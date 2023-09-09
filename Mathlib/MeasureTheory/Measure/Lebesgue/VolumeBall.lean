@@ -11,6 +11,7 @@ A loose port of https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Ball_Volume.
 -/
 
 open Classical Real NNReal ENNReal BigOperators Finset Function MeasureTheory
+set_option autoImplicit true
 
 -- move to Data.Finset.Basic
 theorem Finset.constant_of_eq_insert {α β : Type _} (f : Finset α → β)
@@ -64,6 +65,12 @@ attribute [simp] Real.Gamma_one_half_eq
 theorem Real.Gamma_two_inv : Real.Gamma 2⁻¹ = sqrt π := by
   simp [← Real.Gamma_one_half_eq]
 
+@[simp]
+theorem Real.Gamma_three_div_two : Real.Gamma (3 / 2) = sqrt π / 2 := by
+  calc Gamma (3 / 2) =
+        Gamma (2⁻¹ + 1) := by norm_num
+    _ = sqrt π / 2 := by simp [Gamma_add_one, div_eq_inv_mul]
+
 def NNReal.Gamma (x : ℝ≥0) : ℝ≥0 := ⟨Real.Gamma x, Real.Gamma_nonneg_of_nonneg x.property⟩
 
 @[simp]
@@ -80,16 +87,57 @@ theorem NNReal.Gamma_half : NNReal.Gamma (1 / 2) = sqrt NNReal.pi := by
   simp
 
 @[simp]
+theorem NNReal.Gamma_three_div_two : NNReal.Gamma (3 / 2) = sqrt NNReal.pi / 2 := by
+  ext
+  simp
+
+@[simp]
 theorem NNReal.Gamma_one : NNReal.Gamma 1 = 1 := Subtype.ext Real.Gamma_one
 
 def NNReal.Beta (a b : ℝ≥0) : ℝ≥0 := Gamma a * Gamma b / Gamma (a + b)
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
+@[simp]
+theorem integral_cos_pow_eq_beta : (n : ℕ) →
+    ∫ θ in (-π / 2)..(π / 2), (cos θ) ^ n = Beta (1 / 2) ((n + 1) / 2)
+  | 0 => by
+    simp [Beta, neg_div]
+    norm_num
+    simp [Real.Gamma_one, ← pow_two]
+    rw [Real.sq_sqrt]
+    positivity
+  | 1 => by
+    simp [Beta, neg_div, Real.Gamma_one]
+    norm_num
+    simp [div_div_eq_mul_div]
+    rw [mul_comm]
+    rw [mul_div_assoc]
+    simp
+    rw [div_self]
+    positivity
+  | (n + 2) => by
+    rw [integral_cos_pow, ih]
+
+theorem integral_cos_pow_eq_beta' (n : ℕ) :
+    ∫ θ in (-π / 2)..(π / 2), (cos θ) ^ (n + 1) = Beta (1 / 2) (n / 2 + 1) := by
+  norm_num
+  congr
+  rw [add_assoc, add_div]
+  simp
+
+theorem lintegral_cos_pow_eq_beta (n : ℕ) :
+    ∫⁻ θ in Set.Icc (-π / 2 : ℝ) (π / 2 : ℝ), .ofReal ((cos θ) ^ (n + 1)) =
+    Beta (1 / 2) (n / 2 + 1) := by
+  sorry
+
 def I (n : ℕ) (t : ℝ) : ℝ≥0 := if ht : 0 ≤ t then (⟨t, ht⟩ ^ ((n:ℝ) / 2)) else 0
 
 @[simp] theorem I_zero (t : ℝ) : I 0 t = if 0 ≤ t then 1 else 0 := by
   simp [I]
+
+@[simp] theorem indicator_I : (Set.Ici (0 : ℝ)).indicator (I n ·) = I n := by
+  simp (config := {contextual := true}) [not_le_of_lt, I]
 
 theorem I_apply_nonneg (n : ℕ) {t : ℝ} (ht : 0 ≤ t) : I n t = (⟨t, ht⟩ ^ ((n:ℝ) / 2)) := by
   rw [I, dif_pos]
@@ -121,7 +169,6 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * Beta (1 / 2) (n / 2 + 1) := by
   push_cast
   simp only [add_div]
   ring_nf
-  simp only
   have h₁ : 0 < NNReal.Gamma (1 + n / 2) := NNReal.Gamma_pos_of_pos (by positivity)
   have h₂ : 0 < NNReal.Gamma (1 + n / 2 + 1 / 2) := NNReal.Gamma_pos_of_pos (by positivity)
   set X := NNReal.Gamma (1 + n / 2)
@@ -136,10 +183,19 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * Beta (1 / 2) (n / 2 + 1) := by
 
 /-- auxiliary one-variable integral -/
 theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
-    ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2) = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) :=
+    ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2) = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := by
   calc ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2)
-      = sorry := sorry
-    _ = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := sorry
+      = ∫⁻ x in Set.Icc (-R : ℝ) (R : ℝ), .ofReal (Real.sqrt (R ^ 2 - x ^ 2)) ^ n := by
+        sorry
+      -- x = R * sin θ
+    _ = ∫⁻ θ in Set.Icc (-π / 2 : ℝ) (π / 2 : ℝ), .ofReal (R ^ (n + 1) * (cos θ) ^ (n + 1)) := by
+        sorry
+    _ = (∫⁻ θ in Set.Icc (-π / 2 : ℝ) (π / 2 : ℝ),
+          .ofReal ((cos θ) ^ (n + 1))) * (R:ℝ≥0∞) ^ (n + 1) := by
+        sorry
+    _ = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := by
+        rw [← lintegral_cos_pow_eq_beta]
+
 
 
 -- some automation broken here, track it down
