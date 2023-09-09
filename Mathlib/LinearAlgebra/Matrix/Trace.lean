@@ -42,6 +42,10 @@ def trace (A : Matrix n n R) : R :=
   ∑ i, diag A i
 #align matrix.trace Matrix.trace
 
+lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
+    trace (diagonal d) = (Finset.univ : Finset o).sum d := by
+  simp only [trace, diag_apply, diagonal_apply_eq]
+
 variable (n R)
 
 @[simp]
