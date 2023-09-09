@@ -577,6 +577,97 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
           (regionBetween_subset (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s)).symm
 #align volume_region_between_eq_lintegral volume_regionBetween_eq_lintegral
 
+lemma prod_univ_ae_of_ae {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_ae_univ : μ sᶜ = 0) :
+    μ.prod ν (s ×ˢ univ)ᶜ = 0 := by
+  convert show (μ.prod ν) (sᶜ ×ˢ (univ : Set β)) = 0 by
+    simpa only [Measure.prod_prod, mul_eq_zero] using Or.inl s_ae_univ
+  ext p
+  simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
+
+lemma nullMeasurableSet_prod_univ {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet (s ×ˢ univ) (μ.prod ν) := by
+  obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
+  refine ⟨s₀ ×ˢ univ, ⟨mble_s₀.prod MeasurableSet.univ, ?_⟩⟩
+  rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
+  simp only [Filter.mem_mk, mem_setOf_eq] at *
+  rcases s_aeeq_s₀ with ⟨t, ⟨t_mem,  s_eq_s₀⟩⟩
+  refine ⟨t ×ˢ univ, ⟨prod_univ_ae_of_ae t_mem, ?_⟩⟩
+  intro p hp
+  change (p ∈ s ×ˢ univ) = (p ∈ s₀ ×ˢ univ)
+  simp [show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
+
+lemma nullMeasurableSet_fst_mem {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × β | p.fst ∈ s} (μ.prod ν) := by
+  convert nullMeasurableSet_prod_univ (ν := ν) s_mble
+  ext p
+  simp only [mem_setOf_eq, mem_prod, mem_univ, and_true]
+
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable. -/
+lemma nullMeasurableSet_regionBetween (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioo, setOf_and]
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
+  refine NullMeasurableSet.inter ?_ ?_
+  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
+a version for the region together with the graph of the upper function. -/
+lemma nullMeasurableSet_region_between_oc (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioc, setOf_and]
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
+  refine NullMeasurableSet.inter ?_ ?_
+  · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
+  · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+    rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
+a version for the region together with the graph of the lower function. -/
+lemma nullMeasurableSet_region_between_co (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioc, setOf_and]
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
+  refine NullMeasurableSet.inter ?_ ?_
+  · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+    rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+  · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
+
+/-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
+a version for the region together with the graphs of both functions. -/
+lemma nullMeasurableSet_region_between_cc (μ : Measure α)
+    {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
+    {s : Set α} (s_mble : NullMeasurableSet s μ) :
+    NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  dsimp only [Ioc, setOf_and]
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
+  refine NullMeasurableSet.inter ?_ ?_
+  · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
+    rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst f_mble)).compl
+  · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
+    rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
+          ext p
+          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+    exact (nullMeasurableSet_lt (AEMeasurable.fst g_mble) measurable_snd.aemeasurable).compl
+
 end regionBetween
 
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
