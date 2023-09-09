@@ -231,7 +231,7 @@ instance [TopologicalSpace.SecondCountableTopology E] (b : Basis ι ℝ E) :
   rw [Basis.addHaar_def]; exact MeasureTheory.Measure.sigmaFinite_addHaarMeasure
 
 /-- Let `b` and `b'` two bases of `E`. The basis `b'` defines the same Haar measure as the basis
-`b` iff the parallelepiped defined by `b'` has measure `1` for Haar measure defined by `b`. -/
+`b` iff the parallelepiped defined by `b'` has measure `1` for the Haar measure defined by `b`. -/
 theorem Basis.addHaar_eq_iff {ι' : Type*} [Fintype ι'] [TopologicalSpace.SecondCountableTopology E]
     {b : Basis ι ℝ E} {b' : Basis ι' ℝ E} :
     b.addHaar = b'.addHaar ↔ b.addHaar b'.parallelepiped = 1 := by
