@@ -215,7 +215,7 @@ theorem coprime_mul_left_add_left (m n k : ℕ) : coprime (n * k + m) n ↔ copr
 #align nat.coprime_mul_left_add_left Nat.coprime_mul_left_add_left
 
 @[simp]
-theorem coprime_self_sub_left (m n : ℕ) (h : m ≤ n) : coprime (n - m) n ↔ coprime m n:= by
+theorem coprime_self_sub_left (m n : ℕ) (h : m ≤ n) : coprime (n - m) n ↔ coprime m n := by
   rw [coprime, coprime, gcd_self_sub_left _ _ h]
 
 @[simp]
