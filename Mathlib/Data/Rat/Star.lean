@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Rat.Lemmas
+import Mathlib.Data.Rat.Order
 import Mathlib.GroupTheory.Submonoid.Membership
 
 #align_import data.rat.star from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"

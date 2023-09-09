@@ -142,29 +142,6 @@ def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
   ⟨B, mul_eq_one_comm.mp h, h⟩
 #align matrix.invertible_of_right_inverse Matrix.invertibleOfRightInverse
 
-/-- The transpose of an invertible matrix is invertible. -/
-instance invertibleTranspose [Invertible A] : Invertible Aᵀ :=
-  haveI : Invertible Aᵀ.det := by simpa using detInvertibleOfInvertible A
-  invertibleOfDetInvertible Aᵀ
-#align matrix.invertible_transpose Matrix.invertibleTranspose
-
--- porting note: added because Lean can no longer find this instance automatically
-/-- The conjugate transpose of an invertible matrix is invertible. -/
-instance invertibleConjTranspose [StarRing α] [Invertible A] : Invertible Aᴴ :=
-  Invertible.star A
-
-/-- A matrix is invertible if the transpose is invertible. -/
-def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A := by
-  rw [← transpose_transpose A]
-  infer_instance
-#align matrix.invertible__of_invertible_transpose Matrix.invertibleOfInvertibleTranspose
-
-/-- A matrix is invertible if the conjugate transpose is invertible. -/
-def invertibleOfInvertibleConjTranspose [StarRing α] [Invertible Aᴴ] : Invertible A := by
-  rw [← conjTranspose_conjTranspose A, ← star_eq_conjTranspose]
-  infer_instance
-#align matrix.invertible_of_invertible_conj_transpose Matrix.invertibleOfInvertibleConjTranspose
-
 /-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(Matrix n n α)ˣ`-/
 def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
   @unitOfInvertible _ _ A (invertibleOfDetInvertible A)

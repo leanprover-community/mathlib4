@@ -32,7 +32,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 -/
 
 
-universe u uS v₁ v₂ v₃ v₄
+universe u uS v₁ v₂ v₃ v₄ v₅ v₆
 
 open scoped TensorProduct
 
@@ -60,7 +60,7 @@ variable (r : R) (f g : M →ₗ[R] N)
 
 variable (A)
 
-/-- `base_change A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
+/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
@@ -97,7 +97,7 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
 
 variable (R A M N)
 
-/-- `base_change` as a linear map. -/
+/-- `baseChange` as a linear map. -/
 @[simps]
 def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
   toFun := baseChange A
@@ -382,8 +382,8 @@ products of algebras.
 See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
-  (ha : f.comp includeLeft = g.comp includeLeft)
-  (hb : (f.restrictScalars R).comp includeRight = (g.restrictScalars R).comp includeRight) :
+    (ha : f.comp includeLeft = g.comp includeLeft)
+    (hb : (f.restrictScalars R).comp includeRight = (g.restrictScalars R).comp includeRight) :
     f = g := by
   apply AlgHom.toLinearMap_injective
   ext a b
@@ -512,10 +512,10 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
       simp only
       rw [LinearMap.toFun_eq_coe]
       refine TensorProduct.induction_on x ?_ ?_ ?_
-      · rw [MulZeroClass.zero_mul, map_zero, MulZeroClass.zero_mul]
+      · rw [zero_mul, map_zero, zero_mul]
       · intro a₁ b₁
         refine TensorProduct.induction_on y ?_ ?_ ?_
-        · rw [MulZeroClass.mul_zero, map_zero, MulZeroClass.mul_zero]
+        · rw [mul_zero, map_zero, mul_zero]
         · intro a₂ b₂
           rw [tmul_mul_tmul, w₁]
         · intro x₁ x₂ h₁ h₂
@@ -588,9 +588,13 @@ variable {A : Type v₁} [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower
 
 variable {B : Type v₂} [Semiring B] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
 
+variable {B' : Type v₅} [Semiring B'] [Algebra R B'] [Algebra S B'] [IsScalarTower R S B']
+
 variable {C : Type v₃} [Semiring C] [Algebra R C]
 
 variable {D : Type v₄} [Semiring D] [Algebra R D]
+
+variable {D' : Type v₆} [Semiring D'] [Algebra R D']
 
 section
 
@@ -709,6 +713,14 @@ theorem map_tmul (f : A →ₐ[S] B) (g : C →ₐ[R] D) (a : A) (c : C) : map f
 #align algebra.tensor_product.map_tmul Algebra.TensorProduct.map_tmul
 
 @[simp]
+theorem map_id : map (.id S A) (.id R C) = .id S _:=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+theorem map_comp (f₂ : B →ₐ[S] B') (f₁ : A →ₐ[S] B) (g₂ : D →ₐ[R] D') (g₁ : C →ₐ[R] D) :
+    map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+@[simp]
 theorem map_comp_includeLeft (f : A →ₐ[S] B) (g : C →ₐ[R] D) :
     (map f g).comp includeLeft = includeLeft.comp f :=
   AlgHom.ext <| by simp
@@ -756,6 +768,16 @@ theorem congr_symm_apply (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) (x) :
     (congr f g).symm x = (map (f.symm : B →ₐ[S] A) (g.symm : D →ₐ[R] C)) x :=
   rfl
 #align algebra.tensor_product.congr_symm_apply Algebra.TensorProduct.congr_symm_apply
+
+@[simp]
+theorem congr_refl : congr (.refl : A ≃ₐ[S] A) (.refl : C ≃ₐ[R] C) = .refl :=
+  AlgEquiv.coe_algHom_injective <| map_id
+
+theorem congr_trans (f₁ : A ≃ₐ[S] B) (f₂ : B ≃ₐ[S] B') (g₁ : C ≃ₐ[R] D) (g₂ : D ≃ₐ[R] D') :
+    congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
+  AlgEquiv.coe_algHom_injective <| map_comp f₂.toAlgHom f₁.toAlgHom g₂.toAlgHom g₁.toAlgHom
+
+theorem congr_symm (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : congr f.symm g.symm = (congr f g).symm := rfl
 
 end
 
@@ -1015,13 +1037,13 @@ protected def module : Module (A ⊗[R] B) M where
     simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
     refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
-    · simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+    · simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
     · intro z w _ _
-      simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a₁ b₁ a₂ b₂
       -- porting note; was one `simp only` not two and a `rw` in mathlib3
       simp only [(· • ·), Algebra.TensorProduct.tmul_mul_tmul]
@@ -1034,7 +1056,7 @@ protected def module : Module (A ⊗[R] B) M where
       rw [mul_add]  -- simp only doesn't work
       simp only [LinearMap.map_add, LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
     · intro z w _ _
-      simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw
       simp only [(· • ·), LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]

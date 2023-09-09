@@ -72,13 +72,16 @@ instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
 
+/-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
+This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
+@[coe]
+def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+  { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
+
 instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [_h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) where
-  coe f :=
-    { (f : A ≃+* B) with
-      toFun := f
-      invFun := EquivLike.inv f
-      commutes' := AlgHomClass.commutes f }
+    [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
+  ⟨toAlgEquiv⟩
 end AlgEquivClass
 
 namespace AlgEquiv
@@ -598,6 +601,10 @@ def toLinearMap : A₁ →ₗ[R] A₂ :=
 theorem toAlgHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinearMap :=
   rfl
 #align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.toAlgHom_toLinearMap
+
+theorem toLinearMap_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+    (ofAlgHom f g h₁ h₂).toLinearMap = f.toLinearMap :=
+  LinearMap.ext fun _ => rfl
 
 @[simp]
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
