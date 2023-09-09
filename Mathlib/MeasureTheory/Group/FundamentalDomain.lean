@@ -850,7 +850,8 @@ lemma projection_respects_measure {μ : Measure (Quotient α_mod_G)}
 variable [Countable G] [MeasurableSpace G] [SMulInvariantMeasure G α volume] [MeasurableSMul G α]
 
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
-an artificial way to generate a measure downstairs such that the pair satisfies the `QuotientVolumeEqVolumePreimage` typeclass. -/
+an artificial way to generate a measure downstairs such that the pair satisfies the
+`QuotientVolumeEqVolumePreimage` typeclass. -/
 lemma IsFundamentalDomain.QuotientVolumeEqVolumePreimage_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s) (meas_s : MeasurableSet s) :
     @QuotientVolumeEqVolumePreimage G α _ _ _ (meas_s.quotientMeasure G volume) :=

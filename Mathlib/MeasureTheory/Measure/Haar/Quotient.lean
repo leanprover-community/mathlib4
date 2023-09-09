@@ -128,7 +128,7 @@ instance MeasureTheory.QuotientVolumeEqVolumePreimage.smulInvariantMeasure_quoti
 
 -- not clear why this restatement is needed
 instance [SigmaFinite (volume : Measure G)] [IsMulRightInvariant (volume : Measure G)]
-    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
+    [HasFundamentalDomain (Subgroup.opposite Γ) G]
     (μ : Measure (G ⧸ Γ)) [QuotientVolumeEqVolumePreimage μ] :
     SigmaFinite μ :=
   instSigmaFiniteQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace μ
