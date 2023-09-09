@@ -81,6 +81,7 @@ theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
 
 /-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
 `[Fintype α]` and `[Fact (1 ≤ p)]`. -/
+@[nolint unusedArguments]
 def AddEquiv.lpPiLp [Fact (1 ≤ p)] : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g => rfl }
 #align add_equiv.lp_pi_Lp AddEquiv.lpPiLp
