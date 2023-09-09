@@ -158,6 +158,17 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.Finite_quotient
     rw [h𝓕.covolume_eq_volume meas_𝓕]
   exact inferInstance
 
+/-- The covolume is finite, assuming the quotient measure is finite. -/
+theorem MeasureTheory.QuotientVolumeEqVolumePreimage.finite_covolume
+    [IsMulRightInvariant (volume : Measure G)]
+    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G] [IsFiniteMeasure μ] :
+    hasFun.covolume ≠ ⊤ := by
+  obtain ⟨𝓕, h𝓕, meas_𝓕⟩ := hasFun.has_fundamental_domain_characterization
+  have H : μ univ ≠ ⊤ := measure_ne_top μ univ
+  rw [QuotientVolumeEqVolumePreimage.eq_quotientMeasure h𝓕 meas_𝓕 μ,
+    meas_𝓕.quotientMeasure_apply _ MeasurableSet.univ] at H
+  simpa [h𝓕.covolume_eq_volume meas_𝓕] using H
+
 end smulInvariantMeasure
 
 section normal
@@ -225,6 +236,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.QuotientVolumeEqVolumePreimage_
     · exact trans hV.symm neZeroV
     · exact trans hV.symm neTopV
 
+-- HM, 8 Sep: better to phrase this using `[IsFiniteMeasure μ]` than using `hasFun.covolume ≠ ⊤`?
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientVolumeEqVolumePreimage`. -/
 theorem MeasureTheory.LeftInvariantIsQuotientVolumeEqVolumePreimage
@@ -264,12 +276,41 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar
     μ = μ K • haarMeasure K :=
   haarMeasure_unique _ _
 
+local notation "π" => @QuotientGroup.mk G _ Γ
+
+-- note: is `IsFiniteMeasure` necessary?
+instance [LocallyCompactSpace G] [QuotientVolumeEqVolumePreimage μ]
+    [i : HasFundamentalDomain (Subgroup.opposite Γ) G] [IsFiniteMeasure μ] :
+    IsHaarMeasure μ := by
+  obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
+  let K' : PositiveCompacts (G ⧸ Γ) := K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
+  rw [MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar μ K']
+  have finiteCovol : i.covolume ≠ ⊤ :=
+    MeasureTheory.QuotientVolumeEqVolumePreimage.finite_covolume (μ := μ)
+  obtain ⟨s, fund_dom_s, meas_s⟩ := i
+  rw [fund_dom_s.covolume_eq_volume meas_s] at finiteCovol
+  rw [projection_respects_measure fund_dom_s meas_s K'.isCompact.measurableSet]
+  apply IsHaarMeasure.smul
+  · intro h
+    haveI i' : IsOpenPosMeasure (volume : Measure G) := inferInstance
+    apply IsOpenPosMeasure.open_pos (interior K) (μ := volume) (self := i')
+    · exact isOpen_interior
+    · exact K.interior_nonempty
+    rw [← le_zero_iff, ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _) h]
+    apply measure_mono
+    refine interior_subset.trans ?_
+    show (K : Set G) ⊆ π ⁻¹' (π '' K)
+    exact subset_preimage_image π K
+  · show volume (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
+    apply ne_of_lt
+    refine lt_of_le_of_lt ?_ finiteCovol.lt_top
+    apply measure_mono
+    exact inter_subset_right _ s
 
 --- 7/21/23
 -- Need a lemma about our magic typeclass:
 -- Lemma: behavior under scaling
 
-local notation "π" => @QuotientGroup.mk G _ Γ
 
 
 /- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
