@@ -82,7 +82,7 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
  /-- A parallelepiped can be expressed on the standard basis. -/
  theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : Basis ι ℝ E) :
-    b.parallelepiped = (TopologicalSpace.PositiveCompacts.piIcc01 ι).map b.equivFun.symm
+    b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
       b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
   rw [← Basis.parallelepiped_basisFun]
   refine (congrArg _ ?_).trans (Basis.parallelepiped_map _ _)
@@ -95,12 +95,12 @@ open MeasureTheory MeasureTheory.Measure
 
 theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] (b : Basis ι ℝ E)
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [TopologicalSpace.SecondCountableTopology F]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
     [SigmaCompactSpace F] [MeasurableSpace F] [BorelSpace F] (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   have : IsAddHaarMeasure (map f b.addHaar) :=
   AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
-  have : SigmaFinite (map f b.addHaar) := MeasureTheory.Measure.IsAddHaarMeasure.sigmaFinite _
+  have : SigmaFinite (map f b.addHaar) := IsAddHaarMeasure.sigmaFinite _
   rw [(map f b.addHaar).addHaarMeasure_unique (b.map f.toLinearEquiv).parallelepiped,
     Measure.map_apply f.continuous.measurable (PositiveCompacts.isCompact _).measurableSet,
     Basis.coe_parallelepiped, Basis.coe_map]

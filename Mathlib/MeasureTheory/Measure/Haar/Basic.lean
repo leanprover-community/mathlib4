@@ -701,7 +701,7 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
 /-- Let `K₀ K₁ : TopologicalSpace.PositiveCompacts G`, then `K₁` defines the same Haar measure as
 `K₀` iff it has measure `1` for the Haar measure defined by `K₀`. -/
 @[to_additive]
-theorem haarMeasure_eq_iff (K₀ K₁ : TopologicalSpace.PositiveCompacts G) :
+theorem haarMeasure_eq_iff (K₀ K₁ : PositiveCompacts G) :
     haarMeasure K₀ = haarMeasure K₁ ↔ (haarMeasure K₀) K₁ = 1 :=
   ⟨fun h => h.symm ▸ haarMeasure_self,
     fun h => by rw [haarMeasure_unique (haarMeasure K₀) K₁, h, one_smul]⟩
