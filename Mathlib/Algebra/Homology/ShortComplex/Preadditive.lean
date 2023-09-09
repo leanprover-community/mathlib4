@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
-/-! Homology of in preadditive categories
+/-! Homology of preadditive categories
 
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
