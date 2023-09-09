@@ -424,11 +424,11 @@ additive homomorphism. -/
 def δ_hom : Cochain F G n →+ Cochain F G m :=
   AddMonoidHom.mk' (δ n m) (fun α β => by
     by_cases n + 1 = m
-    . ext p q hpq
+    · ext p q hpq
       dsimp
       simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.add_v, add_comp, comp_add, zsmul_add]
       abel
-    . simp only [δ_shape _ _ h, add_zero])
+    · simp only [δ_shape _ _ h, add_zero])
 
 variable {F G}
 
