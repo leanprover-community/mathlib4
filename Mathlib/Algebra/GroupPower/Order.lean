@@ -526,6 +526,11 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
     _ = a := pow_one _
 #align pow_lt_self_of_lt_one pow_lt_self_of_lt_one
 
+theorem self_lt_pow_of_one_lt (h : 1 < a) (h2 : 1 < m) : a < a ^ m := by
+  calc
+    a = a ^ 1 := (pow_one _).symm
+    _ < a ^ m := pow_lt_pow h h2
+
 theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := by
   rw [sq]
   exact mul_pos ha ha
