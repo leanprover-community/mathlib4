@@ -217,7 +217,7 @@ namespace Subobject
 section OrderTop
 
 instance orderTop {X : C} : OrderTop (Subobject X) where
-  top := Quotient.mk'' ⊤
+  top := Quotient.mk _ ⊤
   le_top := by
     refine' Quotient.ind' fun f => _
     exact ⟨MonoOver.leTop f⟩

@@ -291,7 +291,7 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : (ker f).Rel x y ↔ x ∈ f
 `quotient r → β`. -/
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
-  invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
+  invFun f := ⟨f ∘ (Quotient.mk _), fun x y h => by simp [ker_def, Quotient.sound h]⟩
   left_inv := fun ⟨f, hf⟩ => Subtype.eq <| funext fun x => rfl
   right_inv f := funext fun x => Quotient.inductionOn' x fun x => rfl
 #align setoid.lift_equiv Setoid.liftEquiv

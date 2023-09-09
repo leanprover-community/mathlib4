@@ -54,11 +54,11 @@ namespace QuotientAddGroup
 
 theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {z : ℤ} (hz : z ≠ 0) :
     z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + (k : ℕ) • (p / z : R) := by
-  induction ψ using Quotient.inductionOn'
-  induction θ using Quotient.inductionOn'
+  induction ψ using Quotient.inductionOn
+  induction θ using Quotient.inductionOn
   -- Porting note: Introduced Zp notation to shorten lines
   let Zp := AddSubgroup.zmultiples p
-  have : (Quotient.mk'' : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
+  have : (Quotient.mk _ : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
   simp only [this]
   simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_add,
     QuotientAddGroup.eq_iff_sub_mem, ← smul_sub, ← sub_sub]
@@ -68,8 +68,7 @@ theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {
 theorem zmultiples_nsmul_eq_nsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {n : ℕ} (hz : n ≠ 0) :
     n • ψ = n • θ ↔ ∃ k : Fin n, ψ = θ + (k : ℕ) • (p / n : R) := by
   rw [← coe_nat_zsmul ψ, ← coe_nat_zsmul θ,
-    zmultiples_zsmul_eq_zsmul_iff (Int.coe_nat_ne_zero.mpr hz), Int.cast_ofNat]
-  rfl
+    zmultiples_zsmul_eq_zsmul_iff (Int.coe_nat_ne_zero.mpr hz), Int.cast_ofNat, Int.natAbs_ofNat]
 #align quotient_add_group.zmultiples_nsmul_eq_nsmul_iff QuotientAddGroup.zmultiples_nsmul_eq_nsmul_iff
 
 end QuotientAddGroup

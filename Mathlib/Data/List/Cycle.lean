@@ -471,9 +471,9 @@ theorem mk_eq_coe (l : List α) : Quot.mk _ l = (l : Cycle α) :=
 #align cycle.mk_eq_coe Cycle.mk_eq_coe
 
 @[simp]
-theorem mk''_eq_coe (l : List α) : Quotient.mk'' l = (l : Cycle α) :=
+theorem quotient_mk_eq_coe (l : List α) : Quotient.mk _ l = (l : Cycle α) :=
   rfl
-#align cycle.mk'_eq_coe Cycle.mk''_eq_coe
+#align cycle.mk'_eq_coe Cycle.quotient_mk_eq_coe
 
 theorem coe_cons_eq_coe_append (l : List α) (a : α) :
     (↑(a :: l) : Cycle α) = (↑(l ++ [a]) : Cycle α) :=
@@ -511,7 +511,7 @@ instance : Inhabited (Cycle α) :=
 @[elab_as_elim]
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn s fun l => by
     refine List.recOn l ?_ ?_ <;> simp
     assumption'
 #align cycle.induction_on Cycle.induction_on
@@ -675,8 +675,8 @@ theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
 
 theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬Subsingleton s := by
   rw [length_subsingleton_iff]
-  induction s using Quotient.inductionOn'
-  simp only [mk''_eq_coe, nodup_coe_iff] at h
+  induction s using Quotient.inductionOn
+  simp only [quotient_mk_eq_coe, nodup_coe_iff] at h
   simp [h, Nat.succ_le_iff]
 #align cycle.nodup.nontrivial_iff Cycle.Nodup.nontrivial_iff
 
@@ -698,12 +698,12 @@ theorem nil_toMultiset : nil.toMultiset = (0 : Multiset α) :=
 
 @[simp]
 theorem card_toMultiset (s : Cycle α) : Multiset.card s.toMultiset = s.length :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 #align cycle.card_to_multiset Cycle.card_toMultiset
 
 @[simp]
 theorem toMultiset_eq_nil {s : Cycle α} : s.toMultiset = 0 ↔ s = Cycle.nil :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 #align cycle.to_multiset_eq_nil Cycle.toMultiset_eq_nil
 
 /-- The lift of `list.map`. -/
@@ -723,13 +723,13 @@ theorem map_coe {β : Type*} (f : α → β) (l : List α) : map f ↑l = List.m
 
 @[simp]
 theorem map_eq_nil {β : Type*} (f : α → β) (s : Cycle α) : map f s = nil ↔ s = nil :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 #align cycle.map_eq_nil Cycle.map_eq_nil
 
 @[simp]
 theorem mem_map {β : Type*} {f : α → β} {b : β} {s : Cycle α} :
     b ∈ s.map f ↔ ∃ a, a ∈ s ∧ f a = b :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 #align cycle.mem_map Cycle.mem_map
 
 /-- The `Multiset` of lists that can make the cycle. -/
@@ -745,8 +745,8 @@ theorem lists_coe (l : List α) : lists (l : Cycle α) = ↑l.cyclicPermutations
 
 @[simp]
 theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l : Cycle α) = s :=
-  Quotient.inductionOn' s fun l => by
-    rw [lists, Quotient.liftOn'_mk'']
+  Quotient.inductionOn s fun l => by
+    rw [lists, Quotient.liftOn'_mk]
     simp
 #align cycle.mem_lists_iff_coe_eq Cycle.mem_lists_iff_coe_eq
 
@@ -780,7 +780,7 @@ instance {s : Cycle α} : Decidable (Nodup s) :=
 instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)
     fun ⟨s, hs⟩ => by
-    induction' s using Quotient.inductionOn' with s hs
+    induction' s using Quotient.inductionOn with s hs
     exact ⟨⟨s, hs⟩, by simp⟩
 #align cycle.fintype_nodup_cycle Cycle.fintypeNodupCycle
 
@@ -814,7 +814,7 @@ theorem nil_toFinset : (@nil α).toFinset = ∅ :=
 
 @[simp]
 theorem toFinset_eq_nil {s : Cycle α} : s.toFinset = ∅ ↔ s = Cycle.nil :=
-  Quotient.inductionOn' s (by simp)
+  Quotient.inductionOn s (by simp)
 #align cycle.to_finset_eq_nil Cycle.toFinset_eq_nil
 
 /-- Given a `s : Cycle α` such that `Nodup s`, retrieve the next element after `x ∈ s`. -/
@@ -952,11 +952,11 @@ theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
 
 theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
     Chain r (s.map f) ↔ Chain (fun a b => r (f a) (f b)) s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn s fun l => by
     cases' l with a l
     rfl
-    dsimp only [Chain, ← mk''_eq_coe, Quotient.liftOn'_mk'', Cycle.map, Quotient.map', Quot.map,
-      Quotient.mk'', Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
+    dsimp only [Chain, ← quotient_mk_eq_coe, Quotient.liftOn'_mk'', Cycle.map, Quotient.map',
+      Quot.map, Quotient.mk, Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
     rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
     simp
 #align cycle.chain_map Cycle.chain_map

@@ -602,7 +602,7 @@ several different quotient relations on a type, for example quotient groups, rin
 /-- A version of `Quotient.mk` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
 protected def mk'' (a : α) : Quotient s₁ :=
-  Quot.mk s₁.1 a
+  Quotient.mk s₁ a
 #align quotient.mk Quotient.mk'
 #align quotient.mk' Quotient.mk''
 
@@ -619,6 +619,11 @@ protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, @Setoid.
     φ :=
   Quotient.liftOn q f h
 #align quotient.lift_on' Quotient.liftOn'
+
+@[simp]
+protected theorem liftOn'_mk (f : α → φ) (h) (x : α) :
+    Quotient.liftOn' (Quotient.mk s₁ x) f h = f x :=
+  rfl
 
 @[simp]
 protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
@@ -799,13 +804,11 @@ section
 
 variable [s : Setoid α]
 
+@[simp]
 protected theorem mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
   rfl
 
-@[simp]
-protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
-  rfl
-#align quotient.lift_on'_mk Quotient.liftOn'_mk
+#noalign quotient.lift_on'_mk
 
 @[simp]
 protected theorem liftOn₂'_mk [t : Setoid β] (f : α → β → γ) (h) (a : α) (b : β) :
