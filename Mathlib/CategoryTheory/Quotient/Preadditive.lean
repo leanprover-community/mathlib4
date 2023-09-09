@@ -31,11 +31,11 @@ def add {X Y : Quotient r} (f g : X ⟶ Y) : X ⟶ Y :=
     (fun f g₁ g₂ h₁₂ => by
       simp only [compClosure_iff_self] at h₁₂
       erw [functor_map_eq_iff]
-      exact hr _ _ _ _ (Congruence.isEquiv.refl f) h₁₂)
+      exact hr _ _ _ _ (Congruence.equivalence.refl f) h₁₂)
     (fun f₁ f₂ g h₁₂ => by
       simp only [compClosure_iff_self] at h₁₂
       erw [functor_map_eq_iff]
-      exact hr _ _ _ _ h₁₂ (Congruence.isEquiv.refl g))
+      exact hr _ _ _ _ h₁₂ (Congruence.equivalence.refl g))
 
 /-- The negation on the morphisms in the category `Quotient r` when `r` is compatible
 with the addition. -/
@@ -45,8 +45,8 @@ def neg {X Y : Quotient r} (f : X ⟶ Y) : X ⟶ Y :=
       intro hfg
       simp only [compClosure_iff_self] at hfg
       erw [functor_map_eq_iff]
-      apply Congruence.isEquiv.symm
-      convert hr f g _ _ hfg (Congruence.isEquiv.refl (-f-g)) using 1 <;> abel)
+      apply Congruence.equivalence.symm
+      convert hr f g _ _ hfg (Congruence.equivalence.refl (-f-g)) using 1 <;> abel)
 
 end Preadditive
 
