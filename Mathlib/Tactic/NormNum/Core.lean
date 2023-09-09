@@ -21,6 +21,7 @@ The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Ba
 and elsewhere.
 -/
 
+
 set_option autoImplicit true
 
 open Lean hiding Rat mkRat
@@ -33,6 +34,19 @@ namespace Mathlib
 namespace Meta.NormNum
 
 initialize registerTraceClass `Tactic.norm_num
+
+/-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
+def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
+  return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
+    throwError "not an AddMonoidWithOne"
+
+/-- Helper function to synthesize a typed `Semiring α` expression. -/
+def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
+  return ← synthInstanceQ (q(Semiring $α) : Q(Type u)) <|> throwError "not a semiring"
+
+/-- Helper function to synthesize a typed `Ring α` expression. -/
+def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
+  return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a ring"
 
 /-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
 structure IsNat [AddMonoidWithOne α] (a : α) (n : ℕ) : Prop where
@@ -234,13 +248,6 @@ and `q` is the value of `n / d`. -/
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
 
-/-- A shortcut (non)instance for `AddMonoidWithOne α` from `DivisionRing α` to shrink generated
-proofs. -/
-def instAddMonoidWithOne' [DivisionRing α] : AddMonoidWithOne α := inferInstance
-
-/-- A shortcut (non)instance for `Ring α` from `DivisionRing α` to shrink generated proofs. -/
-def instRing [DivisionRing α] : Ring α := inferInstance
-
 /-- The result is `z : ℤ` and `proof : isNat x z`. -/
 -- Note the independent arguments `z : Q(ℤ)` and `n : ℤ`.
 -- We ensure these are "the same" when calling.
@@ -261,37 +268,6 @@ def Result.toRat : Result e → Option Rat
   | .isRat _ q .. => some q
 
 end
-
-/-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
-def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
-  | .some a => some a
-  | _ => none
-
-/-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
-def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
-  return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
-    throwError "not an AddMonoidWithOne"
-
-/-- Helper function to synthesize a typed `Semiring α` expression. -/
-def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
-  return ← synthInstanceQ (q(Semiring $α) : Q(Type u)) <|> throwError "not a semiring"
-
-/-- Helper function to synthesize a typed `Ring α` expression. -/
-def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
-  return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a ring"
-
-/-- Helper function to synthesize a typed `DivisionRing α` expression. -/
-def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
-  return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
-
-/-- Helper function to synthesize a typed `OfScientific α` expression given `DivisionRing α`. -/
-def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=
-  return ← synthInstanceQ (q(OfScientific $α) : Q(Type u)) <|>
-    throwError "does not support scientific notation"
-
-/-- Helper function to synthesize a typed `RatCast α` expression. -/
-def inferRatCast (α : Q(Type u)) : MetaM Q(RatCast $α) :=
-  return ← synthInstanceQ (q(RatCast $α) : Q(Type u)) <|> throwError "does not support a rat cast"
 
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
@@ -521,13 +497,6 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
 returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
-def deriveNat' {α : Q(Type u)} (e : Q($α)) :
-    MetaM ((_inst : Q(AddMonoidWithOne $α)) × (lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
-  let .isNat inst lit proof ← derive e | failure
-  pure ⟨inst, lit, proof⟩
-
-/-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
 def deriveNat {α : Q(Type u)} (e : Q($α))
     (_inst : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
     MetaM ((lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
@@ -550,33 +519,6 @@ def deriveRat {α : Q(Type u)} (e : Q($α))
     MetaM (ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d)) := do
   let some res := (← derive e).toRat' | failure
   pure res
-
-/-- Extract the natural number `n` if the expression is of the form `OfNat.ofNat n`. -/
-def isNatLit (e : Expr) : Option ℕ := do
-  guard <| e.isAppOfArity ``OfNat.ofNat 3
-  let .lit (.natVal lit) := e.appFn!.appArg! | none
-  lit
-
-/-- Extract the integer `i` if the expression is either a natural number literal
-or the negation of one. -/
-def isIntLit (e : Expr) : Option ℤ :=
-  if e.isAppOfArity ``Neg.neg 3 then
-    (- ·) <$> isNatLit e.appArg!
-  else
-    isNatLit e
-
-/-- Extract the numerator `n : ℤ` and denominator `d : ℕ` if the expression is either
-an integer literal, or the division of one integer literal by another. -/
-def isRatLit (e : Expr) : Option ℚ := do
-  if e.isAppOfArity ``Div.div 4 then
-    let d ← isNatLit e.appArg!
-    guard (d ≠ 1)
-    let n ← isIntLit e.appFn!.appArg!
-    let q := mkRat n d
-    guard (q.den = d)
-    pure q
-  else
-    isIntLit e
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
@@ -606,16 +548,10 @@ def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
   | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
   | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
 
-/-- Test if an expression represents an explicit number written in normal form. -/
-def isNormalForm : Expr → Bool
-  | .lit _ => true
-  | .mdata _ e => isNormalForm e
-  | e => (isRatLit e).isSome
-
 /-- Run each registered `norm_num` extension on an expression,
 returning a `Simp.Result`. -/
 def eval (e : Expr) (post := false) : MetaM Simp.Result := do
-  if isNormalForm e then return { expr := e }
+  if e.isExplicitNumber then return { expr := e }
   let ⟨_, _, e⟩ ← inferTypeQ' e
   (← derive e post).toSimpResult
 
@@ -666,18 +602,6 @@ initialize registerBuiltinAttribute {
 def tryNormNum? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
   try return some (.done (← eval e post))
   catch _ => return none
-
-/--
-Constructs a proof that the original expression is true
-given a simp result which simplifies the target to `True`.
--/
-def _root_.Lean.Meta.Simp.Result.ofTrue (r : Simp.Result) : MetaM (Option Expr) :=
-  if r.expr.isConstOf ``True then
-    some <$> match r.proof? with
-    | some proof => mkOfEqTrue proof
-    | none => pure (mkConst ``True.intro)
-  else
-    pure none
 
 variable (ctx : Simp.Context) (useSimp := true) in
 mutual
