@@ -140,20 +140,10 @@ theorem IsInt.neg_to_eq {α} [Ring α] {n} :
 theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
     {a a' : α} (h : IsInt a (.ofNat n)) (e : n = a') : a = a' := h.to_isNat.to_eq e
 
-/-- Represent an integer as a typed expression. -/
+/-- Represent an integer as a typed expression. This is the inverse of `Expr.intLit!`. -/
 def mkRawIntLit (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
-
-/-- Extract the integer from a raw integer literal, as produced by
-`Mathlib.Meta.NormNum.mkRawIntLit`. -/
-def _root_.Lean.Expr.intLit! (e : Expr) : ℤ :=
-  if e.isAppOfArity ``Int.ofNat 1 then
-    e.appArg!.natLit!
-  else if e.isAppOfArity ``Int.negOfNat 1 then
-    .negOfNat e.appArg!.natLit!
-  else
-    panic! "not a raw integer literal"
 
 /-- Extract the raw natlit representing the absolute value of a raw integer literal
 (of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`) along with an equality proof. -/

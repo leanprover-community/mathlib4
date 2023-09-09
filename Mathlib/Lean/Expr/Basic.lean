@@ -214,6 +214,15 @@ def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
   | _                      => panic! "nat literal expected"
 
+/-- Turn an expression that is a constructor of `Int` applied to a natural number literal
+into an integer. -/
+def intLit! (e : Expr) : Int :=
+  if e.isAppOfArity ``Int.ofNat 1 then
+    e.appArg!.natLit!
+  else if e.isAppOfArity ``Int.negOfNat 1 then
+    .negOfNat e.appArg!.natLit!
+  else
+    panic! "not a raw integer literal"
 
 /--
 Check if an expression is a "natural number in normal form",
