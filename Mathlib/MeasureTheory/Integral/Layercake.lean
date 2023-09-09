@@ -273,7 +273,7 @@ variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
 namespace Measure
 
 theorem meas_eq_pos_of_meas_le_ne_meas_lt
-    {α : Type*} [MeasurableSpace α] {μ : Measure α} {R : Type*} [LinearOrder R] [MeasurableSpace R]
+    {α : Type*} [MeasurableSpace α] {μ : Measure α} {R : Type*} [LinearOrder R]
     {g : α → R} {t : R} (ht : μ {a : α | t ≤ g a} ≠ μ {a : α | t < g a}) :
     0 < μ {a : α | g a = t} := by
   by_contra con
