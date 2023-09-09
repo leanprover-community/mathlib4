@@ -3373,13 +3373,23 @@ finitely many members of the union whose measure exceeds any given positive numb
 theorem finite_const_le_meas_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α] (μ : Measure α)
     {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
-    Set.Finite { i : ι | ε ≤ μ (As i) } := by
-  by_contra con
-  have aux :=
-    lt_of_le_of_lt (tsum_meas_le_meas_iUnion_of_disjoint μ As_mble As_disj)
-      (lt_top_iff_ne_top.mpr Union_As_finite)
-  exact con (ENNReal.finite_const_le_of_tsum_ne_top aux.ne ε_pos.ne.symm)
+    Set.Finite { i : ι | ε ≤ μ (As i) } :=
+  ENNReal.finite_const_le_of_tsum_ne_top
+    (ne_top_of_le_ne_top Union_As_finite (tsum_meas_le_meas_iUnion_of_disjoint μ As_mble As_disj))
+    ε_pos.ne'
 #align measure_theory.measure.finite_const_le_meas_of_disjoint_Union MeasureTheory.Measure.finite_const_le_meas_of_disjoint_iUnion
+
+/-- If all elements of an infinite set have measure uniformly separated from zero,
+then the set has infinite measure. -/
+theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]
+    {s : Set α} (hs : s.Infinite) (h' : ∃ ε, ε ≠ 0 ∧ ∀ x ∈ s, ε ≤ μ {x}) : μ s = ∞ := top_unique <|
+  let ⟨ε, hne, hε⟩ := h'; have := hs.to_subtype
+  calc
+    ∞ = ∑' _ : s, ε := (ENNReal.tsum_const_eq_top_of_ne_zero hne).symm
+    _ ≤ ∑' x : s, μ {x.1} := ENNReal.tsum_le_tsum fun x ↦ hε x x.2
+    _ ≤ μ (⋃ x : s, {x.1}) := tsum_meas_le_meas_iUnion_of_disjoint _
+      (fun _ ↦ MeasurableSet.singleton _) fun x y hne ↦ by simpa [Subtype.val_inj]
+    _ = μ s := by simp
 
 /-- If the union of disjoint measurable sets has finite measure, then there are only
 countably many members of the union whose measure is positive. -/
@@ -3794,11 +3804,10 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
 /-- A measure which is finite on compact sets in a locally compact space is locally finite.
 Not registered as an instance to avoid a loop with the other direction. -/
 theorem isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
-    [LocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
-  ⟨by
-    intro x
-    rcases exists_compact_mem_nhds x with ⟨K, K_compact, K_mem⟩
-    exact ⟨K, K_mem, K_compact.measure_lt_top⟩⟩
+    [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
+  ⟨fun x ↦
+    let ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x
+    ⟨K, K_mem, K_compact.measure_lt_top⟩⟩
 #align measure_theory.is_locally_finite_measure_of_is_finite_measure_on_compacts MeasureTheory.isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
 
 theorem exists_pos_measure_of_cover [Countable ι] {U : ι → Set α} (hU : ⋃ i, U i = univ)

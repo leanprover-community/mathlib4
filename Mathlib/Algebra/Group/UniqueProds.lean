@@ -200,7 +200,7 @@ class UniqueProds (G) [Mul G] : Prop where
     ∀ {A B : Finset G} (_ : A.Nonempty) (_ : B.Nonempty), ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueMul A B a0 b0
 #align unique_prods UniqueProds
 
-attribute [to_additive UniqueSums] UniqueProds
+attribute [to_additive] UniqueProds
 
 namespace Multiplicative
 
@@ -219,7 +219,7 @@ end Additive
 -- see Note [lower instance priority]
 /-- This instance asserts that if `A` has a multiplication, a linear order, and multiplication
 is 'very monotone', then `A` also has `UniqueProds`. -/
-@[to_additive Covariants.to_uniqueSums
+@[to_additive
       "This instance asserts that if `A` has an addition, a linear order, and addition
 is 'very monotone', then `A` also has `UniqueSums`."]
 instance (priority := 100) Covariants.to_uniqueProds {A} [Mul A] [LinearOrder A]
