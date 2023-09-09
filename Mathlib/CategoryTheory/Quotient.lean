@@ -37,14 +37,12 @@ variable {C : Type _} [Category C] (r : HomRel C)
 from left and right. -/
 class Congruence : Prop where
   /-- `r` is an equivalence on every hom-set. -/
-  isEquiv : ∀ {X Y}, IsEquiv _ (@r X Y)
+  equivalence : ∀ {X Y}, _root_.Equivalence (@r X Y)
   /-- Precomposition with an arrow respects `r`. -/
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 #align category_theory.congruence CategoryTheory.Congruence
-
-attribute [instance] Congruence.isEquiv
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -138,23 +136,23 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
   simpa using Quot.sound (CompClosure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
+@[simp]
+lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
+    CompClosure r f g ↔ r f g := by
+  constructor
+  . intro hfg
+    induction' hfg with m m' hm
+    exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
+  . exact CompClosure.of _ _ _
+
+theorem compClosure_eq_self [h : Congruence r] :
+    CompClosure r = r := by aesop_cat
+
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' := by
-  constructor
-  · erw [Quot.eq]
-    intro h
-    induction' h with m m' hm
-    · cases hm
-      apply Congruence.compLeft
-      apply Congruence.compRight
-      assumption
-    · haveI := (h.isEquiv : IsEquiv _ (@r X Y))
-      -- porting note: had to add this line for `refl` (and name the `Congruence` argument)
-      apply refl
-    · apply symm
-      assumption
-    · apply _root_.trans <;> assumption
-  · apply Quotient.sound
+  dsimp
+  rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
+  simpa only [compClosure_eq_self r] using h.equivalence
 #align category_theory.quotient.functor_map_eq_iff CategoryTheory.Quotient.functor_map_eq_iff
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
