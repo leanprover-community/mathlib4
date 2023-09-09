@@ -50,9 +50,9 @@ variable (S)
 lemma exact_iff_isZero_homology [S.HasHomology] :
     S.Exact ↔ IsZero S.homology := by
   constructor
-  . rintro ⟨⟨h', z⟩⟩
+  · rintro ⟨⟨h', z⟩⟩
     exact IsZero.of_iso z h'.left.homologyIso
-  . intro h
+  · intro h
     exact ⟨⟨_, h⟩⟩
 
 variable {S}
@@ -97,9 +97,9 @@ lemma exact_iff_homology_iso_zero [S.HasHomology] [HasZeroObject C] :
     S.Exact ↔ Nonempty (S.homology ≅ 0) := by
   rw [exact_iff_isZero_homology]
   constructor
-  . intro h
+  · intro h
     exact ⟨h.isoZero⟩
-  . rintro ⟨e⟩
+  · rintro ⟨e⟩
     exact IsZero.of_iso (isZero_zero C) e
 
 lemma exact_of_iso (e : S₁ ≅ S₂) (h : S₁.Exact) : S₂.Exact := by
@@ -116,9 +116,9 @@ lemma exact_of_isZero_X₂ (h : IsZero S.X₂) : S.Exact := by
 lemma exact_iff_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     S₁.Exact ↔ S₂.Exact := by
   constructor
-  . rintro ⟨h₁, z₁⟩
+  · rintro ⟨h₁, z₁⟩
     exact ⟨HomologyData.ofEpiOfIsIsoOfMono φ h₁, z₁⟩
-  . rintro ⟨h₂, z₂⟩
+  · rintro ⟨h₂, z₂⟩
     exact ⟨HomologyData.ofEpiOfIsIsoOfMono' φ h₂, z₂⟩
 
 variable {S}
@@ -128,9 +128,9 @@ lemma HomologyData.exact_iff_i_p_zero (h : S.HomologyData) :
   haveI := HasHomology.mk' h
   rw [h.left.exact_iff, ← h.comm]
   constructor
-  . intro z
+  · intro z
     rw [IsZero.eq_of_src z h.iso.hom 0, zero_comp, comp_zero]
-  . intro eq
+  · intro eq
     simp only [IsZero.iff_id_eq_zero, ← cancel_mono h.iso.hom, id_comp, ← cancel_mono h.right.ι,
       ← cancel_epi h.left.π, eq, zero_comp, comp_zero]
 
