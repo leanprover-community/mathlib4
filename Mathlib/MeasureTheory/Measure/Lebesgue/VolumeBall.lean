@@ -71,10 +71,25 @@ theorem Real.Gamma_three_div_two : Real.Gamma (3 / 2) = sqrt π / 2 := by
         Gamma (2⁻¹ + 1) := by norm_num
     _ = sqrt π / 2 := by simp [Gamma_add_one, div_eq_inv_mul]
 
+def Real.Beta (a b : ℝ) : ℝ := Gamma a * Gamma b / Gamma (a + b)
+
+@[simp]
+lemma Real.Beta_add_one {a b : ℝ} (hb : b ≠ 0) (hab : a + b ≠ 0) :
+    a.Beta (b + 1) = b / (a + b) * a.Beta b := by
+  simp [Beta, ← add_assoc, Gamma_add_one, hab, hb]
+  field_simp
+  ring
+
+lemma Real.Beta_nonneg {a b : ℝ} (hb : 0 ≤ a) (hab : 0 ≤ b) : 0 ≤ Beta a b := by
+  have : 0 ≤ a + b := by positivity
+  apply div_nonneg; apply mul_nonneg
+  all_goals
+    apply Gamma_nonneg_of_nonneg; assumption
+
 def NNReal.Gamma (x : ℝ≥0) : ℝ≥0 := ⟨Real.Gamma x, Real.Gamma_nonneg_of_nonneg x.property⟩
 
 @[simp]
-theorem NNReal.Gamma_coe {x : ℝ≥0} : (NNReal.Gamma x : ℝ) = Real.Gamma x := rfl
+theorem NNReal.coe_Gamma {x : ℝ≥0} : (NNReal.Gamma x : ℝ) = Real.Gamma x := rfl
 
 theorem NNReal.Gamma_pos_of_pos {x : ℝ≥0} (hx : 0 < x) : 0 < NNReal.Gamma x := by
   rw [← NNReal.coe_lt_coe]
@@ -93,22 +108,32 @@ theorem NNReal.Gamma_three_div_two : NNReal.Gamma (3 / 2) = sqrt NNReal.pi / 2 :
 
 @[simp]
 theorem NNReal.Gamma_one : NNReal.Gamma 1 = 1 := Subtype.ext Real.Gamma_one
-
 def NNReal.Beta (a b : ℝ≥0) : ℝ≥0 := Gamma a * Gamma b / Gamma (a + b)
+
+@[simp]
+lemma NNReal.coe_Beta (a b : ℝ≥0) : (a.Beta b : ℝ) = (a : ℝ).Beta b := rfl
+
+@[simp]
+lemma NNReal.Beta_add_one {a b : ℝ≥0} (hb : 0 < b) :
+    a.Beta (b + 1) = b / (a + b) * a.Beta b := by
+  ext
+  have h1 : 0 < (b : ℝ) := hb
+  have h2 : 0 < (a + b : ℝ) := h1.trans_le <| le_add_of_nonneg_left <| coe_nonneg a
+  simp [Real.Beta_add_one h1.ne' h2.ne']
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 @[simp]
 theorem integral_cos_pow_eq_beta : (n : ℕ) →
-    ∫ θ in (-π / 2)..(π / 2), (cos θ) ^ n = Beta (1 / 2) ((n + 1) / 2)
+    ∫ θ in (-(π / 2))..(π / 2), cos θ ^ n = Real.Beta (1 / 2) ((n + 1) / 2)
   | 0 => by
-    simp [Beta, neg_div]
+    simp [Real.Beta, neg_div]
     norm_num
     simp [Real.Gamma_one, ← pow_two]
     rw [Real.sq_sqrt]
     positivity
   | 1 => by
-    simp [Beta, neg_div, Real.Gamma_one]
+    simp [Real.Beta, Real.Gamma_one]
     norm_num
     simp [div_div_eq_mul_div]
     rw [mul_comm]
@@ -117,19 +142,44 @@ theorem integral_cos_pow_eq_beta : (n : ℕ) →
     rw [div_self]
     positivity
   | (n + 2) => by
-    rw [integral_cos_pow, ih]
+    simp [integral_cos_pow, integral_cos_pow_eq_beta n]
+    simp_rw [add_right_comm (n : ℝ) 2 1, div_add_same <| two_ne_zero (α := ℝ)]
+    simp (discharger := positivity) [Real.Beta_add_one]
+    field_simp
+    ring_nf
+    simp
 
 theorem integral_cos_pow_eq_beta' (n : ℕ) :
-    ∫ θ in (-π / 2)..(π / 2), (cos θ) ^ (n + 1) = Beta (1 / 2) (n / 2 + 1) := by
+    ∫ θ in (-(π / 2))..(π / 2), cos θ ^ (n + 1) = Real.Beta (1 / 2) (n / 2 + 1) := by
   norm_num
   congr
   rw [add_assoc, add_div]
   simp
 
+-- unused
 theorem lintegral_cos_pow_eq_beta (n : ℕ) :
-    ∫⁻ θ in Set.Icc (-π / 2 : ℝ) (π / 2 : ℝ), .ofReal ((cos θ) ^ (n + 1)) =
-    Beta (1 / 2) (n / 2 + 1) := by
-  sorry
+    ∫⁻ θ in Set.Icc (-(π / 2) : ℝ) (π / 2 : ℝ), .ofReal (cos θ ^ n) =
+    NNReal.Beta (1 / 2) ((n + 1) / 2) := by
+  rw [← ofReal_integral_eq_lintegral_ofReal, integral_Icc_eq_integral_Ioc,
+    ← intervalIntegral.integral_of_le, integral_cos_pow_eq_beta, ← ofReal_coe_nnreal]
+  · rfl
+  · simp; positivity
+  · exact Continuous.integrableOn_Icc <| continuous_cos.pow _
+  · rw [Filter.EventuallyLE, ae_restrict_iff' measurableSet_Icc]
+    apply Filter.eventually_of_forall
+    intro x hx
+    simp
+    apply pow_nonneg <| cos_nonneg_of_mem_Icc hx
+
+-- unused
+theorem lintegral_cos_pow_eq_beta' (n : ℕ) :
+    ∫⁻ θ in Set.Icc (-(π / 2) : ℝ) (π / 2 : ℝ), .ofReal (cos θ ^ (n + 1)) =
+    NNReal.Beta (1 / 2) (n / 2 + 1) := by
+  rw [lintegral_cos_pow_eq_beta]
+  norm_num
+  congr
+  rw [add_assoc, add_div]
+  norm_num
 
 def I (n : ℕ) (t : ℝ) : ℝ≥0 := if ht : 0 ≤ t then (⟨t, ht⟩ ^ ((n:ℝ) / 2)) else 0
 
@@ -164,8 +214,8 @@ def B (n : ℕ) : ℝ≥0 := NNReal.pi ^ ((n:ℝ) / 2) / NNReal.Gamma (n / 2 + 1
 @[simp] theorem B_zero : B 0 = 1 := by simp [B]
 
 -- some automation broken here, track it down
-theorem B_succ (n : ℕ) : B (n + 1) = B n * Beta (1 / 2) (n / 2 + 1) := by
-  dsimp only [B, Beta]
+theorem B_succ (n : ℕ) : B (n + 1) = B n * NNReal.Beta (1 / 2) (n / 2 + 1) := by
+  dsimp only [B, NNReal.Beta]
   push_cast
   simp only [add_div]
   ring_nf
@@ -181,27 +231,76 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * Beta (1 / 2) (n / 2 + 1) := by
     dsimp
     exact Real.pi_ne_zero
 
+lemma integral_sub_sq_sqrt_pow {R : ℝ} (hR : 0 ≤ R) :
+    ∫ x in (-R)..R, (Real.sqrt (R ^ 2 - x ^ 2)) ^ n =
+    ∫ θ in (-(π / 2))..π / 2, cos θ ^ (n + 1) * R ^ (n + 1) := by
+  let a := -(π / 2)
+  let b := π / 2
+  have h1 : ∀ x ∈ Set.uIcc a b, HasDerivAt (R * sin ·) (R * cos x) x :=
+    fun x _ ↦ hasDerivAt_sin x |>.const_mul R
+  have h2 : ContinuousOn (R * cos ·) (Set.uIcc a b) :=
+    continuous_const.mul continuous_cos |>.continuousOn
+  have h3 : Continuous <| fun x ↦ (Real.sqrt (R ^ 2 - x ^ 2)) ^ n :=
+    continuous_const.sub (continuous_id.pow 2) |>.sqrt.pow n
+  have h4 : ∀ a b : ℝ, a - a * b = a * (1 - b) := by intros; ring
+  calc ∫ x in (-R)..R, (Real.sqrt (R ^ 2 - x ^ 2)) ^ n
+      = ∫ x in (R * sin a)..(R * sin b), (Real.sqrt (R ^ 2 - x ^ 2)) ^ n := by
+        simp
+    _ = ∫ θ in a..b, (Real.sqrt (R ^ 2 - (R * sin θ) ^ 2)) ^ n * (R * cos θ) :=
+        intervalIntegral.integral_comp_mul_deriv h1 h2 h3 |>.symm
+    _ = ∫ θ in a..b, cos θ ^ (n + 1) * R ^ (n + 1) := by
+        simp_rw [mul_pow, h4, Real.sqrt_mul <| sq_nonneg _, sqrt_sq hR]
+        apply intervalIntegral.integral_congr
+        intros x hx
+        dsimp
+        rw [mul_pow]
+        rw [Set.uIcc_of_le] at hx
+        · rw [← cos_eq_sqrt_one_sub_sin_sq hx.1 hx.2] -- lemma: wrong = order, wrong hyp statement
+          ring
+        simp; positivity
+
 /-- auxiliary one-variable integral -/
 theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
-    ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2) = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := by
+    ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2) = NNReal.Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := by
   calc ∫⁻ x : ℝ, I n (R ^ 2 - x ^ 2)
-      = ∫⁻ x in Set.Icc (-R : ℝ) (R : ℝ), .ofReal (Real.sqrt (R ^ 2 - x ^ 2)) ^ n := by
-        sorry
-      -- x = R * sin θ
-    _ = ∫⁻ θ in Set.Icc (-π / 2 : ℝ) (π / 2 : ℝ), .ofReal (R ^ (n + 1) * (cos θ) ^ (n + 1)) := by
-        sorry
-    _ = (∫⁻ θ in Set.Icc (-π / 2 : ℝ) (π / 2 : ℝ),
-          .ofReal ((cos θ) ^ (n + 1))) * (R:ℝ≥0∞) ^ (n + 1) := by
-        sorry
-    _ = Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := by
-        rw [← lintegral_cos_pow_eq_beta]
-
-
+      = ∫⁻ x in Set.Icc (-R : ℝ) (R : ℝ), .ofReal ((Real.sqrt (R ^ 2 - x ^ 2)) ^ n) := by
+        rw [← lintegral_indicator _ measurableSet_Icc]
+        congr with x
+        simp [Set.indicator, I, sq_le_sq, abs_le]
+        split_ifs with h; swap; rfl
+        rw [← ofReal_coe_nnreal]
+        congr
+        simp
+        rw [rpow_div_two_eq_sqrt]
+        · simp
+        · simp [sq_le_sq, abs_le, h]
+    _ = .ofReal (∫ x in (-R)..R, (Real.sqrt ((R : ℝ) ^ 2 - x ^ 2)) ^ n) := by
+        rw [← ofReal_integral_eq_lintegral_ofReal, integral_Icc_eq_integral_Ioc,
+          ← intervalIntegral.integral_of_le]
+        · rfl
+        · simp
+        · apply Continuous.integrableOn_Icc
+          exact continuous_const.sub (continuous_id.pow 2) |>.sqrt.pow n
+        · rw [Filter.EventuallyLE, ae_restrict_iff' measurableSet_Icc]
+          exact Filter.eventually_of_forall fun _ _ ↦ pow_nonneg (sqrt_nonneg _) _
+        -- x = R * sin θ
+    _ = .ofReal (∫ θ in (-(π / 2))..π / 2, cos θ ^ (n + 1) * R ^ (n + 1)) := by
+        simp_rw [integral_sub_sq_sqrt_pow R.coe_nonneg, NNReal.coe_pow]
+    _ = .ofReal ((∫ θ in (-(π / 2))..π / 2, cos θ ^ (n + 1)) * R ^ (n + 1)) := by
+        rw [intervalIntegral.integral_mul_const]
+    _ = NNReal.Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := by
+        rw [integral_cos_pow_eq_beta', ← ofReal_coe_nnreal]
+        rw [NNReal.coe_Beta, ofReal_mul]
+        simp
+        rw [ENNReal.ofReal_pow]
+        simp
+        positivity
+        apply Real.Beta_nonneg (by positivity) (by positivity)
 
 -- some automation broken here, track it down
 set_option linter.unreachableTactic false in
 theorem lintegral_I_sub_sq (n : ℕ) (c : ℝ) :
-    ∫⁻ x : ℝ, I n (c - x ^ 2) = Beta (1 / 2) (n / 2 + 1) * I (n + 1) c := by
+    ∫⁻ x : ℝ, I n (c - x ^ 2) = NNReal.Beta (1 / 2) (n / 2 + 1) * I (n + 1) c := by
   by_cases h : (0:ℝ) ≤ c
   · let r : ℝ≥0 := ⟨sqrt c, sqrt_nonneg _⟩
     have hr : r ^ 2 = c := Real.sq_sqrt h
