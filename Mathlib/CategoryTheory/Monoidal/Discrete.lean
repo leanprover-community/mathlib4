@@ -17,7 +17,7 @@ Multiplicative morphisms induced monoidal functors.
 -/
 
 
-universe u
+universe u u' u''
 
 open CategoryTheory Discrete MonoidalCategory
 
@@ -50,7 +50,7 @@ lemma Discrete.monoidal_tensorUnit_as :
 --  Discrete.monoidal_rightUnitor Discrete.addMonoidal_rightUnitor
 --  Discrete.monoidal_associator Discrete.addMonoidal_associator
 
-variable {M} {N : Type u} [Monoid N]
+variable {M} {N : Type u'} [Monoid N]
 
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.
@@ -69,7 +69,7 @@ def Discrete.monoidalFunctor (F : M →* N) : MonoidalFunctor (Discrete M) (Disc
 monoidal functor between the corresponding discrete monoidal categories. -/
 add_decl_doc Discrete.addMonoidalFunctor
 
-variable {K : Type u} [Monoid K]
+variable {K : Type u''} [Monoid K]
 
 /-- The monoidal natural isomorphism corresponding to composing two multiplicative morphisms.
 -/
