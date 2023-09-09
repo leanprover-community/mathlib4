@@ -143,8 +143,10 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
   simp [comp, inv, flip, and_comm]
 #align rel.inv_comp Rel.inv_comp
 
+@[simp]
 theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by simp[Bot.bot, inv, flip]
 
+@[simp]
 theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by simp[Top.top, inv, flip]
 
 /-- Image of a set under a relation -/
@@ -191,10 +193,12 @@ theorem image_univ : r.image Set.univ = r.codom := by
   simp [mem_image, codom]
 #align rel.image_univ Rel.image_univ
 
+@[simp]
 theorem image_empty : r.image ∅ = ∅ := by
   ext x
   simp [mem_image]
 
+@[simp]
 theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
   rw[Set.eq_empty_iff_forall_not_mem]
   intro x h
@@ -240,10 +244,13 @@ theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = prei
 theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
 #align rel.preimage_univ Rel.preimage_univ
 
+@[simp]
 theorem preimage_empty : r.preimage ∅ = ∅ := by rw [preimage, image_empty]
 
+@[simp]
 theorem preimage_inv (s : Set α) : r.inv.preimage s = r.image s := by rw [preimage, inv_inv]
 
+@[simp]
 theorem preimage_bot (s : Set β) : (⊥ : Rel α β).preimage s = ∅ :=
   by rw[preimage, inv_bot, image_bot]
 
@@ -274,6 +281,7 @@ theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := b
     rw [dom, Set.mem_setOf_eq]
     use x
 
+@[simp]
 theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.preimage s := by
   rw[←dom_inv, preimage, preimage, image_inter_dom_eq]
 
