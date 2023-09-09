@@ -290,11 +290,24 @@ lemma rTensor.equiv'_apply_tmul (n : N) (q : Q) :
     comm_tmul]
   rfl
 
+lemma rTensor.inverse_comp_rTensor'
+        {h : P → N} (hgh : Function.RightInverse h g) :
+    (rTensor.equiv_ofRightInverse' Q hfg hgh).symm ∘ (rTensor Q g) =
+      Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
+  rw [LinearEquiv.symm_comp_eq, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
+  apply congr_arg
+  apply TensorProduct.ext'
+  intro n q
+  rfl
+
 lemma rTensor.equiv'_inverse_ofRightInverse_apply
     {h : P → N} (hgh : Function.RightInverse h g) (y : N ⊗[R] Q) :
     (rTensor.equiv_ofRightInverse' Q hfg hgh).symm ((rTensor Q g) y) =
       Submodule.Quotient.mk (p := LinearMap.range (rTensor Q f)) y := by
-  sorry
+  rw [← LinearEquiv.coe_coe, ← Submodule.mkQ_apply, ← LinearMap.comp_apply]
+  apply congr_fun
+  simp only [coe_comp, LinearEquiv.coe_coe]
+  apply rTensor.inverse_comp_rTensor'
 
 /-- The direct map in `rTensor.equiv` -/
 def rTensor.toFun :
