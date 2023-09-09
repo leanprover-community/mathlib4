@@ -2,12 +2,15 @@ import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Preadditive.Opposite
+import Mathlib.CategoryTheory.Triangulated.Functor
 
 namespace CategoryTheory
 
-open Category Limits Preadditive
+open Category Limits Preadditive ZeroObject
 
 variable (C : Type*) [Category C]
+
+namespace Pretriangulated
 
 def PretriangulatedOpposite [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
     [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] :=
@@ -87,13 +90,16 @@ lemma opFunctorShiftCancelIso_inv_app_comp_opInverseShiftCancelIso_hom_app
   rw [shift_shiftFunctorCompIsoId_neg_add_self_inv_app, Iso.inv_hom_id_app]
   rfl
 
-end PretriangulatedOpposite
+lemma opFunctorShiftCancelIso_inv_app_op_unop_shift_op (X : C) (n : ℤ) :
+  (((opFunctorShiftCancelIso C n).inv.app (Opposite.op X)).unop⟦n⟧').op =
+    (opInverseShiftCancelIso C n).inv.app (PretriangulatedOpposite.mk (X⟦n⟧)) := by
+  dsimp [opInverseShiftCancelIso, opFunctorShiftCancelIso, opFunctorShiftIso]
+  simp only [comp_id, Quiver.Hom.unop_op]
+  erw [Functor.map_id, comp_id, shift_shiftFunctorCompIsoId_add_neg_self_hom_app]
 
-namespace Pretriangulated
+variable (C)
 
 namespace TriangleOpEquivalence
-
-open PretriangulatedOpposite
 
 @[simps]
 noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle (PretriangulatedOpposite C) where
@@ -178,6 +184,7 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
 
 end TriangleOpEquivalence
 
+@[simps]
 noncomputable def triangleOpEquivalence :
     (Triangle C)ᵒᵖ ≌ Triangle (PretriangulatedOpposite C) where
   functor := TriangleOpEquivalence.functor C
@@ -185,10 +192,134 @@ noncomputable def triangleOpEquivalence :
   unitIso := TriangleOpEquivalence.unitIso C
   counitIso := TriangleOpEquivalence.counitIso C
 
+def distinguishedTriangles : Set (Triangle (PretriangulatedOpposite C)) :=
+  fun T => ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C
+
+variable {C}
+
+lemma mem_distinguishedOp_iff (T : Triangle (PretriangulatedOpposite C)) :
+    T ∈ distinguishedTriangles C ↔ ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C :=
+  by rfl
+
+lemma mem_distinguishedOp_iff' (T : Triangle (PretriangulatedOpposite C)) :
+    T ∈ distinguishedTriangles C ↔ ∃ (T' : Triangle C) (_ : T' ∈ distTriang C),
+      Nonempty (T ≅ (triangleOpEquivalence C).functor.obj (Opposite.op T')) := by
+  rw [mem_distinguishedOp_iff]
+  constructor
+  · intro hT
+    exact ⟨_ ,hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
+  · rintro ⟨T', hT', ⟨e⟩⟩
+    refine' isomorphic_distinguished _ hT' _ _
+    exact Iso.unop ((triangleOpEquivalence C).unitIso.app (Opposite.op T') ≪≫
+      (triangleOpEquivalence C).inverse.mapIso e.symm)
+
+lemma isomorphic_distinguished (T₁ : Triangle (PretriangulatedOpposite C))
+    (hT₁ : T₁ ∈ distinguishedTriangles C) (T₂ : Triangle (PretriangulatedOpposite C))
+    (e : T₂ ≅ T₁) :
+    T₂ ∈ distinguishedTriangles C := by
+  simp only [mem_distinguishedOp_iff] at hT₁ ⊢
+  exact Pretriangulated.isomorphic_distinguished _ hT₁ _
+    ((triangleOpEquivalence C).inverse.mapIso e).unop.symm
+
+lemma contractibleTriangleIso (X : PretriangulatedOpposite C) :
+    contractibleTriangle X ≅ (triangleOpEquivalence C).functor.obj
+      (Opposite.op (contractibleTriangle X.unop).invRotate) :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    { hom := 0
+      inv := 0
+      inv_hom_id := IsZero.eq_of_tgt (by
+        rw [IsZero.iff_id_eq_zero]
+        change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
+        rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]) _ _ }
+    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+
+lemma contractible_distinguished (X : PretriangulatedOpposite C) :
+    contractibleTriangle X ∈ distinguishedTriangles C := by
+  rw [mem_distinguishedOp_iff']
+  exact ⟨_, inv_rot_of_dist_triangle _ (Pretriangulated.contractible_distinguished X.unop),
+    ⟨contractibleTriangleIso X⟩⟩
+
+noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnop
+    (T : Triangle (PretriangulatedOpposite C)) :
+    Triangle.rotate ((triangleOpEquivalence C).inverse.obj (Triangle.rotate T)).unop ≅
+      ((triangleOpEquivalence C).inverse.obj T).unop := by
+  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+      ((opInverseShiftCancelIso C 1).symm.app T.obj₁).unop _ _ _
+  · dsimp
+    simp
+  · dsimp
+    rw [neg_comp, id_comp]
+    erw [Functor.map_neg]
+    dsimp
+    rw [comp_neg, neg_comp, neg_neg]
+    apply Quiver.Hom.op_inj
+    simp only [op_comp, assoc]
+    erw [(opInverseShiftCancelIso C 1).hom.naturality T.mor₁]
+    dsimp
+    rw [Iso.inv_hom_id_app_assoc]
+  · dsimp
+    simp only [Functor.map_id, comp_id, comp_neg, neg_inj, ← assoc, ← unop_comp,
+      Iso.hom_inv_id_app, Functor.comp_obj, Functor.op_obj, unop_id, Opposite.unop_op, id_comp]
+
+lemma rotate_distinguished_triangle (T : Triangle (PretriangulatedOpposite C)) :
+    T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
+  simp only [mem_distinguishedOp_iff, Pretriangulated.rotate_distinguished_triangle
+    ((triangleOpEquivalence C).inverse.obj (T.rotate)).unop]
+  exact distinguished_iff_of_iso (rotateTriangleOpEquivalenceInverseObjRotateUnop T).symm
+
+lemma distinguished_cocone_triangle {X Y : PretriangulatedOpposite C} (f : X ⟶ Y) :
+    ∃ (Z : PretriangulatedOpposite C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
+      Triangle.mk f g h ∈ distinguishedTriangles C := by
+  obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
+  simp only [mem_distinguishedOp_iff]
+  refine' ⟨_, g.op, -(opFunctorShiftCancelIso C 1).inv.app (Opposite.op Z) ≫
+    (shiftFunctor (PretriangulatedOpposite C) (1 : ℤ)).map h.op, _⟩
+  dsimp
+  convert H using 2
+  rw [unop_neg, Functor.map_neg, comp_neg, neg_neg, unop_comp, Functor.map_comp]
+  apply Quiver.Hom.op_inj
+  simp only [op_comp]
+  rw [← cancel_mono ((opInverseShiftCancelIso C 1).inv.app X) ]
+  simp only [Opposite.op_unop, Quiver.Hom.op_unop, assoc]
+  dsimp
+  erw [Iso.hom_inv_id_app, comp_id]
+  erw [(opInverseShiftCancelIso C 1).inv.naturality h.op]
+  rw [opFunctorShiftCancelIso_inv_app_op_unop_shift_op]
+  rfl
+
+lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle (PretriangulatedOpposite C))
+    (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+    ∃ (c : T₁.obj₃ ⟶ T₂.obj₃), T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧
+      T₁.mor₃ ≫ a⟦1⟧' = c ≫ T₂.mor₃ := by
+  rw [mem_distinguishedOp_iff] at hT₁ hT₂
+  obtain ⟨c, hc₁, hc₂⟩ := Pretriangulated.complete_distinguished_triangle_morphism₁ _ _ hT₂ hT₁ b.unop
+    a.unop (Quiver.Hom.op_inj comm.symm)
+  dsimp at c hc₁ hc₂
+  simp only [neg_comp, assoc, comp_neg, neg_inj] at hc₂
+  refine' ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj _⟩
+  apply (shiftFunctor C (1 : ℤ)).map_injective
+  rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp, Quiver.Hom.unop_op,
+      ← cancel_epi ((opInverseShiftCancelIso C 1).hom.app T₂.obj₁).unop, hc₂]
+  apply Quiver.Hom.op_inj
+  simp only [op_comp, Functor.id_obj, Opposite.op_unop, Functor.comp_obj, Functor.op_obj,
+    Opposite.unop_op, Quiver.Hom.op_unop, assoc]
+  congr 1
+  exact (opInverseShiftCancelIso C 1).hom.naturality a
+
+instance : Pretriangulated (PretriangulatedOpposite C) where
+  distinguishedTriangles := distinguishedTriangles C
+  isomorphic_distinguished := isomorphic_distinguished
+  contractible_distinguished := contractible_distinguished
+  distinguished_cocone_triangle := distinguished_cocone_triangle
+  rotate_distinguished_triangle := rotate_distinguished_triangle
+  complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism
+
+--instance [IsTriangulated C] : IsTriangulated (PretriangulatedOpposite C) := sorry
+
+end PretriangulatedOpposite
+
 end Pretriangulated
 
---instance : Pretriangulated (PretriangulatedOpposite C) := sorry
---
---instance [IsTriangulated C] : IsTriangulated (PretriangulatedOpposite C) := sorry
 
 end CategoryTheory
