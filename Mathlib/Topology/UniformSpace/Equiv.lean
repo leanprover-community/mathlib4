@@ -343,7 +343,8 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
   rfl
 #align uniform_equiv.coe_punit_prod UniformEquiv.coe_punitProd
 
-/-- `Equiv.piCongrLeft` as a uniform equivalence. -/
+/-- `Equiv.piCongrLeft` as a uniform isomorphism: this is the natural isomorphism
+`Π i, β (e i) ≃ᵤ Π j, β j` obtained from a bijection `ι ≃ ι'`. -/
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ᵤ ∀ j, β j where
@@ -353,8 +354,8 @@ def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j
   uniformContinuous_invFun := Pi.uniformContinuous_precomp' _ e
   toEquiv := Equiv.piCongrLeft _ e
 
-/-- If each `β₁ i` is uniformly isomorphic to `β₂ i`, then `Π i, β₁ i` is uniformly isomorphic to
-`Π i, β₂ i`. -/
+/-- `Equiv.piCongrRight` as a uniform isomorphism: this is the natural isomorphism
+`Π i, β₁ i ≃ᵤ Π j, β₂ i` obtained from uniform isomorphisms `β₁ i ≃ᵤ β₂ i` for each `i`. -/
 @[simps! apply toEquiv]
 def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
     [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) : (∀ i, β₁ i) ≃ᵤ ∀ i, β₂ i where
@@ -368,7 +369,9 @@ theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, Unif
     (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
   rfl
 
-/-- `Equiv.piCongr` as an homeomorphism. -/
+/-- `Equiv.piCongr` as a uniform isomorphism: this is the natural isomorphism
+`Π i₁, β₁ i ≃ᵤ Π i₂, β₂ i₂` obtained from a bijection `ι₁ ≃ ι₂` and isomorphisms
+`β₁ i₁ ≃ᵤ β₂ (e i₁)` for each `i₁ : ι₁`. -/
 @[simps! apply toEquiv]
 def piCongr {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*}
     [∀ i₁, UniformSpace (β₁ i₁)] [∀ i₂, UniformSpace (β₂ i₂)]

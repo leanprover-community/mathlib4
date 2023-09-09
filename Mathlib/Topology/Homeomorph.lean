@@ -566,7 +566,8 @@ def homeomorphOfUnique [Unique α] [Unique β] : α ≃ₜ β :=
 
 end
 
-/-- `Equiv.piCongrLeft` as a homeomorphism. -/
+/-- `Equiv.piCongrLeft` as a homeomorphism: this is the natural homeomorphism
+`Π i, β (e i) ≃ₜ Π j, β j` obtained from a bijection `ι ≃ ι'`. -/
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, TopologicalSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ₜ ∀ j, β j where
@@ -575,7 +576,8 @@ def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, TopologicalSpace (
   continuous_invFun := Pi.continuous_precomp' e
   toEquiv := Equiv.piCongrLeft _ e
 
-/-- If each `β₁ i` is homeomorphic to `β₂ i`, then `Π i, β₁ i` is homeomorphic to `Π i, β₂ i`. -/
+/-- `Equiv.piCongrRight` as a homeomorphism: this is the natural homeomorphism
+`Π i, β₁ i ≃ₜ Π j, β₂ i` obtained from homeomorphisms `β₁ i ≃ₜ β₂ i` for each `i`. -/
 @[simps! apply toEquiv]
 def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSpace (β₁ i)]
     [∀ i, TopologicalSpace (β₂ i)] (F : ∀ i, β₁ i ≃ₜ β₂ i) : (∀ i, β₁ i) ≃ₜ ∀ i, β₂ i where
@@ -591,7 +593,9 @@ theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, Topo
   rfl
 #align homeomorph.Pi_congr_right_symm Homeomorph.piCongrRight_symm
 
-/-- `Equiv.piCongr` as a homeomorphism. -/
+/-- `Equiv.piCongr` as a homeomorphism: this is the natural homeomorphism
+`Π i₁, β₁ i ≃ₜ Π i₂, β₂ i₂` obtained from a bijection `ι₁ ≃ ι₂` and homeomorphisms
+`β₁ i₁ ≃ₜ β₂ (e i₁)` for each `i₁ : ι₁`. -/
 @[simps! apply toEquiv]
 def piCongr {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*}
     [∀ i₁, TopologicalSpace (β₁ i₁)] [∀ i₂, TopologicalSpace (β₂ i₂)]
