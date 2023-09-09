@@ -392,12 +392,12 @@ lemma shift_distinguished (n : ℤ) :
     isomorphic_distinguished _ (hb _ (ha _ hT)) _
       ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
   obtain (n|n) := n
-  . induction' n with n hn
-    . exact H_zero
-    . exact H_add hn H_one rfl
-  . induction' n with n hn
-    . exact H_neg_one
-    . exact H_add hn H_neg_one rfl
+  · induction' n with n hn
+    · exact H_zero
+    · exact H_add hn H_one rfl
+  · induction' n with n hn
+    · exact H_neg_one
+    · exact H_add hn H_neg_one rfl
 
 end Triangle
 
@@ -432,9 +432,9 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
       rw [← cancel_mono φ.hom₁, assoc, assoc, eq, IsIso.inv_hom_id_assoc, hh]
     erw [assoc, comp_dist_triangle_mor_zero₁₂ _ (inv_rot_of_dist_triangle _ hT), comp_zero]
   refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
-  . intro f₁ f₂ h
+  · intro f₁ f₂ h
     simpa only [← cancel_mono φ.hom₂] using h
-  . intro y₂
+  · intro y₂
     obtain ⟨x₃, hx₃⟩ : ∃ (x₃ : A ⟶ T.obj₃), x₃ ≫ φ.hom₃ = y₂ ≫ T'.mor₂ :=
       ⟨y₂ ≫ T'.mor₂ ≫ inv φ.hom₃, by simp⟩
     obtain ⟨x₂, hx₂⟩ := Triangle.coyoneda_exact₃ _ hT x₃
@@ -449,7 +449,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
-    isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_dist_triangle _ hT)
+  isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_dist_triangle _ hT)
       (rot_of_dist_triangle _ hT') h₂ (by dsimp ; infer_instance)
 
 lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
