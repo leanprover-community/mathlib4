@@ -792,8 +792,8 @@ class HasFundamentalDomain (G : Type _) (α : Type _) [One G] [SMul G α] [Measu
 
 /-- The `covolume` of a quotient of `α` by `G`, assuming `HasFundamentalDomain`, the volume of any
   choice of a fundamental domain. -/
-def HasFundamentalDomain.covolume {G α : Type _} [One G] [SMul G α] [MeasureSpace α]
-    (funDom : HasFundamentalDomain G α) : ℝ≥0∞ :=
+def covolume (G α : Type _) [One G] [SMul G α] [MeasureSpace α]
+    [funDom : HasFundamentalDomain G α] : ℝ≥0∞ :=
   volume funDom.has_fundamental_domain_characterization.choose
 
 variable [Group G] [MulAction G α] [MeasurableSpace G] [MeasureSpace α]
@@ -805,10 +805,10 @@ lemma IsFundamentalDomain.HasFundamentalDomain {s : Set α} (fund_dom_s : IsFund
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s`. -/
 lemma IsFundamentalDomain.covolume_eq_volume [Countable G] [MeasurableSMul G α]
     [SMulInvariantMeasure G α volume] {s : Set α} (fund_dom_s : IsFundamentalDomain G s) :
-    (fund_dom_s.HasFundamentalDomain).covolume = volume s := by
-  rw [HasFundamentalDomain.covolume, fund_dom_s.measure_eq]
-  exact
-    fund_dom_s.HasFundamentalDomain.has_fundamental_domain_characterization.choose_spec
+    covolume (funDom := fund_dom_s.HasFundamentalDomain) = volume s := by
+  dsimp [covolume]
+  rw [fund_dom_s.measure_eq]
+  exact fund_dom_s.HasFundamentalDomain.has_fundamental_domain_characterization.choose_spec
 
 end HasFundamentalDomain
 

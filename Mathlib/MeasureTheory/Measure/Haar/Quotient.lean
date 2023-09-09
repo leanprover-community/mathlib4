@@ -144,7 +144,7 @@ theorem measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
 /-- The quotient measure is finite, assuming the covolume is finite -/
 theorem MeasureTheory.QuotientVolumeEqVolumePreimage.Finite_quotient
     [IsMulRightInvariant (volume : Measure G)]
-    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G] (h : hasFun.covolume ≠ ⊤) :
+    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G] (h : covolume (Subgroup.opposite Γ) G ≠ ⊤) :
     IsFiniteMeasure μ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
   rw [QuotientVolumeEqVolumePreimage.eq_quotientMeasure h𝓕 μ,
@@ -159,7 +159,7 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.Finite_quotient
 theorem MeasureTheory.QuotientVolumeEqVolumePreimage.finite_covolume
     [IsMulRightInvariant (volume : Measure G)]
     [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G] [IsFiniteMeasure μ] :
-    hasFun.covolume ≠ ⊤ := by
+    covolume (Subgroup.opposite Γ) G ≠ ⊤ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
   have H : μ univ ≠ ⊤ := measure_ne_top μ univ
   rw [QuotientVolumeEqVolumePreimage.eq_quotientMeasure h𝓕 μ,
@@ -237,7 +237,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.QuotientVolumeEqVolumePreimage_
   satisfies `QuotientVolumeEqVolumePreimage`. -/
 theorem MeasureTheory.LeftInvariantIsQuotientVolumeEqVolumePreimage
     [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
-    (h : hasFun.covolume = μ univ) (finiteCovol : hasFun.covolume ≠ ⊤) :
+    (h : covolume (Subgroup.opposite Γ) G = μ univ) (finiteCovol : covolume (Subgroup.opposite Γ) G ≠ ⊤) :
     QuotientVolumeEqVolumePreimage μ := by
   obtain ⟨s, fund_dom_s⟩ := hasFun.has_fundamental_domain_characterization
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol h
@@ -283,7 +283,7 @@ instance [LocallyCompactSpace G] [QuotientVolumeEqVolumePreimage μ]
   let K' : PositiveCompacts (G ⧸ Γ) :=
     K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
   rw [MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar μ K']
-  have finiteCovol : i.covolume ≠ ⊤ :=
+  have finiteCovol : covolume (Subgroup.opposite Γ) G ≠ ⊤ :=
     MeasureTheory.QuotientVolumeEqVolumePreimage.finite_covolume (μ := μ)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
