@@ -914,21 +914,17 @@ theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_of_volume_zero
   exact Eq.symm (measure_inter_null_of_null_right (Quotient.mk α_mod_G ⁻¹' U) vol_s)
 
 /-- If a measure `μ` on a quotient satisfies `QuotientVolumeEqVolumePreimage` with respect to a
-sigma-finite measure, then it is itself sigma-finite. -/
+sigma-finite measure, then it is itself `SigmaFinite`. -/
 instance [i : SigmaFinite (volume : Measure α)] [i' : HasFundamentalDomain G α]
     (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ] :
     SigmaFinite μ := by
   rw [sigmaFinite_iff]
   obtain ⟨A, hA_meas, hA, hA'⟩ := Measure.toFiniteSpanningSetsIn (h := i)
-  refine ⟨⟨fun n ↦ π '' (A n), ?_, ?_, ?_⟩⟩
-  · simp
-  · intro n
-    obtain ⟨s, fund_dom_s, meas_s⟩ := i'
+  refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
+  · obtain ⟨s, fund_dom_s, meas_s⟩ := i'
     rw [projection_respects_measure fund_dom_s meas_s]
-    · show volume (π ⁻¹' (π '' (A n)) ∩ s) < ⊤
-      have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+    · have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
       rw [this, iUnion_inter]
-      dsimp
       refine lt_of_le_of_lt ?_ (hA n)
       rw [fund_dom_s.measure_eq_tsum (A n)]
       exact measure_iUnion_le _
@@ -939,12 +935,9 @@ instance [i : SigmaFinite (volume : Measure α)] [i' : HasFundamentalDomain G α
     intro g
     dsimp
     rw [← preimage_smul_inv]
-    apply measurableSet_preimage
-    · exact measurable_const_smul g⁻¹
-    · apply (hA_meas n)
+    apply measurableSet_preimage (measurable_const_smul g⁻¹) (by apply (hA_meas n))
   · rw [← image_iUnion,  hA']
-    refine image_univ_of_surjective ?_
-    convert surjective_quotient_mk α
+    refine image_univ_of_surjective (by convert surjective_quotient_mk α)
 
 end QuotientVolumeEqVolume
 
