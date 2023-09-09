@@ -588,6 +588,7 @@ import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.LHopital
 import Mathlib.Analysis.Calculus.LagrangeMultipliers
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
@@ -680,6 +681,7 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
+import Mathlib.Analysis.InnerProductSpace.MeanErgodic
 import Mathlib.Analysis.InnerProductSpace.OfNorm
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
@@ -940,7 +942,8 @@ import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Filtered
+import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.FullSubcategory
@@ -1892,6 +1895,7 @@ import Mathlib.Deprecated.Submonoid
 import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
+import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 import Mathlib.Dynamics.Circle.RotationNumber.TranslationNumber
 import Mathlib.Dynamics.Ergodic.AddCircle
 import Mathlib.Dynamics.Ergodic.Conservative
@@ -3007,6 +3011,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.CancelDenoms
+import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
@@ -3094,14 +3099,17 @@ import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.BigOperators
-import Mathlib.Tactic.NormNum.CharZero
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
-import Mathlib.Tactic.NormNum.OrderedRing
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
