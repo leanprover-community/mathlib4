@@ -154,7 +154,7 @@ theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
     mem_mk, mem_bot, Set.mem_setOf_eq]
   constructor
   · intro h
-    rw [← Set.mem_center_iff, Subsemigroup.mem_center_iff]
+    rw [← Set.mem_center_iff, Semigroup.mem_center_iff]
     intro g
     rw [eq_comm, ← mul_inv_eq_iff_eq_mul, ← mul_inv_eq_one, ← h g]
   · intro h g
