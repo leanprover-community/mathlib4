@@ -42,7 +42,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and
 `π : K ⟶ H` such that `i` identifies `K` to the kernel of `g : S.X₂ ⟶ S.X₃`,
-and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` --/
+and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` -/
 structure LeftHomologyData where
   /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
   K : C
