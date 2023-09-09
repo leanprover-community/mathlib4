@@ -379,10 +379,12 @@ end GaloisConnection
 
 section
 
+/-- `sSup` and `Iic` form a Galois connection. -/
 theorem gc_sSup_Iic [CompleteSemilatticeSup α] :
     GaloisConnection (sSup : Set α → α) (Iic : α → Set α) :=
   fun _ _ ↦ sSup_le_iff
 
+/-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois connection. -/
 theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
     GaloisConnection (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   fun _ _ ↦ le_sInf_iff.symm
@@ -945,10 +947,12 @@ end lift
 
 end GaloisCoinsertion
 
+/-- `sSup` and `Iic` form a Galois insertion. -/
 def gi_sSup_Iic [CompleteSemilatticeSup α] :
     GaloisInsertion (sSup : Set α → α) (Iic : α → Set α) :=
   gc_sSup_Iic.toGaloisInsertion fun _ ↦ le_sSup le_rfl
 
+/-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois coinsertion. -/
 def gci_Ici_sInf [CompleteSemilatticeInf α] :
     GaloisCoinsertion (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   gc_Ici_sInf.toGaloisCoinsertion fun _ ↦ sInf_le le_rfl
