@@ -90,8 +90,8 @@ variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [Topologic
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
--- more beautiful theorem: if you have a measure speace downstairs and the downstairs one is smul invariant
--- then fund dom independent
+-- more beautiful theorem: if you have a measure speace downstairs and the downstairs one is smul
+-- invariant then fund dom independent
 
 /-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-
   invariant measure on `G` to is a `G`-invariant measure on `G ⧸ Γ`. -/
@@ -189,8 +189,8 @@ variable
   group `G ⧸ Γ` of the restriction of a both left- and right-invariant measure on `G` to a
   fundamental domain `𝓕` is a left-invariant measure on `G ⧸ Γ`. -/
 -- @[to_additive "Assuming `Γ` is a normal subgroup of an additive topological group `G`, the
---   pushforward to the quotient group `G ⧸ Γ` of the restriction of a both left- and right-invariant
---   measure on `G` to a fundamental domain `𝓕` is a left-invariant measure on `G ⧸ Γ`."]
+--   pushforward to the quotient group `G ⧸ Γ` of the restriction of a both left- and right-
+-- invariant measure on `G` to a fundamental domain `𝓕` is a left-invariant measure on `G ⧸ Γ`."]
 instance MeasureTheory.QuotientVolumeEqVolumePreimage.MulInvariantMeasure_quotient
     [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G] [QuotientVolumeEqVolumePreimage μ] :
     μ.IsMulLeftInvariant where
@@ -284,7 +284,8 @@ instance [LocallyCompactSpace G] [QuotientVolumeEqVolumePreimage μ]
     [i : HasFundamentalDomain (Subgroup.opposite Γ) G] [IsFiniteMeasure μ] :
     IsHaarMeasure μ := by
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
-  let K' : PositiveCompacts (G ⧸ Γ) := K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
+  let K' : PositiveCompacts (G ⧸ Γ) :=
+    K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
   rw [MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar μ K']
   have finiteCovol : i.covolume ≠ ⊤ :=
     MeasureTheory.QuotientVolumeEqVolumePreimage.finite_covolume (μ := μ)
