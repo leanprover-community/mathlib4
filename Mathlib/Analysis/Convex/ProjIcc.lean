@@ -21,7 +21,7 @@ We could deduplicate the proofs if we had a typeclass stating that `segment 𝕜
 
 open Set
 
-variable {𝕜 β : Type _} [LinearOrderedField 𝕜] [LinearOrderedAddCommMonoid β] [SMul 𝕜 β] {s : Set 𝕜}
+variable {𝕜 β : Type*} [LinearOrderedField 𝕜] [LinearOrderedAddCommMonoid β] [SMul 𝕜 β] {s : Set 𝕜}
   {f : 𝕜 → β} {z : 𝕜}
 
 /-- A convex set extended towards minus infinity is convex. -/

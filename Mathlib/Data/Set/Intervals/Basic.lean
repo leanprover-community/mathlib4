@@ -38,7 +38,7 @@ namespace Set
 
 section Preorder
 
-variable [Preorder α] [Preorder β] {f : α → β} {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
 /-- Left-open right-open interval -/
 def Ioo (a b : α) :=

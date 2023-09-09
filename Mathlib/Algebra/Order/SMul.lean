@@ -190,7 +190,6 @@ section LinearOrderedSemiring
 variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
   [OrderedSMul R M] {a : R}
 
-
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
 instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos

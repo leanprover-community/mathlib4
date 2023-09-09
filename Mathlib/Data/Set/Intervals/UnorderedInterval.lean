@@ -188,21 +188,17 @@ lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
   MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
   rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
-#align monotone_on.maps_to_uIcc MonotoneOn.mapsTo_uIcc
 
 lemma _root_.AntitoneOn.mapsTo_uIcc (hf : AntitoneOn f (uIcc a b)) :
   MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
   rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
-#align antitone_on.maps_to_uIcc AntitoneOn.mapsTo_uIcc
 
 lemma _root_.Monotone.mapsTo_uIcc (hf : Monotone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=
   (hf.monotoneOn _).mapsTo_uIcc
-#align monotone.maps_to_uIcc Monotone.mapsTo_uIcc
 
 lemma _root_.Antitone.mapsTo_uIcc (hf : Antitone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=
   (hf.antitoneOn _).mapsTo_uIcc
-#align antitone.maps_to_uIcc Antitone.mapsTo_uIcc
 
 lemma _root_.MonotoneOn.image_uIcc_subset (hf : MonotoneOn f (uIcc a b)) :
   f '' uIcc a b ⊆ uIcc (f a) (f b) :=
