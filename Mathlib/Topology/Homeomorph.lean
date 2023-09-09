@@ -566,7 +566,7 @@ def homeomorphOfUnique [Unique α] [Unique β] : α ≃ₜ β :=
 
 end
 
-/-- `Equiv.piCongrLeft` as an homeomorphism. -/
+/-- `Equiv.piCongrLeft` as a homeomorphism. -/
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, TopologicalSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ₜ ∀ j, β j where
@@ -591,7 +591,7 @@ theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, Topo
   rfl
 #align homeomorph.Pi_congr_right_symm Homeomorph.piCongrRight_symm
 
-/-- `Equiv.piCongr` as an homeomorphism. -/
+/-- `Equiv.piCongr` as a homeomorphism. -/
 @[simps! apply toEquiv]
 def piCongr {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*}
     [∀ i₁, TopologicalSpace (β₁ i₁)] [∀ i₂, TopologicalSpace (β₂ i₂)]

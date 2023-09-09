@@ -54,11 +54,11 @@ theorem Pi.uniformContinuous_proj (i : ι) : UniformContinuous fun a : ∀ i : �
   uniformContinuous_pi.1 uniformContinuous_id i
 #align Pi.uniform_continuous_proj Pi.uniformContinuous_proj
 
-theorem Pi.uniformContinuous_precomp' {ι' : Type*} (φ : ι' → ι) :
+theorem Pi.uniformContinuous_precomp' (φ : ι' → ι) :
     UniformContinuous (fun (f : (∀ i, α i)) (j : ι') ↦ f (φ j)) :=
   uniformContinuous_pi.mpr fun j ↦ uniformContinuous_proj α (φ j)
 
-theorem Pi.uniformContinuous_precomp {ι' β : Type*} [UniformSpace β] (φ : ι' → ι) :
+theorem Pi.uniformContinuous_precomp (φ : ι' → ι) :
     UniformContinuous (· ∘ φ : (ι → β) → (ι' → β)) :=
   Pi.uniformContinuous_precomp' _ φ
 
@@ -67,9 +67,28 @@ theorem Pi.uniformContinuous_postcomp' {β : ι → Type*} [∀ i, UniformSpace 
     UniformContinuous (fun (f : (∀ i, α i)) (i : ι) ↦ g i (f i)) :=
   uniformContinuous_pi.mpr fun i ↦ (hg i).comp <| uniformContinuous_proj α i
 
-theorem Pi.uniformContinuous_postcomp {α β : Type*} [UniformSpace α] [UniformSpace β] {g : α → β}
+theorem Pi.uniformContinuous_postcomp {α : Type*} [UniformSpace α] {g : α → β}
     (hg : UniformContinuous g) : UniformContinuous (g ∘ · : (ι → α) → (ι → β)) :=
   Pi.uniformContinuous_postcomp' _ fun _ ↦ hg
+
+lemma Pi.uniformSpace_comap_precomp' (φ : ι' → ι) :
+    UniformSpace.comap (fun g i' ↦ g (φ i')) (Pi.uniformSpace (fun i' ↦ α (φ i'))) =
+    ⨅ i', UniformSpace.comap (eval (φ i')) (U (φ i')) := by
+  simp [Pi.uniformSpace_eq, UniformSpace.comap_iInf, ← UniformSpace.comap_comap, comp]
+
+lemma Pi.uniformSpace_comap_precomp (φ : ι' → ι) :
+    UniformSpace.comap (· ∘ φ) (Pi.uniformSpace (fun _ ↦ β)) =
+    ⨅ i', UniformSpace.comap (eval (φ i')) ‹UniformSpace β› :=
+  uniformSpace_comap_precomp' (fun _ ↦ β) φ
+
+lemma Pi.uniformContinuous_restrict (S : Set ι) :
+    UniformContinuous (S.restrict : (∀ i : ι, α i) → (∀ i : S, α i)) :=
+  Pi.uniformContinuous_precomp' _ ((↑) : S → ι)
+
+lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
+    UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
+    ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
+  simp [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
