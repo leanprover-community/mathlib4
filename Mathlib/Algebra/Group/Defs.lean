@@ -274,25 +274,36 @@ instance Semigroup.to_isAssociative : IsAssociative G (· * ·) :=
 
 end Semigroup
 
-/-- A commutative semigroup is a type with an associative commutative `(*)`. -/
+/-- A commutative addition is a type with an addition which commutes-/
 @[ext]
-class CommSemigroup (G : Type u) extends Semigroup G where
+class AddComm (G : Type u) extends Add G where
+  /-- Addition is commutative in an additive commutative semigroup. -/
+  protected add_comm : ∀ a b : G, a + b = b + a
+
+/-- A commutative multiplication is a type with a multiplication which commutes-/
+@[ext]
+class CommMul (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative semigroup. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
+
+attribute [to_additive] CommMul
+
+/-- A commutative semigroup is a type with an associative commutative `(*)`. -/
+@[ext]
+class CommSemigroup (G : Type u) extends Semigroup G, CommMul G where
 #align comm_semigroup CommSemigroup
 #align comm_semigroup.ext_iff CommSemigroup.ext_iff
 #align comm_semigroup.ext CommSemigroup.ext
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 @[ext]
-class AddCommSemigroup (G : Type u) extends AddSemigroup G where
-  /-- Addition is commutative in an additive commutative semigroup. -/
-  protected add_comm : ∀ a b : G, a + b = b + a
+class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddComm G where
 #align add_comm_semigroup AddCommSemigroup
 #align add_comm_semigroup.ext AddCommSemigroup.ext
 #align add_comm_semigroup.ext_iff AddCommSemigroup.ext_iff
 
 attribute [to_additive] CommSemigroup
+attribute [to_additive existing] CommSemigroup.toCommMul
 
 section CommSemigroup
 
