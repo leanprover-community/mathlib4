@@ -278,7 +278,8 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
--- note: is `IsFiniteMeasure` necessary?
+-- note: is `IsFiniteMeasure` necessary? transport `K` by group action to have nontrivial
+-- intersection with `s` and then work with the closure of that intersection?
 instance [LocallyCompactSpace G] [QuotientVolumeEqVolumePreimage μ]
     [i : HasFundamentalDomain (Subgroup.opposite Γ) G] [IsFiniteMeasure μ] :
     IsHaarMeasure μ := by
