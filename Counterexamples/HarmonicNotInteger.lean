@@ -7,7 +7,6 @@ Authors: Koundinya Vajjha
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.NumberTheory.Padics.PadicIntegers
-
 /-!
 
 The nth Harmonic number is not an integer. We formalize the proof using
@@ -17,6 +16,9 @@ Reference:
 https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 
 -/
+
+namespace Counterexample
+
 open Rat
 
 variable (p : ℕ) (x : ℤ) [Fact p.Prime]
@@ -25,6 +27,27 @@ variable (p : ℕ) (x : ℤ) [Fact p.Prime]
 def harmonic : ℕ  → ℚ
 | 0 => 0
 | (k+1) => 1 / (k+1) + harmonic k
+
+
+lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := by {
+  intros n Hn
+  induction' n with k ih; try contradiction
+  dsimp [harmonic]
+  by_cases (k = 0)
+  {
+    rw [h]
+    dsimp [harmonic]
+    norm_num
+  }
+  {
+    specialize (ih h)
+    have H₀ : (0 : ℚ) = 0 + 0 := by rfl
+    rw [H₀]
+    refine' add_lt_add _ ih
+    apply div_pos; try norm_num
+    norm_cast; simp only [add_pos_iff, or_true]
+  }
+}
 
 theorem not_int_of_not_padic_int (a : ℚ) : padicNorm 2 a > 1 → ¬ a.isInt := by {
   intro H
@@ -42,7 +65,7 @@ theorem not_int_of_not_padic_int (a : ℚ) : padicNorm 2 a > 1 → ¬ a.isInt :=
     unfold padicValRat at this
     intro Hden
     rw [Hden] at this
-    simp only [padicValNat.one, CharP.cast_eq_zero, sub_zero] at this
+    simp only [padicValNat.one, sub_zero] at this
     norm_cast
     have Hz : 0 = -0 := by {norm_num}
     rw [Hz]
@@ -56,5 +79,17 @@ theorem not_int_of_not_padic_int (a : ℚ) : padicNorm 2 a > 1 → ¬ a.isInt :=
 theorem harmonic_not_int : ∀ n, n ≥ 2 -> ¬ (harmonic n).isInt := by {
   intro n Hn
   apply not_int_of_not_padic_int
+  unfold padicNorm
+  split_ifs with h
+  {
+    have := harmonic_ne_zero n
+    rw [h] at this
+    apply this
+    linarith
+  }
+  {
+    norm_cast
+
+  }
 
 }
