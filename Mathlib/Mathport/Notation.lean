@@ -3,6 +3,7 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
+import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.Expr
 import Mathlib.Util.Syntax
 import Std.Data.Option.Basic
@@ -202,15 +203,6 @@ def matchLambda (n : Name) (matchDom matchBody : Matcher) : Matcher := fun s => 
   let s ← withBindingBody n <| matchBody s
   return s
 
-/-- Fully elaborates the term `patt`, allowing typeclass inference failure.
-Instantiates all assigned metavariables. -/
-def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := do
-  withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
-    Term.withSynthesizeLight do
-      let t ← Term.elabTerm patt expectedType?
-      Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
-      instantiateMVars t
-
 /-- Adds all the names in `boundNames` to the local context
 with types that are fresh metavariables. -/
 def setupLCtx (lctx : LocalContext) (boundNames : HashSet Name) :
@@ -274,7 +266,7 @@ partial def mkExprMatcher (stx : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   let (lctx, boundFVars) ← setupLCtx (← getLCtx) boundNames
   withLCtx lctx (← getLocalInstances) do
-    let patt ← elabPattern stx none
+    let patt ← Term.elabPattern stx none
     trace[notation3] "Generating matcher for pattern {patt}"
     exprToMatcher boundFVars patt
 
