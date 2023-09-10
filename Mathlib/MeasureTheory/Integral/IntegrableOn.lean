@@ -55,7 +55,7 @@ protected lemma StronglyMeasurableAtFilter.filter_mono (h : StronglyMeasurableAt
   ⟨s, h' hsl, hs⟩
 #align strongly_measurable_at_filter.filter_mono StronglyMeasurableAtFilter.filter_mono
 
-protected theorem MeasureTheory.AEStronglyMeasurable.stronglyMeasurableAtFilter
+protected lemma MeasureTheory.AEStronglyMeasurable.stronglyMeasurableAtFilter
     (h : AEStronglyMeasurable f μ) : StronglyMeasurableAtFilter f l μ :=
   ⟨univ, univ_mem, by rwa [Measure.restrict_univ]⟩
 #align measure_theory.ae_strongly_measurable.strongly_measurable_at_filter MeasureTheory.AEStronglyMeasurable.stronglyMeasurableAtFilter
@@ -65,7 +65,7 @@ lemma AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem {s}
   ⟨s, hl, h⟩
 #align ae_strongly_measurable.strongly_measurable_at_filter_of_mem AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem
 
-protected theorem MeasureTheory.StronglyMeasurable.stronglyMeasurableAtFilter
+protected lemma MeasureTheory.StronglyMeasurable.stronglyMeasurableAtFilter
     (h : StronglyMeasurable f) : StronglyMeasurableAtFilter f l μ :=
   h.aestronglyMeasurable.stronglyMeasurableAtFilter
 #align measure_theory.strongly_measurable.strongly_measurable_at_filter MeasureTheory.StronglyMeasurable.stronglyMeasurableAtFilter

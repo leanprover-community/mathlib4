@@ -512,7 +512,7 @@ lemma intervalIntegrable_of_integral_ne_zero {a b : ℝ} {f : ℝ → E} {μ : M
   not_imp_comm.1 integral_undef h
 #align interval_integral.interval_integrable_of_integral_ne_zero intervalIntegral.intervalIntegrable_of_integral_ne_zero
 
-nonrec theorem integral_non_aestronglyMeasurable
+nonrec lemma integral_non_aestronglyMeasurable
     (hf : ¬AEStronglyMeasurable f (μ.restrict (Ι a b))) :
     ∫ x in a..b, f x ∂μ = 0 := by
   rw [intervalIntegral_eq_integral_uIoc, integral_non_aestronglyMeasurable hf, smul_zero]

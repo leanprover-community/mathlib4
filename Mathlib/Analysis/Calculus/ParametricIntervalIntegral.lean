@@ -29,7 +29,7 @@ namespace intervalIntegral
 `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`
 (with a ball radius independent of `a`) with integrable Lipschitz bound, and `F x` is ae-measurable
 for `x` in a possibly smaller neighborhood of `x₀`. -/
-nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip
+nonrec lemma hasFDerivAt_integral_of_dominated_loc_of_lip
     {F : H → ℝ → E} {F' : ℝ → H →L[𝕜] E} {x₀ : H}
     (ε_pos : 0 < ε) (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (μ.restrict (Ι a b)))
     (hF_int : IntervalIntegrable (F x₀) μ a b)
@@ -52,7 +52,7 @@ nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip
 `F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
 derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
 and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
-nonrec theorem hasFDerivAt_integral_of_dominated_of_fderiv_le
+nonrec lemma hasFDerivAt_integral_of_dominated_of_fderiv_le
     {F : H → ℝ → E} {F' : H → ℝ → H →L[𝕜] E} {x₀ : H} (ε_pos : 0 < ε)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (μ.restrict (Ι a b)))
     (hF_int : IntervalIntegrable (F x₀) μ a b)
@@ -94,7 +94,7 @@ nonrec lemma hasDerivAt_integral_of_dominated_loc_of_lip {F : 𝕜 → ℝ → E
 assuming `F x₀` is integrable, `x ↦ F x a` is differentiable on an interval around `x₀` for ae `a`
 (with interval radius independent of `a`) with derivative uniformly bounded by an integrable
 function, and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
-nonrec theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le
+nonrec lemma hasDerivAt_integral_of_dominated_loc_of_deriv_le
     {F : 𝕜 → ℝ → E} {F' : 𝕜 → ℝ → E} {x₀ : 𝕜}
     (ε_pos : 0 < ε) (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (μ.restrict (Ι a b)))
     (hF_int : IntervalIntegrable (F x₀) μ a b)

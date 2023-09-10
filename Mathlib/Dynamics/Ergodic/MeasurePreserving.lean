@@ -47,7 +47,7 @@ structure MeasurePreserving (f : α → β)
 #align measure_theory.measure_preserving.measurable MeasureTheory.MeasurePreserving.measurable
 #align measure_theory.measure_preserving.map_eq MeasureTheory.MeasurePreserving.map_eq
 
-protected theorem _root_.Measurable.measurePreserving
+protected lemma _root_.Measurable.measurePreserving
     {f : α → β} (h : Measurable f) (μa : Measure α) : MeasurePreserving f μa (map f μa) :=
   ⟨h, rfl⟩
 #align measurable.measure_preserving Measurable.measurePreserving

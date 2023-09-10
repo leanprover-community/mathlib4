@@ -2203,7 +2203,7 @@ protected lemma id {_m0 : MeasurableSpace α} (μ : Measure α) : QuasiMeasurePr
 
 variable {μa μa' : Measure α} {μb μb' : Measure β} {μc : Measure γ} {f : α → β}
 
-protected theorem _root_.Measurable.quasiMeasurePreserving
+protected lemma _root_.Measurable.quasiMeasurePreserving
     {_m0 : MeasurableSpace α} (hf : Measurable f) (μ : Measure α) :
     QuasiMeasurePreserving f μ (μ.map f) :=
   ⟨hf, AbsolutelyContinuous.rfl⟩

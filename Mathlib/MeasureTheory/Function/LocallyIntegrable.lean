@@ -151,11 +151,11 @@ lemma locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClosed
     simpa only [IsOpen.nhdsWithin_eq hs hx, interior_eq_nhds'] using h2K
 #align measure_theory.locally_integrable_on_iff MeasureTheory.locallyIntegrableOn_iff
 
-protected theorem LocallyIntegrableOn.add
+protected lemma LocallyIntegrableOn.add
     (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f + g) s μ := fun x hx ↦ (hf x hx).add (hg x hx)
 
-protected theorem LocallyIntegrableOn.sub
+protected lemma LocallyIntegrableOn.sub
     (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f - g) s μ := fun x hx ↦ (hf x hx).sub (hg x hx)
 

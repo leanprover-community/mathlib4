@@ -354,7 +354,7 @@ protected lemma IsHilbertSum.linearIsometryEquiv_symm_apply_single (hV : IsHilbe
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
 elements of `E`. -/
 @[simp]
-protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
+protected lemma IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
     (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
   simp [IsHilbertSum.linearIsometryEquiv, OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single]
@@ -364,7 +364,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_singl
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
 elements of `E`. -/
 @[simp]
-protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
+protected lemma IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
     (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     (hV.linearIsometryEquiv (W₀.sum fun i => V i) : ∀ i, G i) = W₀ := by
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]

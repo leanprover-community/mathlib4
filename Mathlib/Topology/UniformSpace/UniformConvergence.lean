@@ -679,7 +679,7 @@ lemma TendstoLocallyUniformlyOn.union {s₁ s₂ : Set α} (hs₁ : IsOpen s₁)
 
 -- porting note: tendstoLocallyUniformlyOn_univ moved up
 
-protected theorem TendstoLocallyUniformly.tendstoLocallyUniformlyOn
+protected lemma TendstoLocallyUniformly.tendstoLocallyUniformlyOn
     (h : TendstoLocallyUniformly F f p) : TendstoLocallyUniformlyOn F f p s :=
   (tendstoLocallyUniformlyOn_univ.mpr h).mono (subset_univ _)
 #align tendsto_locally_uniformly.tendsto_locally_uniformly_on TendstoLocallyUniformly.tendstoLocallyUniformlyOn

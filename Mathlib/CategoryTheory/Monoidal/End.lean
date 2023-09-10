@@ -57,7 +57,7 @@ attribute [local instance] endofunctorMonoidalCategory
 @[simp] lemma endofunctorMonoidalCategory_tensorObj_map (F G : C ⥤ C) {X Y : C} (f : X ⟶ Y) :
     (F ⊗ G).map f = G.map (F.map f) := rfl
 
-@[simp] theorem endofunctorMonoidalCategory_tensorMap_app
+@[simp] lemma endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
     (α ⊗ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
 
