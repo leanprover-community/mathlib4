@@ -3,6 +3,8 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Congr!
 
@@ -112,18 +114,6 @@ We can still see that it is a hole in the info view on mouseover. -/
   | `($_ $val $_) => pure val
   | _ => throw ()
 
-/-- Given a proposition, returns `(tyLhs, lhs, tyRhs, rhs)` if it's an eq, iff, or heq. -/
-def sides? (ty : Expr) : MetaM (Option (Expr × Expr × Expr × Expr)) := do
-  let ty ← whnf ty
-  if let some (lhs, rhs) := ty.iff? then
-    return some (.sort .zero, lhs, .sort .zero, rhs)
-  if let some (ty, lhs, rhs) := ty.eq? then
-    return (ty, lhs, ty, rhs)
-  else if let some (tyLhs, lhs, tyRhs, rhs) := ty.heq? then
-    return (tyLhs, lhs, tyRhs, rhs)
-  else
-    return none
-
 /-- Create the congruence hole. Used by `elabCHole`.
 
 Saves the current mvarCounter as a proxy for age. We use this to avoid
@@ -165,7 +155,7 @@ def elabCHole (h : Syntax) (forLhs : Bool) (expectedType? : Option Expr) : Term.
   -- Ensure that `pfTy` is a proposition
   unless ← isDefEq (← inferType pfTy) (.sort .zero) do
     throwError "Hole has type{indentD pfTy}\nbut is expected to be a Prop"
-  if let some (_, lhs, _, rhs) ← sides? pfTy then
+  if let some (_, lhs, _, rhs) := (← whnf pfTy).sides? then
     let val := if forLhs then lhs else rhs
     if let some expectedType := expectedType? then
       -- Propagate type hint:
@@ -211,65 +201,6 @@ def elaboratePattern (t : Term) (expectedType? : Option Expr) (forLhs : Bool) :
     Term.elabTermEnsuringType t' expectedType?
 
 /-! ### Congruence generation -/
-
-/-- Generates a congruence lemma for a function `f` and `numArgs` of its arguments.
-The only `Lean.Meta.CongrArgKind` kinds that appear in such a lemma
-are `.eq`, `.heq`, and `.subsingletonInst`.
-The resulting lemma proves either an `Eq` or a `HEq` depending on whether the types
-of the LHS and RHS are equal or not.
-
-This function is a wrapper around `Lean.Meta.mkHCongrWithArity`.
-It transforms the resulting congruence lemma by trying to automatically prove hypotheses
-using subsingleton lemmas, and if they are so provable they are recorded with `.subsingletonInst`.
-Note that this is slightly abusing `.subsingletonInst` since
-(1) the argument might not be for a `Decidable` instance and
-(2) the argument might not even be an instance. -/
--- TODO lift this into a utility file, along with supporting `Congr! functions.
-def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
-  let thm ← mkHCongrWithArity f numArgs
-  process thm thm.type thm.argKinds.toList #[] #[] #[]
-where
-  /-- Process the congruence theorem by trying to pre-prove arguments using `prove`. -/
-  process (cthm : CongrTheorem) (type : Expr) (argKinds : List CongrArgKind)
-      (argKinds' : Array CongrArgKind) (params args : Array Expr) : MetaM CongrTheorem := do
-    match argKinds with
-    | [] =>
-      if params.size == args.size then
-        return cthm
-      else
-        let pf' ← mkLambdaFVars params (mkAppN cthm.proof args)
-        return {proof := pf', type := ← inferType pf', argKinds := argKinds'}
-    | argKind :: argKinds =>
-      match argKind with
-      | .eq | .heq =>
-        forallBoundedTelescope type (some 3) fun params' type' => do
-          let #[x, y, eq] := params' | unreachable!
-          -- See if we can prove `eq` from previous parameters.
-          let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
-          let g ← g.clear eq.fvarId!
-          if (← observing? <| prove g params).isSome then
-            process cthm type' argKinds (argKinds'.push .subsingletonInst)
-              (params := params ++ #[x, y]) (args := args ++ #[x, y, .mvar g])
-          else
-            process cthm type' argKinds (argKinds'.push argKind)
-              (params := params ++ params') (args := args ++ params')
-      | _ => panic! "Unexpected CongrArgKind"
-  /-- Close the goal given only the fvars in `params`, or else fails. -/
-  prove (g : MVarId) (params : Array Expr) : MetaM Unit := do
-    -- Prune the local context.
-    let g ← g.cleanup
-    -- Substitute equalities that come from only this congruence lemma.
-    let [g] ← g.casesRec fun localDecl => do
-      return (localDecl.type.isEq || localDecl.type.isHEq) && params.contains localDecl.toExpr
-      | failure
-    try g.refl; return catch _ => pure ()
-    try g.hrefl; return catch _ => pure ()
-    if ← g.proofIrrelHeq then return
-    -- Make the goal be an eq and then try `Subsingleton.elim`
-    let g ← g.heqOfEq
-    if ← g.subsingletonElim then return
-    -- We have no more tricks.
-    failure
 
 /-- Ensures the expected type is an equality. Returns the equality.
 The returned expression satisfies `Lean.Expr.eq?`. -/
@@ -435,7 +366,7 @@ where
   /-- Get the sides of the type of `pf` and unify them with the respective `lhs` and `rhs`. -/
   ensureSidesDefeq (pf : Expr) : MetaM Expr := do
     let pfTy ← inferType pf
-    let some (_, lhs', _, rhs') ← sides? pfTy
+    let some (_, lhs', _, rhs') := (← whnf pfTy).sides?
       | panic! "Unexpectedly did not generate an eq or heq"
     unless ← isDefEq lhs lhs' do
       throwError "Congruence hole has type{indentD pfTy}\n{""
@@ -503,7 +434,7 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
     -- Defeq checks to unify the lhs and rhs congruence holes.
     unless ← isDefEq (← inferType pf1) (← inferType pf2) do
       throwCongrEx lhs rhs "Elaborated types of congruence holes are not defeq."
-    if let some (_, lhsVal, _, rhsVal) ← sides? (← inferType pf1) then
+    if let some (_, lhsVal, _, rhsVal) := (← whnf <| ← inferType pf1).sides? then
       unless ← isDefEq val1 lhsVal do
         throwError "Left-hand side of congruence hole is{indentD lhsVal}\n{""
           }but is expected to be{indentD val1}"
@@ -680,7 +611,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     let mvarCounterSaved := (← getMCtx).mvarCounter
     -- Case 1: There is an expected type and it's obviously an Iff/Eq/HEq.
     if let some expectedType := expectedType? then
-      if let some (expLhsTy, expLhs, expRhsTy, expRhs) ← sides? expectedType then
+      if let some (expLhsTy, expLhs, expRhsTy, expRhs) := (← whnf expectedType).sides? then
         let lhs ← elaboratePattern t expLhsTy true
         let rhs ← elaboratePattern t expRhsTy false
         -- Note: these defeq checks can leak congruence holes.
