@@ -757,7 +757,8 @@ private lemma continuous_inj_is_monotone_Ioo_H2 {a b : α} {f : α → δ}
   have ht : t ∈ Ioo a b := ⟨lt_max_of_lt_right hy.1, max_lt hd.2 hy.2⟩
   have hst : s < t := lt_of_le_of_lt hsc (lt_of_lt_of_le hcd hdt)
   have h6 : Icc c d ⊆ Icc s t := Icc_subset_Icc hsc hdt
-  have h7 : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := continuous_inj_is_monotone_Ioo_H1 p1 p2 hs ht hst
+  have h7 : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := 
+    continuous_inj_is_monotone_Ioo_H1 p1 p2 hs ht hst
   have h8' : StrictAntiOn f (Icc s t) → False := by
     intro h7
     have h9 : StrictAntiOn f (Icc c d) := StrictAntiOn.mono h7 h6
@@ -784,7 +785,8 @@ theorem continuous_inj_is_monotone_Ioo {a b : α} {f : α → δ} (h1 : a < b)
   choose d hd' using h4
   have hcd : c < d := hd'.1
   have hd : d ∈ Ioo a b := ⟨lt_trans hc.1 hcd, hd'.2⟩
-  have h5 : StrictMonoOn f (Icc c d) ∨ StrictAntiOn f (Icc c d) := continuous_inj_is_monotone_Ioo_H1 p1 p2 hc hd hcd
+  have h5 : StrictMonoOn f (Icc c d) ∨ StrictAntiOn f (Icc c d) :=
+    continuous_inj_is_monotone_Ioo_H1 p1 p2 hc hd hcd
   have h5_1 := continuous_inj_is_monotone_Ioo_H2 hc hd hcd p1 p2
   have h5_2 (h5 : StrictAntiOn f (Icc c d)) : StrictAntiOn f (Ioo a b) := by
     let g (x : α) : OrderDual δ := f x
