@@ -10,6 +10,13 @@ import Mathlib.Analysis.Calculus.FDeriv.Measurable
 
 We prove in `measurable_lineDeriv` that the line derivative of a function (with respect to a
 locally compact scalar field) is measurable, provided the function is continuous.
+
+An assumption such as continuity is necessary, as otherwise one could alternate in a non-measurable
+way between differentiable and non-differentiable functions along the various lines
+directed by `v`.
+
+TODO: prove (again using the techniques in `Analysis.Calculus.FDeriv.Measurable`) that the line
+derivative is measurable as a function of `(x, v)`.
 -/
 
 open MeasureTheory
