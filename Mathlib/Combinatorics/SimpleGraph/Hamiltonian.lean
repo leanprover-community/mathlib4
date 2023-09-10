@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2023 Abhiruk Lahiri, Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Abhirkuk Lahiri, Bhavik Mehta, Rishi Mehta, Linus Sommer
+-/
+
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Algebra.BigOperators.Basic
