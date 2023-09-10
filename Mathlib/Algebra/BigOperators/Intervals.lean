@@ -203,7 +203,7 @@ theorem prod_Ico_factorial_eq_superFactorial : ∀ n : ℕ, (∏ x in Ico 1 (n +
       prod_Ico_factorial_eq_superFactorial n, superFactorial, factorial, Nat.succ_eq_add_one,
       mul_comm]
 
--- `(x + 1)!` is simplified to `(x + 1) * x!`
+-- `(x + 1)!` is simplified to `succ x * x!`
 @[simp, nolint simpNF]
 theorem prod_range_add_one_eq_superFactorial : ∀ n : ℕ, (∏ x in range n, (x + 1) !) = sf n
   | 0 => rfl
