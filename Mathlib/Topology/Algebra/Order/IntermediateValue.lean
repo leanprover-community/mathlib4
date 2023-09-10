@@ -757,7 +757,7 @@ private lemma continuous_inj_is_monotone_Ioo_H2 {a b : α} {f : α → δ}
   have ht : t ∈ Ioo a b := ⟨lt_max_of_lt_right hy.1, max_lt hd.2 hy.2⟩
   have hst : s < t := lt_of_le_of_lt hsc (lt_of_lt_of_le hcd hdt)
   have h6 : Icc c d ⊆ Icc s t := Icc_subset_Icc hsc hdt
-  have h7 : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := 
+  have h7 : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) :=
     continuous_inj_is_monotone_Ioo_H1 p1 p2 hs ht hst
   have h8' : StrictAntiOn f (Icc s t) → False := by
     intro h7
