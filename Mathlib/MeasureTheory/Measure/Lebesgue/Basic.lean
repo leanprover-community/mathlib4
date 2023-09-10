@@ -577,32 +577,49 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
           (regionBetween_subset (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s)).symm
 #align volume_region_between_eq_lintegral volume_regionBetween_eq_lintegral
 
-lemma measure_prod_univ_eq_zero_of_measure_eq_zero {α β : Type*}
-    [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β} [SigmaFinite ν]
-    {s : Set α} (s_ae_univ : μ sᶜ = 0) :
-    μ.prod ν (s ×ˢ univ)ᶜ = 0 := by
-  convert show (μ.prod ν) (sᶜ ×ˢ (univ : Set β)) = 0 by
-    simpa only [Measure.prod_prod, mul_eq_zero] using Or.inl s_ae_univ
+-- Missing? Appropriate place?
+lemma _root_.Set.compl_prod {α β : Type*} (s : Set α) (t : Set β) :
+    (s ×ˢ t)ᶜ = (sᶜ ×ˢ univ) ∪ (univ ×ˢ tᶜ) := by
   ext p
-  simp only [mem_compl_iff, mem_prod, mem_univ, and_true]
+  simp only [mem_compl_iff, mem_prod, not_and, mem_union, mem_univ, and_true, true_and]
+  constructor <;> intro h
+  · by_cases fst_in_s : p.fst ∈ s
+    · exact Or.inr (h fst_in_s)
+    · exact Or.inl fst_in_s
+  · intro fst_in_s
+    simpa only [fst_in_s, not_true, false_or] using h
 
-lemma nullMeasurableSet_prod_univ {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_mble : NullMeasurableSet s μ) :
-    NullMeasurableSet (s ×ˢ univ) (μ.prod ν) := by
+-- Place where?
+lemma measure_prod_compl_eq_zero {α β : Type*}
+    [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β} [SigmaFinite ν]
+    {s : Set α} (s_ae_univ : μ sᶜ = 0) {t : Set β} (t_ae_univ : ν tᶜ = 0) :
+    μ.prod ν (s ×ˢ t)ᶜ = 0 := by
+  rw [Set.compl_prod]
+  apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
+  simp [s_ae_univ, t_ae_univ]
+
+-- Place where?
+lemma nullMeasurableSet_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} {t : Set β}
+    (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
+    NullMeasurableSet (s ×ˢ t) (μ.prod ν) := by
   obtain ⟨s₀, ⟨mble_s₀, s_aeeq_s₀⟩⟩ := s_mble
-  refine ⟨s₀ ×ˢ univ, ⟨mble_s₀.prod MeasurableSet.univ, ?_⟩⟩
+  obtain ⟨t₀, ⟨mble_t₀, t_aeeq_t₀⟩⟩ := t_mble
+  refine ⟨s₀ ×ˢ t₀, ⟨mble_s₀.prod mble_t₀, ?_⟩⟩
   rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
   simp only [Filter.mem_mk, mem_setOf_eq] at *
-  rcases s_aeeq_s₀ with ⟨t, ⟨t_mem,  s_eq_s₀⟩⟩
-  refine ⟨t ×ˢ univ, ⟨measure_prod_univ_eq_zero_of_measure_eq_zero t_mem, ?_⟩⟩
+  rcases s_aeeq_s₀ with ⟨u, ⟨u_mem, s_eq_s₀⟩⟩
+  rcases t_aeeq_t₀ with ⟨v, ⟨v_mem, t_eq_t₀⟩⟩
+  refine ⟨u ×ˢ v, ⟨measure_prod_compl_eq_zero u_mem v_mem, ?_⟩⟩
   intro p hp
-  change (p ∈ s ×ˢ univ) = (p ∈ s₀ ×ˢ univ)
-  simp [show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
+  change (p ∈ s ×ˢ t) = (p ∈ s₀ ×ˢ t₀)
+  simp [show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1),
+        show p.snd ∈ t ↔ p.snd ∈ t₀ from Iff.of_eq (t_eq_t₀ hp.2)]
 
 lemma nullMeasurableSet_fst_mem {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × β | p.fst ∈ s} (μ.prod ν) := by
-  convert nullMeasurableSet_prod_univ (ν := ν) s_mble
+  convert nullMeasurableSet_prod (ν := ν) (t := univ) s_mble nullMeasurableSet_univ
   ext p
   simp only [mem_setOf_eq, mem_prod, mem_univ, and_true]
 
