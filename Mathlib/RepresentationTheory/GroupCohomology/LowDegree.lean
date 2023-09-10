@@ -11,7 +11,9 @@ import Mathlib.RepresentationTheory.Invariants
 # The low-degree cocycles and coboundaries of a `k`-linear `G`-representation
 
 Let `k` be a commutative ring and `G` a group. This file gives simple expressions for
-the cocycles and coboundaries of a `k`-linear `G`-representatio
+the cocycles and coboundaries of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+
+
 
 ## Main definitions
 
