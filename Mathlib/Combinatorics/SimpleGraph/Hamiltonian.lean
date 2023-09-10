@@ -59,7 +59,7 @@ lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltoni
       · rw [this] at length_relation
         assumption
 
-
+/-- RM: Move to Connectivity.lean-/
 lemma Nil_iff_eq_nil {v : V} : ∀ p : G.Walk v v, p.Nil ↔ p = SimpleGraph.Walk.nil
 | .nil | .cons _ _ => by simp
 
@@ -67,24 +67,25 @@ lemma Nil_iff_eq_nil {v : V} : ∀ p : G.Walk v v, p.Nil ↔ p = SimpleGraph.Wal
 structure SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) extends p.IsCycle : Prop :=
   path_hamiltonian : (p.tail (by
     intro np
-    rw [Nil_iff_eq_nil p] at np
+    rw [Nil_iff_eq_nil] at np
     contradiction
   )).IsHamiltonian
 
-
-lemma SimpleGraph.Walk.support_of_tail_eq_tail_of_support (p : G.Walk v v) (hnil : ¬p.Nil) : (p.tail hnil).support = p.support.tail := by
+/-- RM: Move to Connectivity.lean-/
+lemma SimpleGraph.Walk.support_of_tail_eq_tail_of_support (p : G.Walk v v) (hnil : ¬p.Nil) :
+   (p.tail hnil).support = p.support.tail := by
   rw [←SimpleGraph.Walk.cons_support_tail p hnil]
   rw [@List.tail_cons]
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
     (w : V) : w ∈ p.support := by
-    have : w ∈ p.support.tail
-    · have hnil : ¬ Nil p
-      · rw [Nil_iff_eq_nil]
-        apply hp.ne_nil
-      · rw [←SimpleGraph.Walk.support_of_tail_eq_tail_of_support p hnil]
-        apply SimpleGraph.Walk.IsHamiltonian.contains_vertex (p.tail hnil) hp.path_hamiltonian w
-    · exact List.mem_of_mem_tail this
+  have : w ∈ p.support.tail
+  · have hnil : ¬ Nil p
+    · rw [Nil_iff_eq_nil]
+      apply hp.ne_nil
+    · rw [←SimpleGraph.Walk.support_of_tail_eq_tail_of_support p hnil]
+      apply SimpleGraph.Walk.IsHamiltonian.contains_vertex (p.tail hnil) hp.path_hamiltonian w
+  · exact List.mem_of_mem_tail this
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.length = Fintype.card V := by
