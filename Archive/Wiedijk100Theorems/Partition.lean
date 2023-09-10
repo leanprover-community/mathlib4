@@ -524,7 +524,7 @@ lemma same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
   exact_mod_cast Nat.lt_succ_of_le (le_add_right h)
 #align theorems_100.same_coeffs Theorems100.same_coeffs
 
-lemma partition_lemma (n : ℕ) :
+theorem partition_theorem (n : ℕ) :
     (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
   -- We need the counts to live in some field (which contains ℕ), so let's just use ℚ
   suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card by
