@@ -1754,7 +1754,7 @@ theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
 
 theorem rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Prop}
     (hl : ∀ j, P <| toRightMovesAdd (Sum.inl j)) (hr : ∀ j, P <| toRightMovesAdd (Sum.inr j)) :
-      P k := by
+    P k := by
   rw [← toRightMovesAdd.apply_symm_apply k]
   cases' toRightMovesAdd.symm k with i i
   · exact hl i
