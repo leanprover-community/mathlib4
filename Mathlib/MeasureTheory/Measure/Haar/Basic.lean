@@ -698,13 +698,13 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
 #align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
 #align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique
 
-/-- Let `K₀ K₁ : TopologicalSpace.PositiveCompacts G`, then `K₁` defines the same Haar measure as
-`K₀` iff it has measure `1` for the Haar measure defined by `K₀`. -/
+/-- Let `μ` be a  σ-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
+defined by `K₀` iff `μ K₀ = 1`. -/
 @[to_additive]
-theorem haarMeasure_eq_iff (K₀ K₁ : PositiveCompacts G) :
-    haarMeasure K₀ = haarMeasure K₁ ↔ (haarMeasure K₀) K₁ = 1 :=
-  ⟨fun h => h.symm ▸ haarMeasure_self,
-    fun h => by rw [haarMeasure_unique (haarMeasure K₀) K₁, h, one_smul]⟩
+theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
+    [IsMulLeftInvariant μ] :
+    haarMeasure K₀ = μ ↔ μ K₀ = 1 :=
+  ⟨fun h => h.symm ▸ haarMeasure_self, fun h => by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
 
 example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : PositiveCompacts G) :
     μ = μ K₀.1 • haarMeasure K₀ :=

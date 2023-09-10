@@ -79,33 +79,29 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · exact zero_le_one
 #align basis.parallelepiped_basis_fun Basis.parallelepiped_basisFun
 
- /-- A parallelepiped can be expressed on the standard basis. -/
- theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+/-- A parallelepiped can be expressed on the standard basis. -/
+theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : Basis ι ℝ E) :
     b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
       b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
-  rw [← Basis.parallelepiped_basisFun]
-  refine (congrArg _ ?_).trans (Basis.parallelepiped_map _ _)
   classical
-  ext
-  simp only [map_apply, Pi.basisFun_apply, equivFun_symm_apply, LinearMap.stdBasis_apply',
+  rw [← Basis.parallelepiped_basisFun, ← Basis.parallelepiped_map]
+  congr
+  ext; simp only [map_apply, Pi.basisFun_apply, equivFun_symm_apply, LinearMap.stdBasis_apply',
     Finset.sum_univ_ite]
 
 open MeasureTheory MeasureTheory.Measure
 
 theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] (b : Basis ι ℝ E)
-    [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
+    [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+    (b : Basis ι ℝ E) [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
     [SigmaCompactSpace F] [MeasurableSpace F] [BorelSpace F] (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   have : IsAddHaarMeasure (map f b.addHaar) :=
-  AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
-  have : SigmaFinite (map f b.addHaar) := IsAddHaarMeasure.sigmaFinite _
-  rw [(map f b.addHaar).addHaarMeasure_unique (b.map f.toLinearEquiv).parallelepiped,
-    Measure.map_apply f.continuous.measurable (PositiveCompacts.isCompact _).measurableSet,
-    Basis.coe_parallelepiped, Basis.coe_map]
+    AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
+  rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
+    (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
   erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
-  rw [one_smul, Basis.addHaar]
 
 namespace MeasureTheory
 

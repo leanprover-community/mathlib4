@@ -230,13 +230,13 @@ instance [SecondCountableTopology E] (b : Basis ι ℝ E) :
     SigmaFinite b.addHaar := by
   rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
 
-/-- Let `b` and `b'` two bases of `E`. The basis `b'` defines the same Haar measure as the basis
-`b` iff the parallelepiped defined by `b'` has measure `1` for the Haar measure defined by `b`. -/
-theorem Basis.addHaar_eq_iff [SecondCountableTopology E]
-    {b : Basis ι ℝ E} {b' : Basis ι' ℝ E} :
-    b.addHaar = b'.addHaar ↔ b.addHaar b'.parallelepiped = 1 := by
-  rw [Basis.addHaar_def, Basis.addHaar_def]
-  exact addHaarMeasure_eq_iff b.parallelepiped b'.parallelepiped
+/-- Let `μ` be a  σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
+defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
+theorem Basis.addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
+    [SigmaFinite μ] [IsAddLeftInvariant μ] :
+    b.addHaar = μ ↔ μ b.parallelepiped = 1 := by
+  rw [Basis.addHaar_def]
+  exact addHaarMeasure_eq_iff b.parallelepiped μ
 
 @[simp]
 theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
