@@ -87,7 +87,7 @@ variable (h : p ∧ q ∨ p ∧ r)
 -- Make sure that we don't try to work on auxiliary declarations.
 -- In this case, there will be an auxiliary recursive declaration for
 -- `foo` itself that `casesm (_ ∧ _)` could potentially match.
-lemma foo : p ∧ p := by
+theorem foo : p ∧ p := by
   cases h
   · casesm (_ ∧ _)
     constructor <;> assumption
