@@ -17,6 +17,8 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 `MulOpposite`, and `Units`.
 -/
 
+set_option autoImplicit true
+
 open Filter Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/
@@ -93,7 +95,7 @@ instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
 instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩
 
-instance [Monoid R] [StarSemigroup R] [TopologicalSpace R] [ContinuousStar R] :
+instance [Monoid R] [StarMul R] [TopologicalSpace R] [ContinuousStar R] :
     ContinuousStar Rˣ :=
   ⟨continuous_induced_rng.2 Units.continuous_embedProduct.star⟩
 

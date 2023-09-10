@@ -4,6 +4,7 @@ open Lake DSL
 
 def moreServerArgs := #[
   "-Dpp.unicode.fun=true", -- pretty-prints `fun a ↦ b`
+  "-DautoImplicit=false",
   "-DrelaxedAutoImplicit=false"
 ]
 
@@ -14,7 +15,7 @@ def moreLeanArgs := moreServerArgs
 -- so they can be enabled in CI and disabled locally or vice versa.
 -- Warning: Do not put any options here that actually change the olean files,
 -- or inconsistent behavior may result
-def weakLeanArgs :=
+def weakLeanArgs : Array String :=
   if get_config? CI |>.isSome then
     #["-DwarningAsError=true"]
   else
@@ -28,12 +29,10 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
-@[default_target]
 lean_exe runLinter where
   root := `scripts.runLinter
   supportInterpreter := true
 
-@[default_target]
 lean_exe checkYaml where
   root := `scripts.checkYaml
   supportInterpreter := true
@@ -42,7 +41,7 @@ meta if get_config? doc = some "on" then -- do not download and build doc-gen4 b
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
 require std from git "https://github.com/leanprover/std4" @ "main"
-require Qq from git "https://github.com/semorrison/quote4" @ "instance_names"
+require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 require Cli from git "https://github.com/mhuisi/lean4-cli.git" @ "nightly"
 require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.13"

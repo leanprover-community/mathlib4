@@ -17,6 +17,8 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
 
+set_option autoImplicit true
+
 
 variable {α β γ : Sort*}
 
@@ -36,6 +38,9 @@ instance : IsEmpty False :=
 
 instance Fin.isEmpty : IsEmpty (Fin 0) :=
   ⟨fun n ↦ Nat.not_lt_zero n.1 n.2⟩
+
+instance Fin.isEmpty' : IsEmpty (Fin Nat.zero) :=
+  Fin.isEmpty
 
 protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x ↦ IsEmpty.false (f x)⟩

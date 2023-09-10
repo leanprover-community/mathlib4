@@ -39,6 +39,8 @@ Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
 
+set_option autoImplicit true
+
 
 open Topology Pointwise Filter Set TopologicalSpace
 

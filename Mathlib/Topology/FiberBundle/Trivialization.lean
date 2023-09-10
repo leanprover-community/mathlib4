@@ -48,6 +48,8 @@ Indeed, since trivializations only have meaning on their base sets (taking junk 
 type of linear trivializations is not even particularly well-behaved.
 -/
 
+set_option autoImplicit true
+
 
 open TopologicalSpace Filter Set Bundle Function
 
@@ -175,7 +177,7 @@ theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toLocalEquiv.symm (e 
 @[simp, mfld_simps]
 theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toLocalEquiv.symm (proj x, (e x).2) = x := by
-  rw [← e.coe_fst ex, Prod.mk.eta, ← e.coe_coe, e.left_inv ex]
+  rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
 #align pretrivialization.symm_apply_mk_proj Pretrivialization.symm_apply_mk_proj
 
 @[simp, mfld_simps]

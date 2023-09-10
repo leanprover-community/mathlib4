@@ -227,10 +227,10 @@ protected theorem aestronglyMeasurable (h : IntervalIntegrable f μ a b) :
   h.1.aestronglyMeasurable
 #align interval_integrable.ae_strongly_measurable IntervalIntegrable.aestronglyMeasurable
 
-protected theorem ae_strongly_measurable' (h : IntervalIntegrable f μ a b) :
+protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc b a)) :=
   h.2.aestronglyMeasurable
-#align interval_integrable.ae_strongly_measurable' IntervalIntegrable.ae_strongly_measurable'
+#align interval_integrable.ae_strongly_measurable' IntervalIntegrable.aestronglyMeasurable'
 
 end
 
@@ -405,8 +405,8 @@ Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ μ.ae`. Then `f` is i
 `u..v` provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
-`tendsto_Ixx_class Ioc ?m_1 l'`. -/
+`apply Tendsto.eventually_intervalIntegrable_ae` will generate goals `Filter ℝ` and
+`TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
     [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
@@ -423,8 +423,8 @@ Suppose that `f : ℝ → E` has a finite limit at `l`. Then `f` is interval int
 provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
-`tendsto_Ixx_class Ioc ?m_1 l'`. -/
+`apply Tendsto.eventually_intervalIntegrable` will generate goals `Filter ℝ` and
+`TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable {f : ℝ → E} {μ : Measure ℝ} {l l' : Filter ℝ}
     (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l'] [IsMeasurablyGenerated l']
     (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f l' (𝓝 c)) {u v : ι → ℝ} {lt : Filter ι}
@@ -1195,7 +1195,7 @@ theorem continuousOn_primitive [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ
   by_cases h : a ≤ b
   · have : ∀ x ∈ Icc a b, ∫ t in Ioc a x, f t ∂μ = ∫ t in a..x, f t ∂μ := by
       intro x x_in
-      simp_rw [← uIoc_of_le h, integral_of_le x_in.1]
+      simp_rw [integral_of_le x_in.1]
     rw [continuousOn_congr this]
     intro x₀ _
     refine' continuousWithinAt_primitive (measure_singleton x₀) _

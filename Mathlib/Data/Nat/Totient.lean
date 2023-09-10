@@ -84,7 +84,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, MulZeroClass.mul_zero, le_of_lt (mod_lt n a_pos),
+    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
       Nat.zero_eq, zero_add]
     --Porting note: below line was `mono`
     refine Finset.card_mono ?_
@@ -136,7 +136,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
 theorem totient_mul {m n : ℕ} (h : m.coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
     cases' Nat.mul_eq_zero.1 hmn0 with h h <;>
-      simp only [totient_zero, MulZeroClass.mul_zero, MulZeroClass.zero_mul, h]
+      simp only [totient_zero, mul_zero, zero_mul, h]
   else by
     haveI : NeZero (m * n) := ⟨hmn0⟩
     haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩

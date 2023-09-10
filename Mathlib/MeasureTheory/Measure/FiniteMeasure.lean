@@ -22,11 +22,16 @@ measure is continuous.
 ## Main definitions
 
 The main definitions are
- * the type `MeasureTheory.FiniteMeasure Ω` with the topology of weak convergence;
- * `MeasureTheory.FiniteMeasure.toWeakDualBCNN : FiniteMeasure Ω → (WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0))`
-   allowing to interpret a finite measure as a continuous linear functional on the space of
+ * `MeasureTheory.FiniteMeasure Ω`: The type of finite measures on `Ω` with the topology of weak
+   convergence of measures.
+ * `MeasureTheory.FiniteMeasure.toWeakDualBCNN : FiniteMeasure Ω → (WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0))`:
+   Interpret a finite measure as a continuous linear functional on the space of
    bounded continuous nonnegative functions on `Ω`. This is used for the definition of the
    topology of weak convergence.
+ * `MeasureTheory.FiniteMeasure.map`: The push-forward `f* μ` of a finite measure `μ` on `Ω`
+   along a measurable function `f : Ω → Ω'`.
+ * `MeasureTheory.FiniteMeasure.mapClm`: The push-forward along a given continuous `f : Ω → Ω'`
+   as a continuous linear map `f* : FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω'`.
 
 ## Main results
 
@@ -39,6 +44,8 @@ The main definitions are
    of weak convergence of measures. A similar characterization by the convergence of integrals (in
    the `MeasureTheory.lintegral` sense) of all bounded continuous nonnegative functions is
    `MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto`.
+ * `MeasureTheory.FiniteMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
+   push-forward of finite measures `f* : FiniteMeasure Ω → FiniteMeasure Ω'` is continuous.
 
 ## Implementation notes
 
@@ -157,6 +164,9 @@ theorem apply_mono (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s�
 def mass (μ : FiniteMeasure Ω) : ℝ≥0 :=
   μ univ
 #align measure_theory.finite_measure.mass MeasureTheory.FiniteMeasure.mass
+
+@[simp] theorem apply_le_mass (μ : FiniteMeasure Ω) (s : Set Ω) : μ s ≤ μ.mass := by
+  simpa using apply_mono μ (subset_univ s)
 
 @[simp]
 theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Measure Ω) univ :=
@@ -349,7 +359,7 @@ theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_
 
 @[simp]
 theorem testAgainstNN_zero (μ : FiniteMeasure Ω) : μ.testAgainstNN 0 = 0 := by
-  simpa only [MulZeroClass.zero_mul] using μ.testAgainstNN_const 0
+  simpa only [zero_mul] using μ.testAgainstNN_const 0
 #align measure_theory.finite_measure.test_against_nn_zero MeasureTheory.FiniteMeasure.testAgainstNN_zero
 
 @[simp]
@@ -520,12 +530,11 @@ theorem tendsto_zero_testAgainstNN_of_tendsto_zero_mass {γ : Type*} {F : Filter
   simp_rw [show ∀ i, dist ((μs i).testAgainstNN f) 0 = (μs i).testAgainstNN f by
       simp only [dist_nndist, NNReal.nndist_zero_eq_val', eq_self_iff_true, imp_true_iff]]
   refine' squeeze_zero (fun i => NNReal.coe_nonneg _) obs _
-  simp_rw [NNReal.coe_mul]
   have lim_pair : Tendsto (fun i => (⟨nndist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nndist f 0, 0⟩) := by
     refine' (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, _⟩
     exact (NNReal.continuous_coe.tendsto 0).comp mass_lim
   have key := tendsto_mul.comp lim_pair
-  rwa [MulZeroClass.mul_zero] at key
+  rwa [mul_zero] at key
 #align measure_theory.finite_measure.tendsto_zero_test_against_nn_of_tendsto_zero_mass MeasureTheory.FiniteMeasure.tendsto_zero_testAgainstNN_of_tendsto_zero_mass
 
 /-- If the total masses of finite measures tend to zero, then the measures tend to zero. -/
@@ -762,12 +771,92 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
   exact Tendsto.sub tends_pos tends_neg
 #align measure_theory.finite_measure.tendsto_iff_forall_integral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_integral_tendsto
 
-end FiniteMeasureConvergenceByBoundedContinuousFunctions
+end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 
--- section
-end FiniteMeasure
+section map
 
--- namespace
-end MeasureTheory
+variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
--- namespace
+/-- The push-forward of a finite measure by a function between measurable spaces. -/
+noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
+  ⟨(ν : Measure Ω).map f, by
+    constructor
+    by_cases f_aemble : AEMeasurable f ν
+    · rw [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ]
+      exact measure_lt_top (↑ν) (f ⁻¹' univ)
+    · simp [Measure.map, f_aemble]⟩
+
+/-- Note that this is an equality of elements of `ℝ≥0∞`. See also
+`MeasureTheory.FiniteMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
+lemma map_apply' (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (ν.map f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+  Measure.map_apply_of_aemeasurable f_aemble A_mble
+
+lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    ν.map f A = ν (f ⁻¹' A) := by
+  have := ν.map_apply' f_aemble A_mble
+  exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr this
+
+@[simp] lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    ν.map f A = ν (f ⁻¹' A) :=
+  map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
+
+@[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω)  :
+    (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
+  ext s s_mble
+  simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add]
+
+@[simp] lemma map_smul {f : Ω → Ω'} (f_mble : Measurable f) (c : ℝ≥0) (ν : FiniteMeasure Ω)  :
+    (c • ν).map f = c • (ν.map f) := by
+  ext s s_mble
+  simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_smul]
+
+/-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
+noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
+    FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
+  toFun := fun ν ↦ ν.map f
+  map_add' := map_add f_mble
+  map_smul' := map_smul f_mble
+
+variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+variable [TopologicalSpace Ω'] [BorelSpace Ω']
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+(weak) convergence of `FiniteMeasure`s on `X` implies (weak) convergence of the push-forwards
+of these measures by `f`. -/
+lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
+    (νs : ι → FiniteMeasure Ω) (ν : FiniteMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
+    {f : Ω → Ω'} (f_cont : Continuous f) :
+    Tendsto (fun i ↦ (νs i).map f) L (𝓝 (ν.map f)) := by
+  rw [FiniteMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
+  intro g
+  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
+    refine lintegral_map ?_ f_cont.measurable
+    exact (ENNReal.continuous_coe.comp g.continuous).measurable
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+the push-forward of finite measures `f* : FiniteMeasure X → FiniteMeasure Y` is continuous
+(in the topologies of weak convergence of measures). -/
+lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
+    Continuous (fun ν ↦ FiniteMeasure.map ν f) := by
+  rw [continuous_iff_continuousAt]
+  exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
+
+/-- The push-forward of a finite measure by a continuous function between Borel spaces as
+a continuous linear map. -/
+noncomputable def mapClm {f : Ω → Ω'} (f_cont : Continuous f) :
+    FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
+  toFun := fun ν ↦ ν.map f
+  map_add' := map_add f_cont.measurable
+  map_smul' := map_smul f_cont.measurable
+  cont := continuous_map f_cont
+
+end map -- section
+
+end FiniteMeasure -- namespace
+
+end MeasureTheory -- namespace

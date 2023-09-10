@@ -36,6 +36,8 @@ this sequence actually converges to `Real.sqrt (mk f)`.
 square root
 -/
 
+set_option autoImplicit true
+
 open Set Filter
 open scoped Filter NNReal Topology
 
@@ -124,7 +126,7 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 
 @[simp] theorem sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 end NNReal
 
@@ -349,7 +351,7 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
   lt_iff_lt_of_le_iff_le (Iff.trans (by simp [le_antisymm_iff, sqrt_nonneg]) sqrt_eq_zero')
 #align real.sqrt_pos Real.sqrt_pos
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
 end Real
@@ -464,6 +466,11 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
+/-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
+`ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
+want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
+In addition, providing this instance here makes it available earlier in the import
+hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
 instance : StarOrderedRing ℝ :=
   StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
