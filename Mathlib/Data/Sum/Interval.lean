@@ -323,15 +323,20 @@ namespace Lex
 variable [Preorder α] [Preorder β] [OrderTop α] [OrderBot β] [LocallyFiniteOrder α]
   [LocallyFiniteOrder β]
 
+#check ToLex
+
 /-- Throwaway tactic. -/
-private unsafe def simp_lex : tactic Unit :=
-  `[refine ToLex.surjective.forall₃.2 ?_; rintro (a | a) (b | b) (c | c) <;> simp only
-    [sumLexLift_inl_inl, sumLexLift_inl_inr, sumLexLift_inr_inl, sumLexLift_inr_inr,
-    inl_le_inl_iff, inl_le_inr, not_inr_le_inl, inr_le_inr_iff, inl_lt_inl_iff, inl_lt_inr,
-    not_inr_lt_inl, inr_lt_inr_iff, mem_Icc, mem_Ico, mem_Ioc, mem_Ioo, mem_Ici, mem_Ioi, mem_Iic,
-    mem_Iio, equiv.coe_to_embedding, toLex_inj, exists_false, and_false, false_and, map_empty,
-    not_mem_empty, true_and, inl_mem_disj_sum, inr_mem_disj_sum, and_true, ofLex_toLex, mem_map,
-    embedding.coe_fn_mk, exists_prop, exists_eq_right, embedding.inl_apply]]
+local elab "simp_lex" : tactic => do
+  Lean.Elab.Tactic.evalTactic <| ← `(tactic|
+    refine toLex.surjective.forall₃.2 ?_;
+    rintro (a | a) (b | b) (c | c) <;> simp only
+      [sumLexLift_inl_inl, sumLexLift_inl_inr, sumLexLift_inr_inl, sumLexLift_inr_inr,
+        inl_le_inl_iff, inl_le_inr, not_inr_le_inl, inr_le_inr_iff, inl_lt_inl_iff, inl_lt_inr,
+        not_inr_lt_inl, inr_lt_inr_iff, mem_Icc, mem_Ico, mem_Ioc, mem_Ioo, mem_Ici, mem_Ioi, mem_Iic,
+        mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and, map_empty,
+        not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex, mem_map,
+        Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply]
+  )
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
   finsetIcc a b :=
