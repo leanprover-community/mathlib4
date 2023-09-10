@@ -17,6 +17,8 @@ example : 2 ≤ 3 := by#
 info: Try this: simp_all only
 ---
 warning: declaration uses 'sorry'
+---
+warning: this tactic is never executed [linter.unreachableTactic]
 -/
 #guard_msgs in
 example : 2 ≤ 2 := by
