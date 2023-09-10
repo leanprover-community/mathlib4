@@ -1198,7 +1198,8 @@ theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
 @[simp]
 theorem map_univ_eq_univ_of_bijection (f : α → β) (hf : Function.Bijective f) :
     map f (Finset.univ : Finset α).val = univ.val := by
-  -- TODO: Note the converse is also true - this should turn into a @[simp] iff lemma
+  -- TODO: Note the converse is also true (a function mapping universes to universes is bijective)
+  -- this converse should turn into a @[simp] iff lemma.
   ext a
   rw [Function.bijective_iff_has_inverse] at hf
   rcases hf with ⟨f_inv, hf_inv, hf_inv'⟩
