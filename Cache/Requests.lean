@@ -45,7 +45,7 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     -- ```
     -- If this becomes an issue we can implement the curl spec.
 
-    -- Note we append a '_' to the filenames here,
+    -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
     pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
       (IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
