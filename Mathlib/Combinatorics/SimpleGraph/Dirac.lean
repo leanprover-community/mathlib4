@@ -101,13 +101,8 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp :
     · have hnil : ¬ Nil p
       · rw [Nil_iff_eq_nil]
         apply hp.ne_nil
-      · let hamiltonian_path := p.tail hnil
-        have supports : w ∈ hamiltonian_path.support → w ∈ p.support.tail
-        · rw [support_of_tail_eq_tail_of_support]
-          simp
-        · apply supports
-          apply SimpleGraph.Walk.IsHamiltonian.contains_vertex hamiltonian_path _ w
-          apply hp.path_hamiltonian
+      · rw [←SimpleGraph.Walk.support_of_tail_eq_tail_of_support p hnil]
+        apply SimpleGraph.Walk.IsHamiltonian.contains_vertex (p.tail hnil) hp.path_hamiltonian w
     · exact List.mem_of_mem_tail this
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
