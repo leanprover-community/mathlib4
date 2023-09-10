@@ -276,6 +276,10 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
 set_option linter.uppercaseLean3 false in
 #align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
 
+theorem Fintype.exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
+    (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
+  sorry
+
 variable {K}
 
 theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q = p ^ n) :
