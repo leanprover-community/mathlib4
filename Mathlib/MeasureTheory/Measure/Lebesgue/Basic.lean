@@ -577,8 +577,9 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
           (regionBetween_subset (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s)).symm
 #align volume_region_between_eq_lintegral volume_regionBetween_eq_lintegral
 
-lemma prod_univ_ae_of_ae {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : Measure α} {ν : Measure β} [SigmaFinite ν] {s : Set α} (s_ae_univ : μ sᶜ = 0) :
+lemma measure_prod_univ_eq_zero_of_measure_eq_zero {α β : Type*}
+    [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β} [SigmaFinite ν]
+    {s : Set α} (s_ae_univ : μ sᶜ = 0) :
     μ.prod ν (s ×ˢ univ)ᶜ = 0 := by
   convert show (μ.prod ν) (sᶜ ×ˢ (univ : Set β)) = 0 by
     simpa only [Measure.prod_prod, mul_eq_zero] using Or.inl s_ae_univ
@@ -593,7 +594,7 @@ lemma nullMeasurableSet_prod_univ {α β : Type*} [MeasurableSpace α] [Measurab
   rw [Measure.ae, Filter.eventuallyEq_iff_exists_mem] at *
   simp only [Filter.mem_mk, mem_setOf_eq] at *
   rcases s_aeeq_s₀ with ⟨t, ⟨t_mem,  s_eq_s₀⟩⟩
-  refine ⟨t ×ˢ univ, ⟨prod_univ_ae_of_ae t_mem, ?_⟩⟩
+  refine ⟨t ×ˢ univ, ⟨measure_prod_univ_eq_zero_of_measure_eq_zero t_mem, ?_⟩⟩
   intro p hp
   change (p ∈ s ×ˢ univ) = (p ∈ s₀ ×ˢ univ)
   simp [show p.fst ∈ s ↔ p.fst ∈ s₀ from Iff.of_eq (s_eq_s₀ hp.1)]
@@ -610,9 +611,7 @@ lemma nullMeasurableSet_regionBetween (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
-  dsimp only [Ioo, setOf_and]
-  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
-  refine NullMeasurableSet.inter ?_ ?_
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) (NullMeasurableSet.inter ?_ ?_)
   · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
   · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
 
@@ -622,9 +621,7 @@ lemma nullMeasurableSet_region_between_oc (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
-  dsimp only [Ioc, setOf_and]
-  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
-  refine NullMeasurableSet.inter ?_ ?_
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) (NullMeasurableSet.inter ?_ ?_)
   · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
@@ -638,9 +635,7 @@ lemma nullMeasurableSet_region_between_co (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by
-  dsimp only [Ioc, setOf_and]
-  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
-  refine NullMeasurableSet.inter ?_ ?_
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) (NullMeasurableSet.inter ?_ ?_)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
@@ -654,9 +649,7 @@ lemma nullMeasurableSet_region_between_cc (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by
-  dsimp only [Ioc, setOf_and]
-  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) ?_
-  refine NullMeasurableSet.inter ?_ ?_
+  refine NullMeasurableSet.inter (nullMeasurableSet_fst_mem s_mble) (NullMeasurableSet.inter ?_ ?_)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
