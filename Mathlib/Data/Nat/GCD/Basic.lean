@@ -90,18 +90,14 @@ theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
 #align nat.gcd_self_add_right Nat.gcd_self_add_right
 
 -- Lemmas where one argument consists of a subtraction of the other
-
-@[simp]
 theorem gcd_sub_self_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) m = gcd n m := by
   calc
     gcd (n - m) m = gcd (n - m + m) m  := by rw [← gcd_add_self_left (n - m) m]
                 _ = gcd n m := by rw [Nat.sub_add_cancel h]
 
-@[simp]
 theorem gcd_sub_self_right {m n : ℕ} (h : m ≤ n) : gcd m (n - m) = gcd m n := by
   rw [gcd_comm, gcd_sub_self_left h, gcd_comm]
 
-@[simp]
 theorem gcd_self_sub_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) n = gcd m n := by
   have := Nat.sub_add_cancel h
   rw [gcd_comm m n, ← this, gcd_add_self_left (n - m) m]
@@ -110,7 +106,6 @@ theorem gcd_self_sub_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) n = gcd m n :=
     rw [gcd_add_self_right, gcd_comm]
   convert this
 
-@[simp]
 theorem gcd_self_sub_right {m n : ℕ} (h : m ≤ n) : gcd n (n - m) = gcd n m := by
   rw [gcd_comm, gcd_self_sub_left h, gcd_comm]
 
