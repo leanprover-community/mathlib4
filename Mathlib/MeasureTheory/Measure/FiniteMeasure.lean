@@ -329,7 +329,7 @@ theorem _root_.BoundedContinuousFunction.NNReal.coe_ennreal_comp_measurable {Ω 
 
 theorem _root_.MeasureTheory.lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω)
     [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ≥0) : (∫⁻ ω, f ω ∂μ) < ∞ := by
-  apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal
+  apply IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
   use nndist f 0
   intro x
   have key := BoundedContinuousFunction.Nnreal.upper_bound f x
