@@ -50,7 +50,7 @@ open Filter Function Set Topology NNReal ENNReal
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
 /-- A function `f` is Lipschitz continuous with constant `K ≥ 0` if for all `x, y`
-we have `dist (f x) (f y) ≤ K * dist x y` -/
+we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist (f x) (f y) ≤ K * edist x y
 #align lipschitz_with LipschitzWith
@@ -66,7 +66,7 @@ alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitz
 #align lipschitz_with.of_dist_le_mul LipschitzWith.of_dist_le_mul
 
 /-- A function `f` is Lipschitz continuous with constant `K ≥ 0` on `s` if for all `x, y` in `s`
-we have `dist (f x) (f y) ≤ K * dist x y` -/
+we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzOnWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β)
     (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
@@ -185,13 +185,13 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥
     _ < d := ENNReal.mul_lt_of_lt_div' h
 #align lipschitz_with.edist_lt_of_edist_lt_div LipschitzWith.edist_lt_of_edist_lt_div
 
-/-- A Lipschitz function is uniformly continuous -/
+/-- A Lipschitz function is uniformly continuous. -/
 protected theorem uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
   EMetric.uniformContinuous_iff.2 fun ε εpos =>
     ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.edist_lt_of_edist_lt_div⟩
 #align lipschitz_with.uniform_continuous LipschitzWith.uniformContinuous
 
-/-- A Lipschitz function is continuous -/
+/-- A Lipschitz function is continuous. -/
 protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
   hf.uniformContinuous.continuous
 #align lipschitz_with.continuous LipschitzWith.continuous
