@@ -78,7 +78,7 @@ def ofConvexCone (S : ConvexCone 𝕜 E) (hS : S.Pointed) : Submodule 𝕜≥0 E
   smul_mem' := fun ⟨c, hc⟩ x hx => by
     simp_rw [SetLike.mem_coe]
     cases' eq_or_lt_of_le hc with hzero hpos
-    . unfold ConvexCone.Pointed at hS
+    · unfold ConvexCone.Pointed at hS
       convert hS
       simpa [← hzero] using smul_eq_zero_of_left rfl x
     · apply ConvexCone.smul_mem
