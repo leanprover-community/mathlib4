@@ -577,24 +577,12 @@ theorem volume_regionBetween_eq_lintegral [SigmaFinite μ] (hf : AEMeasurable f 
           (regionBetween_subset (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s)).symm
 #align volume_region_between_eq_lintegral volume_regionBetween_eq_lintegral
 
--- Missing? Appropriate place?
-lemma _root_.Set.compl_prod {α β : Type*} (s : Set α) (t : Set β) :
-    (s ×ˢ t)ᶜ = (sᶜ ×ˢ univ) ∪ (univ ×ˢ tᶜ) := by
-  ext p
-  simp only [mem_compl_iff, mem_prod, not_and, mem_union, mem_univ, and_true, true_and]
-  constructor <;> intro h
-  · by_cases fst_in_s : p.fst ∈ s
-    · exact Or.inr (h fst_in_s)
-    · exact Or.inl fst_in_s
-  · intro fst_in_s
-    simpa only [fst_in_s, not_true, false_or] using h
-
 -- Place where?
 lemma measure_prod_compl_eq_zero {α β : Type*}
     [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β} [SigmaFinite ν]
     {s : Set α} (s_ae_univ : μ sᶜ = 0) {t : Set β} (t_ae_univ : ν tᶜ = 0) :
     μ.prod ν (s ×ˢ t)ᶜ = 0 := by
-  rw [Set.compl_prod]
+  rw [Set.compl_prod_eq_union]
   apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
   simp [s_ae_univ, t_ae_univ]
 
