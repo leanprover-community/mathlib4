@@ -40,11 +40,11 @@ lemma Nil_iff_eq_nil {v : V} : ∀ p : G.Walk v v, p.Nil ↔ p = SimpleGraph.Wal
 
 /-- A *Hamiltonian cycle* is a cycle `p` that visits every vertex once.-/
 structure SimpleGraph.Walk.IsHamiltonianCycle (p : G.Walk v v) extends p.IsCycle : Prop :=
-(path_hamiltonian : (p.tail (by
-  intro np
-  rw [Nil_iff_eq_nil p] at np
-  contradiction
-)).IsHamiltonian)
+  path_hamiltonian : (p.tail (by
+    intro np
+    rw [Nil_iff_eq_nil p] at np
+    contradiction
+  )).IsHamiltonian
 
 lemma SimpleGraph.Walk.support_of_tail_eq_tail_of_support (p : G.Walk v v) (hnil : ¬p.Nil) : (p.tail hnil).support = p.support.tail := by
   rw [←SimpleGraph.Walk.cons_support_tail p hnil]
