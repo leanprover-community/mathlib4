@@ -50,9 +50,8 @@ set_option autoImplicit false
 variable
   -- Let `M` be a finite-dimensional topological manifold without boundary over the pair `(E, H)`.
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners ℝ E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [I.Boundaryless]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [I.Boundaryless]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
-variable {I}
 
 variable (I) in
 /-- A measure zero subset of an n-dimensional manifold $M$ is a subset $S ⊆ M$ such that
@@ -76,7 +75,7 @@ protected lemma empty : MeasureZero I (∅: Set M) := by
   simp only [comp_apply, inter_empty, image_empty, OuterMeasure.empty']
 
 /-- A countable indexed union of measure zero sets has measure zero. -/
-protected lemma iUnion { ι : Type* } [Encodable ι] { s : ι → Set M }
+protected lemma iUnion {ι : Type*} [Encodable ι] {s : ι → Set M}
   (hs : ∀ n : ι, MeasureZero I (s n)) : MeasureZero I (⋃ (n : ι),  s n) := by
   intro μ hμ e he
   have : I ∘ e '' (e.source ∩ (⋃ (n : ι),  s n)) = ⋃ (n : ι), I ∘ e '' (e.source ∩ s n) := by
@@ -89,8 +88,8 @@ protected lemma iUnion { ι : Type* } [Encodable ι] { s : ι → Set M }
   exact he
 
 /-- A finite union of measure zero sets has measure zero. -/
-protected lemma union { s t : Set M } (hs : MeasureZero I s) (ht : MeasureZero I t)
-    : MeasureZero I (s ∪ t) := by
+protected lemma union {s t : Set M} (hs : MeasureZero I s) (ht : MeasureZero I t):
+    MeasureZero I (s ∪ t) := by
   let u : Bool → Set M := fun b ↦ cond b s t
   have : ∀ i : Bool, MeasureZero I (u i) := by
     intro i
@@ -102,9 +101,9 @@ protected lemma union { s t : Set M } (hs : MeasureZero I s) (ht : MeasureZero I
 
 /-- The “almost everywhere” filter of co-measure zero sets in a manifold. -/
 def ModelWithCorners.ae
-    { E : Type* } [NormedAddCommGroup E] [NormedSpace ℝ E]
-    { F : Type*} [TopologicalSpace F] (I : ModelWithCorners ℝ E F)
-    { M : Type* } [TopologicalSpace M] [ChartedSpace F M] [MeasurableSpace E] : Filter M where
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {F : Type*} [TopologicalSpace F] (I : ModelWithCorners ℝ E F)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace F M] [MeasurableSpace E] : Filter M where
   sets := { s | MeasureZero I sᶜ }
   univ_sets := by
     rw [@mem_setOf, compl_univ]
@@ -116,8 +115,8 @@ def ModelWithCorners.ae
   sets_of_superset hs hst := hs.mono (Iff.mpr compl_subset_compl hst)
 
 /-- An open set of measure zero is empty. -/
-protected lemma open_implies_empty {s : Set M} (h₁s : IsOpen s) (h₂s : MeasureZero I s)
-    : s = ∅ := by
+protected lemma open_implies_empty {s : Set M} (h₁s : IsOpen s) (h₂s : MeasureZero I s):
+    s = ∅ := by
   suffices ∀ e ∈ atlas H M, (e.source ∩ s) = ∅ by
     by_contra h
     obtain ⟨x, hx⟩ : Set.Nonempty s := Iff.mp nmem_singleton_empty h
