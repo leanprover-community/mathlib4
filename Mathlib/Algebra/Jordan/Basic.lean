@@ -122,6 +122,10 @@ instance (priority := 100) CommSemigroup.isCommJordan [CommSemigroup A] : IsComm
   lmul_comm_rmul_rmul _ _ := mul_assoc _ _ _
 #align comm_semigroup.is_comm_jordan CommSemigroup.isCommJordan
 
+-- see Note [lower instance priority]
+instance (priority := 100) IsCommJordan.isCommMul [Mul A] [IsCommJordan A] : CommMul A where
+  mul_comm := IsCommJordan.mul_comm
+
 local notation "L" => AddMonoid.End.mulLeft
 
 local notation "R" => AddMonoid.End.mulRight
