@@ -743,7 +743,7 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option maxHeartbeats 450000 in
+set_option maxHeartbeats 300000 in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, then
 `g ∘ f` admits the power series `q.comp p` at `x`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
@@ -972,7 +972,6 @@ theorem sigma_pi_composition_eq_iff
         ofFn fun i : Fin (Composition.length a') => (b' i).blocks.sum at this
     simpa [Composition.blocks_sum, Composition.ofFn_blocksFun] using this
   induction h
-  simp only [true_and_iff, eq_self_iff_true, heq_iff_eq]
   ext1
   · rfl
   · simp only [heq_eq_eq, ofFn_inj] at H ⊢
@@ -1170,8 +1169,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       rw [get_of_eq (splitWrtComposition_join _ _ _)]
       · simp only [get_ofFn]
         rfl
-      · simp only [map_ofFn]
-        congr
+      · congr
       · simp only [map_ofFn]
         rfl
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi

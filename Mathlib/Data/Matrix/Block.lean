@@ -758,7 +758,7 @@ theorem blockDiagonal'_mul [NonUnitalNonAssocSemiring α] [∀ i, Fintype (n' i)
   · simp only [if_pos, dif_pos] -- porting note: added
     split_ifs <;> simp
   · intro j' hj'
-    exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, MulZeroClass.zero_mul]
+    exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, zero_mul]
 #align matrix.block_diagonal'_mul Matrix.blockDiagonal'_mul
 
 section

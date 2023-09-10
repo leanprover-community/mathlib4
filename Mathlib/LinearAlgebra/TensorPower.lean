@@ -169,8 +169,7 @@ variable {R}
 theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a := by
   rw [gMul_def, gOne_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
-  · dsimp only at a
-    rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
+  · rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
       tprod_mul_tprod, cast_tprod]
     congr 2 with i
     rw [Fin.elim0'_append]
@@ -182,8 +181,7 @@ theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a
 theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a := by
   rw [gMul_def, gOne_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
-  · dsimp only at a
-    rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
+  · rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
       tprod_mul_tprod R a _, cast_tprod]
     congr 2 with i
     rw [Fin.append_elim0']
@@ -256,7 +254,6 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
 
-set_option maxHeartbeats 250000 in
 instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
   { TensorPower.gmonoid with
     mul_zero := fun a => LinearMap.map_zero _

@@ -139,7 +139,7 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
   · -- Porting note: the next `simp only` doesn't do anything, so added a workaround below.
-    simp only [WithTop.iInf_empty, lintegral_const]
+    -- simp only [WithTop.iInf_empty, lintegral_const]
     conv =>
       lhs
       congr
@@ -858,9 +858,7 @@ theorem measurable_condCdf (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun
     congr with q
     rw [condCdf_eq_condCdfRat]
   rw [this]
-  exact
-    measurable_ciInf (fun q => measurable_condCdfRat ρ q) fun a =>
-      bddBelow_range_condCdfRat_gt ρ a _
+  exact measurable_iInf (fun q => measurable_condCdfRat ρ q)
 #align probability_theory.measurable_cond_cdf ProbabilityTheory.measurable_condCdf
 
 /-- Auxiliary lemma for `set_lintegral_cond_cdf`. -/
@@ -901,13 +899,12 @@ theorem set_lintegral_condCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x
       (measurable_condCdf ρ q).ennreal_ofReal]
   rotate_left
   · intro b
-    simp_rw [h_coe]
     rw [set_lintegral_condCdf_rat ρ _ hs]
     exact measure_ne_top ρ _
   · refine' Monotone.directed_ge fun i j hij a => ENNReal.ofReal_le_ofReal ((condCdf ρ a).mono _)
     rw [h_coe, h_coe]
     exact_mod_cast hij
-  simp_rw [h_coe, set_lintegral_condCdf_rat ρ _ hs]
+  simp_rw [set_lintegral_condCdf_rat ρ _ hs]
   rw [← measure_iInter_eq_iInf]
   · rw [← prod_iInter]
     congr with y

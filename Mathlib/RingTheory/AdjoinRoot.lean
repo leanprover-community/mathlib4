@@ -42,7 +42,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 * `lift_hom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
   homomorphism from R[X]/(f) to S extending `algebraMap R S` and sending `X` to `x`
 
-* `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ (f.map (algebraMap F E)).roots}` a
+* `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ f.aroots E}` a
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
 
 -/
@@ -273,7 +273,7 @@ def lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S 
   apply Ideal.Quotient.lift _ (eval₂RingHom i x)
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, MulZeroClass.zero_mul]
+  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, zero_mul]
 #align adjoin_root.lift AdjoinRoot.lift
 
 variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0)
@@ -544,7 +544,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine' (minpoly.unique K _ f'_monic _ _).symm
-  · rw [AlgHom.map_mul, aeval_eq, mk_self, MulZeroClass.zero_mul]
+  · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
@@ -552,8 +552,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
       rfl
     · simp only [RingHom.comp_apply, mk_X, lift_root]
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
-    Nat.cast_withBot, Nat.cast_withBot, -- porting note: added
-    WithBot.coe_le_coe, natDegree_mul hf, natDegree_C, add_zero]
+    Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
   apply natDegree_le_of_dvd
   · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
     exact mk_eq_zero.1 this
@@ -698,12 +697,11 @@ variable (pb : PowerBasis F K)
 /-- If `L` is a field extension of `F` and `f` is a polynomial over `F` then the set
 of maps from `F[x]/(f)` into `L` is in bijection with the set of roots of `f` in `L`. -/
 def equiv (f : F[X]) (hf : f ≠ 0) :
-    (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ (f.map (algebraMap F L)).roots } :=
+    (AdjoinRoot f →ₐ[F] L) ≃ { x // x ∈ f.aroots L } :=
   (powerBasis hf).liftEquiv'.trans
     ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [powerBasis_gen, minpoly_root hf, Polynomial.map_mul, roots_mul, Polynomial.map_C,
-        roots_C, add_zero, Equiv.refl_apply]
-      rw [← Polynomial.map_mul]; exact map_monic_ne_zero (monic_mul_leadingCoeff_inv hf))
+      rw [powerBasis_gen, minpoly_root hf, aroots_mul, aroots_C, add_zero, Equiv.refl_apply]
+      exact (monic_mul_leadingCoeff_inv hf).ne_zero)
 #align adjoin_root.equiv AdjoinRoot.equiv
 
 end Field

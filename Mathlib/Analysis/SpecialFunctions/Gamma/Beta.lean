@@ -190,7 +190,6 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     ring
   have h_int := ((betaIntegral_convergent hu hv').const_mul u).sub
     ((betaIntegral_convergent hu' hv).const_mul v)
-  dsimp only at h_int
   rw [add_sub_cancel, add_sub_cancel] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
@@ -433,7 +432,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
     cases k
     · rw [Int.ofNat_eq_coe, Int.cast_ofNat, Complex.Gamma_neg_nat_eq_zero, zero_mul]
     · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel',
-        Complex.Gamma_neg_nat_eq_zero, MulZeroClass.mul_zero]
+        Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine' tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) _
   have : ↑π / sin (↑π * z) = 1 * (π / sin (π * z)) := by rw [one_mul]
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn =>
@@ -452,7 +451,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
   by_cases h_im : s.im = 0
   · have : s = ↑s.re := by
       conv_lhs => rw [← Complex.re_add_im s]
-      rw [h_im, ofReal_zero, MulZeroClass.zero_mul, add_zero]
+      rw [h_im, ofReal_zero, zero_mul, add_zero]
     rw [this, Gamma_ofReal, ofReal_ne_zero]
     refine' Real.Gamma_ne_zero fun n => _
     specialize hs n
@@ -532,7 +531,7 @@ theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
     (Gamma s)⁻¹ = s * (Gamma (s + 1))⁻¹ := by
   rcases ne_or_eq s 0 with (h | rfl)
   · rw [Gamma_add_one s h, mul_inv, mul_inv_cancel_left₀ h]
-  · rw [zero_add, Gamma_zero, inv_zero, MulZeroClass.zero_mul]
+  · rw [zero_add, Gamma_zero, inv_zero, zero_mul]
 #align complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one Complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one
 
 /-- The reciprocal of the Gamma function is differentiable everywhere (including the points where

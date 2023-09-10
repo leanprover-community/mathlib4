@@ -117,8 +117,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rw [sUnion_image, iUnion₂_eq_univ_iff]
     exact fun x => ⟨∅, ⟨finite_empty, empty_subset _⟩, sInter_empty.substr <| mem_univ x⟩
   · rintro _ ⟨t, ⟨hft, htb⟩, rfl⟩
-    apply isOpen_sInter
-    exacts [hft, fun s hs => GenerateOpen.basic _ <| htb hs]
+    exact hft.isOpen_sInter fun s hs ↦ GenerateOpen.basic _ $ htb hs
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
@@ -350,7 +349,7 @@ theorem SeparableSpace.of_denseRange {ι : Sort _} [Countable ι] (u : ι → α
   ⟨⟨range u, countable_range u, hu⟩⟩
 #align topological_space.separable_space_of_dense_range TopologicalSpace.SeparableSpace.of_denseRange
 
-alias SeparableSpace.of_denseRange ← _root_.DenseRange.separableSpace'
+alias _root_.DenseRange.separableSpace' := SeparableSpace.of_denseRange
 
 /-- If `α` is a separable space and `f : α → β` is a continuous map with dense range, then `β` is
 a separable space as well. E.g., the completion of a separable uniform space is separable. -/
