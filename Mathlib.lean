@@ -1437,6 +1437,7 @@ import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.Pointwise
 import Mathlib.Data.Finsupp.Pwo
