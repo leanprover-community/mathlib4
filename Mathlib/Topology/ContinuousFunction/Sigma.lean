@@ -38,7 +38,7 @@ noncomputable section
 open scoped Topology
 open Filter
 
-variable {X ι : Type _} {Y : ι → Type _} [TopologicalSpace X] [∀ i, TopologicalSpace (Y i)]
+variable {X ι : Type*} {Y : ι → Type*} [TopologicalSpace X] [∀ i, TopologicalSpace (Y i)]
 
 namespace ContinuousMap
 

@@ -107,6 +107,30 @@ noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 #align category_theory.limits.types.is_terminal_punit CategoryTheory.Limits.Types.isTerminalPunit
 
+-- porting note: the following three instances have been added to ease
+-- the automation in a definition in `AlgebraicTopology.SimplicialSet`
+noncomputable instance : Inhabited (⊤_ (Type u)) :=
+  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
+
+instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
+  congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
+    (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
+
+noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
+
+/-- A type is terminal if and only if it contains exactly one element. -/
+noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
+  equivOfSubsingletonOfSubsingleton
+    (fun h => ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
+    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.equivOfUnique _ _)))
+
+/-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
+noncomputable def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
+  calc
+    IsTerminal X ≃ Unique X := isTerminalEquivUnique _
+    _ ≃ (X ≃ PUnit.{u + 1}) := uniqueEquivEquivUnique _ _
+    _ ≃ (X ≅ PUnit) := equivEquivIso
+
 /-- The category of types has `PEmpty` as an initial object. -/
 def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
   -- porting note: tidy was able to fill the structure automatically
@@ -473,8 +497,8 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
   refine' ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, _⟩
   intro x' hx'
-  suffices : (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1
-  rw [← this]
+  suffices (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1 by
+    rw [← this]
   apply Fork.IsLimit.hom_ext t
   funext ⟨⟩
   apply hx'.trans (congr_fun (Fork.IsLimit.lift' t _ hy').2 ⟨⟩).symm

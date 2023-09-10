@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Std.Tactic.Simpa
 import Std.Tactic.Lint.Basic
@@ -19,6 +18,8 @@ Those in the `Linarith` namespace should stay here.
 
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
+
+set_option autoImplicit true
 
 namespace Linarith
 

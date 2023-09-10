@@ -74,7 +74,7 @@ theorem hasKernels_moduleCat : HasKernels (ModuleCat R) :=
   ⟨fun f => HasLimit.mk ⟨_, kernelIsLimit f⟩⟩
 #align Module.has_kernels_Module ModuleCat.hasKernels_moduleCat
 
-/-- The category or R-modules has cokernels, given by the projection onto the quotient. -/
+/-- The category of R-modules has cokernels, given by the projection onto the quotient. -/
 theorem hasCokernels_moduleCat : HasCokernels (ModuleCat R) :=
   ⟨fun f => HasColimit.mk ⟨_, cokernelIsColimit f⟩⟩
 #align Module.has_cokernels_Module ModuleCat.hasCokernels_moduleCat

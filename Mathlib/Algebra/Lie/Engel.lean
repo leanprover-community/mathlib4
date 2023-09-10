@@ -23,7 +23,7 @@ Engel's theorem is true for any coefficients (i.e., it is really a theorem about
 we work with coefficients in any commutative ring `R` throughout.
 
 On the other hand, Engel's theorem is not true for infinite-dimensional Lie algebras and so a
-finite-dimensionality assumption is required. We prove the theorem subject to the the assumption
+finite-dimensionality assumption is required. We prove the theorem subject to the assumption
 that the Lie algebra is Noetherian as an `R`-module, though actually we only need the slightly
 weaker property that the relation `>` is well-founded on the complete lattice of Lie subalgebras.
 
@@ -286,10 +286,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
 /-- Engel's theorem. -/
 theorem LieModule.isNilpotent_iff_forall :
     LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x :=
-  ⟨by
-    intro h
-    obtain ⟨k, hk⟩ := nilpotent_endo_of_nilpotent_module R L M
-    exact fun x => ⟨k, hk x⟩, fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
+  ⟨fun _ ↦ isNilpotent_toEndomorphism_of_isNilpotent R L M,
+   fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
 #align lie_module.is_nilpotent_iff_forall LieModule.isNilpotent_iff_forall
 
 /-- Engel's theorem. -/

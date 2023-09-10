@@ -17,7 +17,7 @@ where `x` is an integral element over `R`.
 -/
 
 
-variable {K S : Type _} [Field K] [CommRing S] [Algebra K S]
+variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
@@ -89,9 +89,9 @@ open Polynomial
 
 open Polynomial
 
-variable {R : Type _} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
+variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
 
-variable {A : Type _} [CommRing A] [Algebra R A] [Algebra S A]
+variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
 
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
@@ -147,7 +147,7 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
   refine' repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
-/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be and element
+/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element
 with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
 all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case
 if `R` is a GCD domain and `S` is its fraction ring. -/

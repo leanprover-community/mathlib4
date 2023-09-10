@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.PathConnected
 
 #align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
@@ -55,7 +56,7 @@ open AddCommGroup Set Function AddSubgroup TopologicalSpace
 
 open Topology
 
-variable {𝕜 B : Type _}
+variable {𝕜 B : Type*}
 
 section Continuity
 
@@ -203,7 +204,7 @@ protected theorem continuous_mk' :
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
-instance : CircularOrder (AddCircle p) :=
+instance instCircularOrderAddCircle : CircularOrder (AddCircle p) :=
   QuotientAddGroup.circularOrder
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
@@ -458,7 +459,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
         refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
-        · simp_rw [Subtype.ext_iff, Subtype.coe_mk] at h
+        · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_ofNat m₁,
             ← Int.cast_ofNat m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
           obtain ⟨m, hm⟩ := h
@@ -504,6 +505,9 @@ end FiniteOrderPoints
 end LinearOrderedField
 
 variable (p : ℝ)
+
+instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
+  (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by

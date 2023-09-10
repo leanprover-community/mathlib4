@@ -54,13 +54,14 @@ notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 Vector bundle
 -/
 
+set_option autoImplicit true
 
 noncomputable section
 
 open Bundle Set Classical
 open scoped Topology
 
-variable (R : Type _) {B : Type _} (F : Type _) (E : B → Type _)
+variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
 
 section TopologicalVectorSpace
 
@@ -396,7 +397,7 @@ variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module
   [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
-/-- The space `Bundle.TotalSpace F E` (for `E : B → Type _` such that each `E x` is a topological
+/-- The space `Bundle.TotalSpace F E` (for `E : B → Type*` such that each `E x` is a topological
 vector space) has a topological vector space structure with fiber `F` (denoted with
 `VectorBundle R F E`) if around every point there is a fiber bundle trivialization which is linear
 in the fibers. -/
@@ -548,7 +549,7 @@ variable (B F)
 /-- Analogous construction of `FiberBundleCore` for vector bundles. This
 construction gives a way to construct vector bundles from a structure registering how
 trivialization changes act on fibers. -/
-structure VectorBundleCore (ι : Type _) where
+structure VectorBundleCore (ι : Type*) where
   baseSet : ι → Set B
   isOpen_baseSet : ∀ i, IsOpen (baseSet i)
   indexAt : B → ι
@@ -562,7 +563,7 @@ structure VectorBundleCore (ι : Type _) where
 
 /-- The trivial vector bundle core, in which all the changes of coordinates are the
 identity. -/
-def trivialVectorBundleCore (ι : Type _) [Inhabited ι] : VectorBundleCore R B F ι where
+def trivialVectorBundleCore (ι : Type*) [Inhabited ι] : VectorBundleCore R B F ι where
   baseSet _ := univ
   isOpen_baseSet _ := isOpen_univ
   indexAt := default
@@ -573,12 +574,12 @@ def trivialVectorBundleCore (ι : Type _) [Inhabited ι] : VectorBundleCore R B 
   continuousOn_coordChange _ _ := continuousOn_const
 #align trivial_vector_bundle_core trivialVectorBundleCore
 
-instance (ι : Type _) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
+instance (ι : Type*) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
   ⟨trivialVectorBundleCore R B F ι⟩
 
 namespace VectorBundleCore
 
-variable {R B F} {ι : Type _}
+variable {R B F} {ι : Type*}
 variable (Z : VectorBundleCore R B F ι)
 
 /-- Natural identification to a `FiberBundleCore`. -/
@@ -587,7 +588,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
     coordChange := fun i j b => Z.coordChange i j b
     continuousOn_coordChange := fun i j =>
-      isBoundedBilinearMapApply.continuous.comp_continuousOn
+      isBoundedBilinearMap_apply.continuous.comp_continuousOn
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 #align vector_bundle_core.to_fiber_bundle_core VectorBundleCore.toFiberBundleCore
 
@@ -908,7 +909,7 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
     continuous_trivChange := fun e he e' he' ↦ by
       have : ContinuousOn (fun x : B × F ↦ a.coordChange he' he x.1 x.2)
           ((e'.baseSet ∩ e.baseSet) ×ˢ univ) :=
-        isBoundedBilinearMapApply.continuous.comp_continuousOn
+        isBoundedBilinearMap_apply.continuous.comp_continuousOn
           ((a.continuousOn_coordChange he' he).prod_map continuousOn_id)
       rw [e.target_inter_preimage_symm_source_eq e', inter_comm]
       refine' (continuousOn_fst.prod this).congr _
@@ -991,15 +992,15 @@ end VectorPrebundle
 
 namespace ContinuousLinearMap
 
-variable {𝕜₁ 𝕜₂ : Type _} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
+variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
 
 variable {σ : 𝕜₁ →+* 𝕜₂}
 
-variable {B' : Type _} [TopologicalSpace B']
+variable {B' : Type*} [TopologicalSpace B']
 
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]
 
-variable {F' : Type _} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type _}
+variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
   [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
 
 variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]
@@ -1020,9 +1021,9 @@ definition, instead of `Trivialization.continuousLinearEquivAt`, so that
 `ContinuousLinearMap.inCoordinates_eq`).
 
 This is the (second component of the) underlying function of a trivialization of the hom-bundle
-(see `hom_trivialization_at_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
+(see `hom_trivializationAt_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
 defined even when `x` and `y` live in different base sets.
-Therefore, it is is also convenient when working with the hom-bundle between pulled back bundles.
+Therefore, it is also convenient when working with the hom-bundle between pulled back bundles.
 -/
 def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL[σ] F' :=
   ((trivializationAt F' E' y₀).continuousLinearMapAt 𝕜₂ y).comp <|

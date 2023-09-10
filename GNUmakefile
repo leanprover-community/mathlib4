@@ -13,4 +13,4 @@ test/%.run: build
 	lake env lean test/$*
 
 lint: build
-	./build/bin/runLinter
+	env LEAN_ABORT_ON_PANIC=1 lake exe runLinter
