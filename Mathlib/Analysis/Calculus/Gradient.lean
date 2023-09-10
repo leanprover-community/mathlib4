@@ -50,10 +50,9 @@ local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 -/
 -- Translate `g` in `Hilbert Space E` to its dual ℝ-ContinuousLinearMap : `⟨ g , ⬝ ⟩`
 local notation "∇*" gradient  => (toDualMap ℝ _) gradient
-/-
-  Translate the ℝ-ContinuousLinearMap on `Hilbert Space E` to
-  its dual element on E by Frechet-Riesz Represent Theorem
--/
+
+/-- Translate the ℝ-ContinuousLinearMap on `Hilbert Space E` to
+  its dual element on E by Frechet-Riesz Represent Theorem  -/
 def grad : (E →L[ℝ] ℝ) → E
   | gradient => ((toDual ℝ E).symm gradient)
 
@@ -61,16 +60,19 @@ theorem grad_equiv :
   ∀ x y :E, inner (grad (f' x)) y = f' x y := by
     intro x y; apply toDual_symm_apply
 
-/-
-  The gradient of a function `f` at a point `x` is defined to be
-  the dual of `fderiv` of `f` at `x`
--/
+/-- The gradient of a function `f` at a point `x` is defined to be
+   the dual of `fderiv` of `f` at `x` -/
 def gradn (f : E → ℝ) (x : E) : E := grad (fderiv ℝ f x)
 
+
+/-- The gradient of a function `f` at a point `x` is defined to be
+   the dual of `fderiv` of `f` at `x` in one dimension -/
 def grad_one (f : ℝ → ℝ) (x : ℝ) : ℝ := (toDual ℝ ℝ).symm (fderiv ℝ f x)
 
+/-- f is from E to ℝ and have a gradient at x and it is grad-/
 def HasGradnAt (f : E → ℝ) (grad : E) (x : E) := HasFDerivAt f (∇* grad) x
 
+/-- f is from ℝ to ℝ and have a gradient at x and it is grad-/
 def HasGradoneAt (f : ℝ → ℝ) (grad : ℝ) (x : ℝ) := HasFDerivAt f (∇* grad) x
 
 /- The dual of the dual of an element in `(EuclideanSpace ℝ n) →L[ℝ] ℝ` is itself-/
