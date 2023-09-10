@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
 
