@@ -1,6 +1,5 @@
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AidedBy
-import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
