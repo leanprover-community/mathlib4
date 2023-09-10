@@ -81,7 +81,7 @@ theorem measurableSet_lineDifferentiableAt_uncurry (hf : Continuous f) :
     measurableSet_of_differentiableAt_with_param 𝕜 this
   exact measurable_prod_mk_right M_meas
 
-  theorem measurable_lineDeriv_uncurry [MeasurableSpace F] [BorelSpace F]
+theorem measurable_lineDeriv_uncurry [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) : Measurable (fun (p : E × E) ↦ lineDeriv 𝕜 f p.1 p.2) := by
   borelize 𝕜
   let g : (E × E) → 𝕜 → F := fun p t ↦ f (p.1 + t • p.2)
