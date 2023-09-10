@@ -91,6 +91,8 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex.old (p : G.Walk v v) (
     rw [this]
     exact Nat.one_pos
 
+lemma tail_of_support_eq_support_of_tail : sorry := sorry
+
 lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
     (w : V) : w ∈ p.support := by
     have : w ∈ p.support.tail
