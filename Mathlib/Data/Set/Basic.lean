@@ -5,6 +5,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.ByContra
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -2451,7 +2453,7 @@ instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsi
 
 /-- A set `s` is `Set.Nontrivial` if it has at least two distinct elements. -/
 protected def Nontrivial (s : Set α) : Prop :=
-  ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x ≠ y
+  ∃ x ∈ s, ∃ y ∈ s, x ≠ y
 #align set.nontrivial Set.Nontrivial
 
 theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.Nontrivial :=
@@ -2463,20 +2465,20 @@ theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x �
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
 protected noncomputable def Nontrivial.choose (hs : s.Nontrivial) : α × α :=
-  (Exists.choose hs, hs.choose_spec.choose_spec.choose)
+  (Exists.choose hs, hs.choose_spec.right.choose)
 #align set.nontrivial.some Set.Nontrivial.choose
 
 protected theorem Nontrivial.choose_fst_mem (hs : s.Nontrivial) : hs.choose.fst ∈ s :=
-  hs.choose_spec.choose
+  hs.choose_spec.left
 #align set.nontrivial.some_fst_mem Set.Nontrivial.choose_fst_mem
 
 protected theorem Nontrivial.choose_snd_mem (hs : s.Nontrivial) : hs.choose.snd ∈ s :=
-  hs.choose_spec.choose_spec.choose_spec.choose
+  hs.choose_spec.right.choose_spec.left
 #align set.nontrivial.some_snd_mem Set.Nontrivial.choose_snd_mem
 
 protected theorem Nontrivial.choose_fst_ne_choose_snd (hs : s.Nontrivial) :
     hs.choose.fst ≠ hs.choose.snd :=
-  hs.choose_spec.choose_spec.choose_spec.choose_spec
+  hs.choose_spec.right.choose_spec.right
 #align set.nontrivial.some_fst_ne_some_snd Set.Nontrivial.choose_fst_ne_choose_snd
 
 theorem Nontrivial.mono (hs : s.Nontrivial) (hst : s ⊆ t) : t.Nontrivial :=
@@ -2625,7 +2627,7 @@ theorem nontrivial_mono {α : Type*} {s t : Set α} (hst : s ⊆ t) (hs : Nontri
 
 @[simp]
 theorem not_subsingleton_iff : ¬s.Subsingleton ↔ s.Nontrivial := by
-  simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall]
+  simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall, exists_prop]
 #align set.not_subsingleton_iff Set.not_subsingleton_iff
 
 @[simp]
@@ -2831,12 +2833,24 @@ theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
   | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff_val.2 ∘ Subtype.ext_iff_val.1
 #align set.inclusion_injective Set.inclusion_injective
 
+@[simp]
+theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y ↔ x = y :=
+  (inclusion_injective h).eq_iff
+
 theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
     (h_surj : Function.Surjective (inclusion h)) : s = t := by
   refine' Set.Subset.antisymm h (fun x hx => _)
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 #align set.eq_of_inclusion_surjective Set.eq_of_inclusion_surjective
+
+@[simp]
+theorem inclusion_le_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+    inclusion h x ≤ inclusion h y ↔ x ≤ y := Iff.rfl
+
+@[simp]
+theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+    inclusion h x < inclusion h y ↔ x < y := Iff.rfl
 
 end Inclusion
 
