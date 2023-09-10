@@ -92,43 +92,27 @@ theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
 -- Lemmas where one argument consists of a subtraction of the other
 
 @[simp]
-theorem gcd_sub_self_left (m n : ℕ) (h : m ≤ n) : gcd (n - m) m = gcd n m := by
+theorem gcd_sub_self_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) m = gcd n m := by
   calc
     gcd (n - m) m = gcd (n - m + m) m  := by rw [← gcd_add_self_left (n - m) m]
                 _ = gcd n m := by rw [Nat.sub_add_cancel h]
 
 @[simp]
-theorem gcd_self_sub_left (m n : ℕ) (h : m ≤ n) : gcd (n - m) m = gcd m n := by
-  rw [gcd_sub_self_left _ _ h, gcd_comm]
+theorem gcd_sub_self_right {m n : ℕ} (h : m ≤ n) : gcd m (n - m) = gcd m n := by
+  rw [gcd_comm, gcd_sub_self_left h, gcd_comm]
 
 @[simp]
-theorem gcd_sub_self_right (m n : ℕ) (h : m ≤ n) : gcd m (n - m) = gcd n m := by
-  rw [gcd_comm, gcd_sub_self_left _ _ h]
-
-@[simp]
-theorem gcd_self_sub_right (m n : ℕ) (h : m ≤ n) : gcd m (n - m) = gcd m n := by
-  rw [gcd_comm, gcd_self_sub_left _ _ h]
-
-@[simp]
-theorem gcd_sub_self_left' (m n : ℕ) (h : m ≤ n) : gcd (n - m) n = gcd n m := by
+theorem gcd_self_sub_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) n = gcd m n := by
   have := Nat.sub_add_cancel h
-  rw [← this, gcd_add_self_left (n - m) m]
+  rw [gcd_comm m n, ← this, gcd_add_self_left (n - m) m]
   have : gcd (n - m) n = gcd (n - m) m := by
     nth_rw 2 [← Nat.add_sub_cancel' h]
     rw [gcd_add_self_right, gcd_comm]
   convert this
 
 @[simp]
-theorem gcd_self_sub_left' (m n : ℕ) (h : m ≤ n) : gcd (n - m) n = gcd m n := by
-  rw [gcd_sub_self_left' _ _ h, gcd_comm]
-
-@[simp]
-theorem gcd_sub_self_right' (m n : ℕ) (h : m ≤ n) : gcd n (n - m) = gcd n m := by
-  rw [gcd_comm, gcd_sub_self_left' _ _ h]
-
-@[simp]
-theorem gcd_self_sub_right' (m n : ℕ) (h : m ≤ n) : gcd n (n - m) = gcd m n := by
-  rw [gcd_comm, gcd_self_sub_left' _ _ h]
+theorem gcd_self_sub_right {m n : ℕ} (h : m ≤ n) : gcd n (n - m) = gcd n m := by
+  rw [gcd_comm, gcd_self_sub_left h, gcd_comm]
 
 /-! ### `lcm` -/
 
@@ -228,23 +212,21 @@ theorem coprime_mul_left_add_left (m n k : ℕ) : coprime (n * k + m) n ↔ copr
   rw [coprime, coprime, gcd_mul_left_add_left]
 #align nat.coprime_mul_left_add_left Nat.coprime_mul_left_add_left
 
+@[simp]
+theorem coprime_sub_self_left {m n : ℕ} (h : m ≤ n) : coprime (n - m) m ↔ coprime n m := by
+  rw [coprime, coprime, gcd_sub_self_left h]
 
 @[simp]
-theorem coprime_self_sub_left (m n : ℕ) (h : m ≤ n) : coprime (n - m) m ↔ coprime m n := by
-  rw [coprime, coprime, gcd_self_sub_left _ _ h]
+theorem coprime_sub_self_right {m n : ℕ} (h : m ≤ n) : coprime m (n - m) ↔ coprime m n:= by
+  rw [coprime, coprime, gcd_sub_self_right h]
 
 @[simp]
-theorem coprime_self_sub_right (m n : ℕ) (h : m ≤ n) : coprime m (n - m) ↔ coprime m n := by
-  rw [coprime, coprime, gcd_self_sub_right _ _ h]
-
-
-@[simp]
-theorem coprime_self_sub_left' (m n : ℕ) (h : m ≤ n) : coprime (n - m) n ↔ coprime m n := by
-  rw [coprime, coprime, gcd_self_sub_left' _ _ h]
+theorem coprime_self_sub_left {m n : ℕ} (h : m ≤ n) : coprime (n - m) n ↔ coprime m n := by
+  rw [coprime, coprime, gcd_self_sub_left h]
 
 @[simp]
-theorem coprime_self_sub_right' (m n : ℕ) (h : m ≤ n) : coprime n (n - m) ↔ coprime m n := by
-  rw [coprime, coprime, gcd_self_sub_right' _ _ h]
+theorem coprime_self_sub_right {m n : ℕ} (h : m ≤ n) : coprime n (n - m) ↔ coprime n m := by
+  rw [coprime, coprime, gcd_self_sub_right h]
 
 @[simp]
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
