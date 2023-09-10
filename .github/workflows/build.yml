@@ -50,6 +50,10 @@ jobs:
       - name: Look for ignored files
         uses: credfeto/action-no-ignored-files@v1.1.0
 
+      - name: Check manifest is up to date
+        run: |
+          scripts/check-manifest.sh
+
       - name: Install bibtool
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
         run: |
