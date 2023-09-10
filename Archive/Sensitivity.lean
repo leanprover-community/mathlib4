@@ -427,7 +427,7 @@ lemma exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
 #align sensitivity.exists_eigenvalue Sensitivity.exists_eigenvalue
 
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
-lemma huang_degree_lemma (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
+lemma huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by
