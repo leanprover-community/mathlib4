@@ -175,7 +175,7 @@ lemma V_conjTranspose_mul_V (A : Matrix (Fin M) (Fin N) 𝕂) :
     by_cases i = j
     simp_rw [h, one_apply_eq, one_apply_ne h]
     rw [one_apply_ne]
-    simp_rw [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, Sum.inl.injEq, h]
+    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq, Sum.inl.injEq, h]
   )
 
 lemma V₁_conjTranspose_mul_V₁ (A : Matrix (Fin M) (Fin N) 𝕂) : A.svdV₁ᴴ * A.svdV₁ = 1 :=
@@ -201,7 +201,7 @@ lemma S_zero_blocks (A : Matrix (Fin M) (Fin N) 𝕂) :
   unfold toBlocks₁₂ toBlocks₂₁ toBlocks₂₂ svdS
   simp only [reindex_apply, submatrix_apply, ne_eq, EmbeddingLike.apply_eq_iff_eq,
     not_false_eq_true, diagonal_apply_ne]
-  simp_rw [← Matrix.ext_iff, of_apply, zero_apply, ge_iff_le, implies_true, true_and ]
+  simp_rw [← Matrix.ext_iff, of_apply, zero_apply, implies_true, true_and ]
   intro i j
   by_cases i = j
   unfold equiv_fin_width_eigs_conjTranspose_mul_self Equiv.sumCongr
@@ -217,7 +217,7 @@ lemma S'_zero_blocks (A : Matrix (Fin M) (Fin N) 𝕂) :
   unfold toBlocks₁₂ toBlocks₂₁ toBlocks₂₂ svdS'
   simp only [reindex_apply, submatrix_apply, ne_eq, EmbeddingLike.apply_eq_iff_eq,
     not_false_eq_true, diagonal_apply_ne]
-  simp_rw [← Matrix.ext_iff, of_apply, zero_apply, ge_iff_le, implies_true, true_and ]
+  simp_rw [← Matrix.ext_iff, of_apply, zero_apply, implies_true, true_and ]
   intro i j
   by_cases i = j
   · unfold equiv_fin_height_eigs_mul_conjTranspose Equiv.sumCongr
