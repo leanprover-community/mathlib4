@@ -333,7 +333,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 
 See note [partially-applied ext lemmas]. -/
 @[ext 1100] -- porting note: increase priority so this applies before `LinearMap.ext`
-theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
+lemma linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
   LinearMap.ext fun x => Quotient.inductionOn' x <| (LinearMap.congr_fun h : _)
 #align submodule.linear_map_qext Submodule.linearMap_qext
 

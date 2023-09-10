@@ -659,7 +659,7 @@ lemma closure_le {s : Set R} {t : NonUnitalSubring R} : closure s ≤ t ↔ s �
 
 /-- `NonUnitalSubring` closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
+lemma closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 
 lemma closure_eq_of_le {s : Set R} {t : NonUnitalSubring R} (h₁ : s ⊆ t) (h₂ : t ≤ closure s) :
@@ -825,7 +825,7 @@ lemma mem_prod {s : NonUnitalSubring R} {t : NonUnitalSubring S} {p : R × S} :
   Iff.rfl
 
 @[mono]
-theorem prod_mono ⦃s₁ s₂ : NonUnitalSubring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubring S⦄
+lemma prod_mono ⦃s₁ s₂ : NonUnitalSubring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubring S⦄
     (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 

@@ -73,7 +73,7 @@ lemma coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h₂ 
 #align absolute_value.coe_mk AbsoluteValue.coe_mk
 
 @[ext]
-theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
+lemma ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
   FunLike.ext _ _
 #align absolute_value.ext AbsoluteValue.ext
 

@@ -53,7 +53,7 @@ def of {c : Type u → Type v} (α : Type u) [str : c α] : Bundled c :=
 instance coeSort : CoeSort (Bundled c) (Type u) :=
   ⟨Bundled.α⟩
 
-theorem coe_mk (α) (str) : (@Bundled.mk c α str : Type u) = α :=
+lemma coe_mk (α) (str) : (@Bundled.mk c α str : Type u) = α :=
   rfl
 #align category_theory.bundled.coe_mk CategoryTheory.Bundled.coe_mk
 

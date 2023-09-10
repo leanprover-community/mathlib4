@@ -197,7 +197,7 @@ lemma casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α)
 #align free_add_monoid.cases_on_of_add FreeAddMonoid.casesOn_of_add
 
 @[to_additive (attr := ext)]
-theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
+lemma hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   MonoidHom.ext fun l ↦ recOn l (f.map_one.trans g.map_one.symm)
     (fun x xs hxs ↦ by simp only [h, hxs, MonoidHom.map_mul])
 #align free_monoid.hom_eq FreeMonoid.hom_eq

@@ -484,7 +484,7 @@ lemma eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
 
 -- porting note: this was very slow, so I squeezed the `simp` calls
 @[simp]
-theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
+lemma norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp only [norm_eq_card_dsupport, coeFn_neg, Pi.neg_apply, ne_eq, neg_eq_zero]
   · cases isEmpty_or_nonempty α

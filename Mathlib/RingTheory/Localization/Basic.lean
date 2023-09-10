@@ -538,13 +538,13 @@ lemma lift_of_comp (j : S →+* P) : lift (isUnit_comp M j) = j :=
 variable (M)
 
 /-- See note [partially-applied ext lemmas] -/
-theorem monoidHom_ext ⦃j k : S →* P⦄
+lemma monoidHom_ext ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
   Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| FunLike.congr_fun h
 #align is_localization.monoid_hom_ext IsLocalization.monoidHom_ext
 
 /-- See note [partially-applied ext lemmas] -/
-theorem ringHom_ext ⦃j k : S →+* P⦄ (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
+lemma ringHom_ext ⦃j k : S →+* P⦄ (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
   RingHom.coe_monoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
 #align is_localization.ring_hom_ext IsLocalization.ringHom_ext

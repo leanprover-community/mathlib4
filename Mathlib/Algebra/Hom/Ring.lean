@@ -173,7 +173,7 @@ variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 variable (f : α →ₙ+* β) {x y : α}
 
 @[ext]
-theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
+lemma ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
   FunLike.ext _ _
 #align non_unital_ring_hom.ext NonUnitalRingHom.ext
 
@@ -526,12 +526,12 @@ lemma congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
   FunLike.congr_arg f h
 #align ring_hom.congr_arg RingHom.congr_arg
 
-theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
+lemma coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
   FunLike.coe_injective h
 #align ring_hom.coe_inj RingHom.coe_inj
 
 @[ext]
-theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
+lemma ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
   FunLike.ext _ _
 #align ring_hom.ext RingHom.ext
 

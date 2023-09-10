@@ -91,7 +91,7 @@ lemma lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν :
   exact iSup_mono fun φ => iSup_mono' fun hφ => ⟨le_trans hφ hfg, lintegral_mono (le_refl φ) hμν⟩
 #align measure_theory.lintegral_mono' MeasureTheory.lintegral_mono'
 
-theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
+lemma lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono' (le_refl μ) hfg
 #align measure_theory.lintegral_mono MeasureTheory.lintegral_mono
 

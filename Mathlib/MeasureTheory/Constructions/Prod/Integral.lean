@@ -231,7 +231,7 @@ lemma integrable_swap_iff [SigmaFinite μ] ⦃f : α × β → E⦄ :
   ⟨fun hf => hf.swap, fun hf => hf.swap⟩
 #align measure_theory.integrable_swap_iff MeasureTheory.integrable_swap_iff
 
-theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasurable f) :
+lemma hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasurable f) :
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
@@ -252,7 +252,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   · intro h2f; refine' ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_prod_right'
 #align measure_theory.has_finite_integral_prod_iff MeasureTheory.hasFiniteIntegral_prod_iff
 
-theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :
+lemma hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
@@ -270,7 +270,7 @@ theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMe
 
 /-- A binary function is integrable if the function `y ↦ f (x, y)` is integrable for almost every
   `x` and the function `x ↦ ∫ ‖f (x, y)‖ dy` is integrable. -/
-theorem integrable_prod_iff ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :
+lemma integrable_prod_iff ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :
     Integrable f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) ν) ∧ Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
   simp [Integrable, h1f, hasFiniteIntegral_prod_iff', h1f.norm.integral_prod_right',
@@ -297,7 +297,7 @@ lemma Integrable.prod_right_ae [SigmaFinite μ] ⦃f : α × β → E⦄ (hf : I
   hf.swap.prod_left_ae
 #align measure_theory.integrable.prod_right_ae MeasureTheory.Integrable.prod_right_ae
 
-theorem Integrable.integral_norm_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
+lemma Integrable.integral_norm_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
     Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ :=
   ((integrable_prod_iff hf.aestronglyMeasurable).mp hf).2
 #align measure_theory.integrable.integral_norm_prod_left MeasureTheory.Integrable.integral_norm_prod_left
@@ -319,7 +319,7 @@ end
 
 variable [NormedSpace ℝ E] [CompleteSpace E]
 
-theorem Integrable.integral_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
+lemma Integrable.integral_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
     Integrable (fun x => ∫ y, f (x, y) ∂ν) μ :=
   Integrable.mono hf.integral_norm_prod_left hf.aestronglyMeasurable.integral_prod_right' <|
     eventually_of_forall fun x =>
@@ -352,7 +352,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [CompleteSpace E'] [NormedSpace �
 
 
 /-- Integrals commute with addition inside another integral. `F` can be any function. -/
-theorem integral_fn_integral_add ⦃f g : α × β → E⦄ (F : E → E') (hf : Integrable f (μ.prod ν))
+lemma integral_fn_integral_add ⦃f g : α × β → E⦄ (F : E → E') (hf : Integrable f (μ.prod ν))
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, F (∫ y, f (x, y) + g (x, y) ∂ν) ∂μ) =
       ∫ x, F ((∫ y, f (x, y) ∂ν) + ∫ y, g (x, y) ∂ν) ∂μ := by
@@ -363,7 +363,7 @@ theorem integral_fn_integral_add ⦃f g : α × β → E⦄ (F : E → E') (hf :
 
 /-- Integrals commute with subtraction inside another integral.
   `F` can be any measurable function. -/
-theorem integral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → E') (hf : Integrable f (μ.prod ν))
+lemma integral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → E') (hf : Integrable f (μ.prod ν))
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, F (∫ y, f (x, y) - g (x, y) ∂ν) ∂μ) =
       ∫ x, F ((∫ y, f (x, y) ∂ν) - ∫ y, g (x, y) ∂ν) ∂μ := by
@@ -374,7 +374,7 @@ theorem integral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → E') (hf :
 
 /-- Integrals commute with subtraction inside a lower Lebesgue integral.
   `F` can be any function. -/
-theorem lintegral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → ℝ≥0∞) (hf : Integrable f (μ.prod ν))
+lemma lintegral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → ℝ≥0∞) (hf : Integrable f (μ.prod ν))
     (hg : Integrable g (μ.prod ν)) :
     (∫⁻ x, F (∫ y, f (x, y) - g (x, y) ∂ν) ∂μ) =
       ∫⁻ x, F ((∫ y, f (x, y) ∂ν) - ∫ y, g (x, y) ∂ν) ∂μ := by
@@ -384,7 +384,7 @@ theorem lintegral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → ℝ≥0�
 #align measure_theory.lintegral_fn_integral_sub MeasureTheory.lintegral_fn_integral_sub
 
 /-- Double integrals commute with addition. -/
-theorem integral_integral_add ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
+lemma integral_integral_add ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, ∫ y, f (x, y) + g (x, y) ∂ν ∂μ) = (∫ x, ∫ y, f (x, y) ∂ν ∂μ) + ∫ x, ∫ y, g (x, y) ∂ν ∂μ :=
   (integral_fn_integral_add id hf hg).trans <|
@@ -393,14 +393,14 @@ theorem integral_integral_add ⦃f g : α × β → E⦄ (hf : Integrable f (μ.
 
 /-- Double integrals commute with addition. This is the version with `(f + g) (x, y)`
   (instead of `f (x, y) + g (x, y)`) in the LHS. -/
-theorem integral_integral_add' ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
+lemma integral_integral_add' ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, ∫ y, (f + g) (x, y) ∂ν ∂μ) = (∫ x, ∫ y, f (x, y) ∂ν ∂μ) + ∫ x, ∫ y, g (x, y) ∂ν ∂μ :=
   integral_integral_add hf hg
 #align measure_theory.integral_integral_add' MeasureTheory.integral_integral_add'
 
 /-- Double integrals commute with subtraction. -/
-theorem integral_integral_sub ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
+lemma integral_integral_sub ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, ∫ y, f (x, y) - g (x, y) ∂ν ∂μ) = (∫ x, ∫ y, f (x, y) ∂ν ∂μ) - ∫ x, ∫ y, g (x, y) ∂ν ∂μ :=
   (integral_fn_integral_sub id hf hg).trans <|
@@ -409,7 +409,7 @@ theorem integral_integral_sub ⦃f g : α × β → E⦄ (hf : Integrable f (μ.
 
 /-- Double integrals commute with subtraction. This is the version with `(f - g) (x, y)`
   (instead of `f (x, y) - g (x, y)`) in the LHS. -/
-theorem integral_integral_sub' ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
+lemma integral_integral_sub' ⦃f g : α × β → E⦄ (hf : Integrable f (μ.prod ν))
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, ∫ y, (f - g) (x, y) ∂ν ∂μ) = (∫ x, ∫ y, f (x, y) ∂ν ∂μ) - ∫ x, ∫ y, g (x, y) ∂ν ∂μ :=
   integral_integral_sub hf hg
@@ -493,7 +493,7 @@ lemma integral_integral_symm {f : α → β → E} (hf : Integrable (uncurry f) 
 #align measure_theory.integral_integral_symm MeasureTheory.integral_integral_symm
 
 /-- Change the order of Bochner integration. -/
-theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncurry f) (μ.prod ν)) :
+lemma integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncurry f) (μ.prod ν)) :
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ y, ∫ x, f x y ∂μ ∂ν :=
   (integral_integral hf).trans (integral_prod_symm _ hf)
 #align measure_theory.integral_integral_swap MeasureTheory.integral_integral_swap

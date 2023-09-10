@@ -912,7 +912,7 @@ lemma closure_le {s : Set R} {t : Subring R} : closure s ≤ t ↔ s ⊆ t :=
 
 /-- Subring closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
+lemma closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 #align subring.closure_mono Subring.closure_mono
 
@@ -1101,7 +1101,7 @@ lemma mem_prod {s : Subring R} {t : Subring S} {p : R × S} : p ∈ s.prod t ↔
 #align subring.mem_prod Subring.mem_prod
 
 @[mono]
-theorem prod_mono ⦃s₁ s₂ : Subring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subring S⦄ (ht : t₁ ≤ t₂) :
+lemma prod_mono ⦃s₁ s₂ : Subring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 #align subring.prod_mono Subring.prod_mono

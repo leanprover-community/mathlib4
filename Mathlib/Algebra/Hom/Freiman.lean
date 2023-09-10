@@ -185,7 +185,7 @@ lemma toFun_eq_coe (f : A →*[n] β) : f.toFun = f :=
 #align add_freiman_hom.to_fun_eq_coe AddFreimanHom.toFun_eq_coe
 
 @[to_additive (attr := ext)]
-theorem ext ⦃f g : A →*[n] β⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : A →*[n] β⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align freiman_hom.ext FreimanHom.ext
 #align add_freiman_hom.ext AddFreimanHom.ext

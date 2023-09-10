@@ -99,7 +99,7 @@ lemma ext_iff (A B : GL n R) : A = B ↔ ∀ i j, (A : Matrix n n R) i j = (B : 
 #align matrix.general_linear_group.ext_iff Matrix.GeneralLinearGroup.ext_iff
 
 /-- Not marked `@[ext]` as the `ext` tactic already solves this. -/
-theorem ext ⦃A B : GL n R⦄ (h : ∀ i j, (A : Matrix n n R) i j = (B : Matrix n n R) i j) : A = B :=
+lemma ext ⦃A B : GL n R⦄ (h : ∀ i j, (A : Matrix n n R) i j = (B : Matrix n n R) i j) : A = B :=
   Units.ext <| Matrix.ext h
 #align matrix.general_linear_group.ext Matrix.GeneralLinearGroup.ext
 

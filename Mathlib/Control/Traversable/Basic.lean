@@ -112,7 +112,7 @@ protected lemma congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x 
   congrArg (fun z : F α => η z) h
 #align applicative_transformation.congr_arg ApplicativeTransformation.congr_arg
 
-theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
+lemma coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
     η = η' := by
   cases η
   cases η'
@@ -120,7 +120,7 @@ theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, 
 #align applicative_transformation.coe_inj ApplicativeTransformation.coe_inj
 
 @[ext]
-theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
+lemma ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
     η = η' := by
   apply coe_inj
   ext1 α

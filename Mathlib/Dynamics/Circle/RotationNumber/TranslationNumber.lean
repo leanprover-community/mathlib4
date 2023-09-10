@@ -167,7 +167,7 @@ lemma map_one_add (x : ℝ) : f (1 + x) = 1 + f x := by rw [add_comm, map_add_on
 #noalign circle_deg1_lift.coe_inj -- Use `FunLike.coe_inj`
 
 @[ext]
-theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align circle_deg1_lift.ext CircleDeg1Lift.ext
 

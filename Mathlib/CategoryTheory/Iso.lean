@@ -79,7 +79,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 namespace Iso
 
 @[ext]
-theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
+lemma ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by
     cases α
     cases β

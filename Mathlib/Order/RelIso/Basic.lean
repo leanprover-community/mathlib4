@@ -127,7 +127,7 @@ lemma coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
 #align rel_hom.coe_fn_injective RelHom.coe_fn_injective
 
 @[ext]
-theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align rel_hom.ext RelHom.ext
 
@@ -286,7 +286,7 @@ lemma coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
 #align rel_embedding.coe_fn_injective RelEmbedding.coe_fn_injective
 
 @[ext]
-theorem ext ⦃f g : r ↪r s⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : r ↪r s⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align rel_embedding.ext RelEmbedding.ext
 
@@ -690,7 +690,7 @@ lemma coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
 #align rel_iso.coe_fn_injective RelIso.coe_fn_injective
 
 @[ext]
-theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align rel_iso.ext RelIso.ext
 

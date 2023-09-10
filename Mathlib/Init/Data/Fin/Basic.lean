@@ -13,14 +13,14 @@ set_option autoImplicit true
 
 namespace Fin
 
-theorem eq_of_veq : ∀ {i j : Fin n}, i.val = j.val → i = j
+lemma eq_of_veq : ∀ {i j : Fin n}, i.val = j.val → i = j
   | ⟨iv, ilt₁⟩, ⟨jv, jlt₁⟩, h => by cases h; rfl
 
-theorem veq_of_eq : ∀ {i j : Fin n}, i = j → i.val = j.val
+lemma veq_of_eq : ∀ {i j : Fin n}, i = j → i.val = j.val
   | ⟨_, _⟩, _, rfl => rfl
 
-theorem ne_of_vne {i j : Fin n} (h : i.val ≠ j.val) : i ≠ j := fun h' ↦ absurd (veq_of_eq h') h
+lemma ne_of_vne {i j : Fin n} (h : i.val ≠ j.val) : i ≠ j := fun h' ↦ absurd (veq_of_eq h') h
 
-theorem vne_of_ne {i j : Fin n} (h : i ≠ j) : i.val ≠ j.val := fun h' ↦ absurd (eq_of_veq h') h
+lemma vne_of_ne {i j : Fin n} (h : i ≠ j) : i.val ≠ j.val := fun h' ↦ absurd (eq_of_veq h') h
 
 end Fin

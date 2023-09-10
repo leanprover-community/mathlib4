@@ -167,7 +167,7 @@ namespace HasUnitMulPowIrreducibleFactorization
 
 variable {R} [CommRing R] (hR : HasUnitMulPowIrreducibleFactorization R)
 
-theorem unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
+lemma unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
   rcases hR with ⟨ϖ, hϖ, hR⟩
   suffices ∀ {p : R} (_ : Irreducible p), Associated p ϖ by

@@ -110,7 +110,7 @@ lemma zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
 #align nat.arithmetic_function.zero_apply Nat.ArithmeticFunction.zero_apply
 
 @[ext]
-theorem ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
   ZeroHom.ext h
 #align nat.arithmetic_function.ext Nat.ArithmeticFunction.ext
 

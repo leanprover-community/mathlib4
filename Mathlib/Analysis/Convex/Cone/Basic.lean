@@ -118,7 +118,7 @@ lemma smul_mem {c : 𝕜} {x : E} (hc : 0 < c) (hx : x ∈ S) : c • x ∈ S :=
   S.smul_mem' hc hx
 #align convex_cone.smul_mem ConvexCone.smul_mem
 
-theorem add_mem ⦃x⦄ (hx : x ∈ S) ⦃y⦄ (hy : y ∈ S) : x + y ∈ S :=
+lemma add_mem ⦃x⦄ (hx : x ∈ S) ⦃y⦄ (hy : y ∈ S) : x + y ∈ S :=
   S.add_mem' hx hy
 #align convex_cone.add_mem ConvexCone.add_mem
 

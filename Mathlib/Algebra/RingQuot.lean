@@ -571,7 +571,7 @@ section StarRing
 
 variable [StarRing R] (hr : ∀ a b, r a b → r (star a) (star b))
 
-theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
+lemma Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
   induction h with
   | of h          => exact Rel.of (hr _ _ h)
   | add_left _ h  => rw [star_add, star_add]

@@ -149,7 +149,7 @@ lemma innerContent_bot : μ.innerContent ⊥ = 0 := by
 #align measure_theory.content.inner_content_bot MeasureTheory.Content.innerContent_bot
 
 /-- This is "unbundled", because that is required for the API of `inducedOuterMeasure`. -/
-theorem innerContent_mono ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 : U ⊆ V) :
+lemma innerContent_mono ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 : U ⊆ V) :
     μ.innerContent ⟨U, hU⟩ ≤ μ.innerContent ⟨V, hV⟩ :=
   biSup_mono fun _ hK => hK.trans h2
 #align measure_theory.content.inner_content_mono MeasureTheory.Content.innerContent_mono
@@ -237,7 +237,7 @@ lemma innerContent_pos_of_is_mul_left_invariant [T2Space G] [Group G] [Topologic
 #align measure_theory.content.inner_content_pos_of_is_mul_left_invariant MeasureTheory.Content.innerContent_pos_of_is_mul_left_invariant
 #align measure_theory.content.inner_content_pos_of_is_add_left_invariant MeasureTheory.Content.innerContent_pos_of_is_add_left_invariant
 
-theorem innerContent_mono' ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 : U ⊆ V) :
+lemma innerContent_mono' ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 : U ⊆ V) :
     μ.innerContent ⟨U, hU⟩ ≤ μ.innerContent ⟨V, hV⟩ :=
   biSup_mono fun _ hK => hK.trans h2
 #align measure_theory.content.inner_content_mono' MeasureTheory.Content.innerContent_mono'

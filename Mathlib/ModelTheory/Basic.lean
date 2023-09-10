@@ -521,7 +521,7 @@ lemma toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
 #align first_order.language.hom.to_fun_eq_coe FirstOrder.Language.Hom.toFun_eq_coe
 
 @[ext]
-theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align first_order.language.hom.ext FirstOrder.Language.Hom.ext
 
@@ -652,7 +652,7 @@ lemma coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
 #align first_order.language.embedding.coe_injective FirstOrder.Language.Embedding.coe_injective
 
 @[ext]
-theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.embedding.ext FirstOrder.Language.Embedding.ext
 
@@ -832,7 +832,7 @@ lemma coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
 #align first_order.language.equiv.coe_injective FirstOrder.Language.Equiv.coe_injective
 
 @[ext]
-theorem ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.equiv.ext FirstOrder.Language.Equiv.ext
 

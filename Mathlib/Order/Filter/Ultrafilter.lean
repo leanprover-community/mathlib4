@@ -95,7 +95,7 @@ lemma coe_inj : (f : Filter α) = g ↔ f = g :=
 #align ultrafilter.coe_inj Ultrafilter.coe_inj
 
 @[ext]
-theorem ext ⦃f g : Ultrafilter α⦄ (h : ∀ s, s ∈ f ↔ s ∈ g) : f = g :=
+lemma ext ⦃f g : Ultrafilter α⦄ (h : ∀ s, s ∈ f ↔ s ∈ g) : f = g :=
   coe_injective <| Filter.ext h
 #align ultrafilter.ext Ultrafilter.ext
 

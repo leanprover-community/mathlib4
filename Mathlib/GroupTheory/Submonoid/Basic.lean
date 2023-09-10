@@ -421,7 +421,7 @@ then `closure s ≤ closure t`. -/
 @[to_additive
       "Additive submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
       then `closure s ≤ closure t`"]
-theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
+lemma closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 #align submonoid.closure_mono Submonoid.closure_mono
 #align add_submonoid.closure_mono AddSubmonoid.closure_mono

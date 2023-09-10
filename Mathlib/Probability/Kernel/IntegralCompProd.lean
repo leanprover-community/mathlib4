@@ -85,7 +85,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.compProd_mk_left {δ : Type*} [T
 /-! ### Integrability -/
 
 
-theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyMeasurable f) :
+lemma hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyMeasurable f) :
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
       (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y => f (x, y)) (η (a, x))) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
@@ -104,7 +104,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
   · intro h2f; refine' ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_kernel_prod_right''
 #align probability_theory.has_finite_integral_comp_prod_iff ProbabilityTheory.hasFiniteIntegral_compProd_iff
 
-theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
+lemma hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
     (h1f : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
       (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y => f (x, y)) (η (a, x))) ∧
@@ -121,7 +121,7 @@ theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
       integral_congr_ae (EventuallyEq.fun_comp hx _)
 #align probability_theory.has_finite_integral_comp_prod_iff' ProbabilityTheory.hasFiniteIntegral_compProd_iff'
 
-theorem integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
+lemma integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
     Integrable f ((κ ⊗ₖ η) a) ↔
       (∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x))) ∧
         Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
@@ -129,12 +129,12 @@ theorem integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasura
     hf, hf.compProd_mk_left, eventually_and, true_and_iff]
 #align probability_theory.integrable_comp_prod_iff ProbabilityTheory.integrable_compProd_iff
 
-theorem _root_.MeasureTheory.Integrable.compProd_mk_left_ae ⦃f : β × γ → E⦄
+lemma _root_.MeasureTheory.Integrable.compProd_mk_left_ae ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : ∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x)) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).1
 #align measure_theory.integrable.comp_prod_mk_left_ae MeasureTheory.Integrable.compProd_mk_left_ae
 
-theorem _root_.MeasureTheory.Integrable.integral_norm_compProd ⦃f : β × γ → E⦄
+lemma _root_.MeasureTheory.Integrable.integral_norm_compProd ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).2
 #align measure_theory.integrable.integral_norm_comp_prod MeasureTheory.Integrable.integral_norm_compProd
@@ -156,7 +156,7 @@ lemma _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E] [Com
 variable [NormedSpace ℝ E] [CompleteSpace E] {E' : Type*} [NormedAddCommGroup E']
   [CompleteSpace E'] [NormedSpace ℝ E']
 
-theorem kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E')
+lemma kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E')
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, F (∫ y, f (x, y) + g (x, y) ∂η (a, x)) ∂κ a =
       ∫ x, F (∫ y, f (x, y) ∂η (a, x) + ∫ y, g (x, y) ∂η (a, x)) ∂κ a := by
@@ -165,7 +165,7 @@ theorem kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E'
   simp [integral_add h2f h2g]
 #align probability_theory.kernel.integral_fn_integral_add ProbabilityTheory.kernel.integral_fn_integral_add
 
-theorem kernel.integral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → E')
+lemma kernel.integral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → E')
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, F (∫ y, f (x, y) - g (x, y) ∂η (a, x)) ∂κ a =
       ∫ x, F (∫ y, f (x, y) ∂η (a, x) - ∫ y, g (x, y) ∂η (a, x)) ∂κ a := by
@@ -174,7 +174,7 @@ theorem kernel.integral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → E'
   simp [integral_sub h2f h2g]
 #align probability_theory.kernel.integral_fn_integral_sub ProbabilityTheory.kernel.integral_fn_integral_sub
 
-theorem kernel.lintegral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → ℝ≥0∞)
+lemma kernel.lintegral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → ℝ≥0∞)
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫⁻ x, F (∫ y, f (x, y) - g (x, y) ∂η (a, x)) ∂κ a =
       ∫⁻ x, F (∫ y, f (x, y) ∂η (a, x) - ∫ y, g (x, y) ∂η (a, x)) ∂κ a := by
@@ -183,7 +183,7 @@ theorem kernel.lintegral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → �
   simp [integral_sub h2f h2g]
 #align probability_theory.kernel.lintegral_fn_integral_sub ProbabilityTheory.kernel.lintegral_fn_integral_sub
 
-theorem kernel.integral_integral_add ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
+lemma kernel.integral_integral_add ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
     (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, ∫ y, f (x, y) + g (x, y) ∂η (a, x) ∂κ a =
       ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a + ∫ x, ∫ y, g (x, y) ∂η (a, x) ∂κ a :=
@@ -191,14 +191,14 @@ theorem kernel.integral_integral_add ⦃f g : β × γ → E⦄ (hf : Integrable
     integral_add hf.integral_compProd hg.integral_compProd
 #align probability_theory.kernel.integral_integral_add ProbabilityTheory.kernel.integral_integral_add
 
-theorem kernel.integral_integral_add' ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
+lemma kernel.integral_integral_add' ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
     (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, ∫ y, (f + g) (x, y) ∂η (a, x) ∂κ a =
       ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a + ∫ x, ∫ y, g (x, y) ∂η (a, x) ∂κ a :=
   kernel.integral_integral_add hf hg
 #align probability_theory.kernel.integral_integral_add' ProbabilityTheory.kernel.integral_integral_add'
 
-theorem kernel.integral_integral_sub ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
+lemma kernel.integral_integral_sub ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
     (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, ∫ y, f (x, y) - g (x, y) ∂η (a, x) ∂κ a =
       ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a - ∫ x, ∫ y, g (x, y) ∂η (a, x) ∂κ a :=
@@ -206,7 +206,7 @@ theorem kernel.integral_integral_sub ⦃f g : β × γ → E⦄ (hf : Integrable
     integral_sub hf.integral_compProd hg.integral_compProd
 #align probability_theory.kernel.integral_integral_sub ProbabilityTheory.kernel.integral_integral_sub
 
-theorem kernel.integral_integral_sub' ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
+lemma kernel.integral_integral_sub' ⦃f g : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a))
     (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, ∫ y, (f - g) (x, y) ∂η (a, x) ∂κ a =
       ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a - ∫ x, ∫ y, g (x, y) ∂η (a, x) ∂κ a :=

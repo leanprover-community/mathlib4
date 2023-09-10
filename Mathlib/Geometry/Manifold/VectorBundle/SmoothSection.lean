@@ -97,7 +97,7 @@ protected lemma mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
   s.mdifferentiable x
 #align cont_mdiff_section.mdifferentiable_at ContMDiffSection.mdifferentiableAt
 
-theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
+lemma coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
   FunLike.ext' h
 #align cont_mdiff_section.coe_inj ContMDiffSection.coe_inj
 

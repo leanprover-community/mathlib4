@@ -195,7 +195,7 @@ lemma coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
 #align first_order.language.elementary_embedding.coe_injective FirstOrder.Language.ElementaryEmbedding.coe_injective
 
 @[ext]
-theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align first_order.language.elementary_embedding.ext FirstOrder.Language.ElementaryEmbedding.ext
 

@@ -584,13 +584,13 @@ then they are equal.
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem ringHom_ext' ⦃F G : (⨁ i, A i) →+* R⦄
+lemma ringHom_ext' ⦃F G : (⨁ i, A i) →+* R⦄
     (h : ∀ i, (↑F : _ →+ R).comp (of A i) = (↑G : _ →+ R).comp (of A i)) : F = G :=
   RingHom.coe_addMonoidHom_injective <| DirectSum.addHom_ext' h
 #align direct_sum.ring_hom_ext' DirectSum.ringHom_ext'
 
 /-- Two `RingHom`s out of a direct sum are equal if they agree on the generators. -/
-theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
+lemma ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   ringHom_ext' fun i => AddMonoidHom.ext <| h i
 #align direct_sum.ring_hom_ext DirectSum.ringHom_ext
 

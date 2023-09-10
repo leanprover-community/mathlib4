@@ -114,12 +114,12 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
+lemma algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
     (h : ∀ i, f.toLinearMap.comp (lof _ _ A i) = g.toLinearMap.comp (lof _ _ A i)) : f = g :=
   AlgHom.toLinearMap_injective <| DirectSum.linearMap_ext _ h
 #align direct_sum.alg_hom_ext' DirectSum.algHom_ext'
 
-theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
+lemma algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   algHom_ext' R A fun i => LinearMap.ext <| h i
 #align direct_sum.alg_hom_ext DirectSum.algHom_ext
 

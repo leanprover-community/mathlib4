@@ -60,7 +60,7 @@ lemma approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   | succ _ i_ih => intro; apply f.monotone; apply i_ih
 #align part.fix.approx_mono' Part.Fix.approx_mono'
 
-theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
+lemma approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
   induction' j with j ih
   · cases hij
     exact le_rfl

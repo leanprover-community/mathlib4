@@ -719,7 +719,7 @@ lemma closure_le {s : Set K} {t : Subfield K} : closure s ≤ t ↔ s ⊆ t :=
 
 /-- Subfield closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-theorem closure_mono ⦃s t : Set K⦄ (h : s ⊆ t) : closure s ≤ closure t :=
+lemma closure_mono ⦃s t : Set K⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 #align subfield.closure_mono Subfield.closure_mono
 

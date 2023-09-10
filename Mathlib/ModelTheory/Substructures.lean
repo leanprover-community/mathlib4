@@ -286,7 +286,7 @@ lemma closure_le : closure L s ≤ S ↔ s ⊆ S :=
 
 /-- Substructure closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure L s ≤ closure L t`. -/
-theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L t :=
+lemma closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L t :=
   (closure L).monotone h
 #align first_order.language.substructure.closure_mono FirstOrder.Language.Substructure.closure_mono
 

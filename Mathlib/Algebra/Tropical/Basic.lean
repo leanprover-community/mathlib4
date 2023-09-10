@@ -323,12 +323,12 @@ lemma trop_sup_def (x y : Tropical R) : x ⊔ y = trop (untrop x ⊔ untrop y) :
 #align tropical.trop_sup_def Tropical.trop_sup_def
 
 @[simp]
-theorem add_eq_left ⦃x y : Tropical R⦄ (h : x ≤ y) : x + y = x :=
+lemma add_eq_left ⦃x y : Tropical R⦄ (h : x ≤ y) : x + y = x :=
   untrop_injective (by simpa using h)
 #align tropical.add_eq_left Tropical.add_eq_left
 
 @[simp]
-theorem add_eq_right ⦃x y : Tropical R⦄ (h : y ≤ x) : x + y = y :=
+lemma add_eq_right ⦃x y : Tropical R⦄ (h : y ≤ x) : x + y = y :=
   untrop_injective (by simpa using h)
 #align tropical.add_eq_right Tropical.add_eq_right
 

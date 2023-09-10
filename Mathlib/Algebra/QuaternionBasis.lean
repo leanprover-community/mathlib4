@@ -50,7 +50,7 @@ namespace Basis
 
 /-- Since `k` is redundant, it is not necessary to show `q₁.k = q₂.k` when showing `q₁ = q₂`. -/
 @[ext]
-protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂⦄ (hi : q₁.i = q₂.i) (hj : q₁.j = q₂.j) : q₁ = q₂ := by
+protected lemma ext ⦃q₁ q₂ : Basis A c₁ c₂⦄ (hi : q₁.i = q₂.i) (hj : q₁.j = q₂.j) : q₁ = q₂ := by
   cases q₁; rename_i q₁_i_mul_j _
   cases q₂; rename_i q₂_i_mul_j _
   congr

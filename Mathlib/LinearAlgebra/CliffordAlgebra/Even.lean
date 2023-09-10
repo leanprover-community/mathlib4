@@ -115,7 +115,7 @@ variable (f : EvenHom Q A)
 
 See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂ f = (even.ι Q).compr₂ g) :
+lemma even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂ f = (even.ι Q).compr₂ g) :
     f = g := by
   rw [EvenHom.ext_iff] at h
   ext ⟨x, hx⟩

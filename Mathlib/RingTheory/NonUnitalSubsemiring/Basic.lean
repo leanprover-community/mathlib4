@@ -583,7 +583,7 @@ lemma closure_le {s : Set R} {t : NonUnitalSubsemiring R} : closure s ≤ t ↔ 
 
 /-- Subsemiring closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
+lemma closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 #align non_unital_subsemiring.closure_mono NonUnitalSubsemiring.closure_mono
 
@@ -787,7 +787,7 @@ lemma mem_prod {s : NonUnitalSubsemiring R} {t : NonUnitalSubsemiring S} {p : R 
 #align non_unital_subsemiring.mem_prod NonUnitalSubsemiring.mem_prod
 
 @[mono]
-theorem prod_mono ⦃s₁ s₂ : NonUnitalSubsemiring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubsemiring S⦄
+lemma prod_mono ⦃s₁ s₂ : NonUnitalSubsemiring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubsemiring S⦄
     (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 #align non_unital_subsemiring.prod_mono NonUnitalSubsemiring.prod_mono

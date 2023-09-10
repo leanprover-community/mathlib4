@@ -76,7 +76,7 @@ lemma coeFn_mk (f : M → M') (hf : ContMDiff I I' n f) :
   rfl
 #align cont_mdiff_map.coe_fn_mk ContMDiffMap.coeFn_mk
 
-theorem coe_injective ⦃f g : C^n⟮I, M; I', M'⟯⦄ (h : (f : M → M') = g) : f = g :=
+lemma coe_injective ⦃f g : C^n⟮I, M; I', M'⟯⦄ (h : (f : M → M') = g) : f = g :=
   FunLike.ext' h
 #align cont_mdiff_map.coe_inj ContMDiffMap.coe_injective
 

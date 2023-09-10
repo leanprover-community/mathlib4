@@ -782,7 +782,7 @@ lemma lintegral_prod_symm' [SigmaFinite μ] (f : α × β → ℝ≥0∞) (hf : 
 
 /-- The reversed version of **Tonelli's Theorem**. In this version `f` is in curried form, which
 makes it easier for the elaborator to figure out `f` automatically. -/
-theorem lintegral_lintegral ⦃f : α → β → ℝ≥0∞⦄ (hf : AEMeasurable (uncurry f) (μ.prod ν)) :
+lemma lintegral_lintegral ⦃f : α → β → ℝ≥0∞⦄ (hf : AEMeasurable (uncurry f) (μ.prod ν)) :
     ∫⁻ x, ∫⁻ y, f x y ∂ν ∂μ = ∫⁻ z, f z.1 z.2 ∂μ.prod ν :=
   (lintegral_prod _ hf).symm
 #align measure_theory.lintegral_lintegral MeasureTheory.lintegral_lintegral

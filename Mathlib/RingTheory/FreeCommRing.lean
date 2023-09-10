@@ -152,7 +152,7 @@ lemma lift_comp_of (f : FreeCommRing α →+* R) : lift (f ∘ of) = f :=
 #align free_comm_ring.lift_comp_of FreeCommRing.lift_comp_of
 
 @[ext 1100]
-theorem hom_ext ⦃f g : FreeCommRing α →+* R⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
+lemma hom_ext ⦃f g : FreeCommRing α →+* R⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   lift.symm.injective (funext h)
 #align free_comm_ring.hom_ext FreeCommRing.hom_ext
 

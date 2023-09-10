@@ -367,7 +367,7 @@ lemma ediam_image (h : α ≃ᵢ β) (s : Set α) : EMetric.diam (h '' s) = EMet
 #align isometry_equiv.ediam_image IsometryEquiv.ediam_image
 
 @[ext]
-theorem ext ⦃h₁ h₂ : α ≃ᵢ β⦄ (H : ∀ x, h₁ x = h₂ x) : h₁ = h₂ :=
+lemma ext ⦃h₁ h₂ : α ≃ᵢ β⦄ (H : ∀ x, h₁ x = h₂ x) : h₁ = h₂ :=
   FunLike.ext _ _ H
 #align isometry_equiv.ext IsometryEquiv.ext
 

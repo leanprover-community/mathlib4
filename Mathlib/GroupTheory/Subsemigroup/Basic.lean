@@ -333,7 +333,7 @@ lemma closure_le : closure s ≤ S ↔ s ⊆ S :=
 then `closure s ≤ closure t`. -/
 @[to_additive "Additive subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
   then `closure s ≤ closure t`"]
-theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
+lemma closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 #align subsemigroup.closure_mono Subsemigroup.closure_mono
 #align add_subsemigroup.closure_mono AddSubsemigroup.closure_mono

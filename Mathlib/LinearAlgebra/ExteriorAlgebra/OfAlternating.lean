@@ -168,7 +168,7 @@ the exterior powers.
 
 See note [partially-applied ext lemmas] -/
 @[ext]
-theorem lhom_ext ⦃f g : ExteriorAlgebra R M →ₗ[R] N⦄
+lemma lhom_ext ⦃f g : ExteriorAlgebra R M →ₗ[R] N⦄
     (h : ∀ i, f.compAlternatingMap (ιMulti R i) = g.compAlternatingMap (ιMulti R i)) : f = g :=
   liftAlternatingEquiv.symm.injective <| funext h
 #align exterior_algebra.lhom_ext ExteriorAlgebra.lhom_ext

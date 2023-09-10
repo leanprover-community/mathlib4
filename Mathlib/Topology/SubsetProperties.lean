@@ -1349,7 +1349,7 @@ lemma iUnion_compactCovering : ⋃ n, compactCovering α n = univ := by
 #align Union_compact_covering iUnion_compactCovering
 
 @[mono]
-theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering α m ⊆ compactCovering α n :=
+lemma compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering α m ⊆ compactCovering α n :=
   monotone_accumulate h
 #align compact_covering_subset compactCovering_subset
 
@@ -1497,14 +1497,14 @@ lemma subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
 #align compact_exhaustion.subset_interior_succ CompactExhaustion.subset_interior_succ
 
 @[mono]
-protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
+protected lemma subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 #align compact_exhaustion.subset CompactExhaustion.subset
 
 lemma subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
 #align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
-theorem subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
+lemma subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
   Subset.trans (K.subset_interior_succ m) <| interior_mono <| K.subset h
 #align compact_exhaustion.subset_interior CompactExhaustion.subset_interior
 

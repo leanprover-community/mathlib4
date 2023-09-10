@@ -683,7 +683,7 @@ lemma setSeq_mem (n : ℕ) : setSeq hf U_mem n ∈ f :=
   (biInter_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).2.1
 #align sequentially_complete.set_seq_mem SequentiallyComplete.setSeq_mem
 
-theorem setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq hf U_mem m :=
+lemma setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq hf U_mem m :=
   biInter_subset_biInter_left <| Iic_subset_Iic.2 h
 #align sequentially_complete.set_seq_mono SequentiallyComplete.setSeq_mono
 
@@ -709,7 +709,7 @@ lemma seq_mem (n : ℕ) : seq hf U_mem n ∈ setSeq hf U_mem n :=
   choose_spec <| hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)
 #align sequentially_complete.seq_mem SequentiallyComplete.seq_mem
 
-theorem seq_pair_mem ⦃N m n : ℕ⦄ (hm : N ≤ m) (hn : N ≤ n) :
+lemma seq_pair_mem ⦃N m n : ℕ⦄ (hm : N ≤ m) (hn : N ≤ n) :
     (seq hf U_mem m, seq hf U_mem n) ∈ U N :=
   setSeq_prod_subset hf U_mem hm hn ⟨seq_mem hf U_mem m, seq_mem hf U_mem n⟩
 #align sequentially_complete.seq_pair_mem SequentiallyComplete.seq_pair_mem
@@ -719,7 +719,7 @@ lemma seq_is_cauchySeq : CauchySeq <| seq hf U_mem :=
 #align sequentially_complete.seq_is_cauchy_seq SequentiallyComplete.seq_is_cauchySeq
 
 /-- If the sequence `SequentiallyComplete.seq` converges to `a`, then `f ≤ 𝓝 a`. -/
-theorem le_nhds_of_seq_tendsto_nhds ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) atTop (𝓝 a)) : f ≤ 𝓝 a :=
+lemma le_nhds_of_seq_tendsto_nhds ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) atTop (𝓝 a)) : f ≤ 𝓝 a :=
   le_nhds_of_cauchy_adhp_aux
     (fun s hs => by
       rcases U_le s hs with ⟨m, hm⟩

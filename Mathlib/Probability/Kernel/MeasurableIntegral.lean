@@ -239,7 +239,7 @@ end Lintegral
 
 variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
 
-theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
+lemma measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and_iff]
   exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.ennnorm) measurable_const
@@ -254,7 +254,7 @@ namespace MeasureTheory
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
   [IsSFiniteKernel η]
 
-theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
+lemma StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by
   classical
   borelize E
@@ -302,7 +302,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
   exact stronglyMeasurable_of_tendsto _ hf' h2f'
 #align measure_theory.strongly_measurable.integral_kernel_prod_right MeasureTheory.StronglyMeasurable.integral_kernel_prod_right
 
-theorem StronglyMeasurable.integral_kernel_prod_right' ⦃f : α × β → E⦄ (hf : StronglyMeasurable f) :
+lemma StronglyMeasurable.integral_kernel_prod_right' ⦃f : α × β → E⦄ (hf : StronglyMeasurable f) :
     StronglyMeasurable fun x => ∫ y, f (x, y) ∂κ x := by
   rw [← uncurry_curry f] at hf
   exact hf.integral_kernel_prod_right
@@ -322,12 +322,12 @@ lemma StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
   simpa using this
 #align measure_theory.strongly_measurable.integral_kernel_prod_right'' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right''
 
-theorem StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
+lemma StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun y => ∫ x, f x y ∂κ y :=
   (hf.comp_measurable measurable_swap).integral_kernel_prod_right'
 #align measure_theory.strongly_measurable.integral_kernel_prod_left MeasureTheory.StronglyMeasurable.integral_kernel_prod_left
 
-theorem StronglyMeasurable.integral_kernel_prod_left' ⦃f : β × α → E⦄ (hf : StronglyMeasurable f) :
+lemma StronglyMeasurable.integral_kernel_prod_left' ⦃f : β × α → E⦄ (hf : StronglyMeasurable f) :
     StronglyMeasurable fun y => ∫ x, f (x, y) ∂κ y :=
   (hf.comp_measurable measurable_swap).integral_kernel_prod_right'
 #align measure_theory.strongly_measurable.integral_kernel_prod_left' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left'

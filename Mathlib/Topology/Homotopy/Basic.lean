@@ -359,12 +359,12 @@ lemma refl (f : C(X, Y)) : Homotopic f f :=
 #align continuous_map.homotopic.refl ContinuousMap.Homotopic.refl
 
 @[symm]
-theorem symm ⦃f g : C(X, Y)⦄ (h : Homotopic f g) : Homotopic g f :=
+lemma symm ⦃f g : C(X, Y)⦄ (h : Homotopic f g) : Homotopic g f :=
   h.map Homotopy.symm
 #align continuous_map.homotopic.symm ContinuousMap.Homotopic.symm
 
 @[trans]
-theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : Homotopic f g) (h₁ : Homotopic g h) : Homotopic f h :=
+lemma trans ⦃f g h : C(X, Y)⦄ (h₀ : Homotopic f g) (h₁ : Homotopic g h) : Homotopic f h :=
   h₀.map2 Homotopy.trans h₁
 #align continuous_map.homotopic.trans ContinuousMap.Homotopic.trans
 
@@ -561,12 +561,12 @@ lemma refl (f : C(X, Y)) (hf : P f) : HomotopicWith f f P :=
 #align continuous_map.homotopic_with.refl ContinuousMap.HomotopicWith.refl
 
 @[symm]
-theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P :=
+lemma symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P :=
   ⟨h.some.symm⟩
 #align continuous_map.homotopic_with.symm ContinuousMap.HomotopicWith.symm
 
 @[trans]
-theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :
+lemma trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :
     HomotopicWith f h P :=
   ⟨h₀.some.trans h₁.some⟩
 #align continuous_map.homotopic_with.trans ContinuousMap.HomotopicWith.trans
@@ -684,12 +684,12 @@ lemma refl (f : C(X, Y)) : HomotopicRel f f S :=
 #align continuous_map.homotopic_rel.refl ContinuousMap.HomotopicRel.refl
 
 @[symm]
-theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicRel f g S) : HomotopicRel g f S :=
+lemma symm ⦃f g : C(X, Y)⦄ (h : HomotopicRel f g S) : HomotopicRel g f S :=
   h.map HomotopyRel.symm
 #align continuous_map.homotopic_rel.symm ContinuousMap.HomotopicRel.symm
 
 @[trans]
-theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicRel f g S) (h₁ : HomotopicRel g h S) :
+lemma trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicRel f g S) (h₁ : HomotopicRel g h S) :
     HomotopicRel f h S :=
   h₀.map2 HomotopyRel.trans h₁
 #align continuous_map.homotopic_rel.trans ContinuousMap.HomotopicRel.trans

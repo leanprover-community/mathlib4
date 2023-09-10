@@ -100,7 +100,7 @@ lemma orthogonalFamily_eigenspaces' :
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on an inner
 product space is an invariant subspace of the operator. -/
-theorem orthogonalComplement_iSup_eigenspaces_invariant ⦃v : E⦄ (hv : v ∈ (⨆ μ, eigenspace T μ)ᗮ) :
+lemma orthogonalComplement_iSup_eigenspaces_invariant ⦃v : E⦄ (hv : v ∈ (⨆ μ, eigenspace T μ)ᗮ) :
     T v ∈ (⨆ μ, eigenspace T μ)ᗮ := by
   rw [← Submodule.iInf_orthogonal] at hv ⊢
   exact T.iInf_invariant hT.invariant_orthogonalComplement_eigenspace v hv

@@ -64,7 +64,7 @@ instance instCoeFun : CoeFun (α →ₛ β) fun _ => α → β :=
   ⟨toFun⟩
 #align measure_theory.simple_func.has_coe_to_fun MeasureTheory.SimpleFunc.instCoeFun
 
-theorem coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := by
+lemma coe_injective ⦃f g : α →ₛ β⦄ (H : (f : α → β) = g) : f = g := by
   cases f; cases g; congr
 #align measure_theory.simple_func.coe_injective MeasureTheory.SimpleFunc.coe_injective
 

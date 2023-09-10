@@ -61,7 +61,7 @@ def lsingle (a : α) : M →ₗ[R] α →₀ M :=
 #align finsupp.lsingle Finsupp.lsingle
 
 /-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere. -/
-theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
+lemma lhom_ext ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext h
 #align finsupp.lhom_ext Finsupp.lhom_ext
 
@@ -72,7 +72,7 @@ so that the `ext` tactic can apply a type-specific extensionality lemma to prove
 maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single a 1)`. -/
 -- Porting note: The priority should be higher than `LinearMap.ext`.
 @[ext high]
-theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
+lemma lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
     φ = ψ :=
   lhom_ext fun a => LinearMap.congr_fun (h a)
 #align finsupp.lhom_ext' Finsupp.lhom_ext'

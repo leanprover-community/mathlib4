@@ -381,7 +381,7 @@ products of algebras.
 
 See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
+lemma ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
     (ha : f.comp includeLeft = g.comp includeLeft)
     (hb : (f.restrictScalars R).comp includeRight = (g.restrictScalars R).comp includeRight) :
     f = g := by

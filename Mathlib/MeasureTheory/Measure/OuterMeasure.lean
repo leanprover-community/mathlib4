@@ -1397,7 +1397,7 @@ end Subadditive
 
 section Mono
 
-theorem extend_mono' ⦃s₁ s₂ : Set α⦄ (h₁ : P s₁) (hs : s₁ ⊆ s₂) : extend m s₁ ≤ extend m s₂ := by
+lemma extend_mono' ⦃s₁ s₂ : Set α⦄ (h₁ : P s₁) (hs : s₁ ⊆ s₂) : extend m s₁ ≤ extend m s₂ := by
   refine' le_iInf _
   intro h₂
   rw [extend_eq m h₁]

@@ -290,7 +290,7 @@ lemma coe_inj {f g : LocallyConstant X Y} : (f : X → Y) = g ↔ f = g :=
 #align locally_constant.coe_inj LocallyConstant.coe_inj
 
 @[ext]
-theorem ext ⦃f g : LocallyConstant X Y⦄ (h : ∀ x, f x = g x) : f = g :=
+lemma ext ⦃f g : LocallyConstant X Y⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align locally_constant.ext LocallyConstant.ext
 

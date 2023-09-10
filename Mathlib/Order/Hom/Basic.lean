@@ -343,7 +343,7 @@ def comp (g : β →o γ) (f : α →o β) : α →o γ :=
 #align order_hom.comp_coe OrderHom.comp_coe
 
 @[mono]
-theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂ : α →o β⦄ (hf : f₁ ≤ f₂) :
+lemma comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂ : α →o β⦄ (hf : f₁ ≤ f₂) :
     g₁.comp f₁ ≤ g₂.comp f₂ := fun _ => (hg _).trans (g₂.mono <| hf _)
 #align order_hom.comp_mono OrderHom.comp_mono
 

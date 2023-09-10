@@ -134,7 +134,7 @@ variable {ψ} {ψ' : (⨁ i, M i) →ₗ[R] N}
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
+lemma linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
     (H : ∀ i, ψ.comp (lof R ι M i) = ψ'.comp (lof R ι M i)) : ψ = ψ' :=
   DFinsupp.lhom_ext' H
 #align direct_sum.linear_map_ext DirectSum.linearMap_ext

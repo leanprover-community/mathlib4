@@ -597,7 +597,7 @@ where
     return none
 
 /-- Helper theorem for `Lean.MVar.liftReflToEq`. -/
-theorem Lean.MVarId.rel_of_eq_and_refl {R : α → α → Prop} (hxy : x = y) (h : R x x) :
+lemma Lean.MVarId.rel_of_eq_and_refl {R : α → α → Prop} (hxy : x = y) (h : R x x) :
     R x y := hxy ▸ h
 
 /--
@@ -660,7 +660,7 @@ def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId))
 
 /-- Like `implies_congr` but provides an additional assumption to the second hypothesis.
 This is a non-dependent version of `pi_congr` that allows the domains to be different. -/
-private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
+private lemma implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
     (α → β) = (α' → β') := by
   cases h
   show (∀ (x : α), (fun _ => β) x) = _
@@ -726,12 +726,12 @@ def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
     else
       (none, s)
 
-private theorem heq_imp_of_eq_imp {p : HEq x y → Prop} (h : (he : x = y) → p (heq_of_eq he))
+private lemma heq_imp_of_eq_imp {p : HEq x y → Prop} (h : (he : x = y) → p (heq_of_eq he))
     (he : HEq x y) : p he := by
   cases he
   exact h rfl
 
-private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p (propext he))
+private lemma eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p (propext he))
     (he : x = y) : p he := by
   cases he
   exact h Iff.rfl

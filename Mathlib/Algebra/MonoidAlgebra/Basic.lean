@@ -861,7 +861,7 @@ def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (
 
 /-- A `k`-algebra homomorphism from `MonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
-theorem algHom_ext ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
+lemma algHom_ext ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   AlgHom.toLinearMap_injective <| Finsupp.lhom_ext' fun a => LinearMap.ext_ring (h a)
 #align monoid_algebra.alg_hom_ext MonoidAlgebra.algHom_ext
@@ -869,7 +869,7 @@ theorem algHom_ext ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
 -- Porting note: The priority must be `high`.
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem algHom_ext' ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
+lemma algHom_ext' ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
     (h :
       (φ₁ : MonoidAlgebra k G →* A).comp (of k G) = (φ₂ : MonoidAlgebra k G →* A).comp (of k G)) :
     φ₁ = φ₂ :=
@@ -1965,14 +1965,14 @@ def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀
 
 /-- A `k`-algebra homomorphism from `MonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
-theorem algHom_ext ⦃φ₁ φ₂ : AddMonoidAlgebra k G →ₐ[k] A⦄
+lemma algHom_ext ⦃φ₁ φ₂ : AddMonoidAlgebra k G →ₐ[k] A⦄
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   @MonoidAlgebra.algHom_ext k (Multiplicative G) _ _ _ _ _ _ _ h
 #align add_monoid_algebra.alg_hom_ext AddMonoidAlgebra.algHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem algHom_ext' ⦃φ₁ φ₂ : AddMonoidAlgebra k G →ₐ[k] A⦄
+lemma algHom_ext' ⦃φ₁ φ₂ : AddMonoidAlgebra k G →ₐ[k] A⦄
     (h :
       (φ₁ : AddMonoidAlgebra k G →* A).comp (of k G) =
         (φ₂ : AddMonoidAlgebra k G →* A).comp (of k G)) :

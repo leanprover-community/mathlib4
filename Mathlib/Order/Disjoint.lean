@@ -47,7 +47,7 @@ lemma disjoint_comm : Disjoint a b ↔ Disjoint b a :=
 #align disjoint.comm disjoint_comm
 
 @[symm]
-theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
+lemma Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
   disjoint_comm.1
 #align disjoint.symm Disjoint.symm
 
@@ -231,7 +231,7 @@ lemma Codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
 #align codisjoint.comm Codisjoint_comm
 
 @[symm]
-theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
+lemma Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
   Codisjoint_comm.1
 #align codisjoint.symm Codisjoint.symm
 

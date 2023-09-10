@@ -209,7 +209,7 @@ lemma map_mk'_eq_bot_le : map (mk' N) N' = ⊥ ↔ N' ≤ N := by
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
+lemma lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
   LieModuleHom.ext fun x => Quotient.inductionOn' x <| LieModuleHom.congr_fun h
 #align lie_submodule.quotient.lie_module_hom_ext LieSubmodule.Quotient.lieModuleHom_ext
 

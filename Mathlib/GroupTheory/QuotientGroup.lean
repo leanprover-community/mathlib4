@@ -111,7 +111,7 @@ See note [partially-applied ext lemmas]. -/
  their compositions with `AddQuotientGroup.mk'` are equal.
 
  See note [partially-applied ext lemmas]. "]
-theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
+lemma monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
   MonoidHom.ext fun x => QuotientGroup.induction_on x <| (FunLike.congr_fun h : _)
 #align quotient_group.monoid_hom_ext QuotientGroup.monoidHom_ext
 #align quotient_add_group.add_monoid_hom_ext QuotientAddGroup.addMonoidHom_ext

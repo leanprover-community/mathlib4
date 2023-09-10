@@ -266,12 +266,12 @@ lemma refl (p : Path x₀ x₁) : p.Homotopic p :=
 #align path.homotopic.refl Path.Homotopic.refl
 
 @[symm]
-theorem symm ⦃p₀ p₁ : Path x₀ x₁⦄ (h : p₀.Homotopic p₁) : p₁.Homotopic p₀ :=
+lemma symm ⦃p₀ p₁ : Path x₀ x₁⦄ (h : p₀.Homotopic p₁) : p₁.Homotopic p₀ :=
   h.map Homotopy.symm
 #align path.homotopic.symm Path.Homotopic.symm
 
 @[trans]
-theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁) (h₁ : p₁.Homotopic p₂) :
+lemma trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁) (h₁ : p₁.Homotopic p₂) :
     p₀.Homotopic p₂ :=
   h₀.map2 Homotopy.trans h₁
 #align path.homotopic.trans Path.Homotopic.trans

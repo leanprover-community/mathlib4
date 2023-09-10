@@ -475,7 +475,7 @@ lemma _root_.IsOpen.exists_lt_isCompact [Regular μ] ⦃U : Set α⦄ (hU : IsOp
 #align is_open.exists_lt_is_compact IsOpen.exists_lt_isCompact
 
 /-- The measure of an open set is the supremum of the measures of compact sets it contains. -/
-theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
+lemma _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
     [Regular μ] : μ U = ⨆ (K : Set α) (_ : K ⊆ U) (_ : IsCompact K), μ K :=
   Regular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_compact IsOpen.measure_eq_iSup_isCompact
@@ -564,7 +564,7 @@ lemma _root_.IsOpen.exists_lt_isClosed [WeaklyRegular μ] ⦃U : Set α⦄ (hU :
 #align is_open.exists_lt_is_closed IsOpen.exists_lt_isClosed
 
 /-- If `μ` is a weakly regular measure, then any open set can be approximated by a closed subset. -/
-theorem _root_.IsOpen.measure_eq_iSup_isClosed ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
+lemma _root_.IsOpen.measure_eq_iSup_isClosed ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
     [WeaklyRegular μ] : μ U = ⨆ (F) (_ : F ⊆ U) (_ : IsClosed F), μ F :=
   WeaklyRegular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_closed IsOpen.measure_eq_iSup_isClosed

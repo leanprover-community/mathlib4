@@ -186,39 +186,39 @@ def IsGreatest.orderTop (h : IsGreatest s a) :
 -/
 
 
-theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
+lemma upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
   fun _ hb _ h => hb <| hst h
 #align upper_bounds_mono_set upperBounds_mono_set
 
-theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
+lemma lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
 #align lower_bounds_mono_set lowerBounds_mono_set
 
-theorem upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
+lemma upperBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
   fun ha _ h => le_trans (ha h) hab
 #align upper_bounds_mono_mem upperBounds_mono_mem
 
-theorem lowerBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : b ∈ lowerBounds s → a ∈ lowerBounds s :=
+lemma lowerBounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : b ∈ lowerBounds s → a ∈ lowerBounds s :=
   fun hb _ h => le_trans hab (hb h)
 #align lower_bounds_mono_mem lowerBounds_mono_mem
 
-theorem upperBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a ≤ b) :
+lemma upperBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a ≤ b) :
     a ∈ upperBounds t → b ∈ upperBounds s := fun ha =>
   upperBounds_mono_set hst <| upperBounds_mono_mem hab ha
 #align upper_bounds_mono upperBounds_mono
 
-theorem lowerBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a ≤ b) :
+lemma lowerBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a ≤ b) :
     b ∈ lowerBounds t → a ∈ lowerBounds s := fun hb =>
   lowerBounds_mono_set hst <| lowerBounds_mono_mem hab hb
 #align lower_bounds_mono lowerBounds_mono
 
 /-- If `s ⊆ t` and `t` is bounded above, then so is `s`. -/
-theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
+lemma BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
 #align bdd_above.mono BddAbove.mono
 
 /-- If `s ⊆ t` and `t` is bounded below, then so is `s`. -/
-theorem BddBelow.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddBelow t → BddBelow s :=
+lemma BddBelow.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddBelow t → BddBelow s :=
   Nonempty.mono <| lowerBounds_mono_set h
 #align bdd_below.mono BddBelow.mono
 
