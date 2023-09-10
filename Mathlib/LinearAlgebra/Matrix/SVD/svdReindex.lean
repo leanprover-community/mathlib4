@@ -38,16 +38,14 @@ lemma rank_eq_card_pos_eigs_self_mul_conj_transpose (A: Matrix (Fin M) (Fin N) �
 /-- For matrix A of size m × n and rank A.rank : we have an equivalence relation between elements of
 Fin (A.rank) and the set non-zero eigenvalues of the matrix Aᴴ⬝A -/
 noncomputable def fin_rank_equiv_eigs_conjTranspose_mul_self (A: Matrix (Fin M) (Fin N) 𝕂) :
-    {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (A.rank) := by
-  apply Fintype.equivFinOfCardEq
-  rw [rank_eq_card_pos_eigs_conj_transpose_mul_self]
+    {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (A.rank) :=
+  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_conj_transpose_mul_self A).symm)
 
 /-- For matrix A of size m × n and rank A.rank : we have an equivalence relation between elements of
 Fin (A.rank) and the set non-zero eigenvalues of the matrix A⬝Aᴴ -/
 noncomputable def fin_rank_equiv_eigs_mul_conjTranspose (A: Matrix (Fin M) (Fin N) 𝕂) :
-    {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (A.rank) := by
-  apply Fintype.equivFinOfCardEq
-  rw [rank_eq_card_pos_eigs_self_mul_conj_transpose]
+    {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (A.rank) :=
+  (Fintype.equivFinOfCardEq (rank_eq_card_pos_eigs_self_mul_conj_transpose A).symm)
 
 /-- For matrix of size m × n nad rank A.rank : we have an equivalence relation between the elements
 of Fin (width) and the eigevalues of the matrix Aᴴ⬝A partitioned into
