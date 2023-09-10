@@ -760,6 +760,11 @@ protected def map₂' (f : α → β → γ) (h : (s₁.r ⇒ s₂.r ⇒ s₃.r)
 #align quotient.map₂' Quotient.map₂'
 
 @[simp]
+theorem map₂'_mk (f : α → β → γ) (h) (x : α) :
+    (Quotient.mk s₁ x).map₂' f h =
+      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
+  rfl
+
 theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map₂' f h =
       (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
@@ -780,7 +785,6 @@ protected theorem eq' [s₁ : Setoid α] {a b : α} :
   Quotient.eq
 #align quotient.eq Quotient.eq'
 
-@[simp]
 protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ @Setoid.r _ s₁ a b :=
   Quotient.eq
 #align quotient.eq' Quotient.eq''
@@ -791,7 +795,6 @@ noncomputable def out' (a : Quotient s₁) : α :=
   Quotient.out a
 #align quotient.out' Quotient.out'
 
-@[simp]
 theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
   q.out_eq
 #align quotient.out_eq' Quotient.out_eq'

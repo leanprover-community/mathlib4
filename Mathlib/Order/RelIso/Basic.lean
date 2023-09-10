@@ -453,7 +453,7 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
 
 @[simp]
 theorem acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
-    Acc (fun x y => Quotient.liftOn₂' x y r H) (Quotient.mk'' a : Quotient s) ↔ Acc r a :=
+    Acc (fun x y => Quotient.liftOn₂' x y r H) (Quotient.mk s a) ↔ Acc r a :=
   acc_lift₂_iff (H := H)
 #align acc_lift_on₂'_iff acc_liftOn₂'_iff
 
