@@ -6,7 +6,7 @@ Authors: Scott Morrison, Yaël Dillies
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
 
-#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
+#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
 /-!
 # Intervals as finsets
@@ -345,17 +345,17 @@ theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred ((· ≤ ·) c)] (h
 
 theorem Icc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     (Icc a b).filter (· < c) = Icc a b :=
-  (Finset.filter_eq_self _).2 fun _ hx => lt_of_le_of_lt (mem_Icc.1 hx).2 h
+  filter_true_of_mem  fun _ hx => lt_of_le_of_lt (mem_Icc.1 hx).2 h
 #align finset.Icc_filter_lt_of_lt_right Finset.Icc_filter_lt_of_lt_right
 
 theorem Ioc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     (Ioc a b).filter (· < c) = Ioc a b :=
-  (Finset.filter_eq_self _).2 fun _ hx => lt_of_le_of_lt (mem_Ioc.1 hx).2 h
+  filter_true_of_mem  fun _ hx => lt_of_le_of_lt (mem_Ioc.1 hx).2 h
 #align finset.Ioc_filter_lt_of_lt_right Finset.Ioc_filter_lt_of_lt_right
 
 theorem Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] {a c : α}
     [DecidablePred (· < c)] (h : a < c) : (Iic a).filter (· < c) = Iic a :=
-  (Finset.filter_eq_self _).2 fun _ hx => lt_of_le_of_lt (mem_Iic.1 hx) h
+  filter_true_of_mem fun _ hx => lt_of_le_of_lt (mem_Iic.1 hx) h
 #align finset.Iic_filter_lt_of_lt_right Finset.Iic_filter_lt_of_lt_right
 
 variable (a b) [Fintype α]
@@ -1094,47 +1094,39 @@ variable [DecidableEq α]
 
 @[simp]
 theorem image_add_left_Icc (a b c : α) : (Icc a b).image ((· + ·) c) = Icc (c + a) (c + b) := by
-  rw [← map_add_left_Icc, map_eq_image]
-  rfl
+  rw [← map_add_left_Icc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Icc Finset.image_add_left_Icc
 
 @[simp]
 theorem image_add_left_Ico (a b c : α) : (Ico a b).image ((· + ·) c) = Ico (c + a) (c + b) := by
-  rw [← map_add_left_Ico, map_eq_image]
-  rfl
+  rw [← map_add_left_Ico, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ico Finset.image_add_left_Ico
 
 @[simp]
 theorem image_add_left_Ioc (a b c : α) : (Ioc a b).image ((· + ·) c) = Ioc (c + a) (c + b) := by
-  rw [← map_add_left_Ioc, map_eq_image]
-  rfl
+  rw [← map_add_left_Ioc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioc Finset.image_add_left_Ioc
 
 @[simp]
 theorem image_add_left_Ioo (a b c : α) : (Ioo a b).image ((· + ·) c) = Ioo (c + a) (c + b) := by
-  rw [← map_add_left_Ioo, map_eq_image]
-  rfl
+  rw [← map_add_left_Ioo, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioo Finset.image_add_left_Ioo
 
 @[simp]
 theorem image_add_right_Icc (a b c : α) : (Icc a b).image (· + c) = Icc (a + c) (b + c) := by
-  rw [← map_add_right_Icc, map_eq_image]
-  rfl
+  rw [← map_add_right_Icc, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Icc Finset.image_add_right_Icc
 
 theorem image_add_right_Ico (a b c : α) : (Ico a b).image (· + c) = Ico (a + c) (b + c) := by
-  rw [← map_add_right_Ico, map_eq_image]
-  rfl
+  rw [← map_add_right_Ico, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ico Finset.image_add_right_Ico
 
 theorem image_add_right_Ioc (a b c : α) : (Ioc a b).image (· + c) = Ioc (a + c) (b + c) := by
-  rw [← map_add_right_Ioc, map_eq_image]
-  rfl
+  rw [← map_add_right_Ioc, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ioc Finset.image_add_right_Ioc
 
 theorem image_add_right_Ioo (a b c : α) : (Ioo a b).image (· + c) = Ioo (a + c) (b + c) := by
-  rw [← map_add_right_Ioo, map_eq_image]
-  rfl
+  rw [← map_add_right_Ioo, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ioo Finset.image_add_right_Ioo
 
 end OrderedCancelAddCommMonoid
