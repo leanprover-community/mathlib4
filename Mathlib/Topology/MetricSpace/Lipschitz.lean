@@ -27,10 +27,10 @@ uniformly continuous.
 ## Main definitions and lemmas
 
 * `LipschitzWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0`
-* `LipschitzOnWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
+* `LipschitzOnWith K f s`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
 * `LipschitzWith.uniformContinuous`: a Lipschitz function is uniformly continuous
-* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set is uniformly
-  continuous on that set.
+* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set `s` is uniformly
+  continuous on `s`.
 
 
 ## Implementation notes
