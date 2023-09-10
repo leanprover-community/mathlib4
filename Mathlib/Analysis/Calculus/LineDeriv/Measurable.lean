@@ -35,10 +35,8 @@ theorem measurableSet_lineDifferentiableAt (hf : Continuous f) :
     MeasurableSet {x : E | LineDifferentiableAt 𝕜 f x v} := by
   borelize 𝕜
   let g : E → 𝕜 → F := fun x t ↦ f (x + t • v)
-  have : Continuous g.uncurry := by apply hf.comp; continuity
-  have M_meas : MeasurableSet {p | DifferentiableAt 𝕜 (g p.1) p.2} :=
-    measurableSet_of_differentiableAt_with_param 𝕜 this
-  exact measurable_prod_mk_right M_meas
+  have hg : Continuous g.uncurry := by apply hf.comp; continuity
+  exact measurable_prod_mk_right (measurableSet_of_differentiableAt_with_param 𝕜 hg)
 
 theorem measurable_lineDeriv [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) : Measurable (fun x ↦ lineDeriv 𝕜 f x v) := by
@@ -47,17 +45,19 @@ theorem measurable_lineDeriv [MeasurableSpace F] [BorelSpace F]
   have hg : Continuous g.uncurry := by apply hf.comp; continuity
   exact (measurable_deriv_with_param hg).comp measurable_prod_mk_right
 
-theorem stronglyMeasurable_lineDeriv [SecondCountableTopology F] (hf : Continuous f) :
+theorem stronglyMeasurable_lineDeriv [SecondCountableTopologyEither E F] (hf : Continuous f) :
     StronglyMeasurable (fun x ↦ lineDeriv 𝕜 f x v) := by
-  borelize F
-  exact (measurable_lineDeriv hf).stronglyMeasurable
+  borelize 𝕜
+  let g : E → 𝕜 → F := fun x t ↦ f (x + t • v)
+  have hg : Continuous g.uncurry := by apply hf.comp; continuity
+  exact (stronglyMeasurable_deriv_with_param hg).comp_measurable measurable_prod_mk_right
 
 theorem aemeasurable_lineDeriv [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) (μ : Measure E) :
     AEMeasurable (fun x ↦ lineDeriv 𝕜 f x v) μ :=
   (measurable_lineDeriv hf).aemeasurable
 
-theorem aestronglyMeasurable_lineDeriv [SecondCountableTopology F]
+theorem aestronglyMeasurable_lineDeriv [SecondCountableTopologyEither E F]
     (hf : Continuous f) (μ : Measure E) :
     AEStronglyMeasurable (fun x ↦ lineDeriv 𝕜 f x v) μ :=
   (stronglyMeasurable_lineDeriv hf).aestronglyMeasurable
@@ -90,17 +90,20 @@ theorem measurableSet_lineDifferentiableAt_uncurry (hf : Continuous f) :
     <| continuous_snd.smul (continuous_snd.comp continuous_fst)
   exact (measurable_deriv_with_param this).comp measurable_prod_mk_right
 
-theorem stronglyMeasurable_lineDeriv_uncurry [SecondCountableTopology F] (hf : Continuous f) :
+theorem stronglyMeasurable_lineDeriv_uncurry (hf : Continuous f) :
     StronglyMeasurable (fun (p : E × E) ↦ lineDeriv 𝕜 f p.1 p.2) := by
-  borelize F
-  exact (measurable_lineDeriv_uncurry hf).stronglyMeasurable
+  borelize 𝕜
+  let g : (E × E) → 𝕜 → F := fun p t ↦ f (p.1 + t • p.2)
+  have : Continuous g.uncurry :=
+    hf.comp <| (continuous_fst.comp continuous_fst).add
+    <| continuous_snd.smul (continuous_snd.comp continuous_fst)
+  exact (stronglyMeasurable_deriv_with_param this).comp_measurable measurable_prod_mk_right
 
 theorem aemeasurable_lineDeriv_uncurry [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) (μ : Measure (E × E)) :
     AEMeasurable (fun (p : E × E) ↦ lineDeriv 𝕜 f p.1 p.2) μ :=
   (measurable_lineDeriv_uncurry hf).aemeasurable
 
-theorem aestronglyMeasurable_lineDeriv_uncurry [SecondCountableTopology F]
-    (hf : Continuous f) (μ : Measure (E × E)) :
+theorem aestronglyMeasurable_lineDeriv_uncurry (hf : Continuous f) (μ : Measure (E × E)) :
     AEStronglyMeasurable (fun (p : E × E) ↦ lineDeriv 𝕜 f p.1 p.2) μ :=
   (stronglyMeasurable_lineDeriv_uncurry hf).aestronglyMeasurable

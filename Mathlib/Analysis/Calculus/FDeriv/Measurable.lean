@@ -996,7 +996,6 @@ theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measurab
   borelize F
   rcases h.out with hα|hF
   · have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
-    have : SecondCountableTopology (α × 𝕜) := by infer_instance
     apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
     have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)
         ⊆ closure (Submodule.span 𝕜 (range f.uncurry)) := by
@@ -1011,8 +1010,7 @@ theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measurab
         · exact Submodule.subset_span (mem_range_self (p.1, p.2))
       · rw [deriv_zero_of_not_differentiableAt H]
         exact subset_closure (zero_mem _)
-    apply IsSeparable.mono _ this
-    apply IsSeparable.span.closure
+    apply (IsSeparable.span _).closure.mono this
     rw [← image_univ]
     exact (isSeparable_of_separableSpace univ).image hf
   · exact (measurable_deriv_with_param hf).stronglyMeasurable
