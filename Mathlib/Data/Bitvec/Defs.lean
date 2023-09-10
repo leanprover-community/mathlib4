@@ -8,6 +8,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Bitwise
 
 /-!
+# Basic operations on bitvectors
 We define bitvectors. We choose the `Fin` representation over others for its relative efficiency
 (Lean has special support for `Nat`), alignment with `UIntXY` types which are also represented
 with `Fin`, and the fact that bitwise operations on `Fin` are already defined. Some other possible
@@ -41,8 +42,7 @@ protected def ofNat (w : Nat) (n : Nat) : BitVec w :=
 
 instance : Inhabited (BitVec w) := ⟨BitVec.zero w⟩
 
-instance : OfNat (BitVec w) (nat_lit 0) :=
-  ⟨BitVec.zero w⟩
+instance : Zero (BitVec w) := ⟨BitVec.zero w⟩
 
 /-!
 ## Arithmetic
