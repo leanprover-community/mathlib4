@@ -63,6 +63,7 @@ theorem bodd_one : bodd 1 = true :=
 theorem bodd_two : bodd 2 = false :=
   rfl
 #align nat.bodd_two Nat.bodd_two
+
 @[simp]
 theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
   simp only [bodd, boddDiv2]
