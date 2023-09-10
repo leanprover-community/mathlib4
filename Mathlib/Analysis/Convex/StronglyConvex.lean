@@ -22,11 +22,9 @@ Connect with L_smooth property and prove more theorems.
 -/
 
 variable {n : Type _} [Fintype n]  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-/-
-Function f (x) is m - strongly convex iff
-  f (x) - m * ‖x‖ ^ 2 / 2 is a convex function
--/
 
+/-- Function f (x) is m - strongly convex iff
+  f (x) - m * ‖x‖ ^ 2 / 2 is a convex function -/
 def StronglyConvexOn (s : Set E) (m : ℝ) (f : E → ℝ) : Prop :=
  m > 0 ∧ ConvexOn ℝ s (fun x ↦ f x - m / 2 * ‖x‖ ^ 2)
 
