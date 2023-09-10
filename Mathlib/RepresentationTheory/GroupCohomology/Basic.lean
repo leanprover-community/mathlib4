@@ -116,16 +116,27 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 
 variable [Group G] (n) (A : Rep k G)
 
-/- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
-set_option maxHeartbeats 700000 in
+-- The reason to make the below declaration explicit is that whilst the terms are definitionally
+-- equal, they're not syntactically equal and the `k`-module structures are hence not obviously
+-- equal; they are, but this seems to involve a lot of unfolding. Note that the definition
+-- unfolds to `id`.
+
+/-- An auxiliary isomorphism between two definitionally equal `k`-modules which shows up
+in the definition `InhomogeneousCochains.d_eq`. -/
+def aux_equiv :
+    ((Opposite.op (HomologicalComplex.X (GroupCohomology.resolution k G) n)).unop ⟶ A) ≃ₗ[k]
+    (Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) := LinearEquiv.refl k _
+
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
 and the homogeneous `linearYonedaObjResolution`. -/
-@[nolint checkType] theorem d_eq :
+theorem d_eq :
     d n A =
-      (diagonalHomEquiv n A).toModuleIso.inv ≫
+      -- adding (foo n A).trans makes everything quick and the same proof still works
+      ((aux_equiv n A).trans (diagonalHomEquiv n A)).toModuleIso.inv ≫
         (linearYonedaObjResolution A).d n (n + 1) ≫
-          (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
+          -- also add it here
+          ((aux_equiv (n + 1) A).trans (diagonalHomEquiv (n + 1) A)).toModuleIso.hom := by
   ext f g
 /- Porting note: broken proof was
   simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
