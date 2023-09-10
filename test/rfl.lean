@@ -25,7 +25,7 @@ structure Foo
 def Foo.le (_ _ : Foo) := Unit → True
 instance : LE Foo := ⟨Foo.le⟩
 
-@[refl] lemma Foo.le_refl (a : Foo) : a ≤ a := fun _ => trivial
+@[refl] theorem Foo.le_refl (a : Foo) : a ≤ a := fun _ => trivial
 
 example (a : Foo) : a ≤ a := by apply Foo.le_refl
 example (a : Foo) : a ≤ a := by rfl
