@@ -76,7 +76,7 @@ section
 variable [DecidableEq ι] [Semiring M]
 
 @[simp]
-theorem AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) :
+lemma AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) :
     AddMonoidAlgebra.toDirectSum (Finsupp.single i m) = DirectSum.of _ i m :=
   Finsupp.toDFinsupp_single i m
 #align add_monoid_algebra.to_direct_sum_single AddMonoidAlgebra.toDirectSum_single
@@ -89,19 +89,19 @@ def DirectSum.toAddMonoidAlgebra (f : ⨁ _ : ι, M) : AddMonoidAlgebra M ι :=
 #align direct_sum.to_add_monoid_algebra DirectSum.toAddMonoidAlgebra
 
 @[simp]
-theorem DirectSum.toAddMonoidAlgebra_of (i : ι) (m : M) :
+lemma DirectSum.toAddMonoidAlgebra_of (i : ι) (m : M) :
     (DirectSum.of _ i m : ⨁ _ : ι, M).toAddMonoidAlgebra = Finsupp.single i m :=
   DFinsupp.toFinsupp_single i m
 #align direct_sum.to_add_monoid_algebra_of DirectSum.toAddMonoidAlgebra_of
 
 @[simp]
-theorem AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra (f : AddMonoidAlgebra M ι) :
+lemma AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra (f : AddMonoidAlgebra M ι) :
     f.toDirectSum.toAddMonoidAlgebra = f :=
   Finsupp.toDFinsupp_toFinsupp f
 #align add_monoid_algebra.to_direct_sum_to_add_monoid_algebra AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra
 
 @[simp]
-theorem DirectSum.toAddMonoidAlgebra_toDirectSum (f : ⨁ _ : ι, M) :
+lemma DirectSum.toAddMonoidAlgebra_toDirectSum (f : ⨁ _ : ι, M) :
     f.toAddMonoidAlgebra.toDirectSum = f :=
   (DFinsupp.toFinsupp_toDFinsupp (show Π₀ _ : ι, M from f) : _)
 #align direct_sum.to_add_monoid_algebra_to_direct_sum DirectSum.toAddMonoidAlgebra_toDirectSum

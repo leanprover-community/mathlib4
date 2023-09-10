@@ -40,7 +40,7 @@ lemma mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
+lemma card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
 #align finset.nat.card_antidiagonal Finset.Nat.card_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
@@ -48,7 +48,7 @@ theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [
 lemma antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
 #align finset.nat.antidiagonal_zero Finset.Nat.antidiagonal_zero
 
-theorem antidiagonal_succ (n : ℕ) :
+lemma antidiagonal_succ (n : ℕ) :
     antidiagonal (n + 1) =
       cons (0, n + 1)
         ((antidiagonal n).map
@@ -59,7 +59,7 @@ theorem antidiagonal_succ (n : ℕ) :
   · apply Multiset.Nat.antidiagonal_succ
 #align finset.nat.antidiagonal_succ Finset.Nat.antidiagonal_succ
 
-theorem antidiagonal_succ' (n : ℕ) :
+lemma antidiagonal_succ' (n : ℕ) :
     antidiagonal (n + 1) =
       cons (n + 1, 0)
         ((antidiagonal n).map
@@ -124,7 +124,7 @@ lemma antidiagonal.snd_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal
 lemma antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
   Nat.lt_succ_of_le $ antidiagonal.snd_le hlk
 
-theorem filter_fst_eq_antidiagonal (n m : ℕ) :
+lemma filter_fst_eq_antidiagonal (n m : ℕ) :
     filter (fun x : ℕ × ℕ ↦ x.fst = m) (antidiagonal n) = if m ≤ n then {(m, n - m)} else ∅ := by
   ext ⟨x, y⟩
   simp only [mem_filter, Nat.mem_antidiagonal]
@@ -135,7 +135,7 @@ theorem filter_fst_eq_antidiagonal (n m : ℕ) :
     exact fun hn => ne_of_lt (lt_of_le_of_lt (le_self_add.trans hn.le) h)
 #align finset.nat.filter_fst_eq_antidiagonal Finset.Nat.filter_fst_eq_antidiagonal
 
-theorem filter_snd_eq_antidiagonal (n m : ℕ) :
+lemma filter_snd_eq_antidiagonal (n m : ℕ) :
     filter (fun x : ℕ × ℕ ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
   have : (fun x : ℕ × ℕ ↦ (x.snd = m)) ∘ Prod.swap = fun x : ℕ × ℕ ↦ x.fst = m := by
     ext; simp

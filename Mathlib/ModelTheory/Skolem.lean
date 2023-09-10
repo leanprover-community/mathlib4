@@ -83,7 +83,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Substructure
 
-theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
+lemma skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
     (LHom.sumInl.substructureReduct S).IsElementary := by
   apply (LHom.sumInl.substructureReduct S).isElementary_of_exists
   intro n φ x a h
@@ -101,7 +101,7 @@ noncomputable def elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructur
   ⟨LHom.sumInl.substructureReduct S, S.skolem₁_reduct_isElementary⟩
 #align first_order.language.substructure.elementary_skolem₁_reduct FirstOrder.Language.Substructure.elementarySkolem₁Reduct
 
-theorem coeSort_elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructure M) :
+lemma coeSort_elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructure M) :
     (S.elementarySkolem₁Reduct : Type w) = S :=
   rfl
 #align first_order.language.substructure.coe_sort_elementary_skolem₁_reduct FirstOrder.Language.Substructure.coeSort_elementarySkolem₁Reduct
@@ -128,7 +128,7 @@ variable {M}
   If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
   `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.  -/
-theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (h1 : ℵ₀ ≤ κ)
+lemma exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (h1 : ℵ₀ ≤ κ)
     (h2 : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} κ)
     (h3 : Cardinal.lift.{w'} L.card ≤ Cardinal.lift.{max u v} κ)
     (h4 : Cardinal.lift.{w} κ ≤ Cardinal.lift.{w'} #M) :

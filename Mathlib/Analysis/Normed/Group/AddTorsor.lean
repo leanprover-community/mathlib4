@@ -70,11 +70,11 @@ variable (V W)
 /-- The distance equals the norm of subtracting two points. In this
 lemma, it is necessary to have `V` as an explicit argument; otherwise
 `rw dist_eq_norm_vsub` sometimes doesn't work. -/
-theorem dist_eq_norm_vsub (x y : P) : dist x y = ‖x -ᵥ y‖ :=
+lemma dist_eq_norm_vsub (x y : P) : dist x y = ‖x -ᵥ y‖ :=
   NormedAddTorsor.dist_eq_norm' x y
 #align dist_eq_norm_vsub dist_eq_norm_vsub
 
-theorem nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
+lemma nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
 #align nndist_eq_nnnorm_vsub nndist_eq_nnnorm_vsub
 
@@ -82,51 +82,51 @@ theorem nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
 /-- The distance equals the norm of subtracting two points. In this
 lemma, it is necessary to have `V` as an explicit argument; otherwise
 `rw dist_eq_norm_vsub'` sometimes doesn't work. -/
-theorem dist_eq_norm_vsub' (x y : P) : dist x y = ‖y -ᵥ x‖ :=
+lemma dist_eq_norm_vsub' (x y : P) : dist x y = ‖y -ᵥ x‖ :=
   (dist_comm _ _).trans (dist_eq_norm_vsub _ _ _)
 #align dist_eq_norm_vsub' dist_eq_norm_vsub'
 
-theorem nndist_eq_nnnorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
+lemma nndist_eq_nnnorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub' V x y
 #align nndist_eq_nnnorm_vsub' nndist_eq_nnnorm_vsub'
 
 end
 
-theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = dist x y :=
+lemma dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = dist x y :=
   dist_vadd _ _ _
 #align dist_vadd_cancel_left dist_vadd_cancel_left
 
 -- porting note: new
-theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
+lemma nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
 @[simp]
-theorem dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v₂ +ᵥ x) = dist v₁ v₂ := by
+lemma dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v₂ +ᵥ x) = dist v₁ v₂ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm, vadd_vsub_vadd_cancel_right]
 #align dist_vadd_cancel_right dist_vadd_cancel_right
 
 @[simp]
-theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) (v₂ +ᵥ x) = nndist v₁ v₂ :=
+lemma nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) (v₂ +ᵥ x) = nndist v₁ v₂ :=
   NNReal.eq <| dist_vadd_cancel_right _ _ _
 #align nndist_vadd_cancel_right nndist_vadd_cancel_right
 
 @[simp]
-theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
+lemma dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
   -- Porting note: was `simp [dist_eq_norm_vsub V _ x]`
   rw [dist_eq_norm_vsub V _ x, vadd_vsub]
 #align dist_vadd_left dist_vadd_left
 
 @[simp]
-theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
+lemma nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_left _ _
 #align nndist_vadd_left nndist_vadd_left
 
 @[simp]
-theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [dist_comm, dist_vadd_left]
+lemma dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [dist_comm, dist_vadd_left]
 #align dist_vadd_right dist_vadd_right
 
 @[simp]
-theorem nndist_vadd_right (v : V) (x : P) : nndist x (v +ᵥ x) = ‖v‖₊ :=
+lemma nndist_vadd_right (v : V) (x : P) : nndist x (v +ᵥ x) = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_right _ _
 #align nndist_vadd_right nndist_vadd_right
 
@@ -139,13 +139,13 @@ def IsometryEquiv.vaddConst (x : P) : V ≃ᵢ P where
 #align isometry_equiv.vadd_const IsometryEquiv.vaddConst
 
 @[simp]
-theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y z := by
+lemma dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y z := by
   rw [dist_eq_norm, vsub_sub_vsub_cancel_left, dist_comm, dist_eq_norm_vsub V]
 #align dist_vsub_cancel_left dist_vsub_cancel_left
 
 -- porting note: new
 @[simp]
-theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
+lemma nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
@@ -157,46 +157,46 @@ def IsometryEquiv.constVSub (x : P) : P ≃ᵢ V where
 #align isometry_equiv.const_vsub IsometryEquiv.constVSub
 
 @[simp]
-theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x y :=
+lemma dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x y :=
   (IsometryEquiv.vaddConst z).symm.dist_eq x y
 #align dist_vsub_cancel_right dist_vsub_cancel_right
 
 @[simp]
-theorem nndist_vsub_cancel_right (x y z : P) : nndist (x -ᵥ z) (y -ᵥ z) = nndist x y :=
+lemma nndist_vsub_cancel_right (x y z : P) : nndist (x -ᵥ z) (y -ᵥ z) = nndist x y :=
   NNReal.eq <| dist_vsub_cancel_right _ _ _
 #align nndist_vsub_cancel_right nndist_vsub_cancel_right
 
-theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
+lemma dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
   -- porting note: added `()` and lemma name to help simp find a `@[simp]` lemma
   simpa [(dist_vadd_cancel_right)] using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
-theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
+lemma nndist_vadd_vadd_le (v v' : V) (p p' : P) :
     nndist (v +ᵥ p) (v' +ᵥ p') ≤ nndist v v' + nndist p p' :=
   dist_vadd_vadd_le _ _ _ _
 #align nndist_vadd_vadd_le nndist_vadd_vadd_le
 
-theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+lemma dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     dist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ dist p₁ p₃ + dist p₂ p₄ := by
   rw [dist_eq_norm, vsub_sub_vsub_comm, dist_eq_norm_vsub V, dist_eq_norm_vsub V]
   exact norm_sub_le _ _
 #align dist_vsub_vsub_le dist_vsub_vsub_le
 
-theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+lemma nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
   -- porting note: added `()` to help simp find a `@[simp]` lemma
   simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, (dist_vsub_vsub_le)]
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
-theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
+lemma edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
   norm_cast  -- porting note: was apply_mod_cast
   apply dist_vadd_vadd_le
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
-theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+lemma edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
   norm_cast  -- porting note: was apply_mod_cast

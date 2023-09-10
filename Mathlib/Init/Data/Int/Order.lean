@@ -60,10 +60,10 @@ instance instLinearOrderInt : LinearOrder ℤ where
 #align int.eq_neg_succ_of_lt_zero Int.eq_negSucc_of_lt_zero
 #align int.sub_eq_zero_iff_eq Int.sub_eq_zero
 
-theorem neg_mul_eq_neg_mul_symm (a b : ℤ) : -a * b = -(a * b) := (Int.neg_mul_eq_neg_mul a b).symm
+lemma neg_mul_eq_neg_mul_symm (a b : ℤ) : -a * b = -(a * b) := (Int.neg_mul_eq_neg_mul a b).symm
 #align int.neg_mul_eq_neg_mul_symm Int.neg_mul_eq_neg_mul_symm
 
-theorem mul_neg_eq_neg_mul_symm (a b : ℤ) : a * -b = -(a * b) := (Int.neg_mul_eq_mul_neg a b).symm
+lemma mul_neg_eq_neg_mul_symm (a b : ℤ) : a * -b = -(a * b) := (Int.neg_mul_eq_mul_neg a b).symm
 #align int.mul_neg_eq_neg_mul_symm Int.mul_neg_eq_neg_mul_symm
 
 #align int.of_nat_nonneg Int.ofNat_nonneg

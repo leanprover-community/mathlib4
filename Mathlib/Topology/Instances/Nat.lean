@@ -22,14 +22,14 @@ namespace Nat
 noncomputable instance : Dist ℕ :=
   ⟨fun x y => dist (x : ℝ) y⟩
 
-theorem dist_eq (x y : ℕ) : dist x y = |(x : ℝ) - y| := rfl
+lemma dist_eq (x y : ℕ) : dist x y = |(x : ℝ) - y| := rfl
 #align nat.dist_eq Nat.dist_eq
 
-theorem dist_coe_int (x y : ℕ) : dist (x : ℤ) (y : ℤ) = dist x y := rfl
+lemma dist_coe_int (x y : ℕ) : dist (x : ℤ) (y : ℤ) = dist x y := rfl
 #align nat.dist_coe_int Nat.dist_coe_int
 
 @[norm_cast, simp]
-theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
+lemma dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
 #align nat.dist_cast_real Nat.dist_cast_real
 
 lemma pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun m n hne =>
@@ -46,13 +46,13 @@ lemma closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
 
 instance : MetricSpace ℕ := Nat.uniformEmbedding_coe_real.comapMetricSpace _
 
-theorem preimage_ball (x : ℕ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
+lemma preimage_ball (x : ℕ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
 #align nat.preimage_ball Nat.preimage_ball
 
-theorem preimage_closedBall (x : ℕ) (r : ℝ) : (↑) ⁻¹' closedBall (x : ℝ) r = closedBall x r := rfl
+lemma preimage_closedBall (x : ℕ) (r : ℝ) : (↑) ⁻¹' closedBall (x : ℝ) r = closedBall x r := rfl
 #align nat.preimage_closed_ball Nat.preimage_closedBall
 
-theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
+lemma closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
   rcases le_or_lt 0 r with (hr | hr)
   · rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
     exact add_nonneg (cast_nonneg x) hr

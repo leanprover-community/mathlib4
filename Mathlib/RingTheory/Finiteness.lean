@@ -54,7 +54,7 @@ lemma fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R S
     exact ⟨t, rfl⟩⟩
 #align submodule.fg_def Submodule.fg_def
 
-theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
+lemma fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
   ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩, fun ⟨S, hS⟩ =>
     ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩⟩
 #align submodule.fg_iff_add_submonoid_fg Submodule.fg_iff_addSubmonoid_fg
@@ -172,7 +172,7 @@ lemma fg_span {s : Set M} (hs : s.Finite) : FG (span R s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
 #align submodule.fg_span Submodule.fg_span
 
-theorem fg_span_singleton (x : M) : FG (R ∙ x) :=
+lemma fg_span_singleton (x : M) : FG (R ∙ x) :=
   fg_span (finite_singleton x)
 #align submodule.fg_span_singleton Submodule.fg_span_singleton
 
@@ -208,7 +208,7 @@ lemma FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
 
 variable {f}
 
-theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
+lemma fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
   ⟨t.preimage f fun x _ y _ h => hf h,
@@ -226,12 +226,12 @@ lemma fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCo
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 #align submodule.fg_of_fg_map Submodule.fg_of_fg_map
 
-theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG :=
+lemma fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG :=
   ⟨fun h => N.range_subtype ▸ map_top N.subtype ▸ h.map _, fun h =>
     fg_of_fg_map_injective N.subtype Subtype.val_injective <| by rwa [map_top, range_subtype]⟩
 #align submodule.fg_top Submodule.fg_top
 
-theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
+lemma fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 #align submodule.fg_of_linear_equiv Submodule.fg_of_linearEquiv
 
@@ -332,7 +332,7 @@ lemma fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Modu
     · exact fun _ _ _ => add_smul _ _ _
 #align submodule.fg_of_fg_map_of_fg_inf_ker Submodule.fg_of_fg_map_of_fg_inf_ker
 
-theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+lemma fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     (P : Submodule R M → Prop) (h₁ : ∀ x, P (Submodule.span R {x}))
     (h₂ : ∀ M₁ M₂, P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) : P N := by
   classical
@@ -386,7 +386,7 @@ lemma FG.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o S
 #align submodule.fg.stablizes_of_supr_eq Submodule.FG.stablizes_of_iSup_eq
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
-theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
+lemma fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
   classical
     -- Introduce shorthand for span of an element
     let sp : M → Submodule R M := fun a => span R {a}
@@ -428,7 +428,7 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 
 variable [Module R M] [Module R N] [Module R P]
 
-theorem FG.map₂ (f : M →ₗ[R] N →ₗ[R] P) {p : Submodule R M} {q : Submodule R N} (hp : p.FG)
+lemma FG.map₂ (f : M →ₗ[R] N →ₗ[R] P) {p : Submodule R M} {q : Submodule R N} (hp : p.FG)
     (hq : q.FG) : (map₂ f p q).FG :=
   let ⟨sm, hfm, hm⟩ := fg_def.1 hp
   let ⟨sn, hfn, hn⟩ := fg_def.1 hq
@@ -445,11 +445,11 @@ variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 variable {M N : Submodule R A}
 
-theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
+lemma FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
   hm.map₂ _ hn
 #align submodule.fg.mul Submodule.FG.mul
 
-theorem FG.pow (h : M.FG) (n : ℕ) : (M ^ n).FG :=
+lemma FG.pow (h : M.FG) (n : ℕ) : (M ^ n).FG :=
   Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using h.mul ih
 #align submodule.fg.pow Submodule.FG.pow
 
@@ -579,7 +579,7 @@ instance self : Finite R R :=
 
 variable (M)
 
-theorem of_restrictScalars_finite (R A M : Type*) [CommSemiring R] [Semiring A] [AddCommMonoid M]
+lemma of_restrictScalars_finite (R A M : Type*) [CommSemiring R] [Semiring A] [AddCommMonoid M]
     [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Finite R M] :
     Finite A M := by
   rw [finite_def, Submodule.fg_def] at hM ⊢
@@ -680,7 +680,7 @@ lemma id : Finite (RingHom.id A) :=
 
 variable {A}
 
-theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
+lemma of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
   Module.Finite.of_surjective (Algebra.linearMap A B) hf
 #align ring_hom.finite.of_surjective RingHom.Finite.of_surjective
@@ -736,7 +736,7 @@ lemma comp {g : B →ₐ[R] C} {f : A →ₐ[R] B} (hg : g.Finite) (hf : f.Finit
   RingHom.Finite.comp hg hf
 #align alg_hom.finite.comp AlgHom.Finite.comp
 
-theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) : f.Finite :=
+lemma of_surjective (f : A →ₐ[R] B) (hf : Surjective f) : f.Finite :=
   RingHom.Finite.of_surjective f.toRingHom hf
 #align alg_hom.finite.of_surjective AlgHom.Finite.of_surjective
 

@@ -31,11 +31,11 @@ section GCDMonoid
 
 variable {R : Type*} [EuclideanDomain R] [GCDMonoid R] {p q : R}
 
-theorem gcd_ne_zero_of_left (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
+lemma gcd_ne_zero_of_left (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
   hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_left p q)
 #align gcd_ne_zero_of_left gcd_ne_zero_of_left
 
-theorem gcd_ne_zero_of_right (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
+lemma gcd_ne_zero_of_right (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
   hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_right p q)
 #align gcd_ne_zero_of_right gcd_ne_zero_of_right
 
@@ -55,7 +55,7 @@ lemma right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q ≠
   exact r0
 #align right_div_gcd_ne_zero right_div_gcd_ne_zero
 
-theorem isCoprime_div_gcd_div_gcd (hq : q ≠ 0) :
+lemma isCoprime_div_gcd_div_gcd (hq : q ≠ 0) :
     IsCoprime (p / GCDMonoid.gcd p q) (q / GCDMonoid.gcd p q) :=
   (gcd_isUnit_iff _ _).1 <|
     isUnit_gcd_of_eq_mul_gcd
@@ -83,7 +83,7 @@ def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
 
 variable {α : Type*} [EuclideanDomain α] [DecidableEq α]
 
-theorem span_gcd (x y : α) :
+lemma span_gcd (x y : α) :
     span ({gcd x y} : Set α) = span ({x, y} : Set α) :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.span_gcd x y
@@ -102,7 +102,7 @@ lemma isCoprime_of_dvd {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
 #align euclidean_domain.is_coprime_of_dvd EuclideanDomain.isCoprime_of_dvd
 
 -- this should be proved for UFDs surely?
-theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
+lemma dvd_or_coprime (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.dvd_or_coprime x y h

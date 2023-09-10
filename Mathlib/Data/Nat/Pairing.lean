@@ -47,7 +47,7 @@ def unpair (n : ℕ) : ℕ × ℕ :=
 #align nat.unpair Nat.unpair
 
 @[simp]
-theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
+lemma pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
   dsimp only [unpair]; let s := sqrt n
   have sm : s * s + (n - s * s) = n := add_tsub_cancel_of_le (sqrt_le _)
   split_ifs with h
@@ -62,7 +62,7 @@ lemma pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
 #align nat.mkpair_unpair' Nat.pair_unpair'
 
 @[simp]
-theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
+lemma unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
   dsimp only [pair]; split_ifs with h
   · show unpair (b * b + a) = (a, b)
     have be : sqrt (b * b + a) = b := sqrt_add_eq _ (le_trans (le_of_lt h) (Nat.le_add_left _ _))
@@ -112,15 +112,15 @@ lemma unpair_left_le : ∀ n : ℕ, (unpair n).1 ≤ n
   | n + 1 => le_of_lt (unpair_lt (Nat.succ_pos _))
 #align nat.unpair_left_le Nat.unpair_left_le
 
-theorem left_le_pair (a b : ℕ) : a ≤ pair a b := by simpa using unpair_left_le (pair a b)
+lemma left_le_pair (a b : ℕ) : a ≤ pair a b := by simpa using unpair_left_le (pair a b)
 #align nat.left_le_mkpair Nat.left_le_pair
 
-theorem right_le_pair (a b : ℕ) : b ≤ pair a b := by
+lemma right_le_pair (a b : ℕ) : b ≤ pair a b := by
   by_cases h : a < b <;> simp [pair, h]
   exact le_trans (le_mul_self _) (Nat.le_add_right _ _)
 #align nat.right_le_mkpair Nat.right_le_pair
 
-theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
+lemma unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
   simpa using right_le_pair n.unpair.1 n.unpair.2
 #align nat.unpair_right_le Nat.unpair_right_le
 
@@ -138,7 +138,7 @@ lemma pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a
     apply add_lt_add_right; assumption
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
-theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
+lemma pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
   by_cases h₁ : a < b₁ <;> simp [pair, h₁, add_assoc]
   · simp [pair, lt_trans h₁ h, h]
     exact mul_self_lt_mul_self h
@@ -149,7 +149,7 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
     exact le_trans h₁ (Nat.le_add_left _ _)
 #align nat.mkpair_lt_mkpair_right Nat.pair_lt_pair_right
 
-theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
+lemma pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
   rw [pair, add_sq, mul_one, two_mul, sq, add_assoc, add_assoc]
   cases' (lt_or_le m n) with h h
   rw [if_pos h, max_eq_right h.le, add_lt_add_iff_left, add_assoc]
@@ -158,7 +158,7 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
   exact lt_succ_of_le h
 #align nat.mkpair_lt_max_add_one_sq Nat.pair_lt_max_add_one_sq
 
-theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
+lemma max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
   cases' lt_or_le m n with h h
   rw [if_pos h, max_eq_right h.le, min_eq_left h.le, sq]
@@ -166,13 +166,13 @@ theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n 
   exact le_add_self
 #align nat.max_sq_add_min_le_mkpair Nat.max_sq_add_min_le_pair
 
-theorem add_le_pair (m n : ℕ) : m + n ≤ pair m n :=
+lemma add_le_pair (m n : ℕ) : m + n ≤ pair m n :=
   (max_sq_add_min_le_pair _ _).trans' <| by
     rw [sq, ← min_add_max, add_comm, add_le_add_iff_right]
     exact le_mul_self _
 #align nat.add_le_mkpair Nat.add_le_pair
 
-theorem unpair_add_le (n : ℕ) : (unpair n).1 + (unpair n).2 ≤ n :=
+lemma unpair_add_le (n : ℕ) : (unpair n).1 + (unpair n).2 ≤ n :=
   (add_le_pair _ _).trans_eq (pair_unpair _)
 #align nat.unpair_add_le Nat.unpair_add_le
 

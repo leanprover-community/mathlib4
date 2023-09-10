@@ -73,7 +73,7 @@ lemma sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < sin
 #align real.sin_gt_sub_cube Real.sin_gt_sub_cube
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
-theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
+lemma deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
   HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 #align real.deriv_tan_sub_id Real.deriv_tan_sub_id

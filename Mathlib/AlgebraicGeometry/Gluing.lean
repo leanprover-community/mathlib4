@@ -166,7 +166,7 @@ abbrev isoLocallyRingedSpace :
   𝖣.gluedIso forgetToLocallyRingedSpace
 #align algebraic_geometry.Scheme.glue_data.iso_LocallyRingedSpace AlgebraicGeometry.Scheme.GlueData.isoLocallyRingedSpace
 
-theorem ι_isoLocallyRingedSpace_inv (i : D.J) :
+lemma ι_isoLocallyRingedSpace_inv (i : D.J) :
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i ≫ D.isoLocallyRingedSpace.inv = 𝖣.ι i :=
   𝖣.ι_gluedIso_inv forgetToLocallyRingedSpace i
 #align algebraic_geometry.Scheme.glue_data.ι_iso_LocallyRingedSpace_inv AlgebraicGeometry.Scheme.GlueData.ι_isoLocallyRingedSpace_inv
@@ -175,14 +175,14 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoLocallyRingedSpace_inv]; infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_is_open_immersion AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersion
 
-theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
+lemma ι_jointly_surjective (x : 𝖣.glued.carrier) :
     ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).1.base y = x :=
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
 #align algebraic_geometry.Scheme.glue_data.ι_jointly_surjective AlgebraicGeometry.Scheme.GlueData.ι_jointly_surjective
 
 -- Porting note : promote to higher priority to short circuit simplifier
 @[simp (high), reassoc]
-theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
+lemma glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   𝖣.glue_condition i j
 #align algebraic_geometry.Scheme.glue_data.glue_condition AlgebraicGeometry.Scheme.GlueData.glue_condition
 
@@ -222,7 +222,7 @@ def isoCarrier :
 #align algebraic_geometry.Scheme.glue_data.iso_carrier AlgebraicGeometry.Scheme.GlueData.isoCarrier
 
 @[simp]
-theorem ι_isoCarrier_inv (i : D.J) :
+lemma ι_isoCarrier_inv (i : D.J) :
     (D_).ι i ≫ D.isoCarrier.inv = (D.ι i).1.base := by
   delta isoCarrier
   rw [Iso.trans_inv, GlueData.ι_gluedIso_inv_assoc, Functor.mapIso_inv, Iso.trans_inv,
@@ -241,7 +241,7 @@ def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
     ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).1.base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).1.base x = b.2
 #align algebraic_geometry.Scheme.glue_data.rel AlgebraicGeometry.Scheme.GlueData.Rel
 
-theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
+lemma ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (𝖣.ι i).1.base x = (𝖣.ι j).1.base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   refine' Iff.trans _
     (TopCat.GlueData.ι_eq_iff_rel
@@ -252,7 +252,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_eq_iff AlgebraicGeometry.Scheme.GlueData.ι_eq_iff
 
-theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).1.base ⁻¹' U) := by
+lemma isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).1.base ⁻¹' U) := by
   rw [← (TopCat.homeoOfIso D.isoCarrier.symm).isOpen_preimage]
   rw [TopCat.GlueData.isOpen_iff]
   apply forall_congr'
@@ -291,42 +291,42 @@ def gluedCoverT' (x y z : 𝒰.J) :
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t' AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'
 
 @[simp, reassoc]
-theorem gluedCoverT'_fst_fst (x y z : 𝒰.J) :
+lemma gluedCoverT'_fst_fst (x y z : 𝒰.J) :
     𝒰.gluedCoverT' x y z ≫ pullback.fst ≫ pullback.fst = pullback.fst ≫ pullback.snd := by
   delta gluedCoverT'; simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t'_fst_fst AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'_fst_fst
 
 @[simp, reassoc]
-theorem gluedCoverT'_fst_snd (x y z : 𝒰.J) :
+lemma gluedCoverT'_fst_snd (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ pullback.fst ≫ pullback.snd = pullback.snd ≫ pullback.snd := by
   delta gluedCoverT'; simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t'_fst_snd AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'_fst_snd
 
 @[simp, reassoc]
-theorem gluedCoverT'_snd_fst (x y z : 𝒰.J) :
+lemma gluedCoverT'_snd_fst (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ pullback.snd ≫ pullback.fst = pullback.fst ≫ pullback.snd := by
   delta gluedCoverT'; simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t'_snd_fst AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'_snd_fst
 
 @[simp, reassoc]
-theorem gluedCoverT'_snd_snd (x y z : 𝒰.J) :
+lemma gluedCoverT'_snd_snd (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ pullback.snd ≫ pullback.snd = pullback.fst ≫ pullback.fst := by
   delta gluedCoverT'; simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t'_snd_snd AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'_snd_snd
 
-theorem glued_cover_cocycle_fst (x y z : 𝒰.J) :
+lemma glued_cover_cocycle_fst (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.fst =
       pullback.fst :=
   by apply pullback.hom_ext <;> simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_fst AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_fst
 
-theorem glued_cover_cocycle_snd (x y z : 𝒰.J) :
+lemma glued_cover_cocycle_snd (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.snd =
       pullback.snd :=
   by apply pullback.hom_ext <;> simp [pullback.condition]
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_snd AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_snd
 
-theorem glued_cover_cocycle (x y z : 𝒰.J) :
+lemma glued_cover_cocycle (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y = 𝟙 _ := by
   apply pullback.hom_ext <;> simp_rw [Category.id_comp, Category.assoc]
   apply glued_cover_cocycle_fst
@@ -362,7 +362,7 @@ def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
 #align algebraic_geometry.Scheme.open_cover.from_glued AlgebraicGeometry.Scheme.OpenCover.fromGlued
 
 @[simp, reassoc]
-theorem ι_fromGlued (x : 𝒰.J) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.map x :=
+lemma ι_fromGlued (x : 𝒰.J) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = 𝒰.map x :=
   Multicoequalizer.π_desc _ _ _ _ _
 #align algebraic_geometry.Scheme.open_cover.ι_from_glued AlgebraicGeometry.Scheme.OpenCover.ι_fromGlued
 

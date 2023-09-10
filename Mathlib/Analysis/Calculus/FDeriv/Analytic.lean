@@ -33,7 +33,7 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞}
 
 variable {f : E → F} {x : E} {s : Set E}
 
-theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
   refine' h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right _)
   refine' isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, _, EventuallyEq.rfl⟩
@@ -41,12 +41,12 @@ theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
   rw [_root_.id, sub_self, norm_zero]
 #align has_fpower_series_at.has_strict_fderiv_at HasFPowerSeriesAt.hasStrictFDerivAt
 
-theorem HasFPowerSeriesAt.hasFDerivAt (h : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.hasFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x :=
   h.hasStrictFDerivAt.hasFDerivAt
 #align has_fpower_series_at.has_fderiv_at HasFPowerSeriesAt.hasFDerivAt
 
-theorem HasFPowerSeriesAt.differentiableAt (h : HasFPowerSeriesAt f p x) : DifferentiableAt 𝕜 f x :=
+lemma HasFPowerSeriesAt.differentiableAt (h : HasFPowerSeriesAt f p x) : DifferentiableAt 𝕜 f x :=
   h.hasFDerivAt.differentiableAt
 #align has_fpower_series_at.differentiable_at HasFPowerSeriesAt.differentiableAt
 
@@ -54,11 +54,11 @@ lemma AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt �
   | ⟨_, hp⟩ => hp.differentiableAt
 #align analytic_at.differentiable_at AnalyticAt.differentiableAt
 
-theorem AnalyticAt.differentiableWithinAt (h : AnalyticAt 𝕜 f x) : DifferentiableWithinAt 𝕜 f s x :=
+lemma AnalyticAt.differentiableWithinAt (h : AnalyticAt 𝕜 f x) : DifferentiableWithinAt 𝕜 f s x :=
   h.differentiableAt.differentiableWithinAt
 #align analytic_at.differentiable_within_at AnalyticAt.differentiableWithinAt
 
-theorem HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
     fderiv 𝕜 f x = continuousMultilinearCurryFin1 𝕜 E F (p 1) :=
   h.hasFDerivAt.fderiv
 #align has_fpower_series_at.fderiv_eq HasFPowerSeriesAt.fderiv_eq
@@ -68,7 +68,7 @@ lemma HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
   (h.analyticAt_of_mem hy).differentiableWithinAt
 #align has_fpower_series_on_ball.differentiable_on HasFPowerSeriesOnBall.differentiableOn
 
-theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s := fun y hy =>
+lemma AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s := fun y hy =>
   (h y hy).differentiableWithinAt
 #align analytic_on.differentiable_on AnalyticOn.differentiableOn
 
@@ -171,17 +171,17 @@ variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
 
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
-protected theorem HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
+protected lemma HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictDerivAt f (p 1 fun _ => 1) x :=
   h.hasStrictFDerivAt.hasStrictDerivAt
 #align has_fpower_series_at.has_strict_deriv_at HasFPowerSeriesAt.hasStrictDerivAt
 
-protected theorem HasFPowerSeriesAt.hasDerivAt (h : HasFPowerSeriesAt f p x) :
+protected lemma HasFPowerSeriesAt.hasDerivAt (h : HasFPowerSeriesAt f p x) :
     HasDerivAt f (p 1 fun _ => 1) x :=
   h.hasStrictDerivAt.hasDerivAt
 #align has_fpower_series_at.has_deriv_at HasFPowerSeriesAt.hasDerivAt
 
-protected theorem HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
+protected lemma HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
     deriv f x = p 1 fun _ => 1 :=
   h.hasDerivAt.deriv
 #align has_fpower_series_at.deriv HasFPowerSeriesAt.deriv

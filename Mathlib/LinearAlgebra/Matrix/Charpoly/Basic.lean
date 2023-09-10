@@ -48,26 +48,26 @@ def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
 #align charmatrix charmatrix
 
-theorem charmatrix_apply (M : Matrix n n R) (i j : n) :
+lemma charmatrix_apply (M : Matrix n n R) (i j : n) :
     charmatrix M i j = X * (1 : Matrix n n R[X]) i j - C (M i j) :=
   rfl
 #align charmatrix_apply charmatrix_apply
 
 @[simp]
-theorem charmatrix_apply_eq (M : Matrix n n R) (i : n) :
+lemma charmatrix_apply_eq (M : Matrix n n R) (i : n) :
     charmatrix M i i = (X : R[X]) - C (M i i) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_eq, map_apply]
 
 #align charmatrix_apply_eq charmatrix_apply_eq
 
 @[simp]
-theorem charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
+lemma charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
     charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_ne _ _ _ h, map_apply,
     sub_eq_neg_self]
 #align charmatrix_apply_ne charmatrix_apply_ne
 
-theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
+lemma matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
   ext k i j
   simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
   by_cases h : i = j
@@ -106,7 +106,7 @@ This holds over any commutative ring.
 
 See `LinearMap.aeval_self_charpoly` for the equivalent statement about endomorphisms.
 -/
-theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
+lemma Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- We begin with the fact $χ_M(t) I = adjugate (t I - M) * (t I - M)$,
   -- as an identity in `Matrix n n R[X]`.
   have h : M.charpoly • (1 : Matrix n n R[X]) = adjugate (charmatrix M) * charmatrix M :=

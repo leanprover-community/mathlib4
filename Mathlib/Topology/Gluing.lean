@@ -101,7 +101,7 @@ lemma π_surjective : Function.Surjective 𝖣.π :=
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.π_surjective TopCat.GlueData.π_surjective
 
-theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
+lemma isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
@@ -116,7 +116,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.is_open_iff TopCat.GlueData.isOpen_iff
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : _) (y : D.U i), 𝖣.ι i y = x :=
+lemma ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : _) (y : D.U i), 𝖣.ι i y = x :=
   𝖣.ι_jointly_surjective (forget TopCat) x
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_jointly_surjective TopCat.GlueData.ι_jointly_surjective
@@ -195,7 +195,7 @@ theorem eqvGen_of_π_eq
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.eqv_gen_of_π_eq TopCat.GlueData.eqvGen_of_π_eq
 
-theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
+lemma ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     𝖣.ι i x = 𝖣.ι j y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
   constructor
   · delta GlueData.ι
@@ -229,7 +229,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_eq_iff_rel TopCat.GlueData.ι_eq_iff_rel
 
-theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
+lemma ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
   rcases(D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
   · rfl
@@ -245,7 +245,7 @@ instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_mono TopCat.GlueData.ι_mono
 
-theorem image_inter (i j : D.J) :
+lemma image_inter (i j : D.J) :
     Set.range (𝖣.ι i) ∩ Set.range (𝖣.ι j) = Set.range (D.f i j ≫ 𝖣.ι _) := by
   ext x
   constructor
@@ -267,14 +267,14 @@ theorem image_inter (i j : D.J) :
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.image_inter TopCat.GlueData.image_inter
 
-theorem preimage_range (i j : D.J) : 𝖣.ι j ⁻¹' Set.range (𝖣.ι i) = Set.range (D.f j i) := by
+lemma preimage_range (i j : D.J) : 𝖣.ι j ⁻¹' Set.range (𝖣.ι i) = Set.range (D.f j i) := by
   rw [← Set.preimage_image_eq (Set.range (D.f j i)) (D.ι_injective j), ← Set.image_univ, ←
     Set.image_univ, ← Set.image_comp, ← coe_comp, Set.image_univ, Set.image_univ, ← image_inter,
     Set.preimage_range_inter]
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_range TopCat.GlueData.preimage_range
 
-theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
+lemma preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' (𝖣.ι i '' U) = D.f _ _ '' ((D.t j i ≫ D.f _ _) ⁻¹' U) := by
   have : D.f _ _ ⁻¹' (𝖣.ι j ⁻¹' (𝖣.ι i '' U)) = (D.t j i ≫ D.f _ _) ⁻¹' U := by
     ext x
@@ -289,7 +289,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_image_eq_image TopCat.GlueData.preimage_image_eq_image
 
-theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
+lemma preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' (𝖣.ι i '' U) = (D.t i j ≫ D.f _ _) '' (D.f _ _ ⁻¹' U) := by
   convert D.preimage_image_eq_image i j U using 1
   rw [coe_comp, coe_comp]
@@ -308,7 +308,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: the goal was simply `IsOpen (𝖣.ι i '' U)`.
 -- I had to manually add the explicit type ascription.
-theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' (U : Set (D.U i))) := by
+lemma open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' (U : Set (D.U i))) := by
   rw [isOpen_iff]
   intro j
   rw [preimage_image_eq_image]
@@ -318,7 +318,7 @@ theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' 
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.open_image_open TopCat.GlueData.open_image_open
 
-theorem ι_openEmbedding (i : D.J) : OpenEmbedding (𝖣.ι i) :=
+lemma ι_openEmbedding (i : D.J) : OpenEmbedding (𝖣.ι i) :=
   openEmbedding_of_continuous_injective_open (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
     D.open_image_open i ⟨U, h⟩
 set_option linter.uppercaseLean3 false in
@@ -353,7 +353,7 @@ structure MkCore where
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core TopCat.GlueData.MkCore
 
-theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
+lemma MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   rw [h.t_id] at this
   convert Subtype.eq this
@@ -456,7 +456,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: `elementwise` here produces a bad lemma,
 -- where too much has been simplified, despite the `nosimp`.
 @[simp, elementwise nosimp]
-theorem ι_fromOpenSubsetsGlue (i : J) :
+lemma ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion _ :=
   Multicoequalizer.π_desc _ _ _ _ _
 set_option linter.uppercaseLean3 false in

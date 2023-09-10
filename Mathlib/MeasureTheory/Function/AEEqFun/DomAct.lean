@@ -38,18 +38,18 @@ instance : SMul Mᵈᵐᵃ (α →ₘ[μ] β) where
   smul c f := f.compMeasurePreserving (mk.symm c • ·) (measurePreserving_smul _ _)
 
 @[to_additive]
-theorem smul_aeeqFun_aeeq (c : Mᵈᵐᵃ) (f : α →ₘ[μ] β) :
+lemma smul_aeeqFun_aeeq (c : Mᵈᵐᵃ) (f : α →ₘ[μ] β) :
     c • f =ᵐ[μ] (f <| mk.symm c • ·) :=
   f.coeFn_compMeasurePreserving _
 
 @[to_additive (attr := simp)]
-theorem mk_smul_mk_aeeqFun (c : M) (f : α → β) (hf : AEStronglyMeasurable f μ) :
+lemma mk_smul_mk_aeeqFun (c : M) (f : α → β) (hf : AEStronglyMeasurable f μ) :
     mk c • AEEqFun.mk f hf = AEEqFun.mk (f <| c • ·)
       (hf.comp_measurePreserving (measurePreserving_smul _ _)) :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem smul_aeeqFun_const (c : Mᵈᵐᵃ) (b : β) :
+lemma smul_aeeqFun_const (c : Mᵈᵐᵃ) (b : β) :
     c • (AEEqFun.const α b : α →ₘ[μ] β) = AEEqFun.const α b :=
   rfl
 

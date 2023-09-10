@@ -22,12 +22,12 @@ namespace List
 variable {α : Type u}
 
 @[simp]
-theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
+lemma map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
   simp_rw [finRange, map_pmap, pmap_eq_map]
   exact List.map_id _
 #align list.map_coe_fin_range List.map_coe_finRange
 
-theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
+lemma finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
   apply map_injective_iff.mpr Fin.val_injective
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
     map_map]
@@ -42,7 +42,7 @@ lemma ofFn_eq_pmap {α n} {f : Fin n → α} :
   exact ext_get (by simp) fun i hi1 hi2 => by simp [get_ofFn f ⟨i, hi1⟩]
 #align list.of_fn_eq_pmap List.ofFn_eq_pmap
 
-theorem ofFn_id (n) : ofFn id = finRange n :=
+lemma ofFn_id (n) : ofFn id = finRange n :=
   ofFn_eq_pmap
 #align list.of_fn_id List.ofFn_id
 

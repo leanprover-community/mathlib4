@@ -80,21 +80,21 @@ lemma coe_star {U : unitary R} : ↑(star U) = (star U : R) :=
   rfl
 #align unitary.coe_star unitary.coe_star
 
-theorem coe_star_mul_self (U : unitary R) : (star U : R) * U = 1 :=
+lemma coe_star_mul_self (U : unitary R) : (star U : R) * U = 1 :=
   star_mul_self_of_mem U.prop
 #align unitary.coe_star_mul_self unitary.coe_star_mul_self
 
-theorem coe_mul_star_self (U : unitary R) : (U : R) * star U = 1 :=
+lemma coe_mul_star_self (U : unitary R) : (U : R) * star U = 1 :=
   mul_star_self_of_mem U.prop
 #align unitary.coe_mul_star_self unitary.coe_mul_star_self
 
 @[simp]
-theorem star_mul_self (U : unitary R) : star U * U = 1 :=
+lemma star_mul_self (U : unitary R) : star U * U = 1 :=
   Subtype.ext <| coe_star_mul_self U
 #align unitary.star_mul_self unitary.star_mul_self
 
 @[simp]
-theorem mul_star_self (U : unitary R) : U * star U = 1 :=
+lemma mul_star_self (U : unitary R) : U * star U = 1 :=
   Subtype.ext <| coe_mul_star_self U
 #align unitary.mul_star_self unitary.mul_star_self
 
@@ -118,7 +118,7 @@ instance : StarMul (unitary R) :=
 instance : Inhabited (unitary R) :=
   ⟨1⟩
 
-theorem star_eq_inv (U : unitary R) : star U = U⁻¹ :=
+lemma star_eq_inv (U : unitary R) : star U = U⁻¹ :=
   rfl
 #align unitary.star_eq_inv unitary.star_eq_inv
 
@@ -163,17 +163,17 @@ section GroupWithZero
 variable [GroupWithZero R] [StarMul R]
 
 @[norm_cast]
-theorem coe_inv (U : unitary R) : ↑U⁻¹ = (U⁻¹ : R) :=
+lemma coe_inv (U : unitary R) : ↑U⁻¹ = (U⁻¹ : R) :=
   eq_inv_of_mul_eq_one_right <| coe_mul_star_self _
 #align unitary.coe_inv unitary.coe_inv
 
 @[norm_cast]
-theorem coe_div (U₁ U₂ : unitary R) : ↑(U₁ / U₂) = (U₁ / U₂ : R) := by
+lemma coe_div (U₁ U₂ : unitary R) : ↑(U₁ / U₂) = (U₁ / U₂ : R) := by
   simp only [div_eq_mul_inv, coe_inv, Submonoid.coe_mul]
 #align unitary.coe_div unitary.coe_div
 
 @[norm_cast]
-theorem coe_zpow (U : unitary R) (z : ℤ) : ↑(U ^ z) = (U : R) ^ z := by
+lemma coe_zpow (U : unitary R) (z : ℤ) : ↑(U ^ z) = (U : R) ^ z := by
   induction z
   · simp [SubmonoidClass.coe_pow]
   · simp [coe_inv]
@@ -190,7 +190,7 @@ instance : Neg (unitary R)
     ⟨-U, by simp [mem_iff, star_neg, neg_mul_neg]⟩
 
 @[norm_cast]
-theorem coe_neg (U : unitary R) : ↑(-U) = (-U : R) :=
+lemma coe_neg (U : unitary R) : ↑(-U) = (-U : R) :=
   rfl
 #align unitary.coe_neg unitary.coe_neg
 

@@ -198,7 +198,7 @@ def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `Pi.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
-theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
+lemma Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
     Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
   cases w
   simp
@@ -207,7 +207,7 @@ theorem Pi.π_comp_eqToHom (f : J → C) [HasProduct f] {j j' : J} (w : j = j') 
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `Sigma.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
-theorem Sigma.eqToHom_comp_ι (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
+lemma Sigma.eqToHom_comp_ι (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
   cases w
   simp
@@ -487,7 +487,7 @@ lemma has_smallest_coproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasCoprod
   hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w} J) ≌ _)
 #align category_theory.limits.has_smallest_coproducts_of_has_coproducts CategoryTheory.Limits.has_smallest_coproducts_of_hasCoproducts
 
-theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
+lemma hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
     (lf_is_limit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
   fun _ : Type w =>
   { has_limit := fun F =>
@@ -584,7 +584,7 @@ def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
 #align category_theory.limits.pi.reindex CategoryTheory.Limits.Pi.reindex
 
 @[reassoc (attr := simp)]
-theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b := by
+lemma Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b := by
   dsimp [Pi.reindex]
   simp only [HasLimit.isoOfEquivalence_hom_π, Discrete.equivalence_inverse, Discrete.functor_obj,
     Function.comp_apply, Functor.id_obj, Discrete.equivalence_functor, Functor.comp_obj,
@@ -593,7 +593,7 @@ theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = 
 #align category_theory.limits.pi.reindex_hom_π CategoryTheory.Limits.Pi.reindex_hom_π
 
 @[reassoc (attr := simp)]
-theorem Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
+lemma Pi.reindex_inv_π (b : β) : (Pi.reindex ε f).inv ≫ Pi.π (f ∘ ε) b = Pi.π f (ε b) := by
   simp [Iso.inv_comp_eq]
 #align category_theory.limits.pi.reindex_inv_π CategoryTheory.Limits.Pi.reindex_inv_π
 
@@ -609,7 +609,7 @@ def Sigma.reindex : sigmaObj (f ∘ ε) ≅ sigmaObj f :=
 #align category_theory.limits.sigma.reindex CategoryTheory.Limits.Sigma.reindex
 
 @[reassoc (attr := simp)]
-theorem Sigma.ι_reindex_hom (b : β) :
+lemma Sigma.ι_reindex_hom (b : β) :
     Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).hom = Sigma.ι f (ε b) := by
   dsimp [Sigma.reindex]
   simp only [HasColimit.isoOfEquivalence_hom_π, Functor.id_obj, Discrete.functor_obj,
@@ -622,7 +622,7 @@ theorem Sigma.ι_reindex_hom (b : β) :
 #align category_theory.limits.sigma.ι_reindex_hom CategoryTheory.Limits.Sigma.ι_reindex_hom
 
 @[reassoc (attr := simp)]
-theorem Sigma.ι_reindex_inv (b : β) :
+lemma Sigma.ι_reindex_inv (b : β) :
     Sigma.ι f (ε b) ≫ (Sigma.reindex ε f).inv = Sigma.ι (f ∘ ε) b := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.sigma.ι_reindex_inv CategoryTheory.Limits.Sigma.ι_reindex_inv
 

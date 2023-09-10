@@ -105,7 +105,7 @@ variable (K A)
 
 /-- Let `B` be a real number. The set of algebraic integers in `K` whose conjugates are all
 smaller in norm than `B` is finite. -/
-theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K →+* A, ‖φ x‖ ≤ B}.Finite := by
+lemma finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K →+* A, ‖φ x‖ ≤ B}.Finite := by
   let C := Nat.ceil (max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2))
   have := bUnion_roots_finite (algebraMap ℤ K) (finrank ℚ K) (finite_Icc (-C : ℤ) C)
   refine this.subset fun x hx => ?_; simp_rw [mem_iUnion]
@@ -148,7 +148,7 @@ def NumberField.place : AbsoluteValue K ℝ :=
 #align number_field.place NumberField.place
 
 @[simp]
-theorem NumberField.place_apply (x : K) : (NumberField.place φ) x = norm (φ x) := rfl
+lemma NumberField.place_apply (x : K) : (NumberField.place φ) x = norm (φ x) := rfl
 #align number_field.place_apply NumberField.place_apply
 
 end Place
@@ -167,10 +167,10 @@ def conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 #align number_field.complex_embedding.conjugate NumberField.ComplexEmbedding.conjugate
 
 @[simp]
-theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
+lemma conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 #align number_field.complex_embedding.conjugate_coe_eq NumberField.ComplexEmbedding.conjugate_coe_eq
 
-theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
+lemma place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
   ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
 #align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
 
@@ -248,7 +248,7 @@ instance : NonnegHomClass (InfinitePlace K) K ℝ where
   map_nonneg w _ := w.1.nonneg _
 
 @[simp]
-theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
+lemma apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
 #align number_field.infinite_place.apply NumberField.InfinitePlace.apply
 
 /-- For an infinite place `w`, return an embedding `φ` such that `w = infinite_place φ` . -/
@@ -256,25 +256,25 @@ noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ := w.2.choose
 #align number_field.infinite_place.embedding NumberField.InfinitePlace.embedding
 
 @[simp]
-theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext w.2.choose_spec
+lemma mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext w.2.choose_spec
 #align number_field.infinite_place.mk_embedding NumberField.InfinitePlace.mk_embedding
 
 @[simp]
-theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
+lemma mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
   refine FunLike.ext _ _ (fun x => ?_)
   rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.abs_conj]
 #align number_field.infinite_place.mk_conjugate_eq NumberField.InfinitePlace.mk_conjugate_eq
 
-theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
+lemma norm_embedding_eq (w : InfinitePlace K) (x : K) :
     ‖(embedding w) x‖ = w x := by
   nth_rewrite 2 [← mk_embedding w]
   rfl
 
-theorem eq_iff_eq (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x = r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ = r :=
+lemma eq_iff_eq (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x = r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ = r :=
   ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 #align number_field.infinite_place.eq_iff_eq NumberField.InfinitePlace.eq_iff_eq
 
-theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r :=
+lemma le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r :=
   ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 #align number_field.infinite_place.le_iff_le NumberField.InfinitePlace.le_iff_le
 
@@ -324,7 +324,7 @@ def IsReal (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ComplexEmbeddin
 def IsComplex (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ¬ComplexEmbedding.IsReal φ ∧ mk φ = w
 #align number_field.infinite_place.is_complex NumberField.InfinitePlace.IsComplex
 
-theorem embedding_mk_eq (φ : K →+* ℂ) :
+lemma embedding_mk_eq (φ : K →+* ℂ) :
     embedding (mk φ) = φ ∨ embedding (mk φ) = ComplexEmbedding.conjugate φ := by
   rw [@eq_comm _ _ φ, @eq_comm _ _ (ComplexEmbedding.conjugate φ), ← mk_eq_iff, mk_embedding]
 
@@ -357,7 +357,7 @@ lemma not_isReal_iff_isComplex {w : InfinitePlace K} : ¬IsReal w ↔ IsComplex 
   rw [isComplex_iff, isReal_iff]
 #align number_field.infinite_place.not_is_real_iff_is_complex NumberField.InfinitePlace.not_isReal_iff_isComplex
 
-theorem isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := by
+lemma isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := by
   rw [← not_isReal_iff_isComplex]; exact em _
 #align number_field.infinite_place.is_real_or_is_complex NumberField.InfinitePlace.isReal_or_isComplex
 
@@ -419,12 +419,12 @@ noncomputable def mkComplex :
 #align number_field.infinite_place.mk_complex NumberField.InfinitePlace.mkComplex
 
 @[simp]
-theorem mkReal_coe (φ : { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }) :
+lemma mkReal_coe (φ : { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }) :
     (mkReal φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
 #align number_field.infinite_place.mk_real_coe NumberField.InfinitePlace.mkReal_coe
 
 @[simp]
-theorem mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }) :
+lemma mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }) :
     (mkComplex φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
 #align number_field.infinite_place.mk_complex_coe NumberField.InfinitePlace.mkComplex_coe
 
@@ -438,7 +438,7 @@ open scoped BigOperators
 
 /-- The infinite part of the product formula : for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where
 `‖·‖_w` is the normalized absolute value for `w`.  -/
-theorem prod_eq_abs_norm (x : K) :
+lemma prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   convert (congr_arg Complex.abs (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
   · rw [map_prod, ← Equiv.prod_comp' RingHom.equivRatAlgHom (fun f => Complex.abs (f x))

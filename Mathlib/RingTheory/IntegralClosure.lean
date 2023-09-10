@@ -79,7 +79,7 @@ lemma isIntegral_algebraMap {x : R} : IsIntegral R (algebraMap R A x) :=
   (algebraMap R A).is_integral_map
 #align is_integral_algebra_map isIntegral_algebraMap
 
-theorem isIntegral_of_noetherian (H : IsNoetherian R A) (x : A) : IsIntegral R x := by
+lemma isIntegral_of_noetherian (H : IsNoetherian R A) (x : A) : IsIntegral R x := by
   let leval : R[X] →ₗ[R] A := (aeval x).toLinearMap
   let D : ℕ → Submodule R A := fun n => (degreeLE R n).map leval
   let M := WellFounded.min (isNoetherian_iff_wellFounded.1 H) (Set.range D) ⟨_, ⟨0, rfl⟩⟩
@@ -98,7 +98,7 @@ theorem isIntegral_of_noetherian (H : IsNoetherian R A) (x : A) : IsIntegral R x
   rw [LinearMap.map_sub, hpe, sub_self]
 #align is_integral_of_noetherian isIntegral_of_noetherian
 
-theorem isIntegral_of_submodule_noetherian (S : Subalgebra R A)
+lemma isIntegral_of_submodule_noetherian (S : Subalgebra R A)
     (H : IsNoetherian R (Subalgebra.toSubmodule S)) (x : A) (hx : x ∈ S) : IsIntegral R x := by
   suffices IsIntegral R (show S from ⟨x, hx⟩) by
     rcases this with ⟨p, hpm, hpx⟩
@@ -121,7 +121,7 @@ variable [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A]
 
 variable (K)
 
-theorem isIntegral_of_finite (e : A) : IsIntegral K e :=
+lemma isIntegral_of_finite (e : A) : IsIntegral K e :=
   isIntegral_of_noetherian (IsNoetherian.iff_fg.2 inferInstance) _
 
 variable (A)
@@ -214,7 +214,7 @@ lemma isIntegral_iff_isIntegral_closure_finite {r : A} :
   exact isIntegral_ofSubring _ hsr
 #align is_integral_iff_is_integral_closure_finite isIntegral_iff_isIntegral_closure_finite
 
-theorem FG_adjoin_singleton_of_integral (x : A) (hx : IsIntegral R x) :
+lemma FG_adjoin_singleton_of_integral (x : A) (hx : IsIntegral R x) :
     (Algebra.adjoin R ({x} : Set A)).toSubmodule.FG := by
   rcases hx with ⟨f, hfm, hfx⟩
   exists Finset.image ((· ^ ·) x) (Finset.range (natDegree f + 1))
@@ -268,7 +268,7 @@ lemma isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
 
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
-theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) :
+lemma isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) :
     IsIntegral R x := by
   -- say `x ∈ S`. We want to prove that `x` is integral over `R`.
   -- Say `S` is generated as an `R`-module by the set `y`.
@@ -419,7 +419,7 @@ lemma isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R M]
 
 variable {f}
 
-theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
+lemma RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
   fun _ => isIntegral_of_mem_of_FG ⊤ h.1 _ trivial
 #align ring_hom.finite.to_is_integral RingHom.Finite.to_isIntegral
@@ -427,7 +427,7 @@ theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
 alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 #align ring_hom.is_integral.of_finite RingHom.IsIntegral.of_finite
 
-theorem RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.Finite := by
+lemma RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.Finite := by
   letI := f.toAlgebra
   obtain ⟨s, hs⟩ := h'
   constructor
@@ -444,7 +444,7 @@ lemma RingHom.finite_iff_isIntegral_and_finiteType : f.Finite ↔ f.IsIntegral �
   ⟨fun h => ⟨h.to_isIntegral, h.to_finiteType⟩, fun ⟨h, h'⟩ => h.to_finite h'⟩
 #align ring_hom.finite_iff_is_integral_and_finite_type RingHom.finite_iff_isIntegral_and_finiteType
 
-theorem Algebra.IsIntegral.finite (h : Algebra.IsIntegral R A) [h' : Algebra.FiniteType R A] :
+lemma Algebra.IsIntegral.finite (h : Algebra.IsIntegral R A) [h' : Algebra.FiniteType R A] :
     Module.Finite R A := by
   have :=
     h.to_finite
@@ -604,7 +604,7 @@ lemma isIntegral_sup {S T : Subalgebra R A} :
 #align is_integral_sup isIntegral_sup
 
 /-- Mapping an integral closure along an `AlgEquiv` gives the integral closure. -/
-theorem integralClosure_map_algEquiv (f : A ≃ₐ[R] B) :
+lemma integralClosure_map_algEquiv (f : A ≃ₐ[R] B) :
     (integralClosure R A).map (f : A →ₐ[R] B) = integralClosure R B := by
   ext y
   rw [Subalgebra.mem_map]
@@ -616,14 +616,14 @@ theorem integralClosure_map_algEquiv (f : A ≃ₐ[R] B) :
     simp
 #align integral_closure_map_alg_equiv integralClosure_map_algEquiv
 
-theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
+lemma integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2
   ⟨p, hpm,
     Subtype.eq <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 #align integral_closure.is_integral integralClosure.isIntegral
 
-theorem RingHom.isIntegral_of_isIntegral_mul_unit (x y : S) (r : R) (hr : f r * y = 1)
+lemma RingHom.isIntegral_of_isIntegral_mul_unit (x y : S) (r : R) (hr : f r * y = 1)
     (hx : f.IsIntegralElem (x * y)) : f.IsIntegralElem x := by
   obtain ⟨p, ⟨p_monic, hp⟩⟩ := hx
   refine' ⟨scaleRoots p r, ⟨(monic_scaleRoots_iff r).2 p_monic, _⟩⟩
@@ -637,7 +637,7 @@ lemma isIntegral_of_isIntegral_mul_unit {x y : A} {r : R} (hr : algebraMap R A r
 #align is_integral_of_is_integral_mul_unit isIntegral_of_isIntegral_mul_unit
 
 /-- Generalization of `isIntegral_of_mem_closure` bootstrapped up from that lemma -/
-theorem isIntegral_of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x) :
+lemma isIntegral_of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x) :
     ∀ x ∈ Subring.closure G, IsIntegral R x := fun _ hx =>
   Subring.closure_induction hx hG isIntegral_zero isIntegral_one (fun _ _ => isIntegral_add)
     (fun _ => isIntegral_neg) fun _ _ => isIntegral_mul
@@ -695,7 +695,7 @@ open TensorProduct
 
 -- porting note: I fought a lot with this proof.  I tried to follow the original,
 -- but was not really able to.
-theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
+lemma IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
   obtain ⟨p, hp, hp'⟩ := h
   refine' ⟨(p.map (_root_.algebraMap R A)).scaleRoots x, _, _⟩
   · rw [Polynomial.monic_scaleRoots_iff]
@@ -725,7 +725,7 @@ noncomputable def normalizeScaleRoots (p : R[X]) : R[X] :=
     monomial i (if i = p.natDegree then 1 else p.coeff i * p.leadingCoeff ^ (p.natDegree - 1 - i))
 #align normalize_scale_roots normalizeScaleRoots
 
-theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ natDegree p) :
+lemma normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ natDegree p) :
     (normalizeScaleRoots p).coeff i * p.leadingCoeff ^ i =
       p.coeff i * p.leadingCoeff ^ (p.natDegree - 1) := by
   simp only [normalizeScaleRoots, finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', one_mul,
@@ -739,7 +739,7 @@ theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ nat
     exact ⟨le_natDegree_of_ne_zero h₁, h₂⟩
 #align normalize_scale_roots_coeff_mul_leading_coeff_pow normalizeScaleRoots_coeff_mul_leadingCoeff_pow
 
-theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
+lemma leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
     p.leadingCoeff • normalizeScaleRoots p = scaleRoots p p.leadingCoeff := by
   ext
   simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
@@ -772,7 +772,7 @@ lemma normalizeScaleRoots_degree : (normalizeScaleRoots p).degree = p.degree := 
     exact degree_smul_le _ _
 #align normalize_scale_roots_degree normalizeScaleRoots_degree
 
-theorem normalizeScaleRoots_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f : R →+* S) (x : S) :
+lemma normalizeScaleRoots_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f : R →+* S) (x : S) :
     (normalizeScaleRoots p).eval₂ f (f p.leadingCoeff * x) =
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x := by
   rw [eval₂_eq_sum_range, eval₂_eq_sum_range, Finset.mul_sum]
@@ -784,7 +784,7 @@ theorem normalizeScaleRoots_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f 
   ring
 #align normalize_scale_roots_eval₂_leading_coeff_mul normalizeScaleRoots_eval₂_leadingCoeff_mul
 
-theorem normalizeScaleRoots_monic (h : p ≠ 0) : (normalizeScaleRoots p).Monic := by
+lemma normalizeScaleRoots_monic (h : p ≠ 0) : (normalizeScaleRoots p).Monic := by
   delta Monic leadingCoeff
   rw [natDegree_eq_of_degree_eq (normalizeScaleRoots_degree p)]
   suffices p = 0 → (0 : R) = 1 by simpa [normalizeScaleRoots, coeff_monomial]
@@ -793,7 +793,7 @@ theorem normalizeScaleRoots_monic (h : p ≠ 0) : (normalizeScaleRoots p).Monic 
 
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
 `f p.leadingCoeff * x` is integral. -/
-theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
+lemma RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     f.IsIntegralElem (f p.leadingCoeff * x) := by
   by_cases h' : 1 ≤ p.natDegree
   · use normalizeScaleRoots p
@@ -847,7 +847,7 @@ instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing 
 namespace IsIntegralClosure
 
 -- Porting note: added to work around missing infer kind support
-theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
+lemma algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
   [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
   algebraMap_injective' R
 
@@ -882,28 +882,28 @@ noncomputable def mk' (x : B) (hx : IsIntegral R x) : A :=
 #align is_integral_closure.mk' IsIntegralClosure.mk'
 
 @[simp]
-theorem algebraMap_mk' (x : B) (hx : IsIntegral R x) : algebraMap A B (mk' A x hx) = x :=
+lemma algebraMap_mk' (x : B) (hx : IsIntegral R x) : algebraMap A B (mk' A x hx) = x :=
   Classical.choose_spec (isIntegral_iff.mp hx)
 #align is_integral_closure.algebra_map_mk' IsIntegralClosure.algebraMap_mk'
 
 @[simp]
-theorem mk'_one (h : IsIntegral R (1 : B) := isIntegral_one) : mk' A 1 h = 1 :=
+lemma mk'_one (h : IsIntegral R (1 : B) := isIntegral_one) : mk' A 1 h = 1 :=
   algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_one]
 #align is_integral_closure.mk'_one IsIntegralClosure.mk'_one
 
 @[simp]
-theorem mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :=
+lemma mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :=
   algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_zero]
 #align is_integral_closure.mk'_zero IsIntegralClosure.mk'_zero
 
 -- Porting note: Left-hand side does not simplify @[simp]
-theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
+lemma mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x + y) (isIntegral_add hx hy) = mk' A x hx + mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_add]
 #align is_integral_closure.mk'_add IsIntegralClosure.mk'_add
 
 -- Porting note: Left-hand side does not simplify @[simp]
-theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
+lemma mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (isIntegral_mul hx hy) = mk' A x hx * mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_mul]
 #align is_integral_closure.mk'_mul IsIntegralClosure.mk'_mul
@@ -936,7 +936,7 @@ noncomputable def lift : S →ₐ[R] A where
 #align is_integral_closure.lift IsIntegralClosure.lift
 
 @[simp]
-theorem algebraMap_lift (x : S) : algebraMap A B (lift A B h x) = algebraMap S B x :=
+lemma algebraMap_lift (x : S) : algebraMap A B (lift A B h x) = algebraMap S B x :=
   algebraMap_mk' A (algebraMap S B x) (IsIntegral.algebraMap (h x))
 #align is_integral_closure.algebra_map_lift IsIntegralClosure.algebraMap_lift
 
@@ -963,7 +963,7 @@ noncomputable def equiv : A ≃ₐ[R] A' :=
 #align is_integral_closure.equiv IsIntegralClosure.equiv
 
 @[simp]
-theorem algebraMap_equiv (x : A) : algebraMap A' B (equiv R A B A' x) = algebraMap A B x :=
+lemma algebraMap_equiv (x : A) : algebraMap A' B (equiv R A B A' x) = algebraMap A B x :=
   algebraMap_lift A' B (isIntegral_algebra R B) x
 #align is_integral_closure.algebra_map_equiv IsIntegralClosure.algebraMap_equiv
 
@@ -983,7 +983,7 @@ variable [CommRing R] [CommRing A] [CommRing B] [CommRing S] [CommRing T]
 
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
 
-theorem isIntegral_trans_aux (x : B) {p : A[X]} (pmonic : Monic p) (hp : aeval x p = 0) :
+lemma isIntegral_trans_aux (x : B) {p : A[X]} (pmonic : Monic p) (hp : aeval x p = 0) :
     IsIntegral (adjoin R (↑(p.map <| algebraMap A B).frange : Set B)) x := by
   generalize hS : (↑(p.map <| algebraMap A B).frange : Set B) = S
   have coeffs_mem : ∀ i, (p.map <| algebraMap A B).coeff i ∈ adjoin R S := by
@@ -1013,7 +1013,7 @@ variable [Algebra R A] [IsScalarTower R A B]
 
 /-- If A is an R-algebra all of whose elements are integral over R,
 and x is an element of an A-algebra that is integral over A, then x is integral over R.-/
-theorem isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegral A x) :
+lemma isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegral A x) :
     IsIntegral R x := by
   rcases hx with ⟨p, pmonic, hp⟩
   let S : Set B := ↑(p.map <| algebraMap A B).frange
@@ -1035,25 +1035,25 @@ nonrec theorem Algebra.isIntegral_trans
   fun x => isIntegral_trans hA x (hB x)
 #align algebra.is_integral_trans Algebra.isIntegral_trans
 
-theorem RingHom.isIntegral_trans (hf : f.IsIntegral) (hg : g.IsIntegral) : (g.comp f).IsIntegral :=
+lemma RingHom.isIntegral_trans (hf : f.IsIntegral) (hg : g.IsIntegral) : (g.comp f).IsIntegral :=
   @Algebra.isIntegral_trans R S T _ _ _ g.toAlgebra (g.comp f).toAlgebra f.toAlgebra
     (@IsScalarTower.of_algebraMap_eq R S T _ _ _ f.toAlgebra g.toAlgebra (g.comp f).toAlgebra
       (RingHom.comp_apply g f))
     hf hg
 #align ring_hom.is_integral_trans RingHom.isIntegral_trans
 
-theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral := fun x =>
+lemma RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral := fun x =>
   (hf x).recOn fun _y hy => (hy ▸ f.is_integral_map : f.IsIntegralElem x)
 #align ring_hom.is_integral_of_surjective RingHom.isIntegral_of_surjective
 
-theorem isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
+lemma isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
     Algebra.IsIntegral R A :=
   (algebraMap R A).isIntegral_of_surjective h
 #align is_integral_of_surjective isIntegral_of_surjective
 
 /-- If `R → A → B` is an algebra tower with `A → B` injective,
 then if the entire tower is an integral extension so is `R → A` -/
-theorem isIntegral_tower_bot_of_isIntegral (H : Function.Injective (algebraMap A B)) {x : A}
+lemma isIntegral_tower_bot_of_isIntegral (H : Function.Injective (algebraMap A B)) {x : A}
     (h : IsIntegral R (algebraMap A B x)) : IsIntegral R x := by
   rcases h with ⟨p, ⟨hp, hp'⟩⟩
   refine' ⟨p, ⟨hp, _⟩⟩
@@ -1063,7 +1063,7 @@ theorem isIntegral_tower_bot_of_isIntegral (H : Function.Injective (algebraMap A
   exact H hp'
 #align is_integral_tower_bot_of_is_integral isIntegral_tower_bot_of_isIntegral
 
-nonrec theorem RingHom.isIntegral_tower_bot_of_isIntegral (hg : Function.Injective g)
+nonrec lemma RingHom.isIntegral_tower_bot_of_isIntegral (hg : Function.Injective g)
     (hfg : (g.comp f).IsIntegral) : f.IsIntegral := fun x =>
   @isIntegral_tower_bot_of_isIntegral R S T _ _ _ g.toAlgebra (g.comp f).toAlgebra f.toAlgebra
     (@IsScalarTower.of_algebraMap_eq R S T _ _ _ f.toAlgebra g.toAlgebra (g.comp f).toAlgebra
@@ -1084,7 +1084,7 @@ lemma RingHom.isIntegralElem_of_isIntegralElem_comp {x : T} (h : (g.comp f).IsIn
 #align ring_hom.is_integral_elem_of_is_integral_elem_comp
   RingHom.isIntegralElem_of_isIntegralElem_comp
 
-theorem RingHom.isIntegral_tower_top_of_isIntegral (h : (g.comp f).IsIntegral) : g.IsIntegral :=
+lemma RingHom.isIntegral_tower_top_of_isIntegral (h : (g.comp f).IsIntegral) : g.IsIntegral :=
   fun x => RingHom.isIntegralElem_of_isIntegralElem_comp f g (h x)
 #align ring_hom.is_integral_tower_top_of_is_integral RingHom.isIntegral_tower_top_of_isIntegral
 

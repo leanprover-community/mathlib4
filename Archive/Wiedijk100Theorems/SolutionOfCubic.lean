@@ -51,12 +51,12 @@ variable (a b c d : K)
 
 variable {ω p q r s t : K}
 
-theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
+lemma cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
   simpa [cyclotomic_prime, Finset.sum_range_succ] using hω.isRoot_cyclotomic (by decide)
 #align theorems_100.cube_root_of_unity_sum Theorems100.cube_root_of_unity_sum
 
 /-- The roots of a monic cubic whose quadratic term is zero and whose discriminant is nonzero. -/
-theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠ 0)
+lemma cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠ 0)
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
     x ^ 3 + 3 * p * x - 2 * q = 0 ↔ x = s - t ∨ x = s * ω - t * ω ^ 2 ∨ x = s * ω ^ 2 - t * ω := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
@@ -75,7 +75,7 @@ theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠
 #align theorems_100.cubic_basic_eq_zero_iff Theorems100.cubic_basic_eq_zero_iff
 
 /-- Roots of a monic cubic whose discriminant is nonzero. -/
-theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - b ^ 2) / 9)
+lemma cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - b ^ 2) / 9)
     (hp_nonzero : p ≠ 0) (hq : q = (9 * b * c - 2 * b ^ 3 - 27 * d) / 54)
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
     x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
@@ -94,7 +94,7 @@ theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - 
 
 /-- **The Solution of Cubic**.
   The roots of a cubic polynomial whose discriminant is nonzero. -/
-theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
+lemma cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
     (hp : p = (3 * a * c - b ^ 2) / (9 * a ^ 2)) (hp_nonzero : p ≠ 0)
     (hq : q = (9 * a * b * c - 2 * b ^ 3 - 27 * a ^ 2 * d) / (54 * a ^ 3))
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
@@ -120,7 +120,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
 #align theorems_100.cubic_eq_zero_iff Theorems100.cubic_eq_zero_iff
 
 /-- the solution of the cubic equation when p equals zero. -/
-theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
+lemma cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
     (hpz : 3 * a * c - b ^ 2 = 0)
     (hq : q = (9 * a * b * c - 2 * b ^ 3 - 27 * a ^ 2 * d) / (54 * a ^ 3)) (hs3 : s ^ 3 = 2 * q)
     (x : K) :

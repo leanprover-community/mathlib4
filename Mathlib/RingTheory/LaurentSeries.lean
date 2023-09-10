@@ -45,13 +45,13 @@ instance : Coe (PowerSeries R) (LaurentSeries R) :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
 /- Porting note: now a syntactic tautology and not needed elsewhere
-theorem coe_powerSeries (x : PowerSeries R) :
+lemma coe_powerSeries (x : PowerSeries R) :
     (x : LaurentSeries R) = HahnSeries.ofPowerSeries ℤ R x :=
   rfl -/
 #noalign laurent_series.coe_power_series
 
 @[simp]
-theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
+lemma coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
     HahnSeries.coeff (x : LaurentSeries R) n = PowerSeries.coeff R n x := by
   rw [ofPowerSeries_apply_coeff]
 #align laurent_series.coeff_coe_power_series LaurentSeries.coeff_coe_powerSeries
@@ -64,7 +64,7 @@ def powerSeriesPart (x : LaurentSeries R) : PowerSeries R :=
 #align laurent_series.power_series_part LaurentSeries.powerSeriesPart
 
 @[simp]
-theorem powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
+lemma powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
     PowerSeries.coeff R n x.powerSeriesPart = x.coeff (x.order + n) :=
   PowerSeries.coeff_mk _ _
 #align laurent_series.power_series_part_coeff LaurentSeries.powerSeriesPart_coeff
@@ -76,7 +76,7 @@ lemma powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
 #align laurent_series.power_series_part_zero LaurentSeries.powerSeriesPart_zero
 
 @[simp]
-theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 ↔ x = 0 := by
+lemma powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 ↔ x = 0 := by
   constructor
   · contrapose!
     simp only [ne_eq]
@@ -89,7 +89,7 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
 #align laurent_series.power_series_part_eq_zero LaurentSeries.powerSeriesPart_eq_zero
 
 @[simp]
-theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
+lemma single_order_mul_powerSeriesPart (x : LaurentSeries R) :
     (single x.order 1 : LaurentSeries R) * x.powerSeriesPart = x := by
   ext n
   rw [← sub_add_cancel n x.order, single_mul_coeff_add, sub_add_cancel, one_mul]
@@ -107,7 +107,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
       simp only [Nat.cast_nonneg]
 #align laurent_series.single_order_mul_power_series_part LaurentSeries.single_order_mul_powerSeriesPart
 
-theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
+lemma ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
   refine' Eq.trans _ (congr rfl x.single_order_mul_powerSeriesPart)
   rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul]
@@ -211,7 +211,7 @@ lemma coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 #align power_series.coe_mul PowerSeries.coe_mul
 
-theorem coeff_coe (i : ℤ) :
+lemma coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
@@ -224,7 +224,7 @@ theorem coeff_coe (i : ℤ) :
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
 -- Porting note: simp can prove this, and removed norm_cast attribute
-theorem coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries.C r :=
+lemma coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries.C r :=
   ofPowerSeries_C _
 set_option linter.uppercaseLean3 false in
 #align power_series.coe_C PowerSeries.coe_C
@@ -247,7 +247,7 @@ lemma coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S)
 #noalign power_series.coe_bit1
 
 @[simp, norm_cast]
-theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
+lemma coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 #align power_series.coe_pow PowerSeries.coe_pow
 

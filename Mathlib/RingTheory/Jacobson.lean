@@ -124,7 +124,7 @@ instance (priority := 100) isJacobson_quotient [IsJacobson R] : IsJacobson (R �
     rfl⟩
 #align ideal.is_jacobson_quotient Ideal.isJacobson_quotient
 
-theorem isJacobson_iso (e : R ≃+* S) : IsJacobson R ↔ IsJacobson S :=
+lemma isJacobson_iso (e : R ≃+* S) : IsJacobson R ↔ IsJacobson S :=
   ⟨fun h => @isJacobson_of_surjective _ _ _ _ h ⟨(e : R →+* S), e.surjective⟩, fun h =>
     @isJacobson_of_surjective _ _ _ _ h ⟨(e.symm : S →+* R), e.symm.surjective⟩⟩
 #align ideal.is_jacobson_iso Ideal.isJacobson_iso
@@ -148,7 +148,7 @@ lemma isJacobson_of_isIntegral [Algebra R S] (hRS : Algebra.IsIntegral R S) (hR 
       (comap_bot_le_of_injective _ algebraMap_quotient_injective)
 #align ideal.is_jacobson_of_is_integral Ideal.isJacobson_of_isIntegral
 
-theorem isJacobson_of_isIntegral' (f : R →+* S) (hf : f.IsIntegral) (hR : IsJacobson R) :
+lemma isJacobson_of_isIntegral' (f : R →+* S) (hf : f.IsIntegral) (hR : IsJacobson R) :
     IsJacobson S := @isJacobson_of_isIntegral _ _ _ _ f.toAlgebra hf hR
 #align ideal.is_jacobson_of_is_integral' Ideal.isJacobson_of_isIntegral'
 
@@ -162,7 +162,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
 
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
-theorem disjoint_powers_iff_not_mem (hI : I.IsRadical) :
+lemma disjoint_powers_iff_not_mem (hI : I.IsRadical) :
     Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
   refine'
     ⟨fun h => Set.disjoint_left.1 h (mem_powers _), fun h => disjoint_iff.mpr (eq_bot_iff.mpr _)⟩
@@ -412,7 +412,7 @@ lemma jacobson_bot_of_integral_localization {R : Type*} [CommRing R] [IsDomain R
 
 /-- Used to bootstrap the proof of `isJacobson_polynomial_iff_isJacobson`.
   That theorem is more general and should be used instead of this one. -/
-private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
+private lemma isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
     [hR : IsJacobson R] (P : Ideal R[X]) [IsPrime P] (hP : ∀ x : R, C x ∈ P → x = 0) :
     P.jacobson = P := by
   by_cases Pb : P = ⊥
@@ -434,7 +434,7 @@ private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDoma
     exact @isIntegral_isLocalization_polynomial_quotient R _ Rₘ Sₘ _ _ P p pP _ _ _ islocSₘ
 
 set_option maxHeartbeats 300000 in
-theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X] := by
+lemma isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X] := by
   rw [isJacobson_iff_prime_eq]
   intro I hI
   let R' : Subring (R[X] ⧸ I) := ((Quotient.mk I).comp C).range

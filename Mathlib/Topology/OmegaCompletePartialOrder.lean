@@ -55,11 +55,11 @@ lemma isOpen_univ : IsOpen α univ :=
   ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
 #align Scott.is_open_univ Scott.isOpen_univ
 
-theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
+lemma IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
   CompleteLattice.inf_continuous'
 #align Scott.is_open.inter Scott.IsOpen.inter
 
-theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
+lemma isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
   convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
   simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,

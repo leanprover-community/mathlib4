@@ -89,7 +89,7 @@ lemma lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
     apply this
 #align quiver.push.lift_comp Quiver.Push.lift_comp
 
-theorem lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of σ ⋙q Φ) = φ) :
+lemma lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of σ ⋙q Φ) = φ) :
     Φ = lift σ φ τ h := by
   dsimp only [of, lift]
   fapply Prefunctor.ext

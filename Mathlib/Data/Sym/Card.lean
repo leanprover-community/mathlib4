@@ -107,7 +107,7 @@ lemma card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multic
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/
-theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
+lemma card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
   exact card_congr (equivCongr (equivFin α))
@@ -129,7 +129,7 @@ namespace Sym2
 variable [DecidableEq α]
 
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
-theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.card := by
+lemma card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.card := by
   rw [card_image_of_injOn, diag_card]
   rintro ⟨x₀, x₁⟩ hx _ _ h
   cases Quotient.eq'.1 h
@@ -138,7 +138,7 @@ theorem card_image_diag (s : Finset α) : (s.diag.image Quotient.mk').card = s.c
     rw [hx.2]
 #align sym2.card_image_diag Sym2.card_image_diag
 
-theorem two_mul_card_image_offDiag (s : Finset α) :
+lemma two_mul_card_image_offDiag (s : Finset α) :
     2 * (s.offDiag.image Quotient.mk').card = s.offDiag.card := by
   rw [card_eq_sum_card_image (Quotient.mk' : α × α → _), sum_const_nat (Quotient.ind' _), mul_comm]
   rintro ⟨x, y⟩ hxy
@@ -163,7 +163,7 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.offDiag.card / 2`.
 This is because every element `⟦(x, y)⟧` of `Sym2 α` not on the diagonal comes from exactly two
 pairs: `(x, y)` and `(y, x)`. -/
-theorem card_image_offDiag (s : Finset α) :
+lemma card_image_offDiag (s : Finset α) :
     (s.offDiag.image Quotient.mk').card = s.card.choose 2 := by
   rw [Nat.choose_two_right, mul_tsub, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right zero_lt_two (two_mul_card_image_offDiag s).symm]
@@ -191,7 +191,7 @@ lemma card_subtype_not_diag [Fintype α] :
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
 /-- Finset **stars and bars** for the case `n = 2`. -/
-theorem _root_.Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
+lemma _root_.Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
   rw [← image_diag_union_image_offDiag, card_union_eq, Sym2.card_image_diag,
     Sym2.card_image_offDiag, Nat.choose_two_right, add_comm, ← Nat.triangle_succ, Nat.succ_sub_one,
     mul_comm]

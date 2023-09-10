@@ -30,7 +30,7 @@ https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
 
 namespace Theorems100
 
-theorem odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
+lemma odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
   simp [← even_iff_two_dvd, ← Nat.even_add_one, parity_simps]
 #align theorems_100.odd_mersenne_succ Theorems100.odd_mersenne_succ
 
@@ -38,13 +38,13 @@ namespace Nat
 
 open Nat.ArithmeticFunction Finset
 
-theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
+lemma sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp [sigma_one_apply, mersenne, Nat.prime_two, show 2 = 1 + 1 from rfl,
     ← geom_sum_mul_add 1 (k + 1)]
 #align theorems_100.nat.sigma_two_pow_eq_mersenne_succ Theorems100.Nat.sigma_two_pow_eq_mersenne_succ
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
-theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
+lemma perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
     Nat.Perfect (2 ^ k * mersenne (k + 1)) := by
   rw [Nat.perfect_iff_sum_divisors_eq_two_mul, ← mul_assoc, ← pow_succ, ← sigma_one_apply, mul_comm,
     isMultiplicative_sigma.map_mul_of_coprime
@@ -55,12 +55,12 @@ theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1))
     norm_num
 #align theorems_100.nat.perfect_two_pow_mul_mersenne_of_prime Theorems100.Nat.perfect_two_pow_mul_mersenne_of_prime
 
-theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
+lemma ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
   intro H
   simp [H, mersenne, Nat.not_prime_one] at pr
 #align theorems_100.nat.ne_zero_of_prime_mersenne Theorems100.Nat.ne_zero_of_prime_mersenne
 
-theorem even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
+lemma even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
     Even (2 ^ k * mersenne (k + 1)) := by simp [ne_zero_of_prime_mersenne k pr, parity_simps]
 #align theorems_100.nat.even_two_pow_mul_mersenne_of_prime Theorems100.Nat.even_two_pow_mul_mersenne_of_prime
 

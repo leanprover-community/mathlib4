@@ -47,7 +47,7 @@ def of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLatCat :=
 #align BddDistLat.of BddDistLatCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddDistLat.coe_of BddDistLatCat.coe_of
 
@@ -60,7 +60,7 @@ def toBddLat (X : BddDistLatCat) : BddLatCat :=
 #align BddDistLat.to_BddLat BddDistLatCat.toBddLat
 
 @[simp]
-theorem coe_toBddLat (X : BddDistLatCat) : ↥X.toBddLat = ↥X :=
+lemma coe_toBddLat (X : BddDistLatCat) : ↥X.toBddLat = ↥X :=
   rfl
 #align BddDistLatCat.coe_to_BddLat BddDistLatCat.coe_toBddLat
 

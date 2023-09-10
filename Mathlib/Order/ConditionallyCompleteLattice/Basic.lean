@@ -454,48 +454,48 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
-theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
+lemma le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
   ConditionallyCompleteLattice.le_csSup s a h₁ h₂
 #align le_cSup le_csSup
 
-theorem csSup_le (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
+lemma csSup_le (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
   ConditionallyCompleteLattice.csSup_le s a h₁ h₂
 #align cSup_le csSup_le
 
-theorem csInf_le (h₁ : BddBelow s) (h₂ : a ∈ s) : sInf s ≤ a :=
+lemma csInf_le (h₁ : BddBelow s) (h₂ : a ∈ s) : sInf s ≤ a :=
   ConditionallyCompleteLattice.csInf_le s a h₁ h₂
 #align cInf_le csInf_le
 
-theorem le_csInf (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, a ≤ b) : a ≤ sInf s :=
+lemma le_csInf (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, a ≤ b) : a ≤ sInf s :=
   ConditionallyCompleteLattice.le_csInf s a h₁ h₂
 #align le_cInf le_csInf
 
-theorem le_csSup_of_le (hs : BddAbove s) (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
+lemma le_csSup_of_le (hs : BddAbove s) (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_csSup hs hb)
 #align le_cSup_of_le le_csSup_of_le
 
-theorem csInf_le_of_le (hs : BddBelow s) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
+lemma csInf_le_of_le (hs : BddBelow s) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
   le_trans (csInf_le hs hb) h
 #align cInf_le_of_le csInf_le_of_le
 
-theorem csSup_le_csSup (ht : BddAbove t) (hs : s.Nonempty) (h : s ⊆ t) : sSup s ≤ sSup t :=
+lemma csSup_le_csSup (ht : BddAbove t) (hs : s.Nonempty) (h : s ⊆ t) : sSup s ≤ sSup t :=
   csSup_le hs fun _ ha => le_csSup ht (h ha)
 #align cSup_le_cSup csSup_le_csSup
 
-theorem csInf_le_csInf (ht : BddBelow t) (hs : s.Nonempty) (h : s ⊆ t) : sInf t ≤ sInf s :=
+lemma csInf_le_csInf (ht : BddBelow t) (hs : s.Nonempty) (h : s ⊆ t) : sInf t ≤ sInf s :=
   le_csInf hs fun _ ha => csInf_le ht (h ha)
 #align cInf_le_cInf csInf_le_csInf
 
-theorem le_csSup_iff (h : BddAbove s) (hs : s.Nonempty) :
+lemma le_csSup_iff (h : BddAbove s) (hs : s.Nonempty) :
     a ≤ sSup s ↔ ∀ b, b ∈ upperBounds s → a ≤ b :=
   ⟨fun h _ hb => le_trans h (csSup_le hs hb), fun hb => hb _ fun _ => le_csSup h⟩
 #align le_cSup_iff le_csSup_iff
 
-theorem csInf_le_iff (h : BddBelow s) (hs : s.Nonempty) : sInf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
+lemma csInf_le_iff (h : BddBelow s) (hs : s.Nonempty) : sInf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
   ⟨fun h _ hb => le_trans (le_csInf hs hb) h, fun hb => hb _ fun _ => csInf_le h⟩
 #align cInf_le_iff csInf_le_iff
 
-theorem isLUB_csSup (ne : s.Nonempty) (H : BddAbove s) : IsLUB s (sSup s) :=
+lemma isLUB_csSup (ne : s.Nonempty) (H : BddAbove s) : IsLUB s (sSup s) :=
   ⟨fun _ => le_csSup H, fun _ => csSup_le ne⟩
 #align is_lub_cSup isLUB_csSup
 
@@ -510,7 +510,7 @@ lemma isLUB_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne 
   exact isLUB_csSup (Hne.image _) H
 #align is_lub_csupr_set isLUB_ciSup_set
 
-theorem isGLB_csInf (ne : s.Nonempty) (H : BddBelow s) : IsGLB s (sInf s) :=
+lemma isGLB_csInf (ne : s.Nonempty) (H : BddBelow s) : IsGLB s (sInf s) :=
   ⟨fun _ => csInf_le H, fun _ => le_csInf ne⟩
 #align is_glb_cInf isGLB_csInf
 
@@ -544,7 +544,7 @@ lemma le_ciInf_set_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : 
   (le_isGLB_iff <| isGLB_ciInf_set hf hs).trans ball_image_iff
 #align le_cinfi_set_iff le_ciInf_set_iff
 
-theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
+lemma IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
   (isLUB_csSup ne ⟨a, H.1⟩).unique H
 #align is_lub.cSup_eq IsLUB.csSup_eq
 
@@ -558,15 +558,15 @@ lemma IsLUB.ciSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) (Hn
 #align is_lub.csupr_set_eq IsLUB.ciSup_set_eq
 
 /-- A greatest element of a set is the supremum of this set. -/
-theorem IsGreatest.csSup_eq (H : IsGreatest s a) : sSup s = a :=
+lemma IsGreatest.csSup_eq (H : IsGreatest s a) : sSup s = a :=
   H.isLUB.csSup_eq H.nonempty
 #align is_greatest.cSup_eq IsGreatest.csSup_eq
 
-theorem IsGreatest.csSup_mem (H : IsGreatest s a) : sSup s ∈ s :=
+lemma IsGreatest.csSup_mem (H : IsGreatest s a) : sSup s ∈ s :=
   H.csSup_eq.symm ▸ H.1
 #align is_greatest.Sup_mem IsGreatest.csSup_mem
 
-theorem IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
+lemma IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
   (isGLB_csInf ne ⟨a, H.1⟩).unique H
 #align is_glb.cInf_eq IsGLB.csInf_eq
 
@@ -580,23 +580,23 @@ lemma IsGLB.ciInf_set_eq {s : Set β} {f : β → α} (H : IsGLB (f '' s) a) (Hn
 #align is_glb.cinfi_set_eq IsGLB.ciInf_set_eq
 
 /-- A least element of a set is the infimum of this set. -/
-theorem IsLeast.csInf_eq (H : IsLeast s a) : sInf s = a :=
+lemma IsLeast.csInf_eq (H : IsLeast s a) : sInf s = a :=
   H.isGLB.csInf_eq H.nonempty
 #align is_least.cInf_eq IsLeast.csInf_eq
 
-theorem IsLeast.csInf_mem (H : IsLeast s a) : sInf s ∈ s :=
+lemma IsLeast.csInf_mem (H : IsLeast s a) : sInf s ∈ s :=
   H.csInf_eq.symm ▸ H.1
 #align is_least.Inf_mem IsLeast.csInf_mem
 
-theorem subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
+lemma subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨csInf_le hb hx, le_csSup ha hx⟩
 #align subset_Icc_cInf_cSup subset_Icc_csInf_csSup
 
-theorem csSup_le_iff (hb : BddAbove s) (hs : s.Nonempty) : sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a :=
+lemma csSup_le_iff (hb : BddAbove s) (hs : s.Nonempty) : sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a :=
   isLUB_le_iff (isLUB_csSup hs hb)
 #align cSup_le_iff csSup_le_iff
 
-theorem le_csInf_iff (hb : BddBelow s) (hs : s.Nonempty) : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
+lemma le_csInf_iff (hb : BddBelow s) (hs : s.Nonempty) : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
   le_isGLB_iff (isGLB_csInf hs hb)
 #align le_cInf_iff le_csInf_iff
 
@@ -621,7 +621,7 @@ lemma not_mem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove 
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w<b`.
 See `sSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
-theorem csSup_eq_of_forall_le_of_forall_lt_exists_gt (hs : s.Nonempty) (H : ∀ a ∈ s, a ≤ b)
+lemma csSup_eq_of_forall_le_of_forall_lt_exists_gt (hs : s.Nonempty) (H : ∀ a ∈ s, a ≤ b)
     (H' : ∀ w, w < b → ∃ a ∈ s, w < a) : sSup s = b :=
   (eq_of_le_of_not_lt (csSup_le hs H)) fun hb =>
     let ⟨_, ha, ha'⟩ := H' _ hb
@@ -641,7 +641,7 @@ This is essentially an iff, except that the assumptions for the two implications
 slightly different (one needs boundedness above for one direction, nonemptiness and linear
 order for the other one), so we formulate separately the two implications, contrary to
 the `CompleteLattice` case.-/
-theorem lt_csSup_of_lt (hs : BddAbove s) (ha : a ∈ s) (h : b < a) : b < sSup s :=
+lemma lt_csSup_of_lt (hs : BddAbove s) (ha : a ∈ s) (h : b < a) : b < sSup s :=
   lt_of_lt_of_le h (le_csSup hs ha)
 #align lt_cSup_of_lt lt_csSup_of_lt
 
@@ -656,56 +656,56 @@ lemma csInf_lt_of_lt : BddBelow s → a ∈ s → a < b → sInf s < b :=
 
 /-- If all elements of a nonempty set `s` are less than or equal to all elements
 of a nonempty set `t`, then there exists an element between these sets. -/
-theorem exists_between_of_forall_le (sne : s.Nonempty) (tne : t.Nonempty)
+lemma exists_between_of_forall_le (sne : s.Nonempty) (tne : t.Nonempty)
     (hst : ∀ x ∈ s, ∀ y ∈ t, x ≤ y) : (upperBounds s ∩ lowerBounds t).Nonempty :=
   ⟨sInf t, fun x hx => le_csInf tne <| hst x hx, fun _ hy => csInf_le (sne.mono hst) hy⟩
 #align exists_between_of_forall_le exists_between_of_forall_le
 
 /-- The supremum of a singleton is the element of the singleton-/
 @[simp]
-theorem csSup_singleton (a : α) : sSup {a} = a :=
+lemma csSup_singleton (a : α) : sSup {a} = a :=
   isGreatest_singleton.csSup_eq
 #align cSup_singleton csSup_singleton
 
 /-- The infimum of a singleton is the element of the singleton-/
 @[simp]
-theorem csInf_singleton (a : α) : sInf {a} = a :=
+lemma csInf_singleton (a : α) : sInf {a} = a :=
   isLeast_singleton.csInf_eq
 #align cInf_singleton csInf_singleton
 
 @[simp]
-theorem csSup_pair (a b : α) : sSup {a, b} = a ⊔ b :=
+lemma csSup_pair (a b : α) : sSup {a, b} = a ⊔ b :=
   (@isLUB_pair _ _ a b).csSup_eq (insert_nonempty _ _)
 #align cSup_pair csSup_pair
 
 @[simp]
-theorem csInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
+lemma csInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
   (@isGLB_pair _ _ a b).csInf_eq (insert_nonempty _ _)
 #align cInf_pair csInf_pair
 
 /-- If a set is bounded below and above, and nonempty, its infimum is less than or equal to
 its supremum.-/
-theorem csInf_le_csSup (hb : BddBelow s) (ha : BddAbove s) (ne : s.Nonempty) : sInf s ≤ sSup s :=
+lemma csInf_le_csSup (hb : BddBelow s) (ha : BddAbove s) (ne : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_csInf ne hb) (isLUB_csSup ne ha) ne
 #align cInf_le_cSup csInf_le_csSup
 
 /-- The `sSup` of a union of two sets is the max of the suprema of each subset, under the
 assumptions that all sets are bounded above and nonempty.-/
-theorem csSup_union (hs : BddAbove s) (sne : s.Nonempty) (ht : BddAbove t) (tne : t.Nonempty) :
+lemma csSup_union (hs : BddAbove s) (sne : s.Nonempty) (ht : BddAbove t) (tne : t.Nonempty) :
     sSup (s ∪ t) = sSup s ⊔ sSup t :=
   ((isLUB_csSup sne hs).union (isLUB_csSup tne ht)).csSup_eq sne.inl
 #align cSup_union csSup_union
 
 /-- The `sInf` of a union of two sets is the min of the infima of each subset, under the assumptions
 that all sets are bounded below and nonempty.-/
-theorem csInf_union (hs : BddBelow s) (sne : s.Nonempty) (ht : BddBelow t) (tne : t.Nonempty) :
+lemma csInf_union (hs : BddBelow s) (sne : s.Nonempty) (ht : BddBelow t) (tne : t.Nonempty) :
     sInf (s ∪ t) = sInf s ⊓ sInf t :=
   @csSup_union αᵒᵈ _ _ _ hs sne ht tne
 #align cInf_union csInf_union
 
 /-- The supremum of an intersection of two sets is bounded by the minimum of the suprema of each
 set, if all sets are bounded above and nonempty.-/
-theorem csSup_inter_le (hs : BddAbove s) (ht : BddAbove t) (hst : (s ∩ t).Nonempty) :
+lemma csSup_inter_le (hs : BddAbove s) (ht : BddAbove t) (hst : (s ∩ t).Nonempty) :
     sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
   (csSup_le hst) fun _ hx => le_inf (le_csSup hs hx.1) (le_csSup ht hx.2)
 #align cSup_inter_le csSup_inter_le
@@ -719,18 +719,18 @@ lemma le_csInf_inter :
 
 /-- The supremum of `insert a s` is the maximum of `a` and the supremum of `s`, if `s` is
 nonempty and bounded above.-/
-theorem csSup_insert (hs : BddAbove s) (sne : s.Nonempty) : sSup (insert a s) = a ⊔ sSup s :=
+lemma csSup_insert (hs : BddAbove s) (sne : s.Nonempty) : sSup (insert a s) = a ⊔ sSup s :=
   ((isLUB_csSup sne hs).insert a).csSup_eq (insert_nonempty a s)
 #align cSup_insert csSup_insert
 
 /-- The infimum of `insert a s` is the minimum of `a` and the infimum of `s`, if `s` is
 nonempty and bounded below.-/
-theorem csInf_insert (hs : BddBelow s) (sne : s.Nonempty) : sInf (insert a s) = a ⊓ sInf s :=
+lemma csInf_insert (hs : BddBelow s) (sne : s.Nonempty) : sInf (insert a s) = a ⊓ sInf s :=
   @csSup_insert αᵒᵈ _ _ _ hs sne
 #align cInf_insert csInf_insert
 
 @[simp]
-theorem csInf_Icc (h : a ≤ b) : sInf (Icc a b) = a :=
+lemma csInf_Icc (h : a ≤ b) : sInf (Icc a b) = a :=
   (isGLB_Icc h).csInf_eq (nonempty_Icc.2 h)
 #align cInf_Icc csInf_Icc
 
@@ -740,7 +740,7 @@ lemma csInf_Ici : sInf (Ici a) = a :=
 #align cInf_Ici csInf_Ici
 
 @[simp]
-theorem csInf_Ico (h : a < b) : sInf (Ico a b) = a :=
+lemma csInf_Ico (h : a < b) : sInf (Ico a b) = a :=
   (isGLB_Ico h).csInf_eq (nonempty_Ico.2 h)
 #align cInf_Ico csInf_Ico
 
@@ -761,7 +761,7 @@ lemma csInf_Ioo [DenselyOrdered α] (h : a < b) : sInf (Ioo a b) = a :=
 #align cInf_Ioo csInf_Ioo
 
 @[simp]
-theorem csSup_Icc (h : a ≤ b) : sSup (Icc a b) = b :=
+lemma csSup_Icc (h : a ≤ b) : sSup (Icc a b) = b :=
   (isLUB_Icc h).csSup_eq (nonempty_Icc.2 h)
 #align cSup_Icc csSup_Icc
 
@@ -782,7 +782,7 @@ lemma csSup_Iio [NoMinOrder α] [DenselyOrdered α] : sSup (Iio a) = a :=
 #align cSup_Iio csSup_Iio
 
 @[simp]
-theorem csSup_Ioc (h : a < b) : sSup (Ioc a b) = b :=
+lemma csSup_Ioc (h : a < b) : sSup (Ioc a b) = b :=
   (isLUB_Ioc h).csSup_eq (nonempty_Ioc.2 h)
 #align cSup_Ioc csSup_Ioc
 
@@ -955,7 +955,7 @@ lemma ciSup_mem_Inter_Icc_of_antitone_Icc [SemilatticeSup β] {f g : β → α}
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that
 1) `b` is an upper bound
 2) every other upper bound `b'` satisfies `b ≤ b'`.-/
-theorem csSup_eq_of_is_forall_le_of_forall_le_imp_ge (hs : s.Nonempty) (h_is_ub : ∀ a ∈ s, a ≤ b)
+lemma csSup_eq_of_is_forall_le_of_forall_le_imp_ge (hs : s.Nonempty) (h_is_ub : ∀ a ∈ s, a ≤ b)
     (h_b_le_ub : ∀ ub, (∀ a ∈ s, a ≤ ub) → b ≤ ub) : sSup s = b :=
   (csSup_le hs h_is_ub).antisymm ((h_b_le_ub _) fun _ => le_csSup ⟨b, h_is_ub⟩)
 #align cSup_eq_of_is_forall_le_of_forall_le_imp_ge csSup_eq_of_is_forall_le_of_forall_le_imp_ge
@@ -996,7 +996,7 @@ variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
 
 /-- When `b < sSup s`, there is an element `a` in `s` with `b < a`, if `s` is nonempty and the order
 is a linear order. -/
-theorem exists_lt_of_lt_csSup (hs : s.Nonempty) (hb : b < sSup s) : ∃ a ∈ s, b < a := by
+lemma exists_lt_of_lt_csSup (hs : s.Nonempty) (hb : b < sSup s) : ∃ a ∈ s, b < a := by
   contrapose! hb
   exact csSup_le hs hb
 #align exists_lt_of_lt_cSup exists_lt_of_lt_csSup
@@ -1011,7 +1011,7 @@ lemma exists_lt_of_lt_ciSup [Nonempty ι] {f : ι → α} (h : b < iSup f) : ∃
 
 /-- When `sInf s < b`, there is an element `a` in `s` with `a < b`, if `s` is nonempty and the order
 is a linear order.-/
-theorem exists_lt_of_csInf_lt (hs : s.Nonempty) (hb : sInf s < b) : ∃ a ∈ s, a < b :=
+lemma exists_lt_of_csInf_lt (hs : s.Nonempty) (hb : sInf s < b) : ∃ a ∈ s, a < b :=
   @exists_lt_of_lt_csSup αᵒᵈ _ _ _ hs hb
 #align exists_lt_of_cInf_lt exists_lt_of_csInf_lt
 
@@ -1135,21 +1135,21 @@ open Function
 
 variable [IsWellOrder α (· < ·)]
 
-theorem sInf_eq_argmin_on (hs : s.Nonempty) :
+lemma sInf_eq_argmin_on (hs : s.Nonempty) :
     sInf s = argminOn id (@IsWellFounded.wf α (· < ·) _) s hs :=
   IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩
 #align Inf_eq_argmin_on sInf_eq_argmin_on
 
-theorem isLeast_csInf (hs : s.Nonempty) : IsLeast s (sInf s) := by
+lemma isLeast_csInf (hs : s.Nonempty) : IsLeast s (sInf s) := by
   rw [sInf_eq_argmin_on hs]
   exact ⟨argminOn_mem _ _ _ _, fun a ha => argminOn_le id _ _ ha⟩
 #align is_least_Inf isLeast_csInf
 
-theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :=
+lemma le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :=
   le_isGLB_iff (isLeast_csInf hs).isGLB
 #align le_cInf_iff' le_csInf_iff'
 
-theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
+lemma csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
 #align Inf_mem csInf_mem
 
@@ -1190,7 +1190,7 @@ lemma ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
   rw [iSup_of_empty', csSup_empty]
 #align csupr_of_empty ciSup_of_empty
 
-theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
+lemma ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
 #align csupr_false ciSup_false
 
@@ -1235,7 +1235,7 @@ lemma csInf_le' {s : Set α} {a : α} (h : a ∈ s) : sInf s ≤ a :=
   csInf_le ⟨⊥, fun _ _ => bot_le⟩ h
 #align cInf_le' csInf_le'
 
-theorem ciInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
+lemma ciInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
   ciInf_le ⟨⊥, fun _ _ => bot_le⟩ _
 #align cinfi_le' ciInf_le'
 
@@ -1313,7 +1313,7 @@ lemma isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithT
 #align with_top.is_lub_Sup' WithTop.isLUB_sSup'
 
 -- Porting note: in mathlib3 `dsimp only [sSup]` was not needed, we used `show IsLUB ∅ (ite _ _ _)`
-theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
+lemma isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
   cases' s.eq_empty_or_nonempty with hs hs
   · rw [hs]
     dsimp only [sSup]
@@ -1370,7 +1370,7 @@ lemma isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithT
           exact ha hb
 #align with_top.is_glb_Inf' WithTop.isGLB_sInf'
 
-theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
+lemma isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
   by_cases hs : BddBelow s
   · exact isGLB_sInf' hs
   · exfalso
@@ -1444,42 +1444,42 @@ namespace GaloisConnection
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι] {l : α → β}
   {u : β → α}
 
-theorem l_csSup (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
+lemma l_csSup (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     l (sSup s) = ⨆ x : s, l x :=
   Eq.symm <| IsLUB.ciSup_set_eq (gc.isLUB_l_image <| isLUB_csSup hne hbdd) hne
 #align galois_connection.l_cSup GaloisConnection.l_csSup
 
-theorem l_csSup' (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
+lemma l_csSup' (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     l (sSup s) = sSup (l '' s) := by rw [gc.l_csSup hne hbdd, sSup_image']
 #align galois_connection.l_cSup' GaloisConnection.l_csSup'
 
-theorem l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (range f)) :
+lemma l_ciSup (gc : GaloisConnection l u) {f : ι → α} (hf : BddAbove (range f)) :
     l (⨆ i, f i) = ⨆ i, l (f i) := by rw [iSup, gc.l_csSup (range_nonempty _) hf, iSup_range']
 #align galois_connection.l_csupr GaloisConnection.l_ciSup
 
-theorem l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
+lemma l_ciSup_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
   haveI := hne.to_subtype
   rw [image_eq_range] at hf
   exact gc.l_ciSup hf
 #align galois_connection.l_csupr_set GaloisConnection.l_ciSup_set
 
-theorem u_csInf (gc : GaloisConnection l u) {s : Set β} (hne : s.Nonempty) (hbdd : BddBelow s) :
+lemma u_csInf (gc : GaloisConnection l u) {s : Set β} (hne : s.Nonempty) (hbdd : BddBelow s) :
     u (sInf s) = ⨅ x : s, u x :=
   gc.dual.l_csSup hne hbdd
 #align galois_connection.u_cInf GaloisConnection.u_csInf
 
-theorem u_csInf' (gc : GaloisConnection l u) {s : Set β} (hne : s.Nonempty) (hbdd : BddBelow s) :
+lemma u_csInf' (gc : GaloisConnection l u) {s : Set β} (hne : s.Nonempty) (hbdd : BddBelow s) :
     u (sInf s) = sInf (u '' s) :=
   gc.dual.l_csSup' hne hbdd
 #align galois_connection.u_cInf' GaloisConnection.u_csInf'
 
-theorem u_ciInf (gc : GaloisConnection l u) {f : ι → β} (hf : BddBelow (range f)) :
+lemma u_ciInf (gc : GaloisConnection l u) {f : ι → β} (hf : BddBelow (range f)) :
     u (⨅ i, f i) = ⨅ i, u (f i) :=
   gc.dual.l_ciSup hf
 #align galois_connection.u_cinfi GaloisConnection.u_ciInf
 
-theorem u_ciInf_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → β} (hf : BddBelow (f '' s))
+lemma u_ciInf_set (gc : GaloisConnection l u) {s : Set γ} {f : γ → β} (hf : BddBelow (f '' s))
     (hne : s.Nonempty) : u (⨅ i : s, f i) = ⨅ i : s, u (f i) :=
   gc.dual.l_ciSup_set hf hne
 #align galois_connection.u_cinfi_set GaloisConnection.u_ciInf_set
@@ -1490,42 +1490,42 @@ namespace OrderIso
 
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι]
 
-theorem map_csSup (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
+lemma map_csSup (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     e (sSup s) = ⨆ x : s, e x :=
   e.to_galoisConnection.l_csSup hne hbdd
 #align order_iso.map_cSup OrderIso.map_csSup
 
-theorem map_csSup' (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
+lemma map_csSup' (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     e (sSup s) = sSup (e '' s) :=
   e.to_galoisConnection.l_csSup' hne hbdd
 #align order_iso.map_cSup' OrderIso.map_csSup'
 
-theorem map_ciSup (e : α ≃o β) {f : ι → α} (hf : BddAbove (range f)) :
+lemma map_ciSup (e : α ≃o β) {f : ι → α} (hf : BddAbove (range f)) :
     e (⨆ i, f i) = ⨆ i, e (f i) :=
   e.to_galoisConnection.l_ciSup hf
 #align order_iso.map_csupr OrderIso.map_ciSup
 
-theorem map_ciSup_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
+lemma map_ciSup_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : e (⨆ i : s, f i) = ⨆ i : s, e (f i) :=
   e.to_galoisConnection.l_ciSup_set hf hne
 #align order_iso.map_csupr_set OrderIso.map_ciSup_set
 
-theorem map_csInf (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
+lemma map_csInf (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
     e (sInf s) = ⨅ x : s, e x :=
   e.dual.map_csSup hne hbdd
 #align order_iso.map_cInf OrderIso.map_csInf
 
-theorem map_csInf' (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
+lemma map_csInf' (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddBelow s) :
     e (sInf s) = sInf (e '' s) :=
   e.dual.map_csSup' hne hbdd
 #align order_iso.map_cInf' OrderIso.map_csInf'
 
-theorem map_ciInf (e : α ≃o β) {f : ι → α} (hf : BddBelow (range f)) :
+lemma map_ciInf (e : α ≃o β) {f : ι → α} (hf : BddBelow (range f)) :
     e (⨅ i, f i) = ⨅ i, e (f i) :=
   e.dual.map_ciSup hf
 #align order_iso.map_cinfi OrderIso.map_ciInf
 
-theorem map_ciInf_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddBelow (f '' s))
+lemma map_ciInf_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddBelow (f '' s))
     (hne : s.Nonempty) : e (⨅ i : s, f i) = ⨅ i : s, e (f i) :=
   e.dual.map_ciSup_set hf hne
 #align order_iso.map_cinfi_set OrderIso.map_ciInf_set
@@ -1547,7 +1547,7 @@ variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β]
 
 variable {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 
-theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+lemma csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) (hs₀ : s.Nonempty) (hs₁ : BddAbove s)
     (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
   refine' eq_of_forall_ge_iff fun c => _
@@ -1557,44 +1557,44 @@ theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (
   simp_rw [← (h₂ _).le_iff_le, (h₁ _).le_iff_le, csSup_le_iff hs₁ hs₀]
 #align cSup_image2_eq_cSup_cSup csSup_image2_eq_csSup_csSup
 
-theorem csSup_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+lemma csSup_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     s.Nonempty → BddAbove s → t.Nonempty → BddBelow t → sSup (image2 l s t) = l (sSup s) (sInf t) :=
   @csSup_image2_eq_csSup_csSup _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align cSup_image2_eq_cSup_cInf csSup_image2_eq_csSup_csInf
 
-theorem csSup_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+lemma csSup_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddAbove t → sSup (image2 l s t) = l (sInf s) (sSup t) :=
   @csSup_image2_eq_csSup_csSup αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align cSup_image2_eq_cInf_cSup csSup_image2_eq_csInf_csSup
 
-theorem csSup_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+lemma csSup_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddBelow t → sSup (image2 l s t) = l (sInf s) (sInf t) :=
   @csSup_image2_eq_csSup_csSup αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align cSup_image2_eq_cInf_cInf csSup_image2_eq_csInf_csInf
 
-theorem csInf_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
+lemma csInf_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddBelow t → sInf (image2 u s t) = u (sInf s) (sInf t) :=
   @csSup_image2_eq_csSup_csSup αᵒᵈ βᵒᵈ γᵒᵈ _ _ _ _ _ _ l₁ l₂ (fun _ => (h₁ _).dual) fun _ =>
     (h₂ _).dual
 #align cInf_image2_eq_cInf_cInf csInf_image2_eq_csInf_csInf
 
-theorem csInf_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
+lemma csInf_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddAbove t → sInf (image2 u s t) = u (sInf s) (sSup t) :=
   @csInf_image2_eq_csInf_csInf _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align cInf_image2_eq_cInf_cSup csInf_image2_eq_csInf_csSup
 
-theorem csInf_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
+lemma csInf_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) :
     s.Nonempty → BddAbove s → t.Nonempty → BddBelow t → sInf (image2 u s t) = u (sSup s) (sInf t) :=
   @csInf_image2_eq_csInf_csInf αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align cInf_image2_eq_cSup_cInf csInf_image2_eq_csSup_csInf
 
-theorem csInf_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
+lemma csInf_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     s.Nonempty → BddAbove s → t.Nonempty → BddAbove t → sInf (image2 u s t) = u (sSup s) (sSup t) :=
   @csInf_image2_eq_csInf_csInf αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂

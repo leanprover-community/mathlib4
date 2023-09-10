@@ -54,7 +54,7 @@ lemma IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
 variable {R} {M} -- Porting note: had break line or all hell breaks loose
 variable {m : Submodule R M} {N : Type*} [AddCommGroup N] [Module R N]
 
-theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
+lemma IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder
 #align is_simple_module.congr IsSimpleModule.congr
 

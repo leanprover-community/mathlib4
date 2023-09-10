@@ -544,32 +544,32 @@ variable [DenselyOrdered α] [ConditionallyCompleteLinearOrder β] [OrderTopolog
 
 open scoped Interval
 
-theorem image_Icc (hab : a ≤ b) (h : ContinuousOn f <| Icc a b) :
+lemma image_Icc (hab : a ≤ b) (h : ContinuousOn f <| Icc a b) :
     f '' Icc a b = Icc (sInf <| f '' Icc a b) (sSup <| f '' Icc a b) :=
   eq_Icc_of_connected_compact ⟨(nonempty_Icc.2 hab).image f, isPreconnected_Icc.image f h⟩
     (isCompact_Icc.image_of_continuousOn h)
 #align continuous_on.image_Icc ContinuousOn.image_Icc
 
-theorem image_uIcc_eq_Icc (h : ContinuousOn f [[a, b]]) :
+lemma image_uIcc_eq_Icc (h : ContinuousOn f [[a, b]]) :
     f '' [[a, b]] = Icc (sInf (f '' [[a, b]])) (sSup (f '' [[a, b]])) :=
   image_Icc min_le_max h
 #align continuous_on.image_uIcc_eq_Icc ContinuousOn.image_uIcc_eq_Icc
 
-theorem image_uIcc (h : ContinuousOn f <| [[a, b]]) :
+lemma image_uIcc (h : ContinuousOn f <| [[a, b]]) :
     f '' [[a, b]] = [[sInf (f '' [[a, b]]), sSup (f '' [[a, b]])]] := by
   refine' h.image_uIcc_eq_Icc.trans (uIcc_of_le _).symm
   refine' csInf_le_csSup _ _ (nonempty_uIcc.image _) <;> rw [h.image_uIcc_eq_Icc]
   exacts [bddBelow_Icc, bddAbove_Icc]
 #align continuous_on.image_uIcc ContinuousOn.image_uIcc
 
-theorem sInf_image_Icc_le (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
+lemma sInf_image_Icc_le (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
     sInf (f '' Icc a b) ≤ f c := by
   have := mem_image_of_mem f hc
   rw [h.image_Icc (hc.1.trans hc.2)] at this
   exact this.1
 #align continuous_on.Inf_image_Icc_le ContinuousOn.sInf_image_Icc_le
 
-theorem le_sSup_image_Icc (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
+lemma le_sSup_image_Icc (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
     f c ≤ sSup (f '' Icc a b) := by
   have := mem_image_of_mem f hc
   rw [h.image_Icc (hc.1.trans hc.2)] at this

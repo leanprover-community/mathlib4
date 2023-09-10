@@ -113,7 +113,7 @@ Given the existence of the appropriate (possibly finite) products and equalizers
 `F` exists.
 (This assumes the existence of all equalizers, which is technically stronger than needed.)
 -/
-theorem hasLimit_of_equalizer_and_product (F : J ⥤ C) [HasLimit (Discrete.functor F.obj)]
+lemma hasLimit_of_equalizer_and_product (F : J ⥤ C) [HasLimit (Discrete.functor F.obj)]
     [HasLimit (Discrete.functor fun f : Σp : J × J, p.1 ⟶ p.2 => F.obj f.1.2)] [HasEqualizers C] :
     HasLimit F :=
   HasLimit.mk (limitConeOfEqualizerAndProduct F)
@@ -341,7 +341,7 @@ noncomputable def colimitCoconeOfCoequalizerAndCoproduct (F : J ⥤ C)
 we know a colimit of `F` exists.
 (This assumes the existence of all coequalizers, which is technically stronger than needed.)
 -/
-theorem hasColimit_of_coequalizer_and_coproduct (F : J ⥤ C) [HasColimit (Discrete.functor F.obj)]
+lemma hasColimit_of_coequalizer_and_coproduct (F : J ⥤ C) [HasColimit (Discrete.functor F.obj)]
     [HasColimit (Discrete.functor fun f : Σp : J × J, p.1 ⟶ p.2 => F.obj f.1.1)]
     [HasCoequalizers C] : HasColimit F :=
   HasColimit.mk (colimitCoconeOfCoequalizerAndCoproduct F)

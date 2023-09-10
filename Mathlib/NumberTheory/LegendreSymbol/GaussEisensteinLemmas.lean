@@ -28,7 +28,7 @@ namespace ZMod
 /-- The image of the map sending a nonzero natural number `x ≤ p / 2` to the absolute value
   of the integer in `(-p/2, p/2]` that is congruent to `a * x mod p` is the set
   of nonzero natural numbers `x` such that `x ≤ p / 2`. -/
-theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a : ZMod p)
+lemma Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a : ZMod p)
     (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).1.map fun (x : ℕ) => (a * x).valMinAbs.natAbs) =
     (Ico 1 (p / 2).succ).1.map fun a => a := by
   have he : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x ≠ 0 ∧ x ≤ p / 2 := by
@@ -62,7 +62,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj
 #align zmod.Ico_map_val_min_abs_nat_abs_eq_Ico_map_id ZMod.Ico_map_valMinAbs_natAbs_eq_Ico_map_id
 
-private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
+private lemma gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (a ^ (p / 2) * (p / 2)! : ZMod p) =
     (-1 : ZMod p) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
       ¬(a * x : ZMod p).val ≤ p / 2).card * (p / 2)! :=
@@ -93,7 +93,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
         Ico_map_valMinAbs_natAbs_eq_Ico_map_id p a hap, ← Finset.prod_eq_multiset_prod,
         prod_Ico_id_eq_factorial]
 
-theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
+lemma gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (↑a ^ (p / 2) : ZMod p) =
     (-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
@@ -117,7 +117,7 @@ lemma gauss_lemma {p : ℕ} [h : Fact p.Prime] {a : ℤ} (hp : p ≠ 2) (ha0 : (
   simp_all [ne_neg_self hp one_ne_zero, (ne_neg_self hp one_ne_zero).symm]
 #align zmod.gauss_lemma ZMod.gauss_lemma
 
-private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p % 2 = 1)] {a : ℕ}
+private lemma eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p % 2 = 1)] {a : ℕ}
     (hap : (a : ZMod p) ≠ 0) : ((∑ x in Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
     ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card +
       ∑ x in Ico 1 (p / 2).succ, x + (∑ x in Ico 1 (p / 2).succ, a * x / p : ℕ) :=
@@ -145,7 +145,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
               Finset.sum_eq_multiset_sum])
         rfl
 
-theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : ℕ} (ha2 : a % 2 = 1)
+lemma eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : ℕ} (ha2 : a % 2 = 1)
     (hap : (a : ZMod p) ≠ 0) :
     ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card ≡
       ∑ x in Ico 1 (p / 2).succ, x * a / p [MOD 2] :=
@@ -198,7 +198,7 @@ private lemma sum_Ico_eq_card_lt {p q : ℕ} :
 /-- Each of the sums in this lemma is the cardinality of the set of integer points in each of the
   two triangles formed by the diagonal of the rectangle `(0, p/2) × (0, q/2)`. Adding them
   gives the number of points in the rectangle. -/
-theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 : (q : ZMod p) ≠ 0) :
+lemma sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 : (q : ZMod p) ≠ 0) :
     ∑ a in Ico 1 (p / 2).succ, a * q / p + ∑ a in Ico 1 (q / 2).succ, a * p / q =
     p / 2 * (q / 2) := by
   have hswap :

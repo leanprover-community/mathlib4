@@ -97,27 +97,27 @@ lemma Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Ten
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
 @[to_additive]
-theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
+lemma ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
     ContinuousWithinAt (fun x => f x • g x) s b :=
   Filter.Tendsto.smul hf hg
 #align continuous_within_at.smul ContinuousWithinAt.smul
 #align continuous_within_at.vadd ContinuousWithinAt.vadd
 
 @[to_additive]
-theorem ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
+lemma ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
     ContinuousAt (fun x => f x • g x) b :=
   Filter.Tendsto.smul hf hg
 #align continuous_at.smul ContinuousAt.smul
 #align continuous_at.vadd ContinuousAt.vadd
 
 @[to_additive]
-theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+lemma ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
 #align continuous_on.smul ContinuousOn.smul
 #align continuous_on.vadd ContinuousOn.vadd
 
 @[to_additive (attr := continuity)]
-theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
+lemma Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
   continuous_smul.comp (hf.prod_mk hg)
 #align continuous.smul Continuous.smul
 #align continuous.vadd Continuous.vadd

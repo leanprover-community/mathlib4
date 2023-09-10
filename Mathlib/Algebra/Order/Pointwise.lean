@@ -58,14 +58,14 @@ variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass
   (s t : Set α)
 
 @[to_additive]
-theorem sSup_inv (s : Set α) : sSup s⁻¹ = (sInf s)⁻¹ := by
+lemma sSup_inv (s : Set α) : sSup s⁻¹ = (sInf s)⁻¹ := by
   rw [← image_inv, sSup_image]
   exact ((OrderIso.inv α).map_sInf _).symm
 #align Sup_inv sSup_inv
 #align Sup_neg sSup_neg
 
 @[to_additive]
-theorem sInf_inv (s : Set α) : sInf s⁻¹ = (sSup s)⁻¹ := by
+lemma sInf_inv (s : Set α) : sInf s⁻¹ = (sSup s)⁻¹ := by
   rw [← image_inv, sInf_image]
   exact ((OrderIso.inv α).map_sSup _).symm
 #align Inf_inv sInf_inv
@@ -127,21 +127,21 @@ variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass
   {s t : Set α}
 
 @[to_additive]
-theorem csSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : sSup s⁻¹ = (sInf s)⁻¹ := by
+lemma csSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : sSup s⁻¹ = (sInf s)⁻¹ := by
   rw [← image_inv]
   exact ((OrderIso.inv α).map_csInf' hs₀ hs₁).symm
 #align cSup_inv csSup_inv
 #align cSup_neg csSup_neg
 
 @[to_additive]
-theorem csInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : sInf s⁻¹ = (sSup s)⁻¹ := by
+lemma csInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : sInf s⁻¹ = (sSup s)⁻¹ := by
   rw [← image_inv]
   exact ((OrderIso.inv α).map_csSup' hs₀ hs₁).symm
 #align cInf_inv csInf_inv
 #align cInf_neg csInf_neg
 
 @[to_additive]
-theorem csSup_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
+lemma csSup_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
     sSup (s * t) = sSup s * sSup t :=
   csSup_image2_eq_csSup_csSup (fun _ => (OrderIso.mulRight _).to_galoisConnection)
     (fun _ => (OrderIso.mulLeft _).to_galoisConnection) hs₀ hs₁ ht₀ ht₁
@@ -149,7 +149,7 @@ theorem csSup_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty)
 #align cSup_add csSup_add
 
 @[to_additive]
-theorem csInf_mul (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
+lemma csInf_mul (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
     sInf (s * t) = sInf s * sInf t :=
   csInf_image2_eq_csInf_csInf (fun _ => (OrderIso.mulRight _).symm.to_galoisConnection)
     (fun _ => (OrderIso.mulLeft _).symm.to_galoisConnection) hs₀ hs₁ ht₀ ht₁
@@ -157,14 +157,14 @@ theorem csInf_mul (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty)
 #align cInf_add csInf_add
 
 @[to_additive]
-theorem csSup_div (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
+lemma csSup_div (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddBelow t) :
     sSup (s / t) = sSup s / sInf t := by
   rw [div_eq_mul_inv, csSup_mul hs₀ hs₁ ht₀.inv ht₁.inv, csSup_inv ht₀ ht₁, div_eq_mul_inv]
 #align cSup_div csSup_div
 #align cSup_sub csSup_sub
 
 @[to_additive]
-theorem csInf_div (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
+lemma csInf_div (hs₀ : s.Nonempty) (hs₁ : BddBelow s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
     sInf (s / t) = sInf s / sSup t := by
   rw [div_eq_mul_inv, csInf_mul hs₀ hs₁ ht₀.inv ht₁.inv, csInf_inv ht₀ ht₁, div_eq_mul_inv]
 #align cInf_div csInf_div

@@ -69,7 +69,7 @@ lemma mt {G} [Mul G] {A B : Finset G} {a0 b0 : G} (h : UniqueMul A B a0 b0) :
 #align unique_mul.mt UniqueMul.mt
 
 @[to_additive]
-theorem subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) :
+lemma subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) :
     Subsingleton { ab : G × G // ab.1 ∈ A ∧ ab.2 ∈ B ∧ ab.1 * ab.2 = a0 * b0 } :=
   ⟨fun ⟨⟨_a, _b⟩, ha, hb, ab⟩ ⟨⟨_a', _b'⟩, ha', hb', ab'⟩ ↦
     Subtype.ext <|
@@ -79,7 +79,7 @@ theorem subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) :
 #align unique_add.subsingleton UniqueAdd.subsingleton
 
 @[to_additive]
-theorem set_subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) :
+lemma set_subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) :
     Set.Subsingleton { ab : G × G | ab.1 ∈ A ∧ ab.2 ∈ B ∧ ab.1 * ab.2 = a0 * b0 } := by
   rintro ⟨x1, y1⟩ (hx : x1 ∈ A ∧ y1 ∈ B ∧ x1 * y1 = a0 * b0) ⟨x2, y2⟩
     (hy : x2 ∈ A ∧ y2 ∈ B ∧ x2 * y2 = a0 * b0)
@@ -92,7 +92,7 @@ theorem set_subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) 
 -- Porting note: mathport warning: expanding binder collection
 --  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
-theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
+lemma iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ∃! (ab : _) (_ : ab ∈ A ×ˢ B), ab.1 * ab.2 = a0 * b0 :=
   ⟨fun _ ↦ ⟨(a0, b0), ⟨Finset.mem_product.mpr ⟨aA, bB⟩, rfl, by simp⟩, by simpa⟩,
     fun h ↦ h.elim₂
@@ -119,7 +119,7 @@ lemma exists_iff_exists_existsUnique :
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/
 @[to_additive "`UniqueAdd` is preserved by inverse images under injective, additive maps."]
-theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G) {A B : Finset H}
+lemma mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G) {A B : Finset H}
     (u : UniqueMul A B (f a0) (f b0)) :
     UniqueMul (A.preimage f (Set.injOn_of_injective hf _))
       (B.preimage f (Set.injOn_of_injective hf _)) a0 b0 := by
@@ -156,7 +156,7 @@ See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
       "`UniqueAdd` is preserved under embeddings that are additive.
 
 See `UniqueAdd.addHom_image_iff` for a version with swapped bundling."]
-theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
+lemma mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   classical
   convert @mulHom_image_iff G H _ _ A B a0 b0 _ ⟨f, mul⟩ f.2 using 2 <;>

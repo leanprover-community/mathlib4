@@ -80,7 +80,7 @@ set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.of NonemptyFinLinOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [NonemptyFinLinOrd α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [NonemptyFinLinOrd α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrdCat.coe_of

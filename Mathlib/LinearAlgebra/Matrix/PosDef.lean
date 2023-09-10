@@ -110,13 +110,13 @@ lemma posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDe
 #align matrix.pos_def_to_quadratic_form' Matrix.posDef_toQuadraticForm'
 
 /-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
-theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : Matrix.PosSemidef (Aᴴ * A) := by
+lemma posSemidef_conjTranspose_mul_self (A : Matrix m n R) : Matrix.PosSemidef (Aᴴ * A) := by
   refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : Matrix.PosSemidef (A * Aᴴ) :=
+lemma posSemidef_self_mul_conjTranspose (A : Matrix m n R) : Matrix.PosSemidef (A * Aᴴ) :=
   by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 /-- The eigenvalues of a positive definite matrix are positive -/

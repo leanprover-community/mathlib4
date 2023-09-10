@@ -41,7 +41,7 @@ instance : NormedAddCommGroup (AddCircle p) :=
   AddSubgroup.normedAddCommGroupQuotient _
 
 @[simp]
-theorem norm_coe_mul (x : ℝ) (t : ℝ) :
+lemma norm_coe_mul (x : ℝ) (t : ℝ) :
     ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
   have aux : ∀ {a b c : ℝ}, a ∈ zmultiples b → c * a ∈ zmultiples (c * b) := fun {a b c} h => by
     simp only [mem_zmultiples_iff] at h ⊢
@@ -68,7 +68,7 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     exact aux hw
 #align add_circle.norm_coe_mul AddCircle.norm_coe_mul
 
-theorem norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCircle p)‖ := by
+lemma norm_neg_period (x : ℝ) : ‖(x : AddCircle (-p))‖ = ‖(x : AddCircle p)‖ := by
   suffices ‖(↑(-1 * x) : AddCircle (-1 * p))‖ = ‖(x : AddCircle p)‖ by
     rw [← this, neg_one_mul]
     simp
@@ -118,7 +118,7 @@ lemma norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * p|
     simp
 #align add_circle.norm_eq AddCircle.norm_eq
 
-theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
+lemma norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
   conv_rhs =>
     congr
     rw [← abs_eq_self.mpr hp.le]
@@ -167,14 +167,14 @@ lemma norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |
 
 open Metric
 
-theorem closedBall_eq_univ_of_half_period_le (hp : p ≠ 0) (x : AddCircle p) {ε : ℝ}
+lemma closedBall_eq_univ_of_half_period_le (hp : p ≠ 0) (x : AddCircle p) {ε : ℝ}
     (hε : |p| / 2 ≤ ε) : closedBall x ε = univ :=
   eq_univ_iff_forall.mpr fun x => by
     simpa only [mem_closedBall, dist_eq_norm] using (norm_le_half_period p hp).trans hε
 #align add_circle.closed_ball_eq_univ_of_half_period_le AddCircle.closedBall_eq_univ_of_half_period_le
 
 @[simp]
-theorem coe_real_preimage_closedBall_period_zero (x ε : ℝ) :
+lemma coe_real_preimage_closedBall_period_zero (x ε : ℝ) :
     (↑) ⁻¹' closedBall (x : AddCircle (0 : ℝ)) ε = closedBall x ε := by
   ext y
   -- Porting note: squeezed the simp
@@ -182,7 +182,7 @@ theorem coe_real_preimage_closedBall_period_zero (x ε : ℝ) :
     ← QuotientAddGroup.mk_sub, Metric.mem_closedBall, Real.norm_eq_abs]
 #align add_circle.coe_real_preimage_closed_ball_period_zero AddCircle.coe_real_preimage_closedBall_period_zero
 
-theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
+lemma coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε = ⋃ z : ℤ, closedBall (x + z • p) ε := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp [iUnion_const]

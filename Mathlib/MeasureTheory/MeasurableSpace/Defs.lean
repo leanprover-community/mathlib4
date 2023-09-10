@@ -88,7 +88,7 @@ protected lemma MeasurableSet.compl : MeasurableSet s → MeasurableSet sᶜ :=
   MeasurableSpace.measurableSet_compl _ s
 #align measurable_set.compl MeasurableSet.compl
 
-protected theorem MeasurableSet.of_compl (h : MeasurableSet sᶜ) : MeasurableSet s :=
+protected lemma MeasurableSet.of_compl (h : MeasurableSet sᶜ) : MeasurableSet s :=
   compl_compl s ▸ h.compl
 #align measurable_set.of_compl MeasurableSet.of_compl
 
@@ -239,12 +239,12 @@ protected lemma MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Measur
 #align measurable_set.disjointed MeasurableSet.disjointed
 
 @[simp]
-protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
+protected lemma MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 #align measurable_set.const MeasurableSet.const
 
 /-- Every set has a measurable superset. Declare this as local instance as needed. -/
-theorem nonempty_measurable_superset (s : Set α) : Nonempty { t // s ⊆ t ∧ MeasurableSet t } :=
+lemma nonempty_measurable_superset (s : Set α) : Nonempty { t // s ⊆ t ∧ MeasurableSet t } :=
   ⟨⟨univ, subset_univ s, MeasurableSet.univ⟩⟩
 #align nonempty_measurable_superset nonempty_measurable_superset
 
@@ -308,7 +308,7 @@ lemma Set.Finite.measurableSet {s : Set α} (hs : s.Finite) : MeasurableSet s :=
 #align set.finite.measurable_set Set.Finite.measurableSet
 
 @[measurability]
-protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=
+protected lemma Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=
   s.finite_toSet.measurableSet
 #align finset.measurable_set Finset.measurableSet
 
@@ -374,7 +374,7 @@ lemma measurableSet_generateFrom {s : Set (Set α)} {t : Set α} (ht : t ∈ s) 
 #align measurable_space.measurable_set_generate_from MeasurableSpace.measurableSet_generateFrom
 
 @[elab_as_elim]
-theorem generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
+lemma generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
     (h_empty : p ∅) (h_compl : ∀ t, p t → p tᶜ)
     (h_Union : ∀ f : ℕ → Set α, (∀ n, p (f n)) → p (⋃ i, f i)) {s : Set α}
     (hs : MeasurableSet[generateFrom C] s) : p s := by
@@ -456,13 +456,13 @@ lemma generateFrom_singleton_univ : generateFrom {Set.univ} = (⊥ : MeasurableS
 #align measurable_space.generate_from_singleton_univ MeasurableSpace.generateFrom_singleton_univ
 
 @[simp]
-theorem generateFrom_insert_univ (S : Set (Set α)) :
+lemma generateFrom_insert_univ (S : Set (Set α)) :
     generateFrom (insert Set.univ S) = generateFrom S := by
   rw [insert_eq, ← generateFrom_sup_generateFrom, generateFrom_singleton_univ, bot_sup_eq]
 #align measurable_space.generate_from_insert_univ MeasurableSpace.generateFrom_insert_univ
 
 @[simp]
-theorem generateFrom_insert_empty (S : Set (Set α)) :
+lemma generateFrom_insert_empty (S : Set (Set α)) :
     generateFrom (insert ∅ S) = generateFrom S := by
   rw [insert_eq, ← generateFrom_sup_generateFrom, generateFrom_singleton_empty, bot_sup_eq]
 #align measurable_space.generate_from_insert_empty MeasurableSpace.generateFrom_insert_empty
@@ -517,14 +517,14 @@ lemma measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
   by simp only [iSup, measurableSet_sSup, exists_range_iff]
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_iSup
 
-theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
+lemma measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
     ⨆ n, m n = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
   ext s
   rw [measurableSet_iSup]
   rfl
 #align measurable_space.measurable_space_supr_eq MeasurableSpace.measurableSpace_iSup_eq
 
-theorem generateFrom_iUnion_measurableSet (m : ι → MeasurableSpace α) :
+lemma generateFrom_iUnion_measurableSet (m : ι → MeasurableSpace α) :
     generateFrom (⋃ n, { t | MeasurableSet[m n] t }) = ⨆ n, m n :=
   (@giGenerateFrom α).l_iSup_u m
 #align measurable_space.generate_from_Union_measurable_set MeasurableSpace.generateFrom_iUnion_measurableSet

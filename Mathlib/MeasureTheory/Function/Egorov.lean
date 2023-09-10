@@ -96,7 +96,7 @@ lemma measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
 
 variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]
 
-theorem exists_notConvergentSeq_lt (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
+lemma exists_notConvergentSeq_lt (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     ∃ j : ι, μ (s ∩ notConvergentSeq f g n j) ≤ ENNReal.ofReal (ε * 2⁻¹ ^ n) := by
@@ -119,7 +119,7 @@ def notConvergentSeqLTIndex (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n)
   Classical.choose <| exists_notConvergentSeq_lt hε hf hg hsm hs hfg n
 #align measure_theory.egorov.not_convergent_seq_lt_index MeasureTheory.Egorov.notConvergentSeqLTIndex
 
-theorem notConvergentSeqLTIndex_spec (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
+lemma notConvergentSeqLTIndex_spec (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     μ (s ∩ notConvergentSeq f g n (notConvergentSeqLTIndex hε hf hg hsm hs hfg n)) ≤
@@ -137,14 +137,14 @@ def iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
   ⋃ n, s ∩ notConvergentSeq f g n (notConvergentSeqLTIndex (half_pos hε) hf hg hsm hs hfg n)
 #align measure_theory.egorov.Union_not_convergent_seq MeasureTheory.Egorov.iUnionNotConvergentSeq
 
-theorem iUnionNotConvergentSeq_measurableSet (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
+lemma iUnionNotConvergentSeq_measurableSet (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     MeasurableSet <| iUnionNotConvergentSeq hε hf hg hsm hs hfg :=
   MeasurableSet.iUnion fun _ => hsm.inter <| notConvergentSeq_measurableSet hf hg
 #align measure_theory.egorov.Union_not_convergent_seq_measurable_set MeasureTheory.Egorov.iUnionNotConvergentSeq_measurableSet
 
-theorem measure_iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
+lemma measure_iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     μ (iUnionNotConvergentSeq hε hf hg hsm hs hfg) ≤ ENNReal.ofReal ε := by
@@ -158,7 +158,7 @@ theorem measure_iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasu
     exact summable_geometric_two
 #align measure_theory.egorov.measure_Union_not_convergent_seq MeasureTheory.Egorov.measure_iUnionNotConvergentSeq
 
-theorem iUnionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
+lemma iUnionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     iUnionNotConvergentSeq hε hf hg hsm hs hfg ⊆ s := by
@@ -166,7 +166,7 @@ theorem iUnionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasur
   exact Set.inter_subset_left _ _
 #align measure_theory.egorov.Union_not_convergent_seq_subset MeasureTheory.Egorov.iUnionNotConvergentSeq_subset
 
-theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
+lemma tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hg hsm hs hfg) := by
@@ -197,7 +197,7 @@ uniformly on `s \ t`. We require the index type `ι` to be countable, and usuall
 
 In other words, a sequence of almost everywhere convergent functions converges uniformly except on
 an arbitrarily small set. -/
-theorem tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
+lemma tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) {ε : ℝ} (hε : 0 < ε) :
     ∃ (t : _) (_ : t ⊆ s),

@@ -34,12 +34,12 @@ lemma locallyFinite_of_finite [Finite ι] (f : ι → Set X) : LocallyFinite f :
 
 namespace LocallyFinite
 
-theorem point_finite (hf : LocallyFinite f) (x : X) : { b | x ∈ f b }.Finite :=
+lemma point_finite (hf : LocallyFinite f) (x : X) : { b | x ∈ f b }.Finite :=
   let ⟨_t, hxt, ht⟩ := hf x
   ht.subset fun _b hb => ⟨x, hb, mem_of_mem_nhds hxt⟩
 #align locally_finite.point_finite LocallyFinite.point_finite
 
-protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : LocallyFinite g := fun a =>
+protected lemma subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : LocallyFinite g := fun a =>
   let ⟨t, ht₁, ht₂⟩ := hf a
   ⟨t, ht₁, ht₂.subset fun i hi => hi.mono <| inter_subset_inter (hg i) Subset.rfl⟩
 #align locally_finite.subset LocallyFinite.subset
@@ -63,7 +63,7 @@ lemma _root_.locallyFinite_iff_smallSets :
       ht.subset fun _i hi => hi.mono <| inter_subset_inter_right _ hst
 #align locally_finite_iff_small_sets locallyFinite_iff_smallSets
 
-protected theorem eventually_smallSets (hf : LocallyFinite f) (x : X) :
+protected lemma eventually_smallSets (hf : LocallyFinite f) (x : X) :
     ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   locallyFinite_iff_smallSets.mp hf x
 #align locally_finite.eventually_small_sets LocallyFinite.eventually_smallSets
@@ -74,7 +74,7 @@ lemma exists_mem_basis {ι' : Sort*} (hf : LocallyFinite f) {p : ι' → Prop} {
   ⟨i, hpi, hi Subset.rfl⟩
 #align locally_finite.exists_mem_basis LocallyFinite.exists_mem_basis
 
-protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
+protected lemma nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     𝓝[⋃ i, f i] a = ⨆ i, 𝓝[f i] a := by
   rcases hf a with ⟨U, haU, hfin⟩
   refine le_antisymm ?_ (Monotone.le_map_iSup fun _ _ ↦ nhdsWithin_mono _)
@@ -118,7 +118,7 @@ protected lemma continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, 
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
 #align locally_finite.continuous LocallyFinite.continuous
 
-protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
+protected lemma closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
   rcases hf x with ⟨s, hsx, hsf⟩
   refine' ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => _⟩
@@ -126,19 +126,19 @@ protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closur
     (inter_subset_inter_right _ interior_subset)
 #align locally_finite.closure LocallyFinite.closure
 
-theorem closure_iUnion (h : LocallyFinite f) : closure (⋃ i, f i) = ⋃ i, closure (f i) := by
+lemma closure_iUnion (h : LocallyFinite f) : closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   ext x
   simp only [mem_closure_iff_nhdsWithin_neBot, h.nhdsWithin_iUnion, iSup_neBot, mem_iUnion]
 #align locally_finite.closure_Union LocallyFinite.closure_iUnion
 
-theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
+lemma isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
     IsClosed (⋃ i, f i) := by
   simp only [← closure_eq_iff_isClosed, hf.closure_iUnion, (hc _).closure_eq]
 #align locally_finite.is_closed_Union LocallyFinite.isClosed_iUnion
 
 /-- If `f : β → Set α` is a locally finite family of closed sets, then for any `x : α`, the
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
-theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
+lemma iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_ : x ∉ f i), (f i)ᶜ) ∈ 𝓝 x := by
   refine' IsOpen.mem_nhds _ (mem_iInter₂.2 fun i => id)
   suffices IsClosed (⋃ i : { i // x ∉ f i }, f i) by
@@ -196,7 +196,7 @@ lemma preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuous 
   ⟨g ⁻¹' s, hg.continuousAt hsx, hs.subset fun _ ⟨y, hy⟩ => ⟨g y, hy⟩⟩
 #align locally_finite.preimage_continuous LocallyFinite.preimage_continuous
 
-theorem prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fun i ↦ f i ×ˢ g i) :=
+lemma prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hf.preimage_continuous continuous_fst).subset fun _ ↦ prod_subset_preimage_fst _ _
 
 lemma prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set X) :
@@ -206,7 +206,7 @@ lemma prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set X) :
 end LocallyFinite
 
 @[simp]
-theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) ↔ LocallyFinite f :=
+lemma Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) ↔ LocallyFinite f :=
   ⟨fun h => by simpa only [(· ∘ ·), e.apply_symm_apply] using h.comp_injective e.symm.injective,
     fun h => h.comp_injective e.injective⟩
 #align equiv.locally_finite_comp_iff Equiv.locallyFinite_comp_iff
@@ -229,7 +229,7 @@ lemma locallyFinite_option {f : Option ι → Set X} :
   rfl
 #align locally_finite_option locallyFinite_option
 
-theorem LocallyFinite.option_elim' (hf : LocallyFinite f) (s : Set X) :
+lemma LocallyFinite.option_elim' (hf : LocallyFinite f) (s : Set X) :
     LocallyFinite (Option.elim' s f) :=
   locallyFinite_option.2 hf
 #align locally_finite.option_elim LocallyFinite.option_elim'

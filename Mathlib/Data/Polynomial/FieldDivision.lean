@@ -94,7 +94,7 @@ lemma coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCo
   simp [normUnit]
 #align polynomial.coe_norm_unit Polynomial.coe_normUnit
 
-theorem leadingCoeff_normalize (p : R[X]) :
+lemma leadingCoeff_normalize (p : R[X]) :
     leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp
 #align polynomial.leading_coeff_normalize Polynomial.leadingCoeff_normalize
 
@@ -115,18 +115,18 @@ section DivisionRing
 
 variable [DivisionRing R] {p q : R[X]}
 
-theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
+lemma degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
   lt_of_not_ge fun h => by
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 #align polynomial.degree_pos_of_ne_zero_of_nonunit Polynomial.degree_pos_of_ne_zero_of_nonunit
 
-theorem monic_mul_leadingCoeff_inv (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
+lemma monic_mul_leadingCoeff_inv (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
   rw [Monic, leadingCoeff_mul, leadingCoeff_C,
     mul_inv_cancel (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
 #align polynomial.monic_mul_leading_coeff_inv Polynomial.monic_mul_leadingCoeff_inv
 
-theorem degree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
+lemma degree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
     degree (p * C (leadingCoeff q)⁻¹) = degree p := by
   have h₁ : (leadingCoeff q)⁻¹ ≠ 0 := inv_ne_zero (mt leadingCoeff_eq_zero.1 h)
   rw [degree_mul, degree_C h₁, add_zero]
@@ -193,7 +193,7 @@ def mod (p q : R[X]) :=
   p %ₘ (q * C (leadingCoeff q)⁻¹)
 #align polynomial.mod Polynomial.mod
 
-private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
+private lemma quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
   by_cases h : q = 0
   · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
   · conv =>
@@ -201,7 +201,7 @@ private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + m
       rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
     rw [div, mod, add_comm, mul_assoc]
 
-private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
+private lemma remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
   rw [← degree_mul_leadingCoeff_inv q hq]
   exact degree_modByMonic_lt p (monic_mul_leadingCoeff_inv hq)
 
@@ -218,16 +218,16 @@ lemma div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q
 lemma mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 #align polynomial.mod_def Polynomial.mod_def
 
-theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
+lemma modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
 #align polynomial.mod_by_monic_eq_mod Polynomial.modByMonic_eq_mod
 
-theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
+lemma divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
     simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
 #align polynomial.div_by_monic_eq_div Polynomial.divByMonic_eq_div
 
-theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
+lemma mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
   modByMonic_eq_mod p (monic_X_sub_C a) ▸ modByMonic_X_sub_C_eq_C_eval _ _
 set_option linter.uppercaseLean3 false in
 #align polynomial.mod_X_sub_C_eq_C_eval Polynomial.mod_X_sub_C_eq_C_eval
@@ -248,7 +248,7 @@ instance : EuclideanDomain R[X] :=
     remainder_lt := fun p q hq => remainder_lt_aux _ hq
     mul_left_not_lt := fun p q hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
-theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
+lemma mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
     classical
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
@@ -259,7 +259,7 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     simp only [this, false_and_iff, if_false]⟩
 #align polynomial.mod_eq_self_iff Polynomial.mod_eq_self_iff
 
-theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
+lemma div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := EuclideanDomain.div_add_mod p q;
       rwa [h, mul_zero, zero_add, mod_eq_self_iff hq0] at this,
@@ -270,7 +270,7 @@ theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
     rw [div_def, (divByMonic_eq_zero_iff hm).2 hlt, mul_zero]⟩
 #align polynomial.div_eq_zero_iff Polynomial.div_eq_zero_iff
 
-theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
+lemma degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
     degree q + degree (p / q) = degree p := by
   have : degree (p % q) < degree (q * (p / q)) :=
     calc
@@ -281,13 +281,13 @@ theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
     rw [← EuclideanDomain.div_add_mod p q, degree_add_eq_left_of_degree_lt this, degree_mul]
 #align polynomial.degree_add_div Polynomial.degree_add_div
 
-theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
+lemma degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
   by_cases hq : q = 0
   · simp [hq]
   · rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq]; exact degree_divByMonic_le _ _
 #align polynomial.degree_div_le Polynomial.degree_div_le
 
-theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
+lemma degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
   have hq0 : q ≠ 0 := fun hq0 => by simp [hq0] at hq
   rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq0];
     exact
@@ -398,7 +398,7 @@ lemma rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι 
   rwa [← Polynomial.map_prod, Ne, map_eq_zero]
 #align polynomial.root_set_prod Polynomial.rootSet_prod
 
-theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
+lemma exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
   ⟨-(p.coeff 0 / p.coeff 1), by
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
@@ -408,7 +408,7 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     simp [IsRoot, mul_div_cancel' _ this]⟩
 #align polynomial.exists_root_of_degree_eq_one Polynomial.exists_root_of_degree_eq_one
 
-theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
+lemma coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),
     coeff_C, coeff_C, inv_eq_one_div]
   split_ifs
@@ -424,7 +424,7 @@ lemma monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := b
   apply hp0
 #align polynomial.monic_normalize Polynomial.monic_normalize
 
-theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
+lemma leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
   by_cases hq : q = 0
   · simp [hq]
@@ -443,7 +443,7 @@ lemma div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_C_mul Polynomial.div_C_mul
 
-theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
+lemma C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
       rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, _root_.mul_inv_cancel ha, C.map_one,
@@ -451,7 +451,7 @@ theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_mul_dvd Polynomial.C_mul_dvd
 
-theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
+lemma dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
   ⟨fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
       rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, _root_.inv_mul_cancel ha, C.map_one,
@@ -482,7 +482,7 @@ lemma map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f 
 lemma degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by simp
 #align polynomial.degree_normalize Polynomial.degree_normalize
 
-theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
+lemma prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
@@ -490,11 +490,11 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   exact (normalize_associated _).prime this
 #align polynomial.prime_of_degree_eq_one Polynomial.prime_of_degree_eq_one
 
-theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
+lemma irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
   (prime_of_degree_eq_one hp1).irreducible
 #align polynomial.irreducible_of_degree_eq_one Polynomial.irreducible_of_degree_eq_one
 
-theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
+lemma not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
   · rw [H, C_0]
     exact not_irreducible_zero
@@ -502,7 +502,7 @@ theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.not_irreducible_C Polynomial.not_irreducible_C
 
-theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
+lemma degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
   lt_of_not_ge fun hp0 =>
     have := eq_C_of_degree_le_zero hp0
     not_irreducible_C (p.coeff 0) <| this ▸ hp

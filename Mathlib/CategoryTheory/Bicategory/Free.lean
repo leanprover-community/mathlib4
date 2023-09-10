@@ -244,7 +244,7 @@ lemma mk_vcomp {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) :
 #align category_theory.free_bicategory.mk_vcomp CategoryTheory.FreeBicategory.mk_vcomp
 
 @[simp]
-theorem mk_whisker_left (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
+lemma mk_whisker_left (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
     (Hom₂.whisker_left f η).mk = (f ◁ η.mk : f ≫ g ⟶ f ≫ h) :=
   rfl
 #align category_theory.free_bicategory.mk_whisker_left CategoryTheory.FreeBicategory.mk_whisker_left
@@ -326,7 +326,7 @@ def liftHom : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (F.obj a ⟶ F.obj b)
 #align category_theory.free_bicategory.lift_hom CategoryTheory.FreeBicategory.liftHom
 
 @[simp]
-theorem liftHom_id (a : FreeBicategory B) : liftHom F (𝟙 a) = 𝟙 (F.obj a) :=
+lemma liftHom_id (a : FreeBicategory B) : liftHom F (𝟙 a) = 𝟙 (F.obj a) :=
   rfl
 #align category_theory.free_bicategory.lift_hom_id CategoryTheory.FreeBicategory.liftHom_id
 

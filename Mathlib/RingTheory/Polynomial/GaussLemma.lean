@@ -122,7 +122,7 @@ lemma IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (map 
   exact isUnit_C.mpr (isPrimitive_iff_isUnit_of_C_dvd.mp hf (f.coeff 0) dvd_rfl)
 #align polynomial.is_primitive.is_unit_iff_is_unit_map_of_injective Polynomial.IsPrimitive.isUnit_iff_isUnit_map_of_injective
 
-theorem IsPrimitive.irreducible_of_irreducible_map_of_injective (h_irr : Irreducible (map φ f)) :
+lemma IsPrimitive.irreducible_of_irreducible_map_of_injective (h_irr : Irreducible (map φ f)) :
     Irreducible f := by
   refine'
     ⟨fun h => h_irr.not_unit (IsUnit.map (mapRingHom φ) h), fun a b h =>
@@ -331,7 +331,7 @@ lemma IsPrimitive.Int.irreducible_iff_irreducible_map_cast {p : ℤ[X]} (hp : p.
   hp.irreducible_iff_irreducible_map_fraction_map
 #align polynomial.is_primitive.int.irreducible_iff_irreducible_map_cast Polynomial.IsPrimitive.Int.irreducible_iff_irreducible_map_cast
 
-theorem IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (p q : ℤ[X]) (hp : p.IsPrimitive)
+lemma IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (p q : ℤ[X]) (hp : p.IsPrimitive)
     (hq : q.IsPrimitive) : p ∣ q ↔ p.map (Int.castRingHom ℚ) ∣ q.map (Int.castRingHom ℚ) :=
   hp.dvd_iff_fraction_map_dvd_fraction_map ℚ hq
 #align polynomial.is_primitive.int.dvd_iff_map_cast_dvd_map_cast Polynomial.IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast

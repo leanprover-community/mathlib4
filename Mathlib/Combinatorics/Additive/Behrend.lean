@@ -92,7 +92,7 @@ lemma sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, Funct
 #align behrend.sphere_zero_subset Behrend.sphere_zero_subset
 
 @[simp]
-theorem sphere_zero_right (n k : ℕ) : sphere (n + 1) 0 k = ∅ := by simp [sphere]
+lemma sphere_zero_right (n k : ℕ) : sphere (n + 1) 0 k = ∅ := by simp [sphere]
 #align behrend.sphere_zero_right Behrend.sphere_zero_right
 
 lemma sphere_subset_box : sphere n d k ⊆ box n d :=
@@ -121,23 +121,23 @@ def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
 #align behrend.map Behrend.map
 
 -- @[simp] -- Porting note: simp can prove this
-theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
+lemma map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 #align behrend.map_zero Behrend.map_zero
 
-theorem map_succ (a : Fin (n + 1) → ℕ) :
+lemma map_succ (a : Fin (n + 1) → ℕ) :
     map d a = a 0 + (∑ x : Fin n, a x.succ * d ^ (x : ℕ)) * d := by
   simp [map, Fin.sum_univ_succ, _root_.pow_succ', ← mul_assoc, ← sum_mul]
 #align behrend.map_succ Behrend.map_succ
 
-theorem map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
+lemma map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
   map_succ _
 #align behrend.map_succ' Behrend.map_succ'
 
-theorem map_monotone (d : ℕ) : Monotone (map d : (Fin n → ℕ) → ℕ) := fun x y h => by
+lemma map_monotone (d : ℕ) : Monotone (map d : (Fin n → ℕ) → ℕ) := fun x y h => by
   dsimp; exact sum_le_sum fun i _ => Nat.mul_le_mul_right _ <| h i
 #align behrend.map_monotone Behrend.map_monotone
 
-theorem map_mod (a : Fin n.succ → ℕ) : map d a % d = a 0 % d := by
+lemma map_mod (a : Fin n.succ → ℕ) : map d a % d = a 0 % d := by
   rw [map_succ, Nat.add_mul_mod_self_right]
 #align behrend.map_mod Behrend.map_mod
 
@@ -162,7 +162,7 @@ lemma map_injOn : {x : Fin n → ℕ | ∀ i, x i < d}.InjOn (map d) := by
   · exact hx₂ _
 #align behrend.map_inj_on Behrend.map_injOn
 
-theorem map_le_of_mem_box (hx : x ∈ box n d) :
+lemma map_le_of_mem_box (hx : x ∈ box n d) :
     map (2 * d - 1) x ≤ ∑ i : Fin n, (d - 1) * (2 * d - 1) ^ (i : ℕ) :=
   map_monotone (2 * d - 1) fun _ => Nat.le_pred_of_lt <| mem_box.1 hx _
 #align behrend.map_le_of_mem_box Behrend.map_le_of_mem_box
@@ -193,7 +193,7 @@ lemma addSalemSpencer_image_sphere :
   exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
 #align behrend.add_salem_spencer_image_sphere Behrend.addSalemSpencer_image_sphere
 
-theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
+lemma sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
   rw [mem_box] at hx
   have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i =>
     Nat.pow_le_pow_of_le_left (Nat.le_pred_of_lt (hx i)) _
@@ -210,7 +210,7 @@ lemma sum_lt : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) < (2 * d + 1) ^ n :=
   sum_eq.trans_lt <| (Nat.div_le_self _ 2).trans_lt <| pred_lt (pow_pos (succ_pos _) _).ne'
 #align behrend.sum_lt Behrend.sum_lt
 
-theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
+lemma card_sphere_le_rothNumberNat (n d k : ℕ) :
     (sphere n d k).card ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   cases n
   · dsimp; refine' (card_le_univ _).trans_eq _; simp
@@ -238,7 +238,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 -/
 
 
-theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
+lemma exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / (↑(n * (d - 1) ^ 2) + 1) : ℝ) ≤ (sphere n d k).card := by
   refine' exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => _) nonempty_range_succ _
   · rw [mem_range, lt_succ_iff]
@@ -248,7 +248,7 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
     exact (cast_add_one_pos _).ne'
 #align behrend.exists_large_sphere_aux Behrend.exists_large_sphere_aux
 
-theorem exists_large_sphere (n d : ℕ) : ∃ k, (d ^ n / ↑(n * d ^ 2) : ℝ) ≤ (sphere n d k).card := by
+lemma exists_large_sphere (n d : ℕ) : ∃ k, (d ^ n / ↑(n * d ^ 2) : ℝ) ≤ (sphere n d k).card := by
   obtain ⟨k, -, hk⟩ := exists_large_sphere_aux n d
   refine' ⟨k, _⟩
   obtain rfl | hn := n.eq_zero_or_pos
@@ -268,12 +268,12 @@ theorem exists_large_sphere (n d : ℕ) : ∃ k, (d ^ n / ↑(n * d ^ 2) : ℝ) 
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 
-theorem bound_aux' (n d : ℕ) : (d ^ n / ↑(n * d ^ 2) : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) :=
+lemma bound_aux' (n d : ℕ) : (d ^ n / ↑(n * d ^ 2) : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) :=
   let ⟨_, h⟩ := exists_large_sphere n d
   h.trans <| cast_le.2 <| card_sphere_le_rothNumberNat _ _ _
 #align behrend.bound_aux' Behrend.bound_aux'
 
-theorem bound_aux (hd : d ≠ 0) (hn : 2 ≤ n) :
+lemma bound_aux (hd : d ≠ 0) (hn : 2 ≤ n) :
     (d ^ (n - 2) / n : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   convert bound_aux' n d using 1
   rw [cast_mul, cast_pow, mul_comm, ← div_div, ← cast_two, ← cast_sub hn, rpow_nat_cast,
@@ -304,7 +304,7 @@ lemma two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
 #align behrend.two_div_one_sub_two_div_e_le_eight Behrend.two_div_one_sub_two_div_e_le_eight
 
-theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ sqrt (log ↑N) := by
+lemma le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ sqrt (log ↑N) := by
   have : ((12 : ℕ) : ℝ) * log 2 ≤ log N := by
     rw [← log_rpow zero_lt_two, log_le_log, rpow_nat_cast]
     · norm_num1
@@ -376,11 +376,11 @@ noncomputable def dValue (N : ℕ) : ℕ :=
   ⌊(N : ℝ) ^ (1 / nValue N : ℝ) / 2⌋₊
 #align behrend.d_value Behrend.dValue
 
-theorem nValue_pos (hN : 2 ≤ N) : 0 < nValue N :=
+lemma nValue_pos (hN : 2 ≤ N) : 0 < nValue N :=
   ceil_pos.2 <| Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 <| hN
 #align behrend.n_value_pos Behrend.nValue_pos
 
-theorem two_le_nValue (hN : 3 ≤ N) : 2 ≤ nValue N := by
+lemma two_le_nValue (hN : 3 ≤ N) : 2 ≤ nValue N := by
   refine' succ_le_of_lt (lt_ceil.2 <| lt_sqrt_of_sq_lt _)
   rw [cast_one, one_pow, lt_log_iff_exp_lt]
   refine' lt_of_lt_of_le _ (cast_le.2 hN)
@@ -389,7 +389,7 @@ theorem two_le_nValue (hN : 3 ≤ N) : 2 ≤ nValue N := by
   exact (zero_lt_succ _).trans_le hN
 #align behrend.two_le_n_value Behrend.two_le_nValue
 
-theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
+lemma three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   rw [nValue, ← lt_iff_add_one_le, lt_ceil, cast_two]
   apply lt_sqrt_of_sq_lt
   have : (2 : ℝ) ^ ((6 : ℕ) : ℝ) ≤ N := by
@@ -403,7 +403,7 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   exact hN.trans_lt' (by norm_num1)
 #align behrend.three_le_n_value Behrend.three_le_nValue
 
-theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
+lemma dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
   have hN₀ : 0 < (N : ℝ) := cast_pos.2 (succ_pos'.trans_le hN₃)
   rw [dValue, floor_pos, ← log_le_log zero_lt_one, log_one, log_div _ two_ne_zero, log_rpow hN₀,
     div_mul_eq_mul_div, one_mul, sub_nonneg, le_div_iff]
@@ -426,7 +426,7 @@ theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
   · exact div_pos (rpow_pos_of_pos hN₀ _) zero_lt_two
 #align behrend.d_value_pos Behrend.dValue_pos
 
-theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
+lemma le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   have : (2 * dValue N - 1) ^ nValue N ≤ (2 * dValue N) ^ nValue N :=
     Nat.pow_le_pow_of_le_left (Nat.sub_le _ _) _
   apply this.trans
@@ -442,7 +442,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
 set_option linter.uppercaseLean3 false in
 #align behrend.le_N Behrend.le_N
 
-theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dValue N := by
+lemma bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dValue N := by
   apply div_lt_floor _
   rw [← log_le_log, log_rpow, mul_comm, ← div_eq_mul_one_div]
   · apply le_trans _ (div_le_div_of_le_left _ _ (ceil_lt_mul _).le)
@@ -478,7 +478,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dVa
   exact hN.trans_lt' (by norm_num1)
 #align behrend.bound Behrend.bound
 
-theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
+lemma roth_lower_bound_explicit (hN : 4096 ≤ N) :
     (N : ℝ) * exp (-4 * sqrt (log N)) < rothNumberNat N := by
   let n := nValue N
   have hn : 0 < (n : ℝ) := cast_pos.2 (nValue_pos <| hN.trans' <| by norm_num1)
@@ -526,7 +526,7 @@ lemma four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
   linarith [log_two_lt_d9]
 #align behrend.four_zero_nine_six_lt_exp_sixteen Behrend.four_zero_nine_six_lt_exp_sixteen
 
-theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
+lemma lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
     (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
   rw [← log_le_log (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
@@ -538,7 +538,7 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
   exact_mod_cast hN'
 #align behrend.lower_bound_le_one' Behrend.lower_bound_le_one'
 
-theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
+lemma lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
     (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
   obtain rfl | hN := hN.eq_or_lt
   · norm_num

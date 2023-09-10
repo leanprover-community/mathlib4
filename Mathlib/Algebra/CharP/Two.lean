@@ -29,7 +29,7 @@ lemma two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero]
 #align char_two.two_eq_zero CharTwo.two_eq_zero
 
 @[simp]
-theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
+lemma add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
 #align char_two.add_self_eq_zero CharTwo.add_self_eq_zero
 
 set_option linter.deprecated false in
@@ -40,7 +40,7 @@ lemma bit0_eq_zero : (bit0 : R → R) = 0 := by
 #align char_two.bit0_eq_zero CharTwo.bit0_eq_zero
 
 set_option linter.deprecated false in
-theorem bit0_apply_eq_zero (x : R) : (bit0 x : R) = 0 := by simp
+lemma bit0_apply_eq_zero (x : R) : (bit0 x : R) = 0 := by simp
 #align char_two.bit0_apply_eq_zero CharTwo.bit0_apply_eq_zero
 
 set_option linter.deprecated false in
@@ -51,7 +51,7 @@ lemma bit1_eq_one : (bit1 : R → R) = 1 := by
 #align char_two.bit1_eq_one CharTwo.bit1_eq_one
 
 set_option linter.deprecated false in
-theorem bit1_apply_eq_one (x : R) : (bit1 x : R) = 1 := by simp
+lemma bit1_apply_eq_one (x : R) : (bit1 x : R) = 1 := by simp
 #align char_two.bit1_apply_eq_one CharTwo.bit1_apply_eq_one
 
 end Semiring
@@ -61,7 +61,7 @@ section Ring
 variable [Ring R] [CharP R 2]
 
 @[simp]
-theorem neg_eq (x : R) : -x = x := by
+lemma neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, ← two_smul R x, two_eq_zero, zero_smul]
 #align char_two.neg_eq CharTwo.neg_eq
 
@@ -70,7 +70,7 @@ lemma neg_eq' : Neg.neg = (id : R → R) :=
 #align char_two.neg_eq' CharTwo.neg_eq'
 
 @[simp]
-theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
+lemma sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 #align char_two.sub_eq_add CharTwo.sub_eq_add
 
 lemma sub_eq_add' : Sub.sub = ((· + ·) : R → R → R) :=
@@ -83,37 +83,37 @@ section CommSemiring
 
 variable [CommSemiring R] [CharP R 2]
 
-theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 :=
+lemma add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 :=
   add_pow_char _ _ _
 #align char_two.add_sq CharTwo.add_sq
 
-theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
+lemma add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]
 #align char_two.add_mul_self CharTwo.add_mul_self
 
 open BigOperators
 
-theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
+lemma list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   list_sum_pow_char _ _
 #align char_two.list_sum_sq CharTwo.list_sum_sq
 
-theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
+lemma list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
   simp_rw [← pow_two, list_sum_sq]
 #align char_two.list_sum_mul_self CharTwo.list_sum_mul_self
 
-theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
+lemma multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   multiset_sum_pow_char _ _
 #align char_two.multiset_sum_sq CharTwo.multiset_sum_sq
 
-theorem multiset_sum_mul_self (l : Multiset R) :
+lemma multiset_sum_mul_self (l : Multiset R) :
     l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 #align char_two.multiset_sum_mul_self CharTwo.multiset_sum_mul_self
 
-theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i in s, f i) ^ 2 = ∑ i in s, f i ^ 2 :=
+lemma sum_sq (s : Finset ι) (f : ι → R) : (∑ i in s, f i) ^ 2 = ∑ i in s, f i ^ 2 :=
   sum_pow_char _ _ _
 #align char_two.sum_sq CharTwo.sum_sq
 
-theorem sum_mul_self (s : Finset ι) (f : ι → R) :
+lemma sum_mul_self (s : Finset ι) (f : ι → R) :
     ((∑ i in s, f i) * ∑ i in s, f i) = ∑ i in s, f i * f i := by simp_rw [← pow_two, sum_sq]
 #align char_two.sum_mul_self CharTwo.sum_mul_self
 

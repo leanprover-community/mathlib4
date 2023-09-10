@@ -77,7 +77,7 @@ lemma gameAdd_swap_swap : ∀ a b : α × β, GameAdd rβ rα a.swap b.swap ↔ 
   fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ => by rw [Prod.swap, Prod.swap, gameAdd_mk_iff, gameAdd_mk_iff, or_comm]
 #align prod.game_add_swap_swap Prod.gameAdd_swap_swap
 
-theorem gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
+lemma gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
     GameAdd rα rβ (a₁, b₁) (a₂, b₂) ↔ GameAdd rβ rα (b₁, a₁) (b₂, a₂) :=
   gameAdd_swap_swap rβ rα (b₁, a₁) (b₂, a₂)
 #align prod.game_add_swap_swap_mk Prod.gameAdd_swap_swap_mk
@@ -99,7 +99,7 @@ end Prod
 /-- If `a` is accessible under `rα` and `b` is accessible under `rβ`, then `(a, b)` is
   accessible under `Prod.GameAdd rα rβ`. Notice that `Prod.lexAccessible` requires the
   stronger condition `∀ b, Acc rβ b`. -/
-theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
+lemma Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
@@ -111,7 +111,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
 /-- The `Prod.GameAdd` relation on well-founded inputs is well-founded.
 
   In particular, the sum of two well-founded games is well-founded. -/
-theorem WellFounded.prod_gameAdd (hα : WellFounded rα) (hβ : WellFounded rβ) :
+lemma WellFounded.prod_gameAdd (hα : WellFounded rα) (hβ : WellFounded rβ) :
     WellFounded (Prod.GameAdd rα rβ) :=
   ⟨fun ⟨a, b⟩ => (hα.apply a).prod_gameAdd (hβ.apply b)⟩
 #align well_founded.prod_game_add WellFounded.prod_gameAdd
@@ -216,7 +216,7 @@ lemma Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
 #align acc.sym2_game_add Acc.sym2_gameAdd
 
 /-- The `Sym2.GameAdd` relation on well-founded inputs is well-founded. -/
-theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameAdd rα) :=
+lemma WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameAdd rα) :=
   ⟨fun i => Sym2.inductionOn i fun x y => (h.apply x).sym2_gameAdd (h.apply y)⟩
 #align well_founded.sym2_game_add WellFounded.sym2_gameAdd
 

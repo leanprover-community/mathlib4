@@ -29,7 +29,7 @@ instance : StarMul (FreeMonoid α) where
   star_mul := List.reverse_append
 
 @[simp]
-theorem star_of (x : α) : star (of x) = of x :=
+lemma star_of (x : α) : star (of x) = of x :=
   rfl
 #align free_monoid.star_of FreeMonoid.star_of
 
@@ -64,11 +64,11 @@ instance : StarRing (FreeAlgebra R X) where
   star_add a b := by simp only [Function.comp_apply, map_add, MulOpposite.unop_add]
 
 @[simp]
-theorem star_ι (x : X) : star (ι R x) = ι R x := by simp [star, Star.star]
+lemma star_ι (x : X) : star (ι R x) = ι R x := by simp [star, Star.star]
 #align free_algebra.star_ι FreeAlgebra.star_ι
 
 @[simp]
-theorem star_algebraMap (r : R) : star (algebraMap R (FreeAlgebra R X) r) = algebraMap R _ r := by
+lemma star_algebraMap (r : R) : star (algebraMap R (FreeAlgebra R X) r) = algebraMap R _ r := by
   simp [star, Star.star]
 #align free_algebra.star_algebra_map FreeAlgebra.star_algebraMap
 

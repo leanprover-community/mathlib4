@@ -62,7 +62,7 @@ instance OrderedCommMonoid.to_covariantClass_right (M : Type*) [OrderedCommMonoi
 `LeftCancelSemigroup` with a `PartialOrder`, assuming `CovariantClass M M (*) (≤)` implies
 `CovariantClass M M (*) (<)`, see `LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le`. -/
 @[to_additive]
-theorem Mul.to_covariantClass_left (M : Type*) [Mul M] [PartialOrder M]
+lemma Mul.to_covariantClass_left (M : Type*) [Mul M] [PartialOrder M]
     [CovariantClass M M (· * ·) (· < ·)] :
     CovariantClass M M (· * ·) (· ≤ ·) :=
   ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
@@ -74,7 +74,7 @@ theorem Mul.to_covariantClass_left (M : Type*) [Mul M] [PartialOrder M]
 implies `CovariantClass M M (swap (*)) (≤)`, see
 `RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le`. -/
 @[to_additive]
-theorem Mul.to_covariantClass_right (M : Type*) [Mul M] [PartialOrder M]
+lemma Mul.to_covariantClass_right (M : Type*) [Mul M] [PartialOrder M]
     [CovariantClass M M (swap (· * ·)) (· < ·)] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
   ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
@@ -120,12 +120,12 @@ section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b : α}
 
 @[simp]
-theorem top_add (a : α) : ⊤ + a = ⊤ :=
+lemma top_add (a : α) : ⊤ + a = ⊤ :=
   LinearOrderedAddCommMonoidWithTop.top_add' a
 #align top_add top_add
 
 @[simp]
-theorem add_top (a : α) : a + ⊤ = ⊤ :=
+lemma add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
 #align add_top add_top
 

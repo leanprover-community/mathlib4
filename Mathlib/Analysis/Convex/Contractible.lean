@@ -20,7 +20,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Conti
   [ContinuousSMul ℝ E] {s : Set E} {x : E}
 
 /-- A non-empty star convex set is a contractible space. -/
-protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s.Nonempty) :
+protected lemma StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s.Nonempty) :
     ContractibleSpace s := by
   refine'
     (contractible_iff_id_nullhomotopic s).2
@@ -39,7 +39,7 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
 #align star_convex.contractible_space StarConvex.contractibleSpace
 
 /-- A non-empty convex set is a contractible space. -/
-protected theorem Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty) :
+protected lemma Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty) :
     ContractibleSpace s :=
   let ⟨_, hx⟩ := hne
   (hs.starConvex hx).contractibleSpace hne

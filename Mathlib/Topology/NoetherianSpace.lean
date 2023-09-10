@@ -126,7 +126,7 @@ lemma noetherianSpace_of_surjective [NoetherianSpace α] (f : α → β) (hf : C
     (NoetherianSpace.isCompact s).image hf
 #align topological_space.noetherian_space_of_surjective TopologicalSpace.noetherianSpace_of_surjective
 
-theorem noetherianSpace_iff_of_homeomorph (f : α ≃ₜ β) : NoetherianSpace α ↔ NoetherianSpace β :=
+lemma noetherianSpace_iff_of_homeomorph (f : α ≃ₜ β) : NoetherianSpace α ↔ NoetherianSpace β :=
   ⟨fun _ => noetherianSpace_of_surjective f f.continuous f.surjective,
     fun _ => noetherianSpace_of_surjective f.symm f.symm.continuous f.symm.surjective⟩
 #align topological_space.noetherian_space_iff_of_homeomorph TopologicalSpace.noetherianSpace_iff_of_homeomorph
@@ -137,7 +137,7 @@ lemma NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continuou
     Set.surjective_onto_range
 #align topological_space.noetherian_space.range TopologicalSpace.NoetherianSpace.range
 
-theorem noetherianSpace_set_iff (s : Set α) :
+lemma noetherianSpace_set_iff (s : Set α) :
     NoetherianSpace s ↔ ∀ t, t ⊆ s → IsCompact t := by
   simp only [noetherianSpace_iff_isCompact, embedding_subtype_val.isCompact_iff_isCompact_image,
     Subtype.forall_set_subtype]

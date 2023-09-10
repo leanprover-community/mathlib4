@@ -142,7 +142,7 @@ lemma bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
 factorization of the central binomial coefficent only has factors at most `2 * n / 3 + 1`.
 -/
-theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
+lemma centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     (no_prime : ¬∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) :
     centralBinom n = ∏ p in Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
   refine' (Eq.trans _ n.prod_pow_factorization_centralBinom).symm
@@ -166,7 +166,7 @@ The bound splits the prime factors of `centralBinom n` into those
 4. Between `n` and `2 * n`, which would not exist in the case where Bertrand's postulate is false.
 5. Above `2 * n`, which do not exist.
 -/
-theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
+lemma centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     (no_prime : ¬∃ p : ℕ, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n) :
     centralBinom n ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) := by
   have n_pos : 0 < n := (Nat.zero_le _).trans_lt n_big
@@ -200,7 +200,7 @@ namespace Nat
 
 /-- Proves that Bertrand's postulate holds for all sufficiently large `n`.
 -/
-theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) :
+lemma exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
   -- Assume there is no prime in the range.
   by_contra no_prime
@@ -230,7 +230,7 @@ lemma exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime
 **Bertrand's Postulate**: For any positive natural number, there is a prime which is greater than
 it, but no more than twice as large.
 -/
-theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
+lemma exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
     ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n := by
   -- Split into cases whether `n` is large or small
   cases' lt_or_le 511 n with h h

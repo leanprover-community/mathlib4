@@ -326,11 +326,11 @@ variable {P Q : C} (f : P ⟶ Q)
 
 section
 
-theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
+lemma mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
   mono_of_kernel_zero h
 #align category_theory.abelian.mono_of_kernel_ι_eq_zero CategoryTheory.Abelian.mono_of_kernel_ι_eq_zero
 
-theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
+lemma epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
   apply NormalMonoCategory.epi_of_zero_cokernel _ (cokernel f)
   simp_rw [← h]
   exact IsColimit.ofIsoColimit (colimit.isColimit (parallelPair f 0)) (isoOfπ _)
@@ -695,7 +695,7 @@ lemma epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s
 /-- Suppose `f` and `g` are two morphisms with a common codomain and suppose we have written `g` as
     an epimorphism followed by a monomorphism. If `f` factors through the mono part of this
     factorization, then any pullback of `g` along `f` is an epimorphism. -/
-theorem epi_fst_of_factor_thru_epi_mono_factorization (g₁ : Y ⟶ W) [Epi g₁] (g₂ : W ⟶ Z) [Mono g₂]
+lemma epi_fst_of_factor_thru_epi_mono_factorization (g₁ : Y ⟶ W) [Epi g₁] (g₂ : W ⟶ Z) [Mono g₂]
     (hg : g₁ ≫ g₂ = g) (f' : X ⟶ W) (hf : f' ≫ g₂ = f) (t : PullbackCone f g) (ht : IsLimit t) :
     Epi t.fst := by
   apply epi_fst_of_isLimit _ _ (PullbackCone.isLimitOfFactors f g g₂ f' g₁ hf hg t ht)
@@ -772,7 +772,7 @@ lemma mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) 
 /-- Suppose `f` and `g` are two morphisms with a common domain and suppose we have written `g` as
     an epimorphism followed by a monomorphism. If `f` factors through the epi part of this
     factorization, then any pushout of `g` along `f` is a monomorphism. -/
-theorem mono_inl_of_factor_thru_epi_mono_factorization (f : X ⟶ Y) (g : X ⟶ Z) (g₁ : X ⟶ W) [Epi g₁]
+lemma mono_inl_of_factor_thru_epi_mono_factorization (f : X ⟶ Y) (g : X ⟶ Z) (g₁ : X ⟶ W) [Epi g₁]
     (g₂ : W ⟶ Z) [Mono g₂] (hg : g₁ ≫ g₂ = g) (f' : W ⟶ Y) (hf : g₁ ≫ f' = f)
     (t : PushoutCocone f g) (ht : IsColimit t) : Mono t.inl := by
   apply mono_inl_of_isColimit _ _ (PushoutCocone.isColimitOfFactors _ _ _ _ _ hf hg t ht)

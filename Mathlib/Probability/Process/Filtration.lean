@@ -61,7 +61,7 @@ protected lemma mono {i j : ι} (f : Filtration ι m) (hij : i ≤ j) : f i ≤ 
   f.mono' hij
 #align measure_theory.filtration.mono MeasureTheory.Filtration.mono
 
-protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
+protected lemma le (f : Filtration ι m) (i : ι) : f i ≤ m :=
   f.le' i
 #align measure_theory.filtration.le MeasureTheory.Filtration.le
 
@@ -138,7 +138,7 @@ instance : SupSet (Filtration ι m) :=
         rw [← hfm']
         exact f.le i }⟩
 
-theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
+lemma sSup_def (s : Set (Filtration ι m)) (i : ι) :
     sSup s i = sSup ((fun f : Filtration ι m => f i) '' s) :=
   rfl
 #align measure_theory.filtration.Sup_def MeasureTheory.Filtration.sSup_def
@@ -161,7 +161,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
         obtain ⟨f, hf_mem⟩ := h_nonempty
         exact le_trans (sInf_le ⟨f, hf_mem, rfl⟩) (f.le i) }⟩
 
-theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
+lemma sInf_def (s : Set (Filtration ι m)) (i : ι) :
     sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m :=
   rfl
 #align measure_theory.filtration.Inf_def MeasureTheory.Filtration.sInf_def

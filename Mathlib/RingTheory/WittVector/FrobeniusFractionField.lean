@@ -101,7 +101,7 @@ section IsAlgClosed
 
 variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
-theorem root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
+lemma root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ∃ b : k, (succNthDefiningPoly p n a₁ a₂ bs).IsRoot b :=
   IsAlgClosed.exists_root _ <| by
     simp only [succNthDefiningPoly_degree p n a₁ a₂ bs ha₁ ha₂, ne_eq, Nat.cast_eq_zero,
@@ -114,13 +114,13 @@ def succNthVal (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : 
   Classical.choose (root_exists p n a₁ a₂ bs ha₁ ha₂)
 #align witt_vector.recursion_main.succ_nth_val WittVector.RecursionMain.succNthVal
 
-theorem succNthVal_spec (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
+lemma succNthVal_spec (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) :
     (succNthDefiningPoly p n a₁ a₂ bs).IsRoot (succNthVal p n a₁ a₂ bs ha₁ ha₂) :=
   Classical.choose_spec (root_exists p n a₁ a₂ bs ha₁ ha₂)
 #align witt_vector.recursion_main.succ_nth_val_spec WittVector.RecursionMain.succNthVal_spec
 
-theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
+lemma succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) :
     succNthVal p n a₁ a₂ bs ha₁ ha₂ ^ p * a₁.coeff 0 ^ p ^ (n + 1) +
           a₁.coeff (n + 1) * (bs 0 ^ p) ^ p ^ (n + 1) +
@@ -145,7 +145,7 @@ namespace RecursionBase
 
 variable {k : Type*} [Field k] [IsAlgClosed k]
 
-theorem solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
+lemma solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
   IsAlgClosed.exists_pow_nat_eq _ <|
     -- Porting note: was
     -- by linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
@@ -157,7 +157,7 @@ def solution (a₁ a₂ : 𝕎 k) : k :=
   Classical.choose <| solution_pow p a₁ a₂
 #align witt_vector.recursion_base.solution WittVector.RecursionBase.solution
 
-theorem solution_spec (a₁ a₂ : 𝕎 k) : solution p a₁ a₂ ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
+lemma solution_spec (a₁ a₂ : 𝕎 k) : solution p a₁ a₂ ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
   Classical.choose_spec <| solution_pow p a₁ a₂
 #align witt_vector.recursion_base.solution_spec WittVector.RecursionBase.solution_spec
 
@@ -242,7 +242,7 @@ lemma frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠
 
 local notation "φ" => IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
 
-theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
+lemma exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
     (hq' : q'.coeff 0 ≠ 0) (hq : (p : 𝕎 k) ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
     let b : 𝕎 k := frobeniusRotation p hr' hq'
     IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)

@@ -486,7 +486,7 @@ lemma IsSeparable.image {β : Type*} [TopologicalSpace β] {s : Set α} (hs : Is
   exact hc.trans (closure_subset_preimage_closure_image hf)
 #align topological_space.is_separable.image TopologicalSpace.IsSeparable.image
 
-theorem isSeparable_of_separableSpace_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
+lemma isSeparable_of_separableSpace_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
   have : IsSeparable (((↑) : s → α) '' (univ : Set s)) :=
     (isSeparable_of_separableSpace _).image continuous_subtype_val
   simpa only [image_univ, Subtype.range_val_subtype] using this
@@ -535,7 +535,7 @@ lemma isTopologicalBasis_iInf {β : Type*} {ι : Type*} {X : ι → Type*}
     rfl
 #align is_topological_basis_infi isTopologicalBasis_iInf
 
-theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
+lemma isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
     IsTopologicalBasis { s | ∃ x : α, (s : Set α) = {x} } :=
   isTopologicalBasis_of_open_of_nhds (fun _ _ => isOpen_discrete _) fun x _ hx _ =>
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
@@ -578,7 +578,7 @@ instance separableSpace_univ {α : Type*} [TopologicalSpace α] [SeparableSpace 
 dense set `s : Set α` that contains those of both bottom and top elements of `α` that actually
 exist. For a dense set containing neither bot nor top elements, see
 `exists_countable_dense_no_bot_top`. -/
-theorem exists_countable_dense_bot_top (α : Type*) [TopologicalSpace α] [SeparableSpace α]
+lemma exists_countable_dense_bot_top (α : Type*) [TopologicalSpace α] [SeparableSpace α]
     [PartialOrder α] :
     ∃ s : Set α, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∈ s) ∧ ∀ x, IsTop x → x ∈ s := by
   simpa using dense_univ.exists_countable_dense_subset_bot_top
@@ -710,7 +710,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
 
 /-- If `β` is a second-countable space, then its induced topology via
 `f` on `α` is also second-countable. -/
-theorem secondCountableTopology_induced (β) [t : TopologicalSpace β] [SecondCountableTopology β]
+lemma secondCountableTopology_induced (β) [t : TopologicalSpace β] [SecondCountableTopology β]
     (f : α → β) : @SecondCountableTopology α (t.induced f) := by
   rcases @SecondCountableTopology.is_open_generated_countable β _ _ with ⟨b, hb, eq⟩
   letI := t.induced f

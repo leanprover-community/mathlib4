@@ -42,7 +42,7 @@ def IsCoprime : Prop :=
 variable {x y z}
 
 @[symm]
-theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
+lemma IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
   let ⟨a, b, H⟩ := H
   ⟨b, a, by rw [add_comm, H]⟩
 #align is_coprime.symm IsCoprime.symm
@@ -90,19 +90,19 @@ lemma isCoprime_one_right : IsCoprime x 1 :=
   ⟨0, 1, by rw [one_mul, zero_mul, zero_add]⟩
 #align is_coprime_one_right isCoprime_one_right
 
-theorem IsCoprime.dvd_of_dvd_mul_right (H1 : IsCoprime x z) (H2 : x ∣ y * z) : x ∣ y := by
+lemma IsCoprime.dvd_of_dvd_mul_right (H1 : IsCoprime x z) (H2 : x ∣ y * z) : x ∣ y := by
   let ⟨a, b, H⟩ := H1
   rw [← mul_one y, ← H, mul_add, ← mul_assoc, mul_left_comm]
   exact dvd_add (dvd_mul_left _ _) (H2.mul_left _)
 #align is_coprime.dvd_of_dvd_mul_right IsCoprime.dvd_of_dvd_mul_right
 
-theorem IsCoprime.dvd_of_dvd_mul_left (H1 : IsCoprime x y) (H2 : x ∣ y * z) : x ∣ z := by
+lemma IsCoprime.dvd_of_dvd_mul_left (H1 : IsCoprime x y) (H2 : x ∣ y * z) : x ∣ z := by
   let ⟨a, b, H⟩ := H1
   rw [← one_mul z, ← H, add_mul, mul_right_comm, mul_assoc b]
   exact dvd_add (dvd_mul_left _ _) (H2.mul_left _)
 #align is_coprime.dvd_of_dvd_mul_left IsCoprime.dvd_of_dvd_mul_left
 
-theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime (x * y) z :=
+lemma IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime (x * y) z :=
   let ⟨a, b, h1⟩ := H1
   let ⟨c, d, h2⟩ := H2
   ⟨a * c, a * x * d + b * c * y + b * d * z,
@@ -114,12 +114,12 @@ theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime
       ⟩
 #align is_coprime.mul_left IsCoprime.mul_left
 
-theorem IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprime x (y * z) := by
+lemma IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprime x (y * z) := by
   rw [isCoprime_comm] at H1 H2 ⊢
   exact H1.mul_left H2
 #align is_coprime.mul_right IsCoprime.mul_right
 
-theorem IsCoprime.mul_dvd (H : IsCoprime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x * y ∣ z := by
+lemma IsCoprime.mul_dvd (H : IsCoprime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x * y ∣ z := by
   obtain ⟨a, b, h⟩ := H
   rw [← mul_one z, ← h, mul_add]
   apply dvd_add
@@ -129,22 +129,22 @@ theorem IsCoprime.mul_dvd (H : IsCoprime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x 
     exact (mul_dvd_mul_right H1 _).mul_right _
 #align is_coprime.mul_dvd IsCoprime.mul_dvd
 
-theorem IsCoprime.of_mul_left_left (H : IsCoprime (x * y) z) : IsCoprime x z :=
+lemma IsCoprime.of_mul_left_left (H : IsCoprime (x * y) z) : IsCoprime x z :=
   let ⟨a, b, h⟩ := H
   ⟨a * y, b, by rwa [mul_right_comm, mul_assoc]⟩
 #align is_coprime.of_mul_left_left IsCoprime.of_mul_left_left
 
-theorem IsCoprime.of_mul_left_right (H : IsCoprime (x * y) z) : IsCoprime y z := by
+lemma IsCoprime.of_mul_left_right (H : IsCoprime (x * y) z) : IsCoprime y z := by
   rw [mul_comm] at H
   exact H.of_mul_left_left
 #align is_coprime.of_mul_left_right IsCoprime.of_mul_left_right
 
-theorem IsCoprime.of_mul_right_left (H : IsCoprime x (y * z)) : IsCoprime x y := by
+lemma IsCoprime.of_mul_right_left (H : IsCoprime x (y * z)) : IsCoprime x y := by
   rw [isCoprime_comm] at H ⊢
   exact H.of_mul_left_left
 #align is_coprime.of_mul_right_left IsCoprime.of_mul_right_left
 
-theorem IsCoprime.of_mul_right_right (H : IsCoprime x (y * z)) : IsCoprime x z := by
+lemma IsCoprime.of_mul_right_right (H : IsCoprime x (y * z)) : IsCoprime x z := by
   rw [mul_comm] at H
   exact H.of_mul_right_left
 #align is_coprime.of_mul_right_right IsCoprime.of_mul_right_right
@@ -157,16 +157,16 @@ lemma IsCoprime.mul_right_iff : IsCoprime x (y * z) ↔ IsCoprime x y ∧ IsCopr
   rw [isCoprime_comm, IsCoprime.mul_left_iff, isCoprime_comm, @isCoprime_comm _ _ z]
 #align is_coprime.mul_right_iff IsCoprime.mul_right_iff
 
-theorem IsCoprime.of_isCoprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) : IsCoprime x z := by
+lemma IsCoprime.of_isCoprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) : IsCoprime x z := by
   obtain ⟨d, rfl⟩ := hdvd
   exact IsCoprime.of_mul_left_left h
 #align is_coprime.of_coprime_of_dvd_left IsCoprime.of_isCoprime_of_dvd_left
 
-theorem IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y) : IsCoprime z x :=
+lemma IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y) : IsCoprime z x :=
   (h.symm.of_isCoprime_of_dvd_left hdvd).symm
 #align is_coprime.of_coprime_of_dvd_right IsCoprime.of_isCoprime_of_dvd_right
 
-theorem IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
+lemma IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
   let ⟨k, hk⟩ := d
   isCoprime_self.1 <| IsCoprime.of_mul_right_left <| show IsCoprime x (x * k) from hk ▸ H
 #align is_coprime.is_unit_of_dvd IsCoprime.isUnit_of_dvd
@@ -176,50 +176,50 @@ lemma IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (h
   (h.of_isCoprime_of_dvd_left ha).isUnit_of_dvd hb
 #align is_coprime.is_unit_of_dvd' IsCoprime.isUnit_of_dvd'
 
-theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
+lemma IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
     IsCoprime (f x) (f y) :=
   let ⟨a, b, h⟩ := H
   ⟨f a, f b, by rw [← f.map_mul, ← f.map_mul, ← f.map_add, h, f.map_one]⟩
 #align is_coprime.map IsCoprime.map
 
-theorem IsCoprime.of_add_mul_left_left (h : IsCoprime (x + y * z) y) : IsCoprime x y :=
+lemma IsCoprime.of_add_mul_left_left (h : IsCoprime (x + y * z) y) : IsCoprime x y :=
   let ⟨a, b, H⟩ := h
   ⟨a, a * z + b, by
     simpa only [add_mul, mul_add, add_assoc, add_comm, add_left_comm, mul_assoc, mul_comm,
       mul_left_comm] using H⟩
 #align is_coprime.of_add_mul_left_left IsCoprime.of_add_mul_left_left
 
-theorem IsCoprime.of_add_mul_right_left (h : IsCoprime (x + z * y) y) : IsCoprime x y := by
+lemma IsCoprime.of_add_mul_right_left (h : IsCoprime (x + z * y) y) : IsCoprime x y := by
   rw [mul_comm] at h
   exact h.of_add_mul_left_left
 #align is_coprime.of_add_mul_right_left IsCoprime.of_add_mul_right_left
 
-theorem IsCoprime.of_add_mul_left_right (h : IsCoprime x (y + x * z)) : IsCoprime x y := by
+lemma IsCoprime.of_add_mul_left_right (h : IsCoprime x (y + x * z)) : IsCoprime x y := by
   rw [isCoprime_comm] at h ⊢
   exact h.of_add_mul_left_left
 #align is_coprime.of_add_mul_left_right IsCoprime.of_add_mul_left_right
 
-theorem IsCoprime.of_add_mul_right_right (h : IsCoprime x (y + z * x)) : IsCoprime x y := by
+lemma IsCoprime.of_add_mul_right_right (h : IsCoprime x (y + z * x)) : IsCoprime x y := by
   rw [mul_comm] at h
   exact h.of_add_mul_left_right
 #align is_coprime.of_add_mul_right_right IsCoprime.of_add_mul_right_right
 
-theorem IsCoprime.of_mul_add_left_left (h : IsCoprime (y * z + x) y) : IsCoprime x y := by
+lemma IsCoprime.of_mul_add_left_left (h : IsCoprime (y * z + x) y) : IsCoprime x y := by
   rw [add_comm] at h
   exact h.of_add_mul_left_left
 #align is_coprime.of_mul_add_left_left IsCoprime.of_mul_add_left_left
 
-theorem IsCoprime.of_mul_add_right_left (h : IsCoprime (z * y + x) y) : IsCoprime x y := by
+lemma IsCoprime.of_mul_add_right_left (h : IsCoprime (z * y + x) y) : IsCoprime x y := by
   rw [add_comm] at h
   exact h.of_add_mul_right_left
 #align is_coprime.of_mul_add_right_left IsCoprime.of_mul_add_right_left
 
-theorem IsCoprime.of_mul_add_left_right (h : IsCoprime x (x * z + y)) : IsCoprime x y := by
+lemma IsCoprime.of_mul_add_left_right (h : IsCoprime x (x * z + y)) : IsCoprime x y := by
   rw [add_comm] at h
   exact h.of_add_mul_left_right
 #align is_coprime.of_mul_add_left_right IsCoprime.of_mul_add_left_right
 
-theorem IsCoprime.of_mul_add_right_right (h : IsCoprime x (z * x + y)) : IsCoprime x y := by
+lemma IsCoprime.of_mul_add_right_right (h : IsCoprime x (z * x + y)) : IsCoprime x y := by
   rw [add_comm] at h
   exact h.of_add_mul_right_right
 #align is_coprime.of_mul_add_right_right IsCoprime.of_mul_add_right_right
@@ -361,7 +361,7 @@ lemma neg_left {x y : R} (h : IsCoprime x y) : IsCoprime (-x) y := by
   rwa [neg_mul_neg]
 #align is_coprime.neg_left IsCoprime.neg_left
 
-theorem neg_left_iff (x y : R) : IsCoprime (-x) y ↔ IsCoprime x y :=
+lemma neg_left_iff (x y : R) : IsCoprime (-x) y ↔ IsCoprime x y :=
   ⟨fun h => neg_neg x ▸ h.neg_left, neg_left⟩
 #align is_coprime.neg_left_iff IsCoprime.neg_left_iff
 
@@ -369,7 +369,7 @@ lemma neg_right {x y : R} (h : IsCoprime x y) : IsCoprime x (-y) :=
   h.symm.neg_left.symm
 #align is_coprime.neg_right IsCoprime.neg_right
 
-theorem neg_right_iff (x y : R) : IsCoprime x (-y) ↔ IsCoprime x y :=
+lemma neg_right_iff (x y : R) : IsCoprime x (-y) ↔ IsCoprime x y :=
   ⟨fun h => neg_neg y ▸ h.neg_right, neg_right⟩
 #align is_coprime.neg_right_iff IsCoprime.neg_right_iff
 
@@ -377,7 +377,7 @@ lemma neg_neg {x y : R} (h : IsCoprime x y) : IsCoprime (-x) (-y) :=
   h.neg_left.neg_right
 #align is_coprime.neg_neg IsCoprime.neg_neg
 
-theorem neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
+lemma neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
   (neg_left_iff _ _).trans (neg_right_iff _ _)
 #align is_coprime.neg_neg_iff IsCoprime.neg_neg_iff
 

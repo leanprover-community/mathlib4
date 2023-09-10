@@ -44,14 +44,14 @@ variable [Group G] [AddGroup A] {s : Set G}
 namespace Subgroup
 
 @[to_additive (attr := simp)]
-theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
+lemma inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
   rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff]
   exact subset_closure (mem_inv.mp hs)
 #align subgroup.inv_subset_closure Subgroup.inv_subset_closure
 #align add_subgroup.neg_subset_closure AddSubgroup.neg_subset_closure
 
 @[to_additive]
-theorem closure_toSubmonoid (S : Set G) :
+lemma closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
   refine le_antisymm (fun x hx => ?_) (Submonoid.closure_le.2 ?_)
   · refine'
@@ -86,7 +86,7 @@ lemma closure_induction_right {p : G → Prop} {x : G} (h : x ∈ closure s) (H1
 #align add_subgroup.closure_induction_right AddSubgroup.closure_induction_right
 
 @[to_additive (attr := simp)]
-theorem closure_inv (s : Set G) : closure s⁻¹ = closure s := by
+lemma closure_inv (s : Set G) : closure s⁻¹ = closure s := by
   simp only [← toSubmonoid_eq, closure_toSubmonoid, inv_inv, union_comm]
 #align subgroup.closure_inv Subgroup.closure_inv
 #align add_subgroup.closure_neg AddSubgroup.closure_neg
@@ -137,7 +137,7 @@ lemma iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ �
 #align add_subgroup.supr_induction' AddSubgroup.iSup_induction'
 
 @[to_additive]
-theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
+lemma closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
@@ -145,7 +145,7 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
 #align add_subgroup.closure_add_le AddSubgroup.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
+lemma sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
@@ -154,7 +154,7 @@ theorem sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K 
 #align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure
 
 @[to_additive]
-theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
+lemma set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
     s * (N : Set G) = (N : Set G) * s := by
   ext x
   refine (exists_congr fun y => ?_).trans exists_swap
@@ -164,7 +164,7 @@ theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
 /-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `N` is normal."]
-theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
+lemma mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   refine closure_induction'' (p := fun x => x ∈ (H : Set G) * (N : Set G)) hx ?_ ?_ ?_ ?_
@@ -184,14 +184,14 @@ theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) =
 /-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
 when `N` is normal."]
-theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H := by
+lemma normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H := by
   rw [← set_mul_normal_comm, sup_comm, mul_normal]
 #align subgroup.normal_mul Subgroup.normal_mul
 #align add_subgroup.normal_add AddSubgroup.normal_add
 
 -- porting note: todo: use `∩` in the RHS
 @[to_additive]
-theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
+lemma mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
     (A : Set G) * ↑(B ⊓ C) = (A : Set G) * (B : Set G) ⊓ C := by
   ext
   simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
@@ -208,7 +208,7 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
 
 -- porting note: todo: use `∩` in the RHS
 @[to_additive]
-theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
+lemma inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
     ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ⊓ ↑B * ↑C := by
   ext
   simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
@@ -234,7 +234,7 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
 
 -- porting note: new lemma
 @[to_additive]
-theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
+lemma smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
 
@@ -274,35 +274,35 @@ lemma pointwise_smul_def {a : α} (S : Subgroup G) :
 #align subgroup.pointwise_smul_def Subgroup.pointwise_smul_def
 
 @[simp]
-theorem coe_pointwise_smul (a : α) (S : Subgroup G) : ↑(a • S) = a • (S : Set G) :=
+lemma coe_pointwise_smul (a : α) (S : Subgroup G) : ↑(a • S) = a • (S : Set G) :=
   rfl
 #align subgroup.coe_pointwise_smul Subgroup.coe_pointwise_smul
 
 @[simp]
-theorem pointwise_smul_toSubmonoid (a : α) (S : Subgroup G) :
+lemma pointwise_smul_toSubmonoid (a : α) (S : Subgroup G) :
     (a • S).toSubmonoid = a • S.toSubmonoid :=
   rfl
 #align subgroup.pointwise_smul_to_submonoid Subgroup.pointwise_smul_toSubmonoid
 
-theorem smul_mem_pointwise_smul (m : G) (a : α) (S : Subgroup G) : m ∈ S → a • m ∈ a • S :=
+lemma smul_mem_pointwise_smul (m : G) (a : α) (S : Subgroup G) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set G))
 #align subgroup.smul_mem_pointwise_smul Subgroup.smul_mem_pointwise_smul
 
-theorem mem_smul_pointwise_iff_exists (m : G) (a : α) (S : Subgroup G) :
+lemma mem_smul_pointwise_iff_exists (m : G) (a : α) (S : Subgroup G) :
     m ∈ a • S ↔ ∃ s : G, s ∈ S ∧ a • s = m :=
   (Set.mem_smul_set : m ∈ a • (S : Set G) ↔ _)
 #align subgroup.mem_smul_pointwise_iff_exists Subgroup.mem_smul_pointwise_iff_exists
 
 @[simp]
-theorem smul_bot (a : α) : a • (⊥ : Subgroup G) = ⊥ :=
+lemma smul_bot (a : α) : a • (⊥ : Subgroup G) = ⊥ :=
   map_bot _
 #align subgroup.smul_bot Subgroup.smul_bot
 
-theorem smul_sup (a : α) (S T : Subgroup G) : a • (S ⊔ T) = a • S ⊔ a • T :=
+lemma smul_sup (a : α) (S T : Subgroup G) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 #align subgroup.smul_sup Subgroup.smul_sup
 
-theorem smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) :=
+lemma smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) :=
   MonoidHom.map_closure _ _
 #align subgroup.smul_closure Subgroup.smul_closure
 
@@ -360,7 +360,7 @@ lemma subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ 
 #align subgroup.subset_pointwise_smul_iff Subgroup.subset_pointwise_smul_iff
 
 @[simp]
-theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a • T := by
+lemma smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a • T := by
   simp [SetLike.ext_iff, mem_pointwise_smul_iff_inv_smul_mem]
 #align subgroup.smul_inf Subgroup.smul_inf
 
@@ -388,7 +388,7 @@ lemma Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g :
 #align subgroup.normal.conj_act Subgroup.Normal.conjAct
 
 @[simp]
-theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
+lemma smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
 #align subgroup.smul_normal Subgroup.smul_normal
 
@@ -454,21 +454,21 @@ protected def pointwiseMulAction : MulAction α (AddSubgroup A) where
 scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMulAction
 
 @[simp]
-theorem coe_pointwise_smul (a : α) (S : AddSubgroup A) : ↑(a • S) = a • (S : Set A) :=
+lemma coe_pointwise_smul (a : α) (S : AddSubgroup A) : ↑(a • S) = a • (S : Set A) :=
   rfl
 #align add_subgroup.coe_pointwise_smul AddSubgroup.coe_pointwise_smul
 
 @[simp]
-theorem pointwise_smul_toAddSubmonoid (a : α) (S : AddSubgroup A) :
+lemma pointwise_smul_toAddSubmonoid (a : α) (S : AddSubgroup A) :
     (a • S).toAddSubmonoid = a • S.toAddSubmonoid :=
   rfl
 #align add_subgroup.pointwise_smul_to_add_submonoid AddSubgroup.pointwise_smul_toAddSubmonoid
 
-theorem smul_mem_pointwise_smul (m : A) (a : α) (S : AddSubgroup A) : m ∈ S → a • m ∈ a • S :=
+lemma smul_mem_pointwise_smul (m : A) (a : α) (S : AddSubgroup A) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set A))
 #align add_subgroup.smul_mem_pointwise_smul AddSubgroup.smul_mem_pointwise_smul
 
-theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubgroup A) :
+lemma mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubgroup A) :
     m ∈ a • S ↔ ∃ s : A, s ∈ S ∧ a • s = m :=
   (Set.mem_smul_set : m ∈ a • (S : Set A) ↔ _)
 #align add_subgroup.mem_smul_pointwise_iff_exists AddSubgroup.mem_smul_pointwise_iff_exists

@@ -77,13 +77,13 @@ def truncation (f : α → ℝ) (A : ℝ) :=
 
 variable {m : MeasurableSpace α} {μ : Measure α} {f : α → ℝ}
 
-theorem _root_.MeasureTheory.AEStronglyMeasurable.truncation (hf : AEStronglyMeasurable f μ)
+lemma _root_.MeasureTheory.AEStronglyMeasurable.truncation (hf : AEStronglyMeasurable f μ)
     {A : ℝ} : AEStronglyMeasurable (truncation f A) μ := by
   apply AEStronglyMeasurable.comp_aemeasurable _ hf.aemeasurable
   exact (stronglyMeasurable_id.indicator measurableSet_Ioc).aestronglyMeasurable
 #align measure_theory.ae_strongly_measurable.truncation MeasureTheory.AEStronglyMeasurable.truncation
 
-theorem abs_truncation_le_bound (f : α → ℝ) (A : ℝ) (x : α) : |truncation f A x| ≤ |A| := by
+lemma abs_truncation_le_bound (f : α → ℝ) (A : ℝ) (x : α) : |truncation f A x| ≤ |A| := by
   simp only [truncation, Set.indicator, Set.mem_Icc, id.def, Function.comp_apply]
   split_ifs with h
   · exact abs_le_abs h.2 (neg_le.2 h.1.le)
@@ -91,10 +91,10 @@ theorem abs_truncation_le_bound (f : α → ℝ) (A : ℝ) (x : α) : |truncatio
 #align probability_theory.abs_truncation_le_bound ProbabilityTheory.abs_truncation_le_bound
 
 @[simp]
-theorem truncation_zero (f : α → ℝ) : truncation f 0 = 0 := by simp [truncation]; rfl
+lemma truncation_zero (f : α → ℝ) : truncation f 0 = 0 := by simp [truncation]; rfl
 #align probability_theory.truncation_zero ProbabilityTheory.truncation_zero
 
-theorem abs_truncation_le_abs_self (f : α → ℝ) (A : ℝ) (x : α) : |truncation f A x| ≤ |f x| := by
+lemma abs_truncation_le_abs_self (f : α → ℝ) (A : ℝ) (x : α) : |truncation f A x| ≤ |f x| := by
   simp only [truncation, indicator, Set.mem_Icc, id.def, Function.comp_apply]
   split_ifs
   · exact le_rfl
@@ -135,7 +135,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.integrable_truncation [IsFiniteM
   rw [← memℒp_one_iff_integrable]; exact hf.memℒp_truncation
 #align measure_theory.ae_strongly_measurable.integrable_truncation MeasureTheory.AEStronglyMeasurable.integrable_truncation
 
-theorem moment_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {A : ℝ} (hA : 0 ≤ A)
+lemma moment_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {A : ℝ} (hA : 0 ≤ A)
     {n : ℕ} (hn : n ≠ 0) : ∫ x, truncation f A x ^ n ∂μ = ∫ y in -A..A, y ^ n ∂Measure.map f μ := by
   have M : MeasurableSet (Set.Ioc (-A) A) := measurableSet_Ioc
   change ∫ x, (fun z => indicator (Set.Ioc (-A) A) id z ^ n) (f x) ∂μ = _
@@ -146,7 +146,7 @@ theorem moment_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {
   · exact ((measurable_id.indicator M).pow_const n).aestronglyMeasurable
 #align probability_theory.moment_truncation_eq_interval_integral ProbabilityTheory.moment_truncation_eq_intervalIntegral
 
-theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurable f μ) {A : ℝ}
+lemma moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurable f μ) {A : ℝ}
     {n : ℕ} (hn : n ≠ 0) (h'f : 0 ≤ f) :
     ∫ x, truncation f A x ^ n ∂μ = ∫ y in (0)..A, y ^ n ∂Measure.map f μ := by
   have M : MeasurableSet (Set.Ioc 0 A) := measurableSet_Ioc
@@ -173,17 +173,17 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
     · exact ((measurable_id.indicator M).pow_const n).aestronglyMeasurable
 #align probability_theory.moment_truncation_eq_interval_integral_of_nonneg ProbabilityTheory.moment_truncation_eq_intervalIntegral_of_nonneg
 
-theorem integral_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {A : ℝ}
+lemma integral_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {A : ℝ}
     (hA : 0 ≤ A) : ∫ x, truncation f A x ∂μ = ∫ y in -A..A, y ∂Measure.map f μ := by
   simpa using moment_truncation_eq_intervalIntegral hf hA one_ne_zero
 #align probability_theory.integral_truncation_eq_interval_integral ProbabilityTheory.integral_truncation_eq_intervalIntegral
 
-theorem integral_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurable f μ) {A : ℝ}
+lemma integral_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurable f μ) {A : ℝ}
     (h'f : 0 ≤ f) : ∫ x, truncation f A x ∂μ = ∫ y in (0)..A, y ∂Measure.map f μ := by
   simpa using moment_truncation_eq_intervalIntegral_of_nonneg hf one_ne_zero h'f
 #align probability_theory.integral_truncation_eq_interval_integral_of_nonneg ProbabilityTheory.integral_truncation_eq_intervalIntegral_of_nonneg
 
-theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 0 ≤ f) {A : ℝ} :
+lemma integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 0 ≤ f) {A : ℝ} :
     ∫ x, truncation f A x ∂μ ≤ ∫ x, f x ∂μ := by
   apply integral_mono_of_nonneg
     (eventually_of_forall fun x => ?_) hf (eventually_of_forall fun x => ?_)
@@ -641,7 +641,7 @@ end StrongLawNonneg
 identically distributed integrable real-valued random variables, then `∑ i in range n, X i / n`
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
 requires pairwise independence. -/
-theorem strong_law_ae (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
+lemma strong_law_ae (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i in range n, X i ω) / n) atTop (𝓝 𝔼[X 0]) := by
   let pos : ℝ → ℝ := fun x => max x 0

@@ -57,13 +57,13 @@ def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N)
 #align Module.binary_product_limit_cone ModuleCat.binaryProductLimitCone
 
 @[simp]
-theorem binaryProductLimitCone_cone_π_app_left (M N : ModuleCat.{v} R) :
+lemma binaryProductLimitCone_cone_π_app_left (M N : ModuleCat.{v} R) :
     (binaryProductLimitCone M N).cone.π.app ⟨WalkingPair.left⟩ = LinearMap.fst R M N :=
   rfl
 #align Module.binary_product_limit_cone_cone_π_app_left ModuleCat.binaryProductLimitCone_cone_π_app_left
 
 @[simp]
-theorem binaryProductLimitCone_cone_π_app_right (M N : ModuleCat.{v} R) :
+lemma binaryProductLimitCone_cone_π_app_right (M N : ModuleCat.{v} R) :
     (binaryProductLimitCone M N).cone.π.app ⟨WalkingPair.right⟩ = LinearMap.snd R M N :=
   rfl
 #align Module.binary_product_limit_cone_cone_π_app_right ModuleCat.binaryProductLimitCone_cone_π_app_right
@@ -78,13 +78,13 @@ noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
 #align Module.biprod_iso_prod ModuleCat.biprodIsoProd
 
 @[simp, elementwise]
-theorem biprodIsoProd_inv_comp_fst (M N : ModuleCat.{v} R) :
+lemma biprodIsoProd_inv_comp_fst (M N : ModuleCat.{v} R) :
     (biprodIsoProd M N).inv ≫ biprod.fst = LinearMap.fst R M N :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk WalkingPair.left)
 #align Module.biprod_iso_prod_inv_comp_fst ModuleCat.biprodIsoProd_inv_comp_fst
 
 @[simp, elementwise]
-theorem biprodIsoProd_inv_comp_snd (M N : ModuleCat.{v} R) :
+lemma biprodIsoProd_inv_comp_snd (M N : ModuleCat.{v} R) :
     (biprodIsoProd M N).inv ≫ biprod.snd = LinearMap.snd R M N :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk WalkingPair.right)
 #align Module.biprod_iso_prod_inv_comp_snd ModuleCat.biprodIsoProd_inv_comp_snd

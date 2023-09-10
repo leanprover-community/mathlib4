@@ -31,7 +31,7 @@ lemma nnnorm_indicator_eq_indicator_nnnorm :
   flip congr_fun a (indicator_comp_of_zero nnnorm_zero).symm
 #align nnnorm_indicator_eq_indicator_nnnorm nnnorm_indicator_eq_indicator_nnnorm
 
-theorem norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
+lemma norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
     ‖indicator s f a‖ ≤ ‖indicator t f a‖ := by
   simp only [norm_indicator_eq_indicator_norm]
   exact indicator_le_indicator_of_subset ‹_› (fun _ => norm_nonneg _) _

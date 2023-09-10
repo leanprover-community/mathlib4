@@ -41,11 +41,11 @@ lemma continuousWithinAt_Iio_iff_Iic {a : α} {f : α → β} :
   @continuousWithinAt_Ioi_iff_Ici αᵒᵈ _ _ _ _ _ f
 #align continuous_within_at_Iio_iff_Iic continuousWithinAt_Iio_iff_Iic
 
-theorem nhds_left'_le_nhds_ne (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
+lemma nhds_left'_le_nhds_ne (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
   nhdsWithin_mono a fun _ => ne_of_lt
 #align nhds_left'_le_nhds_ne nhds_left'_le_nhds_ne
 
-theorem nhds_right'_le_nhds_ne (a : α) : 𝓝[>] a ≤ 𝓝[≠] a :=
+lemma nhds_right'_le_nhds_ne (a : α) : 𝓝[>] a ≤ 𝓝[≠] a :=
   nhdsWithin_mono a fun _ => ne_of_gt
 #align nhds_right'_le_nhds_ne nhds_right'_le_nhds_ne
 
@@ -55,19 +55,19 @@ section TopologicalSpace
 
 variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β]
 
-theorem nhds_left_sup_nhds_right (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
+lemma nhds_left_sup_nhds_right (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]
 #align nhds_left_sup_nhds_right nhds_left_sup_nhds_right
 
-theorem nhds_left'_sup_nhds_right (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
+lemma nhds_left'_sup_nhds_right (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iio_union_Ici, nhdsWithin_univ]
 #align nhds_left'_sup_nhds_right nhds_left'_sup_nhds_right
 
-theorem nhds_left_sup_nhds_right' (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
+lemma nhds_left_sup_nhds_right' (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ioi, nhdsWithin_univ]
 #align nhds_left_sup_nhds_right' nhds_left_sup_nhds_right'
 
-theorem nhds_left'_sup_nhds_right' (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
+lemma nhds_left'_sup_nhds_right' (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
   rw [← nhdsWithin_union, Iio_union_Ioi]
 #align nhds_left'_sup_nhds_right' nhds_left'_sup_nhds_right'
 

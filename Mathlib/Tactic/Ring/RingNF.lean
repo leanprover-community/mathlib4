@@ -112,8 +112,8 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
 
 variable [CommSemiring R]
 
-theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
-theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
+lemma add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
+lemma mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
 lemma mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
 lemma add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
 lemma nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp

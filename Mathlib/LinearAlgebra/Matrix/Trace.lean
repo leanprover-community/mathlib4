@@ -59,7 +59,7 @@ variable {n R}
 lemma trace_eq_zero_of_isEmpty [IsEmpty n] (A : Matrix n n R) : trace A = 0 := by simp [trace]
 
 @[simp]
-theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
+lemma trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
   Finset.sum_add_distrib
 #align matrix.trace_add Matrix.trace_add
 
@@ -70,7 +70,7 @@ lemma trace_smul [Monoid α] [DistribMulAction α R] (r : α) (A : Matrix n n R)
 #align matrix.trace_smul Matrix.trace_smul
 
 @[simp]
-theorem trace_transpose (A : Matrix n n R) : trace Aᵀ = trace A :=
+lemma trace_transpose (A : Matrix n n R) : trace Aᵀ = trace A :=
   rfl
 #align matrix.trace_transpose Matrix.trace_transpose
 
@@ -100,17 +100,17 @@ def traceLinearMap [Semiring α] [Module α R] : Matrix n n R →ₗ[α] R where
 variable {n α R}
 
 @[simp]
-theorem trace_list_sum (l : List (Matrix n n R)) : trace l.sum = (l.map trace).sum :=
+lemma trace_list_sum (l : List (Matrix n n R)) : trace l.sum = (l.map trace).sum :=
   map_list_sum (traceAddMonoidHom n R) l
 #align matrix.trace_list_sum Matrix.trace_list_sum
 
 @[simp]
-theorem trace_multiset_sum (s : Multiset (Matrix n n R)) : trace s.sum = (s.map trace).sum :=
+lemma trace_multiset_sum (s : Multiset (Matrix n n R)) : trace s.sum = (s.map trace).sum :=
   map_multiset_sum (traceAddMonoidHom n R) s
 #align matrix.trace_multiset_sum Matrix.trace_multiset_sum
 
 @[simp]
-theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
+lemma trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
     trace (∑ i in s, f i) = ∑ i in s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
@@ -126,12 +126,12 @@ section AddCommGroup
 variable [AddCommGroup R]
 
 @[simp]
-theorem trace_sub (A B : Matrix n n R) : trace (A - B) = trace A - trace B :=
+lemma trace_sub (A B : Matrix n n R) : trace (A - B) = trace A - trace B :=
   Finset.sum_sub_distrib
 #align matrix.trace_sub Matrix.trace_sub
 
 @[simp]
-theorem trace_neg (A : Matrix n n R) : trace (-A) = -trace A :=
+lemma trace_neg (A : Matrix n n R) : trace (-A) = -trace A :=
   Finset.sum_neg_distrib
 #align matrix.trace_neg Matrix.trace_neg
 
@@ -190,19 +190,19 @@ with `Matrix.det_fin_two` etc.
 -/
 
 
-theorem trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
+lemma trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
   rfl
 #align matrix.trace_fin_zero Matrix.trace_fin_zero
 
-theorem trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
+lemma trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
   add_zero _
 #align matrix.trace_fin_one Matrix.trace_fin_one
 
-theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
+lemma trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
   congr_arg ((· + ·) _) (add_zero (A 1 1))
 #align matrix.trace_fin_two Matrix.trace_fin_two
 
-theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
+lemma trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
   rfl
 #align matrix.trace_fin_three Matrix.trace_fin_three

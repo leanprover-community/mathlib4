@@ -148,7 +148,7 @@ instance : RingEquivClass (R ≃+* S) R S where
   right_inv f := f.right_inv
 
 @[simp]
-theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
+lemma toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
   rfl
 #align ring_equiv.to_equiv_eq_coe RingEquiv.toEquiv_eq_coe
 
@@ -156,17 +156,17 @@ theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
 #noalign ring_equiv.to_fun_eq_coe
 
 @[simp]
-theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
+lemma coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
   rfl
 #align ring_equiv.coe_to_equiv RingEquiv.coe_toEquiv
 
 /-- A ring isomorphism preserves multiplication. -/
-protected theorem map_mul (e : R ≃+* S) (x y : R) : e (x * y) = e x * e y :=
+protected lemma map_mul (e : R ≃+* S) (x y : R) : e (x * y) = e x * e y :=
   map_mul e x y
 #align ring_equiv.map_mul RingEquiv.map_mul
 
 /-- A ring isomorphism preserves addition. -/
-protected theorem map_add (e : R ≃+* S) (x y : R) : e (x + y) = e x + e y :=
+protected lemma map_add (e : R ≃+* S) (x y : R) : e (x + y) = e x + e y :=
   map_add e x y
 #align ring_equiv.map_add RingEquiv.map_add
 
@@ -178,7 +178,7 @@ lemma ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
 #align ring_equiv.ext RingEquiv.ext
 
 @[simp]
-theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
+lemma coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
   rfl
 #align ring_equiv.coe_mk RingEquiv.coe_mkₓ
 
@@ -186,7 +186,7 @@ theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
 #noalign ring_equiv.to_equiv_mk
 
 @[simp]
-theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
+lemma mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
   ext fun _ => rfl
 #align ring_equiv.mk_coe RingEquiv.mk_coe
 
@@ -203,22 +203,22 @@ protected lemma ext_iff {f g : R ≃+* S} : f = g ↔ ∀ x, f x = g x :=
 #align ring_equiv.ext_iff RingEquiv.ext_iff
 
 @[simp]
-theorem toAddEquiv_eq_coe (f : R ≃+* S) : f.toAddEquiv = ↑f :=
+lemma toAddEquiv_eq_coe (f : R ≃+* S) : f.toAddEquiv = ↑f :=
   rfl
 #align ring_equiv.to_add_equiv_eq_coe RingEquiv.toAddEquiv_eq_coe
 
 @[simp]
-theorem toMulEquiv_eq_coe (f : R ≃+* S) : f.toMulEquiv = ↑f :=
+lemma toMulEquiv_eq_coe (f : R ≃+* S) : f.toMulEquiv = ↑f :=
   rfl
 #align ring_equiv.to_mul_equiv_eq_coe RingEquiv.toMulEquiv_eq_coe
 
 @[simp, norm_cast]
-theorem coe_toMulEquiv (f : R ≃+* S) : ⇑(f : R ≃* S) = f :=
+lemma coe_toMulEquiv (f : R ≃+* S) : ⇑(f : R ≃* S) = f :=
   rfl
 #align ring_equiv.coe_to_mul_equiv RingEquiv.coe_toMulEquiv
 
 @[simp]
-theorem coe_toAddEquiv (f : R ≃+* S) : ⇑(f : R ≃+ S) = f :=
+lemma coe_toAddEquiv (f : R ≃+* S) : ⇑(f : R ≃+ S) = f :=
   rfl
 #align ring_equiv.coe_to_add_equiv RingEquiv.coe_toAddEquiv
 
@@ -241,7 +241,7 @@ def refl : R ≃+* R :=
 #align ring_equiv.refl RingEquiv.refl
 
 @[simp]
-theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
+lemma refl_apply (x : R) : RingEquiv.refl R x = x :=
   rfl
 #align ring_equiv.refl_apply RingEquiv.refl_apply
 
@@ -274,12 +274,12 @@ def Simps.symm_apply (e : R ≃+* S) : S → R :=
 initialize_simps_projections RingEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
-theorem invFun_eq_symm (f : R ≃+* S) : EquivLike.inv f = f.symm :=
+lemma invFun_eq_symm (f : R ≃+* S) : EquivLike.inv f = f.symm :=
   rfl
 #align ring_equiv.inv_fun_eq_symm RingEquiv.invFun_eq_symm
 
 @[simp]
-theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
+lemma symm_symm (e : R ≃+* S) : e.symm.symm = e :=
   ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
 
@@ -289,7 +289,7 @@ lemma symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
   rfl
 
 @[simp]
-theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).symm :=
+lemma coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).symm :=
   rfl
 #align ring_equiv.coe_to_equiv_symm RingEquiv.coe_toEquiv_symm
 
@@ -298,13 +298,13 @@ lemma symm_bijective : Function.Bijective (RingEquiv.symm : R ≃+* S → S ≃+
 #align ring_equiv.symm_bijective RingEquiv.symm_bijective
 
 @[simp]
-theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
+lemma mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
     (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align ring_equiv.mk_coe' RingEquiv.mk_coe'
 
 @[simp]
-theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
+lemma symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
     (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
       { (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm with
         toFun := g
@@ -318,59 +318,59 @@ protected def trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') : R ≃+* S' :=
   { e₁.toMulEquiv.trans e₂.toMulEquiv, e₁.toAddEquiv.trans e₂.toAddEquiv with }
 #align ring_equiv.trans RingEquiv.trans
 
-theorem trans_apply (e₁ : R ≃+* S) (e₂ : S ≃+* S') (a : R) : e₁.trans e₂ a = e₂ (e₁ a) :=
+lemma trans_apply (e₁ : R ≃+* S) (e₂ : S ≃+* S') (a : R) : e₁.trans e₂ a = e₂ (e₁ a) :=
   rfl
 #align ring_equiv.trans_apply RingEquiv.trans_apply
 
 @[simp]
-theorem coe_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') : (e₁.trans e₂ : R → S') = e₂ ∘ e₁ :=
+lemma coe_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') : (e₁.trans e₂ : R → S') = e₂ ∘ e₁ :=
   rfl
 #align ring_equiv.coe_trans RingEquiv.coe_trans
 
 @[simp]
-theorem symm_trans_apply (e₁ : R ≃+* S) (e₂ : S ≃+* S') (a : S') :
+lemma symm_trans_apply (e₁ : R ≃+* S) (e₂ : S ≃+* S') (a : S') :
     (e₁.trans e₂).symm a = e₁.symm (e₂.symm a) :=
   rfl
 #align ring_equiv.symm_trans_apply RingEquiv.symm_trans_apply
 
-theorem symm_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') : (e₁.trans e₂).symm = e₂.symm.trans e₁.symm :=
+lemma symm_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') : (e₁.trans e₂).symm = e₂.symm.trans e₁.symm :=
   rfl
 #align ring_equiv.symm_trans RingEquiv.symm_trans
 
-protected theorem bijective (e : R ≃+* S) : Function.Bijective e :=
+protected lemma bijective (e : R ≃+* S) : Function.Bijective e :=
   EquivLike.bijective e
 #align ring_equiv.bijective RingEquiv.bijective
 
-protected theorem injective (e : R ≃+* S) : Function.Injective e :=
+protected lemma injective (e : R ≃+* S) : Function.Injective e :=
   EquivLike.injective e
 #align ring_equiv.injective RingEquiv.injective
 
-protected theorem surjective (e : R ≃+* S) : Function.Surjective e :=
+protected lemma surjective (e : R ≃+* S) : Function.Surjective e :=
   EquivLike.surjective e
 #align ring_equiv.surjective RingEquiv.surjective
 
 @[simp]
-theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
+lemma apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 #align ring_equiv.apply_symm_apply RingEquiv.apply_symm_apply
 
 @[simp]
-theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
+lemma symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply
 #align ring_equiv.symm_apply_apply RingEquiv.symm_apply_apply
 
-theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
+lemma image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 #align ring_equiv.image_eq_preimage RingEquiv.image_eq_preimage
 
 @[simp]
-theorem coe_mulEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+lemma coe_mulEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R ≃* S') = (e₁ : R ≃* S).trans ↑e₂ :=
   rfl
 #align ring_equiv.coe_mul_equiv_trans RingEquiv.coe_mulEquiv_trans
 
 @[simp]
-theorem coe_addEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+lemma coe_addEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R ≃+ S') = (e₁ : R ≃+ S).trans ↑e₂ :=
   rfl
 #align ring_equiv.coe_add_equiv_trans RingEquiv.coe_addEquiv_trans
@@ -421,12 +421,12 @@ def toOpposite : R ≃+* Rᵐᵒᵖ :=
 #align ring_equiv.to_opposite RingEquiv.toOpposite
 
 @[simp]
-theorem toOpposite_apply (r : R) : toOpposite R r = op r :=
+lemma toOpposite_apply (r : R) : toOpposite R r = op r :=
   rfl
 #align ring_equiv.to_opposite_apply RingEquiv.toOpposite_apply
 
 @[simp]
-theorem toOpposite_symm_apply (r : Rᵐᵒᵖ) : (toOpposite R).symm r = unop r :=
+lemma toOpposite_symm_apply (r : Rᵐᵒᵖ) : (toOpposite R).symm r = unop r :=
   rfl
 #align ring_equiv.to_opposite_symm_apply RingEquiv.toOpposite_symm_apply
 
@@ -570,12 +570,12 @@ lemma coe_ringHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+*
 #align ring_equiv.coe_ring_hom_trans RingEquiv.coe_ringHom_trans
 
 @[simp]
-theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
+lemma comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
   RingHom.ext e.apply_symm_apply
 #align ring_equiv.comp_symm RingEquiv.comp_symm
 
 @[simp]
-theorem symm_comp (e : R ≃+* S) : (e.symm : S →+* R).comp (e : R →+* S) = RingHom.id R :=
+lemma symm_comp (e : R ≃+* S) : (e.symm : S →+* R).comp (e : R →+* S) = RingHom.id R :=
   RingHom.ext e.symm_apply_apply
 #align ring_equiv.symm_comp RingEquiv.symm_comp
 
@@ -624,12 +624,12 @@ lemma toNonUnitalRingHom_injective :
   RingEquiv.ext (NonUnitalRingHom.ext_iff.1 h)
 #align ring_equiv.to_non_unital_ring_hom_injective RingEquiv.toNonUnitalRingHom_injective
 
-theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f :=
+lemma toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f :=
   rfl
 #align ring_equiv.to_non_unital_ring_hom_eq_coe RingEquiv.toNonUnitalRingHom_eq_coe
 
 @[simp, norm_cast]
-theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
+lemma coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
 #align ring_equiv.coe_to_non_unital_ring_hom RingEquiv.coe_toNonUnitalRingHom
 
@@ -645,32 +645,32 @@ lemma toNonUnitalRingHom_refl :
 #align ring_equiv.to_non_unital_ring_hom_refl RingEquiv.toNonUnitalRingHom_refl
 
 @[simp]
-theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
+lemma toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toNonUnitalRingHom (e.symm.toNonUnitalRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 #align ring_equiv.to_non_unital_ring_hom_apply_symm_to_non_unital_ring_hom_apply RingEquiv.toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply
 
 @[simp]
-theorem symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
+lemma symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toNonUnitalRingHom (e.toNonUnitalRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 #align ring_equiv.symm_to_non_unital_ring_hom_apply_to_non_unital_ring_hom_apply RingEquiv.symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply
 
 @[simp]
-theorem toNonUnitalRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+lemma toNonUnitalRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toNonUnitalRingHom = e₂.toNonUnitalRingHom.comp e₁.toNonUnitalRingHom :=
   rfl
 #align ring_equiv.to_non_unital_ring_hom_trans RingEquiv.toNonUnitalRingHom_trans
 
 @[simp]
-theorem toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
+lemma toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
     e.toNonUnitalRingHom.comp e.symm.toNonUnitalRingHom = NonUnitalRingHom.id _ := by
   ext
   simp
 #align ring_equiv.to_non_unital_ring_hom_comp_symm_to_non_unital_ring_hom RingEquiv.toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom
 
 @[simp]
-theorem symm_toNonUnitalRingHom_comp_toNonUnitalRingHom (e : R ≃+* S) :
+lemma symm_toNonUnitalRingHom_comp_toNonUnitalRingHom (e : R ≃+* S) :
     e.symm.toNonUnitalRingHom.comp e.toNonUnitalRingHom = NonUnitalRingHom.id _ := by
   ext
   simp
@@ -691,12 +691,12 @@ lemma toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R →+
   RingEquiv.ext (RingHom.ext_iff.1 h)
 #align ring_equiv.to_ring_hom_injective RingEquiv.toRingHom_injective
 
-@[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
+@[simp] lemma toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 #align ring_equiv.to_ring_hom_eq_coe RingEquiv.toRingHom_eq_coe
 
 @[simp, norm_cast]
-theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
+lemma coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 #align ring_equiv.coe_to_ring_hom RingEquiv.coe_toRingHom
 
@@ -707,7 +707,7 @@ lemma coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S
 
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]
-theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
+lemma toNonUnitalRingHom_commutes (f : R ≃+* S) :
     ((f : R →+* S) : R →ₙ+* S) = (f : R →ₙ+* S) :=
   rfl
 #align ring_equiv.to_non_unital_ring_hom_commutes RingEquiv.toNonUnitalRingHom_commutes
@@ -723,19 +723,19 @@ abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
 #align ring_equiv.to_add_monoid_hom RingEquiv.toAddMonoidHom
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
-theorem toAddMonoidMom_commutes (f : R ≃+* S) :
+lemma toAddMonoidMom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
 #align ring_equiv.to_add_monoid_hom_commutes RingEquiv.toAddMonoidMom_commutes
 
 /-- The two paths coercion can take to a `MonoidHom` are equivalent -/
-theorem toMonoidHom_commutes (f : R ≃+* S) :
+lemma toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
 #align ring_equiv.to_monoid_hom_commutes RingEquiv.toMonoidHom_commutes
 
 /-- The two paths coercion can take to an `Equiv` are equivalent -/
-theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
+lemma toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
   rfl
 #align ring_equiv.to_equiv_commutes RingEquiv.toEquiv_commutes
 
@@ -755,32 +755,32 @@ lemma toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id 
 #align ring_equiv.to_add_monoid_hom_refl RingEquiv.toAddMonoidHom_refl
 
 -- Porting note : Now other `simp` can do this, so removed `simp` attribute
-theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
+lemma toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toRingHom (e.symm.toRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 #align ring_equiv.to_ring_hom_apply_symm_to_ring_hom_apply RingEquiv.toRingHom_apply_symm_toRingHom_apply
 
 -- Porting note : Now other `simp` can do this, so removed `simp` attribute
-theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
+lemma symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 #align ring_equiv.symm_to_ring_hom_apply_to_ring_hom_apply RingEquiv.symm_toRingHom_apply_toRingHom_apply
 
 @[simp]
-theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+lemma toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
 #align ring_equiv.to_ring_hom_trans RingEquiv.toRingHom_trans
 
 -- Porting note : Now other `simp` can do this, so removed `simp` attribute
-theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
+lemma toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
   ext
   simp
 #align ring_equiv.to_ring_hom_comp_symm_to_ring_hom RingEquiv.toRingHom_comp_symm_toRingHom
 
 -- Porting note : Now other `simp` can do this, so removed `simp` attribute
-theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
+lemma symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   ext
   simp
@@ -829,7 +829,7 @@ section GroupPower
 
 variable [Semiring R] [Semiring S]
 
-protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
+protected lemma map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
   map_pow f a
 #align ring_equiv.map_pow RingEquiv.map_pow
 
@@ -862,12 +862,12 @@ namespace RingEquiv
 variable [Add R] [Add S] [Mul R] [Mul S]
 
 @[simp]
-theorem self_trans_symm (e : R ≃+* S) : e.trans e.symm = RingEquiv.refl R :=
+lemma self_trans_symm (e : R ≃+* S) : e.trans e.symm = RingEquiv.refl R :=
   ext e.left_inv
 #align ring_equiv.self_trans_symm RingEquiv.self_trans_symm
 
 @[simp]
-theorem symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
+lemma symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
   ext e.right_inv
 #align ring_equiv.symm_trans_self RingEquiv.symm_trans_self
 

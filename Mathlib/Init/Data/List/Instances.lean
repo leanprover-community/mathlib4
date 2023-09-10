@@ -19,11 +19,11 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
+lemma bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
   append_nil (f x)
 #align list.bind_singleton List.bind_singleton
 
-@[simp] theorem bind_singleton' (l : List α) : (l.bind fun x => [x]) = l := by
+@[simp] lemma bind_singleton' (l : List α) : (l.bind fun x => [x]) = l := by
   induction l <;> simp [*]
 #align list.bind_singleton' List.bind_singleton'
 

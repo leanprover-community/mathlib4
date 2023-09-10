@@ -88,7 +88,7 @@ lemma nfp_le_of_principal {op : Ordinal → Ordinal → Ordinal} {a o : Ordinal}
 
 /-! ### Principal ordinals are unbounded -/
 
-theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
+lemma principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) :=
   fun a b ha hb => by
   rw [lt_nfp] at *
@@ -105,7 +105,7 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
     exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
 #align ordinal.principal_nfp_blsub₂ Ordinal.principal_nfp_blsub₂
 
-theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
+lemma unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
     Set.Unbounded (· < ·) { o | Principal op o } := fun o =>
   ⟨_, principal_nfp_blsub₂ op o, (le_nfp _ o).not_lt⟩
 #align ordinal.unbounded_principal Ordinal.unbounded_principal
@@ -196,7 +196,7 @@ lemma add_omega_opow {a b : Ordinal} (h : a < (omega^b)) : a + (omega^b) = (omeg
             (opow_le_opow_right omega_pos <| le_of_lt <| max_lt xb yb))
 #align ordinal.add_omega_opow Ordinal.add_omega_opow
 
-theorem principal_add_omega_opow (o : Ordinal) : Principal (· + ·) (omega^o) :=
+lemma principal_add_omega_opow (o : Ordinal) : Principal (· + ·) (omega^o) :=
   principal_add_iff_add_left_eq_self.2 fun _ => add_omega_opow
 #align ordinal.principal_add_omega_opow Ordinal.principal_add_omega_opow
 
@@ -240,7 +240,7 @@ lemma add_absorp {a b c : Ordinal} (h₁ : a < (omega^b)) (h₂ : (omega^b) ≤ 
   rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega_opow h₁]
 #align ordinal.add_absorp Ordinal.add_absorp
 
-theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
+lemma mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
   rcases eq_zero_or_pos a with (rfl | _)
   · rw [zero_mul]
@@ -359,7 +359,7 @@ lemma mul_omega_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < (omega^omega^b))
   rw [← opow_add, add_omega_opow xb]
 #align ordinal.mul_omega_opow_opow Ordinal.mul_omega_opow_opow
 
-theorem principal_mul_omega_opow_opow (o : Ordinal) : Principal (· * ·) (omega^omega^o) :=
+lemma principal_mul_omega_opow_opow (o : Ordinal) : Principal (· * ·) (omega^omega^o) :=
   principal_mul_iff_mul_left_eq.2 fun _ => mul_omega_opow_opow
 #align ordinal.principal_mul_omega_opow_opow Ordinal.principal_mul_omega_opow_opow
 

@@ -156,7 +156,7 @@ abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
 #align category_theory.discrete.eq_to_iso' CategoryTheory.Discrete.eqToIso'
 
 @[simp]
-theorem id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :=
+lemma id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :=
   rfl
 #align category_theory.discrete.id_def CategoryTheory.Discrete.id_def
 
@@ -287,7 +287,7 @@ protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
 variable {C : Type u₂} [Category.{v₂} C]
 
 @[simp]
-theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
+lemma functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
     F.map f = 𝟙 (F.obj j) := by
   have h : f = 𝟙 j := by aesop_cat
   rw [h]

@@ -100,7 +100,7 @@ lemma toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
 #align dilation.to_fun_eq_coe Dilation.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
+lemma coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
   rfl
 #align dilation.coe_mk Dilation.coe_mk
 
@@ -108,7 +108,7 @@ lemma congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
   FunLike.congr_fun h x
 #align dilation.congr_fun Dilation.congr_fun
 
-theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
+lemma congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
   FunLike.congr_arg f h
 #align dilation.congr_arg Dilation.congr_arg
 
@@ -122,7 +122,7 @@ lemma ext_iff {f g : α →ᵈ β} : f = g ↔ ∀ x, f x = g x :=
 #align dilation.ext_iff Dilation.ext_iff
 
 @[simp]
-theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
+lemma mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
   ext fun _ => rfl
 #align dilation.mk_coe Dilation.mk_coe
 
@@ -134,7 +134,7 @@ protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →�
   edist_eq' := h.symm ▸ f.edist_eq'
 #align dilation.copy Dilation.copy
 
-theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align dilation.copy_eq_self Dilation.copy_eq_self
 
@@ -314,11 +314,11 @@ lemma comp_assoc {δ : Type*} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β
 #align dilation.comp_assoc Dilation.comp_assoc
 
 @[simp]
-theorem coe_comp (g : β →ᵈ γ) (f : α →ᵈ β) : (g.comp f : α → γ) = g ∘ f :=
+lemma coe_comp (g : β →ᵈ γ) (f : α →ᵈ β) : (g.comp f : α → γ) = g ∘ f :=
   rfl
 #align dilation.coe_comp Dilation.coe_comp
 
-theorem comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : α → γ) x = g (f x) :=
+lemma comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : α → γ) x = g (f x) :=
   rfl
 #align dilation.comp_apply Dilation.comp_apply
 
@@ -338,12 +338,12 @@ lemma ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
 #align dilation.comp_ratio Dilation.ratio_comp'
 
 @[simp]
-theorem comp_id (f : α →ᵈ β) : f.comp (Dilation.id α) = f :=
+lemma comp_id (f : α →ᵈ β) : f.comp (Dilation.id α) = f :=
   ext fun _ => rfl
 #align dilation.comp_id Dilation.comp_id
 
 @[simp]
-theorem id_comp (f : α →ᵈ β) : (Dilation.id β).comp f = f :=
+lemma id_comp (f : α →ᵈ β) : (Dilation.id β).comp f = f :=
   ext fun _ => rfl
 #align dilation.id_comp Dilation.id_comp
 
@@ -358,7 +358,7 @@ lemma one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl
 #align dilation.one_def Dilation.one_def
 
-theorem mul_def (f g : α →ᵈ α) : f * g = f.comp g :=
+lemma mul_def (f g : α →ᵈ α) : f * g = f.comp g :=
   rfl
 #align dilation.mul_def Dilation.mul_def
 
@@ -368,14 +368,14 @@ lemma coe_one : ⇑(1 : α →ᵈ α) = id :=
 #align dilation.coe_one Dilation.coe_one
 
 @[simp]
-theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
+lemma coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align dilation.coe_mul Dilation.coe_mul
 
 @[simp] lemma ratio_one : ratio (1 : α →ᵈ α) = 1 := ratio_id
 
 @[simp]
-theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
+lemma ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
   by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · simp [ratio_of_trivial, h]
   push_neg at h
@@ -386,7 +386,7 @@ theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
 def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, ratio_one⟩, ratio_mul⟩
 
 @[simp]
-theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
+lemma ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
   ratioHom.map_pow _ _
 
 @[simp]
@@ -417,7 +417,7 @@ lemma toContinuous : Continuous (f : α → β) :=
 #align dilation.to_continuous Dilation.toContinuous
 
 /-- Dilations scale the diameter by `ratio f` in pseudoemetric spaces. -/
-theorem ediam_image (s : Set α) : EMetric.diam ((f : α → β) '' s) = ratio f * EMetric.diam s := by
+lemma ediam_image (s : Set α) : EMetric.diam ((f : α → β) '' s) = ratio f * EMetric.diam s := by
   refine' ((lipschitz f).ediam_image_le s).antisymm _
   apply ENNReal.mul_le_of_le_div'
   rw [div_eq_mul_inv, mul_comm, ← ENNReal.coe_inv]
@@ -430,14 +430,14 @@ lemma ediam_range : EMetric.diam (range (f : α → β)) = ratio f * EMetric.dia
 #align dilation.ediam_range Dilation.ediam_range
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
-theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
+lemma mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.ball x r) (EMetric.ball (f x) (ratio f * r)) :=
   fun y hy => (edist_eq f y x).trans_lt <|
     (ENNReal.mul_lt_mul_left (ENNReal.coe_ne_zero.2 <| ratio_ne_zero f) ENNReal.coe_ne_top).2 hy
 #align dilation.maps_to_emetric_ball Dilation.mapsTo_emetric_ball
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
-theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
+lemma mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
   -- Porting note: Added `by exact`
   fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' (by exact hy) _
@@ -495,7 +495,7 @@ section PseudoMetricDilation
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [DilationClass F α β] (f : F)
 
 /-- A dilation scales the diameter by `ratio f` in pseudometric spaces. -/
-theorem diam_image (s : Set α) : Metric.diam ((f : α → β) '' s) = ratio f * Metric.diam s := by
+lemma diam_image (s : Set α) : Metric.diam ((f : α → β) '' s) = ratio f * Metric.diam s := by
   simp [Metric.diam, ediam_image, ENNReal.toReal_mul]
 #align dilation.diam_image Dilation.diam_image
 
@@ -504,19 +504,19 @@ lemma diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam (
 #align dilation.diam_range Dilation.diam_range
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
-theorem mapsTo_ball (x : α) (r' : ℝ) :
+lemma mapsTo_ball (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.ball x r') (Metric.ball (f x) (ratio f * r')) :=
   fun y hy => (dist_eq f y x).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 <| ratio_pos f).2 hy
 #align dilation.maps_to_ball Dilation.mapsTo_ball
 
 /-- A dilation maps spheres to spheres and scales the radius by `ratio f`. -/
-theorem mapsTo_sphere (x : α) (r' : ℝ) :
+lemma mapsTo_sphere (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.sphere x r') (Metric.sphere (f x) (ratio f * r')) :=
   fun y hy => Metric.mem_sphere.mp hy ▸ dist_eq f y x
 #align dilation.maps_to_sphere Dilation.mapsTo_sphere
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
-theorem mapsTo_closedBall (x : α) (r' : ℝ) :
+lemma mapsTo_closedBall (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.closedBall x r') (Metric.closedBall (f x) (ratio f * r')) :=
   fun y hy => (dist_eq f y x).trans_le <| mul_le_mul_of_nonneg_left hy (NNReal.coe_nonneg _)
 #align dilation.maps_to_closed_ball Dilation.mapsTo_closedBall

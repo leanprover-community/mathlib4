@@ -38,7 +38,7 @@ section BorelCantelli
 variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddCommGroup β]
   [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
-theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
+lemma iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
     (hfi : iIndepFun (fun _ => mβ) f μ) (hij : i < j) :
     Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by
   suffices Indep (⨆ k ∈ ({j} : Set ι), MeasurableSpace.comap (f k) mβ)
@@ -55,7 +55,7 @@ lemma iIndepFun.condexp_natural_ae_eq_of_lt [SecondCountableTopology β] [Comple
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.condexp_natural_ae_eq_of_lt ProbabilityTheory.iIndepFun.condexp_natural_ae_eq_of_lt
 
-theorem iIndepSet.condexp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
+lemma iIndepSet.condexp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
     fun _ => (μ (s j)).toReal := by

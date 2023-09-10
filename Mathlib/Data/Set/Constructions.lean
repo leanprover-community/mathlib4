@@ -50,7 +50,7 @@ lemma finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
 
 variable {S}
 
-theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
+lemma finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
   classical
     refine' Finset.induction_on F (fun _ => _) _

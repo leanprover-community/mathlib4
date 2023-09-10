@@ -47,7 +47,7 @@ form a sheaf.
 In fact, the proof is identical when we do this for dependent functions to a type family `T`,
 so we do the more general case.
 -/
-theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
+lemma toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
   isSheaf_of_isSheafUniqueGluing_types.{u} _ fun ι U sf hsf => by
   -- We use the sheaf condition in terms of unique gluing
   -- U is a family of open sets, indexed by `ι` and `sf` is a compatible family of sections.
@@ -81,7 +81,7 @@ set_option linter.uppercaseLean3 false
 /-- The presheaf of not-necessarily-continuous functions to
 a target type `T` satsifies the sheaf condition.
 -/
-theorem toType_isSheaf (T : Type u) : (presheafToType X T).IsSheaf :=
+lemma toType_isSheaf (T : Type u) : (presheafToType X T).IsSheaf :=
   toTypes_isSheaf X fun _ => T
 #align Top.presheaf.to_Type_is_sheaf TopCat.Presheaf.toType_isSheaf
 

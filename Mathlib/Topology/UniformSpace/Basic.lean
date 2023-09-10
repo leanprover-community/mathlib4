@@ -214,11 +214,11 @@ def symmetrizeRel (V : Set (α × α)) : Set (α × α) :=
   V ∩ Prod.swap ⁻¹' V
 #align symmetrize_rel symmetrizeRel
 
-theorem symmetric_symmetrizeRel (V : Set (α × α)) : SymmetricRel (symmetrizeRel V) := by
+lemma symmetric_symmetrizeRel (V : Set (α × α)) : SymmetricRel (symmetrizeRel V) := by
   simp [SymmetricRel, symmetrizeRel, preimage_inter, inter_comm, ← preimage_comp]
 #align symmetric_symmetrize_rel symmetric_symmetrizeRel
 
-theorem symmetrizeRel_subset_self (V : Set (α × α)) : symmetrizeRel V ⊆ V :=
+lemma symmetrizeRel_subset_self (V : Set (α × α)) : symmetrizeRel V ⊆ V :=
   sep_subset _ _
 #align symmetrize_rel_subset_self symmetrizeRel_subset_self
 
@@ -336,7 +336,7 @@ def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : Topologi
   isOpen_uniformity _ := h.symm ▸ Iff.rfl
 #align uniform_space.of_core_eq UniformSpace.ofCoreEq
 
-theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
+lemma UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=
   TopologicalSpace.ext <| funext fun s => propext (UniformSpace.isOpen_uniformity s).symm
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
@@ -372,7 +372,7 @@ protected lemma UniformSpace.ext_iff {u₁ u₂ : UniformSpace α} :
     u₁ = u₂ ↔ ∀ s, s ∈ 𝓤[u₁] ↔ s ∈ 𝓤[u₂] :=
   ⟨fun h _ => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
 
-theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace α)
+lemma UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace α)
     (h : t = u.toCore.toTopologicalSpace) : UniformSpace.ofCoreEq u.toCore t h = u :=
   UniformSpace.ext rfl
 #align uniform_space.of_core_eq_to_core UniformSpace.ofCoreEq_toCore
@@ -500,7 +500,7 @@ lemma Filter.Tendsto.uniformity_symm {l : Filter β} {f : β → α × α} (h : 
 #align filter.tendsto.uniformity_symm Filter.Tendsto.uniformity_symm
 
 /-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is reflexive. -/
-theorem tendsto_diag_uniformity (f : β → α) (l : Filter β) :
+lemma tendsto_diag_uniformity (f : β → α) (l : Filter β) :
     Tendsto (fun x => (f x, f x)) l (𝓤 α) := fun _s hs =>
   mem_map.2 <| univ_mem' fun _ => refl_mem_uniformity hs
 #align tendsto_diag_uniformity tendsto_diag_uniformity
@@ -623,7 +623,7 @@ def UniformSpace.ball (x : β) (V : Set (β × β)) : Set β :=
 
 open UniformSpace (ball)
 
-theorem UniformSpace.mem_ball_self (x : α) {V : Set (α × α)} (hV : V ∈ 𝓤 α) : x ∈ ball x V :=
+lemma UniformSpace.mem_ball_self (x : α) {V : Set (α × α)} (hV : V ∈ 𝓤 α) : x ∈ ball x V :=
   refl_mem_uniformity hV
 #align uniform_space.mem_ball_self UniformSpace.mem_ball_self
 
@@ -641,15 +641,15 @@ lemma ball_mono {V W : Set (β × β)} (h : V ⊆ W) (x : β) : ball x V ⊆ bal
   preimage_mono h
 #align ball_mono ball_mono
 
-theorem ball_inter (x : β) (V W : Set (β × β)) : ball x (V ∩ W) = ball x V ∩ ball x W :=
+lemma ball_inter (x : β) (V W : Set (β × β)) : ball x (V ∩ W) = ball x V ∩ ball x W :=
   preimage_inter
 #align ball_inter ball_inter
 
-theorem ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x V :=
+lemma ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x V :=
   ball_mono (inter_subset_left V W) x
 #align ball_inter_left ball_inter_left
 
-theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
+lemma ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
   ball_mono (inter_subset_right V W) x
 #align ball_inter_right ball_inter_right
 
@@ -673,7 +673,7 @@ lemma mem_comp_of_mem_ball {V W : Set (β × β)} {x y z : β} (hV : SymmetricRe
   exact ⟨z, hx, hy⟩
 #align mem_comp_of_mem_ball mem_comp_of_mem_ball
 
-theorem UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
+lemma UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
 #align uniform_space.is_open_ball UniformSpace.isOpen_ball
 
@@ -747,7 +747,7 @@ lemma UniformSpace.mem_nhds_iff {x : α} {s : Set α} : s ∈ 𝓝 x ↔ ∃ V �
   simp_rw [ball]
 #align uniform_space.mem_nhds_iff UniformSpace.mem_nhds_iff
 
-theorem UniformSpace.ball_mem_nhds (x : α) ⦃V : Set (α × α)⦄ (V_in : V ∈ 𝓤 α) : ball x V ∈ 𝓝 x := by
+lemma UniformSpace.ball_mem_nhds (x : α) ⦃V : Set (α × α)⦄ (V_in : V ∈ 𝓤 α) : ball x V ∈ 𝓝 x := by
   rw [UniformSpace.mem_nhds_iff]
   exact ⟨V, V_in, Subset.rfl⟩
 #align uniform_space.ball_mem_nhds UniformSpace.ball_mem_nhds
@@ -763,7 +763,7 @@ lemma UniformSpace.mem_nhds_iff_symm {x : α} {s : Set α} :
     exact ⟨V, V_in, V_sub⟩
 #align uniform_space.mem_nhds_iff_symm UniformSpace.mem_nhds_iff_symm
 
-theorem UniformSpace.hasBasis_nhds (x : α) :
+lemma UniformSpace.hasBasis_nhds (x : α) :
     HasBasis (𝓝 x) (fun s : Set (α × α) => s ∈ 𝓤 α ∧ SymmetricRel s) fun s => ball x s :=
   ⟨fun t => by simp [UniformSpace.mem_nhds_iff_symm, and_assoc]⟩
 #align uniform_space.has_basis_nhds UniformSpace.hasBasis_nhds
@@ -780,7 +780,7 @@ lemma UniformSpace.mem_closure_iff_ball {s : Set α} {x} :
   simp [mem_closure_iff_nhds_basis' (nhds_basis_uniformity' (𝓤 α).basis_sets)]
 #align uniform_space.mem_closure_iff_ball UniformSpace.mem_closure_iff_ball
 
-theorem UniformSpace.hasBasis_nhds_prod (x y : α) :
+lemma UniformSpace.hasBasis_nhds_prod (x y : α) :
     HasBasis (𝓝 (x, y)) (fun s => s ∈ 𝓤 α ∧ SymmetricRel s) fun s => ball x s ×ˢ ball y s := by
   rw [nhds_prod_eq]
   apply (hasBasis_nhds x).prod_same_index (hasBasis_nhds y)
@@ -798,11 +798,11 @@ lemma nhds_eq_uniformity' {x : α} : 𝓝 x = (𝓤 α).lift' fun s => { y | (y,
   (nhds_basis_uniformity (𝓤 α).basis_sets).eq_biInf
 #align nhds_eq_uniformity' nhds_eq_uniformity'
 
-theorem mem_nhds_left (x : α) {s : Set (α × α)} (h : s ∈ 𝓤 α) : { y : α | (x, y) ∈ s } ∈ 𝓝 x :=
+lemma mem_nhds_left (x : α) {s : Set (α × α)} (h : s ∈ 𝓤 α) : { y : α | (x, y) ∈ s } ∈ 𝓝 x :=
   ball_mem_nhds x h
 #align mem_nhds_left mem_nhds_left
 
-theorem mem_nhds_right (y : α) {s : Set (α × α)} (h : s ∈ 𝓤 α) : { x : α | (x, y) ∈ s } ∈ 𝓝 y :=
+lemma mem_nhds_right (y : α) {s : Set (α × α)} (h : s ∈ 𝓤 α) : { x : α | (x, y) ∈ s } ∈ 𝓝 y :=
   mem_nhds_left _ (symm_le_uniformity h)
 #align mem_nhds_right mem_nhds_right
 
@@ -916,7 +916,7 @@ lemma nhdset_of_mem_uniformity {d : Set (α × α)} (s : Set (α × α)) (hd : d
 #align nhdset_of_mem_uniformity nhdset_of_mem_uniformity
 
 /-- Entourages are neighborhoods of the diagonal. -/
-theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
+lemma nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
   intro V V_in
   rcases comp_symm_mem_uniformity_sets V_in with ⟨w, w_in, w_symm, w_sub⟩
   have : ball x w ×ˢ ball x w ∈ 𝓝 (x, x)
@@ -941,7 +941,7 @@ lemma nhdsSet_diagonal_le_uniformity : 𝓝ˢ (diagonal α) ≤ 𝓤 α :=
 ### Closure and interior in uniform spaces
 -/
 
-theorem closure_eq_uniformity (s : Set <| α × α) :
+lemma closure_eq_uniformity (s : Set <| α × α) :
     closure s = ⋂ V ∈ { V | V ∈ 𝓤 α ∧ SymmetricRel V }, V ○ s ○ V := by
   ext ⟨x, y⟩
   simp (config := { contextual := true }) only
@@ -1705,7 +1705,7 @@ def UniformContinuous₂ (f : α → β → γ) :=
   UniformContinuous (uncurry f)
 #align uniform_continuous₂ UniformContinuous₂
 
-theorem uniformContinuous₂_def (f : α → β → γ) :
+lemma uniformContinuous₂_def (f : α → β → γ) :
     UniformContinuous₂ f ↔ UniformContinuous (uncurry f) :=
   Iff.rfl
 #align uniform_continuous₂_def uniformContinuous₂_def
@@ -1715,7 +1715,7 @@ lemma UniformContinuous₂.uniformContinuous {f : α → β → γ} (h : Uniform
   h
 #align uniform_continuous₂.uniform_continuous UniformContinuous₂.uniformContinuous
 
-theorem uniformContinuous₂_curry (f : α × β → γ) :
+lemma uniformContinuous₂_curry (f : α × β → γ) :
     UniformContinuous₂ (Function.curry f) ↔ UniformContinuous f := by
   rw [UniformContinuous₂, uncurry_curry]
 #align uniform_continuous₂_curry uniformContinuous₂_curry

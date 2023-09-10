@@ -58,7 +58,7 @@ instance : Inhabited UniformSpaceCat :=
   ⟨UniformSpaceCat.of Empty⟩
 
 @[simp]
-theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
+lemma coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
   rfl
 #align UniformSpace.coe_of UniformSpaceCat.coe_of
 
@@ -75,7 +75,7 @@ lemma coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
 -- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
-theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
+lemma coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id
 
@@ -135,7 +135,7 @@ def of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X] : Cplt
 #align CpltSepUniformSpace.of CpltSepUniformSpace.of
 
 @[simp]
-theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X] :
+lemma coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X] :
     (of X : Type u) = X :=
   rfl
 #align CpltSepUniformSpace.coe_of CpltSepUniformSpace.coe_of
@@ -182,7 +182,7 @@ def completionHom (X : UniformSpaceCat) :
 #align UniformSpace.completion_hom UniformSpaceCat.completionHom
 
 @[simp]
-theorem completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x : Completion X) :=
+lemma completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x : Completion X) :=
   rfl
 #align UniformSpace.completion_hom_val UniformSpaceCat.completionHom_val
 

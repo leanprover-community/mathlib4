@@ -65,12 +65,12 @@ lemma ofDual_symm_eq : (@ofDual α).symm = toDual := rfl
 #align order_dual.of_dual_symm_eq OrderDual.ofDual_symm_eq
 
 @[simp]
-theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
+lemma toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
   rfl
 #align order_dual.to_dual_of_dual OrderDual.toDual_ofDual
 
 @[simp]
-theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
+lemma ofDual_toDual (a : α) : ofDual (toDual a) = a :=
   rfl
 #align order_dual.of_dual_to_dual OrderDual.ofDual_toDual
 
@@ -181,12 +181,12 @@ lemma ofLex_symm_eq : (@ofLex α).symm = toLex :=
 #align of_lex_symm_eq ofLex_symm_eq
 
 @[simp]
-theorem toLex_ofLex (a : Lex α) : toLex (ofLex a) = a :=
+lemma toLex_ofLex (a : Lex α) : toLex (ofLex a) = a :=
   rfl
 #align to_lex_of_lex toLex_ofLex
 
 @[simp]
-theorem ofLex_toLex (a : α) : ofLex (toLex a) = a :=
+lemma ofLex_toLex (a : α) : ofLex (toLex a) = a :=
   rfl
 #align of_lex_to_lex ofLex_toLex
 

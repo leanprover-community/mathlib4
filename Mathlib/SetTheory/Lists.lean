@@ -84,7 +84,7 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
 
 -- porting notes: removed @[simp]
 -- simp can prove this: by simp only [@Lists'.toList, @Sigma.eta]
-theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by simp
+lemma toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by simp
 #align lists'.to_list_cons Lists'.toList_cons
 
 /-- Converts a `List` of ZFA lists to a proper ZFA prelist. -/
@@ -95,7 +95,7 @@ def ofList : List (Lists α) → Lists' α true
 #align lists'.of_list Lists'.ofList
 
 @[simp]
-theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction l <;> simp [*]
+lemma to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction l <;> simp [*]
 #align lists'.to_of_list Lists'.to_ofList
 
 @[simp]
@@ -241,11 +241,11 @@ def ofList (l : List (Lists α)) : Lists α :=
   of' (Lists'.ofList l)
 #align lists.of_list Lists.ofList
 
-theorem isList_toList (l : List (Lists α)) : IsList (ofList l) :=
+lemma isList_toList (l : List (Lists α)) : IsList (ofList l) :=
   Eq.refl _
 #align lists.is_list_to_list Lists.isList_toList
 
-theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by simp [ofList, of']
+lemma to_ofList (l : List (Lists α)) : toList (ofList l) = l := by simp [ofList, of']
 #align lists.to_of_list Lists.to_ofList
 
 lemma of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l

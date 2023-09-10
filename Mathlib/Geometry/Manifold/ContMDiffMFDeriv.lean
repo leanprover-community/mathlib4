@@ -340,7 +340,7 @@ lemma ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
 
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
 is `C^m` when `m+1 ≤ n`. -/
-theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : m + 1 ≤ n)
+lemma ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : m + 1 ≤ n)
     (hs : UniqueMDiffOn I s) :
     ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s)
       (π E (TangentSpace I) ⁻¹' s) := by
@@ -513,7 +513,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
 
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
 derivative is continuous there. -/
-theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : 1 ≤ n)
+lemma ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : 1 ≤ n)
     (hs : UniqueMDiffOn I s) :
     ContinuousOn (tangentMapWithin I I' f s) (π E (TangentSpace I) ⁻¹' s) :=
   haveI :
@@ -523,7 +523,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) 
 #align cont_mdiff_on.continuous_on_tangent_map_within ContMDiffOn.continuousOn_tangentMapWithin
 
 /-- If a function is `C^n`, then its bundled derivative is `C^m` when `m+1 ≤ n`. -/
-theorem ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 ≤ n) :
+lemma ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 ≤ n) :
     ContMDiff I.tangent I'.tangent m (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf ⊢
   convert hf.contMDiffOn_tangentMapWithin hmn uniqueMDiffOn_univ
@@ -531,7 +531,7 @@ theorem ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 �
 #align cont_mdiff.cont_mdiff_tangent_map ContMDiff.contMDiff_tangentMap
 
 /-- If a function is `C^n`, with `1 ≤ n`, then its bundled derivative is continuous. -/
-theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n) :
+lemma ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n) :
     Continuous (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf
   rw [continuous_iff_continuousOn_univ]
@@ -561,7 +561,7 @@ coordinates on the tangent bundle in our definitions. So this statement is not a
 may seem.
 
 TODO define splittings of vector bundles; state this result invariantly. -/
-theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
+lemma tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     tangentMap I I.tangent (zeroSection E (TangentSpace I)) p = ⟨⟨p.proj, 0⟩, ⟨p.2, 0⟩⟩ := by
   rcases p with ⟨x, v⟩
   have N : I.symm ⁻¹' (chartAt H x).target ∈ 𝓝 (I ((chartAt H x) x)) := by
@@ -602,15 +602,15 @@ namespace ContMDiffMap
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold
 
-protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : 1 ≤ n) : MDifferentiable I I' f :=
+protected lemma mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   f.contMDiff.mdifferentiable hn
 #align cont_mdiff_map.mdifferentiable' ContMDiffMap.mdifferentiable'
 
-protected theorem mdifferentiable (f : C^∞⟮I, M; I', M'⟯) : MDifferentiable I I' f :=
+protected lemma mdifferentiable (f : C^∞⟮I, M; I', M'⟯) : MDifferentiable I I' f :=
   f.contMDiff.mdifferentiable le_top
 #align cont_mdiff_map.mdifferentiable ContMDiffMap.mdifferentiable
 
-protected theorem mdifferentiableAt (f : C^∞⟮I, M; I', M'⟯) {x} : MDifferentiableAt I I' f x :=
+protected lemma mdifferentiableAt (f : C^∞⟮I, M; I', M'⟯) {x} : MDifferentiableAt I I' f x :=
   f.mdifferentiable x
 #align cont_mdiff_map.mdifferentiable_at ContMDiffMap.mdifferentiableAt
 

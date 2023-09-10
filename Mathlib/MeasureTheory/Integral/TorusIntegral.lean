@@ -83,7 +83,7 @@ it to every n axis. -/
 def torusMap (c : ℂⁿ) (R : ℝⁿ) : ℝⁿ → ℂⁿ := fun θ i => c i + R i * exp (θ i * I)
 #align torus_map torusMap
 
-theorem torusMap_sub_center (c : ℂⁿ) (R : ℝⁿ) (θ : ℝⁿ) : torusMap c R θ - c = torusMap 0 R θ := by
+lemma torusMap_sub_center (c : ℂⁿ) (R : ℝⁿ) (θ : ℝⁿ) : torusMap c R θ - c = torusMap 0 R θ := by
   ext1 i; simp [torusMap]
 #align torus_map_sub_center torusMap_sub_center
 
@@ -92,7 +92,7 @@ lemma torusMap_eq_center_iff {c : ℂⁿ} {R : ℝⁿ} {θ : ℝⁿ} : torusMap 
 #align torus_map_eq_center_iff torusMap_eq_center_iff
 
 @[simp]
-theorem torusMap_zero_radius (c : ℂⁿ) : torusMap c 0 = const ℝⁿ c :=
+lemma torusMap_zero_radius (c : ℂⁿ) : torusMap c 0 = const ℝⁿ c :=
   funext fun _ ↦ torusMap_eq_center_iff.2 rfl
 #align torus_map_zero_radius torusMap_zero_radius
 
@@ -112,22 +112,22 @@ namespace TorusIntegrable
 variable {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
 
 /-- Constant functions are torus integrable -/
-theorem torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrable (fun _ => a) c R := by
+lemma torusIntegrable_const (a : E) (c : ℂⁿ) (R : ℝⁿ) : TorusIntegrable (fun _ => a) c R := by
   simp [TorusIntegrable, measure_Icc_lt_top]
 #align torus_integrable.torus_integrable_const TorusIntegrable.torusIntegrable_const
 
 /-- If `f` is torus integrable then `-f` is torus integrable. -/
-protected nonrec theorem neg (hf : TorusIntegrable f c R) : TorusIntegrable (-f) c R := hf.neg
+protected nonrec lemma neg (hf : TorusIntegrable f c R) : TorusIntegrable (-f) c R := hf.neg
 #align torus_integrable.neg TorusIntegrable.neg
 
 /-- If `f` and `g` are two torus integrable functions, then so is `f + g`. -/
-protected nonrec theorem add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
+protected nonrec lemma add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     TorusIntegrable (f + g) c R :=
   hf.add hg
 #align torus_integrable.add TorusIntegrable.add
 
 /-- If `f` and `g` are two torus integrable functions, then so is `f - g`. -/
-protected nonrec theorem sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
+protected nonrec lemma sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     TorusIntegrable (f - g) c R :=
   hf.sub hg
 #align torus_integrable.sub TorusIntegrable.sub
@@ -158,23 +158,23 @@ def torusIntegral (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :=
 
 notation3"∯ "(...)" in ""T("c", "R")"", "r:(scoped f => torusIntegral f c R) => r
 
-theorem torusIntegral_radius_zero (hn : n ≠ 0) (f : ℂⁿ → E) (c : ℂⁿ) :
+lemma torusIntegral_radius_zero (hn : n ≠ 0) (f : ℂⁿ → E) (c : ℂⁿ) :
     (∯ x in T(c, 0), f x) = 0 := by
   simp only [torusIntegral, Pi.zero_apply, ofReal_zero, mul_zero, zero_mul, Fin.prod_const,
     zero_pow' n hn, zero_smul, integral_zero]
 #align torus_integral_radius_zero torusIntegral_radius_zero
 
-theorem torusIntegral_neg (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :
+lemma torusIntegral_neg (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :
     (∯ x in T(c, R), -f x) = -∯ x in T(c, R), f x := by simp [torusIntegral, integral_neg]
 #align torus_integral_neg torusIntegral_neg
 
-theorem torusIntegral_add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
+lemma torusIntegral_add (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     (∯ x in T(c, R), f x + g x) = (∯ x in T(c, R), f x) + ∯ x in T(c, R), g x := by
   simpa only [torusIntegral, smul_add, Pi.add_apply] using
     integral_add hf.function_integrable hg.function_integrable
 #align torus_integral_add torusIntegral_add
 
-theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
+lemma torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) :
     (∯ x in T(c, R), f x - g x) = (∯ x in T(c, R), f x) - ∯ x in T(c, R), g x := by
   simpa only [sub_eq_add_neg, ← torusIntegral_neg] using torusIntegral_add hf hg.neg
 #align torus_integral_sub torusIntegral_sub
@@ -184,7 +184,7 @@ lemma torusIntegral_smul {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMul
   simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
 #align torus_integral_smul torusIntegral_smul
 
-theorem torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R : ℝⁿ) :
+lemma torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R : ℝⁿ) :
     (∯ x in T(c, R), a * f x) = a * ∯ x in T(c, R), f x :=
   torusIntegral_smul a f c R
 #align torus_integral_const_mul torusIntegral_const_mul
@@ -208,7 +208,7 @@ lemma norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (torus
 #align norm_torus_integral_le_of_norm_le_const norm_torusIntegral_le_of_norm_le_const
 
 @[simp]
-theorem torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
+lemma torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
   simp only [torusIntegral, Fin.prod_univ_zero, one_smul,
     Subsingleton.elim (fun _ : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
     integral_smul_measure, integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
@@ -217,7 +217,7 @@ theorem torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x
 
 /-- In dimension one, `torusIntegral` is the same as `circleIntegral`
 (up to the natural equivalence between `ℂ` and `Fin 1 → ℂ`). -/
-theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
+lemma torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
     (∯ x in T(c, R), f x) = ∮ z in C(c 0, R 0), f fun _ => z := by
   have H₁ : (((MeasurableEquiv.funUnique _ _).symm) ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) :=
     (OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc _ _

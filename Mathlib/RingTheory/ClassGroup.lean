@@ -62,7 +62,7 @@ irreducible_def toPrincipalIdeal : Kˣ →* (FractionalIdeal R⁰ K)ˣ :=
 variable {R K}
 
 @[simp]
-theorem coe_toPrincipalIdeal (x : Kˣ) :
+lemma coe_toPrincipalIdeal (x : Kˣ) :
     (toPrincipalIdeal R K x : FractionalIdeal R⁰ K) = spanSingleton _ (x : K) := by
   simp only [toPrincipalIdeal]; rfl
 #align coe_to_principal_ideal coe_toPrincipalIdeal
@@ -113,7 +113,7 @@ noncomputable def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :
 #align class_group.mk ClassGroup.mk
 
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
-theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
+lemma ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk I := by
   rw [ClassGroup.mk, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
       MonoidHom.comp_apply, MonoidHom.id_apply, QuotientGroup.mk'_apply]
@@ -209,7 +209,7 @@ noncomputable def ClassGroup.equiv :
 #align class_group.equiv ClassGroup.equiv
 
 @[simp]
-theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
+lemma ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.equiv K' (ClassGroup.mk I) =
       QuotientGroup.mk' _ (Units.mapEquiv (↑(FractionalIdeal.canonicalEquiv R⁰ K K')) I) := by
@@ -220,7 +220,7 @@ theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRi
 #align class_group.equiv_mk ClassGroup.equiv_mk
 
 @[simp]
-theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
+lemma ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk I := by

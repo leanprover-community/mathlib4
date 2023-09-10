@@ -75,7 +75,7 @@ info: theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
 -/
 #guard_msgs in #explode theorem_2
 
-theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
+lemma theorem_3 (a : Prop) (h : a) : a ↔ True :=
   Iff.intro
     (λ hl => trivial)
     (λ hr => h)

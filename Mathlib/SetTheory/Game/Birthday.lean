@@ -44,7 +44,7 @@ noncomputable def birthday : PGame.{u} → Ordinal.{u}
     max (lsub.{u, u} fun i => birthday (xL i)) (lsub.{u, u} fun i => birthday (xR i))
 #align pgame.birthday SetTheory.PGame.birthday
 
-theorem birthday_def (x : PGame) :
+lemma birthday_def (x : PGame) :
     birthday x =
       max (lsub.{u, u} fun i => birthday (x.moveLeft i))
         (lsub.{u, u} fun i => birthday (x.moveRight i)) := by
@@ -118,7 +118,7 @@ lemma neg_birthday : ∀ x : PGame, (-x).birthday = x.birthday
 #align pgame.neg_birthday SetTheory.PGame.neg_birthday
 
 @[simp]
-theorem toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o := by
+lemma toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
   rw [toPGame_def, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
@@ -191,10 +191,10 @@ lemma birthday_nat_cast : ∀ n : ℕ, birthday n = n
   | n + 1 => by simp [birthday_nat_cast]
 #align pgame.birthday_nat_cast SetTheory.PGame.birthday_nat_cast
 
-theorem birthday_add_nat (n : ℕ) : (a + n).birthday = a.birthday + n := by simp
+lemma birthday_add_nat (n : ℕ) : (a + n).birthday = a.birthday + n := by simp
 #align pgame.birthday_add_nat SetTheory.PGame.birthday_add_nat
 
-theorem birthday_nat_add (n : ℕ) : (↑n + a).birthday = a.birthday + n := by simp
+lemma birthday_nat_add (n : ℕ) : (↑n + a).birthday = a.birthday + n := by simp
 #align pgame.birthday_nat_add SetTheory.PGame.birthday_nat_add
 
 end PGame

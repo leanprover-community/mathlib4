@@ -244,72 +244,72 @@ lemma sin_periodic : Function.Periodic sin (2 * π) :=
 #align real.sin_periodic Real.sin_periodic
 
 @[simp]
-theorem sin_add_pi (x : ℝ) : sin (x + π) = -sin x :=
+lemma sin_add_pi (x : ℝ) : sin (x + π) = -sin x :=
   sin_antiperiodic x
 #align real.sin_add_pi Real.sin_add_pi
 
 @[simp]
-theorem sin_add_two_pi (x : ℝ) : sin (x + 2 * π) = sin x :=
+lemma sin_add_two_pi (x : ℝ) : sin (x + 2 * π) = sin x :=
   sin_periodic x
 #align real.sin_add_two_pi Real.sin_add_two_pi
 
 @[simp]
-theorem sin_sub_pi (x : ℝ) : sin (x - π) = -sin x :=
+lemma sin_sub_pi (x : ℝ) : sin (x - π) = -sin x :=
   sin_antiperiodic.sub_eq x
 #align real.sin_sub_pi Real.sin_sub_pi
 
 @[simp]
-theorem sin_sub_two_pi (x : ℝ) : sin (x - 2 * π) = sin x :=
+lemma sin_sub_two_pi (x : ℝ) : sin (x - 2 * π) = sin x :=
   sin_periodic.sub_eq x
 #align real.sin_sub_two_pi Real.sin_sub_two_pi
 
 @[simp]
-theorem sin_pi_sub (x : ℝ) : sin (π - x) = sin x :=
+lemma sin_pi_sub (x : ℝ) : sin (π - x) = sin x :=
   neg_neg (sin x) ▸ sin_neg x ▸ sin_antiperiodic.sub_eq'
 #align real.sin_pi_sub Real.sin_pi_sub
 
 @[simp]
-theorem sin_two_pi_sub (x : ℝ) : sin (2 * π - x) = -sin x :=
+lemma sin_two_pi_sub (x : ℝ) : sin (2 * π - x) = -sin x :=
   sin_neg x ▸ sin_periodic.sub_eq'
 #align real.sin_two_pi_sub Real.sin_two_pi_sub
 
 @[simp]
-theorem sin_nat_mul_pi (n : ℕ) : sin (n * π) = 0 :=
+lemma sin_nat_mul_pi (n : ℕ) : sin (n * π) = 0 :=
   sin_antiperiodic.nat_mul_eq_of_eq_zero sin_zero n
 #align real.sin_nat_mul_pi Real.sin_nat_mul_pi
 
 @[simp]
-theorem sin_int_mul_pi (n : ℤ) : sin (n * π) = 0 :=
+lemma sin_int_mul_pi (n : ℤ) : sin (n * π) = 0 :=
   sin_antiperiodic.int_mul_eq_of_eq_zero sin_zero n
 #align real.sin_int_mul_pi Real.sin_int_mul_pi
 
 @[simp]
-theorem sin_add_nat_mul_two_pi (x : ℝ) (n : ℕ) : sin (x + n * (2 * π)) = sin x :=
+lemma sin_add_nat_mul_two_pi (x : ℝ) (n : ℕ) : sin (x + n * (2 * π)) = sin x :=
   sin_periodic.nat_mul n x
 #align real.sin_add_nat_mul_two_pi Real.sin_add_nat_mul_two_pi
 
 @[simp]
-theorem sin_add_int_mul_two_pi (x : ℝ) (n : ℤ) : sin (x + n * (2 * π)) = sin x :=
+lemma sin_add_int_mul_two_pi (x : ℝ) (n : ℤ) : sin (x + n * (2 * π)) = sin x :=
   sin_periodic.int_mul n x
 #align real.sin_add_int_mul_two_pi Real.sin_add_int_mul_two_pi
 
 @[simp]
-theorem sin_sub_nat_mul_two_pi (x : ℝ) (n : ℕ) : sin (x - n * (2 * π)) = sin x :=
+lemma sin_sub_nat_mul_two_pi (x : ℝ) (n : ℕ) : sin (x - n * (2 * π)) = sin x :=
   sin_periodic.sub_nat_mul_eq n
 #align real.sin_sub_nat_mul_two_pi Real.sin_sub_nat_mul_two_pi
 
 @[simp]
-theorem sin_sub_int_mul_two_pi (x : ℝ) (n : ℤ) : sin (x - n * (2 * π)) = sin x :=
+lemma sin_sub_int_mul_two_pi (x : ℝ) (n : ℤ) : sin (x - n * (2 * π)) = sin x :=
   sin_periodic.sub_int_mul_eq n
 #align real.sin_sub_int_mul_two_pi Real.sin_sub_int_mul_two_pi
 
 @[simp]
-theorem sin_nat_mul_two_pi_sub (x : ℝ) (n : ℕ) : sin (n * (2 * π) - x) = -sin x :=
+lemma sin_nat_mul_two_pi_sub (x : ℝ) (n : ℕ) : sin (n * (2 * π) - x) = -sin x :=
   sin_neg x ▸ sin_periodic.nat_mul_sub_eq n
 #align real.sin_nat_mul_two_pi_sub Real.sin_nat_mul_two_pi_sub
 
 @[simp]
-theorem sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -sin x :=
+lemma sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -sin x :=
   sin_neg x ▸ sin_periodic.int_mul_sub_eq n
 #align real.sin_int_mul_two_pi_sub Real.sin_int_mul_two_pi_sub
 
@@ -321,92 +321,92 @@ lemma cos_periodic : Function.Periodic cos (2 * π) :=
 #align real.cos_periodic Real.cos_periodic
 
 @[simp]
-theorem cos_add_pi (x : ℝ) : cos (x + π) = -cos x :=
+lemma cos_add_pi (x : ℝ) : cos (x + π) = -cos x :=
   cos_antiperiodic x
 #align real.cos_add_pi Real.cos_add_pi
 
 @[simp]
-theorem cos_add_two_pi (x : ℝ) : cos (x + 2 * π) = cos x :=
+lemma cos_add_two_pi (x : ℝ) : cos (x + 2 * π) = cos x :=
   cos_periodic x
 #align real.cos_add_two_pi Real.cos_add_two_pi
 
 @[simp]
-theorem cos_sub_pi (x : ℝ) : cos (x - π) = -cos x :=
+lemma cos_sub_pi (x : ℝ) : cos (x - π) = -cos x :=
   cos_antiperiodic.sub_eq x
 #align real.cos_sub_pi Real.cos_sub_pi
 
 @[simp]
-theorem cos_sub_two_pi (x : ℝ) : cos (x - 2 * π) = cos x :=
+lemma cos_sub_two_pi (x : ℝ) : cos (x - 2 * π) = cos x :=
   cos_periodic.sub_eq x
 #align real.cos_sub_two_pi Real.cos_sub_two_pi
 
 @[simp]
-theorem cos_pi_sub (x : ℝ) : cos (π - x) = -cos x :=
+lemma cos_pi_sub (x : ℝ) : cos (π - x) = -cos x :=
   cos_neg x ▸ cos_antiperiodic.sub_eq'
 #align real.cos_pi_sub Real.cos_pi_sub
 
 @[simp]
-theorem cos_two_pi_sub (x : ℝ) : cos (2 * π - x) = cos x :=
+lemma cos_two_pi_sub (x : ℝ) : cos (2 * π - x) = cos x :=
   cos_neg x ▸ cos_periodic.sub_eq'
 #align real.cos_two_pi_sub Real.cos_two_pi_sub
 
 @[simp]
-theorem cos_nat_mul_two_pi (n : ℕ) : cos (n * (2 * π)) = 1 :=
+lemma cos_nat_mul_two_pi (n : ℕ) : cos (n * (2 * π)) = 1 :=
   (cos_periodic.nat_mul_eq n).trans cos_zero
 #align real.cos_nat_mul_two_pi Real.cos_nat_mul_two_pi
 
 @[simp]
-theorem cos_int_mul_two_pi (n : ℤ) : cos (n * (2 * π)) = 1 :=
+lemma cos_int_mul_two_pi (n : ℤ) : cos (n * (2 * π)) = 1 :=
   (cos_periodic.int_mul_eq n).trans cos_zero
 #align real.cos_int_mul_two_pi Real.cos_int_mul_two_pi
 
 @[simp]
-theorem cos_add_nat_mul_two_pi (x : ℝ) (n : ℕ) : cos (x + n * (2 * π)) = cos x :=
+lemma cos_add_nat_mul_two_pi (x : ℝ) (n : ℕ) : cos (x + n * (2 * π)) = cos x :=
   cos_periodic.nat_mul n x
 #align real.cos_add_nat_mul_two_pi Real.cos_add_nat_mul_two_pi
 
 @[simp]
-theorem cos_add_int_mul_two_pi (x : ℝ) (n : ℤ) : cos (x + n * (2 * π)) = cos x :=
+lemma cos_add_int_mul_two_pi (x : ℝ) (n : ℤ) : cos (x + n * (2 * π)) = cos x :=
   cos_periodic.int_mul n x
 #align real.cos_add_int_mul_two_pi Real.cos_add_int_mul_two_pi
 
 @[simp]
-theorem cos_sub_nat_mul_two_pi (x : ℝ) (n : ℕ) : cos (x - n * (2 * π)) = cos x :=
+lemma cos_sub_nat_mul_two_pi (x : ℝ) (n : ℕ) : cos (x - n * (2 * π)) = cos x :=
   cos_periodic.sub_nat_mul_eq n
 #align real.cos_sub_nat_mul_two_pi Real.cos_sub_nat_mul_two_pi
 
 @[simp]
-theorem cos_sub_int_mul_two_pi (x : ℝ) (n : ℤ) : cos (x - n * (2 * π)) = cos x :=
+lemma cos_sub_int_mul_two_pi (x : ℝ) (n : ℤ) : cos (x - n * (2 * π)) = cos x :=
   cos_periodic.sub_int_mul_eq n
 #align real.cos_sub_int_mul_two_pi Real.cos_sub_int_mul_two_pi
 
 @[simp]
-theorem cos_nat_mul_two_pi_sub (x : ℝ) (n : ℕ) : cos (n * (2 * π) - x) = cos x :=
+lemma cos_nat_mul_two_pi_sub (x : ℝ) (n : ℕ) : cos (n * (2 * π) - x) = cos x :=
   cos_neg x ▸ cos_periodic.nat_mul_sub_eq n
 #align real.cos_nat_mul_two_pi_sub Real.cos_nat_mul_two_pi_sub
 
 @[simp]
-theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = cos x :=
+lemma cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = cos x :=
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
 
 -- porting note : was @[simp] but simp can prove it
-theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
+lemma cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_add_pi Real.cos_nat_mul_two_pi_add_pi
 
 -- porting note : was @[simp] but simp can prove it
-theorem cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
+lemma cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_add_pi Real.cos_int_mul_two_pi_add_pi
 
 -- porting note : was @[simp] but simp can prove it
-theorem cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
+lemma cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_sub_pi Real.cos_nat_mul_two_pi_sub_pi
 
 -- porting note : was @[simp] but simp can prove it
-theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
+lemma cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_sub_pi Real.cos_int_mul_two_pi_sub_pi
 
@@ -451,22 +451,22 @@ lemma sin_pi_div_two : sin (π / 2) = 1 :=
       h ▸ sin_pos_of_pos_of_lt_pi pi_div_two_pos (half_lt_self pi_pos)
 #align real.sin_pi_div_two Real.sin_pi_div_two
 
-theorem sin_add_pi_div_two (x : ℝ) : sin (x + π / 2) = cos x := by simp [sin_add]
+lemma sin_add_pi_div_two (x : ℝ) : sin (x + π / 2) = cos x := by simp [sin_add]
 #align real.sin_add_pi_div_two Real.sin_add_pi_div_two
 
-theorem sin_sub_pi_div_two (x : ℝ) : sin (x - π / 2) = -cos x := by simp [sub_eq_add_neg, sin_add]
+lemma sin_sub_pi_div_two (x : ℝ) : sin (x - π / 2) = -cos x := by simp [sub_eq_add_neg, sin_add]
 #align real.sin_sub_pi_div_two Real.sin_sub_pi_div_two
 
-theorem sin_pi_div_two_sub (x : ℝ) : sin (π / 2 - x) = cos x := by simp [sub_eq_add_neg, sin_add]
+lemma sin_pi_div_two_sub (x : ℝ) : sin (π / 2 - x) = cos x := by simp [sub_eq_add_neg, sin_add]
 #align real.sin_pi_div_two_sub Real.sin_pi_div_two_sub
 
-theorem cos_add_pi_div_two (x : ℝ) : cos (x + π / 2) = -sin x := by simp [cos_add]
+lemma cos_add_pi_div_two (x : ℝ) : cos (x + π / 2) = -sin x := by simp [cos_add]
 #align real.cos_add_pi_div_two Real.cos_add_pi_div_two
 
-theorem cos_sub_pi_div_two (x : ℝ) : cos (x - π / 2) = sin x := by simp [sub_eq_add_neg, cos_add]
+lemma cos_sub_pi_div_two (x : ℝ) : cos (x - π / 2) = sin x := by simp [sub_eq_add_neg, cos_add]
 #align real.cos_sub_pi_div_two Real.cos_sub_pi_div_two
 
-theorem cos_pi_div_two_sub (x : ℝ) : cos (π / 2 - x) = sin x := by
+lemma cos_pi_div_two_sub (x : ℝ) : cos (π / 2 - x) = sin x := by
   rw [← cos_neg, neg_sub, cos_sub_pi_div_two]
 #align real.cos_pi_div_two_sub Real.cos_pi_div_two_sub
 
@@ -535,7 +535,7 @@ lemma sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 
   exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 #align real.sin_eq_zero_iff_cos_eq Real.sin_eq_zero_iff_cos_eq
 
-theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
+lemma cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
   ⟨fun h =>
     let ⟨n, hn⟩ := sin_eq_zero_iff.1 (sin_eq_zero_iff_cos_eq.2 (Or.inl h))
     ⟨n / 2,
@@ -633,18 +633,18 @@ lemma surjOn_cos : SurjOn cos (Icc 0 π) (Icc (-1) 1) := by
   simpa only [cos_zero, cos_pi] using intermediate_value_Icc' pi_pos.le continuous_cos.continuousOn
 #align real.surj_on_cos Real.surjOn_cos
 
-theorem sin_mem_Icc (x : ℝ) : sin x ∈ Icc (-1 : ℝ) 1 :=
+lemma sin_mem_Icc (x : ℝ) : sin x ∈ Icc (-1 : ℝ) 1 :=
   ⟨neg_one_le_sin x, sin_le_one x⟩
 #align real.sin_mem_Icc Real.sin_mem_Icc
 
-theorem cos_mem_Icc (x : ℝ) : cos x ∈ Icc (-1 : ℝ) 1 :=
+lemma cos_mem_Icc (x : ℝ) : cos x ∈ Icc (-1 : ℝ) 1 :=
   ⟨neg_one_le_cos x, cos_le_one x⟩
 #align real.cos_mem_Icc Real.cos_mem_Icc
 
-theorem mapsTo_sin (s : Set ℝ) : MapsTo sin s (Icc (-1 : ℝ) 1) := fun x _ => sin_mem_Icc x
+lemma mapsTo_sin (s : Set ℝ) : MapsTo sin s (Icc (-1 : ℝ) 1) := fun x _ => sin_mem_Icc x
 #align real.maps_to_sin Real.mapsTo_sin
 
-theorem mapsTo_cos (s : Set ℝ) : MapsTo cos s (Icc (-1 : ℝ) 1) := fun x _ => cos_mem_Icc x
+lemma mapsTo_cos (s : Set ℝ) : MapsTo cos s (Icc (-1 : ℝ) 1) := fun x _ => cos_mem_Icc x
 #align real.maps_to_cos Real.mapsTo_cos
 
 lemma bijOn_sin : BijOn sin (Icc (-(π / 2)) (π / 2)) (Icc (-1) 1) :=
@@ -717,7 +717,7 @@ lemma sqrtTwoAddSeries_lt_two : ∀ n : ℕ, sqrtTwoAddSeries 0 n < 2
     · exact add_nonneg zero_le_two (sqrtTwoAddSeries_zero_nonneg n)
 #align real.sqrt_two_add_series_lt_two Real.sqrtTwoAddSeries_lt_two
 
-theorem sqrtTwoAddSeries_succ (x : ℝ) :
+lemma sqrtTwoAddSeries_succ (x : ℝ) :
     ∀ n : ℕ, sqrtTwoAddSeries x (n + 1) = sqrtTwoAddSeries (sqrt (2 + x)) n
   | 0 => rfl
   | n + 1 => by rw [sqrtTwoAddSeries, sqrtTwoAddSeries_succ _ _, sqrtTwoAddSeries]
@@ -756,19 +756,19 @@ lemma cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeri
     apply pow_lt_pow; norm_num; apply Nat.succ_lt_succ; apply Nat.succ_pos; all_goals norm_num
 #align real.cos_pi_over_two_pow Real.cos_pi_over_two_pow
 
-theorem sin_sq_pi_over_two_pow (n : ℕ) :
+lemma sin_sq_pi_over_two_pow (n : ℕ) :
     sin (π / 2 ^ (n + 1)) ^ 2 = 1 - (sqrtTwoAddSeries 0 n / 2) ^ 2 := by
   rw [sin_sq, cos_pi_over_two_pow]
 #align real.sin_sq_pi_over_two_pow Real.sin_sq_pi_over_two_pow
 
-theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
+lemma sin_sq_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) ^ 2 = 1 / 2 - sqrtTwoAddSeries 0 n / 4 := by
   rw [sin_sq_pi_over_two_pow, sqrtTwoAddSeries, div_pow, sq_sqrt, add_div, ← sub_sub]
   congr; norm_num; norm_num; apply add_nonneg; norm_num; apply sqrtTwoAddSeries_zero_nonneg
 #align real.sin_sq_pi_over_two_pow_succ Real.sin_sq_pi_over_two_pow_succ
 
 @[simp]
-theorem sin_pi_over_two_pow_succ (n : ℕ) :
+lemma sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = sqrt (2 - sqrtTwoAddSeries 0 n) / 2 := by
   symm; rw [div_eq_iff_mul_eq]; symm
   rw [sqrt_eq_iff_sq_eq, mul_pow, sin_sq_pi_over_two_pow_succ, sub_mul]
@@ -926,11 +926,11 @@ def sinOrderIso : Icc (-(π / 2)) (π / 2) ≃o Icc (-1 : ℝ) 1 :=
 #align real.sin_order_iso Real.sinOrderIso
 
 @[simp]
-theorem coe_sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : (sinOrderIso x : ℝ) = sin x :=
+lemma coe_sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : (sinOrderIso x : ℝ) = sin x :=
   rfl
 #align real.coe_sin_order_iso_apply Real.coe_sinOrderIso_apply
 
-theorem sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : sinOrderIso x = ⟨sin x, sin_mem_Icc x⟩ :=
+lemma sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : sinOrderIso x = ⟨sin x, sin_mem_Icc x⟩ :=
   rfl
 #align real.sin_order_iso_apply Real.sinOrderIso_apply
 
@@ -1016,51 +1016,51 @@ lemma tan_periodic : Function.Periodic tan π := by
 @[simp]
 lemma tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
 
-theorem tan_add_pi (x : ℝ) : tan (x + π) = tan x :=
+lemma tan_add_pi (x : ℝ) : tan (x + π) = tan x :=
   tan_periodic x
 #align real.tan_add_pi Real.tan_add_pi
 
-theorem tan_sub_pi (x : ℝ) : tan (x - π) = tan x :=
+lemma tan_sub_pi (x : ℝ) : tan (x - π) = tan x :=
   tan_periodic.sub_eq x
 #align real.tan_sub_pi Real.tan_sub_pi
 
-theorem tan_pi_sub (x : ℝ) : tan (π - x) = -tan x :=
+lemma tan_pi_sub (x : ℝ) : tan (π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.sub_eq'
 #align real.tan_pi_sub Real.tan_pi_sub
 
-theorem tan_pi_div_two_sub (x : ℝ) : tan (π / 2 - x) = (tan x)⁻¹ := by
+lemma tan_pi_div_two_sub (x : ℝ) : tan (π / 2 - x) = (tan x)⁻¹ := by
   rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos, inv_div, sin_pi_div_two_sub, cos_pi_div_two_sub]
 #align real.tan_pi_div_two_sub Real.tan_pi_div_two_sub
 
-theorem tan_nat_mul_pi (n : ℕ) : tan (n * π) = 0 :=
+lemma tan_nat_mul_pi (n : ℕ) : tan (n * π) = 0 :=
   tan_zero ▸ tan_periodic.nat_mul_eq n
 #align real.tan_nat_mul_pi Real.tan_nat_mul_pi
 
-theorem tan_int_mul_pi (n : ℤ) : tan (n * π) = 0 :=
+lemma tan_int_mul_pi (n : ℤ) : tan (n * π) = 0 :=
   tan_zero ▸ tan_periodic.int_mul_eq n
 #align real.tan_int_mul_pi Real.tan_int_mul_pi
 
-theorem tan_add_nat_mul_pi (x : ℝ) (n : ℕ) : tan (x + n * π) = tan x :=
+lemma tan_add_nat_mul_pi (x : ℝ) (n : ℕ) : tan (x + n * π) = tan x :=
   tan_periodic.nat_mul n x
 #align real.tan_add_nat_mul_pi Real.tan_add_nat_mul_pi
 
-theorem tan_add_int_mul_pi (x : ℝ) (n : ℤ) : tan (x + n * π) = tan x :=
+lemma tan_add_int_mul_pi (x : ℝ) (n : ℤ) : tan (x + n * π) = tan x :=
   tan_periodic.int_mul n x
 #align real.tan_add_int_mul_pi Real.tan_add_int_mul_pi
 
-theorem tan_sub_nat_mul_pi (x : ℝ) (n : ℕ) : tan (x - n * π) = tan x :=
+lemma tan_sub_nat_mul_pi (x : ℝ) (n : ℕ) : tan (x - n * π) = tan x :=
   tan_periodic.sub_nat_mul_eq n
 #align real.tan_sub_nat_mul_pi Real.tan_sub_nat_mul_pi
 
-theorem tan_sub_int_mul_pi (x : ℝ) (n : ℤ) : tan (x - n * π) = tan x :=
+lemma tan_sub_int_mul_pi (x : ℝ) (n : ℤ) : tan (x - n * π) = tan x :=
   tan_periodic.sub_int_mul_eq n
 #align real.tan_sub_int_mul_pi Real.tan_sub_int_mul_pi
 
-theorem tan_nat_mul_pi_sub (x : ℝ) (n : ℕ) : tan (n * π - x) = -tan x :=
+lemma tan_nat_mul_pi_sub (x : ℝ) (n : ℕ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.nat_mul_sub_eq n
 #align real.tan_nat_mul_pi_sub Real.tan_nat_mul_pi_sub
 
-theorem tan_int_mul_pi_sub (x : ℝ) (n : ℤ) : tan (n * π - x) = -tan x :=
+lemma tan_int_mul_pi_sub (x : ℝ) (n : ℤ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.int_mul_sub_eq n
 #align real.tan_int_mul_pi_sub Real.tan_int_mul_pi_sub
 
@@ -1150,59 +1150,59 @@ lemma sin_periodic : Function.Periodic sin (2 * π) :=
   sin_antiperiodic.periodic
 #align complex.sin_periodic Complex.sin_periodic
 
-theorem sin_add_pi (x : ℂ) : sin (x + π) = -sin x :=
+lemma sin_add_pi (x : ℂ) : sin (x + π) = -sin x :=
   sin_antiperiodic x
 #align complex.sin_add_pi Complex.sin_add_pi
 
-theorem sin_add_two_pi (x : ℂ) : sin (x + 2 * π) = sin x :=
+lemma sin_add_two_pi (x : ℂ) : sin (x + 2 * π) = sin x :=
   sin_periodic x
 #align complex.sin_add_two_pi Complex.sin_add_two_pi
 
-theorem sin_sub_pi (x : ℂ) : sin (x - π) = -sin x :=
+lemma sin_sub_pi (x : ℂ) : sin (x - π) = -sin x :=
   sin_antiperiodic.sub_eq x
 #align complex.sin_sub_pi Complex.sin_sub_pi
 
-theorem sin_sub_two_pi (x : ℂ) : sin (x - 2 * π) = sin x :=
+lemma sin_sub_two_pi (x : ℂ) : sin (x - 2 * π) = sin x :=
   sin_periodic.sub_eq x
 #align complex.sin_sub_two_pi Complex.sin_sub_two_pi
 
-theorem sin_pi_sub (x : ℂ) : sin (π - x) = sin x :=
+lemma sin_pi_sub (x : ℂ) : sin (π - x) = sin x :=
   neg_neg (sin x) ▸ sin_neg x ▸ sin_antiperiodic.sub_eq'
 #align complex.sin_pi_sub Complex.sin_pi_sub
 
-theorem sin_two_pi_sub (x : ℂ) : sin (2 * π - x) = -sin x :=
+lemma sin_two_pi_sub (x : ℂ) : sin (2 * π - x) = -sin x :=
   sin_neg x ▸ sin_periodic.sub_eq'
 #align complex.sin_two_pi_sub Complex.sin_two_pi_sub
 
-theorem sin_nat_mul_pi (n : ℕ) : sin (n * π) = 0 :=
+lemma sin_nat_mul_pi (n : ℕ) : sin (n * π) = 0 :=
   sin_antiperiodic.nat_mul_eq_of_eq_zero sin_zero n
 #align complex.sin_nat_mul_pi Complex.sin_nat_mul_pi
 
-theorem sin_int_mul_pi (n : ℤ) : sin (n * π) = 0 :=
+lemma sin_int_mul_pi (n : ℤ) : sin (n * π) = 0 :=
   sin_antiperiodic.int_mul_eq_of_eq_zero sin_zero n
 #align complex.sin_int_mul_pi Complex.sin_int_mul_pi
 
-theorem sin_add_nat_mul_two_pi (x : ℂ) (n : ℕ) : sin (x + n * (2 * π)) = sin x :=
+lemma sin_add_nat_mul_two_pi (x : ℂ) (n : ℕ) : sin (x + n * (2 * π)) = sin x :=
   sin_periodic.nat_mul n x
 #align complex.sin_add_nat_mul_two_pi Complex.sin_add_nat_mul_two_pi
 
-theorem sin_add_int_mul_two_pi (x : ℂ) (n : ℤ) : sin (x + n * (2 * π)) = sin x :=
+lemma sin_add_int_mul_two_pi (x : ℂ) (n : ℤ) : sin (x + n * (2 * π)) = sin x :=
   sin_periodic.int_mul n x
 #align complex.sin_add_int_mul_two_pi Complex.sin_add_int_mul_two_pi
 
-theorem sin_sub_nat_mul_two_pi (x : ℂ) (n : ℕ) : sin (x - n * (2 * π)) = sin x :=
+lemma sin_sub_nat_mul_two_pi (x : ℂ) (n : ℕ) : sin (x - n * (2 * π)) = sin x :=
   sin_periodic.sub_nat_mul_eq n
 #align complex.sin_sub_nat_mul_two_pi Complex.sin_sub_nat_mul_two_pi
 
-theorem sin_sub_int_mul_two_pi (x : ℂ) (n : ℤ) : sin (x - n * (2 * π)) = sin x :=
+lemma sin_sub_int_mul_two_pi (x : ℂ) (n : ℤ) : sin (x - n * (2 * π)) = sin x :=
   sin_periodic.sub_int_mul_eq n
 #align complex.sin_sub_int_mul_two_pi Complex.sin_sub_int_mul_two_pi
 
-theorem sin_nat_mul_two_pi_sub (x : ℂ) (n : ℕ) : sin (n * (2 * π) - x) = -sin x :=
+lemma sin_nat_mul_two_pi_sub (x : ℂ) (n : ℕ) : sin (n * (2 * π) - x) = -sin x :=
   sin_neg x ▸ sin_periodic.nat_mul_sub_eq n
 #align complex.sin_nat_mul_two_pi_sub Complex.sin_nat_mul_two_pi_sub
 
-theorem sin_int_mul_two_pi_sub (x : ℂ) (n : ℤ) : sin (n * (2 * π) - x) = -sin x :=
+lemma sin_int_mul_two_pi_sub (x : ℂ) (n : ℤ) : sin (n * (2 * π) - x) = -sin x :=
   sin_neg x ▸ sin_periodic.int_mul_sub_eq n
 #align complex.sin_int_mul_two_pi_sub Complex.sin_int_mul_two_pi_sub
 
@@ -1213,94 +1213,94 @@ lemma cos_periodic : Function.Periodic cos (2 * π) :=
   cos_antiperiodic.periodic
 #align complex.cos_periodic Complex.cos_periodic
 
-theorem cos_add_pi (x : ℂ) : cos (x + π) = -cos x :=
+lemma cos_add_pi (x : ℂ) : cos (x + π) = -cos x :=
   cos_antiperiodic x
 #align complex.cos_add_pi Complex.cos_add_pi
 
-theorem cos_add_two_pi (x : ℂ) : cos (x + 2 * π) = cos x :=
+lemma cos_add_two_pi (x : ℂ) : cos (x + 2 * π) = cos x :=
   cos_periodic x
 #align complex.cos_add_two_pi Complex.cos_add_two_pi
 
-theorem cos_sub_pi (x : ℂ) : cos (x - π) = -cos x :=
+lemma cos_sub_pi (x : ℂ) : cos (x - π) = -cos x :=
   cos_antiperiodic.sub_eq x
 #align complex.cos_sub_pi Complex.cos_sub_pi
 
-theorem cos_sub_two_pi (x : ℂ) : cos (x - 2 * π) = cos x :=
+lemma cos_sub_two_pi (x : ℂ) : cos (x - 2 * π) = cos x :=
   cos_periodic.sub_eq x
 #align complex.cos_sub_two_pi Complex.cos_sub_two_pi
 
-theorem cos_pi_sub (x : ℂ) : cos (π - x) = -cos x :=
+lemma cos_pi_sub (x : ℂ) : cos (π - x) = -cos x :=
   cos_neg x ▸ cos_antiperiodic.sub_eq'
 #align complex.cos_pi_sub Complex.cos_pi_sub
 
-theorem cos_two_pi_sub (x : ℂ) : cos (2 * π - x) = cos x :=
+lemma cos_two_pi_sub (x : ℂ) : cos (2 * π - x) = cos x :=
   cos_neg x ▸ cos_periodic.sub_eq'
 #align complex.cos_two_pi_sub Complex.cos_two_pi_sub
 
-theorem cos_nat_mul_two_pi (n : ℕ) : cos (n * (2 * π)) = 1 :=
+lemma cos_nat_mul_two_pi (n : ℕ) : cos (n * (2 * π)) = 1 :=
   (cos_periodic.nat_mul_eq n).trans cos_zero
 #align complex.cos_nat_mul_two_pi Complex.cos_nat_mul_two_pi
 
-theorem cos_int_mul_two_pi (n : ℤ) : cos (n * (2 * π)) = 1 :=
+lemma cos_int_mul_two_pi (n : ℤ) : cos (n * (2 * π)) = 1 :=
   (cos_periodic.int_mul_eq n).trans cos_zero
 #align complex.cos_int_mul_two_pi Complex.cos_int_mul_two_pi
 
-theorem cos_add_nat_mul_two_pi (x : ℂ) (n : ℕ) : cos (x + n * (2 * π)) = cos x :=
+lemma cos_add_nat_mul_two_pi (x : ℂ) (n : ℕ) : cos (x + n * (2 * π)) = cos x :=
   cos_periodic.nat_mul n x
 #align complex.cos_add_nat_mul_two_pi Complex.cos_add_nat_mul_two_pi
 
-theorem cos_add_int_mul_two_pi (x : ℂ) (n : ℤ) : cos (x + n * (2 * π)) = cos x :=
+lemma cos_add_int_mul_two_pi (x : ℂ) (n : ℤ) : cos (x + n * (2 * π)) = cos x :=
   cos_periodic.int_mul n x
 #align complex.cos_add_int_mul_two_pi Complex.cos_add_int_mul_two_pi
 
-theorem cos_sub_nat_mul_two_pi (x : ℂ) (n : ℕ) : cos (x - n * (2 * π)) = cos x :=
+lemma cos_sub_nat_mul_two_pi (x : ℂ) (n : ℕ) : cos (x - n * (2 * π)) = cos x :=
   cos_periodic.sub_nat_mul_eq n
 #align complex.cos_sub_nat_mul_two_pi Complex.cos_sub_nat_mul_two_pi
 
-theorem cos_sub_int_mul_two_pi (x : ℂ) (n : ℤ) : cos (x - n * (2 * π)) = cos x :=
+lemma cos_sub_int_mul_two_pi (x : ℂ) (n : ℤ) : cos (x - n * (2 * π)) = cos x :=
   cos_periodic.sub_int_mul_eq n
 #align complex.cos_sub_int_mul_two_pi Complex.cos_sub_int_mul_two_pi
 
-theorem cos_nat_mul_two_pi_sub (x : ℂ) (n : ℕ) : cos (n * (2 * π) - x) = cos x :=
+lemma cos_nat_mul_two_pi_sub (x : ℂ) (n : ℕ) : cos (n * (2 * π) - x) = cos x :=
   cos_neg x ▸ cos_periodic.nat_mul_sub_eq n
 #align complex.cos_nat_mul_two_pi_sub Complex.cos_nat_mul_two_pi_sub
 
-theorem cos_int_mul_two_pi_sub (x : ℂ) (n : ℤ) : cos (n * (2 * π) - x) = cos x :=
+lemma cos_int_mul_two_pi_sub (x : ℂ) (n : ℤ) : cos (n * (2 * π) - x) = cos x :=
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align complex.cos_int_mul_two_pi_sub Complex.cos_int_mul_two_pi_sub
 
-theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
+lemma cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).add_antiperiod_eq cos_antiperiodic
 #align complex.cos_nat_mul_two_pi_add_pi Complex.cos_nat_mul_two_pi_add_pi
 
-theorem cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
+lemma cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).add_antiperiod_eq cos_antiperiodic
 #align complex.cos_int_mul_two_pi_add_pi Complex.cos_int_mul_two_pi_add_pi
 
-theorem cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
+lemma cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).sub_antiperiod_eq cos_antiperiodic
 #align complex.cos_nat_mul_two_pi_sub_pi Complex.cos_nat_mul_two_pi_sub_pi
 
-theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
+lemma cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).sub_antiperiod_eq cos_antiperiodic
 #align complex.cos_int_mul_two_pi_sub_pi Complex.cos_int_mul_two_pi_sub_pi
 
-theorem sin_add_pi_div_two (x : ℂ) : sin (x + π / 2) = cos x := by simp [sin_add]
+lemma sin_add_pi_div_two (x : ℂ) : sin (x + π / 2) = cos x := by simp [sin_add]
 #align complex.sin_add_pi_div_two Complex.sin_add_pi_div_two
 
-theorem sin_sub_pi_div_two (x : ℂ) : sin (x - π / 2) = -cos x := by simp [sub_eq_add_neg, sin_add]
+lemma sin_sub_pi_div_two (x : ℂ) : sin (x - π / 2) = -cos x := by simp [sub_eq_add_neg, sin_add]
 #align complex.sin_sub_pi_div_two Complex.sin_sub_pi_div_two
 
-theorem sin_pi_div_two_sub (x : ℂ) : sin (π / 2 - x) = cos x := by simp [sub_eq_add_neg, sin_add]
+lemma sin_pi_div_two_sub (x : ℂ) : sin (π / 2 - x) = cos x := by simp [sub_eq_add_neg, sin_add]
 #align complex.sin_pi_div_two_sub Complex.sin_pi_div_two_sub
 
-theorem cos_add_pi_div_two (x : ℂ) : cos (x + π / 2) = -sin x := by simp [cos_add]
+lemma cos_add_pi_div_two (x : ℂ) : cos (x + π / 2) = -sin x := by simp [cos_add]
 #align complex.cos_add_pi_div_two Complex.cos_add_pi_div_two
 
-theorem cos_sub_pi_div_two (x : ℂ) : cos (x - π / 2) = sin x := by simp [sub_eq_add_neg, cos_add]
+lemma cos_sub_pi_div_two (x : ℂ) : cos (x - π / 2) = sin x := by simp [sub_eq_add_neg, cos_add]
 #align complex.cos_sub_pi_div_two Complex.cos_sub_pi_div_two
 
-theorem cos_pi_div_two_sub (x : ℂ) : cos (π / 2 - x) = sin x := by
+lemma cos_pi_div_two_sub (x : ℂ) : cos (π / 2 - x) = sin x := by
   rw [← cos_neg, neg_sub, cos_sub_pi_div_two]
 #align complex.cos_pi_div_two_sub Complex.cos_pi_div_two_sub
 
@@ -1308,51 +1308,51 @@ lemma tan_periodic : Function.Periodic tan π := by
   simpa only [tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 #align complex.tan_periodic Complex.tan_periodic
 
-theorem tan_add_pi (x : ℂ) : tan (x + π) = tan x :=
+lemma tan_add_pi (x : ℂ) : tan (x + π) = tan x :=
   tan_periodic x
 #align complex.tan_add_pi Complex.tan_add_pi
 
-theorem tan_sub_pi (x : ℂ) : tan (x - π) = tan x :=
+lemma tan_sub_pi (x : ℂ) : tan (x - π) = tan x :=
   tan_periodic.sub_eq x
 #align complex.tan_sub_pi Complex.tan_sub_pi
 
-theorem tan_pi_sub (x : ℂ) : tan (π - x) = -tan x :=
+lemma tan_pi_sub (x : ℂ) : tan (π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.sub_eq'
 #align complex.tan_pi_sub Complex.tan_pi_sub
 
-theorem tan_pi_div_two_sub (x : ℂ) : tan (π / 2 - x) = (tan x)⁻¹ := by
+lemma tan_pi_div_two_sub (x : ℂ) : tan (π / 2 - x) = (tan x)⁻¹ := by
   rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos, inv_div, sin_pi_div_two_sub, cos_pi_div_two_sub]
 #align complex.tan_pi_div_two_sub Complex.tan_pi_div_two_sub
 
-theorem tan_nat_mul_pi (n : ℕ) : tan (n * π) = 0 :=
+lemma tan_nat_mul_pi (n : ℕ) : tan (n * π) = 0 :=
   tan_zero ▸ tan_periodic.nat_mul_eq n
 #align complex.tan_nat_mul_pi Complex.tan_nat_mul_pi
 
-theorem tan_int_mul_pi (n : ℤ) : tan (n * π) = 0 :=
+lemma tan_int_mul_pi (n : ℤ) : tan (n * π) = 0 :=
   tan_zero ▸ tan_periodic.int_mul_eq n
 #align complex.tan_int_mul_pi Complex.tan_int_mul_pi
 
-theorem tan_add_nat_mul_pi (x : ℂ) (n : ℕ) : tan (x + n * π) = tan x :=
+lemma tan_add_nat_mul_pi (x : ℂ) (n : ℕ) : tan (x + n * π) = tan x :=
   tan_periodic.nat_mul n x
 #align complex.tan_add_nat_mul_pi Complex.tan_add_nat_mul_pi
 
-theorem tan_add_int_mul_pi (x : ℂ) (n : ℤ) : tan (x + n * π) = tan x :=
+lemma tan_add_int_mul_pi (x : ℂ) (n : ℤ) : tan (x + n * π) = tan x :=
   tan_periodic.int_mul n x
 #align complex.tan_add_int_mul_pi Complex.tan_add_int_mul_pi
 
-theorem tan_sub_nat_mul_pi (x : ℂ) (n : ℕ) : tan (x - n * π) = tan x :=
+lemma tan_sub_nat_mul_pi (x : ℂ) (n : ℕ) : tan (x - n * π) = tan x :=
   tan_periodic.sub_nat_mul_eq n
 #align complex.tan_sub_nat_mul_pi Complex.tan_sub_nat_mul_pi
 
-theorem tan_sub_int_mul_pi (x : ℂ) (n : ℤ) : tan (x - n * π) = tan x :=
+lemma tan_sub_int_mul_pi (x : ℂ) (n : ℤ) : tan (x - n * π) = tan x :=
   tan_periodic.sub_int_mul_eq n
 #align complex.tan_sub_int_mul_pi Complex.tan_sub_int_mul_pi
 
-theorem tan_nat_mul_pi_sub (x : ℂ) (n : ℕ) : tan (n * π - x) = -tan x :=
+lemma tan_nat_mul_pi_sub (x : ℂ) (n : ℕ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.nat_mul_sub_eq n
 #align complex.tan_nat_mul_pi_sub Complex.tan_nat_mul_pi_sub
 
-theorem tan_int_mul_pi_sub (x : ℂ) (n : ℤ) : tan (n * π - x) = -tan x :=
+lemma tan_int_mul_pi_sub (x : ℂ) (n : ℤ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.int_mul_sub_eq n
 #align complex.tan_int_mul_pi_sub Complex.tan_int_mul_pi_sub
 
@@ -1386,25 +1386,25 @@ set_option linter.uppercaseLean3 false in
 #align complex.exp_two_pi_mul_I Complex.exp_two_pi_mul_I
 
 @[simp]
-theorem exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=
+lemma exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=
   (exp_periodic.nat_mul_eq n).trans exp_zero
 set_option linter.uppercaseLean3 false in
 #align complex.exp_nat_mul_two_pi_mul_I Complex.exp_nat_mul_two_pi_mul_I
 
 @[simp]
-theorem exp_int_mul_two_pi_mul_I (n : ℤ) : exp (n * (2 * π * I)) = 1 :=
+lemma exp_int_mul_two_pi_mul_I (n : ℤ) : exp (n * (2 * π * I)) = 1 :=
   (exp_periodic.int_mul_eq n).trans exp_zero
 set_option linter.uppercaseLean3 false in
 #align complex.exp_int_mul_two_pi_mul_I Complex.exp_int_mul_two_pi_mul_I
 
 @[simp]
-theorem exp_add_pi_mul_I (z : ℂ) : exp (z + π * I) = -exp z :=
+lemma exp_add_pi_mul_I (z : ℂ) : exp (z + π * I) = -exp z :=
   exp_antiperiodic z
 set_option linter.uppercaseLean3 false in
 #align complex.exp_add_pi_mul_I Complex.exp_add_pi_mul_I
 
 @[simp]
-theorem exp_sub_pi_mul_I (z : ℂ) : exp (z - π * I) = -exp z :=
+lemma exp_sub_pi_mul_I (z : ℂ) : exp (z - π * I) = -exp z :=
   exp_antiperiodic.sub_eq z
 set_option linter.uppercaseLean3 false in
 #align complex.exp_sub_pi_mul_I Complex.exp_sub_pi_mul_I

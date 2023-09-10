@@ -89,7 +89,7 @@ def completion.mapHom (V W : SemiNormedGroupCat.{u}) :
 #align SemiNormedGroup.Completion.map_hom SemiNormedGroupCat.completion.mapHom
 
 -- @[simp] -- Porting note: removed simp since LHS simplifies and is not used
-theorem completion.map_zero (V W : SemiNormedGroupCat) : completion.map (0 : V ⟶ W) = 0 :=
+lemma completion.map_zero (V W : SemiNormedGroupCat) : completion.map (0 : V ⟶ W) = 0 :=
   -- Porting note: cannot see instances through concrete cats
   @AddMonoidHom.map_zero _ _ (_) (_) (completion.mapHom V W)
 #align SemiNormedGroup.Completion.map_zero SemiNormedGroupCat.completion.map_zero

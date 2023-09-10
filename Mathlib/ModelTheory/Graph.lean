@@ -105,7 +105,7 @@ def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGrap
 variable {V}
 
 @[simp]
-theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
+lemma _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
     @simpleGraphOfStructure V G.structure _ = G := by
   ext
   rfl

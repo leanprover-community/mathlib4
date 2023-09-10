@@ -83,7 +83,7 @@ lemma pcontinuous_iff' {f : α →. β} :
   exact ⟨s, Set.Subset.refl _, os, ys⟩
 #align pcontinuous_iff' pcontinuous_iff'
 
-theorem continuousWithinAt_iff_ptendsto_res (f : α → β) {x : α} {s : Set α} :
+lemma continuousWithinAt_iff_ptendsto_res (f : α → β) {x : α} {s : Set α} :
     ContinuousWithinAt f s x ↔ PTendsto (PFun.res f s) (𝓝 x) (𝓝 (f x)) :=
   tendsto_iff_ptendsto _ _ _ _
 #align continuous_within_at_iff_ptendsto_res continuousWithinAt_iff_ptendsto_res

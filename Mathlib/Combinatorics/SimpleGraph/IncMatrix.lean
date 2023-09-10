@@ -81,18 +81,18 @@ lemma incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R b 
     Set.mem_inter_iff]
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply SimpleGraph.incMatrix_apply_mul_incMatrix_apply
 
-theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
+lemma incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
     G.incMatrix R a e * G.incMatrix R b e = 0 := by
   rw [incMatrix_apply_mul_incMatrix_apply, Set.indicator_of_not_mem]
   rw [G.incidenceSet_inter_incidenceSet_of_not_adj h hab]
   exact Set.not_mem_empty e
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply_of_not_adj SimpleGraph.incMatrix_apply_mul_incMatrix_apply_of_not_adj
 
-theorem incMatrix_of_not_mem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
+lemma incMatrix_of_not_mem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
   rw [incMatrix_apply, Set.indicator_of_not_mem h]
 #align simple_graph.inc_matrix_of_not_mem_incidence_set SimpleGraph.incMatrix_of_not_mem_incidenceSet
 
-theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
+lemma incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
   rw [incMatrix_apply, Set.indicator_of_mem h, Pi.one_apply]
 #align simple_graph.inc_matrix_of_mem_incidence_set SimpleGraph.incMatrix_of_mem_incidenceSet
 
@@ -142,7 +142,7 @@ lemma sum_incMatrix_apply_of_mem_edgeSet :
     simp only [mem_filter, mem_univ, true_and_iff, mem_insert, mem_singleton]
 #align simple_graph.sum_inc_matrix_apply_of_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_mem_edgeSet
 
-theorem sum_incMatrix_apply_of_not_mem_edgeSet (h : e ∉ G.edgeSet) :
+lemma sum_incMatrix_apply_of_not_mem_edgeSet (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
   sum_eq_zero fun _ _ => G.incMatrix_of_not_mem_incidenceSet fun he => h he.1
 #align simple_graph.sum_inc_matrix_apply_of_not_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_not_mem_edgeSet
@@ -173,7 +173,7 @@ section Semiring
 
 variable [Fintype (Sym2 α)] [Semiring R] {a b : α} {e : Sym2 α}
 
-theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
+lemma incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a b = (1 : R) := by
   classical
     simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,

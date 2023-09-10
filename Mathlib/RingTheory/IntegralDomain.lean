@@ -108,7 +108,7 @@ def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype
   { Fintype.groupWithZeroOfCancel R, ‹CommRing R› with }
 #align fintype.field_of_domain Fintype.fieldOfDomain
 
-theorem Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R := by
+lemma Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R := by
   cases nonempty_fintype R
   exact @Field.toIsField R (@Fintype.fieldOfDomain R _ _ (Classical.decEq R) _)
 #align finite.is_field_of_domain Finite.isField_of_domain
@@ -171,7 +171,7 @@ open Polynomial
 
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
-theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
+lemma div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
     ∃ q r : R[X], r.degree < g.degree ∧
       (algebraMap R[X] K f) / (algebraMap R[X] K g) =
         algebraMap R[X] K q + (algebraMap R[X] K r) / (algebraMap R[X] K g) := by
@@ -215,7 +215,7 @@ lemma card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G �
 
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
 -/
-theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
+lemma sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
   classical
     obtain ⟨x, hx⟩ :
       ∃ x : MonoidHom.range f.toHomUnits,
@@ -278,7 +278,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
 /-- In an integral domain, a sum indexed by a homomorphism from a finite group is zero,
 unless the homomorphism is trivial, in which case the sum is equal to the cardinality of the group.
 -/
-theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
+lemma sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
   · simp [h, card_univ]

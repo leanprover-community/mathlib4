@@ -44,7 +44,7 @@ Up to rounding, in terms of the definition of `sqrt.iter`,
 
 To turn this into a lean proof we need to manipulate, use properties of natural number division etc.
 -/
-private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
+private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   match n with
   | 0 => simp [IsSqrt]
   | 1 => simp [IsSqrt]
@@ -61,23 +61,23 @@ private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     · exact (lt_succ.1 $ mod_lt n zero_lt_two)
     · simp only [le_add_iff_nonneg_left]; exact zero_le _
 
-theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
+lemma sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
   (sqrt_isSqrt n).left
 #align nat.sqrt_le Nat.sqrt_le
 
-theorem sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n :=
+lemma sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n :=
   Eq.trans_le (sq (sqrt n)) (sqrt_le n)
 #align nat.sqrt_le' Nat.sqrt_le'
 
-theorem lt_succ_sqrt (n : ℕ) : n < succ (sqrt n) * succ (sqrt n) :=
+lemma lt_succ_sqrt (n : ℕ) : n < succ (sqrt n) * succ (sqrt n) :=
   (sqrt_isSqrt n).right
 #align nat.lt_succ_sqrt Nat.lt_succ_sqrt
 
-theorem lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 :=
+lemma lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 :=
   (sq (succ (sqrt n))).symm ▸ (lt_succ_sqrt n)
 #align nat.lt_succ_sqrt' Nat.lt_succ_sqrt'
 
-theorem sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
+lemma sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
   rw [← succ_mul]; exact le_of_lt_succ (lt_succ_sqrt n)
 #align nat.sqrt_le_add Nat.sqrt_le_add
 
@@ -97,7 +97,7 @@ lemma sqrt_lt' {m n : ℕ} : sqrt m < n ↔ m < n ^ 2 :=
   lt_iff_lt_of_le_iff_le le_sqrt'
 #align nat.sqrt_lt' Nat.sqrt_lt'
 
-theorem sqrt_le_self (n : ℕ) : sqrt n ≤ n :=
+lemma sqrt_le_self (n : ℕ) : sqrt n ≤ n :=
   le_trans (le_mul_self _) (sqrt_le n)
 #align nat.sqrt_le_self Nat.sqrt_le_self
 
@@ -136,7 +136,7 @@ lemma sqrt_pos {n : ℕ} : 0 < sqrt n ↔ 0 < n :=
   le_sqrt
 #align nat.sqrt_pos Nat.sqrt_pos
 
-theorem sqrt_add_eq (n : ℕ) {a : ℕ} (h : a ≤ n + n) : sqrt (n * n + a) = n :=
+lemma sqrt_add_eq (n : ℕ) {a : ℕ} (h : a ≤ n + n) : sqrt (n * n + a) = n :=
   le_antisymm
     (le_of_lt_succ <|
       sqrt_lt.2 <| by
@@ -145,15 +145,15 @@ theorem sqrt_add_eq (n : ℕ) {a : ℕ} (h : a ≤ n + n) : sqrt (n * n + a) = n
     (le_sqrt.2 <| Nat.le_add_right _ _)
 #align nat.sqrt_add_eq Nat.sqrt_add_eq
 
-theorem sqrt_add_eq' (n : ℕ) {a : ℕ} (h : a ≤ n + n) : sqrt (n ^ 2 + a) = n :=
+lemma sqrt_add_eq' (n : ℕ) {a : ℕ} (h : a ≤ n + n) : sqrt (n ^ 2 + a) = n :=
   (congr_arg (fun i => sqrt (i + a)) (sq n)).trans (sqrt_add_eq n h)
 #align nat.sqrt_add_eq' Nat.sqrt_add_eq'
 
-theorem sqrt_eq (n : ℕ) : sqrt (n * n) = n :=
+lemma sqrt_eq (n : ℕ) : sqrt (n * n) = n :=
   sqrt_add_eq n (zero_le _)
 #align nat.sqrt_eq Nat.sqrt_eq
 
-theorem sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n :=
+lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n :=
   sqrt_add_eq' n (zero_le _)
 #align nat.sqrt_eq' Nat.sqrt_eq'
 
@@ -162,33 +162,33 @@ lemma sqrt_one : sqrt 1 = 1 :=
   sqrt_eq 1
 #align nat.sqrt_one Nat.sqrt_one
 
-theorem sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
+lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| lt_succ_of_le <|
   succ_le_succ <| le_trans (sqrt_le_add n) <| add_le_add_right
     (by refine' add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
 #align nat.sqrt_succ_le_succ_sqrt Nat.sqrt_succ_le_succ_sqrt
 
-theorem exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
+lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
   ⟨fun ⟨n, hn⟩ => by rw [← hn, sqrt_eq], fun h => ⟨sqrt x, h⟩⟩
 #align nat.exists_mul_self Nat.exists_mul_self
 
-theorem exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
+lemma exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
   simpa only [pow_two] using exists_mul_self x
 #align nat.exists_mul_self' Nat.exists_mul_self'
 
-theorem sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
+lemma sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
   lt_succ_iff.mpr (sqrt_le _)
 #align nat.sqrt_mul_sqrt_lt_succ Nat.sqrt_mul_sqrt_lt_succ
 
-theorem sqrt_mul_sqrt_lt_succ' (n : ℕ) : sqrt n ^ 2 < n + 1 :=
+lemma sqrt_mul_sqrt_lt_succ' (n : ℕ) : sqrt n ^ 2 < n + 1 :=
   lt_succ_iff.mpr (sqrt_le' _)
 #align nat.sqrt_mul_sqrt_lt_succ' Nat.sqrt_mul_sqrt_lt_succ'
 
-theorem succ_le_succ_sqrt (n : ℕ) : n + 1 ≤ (sqrt n + 1) * (sqrt n + 1) :=
+lemma succ_le_succ_sqrt (n : ℕ) : n + 1 ≤ (sqrt n + 1) * (sqrt n + 1) :=
   le_of_pred_lt (lt_succ_sqrt _)
 #align nat.succ_le_succ_sqrt Nat.succ_le_succ_sqrt
 
-theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
+lemma succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
   le_of_pred_lt (lt_succ_sqrt' _)
 #align nat.succ_le_succ_sqrt' Nat.succ_le_succ_sqrt'
 

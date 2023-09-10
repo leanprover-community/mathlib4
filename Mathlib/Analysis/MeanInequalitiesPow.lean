@@ -57,13 +57,13 @@ variable {ι : Type u} (s : Finset ι)
 
 namespace Real
 
-theorem pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+lemma pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (n : ℕ) :
     (∑ i in s, w i * z i) ^ n ≤ ∑ i in s, w i * z i ^ n :=
   (convexOn_pow n).map_sum_le hw hw' hz
 #align real.pow_arith_mean_le_arith_mean_pow Real.pow_arith_mean_le_arith_mean_pow
 
-theorem pow_arith_mean_le_arith_mean_pow_of_even (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+lemma pow_arith_mean_le_arith_mean_pow_of_even (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) {n : ℕ} (hn : Even n) :
     (∑ i in s, w i * z i) ^ n ≤ ∑ i in s, w i * z i ^ n :=
   hn.convexOn_pow.map_sum_le hw hw' fun _ _ => trivial
@@ -87,19 +87,19 @@ lemma pow_sum_div_card_le_sum_pow {f : ι → ℝ} (n : ℕ) (hf : ∀ a ∈ s, 
     · simpa only [one_div, Finset.sum_const, nsmul_eq_mul] using mul_inv_cancel hs0.ne'
 #align real.pow_sum_div_card_le_sum_pow Real.pow_sum_div_card_le_sum_pow
 
-theorem zpow_arith_mean_le_arith_mean_zpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+lemma zpow_arith_mean_le_arith_mean_zpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) (m : ℤ) :
     (∑ i in s, w i * z i) ^ m ≤ ∑ i in s, w i * z i ^ m :=
   (convexOn_zpow m).map_sum_le hw hw' hz
 #align real.zpow_arith_mean_le_arith_mean_zpow Real.zpow_arith_mean_le_arith_mean_zpow
 
-theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+lemma rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) {p : ℝ} (hp : 1 ≤ p) :
     (∑ i in s, w i * z i) ^ p ≤ ∑ i in s, w i * z i ^ p :=
   (convexOn_rpow hp).map_sum_le hw hw' hz
 #align real.rpow_arith_mean_le_arith_mean_rpow Real.rpow_arith_mean_le_arith_mean_rpow
 
-theorem arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : ∑ i in s, w i = 1)
+lemma arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : ∑ i in s, w i = 1)
     (hz : ∀ i ∈ s, 0 ≤ z i) {p : ℝ} (hp : 1 ≤ p) :
     ∑ i in s, w i * z i ≤ (∑ i in s, w i * z i ^ p) ^ (1 / p) := by
   have : 0 < p := by positivity
@@ -117,14 +117,14 @@ namespace NNReal
 
 /-- Weighted generalized mean inequality, version sums over finite sets, with `ℝ≥0`-valued
 functions and natural exponent. -/
-theorem pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) (n : ℕ) :
+lemma pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) (n : ℕ) :
     (∑ i in s, w i * z i) ^ n ≤ ∑ i in s, w i * z i ^ n := by
   exact_mod_cast
     Real.pow_arith_mean_le_arith_mean_pow s _ _ (fun i _ => (w i).coe_nonneg)
       (by exact_mod_cast hw') (fun i _ => (z i).coe_nonneg) n
 #align nnreal.pow_arith_mean_le_arith_mean_pow NNReal.pow_arith_mean_le_arith_mean_pow
 
-theorem pow_sum_div_card_le_sum_pow (f : ι → ℝ≥0) (n : ℕ) :
+lemma pow_sum_div_card_le_sum_pow (f : ι → ℝ≥0) (n : ℕ) :
     (∑ x in s, f x) ^ (n + 1) / (s.card : ℝ) ^ n ≤ ∑ x in s, f x ^ (n + 1) := by
   simpa only [← NNReal.coe_le_coe, NNReal.coe_sum, Nonneg.coe_div, NNReal.coe_pow] using
     @Real.pow_sum_div_card_le_sum_pow ι s (((↑) : ℝ≥0 → ℝ) ∘ f) n fun _ _ => NNReal.coe_nonneg _
@@ -132,7 +132,7 @@ theorem pow_sum_div_card_le_sum_pow (f : ι → ℝ≥0) (n : ℕ) :
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
 functions and real exponents. -/
-theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) {p : ℝ}
+lemma rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) {p : ℝ}
     (hp : 1 ≤ p) : (∑ i in s, w i * z i) ^ p ≤ ∑ i in s, w i * z i ^ p := by
   exact_mod_cast
     Real.rpow_arith_mean_le_arith_mean_rpow s _ _ (fun i _ => (w i).coe_nonneg)
@@ -140,7 +140,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0) (hw' : ∑ i i
 #align nnreal.rpow_arith_mean_le_arith_mean_rpow NNReal.rpow_arith_mean_le_arith_mean_rpow
 
 /-- Weighted generalized mean inequality, version for two elements of `ℝ≥0` and real exponents. -/
-theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0) (hw' : w₁ + w₂ = 1) {p : ℝ}
+lemma rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0) (hw' : w₁ + w₂ = 1) {p : ℝ}
     (hp : 1 ≤ p) : (w₁ * z₁ + w₂ * z₂) ^ p ≤ w₁ * z₁ ^ p + w₂ * z₂ ^ p := by
   have h := rpow_arith_mean_le_arith_mean_rpow univ ![w₁, w₂] ![z₁, z₂] ?_ hp
   · simpa [Fin.sum_univ_succ] using h
@@ -148,7 +148,7 @@ theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0) (hw'
 #align nnreal.rpow_arith_mean_le_arith_mean2_rpow NNReal.rpow_arith_mean_le_arith_mean2_rpow
 
 /-- Unweighted mean inequality, version for two elements of `ℝ≥0` and real exponents. -/
-theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
+lemma rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
   rcases eq_or_lt_of_le hp with (rfl | h'p)
   · simp only [rpow_one, sub_self, rpow_zero, one_mul]; rfl
@@ -163,7 +163,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
 functions and real exponents. -/
-theorem arith_mean_le_rpow_mean (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) {p : ℝ} (hp : 1 ≤ p) :
+lemma arith_mean_le_rpow_mean (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) {p : ℝ} (hp : 1 ≤ p) :
     ∑ i in s, w i * z i ≤ (∑ i in s, w i * z i ^ p) ^ (1 / p) := by
   exact_mod_cast
     Real.arith_mean_le_rpow_mean s _ _ (fun i _ => (w i).coe_nonneg) (by exact_mod_cast hw')
@@ -231,7 +231,7 @@ namespace ENNReal
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0∞`-valued
 functions and real exponents. -/
-theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ i in s, w i = 1) {p : ℝ}
+lemma rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ i in s, w i = 1) {p : ℝ}
     (hp : 1 ≤ p) : (∑ i in s, w i * z i) ^ p ≤ ∑ i in s, w i * z i ^ p := by
   have hp_pos : 0 < p
   positivity
@@ -281,7 +281,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
 
 /-- Weighted generalized mean inequality, version for two elements of `ℝ≥0∞` and real
 exponents. -/
-theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0∞) (hw' : w₁ + w₂ = 1) {p : ℝ}
+lemma rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0∞) (hw' : w₁ + w₂ = 1) {p : ℝ}
     (hp : 1 ≤ p) : (w₁ * z₁ + w₂ * z₂) ^ p ≤ w₁ * z₁ ^ p + w₂ * z₂ ^ p := by
   have h := rpow_arith_mean_le_arith_mean_rpow univ ![w₁, w₂] ![z₁, z₂] ?_ hp
   · simpa [Fin.sum_univ_succ] using h
@@ -289,7 +289,7 @@ theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0∞) (
 #align ennreal.rpow_arith_mean_le_arith_mean2_rpow ENNReal.rpow_arith_mean_le_arith_mean2_rpow
 
 /-- Unweighted mean inequality, version for two elements of `ℝ≥0∞` and real exponents. -/
-theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1 ≤ p) :
+lemma rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1 ≤ p) :
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0∞) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
   rcases eq_or_lt_of_le hp with (rfl | h'p)
   · simp only [rpow_one, sub_self, rpow_zero, one_mul, le_refl]

@@ -106,7 +106,7 @@ def IsPrime.toPrimePair {I : Ideal P} (h : IsPrime I) : PrimePair P :=
     isCompl_I_F := isCompl_compl }
 #align order.ideal.is_prime.to_prime_pair Order.Ideal.IsPrime.toPrimePair
 
-theorem PrimePair.I_isPrime (IF : PrimePair P) : IsPrime IF.I :=
+lemma PrimePair.I_isPrime (IF : PrimePair P) : IsPrime IF.I :=
   { IF.I_isProper with
     compl_filter := by
       rw [IF.compl_I_eq_F]
@@ -120,7 +120,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf P] {x y : P} {I : Ideal P}
 
-theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
+lemma IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
   contrapose!
   let F := hI.compl_filter.toPFilter
   show x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
@@ -172,13 +172,13 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
-theorem IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I := by
+lemma IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I := by
   apply hI.mem_or_mem
   rw [inf_compl_eq_bot]
   exact I.bot_mem
 #align order.ideal.is_prime.mem_or_compl_mem Order.Ideal.IsPrime.mem_or_compl_mem
 
-theorem IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
+lemma IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
   hI.mem_or_compl_mem.resolve_left hxnI
 #align order.ideal.is_prime.mem_compl_of_not_mem Order.Ideal.IsPrime.mem_compl_of_not_mem
 
@@ -227,7 +227,7 @@ def IsPrime.toPrimePair {F : PFilter P} (h : IsPrime F) : Ideal.PrimePair P :=
     isCompl_I_F := isCompl_compl.symm }
 #align order.pfilter.is_prime.to_prime_pair Order.PFilter.IsPrime.toPrimePair
 
-theorem _root_.Order.Ideal.PrimePair.F_isPrime (IF : Ideal.PrimePair P) : IsPrime IF.F :=
+lemma _root_.Order.Ideal.PrimePair.F_isPrime (IF : Ideal.PrimePair P) : IsPrime IF.F :=
   {
     compl_ideal := by
       rw [IF.compl_F_eq_I]

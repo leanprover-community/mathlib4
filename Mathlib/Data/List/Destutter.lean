@@ -45,12 +45,12 @@ lemma destutter'_cons :
 variable {R}
 
 @[simp]
-theorem destutter'_cons_pos (h : R b a) : (a :: l).destutter' R b = b :: l.destutter' R a := by
+lemma destutter'_cons_pos (h : R b a) : (a :: l).destutter' R b = b :: l.destutter' R a := by
   rw [destutter', if_pos h]
 #align list.destutter'_cons_pos List.destutter'_cons_pos
 
 @[simp]
-theorem destutter'_cons_neg (h : ¬R b a) : (a :: l).destutter' R b = l.destutter' R b := by
+lemma destutter'_cons_neg (h : ¬R b a) : (a :: l).destutter' R b = l.destutter' R b := by
   rw [destutter', if_neg h]
 #align list.destutter'_cons_neg List.destutter'_cons_neg
 
@@ -61,7 +61,7 @@ lemma destutter'_singleton : [b].destutter' R a = if R a b then [a, b] else [a] 
   split_ifs with h <;> simp! [h]
 #align list.destutter'_singleton List.destutter'_singleton
 
-theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
+lemma destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
   induction' l with b l hl generalizing a
   · simp
   rw [destutter']
@@ -70,7 +70,7 @@ theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
   · exact (hl a).trans ((l.sublist_cons b).cons_cons a)
 #align list.destutter'_sublist List.destutter'_sublist
 
-theorem mem_destutter' (a) : a ∈ l.destutter' R a := by
+lemma mem_destutter' (a) : a ∈ l.destutter' R a := by
   induction' l with b l hl
   · simp
   rw [destutter']
@@ -89,7 +89,7 @@ lemma destutter'_is_chain : ∀ l : List α, ∀ {a b}, R a b → (l.destutter' 
     · exact destutter'_is_chain l h
 #align list.destutter'_is_chain List.destutter'_is_chain
 
-theorem destutter'_is_chain' (a) : (l.destutter' R a).Chain' R := by
+lemma destutter'_is_chain' (a) : (l.destutter' R a).Chain' R := by
   induction' l with b l hl generalizing a
   · simp
   rw [destutter']
@@ -98,7 +98,7 @@ theorem destutter'_is_chain' (a) : (l.destutter' R a).Chain' R := by
   · exact hl a
 #align list.destutter'_is_chain' List.destutter'_is_chain'
 
-theorem destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l := by
+lemma destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l := by
   induction' l with b l hb generalizing a
   · simp
   obtain ⟨h, hc⟩ := chain_cons.mp h
@@ -106,7 +106,7 @@ theorem destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l := by
 #align list.destutter'_of_chain List.destutter'_of_chain
 
 @[simp]
-theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ l.Chain R a :=
+lemma destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ l.Chain R a :=
   ⟨fun h => by
     suffices Chain' R (a::l) by
       assumption

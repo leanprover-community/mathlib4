@@ -57,7 +57,7 @@ lemma coe_toFinsupp : (l.toFinsupp : ℕ → M) = (l.getD · 0) :=
 #align list.coe_to_finsupp List.coe_toFinsupp
 
 @[simp, norm_cast]
-theorem toFinsupp_apply (i : ℕ) : (l.toFinsupp : ℕ → M) i = l.getD i 0 :=
+lemma toFinsupp_apply (i : ℕ) : (l.toFinsupp : ℕ → M) i = l.getD i 0 :=
   rfl
 #align list.to_finsupp_apply List.toFinsupp_apply
 
@@ -66,19 +66,19 @@ lemma toFinsupp_support :
   rfl
 #align list.to_finsupp_support List.toFinsupp_support
 
-theorem toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l.get ⟨n, hn⟩ :=
+lemma toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l.get ⟨n, hn⟩ :=
   getD_eq_get _ _ _
 
-theorem toFinsupp_apply_fin (n : Fin l.length) : l.toFinsupp n = l.get n :=
+lemma toFinsupp_apply_fin (n : Fin l.length) : l.toFinsupp n = l.get n :=
   getD_eq_get _ _ _
 
 set_option linter.deprecated false in
 @[deprecated]
-theorem toFinsupp_apply_lt' (hn : n < l.length) : l.toFinsupp n = l.nthLe n hn :=
+lemma toFinsupp_apply_lt' (hn : n < l.length) : l.toFinsupp n = l.nthLe n hn :=
   getD_eq_get _ _ _
 #align list.to_finsupp_apply_lt List.toFinsupp_apply_lt'
 
-theorem toFinsupp_apply_le (hn : l.length ≤ n) : l.toFinsupp n = 0 :=
+lemma toFinsupp_apply_le (hn : l.length ≤ n) : l.toFinsupp n = 0 :=
   getD_eq_default _ _ hn
 #align list.to_finsupp_apply_le List.toFinsupp_apply_le
 
@@ -89,19 +89,19 @@ lemma toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
   simp
 #align list.to_finsupp_nil List.toFinsupp_nil
 
-theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
+lemma toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
   ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
 #align list.to_finsupp_singleton List.toFinsupp_singleton
 
 @[simp]
-theorem toFinsupp_cons_apply_zero (x : M) (xs : List M)
+lemma toFinsupp_cons_apply_zero (x : M) (xs : List M)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] : (x::xs).toFinsupp 0 = x :=
   rfl
 #align list.to_finsupp_cons_apply_zero List.toFinsupp_cons_apply_zero
 
 @[simp]
-theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
+lemma toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
     (x::xs).toFinsupp n.succ = xs.toFinsupp n :=
   rfl

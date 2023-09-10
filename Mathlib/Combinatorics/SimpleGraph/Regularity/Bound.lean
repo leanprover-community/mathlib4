@@ -121,11 +121,11 @@ lemma one_le_m_coe [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ ca
   Nat.one_le_cast.2 <| m_pos hPα
 #align szemeredi_regularity.one_le_m_coe SzemerediRegularity.one_le_m_coe
 
-theorem eps_pow_five_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : ↑0 < ε ^ 5 :=
+lemma eps_pow_five_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : ↑0 < ε ^ 5 :=
   pos_of_mul_pos_right ((by norm_num : (0 : ℝ) < 100).trans_le hPε) <| pow_nonneg (by norm_num) _
 #align szemeredi_regularity.eps_pow_five_pos SzemerediRegularity.eps_pow_five_pos
 
-theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
+lemma eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by norm_num)).mp (eps_pow_five_pos hPε)
 #align szemeredi_regularity.eps_pos SzemerediRegularity.eps_pos
 
@@ -153,13 +153,13 @@ lemma a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
   exact Nat.le_pred_of_lt (Nat.lt_div_mul_add h)
 #align szemeredi_regularity.a_add_one_le_four_pow_parts_card SzemerediRegularity.a_add_one_le_four_pow_parts_card
 
-theorem card_aux₁ (hucard : u.card = m * 4 ^ P.parts.card + a) :
+lemma card_aux₁ (hucard : u.card = m * 4 ^ P.parts.card + a) :
     (4 ^ P.parts.card - a) * m + a * (m + 1) = u.card := by
   rw [hucard, mul_add, mul_one, ← add_assoc, ← add_mul,
     Nat.sub_add_cancel ((Nat.le_succ _).trans a_add_one_le_four_pow_parts_card), mul_comm]
 #align szemeredi_regularity.card_aux₁ SzemerediRegularity.card_aux₁
 
-theorem card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts)
+lemma card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts)
     (hucard : ¬u.card = m * 4 ^ P.parts.card + a) :
     (4 ^ P.parts.card - (a + 1)) * m + (a + 1) * (m + 1) = u.card := by
   have : m * 4 ^ P.parts.card ≤ card α / P.parts.card := by
@@ -171,7 +171,7 @@ theorem card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts)
     Nat.add_sub_of_le this, card_univ]
 #align szemeredi_regularity.card_aux₂ SzemerediRegularity.card_aux₂
 
-theorem pow_mul_m_le_card_part (hP : P.IsEquipartition) (hu : u ∈ P.parts) :
+lemma pow_mul_m_le_card_part (hP : P.IsEquipartition) (hu : u ∈ P.parts) :
     (4 : ℝ) ^ P.parts.card * m ≤ u.card := by
   norm_cast
   rw [stepBound, ← Nat.div_div_eq_div_mul]
@@ -230,14 +230,14 @@ lemma bound_pos : 0 < bound ε l :=
 variable {ι 𝕜 : Type*} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [DecidableRel r] {s t : Finset ι}
   {x : 𝕜}
 
-theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i in s, f i) / s.card) ^ 2)
+lemma mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i in s, f i) / s.card) ^ 2)
     (hs' : (s.card : 𝕜) ≠ 0) : (s.card : 𝕜) * x ^ 2 ≤ ∑ i in t, f i ^ 2 :=
   (mul_le_mul_of_nonneg_left (hs.trans sum_div_card_sq_le_sum_sq_div_card) <|
     Nat.cast_nonneg _).trans <| (mul_div_cancel' _ hs').le.trans <|
       sum_le_sum_of_subset_of_nonneg hst fun _ _ _ => sq_nonneg _
 #align szemeredi_regularity.mul_sq_le_sum_sq SzemerediRegularity.mul_sq_le_sum_sq
 
-theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) (hx : 0 ≤ x)
+lemma add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) (hx : 0 ≤ x)
     (hs : x ≤ |(∑ i in s, f i) / s.card - (∑ i in t, f i) / t.card|)
     (ht : d ≤ ((∑ i in t, f i) / t.card) ^ 2) :
     d + s.card / t.card * x ^ 2 ≤ (∑ i in t, f i ^ 2) / t.card := by

@@ -88,7 +88,7 @@ instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
 
 variable {S}
 
-theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
+lemma coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
 #align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
 
@@ -96,12 +96,12 @@ instance (s : S) : RatCast s :=
   ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
 
 @[simp]
-theorem coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
+lemma coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
   rfl
 #align subfield_class.coe_rat_cast SubfieldClass.coe_rat_cast
 
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
-theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
+lemma rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
 #align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
 
@@ -109,7 +109,7 @@ instance (s : S) : SMul ℚ s :=
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
 
 @[simp]
-theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : (a • x : K) = a • (x : K) :=
+lemma coe_rat_smul (s : S) (a : ℚ) (x : s) : (a • x : K) = a • (x : K) :=
   rfl
 #align subfield_class.coe_rat_smul SubfieldClass.coe_rat_smul
 
@@ -186,7 +186,7 @@ lemma mem_mk {S : Subring K} {x : K} (h) : x ∈ (⟨S, h⟩ : Subfield K) ↔ x
 #align subfield.mem_mk Subfield.mem_mk
 
 @[simp]
-theorem coe_set_mk (S : Subring K) (h) : ((⟨S, h⟩ : Subfield K) : Set K) = S :=
+lemma coe_set_mk (S : Subring K) (h) : ((⟨S, h⟩ : Subfield K) : Set K) = S :=
   rfl
 #align subfield.coe_set_mk Subfield.coe_set_mk
 
@@ -211,21 +211,21 @@ protected def copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : Subfield K :=
 #align subfield.copy Subfield.copy
 
 @[simp]
-theorem coe_copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : (S.copy s hs : Set K) = s :=
+lemma coe_copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : (S.copy s hs : Set K) = s :=
   rfl
 #align subfield.coe_copy Subfield.coe_copy
 
-theorem copy_eq (S : Subfield K) (s : Set K) (hs : s = ↑S) : S.copy s hs = S :=
+lemma copy_eq (S : Subfield K) (s : Set K) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 #align subfield.copy_eq Subfield.copy_eq
 
 @[simp]
-theorem coe_toSubring (s : Subfield K) : (s.toSubring : Set K) = s :=
+lemma coe_toSubring (s : Subfield K) : (s.toSubring : Set K) = s :=
   rfl
 #align subfield.coe_to_subring Subfield.coe_toSubring
 
 @[simp]
-theorem mem_toSubring (s : Subfield K) (x : K) : x ∈ s.toSubring ↔ x ∈ s :=
+lemma mem_toSubring (s : Subfield K) (x : K) : x ∈ s.toSubring ↔ x ∈ s :=
   Iff.rfl
 #align subfield.mem_to_subring Subfield.mem_toSubring
 
@@ -293,12 +293,12 @@ protected lemma list_sum_mem {l : List K} : (∀ x ∈ l, x ∈ s) → l.sum ∈
 #align subfield.list_sum_mem Subfield.list_sum_mem
 
 /-- Product of a multiset of elements in a subfield is in the subfield. -/
-protected theorem multiset_prod_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=
+protected lemma multiset_prod_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=
   multiset_prod_mem m
 #align subfield.multiset_prod_mem Subfield.multiset_prod_mem
 
 /-- Sum of a multiset of elements in a `Subfield` is in the `Subfield`. -/
-protected theorem multiset_sum_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
+protected lemma multiset_sum_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
   multiset_sum_mem m
 #align subfield.multiset_sum_mem Subfield.multiset_sum_mem
 
@@ -322,7 +322,7 @@ protected lemma zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 #align subfield.zsmul_mem Subfield.zsmul_mem
 
-protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
+protected lemma coe_int_mem (n : ℤ) : (n : K) ∈ s :=
   coe_int_mem s n
 #align subfield.coe_int_mem Subfield.coe_int_mem
 
@@ -360,32 +360,32 @@ instance toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : Line
 #align subfield.to_linear_ordered_field Subfield.toLinearOrderedField
 
 @[simp, norm_cast]
-theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
+lemma coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
   rfl
 #align subfield.coe_add Subfield.coe_add
 
 @[simp, norm_cast]
-theorem coe_sub (x y : s) : (↑(x - y) : K) = ↑x - ↑y :=
+lemma coe_sub (x y : s) : (↑(x - y) : K) = ↑x - ↑y :=
   rfl
 #align subfield.coe_sub Subfield.coe_sub
 
 @[simp, norm_cast]
-theorem coe_neg (x : s) : (↑(-x) : K) = -↑x :=
+lemma coe_neg (x : s) : (↑(-x) : K) = -↑x :=
   rfl
 #align subfield.coe_neg Subfield.coe_neg
 
 @[simp, norm_cast]
-theorem coe_mul (x y : s) : (↑(x * y) : K) = ↑x * ↑y :=
+lemma coe_mul (x y : s) : (↑(x * y) : K) = ↑x * ↑y :=
   rfl
 #align subfield.coe_mul Subfield.coe_mul
 
 @[simp, norm_cast]
-theorem coe_div (x y : s) : (↑(x / y) : K) = ↑x / ↑y :=
+lemma coe_div (x y : s) : (↑(x / y) : K) = ↑x / ↑y :=
   rfl
 #align subfield.coe_div Subfield.coe_div
 
 @[simp, norm_cast]
-theorem coe_inv (x : s) : (↑x⁻¹ : K) = (↑x)⁻¹ :=
+lemma coe_inv (x : s) : (↑x⁻¹ : K) = (↑x)⁻¹ :=
   rfl
 #align subfield.coe_inv Subfield.coe_inv
 
@@ -415,7 +415,7 @@ lemma coe_subtype : ⇑(s.subtype) = ((↑) : s → K)  :=
   rfl
 #align subfield.coe_subtype Subfield.coe_subtype
 
-theorem toSubring_subtype_eq_subtype (F : Type*) [Field F] (S : Subfield F) :
+lemma toSubring_subtype_eq_subtype (F : Type*) [Field F] (S : Subfield F) :
     S.toSubring.subtype = S.subtype :=
   rfl
 #align subfield.to_subring.subtype_eq_subtype Subfield.toSubring_subtype_eq_subtype
@@ -454,7 +454,7 @@ instance : Inhabited (Subfield K) :=
   ⟨⊤⟩
 
 @[simp]
-theorem mem_top (x : K) : x ∈ (⊤ : Subfield K) :=
+lemma mem_top (x : K) : x ∈ (⊤ : Subfield K) :=
   Set.mem_univ x
 #align subfield.mem_top Subfield.mem_top
 
@@ -484,7 +484,7 @@ def comap (s : Subfield L) : Subfield K :=
 #align subfield.comap Subfield.comap
 
 @[simp]
-theorem coe_comap (s : Subfield L) : (s.comap f : Set K) = f ⁻¹' s :=
+lemma coe_comap (s : Subfield L) : (s.comap f : Set K) = f ⁻¹' s :=
   rfl
 #align subfield.coe_comap Subfield.coe_comap
 
@@ -493,7 +493,7 @@ lemma mem_comap {s : Subfield L} {f : K →+* L} {x : K} : x ∈ s.comap f ↔ f
   Iff.rfl
 #align subfield.mem_comap Subfield.mem_comap
 
-theorem comap_comap (s : Subfield M) (g : L →+* M) (f : K →+* L) :
+lemma comap_comap (s : Subfield M) (g : L →+* M) (f : K →+* L) :
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 #align subfield.comap_comap Subfield.comap_comap
@@ -520,7 +520,7 @@ lemma mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x
   simp only [mem_mk, Subring.mem_mk, Subring.mem_toSubsemiring, Subring.mem_map, mem_toSubring]
 #align subfield.mem_map Subfield.mem_map
 
-theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
+lemma map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
 #align subfield.map_map Subfield.map_map
 
@@ -529,7 +529,7 @@ lemma map_le_iff_le_comap {f : K →+* L} {s : Subfield K} {t : Subfield L} :
   Set.image_subset_iff
 #align subfield.map_le_iff_le_comap Subfield.map_le_iff_le_comap
 
-theorem gc_map_comap (f : K →+* L) : GaloisConnection (map f) (comap f) := fun _ _ =>
+lemma gc_map_comap (f : K →+* L) : GaloisConnection (map f) (comap f) := fun _ _ =>
   map_le_iff_le_comap
 #align subfield.gc_map_comap Subfield.gc_map_comap
 
@@ -589,7 +589,7 @@ instance : Inf (Subfield K) :=
           ⟨s.inv_mem (Subring.mem_inf.mp hx).1, t.inv_mem (Subring.mem_inf.mp hx).2⟩ }⟩
 
 @[simp]
-theorem coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p.carrier ∩ p'.carrier :=
+lemma coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p.carrier ∩ p'.carrier :=
   rfl
 #align subfield.coe_inf Subfield.coe_inf
 
@@ -608,7 +608,7 @@ instance : InfSet (Subfield K) :=
         exact p.inv_mem (Subring.mem_sInf.mp hx p.toSubring ⟨p, p_mem, rfl⟩) }⟩
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
+lemma coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
   show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
     ext x
     rw [Subring.coe_sInf, Set.mem_iInter, Set.mem_iInter]
@@ -624,7 +624,7 @@ lemma mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x 
 #align subfield.mem_Inf Subfield.mem_sInf
 
 @[simp]
-theorem sInf_toSubring (s : Set (Subfield K)) :
+lemma sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
   rw [mem_toSubring, mem_sInf]
@@ -638,7 +638,7 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
               Subring.mem_sInf.mpr fun p' ⟨_, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
 #align subfield.Inf_to_subring Subfield.sInf_toSubring
 
-theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
+lemma isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
   refine' IsGLB.of_image this _
   convert isGLB_biInf (s := S) (f := SetLike.coe)
@@ -689,7 +689,7 @@ lemma mem_closure_iff {s : Set K} {x} :
   simp only [closure, exists_prop, Set.mem_setOf_eq]
 #align subfield.mem_closure_iff Subfield.mem_closure_iff
 
-theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring := fun x hx =>
+lemma subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring := fun x hx =>
   ⟨x, hx, 1, Subring.one_mem _, div_one x⟩
 #align subfield.subring_closure_le Subfield.subring_closure_le
 
@@ -755,7 +755,7 @@ protected def gi : GaloisInsertion (@closure K _) (↑) where
 variable {K}
 
 /-- Closure of a subfield `S` equals `S`. -/
-theorem closure_eq (s : Subfield K) : closure (s : Set K) = s :=
+lemma closure_eq (s : Subfield K) : closure (s : Set K) = s :=
   (Subfield.gi K).l_u_eq s
 #align subfield.closure_eq Subfield.closure_eq
 
@@ -769,7 +769,7 @@ lemma closure_univ : closure (Set.univ : Set K) = ⊤ :=
   @coe_top K _ ▸ closure_eq ⊤
 #align subfield.closure_univ Subfield.closure_univ
 
-theorem closure_union (s t : Set K) : closure (s ∪ t) = closure s ⊔ closure t :=
+lemma closure_union (s t : Set K) : closure (s ∪ t) = closure s ⊔ closure t :=
   (Subfield.gi K).gc.l_sup
 #align subfield.closure_union Subfield.closure_union
 
@@ -777,11 +777,11 @@ lemma closure_iUnion {ι} (s : ι → Set K) : closure (⋃ i, s i) = ⨆ i, clo
   (Subfield.gi K).gc.l_iSup
 #align subfield.closure_Union Subfield.closure_iUnion
 
-theorem closure_sUnion (s : Set (Set K)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
+lemma closure_sUnion (s : Set (Set K)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (Subfield.gi K).gc.l_sSup
 #align subfield.closure_sUnion Subfield.closure_sUnion
 
-theorem map_sup (s t : Subfield K) (f : K →+* L) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
+lemma map_sup (s t : Subfield K) (f : K →+* L) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
   (gc_map_comap f).l_sup
 #align subfield.map_sup Subfield.map_sup
 
@@ -790,7 +790,7 @@ lemma map_iSup {ι : Sort*} (f : K →+* L) (s : ι → Subfield K) :
   (gc_map_comap f).l_iSup
 #align subfield.map_supr Subfield.map_iSup
 
-theorem comap_inf (s t : Subfield L) (f : K →+* L) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
+lemma comap_inf (s t : Subfield L) (f : K →+* L) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
 #align subfield.comap_inf Subfield.comap_inf
 
@@ -800,12 +800,12 @@ lemma comap_iInf {ι : Sort*} (f : K →+* L) (s : ι → Subfield L) :
 #align subfield.comap_infi Subfield.comap_iInf
 
 @[simp]
-theorem map_bot (f : K →+* L) : (⊥ : Subfield K).map f = ⊥ :=
+lemma map_bot (f : K →+* L) : (⊥ : Subfield K).map f = ⊥ :=
   (gc_map_comap f).l_bot
 #align subfield.map_bot Subfield.map_bot
 
 @[simp]
-theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
+lemma comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top
 #align subfield.comap_top Subfield.comap_top
 
@@ -861,7 +861,7 @@ def rangeRestrictField (f : K →+* L) : K →+* f.fieldRange :=
 #align ring_hom.range_restrict_field RingHom.rangeRestrictField
 
 @[simp]
-theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x : L) = f x :=
+lemma coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x : L) = f x :=
   rfl
 #align ring_hom.coe_range_restrict_field RingHom.coe_rangeRestrictField
 
@@ -888,14 +888,14 @@ lemma eq_of_eqOn_of_field_closure_eq_top {s : Set K} (hs : closure s = ⊤) {f g
   eq_of_eqOn_subfield_top <| hs ▸ eqOn_field_closure h
 #align ring_hom.eq_of_eq_on_of_field_closure_eq_top RingHom.eq_of_eqOn_of_field_closure_eq_top
 
-theorem field_closure_preimage_le (f : K →+* L) (s : Set L) :
+lemma field_closure_preimage_le (f : K →+* L) (s : Set L) :
     closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 #align ring_hom.field_closure_preimage_le RingHom.field_closure_preimage_le
 
 /-- The image under a ring homomorphism of the subfield generated by a set equals
 the subfield generated by the image of the set. -/
-theorem map_field_closure (f : K →+* L) (s : Set K) : (closure s).map f = closure (f '' s) :=
+lemma map_field_closure (f : K →+* L) (s : Set K) : (closure s).map f = closure (f '' s) :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       le_trans (closure_mono <| Set.subset_preimage_image _ _) (field_closure_preimage_le _ _))
@@ -914,7 +914,7 @@ def inclusion {S T : Subfield K} (h : S ≤ T) : S →+* T :=
 #align subfield.inclusion Subfield.inclusion
 
 @[simp]
-theorem fieldRange_subtype (s : Subfield K) : s.subtype.fieldRange = s :=
+lemma fieldRange_subtype (s : Subfield K) : s.subtype.fieldRange = s :=
   SetLike.ext' <| (coe_rangeS _).trans Subtype.range_coe
 #align subfield.field_range_subtype Subfield.fieldRange_subtype
 
@@ -938,7 +938,7 @@ namespace Subfield
 
 variable {s : Set K}
 
-theorem closure_preimage_le (f : K →+* L) (s : Set L) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
+lemma closure_preimage_le (f : K →+* L) (s : Set L) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 #align subfield.closure_preimage_le Subfield.closure_preimage_le
 

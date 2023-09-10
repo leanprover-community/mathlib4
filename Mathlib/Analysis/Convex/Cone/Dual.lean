@@ -51,7 +51,7 @@ def Set.innerDualCone (s : Set H) : ConvexCone ℝ H where
 #align set.inner_dual_cone Set.innerDualCone
 
 @[simp]
-theorem mem_innerDualCone (y : H) (s : Set H) : y ∈ s.innerDualCone ↔ ∀ x ∈ s, 0 ≤ ⟪x, y⟫ :=
+lemma mem_innerDualCone (y : H) (s : Set H) : y ∈ s.innerDualCone ↔ ∀ x ∈ s, 0 ≤ ⟪x, y⟫ :=
   Iff.rfl
 #align mem_inner_dual_cone mem_innerDualCone
 
@@ -75,7 +75,7 @@ lemma innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
   exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
 #align inner_dual_cone_univ innerDualCone_univ
 
-theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
+lemma innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.innerDualCone :=
   fun _ hy x hx => hy x (h hx)
 #align inner_dual_cone_le_inner_dual_cone innerDualCone_le_innerDualCone
 
@@ -84,18 +84,18 @@ lemma pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `fun y ↦ ⟪x, y⟫`. -/
-theorem innerDualCone_singleton (x : H) :
+lemma innerDualCone_singleton (x : H) :
     ({x} : Set H).innerDualCone = (ConvexCone.positive ℝ ℝ).comap (innerₛₗ ℝ x) :=
   ConvexCone.ext fun _ => forall_eq
 #align inner_dual_cone_singleton innerDualCone_singleton
 
-theorem innerDualCone_union (s t : Set H) :
+lemma innerDualCone_union (s t : Set H) :
     (s ∪ t).innerDualCone = s.innerDualCone ⊓ t.innerDualCone :=
   le_antisymm (le_inf (fun _ hx _ hy => hx _ <| Or.inl hy) fun _ hx _ hy => hx _ <| Or.inr hy)
     fun _ hx _ => Or.rec (hx.1 _) (hx.2 _)
 #align inner_dual_cone_union innerDualCone_union
 
-theorem innerDualCone_insert (x : H) (s : Set H) :
+lemma innerDualCone_insert (x : H) (s : Set H) :
     (insert x s).innerDualCone = Set.innerDualCone {x} ⊓ s.innerDualCone := by
   rw [insert_eq, innerDualCone_union]
 #align inner_dual_cone_insert innerDualCone_insert
@@ -109,7 +109,7 @@ lemma innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
   exact hx _ _ hj
 #align inner_dual_cone_Union innerDualCone_iUnion
 
-theorem innerDualCone_sUnion (S : Set (Set H)) :
+lemma innerDualCone_sUnion (S : Set (Set H)) :
     (⋃₀ S).innerDualCone = sInf (Set.innerDualCone '' S) := by
   simp_rw [sInf_image, sUnion_eq_biUnion, innerDualCone_iUnion]
 #align inner_dual_cone_sUnion innerDualCone_sUnion
@@ -134,7 +134,7 @@ lemma isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
 
 #align is_closed_inner_dual_cone isClosed_innerDualCone
 
-theorem ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
+lemma ConvexCone.pointed_of_nonempty_of_isClosed (K : ConvexCone ℝ H) (ne : (K : Set H).Nonempty)
     (hc : IsClosed (K : Set H)) : K.Pointed := by
   obtain ⟨x, hx⟩ := ne
   let f : ℝ → H := (· • x)
@@ -160,7 +160,7 @@ variable [CompleteSpace H]
 
 /-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
 is also the geometric interpretation of Farkas' lemma. -/
-theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : ConvexCone ℝ H)
+lemma ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) {b : H} (disj : b ∉ K) :
     ∃ y : H, (∀ x : H, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ) ∧ ⟪y, b⟫_ℝ < 0 := by
   -- let `z` be the point in `K` closest to `b`
@@ -195,7 +195,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
 #align convex_cone.hyperplane_separation_of_nonempty_of_is_closed_of_nmem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem
 
 /-- The inner dual of inner dual of a non-empty, closed convex cone is itself.  -/
-theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
+lemma ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :
     ((K : Set H).innerDualCone : Set H).innerDualCone = K := by
   ext x

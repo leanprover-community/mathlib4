@@ -106,13 +106,13 @@ lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
 
 /-- Given any distinguished triangle `T`, then we know `T.rotate` is also distinguished.
 -/
-theorem rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=
+lemma rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) : T.rotate ∈ distTriang C :=
   (rotate_distinguished_triangle T).mp H
 #align category_theory.pretriangulated.rot_of_dist_triangle CategoryTheory.Pretriangulated.rot_of_dist_triangle
 
 /-- Given any distinguished triangle `T`, then we know `T.inv_rotate` is also distinguished.
 -/
-theorem inv_rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) :
+lemma inv_rot_of_dist_triangle (T : Triangle C) (H : T ∈ distTriang C) :
     T.invRotate ∈ distTriang C :=
   (rotate_distinguished_triangle T.invRotate).mpr
     (isomorphic_distinguished T H T.invRotate.rotate (invRotCompRot.app T))
@@ -127,7 +127,7 @@ the composition `f ≫ g = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
-theorem comp_dist_triangle_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
+lemma comp_dist_triangle_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl
@@ -143,7 +143,7 @@ the composition `g ≫ h = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
-theorem comp_dist_triangle_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
+lemma comp_dist_triangle_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
   T.mor₂ ≫ T.mor₃ = 0 :=
   comp_dist_triangle_mor_zero₁₂ T.rotate (rot_of_dist_triangle T H)
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₂₃
@@ -157,7 +157,7 @@ the composition `h ≫ f⟦1⟧ = 0`.
 See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
-theorem comp_dist_triangle_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
+lemma comp_dist_triangle_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₃ ≫ (shiftEquiv C 1).functor.map T.mor₁ = 0 := by
   have H₂ := rot_of_dist_triangle T.rotate (rot_of_dist_triangle T H)
   simpa using comp_dist_triangle_mor_zero₁₂ T.rotate.rotate H₂

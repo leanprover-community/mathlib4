@@ -120,7 +120,7 @@ def RemoveNone.fiber (a : Option α) : Set (Perm α) :=
   { f : Perm α | (a, f) ∈ Equiv.Perm.decomposeOption '' derangements (Option α) }
 #align derangements.equiv.remove_none.fiber derangements.Equiv.RemoveNone.fiber
 
-theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
+lemma RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
     f ∈ RemoveNone.fiber a ↔
       ∃ F : Perm (Option α), F ∈ derangements (Option α) ∧ F none = a ∧ removeNone F = f :=
   by simp [RemoveNone.fiber, derangements]
@@ -136,7 +136,7 @@ lemma RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
 
 /-- For any `a : α`, the fiber over `some a` is the set of permutations
     where `a` is the only possible fixed point. -/
-theorem RemoveNone.fiber_some (a : α) :
+lemma RemoveNone.fiber_some (a : α) :
     RemoveNone.fiber (some a) = { f : Perm α | fixedPoints f ⊆ {a} } := by
   ext f
   constructor

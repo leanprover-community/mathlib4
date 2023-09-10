@@ -84,7 +84,7 @@ def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
   transferNatTrans (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 #align category_theory.exp_comparison CategoryTheory.expComparison
 
-theorem expComparison_ev (A B : C) :
+lemma expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert transferNatTrans_counit _ _ (prodComparisonNatIso F A).inv B using 2
@@ -92,7 +92,7 @@ theorem expComparison_ev (A B : C) :
   simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
 #align category_theory.exp_comparison_ev CategoryTheory.expComparison_ev
 
-theorem coev_expComparison (A B : C) :
+lemma coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_transferNatTrans _ _ (prodComparisonNatIso F A).inv B using 3
@@ -101,7 +101,7 @@ theorem coev_expComparison (A B : C) :
   simp
 #align category_theory.coev_exp_comparison CategoryTheory.coev_expComparison
 
-theorem uncurry_expComparison (A B : C) :
+lemma uncurry_expComparison (A B : C) :
     CartesianClosed.uncurry ((expComparison F A).app B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) :=
   by rw [uncurry_eq, expComparison_ev]
@@ -129,7 +129,7 @@ class CartesianClosedFunctor : Prop where
 
 attribute [instance] CartesianClosedFunctor.comparison_iso
 
-theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
+lemma frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     transferNatTransSelf (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) =
       expComparison F A := by
@@ -157,7 +157,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
 If the exponential comparison transformation (at `A`) is an isomorphism, then the Frobenius morphism
 at `A` is an isomorphism.
 -/
-theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
+lemma frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
   exact @transferNatTransSelf_of_iso _ _ _ _ _ _ _ _ _ _ _ i
@@ -167,7 +167,7 @@ theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
 If the Frobenius morphism at `A` is an isomorphism, then the exponential comparison transformation
 (at `A`) is an isomorphism.
 -/
-theorem expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
+lemma expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
     [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A) := by
   rw [← frobeniusMorphism_mate F h]; infer_instance
 #align category_theory.exp_comparison_iso_of_frobenius_morphism_iso CategoryTheory.expComparison_iso_of_frobeniusMorphism_iso
@@ -178,7 +178,7 @@ cartesian closed.
 TODO: Show the converse, that if `F` is cartesian closed and its left adjoint preserves binary
 products, then it is full and faithful.
 -/
-theorem cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [Full F] [Faithful F]
+lemma cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [Full F] [Faithful F]
     [PreservesLimitsOfShape (Discrete WalkingPair) L] : CartesianClosedFunctor F where
   comparison_iso _ := expComparison_iso_of_frobeniusMorphism_iso F h _
 #align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts

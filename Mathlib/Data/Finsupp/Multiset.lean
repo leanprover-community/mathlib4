@@ -42,16 +42,16 @@ lemma toMultiset_zero : toMultiset (0 : α →₀ ℕ) = 0 :=
   rfl
 #align finsupp.to_multiset_zero Finsupp.toMultiset_zero
 
-theorem toMultiset_add (m n : α →₀ ℕ) : toMultiset (m + n) = toMultiset m + toMultiset n :=
+lemma toMultiset_add (m n : α →₀ ℕ) : toMultiset (m + n) = toMultiset m + toMultiset n :=
   toMultiset.map_add m n
 #align finsupp.to_multiset_add Finsupp.toMultiset_add
 
-theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n • {a} :=
+lemma toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n • {a} :=
   rfl
 #align finsupp.to_multiset_apply Finsupp.toMultiset_apply
 
 @[simp]
-theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {a} := by
+lemma toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {a} := by
   rw [toMultiset_apply, sum_single_index]; apply zero_nsmul
 #align finsupp.to_multiset_single Finsupp.toMultiset_single
 
@@ -60,16 +60,16 @@ lemma toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
   map_sum Finsupp.toMultiset _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 
-theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
+lemma toMultiset_sum_single (s : Finset ι) (n : ℕ) :
     Finsupp.toMultiset (∑ i in s, single i n) = n • s.val := by
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
 #align finsupp.to_multiset_sum_single Finsupp.toMultiset_sum_single
 
-theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
+lemma card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
   simp [toMultiset_apply, map_finsupp_sum, Function.id_def]
 #align finsupp.card_to_multiset Finsupp.card_toMultiset
 
-theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
+lemma toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
   refine' f.induction _ _
   · rw [toMultiset_zero, Multiset.map_zero, mapDomain_zero, toMultiset_zero]
@@ -126,7 +126,7 @@ lemma toMultiset_inf [DecidableEq α] (f g : α →₀ ℕ) :
   simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply, inf_eq_min]
 
 @[simp]
-theorem mem_toMultiset (f : α →₀ ℕ) (i : α) : i ∈ toMultiset f ↔ i ∈ f.support := by
+lemma mem_toMultiset (f : α →₀ ℕ) (i : α) : i ∈ toMultiset f ↔ i ∈ f.support := by
   classical
   rw [← Multiset.count_ne_zero, Finsupp.count_toMultiset, Finsupp.mem_support_iff]
 #align finsupp.mem_to_multiset Finsupp.mem_toMultiset
@@ -155,27 +155,27 @@ def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
 #align multiset.to_finsupp Multiset.toFinsupp
 
 @[simp]
-theorem toFinsupp_support (s : Multiset α) : s.toFinsupp.support = s.toFinset := rfl
+lemma toFinsupp_support (s : Multiset α) : s.toFinsupp.support = s.toFinset := rfl
 #align multiset.to_finsupp_support Multiset.toFinsupp_support
 
 @[simp]
-theorem toFinsupp_apply (s : Multiset α) (a : α) : toFinsupp s a = s.count a := rfl
+lemma toFinsupp_apply (s : Multiset α) (a : α) : toFinsupp s a = s.count a := rfl
 #align multiset.to_finsupp_apply Multiset.toFinsupp_apply
 
 lemma toFinsupp_zero : toFinsupp (0 : Multiset α) = 0 := _root_.map_zero _
 #align multiset.to_finsupp_zero Multiset.toFinsupp_zero
 
-theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + toFinsupp t :=
+lemma toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + toFinsupp t :=
   toFinsupp.map_add s t
 #align multiset.to_finsupp_add Multiset.toFinsupp_add
 
 @[simp]
-theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 :=
+lemma toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 :=
   by ext; rw [toFinsupp_apply, count_singleton, Finsupp.single_eq_pi_single, Pi.single_apply]
 #align multiset.to_finsupp_singleton Multiset.toFinsupp_singleton
 
 @[simp]
-theorem toFinsupp_toMultiset (s : Multiset α) : Finsupp.toMultiset (toFinsupp s) = s :=
+lemma toFinsupp_toMultiset (s : Multiset α) : Finsupp.toMultiset (toFinsupp s) = s :=
   Multiset.toFinsupp.symm_apply_apply s
 #align multiset.to_finsupp_to_multiset Multiset.toFinsupp_toMultiset
 
@@ -184,11 +184,11 @@ lemma toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
   Multiset.toFinsupp.apply_eq_iff_symm_apply
 #align multiset.to_finsupp_eq_iff Multiset.toFinsupp_eq_iff
 
-theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
+lemma toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext
   simp [sup_eq_max]
 
-theorem toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s ⊓ toFinsupp t := by
+lemma toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s ⊓ toFinsupp t := by
   ext
   simp [inf_eq_min]
 
@@ -228,7 +228,7 @@ lemma toMultiset_strictMono : StrictMono (@toMultiset ι) :=
   by classical exact (@orderIsoMultiset ι _).strictMono
 #align finsupp.to_multiset_strict_mono Finsupp.toMultiset_strictMono
 
-theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by
+lemma sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by
   rw [← card_toMultiset, ← card_toMultiset]
   apply Multiset.card_lt_of_lt
   exact toMultiset_strictMono h

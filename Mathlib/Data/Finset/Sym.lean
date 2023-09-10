@@ -91,7 +91,7 @@ lemma sym2_univ [Fintype α] : (univ : Finset α).sym2 = univ := by
 #align finset.sym2_univ Finset.sym2_univ
 
 @[simp]
-theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := by
+lemma sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := by
   rw [Finset.sym2, singleton_product_singleton, image_singleton, Sym2.diag, Quotient.mk']
 #align finset.sym2_singleton Finset.sym2_singleton
 
@@ -106,7 +106,7 @@ lemma diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_me
 #align finset.diag_mem_sym2_iff Finset.diag_mem_sym2_iff
 
 @[simp]
-theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := fun _m he ↦
+lemma sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := fun _m he ↦
   mem_sym2_iff.2 fun _a ha ↦ h <| mem_sym2_iff.1 he _ ha
 #align finset.sym2_mono Finset.sym2_mono
 
@@ -161,26 +161,26 @@ lemma mem_sym_iff : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
 #align finset.mem_sym_iff Finset.mem_sym_iff
 
 @[simp]
-theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
+lemma sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 #align finset.sym_empty Finset.sym_empty
 
-theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=
+lemma replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=
   mem_sym_iff.2 fun b hb ↦ by rwa [(Sym.mem_replicate.1 hb).2]
 #align finset.replicate_mem_sym Finset.replicate_mem_sym
 
-protected theorem Nonempty.sym (h : s.Nonempty) (n : ℕ) : (s.sym n).Nonempty :=
+protected lemma Nonempty.sym (h : s.Nonempty) (n : ℕ) : (s.sym n).Nonempty :=
   let ⟨_a, ha⟩ := h
   ⟨_, replicate_mem_sym ha n⟩
 #align finset.nonempty.sym Finset.Nonempty.sym
 
 @[simp]
-theorem sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).sym n = {Sym.replicate n a} :=
+lemma sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).sym n = {Sym.replicate n a} :=
   eq_singleton_iff_unique_mem.2
     ⟨replicate_mem_sym (mem_singleton.2 rfl) _, fun _s hs ↦
       Sym.eq_replicate_iff.2 fun _b hb ↦ eq_of_mem_singleton <| mem_sym_iff.1 hs _ hb⟩
 #align finset.sym_singleton Finset.sym_singleton
 
-theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
+lemma eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
   rw [← not_nonempty_iff_eq_empty] at h ⊢
   exact fun hs ↦ h (hs.sym _)
 #align finset.eq_empty_of_sym_eq_empty Finset.eq_empty_of_sym_eq_empty
@@ -207,28 +207,28 @@ lemma sym_univ [Fintype α] (n : ℕ) : (univ : Finset α).sym n = univ :=
 #align finset.sym_univ Finset.sym_univ
 
 @[simp]
-theorem sym_mono (h : s ⊆ t) (n : ℕ) : s.sym n ⊆ t.sym n := fun _m hm ↦
+lemma sym_mono (h : s ⊆ t) (n : ℕ) : s.sym n ⊆ t.sym n := fun _m hm ↦
   mem_sym_iff.2 fun _a ha ↦ h <| mem_sym_iff.1 hm _ ha
 #align finset.sym_mono Finset.sym_mono
 
 @[simp]
-theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).sym n = s.sym n ∩ t.sym n := by
+lemma sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).sym n = s.sym n ∩ t.sym n := by
   ext m
   simp only [mem_inter, mem_sym_iff, imp_and, forall_and]
 #align finset.sym_inter Finset.sym_inter
 
 @[simp]
-theorem sym_union (s t : Finset α) (n : ℕ) : s.sym n ∪ t.sym n ⊆ (s ∪ t).sym n :=
+lemma sym_union (s t : Finset α) (n : ℕ) : s.sym n ∪ t.sym n ⊆ (s ∪ t).sym n :=
   union_subset (sym_mono (subset_union_left s t) n) (sym_mono (subset_union_right s t) n)
 #align finset.sym_union Finset.sym_union
 
-theorem sym_fill_mem (a : α) {i : Fin (n + 1)} {m : Sym α (n - i)} (h : m ∈ s.sym (n - i)) :
+lemma sym_fill_mem (a : α) {i : Fin (n + 1)} {m : Sym α (n - i)} (h : m ∈ s.sym (n - i)) :
     m.fill a i ∈ (insert a s).sym n :=
   mem_sym_iff.2 fun b hb ↦
     mem_insert.2 <| (Sym.mem_fill_iff.1 hb).imp And.right <| mem_sym_iff.1 h b
 #align finset.sym_fill_mem Finset.sym_fill_mem
 
-theorem sym_filterNe_mem (a : α) (h : m ∈ s.sym n) :
+lemma sym_filterNe_mem (a : α) (h : m ∈ s.sym n) :
     (m.filterNe a).2 ∈ (Finset.erase s a).sym (n - (m.filterNe a).1) :=
   mem_sym_iff.2 fun b H ↦
     mem_erase.2 <| (Multiset.mem_filter.1 H).symm.imp Ne.symm <| mem_sym_iff.1 h b

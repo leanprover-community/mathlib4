@@ -118,12 +118,12 @@ lemma lift_zero : q.lift (0 : ℍ[R,c₁,c₂]) = 0 := by simp [lift]
 lemma lift_one : q.lift (1 : ℍ[R,c₁,c₂]) = 1 := by simp [lift]
 #align quaternion_algebra.basis.lift_one QuaternionAlgebra.Basis.lift_one
 
-theorem lift_add (x y : ℍ[R,c₁,c₂]) : q.lift (x + y) = q.lift x + q.lift y := by
+lemma lift_add (x y : ℍ[R,c₁,c₂]) : q.lift (x + y) = q.lift x + q.lift y := by
   simp [lift, add_smul]
   abel
 #align quaternion_algebra.basis.lift_add QuaternionAlgebra.Basis.lift_add
 
-theorem lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y := by
+lemma lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y := by
   simp only [lift, Algebra.algebraMap_eq_smul_one]
   simp_rw [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, one_mul, mul_one, smul_smul]
   simp only [i_mul_i, j_mul_j, i_mul_j, j_mul_i, i_mul_k, k_mul_i, k_mul_j, j_mul_k, k_mul_k]
@@ -136,7 +136,7 @@ theorem lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y
   abel
 #align quaternion_algebra.basis.lift_mul QuaternionAlgebra.Basis.lift_mul
 
-theorem lift_smul (r : R) (x : ℍ[R,c₁,c₂]) : q.lift (r • x) = r • q.lift x := by
+lemma lift_smul (r : R) (x : ℍ[R,c₁,c₂]) : q.lift (r • x) = r • q.lift x := by
   simp [lift, mul_smul, ← Algebra.smul_def]
 #align quaternion_algebra.basis.lift_smul QuaternionAlgebra.Basis.lift_smul
 

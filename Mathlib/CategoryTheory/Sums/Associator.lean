@@ -44,17 +44,17 @@ def associator : Sum (Sum C D) E ⥤ Sum C (Sum D E)
 #align category_theory.sum.associator CategoryTheory.sum.associator
 
 @[simp]
-theorem associator_obj_inl_inl (X) : (associator C D E).obj (inl (inl X)) = inl X :=
+lemma associator_obj_inl_inl (X) : (associator C D E).obj (inl (inl X)) = inl X :=
   rfl
 #align category_theory.sum.associator_obj_inl_inl CategoryTheory.sum.associator_obj_inl_inl
 
 @[simp]
-theorem associator_obj_inl_inr (X) : (associator C D E).obj (inl (inr X)) = inr (inl X) :=
+lemma associator_obj_inl_inr (X) : (associator C D E).obj (inl (inr X)) = inr (inl X) :=
   rfl
 #align category_theory.sum.associator_obj_inl_inr CategoryTheory.sum.associator_obj_inl_inr
 
 @[simp]
-theorem associator_obj_inr (X) : (associator C D E).obj (inr X) = inr (inr X) :=
+lemma associator_obj_inr (X) : (associator C D E).obj (inr X) = inr (inr X) :=
   rfl
 #align category_theory.sum.associator_obj_inr CategoryTheory.sum.associator_obj_inr
 
@@ -95,18 +95,18 @@ def inverseAssociator : Sum C (Sum D E) ⥤ Sum (Sum C D) E
 #align category_theory.sum.inverse_associator CategoryTheory.sum.inverseAssociator
 
 @[simp]
-theorem inverseAssociator_obj_inl (X) : (inverseAssociator C D E).obj (inl X) = inl (inl X) :=
+lemma inverseAssociator_obj_inl (X) : (inverseAssociator C D E).obj (inl X) = inl (inl X) :=
   rfl
 #align category_theory.sum.inverse_associator_obj_inl CategoryTheory.sum.inverseAssociator_obj_inl
 
 @[simp]
-theorem inverseAssociator_obj_inr_inl (X) :
+lemma inverseAssociator_obj_inr_inl (X) :
     (inverseAssociator C D E).obj (inr (inl X)) = inl (inr X) :=
   rfl
 #align category_theory.sum.inverse_associator_obj_inr_inl CategoryTheory.sum.inverseAssociator_obj_inr_inl
 
 @[simp]
-theorem inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (inr X)) = inr X :=
+lemma inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (inr X)) = inr X :=
   rfl
 #align category_theory.sum.inverse_associator_obj_inr_inr CategoryTheory.sum.inverseAssociator_obj_inr_inr
 

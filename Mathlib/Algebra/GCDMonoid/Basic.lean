@@ -109,11 +109,11 @@ def normalize : α →*₀ α where
         simp only [normUnit_mul hx hy, Units.val_mul]; simp only [mul_assoc, mul_left_comm y]
 #align normalize normalize
 
-theorem associated_normalize (x : α) : Associated x (normalize x) :=
+lemma associated_normalize (x : α) : Associated x (normalize x) :=
   ⟨_, rfl⟩
 #align associated_normalize associated_normalize
 
-theorem normalize_associated (x : α) : Associated (normalize x) x :=
+lemma normalize_associated (x : α) : Associated (normalize x) x :=
   (associated_normalize _).symm
 #align normalize_associated normalize_associated
 
@@ -125,12 +125,12 @@ lemma normalize_associated_iff {x y : α} : Associated (normalize x) y ↔ Assoc
   ⟨fun h => (associated_normalize _).trans h, fun h => (normalize_associated _).trans h⟩
 #align normalize_associated_iff normalize_associated_iff
 
-theorem Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
+lemma Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
   Associates.mk_eq_mk_iff_associated.2 (normalize_associated _)
 #align associates.mk_normalize Associates.mk_normalize
 
 @[simp]
-theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
+lemma normalize_apply (x : α) : normalize x = x * normUnit x :=
   rfl
 #align normalize_apply normalize_apply
 
@@ -146,7 +146,7 @@ lemma normalize_one : normalize (1 : α) = 1 :=
   normalize.map_one
 #align normalize_one normalize_one
 
-theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by simp
+lemma normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by simp
 #align normalize_coe_units normalize_coe_units
 
 lemma normalize_eq_zero {x : α} : normalize x = 0 ↔ x = 0 :=
@@ -160,14 +160,14 @@ lemma normalize_eq_one {x : α} : normalize x = 1 ↔ IsUnit x :=
 
 -- Porting note: quite slow. Improve performance?
 @[simp]
-theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
+lemma normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
   nontriviality α using Subsingleton.elim a 0
   obtain rfl | h := eq_or_ne a 0
   · rw [normUnit_zero, zero_mul, normUnit_zero]
   · rw [normUnit_mul h (Units.ne_zero _), normUnit_coe_units, mul_inv_eq_one]
 #align norm_unit_mul_norm_unit normUnit_mul_normUnit
 
-theorem normalize_idem (x : α) : normalize (normalize x) = normalize x := by simp
+lemma normalize_idem (x : α) : normalize (normalize x) = normalize x := by simp
 #align normalize_idem normalize_idem
 
 lemma normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
@@ -217,7 +217,7 @@ protected def out : Associates α → α :=
 #align associates.out Associates.out
 
 @[simp]
-theorem out_mk (a : α) : (Associates.mk a).out = normalize a :=
+lemma out_mk (a : α) : (Associates.mk a).out = normalize a :=
   rfl
 #align associates.out_mk Associates.out_mk
 
@@ -226,17 +226,17 @@ lemma out_one : (1 : Associates α).out = 1 :=
   normalize_one
 #align associates.out_one Associates.out_one
 
-theorem out_mul (a b : Associates α) : (a * b).out = a.out * b.out :=
+lemma out_mul (a b : Associates α) : (a * b).out = a.out * b.out :=
   Quotient.inductionOn₂ a b fun _ _ => by
     simp only [Associates.quotient_mk_eq_mk, out_mk, mk_mul_mk, normalize.map_mul]
 #align associates.out_mul Associates.out_mul
 
-theorem dvd_out_iff (a : α) (b : Associates α) : a ∣ b.out ↔ Associates.mk a ≤ b :=
+lemma dvd_out_iff (a : α) (b : Associates α) : a ∣ b.out ↔ Associates.mk a ≤ b :=
   Quotient.inductionOn b <| by
     simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd_iff]
 #align associates.dvd_out_iff Associates.dvd_out_iff
 
-theorem out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ Associates.mk a :=
+lemma out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ Associates.mk a :=
   Quotient.inductionOn b <| by
     simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd_iff]
 #align associates.out_dvd_iff Associates.out_dvd_iff
@@ -248,13 +248,13 @@ lemma out_top : (⊤ : Associates α).out = 0 :=
 
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
 @[simp 1100]
-theorem normalize_out (a : Associates α) :
+lemma normalize_out (a : Associates α) :
   normalize a.out = a.out :=
   Quotient.inductionOn a normalize_idem
 #align associates.normalize_out Associates.normalize_out
 
 @[simp]
-theorem mk_out (a : Associates α) : Associates.mk a.out = a :=
+lemma mk_out (a : Associates α) : Associates.mk a.out = a :=
   Quotient.inductionOn a mk_normalize
 #align associates.mk_out Associates.mk_out
 
@@ -948,13 +948,13 @@ instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (Normal
 #align subsingleton_normalized_gcd_monoid_of_unique_units subsingleton_normalizedGCDMonoid_of_unique_units
 
 @[simp]
-theorem normUnit_eq_one (x : α) : normUnit x = 1 :=
+lemma normUnit_eq_one (x : α) : normUnit x = 1 :=
   rfl
 #align norm_unit_eq_one normUnit_eq_one
 
 -- Porting note: `simp` can prove this
 -- @[simp]
-theorem normalize_eq (x : α) : normalize x = x :=
+lemma normalize_eq (x : α) : normalize x = x :=
   mul_one x
 #align normalize_eq normalize_eq
 

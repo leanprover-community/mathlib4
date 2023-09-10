@@ -108,7 +108,7 @@ lemma card_mul_eq_card_mul [∀ a b, Decidable (r a b)]
     card_mul_le_card_mul' _ (fun a ha ↦ (hn a ha).ge) fun b hb ↦ (hm b hb).le
 #align finset.card_mul_eq_card_mul Finset.card_mul_eq_card_mul
 
-theorem card_le_card_of_forall_subsingleton (hs : ∀ a ∈ s, ∃ b, b ∈ t ∧ r a b)
+lemma card_le_card_of_forall_subsingleton (hs : ∀ a ∈ s, ∃ b, b ∈ t ∧ r a b)
     (ht : ∀ b ∈ t, ({ a ∈ s | r a b } : Set α).Subsingleton) : s.card ≤ t.card := by
   classical
     rw [← mul_one s.card, ← mul_one t.card]
@@ -121,7 +121,7 @@ theorem card_le_card_of_forall_subsingleton (hs : ∀ a ∈ s, ∃ b, b ∈ t �
         exact ht _ h))
 #align finset.card_le_card_of_forall_subsingleton Finset.card_le_card_of_forall_subsingleton
 
-theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s ∧ r a b)
+lemma card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s ∧ r a b)
     (hs : ∀ a ∈ s, ({ b ∈ t | r a b } : Set β).Subsingleton) : t.card ≤ s.card :=
   card_le_card_of_forall_subsingleton (swap r) ht hs
 #align finset.card_le_card_of_forall_subsingleton' Finset.card_le_card_of_forall_subsingleton'
@@ -136,12 +136,12 @@ namespace Fintype
 
 variable [Fintype α] [Fintype β] {r : α → β → Prop}
 
-theorem card_le_card_of_leftTotal_unique (h₁ : LeftTotal r) (h₂ : LeftUnique r) :
+lemma card_le_card_of_leftTotal_unique (h₁ : LeftTotal r) (h₂ : LeftUnique r) :
     Fintype.card α ≤ Fintype.card β :=
   card_le_card_of_forall_subsingleton r (by simpa using h₁) fun b _ a₁ ha₁ a₂ ha₂ ↦ h₂ ha₁.2 ha₂.2
 #align fintype.card_le_card_of_left_total_unique Fintype.card_le_card_of_leftTotal_unique
 
-theorem card_le_card_of_rightTotal_unique (h₁ : RightTotal r) (h₂ : RightUnique r) :
+lemma card_le_card_of_rightTotal_unique (h₁ : RightTotal r) (h₂ : RightUnique r) :
     Fintype.card β ≤ Fintype.card α :=
   card_le_card_of_forall_subsingleton' r (by simpa using h₁) fun b _ a₁ ha₁ a₂ ha₂ ↦ h₂ ha₁.2 ha₂.2
 #align fintype.card_le_card_of_right_total_unique Fintype.card_le_card_of_rightTotal_unique

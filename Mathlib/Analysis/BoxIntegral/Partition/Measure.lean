@@ -42,11 +42,11 @@ namespace Box
 
 variable (I : Box ι)
 
-theorem measure_Icc_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ (Box.Icc I) < ∞ :=
+lemma measure_Icc_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ (Box.Icc I) < ∞ :=
   show μ (Icc I.lower I.upper) < ∞ from I.isCompact_Icc.measure_lt_top
 #align box_integral.box.measure_Icc_lt_top BoxIntegral.Box.measure_Icc_lt_top
 
-theorem measure_coe_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ I < ∞ :=
+lemma measure_coe_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ I < ∞ :=
   (measure_mono <| coe_subset_Icc).trans_lt (I.measure_Icc_lt_top μ)
 #align box_integral.box.measure_coe_lt_top BoxIntegral.Box.measure_coe_lt_top
 
@@ -118,13 +118,13 @@ open MeasureTheory
 namespace Box
 
 -- @[simp] -- Porting note: simp normal form is `volume_apply'`
-theorem volume_apply (I : Box ι) :
+lemma volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
   rw [Measure.toBoxAdditive_apply, coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
 #align box_integral.box.volume_apply BoxIntegral.Box.volume_apply
 
 @[simp]
-theorem volume_apply' (I : Box ι) :
+lemma volume_apply' (I : Box ι) :
     ((volume : Measure (ι → ℝ)) I).toReal = ∏ i, (I.upper i - I.lower i) := by
   rw [coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]
 

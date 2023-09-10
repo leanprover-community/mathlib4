@@ -79,7 +79,7 @@ lemma dickson_two : dickson k a 2 = X ^ 2 - C a * (3 - k : R[X]) := by
 #align polynomial.dickson_two Polynomial.dickson_two
 
 @[simp]
-theorem dickson_add_two (n : ℕ) :
+lemma dickson_add_two (n : ℕ) :
     dickson k a (n + 2) = X * dickson k a (n + 1) - C a * dickson k a n := by rw [dickson]
 #align polynomial.dickson_add_two Polynomial.dickson_add_two
 
@@ -92,7 +92,7 @@ lemma dickson_of_two_le {n : ℕ} (h : 2 ≤ n) :
 
 variable {k a}
 
-theorem map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dickson k (f a) n
+lemma map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dickson k (f a) n
   | 0 => by
     simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_nat_cast, Polynomial.map_ofNat]
   | 1 => by simp only [dickson_one, map_X]
@@ -126,7 +126,7 @@ There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial pol
 -/
 
 
-theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
+lemma dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     ∀ n, (dickson 1 (1 : R) n).eval (x + y) = x ^ n + y ^ n
   | 0 => by
     -- Porting note: Original proof was
@@ -174,7 +174,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The `(m * n)`-th Dickson polynomial of the first kind is the composition of the `m`-th and
 `n`-th. -/
-theorem dickson_one_one_mul (m n : ℕ) :
+lemma dickson_one_one_mul (m n : ℕ) :
     dickson 1 (1 : R) (m * n) = (dickson 1 1 m).comp (dickson 1 1 n) := by
   have h : (1 : R) = Int.castRingHom R 1
   simp only [eq_intCast, Int.cast_one]
@@ -191,12 +191,12 @@ theorem dickson_one_one_mul (m n : ℕ) :
   rw [mul_comp, C_comp, X_comp, ← mul_assoc, C_half_mul_two_eq_one, one_mul]
 #align polynomial.dickson_one_one_mul Polynomial.dickson_one_one_mul
 
-theorem dickson_one_one_comp_comm (m n : ℕ) :
+lemma dickson_one_one_comp_comm (m n : ℕ) :
     (dickson 1 (1 : R) m).comp (dickson 1 1 n) = (dickson 1 1 n).comp (dickson 1 1 m) := by
   rw [← dickson_one_one_mul, mul_comm, dickson_one_one_mul]
 #align polynomial.dickson_one_one_comp_comm Polynomial.dickson_one_one_comp_comm
 
-theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p) p = X ^ p := by
+lemma dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p) p = X ^ p := by
   -- Recall that `dickson_one_one_eval_add_inv` characterises `dickson 1 1 p`
   -- as a polynomial that maps `x + x⁻¹` to `x ^ p + (x⁻¹) ^ p`.
   -- Since `X ^ p` also satisfies this property in characteristic `p`,
@@ -265,7 +265,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         exact ⟨_, rfl, hx⟩
 #align polynomial.dickson_one_one_zmod_p Polynomial.dickson_one_one_zmod_p
 
-theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by
+lemma dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by
   have h : (1 : R) = ZMod.castHom (dvd_refl p) R 1
   simp only [ZMod.castHom_apply, ZMod.cast_one']
   rw [h, ← map_dickson (ZMod.castHom (dvd_refl p) R), dickson_one_one_zmod_p, Polynomial.map_pow,

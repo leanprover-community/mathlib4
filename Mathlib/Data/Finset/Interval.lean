@@ -72,7 +72,7 @@ lemma Iio_eq_ssubsets : Iio s = s.ssubsets :=
 
 variable {s t}
 
-theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) := by
+lemma Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) := by
   ext u
   simp_rw [mem_Icc, mem_image, mem_powerset]
   constructor
@@ -82,7 +82,7 @@ theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (
     exact ⟨le_sup_left, union_subset h <| hv.trans <| sdiff_subset _ _⟩
 #align finset.Icc_eq_image_powerset Finset.Icc_eq_image_powerset
 
-theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) := by
+lemma Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) := by
   ext u
   simp_rw [mem_Ico, mem_image, mem_ssubsets]
   constructor
@@ -93,7 +93,7 @@ theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (
 #align finset.Ico_eq_image_ssubsets Finset.Ico_eq_image_ssubsets
 
 /-- Cardinality of a non-empty `Icc` of finsets. -/
-theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
+lemma card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
   rw [← card_sdiff h, ← card_powerset, Icc_eq_image_powerset h, Finset.card_image_iff]
   rintro u hu v hv (huv : s ⊔ u = s ⊔ v)
   rw [mem_coe, mem_powerset] at hu hv
@@ -102,17 +102,17 @@ theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) :
 #align finset.card_Icc_finset Finset.card_Icc_finset
 
 /-- Cardinality of an `Ico` of finsets. -/
-theorem card_Ico_finset (h : s ⊆ t) : (Ico s t).card = 2 ^ (t.card - s.card) - 1 := by
+lemma card_Ico_finset (h : s ⊆ t) : (Ico s t).card = 2 ^ (t.card - s.card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc_finset h]
 #align finset.card_Ico_finset Finset.card_Ico_finset
 
 /-- Cardinality of an `Ioc` of finsets. -/
-theorem card_Ioc_finset (h : s ⊆ t) : (Ioc s t).card = 2 ^ (t.card - s.card) - 1 := by
+lemma card_Ioc_finset (h : s ⊆ t) : (Ioc s t).card = 2 ^ (t.card - s.card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc_finset h]
 #align finset.card_Ioc_finset Finset.card_Ioc_finset
 
 /-- Cardinality of an `Ioo` of finsets. -/
-theorem card_Ioo_finset (h : s ⊆ t) : (Ioo s t).card = 2 ^ (t.card - s.card) - 2 := by
+lemma card_Ioo_finset (h : s ⊆ t) : (Ioo s t).card = 2 ^ (t.card - s.card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc_finset h]
 #align finset.card_Ioo_finset Finset.card_Ioo_finset
 

@@ -86,7 +86,7 @@ protected lemma nonneg_of_pos {a : ℤ} : 0 < a → 0 ≤ a :=
 
 #align int.neg_succ_lt_zero Int.negSucc_lt_zero
 
-theorem zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n :=
+lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n :=
   @le.intro _ _ n (by rw [Int.zero_add, Int.coe_nat_eq])
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
@@ -111,11 +111,11 @@ protected lemma ne_of_nat_ne_nonneg_case {a b : ℤ} {n m : Nat} (ha : 0 ≤ a) 
    `Matlib/Init/Data/Int/Basic.lean` -/
 
 
-theorem natAbs_ofNat_core (n : ℕ) : natAbs (ofNat n) = n :=
+lemma natAbs_ofNat_core (n : ℕ) : natAbs (ofNat n) = n :=
   rfl
 #align int.nat_abs_of_nat_core Int.natAbs_ofNat_core
 
-theorem natAbs_of_negSucc (n : ℕ) : natAbs (negSucc n) = Nat.succ n :=
+lemma natAbs_of_negSucc (n : ℕ) : natAbs (negSucc n) = Nat.succ n :=
   rfl
 #align int.nat_abs_of_neg_succ_of_nat Int.natAbs_of_negSucc
 

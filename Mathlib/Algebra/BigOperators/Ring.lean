@@ -214,7 +214,7 @@ lemma dvd_sum {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f
 #align finset.dvd_sum Finset.dvd_sum
 
 @[norm_cast]
-theorem prod_natCast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=
+lemma prod_natCast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=
   (Nat.castRingHom β).map_prod f s
 #align finset.prod_nat_cast Finset.prod_natCast
 
@@ -224,7 +224,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R]
 
-theorem prod_range_cast_nat_sub (n k : ℕ) :
+lemma prod_range_cast_nat_sub (n k : ℕ) :
     ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
   cases' le_or_lt k n with hkn hnk

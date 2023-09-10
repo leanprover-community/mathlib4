@@ -34,7 +34,7 @@ namespace Counterexample
 Since we can't actually change the type of Lean's `Π` operator, we assume the existence of
 `pi`, `lam`, `app` and the `beta` rule equivalent to the `Π` and `app` constructors of type theory.
 -/
-theorem girard.{u} (pi : (Type u → Type u) → Type u)
+lemma girard.{u} (pi : (Type u → Type u) → Type u)
     (lam : ∀ {A : Type u → Type u}, (∀ x, A x) → pi A) (app : ∀ {A}, pi A → ∀ x, A x)
     (beta : ∀ {A : Type u → Type u} (f : ∀ x, A x) (x), app (lam f) x = f x) : False :=
   let F (X) := (Set (Set X) → X) → Set (Set X)

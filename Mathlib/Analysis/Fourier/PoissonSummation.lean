@@ -198,7 +198,7 @@ lemma isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
-theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
+lemma isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
       |x| ^ (-b) := by
@@ -252,7 +252,7 @@ end RpowDecay
 section Schwartz
 
 /-- **Poisson's summation formula** for Schwartz functions. -/
-theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 f = g) :
+lemma SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 f = g) :
     ∑' n : ℤ, f n = (∑' n : ℤ, g n) := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.

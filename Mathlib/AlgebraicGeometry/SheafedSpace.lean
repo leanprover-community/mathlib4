@@ -59,14 +59,14 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note : this is a syntactic tautology, so removed
 -- @[simp]
--- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
+-- lemma as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
 -- set_option linter.uppercaseLean3 false in
 #noalign algebraic_geometry.SheafedSpace.as_coe
 
 -- Porting note : this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]
-theorem mk_coe (carrier) (presheaf) (h) :
+lemma mk_coe (carrier) (presheaf) (h) :
   (({ carrier
       presheaf
       IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
@@ -122,19 +122,19 @@ section
 attribute [local simp] id comp
 
 @[simp]
-theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
+lemma id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_base AlgebraicGeometry.SheafedSpace.id_base
 
-theorem id_c (X : SheafedSpace C) :
+lemma id_c (X : SheafedSpace C) :
     (𝟙 X : X ⟶ X).c = eqToHom (Presheaf.Pushforward.id_eq X.presheaf).symm :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_c AlgebraicGeometry.SheafedSpace.id_c
 
 @[simp]
-theorem id_c_app (X : SheafedSpace C) (U) :
+lemma id_c_app (X : SheafedSpace C) (U) :
     (𝟙 X : X ⟶ X).c.app U = eqToHom (by aesop_cat) := by
   aesop_cat
 set_option linter.uppercaseLean3 false in
@@ -207,12 +207,12 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.Γ_def AlgebraicGeometry.SheafedSpace.Γ_def
 
 @[simp]
-theorem Γ_obj (X : (SheafedSpace C)ᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
+lemma Γ_obj (X : (SheafedSpace C)ᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.Γ_obj AlgebraicGeometry.SheafedSpace.Γ_obj
 
-theorem Γ_obj_op (X : SheafedSpace C) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
+lemma Γ_obj_op (X : SheafedSpace C) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.Γ_obj_op AlgebraicGeometry.SheafedSpace.Γ_obj_op

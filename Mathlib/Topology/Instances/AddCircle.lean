@@ -157,11 +157,11 @@ lemma coe_zsmul {n : ℤ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x :
   rfl
 #align add_circle.coe_zsmul AddCircle.coe_zsmul
 
-theorem coe_add (x y : 𝕜) : (↑(x + y) : AddCircle p) = (x : AddCircle p) + (y : AddCircle p) :=
+lemma coe_add (x y : 𝕜) : (↑(x + y) : AddCircle p) = (x : AddCircle p) + (y : AddCircle p) :=
   rfl
 #align add_circle.coe_add AddCircle.coe_add
 
-theorem coe_sub (x y : 𝕜) : (↑(x - y) : AddCircle p) = (x : AddCircle p) - (y : AddCircle p) :=
+lemma coe_sub (x y : 𝕜) : (↑(x - y) : AddCircle p) = (x : AddCircle p) - (y : AddCircle p) :=
   rfl
 #align add_circle.coe_sub AddCircle.coe_sub
 
@@ -173,7 +173,7 @@ lemma coe_eq_zero_iff {x : 𝕜} : (x : AddCircle p) = 0 ↔ ∃ n : ℤ, n • 
   simp [AddSubgroup.mem_zmultiples_iff]
 #align add_circle.coe_eq_zero_iff AddCircle.coe_eq_zero_iff
 
-theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
+lemma coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
   rw [coe_eq_zero_iff]
   constructor <;> rintro ⟨n, rfl⟩
@@ -192,7 +192,7 @@ lemma coe_period : (p : AddCircle p) = 0 :=
 simp can prove this:
   by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
 -/
-theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
+lemma coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
   rw [coe_add, ← eq_sub_iff_add_eq', sub_self, coe_period]
 #align add_circle.coe_add_period AddCircle.coe_add_period
 
@@ -327,13 +327,13 @@ def equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃+ AddCircle q 
 #align add_circle.equiv_add_circle AddCircle.equivAddCircle
 
 @[simp]
-theorem equivAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
+lemma equivAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
     equivAddCircle p q hp hq (x : 𝕜) = (x * (p⁻¹ * q) : 𝕜) :=
   rfl
 #align add_circle.equiv_add_circle_apply_mk AddCircle.equivAddCircle_apply_mk
 
 @[simp]
-theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
+lemma equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
     (equivAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
   rfl
 #align add_circle.equiv_add_circle_symm_apply_mk AddCircle.equivAddCircle_symm_apply_mk
@@ -345,7 +345,7 @@ section FloorRing
 variable [FloorRing 𝕜]
 
 @[simp]
-theorem coe_equivIco_mk_apply (x : 𝕜) :
+lemma coe_equivIco_mk_apply (x : 𝕜) :
     (equivIco p 0 <| QuotientAddGroup.mk x : 𝕜) = Int.fract (x / p) * p :=
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply

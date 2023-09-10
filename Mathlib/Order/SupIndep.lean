@@ -68,26 +68,26 @@ instance [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) := by
   have : Decidable (Disjoint (f i) (sup t f)) := decidable_of_iff' (_ = ⊥) disjoint_iff
   infer_instance
 
-theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun _ hu _ hi =>
+lemma SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun _ hu _ hi =>
   ht (hu.trans h) (h hi)
 #align finset.sup_indep.subset Finset.SupIndep.subset
 
-theorem supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _ a ha =>
+lemma supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _ a ha =>
   (not_mem_empty a ha).elim
 #align finset.sup_indep_empty Finset.supIndep_empty
 
-theorem supIndep_singleton (i : ι) (f : ι → α) : ({i} : Finset ι).SupIndep f :=
+lemma supIndep_singleton (i : ι) (f : ι → α) : ({i} : Finset ι).SupIndep f :=
   fun s hs j hji hj => by
     rw [eq_empty_of_ssubset_singleton ⟨hs, fun h => hj (h hji)⟩, sup_empty]
     exact disjoint_bot_right
 #align finset.sup_indep_singleton Finset.supIndep_singleton
 
-theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDisjoint f :=
+lemma SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDisjoint f :=
   fun _ ha _ hb hab =>
     sup_singleton.subst <| hs (singleton_subset_iff.2 hb) ha <| not_mem_singleton.2 hab
 #align finset.sup_indep.pairwise_disjoint Finset.SupIndep.pairwiseDisjoint
 
-theorem SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (hf : ∀ i, f i ≠ ⊥) :
+lemma SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (hf : ∀ i, f i ≠ ⊥) :
     f i ≤ t.sup f ↔ i ∈ t := by
   refine' ⟨fun h => _, le_sup⟩
   by_contra hit
@@ -146,20 +146,20 @@ lemma supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
       rw [this, Finset.sup_singleton]⟩
 #align finset.sup_indep_pair Finset.supIndep_pair
 
-theorem supIndep_univ_bool (f : Bool → α) :
+lemma supIndep_univ_bool (f : Bool → α) :
     (Finset.univ : Finset Bool).SupIndep f ↔ Disjoint (f false) (f true) :=
   haveI : true ≠ false := by simp only [Ne.def, not_false_iff]
   (supIndep_pair this).trans disjoint_comm
 #align finset.sup_indep_univ_bool Finset.supIndep_univ_bool
 
 @[simp]
-theorem supIndep_univ_fin_two (f : Fin 2 → α) :
+lemma supIndep_univ_fin_two (f : Fin 2 → α) :
     (Finset.univ : Finset (Fin 2)).SupIndep f ↔ Disjoint (f 0) (f 1) :=
   haveI : (0 : Fin 2) ≠ 1 := by simp
   supIndep_pair this
 #align finset.sup_indep_univ_fin_two Finset.supIndep_univ_fin_two
 
-theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := by
+lemma SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := by
   intro t _ i _ hi
   classical
     have : (fun (a : { x // x ∈ s }) => f ↑a) = f ∘ (fun a : { x // x ∈ s } => ↑a) := rfl
@@ -366,12 +366,12 @@ lemma independent_def'' :
 #align complete_lattice.independent_def'' CompleteLattice.independent_def''
 
 @[simp]
-theorem independent_empty (t : Empty → α) : Independent t :=
+lemma independent_empty (t : Empty → α) : Independent t :=
   fun.
 #align complete_lattice.independent_empty CompleteLattice.independent_empty
 
 @[simp]
-theorem independent_pempty (t : PEmpty → α) : Independent t :=
+lemma independent_pempty (t : PEmpty → α) : Independent t :=
   fun.
 #align complete_lattice.independent_pempty CompleteLattice.independent_pempty
 
@@ -401,13 +401,13 @@ lemma Independent.comp' {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : 
   exact (ht i').mono_right (biSup_mono fun j' hij => mt (congr_arg f) hij)
 #align complete_lattice.independent.comp' CompleteLattice.Independent.comp'
 
-theorem Independent.setIndependent_range (ht : Independent t) : SetIndependent <| range t := by
+lemma Independent.setIndependent_range (ht : Independent t) : SetIndependent <| range t := by
   rw [setIndependent_iff]
   rw [← coe_comp_rangeFactorization t] at ht
   exact ht.comp' surjective_onto_range
 #align complete_lattice.independent.set_independent_range CompleteLattice.Independent.setIndependent_range
 
-theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
+lemma Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   intro i j h
   by_contra' contra
   apply h_ne_bot j

@@ -169,22 +169,22 @@ section
 
 variable [HasZeroMorphisms V] [HasEqualizers V]
 
-theorem exact_comp_hom_inv_comp (i : B ≅ D) (h : Exact f g) : Exact (f ≫ i.hom) (i.inv ≫ g) := by
+lemma exact_comp_hom_inv_comp (i : B ≅ D) (h : Exact f g) : Exact (f ≫ i.hom) (i.inv ≫ g) := by
   refine' ⟨by simp [h.w], _⟩
   rw [imageToKernel_comp_hom_inv_comp]
   haveI := h.epi
   infer_instance
 #align category_theory.exact_comp_hom_inv_comp CategoryTheory.exact_comp_hom_inv_comp
 
-theorem exact_comp_inv_hom_comp (i : D ≅ B) (h : Exact f g) : Exact (f ≫ i.inv) (i.hom ≫ g) :=
+lemma exact_comp_inv_hom_comp (i : D ≅ B) (h : Exact f g) : Exact (f ≫ i.inv) (i.hom ≫ g) :=
   exact_comp_hom_inv_comp i.symm h
 #align category_theory.exact_comp_inv_hom_comp CategoryTheory.exact_comp_inv_hom_comp
 
-theorem exact_comp_hom_inv_comp_iff (i : B ≅ D) : Exact (f ≫ i.hom) (i.inv ≫ g) ↔ Exact f g :=
+lemma exact_comp_hom_inv_comp_iff (i : B ≅ D) : Exact (f ≫ i.hom) (i.inv ≫ g) ↔ Exact f g :=
   ⟨fun h => by simpa using exact_comp_inv_hom_comp i h, exact_comp_hom_inv_comp i⟩
 #align category_theory.exact_comp_hom_inv_comp_iff CategoryTheory.exact_comp_hom_inv_comp_iff
 
-theorem exact_epi_comp (hgh : Exact g h) [Epi f] : Exact (f ≫ g) h := by
+lemma exact_epi_comp (hgh : Exact g h) [Epi f] : Exact (f ≫ g) h := by
   refine' ⟨by simp [hgh.w], _⟩
   rw [imageToKernel_comp_left]
   haveI := hgh.epi
@@ -198,7 +198,7 @@ lemma exact_iso_comp [IsIso f] : Exact (f ≫ g) h ↔ Exact g h :=
     exact exact_epi_comp w, fun w => exact_epi_comp w⟩
 #align category_theory.exact_iso_comp CategoryTheory.exact_iso_comp
 
-theorem exact_comp_mono (hfg : Exact f g) [Mono h] : Exact f (g ≫ h) := by
+lemma exact_comp_mono (hfg : Exact f g) [Mono h] : Exact f (g ≫ h) := by
   refine' ⟨by simp [hfg.w_assoc], _⟩
   rw [imageToKernel_comp_right f g h hfg.w]
   haveI := hfg.epi
@@ -244,7 +244,7 @@ lemma Exact.epi_kernel_lift (h : Exact f g) : Epi (kernel.lift g f h.w) := by
 
 variable (A)
 
-theorem kernelSubobject_arrow_eq_zero_of_exact_zero_left (h : Exact (0 : A ⟶ B) g) :
+lemma kernelSubobject_arrow_eq_zero_of_exact_zero_left (h : Exact (0 : A ⟶ B) g) :
     (kernelSubobject g).arrow = 0 := by
   haveI := h.epi
   rw [← cancel_epi (imageToKernel (0 : A ⟶ B) g h.w), ←
@@ -252,7 +252,7 @@ theorem kernelSubobject_arrow_eq_zero_of_exact_zero_left (h : Exact (0 : A ⟶ B
   simp
 #align category_theory.kernel_subobject_arrow_eq_zero_of_exact_zero_left CategoryTheory.kernelSubobject_arrow_eq_zero_of_exact_zero_left
 
-theorem kernel_ι_eq_zero_of_exact_zero_left (h : Exact (0 : A ⟶ B) g) : kernel.ι g = 0 := by
+lemma kernel_ι_eq_zero_of_exact_zero_left (h : Exact (0 : A ⟶ B) g) : kernel.ι g = 0 := by
   rw [← kernelSubobject_arrow']
   simp [kernelSubobject_arrow_eq_zero_of_exact_zero_left A h]
 #align category_theory.kernel_ι_eq_zero_of_exact_zero_left CategoryTheory.kernel_ι_eq_zero_of_exact_zero_left
@@ -268,7 +268,7 @@ section HasCokernels
 variable [HasZeroMorphisms V] [HasEqualizers V] [HasCokernels V] (f g)
 
 @[reassoc (attr := simp)]
-theorem kernel_comp_cokernel (h : Exact f g) : kernel.ι g ≫ cokernel.π f = 0 := by
+lemma kernel_comp_cokernel (h : Exact f g) : kernel.ι g ≫ cokernel.π f = 0 := by
   suffices Subobject.arrow (kernelSubobject g) ≫ cokernel.π f = 0 by
     rw [← kernelSubobject_arrow', Category.assoc, this, comp_zero]
   haveI := h.epi
@@ -277,14 +277,14 @@ theorem kernel_comp_cokernel (h : Exact f g) : kernel.ι g ≫ cokernel.π f = 0
   aesop_cat
 #align category_theory.kernel_comp_cokernel CategoryTheory.kernel_comp_cokernel
 
-theorem comp_eq_zero_of_exact (h : Exact f g) {X Y : V} {ι : X ⟶ B} (hι : ι ≫ g = 0) {π : B ⟶ Y}
+lemma comp_eq_zero_of_exact (h : Exact f g) {X Y : V} {ι : X ⟶ B} (hι : ι ≫ g = 0) {π : B ⟶ Y}
     (hπ : f ≫ π = 0) : ι ≫ π = 0 := by
   rw [← kernel.lift_ι _ _ hι, ← cokernel.π_desc _ _ hπ, Category.assoc,
     kernel_comp_cokernel_assoc _ _ h, zero_comp, comp_zero]
 #align category_theory.comp_eq_zero_of_exact CategoryTheory.comp_eq_zero_of_exact
 
 @[reassoc (attr := simp)]
-theorem fork_ι_comp_cofork_π (h : Exact f g) (s : KernelFork g) (t : CokernelCofork f) :
+lemma fork_ι_comp_cofork_π (h : Exact f g) (s : KernelFork g) (t : CokernelCofork f) :
     Fork.ι s ≫ Cofork.π t = 0 :=
   comp_eq_zero_of_exact f g h (KernelFork.condition s) (CokernelCofork.condition t)
 #align category_theory.fork_ι_comp_cofork_π CategoryTheory.fork_ι_comp_cofork_π
@@ -359,7 +359,7 @@ class ReflectsExactSequences (F : V ⥤ W) : Prop where
   reflects : ∀ {A B C : V} (f : A ⟶ B) (g : B ⟶ C), Exact (F.map f) (F.map g) → Exact f g
 #align category_theory.functor.reflects_exact_sequences CategoryTheory.Functor.ReflectsExactSequences
 
-theorem exact_of_exact_map (F : V ⥤ W) [ReflectsExactSequences F] {A B C : V} {f : A ⟶ B}
+lemma exact_of_exact_map (F : V ⥤ W) [ReflectsExactSequences F] {A B C : V} {f : A ⟶ B}
     {g : B ⟶ C} (hfg : Exact (F.map f) (F.map g)) : Exact f g :=
   ReflectsExactSequences.reflects f g hfg
 #align category_theory.functor.exact_of_exact_map CategoryTheory.Functor.exact_of_exact_map

@@ -30,7 +30,7 @@ protected lemma range_succ : range succ = { i | 0 < i } := by
 
 variable {α : Type*}
 
-theorem range_of_succ (f : ℕ → α) : {f 0} ∪ range (f ∘ succ) = range f := by
+lemma range_of_succ (f : ℕ → α) : {f 0} ∪ range (f ∘ succ) = range f := by
   rw [← image_singleton, range_comp, ← image_union, zero_union_range_succ, image_univ]
 #align nat.range_of_succ Nat.range_of_succ
 

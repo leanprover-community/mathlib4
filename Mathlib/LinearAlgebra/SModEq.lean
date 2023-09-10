@@ -56,12 +56,12 @@ lemma bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
 #align smodeq.bot SModEq.bot
 
 @[mono]
-theorem mono (HU : U₁ ≤ U₂) (hxy : x ≡ y [SMOD U₁]) : x ≡ y [SMOD U₂] :=
+lemma mono (HU : U₁ ≤ U₂) (hxy : x ≡ y [SMOD U₁]) : x ≡ y [SMOD U₂] :=
   (Submodule.Quotient.eq U₂).2 <| HU <| (Submodule.Quotient.eq U₁).1 hxy
 #align smodeq.mono SModEq.mono
 
 @[refl]
-protected theorem refl (x : M) : x ≡ x [SMOD U] :=
+protected lemma refl (x : M) : x ≡ x [SMOD U] :=
   @rfl _ _
 #align smodeq.refl SModEq.refl
 
@@ -73,21 +73,21 @@ instance : IsRefl _ (SModEq U) :=
   ⟨SModEq.refl⟩
 
 @[symm]
-nonrec theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
+nonrec lemma symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
   hxy.symm
 #align smodeq.symm SModEq.symm
 
 @[trans]
-nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
+nonrec lemma trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
   hxy.trans hyz
 #align smodeq.trans SModEq.trans
 
-theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
+lemma add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
   simp_rw [Quotient.mk_add, hxy₁, hxy₂]
 #align smodeq.add SModEq.add
 
-theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
+lemma smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
   simp_rw [Quotient.mk_smul, hxy]
 #align smodeq.smul SModEq.smul
@@ -95,7 +95,7 @@ theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := 
 lemma zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 #align smodeq.zero SModEq.zero
 
-theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
+lemma map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
   (Submodule.Quotient.eq _).2 <| f.map_sub x y ▸ mem_map_of_mem <| (Submodule.Quotient.eq _).1 hxy
 #align smodeq.map SModEq.map
 

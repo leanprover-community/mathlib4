@@ -44,7 +44,7 @@ def of (α : Type*) [BooleanRing α] : BoolRingCat :=
 #align BoolRing.of BoolRingCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl
 #align BoolRing.coe_of BoolRingCat.coe_of
 

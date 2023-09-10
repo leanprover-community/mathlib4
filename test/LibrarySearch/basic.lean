@@ -130,10 +130,10 @@ inductive P : ℕ → Prop
   | gt_in_head {n : ℕ} : n < 0 → P n
 
 -- This lemma with `>` as its head symbol should also be found for goals with head symbol `<`.
-theorem lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumption
+lemma lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumption
 
 -- This lemma with `false` as its head symbols should also be found for goals with head symbol `¬`.
-theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False := by
+lemma lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False := by
   apply Nat.not_lt_zero; cases h2; assumption
 
 /-- info: Try this: exact lemma_with_gt_in_head a h -/

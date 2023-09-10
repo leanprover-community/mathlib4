@@ -46,7 +46,7 @@ class IsReflexivePair (f g : A ⟶ B) : Prop where
 #align category_theory.is_reflexive_pair CategoryTheory.IsReflexivePair
 
 -- porting note: added theorem, because of unsupported infer kinds
-theorem IsReflexivePair.common_section (f g : A ⟶ B) [IsReflexivePair f g] :
+lemma IsReflexivePair.common_section (f g : A ⟶ B) [IsReflexivePair f g] :
   ∃ s : B ⟶ A, s ≫ f = 𝟙 B ∧ s ≫ g = 𝟙 B := IsReflexivePair.common_section'
 
 /--
@@ -57,15 +57,15 @@ class IsCoreflexivePair (f g : A ⟶ B) : Prop where
 #align category_theory.is_coreflexive_pair CategoryTheory.IsCoreflexivePair
 
 -- porting note: added theorem, because of unsupported infer kinds
-theorem IsCoreflexivePair.common_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
+lemma IsCoreflexivePair.common_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
   ∃ s : B ⟶ A, f ≫ s = 𝟙 A ∧ g ≫ s = 𝟙 A := IsCoreflexivePair.common_retraction'
 
-theorem IsReflexivePair.mk' (s : B ⟶ A) (sf : s ≫ f = 𝟙 B) (sg : s ≫ g = 𝟙 B) :
+lemma IsReflexivePair.mk' (s : B ⟶ A) (sf : s ≫ f = 𝟙 B) (sg : s ≫ g = 𝟙 B) :
     IsReflexivePair f g :=
   ⟨⟨s, sf, sg⟩⟩
 #align category_theory.is_reflexive_pair.mk' CategoryTheory.IsReflexivePair.mk'
 
-theorem IsCoreflexivePair.mk' (s : B ⟶ A) (fs : f ≫ s = 𝟙 A) (gs : g ≫ s = 𝟙 A) :
+lemma IsCoreflexivePair.mk' (s : B ⟶ A) (fs : f ≫ s = 𝟙 A) (gs : g ≫ s = 𝟙 A) :
     IsCoreflexivePair f g :=
   ⟨⟨s, fs, gs⟩⟩
 #align category_theory.is_coreflexive_pair.mk' CategoryTheory.IsCoreflexivePair.mk'
@@ -76,12 +76,12 @@ noncomputable def commonSection (f g : A ⟶ B) [IsReflexivePair f g] : B ⟶ A 
 #align category_theory.common_section CategoryTheory.commonSection
 
 @[reassoc (attr := simp)]
-theorem section_comp_left (f g : A ⟶ B) [IsReflexivePair f g] : commonSection f g ≫ f = 𝟙 B :=
+lemma section_comp_left (f g : A ⟶ B) [IsReflexivePair f g] : commonSection f g ≫ f = 𝟙 B :=
   (IsReflexivePair.common_section f g).choose_spec.1
 #align category_theory.section_comp_left CategoryTheory.section_comp_left
 
 @[reassoc (attr := simp)]
-theorem section_comp_right (f g : A ⟶ B) [IsReflexivePair f g] : commonSection f g ≫ g = 𝟙 B :=
+lemma section_comp_right (f g : A ⟶ B) [IsReflexivePair f g] : commonSection f g ≫ g = 𝟙 B :=
   (IsReflexivePair.common_section f g).choose_spec.2
 #align category_theory.section_comp_right CategoryTheory.section_comp_right
 
@@ -91,13 +91,13 @@ noncomputable def commonRetraction (f g : A ⟶ B) [IsCoreflexivePair f g] : B �
 #align category_theory.common_retraction CategoryTheory.commonRetraction
 
 @[reassoc (attr := simp)]
-theorem left_comp_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
+lemma left_comp_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
     f ≫ commonRetraction f g = 𝟙 A :=
   (IsCoreflexivePair.common_retraction f g).choose_spec.1
 #align category_theory.left_comp_retraction CategoryTheory.left_comp_retraction
 
 @[reassoc (attr := simp)]
-theorem right_comp_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
+lemma right_comp_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
     g ≫ commonRetraction f g = 𝟙 A :=
   (IsCoreflexivePair.common_retraction f g).choose_spec.2
 #align category_theory.right_comp_retraction CategoryTheory.right_comp_retraction

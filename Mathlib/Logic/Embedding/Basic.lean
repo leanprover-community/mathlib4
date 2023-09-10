@@ -70,7 +70,7 @@ lemma Equiv.coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl
 #align equiv.coe_to_embedding Equiv.coe_toEmbedding
 
-theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
+lemma Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
@@ -241,7 +241,7 @@ noncomputable def quotientOut (α) [s : Setoid α] : Quotient s ↪ α :=
 #align function.embedding.quotient_out Function.Embedding.quotientOut
 
 @[simp]
-theorem coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
+lemma coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
   rfl
 #align function.embedding.coe_quotient_out Function.Embedding.coe_quotientOut
 

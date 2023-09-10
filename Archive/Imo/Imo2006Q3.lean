@@ -83,7 +83,7 @@ lemma subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
 #align imo2006_q3.subst_wlog Imo2006Q3.subst_wlog
 
 /-- Proof that `M = 9 * sqrt 2 / 32` works with the substitution. -/
-theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
+lemma subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
     |x * y * z * s| ≤ sqrt 2 / 32 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
   wlog h' : 0 ≤ x * y generalizing x y z; swap
   · rw [div_mul_eq_mul_div, le_div_iff' zero_lt_32]
@@ -102,7 +102,7 @@ lemma proof₁ {a b c : ℝ} :
     _ = _ := by ring
 #align imo2006_q3.proof₁ Imo2006Q3.proof₁
 
-theorem proof₂ (M : ℝ)
+lemma proof₂ (M : ℝ)
     (h : ∀ a b c : ℝ,
       |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
         M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
@@ -126,7 +126,7 @@ end Imo2006Q3
 
 open Imo2006Q3
 
-theorem imo2006_q3 (M : ℝ) :
+lemma imo2006_q3 (M : ℝ) :
     (∀ a b c : ℝ,
         |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
           M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) ↔

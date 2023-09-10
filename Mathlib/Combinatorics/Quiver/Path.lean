@@ -74,11 +74,11 @@ lemma length_nil {a : V} : (nil : Path a a).length = 0 :=
 #align quiver.path.length_nil Quiver.Path.length_nil
 
 @[simp]
-theorem length_cons (a b c : V) (p : Path a b) (e : b ⟶ c) : (p.cons e).length = p.length + 1 :=
+lemma length_cons (a b c : V) (p : Path a b) (e : b ⟶ c) : (p.cons e).length = p.length + 1 :=
   rfl
 #align quiver.path.length_cons Quiver.Path.length_cons
 
-theorem eq_of_length_zero (p : Path a b) (hzero : p.length = 0) : a = b := by
+lemma eq_of_length_zero (p : Path a b) (hzero : p.length = 0) : a = b := by
   cases p
   · rfl
   · cases Nat.succ_ne_zero _ hzero
@@ -115,7 +115,7 @@ lemma comp_assoc {a b c : V} :
 #align quiver.path.comp_assoc Quiver.Path.comp_assoc
 
 @[simp]
-theorem length_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).length = p.length + q.length
+lemma length_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).length = p.length + q.length
   | _, nil => rfl
   | _, cons _ _ => congr_arg Nat.succ (length_comp _ _)
 #align quiver.path.length_comp Quiver.Path.length_comp
@@ -140,11 +140,11 @@ lemma comp_inj' {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (h : p₁.length =
    by rintro ⟨rfl, rfl⟩; rfl⟩
 #align quiver.path.comp_inj' Quiver.Path.comp_inj'
 
-theorem comp_injective_left (q : Path b c) : Injective fun p : Path a b => p.comp q :=
+lemma comp_injective_left (q : Path b c) : Injective fun p : Path a b => p.comp q :=
   fun _ _ h => ((comp_inj rfl).1 h).1
 #align quiver.path.comp_injective_left Quiver.Path.comp_injective_left
 
-theorem comp_injective_right (p : Path a b) : Injective (p.comp : Path b c → Path a c) :=
+lemma comp_injective_right (p : Path a b) : Injective (p.comp : Path b c → Path a c) :=
   fun _ _ h => ((comp_inj' rfl).1 h).2
 #align quiver.path.comp_injective_right Quiver.Path.comp_injective_right
 
@@ -168,7 +168,7 @@ def toList : ∀ {b : V}, Path a b → List V
 /-- `Quiver.Path.toList` is a contravariant functor. The inversion comes from `Quiver.Path` and
 `List` having different preferred directions for adding elements. -/
 @[simp]
-theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList = q.toList ++ p.toList
+lemma toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList = q.toList ++ p.toList
   | _, nil => by simp
   | _, @cons _ _ _ d _ q _ => by simp [toList_comp]
 #align quiver.path.to_list_comp Quiver.Path.toList_comp
@@ -181,7 +181,7 @@ lemma toList_chain_nonempty :
 
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
-theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List V)
+lemma toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List V)
   | _, nil, nil, _ => rfl
   | _, nil, @cons _ _ _ c _ p f, h => by cases h
   | _, @cons _ _ _ c _ p f, nil, h => by cases h
@@ -213,7 +213,7 @@ def mapPath {a : V} : ∀ {b : V}, Path a b → Path (F.obj a) (F.obj b)
 #align prefunctor.map_path Prefunctor.mapPath
 
 @[simp]
-theorem mapPath_nil (a : V) : F.mapPath (Path.nil : Path a a) = Path.nil :=
+lemma mapPath_nil (a : V) : F.mapPath (Path.nil : Path a a) = Path.nil :=
   rfl
 #align prefunctor.map_path_nil Prefunctor.mapPath_nil
 

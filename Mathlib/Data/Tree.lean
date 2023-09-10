@@ -114,11 +114,11 @@ def height : Tree α → ℕ
   | node _ a b => max a.height b.height + 1
 #align tree.height Tree.height
 
-theorem numLeaves_eq_numNodes_succ (x : Tree α) : x.numLeaves = x.numNodes + 1 := by
+lemma numLeaves_eq_numNodes_succ (x : Tree α) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
 #align tree.num_leaves_eq_num_nodes_succ Tree.numLeaves_eq_numNodes_succ
 
-theorem numLeaves_pos (x : Tree α) : 0 < x.numLeaves := by
+lemma numLeaves_pos (x : Tree α) : 0 < x.numLeaves := by
   rw [numLeaves_eq_numNodes_succ]
   exact x.numNodes.zero_lt_succ
 #align tree.num_leaves_pos Tree.numLeaves_pos

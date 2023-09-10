@@ -280,7 +280,7 @@ section CompleteLattice
 
 variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β} {f : Filtration ι m}
 
-theorem hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
+lemma hitting_eq_sInf (ω : Ω) : hitting u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} := by
   simp only [hitting, Set.mem_Icc, bot_le, le_top, and_self_iff, exists_true_left, Set.Icc_bot,
     Set.Iic_top, Set.univ_inter, ite_eq_left_iff, not_exists]
   intro h_nmem_s

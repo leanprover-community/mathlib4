@@ -82,7 +82,7 @@ lemma IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
 #align is_linear_map.with_bound IsLinearMap.with_bound
 
 /-- A continuous linear map satisfies `IsBoundedLinearMap` -/
-theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=
+lemma ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=
   { f.toLinearMap.isLinear with bound := f.bound }
 #align continuous_linear_map.is_bounded_linear_map ContinuousLinearMap.isBoundedLinearMap
 
@@ -123,7 +123,7 @@ lemma snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
 
 variable {f g : E → F}
 
-theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
+lemma smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
   let ⟨hlf, M, _, hM⟩ := hf
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
     calc
@@ -133,12 +133,12 @@ theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap �
 
 #align is_bounded_linear_map.smul IsBoundedLinearMap.smul
 
-theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by
+lemma neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by
   rw [show (fun e => -f e) = fun e => (-1 : 𝕜) • f e by funext; simp]
   exact smul (-1) hf
 #align is_bounded_linear_map.neg IsBoundedLinearMap.neg
 
-theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
+lemma add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
     IsBoundedLinearMap 𝕜 fun e => f e + g e :=
   let ⟨hlf, Mf, _, hMf⟩ := hf
   let ⟨hlg, Mg, _, hMg⟩ := hg
@@ -149,7 +149,7 @@ theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
 
 #align is_bounded_linear_map.add IsBoundedLinearMap.add
 
-theorem sub (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
+lemma sub (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
     IsBoundedLinearMap 𝕜 fun e => f e - g e := by simpa [sub_eq_add_neg] using add hf (neg hg)
 #align is_bounded_linear_map.sub IsBoundedLinearMap.sub
 
@@ -158,7 +158,7 @@ lemma comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinearM
   (hg.toContinuousLinearMap.comp hf.toContinuousLinearMap).isBoundedLinearMap
 #align is_bounded_linear_map.comp IsBoundedLinearMap.comp
 
-protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
+protected lemma tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   let ⟨hf, M, _, hM⟩ := hf
   tendsto_iff_norm_sub_tendsto_zero.2 <|
     squeeze_zero (fun e => norm_nonneg _)
@@ -171,11 +171,11 @@ protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (
       tendsto_const_nhds.mul (tendsto_norm_sub_self _))
 #align is_bounded_linear_map.tendsto IsBoundedLinearMap.tendsto
 
-theorem continuous (hf : IsBoundedLinearMap 𝕜 f) : Continuous f :=
+lemma continuous (hf : IsBoundedLinearMap 𝕜 f) : Continuous f :=
   continuous_iff_continuousAt.2 fun _ => hf.tendsto _
 #align is_bounded_linear_map.continuous IsBoundedLinearMap.continuous
 
-theorem lim_zero_bounded_linear_map (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 0) (𝓝 0) :=
+lemma lim_zero_bounded_linear_map (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 0) (𝓝 0) :=
   (hf.1.mk' _).map_zero ▸ continuous_iff_continuousAt.1 hf.continuous 0
 #align is_bounded_linear_map.lim_zero_bounded_linear_map IsBoundedLinearMap.lim_zero_bounded_linear_map
 
@@ -236,7 +236,7 @@ lemma isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormedAddCo
 
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the
 continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operation. -/
-theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
+lemma isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
       f.compContinuousLinearMap fun _ => g := by
   refine'
@@ -290,15 +290,15 @@ section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] {ρ₁₂ : R →+* 𝕜'}
 
-theorem map_add₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
+lemma map_add₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
     f (x + x') y = f x y + f x' y := by rw [f.map_add, add_apply]
 #align continuous_linear_map.map_add₂ ContinuousLinearMap.map_add₂
 
-theorem map_zero₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (y : F) : f 0 y = 0 := by
+lemma map_zero₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (y : F) : f 0 y = 0 := by
   rw [f.map_zero, zero_apply]
 #align continuous_linear_map.map_zero₂ ContinuousLinearMap.map_zero₂
 
-theorem map_smulₛₗ₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (c : R) (x : M) (y : F) :
+lemma map_smulₛₗ₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (c : R) (x : M) (y : F) :
     f (c • x) y = ρ₁₂ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
 #align continuous_linear_map.map_smulₛₗ₂ ContinuousLinearMap.map_smulₛₗ₂
 
@@ -308,17 +308,17 @@ section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M] {ρ₁₂ : R →+* 𝕜'}
 
-theorem map_sub₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
+lemma map_sub₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
     f (x - x') y = f x y - f x' y := by rw [f.map_sub, sub_apply]
 #align continuous_linear_map.map_sub₂ ContinuousLinearMap.map_sub₂
 
-theorem map_neg₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x : M) (y : F) : f (-x) y = -f x y := by
+lemma map_neg₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x : M) (y : F) : f (-x) y = -f x y := by
   rw [f.map_neg, neg_apply]
 #align continuous_linear_map.map_neg₂ ContinuousLinearMap.map_neg₂
 
 end Ring
 
-theorem map_smul₂ (f : E →L[𝕜] F →L[𝕜] G) (c : 𝕜) (x : E) (y : F) : f (c • x) y = c • f x y := by
+lemma map_smul₂ (f : E →L[𝕜] F →L[𝕜] G) (c : 𝕜) (x : E) (y : F) : f (c • x) y = c • f x y := by
   rw [f.map_smul, smul_apply]
 #align continuous_linear_map.map_smul₂ ContinuousLinearMap.map_smul₂
 
@@ -340,7 +340,7 @@ variable {𝕜}
 
 variable {f : E × F → G}
 
-theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] G) :
+lemma ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] G) :
     IsBoundedBilinearMap 𝕜 fun x : E × F => f x.1 x.2 :=
   { add_left := f.map_add₂
     smul_left := f.map_smul₂
@@ -361,7 +361,7 @@ def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f
     (LinearMap.mk₂ _ f.curry hf.add_left hf.smul_left hf.add_right hf.smul_right) <|
     hf.bound.imp fun _ ↦ And.right
 
-protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) :
+protected lemma IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) :
     f =O[⊤] fun p : E × F => ‖p.1‖ * ‖p.2‖ :=
   let ⟨C, Cpos, hC⟩ := h.bound
   Asymptotics.IsBigO.of_bound _ <|
@@ -375,7 +375,7 @@ lemma IsBoundedBilinearMap.isBigO_comp {α : Type*} (H : IsBoundedBilinearMap �
 set_option linter.uppercaseLean3 false in
 #align is_bounded_bilinear_map.is_O_comp IsBoundedBilinearMap.isBigO_comp
 
-protected theorem IsBoundedBilinearMap.isBigO' (h : IsBoundedBilinearMap 𝕜 f) :
+protected lemma IsBoundedBilinearMap.isBigO' (h : IsBoundedBilinearMap 𝕜 f) :
     f =O[⊤] fun p : E × F => ‖p‖ * ‖p‖ :=
   h.isBigO.trans <|
     (@Asymptotics.isBigO_fst_prod' _ E F _ _ _ _).norm_norm.mul
@@ -383,19 +383,19 @@ protected theorem IsBoundedBilinearMap.isBigO' (h : IsBoundedBilinearMap 𝕜 f)
 set_option linter.uppercaseLean3 false in
 #align is_bounded_bilinear_map.is_O' IsBoundedBilinearMap.isBigO'
 
-theorem IsBoundedBilinearMap.map_sub_left (h : IsBoundedBilinearMap 𝕜 f) {x y : E} {z : F} :
+lemma IsBoundedBilinearMap.map_sub_left (h : IsBoundedBilinearMap 𝕜 f) {x y : E} {z : F} :
     f (x - y, z) = f (x, z) - f (y, z) :=
   (h.toContinuousLinearMap.flip z).map_sub x y
 #align is_bounded_bilinear_map.map_sub_left IsBoundedBilinearMap.map_sub_left
 
-theorem IsBoundedBilinearMap.map_sub_right (h : IsBoundedBilinearMap 𝕜 f) {x : E} {y z : F} :
+lemma IsBoundedBilinearMap.map_sub_right (h : IsBoundedBilinearMap 𝕜 f) {x : E} {y z : F} :
     f (x, y - z) = f (x, y) - f (x, z) :=
   (h.toContinuousLinearMap x).map_sub y z
 #align is_bounded_bilinear_map.map_sub_right IsBoundedBilinearMap.map_sub_right
 
 open Asymptotics in
 /-- Useful to use together with `Continuous.comp₂`. -/
-theorem IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Continuous f := by
+lemma IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Continuous f := by
   refine continuous_iff_continuousAt.2 fun x ↦ tendsto_sub_nhds_zero_iff.1 ?_
   suffices : Tendsto (λ y : E × F ↦ f (y.1 - x.1, y.2) + f (x.1, y.2 - x.2)) (𝓝 x) (𝓝 (0 + 0))
   · simpa only [h.map_sub_left, h.map_sub_right, sub_add_sub_cancel, zero_add] using this
@@ -409,28 +409,28 @@ theorem IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Cont
     exact ((h.toContinuousLinearMap x.1).continuous).comp (continuous_snd.sub continuous_const)
 #align is_bounded_bilinear_map.continuous IsBoundedBilinearMap.continuous
 
-theorem IsBoundedBilinearMap.continuous_left (h : IsBoundedBilinearMap 𝕜 f) {e₂ : F} :
+lemma IsBoundedBilinearMap.continuous_left (h : IsBoundedBilinearMap 𝕜 f) {e₂ : F} :
     Continuous fun e₁ => f (e₁, e₂) :=
   h.continuous.comp (continuous_id.prod_mk continuous_const)
 #align is_bounded_bilinear_map.continuous_left IsBoundedBilinearMap.continuous_left
 
-theorem IsBoundedBilinearMap.continuous_right (h : IsBoundedBilinearMap 𝕜 f) {e₁ : E} :
+lemma IsBoundedBilinearMap.continuous_right (h : IsBoundedBilinearMap 𝕜 f) {e₁ : E} :
     Continuous fun e₂ => f (e₁, e₂) :=
   h.continuous.comp (continuous_const.prod_mk continuous_id)
 #align is_bounded_bilinear_map.continuous_right IsBoundedBilinearMap.continuous_right
 
 /-- Useful to use together with `Continuous.comp₂`. -/
-theorem ContinuousLinearMap.continuous₂ (f : E →L[𝕜] F →L[𝕜] G) :
+lemma ContinuousLinearMap.continuous₂ (f : E →L[𝕜] F →L[𝕜] G) :
     Continuous (Function.uncurry fun x y => f x y) :=
   f.isBoundedBilinearMap.continuous
 #align continuous_linear_map.continuous₂ ContinuousLinearMap.continuous₂
 
-theorem IsBoundedBilinearMap.isBoundedLinearMap_left (h : IsBoundedBilinearMap 𝕜 f) (y : F) :
+lemma IsBoundedBilinearMap.isBoundedLinearMap_left (h : IsBoundedBilinearMap 𝕜 f) (y : F) :
     IsBoundedLinearMap 𝕜 fun x => f (x, y) :=
   (h.toContinuousLinearMap.flip y).isBoundedLinearMap
 #align is_bounded_bilinear_map.is_bounded_linear_map_left IsBoundedBilinearMap.isBoundedLinearMap_left
 
-theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 𝕜 f) (x : E) :
+lemma IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 𝕜 f) (x : E) :
     IsBoundedLinearMap 𝕜 fun y => f (x, y) :=
   (h.toContinuousLinearMap x).isBoundedLinearMap
 #align is_bounded_bilinear_map.is_bounded_linear_map_right IsBoundedBilinearMap.isBoundedLinearMap_right
@@ -451,12 +451,12 @@ lemma isBoundedBilinearMap_comp :
   (compL 𝕜 E F G).isBoundedBilinearMap
 #align is_bounded_bilinear_map_comp isBoundedBilinearMap_comp
 
-theorem ContinuousLinearMap.isBoundedLinearMap_comp_left (g : F →L[𝕜] G) :
+lemma ContinuousLinearMap.isBoundedLinearMap_comp_left (g : F →L[𝕜] G) :
     IsBoundedLinearMap 𝕜 fun f : E →L[𝕜] F => ContinuousLinearMap.comp g f :=
   isBoundedBilinearMap_comp.isBoundedLinearMap_right _
 #align continuous_linear_map.is_bounded_linear_map_comp_left ContinuousLinearMap.isBoundedLinearMap_comp_left
 
-theorem ContinuousLinearMap.isBoundedLinearMap_comp_right (f : E →L[𝕜] F) :
+lemma ContinuousLinearMap.isBoundedLinearMap_comp_right (f : E →L[𝕜] F) :
     IsBoundedLinearMap 𝕜 fun g : F →L[𝕜] G => ContinuousLinearMap.comp g f :=
   isBoundedBilinearMap_comp.isBoundedLinearMap_left _
 #align continuous_linear_map.is_bounded_linear_map_comp_right ContinuousLinearMap.isBoundedLinearMap_comp_right
@@ -500,7 +500,7 @@ def IsBoundedBilinearMap.deriv (h : IsBoundedBilinearMap 𝕜 f) (p : E × F) : 
 #align is_bounded_bilinear_map.deriv IsBoundedBilinearMap.deriv
 
 @[simp]
-theorem IsBoundedBilinearMap.deriv_apply (h : IsBoundedBilinearMap 𝕜 f) (p q : E × F) :
+lemma IsBoundedBilinearMap.deriv_apply (h : IsBoundedBilinearMap 𝕜 f) (p q : E × F) :
     h.deriv p q = f (p.1, q.2) + f (q.1, p.2) :=
   rfl
 #align is_bounded_bilinear_map_deriv_coe IsBoundedBilinearMap.deriv_apply
@@ -509,7 +509,7 @@ variable (𝕜)
 
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
-theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [NormedRing 𝕜']
+lemma ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [NormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap
@@ -519,7 +519,7 @@ variable {𝕜}
 
 /-- Given a bounded bilinear map `f`, the map associating to a point `p` the derivative of `f` at
 `p` is itself a bounded linear map. -/
-theorem IsBoundedBilinearMap.isBoundedLinearMap_deriv (h : IsBoundedBilinearMap 𝕜 f) :
+lemma IsBoundedBilinearMap.isBoundedLinearMap_deriv (h : IsBoundedBilinearMap 𝕜 f) :
     IsBoundedLinearMap 𝕜 fun p : E × F => h.deriv p :=
   h.toContinuousLinearMap.deriv₂.isBoundedLinearMap
 #align is_bounded_bilinear_map.is_bounded_linear_map_deriv IsBoundedBilinearMap.isBoundedLinearMap_deriv

@@ -46,7 +46,7 @@ lemma tendsto_abs_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
     (tendsto_norm_nhdsWithin_zero.comp B).inv_tendsto_zero
 #align complex.tendsto_abs_tan_of_cos_eq_zero Complex.tendsto_abs_tan_of_cos_eq_zero
 
-theorem tendsto_abs_tan_atTop (k : ℤ) :
+lemma tendsto_abs_tan_atTop (k : ℤ) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
   tendsto_abs_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 #align complex.tendsto_abs_tan_at_top Complex.tendsto_abs_tan_atTop
@@ -64,7 +64,7 @@ lemma differentiableAt_tan {x : ℂ} : DifferentiableAt ℂ tan x ↔ cos x ≠ 
 #align complex.differentiable_at_tan Complex.differentiableAt_tan
 
 @[simp]
-theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
+lemma deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
   if h : cos x = 0 then by
     have : ¬DifferentiableAt ℂ tan x := mt differentiableAt_tan.1 (Classical.not_not.2 h)
     simp [deriv_zero_of_not_differentiableAt this, h, sq]

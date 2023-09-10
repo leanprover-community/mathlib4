@@ -130,14 +130,14 @@ instance : FunLike (Con M) M (fun _ => M → Prop) :=
       subst x; rfl }
 
 @[to_additive (attr := simp)]
-theorem rel_eq_coe (c : Con M) : c.r = c :=
+lemma rel_eq_coe (c : Con M) : c.r = c :=
   rfl
 #align con.rel_eq_coe Con.rel_eq_coe
 #align add_con.rel_eq_coe AddCon.rel_eq_coe
 
 /-- Congruence relations are reflexive. -/
 @[to_additive "Additive congruence relations are reflexive."]
-protected theorem refl (x) : c x x :=
+protected lemma refl (x) : c x x :=
   c.toSetoid.refl' x
 #align con.refl Con.refl
 #align add_con.refl AddCon.refl
@@ -383,7 +383,7 @@ variable {c}
     definition). -/
 @[to_additive (attr := simp) "The coercion to the quotient of an additive congruence relation
 commutes with addition (by definition)."]
-theorem coe_mul (x y : M) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
+lemma coe_mul (x y : M) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
   rfl
 #align con.coe_mul Con.coe_mul
 #align add_con.coe_add AddCon.coe_add
@@ -437,7 +437,7 @@ instance : InfSet (Con M) :=
     under the map to the underlying equivalence relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum of
 the set's image under the map to the underlying equivalence relation."]
-theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' S) :=
+lemma sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' S) :=
   Setoid.ext' fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
 #align con.Inf_to_setoid Con.sInf_toSetoid
@@ -447,7 +447,7 @@ theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' 
     under the map to the underlying binary relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum
 of the set's image under the map to the underlying binary relation."]
-theorem sInf_def (S : Set (Con M)) :
+lemma sInf_def (S : Set (Con M)) :
     ⇑(sInf S) = sInf (@Set.image (Con M) (M → M → Prop) (↑) S) := by
   ext
   simp only [sInf_image, iInf_apply, iInf_Prop_eq]
@@ -503,7 +503,7 @@ lemma inf_iff_and {c d : Con M} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
 @[to_additive addConGen_eq "The inductively defined smallest additive congruence relation
 containing a binary relation `r` equals the infimum of the set of additive congruence relations
 containing `r`."]
-theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y, r x y → s x y } :=
+lemma conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y, r x y → s x y } :=
   le_antisymm
     (le_sInf (fun s hs x y (hxy : (conGen r).r x y) =>
       show s.r x y by
@@ -539,7 +539,7 @@ lemma conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : conG
 /-- Congruence relations equal the smallest congruence relation in which they are contained. -/
 @[to_additive (attr := simp) addConGen_of_addCon "Additive congruence relations equal the smallest
 additive congruence relation in which they are contained."]
-theorem conGen_of_con (c : Con M) : conGen c = c :=
+lemma conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
 #align con.con_gen_of_con Con.conGen_of_con
 #align add_con.add_con_gen_of_con AddCon.addConGen_of_addCon
@@ -550,7 +550,7 @@ theorem conGen_of_con (c : Con M) : conGen c = c :=
     contained is idempotent. -/
 @[to_additive addConGen_idem "The map sending a binary relation to the smallest additive
 congruence relation in which it is contained is idempotent."]
-theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
+lemma conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
   conGen_of_con _
 #align con.con_gen_idem Con.conGen_idem
 #align add_con.add_con_gen_idem AddCon.addConGen_idem
@@ -560,7 +560,7 @@ theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
 @[to_additive sup_eq_addConGen "The supremum of additive congruence relations `c, d` equals the
 smallest additive congruence relation containing the binary relation '`x` is related to `y`
 by `c` or `d`'."]
-theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y := by
+lemma sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y := by
   rw [conGen_eq]
   apply congr_arg sInf
   simp only [le_def, or_imp, ← forall_and]
@@ -581,7 +581,7 @@ lemma sup_def {c d : Con M} : c ⊔ d = conGen (c.r ⊔ d.r) := by rw [sup_eq_co
 @[to_additive sSup_eq_addConGen "The supremum of a set of additive congruence relations `S` equals
 the smallest additive congruence relation containing the binary relation 'there exists `c ∈ S`
 such that `x` is related to `y` by `c`'."]
-theorem sSup_eq_conGen (S : Set (Con M)) :
+lemma sSup_eq_conGen (S : Set (Con M)) :
     sSup S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y := by
   rw [conGen_eq]
   apply congr_arg sInf
@@ -797,7 +797,7 @@ lemma mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (x,
 #align add_con.mem_coe AddCon.mem_coe
 
 @[to_additive]
-theorem to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
+lemma to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = d :=
   ext <| fun x y => show (x, y) ∈ c.submonoid ↔ (x, y) ∈ d from H ▸ Iff.rfl
 #align con.to_submonoid_inj Con.to_submonoid_inj
 #align add_con.to_add_submonoid_inj AddCon.to_addSubmonoid_inj
@@ -818,7 +818,7 @@ def ker (f : M →* P) : Con M :=
 /-- The definition of the congruence relation defined by a monoid homomorphism's kernel. -/
 @[to_additive (attr := simp) "The definition of the additive congruence relation defined by an
 `AddMonoid` homomorphism's kernel."]
-theorem ker_rel (f : M →* P) {x y} : ker f x y ↔ f x = f y :=
+lemma ker_rel (f : M →* P) {x y} : ker f x y ↔ f x = f y :=
   Iff.rfl
 #align con.ker_rel Con.ker_rel
 #align add_con.ker_rel AddCon.ker_rel
@@ -916,7 +916,7 @@ variable {c f}
 /-- The diagram describing the universal property for quotients of monoids commutes. -/
 @[to_additive "The diagram describing the universal property for quotients of `AddMonoid`s
 commutes."]
-theorem lift_mk' (H : c ≤ ker f) (x) : c.lift f H (c.mk' x) = f x :=
+lemma lift_mk' (H : c ≤ ker f) (x) : c.lift f H (c.mk' x) = f x :=
   rfl
 #align con.lift_mk' Con.lift_mk'
 #align add_con.lift_mk' AddCon.lift_mk'
@@ -924,7 +924,7 @@ theorem lift_mk' (H : c ≤ ker f) (x) : c.lift f H (c.mk' x) = f x :=
 /-- The diagram describing the universal property for quotients of monoids commutes. -/
 @[to_additive (attr := simp) "The diagram describing the universal property for quotients of
 `AddMonoid`s commutes."]
-theorem lift_coe (H : c ≤ ker f) (x : M) : c.lift f H x = f x :=
+lemma lift_coe (H : c ≤ ker f) (x : M) : c.lift f H x = f x :=
   rfl
 #align con.lift_coe Con.lift_coe
 #align add_con.lift_coe AddCon.lift_coe
@@ -932,7 +932,7 @@ theorem lift_coe (H : c ≤ ker f) (x : M) : c.lift f H x = f x :=
 /-- The diagram describing the universal property for quotients of monoids commutes. -/
 @[to_additive (attr := simp) "The diagram describing the universal property for quotients of
 `AddMonoid`s commutes."]
-theorem lift_comp_mk' (H : c ≤ ker f) : (c.lift f H).comp c.mk' = f := by ext; rfl
+lemma lift_comp_mk' (H : c ≤ ker f) : (c.lift f H).comp c.mk' = f := by ext; rfl
 #align con.lift_comp_mk' Con.lift_comp_mk'
 #align add_con.lift_comp_mk' AddCon.lift_comp_mk'
 
@@ -942,7 +942,7 @@ theorem lift_comp_mk' (H : c ≤ ker f) : (c.lift f H).comp c.mk' = f := by ext;
 @[to_additive (attr := simp) "Given a homomorphism `f` from the quotient of an `AddMonoid` by an
 additive congruence relation, `f` equals the homomorphism on the quotient induced by `f` composed
 with the natural map from the `AddMonoid` to the quotient."]
-theorem lift_apply_mk' (f : c.Quotient →* P) :
+lemma lift_apply_mk' (f : c.Quotient →* P) :
     (c.lift (f.comp c.mk') fun x y h => show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
   ext x; rcases x with ⟨⟩; rfl
 #align con.lift_apply_mk' Con.lift_apply_mk'
@@ -952,7 +952,7 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
     are equal on elements that are coercions from the monoid. -/
 @[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
-theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
+lemma lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
   congr 1
   exact FunLike.ext_iff.2 h
@@ -961,7 +961,7 @@ theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g
 
 /-- The uniqueness part of the universal property for quotients of monoids. -/
 @[to_additive "The uniqueness part of the universal property for quotients of `AddMonoid`s."]
-theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk' = f) :
+lemma lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk' = f) :
     g = c.lift f H :=
   (lift_funext g (c.lift f H)) fun x => by
     subst f
@@ -975,7 +975,7 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk'
 @[to_additive "Given an additive congruence relation `c` on an `AddMonoid` and a homomorphism `f`
 constant on `c`'s equivalence classes, `f` has the same image as the homomorphism that `f` induces
 on the quotient."]
-theorem lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom.mrange f :=
+lemma lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom.mrange f :=
   Submonoid.ext fun x => ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨↑y, hy⟩⟩
 #align con.lift_range Con.lift_range
 #align add_con.lift_range AddCon.lift_range
@@ -984,7 +984,7 @@ theorem lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom
     induce a surjective homomorphism on `c`'s quotient. -/
 @[to_additive "Surjective `AddMonoid` homomorphisms constant on an additive congruence
 relation `c`'s equivalence classes induce a surjective homomorphism on `c`'s quotient."]
-theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
+lemma lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
     Surjective (c.lift f h) := fun y =>
   (Exists.elim (hf y)) fun w hw => ⟨w, (lift_mk' h w).symm ▸ hw⟩
 #align con.lift_surjective_of_surjective Con.lift_surjective_of_surjective
@@ -997,7 +997,7 @@ variable (c f)
 @[to_additive "Given an `AddMonoid` homomorphism `f` from `M` to `P`, the kernel of `f`
 is the unique additive congruence relation on `M` whose induced map from the quotient of `M`
 to `P` is injective."]
-theorem ker_eq_lift_of_injective (H : c ≤ ker f) (h : Injective (c.lift f H)) : ker f = c :=
+lemma ker_eq_lift_of_injective (H : c ≤ ker f) (h : Injective (c.lift f H)) : ker f = c :=
   toSetoid_inj <| Setoid.ker_eq_lift_of_injective f H h
 #align con.ker_eq_lift_of_injective Con.ker_eq_lift_of_injective
 #align add_con.ker_eq_lift_of_injective AddCon.ker_eq_lift_of_injective
@@ -1019,7 +1019,7 @@ variable {f}
 @[to_additive (attr := simp) "The diagram described by the universal property for quotients
 of `AddMonoid`s, when the additive congruence relation is the kernel of the homomorphism,
 commutes."]
-theorem kerLift_mk (x : M) : kerLift f x = f x :=
+lemma kerLift_mk (x : M) : kerLift f x = f x :=
   rfl
 #align con.ker_lift_mk Con.kerLift_mk
 #align add_con.ker_lift_mk AddCon.kerLift_mk
@@ -1036,7 +1036,7 @@ lemma kerLift_range_eq : MonoidHom.mrange (kerLift f) = MonoidHom.mrange f :=
 /-- A monoid homomorphism `f` induces an injective homomorphism on the quotient by `f`'s kernel. -/
 @[to_additive "An `AddMonoid` homomorphism `f` induces an injective homomorphism on the quotient
 by `f`'s kernel."]
-theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
+lemma kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
   Quotient.inductionOn₂' x y fun _ _ => (ker f).eq.2
 #align con.ker_lift_injective Con.kerLift_injective
 #align add_con.ker_lift_injective AddCon.kerLift_injective
@@ -1311,7 +1311,7 @@ of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. 
 add_decl_doc AddCon.liftOnAddUnits
 
 @[to_additive (attr := simp)]
-theorem liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
+lemma liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
     (Hf : ∀ x y hxy hyx x' y' hxy' hyx', c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx')
     (x y : M) (hxy hyx) :
     liftOnUnits ⟨(x : c.Quotient), y, hxy, hyx⟩ f Hf = f x y (c.eq.1 hxy) (c.eq.1 hyx) :=

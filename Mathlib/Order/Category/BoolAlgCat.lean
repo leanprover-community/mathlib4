@@ -40,7 +40,7 @@ def of (α : Type*) [BooleanAlgebra α] : BoolAlgCat :=
 #align BoolAlg.of BoolAlgCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
   rfl
 #align BoolAlg.coe_of BoolAlgCat.coe_of
 
@@ -53,7 +53,7 @@ def toBddDistLatCat (X : BoolAlgCat) : BddDistLatCat :=
 #align BoolAlg.to_BddDistLat BoolAlgCat.toBddDistLatCat
 
 @[simp]
-theorem coe_toBddDistLatCat (X : BoolAlgCat) : ↥X.toBddDistLatCat = ↥X :=
+lemma coe_toBddDistLatCat (X : BoolAlgCat) : ↥X.toBddDistLatCat = ↥X :=
   rfl
 #align BoolAlg.coe_to_BddDistLat BoolAlgCat.coe_toBddDistLatCat
 

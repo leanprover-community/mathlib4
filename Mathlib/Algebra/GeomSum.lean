@@ -53,11 +53,11 @@ lemma geom_sum_succ' {x : α} {n : ℕ} :
   (sum_range_succ _ _).trans (add_comm _ _)
 #align geom_sum_succ' geom_sum_succ'
 
-theorem geom_sum_zero (x : α) : ∑ i in range 0, x ^ i = 0 :=
+lemma geom_sum_zero (x : α) : ∑ i in range 0, x ^ i = 0 :=
   rfl
 #align geom_sum_zero geom_sum_zero
 
-theorem geom_sum_one (x : α) : ∑ i in range 1, x ^ i = 1 := by simp [geom_sum_succ']
+lemma geom_sum_one (x : α) : ∑ i in range 1, x ^ i = 1 := by simp [geom_sum_succ']
 #align geom_sum_one geom_sum_one
 
 @[simp]
@@ -73,18 +73,18 @@ lemma zero_geom_sum : ∀ {n}, ∑ i in range n, (0 : α) ^ i = if n = 0 then 0 
     simp [zero_geom_sum]
 #align zero_geom_sum zero_geom_sum
 
-theorem one_geom_sum (n : ℕ) : ∑ i in range n, (1 : α) ^ i = n := by simp
+lemma one_geom_sum (n : ℕ) : ∑ i in range n, (1 : α) ^ i = n := by simp
 #align one_geom_sum one_geom_sum
 
 -- porting note: simp can prove this
 -- @[simp]
-theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in range n, op x ^ i := by
+lemma op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in range n, op x ^ i := by
   simp
 #align op_geom_sum op_geom_sum
 
 --porting note: linter suggested to change left hand side
 @[simp]
-theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
+lemma op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
     ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):= by
   rw [← sum_range_reflect]
   refine' sum_congr rfl fun j j_in => _
@@ -94,7 +94,7 @@ theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - 
   exact le_tsub_of_add_le_right j_in
 #align op_geom_sum₂ op_geom_sum₂
 
-theorem geom_sum₂_with_one (x : α) (n : ℕ) :
+lemma geom_sum₂_with_one (x : α) (n : ℕ) :
     ∑ i in range n, x ^ i * 1 ^ (n - 1 - i) = ∑ i in range n, x ^ i :=
   sum_congr rfl fun i _ => by rw [one_pow, mul_one]
 #align geom_sum₂_with_one geom_sum₂_with_one
@@ -207,7 +207,7 @@ lemma sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
   conv_rhs => rw [← one_pow n]
   exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
-theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
+lemma nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   cases' le_or_lt y x with h h
   · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_of_le_left h _
     exact_mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
@@ -222,7 +222,7 @@ lemma Odd.add_dvd_pow_add_pow [CommRing α] (x y : α) {n : ℕ} (h : Odd n) :
   exact Dvd.intro_left _ h₁
 #align odd.add_dvd_pow_add_pow Odd.add_dvd_pow_add_pow
 
-theorem Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n := by
+lemma Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n := by
   exact_mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 #align odd.nat_add_dvd_pow_add_pow Odd.nat_add_dvd_pow_add_pow
 
@@ -414,7 +414,7 @@ lemma RingHom.map_geom_sum₂ [Semiring α] [Semiring β] (x y : α) (n : ℕ) (
 /-! ### Geometric sum with `ℕ`-division -/
 
 
-theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
+lemma Nat.pred_mul_geom_sum_le (a b n : ℕ) :
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) ≤ a * b - a / b ^ n :=
   calc
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) =

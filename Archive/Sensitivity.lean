@@ -24,7 +24,7 @@ A fun summer collaboration by
 Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert Y. Lewis, and Patrick Massot,
 based on Don Knuth's account of the story
 (https://www.cs.stanford.edu/~knuth/papers/huang.pdf),
-using the Lean theorem prover (https://leanprover.github.io/),
+using the Lean lemma prover (https://leanprover.github.io/),
 by Leonardo de Moura at Microsoft Research, and his collaborators
 (https://leanprover.github.io/people/),
 and using Lean's user maintained mathematics library
@@ -96,7 +96,7 @@ a natural number). -/
 
 variable {n}
 
-theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
+lemma succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
   constructor
   · rintro rfl; exact ⟨rfl, rfl⟩
   · rintro ⟨h₀, h⟩
@@ -113,7 +113,7 @@ def adjacent {n : ℕ} (p : Q n) : Set (Q n) := { q | ∃! i, p i ≠ q i }
 #align sensitivity.Q.adjacent Sensitivity.Q.adjacent
 
 /-- In `Q 0`, no two vertices are adjacent. -/
-theorem not_adjacent_zero (p q : Q 0) : q ∉ p.adjacent := by rintro ⟨v, _⟩; apply finZeroElim v
+lemma not_adjacent_zero (p q : Q 0) : q ∉ p.adjacent := by rintro ⟨v, _⟩; apply finZeroElim v
 #align sensitivity.Q.not_adjacent_zero Sensitivity.Q.not_adjacent_zero
 
 /-- If `p` and `q` in `Q n.succ` have different values at zero then they are adjacent
@@ -198,7 +198,7 @@ noncomputable def e : ∀ {n}, Q n → V n
 #align sensitivity.e Sensitivity.e
 
 @[simp]
-theorem e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
+lemma e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
   rfl
 #align sensitivity.e_zero_apply Sensitivity.e_zero_apply
 
@@ -211,7 +211,7 @@ noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
 
 variable {n : ℕ}
 
-theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
+lemma duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction' n with n IH
   · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
     dsimp [ε, e]
@@ -245,7 +245,7 @@ open Module
 
 /-- `e` and `ε` are dual families of vectors. It implies that `e` is indeed a basis
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
-theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
+lemma dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval := duality
   Total := @epsilon_total _
 #align sensitivity.dual_bases_e_ε Sensitivity.dualBases_e_ε
@@ -289,7 +289,7 @@ lemma f_zero : f 0 = 0 :=
   rfl
 #align sensitivity.f_zero Sensitivity.f_zero
 
-theorem f_succ_apply (v : V n.succ) : f n.succ v = (f n v.1 + v.2, v.1 - f n v.2) := by
+lemma f_succ_apply (v : V n.succ) : f n.succ v = (f n v.1 + v.2, v.1 - f n v.2) := by
   cases v
   rw [f]
   simp only [sub_eq_add_neg]
@@ -350,7 +350,7 @@ lemma g_injective : Injective (g m) := by
   exact h.right
 #align sensitivity.g_injective Sensitivity.g_injective
 
-theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
+lemma f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
   have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (by exact_mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
@@ -394,7 +394,7 @@ theory of lattices, with inf and sup (also known as meet and join). -/
 /-- If a subset `H` of `Q (m+1)` has cardinal at least `2^m + 1` then the
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
-theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
+lemma exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ (0 : _) := by
   let W := Span (e '' H)
   let img := range (g m)
@@ -427,7 +427,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
 #align sensitivity.exists_eigenvalue Sensitivity.exists_eigenvalue
 
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
-theorem huang_degree_lemma (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
+lemma huang_degree_lemma (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by

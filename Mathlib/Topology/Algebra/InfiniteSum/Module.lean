@@ -22,7 +22,7 @@ lemma HasSum.smul_const {r : R} (hf : HasSum f r) (a : M) : HasSum (fun z => f z
   hf.map ((smulAddHom R M).flip a) (continuous_id.smul continuous_const)
 #align has_sum.smul_const HasSum.smul_const
 
-theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z => f z • a :=
+lemma Summable.smul_const (hf : Summable f) (a : M) : Summable fun z => f z • a :=
   (hf.hasSum.smul_const _).summable
 #align summable.smul_const Summable.smul_const
 

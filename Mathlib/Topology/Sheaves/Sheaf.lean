@@ -88,7 +88,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The presheaf valued in `Unit` over any topological space is a sheaf.
 -/
-theorem isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf :=
+lemma isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf :=
   fun x U S _ x _ => ⟨eqToHom (Subsingleton.elim _ _), by aesop_cat, fun _ => by aesop_cat⟩
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unit TopCat.Presheaf.isSheaf_unit
@@ -155,7 +155,7 @@ instance forgetFaithful : Faithful (forget C X) where
   map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.
-theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
+lemma id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.id_app TopCat.Sheaf.id_app

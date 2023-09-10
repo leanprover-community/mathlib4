@@ -17,10 +17,10 @@ namespace Nat
 section
 set_option linter.deprecated false
 
-theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
+lemma shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 #align nat.shiftl_eq_mul_pow Nat.shiftLeft_eq_mul_pow
 
-theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
+lemma shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
   | k + 1 => by
     change bit1 (shiftLeft' true m k) + 1 = (m + 1) * (2 ^ k * 2)
@@ -33,21 +33,21 @@ end
 
 #align nat.one_shiftl Nat.one_shiftLeft
 
-theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
+lemma zero_shiftLeft (n) : 0 <<< n = 0 := by simp
 #align nat.zero_shiftl Nat.zero_shiftLeft
 
-theorem shiftRight_eq_div_pow (m) : ∀ n, m >>> n = m / 2 ^ n
+lemma shiftRight_eq_div_pow (m) : ∀ n, m >>> n = m / 2 ^ n
   | 0 => (Nat.div_one _).symm
   | k + 1 => by
     rw [shiftRight_add, shiftRight_eq_div_pow m k]
     simp [Nat.div_div_eq_div_mul, ← Nat.pow_succ]
 #align nat.shiftr_eq_div_pow Nat.shiftRight_eq_div_pow
 
-theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
+lemma shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
   induction n <;> simp [bit_ne_zero, shiftLeft', *]
 #align nat.shiftl'_ne_zero_left Nat.shiftLeft'_ne_zero_left
 
-theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
+lemma shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
   | succ _, _ => Nat.bit1_ne_zero _
 #align nat.shiftl'_tt_ne_zero Nat.shiftLeft'_tt_ne_zero
@@ -78,7 +78,7 @@ lemma size_bit0 {n} (h : n ≠ 0) : size (bit0 n) = succ (size n) :=
 #align nat.size_bit0 Nat.size_bit0
 
 @[simp]
-theorem size_bit1 (n) : size (bit1 n) = succ (size n) :=
+lemma size_bit1 (n) : size (bit1 n) = succ (size n) :=
   @size_bit true n (Nat.bit1_ne_zero n)
 #align nat.size_bit1 Nat.size_bit1
 
@@ -114,7 +114,7 @@ lemma size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n :=
   by simp only [size_shiftLeft' (shiftLeft'_ne_zero_left _ h _), ← shiftLeft'_false]
 #align nat.size_shiftl Nat.size_shiftLeft
 
-theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
+lemma lt_size_self (n : ℕ) : n < 2 ^ size n := by
   rw [← one_shiftLeft]
   have : ∀ {n}, n = 0 → n < 1 <<< (size n) := by simp
   apply binaryRec _ _ n
@@ -164,7 +164,7 @@ lemma size_le_size {m n : ℕ} (h : m ≤ n) : size m ≤ size n :=
   size_le.2 <| lt_of_le_of_lt h (lt_size_self _)
 #align nat.size_le_size Nat.size_le_size
 
-theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
+lemma size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   induction' n using Nat.binaryRec' with b n h ih; · simp
   rw [size_bit, bits_append_bit _ _ h]
   · simp [ih]

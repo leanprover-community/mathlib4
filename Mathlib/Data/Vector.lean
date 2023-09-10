@@ -61,7 +61,7 @@ def head : Vector α (Nat.succ n) → α
 #align vector.head Vector.head
 
 /-- The head of a vector obtained by prepending is the element prepended. -/
-theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
+lemma head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 #align vector.head_cons Vector.head_cons
 
@@ -72,7 +72,7 @@ def tail : Vector α n → Vector α (n - 1)
 #align vector.tail Vector.tail
 
 /-- The tail of a vector obtained by prepending is the vector prepended. to -/
-theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
+lemma tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
   | ⟨_, _⟩ => rfl
 #align vector.tail_cons Vector.tail_cons
 
@@ -131,13 +131,13 @@ def map (f : α → β) : Vector α n → Vector β n
 
 /-- A `nil` vector maps to a `nil` vector. -/
 @[simp]
-theorem map_nil (f : α → β) : map f nil = nil :=
+lemma map_nil (f : α → β) : map f nil = nil :=
   rfl
 #align vector.map_nil Vector.map_nil
 
 /-- `map` is natural with respect to `cons`. -/
 @[simp]
-theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
+lemma map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 #align vector.map_cons Vector.map_cons
 
@@ -235,14 +235,14 @@ protected lemma eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 �
 #align vector.eq Vector.eq
 
 /-- A vector of length `0` is a `nil` vector. -/
-protected theorem eq_nil (v : Vector α 0) : v = nil :=
+protected lemma eq_nil (v : Vector α 0) : v = nil :=
   v.eq nil (List.eq_nil_of_length_eq_zero v.2)
 #align vector.eq_nil Vector.eq_nil
 
 /-- Vector of length from a list `v`
 with witness that `v` has length `n` maps to `v` under `toList`.  -/
 @[simp]
-theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
+lemma toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
   rfl
 #align vector.to_list_mk Vector.toList_mk
 
@@ -254,14 +254,14 @@ lemma toList_nil : toList nil = @List.nil α :=
 
 /-- The length of the list to which a vector of length `n` maps is `n`. -/
 @[simp]
-theorem toList_length (v : Vector α n) : (toList v).length = n :=
+lemma toList_length (v : Vector α n) : (toList v).length = n :=
   v.2
 #align vector.to_list_length Vector.toList_length
 
 /-- `toList` of `cons` of a vector and an element is
 the `cons` of the list obtained by `toList` and the element -/
 @[simp]
-theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
+lemma toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
   cases v; rfl
 #align vector.to_list_cons Vector.toList_cons
 

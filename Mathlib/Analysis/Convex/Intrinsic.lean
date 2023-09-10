@@ -96,7 +96,7 @@ lemma intrinsicInterior_subset : intrinsicInterior 𝕜 s ⊆ s :=
   image_subset_iff.2 interior_subset
 #align intrinsic_interior_subset intrinsicInterior_subset
 
-theorem intrinsicFrontier_subset (hs : IsClosed s) : intrinsicFrontier 𝕜 s ⊆ s :=
+lemma intrinsicFrontier_subset (hs : IsClosed s) : intrinsicFrontier 𝕜 s ⊆ s :=
   image_subset_iff.2 (hs.preimage continuous_induced_dom).frontier_subset
 #align intrinsic_frontier_subset intrinsicFrontier_subset
 
@@ -133,18 +133,18 @@ alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := in
 --attribute [protected] Set.Nonempty.intrinsicClosure -- porting note: removed
 
 @[simp]
-theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
+lemma intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
   simpa only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,
     Subtype.range_coe] using coe_affineSpan_singleton _ _ _
 #align intrinsic_interior_singleton intrinsicInterior_singleton
 
 @[simp]
-theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set P) = ∅ := by
+lemma intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set P) = ∅ := by
   rw [intrinsicFrontier, preimage_coe_affineSpan_singleton, frontier_univ, image_empty]
 #align intrinsic_frontier_singleton intrinsicFrontier_singleton
 
 @[simp]
-theorem intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P) = {x} := by
+lemma intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P) = {x} := by
   simpa only [intrinsicClosure, preimage_coe_affineSpan_singleton, closure_univ, image_univ,
     Subtype.range_coe] using coe_affineSpan_singleton _ _ _
 #align intrinsic_closure_singleton intrinsicClosure_singleton
@@ -154,7 +154,7 @@ Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
 -/
 
 
-theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t := by
+lemma intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t := by
   refine' image_subset_iff.2 fun x hx => _
   refine' ⟨Set.inclusion (affineSpan_mono _ h) x, _, rfl⟩
   refine' (continuous_inclusion (affineSpan_mono _ h)).closure_preimage_subset _ (closure_mono _ hx)
@@ -179,56 +179,56 @@ lemma intrinsicClosure_subset_affineSpan : intrinsicClosure 𝕜 s ⊆ affineSpa
 #align intrinsic_closure_subset_affine_span intrinsicClosure_subset_affineSpan
 
 @[simp]
-theorem intrinsicClosure_diff_intrinsicFrontier (s : Set P) :
+lemma intrinsicClosure_diff_intrinsicFrontier (s : Set P) :
     intrinsicClosure 𝕜 s \ intrinsicFrontier 𝕜 s = intrinsicInterior 𝕜 s :=
   (image_diff Subtype.coe_injective _ _).symm.trans <| by
     rw [closure_diff_frontier, intrinsicInterior]
 #align intrinsic_closure_diff_intrinsic_frontier intrinsicClosure_diff_intrinsicFrontier
 
 @[simp]
-theorem intrinsicClosure_diff_intrinsicInterior (s : Set P) :
+lemma intrinsicClosure_diff_intrinsicInterior (s : Set P) :
     intrinsicClosure 𝕜 s \ intrinsicInterior 𝕜 s = intrinsicFrontier 𝕜 s :=
   (image_diff Subtype.coe_injective _ _).symm
 #align intrinsic_closure_diff_intrinsic_interior intrinsicClosure_diff_intrinsicInterior
 
 @[simp]
-theorem intrinsicInterior_union_intrinsicFrontier (s : Set P) :
+lemma intrinsicInterior_union_intrinsicFrontier (s : Set P) :
     intrinsicInterior 𝕜 s ∪ intrinsicFrontier 𝕜 s = intrinsicClosure 𝕜 s := by
   simp [intrinsicClosure, intrinsicInterior, intrinsicFrontier, closure_eq_interior_union_frontier,
     image_union]
 #align intrinsic_interior_union_intrinsic_frontier intrinsicInterior_union_intrinsicFrontier
 
 @[simp]
-theorem intrinsicFrontier_union_intrinsicInterior (s : Set P) :
+lemma intrinsicFrontier_union_intrinsicInterior (s : Set P) :
     intrinsicFrontier 𝕜 s ∪ intrinsicInterior 𝕜 s = intrinsicClosure 𝕜 s := by
   rw [union_comm, intrinsicInterior_union_intrinsicFrontier]
 #align intrinsic_frontier_union_intrinsic_interior intrinsicFrontier_union_intrinsicInterior
 
-theorem isClosed_intrinsicClosure (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
+lemma isClosed_intrinsicClosure (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicClosure 𝕜 s) :=
   (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_closure
 #align is_closed_intrinsic_closure isClosed_intrinsicClosure
 
-theorem isClosed_intrinsicFrontier (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
+lemma isClosed_intrinsicFrontier (hs : IsClosed (affineSpan 𝕜 s : Set P)) :
     IsClosed (intrinsicFrontier 𝕜 s) :=
   (closedEmbedding_subtype_val hs).isClosedMap _ isClosed_frontier
 #align is_closed_intrinsic_frontier isClosed_intrinsicFrontier
 
 @[simp]
-theorem affineSpan_intrinsicClosure (s : Set P) :
+lemma affineSpan_intrinsicClosure (s : Set P) :
     affineSpan 𝕜 (intrinsicClosure 𝕜 s) = affineSpan 𝕜 s :=
   (affineSpan_le.2 intrinsicClosure_subset_affineSpan).antisymm <|
     affineSpan_mono _ subset_intrinsicClosure
 #align affine_span_intrinsic_closure affineSpan_intrinsicClosure
 
-protected theorem IsClosed.intrinsicClosure (hs : IsClosed ((↑) ⁻¹' s : Set <| affineSpan 𝕜 s)) :
+protected lemma IsClosed.intrinsicClosure (hs : IsClosed ((↑) ⁻¹' s : Set <| affineSpan 𝕜 s)) :
     intrinsicClosure 𝕜 s = s := by
   rw [intrinsicClosure, hs.closure_eq, image_preimage_eq_of_subset]
   exact (subset_affineSpan _ _).trans Subtype.range_coe.superset
 #align is_closed.intrinsic_closure IsClosed.intrinsicClosure
 
 @[simp]
-theorem intrinsicClosure_idem (s : Set P) :
+lemma intrinsicClosure_idem (s : Set P) :
     intrinsicClosure 𝕜 (intrinsicClosure 𝕜 s) = intrinsicClosure 𝕜 s := by
   refine' IsClosed.intrinsicClosure _
   set t := affineSpan 𝕜 (intrinsicClosure 𝕜 s) with ht
@@ -250,7 +250,7 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W
 attribute [local instance] AffineSubspace.toNormedAddTorsor AffineSubspace.nonempty_map
 
 @[simp]
-theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
+lemma image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
     intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp only [intrinsicInterior_empty, image_empty]
@@ -264,7 +264,7 @@ theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
 #align affine_isometry.image_intrinsic_interior AffineIsometry.image_intrinsicInterior
 
 @[simp]
-theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
+lemma image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
     intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
@@ -278,7 +278,7 @@ theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
 #align affine_isometry.image_intrinsic_frontier AffineIsometry.image_intrinsicFrontier
 
 @[simp]
-theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
+lemma image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
     intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
@@ -317,13 +317,13 @@ lemma intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
 variable {𝕜}
 
 @[simp]
-theorem closure_diff_intrinsicInterior (s : Set P) :
+lemma closure_diff_intrinsicInterior (s : Set P) :
     closure s \ intrinsicInterior 𝕜 s = intrinsicFrontier 𝕜 s :=
   intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_diff_intrinsicInterior s
 #align closure_diff_intrinsic_interior closure_diff_intrinsicInterior
 
 @[simp]
-theorem closure_diff_intrinsicFrontier (s : Set P) :
+lemma closure_diff_intrinsicFrontier (s : Set P) :
     closure s \ intrinsicFrontier 𝕜 s = intrinsicInterior 𝕜 s :=
   intrinsicClosure_eq_closure 𝕜 s ▸ intrinsicClosure_diff_intrinsicFrontier s
 #align closure_diff_intrinsic_frontier closure_diff_intrinsicFrontier
@@ -337,7 +337,7 @@ private lemma aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (�
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
-protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
+protected lemma Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by
   haveI := hsne.coe_sort
   obtain ⟨p, hp⟩ := hsne
@@ -351,7 +351,7 @@ protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s
       (AffineIsometryEquiv.constVSub ℝ p').symm.toAffineEquiv.toAffineMap)
 #align set.nonempty.intrinsic_interior Set.Nonempty.intrinsicInterior
 
-theorem intrinsicInterior_nonempty (hs : Convex ℝ s) :
+lemma intrinsicInterior_nonempty (hs : Convex ℝ s) :
     (intrinsicInterior ℝ s).Nonempty ↔ s.Nonempty :=
   ⟨by simp_rw [nonempty_iff_ne_empty]; rintro h rfl; exact h intrinsicInterior_empty,
     Set.Nonempty.intrinsicInterior hs⟩

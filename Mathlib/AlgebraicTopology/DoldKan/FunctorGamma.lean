@@ -108,7 +108,7 @@ lemma mapMono_id : mapMono K (𝟙 Δ) = 𝟙 _ := by
 
 variable {Δ}
 
-theorem mapMono_δ₀' (i : Δ' ⟶ Δ) [Mono i] (hi : Isδ₀ i) : mapMono K i = K.d Δ.len Δ'.len := by
+lemma mapMono_δ₀' (i : Δ' ⟶ Δ) [Mono i] (hi : Isδ₀ i) : mapMono K i = K.d Δ.len Δ'.len := by
   unfold mapMono
   suffices Δ ≠ Δ' by
     simp only [dif_neg this, dif_pos hi]
@@ -121,7 +121,7 @@ lemma mapMono_δ₀ {n : ℕ} : mapMono K (δ (0 : Fin (n + 2))) = K.d (n + 1) n
   mapMono_δ₀' K _ (by rw [Isδ₀.iff])
 #align algebraic_topology.dold_kan.Γ₀.obj.termwise.map_mono_δ₀ AlgebraicTopology.DoldKan.Γ₀.Obj.Termwise.mapMono_δ₀
 
-theorem mapMono_eq_zero (i : Δ' ⟶ Δ) [Mono i] (h₁ : Δ ≠ Δ') (h₂ : ¬Isδ₀ i) : mapMono K i = 0 := by
+lemma mapMono_eq_zero (i : Δ' ⟶ Δ) [Mono i] (h₁ : Δ ≠ Δ') (h₂ : ¬Isδ₀ i) : mapMono K i = 0 := by
   unfold mapMono
   rw [Ne.def] at h₁
   split_ifs
@@ -131,7 +131,7 @@ theorem mapMono_eq_zero (i : Δ' ⟶ Δ) [Mono i] (h₁ : Δ ≠ Δ') (h₂ : ¬
 variable {K K'}
 
 @[reassoc (attr := simp)]
-theorem mapMono_naturality (i : Δ ⟶ Δ') [Mono i] :
+lemma mapMono_naturality (i : Δ ⟶ Δ') [Mono i] :
   mapMono K i ≫ f.f Δ.len = f.f Δ'.len ≫ mapMono K' i := by
   unfold mapMono
   split_ifs with h
@@ -144,7 +144,7 @@ theorem mapMono_naturality (i : Δ ⟶ Δ') [Mono i] :
 variable (K)
 
 @[reassoc (attr := simp)]
-theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
+lemma mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   mapMono K i ≫ mapMono K i' = mapMono K (i' ≫ i) := by
   -- case where i : Δ' ⟶ Δ is the identity
   by_cases h₁ : Δ = Δ'
@@ -232,7 +232,7 @@ def obj (K : ChainComplex C ℕ) : SimplicialObject C where
 #align algebraic_topology.dold_kan.Γ₀.obj AlgebraicTopology.DoldKan.Γ₀.obj
 
 
-theorem splitting_map_eq_id (Δ : SimplexCategoryᵒᵖ) :
+lemma splitting_map_eq_id (Δ : SimplexCategoryᵒᵖ) :
     SimplicialObject.Splitting.map (Γ₀.obj K)
         (fun n : ℕ => Sigma.ι (Γ₀.Obj.summand K (op [n])) (Splitting.IndexSet.id (op [n]))) Δ =
       𝟙 _ := colimit.hom_ext (fun ⟨A⟩ => by
@@ -256,7 +256,7 @@ def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K
 #align algebraic_topology.dold_kan.Γ₀.splitting AlgebraicTopology.DoldKan.Γ₀.splitting
 
 @[simp 1100]
-theorem splitting_iso_hom_eq_id (Δ : SimplexCategoryᵒᵖ) : ((splitting K).iso Δ).hom = 𝟙 _ :=
+lemma splitting_iso_hom_eq_id (Δ : SimplexCategoryᵒᵖ) : ((splitting K).iso Δ).hom = 𝟙 _ :=
   splitting_map_eq_id K Δ
 #align algebraic_topology.dold_kan.Γ₀.splitting_iso_hom_eq_id AlgebraicTopology.DoldKan.Γ₀.splitting_iso_hom_eq_id
 
@@ -343,7 +343,7 @@ def Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   (CategoryTheory.Idempotents.functorExtension₂ _ _).obj Γ₀
 #align algebraic_topology.dold_kan.Γ₂ AlgebraicTopology.DoldKan.Γ₂
 
-theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ) :
+lemma HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ) :
     HigherFacesVanish (n + 1) ((Γ₀.splitting K).ιSummand (Splitting.IndexSet.id (op [n + 1]))) := by
   intro j _
   have eq := Γ₀.Obj.mapMono_on_summand_id K (SimplexCategory.δ j.succ)
@@ -355,7 +355,7 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
 #align algebraic_topology.dold_kan.higher_faces_vanish.on_Γ₀_summand_id AlgebraicTopology.DoldKan.HigherFacesVanish.on_Γ₀_summand_id
 
 @[reassoc (attr := simp)]
-theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : ℕ} :
+lemma PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : ℕ} :
     (Γ₀.splitting K).ιSummand (Splitting.IndexSet.id (op [n])) ≫ (PInfty : K[Γ₀.obj K] ⟶ _).f n =
       (Γ₀.splitting K).ιSummand (Splitting.IndexSet.id (op [n])) := by
   rw [PInfty_f]

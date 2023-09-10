@@ -18,7 +18,7 @@ namespace Polynomial
 
 open Polynomial
 
-theorem ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
+lemma ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
   (@aeval_algebraMap_apply_eq_algebraMap_eval ℝ K _ _ _ x p).symm
 #align polynomial.of_real_eval Polynomial.ofReal_eval
 

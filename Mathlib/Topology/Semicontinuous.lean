@@ -128,7 +128,7 @@ def UpperSemicontinuous (f : α → β) :=
 /-! #### Basic dot notation interface for lower semicontinuity -/
 
 
-theorem LowerSemicontinuousWithinAt.mono (h : LowerSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
+lemma LowerSemicontinuousWithinAt.mono (h : LowerSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     LowerSemicontinuousWithinAt f t x := fun y hy =>
   Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 #align lower_semicontinuous_within_at.mono LowerSemicontinuousWithinAt.mono
@@ -138,17 +138,17 @@ lemma lowerSemicontinuousWithinAt_univ_iff :
   simp [LowerSemicontinuousWithinAt, LowerSemicontinuousAt, nhdsWithin_univ]
 #align lower_semicontinuous_within_at_univ_iff lowerSemicontinuousWithinAt_univ_iff
 
-theorem LowerSemicontinuousAt.lowerSemicontinuousWithinAt (s : Set α)
+lemma LowerSemicontinuousAt.lowerSemicontinuousWithinAt (s : Set α)
     (h : LowerSemicontinuousAt f x) : LowerSemicontinuousWithinAt f s x := fun y hy =>
   Filter.Eventually.filter_mono nhdsWithin_le_nhds (h y hy)
 #align lower_semicontinuous_at.lower_semicontinuous_within_at LowerSemicontinuousAt.lowerSemicontinuousWithinAt
 
-theorem LowerSemicontinuousOn.lowerSemicontinuousWithinAt (h : LowerSemicontinuousOn f s)
+lemma LowerSemicontinuousOn.lowerSemicontinuousWithinAt (h : LowerSemicontinuousOn f s)
     (hx : x ∈ s) : LowerSemicontinuousWithinAt f s x :=
   h x hx
 #align lower_semicontinuous_on.lower_semicontinuous_within_at LowerSemicontinuousOn.lowerSemicontinuousWithinAt
 
-theorem LowerSemicontinuousOn.mono (h : LowerSemicontinuousOn f s) (hst : t ⊆ s) :
+lemma LowerSemicontinuousOn.mono (h : LowerSemicontinuousOn f s) (hst : t ⊆ s) :
     LowerSemicontinuousOn f t := fun x hx => (h x (hst hx)).mono hst
 #align lower_semicontinuous_on.mono LowerSemicontinuousOn.mono
 
@@ -156,17 +156,17 @@ lemma lowerSemicontinuousOn_univ_iff : LowerSemicontinuousOn f univ ↔ LowerSem
   simp [LowerSemicontinuousOn, LowerSemicontinuous, lowerSemicontinuousWithinAt_univ_iff]
 #align lower_semicontinuous_on_univ_iff lowerSemicontinuousOn_univ_iff
 
-theorem LowerSemicontinuous.lowerSemicontinuousAt (h : LowerSemicontinuous f) (x : α) :
+lemma LowerSemicontinuous.lowerSemicontinuousAt (h : LowerSemicontinuous f) (x : α) :
     LowerSemicontinuousAt f x :=
   h x
 #align lower_semicontinuous.lower_semicontinuous_at LowerSemicontinuous.lowerSemicontinuousAt
 
-theorem LowerSemicontinuous.lowerSemicontinuousWithinAt (h : LowerSemicontinuous f) (s : Set α)
+lemma LowerSemicontinuous.lowerSemicontinuousWithinAt (h : LowerSemicontinuous f) (s : Set α)
     (x : α) : LowerSemicontinuousWithinAt f s x :=
   (h x).lowerSemicontinuousWithinAt s
 #align lower_semicontinuous.lower_semicontinuous_within_at LowerSemicontinuous.lowerSemicontinuousWithinAt
 
-theorem LowerSemicontinuous.lowerSemicontinuousOn (h : LowerSemicontinuous f) (s : Set α) :
+lemma LowerSemicontinuous.lowerSemicontinuousOn (h : LowerSemicontinuous f) (s : Set α) :
     LowerSemicontinuousOn f s := fun x _hx => h.lowerSemicontinuousWithinAt s x
 #align lower_semicontinuous.lower_semicontinuous_on LowerSemicontinuous.lowerSemicontinuousOn
 
@@ -196,7 +196,7 @@ section
 
 variable [Zero β]
 
-theorem IsOpen.lowerSemicontinuous_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
+lemma IsOpen.lowerSemicontinuous_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
     LowerSemicontinuous (indicator s fun _x => y) := by
   intro x z hz
   by_cases h : x ∈ s <;> simp [h] at hz
@@ -206,22 +206,22 @@ theorem IsOpen.lowerSemicontinuous_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
     by_cases h' : x' ∈ s <;> simp [h', hz.trans_le hy, hz]
 #align is_open.lower_semicontinuous_indicator IsOpen.lowerSemicontinuous_indicator
 
-theorem IsOpen.lowerSemicontinuousOn_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
+lemma IsOpen.lowerSemicontinuousOn_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
     LowerSemicontinuousOn (indicator s fun _x => y) t :=
   (hs.lowerSemicontinuous_indicator hy).lowerSemicontinuousOn t
 #align is_open.lower_semicontinuous_on_indicator IsOpen.lowerSemicontinuousOn_indicator
 
-theorem IsOpen.lowerSemicontinuousAt_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
+lemma IsOpen.lowerSemicontinuousAt_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
     LowerSemicontinuousAt (indicator s fun _x => y) x :=
   (hs.lowerSemicontinuous_indicator hy).lowerSemicontinuousAt x
 #align is_open.lower_semicontinuous_at_indicator IsOpen.lowerSemicontinuousAt_indicator
 
-theorem IsOpen.lowerSemicontinuousWithinAt_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
+lemma IsOpen.lowerSemicontinuousWithinAt_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
     LowerSemicontinuousWithinAt (indicator s fun _x => y) t x :=
   (hs.lowerSemicontinuous_indicator hy).lowerSemicontinuousWithinAt t x
 #align is_open.lower_semicontinuous_within_at_indicator IsOpen.lowerSemicontinuousWithinAt_indicator
 
-theorem IsClosed.lowerSemicontinuous_indicator (hs : IsClosed s) (hy : y ≤ 0) :
+lemma IsClosed.lowerSemicontinuous_indicator (hs : IsClosed s) (hy : y ≤ 0) :
     LowerSemicontinuous (indicator s fun _x => y) := by
   intro x z hz
   by_cases h : x ∈ s <;> simp [h] at hz
@@ -231,17 +231,17 @@ theorem IsClosed.lowerSemicontinuous_indicator (hs : IsClosed s) (hy : y ≤ 0) 
     simp (config := { contextual := true }) [hz]
 #align is_closed.lower_semicontinuous_indicator IsClosed.lowerSemicontinuous_indicator
 
-theorem IsClosed.lowerSemicontinuousOn_indicator (hs : IsClosed s) (hy : y ≤ 0) :
+lemma IsClosed.lowerSemicontinuousOn_indicator (hs : IsClosed s) (hy : y ≤ 0) :
     LowerSemicontinuousOn (indicator s fun _x => y) t :=
   (hs.lowerSemicontinuous_indicator hy).lowerSemicontinuousOn t
 #align is_closed.lower_semicontinuous_on_indicator IsClosed.lowerSemicontinuousOn_indicator
 
-theorem IsClosed.lowerSemicontinuousAt_indicator (hs : IsClosed s) (hy : y ≤ 0) :
+lemma IsClosed.lowerSemicontinuousAt_indicator (hs : IsClosed s) (hy : y ≤ 0) :
     LowerSemicontinuousAt (indicator s fun _x => y) x :=
   (hs.lowerSemicontinuous_indicator hy).lowerSemicontinuousAt x
 #align is_closed.lower_semicontinuous_at_indicator IsClosed.lowerSemicontinuousAt_indicator
 
-theorem IsClosed.lowerSemicontinuousWithinAt_indicator (hs : IsClosed s) (hy : y ≤ 0) :
+lemma IsClosed.lowerSemicontinuousWithinAt_indicator (hs : IsClosed s) (hy : y ≤ 0) :
     LowerSemicontinuousWithinAt (indicator s fun _x => y) t x :=
   (hs.lowerSemicontinuous_indicator hy).lowerSemicontinuousWithinAt t x
 #align is_closed.lower_semicontinuous_within_at_indicator IsClosed.lowerSemicontinuousWithinAt_indicator
@@ -257,7 +257,7 @@ lemma lowerSemicontinuous_iff_isOpen_preimage :
     IsOpen.mem_nhds (H y) y_lt⟩
 #align lower_semicontinuous_iff_is_open_preimage lowerSemicontinuous_iff_isOpen_preimage
 
-theorem LowerSemicontinuous.isOpen_preimage (hf : LowerSemicontinuous f) (y : β) :
+lemma LowerSemicontinuous.isOpen_preimage (hf : LowerSemicontinuous f) (y : β) :
     IsOpen (f ⁻¹' Ioi y) :=
   lowerSemicontinuous_iff_isOpen_preimage.1 hf y
 #align lower_semicontinuous.is_open_preimage LowerSemicontinuous.isOpen_preimage
@@ -664,7 +664,7 @@ end
 /-! #### Basic dot notation interface for upper semicontinuity -/
 
 
-theorem UpperSemicontinuousWithinAt.mono (h : UpperSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
+lemma UpperSemicontinuousWithinAt.mono (h : UpperSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     UpperSemicontinuousWithinAt f t x := fun y hy =>
   Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 #align upper_semicontinuous_within_at.mono UpperSemicontinuousWithinAt.mono
@@ -674,17 +674,17 @@ lemma upperSemicontinuousWithinAt_univ_iff :
   simp [UpperSemicontinuousWithinAt, UpperSemicontinuousAt, nhdsWithin_univ]
 #align upper_semicontinuous_within_at_univ_iff upperSemicontinuousWithinAt_univ_iff
 
-theorem UpperSemicontinuousAt.upperSemicontinuousWithinAt (s : Set α)
+lemma UpperSemicontinuousAt.upperSemicontinuousWithinAt (s : Set α)
     (h : UpperSemicontinuousAt f x) : UpperSemicontinuousWithinAt f s x := fun y hy =>
   Filter.Eventually.filter_mono nhdsWithin_le_nhds (h y hy)
 #align upper_semicontinuous_at.upper_semicontinuous_within_at UpperSemicontinuousAt.upperSemicontinuousWithinAt
 
-theorem UpperSemicontinuousOn.upperSemicontinuousWithinAt (h : UpperSemicontinuousOn f s)
+lemma UpperSemicontinuousOn.upperSemicontinuousWithinAt (h : UpperSemicontinuousOn f s)
     (hx : x ∈ s) : UpperSemicontinuousWithinAt f s x :=
   h x hx
 #align upper_semicontinuous_on.upper_semicontinuous_within_at UpperSemicontinuousOn.upperSemicontinuousWithinAt
 
-theorem UpperSemicontinuousOn.mono (h : UpperSemicontinuousOn f s) (hst : t ⊆ s) :
+lemma UpperSemicontinuousOn.mono (h : UpperSemicontinuousOn f s) (hst : t ⊆ s) :
     UpperSemicontinuousOn f t := fun x hx => (h x (hst hx)).mono hst
 #align upper_semicontinuous_on.mono UpperSemicontinuousOn.mono
 
@@ -692,17 +692,17 @@ lemma upperSemicontinuousOn_univ_iff : UpperSemicontinuousOn f univ ↔ UpperSem
   simp [UpperSemicontinuousOn, UpperSemicontinuous, upperSemicontinuousWithinAt_univ_iff]
 #align upper_semicontinuous_on_univ_iff upperSemicontinuousOn_univ_iff
 
-theorem UpperSemicontinuous.upperSemicontinuousAt (h : UpperSemicontinuous f) (x : α) :
+lemma UpperSemicontinuous.upperSemicontinuousAt (h : UpperSemicontinuous f) (x : α) :
     UpperSemicontinuousAt f x :=
   h x
 #align upper_semicontinuous.upper_semicontinuous_at UpperSemicontinuous.upperSemicontinuousAt
 
-theorem UpperSemicontinuous.upperSemicontinuousWithinAt (h : UpperSemicontinuous f) (s : Set α)
+lemma UpperSemicontinuous.upperSemicontinuousWithinAt (h : UpperSemicontinuous f) (s : Set α)
     (x : α) : UpperSemicontinuousWithinAt f s x :=
   (h x).upperSemicontinuousWithinAt s
 #align upper_semicontinuous.upper_semicontinuous_within_at UpperSemicontinuous.upperSemicontinuousWithinAt
 
-theorem UpperSemicontinuous.upperSemicontinuousOn (h : UpperSemicontinuous f) (s : Set α) :
+lemma UpperSemicontinuous.upperSemicontinuousOn (h : UpperSemicontinuous f) (s : Set α) :
     UpperSemicontinuousOn f s := fun x _hx => h.upperSemicontinuousWithinAt s x
 #align upper_semicontinuous.upper_semicontinuous_on UpperSemicontinuous.upperSemicontinuousOn
 
@@ -732,42 +732,42 @@ section
 
 variable [Zero β]
 
-theorem IsOpen.upperSemicontinuous_indicator (hs : IsOpen s) (hy : y ≤ 0) :
+lemma IsOpen.upperSemicontinuous_indicator (hs : IsOpen s) (hy : y ≤ 0) :
     UpperSemicontinuous (indicator s fun _x => y) :=
   @IsOpen.lowerSemicontinuous_indicator α _ βᵒᵈ _ s y _ hs hy
 #align is_open.upper_semicontinuous_indicator IsOpen.upperSemicontinuous_indicator
 
-theorem IsOpen.upperSemicontinuousOn_indicator (hs : IsOpen s) (hy : y ≤ 0) :
+lemma IsOpen.upperSemicontinuousOn_indicator (hs : IsOpen s) (hy : y ≤ 0) :
     UpperSemicontinuousOn (indicator s fun _x => y) t :=
   (hs.upperSemicontinuous_indicator hy).upperSemicontinuousOn t
 #align is_open.upper_semicontinuous_on_indicator IsOpen.upperSemicontinuousOn_indicator
 
-theorem IsOpen.upperSemicontinuousAt_indicator (hs : IsOpen s) (hy : y ≤ 0) :
+lemma IsOpen.upperSemicontinuousAt_indicator (hs : IsOpen s) (hy : y ≤ 0) :
     UpperSemicontinuousAt (indicator s fun _x => y) x :=
   (hs.upperSemicontinuous_indicator hy).upperSemicontinuousAt x
 #align is_open.upper_semicontinuous_at_indicator IsOpen.upperSemicontinuousAt_indicator
 
-theorem IsOpen.upperSemicontinuousWithinAt_indicator (hs : IsOpen s) (hy : y ≤ 0) :
+lemma IsOpen.upperSemicontinuousWithinAt_indicator (hs : IsOpen s) (hy : y ≤ 0) :
     UpperSemicontinuousWithinAt (indicator s fun _x => y) t x :=
   (hs.upperSemicontinuous_indicator hy).upperSemicontinuousWithinAt t x
 #align is_open.upper_semicontinuous_within_at_indicator IsOpen.upperSemicontinuousWithinAt_indicator
 
-theorem IsClosed.upperSemicontinuous_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
+lemma IsClosed.upperSemicontinuous_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
     UpperSemicontinuous (indicator s fun _x => y) :=
   @IsClosed.lowerSemicontinuous_indicator α _ βᵒᵈ _ s y _ hs hy
 #align is_closed.upper_semicontinuous_indicator IsClosed.upperSemicontinuous_indicator
 
-theorem IsClosed.upperSemicontinuousOn_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
+lemma IsClosed.upperSemicontinuousOn_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
     UpperSemicontinuousOn (indicator s fun _x => y) t :=
   (hs.upperSemicontinuous_indicator hy).upperSemicontinuousOn t
 #align is_closed.upper_semicontinuous_on_indicator IsClosed.upperSemicontinuousOn_indicator
 
-theorem IsClosed.upperSemicontinuousAt_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
+lemma IsClosed.upperSemicontinuousAt_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
     UpperSemicontinuousAt (indicator s fun _x => y) x :=
   (hs.upperSemicontinuous_indicator hy).upperSemicontinuousAt x
 #align is_closed.upper_semicontinuous_at_indicator IsClosed.upperSemicontinuousAt_indicator
 
-theorem IsClosed.upperSemicontinuousWithinAt_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
+lemma IsClosed.upperSemicontinuousWithinAt_indicator (hs : IsClosed s) (hy : 0 ≤ y) :
     UpperSemicontinuousWithinAt (indicator s fun _x => y) t x :=
   (hs.upperSemicontinuous_indicator hy).upperSemicontinuousWithinAt t x
 #align is_closed.upper_semicontinuous_within_at_indicator IsClosed.upperSemicontinuousWithinAt_indicator
@@ -783,7 +783,7 @@ lemma upperSemicontinuous_iff_isOpen_preimage :
     IsOpen.mem_nhds (H y) y_lt⟩
 #align upper_semicontinuous_iff_is_open_preimage upperSemicontinuous_iff_isOpen_preimage
 
-theorem UpperSemicontinuous.isOpen_preimage (hf : UpperSemicontinuous f) (y : β) :
+lemma UpperSemicontinuous.isOpen_preimage (hf : UpperSemicontinuous f) (y : β) :
     IsOpen (f ⁻¹' Iio y) :=
   upperSemicontinuous_iff_isOpen_preimage.1 hf y
 #align upper_semicontinuous.is_open_preimage UpperSemicontinuous.isOpen_preimage

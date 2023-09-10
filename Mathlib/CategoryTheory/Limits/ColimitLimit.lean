@@ -89,7 +89,7 @@ noncomputable def colimitLimitToLimitColimit :
 this lemma characterises it.
 -/
 @[reassoc (attr := simp)]
-theorem ι_colimitLimitToLimitColimit_π (j) (k) :
+lemma ι_colimitLimitToLimitColimit_π (j) (k) :
     colimit.ι _ k ≫ colimitLimitToLimitColimit F ≫ limit.π _ j =
       limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j ≫ colimit.ι ((curry.obj F).obj j) k := by
   dsimp [colimitLimitToLimitColimit]
@@ -97,7 +97,7 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
 #align category_theory.limits.ι_colimit_limit_to_limit_colimit_π CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π
 
 @[simp]
-theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j : J) (k : K) (f) :
+lemma ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j : J) (k : K) (f) :
     limit.π (curry.obj F ⋙ colim) j
         (colimitLimitToLimitColimit F (colimit.ι (curry.obj (Prod.swap K J ⋙ F) ⋙ lim) k f)) =
       colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j f) := by

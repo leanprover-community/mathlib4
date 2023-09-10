@@ -28,11 +28,11 @@ noncomputable def viaEmbedding : Perm β :=
   extendDomain e (ofInjective ι.1 ι.2)
 #align equiv.perm.via_embedding Equiv.Perm.viaEmbedding
 
-theorem viaEmbedding_apply (x : α) : e.viaEmbedding ι (ι x) = ι (e x) :=
+lemma viaEmbedding_apply (x : α) : e.viaEmbedding ι (ι x) = ι (e x) :=
   extendDomain_apply_image e (ofInjective ι.1 ι.2) x
 #align equiv.perm.via_embedding_apply Equiv.Perm.viaEmbedding_apply
 
-theorem viaEmbedding_apply_of_not_mem (x : β) (hx : x ∉ Set.range ι) : e.viaEmbedding ι x = x :=
+lemma viaEmbedding_apply_of_not_mem (x : β) (hx : x ∉ Set.range ι) : e.viaEmbedding ι x = x :=
   extendDomain_apply_not_subtype e (ofInjective ι.1 ι.2) hx
 #align equiv.perm.via_embedding_apply_of_not_mem Equiv.Perm.viaEmbedding_apply_of_not_mem
 

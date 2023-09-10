@@ -72,7 +72,7 @@ variable {f : R[X]} {I : Ideal R[X]}
 
 /-- If the coefficients of a polynomial belong to an ideal, then that ideal contains
 the ideal spanned by the coefficients of the polynomial. -/
-theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
+lemma span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
     Ideal.span { g | ∃ i, g = C (f.coeff i) } ≤ I := by
   simp (config := { singlePass := true }) only [@eq_comm _ _ (C _)]
   exact (Ideal.span_le.trans range_subset_iff).mpr cf

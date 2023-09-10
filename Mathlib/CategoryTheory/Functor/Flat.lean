@@ -180,7 +180,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
           (StructuredArrow.proj s.pt F).mapCone s')
 #align category_theory.preserves_finite_limits_of_flat.lift CategoryTheory.PreservesFiniteLimitsOfFlat.lift
 
-theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
+lemma fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 #align category_theory.preserves_finite_limits_of_flat.fac CategoryTheory.PreservesFiniteLimitsOfFlat.fac
 
@@ -379,7 +379,7 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
 
-theorem flat_iff_lan_flat (F : C ⥤ D) :
+lemma flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun H => inferInstance, fun H => by
     skip

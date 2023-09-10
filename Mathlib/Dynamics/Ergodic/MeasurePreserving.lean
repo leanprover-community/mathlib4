@@ -54,7 +54,7 @@ protected theorem _root_.Measurable.measurePreserving
 
 namespace MeasurePreserving
 
-protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
+protected lemma id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨measurable_id, map_id⟩
 #align measure_theory.measure_preserving.id MeasureTheory.MeasurePreserving.id
 
@@ -62,7 +62,7 @@ protected lemma aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) 
   hf.1.aemeasurable
 #align measure_theory.measure_preserving.ae_measurable MeasureTheory.MeasurePreserving.aemeasurable
 
-theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
+lemma symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
   ⟨e.symm.measurable, by
     rw [← h.map_eq, map_map e.symm.measurable e.measurable, e.symm_comp_self, map_id]⟩
@@ -146,7 +146,7 @@ lemma measure_symmDiff_preimage_iterate_le
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/
-theorem exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f μ μ)
+lemma exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f μ μ)
     (hs : MeasurableSet s) {n : ℕ} (hvol : μ (Set.univ : Set α) < n * μ s) :
     ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, f^[m] x ∈ s := by
   have A : ∀ m, MeasurableSet (f^[m] ⁻¹' s) := fun m => (hf.iterate m).measurable hs
@@ -177,7 +177,7 @@ end MeasurePreserving
 
 namespace MeasurableEquiv
 
-theorem measurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
+lemma measurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
     MeasurePreserving e.symm (map e μ) μ :=
   (e.measurable.measurePreserving μ).symm _
 #align measure_theory.measurable_equiv.measure_preserving_symm MeasureTheory.MeasurableEquiv.measurePreserving_symm

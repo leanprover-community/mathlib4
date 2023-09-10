@@ -116,12 +116,12 @@ def pairFunction (X Y : C) : WalkingPair → C := fun j => WalkingPair.casesOn j
 #align category_theory.limits.pair_function CategoryTheory.Limits.pairFunction
 
 @[simp]
-theorem pairFunction_left (X Y : C) : pairFunction X Y left = X :=
+lemma pairFunction_left (X Y : C) : pairFunction X Y left = X :=
   rfl
 #align category_theory.limits.pair_function_left CategoryTheory.Limits.pairFunction_left
 
 @[simp]
-theorem pairFunction_right (X Y : C) : pairFunction X Y right = Y :=
+lemma pairFunction_right (X Y : C) : pairFunction X Y right = Y :=
   rfl
 #align category_theory.limits.pair_function_right CategoryTheory.Limits.pairFunction_right
 
@@ -133,12 +133,12 @@ def pair (X Y : C) : Discrete WalkingPair ⥤ C :=
 #align category_theory.limits.pair CategoryTheory.Limits.pair
 
 @[simp]
-theorem pair_obj_left (X Y : C) : (pair X Y).obj ⟨left⟩ = X :=
+lemma pair_obj_left (X Y : C) : (pair X Y).obj ⟨left⟩ = X :=
   rfl
 #align category_theory.limits.pair_obj_left CategoryTheory.Limits.pair_obj_left
 
 @[simp]
-theorem pair_obj_right (X Y : C) : (pair X Y).obj ⟨right⟩ = Y :=
+lemma pair_obj_right (X Y : C) : (pair X Y).obj ⟨right⟩ = Y :=
   rfl
 #align category_theory.limits.pair_obj_right CategoryTheory.Limits.pair_obj_right
 
@@ -1026,7 +1026,7 @@ lemma braid_natural [HasBinaryProducts C] {W X Y Z : C} (f : X ⟶ Y) (g : Z ⟶
 #align category_theory.limits.braid_natural_assoc CategoryTheory.Limits.braid_natural_assoc
 
 @[reassoc]
-theorem prod.symmetry' (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
+lemma prod.symmetry' (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
     prod.lift prod.snd prod.fst ≫ prod.lift prod.snd prod.fst = 𝟙 (P ⨯ Q) :=
   (prod.braiding _ _).hom_inv_id
 #align category_theory.limits.prod.symmetry' CategoryTheory.Limits.prod.symmetry'
@@ -1034,7 +1034,7 @@ theorem prod.symmetry' (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
 
 /-- The braiding isomorphism is symmetric. -/
 @[reassoc]
-theorem prod.symmetry (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
+lemma prod.symmetry (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
     (prod.braiding P Q).hom ≫ (prod.braiding Q P).hom = 𝟙 _ :=
   (prod.braiding _ _).hom_inv_id
 #align category_theory.limits.prod.symmetry CategoryTheory.Limits.prod.symmetry
@@ -1134,14 +1134,14 @@ def coprod.braiding (P Q : C) : P ⨿ Q ≅ Q ⨿ P where
 #align category_theory.limits.coprod.braiding CategoryTheory.Limits.coprod.braiding
 
 @[reassoc]
-theorem coprod.symmetry' (P Q : C) :
+lemma coprod.symmetry' (P Q : C) :
     coprod.desc coprod.inr coprod.inl ≫ coprod.desc coprod.inr coprod.inl = 𝟙 (P ⨿ Q) :=
   (coprod.braiding _ _).hom_inv_id
 #align category_theory.limits.coprod.symmetry' CategoryTheory.Limits.coprod.symmetry'
 #align category_theory.limits.coprod.symmetry'_assoc CategoryTheory.Limits.coprod.symmetry'_assoc
 
 /-- The braiding isomorphism is symmetric. -/
-theorem coprod.symmetry (P Q : C) : (coprod.braiding P Q).hom ≫ (coprod.braiding Q P).hom = 𝟙 _ :=
+lemma coprod.symmetry (P Q : C) : (coprod.braiding P Q).hom ≫ (coprod.braiding Q P).hom = 𝟙 _ :=
   coprod.symmetry' _ _
 #align category_theory.limits.coprod.symmetry CategoryTheory.Limits.coprod.symmetry
 
@@ -1152,7 +1152,7 @@ def coprod.associator (P Q R : C) : (P ⨿ Q) ⨿ R ≅ P ⨿ Q ⨿ R where
   inv := coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) coprod.inr)
 #align category_theory.limits.coprod.associator CategoryTheory.Limits.coprod.associator
 
-theorem coprod.pentagon (W X Y Z : C) :
+lemma coprod.pentagon (W X Y Z : C) :
     coprod.map (coprod.associator W X Y).hom (𝟙 Z) ≫
         (coprod.associator W (X ⨿ Y) Z).hom ≫ coprod.map (𝟙 W) (coprod.associator X Y Z).hom =
       (coprod.associator (W ⨿ X) Y Z).hom ≫ (coprod.associator W X (Y ⨿ Z)).hom :=
@@ -1186,7 +1186,7 @@ def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
   inv_hom_id := by simp
 #align category_theory.limits.coprod.right_unitor CategoryTheory.Limits.coprod.rightUnitor
 
-theorem coprod.triangle (X Y : C) :
+lemma coprod.triangle (X Y : C) :
     (coprod.associator X (⊥_ C) Y).hom ≫ coprod.map (𝟙 X) (coprod.leftUnitor Y).hom =
       coprod.map (coprod.rightUnitor X).hom (𝟙 Y) :=
   by ext <;> simp
@@ -1274,7 +1274,7 @@ lemma prodComparison_snd : prodComparison F A B ≫ prod.snd = F.map prod.snd :=
 
 /-- Naturality of the `prodComparison` morphism in both arguments. -/
 @[reassoc]
-theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
+lemma prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
     F.map (prod.map f g) ≫ prodComparison F A' B' =
       prodComparison F A B ≫ prod.map (F.map f) (F.map g) := by
   rw [prodComparison, prodComparison, prod.lift_map, ← F.map_comp, ← F.map_comp, prod.comp_lift, ←
@@ -1307,7 +1307,7 @@ lemma inv_prodComparison_map_snd [IsIso (prodComparison F A B)] :
 
 /-- If the product comparison morphism is an iso, its inverse is natural. -/
 @[reassoc]
-theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodComparison F A B)]
+lemma prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodComparison F A B)]
     [IsIso (prodComparison F A' B')] :
     inv (prodComparison F A B) ≫ F.map (prod.map f g) =
       prod.map (F.map f) (F.map g) ≫ inv (prodComparison F A' B') :=
@@ -1365,7 +1365,7 @@ lemma coprodComparison_inr : coprod.inr ≫ coprodComparison F A B = F.map copro
 
 /-- Naturality of the coprod_comparison morphism in both arguments. -/
 @[reassoc]
-theorem coprodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
+lemma coprodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
     coprodComparison F A B ≫ F.map (coprod.map f g) =
       coprod.map (F.map f) (F.map g) ≫ coprodComparison F A' B' := by
   rw [coprodComparison, coprodComparison, coprod.map_desc, ← F.map_comp, ← F.map_comp,
@@ -1397,7 +1397,7 @@ lemma map_inr_inv_coprodComparison [IsIso (coprodComparison F A B)] :
 
 /-- If the coproduct comparison morphism is an iso, its inverse is natural. -/
 @[reassoc]
-theorem coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (coprodComparison F A B)]
+lemma coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (coprodComparison F A B)]
     [IsIso (coprodComparison F A' B')] :
     inv (coprodComparison F A B) ≫ coprod.map (F.map f) (F.map g) =
       F.map (coprod.map f g) ≫ inv (coprodComparison F A' B') :=

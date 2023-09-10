@@ -162,63 +162,63 @@ def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
 #align category_theory.monoidal_closed.uncurry CategoryTheory.MonoidalClosed.uncurry
 
 @[simp]
-theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
+lemma homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.monoidal_closed.hom_equiv_apply_eq CategoryTheory.MonoidalClosed.homEquiv_apply_eq
 
 @[simp]
-theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
+lemma homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
 #align category_theory.monoidal_closed.hom_equiv_symm_apply_eq CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
 
 @[reassoc]
-theorem curry_natural_left (f : X ⟶ X') (g : A ⊗ X' ⟶ Y) : curry ((𝟙 _ ⊗ f) ≫ g) = f ≫ curry g :=
+lemma curry_natural_left (f : X ⟶ X') (g : A ⊗ X' ⟶ Y) : curry ((𝟙 _ ⊗ f) ≫ g) = f ≫ curry g :=
   Adjunction.homEquiv_naturality_left _ _ _
 #align category_theory.monoidal_closed.curry_natural_left CategoryTheory.MonoidalClosed.curry_natural_left
 
 @[reassoc]
-theorem curry_natural_right (f : A ⊗ X ⟶ Y) (g : Y ⟶ Y') :
+lemma curry_natural_right (f : A ⊗ X ⟶ Y) (g : Y ⟶ Y') :
     curry (f ≫ g) = curry f ≫ (ihom _).map g :=
   Adjunction.homEquiv_naturality_right _ _ _
 #align category_theory.monoidal_closed.curry_natural_right CategoryTheory.MonoidalClosed.curry_natural_right
 
 @[reassoc]
-theorem uncurry_natural_right (f : X ⟶ A ⟶[C] Y) (g : Y ⟶ Y') :
+lemma uncurry_natural_right (f : X ⟶ A ⟶[C] Y) (g : Y ⟶ Y') :
     uncurry (f ≫ (ihom _).map g) = uncurry f ≫ g :=
   Adjunction.homEquiv_naturality_right_symm _ _ _
 #align category_theory.monoidal_closed.uncurry_natural_right CategoryTheory.MonoidalClosed.uncurry_natural_right
 
 @[reassoc]
-theorem uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟶[C] Y) :
+lemma uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟶[C] Y) :
     uncurry (f ≫ g) = (𝟙 _ ⊗ f) ≫ uncurry g :=
   Adjunction.homEquiv_naturality_left_symm _ _ _
 #align category_theory.monoidal_closed.uncurry_natural_left CategoryTheory.MonoidalClosed.uncurry_natural_left
 
 @[simp]
-theorem uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
+lemma uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
   (Closed.isAdj.adj.homEquiv _ _).left_inv f
 #align category_theory.monoidal_closed.uncurry_curry CategoryTheory.MonoidalClosed.uncurry_curry
 
 @[simp]
-theorem curry_uncurry (f : X ⟶ A ⟶[C] Y) : curry (uncurry f) = f :=
+lemma curry_uncurry (f : X ⟶ A ⟶[C] Y) : curry (uncurry f) = f :=
   (Closed.isAdj.adj.homEquiv _ _).right_inv f
 #align category_theory.monoidal_closed.curry_uncurry CategoryTheory.MonoidalClosed.curry_uncurry
 
-theorem curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : curry f = g ↔ f = uncurry g :=
+lemma curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (ihom.adjunction A) f g
 #align category_theory.monoidal_closed.curry_eq_iff CategoryTheory.MonoidalClosed.curry_eq_iff
 
-theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : g = curry f ↔ uncurry g = f :=
+lemma eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (ihom.adjunction A) f g
 #align category_theory.monoidal_closed.eq_curry_iff CategoryTheory.MonoidalClosed.eq_curry_iff
 
 -- I don't think these two should be simp.
-theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (𝟙 A ⊗ g) ≫ (ihom.ev A).app X :=
+lemma uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (𝟙 A ⊗ g) ≫ (ihom.ev A).app X :=
   Adjunction.homEquiv_counit _
 #align category_theory.monoidal_closed.uncurry_eq CategoryTheory.MonoidalClosed.uncurry_eq
 
-theorem curry_eq (g : A ⊗ Y ⟶ X) : curry g = (ihom.coev A).app Y ≫ (ihom A).map g :=
+lemma curry_eq (g : A ⊗ Y ⟶ X) : curry g = (ihom.coev A).app Y ≫ (ihom A).map g :=
   Adjunction.homEquiv_unit _
 #align category_theory.monoidal_closed.curry_eq CategoryTheory.MonoidalClosed.curry_eq
 
@@ -251,25 +251,25 @@ def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=
 #align category_theory.monoidal_closed.pre CategoryTheory.MonoidalClosed.pre
 
 @[reassoc (attr := simp)]
-theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
+lemma id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     (𝟙 B ⊗ (pre f).app X) ≫ (ihom.ev B).app X = (f ⊗ 𝟙 (A ⟶[C] X)) ≫ (ihom.ev A).app X :=
   transferNatTransSelf_counit _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.id_tensor_pre_app_comp_ev CategoryTheory.MonoidalClosed.id_tensor_pre_app_comp_ev
 
 @[simp]
-theorem uncurry_pre (f : B ⟶ A) (X : C) :
+lemma uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = (f ⊗ 𝟙 _) ≫ (ihom.ev A).app X := by
   rw [uncurry_eq, id_tensor_pre_app_comp_ev]
 #align category_theory.monoidal_closed.uncurry_pre CategoryTheory.MonoidalClosed.uncurry_pre
 
 @[reassoc (attr := simp)]
-theorem coev_app_comp_pre_app (f : B ⟶ A) :
+lemma coev_app_comp_pre_app (f : B ⟶ A) :
     (ihom.coev A).app X ≫ (pre f).app (A ⊗ X) = (ihom.coev B).app X ≫ (ihom B).map (f ⊗ 𝟙 _) :=
   unit_transferNatTransSelf _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.coev_app_comp_pre_app CategoryTheory.MonoidalClosed.coev_app_comp_pre_app
 
 @[simp]
-theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
+lemma pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
   dsimp
   simp
@@ -315,7 +315,7 @@ monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lem
 resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z` is defined to be
 `F⁻¹(F(X) ⟶[D] F(Z))`, so currying in `C` is given by essentially conjugating currying in
 `D` by `F.`) -/
-theorem ofEquiv_curry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
+lemma ofEquiv_curry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
     [MonoidalClosed D] {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
     @MonoidalClosed.curry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =
       (F.1.1.adjunction.homEquiv Y ((ihom _).obj _))
@@ -330,7 +330,7 @@ monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lem
 resulting uncurrying map `Hom(Y, (X ⟶[C] Z)) → Hom(X ⊗ Y ⟶ Z)`. (`X ⟶[C] Z` is
 defined to be `F⁻¹(F(X) ⟶[D] F(Z))`, so uncurrying in `C` is given by essentially conjugating
 uncurrying in `D` by `F.`) -/
-theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
+lemma ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
     [MonoidalClosed D] {X Y Z : C}
     (f : Y ⟶ (@ihom _ _ _ X <| (MonoidalClosed.ofEquiv F).1 X).obj Z) :
     @MonoidalClosed.uncurry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =

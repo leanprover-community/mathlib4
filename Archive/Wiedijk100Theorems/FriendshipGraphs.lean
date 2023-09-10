@@ -122,7 +122,7 @@ lemma degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G
   If `G` is a friendship graph, then all of the off-diagonal entries of `A^2` are 1.
   If `G` is `d`-regular, then all of the diagonal entries of `A^2` are `d`.
   Putting these together determines `A^2` exactly for a `d`-regular friendship graph. -/
-theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
+lemma adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R ^ 2 = of fun v w => if v = w then (d : R) else (1 : R) := by
   ext (v w); by_cases h : v = w
   · rw [h, sq, adjMatrix_mul_self_apply_self, hd]; simp
@@ -142,7 +142,7 @@ variable [Nonempty V]
   it is regular. We have shown that nonadjacent vertices of a friendship graph have the same degree,
   and if there isn't a politician, we can show this for adjacent vertices by finding a vertex
   neither is adjacent to, and then using transitivity. -/
-theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
+lemma isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
     ∃ d : ℕ, G.IsRegularOfDegree d := by
   have v := Classical.arbitrary V
   use G.degree v
@@ -176,7 +176,7 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
   the eigenvalue to be `d * d`, or as `d + (Fintype.card V - 1)`, so those quantities must be equal.
 
   This essentially means that the graph has `d ^ 2 - d + 1` vertices. -/
-theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) = d * d := by
+lemma card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) = d * d := by
   have v := Classical.arbitrary V
   trans (G.adjMatrix ℕ ^ 2).mulVec (fun _ => 1) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
@@ -203,7 +203,7 @@ lemma card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegula
 
 end Nonempty
 
-theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
+lemma adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
   ext x
   simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_coe,
@@ -237,7 +237,7 @@ variable [Nonempty V]
   mod `p`, but we can also show that the trace must be the `p`th power of the trace of the original
   adjacency matrix, which is 0, a contradiction.
 -/
-theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : False := by
+lemma false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : False := by
   -- get a prime factor of d - 1
   let p : ℕ := (d - 1).minFac
   have p_dvd_d_pred := (ZMod.nat_cast_zmod_eq_zero_iff_dvd _ _).mpr (d - 1).minFac_dvd
@@ -267,7 +267,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
 
 /-- If `d ≤ 1`, a `d`-regular friendship graph has at most one vertex, which is
   trivially a politician. -/
-theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d ≤ 1) :
+lemma existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d ≤ 1) :
     ExistsPolitician G := by
   have sq : d * d = d := by interval_cases d <;> norm_num
   have h := card_of_regular hG hd
@@ -289,7 +289,7 @@ theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d 
 
 /-- If `d = 2`, a `d`-regular friendship graph has 3 vertices, so it must be complete graph,
   and all the vertices are politicians. -/
-theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) :
+lemma neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) :
     G.neighborFinset v = Finset.univ.erase v := by
   apply Finset.eq_of_subset_of_card_le
   · rw [Finset.subset_iff]
@@ -305,7 +305,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
     rw [hd]
 #align theorems_100.friendship.neighbor_finset_eq_of_degree_eq_two Theorems100.Friendship.neighborFinset_eq_of_degree_eq_two
 
-theorem existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsPolitician G := by
+lemma existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsPolitician G := by
   have v := Classical.arbitrary V
   use v
   intro w hvw
@@ -313,7 +313,7 @@ theorem existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsP
   exact ⟨hvw.symm, Finset.mem_univ _⟩
 #align theorems_100.friendship.exists_politician_of_degree_eq_two Theorems100.Friendship.existsPolitician_of_degree_eq_two
 
-theorem existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d ≤ 2) :
+lemma existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d ≤ 2) :
     ExistsPolitician G := by
   interval_cases d
   iterate 2 apply existsPolitician_of_degree_le_one hG hd; norm_num

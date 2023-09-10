@@ -120,7 +120,7 @@ lemma IsClosable.graph_closure_eq_closure_graph {f : E →ₗ.[R] F} (hf : f.IsC
 #align linear_pmap.is_closable.graph_closure_eq_closure_graph LinearPMap.IsClosable.graph_closure_eq_closure_graph
 
 /-- A `LinearPMap` is contained in its closure. -/
-theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
+lemma le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
   by_cases hf : f.IsClosable
   · refine' le_of_le_graph _
     rw [← hf.graph_closure_eq_closure_graph]
@@ -170,7 +170,7 @@ lemma hasCore_def {f : E →ₗ.[R] F} {S : Submodule R E} (h : f.HasCore S) :
 /-- For every unbounded operator `f` the submodule `f.domain` is a core of its closure.
 
 Note that we don't require that `f` is closable, due to the definition of the closure. -/
-theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
+lemma closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine' ⟨f.le_closure.1, _⟩
   congr
   ext x y hxy
@@ -191,7 +191,7 @@ variable {f : E →ₗ.[R] F}
 
 /-- If `f` is invertible and closable as well as its closure being invertible, then
 the graph of the inverse of the closure is given by the closure of the graph of the inverse. -/
-theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
+lemma closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
     (hcf : LinearMap.ker f.closure.toFun = ⊥) :
     f.closure.inverse.graph = f.inverse.graph.topologicalClosure := by
   rw [inverse_graph hf, inverse_graph hcf, ← hf'.graph_closure_eq_closure_graph]
@@ -208,7 +208,7 @@ theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClos
 
 /-- Assuming that `f` is invertible and closable, then the closure is invertible if and only
 if the inverse of `f` is closable. -/
-theorem inverse_isClosable_iff (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable) :
+lemma inverse_isClosable_iff (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable) :
     f.inverse.IsClosable ↔ LinearMap.ker f.closure.toFun = ⊥ := by
   constructor
   · intro ⟨f', h⟩
@@ -229,7 +229,7 @@ theorem inverse_isClosable_iff (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClo
     exact (closure_inverse_graph hf hf' h).symm
 
 /-- If `f` is invertible and closable, then taking the closure and the inverse commute. -/
-theorem inverse_closure (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
+lemma inverse_closure (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)
     (hcf : LinearMap.ker f.closure.toFun = ⊥) :
     f.inverse.closure = f.closure.inverse := by
   apply eq_of_eq_graph

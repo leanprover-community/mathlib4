@@ -154,7 +154,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 /-- A functor between preorder categories is monotone.
 -/
 @[mono]
-theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
+lemma Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 #align category_theory.functor.monotone CategoryTheory.Functor.monotone
 
 end Preorder
@@ -183,12 +183,12 @@ def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y where
 -- `@[simps]` on `Equivalence.toOrderIso` produces lemmas that fail the `simpNF` linter,
 -- so we provide them by hand:
 @[simp]
-theorem Equivalence.toOrderIso_apply (e : X ≌ Y) (x : X) : e.toOrderIso x = e.functor.obj x :=
+lemma Equivalence.toOrderIso_apply (e : X ≌ Y) (x : X) : e.toOrderIso x = e.functor.obj x :=
   rfl
 #align category_theory.equivalence.to_order_iso_apply CategoryTheory.Equivalence.toOrderIso_apply
 
 @[simp]
-theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
+lemma Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
     e.toOrderIso.symm y = e.inverse.obj y :=
   rfl
 #align category_theory.equivalence.to_order_iso_symm_apply CategoryTheory.Equivalence.toOrderIso_symm_apply

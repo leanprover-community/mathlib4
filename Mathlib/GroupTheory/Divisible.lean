@@ -262,7 +262,7 @@ noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
 #align function.surjective.divisible_by Function.Surjective.divisibleByₓ
 
 @[to_additive DivisibleBy.surjective_smul]
-theorem RootableBy.surjective_pow (A α : Type*) [Monoid A] [Pow A α] [Zero α] [RootableBy A α]
+lemma RootableBy.surjective_pow (A α : Type*) [Monoid A] [Pow A α] [Zero α] [RootableBy A α]
     {n : α} (hn : n ≠ 0) : Function.Surjective fun a : A => a ^ n := fun a =>
   ⟨RootableBy.root a n, RootableBy.root_cancel a hn⟩
 #align rootable_by.surjective_pow RootableBy.surjective_pow

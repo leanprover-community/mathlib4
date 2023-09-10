@@ -79,7 +79,7 @@ lemma chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ 
   by simp [chain_iff_forall₂]
 #align list.chain_append_singleton_iff_forall₂ List.chain_append_singleton_iff_forall₂
 
-theorem chain_map (f : β → α) {b : β} {l : List β} :
+lemma chain_map (f : β → α) {b : β} {l : List β} :
     Chain R (f b) (map f l) ↔ Chain (fun a b : β => R (f a) (f b)) b l := by
   induction l generalizing b <;> simp only [map, Chain.nil, chain_cons, *]
 #align list.chain_map List.chain_map
@@ -192,7 +192,7 @@ lemma chain'_nil : Chain' R [] :=
 #align list.chain'_nil List.chain'_nil
 
 @[simp]
-theorem chain'_singleton (a : α) : Chain' R [a] :=
+lemma chain'_singleton (a : α) : Chain' R [a] :=
   Chain.nil
 #align list.chain'_singleton List.chain'_singleton
 
@@ -221,7 +221,7 @@ lemma chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
   rw [chain'_split, chain'_cons]
 #align list.chain'_append_cons_cons List.chain'_append_cons_cons
 
-theorem chain'_map (f : β → α) {l : List β} :
+lemma chain'_map (f : β → α) {l : List β} :
     Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by
   cases l <;> [rfl; exact chain_map _]
 #align list.chain'_map List.chain'_map
@@ -290,41 +290,41 @@ lemma chain'_append :
     simp
 #align list.chain'_append List.chain'_append
 
-theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
+lemma Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
     (h : ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y) : Chain' R (l₁ ++ l₂) :=
   chain'_append.2 ⟨h₁, h₂, h⟩
 #align list.chain'.append List.Chain'.append
 
-theorem Chain'.left_of_append (h : Chain' R (l₁ ++ l₂)) : Chain' R l₁ :=
+lemma Chain'.left_of_append (h : Chain' R (l₁ ++ l₂)) : Chain' R l₁ :=
   (chain'_append.1 h).1
 #align list.chain'.left_of_append List.Chain'.left_of_append
 
-theorem Chain'.right_of_append (h : Chain' R (l₁ ++ l₂)) : Chain' R l₂ :=
+lemma Chain'.right_of_append (h : Chain' R (l₁ ++ l₂)) : Chain' R l₂ :=
   (chain'_append.1 h).2.1
 #align list.chain'.right_of_append List.Chain'.right_of_append
 
-theorem Chain'.infix (h : Chain' R l) (h' : l₁ <:+: l) : Chain' R l₁ := by
+lemma Chain'.infix (h : Chain' R l) (h' : l₁ <:+: l) : Chain' R l₁ := by
   rcases h' with ⟨l₂, l₃, rfl⟩
   exact h.left_of_append.right_of_append
 #align list.chain'.infix List.Chain'.infix
 
-theorem Chain'.suffix (h : Chain' R l) (h' : l₁ <:+ l) : Chain' R l₁ :=
+lemma Chain'.suffix (h : Chain' R l) (h' : l₁ <:+ l) : Chain' R l₁ :=
   h.infix h'.isInfix
 #align list.chain'.suffix List.Chain'.suffix
 
-theorem Chain'.prefix (h : Chain' R l) (h' : l₁ <+: l) : Chain' R l₁ :=
+lemma Chain'.prefix (h : Chain' R l) (h' : l₁ <+: l) : Chain' R l₁ :=
   h.infix h'.isInfix
 #align list.chain'.prefix List.Chain'.prefix
 
-theorem Chain'.drop (h : Chain' R l) (n : ℕ) : Chain' R (drop n l) :=
+lemma Chain'.drop (h : Chain' R l) (n : ℕ) : Chain' R (drop n l) :=
   h.suffix (drop_suffix _ _)
 #align list.chain'.drop List.Chain'.drop
 
-theorem Chain'.init (h : Chain' R l) : Chain' R l.dropLast :=
+lemma Chain'.init (h : Chain' R l) : Chain' R l.dropLast :=
   h.prefix l.dropLast_prefix
 #align list.chain'.init List.Chain'.init
 
-theorem Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
+lemma Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
   h.prefix (take_prefix _ _)
 #align list.chain'.take List.Chain'.take
 
@@ -390,7 +390,7 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
 `r`-chain starting from `a` and ending on `b`.
 The converse of `relationReflTransGen_of_exists_chain`.
 -/
-theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
+lemma exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, Chain r a l ∧ getLast (a :: l) (cons_ne_nil _ _) = b := by
   refine' Relation.ReflTransGen.head_induction_on h _ _
   · exact ⟨[], Chain.nil, rfl⟩
@@ -404,7 +404,7 @@ theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
 the predicate is true everywhere in the chain and at `a`.
 That is, we can propagate the predicate up the chain.
 -/
-theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
+lemma Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : ∀ i ∈ a :: l, p i := by
   induction' l with _ _ l_ih generalizing a
@@ -422,7 +422,7 @@ the predicate is true at `a`.
 That is, we can propagate the predicate all the way up the chain.
 -/
 @[elab_as_elim]
-theorem Chain.induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
+lemma Chain.induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : p a :=
   (Chain.induction p l h hb carries final) _ (mem_cons_self _ _)
@@ -432,7 +432,7 @@ theorem Chain.induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
 If there is an `r`-chain starting from `a` and ending at `b`, then `a` and `b` are related by the
 reflexive transitive closure of `r`. The converse of `exists_chain_of_relationReflTransGen`.
 -/
-theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
+lemma relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
 --Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
   Chain.induction_head l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
@@ -488,7 +488,7 @@ lemma Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a)
       · apply ih b hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
-theorem WellFounded.list_chain' (hwf : WellFounded r) :
+lemma WellFounded.list_chain' (hwf : WellFounded r) :
     WellFounded (List.lex_chains r) :=
   ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
 

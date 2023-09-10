@@ -387,7 +387,7 @@ lemma IsClosed.Icc_subset_of_forall_mem_nhdsWithin {a b : α} {s : Set α}
   exact (nhdsWithin_Ioi_self_neBot' ⟨b, hxab.2⟩).nonempty_of_mem this
 #align is_closed.Icc_subset_of_forall_mem_nhds_within IsClosed.Icc_subset_of_forall_mem_nhdsWithin
 
-theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : IsClosed s)
+lemma isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : IsClosed s)
     (ht : IsClosed t) (hab : Icc a b ⊆ s ∪ t) (hx : x ∈ Icc a b ∩ s) (hy : y ∈ Icc a b ∩ t) :
     (Icc a b ∩ (s ∩ t)).Nonempty := by
   have xyab : Icc x y ⊆ Icc a b := Icc_subset_Icc hx.1.1 hy.1.2
@@ -475,19 +475,19 @@ lemma isConnected_Iio [NoMinOrder α] : IsConnected (Iio a) :=
   ⟨nonempty_Iio, isPreconnected_Iio⟩
 #align is_connected_Iio isConnected_Iio
 
-theorem isConnected_Icc (h : a ≤ b) : IsConnected (Icc a b) :=
+lemma isConnected_Icc (h : a ≤ b) : IsConnected (Icc a b) :=
   ⟨nonempty_Icc.2 h, isPreconnected_Icc⟩
 #align is_connected_Icc isConnected_Icc
 
-theorem isConnected_Ioo (h : a < b) : IsConnected (Ioo a b) :=
+lemma isConnected_Ioo (h : a < b) : IsConnected (Ioo a b) :=
   ⟨nonempty_Ioo.2 h, isPreconnected_Ioo⟩
 #align is_connected_Ioo isConnected_Ioo
 
-theorem isConnected_Ioc (h : a < b) : IsConnected (Ioc a b) :=
+lemma isConnected_Ioc (h : a < b) : IsConnected (Ioc a b) :=
   ⟨nonempty_Ioc.2 h, isPreconnected_Ioc⟩
 #align is_connected_Ioc isConnected_Ioc
 
-theorem isConnected_Ico (h : a < b) : IsConnected (Ico a b) :=
+lemma isConnected_Ico (h : a < b) : IsConnected (Ico a b) :=
   ⟨nonempty_Ico.2 h, isPreconnected_Ico⟩
 #align is_connected_Ico isConnected_Ico
 

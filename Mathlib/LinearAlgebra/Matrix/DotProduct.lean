@@ -51,7 +51,7 @@ lemma dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
   rw [dotProduct_stdBasis_eq_mul, mul_one]
 #align matrix.dot_product_std_basis_one Matrix.dotProduct_stdBasis_one
 
-theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w := by
+lemma dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w u) : v = w := by
   funext x
   classical rw [← dotProduct_stdBasis_one v x, ← dotProduct_stdBasis_one w x, h]
 #align matrix.dot_product_eq Matrix.dotProduct_eq
@@ -60,7 +60,7 @@ lemma dotProduct_eq_iff {v w : n → R} : (∀ u, dotProduct v u = dotProduct w 
   ⟨fun h => dotProduct_eq v w h, fun h _ => h ▸ rfl⟩
 #align matrix.dot_product_eq_iff Matrix.dotProduct_eq_iff
 
-theorem dotProduct_eq_zero (v : n → R) (h : ∀ w, dotProduct v w = 0) : v = 0 :=
+lemma dotProduct_eq_zero (v : n → R) (h : ∀ w, dotProduct v w = 0) : v = 0 :=
   dotProduct_eq _ _ fun u => (h u).symm ▸ (zero_dotProduct u).symm
 #align matrix.dot_product_eq_zero Matrix.dotProduct_eq_zero
 

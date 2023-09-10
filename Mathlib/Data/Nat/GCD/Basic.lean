@@ -31,66 +31,66 @@ lemma gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : �
 
 -- Lemmas where one argument consists of addition of a multiple of the other
 @[simp]
-theorem gcd_add_mul_right_right (m n k : ℕ) : gcd m (n + k * m) = gcd m n := by
+lemma gcd_add_mul_right_right (m n k : ℕ) : gcd m (n + k * m) = gcd m n := by
   simp [gcd_rec m (n + k * m), gcd_rec m n]
 #align nat.gcd_add_mul_right_right Nat.gcd_add_mul_right_right
 
 @[simp]
-theorem gcd_add_mul_left_right (m n k : ℕ) : gcd m (n + m * k) = gcd m n := by
+lemma gcd_add_mul_left_right (m n k : ℕ) : gcd m (n + m * k) = gcd m n := by
   simp [gcd_rec m (n + m * k), gcd_rec m n]
 #align nat.gcd_add_mul_left_right Nat.gcd_add_mul_left_right
 
 @[simp]
-theorem gcd_mul_right_add_right (m n k : ℕ) : gcd m (k * m + n) = gcd m n := by simp [add_comm _ n]
+lemma gcd_mul_right_add_right (m n k : ℕ) : gcd m (k * m + n) = gcd m n := by simp [add_comm _ n]
 #align nat.gcd_mul_right_add_right Nat.gcd_mul_right_add_right
 
 @[simp]
-theorem gcd_mul_left_add_right (m n k : ℕ) : gcd m (m * k + n) = gcd m n := by simp [add_comm _ n]
+lemma gcd_mul_left_add_right (m n k : ℕ) : gcd m (m * k + n) = gcd m n := by simp [add_comm _ n]
 #align nat.gcd_mul_left_add_right Nat.gcd_mul_left_add_right
 
 @[simp]
-theorem gcd_add_mul_right_left (m n k : ℕ) : gcd (m + k * n) n = gcd m n := by
+lemma gcd_add_mul_right_left (m n k : ℕ) : gcd (m + k * n) n = gcd m n := by
   rw [gcd_comm, gcd_add_mul_right_right, gcd_comm]
 #align nat.gcd_add_mul_right_left Nat.gcd_add_mul_right_left
 
 @[simp]
-theorem gcd_add_mul_left_left (m n k : ℕ) : gcd (m + n * k) n = gcd m n := by
+lemma gcd_add_mul_left_left (m n k : ℕ) : gcd (m + n * k) n = gcd m n := by
   rw [gcd_comm, gcd_add_mul_left_right, gcd_comm]
 #align nat.gcd_add_mul_left_left Nat.gcd_add_mul_left_left
 
 @[simp]
-theorem gcd_mul_right_add_left (m n k : ℕ) : gcd (k * n + m) n = gcd m n := by
+lemma gcd_mul_right_add_left (m n k : ℕ) : gcd (k * n + m) n = gcd m n := by
   rw [gcd_comm, gcd_mul_right_add_right, gcd_comm]
 #align nat.gcd_mul_right_add_left Nat.gcd_mul_right_add_left
 
 @[simp]
-theorem gcd_mul_left_add_left (m n k : ℕ) : gcd (n * k + m) n = gcd m n := by
+lemma gcd_mul_left_add_left (m n k : ℕ) : gcd (n * k + m) n = gcd m n := by
   rw [gcd_comm, gcd_mul_left_add_right, gcd_comm]
 #align nat.gcd_mul_left_add_left Nat.gcd_mul_left_add_left
 
 -- Lemmas where one argument consists of an addition of the other
 @[simp]
-theorem gcd_add_self_right (m n : ℕ) : gcd m (n + m) = gcd m n :=
+lemma gcd_add_self_right (m n : ℕ) : gcd m (n + m) = gcd m n :=
   Eq.trans (by rw [one_mul]) (gcd_add_mul_right_right m n 1)
 #align nat.gcd_add_self_right Nat.gcd_add_self_right
 
 @[simp]
-theorem gcd_add_self_left (m n : ℕ) : gcd (m + n) n = gcd m n := by
+lemma gcd_add_self_left (m n : ℕ) : gcd (m + n) n = gcd m n := by
   rw [gcd_comm, gcd_add_self_right, gcd_comm]
 #align nat.gcd_add_self_left Nat.gcd_add_self_left
 
 @[simp]
-theorem gcd_self_add_left (m n : ℕ) : gcd (m + n) m = gcd n m := by rw [add_comm, gcd_add_self_left]
+lemma gcd_self_add_left (m n : ℕ) : gcd (m + n) m = gcd n m := by rw [add_comm, gcd_add_self_left]
 #align nat.gcd_self_add_left Nat.gcd_self_add_left
 
 @[simp]
-theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
+lemma gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
   rw [add_comm, gcd_add_self_right]
 #align nat.gcd_self_add_right Nat.gcd_self_add_right
 
 /-! ### `lcm` -/
 
-theorem lcm_dvd_mul (m n : ℕ) : lcm m n ∣ m * n :=
+lemma lcm_dvd_mul (m n : ℕ) : lcm m n ∣ m * n :=
   lcm_dvd (dvd_mul_right _ _) (dvd_mul_left _ _)
 #align nat.lcm_dvd_mul Nat.lcm_dvd_mul
 
@@ -147,42 +147,42 @@ lemma coprime_self_add_left {m n : ℕ} : coprime (m + n) m ↔ coprime n m := b
 #align nat.coprime_self_add_left Nat.coprime_self_add_left
 
 @[simp]
-theorem coprime_add_mul_right_right (m n k : ℕ) : coprime m (n + k * m) ↔ coprime m n := by
+lemma coprime_add_mul_right_right (m n k : ℕ) : coprime m (n + k * m) ↔ coprime m n := by
   rw [coprime, coprime, gcd_add_mul_right_right]
 #align nat.coprime_add_mul_right_right Nat.coprime_add_mul_right_right
 
 @[simp]
-theorem coprime_add_mul_left_right (m n k : ℕ) : coprime m (n + m * k) ↔ coprime m n := by
+lemma coprime_add_mul_left_right (m n k : ℕ) : coprime m (n + m * k) ↔ coprime m n := by
   rw [coprime, coprime, gcd_add_mul_left_right]
 #align nat.coprime_add_mul_left_right Nat.coprime_add_mul_left_right
 
 @[simp]
-theorem coprime_mul_right_add_right (m n k : ℕ) : coprime m (k * m + n) ↔ coprime m n := by
+lemma coprime_mul_right_add_right (m n k : ℕ) : coprime m (k * m + n) ↔ coprime m n := by
   rw [coprime, coprime, gcd_mul_right_add_right]
 #align nat.coprime_mul_right_add_right Nat.coprime_mul_right_add_right
 
 @[simp]
-theorem coprime_mul_left_add_right (m n k : ℕ) : coprime m (m * k + n) ↔ coprime m n := by
+lemma coprime_mul_left_add_right (m n k : ℕ) : coprime m (m * k + n) ↔ coprime m n := by
   rw [coprime, coprime, gcd_mul_left_add_right]
 #align nat.coprime_mul_left_add_right Nat.coprime_mul_left_add_right
 
 @[simp]
-theorem coprime_add_mul_right_left (m n k : ℕ) : coprime (m + k * n) n ↔ coprime m n := by
+lemma coprime_add_mul_right_left (m n k : ℕ) : coprime (m + k * n) n ↔ coprime m n := by
   rw [coprime, coprime, gcd_add_mul_right_left]
 #align nat.coprime_add_mul_right_left Nat.coprime_add_mul_right_left
 
 @[simp]
-theorem coprime_add_mul_left_left (m n k : ℕ) : coprime (m + n * k) n ↔ coprime m n := by
+lemma coprime_add_mul_left_left (m n k : ℕ) : coprime (m + n * k) n ↔ coprime m n := by
   rw [coprime, coprime, gcd_add_mul_left_left]
 #align nat.coprime_add_mul_left_left Nat.coprime_add_mul_left_left
 
 @[simp]
-theorem coprime_mul_right_add_left (m n k : ℕ) : coprime (k * n + m) n ↔ coprime m n := by
+lemma coprime_mul_right_add_left (m n k : ℕ) : coprime (k * n + m) n ↔ coprime m n := by
   rw [coprime, coprime, gcd_mul_right_add_left]
 #align nat.coprime_mul_right_add_left Nat.coprime_mul_right_add_left
 
 @[simp]
-theorem coprime_mul_left_add_left (m n k : ℕ) : coprime (n * k + m) n ↔ coprime m n := by
+lemma coprime_mul_left_add_left (m n k : ℕ) : coprime (n * k + m) n ↔ coprime m n := by
   rw [coprime, coprime, gcd_mul_left_add_left]
 #align nat.coprime_mul_left_add_left Nat.coprime_mul_left_add_left
 
@@ -203,10 +203,10 @@ lemma coprime_pow_right_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
 lemma not_coprime_zero_zero : ¬coprime 0 0 := by simp
 #align nat.not_coprime_zero_zero Nat.not_coprime_zero_zero
 
-theorem coprime_one_left_iff (n : ℕ) : coprime 1 n ↔ True := by simp [coprime]
+lemma coprime_one_left_iff (n : ℕ) : coprime 1 n ↔ True := by simp [coprime]
 #align nat.coprime_one_left_iff Nat.coprime_one_left_iff
 
-theorem coprime_one_right_iff (n : ℕ) : coprime n 1 ↔ True := by simp [coprime]
+lemma coprime_one_right_iff (n : ℕ) : coprime n 1 ↔ True := by simp [coprime]
 #align nat.coprime_one_right_iff Nat.coprime_one_right_iff
 
 lemma gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : coprime a c) (b_dvd_c : b ∣ c) :

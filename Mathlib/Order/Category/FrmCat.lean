@@ -46,7 +46,7 @@ def of (α : Type*) [Frame α] : FrmCat :=
 #align Frm.of FrmCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
+lemma coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
 #align Frm.coe_of FrmCat.coe_of
 
 instance : Inhabited FrmCat :=

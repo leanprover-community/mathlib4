@@ -57,38 +57,38 @@ lemma mem_map₂_iff : u ∈ map₂ m f g ↔ ∃ s t, s ∈ f ∧ t ∈ g ∧ i
   Iff.rfl
 #align filter.mem_map₂_iff Filter.mem_map₂_iff
 
-theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map₂ m f g :=
+lemma image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map₂ m f g :=
   ⟨_, _, hs, ht, Subset.rfl⟩
 #align filter.image2_mem_map₂ Filter.image2_mem_map₂
 
-theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
+lemma map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
     Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
   ext s
   simp [mem_prod_iff, prod_subset_iff]
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
-theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
+lemma map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
     Filter.map m (f ×ˢ g) = map₂ (fun a b => m (a, b)) f g :=
   map_prod_eq_map₂ (curry m) f g
 #align filter.map_prod_eq_map₂' Filter.map_prod_eq_map₂'
 
 @[simp]
-theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
+lemma map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
   simp only [← map_prod_eq_map₂, map_id']
 #align filter.map₂_mk_eq_prod Filter.map₂_mk_eq_prod
 
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
 -- ⟨by { rintro ⟨u, v, hu, hv, h⟩, rw image2_subset_image2_iff hm at h,
 --   exact ⟨mem_of_superset hu h.1, mem_of_superset hv h.2⟩ }, λ h, image2_mem_map₂ h.1 h.2⟩
-theorem map₂_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : map₂ m f₁ g₁ ≤ map₂ m f₂ g₂ :=
+lemma map₂_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : map₂ m f₁ g₁ ≤ map₂ m f₂ g₂ :=
   fun _ ⟨s, t, hs, ht, hst⟩ => ⟨s, t, hf hs, hg ht, hst⟩
 #align filter.map₂_mono Filter.map₂_mono
 
-theorem map₂_mono_left (h : g₁ ≤ g₂) : map₂ m f g₁ ≤ map₂ m f g₂ :=
+lemma map₂_mono_left (h : g₁ ≤ g₂) : map₂ m f g₁ ≤ map₂ m f g₂ :=
   map₂_mono Subset.rfl h
 #align filter.map₂_mono_left Filter.map₂_mono_left
 
-theorem map₂_mono_right (h : f₁ ≤ f₂) : map₂ m f₁ g ≤ map₂ m f₂ g :=
+lemma map₂_mono_right (h : f₁ ≤ f₂) : map₂ m f₁ g ≤ map₂ m f₂ g :=
   map₂_mono h Subset.rfl
 #align filter.map₂_mono_right Filter.map₂_mono_right
 
@@ -127,16 +127,16 @@ lemma map₂_neBot_iff : (map₂ m f g).NeBot ↔ f.NeBot ∧ g.NeBot := by
   exact map₂_eq_bot_iff.not.trans not_or
 #align filter.map₂_ne_bot_iff Filter.map₂_neBot_iff
 
-theorem NeBot.map₂ (hf : f.NeBot) (hg : g.NeBot) : (map₂ m f g).NeBot :=
+lemma NeBot.map₂ (hf : f.NeBot) (hg : g.NeBot) : (map₂ m f g).NeBot :=
   map₂_neBot_iff.2 ⟨hf, hg⟩
 #align filter.ne_bot.map₂ Filter.NeBot.map₂
 
 -- Porting note: Why do I have to specify the `Filter` namespace for `map₂` here?
-theorem NeBot.of_map₂_left (h : (Filter.map₂ m f g).NeBot) : f.NeBot :=
+lemma NeBot.of_map₂_left (h : (Filter.map₂ m f g).NeBot) : f.NeBot :=
   (map₂_neBot_iff.1 h).1
 #align filter.ne_bot.of_map₂_left Filter.NeBot.of_map₂_left
 
-theorem NeBot.of_map₂_right (h : (Filter.map₂ m f g).NeBot) : g.NeBot :=
+lemma NeBot.of_map₂_right (h : (Filter.map₂ m f g).NeBot) : g.NeBot :=
   (map₂_neBot_iff.1 h).2
 #align filter.ne_bot.of_map₂_right Filter.NeBot.of_map₂_right
 
@@ -193,14 +193,14 @@ lemma map₂_pure_right : map₂ m f (pure b) = f.map fun a => m a b :=
 lemma map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂_pure_right, map_pure]
 #align filter.map₂_pure Filter.map₂_pure
 
-theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
+lemma map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
     map₂ m f g = map₂ (fun a b => m b a) g f := by
   ext u
   constructor <;> rintro ⟨s, t, hs, ht, hu⟩ <;> refine' ⟨t, s, ht, hs, by rwa [image2_swap]⟩
 #align filter.map₂_swap Filter.map₂_swap
 
 @[simp]
-theorem map₂_left (h : g.NeBot) : map₂ (fun x _ => x) f g = f := by
+lemma map₂_left (h : g.NeBot) : map₂ (fun x _ => x) f g = f := by
   ext u
   refine' ⟨_, fun hu => ⟨_, _, hu, univ_mem, (image2_left <| h.nonempty_of_mem univ_mem).subset⟩⟩
   rintro ⟨s, t, hs, ht, hu⟩
@@ -209,7 +209,7 @@ theorem map₂_left (h : g.NeBot) : map₂ (fun x _ => x) f g = f := by
 #align filter.map₂_left Filter.map₂_left
 
 @[simp]
-theorem map₂_right (h : f.NeBot) : map₂ (fun _ y => y) f g = g := by rw [map₂_swap, map₂_left h]
+lemma map₂_right (h : f.NeBot) : map₂ (fun _ y => y) f g = g := by rw [map₂_swap, map₂_left h]
 #align filter.map₂_right Filter.map₂_right
 
 /-- The image of a ternary function `m : α → β → γ → δ` as a function
@@ -234,7 +234,7 @@ def map₃ (m : α → β → γ → δ) (f : Filter α) (g : Filter β) (h : Fi
           ht⟩
 #align filter.map₃ Filter.map₃
 
-theorem map₂_map₂_left (m : δ → γ → ε) (n : α → β → δ) :
+lemma map₂_map₂_left (m : δ → γ → ε) (n : α → β → δ) :
     map₂ m (map₂ n f g) h = map₃ (fun a b c => m (n a b) c) f g h := by
   ext w
   constructor
@@ -246,7 +246,7 @@ theorem map₂_map₂_left (m : δ → γ → ε) (n : α → β → δ) :
     exact ⟨_, u, image2_mem_map₂ hs ht, hu, by rwa [image2_image2_left]⟩
 #align filter.map₂_map₂_left Filter.map₂_map₂_left
 
-theorem map₂_map₂_right (m : α → δ → ε) (n : β → γ → δ) :
+lemma map₂_map₂_right (m : α → δ → ε) (n : β → γ → δ) :
     map₂ m f (map₂ n g h) = map₃ (fun a b c => m a (n b c)) f g h := by
   ext w
   constructor
@@ -258,29 +258,29 @@ theorem map₂_map₂_right (m : α → δ → ε) (n : β → γ → δ) :
     exact ⟨s, _, hs, image2_mem_map₂ ht hu, by rwa [image2_image2_right]⟩
 #align filter.map₂_map₂_right Filter.map₂_map₂_right
 
-theorem map_map₂ (m : α → β → γ) (n : γ → δ) :
+lemma map_map₂ (m : α → β → γ) (n : γ → δ) :
     (map₂ m f g).map n = map₂ (fun a b => n (m a b)) f g := by
   rw [← map_prod_eq_map₂, ← map_prod_eq_map₂, map_map]; rfl
 #align filter.map_map₂ Filter.map_map₂
 
-theorem map₂_map_left (m : γ → β → δ) (n : α → γ) :
+lemma map₂_map_left (m : γ → β → δ) (n : α → γ) :
     map₂ m (f.map n) g = map₂ (fun a b => m (n a) b) f g := by
   rw [← map_prod_eq_map₂, ← map_prod_eq_map₂, ← @map_id _ g, prod_map_map_eq, map_map, map_id]; rfl
 #align filter.map₂_map_left Filter.map₂_map_left
 
-theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
+lemma map₂_map_right (m : α → γ → δ) (n : β → γ) :
     map₂ m f (g.map n) = map₂ (fun a b => m a (n b)) f g := by
   rw [map₂_swap, map₂_map_left, map₂_swap]
 #align filter.map₂_map_right Filter.map₂_map_right
 
 @[simp]
-theorem map₂_curry (m : α × β → γ) (f : Filter α) (g : Filter β) :
+lemma map₂_curry (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map₂ (curry m) f g = (f ×ˢ g).map m :=
   (map_prod_eq_map₂' _ _ _).symm
 #align filter.map₂_curry Filter.map₂_curry
 
 @[simp]
-theorem map_uncurry_prod (m : α → β → γ) (f : Filter α) (g : Filter β) :
+lemma map_uncurry_prod (m : α → β → γ) (f : Filter α) (g : Filter β) :
     (f ×ˢ g).map (uncurry m) = map₂ m f g :=
   (map₂_curry (uncurry m) f g).symm
 #align filter.map_uncurry_prod Filter.map_uncurry_prod

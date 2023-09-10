@@ -194,7 +194,7 @@ lemma to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   cases a; cases f n <;> simp
 #align computable_pred.to_re ComputablePred.to_re
 
-theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
+lemma rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
   cases' h with _ h; skip
   obtain ⟨c, e⟩ :=
@@ -211,7 +211,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     contradiction
 #align computable_pred.rice ComputablePred.rice
 
-theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
+lemma rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
     (ComputablePred fun c => c ∈ C) ↔ C = ∅ ∨ C = Set.univ := by
   classical exact
       have hC : ∀ f, f ∈ C ↔ eval f ∈ eval '' C := fun f =>
@@ -229,11 +229,11 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
             exact ⟨by infer_instance, Computable.const _⟩ }⟩
 #align computable_pred.rice₂ ComputablePred.rice₂
 
-theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
+lemma halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 #align computable_pred.halting_problem_re ComputablePred.halting_problem_re
 
-theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
+lemma halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 #align computable_pred.halting_problem ComputablePred.halting_problem
 
@@ -262,7 +262,7 @@ lemma computable_iff_re_compl_re' {p : α → Prop} :
   classical exact computable_iff_re_compl_re
 #align computable_pred.computable_iff_re_compl_re' ComputablePred.computable_iff_re_compl_re'
 
-theorem halting_problem_not_re (n) : ¬RePred fun c => ¬(eval c n).Dom
+lemma halting_problem_not_re (n) : ¬RePred fun c => ¬(eval c n).Dom
   | h => halting_problem _ <| computable_iff_re_compl_re'.2 ⟨halting_problem_re _, h⟩
 #align computable_pred.halting_problem_not_re ComputablePred.halting_problem_not_re
 

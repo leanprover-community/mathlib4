@@ -36,11 +36,11 @@ def doubleFactorial : ℕ → ℕ
 -- This notation is `\!!` not two !'s
 scoped notation:10000 n "‼" => Nat.doubleFactorial n
 
-theorem doubleFactorial_add_two (n : ℕ) : (n + 2)‼ = (n + 2) * n‼ :=
+lemma doubleFactorial_add_two (n : ℕ) : (n + 2)‼ = (n + 2) * n‼ :=
   rfl
 #align nat.double_factorial_add_two Nat.doubleFactorial_add_two
 
-theorem doubleFactorial_add_one (n : ℕ) : (n + 1)‼ = (n + 1) * (n - 1)‼ := by cases n <;> rfl
+lemma doubleFactorial_add_one (n : ℕ) : (n + 1)‼ = (n + 1) * (n - 1)‼ := by cases n <;> rfl
 #align nat.double_factorial_add_one Nat.doubleFactorial_add_one
 
 lemma factorial_eq_mul_doubleFactorial : ∀ n : ℕ, (n + 1)! = (n + 1)‼ * n‼

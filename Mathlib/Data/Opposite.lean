@@ -60,24 +60,24 @@ lemma unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_�
 #align opposite.unop_injective Opposite.unop_injective
 
 @[simp]
-theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
+lemma op_unop (x : αᵒᵖ) : op (unop x) = x :=
   rfl
 #align opposite.op_unop Opposite.op_unop
 
 @[simp]
-theorem unop_op (x : α) : unop (op x) = x :=
+lemma unop_op (x : α) : unop (op x) = x :=
   rfl
 #align opposite.unop_op Opposite.unop_op
 
 -- We could prove these by `Iff.rfl`, but that would make these eligible for `dsimp`. That would be
 -- a bad idea because `Opposite` is irreducible.
 @[simp]
-theorem op_inj_iff (x y : α) : op x = op y ↔ x = y :=
+lemma op_inj_iff (x y : α) : op x = op y ↔ x = y :=
   op_injective.eq_iff
 #align opposite.op_inj_iff Opposite.op_inj_iff
 
 @[simp]
-theorem unop_inj_iff (x y : αᵒᵖ) : unop x = unop y ↔ x = y :=
+lemma unop_inj_iff (x y : αᵒᵖ) : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
 #align opposite.unop_inj_iff Opposite.unop_inj_iff
 

@@ -72,10 +72,10 @@ instance : FunLike (α ≃. β) α fun _ => Option β :=
       congr with y x
       simp only [hf, hg] }
 
-@[simp] theorem coe_mk (f₁ : α → Option β) (f₂ h) : (mk f₁ f₂ h : α → Option β) = f₁ :=
+@[simp] lemma coe_mk (f₁ : α → Option β) (f₂ h) : (mk f₁ f₂ h : α → Option β) = f₁ :=
   rfl
 
-theorem coe_mk_apply (f₁ : α → Option β) (f₂ : β → Option α) (h) (x : α) :
+lemma coe_mk_apply (f₁ : α → Option β) (f₂ : β → Option α) (h) (x : α) :
     (PEquiv.mk f₁ f₂ h : α → Option β) x = f₁ x :=
   rfl
 #align pequiv.coe_mk_apply PEquiv.coe_mk_apply
@@ -104,11 +104,11 @@ protected def symm (f : α ≃. β) : β ≃. α where
   inv _ _ := (f.inv _ _).symm
 #align pequiv.symm PEquiv.symm
 
-theorem mem_iff_mem (f : α ≃. β) : ∀ {a : α} {b : β}, a ∈ f.symm b ↔ b ∈ f a :=
+lemma mem_iff_mem (f : α ≃. β) : ∀ {a : α} {b : β}, a ∈ f.symm b ↔ b ∈ f a :=
   f.3 _ _
 #align pequiv.mem_iff_mem PEquiv.mem_iff_mem
 
-theorem eq_some_iff (f : α ≃. β) : ∀ {a : α} {b : β}, f.symm b = some a ↔ f a = some b :=
+lemma eq_some_iff (f : α ≃. β) : ∀ {a : α} {b : β}, f.symm b = some a ↔ f a = some b :=
   f.3 _ _
 #align pequiv.eq_some_iff PEquiv.eq_some_iff
 
@@ -122,7 +122,7 @@ protected def trans (f : α ≃. β) (g : β ≃. γ) :
 #align pequiv.trans PEquiv.trans
 
 @[simp]
-theorem refl_apply (a : α) : PEquiv.refl α a = some a :=
+lemma refl_apply (a : α) : PEquiv.refl α a = some a :=
   rfl
 #align pequiv.refl_apply PEquiv.refl_apply
 
@@ -132,29 +132,29 @@ lemma symm_refl : (PEquiv.refl α).symm = PEquiv.refl α :=
 #align pequiv.symm_refl PEquiv.symm_refl
 
 @[simp]
-theorem symm_symm (f : α ≃. β) : f.symm.symm = f := by cases f; rfl
+lemma symm_symm (f : α ≃. β) : f.symm.symm = f := by cases f; rfl
 #align pequiv.symm_symm PEquiv.symm_symm
 
 lemma symm_injective : Function.Injective (@PEquiv.symm α β) :=
   LeftInverse.injective symm_symm
 #align pequiv.symm_injective PEquiv.symm_injective
 
-theorem trans_assoc (f : α ≃. β) (g : β ≃. γ) (h : γ ≃. δ) :
+lemma trans_assoc (f : α ≃. β) (g : β ≃. γ) (h : γ ≃. δ) :
     (f.trans g).trans h = f.trans (g.trans h) :=
   ext fun _ => Option.bind_assoc _ _ _
 #align pequiv.trans_assoc PEquiv.trans_assoc
 
-theorem mem_trans (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
+lemma mem_trans (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
     c ∈ f.trans g a ↔ ∃ b, b ∈ f a ∧ c ∈ g b :=
   Option.bind_eq_some'
 #align pequiv.mem_trans PEquiv.mem_trans
 
-theorem trans_eq_some (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
+lemma trans_eq_some (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
     f.trans g a = some c ↔ ∃ b, f a = some b ∧ g b = some c :=
   Option.bind_eq_some'
 #align pequiv.trans_eq_some PEquiv.trans_eq_some
 
-theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
+lemma trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
     f.trans g a = none ↔ ∀ b c, b ∉ f a ∨ c ∉ g b := by
   simp only [eq_none_iff_forall_not_mem, mem_trans, imp_iff_not_or.symm]
   push_neg
@@ -162,21 +162,21 @@ theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
 #align pequiv.trans_eq_none PEquiv.trans_eq_none
 
 @[simp]
-theorem refl_trans (f : α ≃. β) : (PEquiv.refl α).trans f = f := by
+lemma refl_trans (f : α ≃. β) : (PEquiv.refl α).trans f = f := by
   ext; dsimp [PEquiv.trans]; rfl
 #align pequiv.refl_trans PEquiv.refl_trans
 
 @[simp]
-theorem trans_refl (f : α ≃. β) : f.trans (PEquiv.refl β) = f := by
+lemma trans_refl (f : α ≃. β) : f.trans (PEquiv.refl β) = f := by
   ext; dsimp [PEquiv.trans]; simp
 #align pequiv.trans_refl PEquiv.trans_refl
 
-protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f a₁) (h₂ : b ∈ f a₂) : a₁ = a₂ :=
+protected lemma inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f a₁) (h₂ : b ∈ f a₂) : a₁ = a₂ :=
   by rw [← mem_iff_mem] at *; cases h : f.symm b <;> simp_all
 #align pequiv.inj PEquiv.inj
 
 /-- If the domain of a `PEquiv` is `α` except a point, its forward direction is injective. -/
-theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
+lemma injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
     (h : ∀ a₁ : α, a₁ ≠ a₂ → isSome (f a₁)) : Injective f :=
   HasLeftInverse.injective
     ⟨fun b => Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x => by
@@ -263,11 +263,11 @@ lemma ofSet_eq_refl {s : Set α} [DecidablePred (· ∈ s)] :
 
 end OfSet
 
-theorem symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.symm.trans f.symm :=
+lemma symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.symm.trans f.symm :=
   rfl
 #align pequiv.symm_trans_rev PEquiv.symm_trans_rev
 
-theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
+lemma self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]
   simp only [eq_some_iff f, Option.isSome_iff_exists, Option.mem_def, bind_eq_some',
@@ -278,7 +278,7 @@ theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).is
   · simp (config := { contextual := true })
 #align pequiv.self_trans_symm PEquiv.self_trans_symm
 
-theorem symm_trans_self (f : α ≃. β) : f.symm.trans f = ofSet { b | (f.symm b).isSome } :=
+lemma symm_trans_self (f : α ≃. β) : f.symm.trans f = ofSet { b | (f.symm b).isSome } :=
   symm_injective <| by simp [symm_trans_rev, self_trans_symm, -symm_symm]
 #align pequiv.symm_trans_self PEquiv.symm_trans_self
 
@@ -296,7 +296,7 @@ instance : Inhabited (α ≃. β) :=
   ⟨⊥⟩
 
 @[simp]
-theorem bot_apply (a : α) : (⊥ : α ≃. β) a = none :=
+lemma bot_apply (a : α) : (⊥ : α ≃. β) a = none :=
   rfl
 #align pequiv.bot_apply PEquiv.bot_apply
 
@@ -306,16 +306,16 @@ lemma symm_bot : (⊥ : α ≃. β).symm = ⊥ :=
 #align pequiv.symm_bot PEquiv.symm_bot
 
 @[simp]
-theorem trans_bot (f : α ≃. β) : f.trans (⊥ : β ≃. γ) = ⊥ := by
+lemma trans_bot (f : α ≃. β) : f.trans (⊥ : β ≃. γ) = ⊥ := by
   ext; dsimp [PEquiv.trans]; simp
 #align pequiv.trans_bot PEquiv.trans_bot
 
 @[simp]
-theorem bot_trans (f : β ≃. γ) : (⊥ : α ≃. β).trans f = ⊥ := by
+lemma bot_trans (f : β ≃. γ) : (⊥ : α ≃. β).trans f = ⊥ := by
   ext; dsimp [PEquiv.trans]; simp
 #align pequiv.bot_trans PEquiv.bot_trans
 
-theorem isSome_symm_get (f : α ≃. β) {a : α} (h : isSome (f a)) :
+lemma isSome_symm_get (f : α ≃. β) {a : α} (h : isSome (f a)) :
     isSome (f.symm (Option.get _ h)) :=
   isSome_iff_exists.2 ⟨a, by rw [f.eq_some_iff, some_get]⟩
 #align pequiv.is_some_symm_get PEquiv.isSome_symm_get
@@ -340,21 +340,21 @@ def single (a : α) (b : β) :
     · simp
 #align pequiv.single PEquiv.single
 
-theorem mem_single (a : α) (b : β) : b ∈ single a b a :=
+lemma mem_single (a : α) (b : β) : b ∈ single a b a :=
   if_pos rfl
 #align pequiv.mem_single PEquiv.mem_single
 
-theorem mem_single_iff (a₁ a₂ : α) (b₁ b₂ : β) : b₁ ∈ single a₂ b₂ a₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
+lemma mem_single_iff (a₁ a₂ : α) (b₁ b₂ : β) : b₁ ∈ single a₂ b₂ a₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
   dsimp [single]; split_ifs <;> simp [*, eq_comm]
 #align pequiv.mem_single_iff PEquiv.mem_single_iff
 
 @[simp]
-theorem symm_single (a : α) (b : β) : (single a b).symm = single b a :=
+lemma symm_single (a : α) (b : β) : (single a b).symm = single b a :=
   rfl
 #align pequiv.symm_single PEquiv.symm_single
 
 @[simp]
-theorem single_apply (a : α) (b : β) : single a b a = some b :=
+lemma single_apply (a : α) (b : β) : single a b a = some b :=
   if_pos rfl
 #align pequiv.single_apply PEquiv.single_apply
 
@@ -362,7 +362,7 @@ lemma single_apply_of_ne {a₁ a₂ : α} (h : a₁ ≠ a₂) (b : β) : single 
   if_neg h.symm
 #align pequiv.single_apply_of_ne PEquiv.single_apply_of_ne
 
-theorem single_trans_of_mem (a : α) {b : β} {c : γ} {f : β ≃. γ} (h : c ∈ f b) :
+lemma single_trans_of_mem (a : α) {b : β} {c : γ} {f : β ≃. γ} (h : c ∈ f b) :
     (single a b).trans f = single a c := by
   ext
   dsimp [single, PEquiv.trans]
@@ -375,7 +375,7 @@ lemma trans_single_of_mem {a : α} {b : β} (c : γ) {f : α ≃. β} (h : b ∈
 #align pequiv.trans_single_of_mem PEquiv.trans_single_of_mem
 
 @[simp]
-theorem single_trans_single (a : α) (b : β) (c : γ) :
+lemma single_trans_single (a : α) (b : β) (c : γ) :
     (single a b).trans (single b c) = single a c :=
   single_trans_of_mem _ (mem_single _ _)
 #align pequiv.single_trans_single PEquiv.single_trans_single
@@ -397,7 +397,7 @@ lemma trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b =
   split_ifs <;> simp_all
 #align pequiv.trans_single_of_eq_none PEquiv.trans_single_of_eq_none
 
-theorem single_trans_of_eq_none (a : α) {b : β} {f : β ≃. δ} (h : f b = none) :
+lemma single_trans_of_eq_none (a : α) {b : β} {f : β ≃. δ} (h : f b = none) :
     (single a b).trans f = ⊥ :=
   symm_injective <| trans_single_of_eq_none _ h
 #align pequiv.single_trans_of_eq_none PEquiv.single_trans_of_eq_none
@@ -479,16 +479,16 @@ lemma toPEquiv_refl : (Equiv.refl α).toPEquiv = PEquiv.refl α :=
   rfl
 #align equiv.to_pequiv_refl Equiv.toPEquiv_refl
 
-theorem toPEquiv_trans (f : α ≃ β) (g : β ≃ γ) :
+lemma toPEquiv_trans (f : α ≃ β) (g : β ≃ γ) :
     (f.trans g).toPEquiv = f.toPEquiv.trans g.toPEquiv :=
   rfl
 #align equiv.to_pequiv_trans Equiv.toPEquiv_trans
 
-theorem toPEquiv_symm (f : α ≃ β) : f.symm.toPEquiv = f.toPEquiv.symm :=
+lemma toPEquiv_symm (f : α ≃ β) : f.symm.toPEquiv = f.toPEquiv.symm :=
   rfl
 #align equiv.to_pequiv_symm Equiv.toPEquiv_symm
 
-theorem toPEquiv_apply (f : α ≃ β) (x : α) : f.toPEquiv x = some (f x) :=
+lemma toPEquiv_apply (f : α ≃ β) (x : α) : f.toPEquiv x = some (f x) :=
   rfl
 #align equiv.to_pequiv_apply Equiv.toPEquiv_apply
 

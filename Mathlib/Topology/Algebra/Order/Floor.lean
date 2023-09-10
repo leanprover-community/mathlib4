@@ -50,12 +50,12 @@ lemma tendsto_ceil_atBot : Tendsto (ceil : α → ℤ) atBot atBot :=
 
 variable [TopologicalSpace α]
 
-theorem continuousOn_floor (n : ℤ) :
+lemma continuousOn_floor (n : ℤ) :
     ContinuousOn (fun x => floor x : α → α) (Ico n (n + 1) : Set α) :=
   (continuousOn_congr <| floor_eq_on_Ico' n).mpr continuousOn_const
 #align continuous_on_floor continuousOn_floor
 
-theorem continuousOn_ceil (n : ℤ) :
+lemma continuousOn_ceil (n : ℤ) :
     ContinuousOn (fun x => ceil x : α → α) (Ioc (n - 1) n : Set α) :=
   (continuousOn_congr <| ceil_eq_on_Ioc' n).mpr continuousOn_const
 #align continuous_on_ceil continuousOn_ceil
@@ -65,26 +65,26 @@ section OrderClosedTopology
 variable [OrderClosedTopology α]
 
 -- porting note: new theorem
-theorem tendsto_floor_right_pure_floor (x : α) : Tendsto (floor : α → ℤ) (𝓝[≥] x) (pure ⌊x⌋) :=
+lemma tendsto_floor_right_pure_floor (x : α) : Tendsto (floor : α → ℤ) (𝓝[≥] x) (pure ⌊x⌋) :=
   tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsWithin_Ici' <| lt_floor_add_one x) <| fun _y hy =>
     floor_eq_on_Ico _ _ ⟨(floor_le x).trans hy.1, hy.2⟩
 
 -- porting note: new theorem
-theorem tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[≥] n) (pure n) := by
+lemma tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[≥] n) (pure n) := by
   simpa only [floor_intCast] using tendsto_floor_right_pure_floor (n : α)
 
 -- porting note: new theorem
-theorem tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝[≤] x) (pure ⌈x⌉) :=
+lemma tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝[≤] x) (pure ⌈x⌉) :=
   tendsto_pure.2 <| mem_of_superset
     (Ioc_mem_nhdsWithin_Iic' <| sub_lt_iff_lt_add.2 <| ceil_lt_add_one _) <| fun _y hy =>
       ceil_eq_on_Ioc _ _ ⟨hy.1, hy.2.trans (le_ceil _)⟩
 
 -- porting note: new theorem
-theorem tendsto_ceil_left_pure (n : ℤ) : Tendsto (ceil : α → ℤ) (𝓝[≤] n) (pure n) := by
+lemma tendsto_ceil_left_pure (n : ℤ) : Tendsto (ceil : α → ℤ) (𝓝[≤] n) (pure n) := by
   simpa only [ceil_intCast] using tendsto_ceil_left_pure_ceil (n : α)
 
 -- porting note: new theorem
-theorem tendsto_floor_left_pure_ceil_sub_one (x : α) :
+lemma tendsto_floor_left_pure_ceil_sub_one (x : α) :
     Tendsto (floor : α → ℤ) (𝓝[<] x) (pure (⌈x⌉ - 1)) :=
   have h₁ : ↑(⌈x⌉ - 1) < x := by rw [cast_sub, cast_one, sub_lt_iff_lt_add]; exact ceil_lt_add_one _
   have h₂ : x ≤ ↑(⌈x⌉ - 1) + 1 := by rw [cast_sub, cast_one, sub_add_cancel]; exact le_ceil _
@@ -92,59 +92,59 @@ theorem tendsto_floor_left_pure_ceil_sub_one (x : α) :
     floor_eq_on_Ico _ _ ⟨hy.1, hy.2.trans_le h₂⟩
 
 -- porting note: new theorem
-theorem tendsto_floor_left_pure_sub_one (n : ℤ) :
+lemma tendsto_floor_left_pure_sub_one (n : ℤ) :
     Tendsto (floor : α → ℤ) (𝓝[<] n) (pure (n - 1)) := by
   simpa only [ceil_intCast] using tendsto_floor_left_pure_ceil_sub_one (n : α)
 
 -- porting note: new theorem
-theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
+lemma tendsto_ceil_right_pure_floor_add_one (x : α) :
     Tendsto (ceil : α → ℤ) (𝓝[>] x) (pure (⌊x⌋ + 1)) :=
   have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel]; exact floor_le _
   tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsWithin_Ioi' <| lt_succ_floor _) <| fun _y hy =>
     ceil_eq_on_Ioc _ _ ⟨this.trans_lt hy.1, hy.2⟩
 
 -- porting note: new theorem
-theorem tendsto_ceil_right_pure_add_one (n : ℤ) :
+lemma tendsto_ceil_right_pure_add_one (n : ℤ) :
     Tendsto (ceil : α → ℤ) (𝓝[>] n) (pure (n + 1)) := by
   simpa only [floor_intCast] using tendsto_ceil_right_pure_floor_add_one (n : α)
 
-theorem tendsto_floor_right (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝[≥] n) :=
+lemma tendsto_floor_right (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝[≥] n) :=
   ((tendsto_pure_pure _ _).comp (tendsto_floor_right_pure n)).mono_right <|
     pure_le_nhdsWithin le_rfl
 #align tendsto_floor_right tendsto_floor_right
 
-theorem tendsto_floor_right' (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝 n) :=
+lemma tendsto_floor_right' (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝 n) :=
   (tendsto_floor_right n).mono_right inf_le_left
 #align tendsto_floor_right' tendsto_floor_right'
 
-theorem tendsto_ceil_left (n : ℤ) : Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝[≤] n) :=
+lemma tendsto_ceil_left (n : ℤ) : Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝[≤] n) :=
   ((tendsto_pure_pure _ _).comp (tendsto_ceil_left_pure n)).mono_right <|
     pure_le_nhdsWithin le_rfl
 #align tendsto_ceil_left tendsto_ceil_left
 
-theorem tendsto_ceil_left' (n : ℤ) :
+lemma tendsto_ceil_left' (n : ℤ) :
     Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝 n) :=
   (tendsto_ceil_left n).mono_right inf_le_left
 #align tendsto_ceil_left' tendsto_ceil_left'
 
-theorem tendsto_floor_left (n : ℤ) :
+lemma tendsto_floor_left (n : ℤ) :
     Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝[≤] (n - 1)) :=
   ((tendsto_pure_pure _ _).comp (tendsto_floor_left_pure_sub_one n)).mono_right <| by
     rw [← @cast_one α, ← cast_sub]; exact pure_le_nhdsWithin le_rfl
 #align tendsto_floor_left tendsto_floor_left
 
-theorem tendsto_ceil_right (n : ℤ) :
+lemma tendsto_ceil_right (n : ℤ) :
     Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) :=
   ((tendsto_pure_pure _ _).comp (tendsto_ceil_right_pure_add_one n)).mono_right <| by
     rw [← @cast_one α, ← cast_add]; exact pure_le_nhdsWithin le_rfl
 #align tendsto_ceil_right tendsto_ceil_right
 
-theorem tendsto_floor_left' (n : ℤ) :
+lemma tendsto_floor_left' (n : ℤ) :
     Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝 (n - 1)) :=
   (tendsto_floor_left n).mono_right inf_le_left
 #align tendsto_floor_left' tendsto_floor_left'
 
-theorem tendsto_ceil_right' (n : ℤ) :
+lemma tendsto_ceil_right' (n : ℤ) :
     Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) :=
   (tendsto_ceil_right n).mono_right inf_le_left
 #align tendsto_ceil_right' tendsto_ceil_right'

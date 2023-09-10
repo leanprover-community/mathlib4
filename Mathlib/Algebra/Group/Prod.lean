@@ -341,31 +341,31 @@ protected def prod (f : M →ₙ* N) (g : M →ₙ* P) :
 #align add_hom.prod AddHom.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Pi.prod f g :=
+lemma coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
 #align mul_hom.coe_prod MulHom.coe_prod
 #align add_hom.coe_prod AddHom.coe_prod
 
 @[to_additive (attr := simp) prod_apply]
-theorem prod_apply (f : M →ₙ* N) (g : M →ₙ* P) (x) : f.prod g x = (f x, g x) :=
+lemma prod_apply (f : M →ₙ* N) (g : M →ₙ* P) (x) : f.prod g x = (f x, g x) :=
   rfl
 #align mul_hom.prod_apply MulHom.prod_apply
 #align add_hom.prod_apply AddHom.prod_apply
 
 @[to_additive (attr := simp) fst_comp_prod]
-theorem fst_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (fst N P).comp (f.prod g) = f :=
+lemma fst_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (fst N P).comp (f.prod g) = f :=
   ext fun _ => rfl
 #align mul_hom.fst_comp_prod MulHom.fst_comp_prod
 #align add_hom.fst_comp_prod AddHom.fst_comp_prod
 
 @[to_additive (attr := simp) snd_comp_prod]
-theorem snd_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (snd N P).comp (f.prod g) = g :=
+lemma snd_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (snd N P).comp (f.prod g) = g :=
   ext fun _ => rfl
 #align mul_hom.snd_comp_prod MulHom.snd_comp_prod
 #align add_hom.snd_comp_prod AddHom.snd_comp_prod
 
 @[to_additive (attr := simp) prod_unique]
-theorem prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
+lemma prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align mul_hom.prod_unique MulHom.prod_unique
 #align add_hom.prod_unique AddHom.prod_unique
@@ -397,7 +397,7 @@ lemma coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
 #align add_hom.coe_prod_map AddHom.coe_prodMap
 
 @[to_additive prod_comp_prodMap]
-theorem prod_comp_prodMap (f : P →ₙ* M) (g : P →ₙ* N) (f' : M →ₙ* M') (g' : N →ₙ* N') :
+lemma prod_comp_prodMap (f : P →ₙ* M) (g : P →ₙ* N) (f' : M →ₙ* M') (g' : N →ₙ* N') :
     (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
 #align mul_hom.prod_comp_prod_map MulHom.prod_comp_prodMap
@@ -420,7 +420,7 @@ def coprod : M × N →ₙ* P :=
 #align add_hom.coprod AddHom.coprod
 
 @[to_additive (attr := simp)]
-theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
+lemma coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
   rfl
 #align mul_hom.coprod_apply MulHom.coprod_apply
 #align add_hom.coprod_apply AddHom.coprod_apply
@@ -499,13 +499,13 @@ lemma coe_snd : ⇑(snd M N) = Prod.snd :=
 #align add_monoid_hom.coe_snd AddMonoidHom.coe_snd
 
 @[to_additive (attr := simp)]
-theorem inl_apply (x) : inl M N x = (x, 1) :=
+lemma inl_apply (x) : inl M N x = (x, 1) :=
   rfl
 #align monoid_hom.inl_apply MonoidHom.inl_apply
 #align add_monoid_hom.inl_apply AddMonoidHom.inl_apply
 
 @[to_additive (attr := simp)]
-theorem inr_apply (y) : inr M N y = (1, y) :=
+lemma inr_apply (y) : inr M N y = (1, y) :=
   rfl
 #align monoid_hom.inr_apply MonoidHom.inr_apply
 #align add_monoid_hom.inr_apply AddMonoidHom.inr_apply
@@ -552,31 +552,31 @@ protected def prod (f : M →* N) (g : M →* P) :
 #align add_monoid_hom.prod AddMonoidHom.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Pi.prod f g :=
+lemma coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
 #align monoid_hom.coe_prod MonoidHom.coe_prod
 #align add_monoid_hom.coe_prod AddMonoidHom.coe_prod
 
 @[to_additive (attr := simp) prod_apply]
-theorem prod_apply (f : M →* N) (g : M →* P) (x) : f.prod g x = (f x, g x) :=
+lemma prod_apply (f : M →* N) (g : M →* P) (x) : f.prod g x = (f x, g x) :=
   rfl
 #align monoid_hom.prod_apply MonoidHom.prod_apply
 #align add_monoid_hom.prod_apply AddMonoidHom.prod_apply
 
 @[to_additive (attr := simp) fst_comp_prod]
-theorem fst_comp_prod (f : M →* N) (g : M →* P) : (fst N P).comp (f.prod g) = f :=
+lemma fst_comp_prod (f : M →* N) (g : M →* P) : (fst N P).comp (f.prod g) = f :=
   ext fun _ => rfl
 #align monoid_hom.fst_comp_prod MonoidHom.fst_comp_prod
 #align add_monoid_hom.fst_comp_prod AddMonoidHom.fst_comp_prod
 
 @[to_additive (attr := simp) snd_comp_prod]
-theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) = g :=
+lemma snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) = g :=
   ext fun _ => rfl
 #align monoid_hom.snd_comp_prod MonoidHom.snd_comp_prod
 #align add_monoid_hom.snd_comp_prod AddMonoidHom.snd_comp_prod
 
 @[to_additive (attr := simp) prod_unique]
-theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
+lemma prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align monoid_hom.prod_unique MonoidHom.prod_unique
 #align add_monoid_hom.prod_unique AddMonoidHom.prod_unique
@@ -608,7 +608,7 @@ lemma coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
 #align add_monoid_hom.coe_prod_map AddMonoidHom.coe_prodMap
 
 @[to_additive prod_comp_prodMap]
-theorem prod_comp_prodMap (f : P →* M) (g : P →* N) (f' : M →* M') (g' : N →* N') :
+lemma prod_comp_prodMap (f : P →* M) (g : P →* N) (f' : M →* M') (g' : N →* N') :
     (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
 #align monoid_hom.prod_comp_prod_map MonoidHom.prod_comp_prodMap
@@ -631,7 +631,7 @@ def coprod : M × N →* P :=
 #align add_monoid_hom.coprod AddMonoidHom.coprod
 
 @[to_additive (attr := simp)]
-theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
+lemma coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
   rfl
 #align monoid_hom.coprod_apply MonoidHom.coprod_apply
 #align add_monoid_hom.coprod_apply AddMonoidHom.coprod_apply
@@ -649,7 +649,7 @@ lemma coprod_comp_inr : (f.coprod g).comp (inr M N) = g :=
 #align add_monoid_hom.coprod_comp_inr AddMonoidHom.coprod_comp_inr
 
 @[to_additive (attr := simp)]
-theorem coprod_unique (f : M × N →* P) : (f.comp (inl M N)).coprod (f.comp (inr M N)) = f :=
+lemma coprod_unique (f : M × N →* P) : (f.comp (inl M N)).coprod (f.comp (inr M N)) = f :=
   ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
 #align monoid_hom.coprod_unique MonoidHom.coprod_unique
 #align add_monoid_hom.coprod_unique AddMonoidHom.coprod_unique
@@ -802,7 +802,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 #align add_units.embed_product_apply AddUnits.embedProduct_apply
 
 @[to_additive]
-theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
+lemma embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
   fun _ _ h => Units.ext <| (congr_arg Prod.fst h : _)
 #align units.embed_product_injective Units.embedProduct_injective
 #align add_units.embed_product_injective AddUnits.embedProduct_injective

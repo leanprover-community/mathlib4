@@ -89,13 +89,13 @@ def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
 
 variable {R}
 
-theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
+lemma mem_restrictTotalDegree (p : MvPolynomial σ R) :
     p ∈ restrictTotalDegree σ R m ↔ p.totalDegree ≤ m := by
   rw [totalDegree, Finset.sup_le_iff]
   rfl
 #align mv_polynomial.mem_restrict_total_degree MvPolynomial.mem_restrictTotalDegree
 
-theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
+lemma mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, Finsupp.mem_supported]
   rfl

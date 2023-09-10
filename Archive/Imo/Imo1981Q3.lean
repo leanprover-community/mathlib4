@@ -188,7 +188,7 @@ lemma solution_bound : ∀ {k : ℤ}, k ∈ specifiedSet N → k ≤ M
   | _, ⟨_, _, rfl, h⟩ => k_bound HK HM h
 #align imo1981_q3.solution_bound Imo1981Q3.solution_bound
 
-theorem solution_greatest (H : ProblemPredicate N (fib K) (fib (K + 1))) :
+lemma solution_greatest (H : ProblemPredicate N (fib K) (fib (K + 1))) :
     IsGreatest (specifiedSet N) M :=
   ⟨⟨fib K, fib (K + 1), by simp [HM], H⟩, fun k h => solution_bound HK HM h⟩
 #align imo1981_q3.solution_greatest Imo1981Q3.solution_greatest

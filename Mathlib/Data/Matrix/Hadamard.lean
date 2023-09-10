@@ -132,7 +132,7 @@ section Diagonal
 
 variable [DecidableEq n] [MulZeroClass α]
 
-theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
+lemma diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
     diagonal v ⊙ diagonal w = diagonal (v * w) :=
   ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 #align matrix.diagonal_hadamard_diagonal Matrix.diagonal_hadamard_diagonal

@@ -72,17 +72,17 @@ lemma coe_zero : ↑(0 : ℝ) = (0 : ℝ*) :=
 #align hyperreal.coe_zero Hyperreal.coe_zero
 
 @[simp, norm_cast]
-theorem coe_inv (x : ℝ) : ↑x⁻¹ = (x⁻¹ : ℝ*) :=
+lemma coe_inv (x : ℝ) : ↑x⁻¹ = (x⁻¹ : ℝ*) :=
   rfl
 #align hyperreal.coe_inv Hyperreal.coe_inv
 
 @[simp, norm_cast]
-theorem coe_neg (x : ℝ) : ↑(-x) = (-x : ℝ*) :=
+lemma coe_neg (x : ℝ) : ↑(-x) = (-x : ℝ*) :=
   rfl
 #align hyperreal.coe_neg Hyperreal.coe_neg
 
 @[simp, norm_cast]
-theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
+lemma coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
   rfl
 #align hyperreal.coe_add Hyperreal.coe_add
 
@@ -90,20 +90,20 @@ theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
 #noalign hyperreal.coe_bit1
 
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℝ*) = OfNat.ofNat n := rfl
+lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℝ*) = OfNat.ofNat n := rfl
 
 @[simp, norm_cast]
-theorem coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=
+lemma coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=
   rfl
 #align hyperreal.coe_mul Hyperreal.coe_mul
 
 @[simp, norm_cast]
-theorem coe_div (x y : ℝ) : ↑(x / y) = (x / y : ℝ*) :=
+lemma coe_div (x y : ℝ) : ↑(x / y) = (x / y : ℝ*) :=
   rfl
 #align hyperreal.coe_div Hyperreal.coe_div
 
 @[simp, norm_cast]
-theorem coe_sub (x y : ℝ) : ↑(x - y) = (x - y : ℝ*) :=
+lemma coe_sub (x y : ℝ) : ↑(x - y) = (x - y : ℝ*) :=
   rfl
 #align hyperreal.coe_sub Hyperreal.coe_sub
 
@@ -128,17 +128,17 @@ lemma coe_pos {x : ℝ} : 0 < (x : ℝ*) ↔ 0 < x :=
 #align hyperreal.coe_pos Hyperreal.coe_pos
 
 @[simp, norm_cast]
-theorem coe_abs (x : ℝ) : ((|x| : ℝ) : ℝ*) = |↑x| :=
+lemma coe_abs (x : ℝ) : ((|x| : ℝ) : ℝ*) = |↑x| :=
   const_abs x
 #align hyperreal.coe_abs Hyperreal.coe_abs
 
 @[simp, norm_cast]
-theorem coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max ↑x ↑y :=
+lemma coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max ↑x ↑y :=
   Germ.const_max _ _
 #align hyperreal.coe_max Hyperreal.coe_max
 
 @[simp, norm_cast]
-theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
+lemma coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 #align hyperreal.coe_min Hyperreal.coe_min
 
@@ -211,7 +211,7 @@ lemma gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)
   rw [← neg_neg r, coe_neg]; exact neg_lt_of_tendsto_zero_of_pos hf (neg_pos.mpr hr)
 #align hyperreal.gt_of_tendsto_zero_of_neg Hyperreal.gt_of_tendsto_zero_of_neg
 
-theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
+lemma epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
   lt_of_tendsto_zero_of_pos tendsto_inverse_atTop_nhds_0_nat
 #align hyperreal.epsilon_lt_pos Hyperreal.epsilon_lt_pos
 
@@ -355,10 +355,10 @@ lemma isSt_st {x : ℝ*} (hx : st x ≠ 0) : IsSt x (st x) :=
   isSt_st' <| mt Infinite.st_eq hx
 #align hyperreal.is_st_st Hyperreal.isSt_st
 
-theorem isSt_refl_real (r : ℝ) : IsSt r r := isSt_ofSeq_iff_tendsto.2 tendsto_const_nhds
+lemma isSt_refl_real (r : ℝ) : IsSt r r := isSt_ofSeq_iff_tendsto.2 tendsto_const_nhds
 #align hyperreal.is_st_refl_real Hyperreal.isSt_refl_real
 
-theorem st_id_real (r : ℝ) : st r = r := (isSt_refl_real r).st_eq
+lemma st_id_real (r : ℝ) : st r = r := (isSt_refl_real r).st_eq
 #align hyperreal.st_id_real Hyperreal.st_id_real
 
 lemma eq_of_isSt_real {r s : ℝ} : IsSt r s → r = s :=
@@ -612,7 +612,7 @@ lemma not_infinite_iff_exist_lt_gt {x : ℝ*} : ¬Infinite x ↔ ∃ r s : ℝ, 
     fun ⟨r, s, hr, hs⟩ hi ↦ hi.elim (fun hp ↦ (hp s).not_lt hs) (fun hn ↦ (hn r).not_lt hr)⟩
 #align hyperreal.not_infinite_iff_exist_lt_gt Hyperreal.not_infinite_iff_exist_lt_gt
 
-theorem not_infinite_real (r : ℝ) : ¬Infinite r := by
+lemma not_infinite_real (r : ℝ) : ¬Infinite r := by
   rw [not_infinite_iff_exist_lt_gt]
   exact ⟨r - 1, r + 1, coe_lt_coe.2 <| sub_one_lt r, coe_lt_coe.2 <| lt_add_one r⟩
 #align hyperreal.not_infinite_real Hyperreal.not_infinite_real
@@ -641,7 +641,7 @@ lemma st_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x + y) =
   (isSt_st' (not_infinite_add hx hy)).unique ((isSt_st' hx).add (isSt_st' hy))
 #align hyperreal.st_add Hyperreal.st_add
 
-theorem st_neg (x : ℝ*) : st (-x) = -st x :=
+lemma st_neg (x : ℝ*) : st (-x) = -st x :=
   if h : Infinite x then by
     rw [h.st_eq, (infinite_neg.2 h).st_eq, neg_zero]
   else (isSt_st' (not_infinite_neg h)).unique (isSt_st' h).neg
@@ -716,7 +716,7 @@ lemma infinitesimal_epsilon : Infinitesimal ε :=
   infinitesimal_of_tendsto_zero tendsto_inverse_atTop_nhds_0_nat
 #align hyperreal.infinitesimal_epsilon Hyperreal.infinitesimal_epsilon
 
-theorem not_real_of_infinitesimal_ne_zero (x : ℝ*) : Infinitesimal x → x ≠ 0 → ∀ r : ℝ, x ≠ r :=
+lemma not_real_of_infinitesimal_ne_zero (x : ℝ*) : Infinitesimal x → x ≠ 0 → ∀ r : ℝ, x ≠ r :=
   fun hi hx r hr =>
   hx <| hr.trans <| coe_eq_zero.2 <| IsSt.unique (hr.symm ▸ isSt_refl_real r : IsSt x r) hi
 #align hyperreal.not_real_of_infinitesimal_ne_zero Hyperreal.not_real_of_infinitesimal_ne_zero
@@ -786,7 +786,7 @@ lemma IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) : I
   hr.map <| continuousAt_inv₀ <| by rintro rfl; exact hi hr
 #align hyperreal.is_st_inv Hyperreal.IsSt.inv
 
-theorem st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
+lemma st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
   by_cases h0 : x = 0
   rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
   by_cases h1 : Infinitesimal x

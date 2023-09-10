@@ -48,7 +48,7 @@ def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLatCat :=
 #align BddLat.of BddLatCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddLat.coe_of BddLatCat.coe_of
 
@@ -99,23 +99,23 @@ instance hasForgetToSemilatInf : HasForget₂ BddLatCat SemilatInfCat where
 #align BddLat.has_forget_to_SemilatInf BddLatCat.hasForgetToSemilatInf
 
 @[simp]
-theorem coe_forget_to_bddOrd (X : BddLatCat) : ↥((forget₂ BddLatCat BddOrdCat).obj X) = ↥X :=
+lemma coe_forget_to_bddOrd (X : BddLatCat) : ↥((forget₂ BddLatCat BddOrdCat).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_BddOrd BddLatCat.coe_forget_to_bddOrd
 
 @[simp]
-theorem coe_forget_to_latCat (X : BddLatCat) : ↥((forget₂ BddLatCat LatCat).obj X) = ↥X :=
+lemma coe_forget_to_latCat (X : BddLatCat) : ↥((forget₂ BddLatCat LatCat).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_Lat BddLatCat.coe_forget_to_latCat
 
 @[simp]
-theorem coe_forget_to_semilatSup (X : BddLatCat) :
+lemma coe_forget_to_semilatSup (X : BddLatCat) :
     ↥((forget₂ BddLatCat SemilatSupCat).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_SemilatSup BddLatCat.coe_forget_to_semilatSup
 
 @[simp]
-theorem coe_forget_to_semilatInf (X : BddLatCat) :
+lemma coe_forget_to_semilatInf (X : BddLatCat) :
     ↥((forget₂ BddLatCat SemilatInfCat).obj X) = ↥X :=
   rfl
 #align BddLat.coe_forget_to_SemilatInf BddLatCat.coe_forget_to_semilatInf

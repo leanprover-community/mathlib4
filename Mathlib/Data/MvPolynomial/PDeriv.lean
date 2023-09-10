@@ -95,7 +95,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X MvPolynomial.pderiv_X
 
 @[simp]
-theorem pderiv_X_self (i : σ) : pderiv i (X i : MvPolynomial σ R) = 1 := by classical simp
+lemma pderiv_X_self (i : σ) : pderiv i (X i : MvPolynomial σ R) = 1 := by classical simp
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_X_self MvPolynomial.pderiv_X_self
 

@@ -49,13 +49,13 @@ noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function
 #align linear_map.quot_ker_equiv_of_surjective LinearMap.quotKerEquivOfSurjective
 
 @[simp]
-theorem quotKerEquivRange_apply_mk (x : M) :
+lemma quotKerEquivRange_apply_mk (x : M) :
     (f.quotKerEquivRange (Submodule.Quotient.mk x) : M₂) = f x :=
   rfl
 #align linear_map.quot_ker_equiv_range_apply_mk LinearMap.quotKerEquivRange_apply_mk
 
 @[simp]
-theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range f) :
+lemma quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range f) :
     f.quotKerEquivRange.symm ⟨f x, h⟩ = f.ker.mkQ x :=
   f.quotKerEquivRange.symm_apply_apply (f.ker.mkQ x)
 #align linear_map.quot_ker_equiv_range_symm_apply_image LinearMap.quotKerEquivRange_symm_apply_image
@@ -68,7 +68,7 @@ def subToSupQuotient (p p' : Submodule R M) :
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.ofLe le_sup_left)
 
 -- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
-theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
+lemma comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
     comap (Submodule.subtype p) (p ⊓ p') ≤ ker (subToSupQuotient p p') := by
   rw [LinearMap.ker_comp, Submodule.ofLe, comap_codRestrict, ker_mkQ, map_comap_subtype]
   exact comap_mono (inf_le_inf_right _ le_sup_left)
@@ -82,14 +82,14 @@ def quotientInfToSupQuotient (p p' : Submodule R M) :
 #align linear_map.quotient_inf_to_sup_quotient LinearMap.quotientInfToSupQuotient
 
 -- Porting note: breaking up original definition of quotientInfEquivSupQuotient to avoid timing out
-theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
+lemma quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
   exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
 
 -- Porting note: breaking up original definition of quotientInfEquivSupQuotient to avoid timing out
-theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
+lemma quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
@@ -108,20 +108,20 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
 -- @[simp]
 -- Porting note: `simp` affects the type arguments of `FunLike.coe`, so this theorem can't be
 --               a simp theorem anymore, even if it has high priority.
-theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
+lemma coe_quotientInfToSupQuotient (p p' : Submodule R M) :
     ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
 @[simp]
-theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
+lemma quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := ofLe (le_sup_left : p ≤ p ⊔ p')
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
       @Submodule.Quotient.mk R (p ⊔ p' : Submodule R M) _ _ _ (comap (p ⊔ p').subtype p') (map x) :=
   rfl
 #align linear_map.quotient_inf_equiv_sup_quotient_apply_mk LinearMap.quotientInfEquivSupQuotient_apply_mk
 
-theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
+lemma quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
     (hx : (x : M) ∈ p) :
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨x, hx⟩ :=
@@ -139,7 +139,7 @@ lemma quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} 
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
-theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
+lemma quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
     (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x)
     = 0 :=
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
@@ -165,13 +165,13 @@ def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ �
 #align submodule.quotient_quotient_equiv_quotient_aux Submodule.quotientQuotientEquivQuotientAux
 
 @[simp]
-theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
+lemma quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk x) = mapQ S T LinearMap.id h x :=
   liftQ_apply _ _ _
 #align submodule.quotient_quotient_equiv_quotient_aux_mk Submodule.quotientQuotientEquivQuotientAux_mk
 
 -- @[simp] -- Porting note: simp can prove this
-theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
+lemma quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
 #align submodule.quotient_quotient_equiv_quotient_aux_mk_mk Submodule.quotientQuotientEquivQuotientAux_mk_mk
 
@@ -185,7 +185,7 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
 #align submodule.quotient_quotient_equiv_quotient Submodule.quotientQuotientEquivQuotient
 
 /-- Corollary of the third isomorphism theorem: `[S : T] [M : S] = [M : T]` -/
-theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
+lemma card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
     [DecidablePred fun x => x ∈ S.map T.mkQ] [Fintype (M ⧸ S)] [Fintype (M ⧸ T)] :
     Fintype.card (S.map T.mkQ) * Fintype.card (M ⧸ S) = Fintype.card (M ⧸ T) := by
   rw [Submodule.card_eq_card_quotient_mul_card (map T.mkQ S),

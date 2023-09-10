@@ -62,7 +62,7 @@ lemma one_def : (1 : End X) = 𝟙 X := rfl
 #align category_theory.End.one_def CategoryTheory.End.one_def
 
 @[simp] -- porting note: todo: use `of`/`asHom`?
-theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
+lemma mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 #align category_theory.End.mul_def CategoryTheory.End.mul_def
 
 end Struct
@@ -147,11 +147,11 @@ instance : Group (Aut X) where
   mul_one := Iso.refl_trans
   mul_left_inv := Iso.self_symm_id
 
-theorem Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
+lemma Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.Aut_mul_def CategoryTheory.Aut.Aut_mul_def
 
-theorem Aut_inv_def (f : Aut X) : f⁻¹ = f.symm := rfl
+lemma Aut_inv_def (f : Aut X) : f⁻¹ = f.symm := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.Aut_inv_def CategoryTheory.Aut.Aut_inv_def
 

@@ -189,7 +189,7 @@ lemma biUnion_image_sup_right : (t.biUnion fun b => s.image fun a => a ⊔ b) = 
 #align finset.bUnion_image_sup_right Finset.biUnion_image_sup_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
-theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
+lemma image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 #align finset.image_sup_product Finset.image_sup_product
 
@@ -363,7 +363,7 @@ lemma biUnion_image_inf_right : (t.biUnion fun b => s.image fun a => a ⊓ b) = 
 #align finset.bUnion_image_inf_right Finset.biUnion_image_inf_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
-theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
+lemma image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 #align finset.image_inf_product Finset.image_inf_product
 
@@ -448,15 +448,15 @@ lemma card_disjSups_le : (s ○ t).card ≤ s.card * t.card :=
 
 variable {s s₁ s₂ t t₁ t₂}
 
-theorem disjSups_subset (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ○ t₁ ⊆ s₂ ○ t₂ :=
+lemma disjSups_subset (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ○ t₁ ⊆ s₂ ○ t₂ :=
   image_subset_image <| filter_subset_filter _ <| product_subset_product hs ht
 #align finset.disj_sups_subset Finset.disjSups_subset
 
-theorem disjSups_subset_left (ht : t₁ ⊆ t₂) : s ○ t₁ ⊆ s ○ t₂ :=
+lemma disjSups_subset_left (ht : t₁ ⊆ t₂) : s ○ t₁ ⊆ s ○ t₂ :=
   disjSups_subset Subset.rfl ht
 #align finset.disj_sups_subset_left Finset.disjSups_subset_left
 
-theorem disjSups_subset_right (hs : s₁ ⊆ s₂) : s₁ ○ t ⊆ s₂ ○ t :=
+lemma disjSups_subset_right (hs : s₁ ⊆ s₂) : s₁ ○ t ⊆ s₂ ○ t :=
   disjSups_subset hs Subset.rfl
 #align finset.disj_sups_subset_right Finset.disjSups_subset_right
 

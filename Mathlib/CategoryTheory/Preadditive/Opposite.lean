@@ -71,7 +71,7 @@ def unopHom (X Y : Cᵒᵖ) : (X ⟶ Y) →+ (Opposite.unop Y ⟶ Opposite.unop 
 #align category_theory.unop_hom CategoryTheory.unopHom
 
 @[simp]
-theorem unop_sum (X Y : Cᵒᵖ) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
+lemma unop_sum (X Y : Cᵒᵖ) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).unop = s.sum fun i => (f i).unop :=
   (unopHom X Y).map_sum _ _
 #align category_theory.unop_sum CategoryTheory.unop_sum
@@ -83,7 +83,7 @@ def opHom (X Y : C) : (X ⟶ Y) →+ (Opposite.op Y ⟶ Opposite.op X) :=
 #align category_theory.op_hom CategoryTheory.opHom
 
 @[simp]
-theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
+lemma op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).op = s.sum fun i => (f i).op :=
   (opHom X Y).map_sum _ _
 #align category_theory.op_sum CategoryTheory.op_sum

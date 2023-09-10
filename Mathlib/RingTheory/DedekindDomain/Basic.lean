@@ -63,7 +63,7 @@ instance DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing 
     IsPrime.to_maximal_ideal nonzero
 #align ring.dimension_le_one.principal_ideal_ring Ring.DimensionLEOne.principal_ideal_ring
 
-theorem DimensionLEOne.isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
+lemma DimensionLEOne.isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
     [Algebra R A] [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A]
     [DimensionLEOne R] : DimensionLEOne B where
   maximalOfPrime := fun {p} ne_bot _ =>
@@ -109,7 +109,7 @@ class IsDedekindDomain
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
-theorem isDedekindDomain_iff (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
+lemma isDedekindDomain_iff (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
     IsDedekindDomain A ↔
       IsDomain A ∧ IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=

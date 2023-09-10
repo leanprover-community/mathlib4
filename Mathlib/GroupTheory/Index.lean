@@ -94,26 +94,26 @@ lemma relindex_comap {G' : Type*} [Group G'] (f : G' →* G) (K : Subgroup G') :
 variable {H K L}
 
 @[to_additive relindex_mul_index]
-theorem relindex_mul_index (h : H ≤ K) : H.relindex K * K.index = H.index :=
+lemma relindex_mul_index (h : H ≤ K) : H.relindex K * K.index = H.index :=
   ((mul_comm _ _).trans (Cardinal.toNat_mul _ _).symm).trans
     (congr_arg Cardinal.toNat (Equiv.cardinal_eq (quotientEquivProdOfLE h))).symm
 #align subgroup.relindex_mul_index Subgroup.relindex_mul_index
 #align add_subgroup.relindex_mul_index AddSubgroup.relindex_mul_index
 
 @[to_additive]
-theorem index_dvd_of_le (h : H ≤ K) : K.index ∣ H.index :=
+lemma index_dvd_of_le (h : H ≤ K) : K.index ∣ H.index :=
   dvd_of_mul_left_eq (H.relindex K) (relindex_mul_index h)
 #align subgroup.index_dvd_of_le Subgroup.index_dvd_of_le
 #align add_subgroup.index_dvd_of_le AddSubgroup.index_dvd_of_le
 
 @[to_additive]
-theorem relindex_dvd_index_of_le (h : H ≤ K) : H.relindex K ∣ H.index :=
+lemma relindex_dvd_index_of_le (h : H ≤ K) : H.relindex K ∣ H.index :=
   dvd_of_mul_right_eq K.index (relindex_mul_index h)
 #align subgroup.relindex_dvd_index_of_le Subgroup.relindex_dvd_index_of_le
 #align add_subgroup.relindex_dvd_index_of_le AddSubgroup.relindex_dvd_index_of_le
 
 @[to_additive]
-theorem relindex_subgroupOf (hKL : K ≤ L) :
+lemma relindex_subgroupOf (hKL : K ≤ L) :
     (H.subgroupOf L).relindex (K.subgroupOf L) = H.relindex K :=
   ((index_comap (H.subgroupOf L) (inclusion hKL)).trans (congr_arg _ (inclusion_range hKL))).symm
 #align subgroup.relindex_subgroup_of Subgroup.relindex_subgroupOf
@@ -122,7 +122,7 @@ theorem relindex_subgroupOf (hKL : K ≤ L) :
 variable (H K L)
 
 @[to_additive relindex_mul_relindex]
-theorem relindex_mul_relindex (hHK : H ≤ K) (hKL : K ≤ L) :
+lemma relindex_mul_relindex (hHK : H ≤ K) (hKL : K ≤ L) :
     H.relindex K * K.relindex L = H.relindex L := by
   rw [← relindex_subgroupOf hKL]
   exact relindex_mul_index fun x hx => hHK hx
@@ -169,7 +169,7 @@ lemma relindex_dvd_index_of_normal [H.Normal] : H.relindex K ∣ H.index :=
 variable {H K}
 
 @[to_additive]
-theorem relindex_dvd_of_le_left (hHK : H ≤ K) : K.relindex L ∣ H.relindex L :=
+lemma relindex_dvd_of_le_left (hHK : H ≤ K) : K.relindex L ∣ H.relindex L :=
   inf_of_le_left hHK ▸ dvd_of_mul_left_eq _ (relindex_inf_mul_relindex _ _ _)
 #align subgroup.relindex_dvd_of_le_left Subgroup.relindex_dvd_of_le_left
 #align add_subgroup.relindex_dvd_of_le_left AddSubgroup.relindex_dvd_of_le_left
@@ -193,7 +193,7 @@ lemma index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈
 #align add_subgroup.index_eq_two_iff AddSubgroup.index_eq_two_iff
 
 @[to_additive]
-theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (a ∈ H ↔ b ∈ H) := by
+lemma mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (a ∈ H ↔ b ∈ H) := by
   by_cases ha : a ∈ H; · simp only [ha, true_iff_iff, mul_mem_cancel_left ha]
   by_cases hb : b ∈ H; · simp only [hb, iff_true_iff, mul_mem_cancel_right hb]
   simp only [ha, hb, iff_self_iff, iff_true_iff]
@@ -204,13 +204,13 @@ theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (
 #align add_subgroup.add_mem_iff_of_index_two AddSubgroup.add_mem_iff_of_index_two
 
 @[to_additive]
-theorem mul_self_mem_of_index_two (h : H.index = 2) (a : G) : a * a ∈ H := by
+lemma mul_self_mem_of_index_two (h : H.index = 2) (a : G) : a * a ∈ H := by
   rw [mul_mem_iff_of_index_two h]
 #align subgroup.mul_self_mem_of_index_two Subgroup.mul_self_mem_of_index_two
 #align add_subgroup.add_self_mem_of_index_two AddSubgroup.add_self_mem_of_index_two
 
 @[to_additive two_smul_mem_of_index_two]
-theorem sq_mem_of_index_two (h : H.index = 2) (a : G) : a ^ 2 ∈ H :=
+lemma sq_mem_of_index_two (h : H.index = 2) (a : G) : a ^ 2 ∈ H :=
   (pow_two a).symm ▸ mul_self_mem_of_index_two h a
 #align subgroup.sq_mem_of_index_two Subgroup.sq_mem_of_index_two
 #align add_subgroup.two_smul_mem_of_index_two AddSubgroup.two_smul_mem_of_index_two
@@ -301,7 +301,7 @@ lemma nat_card_dvd_of_injective {G H : Type*} [Group G] [Group H] (f : G →* H)
 #align add_subgroup.nat_card_dvd_of_injective AddSubgroup.nat_card_dvd_of_injective
 
 @[to_additive]
-theorem nat_card_dvd_of_le (hHK : H ≤ K) : Nat.card H ∣ Nat.card K :=
+lemma nat_card_dvd_of_le (hHK : H ≤ K) : Nat.card H ∣ Nat.card K :=
   nat_card_dvd_of_injective (inclusion hHK) (inclusion_injective hHK)
 #align subgroup.nat_card_dvd_of_le Subgroup.nat_card_dvd_of_le
 #align add_subgroup.nat_card_dvd_of_le AddSubgroup.nat_card_dvd_of_le
@@ -374,39 +374,39 @@ lemma index_dvd_card [Fintype G] : H.index ∣ Fintype.card G := by
 variable {H K L}
 
 @[to_additive]
-theorem relindex_eq_zero_of_le_left (hHK : H ≤ K) (hKL : K.relindex L = 0) : H.relindex L = 0 :=
+lemma relindex_eq_zero_of_le_left (hHK : H ≤ K) (hKL : K.relindex L = 0) : H.relindex L = 0 :=
   eq_zero_of_zero_dvd (hKL ▸ relindex_dvd_of_le_left L hHK)
 #align subgroup.relindex_eq_zero_of_le_left Subgroup.relindex_eq_zero_of_le_left
 #align add_subgroup.relindex_eq_zero_of_le_left AddSubgroup.relindex_eq_zero_of_le_left
 
 @[to_additive]
-theorem relindex_eq_zero_of_le_right (hKL : K ≤ L) (hHK : H.relindex K = 0) : H.relindex L = 0 :=
+lemma relindex_eq_zero_of_le_right (hKL : K ≤ L) (hHK : H.relindex K = 0) : H.relindex L = 0 :=
   Finite.card_eq_zero_of_embedding (quotientSubgroupOfEmbeddingOfLE H hKL) hHK
 #align subgroup.relindex_eq_zero_of_le_right Subgroup.relindex_eq_zero_of_le_right
 #align add_subgroup.relindex_eq_zero_of_le_right AddSubgroup.relindex_eq_zero_of_le_right
 
 @[to_additive]
-theorem index_eq_zero_of_relindex_eq_zero (h : H.relindex K = 0) : H.index = 0 :=
+lemma index_eq_zero_of_relindex_eq_zero (h : H.relindex K = 0) : H.index = 0 :=
   H.relindex_top_right.symm.trans (relindex_eq_zero_of_le_right le_top h)
 #align subgroup.index_eq_zero_of_relindex_eq_zero Subgroup.index_eq_zero_of_relindex_eq_zero
 #align add_subgroup.index_eq_zero_of_relindex_eq_zero AddSubgroup.index_eq_zero_of_relindex_eq_zero
 
 @[to_additive]
-theorem relindex_le_of_le_left (hHK : H ≤ K) (hHL : H.relindex L ≠ 0) :
+lemma relindex_le_of_le_left (hHK : H ≤ K) (hHL : H.relindex L ≠ 0) :
     K.relindex L ≤ H.relindex L :=
   Nat.le_of_dvd (Nat.pos_of_ne_zero hHL) (relindex_dvd_of_le_left L hHK)
 #align subgroup.relindex_le_of_le_left Subgroup.relindex_le_of_le_left
 #align add_subgroup.relindex_le_of_le_left AddSubgroup.relindex_le_of_le_left
 
 @[to_additive]
-theorem relindex_le_of_le_right (hKL : K ≤ L) (hHL : H.relindex L ≠ 0) :
+lemma relindex_le_of_le_right (hKL : K ≤ L) (hHL : H.relindex L ≠ 0) :
     H.relindex K ≤ H.relindex L :=
   Finite.card_le_of_embedding' (quotientSubgroupOfEmbeddingOfLE H hKL) fun h => (hHL h).elim
 #align subgroup.relindex_le_of_le_right Subgroup.relindex_le_of_le_right
 #align add_subgroup.relindex_le_of_le_right AddSubgroup.relindex_le_of_le_right
 
 @[to_additive]
-theorem relindex_ne_zero_trans (hHK : H.relindex K ≠ 0) (hKL : K.relindex L ≠ 0) :
+lemma relindex_ne_zero_trans (hHK : H.relindex K ≠ 0) (hKL : K.relindex L ≠ 0) :
     H.relindex L ≠ 0 := fun h =>
   mul_ne_zero (mt (relindex_eq_zero_of_le_right (show K ⊓ L ≤ K from inf_le_left)) hHK) hKL
     ((relindex_inf_mul_relindex H K L).trans (relindex_eq_zero_of_le_left inf_le_left h))
@@ -414,7 +414,7 @@ theorem relindex_ne_zero_trans (hHK : H.relindex K ≠ 0) (hKL : K.relindex L �
 #align add_subgroup.relindex_ne_zero_trans AddSubgroup.relindex_ne_zero_trans
 
 @[to_additive]
-theorem relindex_inf_ne_zero (hH : H.relindex L ≠ 0) (hK : K.relindex L ≠ 0) :
+lemma relindex_inf_ne_zero (hH : H.relindex L ≠ 0) (hK : K.relindex L ≠ 0) :
     (H ⊓ K).relindex L ≠ 0 := by
   replace hH : H.relindex (K ⊓ L) ≠ 0 := mt (relindex_eq_zero_of_le_right inf_le_right) hH
   rw [← inf_relindex_right] at hH hK ⊢
@@ -424,7 +424,7 @@ theorem relindex_inf_ne_zero (hH : H.relindex L ≠ 0) (hK : K.relindex L ≠ 0)
 #align add_subgroup.relindex_inf_ne_zero AddSubgroup.relindex_inf_ne_zero
 
 @[to_additive]
-theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).index ≠ 0 := by
+lemma index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).index ≠ 0 := by
   rw [← relindex_top_right] at hH hK ⊢
   exact relindex_inf_ne_zero hH hK
 #align subgroup.index_inf_ne_zero Subgroup.index_inf_ne_zero

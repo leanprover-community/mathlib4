@@ -124,7 +124,7 @@ def restrictYonedaHomEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ)
 /--
 (Implementation). Show that the bijection in `restrictYonedaHomEquiv` is natural (on the right).
 -/
-theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : ℰ) (g : E₁ ⟶ E₂) {c : Cocone _}
+lemma restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : ℰ) (g : E₁ ⟶ E₂) {c : Cocone _}
     (t : IsColimit c) (k : c.pt ⟶ E₁) :
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
@@ -145,7 +145,7 @@ noncomputable def extendAlongYoneda : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ :=
 #align category_theory.colimit_adj.extend_along_yoneda CategoryTheory.ColimitAdj.extendAlongYoneda
 
 @[simp]
-theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
+lemma extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
     (extendAlongYoneda A).obj P = colimit ((CategoryOfElements.π P).leftOp ⋙ A) :=
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
@@ -337,14 +337,14 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) : Cocone (fu
 #align category_theory.cocone_of_representable CategoryTheory.coconeOfRepresentable
 
 @[simp]
-theorem coconeOfRepresentable_pt (P : Cᵒᵖ ⥤ Type u₁) : (coconeOfRepresentable P).pt = P :=
+lemma coconeOfRepresentable_pt (P : Cᵒᵖ ⥤ Type u₁) : (coconeOfRepresentable P).pt = P :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.cocone_of_representable_X CategoryTheory.coconeOfRepresentable_pt
 
 -- Marking this as a simp lemma seems to make things more awkward.
 /-- An explicit formula for the legs of the cocone `coconeOfRepresentable`. -/
-theorem coconeOfRepresentable_ι_app (P : Cᵒᵖ ⥤ Type u₁) (j : P.Elementsᵒᵖ) :
+lemma coconeOfRepresentable_ι_app (P : Cᵒᵖ ⥤ Type u₁) (j : P.Elementsᵒᵖ) :
     (coconeOfRepresentable P).ι.app j = (yonedaSectionsSmall _ _).inv j.unop.2 :=
   colimit.ι_desc _ _
 #align category_theory.cocone_of_representable_ι_app CategoryTheory.coconeOfRepresentable_ι_app

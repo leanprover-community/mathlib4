@@ -150,7 +150,7 @@ def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Shor
 
 attribute [local instance] moveRightShort'
 
-theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omega := by
+lemma short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omega := by
   -- Porting note: Again `induction` is used instead of `pgame_wf_tac`
   induction x with
   | mk xl xr xL xR ihl ihr =>

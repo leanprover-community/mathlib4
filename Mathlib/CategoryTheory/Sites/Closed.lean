@@ -314,7 +314,7 @@ lemma topologyOfClosureOperator_self :
   apply GrothendieckTopology.close_eq_top_iff_mem
 #align category_theory.topology_of_closure_operator_self CategoryTheory.topologyOfClosureOperator_self
 
-theorem topologyOfClosureOperator_close (c : ∀ X : C, ClosureOperator (Sieve X))
+lemma topologyOfClosureOperator_close (c : ∀ X : C, ClosureOperator (Sieve X))
     (pb : ∀ ⦃X Y : C⦄ (f : Y ⟶ X) (S : Sieve X), c Y (S.pullback f) = (c X S).pullback f) (X : C)
     (S : Sieve X) : (topologyOfClosureOperator c pb).close S = c X S := by
   ext Y f

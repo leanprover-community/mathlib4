@@ -172,7 +172,7 @@ lemma FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommRin
 /-- An invertible ideal in a commutative ring with finitely many maximal ideals is principal.
 
 https://math.stackexchange.com/a/95857 -/
-theorem Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.IsMaximal}.Finite)
+lemma Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.IsMaximal}.Finite)
     {I : Ideal R} (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) : I.IsPrincipal :=
   (IsLocalization.coeSubmodule_isPrincipal _ le_rfl).mp
     (FractionalIdeal.isPrincipal.of_finite_maximals_of_inv le_rfl hf I

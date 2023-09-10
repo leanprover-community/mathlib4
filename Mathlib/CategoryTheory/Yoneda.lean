@@ -219,7 +219,7 @@ lemma reprW_hom : F.reprW.hom = F.reprF :=
   rfl
 #align category_theory.functor.repr_w_hom CategoryTheory.Functor.reprW_hom
 
-theorem reprW_app_hom (X : Cᵒᵖ) (f : unop X ⟶ F.reprX) :
+lemma reprW_app_hom (X : Cᵒᵖ) (f : unop X ⟶ F.reprX) :
     (F.reprW.app X).hom f = F.map f.op F.reprx := by
   change F.reprF.app X f = (F.reprF.app (op F.reprX) ≫ F.map f.op) (𝟙 F.reprX)
   rw [← F.reprF.naturality]
@@ -263,7 +263,7 @@ noncomputable def coreprW : coyoneda.obj (op F.coreprX) ≅ F :=
   asIso F.coreprF
 #align category_theory.functor.corepr_w CategoryTheory.Functor.coreprW
 
-theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) :
+lemma coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) :
     (F.coreprW.app X).hom f = F.map f F.coreprx := by
   change F.coreprF.app X f = (F.coreprF.app F.coreprX ≫ F.map f) (𝟙 F.coreprX)
   rw [← F.coreprF.naturality]
@@ -275,12 +275,12 @@ end Corepresentable
 
 end Functor
 
-theorem representable_of_nat_iso (F : Cᵒᵖ ⥤ Type v₁) {G} (i : F ≅ G) [F.Representable] :
+lemma representable_of_nat_iso (F : Cᵒᵖ ⥤ Type v₁) {G} (i : F ≅ G) [F.Representable] :
     G.Representable :=
   { has_representation := ⟨F.reprX, F.reprF ≫ i.hom, inferInstance⟩ }
 #align category_theory.representable_of_nat_iso CategoryTheory.representable_of_nat_iso
 
-theorem corepresentable_of_nat_iso (F : C ⥤ Type v₁) {G} (i : F ≅ G) [F.Corepresentable] :
+lemma corepresentable_of_nat_iso (F : C ⥤ Type v₁) {G} (i : F ≅ G) [F.Corepresentable] :
     G.Corepresentable :=
   { has_corepresentation := ⟨op F.coreprX, F.coreprF ≫ i.hom, inferInstance⟩ }
 #align category_theory.corepresentable_of_nat_iso CategoryTheory.corepresentable_of_nat_iso
@@ -311,7 +311,7 @@ def yonedaEvaluation : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁
 #align category_theory.yoneda_evaluation CategoryTheory.yonedaEvaluation
 
 @[simp]
-theorem yonedaEvaluation_map_down (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q)
+lemma yonedaEvaluation_map_down (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q)
     (x : (yonedaEvaluation C).obj P) :
     ((yonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) :=
   rfl
@@ -332,7 +332,7 @@ lemma yonedaPairingExt {x y : (yonedaPairing C).obj X} (w : ∀ Y, x.app Y = y.a
   NatTrans.ext _ _ (funext w)
 
 @[simp]
-theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q) (β : (yonedaPairing C).obj P) :
+lemma yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q) (β : (yonedaPairing C).obj P) :
     (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
   rfl
 #align category_theory.yoneda_pairing_map CategoryTheory.yonedaPairing_map

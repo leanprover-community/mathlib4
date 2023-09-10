@@ -143,11 +143,11 @@ lemma Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tends
   exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
 #align filter.tendsto.div_at_top Filter.Tendsto.div_atTop
 
-theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
+lemma Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
 #align filter.tendsto.inv_tendsto_at_top Filter.Tendsto.inv_tendsto_atTop
 
-theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
+lemma Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
   tendsto_inv_zero_atTop.comp h
 #align filter.tendsto.inv_tendsto_zero Filter.Tendsto.inv_tendsto_zero
 

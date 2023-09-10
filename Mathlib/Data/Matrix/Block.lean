@@ -48,25 +48,25 @@ def fromBlocks (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : 
 #align matrix.from_blocks Matrix.fromBlocks
 
 @[simp]
-theorem fromBlocks_apply₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma fromBlocks_apply₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (i : n) (j : l) : fromBlocks A B C D (Sum.inl i) (Sum.inl j) = A i j :=
   rfl
 #align matrix.from_blocks_apply₁₁ Matrix.fromBlocks_apply₁₁
 
 @[simp]
-theorem fromBlocks_apply₁₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma fromBlocks_apply₁₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (i : n) (j : m) : fromBlocks A B C D (Sum.inl i) (Sum.inr j) = B i j :=
   rfl
 #align matrix.from_blocks_apply₁₂ Matrix.fromBlocks_apply₁₂
 
 @[simp]
-theorem fromBlocks_apply₂₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma fromBlocks_apply₂₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (i : o) (j : l) : fromBlocks A B C D (Sum.inr i) (Sum.inl j) = C i j :=
   rfl
 #align matrix.from_blocks_apply₂₁ Matrix.fromBlocks_apply₂₁
 
 @[simp]
-theorem fromBlocks_apply₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma fromBlocks_apply₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (i : o) (j : m) : fromBlocks A B C D (Sum.inr i) (Sum.inr j) = D i j :=
   rfl
 #align matrix.from_blocks_apply₂₂ Matrix.fromBlocks_apply₂₂
@@ -95,32 +95,32 @@ def toBlocks₂₂ (M : Matrix (Sum n o) (Sum l m) α) : Matrix o m α :=
   of fun i j => M (Sum.inr i) (Sum.inr j)
 #align matrix.to_blocks₂₂ Matrix.toBlocks₂₂
 
-theorem fromBlocks_toBlocks (M : Matrix (Sum n o) (Sum l m) α) :
+lemma fromBlocks_toBlocks (M : Matrix (Sum n o) (Sum l m) α) :
     fromBlocks M.toBlocks₁₁ M.toBlocks₁₂ M.toBlocks₂₁ M.toBlocks₂₂ = M := by
   ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
 #align matrix.from_blocks_to_blocks Matrix.fromBlocks_toBlocks
 
 @[simp]
-theorem toBlocks_fromBlocks₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma toBlocks_fromBlocks₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₁₁ = A :=
   rfl
 #align matrix.to_blocks_from_blocks₁₁ Matrix.toBlocks_fromBlocks₁₁
 
 @[simp]
-theorem toBlocks_fromBlocks₁₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma toBlocks_fromBlocks₁₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₁₂ = B :=
   rfl
 #align matrix.to_blocks_from_blocks₁₂ Matrix.toBlocks_fromBlocks₁₂
 
 @[simp]
-theorem toBlocks_fromBlocks₂₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma toBlocks_fromBlocks₂₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₂₁ = C :=
   rfl
 #align matrix.to_blocks_from_blocks₂₁ Matrix.toBlocks_fromBlocks₂₁
 
 @[simp]
-theorem toBlocks_fromBlocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma toBlocks_fromBlocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D).toBlocks₂₂ = D :=
   rfl
 #align matrix.to_blocks_from_blocks₂₂ Matrix.toBlocks_fromBlocks₂₂
@@ -141,12 +141,12 @@ lemma fromBlocks_inj {A : Matrix n l α} {B : Matrix n m α} {C : Matrix o l α}
   ext_iff_blocks
 #align matrix.from_blocks_inj Matrix.fromBlocks_inj
 
-theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
+lemma fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
     (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
   by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
 #align matrix.from_blocks_map Matrix.fromBlocks_map
 
-theorem fromBlocks_transpose (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma fromBlocks_transpose (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : (fromBlocks A B C D)ᵀ = fromBlocks Aᵀ Cᵀ Bᵀ Dᵀ := by
   ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
@@ -158,7 +158,7 @@ lemma fromBlocks_conjTranspose [Star α] (A : Matrix n l α) (B : Matrix n m α)
 #align matrix.from_blocks_conj_transpose Matrix.fromBlocks_conjTranspose
 
 @[simp]
-theorem fromBlocks_submatrix_sum_swap_left (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma fromBlocks_submatrix_sum_swap_left (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (f : p → Sum l m) :
     (fromBlocks A B C D).submatrix Sum.swap f = (fromBlocks C D A B).submatrix id f := by
   ext i j
@@ -166,7 +166,7 @@ theorem fromBlocks_submatrix_sum_swap_left (A : Matrix n l α) (B : Matrix n m �
 #align matrix.from_blocks_submatrix_sum_swap_left Matrix.fromBlocks_submatrix_sum_swap_left
 
 @[simp]
-theorem fromBlocks_submatrix_sum_swap_right (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
+lemma fromBlocks_submatrix_sum_swap_right (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (f : p → Sum n o) :
     (fromBlocks A B C D).submatrix f Sum.swap = (fromBlocks B A D C).submatrix f id := by
   ext i j
@@ -190,7 +190,7 @@ def toBlock (M : Matrix m n α) (p : m → Prop) (q : n → Prop) : Matrix { a /
 #align matrix.to_block Matrix.toBlock
 
 @[simp]
-theorem toBlock_apply (M : Matrix m n α) (p : m → Prop) (q : n → Prop) (i : { a // p a })
+lemma toBlock_apply (M : Matrix m n α) (p : m → Prop) (q : n → Prop) (i : { a // p a })
     (j : { a // q a }) : toBlock M p q i j = M ↑i ↑j :=
   rfl
 #align matrix.to_block_apply Matrix.toBlock_apply
@@ -201,7 +201,7 @@ def toSquareBlockProp (M : Matrix m m α) (p : m → Prop) : Matrix { a // p a }
   toBlock M _ _
 #align matrix.to_square_block_prop Matrix.toSquareBlockProp
 
-theorem toSquareBlockProp_def (M : Matrix m m α) (p : m → Prop) :
+lemma toSquareBlockProp_def (M : Matrix m m α) (p : m → Prop) :
     -- porting note: added missing `of`
     toSquareBlockProp M p = of (fun i j : { a // p a } => M ↑i ↑j) :=
   rfl
@@ -214,7 +214,7 @@ def toSquareBlock (M : Matrix m m α) (b : m → β) (k : β) :
   toSquareBlockProp M _
 #align matrix.to_square_block Matrix.toSquareBlock
 
-theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
+lemma toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
     -- porting note: added missing `of`
     toSquareBlock M b k = of (fun i j : { a // b a = k } => M ↑i ↑j) :=
   rfl
@@ -278,7 +278,7 @@ section Zero
 
 variable [Zero α]
 
-theorem toBlock_diagonal_self (d : m → α) (p : m → Prop) :
+lemma toBlock_diagonal_self (d : m → α) (p : m → Prop) :
     Matrix.toBlock (diagonal d) p p = diagonal fun i : Subtype p => d ↑i := by
   ext i j
   by_cases i = j
@@ -286,7 +286,7 @@ theorem toBlock_diagonal_self (d : m → α) (p : m → Prop) :
   · simp [One.one, h, Subtype.val_injective.ne h]
 #align matrix.to_block_diagonal_self Matrix.toBlock_diagonal_self
 
-theorem toBlock_diagonal_disjoint (d : m → α) {p q : m → Prop} (hpq : Disjoint p q) :
+lemma toBlock_diagonal_disjoint (d : m → α) {p q : m → Prop} (hpq : Disjoint p q) :
     Matrix.toBlock (diagonal d) p q = 0 := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   have : i ≠ j := fun heq => hpq.le_bot i ⟨hi, heq.symm ▸ hj⟩
@@ -294,7 +294,7 @@ theorem toBlock_diagonal_disjoint (d : m → α) {p q : m → Prop} (hpq : Disjo
 #align matrix.to_block_diagonal_disjoint Matrix.toBlock_diagonal_disjoint
 
 @[simp]
-theorem fromBlocks_diagonal (d₁ : l → α) (d₂ : m → α) :
+lemma fromBlocks_diagonal (d₁ : l → α) (d₂ : m → α) :
     fromBlocks (diagonal d₁) 0 0 (diagonal d₂) = diagonal (Sum.elim d₁ d₂) := by
   ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [diagonal]
@@ -313,7 +313,7 @@ lemma fromBlocks_one : fromBlocks (1 : Matrix l l α) 0 0 (1 : Matrix m m α) = 
 #align matrix.from_blocks_one Matrix.fromBlocks_one
 
 @[simp]
-theorem toBlock_one_self (p : m → Prop) : Matrix.toBlock (1 : Matrix m m α) p p = 1 :=
+lemma toBlock_one_self (p : m → Prop) : Matrix.toBlock (1 : Matrix m m α) p p = 1 :=
   toBlock_diagonal_self _ p
 #align matrix.to_block_one_self Matrix.toBlock_one_self
 
@@ -345,12 +345,12 @@ def blockDiagonal (M : o → Matrix m n α) : Matrix (m × o) (n × o) α :=
 #align matrix.block_diagonal Matrix.blockDiagonal
 
 -- TODO: set as an equation lemma for `blockDiagonal`, see mathlib4#3024
-theorem blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
+lemma blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
     blockDiagonal M ⟨i, k⟩ ⟨j, k'⟩ = if k = k' then M k i j else 0 :=
   rfl
 #align matrix.block_diagonal_apply' Matrix.blockDiagonal_apply'
 
-theorem blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
+lemma blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
     blockDiagonal M ik jk = if ik.2 = jk.2 then M ik.2 ik.1 jk.1 else 0 := by
   cases ik
   cases jk
@@ -358,17 +358,17 @@ theorem blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
 #align matrix.block_diagonal_apply Matrix.blockDiagonal_apply
 
 @[simp]
-theorem blockDiagonal_apply_eq (M : o → Matrix m n α) (i j k) :
+lemma blockDiagonal_apply_eq (M : o → Matrix m n α) (i j k) :
     blockDiagonal M (i, k) (j, k) = M k i j :=
   if_pos rfl
 #align matrix.block_diagonal_apply_eq Matrix.blockDiagonal_apply_eq
 
-theorem blockDiagonal_apply_ne (M : o → Matrix m n α) (i j) {k k'} (h : k ≠ k') :
+lemma blockDiagonal_apply_ne (M : o → Matrix m n α) (i j) {k k'} (h : k ≠ k') :
     blockDiagonal M (i, k) (j, k') = 0 :=
   if_neg h
 #align matrix.block_diagonal_apply_ne Matrix.blockDiagonal_apply_ne
 
-theorem blockDiagonal_map (M : o → Matrix m n α) (f : α → β) (hf : f 0 = 0) :
+lemma blockDiagonal_map (M : o → Matrix m n α) (f : α → β) (hf : f 0 = 0) :
     (blockDiagonal M).map f = blockDiagonal fun k => (M k).map f := by
   ext
   simp only [map_apply, blockDiagonal_apply, eq_comm]
@@ -376,7 +376,7 @@ theorem blockDiagonal_map (M : o → Matrix m n α) (f : α → β) (hf : f 0 = 
 #align matrix.block_diagonal_map Matrix.blockDiagonal_map
 
 @[simp]
-theorem blockDiagonal_transpose (M : o → Matrix m n α) :
+lemma blockDiagonal_transpose (M : o → Matrix m n α) :
     (blockDiagonal M)ᵀ = blockDiagonal fun k => (M k)ᵀ := by
   ext
   simp only [transpose_apply, blockDiagonal_apply, eq_comm]
@@ -501,18 +501,18 @@ def blockDiag (M : Matrix (m × o) (n × o) α) (k : o) : Matrix m n α :=
 #align matrix.block_diag Matrix.blockDiag
 
 -- TODO: set as an equation lemma for `blockDiag`, see mathlib4#3024
-theorem blockDiag_apply (M : Matrix (m × o) (n × o) α) (k : o) (i j) :
+lemma blockDiag_apply (M : Matrix (m × o) (n × o) α) (k : o) (i j) :
     blockDiag M k i j = M (i, k) (j, k) :=
   rfl
 #align matrix.block_diag_apply Matrix.blockDiag_apply
 
-theorem blockDiag_map (M : Matrix (m × o) (n × o) α) (f : α → β) :
+lemma blockDiag_map (M : Matrix (m × o) (n × o) α) (f : α → β) :
     blockDiag (M.map f) = fun k => (blockDiag M k).map f :=
   rfl
 #align matrix.block_diag_map Matrix.blockDiag_map
 
 @[simp]
-theorem blockDiag_transpose (M : Matrix (m × o) (n × o) α) (k : o) :
+lemma blockDiag_transpose (M : Matrix (m × o) (n × o) α) (k : o) :
     blockDiag Mᵀ k = (blockDiag M k)ᵀ :=
   ext fun _ _ => rfl
 #align matrix.block_diag_transpose Matrix.blockDiag_transpose
@@ -626,24 +626,24 @@ def blockDiagonal' (M : ∀ i, Matrix (m' i) (n' i) α) : Matrix (Σi, m' i) (Σ
 #align matrix.block_diagonal' Matrix.blockDiagonal'
 
 -- TODO: set as an equation lemma for `blockDiagonal'`, see mathlib4#3024
-theorem blockDiagonal'_apply' (M : ∀ i, Matrix (m' i) (n' i) α) (k i k' j) :
+lemma blockDiagonal'_apply' (M : ∀ i, Matrix (m' i) (n' i) α) (k i k' j) :
     blockDiagonal' M ⟨k, i⟩ ⟨k', j⟩ =
       if h : k = k' then M k i (cast (congr_arg n' h.symm) j) else 0 :=
   rfl
 #align matrix.block_diagonal'_apply' Matrix.blockDiagonal'_apply'
 
-theorem blockDiagonal'_eq_blockDiagonal (M : o → Matrix m n α) {k k'} (i j) :
+lemma blockDiagonal'_eq_blockDiagonal (M : o → Matrix m n α) {k k'} (i j) :
     blockDiagonal M (i, k) (j, k') = blockDiagonal' M ⟨k, i⟩ ⟨k', j⟩ :=
   rfl
 #align matrix.block_diagonal'_eq_block_diagonal Matrix.blockDiagonal'_eq_blockDiagonal
 
-theorem blockDiagonal'_submatrix_eq_blockDiagonal (M : o → Matrix m n α) :
+lemma blockDiagonal'_submatrix_eq_blockDiagonal (M : o → Matrix m n α) :
     (blockDiagonal' M).submatrix (Prod.toSigma ∘ Prod.swap) (Prod.toSigma ∘ Prod.swap) =
       blockDiagonal M :=
   Matrix.ext fun ⟨_, _⟩ ⟨_, _⟩ => rfl
 #align matrix.block_diagonal'_submatrix_eq_block_diagonal Matrix.blockDiagonal'_submatrix_eq_blockDiagonal
 
-theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
+lemma blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
     blockDiagonal' M ik jk =
       if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := by
   cases ik
@@ -652,17 +652,17 @@ theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
 #align matrix.block_diagonal'_apply Matrix.blockDiagonal'_apply
 
 @[simp]
-theorem blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :
+lemma blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :
     blockDiagonal' M ⟨k, i⟩ ⟨k, j⟩ = M k i j :=
   dif_pos rfl
 #align matrix.block_diagonal'_apply_eq Matrix.blockDiagonal'_apply_eq
 
-theorem blockDiagonal'_apply_ne (M : ∀ i, Matrix (m' i) (n' i) α) {k k'} (i j) (h : k ≠ k') :
+lemma blockDiagonal'_apply_ne (M : ∀ i, Matrix (m' i) (n' i) α) {k k'} (i j) (h : k ≠ k') :
     blockDiagonal' M ⟨k, i⟩ ⟨k', j⟩ = 0 :=
   dif_neg h
 #align matrix.block_diagonal'_apply_ne Matrix.blockDiagonal'_apply_ne
 
-theorem blockDiagonal'_map (M : ∀ i, Matrix (m' i) (n' i) α) (f : α → β) (hf : f 0 = 0) :
+lemma blockDiagonal'_map (M : ∀ i, Matrix (m' i) (n' i) α) (f : α → β) (hf : f 0 = 0) :
     (blockDiagonal' M).map f = blockDiagonal' fun k => (M k).map f := by
   ext
   simp only [map_apply, blockDiagonal'_apply, eq_comm]
@@ -670,7 +670,7 @@ theorem blockDiagonal'_map (M : ∀ i, Matrix (m' i) (n' i) α) (f : α → β) 
 #align matrix.block_diagonal'_map Matrix.blockDiagonal'_map
 
 @[simp]
-theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
+lemma blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
@@ -803,18 +803,18 @@ def blockDiag' (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) : Matrix (m' k) (
 #align matrix.block_diag' Matrix.blockDiag'
 
 -- TODO: set as an equation lemma for `blockDiag'`, see mathlib4#3024
-theorem blockDiag'_apply (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) (i j) :
+lemma blockDiag'_apply (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) (i j) :
     blockDiag' M k i j = M ⟨k, i⟩ ⟨k, j⟩ :=
   rfl
 #align matrix.block_diag'_apply Matrix.blockDiag'_apply
 
-theorem blockDiag'_map (M : Matrix (Σi, m' i) (Σi, n' i) α) (f : α → β) :
+lemma blockDiag'_map (M : Matrix (Σi, m' i) (Σi, n' i) α) (f : α → β) :
     blockDiag' (M.map f) = fun k => (blockDiag' M k).map f :=
   rfl
 #align matrix.block_diag'_map Matrix.blockDiag'_map
 
 @[simp]
-theorem blockDiag'_transpose (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) :
+lemma blockDiag'_transpose (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) :
     blockDiag' Mᵀ k = (blockDiag' M k)ᵀ :=
   ext fun _ _ => rfl
 #align matrix.block_diag'_transpose Matrix.blockDiag'_transpose

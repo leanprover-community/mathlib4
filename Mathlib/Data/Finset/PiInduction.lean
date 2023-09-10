@@ -34,7 +34,7 @@ variable {ι : Type*} {α : ι → Type*} [Finite ι] [DecidableEq ι] [∀ i, D
 namespace Finset
 
 /-- General theorem for `Finset.induction_on_pi`-style induction principles. -/
-theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
+lemma induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     (H_ex : ∀ (i) (s : Finset (α i)) (_ : s.Nonempty), ∃ x ∈ s, r i x (s.erase x))
     {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :

@@ -67,30 +67,30 @@ section
 variable {R} {S : Type*} [CommRing S]
 
 @[simp]
-theorem map (f : R →+* S) (n ν : ℕ) :
+lemma map (f : R →+* S) (n ν : ℕ) :
     (bernsteinPolynomial R n ν).map f = bernsteinPolynomial S n ν := by simp [bernsteinPolynomial]
 #align bernstein_polynomial.map bernsteinPolynomial.map
 
 end
 
-theorem flip (n ν : ℕ) (h : ν ≤ n) :
+lemma flip (n ν : ℕ) (h : ν ≤ n) :
     (bernsteinPolynomial R n ν).comp (1 - X) = bernsteinPolynomial R n (n - ν) := by
   simp [bernsteinPolynomial, h, tsub_tsub_assoc, mul_right_comm]
 #align bernstein_polynomial.flip bernsteinPolynomial.flip
 
-theorem flip' (n ν : ℕ) (h : ν ≤ n) :
+lemma flip' (n ν : ℕ) (h : ν ≤ n) :
     bernsteinPolynomial R n ν = (bernsteinPolynomial R n (n - ν)).comp (1 - X) := by
   simp [← flip _ _ _ h, Polynomial.comp_assoc]
 #align bernstein_polynomial.flip' bernsteinPolynomial.flip'
 
-theorem eval_at_0 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 0 = if ν = 0 then 1 else 0 := by
+lemma eval_at_0 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 0 = if ν = 0 then 1 else 0 := by
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
   · simp [zero_pow (Nat.pos_of_ne_zero h)]
 #align bernstein_polynomial.eval_at_0 bernsteinPolynomial.eval_at_0
 
-theorem eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n then 1 else 0 := by
+lemma eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n then 1 else 0 := by
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
@@ -99,7 +99,7 @@ theorem eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n
     · simp [zero_pow w]
 #align bernstein_polynomial.eval_at_1 bernsteinPolynomial.eval_at_1
 
-theorem derivative_succ_aux (n ν : ℕ) :
+lemma derivative_succ_aux (n ν : ℕ) :
     Polynomial.derivative (bernsteinPolynomial R (n + 1) (ν + 1)) =
       (n + 1) * (bernsteinPolynomial R n ν - bernsteinPolynomial R n (ν + 1)) := by
   rw [bernsteinPolynomial]
@@ -131,19 +131,19 @@ theorem derivative_succ_aux (n ν : ℕ) :
     · apply mul_comm
 #align bernstein_polynomial.derivative_succ_aux bernsteinPolynomial.derivative_succ_aux
 
-theorem derivative_succ (n ν : ℕ) : Polynomial.derivative (bernsteinPolynomial R n (ν + 1)) =
+lemma derivative_succ (n ν : ℕ) : Polynomial.derivative (bernsteinPolynomial R n (ν + 1)) =
     n * (bernsteinPolynomial R (n - 1) ν - bernsteinPolynomial R (n - 1) (ν + 1)) := by
   cases n
   · simp [bernsteinPolynomial]
   · rw [Nat.cast_succ]; apply derivative_succ_aux
 #align bernstein_polynomial.derivative_succ bernsteinPolynomial.derivative_succ
 
-theorem derivative_zero (n : ℕ) :
+lemma derivative_zero (n : ℕ) :
     Polynomial.derivative (bernsteinPolynomial R n 0) = -n * bernsteinPolynomial R (n - 1) 0 := by
   simp [bernsteinPolynomial, Polynomial.derivative_pow]
 #align bernstein_polynomial.derivative_zero bernsteinPolynomial.derivative_zero
 
-theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
+lemma iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 0 = 0 := by
   cases' ν with ν
   · rintro ⟨⟩
@@ -162,7 +162,7 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
 #align bernstein_polynomial.iterate_derivative_at_0_eq_zero_of_lt bernsteinPolynomial.iterate_derivative_at_0_eq_zero_of_lt
 
 @[simp]
-theorem iterate_derivative_succ_at_0_eq_zero (n ν : ℕ) :
+lemma iterate_derivative_succ_at_0_eq_zero (n ν : ℕ) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n (ν + 1))).eval 0 = 0 :=
   iterate_derivative_at_0_eq_zero_of_lt R n (lt_add_one ν)
 #align bernstein_polynomial.iterate_derivative_succ_at_0_eq_zero bernsteinPolynomial.iterate_derivative_succ_at_0_eq_zero
@@ -170,7 +170,7 @@ theorem iterate_derivative_succ_at_0_eq_zero (n ν : ℕ) :
 open Polynomial
 
 @[simp]
-theorem iterate_derivative_at_0 (n ν : ℕ) :
+lemma iterate_derivative_at_0 (n ν : ℕ) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 =
       (pochhammer R ν).eval ((n - (ν - 1) : ℕ) : R) := by
   by_cases h : ν ≤ n
@@ -212,7 +212,7 @@ we use the symmetry of the Bernstein polynomials.
 -/
 
 
-theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
+lemma iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < n - ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 1 = 0 := by
   intro w
   rw [flip' _ _ _ (tsub_pos_iff_lt.mp (pos_of_gt w)).le]
@@ -220,7 +220,7 @@ theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
 #align bernstein_polynomial.iterate_derivative_at_1_eq_zero_of_lt bernsteinPolynomial.iterate_derivative_at_1_eq_zero_of_lt
 
 @[simp]
-theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
+lemma iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 =
       (-1) ^ (n - ν) * (pochhammer R (n - ν)).eval (ν + 1 : R) := by
   rw [flip' _ _ _ h]
@@ -241,7 +241,7 @@ lemma iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
 
 open Submodule
 
-theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
+lemma linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
     LinearIndependent ℚ fun ν : Fin k => bernsteinPolynomial ℚ n ν := by
   induction' k with k ih
   · simp [Nat.zero_eq]
@@ -282,12 +282,12 @@ are linearly independent.
 The inductive step relies on the observation that the `(n-k)`-th derivative, evaluated at 1,
 annihilates `bernsteinPolynomial n ν` for `ν < k`, but has a nonzero value at `ν = k`.
 -/
-theorem linearIndependent (n : ℕ) :
+lemma linearIndependent (n : ℕ) :
     LinearIndependent ℚ fun ν : Fin (n + 1) => bernsteinPolynomial ℚ n ν :=
   linearIndependent_aux n (n + 1) le_rfl
 #align bernstein_polynomial.linear_independent bernsteinPolynomial.linearIndependent
 
-theorem sum (n : ℕ) : (∑ ν in Finset.range (n + 1), bernsteinPolynomial R n ν) = 1 :=
+lemma sum (n : ℕ) : (∑ ν in Finset.range (n + 1), bernsteinPolynomial R n ν) = 1 :=
   calc
     (∑ ν in Finset.range (n + 1), bernsteinPolynomial R n ν) = (X + (1 - X)) ^ n := by
       rw [add_pow]
@@ -299,7 +299,7 @@ open Polynomial
 
 open MvPolynomial hiding X
 
-theorem sum_smul (n : ℕ) :
+lemma sum_smul (n : ℕ) :
     (∑ ν in Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
   -- either directly or by using the binomial theorem.
@@ -336,7 +336,7 @@ theorem sum_smul (n : ℕ) :
       add_zero, mul_one]
 #align bernstein_polynomial.sum_smul bernsteinPolynomial.sum_smul
 
-theorem sum_mul_smul (n : ℕ) :
+lemma sum_mul_smul (n : ℕ) :
     (∑ ν in Finset.range (n + 1), (ν * (ν - 1)) • bernsteinPolynomial R n ν) =
       (n * (n - 1)) • X ^ 2 := by
   -- We calculate the second `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
@@ -382,7 +382,7 @@ theorem sum_mul_smul (n : ℕ) :
 /-- A certain linear combination of the previous three identities,
 which we'll want later.
 -/
-theorem variance (n : ℕ) :
+lemma variance (n : ℕ) :
     (∑ ν in Finset.range (n + 1), (n • Polynomial.X - (ν : R[X])) ^ 2 * bernsteinPolynomial R n ν) =
       n • Polynomial.X * ((1 : R[X]) - Polynomial.X) := by
   have p : ((((Finset.range (n + 1)).sum fun ν => (ν * (ν - 1)) • bernsteinPolynomial R n ν) +

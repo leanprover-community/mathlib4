@@ -74,13 +74,13 @@ def skewAdjointLieSubalgebraEquiv :
 #align skew_adjoint_lie_subalgebra_equiv skewAdjointLieSubalgebraEquiv
 
 @[simp]
-theorem skewAdjointLieSubalgebraEquiv_apply (f : skewAdjointLieSubalgebra (B.comp ↑e ↑e)) :
+lemma skewAdjointLieSubalgebraEquiv_apply (f : skewAdjointLieSubalgebra (B.comp ↑e ↑e)) :
     ↑(skewAdjointLieSubalgebraEquiv B e f) = e.lieConj f := by
   simp [skewAdjointLieSubalgebraEquiv]
 #align skew_adjoint_lie_subalgebra_equiv_apply skewAdjointLieSubalgebraEquiv_apply
 
 @[simp]
-theorem skewAdjointLieSubalgebraEquiv_symm_apply (f : skewAdjointLieSubalgebra B) :
+lemma skewAdjointLieSubalgebraEquiv_symm_apply (f : skewAdjointLieSubalgebra B) :
     ↑((skewAdjointLieSubalgebraEquiv B e).symm f) = e.symm.lieConj f := by
   simp [skewAdjointLieSubalgebraEquiv]
 #align skew_adjoint_lie_subalgebra_equiv_symm_apply skewAdjointLieSubalgebraEquiv_symm_apply
@@ -95,7 +95,7 @@ variable {R : Type u} {n : Type w} [CommRing R] [DecidableEq n] [Fintype n]
 
 variable (J : Matrix n n R)
 
-theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=
+lemma Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=
   show (A * B - B * A)ᵀ = Bᵀ * Aᵀ - Aᵀ * Bᵀ by simp
 #align matrix.lie_transpose Matrix.lie_transpose
 
@@ -119,7 +119,7 @@ def skewAdjointMatricesLieSubalgebra : LieSubalgebra R (Matrix n n R) :=
 #align skew_adjoint_matrices_lie_subalgebra skewAdjointMatricesLieSubalgebra
 
 @[simp]
-theorem mem_skewAdjointMatricesLieSubalgebra (A : Matrix n n R) :
+lemma mem_skewAdjointMatricesLieSubalgebra (A : Matrix n n R) :
     A ∈ skewAdjointMatricesLieSubalgebra J ↔ A ∈ skewAdjointMatricesSubmodule J :=
   Iff.rfl
 #align mem_skew_adjoint_matrices_lie_subalgebra mem_skewAdjointMatricesLieSubalgebra
@@ -139,7 +139,7 @@ def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) 
 #align skew_adjoint_matrices_lie_subalgebra_equiv skewAdjointMatricesLieSubalgebraEquiv
 
 -- TODO(mathlib4#6607): fix elaboration so annotation on `A` isn't needed
-theorem skewAdjointMatricesLieSubalgebraEquiv_apply (P : Matrix n n R) (h : Invertible P)
+lemma skewAdjointMatricesLieSubalgebraEquiv_apply (P : Matrix n n R) (h : Invertible P)
     (A : skewAdjointMatricesLieSubalgebra J) :
     ↑(skewAdjointMatricesLieSubalgebraEquiv J P h A) = P⁻¹ * (A : Matrix n n R) * P := by
   simp [skewAdjointMatricesLieSubalgebraEquiv]
@@ -167,7 +167,7 @@ lemma skewAdjointMatricesLieSubalgebraEquivTranspose_apply {m : Type w} [Decidab
   rfl
 #align skew_adjoint_matrices_lie_subalgebra_equiv_transpose_apply skewAdjointMatricesLieSubalgebraEquivTranspose_apply
 
-theorem mem_skewAdjointMatricesLieSubalgebra_unit_smul (u : Rˣ) (J A : Matrix n n R) :
+lemma mem_skewAdjointMatricesLieSubalgebra_unit_smul (u : Rˣ) (J A : Matrix n n R) :
     A ∈ skewAdjointMatricesLieSubalgebra (u • J) ↔ A ∈ skewAdjointMatricesLieSubalgebra J := by
   change A ∈ skewAdjointMatricesSubmodule (u • J) ↔ A ∈ skewAdjointMatricesSubmodule J
   simp only [mem_skewAdjointMatricesSubmodule, Matrix.IsSkewAdjoint, Matrix.IsAdjointPair]

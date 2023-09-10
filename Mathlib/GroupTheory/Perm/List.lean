@@ -54,23 +54,23 @@ lemma formPerm_nil : formPerm ([] : List α) = 1 :=
 #align list.form_perm_nil List.formPerm_nil
 
 @[simp]
-theorem formPerm_singleton (x : α) : formPerm [x] = 1 :=
+lemma formPerm_singleton (x : α) : formPerm [x] = 1 :=
   rfl
 #align list.form_perm_singleton List.formPerm_singleton
 
 @[simp]
-theorem formPerm_cons_cons (x y : α) (l : List α) :
+lemma formPerm_cons_cons (x y : α) (l : List α) :
     formPerm (x :: y :: l) = swap x y * formPerm (y :: l) :=
   prod_cons
 #align list.form_perm_cons_cons List.formPerm_cons_cons
 
-theorem formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
+lemma formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
   rfl
 #align list.form_perm_pair List.formPerm_pair
 
 variable {l} {x : α}
 
-theorem formPerm_apply_of_not_mem (x : α) (l : List α) (h : x ∉ l) : formPerm l x = x := by
+lemma formPerm_apply_of_not_mem (x : α) (l : List α) (h : x ∉ l) : formPerm l x = x := by
   cases' l with y l
   · simp
   induction' l with z l IH generalizing x y
@@ -80,11 +80,11 @@ theorem formPerm_apply_of_not_mem (x : α) (l : List α) (h : x ∉ l) : formPer
     simp [IH, swap_apply_of_ne_of_ne, h]
 #align list.form_perm_apply_of_not_mem List.formPerm_apply_of_not_mem
 
-theorem mem_of_formPerm_apply_ne (x : α) (l : List α) : l.formPerm x ≠ x → x ∈ l :=
+lemma mem_of_formPerm_apply_ne (x : α) (l : List α) : l.formPerm x ≠ x → x ∈ l :=
   not_imp_comm.2 <| List.formPerm_apply_of_not_mem _ _
 #align list.mem_of_form_perm_apply_ne List.mem_of_formPerm_apply_ne
 
-theorem formPerm_apply_mem_of_mem (x : α) (l : List α) (h : x ∈ l) : formPerm l x ∈ l := by
+lemma formPerm_apply_mem_of_mem (x : α) (l : List α) (h : x ∈ l) : formPerm l x ∈ l := by
   cases' l with y l
   · simp at h
   induction' l with z l IH generalizing x y
@@ -100,7 +100,7 @@ theorem formPerm_apply_mem_of_mem (x : α) (l : List α) (h : x ∈ l) : formPer
 #align list.form_perm_apply_mem_of_mem List.formPerm_apply_mem_of_mem
 
 set_option maxHeartbeats 220000 in
-theorem mem_of_formPerm_apply_mem (x : α) (l : List α) (h : l.formPerm x ∈ l) : x ∈ l := by
+lemma mem_of_formPerm_apply_mem (x : α) (l : List α) (h : l.formPerm x ∈ l) : x ∈ l := by
   cases' l with y l
   · simp at h
   induction' l with z l IH generalizing x y
@@ -123,7 +123,7 @@ lemma formPerm_mem_iff_mem : l.formPerm x ∈ l ↔ x ∈ l :=
 #align list.form_perm_mem_iff_mem List.formPerm_mem_iff_mem
 
 @[simp]
-theorem formPerm_cons_concat_apply_last (x y : α) (xs : List α) :
+lemma formPerm_cons_concat_apply_last (x y : α) (xs : List α) :
     formPerm (x :: (xs ++ [y])) y = x := by
   induction' xs with z xs IH generalizing x y
   · simp
@@ -131,24 +131,24 @@ theorem formPerm_cons_concat_apply_last (x y : α) (xs : List α) :
 #align list.form_perm_cons_concat_apply_last List.formPerm_cons_concat_apply_last
 
 @[simp]
-theorem formPerm_apply_getLast (x : α) (xs : List α) :
+lemma formPerm_apply_getLast (x : α) (xs : List α) :
     formPerm (x :: xs) ((x :: xs).getLast (cons_ne_nil x xs)) = x := by
   induction' xs using List.reverseRecOn with xs y _ generalizing x <;> simp
 #align list.form_perm_apply_last List.formPerm_apply_getLast
 
 set_option linter.deprecated false in
 @[simp]
-theorem formPerm_apply_nthLe_length (x : α) (xs : List α) :
+lemma formPerm_apply_nthLe_length (x : α) (xs : List α) :
     formPerm (x :: xs) ((x :: xs).nthLe xs.length (by simp)) = x := by
   rw [nthLe_cons_length, formPerm_apply_getLast]; rfl
 #align list.form_perm_apply_nth_le_length List.formPerm_apply_nthLe_length
 
-theorem formPerm_apply_head (x y : α) (xs : List α) (h : Nodup (x :: y :: xs)) :
+lemma formPerm_apply_head (x y : α) (xs : List α) (h : Nodup (x :: y :: xs)) :
     formPerm (x :: y :: xs) x = y := by simp [formPerm_apply_of_not_mem _ _ h.not_mem]
 #align list.form_perm_apply_head List.formPerm_apply_head
 
 set_option linter.deprecated false in
-theorem formPerm_apply_nthLe_zero (l : List α) (h : Nodup l) (hl : 1 < l.length) :
+lemma formPerm_apply_nthLe_zero (l : List α) (h : Nodup l) (hl : 1 < l.length) :
     formPerm l (l.nthLe 0 (zero_lt_one.trans hl)) = l.nthLe 1 hl := by
   rcases l with (_ | ⟨x, _ | ⟨y, tl⟩⟩)
   · simp at hl
@@ -158,12 +158,12 @@ theorem formPerm_apply_nthLe_zero (l : List α) (h : Nodup l) (hl : 1 < l.length
 
 variable (l)
 
-theorem formPerm_eq_head_iff_eq_getLast (x y : α) :
+lemma formPerm_eq_head_iff_eq_getLast (x y : α) :
     formPerm (y :: l) x = y ↔ x = getLast (y :: l) (cons_ne_nil _ _) :=
   Iff.trans (by rw [formPerm_apply_getLast]) (formPerm (y :: l)).injective.eq_iff
 #align list.form_perm_eq_head_iff_eq_last List.formPerm_eq_head_iff_eq_getLast
 
-theorem zipWith_swap_prod_support' (l l' : List α) :
+lemma zipWith_swap_prod_support' (l l' : List α) :
     { x | (zipWith swap l l').prod x ≠ x } ≤ l.toFinset ⊔ l'.toFinset := by
   simp only [Set.sup_eq_union, Set.le_eq_subset]
   induction' l with y l hl generalizing l'
@@ -207,7 +207,7 @@ lemma support_formPerm_le [Fintype α] : support (formPerm l) ≤ l.toFinset := 
 #align list.support_form_perm_le List.support_formPerm_le
 
 set_option linter.deprecated false in
-theorem formPerm_apply_lt (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 1 < xs.length) :
+lemma formPerm_apply_lt (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 1 < xs.length) :
     formPerm xs (xs.nthLe n ((Nat.lt_succ_self n).trans hn)) = xs.nthLe (n + 1) hn := by
   induction' n with n IH generalizing xs
   · simpa using formPerm_apply_nthLe_zero _ h _
@@ -225,7 +225,7 @@ theorem formPerm_apply_lt (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 1 < 
 #align list.form_perm_apply_lt List.formPerm_apply_lt
 
 set_option linter.deprecated false in
-theorem formPerm_apply_nthLe (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < xs.length) :
+lemma formPerm_apply_nthLe (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < xs.length) :
     formPerm xs (xs.nthLe n hn) =
       xs.nthLe ((n + 1) % xs.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) := by
   cases' xs with x xs
@@ -241,7 +241,7 @@ theorem formPerm_apply_nthLe (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < x
 #align list.form_perm_apply_nth_le List.formPerm_apply_nthLe
 
 set_option linter.deprecated false in
-theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
+lemma support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     { x | formPerm l x ≠ x } = l.toFinset := by
   apply _root_.le_antisymm
   · exact support_formPerm_le' l
@@ -268,7 +268,7 @@ lemma support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : �
 #align list.support_form_perm_of_nodup List.support_formPerm_of_nodup
 
 set_option linter.deprecated false in
-theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by
+lemma formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by
   have h' : Nodup (l.rotate 1) := by simpa using h
   ext x
   by_cases hx : x ∈ l.rotate 1
@@ -279,7 +279,7 @@ theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) 
     simpa using hx
 #align list.form_perm_rotate_one List.formPerm_rotate_one
 
-theorem formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :
+lemma formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :
     formPerm (l.rotate n) = formPerm l := by
   induction' n with n hn
   · simp
@@ -295,7 +295,7 @@ lemma formPerm_eq_of_isRotated {l l' : List α} (hd : Nodup l) (h : l ~r l') :
 #align list.form_perm_eq_of_is_rotated List.formPerm_eq_of_isRotated
 
 set_option linter.deprecated false in
-theorem formPerm_reverse (l : List α) (h : Nodup l) : formPerm l.reverse = (formPerm l)⁻¹ := by
+lemma formPerm_reverse (l : List α) (h : Nodup l) : formPerm l.reverse = (formPerm l)⁻¹ := by
   -- Let's show `formPerm l` is an inverse to `formPerm l.reverse`.
   rw [eq_comm, inv_eq_iff_mul_eq_one]
   ext x
@@ -323,7 +323,7 @@ theorem formPerm_reverse (l : List α) (h : Nodup l) : formPerm l.reverse = (for
     simpa using hx
 #align list.form_perm_reverse List.formPerm_reverse
 
-theorem formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
+lemma formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
     (formPerm l ^ n) (l.nthLe k hk) =
       l.nthLe ((k + n) % l.length) (Nat.mod_lt _ (k.zero_le.trans_lt hk)) := by
   induction' n with n hn
@@ -331,7 +331,7 @@ theorem formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k
   · simp [pow_succ, mul_apply, hn, formPerm_apply_nthLe _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
 #align list.form_perm_pow_apply_nth_le List.formPerm_pow_apply_nthLe
 
-theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n : ℕ) :
+lemma formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n : ℕ) :
     (formPerm (x :: l) ^ n) x =
       (x :: l).nthLe (n % (x :: l).length) (Nat.mod_lt _ (Nat.zero_lt_succ _)) := by
   convert formPerm_pow_apply_nthLe _ h n 0 (Nat.succ_pos _)
@@ -378,7 +378,7 @@ lemma formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :: 
 #align list.form_perm_ext_iff List.formPerm_ext_iff
 
 set_option linter.deprecated false in
-theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
+lemma formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
     formPerm l x = x ↔ length l ≤ 1 := by
   obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
   rw [formPerm_apply_nthLe _ hl, hl.nthLe_inj_iff]
@@ -391,24 +391,24 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
         k.zero_le.trans_lt hk'
 #align list.form_perm_apply_mem_eq_self_iff List.formPerm_apply_mem_eq_self_iff
 
-theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
+lemma formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
     formPerm l x ≠ x ↔ 2 ≤ l.length := by
   rw [Ne.def, formPerm_apply_mem_eq_self_iff _ hl x hx, not_le]
   exact ⟨Nat.succ_le_of_lt, Nat.lt_of_succ_le⟩
 #align list.form_perm_apply_mem_ne_self_iff List.formPerm_apply_mem_ne_self_iff
 
-theorem mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) : x ∈ l := by
+lemma mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) : x ∈ l := by
   suffices x ∈ { y | formPerm l y ≠ y } by
     rw [← mem_toFinset]
     exact support_formPerm_le' _ this
   simpa using h
 #align list.mem_of_form_perm_ne_self List.mem_of_formPerm_ne_self
 
-theorem formPerm_eq_self_of_not_mem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
+lemma formPerm_eq_self_of_not_mem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
   by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
 #align list.form_perm_eq_self_of_not_mem List.formPerm_eq_self_of_not_mem
 
-theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
+lemma formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   cases' l with hd tl
   · simp
   · rw [← formPerm_apply_mem_eq_self_iff _ hl hd (mem_cons_self _ _)]
@@ -441,7 +441,7 @@ lemma formPerm_eq_formPerm_iff {l l' : List α} (hl : l.Nodup) (hl' : l'.Nodup) 
     · simp [-formPerm_cons_cons, formPerm_ext_iff hl hl', Nat.succ_le_succ_iff]
 #align list.form_perm_eq_form_perm_iff List.formPerm_eq_formPerm_iff
 
-theorem form_perm_zpow_apply_mem_imp_mem (l : List α) (x : α) (hx : x ∈ l) (n : ℤ) :
+lemma form_perm_zpow_apply_mem_imp_mem (l : List α) (x : α) (hx : x ∈ l) (n : ℤ) :
     (formPerm l ^ n) x ∈ l := by
   by_cases h : (l.formPerm ^ n) x = x
   · simpa [h] using hx
@@ -452,7 +452,7 @@ theorem form_perm_zpow_apply_mem_imp_mem (l : List α) (x : α) (hx : x ∈ l) (
 #align list.form_perm_zpow_apply_mem_imp_mem List.form_perm_zpow_apply_mem_imp_mem
 
 set_option linter.deprecated false in
-theorem formPerm_pow_length_eq_one_of_nodup (hl : Nodup l) : formPerm l ^ length l = 1 := by
+lemma formPerm_pow_length_eq_one_of_nodup (hl : Nodup l) : formPerm l ^ length l = 1 := by
   ext x
   by_cases hx : x ∈ l
   · obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx

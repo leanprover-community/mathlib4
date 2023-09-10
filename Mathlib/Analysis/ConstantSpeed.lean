@@ -57,12 +57,12 @@ def HasConstantSpeedOnWith :=
 
 variable {f s l}
 
-theorem HasConstantSpeedOnWith.hasLocallyBoundedVariationOn (h : HasConstantSpeedOnWith f s l) :
+lemma HasConstantSpeedOnWith.hasLocallyBoundedVariationOn (h : HasConstantSpeedOnWith f s l) :
     LocallyBoundedVariationOn f s := fun x y hx hy => by
   simp only [BoundedVariationOn, h hx hy, Ne.def, ENNReal.ofReal_ne_top, not_false_iff]
 #align has_constant_speed_on_with.has_locally_bounded_variation_on HasConstantSpeedOnWith.hasLocallyBoundedVariationOn
 
-theorem hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs : s.Subsingleton)
+lemma hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs : s.Subsingleton)
     (l : ℝ≥0) : HasConstantSpeedOnWith f s l := by
   rintro x hx y hy; cases hs hx hy
   rw [eVariationOn.subsingleton f (fun y hy z hz => hs hy.1 hz.1 : (s ∩ Icc x x).Subsingleton)]
@@ -257,7 +257,7 @@ lemma edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
   apply variationOnFromTo.edist_zero_of_eq_zero hf cs bs hc
 #align edist_natural_parameterization_eq_zero edist_naturalParameterization_eq_zero
 
-theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
+lemma has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) :
     HasUnitSpeedOn (naturalParameterization f s a) (variationOnFromTo f s a '' s) := by
   dsimp only [HasUnitSpeedOn]

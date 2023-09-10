@@ -42,7 +42,7 @@ def preservesFiniteColimitsPreadditiveYonedaObjOfInjective (J : C) [hP : Injecti
 #align category_theory.preserves_finite_colimits_preadditive_yoneda_obj_of_injective CategoryTheory.preservesFiniteColimitsPreadditiveYonedaObjOfInjective
 
 /-- An object is injective if its preadditive Yoneda functor preserves finite colimits. -/
-theorem injective_of_preservesFiniteColimits_preadditiveYonedaObj (J : C)
+lemma injective_of_preservesFiniteColimits_preadditiveYonedaObj (J : C)
     [hP : PreservesFiniteColimits (preadditiveYonedaObj J)] : Injective J := by
   rw [injective_iff_preservesEpimorphisms_preadditive_yoneda_obj']
   infer_instance

@@ -47,7 +47,7 @@ def of (α : Type*) [Lattice α] : LatCat :=
 #align Lat.of LatCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
   rfl
 #align Lat.coe_of LatCat.coe_of
 

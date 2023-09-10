@@ -60,7 +60,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.of CategoryTheory.Grpd.of
 
 @[simp]
-theorem coe_of (C : Type u) [Groupoid C] : (of C : Type u) = C :=
+lemma coe_of (C : Type u) [Groupoid C] : (of C : Type u) = C :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.coe_of CategoryTheory.Grpd.coe_of
@@ -149,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.pi_iso_pi CategoryTheory.Grpd.piIsoPi
 
 @[simp]
-theorem piIsoPi_hom_π (J : Type u) (f : J → Grpd.{u, u}) (j : J) :
+lemma piIsoPi_hom_π (J : Type u) (f : J → Grpd.{u, u}) (j : J) :
     (piIsoPi J f).hom ≫ Limits.Pi.π f j = CategoryTheory.Pi.eval _ j := by
   simp [piIsoPi]
   rfl

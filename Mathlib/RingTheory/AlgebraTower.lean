@@ -87,7 +87,7 @@ noncomputable def Basis.algebraMapCoeffs : Basis ι A M :=
 #align basis.algebra_map_coeffs Basis.algebraMapCoeffs
 #noalign Basis.algebraMapCoeffs_repr_symm_apply -- failed simpNF linter
 
-theorem Basis.algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
+lemma Basis.algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
   b.mapCoeffs_apply _ _ _
 #align basis.algebra_map_coeffs_apply Basis.algebraMapCoeffs_apply
 

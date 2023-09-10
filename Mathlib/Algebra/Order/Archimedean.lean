@@ -142,21 +142,21 @@ section StrictOrderedRing
 
 variable [StrictOrderedRing α] [Archimedean α]
 
-theorem pow_unbounded_of_one_lt (x : α) {y : α} (hy1 : 1 < y) : ∃ n : ℕ, x < y ^ n :=
+lemma pow_unbounded_of_one_lt (x : α) {y : α} (hy1 : 1 < y) : ∃ n : ℕ, x < y ^ n :=
   sub_add_cancel y 1 ▸ add_one_pow_unbounded_of_pos _ (sub_pos.2 hy1)
 #align pow_unbounded_of_one_lt pow_unbounded_of_one_lt
 
-theorem exists_int_gt (x : α) : ∃ n : ℤ, x < n :=
+lemma exists_int_gt (x : α) : ∃ n : ℤ, x < n :=
   let ⟨n, h⟩ := exists_nat_gt x
   ⟨n, by rwa [Int.cast_ofNat]⟩
 #align exists_int_gt exists_int_gt
 
-theorem exists_int_lt (x : α) : ∃ n : ℤ, (n : α) < x :=
+lemma exists_int_lt (x : α) : ∃ n : ℤ, (n : α) < x :=
   let ⟨n, h⟩ := exists_int_gt (-x)
   ⟨-n, by rw [Int.cast_neg]; exact neg_lt.1 h⟩
 #align exists_int_lt exists_int_lt
 
-theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
+lemma exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
   haveI := Classical.propDecidable
   have : ∃ ub : ℤ, (ub : α) ≤ x ∧ ∀ z : ℤ, (z : α) ≤ x → z ≤ ub :=
     Int.exists_greatest_of_bdd
@@ -199,7 +199,7 @@ variable [LinearOrderedField α] [Archimedean α] {x y ε : α}
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ioc_zpow`,
 but with ≤ and < the other way around. -/
-theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
+lemma exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
   classical exact
       let ⟨N, hN⟩ := pow_unbounded_of_one_lt x⁻¹ hy
       have he : ∃ m : ℤ, y ^ m ≤ x :=
@@ -221,7 +221,7 @@ theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ico_zpow`,
 but with ≤ and < the other way around. -/
-theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) :=
+lemma exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) :=
   let ⟨m, hle, hlt⟩ := exists_mem_Ico_zpow (inv_pos.2 hx) hy
   have hyp : 0 < y := lt_trans zero_lt_one hy
   ⟨-(m + 1), by rwa [zpow_neg, inv_lt (zpow_pos_of_pos hyp _) hx], by
@@ -229,7 +229,7 @@ theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (
 #align exists_mem_Ioc_zpow exists_mem_Ioc_zpow
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
-theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
+lemma exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
   by_cases y_pos : y ≤ 0
   · use 1
     simp only [pow_one]
@@ -241,7 +241,7 @@ theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n <
 
 /-- Given `x` and `y` between `0` and `1`, `x` is between two successive powers of `y`.
 This is the same as `exists_nat_pow_near`, but for elements between `0` and `1` -/
-theorem exists_nat_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 0 < y) (hy : y < 1) :
+lemma exists_nat_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 0 < y) (hy : y < 1) :
     ∃ n : ℕ, y ^ (n + 1) < x ∧ x ≤ y ^ n := by
   rcases exists_nat_pow_near (one_le_inv_iff.2 ⟨xpos, hx⟩) (one_lt_inv_iff.2 ⟨ypos, hy⟩) with
     ⟨n, hn, h'n⟩
@@ -250,12 +250,12 @@ theorem exists_nat_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 0 < 
   · rwa [inv_pow, inv_le_inv (pow_pos ypos _) xpos] at hn
 #align exists_nat_pow_near_of_lt_one exists_nat_pow_near_of_lt_one
 
-theorem exists_rat_gt (x : α) : ∃ q : ℚ, x < q :=
+lemma exists_rat_gt (x : α) : ∃ q : ℚ, x < q :=
   let ⟨n, h⟩ := exists_nat_gt x
   ⟨n, by rwa [Rat.cast_coe_nat]⟩
 #align exists_rat_gt exists_rat_gt
 
-theorem exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
+lemma exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
   let ⟨n, h⟩ := exists_int_lt x
   ⟨n, by rwa [Rat.cast_coe_int]⟩
 #align exists_rat_lt exists_rat_lt
@@ -281,13 +281,13 @@ lemma exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) <
     exact one_ne_zero
 #align exists_rat_btwn exists_rat_btwn
 
-theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : α) < x → (q : α) ≤ y) : x ≤ y :=
+lemma le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : α) < x → (q : α) ≤ y) : x ≤ y :=
   le_of_not_lt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
     hy.not_le <| h _ hx
 #align le_of_forall_rat_lt_imp_le le_of_forall_rat_lt_imp_le
 
-theorem le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
+lemma le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
   le_of_not_lt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
     hx.not_le <| h _ hy
@@ -299,12 +299,12 @@ lemma le_iff_forall_rat_lt_imp_le : x ≤ y ↔ ∀ q : ℚ, (q : α) < x → (q
 lemma le_iff_forall_lt_rat_imp_le : x ≤ y ↔ ∀ q : ℚ, y < q → x ≤ q :=
   ⟨fun hxy _ hqx ↦ hxy.trans hqx.le, le_of_forall_lt_rat_imp_le⟩
 
-theorem eq_of_forall_rat_lt_iff_lt (h : ∀ q : ℚ, (q : α) < x ↔ (q : α) < y) : x = y :=
+lemma eq_of_forall_rat_lt_iff_lt (h : ∀ q : ℚ, (q : α) < x ↔ (q : α) < y) : x = y :=
   (le_of_forall_rat_lt_imp_le fun q hq => ((h q).1 hq).le).antisymm <|
     le_of_forall_rat_lt_imp_le fun q hq => ((h q).2 hq).le
 #align eq_of_forall_rat_lt_iff_lt eq_of_forall_rat_lt_iff_lt
 
-theorem eq_of_forall_lt_rat_iff_lt (h : ∀ q : ℚ, x < q ↔ y < q) : x = y :=
+lemma eq_of_forall_lt_rat_iff_lt (h : ∀ q : ℚ, x < q ↔ y < q) : x = y :=
   (le_of_forall_lt_rat_imp_le fun q hq => ((h q).2 hq).le).antisymm <|
     le_of_forall_lt_rat_imp_le fun q hq => ((h q).1 hq).le
 #align eq_of_forall_lt_rat_iff_lt eq_of_forall_lt_rat_iff_lt
@@ -322,7 +322,7 @@ lemma exists_pos_rat_lt {x : α} (x0 : 0 < x) : ∃ q : ℚ, 0 < q ∧ (q : α) 
   simpa only [Rat.cast_pos] using exists_rat_btwn x0
 #align exists_pos_rat_lt exists_pos_rat_lt
 
-theorem exists_rat_near (x : α) (ε0 : 0 < ε) : ∃ q : ℚ, |x - q| < ε :=
+lemma exists_rat_near (x : α) (ε0 : 0 < ε) : ∃ q : ℚ, |x - q| < ε :=
   let ⟨q, h₁, h₂⟩ :=
     exists_rat_btwn <| ((sub_lt_self_iff x).2 ε0).trans ((lt_add_iff_pos_left x).2 ε0)
   ⟨q, abs_sub_lt_iff.2 ⟨sub_lt_comm.1 h₁, sub_lt_iff_lt_add.2 h₂⟩⟩

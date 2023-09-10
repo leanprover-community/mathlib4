@@ -120,7 +120,7 @@ lemma singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A B)
 variable {A B}
 
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension ∅ A B`. -/
-theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
+lemma singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension ∅ A B := by
 -- Porting note: Lean3 is able to infer `A`.
   refine' (iff_adjoin_eq_top _ A _).2
@@ -132,7 +132,7 @@ theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
 variable (A B)
 
 /-- Transitivity of cyclotomic extensions. -/
-theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
+lemma trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
     [hS : IsCyclotomicExtension S A B] [hT : IsCyclotomicExtension T B C]
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
   refine' ⟨fun hn => _, fun x => _⟩
@@ -208,7 +208,7 @@ variable {n S}
 
 /-- If `∀ s ∈ S, n ∣ s` and `S` is not empty, then `IsCyclotomicExtension S A B` implies
 `IsCyclotomicExtension (S ∪ {n}) A B`. -/
-theorem of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) [H : IsCyclotomicExtension S A B] :
+lemma of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) [H : IsCyclotomicExtension S A B] :
     IsCyclotomicExtension (S ∪ {n}) A B := by
   refine' (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => _, _⟩
   · rw [mem_union, mem_singleton_iff] at hs
@@ -230,7 +230,7 @@ theorem of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) [H : IsCycl
 
 /-- If `∀ s ∈ S, n ∣ s` and `S` is not empty, then `IsCyclotomicExtension S A B` if and only if
 `IsCyclotomicExtension (S ∪ {n}) A B`. -/
-theorem iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) :
+lemma iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {n}) A B := by
   refine'
     ⟨fun H => of_union_of_dvd A B h hS, fun H => (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => _, _⟩⟩
@@ -264,14 +264,14 @@ lemma iff_union_singleton_one :
 variable {A B}
 
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {1} A B`. -/
-theorem singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
+lemma singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {1} A B := by
   convert (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
   simp
 #align is_cyclotomic_extension.singleton_one_of_bot_eq_top IsCyclotomicExtension.singleton_one_of_bot_eq_top
 
 /-- If `Function.Surjective (algebraMap A B)`, then `IsCyclotomicExtension {1} A B`. -/
-theorem singleton_one_of_algebraMap_bijective (h : Function.Surjective (algebraMap A B)) :
+lemma singleton_one_of_algebraMap_bijective (h : Function.Surjective (algebraMap A B)) :
     IsCyclotomicExtension {1} A B :=
   singleton_one_of_bot_eq_top (surjective_algebraMap_iff.1 h).symm
 #align is_cyclotomic_extension.singleton_one_of_algebra_map_bijective IsCyclotomicExtension.singleton_one_of_algebraMap_bijective
@@ -357,7 +357,7 @@ lemma integral [IsDomain B] [IsNoetherianRing A] [Finite S] [IsCyclotomicExtensi
 #align is_cyclotomic_extension.integral IsCyclotomicExtension.integral
 
 /-- If `S` is finite and `IsCyclotomicExtension S K A`, then `finiteDimensional K A`. -/
-theorem finiteDimensional (C : Type z) [Finite S] [CommRing C] [Algebra K C] [IsDomain C]
+lemma finiteDimensional (C : Type z) [Finite S] [CommRing C] [Algebra K C] [IsDomain C]
     [IsCyclotomicExtension S K C] : FiniteDimensional K C :=
   IsCyclotomicExtension.finite S K C
 #align is_cyclotomic_extension.finite_dimensional IsCyclotomicExtension.finiteDimensional
@@ -732,7 +732,7 @@ variable [IsAlgClosed K]
 
 /-- Algebraically closed fields are `S`-cyclotomic extensions over themselves if
 `NeZero ((a : ℕ) : K))` for all `a ∈ S`. -/
-theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : K)) :
+lemma IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : K)) :
     IsCyclotomicExtension S K K := by
   refine' ⟨@fun a ha => _, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
   obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _ (degree_cyclotomic_pos a K a.pos).ne'

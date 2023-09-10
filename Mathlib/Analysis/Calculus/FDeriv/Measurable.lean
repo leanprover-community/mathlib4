@@ -134,7 +134,7 @@ def D (f : E → F) (K : Set (E →L[𝕜] F)) : Set E :=
   ⋂ e : ℕ, ⋃ n : ℕ, ⋂ (p ≥ n) (q ≥ n), B f K ((1 / 2) ^ p) ((1 / 2) ^ q) ((1 / 2) ^ e)
 #align fderiv_measurable_aux.D FDerivMeasurableAux.D
 
-theorem isOpen_A (L : E →L[𝕜] F) (r ε : ℝ) : IsOpen (A f L r ε) := by
+lemma isOpen_A (L : E →L[𝕜] F) (r ε : ℝ) : IsOpen (A f L r ε) := by
   rw [Metric.isOpen_iff]
   rintro x ⟨r', r'_mem, hr'⟩
   obtain ⟨s, s_gt, s_lt⟩ : ∃ s : ℝ, r / 2 < s ∧ s < r' := exists_between r'_mem.1
@@ -149,7 +149,7 @@ lemma isOpen_B {K : Set (E →L[𝕜] F)} {r s ε : ℝ} : IsOpen (B f K r s ε)
   simp [B, isOpen_biUnion, IsOpen.inter, isOpen_A]
 #align fderiv_measurable_aux.is_open_B FDerivMeasurableAux.isOpen_B
 
-theorem A_mono (L : E →L[𝕜] F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
+lemma A_mono (L : E →L[𝕜] F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
   rintro x ⟨r', r'r, hr'⟩
   refine' ⟨r', r'r, fun y hy z hz => (hr' y hy z hz).trans_le (mul_le_mul_of_nonneg_right h _)⟩
   linarith [mem_ball.1 hy, r'r.2, @dist_nonneg _ _ y x]
@@ -367,7 +367,7 @@ lemma D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete K)
   exact ⟨this.differentiableAt, f'K⟩
 #align fderiv_measurable_aux.D_subset_differentiable_set FDerivMeasurableAux.D_subset_differentiable_set
 
-theorem differentiable_set_eq_D (hK : IsComplete K) :
+lemma differentiable_set_eq_D (hK : IsComplete K) :
     { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } = D f K :=
   Subset.antisymm (differentiable_set_subset_D _) (D_subset_differentiable_set hK)
 #align fderiv_measurable_aux.differentiable_set_eq_D FDerivMeasurableAux.differentiable_set_eq_D
@@ -511,7 +511,7 @@ lemma measurableSet_B {K : Set F} {r s ε : ℝ} : MeasurableSet (B f K r s ε) 
   measurableSet_of_mem_nhdsWithin_Ioi fun _ hx => B_mem_nhdsWithin_Ioi hx
 #align right_deriv_measurable_aux.measurable_set_B RightDerivMeasurableAux.measurableSet_B
 
-theorem A_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
+lemma A_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
   rintro x ⟨r', r'r, hr'⟩
   refine' ⟨r', r'r, fun y hy z hz => (hr' y hy z hz).trans (mul_le_mul_of_nonneg_right h _)⟩
   linarith [hy.1, hy.2, r'r.2]
@@ -733,7 +733,7 @@ lemma D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
   exact ⟨this.differentiableWithinAt, f'K⟩
 #align right_deriv_measurable_aux.D_subset_differentiable_set RightDerivMeasurableAux.D_subset_differentiable_set
 
-theorem differentiable_set_eq_D (hK : IsComplete K) :
+lemma differentiable_set_eq_D (hK : IsComplete K) :
     { x | DifferentiableWithinAt ℝ f (Ici x) x ∧ derivWithin f (Ici x) x ∈ K } = D f K :=
   Subset.antisymm (differentiable_set_subset_D _) (D_subset_differentiable_set hK)
 #align right_deriv_measurable_aux.differentiable_set_eq_D RightDerivMeasurableAux.differentiable_set_eq_D
@@ -953,13 +953,13 @@ variable [CompleteSpace F]
 
 /-- The set of differentiability points of a continuous function depending on a parameter taking
 values in a complete space is Borel-measurable. -/
-theorem measurableSet_of_differentiableAt_with_param (hf : Continuous f.uncurry) :
+lemma measurableSet_of_differentiableAt_with_param (hf : Continuous f.uncurry) :
     MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2} := by
   have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
   convert measurableSet_of_differentiableAt_of_isComplete_with_param hf this
   simp
 
-theorem measurable_fderiv_with_param (hf : Continuous f.uncurry) :
+lemma measurable_fderiv_with_param (hf : Continuous f.uncurry) :
     Measurable (fun (p : α × E) ↦ fderiv 𝕜 (f p.1) p.2) := by
   refine measurable_of_isClosed (fun s hs ↦ ?_)
   have :

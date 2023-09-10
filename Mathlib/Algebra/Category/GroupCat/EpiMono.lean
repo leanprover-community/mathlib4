@@ -125,7 +125,7 @@ instance : SMul B X' where
           use b * b'⟩
     | ∞ => ∞
 
-theorem mul_smul (b b' : B) (x : X') : (b * b') • x = b • b' • x :=
+lemma mul_smul (b b' : B) (x : X') : (b * b') • x = b • b' • x :=
   match x with
   | fromCoset y => by
     change fromCoset _ = fromCoset _
@@ -133,7 +133,7 @@ theorem mul_smul (b b' : B) (x : X') : (b * b') • x = b • b' • x :=
   | ∞ => rfl
 #align Group.surjective_of_epi_auxs.mul_smul GroupCat.SurjectiveOfEpiAuxs.mul_smul
 
-theorem one_smul (x : X') : (1 : B) • x = x :=
+lemma one_smul (x : X') : (1 : B) • x = x :=
   match x with
   | fromCoset y => by
     change fromCoset _ = fromCoset _
@@ -186,7 +186,7 @@ lemma τ_apply_fromCoset : τ (fromCoset ⟨f.range.carrier, ⟨1, one_leftCoset
   Equiv.swap_apply_left _ _
 #align Group.surjective_of_epi_auxs.τ_apply_fromCoset GroupCat.SurjectiveOfEpiAuxs.τ_apply_fromCoset
 
-theorem τ_apply_fromCoset' (x : B) (hx : x ∈ f.range) :
+lemma τ_apply_fromCoset' (x : B) (hx : x ∈ f.range) :
     τ (fromCoset ⟨x *l f.range.carrier, ⟨x, rfl⟩⟩) = ∞ :=
   (fromCoset_eq_of_mem_range _ hx).symm ▸ τ_apply_fromCoset _
 #align Group.surjective_of_epi_auxs.τ_apply_fromCoset' GroupCat.SurjectiveOfEpiAuxs.τ_apply_fromCoset'
@@ -247,34 +247,34 @@ The strategy is the following: assuming `epi f`
 -/
 
 
-theorem g_apply_fromCoset (x : B) (y : X) : (g x) (fromCoset y)
+lemma g_apply_fromCoset (x : B) (y : X) : (g x) (fromCoset y)
     = fromCoset ⟨x *l y, by aesop_cat⟩ := rfl
 #align Group.surjective_of_epi_auxs.g_apply_fromCoset GroupCat.SurjectiveOfEpiAuxs.g_apply_fromCoset
 
-theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ := rfl
+lemma g_apply_infinity (x : B) : (g x) ∞ = ∞ := rfl
 #align Group.surjective_of_epi_auxs.g_apply_infinity GroupCat.SurjectiveOfEpiAuxs.g_apply_infinity
 
-theorem h_apply_infinity (x : B) (hx : x ∈ f.range) : (h x) ∞ = ∞ := by
+lemma h_apply_infinity (x : B) (hx : x ∈ f.range) : (h x) ∞ = ∞ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
   simp only [MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_fromCoset]
   simpa only using τ_apply_fromCoset' f x hx
 #align Group.surjective_of_epi_auxs.h_apply_infinity GroupCat.SurjectiveOfEpiAuxs.h_apply_infinity
 
-theorem h_apply_fromCoset (x : B) :
+lemma h_apply_fromCoset (x : B) :
     (h x) (fromCoset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩) =
       fromCoset ⟨f.range.carrier, ⟨1, one_leftCoset _⟩⟩ := by
     change ((τ).symm.trans (g x)).trans τ _ = _
     simp [τ_symm_apply_fromCoset, g_apply_infinity, τ_apply_infinity]
 #align Group.surjective_of_epi_auxs.h_apply_fromCoset GroupCat.SurjectiveOfEpiAuxs.h_apply_fromCoset
 
-theorem h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.range) :
+lemma h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.range) :
     (h x) (fromCoset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩) =
       fromCoset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩ :=
   (fromCoset_eq_of_mem_range _ hb).symm ▸ h_apply_fromCoset f x
 #align Group.surjective_of_epi_auxs.h_apply_fromCoset' GroupCat.SurjectiveOfEpiAuxs.h_apply_fromCoset'
 
-theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b ∉ f.range) :
+lemma h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b ∉ f.range) :
     (h x) (fromCoset ⟨b *l f.range.carrier, ⟨b, rfl⟩⟩) =
       fromCoset ⟨x * b *l f.range.carrier, ⟨x * b, rfl⟩⟩ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
@@ -323,7 +323,7 @@ lemma comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ show B ⟶ Gro
   rw [this]
 #align Group.surjective_of_epi_auxs.comp_eq GroupCat.SurjectiveOfEpiAuxs.comp_eq
 
-theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h := by
+lemma g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h := by
   intro r
   replace r :=
     FunLike.congr_fun (FunLike.congr_fun r x) (fromCoset ⟨f.range, ⟨1, one_leftCoset _⟩⟩)

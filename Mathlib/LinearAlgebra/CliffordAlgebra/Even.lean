@@ -171,16 +171,16 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
     fun c m a => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun m₃ => mul_smul_comm _ _ _)
 
 @[simp]
-private theorem fst_fFold_fFold (m₁ m₂ : M) (x : A × S f) :
+private lemma fst_fFold_fFold (m₁ m₂ : M) (x : A × S f) :
     (fFold f m₁ (fFold f m₂ x)).fst = f.bilin m₁ m₂ * x.fst :=
   rfl
 
 @[simp]
-private theorem snd_fFold_fFold (m₁ m₂ m₃ : M) (x : A × S f) :
+private lemma snd_fFold_fFold (m₁ m₂ m₃ : M) (x : A × S f) :
     ((fFold f m₁ (fFold f m₂ x)).snd : M →ₗ[R] A) m₃ = f.bilin m₃ m₁ * (x.snd : M →ₗ[R] A) m₂ :=
   rfl
 
-private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q m • x := by
+private lemma fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q m • x := by
   obtain ⟨a, ⟨g, hg⟩⟩ := x
   ext : 2
   · change f.bilin m m * a = Q m • a
@@ -216,7 +216,7 @@ lemma aux_one : aux f 1 = 1 :=
 #align clifford_algebra.even.lift.aux_one CliffordAlgebra.even.lift.aux_one
 
 @[simp]
-theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
+lemma aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
     (by
       rw [foldr_ι, foldr_ι]
@@ -224,12 +224,12 @@ theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m
 #align clifford_algebra.even.lift.aux_ι CliffordAlgebra.even.lift.aux_ι
 
 @[simp]
-theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
+lemma aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 #align clifford_algebra.even.lift.aux_algebra_map CliffordAlgebra.even.lift.aux_algebraMap
 
 @[simp]
-theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
+lemma aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   cases' x with x x_property
   cases y
   refine' (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
@@ -265,7 +265,7 @@ def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
 #align clifford_algebra.even.lift CliffordAlgebra.even.lift
 
 -- @[simp] -- Porting note: simpNF linter times out on this one
-theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :
+lemma even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :
     even.lift Q f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   even.lift.aux_ι _ _ _
 #align clifford_algebra.even.lift_ι CliffordAlgebra.even.lift_ι

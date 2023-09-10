@@ -73,7 +73,7 @@ def quotientPiLift (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns
 #align submodule.quotient_pi_lift Submodule.quotientPiLift
 
 @[simp]
-theorem quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns i)
+lemma quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →ₗ[R] Ns i)
     (hf : ∀ i, p i ≤ ker (f i)) (x : ∀ i, Ms i) :
     quotientPiLift p f hf (Quotient.mk x) = fun i => f i (x i) :=
   rfl
@@ -110,11 +110,11 @@ lemma right_inv : Function.RightInverse (invFun p) (toFun p) := by
     rw [Pi.single_eq_same, Pi.single_eq_same]
   · rw [Pi.single_eq_of_ne (Ne.symm hij), Pi.single_eq_of_ne (Ne.symm hij), Quotient.mk_zero]
 
-theorem map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+lemma map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
     toFun p (x + y) = toFun p x + toFun p y :=
   LinearMap.map_add (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) x y
 
-theorem map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+lemma map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
     toFun p (r • x) = (RingHom.id R r) • toFun p x :=
   LinearMap.map_smul (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) r x
 

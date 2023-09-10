@@ -50,13 +50,13 @@ protected lemma continuous_dist [TopologicalSpace β] {f g : β → Completion �
 
 /-- The new distance is an extension of the original distance. -/
 @[simp]
-protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
+protected lemma dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
   Completion.extension₂_coe_coe uniformContinuous_dist _ _
 #align uniform_space.completion.dist_eq UniformSpace.Completion.dist_eq
 
 /- Let us check that the new distance satisfies the axioms of a distance, by starting from the
 properties on α and extending them to `Completion α` by continuity. -/
-protected theorem dist_self (x : Completion α) : dist x x = 0 := by
+protected lemma dist_self (x : Completion α) : dist x x = 0 := by
   refine' induction_on x _ _
   · refine' isClosed_eq _ continuous_const
     exact Completion.continuous_dist continuous_id continuous_id
@@ -64,7 +64,7 @@ protected theorem dist_self (x : Completion α) : dist x x = 0 := by
     rw [Completion.dist_eq, dist_self]
 #align uniform_space.completion.dist_self UniformSpace.Completion.dist_self
 
-protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
+protected lemma dist_comm (x y : Completion α) : dist x y = dist y x := by
   refine' induction_on₂ x y _ _
   · exact isClosed_eq (Completion.continuous_dist continuous_fst continuous_snd)
         (Completion.continuous_dist continuous_snd continuous_fst)
@@ -72,7 +72,7 @@ protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
     rw [Completion.dist_eq, Completion.dist_eq, dist_comm]
 #align uniform_space.completion.dist_comm UniformSpace.Completion.dist_comm
 
-protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z := by
+protected lemma dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z := by
   refine' induction_on₃ x y z _ _
   · refine' isClosed_le _ (Continuous.add _ _) <;>
       apply_rules [Completion.continuous_dist, Continuous.fst, Continuous.snd, continuous_id]
@@ -83,7 +83,7 @@ protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y 
 
 /-- Elements of the uniformity (defined generally for completions) can be characterized in terms
 of the distance. -/
-protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α)) :
+protected lemma mem_uniformity_dist (s : Set (Completion α × Completion α)) :
     s ∈ 𝓤 (Completion α) ↔ ∃ ε > 0, ∀ {a b}, dist a b < ε → (a, b) ∈ s := by
   constructor
   · /- Start from an entourage `s`. It contains a closed entourage `t`. Its pullback in `α` is an
@@ -140,7 +140,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
 #align uniform_space.completion.mem_uniformity_dist UniformSpace.Completion.mem_uniformity_dist
 
 /-- If two points are at distance 0, then they coincide. -/
-protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y := by
+protected lemma eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y := by
   /- This follows from the separation of `Completion α` and from the description of
     entourages in terms of the distance. -/
   have : SeparatedSpace (Completion α) := by infer_instance
@@ -183,7 +183,7 @@ lemma coe_isometry : Isometry ((↑) : α → Completion α) :=
 #align uniform_space.completion.coe_isometry UniformSpace.Completion.coe_isometry
 
 @[simp]
-protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
+protected lemma edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
   coe_isometry x y
 #align uniform_space.completion.edist_eq UniformSpace.Completion.edist_eq
 

@@ -119,7 +119,7 @@ lemma not_top_lt : ¬⊤ < a :=
   isMax_top.not_lt
 #align not_top_lt not_top_lt
 
-theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
+lemma ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   (h.trans_le le_top).ne
 #align ne_top_of_lt ne_top_of_lt
 
@@ -158,7 +158,7 @@ lemma top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
   le_top.le_iff_eq.trans eq_comm
 #align top_le_iff top_le_iff
 
-theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
+lemma top_unique (h : ⊤ ≤ a) : a = ⊤ :=
   le_top.antisymm h
 #align top_unique top_unique
 
@@ -166,7 +166,7 @@ lemma eq_top_iff : a = ⊤ ↔ ⊤ ≤ a :=
   top_le_iff.symm
 #align eq_top_iff eq_top_iff
 
-theorem eq_top_mono (h : a ≤ b) (h₂ : a = ⊤) : b = ⊤ :=
+lemma eq_top_mono (h : a ≤ b) (h₂ : a = ⊤) : b = ⊤ :=
   top_unique <| h₂ ▸ h
 #align eq_top_mono eq_top_mono
 
@@ -179,27 +179,27 @@ lemma not_lt_top_iff : ¬a < ⊤ ↔ a = ⊤ :=
   lt_top_iff_ne_top.not_left
 #align not_lt_top_iff not_lt_top_iff
 
-theorem eq_top_or_lt_top (a : α) : a = ⊤ ∨ a < ⊤ :=
+lemma eq_top_or_lt_top (a : α) : a = ⊤ ∨ a < ⊤ :=
   le_top.eq_or_lt
 #align eq_top_or_lt_top eq_top_or_lt_top
 
-theorem Ne.lt_top (h : a ≠ ⊤) : a < ⊤ :=
+lemma Ne.lt_top (h : a ≠ ⊤) : a < ⊤ :=
   lt_top_iff_ne_top.mpr h
 #align ne.lt_top Ne.lt_top
 
-theorem Ne.lt_top' (h : ⊤ ≠ a) : a < ⊤ :=
+lemma Ne.lt_top' (h : ⊤ ≠ a) : a < ⊤ :=
   h.symm.lt_top
 #align ne.lt_top' Ne.lt_top'
 
-theorem ne_top_of_le_ne_top (hb : b ≠ ⊤) (hab : a ≤ b) : a ≠ ⊤ :=
+lemma ne_top_of_le_ne_top (hb : b ≠ ⊤) (hab : a ≤ b) : a ≠ ⊤ :=
   (hab.trans_lt hb.lt_top).ne
 #align ne_top_of_le_ne_top ne_top_of_le_ne_top
 
-theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = ⊤ :=
+lemma StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne h, congr_arg _⟩
 #align strict_mono.apply_eq_top_iff StrictMono.apply_eq_top_iff
 
-theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
+lemma StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne' h, congr_arg _⟩
 #align strict_anti.apply_eq_top_iff StrictAnti.apply_eq_top_iff
 
@@ -325,7 +325,7 @@ lemma not_lt_bot : ¬a < ⊥ :=
   isMin_bot.not_lt
 #align not_lt_bot not_lt_bot
 
-theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
+lemma ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
   (bot_le.trans_lt h).ne'
 #align ne_bot_of_gt ne_bot_of_gt
 
@@ -364,7 +364,7 @@ lemma le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
   bot_le.le_iff_eq
 #align le_bot_iff le_bot_iff
 
-theorem bot_unique (h : a ≤ ⊥) : a = ⊥ :=
+lemma bot_unique (h : a ≤ ⊥) : a = ⊥ :=
   h.antisymm bot_le
 #align bot_unique bot_unique
 
@@ -372,7 +372,7 @@ lemma eq_bot_iff : a = ⊥ ↔ a ≤ ⊥ :=
   le_bot_iff.symm
 #align eq_bot_iff eq_bot_iff
 
-theorem eq_bot_mono (h : a ≤ b) (h₂ : b = ⊥) : a = ⊥ :=
+lemma eq_bot_mono (h : a ≤ b) (h₂ : b = ⊥) : a = ⊥ :=
   bot_unique <| h₂ ▸ h
 #align eq_bot_mono eq_bot_mono
 
@@ -385,31 +385,31 @@ lemma not_bot_lt_iff : ¬⊥ < a ↔ a = ⊥ :=
   bot_lt_iff_ne_bot.not_left
 #align not_bot_lt_iff not_bot_lt_iff
 
-theorem eq_bot_or_bot_lt (a : α) : a = ⊥ ∨ ⊥ < a :=
+lemma eq_bot_or_bot_lt (a : α) : a = ⊥ ∨ ⊥ < a :=
   bot_le.eq_or_gt
 #align eq_bot_or_bot_lt eq_bot_or_bot_lt
 
-theorem eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
+lemma eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
   (eq_bot_or_bot_lt a).resolve_right (h ⊥)
 #align eq_bot_of_minimal eq_bot_of_minimal
 
-theorem Ne.bot_lt (h : a ≠ ⊥) : ⊥ < a :=
+lemma Ne.bot_lt (h : a ≠ ⊥) : ⊥ < a :=
   bot_lt_iff_ne_bot.mpr h
 #align ne.bot_lt Ne.bot_lt
 
-theorem Ne.bot_lt' (h : ⊥ ≠ a) : ⊥ < a :=
+lemma Ne.bot_lt' (h : ⊥ ≠ a) : ⊥ < a :=
   h.symm.bot_lt
 #align ne.bot_lt' Ne.bot_lt'
 
-theorem ne_bot_of_le_ne_bot (hb : b ≠ ⊥) (hab : b ≤ a) : a ≠ ⊥ :=
+lemma ne_bot_of_le_ne_bot (hb : b ≠ ⊥) (hab : b ≤ a) : a ≠ ⊥ :=
   (hb.bot_lt.trans_le hab).ne'
 #align ne_bot_of_le_ne_bot ne_bot_of_le_ne_bot
 
-theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = ⊥ :=
+lemma StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = ⊥ :=
   hf.dual.apply_eq_top_iff
 #align strict_mono.apply_eq_bot_iff StrictMono.apply_eq_bot_iff
 
-theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ :=
+lemma StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ :=
   hf.dual.apply_eq_top_iff
 #align strict_anti.apply_eq_bot_iff StrictAnti.apply_eq_bot_iff
 
@@ -680,20 +680,20 @@ section Subsingleton
 
 variable [PartialOrder α] [BoundedOrder α]
 
-theorem eq_bot_of_bot_eq_top (hα : (⊥ : α) = ⊤) (x : α) : x = (⊥ : α) :=
+lemma eq_bot_of_bot_eq_top (hα : (⊥ : α) = ⊤) (x : α) : x = (⊥ : α) :=
   eq_bot_mono le_top (Eq.symm hα)
 #align eq_bot_of_bot_eq_top eq_bot_of_bot_eq_top
 
-theorem eq_top_of_bot_eq_top (hα : (⊥ : α) = ⊤) (x : α) : x = (⊤ : α) :=
+lemma eq_top_of_bot_eq_top (hα : (⊥ : α) = ⊤) (x : α) : x = (⊤ : α) :=
   eq_top_mono bot_le hα
 #align eq_top_of_bot_eq_top eq_top_of_bot_eq_top
 
-theorem subsingleton_of_top_le_bot (h : (⊤ : α) ≤ (⊥ : α)) : Subsingleton α :=
+lemma subsingleton_of_top_le_bot (h : (⊤ : α) ≤ (⊥ : α)) : Subsingleton α :=
   ⟨fun _ _ => le_antisymm
     (le_trans le_top <| le_trans h bot_le) (le_trans le_top <| le_trans h bot_le)⟩
 #align subsingleton_of_top_le_bot subsingleton_of_top_le_bot
 
-theorem subsingleton_of_bot_eq_top (hα : (⊥ : α) = (⊤ : α)) : Subsingleton α :=
+lemma subsingleton_of_bot_eq_top (hα : (⊥ : α) = (⊤ : α)) : Subsingleton α :=
   subsingleton_of_top_le_bot (ge_of_eq hα)
 #align subsingleton_of_bot_eq_top subsingleton_of_bot_eq_top
 

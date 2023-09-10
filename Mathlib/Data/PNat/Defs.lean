@@ -52,7 +52,7 @@ namespace PNat
 
 -- Note: similar to Subtype.coe_mk
 @[simp]
-theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
+lemma mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
 #align pnat.mk_coe PNat.mk_coe
 
@@ -82,17 +82,17 @@ def succPNat (n : ℕ) : ℕ+ :=
 #align nat.succ_pnat Nat.succPNat
 
 @[simp]
-theorem succPNat_coe (n : ℕ) : (succPNat n : ℕ) = succ n :=
+lemma succPNat_coe (n : ℕ) : (succPNat n : ℕ) = succ n :=
   rfl
 #align nat.succ_pnat_coe Nat.succPNat_coe
 
 @[simp]
-theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
+lemma natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
   rfl
 #align nat.nat_pred_succ_pnat Nat.natPred_succPNat
 
 @[simp]
-theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
+lemma _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.eq <| succ_pred_eq_of_pos n.2
 #align pnat.succ_pnat_nat_pred PNat.succPNat_natPred
 
@@ -122,27 +122,27 @@ open Nat
  subtraction, division and powers.
 -/
 -- Porting note: no `simp`  because simp can prove it
-theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
+lemma mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
   Iff.rfl
 #align pnat.mk_le_mk PNat.mk_le_mk
 
 -- Porting note: no `simp`  because simp can prove it
-theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
+lemma mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
   Iff.rfl
 #align pnat.mk_lt_mk PNat.mk_lt_mk
 
 @[simp, norm_cast]
-theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
+lemma coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 #align pnat.coe_le_coe PNat.coe_le_coe
 
 @[simp, norm_cast]
-theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
+lemma coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
 #align pnat.coe_lt_coe PNat.coe_lt_coe
 
 @[simp]
-theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
+lemma pos (n : ℕ+) : 0 < (n : ℕ) :=
   n.2
 #align pnat.pos PNat.pos
 
@@ -155,7 +155,7 @@ lemma coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
 #align pnat.coe_injective PNat.coe_injective
 
 @[simp]
-theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
+lemma ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
   n.2.ne'
 #align pnat.ne_zero PNat.ne_zero
 
@@ -168,17 +168,17 @@ lemma toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
 #align pnat.to_pnat'_coe PNat.toPNat'_coe
 
 @[simp]
-theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
+lemma coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
   eq (toPNat'_coe n.pos)
 #align pnat.coe_to_pnat' PNat.coe_toPNat'
 
 @[simp]
-theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
+lemma one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
   n.2
 #align pnat.one_le PNat.one_le
 
 @[simp]
-theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
+lemma not_lt_one (n : ℕ+) : ¬n < 1 :=
   not_lt_of_le n.one_le
 #align pnat.not_lt_one PNat.not_lt_one
 
@@ -249,7 +249,7 @@ def div (m k : ℕ+) : ℕ :=
   (modDiv m k).2
 #align pnat.div PNat.div
 
-theorem mod_coe (m k : ℕ+) :
+lemma mod_coe (m k : ℕ+) :
   (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
   dsimp [mod, modDiv]
   cases (m : ℕ) % (k : ℕ) with
@@ -261,7 +261,7 @@ theorem mod_coe (m k : ℕ+) :
     rfl
 #align pnat.mod_coe PNat.mod_coe
 
-theorem div_coe (m k : ℕ+) :
+lemma div_coe (m k : ℕ+) :
   (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) := by
   dsimp [div, modDiv]
   cases (m : ℕ) % (k : ℕ) with

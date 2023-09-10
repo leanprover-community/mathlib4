@@ -125,7 +125,7 @@ def decodeNum : List Bool → Num := fun l => ite (l = []) Num.zero <| decodePos
 def decodeNat : List Bool → Nat := fun l => decodeNum l
 #align computability.decode_nat Computability.decodeNat
 
-theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
+lemma encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
     List.cons_ne_nil _ _
 #align computability.encode_pos_num_nonempty Computability.encodePosNum_nonempty

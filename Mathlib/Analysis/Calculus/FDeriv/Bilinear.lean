@@ -56,7 +56,7 @@ variable {b : E × F → G} {u : Set (E × F)}
 open NormedField
 
 -- porting note: todo: rewrite/golf using analytic functions?
-theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
+lemma IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
   simp only [HasStrictFDerivAt]
   simp only [← map_add_left_nhds_zero (p, p), isLittleO_map]
@@ -81,42 +81,42 @@ theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b)
     _ = _ := by simp [(· ∘ ·)]
 #align is_bounded_bilinear_map.has_strict_fderiv_at IsBoundedBilinearMap.hasStrictFDerivAt
 
-theorem IsBoundedBilinearMap.hasFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
+lemma IsBoundedBilinearMap.hasFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasFDerivAt b (h.deriv p) p :=
   (h.hasStrictFDerivAt p).hasFDerivAt
 #align is_bounded_bilinear_map.has_fderiv_at IsBoundedBilinearMap.hasFDerivAt
 
-theorem IsBoundedBilinearMap.hasFDerivWithinAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
+lemma IsBoundedBilinearMap.hasFDerivWithinAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasFDerivWithinAt b (h.deriv p) u p :=
   (h.hasFDerivAt p).hasFDerivWithinAt
 #align is_bounded_bilinear_map.has_fderiv_within_at IsBoundedBilinearMap.hasFDerivWithinAt
 
-theorem IsBoundedBilinearMap.differentiableAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
+lemma IsBoundedBilinearMap.differentiableAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     DifferentiableAt 𝕜 b p :=
   (h.hasFDerivAt p).differentiableAt
 #align is_bounded_bilinear_map.differentiable_at IsBoundedBilinearMap.differentiableAt
 
-theorem IsBoundedBilinearMap.differentiableWithinAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
+lemma IsBoundedBilinearMap.differentiableWithinAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     DifferentiableWithinAt 𝕜 b u p :=
   (h.differentiableAt p).differentiableWithinAt
 #align is_bounded_bilinear_map.differentiable_within_at IsBoundedBilinearMap.differentiableWithinAt
 
-protected theorem IsBoundedBilinearMap.fderiv (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
+protected lemma IsBoundedBilinearMap.fderiv (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     fderiv 𝕜 b p = h.deriv p :=
   HasFDerivAt.fderiv (h.hasFDerivAt p)
 #align is_bounded_bilinear_map.fderiv IsBoundedBilinearMap.fderiv
 
-protected theorem IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap 𝕜 b) (p : E × F)
+protected lemma IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap 𝕜 b) (p : E × F)
     (hxs : UniqueDiffWithinAt 𝕜 u p) : fderivWithin 𝕜 b u p = h.deriv p := by
   rw [DifferentiableAt.fderivWithin (h.differentiableAt p) hxs]
   exact h.fderiv p
 #align is_bounded_bilinear_map.fderiv_within IsBoundedBilinearMap.fderivWithin
 
-theorem IsBoundedBilinearMap.differentiable (h : IsBoundedBilinearMap 𝕜 b) : Differentiable 𝕜 b :=
+lemma IsBoundedBilinearMap.differentiable (h : IsBoundedBilinearMap 𝕜 b) : Differentiable 𝕜 b :=
   fun x => h.differentiableAt x
 #align is_bounded_bilinear_map.differentiable IsBoundedBilinearMap.differentiable
 
-theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) :
+lemma IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) :
     DifferentiableOn 𝕜 b u :=
   h.differentiable.differentiableOn
 #align is_bounded_bilinear_map.differentiable_on IsBoundedBilinearMap.differentiableOn

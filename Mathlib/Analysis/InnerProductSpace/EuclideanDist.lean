@@ -57,12 +57,12 @@ def ball (x : E) (r : ℝ) : Set E :=
   {y | dist y x < r}
 #align euclidean.ball Euclidean.ball
 
-theorem ball_eq_preimage (x : E) (r : ℝ) :
+lemma ball_eq_preimage (x : E) (r : ℝ) :
     ball x r = toEuclidean ⁻¹' Metric.ball (toEuclidean x) r :=
   rfl
 #align euclidean.ball_eq_preimage Euclidean.ball_eq_preimage
 
-theorem closedBall_eq_preimage (x : E) (r : ℝ) :
+lemma closedBall_eq_preimage (x : E) (r : ℝ) :
     closedBall x r = toEuclidean ⁻¹' Metric.closedBall (toEuclidean x) r :=
   rfl
 #align euclidean.closed_ball_eq_preimage Euclidean.closedBall_eq_preimage
@@ -79,7 +79,7 @@ lemma mem_ball_self {x : E} {r : ℝ} (hr : 0 < r) : x ∈ ball x r :=
   Metric.mem_ball_self hr
 #align euclidean.mem_ball_self Euclidean.mem_ball_self
 
-theorem closedBall_eq_image (x : E) (r : ℝ) :
+lemma closedBall_eq_image (x : E) (r : ℝ) :
     closedBall x r = toEuclidean.symm '' Metric.closedBall (toEuclidean x) r := by
   rw [toEuclidean.image_symm_eq_preimage, closedBall_eq_preimage]
 #align euclidean.closed_ball_eq_image Euclidean.closedBall_eq_image
@@ -93,7 +93,7 @@ lemma isClosed_closedBall {x : E} {r : ℝ} : IsClosed (closedBall x r) :=
   isCompact_closedBall.isClosed
 #align euclidean.is_closed_closed_ball Euclidean.isClosed_closedBall
 
-nonrec theorem closure_ball (x : E) {r : ℝ} (h : r ≠ 0) : closure (ball x r) = closedBall x r := by
+nonrec lemma closure_ball (x : E) {r : ℝ} (h : r ≠ 0) : closure (ball x r) = closedBall x r := by
   rw [ball_eq_preimage, ← toEuclidean.preimage_closure, closure_ball (toEuclidean x) h,
     closedBall_eq_preimage]
 #align euclidean.closure_ball Euclidean.closure_ball
@@ -128,7 +128,7 @@ end Euclidean
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type*} [NormedAddCommGroup G]
   [NormedSpace ℝ G] [FiniteDimensional ℝ G] {f g : F → G} {n : ℕ∞}
 
-theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (h : ∀ x, f x ≠ g x) :
+lemma ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (h : ∀ x, f x ≠ g x) :
     ContDiff ℝ n fun x => Euclidean.dist (f x) (g x) := by
   simp only [Euclidean.dist]
   apply @ContDiff.dist ℝ

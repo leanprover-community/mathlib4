@@ -36,7 +36,7 @@ lemma euler_four_squares {R : Type*} [CommRing R] (a b c d x y z w : R) :
       (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by ring
 
 /-- **Euler's four-square identity**, a version for natural numbers. -/
-theorem Nat.euler_four_squares (a b c d x y z w : ℕ) :
+lemma Nat.euler_four_squares (a b c d x y z w : ℕ) :
     ((a : ℤ) * x - b * y - c * z - d * w).natAbs ^ 2 +
       ((a : ℤ) * y + b * x + c * w - d * z).natAbs ^ 2 +
       ((a : ℤ) * z - b * w + c * x + d * y).natAbs ^ 2 +
@@ -78,7 +78,7 @@ lemma lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
 -- porting note: new theorem
-theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
+lemma exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
     ∃ (a b k : ℕ), 0 < k ∧ k < p ∧ a ^ 2 + b ^ 2 + 1 = k * p := by
   rcases hp.1.eq_two_or_odd' with (rfl | hodd)
   · use 1, 0, 1; simp
@@ -100,7 +100,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   · exact hp.1.pos
 
 @[deprecated exists_sq_add_sq_add_one_eq_mul]
-theorem exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
+lemma exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
     ∃ (a b : ℤ) (k : ℕ), a ^ 2 + b ^ 2 + 1 = k * p ∧ k < p :=
   let ⟨a, b, k, _, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
   ⟨a, b, k, by exact_mod_cast hk, hkp⟩
@@ -223,7 +223,7 @@ protected lemma Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     · simp [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
 
 /-- **Four squares theorem** -/
-theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n := by
+lemma sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n := by
   -- The proof is by induction on prime factorization. The case of prime `n` was proved above,
   -- the inductive step follows from `Nat.euler_four_squares`.
   induction n using Nat.recOnMul with

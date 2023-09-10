@@ -65,7 +65,7 @@ def eigenspace (f : End R M) (μ : R) : Submodule R M :=
 #align module.End.eigenspace Module.End.eigenspace
 
 @[simp]
-theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by simp [eigenspace]
+lemma eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by simp [eigenspace]
 #align module.End.eigenspace_zero Module.End.eigenspace_zero
 
 /-- A nonzero element of an eigenspace is an eigenvector. (Def 5.7 of [axler2015]) -/
@@ -129,7 +129,7 @@ lemma hasEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {μ :
     rwa [spectrum.mem_iff, IsUnit.sub_iff, LinearMap.isUnit_iff_ker_eq_bot] at h
 #align module.End.has_eigenvalue_iff_mem_spectrum Module.End.hasEigenvalue_iff_mem_spectrum
 
-theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
+lemma eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     eigenspace f (a / b) = LinearMap.ker (b • f - algebraMap K (End K V) a) :=
   calc
     eigenspace f (a / b) = eigenspace f (b⁻¹ * a) := by rw [div_eq_mul_inv, mul_comm]
@@ -143,7 +143,7 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `V`.  That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
-theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.eigenspace := by
+lemma eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.eigenspace := by
   classical
   -- Define an operation from `Π₀ μ : K, f.eigenspace μ`, the vector space of finitely-supported
   -- choices of an eigenvector from each eigenspace, to `V`, by sending a collection to its sum.
@@ -245,7 +245,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
 
     We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
     eigenvalue in the image of `xs`. -/
-theorem eigenvectors_linearIndependent (f : End K V) (μs : Set K) (xs : μs → V)
+lemma eigenvectors_linearIndependent (f : End K V) (μs : Set K) (xs : μs → V)
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent K xs :=
   CompleteLattice.Independent.linearIndependent _
     (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
@@ -265,12 +265,12 @@ def generalizedEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M where
 #align module.End.generalized_eigenspace Module.End.generalizedEigenspace
 
 @[simp]
-theorem mem_generalizedEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
+lemma mem_generalizedEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
     m ∈ f.generalizedEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 := Iff.rfl
 #align module.End.mem_generalized_eigenspace Module.End.mem_generalizedEigenspace
 
 @[simp]
-theorem generalizedEigenspace_zero (f : End R M) (k : ℕ) :
+lemma generalizedEigenspace_zero (f : End R M) (k : ℕ) :
     f.generalizedEigenspace 0 k = LinearMap.ker (f ^ k) := by
   simp [Module.End.generalizedEigenspace]
 #align module.End.generalized_eigenspace_zero Module.End.generalizedEigenspace_zero
@@ -305,13 +305,13 @@ def maximalGeneralizedEigenspace (f : End R M) (μ : R) : Submodule R M :=
   ⨆ k, f.generalizedEigenspace μ k
 #align module.End.maximal_generalized_eigenspace Module.End.maximalGeneralizedEigenspace
 
-theorem generalizedEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
+lemma generalizedEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
     f.generalizedEigenspace μ k ≤ f.maximalGeneralizedEigenspace μ :=
   le_iSup _ _
 #align module.End.generalized_eigenspace_le_maximal Module.End.generalizedEigenspace_le_maximal
 
 @[simp]
-theorem mem_maximalGeneralizedEigenspace (f : End R M) (μ : R) (m : M) :
+lemma mem_maximalGeneralizedEigenspace (f : End R M) (μ : R) (m : M) :
     m ∈ f.maximalGeneralizedEigenspace μ ↔ ∃ k : ℕ, ((f - μ • (1 : End R M)) ^ k) m = 0 := by
   simp only [maximalGeneralizedEigenspace, ← mem_generalizedEigenspace, Submodule.mem_iSup_of_chain]
 #align module.End.mem_maximal_generalized_eigenspace Module.End.mem_maximalGeneralizedEigenspace
@@ -388,7 +388,7 @@ lemma generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le [FiniteDimens
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
-theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ : R)
+lemma generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ : R)
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
     generalizedEigenspace (LinearMap.restrict f hfp) μ k =
       Submodule.comap p.subtype (f.generalizedEigenspace μ k) := by
@@ -402,7 +402,7 @@ theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : �
 
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
-theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
+lemma eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
     (μ : R) : (eigenspace (f.restrict hfp) μ).map p.subtype ≤ f.eigenspace μ := by
   rintro a ⟨x, hx, rfl⟩
   simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢

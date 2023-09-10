@@ -31,7 +31,7 @@ def LocalHomeomorph.symm (e : LocalHomeomorph α β) : LocalHomeomorph β α := 
   e.symm (e x) = x :=
 sorry
 
-@[mfld_simps] theorem LocalHomeomorph.symm_to_LocalEquiv (e : LocalHomeomorph α β) :
+@[mfld_simps] lemma LocalHomeomorph.symm_to_LocalEquiv (e : LocalHomeomorph α β) :
   e.symm.toLocalEquiv = e.toLocalEquiv.symm :=
 sorry
 

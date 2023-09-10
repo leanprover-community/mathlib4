@@ -45,7 +45,7 @@ variable {α β γ E : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace 
 
 namespace ProbabilityTheory
 
-theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
+lemma hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
     HasFiniteIntegral (fun b => (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
   let t := toMeasurable ((κ ⊗ₖ η) a) s
   simp_rw [HasFiniteIntegral, ennnorm_eq_ofReal toReal_nonneg]
@@ -61,7 +61,7 @@ theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ 
     _ < ⊤ := h2s.lt_top
 #align probability_theory.has_finite_integral_prod_mk_left ProbabilityTheory.hasFiniteIntegral_prod_mk_left
 
-theorem integrable_kernel_prod_mk_left (a : α) {s : Set (β × γ)} (hs : MeasurableSet s)
+lemma integrable_kernel_prod_mk_left (a : α) {s : Set (β × γ)} (hs : MeasurableSet s)
     (h2s : (κ ⊗ₖ η) a s ≠ ∞) : Integrable (fun b => (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
   constructor
   · exact (measurable_kernel_prod_mk_left' hs a).ennreal_toReal.aestronglyMeasurable
@@ -277,13 +277,13 @@ lemma set_integral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs :
   · rw [compProd_restrict, kernel.restrict_apply]; exact hf
 #align probability_theory.set_integral_comp_prod ProbabilityTheory.set_integral_compProd
 
-theorem set_integral_compProd_univ_right (f : β × γ → E) {s : Set β} (hs : MeasurableSet s)
+lemma set_integral_compProd_univ_right (f : β × γ → E) {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ univ) ((κ ⊗ₖ η) a)) :
     ∫ z in s ×ˢ univ, f z ∂(κ ⊗ₖ η) a = ∫ x in s, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [set_integral_compProd hs MeasurableSet.univ hf, Measure.restrict_univ]
 #align probability_theory.set_integral_comp_prod_univ_right ProbabilityTheory.set_integral_compProd_univ_right
 
-theorem set_integral_compProd_univ_left (f : β × γ → E) {t : Set γ} (ht : MeasurableSet t)
+lemma set_integral_compProd_univ_left (f : β × γ → E) {t : Set γ} (ht : MeasurableSet t)
     (hf : IntegrableOn f (univ ×ˢ t) ((κ ⊗ₖ η) a)) :
     ∫ z in univ ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫ x, ∫ y in t, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [set_integral_compProd MeasurableSet.univ ht hf, Measure.restrict_univ]

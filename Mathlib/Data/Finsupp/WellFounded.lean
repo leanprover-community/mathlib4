@@ -34,7 +34,7 @@ variable [Zero N] {r : α → α → Prop} {s : N → N → Prop} (hbot : ∀ �
 
 /-- Transferred from `DFinsupp.Lex.acc`. See the top of that file for an explanation for the
   appearance of the relation `rᶜ ⊓ (≠)`. -/
-theorem Lex.acc (x : α →₀ N) (h : ∀ a ∈ x.support, Acc (rᶜ ⊓ (· ≠ ·)) a) :
+lemma Lex.acc (x : α →₀ N) (h : ∀ a ∈ x.support, Acc (rᶜ ⊓ (· ≠ ·)) a) :
     Acc (Finsupp.Lex r s) x := by
   rw [lex_eq_invImage_dfinsupp_lex]
   classical
@@ -42,7 +42,7 @@ theorem Lex.acc (x : α →₀ N) (h : ∀ a ∈ x.support, Acc (rᶜ ⊓ (· �
     simpa only [toDFinsupp_support] using h
 #align finsupp.lex.acc Finsupp.Lex.acc
 
-theorem Lex.wellFounded (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded (Finsupp.Lex r s) :=
+lemma Lex.wellFounded (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded (Finsupp.Lex r s) :=
   ⟨fun x => Lex.acc hbot hs x fun a _ => hr.apply a⟩
 #align finsupp.lex.well_founded Finsupp.Lex.wellFounded
 

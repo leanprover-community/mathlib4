@@ -163,19 +163,19 @@ lemma comp_neg : f ≫ (-g) = -f ≫ g :=
 lemma neg_comp_neg : (-f) ≫ (-g) = f ≫ g := by simp
 #align category_theory.preadditive.neg_comp_neg CategoryTheory.Preadditive.neg_comp_neg
 
-theorem nsmul_comp (n : ℕ) : (n • f) ≫ g = n • f ≫ g :=
+lemma nsmul_comp (n : ℕ) : (n • f) ≫ g = n • f ≫ g :=
   map_nsmul (rightComp P g) n f
 #align category_theory.preadditive.nsmul_comp CategoryTheory.Preadditive.nsmul_comp
 
-theorem comp_nsmul (n : ℕ) : f ≫ (n • g) = n • f ≫ g :=
+lemma comp_nsmul (n : ℕ) : f ≫ (n • g) = n • f ≫ g :=
   map_nsmul (leftComp R f) n g
 #align category_theory.preadditive.comp_nsmul CategoryTheory.Preadditive.comp_nsmul
 
-theorem zsmul_comp (n : ℤ) : (n • f) ≫ g = n • f ≫ g :=
+lemma zsmul_comp (n : ℤ) : (n • f) ≫ g = n • f ≫ g :=
   map_zsmul (rightComp P g) n f
 #align category_theory.preadditive.zsmul_comp CategoryTheory.Preadditive.zsmul_comp
 
-theorem comp_zsmul (n : ℤ) : f ≫ (n • g) = n • f ≫ g :=
+lemma comp_zsmul (n : ℤ) : f ≫ (n • g) = n • f ≫ g :=
   map_zsmul (leftComp R f) n g
 #align category_theory.preadditive.comp_zsmul CategoryTheory.Preadditive.comp_zsmul
 
@@ -304,7 +304,7 @@ def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
 #align category_theory.preadditive.fork_of_kernel_fork CategoryTheory.Preadditive.forkOfKernelFork
 
 @[simp]
-theorem forkOfKernelFork_ι (c : KernelFork (f - g)) : (forkOfKernelFork c).ι = c.ι :=
+lemma forkOfKernelFork_ι (c : KernelFork (f - g)) : (forkOfKernelFork c).ι = c.ι :=
   rfl
 #align category_theory.preadditive.fork_of_kernel_fork_ι CategoryTheory.Preadditive.forkOfKernelFork_ι
 
@@ -314,7 +314,7 @@ def kernelForkOfFork (c : Fork f g) : KernelFork (f - g) :=
 #align category_theory.preadditive.kernel_fork_of_fork CategoryTheory.Preadditive.kernelForkOfFork
 
 @[simp]
-theorem kernelForkOfFork_ι (c : Fork f g) : (kernelForkOfFork c).ι = c.ι :=
+lemma kernelForkOfFork_ι (c : Fork f g) : (kernelForkOfFork c).ι = c.ι :=
   rfl
 #align category_theory.preadditive.kernel_fork_of_fork_ι CategoryTheory.Preadditive.kernelForkOfFork_ι
 
@@ -368,7 +368,7 @@ def coforkOfCokernelCofork (c : CokernelCofork (f - g)) : Cofork f g :=
 #align category_theory.preadditive.cofork_of_cokernel_cofork CategoryTheory.Preadditive.coforkOfCokernelCofork
 
 @[simp]
-theorem coforkOfCokernelCofork_π (c : CokernelCofork (f - g)) :
+lemma coforkOfCokernelCofork_π (c : CokernelCofork (f - g)) :
     (coforkOfCokernelCofork c).π = c.π :=
   rfl
 #align category_theory.preadditive.cofork_of_cokernel_cofork_π CategoryTheory.Preadditive.coforkOfCokernelCofork_π
@@ -379,7 +379,7 @@ def cokernelCoforkOfCofork (c : Cofork f g) : CokernelCofork (f - g) :=
 #align category_theory.preadditive.cokernel_cofork_of_cofork CategoryTheory.Preadditive.cokernelCoforkOfCofork
 
 @[simp]
-theorem cokernelCoforkOfCofork_π (c : Cofork f g) : (cokernelCoforkOfCofork c).π = c.π :=
+lemma cokernelCoforkOfCofork_π (c : Cofork f g) : (cokernelCoforkOfCofork c).π = c.π :=
   rfl
 #align category_theory.preadditive.cokernel_cofork_of_cofork_π CategoryTheory.Preadditive.cokernelCoforkOfCofork_π
 

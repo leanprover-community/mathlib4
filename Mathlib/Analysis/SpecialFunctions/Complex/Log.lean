@@ -30,16 +30,16 @@ noncomputable def log (x : ℂ) : ℂ :=
   x.abs.log + arg x * I
 #align complex.log Complex.log
 
-theorem log_re (x : ℂ) : x.log.re = x.abs.log := by simp [log]
+lemma log_re (x : ℂ) : x.log.re = x.abs.log := by simp [log]
 #align complex.log_re Complex.log_re
 
-theorem log_im (x : ℂ) : x.log.im = x.arg := by simp [log]
+lemma log_im (x : ℂ) : x.log.im = x.arg := by simp [log]
 #align complex.log_im Complex.log_im
 
-theorem neg_pi_lt_log_im (x : ℂ) : -π < (log x).im := by simp only [log_im, neg_pi_lt_arg]
+lemma neg_pi_lt_log_im (x : ℂ) : -π < (log x).im := by simp only [log_im, neg_pi_lt_arg]
 #align complex.neg_pi_lt_log_im Complex.neg_pi_lt_log_im
 
-theorem log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp only [log_im, arg_le_pi]
+lemma log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp only [log_im, arg_le_pi]
 #align complex.log_im_le_pi Complex.log_im_le_pi
 
 lemma exp_log {x : ℂ} (hx : x ≠ 0) : exp (log x) = x := by
@@ -72,7 +72,7 @@ lemma ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
     (by rw [ofReal_im, log_im, arg_ofReal_of_nonneg hx])
 #align complex.of_real_log Complex.ofReal_log
 
-theorem log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [log_re]
+lemma log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [log_re]
 #align complex.log_of_real_re Complex.log_ofReal_re
 
 lemma log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
@@ -82,7 +82,7 @@ lemma log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
     ofReal_add, add_assoc]
 #align complex.log_of_real_mul Complex.log_ofReal_mul
 
-theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
+lemma log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
     log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
 
@@ -105,18 +105,18 @@ lemma log_neg_I : log (-I) = -(π / 2) * I := by simp [log]
 set_option linter.uppercaseLean3 false in
 #align complex.log_neg_I Complex.log_neg_I
 
-theorem log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else conj (log x) := by
+lemma log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else conj (log x) := by
   simp_rw [log, abs_conj, arg_conj, map_add, map_mul, conj_ofReal]
   split_ifs with hx
   · rw [hx]
   simp_rw [ofReal_neg, conj_I, mul_neg, neg_mul]
 #align complex.log_conj_eq_ite Complex.log_conj_eq_ite
 
-theorem log_conj (x : ℂ) (h : x.arg ≠ π) : log (conj x) = conj (log x) := by
+lemma log_conj (x : ℂ) (h : x.arg ≠ π) : log (conj x) = conj (log x) := by
   rw [log_conj_eq_ite, if_neg h]
 #align complex.log_conj Complex.log_conj
 
-theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x) else -log x := by
+lemma log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x) else -log x := by
   by_cases hx : x = 0
   · simp [hx]
   rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
@@ -130,7 +130,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   · rwa [map_ne_zero]
 #align complex.log_inv_eq_ite Complex.log_inv_eq_ite
 
-theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
+lemma log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
 #align complex.log_inv Complex.log_inv
 
 lemma two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num [Real.pi_ne_zero, I_ne_zero]

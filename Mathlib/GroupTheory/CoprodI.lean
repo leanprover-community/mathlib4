@@ -137,7 +137,7 @@ variable {N : Type*} [Monoid N]
 /-- See note [partially-applied ext lemmas]. -/
 --Porting note: higher `ext` priority
 @[ext 1100]
-theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
+lemma ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
       rw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
@@ -195,7 +195,7 @@ lemma of_leftInverse [DecidableEq ι] (i : ι) :
   simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]
 #align free_product.of_left_inverse Monoid.CoprodI.of_leftInverse
 
-theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
+lemma of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 #align free_product.of_injective Monoid.CoprodI.of_injective
 
@@ -226,7 +226,7 @@ instance : Inv (CoprodI G)
     where inv :=
     MulOpposite.unop ∘ lift fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom
 
-theorem inv_def (x : CoprodI G) :
+lemma inv_def (x : CoprodI G) :
     x⁻¹ =
       MulOpposite.unop
         (lift (fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom) x) :=
@@ -389,7 +389,7 @@ lemma fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m
     fstIdx (cons m w hmw h1) = some i := by simp [cons, fstIdx]
 
 @[simp]
-theorem prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
+lemma prod_cons (i) (m : M i) (w : Word M) (h1 : m ≠ 1) (h2 : w.fstIdx ≠ some i) :
     prod (cons m w h2 h1) = of m * prod w := by
   simp [cons, prod, List.map_cons, List.prod_cons]
 
@@ -449,7 +449,7 @@ def equivPair (i) : Word M ≃ Pair M i where
   right_inv _ := rcons_inj (equivPairAux i _).property
 #align free_product.word.equiv_pair Monoid.CoprodI.Word.equivPair
 
-theorem equivPair_symm (i) (p : Pair M i) : (equivPair i).symm p = rcons p :=
+lemma equivPair_symm (i) (p : Pair M i) : (equivPair i).symm p = rcons p :=
   rfl
 #align free_product.word.equiv_pair_symm Monoid.CoprodI.Word.equivPair_symm
 
@@ -510,7 +510,7 @@ lemma smul_def {i} (m : M i) (w : Word M) :
     m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 
-theorem of_smul_def (i) (w : Word M) (m : M i) :
+lemma of_smul_def (i) (w : Word M) (m : M i) :
     of m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
   rfl
 #align free_product.word.of_smul_def Monoid.CoprodI.Word.of_smul_def
@@ -599,7 +599,7 @@ lemma smul_induction {C : Word M → Prop} (h_empty : C empty)
 #align free_product.word.smul_induction Monoid.CoprodI.Word.smul_induction
 
 @[simp]
-theorem prod_smul (m) : ∀ w : Word M, prod (m • w) = m * prod w := by
+lemma prod_smul (m) : ∀ w : Word M, prod (m • w) = m * prod w := by
   induction m using CoprodI.induction_on with
   | h_one =>
     intro
@@ -721,7 +721,7 @@ def toWord {i j} (w : NeWord M i j) : Word M
 #align free_product.neword.to_word Monoid.CoprodI.NeWord.toWord
 
 /-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
-theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
+lemma of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
   suffices : ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList
   · rcases this with ⟨i, j, w, h⟩
     refine' ⟨i, j, w, _⟩

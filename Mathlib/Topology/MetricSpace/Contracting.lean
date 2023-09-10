@@ -45,14 +45,14 @@ variable [EMetricSpace α] [cs : CompleteSpace α] {K : ℝ≥0} {f : α → α}
 
 open EMetric Set
 
-theorem toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f := hf.2
+lemma toLipschitzWith (hf : ContractingWith K f) : LipschitzWith K f := hf.2
 #align contracting_with.to_lipschitz_with ContractingWith.toLipschitzWith
 
-theorem one_sub_K_pos' (hf : ContractingWith K f) : (0 : ℝ≥0∞) < 1 - K := by simp [hf.1]
+lemma one_sub_K_pos' (hf : ContractingWith K f) : (0 : ℝ≥0∞) < 1 - K := by simp [hf.1]
 set_option linter.uppercaseLean3 false in
 #align contracting_with.one_sub_K_pos' ContractingWith.one_sub_K_pos'
 
-theorem one_sub_K_ne_zero (hf : ContractingWith K f) : (1 : ℝ≥0∞) - K ≠ 0 :=
+lemma one_sub_K_ne_zero (hf : ContractingWith K f) : (1 : ℝ≥0∞) - K ≠ 0 :=
   ne_of_gt hf.one_sub_K_pos'
 set_option linter.uppercaseLean3 false in
 #align contracting_with.one_sub_K_ne_zero ContractingWith.one_sub_K_ne_zero
@@ -63,7 +63,7 @@ lemma one_sub_K_ne_top : (1 : ℝ≥0∞) - K ≠ ∞ := by
 set_option linter.uppercaseLean3 false in
 #align contracting_with.one_sub_K_ne_top ContractingWith.one_sub_K_ne_top
 
-theorem edist_inequality (hf : ContractingWith K f) {x y} (h : edist x y ≠ ∞) :
+lemma edist_inequality (hf : ContractingWith K f) {x y} (h : edist x y ≠ ∞) :
     edist x y ≤ (edist x (f x) + edist y (f y)) / (1 - K) :=
   suffices edist x y ≤ edist x (f x) + edist y (f y) + K * edist x y by
     rwa [ENNReal.le_div_iff_mul_le (Or.inl hf.one_sub_K_ne_zero) (Or.inl one_sub_K_ne_top),
@@ -74,12 +74,12 @@ theorem edist_inequality (hf : ContractingWith K f) {x y} (h : edist x y ≠ ∞
     _ ≤ edist x (f x) + edist y (f y) + K * edist x y := add_le_add le_rfl (hf.2 _ _)
 #align contracting_with.edist_inequality ContractingWith.edist_inequality
 
-theorem edist_le_of_fixedPoint (hf : ContractingWith K f) {x y} (h : edist x y ≠ ∞)
+lemma edist_le_of_fixedPoint (hf : ContractingWith K f) {x y} (h : edist x y ≠ ∞)
     (hy : IsFixedPt f y) : edist x y ≤ edist x (f x) / (1 - K) := by
   simpa only [hy.eq, edist_self, add_zero] using hf.edist_inequality h
 #align contracting_with.edist_le_of_fixed_point ContractingWith.edist_le_of_fixedPoint
 
-theorem eq_or_edist_eq_top_of_fixedPoints (hf : ContractingWith K f) {x y} (hx : IsFixedPt f x)
+lemma eq_or_edist_eq_top_of_fixedPoints (hf : ContractingWith K f) {x y} (hx : IsFixedPt f x)
     (hy : IsFixedPt f y) : x = y ∨ edist x y = ∞ := by
   refine' or_iff_not_imp_right.2 fun h ↦ edist_le_zero.1 _
   simpa only [hx.eq, edist_self, add_zero, ENNReal.zero_div] using hf.edist_le_of_fixedPoint h hy
@@ -87,7 +87,7 @@ theorem eq_or_edist_eq_top_of_fixedPoints (hf : ContractingWith K f) {x y} (hx :
 
 /-- If a map `f` is `ContractingWith K`, and `s` is a forward-invariant set, then
 restriction of `f` to `s` is `ContractingWith K` as well. -/
-theorem restrict (hf : ContractingWith K f) {s : Set α} (hs : MapsTo f s s) :
+lemma restrict (hf : ContractingWith K f) {s : Set α} (hs : MapsTo f s s) :
     ContractingWith K (hs.restrict f s s) :=
   ⟨hf.1, fun x y ↦ hf.2 x y⟩
 #align contracting_with.restrict ContractingWith.restrict
@@ -98,7 +98,7 @@ We include more conclusions in this theorem to avoid proving them again later.
 
 The main API for this theorem are the functions `efixedPoint` and `fixedPoint`,
 and lemmas about these functions. -/
-theorem exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) :
+lemma exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) :
     ∃ y, IsFixedPt f y ∧ Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y) ∧
       ∀ n : ℕ, edist (f^[n] x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
   have : CauchySeq fun n ↦ f^[n] x :=
@@ -122,35 +122,35 @@ noncomputable def efixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x 
 
 variable {f}
 
-theorem efixedPoint_isFixedPt (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
+lemma efixedPoint_isFixedPt (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     IsFixedPt f (efixedPoint f hf x hx) :=
   (Classical.choose_spec <| hf.exists_fixedPoint x hx).1
 #align contracting_with.efixed_point_is_fixed_pt ContractingWith.efixedPoint_isFixedPt
 
-theorem tendsto_iterate_efixedPoint (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
+lemma tendsto_iterate_efixedPoint (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| efixedPoint f hf x hx) :=
   (Classical.choose_spec <| hf.exists_fixedPoint x hx).2.1
 #align contracting_with.tendsto_iterate_efixed_point ContractingWith.tendsto_iterate_efixedPoint
 
-theorem apriori_edist_iterate_efixedPoint_le (hf : ContractingWith K f) {x : α}
+lemma apriori_edist_iterate_efixedPoint_le (hf : ContractingWith K f) {x : α}
     (hx : edist x (f x) ≠ ∞) (n : ℕ) :
     edist (f^[n] x) (efixedPoint f hf x hx) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
   (Classical.choose_spec <| hf.exists_fixedPoint x hx).2.2 n
 #align contracting_with.apriori_edist_iterate_efixed_point_le ContractingWith.apriori_edist_iterate_efixedPoint_le
 
-theorem edist_efixedPoint_le (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
+lemma edist_efixedPoint_le (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) ≤ edist x (f x) / (1 - K) := by
   convert hf.apriori_edist_iterate_efixedPoint_le hx 0
   simp only [pow_zero, mul_one]
 #align contracting_with.edist_efixed_point_le ContractingWith.edist_efixedPoint_le
 
-theorem edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
+lemma edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) < ∞ :=
   (hf.edist_efixedPoint_le hx).trans_lt
     (ENNReal.mul_lt_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero)
 #align contracting_with.edist_efixed_point_lt_top ContractingWith.edist_efixedPoint_lt_top
 
-theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞)
+lemma efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞)
     {y : α} (hy : edist y (f y) ≠ ∞) (h : edist x y ≠ ∞) :
     efixedPoint f hf x hx = efixedPoint f hf y hy := by
   refine' (hf.eq_or_edist_eq_top_of_fixedPoints _ _).elim id fun h' ↦ False.elim (ne_of_lt _ h')
@@ -238,7 +238,7 @@ is the same as the `efixedPoint'` constructed by `y`.
 
 This lemma takes additional arguments stating that `f` contracts on `s` and `t` because this way
 it can be used to prove the desired equality with non-trivial proofs of these facts. -/
-theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} (hsc : IsComplete s)
+lemma efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} (hsc : IsComplete s)
     (hsf : MapsTo f s s) (hfs : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s)
     (hx : edist x (f x) ≠ ∞) {t : Set α} (htc : IsComplete t) (htf : MapsTo f t t)
     (hft : ContractingWith K <| htf.restrict f t t) {y : α} (hyt : y ∈ t) (hy : edist y (f y) ≠ ∞)
@@ -261,16 +261,16 @@ namespace ContractingWith
 
 variable [MetricSpace α] {K : ℝ≥0} {f : α → α} (hf : ContractingWith K f)
 
-theorem one_sub_K_pos (hf : ContractingWith K f) : (0 : ℝ) < 1 - K :=
+lemma one_sub_K_pos (hf : ContractingWith K f) : (0 : ℝ) < 1 - K :=
   sub_pos.2 hf.1
 set_option linter.uppercaseLean3 false in
 #align contracting_with.one_sub_K_pos ContractingWith.one_sub_K_pos
 
-theorem dist_le_mul (x y : α) : dist (f x) (f y) ≤ K * dist x y :=
+lemma dist_le_mul (x y : α) : dist (f x) (f y) ≤ K * dist x y :=
   hf.toLipschitzWith.dist_le_mul x y
 #align contracting_with.dist_le_mul ContractingWith.dist_le_mul
 
-theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 - K) :=
+lemma dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 - K) :=
   suffices dist x y ≤ dist x (f x) + dist y (f y) + K * dist x y by
     rwa [le_div_iff hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
   calc
@@ -278,7 +278,7 @@ theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 
     _ ≤ dist x (f x) + dist y (f y) + K * dist x y := add_le_add_left (hf.dist_le_mul _ _) _
 #align contracting_with.dist_inequality ContractingWith.dist_inequality
 
-theorem dist_le_of_fixedPoint (x) {y} (hy : IsFixedPt f y) : dist x y ≤ dist x (f x) / (1 - K) := by
+lemma dist_le_of_fixedPoint (x) {y} (hy : IsFixedPt f y) : dist x y ≤ dist x (f x) / (1 - K) := by
   simpa only [hy.eq, dist_self, add_zero] using hf.dist_inequality x y
 #align contracting_with.dist_le_of_fixed_point ContractingWith.dist_le_of_fixedPoint
 
@@ -288,7 +288,7 @@ lemma fixedPoint_unique' {x y} (hx : IsFixedPt f x) (hy : IsFixedPt f y) : x = y
 
 /-- Let `f` be a contracting map with constant `K`; let `g` be another map uniformly
 `C`-close to `f`. If `x` and `y` are their fixed points, then `dist x y ≤ C / (1 - K)`. -/
-theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFixedPt f x)
+lemma dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFixedPt f x)
     (hy : IsFixedPt g y) {C} (hfg : ∀ z, dist (f z) (g z) ≤ C) : dist x y ≤ C / (1 - K) :=
   calc
     dist x y = dist y x := dist_comm x y
@@ -317,24 +317,24 @@ lemma fixedPoint_unique {x} (hx : IsFixedPt f x) : x = fixedPoint f hf :=
   hf.fixedPoint_unique' hx hf.fixedPoint_isFixedPt
 #align contracting_with.fixed_point_unique ContractingWith.fixedPoint_unique
 
-theorem dist_fixedPoint_le (x) : dist x (fixedPoint f hf) ≤ dist x (f x) / (1 - K) :=
+lemma dist_fixedPoint_le (x) : dist x (fixedPoint f hf) ≤ dist x (f x) / (1 - K) :=
   hf.dist_le_of_fixedPoint x hf.fixedPoint_isFixedPt
 #align contracting_with.dist_fixed_point_le ContractingWith.dist_fixedPoint_le
 
 /-- Aposteriori estimates on the convergence of iterates to the fixed point. -/
-theorem aposteriori_dist_iterate_fixedPoint_le (x n) :
+lemma aposteriori_dist_iterate_fixedPoint_le (x n) :
     dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := by
   rw [iterate_succ']
   apply hf.dist_fixedPoint_le
 #align contracting_with.aposteriori_dist_iterate_fixed_point_le ContractingWith.aposteriori_dist_iterate_fixedPoint_le
 
-theorem apriori_dist_iterate_fixedPoint_le (x n) :
+lemma apriori_dist_iterate_fixedPoint_le (x n) :
     dist (f^[n] x) (fixedPoint f hf) ≤ dist x (f x) * (K : ℝ) ^ n / (1 - K) :=
   le_trans (hf.aposteriori_dist_iterate_fixedPoint_le x n) <|
     (div_le_div_right hf.one_sub_K_pos).2 <| hf.toLipschitzWith.dist_iterate_succ_le_geometric x n
 #align contracting_with.apriori_dist_iterate_fixed_point_le ContractingWith.apriori_dist_iterate_fixedPoint_le
 
-theorem tendsto_iterate_fixedPoint (x) :
+lemma tendsto_iterate_fixedPoint (x) :
     Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| fixedPoint f hf) := by
   convert tendsto_iterate_efixedPoint hf (edist_ne_top x _)
   refine' (fixedPoint_unique _ _).symm

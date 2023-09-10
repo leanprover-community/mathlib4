@@ -66,7 +66,7 @@ def len (n : SimplexCategory) : ℕ :=
 #align simplex_category.len SimplexCategory.len
 
 @[ext]
-theorem ext (a b : SimplexCategory) : a.len = b.len → a = b :=
+lemma ext (a b : SimplexCategory) : a.len = b.len → a = b :=
   id
 #align simplex_category.ext SimplexCategory.ext
 
@@ -75,12 +75,12 @@ attribute [irreducible] SimplexCategory
 open Simplicial
 
 @[simp]
-theorem len_mk (n : ℕ) : [n].len = n :=
+lemma len_mk (n : ℕ) : [n].len = n :=
   rfl
 #align simplex_category.len_mk SimplexCategory.len_mk
 
 @[simp]
-theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
+lemma mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
   rfl
 #align simplex_category.mk_len SimplexCategory.mk_len
 
@@ -165,7 +165,7 @@ def const (x : SimplexCategory) (i : Fin (x.len + 1)) : ([0] : SimplexCategory) 
 #align simplex_category.const SimplexCategory.const
 
 -- porting note: removed @[simp] as the linter complains
-theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
+lemma const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
     const x i ≫ f = const y (f.toOrderHom i) :=
   rfl
 #align simplex_category.const_comp SimplexCategory.const_comp
@@ -179,7 +179,7 @@ def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategor
   SimplexCategory.Hom.mk f
 #align simplex_category.mk_hom SimplexCategory.mkHom
 
-theorem hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
+lemma hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
   ext : 3
   apply @Subsingleton.elim (Fin 1)
 #align simplex_category.hom_zero_zero SimplexCategory.hom_zero_zero

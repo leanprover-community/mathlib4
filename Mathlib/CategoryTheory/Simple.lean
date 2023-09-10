@@ -108,7 +108,7 @@ lemma mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
     exact w (isIso_of_mono_of_nonzero h)
 #align category_theory.mono_to_simple_zero_of_not_iso CategoryTheory.mono_to_simple_zero_of_not_iso
 
-theorem id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
+lemma id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
   (Simple.mono_isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
 #align category_theory.id_nonzero CategoryTheory.id_nonzero
 
@@ -117,7 +117,7 @@ instance (X : C) [Simple.{v} X] : Nontrivial (End X) :=
 
 section
 
-theorem Simple.not_isZero (X : C) [Simple X] : ¬IsZero X := by
+lemma Simple.not_isZero (X : C) [Simple X] : ¬IsZero X := by
   simpa [Limits.IsZero.iff_id_eq_zero] using id_nonzero X
 #align category_theory.simple.not_is_zero CategoryTheory.Simple.not_isZero
 
@@ -143,7 +143,7 @@ variable [Abelian C]
 
 /-- In an abelian category, an object satisfying the dual of the definition of a simple object is
     simple. -/
-theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso f ↔ f ≠ 0) :
+lemma simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso f ↔ f ≠ 0) :
     Simple X :=
   ⟨fun {Y} f I => by
     classical
@@ -191,7 +191,7 @@ variable [Preadditive C] [HasBinaryBiproducts C]
 
 -- There are another three potential variations of this lemma,
 -- but as any one suffices to prove `indecomposable_of_simple` we will not give them all.
-theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
+lemma Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ Y) ↔ IsZero Y := by
   rw [biprod.isIso_inl_iff_id_eq_fst_comp_inl, ← biprod.total, add_right_eq_self]
   constructor
   · intro h
@@ -203,7 +203,7 @@ theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ 
 #align category_theory.biprod.is_iso_inl_iff_is_zero CategoryTheory.Biprod.isIso_inl_iff_isZero
 
 /-- Any simple object in a preadditive category is indecomposable. -/
-theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
+lemma indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
   ⟨Simple.not_isZero X, fun Y Z i => by
     refine' or_iff_not_imp_left.mpr fun h => _
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
@@ -235,7 +235,7 @@ instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
     · refine' Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
-theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by
+lemma simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by
   constructor; intros Y f hf; constructor
   · intro i
     rw [Subobject.isIso_iff_mk_eq_top] at i
@@ -250,7 +250,7 @@ theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] 
 #align category_theory.simple_of_is_simple_order_subobject CategoryTheory.simple_of_isSimpleOrder_subobject
 
 /-- `X` is simple iff it has subobject lattice `{⊥, ⊤}`. -/
-theorem simple_iff_subobject_isSimpleOrder (X : C) : Simple X ↔ IsSimpleOrder (Subobject X) :=
+lemma simple_iff_subobject_isSimpleOrder (X : C) : Simple X ↔ IsSimpleOrder (Subobject X) :=
   ⟨by
     intro h
     infer_instance, by

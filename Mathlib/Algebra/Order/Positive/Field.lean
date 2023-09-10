@@ -24,7 +24,7 @@ instance Subtype.inv : Inv { x : K // 0 < x } :=
   ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
 
 @[simp]
-theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
+lemma coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
   rfl
 #align positive.coe_inv Positive.coe_inv
 
@@ -32,7 +32,7 @@ instance : Pow { x : K // 0 < x } ℤ :=
   ⟨fun x n => ⟨(x: K) ^ n, zpow_pos_of_pos x.2 _⟩⟩
 
 @[simp]
-theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :=
+lemma coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :=
   rfl
 #align positive.coe_zpow Positive.coe_zpow
 

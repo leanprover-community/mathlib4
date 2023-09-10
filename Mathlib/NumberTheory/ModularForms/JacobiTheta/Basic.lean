@@ -70,14 +70,14 @@ lemma summable_exp_mul_sq {z : ℂ} (hz : 0 < z.im) :
   summable_norm_iff.mp (summable_of_nonneg_of_le (fun _ => norm_nonneg _) (h' <| le_refl _) h)
 #align summable_exp_mul_sq summable_exp_mul_sq
 
-theorem jacobiTheta_two_add (z : ℂ) : jacobiTheta (2 + z) = jacobiTheta z := by
+lemma jacobiTheta_two_add (z : ℂ) : jacobiTheta (2 + z) = jacobiTheta z := by
   refine' tsum_congr fun n => _
   suffices cexp (↑π * I * (n : ℂ) ^ 2 * 2) = 1 by rw [mul_add, Complex.exp_add, this, one_mul]
   rw [(by push_cast; ring : ↑π * I * ↑n ^ 2 * 2 = ↑(n ^ 2) * (2 * π * I)), Complex.exp_int_mul,
     Complex.exp_two_pi_mul_I, one_zpow]
 #align jacobi_theta_two_add jacobiTheta_two_add
 
-theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta ↑(ModularGroup.T ^ 2 • τ) = jacobiTheta τ := by
+lemma jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta ↑(ModularGroup.T ^ 2 • τ) = jacobiTheta τ := by
   suffices ↑(ModularGroup.T ^ 2 • τ) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
   have : ModularGroup.T ^ (2 : ℕ) = ModularGroup.T ^ (2 : ℤ) := rfl
   simp_rw [this, UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
@@ -85,7 +85,7 @@ theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta ↑(ModularGroup.T ^ 2 �
 set_option linter.uppercaseLean3 false in
 #align jacobi_theta_T_sq_smul jacobiTheta_T_sq_smul
 
-theorem jacobiTheta_S_smul (τ : ℍ) :
+lemma jacobiTheta_S_smul (τ : ℍ) :
     jacobiTheta ↑(ModularGroup.S • τ) = (-I * τ) ^ (1 / 2 : ℂ) * jacobiTheta τ := by
   unfold jacobiTheta
   rw [UpperHalfPlane.modular_S_smul, UpperHalfPlane.coe_mk]

@@ -23,11 +23,11 @@ variable {α : Type*} {r : α → α → Prop} {s t : Set α}
 /-! ### Subsets of bounded and unbounded sets -/
 
 
-theorem Bounded.mono (hst : s ⊆ t) (hs : Bounded r t) : Bounded r s :=
+lemma Bounded.mono (hst : s ⊆ t) (hs : Bounded r t) : Bounded r s :=
   hs.imp fun _ ha b hb => ha b (hst hb)
 #align set.bounded.mono Set.Bounded.mono
 
-theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := fun a =>
+lemma Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := fun a =>
   let ⟨b, hb, hb'⟩ := hs a
   ⟨b, hst hb, hb'⟩
 #align set.unbounded.mono Set.Unbounded.mono
@@ -166,7 +166,7 @@ lemma unbounded_gt_univ [Preorder α] [NoBotOrder α] : Unbounded (· > ·) (@Se
 /-! ### Bounded and unbounded intervals -/
 
 
-theorem bounded_self (a : α) : Bounded r { b | r b a } :=
+lemma bounded_self (a : α) : Bounded r { b | r b a } :=
   ⟨a, fun _ => id⟩
 #align set.bounded_self Set.bounded_self
 
@@ -298,7 +298,7 @@ lemma unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici a
 /-! ### Bounded initial segments -/
 
 
-theorem bounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
+lemma bounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
     Bounded r (s ∩ { b | ¬r b a }) ↔ Bounded r s := by
   refine' ⟨_, Bounded.mono (Set.inter_subset_left s _)⟩
   rintro ⟨b, hb⟩
@@ -306,7 +306,7 @@ theorem bounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m)
   exact ⟨m, fun c hc => hm c (or_iff_not_imp_left.2 fun hca => hb c ⟨hc, hca⟩)⟩
 #align set.bounded_inter_not Set.bounded_inter_not
 
-theorem unbounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
+lemma unbounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
     Unbounded r (s ∩ { b | ¬r b a }) ↔ Unbounded r s := by
   simp_rw [← not_bounded_iff, bounded_inter_not H]
 #align set.unbounded_inter_not Set.unbounded_inter_not

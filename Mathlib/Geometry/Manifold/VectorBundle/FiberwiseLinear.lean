@@ -58,7 +58,7 @@ def localHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
 
 /-- Compute the composition of two local homeomorphisms induced by fiberwise linear
 equivalences. -/
-theorem trans_localHomeomorph_apply (hU : IsOpen U)
+lemma trans_localHomeomorph_apply (hU : IsOpen U)
     (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
     (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
     (hφ' : ContinuousOn (fun x => φ' x : B → F →L[𝕜] F) U')
@@ -71,7 +71,7 @@ theorem trans_localHomeomorph_apply (hU : IsOpen U)
 
 /-- Compute the source of the composition of two local homeomorphisms induced by fiberwise linear
 equivalences. -/
-theorem source_trans_localHomeomorph (hU : IsOpen U)
+lemma source_trans_localHomeomorph (hU : IsOpen U)
     (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
     (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
     (hφ' : ContinuousOn (fun x => φ' x : B → F →L[𝕜] F) U')
@@ -84,7 +84,7 @@ theorem source_trans_localHomeomorph (hU : IsOpen U)
 
 /-- Compute the target of the composition of two local homeomorphisms induced by fiberwise linear
 equivalences. -/
-theorem target_trans_localHomeomorph (hU : IsOpen U)
+lemma target_trans_localHomeomorph (hU : IsOpen U)
     (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
     (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
     (hφ' : ContinuousOn (fun x => φ' x : B → F →L[𝕜] F) U')
@@ -106,7 +106,7 @@ local homeomorphism.
 Then the source of `e` is of the form `U ×ˢ univ`, for some set `U` in `B`, and, at any point `x` in
 `U`, admits a neighbourhood `u` of `x` such that `e` is equal on `u ×ˢ univ` to some bi-smooth
 fiberwise linear local homeomorphism. -/
-theorem SmoothFiberwiseLinear.locality_aux₁ (e : LocalHomeomorph (B × F) (B × F))
+lemma SmoothFiberwiseLinear.locality_aux₁ (e : LocalHomeomorph (B × F) (B × F))
     (h : ∀ p ∈ e.source, ∃ s : Set (B × F), IsOpen s ∧ p ∈ s ∧
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u)
         (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x : F →L[𝕜] F)) u)
@@ -158,7 +158,7 @@ together the various bi-smooth fiberwise linear local homeomorphism which exist 
 
 The `U` in the conclusion is the same `U` as in the hypothesis. We state it like this, because this
 is exactly what we need for `smoothFiberwiseLinear`. -/
-theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B × F)) (U : Set B)
+lemma SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B × F)) (U : Set B)
     (hU : e.source = U ×ˢ univ)
     (h : ∀ x ∈ U,
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u) (_hUu : u ⊆ U) (_hux : x ∈ u)
@@ -293,7 +293,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
 #align smooth_fiberwise_linear smoothFiberwiseLinear
 
 @[simp]
-theorem mem_smoothFiberwiseLinear_iff (e : LocalHomeomorph (B × F) (B × F)) :
+lemma mem_smoothFiberwiseLinear_iff (e : LocalHomeomorph (B × F) (B × F)) :
     e ∈ smoothFiberwiseLinear B F IB ↔
       ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U) (hφ :
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U) (h2φ :

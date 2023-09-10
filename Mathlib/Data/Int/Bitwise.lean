@@ -38,12 +38,12 @@ lemma bodd_two : bodd 2 = false :=
 #align int.bodd_two Int.bodd_two
 
 @[simp, norm_cast]
-theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
+lemma bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
   rfl
 #align int.bodd_coe Int.bodd_coe
 
 @[simp]
-theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
+lemma bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
   apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
   intros i j <;>
   simp only [Int.bodd, Int.bodd_coe, Nat.bodd_add] <;>
@@ -51,13 +51,13 @@ theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd :=
 #align int.bodd_sub_nat_nat Int.bodd_subNatNat
 
 @[simp]
-theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
+lemma bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
   cases n <;> simp
   rfl
 #align int.bodd_neg_of_nat Int.bodd_negOfNat
 
 @[simp]
-theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
+lemma bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
   cases n with
   | ofNat =>
     rw [←negOfNat_eq, bodd_negOfNat]
@@ -71,7 +71,7 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
 #align int.bodd_neg Int.bodd_neg
 
 @[simp]
-theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
+lemma bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
   cases' m with m m <;>
   cases' n with n n <;>
   simp only [ofNat_eq_coe, ofNat_add_negSucc, negSucc_add_ofNat,
@@ -84,7 +84,7 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
 #align int.bodd_add Int.bodd_add
 
 @[simp]
-theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
+lemma bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   cases' m with m m <;> cases' n with n n <;>
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
@@ -117,22 +117,22 @@ section deprecated
 set_option linter.deprecated false
 
 @[deprecated]
-theorem bit0_val (n : ℤ) : bit0 n = 2 * n :=
+lemma bit0_val (n : ℤ) : bit0 n = 2 * n :=
   (two_mul _).symm
 #align int.bit0_val Int.bit0_val
 
 @[deprecated]
-theorem bit1_val (n : ℤ) : bit1 n = 2 * n + 1 :=
+lemma bit1_val (n : ℤ) : bit1 n = 2 * n + 1 :=
   congr_arg (· + (1 : ℤ)) (bit0_val _)
 #align int.bit1_val Int.bit1_val
 
-theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
+lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
   apply (bit0_val n).trans (add_zero _).symm
   apply bit1_val
 #align int.bit_val Int.bit_val
 
-theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
+lemma bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (add_comm _ _).trans <| bodd_add_div2 _
 #align int.bit_decomp Int.bit_decomp
 
@@ -149,51 +149,51 @@ lemma bit_zero : bit false 0 = 0 :=
 #align int.bit_zero Int.bit_zero
 
 @[simp]
-theorem bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
+lemma bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
   rw [bit_val, Nat.bit_val]
   cases b <;> rfl
 #align int.bit_coe_nat Int.bit_coe_nat
 
 @[simp]
-theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
+lemma bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
   rw [bit_val, Nat.bit_val]
   cases b <;> rfl
 #align int.bit_neg_succ Int.bit_negSucc
 
 @[simp]
-theorem bodd_bit (b n) : bodd (bit b n) = b := by
+lemma bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
   cases b <;> cases bodd n <;> simp
 #align int.bodd_bit Int.bodd_bit
 
 @[simp, deprecated]
-theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
+lemma bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align int.bodd_bit0 Int.bodd_bit0
 
 @[simp, deprecated]
-theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
+lemma bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align int.bodd_bit1 Int.bodd_bit1
 
 @[deprecated]
-theorem bit0_ne_bit1 (m n : ℤ) : bit0 m ≠ bit1 n :=
+lemma bit0_ne_bit1 (m n : ℤ) : bit0 m ≠ bit1 n :=
   mt (congr_arg bodd) <| by simp
 #align int.bit0_ne_bit1 Int.bit0_ne_bit1
 
 @[deprecated]
-theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
+lemma bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
   (bit0_ne_bit1 _ _).symm
 #align int.bit1_ne_bit0 Int.bit1_ne_bit0
 
 @[deprecated]
-theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
+lemma bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
 #align int.bit1_ne_zero Int.bit1_ne_zero
 
 end deprecated
 
 @[simp]
-theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+lemma testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
   | -[n+1] => by
     rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
@@ -202,7 +202,7 @@ theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
 #align int.test_bit_zero Int.testBit_zero
 
 @[simp]
-theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
+lemma testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
   | -[n+1] => by
     dsimp [testBit]
@@ -291,7 +291,7 @@ lemma bitwise_xor : bitwise xor = lxor' := by
 #align int.bitwise_xor Int.bitwise_xor
 
 @[simp]
-theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
+lemma bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   cases' m with m m <;> cases' n with n n <;>
   simp only [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
@@ -303,33 +303,33 @@ theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
 #align int.bitwise_bit Int.bitwise_bit
 
 @[simp]
-theorem lor_bit (a m b n) : lor (bit a m) (bit b n) = bit (a || b) (lor m n) := by
+lemma lor_bit (a m b n) : lor (bit a m) (bit b n) = bit (a || b) (lor m n) := by
   rw [← bitwise_or, bitwise_bit]
 #align int.lor_bit Int.lor_bit
 
 @[simp]
-theorem land_bit (a m b n) : land (bit a m) (bit b n) = bit (a && b) (land m n) := by
+lemma land_bit (a m b n) : land (bit a m) (bit b n) = bit (a && b) (land m n) := by
   rw [← bitwise_and, bitwise_bit]
 #align int.land_bit Int.land_bit
 
 @[simp]
-theorem ldiff_bit (a m b n) : ldiff' (bit a m) (bit b n) = bit (a && not b) (ldiff' m n) := by
+lemma ldiff_bit (a m b n) : ldiff' (bit a m) (bit b n) = bit (a && not b) (ldiff' m n) := by
   rw [← bitwise_diff, bitwise_bit]
 #align int.ldiff_bit Int.ldiff_bit
 
 @[simp]
-theorem lxor_bit (a m b n) : lxor' (bit a m) (bit b n) = bit (xor a b) (lxor' m n) := by
+lemma lxor_bit (a m b n) : lxor' (bit a m) (bit b n) = bit (xor a b) (lxor' m n) := by
   rw [← bitwise_xor, bitwise_bit]
 #align int.lxor_bit Int.lxor_bit
 
 @[simp]
-theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
+lemma lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
   | (n : ℕ) => by simp [lnot]
   | -[n+1] => by simp [lnot]
 #align int.lnot_bit Int.lnot_bit
 
 @[simp]
-theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
+lemma testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
   cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
   · by_cases h : f false false <;> simp [h]
@@ -339,22 +339,22 @@ theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
 #align int.test_bit_bitwise Int.testBit_bitwise
 
 @[simp]
-theorem testBit_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
+lemma testBit_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
   rw [← bitwise_or, testBit_bitwise]
 #align int.test_bit_lor Int.testBit_lor
 
 @[simp]
-theorem testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
+lemma testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
   rw [← bitwise_and, testBit_bitwise]
 #align int.test_bit_land Int.testBit_land
 
 @[simp]
-theorem testBit_ldiff (m n k) : testBit (ldiff' m n) k = (testBit m k && not (testBit n k)) := by
+lemma testBit_ldiff (m n k) : testBit (ldiff' m n) k = (testBit m k && not (testBit n k)) := by
   rw [← bitwise_diff, testBit_bitwise]
 #align int.test_bit_ldiff Int.testBit_ldiff
 
 @[simp]
-theorem testBit_lxor (m n k) : testBit (lxor' m n) k = xor (testBit m k) (testBit n k) := by
+lemma testBit_lxor (m n k) : testBit (lxor' m n) k = xor (testBit m k) (testBit n k) := by
   rw [← bitwise_xor, testBit_bitwise]
 #align int.test_bit_lxor Int.testBit_lxor
 
@@ -365,32 +365,32 @@ lemma testBit_lnot : ∀ n k, testBit (lnot n) k = not (testBit n k)
 #align int.test_bit_lnot Int.testBit_lnot
 
 @[simp]
-theorem shiftl_neg (m n : ℤ) : shiftl m (-n) = shiftr m n :=
+lemma shiftl_neg (m n : ℤ) : shiftl m (-n) = shiftr m n :=
   rfl
 #align int.shiftl_neg Int.shiftl_neg
 
 @[simp]
-theorem shiftr_neg (m n : ℤ) : shiftr m (-n) = shiftl m n := by rw [← shiftl_neg, neg_neg]
+lemma shiftr_neg (m n : ℤ) : shiftr m (-n) = shiftl m n := by rw [← shiftl_neg, neg_neg]
 #align int.shiftr_neg Int.shiftr_neg
 
 -- Porting note: what's the correct new name?
 @[simp]
-theorem shiftl_coe_nat (m n : ℕ) : shiftl m n = m <<< n :=
+lemma shiftl_coe_nat (m n : ℕ) : shiftl m n = m <<< n :=
   by simp [shiftl]
 #align int.shiftl_coe_nat Int.shiftl_coe_nat
 
 -- Porting note: what's the correct new name?
 @[simp]
-theorem shiftr_coe_nat (m n : ℕ) : shiftr m n = m >>> n := by cases n <;> rfl
+lemma shiftr_coe_nat (m n : ℕ) : shiftr m n = m >>> n := by cases n <;> rfl
 #align int.shiftr_coe_nat Int.shiftr_coe_nat
 
 @[simp]
-theorem shiftl_negSucc (m n : ℕ) : shiftl -[m+1] n = -[Nat.shiftLeft' true m n+1] :=
+lemma shiftl_negSucc (m n : ℕ) : shiftl -[m+1] n = -[Nat.shiftLeft' true m n+1] :=
   rfl
 #align int.shiftl_neg_succ Int.shiftl_negSucc
 
 @[simp]
-theorem shiftr_negSucc (m n : ℕ) : shiftr -[m+1] n = -[m >>> n+1] := by cases n <;> rfl
+lemma shiftr_negSucc (m n : ℕ) : shiftr -[m+1] n = -[m >>> n+1] := by cases n <;> rfl
 #align int.shiftr_neg_succ Int.shiftr_negSucc
 
 lemma shiftr_add : ∀ (m : ℤ) (n k : ℕ), shiftr m (n + k) = shiftr (shiftr m n) k
@@ -426,7 +426,7 @@ lemma shiftl_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), shiftl m (n + k) = shiftl 
       <;> rfl
 #align int.shiftl_add Int.shiftl_add
 
-theorem shiftl_sub (m : ℤ) (n : ℕ) (k : ℤ) : shiftl m (n - k) = shiftr (shiftl m n) k :=
+lemma shiftl_sub (m : ℤ) (n : ℕ) (k : ℤ) : shiftl m (n - k) = shiftr (shiftl m n) k :=
   shiftl_add _ _ _
 #align int.shiftl_sub Int.shiftl_sub
 
@@ -442,7 +442,7 @@ lemma shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / ↑(2 ^ n)
     exact ofNat_lt_ofNat_of_lt (pow_pos (by decide) _)
 #align int.shiftr_eq_div_pow Int.shiftr_eq_div_pow
 
-theorem one_shiftl (n : ℕ) : shiftl 1 n = (2 ^ n : ℕ) :=
+lemma one_shiftl (n : ℕ) : shiftl 1 n = (2 ^ n : ℕ) :=
   congr_arg ((↑) : ℕ → ℤ) (by simp)
 #align int.one_shiftl Int.one_shiftl
 
@@ -453,7 +453,7 @@ lemma zero_shiftl : ∀ n : ℤ, shiftl 0 n = 0
 #align int.zero_shiftl Int.zero_shiftl
 
 @[simp]
-theorem zero_shiftr (n) : shiftr 0 n = 0 :=
+lemma zero_shiftr (n) : shiftr 0 n = 0 :=
   zero_shiftl _
 #align int.zero_shiftr Int.zero_shiftr
 

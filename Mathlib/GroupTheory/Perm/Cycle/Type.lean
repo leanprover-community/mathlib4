@@ -48,7 +48,7 @@ def cycleType (σ : Perm α) : Multiset ℕ :=
   σ.cycleFactorsFinset.1.map (Finset.card ∘ support)
 #align equiv.perm.cycle_type Equiv.Perm.cycleType
 
-theorem cycleType_def (σ : Perm α) :
+lemma cycleType_def (σ : Perm α) :
     σ.cycleType = σ.cycleFactorsFinset.1.map (Finset.card ∘ support) :=
   rfl
 #align equiv.perm.cycle_type_def Equiv.Perm.cycleType_def
@@ -126,7 +126,7 @@ lemma Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
 #align equiv.perm.disjoint.cycle_type Equiv.Perm.Disjoint.cycleType
 
 @[simp] -- porting note: new attr
-theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
+lemma cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
     (fun σ hσ => by simp only [hσ.cycleType, hσ.inv.cycleType, support_inv])
     fun σ τ hστ _ hσ hτ => by
@@ -143,14 +143,14 @@ lemma cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cycl
     rw [← conj_mul, hd.cycleType, (hd.conj _).cycleType, hσ, hπ]
 #align equiv.perm.cycle_type_conj Equiv.Perm.cycleType_conj
 
-theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
+lemma sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   induction σ using cycle_induction_on with
   | base_one => simp
   | base_cycles σ hσ => rw [hσ.cycleType, coe_sum, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
 #align equiv.perm.sum_cycle_type Equiv.Perm.sum_cycleType
 
-theorem sign_of_cycleType' (σ : Perm α) :
+lemma sign_of_cycleType' (σ : Perm α) :
     sign σ = (σ.cycleType.map fun n => -(-1 : ℤˣ) ^ n).prod := by
   induction σ using cycle_induction_on with
   | base_one => simp
@@ -158,7 +158,7 @@ theorem sign_of_cycleType' (σ : Perm α) :
   | induction_disjoint σ τ hd _ hσ hτ => simp [hσ, hτ, hd.cycleType]
 #align equiv.perm.sign_of_cycle_type' Equiv.Perm.sign_of_cycleType'
 
-theorem sign_of_cycleType (f : Perm α) :
+lemma sign_of_cycleType (f : Perm α) :
     sign f = (-1 : ℤˣ) ^ (f.cycleType.sum + Multiset.card f.cycleType) := by
   rw [sign_of_cycleType']
   induction' f.cycleType using Multiset.induction_on with a s ihs
@@ -168,7 +168,7 @@ theorem sign_of_cycleType (f : Perm α) :
 #align equiv.perm.sign_of_cycle_type Equiv.Perm.sign_of_cycleType
 
 @[simp] -- porting note: new attr
-theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
+lemma lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
   induction σ using cycle_induction_on with
   | base_one => simp
   | base_cycles σ hσ => simp [hσ.cycleType, hσ.orderOf]
@@ -180,7 +180,7 @@ lemma dvd_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType) : n
   exact dvd_lcm h
 #align equiv.perm.dvd_of_mem_cycle_type Equiv.Perm.dvd_of_mem_cycleType
 
-theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f x) ∣ orderOf f := by
+lemma orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f x) ∣ orderOf f := by
   by_cases hx : f x = x
   · rw [← cycleOf_eq_one_iff] at hx
     simp [hx]
@@ -579,11 +579,11 @@ namespace IsThreeCycle
 
 variable [DecidableEq α] {σ : Perm α}
 
-theorem cycleType (h : IsThreeCycle σ) : σ.cycleType = {3} :=
+lemma cycleType (h : IsThreeCycle σ) : σ.cycleType = {3} :=
   h
 #align equiv.perm.is_three_cycle.cycle_type Equiv.Perm.IsThreeCycle.cycleType
 
-theorem card_support (h : IsThreeCycle σ) : σ.support.card = 3 := by
+lemma card_support (h : IsThreeCycle σ) : σ.support.card = 3 := by
   rw [← sum_cycleType, h.cycleType, Multiset.sum_singleton]
 #align equiv.perm.is_three_cycle.card_support Equiv.Perm.IsThreeCycle.card_support
 
@@ -605,11 +605,11 @@ lemma _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCycle
   cases this (two_le_of_mem_cycleType (mem_of_mem_erase hm)) (two_le_of_mem_cycleType hn) h
 #align card_support_eq_three_iff card_support_eq_three_iff
 
-theorem isCycle (h : IsThreeCycle σ) : IsCycle σ := by
+lemma isCycle (h : IsThreeCycle σ) : IsCycle σ := by
   rw [← card_cycleType_eq_one, h.cycleType, card_singleton]
 #align equiv.perm.is_three_cycle.is_cycle Equiv.Perm.IsThreeCycle.isCycle
 
-theorem sign (h : IsThreeCycle σ) : sign σ = 1 := by
+lemma sign (h : IsThreeCycle σ) : sign σ = 1 := by
   rw [Equiv.Perm.sign_of_cycleType, h.cycleType]
   rfl
 #align equiv.perm.is_three_cycle.sign Equiv.Perm.IsThreeCycle.sign

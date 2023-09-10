@@ -47,14 +47,14 @@ lemma pos_iff_one_le {a : ℤ} : 0 < a ↔ 1 ≤ a :=
   Order.succ_le_iff.symm
 #align int.pos_iff_one_le Int.pos_iff_one_le
 
-theorem succ_iterate (a : ℤ) : ∀ n, succ^[n] a = a + n
+lemma succ_iterate (a : ℤ) : ∀ n, succ^[n] a = a + n
   | 0 => (add_zero a).symm
   | n + 1 => by
     rw [Function.iterate_succ', Int.ofNat_succ, ← add_assoc]
     exact congr_arg _ (succ_iterate a n)
 #align int.succ_iterate Int.succ_iterate
 
-theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
+lemma pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
   | 0 => (sub_zero a).symm
   | n + 1 => by
     rw [Function.iterate_succ', Int.ofNat_succ, ← sub_sub]
@@ -78,11 +78,11 @@ protected lemma covby_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
 #align int.covby_iff_succ_eq Int.covby_iff_succ_eq
 
 @[simp]
-theorem sub_one_covby (z : ℤ) : z - 1 ⋖ z := by rw [Int.covby_iff_succ_eq, sub_add_cancel]
+lemma sub_one_covby (z : ℤ) : z - 1 ⋖ z := by rw [Int.covby_iff_succ_eq, sub_add_cancel]
 #align int.sub_one_covby Int.sub_one_covby
 
 @[simp]
-theorem covby_add_one (z : ℤ) : z ⋖ z + 1 :=
+lemma covby_add_one (z : ℤ) : z ⋖ z + 1 :=
   Int.covby_iff_succ_eq.mpr rfl
 #align int.covby_add_one Int.covby_add_one
 

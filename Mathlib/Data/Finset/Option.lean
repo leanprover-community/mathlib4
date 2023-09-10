@@ -52,7 +52,7 @@ lemma mem_toFinset {a : α} {o : Option α} : a ∈ o.toFinset ↔ a ∈ o := by
   cases o <;> simp [eq_comm]
 #align option.mem_to_finset Option.mem_toFinset
 
-theorem card_toFinset (o : Option α) : o.toFinset.card = o.elim 0 1 := by cases o <;> rfl
+lemma card_toFinset (o : Option α) : o.toFinset.card = o.elim 0 1 := by cases o <;> rfl
 #align option.card_to_finset Option.card_toFinset
 
 end Option
@@ -76,7 +76,7 @@ lemma some_mem_insertNone {s : Finset α} {a : α} : some a ∈ insertNone s ↔
 #align finset.some_mem_insert_none Finset.some_mem_insertNone
 
 @[simp]
-theorem card_insertNone (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insertNone]
+lemma card_insertNone (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insertNone]
 #align finset.card_insert_none Finset.card_insertNone
 
 /-- Given `s : Finset (Option α)`, `eraseNone s : Finset α` is the set of `x : α` such that
@@ -98,7 +98,7 @@ lemma eraseNone_eq_biUnion [DecidableEq α] (s : Finset (Option α)) :
 #align finset.erase_none_eq_bUnion Finset.eraseNone_eq_biUnion
 
 @[simp]
-theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = s := by
+lemma eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = s := by
   ext
   simp
 #align finset.erase_none_map_some Finset.eraseNone_map_some
@@ -109,7 +109,7 @@ lemma eraseNone_image_some [DecidableEq (Option α)] (s : Finset α) :
 #align finset.erase_none_image_some Finset.eraseNone_image_some
 
 @[simp]
-theorem coe_eraseNone (s : Finset (Option α)) : (eraseNone s : Set α) = some ⁻¹' s :=
+lemma coe_eraseNone (s : Finset (Option α)) : (eraseNone s : Set α) = some ⁻¹' s :=
   Set.ext fun _ => mem_eraseNone
 #align finset.coe_erase_none Finset.coe_eraseNone
 
@@ -156,7 +156,7 @@ lemma insertNone_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
 #align finset.insert_none_erase_none Finset.insertNone_eraseNone
 
 @[simp]
-theorem eraseNone_insertNone (s : Finset α) : eraseNone (insertNone s) = s := by
+lemma eraseNone_insertNone (s : Finset α) : eraseNone (insertNone s) = s := by
   ext
   simp
 #align finset.erase_none_insert_none Finset.eraseNone_insertNone

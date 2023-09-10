@@ -87,7 +87,7 @@ lemma coe_injective :
 #align left_invariant_derivation.coe_injective LeftInvariantDerivation.coe_injective
 
 @[ext]
-theorem ext (h : ∀ f, X f = Y f) : X = Y := FunLike.ext _ _ h
+lemma ext (h : ∀ f, X f = Y f) : X = Y := FunLike.ext _ _ h
 #align left_invariant_derivation.ext LeftInvariantDerivation.ext
 
 variable (X Y f)
@@ -207,7 +207,7 @@ lemma coe_smul : ⇑(r • X) = r • ⇑X :=
 #align left_invariant_derivation.coe_smul LeftInvariantDerivation.coe_smul
 
 @[simp]
-theorem lift_smul (k : 𝕜) : (k • X).1 = k • X.1 :=
+lemma lift_smul (k : 𝕜) : (k • X).1 = k • X.1 :=
   rfl
 #align left_invariant_derivation.lift_smul LeftInvariantDerivation.lift_smul
 

@@ -175,7 +175,7 @@ lemma cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowDeg
 /-- A slightly stronger version of `exists_partition` on which we perform induction on `n`:
 for all `ε > 0`, we can partition the remainders of any family of polynomials `A`
 into equivalence classes, where the equivalence(!) relation is "closer than `ε`". -/
-theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : Fq[X]} (hb : b ≠ 0)
+lemma exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : Fq[X]} (hb : b ≠ 0)
     (A : Fin n → Fq[X]) : ∃ t : Fin n → Fin (Fintype.card Fq ^ ⌈-log ε / log (Fintype.card Fq)⌉₊),
       ∀ i₀ i₁ : Fin n, t i₀ = t i₁ ↔
         (cardPowDegree (A i₁ % b - A i₀ % b) : ℝ) < cardPowDegree b • ε := by
@@ -246,7 +246,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
 
 /-- For all `ε > 0`, we can partition the remainders of any family of polynomials `A`
 into classes, where all remainders in a class are close together. -/
-theorem exists_partition_polynomial (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : Fq[X]} (hb : b ≠ 0)
+lemma exists_partition_polynomial (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : Fq[X]} (hb : b ≠ 0)
     (A : Fin n → Fq[X]) : ∃ t : Fin n → Fin (Fintype.card Fq ^ ⌈-log ε / log (Fintype.card Fq)⌉₊),
       ∀ i₀ i₁ : Fin n, t i₀ = t i₁ →
         (cardPowDegree (A i₁ % b - A i₀ % b) : ℝ) < cardPowDegree b • ε := by

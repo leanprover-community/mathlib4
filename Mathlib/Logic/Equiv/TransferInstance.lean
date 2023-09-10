@@ -145,13 +145,13 @@ def mulEquiv (e : α ≃ β) [Mul β] :
 #align equiv.add_equiv Equiv.addEquiv
 
 @[to_additive (attr := simp)]
-theorem mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a :=
+lemma mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a :=
   rfl
 #align equiv.mul_equiv_apply Equiv.mulEquiv_apply
 #align equiv.add_equiv_apply Equiv.addEquiv_apply
 
 @[to_additive]
-theorem mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
+lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
     (mulEquiv e).symm b = e.symm b :=
   by intros; rfl
@@ -178,11 +178,11 @@ def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
 #align equiv.ring_equiv Equiv.ringEquiv
 
 @[simp]
-theorem ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv e) a = e a :=
+lemma ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv e) a = e a :=
   rfl
 #align equiv.ring_equiv_apply Equiv.ringEquiv_apply
 
-theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
+lemma ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
     letI := Equiv.add e
     letI := Equiv.mul e
     exact (ringEquiv e).symm b = e.symm b := by intros; rfl

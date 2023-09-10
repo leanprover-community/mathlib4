@@ -66,26 +66,26 @@ def ack : ℕ → ℕ → ℕ
 #align ack ack
 
 @[simp]
-theorem ack_zero (n : ℕ) : ack 0 n = n + 1 := by rw [ack]
+lemma ack_zero (n : ℕ) : ack 0 n = n + 1 := by rw [ack]
 #align ack_zero ack_zero
 
 @[simp]
-theorem ack_succ_zero (m : ℕ) : ack (m + 1) 0 = ack m 1 := by rw [ack]
+lemma ack_succ_zero (m : ℕ) : ack (m + 1) 0 = ack m 1 := by rw [ack]
 #align ack_succ_zero ack_succ_zero
 
 @[simp]
-theorem ack_succ_succ (m n : ℕ) : ack (m + 1) (n + 1) = ack m (ack (m + 1) n) := by rw [ack]
+lemma ack_succ_succ (m n : ℕ) : ack (m + 1) (n + 1) = ack m (ack (m + 1) n) := by rw [ack]
 #align ack_succ_succ ack_succ_succ
 
 @[simp]
-theorem ack_one (n : ℕ) : ack 1 n = n + 2 := by
+lemma ack_one (n : ℕ) : ack 1 n = n + 2 := by
   induction' n with n IH
   · rfl
   · simp [IH]
 #align ack_one ack_one
 
 @[simp]
-theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
+lemma ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   induction' n with n IH
   · rfl
   · simpa [mul_succ]
@@ -93,7 +93,7 @@ theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
 
 -- Porting note: re-written to get rid of ack_three_aux
 @[simp]
-theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
+lemma ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   induction' n with n IH
   · rfl
   · rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
@@ -144,11 +144,11 @@ lemma ack_strictMono_right : ∀ m, StrictMono (ack m)
   termination_by ack_strictMono_right m x y h => (m, x)
 #align ack_strict_mono_right ack_strictMono_right
 
-theorem ack_mono_right (m : ℕ) : Monotone (ack m) :=
+lemma ack_mono_right (m : ℕ) : Monotone (ack m) :=
   (ack_strictMono_right m).monotone
 #align ack_mono_right ack_mono_right
 
-theorem ack_injective_right (m : ℕ) : Function.Injective (ack m) :=
+lemma ack_injective_right (m : ℕ) : Function.Injective (ack m) :=
   (ack_strictMono_right m).injective
 #align ack_injective_right ack_injective_right
 
@@ -167,7 +167,7 @@ lemma ack_inj_right {m n₁ n₂ : ℕ} : ack m n₁ = ack m n₂ ↔ n₁ = n�
   (ack_injective_right m).eq_iff
 #align ack_inj_right ack_inj_right
 
-theorem max_ack_right (m n₁ n₂ : ℕ) : ack m (max n₁ n₂) = max (ack m n₁) (ack m n₂) :=
+lemma max_ack_right (m n₁ n₂ : ℕ) : ack m (max n₁ n₂) = max (ack m n₁) (ack m n₂) :=
   (ack_mono_right m).map_max
 #align max_ack_right max_ack_right
 
@@ -185,15 +185,15 @@ lemma add_lt_ack : ∀ m n, m + n < ack m n
   termination_by add_lt_ack m n => (m, n)
 #align add_lt_ack add_lt_ack
 
-theorem add_add_one_le_ack (m n : ℕ) : m + n + 1 ≤ ack m n :=
+lemma add_add_one_le_ack (m n : ℕ) : m + n + 1 ≤ ack m n :=
   succ_le_of_lt (add_lt_ack m n)
 #align add_add_one_le_ack add_add_one_le_ack
 
-theorem lt_ack_left (m n : ℕ) : m < ack m n :=
+lemma lt_ack_left (m n : ℕ) : m < ack m n :=
   (self_le_add_right m n).trans_lt <| add_lt_ack m n
 #align lt_ack_left lt_ack_left
 
-theorem lt_ack_right (m n : ℕ) : n < ack m n :=
+lemma lt_ack_right (m n : ℕ) : n < ack m n :=
   (self_le_add_left n m).trans_lt <| add_lt_ack m n
 #align lt_ack_right lt_ack_right
 
@@ -214,15 +214,15 @@ private lemma ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
   termination_by ack_strict_mono_left' x y => (x, y)
 
-theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
+lemma ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
   ack_strict_mono_left' n
 #align ack_strict_mono_left ack_strictMono_left
 
-theorem ack_mono_left (n : ℕ) : Monotone fun m => ack m n :=
+lemma ack_mono_left (n : ℕ) : Monotone fun m => ack m n :=
   (ack_strictMono_left n).monotone
 #align ack_mono_left ack_mono_left
 
-theorem ack_injective_left (n : ℕ) : Function.Injective fun m => ack m n :=
+lemma ack_injective_left (n : ℕ) : Function.Injective fun m => ack m n :=
   (ack_strictMono_left n).injective
 #align ack_injective_left ack_injective_left
 
@@ -241,7 +241,7 @@ lemma ack_inj_left {m₁ m₂ n : ℕ} : ack m₁ n = ack m₂ n ↔ m₁ = m₂
   (ack_injective_left n).eq_iff
 #align ack_inj_left ack_inj_left
 
-theorem max_ack_left (m₁ m₂ n : ℕ) : ack (max m₁ m₂) n = max (ack m₁ n) (ack m₂ n) :=
+lemma max_ack_left (m₁ m₂ n : ℕ) : ack (max m₁ m₂) n = max (ack m₁ n) (ack m₂ n) :=
   (ack_mono_left n).map_max
 #align max_ack_left max_ack_left
 
@@ -249,7 +249,7 @@ lemma ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ ≤
   (ack_mono_left n₁ hm).trans <| ack_mono_right m₂ hn
 #align ack_le_ack ack_le_ack
 
-theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
+lemma ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
   cases' n with n n
   · simp
   · rw [ack_succ_succ, succ_eq_add_one]
@@ -258,7 +258,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 #align ack_succ_right_le_ack_succ_left ack_succ_right_le_ack_succ_left
 
 -- All the inequalities from this point onwards are specific to the main proof.
-private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
+private lemma sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction' n with k hk
   · norm_num
   · cases' k with k k
@@ -284,7 +284,7 @@ lemma ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m + 
     linarith
 #align ack_add_one_sq_lt_ack_add_three ack_add_one_sq_lt_ack_add_three
 
-theorem ack_ack_lt_ack_max_add_two (m n k : ℕ) : ack m (ack n k) < ack (max m n + 2) k :=
+lemma ack_ack_lt_ack_max_add_two (m n k : ℕ) : ack m (ack n k) < ack (max m n + 2) k :=
   calc
     ack m (ack n k) ≤ ack (max m n) (ack n k) := ack_mono_left _ (le_max_left _ _)
     _ < ack (max m n) (ack (max m n + 1) k) :=
@@ -293,7 +293,7 @@ theorem ack_ack_lt_ack_max_add_two (m n k : ℕ) : ack m (ack n k) < ack (max m 
     _ ≤ ack (max m n + 2) k := ack_succ_right_le_ack_succ_left _ _
 #align ack_ack_lt_ack_max_add_two ack_ack_lt_ack_max_add_two
 
-theorem ack_add_one_sq_lt_ack_add_four (m n : ℕ) : ack m ((n + 1) ^ 2) < ack (m + 4) n :=
+lemma ack_add_one_sq_lt_ack_add_four (m n : ℕ) : ack m ((n + 1) ^ 2) < ack (m + 4) n :=
   calc
     ack m ((n + 1) ^ 2) < ack m ((ack m n + 1) ^ 2) :=
       ack_strictMono_right m <| pow_lt_pow_of_lt_left (succ_lt_succ <| lt_ack_right m n) zero_lt_two
@@ -303,7 +303,7 @@ theorem ack_add_one_sq_lt_ack_add_four (m n : ℕ) : ack m ((n + 1) ^ 2) < ack (
     _ ≤ ack (m + 4) n := ack_succ_right_le_ack_succ_left _ n
 #align ack_add_one_sq_lt_ack_add_four ack_add_one_sq_lt_ack_add_four
 
-theorem ack_pair_lt (m n k : ℕ) : ack m (pair n k) < ack (m + 4) (max n k) :=
+lemma ack_pair_lt (m n k : ℕ) : ack m (pair n k) < ack (m + 4) (max n k) :=
   (ack_strictMono_right m <| pair_lt_max_add_one_sq n k).trans <|
     ack_add_one_sq_lt_ack_add_four _ _
 #align ack_mkpair_lt ack_pair_lt

@@ -81,12 +81,12 @@ def lift : (α → R) ≃ (FreeRing α →+* R) :=
 #align free_ring.lift FreeRing.lift
 
 @[simp]
-theorem lift_of (x : α) : lift f (of x) = f x :=
+lemma lift_of (x : α) : lift f (of x) = f x :=
   congr_fun (lift.left_inv f) x
 #align free_ring.lift_of FreeRing.lift_of
 
 @[simp]
-theorem lift_comp_of (f : FreeRing α →+* R) : lift (f ∘ of) = f :=
+lemma lift_comp_of (f : FreeRing α →+* R) : lift (f ∘ of) = f :=
   lift.right_inv f
 #align free_ring.lift_comp_of FreeRing.lift_comp_of
 
@@ -105,7 +105,7 @@ def map : FreeRing α →+* FreeRing β :=
 #align free_ring.map FreeRing.map
 
 @[simp]
-theorem map_of (x : α) : map f (of x) = of (f x) :=
+lemma map_of (x : α) : map f (of x) = of (f x) :=
   lift_of _ _
 #align free_ring.map_of FreeRing.map_of
 

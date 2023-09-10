@@ -35,7 +35,7 @@ noncomputable def arcsin : ℝ → ℝ :=
   Subtype.val ∘ IccExtend (neg_le_self zero_le_one) sinOrderIso.symm
 #align real.arcsin Real.arcsin
 
-theorem arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
+lemma arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 #align real.arcsin_mem_Icc Real.arcsin_mem_Icc
 
@@ -45,15 +45,15 @@ lemma range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   simp [Icc]
 #align real.range_arcsin Real.range_arcsin
 
-theorem arcsin_le_pi_div_two (x : ℝ) : arcsin x ≤ π / 2 :=
+lemma arcsin_le_pi_div_two (x : ℝ) : arcsin x ≤ π / 2 :=
   (arcsin_mem_Icc x).2
 #align real.arcsin_le_pi_div_two Real.arcsin_le_pi_div_two
 
-theorem neg_pi_div_two_le_arcsin (x : ℝ) : -(π / 2) ≤ arcsin x :=
+lemma neg_pi_div_two_le_arcsin (x : ℝ) : -(π / 2) ≤ arcsin x :=
   (arcsin_mem_Icc x).1
 #align real.neg_pi_div_two_le_arcsin Real.neg_pi_div_two_le_arcsin
 
-theorem arcsin_projIcc (x : ℝ) : arcsin (projIcc (-1) 1 (neg_le_self zero_le_one) x) = arcsin x :=
+lemma arcsin_projIcc (x : ℝ) : arcsin (projIcc (-1) 1 (neg_le_self zero_le_one) x) = arcsin x :=
   by rw [arcsin, Function.comp_apply, IccExtend_val, Function.comp_apply, IccExtend,
         Function.comp_apply]
 #align real.arcsin_proj_Icc Real.arcsin_projIcc
@@ -132,7 +132,7 @@ lemma arcsin_of_le_neg_one {x : ℝ} (hx : x ≤ -1) : arcsin x = -(π / 2) := b
 #align real.arcsin_of_le_neg_one Real.arcsin_of_le_neg_one
 
 @[simp]
-theorem arcsin_neg (x : ℝ) : arcsin (-x) = -arcsin x := by
+lemma arcsin_neg (x : ℝ) : arcsin (-x) = -arcsin x := by
   cases' le_total x (-1) with hx₁ hx₁
   · rw [arcsin_of_le_neg_one hx₁, neg_neg, arcsin_of_one_le (le_neg.2 hx₁)]
   cases' le_total 1 x with hx₂ hx₂
@@ -295,12 +295,12 @@ def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   continuous_invFun := continuous_arcsin.continuousOn
 #align real.sin_local_homeomorph Real.sinLocalHomeomorph
 
-theorem cos_arcsin_nonneg (x : ℝ) : 0 ≤ cos (arcsin x) :=
+lemma cos_arcsin_nonneg (x : ℝ) : 0 ≤ cos (arcsin x) :=
   cos_nonneg_of_mem_Icc ⟨neg_pi_div_two_le_arcsin _, arcsin_le_pi_div_two _⟩
 #align real.cos_arcsin_nonneg Real.cos_arcsin_nonneg
 
 -- The junk values for `arcsin` and `sqrt` make this true even outside `[-1, 1]`.
-theorem cos_arcsin (x : ℝ) : cos (arcsin x) = sqrt (1 - x ^ 2) := by
+lemma cos_arcsin (x : ℝ) : cos (arcsin x) = sqrt (1 - x ^ 2) := by
   by_cases hx₁ : -1 ≤ x; swap
   · rw [not_le] at hx₁
     rw [arcsin_of_le_neg_one hx₁.le, cos_neg, cos_pi_div_two, sqrt_eq_zero_of_nonpos]
@@ -316,7 +316,7 @@ theorem cos_arcsin (x : ℝ) : cos (arcsin x) = sqrt (1 - x ^ 2) := by
 #align real.cos_arcsin Real.cos_arcsin
 
 -- The junk values for `arcsin` and `sqrt` make this true even outside `[-1, 1]`.
-theorem tan_arcsin (x : ℝ) : tan (arcsin x) = x / sqrt (1 - x ^ 2) := by
+lemma tan_arcsin (x : ℝ) : tan (arcsin x) = x / sqrt (1 - x ^ 2) := by
   rw [tan_eq_sin_div_cos, cos_arcsin]
   by_cases hx₁ : -1 ≤ x; swap
   · have h : sqrt (1 - x ^ 2) = 0 := sqrt_eq_zero_of_nonpos (by nlinarith)
@@ -336,18 +336,18 @@ noncomputable def arccos (x : ℝ) : ℝ :=
   π / 2 - arcsin x
 #align real.arccos Real.arccos
 
-theorem arccos_eq_pi_div_two_sub_arcsin (x : ℝ) : arccos x = π / 2 - arcsin x :=
+lemma arccos_eq_pi_div_two_sub_arcsin (x : ℝ) : arccos x = π / 2 - arcsin x :=
   rfl
 #align real.arccos_eq_pi_div_two_sub_arcsin Real.arccos_eq_pi_div_two_sub_arcsin
 
-theorem arcsin_eq_pi_div_two_sub_arccos (x : ℝ) : arcsin x = π / 2 - arccos x := by simp [arccos]
+lemma arcsin_eq_pi_div_two_sub_arccos (x : ℝ) : arcsin x = π / 2 - arccos x := by simp [arccos]
 #align real.arcsin_eq_pi_div_two_sub_arccos Real.arcsin_eq_pi_div_two_sub_arccos
 
-theorem arccos_le_pi (x : ℝ) : arccos x ≤ π := by
+lemma arccos_le_pi (x : ℝ) : arccos x ≤ π := by
   unfold arccos; linarith [neg_pi_div_two_le_arcsin x]
 #align real.arccos_le_pi Real.arccos_le_pi
 
-theorem arccos_nonneg (x : ℝ) : 0 ≤ arccos x := by
+lemma arccos_nonneg (x : ℝ) : 0 ≤ arccos x := by
   unfold arccos; linarith [arcsin_le_pi_div_two x]
 #align real.arccos_nonneg Real.arccos_nonneg
 
@@ -401,7 +401,7 @@ lemma arccos_eq_pi {x} : arccos x = π ↔ x ≤ -1 := by
   rw [arccos, sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', div_two_sub_self, neg_pi_div_two_eq_arcsin]
 #align real.arccos_eq_pi Real.arccos_eq_pi
 
-theorem arccos_neg (x : ℝ) : arccos (-x) = π - arccos x := by
+lemma arccos_neg (x : ℝ) : arccos (-x) = π - arccos x := by
   rw [← add_halves π, arccos, arcsin_neg, arccos, add_sub_assoc, sub_sub_self, sub_neg_eq_add]
 #align real.arccos_neg Real.arccos_neg
 
@@ -414,7 +414,7 @@ lemma arccos_of_le_neg_one {x : ℝ} (hx : x ≤ -1) : arccos x = π := by
 #align real.arccos_of_le_neg_one Real.arccos_of_le_neg_one
 
 -- The junk values for `arccos` and `sqrt` make this true even outside `[-1, 1]`.
-theorem sin_arccos (x : ℝ) : sin (arccos x) = sqrt (1 - x ^ 2) := by
+lemma sin_arccos (x : ℝ) : sin (arccos x) = sqrt (1 - x ^ 2) := by
   by_cases hx₁ : -1 ≤ x; swap
   · rw [not_le] at hx₁
     rw [arccos_of_le_neg_one hx₁.le, sin_pi, sqrt_eq_zero_of_nonpos]
@@ -448,7 +448,7 @@ lemma continuous_arccos : Continuous arccos :=
 #align real.continuous_arccos Real.continuous_arccos
 
 -- The junk values for `arccos` and `sqrt` make this true even outside `[-1, 1]`.
-theorem tan_arccos (x : ℝ) : tan (arccos x) = sqrt (1 - x ^ 2) / x := by
+lemma tan_arccos (x : ℝ) : tan (arccos x) = sqrt (1 - x ^ 2) / x := by
   rw [arccos, tan_pi_div_two_sub, tan_arcsin, inv_div]
 #align real.tan_arccos Real.tan_arccos
 

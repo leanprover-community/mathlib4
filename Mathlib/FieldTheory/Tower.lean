@@ -66,7 +66,7 @@ lemma lift_rank_mul_lift_rank :
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
-theorem rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddCommGroup A]
+lemma rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddCommGroup A]
     [Algebra F K] [Module K A] [Module F A] [IsScalarTower F K A] [StrongRankCondition F]
     [StrongRankCondition K] [Module.Free F K] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
@@ -106,7 +106,7 @@ lemma trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional 
 
 Note this cannot be an instance as Lean cannot infer `L`.
 -/
-theorem left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
+lemma left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
     [Algebra K L] [IsScalarTower F K L] [FiniteDimensional F L] : FiniteDimensional F K :=
   FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K L).toLinearMap (RingHom.injective _)
 #align finite_dimensional.left FiniteDimensional.left
@@ -130,7 +130,7 @@ lemma finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A = 
     exact mt (@right F K A _ _ _ _ _ _ _) hA
 #align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
 
-theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Algebra F A]
+lemma Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Algebra F A]
     (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
   { toNontrivial :=
       ⟨⟨⊥, ⊤, fun he =>
@@ -154,7 +154,7 @@ instance _root_.LinearMap.finite_dimensional'' (F : Type u) (K : Type v) (V : Ty
   right F _ _
 #align linear_map.finite_dimensional'' LinearMap.finite_dimensional''
 
-theorem finrank_linear_map' (F : Type u) (K : Type v) (V : Type w) [Field F] [Field K] [Algebra F K]
+lemma finrank_linear_map' (F : Type u) (K : Type v) (V : Type w) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [AddCommGroup V] [Module F V] [FiniteDimensional F V] :
     finrank K (V →ₗ[F] K) = finrank F V :=
   mul_right_injective₀ finrank_pos.ne' <|

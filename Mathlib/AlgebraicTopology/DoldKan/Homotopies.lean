@@ -79,12 +79,12 @@ abbrev c :=
 
 /-- Helper when we need some `c.rel i j` (i.e. `ComplexShape.down ℕ`),
 e.g. `c_mk n (n+1) rfl` -/
-theorem c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
+lemma c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
   ComplexShape.down_mk i j h
 #align algebraic_topology.dold_kan.c_mk AlgebraicTopology.DoldKan.c_mk
 
 /-- This lemma is meant to be used with `nullHomotopicMap'_f_of_not_rel_left` -/
-theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
+lemma cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
   intro hj
   dsimp at hj
   apply Nat.not_succ_le_zero j
@@ -140,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_Hσ_to_zero AlgebraicTopology.DoldKan.homotopyHσToZero
 
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
-theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
+lemma Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   unfold Hσ
   rw [nullHomotopicMap'_f_of_not_rel_left (c_mk 1 0 rfl) cs_down_0_not_rel_left]
   rcases q with (_|q)
@@ -155,7 +155,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Hσ_eq_zero AlgebraicTopology.DoldKan.Hσ_eq_zero
 
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
-theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
+lemma hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op [n]) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op [m]) := by
   have h : n + 1 = m := hnm
   subst h

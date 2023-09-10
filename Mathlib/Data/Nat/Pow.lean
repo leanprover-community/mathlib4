@@ -49,29 +49,29 @@ lemma lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
       _ ≤ p ^ (n + 1) := pow_lt_pow_succ h _
 #align nat.lt_pow_self Nat.lt_pow_self
 
-theorem lt_two_pow (n : ℕ) : n < 2 ^ n :=
+lemma lt_two_pow (n : ℕ) : n < 2 ^ n :=
   lt_pow_self (by decide) n
 #align nat.lt_two_pow Nat.lt_two_pow
 
-theorem one_le_pow (n m : ℕ) (h : 0 < m) : 1 ≤ m ^ n := by
+lemma one_le_pow (n m : ℕ) (h : 0 < m) : 1 ≤ m ^ n := by
   rw [← one_pow n]
   exact Nat.pow_le_pow_of_le_left h n
 #align nat.one_le_pow Nat.one_le_pow
 
-theorem one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n :=
+lemma one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n :=
   one_le_pow n (m + 1) (succ_pos m)
 #align nat.one_le_pow' Nat.one_le_pow'
 
-theorem one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
+lemma one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
   one_le_pow n 2 (by decide)
 #align nat.one_le_two_pow Nat.one_le_two_pow
 
-theorem one_lt_pow (n m : ℕ) (h₀ : 0 < n) (h₁ : 1 < m) : 1 < m ^ n := by
+lemma one_lt_pow (n m : ℕ) (h₀ : 0 < n) (h₁ : 1 < m) : 1 < m ^ n := by
   rw [← one_pow n]
   exact pow_lt_pow_of_lt_left h₁ h₀
 #align nat.one_lt_pow Nat.one_lt_pow
 
-theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
+lemma one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
   one_lt_pow (n + 1) (m + 2) (succ_pos n) (Nat.lt_of_sub_eq_succ rfl)
 #align nat.one_lt_pow' Nat.one_lt_pow'
 
@@ -90,11 +90,11 @@ lemma one_lt_pow_iff {k n : ℕ} (h : 0 ≠ k) : 1 < n ^ k ↔ 1 < n := by
   exact one_lt_mul (one_lt_succ_succ _).le (hk (succ_ne_zero k).symm)
 #align nat.one_lt_pow_iff Nat.one_lt_pow_iff
 
-theorem one_lt_two_pow (n : ℕ) (h₀ : 0 < n) : 1 < 2 ^ n :=
+lemma one_lt_two_pow (n : ℕ) (h₀ : 0 < n) : 1 < 2 ^ n :=
   one_lt_pow n 2 h₀ (by decide)
 #align nat.one_lt_two_pow Nat.one_lt_two_pow
 
-theorem one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) :=
+lemma one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) :=
   one_lt_pow (n + 1) 2 (succ_pos n) (by decide)
 #align nat.one_lt_two_pow' Nat.one_lt_two_pow'
 
@@ -144,7 +144,7 @@ lemma pow_left_injective {m : ℕ} (k : 1 ≤ m) : Function.Injective fun x : �
   StrictMono.injective (pow_left_strictMono k)
 #align nat.pow_left_injective Nat.pow_left_injective
 
-theorem sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
+lemma sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   rw [sq, sq]
   exact Nat.mul_self_sub_mul_self_eq a b
 #align nat.sq_sub_sq Nat.sq_sub_sq
@@ -155,7 +155,7 @@ alias pow_two_sub_pow_two := sq_sub_sq
 /-! ### `pow` and `mod` / `dvd` -/
 
 
-theorem pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by
+lemma pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by
   induction' b with b ih
   rfl; simp [pow_succ, Nat.mul_mod, ih]
 #align nat.pow_mod Nat.pow_mod

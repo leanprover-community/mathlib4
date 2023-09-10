@@ -67,7 +67,7 @@ lemma mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
 is 1 or 2 modulo 3.
 -/
-theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
+lemma count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     Derivable en → count I en % 3 = 1 ∨ count I en % 3 = 2 := by
   intro h
   induction' h with _ _ h_ih _ _ h_ih _ _ _ h_ih _ _ _ h_ih
@@ -122,7 +122,7 @@ We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st`
 -/
 
 
-theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : Goodm (xs ++ ↑[I])) :
+lemma goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : Goodm (xs ++ ↑[I])) :
     Goodm (xs ++ ↑[I, U]) := by
   cases' h₂ with mhead nmtail
   have : xs ≠ nil := by rintro rfl; contradiction
@@ -138,7 +138,7 @@ theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : G
     · exact append_ne_nil_of_ne_nil_left _ _ this
 #align miu.goodm_of_rule1 Miu.goodm_of_rule1
 
-theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :
+lemma goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :
     Goodm (↑(M :: xs) ++ xs) := by
   constructor
   · rfl
@@ -148,7 +148,7 @@ theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M 
     exact (or_self_iff _).mp (mem_append.mp mtail)
 #align miu.goodm_of_rule2 Miu.goodm_of_rule2
 
-theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++ bs))
+lemma goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++ bs))
     (h₂ : Goodm (as ++ ↑[I, I, I] ++ bs)) : Goodm (as ++ ↑(U :: bs)) := by
   cases' h₂ with mhead nmtail
   have k : as ≠ nil := by rintro rfl; contradiction
@@ -169,7 +169,7 @@ The proof of the next lemma is identical, on the tactic level, to the previous p
 -/
 
 
-theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs))
+lemma goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs))
     (h₂ : Goodm (as ++ ↑[U, U] ++ bs)) : Goodm (as ++ bs) := by
   cases' h₂ with mhead nmtail
   have k : as ≠ nil := by rintro rfl; contradiction
@@ -187,7 +187,7 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs
 
 /-- Any derivable string must begin with `M` and have no `M` in its tail.
 -/
-theorem goodm_of_derivable (en : Miustr) : Derivable en → Goodm en := by
+lemma goodm_of_derivable (en : Miustr) : Derivable en → Goodm en := by
   intro h
   induction h
   · exact goodmi

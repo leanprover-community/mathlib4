@@ -145,7 +145,7 @@ def forget (F : C ⥤ C) : Algebra F ⥤ C where
 #align category_theory.endofunctor.algebra.forget CategoryTheory.Endofunctor.Algebra.forget
 
 /-- An algebra morphism with an underlying isomorphism hom in `C` is an algebra isomorphism. -/
-theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
+lemma iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
       h := by
         rw [IsIso.eq_comp_inv f.1, Category.assoc, ← f.h]
@@ -247,7 +247,7 @@ lemma right_inv : A.str ≫ strInv h = 𝟙 _ := by
 /-- The structure map of the initial algebra is an isomorphism,
 hence endofunctors preserve their initial algebras
 -/
-theorem str_isIso (h : Limits.IsInitial A) : IsIso A.str :=
+lemma str_isIso (h : Limits.IsInitial A) : IsIso A.str :=
   { out := ⟨strInv h, right_inv _, left_inv _⟩ }
 #align category_theory.endofunctor.algebra.initial.str_is_iso CategoryTheory.Endofunctor.Algebra.Initial.str_isIso
 
@@ -367,7 +367,7 @@ def forget (F : C ⥤ C) : Coalgebra F ⥤ C where
 #align category_theory.endofunctor.coalgebra.forget CategoryTheory.Endofunctor.Coalgebra.forget
 
 /-- A coalgebra morphism with an underlying isomorphism hom in `C` is a coalgebra isomorphism. -/
-theorem iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.1] : IsIso f :=
+lemma iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
       h := by
         rw [IsIso.eq_inv_comp f.1, ← Category.assoc, ← f.h, Category.assoc]
@@ -450,12 +450,12 @@ namespace Adjunction
 
 variable {F : C ⥤ C} {G : C ⥤ C}
 
-theorem Algebra.homEquiv_naturality_str (adj : F ⊣ G) (A₁ A₂ : Algebra F) (f : A₁ ⟶ A₂) :
+lemma Algebra.homEquiv_naturality_str (adj : F ⊣ G) (A₁ A₂ : Algebra F) (f : A₁ ⟶ A₂) :
     (adj.homEquiv A₁.a A₁.a) A₁.str ≫ G.map f.f = f.f ≫ (adj.homEquiv A₂.a A₂.a) A₂.str := by
   rw [← Adjunction.homEquiv_naturality_right, ← Adjunction.homEquiv_naturality_left, f.h]
 #align category_theory.endofunctor.adjunction.algebra.hom_equiv_naturality_str CategoryTheory.Endofunctor.Adjunction.Algebra.homEquiv_naturality_str
 
-theorem Coalgebra.homEquiv_naturality_str_symm (adj : F ⊣ G) (V₁ V₂ : Coalgebra G) (f : V₁ ⟶ V₂) :
+lemma Coalgebra.homEquiv_naturality_str_symm (adj : F ⊣ G) (V₁ V₂ : Coalgebra G) (f : V₁ ⟶ V₂) :
     F.map f.f ≫ (adj.homEquiv V₂.V V₂.V).symm V₂.str =
     (adj.homEquiv V₁.V V₁.V).symm V₁.str ≫ f.f := by
   rw [← Adjunction.homEquiv_naturality_left_symm, ← Adjunction.homEquiv_naturality_right_symm,

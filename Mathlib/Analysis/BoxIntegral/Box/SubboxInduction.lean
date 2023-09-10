@@ -62,11 +62,11 @@ lemma mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
       fun H ↦ ⟨H.1.1, H.2⟩⟩]
 #align box_integral.box.mem_split_center_box BoxIntegral.Box.mem_splitCenterBox
 
-theorem splitCenterBox_le (I : Box ι) (s : Set ι) : I.splitCenterBox s ≤ I :=
+lemma splitCenterBox_le (I : Box ι) (s : Set ι) : I.splitCenterBox s ≤ I :=
   fun _ hx ↦ (mem_splitCenterBox.1 hx).1
 #align box_integral.box.split_center_box_le BoxIntegral.Box.splitCenterBox_le
 
-theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
+lemma disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
     Disjoint (I.splitCenterBox s : Set (ι → ℝ)) (I.splitCenterBox t) := by
   rw [disjoint_iff_inf_le]
   rintro y ⟨hs, ht⟩; apply h
@@ -75,7 +75,7 @@ theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
   rw [← hs.2, ← ht.2]
 #align box_integral.box.disjoint_split_center_box BoxIntegral.Box.disjoint_splitCenterBox
 
-theorem injective_splitCenterBox (I : Box ι) : Injective I.splitCenterBox := fun _ _ H ↦
+lemma injective_splitCenterBox (I : Box ι) : Injective I.splitCenterBox := fun _ _ H ↦
   by_contra fun Hne ↦ (I.disjoint_splitCenterBox Hne).ne (nonempty_coe _).ne_empty (H ▸ rfl)
 #align box_integral.box.injective_split_center_box BoxIntegral.Box.injective_splitCenterBox
 
@@ -92,13 +92,13 @@ def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
 #align box_integral.box.split_center_box_emb BoxIntegral.Box.splitCenterBoxEmb
 
 @[simp]
-theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
+lemma iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
   ext x
   simp
 #align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.iUnion_coe_splitCenterBox
 
 @[simp]
-theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
+lemma upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
   by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
 #align box_integral.box.upper_sub_lower_split_center_box BoxIntegral.Box.upper_sub_lower_splitCenterBox

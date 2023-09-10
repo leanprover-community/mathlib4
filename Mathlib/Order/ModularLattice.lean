@@ -229,7 +229,7 @@ lemma IsModularLattice.sup_inf_sup_assoc : (x ⊔ z) ⊓ (y ⊔ z) = (x ⊔ z) �
   @IsModularLattice.inf_sup_inf_assoc αᵒᵈ _ _ _ _ _
 #align is_modular_lattice.sup_inf_sup_assoc IsModularLattice.sup_inf_sup_assoc
 
-theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z) (hsup : y ⊔ z ≤ x ⊔ z) :
+lemma eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z) (hsup : y ⊔ z ≤ x ⊔ z) :
     x = y :=
   le_antisymm hxy <|
     have h : y ≤ x ⊔ z :=
@@ -243,12 +243,12 @@ theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z
       _ ≤ x := sup_le le_rfl inf_le_right
 #align eq_of_le_of_inf_le_of_sup_le eq_of_le_of_inf_le_of_sup_le
 
-theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : x < y) (hinf : y ⊓ z ≤ x ⊓ z) : x ⊔ z < y ⊔ z :=
+lemma sup_lt_sup_of_lt_of_inf_le_inf (hxy : x < y) (hinf : y ⊓ z ≤ x ⊓ z) : x ⊔ z < y ⊔ z :=
   lt_of_le_of_ne (sup_le_sup_right (le_of_lt hxy) _) fun hsup =>
     ne_of_lt hxy <| eq_of_le_of_inf_le_of_sup_le (le_of_lt hxy) hinf (le_of_eq hsup.symm)
 #align sup_lt_sup_of_lt_of_inf_le_inf sup_lt_sup_of_lt_of_inf_le_inf
 
-theorem inf_lt_inf_of_lt_of_sup_le_sup (hxy : x < y) (hinf : y ⊔ z ≤ x ⊔ z) : x ⊓ z < y ⊓ z :=
+lemma inf_lt_inf_of_lt_of_sup_le_sup (hxy : x < y) (hinf : y ⊔ z ≤ x ⊔ z) : x ⊓ z < y ⊓ z :=
   @sup_lt_sup_of_lt_of_inf_le_inf αᵒᵈ _ _ _ _ _ hxy hinf
 #align inf_lt_inf_of_lt_of_sup_le_sup inf_lt_inf_of_lt_of_sup_le_sup
 

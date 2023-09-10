@@ -40,7 +40,7 @@ lemma coe_nat_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
   Nat.cast_pos
 #align int.coe_nat_pos Int.coe_nat_pos
 
-theorem coe_nat_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
+lemma coe_nat_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
   Int.coe_nat_pos.2 (succ_pos n)
 #align int.coe_nat_succ_pos Int.coe_nat_succ_pos
 
@@ -170,17 +170,17 @@ lemma cast_max : (↑(max a b) : α) = max (a : α) (b : α) :=
 lemma cast_abs : ((|a| : ℤ) : α) = |(a : α)| := by simp [abs_eq_max_neg]
 #align int.cast_abs Int.cast_abs
 
-theorem cast_one_le_of_pos (h : 0 < a) : (1 : α) ≤ a := by exact_mod_cast Int.add_one_le_of_lt h
+lemma cast_one_le_of_pos (h : 0 < a) : (1 : α) ≤ a := by exact_mod_cast Int.add_one_le_of_lt h
 #align int.cast_one_le_of_pos Int.cast_one_le_of_pos
 
-theorem cast_le_neg_one_of_neg (h : a < 0) : (a : α) ≤ -1 := by
+lemma cast_le_neg_one_of_neg (h : a < 0) : (a : α) ≤ -1 := by
   rw [← Int.cast_one, ← Int.cast_neg, cast_le]
   exact Int.le_sub_one_of_lt h
 #align int.cast_le_neg_one_of_neg Int.cast_le_neg_one_of_neg
 
 variable (α) {n}
 
-theorem cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : α) ≤ -1 ∨ 1 ≤ (n : α) :=
+lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : α) ≤ -1 ∨ 1 ≤ (n : α) :=
   hn.lt_or_lt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
 #align int.cast_le_neg_one_or_one_le_cast_of_ne_zero Int.cast_le_neg_one_or_one_le_cast_of_ne_zero
 
@@ -235,7 +235,7 @@ lemma ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
 
 variable [AddGroupWithOne A]
 
-theorem eq_int_castAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
+lemma eq_int_castAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
 #align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_int_castAddHom
 
@@ -318,7 +318,7 @@ lemma map_intCast [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
 
 namespace RingHom
 
-theorem eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
+lemma eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
   RingHom.ext <| eq_intCast f
 #align ring_hom.eq_int_cast' RingHom.eq_intCast'
 
@@ -348,12 +348,12 @@ variable {π : ι → Type*} [∀ i, IntCast (π i)]
 instance intCast : IntCast (∀ i, π i) :=
   { intCast := fun n _ ↦ n }
 
-theorem int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
+lemma int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 #align pi.int_apply Pi.int_apply
 
 @[simp]
-theorem coe_int (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
+lemma coe_int (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
 #align pi.coe_int Pi.coe_int
 

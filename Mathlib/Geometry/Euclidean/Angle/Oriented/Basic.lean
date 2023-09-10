@@ -68,17 +68,17 @@ lemma continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
 
 /-- If the first vector passed to `oangle` is 0, the result is 0. -/
 @[simp]
-theorem oangle_zero_left (x : V) : o.oangle 0 x = 0 := by simp [oangle]
+lemma oangle_zero_left (x : V) : o.oangle 0 x = 0 := by simp [oangle]
 #align orientation.oangle_zero_left Orientation.oangle_zero_left
 
 /-- If the second vector passed to `oangle` is 0, the result is 0. -/
 @[simp]
-theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
+lemma oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 #align orientation.oangle_zero_right Orientation.oangle_zero_right
 
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
-theorem oangle_self (x : V) : o.oangle x x = 0 := by
+lemma oangle_self (x : V) : o.oangle x x = 0 := by
   rw [oangle, kahler_apply_self]; norm_cast
   convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
@@ -193,13 +193,13 @@ lemma ne_of_oangle_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sign = -1) : x 
 #align orientation.ne_of_oangle_sign_eq_neg_one Orientation.ne_of_oangle_sign_eq_neg_one
 
 /-- Swapping the two vectors passed to `oangle` negates the angle. -/
-theorem oangle_rev (x y : V) : o.oangle y x = -o.oangle x y := by
+lemma oangle_rev (x y : V) : o.oangle y x = -o.oangle x y := by
   simp only [oangle, o.kahler_swap y x, Complex.arg_conj_coe_angle]
 #align orientation.oangle_rev Orientation.oangle_rev
 
 /-- Adding the angles between two vectors in each order results in 0. -/
 @[simp]
-theorem oangle_add_oangle_rev (x y : V) : o.oangle x y + o.oangle y x = 0 := by
+lemma oangle_add_oangle_rev (x y : V) : o.oangle x y + o.oangle y x = 0 := by
   simp [o.oangle_rev y x]
 #align orientation.oangle_add_oangle_rev Orientation.oangle_add_oangle_rev
 
@@ -221,7 +221,7 @@ lemma oangle_neg_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
 
 /-- Negating the first vector passed to `oangle` does not change twice the angle. -/
 @[simp]
-theorem two_zsmul_oangle_neg_left (x y : V) :
+lemma two_zsmul_oangle_neg_left (x y : V) :
     (2 : ℤ) • o.oangle (-x) y = (2 : ℤ) • o.oangle x y := by
   by_cases hx : x = 0
   · simp [hx]
@@ -232,7 +232,7 @@ theorem two_zsmul_oangle_neg_left (x y : V) :
 
 /-- Negating the second vector passed to `oangle` does not change twice the angle. -/
 @[simp]
-theorem two_zsmul_oangle_neg_right (x y : V) :
+lemma two_zsmul_oangle_neg_right (x y : V) :
     (2 : ℤ) • o.oangle x (-y) = (2 : ℤ) • o.oangle x y := by
   by_cases hx : x = 0
   · simp [hx]
@@ -243,11 +243,11 @@ theorem two_zsmul_oangle_neg_right (x y : V) :
 
 /-- Negating both vectors passed to `oangle` does not change the angle. -/
 @[simp]
-theorem oangle_neg_neg (x y : V) : o.oangle (-x) (-y) = o.oangle x y := by simp [oangle]
+lemma oangle_neg_neg (x y : V) : o.oangle (-x) (-y) = o.oangle x y := by simp [oangle]
 #align orientation.oangle_neg_neg Orientation.oangle_neg_neg
 
 /-- Negating the first vector produces the same angle as negating the second vector. -/
-theorem oangle_neg_left_eq_neg_right (x y : V) : o.oangle (-x) y = o.oangle x (-y) := by
+lemma oangle_neg_left_eq_neg_right (x y : V) : o.oangle (-x) y = o.oangle x (-y) := by
   rw [← neg_neg y, oangle_neg_neg, neg_neg]
 #align orientation.oangle_neg_left_eq_neg_right Orientation.oangle_neg_left_eq_neg_right
 
@@ -265,48 +265,48 @@ lemma oangle_neg_self_right {x : V} (hx : x ≠ 0) : o.oangle x (-x) = π := by
 
 /-- Twice the angle between the negation of a vector and that vector is 0. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem two_zsmul_oangle_neg_self_left (x : V) : (2 : ℤ) • o.oangle (-x) x = 0 := by
+lemma two_zsmul_oangle_neg_self_left (x : V) : (2 : ℤ) • o.oangle (-x) x = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 #align orientation.two_zsmul_oangle_neg_self_left Orientation.two_zsmul_oangle_neg_self_left
 
 /-- Twice the angle between a vector and its negation is 0. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem two_zsmul_oangle_neg_self_right (x : V) : (2 : ℤ) • o.oangle x (-x) = 0 := by
+lemma two_zsmul_oangle_neg_self_right (x : V) : (2 : ℤ) • o.oangle x (-x) = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 #align orientation.two_zsmul_oangle_neg_self_right Orientation.two_zsmul_oangle_neg_self_right
 
 /-- Adding the angles between two vectors in each order, with the first vector in each angle
 negated, results in 0. -/
 @[simp]
-theorem oangle_add_oangle_rev_neg_left (x y : V) : o.oangle (-x) y + o.oangle (-y) x = 0 := by
+lemma oangle_add_oangle_rev_neg_left (x y : V) : o.oangle (-x) y + o.oangle (-y) x = 0 := by
   rw [oangle_neg_left_eq_neg_right, oangle_rev, add_left_neg]
 #align orientation.oangle_add_oangle_rev_neg_left Orientation.oangle_add_oangle_rev_neg_left
 
 /-- Adding the angles between two vectors in each order, with the second vector in each angle
 negated, results in 0. -/
 @[simp]
-theorem oangle_add_oangle_rev_neg_right (x y : V) : o.oangle x (-y) + o.oangle y (-x) = 0 := by
+lemma oangle_add_oangle_rev_neg_right (x y : V) : o.oangle x (-y) + o.oangle y (-x) = 0 := by
   rw [o.oangle_rev (-x), oangle_neg_left_eq_neg_right, add_neg_self]
 #align orientation.oangle_add_oangle_rev_neg_right Orientation.oangle_add_oangle_rev_neg_right
 
 /-- Multiplying the first vector passed to `oangle` by a positive real does not change the
 angle. -/
 @[simp]
-theorem oangle_smul_left_of_pos (x y : V) {r : ℝ} (hr : 0 < r) :
+lemma oangle_smul_left_of_pos (x y : V) {r : ℝ} (hr : 0 < r) :
     o.oangle (r • x) y = o.oangle x y := by simp [oangle, Complex.arg_real_mul _ hr]
 #align orientation.oangle_smul_left_of_pos Orientation.oangle_smul_left_of_pos
 
 /-- Multiplying the second vector passed to `oangle` by a positive real does not change the
 angle. -/
 @[simp]
-theorem oangle_smul_right_of_pos (x y : V) {r : ℝ} (hr : 0 < r) :
+lemma oangle_smul_right_of_pos (x y : V) {r : ℝ} (hr : 0 < r) :
     o.oangle x (r • y) = o.oangle x y := by simp [oangle, Complex.arg_real_mul _ hr]
 #align orientation.oangle_smul_right_of_pos Orientation.oangle_smul_right_of_pos
 
 /-- Multiplying the first vector passed to `oangle` by a negative real produces the same angle
 as negating that vector. -/
 @[simp]
-theorem oangle_smul_left_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
+lemma oangle_smul_left_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
     o.oangle (r • x) y = o.oangle (-x) y := by
   rw [← neg_neg r, neg_smul, ← smul_neg, o.oangle_smul_left_of_pos _ _ (neg_pos_of_neg hr)]
 #align orientation.oangle_smul_left_of_neg Orientation.oangle_smul_left_of_neg
@@ -314,14 +314,14 @@ theorem oangle_smul_left_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
 /-- Multiplying the second vector passed to `oangle` by a negative real produces the same angle
 as negating that vector. -/
 @[simp]
-theorem oangle_smul_right_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
+lemma oangle_smul_right_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
     o.oangle x (r • y) = o.oangle x (-y) := by
   rw [← neg_neg r, neg_smul, ← smul_neg, o.oangle_smul_right_of_pos _ _ (neg_pos_of_neg hr)]
 #align orientation.oangle_smul_right_of_neg Orientation.oangle_smul_right_of_neg
 
 /-- The angle between a nonnegative multiple of a vector and that vector is 0. -/
 @[simp]
-theorem oangle_smul_left_self_of_nonneg (x : V) {r : ℝ} (hr : 0 ≤ r) : o.oangle (r • x) x = 0 := by
+lemma oangle_smul_left_self_of_nonneg (x : V) {r : ℝ} (hr : 0 ≤ r) : o.oangle (r • x) x = 0 := by
   rcases hr.lt_or_eq with (h | h)
   · simp [h]
   · simp [h.symm]
@@ -329,7 +329,7 @@ theorem oangle_smul_left_self_of_nonneg (x : V) {r : ℝ} (hr : 0 ≤ r) : o.oan
 
 /-- The angle between a vector and a nonnegative multiple of that vector is 0. -/
 @[simp]
-theorem oangle_smul_right_self_of_nonneg (x : V) {r : ℝ} (hr : 0 ≤ r) : o.oangle x (r • x) = 0 := by
+lemma oangle_smul_right_self_of_nonneg (x : V) {r : ℝ} (hr : 0 ≤ r) : o.oangle x (r • x) = 0 := by
   rcases hr.lt_or_eq with (h | h)
   · simp [h]
   · simp [h.symm]
@@ -337,7 +337,7 @@ theorem oangle_smul_right_self_of_nonneg (x : V) {r : ℝ} (hr : 0 ≤ r) : o.oa
 
 /-- The angle between two nonnegative multiples of the same vector is 0. -/
 @[simp]
-theorem oangle_smul_smul_self_of_nonneg (x : V) {r₁ r₂ : ℝ} (hr₁ : 0 ≤ r₁) (hr₂ : 0 ≤ r₂) :
+lemma oangle_smul_smul_self_of_nonneg (x : V) {r₁ r₂ : ℝ} (hr₁ : 0 ≤ r₁) (hr₂ : 0 ≤ r₂) :
     o.oangle (r₁ • x) (r₂ • x) = 0 := by
   rcases hr₁.lt_or_eq with (h | h)
   · simp [h, hr₂]
@@ -347,7 +347,7 @@ theorem oangle_smul_smul_self_of_nonneg (x : V) {r₁ r₂ : ℝ} (hr₁ : 0 ≤
 /-- Multiplying the first vector passed to `oangle` by a nonzero real does not change twice the
 angle. -/
 @[simp]
-theorem two_zsmul_oangle_smul_left_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
+lemma two_zsmul_oangle_smul_left_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
     (2 : ℤ) • o.oangle (r • x) y = (2 : ℤ) • o.oangle x y := by
   rcases hr.lt_or_lt with (h | h) <;> simp [h]
 #align orientation.two_zsmul_oangle_smul_left_of_ne_zero Orientation.two_zsmul_oangle_smul_left_of_ne_zero
@@ -355,26 +355,26 @@ theorem two_zsmul_oangle_smul_left_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0)
 /-- Multiplying the second vector passed to `oangle` by a nonzero real does not change twice the
 angle. -/
 @[simp]
-theorem two_zsmul_oangle_smul_right_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
+lemma two_zsmul_oangle_smul_right_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
     (2 : ℤ) • o.oangle x (r • y) = (2 : ℤ) • o.oangle x y := by
   rcases hr.lt_or_lt with (h | h) <;> simp [h]
 #align orientation.two_zsmul_oangle_smul_right_of_ne_zero Orientation.two_zsmul_oangle_smul_right_of_ne_zero
 
 /-- Twice the angle between a multiple of a vector and that vector is 0. -/
 @[simp]
-theorem two_zsmul_oangle_smul_left_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle (r • x) x = 0 := by
+lemma two_zsmul_oangle_smul_left_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle (r • x) x = 0 := by
   rcases lt_or_le r 0 with (h | h) <;> simp [h]
 #align orientation.two_zsmul_oangle_smul_left_self Orientation.two_zsmul_oangle_smul_left_self
 
 /-- Twice the angle between a vector and a multiple of that vector is 0. -/
 @[simp]
-theorem two_zsmul_oangle_smul_right_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle x (r • x) = 0 := by
+lemma two_zsmul_oangle_smul_right_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle x (r • x) = 0 := by
   rcases lt_or_le r 0 with (h | h) <;> simp [h]
 #align orientation.two_zsmul_oangle_smul_right_self Orientation.two_zsmul_oangle_smul_right_self
 
 /-- Twice the angle between two multiples of a vector is 0. -/
 @[simp]
-theorem two_zsmul_oangle_smul_smul_self (x : V) {r₁ r₂ : ℝ} :
+lemma two_zsmul_oangle_smul_smul_self (x : V) {r₁ r₂ : ℝ} :
     (2 : ℤ) • o.oangle (r₁ • x) (r₂ • x) = 0 := by by_cases h : r₁ = 0 <;> simp [h]
 #align orientation.two_zsmul_oangle_smul_smul_self Orientation.two_zsmul_oangle_smul_smul_self
 
@@ -389,7 +389,7 @@ lemma two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : (ℝ ∙ x) = ℝ 
 
 /-- If the spans of two vectors are equal, twice angles with those vectors on the right are
 equal. -/
-theorem two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : (ℝ ∙ y) = ℝ ∙ z) :
+lemma two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : (ℝ ∙ y) = ℝ ∙ z) :
     (2 : ℤ) • o.oangle x y = (2 : ℤ) • o.oangle x z := by
   rw [Submodule.span_singleton_eq_span_singleton] at h
   rcases h with ⟨r, rfl⟩
@@ -478,7 +478,7 @@ lemma oangle_ne_zero_and_ne_pi_iff_linearIndependent {x y : V} :
 #align orientation.oangle_ne_zero_and_ne_pi_iff_linear_independent Orientation.oangle_ne_zero_and_ne_pi_iff_linearIndependent
 
 /-- Two vectors are equal if and only if they have equal norms and zero angle between them. -/
-theorem eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y‖ ∧ o.oangle x y = 0 := by
+lemma eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y‖ ∧ o.oangle x y = 0 := by
   rw [oangle_eq_zero_iff_sameRay]
   constructor
   · rintro rfl
@@ -596,19 +596,19 @@ lemma oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq {x y : V} (hn : x ≠ y) 
 with a linear isometric equivalence, equals the angle between those two vectors, transformed by
 the inverse of that equivalence, with respect to the original orientation. -/
 @[simp]
-theorem oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
+lemma oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
     (Orientation.map (Fin 2) f.toLinearEquiv o).oangle x y = o.oangle (f.symm x) (f.symm y) := by
   simp [oangle, o.kahler_map]
 #align orientation.oangle_map Orientation.oangle_map
 
 @[simp]
-protected theorem _root_.Complex.oangle (w z : ℂ) :
+protected lemma _root_.Complex.oangle (w z : ℂ) :
     Complex.orientation.oangle w z = Complex.arg (conj w * z) := by simp [oangle]
 #align complex.oangle Complex.oangle
 
 /-- The oriented angle on an oriented real inner product space of dimension 2 can be evaluated in
 terms of a complex-number representation of the space. -/
-theorem oangle_map_complex (f : V ≃ₗᵢ[ℝ] ℂ)
+lemma oangle_map_complex (f : V ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x y : V) :
     o.oangle x y = Complex.arg (conj (f x) * f y) := by
   rw [← Complex.oangle, ← hf, o.oangle_map]
@@ -616,13 +616,13 @@ theorem oangle_map_complex (f : V ≃ₗᵢ[ℝ] ℂ)
 #align orientation.oangle_map_complex Orientation.oangle_map_complex
 
 /-- Negating the orientation negates the value of `oangle`. -/
-theorem oangle_neg_orientation_eq_neg (x y : V) : (-o).oangle x y = -o.oangle x y := by
+lemma oangle_neg_orientation_eq_neg (x y : V) : (-o).oangle x y = -o.oangle x y := by
   simp [oangle]
 #align orientation.oangle_neg_orientation_eq_neg Orientation.oangle_neg_orientation_eq_neg
 
 /-- The inner product of two vectors is the product of the norms and the cosine of the oriented
 angle between the vectors. -/
-theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
+lemma inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
     ⟪x, y⟫ = ‖x‖ * ‖y‖ * Real.Angle.cos (o.oangle x y) := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
@@ -825,7 +825,7 @@ lemma inner_rev_eq_zero_of_oangle_eq_neg_pi_div_two {x y : V} (h : o.oangle x y 
 
 /-- Negating the first vector passed to `oangle` negates the sign of the angle. -/
 @[simp]
-theorem oangle_sign_neg_left (x y : V) : (o.oangle (-x) y).sign = -(o.oangle x y).sign := by
+lemma oangle_sign_neg_left (x y : V) : (o.oangle (-x) y).sign = -(o.oangle x y).sign := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [o.oangle_neg_left hx hy, Real.Angle.sign_add_pi]
@@ -833,7 +833,7 @@ theorem oangle_sign_neg_left (x y : V) : (o.oangle (-x) y).sign = -(o.oangle x y
 
 /-- Negating the second vector passed to `oangle` negates the sign of the angle. -/
 @[simp]
-theorem oangle_sign_neg_right (x y : V) : (o.oangle x (-y)).sign = -(o.oangle x y).sign := by
+lemma oangle_sign_neg_right (x y : V) : (o.oangle x (-y)).sign = -(o.oangle x y).sign := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [o.oangle_neg_right hx hy, Real.Angle.sign_add_pi]
@@ -842,7 +842,7 @@ theorem oangle_sign_neg_right (x y : V) : (o.oangle x (-y)).sign = -(o.oangle x 
 /-- Multiplying the first vector passed to `oangle` by a real multiplies the sign of the angle by
 the sign of the real. -/
 @[simp]
-theorem oangle_sign_smul_left (x y : V) (r : ℝ) :
+lemma oangle_sign_smul_left (x y : V) (r : ℝ) :
     (o.oangle (r • x) y).sign = SignType.sign r * (o.oangle x y).sign := by
   rcases lt_trichotomy r 0 with (h | h | h) <;> simp [h]
 #align orientation.oangle_sign_smul_left Orientation.oangle_sign_smul_left
@@ -850,7 +850,7 @@ theorem oangle_sign_smul_left (x y : V) (r : ℝ) :
 /-- Multiplying the second vector passed to `oangle` by a real multiplies the sign of the angle by
 the sign of the real. -/
 @[simp]
-theorem oangle_sign_smul_right (x y : V) (r : ℝ) :
+lemma oangle_sign_smul_right (x y : V) (r : ℝ) :
     (o.oangle x (r • y)).sign = SignType.sign r * (o.oangle x y).sign := by
   rcases lt_trichotomy r 0 with (h | h | h) <;> simp [h]
 #align orientation.oangle_sign_smul_right Orientation.oangle_sign_smul_right
@@ -899,7 +899,7 @@ lemma oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
 /-- Adding a multiple of the first vector passed to `oangle` to the second vector does not change
 the sign of the angle. -/
 @[simp]
-theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
+lemma oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     (o.oangle x (r • x + y)).sign = (o.oangle x y).sign := by
   by_cases h : o.oangle x y = 0 ∨ o.oangle x y = π
   · rwa [Real.Angle.sign_eq_zero_iff.2 h, Real.Angle.sign_eq_zero_iff,
@@ -934,7 +934,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
 /-- Adding a multiple of the second vector passed to `oangle` to the first vector does not change
 the sign of the angle. -/
 @[simp]
-theorem oangle_sign_add_smul_left (x y : V) (r : ℝ) :
+lemma oangle_sign_add_smul_left (x y : V) (r : ℝ) :
     (o.oangle (x + r • y) y).sign = (o.oangle x y).sign := by
   simp_rw [o.oangle_rev y, Real.Angle.sign_neg, add_comm x, oangle_sign_smul_add_right]
 #align orientation.oangle_sign_add_smul_left Orientation.oangle_sign_add_smul_left
@@ -942,7 +942,7 @@ theorem oangle_sign_add_smul_left (x y : V) (r : ℝ) :
 /-- Subtracting a multiple of the first vector passed to `oangle` from the second vector does
 not change the sign of the angle. -/
 @[simp]
-theorem oangle_sign_sub_smul_right (x y : V) (r : ℝ) :
+lemma oangle_sign_sub_smul_right (x y : V) (r : ℝ) :
     (o.oangle x (y - r • x)).sign = (o.oangle x y).sign := by
   rw [sub_eq_add_neg, ← neg_smul, add_comm, oangle_sign_smul_add_right]
 #align orientation.oangle_sign_sub_smul_right Orientation.oangle_sign_sub_smul_right
@@ -950,7 +950,7 @@ theorem oangle_sign_sub_smul_right (x y : V) (r : ℝ) :
 /-- Subtracting a multiple of the second vector passed to `oangle` from the first vector does
 not change the sign of the angle. -/
 @[simp]
-theorem oangle_sign_sub_smul_left (x y : V) (r : ℝ) :
+lemma oangle_sign_sub_smul_left (x y : V) (r : ℝ) :
     (o.oangle (x - r • y) y).sign = (o.oangle x y).sign := by
   rw [sub_eq_add_neg, ← neg_smul, oangle_sign_add_smul_left]
 #align orientation.oangle_sign_sub_smul_left Orientation.oangle_sign_sub_smul_left
@@ -958,35 +958,35 @@ theorem oangle_sign_sub_smul_left (x y : V) (r : ℝ) :
 /-- Adding the first vector passed to `oangle` to the second vector does not change the sign of
 the angle. -/
 @[simp]
-theorem oangle_sign_add_right (x y : V) : (o.oangle x (x + y)).sign = (o.oangle x y).sign := by
+lemma oangle_sign_add_right (x y : V) : (o.oangle x (x + y)).sign = (o.oangle x y).sign := by
   rw [← o.oangle_sign_smul_add_right x y 1, one_smul]
 #align orientation.oangle_sign_add_right Orientation.oangle_sign_add_right
 
 /-- Adding the second vector passed to `oangle` to the first vector does not change the sign of
 the angle. -/
 @[simp]
-theorem oangle_sign_add_left (x y : V) : (o.oangle (x + y) y).sign = (o.oangle x y).sign := by
+lemma oangle_sign_add_left (x y : V) : (o.oangle (x + y) y).sign = (o.oangle x y).sign := by
   rw [← o.oangle_sign_add_smul_left x y 1, one_smul]
 #align orientation.oangle_sign_add_left Orientation.oangle_sign_add_left
 
 /-- Subtracting the first vector passed to `oangle` from the second vector does not change the
 sign of the angle. -/
 @[simp]
-theorem oangle_sign_sub_right (x y : V) : (o.oangle x (y - x)).sign = (o.oangle x y).sign := by
+lemma oangle_sign_sub_right (x y : V) : (o.oangle x (y - x)).sign = (o.oangle x y).sign := by
   rw [← o.oangle_sign_sub_smul_right x y 1, one_smul]
 #align orientation.oangle_sign_sub_right Orientation.oangle_sign_sub_right
 
 /-- Subtracting the second vector passed to `oangle` from the first vector does not change the
 sign of the angle. -/
 @[simp]
-theorem oangle_sign_sub_left (x y : V) : (o.oangle (x - y) y).sign = (o.oangle x y).sign := by
+lemma oangle_sign_sub_left (x y : V) : (o.oangle (x - y) y).sign = (o.oangle x y).sign := by
   rw [← o.oangle_sign_sub_smul_left x y 1, one_smul]
 #align orientation.oangle_sign_sub_left Orientation.oangle_sign_sub_left
 
 /-- Subtracting the second vector passed to `oangle` from a multiple of the first vector negates
 the sign of the angle. -/
 @[simp]
-theorem oangle_sign_smul_sub_right (x y : V) (r : ℝ) :
+lemma oangle_sign_smul_sub_right (x y : V) (r : ℝ) :
     (o.oangle x (r • x - y)).sign = -(o.oangle x y).sign := by
   rw [← oangle_sign_neg_right, sub_eq_add_neg, oangle_sign_smul_add_right]
 #align orientation.oangle_sign_smul_sub_right Orientation.oangle_sign_smul_sub_right
@@ -994,21 +994,21 @@ theorem oangle_sign_smul_sub_right (x y : V) (r : ℝ) :
 /-- Subtracting the first vector passed to `oangle` from a multiple of the second vector negates
 the sign of the angle. -/
 @[simp]
-theorem oangle_sign_smul_sub_left (x y : V) (r : ℝ) :
+lemma oangle_sign_smul_sub_left (x y : V) (r : ℝ) :
     (o.oangle (r • y - x) y).sign = -(o.oangle x y).sign := by
   rw [← oangle_sign_neg_left, sub_eq_neg_add, oangle_sign_add_smul_left]
 #align orientation.oangle_sign_smul_sub_left Orientation.oangle_sign_smul_sub_left
 
 /-- Subtracting the second vector passed to `oangle` from the first vector negates the sign of
 the angle. -/
-theorem oangle_sign_sub_right_eq_neg (x y : V) :
+lemma oangle_sign_sub_right_eq_neg (x y : V) :
     (o.oangle x (x - y)).sign = -(o.oangle x y).sign := by
   rw [← o.oangle_sign_smul_sub_right x y 1, one_smul]
 #align orientation.oangle_sign_sub_right_eq_neg Orientation.oangle_sign_sub_right_eq_neg
 
 /-- Subtracting the first vector passed to `oangle` from the second vector negates the sign of
 the angle. -/
-theorem oangle_sign_sub_left_eq_neg (x y : V) :
+lemma oangle_sign_sub_left_eq_neg (x y : V) :
     (o.oangle (y - x) y).sign = -(o.oangle x y).sign := by
   rw [← o.oangle_sign_smul_sub_left x y 1, one_smul]
 #align orientation.oangle_sign_sub_left_eq_neg Orientation.oangle_sign_sub_left_eq_neg
@@ -1016,14 +1016,14 @@ theorem oangle_sign_sub_left_eq_neg (x y : V) :
 /-- Subtracting the first vector passed to `oangle` from the second vector then swapping the
 vectors does not change the sign of the angle. -/
 @[simp]
-theorem oangle_sign_sub_right_swap (x y : V) : (o.oangle y (y - x)).sign = (o.oangle x y).sign := by
+lemma oangle_sign_sub_right_swap (x y : V) : (o.oangle y (y - x)).sign = (o.oangle x y).sign := by
   rw [oangle_sign_sub_right_eq_neg, o.oangle_rev y x, Real.Angle.sign_neg]
 #align orientation.oangle_sign_sub_right_swap Orientation.oangle_sign_sub_right_swap
 
 /-- Subtracting the second vector passed to `oangle` from the first vector then swapping the
 vectors does not change the sign of the angle. -/
 @[simp]
-theorem oangle_sign_sub_left_swap (x y : V) : (o.oangle (x - y) x).sign = (o.oangle x y).sign := by
+lemma oangle_sign_sub_left_swap (x y : V) : (o.oangle (x - y) x).sign = (o.oangle x y).sign := by
   rw [oangle_sign_sub_left_eq_neg, o.oangle_rev y x, Real.Angle.sign_neg]
 #align orientation.oangle_sign_sub_left_swap Orientation.oangle_sign_sub_left_swap
 
@@ -1031,7 +1031,7 @@ theorem oangle_sign_sub_left_swap (x y : V) : (o.oangle (x - y) x).sign = (o.oan
 vector, is the sign of the factor by which the second vector is multiplied in that combination
 multiplied by the sign of the angle between the two vectors. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
+lemma oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle x (r₁ • x + r₂ • y)).sign = SignType.sign r₂ * (o.oangle x y).sign := by
   rw [← o.oangle_sign_smul_add_right x (r₁ • x + r₂ • y) (-r₁)]
   simp
@@ -1041,7 +1041,7 @@ theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
 the sign of the factor by which the first vector is multiplied in that combination multiplied by
 the sign of the angle between the two vectors. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
+lemma oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle (r₁ • x + r₂ • y) y).sign = SignType.sign r₁ * (o.oangle x y).sign := by
   simp_rw [o.oangle_rev y, Real.Angle.sign_neg, add_comm (r₁ • x), oangle_sign_smul_add_smul_right,
     mul_neg]
@@ -1050,7 +1050,7 @@ theorem oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
 /-- The sign of the angle between two linear combinations of two vectors is the sign of the
 determinant of the factors in those combinations multiplied by the sign of the angle between the
 two vectors. -/
-theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ : ℝ) :
+lemma oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ : ℝ) :
     (o.oangle (r₁ • x + r₂ • y) (r₃ • x + r₄ • y)).sign =
       SignType.sign (r₁ * r₄ - r₂ * r₃) * (o.oangle x y).sign := by
   by_cases hr₁ : r₁ = 0

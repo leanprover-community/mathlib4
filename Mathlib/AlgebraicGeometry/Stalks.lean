@@ -127,7 +127,7 @@ end Restrict
 namespace stalkMap
 
 @[simp]
-theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
+lemma id (X : PresheafedSpace.{_, _, v} C) (x : X) :
     stalkMap (𝟙 X) x = 𝟙 (X.stalk x) := by
   dsimp [stalkMap]
   simp only [stalkPushforward.id]

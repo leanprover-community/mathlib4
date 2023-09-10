@@ -39,7 +39,7 @@ namespace Real
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Hahn-Banach theorem for continuous linear functions over `ℝ`. -/
-theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
+lemma exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
     ∃ g : E →L[ℝ] ℝ, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
       (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
@@ -66,7 +66,7 @@ open IsROrC
 variable {𝕜 : Type*} [IsROrC 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisfying `IsROrC 𝕜`. -/
-theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
+lemma exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
     ∃ g : F →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : Module ℝ F := RestrictScalars.module ℝ 𝕜 F
   letI : IsScalarTower ℝ 𝕜 F := RestrictScalars.isScalarTower _ _ _
@@ -121,7 +121,7 @@ lemma coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
     element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
-theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
+lemma exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   let p : Submodule 𝕜 E := 𝕜 ∙ x
   let f := (‖x‖ : 𝕜) • coord 𝕜 x h
   obtain ⟨g, hg⟩ := exists_extension_norm_eq p f
@@ -147,7 +147,7 @@ lemma exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, �
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
     the dual element has norm at most `1` (this can not be improved for the trivial
     vector space). -/
-theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
+lemma exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
   · refine' ⟨0, by simp, _⟩
     symm

@@ -132,12 +132,12 @@ instance coe : CoeTC C (Karoubi C) :=
 #align category_theory.idempotents.karoubi.coe CategoryTheory.Idempotents.Karoubi.coe
 
 -- porting note: removed @[simp] as the linter complains
-theorem coe_X (X : C) : (X : Karoubi C).X = X := rfl
+lemma coe_X (X : C) : (X : Karoubi C).X = X := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.karoubi.coe_X CategoryTheory.Idempotents.Karoubi.coe_X
 
 @[simp]
-theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
+lemma coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 #align category_theory.idempotents.karoubi.coe_p CategoryTheory.Idempotents.Karoubi.coe_p
 
 @[simp]
@@ -271,21 +271,21 @@ def decompId_p (P : Karoubi C) : (P.X : Karoubi C) ⟶ P :=
 /-- The formal direct factor of `P.X` given by the idempotent `P.p` in the category `C`
 is actually a direct factor in the category `Karoubi C`. -/
 @[reassoc]
-theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
+lemma decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
   simp only [comp_f, id_eq, P.idem, decompId_i, decompId_p]
 #align category_theory.idempotents.karoubi.decomp_id CategoryTheory.Idempotents.Karoubi.decompId
 
-theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ decompId_i P := by
+lemma decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ decompId_i P := by
   ext
   simp only [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
 #align category_theory.idempotents.karoubi.decomp_p CategoryTheory.Idempotents.Karoubi.decomp_p
 
-theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ := by
+lemma decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ := by
   rfl
 #align category_theory.idempotents.karoubi.decomp_id_i_to_karoubi CategoryTheory.Idempotents.Karoubi.decompId_i_toKaroubi
 
-theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ := by
+lemma decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ := by
   rfl
 #align category_theory.idempotents.karoubi.decomp_id_p_to_karoubi CategoryTheory.Idempotents.Karoubi.decompId_p_toKaroubi
 

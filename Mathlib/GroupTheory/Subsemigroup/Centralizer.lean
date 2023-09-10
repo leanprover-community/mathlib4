@@ -186,13 +186,13 @@ instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
 #align add_subsemigroup.decidable_mem_centralizer AddSubsemigroup.decidableMemCentralizer
 
 @[to_additive]
-theorem center_le_centralizer (S) : center M ≤ centralizer S :=
+lemma center_le_centralizer (S) : center M ≤ centralizer S :=
   S.center_subset_centralizer
 #align subsemigroup.center_le_centralizer Subsemigroup.center_le_centralizer
 #align add_subsemigroup.center_le_centralizer AddSubsemigroup.center_le_centralizer
 
 @[to_additive]
-theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
+lemma centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
   Set.centralizer_subset h
 #align subsemigroup.centralizer_le Subsemigroup.centralizer_le
 #align add_subsemigroup.centralizer_le AddSubsemigroup.centralizer_le

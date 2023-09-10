@@ -46,13 +46,13 @@ lemma coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.coeff_div_X Polynomial.coeff_divX
 
-theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
+lemma divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
   ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_mul_X_add Polynomial.divX_mul_X_add
 
 @[simp]
-theorem divX_C (a : R) : divX (C a) = 0 :=
+lemma divX_C (a : R) : divX (C a) = 0 :=
   ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_C Polynomial.divX_C
@@ -67,7 +67,7 @@ lemma divX_add : divX (p + q) = divX p + divX q :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_add Polynomial.divX_add
 
-theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
+lemma degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
   haveI := Nontrivial.of_polynomial_ne hp0
   calc
     degree (divX p) < (divX p * X + C (p.coeff 0)).degree :=

@@ -81,14 +81,14 @@ open LieModule
 
 variable {I : LieIdeal R L} {x : L} (hxI : (R ∙ x) ⊔ I = ⊤)
 
-theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
+lemma exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
   have hy : y ∈ (⊤ : Submodule R L) := Submodule.mem_top
   simp only [← hxI, Submodule.mem_sup, Submodule.mem_span_singleton] at hy
   obtain ⟨-, ⟨t, rfl⟩, z, hz, rfl⟩ := hy
   exact ⟨t, z, hz, rfl⟩
 #align lie_submodule.exists_smul_add_of_span_sup_eq_top LieSubmodule.exists_smul_add_of_span_sup_eq_top
 
-theorem lie_top_eq_of_span_sup_eq_top (N : LieSubmodule R L M) :
+lemma lie_top_eq_of_span_sup_eq_top (N : LieSubmodule R L M) :
     (↑⁅(⊤ : LieIdeal R L), N⁆ : Submodule R M) =
       (N : Submodule R M).map (toEndomorphism R L M x) ⊔ (↑⁅I, N⁆ : Submodule R M) := by
   simp only [lieIdeal_oper_eq_linear_span', Submodule.sup_span, mem_top, exists_prop,
@@ -127,7 +127,7 @@ lemma lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
       exact antitone_lowerCentralSeries R L M le_self_add
 #align lie_submodule.lcs_le_lcs_of_is_nilpotent_span_sup_eq_top LieSubmodule.lcs_le_lcs_of_is_nilpotent_span_sup_eq_top
 
-theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEndomorphism R L M x)
+lemma isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEndomorphism R L M x)
     (hIM : IsNilpotent R I M) : IsNilpotent R L M := by
   obtain ⟨n, hn⟩ := hnp
   obtain ⟨k, hk⟩ := hIM
@@ -187,7 +187,7 @@ lemma Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function.S
   intros; simp only [LinearMap.id_coe, id_eq]; rfl
 #align function.surjective.is_engelian Function.Surjective.isEngelian
 
-theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
+lemma LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
     LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L ↔ LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ :=
   ⟨e.surjective.isEngelian, e.symm.surjective.isEngelian⟩
 #align lie_equiv.is_engelian_iff LieEquiv.isEngelian_iff

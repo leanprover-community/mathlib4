@@ -85,7 +85,7 @@ lemma midpoint_fixed {x y : PE} :
 #align isometry_equiv.midpoint_fixed IsometryEquiv.midpoint_fixed
 
 /-- A bijective isometry sends midpoints to midpoints. -/
-theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midpoint ℝ (f x) (f y) := by
+lemma map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midpoint ℝ (f x) (f y) := by
   set e : PE ≃ᵢ PE :=
     ((f.trans <| (pointReflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
       (pointReflection ℝ <| midpoint ℝ x y).toIsometryEquiv
@@ -111,13 +111,13 @@ def toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) : E ≃�
 #align isometry_equiv.to_real_linear_isometry_equiv_of_map_zero IsometryEquiv.toRealLinearIsometryEquivOfMapZero
 
 @[simp]
-theorem coe_toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) :
+lemma coe_toRealLinearIsometryEquivOfMapZero (f : E ≃ᵢ F) (h0 : f 0 = 0) :
     ⇑(f.toRealLinearIsometryEquivOfMapZero h0) = f :=
   rfl
 #align isometry_equiv.coe_to_real_linear_equiv_of_map_zero IsometryEquiv.coe_toRealLinearIsometryEquivOfMapZero
 
 @[simp]
-theorem coe_toRealLinearIsometryEquivOfMapZero_symm (f : E ≃ᵢ F) (h0 : f 0 = 0) :
+lemma coe_toRealLinearIsometryEquivOfMapZero_symm (f : E ≃ᵢ F) (h0 : f 0 = 0) :
     ⇑(f.toRealLinearIsometryEquivOfMapZero h0).symm = f.symm :=
   rfl
 #align isometry_equiv.coe_to_real_linear_equiv_of_map_zero_symm IsometryEquiv.coe_toRealLinearIsometryEquivOfMapZero_symm
@@ -130,13 +130,13 @@ def toRealLinearIsometryEquiv (f : E ≃ᵢ F) : E ≃ₗᵢ[ℝ] F :=
 #align isometry_equiv.to_real_linear_isometry_equiv IsometryEquiv.toRealLinearIsometryEquiv
 
 @[simp]
-theorem toRealLinearIsometryEquiv_apply (f : E ≃ᵢ F) (x : E) :
+lemma toRealLinearIsometryEquiv_apply (f : E ≃ᵢ F) (x : E) :
     (f.toRealLinearIsometryEquiv : E → F) x = f x - f 0 :=
   (sub_eq_add_neg (f x) (f 0)).symm
 #align isometry_equiv.to_real_linear_equiv_apply IsometryEquiv.toRealLinearIsometryEquiv_apply
 
 @[simp]
-theorem toRealLinearIsometryEquiv_symm_apply (f : E ≃ᵢ F) (y : F) :
+lemma toRealLinearIsometryEquiv_symm_apply (f : E ≃ᵢ F) (y : F) :
     (f.toRealLinearIsometryEquiv.symm : F → E) y = f.symm (y + f 0) :=
   rfl
 #align isometry_equiv.to_real_linear_isometry_equiv_symm_apply IsometryEquiv.toRealLinearIsometryEquiv_symm_apply
@@ -151,12 +151,12 @@ def toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : PE ≃ᵃⁱ[ℝ] PF :=
 #align isometry_equiv.to_real_affine_isometry_equiv IsometryEquiv.toRealAffineIsometryEquiv
 
 @[simp]
-theorem coeFn_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : ⇑f.toRealAffineIsometryEquiv = f :=
+lemma coeFn_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) : ⇑f.toRealAffineIsometryEquiv = f :=
   rfl
 #align isometry_equiv.coe_fn_to_real_affine_isometry_equiv IsometryEquiv.coeFn_toRealAffineIsometryEquiv
 
 @[simp]
-theorem coe_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) :
+lemma coe_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) :
     f.toRealAffineIsometryEquiv.toIsometryEquiv = f := by
   ext
   rfl

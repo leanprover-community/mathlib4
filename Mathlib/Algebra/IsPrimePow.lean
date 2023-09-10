@@ -73,7 +73,7 @@ lemma IsPrimePow.ne_one {n : R} (h : IsPrimePow n) : n ≠ 1 := fun t =>
 
 section Nat
 
-theorem isPrimePow_nat_iff (n : ℕ) : IsPrimePow n ↔ ∃ p k : ℕ, Nat.Prime p ∧ 0 < k ∧ p ^ k = n := by
+lemma isPrimePow_nat_iff (n : ℕ) : IsPrimePow n ↔ ∃ p k : ℕ, Nat.Prime p ∧ 0 < k ∧ p ^ k = n := by
   simp only [isPrimePow_def, Nat.prime_iff]
 #align is_prime_pow_nat_iff isPrimePow_nat_iff
 
@@ -81,7 +81,7 @@ lemma Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
   _root_.Prime.isPrimePow (prime_iff.mp hp)
 #align nat.prime.is_prime_pow Nat.Prime.isPrimePow
 
-theorem isPrimePow_nat_iff_bounded (n : ℕ) :
+lemma isPrimePow_nat_iff_bounded (n : ℕ) :
     IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff]
   refine' Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, _⟩

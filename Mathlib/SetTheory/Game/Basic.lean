@@ -205,17 +205,17 @@ end Game
 namespace PGame
 
 @[simp]
-theorem quot_neg (a : PGame) : (⟦-a⟧ : Game) = -⟦a⟧ :=
+lemma quot_neg (a : PGame) : (⟦-a⟧ : Game) = -⟦a⟧ :=
   rfl
 #align pgame.quot_neg SetTheory.PGame.quot_neg
 
 @[simp]
-theorem quot_add (a b : PGame) : ⟦a + b⟧ = (⟦a⟧ : Game) + ⟦b⟧ :=
+lemma quot_add (a b : PGame) : ⟦a + b⟧ = (⟦a⟧ : Game) + ⟦b⟧ :=
   rfl
 #align pgame.quot_add SetTheory.PGame.quot_add
 
 @[simp]
-theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ :=
+lemma quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ :=
   rfl
 #align pgame.quot_sub SetTheory.PGame.quot_sub
 
@@ -400,12 +400,12 @@ def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
   decreasing_by pgame_wf_tac
 #align pgame.mul_comm_relabelling SetTheory.PGame.mulCommRelabelling
 
-theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
+lemma quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
   Quot.sound (mulCommRelabelling x y).equiv
 #align pgame.quot_mul_comm SetTheory.PGame.quot_mul_comm
 
 /-- `x * y` is equivalent to `y * x`. -/
-theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
+lemma mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
   Quotient.exact <| quot_mul_comm _ _
 #align pgame.mul_comm_equiv SetTheory.PGame.mul_comm_equiv
 
@@ -435,12 +435,12 @@ def mulZeroRelabelling (x : PGame) : x * 0 ≡r 0 :=
 #align pgame.mul_zero_relabelling SetTheory.PGame.mulZeroRelabelling
 
 /-- `x * 0` is equivalent to `0`. -/
-theorem mul_zero_equiv (x : PGame) : x * 0 ≈ 0 :=
+lemma mul_zero_equiv (x : PGame) : x * 0 ≈ 0 :=
   (mulZeroRelabelling x).equiv
 #align pgame.mul_zero_equiv SetTheory.PGame.mul_zero_equiv
 
 @[simp]
-theorem quot_mul_zero (x : PGame) : (⟦x * 0⟧ : Game) = ⟦0⟧ :=
+lemma quot_mul_zero (x : PGame) : (⟦x * 0⟧ : Game) = ⟦0⟧ :=
   @Quotient.sound _ _ (x * 0) _ x.mul_zero_equiv
 #align pgame.quot_mul_zero SetTheory.PGame.quot_mul_zero
 
@@ -450,12 +450,12 @@ def zeroMulRelabelling (x : PGame) : 0 * x ≡r 0 :=
 #align pgame.zero_mul_relabelling SetTheory.PGame.zeroMulRelabelling
 
 /-- `0 * x` is equivalent to `0`. -/
-theorem zero_mul_equiv (x : PGame) : 0 * x ≈ 0 :=
+lemma zero_mul_equiv (x : PGame) : 0 * x ≈ 0 :=
   (zeroMulRelabelling x).equiv
 #align pgame.zero_mul_equiv SetTheory.PGame.zero_mul_equiv
 
 @[simp]
-theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = ⟦0⟧ :=
+lemma quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = ⟦0⟧ :=
   @Quotient.sound _ _ (0 * x) _ x.zero_mul_equiv
 #align pgame.quot_zero_mul SetTheory.PGame.quot_zero_mul
 
@@ -481,7 +481,7 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
 #align pgame.neg_mul_relabelling SetTheory.PGame.negMulRelabelling
 
 @[simp]
-theorem quot_neg_mul (x y : PGame) : (⟦-x * y⟧ : Game) = -⟦x * y⟧ :=
+lemma quot_neg_mul (x y : PGame) : (⟦-x * y⟧ : Game) = -⟦x * y⟧ :=
   Quot.sound (negMulRelabelling x y).equiv
 #align pgame.quot_neg_mul SetTheory.PGame.quot_neg_mul
 
@@ -491,12 +491,12 @@ def mulNegRelabelling (x y : PGame) : x * -y ≡r -(x * y) :=
 #align pgame.mul_neg_relabelling SetTheory.PGame.mulNegRelabelling
 
 @[simp]
-theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
+lemma quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   Quot.sound (mulNegRelabelling x y).equiv
 #align pgame.quot_mul_neg SetTheory.PGame.quot_mul_neg
 
 @[simp]
-theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * y⟧ + ⟦x * z⟧ :=
+lemma quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * y⟧ + ⟦x * z⟧ :=
   match x, y, z with
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => by
     let x := mk xl xr xL xR
@@ -595,28 +595,28 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
 #align pgame.quot_left_distrib SetTheory.PGame.quot_left_distrib
 
 /-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
-theorem left_distrib_equiv (x y z : PGame) : x * (y + z) ≈ x * y + x * z :=
+lemma left_distrib_equiv (x y z : PGame) : x * (y + z) ≈ x * y + x * z :=
   Quotient.exact <| quot_left_distrib _ _ _
 #align pgame.left_distrib_equiv SetTheory.PGame.left_distrib_equiv
 
 @[simp]
-theorem quot_left_distrib_sub (x y z : PGame) : (⟦x * (y - z)⟧ : Game) = ⟦x * y⟧ - ⟦x * z⟧ := by
+lemma quot_left_distrib_sub (x y z : PGame) : (⟦x * (y - z)⟧ : Game) = ⟦x * y⟧ - ⟦x * z⟧ := by
   change (⟦x * (y + -z)⟧ : Game) = ⟦x * y⟧ + -⟦x * z⟧
   rw [quot_left_distrib, quot_mul_neg]
 #align pgame.quot_left_distrib_sub SetTheory.PGame.quot_left_distrib_sub
 
 @[simp]
-theorem quot_right_distrib (x y z : PGame) : (⟦(x + y) * z⟧ : Game) = ⟦x * z⟧ + ⟦y * z⟧ := by
+lemma quot_right_distrib (x y z : PGame) : (⟦(x + y) * z⟧ : Game) = ⟦x * z⟧ + ⟦y * z⟧ := by
   simp only [quot_mul_comm, quot_left_distrib]
 #align pgame.quot_right_distrib SetTheory.PGame.quot_right_distrib
 
 /-- `(x + y) * z` is equivalent to `x * z + y * z.`-/
-theorem right_distrib_equiv (x y z : PGame) : (x + y) * z ≈ x * z + y * z :=
+lemma right_distrib_equiv (x y z : PGame) : (x + y) * z ≈ x * z + y * z :=
   Quotient.exact <| quot_right_distrib _ _ _
 #align pgame.right_distrib_equiv SetTheory.PGame.right_distrib_equiv
 
 @[simp]
-theorem quot_right_distrib_sub (x y z : PGame) : (⟦(y - z) * x⟧ : Game) = ⟦y * x⟧ - ⟦z * x⟧ := by
+lemma quot_right_distrib_sub (x y z : PGame) : (⟦(y - z) * x⟧ : Game) = ⟦y * x⟧ - ⟦z * x⟧ := by
   change (⟦(y + -z) * x⟧ : Game) = ⟦y * x⟧ + -⟦z * x⟧
   rw [quot_right_distrib, quot_neg_mul]
 #align pgame.quot_right_distrib_sub SetTheory.PGame.quot_right_distrib_sub
@@ -643,12 +643,12 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
 #align pgame.mul_one_relabelling SetTheory.PGame.mulOneRelabelling
 
 @[simp]
-theorem quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=
+lemma quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=
   Quot.sound <| PGame.Relabelling.equiv <| mulOneRelabelling x
 #align pgame.quot_mul_one SetTheory.PGame.quot_mul_one
 
 /-- `x * 1` is equivalent to `x`. -/
-theorem mul_one_equiv (x : PGame) : x * 1 ≈ x :=
+lemma mul_one_equiv (x : PGame) : x * 1 ≈ x :=
   Quotient.exact <| quot_mul_one x
 #align pgame.mul_one_equiv SetTheory.PGame.mul_one_equiv
 
@@ -658,16 +658,16 @@ def oneMulRelabelling (x : PGame) : 1 * x ≡r x :=
 #align pgame.one_mul_relabelling SetTheory.PGame.oneMulRelabelling
 
 @[simp]
-theorem quot_one_mul (x : PGame) : (⟦1 * x⟧ : Game) = ⟦x⟧ :=
+lemma quot_one_mul (x : PGame) : (⟦1 * x⟧ : Game) = ⟦x⟧ :=
   Quot.sound <| PGame.Relabelling.equiv <| oneMulRelabelling x
 #align pgame.quot_one_mul SetTheory.PGame.quot_one_mul
 
 /-- `1 * x` is equivalent to `x`. -/
-theorem one_mul_equiv (x : PGame) : 1 * x ≈ x :=
+lemma one_mul_equiv (x : PGame) : 1 * x ≈ x :=
   Quotient.exact <| quot_one_mul x
 #align pgame.one_mul_equiv SetTheory.PGame.one_mul_equiv
 
-theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * z)⟧ :=
+lemma quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * z)⟧ :=
   match x, y, z with
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => by
     let x := mk xl xr xL xR
@@ -820,7 +820,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
 #align pgame.quot_mul_assoc SetTheory.PGame.quot_mul_assoc
 
 /-- `x * y * z` is equivalent to `x * (y * z).`-/
-theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
+lemma mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
   Quotient.exact <| quot_mul_assoc _ _ _
 #align pgame.mul_assoc_equiv SetTheory.PGame.mul_assoc_equiv
 

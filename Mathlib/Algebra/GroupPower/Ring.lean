@@ -40,7 +40,7 @@ lemma zero_pow' : ∀ n : ℕ, n ≠ 0 → (0 : M) ^ n = 0
     exact zero_mul _
 #align zero_pow' zero_pow'
 
-theorem zero_pow_eq (n : ℕ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
+lemma zero_pow_eq (n : ℕ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
   split_ifs with h
   · rw [h, pow_zero]
   · rw [zero_pow (Nat.pos_of_ne_zero h)]
@@ -101,7 +101,7 @@ lemma zero_pow_eq_zero [Nontrivial M] {n : ℕ} : (0 : M) ^ n = 0 ↔ 0 < n := b
   · exact zero_pow' n h.ne.symm
 #align zero_pow_eq_zero zero_pow_eq_zero
 
-theorem Ring.inverse_pow (r : M) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r ^ n)
+lemma Ring.inverse_pow (r : M) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r ^ n)
   | 0 => by rw [pow_zero, pow_zero, Ring.inverse_one]
   | n + 1 => by
     rw [pow_succ, pow_succ', Ring.mul_inverse_rev' ((Commute.refl r).pow_left n),
@@ -124,7 +124,7 @@ lemma coe_powMonoidWithZeroHom : (powMonoidWithZeroHom hn : M → M) = fun x ↦
 #align coe_pow_monoid_with_zero_hom coe_powMonoidWithZeroHom
 
 @[simp]
-theorem powMonoidWithZeroHom_apply (a : M) : powMonoidWithZeroHom hn a = a ^ n :=
+lemma powMonoidWithZeroHom_apply (a : M) : powMonoidWithZeroHom hn a = a ^ n :=
   rfl
 #align pow_monoid_with_zero_hom_apply powMonoidWithZeroHom_apply
 
@@ -149,7 +149,7 @@ section Semiring
 
 variable [Semiring R] [Semiring S]
 
-protected theorem RingHom.map_pow (f : R →+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
+protected lemma RingHom.map_pow (f : R →+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
   map_pow f a
 #align ring_hom.map_pow RingHom.map_pow
 
@@ -166,11 +166,11 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-theorem add_sq (a b : R) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
+lemma add_sq (a b : R) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
   simp only [sq, add_mul_self_eq]
 #align add_sq add_sq
 
-theorem add_sq' (a b : R) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
+lemma add_sq' (a b : R) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
   rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]
 #align add_sq' add_sq'
 
@@ -194,25 +194,25 @@ lemma neg_one_pow_eq_or : ∀ n : ℕ, (-1 : R) ^ n = 1 ∨ (-1 : R) ^ n = -1
 
 variable {R}
 
-theorem neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
+lemma neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
   neg_one_mul a ▸ (Commute.neg_one_left a).mul_pow n
 #align neg_pow neg_pow
 
 section
 set_option linter.deprecated false
 
-theorem neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
+lemma neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
   rw [pow_bit0', neg_mul_neg, pow_bit0']
 #align neg_pow_bit0 neg_pow_bit0
 
 @[simp]
-theorem neg_pow_bit1 (a : R) (n : ℕ) : (-a) ^ bit1 n = -a ^ bit1 n := by
+lemma neg_pow_bit1 (a : R) (n : ℕ) : (-a) ^ bit1 n = -a ^ bit1 n := by
   simp only [bit1, pow_succ, neg_pow_bit0, neg_mul_eq_neg_mul]
 #align neg_pow_bit1 neg_pow_bit1
 
 end
 
-theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
+lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 #align neg_sq neg_sq
 
 -- Porting note: removed the simp attribute to please the simpNF linter
@@ -231,7 +231,7 @@ section Ring
 
 variable [Ring R] {a b : R}
 
-protected theorem Commute.sq_sub_sq (h : Commute a b) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
+protected lemma Commute.sq_sub_sq (h : Commute a b) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   rw [sq, sq, h.mul_self_sub_mul_self_eq]
 #align commute.sq_sub_sq Commute.sq_sub_sq
 
@@ -247,7 +247,7 @@ lemma mul_neg_one_pow_eq_zero_iff {n : ℕ} {r : R} : r * (-1) ^ n = 0 ↔ r = 0
 
 variable [NoZeroDivisors R]
 
-protected theorem Commute.sq_eq_sq_iff_eq_or_eq_neg (h : Commute a b) :
+protected lemma Commute.sq_eq_sq_iff_eq_or_eq_neg (h : Commute a b) :
     a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b := by
   rw [← sub_eq_zero, h.sq_sub_sq, mul_eq_zero, add_eq_zero_iff_eq_neg, sub_eq_zero, or_comm]
 #align commute.sq_eq_sq_iff_eq_or_eq_neg Commute.sq_eq_sq_iff_eq_or_eq_neg
@@ -267,21 +267,21 @@ section CommRing
 
 variable [CommRing R]
 
-theorem sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = (a + b) * (a - b) :=
+lemma sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = (a + b) * (a - b) :=
   (Commute.all a b).sq_sub_sq
 #align sq_sub_sq sq_sub_sq
 
 alias pow_two_sub_pow_two := sq_sub_sq
 #align pow_two_sub_pow_two pow_two_sub_pow_two
 
-theorem sub_sq (a b : R) : (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2 := by
+lemma sub_sq (a b : R) : (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2 := by
   rw [sub_eq_add_neg, add_sq, neg_sq, mul_neg, ← sub_eq_add_neg]
 #align sub_sq sub_sq
 
 alias sub_pow_two := sub_sq
 #align sub_pow_two sub_pow_two
 
-theorem sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by
+lemma sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by
   rw [sub_eq_add_neg, add_sq', neg_sq, mul_neg, ← sub_eq_add_neg]
 #align sub_sq' sub_sq'
 
@@ -291,7 +291,7 @@ lemma sq_eq_sq_iff_eq_or_eq_neg : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b :=
   (Commute.all a b).sq_eq_sq_iff_eq_or_eq_neg
 #align sq_eq_sq_iff_eq_or_eq_neg sq_eq_sq_iff_eq_or_eq_neg
 
-theorem eq_or_eq_neg_of_sq_eq_sq (a b : R) : a ^ 2 = b ^ 2 → a = b ∨ a = -b :=
+lemma eq_or_eq_neg_of_sq_eq_sq (a b : R) : a ^ 2 = b ^ 2 → a = b ∨ a = -b :=
   sq_eq_sq_iff_eq_or_eq_neg.1
 #align eq_or_eq_neg_of_sq_eq_sq eq_or_eq_neg_of_sq_eq_sq
 
@@ -302,7 +302,7 @@ protected lemma sq_eq_sq_iff_eq_or_eq_neg {a b : Rˣ} : a ^ 2 = b ^ 2 ↔ a = b 
   simp_rw [ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg]
 #align units.sq_eq_sq_iff_eq_or_eq_neg Units.sq_eq_sq_iff_eq_or_eq_neg
 
-protected theorem eq_or_eq_neg_of_sq_eq_sq (a b : Rˣ) (h : a ^ 2 = b ^ 2) : a = b ∨ a = -b :=
+protected lemma eq_or_eq_neg_of_sq_eq_sq (a b : Rˣ) (h : a ^ 2 = b ^ 2) : a = b ∨ a = -b :=
   Units.sq_eq_sq_iff_eq_or_eq_neg.1 h
 #align units.eq_or_eq_neg_of_sq_eq_sq Units.eq_or_eq_neg_of_sq_eq_sq
 

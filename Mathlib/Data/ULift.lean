@@ -130,7 +130,7 @@ lemma «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULift
 #align ulift.exists ULift.exists
 
 @[ext]
-theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
+lemma ext (x y : ULift α) (h : x.down = y.down) : x = y :=
   congrArg up h
 #align ulift.ext ULift.ext
 

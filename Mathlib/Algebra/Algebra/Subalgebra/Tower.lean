@@ -43,7 +43,7 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 variable {A}
 
-theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
+lemma lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
   Eq.symm <| LinearMap.ext <| smul_def x
 #align algebra.lmul_algebra_map Algebra.lmul_algebraMap
 
@@ -152,7 +152,7 @@ variable [CommSemiring R] [CommSemiring S] [CommSemiring A]
 
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
-theorem adjoin_range_toAlgHom (t : Set A) :
+lemma adjoin_range_toAlgHom (t : Set A) :
     (Algebra.adjoin (toAlgHom R S A).range t).restrictScalars R =
       (Algebra.adjoin S t).restrictScalars R :=
   Subalgebra.ext fun z ↦

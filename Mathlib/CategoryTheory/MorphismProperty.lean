@@ -85,11 +85,11 @@ def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.u
 def unop (P : MorphismProperty Cᵒᵖ) : MorphismProperty C := fun _ _ f => P f.op
 #align category_theory.morphism_property.unop CategoryTheory.MorphismProperty.unop
 
-theorem unop_op (P : MorphismProperty C) : P.op.unop = P :=
+lemma unop_op (P : MorphismProperty C) : P.op.unop = P :=
   rfl
 #align category_theory.morphism_property.unop_op CategoryTheory.MorphismProperty.unop_op
 
-theorem op_unop (P : MorphismProperty Cᵒᵖ) : P.unop.op = P :=
+lemma op_unop (P : MorphismProperty Cᵒᵖ) : P.unop.op = P :=
   rfl
 #align category_theory.morphism_property.op_unop CategoryTheory.MorphismProperty.op_unop
 
@@ -212,7 +212,7 @@ lemma RespectsIso.arrow_mk_iso_iff {P : MorphismProperty C} (hP : RespectsIso P)
   hP.arrow_iso_iff e
 #align category_theory.morphism_property.respects_iso.arrow_mk_iso_iff CategoryTheory.MorphismProperty.RespectsIso.arrow_mk_iso_iff
 
-theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
+lemma RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
     (hP : ∀ (f g : Arrow C) (_ : f ≅ g) (_ : P f.hom), P g.hom) : RespectsIso P := by
   constructor
   · intro X Y Z e f hf
@@ -564,7 +564,7 @@ def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category D] (F : 
   ⟨F, hF⟩
 #align category_theory.morphism_property.functors_inverting.mk CategoryTheory.MorphismProperty.FunctorsInverting.mk
 
-theorem IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) :
+lemma IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) :
     W.IsInvertedBy F₁ ↔ W.IsInvertedBy F₂ := by
   dsimp [IsInvertedBy]
   simp only [NatIso.isIso_map_iff e]
@@ -719,7 +719,7 @@ lemma diagonal_iff {X Y : C} {f : X ⟶ Y} : P.diagonal f ↔ P (pullback.diagon
   Iff.rfl
 #align category_theory.morphism_property.diagonal_iff CategoryTheory.MorphismProperty.diagonal_iff
 
-theorem RespectsIso.diagonal (hP : P.RespectsIso) : P.diagonal.RespectsIso := by
+lemma RespectsIso.diagonal (hP : P.RespectsIso) : P.diagonal.RespectsIso := by
   constructor
   · introv H
     rwa [diagonal_iff, pullback.diagonal_comp, hP.cancel_left_isIso, hP.cancel_left_isIso,
@@ -731,14 +731,14 @@ theorem RespectsIso.diagonal (hP : P.RespectsIso) : P.diagonal.RespectsIso := by
     rwa [pullback.diagonal_comp, hP.cancel_right_isIso]
 #align category_theory.morphism_property.respects_iso.diagonal CategoryTheory.MorphismProperty.RespectsIso.diagonal
 
-theorem StableUnderComposition.diagonal (hP : StableUnderComposition P) (hP' : RespectsIso P)
+lemma StableUnderComposition.diagonal (hP : StableUnderComposition P) (hP' : RespectsIso P)
     (hP'' : StableUnderBaseChange P) : P.diagonal.StableUnderComposition := by
   introv X h₁ h₂
   rw [diagonal_iff, pullback.diagonal_comp]
   exact hP _ _ h₁ (by simpa [hP'.cancel_left_isIso] using hP''.snd _ _ h₂)
 #align category_theory.morphism_property.stable_under_composition.diagonal CategoryTheory.MorphismProperty.StableUnderComposition.diagonal
 
-theorem StableUnderBaseChange.diagonal (hP : StableUnderBaseChange P) (hP' : RespectsIso P) :
+lemma StableUnderBaseChange.diagonal (hP : StableUnderBaseChange P) (hP' : RespectsIso P) :
     P.diagonal.StableUnderBaseChange :=
   StableUnderBaseChange.mk hP'.diagonal
     (by
@@ -756,7 +756,7 @@ def universally (P : MorphismProperty C) : MorphismProperty C := fun X Y f =>
   ∀ ⦃X' Y' : C⦄ (i₁ : X' ⟶ X) (i₂ : Y' ⟶ Y) (f' : X' ⟶ Y') (_ : IsPullback f' i₁ i₂ f), P f'
 #align category_theory.morphism_property.universally CategoryTheory.MorphismProperty.universally
 
-theorem universally_respectsIso (P : MorphismProperty C) : P.universally.RespectsIso := by
+lemma universally_respectsIso (P : MorphismProperty C) : P.universally.RespectsIso := by
   constructor
   · intro X Y Z e f hf X' Z' i₁ i₂ f' H
     have : IsPullback (𝟙 _) (i₁ ≫ e.hom) i₁ e.inv :=
@@ -771,7 +771,7 @@ theorem universally_respectsIso (P : MorphismProperty C) : P.universally.Respect
       Category.comp_id, Category.comp_id] using H.paste_horiz this)
 #align category_theory.morphism_property.universally_respects_iso CategoryTheory.MorphismProperty.universally_respectsIso
 
-theorem universally_stableUnderBaseChange (P : MorphismProperty C) :
+lemma universally_stableUnderBaseChange (P : MorphismProperty C) :
     P.universally.StableUnderBaseChange := fun _ _ _ _ _ _ _ _ H h₁ _ _ _ _ _ H' =>
   h₁ _ _ _ (H'.paste_vert H.flip)
 #align category_theory.morphism_property.universally_stable_under_base_change CategoryTheory.MorphismProperty.universally_stableUnderBaseChange
@@ -785,7 +785,7 @@ lemma StableUnderComposition.universally [HasPullbacks C] {P : MorphismProperty 
   exact hf _ _ _ (H.of_right (pullback.lift_snd _ _ _) (IsPullback.of_hasPullback i₂ g))
 #align category_theory.morphism_property.stable_under_composition.universally CategoryTheory.MorphismProperty.StableUnderComposition.universally
 
-theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
+lemma universally_le (P : MorphismProperty C) : P.universally ≤ P := by
   intro X Y f hf
   exact hf (𝟙 _) (𝟙 _) _ (IsPullback.of_vert_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩)
 #align category_theory.morphism_property.universally_le CategoryTheory.MorphismProperty.universally_le

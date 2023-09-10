@@ -54,17 +54,17 @@ def nfpFamily (f : ι → Ordinal → Ordinal) (a : Ordinal) : Ordinal :=
   sup (List.foldr f a)
 #align ordinal.nfp_family Ordinal.nfpFamily
 
-theorem nfpFamily_eq_sup (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) :
+lemma nfpFamily_eq_sup (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) :
     nfpFamily.{u, v} f a = sup.{u, v} (List.foldr f a) :=
   rfl
 #align ordinal.nfp_family_eq_sup Ordinal.nfpFamily_eq_sup
 
-theorem foldr_le_nfpFamily (f : ι → Ordinal → Ordinal)
+lemma foldr_le_nfpFamily (f : ι → Ordinal → Ordinal)
     (a l) : List.foldr f a l ≤ nfpFamily.{u, v} f a :=
   le_sup.{u, v} _ _
 #align ordinal.foldr_le_nfp_family Ordinal.foldr_le_nfpFamily
 
-theorem le_nfpFamily (f : ι → Ordinal → Ordinal) (a) : a ≤ nfpFamily f a :=
+lemma le_nfpFamily (f : ι → Ordinal → Ordinal) (a) : a ≤ nfpFamily f a :=
   le_sup _ []
 #align ordinal.le_nfp_family Ordinal.le_nfpFamily
 
@@ -80,11 +80,11 @@ lemma nfpFamily_le {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily.{u, v} 
   sup_le.{u, v}
 #align ordinal.nfp_family_le Ordinal.nfpFamily_le
 
-theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u, v} f) :=
+lemma nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u, v} f) :=
   fun _ _ h => sup_le.{u, v} fun l => (List.foldr_monotone hf l h).trans (le_sup.{u, v} _ l)
 #align ordinal.nfp_family_monotone Ordinal.nfpFamily_monotone
 
-theorem apply_lt_nfpFamily (H : ∀ i, IsNormal (f i)) {a b} (hb : b < nfpFamily.{u, v} f a) (i) :
+lemma apply_lt_nfpFamily (H : ∀ i, IsNormal (f i)) {a b} (hb : b < nfpFamily.{u, v} f a) (i) :
     f i b < nfpFamily.{u, v} f a :=
   let ⟨l, hl⟩ := lt_nfpFamily.1 hb
   lt_sup.2 ⟨i::l, (H i).strictMono hl⟩
@@ -106,7 +106,7 @@ lemma nfpFamily_le_apply [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
   exact apply_lt_nfpFamily_iff H
 #align ordinal.nfp_family_le_apply Ordinal.nfpFamily_le_apply
 
-theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : ∀ i, f i b ≤ b) :
+lemma nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : ∀ i, f i b ≤ b) :
     nfpFamily.{u, v} f a ≤ b :=
   sup_le fun l => by
     by_cases hι : IsEmpty ι
@@ -142,7 +142,7 @@ lemma nfpFamily_eq_self {f : ι → Ordinal → Ordinal} {a} (h : ∀ i, f i a =
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
     has an unbounded set of common fixed points. -/
-theorem fp_family_unbounded (H : ∀ i, IsNormal (f i)) :
+lemma fp_family_unbounded (H : ∀ i, IsNormal (f i)) :
     (⋂ i, Function.fixedPoints (f i)).Unbounded (· < ·) := fun a =>
   ⟨nfpFamily.{u, v} f a, fun s ⟨i, hi⟩ => by
     rw [← hi, mem_fixedPoints_iff]
@@ -159,23 +159,23 @@ def derivFamily (f : ι → Ordinal → Ordinal) (o : Ordinal) : Ordinal :=
 #align ordinal.deriv_family Ordinal.derivFamily
 
 @[simp]
-theorem derivFamily_zero (f : ι → Ordinal → Ordinal) :
+lemma derivFamily_zero (f : ι → Ordinal → Ordinal) :
     derivFamily.{u, v} f 0 = nfpFamily.{u, v} f 0 :=
   limitRecOn_zero _ _ _
 #align ordinal.deriv_family_zero Ordinal.derivFamily_zero
 
 @[simp]
-theorem derivFamily_succ (f : ι → Ordinal → Ordinal) (o) :
+lemma derivFamily_succ (f : ι → Ordinal → Ordinal) (o) :
     derivFamily.{u, v} f (succ o) = nfpFamily.{u, v} f (succ (derivFamily.{u, v} f o)) :=
   limitRecOn_succ _ _ _ _
 #align ordinal.deriv_family_succ Ordinal.derivFamily_succ
 
-theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
+lemma derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
     IsLimit o → derivFamily.{u, v} f o = bsup.{max u v, u} o fun a _ => derivFamily.{u, v} f a :=
   limitRecOn_limit _ _ _ _
 #align ordinal.deriv_family_limit Ordinal.derivFamily_limit
 
-theorem derivFamily_isNormal (f : ι → Ordinal → Ordinal) : IsNormal (derivFamily f) :=
+lemma derivFamily_isNormal (f : ι → Ordinal → Ordinal) : IsNormal (derivFamily f) :=
   ⟨fun o => by rw [derivFamily_succ, ← succ_le_iff]; apply le_nfpFamily, fun o l a => by
     rw [derivFamily_limit _ l, bsup_le_iff]⟩
 #align ordinal.deriv_family_is_normal Ordinal.derivFamily_isNormal
@@ -193,7 +193,7 @@ lemma derivFamily_fp {i} (H : IsNormal (f i)) (o : Ordinal.{max u v}) :
     simp (config := { contextual := true }) only [bsup_le_iff, IH]
 #align ordinal.deriv_family_fp Ordinal.derivFamily_fp
 
-theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
+lemma le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily.{u, v} f o = a :=
   ⟨fun ha => by
     suffices : ∀ (o) (_ : a ≤ derivFamily.{u, v} f o), ∃ o, derivFamily.{u, v} f o = a
@@ -220,13 +220,13 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     fun ⟨o, e⟩ i => e ▸ (derivFamily_fp (H i) _).le⟩
 #align ordinal.le_iff_deriv_family Ordinal.le_iff_derivFamily
 
-theorem fp_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
+lemma fp_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a = a) ↔ ∃ o, derivFamily.{u, v} f o = a :=
   Iff.trans ⟨fun h i => le_of_eq (h i), fun h i => (H i).le_iff_eq.1 (h i)⟩ (le_iff_derivFamily H)
 #align ordinal.fp_iff_deriv_family Ordinal.fp_iff_derivFamily
 
 /-- For a family of normal functions, `Ordinal.derivFamily` enumerates the common fixed points. -/
-theorem derivFamily_eq_enumOrd (H : ∀ i, IsNormal (f i)) :
+lemma derivFamily_eq_enumOrd (H : ∀ i, IsNormal (f i)) :
     derivFamily.{u, v} f = enumOrd (⋂ i, Function.fixedPoints (f i)) := by
   rw [← eq_enumOrd _ (fp_family_unbounded.{u, v} H)]
   use (derivFamily_isNormal f).strictMono
@@ -286,17 +286,17 @@ lemma nfpBFamily_le {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
   sup_le.{u, v}
 #align ordinal.nfp_bfamily_le Ordinal.nfpBFamily_le
 
-theorem nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBFamily.{u, v} o f) :=
+lemma nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBFamily.{u, v} o f) :=
   nfpFamily_monotone fun _ => hf _ _
 #align ordinal.nfp_bfamily_monotone Ordinal.nfpBFamily_monotone
 
-theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily.{u, v} o f a)
+lemma apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily.{u, v} o f a)
     (i hi) : f i hi b < nfpBFamily.{u, v} o f a := by
   rw [←familyOfBFamily_enum o f]
   apply apply_lt_nfpFamily (fun _ => H _ _) hb
 #align ordinal.apply_lt_nfp_bfamily Ordinal.apply_lt_nfpBFamily
 
-theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
+lemma apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∀ i hi, f i hi b < nfpBFamily.{u, v} o f a) ↔ b < nfpBFamily.{u, v} o f a :=
   ⟨fun h => by
     haveI := out_nonempty_iff_ne_zero.2 ho
@@ -304,14 +304,14 @@ theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi))
     exact fun _ => H _ _, apply_lt_nfpBFamily H⟩
 #align ordinal.apply_lt_nfp_bfamily_iff Ordinal.apply_lt_nfpBFamily_iff
 
-theorem nfpBFamily_le_apply (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
+lemma nfpBFamily_le_apply (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∃ i hi, nfpBFamily.{u, v} o f a ≤ f i hi b) ↔ nfpBFamily.{u, v} o f a ≤ b := by
   rw [← not_iff_not]
   push_neg
   exact apply_lt_nfpBFamily_iff.{u, v} ho H
 #align ordinal.nfp_bfamily_le_apply Ordinal.nfpBFamily_le_apply
 
-theorem nfpBFamily_le_fp (H : ∀ i hi, Monotone (f i hi)) {a b} (ab : a ≤ b)
+lemma nfpBFamily_le_fp (H : ∀ i hi, Monotone (f i hi)) {a b} (ab : a ≤ b)
     (h : ∀ i hi, f i hi b ≤ b) : nfpBFamily.{u, v} o f a ≤ b :=
   nfpFamily_le_fp (fun _ => H _ _) ab fun _ => h _ _
 #align ordinal.nfp_bfamily_le_fp Ordinal.nfpBFamily_le_fp
@@ -324,7 +324,7 @@ lemma nfpBFamily_fp {i hi} (H : IsNormal (f i hi)) (a) :
   exact H
 #align ordinal.nfp_bfamily_fp Ordinal.nfpBFamily_fp
 
-theorem apply_le_nfpBFamily (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
+lemma apply_le_nfpBFamily (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∀ i hi, f i hi b ≤ nfpBFamily.{u, v} o f a) ↔ b ≤ nfpBFamily.{u, v} o f a := by
   refine' ⟨fun h => _, fun h i hi => _⟩
   · have ho' : 0 < o := Ordinal.pos_iff_ne_zero.2 ho
@@ -339,7 +339,7 @@ lemma nfpBFamily_eq_self {a} (h : ∀ i hi, f i hi a = a) : nfpBFamily.{u, v} o 
 
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
     has an unbounded set of common fixed points. -/
-theorem fp_bfamily_unbounded (H : ∀ i hi, IsNormal (f i hi)) :
+lemma fp_bfamily_unbounded (H : ∀ i hi, IsNormal (f i hi)) :
     (⋂ (i) (hi), Function.fixedPoints (f i hi)).Unbounded (· < ·) := fun a =>
   ⟨nfpBFamily.{u, v} _ f a, by
     rw [Set.mem_iInter₂]
@@ -371,7 +371,7 @@ lemma derivBFamily_fp {i hi} (H : IsNormal (f i hi)) (a : Ordinal) :
   exact H
 #align ordinal.deriv_bfamily_fp Ordinal.derivBFamily_fp
 
-theorem le_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
+lemma le_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
     (∀ i hi, f i hi a ≤ a) ↔ ∃ b, derivBFamily.{u, v} o f b = a := by
   unfold derivBFamily
   rw [← le_iff_derivFamily]
@@ -381,7 +381,7 @@ theorem le_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
   · exact fun _ => H _ _
 #align ordinal.le_iff_deriv_bfamily Ordinal.le_iff_derivBFamily
 
-theorem fp_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
+lemma fp_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
     (∀ i hi, f i hi a = a) ↔ ∃ b, derivBFamily.{u, v} o f b = a := by
   rw [← le_iff_derivBFamily H]
   refine' ⟨fun h i hi => le_of_eq (h i hi), fun h i hi => _⟩
@@ -390,7 +390,7 @@ theorem fp_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
 #align ordinal.fp_iff_deriv_bfamily Ordinal.fp_iff_derivBFamily
 
 /-- For a family of normal functions, `Ordinal.derivBFamily` enumerates the common fixed points. -/
-theorem derivBFamily_eq_enumOrd (H : ∀ i hi, IsNormal (f i hi)) :
+lemma derivBFamily_eq_enumOrd (H : ∀ i hi, IsNormal (f i hi)) :
     derivBFamily.{u, v} o f = enumOrd (⋂ (i) (hi), Function.fixedPoints (f i hi)) := by
   rw [← eq_enumOrd _ (fp_bfamily_unbounded.{u, v} H)]
   use (derivBFamily_isNormal f).strictMono
@@ -416,12 +416,12 @@ def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
   nfpFamily fun _ : Unit => f
 #align ordinal.nfp Ordinal.nfp
 
-theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : Unit => f :=
+lemma nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : Unit => f :=
   rfl
 #align ordinal.nfp_eq_nfp_family Ordinal.nfp_eq_nfpFamily
 
 @[simp]
-theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
+lemma sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
     (fun a => sup fun n : ℕ => f^[n] a) = nfp f := by
   refine' funext fun a => le_antisymm _ (sup_le fun l => _)
   · rw [sup_le_iff]
@@ -432,12 +432,12 @@ theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
     exact le_sup _ _
 #align ordinal.sup_iterate_eq_nfp Ordinal.sup_iterate_eq_nfp
 
-theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
+lemma iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
   rw [← sup_iterate_eq_nfp]
   exact le_sup _ n
 #align ordinal.iterate_le_nfp Ordinal.iterate_le_nfp
 
-theorem le_nfp (f a) : a ≤ nfp f a :=
+lemma le_nfp (f a) : a ≤ nfp f a :=
   iterate_le_nfp f a 0
 #align ordinal.le_nfp Ordinal.le_nfp
 
@@ -462,7 +462,7 @@ lemma nfp_id : nfp id = id :=
     exact sup_const a
 #align ordinal.nfp_id Ordinal.nfp_id
 
-theorem nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
+lemma nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
   nfpFamily_monotone fun _ => hf
 #align ordinal.nfp_monotone Ordinal.nfp_monotone
 
@@ -494,7 +494,7 @@ lemma nfp_eq_self {f : Ordinal → Ordinal} {a} (h : f a = a) : nfp f a = a :=
 
 /-- The fixed point lemma for normal functions: any normal function has an unbounded set of
 fixed points. -/
-theorem fp_unbounded (H : IsNormal f) : (Function.fixedPoints f).Unbounded (· < ·) := by
+lemma fp_unbounded (H : IsNormal f) : (Function.fixedPoints f).Unbounded (· < ·) := by
   convert fp_family_unbounded fun _ : Unit => H
   exact (Set.iInter_const _).symm
 #align ordinal.fp_unbounded Ordinal.fp_unbounded
@@ -506,25 +506,25 @@ def deriv (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
   derivFamily fun _ : Unit => f
 #align ordinal.deriv Ordinal.deriv
 
-theorem deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily fun _ : Unit => f :=
+lemma deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily fun _ : Unit => f :=
   rfl
 #align ordinal.deriv_eq_deriv_family Ordinal.deriv_eq_derivFamily
 
 @[simp]
-theorem deriv_zero (f) : deriv f 0 = nfp f 0 :=
+lemma deriv_zero (f) : deriv f 0 = nfp f 0 :=
   derivFamily_zero _
 #align ordinal.deriv_zero Ordinal.deriv_zero
 
 @[simp]
-theorem deriv_succ (f o) : deriv f (succ o) = nfp f (succ (deriv f o)) :=
+lemma deriv_succ (f o) : deriv f (succ o) = nfp f (succ (deriv f o)) :=
   derivFamily_succ _ _
 #align ordinal.deriv_succ Ordinal.deriv_succ
 
-theorem deriv_limit (f) {o} : IsLimit o → deriv f o = bsup.{u, 0} o fun a _ => deriv f a :=
+lemma deriv_limit (f) {o} : IsLimit o → deriv f o = bsup.{u, 0} o fun a _ => deriv f a :=
   derivFamily_limit _
 #align ordinal.deriv_limit Ordinal.deriv_limit
 
-theorem deriv_isNormal (f) : IsNormal (deriv f) :=
+lemma deriv_isNormal (f) : IsNormal (deriv f) :=
   derivFamily_isNormal _
 #align ordinal.deriv_is_normal Ordinal.deriv_isNormal
 
@@ -547,7 +547,7 @@ lemma IsNormal.fp_iff_deriv {f} (H : IsNormal f) {a} : f a = a ↔ ∃ o, deriv 
 #align ordinal.is_normal.fp_iff_deriv Ordinal.IsNormal.fp_iff_deriv
 
 /-- `Ordinal.deriv` enumerates the fixed points of a normal function. -/
-theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
+lemma deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
   convert derivFamily_eq_enumOrd fun _ : Unit => H
   exact (Set.iInter_const _).symm
 #align ordinal.deriv_eq_enum_ord Ordinal.deriv_eq_enumOrd
@@ -562,7 +562,7 @@ end
 
 
 @[simp]
-theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
+lemma nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
   simp_rw [← sup_iterate_eq_nfp, ← sup_mul_nat]
   congr; funext n
   induction' n with n hn
@@ -594,7 +594,7 @@ lemma add_le_right_iff_mul_omega_le {a b : Ordinal} : a + b ≤ b ↔ a * omega 
   exact (add_isNormal a).le_iff_eq
 #align ordinal.add_le_right_iff_mul_omega_le Ordinal.add_le_right_iff_mul_omega_le
 
-theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * omega + b := by
+lemma deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * omega + b := by
   revert b
   rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (add_isNormal _)]
   refine' ⟨_, fun a h => _⟩
@@ -623,7 +623,7 @@ lemma nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := by
 #align ordinal.nfp_mul_one Ordinal.nfp_mul_one
 
 @[simp]
-theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
+lemma nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
   rw [← Ordinal.le_zero, nfp_le_iff]
   intro n
   induction' n with n hn; · rfl

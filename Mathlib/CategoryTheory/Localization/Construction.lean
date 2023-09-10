@@ -189,7 +189,7 @@ lemma fac : W.Q ⋙ lift G hG = G :=
       rw [composePath_toPath])
 #align category_theory.localization.construction.fac CategoryTheory.Localization.Construction.fac
 
-theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
+lemma uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
   suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂
   · refine' Functor.ext _ _
     · rintro ⟨⟨X⟩⟩
@@ -229,7 +229,7 @@ variable {W}
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, the inverses of the morphisms
 in `W` and if it is stable under composition -/
-theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
+lemma morphismProperty_is_top (P : MorphismProperty W.Localization)
     (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : C⦄ (w : X ⟶ Y) (hw : W w), P (winv w hw)) (hP₃ : P.StableUnderComposition) :
     P = ⊤ := by
@@ -260,7 +260,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, if is stable under composition
 and if the property is stable by passing to inverses. -/
-theorem morphismProperty_is_top' (P : MorphismProperty W.Localization)
+lemma morphismProperty_is_top' (P : MorphismProperty W.Localization)
     (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : W.Localization⦄ (e : X ≅ Y) (_ : P e.hom), P e.inv)
     (hP₃ : P.StableUnderComposition) : P = ⊤ :=
@@ -280,7 +280,7 @@ def app (X : W.Localization) : F₁.obj X ⟶ F₂.obj X :=
 #align category_theory.localization.construction.nat_trans_extension.app CategoryTheory.Localization.Construction.NatTransExtension.app
 
 @[simp]
-theorem app_eq (X : C) : (app τ) (W.Q.obj X) = τ.app X := by
+lemma app_eq (X : C) : (app τ) (W.Q.obj X) = τ.app X := by
   simp only [app, eqToHom_refl, comp_id, id_comp]
   rfl
 #align category_theory.localization.construction.nat_trans_extension.app_eq CategoryTheory.Localization.Construction.NatTransExtension.app_eq

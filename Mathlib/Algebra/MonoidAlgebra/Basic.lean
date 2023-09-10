@@ -105,9 +105,9 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 abbrev single (a : G) (b : k) : MonoidAlgebra k G := Finsupp.single a b
 
-theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.single_zero a
+lemma single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.single_zero a
 
-theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
+lemma single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
 @[simp]
@@ -115,7 +115,7 @@ lemma sum_single_index [AddCommMonoid N] {a : G} {b : k} {h : G → k → N} (h_
   (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
 
 @[simp]
-theorem sum_single (f : MonoidAlgebra k G) : f.sum single = f :=
+lemma sum_single (f : MonoidAlgebra k G) : f.sum single = f :=
   Finsupp.sum_single f
 
 lemma single_apply {a a' : G} {b : k} [Decidable (a = a')] :
@@ -144,7 +144,7 @@ def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
 #align monoid_algebra.lift_nc MonoidAlgebra.liftNC
 
 @[simp]
-theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
+lemma liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
     liftNC f g (single a b) = f b * g a :=
   liftAddHom_apply_single _ _ _
 #align monoid_algebra.lift_nc_single MonoidAlgebra.liftNC_single
@@ -269,7 +269,7 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
         mul_one, sum_single] }
 #align monoid_algebra.non_assoc_semiring MonoidAlgebra.nonAssocSemiring
 
-theorem nat_cast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
+lemma nat_cast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
 #align monoid_algebra.nat_cast_def MonoidAlgebra.nat_cast_def
 
@@ -893,42 +893,42 @@ def lift : (G →* A) ≃ (MonoidAlgebra k G →ₐ[k] A) where
 
 variable {k G H A}
 
-theorem lift_apply' (F : G →* A) (f : MonoidAlgebra k G) :
+lemma lift_apply' (F : G →* A) (f : MonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b => algebraMap k A b * F a :=
   rfl
 #align monoid_algebra.lift_apply' MonoidAlgebra.lift_apply'
 
-theorem lift_apply (F : G →* A) (f : MonoidAlgebra k G) :
+lemma lift_apply (F : G →* A) (f : MonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
 #align monoid_algebra.lift_apply MonoidAlgebra.lift_apply
 
-theorem lift_def (F : G →* A) : ⇑(lift k G A F) = liftNC ((algebraMap k A : k →+* A) : k →+ A) F :=
+lemma lift_def (F : G →* A) : ⇑(lift k G A F) = liftNC ((algebraMap k A : k →+* A) : k →+ A) F :=
   rfl
 #align monoid_algebra.lift_def MonoidAlgebra.lift_def
 
 @[simp]
-theorem lift_symm_apply (F : MonoidAlgebra k G →ₐ[k] A) (x : G) :
+lemma lift_symm_apply (F : MonoidAlgebra k G →ₐ[k] A) (x : G) :
     (lift k G A).symm F x = F (single x 1) :=
   rfl
 #align monoid_algebra.lift_symm_apply MonoidAlgebra.lift_symm_apply
 
-theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
+lemma lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
   rw [of_apply, ← lift_symm_apply, Equiv.symm_apply_apply]
 #align monoid_algebra.lift_of MonoidAlgebra.lift_of
 
 @[simp]
-theorem lift_single (F : G →* A) (a b) : lift k G A F (single a b) = b • F a := by
+lemma lift_single (F : G →* A) (a b) : lift k G A F (single a b) = b • F a := by
   rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 #align monoid_algebra.lift_single MonoidAlgebra.lift_single
 
-theorem lift_unique' (F : MonoidAlgebra k G →ₐ[k] A) :
+lemma lift_unique' (F : MonoidAlgebra k G →ₐ[k] A) :
     F = lift k G A ((F : MonoidAlgebra k G →* A).comp (of k G)) :=
   ((lift k G A).apply_symm_apply F).symm
 #align monoid_algebra.lift_unique' MonoidAlgebra.lift_unique'
 
 /-- Decomposition of a `k`-algebra homomorphism from `MonoidAlgebra k G` by
 its values on `F (single a 1)`. -/
-theorem lift_unique (F : MonoidAlgebra k G →ₐ[k] A) (f : MonoidAlgebra k G) :
+lemma lift_unique (F : MonoidAlgebra k G →ₐ[k] A) (f : MonoidAlgebra k G) :
     F f = f.sum fun a b => b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
@@ -973,25 +973,25 @@ def domCongr (e : G ≃* H) : MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A H :=
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
     (fun r => (equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_algebraMap A e r)
 
-theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
+lemma domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
   AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
 
-@[simp] theorem domCongr_apply (e : G ≃* H) (f : MonoidAlgebra A G) (h : H) :
+@[simp] lemma domCongr_apply (e : G ≃* H) (f : MonoidAlgebra A G) (h : H) :
     domCongr k A e f h = f (e.symm h) :=
   rfl
 
-@[simp] theorem domCongr_support (e : G ≃* H) (f : MonoidAlgebra A G) :
+@[simp] lemma domCongr_support (e : G ≃* H) (f : MonoidAlgebra A G) :
     (domCongr k A e f).support = f.support.map e :=
   rfl
 
-@[simp] theorem domCongr_single (e : G ≃* H) (g : G) (a : A) :
+@[simp] lemma domCongr_single (e : G ≃* H) (g : G) (a : A) :
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
 
 @[simp] lemma domCongr_refl : domCongr k A (MulEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
 
-@[simp] theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
+@[simp] lemma domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
 end lift
 
@@ -1045,7 +1045,7 @@ def equivariantOfLinearOfComm : V →ₗ[MonoidAlgebra k G] W where
 #align monoid_algebra.equivariant_of_linear_of_comm MonoidAlgebra.equivariantOfLinearOfComm
 
 @[simp]
-theorem equivariantOfLinearOfComm_apply (v : V) : (equivariantOfLinearOfComm f h) v = f v :=
+lemma equivariantOfLinearOfComm_apply (v : V) : (equivariantOfLinearOfComm f h) v = f v :=
   rfl
 #align monoid_algebra.equivariant_of_linear_of_comm_apply MonoidAlgebra.equivariantOfLinearOfComm_apply
 
@@ -1077,18 +1077,18 @@ variable [Semiring k] [Group G]
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
 @[simp]
-theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
+lemma mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
     (f * single x r) y = f (y * x⁻¹) * r :=
   f.mul_single_apply_aux fun _a => eq_mul_inv_iff_mul_eq.symm
 #align monoid_algebra.mul_single_apply MonoidAlgebra.mul_single_apply
 
 @[simp]
-theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
+lemma single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
     (single x r * f) y = r * f (x⁻¹ * y) :=
   f.single_mul_apply_aux fun _z => eq_inv_mul_iff_mul_eq.symm
 #align monoid_algebra.single_mul_apply MonoidAlgebra.single_mul_apply
 
-theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
+lemma mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a b => b * g (a⁻¹ * x) :=
   calc
     (f * g) x = sum f fun a b => (single a b * g) x := by
@@ -1097,7 +1097,7 @@ theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
 #align monoid_algebra.mul_apply_left MonoidAlgebra.mul_apply_left
 
 -- If we'd assumed `CommSemiring`, we could deduce this from `mul_apply_left`.
-theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
+lemma mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = g.sum fun a b => f (x * a⁻¹) * b :=
   calc
     (f * g) x = sum g fun a b => (f * single a b) x := by
@@ -1220,9 +1220,9 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 abbrev single (a : G) (b : k) : AddMonoidAlgebra k G := Finsupp.single a b
 
-theorem single_zero (a : G) : (single a 0 : AddMonoidAlgebra k G) = 0 := Finsupp.single_zero a
+lemma single_zero (a : G) : (single a 0 : AddMonoidAlgebra k G) = 0 := Finsupp.single_zero a
 
-theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
+lemma single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
 @[simp]
@@ -1230,7 +1230,7 @@ lemma sum_single_index [AddCommMonoid N] {a : G} {b : k} {h : G → k → N} (h_
   (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
 
 @[simp]
-theorem sum_single (f : AddMonoidAlgebra k G) : f.sum single = f :=
+lemma sum_single (f : AddMonoidAlgebra k G) : f.sum single = f :=
   Finsupp.sum_single f
 
 lemma single_apply {a a' : G} {b : k} [Decidable (a = a')] :
@@ -1263,7 +1263,7 @@ def liftNC (f : k →+ R) (g : Multiplicative G → R) : AddMonoidAlgebra k G �
 #align add_monoid_algebra.lift_nc AddMonoidAlgebra.liftNC
 
 @[simp]
-theorem liftNC_single (f : k →+ R) (g : Multiplicative G → R) (a : G) (b : k) :
+lemma liftNC_single (f : k →+ R) (g : Multiplicative G → R) (a : G) (b : k) :
     liftNC f g (single a b) = f b * g (Multiplicative.ofAdd a) :=
   liftAddHom_apply_single _ _ _
 #align add_monoid_algebra.lift_nc_single AddMonoidAlgebra.liftNC_single
@@ -1399,7 +1399,7 @@ instance nonAssocSemiring : NonAssocSemiring (AddMonoidAlgebra k G) :=
         mul_one, sum_single] }
 #align add_monoid_algebra.non_assoc_semiring AddMonoidAlgebra.nonAssocSemiring
 
-theorem nat_cast_def (n : ℕ) : (n : AddMonoidAlgebra k G) = single (0 : G) (n : k) :=
+lemma nat_cast_def (n : ℕ) : (n : AddMonoidAlgebra k G) = single (0 : G) (n : k) :=
   rfl
 #align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.nat_cast_def
 
@@ -1627,7 +1627,7 @@ lemma of_apply [AddZeroClass G] (a : Multiplicative G) :
 #align add_monoid_algebra.of_apply AddMonoidAlgebra.of_apply
 
 @[simp]
-theorem of'_apply (a : G) : of' k G a = single a 1 :=
+lemma of'_apply (a : G) : of' k G a = single a 1 :=
   rfl
 #align add_monoid_algebra.of'_apply AddMonoidAlgebra.of'_apply
 
@@ -1994,45 +1994,45 @@ def lift : (Multiplicative G →* A) ≃ (AddMonoidAlgebra k G →ₐ[k] A) :=
 
 variable {k G A}
 
-theorem lift_apply' (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
+lemma lift_apply' (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b => algebraMap k A b * F (Multiplicative.ofAdd a) :=
   rfl
 #align add_monoid_algebra.lift_apply' AddMonoidAlgebra.lift_apply'
 
-theorem lift_apply (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
+lemma lift_apply (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b => b • F (Multiplicative.ofAdd a) := by
   simp only [lift_apply', Algebra.smul_def]
 #align add_monoid_algebra.lift_apply AddMonoidAlgebra.lift_apply
 
-theorem lift_def (F : Multiplicative G →* A) :
+lemma lift_def (F : Multiplicative G →* A) :
     ⇑(lift k G A F) = liftNC ((algebraMap k A : k →+* A) : k →+ A) F :=
   rfl
 #align add_monoid_algebra.lift_def AddMonoidAlgebra.lift_def
 
 @[simp]
-theorem lift_symm_apply (F : AddMonoidAlgebra k G →ₐ[k] A) (x : Multiplicative G) :
+lemma lift_symm_apply (F : AddMonoidAlgebra k G →ₐ[k] A) (x : Multiplicative G) :
     (lift k G A).symm F x = F (single (Multiplicative.toAdd x) 1) :=
   rfl
 #align add_monoid_algebra.lift_symm_apply AddMonoidAlgebra.lift_symm_apply
 
-theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
+lemma lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
     lift k G A F (of k G x) = F x := by rw [of_apply, ← lift_symm_apply, Equiv.symm_apply_apply]
 #align add_monoid_algebra.lift_of AddMonoidAlgebra.lift_of
 
 @[simp]
-theorem lift_single (F : Multiplicative G →* A) (a b) :
+lemma lift_single (F : Multiplicative G →* A) (a b) :
     lift k G A F (single a b) = b • F (Multiplicative.ofAdd a) := by
   rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 #align add_monoid_algebra.lift_single AddMonoidAlgebra.lift_single
 
-theorem lift_unique' (F : AddMonoidAlgebra k G →ₐ[k] A) :
+lemma lift_unique' (F : AddMonoidAlgebra k G →ₐ[k] A) :
     F = lift k G A ((F : AddMonoidAlgebra k G →* A).comp (of k G)) :=
   ((lift k G A).apply_symm_apply F).symm
 #align add_monoid_algebra.lift_unique' AddMonoidAlgebra.lift_unique'
 
 /-- Decomposition of a `k`-algebra homomorphism from `MonoidAlgebra k G` by
 its values on `F (single a 1)`. -/
-theorem lift_unique (F : AddMonoidAlgebra k G →ₐ[k] A) (f : MonoidAlgebra k G) :
+lemma lift_unique (F : AddMonoidAlgebra k G →ₐ[k] A) (f : MonoidAlgebra k G) :
     F f = f.sum fun a b => b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
@@ -2062,7 +2062,7 @@ lemma prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι →
 
 end
 
-theorem mapDomain_algebraMap (A : Type*) {H F : Type*} [CommSemiring k] [Semiring A] [Algebra k A]
+lemma mapDomain_algebraMap (A : Type*) {H F : Type*} [CommSemiring k] [Semiring A] [Algebra k A]
     [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) (r : k) :
     mapDomain f (algebraMap k (AddMonoidAlgebra A G) r) = algebraMap k (AddMonoidAlgebra A H) r :=
   by simp only [Function.comp_apply, mapDomain_single, AddMonoidAlgebra.coe_algebraMap, map_zero]
@@ -2104,25 +2104,25 @@ def domCongr (e : G ≃+ H) : AddMonoidAlgebra A G ≃ₐ[k] AddMonoidAlgebra A 
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
     (fun r => (equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_algebraMap A e r)
 
-theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
+lemma domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
   AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
 
-@[simp] theorem domCongr_apply (e : G ≃+ H) (f : MonoidAlgebra A G) (h : H) :
+@[simp] lemma domCongr_apply (e : G ≃+ H) (f : MonoidAlgebra A G) (h : H) :
     domCongr k A e f h = f (e.symm h) :=
   rfl
 
-@[simp] theorem domCongr_support (e : G ≃+ H) (f : MonoidAlgebra A G) :
+@[simp] lemma domCongr_support (e : G ≃+ H) (f : MonoidAlgebra A G) :
     (domCongr k A e f).support = f.support.map e :=
   rfl
 
-@[simp] theorem domCongr_single (e : G ≃+ H) (g : G) (a : A) :
+@[simp] lemma domCongr_single (e : G ≃+ H) (g : G) (a : A) :
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
 
 @[simp] lemma domCongr_refl : domCongr k A (AddEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
 
-@[simp] theorem domCongr_symm (e : G ≃+ H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
+@[simp] lemma domCongr_symm (e : G ≃+ H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
 end AddMonoidAlgebra
 

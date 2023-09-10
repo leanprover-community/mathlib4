@@ -67,7 +67,7 @@ def of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] : TopC
 #align TopCommRing.of TopCommRingCat.of
 
 @[simp]
-theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] :
+lemma coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] :
     (of X : Type u) = X := rfl
 #align TopCommRing.coe_of TopCommRingCat.coe_of
 

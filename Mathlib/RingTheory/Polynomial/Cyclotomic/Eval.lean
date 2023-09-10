@@ -113,7 +113,7 @@ lemma cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x : R
     · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using h.right.le
 #align polynomial.cyclotomic_pos Polynomial.cyclotomic_pos
 
-theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R) :
+lemma cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n) <;>
     simp [cyclotomic_zero, cyclotomic_one, cyclotomic_two, succ_eq_add_one, eval_X, eval_one,
@@ -127,13 +127,13 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R
 /-- Cyclotomic polynomials are always positive on inputs larger than one.
 Similar to `cyclotomic_pos` but with the condition on the input rather than index of the
 cyclotomic polynomial. -/
-theorem cyclotomic_pos' (n : ℕ) {R} [LinearOrderedCommRing R] {x : R} (hx : 1 < x) :
+lemma cyclotomic_pos' (n : ℕ) {R} [LinearOrderedCommRing R] {x : R} (hx : 1 < x) :
     0 < eval x (cyclotomic n R) :=
   (cyclotomic_pos_and_nonneg n x).1 hx
 #align polynomial.cyclotomic_pos' Polynomial.cyclotomic_pos'
 
 /-- Cyclotomic polynomials are always nonnegative on inputs one or more. -/
-theorem cyclotomic_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] {x : R} (hx : 1 ≤ x) :
+lemma cyclotomic_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] {x : R} (hx : 1 ≤ x) :
     0 ≤ eval x (cyclotomic n R) :=
   (cyclotomic_pos_and_nonneg n x).2 hx
 #align polynomial.cyclotomic_nonneg Polynomial.cyclotomic_nonneg

@@ -81,7 +81,7 @@ def Sieve.coverByImage (G : C ⥤ D) (U : D) : Sieve U :=
     ⟨⟨Z, g ≫ f₁, f₂, show (g ≫ f₁) ≫ f₂ = g ≫ _ by rw [Category.assoc, ← e]⟩⟩⟩
 #align category_theory.sieve.cover_by_image CategoryTheory.Sieve.coverByImage
 
-theorem Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ X) :
+lemma Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ X) :
     Presieve.coverByImage G X f :=
   ⟨⟨Y, 𝟙 _, f, by simp⟩⟩
 #align category_theory.presieve.in_cover_by_image CategoryTheory.Presieve.in_coverByImage
@@ -106,7 +106,7 @@ variable {K}
 variable {A : Type*} [Category A] {G : C ⥤ D} (H : CoverDense K G)
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
-theorem ext (H : CoverDense K G) (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
+lemma ext (H : CoverDense K G) (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
   apply (ℱ.cond (Sieve.coverByImage G X) (H.is_cover X)).isSeparatedFor.ext
   rintro Y _ ⟨Z, f₁, f₂, ⟨rfl⟩⟩
@@ -141,7 +141,7 @@ def isoOver {ℱ ℱ' : Sheaf K A} (α : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val)
   isoWhiskerRight α (coyoneda.obj (op X))
 #align category_theory.cover_dense.iso_over CategoryTheory.CoverDense.isoOver
 
-theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (hT)
+lemma sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (hT)
     (x : FamilyOfElements _ T) (hx) (t) (h : x.IsAmalgamation t) :
     t = (ℱ.cond X T hT).amalgamate x hx :=
   (ℱ.cond X T hT).isSeparatedFor x t _ h ((ℱ.cond X T hT).isAmalgamation hx)
@@ -399,7 +399,7 @@ noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op
 
 /-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`.
 -/
-theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
+lemma sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     whiskerLeft G.op (sheafHom H α) = α := by
   ext X
   apply yoneda.map_injective
@@ -427,7 +427,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 /-- If the pullback map is obtained via whiskering,
 then the result `sheaf_hom (whisker_left G.op α)` is equal to `α`.
 -/
-theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom H (whiskerLeft G.op α) = α := by
+lemma sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom H (whiskerLeft G.op α) = α := by
   ext X
   apply yoneda.map_injective
   -- porting note: deleted next line as it's not needed in Lean 4

@@ -61,15 +61,15 @@ variable [IsBezout R]
 noncomputable def gcd (x y : R) : R := Submodule.IsPrincipal.generator (Ideal.span {x, y})
 #align is_bezout.gcd IsBezout.gcd
 
-theorem span_gcd (x y : R) : (Ideal.span {gcd x y} : Ideal R) = Ideal.span {x, y} :=
+lemma span_gcd (x y : R) : (Ideal.span {gcd x y} : Ideal R) = Ideal.span {x, y} :=
   Ideal.span_singleton_generator _
 #align is_bezout.span_gcd IsBezout.span_gcd
 
-theorem gcd_dvd_left (x y : R) : gcd x y ∣ x :=
+lemma gcd_dvd_left (x y : R) : gcd x y ∣ x :=
   (Submodule.IsPrincipal.mem_iff_generator_dvd _).mp (Ideal.subset_span (by simp))
 #align is_bezout.gcd_dvd_left IsBezout.gcd_dvd_left
 
-theorem gcd_dvd_right (x y : R) : gcd x y ∣ y :=
+lemma gcd_dvd_right (x y : R) : gcd x y ∣ y :=
   (Submodule.IsPrincipal.mem_iff_generator_dvd _).mp (Ideal.subset_span (by simp))
 #align is_bezout.gcd_dvd_right IsBezout.gcd_dvd_right
 
@@ -79,7 +79,7 @@ lemma dvd_gcd {x y z : R} (hx : z ∣ x) (hy : z ∣ y) : z ∣ gcd x y := by
   exact ⟨hx, hy⟩
 #align is_bezout.dvd_gcd IsBezout.dvd_gcd
 
-theorem gcd_eq_sum (x y : R) : ∃ a b : R, a * x + b * y = gcd x y :=
+lemma gcd_eq_sum (x y : R) : ∃ a b : R, a * x + b * y = gcd x y :=
   Ideal.mem_span_pair.mp (by rw [← span_gcd]; apply Ideal.subset_span; simp)
 #align is_bezout.gcd_eq_sum IsBezout.gcd_eq_sum
 

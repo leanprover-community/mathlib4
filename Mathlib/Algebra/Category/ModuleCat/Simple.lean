@@ -26,7 +26,7 @@ lemma simple_iff_isSimpleModule : Simple (of R M) ↔ IsSimpleModule R M :=
   (simple_iff_subobject_isSimpleOrder _).trans (subobjectModule (of R M)).isSimpleOrder_iff
 #align simple_iff_is_simple_module simple_iff_isSimpleModule
 
-theorem simple_iff_isSimpleModule' (M : ModuleCat R) : Simple M ↔ IsSimpleModule R M :=
+lemma simple_iff_isSimpleModule' (M : ModuleCat R) : Simple M ↔ IsSimpleModule R M :=
   (Simple.iff_of_iso (ofSelfIso M).symm).trans simple_iff_isSimpleModule
 #align simple_iff_is_simple_module' simple_iff_isSimpleModule'
 

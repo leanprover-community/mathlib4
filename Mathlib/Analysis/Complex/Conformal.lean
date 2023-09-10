@@ -77,7 +77,7 @@ open ContinuousLinearMap
 
 variable {f : ℂ → ℂ} {z : ℂ} {g : ℂ →L[ℝ] ℂ}
 
-theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
+lemma IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     (∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
       ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCle := by
   rcases h with ⟨c, -, li, rfl⟩

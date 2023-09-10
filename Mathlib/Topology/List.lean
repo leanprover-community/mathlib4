@@ -23,7 +23,7 @@ variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
 
-theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
+lemma nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
   refine' nhds_mkOfNhds _ _ _ _
   · intro l
     induction l
@@ -67,7 +67,7 @@ lemma nhds_nil : 𝓝 ([] : List α) = pure [] := by
   rw [nhds_list, List.traverse_nil _]
 #align nhds_nil nhds_nil
 
-theorem nhds_cons (a : α) (l : List α) : 𝓝 (a::l) = List.cons <$> 𝓝 a <*> 𝓝 l := by
+lemma nhds_cons (a : α) (l : List α) : 𝓝 (a::l) = List.cons <$> 𝓝 a <*> 𝓝 l := by
   rw [nhds_list, List.traverse_cons _, ← nhds_list]
 #align nhds_cons nhds_cons
 

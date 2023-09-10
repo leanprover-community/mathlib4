@@ -71,7 +71,7 @@ variable {mβ : MeasurableSpace β} {s : Set Ω} {t : Set β} {f : β × Ω → 
 
 section Measurability
 
-theorem measurable_condDistrib (hs : MeasurableSet s) :
+lemma measurable_condDistrib (hs : MeasurableSet s) :
     Measurable[mβ.comap X] fun a => condDistrib Y X μ (X a) s :=
   (kernel.measurable_coe _ hs).comp (Measurable.of_comap_le le_rfl)
 #align probability_theory.measurable_cond_distrib ProbabilityTheory.measurable_condDistrib
@@ -92,13 +92,13 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib_map
   rw [← Measure.fst_map_prod_mk₀ hY, condDistrib]; exact hf.integral_condKernel
 #align measure_theory.ae_strongly_measurable.integral_cond_distrib_map MeasureTheory.AEStronglyMeasurable.integral_condDistrib_map
 
-theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib (hX : AEMeasurable X μ)
+lemma _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
     AEStronglyMeasurable (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf.integral_condDistrib_map hY).comp_aemeasurable hX
 #align measure_theory.ae_strongly_measurable.integral_cond_distrib MeasureTheory.AEStronglyMeasurable.integral_condDistrib
 
-theorem aestronglyMeasurable'_integral_condDistrib (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
+lemma aestronglyMeasurable'_integral_condDistrib (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
     AEStronglyMeasurable' (mβ.comap X) (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf.integral_condDistrib_map hY).comp_ae_measurable' hX
@@ -108,7 +108,7 @@ end Measurability
 
 section Integrability
 
-theorem integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableSet s) :
+lemma integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableSet s) :
     Integrable (fun a => (condDistrib Y X μ (X a) s).toReal) μ := by
   refine' integrable_toReal_of_lintegral_ne_top _ _
   · exact Measurable.comp_aemeasurable (kernel.measurable_coe _ hs) hX
@@ -125,7 +125,7 @@ theorem _root_.MeasureTheory.Integrable.condDistrib_ae_map
   rw [condDistrib, ← Measure.fst_map_prod_mk₀ (X := X) hY]; exact hf_int.condKernel_ae
 #align measure_theory.integrable.cond_distrib_ae_map MeasureTheory.Integrable.condDistrib_ae_map
 
-theorem _root_.MeasureTheory.Integrable.condDistrib_ae (hX : AEMeasurable X μ)
+lemma _root_.MeasureTheory.Integrable.condDistrib_ae (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) (hf_int : Integrable f (μ.map fun a => (X a, Y a))) :
     ∀ᵐ a ∂μ, Integrable (fun ω => f (X a, ω)) (condDistrib Y X μ (X a)) :=
   ae_of_ae_map hX (hf_int.condDistrib_ae_map hY)
@@ -137,7 +137,7 @@ theorem _root_.MeasureTheory.Integrable.integral_norm_condDistrib_map
   rw [condDistrib, ← Measure.fst_map_prod_mk₀ (X := X) hY]; exact hf_int.integral_norm_condKernel
 #align measure_theory.integrable.integral_norm_cond_distrib_map MeasureTheory.Integrable.integral_norm_condDistrib_map
 
-theorem _root_.MeasureTheory.Integrable.integral_norm_condDistrib (hX : AEMeasurable X μ)
+lemma _root_.MeasureTheory.Integrable.integral_norm_condDistrib (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) (hf_int : Integrable f (μ.map fun a => (X a, Y a))) :
     Integrable (fun a => ∫ y, ‖f (X a, y)‖ ∂condDistrib Y X μ (X a)) μ :=
   (hf_int.integral_norm_condDistrib_map hY).comp_aemeasurable hX
@@ -151,7 +151,7 @@ theorem _root_.MeasureTheory.Integrable.norm_integral_condDistrib_map
   rw [condDistrib, ← Measure.fst_map_prod_mk₀ (X := X) hY]; exact hf_int.norm_integral_condKernel
 #align measure_theory.integrable.norm_integral_cond_distrib_map MeasureTheory.Integrable.norm_integral_condDistrib_map
 
-theorem _root_.MeasureTheory.Integrable.norm_integral_condDistrib (hX : AEMeasurable X μ)
+lemma _root_.MeasureTheory.Integrable.norm_integral_condDistrib (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) (hf_int : Integrable f (μ.map fun a => (X a, Y a))) :
     Integrable (fun a => ‖∫ y, f (X a, y) ∂condDistrib Y X μ (X a)‖) μ :=
   (hf_int.norm_integral_condDistrib_map hY).comp_aemeasurable hX
@@ -164,7 +164,7 @@ theorem _root_.MeasureTheory.Integrable.integral_condDistrib_map
     (hf_int.norm_integral_condDistrib_map hY)
 #align measure_theory.integrable.integral_cond_distrib_map MeasureTheory.Integrable.integral_condDistrib_map
 
-theorem _root_.MeasureTheory.Integrable.integral_condDistrib (hX : AEMeasurable X μ)
+lemma _root_.MeasureTheory.Integrable.integral_condDistrib (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) (hf_int : Integrable f (μ.map fun a => (X a, Y a))) :
     Integrable (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf_int.integral_condDistrib_map hY).comp_aemeasurable hX
@@ -172,7 +172,7 @@ theorem _root_.MeasureTheory.Integrable.integral_condDistrib (hX : AEMeasurable 
 
 end Integrability
 
-theorem set_lintegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurable Y μ)
+lemma set_lintegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hs : MeasurableSet s) (ht : MeasurableSet t) :
     ∫⁻ a in X ⁻¹' t, condDistrib Y X μ (X a) s ∂μ = μ (X ⁻¹' t ∩ Y ⁻¹' s) := by
   -- Porting note: need to massage the LHS integrand into the form accepted by `lintegral_comp`
@@ -183,7 +183,7 @@ theorem set_lintegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurabl
     Measure.map_apply_of_aemeasurable (hX.aemeasurable.prod_mk hY) (ht.prod hs), mk_preimage_prod]
 #align probability_theory.set_lintegral_preimage_cond_distrib ProbabilityTheory.set_lintegral_preimage_condDistrib
 
-theorem set_lintegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMeasurable Y μ)
+lemma set_lintegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hs : MeasurableSet s) {t : Set α} (ht : MeasurableSet[mβ.comap X] t) :
     ∫⁻ a in t, condDistrib Y X μ (X a) s ∂μ = μ (t ∩ Y ⁻¹' s) := by
   obtain ⟨t', ht', rfl⟩ := ht
@@ -192,7 +192,7 @@ theorem set_lintegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEM
 
 /-- For almost every `a : α`, the `condDistrib Y X μ` kernel applied to `X a` and a measurable set
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
-theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : MeasurableSet s) :
+lemma condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : MeasurableSet s) :
     (fun a => (condDistrib Y X μ (X a) s).toReal) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ := by
   refine' ae_eq_condexp_of_forall_set_integral_eq hX.comap_le _ _ _ _
   · exact (integrable_const _).indicator (hY hs)

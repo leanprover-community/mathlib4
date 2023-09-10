@@ -318,14 +318,14 @@ def ExtensionOfMaxAdjoin.extendIdealTo (h : Module.Baer R Q) (y : N) : R →ₗ[
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extend_ideal_to Module.Baer.ExtensionOfMaxAdjoin.extendIdealTo
 
-theorem ExtensionOfMaxAdjoin.extendIdealTo_is_extension (h : Module.Baer R Q) (y : N) :
+lemma ExtensionOfMaxAdjoin.extendIdealTo_is_extension (h : Module.Baer R Q) (y : N) :
     ∀ (x : R) (mem : x ∈ ExtensionOfMaxAdjoin.ideal i f y),
       ExtensionOfMaxAdjoin.extendIdealTo i f h y x = ExtensionOfMaxAdjoin.idealTo i f y ⟨x, mem⟩ :=
   (h (ExtensionOfMaxAdjoin.ideal i f y) (ExtensionOfMaxAdjoin.idealTo i f y)).choose_spec
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extend_ideal_to_is_extension Module.Baer.ExtensionOfMaxAdjoin.extendIdealTo_is_extension
 
-theorem ExtensionOfMaxAdjoin.extendIdealTo_wd' (h : Module.Baer R Q) {y : N} (r : R)
+lemma ExtensionOfMaxAdjoin.extendIdealTo_wd' (h : Module.Baer R Q) {y : N} (r : R)
     (eq1 : r • y = 0) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r = 0 := by
   have : r ∈ ideal i f y := by
     change (r • y) ∈ (extensionOfMax i f).toLinearPMap.domain
@@ -338,7 +338,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd' (h : Module.Baer R Q) {y : N} (r 
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extend_ideal_to_wd' Module.Baer.ExtensionOfMaxAdjoin.extendIdealTo_wd'
 
-theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r' : R)
+lemma ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r' : R)
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
@@ -347,7 +347,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extend_ideal_to_wd Module.Baer.ExtensionOfMaxAdjoin.extendIdealTo_wd
 
-theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
+lemma ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
     (hr : r • y ∈ (extensionOfMax i f).domain) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     (extensionOfMax i f).toLinearPMap ⟨r • y, hr⟩ := by
     -- porting note: in mathlib3 `AddHom.coe_mk` was not needed
@@ -365,7 +365,7 @@ def ExtensionOfMaxAdjoin.extensionToFun (h : Module.Baer R Q) {y : N} :
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.extension_to_fun Module.Baer.ExtensionOfMaxAdjoin.extensionToFun
 
-theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
+lemma ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     (x : supExtensionOfMaxSingleton i f y) (a : (extensionOfMax i f).domain)
     (r : R) (eq1 : ↑x = ↑a + r • y) :
     ExtensionOfMaxAdjoin.extensionToFun i f h x =
@@ -425,7 +425,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin Module.Baer.extensionOfMaxAdjoin
 
-theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
+lemma extensionOfMax_le (h : Module.Baer R Q) {y : N} :
     extensionOfMax i f ≤ extensionOfMaxAdjoin i f h y :=
   ⟨le_sup_left, fun x x' EQ => by
     symm
@@ -435,7 +435,7 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_le Module.Baer.extensionOfMax_le
 
-theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
+lemma extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
   refine' Submodule.eq_top_iff'.mpr fun y => _
   dsimp
@@ -447,7 +447,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective.-/
-protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
+protected lemma injective (h : Module.Baer R Q) : Module.Injective R Q :=
   { out := fun X Y ins1 ins2 ins3 ins4 i hi f =>
       haveI : Fact (Function.Injective i) := ⟨hi⟩
       ⟨{  toFun := fun y =>

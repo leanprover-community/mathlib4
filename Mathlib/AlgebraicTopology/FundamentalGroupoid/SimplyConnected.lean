@@ -36,12 +36,12 @@ class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 #align simply_connected_space SimplyConnectedSpace
 
-theorem simply_connected_def (X : Type*) [TopologicalSpace X] :
+lemma simply_connected_def (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔ Nonempty (FundamentalGroupoid X ≌ Discrete Unit) :=
   ⟨fun h => @SimplyConnectedSpace.equiv_unit X _ h, fun h => ⟨h⟩⟩
 #align simply_connected_def simply_connected_def
 
-theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
+lemma simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
   rw [simply_connected_def, equiv_punit_iff_unique]; rfl

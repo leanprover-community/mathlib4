@@ -37,7 +37,7 @@ variable [ce : IsCyclotomicExtension {n} ℚ K]
 
 /-- The discriminant of the power basis given by a primitive root of unity `ζ` is the same as the
 discriminant of the power basis given by `ζ - 1`. -/
-theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
+lemma discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
     discr ℚ (hζ.powerBasis ℚ).basis = discr ℚ (hζ.subOnePowerBasis ℚ).basis := by
   haveI : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
   have H₁ : (aeval (hζ.powerBasis ℚ).gen) (X - 1 : ℤ[X]) = (hζ.subOnePowerBasis ℚ).gen := by simp

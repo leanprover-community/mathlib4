@@ -69,83 +69,83 @@ lemma _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p₃
 
 /-- Angles are translation invariant -/
 @[simp]
-theorem angle_const_vadd (v : V) (p₁ p₂ p₃ : P) : ∠ (v +ᵥ p₁) (v +ᵥ p₂) (v +ᵥ p₃) = ∠ p₁ p₂ p₃ :=
+lemma angle_const_vadd (v : V) (p₁ p₂ p₃ : P) : ∠ (v +ᵥ p₁) (v +ᵥ p₂) (v +ᵥ p₃) = ∠ p₁ p₂ p₃ :=
   (AffineIsometryEquiv.constVAdd ℝ P v).toAffineIsometry.angle_map _ _ _
 #align euclidean_geometry.angle_const_vadd EuclideanGeometry.angle_const_vadd
 
 /-- Angles are translation invariant -/
 @[simp]
-theorem angle_vadd_const (v₁ v₂ v₃ : V) (p : P) : ∠ (v₁ +ᵥ p) (v₂ +ᵥ p) (v₃ +ᵥ p) = ∠ v₁ v₂ v₃ :=
+lemma angle_vadd_const (v₁ v₂ v₃ : V) (p : P) : ∠ (v₁ +ᵥ p) (v₂ +ᵥ p) (v₃ +ᵥ p) = ∠ v₁ v₂ v₃ :=
   (AffineIsometryEquiv.vaddConst ℝ p).toAffineIsometry.angle_map _ _ _
 #align euclidean_geometry.angle_vadd_const EuclideanGeometry.angle_vadd_const
 
 /-- Angles are translation invariant -/
 @[simp]
-theorem angle_const_vsub (p p₁ p₂ p₃ : P) : ∠ (p -ᵥ p₁) (p -ᵥ p₂) (p -ᵥ p₃) = ∠ p₁ p₂ p₃ :=
+lemma angle_const_vsub (p p₁ p₂ p₃ : P) : ∠ (p -ᵥ p₁) (p -ᵥ p₂) (p -ᵥ p₃) = ∠ p₁ p₂ p₃ :=
   (AffineIsometryEquiv.constVSub ℝ p).toAffineIsometry.angle_map _ _ _
 #align euclidean_geometry.angle_const_vsub EuclideanGeometry.angle_const_vsub
 
 /-- Angles are translation invariant -/
 @[simp]
-theorem angle_vsub_const (p₁ p₂ p₃ p : P) : ∠ (p₁ -ᵥ p) (p₂ -ᵥ p) (p₃ -ᵥ p) = ∠ p₁ p₂ p₃ :=
+lemma angle_vsub_const (p₁ p₂ p₃ p : P) : ∠ (p₁ -ᵥ p) (p₂ -ᵥ p) (p₃ -ᵥ p) = ∠ p₁ p₂ p₃ :=
   (AffineIsometryEquiv.vaddConst ℝ p).symm.toAffineIsometry.angle_map _ _ _
 #align euclidean_geometry.angle_vsub_const EuclideanGeometry.angle_vsub_const
 
 /-- Angles in a vector space are translation invariant -/
 @[simp]
-theorem angle_add_const (v₁ v₂ v₃ : V) (v : V) : ∠ (v₁ + v) (v₂ + v) (v₃ + v) = ∠ v₁ v₂ v₃ :=
+lemma angle_add_const (v₁ v₂ v₃ : V) (v : V) : ∠ (v₁ + v) (v₂ + v) (v₃ + v) = ∠ v₁ v₂ v₃ :=
   angle_vadd_const _ _ _ _
 #align euclidean_geometry.angle_add_const EuclideanGeometry.angle_add_const
 
 /-- Angles in a vector space are translation invariant -/
 @[simp]
-theorem angle_const_add (v : V) (v₁ v₂ v₃ : V) : ∠ (v + v₁) (v + v₂) (v + v₃) = ∠ v₁ v₂ v₃ :=
+lemma angle_const_add (v : V) (v₁ v₂ v₃ : V) : ∠ (v + v₁) (v + v₂) (v + v₃) = ∠ v₁ v₂ v₃ :=
   angle_const_vadd _ _ _ _
 #align euclidean_geometry.angle_const_add EuclideanGeometry.angle_const_add
 
 /-- Angles in a vector space are translation invariant -/
 @[simp]
-theorem angle_sub_const (v₁ v₂ v₃ : V) (v : V) : ∠ (v₁ - v) (v₂ - v) (v₃ - v) = ∠ v₁ v₂ v₃ := by
+lemma angle_sub_const (v₁ v₂ v₃ : V) (v : V) : ∠ (v₁ - v) (v₂ - v) (v₃ - v) = ∠ v₁ v₂ v₃ := by
   simpa only [vsub_eq_sub] using angle_vsub_const v₁ v₂ v₃ v
 #align euclidean_geometry.angle_sub_const EuclideanGeometry.angle_sub_const
 
 /-- Angles in a vector space are invariant to inversion -/
 @[simp]
-theorem angle_const_sub (v : V) (v₁ v₂ v₃ : V) : ∠ (v - v₁) (v - v₂) (v - v₃) = ∠ v₁ v₂ v₃ := by
+lemma angle_const_sub (v : V) (v₁ v₂ v₃ : V) : ∠ (v - v₁) (v - v₂) (v - v₃) = ∠ v₁ v₂ v₃ := by
   simpa only [vsub_eq_sub] using angle_const_vsub v v₁ v₂ v₃
 #align euclidean_geometry.angle_const_sub EuclideanGeometry.angle_const_sub
 
 /-- Angles in a vector space are invariant to inversion -/
 @[simp]
-theorem angle_neg (v₁ v₂ v₃ : V) : ∠ (-v₁) (-v₂) (-v₃) = ∠ v₁ v₂ v₃ := by
+lemma angle_neg (v₁ v₂ v₃ : V) : ∠ (-v₁) (-v₂) (-v₃) = ∠ v₁ v₂ v₃ := by
   simpa only [zero_sub] using angle_const_sub 0 v₁ v₂ v₃
 #align euclidean_geometry.angle_neg EuclideanGeometry.angle_neg
 
 /-- The angle at a point does not depend on the order of the other two
 points. -/
-nonrec theorem angle_comm (p1 p2 p3 : P) : ∠ p1 p2 p3 = ∠ p3 p2 p1 :=
+nonrec lemma angle_comm (p1 p2 p3 : P) : ∠ p1 p2 p3 = ∠ p3 p2 p1 :=
   angle_comm _ _
 #align euclidean_geometry.angle_comm EuclideanGeometry.angle_comm
 
 /-- The angle at a point is nonnegative. -/
-nonrec theorem angle_nonneg (p1 p2 p3 : P) : 0 ≤ ∠ p1 p2 p3 :=
+nonrec lemma angle_nonneg (p1 p2 p3 : P) : 0 ≤ ∠ p1 p2 p3 :=
   angle_nonneg _ _
 #align euclidean_geometry.angle_nonneg EuclideanGeometry.angle_nonneg
 
 /-- The angle at a point is at most π. -/
-nonrec theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
+nonrec lemma angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
   angle_le_pi _ _
 #align euclidean_geometry.angle_le_pi EuclideanGeometry.angle_le_pi
 
 /-- The angle ∠AAB at a point. -/
-theorem angle_eq_left (p1 p2 : P) : ∠ p1 p1 p2 = π / 2 := by
+lemma angle_eq_left (p1 p2 : P) : ∠ p1 p1 p2 = π / 2 := by
   unfold angle
   rw [vsub_self]
   exact angle_zero_left _
 #align euclidean_geometry.angle_eq_left EuclideanGeometry.angle_eq_left
 
 /-- The angle ∠ABB at a point. -/
-theorem angle_eq_right (p1 p2 : P) : ∠ p1 p2 p2 = π / 2 := by rw [angle_comm, angle_eq_left]
+lemma angle_eq_right (p1 p2 : P) : ∠ p1 p2 p2 = π / 2 := by rw [angle_comm, angle_eq_left]
 #align euclidean_geometry.angle_eq_right EuclideanGeometry.angle_eq_right
 
 /-- The angle ∠ABA at a point. -/
@@ -174,7 +174,7 @@ lemma angle_eq_zero_of_angle_eq_pi_right {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) 
 #align euclidean_geometry.angle_eq_zero_of_angle_eq_pi_right EuclideanGeometry.angle_eq_zero_of_angle_eq_pi_right
 
 /-- If ∠BCD = π, then ∠ABC = ∠ABD. -/
-theorem angle_eq_angle_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 = π) :
+lemma angle_eq_angle_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 = π) :
     ∠ p1 p2 p3 = ∠ p1 p2 p4 := by
   unfold angle at *
   rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, hpr⟩⟩⟩
@@ -185,7 +185,7 @@ theorem angle_eq_angle_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 
 #align euclidean_geometry.angle_eq_angle_of_angle_eq_pi EuclideanGeometry.angle_eq_angle_of_angle_eq_pi
 
 /-- If ∠BCD = π, then ∠ACB + ∠ACD = π. -/
-nonrec theorem angle_add_angle_eq_pi_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 = π) :
+nonrec lemma angle_add_angle_eq_pi_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h : ∠ p2 p3 p4 = π) :
     ∠ p1 p3 p2 + ∠ p1 p3 p4 = π := by
   unfold angle at h
   rw [angle_comm p1 p3 p2, angle_comm p1 p3 p4]
@@ -247,7 +247,7 @@ lemma dist_eq_abs_sub_dist_iff_angle_eq_zero {p1 p2 p3 : P} (hp1p2 : p1 ≠ p2) 
 #align euclidean_geometry.dist_eq_abs_sub_dist_iff_angle_eq_zero EuclideanGeometry.dist_eq_abs_sub_dist_iff_angle_eq_zero
 
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
-theorem angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint ℝ p1 p2) p2 = π := by
+lemma angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint ℝ p1 p2) p2 = π := by
   simp [angle, hp1p2, -zero_lt_one]
   rw [← neg_vsub_eq_vsub_rev p1 p2]
   apply angle_self_neg_of_nonzero

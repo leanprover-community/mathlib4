@@ -76,7 +76,7 @@ def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
 @[simp]
-theorem rangeIcc_support (f g : ι →₀ α) :
+lemma rangeIcc_support (f g : ι →₀ α) :
     (rangeIcc f g).support = f.support ∪ g.support := rfl
 #align finsupp.range_Icc_support Finsupp.rangeIcc_support
 

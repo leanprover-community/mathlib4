@@ -39,7 +39,7 @@ variable {G : Type*} [LinearOrderedAddCommGroup G] [TopologicalSpace G] [OrderTo
 /-- An additive subgroup of an archimedean linear ordered additive commutative group with order
 topology is dense provided that for all positive `ε` there exists a positive element of the
 subgroup that is less than `ε`. -/
-theorem dense_of_not_isolated_zero (S : AddSubgroup G) (hS : ∀ ε > 0, ∃ g ∈ S, g ∈ Ioo 0 ε) :
+lemma dense_of_not_isolated_zero (S : AddSubgroup G) (hS : ∀ ε > 0, ∃ g ∈ S, g ∈ Ioo 0 ε) :
     Dense (S : Set G) := by
   cases subsingleton_or_nontrivial G
   · refine fun x => _root_.subset_closure ?_
@@ -55,7 +55,7 @@ theorem dense_of_not_isolated_zero (S : AddSubgroup G) (hS : ∀ ε > 0, ∃ g �
 /-- Let `S` be a nontrivial additive subgroup in an archimedean linear ordered additive commutative
 group `G` with order topology. If the set of positive elements of `S` does not have a minimal
 element, then `S` is dense `G`. -/
-theorem dense_of_no_min (S : AddSubgroup G) (hbot : S ≠ ⊥)
+lemma dense_of_no_min (S : AddSubgroup G) (hbot : S ≠ ⊥)
     (H : ¬∃ a : G, IsLeast { g : G | g ∈ S ∧ 0 < g } a) : Dense (S : Set G) := by
   refine S.dense_of_not_isolated_zero fun ε ε0 => ?_
   contrapose! H
@@ -64,7 +64,7 @@ theorem dense_of_no_min (S : AddSubgroup G) (hbot : S ≠ ⊥)
 
 /-- An additive subgroup of an archimedean linear ordered additive commutative group `G` with order
 topology either is dense in `G` or is a cyclic subgroup. -/
-theorem dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
+lemma dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
   refine (em _).imp (dense_of_not_isolated_zero S) fun h => ?_
   push_neg at h
   rcases h with ⟨ε, ε0, hε⟩

@@ -106,7 +106,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
 
 /-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
    then `E[f * g] = E[f] * E[g]`. -/
-theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measurable f)
+lemma lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measurable f)
     (h_meas_g : Measurable g) (h_indep_fun : IndepFun f g μ) :
     (∫⁻ ω, (f * g) ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
@@ -117,7 +117,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measura
 /-- If `f` and `g` with values in `ℝ≥0∞` are independent and almost everywhere measurable,
    then `E[f * g] = E[f] * E[g]` (slightly generalizing
    `lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun`). -/
-theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeasurable f μ)
+lemma lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
     (∫⁻ ω, (f * g) ω ∂μ) = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ := by
   have fg_ae : f * g =ᵐ[μ] h_meas_f.mk _ * h_meas_g.mk _ := h_meas_f.ae_eq_mk.mul h_meas_g.ae_eq_mk
@@ -128,7 +128,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeas
   exact h_indep_fun.ae_eq h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
 #align probability_theory.lintegral_mul_eq_lintegral_mul_lintegral_of_indep_fun' ProbabilityTheory.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
 
-theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMeasurable f μ)
+lemma lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
     ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
@@ -200,7 +200,7 @@ lemma IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpace 
 /-- The (Bochner) integral of the product of two independent, nonnegative random
   variables is the product of their integrals. The proof is just plumbing around
   `lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'`. -/
-theorem IndepFun.integral_mul_of_nonneg (hXY : IndepFun X Y μ) (hXp : 0 ≤ X) (hYp : 0 ≤ Y)
+lemma IndepFun.integral_mul_of_nonneg (hXY : IndepFun X Y μ) (hXp : 0 ≤ X) (hYp : 0 ≤ Y)
     (hXm : AEMeasurable X μ) (hYm : AEMeasurable Y μ) :
     integral μ (X * Y) = integral μ X * integral μ Y := by
   have h1 : AEMeasurable (fun a => ENNReal.ofReal (X a)) μ :=
@@ -222,7 +222,7 @@ theorem IndepFun.integral_mul_of_nonneg (hXY : IndepFun X Y μ) (hXp : 0 ≤ X) 
   variables is the product of their integrals. The proof is pedestrian decomposition
   into their positive and negative parts in order to apply `IndepFun.integral_mul_of_nonneg`
   four times. -/
-theorem IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y μ) (hX : Integrable X μ)
+lemma IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y μ) (hX : Integrable X μ)
     (hY : Integrable Y μ) : integral μ (X * Y) = integral μ X * integral μ Y := by
   let pos : ℝ → ℝ := fun x => max x 0
   let neg : ℝ → ℝ := fun x => max (-x) 0
@@ -267,7 +267,7 @@ theorem IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y μ) (hX : Integr
 
 /-- The (Bochner) integral of the product of two independent random
   variables is the product of their integrals. -/
-theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
+lemma IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : integral μ (X * Y) = integral μ X * integral μ Y := by
   by_cases h'X : X =ᵐ[μ] 0
   · have h' : X * Y =ᵐ[μ] 0 := by
@@ -293,7 +293,7 @@ theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable
     cases' I with I I <;> simp [integral_undef I]
 #align probability_theory.indep_fun.integral_mul ProbabilityTheory.IndepFun.integral_mul
 
-theorem IndepFun.integral_mul' (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
+lemma IndepFun.integral_mul' (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) :
     (integral μ fun ω => X ω * Y ω) = integral μ X * integral μ Y :=
   hXY.integral_mul hX hY

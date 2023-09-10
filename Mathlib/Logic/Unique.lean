@@ -63,7 +63,7 @@ attribute [class] Unique
 -- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
 attribute [nolint simpNF] Unique.mk.injEq
 
-theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
+lemma unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 #align unique_iff_exists_unique unique_iff_exists_unique
@@ -121,7 +121,7 @@ instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
   ⟨⟨0, by rw [Nat.add_comm]; exact Nat.zero_lt_succ _⟩⟩
 
 @[simp]
-theorem Fin.default_eq_zero (n : ℕ) : (default : Fin n.succ) = 0 :=
+lemma Fin.default_eq_zero (n : ℕ) : (default : Fin n.succ) = 0 :=
   rfl
 #align fin.default_eq_zero Fin.default_eq_zero
 
@@ -140,11 +140,11 @@ variable [Unique α]
 instance (priority := 100) : Inhabited α :=
   toInhabited ‹Unique α›
 
-theorem eq_default (a : α) : a = default :=
+lemma eq_default (a : α) : a = default :=
   uniq _ a
 #align unique.eq_default Unique.eq_default
 
-theorem default_eq (a : α) : default = a :=
+lemma default_eq (a : α) : default = a :=
   (uniq _ a).symm
 #align unique.default_eq Unique.default_eq
 
@@ -179,7 +179,7 @@ def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
 
 end Unique
 
-theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
+lemma unique_iff_subsingleton_and_nonempty (α : Sort u) :
     Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
   ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
    fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
@@ -221,7 +221,7 @@ variable {f : α → β}
 
 /-- If the codomain of an injective function is a subsingleton, then the domain
 is a subsingleton as well. -/
-protected theorem Injective.subsingleton (hf : Injective f) [Subsingleton β] : Subsingleton α :=
+protected lemma Injective.subsingleton (hf : Injective f) [Subsingleton β] : Subsingleton α :=
   ⟨fun _ _ ↦ hf <| Subsingleton.elim _ _⟩
 #align function.injective.subsingleton Function.Injective.subsingleton
 

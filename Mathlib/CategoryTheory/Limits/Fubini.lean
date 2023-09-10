@@ -230,7 +230,7 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
-theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
+lemma limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k =
       (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
@@ -240,7 +240,7 @@ theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 -- See note [dsimp, simp]
 @[simp, reassoc]
-theorem limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
+lemma limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
     (limitFlipCompLimIsoLimitCompLim F).inv ≫ limit.π _ k ≫ limit.π _ j =
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]

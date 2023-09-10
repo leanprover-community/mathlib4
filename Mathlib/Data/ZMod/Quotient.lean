@@ -92,7 +92,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
     (Int.quotientZmultiplesNatEquivZMod (minimalPeriod ((· +ᵥ ·) a) b))
 #align add_action.zmultiples_quotient_stabilizer_equiv AddAction.zmultiplesQuotientStabilizerEquiv
 
-theorem zmultiplesQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod ((· +ᵥ ·) a) b)) :
+lemma zmultiplesQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod ((· +ᵥ ·) a) b)) :
     (zmultiplesQuotientStabilizerEquiv a b).symm n =
       (n : ℤ) • (⟨a, mem_zmultiples a⟩ : zmultiples a) :=
   rfl
@@ -113,7 +113,7 @@ noncomputable def zpowersQuotientStabilizerEquiv :
   AddEquiv.toMultiplicative f
 #align mul_action.zpowers_quotient_stabilizer_equiv MulAction.zpowersQuotientStabilizerEquiv
 
-theorem zpowersQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod ((· • ·) a) b)) :
+lemma zpowersQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod ((· • ·) a) b)) :
     (zpowersQuotientStabilizerEquiv a b).symm n = (⟨a, mem_zpowers a⟩ : zpowers a) ^ (n : ℤ) :=
   rfl
 #align mul_action.zpowers_quotient_stabilizer_equiv_symm_apply MulAction.zpowersQuotientStabilizerEquiv_symm_apply
@@ -134,14 +134,14 @@ noncomputable def _root_.AddAction.orbitZmultiplesEquiv {α β : Type*} [AddGrou
 attribute [to_additive existing AddAction.orbitZmultiplesEquiv] orbitZpowersEquiv
 
 @[to_additive orbit_zmultiples_equiv_symm_apply]
-theorem orbitZpowersEquiv_symm_apply (k : ZMod (minimalPeriod ((· • ·) a) b)) :
+lemma orbitZpowersEquiv_symm_apply (k : ZMod (minimalPeriod ((· • ·) a) b)) :
     (orbitZpowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ (k : ℤ) • ⟨b, mem_orbit_self b⟩ :=
   rfl
 #align mul_action.orbit_zpowers_equiv_symm_apply MulAction.orbitZpowersEquiv_symm_apply
 #align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbit_zmultiples_equiv_symm_apply
 
-theorem orbitZpowersEquiv_symm_apply' (k : ℤ) :
+lemma orbitZpowersEquiv_symm_apply' (k : ℤ) :
     (orbitZpowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ := by
   rw [orbitZpowersEquiv_symm_apply, ZMod.coe_int_cast]
@@ -198,7 +198,7 @@ lemma order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) := by
 variable {a}
 
 @[to_additive IsOfFinAddOrder.finite_zmultiples]
-theorem IsOfFinOrder.finite_zpowers (h : IsOfFinOrder a) : Finite <| zpowers a := by
+lemma IsOfFinOrder.finite_zpowers (h : IsOfFinOrder a) : Finite <| zpowers a := by
   rw [← orderOf_pos_iff, order_eq_card_zpowers'] at h
   exact Nat.finite_of_card_ne_zero h.ne.symm
 #align is_of_fin_order.finite_zpowers IsOfFinOrder.finite_zpowers

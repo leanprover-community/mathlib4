@@ -143,13 +143,13 @@ lemma succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
 /-! ### Simple cases -/
 
 
-theorem multinomial_univ_two (a b : ℕ) :
+lemma multinomial_univ_two (a b : ℕ) :
     multinomial Finset.univ ![a, b] = (a + b)! / (a ! * b !) := by
   rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one,
     Matrix.head_cons]
 #align nat.multinomial_univ_two Nat.multinomial_univ_two
 
-theorem multinomial_univ_three (a b c : ℕ) :
+lemma multinomial_univ_three (a b c : ℕ) :
     multinomial Finset.univ ![a, b, c] = (a + b + c)! / (a ! * b ! * c !) := by
   rw [multinomial, Fin.sum_univ_three, Fin.prod_univ_three]
   rfl
@@ -171,11 +171,11 @@ def multinomial (f : α →₀ ℕ) : ℕ :=
   (f.sum fun _ => id)! / f.prod fun _ n => n !
 #align finsupp.multinomial Finsupp.multinomial
 
-theorem multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
+lemma multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
   rfl
 #align finsupp.multinomial_eq Finsupp.multinomial_eq
 
-theorem multinomial_update (a : α) (f : α →₀ ℕ) :
+lemma multinomial_update (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical

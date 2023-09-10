@@ -271,7 +271,7 @@ lemma pullbackDiagonalMapIdIso_inv_snd_snd :
   simp
 #align category_theory.limits.pullback_diagonal_map_id_iso_inv_snd_snd CategoryTheory.Limits.pullbackDiagonalMapIdIso_inv_snd_snd
 
-theorem pullback.diagonal_comp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullback f f] [HasPullback g g]
+lemma pullback.diagonal_comp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullback f f] [HasPullback g g]
     [HasPullback (f ≫ g) (f ≫ g)] :
     diagonal (f ≫ g) = diagonal f ≫ (pullbackDiagonalMapIdIso f f g).inv ≫ pullback.snd := by
   ext <;> simp

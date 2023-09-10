@@ -235,7 +235,7 @@ def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
 #align pi.single Pi.single
 
 @[to_additive (attr := simp)]
-theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
+lemma mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
   Function.update_same i x _
 #align pi.mul_single_eq_same Pi.mulSingle_eq_same
 #align pi.single_eq_same Pi.single_eq_same
@@ -255,7 +255,7 @@ lemma mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x i'
 #align pi.single_eq_of_ne' Pi.single_eq_of_ne'
 
 @[to_additive (attr := simp)]
-theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
+lemma mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
 #align pi.mul_single_one Pi.mulSingle_one
 #align pi.single_zero Pi.single_zero
@@ -282,14 +282,14 @@ lemma mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
 #align pi.single_comm Pi.single_comm
 
 @[to_additive]
-theorem apply_mulSingle (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i : I) (x : f i) (j : I) :
+lemma apply_mulSingle (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i : I) (x : f i) (j : I) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
   simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
 #align pi.apply_mul_single Pi.apply_mulSingle
 #align pi.apply_single Pi.apply_single
 
 @[to_additive apply_single₂]
-theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 1 1 = 1) (i : I)
+lemma apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 1 1 = 1) (i : I)
     (x : f i) (y : g i) (j : I) :
     f' j (mulSingle i x j) (mulSingle i y j) = mulSingle i (f' i x y) j := by
   by_cases h : j = i
@@ -318,13 +318,13 @@ lemma mulSingle_op₂ {g₁ g₂ : I → Type*} [∀ i, One (g₁ i)] [∀ i, On
 variable (f)
 
 @[to_additive]
-theorem mulSingle_injective (i : I) : Function.Injective (mulSingle i : f i → ∀ i, f i) :=
+lemma mulSingle_injective (i : I) : Function.Injective (mulSingle i : f i → ∀ i, f i) :=
   Function.update_injective _ i
 #align pi.mul_single_injective Pi.mulSingle_injective
 #align pi.single_injective Pi.single_injective
 
 @[to_additive (attr := simp)]
-theorem mulSingle_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x = y :=
+lemma mulSingle_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x = y :=
   (Pi.mulSingle_injective _ _).eq_iff
 #align pi.mul_single_inj Pi.mulSingle_inj
 #align pi.single_inj Pi.single_inj

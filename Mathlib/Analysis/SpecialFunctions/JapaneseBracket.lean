@@ -33,12 +33,12 @@ open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-theorem sqrt_one_add_norm_sq_le (x : E) : Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
+lemma sqrt_one_add_norm_sq_le (x : E) : Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
   rw [sqrt_le_left (by positivity)]
   simp [add_sq]
 #align sqrt_one_add_norm_sq_le sqrt_one_add_norm_sq_le
 
-theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
+lemma one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
     (1 : ℝ) + ‖x‖ ≤ Real.sqrt 2 * sqrt ((1 : ℝ) + ‖x‖ ^ 2) := by
   rw [← sqrt_mul zero_le_two]
   have := sq_nonneg (‖x‖ - 1)

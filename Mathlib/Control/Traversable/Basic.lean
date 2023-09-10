@@ -92,22 +92,22 @@ instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G 
 variable {F G}
 
 @[simp]
-theorem app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
+lemma app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
   rfl
 #align applicative_transformation.app_eq_coe ApplicativeTransformation.app_eq_coe
 
 @[simp]
-theorem coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
+lemma coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
   (ApplicativeTransformation.mk f @pp @ps) = f :=
   rfl
 #align applicative_transformation.coe_mk ApplicativeTransformation.coe_mk
 
-protected theorem congr_fun (η η' : ApplicativeTransformation F G) (h : η = η') {α : Type u}
+protected lemma congr_fun (η η' : ApplicativeTransformation F G) (h : η = η') {α : Type u}
     (x : F α) : η x = η' x :=
   congrArg (fun η'' : ApplicativeTransformation F G => η'' x) h
 #align applicative_transformation.congr_fun ApplicativeTransformation.congr_fun
 
-protected theorem congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α}
+protected lemma congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α}
     (h : x = y) : η x = η y :=
   congrArg (fun z : F α => η z) h
 #align applicative_transformation.congr_arg ApplicativeTransformation.congr_arg
@@ -183,7 +183,7 @@ def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F
 #align applicative_transformation.comp ApplicativeTransformation.comp
 
 @[simp]
-theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
+lemma comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
     {α : Type u} (x : F α) : η'.comp η x = η' (η x) :=
   rfl
 #align applicative_transformation.comp_apply ApplicativeTransformation.comp_apply
@@ -197,12 +197,12 @@ lemma comp_assoc {I : Type u → Type t} [Applicative I]
 #align applicative_transformation.comp_assoc ApplicativeTransformation.comp_assoc
 
 @[simp]
-theorem comp_id (η : ApplicativeTransformation F G) : η.comp idTransformation = η :=
+lemma comp_id (η : ApplicativeTransformation F G) : η.comp idTransformation = η :=
   ext fun _ _ => rfl
 #align applicative_transformation.comp_id ApplicativeTransformation.comp_id
 
 @[simp]
-theorem id_comp (η : ApplicativeTransformation F G) : idTransformation.comp η = η :=
+lemma id_comp (η : ApplicativeTransformation F G) : idTransformation.comp η = η :=
   ext fun _ _ => rfl
 #align applicative_transformation.id_comp ApplicativeTransformation.id_comp
 

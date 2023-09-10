@@ -101,7 +101,7 @@ lemma rel_eq_coe : c.r = c :=
   rfl
 #align ring_con.rel_eq_coe RingCon.rel_eq_coe
 
-protected theorem refl (x) : c x x :=
+protected lemma refl (x) : c x x :=
   c.refl' x
 #align ring_con.refl RingCon.refl
 
@@ -162,7 +162,7 @@ instance (priority := 500) [d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quot
   delta RingCon.Quotient; infer_instance
 
 @[simp]
-theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
+lemma quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
   rfl
 #align ring_con.quot_mk_eq_coe RingCon.quot_mk_eq_coe
 
@@ -190,14 +190,14 @@ variable [Add R] [Mul R] (c : RingCon R)
 instance : Add c.Quotient := inferInstanceAs (Add c.toAddCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
+lemma coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
   rfl
 #align ring_con.coe_add RingCon.coe_add
 
 instance : Mul c.Quotient := inferInstanceAs (Mul c.toCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_mul (x y : R) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
+lemma coe_mul (x y : R) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
   rfl
 #align ring_con.coe_mul RingCon.coe_mul
 
@@ -236,7 +236,7 @@ variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon
 instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
+lemma coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_smul RingCon.coe_smul
 
@@ -249,14 +249,14 @@ variable [AddGroup R] [Mul R] (c : RingCon R)
 instance : Neg c.Quotient := inferInstanceAs (Neg c.toAddCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
+lemma coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
   rfl
 #align ring_con.coe_neg RingCon.coe_neg
 
 instance : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
+lemma coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 #align ring_con.coe_sub RingCon.coe_sub
 
@@ -264,7 +264,7 @@ instance hasZsmul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.
 #align ring_con.has_zsmul RingCon.hasZsmul
 
 @[simp, norm_cast]
-theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
+lemma coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_zsmul RingCon.coe_zsmul
 
@@ -278,7 +278,7 @@ instance hasNsmul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.
 #align ring_con.has_nsmul RingCon.hasNsmul
 
 @[simp, norm_cast]
-theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
+lemma coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_nsmul RingCon.coe_nsmul
 
@@ -291,7 +291,7 @@ variable [Add R] [Monoid R] (c : RingCon R)
 instance : Pow c.Quotient ℕ := inferInstanceAs (Pow c.toCon.Quotient ℕ)
 
 @[simp, norm_cast]
-theorem coe_pow (x : R) (n : ℕ) : (↑(x ^ n) : c.Quotient) = (x : c.Quotient) ^ n :=
+lemma coe_pow (x : R) (n : ℕ) : (↑(x ^ n) : c.Quotient) = (x : c.Quotient) ^ n :=
   rfl
 #align ring_con.coe_pow RingCon.coe_pow
 
@@ -305,7 +305,7 @@ instance : NatCast c.Quotient :=
   ⟨fun n => ↑(n : R)⟩
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+lemma coe_nat_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
 #align ring_con.coe_nat_cast RingCon.coe_nat_cast
 
@@ -319,7 +319,7 @@ instance : IntCast c.Quotient :=
   ⟨fun z => ↑(z : R)⟩
 
 @[simp, norm_cast]
-theorem coe_int_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+lemma coe_int_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
 #align ring_con.coe_int_cast RingCon.coe_int_cast
 

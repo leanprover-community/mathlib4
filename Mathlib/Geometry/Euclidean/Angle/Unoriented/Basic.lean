@@ -73,55 +73,55 @@ lemma _root_.Submodule.angle_coe {s : Submodule ℝ V} (x y : s) :
 #align submodule.angle_coe Submodule.angle_coe
 
 /-- The cosine of the angle between two vectors. -/
-theorem cos_angle (x y : V) : Real.cos (angle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) :=
+lemma cos_angle (x y : V) : Real.cos (angle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) :=
   Real.cos_arccos (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).1
     (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).2
 #align inner_product_geometry.cos_angle InnerProductGeometry.cos_angle
 
 /-- The angle between two vectors does not depend on their order. -/
-theorem angle_comm (x y : V) : angle x y = angle y x := by
+lemma angle_comm (x y : V) : angle x y = angle y x := by
   unfold angle
   rw [real_inner_comm, mul_comm]
 #align inner_product_geometry.angle_comm InnerProductGeometry.angle_comm
 
 /-- The angle between the negation of two vectors. -/
 @[simp]
-theorem angle_neg_neg (x y : V) : angle (-x) (-y) = angle x y := by
+lemma angle_neg_neg (x y : V) : angle (-x) (-y) = angle x y := by
   unfold angle
   rw [inner_neg_neg, norm_neg, norm_neg]
 #align inner_product_geometry.angle_neg_neg InnerProductGeometry.angle_neg_neg
 
 /-- The angle between two vectors is nonnegative. -/
-theorem angle_nonneg (x y : V) : 0 ≤ angle x y :=
+lemma angle_nonneg (x y : V) : 0 ≤ angle x y :=
   Real.arccos_nonneg _
 #align inner_product_geometry.angle_nonneg InnerProductGeometry.angle_nonneg
 
 /-- The angle between two vectors is at most π. -/
-theorem angle_le_pi (x y : V) : angle x y ≤ π :=
+lemma angle_le_pi (x y : V) : angle x y ≤ π :=
   Real.arccos_le_pi _
 #align inner_product_geometry.angle_le_pi InnerProductGeometry.angle_le_pi
 
 /-- The angle between a vector and the negation of another vector. -/
-theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
+lemma angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
   unfold angle
   rw [← Real.arccos_neg, norm_neg, inner_neg_right, neg_div]
 #align inner_product_geometry.angle_neg_right InnerProductGeometry.angle_neg_right
 
 /-- The angle between the negation of a vector and another vector. -/
-theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
+lemma angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
 #align inner_product_geometry.angle_neg_left InnerProductGeometry.angle_neg_left
 
 /-- The angle between the zero vector and a vector. -/
 @[simp]
-theorem angle_zero_left (x : V) : angle 0 x = π / 2 := by
+lemma angle_zero_left (x : V) : angle 0 x = π / 2 := by
   unfold angle
   rw [inner_zero_left, zero_div, Real.arccos_zero]
 #align inner_product_geometry.angle_zero_left InnerProductGeometry.angle_zero_left
 
 /-- The angle between a vector and the zero vector. -/
 @[simp]
-theorem angle_zero_right (x : V) : angle x 0 = π / 2 := by
+lemma angle_zero_right (x : V) : angle x 0 = π / 2 := by
   unfold angle
   rw [inner_zero_right, zero_div, Real.arccos_zero]
 #align inner_product_geometry.angle_zero_right InnerProductGeometry.angle_zero_right
@@ -149,7 +149,7 @@ lemma angle_neg_self_of_nonzero {x : V} (hx : x ≠ 0) : angle (-x) x = π := by
 
 /-- The angle between a vector and a positive multiple of a vector. -/
 @[simp]
-theorem angle_smul_right_of_pos (x y : V) {r : ℝ} (hr : 0 < r) : angle x (r • y) = angle x y := by
+lemma angle_smul_right_of_pos (x y : V) {r : ℝ} (hr : 0 < r) : angle x (r • y) = angle x y := by
   unfold angle
   rw [inner_smul_right, norm_smul, Real.norm_eq_abs, abs_of_nonneg (le_of_lt hr), ← mul_assoc,
     mul_comm _ r, mul_assoc, mul_div_mul_left _ _ (ne_of_gt hr)]
@@ -157,13 +157,13 @@ theorem angle_smul_right_of_pos (x y : V) {r : ℝ} (hr : 0 < r) : angle x (r �
 
 /-- The angle between a positive multiple of a vector and a vector. -/
 @[simp]
-theorem angle_smul_left_of_pos (x y : V) {r : ℝ} (hr : 0 < r) : angle (r • x) y = angle x y := by
+lemma angle_smul_left_of_pos (x y : V) {r : ℝ} (hr : 0 < r) : angle (r • x) y = angle x y := by
   rw [angle_comm, angle_smul_right_of_pos y x hr, angle_comm]
 #align inner_product_geometry.angle_smul_left_of_pos InnerProductGeometry.angle_smul_left_of_pos
 
 /-- The angle between a vector and a negative multiple of a vector. -/
 @[simp]
-theorem angle_smul_right_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
+lemma angle_smul_right_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
     angle x (r • y) = angle x (-y) := by
   rw [← neg_neg r, neg_smul, angle_neg_right, angle_smul_right_of_pos x y (neg_pos_of_neg hr),
     angle_neg_right]
@@ -171,20 +171,20 @@ theorem angle_smul_right_of_neg (x y : V) {r : ℝ} (hr : r < 0) :
 
 /-- The angle between a negative multiple of a vector and a vector. -/
 @[simp]
-theorem angle_smul_left_of_neg (x y : V) {r : ℝ} (hr : r < 0) : angle (r • x) y = angle (-x) y := by
+lemma angle_smul_left_of_neg (x y : V) {r : ℝ} (hr : r < 0) : angle (r • x) y = angle (-x) y := by
   rw [angle_comm, angle_smul_right_of_neg y x hr, angle_comm]
 #align inner_product_geometry.angle_smul_left_of_neg InnerProductGeometry.angle_smul_left_of_neg
 
 /-- The cosine of the angle between two vectors, multiplied by the
 product of their norms. -/
-theorem cos_angle_mul_norm_mul_norm (x y : V) : Real.cos (angle x y) * (‖x‖ * ‖y‖) = ⟪x, y⟫ := by
+lemma cos_angle_mul_norm_mul_norm (x y : V) : Real.cos (angle x y) * (‖x‖ * ‖y‖) = ⟪x, y⟫ := by
   rw [cos_angle, div_mul_cancel_of_imp]
   simp (config := { contextual := true }) [or_imp]
 #align inner_product_geometry.cos_angle_mul_norm_mul_norm InnerProductGeometry.cos_angle_mul_norm_mul_norm
 
 /-- The sine of the angle between two vectors, multiplied by the
 product of their norms. -/
-theorem sin_angle_mul_norm_mul_norm (x y : V) :
+lemma sin_angle_mul_norm_mul_norm (x y : V) :
     Real.sin (angle x y) * (‖x‖ * ‖y‖) = Real.sqrt (⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
   unfold angle
   rw [Real.sin_arccos, ← Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
@@ -228,7 +228,7 @@ lemma angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = π
 
 /-- Two vectors have inner product 0 if and only if the angle between
 them is π/2. -/
-theorem inner_eq_zero_iff_angle_eq_pi_div_two (x y : V) : ⟪x, y⟫ = 0 ↔ angle x y = π / 2 :=
+lemma inner_eq_zero_iff_angle_eq_pi_div_two (x y : V) : ⟪x, y⟫ = 0 ↔ angle x y = π / 2 :=
   Iff.symm <| by simp (config := { contextual := true }) [angle, or_imp]
 #align inner_product_geometry.inner_eq_zero_iff_angle_eq_pi_div_two InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two
 
@@ -332,7 +332,7 @@ lemma norm_sub_eq_abs_sub_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : 
 
 /-- The norm of the sum of two vectors equals the norm of their difference if and only if
 the angle between them is π/2. -/
-theorem norm_add_eq_norm_sub_iff_angle_eq_pi_div_two (x y : V) :
+lemma norm_add_eq_norm_sub_iff_angle_eq_pi_div_two (x y : V) :
     ‖x + y‖ = ‖x - y‖ ↔ angle x y = π / 2 := by
   rw [← sq_eq_sq (norm_nonneg (x + y)) (norm_nonneg (x - y)),
     ← inner_eq_zero_iff_angle_eq_pi_div_two x y, norm_add_pow_two_real, norm_sub_pow_two_real]

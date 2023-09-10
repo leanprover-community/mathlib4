@@ -79,7 +79,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing α] {a b c : α}
 
-theorem dvd_sub (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b - c := by
+lemma dvd_sub (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b - c := by
   simpa only [← sub_eq_add_neg] using h₁.add h₂.neg_right
 #align dvd_sub dvd_sub
 
@@ -88,30 +88,30 @@ alias Dvd.dvd.sub := dvd_sub
 
 /-- If an element `a` divides another element `c` in a ring, `a` divides the sum of another element
 `b` with `c` iff `a` divides `b`. -/
-theorem dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b :=
+lemma dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b :=
   ⟨fun H => by simpa only [add_sub_cancel] using dvd_sub H h, fun h₂ => dvd_add h₂ h⟩
 #align dvd_add_left dvd_add_left
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the sum of `b` and another
 element `c` iff `a` divides `c`. -/
-theorem dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := by rw [add_comm]; exact dvd_add_left h
+lemma dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := by rw [add_comm]; exact dvd_add_left h
 #align dvd_add_right dvd_add_right
 
 /-- If an element `a` divides another element `c` in a ring, `a` divides the difference of another
 element `b` with `c` iff `a` divides `b`. -/
-theorem dvd_sub_left (h : a ∣ c) : a ∣ b - c ↔ a ∣ b := by
+lemma dvd_sub_left (h : a ∣ c) : a ∣ b - c ↔ a ∣ b := by
   --porting note: Needed to give `α` explicitly
   simpa only [← sub_eq_add_neg] using dvd_add_left ((dvd_neg (α := α)).2 h)
 #align dvd_sub_left dvd_sub_left
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the difference of `b` and
 another element `c` iff `a` divides `c`. -/
-theorem dvd_sub_right (h : a ∣ b) : a ∣ b - c ↔ a ∣ c := by
+lemma dvd_sub_right (h : a ∣ b) : a ∣ b - c ↔ a ∣ c := by
   --porting note: Needed to give `α` explicitly
   rw [sub_eq_add_neg, dvd_add_right h, dvd_neg (α := α)]
 #align dvd_sub_right dvd_sub_right
 
-theorem dvd_iff_dvd_of_dvd_sub (h : a ∣ b - c) : a ∣ b ↔ a ∣ c := by
+lemma dvd_iff_dvd_of_dvd_sub (h : a ∣ b - c) : a ∣ b ↔ a ∣ c := by
   rw [← sub_add_cancel b c, dvd_add_right h]
 #align dvd_iff_dvd_of_dvd_sub dvd_iff_dvd_of_dvd_sub
 

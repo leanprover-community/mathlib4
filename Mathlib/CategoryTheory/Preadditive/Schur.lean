@@ -135,7 +135,7 @@ variable [HasKernels C]
 
 /-- **Schur's lemma** for endomorphisms in `𝕜`-linear categories.
 -/
-theorem finrank_endomorphism_simple_eq_one (X : C) [Simple X] [FiniteDimensional 𝕜 (X ⟶ X)] :
+lemma finrank_endomorphism_simple_eq_one (X : C) [Simple X] [FiniteDimensional 𝕜 (X ⟶ X)] :
     finrank 𝕜 (X ⟶ X) = 1 :=
   finrank_endomorphism_eq_one 𝕜 isIso_iff_nonzero
 #align category_theory.finrank_endomorphism_simple_eq_one CategoryTheory.finrank_endomorphism_simple_eq_one
@@ -167,7 +167,7 @@ if hom spaces are finite dimensional, then the hom space between simples is at m
 See `finrank_hom_simple_simple_eq_one_iff` and `finrank_hom_simple_simple_eq_zero_iff` below
 for the refinements when we know whether or not the simples are isomorphic.
 -/
-theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)] [Simple X]
+lemma finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) ≤ 1 := by
   obtain (h|h) := subsingleton_or_nontrivial (X ⟶ Y)
   · rw [finrank_zero_of_subsingleton]
@@ -180,7 +180,7 @@ theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X �
     exact ⟨c, by simpa using w =≫ f⟩
 #align category_theory.finrank_hom_simple_simple_le_one CategoryTheory.finrank_hom_simple_simple_le_one
 
-theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
+lemma finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 1 ↔ Nonempty (X ≅ Y) := by
   fconstructor
@@ -196,7 +196,7 @@ theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (
     linarith
 #align category_theory.finrank_hom_simple_simple_eq_one_iff CategoryTheory.finrank_hom_simple_simple_eq_one_iff
 
-theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
+lemma finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
@@ -209,7 +209,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
 
 open scoped Classical
 
-theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]
+lemma finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) = if Nonempty (X ≅ Y) then 1 else 0 := by
   split_ifs with h
   exact (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y).2 h

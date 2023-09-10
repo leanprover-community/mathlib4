@@ -121,7 +121,7 @@ lemma symm : SeparatedNhds s t → SeparatedNhds t s := fun ⟨U, V, oU, oV, aU,
   ⟨V, U, oV, oU, bV, aU, Disjoint.symm UV⟩
 #align separated_nhds.symm SeparatedNhds.symm
 
-theorem comm (s t : Set α) : SeparatedNhds s t ↔ SeparatedNhds t s :=
+lemma comm (s t : Set α) : SeparatedNhds s t ↔ SeparatedNhds t s :=
   ⟨symm, symm⟩
 #align separated_nhds.comm SeparatedNhds.comm
 
@@ -132,28 +132,28 @@ lemma preimage [TopologicalSpace β] {f : α → β} {s t : Set β} (h : Separat
     UV.preimage f⟩
 #align separated_nhds.preimage SeparatedNhds.preimage
 
-protected theorem disjoint (h : SeparatedNhds s t) : Disjoint s t :=
+protected lemma disjoint (h : SeparatedNhds s t) : Disjoint s t :=
   let ⟨_, _, _, _, hsU, htV, hd⟩ := h; hd.mono hsU htV
 #align separated_nhds.disjoint SeparatedNhds.disjoint
 
-theorem disjoint_closure_left (h : SeparatedNhds s t) : Disjoint (closure s) t :=
+lemma disjoint_closure_left (h : SeparatedNhds s t) : Disjoint (closure s) t :=
   let ⟨_U, _V, _, hV, hsU, htV, hd⟩ := h
   (hd.closure_left hV).mono (closure_mono hsU) htV
 #align separated_nhds.disjoint_closure_left SeparatedNhds.disjoint_closure_left
 
-theorem disjoint_closure_right (h : SeparatedNhds s t) : Disjoint s (closure t) :=
+lemma disjoint_closure_right (h : SeparatedNhds s t) : Disjoint s (closure t) :=
   h.symm.disjoint_closure_left.symm
 #align separated_nhds.disjoint_closure_right SeparatedNhds.disjoint_closure_right
 
-theorem empty_right (s : Set α) : SeparatedNhds s ∅ :=
+lemma empty_right (s : Set α) : SeparatedNhds s ∅ :=
   ⟨_, _, isOpen_univ, isOpen_empty, fun a _ => mem_univ a, Subset.rfl, disjoint_empty _⟩
 #align separated_nhds.empty_right SeparatedNhds.empty_right
 
-theorem empty_left (s : Set α) : SeparatedNhds ∅ s :=
+lemma empty_left (s : Set α) : SeparatedNhds ∅ s :=
   (empty_right _).symm
 #align separated_nhds.empty_left SeparatedNhds.empty_left
 
-theorem mono (h : SeparatedNhds s₂ t₂) (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : SeparatedNhds s₁ t₁ :=
+lemma mono (h : SeparatedNhds s₂ t₂) (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : SeparatedNhds s₁ t₁ :=
   let ⟨U, V, hU, hV, hsU, htV, hd⟩ := h
   ⟨U, V, hU, hV, hs.trans hsU, ht.trans htV, hd⟩
 #align separated_nhds.mono SeparatedNhds.mono
@@ -162,7 +162,7 @@ lemma union_left : SeparatedNhds s u → SeparatedNhds t u → SeparatedNhds (s 
   simpa only [separatedNhds_iff_disjoint, nhdsSet_union, disjoint_sup_left] using And.intro
 #align separated_nhds.union_left SeparatedNhds.union_left
 
-theorem union_right (ht : SeparatedNhds s t) (hu : SeparatedNhds s u) : SeparatedNhds s (t ∪ u) :=
+lemma union_right (ht : SeparatedNhds s t) (hu : SeparatedNhds s u) : SeparatedNhds s (t ∪ u) :=
   (ht.symm.union_left hu.symm).symm
 #align separated_nhds.union_right SeparatedNhds.union_right
 
@@ -176,12 +176,12 @@ class T0Space (α : Type u) [TopologicalSpace α] : Prop where
   t0 : ∀ ⦃x y : α⦄, Inseparable x y → x = y
 #align t0_space T0Space
 
-theorem t0Space_iff_inseparable (α : Type u) [TopologicalSpace α] :
+lemma t0Space_iff_inseparable (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ ∀ x y : α, Inseparable x y → x = y :=
   ⟨fun ⟨h⟩ => h, fun h => ⟨h⟩⟩
 #align t0_space_iff_inseparable t0Space_iff_inseparable
 
-theorem t0Space_iff_not_inseparable (α : Type u) [TopologicalSpace α] :
+lemma t0Space_iff_not_inseparable (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ ∀ x y : α, x ≠ y → ¬Inseparable x y := by
   simp only [t0Space_iff_inseparable, Ne.def, not_imp_not]
 #align t0_space_iff_not_inseparable t0Space_iff_not_inseparable
@@ -207,7 +207,7 @@ lemma embedding_iff_inducing [TopologicalSpace β] [T0Space α] {f : α → β} 
   ⟨Embedding.toInducing, Inducing.embedding⟩
 #align embedding_iff_inducing embedding_iff_inducing
 
-theorem t0Space_iff_nhds_injective (α : Type u) [TopologicalSpace α] :
+lemma t0Space_iff_nhds_injective (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ Injective (𝓝 : α → Filter α) :=
   t0Space_iff_inseparable α
 #align t0_space_iff_nhds_injective t0Space_iff_nhds_injective
@@ -241,7 +241,7 @@ lemma TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space α] {b : Set (Set α)}
     (hb : IsTopologicalBasis b) {x y : α} : x = y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
   inseparable_iff_eq.symm.trans hb.inseparable_iff
 
-theorem t0Space_iff_exists_isOpen_xor'_mem (α : Type u) [TopologicalSpace α] :
+lemma t0Space_iff_exists_isOpen_xor'_mem (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ ∀ x y, x ≠ y → ∃ U : Set α, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_open]
@@ -344,7 +344,7 @@ instance Subtype.t0Space [T0Space α] {p : α → Prop} : T0Space (Subtype p) :=
   embedding_subtype_val.t0Space
 #align subtype.t0_space Subtype.t0Space
 
-theorem t0Space_iff_or_not_mem_closure (α : Type u) [TopologicalSpace α] :
+lemma t0Space_iff_or_not_mem_closure (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ ∀ a b : α, a ≠ b → a ∉ closure ({b} : Set α) ∨ b ∉ closure ({a} : Set α) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 #align t0_space_iff_or_not_mem_closure t0Space_iff_or_not_mem_closure
@@ -358,7 +358,7 @@ instance Pi.instT0Space {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpac
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
 #align pi.t0_space Pi.instT0Space
 
-theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set α, x ∈ s ∧ y ∈ s ∧ T0Space s) :
+lemma T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set α, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space α := by
   refine' ⟨fun x y hxy => _⟩
   rcases h x y hxy with ⟨s, hxs, hys, hs⟩
@@ -367,7 +367,7 @@ theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set α, x ∈
   exact congr_arg Subtype.val hxy.eq
 #align t0_space.of_cover T0Space.of_cover
 
-theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set α, x ∈ s ∧ IsOpen s ∧ T0Space s) : T0Space α :=
+lemma T0Space.of_open_cover (h : ∀ x, ∃ s : Set α, x ∈ s ∧ IsOpen s ∧ T0Space s) : T0Space α :=
   T0Space.of_cover fun x _ hxy =>
     let ⟨s, hxs, hso, hs⟩ := h x
     ⟨s, hxs, (hxy.mem_open_iff hso).1 hxs, hs⟩
@@ -464,7 +464,7 @@ protected lemma Finset.isClosed [T1Space α] (s : Finset α) : IsClosed (s : Set
   s.finite_toSet.isClosed
 #align finset.is_closed Finset.isClosed
 
-theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
+lemma t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
     List.TFAE [T1Space α,
       ∀ x, IsClosed ({ x } : Set α),
       ∀ x, IsOpen ({ x }ᶜ : Set α),
@@ -1094,13 +1094,13 @@ lemma Continuous.limUnder_eq [TopologicalSpace β] {f : β → α} (h : Continuo
 #align continuous.lim_eq Continuous.limUnder_eq
 
 @[simp]
-theorem lim_nhds (a : α) : @lim _ _ ⟨a⟩ (𝓝 a) = a :=
+lemma lim_nhds (a : α) : @lim _ _ ⟨a⟩ (𝓝 a) = a :=
   lim_eq le_rfl
 set_option linter.uppercaseLean3 false in
 #align Lim_nhds lim_nhds
 
 @[simp]
-theorem limUnder_nhds_id (a : α) : @limUnder _ _ _ ⟨a⟩ (𝓝 a) id = a :=
+lemma limUnder_nhds_id (a : α) : @limUnder _ _ _ ⟨a⟩ (𝓝 a) id = a :=
   lim_nhds a
 #align lim_nhds_id limUnder_nhds_id
 
@@ -1487,7 +1487,7 @@ lemma isIrreducible_iff_singleton [T2Space α] {S : Set α} : IsIrreducible S �
 #align is_irreducible_iff_singleton isIrreducible_iff_singleton
 
 /-- There does not exist a nontrivial preirreducible T₂ space. -/
-theorem not_preirreducible_nontrivial_t2 (α) [TopologicalSpace α] [PreirreducibleSpace α]
+lemma not_preirreducible_nontrivial_t2 (α) [TopologicalSpace α] [PreirreducibleSpace α]
     [Nontrivial α] [T2Space α] : False :=
   (PreirreducibleSpace.isPreirreducible_univ (α := α)).subsingleton.not_nontrivial nontrivial_univ
 #align not_preirreducible_nontrivial_t2 not_preirreducible_nontrivial_t2
@@ -1506,7 +1506,7 @@ class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   regular : ∀ {s : Set X} {a}, IsClosed s → a ∉ s → Disjoint (𝓝ˢ s) (𝓝 a)
 #align regular_space RegularSpace
 
-theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
+lemma regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
     List.TFAE [RegularSpace X,
       ∀ (s : Set X) a, a ∉ closure s → Disjoint (𝓝ˢ s) (𝓝 a),
       ∀ (a : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 a) ↔ a ∉ closure s,
@@ -1540,7 +1540,7 @@ theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
   tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
-theorem RegularSpace.ofLift'_closure (h : ∀ a : α, (𝓝 a).lift' closure = 𝓝 a) : RegularSpace α :=
+lemma RegularSpace.ofLift'_closure (h : ∀ a : α, (𝓝 a).lift' closure = 𝓝 a) : RegularSpace α :=
   Iff.mpr ((regularSpace_TFAE α).out 0 5) h
 #align regular_space.of_lift'_closure RegularSpace.ofLift'_closure
 
@@ -1572,11 +1572,11 @@ lemma exists_mem_nhds_isClosed_subset {a : α} {s : Set α} (h : s ∈ 𝓝 a) :
   exact h'.mp ‹_› _ _ h
 #align exists_mem_nhds_is_closed_subset exists_mem_nhds_isClosed_subset
 
-theorem closed_nhds_basis (a : α) : (𝓝 a).HasBasis (fun s : Set α => s ∈ 𝓝 a ∧ IsClosed s) id :=
+lemma closed_nhds_basis (a : α) : (𝓝 a).HasBasis (fun s : Set α => s ∈ 𝓝 a ∧ IsClosed s) id :=
   hasBasis_self.2 fun _ => exists_mem_nhds_isClosed_subset
 #align closed_nhds_basis closed_nhds_basis
 
-theorem lift'_nhds_closure (a : α) : (𝓝 a).lift' closure = 𝓝 a :=
+lemma lift'_nhds_closure (a : α) : (𝓝 a).lift' closure = 𝓝 a :=
   (closed_nhds_basis a).lift'_closure_eq_self fun _ => And.right
 #align lift'_nhds_closure lift'_nhds_closure
 
@@ -1585,11 +1585,11 @@ lemma Filter.HasBasis.nhds_closure {ι : Sort*} {a : α} {p : ι → Prop} {s : 
   lift'_nhds_closure a ▸ h.lift'_closure
 #align filter.has_basis.nhds_closure Filter.HasBasis.nhds_closure
 
-theorem hasBasis_nhds_closure (a : α) : (𝓝 a).HasBasis (fun s => s ∈ 𝓝 a) closure :=
+lemma hasBasis_nhds_closure (a : α) : (𝓝 a).HasBasis (fun s => s ∈ 𝓝 a) closure :=
   (𝓝 a).basis_sets.nhds_closure
 #align has_basis_nhds_closure hasBasis_nhds_closure
 
-theorem hasBasis_opens_closure (a : α) : (𝓝 a).HasBasis (fun s => a ∈ s ∧ IsOpen s) closure :=
+lemma hasBasis_opens_closure (a : α) : (𝓝 a).HasBasis (fun s => a ∈ s ∧ IsOpen s) closure :=
   (nhds_basis_opens a).nhds_closure
 #align has_basis_opens_closure hasBasis_opens_closure
 
@@ -1636,7 +1636,7 @@ protected lemma Inducing.regularSpace [TopologicalSpace β] {f : β → α} (hf 
     fun b s hs => by exact hs.2.preimage hf.continuous
 #align inducing.regular_space Inducing.regularSpace
 
-theorem regularSpace_induced (f : β → α) : @RegularSpace β (induced f ‹_›) :=
+lemma regularSpace_induced (f : β → α) : @RegularSpace β (induced f ‹_›) :=
   letI := induced f ‹_›
   Inducing.regularSpace ⟨rfl⟩
 #align regular_space_induced regularSpace_induced
@@ -1994,7 +1994,7 @@ variable [TotallyDisconnectedSpace α]
 /-- A totally disconnected compact Hausdorff space is totally separated. -/
 instance : TotallySeparatedSpace α := compact_t2_tot_disc_iff_tot_sep.mp inferInstance
 
-theorem nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ s ∧ IsClopen s) id :=
+lemma nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ s ∧ IsClopen s) id :=
   ⟨fun U => by
     constructor
     · have hx : connectedComponent x = {x} :=

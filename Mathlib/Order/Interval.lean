@@ -52,12 +52,12 @@ lemma toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
 -- Would be nice to fix `@[ext]` to generate them automatically.
-theorem ext (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
+lemma ext (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
 #align nonempty_interval.ext NonemptyInterval.ext
 
 -- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
 -- Would be nice to fix `@[ext]` to generate them automatically.
-theorem ext_iff (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
+lemma ext_iff (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
   toProd_injective.eq_iff.symm
 #align nonempty_interval.ext_iff NonemptyInterval.ext_iff
 
@@ -67,7 +67,7 @@ def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
 #align nonempty_interval.to_dual_prod NonemptyInterval.toDualProd
 
 @[simp]
-theorem toDualProd_apply (s : NonemptyInterval α) : s.toDualProd = (toDual s.fst, s.snd) :=
+lemma toDualProd_apply (s : NonemptyInterval α) : s.toDualProd = (toDual s.fst, s.snd) :=
   rfl
 #align nonempty_interval.to_dual_prod_apply NonemptyInterval.toDualProd_apply
 
@@ -105,12 +105,12 @@ def dual : NonemptyInterval α ≃ NonemptyInterval αᵒᵈ where
 #align nonempty_interval.dual NonemptyInterval.dual
 
 @[simp]
-theorem fst_dual (s : NonemptyInterval α) : s.dual.fst = toDual s.snd :=
+lemma fst_dual (s : NonemptyInterval α) : s.dual.fst = toDual s.snd :=
   rfl
 #align nonempty_interval.fst_dual NonemptyInterval.fst_dual
 
 @[simp]
-theorem snd_dual (s : NonemptyInterval α) : s.dual.snd = toDual s.fst :=
+lemma snd_dual (s : NonemptyInterval α) : s.dual.snd = toDual s.fst :=
   rfl
 #align nonempty_interval.snd_dual NonemptyInterval.snd_dual
 
@@ -140,7 +140,7 @@ lemma mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
 #align nonempty_interval.mem_def NonemptyInterval.mem_def
 
 -- @[simp] -- Porting note: not in simpNF
-theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
+lemma coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
   nonempty_Icc.2 s.fst_le_snd
 #align nonempty_interval.coe_nonempty NonemptyInterval.coe_nonempty
 
@@ -150,7 +150,7 @@ def pure (a : α) : NonemptyInterval α :=
   ⟨⟨a, a⟩, le_rfl⟩
 #align nonempty_interval.pure NonemptyInterval.pure
 
-theorem mem_pure_self (a : α) : a ∈ pure a :=
+lemma mem_pure_self (a : α) : a ∈ pure a :=
   ⟨le_rfl, le_rfl⟩
 #align nonempty_interval.mem_pure_self NonemptyInterval.mem_pure_self
 
@@ -159,7 +159,7 @@ lemma pure_injective : Injective (pure : α → NonemptyInterval α) := fun _ _ 
 #align nonempty_interval.pure_injective NonemptyInterval.pure_injective
 
 @[simp]
-theorem dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
+lemma dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
   rfl
 #align nonempty_interval.dual_pure NonemptyInterval.dual_pure
 
@@ -179,18 +179,18 @@ def map (f : α →o β) (a : NonemptyInterval α) : NonemptyInterval β :=
 #align nonempty_interval.map NonemptyInterval.map
 
 @[simp]
-theorem map_pure (f : α →o β) (a : α) : (pure a).map f = pure (f a) :=
+lemma map_pure (f : α →o β) (a : α) : (pure a).map f = pure (f a) :=
   rfl
 #align nonempty_interval.map_pure NonemptyInterval.map_pure
 
 @[simp]
-theorem map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
+lemma map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
     (a.map f).map g = a.map (g.comp f) :=
   rfl
 #align nonempty_interval.map_map NonemptyInterval.map_map
 
 @[simp]
-theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
+lemma dual_map (f : α →o β) (a : NonemptyInterval α) :
     dual (a.map f) = a.dual.map (OrderHom.dual f) :=
   rfl
 #align nonempty_interval.dual_map NonemptyInterval.dual_map
@@ -203,13 +203,13 @@ def map₂ (f : α → β → γ) (h₀ : ∀ b, Monotone fun a => f a b) (h₁ 
 #align nonempty_interval.map₂ NonemptyInterval.map₂
 
 @[simp]
-theorem map₂_pure (f : α → β → γ) (h₀ h₁) (a : α) (b : β) :
+lemma map₂_pure (f : α → β → γ) (h₀ h₁) (a : α) (b : β) :
     map₂ f h₀ h₁ (pure a) (pure b) = pure (f a b) :=
   rfl
 #align nonempty_interval.map₂_pure NonemptyInterval.map₂_pure
 
 @[simp]
-theorem dual_map₂ (f : α → β → γ) (h₀ h₁ s t) :
+lemma dual_map₂ (f : α → β → γ) (h₀ h₁ s t) :
     dual (map₂ f h₀ h₁ s t) =
       map₂ (fun a b => toDual <| f (ofDual a) <| ofDual b) (fun _ => (h₀ _).dual)
         (fun _ => (h₁ _).dual) (dual s) (dual t) :=
@@ -261,7 +261,7 @@ lemma coe_coeHom : (coeHom : NonemptyInterval α → Set α) = ((↑) : Nonempty
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
 @[simp, norm_cast]
-theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
+lemma coe_pure (a : α) : (pure a : Set α) = {a} :=
   Icc_self _
 #align nonempty_interval.coe_pure NonemptyInterval.coe_pure
 
@@ -276,11 +276,11 @@ lemma coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = univ 
 #align nonempty_interval.coe_top NonemptyInterval.coe_top
 
 @[simp, norm_cast]
-theorem coe_dual (s : NonemptyInterval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s :=
+lemma coe_dual (s : NonemptyInterval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s :=
   dual_Icc
 #align nonempty_interval.coe_dual NonemptyInterval.coe_dual
 
-theorem subset_coe_map (f : α →o β) (s : NonemptyInterval α) : f '' s ⊆ s.map f :=
+lemma subset_coe_map (f : α →o β) (s : NonemptyInterval α) : f '' s ⊆ s.map f :=
   image_subset_iff.2 fun _ ha => ⟨f.mono ha.1, f.mono ha.2⟩
 #align nonempty_interval.subset_coe_map NonemptyInterval.subset_coe_map
 
@@ -297,12 +297,12 @@ instance : SemilatticeSup (NonemptyInterval α) :=
   toDualProd_injective.semilatticeSup _ fun _ _ => rfl
 
 @[simp]
-theorem fst_sup (s t : NonemptyInterval α) : (s ⊔ t).fst = s.fst ⊓ t.fst :=
+lemma fst_sup (s t : NonemptyInterval α) : (s ⊔ t).fst = s.fst ⊓ t.fst :=
   rfl
 #align nonempty_interval.fst_sup NonemptyInterval.fst_sup
 
 @[simp]
-theorem snd_sup (s t : NonemptyInterval α) : (s ⊔ t).snd = s.snd ⊔ t.snd :=
+lemma snd_sup (s t : NonemptyInterval α) : (s ⊔ t).snd = s.snd ⊔ t.snd :=
   rfl
 #align nonempty_interval.snd_sup NonemptyInterval.snd_sup
 
@@ -384,7 +384,7 @@ lemma pure_injective : Injective (pure : α → Interval α) :=
 #align interval.pure_injective Interval.pure_injective
 
 @[simp]
-theorem dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
+lemma dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
   rfl
 #align interval.dual_pure Interval.dual_pure
 
@@ -412,17 +412,17 @@ def map (f : α →o β) : Interval α → Interval β :=
 #align interval.map Interval.map
 
 @[simp]
-theorem map_pure (f : α →o β) (a : α) : (pure a).map f = pure (f a) :=
+lemma map_pure (f : α →o β) (a : α) : (pure a).map f = pure (f a) :=
   rfl
 #align interval.map_pure Interval.map_pure
 
 @[simp]
-theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).map g = s.map (g.comp f) :=
+lemma map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).map g = s.map (g.comp f) :=
   Option.map_map _ _ _
 #align interval.map_map Interval.map_map
 
 @[simp]
-theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map (OrderHom.dual f) := by
+lemma dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map (OrderHom.dual f) := by
   cases s
   · rfl
   · exact WithBot.map_comm rfl _
@@ -477,12 +477,12 @@ lemma coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
 #align interval.coe_ssubset_coe Interval.coe_sSubset_coe
 
 @[simp, norm_cast]
-theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
+lemma coe_pure (a : α) : (pure a : Set α) = {a} :=
   Icc_self _
 #align interval.coe_pure Interval.coe_pure
 
 @[simp, norm_cast]
-theorem coe_coe (s : NonemptyInterval α) : ((s : Interval α) : Set α) = s :=
+lemma coe_coe (s : NonemptyInterval α) : ((s : Interval α) : Set α) = s :=
   rfl
 #align interval.coe_coe Interval.coe_coe
 
@@ -497,13 +497,13 @@ lemma coe_top [BoundedOrder α] : ((⊤ : Interval α) : Set α) = univ :=
 #align interval.coe_top Interval.coe_top
 
 @[simp, norm_cast]
-theorem coe_dual (s : Interval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s := by
+lemma coe_dual (s : Interval α) : (dual s : Set αᵒᵈ) = ofDual ⁻¹' s := by
   cases s with
   | none => rfl
   | some s₀ => exact NonemptyInterval.coe_dual s₀
 #align interval.coe_dual Interval.coe_dual
 
-theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map f
+lemma subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map f
   | ⊥ => by simp
   | (s : NonemptyInterval α) => s.subset_coe_map _
 #align interval.subset_coe_map Interval.subset_coe_map
@@ -512,7 +512,7 @@ theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map 
 lemma mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
 #align interval.mem_pure Interval.mem_pure
 
-theorem mem_pure_self (a : α) : a ∈ pure a :=
+lemma mem_pure_self (a : α) : a ∈ pure a :=
   mem_pure.2 rfl
 #align interval.mem_pure_self Interval.mem_pure_self
 
@@ -586,7 +586,7 @@ instance lattice : Lattice (Interval α) :=
         exact ⟨hb₁.trans <| s.fst_le_snd.trans hc₂, hc₁.trans <| s.fst_le_snd.trans hb₂⟩ }
 
 @[simp, norm_cast]
-theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := by
+lemma coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := by
   cases s with
   | none =>
     rw [WithBot.none_eq_bot, bot_inf_eq]
@@ -611,7 +611,7 @@ theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
 end Decidable
 
 @[simp, norm_cast]
-theorem disjoint_coe (s t : Interval α) : Disjoint (s : Set α) t ↔ Disjoint s t := by
+lemma disjoint_coe (s t : Interval α) : Disjoint (s : Set α) t ↔ Disjoint s t := by
   classical
     rw [disjoint_iff_inf_le, disjoint_iff_inf_le, ← coe_subset_coe, coe_inf]
     rfl
@@ -628,7 +628,7 @@ section Preorder
 variable [Preorder α] {s : NonemptyInterval α} {a : α}
 
 @[simp, norm_cast]
-theorem coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=
+lemma coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=
   rfl
 #align nonempty_interval.coe_pure_interval NonemptyInterval.coe_pure_interval
 

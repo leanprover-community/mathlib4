@@ -116,7 +116,7 @@ lemma traverse_nil : traverse f ([] : List α') = (pure [] : F (List β')) :=
 #align list.traverse_nil List.traverse_nil
 
 @[simp]
-theorem traverse_cons (a : α') (l : List α') :
+lemma traverse_cons (a : α') (l : List α') :
     traverse f (a :: l) = (· :: ·) <$> f a <*> traverse f l :=
   rfl
 #align list.traverse_cons List.traverse_cons

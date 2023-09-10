@@ -36,7 +36,7 @@ protected def GradedAlgebra.ι :
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
 -- porting note: replaced coercion to sort with an explicit subtype notation
-theorem GradedAlgebra.ι_apply (m : M) :
+lemma GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun i => {x // x ∈ (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)}) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
@@ -47,7 +47,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 -- synthesize 0 in the next theorem
 instance (α : Type*) [MulZeroClass α] : Zero α := MulZeroClass.toZero
 
-theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
+lemma GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
   refine DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
@@ -60,7 +60,7 @@ def GradedAlgebra.liftι :
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
-theorem GradedAlgebra.liftι_eq (i : ℕ)
+lemma GradedAlgebra.liftι_eq (i : ℕ)
     (x : (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i :
       Submodule R (ExteriorAlgebra R M))) :
     GradedAlgebra.liftι R M x =

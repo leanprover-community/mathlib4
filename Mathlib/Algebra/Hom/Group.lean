@@ -955,7 +955,7 @@ then `f x` has a right inverse too. For elements invertible on both sides see `I
 @[to_additive
   "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
   a right inverse, then `f x` has a right inverse too."]
-theorem map_exists_right_inv (f : F) {x : M} (hx : ∃ y, x * y = 1) : ∃ y, f x * y = 1 :=
+lemma map_exists_right_inv (f : F) {x : M} (hx : ∃ y, x * y = 1) : ∃ y, f x * y = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 #align monoid_hom.map_exists_right_inv MonoidHom.map_exists_right_inv
@@ -967,7 +967,7 @@ then `f x` has a left inverse too. For elements invertible on both sides see `Is
   "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
   a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
   `IsAddUnit.map`."]
-theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y * f x = 1 :=
+lemma map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y * f x = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 #align monoid_hom.map_exists_left_inv MonoidHom.map_exists_left_inv
@@ -994,7 +994,7 @@ lemma coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
 #align coe_inv_monoid_hom coe_invMonoidHom
 
 @[simp]
-theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
+lemma invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
 #align inv_monoid_hom_apply invMonoidHom_apply
 
 end DivisionCommMonoid
@@ -1342,7 +1342,7 @@ lemma coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
 #align monoid.coe_one Monoid.coe_one
 
 @[simp]
-theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
+lemma coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 #align monoid.coe_mul Monoid.coe_mul
 
 end Monoid
@@ -1375,7 +1375,7 @@ lemma coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
 #align add_monoid.coe_one AddMonoid.coe_one
 
 @[simp]
-theorem coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
+lemma coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
 #align add_monoid.coe_mul AddMonoid.coe_mul
 
 end AddMonoid

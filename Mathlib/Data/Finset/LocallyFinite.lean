@@ -92,27 +92,27 @@ alias ⟨_, Ioc_eq_empty⟩ := Ioc_eq_empty_iff
 #align finset.Ioc_eq_empty Finset.Ioc_eq_empty
 
 @[simp]
-theorem Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
+lemma Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
   eq_empty_iff_forall_not_mem.2 fun _ hx => h ((mem_Ioo.1 hx).1.trans (mem_Ioo.1 hx).2)
 #align finset.Ioo_eq_empty Finset.Ioo_eq_empty
 
 @[simp]
-theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
+lemma Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
   Icc_eq_empty h.not_le
 #align finset.Icc_eq_empty_of_lt Finset.Icc_eq_empty_of_lt
 
 @[simp]
-theorem Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
+lemma Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
   Ico_eq_empty h.not_lt
 #align finset.Ico_eq_empty_of_le Finset.Ico_eq_empty_of_le
 
 @[simp]
-theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
+lemma Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
   Ioc_eq_empty h.not_lt
 #align finset.Ioc_eq_empty_of_le Finset.Ioc_eq_empty_of_le
 
 @[simp]
-theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
+lemma Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 #align finset.Ioo_eq_empty_of_le Finset.Ioo_eq_empty_of_le
 
@@ -156,65 +156,65 @@ lemma right_not_mem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).2
 lemma right_not_mem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
 #align finset.right_not_mem_Ioo Finset.right_not_mem_Ioo
 
-theorem Icc_subset_Icc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := by
+lemma Icc_subset_Icc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := by
   simpa [← coe_subset] using Set.Icc_subset_Icc ha hb
 #align finset.Icc_subset_Icc Finset.Icc_subset_Icc
 
-theorem Ico_subset_Ico (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ico a₂ b₂ := by
+lemma Ico_subset_Ico (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ico a₂ b₂ := by
   simpa [← coe_subset] using Set.Ico_subset_Ico ha hb
 #align finset.Ico_subset_Ico Finset.Ico_subset_Ico
 
-theorem Ioc_subset_Ioc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ := by
+lemma Ioc_subset_Ioc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ := by
   simpa [← coe_subset] using Set.Ioc_subset_Ioc ha hb
 #align finset.Ioc_subset_Ioc Finset.Ioc_subset_Ioc
 
-theorem Ioo_subset_Ioo (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := by
+lemma Ioo_subset_Ioo (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := by
   simpa [← coe_subset] using Set.Ioo_subset_Ioo ha hb
 #align finset.Ioo_subset_Ioo Finset.Ioo_subset_Ioo
 
-theorem Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
+lemma Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
   Icc_subset_Icc h le_rfl
 #align finset.Icc_subset_Icc_left Finset.Icc_subset_Icc_left
 
-theorem Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
+lemma Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
   Ico_subset_Ico h le_rfl
 #align finset.Ico_subset_Ico_left Finset.Ico_subset_Ico_left
 
-theorem Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
+lemma Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
   Ioc_subset_Ioc h le_rfl
 #align finset.Ioc_subset_Ioc_left Finset.Ioc_subset_Ioc_left
 
-theorem Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
+lemma Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
   Ioo_subset_Ioo h le_rfl
 #align finset.Ioo_subset_Ioo_left Finset.Ioo_subset_Ioo_left
 
-theorem Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
+lemma Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
   Icc_subset_Icc le_rfl h
 #align finset.Icc_subset_Icc_right Finset.Icc_subset_Icc_right
 
-theorem Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
+lemma Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
   Ico_subset_Ico le_rfl h
 #align finset.Ico_subset_Ico_right Finset.Ico_subset_Ico_right
 
-theorem Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
+lemma Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
   Ioc_subset_Ioc le_rfl h
 #align finset.Ioc_subset_Ioc_right Finset.Ioc_subset_Ioc_right
 
-theorem Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
+lemma Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
   Ioo_subset_Ioo le_rfl h
 #align finset.Ioo_subset_Ioo_right Finset.Ioo_subset_Ioo_right
 
-theorem Ico_subset_Ioo_left (h : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b := by
+lemma Ico_subset_Ioo_left (h : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b := by
   rw [← coe_subset, coe_Ico, coe_Ioo]
   exact Set.Ico_subset_Ioo_left h
 #align finset.Ico_subset_Ioo_left Finset.Ico_subset_Ioo_left
 
-theorem Ioc_subset_Ioo_right (h : b₁ < b₂) : Ioc a b₁ ⊆ Ioo a b₂ := by
+lemma Ioc_subset_Ioo_right (h : b₁ < b₂) : Ioc a b₁ ⊆ Ioo a b₂ := by
   rw [← coe_subset, coe_Ioc, coe_Ioo]
   exact Set.Ioc_subset_Ioo_right h
 #align finset.Ioc_subset_Ioo_right Finset.Ioc_subset_Ioo_right
 
-theorem Icc_subset_Ico_right (h : b₁ < b₂) : Icc a b₁ ⊆ Ico a b₂ := by
+lemma Icc_subset_Ico_right (h : b₁ < b₂) : Icc a b₁ ⊆ Ico a b₂ := by
   rw [← coe_subset, coe_Icc, coe_Ico]
   exact Set.Icc_subset_Ico_right h
 #align finset.Icc_subset_Ico_right Finset.Icc_subset_Ico_right
@@ -243,30 +243,30 @@ lemma Ioo_subset_Icc_self : Ioo a b ⊆ Icc a b :=
   Ioo_subset_Ico_self.trans Ico_subset_Icc_self
 #align finset.Ioo_subset_Icc_self Finset.Ioo_subset_Icc_self
 
-theorem Icc_subset_Icc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Icc a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
+lemma Icc_subset_Icc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Icc a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
   rw [← coe_subset, coe_Icc, coe_Icc, Set.Icc_subset_Icc_iff h₁]
 #align finset.Icc_subset_Icc_iff Finset.Icc_subset_Icc_iff
 
-theorem Icc_subset_Ioo_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ < a₁ ∧ b₁ < b₂ := by
+lemma Icc_subset_Ioo_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ < a₁ ∧ b₁ < b₂ := by
   rw [← coe_subset, coe_Icc, coe_Ioo, Set.Icc_subset_Ioo_iff h₁]
 #align finset.Icc_subset_Ioo_iff Finset.Icc_subset_Ioo_iff
 
-theorem Icc_subset_Ico_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ < b₂ := by
+lemma Icc_subset_Ico_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ < b₂ := by
   rw [← coe_subset, coe_Icc, coe_Ico, Set.Icc_subset_Ico_iff h₁]
 #align finset.Icc_subset_Ico_iff Finset.Icc_subset_Ico_iff
 
-theorem Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ a₂ < a₁ ∧ b₁ ≤ b₂ :=
+lemma Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ a₂ < a₁ ∧ b₁ ≤ b₂ :=
   (Icc_subset_Ico_iff h₁.dual).trans and_comm
 #align finset.Icc_subset_Ioc_iff Finset.Icc_subset_Ioc_iff
 
 --TODO: `Ico_subset_Ioo_iff`, `Ioc_subset_Ioo_iff`
-theorem Icc_ssubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) :
+lemma Icc_ssubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ := by
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_left hI ha hb
 #align finset.Icc_ssubset_Icc_left Finset.Icc_ssubset_Icc_left
 
-theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
+lemma Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ := by
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
@@ -511,7 +511,7 @@ end LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
-theorem disjoint_Ioi_Iio (a : α) : Disjoint (Ioi a) (Iio a) :=
+lemma disjoint_Ioi_Iio (a : α) : Disjoint (Ioi a) (Iio a) :=
   disjoint_left.2 fun _ hab hba => (mem_Ioi.1 hab).not_lt <| mem_Iio.1 hba
 #align finset.disjoint_Ioi_Iio Finset.disjoint_Ioi_Iio
 
@@ -522,7 +522,7 @@ section PartialOrder
 variable [PartialOrder α] [LocallyFiniteOrder α] {a b c : α}
 
 @[simp]
-theorem Icc_self (a : α) : Icc a a = {a} := by rw [← coe_eq_singleton, coe_Icc, Set.Icc_self]
+lemma Icc_self (a : α) : Icc a a = {a} := by rw [← coe_eq_singleton, coe_Icc, Set.Icc_self]
 #align finset.Icc_self Finset.Icc_self
 
 @[simp]
@@ -530,7 +530,7 @@ lemma Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   rw [← coe_eq_singleton, coe_Icc, Set.Icc_eq_singleton_iff]
 #align finset.Icc_eq_singleton_iff Finset.Icc_eq_singleton_iff
 
-theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
+lemma Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_le (mem_Ico.mp hbc).1
 #align finset.Ico_disjoint_Ico_consecutive Finset.Ico_disjoint_Ico_consecutive
 
@@ -539,67 +539,67 @@ section DecidableEq
 variable [DecidableEq α]
 
 @[simp]
-theorem Icc_erase_left (a b : α) : (Icc a b).erase a = Ioc a b := by simp [← coe_inj]
+lemma Icc_erase_left (a b : α) : (Icc a b).erase a = Ioc a b := by simp [← coe_inj]
 #align finset.Icc_erase_left Finset.Icc_erase_left
 
 @[simp]
-theorem Icc_erase_right (a b : α) : (Icc a b).erase b = Ico a b := by simp [← coe_inj]
+lemma Icc_erase_right (a b : α) : (Icc a b).erase b = Ico a b := by simp [← coe_inj]
 #align finset.Icc_erase_right Finset.Icc_erase_right
 
 @[simp]
-theorem Ico_erase_left (a b : α) : (Ico a b).erase a = Ioo a b := by simp [← coe_inj]
+lemma Ico_erase_left (a b : α) : (Ico a b).erase a = Ioo a b := by simp [← coe_inj]
 #align finset.Ico_erase_left Finset.Ico_erase_left
 
 @[simp]
-theorem Ioc_erase_right (a b : α) : (Ioc a b).erase b = Ioo a b := by simp [← coe_inj]
+lemma Ioc_erase_right (a b : α) : (Ioc a b).erase b = Ioo a b := by simp [← coe_inj]
 #align finset.Ioc_erase_right Finset.Ioc_erase_right
 
 @[simp]
-theorem Icc_diff_both (a b : α) : Icc a b \ {a, b} = Ioo a b := by simp [← coe_inj]
+lemma Icc_diff_both (a b : α) : Icc a b \ {a, b} = Ioo a b := by simp [← coe_inj]
 #align finset.Icc_diff_both Finset.Icc_diff_both
 
 @[simp]
-theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
+lemma Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
   rw [← coe_inj, coe_insert, coe_Icc, coe_Ico, Set.insert_eq, Set.union_comm, Set.Ico_union_right h]
 #align finset.Ico_insert_right Finset.Ico_insert_right
 
 @[simp]
-theorem Ioc_insert_left (h : a ≤ b) : insert a (Ioc a b) = Icc a b := by
+lemma Ioc_insert_left (h : a ≤ b) : insert a (Ioc a b) = Icc a b := by
   rw [← coe_inj, coe_insert, coe_Ioc, coe_Icc, Set.insert_eq, Set.union_comm, Set.Ioc_union_left h]
 #align finset.Ioc_insert_left Finset.Ioc_insert_left
 
 @[simp]
-theorem Ioo_insert_left (h : a < b) : insert a (Ioo a b) = Ico a b := by
+lemma Ioo_insert_left (h : a < b) : insert a (Ioo a b) = Ico a b := by
   rw [← coe_inj, coe_insert, coe_Ioo, coe_Ico, Set.insert_eq, Set.union_comm, Set.Ioo_union_left h]
 #align finset.Ioo_insert_left Finset.Ioo_insert_left
 
 @[simp]
-theorem Ioo_insert_right (h : a < b) : insert b (Ioo a b) = Ioc a b := by
+lemma Ioo_insert_right (h : a < b) : insert b (Ioo a b) = Ioc a b := by
   rw [← coe_inj, coe_insert, coe_Ioo, coe_Ioc, Set.insert_eq, Set.union_comm, Set.Ioo_union_right h]
 #align finset.Ioo_insert_right Finset.Ioo_insert_right
 
 @[simp]
-theorem Icc_diff_Ico_self (h : a ≤ b) : Icc a b \ Ico a b = {b} := by simp [← coe_inj, h]
+lemma Icc_diff_Ico_self (h : a ≤ b) : Icc a b \ Ico a b = {b} := by simp [← coe_inj, h]
 #align finset.Icc_diff_Ico_self Finset.Icc_diff_Ico_self
 
 @[simp]
-theorem Icc_diff_Ioc_self (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by simp [← coe_inj, h]
+lemma Icc_diff_Ioc_self (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by simp [← coe_inj, h]
 #align finset.Icc_diff_Ioc_self Finset.Icc_diff_Ioc_self
 
 @[simp]
-theorem Icc_diff_Ioo_self (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by simp [← coe_inj, h]
+lemma Icc_diff_Ioo_self (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by simp [← coe_inj, h]
 #align finset.Icc_diff_Ioo_self Finset.Icc_diff_Ioo_self
 
 @[simp]
-theorem Ico_diff_Ioo_self (h : a < b) : Ico a b \ Ioo a b = {a} := by simp [← coe_inj, h]
+lemma Ico_diff_Ioo_self (h : a < b) : Ico a b \ Ioo a b = {a} := by simp [← coe_inj, h]
 #align finset.Ico_diff_Ioo_self Finset.Ico_diff_Ioo_self
 
 @[simp]
-theorem Ioc_diff_Ioo_self (h : a < b) : Ioc a b \ Ioo a b = {b} := by simp [← coe_inj, h]
+lemma Ioc_diff_Ioo_self (h : a < b) : Ioc a b \ Ioo a b = {b} := by simp [← coe_inj, h]
 #align finset.Ioc_diff_Ioo_self Finset.Ioc_diff_Ioo_self
 
 @[simp]
-theorem Ico_inter_Ico_consecutive (a b c : α) : Ico a b ∩ Ico b c = ∅ :=
+lemma Ico_inter_Ico_consecutive (a b c : α) : Ico a b ∩ Ico b c = ∅ :=
   (Ico_disjoint_Ico_consecutive a b c).eq_bot
 #align finset.Ico_inter_Ico_consecutive Finset.Ico_inter_Ico_consecutive
 
@@ -608,22 +608,22 @@ end DecidableEq
 -- Those lemmas are purposefully the other way around
 
 /-- `Finset.cons` version of `Finset.Ico_insert_right`. -/
-theorem Icc_eq_cons_Ico (h : a ≤ b) : Icc a b = (Ico a b).cons b right_not_mem_Ico := by
+lemma Icc_eq_cons_Ico (h : a ≤ b) : Icc a b = (Ico a b).cons b right_not_mem_Ico := by
   classical rw [cons_eq_insert, Ico_insert_right h]
 #align finset.Icc_eq_cons_Ico Finset.Icc_eq_cons_Ico
 
 /-- `Finset.cons` version of `Finset.Ioc_insert_left`. -/
-theorem Icc_eq_cons_Ioc (h : a ≤ b) : Icc a b = (Ioc a b).cons a left_not_mem_Ioc := by
+lemma Icc_eq_cons_Ioc (h : a ≤ b) : Icc a b = (Ioc a b).cons a left_not_mem_Ioc := by
   classical rw [cons_eq_insert, Ioc_insert_left h]
 #align finset.Icc_eq_cons_Ioc Finset.Icc_eq_cons_Ioc
 
 /-- `Finset.cons` version of `Finset.Ioo_insert_right`. -/
-theorem Ioc_eq_cons_Ioo (h : a < b) : Ioc a b = (Ioo a b).cons b right_not_mem_Ioo := by
+lemma Ioc_eq_cons_Ioo (h : a < b) : Ioc a b = (Ioo a b).cons b right_not_mem_Ioo := by
   classical rw [cons_eq_insert, Ioo_insert_right h]
 #align finset.Ioc_eq_cons_Ioo Finset.Ioc_eq_cons_Ioo
 
 /-- `Finset.cons` version of `Finset.Ioo_insert_left`. -/
-theorem Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_not_mem_Ioo := by
+lemma Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_not_mem_Ioo := by
   classical rw [cons_eq_insert, Ioo_insert_left h]
 #align finset.Ico_eq_cons_Ioo Finset.Ico_eq_cons_Ioo
 
@@ -634,7 +634,7 @@ lemma Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
   exact and_iff_left_of_imp fun h => h.le.trans_lt hab
 #align finset.Ico_filter_le_left Finset.Ico_filter_le_left
 
-theorem card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).card - 1 := by
+lemma card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).card - 1 := by
   classical
     by_cases h : a ≤ b
     · rw [Icc_eq_cons_Ico h, card_cons]
@@ -642,11 +642,11 @@ theorem card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).car
     · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, zero_tsub]
 #align finset.card_Ico_eq_card_Icc_sub_one Finset.card_Ico_eq_card_Icc_sub_one
 
-theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : (Ioc a b).card = (Icc a b).card - 1 :=
+lemma card_Ioc_eq_card_Icc_sub_one (a b : α) : (Ioc a b).card = (Icc a b).card - 1 :=
   @card_Ico_eq_card_Icc_sub_one αᵒᵈ _ _ _ _
 #align finset.card_Ioc_eq_card_Icc_sub_one Finset.card_Ioc_eq_card_Icc_sub_one
 
-theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).card - 1 := by
+lemma card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).card - 1 := by
   classical
     by_cases h : a < b
     · rw [Ico_eq_cons_Ioo h, card_cons]
@@ -654,11 +654,11 @@ theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).car
     · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, zero_tsub]
 #align finset.card_Ioo_eq_card_Ico_sub_one Finset.card_Ioo_eq_card_Ico_sub_one
 
-theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : (Ioo a b).card = (Ioc a b).card - 1 :=
+lemma card_Ioo_eq_card_Ioc_sub_one (a b : α) : (Ioo a b).card = (Ioc a b).card - 1 :=
   @card_Ioo_eq_card_Ico_sub_one αᵒᵈ _ _ _ _
 #align finset.card_Ioo_eq_card_Ioc_sub_one Finset.card_Ioo_eq_card_Ioc_sub_one
 
-theorem card_Ioo_eq_card_Icc_sub_two (a b : α) : (Ioo a b).card = (Icc a b).card - 2 := by
+lemma card_Ioo_eq_card_Icc_sub_two (a b : α) : (Ioo a b).card = (Icc a b).card - 2 := by
   rw [card_Ioo_eq_card_Ico_sub_one, card_Ico_eq_card_Icc_sub_one]
   rfl
 #align finset.card_Ioo_eq_card_Icc_sub_two Finset.card_Ioo_eq_card_Icc_sub_two
@@ -692,11 +692,11 @@ lemma not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1
 
 -- Purposefully written the other way around
 /-- `Finset.cons` version of `Finset.Ioi_insert`. -/
-theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a not_mem_Ioi_self := by
+lemma Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a not_mem_Ioi_self := by
   classical rw [cons_eq_insert, Ioi_insert]
 #align finset.Ici_eq_cons_Ioi Finset.Ici_eq_cons_Ioi
 
-theorem card_Ioi_eq_card_Ici_sub_one (a : α) : (Ioi a).card = (Ici a).card - 1 := by
+lemma card_Ioi_eq_card_Ici_sub_one (a : α) : (Ioi a).card = (Ici a).card - 1 := by
   rw [Ici_eq_cons_Ioi, card_cons, add_tsub_cancel_right]
 #align finset.card_Ioi_eq_card_Ici_sub_one Finset.card_Ioi_eq_card_Ici_sub_one
 
@@ -725,11 +725,11 @@ lemma not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1
 
 -- Purposefully written the other way around
 /-- `Finset.cons` version of `Finset.Iio_insert`. -/
-theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b not_mem_Iio_self := by
+lemma Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b not_mem_Iio_self := by
   classical rw [cons_eq_insert, Iio_insert]
 #align finset.Iic_eq_cons_Iio Finset.Iic_eq_cons_Iio
 
-theorem card_Iio_eq_card_Iic_sub_one (a : α) : (Iio a).card = (Iic a).card - 1 := by
+lemma card_Iio_eq_card_Iic_sub_one (a : α) : (Iio a).card = (Iic a).card - 1 := by
   rw [Iic_eq_cons_Iio, card_cons, add_tsub_cancel_right]
 #align finset.card_Iio_eq_card_Iic_sub_one Finset.card_Iio_eq_card_Iic_sub_one
 
@@ -782,21 +782,21 @@ lemma Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min b 
 #align finset.Ico_inter_Ico Finset.Ico_inter_Ico
 
 @[simp]
-theorem Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
+lemma Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
   cases le_total b c with
   | inl h => rw [Ico_filter_lt_of_right_le h, min_eq_left h]
   | inr h => rw [Ico_filter_lt_of_le_right h, min_eq_right h]
 #align finset.Ico_filter_lt Finset.Ico_filter_lt
 
 @[simp]
-theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (max a c) b := by
+lemma Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (max a c) b := by
   cases le_total a c with
   | inl h => rw [Ico_filter_le_of_left_le h, max_eq_right h]
   | inr h => rw [Ico_filter_le_of_le_left h, max_eq_left h]
 #align finset.Ico_filter_le Finset.Ico_filter_le
 
 @[simp]
-theorem Ioo_filter_lt (a b c : α) : (Ioo a b).filter (· < c) = Ioo a (min b c) := by
+lemma Ioo_filter_lt (a b c : α) : (Ioo a b).filter (· < c) = Ioo a (min b c) := by
   ext
   simp [and_assoc]
 #align finset.Ioo_filter_lt Finset.Ioo_filter_lt
@@ -809,7 +809,7 @@ lemma Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α) 
 #align finset.Iio_filter_lt Finset.Iio_filter_lt
 
 @[simp]
-theorem Ico_diff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := by
+lemma Ico_diff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := by
   cases le_total a c with
   | inl h =>
     ext x
@@ -819,7 +819,7 @@ theorem Ico_diff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := 
 #align finset.Ico_diff_Ico_left Finset.Ico_diff_Ico_left
 
 @[simp]
-theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) := by
+lemma Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) := by
   cases le_total b c with
   | inl h => rw [Ico_eq_empty_of_le h, sdiff_empty, min_eq_left h]
   | inr h =>
@@ -833,7 +833,7 @@ end LocallyFiniteOrder
 section LocallyFiniteOrderBot
 variable [LocallyFiniteOrderBot α] {s : Set α}
 
-theorem _root_.Set.Infinite.exists_gt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, a < b :=
+lemma _root_.Set.Infinite.exists_gt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, a < b :=
   not_bddAbove_iff.1 hs.not_bddAbove
 #align set.infinite.exists_gt Set.Infinite.exists_gt
 
@@ -846,7 +846,7 @@ end LocallyFiniteOrderBot
 section LocallyFiniteOrderTop
 variable [LocallyFiniteOrderTop α] {s : Set α}
 
-theorem _root_.Set.Infinite.exists_lt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, b < a :=
+lemma _root_.Set.Infinite.exists_lt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, b < a :=
   not_bddBelow_iff.1 hs.not_bddBelow
 #align set.infinite.exists_lt Set.Infinite.exists_lt
 
@@ -858,7 +858,7 @@ end LocallyFiniteOrderTop
 
 variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
-theorem Ioi_disjUnion_Iio (a : α) :
+lemma Ioi_disjUnion_Iio (a : α) :
     (Ioi a).disjUnion (Iio a) (disjoint_Ioi_Iio a) = ({a} : Finset α)ᶜ := by
   ext
   simp [eq_comm]
@@ -870,21 +870,21 @@ section Lattice
 
 variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-theorem uIcc_toDual (a b : α) : [[toDual a, toDual b]] = [[a, b]].map toDual.toEmbedding :=
+lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = [[a, b]].map toDual.toEmbedding :=
   Icc_toDual _ _
 #align finset.uIcc_to_dual Finset.uIcc_toDual
 
 @[simp]
-theorem uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by
+lemma uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by
   rw [uIcc, inf_eq_left.2 h, sup_eq_right.2 h]
 #align finset.uIcc_of_le Finset.uIcc_of_le
 
 @[simp]
-theorem uIcc_of_ge (h : b ≤ a) : [[a, b]] = Icc b a := by
+lemma uIcc_of_ge (h : b ≤ a) : [[a, b]] = Icc b a := by
   rw [uIcc, inf_eq_right.2 h, sup_eq_left.2 h]
 #align finset.uIcc_of_ge Finset.uIcc_of_ge
 
-theorem uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by
+lemma uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by
   rw [uIcc, uIcc, inf_comm, sup_comm]
 #align finset.uIcc_comm Finset.uIcc_comm
 
@@ -918,21 +918,21 @@ lemma right_mem_uIcc : b ∈ [[a, b]] :=
   mem_Icc.2 ⟨inf_le_right, le_sup_right⟩
 #align finset.right_mem_uIcc Finset.right_mem_uIcc
 
-theorem mem_uIcc_of_le (ha : a ≤ x) (hb : x ≤ b) : x ∈ [[a, b]] :=
+lemma mem_uIcc_of_le (ha : a ≤ x) (hb : x ≤ b) : x ∈ [[a, b]] :=
   Icc_subset_uIcc <| mem_Icc.2 ⟨ha, hb⟩
 #align finset.mem_uIcc_of_le Finset.mem_uIcc_of_le
 
-theorem mem_uIcc_of_ge (hb : b ≤ x) (ha : x ≤ a) : x ∈ [[a, b]] :=
+lemma mem_uIcc_of_ge (hb : b ≤ x) (ha : x ≤ a) : x ∈ [[a, b]] :=
   Icc_subset_uIcc' <| mem_Icc.2 ⟨hb, ha⟩
 #align finset.mem_uIcc_of_ge Finset.mem_uIcc_of_ge
 
-theorem uIcc_subset_uIcc (h₁ : a₁ ∈ [[a₂, b₂]]) (h₂ : b₁ ∈ [[a₂, b₂]]) :
+lemma uIcc_subset_uIcc (h₁ : a₁ ∈ [[a₂, b₂]]) (h₂ : b₁ ∈ [[a₂, b₂]]) :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] := by
   rw [mem_uIcc] at h₁ h₂
   exact Icc_subset_Icc (_root_.le_inf h₁.1 h₂.1) (_root_.sup_le h₁.2 h₂.2)
 #align finset.uIcc_subset_uIcc Finset.uIcc_subset_uIcc
 
-theorem uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : [[a₁, b₁]] ⊆ Icc a₂ b₂ := by
+lemma uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : [[a₁, b₁]] ⊆ Icc a₂ b₂ := by
   rw [mem_Icc] at ha hb
   exact Icc_subset_Icc (_root_.le_inf ha.1 hb.1) (_root_.sup_le ha.2 hb.2)
 #align finset.uIcc_subset_Icc Finset.uIcc_subset_Icc
@@ -946,11 +946,11 @@ lemma uIcc_subset_uIcc_iff_le' :
   Icc_subset_Icc_iff inf_le_sup
 #align finset.uIcc_subset_uIcc_iff_le' Finset.uIcc_subset_uIcc_iff_le'
 
-theorem uIcc_subset_uIcc_right (h : x ∈ [[a, b]]) : [[x, b]] ⊆ [[a, b]] :=
+lemma uIcc_subset_uIcc_right (h : x ∈ [[a, b]]) : [[x, b]] ⊆ [[a, b]] :=
   uIcc_subset_uIcc h right_mem_uIcc
 #align finset.uIcc_subset_uIcc_right Finset.uIcc_subset_uIcc_right
 
-theorem uIcc_subset_uIcc_left (h : x ∈ [[a, b]]) : [[a, x]] ⊆ [[a, b]] :=
+lemma uIcc_subset_uIcc_left (h : x ∈ [[a, b]]) : [[a, x]] ⊆ [[a, b]] :=
   uIcc_subset_uIcc left_mem_uIcc h
 #align finset.uIcc_subset_uIcc_left Finset.uIcc_subset_uIcc_left
 
@@ -970,12 +970,12 @@ lemma eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = c 
   exact Set.eq_of_mem_uIcc_of_mem_uIcc'
 #align finset.eq_of_mem_uIcc_of_mem_uIcc' Finset.eq_of_mem_uIcc_of_mem_uIcc'
 
-theorem uIcc_injective_right (a : α) : Injective fun b => [[b, a]] := fun b c h => by
+lemma uIcc_injective_right (a : α) : Injective fun b => [[b, a]] := fun b c h => by
   rw [ext_iff] at h
   exact eq_of_mem_uIcc_of_mem_uIcc ((h _).1 left_mem_uIcc) ((h _).2 left_mem_uIcc)
 #align finset.uIcc_injective_right Finset.uIcc_injective_right
 
-theorem uIcc_injective_left (a : α) : Injective (uIcc a) := by
+lemma uIcc_injective_left (a : α) : Injective (uIcc a) := by
   simpa only [uIcc_comm] using uIcc_injective_right a
 #align finset.uIcc_injective_left Finset.uIcc_injective_left
 
@@ -989,11 +989,11 @@ lemma Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 #align finset.Icc_min_max Finset.Icc_min_max
 
-theorem uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a :=
+lemma uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a :=
   uIcc_of_ge <| le_of_not_ge h
 #align finset.uIcc_of_not_le Finset.uIcc_of_not_le
 
-theorem uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
+lemma uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
   uIcc_of_le <| le_of_not_ge h
 #align finset.uIcc_of_not_ge Finset.uIcc_of_not_ge
 
@@ -1035,56 +1035,56 @@ section OrderedCancelAddCommMonoid
 variable [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
 @[simp]
-theorem map_add_left_Icc (a b c : α) :
+lemma map_add_left_Icc (a b c : α) :
     (Icc a b).map (addLeftEmbedding c) = Icc (c + a) (c + b) := by
   rw [← coe_inj, coe_map, coe_Icc, coe_Icc]
   exact Set.image_const_add_Icc _ _ _
 #align finset.map_add_left_Icc Finset.map_add_left_Icc
 
 @[simp]
-theorem map_add_right_Icc (a b c : α) :
+lemma map_add_right_Icc (a b c : α) :
     (Icc a b).map (addRightEmbedding c) = Icc (a + c) (b + c) := by
   rw [← coe_inj, coe_map, coe_Icc, coe_Icc]
   exact Set.image_add_const_Icc _ _ _
 #align finset.map_add_right_Icc Finset.map_add_right_Icc
 
 @[simp]
-theorem map_add_left_Ico (a b c : α) :
+lemma map_add_left_Ico (a b c : α) :
     (Ico a b).map (addLeftEmbedding c) = Ico (c + a) (c + b) := by
   rw [← coe_inj, coe_map, coe_Ico, coe_Ico]
   exact Set.image_const_add_Ico _ _ _
 #align finset.map_add_left_Ico Finset.map_add_left_Ico
 
 @[simp]
-theorem map_add_right_Ico (a b c : α) :
+lemma map_add_right_Ico (a b c : α) :
     (Ico a b).map (addRightEmbedding c) = Ico (a + c) (b + c) := by
   rw [← coe_inj, coe_map, coe_Ico, coe_Ico]
   exact Set.image_add_const_Ico _ _ _
 #align finset.map_add_right_Ico Finset.map_add_right_Ico
 
 @[simp]
-theorem map_add_left_Ioc (a b c : α) :
+lemma map_add_left_Ioc (a b c : α) :
     (Ioc a b).map (addLeftEmbedding c) = Ioc (c + a) (c + b) := by
   rw [← coe_inj, coe_map, coe_Ioc, coe_Ioc]
   exact Set.image_const_add_Ioc _ _ _
 #align finset.map_add_left_Ioc Finset.map_add_left_Ioc
 
 @[simp]
-theorem map_add_right_Ioc (a b c : α) :
+lemma map_add_right_Ioc (a b c : α) :
     (Ioc a b).map (addRightEmbedding c) = Ioc (a + c) (b + c) := by
   rw [← coe_inj, coe_map, coe_Ioc, coe_Ioc]
   exact Set.image_add_const_Ioc _ _ _
 #align finset.map_add_right_Ioc Finset.map_add_right_Ioc
 
 @[simp]
-theorem map_add_left_Ioo (a b c : α) :
+lemma map_add_left_Ioo (a b c : α) :
     (Ioo a b).map (addLeftEmbedding c) = Ioo (c + a) (c + b) := by
   rw [← coe_inj, coe_map, coe_Ioo, coe_Ioo]
   exact Set.image_const_add_Ioo _ _ _
 #align finset.map_add_left_Ioo Finset.map_add_left_Ioo
 
 @[simp]
-theorem map_add_right_Ioo (a b c : α) :
+lemma map_add_right_Ioo (a b c : α) :
     (Ioo a b).map (addRightEmbedding c) = Ioo (a + c) (b + c) := by
   rw [← coe_inj, coe_map, coe_Ioo, coe_Ioo]
   exact Set.image_add_const_Ioo _ _ _
@@ -1093,39 +1093,39 @@ theorem map_add_right_Ioo (a b c : α) :
 variable [DecidableEq α]
 
 @[simp]
-theorem image_add_left_Icc (a b c : α) : (Icc a b).image ((· + ·) c) = Icc (c + a) (c + b) := by
+lemma image_add_left_Icc (a b c : α) : (Icc a b).image ((· + ·) c) = Icc (c + a) (c + b) := by
   rw [← map_add_left_Icc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Icc Finset.image_add_left_Icc
 
 @[simp]
-theorem image_add_left_Ico (a b c : α) : (Ico a b).image ((· + ·) c) = Ico (c + a) (c + b) := by
+lemma image_add_left_Ico (a b c : α) : (Ico a b).image ((· + ·) c) = Ico (c + a) (c + b) := by
   rw [← map_add_left_Ico, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ico Finset.image_add_left_Ico
 
 @[simp]
-theorem image_add_left_Ioc (a b c : α) : (Ioc a b).image ((· + ·) c) = Ioc (c + a) (c + b) := by
+lemma image_add_left_Ioc (a b c : α) : (Ioc a b).image ((· + ·) c) = Ioc (c + a) (c + b) := by
   rw [← map_add_left_Ioc, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioc Finset.image_add_left_Ioc
 
 @[simp]
-theorem image_add_left_Ioo (a b c : α) : (Ioo a b).image ((· + ·) c) = Ioo (c + a) (c + b) := by
+lemma image_add_left_Ioo (a b c : α) : (Ioo a b).image ((· + ·) c) = Ioo (c + a) (c + b) := by
   rw [← map_add_left_Ioo, map_eq_image, addLeftEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_left_Ioo Finset.image_add_left_Ioo
 
 @[simp]
-theorem image_add_right_Icc (a b c : α) : (Icc a b).image (· + c) = Icc (a + c) (b + c) := by
+lemma image_add_right_Icc (a b c : α) : (Icc a b).image (· + c) = Icc (a + c) (b + c) := by
   rw [← map_add_right_Icc, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Icc Finset.image_add_right_Icc
 
-theorem image_add_right_Ico (a b c : α) : (Ico a b).image (· + c) = Ico (a + c) (b + c) := by
+lemma image_add_right_Ico (a b c : α) : (Ico a b).image (· + c) = Ico (a + c) (b + c) := by
   rw [← map_add_right_Ico, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ico Finset.image_add_right_Ico
 
-theorem image_add_right_Ioc (a b c : α) : (Ioc a b).image (· + c) = Ioc (a + c) (b + c) := by
+lemma image_add_right_Ioc (a b c : α) : (Ioc a b).image (· + c) = Ioc (a + c) (b + c) := by
   rw [← map_add_right_Ioc, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ioc Finset.image_add_right_Ioc
 
-theorem image_add_right_Ioo (a b c : α) : (Ioo a b).image (· + c) = Ioo (a + c) (b + c) := by
+lemma image_add_right_Ioo (a b c : α) : (Ioo a b).image (· + c) = Ioo (a + c) (b + c) := by
   rw [← map_add_right_Ioo, map_eq_image, addRightEmbedding, Embedding.coeFn_mk]
 #align finset.image_add_right_Ioo Finset.image_add_right_Ioo
 

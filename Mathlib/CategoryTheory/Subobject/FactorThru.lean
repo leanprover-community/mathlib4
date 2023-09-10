@@ -77,7 +77,7 @@ lemma mk_factors_iff {X Y Z : C} (f : Y ⟶ X) [Mono f] (g : Z ⟶ X) :
   Iff.rfl
 #align category_theory.subobject.mk_factors_iff CategoryTheory.Subobject.mk_factors_iff
 
-theorem mk_factors_self (f : X ⟶ Y) [Mono f] : (mk f).Factors f :=
+lemma mk_factors_self (f : X ⟶ Y) [Mono f] : (mk f).Factors f :=
   ⟨𝟙 _, by simp⟩
 #align category_theory.subobject.mk_factors_self CategoryTheory.Subobject.mk_factors_self
 
@@ -130,7 +130,7 @@ lemma factorThru_self {X : C} (P : Subobject X) (h) : P.factorThru P.arrow h = �
 #align category_theory.subobject.factor_thru_self CategoryTheory.Subobject.factorThru_self
 
 @[simp]
-theorem factorThru_mk_self (f : X ⟶ Y) [Mono f] :
+lemma factorThru_mk_self (f : X ⟶ Y) [Mono f] :
     (mk f).factorThru f (mk_factors_self f) = (underlyingIso f).inv := by
   ext
   simp

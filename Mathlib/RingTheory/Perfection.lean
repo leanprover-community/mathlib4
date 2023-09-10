@@ -119,32 +119,32 @@ def pthRoot : Ring.Perfection R p →+* Ring.Perfection R p where
 variable {R p}
 
 @[simp]
-theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
+lemma coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
 #align perfection.coeff_mk Perfection.coeff_mk
 
-theorem coeff_pthRoot (f : Ring.Perfection R p) (n : ℕ) :
+lemma coeff_pthRoot (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p n (pthRoot R p f) = coeff R p (n + 1) f := rfl
 #align perfection.coeff_pth_root Perfection.coeff_pthRoot
 
-theorem coeff_pow_p (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) (f ^ p) = coeff R p n f :=
+lemma coeff_pow_p (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) (f ^ p) = coeff R p n f :=
   by rw [RingHom.map_pow]; exact f.2 n
 #align perfection.coeff_pow_p Perfection.coeff_pow_p
 
-theorem coeff_pow_p' (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
+lemma coeff_pow_p' (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
   f.2 n
 #align perfection.coeff_pow_p' Perfection.coeff_pow_p'
 
-theorem coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
+lemma coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p (n + 1) (frobenius _ p f) = coeff R p n f := by apply coeff_pow_p f n
 #align perfection.coeff_frobenius Perfection.coeff_frobenius
 
 -- `coeff_pow_p f n` also works but is slow!
-theorem coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
+lemma coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
     coeff R p (n + m) ((frobenius _ p)^[m] f) = coeff R p n f :=
   Nat.recOn m rfl fun m ih => by erw [Function.iterate_succ_apply', coeff_frobenius, ih]
 #align perfection.coeff_iterate_frobenius Perfection.coeff_iterate_frobenius
 
-theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m ≤ n) :
+lemma coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m ≤ n) :
     coeff R p n ((frobenius _ p)^[m] f) = coeff R p (n - m) f :=
   Eq.symm <| (coeff_iterate_frobenius _ _ m).symm.trans <| (tsub_add_cancel_of_le hmn).symm ▸ rfl
 #align perfection.coeff_iterate_frobenius' Perfection.coeff_iterate_frobenius'
@@ -220,7 +220,7 @@ def map (φ : R →+* S) : Ring.Perfection R p →+* Ring.Perfection S p where
   map_add' f g := Subtype.eq <| funext fun n => φ.map_add _ _
 #align perfection.map Perfection.map
 
-theorem coeff_map (φ : R →+* S) (f : Ring.Perfection R p) (n : ℕ) :
+lemma coeff_map (φ : R →+* S) (f : Ring.Perfection R p) (n : ℕ) :
     coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
 #align perfection.coeff_map Perfection.coeff_map
 
@@ -361,7 +361,7 @@ lemma map_map {π : P →+* R} (m : PerfectionMap p π) {σ : Q →+* S} (n : Pe
   RingHom.ext_iff.1 (comp_map p m n φ) x
 #align perfection_map.map_map PerfectionMap.map_map
 
-theorem map_eq_map (φ : R →+* S) : map p (of p R) (of p S) φ = Perfection.map p φ :=
+lemma map_eq_map (φ : R →+* S) : map p (of p R) (of p S) φ = Perfection.map p φ :=
   hom_ext _ (of p S) fun f => by rw [map_map, Perfection.coeff_map]
 #align perfection_map.map_eq_map PerfectionMap.map_eq_map
 
@@ -432,7 +432,7 @@ lemma preVal_mul {x y : ModP K v O hv p} (hxy0 : x * y ≠ 0) :
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_mul, v.map_mul]
 #align mod_p.pre_val_mul ModP.preVal_mul
 
-theorem preVal_add (x y : ModP K v O hv p) :
+lemma preVal_add (x y : ModP K v O hv p) :
     preVal K v O hv p (x + y) ≤ max (preVal K v O hv p x) (preVal K v O hv p y) := by
   by_cases hx0 : x = 0
   · rw [hx0, zero_add]; exact le_max_right _ _
@@ -563,7 +563,7 @@ lemma valAux_one : valAux K v O hv p 1 = 1 :=
     exact one_ne_zero
 #align pre_tilt.val_aux_one PreTilt.valAux_one
 
-theorem valAux_mul (f g : PreTilt K v O hv p) :
+lemma valAux_mul (f g : PreTilt K v O hv p) :
     valAux K v O hv p (f * g) = valAux K v O hv p f * valAux K v O hv p g := by
   by_cases hf : f = 0
   · rw [hf, zero_mul, valAux_zero, zero_mul]
@@ -582,7 +582,7 @@ theorem valAux_mul (f g : PreTilt K v O hv p) :
   rw [RingHom.map_mul] at hfg ⊢; rw [ModP.preVal_mul hfg, mul_pow]
 #align pre_tilt.val_aux_mul PreTilt.valAux_mul
 
-theorem valAux_add (f g : PreTilt K v O hv p) :
+lemma valAux_add (f g : PreTilt K v O hv p) :
     valAux K v O hv p (f + g) ≤ max (valAux K v O hv p f) (valAux K v O hv p g) := by
   by_cases hf : f = 0
   · rw [hf, zero_add, valAux_zero, max_eq_right]; exact zero_le _

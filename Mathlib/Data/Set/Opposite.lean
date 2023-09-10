@@ -49,11 +49,11 @@ lemma unop_mem_unop {s : Set αᵒᵖ} {a : αᵒᵖ} : unop a ∈ s.unop ↔ a 
 #align set.unop_mem_unop Set.unop_mem_unop
 
 @[simp]
-theorem op_unop (s : Set α) : s.op.unop = s := rfl
+lemma op_unop (s : Set α) : s.op.unop = s := rfl
 #align set.op_unop Set.op_unop
 
 @[simp]
-theorem unop_op (s : Set αᵒᵖ) : s.unop.op = s := rfl
+lemma unop_op (s : Set αᵒᵖ) : s.unop.op = s := rfl
 #align set.unop_op Set.unop_op
 
 /-- The members of the opposite of a set are in bijection with the members of the set itself. -/
@@ -73,7 +73,7 @@ def opEquiv : Set α ≃ Set αᵒᵖ :=
 #align set.op_equiv_apply Set.opEquiv_apply
 
 @[simp]
-theorem singleton_op (x : α) : ({x} : Set α).op = {op x} := by
+lemma singleton_op (x : α) : ({x} : Set α).op = {op x} := by
   ext
   constructor
   · apply unop_injective
@@ -81,7 +81,7 @@ theorem singleton_op (x : α) : ({x} : Set α).op = {op x} := by
 #align set.singleton_op Set.singleton_op
 
 @[simp]
-theorem singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := by
+lemma singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := by
   ext
   constructor
   · apply op_injective
@@ -89,7 +89,7 @@ theorem singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := 
 #align set.singleton_unop Set.singleton_unop
 
 @[simp 1100]
-theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
+lemma singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
   ext
   constructor
   · apply op_injective
@@ -97,7 +97,7 @@ theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
 #align set.singleton_op_unop Set.singleton_op_unop
 
 @[simp 1100]
-theorem singleton_unop_op (x : αᵒᵖ) : ({unop x} : Set α).op = {x} := by
+lemma singleton_unop_op (x : αᵒᵖ) : ({unop x} : Set α).op = {x} := by
   ext
   constructor
   · apply unop_injective

@@ -78,7 +78,7 @@ lemma _root_.Set.Finite.eventually_cofinite_nmem {s : Set α} (hs : s.Finite) :
   hs.compl_mem_cofinite
 #align set.finite.eventually_cofinite_nmem Set.Finite.eventually_cofinite_nmem
 
-theorem _root_.Finset.eventually_cofinite_nmem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
+lemma _root_.Finset.eventually_cofinite_nmem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
   s.finite_toSet.eventually_cofinite_nmem
 #align finset.eventually_cofinite_nmem Finset.eventually_cofinite_nmem
 
@@ -87,7 +87,7 @@ lemma _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
   frequently_cofinite_iff_infinite.symm
 #align set.infinite_iff_frequently_cofinite Set.infinite_iff_frequently_cofinite
 
-theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
+lemma eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
   (Set.finite_singleton x).eventually_cofinite_nmem
 #align filter.eventually_cofinite_ne Filter.eventually_cofinite_ne
 
@@ -106,7 +106,7 @@ lemma atTop_le_cofinite [Preorder α] [NoMaxOrder α] : (atTop : Filter α) ≤ 
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atTop
 #align filter.at_top_le_cofinite Filter.atTop_le_cofinite
 
-theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
+lemma comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr fun x =>
     mem_comap.2 ⟨{f x}ᶜ, (finite_singleton _).compl_mem_cofinite, fun _ => ne_of_apply_ne f⟩
 #align filter.comap_cofinite_le Filter.comap_cofinite_le

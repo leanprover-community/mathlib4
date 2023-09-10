@@ -110,7 +110,7 @@ lemma hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = ↑(x⁻¹ : K
 variable [CompletableTopField K]
 
 @[norm_cast]
-theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
+lemma coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   by_cases h : x = 0
   · rw [h, inv_zero]
     dsimp [Inv.inv]

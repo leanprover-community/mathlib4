@@ -115,7 +115,7 @@ lemma Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     simpa using hi
 #align set.maps_to.exists_equiv_extend_of_card_eq Set.MapsTo.exists_equiv_extend_of_card_eq
 
-theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
+lemma Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
     [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } ≤ Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical
@@ -123,7 +123,7 @@ theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fint
     rw [Fintype.card_sum]
 #align fintype.card_subtype_or Fintype.card_subtype_or
 
-theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
+lemma Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
     [Fintype { x // q x }] [Fintype { x // p x ∨ q x }] :
     Fintype.card { x // p x ∨ q x } = Fintype.card { x // p x } + Fintype.card { x // q x } := by
   classical

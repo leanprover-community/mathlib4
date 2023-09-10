@@ -73,7 +73,7 @@ instance (priority := 100) IsIso.of_groupoid (f : X ⟶ Y) : IsIso f :=
 #align category_theory.is_iso.of_groupoid CategoryTheory.IsIso.of_groupoid
 
 @[simp]
-theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv f :=
+lemma Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv f :=
   IsIso.eq_inv_of_hom_inv_id <| Groupoid.comp_inv f
 #align category_theory.groupoid.inv_eq_inv CategoryTheory.Groupoid.inv_eq_inv
 
@@ -91,7 +91,7 @@ instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveRe
 #align category_theory.groupoid_has_involutive_reverse CategoryTheory.groupoidHasInvolutiveReverse
 
 @[simp]
-theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv f :=
+lemma Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv f :=
   rfl
 #align category_theory.groupoid.reverse_eq_inv CategoryTheory.Groupoid.reverse_eq_inv
 

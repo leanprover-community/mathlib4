@@ -84,12 +84,12 @@ abbrev KernelFork :=
 variable {f}
 
 @[reassoc (attr := simp)]
-theorem KernelFork.condition (s : KernelFork f) : Fork.ι s ≫ f = 0 := by
+lemma KernelFork.condition (s : KernelFork f) : Fork.ι s ≫ f = 0 := by
   erw [Fork.condition, HasZeroMorphisms.comp_zero]
 #align category_theory.limits.kernel_fork.condition CategoryTheory.Limits.KernelFork.condition
 
 -- Porting note: simp can prove this, removed simp tag
-theorem KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
+lemma KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
   simp [Fork.app_one_eq_ι_comp_right]
 #align category_theory.limits.kernel_fork.app_one CategoryTheory.Limits.KernelFork.app_one
 
@@ -382,11 +382,11 @@ lemma kernelIsoOfEq_trans {f g h : X ⟶ Y} [HasKernel f] [HasKernel g] [HasKern
 
 variable {f}
 
-theorem kernel_not_epi_of_nonzero (w : f ≠ 0) : ¬Epi (kernel.ι f) := fun _ =>
+lemma kernel_not_epi_of_nonzero (w : f ≠ 0) : ¬Epi (kernel.ι f) := fun _ =>
   w (eq_zero_of_epi_kernel f)
 #align category_theory.limits.kernel_not_epi_of_nonzero CategoryTheory.Limits.kernel_not_epi_of_nonzero
 
-theorem kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun I =>
+lemma kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun I =>
   kernel_not_epi_of_nonzero w <| by
     skip
     infer_instance
@@ -537,12 +537,12 @@ abbrev CokernelCofork :=
 variable {f}
 
 @[reassoc (attr := simp)]
-theorem CokernelCofork.condition (s : CokernelCofork f) : f ≫ s.π = 0 := by
+lemma CokernelCofork.condition (s : CokernelCofork f) : f ≫ s.π = 0 := by
   rw [Cofork.condition, zero_comp]
 #align category_theory.limits.cokernel_cofork.condition CategoryTheory.Limits.CokernelCofork.condition
 
 -- Porting note: simp can prove this, removed simp tag
-theorem CokernelCofork.π_eq_zero (s : CokernelCofork f) : s.ι.app zero = 0 := by
+lemma CokernelCofork.π_eq_zero (s : CokernelCofork f) : s.ι.app zero = 0 := by
   simp [Cofork.app_zero_eq_comp_π_right]
 #align category_theory.limits.cokernel_cofork.π_eq_zero CategoryTheory.Limits.CokernelCofork.π_eq_zero
 
@@ -847,11 +847,11 @@ lemma cokernelIsoOfEq_trans {f g h : X ⟶ Y} [HasCokernel f] [HasCokernel g] [H
 
 variable {f}
 
-theorem cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := fun _ =>
+lemma cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := fun _ =>
   w (eq_zero_of_mono_cokernel f)
 #align category_theory.limits.cokernel_not_mono_of_nonzero CategoryTheory.Limits.cokernel_not_mono_of_nonzero
 
-theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun I =>
+lemma cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun I =>
   cokernel_not_mono_of_nonzero w <| by
     skip
     infer_instance

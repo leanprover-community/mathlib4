@@ -219,19 +219,19 @@ lemma sOppSide_comm {s : AffineSubspace R P} {x y : P} : s.SOppSide x y ↔ s.SO
 alias ⟨SOppSide.symm, _⟩ := sOppSide_comm
 #align affine_subspace.s_opp_side.symm AffineSubspace.SOppSide.symm
 
-theorem not_wSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WSameSide x y :=
+lemma not_wSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WSameSide x y :=
   fun ⟨_, h, _⟩ => h.elim
 #align affine_subspace.not_w_same_side_bot AffineSubspace.not_wSameSide_bot
 
-theorem not_sSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SSameSide x y :=
+lemma not_sSameSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SSameSide x y :=
   fun h => not_wSameSide_bot x y h.wSameSide
 #align affine_subspace.not_s_same_side_bot AffineSubspace.not_sSameSide_bot
 
-theorem not_wOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WOppSide x y :=
+lemma not_wOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).WOppSide x y :=
   fun ⟨_, h, _⟩ => h.elim
 #align affine_subspace.not_w_opp_side_bot AffineSubspace.not_wOppSide_bot
 
-theorem not_sOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SOppSide x y :=
+lemma not_sOppSide_bot (x y : P) : ¬(⊥ : AffineSubspace R P).SOppSide x y :=
   fun h => not_wOppSide_bot x y h.wOppSide
 #align affine_subspace.not_s_opp_side_bot AffineSubspace.not_sOppSide_bot
 
@@ -430,7 +430,7 @@ lemma wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ x 
   · exact fun h => ⟨x, h, x, h, SameRay.rfl⟩
 #align affine_subspace.w_opp_side_self_iff AffineSubspace.wOppSide_self_iff
 
-theorem not_sOppSide_self (s : AffineSubspace R P) (x : P) : ¬s.SOppSide x x := by
+lemma not_sOppSide_self (s : AffineSubspace R P) (x : P) : ¬s.SOppSide x x := by
   rw [SOppSide]
   simp
 #align affine_subspace.not_s_opp_side_self AffineSubspace.not_sOppSide_self
@@ -872,7 +872,7 @@ lemma isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : S
     convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_w_same_side AffineSubspace.isConnected_setOf_wSameSide
 
-theorem isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
+lemma isPreconnected_setOf_wSameSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.WSameSide x y } := by
   rcases Set.eq_empty_or_nonempty (s : Set P) with (h | h)
   · rw [coe_eq_bot_iff] at h
@@ -891,7 +891,7 @@ lemma isConnected_setOf_sSameSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉
   convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_s_same_side AffineSubspace.isConnected_setOf_sSameSide
 
-theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
+lemma isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.SSameSide x y } := by
   rcases Set.eq_empty_or_nonempty (s : Set P) with (h | h)
   · rw [coe_eq_bot_iff] at h
@@ -917,7 +917,7 @@ lemma isConnected_setOf_wOppSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Se
     convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_w_opp_side AffineSubspace.isConnected_setOf_wOppSide
 
-theorem isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
+lemma isPreconnected_setOf_wOppSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.WOppSide x y } := by
   rcases Set.eq_empty_or_nonempty (s : Set P) with (h | h)
   · rw [coe_eq_bot_iff] at h
@@ -936,7 +936,7 @@ lemma isConnected_setOf_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ 
   convert AddTorsor.connectedSpace s.direction s
 #align affine_subspace.is_connected_set_of_s_opp_side AffineSubspace.isConnected_setOf_sOppSide
 
-theorem isPreconnected_setOf_sOppSide (s : AffineSubspace ℝ P) (x : P) :
+lemma isPreconnected_setOf_sOppSide (s : AffineSubspace ℝ P) (x : P) :
     IsPreconnected { y | s.SOppSide x y } := by
   rcases Set.eq_empty_or_nonempty (s : Set P) with (h | h)
   · rw [coe_eq_bot_iff] at h

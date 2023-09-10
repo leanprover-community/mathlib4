@@ -38,7 +38,7 @@ def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i)
 #align finset.dfinsupp Finset.dfinsupp
 
 @[simp]
-theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) :
+lemma card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) :
     (s.dfinsupp t).card = ∏ i in s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 #align finset.card_dfinsupp Finset.card_dfinsupp
@@ -116,7 +116,7 @@ def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
 #align dfinsupp.range_Icc DFinsupp.rangeIcc
 
 @[simp]
-theorem rangeIcc_apply (f g : Π₀ i, α i) (i : ι) : f.rangeIcc g i = Icc (f i) (g i) := rfl
+lemma rangeIcc_apply (f g : Π₀ i, α i) (i : ι) : f.rangeIcc g i = Icc (f i) (g i) := rfl
 #align dfinsupp.range_Icc_apply DFinsupp.rangeIcc_apply
 
 lemma mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
@@ -149,7 +149,7 @@ lemma mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔ �
 #align dfinsupp.mem_pi DFinsupp.mem_pi
 
 @[simp]
-theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.prod fun i => (f i).card := by
+lemma card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_dfinsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
 #align dfinsupp.card_pi DFinsupp.card_pi

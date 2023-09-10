@@ -105,14 +105,14 @@ instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op
     where out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.initial_op_of_final CategoryTheory.Functor.initial_op_of_final
 
-theorem final_of_initial_op (F : C ⥤ D) [Initial F.op] : Final F :=
+lemma final_of_initial_op (F : C ⥤ D) [Initial F.op] : Final F :=
   {
     out := fun d =>
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (structuredArrowOpEquivalence F d).symm) }
 #align category_theory.functor.final_of_initial_op CategoryTheory.Functor.final_of_initial_op
 
-theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
+lemma initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
   {
     out := fun d =>
       @isConnected_of_isConnected_op _ _
@@ -253,7 +253,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G
 #align category_theory.functor.final.extend_cocone CategoryTheory.Functor.Final.extendCocone
 
 @[simp]
-theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
+lemma colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
     G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
@@ -543,7 +543,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G
 #align category_theory.functor.initial.extend_cone CategoryTheory.Functor.Initial.extendCone
 
 @[simp]
-theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
+lemma limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
     s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
@@ -823,7 +823,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
 -/
-theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C] :
+lemma IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C] :
     IsFilteredOrEmpty D where
   cocone_objs X Y := ⟨F.obj (IsFiltered.max (Final.lift F X) (Final.lift F Y)),
     Final.homToLift F X ≫ F.map (IsFiltered.leftToMax _ _),
@@ -850,7 +850,7 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
 -/
-theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
+lemma IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
 { IsFilteredOrEmpty.of_final F with
   Nonempty := Nonempty.map F.obj IsFiltered.Nonempty }
 
@@ -859,7 +859,7 @@ theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
-theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
+lemma IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
   IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
@@ -869,7 +869,7 @@ theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOr
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
-theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
+lemma IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
   have : IsFiltered Dᵒᵖ := IsFiltered.of_final F.op
   isCofiltered_of_isFiltered_op _
 

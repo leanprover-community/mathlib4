@@ -137,7 +137,7 @@ end Wo
 `Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice
 instance. -/
 -- Porting note: `ULift.{max u v, u} α` was `ULift α`
-theorem total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (β ↪ α) :=
+lemma total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (β ↪ α) :=
   match @min_injective Bool (fun b => cond b (ULift.{max u v, u} α) (ULift.{max u v, v} β)) ⟨true⟩
     with
   | ⟨true, ⟨h⟩⟩ =>

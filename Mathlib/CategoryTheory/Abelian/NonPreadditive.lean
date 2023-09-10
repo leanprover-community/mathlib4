@@ -432,11 +432,11 @@ lemma sub_comp {X Y Z : C} (f g : X ⟶ Y) (h : Y ⟶ Z) : (f - g) ≫ h = f ≫
   rw [sub_def, Category.assoc, σ_comp, ← Category.assoc, prod.lift_map, sub_def]
 #align category_theory.non_preadditive_abelian.sub_comp CategoryTheory.NonPreadditiveAbelian.sub_comp
 
-theorem comp_add (X Y Z : C) (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫ h := by
+lemma comp_add (X Y Z : C) (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫ h := by
   rw [add_def, comp_sub, neg_def, comp_sub, comp_zero, add_def, neg_def]
 #align category_theory.non_preadditive_abelian.comp_add CategoryTheory.NonPreadditiveAbelian.comp_add
 
-theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f ≫ h + g ≫ h := by
+lemma add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f ≫ h + g ≫ h := by
   rw [add_def, sub_comp, neg_def, sub_comp, zero_comp, add_def, neg_def]
 #align category_theory.non_preadditive_abelian.add_comp CategoryTheory.NonPreadditiveAbelian.add_comp
 

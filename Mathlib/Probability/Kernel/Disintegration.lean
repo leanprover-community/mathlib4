@@ -69,24 +69,24 @@ noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ wher
 instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) :=
   ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure ρ a⟩
 
-theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
+lemma condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
     condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCdf ρ a x) :=
   measure_condCdf_Iic ρ a x
 #align probability_theory.cond_kernel_real_Iic ProbabilityTheory.condKernelReal_Iic
 
-theorem set_lintegral_condKernelReal_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ)
+lemma set_lintegral_condKernelReal_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ)
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, condKernelReal ρ a (Iic x) ∂ρ.fst = ρ (s ×ˢ Iic x) := by
   simp_rw [condKernelReal_Iic]; exact set_lintegral_condCdf ρ x hs
 #align probability_theory.set_lintegral_cond_kernel_real_Iic ProbabilityTheory.set_lintegral_condKernelReal_Iic
 
-theorem set_lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) {s : Set α} (hs : MeasurableSet s) :
+lemma set_lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, condKernelReal ρ a univ ∂ρ.fst = ρ (s ×ˢ univ) := by
   simp only [measure_univ, lintegral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
     one_mul, Measure.fst_apply hs, ← prod_univ]
 #align probability_theory.set_lintegral_cond_kernel_real_univ ProbabilityTheory.set_lintegral_condKernelReal_univ
 
-theorem lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) :
+lemma lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) :
     ∫⁻ a, condKernelReal ρ a univ ∂ρ.fst = ρ univ := by
   rw [← set_lintegral_univ, set_lintegral_condKernelReal_univ ρ MeasurableSet.univ,
     univ_prod_univ]
@@ -207,7 +207,7 @@ lemma lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s) 
       _ = ρ (iUnion f) := (measure_iUnion hf_disj hf_meas).symm
 #align probability_theory.lintegral_cond_kernel_real_mem ProbabilityTheory.lintegral_condKernelReal_mem
 
-theorem kernel.const_eq_compProd_real (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × ℝ))
+lemma kernel.const_eq_compProd_real (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × ℝ))
     [IsFiniteMeasure ρ] :
     kernel.const γ ρ = kernel.const γ ρ.fst ⊗ₖ kernel.prodMkLeft γ (condKernelReal ρ) := by
   ext a s hs : 2
@@ -261,7 +261,7 @@ variable {Ω : Type*} [TopologicalSpace Ω] [PolishSpace Ω] [MeasurableSpace Ω
   [Nonempty Ω] (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
 
 /-- Existence of a conditional kernel. Use the definition `condKernel` to get that kernel. -/
-theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
+lemma exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
     ∃ (η : kernel α Ω) (_h : IsMarkovKernel η), kernel.const γ ρ =
       kernel.compProd (kernel.const γ ρ.fst) (kernel.prodMkLeft γ η) := by
   obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
@@ -374,7 +374,7 @@ lemma measure_eq_compProd :
 is Polish Borel, can be written as the composition-product of the constant kernel with value `ρ.fst`
 (marginal measure over `α`) and a Markov kernel from `α` to `Ω`. We call that Markov kernel
 `ProbabilityTheory.condKernel ρ`. -/
-theorem kernel.const_eq_compProd (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × Ω))
+lemma kernel.const_eq_compProd (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × Ω))
     [IsFiniteMeasure ρ] :
     kernel.const γ ρ = kernel.const γ ρ.fst ⊗ₖ kernel.prodMkLeft γ ρ.condKernel := by
   ext a s hs : 2

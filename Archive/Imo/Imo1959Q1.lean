@@ -22,7 +22,7 @@ open Nat
 
 namespace Imo1959Q1
 
-theorem calculation (n k : ℕ) (h1 : k ∣ 21 * n + 4) (h2 : k ∣ 14 * n + 3) : k ∣ 1 :=
+lemma calculation (n k : ℕ) (h1 : k ∣ 21 * n + 4) (h2 : k ∣ 14 * n + 3) : k ∣ 1 :=
   have h3 : k ∣ 2 * (21 * n + 4) := h1.mul_left 2
   have h4 : k ∣ 3 * (14 * n + 3) := h2.mul_left 3
   have h5 : 3 * (14 * n + 3) = 2 * (21 * n + 4) + 1 := by ring

@@ -41,7 +41,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {U : Set E} {f :
 
 /-- If the modulus of a holomorphic function `f` is bounded below by `ε` on a circle, then its range
 contains a disk of radius `ε / 2`. -/
-theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball z₀ r)) (hr : 0 < r)
+lemma DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball z₀ r)) (hr : 0 < r)
     (hf : ∀ z ∈ sphere z₀ r, ε ≤ ‖f z - f z₀‖) (hz₀ : ∃ᶠ z in 𝓝 z₀, f z ≠ f z₀) :
     ball (f z₀) (ε / 2) ⊆ f '' closedBall z₀ r := by
   /- This is a direct application of the maximum principle. Pick `v` close to `f z₀`, and look at
@@ -74,7 +74,7 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
 of `z₀`, or behaves locally like an open function (in the sense that the image of every neighborhood
 of `z₀` is a neighborhood of `f z₀`, as in `isOpenMap_iff_nhds_le`). For a function `f : E → ℂ`
 the same result holds, see `AnalyticAt.eventually_constant_or_nhds_le_map_nhds`. -/
-theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt ℂ f z₀) :
+lemma AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt ℂ f z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = f z₀) ∨ 𝓝 (f z₀) ≤ map f (𝓝 z₀) := by
   /- The function `f` is analytic in a neighborhood of `z₀`; by the isolated zeros principle, if `f`
     is not constant in a neighborhood of `z₀`, then it is nonzero, and therefore bounded below, on
@@ -160,7 +160,7 @@ lemma AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Analyt
 /-- The *open mapping theorem* for holomorphic functions, global version: if a function `g : E → ℂ`
 is analytic on a connected set `U`, then either it is constant on `U`, or it is open on `U` (in the
 sense that it maps any open set contained in `U` to an open set in `ℂ`). -/
-theorem AnalyticOn.is_constant_or_isOpen (hg : AnalyticOn ℂ g U) (hU : IsPreconnected U) :
+lemma AnalyticOn.is_constant_or_isOpen (hg : AnalyticOn ℂ g U) (hU : IsPreconnected U) :
     (∃ w, ∀ z ∈ U, g z = w) ∨ ∀ (s) (_ : s ⊆ U), IsOpen s → IsOpen (g '' s) := by
   by_cases ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
   · obtain ⟨z₀, hz₀, h⟩ := h

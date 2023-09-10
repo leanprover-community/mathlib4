@@ -53,7 +53,7 @@ lemma Subsingleton.set_empty_or_univ {α} [Subsingleton α] (s : Set α) : s = �
 lemma Subsingleton.set_empty_or_univ' {α} [Subsingleton α] (s : Set α) : EmptyOrUniv s :=
   Subsingleton.set_empty_or_univ s
 
-theorem Set.empty_union (a : Set α) : ∅ ∪ a = a := sorry
+lemma Set.empty_union (a : Set α) : ∅ ∪ a = a := sorry
 
 example {α : Type _} (s : Set α) (hs : s = ∅ ∪ Set.univ) : EmptyOrUniv s := by
   fail_if_success nontriviality α

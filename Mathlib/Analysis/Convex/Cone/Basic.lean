@@ -145,7 +145,7 @@ instance : InfSet (ConvexCone 𝕜 E) :=
       mem_biInter fun s hs => s.add_mem (mem_iInter₂.1 hx s hs) (mem_iInter₂.1 hy s hs)⟩⟩
 
 @[simp]
-theorem coe_sInf (S : Set (ConvexCone 𝕜 E)) : ↑(sInf S) = ⋂ s ∈ S, (s : Set E) :=
+lemma coe_sInf (S : Set (ConvexCone 𝕜 E)) : ↑(sInf S) = ⋂ s ∈ S, (s : Set E) :=
   rfl
 #align convex_cone.coe_Inf ConvexCone.coe_sInf
 
@@ -167,7 +167,7 @@ variable (𝕜)
 instance : Bot (ConvexCone 𝕜 E) :=
   ⟨⟨∅, fun _ _ _ => False.elim, fun _ => False.elim⟩⟩
 
-theorem mem_bot (x : E) : (x ∈ (⊥ : ConvexCone 𝕜 E)) = False :=
+lemma mem_bot (x : E) : (x ∈ (⊥ : ConvexCone 𝕜 E)) = False :=
   rfl
 #align convex_cone.mem_bot ConvexCone.mem_bot
 
@@ -179,7 +179,7 @@ lemma coe_bot : ↑(⊥ : ConvexCone 𝕜 E) = (∅ : Set E) :=
 instance : Top (ConvexCone 𝕜 E) :=
   ⟨⟨univ, fun _ _ _ _ => mem_univ _, fun _ _ _ _ => mem_univ _⟩⟩
 
-theorem mem_top (x : E) : x ∈ (⊤ : ConvexCone 𝕜 E) :=
+lemma mem_top (x : E) : x ∈ (⊤ : ConvexCone 𝕜 E) :=
   mem_univ x
 #align convex_cone.mem_top ConvexCone.mem_top
 
@@ -264,13 +264,13 @@ lemma mem_map {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 E} {y : F} : y ∈ S.m
   Set.mem_image f S y
 #align convex_cone.mem_map ConvexCone.mem_map
 
-theorem map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) :
+lemma map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) :
     (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image g f S
 #align convex_cone.map_map ConvexCone.map_map
 
 @[simp]
-theorem map_id (S : ConvexCone 𝕜 E) : S.map LinearMap.id = S :=
+lemma map_id (S : ConvexCone 𝕜 E) : S.map LinearMap.id = S :=
   SetLike.coe_injective <| image_id _
 #align convex_cone.map_id ConvexCone.map_id
 
@@ -286,16 +286,16 @@ def comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : ConvexCone 𝕜 E whe
 #align convex_cone.comap ConvexCone.comap
 
 @[simp]
-theorem coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : Set E) = f ⁻¹' S :=
+lemma coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : Set E) = f ⁻¹' S :=
   rfl
 #align convex_cone.coe_comap ConvexCone.coe_comap
 
 @[simp] -- porting note: was not a `dsimp` lemma
-theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
+lemma comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
   rfl
 #align convex_cone.comap_id ConvexCone.comap_id
 
-theorem comap_comap (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 G) :
+lemma comap_comap (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 G) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   rfl
 #align convex_cone.comap_comap ConvexCone.comap_comap
@@ -316,7 +316,7 @@ variable [OrderedAddCommGroup E] [Module 𝕜 E]
 /-- Constructs an ordered module given an `OrderedAddCommGroup`, a cone, and a proof that
 the order relation is the one defined by the cone.
 -/
-theorem to_orderedSMul (S : ConvexCone 𝕜 E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ S) : OrderedSMul 𝕜 E :=
+lemma to_orderedSMul (S : ConvexCone 𝕜 E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ S) : OrderedSMul 𝕜 E :=
   OrderedSMul.mk'
     (by
       intro x y z xy hz
@@ -349,11 +349,11 @@ def Blunt (S : ConvexCone 𝕜 E) : Prop :=
   (0 : E) ∉ S
 #align convex_cone.blunt ConvexCone.Blunt
 
-theorem pointed_iff_not_blunt (S : ConvexCone 𝕜 E) : S.Pointed ↔ ¬S.Blunt :=
+lemma pointed_iff_not_blunt (S : ConvexCone 𝕜 E) : S.Pointed ↔ ¬S.Blunt :=
   ⟨fun h₁ h₂ => h₂ h₁, Classical.not_not.mp⟩
 #align convex_cone.pointed_iff_not_blunt ConvexCone.pointed_iff_not_blunt
 
-theorem blunt_iff_not_pointed (S : ConvexCone 𝕜 E) : S.Blunt ↔ ¬S.Pointed := by
+lemma blunt_iff_not_pointed (S : ConvexCone 𝕜 E) : S.Blunt ↔ ¬S.Pointed := by
   rw [pointed_iff_not_blunt, Classical.not_not]
 #align convex_cone.blunt_iff_not_pointed ConvexCone.blunt_iff_not_pointed
 
@@ -381,7 +381,7 @@ def Salient : Prop :=
   ∀ x ∈ S, x ≠ (0 : E) → -x ∉ S
 #align convex_cone.salient ConvexCone.Salient
 
-theorem salient_iff_not_flat (S : ConvexCone 𝕜 E) : S.Salient ↔ ¬S.Flat := by
+lemma salient_iff_not_flat (S : ConvexCone 𝕜 E) : S.Salient ↔ ¬S.Flat := by
   simp [Salient, Flat]
 #align convex_cone.salient_iff_not_flat ConvexCone.salient_iff_not_flat
 
@@ -445,7 +445,7 @@ instance : Zero (ConvexCone 𝕜 E) :=
   ⟨⟨0, fun _ _ => by simp, fun _ => by simp⟩⟩
 
 @[simp]
-theorem mem_zero (x : E) : x ∈ (0 : ConvexCone 𝕜 E) ↔ x = 0 :=
+lemma mem_zero (x : E) : x ∈ (0 : ConvexCone 𝕜 E) ↔ x = 0 :=
   Iff.rfl
 #align convex_cone.mem_zero ConvexCone.mem_zero
 
@@ -511,7 +511,7 @@ def toConvexCone (S : Submodule 𝕜 E) : ConvexCone 𝕜 E where
 #align submodule.to_convex_cone Submodule.toConvexCone
 
 @[simp]
-theorem coe_toConvexCone (S : Submodule 𝕜 E) : ↑S.toConvexCone = (S : Set E) :=
+lemma coe_toConvexCone (S : Submodule 𝕜 E) : ↑S.toConvexCone = (S : Set E) :=
   rfl
 #align submodule.coe_to_convex_cone Submodule.coe_toConvexCone
 
@@ -536,13 +536,13 @@ lemma toConvexCone_top : (⊤ : Submodule 𝕜 E).toConvexCone = ⊤ :=
 #align submodule.to_convex_cone_top Submodule.toConvexCone_top
 
 @[simp]
-theorem toConvexCone_inf (S T : Submodule 𝕜 E) :
+lemma toConvexCone_inf (S T : Submodule 𝕜 E) :
     (S ⊓ T).toConvexCone = S.toConvexCone ⊓ T.toConvexCone :=
   rfl
 #align submodule.to_convex_cone_inf Submodule.toConvexCone_inf
 
 @[simp]
-theorem pointed_toConvexCone (S : Submodule 𝕜 E) : S.toConvexCone.Pointed :=
+lemma pointed_toConvexCone (S : Submodule 𝕜 E) : S.toConvexCone.Pointed :=
   S.zero_mem
 #align submodule.pointed_to_convex_cone Submodule.pointed_toConvexCone
 
@@ -683,14 +683,14 @@ lemma toCone_eq_sInf : hs.toCone s = sInf { t : ConvexCone 𝕜 E | s ⊆ t } :=
 
 end Convex
 
-theorem convexHull_toCone_isLeast (s : Set E) :
+lemma convexHull_toCone_isLeast (s : Set E) :
     IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
   convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 #align convex_hull_to_cone_is_least convexHull_toCone_isLeast
 
-theorem convexHull_toCone_eq_sInf (s : Set E) :
+lemma convexHull_toCone_eq_sInf (s : Set E) :
     (convex_convexHull 𝕜 s).toCone _ = sInf { t : ConvexCone 𝕜 E | s ⊆ t } :=
   Eq.symm <| IsGLB.sInf_eq <| IsLeast.isGLB <| convexHull_toCone_isLeast s
 #align convex_hull_to_cone_eq_Inf convexHull_toCone_eq_sInf
@@ -727,7 +727,7 @@ variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
 and `p + s = E`. If `f` is not defined on the whole `E`, then we can extend it to a larger
 submodule without breaking the non-negativity condition. -/
-theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
+lemma step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
     ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
   obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain :=
@@ -779,7 +779,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
         one_mul] at this
 #align riesz_extension.step RieszExtension.step
 
-theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
+lemma exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
     ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
   set S := { p : E →ₗ.[ℝ] ℝ | ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x }
@@ -812,7 +812,7 @@ end RieszExtension
 and a linear `f : p → ℝ`, assume that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then
 there exists a globally defined linear function `g : E → ℝ` that agrees with `f` on `p`,
 and is nonnegative on `s`. -/
-theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
+lemma riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
     (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
@@ -827,7 +827,7 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
 then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
 for all `x`. -/
-theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ)
+lemma exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ)
     (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
     (hf : ∀ x : f.domain, f x ≤ N x) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by

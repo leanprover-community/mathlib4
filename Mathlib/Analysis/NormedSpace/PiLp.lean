@@ -93,12 +93,12 @@ variable (p : ℝ≥0∞) (𝕜 𝕜' : Type*) {ι : Type*} (α : ι → Type*) 
 the use of the type synonym. -/
 
 @[simp]
-theorem _root_.WithLp.equiv_pi_apply (x : PiLp p α) (i : ι) : WithLp.equiv p _ x i = x i :=
+lemma _root_.WithLp.equiv_pi_apply (x : PiLp p α) (i : ι) : WithLp.equiv p _ x i = x i :=
   rfl
 #align pi_Lp.equiv_apply WithLp.equiv_pi_apply
 
 @[simp]
-theorem  _root_.WithLp.equiv_symm_pi_apply (x : ∀ i, α i) (i : ι) :
+lemma _root_.WithLp.equiv_symm_pi_apply (x : ∀ i, α i) (i : ι) :
     (WithLp.equiv p _).symm x i = x i :=
   rfl
 #align pi_Lp.equiv_symm_apply WithLp.equiv_symm_pi_apply
@@ -136,7 +136,7 @@ instance : EDist (PiLp p β) where
 
 variable {β}
 
-theorem edist_eq_card (f g : PiLp 0 β) : edist f g = { i | f i ≠ g i }.toFinite.toFinset.card :=
+lemma edist_eq_card (f g : PiLp 0 β) : edist f g = { i | f i ≠ g i }.toFinite.toFinset.card :=
   if_pos rfl
 #align pi_Lp.edist_eq_card PiLp.edist_eq_card
 
@@ -146,7 +146,7 @@ lemma edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 #align pi_Lp.edist_eq_sum PiLp.edist_eq_sum
 
-theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := by
+lemma edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := by
   dsimp [edist]
   exact if_neg ENNReal.top_ne_zero
 #align pi_Lp.edist_eq_supr PiLp.edist_eq_iSup
@@ -160,7 +160,7 @@ variable [∀ i, PseudoEMetricSpace (β i)]
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
-protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
+protected lemma edist_self (f : PiLp p β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp [edist_eq_card]
   · simp [edist_eq_iSup]
@@ -169,7 +169,7 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
-protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
+protected lemma edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp only [edist_eq_card, eq_comm, Ne.def]
   · simp only [edist_eq_iSup, edist_comm]
@@ -197,7 +197,7 @@ instance : Dist (PiLp p α) where
 
 variable {α}
 
-theorem dist_eq_card (f g : PiLp 0 α) : dist f g = { i | f i ≠ g i }.toFinite.toFinset.card :=
+lemma dist_eq_card (f g : PiLp 0 α) : dist f g = { i | f i ≠ g i }.toFinite.toFinset.card :=
   if_pos rfl
 #align pi_Lp.dist_eq_card PiLp.dist_eq_card
 
@@ -207,7 +207,7 @@ lemma dist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p α) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 #align pi_Lp.dist_eq_sum PiLp.dist_eq_sum
 
-theorem dist_eq_iSup (f g : PiLp ∞ α) : dist f g = ⨆ i, dist (f i) (g i) := by
+lemma dist_eq_iSup (f g : PiLp ∞ α) : dist f g = ⨆ i, dist (f i) (g i) := by
   dsimp [dist]
   exact if_neg ENNReal.top_ne_zero
 #align pi_Lp.dist_eq_csupr PiLp.dist_eq_iSup
@@ -232,16 +232,16 @@ instance hasNorm : Norm (PiLp p β) where
 
 variable {p β}
 
-theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = { i | f i ≠ 0 }.toFinite.toFinset.card :=
+lemma norm_eq_card (f : PiLp 0 β) : ‖f‖ = { i | f i ≠ 0 }.toFinite.toFinset.card :=
   if_pos rfl
 #align pi_Lp.norm_eq_card PiLp.norm_eq_card
 
-theorem norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := by
+lemma norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := by
   dsimp [Norm.norm]
   exact if_neg ENNReal.top_ne_zero
 #align pi_Lp.norm_eq_csupr PiLp.norm_eq_ciSup
 
-theorem norm_eq_sum (hp : 0 < p.toReal) (f : PiLp p β) :
+lemma norm_eq_sum (hp : 0 < p.toReal) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
@@ -588,7 +588,7 @@ lemma nnnorm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)]
     exact norm_eq_of_L2 x
 #align pi_Lp.nnnorm_eq_of_L2 PiLp.nnnorm_eq_of_L2
 
-theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+lemma norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
     simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
@@ -710,13 +710,13 @@ def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
 variable {p 𝕜 E}
 
 @[simp]
-theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiLp p fun _ : ι => E) :
+lemma _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiLp p fun _ : ι => E) :
     LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e v = Equiv.piCongrLeft' (fun _ : ι => E) e v :=
   rfl
 #align linear_isometry_equiv.pi_Lp_congr_left_apply LinearIsometryEquiv.piLpCongrLeft_apply
 
 @[simp]
-theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
+lemma _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
   LinearIsometryEquiv.ext fun z => by -- porting note: was `rfl`
@@ -770,13 +770,13 @@ lemma nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
 #align pi_Lp.nnnorm_equiv_symm_single PiLp.nnnorm_equiv_symm_single
 
 @[simp]
-theorem norm_equiv_symm_single (i : ι) (b : β i) :
+lemma norm_equiv_symm_single (i : ι) (b : β i) :
     ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖ = ‖b‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_single p β i b
 #align pi_Lp.norm_equiv_symm_single PiLp.norm_equiv_symm_single
 
 @[simp]
-theorem nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
+lemma nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
     nndist
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
@@ -786,7 +786,7 @@ theorem nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
 #align pi_Lp.nndist_equiv_symm_single_same PiLp.nndist_equiv_symm_single_same
 
 @[simp]
-theorem dist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
+lemma dist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
     dist
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
@@ -795,7 +795,7 @@ theorem dist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
 #align pi_Lp.dist_equiv_symm_single_same PiLp.dist_equiv_symm_single_same
 
 @[simp]
-theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
+lemma edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
     edist
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
@@ -892,7 +892,7 @@ lemma basisFun_apply [DecidableEq ι] (i) :
 #align pi_Lp.basis_fun_apply PiLp.basisFun_apply
 
 @[simp]
-theorem basisFun_repr (x : PiLp p fun _ : ι => 𝕜) (i : ι) : (basisFun p 𝕜 ι).repr x i = x i :=
+lemma basisFun_repr (x : PiLp p fun _ : ι => 𝕜) (i : ι) : (basisFun p 𝕜 ι).repr x i = x i :=
   rfl
 #align pi_Lp.basis_fun_repr PiLp.basisFun_repr
 
@@ -914,7 +914,7 @@ lemma basisFun_map :
 
 open Matrix
 
-nonrec theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
+nonrec lemma basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) * A =
       Matrix.of fun i j => b.repr ((WithLp.equiv _ _).symm (Aᵀ j)) i := by

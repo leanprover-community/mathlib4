@@ -53,7 +53,7 @@ lemma tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 :
   rw [← not_iff_not, not_exists, ← Ne, tan_ne_zero_iff]
 #align real.tan_eq_zero_iff Real.tan_eq_zero_iff
 
-theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
+lemma tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align real.tan_int_mul_pi_div_two Real.tan_int_mul_pi_div_two
 
@@ -117,11 +117,11 @@ noncomputable def arctan (x : ℝ) : ℝ :=
 #align real.arctan Real.arctan
 
 @[simp]
-theorem tan_arctan (x : ℝ) : tan (arctan x) = x :=
+lemma tan_arctan (x : ℝ) : tan (arctan x) = x :=
   tanOrderIso.apply_symm_apply x
 #align real.tan_arctan Real.tan_arctan
 
-theorem arctan_mem_Ioo (x : ℝ) : arctan x ∈ Ioo (-(π / 2)) (π / 2) :=
+lemma arctan_mem_Ioo (x : ℝ) : arctan x ∈ Ioo (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 #align real.arctan_mem_Ioo Real.arctan_mem_Ioo
 
@@ -134,31 +134,31 @@ lemma arctan_tan {x : ℝ} (hx₁ : -(π / 2) < x) (hx₂ : x < π / 2) : arctan
   Subtype.ext_iff.1 <| tanOrderIso.symm_apply_apply ⟨x, hx₁, hx₂⟩
 #align real.arctan_tan Real.arctan_tan
 
-theorem cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
+lemma cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
   cos_pos_of_mem_Ioo <| arctan_mem_Ioo x
 #align real.cos_arctan_pos Real.cos_arctan_pos
 
-theorem cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
+lemma cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
   rw_mod_cast [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
 #align real.cos_sq_arctan Real.cos_sq_arctan
 
-theorem sin_arctan (x : ℝ) : sin (arctan x) = x / sqrt (1 + x ^ 2) := by
+lemma sin_arctan (x : ℝ) : sin (arctan x) = x / sqrt (1 + x ^ 2) := by
   rw_mod_cast [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 #align real.sin_arctan Real.sin_arctan
 
-theorem cos_arctan (x : ℝ) : cos (arctan x) = 1 / sqrt (1 + x ^ 2) := by
+lemma cos_arctan (x : ℝ) : cos (arctan x) = 1 / sqrt (1 + x ^ 2) := by
   rw_mod_cast [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 #align real.cos_arctan Real.cos_arctan
 
-theorem arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
+lemma arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
   (arctan_mem_Ioo x).2
 #align real.arctan_lt_pi_div_two Real.arctan_lt_pi_div_two
 
-theorem neg_pi_div_two_lt_arctan (x : ℝ) : -(π / 2) < arctan x :=
+lemma neg_pi_div_two_lt_arctan (x : ℝ) : -(π / 2) < arctan x :=
   (arctan_mem_Ioo x).1
 #align real.neg_pi_div_two_lt_arctan Real.neg_pi_div_two_lt_arctan
 
-theorem arctan_eq_arcsin (x : ℝ) : arctan x = arcsin (x / sqrt (1 + x ^ 2)) :=
+lemma arctan_eq_arcsin (x : ℝ) : arctan x = arcsin (x / sqrt (1 + x ^ 2)) :=
   Eq.symm <| arcsin_eq_of_sin_eq (sin_arctan x) (mem_Icc_of_Ioo <| arctan_mem_Ioo x)
 #align real.arctan_eq_arcsin Real.arctan_eq_arcsin
 
@@ -183,7 +183,7 @@ lemma arctan_one : arctan 1 = π / 4 :=
 #align real.arctan_one Real.arctan_one
 
 @[simp]
-theorem arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arcsin, neg_div]
+lemma arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arcsin, neg_div]
 #align real.arctan_neg Real.arctan_neg
 
 lemma arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (sqrt (1 + x ^ 2))⁻¹ := by

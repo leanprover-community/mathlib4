@@ -134,7 +134,7 @@ lemma ι_openEmbedding [HasLimits C] (i : D.J) : OpenEmbedding (𝖣.ι i).base 
       (D.toTopGlueData.ι_openEmbedding i)
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_open_embedding AlgebraicGeometry.PresheafedSpace.GlueData.ι_openEmbedding
 
-theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
+lemma pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
     (π₂ i, j, k) '' ((π₁ i, j, k) ⁻¹' S) = D.f i k ⁻¹' (D.f i j '' S) := by
   have eq₁ : _ = (π₁ i, j, k).base := PreservesPullback.iso_hom_fst (forget C) _ _
   have eq₂ : _ = (π₂ i, j, k).base := PreservesPullback.iso_hom_snd (forget C) _ _
@@ -152,7 +152,7 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/0GiBUh6.png) commute. -/
 @[simp, reassoc]
-theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
+lemma f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
     (D.f_open i j).invApp U ≫ (D.f i k).c.app _ =
       (π₁ i, j, k).c.app (op U) ≫
         (π₂⁻¹ i, j, k) (unop _) ≫
@@ -181,7 +181,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
 -/
-theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)).carrier) :
+lemma snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)).carrier) :
     ∃ eq,
       (π₂⁻¹ i, j, k) U ≫ (D.t k i).c.app _ ≫ (D.V (k, i)).presheaf.map (eqToHom eq) =
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
@@ -230,7 +230,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/q6X1GJ9.png) commute. -/
 @[simp, reassoc]
-theorem snd_invApp_t_app (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)).carrier) :
+lemma snd_invApp_t_app (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)).carrier) :
     (π₂⁻¹ i, j, k) U ≫ (D.t k i).c.app _ =
       (D.t' k i j).c.app _ ≫
         (π₁⁻¹ k, j, i) (unop _) ≫
@@ -243,7 +243,7 @@ theorem snd_invApp_t_app (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k))
 
 variable [HasLimits C]
 
-theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
+lemma ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     (Opens.map (𝖣.ι j).base).obj ((D.ι_openEmbedding i).isOpenMap.functor.obj U) =
       (D.f_open j i).openFunctor.obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
@@ -280,7 +280,7 @@ def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
         (𝖣.U j).presheaf.map (eqToHom (D.ι_image_preimage_eq i j U)).op
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap
 
-theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
+lemma opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
     ∃ eq,
       D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ =
         ((π₁ j, i, k) ≫ D.t j i ≫ D.f i j).c.app (op U) ≫
@@ -299,7 +299,7 @@ theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app' AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app'
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/mBzV1Rx.png) commute. -/
-theorem opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
+lemma opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
     D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ =
       ((π₁ j, i, k) ≫ D.t j i ≫ D.f i j).c.app (op U) ≫
         (π₂⁻¹ j, i, k) (unop _) ≫
@@ -308,7 +308,7 @@ theorem opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app
 
 -- This is proved separately since `reassoc` somehow timeouts.
-theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier) {X' : C}
+lemma opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier) {X' : C}
     (f' : _ ⟶ X') :
     D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ f' =
       ((π₁ j, i, k) ≫ D.t j i ≫ D.f i j).c.app (op U) ≫
@@ -448,7 +448,7 @@ abbrev ιInvAppπEqMap {i : D.J} (U : Opens (D.U i).carrier) :=
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π_eq_map AlgebraicGeometry.PresheafedSpace.GlueData.ιInvAppπEqMap
 
 /-- `ιInvApp` is the right inverse of `D.ι i` on `U`. -/
-theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
+lemma π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U ≫ D.diagramOverOpenπ U j =
       D.diagramOverOpenπ U j := by
   -- Porting note : originally, the proof of monotonicity was left a blank and proved in the end
@@ -484,7 +484,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
 #align algebraic_geometry.PresheafedSpace.glue_data.π_ι_inv_app_π AlgebraicGeometry.PresheafedSpace.GlueData.π_ιInvApp_π
 
 /-- `ιInvApp` is the inverse of `D.ι i` on `U`. -/
-theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
+lemma π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U = 𝟙 _ := by
   ext j
   induction j using Opposite.rec' with | h j => ?_
@@ -547,7 +547,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
     · intro m e₁ _; rw [← cancel_mono (D.f i j)]; erw [e₁]; rw [IsOpenImmersion.lift_fac]
 #align algebraic_geometry.PresheafedSpace.glue_data.V_pullback_cone_is_limit AlgebraicGeometry.PresheafedSpace.GlueData.vPullbackConeIsLimit
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
+lemma ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
   𝖣.ι_jointly_surjective (PresheafedSpace.forget _ ⋙ CategoryTheory.forget TopCat) x
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_jointly_surjective AlgebraicGeometry.PresheafedSpace.GlueData.ι_jointly_surjective
 
@@ -606,7 +606,7 @@ abbrev isoPresheafedSpace :
   𝖣.gluedIso forgetToPresheafedSpace
 #align algebraic_geometry.SheafedSpace.glue_data.iso_PresheafedSpace AlgebraicGeometry.SheafedSpaceₓ.GlueData.isoPresheafedSpace
 
-theorem ι_isoPresheafedSpace_inv (i : D.J) :
+lemma ι_isoPresheafedSpace_inv (i : D.J) :
     D.toPresheafedSpaceGlueData.toGlueData.ι i ≫ D.isoPresheafedSpace.inv = 𝖣.ι i :=
   𝖣.ι_gluedIso_inv _ _
 #align algebraic_geometry.SheafedSpace.glue_data.ι_iso_PresheafedSpace_inv AlgebraicGeometry.SheafedSpaceₓ.GlueData.ι_isoPresheafedSpace_inv
@@ -618,7 +618,7 @@ instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   apply PresheafedSpace.GlueData.ιIsOpenImmersion
 #align algebraic_geometry.SheafedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.SheafedSpaceₓ.GlueData.ιIsOpenImmersion
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
+lemma ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
   𝖣.ι_jointly_surjective (SheafedSpace.forget _ ⋙ CategoryTheory.forget TopCat) x
 #align algebraic_geometry.SheafedSpace.glue_data.ι_jointly_surjective AlgebraicGeometry.SheafedSpaceₓ.GlueData.ι_jointly_surjective
 
@@ -683,7 +683,7 @@ abbrev isoSheafedSpace : 𝖣.glued.toSheafedSpace ≅ D.toSheafedSpaceGlueData.
   𝖣.gluedIso forgetToSheafedSpace
 #align algebraic_geometry.LocallyRingedSpace.glue_data.iso_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.GlueData.isoSheafedSpace
 
-theorem ι_isoSheafedSpace_inv (i : D.J) :
+lemma ι_isoSheafedSpace_inv (i : D.J) :
     D.toSheafedSpaceGlueData.toGlueData.ι i ≫ D.isoSheafedSpace.inv = (𝖣.ι i).1 :=
   𝖣.ι_gluedIso_inv forgetToSheafedSpace i
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_iso_SheafedSpace_inv AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_isoSheafedSpace_inv
@@ -698,7 +698,7 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
 instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
   inferInstance
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).1.base y = x :=
+lemma ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).1.base y = x :=
   𝖣.ι_jointly_surjective
     ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCatMax.{u, u}) ⋙
       forget TopCat.{u}) x

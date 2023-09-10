@@ -263,7 +263,7 @@ lemma restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
   convert rfl
 #align polynomial.gal.restrict_dvd_def Polynomial.Gal.restrictDvd_def
 
-theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) : Function.Surjective (restrictDvd hpq) :=
+lemma restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) : Function.Surjective (restrictDvd hpq) :=
   by classical
     -- Porting note: was `simp only [restrictDvd_def, dif_neg hq, restrict_surjective]`
     haveI := Fact.mk <|
@@ -332,7 +332,7 @@ lemma mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ : 
 
 set_option maxHeartbeats 300000 in
 /-- `p` splits in the splitting field of `p ∘ q`, for `q` non-constant. -/
-theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
+lemma splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     p.Splits (algebraMap F (p.comp q).SplittingField) := by
   let P : F[X] → Prop := fun r => r.Splits (algebraMap F (r.comp q).SplittingField)
   have key1 : ∀ {r : F[X]}, Irreducible r → P r := by
@@ -384,7 +384,7 @@ def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
   @restrict F _ p _ _ _ h
 #align polynomial.gal.restrict_comp Polynomial.Gal.restrictComp
 
-theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
+lemma restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
   -- Porting note: was
   -- simp only [restrictComp, restrict_surjective]
@@ -398,7 +398,7 @@ variable {p q}
 
 /-- For a separable polynomial, its Galois group has cardinality
 equal to the dimension of its splitting field over `F`. -/
-theorem card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.SplittingField :=
+lemma card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.SplittingField :=
   haveI : IsGalois F p.SplittingField := IsGalois.of_separable_splitting_field hp
   IsGalois.card_aut_eq_finrank F p.SplittingField
 #align polynomial.gal.card_of_separable Polynomial.Gal.card_of_separable
@@ -434,7 +434,7 @@ attribute [local instance] splits_ℚ_ℂ
 
 /-- The number of complex roots equals the number of real roots plus
     the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
-theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
+lemma card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     (p.rootSet ℂ).toFinset.card =
       (p.rootSet ℝ).toFinset.card +
         (galActionHom p ℂ (restrict p ℂ

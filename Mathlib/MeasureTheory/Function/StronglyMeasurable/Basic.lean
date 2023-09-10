@@ -525,7 +525,7 @@ section Monoid
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
 
 @[to_additive (attr := measurability)]
-theorem _root_.List.stronglyMeasurable_prod' (l : List (α → M))
+lemma _root_.List.stronglyMeasurable_prod' (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   induction' l with f l ihl; · exact stronglyMeasurable_one
   rw [List.forall_mem_cons] at hl
@@ -535,7 +535,7 @@ theorem _root_.List.stronglyMeasurable_prod' (l : List (α → M))
 #align list.strongly_measurable_sum' List.stronglyMeasurable_sum'
 
 @[to_additive (attr := measurability)]
-theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
+lemma _root_.List.stronglyMeasurable_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) :
     StronglyMeasurable fun x => (l.map fun f : α → M => f x).prod := by
   simpa only [← Pi.list_prod_apply] using l.stronglyMeasurable_prod' hl
@@ -549,7 +549,7 @@ section CommMonoid
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
 
 @[to_additive (attr := measurability)]
-theorem _root_.Multiset.stronglyMeasurable_prod' (l : Multiset (α → M))
+lemma _root_.Multiset.stronglyMeasurable_prod' (l : Multiset (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   rcases l with ⟨l⟩
   simpa using l.stronglyMeasurable_prod' (by simpa using hl)
@@ -557,7 +557,7 @@ theorem _root_.Multiset.stronglyMeasurable_prod' (l : Multiset (α → M))
 #align multiset.strongly_measurable_sum' Multiset.stronglyMeasurable_sum'
 
 @[to_additive (attr := measurability)]
-theorem _root_.Multiset.stronglyMeasurable_prod (s : Multiset (α → M))
+lemma _root_.Multiset.stronglyMeasurable_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, StronglyMeasurable f) :
     StronglyMeasurable fun x => (s.map fun f : α → M => f x).prod := by
   simpa only [← Pi.multiset_prod_apply] using s.stronglyMeasurable_prod' hs
@@ -1209,7 +1209,7 @@ protected noncomputable def mk (f : α → β) (hf : AEStronglyMeasurable f μ) 
   hf.choose
 #align measure_theory.ae_strongly_measurable.mk MeasureTheory.AEStronglyMeasurable.mk
 
-theorem stronglyMeasurable_mk (hf : AEStronglyMeasurable f μ) : StronglyMeasurable (hf.mk f) :=
+lemma stronglyMeasurable_mk (hf : AEStronglyMeasurable f μ) : StronglyMeasurable (hf.mk f) :=
   hf.choose_spec.1
 #align measure_theory.ae_strongly_measurable.strongly_measurable_mk MeasureTheory.AEStronglyMeasurable.stronglyMeasurable_mk
 
@@ -1218,7 +1218,7 @@ lemma measurable_mk [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace 
   hf.stronglyMeasurable_mk.measurable
 #align measure_theory.ae_strongly_measurable.measurable_mk MeasureTheory.AEStronglyMeasurable.measurable_mk
 
-theorem ae_eq_mk (hf : AEStronglyMeasurable f μ) : f =ᵐ[μ] hf.mk f :=
+lemma ae_eq_mk (hf : AEStronglyMeasurable f μ) : f =ᵐ[μ] hf.mk f :=
   hf.choose_spec.2
 #align measure_theory.ae_strongly_measurable.ae_eq_mk MeasureTheory.AEStronglyMeasurable.ae_eq_mk
 
@@ -1231,11 +1231,11 @@ protected lemma aemeasurable {β} [MeasurableSpace β] [TopologicalSpace β]
 
 end Mk
 
-theorem congr (hf : AEStronglyMeasurable f μ) (h : f =ᵐ[μ] g) : AEStronglyMeasurable g μ :=
+lemma congr (hf : AEStronglyMeasurable f μ) (h : f =ᵐ[μ] g) : AEStronglyMeasurable g μ :=
   ⟨hf.mk f, hf.stronglyMeasurable_mk, h.symm.trans hf.ae_eq_mk⟩
 #align measure_theory.ae_strongly_measurable.congr MeasureTheory.AEStronglyMeasurable.congr
 
-theorem _root_.aestronglyMeasurable_congr (h : f =ᵐ[μ] g) :
+lemma _root_.aestronglyMeasurable_congr (h : f =ᵐ[μ] g) :
     AEStronglyMeasurable f μ ↔ AEStronglyMeasurable g μ :=
   ⟨fun hf => hf.congr h, fun hg => hg.congr h.symm⟩
 #align ae_strongly_measurable_congr aestronglyMeasurable_congr
@@ -1255,7 +1255,7 @@ lemma mono_set {s t} (h : s ⊆ t) (ht : AEStronglyMeasurable f (μ.restrict t))
   ht.mono_measure (restrict_mono h le_rfl)
 #align measure_theory.ae_strongly_measurable.mono_set MeasureTheory.AEStronglyMeasurable.mono_set
 
-protected theorem restrict (hfm : AEStronglyMeasurable f μ) {s} :
+protected lemma restrict (hfm : AEStronglyMeasurable f μ) {s} :
     AEStronglyMeasurable f (μ.restrict s) :=
   hfm.mono_measure Measure.restrict_le_self
 #align measure_theory.ae_strongly_measurable.restrict MeasureTheory.AEStronglyMeasurable.restrict
@@ -1390,7 +1390,7 @@ section Monoid
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 
 @[to_additive (attr := measurability)]
-theorem _root_.List.aestronglyMeasurable_prod' (l : List (α → M))
+lemma _root_.List.aestronglyMeasurable_prod' (l : List (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
   induction' l with f l ihl; · exact aestronglyMeasurable_one
   rw [List.forall_mem_cons] at hl
@@ -1414,7 +1414,7 @@ section CommMonoid
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
 
 @[to_additive (attr := measurability)]
-theorem _root_.Multiset.aestronglyMeasurable_prod' (l : Multiset (α → M))
+lemma _root_.Multiset.aestronglyMeasurable_prod' (l : Multiset (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
   rcases l with ⟨l⟩
   simpa using l.aestronglyMeasurable_prod' (by simpa using hl)
@@ -1422,7 +1422,7 @@ theorem _root_.Multiset.aestronglyMeasurable_prod' (l : Multiset (α → M))
 #align multiset.ae_strongly_measurable_sum' Multiset.aestronglyMeasurable_sum'
 
 @[to_additive (attr := measurability)]
-theorem _root_.Multiset.aestronglyMeasurable_prod (s : Multiset (α → M))
+lemma _root_.Multiset.aestronglyMeasurable_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.multiset_prod_apply] using s.aestronglyMeasurable_prod' hs
@@ -1593,7 +1593,7 @@ lemma comp_measurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : Measurab
     (hf : MeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
   hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving
 
-theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
+lemma isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by
   refine' ⟨range (hf.mk f), hf.stronglyMeasurable_mk.isSeparable_range, _⟩
   filter_upwards [hf.ae_eq_mk] with x hx
@@ -1789,7 +1789,7 @@ variable [Monoid M] [MulAction M β] [ContinuousConstSMul M β]
 variable [Group G] [MulAction G β] [ContinuousConstSMul G β]
 variable [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
 
-theorem _root_.aestronglyMeasurable_const_smul_iff (c : G) :
+lemma _root_.aestronglyMeasurable_const_smul_iff (c : G) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
 #align ae_strongly_measurable_const_smul_iff aestronglyMeasurable_const_smul_iff
@@ -1829,7 +1829,7 @@ lemma apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : AEStronglyMe
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_aestronglyMeasurable hφ
 #align measure_theory.ae_strongly_measurable.apply_continuous_linear_map MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap
 
-theorem _root_.ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}
+lemma _root_.ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}
     {g : α → F} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun x => L (f x) (g x)) μ :=
   L.continuous₂.comp_aestronglyMeasurable <| hf.prod_mk hg
@@ -1883,12 +1883,12 @@ protected noncomputable def mk (f : α → β) (hf : AEFinStronglyMeasurable f �
   hf.choose
 #align measure_theory.ae_fin_strongly_measurable.mk MeasureTheory.AEFinStronglyMeasurable.mk
 
-theorem finStronglyMeasurable_mk (hf : AEFinStronglyMeasurable f μ) :
+lemma finStronglyMeasurable_mk (hf : AEFinStronglyMeasurable f μ) :
     FinStronglyMeasurable (hf.mk f) μ :=
   hf.choose_spec.1
 #align measure_theory.ae_fin_strongly_measurable.fin_strongly_measurable_mk MeasureTheory.AEFinStronglyMeasurable.finStronglyMeasurable_mk
 
-theorem ae_eq_mk (hf : AEFinStronglyMeasurable f μ) : f =ᵐ[μ] hf.mk f :=
+lemma ae_eq_mk (hf : AEFinStronglyMeasurable f μ) : f =ᵐ[μ] hf.mk f :=
   hf.choose_spec.2
 #align measure_theory.ae_fin_strongly_measurable.ae_eq_mk
 MeasureTheory.AEFinStronglyMeasurable.ae_eq_mk
@@ -1963,7 +1963,7 @@ end Order
 
 variable [Zero β] [T2Space β]
 
-theorem exists_set_sigmaFinite (hf : AEFinStronglyMeasurable f μ) :
+lemma exists_set_sigmaFinite (hf : AEFinStronglyMeasurable f μ) :
     ∃ t, MeasurableSet t ∧ f =ᵐ[μ.restrict tᶜ] 0 ∧ SigmaFinite (μ.restrict t) := by
   rcases hf with ⟨g, hg, hfg⟩
   obtain ⟨t, ht, hgt_zero, htμ⟩ := hg.exists_set_sigmaFinite
@@ -1978,12 +1978,12 @@ def sigmaFiniteSet (hf : AEFinStronglyMeasurable f μ) : Set α :=
   hf.exists_set_sigmaFinite.choose
 #align measure_theory.ae_fin_strongly_measurable.sigma_finite_set MeasureTheory.AEFinStronglyMeasurable.sigmaFiniteSet
 
-protected theorem measurableSet (hf : AEFinStronglyMeasurable f μ) :
+protected lemma measurableSet (hf : AEFinStronglyMeasurable f μ) :
     MeasurableSet hf.sigmaFiniteSet :=
   hf.exists_set_sigmaFinite.choose_spec.1
 #align measure_theory.ae_fin_strongly_measurable.measurable_set MeasureTheory.AEFinStronglyMeasurable.measurableSet
 
-theorem ae_eq_zero_compl (hf : AEFinStronglyMeasurable f μ) :
+lemma ae_eq_zero_compl (hf : AEFinStronglyMeasurable f μ) :
     f =ᵐ[μ.restrict hf.sigmaFiniteSetᶜ] 0 :=
   hf.exists_set_sigmaFinite.choose_spec.2.1
 #align measure_theory.ae_fin_strongly_measurable.ae_eq_zero_compl MeasureTheory.AEFinStronglyMeasurable.ae_eq_zero_compl

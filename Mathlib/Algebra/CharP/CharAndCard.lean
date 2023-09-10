@@ -20,7 +20,7 @@ characteristic, cardinality, ring
 
 /-- A prime `p` is a unit in a commutative ring `R` of nonzero characteristic iff it does not divide
 the characteristic. -/
-theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime]
+lemma isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime]
     (hR : ringChar R ≠ 0) : IsUnit (p : R) ↔ ¬p ∣ ringChar R := by
   have hch := CharP.cast_eq_zero R (ringChar R)
   have hp : p.Prime := Fact.out
@@ -48,7 +48,7 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p 
 
 /-- A prime `p` is a unit in a finite commutative ring `R`
 iff it does not divide the characteristic. -/
-theorem isUnit_iff_not_dvd_char (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [Finite R] :
+lemma isUnit_iff_not_dvd_char (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime] [Finite R] :
     IsUnit (p : R) ↔ ¬p ∣ ringChar R :=
   isUnit_iff_not_dvd_char_of_ringChar_ne_zero R p <| CharP.char_ne_zero_of_finite R (ringChar R)
 #align is_unit_iff_not_dvd_char isUnit_iff_not_dvd_char

@@ -78,7 +78,7 @@ def preWeightSpace (χ : L → R) : Submodule R M :=
   ⨅ x : L, (toEndomorphism R L M x).maximalGeneralizedEigenspace (χ x)
 #align lie_module.pre_weight_space LieModule.preWeightSpace
 
-theorem mem_preWeightSpace (χ : L → R) (m : M) :
+lemma mem_preWeightSpace (χ : L → R) (m : M) :
     m ∈ preWeightSpace M χ ↔
     ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • ↑1) ^ k) m = 0 := by
   simp [preWeightSpace]
@@ -96,7 +96,7 @@ lemma exists_preWeightSpace_zero_le_ker_of_isNoetherian [IsNoetherian R M] (x : 
 variable {R} (L)
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
-protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w₂) (M₃ : Type w₃)
+protected lemma weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w₂) (M₃ : Type w₃)
     [AddCommGroup M₁] [Module R M₁] [LieRingModule L M₁] [LieModule R L M₁] [AddCommGroup M₂]
     [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂] [AddCommGroup M₃] [Module R M₃]
     [LieRingModule L M₃] [LieModule R L M₃] (g : M₁ ⊗[R] M₂ →ₗ⁅R,L⁆ M₃) (χ₁ χ₂ : L → R) :
@@ -287,7 +287,7 @@ abbrev IsRoot :=
 #align lie_algebra.is_root LieAlgebra.IsRoot
 
 @[simp]
-theorem rootSpace_comap_eq_weightSpace (χ : H → R) :
+lemma rootSpace_comap_eq_weightSpace (χ : H → R) :
     (rootSpace H χ).comap H.incl' = weightSpace H χ := by
   ext x
   let f : H → Module.End R L := fun y => toEndomorphism R H L y - χ y • ↑1
@@ -363,7 +363,7 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
 #align lie_algebra.root_space_weight_space_product LieAlgebra.rootSpaceWeightSpaceProduct
 
 @[simp]
-theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
+lemma coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
     (x : rootSpace H χ₁) (m : weightSpace M χ₂) :
     (rootSpaceWeightSpaceProduct R L H M χ₁ χ₂ χ₃ hχ (x ⊗ₜ m) : M) = ⁅(x : L), (m : M)⁆ := by
   simp only [rootSpaceWeightSpaceProduct, rootSpaceWeightSpaceProductAux, coe_liftLie_eq_lift_coe,
@@ -382,7 +382,7 @@ def rootSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
 lemma rootSpaceProduct_def : rootSpaceProduct R L H = rootSpaceWeightSpaceProduct R L H L := rfl
 #align lie_algebra.root_space_product_def LieAlgebra.rootSpaceProduct_def
 
-theorem rootSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁)
+lemma rootSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁)
     (y : rootSpace H χ₂) : (rootSpaceProduct R L H χ₁ χ₂ χ₃ hχ (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ :=
   by simp only [rootSpaceProduct_def, coe_rootSpaceWeightSpaceProduct_tmul]
 #align lie_algebra.root_space_product_tmul LieAlgebra.rootSpaceProduct_tmul
@@ -402,7 +402,7 @@ def zeroRootSubalgebra : LieSubalgebra R L :=
 lemma coe_zeroRootSubalgebra : (zeroRootSubalgebra R L H : Submodule R L) = rootSpace H 0 := rfl
 #align lie_algebra.coe_zero_root_subalgebra LieAlgebra.coe_zeroRootSubalgebra
 
-theorem mem_zeroRootSubalgebra (x : L) :
+lemma mem_zeroRootSubalgebra (x : L) :
     x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEndomorphism R H L y ^ k) x = 0 := by
   rw [zeroRootSubalgebra]
   -- Porting note: added the following `change` otherwise the `simp` fails
@@ -463,14 +463,14 @@ subalgebra.
 
 When `L` is Noetherian, it follows from Engel's theorem that the converse holds. See
 `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan` -/
-theorem is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
+lemma is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
     H.IsCartanSubalgebra :=
   { nilpotent := inferInstance
     self_normalizing := by rw [← h]; exact zeroRootSubalgebra_normalizer_eq_self R L H }
 #align lie_algebra.is_cartan_of_zero_root_subalgebra_eq LieAlgebra.is_cartan_of_zeroRootSubalgebra_eq
 
 @[simp]
-theorem zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSubalgebra]
+lemma zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSubalgebra]
     [IsNoetherian R L] : zeroRootSubalgebra R L H = H := by
   refine' le_antisymm _ (le_zeroRootSubalgebra R L H)
   suffices rootSpace H 0 ≤ H.toLieSubmodule by exact fun x hx => this hx
@@ -507,7 +507,7 @@ def weightSpace' (χ : H → R) : LieSubmodule R (zeroRootSubalgebra R L H) M :=
 #align lie_module.weight_space' LieModule.weightSpace'
 
 @[simp]
-theorem coe_weightSpace' (χ : H → R) : (weightSpace' M χ : Submodule R M) = weightSpace M χ := rfl
+lemma coe_weightSpace' (χ : H → R) : (weightSpace' M χ : Submodule R M) = weightSpace M χ := rfl
 #align lie_module.coe_weight_space' LieModule.coe_weightSpace'
 
 end LieModule

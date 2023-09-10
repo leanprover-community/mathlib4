@@ -553,7 +553,7 @@ def sumComm (α β : Type*) [LE α] [LE β] : Sum α β ≃o Sum β α :=
 #align order_iso.sum_comm_apply OrderIso.sumComm_apply
 
 @[simp]
-theorem sumComm_symm (α β : Type*) [LE α] [LE β] :
+lemma sumComm_symm (α β : Type*) [LE α] [LE β] :
     (OrderIso.sumComm α β).symm = OrderIso.sumComm β α :=
   rfl
 #align order_iso.sum_comm_symm OrderIso.sumComm_symm
@@ -748,18 +748,18 @@ lemma orderIsoPUnitSumLex_bot : @orderIsoPUnitSumLex α _ ⊥ = toLex (inl PUnit
 #align with_bot.order_iso_punit_sum_lex_bot WithBot.orderIsoPUnitSumLex_bot
 
 @[simp]
-theorem orderIsoPUnitSumLex_toLex (a : α) : orderIsoPUnitSumLex ↑a = toLex (inr a) :=
+lemma orderIsoPUnitSumLex_toLex (a : α) : orderIsoPUnitSumLex ↑a = toLex (inr a) :=
   rfl
 #align with_bot.order_iso_punit_sum_lex_coe WithBot.orderIsoPUnitSumLex_toLex
 
 @[simp]
-theorem orderIsoPUnitSumLex_symm_inl (x : PUnit) :
+lemma orderIsoPUnitSumLex_symm_inl (x : PUnit) :
     (@orderIsoPUnitSumLex α _).symm (toLex <| inl x) = ⊥ :=
   rfl
 #align with_bot.order_iso_punit_sum_lex_symm_inl WithBot.orderIsoPUnitSumLex_symm_inl
 
 @[simp]
-theorem orderIsoPUnitSumLex_symm_inr (a : α) : orderIsoPUnitSumLex.symm (toLex <| inr a) = a :=
+lemma orderIsoPUnitSumLex_symm_inr (a : α) : orderIsoPUnitSumLex.symm (toLex <| inr a) = a :=
   rfl
 #align with_bot.order_iso_punit_sum_lex_symm_inr WithBot.orderIsoPUnitSumLex_symm_inr
 
@@ -782,18 +782,18 @@ lemma orderIsoSumLexPUnit_top : @orderIsoSumLexPUnit α _ ⊤ = toLex (inr PUnit
 #align with_top.order_iso_sum_lex_punit_top WithTop.orderIsoSumLexPUnit_top
 
 @[simp]
-theorem orderIsoSumLexPUnit_toLex (a : α) : orderIsoSumLexPUnit ↑a = toLex (inl a) :=
+lemma orderIsoSumLexPUnit_toLex (a : α) : orderIsoSumLexPUnit ↑a = toLex (inl a) :=
   rfl
 #align with_top.order_iso_sum_lex_punit_coe WithTop.orderIsoSumLexPUnit_toLex
 
 @[simp]
-theorem orderIsoSumLexPUnit_symm_inr (x : PUnit) :
+lemma orderIsoSumLexPUnit_symm_inr (x : PUnit) :
     (@orderIsoSumLexPUnit α _).symm (toLex <| inr x) = ⊤ :=
   rfl
 #align with_top.order_iso_sum_lex_punit_symm_inr WithTop.orderIsoSumLexPUnit_symm_inr
 
 @[simp]
-theorem orderIsoSumLexPUnit_symm_inl (a : α) : orderIsoSumLexPUnit.symm (toLex <| inl a) = a :=
+lemma orderIsoSumLexPUnit_symm_inl (a : α) : orderIsoSumLexPUnit.symm (toLex <| inl a) = a :=
   rfl
 #align with_top.order_iso_sum_lex_punit_symm_inl WithTop.orderIsoSumLexPUnit_symm_inl
 

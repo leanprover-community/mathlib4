@@ -38,16 +38,16 @@ namespace UpperHalfPlane
 instance : Dist ℍ :=
   ⟨fun z w => 2 * arsinh (dist (z : ℂ) w / (2 * sqrt (z.im * w.im)))⟩
 
-theorem dist_eq (z w : ℍ) : dist z w = 2 * arsinh (dist (z : ℂ) w / (2 * sqrt (z.im * w.im))) :=
+lemma dist_eq (z w : ℍ) : dist z w = 2 * arsinh (dist (z : ℂ) w / (2 * sqrt (z.im * w.im))) :=
   rfl
 #align upper_half_plane.dist_eq UpperHalfPlane.dist_eq
 
-theorem sinh_half_dist (z w : ℍ) :
+lemma sinh_half_dist (z w : ℍ) :
     sinh (dist z w / 2) = dist (z : ℂ) w / (2 * sqrt (z.im * w.im)) := by
   rw [dist_eq, mul_div_cancel_left (arsinh _) two_ne_zero, sinh_arsinh]
 #align upper_half_plane.sinh_half_dist UpperHalfPlane.sinh_half_dist
 
-theorem cosh_half_dist (z w : ℍ) :
+lemma cosh_half_dist (z w : ℍ) :
     cosh (dist z w / 2) = dist (z : ℂ) (conj (w : ℂ)) / (2 * sqrt (z.im * w.im)) := by
   have H₁ : (2 ^ 2 : ℝ) = 4 := by norm_num1
   have H₂ : 0 < z.im * w.im := mul_pos z.im_pos w.im_pos
@@ -60,24 +60,24 @@ theorem cosh_half_dist (z w : ℍ) :
   ring
 #align upper_half_plane.cosh_half_dist UpperHalfPlane.cosh_half_dist
 
-theorem tanh_half_dist (z w : ℍ) :
+lemma tanh_half_dist (z w : ℍ) :
     tanh (dist z w / 2) = dist (z : ℂ) w / dist (z : ℂ) (conj ↑w) := by
   rw [tanh_eq_sinh_div_cosh, sinh_half_dist, cosh_half_dist, div_div_div_comm, div_self, div_one]
   exact (mul_pos (zero_lt_two' ℝ) (sqrt_pos.2 <| mul_pos z.im_pos w.im_pos)).ne'
 #align upper_half_plane.tanh_half_dist UpperHalfPlane.tanh_half_dist
 
-theorem exp_half_dist (z w : ℍ) :
+lemma exp_half_dist (z w : ℍ) :
     exp (dist z w / 2) = (dist (z : ℂ) w + dist (z : ℂ) (conj ↑w)) / (2 * sqrt (z.im * w.im)) := by
   rw [← sinh_add_cosh, sinh_half_dist, cosh_half_dist, add_div]
 #align upper_half_plane.exp_half_dist UpperHalfPlane.exp_half_dist
 
-theorem cosh_dist (z w : ℍ) : cosh (dist z w) = 1 + dist (z : ℂ) w ^ 2 / (2 * z.im * w.im) := by
+lemma cosh_dist (z w : ℍ) : cosh (dist z w) = 1 + dist (z : ℂ) w ^ 2 / (2 * z.im * w.im) := by
   rw [dist_eq, cosh_two_mul, cosh_sq', add_assoc, ← two_mul, sinh_arsinh, div_pow, mul_pow,
     sq_sqrt (mul_pos z.im_pos w.im_pos).le, sq (2 : ℝ), mul_assoc, ← mul_div_assoc, mul_assoc,
     mul_div_mul_left _ _ (two_ne_zero' ℝ)]
 #align upper_half_plane.cosh_dist UpperHalfPlane.cosh_dist
 
-theorem sinh_half_dist_add_dist (a b c : ℍ) : sinh ((dist a b + dist b c) / 2) =
+lemma sinh_half_dist_add_dist (a b c : ℍ) : sinh ((dist a b + dist b c) / 2) =
     (dist (a : ℂ) b * dist (c : ℂ) (conj ↑b) + dist (b : ℂ) c * dist (a : ℂ) (conj ↑b)) /
       (2 * sqrt (a.im * c.im) * dist (b : ℂ) (conj ↑b)) := by
   simp only [add_div _ _ (2 : ℝ), sinh_add, sinh_half_dist, cosh_half_dist, div_mul_div_comm]
@@ -88,7 +88,7 @@ theorem sinh_half_dist_add_dist (a b c : ℍ) : sinh ((dist a b + dist b c) / 2)
       mul_comm] <;> exact (im_pos _).le
 #align upper_half_plane.sinh_half_dist_add_dist UpperHalfPlane.sinh_half_dist_add_dist
 
-protected theorem dist_comm (z w : ℍ) : dist z w = dist w z := by
+protected lemma dist_comm (z w : ℍ) : dist z w = dist w z := by
   simp only [dist_eq, dist_comm (z : ℂ), mul_comm]
 #align upper_half_plane.dist_comm UpperHalfPlane.dist_comm
 
@@ -102,7 +102,7 @@ lemma dist_eq_iff_eq_sinh :
   rw [← div_left_inj' (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
 #align upper_half_plane.dist_eq_iff_eq_sinh UpperHalfPlane.dist_eq_iff_eq_sinh
 
-theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
+lemma dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
   rw [dist_eq_iff_eq_sinh, ← sq_eq_sq, div_pow, mul_pow, sq_sqrt, mul_assoc]
   · norm_num
@@ -111,7 +111,7 @@ theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
   · exact sinh_nonneg_iff.2 (div_nonneg hr zero_le_two)
 #align upper_half_plane.dist_eq_iff_eq_sq_sinh UpperHalfPlane.dist_eq_iff_eq_sq_sinh
 
-protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c := by
+protected lemma dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c := by
   rw [dist_le_iff_le_sinh, sinh_half_dist_add_dist, div_mul_eq_div_div _ _ (dist _ _), le_div_iff,
     div_mul_eq_mul_div]
   · exact div_le_div_of_le (mul_nonneg zero_le_two (sqrt_nonneg _))
@@ -120,7 +120,7 @@ protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c
     exact b.im_ne_zero
 #align upper_half_plane.dist_triangle UpperHalfPlane.dist_triangle
 
-theorem dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / sqrt (z.im * w.im) := by
+lemma dist_le_dist_coe_div_sqrt (z w : ℍ) : dist z w ≤ dist (z : ℂ) w / sqrt (z.im * w.im) := by
   rw [dist_le_iff_le_sinh, ← div_mul_eq_div_div_swap, self_le_sinh_iff]
   exact div_nonneg dist_nonneg (mul_nonneg zero_le_two (sqrt_nonneg _))
 #align upper_half_plane.dist_le_dist_coe_div_sqrt UpperHalfPlane.dist_le_dist_coe_div_sqrt
@@ -139,7 +139,7 @@ def metricSpaceAux : MetricSpace ℍ where
 
 open Complex
 
-theorem cosh_dist' (z w : ℍ) :
+lemma cosh_dist' (z w : ℍ) :
     Real.cosh (dist z w) = ((z.re - w.re) ^ 2 + z.im ^ 2 + w.im ^ 2) / (2 * z.im * w.im) := by
   have H : 0 < 2 * z.im * w.im := mul_pos (mul_pos two_pos z.im_pos) w.im_pos
   field_simp [cosh_dist, Complex.dist_eq, Complex.sq_abs, normSq_apply, H, H.ne']
@@ -152,21 +152,21 @@ def center (z : ℍ) (r : ℝ) : ℍ :=
 #align upper_half_plane.center UpperHalfPlane.center
 
 @[simp]
-theorem center_re (z r) : (center z r).re = z.re :=
+lemma center_re (z r) : (center z r).re = z.re :=
   rfl
 #align upper_half_plane.center_re UpperHalfPlane.center_re
 
 @[simp]
-theorem center_im (z r) : (center z r).im = z.im * Real.cosh r :=
+lemma center_im (z r) : (center z r).im = z.im * Real.cosh r :=
   rfl
 #align upper_half_plane.center_im UpperHalfPlane.center_im
 
 @[simp]
-theorem center_zero (z : ℍ) : center z 0 = z :=
+lemma center_zero (z : ℍ) : center z 0 = z :=
   ext' rfl <| by rw [center_im, Real.cosh_zero, mul_one]
 #align upper_half_plane.center_zero UpperHalfPlane.center_zero
 
-theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
+lemma dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
     2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2 := by
   have H : 2 * z.im * w.im ≠ 0 := by apply_rules [mul_ne_zero, two_ne_zero, im_ne_zero]
   simp only [Complex.dist_eq, Complex.sq_abs, normSq_apply, coe_re, coe_im, center_re, center_im,
@@ -175,12 +175,12 @@ theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^
   ring
 #align upper_half_plane.dist_coe_center_sq UpperHalfPlane.dist_coe_center_sq
 
-theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
+lemma dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
     sqrt (2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2) := by
   rw [← sqrt_sq dist_nonneg, dist_coe_center_sq]
 #align upper_half_plane.dist_coe_center UpperHalfPlane.dist_coe_center
 
-theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
+lemma cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
   letI := metricSpaceAux
   cases' lt_or_le r 0 with hr₀ hr₀
@@ -200,14 +200,14 @@ lemma dist_eq_iff_dist_coe_center_eq :
 #align upper_half_plane.dist_eq_iff_dist_coe_center_eq UpperHalfPlane.dist_eq_iff_dist_coe_center_eq
 
 @[simp]
-theorem dist_self_center (z : ℍ) (r : ℝ) :
+lemma dist_self_center (z : ℍ) (r : ℝ) :
     dist (z : ℂ) (z.center r) = z.im * (Real.cosh r - 1) := by
   rw [dist_of_re_eq (z.center_re r).symm, dist_comm, Real.dist_eq, mul_sub, mul_one]
   exact abs_of_nonneg (sub_nonneg.2 <| le_mul_of_one_le_right z.im_pos.le (one_le_cosh _))
 #align upper_half_plane.dist_self_center UpperHalfPlane.dist_self_center
 
 @[simp]
-theorem dist_center_dist (z w : ℍ) :
+lemma dist_center_dist (z w : ℍ) :
     dist (z : ℂ) (w.center (dist z w)) = w.im * Real.sinh (dist z w) :=
   dist_eq_iff_dist_coe_center_eq.1 rfl
 #align upper_half_plane.dist_center_dist UpperHalfPlane.dist_center_dist
@@ -234,7 +234,7 @@ lemma le_dist_iff_le_dist_coe_center :
 
 /-- For two points on the same vertical line, the distance is equal to the distance between the
 logarithms of their imaginary parts. -/
-nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log w.im) := by
+nonrec lemma dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log w.im) := by
   have h₀ : 0 < z.im / w.im := div_pos z.im_pos w.im_pos
   rw [dist_eq_iff_dist_coe_center_eq, Real.dist_eq, ← abs_sinh, ← log_div z.im_ne_zero w.im_ne_zero,
     sinh_log h₀, dist_of_re_eq, coe_im, coe_im, center_im, cosh_abs, cosh_log h₀, inv_div] <;>
@@ -248,7 +248,7 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
 
 /-- Hyperbolic distance between two points is greater than or equal to the distance between the
 logarithms of their imaginary parts. -/
-theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
+lemma dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
   calc
     dist (log z.im) (log w.im) = dist (mk ⟨0, z.im⟩ z.im_pos) (mk ⟨0, w.im⟩ w.im_pos) :=
       Eq.symm <| dist_of_re_eq rfl
@@ -257,18 +257,18 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
         simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)) zero_le_two
 #align upper_half_plane.dist_log_im_le UpperHalfPlane.dist_log_im_le
 
-theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
+lemma im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
   rw [← div_le_iff' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
   exact (le_abs_self _).trans (dist_log_im_le z w)
 #align upper_half_plane.im_le_im_mul_exp_dist UpperHalfPlane.im_le_im_mul_exp_dist
 
-theorem im_div_exp_dist_le (z w : ℍ) : z.im / Real.exp (dist z w) ≤ w.im :=
+lemma im_div_exp_dist_le (z w : ℍ) : z.im / Real.exp (dist z w) ≤ w.im :=
   (div_le_iff (exp_pos _)).2 (im_le_im_mul_exp_dist z w)
 #align upper_half_plane.im_div_exp_dist_le UpperHalfPlane.im_div_exp_dist_le
 
 /-- An upper estimate on the complex distance between two points in terms of the hyperbolic distance
 and the imaginary part of one of the points. -/
-theorem dist_coe_le (z w : ℍ) : dist (z : ℂ) w ≤ w.im * (Real.exp (dist z w) - 1) :=
+lemma dist_coe_le (z w : ℍ) : dist (z : ℂ) w ≤ w.im * (Real.exp (dist z w) - 1) :=
   calc
     dist (z : ℂ) w ≤ dist (z : ℂ) (w.center (dist z w)) + dist (w : ℂ) (w.center (dist z w)) :=
       dist_triangle_right _ _ _
@@ -278,7 +278,7 @@ theorem dist_coe_le (z w : ℍ) : dist (z : ℂ) w ≤ w.im * (Real.exp (dist z 
 
 /-- An upper estimate on the complex distance between two points in terms of the hyperbolic distance
 and the imaginary part of one of the points. -/
-theorem le_dist_coe (z w : ℍ) : w.im * (1 - Real.exp (-dist z w)) ≤ dist (z : ℂ) w :=
+lemma le_dist_coe (z w : ℍ) : w.im * (1 - Real.exp (-dist z w)) ≤ dist (z : ℂ) w :=
   calc
     w.im * (1 - Real.exp (-dist z w)) =
         dist (z : ℂ) (w.center (dist z w)) - dist (w : ℂ) (w.center (dist z w)) := by
@@ -317,7 +317,7 @@ lemma im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     _ ≤ w.im := sub_le_comm.1 <| (le_abs_self _).trans (abs_im_le_abs <| z.center r - w)
 #align upper_half_plane.im_pos_of_dist_center_le UpperHalfPlane.im_pos_of_dist_center_le
 
-theorem image_coe_closedBall (z : ℍ) (r : ℝ) :
+lemma image_coe_closedBall (z : ℍ) (r : ℝ) :
     ((↑) : ℍ → ℂ) '' closedBall (α := ℍ) z r = closedBall ↑(z.center r) (z.im * Real.sinh r) := by
   ext w; constructor
   · rintro ⟨w, hw, rfl⟩
@@ -327,7 +327,7 @@ theorem image_coe_closedBall (z : ℍ) (r : ℝ) :
     exact mem_image_of_mem _ (dist_le_iff_dist_coe_center_le.2 hw)
 #align upper_half_plane.image_coe_closed_ball UpperHalfPlane.image_coe_closedBall
 
-theorem image_coe_ball (z : ℍ) (r : ℝ) :
+lemma image_coe_ball (z : ℍ) (r : ℝ) :
     ((↑) : ℍ → ℂ) '' ball (α := ℍ) z r = ball ↑(z.center r) (z.im * Real.sinh r) := by
   ext w; constructor
   · rintro ⟨w, hw, rfl⟩
@@ -337,7 +337,7 @@ theorem image_coe_ball (z : ℍ) (r : ℝ) :
     exact mem_image_of_mem _ (dist_lt_iff_dist_coe_center_lt.2 hw)
 #align upper_half_plane.image_coe_ball UpperHalfPlane.image_coe_ball
 
-theorem image_coe_sphere (z : ℍ) (r : ℝ) :
+lemma image_coe_sphere (z : ℍ) (r : ℝ) :
     ((↑) : ℍ → ℂ) '' sphere (α := ℍ) z r = sphere ↑(z.center r) (z.im * Real.sinh r) := by
   ext w; constructor
   · rintro ⟨w, hw, rfl⟩
@@ -352,17 +352,17 @@ instance : ProperSpace ℍ := by
   rw [← inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
-theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
+lemma isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
   refine' Isometry.of_dist_eq fun y₁ y₂ => _
   rw [dist_of_re_eq]
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 #align upper_half_plane.isometry_vertical_line UpperHalfPlane.isometry_vertical_line
 
-theorem isometry_real_vadd (a : ℝ) : Isometry ((· +ᵥ ·) a : ℍ → ℍ) :=
+lemma isometry_real_vadd (a : ℝ) : Isometry ((· +ᵥ ·) a : ℍ → ℍ) :=
   Isometry.of_dist_eq fun y₁ y₂ => by simp only [dist_eq, coe_vadd, vadd_im, dist_add_left]
 #align upper_half_plane.isometry_real_vadd UpperHalfPlane.isometry_real_vadd
 
-theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry ((· • ·) a : ℍ → ℍ) := by
+lemma isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry ((· • ·) a : ℍ → ℍ) := by
   refine' Isometry.of_dist_eq fun y₁ y₂ => _
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
   rw [dist_smul₀, mul_mul_mul_comm, Real.sqrt_mul (mul_self_nonneg _), Real.sqrt_mul_self_eq_abs,

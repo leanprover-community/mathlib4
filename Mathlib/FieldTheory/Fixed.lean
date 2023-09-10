@@ -103,13 +103,13 @@ instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
 #align fixed_points.smul_comm_class' FixedPoints.smulCommClass'
 
 @[simp]
-theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
+lemma smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
   Subtype.eq <| x.2 m
 #align fixed_points.smul FixedPoints.smul
 
 -- Why is this so slow?
 @[simp]
-theorem smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m • p = p :=
+lemma smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m • p = p :=
   Polynomial.induction_on p (fun x => by rw [Polynomial.smul_C, smul])
     (fun p q ihp ihq => by rw [smul_add, ihp, ihq]) fun n x _ => by
     rw [smul_mul', Polynomial.smul_C, smul, smul_pow', Polynomial.smul_X]
@@ -202,7 +202,7 @@ lemma ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := 
   (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this
 #align fixed_points.minpoly.ne_one FixedPoints.minpoly.ne_one
 
-theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
+lemma of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
 -- Porting note: the two `have` below were not needed.
@@ -225,7 +225,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
 #align fixed_points.minpoly.of_eval₂ FixedPoints.minpoly.of_eval₂
 
 -- Why is this so slow?
-theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Monic) (hg : g.Monic)
+lemma irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Monic) (hg : g.Monic)
     (hfg : f * g = minpoly G F x) : f = 1 ∨ g = 1 := by
   have hf2 : f ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_right _ _
   have hg2 : g ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_left _ _
@@ -311,7 +311,7 @@ lemma finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G 
 
 end FixedPoints
 
-theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
+lemma linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
     [Ring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
@@ -321,7 +321,7 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
   this.of_comp _
 #align linear_independent_to_linear_map linearIndependent_toLinearMap
 
-theorem cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
+lemma cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] [Field W] [Algebra K W] [FiniteDimensional K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
   cardinal_mk_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V W
@@ -332,14 +332,14 @@ noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Fie
   Fintype.ofEquiv (V →ₐ[K] V) (algEquivEquivAlgHom K V).symm
 #align alg_equiv.fintype AlgEquiv.fintype
 
-theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
+lemma finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype.card (V →ₐ[K] V) ≤ finrank V (V →ₗ[K] V) :=
   fintype_card_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V V
 #align finrank_alg_hom finrank_algHom
 
 namespace FixedPoints
 
-theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G]
+lemma finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G]
     [MulSemiringAction G F] [FaithfulSMul G F] :
     finrank (FixedPoints.subfield G F) F = Fintype.card G :=
   le_antisymm (FixedPoints.finrank_le_card G F) <|
@@ -351,7 +351,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
 #align fixed_points.finrank_eq_card FixedPoints.finrank_eq_card
 
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
-theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite G]
+lemma toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite G]
     [MulSemiringAction G F] [FaithfulSMul G F] :
     Function.Bijective (MulSemiringAction.toAlgHom _ _ : G → F →ₐ[subfield G F] F) := by
   cases nonempty_fintype G

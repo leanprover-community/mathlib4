@@ -83,7 +83,7 @@ protected lemma isOpen : IsOpen { x : R | IsUnit x } := by
   exact (x.ofNearby y hy).isUnit
 #align units.is_open Units.isOpen
 
-protected theorem nhds (x : Rˣ) : { x : R | IsUnit x } ∈ 𝓝 (x : R) :=
+protected lemma nhds (x : Rˣ) : { x : R | IsUnit x } ∈ 𝓝 (x : R) :=
   IsOpen.mem_nhds Units.isOpen x.isUnit
 #align units.nhds Units.nhds
 
@@ -110,13 +110,13 @@ open Classical BigOperators
 
 open Asymptotics Filter Metric Finset Ring
 
-theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
+lemma inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by
   rw [← inverse_unit (Units.oneSub t h), Units.val_oneSub]
 #align normed_ring.inverse_one_sub NormedRing.inverse_one_sub
 
 /-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
 small. -/
-theorem inverse_add (x : Rˣ) :
+lemma inverse_add (x : Rˣ) :
     ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) = inverse (1 + ↑x⁻¹ * t) * ↑x⁻¹ := by
   nontriviality R
   rw [Metric.eventually_nhds_iff]
@@ -126,7 +126,7 @@ theorem inverse_add (x : Rˣ) :
     ← inverse_unit, Units.val_oneSub, sub_neg_eq_add]
 #align normed_ring.inverse_add NormedRing.inverse_add
 
-theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
+lemma inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
   have := NormedRing.summable_geometric_of_norm_lt_1 t ht
   calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
@@ -134,7 +134,7 @@ theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
     _ = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) := by
       simp only [inverse_one_sub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
 
-theorem inverse_one_sub_nth_order (n : ℕ) :
+lemma inverse_one_sub_nth_order (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((1 : R) - t) = (∑ i in range n, t ^ i) + t ^ n * inverse (1 - t) :=
   Metric.eventually_nhds_iff.2 ⟨1, one_pos, fun t ht ↦ inverse_one_sub_nth_order' n <| by
     rwa [← dist_zero_right]⟩
@@ -145,7 +145,7 @@ theorem inverse_one_sub_nth_order (n : ℕ) :
 `Ring.inverse (x + t) =
   (∑ i in Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`
 holds for `t` sufficiently small. -/
-theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
+lemma inverse_add_nth_order (x : Rˣ) (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) =
       (∑ i in range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹ + (-↑x⁻¹ * t) ^ n * inverse (x + t) := by
   have hzero : Tendsto (-(↑x⁻¹ : R) * ·) (𝓝 0) (𝓝 0) :=
@@ -175,7 +175,7 @@ lemma inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t =
 #align normed_ring.inverse_one_sub_norm NormedRing.inverse_one_sub_norm
 
 /-- The function `fun t ↦ inverse (x + t)` is O(1) as `t → 0`. -/
-theorem inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0] fun _t => (1 : ℝ) := by
+lemma inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0] fun _t => (1 : ℝ) := by
   refine EventuallyEq.trans_isBigO (inverse_add x) (one_mul (1 : ℝ) ▸ ?_)
   simp only [← sub_neg_eq_add, ← neg_mul]
   have hzero : Tendsto (-(↑x⁻¹ : R) * ·) (𝓝 0) (𝓝 0) :=
@@ -186,7 +186,7 @@ theorem inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0
 /-- The function
 `fun t ↦ Ring.inverse (x + t) - (∑ i in Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹`
 is `O(t ^ n)` as `t → 0`. -/
-theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
+lemma inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
     (fun t : R => inverse (↑x + t) - (∑ i in range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹) =O[𝓝 (0 : R)]
       fun t => ‖t‖ ^ n := by
   refine EventuallyEq.trans_isBigO (.sub (inverse_add_nth_order x n) (.refl _ _)) ?_
@@ -197,13 +197,13 @@ theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
 #align normed_ring.inverse_add_norm_diff_nth_order NormedRing.inverse_add_norm_diff_nth_order
 
 /-- The function `fun t ↦ Ring.inverse (x + t) - x⁻¹` is `O(t)` as `t → 0`. -/
-theorem inverse_add_norm_diff_first_order (x : Rˣ) :
+lemma inverse_add_norm_diff_first_order (x : Rˣ) :
     (fun t : R => inverse (↑x + t) - ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ := by
   simpa using inverse_add_norm_diff_nth_order x 1
 #align normed_ring.inverse_add_norm_diff_first_order NormedRing.inverse_add_norm_diff_first_order
 
 /-- The function `fun t ↦ Ring.inverse (x + t) - x⁻¹ + x⁻¹ * t * x⁻¹` is `O(t ^ 2)` as `t → 0`. -/
-theorem inverse_add_norm_diff_second_order (x : Rˣ) :
+lemma inverse_add_norm_diff_second_order (x : Rˣ) :
     (fun t : R => inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ ^ 2 := by
   convert inverse_add_norm_diff_nth_order x 2 using 2
   simp only [sum_range_succ, sum_range_zero, zero_add, pow_zero, pow_one, add_mul, one_mul,
@@ -211,7 +211,7 @@ theorem inverse_add_norm_diff_second_order (x : Rˣ) :
 #align normed_ring.inverse_add_norm_diff_second_order NormedRing.inverse_add_norm_diff_second_order
 
 /-- The function `Ring.inverse` is continuous at each unit of `R`. -/
-theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
+lemma inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
   have h_is_o : (fun t : R => inverse (↑x + t) - ↑x⁻¹) =o[𝓝 0] (fun _ => 1 : R → ℝ) :=
     (inverse_add_norm_diff_first_order x).trans_isLittleO (isLittleO_id_const one_ne_zero).norm_left
   have h_lim : Tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
@@ -246,13 +246,13 @@ end Units
 namespace Ideal
 
 /-- An ideal which contains an element within `1` of `1 : R` is the unit ideal. -/
-theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 - x‖ < 1) : I = ⊤ :=
+lemma eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 - x‖ < 1) : I = ⊤ :=
   let u := Units.oneSub (1 - x) hx
   I.eq_top_iff_one.mpr <| by simpa only [show u.inv * x = 1 by simp] using I.mul_mem_left u.inv hxI
 #align ideal.eq_top_of_norm_lt_one Ideal.eq_top_of_norm_lt_one
 
 /-- The `Ideal.closure` of a proper ideal in a complete normed ring is proper. -/
-theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
+lemma closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
   have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
   simpa only [I.closure.eq_top_iff_one, Ne.def] using mt (@h 1) one_not_mem_nonunits
 #align ideal.closure_ne_top Ideal.closure_ne_top

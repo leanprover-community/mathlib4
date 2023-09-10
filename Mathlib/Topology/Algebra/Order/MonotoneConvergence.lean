@@ -92,14 +92,14 @@ section IsLUB
 
 variable [Preorder α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
+lemma tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by
   suffices : Tendsto (rangeFactorization f) atTop atTop
   exact (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
   exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b => b.2.imp fun a ha => ha.ge
 #align tendsto_at_top_is_lub tendsto_atTop_isLUB
 
-theorem tendsto_atBot_isLUB (h_anti : Antitone f) (ha : IsLUB (Set.range f) a) :
+lemma tendsto_atBot_isLUB (h_anti : Antitone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_anti.dual_left ha using 1
 #align tendsto_at_bot_is_lub tendsto_atBot_isLUB
 
@@ -109,11 +109,11 @@ section IsGLB
 
 variable [Preorder α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atBot_isGLB (h_mono : Monotone f) (ha : IsGLB (Set.range f) a) :
+lemma tendsto_atBot_isGLB (h_mono : Monotone f) (ha : IsGLB (Set.range f) a) :
     Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_mono.dual ha.dual using 1
 #align tendsto_at_bot_is_glb tendsto_atBot_isGLB
 
-theorem tendsto_atTop_isGLB (h_anti : Antitone f) (ha : IsGLB (Set.range f) a) :
+lemma tendsto_atTop_isGLB (h_anti : Antitone f) (ha : IsGLB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by convert tendsto_atBot_isLUB h_anti.dual ha.dual using 1
 #align tendsto_at_top_is_glb tendsto_atTop_isGLB
 
@@ -123,13 +123,13 @@ section CiSup
 
 variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
+lemma tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
   cases isEmpty_or_nonempty ι
   exacts [tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_ciSup hbdd)]
 #align tendsto_at_top_csupr tendsto_atTop_ciSup
 
-theorem tendsto_atBot_ciSup (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
+lemma tendsto_atBot_ciSup (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
     Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert tendsto_atTop_ciSup h_anti.dual hbdd.dual using 1
 #align tendsto_at_bot_csupr tendsto_atBot_ciSup
 
@@ -139,11 +139,11 @@ section CiInf
 
 variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atBot_ciInf (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
+lemma tendsto_atBot_ciInf (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
     Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_ciSup h_mono.dual hbdd.dual using 1
 #align tendsto_at_bot_cinfi tendsto_atBot_ciInf
 
-theorem tendsto_atTop_ciInf (h_anti : Antitone f) (hbdd : BddBelow <| range f) :
+lemma tendsto_atTop_ciInf (h_anti : Antitone f) (hbdd : BddBelow <| range f) :
     Tendsto f atTop (𝓝 (⨅ i, f i)) := by convert tendsto_atBot_ciSup h_anti.dual hbdd.dual using 1
 #align tendsto_at_top_cinfi tendsto_atTop_ciInf
 
@@ -153,11 +153,11 @@ section iSup
 
 variable [CompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atTop_iSup (h_mono : Monotone f) : Tendsto f atTop (𝓝 (⨆ i, f i)) :=
+lemma tendsto_atTop_iSup (h_mono : Monotone f) : Tendsto f atTop (𝓝 (⨆ i, f i)) :=
   tendsto_atTop_ciSup h_mono (OrderTop.bddAbove _)
 #align tendsto_at_top_supr tendsto_atTop_iSup
 
-theorem tendsto_atBot_iSup (h_anti : Antitone f) : Tendsto f atBot (𝓝 (⨆ i, f i)) :=
+lemma tendsto_atBot_iSup (h_anti : Antitone f) : Tendsto f atBot (𝓝 (⨆ i, f i)) :=
   tendsto_atBot_ciSup h_anti (OrderTop.bddAbove _)
 #align tendsto_at_bot_supr tendsto_atBot_iSup
 
@@ -167,11 +167,11 @@ section iInf
 
 variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atBot_iInf (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i, f i)) :=
+lemma tendsto_atBot_iInf (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i, f i)) :=
   tendsto_atBot_ciInf h_mono (OrderBot.bddBelow _)
 #align tendsto_at_bot_infi tendsto_atBot_iInf
 
-theorem tendsto_atTop_iInf (h_anti : Antitone f) : Tendsto f atTop (𝓝 (⨅ i, f i)) :=
+lemma tendsto_atTop_iInf (h_anti : Antitone f) : Tendsto f atTop (𝓝 (⨅ i, f i)) :=
   tendsto_atTop_ciInf h_anti (OrderBot.bddBelow _)
 #align tendsto_at_top_infi tendsto_atTop_iInf
 

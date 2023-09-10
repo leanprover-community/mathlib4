@@ -36,21 +36,21 @@ local infixl:50 " ∈+ " => List.Duplicate
 
 variable {l : List α} {x : α}
 
-theorem Mem.duplicate_cons_self (h : x ∈ l) : x ∈+ x :: l :=
+lemma Mem.duplicate_cons_self (h : x ∈ l) : x ∈+ x :: l :=
   Duplicate.cons_mem h
 #align list.mem.duplicate_cons_self List.Mem.duplicate_cons_self
 
-theorem Duplicate.duplicate_cons (h : x ∈+ l) (y : α) : x ∈+ y :: l :=
+lemma Duplicate.duplicate_cons (h : x ∈+ l) (y : α) : x ∈+ y :: l :=
   Duplicate.cons_duplicate h
 #align list.duplicate.duplicate_cons List.Duplicate.duplicate_cons
 
-theorem Duplicate.mem (h : x ∈+ l) : x ∈ l := by
+lemma Duplicate.mem (h : x ∈+ l) : x ∈ l := by
   induction' h with l' _ y l' _ hm
   · exact mem_cons_self _ _
   · exact mem_cons_of_mem _ hm
 #align list.duplicate.mem List.Duplicate.mem
 
-theorem Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l := by
+lemma Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l := by
   cases' h with _ h _ _ h
   · exact h
   · exact h.mem
@@ -61,24 +61,24 @@ lemma duplicate_cons_self_iff : x ∈+ x :: l ↔ x ∈ l :=
   ⟨Duplicate.mem_cons_self, Mem.duplicate_cons_self⟩
 #align list.duplicate_cons_self_iff List.duplicate_cons_self_iff
 
-theorem Duplicate.ne_nil (h : x ∈+ l) : l ≠ [] := fun H => (mem_nil_iff x).mp (H ▸ h.mem)
+lemma Duplicate.ne_nil (h : x ∈+ l) : l ≠ [] := fun H => (mem_nil_iff x).mp (H ▸ h.mem)
 #align list.duplicate.ne_nil List.Duplicate.ne_nil
 
 @[simp]
-theorem not_duplicate_nil (x : α) : ¬x ∈+ [] := fun H => H.ne_nil rfl
+lemma not_duplicate_nil (x : α) : ¬x ∈+ [] := fun H => H.ne_nil rfl
 #align list.not_duplicate_nil List.not_duplicate_nil
 
-theorem Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] := by
+lemma Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] := by
   induction' h with l' h z l' h _
   · simp [ne_nil_of_mem h]
   · simp [ne_nil_of_mem h.mem]
 #align list.duplicate.ne_singleton List.Duplicate.ne_singleton
 
 @[simp]
-theorem not_duplicate_singleton (x y : α) : ¬x ∈+ [y] := fun H => H.ne_singleton _ rfl
+lemma not_duplicate_singleton (x y : α) : ¬x ∈+ [y] := fun H => H.ne_singleton _ rfl
 #align list.not_duplicate_singleton List.not_duplicate_singleton
 
-theorem Duplicate.elim_nil (h : x ∈+ []) : False :=
+lemma Duplicate.elim_nil (h : x ∈+ []) : False :=
   not_duplicate_nil x h
 #align list.duplicate.elim_nil List.Duplicate.elim_nil
 
@@ -135,7 +135,7 @@ lemma exists_duplicate_iff_not_nodup : (∃ x : α, x ∈+ l) ↔ ¬Nodup l := b
   simp [nodup_iff_forall_not_duplicate]
 #align list.exists_duplicate_iff_not_nodup List.exists_duplicate_iff_not_nodup
 
-theorem Duplicate.not_nodup (h : x ∈+ l) : ¬Nodup l := fun H =>
+lemma Duplicate.not_nodup (h : x ∈+ l) : ¬Nodup l := fun H =>
   nodup_iff_forall_not_duplicate.mp H _ h
 #align list.duplicate.not_nodup List.Duplicate.not_nodup
 

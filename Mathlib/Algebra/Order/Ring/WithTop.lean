@@ -43,14 +43,14 @@ lemma mul_def {a b : WithTop α} :
 lemma top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := by simp [mul_def]; rfl
 #align with_top.top_mul_top WithTop.top_mul_top
 
-theorem mul_top' (a : WithTop α) : a * ⊤ = if a = 0 then 0 else ⊤ := by
+lemma mul_top' (a : WithTop α) : a * ⊤ = if a = 0 then 0 else ⊤ := by
   induction a using recTopCoe <;> simp [mul_def] <;> rfl
 #align with_top.mul_top' WithTop.mul_top'
 
 @[simp] lemma mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', if_neg h]
 #align with_top.mul_top WithTop.mul_top
 
-theorem top_mul' (a : WithTop α) : ⊤ * a = if a = 0 then 0 else ⊤ := by
+lemma top_mul' (a : WithTop α) : ⊤ * a = if a = 0 then 0 else ⊤ := by
   induction a using recTopCoe <;> simp [mul_def] <;> rfl
 #align with_top.top_mul' WithTop.top_mul'
 
@@ -105,7 +105,7 @@ lemma mul_coe {b : α} (hb : b ≠ 0) : ∀ {a : WithTop α},
 #align with_top.mul_coe WithTop.mul_coe
 
 @[simp]
-theorem untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.untop' 0 := by
+lemma untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.untop' 0 := by
   by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, untop'_coe, zero_mul]
   by_cases hb : b = 0; · rw [hb, mul_zero, ← coe_zero, untop'_coe, mul_zero]
   induction a using WithTop.recTopCoe; · rw [top_mul hb, untop'_top, zero_mul]
@@ -185,7 +185,7 @@ instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontriv
 
 variable [CanonicallyOrderedCommSemiring α]
 
-private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
+private lemma distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
   induction' c using WithTop.recTopCoe with c
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0

@@ -126,7 +126,7 @@ variable [AddMonoid A] [AddMonoid B] [CovariantClass B B (· + ·) (· ≤ ·)]
   [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
   {degb : A → B} {degt : A → T}
 
-theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
+lemma sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) :
     ∀ l : List (AddMonoidAlgebra R A),
       l.prod.support.sup degb ≤ (l.map fun f : AddMonoidAlgebra R A => f.support.sup degb).sum
@@ -139,7 +139,7 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
         (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
 #align add_monoid_algebra.sup_support_list_prod_le AddMonoidAlgebra.sup_support_list_prod_le
 
-theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
+lemma le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List (AddMonoidAlgebra R A)) :
     (l.map fun f : AddMonoidAlgebra R A => f.support.inf degt).sum ≤ l.prod.support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr _
@@ -150,14 +150,14 @@ theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     exact degtm a b
 #align add_monoid_algebra.le_inf_support_list_prod AddMonoidAlgebra.le_inf_support_list_prod
 
-theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
+lemma sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (n : ℕ) (f : AddMonoidAlgebra R A) : (f ^ n).support.sup degb ≤ n • f.support.sup degb := by
   rw [← List.prod_replicate, ← List.sum_replicate]
   refine' (sup_support_list_prod_le degb0 degbm _).trans_eq _
   rw [List.map_replicate]
 #align add_monoid_algebra.sup_support_pow_le AddMonoidAlgebra.sup_support_pow_le
 
-theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
+lemma le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (n : ℕ) (f : AddMonoidAlgebra R A) : n • f.support.inf degt ≤ (f ^ n).support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (OrderDual.ofDual_le_ofDual.mp _)
       (fun a b => OrderDual.ofDual_le_ofDual.mp _) n f
@@ -176,7 +176,7 @@ variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [CovariantClass B 
   [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
   {degb : A → B} {degt : A → T}
 
-theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
+lemma sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset (AddMonoidAlgebra R A)) :
     m.prod.support.sup degb ≤ (m.map fun f : AddMonoidAlgebra R A => f.support.sup degb).sum := by
   induction m using Quot.inductionOn
@@ -184,7 +184,7 @@ theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
   exact sup_support_list_prod_le degb0 degbm _
 #align add_monoid_algebra.sup_support_multiset_prod_le AddMonoidAlgebra.sup_support_multiset_prod_le
 
-theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
+lemma le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (m : Multiset (AddMonoidAlgebra R A)) :
     (m.map fun f : AddMonoidAlgebra R A => f.support.inf degt).sum ≤ m.prod.support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr <|
@@ -194,13 +194,13 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
   exact degtm _ _
 #align add_monoid_algebra.le_inf_support_multiset_prod AddMonoidAlgebra.le_inf_support_multiset_prod
 
-theorem sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)
+lemma sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (s : Finset ι) (f : ι → AddMonoidAlgebra R A) :
     (∏ i in s, f i).support.sup degb ≤ ∑ i in s, (f i).support.sup degb :=
   (sup_support_multiset_prod_le degb0 degbm _).trans_eq <| congr_arg _ <| Multiset.map_map _ _ _
 #align add_monoid_algebra.sup_support_finset_prod_le AddMonoidAlgebra.sup_support_finset_prod_le
 
-theorem le_inf_support_finset_prod (degt0 : 0 ≤ degt 0)
+lemma le_inf_support_finset_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → AddMonoidAlgebra R A) :
     (∑ i in s, (f i).support.inf degt) ≤ (∏ i in s, f i).support.inf degt :=
   le_of_eq_of_le (by rw [Multiset.map_map]; rfl) (le_inf_support_multiset_prod degt0 degtm _)
@@ -236,13 +236,13 @@ using the maximum of the exponents. -/
 def supDegree (f : AddMonoidAlgebra R A) : B :=
   f.support.sup D
 
-theorem supDegree_add_le (f g : AddMonoidAlgebra R A) :
+lemma supDegree_add_le (f g : AddMonoidAlgebra R A) :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
   sup_support_add_le D f g
 
 variable [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
   (D : A →+ B) in
-theorem supDegree_mul_le (f g : AddMonoidAlgebra R A) :
+lemma supDegree_mul_le (f g : AddMonoidAlgebra R A) :
     (f * g).supDegree D ≤ f.supDegree D + g.supDegree D :=
   sup_support_mul_le (fun {_ _} => (AddMonoidHom.map_add D _ _).le) f g
 
@@ -263,13 +263,13 @@ using the minimum of the exponents. -/
 def infDegree (D : A → T) (f : AddMonoidAlgebra R A) : T :=
   f.support.inf D
 
-theorem le_infDegree_add (D : A → T) (f g : AddMonoidAlgebra R A) :
+lemma le_infDegree_add (D : A → T) (f g : AddMonoidAlgebra R A) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
 variable [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
   (D : A →+ T) in
-theorem le_infDegree_mul (f g : AddMonoidAlgebra R A) :
+lemma le_infDegree_mul (f g : AddMonoidAlgebra R A) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   --  Porting note: added `a b` in `AddMonoidHom.map_add D a b`, was `AddMonoidHom.map_add D _ _`
   le_inf_support_mul (fun {a b : A} => (AddMonoidHom.map_add D a b).ge) _ _

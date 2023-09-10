@@ -73,7 +73,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
         pow_add] }
 #align polynomial.card_pow_degree Polynomial.cardPowDegree
 
-theorem cardPowDegree_apply (p : Fq[X]) :
+lemma cardPowDegree_apply (p : Fq[X]) :
     cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p :=
   rfl
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
@@ -83,7 +83,7 @@ lemma cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl
 #align polynomial.card_pow_degree_zero Polynomial.cardPowDegree_zero
 
 @[simp]
-theorem cardPowDegree_nonzero (p : Fq[X]) (hp : p ≠ 0) :
+lemma cardPowDegree_nonzero (p : Fq[X]) (hp : p ≠ 0) :
     cardPowDegree p = (Fintype.card Fq : ℤ) ^ p.natDegree :=
   if_neg hp
 #align polynomial.card_pow_degree_nonzero Polynomial.cardPowDegree_nonzero

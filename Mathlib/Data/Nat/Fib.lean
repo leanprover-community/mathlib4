@@ -135,7 +135,7 @@ lemma le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
 
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/
-theorem fib_coprime_fib_succ (n : ℕ) : Nat.coprime (fib n) (fib (n + 1)) := by
+lemma fib_coprime_fib_succ (n : ℕ) : Nat.coprime (fib n) (fib (n + 1)) := by
   induction' n with n ih
   · simp
   · rw [fib_add_two]
@@ -144,7 +144,7 @@ theorem fib_coprime_fib_succ (n : ℕ) : Nat.coprime (fib n) (fib (n + 1)) := by
 #align nat.fib_coprime_fib_succ Nat.fib_coprime_fib_succ
 
 /-- See https://proofwiki.org/wiki/Fibonacci_Number_in_terms_of_Smaller_Fibonacci_Numbers -/
-theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by
+lemma fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by
   induction' n with n ih generalizing m
   · simp
   · intros
@@ -154,7 +154,7 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
     ring
 #align nat.fib_add Nat.fib_add
 
-theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
+lemma fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
   · rw [Nat.succ_eq_add_one, two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
@@ -162,12 +162,12 @@ theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) 
     ring
 #align nat.fib_two_mul Nat.fib_two_mul
 
-theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
+lemma fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   rw [two_mul, fib_add]
   ring
 #align nat.fib_two_mul_add_one Nat.fib_two_mul_add_one
 
-theorem fib_two_mul_add_two (n : ℕ) :
+lemma fib_two_mul_add_two (n : ℕ) :
     fib (2 * n + 2) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
   rw [fib_add_two, fib_two_mul, fib_two_mul_add_one]
   -- porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
@@ -180,19 +180,19 @@ section deprecated
 
 set_option linter.deprecated false
 
-theorem fib_bit0 (n : ℕ) : fib (bit0 n) = fib n * (2 * fib (n + 1) - fib n) := by
+lemma fib_bit0 (n : ℕ) : fib (bit0 n) = fib n * (2 * fib (n + 1) - fib n) := by
   rw [bit0_eq_two_mul, fib_two_mul]
 #align nat.fib_bit0 Nat.fib_bit0
 
-theorem fib_bit1 (n : ℕ) : fib (bit1 n) = fib (n + 1) ^ 2 + fib n ^ 2 := by
+lemma fib_bit1 (n : ℕ) : fib (bit1 n) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_one]
 #align nat.fib_bit1 Nat.fib_bit1
 
-theorem fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 :=
+lemma fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 :=
   fib_bit1 n
 #align nat.fib_bit0_succ Nat.fib_bit0_succ
 
-theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
+lemma fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
   rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_two]
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
 
@@ -212,7 +212,7 @@ def fastFib (n : ℕ) : ℕ :=
   (fastFibAux n).1
 #align nat.fast_fib Nat.fastFib
 
-theorem fast_fib_aux_bit_ff (n : ℕ) :
+lemma fast_fib_aux_bit_ff (n : ℕ) :
     fastFibAux (bit false n) =
       let p := fastFibAux n
       (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2) := by
@@ -221,7 +221,7 @@ theorem fast_fib_aux_bit_ff (n : ℕ) :
   · simp
 #align nat.fast_fib_aux_bit_ff Nat.fast_fib_aux_bit_ff
 
-theorem fast_fib_aux_bit_tt (n : ℕ) :
+lemma fast_fib_aux_bit_tt (n : ℕ) :
     fastFibAux (bit true n) =
       let p := fastFibAux n
       (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2)) := by
@@ -230,7 +230,7 @@ theorem fast_fib_aux_bit_tt (n : ℕ) :
   · simp
 #align nat.fast_fib_aux_bit_tt Nat.fast_fib_aux_bit_tt
 
-theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
+lemma fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   apply Nat.binaryRec _ (fun b n' ih => _) n
   · simp [fastFibAux]
   · intro b
@@ -242,10 +242,10 @@ theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
           simp [bit, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
 #align nat.fast_fib_aux_eq Nat.fast_fib_aux_eq
 
-theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
+lemma fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
 #align nat.fast_fib_eq Nat.fast_fib_eq
 
-theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
+lemma gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (fib n) := by
   cases' Nat.eq_zero_or_pos n with h h
   · rw [h]
     simp
@@ -261,7 +261,7 @@ theorem gcd_fib_add_self (m n : ℕ) : gcd (fib m) (fib (n + m)) = gcd (fib m) (
       coprime.gcd_mul_right_cancel_right (fib (n.pred + 1)) (coprime.symm (fib_coprime_fib_succ m))
 #align nat.gcd_fib_add_self Nat.gcd_fib_add_self
 
-theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) = gcd (fib m) (fib n)
+lemma gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) = gcd (fib m) (fib n)
   | 0 => by simp
   | k + 1 => by
     rw [←gcd_fib_add_mul_self m n k,
@@ -273,7 +273,7 @@ theorem gcd_fib_add_mul_self (m n : ℕ) : ∀ k, gcd (fib m) (fib (n + k * m)) 
 
 /-- `fib n` is a strong divisibility sequence,
   see https://proofwiki.org/wiki/GCD_of_Fibonacci_Numbers -/
-theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
+lemma fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
   induction m, n using Nat.gcd.induction with
   | H0 => simp
   | H1 m n _ h' =>
@@ -282,7 +282,7 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 #align nat.fib_gcd Nat.fib_gcd
 
-theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
+lemma fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
   rwa [gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mp]
 #align nat.fib_dvd Nat.fib_dvd
 
@@ -293,7 +293,7 @@ lemma fib_succ_eq_sum_choose :
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 #align nat.fib_succ_eq_sum_choose Nat.fib_succ_eq_sum_choose
 
-theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n, fib k) + 1 := by
+lemma fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k in Finset.range n, fib k) + 1 := by
   induction' n with n ih
   · simp
   · calc

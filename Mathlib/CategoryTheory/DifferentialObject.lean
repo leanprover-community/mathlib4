@@ -91,7 +91,7 @@ lemma ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by ae
   Hom.ext _ _ w
 
 @[simp]
-theorem id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj := rfl
+lemma id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj := rfl
 #align category_theory.differential_object.id_f CategoryTheory.DifferentialObject.id_f
 
 @[simp]
@@ -126,7 +126,7 @@ instance {X Y : DifferentialObject S C} : Zero (X ⟶ Y) := ⟨{f := 0}⟩
 variable {S C}
 
 @[simp]
-theorem zero_f (P Q : DifferentialObject S C) : (0 : P ⟶ Q).f = 0 := rfl
+lemma zero_f (P Q : DifferentialObject S C) : (0 : P ⟶ Q).f = 0 := rfl
 #align category_theory.differential_object.zero_f CategoryTheory.DifferentialObject.zero_f
 
 instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject S C) where
@@ -142,7 +142,7 @@ def isoApp {X Y : DifferentialObject S C} (f : X ≅ Y) : X.obj ≅ Y.obj where
 #align category_theory.differential_object.iso_app CategoryTheory.DifferentialObject.isoApp
 
 @[simp]
-theorem isoApp_refl (X : DifferentialObject S C) : isoApp (Iso.refl X) = Iso.refl X.obj := rfl
+lemma isoApp_refl (X : DifferentialObject S C) : isoApp (Iso.refl X) = Iso.refl X.obj := rfl
 #align category_theory.differential_object.iso_app_refl CategoryTheory.DifferentialObject.isoApp_refl
 
 @[simp]

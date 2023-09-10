@@ -47,7 +47,7 @@ def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Proj
 #align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
-theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
+lemma projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
     [hP : PreservesFiniteColimits (preadditiveCoyonedaObj (op P))] : Projective P := by
   rw [projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj']
   -- porting note: this next line wasn't necessary in Lean 3
@@ -109,7 +109,7 @@ describing the inductive steps. The problems apparent here clearly indicate that
 -- Porting note: the π in `of` was very, very slow. To assist,
 -- implicit arguments were filled in and this particular proof was broken
 -- out into a separate result
-theorem ofComplex_sq_10_comm (Z : C) :
+lemma ofComplex_sq_10_comm (Z : C) :
     0 ≫ HomologicalComplex.d ((ChainComplex.single₀ C).obj Z) 1 0 =
     HomologicalComplex.d (ofComplex Z) 1 0 ≫ Projective.π Z := by
   simp only [ofComplex_X, ChainComplex.single₀_obj_X_0, ChainComplex.single₀_obj_X_succ,
@@ -119,7 +119,7 @@ theorem ofComplex_sq_10_comm (Z : C) :
 
 -- Porting note: the `exact` in `of` was very, very slow. To assist,
 -- the whole proof was broken out into a separate result
-theorem exact_ofComplex (Z : C) (n : ℕ) :
+lemma exact_ofComplex (Z : C) (n : ℕ) :
     Exact (HomologicalComplex.d (ofComplex Z) (n + 2) (n + 1))
     (HomologicalComplex.d (ofComplex Z) (n + 1) n) :=
   match n with

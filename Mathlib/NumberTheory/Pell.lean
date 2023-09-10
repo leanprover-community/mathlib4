@@ -125,16 +125,16 @@ protected def y (a : Solution₁ d) : ℤ :=
 #align pell.solution₁.y Pell.Solution₁.y
 
 /-- The proof that `a` is a solution to the Pell equation `x^2 - d*y^2 = 1` -/
-theorem prop (a : Solution₁ d) : a.x ^ 2 - d * a.y ^ 2 = 1 :=
+lemma prop (a : Solution₁ d) : a.x ^ 2 - d * a.y ^ 2 = 1 :=
   is_pell_solution_iff_mem_unitary.mpr a.property
 #align pell.solution₁.prop Pell.Solution₁.prop
 
 /-- An alternative form of the equation, suitable for rewriting `x^2`. -/
-theorem prop_x (a : Solution₁ d) : a.x ^ 2 = 1 + d * a.y ^ 2 := by rw [← a.prop]; ring
+lemma prop_x (a : Solution₁ d) : a.x ^ 2 = 1 + d * a.y ^ 2 := by rw [← a.prop]; ring
 #align pell.solution₁.prop_x Pell.Solution₁.prop_x
 
 /-- An alternative form of the equation, suitable for rewriting `d * y^2`. -/
-theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.prop]; ring
+lemma prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.prop]; ring
 #align pell.solution₁.prop_y Pell.Solution₁.prop_y
 
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
@@ -150,17 +150,17 @@ def mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : Solution₁ d where
 #align pell.solution₁.mk Pell.Solution₁.mk
 
 @[simp]
-theorem x_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).x = x :=
+lemma x_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).x = x :=
   rfl
 #align pell.solution₁.x_mk Pell.Solution₁.x_mk
 
 @[simp]
-theorem y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
+lemma y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
   rfl
 #align pell.solution₁.y_mk Pell.Solution₁.y_mk
 
 @[simp]
-theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
+lemma coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
   Zsqrtd.ext.mpr ⟨x_mk x y prop, y_mk x y prop⟩
 #align pell.solution₁.coe_mk Pell.Solution₁.coe_mk
 
@@ -175,38 +175,38 @@ lemma y_one : (1 : Solution₁ d).y = 0 :=
 #align pell.solution₁.y_one Pell.Solution₁.y_one
 
 @[simp]
-theorem x_mul (a b : Solution₁ d) : (a * b).x = a.x * b.x + d * (a.y * b.y) := by
+lemma x_mul (a b : Solution₁ d) : (a * b).x = a.x * b.x + d * (a.y * b.y) := by
   rw [← mul_assoc]
   rfl
 #align pell.solution₁.x_mul Pell.Solution₁.x_mul
 
 @[simp]
-theorem y_mul (a b : Solution₁ d) : (a * b).y = a.x * b.y + a.y * b.x :=
+lemma y_mul (a b : Solution₁ d) : (a * b).y = a.x * b.y + a.y * b.x :=
   rfl
 #align pell.solution₁.y_mul Pell.Solution₁.y_mul
 
 @[simp]
-theorem x_inv (a : Solution₁ d) : a⁻¹.x = a.x :=
+lemma x_inv (a : Solution₁ d) : a⁻¹.x = a.x :=
   rfl
 #align pell.solution₁.x_inv Pell.Solution₁.x_inv
 
 @[simp]
-theorem y_inv (a : Solution₁ d) : a⁻¹.y = -a.y :=
+lemma y_inv (a : Solution₁ d) : a⁻¹.y = -a.y :=
   rfl
 #align pell.solution₁.y_inv Pell.Solution₁.y_inv
 
 @[simp]
-theorem x_neg (a : Solution₁ d) : (-a).x = -a.x :=
+lemma x_neg (a : Solution₁ d) : (-a).x = -a.x :=
   rfl
 #align pell.solution₁.x_neg Pell.Solution₁.x_neg
 
 @[simp]
-theorem y_neg (a : Solution₁ d) : (-a).y = -a.y :=
+lemma y_neg (a : Solution₁ d) : (-a).y = -a.y :=
   rfl
 #align pell.solution₁.y_neg Pell.Solution₁.y_neg
 
 /-- When `d` is negative, then `x` or `y` must be zero in a solution. -/
-theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 0 := by
+lemma eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 0 := by
   have h := a.prop
   contrapose! h
   have h1 := sq_pos_of_ne_zero a.x h.1
@@ -217,7 +217,7 @@ theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 
 #align pell.solution₁.eq_zero_of_d_neg Pell.Solution₁.eq_zero_of_d_neg
 
 /-- A solution has `x ≠ 0`. -/
-theorem x_ne_zero (h₀ : 0 ≤ d) (a : Solution₁ d) : a.x ≠ 0 := by
+lemma x_ne_zero (h₀ : 0 ≤ d) (a : Solution₁ d) : a.x ≠ 0 := by
   intro hx
   have h : 0 ≤ d * a.y ^ 2 := mul_nonneg h₀ (sq_nonneg _)
   rw [a.prop_y, hx, sq, zero_mul, zero_sub] at h
@@ -248,7 +248,7 @@ lemma d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d 
 #align pell.solution₁.d_nonsquare_of_one_lt_x Pell.Solution₁.d_nonsquare_of_one_lt_x
 
 /-- A solution with `x = 1` is trivial. -/
-theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
+lemma eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
   have prop := a.prop_y
   rw [ha, one_pow, sub_self, mul_eq_zero, or_iff_right h₀, sq_eq_zero_iff] at prop
   exact ext ha prop
@@ -340,7 +340,7 @@ lemma sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x) 
 
 /-- If `a` is any solution, then one of `a`, `a⁻¹`, `-a`, `-a⁻¹` has
 positive `x` and nonnegative `y`. -/
-theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
+lemma exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
     ∃ b : Solution₁ d, 0 < b.x ∧ 0 ≤ b.y ∧ a ∈ ({b, b⁻¹, -b, -b⁻¹} : Set (Solution₁ d)) := by
   refine'
         (lt_or_gt_of_ne (a.x_ne_zero h₀.le)).elim
@@ -366,7 +366,7 @@ open Set Real
 
 /-- If `d` is a positive integer that is not a square, then there is a nontrivial solution
 to the Pell equation `x^2 - d*y^2 = 1`. -/
-theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
+lemma exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
   let ξ : ℝ := sqrt d
   have hξ : Irrational ξ := by
@@ -438,7 +438,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
 
 /-- If `d` is a positive integer, then there is a nontrivial solution
 to the Pell equation `x^2 - d*y^2 = 1` if and only if `d` is not a square. -/
-theorem exists_iff_not_isSquare (h₀ : 0 < d) :
+lemma exists_iff_not_isSquare (h₀ : 0 < d) :
     (∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0) ↔ ¬IsSquare d := by
   refine' ⟨_, exists_of_not_isSquare h₀⟩
   rintro ⟨x, y, hxy, hy⟩ ⟨a, rfl⟩
@@ -450,7 +450,7 @@ namespace Solution₁
 
 /-- If `d` is a positive integer that is not a square, then there exists a nontrivial solution
 to the Pell equation `x^2 - d*y^2 = 1`. -/
-theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
+lemma exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, a ≠ 1 ∧ a ≠ -1 := by
   obtain ⟨x, y, prop, hy⟩ := exists_of_not_isSquare h₀ hd
   refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H <;>
@@ -459,7 +459,7 @@ theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
 
 /-- If `d` is a positive integer that is not a square, then there exists a solution
 to the Pell equation `x^2 - d*y^2 = 1` with `x > 1` and `y > 0`. -/
-theorem exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
+lemma exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, 1 < a.x ∧ 0 < a.y := by
   obtain ⟨x, y, h, hy⟩ := exists_of_not_isSquare h₀ hd
   refine' ⟨mk |x| |y| (by rwa [sq_abs, sq_abs]), _, abs_pos.mpr hy⟩
@@ -515,7 +515,7 @@ lemma subsingleton {a b : Solution₁ d} (ha : IsFundamental a) (hb : IsFundamen
 #align pell.is_fundamental.subsingleton Pell.IsFundamental.subsingleton
 
 /-- If `d` is positive and not a square, then a fundamental solution exists. -/
-theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
+lemma exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, IsFundamental a := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_pos_of_not_isSquare h₀ hd
   -- convert to `x : ℕ` to be able to use `Nat.find`
@@ -709,7 +709,7 @@ open Solution₁ IsFundamental
 
 /-- When `d` is positive and not a square, then the group of solutions to the Pell equation
 `x^2 - d*y^2 = 1` has a unique positive generator (up to sign). -/
-theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
+lemma existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃! a₁ : Solution₁ d,
       1 < a₁.x ∧ 0 < a₁.y ∧ ∀ a : Solution₁ d, ∃ n : ℤ, a = a₁ ^ n ∨ a = -a₁ ^ n := by
   obtain ⟨a₁, ha₁⟩ := IsFundamental.exists_of_not_isSquare h₀ hd
@@ -737,7 +737,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
 
 /-- A positive solution is a generator (up to sign) of the group of all solutions to the
 Pell equation `x^2 - d*y^2 = 1` if and only if it is a fundamental solution. -/
-theorem pos_generator_iff_fundamental (a : Solution₁ d) :
+lemma pos_generator_iff_fundamental (a : Solution₁ d) :
     (1 < a.x ∧ 0 < a.y ∧ ∀ b : Solution₁ d, ∃ n : ℤ, b = a ^ n ∨ b = -a ^ n) ↔ IsFundamental a := by
   refine' ⟨fun h => _, fun H => ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
   have h₀ := d_pos_of_one_lt_x h.1

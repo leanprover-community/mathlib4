@@ -55,41 +55,41 @@ lemma pointwise_smul_def {a : M} (S : Subring R) :
 #align subring.pointwise_smul_def Subring.pointwise_smul_def
 
 @[simp]
-theorem coe_pointwise_smul (m : M) (S : Subring R) : ↑(m • S) = m • (S : Set R) :=
+lemma coe_pointwise_smul (m : M) (S : Subring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 #align subring.coe_pointwise_smul Subring.coe_pointwise_smul
 
 @[simp]
-theorem pointwise_smul_toAddSubgroup (m : M) (S : Subring R) :
+lemma pointwise_smul_toAddSubgroup (m : M) (S : Subring R) :
     (m • S).toAddSubgroup = m • S.toAddSubgroup :=
   rfl
 #align subring.pointwise_smul_to_add_subgroup Subring.pointwise_smul_toAddSubgroup
 
 @[simp]
-theorem pointwise_smul_toSubsemiring (m : M) (S : Subring R) :
+lemma pointwise_smul_toSubsemiring (m : M) (S : Subring R) :
     (m • S).toSubsemiring = m • S.toSubsemiring :=
   rfl
 #align subring.pointwise_smul_to_subsemiring Subring.pointwise_smul_toSubsemiring
 
-theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subring R) : r ∈ S → m • r ∈ m • S :=
+lemma smul_mem_pointwise_smul (m : M) (r : R) (S : Subring R) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 #align subring.smul_mem_pointwise_smul Subring.smul_mem_pointwise_smul
 
-theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subring R) :
+lemma mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
   (Set.mem_smul_set : r ∈ m • (S : Set R) ↔ _)
 #align subring.mem_smul_pointwise_iff_exists Subring.mem_smul_pointwise_iff_exists
 
 @[simp]
-theorem smul_bot (a : M) : a • (⊥ : Subring R) = ⊥ :=
+lemma smul_bot (a : M) : a • (⊥ : Subring R) = ⊥ :=
   map_bot _
 #align subring.smul_bot Subring.smul_bot
 
-theorem smul_sup (a : M) (S T : Subring R) : a • (S ⊔ T) = a • S ⊔ a • T :=
+lemma smul_sup (a : M) (S T : Subring R) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 #align subring.smul_sup Subring.smul_sup
 
-theorem smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :=
+lemma smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :=
   RingHom.map_closure _ _
 #align subring.smul_closure Subring.smul_closure
 

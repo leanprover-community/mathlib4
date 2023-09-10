@@ -164,12 +164,12 @@ def binaryProductCone (X Y : Type u) : BinaryFan X Y :=
 #align category_theory.limits.types.binary_product_cone CategoryTheory.Limits.Types.binaryProductCone
 
 @[simp]
-theorem binaryProductCone_fst (X Y : Type u) : (binaryProductCone X Y).fst = _root_.Prod.fst :=
+lemma binaryProductCone_fst (X Y : Type u) : (binaryProductCone X Y).fst = _root_.Prod.fst :=
   rfl
 #align category_theory.limits.types.binary_product_cone_fst CategoryTheory.Limits.Types.binaryProductCone_fst
 
 @[simp]
-theorem binaryProductCone_snd (X Y : Type u) : (binaryProductCone X Y).snd = _root_.Prod.snd :=
+lemma binaryProductCone_snd (X Y : Type u) : (binaryProductCone X Y).snd = _root_.Prod.snd :=
   rfl
 #align category_theory.limits.types.binary_product_cone_snd CategoryTheory.Limits.Types.binaryProductCone_snd
 
@@ -195,25 +195,25 @@ noncomputable def binaryProductIso (X Y : Type u) : Limits.prod X Y ≅ X × Y :
 #align category_theory.limits.types.binary_product_iso CategoryTheory.Limits.Types.binaryProductIso
 
 @[elementwise (attr := simp)]
-theorem binaryProductIso_hom_comp_fst (X Y : Type u) :
+lemma binaryProductIso_hom_comp_fst (X Y : Type u) :
     (binaryProductIso X Y).hom ≫ _root_.Prod.fst = Limits.prod.fst :=
   limit.isoLimitCone_hom_π (binaryProductLimitCone X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.types.binary_product_iso_hom_comp_fst CategoryTheory.Limits.Types.binaryProductIso_hom_comp_fst
 
 @[elementwise (attr := simp)]
-theorem binaryProductIso_hom_comp_snd (X Y : Type u) :
+lemma binaryProductIso_hom_comp_snd (X Y : Type u) :
     (binaryProductIso X Y).hom ≫ _root_.Prod.snd = Limits.prod.snd :=
   limit.isoLimitCone_hom_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.types.binary_product_iso_hom_comp_snd CategoryTheory.Limits.Types.binaryProductIso_hom_comp_snd
 
 @[elementwise (attr := simp)]
-theorem binaryProductIso_inv_comp_fst (X Y : Type u) :
+lemma binaryProductIso_inv_comp_fst (X Y : Type u) :
     (binaryProductIso X Y).inv ≫ Limits.prod.fst = _root_.Prod.fst :=
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.types.binary_product_iso_inv_comp_fst CategoryTheory.Limits.Types.binaryProductIso_inv_comp_fst
 
 @[elementwise (attr := simp)]
-theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
+lemma binaryProductIso_inv_comp_snd (X Y : Type u) :
     (binaryProductIso X Y).inv ≫ Limits.prod.snd = _root_.Prod.snd :=
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.types.binary_product_iso_inv_comp_snd CategoryTheory.Limits.Types.binaryProductIso_inv_comp_snd
@@ -274,25 +274,25 @@ noncomputable def binaryCoproductIso (X Y : Type u) : Limits.coprod X Y ≅ Sum 
 --open CategoryTheory.Type
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inl_comp_hom (X Y : Type u) :
+lemma binaryCoproductIso_inl_comp_hom (X Y : Type u) :
     Limits.coprod.inl ≫ (binaryCoproductIso X Y).hom = Sum.inl :=
   colimit.isoColimitCocone_ι_hom (binaryCoproductColimitCocone X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.types.binary_coproduct_iso_inl_comp_hom CategoryTheory.Limits.Types.binaryCoproductIso_inl_comp_hom
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inr_comp_hom (X Y : Type u) :
+lemma binaryCoproductIso_inr_comp_hom (X Y : Type u) :
     Limits.coprod.inr ≫ (binaryCoproductIso X Y).hom = Sum.inr :=
   colimit.isoColimitCocone_ι_hom (binaryCoproductColimitCocone X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.types.binary_coproduct_iso_inr_comp_hom CategoryTheory.Limits.Types.binaryCoproductIso_inr_comp_hom
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inl_comp_inv (X Y : Type u) :
+lemma binaryCoproductIso_inl_comp_inv (X Y : Type u) :
     ↾(Sum.inl : X ⟶ Sum X Y) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inl :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.types.binary_coproduct_iso_inl_comp_inv CategoryTheory.Limits.Types.binaryCoproductIso_inl_comp_inv
 
 @[elementwise (attr := simp)]
-theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
+lemma binaryCoproductIso_inr_comp_inv (X Y : Type u) :
     ↾(Sum.inr : Y ⟶ Sum X Y) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inr :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.types.binary_coproduct_iso_inr_comp_inv CategoryTheory.Limits.Types.binaryCoproductIso_inr_comp_inv
@@ -491,7 +491,7 @@ noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X
 #align category_theory.limits.types.type_equalizer_of_unique CategoryTheory.Limits.Types.typeEqualizerOfUnique
 
 /-- The converse of `type_equalizer_of_unique`. -/
-theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y = h y) :
+lemma unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y = h y) :
     ∃! x : X, f x = y := by
   let y' : PUnit ⟶ Y := fun _ => y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
@@ -567,7 +567,7 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
 /-- If `π : Y ⟶ Z` is an equalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
 then `π ⁻¹' (π '' U) = U`.
 -/
-theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ π = g ≫ π)
+lemma coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ π = g ≫ π)
     (h : IsColimit (Cofork.ofπ π e)) (U : Set Y) (H : f ⁻¹' U = g ⁻¹' U) : π ⁻¹' (π '' U) = U := by
   have lem : ∀ x y, CoequalizerRel f g x y → (x ∈ U ↔ y ∈ U) := by
     rintro _ _ ⟨x⟩
@@ -681,13 +681,13 @@ noncomputable def pullbackIsoPullback : pullback f g ≅ PullbackObj f g :=
 #align category_theory.limits.types.pullback_iso_pullback CategoryTheory.Limits.Types.pullbackIsoPullback
 
 @[simp]
-theorem pullbackIsoPullback_hom_fst (p : pullback f g) :
+lemma pullbackIsoPullback_hom_fst (p : pullback f g) :
     ((pullbackIsoPullback f g).hom p : X × Y).fst = (pullback.fst : _ ⟶ X) p :=
   congr_fun ((pullbackConeIsoPullback f g).hom.w left) p
 #align category_theory.limits.types.pullback_iso_pullback_hom_fst CategoryTheory.Limits.Types.pullbackIsoPullback_hom_fst
 
 @[simp]
-theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
+lemma pullbackIsoPullback_hom_snd (p : pullback f g) :
     ((pullbackIsoPullback f g).hom p : X × Y).snd = (pullback.snd : _ ⟶ Y) p :=
   congr_fun ((pullbackConeIsoPullback f g).hom.w right) p
 #align category_theory.limits.types.pullback_iso_pullback_hom_snd CategoryTheory.Limits.Types.pullbackIsoPullback_hom_snd

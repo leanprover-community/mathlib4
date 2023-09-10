@@ -72,7 +72,7 @@ lemma volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.mea
   simp only [volume, Basis.addHaar, one_smul]
 #align real.volume_eq_stieltjes_id Real.volume_eq_stieltjes_id
 
-theorem volume_val (s) : volume s = StieltjesFunction.id.measure s := by
+lemma volume_val (s) : volume s = StieltjesFunction.id.measure s := by
   simp [volume_eq_stieltjes_id]
 #align real.volume_val Real.volume_val
 
@@ -105,17 +105,17 @@ lemma volume_univ : volume (univ : Set ℝ) = ∞ :=
 #align real.volume_univ Real.volume_univ
 
 @[simp]
-theorem volume_ball (a r : ℝ) : volume (Metric.ball a r) = ofReal (2 * r) := by
+lemma volume_ball (a r : ℝ) : volume (Metric.ball a r) = ofReal (2 * r) := by
   rw [ball_eq_Ioo, volume_Ioo, ← sub_add, add_sub_cancel', two_mul]
 #align real.volume_ball Real.volume_ball
 
 @[simp]
-theorem volume_closedBall (a r : ℝ) : volume (Metric.closedBall a r) = ofReal (2 * r) := by
+lemma volume_closedBall (a r : ℝ) : volume (Metric.closedBall a r) = ofReal (2 * r) := by
   rw [closedBall_eq_Icc, volume_Icc, ← sub_add, add_sub_cancel', two_mul]
 #align real.volume_closed_ball Real.volume_closedBall
 
 @[simp]
-theorem volume_emetric_ball (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.ball a r) = 2 * r := by
+lemma volume_emetric_ball (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.ball a r) = 2 * r := by
   rcases eq_or_ne r ∞ with (rfl | hr)
   · rw [Metric.emetric_ball_top, volume_univ, two_mul, _root_.top_add]
   · lift r to ℝ≥0 using hr
@@ -124,7 +124,7 @@ theorem volume_emetric_ball (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.ball a 
 #align real.volume_emetric_ball Real.volume_emetric_ball
 
 @[simp]
-theorem volume_emetric_closedBall (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.closedBall a r) = 2 * r := by
+lemma volume_emetric_closedBall (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.closedBall a r) = 2 * r := by
   rcases eq_or_ne r ∞ with (rfl | hr)
   · rw [EMetric.closedBall_top, volume_univ, two_mul, _root_.top_add]
   · lift r to ℝ≥0 using hr
@@ -190,7 +190,7 @@ instance isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.rest
   ⟨by simp⟩
 #align real.is_finite_measure_restrict_Ioo Real.isFiniteMeasure_restrict_Ioo
 
-theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
+lemma volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
   by_cases hs : Metric.Bounded s
   · rw [Real.ediam_eq hs, ← volume_Icc]
     exact volume.mono (Real.subset_Icc_sInf_sSup_of_bounded hs)
@@ -254,20 +254,20 @@ lemma volume_pi_Ico_toReal {a b : ι → ℝ} (h : a ≤ b) :
 #align real.volume_pi_Ico_to_real Real.volume_pi_Ico_toReal
 
 @[simp]
-nonrec theorem volume_pi_ball (a : ι → ℝ) {r : ℝ} (hr : 0 < r) :
+nonrec lemma volume_pi_ball (a : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     volume (Metric.ball a r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
   simp only [MeasureTheory.volume_pi_ball a hr, volume_ball, Finset.prod_const]
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr.le) _).symm
 #align real.volume_pi_ball Real.volume_pi_ball
 
 @[simp]
-nonrec theorem volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
+nonrec lemma volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
     volume (Metric.closedBall a r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
   simp only [MeasureTheory.volume_pi_closedBall a hr, volume_closedBall, Finset.prod_const]
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr) _).symm
 #align real.volume_pi_closed_ball Real.volume_pi_closedBall
 
-theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
+lemma volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
     volume s ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
   calc
     volume s ≤ volume (pi univ fun i => closure (Function.eval i '' s)) :=
@@ -278,7 +278,7 @@ theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
       Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (EMetric.diam_closure _)
 #align real.volume_pi_le_prod_diam Real.volume_pi_le_prod_diam
 
-theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam s ^ Fintype.card ι :=
+lemma volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam s ^ Fintype.card ι :=
   calc
     volume s ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) := volume_pi_le_prod_diam s
     _ ≤ ∏ _i : ι, (1 : ℝ≥0) * EMetric.diam s :=
@@ -467,14 +467,14 @@ def regionBetween (f g : α → ℝ) (s : Set α) : Set (α × ℝ) :=
   { p : α × ℝ | p.1 ∈ s ∧ p.2 ∈ Ioo (f p.1) (g p.1) }
 #align region_between regionBetween
 
-theorem regionBetween_subset (f g : α → ℝ) (s : Set α) : regionBetween f g s ⊆ s ×ˢ univ := by
+lemma regionBetween_subset (f g : α → ℝ) (s : Set α) : regionBetween f g s ⊆ s ×ˢ univ := by
   simpa only [prod_univ, regionBetween, Set.preimage, setOf_subset_setOf] using fun a => And.left
 #align region_between_subset regionBetween_subset
 
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
 /-- The region between two measurable functions on a measurable set is measurable. -/
-theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :
+lemma measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :
     MeasurableSet (regionBetween f g s) := by
   dsimp only [regionBetween, Ioo, mem_setOf_eq, setOf_and]
   refine'
@@ -486,7 +486,7 @@ theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs 
 
 /-- The region between two measurable functions on a measurable set is measurable;
 a version for the region together with the graph of the upper function. -/
-theorem measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
+lemma measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Ioc, mem_setOf_eq, setOf_and]
@@ -499,7 +499,7 @@ theorem measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
 
 /-- The region between two measurable functions on a measurable set is measurable;
 a version for the region together with the graph of the lower function. -/
-theorem measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
+lemma measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Ico, mem_setOf_eq, setOf_and]
@@ -512,7 +512,7 @@ theorem measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
 
 /-- The region between two measurable functions on a measurable set is measurable;
 a version for the region together with the graphs of both functions. -/
-theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
+lemma measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Icc, mem_setOf_eq, setOf_and]
@@ -524,11 +524,11 @@ theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
 #align measurable_set_region_between_cc measurableSet_region_between_cc
 
 /-- The graph of a measurable function is a measurable set. -/
-theorem measurableSet_graph (hf : Measurable f) : MeasurableSet { p : α × ℝ | p.snd = f p.fst } :=
+lemma measurableSet_graph (hf : Measurable f) : MeasurableSet { p : α × ℝ | p.snd = f p.fst } :=
   by simpa using measurableSet_region_between_cc hf hf MeasurableSet.univ
 #align measurable_set_graph measurableSet_graph
 
-theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable g)
+lemma volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     μ.prod volume (regionBetween f g s) = ∫⁻ y in s, ENNReal.ofReal ((g - f) y) ∂μ := by
   classical

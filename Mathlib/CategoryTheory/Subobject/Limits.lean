@@ -155,7 +155,7 @@ def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
 #align category_theory.limits.kernel_subobject_map CategoryTheory.Limits.kernelSubobjectMap
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
+lemma kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernelSubobjectMap sq ≫ (kernelSubobject f').arrow = (kernelSubobject f).arrow ≫ sq.left := by
   simp [kernelSubobjectMap]
 #align category_theory.limits.kernel_subobject_map_arrow CategoryTheory.Limits.kernelSubobjectMap_arrow
@@ -172,13 +172,13 @@ lemma kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
 #align category_theory.limits.kernel_subobject_map_comp CategoryTheory.Limits.kernelSubobjectMap_comp
 
 @[reassoc]
-theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
+lemma kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
       (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by aesop_cat
 #align category_theory.limits.kernel_map_comp_kernel_subobject_iso_inv CategoryTheory.Limits.kernel_map_comp_kernelSubobjectIso_inv
 
 @[reassoc]
-theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
+lemma kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.1 sq.2 sq.3.symm =
       kernelSubobjectMap sq ≫ (kernelSubobjectIso _).hom :=
   by simp [← Iso.comp_inv_eq, kernel_map_comp_kernelSubobjectIso_inv]
@@ -195,7 +195,7 @@ instance isIso_kernelSubobject_zero_arrow : IsIso (kernelSubobject (0 : X ⟶ Y)
   (isIso_arrow_iff_eq_top _).mpr kernelSubobject_zero
 #align category_theory.limits.is_iso_kernel_subobject_zero_arrow CategoryTheory.Limits.isIso_kernelSubobject_zero_arrow
 
-theorem le_kernelSubobject (A : Subobject X) (h : A.arrow ≫ f = 0) : A ≤ kernelSubobject f :=
+lemma le_kernelSubobject (A : Subobject X) (h : A.arrow ≫ f = 0) : A ≤ kernelSubobject f :=
   Subobject.le_mk_of_comm (kernel.lift f A.arrow h) (by simp)
 #align category_theory.limits.le_kernel_subobject CategoryTheory.Limits.le_kernelSubobject
 
@@ -222,14 +222,14 @@ lemma kernelSubobjectIsoComp_inv_arrow {X' : C} (f : X' ⟶ X) [IsIso f] (g : X 
 #align category_theory.limits.kernel_subobject_iso_comp_inv_arrow CategoryTheory.Limits.kernelSubobjectIsoComp_inv_arrow
 
 /-- The kernel of `f` is always a smaller subobject than the kernel of `f ≫ h`. -/
-theorem kernelSubobject_comp_le (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [HasKernel (f ≫ h)] :
+lemma kernelSubobject_comp_le (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [HasKernel (f ≫ h)] :
     kernelSubobject f ≤ kernelSubobject (f ≫ h) :=
   le_kernelSubobject _ _ (by simp)
 #align category_theory.limits.kernel_subobject_comp_le CategoryTheory.Limits.kernelSubobject_comp_le
 
 /-- Postcomposing by a monomorphism does not change the kernel subobject. -/
 @[simp]
-theorem kernelSubobject_comp_mono (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [Mono h] :
+lemma kernelSubobject_comp_mono (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [Mono h] :
     kernelSubobject (f ≫ h) = kernelSubobject f :=
   le_antisymm (le_kernelSubobject _ _ ((cancel_mono h).mp (by simp))) (kernelSubobject_comp_le f h)
 #align category_theory.limits.kernel_subobject_comp_mono CategoryTheory.Limits.kernelSubobject_comp_mono
@@ -409,14 +409,14 @@ def imageSubobjectCompIso (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [Is
 #align category_theory.limits.image_subobject_comp_iso CategoryTheory.Limits.imageSubobjectCompIso
 
 @[reassoc (attr := simp)]
-theorem imageSubobjectCompIso_hom_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
+lemma imageSubobjectCompIso_hom_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
     (imageSubobjectCompIso f h).hom ≫ (imageSubobject f).arrow =
       (imageSubobject (f ≫ h)).arrow ≫ inv h :=
   by simp [imageSubobjectCompIso]
 #align category_theory.limits.image_subobject_comp_iso_hom_arrow CategoryTheory.Limits.imageSubobjectCompIso_hom_arrow
 
 @[reassoc (attr := simp)]
-theorem imageSubobjectCompIso_inv_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
+lemma imageSubobjectCompIso_inv_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
     (imageSubobjectCompIso f h).inv ≫ (imageSubobject (f ≫ h)).arrow =
       (imageSubobject f).arrow ≫ h :=
   by simp [imageSubobjectCompIso]
@@ -424,7 +424,7 @@ theorem imageSubobjectCompIso_inv_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h :
 
 end
 
-theorem imageSubobject_mono (f : X ⟶ Y) [Mono f] : imageSubobject f = Subobject.mk f :=
+lemma imageSubobject_mono (f : X ⟶ Y) [Mono f] : imageSubobject f = Subobject.mk f :=
   eq_of_comm (imageSubobjectIso f ≪≫ imageMonoIsoSource f ≪≫ (underlyingIso f).symm) (by simp)
 #align category_theory.limits.image_subobject_mono CategoryTheory.Limits.imageSubobject_mono
 

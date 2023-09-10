@@ -160,7 +160,7 @@ lemma IsGalois.of_algEquiv [IsGalois F E] (f : E ≃ₐ[F] E') : IsGalois F E' :
     to_normal := Normal.of_algEquiv f }
 #align is_galois.of_alg_equiv IsGalois.of_algEquiv
 
-theorem AlgEquiv.transfer_galois (f : E ≃ₐ[F] E') : IsGalois F E ↔ IsGalois F E' :=
+lemma AlgEquiv.transfer_galois (f : E ≃ₐ[F] E') : IsGalois F E ↔ IsGalois F E' :=
   ⟨fun _ => IsGalois.of_algEquiv f, fun _ => IsGalois.of_algEquiv f.symm⟩
 #align alg_equiv.transfer_galois AlgEquiv.transfer_galois
 

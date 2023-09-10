@@ -33,13 +33,13 @@ lemma decide_False {h} : @decide False h = false :=
 #align bool.to_bool_false Bool.decide_False
 
 @[simp]
-theorem decide_coe (b : Bool) {h} : @decide b h = b := by
+lemma decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
   · exact decide_eq_false $ λ j => by cases j
   · exact decide_eq_true $ rfl
 #align bool.to_bool_coe Bool.decide_coe
 
-theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
+lemma coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
   match d with
   | isTrue hp => ⟨λ _ => hp, λ _ => rfl⟩
   | isFalse hnp => ⟨λ h => Bool.noConfusion h, λ hp => (hnp hp).elim⟩
@@ -59,17 +59,17 @@ lemma false_eq_decide_iff {p : Prop} [Decidable p] : false = decide p ↔ ¬p :=
   eq_comm.trans (decide_false_iff _)
 #align bool.ff_eq_to_bool_iff Bool.false_eq_decide_iff
 
-theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
+lemma decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
   by_cases p <;> simp [*]
 #align bool.to_bool_not Bool.decide_not
 
 @[simp]
-theorem decide_and (p q : Prop) [Decidable p] [Decidable q] : decide (p ∧ q) = (p && q) := by
+lemma decide_and (p q : Prop) [Decidable p] [Decidable q] : decide (p ∧ q) = (p && q) := by
   by_cases p <;> by_cases q <;> simp [*]
 #align bool.to_bool_and Bool.decide_and
 
 @[simp]
-theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = (p || q) := by
+lemma decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = (p || q) := by
   by_cases p <;> by_cases q <;> simp [*]
 #align bool.to_bool_or Bool.decide_or
 
@@ -95,7 +95,7 @@ lemma default_bool : default = false :=
   rfl
 #align bool.default_bool Bool.default_bool
 
-theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
+lemma dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 #align bool.dichotomy Bool.dichotomy
 
 @[simp]
@@ -178,19 +178,19 @@ lemma and_intro : ∀ {a b : Bool}, a → b → a && b := by decide
 lemma and_elim_right : ∀ {a b : Bool}, a && b → b := by decide
 #align bool.band_elim_right Bool.and_elim_right
 
-theorem and_or_distrib_left (a b c : Bool) : (a && (b || c)) = (a && b || a && c) := by
+lemma and_or_distrib_left (a b c : Bool) : (a && (b || c)) = (a && b || a && c) := by
   cases a <;> simp
 #align bool.band_bor_distrib_left Bool.and_or_distrib_left
 
-theorem and_or_distrib_right (a b c : Bool) : ((a || b) && c) = (a && c || b && c) := by
+lemma and_or_distrib_right (a b c : Bool) : ((a || b) && c) = (a && c || b && c) := by
   cases a <;> cases b <;> cases c <;> simp
 #align bool.band_bor_distrib_right Bool.and_or_distrib_right
 
-theorem or_and_distrib_left (a b c : Bool) : (a || b && c) = ((a || b) && (a || c)) := by
+lemma or_and_distrib_left (a b c : Bool) : (a || b && c) = ((a || b) && (a || c)) := by
   cases a <;> simp
 #align bool.bor_band_distrib_left Bool.or_and_distrib_left
 
-theorem or_and_distrib_right (a b c : Bool) : (a && b || c) = ((a || c) && (b || c)) := by
+lemma or_and_distrib_right (a b c : Bool) : (a && b || c) = ((a || c) && (b || c)) := by
   cases a <;> cases b <;> cases c <;> simp
 #align bool.bor_band_distrib_right Bool.or_and_distrib_right
 
@@ -289,11 +289,11 @@ lemma xor_false_left : ∀ a, xor false a = a := by decide
 lemma xor_false_right : ∀ a, xor a false = a := by decide
 #align bool.bxor_ff_right Bool.xor_false_right
 
-theorem and_xor_distrib_left (a b c : Bool) : (a && xor b c) = xor (a && b) (a && c) := by
+lemma and_xor_distrib_left (a b c : Bool) : (a && xor b c) = xor (a && b) (a && c) := by
   cases a <;> simp
 #align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
 
-theorem and_xor_distrib_right (a b c : Bool) : (xor a b && c) = xor (a && c) (b && c) := by
+lemma and_xor_distrib_right (a b c : Bool) : (xor a b && c) = xor (a && c) (b && c) := by
   cases a <;> cases b <;> cases c <;> simp
 #align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
 
@@ -395,7 +395,7 @@ lemma toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toN
   | inr h => subst h; cases b₀ <;> simp
 #align bool.to_nat_le_to_nat Bool.toNat_le_toNat
 
-theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
+lemma ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
   cases b <;> rfl
 #align bool.of_nat_to_nat Bool.ofNat_toNat
 
@@ -407,7 +407,7 @@ lemma injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f 
 #align bool.injective_iff Bool.injective_iff
 
 /-- **Kaminski's Equation** -/
-theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
+lemma apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
   cases x <;> cases h₁ : f true <;> cases h₂ : f false <;> simp only [h₁, h₂]
 #align bool.apply_apply_apply Bool.apply_apply_apply
 

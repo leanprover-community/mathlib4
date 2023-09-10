@@ -43,7 +43,7 @@ lemma Finset.mem_powerset_len_univ_iff [Fintype α] {s : Finset α} {k : ℕ} :
 #align finset.mem_powerset_len_univ_iff Finset.mem_powerset_len_univ_iff
 
 @[simp]
-theorem Finset.univ_filter_card_eq (α : Type*) [Fintype α] (k : ℕ) :
+lemma Finset.univ_filter_card_eq (α : Type*) [Fintype α] (k : ℕ) :
     ((Finset.univ : Finset (Finset α)).filter fun s => s.card = k) = Finset.univ.powersetLen k := by
   ext
   simp [Finset.mem_powersetLen]

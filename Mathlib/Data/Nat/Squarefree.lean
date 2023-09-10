@@ -141,7 +141,7 @@ def MinSqFacProp (n : ℕ) : Option ℕ → Prop
   | some d => Prime d ∧ d * d ∣ n ∧ ∀ p, Prime p → p * p ∣ n → d ≤ p
 #align nat.min_sq_fac_prop Nat.MinSqFacProp
 
-theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k ∣ n) {o}
+lemma minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k ∣ n) {o}
     (H : MinSqFacProp (n / k) o) : MinSqFacProp n o := by
   have : ∀ p, Prime p → p * p ∣ n → k * (p * p) ∣ n := fun p pp dp =>
     have :=
@@ -199,7 +199,7 @@ lemma minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
 termination_by _ => n.sqrt + 2 - k
 #align nat.min_sq_fac_aux_has_prop Nat.minSqFacAux_has_prop
 
-theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
+lemma minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
   dsimp only [minSqFac]; split_ifs with d2 d4
   · exact ⟨prime_two, (dvd_div_iff d2).1 d4, fun p pp _ => pp.two_le⟩
   · cases' Nat.eq_zero_or_pos n with n0 n0
@@ -361,7 +361,7 @@ lemma sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :
   refine' ⟨a₁.pred, b₁.pred, _, _⟩ <;> simpa only [add_one, succ_pred_eq_of_pos, ha₁, hb₁]
 #align nat.sq_mul_squarefree_of_pos' Nat.sq_mul_squarefree_of_pos'
 
-theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
+lemma sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
   cases' n with n
   · exact ⟨1, 0, by simp, squarefree_one⟩
   · obtain ⟨a, b, -, -, h₁, h₂⟩ := sq_mul_squarefree_of_pos (succ_pos n)
@@ -409,7 +409,7 @@ def SquarefreeHelper (n k : ℕ) : Prop :=
   0 < k → (∀ m, Nat.Prime m → m ∣ bit1 n → bit1 k ≤ m) → Squarefree (bit1 n)
 #align tactic.norm_num.squarefree_helper Tactic.NormNum.SquarefreeHelper
 
-theorem squarefree_bit10 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit0 (bit1 n)) := by
+lemma squarefree_bit10 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit0 (bit1 n)) := by
   refine' @Nat.minSqFacProp_div _ _ Nat.prime_two two_dvd_bit0 _ none _
   · rw [bit0_eq_two_mul (bit1 n), mul_dvd_mul_iff_left (two_ne_zero' ℕ)]
     exact Nat.not_two_dvd_bit1 _
@@ -419,7 +419,7 @@ theorem squarefree_bit10 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit0
     exact Nat.not_two_dvd_bit1 _ dp
 #align tactic.norm_num.squarefree_bit10 Tactic.NormNum.squarefree_bit10
 
-theorem squarefree_bit1 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit1 n) := by
+lemma squarefree_bit1 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit1 n) := by
   refine' h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
   rintro rfl; exact Nat.not_two_dvd_bit1 _ dp
 #align tactic.norm_num.squarefree_bit1 Tactic.NormNum.squarefree_bit1
@@ -436,7 +436,7 @@ lemma squarefree_helper_0 {k} (k0 : 0 < k) {p : ℕ} (pp : Nat.Prime p) (h : bit
   · exact Or.inr hp
 #align tactic.norm_num.squarefree_helper_0 Tactic.NormNum.squarefree_helper_0
 
-theorem squarefreeHelper_1 (n k k' : ℕ) (e : k + 1 = k')
+lemma squarefreeHelper_1 (n k k' : ℕ) (e : k + 1 = k')
     (hk : Nat.Prime (bit1 k) → ¬bit1 k ∣ bit1 n) (H : SquarefreeHelper n k') :
     SquarefreeHelper n k := fun k0 ih => by
   subst e
@@ -445,14 +445,14 @@ theorem squarefreeHelper_1 (n k k' : ℕ) (e : k + 1 = k')
   subst hp; cases hk pp dp
 #align tactic.norm_num.squarefree_helper_1 Tactic.NormNum.squarefreeHelper_1
 
-theorem squarefreeHelper_2 (n k k' c : ℕ) (e : k + 1 = k') (hc : bit1 n % bit1 k = c) (c0 : 0 < c)
+lemma squarefreeHelper_2 (n k k' c : ℕ) (e : k + 1 = k') (hc : bit1 n % bit1 k = c) (c0 : 0 < c)
     (h : SquarefreeHelper n k') : SquarefreeHelper n k := by
   refine' squarefree_helper_1 _ _ _ e (fun _ => _) h
   refine' mt _ (ne_of_gt c0); intro e₁
   rwa [← hc, ← Nat.dvd_iff_mod_eq_zero]
 #align tactic.norm_num.squarefree_helper_2 Tactic.NormNum.squarefreeHelper_2
 
-theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' * bit1 k = bit1 n)
+lemma squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' * bit1 k = bit1 n)
     (hc : bit1 n' % bit1 k = c) (c0 : 0 < c) (H : SquarefreeHelper n' k') : SquarefreeHelper n k :=
   fun k0 ih => by
   subst e
@@ -476,7 +476,7 @@ theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' *
   contradiction
 #align tactic.norm_num.squarefree_helper_3 Tactic.NormNum.squarefreeHelper_3
 
-theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 n < k') :
+lemma squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 n < k') :
     SquarefreeHelper n k := by
   cases' Nat.eq_zero_or_pos n with h h
   · subst n
@@ -492,7 +492,7 @@ theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 
   exact not_le_of_lt hd this
 #align tactic.norm_num.squarefree_helper_4 Tactic.NormNum.squarefreeHelper_4
 
-theorem not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) (h₁ : 1 < a) :
+lemma not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) (h₁ : 1 < a) :
     ¬Squarefree n := by
   rw [← hb, ← ha]
   exact fun H => ne_of_gt h₁ (Nat.isUnit_iff.1 <| H _ ⟨_, rfl⟩)

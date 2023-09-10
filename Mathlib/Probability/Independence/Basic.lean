@@ -230,12 +230,12 @@ lemma Indep.symm {m₁ m₂ : MeasurableSpace Ω} [MeasurableSpace Ω] {μ : Mea
     (h : Indep m₁ m₂ μ) : Indep m₂ m₁ μ := IndepSets.symm h
 #align probability_theory.indep.symm ProbabilityTheory.Indep.symm
 
-theorem indep_bot_right (m' : MeasurableSpace Ω) {_m : MeasurableSpace Ω} {μ : Measure Ω}
+lemma indep_bot_right (m' : MeasurableSpace Ω) {_m : MeasurableSpace Ω} {μ : Measure Ω}
     [IsProbabilityMeasure μ] : Indep m' ⊥ μ :=
   kernel.indep_bot_right m'
 #align probability_theory.indep_bot_right ProbabilityTheory.indep_bot_right
 
-theorem indep_bot_left (m' : MeasurableSpace Ω) {_m : MeasurableSpace Ω} {μ : Measure Ω}
+lemma indep_bot_left (m' : MeasurableSpace Ω) {_m : MeasurableSpace Ω} {μ : Measure Ω}
     [IsProbabilityMeasure μ] : Indep ⊥ m' μ := (indep_bot_right m').symm
 #align probability_theory.indep_bot_left ProbabilityTheory.indep_bot_left
 
@@ -515,7 +515,7 @@ lemma Indep.indepSet_of_measurableSet {m₁ m₂ _m0 : MeasurableSpace Ω} {μ :
   kernel.Indep.indepSet_of_measurableSet h_indep hs ht
 #align probability_theory.indep.indep_set_of_measurable_set ProbabilityTheory.Indep.indepSet_of_measurableSet
 
-theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
+lemma indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (μ : Measure Ω) :
     Indep m₁ m₂ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t μ :=
   kernel.indep_iff_forall_indepSet m₁ m₂ _ _

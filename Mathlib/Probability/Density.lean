@@ -270,7 +270,7 @@ variable [IsFiniteMeasure ℙ] {X : Ω → ℝ}
 
 /-- A real-valued random variable `X` `HasPDF X ℙ λ` (where `λ` is the Lebesgue measure) if and
 only if the push-forward measure of `ℙ` along `X` is absolutely continuous with respect to `λ`. -/
-nonrec theorem _root_.Real.hasPDF_iff_of_measurable (hX : Measurable X) :
+nonrec lemma _root_.Real.hasPDF_iff_of_measurable (hX : Measurable X) :
     HasPDF X ℙ ↔ map X ℙ ≪ volume := by
   rw [hasPDF_iff_of_measurable hX]
   exact and_iff_right inferInstance
@@ -388,7 +388,7 @@ lemma mul_pdf_integrable [IsFiniteMeasure ℙ] (hcs : IsCompact s) (huX : IsUnif
 
 /-- A real uniform random variable `X` with support `s` has expectation
 `(λ s)⁻¹ * ∫ x in s, x ∂λ` where `λ` is the Lebesgue measure. -/
-theorem integral_eq (hnt : volume s ≠ ∞) (huX : IsUniform X s ℙ) :
+lemma integral_eq (hnt : volume s ≠ ∞) (huX : IsUniform X s ℙ) :
     ∫ x, X x ∂ℙ = (volume s)⁻¹.toReal * ∫ x in s, x := by
   haveI := hasPDF hns hnt huX
   haveI := huX.isProbabilityMeasure hns hnt hms

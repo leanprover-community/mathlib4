@@ -142,7 +142,7 @@ noncomputable instance : SMul M (Completion X) :=
   ⟨fun c => Completion.map ((· • ·) c)⟩
 
 @[to_additive]
-theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=
+lemma smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=
   rfl
 #align uniform_space.completion.smul_def UniformSpace.Completion.smul_def
 #align uniform_space.completion.vadd_def UniformSpace.Completion.vadd_def
@@ -180,7 +180,7 @@ variable {M X}
 variable [UniformContinuousConstSMul M X]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Completion X) :=
+lemma coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Completion X) :=
   (map_coe (uniformContinuous_const_smul c) x).symm
 #align uniform_space.completion.coe_smul UniformSpace.Completion.coe_smul
 #align uniform_space.completion.coe_vadd UniformSpace.Completion.coe_vadd

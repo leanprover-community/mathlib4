@@ -91,7 +91,7 @@ lemma irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing R]
 
 /-- An element of a DVR is irreducible iff it is a uniformizer, that is, generates the
   maximal ideal of `R`. -/
-theorem irreducible_iff_uniformizer (ϖ : R) : Irreducible ϖ ↔ maximalIdeal R = Ideal.span {ϖ} :=
+lemma irreducible_iff_uniformizer (ϖ : R) : Irreducible ϖ ↔ maximalIdeal R = Ideal.span {ϖ} :=
   ⟨fun hϖ => (eq_maximalIdeal (isMaximal_of_irreducible hϖ)).symm,
     fun h => irreducible_of_span_eq_maximalIdeal ϖ
       (fun e => not_a_field R <| by rwa [h, span_singleton_eq_bot]) h⟩
@@ -116,7 +116,7 @@ lemma exists_prime : ∃ ϖ : R, Prime ϖ :=
 #align discrete_valuation_ring.exists_prime DiscreteValuationRing.exists_prime
 
 /-- An integral domain is a DVR iff it's a PID with a unique non-zero prime ideal. -/
-theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
+lemma iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
     DiscreteValuationRing R ↔ IsPrincipalIdealRing R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ IsPrime P := by
   constructor
   · intro RDVR
@@ -248,7 +248,7 @@ lemma of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p :
 
 end HasUnitMulPowIrreducibleFactorization
 
-theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain R]
+lemma aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsPrincipalIdealRing R := by
@@ -401,7 +401,7 @@ noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuati
   addValuation (Classical.choose_spec (exists_prime R))
 #align discrete_valuation_ring.add_val DiscreteValuationRing.addVal
 
-theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
+lemma addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
     addVal R r = n := by
   rw [addVal, addValuation_apply, hr, eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
@@ -409,7 +409,7 @@ theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (
     multiplicity_pow_self_of_prime (PrincipalIdealRing.irreducible_iff_prime.1 hϖ)]
 #align discrete_valuation_ring.add_val_def DiscreteValuationRing.addVal_def
 
-theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
+lemma addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
     addVal R ((u : R) * ϖ ^ n) = n :=
   addVal_def _ u hϖ n rfl
 #align discrete_valuation_ring.add_val_def' DiscreteValuationRing.addVal_def'
@@ -436,7 +436,7 @@ lemma addVal_mul {a b : R} :
   (addVal R).map_mul _ _
 #align discrete_valuation_ring.add_val_mul DiscreteValuationRing.addVal_mul
 
-theorem addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • addVal R a :=
+lemma addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • addVal R a :=
   (addVal R).map_pow _ _
 #align discrete_valuation_ring.add_val_pow DiscreteValuationRing.addVal_pow
 

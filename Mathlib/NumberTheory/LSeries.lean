@@ -48,7 +48,7 @@ def LSeriesSummable (f : ArithmeticFunction ℂ) (z : ℂ) : Prop :=
   Summable fun n => f n / n ^ z
 #align nat.arithmetic_function.l_series_summable Nat.ArithmeticFunction.LSeriesSummable
 
-theorem LSeries_eq_zero_of_not_LSeriesSummable (f : ArithmeticFunction ℂ) (z : ℂ) :
+lemma LSeries_eq_zero_of_not_LSeriesSummable (f : ArithmeticFunction ℂ) (z : ℂ) :
     ¬f.LSeriesSummable z → f.LSeries z = 0 :=
   tsum_eq_zero_of_not_summable
 #align nat.arithmetic_function.l_series_eq_zero_of_not_l_series_summable Nat.ArithmeticFunction.LSeries_eq_zero_of_not_LSeriesSummable

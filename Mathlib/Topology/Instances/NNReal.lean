@@ -191,11 +191,11 @@ lemma coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 #align nnreal.coe_tsum_of_nonneg NNReal.coe_tsum_of_nonneg
 
-nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
+nonrec lemma tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
 #align nnreal.tsum_mul_left NNReal.tsum_mul_left
 
-nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
+nonrec lemma tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
 #align nnreal.tsum_mul_right NNReal.tsum_mul_right
 
@@ -205,7 +205,7 @@ lemma summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f
   exact hf.comp_injective hi
 #align nnreal.summable_comp_injective NNReal.summable_comp_injective
 
-theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
+lemma summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
   summable_comp_injective hf <| add_left_injective k
 #align nnreal.summable_nat_add NNReal.summable_nat_add
 

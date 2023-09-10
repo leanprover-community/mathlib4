@@ -68,7 +68,7 @@ instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
 @[simp]
-theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h₂ h₃ : R → S) = f :=
+lemma coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h₂ h₃ : R → S) = f :=
   rfl
 #align absolute_value.coe_mk AbsoluteValue.coe_mk
 
@@ -94,7 +94,7 @@ lemma coe_toMulHom : ⇑abv.toMulHom = abv :=
   rfl
 #align absolute_value.coe_to_mul_hom AbsoluteValue.coe_toMulHom
 
-protected theorem nonneg (x : R) : 0 ≤ abv x :=
+protected lemma nonneg (x : R) : 0 ≤ abv x :=
   abv.nonneg' x
 #align absolute_value.nonneg AbsoluteValue.nonneg
 
@@ -103,12 +103,12 @@ protected lemma eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
   abv.eq_zero' x
 #align absolute_value.eq_zero AbsoluteValue.eq_zero
 
-protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
+protected lemma add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 #align absolute_value.add_le AbsoluteValue.add_le
 
 -- porting note: was `@[simp]` but `simp` can prove it
-protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
+protected lemma map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
 #align absolute_value.map_mul AbsoluteValue.map_mul
 
@@ -129,7 +129,7 @@ protected lemma ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
   (abv.pos hx).ne'
 #align absolute_value.ne_zero AbsoluteValue.ne_zero
 
-theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
+lemma map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 #align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
@@ -144,12 +144,12 @@ section Ring
 
 variable {R S : Type*} [Ring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
+protected lemma sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
 @[simp high] -- porting note: added `high` to apply it before `abv.eq_zero`
-theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
+lemma map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
   abv.eq_zero.trans sub_eq_zero
 #align absolute_value.map_sub_eq_zero_iff AbsoluteValue.map_sub_eq_zero_iff
 
@@ -200,7 +200,7 @@ lemma coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
 #align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
 -- porting note: was `@[simp]` but `simp` can prove it
-protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
+protected lemma map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 #align absolute_value.map_pow AbsoluteValue.map_pow
 
@@ -212,7 +212,7 @@ section Ring
 
 variable {R S : Type*} [Ring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
-protected theorem le_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
+protected lemma le_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
   sub_le_iff_le_add.2 <| by simpa using abv.add_le (a - b) b
 #align absolute_value.le_sub AbsoluteValue.le_sub
 
@@ -227,14 +227,14 @@ variable {R S : Type*} [Ring R] [OrderedCommRing S] (abv : AbsoluteValue R S)
 variable [NoZeroDivisors S]
 
 @[simp]
-protected theorem map_neg (a : R) : abv (-a) = abv a := by
+protected lemma map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine'
     (mul_self_eq_mul_self_iff.mp (by rw [← abv.map_mul, neg_mul_neg, abv.map_mul])).resolve_right _
   exact ((neg_lt_zero.mpr (abv.pos ha)).trans (abv.pos (neg_ne_zero.mpr ha))).ne'
 #align absolute_value.map_neg AbsoluteValue.map_neg
 
-protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← neg_sub, abv.map_neg]
+protected lemma map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← neg_sub, abv.map_neg]
 #align absolute_value.map_sub AbsoluteValue.map_sub
 
 end OrderedCommRing
@@ -271,7 +271,7 @@ section LinearOrderedCommRing
 
 variable {R S : Type*} [Ring R] [LinearOrderedCommRing S] (abv : AbsoluteValue R S)
 
-theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
+lemma abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
   abs_sub_le_iff.2 ⟨abv.le_sub _ _, by rw [abv.map_sub]; apply abv.le_sub⟩
 #align absolute_value.abs_abv_sub_le_abv_sub AbsoluteValue.abs_abv_sub_le_abv_sub
 
@@ -396,11 +396,11 @@ section Ring
 
 variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
-theorem abv_sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
+lemma abv_sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv_add abv (a - b) (b - c)
 #align is_absolute_value.abv_sub_le IsAbsoluteValue.abv_sub_le
 
-theorem sub_abv_le_abv_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
+lemma sub_abv_le_abv_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
   (toAbsoluteValue abv).le_sub a b
 #align is_absolute_value.sub_abv_le_abv_sub IsAbsoluteValue.sub_abv_le_abv_sub
 
@@ -418,11 +418,11 @@ variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 variable [NoZeroDivisors S]
 
-theorem abv_neg (a : R) : abv (-a) = abv a :=
+lemma abv_neg (a : R) : abv (-a) = abv a :=
   (toAbsoluteValue abv).map_neg a
 #align is_absolute_value.abv_neg IsAbsoluteValue.abv_neg
 
-theorem abv_sub (a b : R) : abv (a - b) = abv (b - a) :=
+lemma abv_sub (a b : R) : abv (a - b) = abv (b - a) :=
   (toAbsoluteValue abv).map_sub a b
 #align is_absolute_value.abv_sub IsAbsoluteValue.abv_sub
 
@@ -438,7 +438,7 @@ section Ring
 
 variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
-theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
+lemma abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
   (toAbsoluteValue abv).abs_abv_sub_le_abv_sub a b
 #align is_absolute_value.abs_abv_sub_le_abv_sub IsAbsoluteValue.abs_abv_sub_le_abv_sub
 
@@ -470,11 +470,11 @@ section DivisionSemiring
 
 variable {R : Type*} [DivisionSemiring R] (abv : R → S) [IsAbsoluteValue abv]
 
-theorem abv_inv (a : R) : abv a⁻¹ = (abv a)⁻¹ :=
+lemma abv_inv (a : R) : abv a⁻¹ = (abv a)⁻¹ :=
   map_inv₀ (abvHom' abv) a
 #align is_absolute_value.abv_inv IsAbsoluteValue.abv_inv
 
-theorem abv_div (a b : R) : abv (a / b) = abv a / abv b :=
+lemma abv_div (a b : R) : abv (a / b) = abv a / abv b :=
   map_div₀ (abvHom' abv) a b
 #align is_absolute_value.abv_div IsAbsoluteValue.abv_div
 

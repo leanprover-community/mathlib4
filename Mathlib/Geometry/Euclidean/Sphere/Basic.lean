@@ -60,26 +60,26 @@ instance : Coe (Sphere P) (Set P) :=
 instance : Membership P (Sphere P) :=
   ⟨fun p s => p ∈ (s : Set P)⟩
 
-theorem Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
+lemma Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
   rfl
 #align euclidean_geometry.sphere.mk_center EuclideanGeometry.Sphere.mk_center
 
-theorem Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r :=
+lemma Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r :=
   rfl
 #align euclidean_geometry.sphere.mk_radius EuclideanGeometry.Sphere.mk_radius
 
 @[simp]
-theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
+lemma Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
   ext <;> rfl
 #align euclidean_geometry.sphere.mk_center_radius EuclideanGeometry.Sphere.mk_center_radius
 
 /- Porting note: is a syntactic tautology
-theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
+lemma Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
   rfl -/
 #noalign euclidean_geometry.sphere.coe_def
 
 @[simp]
-theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
+lemma Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
   rfl
 #align euclidean_geometry.sphere.coe_mk EuclideanGeometry.Sphere.coe_mk
 
@@ -149,7 +149,7 @@ def Cospherical (ps : Set P) : Prop :=
 #align euclidean_geometry.cospherical EuclideanGeometry.Cospherical
 
 /-- The definition of `Cospherical`. -/
-theorem cospherical_def (ps : Set P) :
+lemma cospherical_def (ps : Set P) :
     Cospherical ps ↔ ∃ (center : P) (radius : ℝ), ∀ p ∈ ps, dist p center = radius :=
   Iff.rfl
 #align euclidean_geometry.cospherical_def EuclideanGeometry.cospherical_def
@@ -165,7 +165,7 @@ lemma cospherical_iff_exists_sphere {ps : Set P} :
 #align euclidean_geometry.cospherical_iff_exists_sphere EuclideanGeometry.cospherical_iff_exists_sphere
 
 /-- The set of points in a sphere is cospherical. -/
-theorem Sphere.cospherical (s : Sphere P) : Cospherical (s : Set P) :=
+lemma Sphere.cospherical (s : Sphere P) : Cospherical (s : Set P) :=
   cospherical_iff_exists_sphere.2 ⟨s, Set.Subset.rfl⟩
 #align euclidean_geometry.sphere.cospherical EuclideanGeometry.Sphere.cospherical
 
@@ -183,7 +183,7 @@ lemma cospherical_empty [Nonempty P] : Cospherical (∅ : Set P) :=
 #align euclidean_geometry.cospherical_empty EuclideanGeometry.cospherical_empty
 
 /-- A single point is cospherical. -/
-theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
+lemma cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
   use p
   simp
 #align euclidean_geometry.cospherical_singleton EuclideanGeometry.cospherical_singleton
@@ -195,7 +195,7 @@ section NormedSpace
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 /-- Two points are cospherical. -/
-theorem cospherical_pair (p₁ p₂ : P) : Cospherical ({p₁, p₂} : Set P) :=
+lemma cospherical_pair (p₁ p₂ : P) : Cospherical ({p₁, p₂} : Set P) :=
   ⟨midpoint ℝ p₁ p₂, ‖(2 : ℝ)‖⁻¹ * dist p₁ p₂, by
     rintro p (rfl | rfl | _)
     · rw [dist_comm, dist_midpoint_left (𝕜 := ℝ)]
@@ -220,12 +220,12 @@ lemma concyclic_empty : Concyclic (∅ : Set P) :=
 #align euclidean_geometry.concyclic_empty EuclideanGeometry.concyclic_empty
 
 /-- A single point is concyclic. -/
-theorem concyclic_singleton (p : P) : Concyclic ({p} : Set P) :=
+lemma concyclic_singleton (p : P) : Concyclic ({p} : Set P) :=
   ⟨cospherical_singleton p, coplanar_singleton ℝ p⟩
 #align euclidean_geometry.concyclic_singleton EuclideanGeometry.concyclic_singleton
 
 /-- Two points are concyclic. -/
-theorem concyclic_pair (p₁ p₂ : P) : Concyclic ({p₁, p₂} : Set P) :=
+lemma concyclic_pair (p₁ p₂ : P) : Concyclic ({p₁, p₂} : Set P) :=
   ⟨cospherical_pair p₁ p₂, coplanar_pair ℝ p₁ p₂⟩
 #align euclidean_geometry.concyclic_pair EuclideanGeometry.concyclic_pair
 

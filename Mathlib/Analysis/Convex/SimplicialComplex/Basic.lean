@@ -84,16 +84,16 @@ lemma mem_space_iff : x ∈ K.space ↔ ∃ (s : _) (_ : s ∈ K.faces), x ∈ c
 #align geometry.simplicial_complex.mem_space_iff Geometry.SimplicialComplex.mem_space_iff
 
 -- Porting note: Original proof was `:= subset_biUnion_of_mem hs`
-theorem convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 ↑s ⊆ K.space := by
+lemma convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 ↑s ⊆ K.space := by
   convert subset_biUnion_of_mem hs
   rfl
 #align geometry.simplicial_complex.convex_hull_subset_space Geometry.SimplicialComplex.convexHull_subset_space
 
-protected theorem subset_space (hs : s ∈ K.faces) : (s : Set E) ⊆ K.space :=
+protected lemma subset_space (hs : s ∈ K.faces) : (s : Set E) ⊆ K.space :=
   (subset_convexHull 𝕜 _).trans <| convexHull_subset_space hs
 #align geometry.simplicial_complex.subset_space Geometry.SimplicialComplex.subset_space
 
-theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
+lemma convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t = convexHull 𝕜 (s ∩ t : Set E) :=
   (K.inter_subset_convexHull hs ht).antisymm <|
     subset_inter (convexHull_mono <| Set.inter_subset_left _ _) <|
@@ -103,7 +103,7 @@ theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
 /-- The conclusion is the usual meaning of "glue nicely" in textbooks. It turns out to be quite
 unusable, as it's about faces as sets in space rather than simplices. Further, additional structure
 on `𝕜` means the only choice of `u` is `s ∩ t` (but it's hard to prove). -/
-theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
+lemma disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     Disjoint (convexHull 𝕜 (s : Set E)) (convexHull 𝕜 ↑t) ∨
       ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
   classical
@@ -162,7 +162,7 @@ lemma vertices_subset_space : K.vertices ⊆ K.space :=
   vertices_eq.subset.trans <| iUnion₂_mono fun x _ => subset_convexHull 𝕜 (x : Set E)
 #align geometry.simplicial_complex.vertices_subset_space Geometry.SimplicialComplex.vertices_subset_space
 
-theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
+lemma vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
     x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
   refine' ⟨fun h => _, fun h => subset_convexHull 𝕜 _ h⟩
   classical
@@ -173,7 +173,7 @@ theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
 #align geometry.simplicial_complex.vertex_mem_convex_hull_iff Geometry.SimplicialComplex.vertex_mem_convexHull_iff
 
 /-- A face is a subset of another one iff its vertices are. -/
-theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
+lemma face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     convexHull 𝕜 (s : Set E) ⊆ convexHull 𝕜 ↑t ↔ s ⊆ t :=
   ⟨fun h _ hxs =>
     (vertex_mem_convexHull_iff
@@ -197,7 +197,7 @@ lemma mem_facets : s ∈ K.facets ↔ s ∈ K.faces ∧ ∀ t ∈ K.faces, s ⊆
 lemma facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
 #align geometry.simplicial_complex.facets_subset Geometry.SimplicialComplex.facets_subset
 
-theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
+lemma not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
   refine' ⟨fun hs' : ¬(_ ∧ _) => _, _⟩
   · push_neg at hs'
     obtain ⟨t, ht⟩ := hs' hs

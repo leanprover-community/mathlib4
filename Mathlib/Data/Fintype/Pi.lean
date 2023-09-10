@@ -43,14 +43,14 @@ lemma mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset
 #align fintype.mem_pi_finset Fintype.mem_piFinset
 
 @[simp]
-theorem coe_piFinset (t : ∀ a, Finset (δ a)) :
+lemma coe_piFinset (t : ∀ a, Finset (δ a)) :
     (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a => t a :=
   Set.ext fun x => by
     rw [Set.mem_univ_pi]
     exact Fintype.mem_piFinset
 #align fintype.coe_pi_finset Fintype.coe_piFinset
 
-theorem piFinset_subset (t₁ t₂ : ∀ a, Finset (δ a)) (h : ∀ a, t₁ a ⊆ t₂ a) :
+lemma piFinset_subset (t₁ t₂ : ∀ a, Finset (δ a)) (h : ∀ a, t₁ a ⊆ t₂ a) :
     piFinset t₁ ⊆ piFinset t₂ := fun _ hg => mem_piFinset.2 fun a => h a <| mem_piFinset.1 hg a
 #align fintype.pi_finset_subset Fintype.piFinset_subset
 
@@ -60,7 +60,7 @@ lemma piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (δ 
 #align fintype.pi_finset_empty Fintype.piFinset_empty
 
 @[simp]
-theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
+lemma piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
   ext fun _ => by simp only [Function.funext_iff, Fintype.mem_piFinset, mem_singleton]
 #align fintype.pi_finset_singleton Fintype.piFinset_singleton
 
@@ -69,7 +69,7 @@ lemma piFinset_subsingleton {f : ∀ i, Finset (δ i)} (hf : ∀ i, (f i : Set (
   funext fun _ => hf _ (mem_piFinset.1 ha _) (mem_piFinset.1 hb _)
 #align fintype.pi_finset_subsingleton Fintype.piFinset_subsingleton
 
-theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α}
+lemma piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α}
     (h : Disjoint (t₁ a) (t₂ a)) : Disjoint (piFinset t₁) (piFinset t₂) :=
   disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ =>
     disjoint_iff_ne.1 h (f₁ a) (mem_piFinset.1 hf₁ a) (f₂ a) (mem_piFinset.1 hf₂ a)

@@ -57,13 +57,13 @@ lemma smul_snd : (a • x).2 = a • x.2 :=
 #align prod.vadd_snd Prod.vadd_snd
 
 @[to_additive (attr := simp)]
-theorem smul_mk (a : M) (b : α) (c : β) : a • (b, c) = (a • b, a • c) :=
+lemma smul_mk (a : M) (b : α) (c : β) : a • (b, c) = (a • b, a • c) :=
   rfl
 #align prod.smul_mk Prod.smul_mk
 #align prod.vadd_mk Prod.vadd_mk
 
 @[to_additive]
-theorem smul_def (a : M) (x : α × β) : a • x = (a • x.1, a • x.2) :=
+lemma smul_def (a : M) (x : α × β) : a • x = (a • x.1, a • x.2) :=
   rfl
 #align prod.smul_def Prod.smul_def
 #align prod.vadd_def Prod.vadd_def
@@ -90,12 +90,12 @@ instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_smul Prod.smul
 
 @[to_additive existing (attr := simp) (reorder := 6 7) smul_fst]
-theorem pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c :=
+lemma pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c :=
   rfl
 #align prod.pow_fst Prod.pow_fst
 
 @[to_additive existing (attr := simp) (reorder := 6 7) smul_snd]
-theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
+lemma pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
   rfl
 #align prod.pow_snd Prod.pow_snd
 
@@ -103,17 +103,17 @@ theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
 to limitations in `to_additive` and `to_additive_reorder`, which will silently fail to reorder more
 than two adjacent arguments -/
 @[to_additive existing (attr := simp) (reorder := 6 7) smul_mk]
-theorem pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) :=
+lemma pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) :=
   rfl
 #align prod.pow_mk Prod.pow_mk
 
 @[to_additive existing (reorder := 6 7) smul_def]
-theorem pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) :=
+lemma pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) :=
   rfl
 #align prod.pow_def Prod.pow_def
 
 @[to_additive existing (attr := simp) (reorder := 6 7) smul_swap]
-theorem pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c :=
+lemma pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c :=
   rfl
 #align prod.pow_swap Prod.pow_swap
 

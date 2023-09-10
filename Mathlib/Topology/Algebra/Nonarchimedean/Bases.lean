@@ -133,7 +133,7 @@ lemma mem_addGroupFilterBasis_iff {V : Set A} :
   Iff.rfl
 #align ring_subgroups_basis.mem_add_group_filter_basis_iff RingSubgroupsBasis.mem_addGroupFilterBasis_iff
 
-theorem mem_addGroupFilterBasis (i) : (B i : Set A) ∈ hB.toRingFilterBasis.toAddGroupFilterBasis :=
+lemma mem_addGroupFilterBasis (i) : (B i : Set A) ∈ hB.toRingFilterBasis.toAddGroupFilterBasis :=
   ⟨i, rfl⟩
 #align ring_subgroups_basis.mem_add_group_filter_basis RingSubgroupsBasis.mem_addGroupFilterBasis
 
@@ -154,7 +154,7 @@ lemma hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun 
       exact ⟨B i, ⟨i, rfl⟩, hi⟩⟩
 #align ring_subgroups_basis.has_basis_nhds_zero RingSubgroupsBasis.hasBasis_nhds_zero
 
-theorem hasBasis_nhds (a : A) :
+lemma hasBasis_nhds (a : A) :
     HasBasis (@nhds A hB.topology a) (fun _ => True) fun i => { b | b - a ∈ B i } :=
   ⟨by
     intro s
@@ -225,7 +225,7 @@ namespace SubmodulesRingBasis
 
 variable {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
 
-theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
+lemma toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
     RingSubgroupsBasis fun i => (B i).toAddSubgroup := by
   apply RingSubgroupsBasis.of_comm (fun i => (B i).toAddSubgroup) hB.inter hB.mul
   intro a i
@@ -340,7 +340,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
 #align submodules_basis.open_add_subgroup SubmodulesBasis.openAddSubgroup
 
 -- see Note [nonarchimedean non instances]
-theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
+lemma nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB.topology := by
   letI := hB.topology
   constructor
   intro U hU
@@ -391,7 +391,7 @@ structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → S
   smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
 #align ring_filter_basis.submodules_basis RingFilterBasis.SubmodulesBasis
 
-theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
+lemma RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
     (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
   let _ := BR.topology -- Porting note: failed to synthesize instance `TopologicalSpace R`
   { inter := hB.inter

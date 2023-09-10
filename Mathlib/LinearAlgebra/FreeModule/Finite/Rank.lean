@@ -40,7 +40,7 @@ variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup N] [Module R N]
 
 @[simp]
-theorem Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p) :
+lemma Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p) :
     finrank R (q.map p.subtype) = finrank R q :=
   (Submodule.equivSubtypeMap p q).symm.finrank_eq
 #align finite_dimensional.submodule.finrank_map_subtype_eq FiniteDimensional.Submodule.finrank_map_subtype_eq
@@ -126,14 +126,14 @@ lemma finrank_pi_fintype {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i :
 
 /-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices is
   `(Fintype.card m) * (Fintype.card n)`. -/
-theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
+lemma finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
     finrank R (Matrix m n R) = card m * card n := by simp [finrank]
 #align finite_dimensional.finrank_matrix FiniteDimensional.finrank_matrix
 
 variable {R M N}
 
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
-theorem nonempty_linearEquiv_of_finrank_eq (cond : finrank R M = finrank R N) :
+lemma nonempty_linearEquiv_of_finrank_eq (cond : finrank R M = finrank R N) :
     Nonempty (M ≃ₗ[R] N) :=
   nonempty_linearEquiv_of_lift_rank_eq <| by simp only [← finrank_eq_rank, cond, lift_natCast]
 #align finite_dimensional.nonempty_linear_equiv_of_finrank_eq FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
@@ -162,7 +162,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
 /-- The finrank of `M ⊗[R] N` is `(finrank R M) * (finrank R N)`. -/
 @[simp]
-theorem finrank_tensorProduct (M : Type v) (N : Type w) [AddCommGroup M] [Module R M]
+lemma finrank_tensorProduct (M : Type v) (N : Type w) [AddCommGroup M] [Module R M]
     [Module.Free R M] [AddCommGroup N] [Module R N] [Module.Free R N] :
     finrank R (M ⊗[R] N) = finrank R M * finrank R N := by simp [finrank]
 #align finite_dimensional.finrank_tensor_product FiniteDimensional.finrank_tensorProduct
@@ -209,7 +209,7 @@ lemma Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
 #align submodule.finrank_quotient_le Submodule.finrank_quotient_le
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/
-theorem Submodule.finrank_map_le (f : M →ₗ[R] N) (p : Submodule R M) [Module.Finite R p] :
+lemma Submodule.finrank_map_le (f : M →ₗ[R] N) (p : Submodule R M) [Module.Finite R p] :
     finrank R (p.map f) ≤ finrank R p :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 #align submodule.finrank_map_le Submodule.finrank_map_le

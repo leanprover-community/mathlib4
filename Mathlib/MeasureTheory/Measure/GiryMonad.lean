@@ -53,7 +53,7 @@ lemma measurable_coe {s : Set α} (hs : MeasurableSet s) : Measurable fun μ : M
   Measurable.of_comap_le <| le_iSup_of_le s <| le_iSup_of_le hs <| le_rfl
 #align measure_theory.measure.measurable_coe MeasureTheory.Measure.measurable_coe
 
-theorem measurable_of_measurable_coe (f : β → Measure α)
+lemma measurable_of_measurable_coe (f : β → Measure α)
     (h : ∀ (s : Set α), MeasurableSet s → Measurable fun b => f b s) : Measurable f :=
   Measurable.of_le_map <|
     iSup₂_le fun s hs =>
@@ -73,7 +73,7 @@ lemma measurable_measure {μ : α → Measure β} :
   ⟨fun hμ _s hs => (measurable_coe hs).comp hμ, measurable_of_measurable_coe μ⟩
 #align measure_theory.measure.measurable_measure MeasureTheory.Measure.measurable_measure
 
-theorem measurable_map (f : α → β) (hf : Measurable f) :
+lemma measurable_map (f : α → β) (hf : Measurable f) :
     Measurable fun μ : Measure α => map f μ := by
   refine' measurable_of_measurable_coe _ fun s hs => _
   simp_rw [map_apply hf hs]
@@ -154,11 +154,11 @@ def bind (m : Measure α) (f : α → Measure β) : Measure β :=
 #align measure_theory.measure.bind MeasureTheory.Measure.bind
 
 @[simp]
-theorem bind_zero_left (f : α → Measure β) : bind 0 f = 0 := by simp [bind]
+lemma bind_zero_left (f : α → Measure β) : bind 0 f = 0 := by simp [bind]
 #align measure_theory.measure.bind_zero_left MeasureTheory.Measure.bind_zero_left
 
 @[simp]
-theorem bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 := by
+lemma bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 := by
   ext1 s hs
   simp only [bind, hs, join_apply, coe_zero, Pi.zero_apply]
   rw [lintegral_map (measurable_coe hs) measurable_zero]
@@ -166,7 +166,7 @@ theorem bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 :=
 #align measure_theory.measure.bind_zero_right MeasureTheory.Measure.bind_zero_right
 
 @[simp]
-theorem bind_zero_right' (m : Measure α) : bind m (fun _ => 0 : α → Measure β) = 0 :=
+lemma bind_zero_right' (m : Measure α) : bind m (fun _ => 0 : α → Measure β) = 0 :=
   bind_zero_right m
 #align measure_theory.measure.bind_zero_right' MeasureTheory.Measure.bind_zero_right'
 
@@ -205,7 +205,7 @@ lemma dirac_bind {m : Measure α} : bind m dirac = m := by
     Pi.one_apply, lintegral_one, restrict_apply, MeasurableSet.univ, univ_inter]
 #align measure_theory.measure.dirac_bind MeasureTheory.Measure.dirac_bind
 
-theorem join_eq_bind (μ : Measure (Measure α)) : join μ = bind μ id := by rw [bind, map_id]
+lemma join_eq_bind (μ : Measure (Measure α)) : join μ = bind μ id := by rw [bind, map_id]
 #align measure_theory.measure.join_eq_bind MeasureTheory.Measure.join_eq_bind
 
 lemma join_map_map {f : α → β} (hf : Measurable f) (μ : Measure (Measure α)) :
@@ -216,7 +216,7 @@ lemma join_map_map {f : α → β} (hf : Measurable f) (μ : Measure (Measure α
   simp_rw [map_apply hf hs]
 #align measure_theory.measure.join_map_map MeasureTheory.Measure.join_map_map
 
-theorem join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ) = join (join μ) := by
+lemma join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ) = join (join μ) := by
   show bind μ join = join (join μ)
   rw [join_eq_bind, join_eq_bind, bind_bind measurable_id measurable_id]
   apply congr_arg (bind μ)
@@ -224,11 +224,11 @@ theorem join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ)
   exact join_eq_bind ν
 #align measure_theory.measure.join_map_join MeasureTheory.Measure.join_map_join
 
-theorem join_map_dirac (μ : Measure α) : join (map dirac μ) = μ :=
+lemma join_map_dirac (μ : Measure α) : join (map dirac μ) = μ :=
   dirac_bind
 #align measure_theory.measure.join_map_dirac MeasureTheory.Measure.join_map_dirac
 
-theorem join_dirac (μ : Measure α) : join (dirac μ) = μ :=
+lemma join_dirac (μ : Measure α) : join (dirac μ) = μ :=
   (join_eq_bind (dirac μ)).trans (bind_dirac measurable_id _)
 #align measure_theory.measure.join_dirac MeasureTheory.Measure.join_dirac
 

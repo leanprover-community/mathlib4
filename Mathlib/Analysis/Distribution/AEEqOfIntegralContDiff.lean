@@ -37,7 +37,7 @@ variable {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
 
 /-- If a locally integrable function `f` on a finite-dimensional real manifold has zero integral
 when multiplied by any smooth compactly supported function, then `f` vanishes almost everywhere. -/
-theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
+lemma ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     (h : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 := by
   -- record topological properties of `M`
@@ -135,7 +135,7 @@ variable [MeasurableSpace E] [BorelSpace E] {f f' : E → F} {μ : Measure E}
 
 /-- If a locally integrable function `f` on a finite-dimensional real vector space has zero integral
 when multiplied by any smooth compactly supported function, then `f` vanishes almost everywhere. -/
-theorem ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf : LocallyIntegrable f μ)
+lemma ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf : LocallyIntegrable f μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 :=
   ae_eq_zero_of_integral_smooth_smul_eq_zero 𝓘(ℝ, E) hf

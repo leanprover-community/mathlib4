@@ -66,12 +66,12 @@ lemma monotone_primeCounting : Monotone primeCounting :=
 #align nat.monotone_prime_counting Nat.monotone_primeCounting
 
 @[simp]
-theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
+lemma primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
   count_nth_of_infinite infinite_setOf_prime _
 #align nat.prime_counting'_nth_eq Nat.primeCounting'_nth_eq
 
 @[simp]
-theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
+lemma prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 #align nat.prime_nth_prime Nat.prime_nth_prime
 

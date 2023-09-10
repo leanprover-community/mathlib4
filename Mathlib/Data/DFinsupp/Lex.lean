@@ -136,7 +136,7 @@ lemma toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
     (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 #align dfinsupp.to_lex_monotone DFinsupp.toLex_monotone
 
-theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
+lemma lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
 #align dfinsupp.lt_of_forall_lt_of_lt DFinsupp.lt_of_forall_lt_of_lt

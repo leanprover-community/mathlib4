@@ -120,7 +120,7 @@ lemma Filter.Tendsto.const_cpow {l : Filter α} {f : α → ℂ} {a b : ℂ} (hf
 
 variable [TopologicalSpace α] {f g : α → ℂ} {s : Set α} {a : α}
 
-nonrec theorem ContinuousWithinAt.cpow (hf : ContinuousWithinAt f s a)
+nonrec lemma ContinuousWithinAt.cpow (hf : ContinuousWithinAt f s a)
     (hg : ContinuousWithinAt g s a) (h0 : 0 < (f a).re ∨ (f a).im ≠ 0) :
     ContinuousWithinAt (fun x => f x ^ g x) s a :=
   hf.cpow hg h0
@@ -131,7 +131,7 @@ nonrec lemma ContinuousWithinAt.const_cpow {b : ℂ} (hf : ContinuousWithinAt f 
   hf.const_cpow h
 #align continuous_within_at.const_cpow ContinuousWithinAt.const_cpow
 
-nonrec theorem ContinuousAt.cpow (hf : ContinuousAt f a) (hg : ContinuousAt g a)
+nonrec lemma ContinuousAt.cpow (hf : ContinuousAt f a) (hg : ContinuousAt g a)
     (h0 : 0 < (f a).re ∨ (f a).im ≠ 0) : ContinuousAt (fun x => f x ^ g x) a :=
   hf.cpow hg h0
 #align continuous_at.cpow ContinuousAt.cpow
@@ -141,7 +141,7 @@ nonrec lemma ContinuousAt.const_cpow {b : ℂ} (hf : ContinuousAt f a) (h : b �
   hf.const_cpow h
 #align continuous_at.const_cpow ContinuousAt.const_cpow
 
-theorem ContinuousOn.cpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
+lemma ContinuousOn.cpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
     (h0 : ∀ a ∈ s, 0 < (f a).re ∨ (f a).im ≠ 0) : ContinuousOn (fun x => f x ^ g x) s := fun a ha =>
   (hf a ha).cpow (hg a ha) (h0 a ha)
 #align continuous_on.cpow ContinuousOn.cpow
@@ -150,7 +150,7 @@ lemma ContinuousOn.const_cpow {b : ℂ} (hf : ContinuousOn f s) (h : b ≠ 0 ∨
     ContinuousOn (fun x => b ^ f x) s := fun a ha => (hf a ha).const_cpow (h.imp id fun h => h a ha)
 #align continuous_on.const_cpow ContinuousOn.const_cpow
 
-theorem Continuous.cpow (hf : Continuous f) (hg : Continuous g)
+lemma Continuous.cpow (hf : Continuous f) (hg : Continuous g)
     (h0 : ∀ a, 0 < (f a).re ∨ (f a).im ≠ 0) : Continuous fun x => f x ^ g x :=
   continuous_iff_continuousAt.2 fun a => hf.continuousAt.cpow hg.continuousAt (h0 a)
 #align continuous.cpow Continuous.cpow
@@ -216,7 +216,7 @@ lemma rpow_eq_nhds_of_pos {p : ℝ × ℝ} (hp_fst : 0 < p.fst) :
   exact IsOpen.eventually_mem (isOpen_lt continuous_const continuous_fst) hp_fst
 #align real.rpow_eq_nhds_of_pos Real.rpow_eq_nhds_of_pos
 
-theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
+lemma continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
   rw [ne_iff_lt_or_gt] at hp
   cases hp with
@@ -234,7 +234,7 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     exact hp.lt.ne.symm
 #align real.continuous_at_rpow_of_ne Real.continuousAt_rpow_of_ne
 
-theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
+lemma continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
   cases' p with x y
   dsimp only at hp
@@ -252,12 +252,12 @@ theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt, zero_rpow hp.ne'] using B.sup (C.mono_right (pure_le_nhds _))
 #align real.continuous_at_rpow_of_pos Real.continuousAt_rpow_of_pos
 
-theorem continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
+lemma continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p :=
   h.elim (fun h => continuousAt_rpow_of_ne p h) fun h => continuousAt_rpow_of_pos p h
 #align real.continuous_at_rpow Real.continuousAt_rpow
 
-theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 < q) :
+lemma continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 < q) :
     ContinuousAt (fun x : ℝ => x ^ q) x := by
   change ContinuousAt ((fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun y : ℝ => (y, q)) x
   apply ContinuousAt.comp
@@ -284,42 +284,42 @@ lemma Filter.Tendsto.rpow_const {l : Filter α} {f : α → ℝ} {x p : ℝ} (hf
 
 variable [TopologicalSpace α] {f g : α → ℝ} {s : Set α} {x : α} {p : ℝ}
 
-nonrec theorem ContinuousAt.rpow (hf : ContinuousAt f x) (hg : ContinuousAt g x)
+nonrec lemma ContinuousAt.rpow (hf : ContinuousAt f x) (hg : ContinuousAt g x)
     (h : f x ≠ 0 ∨ 0 < g x) : ContinuousAt (fun t => f t ^ g t) x :=
   hf.rpow hg h
 #align continuous_at.rpow ContinuousAt.rpow
 
-nonrec theorem ContinuousWithinAt.rpow (hf : ContinuousWithinAt f s x)
+nonrec lemma ContinuousWithinAt.rpow (hf : ContinuousWithinAt f s x)
     (hg : ContinuousWithinAt g s x) (h : f x ≠ 0 ∨ 0 < g x) :
     ContinuousWithinAt (fun t => f t ^ g t) s x :=
   hf.rpow hg h
 #align continuous_within_at.rpow ContinuousWithinAt.rpow
 
-theorem ContinuousOn.rpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
+lemma ContinuousOn.rpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
     (h : ∀ x ∈ s, f x ≠ 0 ∨ 0 < g x) : ContinuousOn (fun t => f t ^ g t) s := fun t ht =>
   (hf t ht).rpow (hg t ht) (h t ht)
 #align continuous_on.rpow ContinuousOn.rpow
 
-theorem Continuous.rpow (hf : Continuous f) (hg : Continuous g) (h : ∀ x, f x ≠ 0 ∨ 0 < g x) :
+lemma Continuous.rpow (hf : Continuous f) (hg : Continuous g) (h : ∀ x, f x ≠ 0 ∨ 0 < g x) :
     Continuous fun x => f x ^ g x :=
   continuous_iff_continuousAt.2 fun x => hf.continuousAt.rpow hg.continuousAt (h x)
 #align continuous.rpow Continuous.rpow
 
-nonrec theorem ContinuousWithinAt.rpow_const (hf : ContinuousWithinAt f s x) (h : f x ≠ 0 ∨ 0 ≤ p) :
+nonrec lemma ContinuousWithinAt.rpow_const (hf : ContinuousWithinAt f s x) (h : f x ≠ 0 ∨ 0 ≤ p) :
     ContinuousWithinAt (fun x => f x ^ p) s x :=
   hf.rpow_const h
 #align continuous_within_at.rpow_const ContinuousWithinAt.rpow_const
 
-nonrec theorem ContinuousAt.rpow_const (hf : ContinuousAt f x) (h : f x ≠ 0 ∨ 0 ≤ p) :
+nonrec lemma ContinuousAt.rpow_const (hf : ContinuousAt f x) (h : f x ≠ 0 ∨ 0 ≤ p) :
     ContinuousAt (fun x => f x ^ p) x :=
   hf.rpow_const h
 #align continuous_at.rpow_const ContinuousAt.rpow_const
 
-theorem ContinuousOn.rpow_const (hf : ContinuousOn f s) (h : ∀ x ∈ s, f x ≠ 0 ∨ 0 ≤ p) :
+lemma ContinuousOn.rpow_const (hf : ContinuousOn f s) (h : ∀ x ∈ s, f x ≠ 0 ∨ 0 ≤ p) :
     ContinuousOn (fun x => f x ^ p) s := fun x hx => (hf x hx).rpow_const (h x hx)
 #align continuous_on.rpow_const ContinuousOn.rpow_const
 
-theorem Continuous.rpow_const (hf : Continuous f) (h : ∀ x, f x ≠ 0 ∨ 0 ≤ p) :
+lemma Continuous.rpow_const (hf : Continuous f) (h : ∀ x, f x ≠ 0 ∨ 0 ≤ p) :
     Continuous fun x => f x ^ p :=
   continuous_iff_continuousAt.2 fun x => hf.continuousAt.rpow_const (h x)
 #align continuous.rpow_const Continuous.rpow_const
@@ -382,7 +382,7 @@ lemma continuousAt_cpow_const_of_re_pos {z w : ℂ} (hz : 0 ≤ re z ∨ im z �
 #align complex.continuous_at_cpow_const_of_re_pos Complex.continuousAt_cpow_const_of_re_pos
 
 /-- Continuity of `(x, y) ↦ x ^ y` as a function on `ℝ × ℂ`. -/
-theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
+lemma continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun p => (p.1 : ℂ) ^ p.2 : ℝ × ℂ → ℂ) (x, y) := by
   rcases lt_trichotomy (0 : ℝ) x with (hx | rfl | hx)
   · -- x > 0 : easy case
@@ -410,7 +410,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
     · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
 #align complex.continuous_at_of_real_cpow Complex.continuousAt_ofReal_cpow
 
-theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
+lemma continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
   @ContinuousAt.comp _ _ _ _ _ _ _ _ x (continuousAt_ofReal_cpow x y h)
     (continuous_id.prod_mk continuous_const).continuousAt
@@ -447,7 +447,7 @@ lemma continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
   · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
 #align nnreal.continuous_at_rpow NNReal.continuousAt_rpow
 
-theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
+lemma eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
   obtain ⟨m, hm⟩ := add_one_pow_unbounded_of_pos x (tsub_pos_of_lt hy)
   rw [tsub_add_cancel_of_le hy.le] at hm

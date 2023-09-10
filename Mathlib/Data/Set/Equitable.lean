@@ -74,7 +74,7 @@ lemma Subsingleton.equitableOn {s : Set α} (hs : s.Subsingleton) (f : α → β
   exact le_add_of_nonneg_right zero_le_one
 #align set.subsingleton.equitable_on Set.Subsingleton.equitableOn
 
-theorem equitableOn_singleton (a : α) (f : α → β) : Set.EquitableOn {a} f :=
+lemma equitableOn_singleton (a : α) (f : α → β) : Set.EquitableOn {a} f :=
   Set.subsingleton_singleton.equitableOn f
 #align set.equitable_on_singleton Set.equitableOn_singleton
 
@@ -111,12 +111,12 @@ lemma equitableOn_iff_le_le_add_one :
   exact fun _ _ => rfl
 #align finset.equitable_on_iff_le_le_add_one Finset.equitableOn_iff_le_le_add_one
 
-theorem EquitableOn.le (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
+lemma EquitableOn.le (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
     (∑ i in s, f i) / s.card ≤ f a :=
   (equitableOn_iff_le_le_add_one.1 h a ha).1
 #align finset.equitable_on.le Finset.EquitableOn.le
 
-theorem EquitableOn.le_add_one (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
+lemma EquitableOn.le_add_one (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
     f a ≤ (∑ i in s, f i) / s.card + 1 :=
   (equitableOn_iff_le_le_add_one.1 h a ha).2
 #align finset.equitable_on.le_add_one Finset.EquitableOn.le_add_one

@@ -87,7 +87,7 @@ protected def rec {C : ConjAct G → Sort*} (h : ∀ g, C (toConjAct g)) : ∀ g
 #align conj_act.rec ConjAct.rec
 
 @[simp]
-theorem «forall» (p : ConjAct G → Prop) : (∀ x : ConjAct G, p x) ↔ ∀ x : G, p (toConjAct x) :=
+lemma «forall» (p : ConjAct G → Prop) : (∀ x : ConjAct G, p x) ↔ ∀ x : G, p (toConjAct x) :=
   id Iff.rfl
 #align conj_act.forall ConjAct.forall
 
@@ -102,12 +102,12 @@ lemma to_mul_symm_eq : (@toConjAct G _).symm = ofConjAct :=
 #align conj_act.to_mul_symm_eq ConjAct.to_mul_symm_eq
 
 @[simp]
-theorem toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
+lemma toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
   rfl
 #align conj_act.to_conj_act_of_conj_act ConjAct.toConjAct_ofConjAct
 
 @[simp]
-theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
+lemma ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 #align conj_act.of_conj_act_to_conj_act ConjAct.ofConjAct_toConjAct
 
@@ -122,28 +122,28 @@ lemma toConjAct_one : toConjAct (1 : G) = 1 :=
 #align conj_act.to_conj_act_one ConjAct.toConjAct_one
 
 @[simp]
-theorem ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
+lemma ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
   rfl
 #align conj_act.of_conj_act_inv ConjAct.ofConjAct_inv
 
 @[simp]
-theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
+lemma toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 #align conj_act.to_conj_act_inv ConjAct.toConjAct_inv
 
 -- porting note: removed `simp` attribute because `simpNF` says it can prove it
-theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
+lemma ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 #align conj_act.of_conj_act_mul ConjAct.ofConjAct_mul
 
 -- porting note: removed `simp` attribute because `simpNF` says it can prove it
-theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
+lemma toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 #align conj_act.to_conj_act_mul ConjAct.toConjAct_mul
 
 instance : SMul (ConjAct G) G where smul g h := ofConjAct g * h * (ofConjAct g)⁻¹
 
-theorem smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
+lemma smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
   rfl
 #align conj_act.smul_def ConjAct.smul_def
 
@@ -158,7 +158,7 @@ variable [Monoid M]
 instance unitsScalar : SMul (ConjAct Mˣ) M where smul g h := ofConjAct g * h * ↑(ofConjAct g)⁻¹
 #align conj_act.has_units_scalar ConjAct.unitsScalar
 
-theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * ↑(ofConjAct g)⁻¹ :=
+lemma units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * ↑(ofConjAct g)⁻¹ :=
   rfl
 #align conj_act.units_smul_def ConjAct.units_smul_def
 
@@ -292,7 +292,7 @@ instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G
   SMulCommClass.symm _ _ _
 #align conj_act.smul_comm_class' ConjAct.smulCommClass'
 
-theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
+lemma smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
   rfl
 #align conj_act.smul_eq_mul_aut_conj ConjAct.smul_eq_mulAut_conj
 
@@ -316,7 +316,7 @@ lemma orbit_eq_carrier_conjClasses [Group G] (g : G) :
   ext h
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
-theorem stabilizer_eq_centralizer (g : G) :
+lemma stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm

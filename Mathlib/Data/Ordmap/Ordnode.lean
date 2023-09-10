@@ -140,7 +140,7 @@ def size : Ordnode α → ℕ
 
 lemma size_nil : size (nil : Ordnode α) = 0 :=
   rfl
-theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
+lemma size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
   rfl
 
 attribute [eqns size_nil size_node] size

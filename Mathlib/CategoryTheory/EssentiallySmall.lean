@@ -153,12 +153,12 @@ def fromShrinkHoms {C' : Type*} (X : ShrinkHoms C') : C' :=
 #align category_theory.shrink_homs.from_shrink_homs CategoryTheory.ShrinkHoms.fromShrinkHoms
 
 @[simp]
-theorem to_from (X : C') : fromShrinkHoms (toShrinkHoms X) = X :=
+lemma to_from (X : C') : fromShrinkHoms (toShrinkHoms X) = X :=
   rfl
 #align category_theory.shrink_homs.to_from CategoryTheory.ShrinkHoms.to_from
 
 @[simp]
-theorem from_to (X : ShrinkHoms C') : toShrinkHoms (fromShrinkHoms X) = X :=
+lemma from_to (X : ShrinkHoms C') : toShrinkHoms (fromShrinkHoms X) = X :=
   rfl
 #align category_theory.shrink_homs.from_to CategoryTheory.ShrinkHoms.from_to
 
@@ -204,7 +204,7 @@ end ShrinkHoms
 the underlying type of its skeleton (i.e. the "set" of isomorphism classes) is small,
 and it is locally small.
 -/
-theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
+lemma essentiallySmall_iff (C : Type u) [Category.{v} C] :
     EssentiallySmall.{w} C ↔ Small.{w} (Skeleton C) ∧ LocallySmall.{w} C := by
   -- This theorem is the only bit of real work in this file.
   fconstructor

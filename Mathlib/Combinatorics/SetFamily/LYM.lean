@@ -61,7 +61,7 @@ variable [DecidableEq α] [Fintype α]
   {𝒜 : Finset (Finset α)} {r : ℕ}
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
-theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+lemma card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
@@ -88,7 +88,7 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
-theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
+lemma card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
     (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (𝒜.card : 𝕜) / (Fintype.card α).choose r
     ≤ (∂ 𝒜).card / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r

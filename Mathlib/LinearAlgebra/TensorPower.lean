@@ -228,7 +228,7 @@ def algebraMap₀ : R ≃ₗ[R] (⨂[R]^0) M :=
   LinearEquiv.symm <| isEmptyEquiv (Fin 0)
 #align tensor_power.algebra_map₀ TensorPower.algebraMap₀
 
-theorem algebraMap₀_eq_smul_one (r : R) : (algebraMap₀ r : (⨂[R]^0) M) = r • ₜ1 := by
+lemma algebraMap₀_eq_smul_one (r : R) : (algebraMap₀ r : (⨂[R]^0) M) = r • ₜ1 := by
   simp [algebraMap₀]; congr
 #align tensor_power.algebra_map₀_eq_smul_one TensorPower.algebraMap₀_eq_smul_one
 
@@ -248,7 +248,7 @@ lemma mul_algebraMap₀ {n} (r : R) (a : (⨂[R]^n) M) :
     LinearEquiv.map_smul, ← gMul_eq_coe_linearMap, mul_one]
 #align tensor_power.mul_algebra_map₀ TensorPower.mul_algebraMap₀
 
-theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
+lemma algebraMap₀_mul_algebraMap₀ (r s : R) :
     cast R M (add_zero _) (algebraMap₀ r ₜ* algebraMap₀ s) = algebraMap₀ (r * s) := by
   rw [← smul_eq_mul, LinearEquiv.map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
@@ -287,7 +287,7 @@ instance galgebra : DirectSum.GAlgebra R fun i => (⨂[R]^i) M where
     exact (algebraMap₀_mul r x.snd).symm)
 #align tensor_power.galgebra TensorPower.galgebra
 
-theorem galgebra_toFun_def (r : R) :
+lemma galgebra_toFun_def (r : R) :
     @DirectSum.GAlgebra.toFun ℕ R (fun i => (⨂[R]^i) M) _ _ _ _ _ _ _ r = algebraMap₀ r :=
   rfl
 #align tensor_power.galgebra_to_fun_def TensorPower.galgebra_toFun_def

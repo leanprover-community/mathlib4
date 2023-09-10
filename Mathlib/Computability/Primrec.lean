@@ -247,7 +247,7 @@ lemma of_eq {f g : α → σ} (hf : Primrec f) (H : ∀ n, f n = g n) : Primrec 
   (funext H : f = g) ▸ hf
 #align primrec.of_eq Primrec.of_eq
 
-theorem const (x : σ) : Primrec fun _ : α => x :=
+lemma const (x : σ) : Primrec fun _ : α => x :=
   ((casesOn1 0 (.const (encode x).succ)).comp (@Primcodable.prim α _)).of_eq fun n => by
     cases @decode α _ n <;> rfl
 #align primrec.const Primrec.const
@@ -278,7 +278,7 @@ lemma ofNat_iff {α β} [Denumerable α] [Primcodable β] {f : α → β} :
   dom_denumerable.trans <| nat_iff.symm.trans encode_iff
 #align primrec.of_nat_iff Primrec.ofNat_iff
 
-protected theorem ofNat (α) [Denumerable α] : Primrec (ofNat α) :=
+protected lemma ofNat (α) [Denumerable α] : Primrec (ofNat α) :=
   ofNat_iff.1 Primrec.id
 #align primrec.of_nat Primrec.ofNat
 
@@ -415,7 +415,7 @@ lemma of_eq {f g : α → β → σ} (hg : Primrec₂ f) (H : ∀ a b, f a b = g
   (by funext a b; apply H : f = g) ▸ hg
 #align primrec₂.of_eq Primrec₂.of_eq
 
-theorem const (x : σ) : Primrec₂ fun (_ : α) (_ : β) => x :=
+lemma const (x : σ) : Primrec₂ fun (_ : α) (_ : β) => x :=
   Primrec.const _
 #align primrec₂.const Primrec₂.const
 
@@ -700,11 +700,11 @@ lemma nat_max : Primrec₂ (@max ℕ _) :=
   ite (nat_le.comp fst snd) snd fst
 #align primrec.nat_max Primrec.nat_max
 
-theorem dom_bool (f : Bool → α) : Primrec f :=
+lemma dom_bool (f : Bool → α) : Primrec f :=
   (cond .id (const (f true)) (const (f false))).of_eq fun b => by cases b <;> rfl
 #align primrec.dom_bool Primrec.dom_bool
 
-theorem dom_bool₂ (f : Bool → Bool → α) : Primrec₂ f :=
+lemma dom_bool₂ (f : Bool → Bool → α) : Primrec₂ f :=
   (cond fst ((dom_bool (f true)).comp snd) ((dom_bool (f false)).comp snd)).of_eq fun ⟨a, b⟩ => by
     cases a <;> rfl
 #align primrec.dom_bool₂ Primrec.dom_bool₂
@@ -1085,7 +1085,7 @@ lemma list_get? : Primrec₂ (@List.get? α) :=
     · apply IH
 #align primrec.list_nth Primrec.list_get?
 
-theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
+lemma list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getD_get?]
   exact option_getD.comp₂ list_get? (const _)
 #align primrec.list_nthd Primrec.list_getD
@@ -1136,7 +1136,7 @@ lemma list_indexOf [DecidableEq α] : Primrec₂ (@List.indexOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ (fst.comp fst).to₂ snd.to₂
 #align primrec.list_index_of Primrec.list_indexOfₓ
 
-theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)
+lemma nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = some (f a n)) : Primrec₂ f :=
   suffices Primrec₂ fun a n => (List.range n).map (f a) from
     Primrec₂.option_some_iff.1 <|
@@ -1429,12 +1429,12 @@ lemma comp' {n m f g} (hf : @Primrec' m f) (hg : @Vec n m g) : Primrec' fun v =>
   (hf.comp _ hg).of_eq fun v => by simp
 #align nat.primrec'.comp' Nat.Primrec'.comp'
 
-theorem comp₁ (f : ℕ → ℕ) (hf : @Primrec' 1 fun v => f v.head) {n g} (hg : @Primrec' n g) :
+lemma comp₁ (f : ℕ → ℕ) (hf : @Primrec' 1 fun v => f v.head) {n g} (hg : @Primrec' n g) :
     Primrec' fun v => f (g v) :=
   hf.comp _ fun _ => hg
 #align nat.primrec'.comp₁ Nat.Primrec'.comp₁
 
-theorem comp₂ (f : ℕ → ℕ → ℕ) (hf : @Primrec' 2 fun v => f v.head v.tail.head) {n g h}
+lemma comp₂ (f : ℕ → ℕ → ℕ) (hf : @Primrec' 2 fun v => f v.head v.tail.head) {n g h}
     (hg : @Primrec' n g) (hh : @Primrec' n h) : Primrec' fun v => f (g v) (h v) := by
   simpa using hf.comp' (hg.cons <| hh.cons Primrec'.nil)
 #align nat.primrec'.comp₂ Nat.Primrec'.comp₂

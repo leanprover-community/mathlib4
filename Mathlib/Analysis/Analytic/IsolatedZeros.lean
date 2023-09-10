@@ -44,14 +44,14 @@ namespace HasSum
 
 variable {a : ℕ → E}
 
-theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
+lemma hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
   convert hasSum_single (α := E) 0 fun b h => _ <;>
     first
     | simp [Nat.pos_of_ne_zero h]
     | simp
 #align has_sum.has_sum_at_zero HasSum.hasSum_at_zero
 
-theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
+lemma exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
     (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by
   obtain rfl | hn := n.eq_zero_or_pos
   · simpa
@@ -72,7 +72,7 @@ end HasSum
 
 namespace HasFPowerSeriesAt
 
-theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
+lemma has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
     HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
   have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
   have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
@@ -86,20 +86,20 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
     · simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
 #align has_fpower_series_at.has_fpower_series_dslope_fslope HasFPowerSeriesAt.has_fpower_series_dslope_fslope
 
-theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
+lemma has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
     HasFPowerSeriesAt ((swap dslope z₀)^[n] f) (fslope^[n] p) z₀ := by
   induction' n with n ih generalizing f p
   · exact hp
   · simpa using ih (has_fpower_series_dslope_fslope hp)
 #align has_fpower_series_at.has_fpower_series_iterate_dslope_fslope HasFPowerSeriesAt.has_fpower_series_iterate_dslope_fslope
 
-theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
+lemma iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
     (swap dslope z₀)^[p.order] f z₀ ≠ 0 := by
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 #align has_fpower_series_at.iterate_dslope_fslope_ne_zero HasFPowerSeriesAt.iterate_dslope_fslope_ne_zero
 
-theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
+lemma eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
     ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
   have hq := hasFPowerSeriesAt_iff'.mp (has_fpower_series_iterate_dslope_fslope p.order hp)
   filter_upwards [hq, hasFPowerSeriesAt_iff'.mp hp] with x hx1 hx2
@@ -111,7 +111,7 @@ theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
   exact hx1.unique hs2
 #align has_fpower_series_at.eq_pow_order_mul_iterate_dslope HasFPowerSeriesAt.eq_pow_order_mul_iterate_dslope
 
-theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
+lemma locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rw [eventually_nhdsWithin_iff]
   have h2 := (has_fpower_series_iterate_dslope_fslope p.order hp).continuousAt
   have h3 := h2.eventually_ne (iterate_dslope_fslope_ne_zero hp h)
@@ -119,7 +119,7 @@ theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ
   simpa [e1, e2, e3] using pow_ne_zero p.order (sub_ne_zero.mpr e3)
 #align has_fpower_series_at.locally_ne_zero HasFPowerSeriesAt.locally_ne_zero
 
-theorem locally_zero_iff (hp : HasFPowerSeriesAt f p z₀) : (∀ᶠ z in 𝓝 z₀, f z = 0) ↔ p = 0 :=
+lemma locally_zero_iff (hp : HasFPowerSeriesAt f p z₀) : (∀ᶠ z in 𝓝 z₀, f z = 0) ↔ p = 0 :=
   ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (by rwa [h] at hp )⟩
 #align has_fpower_series_at.locally_zero_iff HasFPowerSeriesAt.locally_zero_iff
 
@@ -130,7 +130,7 @@ namespace AnalyticAt
 /-- The *principle of isolated zeros* for an analytic function, local version: if a function is
 analytic at `z₀`, then either it is identically zero in a neighborhood of `z₀`, or it does not
 vanish in a punctured neighborhood of `z₀`. -/
-theorem eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
+lemma eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = 0) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rcases hf with ⟨p, hp⟩
   by_cases h : p = 0
@@ -138,7 +138,7 @@ theorem eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
   · exact Or.inr (hp.locally_ne_zero h)
 #align analytic_at.eventually_eq_zero_or_eventually_ne_zero AnalyticAt.eventually_eq_zero_or_eventually_ne_zero
 
-theorem eventually_eq_or_eventually_ne (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+lemma eventually_eq_or_eventually_ne (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = g z) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ g z := by
   simpa [sub_eq_zero] using (hf.sub hg).eventually_eq_zero_or_eventually_ne_zero
 #align analytic_at.eventually_eq_or_eventually_ne AnalyticAt.eventually_eq_or_eventually_ne
@@ -149,7 +149,7 @@ lemma frequently_zero_iff_eventually_zero {f : 𝕜 → E} {w : 𝕜} (hf : Anal
     (h.filter_mono nhdsWithin_le_nhds).frequently⟩
 #align analytic_at.frequently_zero_iff_eventually_zero AnalyticAt.frequently_zero_iff_eventually_zero
 
-theorem frequently_eq_iff_eventually_eq (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+lemma frequently_eq_iff_eventually_eq (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     (∃ᶠ z in 𝓝[≠] z₀, f z = g z) ↔ ∀ᶠ z in 𝓝 z₀, f z = g z := by
   simpa [sub_eq_zero] using frequently_zero_iff_eventually_zero (hf.sub hg)
 #align analytic_at.frequently_eq_iff_eventually_eq AnalyticAt.frequently_eq_iff_eventually_eq
@@ -165,13 +165,13 @@ analytic on a connected set `U` and vanishes in arbitrary neighborhoods of a poi
 it is identically zero in `U`.
 For higher-dimensional versions requiring that the function vanishes in a neighborhood of `z₀`,
 see `AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero`. -/
-theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOn 𝕜 f U)
+lemma eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOn 𝕜 f U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfw : ∃ᶠ z in 𝓝[≠] z₀, f z = 0) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀
     ((hf z₀ h₀).frequently_zero_iff_eventually_zero.1 hfw)
 #align analytic_on.eq_on_zero_of_preconnected_of_frequently_eq_zero AnalyticOn.eqOn_zero_of_preconnected_of_frequently_eq_zero
 
-theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U)
+lemma eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U)
     (h₀ : z₀ ∈ U) (hfz₀ : z₀ ∈ closure ({z | f z = 0} \ {z₀})) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀
     (mem_closure_ne_iff_frequently_within.mp hfz₀)
@@ -182,7 +182,7 @@ analytic on a connected set `U` and coincide at points which accumulate to a poi
 they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
 see `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`. -/
-theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
+lemma eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
     hfg.mono fun z h => by rw [Pi.sub_apply, h, sub_self]
@@ -190,7 +190,7 @@ theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOn 𝕜 f U) (hg : A
     (hf.sub hg).eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀ hfg' hz
 #align analytic_on.eq_on_of_preconnected_of_frequently_eq AnalyticOn.eqOn_of_preconnected_of_frequently_eq
 
-theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
+lemma eqOn_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : z₀ ∈ closure ({z | f z = g z} \ {z₀})) :
     EqOn f g U :=
   hf.eqOn_of_preconnected_of_frequently_eq hg hU h₀ (mem_closure_ne_iff_frequently_within.mp hfg)

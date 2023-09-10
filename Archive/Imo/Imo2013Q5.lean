@@ -181,7 +181,7 @@ end Imo2013Q5
 
 open Imo2013Q5
 
-theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
+lemma imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H_fixed_point : ∃ a, 1 < a ∧ f a = a) :
     ∀ x, 0 < x → f x = x := by
   obtain ⟨a, ha1, hae⟩ := H_fixed_point

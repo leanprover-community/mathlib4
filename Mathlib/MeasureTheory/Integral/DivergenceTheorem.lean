@@ -106,7 +106,7 @@ in several aspects.
 `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. This is exactly
 `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` reformulated for the
 Bochner integral. -/
-theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (Fin (n + 1)))
+lemma integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (Fin (n + 1)))
     (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
     (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
@@ -138,7 +138,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (
 /-- An auxiliary lemma for
 `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/
-theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (Fin (n + 1)))
+lemma integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (Fin (n + 1)))
     (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
     (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
     (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
@@ -265,7 +265,7 @@ We represent both faces `x i = a i` and `x i = b i` as the box
 of `f : ℝⁿ⁺¹ → Eⁿ⁺¹` to these faces are given by `f ∘ backFace i` and `f ∘ frontFace i`, where
 `backFace i = Fin.insertNth i (a i)` and `frontFace i = Fin.insertNth i (b i)` are embeddings
 `ℝⁿ → ℝⁿ⁺¹` that take `y : ℝⁿ` and insert `a i` (resp., `b i`) as `i`-th coordinate. -/
-theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
+lemma integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
     (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
     (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
     (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
@@ -298,7 +298,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
 /-- **Divergence theorem** for a family of functions `f : Fin (n + 1) → ℝⁿ⁺¹ → E`. See also
 `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable'` for a version formulated
 in terms of a vector-valued function `f : ℝⁿ⁺¹ → Eⁿ⁺¹`. -/
-theorem integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
+lemma integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
     (f : Fin (n + 1) → ℝⁿ⁺¹ → E)
     (f' : Fin (n + 1) → ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] E) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ∀ i, ContinuousOn (f i) (Icc a b))
@@ -378,7 +378,7 @@ differentiability of `f`;
 
 * `MeasureTheory.integral_eq_of_has_deriv_within_at_off_countable` for a version that works both
   for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `Set.Icc`. -/
-theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {a b : ℝ}
+lemma integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {a b : ℝ}
     (hle : a ≤ b) {s : Set ℝ} (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
     (Hd : ∀ x ∈ Ioo a b \ s, HasDerivAt f (f' x) x) (Hi : IntervalIntegrable f' volume a b) :
     ∫ x in a..b, f' x = f b - f a := by
@@ -415,7 +415,7 @@ interval and is differentiable off a countable set `s`.
 See also `measure_theory.interval_integral.integral_eq_sub_of_has_deriv_right` for a version that
 only assumes right differentiability of `f`.
 -/
-theorem integral_eq_of_has_deriv_within_at_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}
+lemma integral_eq_of_has_deriv_within_at_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}
     (hs : s.Countable) (Hc : ContinuousOn f [[a, b]])
     (Hd : ∀ x ∈ Ioo (min a b) (max a b) \ s, HasDerivAt f (f' x) x)
     (Hi : IntervalIntegrable f' volume a b) : ∫ x in a..b, f' x = f b - f a := by
@@ -437,7 +437,7 @@ boundary.
 See also `MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable` for a
 version that does not assume `a ≤ b` and uses iterated interval integral instead of the integral
 over `Icc a b`. -/
-theorem integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le (f g : ℝ × ℝ → E)
+lemma integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le (f g : ℝ × ℝ → E)
     (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a b : ℝ × ℝ) (hle : a ≤ b) (s : Set (ℝ × ℝ)) (hs : s.Countable)
     (Hcf : ContinuousOn f (Icc a b)) (Hcg : ContinuousOn g (Icc a b))
     (Hdf : ∀ x ∈ Ioo a.1 b.1 ×ˢ Ioo a.2 b.2 \ s, HasFDerivAt f (f' x) x)
@@ -488,7 +488,7 @@ the normal derivative of `F` along the boundary.
 
 See also `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le`
 for a version that uses an integral over `Icc a b`, where `a b : ℝ × ℝ`, `a ≤ b`. -/
-theorem integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (f g : ℝ × ℝ → E)
+lemma integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (f g : ℝ × ℝ → E)
     (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a₁ a₂ b₁ b₂ : ℝ) (s : Set (ℝ × ℝ)) (hs : s.Countable)
     (Hcf : ContinuousOn f ([[a₁, b₁]] ×ˢ [[a₂, b₂]]))
     (Hcg : ContinuousOn g ([[a₁, b₁]] ×ˢ [[a₂, b₂]]))

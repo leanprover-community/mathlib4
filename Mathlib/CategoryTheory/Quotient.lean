@@ -183,7 +183,7 @@ lemma lift_spec : functor r ⋙ lift r F H = F := by
     simp
 #align category_theory.quotient.lift_spec CategoryTheory.Quotient.lift_spec
 
-theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
+lemma lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
   fapply Functor.hext
   · rintro X
@@ -202,12 +202,12 @@ def lift.isLift : functor r ⋙ lift r F H ≅ F :=
 #align category_theory.quotient.lift.is_lift CategoryTheory.Quotient.lift.isLift
 
 @[simp]
-theorem lift.isLift_hom (X : C) : (lift.isLift r F H).hom.app X = 𝟙 (F.obj X) :=
+lemma lift.isLift_hom (X : C) : (lift.isLift r F H).hom.app X = 𝟙 (F.obj X) :=
   rfl
 #align category_theory.quotient.lift.is_lift_hom CategoryTheory.Quotient.lift.isLift_hom
 
 @[simp]
-theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X) :=
+lemma lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X) :=
   rfl
 #align category_theory.quotient.lift.is_lift_inv CategoryTheory.Quotient.lift.isLift_inv
 

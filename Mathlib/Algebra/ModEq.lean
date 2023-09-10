@@ -50,7 +50,7 @@ def ModEq (p a b : α) : Prop :=
 notation:50 a " ≡ " b " [PMOD " p "]" => ModEq p a b
 
 @[refl, simp]
-theorem modEq_refl (a : α) : a ≡ a [PMOD p] :=
+lemma modEq_refl (a : α) : a ≡ a [PMOD p] :=
   ⟨0, by simp⟩
 #align add_comm_group.modeq_refl AddCommGroup.modEq_refl
 
@@ -93,7 +93,7 @@ alias ⟨ModEq.of_neg', ModEq.neg'⟩ := modEq_neg
 #align add_comm_group.modeq.of_neg' AddCommGroup.ModEq.of_neg'
 #align add_comm_group.modeq.neg' AddCommGroup.ModEq.neg'
 
-theorem modEq_sub (a b : α) : a ≡ b [PMOD b - a] :=
+lemma modEq_sub (a b : α) : a ≡ b [PMOD b - a] :=
   ⟨1, (one_smul _ _).symm⟩
 #align add_comm_group.modeq_sub AddCommGroup.modEq_sub
 
@@ -107,41 +107,41 @@ lemma self_modEq_zero : p ≡ 0 [PMOD p] :=
 #align add_comm_group.self_modeq_zero AddCommGroup.self_modEq_zero
 
 @[simp]
-theorem zsmul_modEq_zero (z : ℤ) : z • p ≡ 0 [PMOD p] :=
+lemma zsmul_modEq_zero (z : ℤ) : z • p ≡ 0 [PMOD p] :=
   ⟨-z, by simp⟩
 #align add_comm_group.zsmul_modeq_zero AddCommGroup.zsmul_modEq_zero
 
-theorem add_zsmul_modEq (z : ℤ) : a + z • p ≡ a [PMOD p] :=
+lemma add_zsmul_modEq (z : ℤ) : a + z • p ≡ a [PMOD p] :=
   ⟨-z, by simp⟩
 #align add_comm_group.add_zsmul_modeq AddCommGroup.add_zsmul_modEq
 
-theorem zsmul_add_modEq (z : ℤ) : z • p + a ≡ a [PMOD p] :=
+lemma zsmul_add_modEq (z : ℤ) : z • p + a ≡ a [PMOD p] :=
   ⟨-z, by simp [← sub_sub]⟩
 #align add_comm_group.zsmul_add_modeq AddCommGroup.zsmul_add_modEq
 
-theorem add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
+lemma add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
   ⟨-n, by simp⟩
 #align add_comm_group.add_nsmul_modeq AddCommGroup.add_nsmul_modEq
 
-theorem nsmul_add_modEq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
+lemma nsmul_add_modEq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
   ⟨-n, by simp [← sub_sub]⟩
 #align add_comm_group.nsmul_add_modeq AddCommGroup.nsmul_add_modEq
 
 namespace ModEq
 
-protected theorem add_zsmul (z : ℤ) : a ≡ b [PMOD p] → a + z • p ≡ b [PMOD p] :=
+protected lemma add_zsmul (z : ℤ) : a ≡ b [PMOD p] → a + z • p ≡ b [PMOD p] :=
   (add_zsmul_modEq _).trans
 #align add_comm_group.modeq.add_zsmul AddCommGroup.ModEq.add_zsmul
 
-protected theorem zsmul_add (z : ℤ) : a ≡ b [PMOD p] → z • p + a ≡ b [PMOD p] :=
+protected lemma zsmul_add (z : ℤ) : a ≡ b [PMOD p] → z • p + a ≡ b [PMOD p] :=
   (zsmul_add_modEq _).trans
 #align add_comm_group.modeq.zsmul_add AddCommGroup.ModEq.zsmul_add
 
-protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
+protected lemma add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
   (add_nsmul_modEq _).trans
 #align add_comm_group.modeq.add_nsmul AddCommGroup.ModEq.add_nsmul
 
-protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
+protected lemma nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
   (nsmul_add_modEq _).trans
 #align add_comm_group.modeq.nsmul_add AddCommGroup.ModEq.nsmul_add
 
@@ -224,35 +224,35 @@ alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
 -- porting note: doesn't work
 -- attribute [protected] add_left_cancel add_right_cancel add sub_left_cancel sub_right_cancel sub
 
-protected theorem add_left (c : α) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
+protected lemma add_left (c : α) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
   modEq_rfl.add h
 #align add_comm_group.modeq.add_left AddCommGroup.ModEq.add_left
 
-protected theorem sub_left (c : α) (h : a ≡ b [PMOD p]) : c - a ≡ c - b [PMOD p] :=
+protected lemma sub_left (c : α) (h : a ≡ b [PMOD p]) : c - a ≡ c - b [PMOD p] :=
   modEq_rfl.sub h
 #align add_comm_group.modeq.sub_left AddCommGroup.ModEq.sub_left
 
-protected theorem add_right (c : α) (h : a ≡ b [PMOD p]) : a + c ≡ b + c [PMOD p] :=
+protected lemma add_right (c : α) (h : a ≡ b [PMOD p]) : a + c ≡ b + c [PMOD p] :=
   h.add modEq_rfl
 #align add_comm_group.modeq.add_right AddCommGroup.ModEq.add_right
 
-protected theorem sub_right (c : α) (h : a ≡ b [PMOD p]) : a - c ≡ b - c [PMOD p] :=
+protected lemma sub_right (c : α) (h : a ≡ b [PMOD p]) : a - c ≡ b - c [PMOD p] :=
   h.sub modEq_rfl
 #align add_comm_group.modeq.sub_right AddCommGroup.ModEq.sub_right
 
-protected theorem add_left_cancel' (c : α) : c + a ≡ c + b [PMOD p] → a ≡ b [PMOD p] :=
+protected lemma add_left_cancel' (c : α) : c + a ≡ c + b [PMOD p] → a ≡ b [PMOD p] :=
   modEq_rfl.add_left_cancel
 #align add_comm_group.modeq.add_left_cancel' AddCommGroup.ModEq.add_left_cancel'
 
-protected theorem add_right_cancel' (c : α) : a + c ≡ b + c [PMOD p] → a ≡ b [PMOD p] :=
+protected lemma add_right_cancel' (c : α) : a + c ≡ b + c [PMOD p] → a ≡ b [PMOD p] :=
   modEq_rfl.add_right_cancel
 #align add_comm_group.modeq.add_right_cancel' AddCommGroup.ModEq.add_right_cancel'
 
-protected theorem sub_left_cancel' (c : α) : c - a ≡ c - b [PMOD p] → a ≡ b [PMOD p] :=
+protected lemma sub_left_cancel' (c : α) : c - a ≡ c - b [PMOD p] → a ≡ b [PMOD p] :=
   modEq_rfl.sub_left_cancel
 #align add_comm_group.modeq.sub_left_cancel' AddCommGroup.ModEq.sub_left_cancel'
 
-protected theorem sub_right_cancel' (c : α) : a - c ≡ b - c [PMOD p] → a ≡ b [PMOD p] :=
+protected lemma sub_right_cancel' (c : α) : a - c ≡ b - c [PMOD p] → a ≡ b [PMOD p] :=
   modEq_rfl.sub_right_cancel
 #align add_comm_group.modeq.sub_right_cancel' AddCommGroup.ModEq.sub_right_cancel'
 

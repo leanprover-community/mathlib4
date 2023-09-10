@@ -44,7 +44,7 @@ lemma gal_zero_isSolvable : IsSolvable (0 : F[X]).Gal := by infer_instance
 lemma gal_one_isSolvable : IsSolvable (1 : F[X]).Gal := by infer_instance
 #align gal_one_is_solvable gal_one_isSolvable
 
-theorem gal_C_isSolvable (x : F) : IsSolvable (C x).Gal := by infer_instance
+lemma gal_C_isSolvable (x : F) : IsSolvable (C x).Gal := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align gal_C_is_solvable gal_C_isSolvable
 
@@ -52,11 +52,11 @@ lemma gal_X_isSolvable : IsSolvable (X : F[X]).Gal := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align gal_X_is_solvable gal_X_isSolvable
 
-theorem gal_X_sub_C_isSolvable (x : F) : IsSolvable (X - C x).Gal := by infer_instance
+lemma gal_X_sub_C_isSolvable (x : F) : IsSolvable (X - C x).Gal := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align gal_X_sub_C_is_solvable gal_X_sub_C_isSolvable
 
-theorem gal_X_pow_isSolvable (n : ℕ) : IsSolvable (X ^ n : F[X]).Gal := by infer_instance
+lemma gal_X_pow_isSolvable (n : ℕ) : IsSolvable (X ^ n : F[X]).Gal := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align gal_X_pow_is_solvable gal_X_pow_isSolvable
 
@@ -81,7 +81,7 @@ lemma gal_isSolvable_of_splits {p q : F[X]}
   solvable_of_surjective (AlgEquiv.restrictNormalHom_surjective q.SplittingField)
 #align gal_is_solvable_of_splits gal_isSolvable_of_splits
 
-theorem gal_isSolvable_tower (p q : F[X]) (hpq : p.Splits (algebraMap F q.SplittingField))
+lemma gal_isSolvable_tower (p q : F[X]) (hpq : p.Splits (algebraMap F q.SplittingField))
     (hp : IsSolvable p.Gal) (hq : IsSolvable (q.map (algebraMap F p.SplittingField)).Gal) :
     IsSolvable q.Gal := by
   let K := p.SplittingField
@@ -97,7 +97,7 @@ theorem gal_isSolvable_tower (p q : F[X]) (hpq : p.Splits (algebraMap F q.Splitt
 
 section GalXPowSubC
 
-theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).Gal := by
+lemma gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).Gal := by
   by_cases hn : n = 0
   · rw [hn, pow_zero, sub_self]
     exact gal_zero_isSolvable
@@ -118,7 +118,7 @@ set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_one_is_solvable gal_X_pow_sub_one_isSolvable
 
 set_option maxHeartbeats 250000 in
-theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
+lemma gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
     (h : (X ^ n - 1 : F[X]).Splits (RingHom.id F)) : IsSolvable (X ^ n - C a).Gal := by
   by_cases ha : a = 0
   · rw [ha, C_0, sub_zero]
@@ -199,7 +199,7 @@ lemma splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [Fie
 set_option linter.uppercaseLean3 false in
 #align splits_X_pow_sub_one_of_X_pow_sub_C splits_X_pow_sub_one_of_X_pow_sub_C
 
-theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : IsSolvable (X ^ n - C x).Gal := by
+lemma gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : IsSolvable (X ^ n - C x).Gal := by
   by_cases hx : x = 0
   · rw [hx, C_0, sub_zero]
     exact gal_X_pow_isSolvable n
@@ -249,7 +249,7 @@ namespace solvableByRad
 
 variable {F} {E} {α : E}
 
-theorem induction (P : solvableByRad F E → Prop)
+lemma induction (P : solvableByRad F E → Prop)
     (base : ∀ α : F, P (algebraMap F (solvableByRad F E) α))
     (add : ∀ α β : solvableByRad F E, P α → P β → P (α + β))
     (neg : ∀ α : solvableByRad F E, P α → P (-α))
@@ -284,7 +284,7 @@ theorem induction (P : solvableByRad F E → Prop)
     exact Subtype.ext (Eq.trans ((solvableByRad F E).coe_pow _ n) hα₀.symm)
 #align solvable_by_rad.induction solvableByRad.induction
 
-theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
+lemma isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   revert α
   apply solvableByRad.induction
   · exact fun _ => isIntegral_algebraMap
@@ -374,7 +374,7 @@ lemma induction1 {α β : solvableByRad F E} (hβ : β ∈ F⟮α⟯) (hα : P �
   induction2 (adjoin.mono F _ _ (ge_of_eq (Set.pair_eq_singleton α)) hβ) hα hα
 #align solvable_by_rad.induction1 solvableByRad.induction1
 
-theorem isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := by
+lemma isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := by
   revert α
   apply solvableByRad.induction
   · exact fun α => by rw [minpoly.eq_X_sub_C (solvableByRad F E)]; exact gal_X_sub_C_isSolvable α

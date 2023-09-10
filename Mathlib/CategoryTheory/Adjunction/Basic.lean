@@ -133,10 +133,10 @@ section
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {X' X : C} {Y Y' : D}
 
-theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
+lemma homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
 #align category_theory.adjunction.hom_equiv_id CategoryTheory.Adjunction.homEquiv_id
 
-theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
+lemma homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
 #align category_theory.adjunction.hom_equiv_symm_id CategoryTheory.Adjunction.homEquiv_symm_id
 
 /-
@@ -145,14 +145,14 @@ but it is in fact not. Also the `docBlame` linter expects a docstring even thoug
 valued
 -/
 @[simp, nolint simpNF]
-theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
+lemma homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
     (adj.homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (adj.homEquiv X Y).symm g := by
   rw [homEquiv_counit, F.map_comp, assoc, adj.homEquiv_counit.symm]
 #align category_theory.adjunction.hom_equiv_naturality_left_symm CategoryTheory.Adjunction.homEquiv_naturality_left_symm
 
 -- Porting note: Same as above
 @[simp, nolint simpNF]
-theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
+lemma homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
   rw [← Equiv.eq_symm_apply]
   simp only [Equiv.symm_apply_apply,eq_self_iff_true,homEquiv_naturality_left_symm]
@@ -160,14 +160,14 @@ theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
 
 -- Porting note: Same as above
 @[simp, nolint simpNF]
-theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
+lemma homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
   rw [homEquiv_unit, G.map_comp, ← assoc, ← homEquiv_unit]
 #align category_theory.adjunction.hom_equiv_naturality_right CategoryTheory.Adjunction.homEquiv_naturality_right
 
 -- Porting note: Same as above
 @[simp, nolint simpNF]
-theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
+lemma homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq]
   simp only [homEquiv_naturality_right,eq_self_iff_true,Equiv.apply_symm_apply]
@@ -274,23 +274,23 @@ attribute [simp] homEquiv_naturality_left_symm homEquiv_naturality_right
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : CoreHomEquiv F G) {X' X : C} {Y Y' : D}
 
 @[simp]
-theorem homEquiv_naturality_left_aux (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
+lemma homEquiv_naturality_left_aux (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' (F.obj X)) (F.map f) ≫ G.map g = f ≫ (adj.homEquiv X Y) g := by
   rw [← homEquiv_naturality_right, ← Equiv.eq_symm_apply]; simp
 
 -- @[simp] -- Porting note: LHS simplifies, added aux lemma above
-theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
+lemma homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
   rw [← Equiv.eq_symm_apply]; simp
 #align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_left CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_left
 
 @[simp]
-theorem homEquiv_naturality_right_symm_aux (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
+lemma homEquiv_naturality_right_symm_aux (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     F.map f ≫ (adj.homEquiv (G.obj Y) Y').symm (G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [← homEquiv_naturality_left_symm, Equiv.symm_apply_eq]; simp
 
 -- @[simp] -- Porting note: LHS simplifies, added aux lemma above
-theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
+lemma homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq]; simp
 #align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_right_symm CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_right_symm

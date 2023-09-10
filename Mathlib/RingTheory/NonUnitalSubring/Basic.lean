@@ -166,7 +166,7 @@ lemma mem_mk {S : NonUnitalSubsemiring R} {x : R} (h) :
   Iff.rfl
 
 @[simp]
-theorem coe_set_mk (S : NonUnitalSubsemiring R) (h) :
+lemma coe_set_mk (S : NonUnitalSubsemiring R) (h) :
     ((⟨S, h⟩ : NonUnitalSubring R) : Set R) = S :=
   rfl
 
@@ -188,10 +188,10 @@ protected def copy (S : NonUnitalSubring R) (s : Set R) (hs : s = ↑S) : NonUni
     neg_mem' := hs.symm ▸ S.neg_mem' }
 
 @[simp]
-theorem coe_copy (S : NonUnitalSubring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
+lemma coe_copy (S : NonUnitalSubring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
   rfl
 
-theorem copy_eq (S : NonUnitalSubring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
+lemma copy_eq (S : NonUnitalSubring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 
 lemma toNonUnitalSubsemiring_injective :
@@ -310,15 +310,15 @@ protected lemma zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 
 @[simp, norm_cast]
-theorem val_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
+lemma val_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
   rfl
 
 @[simp, norm_cast]
-theorem val_neg (x : s) : (↑(-x) : R) = -↑x :=
+lemma val_neg (x : s) : (↑(-x) : R) = -↑x :=
   rfl
 
 @[simp, norm_cast]
-theorem val_mul (x y : s) : (↑(x * y) : R) = ↑x * ↑y :=
+lemma val_mul (x y : s) : (↑(x * y) : R) = ↑x * ↑y :=
   rfl
 
 @[simp, norm_cast]
@@ -342,7 +342,7 @@ lemma mem_toSubsemigroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toSubsemigro
   Iff.rfl
 
 @[simp]
-theorem coe_toSubsemigroup (s : NonUnitalSubring R) : (s.toSubsemigroup : Set R) = s :=
+lemma coe_toSubsemigroup (s : NonUnitalSubring R) : (s.toSubsemigroup : Set R) = s :=
   rfl
 
 @[simp]
@@ -350,7 +350,7 @@ lemma mem_toAddSubgroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toAddSubgroup
   Iff.rfl
 
 @[simp]
-theorem coe_toAddSubgroup (s : NonUnitalSubring R) : (s.toAddSubgroup : Set R) = s :=
+lemma coe_toAddSubgroup (s : NonUnitalSubring R) : (s.toAddSubgroup : Set R) = s :=
   rfl
 
 @[simp]
@@ -359,7 +359,7 @@ lemma mem_toNonUnitalSubsemiring {s : NonUnitalSubring R} {x : R} :
   Iff.rfl
 
 @[simp]
-theorem coe_toNonUnitalSubsemiring (s : NonUnitalSubring R) :
+lemma coe_toNonUnitalSubsemiring (s : NonUnitalSubring R) :
     (s.toNonUnitalSubsemiring : Set R) = s :=
   rfl
 
@@ -371,7 +371,7 @@ instance : Top (NonUnitalSubring R) :=
   ⟨{ (⊤ : Subsemigroup R), (⊤ : AddSubgroup R) with }⟩
 
 @[simp]
-theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubring R) :=
+lemma mem_top (x : R) : x ∈ (⊤ : NonUnitalSubring R) :=
   Set.mem_univ x
 
 @[simp]
@@ -404,14 +404,14 @@ def comap {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonU
     carrier := f ⁻¹' s.carrier }
 
 @[simp]
-theorem coe_comap (s : NonUnitalSubring S) (f : F) : (s.comap f : Set R) = f ⁻¹' s :=
+lemma coe_comap (s : NonUnitalSubring S) (f : F) : (s.comap f : Set R) = f ⁻¹' s :=
   rfl
 
 @[simp]
 lemma mem_comap {s : NonUnitalSubring S} {f : F} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 
-theorem comap_comap (s : NonUnitalSubring T) (g : S →ₙ+* T) (f : R →ₙ+* S) :
+lemma comap_comap (s : NonUnitalSubring T) (g : S →ₙ+* T) (f : R →ₙ+* S) :
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
@@ -424,7 +424,7 @@ def map {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUni
     carrier := f '' s.carrier }
 
 @[simp]
-theorem coe_map (f : F) (s : NonUnitalSubring R) : (s.map f : Set S) = f '' s :=
+lemma coe_map (f : F) (s : NonUnitalSubring R) : (s.map f : Set S) = f '' s :=
   rfl
 
 @[simp]
@@ -435,14 +435,14 @@ lemma mem_map {f : F} {s : NonUnitalSubring R} {y : S} : y ∈ s.map f ↔ ∃ x
 lemma map_id : s.map (NonUnitalRingHom.id R) = s :=
   SetLike.coe_injective <| Set.image_id _
 
-theorem map_map (g : S →ₙ+* T) (f : R →ₙ+* S) : (s.map f).map g = s.map (g.comp f) :=
+lemma map_map (g : S →ₙ+* T) (f : R →ₙ+* S) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
 lemma map_le_iff_le_comap {f : F} {s : NonUnitalSubring R} {t : NonUnitalSubring S} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f : F) :
+lemma gc_map_comap (f : F) :
     GaloisConnection (map f : NonUnitalSubring R → NonUnitalSubring S) (comap f) := fun _S _T =>
   map_le_iff_le_comap
 
@@ -456,7 +456,7 @@ noncomputable def equivMapOfInjective (f : F) (hf : Function.Injective (f : R �
     map_add' := fun _ _ => Subtype.ext (map_add f _ _) }
 
 @[simp]
-theorem coe_equivMapOfInjective_apply (f : F) (hf : Function.Injective f) (x : s) :
+lemma coe_equivMapOfInjective_apply (f : F) (hf : Function.Injective f) (x : s) :
     (equivMapOfInjective s f hf x : S) = f x :=
   rfl
 
@@ -484,9 +484,9 @@ lemma coe_range : (f.range : Set S) = Set.range f :=
 lemma mem_range {f : R →ₙ+* S} {y : S} : y ∈ f.range ↔ ∃ x, f x = y :=
   Iff.rfl
 
-theorem range_eq_map (f : R →ₙ+* S) : f.range = NonUnitalSubring.map f ⊤ := by ext; simp
+lemma range_eq_map (f : R →ₙ+* S) : f.range = NonUnitalSubring.map f ⊤ := by ext; simp
 
-theorem mem_range_self (f : R →ₙ+* S) (x : R) : f x ∈ f.range :=
+lemma mem_range_self (f : R →ₙ+* S) (x : R) : f x ∈ f.range :=
   mem_range.mpr ⟨x, rfl⟩
 
 lemma map_range : f.range.map g = (g.comp f).range := by
@@ -533,7 +533,7 @@ instance : Inf (NonUnitalSubring R) :=
       carrier := s ∩ t }⟩
 
 @[simp]
-theorem coe_inf (p p' : NonUnitalSubring R) :
+lemma coe_inf (p p' : NonUnitalSubring R) :
   ((p ⊓ p' : NonUnitalSubring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 
@@ -547,7 +547,7 @@ instance : InfSet (NonUnitalSubring R) :=
       (⨅ t ∈ s, NonUnitalSubring.toAddSubgroup t) (by simp) (by simp)⟩
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (NonUnitalSubring R)) :
+lemma coe_sInf (S : Set (NonUnitalSubring R)) :
     ((sInf S : NonUnitalSubring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
@@ -562,12 +562,12 @@ lemma mem_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} {x : R} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
 
 @[simp]
-theorem sInf_toSubsemigroup (s : Set (NonUnitalSubring R)) :
+lemma sInf_toSubsemigroup (s : Set (NonUnitalSubring R)) :
     (sInf s).toSubsemigroup = ⨅ t ∈ s, NonUnitalSubring.toSubsemigroup t :=
   mk'_toSubsemigroup _ _
 
 @[simp]
-theorem sInf_toAddSubgroup (s : Set (NonUnitalSubring R)) :
+lemma sInf_toAddSubgroup (s : Set (NonUnitalSubring R)) :
     (sInf s).toAddSubgroup = ⨅ t ∈ s, NonUnitalSubring.toAddSubgroup t :=
   mk'_toAddSubgroup _ _
 
@@ -585,7 +585,7 @@ instance : CompleteLattice (NonUnitalSubring R) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
 
-theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
+lemma eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
 end Order
@@ -621,7 +621,7 @@ instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ 
   decidable_of_iff' _ mem_center_iff
 
 @[simp]
-theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
+lemma center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 /-- The center is commutative. -/
@@ -767,7 +767,7 @@ protected def gi : GaloisInsertion (@closure R _) SetLike.coe
 variable {R}
 
 /-- Closure of a `NonUnitalSubring` `S` equals `S`. -/
-theorem closure_eq (s : NonUnitalSubring R) : closure (s : Set R) = s :=
+lemma closure_eq (s : NonUnitalSubring R) : closure (s : Set R) = s :=
   (NonUnitalSubring.gi R).l_u_eq s
 
 @[simp]
@@ -778,23 +778,23 @@ lemma closure_empty : closure (∅ : Set R) = ⊥ :=
 lemma closure_univ : closure (Set.univ : Set R) = ⊤ :=
   @coe_top R _ ▸ closure_eq ⊤
 
-theorem closure_union (s t : Set R) : closure (s ∪ t) = closure s ⊔ closure t :=
+lemma closure_union (s t : Set R) : closure (s ∪ t) = closure s ⊔ closure t :=
   (NonUnitalSubring.gi R).gc.l_sup
 
 lemma closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (NonUnitalSubring.gi R).gc.l_iSup
 
-theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
+lemma closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (NonUnitalSubring.gi R).gc.l_sSup
 
-theorem map_sup (s t : NonUnitalSubring R) (f : F) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
+lemma map_sup (s t : NonUnitalSubring R) (f : F) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
   (@gc_map_comap F R S _ _ _ f).l_sup
 
 lemma map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (@gc_map_comap F R S _ _ _ f).l_iSup
 
-theorem comap_inf (s t : NonUnitalSubring S) (f : F) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
+lemma comap_inf (s t : NonUnitalSubring S) (f : F) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (@gc_map_comap F R S _ _ _ f).u_inf
 
 lemma comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubring S) :
@@ -802,11 +802,11 @@ lemma comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubring S) :
   (@gc_map_comap F R S _ _ _ f).u_iInf
 
 @[simp]
-theorem map_bot (f : R →ₙ+* S) : (⊥ : NonUnitalSubring R).map f = ⊥ :=
+lemma map_bot (f : R →ₙ+* S) : (⊥ : NonUnitalSubring R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
 @[simp]
-theorem comap_top (f : R →ₙ+* S) : (⊤ : NonUnitalSubring S).comap f = ⊤ :=
+lemma comap_top (f : R →ₙ+* S) : (⊤ : NonUnitalSubring S).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
 /-- Given `NonUnitalSubring`s `s`, `t` of rings `R`, `S` respectively, `s.prod t` is `s ×ˢ t`
@@ -816,7 +816,7 @@ def prod (s : NonUnitalSubring R) (t : NonUnitalSubring S) : NonUnitalSubring (R
     carrier := s ×ˢ t }
 
 @[norm_cast]
-theorem coe_prod (s : NonUnitalSubring R) (t : NonUnitalSubring S) :
+lemma coe_prod (s : NonUnitalSubring R) (t : NonUnitalSubring S) :
     (s.prod t : Set (R × S)) = (s : Set R) ×ˢ t :=
   rfl
 
@@ -829,18 +829,18 @@ theorem prod_mono ⦃s₁ s₂ : NonUnitalSubring R⦄ (hs : s₁ ≤ s₂) ⦃t
     (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 
-theorem prod_mono_right (s : NonUnitalSubring R) :
+lemma prod_mono_right (s : NonUnitalSubring R) :
     Monotone fun t : NonUnitalSubring S => s.prod t :=
   prod_mono (le_refl s)
 
-theorem prod_mono_left (t : NonUnitalSubring S) : Monotone fun s : NonUnitalSubring R => s.prod t :=
+lemma prod_mono_left (t : NonUnitalSubring S) : Monotone fun s : NonUnitalSubring R => s.prod t :=
   fun _s₁ _s₂ hs => prod_mono hs (le_refl t)
 
-theorem prod_top (s : NonUnitalSubring R) :
+lemma prod_top (s : NonUnitalSubring R) :
     s.prod (⊤ : NonUnitalSubring S) = s.comap (NonUnitalRingHom.fst R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
 
-theorem top_prod (s : NonUnitalSubring S) :
+lemma top_prod (s : NonUnitalSubring S) :
     (⊤ : NonUnitalSubring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
 
@@ -885,11 +885,11 @@ lemma mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubring R} {x : S} :
     x ∈ K.map (f : R →ₙ+* S) ↔ f.symm x ∈ K :=
   @Set.mem_image_equiv _ _ (K : Set R) f.toEquiv x
 
-theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubring R) :
+lemma map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubring R) :
     K.map (f : R →ₙ+* S) = K.comap f.symm :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
 
-theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : NonUnitalSubring S) :
+lemma comap_equiv_eq_map_symm (f : R ≃+* S) (K : NonUnitalSubring S) :
     K.comap (f : R →ₙ+* S) = K.map f.symm :=
   (map_equiv_eq_comap_symm f.symm K).symm
 
@@ -912,10 +912,10 @@ def rangeRestrict (f : R →ₙ+* S) : R →ₙ+* f.range :=
   NonUnitalRingHom.codRestrict f f.range fun x => ⟨x, rfl⟩
 
 @[simp]
-theorem coe_rangeRestrict (f : R →ₙ+* S) (x : R) : (f.rangeRestrict x : S) = f x :=
+lemma coe_rangeRestrict (f : R →ₙ+* S) (x : R) : (f.rangeRestrict x : S) = f x :=
   rfl
 
-theorem rangeRestrict_surjective (f : R →ₙ+* S) : Function.Surjective f.rangeRestrict :=
+lemma rangeRestrict_surjective (f : R →ₙ+* S) : Function.Surjective f.rangeRestrict :=
   fun ⟨_y, hy⟩ =>
   let ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
@@ -926,7 +926,7 @@ lemma range_top_iff_surjective {f : R →ₙ+* S} :
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]
-theorem range_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective f) :
+lemma range_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : NonUnitalSubring S) :=
   range_top_iff_surjective.2 hf
 
@@ -936,7 +936,7 @@ def eqLocus (f g : R →ₙ+* S) : NonUnitalSubring R :=
   { (f : R →ₙ* S).eqLocus g, (f : R →+ S).eqLocus g with carrier := {x | f x = g x} }
 
 @[simp]
-theorem eqLocus_same (f : R →ₙ+* S) : f.eqLocus f = ⊤ :=
+lemma eqLocus_same (f : R →ₙ+* S) : f.eqLocus f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
 /-- If two ring homomorphisms are equal on a set, then they are equal on its
@@ -952,12 +952,12 @@ lemma eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →ₙ+* 
     f = g :=
   eq_of_eqOn_set_top <| hs ▸ eqOn_set_closure h
 
-theorem closure_preimage_le (f : R →ₙ+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
+lemma closure_preimage_le (f : R →ₙ+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _x hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 
 /-- The image under a ring homomorphism of the `NonUnitalSubring` generated by a set equals
 the `NonUnitalSubring` generated by the image of the set. -/
-theorem map_closure (f : R →ₙ+* S) (s : Set R) : (closure s).map f = closure (f '' s) :=
+lemma map_closure (f : R →ₙ+* S) (s : Set R) : (closure s).map f = closure (f '' s) :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       le_trans (closure_mono <| Set.subset_preimage_image _ _) (closure_preimage_le _ _))
@@ -980,7 +980,7 @@ def inclusion {S T : NonUnitalSubring R} (h : S ≤ T) : S →ₙ+* T :=
   NonUnitalRingHom.codRestrict (NonUnitalSubringClass.subtype S) _ fun x => h x.2
 
 @[simp]
-theorem range_subtype (s : NonUnitalSubring R) : (NonUnitalSubringClass.subtype s).range = s :=
+lemma range_subtype (s : NonUnitalSubring R) : (NonUnitalSubringClass.subtype s).range = s :=
   SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
 
 lemma range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
@@ -1037,7 +1037,7 @@ variable {F : Type w} {R : Type u} {S : Type v}
   [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
   [NonUnitalRingHomClass F R S]
 
-theorem closure_preimage_le (f : F) (s : Set S) :
+lemma closure_preimage_le (f : F) (s : Set S) :
     closure ((f : R → S) ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _x hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 

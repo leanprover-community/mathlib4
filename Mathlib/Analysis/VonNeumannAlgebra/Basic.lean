@@ -107,12 +107,12 @@ lemma mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
 -- porting note: changed the declaration because `simpNF` indicated the LHS simplifies to this.
 
 @[simp]
-theorem coe_toStarSubalgebra (S : VonNeumannAlgebra H) :
+lemma coe_toStarSubalgebra (S : VonNeumannAlgebra H) :
     (S.toStarSubalgebra : Set (H →L[ℂ] H)) = S :=
   rfl
 
 @[simp]
-theorem coe_mk (S : StarSubalgebra ℂ (H →L[ℂ] H)) (h) :
+lemma coe_mk (S : StarSubalgebra ℂ (H →L[ℂ] H)) (h) :
     ((⟨S, h⟩ : VonNeumannAlgebra H) : Set (H →L[ℂ] H)) = S :=
   rfl
 
@@ -122,7 +122,7 @@ lemma ext {S T : VonNeumannAlgebra H} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :
 #align von_neumann_algebra.ext VonNeumannAlgebra.ext
 
 @[simp]
-theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
+lemma centralizer_centralizer (S : VonNeumannAlgebra H) :
     Set.centralizer (Set.centralizer (S : Set (H →L[ℂ] H))) = S :=
   S.centralizer_centralizer'
 #align von_neumann_algebra.centralizer_centralizer VonNeumannAlgebra.centralizer_centralizer
@@ -134,7 +134,7 @@ def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
 #align von_neumann_algebra.commutant VonNeumannAlgebra.commutant
 
 @[simp]
-theorem coe_commutant (S : VonNeumannAlgebra H) :
+lemma coe_commutant (S : VonNeumannAlgebra H) :
     ↑S.commutant = Set.centralizer (S : Set (H →L[ℂ] H)) := by
   simp [commutant]
 
@@ -148,7 +148,7 @@ lemma mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
 #align von_neumann_algebra.mem_commutant_iff VonNeumannAlgebra.mem_commutant_iff
 
 @[simp]
-theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
+lemma commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
 #align von_neumann_algebra.commutant_commutant VonNeumannAlgebra.commutant_commutant
 

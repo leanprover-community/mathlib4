@@ -38,7 +38,7 @@ variable [Semiring R] {p q r : R[X]}
 section Coeff
 
 @[simp]
-theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
+lemma coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
   simp_rw [← ofFinsupp_add, coeff]
@@ -47,7 +47,7 @@ theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_bit0 (p : R[X]) (n : ℕ) : coeff (bit0 p) n = bit0 (coeff p n) := by simp [bit0]
+lemma coeff_bit0 (p : R[X]) (n : ℕ) : coeff (bit0 p) n = bit0 (coeff p n) := by simp [bit0]
 #align polynomial.coeff_bit0 Polynomial.coeff_bit0
 
 @[simp]
@@ -93,7 +93,7 @@ def lcoeff (n : ℕ) : R[X] →ₗ[R] R where
 variable {R}
 
 @[simp]
-theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
+lemma lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
   rfl
 #align polynomial.lcoeff_apply Polynomial.lcoeff_apply
 
@@ -113,7 +113,7 @@ lemma coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `Nat.antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `Finset.Nat.sum_antidiagonal_eq_sum_range_succ`. -/
-theorem coeff_mul (p q : R[X]) (n : ℕ) :
+lemma coeff_mul (p q : R[X]) (n : ℕ) :
     coeff (p * q) n = ∑ x in Nat.antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp_rw [← ofFinsupp_mul, coeff]
@@ -121,7 +121,7 @@ theorem coeff_mul (p q : R[X]) (n : ℕ) :
 #align polynomial.coeff_mul Polynomial.coeff_mul
 
 @[simp]
-theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
+lemma mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
 #align polynomial.mul_coeff_zero Polynomial.mul_coeff_zero
 
 /-- `constantCoeff p` returns the constant term of the polynomial `p`,
@@ -140,48 +140,48 @@ lemma isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
   ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
 #align polynomial.is_unit_C Polynomial.isUnit_C
 
-theorem coeff_mul_X_zero (p : R[X]) : coeff (p * X) 0 = 0 := by simp
+lemma coeff_mul_X_zero (p : R[X]) : coeff (p * X) 0 = 0 := by simp
 #align polynomial.coeff_mul_X_zero Polynomial.coeff_mul_X_zero
 
-theorem coeff_X_mul_zero (p : R[X]) : coeff (X * p) 0 = 0 := by simp
+lemma coeff_X_mul_zero (p : R[X]) : coeff (X * p) 0 = 0 := by simp
 #align polynomial.coeff_X_mul_zero Polynomial.coeff_X_mul_zero
 
-theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
+lemma coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff (C x * X ^ k : R[X]) n = if n = k then x else 0 := by
   rw [C_mul_X_pow_eq_monomial, coeff_monomial]
   congr 1
   simp [eq_comm]
 #align polynomial.coeff_C_mul_X_pow Polynomial.coeff_C_mul_X_pow
 
-theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by
+lemma coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by
   rw [← pow_one X, coeff_C_mul_X_pow]
 #align polynomial.coeff_C_mul_X Polynomial.coeff_C_mul_X
 
 @[simp]
-theorem coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n := by
+lemma coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n := by
   rcases p with ⟨p⟩
   simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
   exact AddMonoidAlgebra.single_zero_mul_apply p a n
 #align polynomial.coeff_C_mul Polynomial.coeff_C_mul
 
-theorem C_mul' (a : R) (f : R[X]) : C a * f = a • f := by
+lemma C_mul' (a : R) (f : R[X]) : C a * f = a • f := by
   ext
   rw [coeff_C_mul, coeff_smul, smul_eq_mul]
 #align polynomial.C_mul' Polynomial.C_mul'
 
 @[simp]
-theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n * a := by
+lemma coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n * a := by
   rcases p with ⟨p⟩
   simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
   exact AddMonoidAlgebra.mul_single_zero_apply p a n
 #align polynomial.coeff_mul_C Polynomial.coeff_mul_C
 
 @[simp]
-theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
+lemma coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
   simp only [one_mul, RingHom.map_one, ← coeff_C_mul_X_pow]
 #align polynomial.coeff_X_pow Polynomial.coeff_X_pow
 
-theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp
+lemma coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp
 #align polynomial.coeff_X_pow_self Polynomial.coeff_X_pow_self
 
 section Fewnomials
@@ -222,7 +222,7 @@ lemma card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : 
 end Fewnomials
 
 @[simp]
-theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
+lemma coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
   · rintro ⟨i, j⟩ h1 h2
@@ -236,11 +236,11 @@ theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
 #align polynomial.coeff_mul_X_pow Polynomial.coeff_mul_X_pow
 
 @[simp]
-theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) : coeff (Polynomial.X ^ n * p) (d + n) = coeff p d :=
+lemma coeff_X_pow_mul (p : R[X]) (n d : ℕ) : coeff (Polynomial.X ^ n * p) (d + n) = coeff p d :=
   by rw [(commute_X_pow p n).eq, coeff_mul_X_pow]
 #align polynomial.coeff_X_pow_mul Polynomial.coeff_X_pow_mul
 
-theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
+lemma coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
     (p * X ^ n).coeff d = ite (n ≤ d) (p.coeff (d - n)) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
@@ -249,39 +249,39 @@ theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
     exact ((le_of_add_le_right (Finset.Nat.mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 #align polynomial.coeff_mul_X_pow' Polynomial.coeff_mul_X_pow'
 
-theorem coeff_X_pow_mul' (p : R[X]) (n d : ℕ) :
+lemma coeff_X_pow_mul' (p : R[X]) (n d : ℕ) :
     (X ^ n * p).coeff d = ite (n ≤ d) (p.coeff (d - n)) 0 := by
   rw [(commute_X_pow p n).eq, coeff_mul_X_pow']
 #align polynomial.coeff_X_pow_mul' Polynomial.coeff_X_pow_mul'
 
 @[simp]
-theorem coeff_mul_X (p : R[X]) (n : ℕ) : coeff (p * X) (n + 1) = coeff p n := by
+lemma coeff_mul_X (p : R[X]) (n : ℕ) : coeff (p * X) (n + 1) = coeff p n := by
   simpa only [pow_one] using coeff_mul_X_pow p 1 n
 #align polynomial.coeff_mul_X Polynomial.coeff_mul_X
 
 @[simp]
-theorem coeff_X_mul (p : R[X]) (n : ℕ) : coeff (X * p) (n + 1) = coeff p n := by
+lemma coeff_X_mul (p : R[X]) (n : ℕ) : coeff (X * p) (n + 1) = coeff p n := by
   rw [(commute_X p).eq, coeff_mul_X]
 #align polynomial.coeff_X_mul Polynomial.coeff_X_mul
 
-theorem coeff_mul_monomial (p : R[X]) (n d : ℕ) (r : R) :
+lemma coeff_mul_monomial (p : R[X]) (n d : ℕ) (r : R) :
     coeff (p * monomial n r) (d + n) = coeff p d * r := by
   rw [← C_mul_X_pow_eq_monomial, ← X_pow_mul, ← mul_assoc, coeff_mul_C, coeff_mul_X_pow]
 #align polynomial.coeff_mul_monomial Polynomial.coeff_mul_monomial
 
-theorem coeff_monomial_mul (p : R[X]) (n d : ℕ) (r : R) :
+lemma coeff_monomial_mul (p : R[X]) (n d : ℕ) (r : R) :
     coeff (monomial n r * p) (d + n) = r * coeff p d := by
   rw [← C_mul_X_pow_eq_monomial, mul_assoc, coeff_C_mul, X_pow_mul, coeff_mul_X_pow]
 #align polynomial.coeff_monomial_mul Polynomial.coeff_monomial_mul
 
 -- This can already be proved by `simp`.
-theorem coeff_mul_monomial_zero (p : R[X]) (d : ℕ) (r : R) :
+lemma coeff_mul_monomial_zero (p : R[X]) (d : ℕ) (r : R) :
     coeff (p * monomial 0 r) d = coeff p d * r :=
   coeff_mul_monomial p 0 d r
 #align polynomial.coeff_mul_monomial_zero Polynomial.coeff_mul_monomial_zero
 
 -- This can already be proved by `simp`.
-theorem coeff_monomial_zero_mul (p : R[X]) (d : ℕ) (r : R) :
+lemma coeff_monomial_zero_mul (p : R[X]) (d : ℕ) (r : R) :
     coeff (monomial 0 r * p) d = r * coeff p d :=
   coeff_monomial_mul p 0 d r
 #align polynomial.coeff_monomial_zero_mul Polynomial.coeff_monomial_zero_mul
@@ -298,9 +298,9 @@ lemma mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
 
 -- TODO Unify this with `Polynomial.Monic.isRegular`
-theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow n
+lemma isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow n
 
-theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
+lemma coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
   rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, LinearMap.map_sum]
   simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_nat_cast, ← C_pow, coeff_mul_C, Nat.cast_id]
@@ -312,15 +312,15 @@ theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
 #align polynomial.coeff_X_add_C_pow Polynomial.coeff_X_add_C_pow
 
-theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
+lemma coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((X + 1) ^ n).coeff k = (n.choose k : R) := by rw [← C_1, coeff_X_add_C_pow, one_pow, one_mul]
 #align polynomial.coeff_X_add_one_pow Polynomial.coeff_X_add_one_pow
 
-theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
+lemma coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 #align polynomial.coeff_one_add_X_pow Polynomial.coeff_one_add_X_pow
 
-theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
+lemma C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
   · rintro ⟨φ, rfl⟩ c
     rw [coeff_C_mul]
@@ -341,18 +341,18 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
 #align polynomial.C_dvd_iff_dvd_coeff Polynomial.C_dvd_iff_dvd_coeff
 
 set_option linter.deprecated false in
-theorem coeff_bit0_mul (P Q : R[X]) (n : ℕ) : coeff (bit0 P * Q) n = 2 * coeff (P * Q) n := by
+lemma coeff_bit0_mul (P Q : R[X]) (n : ℕ) : coeff (bit0 P * Q) n = 2 * coeff (P * Q) n := by
   -- Porting note: `two_mul` is required.
   simp [bit0, add_mul, two_mul]
 #align polynomial.coeff_bit0_mul Polynomial.coeff_bit0_mul
 
 set_option linter.deprecated false in
-theorem coeff_bit1_mul (P Q : R[X]) (n : ℕ) :
+lemma coeff_bit1_mul (P Q : R[X]) (n : ℕ) :
     coeff (bit1 P * Q) n = 2 * coeff (P * Q) n + coeff Q n := by
   simp [bit1, add_mul, coeff_bit0_mul]
 #align polynomial.coeff_bit1_mul Polynomial.coeff_bit1_mul
 
-theorem smul_eq_C_mul (a : R) : a • p = C a * p := by simp [ext_iff]
+lemma smul_eq_C_mul (a : R) : a • p = C a * p := by simp [ext_iff]
 #align polynomial.smul_eq_C_mul Polynomial.smul_eq_C_mul
 
 lemma update_eq_add_sub_coeff {R : Type*} [Ring R] (p : R[X]) (n : ℕ) (a : R) :

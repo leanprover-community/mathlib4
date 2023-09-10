@@ -423,7 +423,7 @@ instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒ�
 #align complete_space.add_opposite CompleteSpace.addOpposite
 
 /-- If `univ` is complete, the space is a complete space -/
-theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
+lemma completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
   ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
 #align complete_space_of_is_complete_univ completeSpace_of_isComplete_univ
 
@@ -679,7 +679,7 @@ def setSeq (n : ℕ) : Set α :=
   ⋂ m ∈ Set.Iic n, (setSeqAux hf U_mem m).val
 #align sequentially_complete.set_seq SequentiallyComplete.setSeq
 
-theorem setSeq_mem (n : ℕ) : setSeq hf U_mem n ∈ f :=
+lemma setSeq_mem (n : ℕ) : setSeq hf U_mem n ∈ f :=
   (biInter_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).2.1
 #align sequentially_complete.set_seq_mem SequentiallyComplete.setSeq_mem
 
@@ -687,7 +687,7 @@ theorem setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq
   biInter_subset_biInter_left <| Iic_subset_Iic.2 h
 #align sequentially_complete.set_seq_mono SequentiallyComplete.setSeq_mono
 
-theorem setSeq_sub_aux (n : ℕ) : setSeq hf U_mem n ⊆ setSeqAux hf U_mem n :=
+lemma setSeq_sub_aux (n : ℕ) : setSeq hf U_mem n ⊆ setSeqAux hf U_mem n :=
   biInter_subset_of_mem right_mem_Iic
 #align sequentially_complete.set_seq_sub_aux SequentiallyComplete.setSeq_sub_aux
 
@@ -705,7 +705,7 @@ def seq (n : ℕ) : α :=
   choose <| hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)
 #align sequentially_complete.seq SequentiallyComplete.seq
 
-theorem seq_mem (n : ℕ) : seq hf U_mem n ∈ setSeq hf U_mem n :=
+lemma seq_mem (n : ℕ) : seq hf U_mem n ∈ setSeq hf U_mem n :=
   choose_spec <| hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)
 #align sequentially_complete.seq_mem SequentiallyComplete.seq_mem
 
@@ -744,7 +744,7 @@ variable [IsCountablyGenerated (𝓤 α)]
 
 /-- A uniform space is complete provided that (a) its uniformity filter has a countable basis;
 (b) any sequence satisfying a "controlled" version of the Cauchy condition converges. -/
-theorem complete_of_convergent_controlled_sequences (U : ℕ → Set (α × α)) (U_mem : ∀ n, U n ∈ 𝓤 α)
+lemma complete_of_convergent_controlled_sequences (U : ℕ → Set (α × α)) (U_mem : ∀ n, U n ∈ 𝓤 α)
     (HU : ∀ u : ℕ → α, (∀ N m n, N ≤ m → N ≤ n → (u m, u n) ∈ U N) → ∃ a, Tendsto u atTop (𝓝 a)) :
     CompleteSpace α := by
   obtain ⟨U', -, hU'⟩ := (𝓤 α).exists_antitone_seq
@@ -758,7 +758,7 @@ theorem complete_of_convergent_controlled_sequences (U : ℕ → Set (α × α))
 
 /-- A sequentially complete uniform space with a countable basis of the uniformity filter is
 complete. -/
-theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) :
+lemma complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) :
     CompleteSpace α :=
   let ⟨U', _, hU'⟩ := (𝓤 α).exists_antitone_seq
   complete_of_convergent_controlled_sequences U' (fun n => hU'.2 ⟨n, Subset.refl _⟩) fun u hu =>

@@ -44,7 +44,7 @@ variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 
 /-- If the distance between consecutive points of a sequence is estimated by a summable series,
 then the original sequence is a Cauchy sequence. -/
-theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
+lemma cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) : CauchySeq f := by
   -- Porting note: todo: with `Topology/Instances/NNReal` we can use this:
   -- lift d to ℕ → ℝ≥0 using fun n => dist_nonneg.trans (hf n)
@@ -65,11 +65,11 @@ theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f 
     _ < ε := hsum
 #align cauchy_seq_of_dist_le_of_summable cauchySeq_of_dist_le_of_summable
 
-theorem cauchySeq_of_summable_dist (h : Summable fun n => dist (f n) (f n.succ)) : CauchySeq f :=
+lemma cauchySeq_of_summable_dist (h : Summable fun n => dist (f n) (f n.succ)) : CauchySeq f :=
   cauchySeq_of_dist_le_of_summable _ (fun _ => le_rfl) h
 #align cauchy_seq_of_summable_dist cauchySeq_of_summable_dist
 
-theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
+lemma dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ ∑' m, d (n + m) := by
   refine' le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm => _⟩)
@@ -79,18 +79,18 @@ theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (
   exact hd.comp_injective (add_right_injective n)
 #align dist_le_tsum_of_dist_le_of_tendsto dist_le_tsum_of_dist_le_of_tendsto
 
-theorem dist_le_tsum_of_dist_le_of_tendsto₀ (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
+lemma dist_le_tsum_of_dist_le_of_tendsto₀ (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) (ha : Tendsto f atTop (𝓝 a)) : dist (f 0) a ≤ tsum d := by
   simpa only [zero_add] using dist_le_tsum_of_dist_le_of_tendsto d hf hd ha 0
 #align dist_le_tsum_of_dist_le_of_tendsto₀ dist_le_tsum_of_dist_le_of_tendsto₀
 
-theorem dist_le_tsum_dist_of_tendsto (h : Summable fun n => dist (f n) (f n.succ))
+lemma dist_le_tsum_dist_of_tendsto (h : Summable fun n => dist (f n) (f n.succ))
     (ha : Tendsto f atTop (𝓝 a)) (n) : dist (f n) a ≤ ∑' m, dist (f (n + m)) (f (n + m).succ) :=
   show dist (f n) a ≤ ∑' m, (fun x => dist (f x) (f x.succ)) (n + m) from
     dist_le_tsum_of_dist_le_of_tendsto (fun n => dist (f n) (f n.succ)) (fun _ => le_rfl) h ha n
 #align dist_le_tsum_dist_of_tendsto dist_le_tsum_dist_of_tendsto
 
-theorem dist_le_tsum_dist_of_tendsto₀ (h : Summable fun n => dist (f n) (f n.succ))
+lemma dist_le_tsum_dist_of_tendsto₀ (h : Summable fun n => dist (f n) (f n.succ))
     (ha : Tendsto f atTop (𝓝 a)) : dist (f 0) a ≤ ∑' n, dist (f n) (f n.succ) := by
   simpa only [zero_add] using dist_le_tsum_dist_of_tendsto h ha 0
 #align dist_le_tsum_dist_of_tendsto₀ dist_le_tsum_dist_of_tendsto₀

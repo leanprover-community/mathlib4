@@ -70,7 +70,7 @@ def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X
 #align category_theory.grothendieck_topology.diagram_nat_trans CategoryTheory.GrothendieckTopology.diagramNatTrans
 
 @[simp]
-theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
+lemma diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (𝟙 P) X = 𝟙 (J.diagram P X) := by
   ext : 2
   refine' Multiequalizer.hom_ext _ _ _ (fun i => _)
@@ -165,7 +165,7 @@ def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q w
 #align category_theory.grothendieck_topology.plus_map CategoryTheory.GrothendieckTopology.plusMap
 
 @[simp]
-theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
+lemma plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
   ext : 2
   dsimp only [plusMap, plusObj]
   rw [J.diagramNatTrans_id, NatTrans.id_app]
@@ -273,7 +273,7 @@ lemma plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
     rfl
 #align category_theory.grothendieck_topology.plus_map_to_plus CategoryTheory.GrothendieckTopology.plusMap_toPlus
 
-theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
+lemma isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer] at hP
   suffices : ∀ X, IsIso ((J.toPlus P).app X)
   · apply NatIso.isIso_of_isIso_app
@@ -299,7 +299,7 @@ def isoToPlus (hP : Presheaf.IsSheaf J P) : P ≅ J.plusObj P :=
 #align category_theory.grothendieck_topology.iso_to_plus CategoryTheory.GrothendieckTopology.isoToPlus
 
 @[simp]
-theorem isoToPlus_hom (hP : Presheaf.IsSheaf J P) : (J.isoToPlus P hP).hom = J.toPlus P :=
+lemma isoToPlus_hom (hP : Presheaf.IsSheaf J P) : (J.isoToPlus P hP).hom = J.toPlus P :=
   rfl
 #align category_theory.grothendieck_topology.iso_to_plus_hom CategoryTheory.GrothendieckTopology.isoToPlus_hom
 
@@ -336,7 +336,7 @@ lemma plus_hom_ext {P Q : Cᵒᵖ ⥤ D} (η γ : J.plusObj P ⟶ Q) (hQ : Presh
 #align category_theory.grothendieck_topology.plus_hom_ext CategoryTheory.GrothendieckTopology.plus_hom_ext
 
 @[simp]
-theorem isoToPlus_inv (hP : Presheaf.IsSheaf J P) :
+lemma isoToPlus_inv (hP : Presheaf.IsSheaf J P) :
     (J.isoToPlus P hP).inv = J.plusLift (𝟙 _) hP := by
   apply J.plusLift_unique
   rw [Iso.comp_inv_eq, Category.id_comp]

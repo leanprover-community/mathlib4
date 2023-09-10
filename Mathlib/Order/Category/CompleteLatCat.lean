@@ -39,7 +39,7 @@ def of (α : Type*) [CompleteLattice α] : CompleteLatCat :=
 #align CompleteLat.of CompleteLatCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [CompleteLattice α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [CompleteLattice α] : ↥(of α) = α :=
   rfl
 #align CompleteLat.coe_of CompleteLatCat.coe_of
 

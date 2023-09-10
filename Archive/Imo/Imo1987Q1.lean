@@ -99,7 +99,7 @@ lemma main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card 
 #align imo1987_q1.main_fintype Imo1987Q1.main_fintype
 
 /-- Main statement for permutations of `Fin n`, a version that works for `n = 0`. -/
-theorem main₀ (n : ℕ) : ∑ k in range (n + 1), k * p (Fin n) k = n * (n - 1)! := by
+lemma main₀ (n : ℕ) : ∑ k in range (n + 1), k * p (Fin n) k = n * (n - 1)! := by
   simpa using main_fintype (Fin n)
 #align imo1987_q1.main₀ Imo1987Q1.main₀
 

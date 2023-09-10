@@ -40,7 +40,7 @@ class OrdConnected (s : Set α) : Prop where
   out' ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) : Icc x y ⊆ s
 #align set.ord_connected Set.OrdConnected
 
-theorem OrdConnected.out (h : OrdConnected s) : ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), Icc x y ⊆ s :=
+lemma OrdConnected.out (h : OrdConnected s) : ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), Icc x y ⊆ s :=
   h.1
 #align set.ord_connected.out Set.OrdConnected.out
 
@@ -73,7 +73,7 @@ lemma OrdConnected.preimage_anti {f : β → α} (hs : OrdConnected s) (hf : Ant
   ⟨fun _ hx _ hy _ hz => hs.out hy hx ⟨hf hz.2, hf hz.1⟩⟩
 #align set.ord_connected.preimage_anti Set.OrdConnected.preimage_anti
 
-protected theorem Icc_subset (s : Set α) [hs : OrdConnected s] {x y} (hx : x ∈ s) (hy : y ∈ s) :
+protected lemma Icc_subset (s : Set α) [hs : OrdConnected s] {x y} (hx : x ∈ s) (hy : y ∈ s) :
     Icc x y ⊆ s :=
   hs.out hx hy
 #align set.Icc_subset Set.Icc_subset
@@ -229,7 +229,7 @@ section PartialOrder
 
 variable {α : Type*} [PartialOrder α] {s : Set α}
 
-protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
+protected lemma _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
   ⟨fun x hx y hy z hz => by
     obtain rfl := hs.eq hx hy (hz.1.trans hz.2)
     rw [Icc_self, mem_singleton_iff] at hz
@@ -252,12 +252,12 @@ lemma ordConnected_uIoc {a b : α} : OrdConnected (Ι a b) :=
   ordConnected_Ioc
 #align set.ord_connected_uIoc Set.ordConnected_uIoc
 
-theorem OrdConnected.uIcc_subset (hs : OrdConnected s) ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) :
+lemma OrdConnected.uIcc_subset (hs : OrdConnected s) ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) :
     [[x, y]] ⊆ s :=
   hs.out (min_rec' (· ∈ s) hx hy) (max_rec' (· ∈ s) hx hy)
 #align set.ord_connected.uIcc_subset Set.OrdConnected.uIcc_subset
 
-theorem OrdConnected.uIoc_subset (hs : OrdConnected s) ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) :
+lemma OrdConnected.uIoc_subset (hs : OrdConnected s) ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) :
     Ι x y ⊆ s :=
   Ioc_subset_Icc_self.trans <| hs.uIcc_subset hx hy
 #align set.ord_connected.uIoc_subset Set.OrdConnected.uIoc_subset
@@ -267,7 +267,7 @@ lemma ordConnected_iff_uIcc_subset :
   ⟨fun h => h.uIcc_subset, fun H => ⟨fun _ hx _ hy => Icc_subset_uIcc.trans <| H hx hy⟩⟩
 #align set.ord_connected_iff_uIcc_subset Set.ordConnected_iff_uIcc_subset
 
-theorem ordConnected_of_uIcc_subset_left (h : ∀ y ∈ s, [[x, y]] ⊆ s) : OrdConnected s :=
+lemma ordConnected_of_uIcc_subset_left (h : ∀ y ∈ s, [[x, y]] ⊆ s) : OrdConnected s :=
   ordConnected_iff_uIcc_subset.2 fun y hy z hz =>
     calc
       [[y, z]] ⊆ [[y, x]] ∪ [[x, z]] := uIcc_subset_uIcc_union_uIcc
@@ -275,12 +275,12 @@ theorem ordConnected_of_uIcc_subset_left (h : ∀ y ∈ s, [[x, y]] ⊆ s) : Ord
       _ ⊆ s := union_subset (h y hy) (h z hz)
 #align set.ord_connected_of_uIcc_subset_left Set.ordConnected_of_uIcc_subset_left
 
-theorem ordConnected_iff_uIcc_subset_left (hx : x ∈ s) :
+lemma ordConnected_iff_uIcc_subset_left (hx : x ∈ s) :
     OrdConnected s ↔ ∀ ⦃y⦄, y ∈ s → [[x, y]] ⊆ s :=
   ⟨fun hs => hs.uIcc_subset hx, ordConnected_of_uIcc_subset_left⟩
 #align set.ord_connected_iff_uIcc_subset_left Set.ordConnected_iff_uIcc_subset_left
 
-theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
+lemma ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
     OrdConnected s ↔ ∀ ⦃y⦄, y ∈ s → [[y, x]] ⊆ s := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
 #align set.ord_connected_iff_uIcc_subset_right Set.ordConnected_iff_uIcc_subset_right

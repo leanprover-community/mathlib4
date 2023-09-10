@@ -198,31 +198,31 @@ lemma one_le_iff {a : SignType} : 1 ≤ a ↔ a = 1 :=
 #align sign_type.one_le_iff SignType.one_le_iff
 
 @[simp]
-theorem neg_one_le (a : SignType) : -1 ≤ a :=
+lemma neg_one_le (a : SignType) : -1 ≤ a :=
   bot_le
 #align sign_type.neg_one_le SignType.neg_one_le
 
 @[simp]
-theorem le_one (a : SignType) : a ≤ 1 :=
+lemma le_one (a : SignType) : a ≤ 1 :=
   le_top
 #align sign_type.le_one SignType.le_one
 
 @[simp]
-theorem not_lt_neg_one (a : SignType) : ¬a < -1 :=
+lemma not_lt_neg_one (a : SignType) : ¬a < -1 :=
   not_lt_bot
 #align sign_type.not_lt_neg_one SignType.not_lt_neg_one
 
 @[simp]
-theorem not_one_lt (a : SignType) : ¬1 < a :=
+lemma not_one_lt (a : SignType) : ¬1 < a :=
   not_top_lt
 #align sign_type.not_one_lt SignType.not_one_lt
 
 @[simp]
-theorem self_eq_neg_iff (a : SignType) : a = -a ↔ a = 0 := by cases a <;> decide
+lemma self_eq_neg_iff (a : SignType) : a = -a ↔ a = 0 := by cases a <;> decide
 #align sign_type.self_eq_neg_iff SignType.self_eq_neg_iff
 
 @[simp]
-theorem neg_eq_self_iff (a : SignType) : -a = a ↔ a = 0 := by cases a <;> decide
+lemma neg_eq_self_iff (a : SignType) : -a = a ↔ a = 0 := by cases a <;> decide
 #align sign_type.neg_eq_self_iff SignType.neg_eq_self_iff
 
 @[simp]
@@ -316,11 +316,11 @@ lemma sign_zero : sign (0 : α) = 0 := by simp [sign_apply]
 #align sign_zero sign_zero
 
 @[simp]
-theorem sign_pos (ha : 0 < a) : sign a = 1 := by rwa [sign_apply, if_pos]
+lemma sign_pos (ha : 0 < a) : sign a = 1 := by rwa [sign_apply, if_pos]
 #align sign_pos sign_pos
 
 @[simp]
-theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asymm ha, if_pos]
+lemma sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asymm ha, if_pos]
 #align sign_neg sign_neg
 
 lemma sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
@@ -393,18 +393,18 @@ variable [LinearOrderedRing α] {a b : α}
 113488-general/topic/type.20class.20inference.20issues/near/276937942 -/
 attribute [local instance] LinearOrderedRing.decidableLT
 
-theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
+lemma sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
     simp [hx, hy, mul_pos_of_neg_of_neg, mul_neg_of_neg_of_pos, mul_neg_of_pos_of_neg]
 #align sign_mul sign_mul
 
-@[simp] theorem sign_mul_abs (x : α) : (sign x * |x| : α) = x := by
+@[simp] lemma sign_mul_abs (x : α) : (sign x * |x| : α) = x := by
   rcases lt_trichotomy x 0 with (hx | rfl | hx)
   · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, neg_one_mul, neg_neg]
   · rw [abs_zero, mul_zero]
   · rw [sign_pos hx, abs_of_pos hx, coe_one, one_mul]
 
-@[simp] theorem abs_mul_sign (x : α) : (|x| * sign x : α) = x := by
+@[simp] lemma abs_mul_sign (x : α) : (|x| * sign x : α) = x := by
   rcases lt_trichotomy x 0 with (hx | rfl | hx)
   · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, mul_neg_one, neg_neg]
   · rw [abs_zero, zero_mul]
@@ -422,7 +422,7 @@ def signHom : α →*₀ SignType where
   map_mul' := sign_mul
 #align sign_hom signHom
 
-theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := map_pow signHom x n
+lemma sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := map_pow signHom x n
 #align sign_pow sign_pow
 
 end LinearOrderedRing
@@ -477,7 +477,7 @@ end LinearOrderedAddCommGroup
 
 namespace Int
 
-theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
+lemma sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
   obtain (n | _) | _ := n <;> simp [sign, Int.sign_neg, negSucc_lt_zero]
 #align int.sign_eq_sign Int.sign_eq_sign
 

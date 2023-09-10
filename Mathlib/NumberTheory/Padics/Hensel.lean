@@ -129,11 +129,11 @@ private lemma T_lt_one : T < 1 := by
 
 private lemma T_nonneg : 0 ≤ T := norm_nonneg _
 
-private theorem T_pow_nonneg (n : ℕ) : 0 ≤ T ^ n := pow_nonneg T_nonneg _
+private lemma T_pow_nonneg (n : ℕ) : 0 ≤ T ^ n := pow_nonneg T_nonneg _
 
 private lemma T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one T_nonneg (T_lt_one hnorm) hn
 
-private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
+private lemma T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
 -- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 /-- We will construct a sequence of elements of ℤ_p satisfying successive values of `ih`. -/
@@ -247,21 +247,21 @@ private def newton_seq_gen (n : ℕ) : ℤ_[p] :=
 
 local notation "newton_seq" => newton_seq_gen hnorm
 
-private theorem newton_seq_deriv_norm (n : ℕ) :
+private lemma newton_seq_deriv_norm (n : ℕ) :
     ‖F.derivative.eval (newton_seq n)‖ = ‖F.derivative.eval a‖ :=
   (newton_seq_aux hnorm n).2.1
 
-private theorem newton_seq_norm_le (n : ℕ) :
+private lemma newton_seq_norm_le (n : ℕ) :
     ‖F.eval (newton_seq n)‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n :=
   (newton_seq_aux hnorm n).2.2
 
-private theorem newton_seq_norm_eq (n : ℕ) :
+private lemma newton_seq_norm_eq (n : ℕ) :
     ‖newton_seq (n + 1) - newton_seq n‖ =
     ‖F.eval (newton_seq n)‖ / ‖F.derivative.eval (newton_seq n)‖ := by
   rw [newton_seq_gen, newton_seq_gen, newton_seq_aux, ih_n]
   simp [sub_eq_add_neg, add_comm]
 
-private theorem newton_seq_succ_dist (n : ℕ) :
+private lemma newton_seq_succ_dist (n : ℕ) :
     ‖newton_seq (n + 1) - newton_seq n‖ ≤ ‖F.derivative.eval a‖ * T ^ 2 ^ n :=
   calc
     ‖newton_seq (n + 1) - newton_seq n‖ =
@@ -276,7 +276,7 @@ private lemma T_pos : T > 0 := by
   rw [T_def]
   exact div_pos (norm_pos_iff.2 hnsol) (deriv_sq_norm_pos hnorm)
 
-private theorem newton_seq_succ_dist_weak (n : ℕ) :
+private lemma newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ < ‖F.eval a‖ / ‖F.derivative.eval a‖ :=
   have : 2 ≤ 2 ^ (n + 1) := by
     have := pow_le_pow (by norm_num : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
@@ -296,7 +296,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
       apply mul_div_mul_left
       apply deriv_norm_ne_zero; assumption
 
-private theorem newton_seq_dist_aux (n : ℕ) :
+private lemma newton_seq_dist_aux (n : ℕ) :
     ∀ k : ℕ, ‖newton_seq (n + k) - newton_seq n‖ ≤ ‖F.derivative.eval a‖ * T ^ 2 ^ n
   | 0 => by simp [T_pow_nonneg, mul_nonneg]
   | k + 1 =>
@@ -419,7 +419,7 @@ private lemma soln_dist_to_a_lt_deriv : ‖soln - a‖ < ‖F.derivative.eval a�
 private lemma eval_soln : F.eval soln = 0 :=
   limit_zero_of_norm_tendsto_zero (newton_seq_norm_tendsto_zero hnorm)
 
-private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
+private lemma soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
     (hnlt : ‖z - a‖ < ‖F.derivative.eval a‖) : z = soln :=
   have soln_dist : ‖z - soln‖ < ‖F.derivative.eval a‖ :=
     calc
@@ -457,7 +457,7 @@ end Hensel
 
 variable {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]} {a : ℤ_[p]}
 
-private theorem a_soln_is_unique (ha : F.eval a = 0) (z' : ℤ_[p]) (hz' : F.eval z' = 0)
+private lemma a_soln_is_unique (ha : F.eval a = 0) (z' : ℤ_[p]) (hz' : F.eval z' = 0)
     (hnormz' : ‖z' - a‖ < ‖F.derivative.eval a‖) : z' = a :=
   let h := z' - a
   let ⟨q, hq⟩ := F.binomExpansion a h
@@ -483,7 +483,7 @@ private theorem a_soln_is_unique (ha : F.eval a = 0) (z' : ℤ_[p]) (hz' : F.eva
 
 variable (hnorm : ‖F.eval a‖ < ‖F.derivative.eval a‖ ^ 2)
 
-private theorem a_is_soln (ha : F.eval a = 0) :
+private lemma a_is_soln (ha : F.eval a = 0) :
     F.eval a = 0 ∧
       ‖a - a‖ < ‖F.derivative.eval a‖ ∧
         ‖F.derivative.eval a‖ = ‖F.derivative.eval a‖ ∧

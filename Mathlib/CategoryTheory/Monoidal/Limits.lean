@@ -107,11 +107,11 @@ def limLax : LaxMonoidalFunctor (J ⥤ C) C :=
 #align category_theory.limits.lim_lax CategoryTheory.Limits.limLax
 
 @[simp]
-theorem limLax_obj (F : J ⥤ C) : limLax.obj F = limit F :=
+lemma limLax_obj (F : J ⥤ C) : limLax.obj F = limit F :=
   rfl
 #align category_theory.limits.lim_lax_obj CategoryTheory.Limits.limLax_obj
 
-theorem limLax_obj' (F : J ⥤ C) : limLax.obj F = lim.obj F :=
+lemma limLax_obj' (F : J ⥤ C) : limLax.obj F = lim.obj F :=
   rfl
 #align category_theory.limits.lim_lax_obj' CategoryTheory.Limits.limLax_obj'
 
@@ -130,7 +130,7 @@ lemma limLax_ε :
 #align category_theory.limits.lim_lax_ε CategoryTheory.Limits.limLax_ε
 
 @[simp]
-theorem limLax_μ (F G : J ⥤ C) :
+lemma limLax_μ (F G : J ⥤ C) :
     (@limLax J _ C _ _ _).μ F G =
       limit.lift (F ⊗ G)
         { pt := limit F ⊗ limit G

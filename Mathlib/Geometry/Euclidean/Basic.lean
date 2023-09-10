@@ -72,7 +72,7 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 /-- The midpoint of the segment AB is the same distance from A as it is from B. -/
-theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
+lemma dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
     dist p1 (midpoint ℝ p1 p2) = dist p2 (midpoint ℝ p1 p2) := by
   rw [dist_left_midpoint (𝕜 := ℝ) p1 p2, dist_right_midpoint (𝕜 := ℝ) p1 p2]
 #align euclidean_geometry.dist_left_midpoint_eq_dist_right_midpoint EuclideanGeometry.dist_left_midpoint_eq_dist_right_midpoint
@@ -113,7 +113,7 @@ lemma dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → �
 /-- The squared distance between points on a line (expressed as a
 multiple of a fixed vector added to a point) and another point,
 expressed as a quadratic. -/
-theorem dist_smul_vadd_sq (r : ℝ) (v : V) (p₁ p₂ : P) :
+lemma dist_smul_vadd_sq (r : ℝ) (v : V) (p₁ p₂ : P) :
     dist (r • v +ᵥ p₁) p₂ * dist (r • v +ᵥ p₁) p₂ =
       ⟪v, v⟫ * r * r + 2 * ⟪v, p₁ -ᵥ p₂⟫ * r + ⟪p₁ -ᵥ p₂, p₁ -ᵥ p₂⟫ := by
   rw [dist_eq_norm_vsub V _ p₂, ← real_inner_self_eq_norm_mul_norm, vadd_vsub_assoc,
@@ -337,7 +337,7 @@ lemma orthogonalProjection_mem {s : AffineSubspace ℝ P} [Nonempty s]
 #align euclidean_geometry.orthogonal_projection_mem EuclideanGeometry.orthogonalProjection_mem
 
 /-- The `orthogonalProjection` lies in the orthogonal subspace. -/
-theorem orthogonalProjection_mem_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
+lemma orthogonalProjection_mem_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     ↑(orthogonalProjection s p) ∈ mk' p s.directionᗮ :=
   orthogonalProjectionFn_mem_orthogonal p
@@ -383,7 +383,7 @@ lemma orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [None
 
 /-- Orthogonal projection is idempotent. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
+lemma orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
   ext
@@ -415,7 +415,7 @@ lemma dist_orthogonalProjection_ne_zero_of_not_mem {s : AffineSubspace ℝ P} [N
 
 /-- Subtracting `p` from its `orthogonalProjection` produces a result
 in the orthogonal direction. -/
-theorem orthogonalProjection_vsub_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
+lemma orthogonalProjection_vsub_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     (orthogonalProjection s p : P) -ᵥ p ∈ s.directionᗮ :=
   orthogonalProjectionFn_vsub_mem_direction_orthogonal p
@@ -423,7 +423,7 @@ theorem orthogonalProjection_vsub_mem_direction_orthogonal (s : AffineSubspace �
 
 /-- Subtracting the `orthogonalProjection` from `p` produces a result
 in the orthogonal direction. -/
-theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
+lemma vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : p -ᵥ orthogonalProjection s p ∈ s.directionᗮ :=
   direction_mk' p s.directionᗮ ▸
     vsub_mem_direction (self_mem_mk' _ _) (orthogonalProjection_mem_orthogonal s p)
@@ -431,7 +431,7 @@ theorem vsub_orthogonalProjection_mem_direction_orthogonal (s : AffineSubspace �
 
 /-- Subtracting the `orthogonalProjection` from `p` produces a result in the kernel of the linear
 part of the orthogonal projection. -/
-theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
+lemma orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     _root_.orthogonalProjection s.direction (p -ᵥ orthogonalProjection s p) = 0 := by
   apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
@@ -530,7 +530,7 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection 
 #align euclidean_geometry.reflection EuclideanGeometry.reflection
 
 /-- The result of reflecting. -/
-theorem reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
+lemma reflection_apply (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
     (p : P) : reflection s p = ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P) :=
   rfl
 #align euclidean_geometry.reflection_apply EuclideanGeometry.reflection_apply
@@ -544,7 +544,7 @@ lemma eq_reflection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s] [N
 
 /-- Reflecting twice in the same subspace. -/
 @[simp]
-theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
+lemma reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) : reflection s (reflection s p) = p := by
   have : ∀ a : s, ∀ b : V, (_root_.orthogonalProjection s.direction) b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
@@ -556,7 +556,7 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
 
 /-- Reflection is its own inverse. -/
 @[simp]
-theorem reflection_symm (s : AffineSubspace ℝ P) [Nonempty s]
+lemma reflection_symm (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] : (reflection s).symm = reflection s := by
   ext
   rw [← (reflection s).injective.eq_iff]
@@ -564,7 +564,7 @@ theorem reflection_symm (s : AffineSubspace ℝ P) [Nonempty s]
 #align euclidean_geometry.reflection_symm EuclideanGeometry.reflection_symm
 
 /-- Reflection is involutive. -/
-theorem reflection_involutive (s : AffineSubspace ℝ P) [Nonempty s]
+lemma reflection_involutive (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] : Function.Involutive (reflection s) :=
   reflection_reflection s
 #align euclidean_geometry.reflection_involutive EuclideanGeometry.reflection_involutive
@@ -586,7 +586,7 @@ lemma reflection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
 /-- Reflecting a point in two subspaces produces the same result if
 and only if the point has the same orthogonal projection in each of
 those subspaces. -/
-theorem reflection_eq_iff_orthogonalProjection_eq (s₁ s₂ : AffineSubspace ℝ P) [Nonempty s₁]
+lemma reflection_eq_iff_orthogonalProjection_eq (s₁ s₂ : AffineSubspace ℝ P) [Nonempty s₁]
     [Nonempty s₂] [HasOrthogonalProjection s₁.direction] [HasOrthogonalProjection s₂.direction]
     (p : P) :
     reflection s₁ p = reflection s₂ p ↔
@@ -605,7 +605,7 @@ theorem reflection_eq_iff_orthogonalProjection_eq (s₁ s₂ : AffineSubspace �
 
 /-- The distance between `p₁` and the reflection of `p₂` equals that
 between the reflection of `p₁` and `p₂`. -/
-theorem dist_reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
+lemma dist_reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction]
     (p₁ p₂ : P) : dist p₁ (reflection s p₂) = dist (reflection s p₁) p₂ := by
   conv_lhs => rw [← reflection_reflection s p₁]
   exact (reflection s).dist_map _ _
@@ -613,7 +613,7 @@ theorem dist_reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalPr
 
 /-- A point in the subspace is equidistant from another point and its
 reflection. -/
-theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s]
+lemma dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
     dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁

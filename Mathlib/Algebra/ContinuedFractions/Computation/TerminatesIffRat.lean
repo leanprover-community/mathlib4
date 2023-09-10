@@ -127,7 +127,7 @@ lemma exists_rat_eq_nth_convergent : ∃ q : ℚ, (of v).convergents n = (q : K)
 variable {v}
 
 /-- Every terminating continued fraction corresponds to a rational number. -/
-theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : ℚ, v = ↑q := by
+lemma exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : ℚ, v = ↑q := by
   obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convergents n;
   exact of_correctness_of_terminates terminates
   obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K)
@@ -270,7 +270,7 @@ variable {q : ℚ} {n : ℕ}
 /-- Shows that for any `q : ℚ` with `0 < q < 1`, the numerator of the fractional part of
 `int_fract_pair.of q⁻¹` is smaller than the numerator of `q`.
 -/
-theorem of_inv_fr_num_lt_num_of_pos (q_pos : 0 < q) : (IntFractPair.of q⁻¹).fr.num < q.num :=
+lemma of_inv_fr_num_lt_num_of_pos (q_pos : 0 < q) : (IntFractPair.of q⁻¹).fr.num < q.num :=
   Rat.fract_inv_num_lt_num_of_pos q_pos
 #align generalized_continued_fraction.int_fract_pair.of_inv_fr_num_lt_num_of_pos GeneralizedContinuedFraction.IntFractPair.of_inv_fr_num_lt_num_of_pos
 
@@ -313,7 +313,7 @@ lemma stream_nth_fr_num_le_fr_num_sub_n_rat :
     exact le_trans this (IH stream_nth_eq)
 #align generalized_continued_fraction.int_fract_pair.stream_nth_fr_num_le_fr_num_sub_n_rat GeneralizedContinuedFraction.IntFractPair.stream_nth_fr_num_le_fr_num_sub_n_rat
 
-theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
+lemma exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
   let fract_q_num := (Int.fract q).num; let n := fract_q_num.natAbs + 1
   cases' stream_nth_eq : IntFractPair.stream q n with ifp
   · use n, stream_nth_eq
@@ -335,7 +335,7 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
 end IntFractPair
 
 /-- The continued fraction of a rational number terminates. -/
-theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
+lemma terminates_of_rat (q : ℚ) : (of q).Terminates :=
   Exists.elim (IntFractPair.exists_nth_stream_eq_none_of_rat q) fun n stream_nth_eq_none =>
     Exists.intro n
       (have : IntFractPair.stream q (n + 1) = none := IntFractPair.stream_isSeq q stream_nth_eq_none
@@ -346,7 +346,7 @@ end TerminatesOfRat
 
 /-- The continued fraction `GeneralizedContinuedFraction.of v` terminates if and only if `v ∈ ℚ`.
 -/
-theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
+lemma terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
   Iff.intro
     (fun terminates_v : (of v).Terminates =>
       show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)

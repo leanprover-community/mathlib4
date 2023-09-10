@@ -70,7 +70,7 @@ lemma Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommR
         Finset.prod_const, neg_one_pow_eq_pow_mod_two, Nat.even_iff.1 h0, pow_zero, one_mul]
 #align finset.prod_nonneg_of_card_nonpos_even Finset.prod_nonneg_of_card_nonpos_even
 
-theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
+lemma int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     0 ≤ ∏ k in Finset.range n, (m - k) := by
   rcases hn with ⟨n, rfl⟩
   induction' n with n ihn
@@ -120,7 +120,7 @@ lemma hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
     div_eq_mul_one_div, mul_comm]
 #align has_deriv_at_sqrt_mul_log hasDerivAt_sqrt_mul_log
 
-theorem deriv_sqrt_mul_log (x : ℝ) :
+lemma deriv_sqrt_mul_log (x : ℝ) :
     deriv (fun x => sqrt x * log x) x = (2 + log x) / (2 * sqrt x) := by
   cases' lt_or_le 0 x with hx hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
@@ -135,7 +135,7 @@ lemma deriv_sqrt_mul_log' :
   funext deriv_sqrt_mul_log
 #align deriv_sqrt_mul_log' deriv_sqrt_mul_log'
 
-theorem deriv2_sqrt_mul_log (x : ℝ) :
+lemma deriv2_sqrt_mul_log (x : ℝ) :
     deriv^[2] (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
   cases' le_or_lt x 0 with hx hx

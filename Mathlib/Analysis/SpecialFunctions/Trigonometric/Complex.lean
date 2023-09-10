@@ -73,7 +73,7 @@ lemma tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π /
   rw [← not_exists, not_iff_not, tan_eq_zero_iff]
 #align complex.tan_ne_zero_iff Complex.tan_ne_zero_iff
 
-theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
+lemma tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align complex.tan_int_mul_pi_div_two Complex.tan_int_mul_pi_div_two
 

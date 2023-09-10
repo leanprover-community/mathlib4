@@ -162,7 +162,7 @@ variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ
 /-- If a measure `ρ` is singular with respect to `μ`, then for `μ` almost every `x`, the ratio
 `ρ a / μ a` tends to zero when `a` shrinks to `x` along the Vitali family. This makes sense
 as `μ a` is eventually positive by `ae_eventually_measure_pos`. -/
-theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
+lemma ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 0) := by
   have A : ∀ ε > (0 : ℝ≥0), ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, ρ a < ε * μ a := by
     intro ε εpos
@@ -749,7 +749,7 @@ lemma ae_tendsto_measure_inter_div_of_measurableSet {s : Set α} (hs : Measurabl
 typical point of `s` along a Vitali family. This shows that almost every point of `s` is a
 Lebesgue density point for `s`. A stronger version for measurable sets is given
 in `ae_tendsto_measure_inter_div_of_measurableSet`. -/
-theorem ae_tendsto_measure_inter_div (s : Set α) :
+lemma ae_tendsto_measure_inter_div (s : Set α) :
     ∀ᵐ x ∂μ.restrict s, Tendsto (fun a => μ (s ∩ a) / μ a) (v.filterAt x) (𝓝 1) := by
   let t := toMeasurable μ s
   have A :
@@ -906,7 +906,7 @@ lemma ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : LocallyIntegrable
   refine' set_lintegral_congr_fun h'a (eventually_of_forall (fun y hy ↦ _))
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
 
-theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :
+lemma eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᶠ a in v.filterAt x, IntegrableOn f a μ := by
   rcases hf x with ⟨w, w_nhds, hw⟩
   filter_upwards [v.eventually_filterAt_subset_of_nhds w_nhds] with a ha

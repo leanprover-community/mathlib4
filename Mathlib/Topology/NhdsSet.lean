@@ -38,7 +38,7 @@ def nhdsSet (s : Set α) : Filter α :=
 
 @[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
 
-theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
+lemma nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
     𝓝ˢ (diagonal α) = ⨆ (x : α), 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diag, ← range_comp]
   rfl
@@ -68,11 +68,11 @@ lemma mem_nhdsSet_iff_exists : s ∈ 𝓝ˢ t ↔ ∃ U : Set α, IsOpen U ∧ t
   rw [← subset_interior_iff_mem_nhdsSet, subset_interior_iff]
 #align mem_nhds_set_iff_exists mem_nhdsSet_iff_exists
 
-theorem hasBasis_nhdsSet (s : Set α) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
+lemma hasBasis_nhdsSet (s : Set α) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
   ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 #align has_basis_nhds_set hasBasis_nhdsSet
 
-theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
+lemma IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
 #align is_open.mem_nhds_set IsOpen.mem_nhdsSet
 
@@ -80,7 +80,7 @@ lemma principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
   (subset_interior_iff_mem_nhdsSet.mpr hs).trans interior_subset
 #align principal_le_nhds_set principal_le_nhdsSet
 
-theorem subset_of_mem_nhdsSet (h : t ∈ 𝓝ˢ s) : s ⊆ t := principal_le_nhdsSet h
+lemma subset_of_mem_nhdsSet (h : t ∈ 𝓝ˢ s) : s ⊆ t := principal_le_nhdsSet h
 
 lemma Filter.Eventually.self_of_nhdsSet {p : α → Prop} (h : ∀ᶠ x in 𝓝ˢ s, p x) : ∀ x ∈ s, p x :=
   principal_le_nhdsSet h
@@ -122,29 +122,29 @@ lemma nhdsSet_univ : 𝓝ˢ (univ : Set α) = ⊤ := by rw [isOpen_univ.nhdsSet_
 #align nhds_set_univ nhdsSet_univ
 
 @[mono]
-theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
+lemma nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   sSup_le_sSup <| image_subset _ h
 #align nhds_set_mono nhdsSet_mono
 
 lemma monotone_nhdsSet : Monotone (𝓝ˢ : Set α → Filter α) := fun _ _ => nhdsSet_mono
 #align monotone_nhds_set monotone_nhdsSet
 
-theorem nhds_le_nhdsSet (h : x ∈ s) : 𝓝 x ≤ 𝓝ˢ s :=
+lemma nhds_le_nhdsSet (h : x ∈ s) : 𝓝 x ≤ 𝓝ˢ s :=
   le_sSup <| mem_image_of_mem _ h
 #align nhds_le_nhds_set nhds_le_nhdsSet
 
 @[simp]
-theorem nhdsSet_union (s t : Set α) : 𝓝ˢ (s ∪ t) = 𝓝ˢ s ⊔ 𝓝ˢ t := by
+lemma nhdsSet_union (s t : Set α) : 𝓝ˢ (s ∪ t) = 𝓝ˢ s ⊔ 𝓝ˢ t := by
   simp only [nhdsSet, image_union, sSup_union]
 #align nhds_set_union nhdsSet_union
 
-theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ t₂) : s₁ ∪ s₂ ∈ 𝓝ˢ (t₁ ∪ t₂) := by
+lemma union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ t₂) : s₁ ∪ s₂ ∈ 𝓝ˢ (t₁ ∪ t₂) := by
   rw [nhdsSet_union]
   exact union_mem_sup h₁ h₂
 #align union_mem_nhds_set union_mem_nhdsSet
 
 @[simp]
-theorem nhdsSet_insert (x : α) (s : Set α) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ 𝓝ˢ s := by
+lemma nhdsSet_insert (x : α) (s : Set α) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ 𝓝ˢ s := by
   rw [insert_eq, nhdsSet_union, nhdsSet_singleton]
 
 /-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`

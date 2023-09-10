@@ -69,17 +69,17 @@ def bernoulli' : ℕ → ℚ :=
     1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k k.2
 #align bernoulli' bernoulli'
 
-theorem bernoulli'_def' (n : ℕ) :
+lemma bernoulli'_def' (n : ℕ) :
     bernoulli' n = 1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k :=
   WellFounded.fix_eq _ _ _
 #align bernoulli'_def' bernoulli'_def'
 
-theorem bernoulli'_def (n : ℕ) :
+lemma bernoulli'_def (n : ℕ) :
     bernoulli' n = 1 - ∑ k in range n, n.choose k / (n - k + 1) * bernoulli' k := by
   rw [bernoulli'_def', ← Fin.sum_univ_eq_sum_range]
 #align bernoulli'_def bernoulli'_def
 
-theorem bernoulli'_spec (n : ℕ) :
+lemma bernoulli'_spec (n : ℕ) :
     (∑ k in range n.succ, (n.choose (n - k) : ℚ) / (n - k + 1) * bernoulli' k) = 1 := by
   rw [sum_range_succ_comm, bernoulli'_def n, tsub_self, choose_zero_right, sub_self, zero_add,
     div_one, cast_one, one_mul, sub_add, ← sum_sub_distrib, ← sub_eq_zero, sub_sub_cancel_left,
@@ -87,7 +87,7 @@ theorem bernoulli'_spec (n : ℕ) :
   exact Finset.sum_eq_zero (fun x hx => by rw [choose_symm (le_of_lt (mem_range.1 hx)), sub_self])
 #align bernoulli'_spec bernoulli'_spec
 
-theorem bernoulli'_spec' (n : ℕ) :
+lemma bernoulli'_spec' (n : ℕ) :
     (∑ k in antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli' k.1) = 1 := by
   refine' ((sum_antidiagonal_eq_sum_range_succ_mk _ n).trans _).trans (bernoulli'_spec n)
   refine' sum_congr rfl fun x hx => _
@@ -133,7 +133,7 @@ lemma bernoulli'_four : bernoulli' 4 = -1 / 30 := by
 end Examples
 
 @[simp]
-theorem sum_bernoulli' (n : ℕ) : (∑ k in range n, (n.choose k : ℚ) * bernoulli' k) = n := by
+lemma sum_bernoulli' (n : ℕ) : (∑ k in range n, (n.choose k : ℚ) * bernoulli' k) = n := by
   cases' n with n
   · simp
   suffices
@@ -200,7 +200,7 @@ def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 #align bernoulli bernoulli
 
-theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
+lemma bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
   simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2, pow_mul]
 #align bernoulli'_eq_bernoulli bernoulli'_eq_bernoulli
 
@@ -221,7 +221,7 @@ lemma bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n =
 #align bernoulli_eq_bernoulli'_of_ne_one bernoulli_eq_bernoulli'_of_ne_one
 
 @[simp]
-theorem sum_bernoulli (n : ℕ) :
+lemma sum_bernoulli (n : ℕ) :
     (∑ k in range n, (n.choose k : ℚ) * bernoulli k) = if n = 1 then 1 else 0 := by
   cases' n with n n
   · simp
@@ -244,7 +244,7 @@ theorem sum_bernoulli (n : ℕ) :
     ring
 #align sum_bernoulli sum_bernoulli
 
-theorem bernoulli_spec' (n : ℕ) :
+lemma bernoulli_spec' (n : ℕ) :
     (∑ k in antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
   cases' n with n n;
@@ -304,7 +304,7 @@ section Faulhaber
 $$\sum_{k=0}^{n-1} k^p = \sum_{i=0}^p B_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$
 See https://proofwiki.org/wiki/Faulhaber%27s_Formula and [orosi2018faulhaber] for
 the proof provided here. -/
-theorem sum_range_pow (n p : ℕ) :
+lemma sum_range_pow (n p : ℕ) :
     (∑ k in range n, (k : ℚ) ^ p) =
       ∑ i in range (p + 1), bernoulli i * ((p + 1).choose i) * (n : ℚ) ^ (p + 1 - i) / (p + 1) := by
   have hne : ∀ m : ℕ, (m ! : ℚ) ≠ 0 := fun m => by exact_mod_cast factorial_ne_zero m
@@ -375,7 +375,7 @@ theorem sum_range_pow (n p : ℕ) :
 /-- Alternate form of **Faulhaber's theorem**, relating the sum of p-th powers to the Bernoulli
 numbers: $$\sum_{k=1}^{n} k^p = \sum_{i=0}^p (-1)^iB_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$
 Deduced from `sum_range_pow`. -/
-theorem sum_Ico_pow (n p : ℕ) :
+lemma sum_Ico_pow (n p : ℕ) :
     (∑ k in Ico 1 (n + 1), (k : ℚ) ^ p) =
       ∑ i in range (p + 1), bernoulli' i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1) := by
   rw [← Nat.cast_succ]

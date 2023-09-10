@@ -112,12 +112,12 @@ instance : RelHomClass (r →r s) r s where
 
 initialize_simps_projections RelHom (toFun → apply)
 
-protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
+protected lemma map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
   f.map_rel'
 #align rel_hom.map_rel RelHom.map_rel
 
 @[simp]
-theorem coe_fn_toFun (f : r →r s) : f.toFun = (f : α → β) :=
+lemma coe_fn_toFun (f : r →r s) : f.toFun = (f : α → β) :=
   rfl
 #align rel_hom.coe_fn_to_fun RelHom.coe_fn_toFun
 
@@ -162,7 +162,7 @@ def preimage (f : α → β) (s : β → β → Prop) : f ⁻¹'o s →r s :=
 end RelHom
 
 /-- An increasing function is injective -/
-theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [IsTrichotomous α r]
+lemma injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [IsTrichotomous α r]
     [IsIrrefl β s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
   intro x y hxy
   rcases trichotomous_of r x y with (h | h | h)
@@ -263,15 +263,15 @@ lemma coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
 lemma coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
-theorem injective (f : r ↪r s) : Injective f :=
+lemma injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
-theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
+lemma inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
 
-theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
+lemma map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
@@ -309,12 +309,12 @@ protected def trans (f : r ↪r s) (g : s ↪r t) : r ↪r t :=
 instance (r : α → α → Prop) : Inhabited (r ↪r r) :=
   ⟨RelEmbedding.refl _⟩
 
-theorem trans_apply (f : r ↪r s) (g : s ↪r t) (a : α) : (f.trans g) a = g (f a) :=
+lemma trans_apply (f : r ↪r s) (g : s ↪r t) (a : α) : (f.trans g) a = g (f a) :=
   rfl
 #align rel_embedding.trans_apply RelEmbedding.trans_apply
 
 @[simp]
-theorem coe_trans (f : r ↪r s) (g : s ↪r t) : (f.trans g) = g ∘ f :=
+lemma coe_trans (f : r ↪r s) (g : s ↪r t) : (f.trans g) = g ∘ f :=
   rfl
 #align rel_embedding.coe_trans RelEmbedding.coe_trans
 
@@ -329,24 +329,24 @@ def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
   ⟨f, Iff.rfl⟩
 #align rel_embedding.preimage RelEmbedding.preimage
 
-theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
+lemma eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   ext a b
   exact f.map_rel_iff.symm
 #align rel_embedding.eq_preimage RelEmbedding.eq_preimage
 
-protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
+protected lemma isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
   ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
 #align rel_embedding.is_irrefl RelEmbedding.isIrrefl
 
-protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
+protected lemma isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
 #align rel_embedding.is_refl RelEmbedding.isRefl
 
-protected theorem isSymm (f : r ↪r s) [IsSymm β s] : IsSymm α r :=
+protected lemma isSymm (f : r ↪r s) [IsSymm β s] : IsSymm α r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
 #align rel_embedding.is_symm RelEmbedding.isSymm
 
-protected theorem isAsymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
+protected lemma isAsymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
 #align rel_embedding.is_asymm RelEmbedding.isAsymm
 
@@ -387,7 +387,7 @@ protected lemma isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β s
   | f, _ => { f.isTrichotomous, f.isStrictOrder with }
 #align rel_embedding.is_strict_total_order RelEmbedding.isStrictTotalOrder
 
-protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
+protected lemma acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
   intro ac
   induction' ac with _ H IH generalizing a
@@ -399,7 +399,7 @@ protected lemma wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFounde
   | f, ⟨H⟩ => ⟨fun _ => f.acc _ (H _)⟩
 #align rel_embedding.well_founded RelEmbedding.wellFounded
 
-protected theorem isWellFounded (f : r ↪r s) [IsWellFounded β s] : IsWellFounded α r :=
+protected lemma isWellFounded (f : r ↪r s) [IsWellFounded β s] : IsWellFounded α r :=
   ⟨f.wellFounded IsWellFounded.wf⟩
 #align rel_embedding.is_well_founded RelEmbedding.isWellFounded
 
@@ -502,7 +502,7 @@ def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s
 #align rel_embedding.of_map_rel_iff RelEmbedding.ofMapRelIff
 
 @[simp]
-theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
+lemma ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
     (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     (ofMapRelIff f hf : r ↪r s) = f :=
   rfl
@@ -657,29 +657,29 @@ instance : CoeFun (r ≃r s) fun _ => α → β :=
   ⟨FunLike.coe⟩
 
 @[simp]
-theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
+lemma coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
   rfl
 
 @[simp]
-theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
+lemma coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
   rfl
 
 @[simp]
-theorem coe_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
+lemma coe_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 
-theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
+lemma map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_iso.map_rel_iff RelIso.map_rel_iff
 
 @[simp]
-theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
+lemma coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
     (RelIso.mk f @o : α → β) = f :=
   rfl
 #align rel_iso.coe_fn_mk RelIso.coe_fn_mk
 
 @[simp]
-theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
+lemma coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 #align rel_iso.coe_fn_to_equiv RelIso.coe_fn_toEquiv
 
@@ -734,7 +734,7 @@ instance (r : α → α → Prop) : Inhabited (r ≃r r) :=
   ⟨RelIso.refl _⟩
 
 @[simp]
-theorem default_def (r : α → α → Prop) : default = RelIso.refl r :=
+lemma default_def (r : α → α → Prop) : default = RelIso.refl r :=
   rfl
 #align rel_iso.default_def RelIso.default_def
 
@@ -775,41 +775,41 @@ protected def swap (f : r ≃r s) : swap r ≃r swap s :=
 #align rel_iso.swap RelIso.swap
 
 @[simp]
-theorem coe_fn_symm_mk (f o) : ((@RelIso.mk _ _ r s f @o).symm : β → α) = f.symm :=
+lemma coe_fn_symm_mk (f o) : ((@RelIso.mk _ _ r s f @o).symm : β → α) = f.symm :=
   rfl
 #align rel_iso.coe_fn_symm_mk RelIso.coe_fn_symm_mk
 
 @[simp]
-theorem apply_symm_apply (e : r ≃r s) (x : β) : e (e.symm x) = x :=
+lemma apply_symm_apply (e : r ≃r s) (x : β) : e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply x
 #align rel_iso.apply_symm_apply RelIso.apply_symm_apply
 
 @[simp]
-theorem symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x :=
+lemma symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
 #align rel_iso.symm_apply_apply RelIso.symm_apply_apply
 
-theorem rel_symm_apply (e : r ≃r s) {x y} : r x (e.symm y) ↔ s (e x) y := by
+lemma rel_symm_apply (e : r ≃r s) {x y} : r x (e.symm y) ↔ s (e x) y := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
 #align rel_iso.rel_symm_apply RelIso.rel_symm_apply
 
-theorem symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) := by
+lemma symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
 #align rel_iso.symm_apply_rel RelIso.symm_apply_rel
 
-protected theorem bijective (e : r ≃r s) : Bijective e :=
+protected lemma bijective (e : r ≃r s) : Bijective e :=
   e.toEquiv.bijective
 #align rel_iso.bijective RelIso.bijective
 
-protected theorem injective (e : r ≃r s) : Injective e :=
+protected lemma injective (e : r ≃r s) : Injective e :=
   e.toEquiv.injective
 #align rel_iso.injective RelIso.injective
 
-protected theorem surjective (e : r ≃r s) : Surjective e :=
+protected lemma surjective (e : r ≃r s) : Surjective e :=
   e.toEquiv.surjective
 #align rel_iso.surjective RelIso.surjective
 
-theorem eq_iff_eq (f : r ≃r s) {a b} : f a = f b ↔ a = b :=
+lemma eq_iff_eq (f : r ≃r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_iso.eq_iff_eq RelIso.eq_iff_eq
 

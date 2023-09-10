@@ -52,7 +52,7 @@ namespace HasLiftingProperty
 
 variable {i p}
 
-theorem op (h : HasLiftingProperty i p) : HasLiftingProperty p.op i.op :=
+lemma op (h : HasLiftingProperty i p) : HasLiftingProperty p.op i.op :=
   ⟨fun {f} {g} sq => by
     simp only [CommSq.HasLift.iff_unop, Quiver.Hom.unop_op]
     infer_instance⟩

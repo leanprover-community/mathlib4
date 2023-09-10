@@ -146,7 +146,7 @@ def toZModPow (k : ℕ) : 𝕎 (ZMod p) →+* ZMod (p ^ k) :=
   (zmodEquivTrunc p k).symm.toRingHom.comp (truncate k)
 #align witt_vector.to_zmod_pow WittVector.toZModPow
 
-theorem toZModPow_compat (m n : ℕ) (h : m ≤ n) :
+lemma toZModPow_compat (m n : ℕ) (h : m ≤ n) :
     (ZMod.castHom (pow_dvd_pow p h) (ZMod (p ^ m))).comp (toZModPow p n) = toZModPow p m :=
   calc
     (ZMod.castHom _ (ZMod (p ^ m))).comp ((zmodEquivTrunc p n).symm.toRingHom.comp (truncate n))
@@ -164,7 +164,7 @@ def toPadicInt : 𝕎 (ZMod p) →+* ℤ_[p] :=
   PadicInt.lift <| toZModPow_compat p
 #align witt_vector.to_padic_int WittVector.toPadicInt
 
-theorem zmodEquivTrunc_compat (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂) :
+lemma zmodEquivTrunc_compat (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂) :
     (TruncatedWittVector.truncate hk).comp
         ((zmodEquivTrunc p k₂).toRingHom.comp (PadicInt.toZModPow k₂)) =
       (zmodEquivTrunc p k₁).toRingHom.comp (PadicInt.toZModPow k₁) :=
@@ -189,7 +189,7 @@ lemma toPadicInt_comp_fromPadicInt : (toPadicInt p).comp (fromPadicInt p) = Ring
   simp only [RingEquiv.symm_toRingHom_comp_toRingHom, RingHom.id_comp]
 #align witt_vector.to_padic_int_comp_from_padic_int WittVector.toPadicInt_comp_fromPadicInt
 
-theorem toPadicInt_comp_fromPadicInt_ext (x) :
+lemma toPadicInt_comp_fromPadicInt_ext (x) :
     (toPadicInt p).comp (fromPadicInt p) x = RingHom.id ℤ_[p] x := by
   rw [toPadicInt_comp_fromPadicInt]
 #align witt_vector.to_padic_int_comp_from_padic_int_ext WittVector.toPadicInt_comp_fromPadicInt_ext
@@ -203,7 +203,7 @@ lemma fromPadicInt_comp_toPadicInt :
     RingHom.comp_assoc, RingEquiv.toRingHom_comp_symm_toRingHom]
 #align witt_vector.from_padic_int_comp_to_padic_int WittVector.fromPadicInt_comp_toPadicInt
 
-theorem fromPadicInt_comp_toPadicInt_ext (x) :
+lemma fromPadicInt_comp_toPadicInt_ext (x) :
     (fromPadicInt p).comp (toPadicInt p) x = RingHom.id (𝕎 (ZMod p)) x := by
   rw [fromPadicInt_comp_toPadicInt]
 #align witt_vector.from_padic_int_comp_to_padic_int_ext WittVector.fromPadicInt_comp_toPadicInt_ext

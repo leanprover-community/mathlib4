@@ -99,15 +99,15 @@ lemma cond_univ [IsProbabilityMeasure μ] : μ[|Set.univ] = μ := by
 #align probability_theory.cond_univ ProbabilityTheory.cond_univ
 
 /-- The axiomatic definition of conditional probability derived from a measure-theoretic one. -/
-theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
+lemma cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
 #align probability_theory.cond_apply ProbabilityTheory.cond_apply
 
-theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = μ[t|s] := by
+lemma cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = μ[t|s] := by
   rw [cond_apply _ hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply _ hms]
 #align probability_theory.cond_inter_self ProbabilityTheory.cond_inter_self
 
-theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) := by
+lemma inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) := by
   refine' pos_iff_ne_zero.mpr (right_ne_zero_of_mul _)
   · exact (μ s)⁻¹
   convert hcst
@@ -121,7 +121,7 @@ lemma cond_pos_of_inter_ne_zero [IsFiniteMeasure μ]
   exact ENNReal.inv_ne_zero.mpr (measure_ne_top _ _)
 #align probability_theory.cond_pos_of_inter_ne_zero ProbabilityTheory.cond_pos_of_inter_ne_zero
 
-theorem cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (hcs : μ s ≠ ∞)
+lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (hcs : μ s ≠ ∞)
     (hci : μ (s ∩ t) ≠ 0) : μ[|s][|t] = μ[|s ∩ t] := by
   have hcs' : μ s ≠ 0 :=
     (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hci).ne'
@@ -137,7 +137,7 @@ lemma cond_cond_eq_cond_inter [IsFiniteMeasure μ] (hms : MeasurableSet s) (hmt 
   cond_cond_eq_cond_inter' μ hms hmt (measure_ne_top μ s) hci
 #align probability_theory.cond_cond_eq_cond_inter ProbabilityTheory.cond_cond_eq_cond_inter
 
-theorem cond_mul_eq_inter' (hms : MeasurableSet s) (hcs : μ s ≠ 0) (hcs' : μ s ≠ ∞) (t : Set Ω) :
+lemma cond_mul_eq_inter' (hms : MeasurableSet s) (hcs : μ s ≠ 0) (hcs' : μ s ≠ ∞) (t : Set Ω) :
     μ[t|s] * μ s = μ (s ∩ t) := by
   rw [cond_apply μ hms t, mul_comm, ← mul_assoc, ENNReal.mul_inv_cancel hcs hcs', one_mul]
 #align probability_theory.cond_mul_eq_inter' ProbabilityTheory.cond_mul_eq_inter'

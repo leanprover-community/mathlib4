@@ -66,18 +66,18 @@ noncomputable def leftInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 #align formal_multilinear_series.left_inv FormalMultilinearSeries.leftInv
 
 @[simp]
-theorem leftInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma leftInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.leftInv i 0 = 0 := by rw [leftInv]
 #align formal_multilinear_series.left_inv_coeff_zero FormalMultilinearSeries.leftInv_coeff_zero
 
 @[simp]
-theorem leftInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma leftInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.leftInv i 1 = (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm := by rw [leftInv]
 #align formal_multilinear_series.left_inv_coeff_one FormalMultilinearSeries.leftInv_coeff_one
 
 /-- The left inverse does not depend on the zeroth coefficient of a formal multilinear
 series. -/
-theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.removeZero.leftInv i = p.leftInv i := by
   ext1 n
   induction' n using Nat.strongRec' with n IH
@@ -95,7 +95,7 @@ theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 
 /-- The left inverse to a formal multilinear series is indeed a left inverse, provided its linear
 term is invertible. -/
-theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
+lemma leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) : (leftInv p i).comp p = id 𝕜 E := by
   ext (n v)
   match n with
@@ -175,18 +175,18 @@ noncomputable def rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 #align formal_multilinear_series.right_inv FormalMultilinearSeries.rightInv
 
 @[simp]
-theorem rightInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma rightInv_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.rightInv i 0 = 0 := by rw [rightInv]
 #align formal_multilinear_series.right_inv_coeff_zero FormalMultilinearSeries.rightInv_coeff_zero
 
 @[simp]
-theorem rightInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma rightInv_coeff_one (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.rightInv i 1 = (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm := by rw [rightInv]
 #align formal_multilinear_series.right_inv_coeff_one FormalMultilinearSeries.rightInv_coeff_one
 
 /-- The right inverse does not depend on the zeroth coefficient of a formal multilinear
 series. -/
-theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
+lemma rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) :
     p.removeZero.rightInv i = p.rightInv i := by
   ext1 n
   induction' n using Nat.strongRec' with n IH
@@ -229,7 +229,7 @@ lemma comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     -add_right_inj, -Composition.single_length]
 #align formal_multilinear_series.comp_right_inv_aux1 FormalMultilinearSeries.comp_rightInv_aux1
 
-theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ)
+lemma comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ)
     (v : Fin (n + 2) → F) :
     ∑ c : Composition (n + 2) in {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length (applyComposition (fun k : ℕ => ite (k < n + 2) (p.rightInv i k) 0) c v) =
@@ -246,7 +246,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 
 /-- The right inverse to a formal multilinear series is indeed a right inverse, provided its linear
 term is invertible and its constant term vanishes. -/
-theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
+lemma comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) (h0 : p 0 = 0) :
     p.comp (rightInv p i) = id 𝕜 F := by
   ext (n v)
@@ -263,7 +263,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
       ← sub_eq_add_neg, sub_eq_zero, comp_rightInv_aux2, -Set.toFinset_setOf]
 #align formal_multilinear_series.comp_right_inv FormalMultilinearSeries.comp_rightInv
 
-theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ) (hn : 2 ≤ n) :
+lemma rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ) (hn : 2 ≤ n) :
     p.rightInv i n =
       -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap
           (∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition n)),
@@ -283,7 +283,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
 /-! ### Coincidence of the left and the right inverse -/
 
 
-private theorem leftInv_eq_rightInv_aux (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
+private lemma leftInv_eq_rightInv_aux (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) (h0 : p 0 = 0) :
     leftInv p i = rightInv p i :=
   calc
@@ -296,7 +296,7 @@ private theorem leftInv_eq_rightInv_aux (p : FormalMultilinearSeries 𝕜 E F) (
 /-- The left inverse and the right inverse of a formal multilinear series coincide. This is not at
 all obvious from their definition, but it follows from uniqueness of inverses (which comes from the
 fact that composition is associative on formal multilinear series). -/
-theorem leftInv_eq_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
+lemma leftInv_eq_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) : leftInv p i = rightInv p i :=
   calc
     leftInv p i = leftInv p.removeZero i := by rw [leftInv_removeZero]
@@ -377,7 +377,7 @@ remains bounded.
 /-- First technical lemma to control the growth of coefficients of the inverse. Bound the explicit
 expression for `∑_{k<n+1} aᵏ Qₖ` in terms of a sum of powers of the same sum one step before,
 in a general abstract setup. -/
-theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp : ∀ k, 0 ≤ p k) {r a : ℝ}
+lemma radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp : ∀ k, 0 ≤ p k) {r a : ℝ}
     (hr : 0 ≤ r) (ha : 0 ≤ a) :
     ∑ k in Ico 2 (n + 1),
         a ^ k *
@@ -502,7 +502,7 @@ lemma radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
 
 /-- If a a formal multilinear series has a positive radius of convergence, then its right inverse
 also has a positive radius of convergence. -/
-theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
+lemma radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (hp : 0 < p.radius) : 0 < (p.rightInv i).radius := by
   obtain ⟨C, r, Cpos, rpos, ple⟩ :
     ∃ (C r : _) (_ : 0 < C) (_ : 0 < r), ∀ n : ℕ, ‖p n‖ ≤ C * r ^ n :=

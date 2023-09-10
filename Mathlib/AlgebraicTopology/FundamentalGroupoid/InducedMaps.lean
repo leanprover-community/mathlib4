@@ -143,7 +143,7 @@ def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
 #align continuous_map.homotopy.ulift_map ContinuousMap.Homotopy.uliftMap
 
 @[simp]
-theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
+lemma ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
 #align continuous_map.homotopy.ulift_apply ContinuousMap.Homotopy.ulift_apply
 
@@ -184,7 +184,7 @@ lemma apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
 #align continuous_map.homotopy.apply_one_path ContinuousMap.Homotopy.apply_one_path
 
 /-- Proof that `H.evalAt x = H(0 ⟶ 1, x ⟶ x)`, with the appropriate casts -/
-theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
+lemma evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
     (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 x)) ≫ hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
   refine' (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _ (H.apply_one x).symm).mpr _

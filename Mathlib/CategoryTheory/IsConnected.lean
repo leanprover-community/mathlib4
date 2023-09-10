@@ -298,13 +298,13 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
 -/
-theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
+lemma zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
   h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 #align category_theory.zigzag_obj_of_zigzag CategoryTheory.zigzag_obj_of_zigzag
 
 -- TODO: figure out the right way to generalise this to `Zigzag`.
-theorem zag_of_zag_obj (F : J ⥤ K) [Full F] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
+lemma zag_of_zag_obj (F : J ⥤ K) [Full F] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
     Zag j₁ j₂ :=
   Or.imp (Nonempty.map F.preimage) (Nonempty.map F.preimage) h
 #align category_theory.zag_of_zag_obj CategoryTheory.zag_of_zag_obj

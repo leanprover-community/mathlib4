@@ -339,7 +339,7 @@ lemma Integrable.integral_prod_right [SigmaFinite μ] ⦃f : α × β → E⦄
 
 variable [SigmaFinite μ]
 
-theorem integral_prod_swap (f : α × β → E) (hf : AEStronglyMeasurable f (μ.prod ν)) :
+lemma integral_prod_swap (f : α × β → E) (hf : AEStronglyMeasurable f (μ.prod ν)) :
     ∫ z, f z.swap ∂ν.prod μ = ∫ z, f z ∂μ.prod ν := by
   rw [← prod_swap] at hf
   rw [← integral_map measurable_swap.aemeasurable hf, prod_swap]
@@ -475,7 +475,7 @@ lemma integral_prod :
 /-- Symmetric version of **Fubini's Theorem**: For integrable functions on `α × β`,
   the Bochner integral of `f` is equal to the iterated Bochner integral.
   This version has the integrals on the right-hand side in the other order. -/
-theorem integral_prod_symm (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
+lemma integral_prod_symm (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ y, ∫ x, f (x, y) ∂μ ∂ν := by
   simp_rw [← integral_prod_swap f hf.aestronglyMeasurable]; exact integral_prod _ hf.swap
 #align measure_theory.integral_prod_symm MeasureTheory.integral_prod_symm
@@ -499,7 +499,7 @@ theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncur
 #align measure_theory.integral_integral_swap MeasureTheory.integral_integral_swap
 
 /-- **Fubini's Theorem** for set integrals. -/
-theorem set_integral_prod (f : α × β → E) {s : Set α} {t : Set β}
+lemma set_integral_prod (f : α × β → E) {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
     ∫ z in s ×ˢ t, f z ∂μ.prod ν = ∫ x in s, ∫ y in t, f (x, y) ∂ν ∂μ := by
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢

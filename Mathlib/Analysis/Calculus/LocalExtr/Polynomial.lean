@@ -35,7 +35,7 @@ open scoped BigOperators
 
 /-- The number of roots of a real polynomial `p` is at most the number of roots of its derivative
 that are not roots of `p` plus one. -/
-theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]) :
+lemma card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]) :
     p.roots.toFinset.card ≤ (p.derivative.roots.toFinset \ p.roots.toFinset).card + 1 := by
   cases' eq_or_ne (derivative p) 0 with hp' hp'
   · rw [eq_C_of_derivative_eq_zero hp', roots_C, Multiset.toFinset_zero, Finset.card_empty]
@@ -50,7 +50,7 @@ theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]
 
 /-- The number of roots of a real polynomial is at most the number of roots of its derivative plus
 one. -/
-theorem card_roots_toFinset_le_derivative (p : ℝ[X]) :
+lemma card_roots_toFinset_le_derivative (p : ℝ[X]) :
     p.roots.toFinset.card ≤ p.derivative.roots.toFinset.card + 1 :=
   p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ.trans <|
     add_le_add_right (Finset.card_mono <| Finset.sdiff_subset _ _) _
@@ -58,7 +58,7 @@ theorem card_roots_toFinset_le_derivative (p : ℝ[X]) :
 
 /-- The number of roots of a real polynomial (counted with multiplicities) is at most the number of
 roots of its derivative (counted with multiplicities) plus one. -/
-theorem card_roots_le_derivative (p : ℝ[X]) :
+lemma card_roots_le_derivative (p : ℝ[X]) :
     Multiset.card p.roots ≤ Multiset.card (derivative p).roots + 1 :=
   calc
     Multiset.card p.roots = ∑ x in p.roots.toFinset, p.roots.count x :=

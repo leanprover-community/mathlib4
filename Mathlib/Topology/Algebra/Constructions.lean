@@ -64,25 +64,25 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ
   opHomeomorph.symm.embedding.discreteTopology
 
 @[to_additive (attr := simp)]
-theorem map_op_nhds (x : M) : map (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (op x) :=
+lemma map_op_nhds (x : M) : map (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (op x) :=
   opHomeomorph.map_nhds_eq x
 #align mul_opposite.map_op_nhds MulOpposite.map_op_nhds
 #align add_opposite.map_op_nhds AddOpposite.map_op_nhds
 
 @[to_additive (attr := simp)]
-theorem map_unop_nhds (x : Mᵐᵒᵖ) : map (unop : Mᵐᵒᵖ → M) (𝓝 x) = 𝓝 (unop x) :=
+lemma map_unop_nhds (x : Mᵐᵒᵖ) : map (unop : Mᵐᵒᵖ → M) (𝓝 x) = 𝓝 (unop x) :=
   opHomeomorph.symm.map_nhds_eq x
 #align mul_opposite.map_unop_nhds MulOpposite.map_unop_nhds
 #align add_opposite.map_unop_nhds AddOpposite.map_unop_nhds
 
 @[to_additive (attr := simp)]
-theorem comap_op_nhds (x : Mᵐᵒᵖ) : comap (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (unop x) :=
+lemma comap_op_nhds (x : Mᵐᵒᵖ) : comap (op : M → Mᵐᵒᵖ) (𝓝 x) = 𝓝 (unop x) :=
   opHomeomorph.comap_nhds_eq x
 #align mul_opposite.comap_op_nhds MulOpposite.comap_op_nhds
 #align add_opposite.comap_op_nhds AddOpposite.comap_op_nhds
 
 @[to_additive (attr := simp)]
-theorem comap_unop_nhds (x : M) : comap (unop : Mᵐᵒᵖ → M) (𝓝 x) = 𝓝 (op x) :=
+lemma comap_unop_nhds (x : M) : comap (unop : Mᵐᵒᵖ → M) (𝓝 x) = 𝓝 (op x) :=
   opHomeomorph.symm.comap_nhds_eq x
 #align mul_opposite.comap_unop_nhds MulOpposite.comap_unop_nhds
 #align add_opposite.comap_unop_nhds AddOpposite.comap_unop_nhds

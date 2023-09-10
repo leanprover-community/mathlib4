@@ -139,7 +139,7 @@ variable {ι : Type u} (v : ι → K)
 
 variable (hv : IsTranscendenceBasis R v)
 
-theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
+lemma cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     #K ≤ max (max #R #ι) ℵ₀ :=
   calc
     #K ≤ max #(Algebra.adjoin R (Set.range v)) ℵ₀ :=
@@ -188,7 +188,7 @@ lemma ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ < #
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 #align is_alg_closed.ring_equiv_of_cardinal_eq_of_char_zero IsAlgClosed.ringEquivOfCardinalEqOfCharZero
 
-private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
+private lemma ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : #K = #L) : Nonempty (K ≃+* L) := by
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) L := ZMod.algebra _ _
@@ -207,7 +207,7 @@ private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p
 
 /-- Two uncountable algebraically closed fields are isomorphic
 if they have the same cardinality and the same characteristic. -/
-theorem ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
+lemma ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
     (hKL : #K = #L) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
   · haveI : Fact p.Prime := ⟨hp⟩

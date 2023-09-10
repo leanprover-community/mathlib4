@@ -163,17 +163,17 @@ instance : Mul (NumDenSameDeg 𝒜 x) where
       den_mem := Submonoid.mul_mem _ p.den_mem q.den_mem }
 
 @[simp]
-theorem deg_mul (c1 c2 : NumDenSameDeg 𝒜 x) : (c1 * c2).deg = c1.deg + c2.deg :=
+lemma deg_mul (c1 c2 : NumDenSameDeg 𝒜 x) : (c1 * c2).deg = c1.deg + c2.deg :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.deg_mul HomogeneousLocalization.NumDenSameDeg.deg_mul
 
 @[simp]
-theorem num_mul (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 * c2).num : A) = c1.num * c2.num :=
+lemma num_mul (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 * c2).num : A) = c1.num * c2.num :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.num_mul HomogeneousLocalization.NumDenSameDeg.num_mul
 
 @[simp]
-theorem den_mul (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 * c2).den : A) = c1.den * c2.den :=
+lemma den_mul (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 * c2).den : A) = c1.den * c2.den :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.denom_mul HomogeneousLocalization.NumDenSameDeg.den_mul
 
@@ -187,18 +187,18 @@ instance : Add (NumDenSameDeg 𝒜 x) where
       den_mem := Submonoid.mul_mem _ c1.den_mem c2.den_mem }
 
 @[simp]
-theorem deg_add (c1 c2 : NumDenSameDeg 𝒜 x) : (c1 + c2).deg = c1.deg + c2.deg :=
+lemma deg_add (c1 c2 : NumDenSameDeg 𝒜 x) : (c1 + c2).deg = c1.deg + c2.deg :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.deg_add HomogeneousLocalization.NumDenSameDeg.deg_add
 
 @[simp]
-theorem num_add (c1 c2 : NumDenSameDeg 𝒜 x) :
+lemma num_add (c1 c2 : NumDenSameDeg 𝒜 x) :
     ((c1 + c2).num : A) = c1.den * c2.num + c2.den * c1.num :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.num_add HomogeneousLocalization.NumDenSameDeg.num_add
 
 @[simp]
-theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * c2.den :=
+lemma den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * c2.den :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.denom_add HomogeneousLocalization.NumDenSameDeg.den_add
 
@@ -206,17 +206,17 @@ instance : Neg (NumDenSameDeg 𝒜 x) where
   neg c := ⟨c.deg, ⟨-c.num, neg_mem c.num.2⟩, c.den, c.den_mem⟩
 
 @[simp]
-theorem deg_neg (c : NumDenSameDeg 𝒜 x) : (-c).deg = c.deg :=
+lemma deg_neg (c : NumDenSameDeg 𝒜 x) : (-c).deg = c.deg :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.deg_neg HomogeneousLocalization.NumDenSameDeg.deg_neg
 
 @[simp]
-theorem num_neg (c : NumDenSameDeg 𝒜 x) : ((-c).num : A) = -c.num :=
+lemma num_neg (c : NumDenSameDeg 𝒜 x) : ((-c).num : A) = -c.num :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.num_neg HomogeneousLocalization.NumDenSameDeg.num_neg
 
 @[simp]
-theorem den_neg (c : NumDenSameDeg 𝒜 x) : ((-c).den : A) = c.den :=
+lemma den_neg (c : NumDenSameDeg 𝒜 x) : ((-c).den : A) = c.den :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.denom_neg HomogeneousLocalization.NumDenSameDeg.den_neg
 
@@ -237,17 +237,17 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
         · simpa only [pow_succ', coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
-theorem deg_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : (c ^ n).deg = n • c.deg :=
+lemma deg_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : (c ^ n).deg = n • c.deg :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.deg_pow HomogeneousLocalization.NumDenSameDeg.deg_pow
 
 @[simp]
-theorem num_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).num : A) = (c.num : A) ^ n :=
+lemma num_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).num : A) = (c.num : A) ^ n :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.num_pow HomogeneousLocalization.NumDenSameDeg.num_pow
 
 @[simp]
-theorem den_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).den : A) = (c.den : A) ^ n :=
+lemma den_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : ((c ^ n).den : A) = (c.den : A) ^ n :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.denom_pow HomogeneousLocalization.NumDenSameDeg.den_pow
 
@@ -259,17 +259,17 @@ instance : SMul α (NumDenSameDeg 𝒜 x) where
   smul m c := ⟨c.deg, m • c.num, c.den, c.den_mem⟩
 
 @[simp]
-theorem deg_smul (c : NumDenSameDeg 𝒜 x) (m : α) : (m • c).deg = c.deg :=
+lemma deg_smul (c : NumDenSameDeg 𝒜 x) (m : α) : (m • c).deg = c.deg :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.deg_smul HomogeneousLocalization.NumDenSameDeg.deg_smul
 
 @[simp]
-theorem num_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).num : A) = m • c.num :=
+lemma num_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).num : A) = m • c.num :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.num_smul HomogeneousLocalization.NumDenSameDeg.num_smul
 
 @[simp]
-theorem den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.den :=
+lemma den_smul (c : NumDenSameDeg 𝒜 x) (m : α) : ((m • c).den : A) = c.den :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.denom_smul HomogeneousLocalization.NumDenSameDeg.den_smul
 
@@ -311,7 +311,7 @@ def val (y : HomogeneousLocalization 𝒜 x) : at x :=
 #align homogeneous_localization.val HomogeneousLocalization.val
 
 @[simp]
-theorem val_mk'' (i : NumDenSameDeg 𝒜 x) :
+lemma val_mk'' (i : NumDenSameDeg 𝒜 x) :
     val (Quotient.mk'' i) = Localization.mk (i.num : A) ⟨i.den, i.den_mem⟩ :=
   rfl
 #align homogeneous_localization.val_mk' HomogeneousLocalization.val_mk''
@@ -345,7 +345,7 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
     convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk] <;> rfl
 
 @[simp]
-theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
+lemma smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
   change Localization.mk _ _ = n • Localization.mk _ _
   dsimp only
@@ -404,7 +404,7 @@ lemma one_val : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
 #align homogeneous_localization.one_val HomogeneousLocalization.one_val
 
 @[simp]
-theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.val + y2.val := by
+lemma add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.val + y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
   change Localization.mk _ _ = Localization.mk _ _ + Localization.mk _ _
@@ -414,7 +414,7 @@ theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.va
 #align homogeneous_localization.add_val HomogeneousLocalization.add_val
 
 @[simp]
-theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.val * y2.val := by
+lemma mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.val * y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
   change Localization.mk _ _ = Localization.mk _ _ * Localization.mk _ _
@@ -424,7 +424,7 @@ theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.va
 #align homogeneous_localization.mul_val HomogeneousLocalization.mul_val
 
 @[simp]
-theorem neg_val (y : HomogeneousLocalization 𝒜 x) : (-y).val = -y.val := by
+lemma neg_val (y : HomogeneousLocalization 𝒜 x) : (-y).val = -y.val := by
   induction y using Quotient.inductionOn
   change Localization.mk _ _ = -Localization.mk _ _
   dsimp only
@@ -433,12 +433,12 @@ theorem neg_val (y : HomogeneousLocalization 𝒜 x) : (-y).val = -y.val := by
 #align homogeneous_localization.neg_val HomogeneousLocalization.neg_val
 
 @[simp]
-theorem sub_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.val - y2.val := by
+lemma sub_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.val - y2.val := by
   rw [show y1 - y2 = y1 + -y2 from rfl, add_val, neg_val]; rfl
 #align homogeneous_localization.sub_val HomogeneousLocalization.sub_val
 
 @[simp]
-theorem pow_val (y : HomogeneousLocalization 𝒜 x) (n : ℕ) : (y ^ n).val = y.val ^ n := by
+lemma pow_val (y : HomogeneousLocalization 𝒜 x) (n : ℕ) : (y ^ n).val = y.val ^ n := by
   induction y using Quotient.inductionOn
   change Localization.mk _ _ = Localization.mk _ _ ^ n
   rw [Localization.mk_pow]
@@ -453,12 +453,12 @@ instance : IntCast (HomogeneousLocalization 𝒜 x) :=
   ⟨Int.castDef⟩
 
 @[simp]
-theorem natCast_val (n : ℕ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
+lemma natCast_val (n : ℕ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Nat.unaryCast n) = _ by induction n <;> simp [Nat.unaryCast, zero_val, one_val, *]
 #align homogeneous_localization.nat_cast_val HomogeneousLocalization.natCast_val
 
 @[simp]
-theorem intCast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
+lemma intCast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Int.castDef n) = _ by cases n <;> simp [Int.castDef, zero_val, one_val, *]
 #align homogeneous_localization.int_cast_val HomogeneousLocalization.intCast_val
 
@@ -503,19 +503,19 @@ def deg (f : HomogeneousLocalization 𝒜 x) : ι :=
   (Quotient.out' f).deg
 #align homogeneous_localization.deg HomogeneousLocalization.deg
 
-theorem den_mem (f : HomogeneousLocalization 𝒜 x) : f.den ∈ x :=
+lemma den_mem (f : HomogeneousLocalization 𝒜 x) : f.den ∈ x :=
   (Quotient.out' f).den_mem
 #align homogeneous_localization.denom_mem HomogeneousLocalization.den_mem
 
-theorem num_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.num ∈ 𝒜 f.deg :=
+lemma num_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.num ∈ 𝒜 f.deg :=
   (Quotient.out' f).num.2
 #align homogeneous_localization.num_mem_deg HomogeneousLocalization.num_mem_deg
 
-theorem den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg :=
+lemma den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg :=
   (Quotient.out' f).den.2
 #align homogeneous_localization.denom_mem_deg HomogeneousLocalization.den_mem_deg
 
-theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
+lemma eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
     f.val = Localization.mk f.num ⟨f.den, f.den_mem⟩ := by
   have := Quotient.out_eq' f
   apply_fun HomogeneousLocalization.val at this
@@ -523,7 +523,7 @@ theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
   rfl
 #align homogeneous_localization.eq_num_div_denom HomogeneousLocalization.eq_num_div_den
 
-theorem ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g.val :=
+lemma ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g.val :=
   { mp := fun h => h ▸ rfl
     mpr := fun h => by
       induction f using Quotient.inductionOn'
@@ -541,7 +541,7 @@ abbrev AtPrime :=
   HomogeneousLocalization 𝒜 𝔭.primeCompl
 #align homogeneous_localization.at_prime HomogeneousLocalization.AtPrime
 
-theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : IsUnit f.val ↔ IsUnit f :=
+lemma isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : IsUnit f.val ↔ IsUnit f :=
   ⟨fun h1 => by
     rcases h1 with ⟨⟨a, b, eq0, eq1⟩, eq2 : a = f.val⟩
     rw [eq2] at eq0 eq1

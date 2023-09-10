@@ -55,12 +55,12 @@ lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f
   CommaMorphism.ext _ _ h₁ h₂
 
 @[simp]
-theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
+lemma id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
   rfl
 #align category_theory.arrow.id_left CategoryTheory.Arrow.id_left
 
 @[simp]
-theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
+lemma id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 #align category_theory.arrow.id_right CategoryTheory.Arrow.id_right
 
@@ -83,18 +83,18 @@ def mk {X Y : T} (f : X ⟶ Y) : Arrow T where
 #align category_theory.arrow.mk CategoryTheory.Arrow.mk
 
 @[simp]
-theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
+lemma mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   cases f
   rfl
 #align category_theory.arrow.mk_eq CategoryTheory.Arrow.mk_eq
 
-theorem mk_injective (A B : T) :
+lemma mk_injective (A B : T) :
     Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h => by
   cases h
   rfl
 #align category_theory.arrow.mk_injective CategoryTheory.Arrow.mk_injective
 
-theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
+lemma mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
   (mk_injective A B).eq_iff
 #align category_theory.arrow.mk_inj CategoryTheory.Arrow.mk_inj
 
@@ -253,7 +253,7 @@ end
 /-- Given a square from an arrow `i` to an isomorphism `p`, express the source part of `sq`
 in terms of the inverse of `p`. -/
 @[simp]
-theorem square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ Arrow.mk p.hom) :
+lemma square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ Arrow.mk p.hom) :
     i.hom ≫ sq.right ≫ p.inv = sq.left := by
   simpa only [Category.assoc] using (Iso.comp_inv_eq p).mpr (Arrow.w_mk_right sq).symm
 #align category_theory.arrow.square_to_iso_invert CategoryTheory.Arrow.square_to_iso_invert

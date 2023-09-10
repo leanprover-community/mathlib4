@@ -63,23 +63,23 @@ lemma isRegular_bot : IsRegular (⊥ : α) := by rw [IsRegular, compl_bot, compl
 lemma isRegular_top : IsRegular (⊤ : α) := by rw [IsRegular, compl_top, compl_bot]
 #align heyting.is_regular_top Heyting.isRegular_top
 
-theorem IsRegular.inf (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⊓ b) := by
+lemma IsRegular.inf (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⊓ b) := by
   rw [IsRegular, compl_compl_inf_distrib, ha.eq, hb.eq]
 #align heyting.is_regular.inf Heyting.IsRegular.inf
 
-theorem IsRegular.himp (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⇨ b) := by
+lemma IsRegular.himp (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⇨ b) := by
   rw [IsRegular, compl_compl_himp_distrib, ha.eq, hb.eq]
 #align heyting.is_regular.himp Heyting.IsRegular.himp
 
-theorem isRegular_compl (a : α) : IsRegular aᶜ :=
+lemma isRegular_compl (a : α) : IsRegular aᶜ :=
   compl_compl_compl _
 #align heyting.is_regular_compl Heyting.isRegular_compl
 
-protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint aᶜ b ↔ b ≤ a :=
+protected lemma IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint aᶜ b ↔ b ≤ a :=
   by rw [← le_compl_iff_disjoint_left, ha.eq]
 #align heyting.is_regular.disjoint_compl_left_iff Heyting.IsRegular.disjoint_compl_left_iff
 
-protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a bᶜ ↔ a ≤ b :=
+protected lemma IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a bᶜ ↔ a ≤ b :=
   by rw [← le_compl_iff_disjoint_right, hb.eq]
 #align heyting.is_regular.disjoint_compl_right_iff Heyting.IsRegular.disjoint_compl_right_iff
 
@@ -153,17 +153,17 @@ lemma coe_bot : ((⊥ : Regular α) : α) = ⊥ :=
 #align heyting.regular.coe_bot Heyting.Regular.coe_bot
 
 @[simp, norm_cast]
-theorem coe_inf (a b : Regular α) : (↑(a ⊓ b) : α) = (a : α) ⊓ b :=
+lemma coe_inf (a b : Regular α) : (↑(a ⊓ b) : α) = (a : α) ⊓ b :=
   rfl
 #align heyting.regular.coe_inf Heyting.Regular.coe_inf
 
 @[simp, norm_cast]
-theorem coe_himp (a b : Regular α) : (↑(a ⇨ b) : α) = (a : α) ⇨ b :=
+lemma coe_himp (a b : Regular α) : (↑(a ⇨ b) : α) = (a : α) ⇨ b :=
   rfl
 #align heyting.regular.coe_himp Heyting.Regular.coe_himp
 
 @[simp, norm_cast]
-theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
+lemma coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
   rfl
 #align heyting.regular.coe_compl Heyting.Regular.coe_compl
 
@@ -193,12 +193,12 @@ def toRegular : α →o Regular α :=
 #align heyting.regular.to_regular Heyting.Regular.toRegular
 
 @[simp, norm_cast]
-theorem coe_toRegular (a : α) : (toRegular a : α) = aᶜᶜ :=
+lemma coe_toRegular (a : α) : (toRegular a : α) = aᶜᶜ :=
   rfl
 #align heyting.regular.coe_to_regular Heyting.Regular.coe_toRegular
 
 @[simp]
-theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
+lemma toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
   coe_injective a.2
 #align heyting.regular.to_regular_coe Heyting.Regular.toRegular_coe
 
@@ -217,7 +217,7 @@ instance lattice : Lattice (Regular α) :=
   gi.liftLattice
 
 @[simp, norm_cast]
-theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
+lemma coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
   rfl
 #align heyting.regular.coe_sup Heyting.Regular.coe_sup
 
@@ -243,7 +243,7 @@ instance : BooleanAlgebra (Regular α) :=
           rw [b.prop.disjoint_compl_left_iff]) }
 
 @[simp, norm_cast]
-theorem coe_sdiff (a b : Regular α) : (↑(a \ b) : α) = (a : α) ⊓ bᶜ :=
+lemma coe_sdiff (a b : Regular α) : (↑(a \ b) : α) = (a : α) ⊓ bᶜ :=
   rfl
 #align heyting.regular.coe_sdiff Heyting.Regular.coe_sdiff
 
@@ -259,7 +259,7 @@ lemma isRegular_of_boolean : ∀ a : α, IsRegular a :=
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
 --Porting note: removed @[nolint decidable_classical]
-theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
+lemma isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
 #align heyting.is_regular_of_decidable Heyting.isRegular_of_decidable
 

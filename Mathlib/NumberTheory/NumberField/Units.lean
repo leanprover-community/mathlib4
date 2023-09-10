@@ -65,12 +65,12 @@ lemma coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
 
 variable {K}
 
-theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
+lemma coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
-theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
+lemma coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
   rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
 
-theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
+lemma coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
   exact map_zpow _ x n
 
@@ -78,7 +78,7 @@ lemma coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
 
 lemma coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
 
-theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
+lemma coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
   Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
 
 end coe

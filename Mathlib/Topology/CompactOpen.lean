@@ -53,23 +53,23 @@ def CompactOpen.gen (s : Set α) (u : Set β) : Set C(α, β) :=
 #align continuous_map.compact_open.gen ContinuousMap.CompactOpen.gen
 
 @[simp]
-theorem gen_empty (u : Set β) : CompactOpen.gen (∅ : Set α) u = Set.univ :=
+lemma gen_empty (u : Set β) : CompactOpen.gen (∅ : Set α) u = Set.univ :=
   Set.ext fun f => iff_true_intro ((congr_arg (· ⊆ u) (image_empty f)).mpr u.empty_subset)
 #align continuous_map.gen_empty ContinuousMap.gen_empty
 
 @[simp]
-theorem gen_univ (s : Set α) : CompactOpen.gen s (Set.univ : Set β) = Set.univ :=
+lemma gen_univ (s : Set α) : CompactOpen.gen s (Set.univ : Set β) = Set.univ :=
   Set.ext fun f => iff_true_intro (f '' s).subset_univ
 #align continuous_map.gen_univ ContinuousMap.gen_univ
 
 @[simp]
-theorem gen_inter (s : Set α) (u v : Set β) :
+lemma gen_inter (s : Set α) (u v : Set β) :
     CompactOpen.gen s (u ∩ v) = CompactOpen.gen s u ∩ CompactOpen.gen s v :=
   Set.ext fun _ => subset_inter_iff
 #align continuous_map.gen_inter ContinuousMap.gen_inter
 
 @[simp]
-theorem gen_union (s t : Set α) (u : Set β) :
+lemma gen_union (s t : Set α) (u : Set β) :
     CompactOpen.gen (s ∪ t) u = CompactOpen.gen s u ∩ CompactOpen.gen t u :=
   Set.ext fun f => (iff_of_eq (congr_arg (· ⊆ u) (image_union f s t))).trans union_subset_iff
 #align continuous_map.gen_union ContinuousMap.gen_union
@@ -112,14 +112,14 @@ lemma continuous_comp : Continuous (ContinuousMap.comp g : C(α, β) → C(α, �
 
 /-- If `g : C(β, γ)` is a topology inducing map, then the composition
 `ContinuousMap.comp g : C(α, β) → C(α, γ)` is a topology inducing map too. -/
-theorem inducing_comp (hg : Inducing g) : Inducing (g.comp : C(α, β) → C(α, γ)) where
+lemma inducing_comp (hg : Inducing g) : Inducing (g.comp : C(α, β) → C(α, γ)) where
   induced := by
     simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, preimage_gen,
       hg.setOf_isOpen, image2_image_right]
 
 /-- If `g : C(β, γ)` is a topological embedding, then the composition
 `ContinuousMap.comp g : C(α, β) → C(α, γ)` is an embedding too. -/
-theorem embedding_comp (hg : Embedding g) : Embedding (g.comp : C(α, β) → C(α, γ)) :=
+lemma embedding_comp (hg : Embedding g) : Embedding (g.comp : C(α, β) → C(α, γ)) :=
   ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 variable (f : C(α, β))
@@ -201,7 +201,7 @@ lemma continuous_eval' [LocallyCompactSpace α] : Continuous fun p : C(α, β) �
 Porting note: merged `continuous_eval_const` with `continuous_eval_const'` removing unneeded
 assumptions. -/
 @[continuity]
-theorem continuous_eval_const (a : α) :
+lemma continuous_eval_const (a : α) :
     Continuous fun f : C(α, β) => f a := by
   refine continuous_def.2 fun U hU ↦ ?_
   convert ContinuousMap.isOpen_gen (isCompact_singleton (a := a)) hU using 1
@@ -231,7 +231,7 @@ end Ev
 
 section InfInduced
 
-theorem compactOpen_le_induced (s : Set α) :
+lemma compactOpen_le_induced (s : Set α) :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) ≤
       TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   simp only [induced_generateFrom_eq, ContinuousMap.compactOpen]
@@ -266,12 +266,12 @@ lemma compactOpen_eq_sInf_induced :
 
 /-- For any subset `s` of `α`, the restriction of continuous functions to `s` is continuous as a
 function from `C(α, β)` to `C(s, β)` with their respective compact-open topologies. -/
-theorem continuous_restrict (s : Set α) : Continuous fun F : C(α, β) => F.restrict s := by
+lemma continuous_restrict (s : Set α) : Continuous fun F : C(α, β) => F.restrict s := by
   rw [continuous_iff_le_induced]
   exact compactOpen_le_induced s
 #align continuous_map.continuous_restrict ContinuousMap.continuous_restrict
 
-theorem nhds_compactOpen_eq_sInf_nhds_induced (f : C(α, β)) :
+lemma nhds_compactOpen_eq_sInf_nhds_induced (f : C(α, β)) :
     𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_sInf_induced]
   simp [nhds_iInf, nhds_induced]
@@ -368,14 +368,14 @@ def curry' (f : C(α × β, γ)) (a : α) : C(β, γ) :=
 #align continuous_map.curry' ContinuousMap.curry'
 
 /-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
-theorem continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
+lemma continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
   have hf : curry' f = ContinuousMap.comp f ∘ coev _ _ := by ext; rfl
   hf ▸ Continuous.comp (continuous_comp f) continuous_coev
 #align continuous_map.continuous_curry' ContinuousMap.continuous_curry'
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
     `α × β → γ` is continuous. -/
-theorem continuous_of_continuous_uncurry (f : α → C(β, γ))
+lemma continuous_of_continuous_uncurry (f : α → C(β, γ))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
   continuous_curry' ⟨_, h⟩
 #align continuous_map.continuous_of_continuous_uncurry ContinuousMap.continuous_of_continuous_uncurry
@@ -388,7 +388,7 @@ def curry (f : C(α × β, γ)) : C(α, C(β, γ)) :=
 #align continuous_map.curry ContinuousMap.curry
 
 @[simp]
-theorem curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a, b) :=
+lemma curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a, b) :=
   rfl
 #align continuous_map.curry_apply ContinuousMap.curry_apply
 
@@ -488,7 +488,7 @@ section QuotientMap
 variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
-theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
+lemma QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
   have h : ∀ x : X, Continuous fun y => g (x, y) := by
@@ -502,7 +502,7 @@ theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y �
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 #align quotient_map.continuous_lift_prod_left QuotientMap.continuous_lift_prod_left
 
-theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
+lemma QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap

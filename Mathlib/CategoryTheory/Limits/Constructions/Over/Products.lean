@@ -167,7 +167,7 @@ way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by
 `over_product_of_widePullback` above.)
 -/
-theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
+lemma over_hasTerminal (B : C) : HasTerminal (Over B) where
   has_limit F := HasLimit.mk
     { cone :=
         { pt := Over.mk (𝟙 _)

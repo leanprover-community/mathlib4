@@ -72,12 +72,12 @@ alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
 
 namespace AntilipschitzWith
 
-theorem mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
+lemma mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
     K⁻¹ * nndist x y ≤ nndist (f x) (f y) := by
   simpa only [div_eq_inv_mul] using NNReal.div_le_of_le_mul' (hf.le_mul_nndist x y)
 #align antilipschitz_with.mul_le_nndist AntilipschitzWith.mul_le_nndist
 
-theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
+lemma mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
     (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := by exact_mod_cast hf.mul_le_nndist x y
 #align antilipschitz_with.mul_le_dist AntilipschitzWith.mul_le_dist
 
@@ -106,18 +106,18 @@ protected lemma injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMe
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 #align antilipschitz_with.injective AntilipschitzWith.injective
 
-theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
+lemma mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
     (K : ℝ≥0∞)⁻¹ * edist x y ≤ edist (f x) (f y) := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (hf x y)
 #align antilipschitz_with.mul_le_edist AntilipschitzWith.mul_le_edist
 
-theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) : diam (f ⁻¹' s) ≤ K * diam s :=
+lemma ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) : diam (f ⁻¹' s) ≤ K * diam s :=
   diam_le fun x hx y hy => (hf x y).trans <|
     mul_le_mul_left' (edist_le_diam_of_mem (mem_preimage.1 hx) hy) K
 #align antilipschitz_with.ediam_preimage_le AntilipschitzWith.ediam_preimage_le
 
-theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s ≤ K * diam (f '' s) :=
+lemma le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s ≤ K * diam (f '' s) :=
   (diam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))
 #align antilipschitz_with.le_mul_ediam_image AntilipschitzWith.le_mul_ediam_image
 
@@ -133,11 +133,11 @@ lemma comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : �
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 #align antilipschitz_with.comp AntilipschitzWith.comp
 
-theorem restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=
+lemma restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=
   fun x y => hf x y
 #align antilipschitz_with.restrict AntilipschitzWith.restrict
 
-theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x ∈ s) :
+lemma codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x ∈ s) :
     AntilipschitzWith K (s.codRestrict f hs) := fun x y => hf x y
 #align antilipschitz_with.cod_restrict AntilipschitzWith.codRestrict
 
@@ -148,19 +148,19 @@ lemma to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g :
     hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
 #align antilipschitz_with.to_right_inv_on' AntilipschitzWith.to_rightInvOn'
 
-theorem to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
+lemma to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
     LipschitzWith K (t.restrict g) :=
   (hf.restrict univ).to_rightInvOn' (mapsTo_univ g t) h
 #align antilipschitz_with.to_right_inv_on AntilipschitzWith.to_rightInvOn
 
-theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
+lemma to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     LipschitzWith K g := by
   intro x y
   have := hf (g x) (g y)
   rwa [hg x, hg y] at this
 #align antilipschitz_with.to_right_inverse AntilipschitzWith.to_rightInverse
 
-theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
+lemma comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
   refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => ?_
   refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', ?_⟩
   refine' fun x hx => (hf x.1 x.2).trans_lt _
@@ -169,7 +169,7 @@ theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod
   exact ENNReal.mul_lt_of_lt_div hx
 #align antilipschitz_with.comap_uniformity_le AntilipschitzWith.comap_uniformity_le
 
-protected theorem uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
+protected lemma uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     UniformInducing f :=
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 #align antilipschitz_with.uniform_inducing AntilipschitzWith.uniformInducing
@@ -197,7 +197,7 @@ lemma closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace 
   { (hf.uniformEmbedding hfc).embedding with closed_range := hf.isClosed_range hfc }
 #align antilipschitz_with.closed_embedding AntilipschitzWith.closedEmbedding
 
-theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
+lemma subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 #align antilipschitz_with.subtype_coe AntilipschitzWith.subtype_coe
 
@@ -220,7 +220,7 @@ open Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
 
-theorem bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded s) :
+lemma bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded s) :
     Bounded (f ⁻¹' s) :=
   Exists.intro (K * diam s) fun x hx y hy =>
     calc
@@ -228,7 +228,7 @@ theorem bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded
       _ ≤ K * diam s := by gcongr; exact dist_le_diam_of_mem hs hx hy
 #align antilipschitz_with.bounded_preimage AntilipschitzWith.bounded_preimage
 
-theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α) (cobounded β) :=
+lemma tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α) (cobounded β) :=
   compl_surjective.forall.2 fun s (hs : IsBounded s) =>
     Metric.isBounded_iff.2 <| hf.bounded_preimage <| Metric.isBounded_iff.1 hs
 #align antilipschitz_with.tendsto_cobounded AntilipschitzWith.tendsto_cobounded

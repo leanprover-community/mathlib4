@@ -93,7 +93,7 @@ def Coloring.colorClass (c : α) : Set V := { v : V | C v = c }
 def Coloring.colorClasses : Set (Set V) := (Setoid.ker C).classes
 #align simple_graph.coloring.color_classes SimpleGraph.Coloring.colorClasses
 
-theorem Coloring.mem_colorClass (v : V) : v ∈ C.colorClass (C v) := rfl
+lemma Coloring.mem_colorClass (v : V) : v ∈ C.colorClass (C v) := rfl
 #align simple_graph.coloring.mem_color_class SimpleGraph.Coloring.mem_colorClass
 
 lemma Coloring.colorClasses_isPartition : Setoid.IsPartition C.colorClasses :=
@@ -120,7 +120,7 @@ lemma Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorC
     (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h => C.valid h (Eq.trans hv (Eq.symm hw))
 #align simple_graph.coloring.not_adj_of_mem_color_class SimpleGraph.Coloring.not_adj_of_mem_colorClass
 
-theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
+lemma Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
 #align simple_graph.coloring.color_classes_independent SimpleGraph.Coloring.color_classes_independent
 
@@ -145,7 +145,7 @@ lemma colorable_of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n :=
   ⟨G.coloringOfIsEmpty⟩
 #align simple_graph.colorable_of_is_empty SimpleGraph.colorable_of_isEmpty
 
-theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
+lemma isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
   constructor
   intro v
   obtain ⟨i, hi⟩ := h.some v
@@ -204,7 +204,7 @@ lemma Coloring.to_colorable [Fintype α] (C : G.Coloring α) : G.Colorable (Fint
   ⟨G.recolorOfCardLE (by simp) C⟩
 #align simple_graph.coloring.to_colorable SimpleGraph.Coloring.to_colorable
 
-theorem colorable_of_fintype (G : SimpleGraph V) [Fintype V] : G.Colorable (Fintype.card V) :=
+lemma colorable_of_fintype (G : SimpleGraph V) [Fintype V] : G.Colorable (Fintype.card V) :=
   G.selfColoring.to_colorable
 #align simple_graph.colorable_of_fintype SimpleGraph.colorable_of_fintype
 
@@ -220,7 +220,7 @@ lemma Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G') 
   ⟨(h.toColoring (by simp)).comp f⟩
 #align simple_graph.colorable.of_embedding SimpleGraph.Colorable.of_embedding
 
-theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
+lemma colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
   constructor
   · rintro hc
@@ -267,13 +267,13 @@ lemma colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) : G.Colorable G.c
   exact colorable_set_nonempty_of_colorable hc
 #align simple_graph.colorable_chromatic_number SimpleGraph.colorable_chromaticNumber
 
-theorem colorable_chromaticNumber_of_fintype (G : SimpleGraph V) [Finite V] :
+lemma colorable_chromaticNumber_of_fintype (G : SimpleGraph V) [Finite V] :
     G.Colorable G.chromaticNumber := by
   cases nonempty_fintype V
   exact colorable_chromaticNumber G.colorable_of_fintype
 #align simple_graph.colorable_chromatic_number_of_fintype SimpleGraph.colorable_chromaticNumber_of_fintype
 
-theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton V] :
+lemma chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton V] :
     G.chromaticNumber ≤ 1 := by
   rw [chromaticNumber]
   apply csInf_le chromaticNumber_bddBelow
@@ -284,14 +284,14 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
   simp
 #align simple_graph.chromatic_number_le_one_of_subsingleton SimpleGraph.chromaticNumber_le_one_of_subsingleton
 
-theorem chromaticNumber_eq_zero_of_isempty (G : SimpleGraph V) [IsEmpty V] :
+lemma chromaticNumber_eq_zero_of_isempty (G : SimpleGraph V) [IsEmpty V] :
     G.chromaticNumber = 0 := by
   rw [← nonpos_iff_eq_zero]
   apply csInf_le chromaticNumber_bddBelow
   apply colorable_of_isEmpty
 #align simple_graph.chromatic_number_eq_zero_of_isempty SimpleGraph.chromaticNumber_eq_zero_of_isempty
 
-theorem isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) [Finite V]
+lemma isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) [Finite V]
     (h : G.chromaticNumber = 0) : IsEmpty V := by
   have h' := G.colorable_chromaticNumber_of_fintype
   rw [h] at h'
@@ -308,7 +308,7 @@ lemma chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.ch
   exact Nat.not_lt_zero _ h₁
 #align simple_graph.chromatic_number_pos SimpleGraph.chromaticNumber_pos
 
-theorem colorable_of_chromaticNumber_pos (h : 0 < G.chromaticNumber) :
+lemma colorable_of_chromaticNumber_pos (h : 0 < G.chromaticNumber) :
     G.Colorable G.chromaticNumber := by
   obtain ⟨h, hn⟩ := Nat.nonempty_of_pos_sInf h
   exact colorable_chromaticNumber hn
@@ -327,7 +327,7 @@ lemma Colorable.chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph 
   apply colorable_chromaticNumber hc
 #align simple_graph.colorable.chromatic_number_le_of_forall_imp SimpleGraph.Colorable.chromaticNumber_le_of_forall_imp
 
-theorem Colorable.chromaticNumber_mono (G' : SimpleGraph V) {m : ℕ} (hc : G'.Colorable m)
+lemma Colorable.chromaticNumber_mono (G' : SimpleGraph V) {m : ℕ} (hc : G'.Colorable m)
     (h : G ≤ G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   hc.chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
 #align simple_graph.colorable.chromatic_number_mono SimpleGraph.Colorable.chromaticNumber_mono
@@ -373,7 +373,7 @@ lemma chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = 
   exact C.valid h
 #align simple_graph.chromatic_number_top SimpleGraph.chromaticNumber_top
 
-theorem chromaticNumber_top_eq_zero_of_infinite (V : Type*) [Infinite V] :
+lemma chromaticNumber_top_eq_zero_of_infinite (V : Type*) [Infinite V] :
     (⊤ : SimpleGraph V).chromaticNumber = 0 := by
   let n := (⊤ : SimpleGraph V).chromaticNumber
   by_contra hc

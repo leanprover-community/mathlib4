@@ -38,7 +38,7 @@ section
 
 variable {A B C : V} (f : A ⟶ B) [HasImage f] (g : B ⟶ C) [HasKernel g]
 
-theorem image_le_kernel (w : f ≫ g = 0) : imageSubobject f ≤ kernelSubobject g :=
+lemma image_le_kernel (w : f ≫ g = 0) : imageSubobject f ≤ kernelSubobject g :=
   imageSubobject_le_mk _ _ (kernel.lift _ _ w) (by simp)
 #align image_le_kernel image_le_kernel
 
@@ -54,7 +54,7 @@ instance (w : f ≫ g = 0) : Mono (imageToKernel f g w) := by
 
 /-- Prefer `imageToKernel`. -/
 @[simp]
-theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
+lemma subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
     Subobject.ofLE (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
   rfl
 #align subobject_of_le_as_image_to_kernel subobject_ofLE_as_imageToKernel
@@ -64,7 +64,7 @@ attribute [local instance] ConcreteCategory.funLike
 -- porting note: removed elementwise attribute which does not seem to be helpful here
 -- a more suitable lemma is added below
 @[reassoc (attr := simp)]
-theorem imageToKernel_arrow (w : f ≫ g = 0) :
+lemma imageToKernel_arrow (w : f ≫ g = 0) :
     imageToKernel f g w ≫ (kernelSubobject g).arrow = (imageSubobject f).arrow := by
   simp [imageToKernel]
 #align image_to_kernel_arrow imageToKernel_arrow
@@ -78,7 +78,7 @@ lemma imageToKernel_arrow_apply [ConcreteCategory V] (w : f ≫ g = 0)
 
 -- This is less useful as a `simp` lemma than it initially appears,
 -- as it "loses" the information the morphism factors through the image.
-theorem factorThruImageSubobject_comp_imageToKernel (w : f ≫ g = 0) :
+lemma factorThruImageSubobject_comp_imageToKernel (w : f ≫ g = 0) :
     factorThruImageSubobject f ≫ imageToKernel f g w = factorThruKernelSubobject g f w := by
   ext
   simp
@@ -266,7 +266,7 @@ a pair `f g` and a pair `f' g'` satisfying `f ≫ g = 0` and `f' ≫ g' = 0`,
 the `imageToKernel` morphisms intertwine the induced map on kernels and the induced map on images.
 -/
 @[reassoc]
-theorem imageSubobjectMap_comp_imageToKernel (p : α.right = β.left) :
+lemma imageSubobjectMap_comp_imageToKernel (p : α.right = β.left) :
     imageToKernel f g w ≫ kernelSubobjectMap β = imageSubobjectMap α ≫ imageToKernel f' g' w' := by
   ext
   simp [p]
@@ -290,7 +290,7 @@ def homology.map (p : α.right = β.left) : homology f g w ⟶ homology f' g' w'
 -- porting note: removed elementwise attribute which does not seem to be helpful here,
 -- the correct lemma is stated below
 @[reassoc (attr := simp)]
-theorem homology.π_map (p : α.right = β.left) :
+lemma homology.π_map (p : α.right = β.left) :
     homology.π f g w ≫ homology.map w w' α β p = kernelSubobjectMap β ≫ homology.π f' g' w' := by
   simp only [homology.π, homology.map, cokernel.π_desc]
 #align homology.π_map homology.π_map
@@ -309,7 +309,7 @@ lemma homology.π_map_apply [ConcreteCategory.{w} V] (p : α.right = β.left)
 end
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem homology.map_desc (p : α.right = β.left) {D : V} (k : (kernelSubobject g' : V) ⟶ D)
+lemma homology.map_desc (p : α.right = β.left) {D : V} (k : (kernelSubobject g' : V) ⟶ D)
     (z : imageToKernel f' g' w' ≫ k = 0) :
     homology.map w w' α β p ≫ homology.desc f' g' w' k z =
       homology.desc f g w (kernelSubobjectMap β ≫ k)
@@ -334,7 +334,7 @@ lemma homology.comp_right_eq_comp_left {V : Type*} [Category V] {A₁ B₁ C₁ 
 #align homology.comp_right_eq_comp_left homology.comp_right_eq_comp_left
 
 @[reassoc]
-theorem homology.map_comp (p₁ : α₁.right = β₁.left) (p₂ : α₂.right = β₂.left) :
+lemma homology.map_comp (p₁ : α₁.right = β₁.left) (p₂ : α₂.right = β₂.left) :
     homology.map w₁ w₂ α₁ β₁ p₁ ≫ homology.map w₂ w₃ α₂ β₂ p₂ =
       homology.map w₁ w₃ (α₁ ≫ α₂) (β₁ ≫ β₂) (homology.comp_right_eq_comp_left p₁ p₂) := by
   ext
@@ -418,7 +418,7 @@ def imageToKernel' (w : f ≫ g = 0) : image f ⟶ kernel g :=
 #align image_to_kernel' imageToKernel'
 
 @[simp]
-theorem imageSubobjectIso_imageToKernel' (w : f ≫ g = 0) :
+lemma imageSubobjectIso_imageToKernel' (w : f ≫ g = 0) :
     (imageSubobjectIso f).hom ≫ imageToKernel' f g w =
       imageToKernel f g w ≫ (kernelSubobjectIso g).hom := by
   ext
@@ -426,7 +426,7 @@ theorem imageSubobjectIso_imageToKernel' (w : f ≫ g = 0) :
 #align image_subobject_iso_image_to_kernel' imageSubobjectIso_imageToKernel'
 
 @[simp]
-theorem imageToKernel'_kernelSubobjectIso (w : f ≫ g = 0) :
+lemma imageToKernel'_kernelSubobjectIso (w : f ≫ g = 0) :
     imageToKernel' f g w ≫ (kernelSubobjectIso g).inv =
       (imageSubobjectIso f).inv ≫ imageToKernel f g w := by
   ext

@@ -94,7 +94,7 @@ lemma AddSubgroup.cyclic_of_isolated_zero {H : AddSubgroup G} {a : G} (h₀ : 0 
   · exact (exists_isLeast_pos hbot h₀ hd).imp fun _ => cyclic_of_min
 
 /-- Every subgroup of `ℤ` is cyclic. -/
-theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
+lemma Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_not_mem fun m hm =>
     hm.1.not_le (lt_add_one_iff.1 hm.2)
   AddSubgroup.cyclic_of_isolated_zero one_pos <| by simp [this]

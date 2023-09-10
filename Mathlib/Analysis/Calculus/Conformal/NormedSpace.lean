@@ -59,7 +59,7 @@ def ConformalAt (f : X → Y) (x : X) :=
   ∃ f' : X →L[ℝ] Y, HasFDerivAt f f' x ∧ IsConformalMap f'
 #align conformal_at ConformalAt
 
-theorem conformalAt_id (x : X) : ConformalAt _root_.id x :=
+lemma conformalAt_id (x : X) : ConformalAt _root_.id x :=
   ⟨id ℝ X, hasFDerivAt_id _, isConformalMap_id⟩
 #align conformal_at_id conformalAt_id
 

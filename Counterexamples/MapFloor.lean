@@ -121,13 +121,13 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
 #align counterexample.int_with_epsilon.forget_epsilons Counterexample.IntWithEpsilon.forgetEpsilons
 
 @[simp]
-theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
+lemma forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
   rfl
 #align counterexample.int_with_epsilon.forget_epsilons_apply Counterexample.IntWithEpsilon.forgetEpsilons_apply
 
 /-- The floor of `n - ε` is `n - 1` but its image under `forgetEpsilons` is `n`, whose floor is
 itself. -/
-theorem forgetEpsilons_floor_lt (n : ℤ) :
+lemma forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
   suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
@@ -137,7 +137,7 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
 
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is
 itself. -/
-theorem lt_forgetEpsilons_ceil (n : ℤ) :
+lemma lt_forgetEpsilons_ceil (n : ℤ) :
     ⌈forgetEpsilons (n + ↑ε)⌉ < forgetEpsilons ⌈(n + ↑ε : ℤ[ε])⌉ := by
   rw [← neg_lt_neg_iff, ← map_neg, ← cast_neg, ← floor_neg, ← floor_neg, ← map_neg, neg_add', ←
     cast_neg]

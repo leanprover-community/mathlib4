@@ -31,13 +31,13 @@ lemma IsPwo.mul [OrderedCancelCommMonoid α] (hs : s.IsPwo) (ht : t.IsPwo) : IsP
 variable [LinearOrderedCancelCommMonoid α]
 
 @[to_additive]
-theorem IsWf.mul (hs : s.IsWf) (ht : t.IsWf) : IsWf (s * t) :=
+lemma IsWf.mul (hs : s.IsWf) (ht : t.IsWf) : IsWf (s * t) :=
   (hs.isPwo.mul ht.isPwo).isWf
 #align set.is_wf.mul Set.IsWf.mul
 #align set.is_wf.add Set.IsWf.add
 
 @[to_additive]
-theorem IsWf.min_mul (hs : s.IsWf) (ht : t.IsWf) (hsn : s.Nonempty) (htn : t.Nonempty) :
+lemma IsWf.min_mul (hs : s.IsWf) (ht : t.IsWf) (hsn : s.Nonempty) (htn : t.Nonempty) :
     (hs.mul ht).min (hsn.mul htn) = hs.min hsn * ht.min htn := by
   refine' le_antisymm (IsWf.min_le _ _ (mem_mul.2 ⟨_, _, hs.min_mem _, ht.min_mem _, rfl⟩)) _
   rw [IsWf.le_min_iff]
@@ -76,13 +76,13 @@ lemma mem_mulAntidiagonal : x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 
 #align finset.mem_add_antidiagonal Finset.mem_addAntidiagonal
 
 @[to_additive]
-theorem mulAntidiagonal_mono_left (h : u ⊆ s) : mulAntidiagonal hu ht a ⊆ mulAntidiagonal hs ht a :=
+lemma mulAntidiagonal_mono_left (h : u ⊆ s) : mulAntidiagonal hu ht a ⊆ mulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_left h
 #align finset.mul_antidiagonal_mono_left Finset.mulAntidiagonal_mono_left
 #align finset.add_antidiagonal_mono_left Finset.addAntidiagonal_mono_left
 
 @[to_additive]
-theorem mulAntidiagonal_mono_right (h : u ⊆ t) :
+lemma mulAntidiagonal_mono_right (h : u ⊆ t) :
     mulAntidiagonal hs hu a ⊆ mulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_right h
 #align finset.mul_antidiagonal_mono_right Finset.mulAntidiagonal_mono_right

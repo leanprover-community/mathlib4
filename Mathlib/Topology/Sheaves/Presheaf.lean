@@ -233,7 +233,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note : This lemma is promoted to a higher priority to short circuit the simplifier
 @[simp (high)]
-theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
+lemma id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
   simp [CategoryStruct.comp]
 set_option linter.uppercaseLean3 false in
@@ -247,7 +247,7 @@ attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
 attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 
 @[simp]
-theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
+lemma id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
   -- was `tidy`, see porting note above.
   induction U
   apply id_hom_app'
@@ -255,7 +255,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
 
 @[simp]
-theorem id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
+lemma id_inv_app' (U) (p) : (id ℱ).inv.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
   simp [CategoryStruct.comp]
 set_option linter.uppercaseLean3 false in
@@ -366,7 +366,7 @@ def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback.id TopCat.Presheaf.Pullback.id
 
-theorem id_inv_app (U : Opens Y) :
+lemma id_inv_app (U : Opens Y) :
     (id ℱ).inv.app (op U) =
       colimit.ι (Lan.diagram (Opens.map (𝟙 Y)).op ℱ (op U))
         (@CostructuredArrow.mk _ _ _ _ _ (op U) _ (eqToHom (by simp))) := by

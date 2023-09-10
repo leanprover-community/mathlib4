@@ -719,7 +719,7 @@ set_option linter.uppercaseLean3 false in
 #align continuous_map.C ContinuousMap.C
 
 @[simp]
-theorem ContinuousMap.C_apply (r : R) (a : α) : ContinuousMap.C r a = algebraMap R A r :=
+lemma ContinuousMap.C_apply (r : R) (a : α) : ContinuousMap.C r a = algebraMap R A r :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align continuous_map.C_apply ContinuousMap.C_apply
@@ -792,7 +792,7 @@ lemma Subalgebra.separatesPoints_monotone :
 #align subalgebra.separates_points_monotone Subalgebra.separatesPoints_monotone
 
 @[simp]
-theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1 : A) := by
+lemma algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1 : A) := by
   rw [Algebra.algebraMap_eq_smul_one]
   rfl
 #align algebra_map_apply algebraMap_apply
@@ -952,12 +952,12 @@ variable [Star β] [ContinuousStar β]
 instance : Star C(α, β) where star f := starContinuousMap.comp f
 
 @[simp]
-theorem coe_star (f : C(α, β)) : ⇑(star f) = star (⇑f) :=
+lemma coe_star (f : C(α, β)) : ⇑(star f) = star (⇑f) :=
   rfl
 #align continuous_map.coe_star ContinuousMap.coe_star
 
 @[simp]
-theorem star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
+lemma star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
   rfl
 #align continuous_map.star_apply ContinuousMap.star_apply
 
@@ -1015,7 +1015,7 @@ lemma compStarAlgHom'_id : compStarAlgHom' 𝕜 A (ContinuousMap.id X) = StarAlg
 #align continuous_map.comp_star_alg_hom'_id ContinuousMap.compStarAlgHom'_id
 
 /-- `ContinuousMap.compStarAlgHom'` is functorial. -/
-theorem compStarAlgHom'_comp (g : C(Y, Z)) (f : C(X, Y)) :
+lemma compStarAlgHom'_comp (g : C(Y, Z)) (f : C(X, Y)) :
     compStarAlgHom' 𝕜 A (g.comp f) = (compStarAlgHom' 𝕜 A f).comp (compStarAlgHom' 𝕜 A g) :=
   StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
 #align continuous_map.comp_star_alg_hom'_comp ContinuousMap.compStarAlgHom'_comp

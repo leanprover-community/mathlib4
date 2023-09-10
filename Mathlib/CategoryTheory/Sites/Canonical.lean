@@ -59,7 +59,7 @@ This is mostly an auxiliary lemma to show `isSheafFor_trans`.
 Adapted from [Elephant], Lemma C2.1.7(i) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709/
 -/
-theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, U f → Sieve Y)
+lemma isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, U f → Sieve Y)
     (hU : Presieve.IsSheafFor P (U : Presieve X))
     (hB : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.IsSheafFor P (B hf : Presieve Y))
     (hB' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (h : U f) ⦃Z⦄ (g : Z ⟶ Y),
@@ -123,7 +123,7 @@ This is mostly an auxiliary lemma to construct `finestTopology`.
 Adapted from [Elephant], Lemma C2.1.7(ii) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709
 -/
-theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
+lemma isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
     (hR : Presieve.IsSheafFor P (R : Presieve X))
     (hR' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : S f), Presieve.IsSeparatedFor P (R.pullback f : Presieve Y))
     (hS : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : R f), Presieve.IsSheafFor P (S.pullback f : Presieve Y)) :
@@ -187,7 +187,7 @@ def finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) : GrothendieckTopology C :=
 #align category_theory.sheaf.finest_topology CategoryTheory.Sheaf.finestTopology
 
 /-- Check that if `P ∈ Ps`, then `P` is indeed a sheaf for the finest topology on `Ps`. -/
-theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) :
+lemma sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) :
     Presieve.IsSheaf (finestTopology Ps) P := fun X S hS => by
   simpa using hS _ ⟨⟨_, _, ⟨_, h, rfl⟩, rfl⟩, rfl⟩ _ (𝟙 _)
 #align category_theory.sheaf.sheaf_for_finest_topology CategoryTheory.Sheaf.sheaf_for_finestTopology
@@ -195,7 +195,7 @@ theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) 
 /--
 Check that if each `P ∈ Ps` is a sheaf for `J`, then `J` is a subtopology of `finestTopology Ps`.
 -/
-theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopology C)
+lemma le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopology C)
     (hJ : ∀ P ∈ Ps, Presieve.IsSheaf J P) : J ≤ finestTopology Ps := by
   rintro X S hS _ ⟨⟨_, _, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩
   intro Y f
@@ -213,12 +213,12 @@ def canonicalTopology (C : Type u) [Category.{v} C] : GrothendieckTopology C :=
 #align category_theory.sheaf.canonical_topology CategoryTheory.Sheaf.canonicalTopology
 
 /-- `yoneda.obj X` is a sheaf for the canonical topology. -/
-theorem isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yoneda.obj X) :=
+lemma isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yoneda.obj X) :=
   fun _ _ hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
 #align category_theory.sheaf.is_sheaf_yoneda_obj CategoryTheory.Sheaf.isSheaf_yoneda_obj
 
 /-- A representable functor is a sheaf for the canonical topology. -/
-theorem isSheaf_of_representable (P : Cᵒᵖ ⥤ Type v) [P.Representable] :
+lemma isSheaf_of_representable (P : Cᵒᵖ ⥤ Type v) [P.Representable] :
     Presieve.IsSheaf (canonicalTopology C) P :=
   Presieve.isSheaf_iso (canonicalTopology C) P.reprW (isSheaf_yoneda_obj _)
 #align category_theory.sheaf.is_sheaf_of_representable CategoryTheory.Sheaf.isSheaf_of_representable
@@ -233,7 +233,7 @@ def Subcanonical (J : GrothendieckTopology C) : Prop :=
 namespace Subcanonical
 
 /-- If every functor `yoneda.obj X` is a `J`-sheaf, then `J` is subcanonical. -/
-theorem of_yoneda_isSheaf (J : GrothendieckTopology C)
+lemma of_yoneda_isSheaf (J : GrothendieckTopology C)
     (h : ∀ X, Presieve.IsSheaf J (yoneda.obj X)) : Subcanonical J :=
   le_finestTopology _ _
     (by

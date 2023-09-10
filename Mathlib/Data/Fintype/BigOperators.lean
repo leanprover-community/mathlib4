@@ -64,13 +64,13 @@ section
 variable {M : Type*} [Fintype α] [CommMonoid M]
 
 @[to_additive]
-theorem prod_eq_one (f : α → M) (h : ∀ a, f a = 1) : ∏ a, f a = 1 :=
+lemma prod_eq_one (f : α → M) (h : ∀ a, f a = 1) : ∏ a, f a = 1 :=
   Finset.prod_eq_one fun a _ha => h a
 #align fintype.prod_eq_one Fintype.prod_eq_one
 #align fintype.sum_eq_zero Fintype.sum_eq_zero
 
 @[to_additive]
-theorem prod_congr (f g : α → M) (h : ∀ a, f a = g a) : ∏ a, f a = ∏ a, g a :=
+lemma prod_congr (f g : α → M) (h : ∀ a, f a = g a) : ∏ a, f a = ∏ a, g a :=
   Finset.prod_congr rfl fun a _ha => h a
 #align fintype.prod_congr Fintype.prod_congr
 #align fintype.sum_congr Fintype.sum_congr
@@ -110,7 +110,7 @@ section
 variable {M : Type*} [Fintype α] [CommMonoid M]
 
 @[to_additive (attr := simp)]
-theorem Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
+lemma Fintype.prod_option (f : Option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
   Finset.prod_insertNone f univ
 #align fintype.prod_option Fintype.prod_option
 #align fintype.sum_option Fintype.sum_option
@@ -195,7 +195,7 @@ lemma Finset.prod_univ_sum [DecidableEq α] [Fintype α] [CommSemiring β] {δ :
 gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
 `x^n` is multilinear, but multilinear maps are only available now over rings, so we give instead
 a proof reducing to the usual binomial theorem to have a result over semirings. -/
-theorem Fintype.sum_pow_mul_eq_add_pow (α : Type*) [Fintype α] {R : Type*} [CommSemiring R]
+lemma Fintype.sum_pow_mul_eq_add_pow (α : Type*) [Fintype α] {R : Type*} [CommSemiring R]
     (a b : R) :
     (∑ s : Finset α, a ^ s.card * b ^ (Fintype.card α - s.card)) = (a + b) ^ Fintype.card α :=
   Finset.sum_pow_mul_eq_add_pow _ _ _
@@ -282,14 +282,14 @@ open Finset
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
-theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
+lemma Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
   prod_disj_sum _ _ _
 #align fintype.prod_sum_elim Fintype.prod_sum_elim
 #align fintype.sum_sum_elim Fintype.sum_sum_elim
 
 @[to_additive (attr := simp)]
-theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
+lemma Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
   prod_disj_sum _ _ _
 #align fintype.prod_sum_type Fintype.prod_sum_type

@@ -56,7 +56,7 @@ lemma dvd_geom_sum₂_self {x y : R} (h : ↑n ∣ x - y) :
   (dvd_geom_sum₂_iff_of_dvd_sub h).mpr (dvd_mul_right _ _)
 #align dvd_geom_sum₂_self dvd_geom_sum₂_self
 
-theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
+lemma sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
     p ^ 2 ∣ (x + p) ^ n - x ^ (n - 1) * p * n - x ^ n := by
   cases' n with n n
   · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, Nat.zero_eq, mul_zero]
@@ -82,7 +82,7 @@ lemma not_dvd_geom_sum₂ {p : R} (hp : Prime p) (hxy : p ∣ x - y) (hx : ¬p �
 
 variable {p : ℕ} (a b)
 
-theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
+lemma odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     (p : R) ^ 2 ∣ (∑ i in range p, (a + p * b) ^ i * a ^ (p - 1 - i)) - p * a ^ (p - 1) := by
   have h1 : ∀ (i : ℕ),
       (p : R) ^ 2 ∣ (a + ↑p * b) ^ i - (a ^ (i - 1) * (↑p * b) * i + a ^ i) := by
@@ -181,7 +181,7 @@ lemma pow_prime_sub_pow_prime :
   rw [← geom_sum₂_mul, multiplicity.mul hp, geom_sum₂_eq_one hp hp1 hxy hx, add_comm]
 #align multiplicity.pow_prime_sub_pow_prime multiplicity.pow_prime_sub_pow_prime
 
-theorem pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
+lemma pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     multiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = multiplicity (↑p) (x - y) + a := by
   induction' a with a h_ind
   · rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
@@ -378,7 +378,7 @@ namespace padicValNat
 
 variable {x y : ℕ}
 
-theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : 0 < n)
+lemma pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : 0 < n)
     (hneven : Even n) :
     padicValNat 2 (x ^ n - y ^ n) + 1 =
       padicValNat 2 (x + y) + padicValNat 2 (x - y) + padicValNat 2 n := by
@@ -393,7 +393,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 
-theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : 0 < n) :
+lemma pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : 0 < n) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← PartENat.natCast_inj, Nat.cast_add]
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
@@ -403,7 +403,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
   · exact Nat.sub_pos_of_lt (Nat.pow_lt_pow_of_lt_left hyx hn)
 #align padic_val_nat.pow_sub_pow padicValNat.pow_sub_pow
 
-theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
+lemma pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
   cases' y with y
   · contradiction

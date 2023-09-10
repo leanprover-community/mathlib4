@@ -31,7 +31,7 @@ namespace Nat
 #align nat.gcd.induction Nat.gcd.induction
 #align nat.lcm Nat.lcm
 
-theorem gcd_def (x y : ℕ) : gcd x y = if x = 0 then y else gcd (y % x) x := by
+lemma gcd_def (x y : ℕ) : gcd x y = if x = 0 then y else gcd (y % x) x := by
   cases x <;> simp [Nat.gcd_succ]
 #align nat.gcd_def Nat.gcd_def
 

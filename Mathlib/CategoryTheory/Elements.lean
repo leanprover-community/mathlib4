@@ -68,7 +68,7 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
 namespace CategoryOfElements
 
 @[ext]
-theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
+lemma ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
   Subtype.ext_val w
 #align category_theory.category_of_elements.ext CategoryTheory.CategoryOfElements.ext
 
@@ -137,7 +137,7 @@ def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
 #align category_theory.category_of_elements.to_structured_arrow CategoryTheory.CategoryOfElements.toStructuredArrow
 
 @[simp]
-theorem toStructuredArrow_obj (X) :
+lemma toStructuredArrow_obj (X) :
     (toStructuredArrow F).obj X =
       { left := ⟨⟨⟩⟩
         right := X.1
@@ -157,7 +157,7 @@ def fromStructuredArrow : StructuredArrow PUnit F ⥤ F.Elements where
 #align category_theory.category_of_elements.from_structured_arrow CategoryTheory.CategoryOfElements.fromStructuredArrow
 
 @[simp]
-theorem fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right, X.hom PUnit.unit⟩ :=
+lemma fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right, X.hom PUnit.unit⟩ :=
   rfl
 #align category_theory.category_of_elements.from_structured_arrow_obj CategoryTheory.CategoryOfElements.fromStructuredArrow_obj
 
@@ -213,13 +213,13 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : (CostructuredArrow yoneda F
 #align category_theory.category_of_elements.from_costructured_arrow CategoryTheory.CategoryOfElements.fromCostructuredArrow
 
 @[simp]
-theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
+lemma fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 #align category_theory.category_of_elements.from_costructured_arrow_obj_mk CategoryTheory.CategoryOfElements.fromCostructuredArrow_obj_mk
 
 /-- The unit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
-theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
+lemma from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     (toCostructuredArrow F).rightOp ⋙ fromCostructuredArrow F = 𝟭 _ := by
   refine' Functor.ext _ _
   · intro X
@@ -234,7 +234,7 @@ theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
 #align category_theory.category_of_elements.from_to_costructured_arrow_eq CategoryTheory.CategoryOfElements.from_toCostructuredArrow_eq
 
 /-- The counit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
-theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
+lemma to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     (fromCostructuredArrow F).rightOp ⋙ toCostructuredArrow F = 𝟭 _ := by
   refine' Functor.ext _ _
   · intro X

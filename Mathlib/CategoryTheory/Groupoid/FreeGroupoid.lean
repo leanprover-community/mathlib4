@@ -165,13 +165,13 @@ def lift (φ : V ⥤q V') : FreeGroupoid V ⥤ V' :=
     apply Groupoid.comp_inv
 #align category_theory.groupoid.free.lift CategoryTheory.Groupoid.Free.lift
 
-theorem lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by
+lemma lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by
   rw [of_eq, Prefunctor.comp_assoc, Prefunctor.comp_assoc, Functor.toPrefunctor_comp]
   dsimp [lift]
   rw [Quotient.lift_spec, Paths.lift_spec, Quiver.Symmetrify.lift_spec]
 #align category_theory.groupoid.free.lift_spec CategoryTheory.Groupoid.Free.lift_spec
 
-theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V ⋙q Φ.toPrefunctor = φ) :
+lemma lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V ⋙q Φ.toPrefunctor = φ) :
     Φ = lift φ := by
   apply Quotient.lift_unique
   apply Paths.lift_unique
@@ -203,7 +203,7 @@ lemma freeGroupoidFunctor_id :
   apply lift_unique; rfl
 #align category_theory.groupoid.free.free_groupoid_functor_id CategoryTheory.Groupoid.Free.freeGroupoidFunctor_id
 
-theorem freeGroupoidFunctor_comp (φ : V ⥤q V') (φ' : V' ⥤q V'') :
+lemma freeGroupoidFunctor_comp (φ : V ⥤q V') (φ' : V' ⥤q V'') :
     freeGroupoidFunctor (φ ⋙q φ') = freeGroupoidFunctor φ ⋙ freeGroupoidFunctor φ' := by
   dsimp only [freeGroupoidFunctor]; symm
   apply lift_unique; rfl

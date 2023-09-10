@@ -89,19 +89,19 @@ instance : OrderBot (Submodule R M) where
   bot := ⊥
   bot_le p x := by simp (config := { contextual := true }) [zero_mem]
 
-protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
+protected lemma eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
   ⟨fun h ↦ h.symm ▸ fun _ hx ↦ (mem_bot R).mp hx,
     fun h ↦ eq_bot_iff.mpr fun x hx ↦ (mem_bot R).mpr (h x hx)⟩
 #align submodule.eq_bot_iff Submodule.eq_bot_iff
 
 @[ext high]
-protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
+protected lemma bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
   rcases x with ⟨x, xm⟩; rcases y with ⟨y, ym⟩; congr
   rw [(Submodule.eq_bot_iff _).mp rfl x xm]
   rw [(Submodule.eq_bot_iff _).mp rfl y ym]
 #align submodule.bot_ext Submodule.bot_ext
 
-protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
+protected lemma ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
   simp only [ne_eq, p.eq_bot_iff, not_forall, exists_prop]
 #align submodule.ne_bot_iff Submodule.ne_bot_iff
 
@@ -127,7 +127,7 @@ def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
   right_inv _ := rfl
 #align submodule.bot_equiv_punit Submodule.botEquivPUnit
 
-theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
+lemma eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
   rw [eq_bot_iff]
   intro v hv
   exact congr_arg Subtype.val (Subsingleton.elim (⟨v, hv⟩ : p) 0)
@@ -239,7 +239,7 @@ lemma mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x �
 #align submodule.mem_inf Submodule.mem_inf
 
 @[simp]
-theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
+lemma sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
   rfl
 #align submodule.Inf_coe Submodule.sInf_coe
 
@@ -333,7 +333,7 @@ lemma disjoint_def' {p p' : Submodule R M} :
     ⟨fun h x hx _ hy hxy ↦ h x hx <| hxy.symm ▸ hy, fun h x hx hx' ↦ h _ hx x hx' rfl⟩
 #align submodule.disjoint_def' Submodule.disjoint_def'
 
-theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 := by
+lemma eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 := by
   exact_mod_cast disjoint_def.mp hpq a (coe_mem a) ha
 #align submodule.eq_zero_of_coe_mem_of_disjoint Submodule.eq_zero_of_coe_mem_of_disjoint
 
@@ -358,19 +358,19 @@ lemma AddSubmonoid.toNatSubmodule_symm :
 #align add_submonoid.to_nat_submodule_symm AddSubmonoid.toNatSubmodule_symm
 
 @[simp]
-theorem AddSubmonoid.coe_toNatSubmodule (S : AddSubmonoid M) :
+lemma AddSubmonoid.coe_toNatSubmodule (S : AddSubmonoid M) :
     (AddSubmonoid.toNatSubmodule S : Set M) = S :=
   rfl
 #align add_submonoid.coe_to_nat_submodule AddSubmonoid.coe_toNatSubmodule
 
 @[simp]
-theorem AddSubmonoid.toNatSubmodule_toAddSubmonoid (S : AddSubmonoid M) :
+lemma AddSubmonoid.toNatSubmodule_toAddSubmonoid (S : AddSubmonoid M) :
     S.toNatSubmodule.toAddSubmonoid = S :=
   AddSubmonoid.toNatSubmodule.symm_apply_apply S
 #align add_submonoid.to_nat_submodule_to_add_submonoid AddSubmonoid.toNatSubmodule_toAddSubmonoid
 
 @[simp]
-theorem Submodule.toAddSubmonoid_toNatSubmodule (S : Submodule ℕ M) :
+lemma Submodule.toAddSubmonoid_toNatSubmodule (S : Submodule ℕ M) :
     AddSubmonoid.toNatSubmodule S.toAddSubmonoid = S :=
   AddSubmonoid.toNatSubmodule.apply_symm_apply S
 #align submodule.to_add_submonoid_to_nat_submodule Submodule.toAddSubmonoid_toNatSubmodule
@@ -400,19 +400,19 @@ lemma AddSubgroup.toIntSubmodule_symm :
 #align add_subgroup.to_int_submodule_symm AddSubgroup.toIntSubmodule_symm
 
 @[simp]
-theorem AddSubgroup.coe_toIntSubmodule (S : AddSubgroup M) :
+lemma AddSubgroup.coe_toIntSubmodule (S : AddSubgroup M) :
     (AddSubgroup.toIntSubmodule S : Set M) = S :=
   rfl
 #align add_subgroup.coe_to_int_submodule AddSubgroup.coe_toIntSubmodule
 
 @[simp]
-theorem AddSubgroup.toIntSubmodule_toAddSubgroup (S : AddSubgroup M) :
+lemma AddSubgroup.toIntSubmodule_toAddSubgroup (S : AddSubgroup M) :
     S.toIntSubmodule.toAddSubgroup = S :=
   AddSubgroup.toIntSubmodule.symm_apply_apply S
 #align add_subgroup.to_int_submodule_to_add_subgroup AddSubgroup.toIntSubmodule_toAddSubgroup
 
 @[simp]
-theorem Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
+lemma Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
     AddSubgroup.toIntSubmodule S.toAddSubgroup = S :=
   AddSubgroup.toIntSubmodule.apply_symm_apply S
 #align submodule.to_add_subgroup_to_int_submodule Submodule.toAddSubgroup_toIntSubmodule

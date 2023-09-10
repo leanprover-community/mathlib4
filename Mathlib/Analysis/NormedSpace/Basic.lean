@@ -64,12 +64,12 @@ instance NormedField.to_boundedSMul : BoundedSMul α α :=
   NormedSpace.boundedSMul
 #align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
-theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
+lemma norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
 @[simp]
-theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
+lemma abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
 #align abs_norm abs_norm
 
 lemma inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
@@ -86,7 +86,7 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
 
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]
 
-theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
+lemma eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
   have : Tendsto (fun y => ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
     ((continuous_id.sub continuous_const).const_smul _).norm.tendsto' _ _ (by simp)
@@ -327,7 +327,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] 
 
 /-- If `E` is a nontrivial normed space over a nontrivially normed field `𝕜`, then `E` is unbounded:
 for any `c : ℝ`, there exists a vector `x : E` with norm strictly greater than `c`. -/
-theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
+lemma NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rcases NormedField.exists_lt_norm 𝕜 (c / ‖x‖) with ⟨r, hr⟩
   use r • x
@@ -400,12 +400,12 @@ instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜
     NormedSpace 𝕜 𝕜' := by infer_instance
 #align normed_algebra.to_normed_space' NormedAlgebra.toNormedSpace'
 
-theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
+lemma norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact norm_smul _ _
 #align norm_algebra_map norm_algebraMap
 
-theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
+lemma nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
 #align nnnorm_algebra_map nnnorm_algebraMap
 
@@ -424,12 +424,12 @@ section NNReal
 variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 
 @[simp]
-theorem norm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
+lemma norm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
 #align norm_algebra_map_nnreal norm_algebraMap_nNReal
 
 @[simp]
-theorem nnnorm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
+lemma nnnorm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nNReal 𝕜' x
 #align nnnorm_algebra_map_nnreal nnnorm_algebraMap_nNReal
 

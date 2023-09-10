@@ -53,22 +53,22 @@ lemma unop_injective : Function.Injective (unmop : Cᴹᵒᵖ → C) :=
 #align category_theory.monoidal_opposite.unop_injective CategoryTheory.MonoidalOpposite.unop_injective
 
 @[simp]
-theorem op_inj_iff (x y : C) : mop x = mop y ↔ x = y :=
+lemma op_inj_iff (x y : C) : mop x = mop y ↔ x = y :=
   Iff.rfl
 #align category_theory.monoidal_opposite.op_inj_iff CategoryTheory.MonoidalOpposite.op_inj_iff
 
 @[simp]
-theorem unop_inj_iff (x y : Cᴹᵒᵖ) : unmop x = unmop y ↔ x = y :=
+lemma unop_inj_iff (x y : Cᴹᵒᵖ) : unmop x = unmop y ↔ x = y :=
   Iff.rfl
 #align category_theory.monoidal_opposite.unop_inj_iff CategoryTheory.MonoidalOpposite.unop_inj_iff
 
 @[simp]
-theorem mop_unmop (X : Cᴹᵒᵖ) : mop (unmop X) = X :=
+lemma mop_unmop (X : Cᴹᵒᵖ) : mop (unmop X) = X :=
   rfl
 #align category_theory.monoidal_opposite.mop_unmop CategoryTheory.MonoidalOpposite.mop_unmop
 
 @[simp]
-theorem unmop_mop (X : C) : unmop (mop X) = X :=
+lemma unmop_mop (X : C) : unmop (mop X) = X :=
   rfl
 #align category_theory.monoidal_opposite.unmop_mop CategoryTheory.MonoidalOpposite.unmop_mop
 
@@ -185,7 +185,7 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   pentagon W X Y Z := Quiver.Hom.unop_inj (by dsimp; coherence)
 #align category_theory.monoidal_category_op CategoryTheory.monoidalCategoryOp
 
-theorem op_tensorObj (X Y : Cᵒᵖ) : X ⊗ Y = op (unop X ⊗ unop Y) :=
+lemma op_tensorObj (X Y : Cᵒᵖ) : X ⊗ Y = op (unop X ⊗ unop Y) :=
   rfl
 #align category_theory.op_tensor_obj CategoryTheory.op_tensorObj
 
@@ -210,7 +210,7 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   pentagon W X Y Z := unmop_inj (by dsimp; coherence)
 #align category_theory.monoidal_category_mop CategoryTheory.monoidalCategoryMop
 
-theorem mop_tensorObj (X Y : Cᴹᵒᵖ) : X ⊗ Y = mop (unmop Y ⊗ unmop X) :=
+lemma mop_tensorObj (X Y : Cᴹᵒᵖ) : X ⊗ Y = mop (unmop Y ⊗ unmop X) :=
   rfl
 #align category_theory.mop_tensor_obj CategoryTheory.mop_tensorObj
 

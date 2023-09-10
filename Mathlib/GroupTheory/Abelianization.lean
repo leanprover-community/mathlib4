@@ -116,7 +116,7 @@ def of : G →* Abelianization G where
 #align abelianization.of Abelianization.of
 
 @[simp]
-theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
+lemma mk_eq_of (a : G) : Quot.mk _ a = of a :=
   rfl
 #align abelianization.mk_eq_of Abelianization.mk_eq_of
 
@@ -143,11 +143,11 @@ def lift : (G →* A) ≃ (Abelianization G →* A) where
 #align abelianization.lift Abelianization.lift
 
 @[simp]
-theorem lift.of (x : G) : lift f (of x) = f x :=
+lemma lift.of (x : G) : lift f (of x) = f x :=
   rfl
 #align abelianization.lift.of Abelianization.lift.of
 
-theorem lift.unique (φ : Abelianization G →* A)
+lemma lift.unique (φ : Abelianization G →* A)
     -- hφ : φ agrees with f on the image of G in Gᵃᵇ
     (hφ : ∀ x : G, φ (Abelianization.of x) = f x)
     {x : Abelianization G} : φ x = lift f x :=
@@ -165,7 +165,7 @@ variable {A : Type v} [Monoid A]
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
+lemma hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
   MonoidHom.ext fun x => QuotientGroup.induction_on x <| FunLike.congr_fun h
 #align abelianization.hom_ext Abelianization.hom_ext
 
@@ -179,7 +179,7 @@ def map : Abelianization G →* Abelianization H :=
 #align abelianization.map Abelianization.map
 
 @[simp]
-theorem map_of (x : G) : map f (of x) = of (f x) :=
+lemma map_of (x : G) : map f (of x) = of (f x) :=
   rfl
 #align abelianization.map_of Abelianization.map_of
 
@@ -222,7 +222,7 @@ def MulEquiv.abelianizationCongr : Abelianization G ≃* Abelianization H where
 #align mul_equiv.abelianization_congr MulEquiv.abelianizationCongr
 
 @[simp]
-theorem abelianizationCongr_of (x : G) :
+lemma abelianizationCongr_of (x : G) :
     e.abelianizationCongr (Abelianization.of x) = Abelianization.of (e x) :=
   rfl
 #align abelianization_congr_of abelianizationCongr_of

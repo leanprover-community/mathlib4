@@ -62,7 +62,7 @@ def minFac : PosNum → PosNum
 #align pos_num.min_fac PosNum.minFac
 
 @[simp]
-theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
+lemma minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   cases' n with n
   · rfl
   · rw [minFac, Nat.minFac_eq, if_neg]

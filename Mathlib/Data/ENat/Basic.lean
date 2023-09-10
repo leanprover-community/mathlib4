@@ -73,18 +73,18 @@ lemma coe_one : ((1 : ℕ) : ℕ∞) = 1 :=
 
 --Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
-theorem coe_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
+lemma coe_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
   rfl
 #align enat.coe_add ENat.coe_add
 
 @[simp, norm_cast]
-theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
+lemma coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 #align enat.coe_sub ENat.coe_sub
 
 --Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
-theorem coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) :=
+lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) :=
   WithTop.coe_mul
 #align enat.coe_mul ENat.coe_mul
 
@@ -106,7 +106,7 @@ def toNat : MonoidWithZeroHom ℕ∞ ℕ
 #align enat.to_nat ENat.toNat
 
 @[simp]
-theorem toNat_coe (n : ℕ) : toNat n = n :=
+lemma toNat_coe (n : ℕ) : toNat n = n :=
   rfl
 #align enat.to_nat_coe ENat.toNat_coe
 
@@ -136,21 +136,21 @@ lemma recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
+lemma top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   fun.
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
+lemma coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   fun.
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
+lemma top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   WithTop.top_sub_coe
 
 --Porting note: new theorem copied from `WithTop`
-theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
+lemma sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
 @[simp]
@@ -161,7 +161,7 @@ lemma coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 #align enat.coe_to_nat ENat.coe_toNat
 
-theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
+lemma coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
 #align enat.coe_to_nat_le_self ENat.coe_toNat_le_self
 
@@ -183,14 +183,14 @@ lemma toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n
 #align enat.to_nat_eq_iff ENat.toNat_eq_iff
 
 @[simp]
-theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
+lemma succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
 #align enat.succ_def ENat.succ_def
 
-theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
+lemma add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
   m.succ_def ▸ Order.succ_le_of_lt h
 #align enat.add_one_le_of_lt ENat.add_one_le_of_lt
 
-theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
+lemma add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   m.succ_def ▸ (Order.succ_le_iff_of_not_isMax <| by rwa [isMax_iff_eq_top])
 #align enat.add_one_le_iff ENat.add_one_le_iff
 
@@ -202,7 +202,7 @@ lemma one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 #align enat.one_le_iff_ne_zero ENat.one_le_iff_ne_zero
 
-theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
+lemma le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 #align enat.le_of_lt_add_one ENat.le_of_lt_add_one
 

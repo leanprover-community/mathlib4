@@ -947,7 +947,7 @@ def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F where
 #align category_theory.limits.cocone_of_cone_left_op CategoryTheory.Limits.coconeOfConeLeftOp
 
 @[simp]
-theorem coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
+lemma coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
     (coconeOfConeLeftOp c).ι.app j = (c.π.app (op j)).op := by
   dsimp only [coconeOfConeLeftOp]
   simp

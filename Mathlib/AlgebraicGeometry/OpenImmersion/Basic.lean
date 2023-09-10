@@ -212,7 +212,7 @@ lemma inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
 
 instance (U : Opens X) : IsIso (H.invApp U) := by delta invApp; infer_instance
 
-theorem inv_invApp (U : Opens X) :
+lemma inv_invApp (U : Opens X) :
     inv (H.invApp U) =
       f.c.app (op (H.openFunctor.obj U)) ≫
         X.presheaf.map (eqToHom (by
@@ -229,7 +229,7 @@ theorem inv_invApp (U : Opens X) :
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.inv_inv_app AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.inv_invApp
 
 @[simp, reassoc, elementwise]
-theorem invApp_app (U : Opens X) :
+lemma invApp_app (U : Opens X) :
     H.invApp U ≫ f.c.app (op (H.openFunctor.obj U)) =
       X.presheaf.map (eqToHom (by
         -- Porting note : was just `simp [opens.map, Set.preimage_image_eq _ H.base_open.inj]`
@@ -243,7 +243,7 @@ theorem invApp_app (U : Opens X) :
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.inv_app_app AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.invApp_app
 
 @[simp, reassoc]
-theorem app_invApp (U : Opens Y) :
+lemma app_invApp (U : Opens Y) :
     f.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
@@ -253,7 +253,7 @@ theorem app_invApp (U : Opens Y) :
 
 /-- A variant of `app_inv_app` that gives an `eq_to_hom` instead of `hom_of_le`. -/
 @[reassoc]
-theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
+lemma app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
     f.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
       Y.presheaf.map
         (eqToHom
@@ -310,7 +310,7 @@ lemma ofRestrict_invApp {C : Type*} [Category C] (X : PresheafedSpace C) {Y : To
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.of_restrict_inv_app AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofRestrict_invApp
 
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
-theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f := by
+lemma to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f := by
   -- Porting Note : was `apply (config := { instances := False }) ...`
   -- See https://github.com/leanprover/lean4/issues/2273
   have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U)
@@ -542,7 +542,7 @@ instance forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :
   preservesPullbackSymmetry (forget C) f g
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.forget_preserves_limits_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.forgetPreservesLimitsOfRight
 
-theorem pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
+lemma pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd : pullback f g ⟶ _) := by
   haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.toEmbedding g.base H
   have : IsIso (pullback.snd : pullback f g ⟶ _).base := by
@@ -564,13 +564,13 @@ def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.lift AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift
 
 @[simp, reassoc]
-theorem lift_fac (H : Set.range g.base ⊆ Set.range f.base) : lift f g H ≫ f = g := by
+lemma lift_fac (H : Set.range g.base ⊆ Set.range f.base) : lift f g H ≫ f = g := by
   -- Porting note : this instance was automatic
   letI := pullback_snd_isIso_of_range_subset _ _ H
   erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.lift_fac AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift_fac
 
-theorem lift_uniq (H : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
+lemma lift_uniq (H : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H := by rw [← cancel_mono f, hl, lift_fac]
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.lift_uniq AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift_uniq
 
@@ -879,7 +879,7 @@ lemma sigma_ι_openEmbedding : OpenEmbedding (colimit.ι F i).base := by
   exact openEmbedding_sigmaMk
 #align algebraic_geometry.SheafedSpace.is_open_immersion.sigma_ι_open_embedding AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sigma_ι_openEmbedding
 
-theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
+lemma image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
     (Opens.map (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) j).base).obj
         ((Opens.map (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
           ((sigma_ι_openEmbedding F i).isOpenMap.functor.obj U)) =
@@ -1121,7 +1121,7 @@ instance forgetToPresheafedSpaceReflectsPullbackOfRight :
   reflectsLimitOfReflectsIsomorphisms _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forgetToPresheafedSpace_reflects_pullback_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToPresheafedSpaceReflectsPullbackOfRight
 
-theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
+lemma pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     IsIso (pullback.snd : pullback f g ⟶ _) := by
   -- Porting note : was `apply (config := { instances := False }) ...`
   -- See https://github.com/leanprover/lean4/issues/2273
@@ -1151,17 +1151,17 @@ def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift
 
 @[simp, reassoc]
-theorem lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g := by
+lemma lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g := by
   -- Porting note : added instance manually
   haveI := pullback_snd_isIso_of_range_subset f g H'
   erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift_fac AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift_fac
 
-theorem lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
+lemma lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H' := by rw [← cancel_mono f, hl, lift_fac]
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift_uniq AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift_uniq
 
-theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
+lemma lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     Set.range (lift f g H').1.base = f.1.base ⁻¹' Set.range g.1.base := by
   -- Porting note : added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'

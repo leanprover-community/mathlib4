@@ -39,22 +39,22 @@ section IsROrCComposition
 variable {α 𝕜 : Type*} [IsROrC 𝕜] {m : MeasurableSpace α} {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
-theorem Measurable.re (hf : Measurable f) : Measurable fun x => IsROrC.re (f x) :=
+lemma Measurable.re (hf : Measurable f) : Measurable fun x => IsROrC.re (f x) :=
   IsROrC.measurable_re.comp hf
 #align measurable.re Measurable.re
 
 @[measurability]
-theorem AEMeasurable.re (hf : AEMeasurable f μ) : AEMeasurable (fun x => IsROrC.re (f x)) μ :=
+lemma AEMeasurable.re (hf : AEMeasurable f μ) : AEMeasurable (fun x => IsROrC.re (f x)) μ :=
   IsROrC.measurable_re.comp_aemeasurable hf
 #align ae_measurable.re AEMeasurable.re
 
 @[measurability]
-theorem Measurable.im (hf : Measurable f) : Measurable fun x => IsROrC.im (f x) :=
+lemma Measurable.im (hf : Measurable f) : Measurable fun x => IsROrC.im (f x) :=
   IsROrC.measurable_im.comp hf
 #align measurable.im Measurable.im
 
 @[measurability]
-theorem AEMeasurable.im (hf : AEMeasurable f μ) : AEMeasurable (fun x => IsROrC.im (f x)) μ :=
+lemma AEMeasurable.im (hf : AEMeasurable f μ) : AEMeasurable (fun x => IsROrC.im (f x)) μ :=
   IsROrC.measurable_im.comp_aemeasurable hf
 #align ae_measurable.im AEMeasurable.im
 
@@ -69,14 +69,14 @@ lemma IsROrC.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=
   IsROrC.continuous_ofReal.measurable
 #align is_R_or_C.measurable_of_real IsROrC.measurable_ofReal
 
-theorem measurable_of_re_im (hre : Measurable fun x => IsROrC.re (f x))
+lemma measurable_of_re_im (hre : Measurable fun x => IsROrC.re (f x))
     (him : Measurable fun x => IsROrC.im (f x)) : Measurable f := by
   convert Measurable.add (M := 𝕜) (IsROrC.measurable_ofReal.comp hre)
       ((IsROrC.measurable_ofReal.comp him).mul_const IsROrC.I)
   exact (IsROrC.re_add_im _).symm
 #align measurable_of_re_im measurable_of_re_im
 
-theorem aemeasurable_of_re_im (hre : AEMeasurable (fun x => IsROrC.re (f x)) μ)
+lemma aemeasurable_of_re_im (hre : AEMeasurable (fun x => IsROrC.re (f x)) μ)
     (him : AEMeasurable (fun x => IsROrC.im (f x)) μ) : AEMeasurable f μ := by
   convert AEMeasurable.add (M := 𝕜) (IsROrC.measurable_ofReal.comp_aemeasurable hre)
       ((IsROrC.measurable_ofReal.comp_aemeasurable him).mul_const IsROrC.I)

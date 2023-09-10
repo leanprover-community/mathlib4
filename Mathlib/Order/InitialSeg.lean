@@ -79,19 +79,19 @@ instance : EmbeddingLike (r ≼i s) α β :=
 #align initial_seg.ext InitialSeg.ext
 
 @[simp]
-theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
+lemma coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
   rfl
 #align initial_seg.coe_coe_fn InitialSeg.coe_coe_fn
 
-theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
+lemma init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :=
   f.init' _ _
 #align initial_seg.init InitialSeg.init
 
-theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
+lemma map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
-theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
+lemma init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
     rcases f.init h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
@@ -122,12 +122,12 @@ protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
 #align initial_seg.trans InitialSeg.trans
 
 @[simp]
-theorem refl_apply (x : α) : InitialSeg.refl r x = x :=
+lemma refl_apply (x : α) : InitialSeg.refl r x = x :=
   rfl
 #align initial_seg.refl_apply InitialSeg.refl_apply
 
 @[simp]
-theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (f a) :=
+lemma trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (f a) :=
   rfl
 #align initial_seg.trans_apply InitialSeg.trans_apply
 
@@ -192,7 +192,7 @@ def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subr
 #align initial_seg.cod_restrict InitialSeg.codRestrict
 
 @[simp]
-theorem codRestrict_apply (p) (f : r ≼i s) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
+lemma codRestrict_apply (p) (f : r ≼i s) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
 #align initial_seg.cod_restrict_apply InitialSeg.codRestrict_apply
 
@@ -208,11 +208,11 @@ def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s
 #align initial_seg.le_add InitialSeg.leAdd
 
 @[simp]
-theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAdd r s a = Sum.inl a :=
+lemma leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAdd r s a = Sum.inl a :=
   rfl
 #align initial_seg.le_add_apply InitialSeg.leAdd_apply
 
-protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
+protected lemma acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   ⟨by
     refine' fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => _
     obtain ⟨a', rfl⟩ := f.init hb
@@ -256,15 +256,15 @@ instance : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
 
 @[simp]
-theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
+lemma coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
   rfl
 #align principal_seg.coe_fn_mk PrincipalSeg.coe_fn_mk
 
-theorem down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
+lemma down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
   f.down' _
 #align principal_seg.down PrincipalSeg.down
 
-theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
+lemma lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
   f.down.2 ⟨_, rfl⟩
 #align principal_seg.lt_top PrincipalSeg.lt_top
 
@@ -302,12 +302,12 @@ def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
 #align principal_seg.lt_le PrincipalSeg.ltLe
 
 @[simp]
-theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
+lemma lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
 #align principal_seg.lt_le_apply PrincipalSeg.lt_le_apply
 
 @[simp]
-theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
+lemma lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
   rfl
 #align principal_seg.lt_le_top PrincipalSeg.lt_le_top
 
@@ -345,12 +345,12 @@ def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ →
 #align principal_seg.lt_equiv PrincipalSeg.ltEquiv
 
 @[simp]
-theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
+lemma equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
   RelEmbedding.trans_apply _ _ _
 #align principal_seg.equiv_lt_apply PrincipalSeg.equivLT_apply
 
 @[simp]
-theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
+lemma equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 #align principal_seg.equiv_lt_top PrincipalSeg.equivLT_top
 
@@ -401,12 +401,12 @@ noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
     map_rel_iff' := f.map_rel_iff }
 
 @[simp]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
+lemma apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
     f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 @[simp]
-theorem subrelIso_apply (f : r ≺i s) (a : α) :
+lemma subrelIso_apply (f : r ≺i s) (a : α) :
     f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
 
@@ -418,12 +418,12 @@ def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top
 #align principal_seg.cod_restrict PrincipalSeg.codRestrict
 
 @[simp]
-theorem codRestrict_apply (p) (f : r ≺i s) (H H₂ a) : codRestrict p f H H₂ a = ⟨f a, H a⟩ :=
+lemma codRestrict_apply (p) (f : r ≺i s) (H H₂ a) : codRestrict p f H H₂ a = ⟨f a, H a⟩ :=
   rfl
 #align principal_seg.cod_restrict_apply PrincipalSeg.codRestrict_apply
 
 @[simp]
-theorem codRestrict_top (p) (f : r ≺i s) (H H₂) : (codRestrict p f H H₂).top = ⟨f.top, H₂⟩ :=
+lemma codRestrict_top (p) (f : r ≺i s) (H H₂) : (codRestrict p f H H₂).top = ⟨f.top, H₂⟩ :=
   rfl
 #align principal_seg.cod_restrict_top PrincipalSeg.codRestrict_top
 
@@ -435,7 +435,7 @@ def ofIsEmpty (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b'
 #align principal_seg.of_is_empty PrincipalSeg.ofIsEmpty
 
 @[simp]
-theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) :
+lemma ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) :
     (ofIsEmpty r H).top = b :=
   rfl
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top

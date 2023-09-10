@@ -59,7 +59,7 @@ def normalizer : LieSubmodule R L M where
 #align lie_submodule.normalizer LieSubmodule.normalizer
 
 @[simp]
-theorem mem_normalizer (m : M) : m ∈ N.normalizer ↔ ∀ x : L, ⁅x, m⁆ ∈ N :=
+lemma mem_normalizer (m : M) : m ∈ N.normalizer ↔ ∀ x : L, ⁅x, m⁆ ∈ N :=
   Iff.rfl
 #align lie_submodule.mem_normalizer LieSubmodule.mem_normalizer
 
@@ -82,11 +82,11 @@ lemma monotone_normalizer : Monotone (normalizer : LieSubmodule R L M → LieSub
 #align lie_submodule.monotone_normalizer LieSubmodule.monotone_normalizer
 
 @[simp]
-theorem comap_normalizer (f : M' →ₗ⁅R,L⁆ M) : N.normalizer.comap f = (N.comap f).normalizer := by
+lemma comap_normalizer (f : M' →ₗ⁅R,L⁆ M) : N.normalizer.comap f = (N.comap f).normalizer := by
   ext; simp
 #align lie_submodule.comap_normalizer LieSubmodule.comap_normalizer
 
-theorem top_lie_le_iff_le_normalizer (N' : LieSubmodule R L M) :
+lemma top_lie_le_iff_le_normalizer (N' : LieSubmodule R L M) :
     ⁅(⊤ : LieIdeal R L), N⁆ ≤ N' ↔ N ≤ N'.normalizer := by rw [lie_le_iff]; tauto
 #align lie_submodule.top_lie_le_iff_le_normalizer LieSubmodule.top_lie_le_iff_le_normalizer
 
@@ -134,11 +134,11 @@ def normalizer : LieSubalgebra R L :=
       exact H.sub_mem (hz ⟨_, hy x⟩) (hy ⟨_, hz x⟩) }
 #align lie_subalgebra.normalizer LieSubalgebra.normalizer
 
-theorem mem_normalizer_iff' (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H → ⁅y, x⁆ ∈ H := by
+lemma mem_normalizer_iff' (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H → ⁅y, x⁆ ∈ H := by
   rw [Subtype.forall']; rfl
 #align lie_subalgebra.mem_normalizer_iff' LieSubalgebra.mem_normalizer_iff'
 
-theorem mem_normalizer_iff (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H → ⁅x, y⁆ ∈ H := by
+lemma mem_normalizer_iff (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H → ⁅x, y⁆ ∈ H := by
   rw [mem_normalizer_iff']
   refine' forall₂_congr fun y hy => _
   rw [← lie_skew, neg_mem_iff (G := L)]

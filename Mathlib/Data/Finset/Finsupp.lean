@@ -74,7 +74,7 @@ lemma mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.suppor
 #align finset.mem_finsupp_iff_of_support_subset Finset.mem_finsupp_iff_of_support_subset
 
 @[simp]
-theorem card_finsupp (s : Finset ι) (t : ι → Finset α) :
+lemma card_finsupp (s : Finset ι) (t : ι → Finset α) :
     (s.finsupp t).card = ∏ i in s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 #align finset.card_finsupp Finset.card_finsupp
@@ -97,7 +97,7 @@ lemma mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀ i
 #align finsupp.mem_pi Finsupp.mem_pi
 
 @[simp]
-theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
+lemma card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_finsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
 #align finsupp.card_pi Finsupp.card_pi

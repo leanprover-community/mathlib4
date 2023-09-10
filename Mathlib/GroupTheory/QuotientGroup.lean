@@ -85,7 +85,7 @@ lemma coe_mk' : (mk' N : G → G ⧸ N) = mk :=
 #align quotient_add_group.coe_mk' QuotientAddGroup.coe_mk'
 
 @[to_additive (attr := simp)]
-theorem mk'_apply (x : G) : mk' N x = x :=
+lemma mk'_apply (x : G) : mk' N x = x :=
   rfl
 #align quotient_group.mk'_apply QuotientGroup.mk'_apply
 #align quotient_add_group.mk'_apply QuotientAddGroup.mk'_apply
@@ -162,31 +162,31 @@ lemma mk_one : ((1 : G) : Q ) = 1 :=
 #align quotient_add_group.coe_zero QuotientAddGroup.mk_zero
 
 @[to_additive (attr := simp)]
-theorem mk_mul (a b : G) : ((a * b : G) : Q ) = a * b :=
+lemma mk_mul (a b : G) : ((a * b : G) : Q ) = a * b :=
   rfl
 #align quotient_group.coe_mul QuotientGroup.mk_mul
 #align quotient_add_group.coe_add QuotientAddGroup.mk_add
 
 @[to_additive (attr := simp)]
-theorem mk_inv (a : G) : ((a⁻¹ : G) : Q ) = (a : Q)⁻¹ :=
+lemma mk_inv (a : G) : ((a⁻¹ : G) : Q ) = (a : Q)⁻¹ :=
   rfl
 #align quotient_group.coe_inv QuotientGroup.mk_inv
 #align quotient_add_group.coe_neg QuotientAddGroup.mk_neg
 
 @[to_additive (attr := simp)]
-theorem mk_div (a b : G) : ((a / b : G) : Q ) = a / b :=
+lemma mk_div (a b : G) : ((a / b : G) : Q ) = a / b :=
   rfl
 #align quotient_group.coe_div QuotientGroup.mk_div
 #align quotient_add_group.coe_sub QuotientAddGroup.mk_sub
 
 @[to_additive (attr := simp)]
-theorem mk_pow (a : G) (n : ℕ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
+lemma mk_pow (a : G) (n : ℕ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
   rfl
 #align quotient_group.coe_pow QuotientGroup.mk_pow
 #align quotient_add_group.coe_nsmul QuotientAddGroup.mk_nsmul
 
 @[to_additive (attr := simp)]
-theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
+lemma mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
   rfl
 #align quotient_group.coe_zpow QuotientGroup.mk_zpow
 #align quotient_add_group.coe_zsmul QuotientAddGroup.mk_zsmul
@@ -238,28 +238,28 @@ def map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) : G ⧸
 #align quotient_add_group.map QuotientAddGroup.map
 
 @[to_additive (attr := simp)]
-theorem map_mk (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) (x : G) :
+lemma map_mk (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) (x : G) :
     map N M f h ↑x = ↑(f x) :=
   rfl
 #align quotient_group.map_coe QuotientGroup.map_mk
 #align quotient_add_group.map_coe QuotientAddGroup.map_mk
 
 @[to_additive]
-theorem map_mk' (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) (x : G) :
+lemma map_mk' (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) (x : G) :
     map N M f h (mk' _ x) = ↑(f x) :=
   rfl
 #align quotient_group.map_mk' QuotientGroup.map_mk'
 #align quotient_add_group.map_mk' QuotientAddGroup.map_mk'
 
 @[to_additive]
-theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
+lemma map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
     map N N (MonoidHom.id _) h x = x :=
   induction_on' x fun _x => rfl
 #align quotient_group.map_id_apply QuotientGroup.map_id_apply
 #align quotient_add_group.map_id_apply QuotientAddGroup.map_id_apply
 
 @[to_additive (attr := simp)]
-theorem map_id (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) :
+lemma map_id (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) :
     map N N (MonoidHom.id _) h = MonoidHom.id _ :=
   MonoidHom.ext (map_id_apply N h)
 #align quotient_group.map_id QuotientGroup.map_id
@@ -312,30 +312,30 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
 #align quotient_add_group.congr QuotientAddGroup.congr
 
 @[simp]
-theorem congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he (mk x) = e x :=
+lemma congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he (mk x) = e x :=
   rfl
 #align quotient_group.congr_mk QuotientGroup.congr_mk
 
-theorem congr_mk' (e : G ≃* H) (he : G'.map ↑e = H') (x) :
+lemma congr_mk' (e : G ≃* H) (he : G'.map ↑e = H') (x) :
     congr G' H' e he (mk' G' x) = mk' H' (e x) :=
   rfl
 #align quotient_group.congr_mk' QuotientGroup.congr_mk'
 
 @[simp]
-theorem congr_apply (e : G ≃* H) (he : G'.map ↑e = H') (x : G) :
+lemma congr_apply (e : G ≃* H) (he : G'.map ↑e = H') (x : G) :
     congr G' H' e he x = mk' H' (e x) :=
   rfl
 #align quotient_group.congr_apply QuotientGroup.congr_apply
 
 @[simp]
-theorem congr_refl (he : G'.map (MulEquiv.refl G : G →* G) = G' := Subgroup.map_id G') :
+lemma congr_refl (he : G'.map (MulEquiv.refl G : G →* G) = G' := Subgroup.map_id G') :
     congr G' G' (MulEquiv.refl G) he = MulEquiv.refl (G ⧸ G') := by
   ext ⟨x⟩
   rfl
 #align quotient_group.congr_refl QuotientGroup.congr_refl
 
 @[simp]
-theorem congr_symm (e : G ≃* H) (he : G'.map ↑e = H') :
+lemma congr_symm (e : G ≃* H) (he : G'.map ↑e = H') :
     (congr G' H' e he).symm = congr H' G' e.symm ((Subgroup.map_symm_eq_iff_map_eq _).mpr he) :=
   rfl
 #align quotient_group.congr_symm QuotientGroup.congr_symm
@@ -354,13 +354,13 @@ def kerLift : G ⧸ ker φ →* H :=
 #align quotient_add_group.ker_lift QuotientAddGroup.kerLift
 
 @[to_additive (attr := simp)]
-theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
+lemma kerLift_mk (g : G) : (kerLift φ) g = φ g :=
   lift_mk _ _ _
 #align quotient_group.ker_lift_mk QuotientGroup.kerLift_mk
 #align quotient_add_group.ker_lift_mk QuotientAddGroup.kerLift_mk
 
 @[to_additive (attr := simp)]
-theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
+lemma kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
   lift_mk' _ _ _
 #align quotient_group.ker_lift_mk' QuotientGroup.kerLift_mk'
 #align quotient_add_group.ker_lift_mk' QuotientAddGroup.kerLift_mk'
@@ -524,7 +524,7 @@ lemma homQuotientZPowOfHom_comp :
 #align quotient_add_group.hom_quotient_zsmul_of_hom_comp QuotientAddGroup.homQuotientZSMulOfHom_comp
 
 @[to_additive (attr := simp)]
-theorem homQuotientZPowOfHom_comp_of_rightInverse (i : Function.RightInverse g f) :
+lemma homQuotientZPowOfHom_comp_of_rightInverse (i : Function.RightInverse g f) :
     (homQuotientZPowOfHom f n).comp (homQuotientZPowOfHom g n) = MonoidHom.id _ :=
   monoidHom_ext _ <| MonoidHom.ext fun x => congrArg _ <| i x
 #align quotient_group.hom_quotient_zpow_of_hom_comp_of_right_inverse QuotientGroup.homQuotientZPowOfHom_comp_of_rightInverse
@@ -632,14 +632,14 @@ def quotientQuotientEquivQuotientAux : (G ⧸ N) ⧸ M.map (mk' N) →* G ⧸ M 
 #align quotient_add_group.quotient_quotient_equiv_quotient_aux QuotientAddGroup.quotientQuotientEquivQuotientAux
 
 @[to_additive (attr := simp)]
-theorem quotientQuotientEquivQuotientAux_mk (x : G ⧸ N) :
+lemma quotientQuotientEquivQuotientAux_mk (x : G ⧸ N) :
     quotientQuotientEquivQuotientAux N M h x = QuotientGroup.map N M (MonoidHom.id G) h x :=
   QuotientGroup.lift_mk' _ _ x
 #align quotient_group.quotient_quotient_equiv_quotient_aux_coe QuotientGroup.quotientQuotientEquivQuotientAux_mk
 #align quotient_add_group.quotient_quotient_equiv_quotient_aux_coe QuotientAddGroup.quotientQuotientEquivQuotientAux_mk
 
 @[to_additive]
-theorem quotientQuotientEquivQuotientAux_mk_mk (x : G) :
+lemma quotientQuotientEquivQuotientAux_mk_mk (x : G) :
     quotientQuotientEquivQuotientAux N M h (x : G ⧸ N) = x :=
   QuotientGroup.lift_mk' (M.map (mk' N)) _ x
 #align quotient_group.quotient_quotient_equiv_quotient_aux_coe_coe QuotientGroup.quotientQuotientEquivQuotientAux_mk_mk
@@ -671,7 +671,7 @@ lemma subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
 @[to_additive "If the quotient by an additive subgroup gives a singleton then the additive subgroup
 is the whole additive group."]
-theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
+lemma subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
   top_unique fun x _ => by
     have this : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
     rwa [inv_one, one_mul] at this

@@ -34,7 +34,7 @@ section
 variable {α : Type*} {β : Type*} [Ring β] [LinearOrderedField α] [Archimedean α] {abv : β → α}
   [IsAbsoluteValue abv]
 
-theorem isCauSeq_of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
+lemma isCauSeq_of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n.succ ≤ f n) : IsCauSeq abs f := fun ε ε0 => by
   let ⟨k, hk⟩ := Archimedean.arch a ε0
   have h : ∃ l, ∀ n ≥ m, a - l • ε < f n :=
@@ -68,7 +68,7 @@ theorem isCauSeq_of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham 
     _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
 #align is_cau_of_decreasing_bounded isCauSeq_of_decreasing_bounded
 
-theorem isCauSeq_of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
+lemma isCauSeq_of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f := by
   refine'
     @Eq.ndrecOn (ℕ → α) _ (IsCauSeq abs) _ _
@@ -145,7 +145,7 @@ lemma isCauSeq_geo_series {β : Type*} [Ring β] [Nontrivial β] {abv : β → �
         gcongr)
 #align is_cau_geo_series isCauSeq_geo_series
 
-theorem isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
+lemma isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
     IsCauSeq abs fun m => ∑ n in range m, (a * x ^ n) := by
   have : IsCauSeq abs fun m => a * ∑ n in range m, (x ^ n) :=
     (CauSeq.const abs a *
@@ -348,7 +348,7 @@ open CauSeq
 
 namespace Complex
 
-theorem isCauSeq_abs_exp (z : ℂ) :
+lemma isCauSeq_abs_exp (z : ℂ) :
     IsCauSeq Abs.abs fun n => ∑ m in range n, abs (z ^ m / m.factorial) :=
   let ⟨n, hn⟩ := exists_nat_gt (abs z)
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
@@ -362,7 +362,7 @@ theorem isCauSeq_abs_exp (z : ℂ) :
 
 noncomputable section
 
-theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m in range n, z ^ m / m.factorial :=
+lemma isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m in range n, z ^ m / m.factorial :=
   isCauSeq_series_of_abv_isCauSeq (isCauSeq_abs_exp z)
 #align complex.is_cau_exp Complex.isCauSeq_exp
 
@@ -521,11 +521,11 @@ noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
-theorem exp_list_sum (l : List ℂ) : exp l.sum = (l.map exp).prod :=
+lemma exp_list_sum (l : List ℂ) : exp l.sum = (l.map exp).prod :=
   @MonoidHom.map_list_prod (Multiplicative ℂ) ℂ _ _ expMonoidHom l
 #align complex.exp_list_sum Complex.exp_list_sum
 
-theorem exp_multiset_sum (s : Multiset ℂ) : exp s.sum = (s.map exp).prod :=
+lemma exp_multiset_sum (s : Multiset ℂ) : exp s.sum = (s.map exp).prod :=
   @MonoidHom.map_multiset_prod (Multiplicative ℂ) ℂ _ _ expMonoidHom s
 #align complex.exp_multiset_sum Complex.exp_multiset_sum
 
@@ -534,7 +534,7 @@ lemma exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
   @map_prod (Multiplicative ℂ) α ℂ _ _ _ _ expMonoidHom f s
 #align complex.exp_sum Complex.exp_sum
 
-theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
+lemma exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
   | Nat.succ n => by rw [pow_succ', Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
 #align complex.exp_nat_mul Complex.exp_nat_mul
@@ -551,7 +551,7 @@ lemma exp_sub : exp (x - y) = exp x / exp y := by
   simp [sub_eq_add_neg, exp_add, exp_neg, div_eq_mul_inv]
 #align complex.exp_sub Complex.exp_sub
 
-theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
+lemma exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
   cases n
   · simp [exp_nat_mul]
   · simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
@@ -569,20 +569,20 @@ lemma exp_conj : exp (conj x) = conj (exp x) := by
 #align complex.exp_conj Complex.exp_conj
 
 @[simp]
-theorem ofReal_exp_ofReal_re (x : ℝ) : ((exp x).re : ℂ) = exp x :=
+lemma ofReal_exp_ofReal_re (x : ℝ) : ((exp x).re : ℂ) = exp x :=
   conj_eq_iff_re.1 <| by rw [← exp_conj, conj_ofReal]
 #align complex.of_real_exp_of_real_re Complex.ofReal_exp_ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_exp (x : ℝ) : (Real.exp x : ℂ) = exp x :=
+lemma ofReal_exp (x : ℝ) : (Real.exp x : ℂ) = exp x :=
   ofReal_exp_ofReal_re _
 #align complex.of_real_exp Complex.ofReal_exp
 
 @[simp]
-theorem exp_ofReal_im (x : ℝ) : (exp x).im = 0 := by rw [← ofReal_exp_ofReal_re, ofReal_im]
+lemma exp_ofReal_im (x : ℝ) : (exp x).im = 0 := by rw [← ofReal_exp_ofReal_re, ofReal_im]
 #align complex.exp_of_real_im Complex.exp_ofReal_im
 
-theorem exp_ofReal_re (x : ℝ) : (exp x).re = Real.exp x :=
+lemma exp_ofReal_re (x : ℝ) : (exp x).re = Real.exp x :=
   rfl
 #align complex.exp_of_real_re Complex.exp_ofReal_re
 
@@ -645,20 +645,20 @@ lemma sinh_conj : sinh (conj x) = conj (sinh x) := by
 #align complex.sinh_conj Complex.sinh_conj
 
 @[simp]
-theorem ofReal_sinh_ofReal_re (x : ℝ) : ((sinh x).re : ℂ) = sinh x :=
+lemma ofReal_sinh_ofReal_re (x : ℝ) : ((sinh x).re : ℂ) = sinh x :=
   conj_eq_iff_re.1 <| by rw [← sinh_conj, conj_ofReal]
 #align complex.of_real_sinh_of_real_re Complex.ofReal_sinh_ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_sinh (x : ℝ) : (Real.sinh x : ℂ) = sinh x :=
+lemma ofReal_sinh (x : ℝ) : (Real.sinh x : ℂ) = sinh x :=
   ofReal_sinh_ofReal_re _
 #align complex.of_real_sinh Complex.ofReal_sinh
 
 @[simp]
-theorem sinh_ofReal_im (x : ℝ) : (sinh x).im = 0 := by rw [← ofReal_sinh_ofReal_re, ofReal_im]
+lemma sinh_ofReal_im (x : ℝ) : (sinh x).im = 0 := by rw [← ofReal_sinh_ofReal_re, ofReal_im]
 #align complex.sinh_of_real_im Complex.sinh_ofReal_im
 
-theorem sinh_ofReal_re (x : ℝ) : (sinh x).re = Real.sinh x :=
+lemma sinh_ofReal_re (x : ℝ) : (sinh x).re = Real.sinh x :=
   rfl
 #align complex.sinh_of_real_re Complex.sinh_ofReal_re
 
@@ -668,21 +668,21 @@ lemma cosh_conj : cosh (conj x) = conj (cosh x) := by
   simp [← one_add_one_eq_two]
 #align complex.cosh_conj Complex.cosh_conj
 
-theorem ofReal_cosh_ofReal_re (x : ℝ) : ((cosh x).re : ℂ) = cosh x :=
+lemma ofReal_cosh_ofReal_re (x : ℝ) : ((cosh x).re : ℂ) = cosh x :=
   conj_eq_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
 #align complex.of_real_cosh_of_real_re Complex.ofReal_cosh_ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_cosh (x : ℝ) : (Real.cosh x : ℂ) = cosh x :=
+lemma ofReal_cosh (x : ℝ) : (Real.cosh x : ℂ) = cosh x :=
   ofReal_cosh_ofReal_re _
 #align complex.of_real_cosh Complex.ofReal_cosh
 
 @[simp]
-theorem cosh_ofReal_im (x : ℝ) : (cosh x).im = 0 := by rw [← ofReal_cosh_ofReal_re, ofReal_im]
+lemma cosh_ofReal_im (x : ℝ) : (cosh x).im = 0 := by rw [← ofReal_cosh_ofReal_re, ofReal_im]
 #align complex.cosh_of_real_im Complex.cosh_ofReal_im
 
 @[simp]
-theorem cosh_ofReal_re (x : ℝ) : (cosh x).re = Real.cosh x :=
+lemma cosh_ofReal_re (x : ℝ) : (cosh x).re = Real.cosh x :=
   rfl
 #align complex.cosh_of_real_re Complex.cosh_ofReal_re
 
@@ -703,20 +703,20 @@ lemma tanh_conj : tanh (conj x) = conj (tanh x) := by
 #align complex.tanh_conj Complex.tanh_conj
 
 @[simp]
-theorem ofReal_tanh_ofReal_re (x : ℝ) : ((tanh x).re : ℂ) = tanh x :=
+lemma ofReal_tanh_ofReal_re (x : ℝ) : ((tanh x).re : ℂ) = tanh x :=
   conj_eq_iff_re.1 <| by rw [← tanh_conj, conj_ofReal]
 #align complex.of_real_tanh_of_real_re Complex.ofReal_tanh_ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_tanh (x : ℝ) : (Real.tanh x : ℂ) = tanh x :=
+lemma ofReal_tanh (x : ℝ) : (Real.tanh x : ℂ) = tanh x :=
   ofReal_tanh_ofReal_re _
 #align complex.of_real_tanh Complex.ofReal_tanh
 
 @[simp]
-theorem tanh_ofReal_im (x : ℝ) : (tanh x).im = 0 := by rw [← ofReal_tanh_ofReal_re, ofReal_im]
+lemma tanh_ofReal_im (x : ℝ) : (tanh x).im = 0 := by rw [← ofReal_tanh_ofReal_re, ofReal_im]
 #align complex.tanh_of_real_im Complex.tanh_ofReal_im
 
-theorem tanh_ofReal_re (x : ℝ) : (tanh x).re = Real.tanh x :=
+lemma tanh_ofReal_re (x : ℝ) : (tanh x).re = Real.tanh x :=
   rfl
 #align complex.tanh_of_real_re Complex.tanh_ofReal_re
 
@@ -870,21 +870,21 @@ lemma cos_sub : cos (x - y) = cos x * cos y + sin x * sin y := by
   simp [sub_eq_add_neg, cos_add, sin_neg, cos_neg]
 #align complex.cos_sub Complex.cos_sub
 
-theorem sin_add_mul_I (x y : ℂ) : sin (x + y * I) = sin x * cosh y + cos x * sinh y * I := by
+lemma sin_add_mul_I (x y : ℂ) : sin (x + y * I) = sin x * cosh y + cos x * sinh y * I := by
   rw [sin_add, cos_mul_I, sin_mul_I, mul_assoc]
 set_option linter.uppercaseLean3 false in
 #align complex.sin_add_mul_I Complex.sin_add_mul_I
 
-theorem sin_eq (z : ℂ) : sin z = sin z.re * cosh z.im + cos z.re * sinh z.im * I := by
+lemma sin_eq (z : ℂ) : sin z = sin z.re * cosh z.im + cos z.re * sinh z.im * I := by
   convert sin_add_mul_I z.re z.im; exact (re_add_im z).symm
 #align complex.sin_eq Complex.sin_eq
 
-theorem cos_add_mul_I (x y : ℂ) : cos (x + y * I) = cos x * cosh y - sin x * sinh y * I := by
+lemma cos_add_mul_I (x y : ℂ) : cos (x + y * I) = cos x * cosh y - sin x * sinh y * I := by
   rw [cos_add, cos_mul_I, sin_mul_I, mul_assoc]
 set_option linter.uppercaseLean3 false in
 #align complex.cos_add_mul_I Complex.cos_add_mul_I
 
-theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im * I := by
+lemma cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im * I := by
   convert cos_add_mul_I z.re z.im; exact (re_add_im z).symm
 #align complex.cos_eq Complex.cos_eq
 
@@ -926,20 +926,20 @@ lemma sin_conj : sin (conj x) = conj (sin x) := by
 #align complex.sin_conj Complex.sin_conj
 
 @[simp]
-theorem ofReal_sin_ofReal_re (x : ℝ) : ((sin x).re : ℂ) = sin x :=
+lemma ofReal_sin_ofReal_re (x : ℝ) : ((sin x).re : ℂ) = sin x :=
   conj_eq_iff_re.1 <| by rw [← sin_conj, conj_ofReal]
 #align complex.of_real_sin_of_real_re Complex.ofReal_sin_ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_sin (x : ℝ) : (Real.sin x : ℂ) = sin x :=
+lemma ofReal_sin (x : ℝ) : (Real.sin x : ℂ) = sin x :=
   ofReal_sin_ofReal_re _
 #align complex.of_real_sin Complex.ofReal_sin
 
 @[simp]
-theorem sin_ofReal_im (x : ℝ) : (sin x).im = 0 := by rw [← ofReal_sin_ofReal_re, ofReal_im]
+lemma sin_ofReal_im (x : ℝ) : (sin x).im = 0 := by rw [← ofReal_sin_ofReal_re, ofReal_im]
 #align complex.sin_of_real_im Complex.sin_ofReal_im
 
-theorem sin_ofReal_re (x : ℝ) : (sin x).re = Real.sin x :=
+lemma sin_ofReal_re (x : ℝ) : (sin x).re = Real.sin x :=
   rfl
 #align complex.sin_of_real_re Complex.sin_ofReal_re
 
@@ -948,20 +948,20 @@ lemma cos_conj : cos (conj x) = conj (cos x) := by
 #align complex.cos_conj Complex.cos_conj
 
 @[simp]
-theorem ofReal_cos_ofReal_re (x : ℝ) : ((cos x).re : ℂ) = cos x :=
+lemma ofReal_cos_ofReal_re (x : ℝ) : ((cos x).re : ℂ) = cos x :=
   conj_eq_iff_re.1 <| by rw [← cos_conj, conj_ofReal]
 #align complex.of_real_cos_of_real_re Complex.ofReal_cos_ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_cos (x : ℝ) : (Real.cos x : ℂ) = cos x :=
+lemma ofReal_cos (x : ℝ) : (Real.cos x : ℂ) = cos x :=
   ofReal_cos_ofReal_re _
 #align complex.of_real_cos Complex.ofReal_cos
 
 @[simp]
-theorem cos_ofReal_im (x : ℝ) : (cos x).im = 0 := by rw [← ofReal_cos_ofReal_re, ofReal_im]
+lemma cos_ofReal_im (x : ℝ) : (cos x).im = 0 := by rw [← ofReal_cos_ofReal_re, ofReal_im]
 #align complex.cos_of_real_im Complex.cos_ofReal_im
 
-theorem cos_ofReal_re (x : ℝ) : (cos x).re = Real.cos x :=
+lemma cos_ofReal_re (x : ℝ) : (cos x).re = Real.cos x :=
   rfl
 #align complex.cos_of_real_re Complex.cos_ofReal_re
 
@@ -985,20 +985,20 @@ lemma tan_conj : tan (conj x) = conj (tan x) := by rw [tan, sin_conj, cos_conj, 
 #align complex.tan_conj Complex.tan_conj
 
 @[simp]
-theorem ofReal_tan_ofReal_re (x : ℝ) : ((tan x).re : ℂ) = tan x :=
+lemma ofReal_tan_ofReal_re (x : ℝ) : ((tan x).re : ℂ) = tan x :=
   conj_eq_iff_re.1 <| by rw [← tan_conj, conj_ofReal]
 #align complex.of_real_tan_of_real_re Complex.ofReal_tan_ofReal_re
 
 @[simp, norm_cast]
-theorem ofReal_tan (x : ℝ) : (Real.tan x : ℂ) = tan x :=
+lemma ofReal_tan (x : ℝ) : (Real.tan x : ℂ) = tan x :=
   ofReal_tan_ofReal_re _
 #align complex.of_real_tan Complex.ofReal_tan
 
 @[simp]
-theorem tan_ofReal_im (x : ℝ) : (tan x).im = 0 := by rw [← ofReal_tan_ofReal_re, ofReal_im]
+lemma tan_ofReal_im (x : ℝ) : (tan x).im = 0 := by rw [← ofReal_tan_ofReal_re, ofReal_im]
 #align complex.tan_of_real_im Complex.tan_ofReal_im
 
-theorem tan_ofReal_re (x : ℝ) : (tan x).re = Real.tan x :=
+lemma tan_ofReal_re (x : ℝ) : (tan x).re = Real.tan x :=
   rfl
 #align complex.tan_of_real_re Complex.tan_ofReal_re
 
@@ -1096,19 +1096,19 @@ lemma exp_im : (exp x).im = Real.exp x.re * Real.sin x.im := by
 #align complex.exp_im Complex.exp_im
 
 @[simp]
-theorem exp_ofReal_mul_I_re (x : ℝ) : (exp (x * I)).re = Real.cos x := by
+lemma exp_ofReal_mul_I_re (x : ℝ) : (exp (x * I)).re = Real.cos x := by
   simp [exp_mul_I, cos_ofReal_re]
 set_option linter.uppercaseLean3 false in
 #align complex.exp_of_real_mul_I_re Complex.exp_ofReal_mul_I_re
 
 @[simp]
-theorem exp_ofReal_mul_I_im (x : ℝ) : (exp (x * I)).im = Real.sin x := by
+lemma exp_ofReal_mul_I_im (x : ℝ) : (exp (x * I)).im = Real.sin x := by
   simp [exp_mul_I, sin_ofReal_re]
 set_option linter.uppercaseLean3 false in
 #align complex.exp_of_real_mul_I_im Complex.exp_ofReal_mul_I_im
 
 /-- **De Moivre's formula** -/
-theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
+lemma cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
   rw [← exp_mul_I, ← exp_mul_I]
   induction' n with n ih
@@ -1139,11 +1139,11 @@ noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
-theorem exp_list_sum (l : List ℝ) : exp l.sum = (l.map exp).prod :=
+lemma exp_list_sum (l : List ℝ) : exp l.sum = (l.map exp).prod :=
   @MonoidHom.map_list_prod (Multiplicative ℝ) ℝ _ _ expMonoidHom l
 #align real.exp_list_sum Real.exp_list_sum
 
-theorem exp_multiset_sum (s : Multiset ℝ) : exp s.sum = (s.map exp).prod :=
+lemma exp_multiset_sum (s : Multiset ℝ) : exp s.sum = (s.map exp).prod :=
   @MonoidHom.map_multiset_prod (Multiplicative ℝ) ℝ _ _ expMonoidHom s
 #align real.exp_multiset_sum Real.exp_multiset_sum
 
@@ -1152,7 +1152,7 @@ lemma exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   @map_prod (Multiplicative ℝ) α ℝ _ _ _ _ expMonoidHom f s
 #align real.exp_sum Real.exp_sum
 
-nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
+nonrec lemma exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 #align real.exp_nat_mul Real.exp_nat_mul
 
@@ -1297,11 +1297,11 @@ lemma sin_sq : sin x ^ 2 = 1 - cos x ^ 2 :=
   eq_sub_iff_add_eq.2 <| sin_sq_add_cos_sq _
 #align real.sin_sq Real.sin_sq
 
-theorem abs_sin_eq_sqrt_one_sub_cos_sq (x : ℝ) : |sin x| = sqrt (1 - cos x ^ 2) := by
+lemma abs_sin_eq_sqrt_one_sub_cos_sq (x : ℝ) : |sin x| = sqrt (1 - cos x ^ 2) := by
   rw [← sin_sq, sqrt_sq_eq_abs]
 #align real.abs_sin_eq_sqrt_one_sub_cos_sq Real.abs_sin_eq_sqrt_one_sub_cos_sq
 
-theorem abs_cos_eq_sqrt_one_sub_sin_sq (x : ℝ) : |cos x| = sqrt (1 - sin x ^ 2) := by
+lemma abs_cos_eq_sqrt_one_sub_sin_sq (x : ℝ) : |cos x| = sqrt (1 - sin x ^ 2) := by
   rw [← cos_sq', sqrt_sq_eq_abs]
 #align real.abs_cos_eq_sqrt_one_sub_sin_sq Real.abs_cos_eq_sqrt_one_sub_sin_sq
 
@@ -1333,7 +1333,7 @@ nonrec lemma sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
 #align real.sin_three_mul Real.sin_three_mul
 
 /-- The definition of `sinh` in terms of `exp`. -/
-nonrec theorem sinh_eq (x : ℝ) : sinh x = (exp x - exp (-x)) / 2 :=
+nonrec lemma sinh_eq (x : ℝ) : sinh x = (exp x - exp (-x)) / 2 :=
   ofReal_injective <| by simp [Complex.sinh]
 #align real.sinh_eq Real.sinh_eq
 
@@ -1350,7 +1350,7 @@ nonrec lemma sinh_add : sinh (x + y) = sinh x * cosh y + cosh x * sinh y := by
 #align real.sinh_add Real.sinh_add
 
 /-- The definition of `cosh` in terms of `exp`. -/
-theorem cosh_eq (x : ℝ) : cosh x = (exp x + exp (-x)) / 2 :=
+lemma cosh_eq (x : ℝ) : cosh x = (exp x + exp (-x)) / 2 :=
   eq_div_of_mul_eq two_ne_zero <| by
     rw [cosh, exp, exp, Complex.ofReal_neg, Complex.cosh, mul_two, ← Complex.add_re, ← mul_two,
       div_mul_cancel _ (two_ne_zero' ℂ), Complex.add_re]
@@ -1423,7 +1423,7 @@ lemma sinh_sub_cosh : sinh x - cosh x = -exp (-x) := by rw [← neg_sub, cosh_su
 #align real.sinh_sub_cosh Real.sinh_sub_cosh
 
 @[simp]
-theorem cosh_sq_sub_sinh_sq (x : ℝ) : cosh x ^ 2 - sinh x ^ 2 = 1 := by rw [← ofReal_inj]; simp
+lemma cosh_sq_sub_sinh_sq (x : ℝ) : cosh x ^ 2 - sinh x ^ 2 = 1 := by rw [← ofReal_inj]; simp
 #align real.cosh_sq_sub_sinh_sq Real.cosh_sq_sub_sinh_sq
 
 nonrec lemma cosh_sq : cosh x ^ 2 = sinh x ^ 2 + 1 := by rw [← ofReal_inj]; simp [cosh_sq]
@@ -1487,14 +1487,14 @@ lemma add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x := by
 lemma one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_one_le_exp_of_nonneg hx]
 #align real.one_le_exp Real.one_le_exp
 
-theorem exp_pos (x : ℝ) : 0 < exp x :=
+lemma exp_pos (x : ℝ) : 0 < exp x :=
   (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h => by
     rw [← neg_neg x, Real.exp_neg]
     exact inv_pos.2 (lt_of_lt_of_le zero_lt_one (one_le_exp (neg_nonneg.2 h)))
 #align real.exp_pos Real.exp_pos
 
 @[simp]
-theorem abs_exp (x : ℝ) : |exp x| = exp x :=
+lemma abs_exp (x : ℝ) : |exp x| = exp x :=
   abs_of_pos (exp_pos _)
 #align real.abs_exp Real.abs_exp
 
@@ -1559,7 +1559,7 @@ lemma one_le_exp_iff {x : ℝ} : 1 ≤ exp x ↔ 0 ≤ x :=
 #align real.one_le_exp_iff Real.one_le_exp_iff
 
 /-- `Real.cosh` is always positive -/
-theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
+lemma cosh_pos (x : ℝ) : 0 < Real.cosh x :=
   (cosh_eq x).symm ▸ half_pos (add_pos (exp_pos x) (exp_pos (-x)))
 #align real.cosh_pos Real.cosh_pos
 
@@ -1750,22 +1750,22 @@ noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
 #align real.exp_near Real.expNear
 
 @[simp]
-theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
+lemma expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 #align real.exp_near_zero Real.expNear_zero
 
 @[simp]
-theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
+lemma expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
       mul_inv]
   ac_rfl
 #align real.exp_near_succ Real.expNear_succ
 
-theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
+lemma expNear_sub (n x r₁ r₂) : expNear n x r₁ -
     expNear n x r₂ = x ^ n / n.factorial * (r₁ - r₂) := by
   simp [expNear, mul_sub]
 #align real.exp_near_sub Real.expNear_sub
 
-theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
+lemma exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp [expNear]
   convert exp_bound (n := m) h ?_ using 1
@@ -1801,7 +1801,7 @@ lemma exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {rm 
   field_simp [show (m : ℝ) ≠ 0 by norm_cast; linarith]
 #align real.exp_1_approx_succ_eq Real.exp_1_approx_succ_eq
 
-theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
+lemma exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
     |exp x - a| ≤ b := by simpa using h
 #align real.exp_approx_start Real.exp_approx_start
 
@@ -1978,7 +1978,7 @@ lemma add_one_lt_exp_of_nonzero {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x :=
   exact add_one_lt_exp_of_pos h
 #align real.add_one_lt_exp_of_nonzero Real.add_one_lt_exp_of_nonzero
 
-theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
+lemma add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
   cases' le_or_lt 0 x with h h
   · exact Real.add_one_le_exp_of_nonneg h
   exact (add_one_lt_exp_of_neg h).le
@@ -2014,25 +2014,25 @@ end Mathlib.Meta.Positivity
 namespace Complex
 
 @[simp]
-theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
+lemma abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
   simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_cos_add_sin_mul_I Complex.abs_cos_add_sin_mul_I
 
 @[simp]
-theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
+lemma abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
   rw [← ofReal_exp]
   exact abs_of_nonneg (le_of_lt (Real.exp_pos _))
 #align complex.abs_exp_of_real Complex.abs_exp_ofReal
 
 @[simp]
-theorem abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
+lemma abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
   rw [exp_mul_I, abs_cos_add_sin_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_exp_of_real_mul_I Complex.abs_exp_ofReal_mul_I
 
-theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
+lemma abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
   rw [exp_eq_exp_re_mul_sin_add_cos, map_mul, abs_exp_ofReal, abs_cos_add_sin_mul_I, mul_one]
 #align complex.abs_exp Complex.abs_exp
 

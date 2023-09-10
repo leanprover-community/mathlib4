@@ -236,7 +236,7 @@ lemma coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (
       exact fun x _ H => h ((self_le_add_right i x).trans_eq H)
 #align direct_sum.coe_of_mul_apply_of_not_le DirectSum.coe_of_mul_apply_of_not_le
 
-theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : ¬i ≤ n) :
+lemma coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : ¬i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = 0 := by
   classical
     rw [coe_mul_apply_eq_dfinsupp_sum, DFinsupp.sum_comm]
@@ -252,7 +252,7 @@ variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
   state them for `CanonicallyOrderedAddMonoid` + the above three typeclasses for convenience. -/
-theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
+lemma coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
 #align direct_sum.coe_mul_of_apply_of_le DirectSum.coe_mul_of_apply_of_le
@@ -262,7 +262,7 @@ lemma coe_of_mul_apply_of_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : 
   coe_of_mul_apply_aux _ _ _ fun x => by rw [eq_tsub_iff_add_eq_of_le h, add_comm]
 #align direct_sum.coe_of_mul_apply_of_le DirectSum.coe_of_mul_apply_of_le
 
-theorem coe_mul_of_apply (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) [Decidable (i ≤ n)] :
+lemma coe_mul_of_apply (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) [Decidable (i ≤ n)] :
     ((r * of (fun i => A i) i r') n : R) = if i ≤ n then (r (n - i) : R) * r' else 0 := by
   split_ifs with h
   exacts [coe_mul_of_apply_of_le _ _ _ n h, coe_mul_of_apply_of_not_le _ _ _ n h]

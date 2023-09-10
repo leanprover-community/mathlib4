@@ -102,17 +102,17 @@ def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, �
 #align multiset.pi Multiset.pi
 
 @[simp]
-theorem pi_zero (t : ∀ a, Multiset (β a)) : pi 0 t = {Pi.empty β} :=
+lemma pi_zero (t : ∀ a, Multiset (β a)) : pi 0 t = {Pi.empty β} :=
   rfl
 #align multiset.pi_zero Multiset.pi_zero
 
 @[simp]
-theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
+lemma pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
     pi (a ::ₘ m) t = (t a).bind fun b => (pi m t).map <| Pi.cons m a b :=
   recOn_cons a m
 #align multiset.pi_cons Multiset.pi_cons
 
-theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
+lemma card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     card (pi m t) = prod (m.map fun a => card (t a)) :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }) [mul_comm])
 #align multiset.card_pi Multiset.card_pi
@@ -136,7 +136,7 @@ protected lemma Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
           neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
 #align multiset.nodup.pi Multiset.Nodup.pi
 
-theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
+lemma mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
   induction' m using Multiset.induction_on with a m ih

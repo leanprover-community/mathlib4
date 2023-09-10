@@ -56,7 +56,7 @@ def AffineIndependent (p : ι → P) : Prop :=
 #align affine_independent AffineIndependent
 
 /-- The definition of `AffineIndependent`. -/
-theorem affineIndependent_def (p : ι → P) :
+lemma affineIndependent_def (p : ι → P) :
     AffineIndependent k p ↔
       ∀ (s : Finset ι) (w : ι → k),
         ∑ i in s, w i = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0 :=
@@ -85,7 +85,7 @@ lemma affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
 
 /-- A family is affinely independent if and only if the differences
 from a base point in that family are linearly independent. -/
-theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
+lemma affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
     AffineIndependent k p ↔ LinearIndependent k fun i : { x // x ≠ i1 } => (p i -ᵥ p i1 : V) := by
   classical
     constructor
@@ -178,7 +178,7 @@ lemma linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Set 
 /-- A family is affinely independent if and only if any affine
 combinations (with sum of weights 1) that evaluate to the same point
 have equal `Set.indicator`. -/
-theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P) :
+lemma affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P) :
     AffineIndependent k p ↔
       ∀ (s1 s2 : Finset ι) (w1 w2 : ι → k),
         ∑ i in s1, w1 i = 1 →
@@ -581,7 +581,7 @@ lemma exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
 
 variable (k V)
 
-theorem exists_affineIndependent (s : Set P) :
+lemma exists_affineIndependent (s : Set P) :
     ∃ (t : _) (_ : t ⊆ s), affineSpan k t = affineSpan k s ∧ AffineIndependent k ((↑) : t → P) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
   · exact ⟨∅, Set.empty_subset ∅, rfl, affineIndependent_of_subsingleton k _⟩
@@ -796,7 +796,7 @@ def mkOfPoint (p : P) : Simplex k P 0 :=
 
 /-- The point in a simplex constructed with `mkOfPoint`. -/
 @[simp]
-theorem mkOfPoint_points (p : P) (i : Fin 1) : (mkOfPoint k p).points i = p :=
+lemma mkOfPoint_points (p : P) (i : Fin 1) : (mkOfPoint k p).points i = p :=
   rfl
 #align affine.simplex.mk_of_point_points Affine.Simplex.mkOfPoint_points
 

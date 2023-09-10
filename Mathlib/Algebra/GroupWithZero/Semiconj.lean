@@ -37,11 +37,11 @@ lemma inv_symm_left_iff₀ : SemiconjBy a⁻¹ x y ↔ SemiconjBy a y x :=
     @units_inv_symm_left_iff _ _ (Units.mk0 a ha) _ _
 #align semiconj_by.inv_symm_left_iff₀ SemiconjBy.inv_symm_left_iff₀
 
-theorem inv_symm_left₀ (h : SemiconjBy a x y) : SemiconjBy a⁻¹ y x :=
+lemma inv_symm_left₀ (h : SemiconjBy a x y) : SemiconjBy a⁻¹ y x :=
   SemiconjBy.inv_symm_left_iff₀.2 h
 #align semiconj_by.inv_symm_left₀ SemiconjBy.inv_symm_left₀
 
-theorem inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
+lemma inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
   by_cases ha : a = 0
   · simp only [ha, zero_left]
   by_cases hx : x = 0
@@ -58,7 +58,7 @@ lemma inv_right_iff₀ : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y :=
   ⟨fun h => inv_inv x ▸ inv_inv y ▸ h.inv_right₀, inv_right₀⟩
 #align semiconj_by.inv_right_iff₀ SemiconjBy.inv_right_iff₀
 
-theorem div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
+lemma div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x / x') (y / y') := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact h.mul_right h'.inv_right₀

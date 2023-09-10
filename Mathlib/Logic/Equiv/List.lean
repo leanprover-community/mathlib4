@@ -61,7 +61,7 @@ lemma encode_list_nil : encode (@nil α) = 0 :=
 #align encodable.encode_list_nil Encodable.encode_list_nil
 
 @[simp]
-theorem encode_list_cons (a : α) (l : List α) :
+lemma encode_list_cons (a : α) (l : List α) :
     encode (a :: l) = succ (pair (encode a) (encode l)) :=
   rfl
 #align encodable.encode_list_cons Encodable.encode_list_cons
@@ -72,7 +72,7 @@ lemma decode_list_zero : decode (α := List α) 0 = some [] :=
 #align encodable.decode_list_zero Encodable.decode_list_zero
 
 @[simp, nolint unusedHavesSuffices] -- Porting note: false positive
-theorem decode_list_succ (v : ℕ) :
+lemma decode_list_succ (v : ℕ) :
     decode (α := List α) (succ v) =
       (· :: ·) <$> decode (α := α) v.unpair.1 <*> decode (α := List α) v.unpair.2 :=
   show decodeList (succ v) = _ by
@@ -206,17 +206,17 @@ lemma mem_sortedUniv {α} [Fintype α] [Encodable α] (x : α) : x ∈ sortedUni
 #align encodable.mem_sorted_univ Encodable.mem_sortedUniv
 
 @[simp]
-theorem length_sortedUniv (α) [Fintype α] [Encodable α] : (sortedUniv α).length = Fintype.card α :=
+lemma length_sortedUniv (α) [Fintype α] [Encodable α] : (sortedUniv α).length = Fintype.card α :=
   Finset.length_sort _
 #align encodable.length_sorted_univ Encodable.length_sortedUniv
 
 @[simp]
-theorem sortedUniv_nodup (α) [Fintype α] [Encodable α] : (sortedUniv α).Nodup :=
+lemma sortedUniv_nodup (α) [Fintype α] [Encodable α] : (sortedUniv α).Nodup :=
   Finset.sort_nodup _ _
 #align encodable.sorted_univ_nodup Encodable.sortedUniv_nodup
 
 @[simp]
-theorem sortedUniv_toFinset (α) [Fintype α] [Encodable α] [DecidableEq α] :
+lemma sortedUniv_toFinset (α) [Fintype α] [Encodable α] [DecidableEq α] :
     (sortedUniv α).toFinset = Finset.univ :=
   Finset.sort_toFinset _ _
 #align encodable.sorted_univ_to_finset Encodable.sortedUniv_toFinset
@@ -270,7 +270,7 @@ lemma list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α
 #align denumerable.list_of_nat_zero Denumerable.list_ofNat_zero
 
 @[simp, nolint unusedHavesSuffices] -- Porting note: false positive
-theorem list_ofNat_succ (v : ℕ) :
+lemma list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
   ofNat_of_decode <|
     show decodeList (succ v) = _ by

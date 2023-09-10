@@ -29,7 +29,7 @@ open Polynomial Real
 
 open scoped Nat Real
 
-theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.coprime n) :
+lemma isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.coprime n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
@@ -49,12 +49,12 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.coprim
     exact hi.symm.dvd_of_dvd_mul_left this
 #align complex.is_primitive_root_exp_of_coprime Complex.isPrimitiveRoot_exp_of_coprime
 
-theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
+lemma isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
   simpa only [Nat.cast_one, one_div] using
     isPrimitiveRoot_exp_of_coprime 1 n h0 n.coprime_one_left
 #align complex.is_primitive_root_exp Complex.isPrimitiveRoot_exp
 
-theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
+lemma isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
     IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.coprime n, exp (2 * π * I * (i / n)) = ζ := by
   have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast hn
   constructor; swap
@@ -70,7 +70,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
 
 /-- The complex `n`-th roots of unity are exactly the
 complex numbers of the form `exp (2 * Real.pi * Complex.I * (i / n))` for some `i < n`. -/
-nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
+nonrec lemma mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
     x ∈ rootsOfUnity n ℂ ↔ ∃ i < (n : ℕ), exp (2 * π * I * (i / n)) = x := by
   rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
   have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast n.ne_zero
@@ -88,11 +88,11 @@ nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
     field_simp [hn0, mul_comm ((n : ℕ) : ℂ), mul_comm (i : ℂ)]
 #align complex.mem_roots_of_unity Complex.mem_rootsOfUnity
 
-theorem card_rootsOfUnity (n : ℕ+) : Fintype.card (rootsOfUnity n ℂ) = n :=
+lemma card_rootsOfUnity (n : ℕ+) : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n n.ne_zero).card_rootsOfUnity
 #align complex.card_roots_of_unity Complex.card_rootsOfUnity
 
-theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
+lemma card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
   by_cases h : k = 0
   · simp [h]
   exact (isPrimitiveRoot_exp k h).card_primitiveRoots

@@ -40,7 +40,7 @@ def discreteSieve (α : Type u) : Sieve α where
   downward_closed := fun ⟨x, hx⟩ g => ⟨x, fun y => hx <| g y⟩
 #align category_theory.discrete_sieve CategoryTheory.discreteSieve
 
-theorem discreteSieve_mem (α : Type u) : discreteSieve α ∈ typesGrothendieckTopology α :=
+lemma discreteSieve_mem (α : Type u) : discreteSieve α ∈ typesGrothendieckTopology α :=
   fun x => ⟨x, fun _ => rfl⟩
 #align category_theory.discrete_sieve_mem CategoryTheory.discreteSieve_mem
 
@@ -49,7 +49,7 @@ def discretePresieve (α : Type u) : Presieve α :=
   fun β _ => ∃ x : β, ∀ y : β, y = x
 #align category_theory.discrete_presieve CategoryTheory.discretePresieve
 
-theorem generate_discretePresieve_mem (α : Type u) :
+lemma generate_discretePresieve_mem (α : Type u) :
     Sieve.generate (discretePresieve α) ∈ typesGrothendieckTopology α :=
   fun x => ⟨PUnit, id, fun _ => x, ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩, rfl⟩
 #align category_theory.generate_discrete_presieve_mem CategoryTheory.generate_discretePresieve_mem
@@ -127,7 +127,7 @@ noncomputable def evalEquiv (S : Type uᵒᵖ ⥤ Type u) (hs : IsSheaf typesGro
   right_inv := eval_typesGlue
 #align category_theory.eval_equiv CategoryTheory.evalEquiv
 
-theorem eval_map (S : Type uᵒᵖ ⥤ Type u) (α β) (f : β ⟶ α) (s x) :
+lemma eval_map (S : Type uᵒᵖ ⥤ Type u) (α β) (f : β ⟶ α) (s x) :
     eval S β (S.map f.op s) x = eval S α s (f x) := by
   simp_rw [eval, ← FunctorToTypes.map_comp_apply, ← op_comp]; rfl
 #align category_theory.eval_map CategoryTheory.eval_map
@@ -150,7 +150,7 @@ noncomputable def equivYoneda' (S : SheafOfTypes typesGrothendieckTopology) :
   inv_hom_id := by ext1; apply (equivYoneda S.1 S.2).inv_hom_id
 #align category_theory.equiv_yoneda' CategoryTheory.equivYoneda'
 
-theorem eval_app (S₁ S₂ : SheafOfTypes.{u} typesGrothendieckTopology) (f : S₁ ⟶ S₂) (α : Type u)
+lemma eval_app (S₁ S₂ : SheafOfTypes.{u} typesGrothendieckTopology) (f : S₁ ⟶ S₂) (α : Type u)
     (s : S₁.1.obj (op α)) (x : α) :
     eval S₂.1 α (f.val.app (op α) s) x = f.val.app (op PUnit) (eval S₁.1 α s x) :=
   (congr_fun (f.val.naturality (↾fun _ : PUnit => x).op) s).symm

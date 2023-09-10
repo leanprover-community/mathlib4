@@ -48,7 +48,7 @@ section ExistsAddOfLE
 variable [ExistsAddOfLE α]
 
 /-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
+lemma mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
@@ -56,14 +56,14 @@ theorem mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b *
 #align mul_add_mul_le_mul_add_mul mul_add_mul_le_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) :
+lemma mul_add_mul_le_mul_add_mul' (hba : b ≤ a) (hdc : d ≤ c) :
     a • d + b • c ≤ a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
   exact mul_add_mul_le_mul_add_mul hba hdc
 #align mul_add_mul_le_mul_add_mul' mul_add_mul_le_mul_add_mul'
 
 /-- Binary strict **rearrangement inequality**. -/
-theorem mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
+lemma mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
@@ -71,7 +71,7 @@ theorem mul_add_mul_lt_mul_add_mul (hab : a < b) (hcd : c < d) : a * d + b * c <
 #align mul_add_mul_lt_mul_add_mul mul_add_mul_lt_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
-theorem mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) :
+lemma mul_add_mul_lt_mul_add_mul' (hba : b < a) (hdc : d < c) :
     a • d + b • c < a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc
@@ -128,14 +128,14 @@ variable [IsTotal α (· ≤ ·)]
 
 namespace AddLECancellable
 
-protected theorem mul_tsub (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
+protected lemma mul_tsub (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
   cases' total_of (· ≤ ·) b c with hbc hcb
   · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_left' hbc a)]
   · apply h.eq_tsub_of_add_eq
     rw [← mul_add, tsub_add_cancel_of_le hcb]
 #align add_le_cancellable.mul_tsub AddLECancellable.mul_tsub
 
-protected theorem tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
+protected lemma tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
   simp only [mul_comm _ c] at *
   exact h.mul_tsub
 #align add_le_cancellable.tsub_mul AddLECancellable.tsub_mul
@@ -144,11 +144,11 @@ end AddLECancellable
 
 variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
-theorem mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
+lemma mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
   Contravariant.AddLECancellable.mul_tsub
 #align mul_tsub mul_tsub
 
-theorem tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
+lemma tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
   Contravariant.AddLECancellable.tsub_mul
 #align tsub_mul tsub_mul
 

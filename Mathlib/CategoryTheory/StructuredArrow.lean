@@ -70,17 +70,17 @@ def mk (f : S ⟶ T.obj Y) : StructuredArrow S T :=
 #align category_theory.structured_arrow.mk CategoryTheory.StructuredArrow.mk
 
 @[simp]
-theorem mk_left (f : S ⟶ T.obj Y) : (mk f).left = ⟨⟨⟩⟩ :=
+lemma mk_left (f : S ⟶ T.obj Y) : (mk f).left = ⟨⟨⟩⟩ :=
   rfl
 #align category_theory.structured_arrow.mk_left CategoryTheory.StructuredArrow.mk_left
 
 @[simp]
-theorem mk_right (f : S ⟶ T.obj Y) : (mk f).right = Y :=
+lemma mk_right (f : S ⟶ T.obj Y) : (mk f).right = Y :=
   rfl
 #align category_theory.structured_arrow.mk_right CategoryTheory.StructuredArrow.mk_right
 
 @[simp]
-theorem mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
+lemma mk_hom_eq_self (f : S ⟶ T.obj Y) : (mk f).hom = f :=
   rfl
 #align category_theory.structured_arrow.mk_hom_eq_self CategoryTheory.StructuredArrow.mk_hom_eq_self
 
@@ -94,7 +94,7 @@ lemma comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
   (f ≫ g).right = f.right ≫ g.right := rfl
 
 @[simp]
-theorem id_right (X : StructuredArrow S T) :
+lemma id_right (X : StructuredArrow S T) :
   (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
 
 lemma eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
@@ -196,7 +196,7 @@ instance epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h 
 
 /-- Eta rule for structured arrows. Prefer `StructuredArrow.eta` for rewriting, since equality of
     objects tends to cause problems. -/
-theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom :=
+lemma eq_mk (f : StructuredArrow S T) : f = mk f.hom :=
   rfl
 #align category_theory.structured_arrow.eq_mk CategoryTheory.StructuredArrow.eq_mk
 
@@ -331,7 +331,7 @@ namespace IsUniversal
 
 variable {f g : StructuredArrow S T}
 
-theorem uniq (h : IsUniversal f) (η : f ⟶ g) : η = h.to g :=
+lemma uniq (h : IsUniversal f) (η : f ⟶ g) : η = h.to g :=
   h.hom_ext η (h.to g)
 
 /-- The family of morphisms out of a universal arrow. -/
@@ -340,22 +340,22 @@ def desc (h : IsUniversal f) (g : StructuredArrow S T) : f.right ⟶ g.right :=
 
 /-- Any structured arrow factors through a universal arrow. -/
 @[reassoc (attr := simp)]
-theorem fac (h : IsUniversal f) (g : StructuredArrow S T) :
+lemma fac (h : IsUniversal f) (g : StructuredArrow S T) :
     f.hom ≫ T.map (h.desc g) = g.hom :=
   Category.id_comp g.hom ▸ (h.to g).w.symm
 
-theorem hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
+lemma hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
     η = h.desc (mk <| f.hom ≫ T.map η) :=
   let g := mk <| f.hom ≫ T.map η
   congrArg CommaMorphism.right (h.hom_ext (homMk η rfl : f ⟶ g) (h.to g))
 
 /-- Two morphisms out of a universal `T`-structured arrow are equal if their image under `T` are
 equal after precomposing the universal arrow. -/
-theorem hom_ext (h : IsUniversal f) {c : C} {η η' : f.right ⟶ c}
+lemma hom_ext (h : IsUniversal f) {c : C} {η η' : f.right ⟶ c}
     (w : f.hom ≫ T.map η = f.hom ≫ T.map η') : η = η' := by
   rw [h.hom_desc η, h.hom_desc η', w]
 
-theorem existsUnique (h : IsUniversal f) (g : StructuredArrow S T) :
+lemma existsUnique (h : IsUniversal f) (g : StructuredArrow S T) :
     ∃! η : f.right ⟶ g.right, f.hom ≫ T.map η = g.hom :=
   ⟨h.desc g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
 
@@ -403,17 +403,17 @@ def mk (f : S.obj Y ⟶ T) : CostructuredArrow S T :=
 #align category_theory.costructured_arrow.mk CategoryTheory.CostructuredArrow.mk
 
 @[simp]
-theorem mk_left (f : S.obj Y ⟶ T) : (mk f).left = Y :=
+lemma mk_left (f : S.obj Y ⟶ T) : (mk f).left = Y :=
   rfl
 #align category_theory.costructured_arrow.mk_left CategoryTheory.CostructuredArrow.mk_left
 
 @[simp]
-theorem mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
+lemma mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
   rfl
 #align category_theory.costructured_arrow.mk_right CategoryTheory.CostructuredArrow.mk_right
 
 @[simp]
-theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
+lemma mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
   rfl
 #align category_theory.costructured_arrow.mk_hom_eq_self CategoryTheory.CostructuredArrow.mk_hom_eq_self
 
@@ -427,7 +427,7 @@ lemma comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
   (f ≫ g).left = f.left ≫ g.left := rfl
 
 @[simp]
-theorem id_left (X : CostructuredArrow S T) :
+lemma id_left (X : CostructuredArrow S T) :
   (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
 
 lemma eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
@@ -524,7 +524,7 @@ instance epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h 
 
 /-- Eta rule for costructured arrows. Prefer `CostructuredArrow.eta` for rewriting, as equality of
     objects tends to cause problems. -/
-theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom :=
+lemma eq_mk (f : CostructuredArrow S T) : f = mk f.hom :=
   rfl
 #align category_theory.costructured_arrow.eq_mk CategoryTheory.CostructuredArrow.eq_mk
 
@@ -660,7 +660,7 @@ namespace IsUniversal
 
 variable {f g : CostructuredArrow S T}
 
-theorem uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
+lemma uniq (h : IsUniversal f) (η : g ⟶ f) : η = h.from g :=
   h.hom_ext η (h.from g)
 
 /-- The family of morphisms into a universal arrow. -/
@@ -669,22 +669,22 @@ def lift (h : IsUniversal f) (g : CostructuredArrow S T) : g.left ⟶ f.left :=
 
 /-- Any costructured arrow factors through a universal arrow. -/
 @[reassoc (attr := simp)]
-theorem fac (h : IsUniversal f) (g : CostructuredArrow S T) :
+lemma fac (h : IsUniversal f) (g : CostructuredArrow S T) :
     S.map (h.lift g) ≫ f.hom = g.hom :=
   Category.comp_id g.hom ▸ (h.from g).w
 
-theorem hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
+lemma hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
     η = h.lift (mk <| S.map η ≫ f.hom) :=
   let g := mk <| S.map η ≫ f.hom
   congrArg CommaMorphism.left (h.hom_ext (homMk η rfl : g ⟶ f) (h.from g))
 
 /-- Two morphisms into a universal `S`-costructured arrow are equal if their image under `S` are
 equal after postcomposing the universal arrow. -/
-theorem hom_ext (h : IsUniversal f) {c : C} {η η' : c ⟶ f.left}
+lemma hom_ext (h : IsUniversal f) {c : C} {η η' : c ⟶ f.left}
     (w : S.map η ≫ f.hom = S.map η' ≫ f.hom) : η = η' := by
   rw [h.hom_desc η, h.hom_desc η', w]
 
-theorem existsUnique (h : IsUniversal f) (g : CostructuredArrow S T) :
+lemma existsUnique (h : IsUniversal f) (g : CostructuredArrow S T) :
     ∃! η : g.left ⟶ f.left, S.map η ≫ f.hom = g.hom :=
   ⟨h.lift g, h.fac g, fun f w ↦ h.hom_ext <| by simp [w]⟩
 

@@ -34,7 +34,7 @@ lemma atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis
 #align upper_half_plane.at_im_infty_basis UpperHalfPlane.atImInfty_basis
 
-theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → z ∈ S := by
+lemma atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → z ∈ S := by
   simp only [atImInfty_basis.mem_iff, true_and]; rfl
 #align upper_half_plane.at_im_infty_mem UpperHalfPlane.atImInfty_mem
 
@@ -68,13 +68,13 @@ nonrec lemma IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty
   simpa only [Pi.one_apply, mul_one, norm_eq_abs] using hf.mul hg
 #align upper_half_plane.is_bounded_at_im_infty.mul UpperHalfPlane.IsBoundedAtImInfty.mul
 
-theorem bounded_mem (f : ℍ → ℂ) :
+lemma bounded_mem (f : ℍ → ℂ) :
     IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ M := by
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 #align upper_half_plane.bounded_mem UpperHalfPlane.bounded_mem
 
-theorem zero_at_im_infty (f : ℍ → ℂ) :
+lemma zero_at_im_infty (f : ℍ → ℂ) :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by
     simp only [true_and, mem_closedBall_zero_iff]; rfl

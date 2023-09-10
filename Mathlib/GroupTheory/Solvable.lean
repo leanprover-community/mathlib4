@@ -47,13 +47,13 @@ lemma derivedSeries_zero : derivedSeries G 0 = ⊤ :=
 #align derived_series_zero derivedSeries_zero
 
 @[simp]
-theorem derivedSeries_succ (n : ℕ) :
+lemma derivedSeries_succ (n : ℕ) :
     derivedSeries G (n + 1) = ⁅derivedSeries G n, derivedSeries G n⁆ :=
   rfl
 #align derived_series_succ derivedSeries_succ
 
 -- porting note: had to provide inductive hypothesis explicitly
-theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
+lemma derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction' n with n ih
   · exact (⊤ : Subgroup G).normal_of_characteristic
   · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
@@ -73,7 +73,7 @@ section DerivedSeriesMap
 
 variable (f)
 
-theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
+lemma map_derivedSeries_le_derivedSeries (n : ℕ) :
     (derivedSeries G n).map f ≤ derivedSeries G' n := by
   induction' n with n ih
   · exact le_top
@@ -82,14 +82,14 @@ theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
 
 variable {f}
 
-theorem derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
+lemma derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
     derivedSeries G' n ≤ (derivedSeries G n).map f := by
   induction' n with n ih
   · exact (map_top_of_surjective f hf).ge
   · exact commutator_le_map_commutator ih ih
 #align derived_series_le_map_derived_series derivedSeries_le_map_derivedSeries
 
-theorem map_derivedSeries_eq (hf : Function.Surjective f) (n : ℕ) :
+lemma map_derivedSeries_eq (hf : Function.Surjective f) (n : ℕ) :
     (derivedSeries G n).map f = derivedSeries G' n :=
   le_antisymm (map_derivedSeries_le_derivedSeries f n) (derivedSeries_le_map_derivedSeries hf n)
 #align map_derived_series_eq map_derivedSeries_eq
@@ -124,7 +124,7 @@ lemma isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b 
   exact CommGroup.isSolvable
 #align is_solvable_of_comm isSolvable_of_comm
 
-theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :=
+lemma isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :=
   ⟨⟨0, h⟩⟩
 #align is_solvable_of_top_eq_bot isSolvable_of_top_eq_bot
 
@@ -147,7 +147,7 @@ lemma solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' �
   · exact commutator_le_map_commutator hm hm
 #align solvable_of_ker_le_range solvable_of_ker_le_range
 
-theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
+lemma solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
   solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot_iff.mpr hf).symm ▸ bot_le)
 #align solvable_of_solvable_injective solvable_of_solvable_injective
@@ -156,7 +156,7 @@ instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolva
   solvable_of_solvable_injective H.subtype_injective
 #align subgroup_solvable_of_solvable subgroup_solvable_of_solvable
 
-theorem solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
+lemma solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
   solvable_of_ker_le_range f (1 : G' →* G) ((f.range_top_of_surjective hf).symm ▸ le_top)
 #align solvable_of_surjective solvable_of_surjective
 
@@ -222,7 +222,7 @@ lemma Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
     exact commutator_mem_commutator ih ((derivedSeries_normal _ _).conj_mem _ ih _)
 #align equiv.perm.fin_5_not_solvable Equiv.Perm.fin_5_not_solvable
 
-theorem Equiv.Perm.not_solvable (X : Type*) (hX : 5 ≤ Cardinal.mk X) :
+lemma Equiv.Perm.not_solvable (X : Type*) (hX : 5 ≤ Cardinal.mk X) :
     ¬IsSolvable (Equiv.Perm X) := by
   intro h
   have key : Nonempty (Fin 5 ↪ X) := by

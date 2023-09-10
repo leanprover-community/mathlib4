@@ -139,7 +139,7 @@ instance rep_gHSpace_nonempty {p : GHSpace} : Nonempty p.Rep :=
 
 end
 
-theorem GHSpace.toGHSpace_rep (p : GHSpace) : toGHSpace p.Rep = p := by
+lemma GHSpace.toGHSpace_rep (p : GHSpace) : toGHSpace p.Rep = p := by
   change toGHSpace (Quot.out p : NonemptyCompacts ℓ_infty_ℝ) = p
   rw [← eq_toGHSpace]
   exact Quot.out_eq p
@@ -187,7 +187,7 @@ def ghDist (X : Type u) (Y : Type v) [MetricSpace X] [Nonempty X] [CompactSpace 
   dist (toGHSpace X) (toGHSpace Y)
 #align Gromov_Hausdorff.GH_dist GromovHausdorff.ghDist
 
-theorem dist_ghDist (p q : GHSpace) : dist p q = ghDist p.Rep q.Rep := by
+lemma dist_ghDist (p q : GHSpace) : dist p q = ghDist p.Rep q.Rep := by
   rw [ghDist, p.toGHSpace_rep, q.toGHSpace_rep]
 #align Gromov_Hausdorff.dist_GH_dist GromovHausdorff.dist_ghDist
 
@@ -396,7 +396,7 @@ lemma hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Nonem
 
 /-- The Gromov-Hausdorff distance can also be realized by a coupling in `ℓ^∞(ℝ)`, by embedding
 the optimal coupling through its Kuratowski embedding. -/
-theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [Nonempty X]
+lemma ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [Nonempty X]
     (Y : Type v) [MetricSpace Y] [CompactSpace Y] [Nonempty Y] :
     ∃ Φ : X → ℓ_infty_ℝ,
       ∃ Ψ : Y → ℓ_infty_ℝ,
@@ -536,7 +536,7 @@ section NonemptyCompacts
 
 variable {X : Type u} [MetricSpace X]
 
-theorem ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
+lemma ghDist_le_nonemptyCompacts_dist (p q : NonemptyCompacts X) :
     dist p.toGHSpace q.toGHSpace ≤ dist p q := by
   have ha : Isometry ((↑) : p → X) := isometry_subtype_coe
   have hb : Isometry ((↑) : q → X) := isometry_subtype_coe

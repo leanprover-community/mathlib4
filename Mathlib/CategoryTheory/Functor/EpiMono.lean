@@ -56,7 +56,7 @@ class ReflectsMonomorphisms (F : C ⥤ D) : Prop where
   reflects : ∀ {X Y : C} (f : X ⟶ Y), Mono (F.map f) → Mono f
 #align category_theory.functor.reflects_monomorphisms CategoryTheory.Functor.ReflectsMonomorphisms
 
-theorem mono_of_mono_map (F : C ⥤ D) [ReflectsMonomorphisms F] {X Y : C} {f : X ⟶ Y}
+lemma mono_of_mono_map (F : C ⥤ D) [ReflectsMonomorphisms F] {X Y : C} {f : X ⟶ Y}
     (h : Mono (F.map f)) : Mono f :=
   ReflectsMonomorphisms.reflects f h
 #align category_theory.functor.mono_of_mono_map CategoryTheory.Functor.mono_of_mono_map
@@ -69,7 +69,7 @@ class ReflectsEpimorphisms (F : C ⥤ D) : Prop where
   reflects : ∀ {X Y : C} (f : X ⟶ Y), Epi (F.map f) → Epi f
 #align category_theory.functor.reflects_epimorphisms CategoryTheory.Functor.ReflectsEpimorphisms
 
-theorem epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X ⟶ Y}
+lemma epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X ⟶ Y}
     (h : Epi (F.map f)) : Epi f :=
   ReflectsEpimorphisms.reflects f h
 #align category_theory.functor.epi_of_epi_map CategoryTheory.Functor.epi_of_epi_map
@@ -98,22 +98,22 @@ instance reflectsEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsEpimorph
   reflects _ h := F.epi_of_epi_map (G.epi_of_epi_map h)
 #align category_theory.functor.reflects_epimorphisms_comp CategoryTheory.Functor.reflectsEpimorphisms_comp
 
-theorem preservesEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
+lemma preservesEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesEpimorphisms (F ⋙ G)] [ReflectsEpimorphisms G] : PreservesEpimorphisms F :=
   ⟨fun f _ => G.epi_of_epi_map <| show Epi ((F ⋙ G).map f) from inferInstance⟩
 #align category_theory.functor.preserves_epimorphisms_of_preserves_of_reflects CategoryTheory.Functor.preservesEpimorphisms_of_preserves_of_reflects
 
-theorem preservesMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
+lemma preservesMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesMonomorphisms (F ⋙ G)] [ReflectsMonomorphisms G] : PreservesMonomorphisms F :=
   ⟨fun f _ => G.mono_of_mono_map <| show Mono ((F ⋙ G).map f) from inferInstance⟩
 #align category_theory.functor.preserves_monomorphisms_of_preserves_of_reflects CategoryTheory.Functor.preservesMonomorphisms_of_preserves_of_reflects
 
-theorem reflectsEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
+lemma reflectsEpimorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesEpimorphisms G] [ReflectsEpimorphisms (F ⋙ G)] : ReflectsEpimorphisms F :=
   ⟨fun f _ => (F ⋙ G).epi_of_epi_map <| show Epi (G.map (F.map f)) from inferInstance⟩
 #align category_theory.functor.reflects_epimorphisms_of_preserves_of_reflects CategoryTheory.Functor.reflectsEpimorphisms_of_preserves_of_reflects
 
-theorem reflectsMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
+lemma reflectsMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ E)
     [PreservesMonomorphisms G] [ReflectsMonomorphisms (F ⋙ G)] : ReflectsMonomorphisms F :=
   ⟨fun f _ => (F ⋙ G).mono_of_mono_map <| show Mono (G.map (F.map f)) from inferInstance⟩
 #align category_theory.functor.reflects_monomorphisms_of_preserves_of_reflects CategoryTheory.Functor.reflectsMonomorphisms_of_preserves_of_reflects
@@ -308,7 +308,7 @@ namespace CategoryTheory.Adjunction
 
 variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
 
-theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.PreservesMonomorphisms]
+lemma strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.PreservesMonomorphisms]
     [h₂ : F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
   ⟨inferInstance, fun X Y Z => by
     intro

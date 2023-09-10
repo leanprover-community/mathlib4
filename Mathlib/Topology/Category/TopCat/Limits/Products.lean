@@ -147,7 +147,7 @@ lemma induced_of_isLimit {F : J ⥤ TopCatMax.{v, u}} (C : Cone F) (hC : IsLimit
   rfl
 #align Top.induced_of_is_limit TopCat.induced_of_isLimit
 
-theorem limit_topology (F : J ⥤ TopCatMax.{v, u}) :
+lemma limit_topology (F : J ⥤ TopCatMax.{v, u}) :
     (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
   induced_of_isLimit _ (limit.isLimit F)
 #align Top.limit_topology TopCat.limit_topology
@@ -200,14 +200,14 @@ def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
 #align Top.prod_iso_prod TopCat.prodIsoProd
 
 @[reassoc (attr := simp)]
-theorem prodIsoProd_hom_fst (X Y : TopCat.{u}) :
+lemma prodIsoProd_hom_fst (X Y : TopCat.{u}) :
     (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst := by
   simp [← Iso.eq_inv_comp, prodIsoProd]
   rfl
 #align Top.prod_iso_prod_hom_fst TopCat.prodIsoProd_hom_fst
 
 @[reassoc (attr := simp)]
-theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
+lemma prodIsoProd_hom_snd (X Y : TopCat.{u}) :
     (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd := by
   simp [← Iso.eq_inv_comp, prodIsoProd]
   rfl
@@ -225,12 +225,12 @@ lemma prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
 #align Top.prod_iso_prod_hom_apply TopCat.prodIsoProd_hom_apply
 
 @[reassoc (attr := simp), elementwise]
-theorem prodIsoProd_inv_fst (X Y : TopCat.{u}) :
+lemma prodIsoProd_inv_fst (X Y : TopCat.{u}) :
     (prodIsoProd X Y).inv ≫ Limits.prod.fst = prodFst := by simp [Iso.inv_comp_eq]
 #align Top.prod_iso_prod_inv_fst TopCat.prodIsoProd_inv_fst
 
 @[reassoc (attr := simp), elementwise]
-theorem prodIsoProd_inv_snd (X Y : TopCat.{u}) :
+lemma prodIsoProd_inv_snd (X Y : TopCat.{u}) :
     (prodIsoProd X Y).inv ≫ Limits.prod.snd = prodSnd := by simp [Iso.inv_comp_eq]
 #align Top.prod_iso_prod_inv_snd TopCat.prodIsoProd_inv_snd
 

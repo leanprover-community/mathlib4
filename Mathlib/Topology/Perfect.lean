@@ -97,7 +97,7 @@ lemma Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
 
 /-- The closure of a preperfect set is perfect.
 For a converse, see `preperfect_iff_perfect_closure`. -/
-theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := by
+lemma Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := by
   constructor; · exact isClosed_closure
   intro x hx
   by_cases h : x ∈ C <;> apply AccPt.mono _ (principal_mono.mpr subset_closure)
@@ -221,7 +221,7 @@ open Function ENNReal
 
 variable {α : Type*} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ≥0∞}
 
-private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
+private lemma Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
     let D := closure (EMetric.ball x (ε / 2) ∩ C)
     Perfect D ∧ D.Nonempty ∧ D ⊆ C ∧ EMetric.diam D ≤ ε := by
   have : x ∈ EMetric.ball x (ε / 2) := by
@@ -241,7 +241,7 @@ variable (hnonempty : C.Nonempty)
 
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
 the diameter of the new perfect sets. -/
-theorem Perfect.small_diam_splitting (ε_pos : 0 < ε) :
+lemma Perfect.small_diam_splitting (ε_pos : 0 < ε) :
     ∃ C₀ C₁ : Set α, (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C ∧ EMetric.diam C₀ ≤ ε) ∧
     (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C ∧ EMetric.diam C₁ ≤ ε) ∧ Disjoint C₀ C₁ := by
   rcases hC.splitting hnonempty with ⟨D₀, D₁, ⟨perf0, non0, sub0⟩, ⟨perf1, non1, sub1⟩, hdisj⟩

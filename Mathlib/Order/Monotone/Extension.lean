@@ -22,7 +22,7 @@ variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] 
 
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
 the whole space. -/
-theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow (f '' s))
+lemma MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow (f '' s))
     (hu : BddAbove (f '' s)) : ∃ g : α → β, Monotone g ∧ EqOn f g s := by
   classical
     /- The extension is defined by `f x = f a` for `x ≤ a`, and `f x` is the supremum of the values
@@ -50,7 +50,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
 
 /-- If a function is antitone and is bounded on a set `s`, then it admits an antitone extension to
 the whole space. -/
-theorem AntitoneOn.exists_antitone_extension (h : AntitoneOn f s) (hl : BddBelow (f '' s))
+lemma AntitoneOn.exists_antitone_extension (h : AntitoneOn f s) (hl : BddBelow (f '' s))
     (hu : BddAbove (f '' s)) : ∃ g : α → β, Antitone g ∧ EqOn f g s :=
   h.dual_right.exists_monotone_extension hu hl
 #align antitone_on.exists_antitone_extension AntitoneOn.exists_antitone_extension

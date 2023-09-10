@@ -73,7 +73,7 @@ section
 
 variable [Preorder α] [Preorder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 
-theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a))
+lemma monotone_intro (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a))
     (hlu : ∀ a, l (u a) ≤ a) : GaloisConnection l u := fun _ _ =>
   ⟨fun h => (hul _).trans (hu h), fun h => (hl h).trans (hlu _)⟩
 #align galois_connection.monotone_intro GaloisConnection.monotone_intro
@@ -96,11 +96,11 @@ lemma le_u {a : α} {b : β} : l a ≤ b → a ≤ u b :=
   (gc _ _).mp
 #align galois_connection.le_u GaloisConnection.le_u
 
-theorem le_u_l (a) : a ≤ u (l a) :=
+lemma le_u_l (a) : a ≤ u (l a) :=
   gc.le_u <| le_rfl
 #align galois_connection.le_u_l GaloisConnection.le_u_l
 
-theorem l_u_le (a) : l (u a) ≤ a :=
+lemma l_u_le (a) : l (u a) ≤ a :=
   gc.l_le <| le_rfl
 #align galois_connection.l_u_le GaloisConnection.l_u_le
 
@@ -111,11 +111,11 @@ lemma monotone_l : Monotone l :=
   gc.dual.monotone_u.dual
 #align galois_connection.monotone_l GaloisConnection.monotone_l
 
-theorem upperBounds_l_image (s : Set α) : upperBounds (l '' s) = u ⁻¹' upperBounds s :=
+lemma upperBounds_l_image (s : Set α) : upperBounds (l '' s) = u ⁻¹' upperBounds s :=
   Set.ext fun b => by simp [upperBounds, gc _ _]
 #align galois_connection.upper_bounds_l_image GaloisConnection.upperBounds_l_image
 
-theorem lowerBounds_u_image (s : Set β) : lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
+lemma lowerBounds_u_image (s : Set β) : lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
   gc.dual.upperBounds_l_image s
 #align galois_connection.lower_bounds_u_image GaloisConnection.lowerBounds_u_image
 
@@ -170,7 +170,7 @@ section PartialOrder
 
 variable [PartialOrder α] [Preorder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 
-theorem u_l_u_eq_u (b : β) : u (l (u b)) = u b :=
+lemma u_l_u_eq_u (b : β) : u (l (u b)) = u b :=
   (gc.monotone_u (gc.l_u_le _)).antisymm (gc.le_u_l _)
 #align galois_connection.u_l_u_eq_u GaloisConnection.u_l_u_eq_u
 
@@ -184,7 +184,7 @@ lemma u_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u') 
 #align galois_connection.u_unique GaloisConnection.u_unique
 
 /-- If there exists a `b` such that `a = u a`, then `b = l a` is one such element. -/
-theorem exists_eq_u (a : α) : (∃ b : β, a = u b) ↔ a = u (l a) :=
+lemma exists_eq_u (a : α) : (∃ b : β, a = u b) ↔ a = u (l a) :=
   ⟨fun ⟨_, hS⟩ => hS.symm ▸ (gc.u_l_u_eq_u _).symm, fun HI => ⟨_, HI⟩⟩
 #align galois_connection.exists_eq_u GaloisConnection.exists_eq_u
 
@@ -202,7 +202,7 @@ section PartialOrder
 
 variable [Preorder α] [PartialOrder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 
-theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a :=
+lemma l_u_l_eq_l (a : α) : l (u (l a)) = l a :=
   (gc.l_u_le _).antisymm (gc.monotone_l (gc.le_u_l _))
 #align galois_connection.l_u_l_eq_l GaloisConnection.l_u_l_eq_l
 
@@ -216,7 +216,7 @@ lemma l_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u') 
 #align galois_connection.l_unique GaloisConnection.l_unique
 
 /-- If there exists an `a` such that `b = l a`, then `a = u b` is one such element. -/
-theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) :=
+lemma exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) :=
   ⟨fun ⟨_, hS⟩ => hS.symm ▸ (gc.l_u_l_eq_l _).symm, fun HI => ⟨_, HI⟩⟩
 #align galois_connection.exists_eq_l GaloisConnection.exists_eq_l
 
@@ -392,45 +392,45 @@ lemma gc_Ici_sInf [CompleteSemilatticeInf α] :
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {f : α → β → γ} {s : Set α}
   {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 
-theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+lemma sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
   simp_rw [sSup_image2, ← (h₂ _).l_sSup, ← (h₁ _).l_sSup]
 #align Sup_image2_eq_Sup_Sup sSup_image2_eq_sSup_sSup
 
-theorem sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+lemma sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sSup s) (sInf t) :=
   @sSup_image2_eq_sSup_sSup _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align Sup_image2_eq_Sup_Inf sSup_image2_eq_sSup_sInf
 
-theorem sSup_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+lemma sSup_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sInf s) (sSup t) :=
   @sSup_image2_eq_sSup_sSup αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align Sup_image2_eq_Inf_Sup sSup_image2_eq_sInf_sSup
 
-theorem sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+lemma sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sInf s) (sInf t) :=
   @sSup_image2_eq_sSup_sSup αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align Sup_image2_eq_Inf_Inf sSup_image2_eq_sInf_sInf
 
-theorem sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
+lemma sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) : sInf (image2 u s t) = u (sInf s) (sInf t) := by
   simp_rw [sInf_image2, ← (h₂ _).u_sInf, ← (h₁ _).u_sInf]
 #align Inf_image2_eq_Inf_Inf sInf_image2_eq_sInf_sInf
 
-theorem sInf_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
+lemma sInf_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     sInf (image2 u s t) = u (sInf s) (sSup t) :=
   @sInf_image2_eq_sInf_sInf _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align Inf_image2_eq_Inf_Sup sInf_image2_eq_sInf_sSup
 
-theorem sInf_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
+lemma sInf_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) : sInf (image2 u s t) = u (sSup s) (sInf t) :=
   @sInf_image2_eq_sInf_sInf αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
 #align Inf_image2_eq_Sup_Inf sInf_image2_eq_sSup_sInf
 
-theorem sInf_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
+lemma sInf_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     sInf (image2 u s t) = u (sSup s) (sSup t) :=
   @sInf_image2_eq_sInf_sInf αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
@@ -443,22 +443,22 @@ namespace OrderIso
 variable [Preorder α] [Preorder β]
 
 @[simp]
-theorem bddAbove_image (e : α ≃o β) {s : Set α} : BddAbove (e '' s) ↔ BddAbove s :=
+lemma bddAbove_image (e : α ≃o β) {s : Set α} : BddAbove (e '' s) ↔ BddAbove s :=
   e.to_galoisConnection.bddAbove_l_image
 #align order_iso.bdd_above_image OrderIso.bddAbove_image
 
 @[simp]
-theorem bddBelow_image (e : α ≃o β) {s : Set α} : BddBelow (e '' s) ↔ BddBelow s :=
+lemma bddBelow_image (e : α ≃o β) {s : Set α} : BddBelow (e '' s) ↔ BddBelow s :=
   e.dual.bddAbove_image
 #align order_iso.bdd_below_image OrderIso.bddBelow_image
 
 @[simp]
-theorem bddAbove_preimage (e : α ≃o β) {s : Set β} : BddAbove (e ⁻¹' s) ↔ BddAbove s := by
+lemma bddAbove_preimage (e : α ≃o β) {s : Set β} : BddAbove (e ⁻¹' s) ↔ BddAbove s := by
   rw [← e.bddAbove_image, e.image_preimage]
 #align order_iso.bdd_above_preimage OrderIso.bddAbove_preimage
 
 @[simp]
-theorem bddBelow_preimage (e : α ≃o β) {s : Set β} : BddBelow (e ⁻¹' s) ↔ BddBelow s := by
+lemma bddBelow_preimage (e : α ≃o β) {s : Set β} : BddBelow (e ⁻¹' s) ↔ BddBelow s := by
   rw [← e.bddBelow_image, e.image_preimage]
 #align order_iso.bdd_below_preimage OrderIso.bddBelow_preimage
 

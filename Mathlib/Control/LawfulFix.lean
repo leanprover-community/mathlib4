@@ -68,7 +68,7 @@ theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j 
   exact le_trans (ih ‹_›) (approx_mono' f)
 #align part.fix.approx_mono Part.Fix.approx_mono
 
-theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
+lemma mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
   by_cases h₀ : ∃ i : ℕ, (approx f i a).Dom
   · simp only [Part.fix_def f h₀]
     constructor <;> intro hh
@@ -91,12 +91,12 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     intro; apply h₀
 #align part.fix.mem_iff Part.Fix.mem_iff
 
-theorem approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh ↦ by
+lemma approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh ↦ by
   rw [mem_iff f]
   exact ⟨_, hh⟩
 #align part.fix.approx_le_fix Part.Fix.approx_le_fix
 
-theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := by
+lemma exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := by
   by_cases hh : ∃ i b, b ∈ approx f i x
   · rcases hh with ⟨i, b, hb⟩
     exists i
@@ -197,7 +197,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 #align part.to_unit_mono Part.toUnitMono
 
-theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous (toUnitMono f)
+lemma to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous (toUnitMono f)
   | _ => by
     ext ⟨⟩ : 1
     dsimp [OmegaCompletePartialOrder.ωSup]

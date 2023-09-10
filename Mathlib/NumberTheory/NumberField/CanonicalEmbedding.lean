@@ -45,7 +45,7 @@ lemma _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
 variable {K}
 
 @[simp]
-theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K x) φ = φ x := rfl
+lemma apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K x) φ = φ x := rfl
 
 open scoped ComplexConjugate
 

@@ -24,7 +24,7 @@ lemma isUnit_sq {a : ℤ} (ha : IsUnit a) : a ^ 2 = 1 := by rw [sq, isUnit_mul_s
 #align int.is_unit_sq Int.isUnit_sq
 
 @[simp]
-theorem units_sq (u : ℤˣ) : u ^ 2 = 1 := by
+lemma units_sq (u : ℤˣ) : u ^ 2 = 1 := by
   rw [Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one, isUnit_sq u.isUnit]
 #align int.units_sq Int.units_sq
 
@@ -32,16 +32,16 @@ alias units_pow_two := units_sq
 #align int.units_pow_two Int.units_pow_two
 
 @[simp]
-theorem units_mul_self (u : ℤˣ) : u * u = 1 := by rw [← sq, units_sq]
+lemma units_mul_self (u : ℤˣ) : u * u = 1 := by rw [← sq, units_sq]
 #align int.units_mul_self Int.units_mul_self
 
 @[simp]
-theorem units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := by rw [inv_eq_iff_mul_eq_one, units_mul_self]
+lemma units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := by rw [inv_eq_iff_mul_eq_one, units_mul_self]
 #align int.units_inv_eq_self Int.units_inv_eq_self
 
 -- `Units.val_mul` is a "wrong turn" for the simplifier, this undoes it and simplifies further
 @[simp]
-theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
+lemma units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
   rw [← Units.val_mul, units_mul_self, Units.val_one]
 #align int.units_coe_mul_self Int.units_coe_mul_self
 
@@ -61,7 +61,7 @@ lemma sq_eq_one_of_sq_le_three {x : ℤ} (h1 : x ^ 2 ≤ 3) (h2 : x ≠ 0) : x ^
   sq_eq_one_of_sq_lt_four (lt_of_le_of_lt h1 (lt_add_one (3 : ℤ))) h2
 #align int.sq_eq_one_of_sq_le_three Int.sq_eq_one_of_sq_le_three
 
-theorem units_pow_eq_pow_mod_two (u : ℤˣ) (n : ℕ) : u ^ n = u ^ (n % 2) := by
+lemma units_pow_eq_pow_mod_two (u : ℤˣ) (n : ℕ) : u ^ n = u ^ (n % 2) := by
   conv =>
       lhs
       rw [← Nat.mod_add_div n 2];

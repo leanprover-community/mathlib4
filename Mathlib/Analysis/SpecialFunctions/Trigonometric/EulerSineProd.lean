@@ -39,7 +39,7 @@ We evaluate the integral of `cos (2 * z * x) * cos x ^ n`, for any complex `z` a
 
 variable {z : ℂ} {n : ℕ}
 
-theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
+lemma antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => Complex.sin (2 * z * y) / (2 * z)) (Complex.cos (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (fun y : ℂ => Complex.sin (y * (2 * z))) _ x :=
@@ -49,7 +49,7 @@ theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   exact c
 #align euler_sine.antideriv_cos_comp_const_mul EulerSine.antideriv_cos_comp_const_mul
 
-theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
+lemma antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => -Complex.cos (2 * z * y) / (2 * z)) (Complex.sin (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (fun y : ℂ => Complex.cos (y * (2 * z))) _ x :=
@@ -59,7 +59,7 @@ theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   exact c
 #align euler_sine.antideriv_sin_comp_const_mul EulerSine.antideriv_sin_comp_const_mul
 
-theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
+lemma integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
     (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) =
       n / (2 * z) *
         ∫ x in (0 : ℝ)..π / 2, Complex.sin (2 * z * x) * sin x * (cos x : ℂ) ^ (n - 1) := by
@@ -89,7 +89,7 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
     exact Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)
 #align euler_sine.integral_cos_mul_cos_pow_aux EulerSine.integral_cos_mul_cos_pow_aux
 
-theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
+lemma integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     (∫ x in (0 : ℝ)..π / 2, Complex.sin (2 * z * x) * sin x * (cos x : ℂ) ^ (n - 1)) =
       (n / (2 * z) * ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) -
         (n - 1) / (2 * z) *
@@ -152,7 +152,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
 #align euler_sine.integral_sin_mul_sin_mul_cos_pow_eq EulerSine.integral_sin_mul_sin_mul_cos_pow_eq
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`.  -/
-theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
+lemma integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
     (((1 : ℂ) - (4 : ℂ) * z ^ 2 / (n : ℂ) ^ 2) *
       ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) =
       (n - 1 : ℂ) / n *
@@ -166,7 +166,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
 #align euler_sine.integral_cos_mul_cos_pow EulerSine.integral_cos_mul_cos_pow
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
-theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
+lemma integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
     (((1 : ℂ) - z ^ 2 / ((n : ℂ) + 1) ^ 2) *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n + 2)) =
       (2 * n + 1 : ℂ) / (2 * n + 2) *
@@ -182,7 +182,7 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
 
 /-- Relate the integral `cos x ^ n` over `[0, π/2]` to the integral of `sin x ^ n` over `[0, π]`,
 which is studied in `Data.Real.Pi.Wallis` and other places. -/
-theorem integral_cos_pow_eq (n : ℕ) :
+lemma integral_cos_pow_eq (n : ℕ) :
     (∫ x in (0 : ℝ)..π / 2, cos x ^ n) = 1 / 2 * ∫ x in (0 : ℝ)..π, sin x ^ n := by
   rw [mul_comm (1 / 2 : ℝ), ← div_eq_iff (one_div_ne_zero (two_ne_zero' ℝ)), ← div_mul, div_one,
     mul_two]
@@ -203,13 +203,13 @@ theorem integral_cos_pow_eq (n : ℕ) :
     rw [sin_add_pi_div_two]
 #align euler_sine.integral_cos_pow_eq EulerSine.integral_cos_pow_eq
 
-theorem integral_cos_pow_pos (n : ℕ) : 0 < ∫ x in (0 : ℝ)..π / 2, cos x ^ n :=
+lemma integral_cos_pow_pos (n : ℕ) : 0 < ∫ x in (0 : ℝ)..π / 2, cos x ^ n :=
   (integral_cos_pow_eq n).symm ▸ mul_pos one_half_pos (integral_sin_pow_pos _)
 #align euler_sine.integral_cos_pow_pos EulerSine.integral_cos_pow_pos
 
 /-- Finite form of Euler's sine product, with remainder term expressed as a ratio of cosine
 integrals. -/
-theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
+lemma sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     Complex.sin (π * z) =
       ((π * z * ∏ j in Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)) *
           ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)) /
@@ -300,7 +300,7 @@ lemma tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (I
 #align euler_sine.tendsto_integral_cos_pow_mul_div EulerSine.tendsto_integral_cos_pow_mul_div
 
 /-- Euler's infinite product formula for the complex sine function. -/
-theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
+lemma _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
     Tendsto (fun n : ℕ => π * z * ∏ j in Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2))
       atTop (𝓝 <| Complex.sin (π * z)) := by
   have A :
@@ -329,7 +329,7 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
 #align complex.tendsto_euler_sin_prod Complex.tendsto_euler_sin_prod
 
 /-- Euler's infinite product formula for the real sine function. -/
-theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
+lemma _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
     Tendsto (fun n : ℕ => π * x * ∏ j in Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2))
       atTop (𝓝 <| sin (π * x)) := by
   convert (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1

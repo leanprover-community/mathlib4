@@ -237,52 +237,52 @@ lemma iUnion_smul_right_image : ⋃ a ∈ t, (· • a) '' s = s • t :=
 #align set.Union_vadd_right_image Set.iUnion_vadd_right_image
 
 @[to_additive]
-theorem iUnion_smul (s : ι → Set α) (t : Set β) : (⋃ i, s i) • t = ⋃ i, s i • t :=
+lemma iUnion_smul (s : ι → Set α) (t : Set β) : (⋃ i, s i) • t = ⋃ i, s i • t :=
   image2_iUnion_left _ _ _
 #align set.Union_smul Set.iUnion_smul
 #align set.Union_vadd Set.iUnion_vadd
 
 @[to_additive]
-theorem smul_iUnion (s : Set α) (t : ι → Set β) : (s • ⋃ i, t i) = ⋃ i, s • t i :=
+lemma smul_iUnion (s : Set α) (t : ι → Set β) : (s • ⋃ i, t i) = ⋃ i, s • t i :=
   image2_iUnion_right _ _ _
 #align set.smul_Union Set.smul_iUnion
 #align set.vadd_Union Set.vadd_iUnion
 
 @[to_additive]
-theorem iUnion₂_smul (s : ∀ i, κ i → Set α) (t : Set β) :
+lemma iUnion₂_smul (s : ∀ i, κ i → Set α) (t : Set β) :
     (⋃ (i) (j), s i j) • t = ⋃ (i) (j), s i j • t :=
   image2_iUnion₂_left _ _ _
 #align set.Union₂_smul Set.iUnion₂_smul
 #align set.Union₂_vadd Set.iUnion₂_vadd
 
 @[to_additive]
-theorem smul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set β) :
+lemma smul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set β) :
     (s • ⋃ (i) (j), t i j) = ⋃ (i) (j), s • t i j :=
   image2_iUnion₂_right _ _ _
 #align set.smul_Union₂ Set.smul_iUnion₂
 #align set.vadd_Union₂ Set.vadd_iUnion₂
 
 @[to_additive]
-theorem iInter_smul_subset (s : ι → Set α) (t : Set β) : (⋂ i, s i) • t ⊆ ⋂ i, s i • t :=
+lemma iInter_smul_subset (s : ι → Set α) (t : Set β) : (⋂ i, s i) • t ⊆ ⋂ i, s i • t :=
   image2_iInter_subset_left _ _ _
 #align set.Inter_smul_subset Set.iInter_smul_subset
 #align set.Inter_vadd_subset Set.iInter_vadd_subset
 
 @[to_additive]
-theorem smul_iInter_subset (s : Set α) (t : ι → Set β) : (s • ⋂ i, t i) ⊆ ⋂ i, s • t i :=
+lemma smul_iInter_subset (s : Set α) (t : ι → Set β) : (s • ⋂ i, t i) ⊆ ⋂ i, s • t i :=
   image2_iInter_subset_right _ _ _
 #align set.smul_Inter_subset Set.smul_iInter_subset
 #align set.vadd_Inter_subset Set.vadd_iInter_subset
 
 @[to_additive]
-theorem iInter₂_smul_subset (s : ∀ i, κ i → Set α) (t : Set β) :
+lemma iInter₂_smul_subset (s : ∀ i, κ i → Set α) (t : Set β) :
     (⋂ (i) (j), s i j) • t ⊆ ⋂ (i) (j), s i j • t :=
   image2_iInter₂_subset_left _ _ _
 #align set.Inter₂_smul_subset Set.iInter₂_smul_subset
 #align set.Inter₂_vadd_subset Set.iInter₂_vadd_subset
 
 @[to_additive]
-theorem smul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set β) :
+lemma smul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set β) :
     (s • ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s • t i j :=
   image2_iInter₂_subset_right _ _ _
 #align set.smul_Inter₂_subset Set.smul_iInter₂_subset
@@ -295,7 +295,7 @@ lemma smul_set_subset_smul {s : Set α} : a ∈ s → a • t ⊆ s • t :=
 #align set.vadd_set_subset_vadd Set.vadd_set_subset_vadd
 
 @[to_additive (attr := simp)]
-theorem iUnion_smul_set (s : Set α) (t : Set β) : ⋃ a ∈ s, a • t = s • t :=
+lemma iUnion_smul_set (s : Set α) (t : Set β) : ⋃ a ∈ s, a • t = s • t :=
   iUnion_image_left _
 #align set.bUnion_smul_set Set.iUnion_smul_set
 #align set.bUnion_vadd_set Set.iUnion_vadd_set
@@ -375,26 +375,26 @@ lemma smul_set_inter_subset : a • (t₁ ∩ t₂) ⊆ a • t₁ ∩ a • t�
 #align set.vadd_set_inter_subset Set.vadd_set_inter_subset
 
 @[to_additive]
-theorem smul_set_Union (a : α) (s : ι → Set β) : (a • ⋃ i, s i) = ⋃ i, a • s i :=
+lemma smul_set_Union (a : α) (s : ι → Set β) : (a • ⋃ i, s i) = ⋃ i, a • s i :=
   image_iUnion
 #align set.smul_set_Union Set.smul_set_Union
 #align set.vadd_set_Union Set.vadd_set_Union
 
 @[to_additive]
-theorem smul_set_iUnion₂ (a : α) (s : ∀ i, κ i → Set β) :
+lemma smul_set_iUnion₂ (a : α) (s : ∀ i, κ i → Set β) :
     (a • ⋃ (i) (j), s i j) = ⋃ (i) (j), a • s i j :=
   image_iUnion₂ _ _
 #align set.smul_set_Union₂ Set.smul_set_iUnion₂
 #align set.vadd_set_Union₂ Set.vadd_set_iUnion₂
 
 @[to_additive]
-theorem smul_set_iInter_subset (a : α) (t : ι → Set β) : (a • ⋂ i, t i) ⊆ ⋂ i, a • t i :=
+lemma smul_set_iInter_subset (a : α) (t : ι → Set β) : (a • ⋂ i, t i) ⊆ ⋂ i, a • t i :=
   image_iInter_subset _ _
 #align set.smul_set_Inter_subset Set.smul_set_iInter_subset
 #align set.vadd_set_Inter_subset Set.vadd_set_iInter_subset
 
 @[to_additive]
-theorem smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
+lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
     (a • ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), a • t i j :=
   image_iInter₂_subset _ _
 #align set.smul_set_Inter₂_subset Set.smul_set_iInter₂_subset
@@ -424,7 +424,7 @@ lemma image_op_smul : (op '' s) • t = t * s := by
   rfl
 
 @[to_additive (attr := simp)]
-theorem iUnion_op_smul_set (s t : Set α) : ⋃ a ∈ t, MulOpposite.op a • s = s * t :=
+lemma iUnion_op_smul_set (s t : Set α) : ⋃ a ∈ t, MulOpposite.op a • s = s * t :=
   iUnion_image_right _
 #align set.bUnion_op_smul_set Set.iUnion_op_smul_set
 #align set.bUnion_op_vadd_set Set.iUnion_op_vadd_set
@@ -611,17 +611,17 @@ lemma mem_vsub : a ∈ s -ᵥ t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x -ᵥ y = 
   Iff.rfl
 #align set.mem_vsub Set.mem_vsub
 
-theorem vsub_mem_vsub (hb : b ∈ s) (hc : c ∈ t) : b -ᵥ c ∈ s -ᵥ t :=
+lemma vsub_mem_vsub (hb : b ∈ s) (hc : c ∈ t) : b -ᵥ c ∈ s -ᵥ t :=
   mem_image2_of_mem hb hc
 #align set.vsub_mem_vsub Set.vsub_mem_vsub
 
 @[simp]
-theorem empty_vsub (t : Set β) : ∅ -ᵥ t = ∅ :=
+lemma empty_vsub (t : Set β) : ∅ -ᵥ t = ∅ :=
   image2_empty_left
 #align set.empty_vsub Set.empty_vsub
 
 @[simp]
-theorem vsub_empty (s : Set β) : s -ᵥ ∅ = ∅ :=
+lemma vsub_empty (s : Set β) : s -ᵥ ∅ = ∅ :=
   image2_empty_right
 #align set.vsub_empty Set.vsub_empty
 
@@ -648,12 +648,12 @@ lemma Nonempty.of_vsub_right : (s -ᵥ t : Set α).Nonempty → t.Nonempty :=
 #align set.nonempty.of_vsub_right Set.Nonempty.of_vsub_right
 
 @[simp low+1]
-theorem vsub_singleton (s : Set β) (b : β) : s -ᵥ {b} = (· -ᵥ b) '' s :=
+lemma vsub_singleton (s : Set β) (b : β) : s -ᵥ {b} = (· -ᵥ b) '' s :=
   image2_singleton_right
 #align set.vsub_singleton Set.vsub_singleton
 
 @[simp low+1]
-theorem singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (· -ᵥ ·) b '' t :=
+lemma singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (· -ᵥ ·) b '' t :=
   image2_singleton_left
 #align set.singleton_vsub Set.singleton_vsub
 
@@ -679,7 +679,7 @@ lemma vsub_subset_iff : s -ᵥ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x -ᵥ y �
   image2_subset_iff
 #align set.vsub_subset_iff Set.vsub_subset_iff
 
-theorem vsub_self_mono (h : s ⊆ t) : s -ᵥ s ⊆ t -ᵥ t :=
+lemma vsub_self_mono (h : s ⊆ t) : s -ᵥ s ⊆ t -ᵥ t :=
   vsub_subset_vsub h h
 #align set.vsub_self_mono Set.vsub_self_mono
 
@@ -715,38 +715,38 @@ lemma iUnion_vsub_right_image : ⋃ a ∈ t, (· -ᵥ a) '' s = s -ᵥ t :=
   iUnion_image_right _
 #align set.Union_vsub_right_image Set.iUnion_vsub_right_image
 
-theorem iUnion_vsub (s : ι → Set β) (t : Set β) : (⋃ i, s i) -ᵥ t = ⋃ i, s i -ᵥ t :=
+lemma iUnion_vsub (s : ι → Set β) (t : Set β) : (⋃ i, s i) -ᵥ t = ⋃ i, s i -ᵥ t :=
   image2_iUnion_left _ _ _
 #align set.Union_vsub Set.iUnion_vsub
 
-theorem vsub_iUnion (s : Set β) (t : ι → Set β) : (s -ᵥ ⋃ i, t i) = ⋃ i, s -ᵥ t i :=
+lemma vsub_iUnion (s : Set β) (t : ι → Set β) : (s -ᵥ ⋃ i, t i) = ⋃ i, s -ᵥ t i :=
   image2_iUnion_right _ _ _
 #align set.vsub_Union Set.vsub_iUnion
 
-theorem iUnion₂_vsub (s : ∀ i, κ i → Set β) (t : Set β) :
+lemma iUnion₂_vsub (s : ∀ i, κ i → Set β) (t : Set β) :
     (⋃ (i) (j), s i j) -ᵥ t = ⋃ (i) (j), s i j -ᵥ t :=
   image2_iUnion₂_left _ _ _
 #align set.Union₂_vsub Set.iUnion₂_vsub
 
-theorem vsub_iUnion₂ (s : Set β) (t : ∀ i, κ i → Set β) :
+lemma vsub_iUnion₂ (s : Set β) (t : ∀ i, κ i → Set β) :
     (s -ᵥ ⋃ (i) (j), t i j) = ⋃ (i) (j), s -ᵥ t i j :=
   image2_iUnion₂_right _ _ _
 #align set.vsub_Union₂ Set.vsub_iUnion₂
 
-theorem iInter_vsub_subset (s : ι → Set β) (t : Set β) : (⋂ i, s i) -ᵥ t ⊆ ⋂ i, s i -ᵥ t :=
+lemma iInter_vsub_subset (s : ι → Set β) (t : Set β) : (⋂ i, s i) -ᵥ t ⊆ ⋂ i, s i -ᵥ t :=
   image2_iInter_subset_left _ _ _
 #align set.Inter_vsub_subset Set.iInter_vsub_subset
 
-theorem vsub_iInter_subset (s : Set β) (t : ι → Set β) : (s -ᵥ ⋂ i, t i) ⊆ ⋂ i, s -ᵥ t i :=
+lemma vsub_iInter_subset (s : Set β) (t : ι → Set β) : (s -ᵥ ⋂ i, t i) ⊆ ⋂ i, s -ᵥ t i :=
   image2_iInter_subset_right _ _ _
 #align set.vsub_Inter_subset Set.vsub_iInter_subset
 
-theorem iInter₂_vsub_subset (s : ∀ i, κ i → Set β) (t : Set β) :
+lemma iInter₂_vsub_subset (s : ∀ i, κ i → Set β) (t : Set β) :
     (⋂ (i) (j), s i j) -ᵥ t ⊆ ⋂ (i) (j), s i j -ᵥ t :=
   image2_iInter₂_subset_left _ _ _
 #align set.Inter₂_vsub_subset Set.iInter₂_vsub_subset
 
-theorem vsub_iInter₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
+lemma vsub_iInter₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
     (s -ᵥ ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s -ᵥ t i j :=
   image2_iInter₂_subset_right _ _ _
 #align set.vsub_Inter₂_subset Set.vsub_iInter₂_subset
@@ -775,7 +775,7 @@ variable [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
 
 -- TODO: replace hypothesis and conclusion with a typeclass
 @[to_additive]
-theorem op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
+lemma op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
     (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
   ext
   simp [mem_smul, mem_smul_set, h]
@@ -794,17 +794,17 @@ because `0 * ∅ ≠ 0`.
 -/
 
 
-theorem smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
+lemma smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
 #align set.smul_zero_subset Set.smul_zero_subset
 
-theorem zero_smul_subset (t : Set β) : (0 : Set α) • t ⊆ 0 := by simp [subset_def, mem_smul]
+lemma zero_smul_subset (t : Set β) : (0 : Set α) • t ⊆ 0 := by simp [subset_def, mem_smul]
 #align set.zero_smul_subset Set.zero_smul_subset
 
-theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
+lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
   s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
 #align set.nonempty.smul_zero Set.Nonempty.smul_zero
 
-theorem Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
+lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
   t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
 #align set.nonempty.zero_smul Set.Nonempty.zero_smul
 
@@ -813,11 +813,11 @@ lemma zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β
   simp only [← image_smul, image_eta, zero_smul, h.image_const, singleton_zero]
 #align set.zero_smul_set Set.zero_smul_set
 
-theorem zero_smul_set_subset (s : Set β) : (0 : α) • s ⊆ 0 :=
+lemma zero_smul_set_subset (s : Set β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ zero_smul α x
 #align set.zero_smul_set_subset Set.zero_smul_set_subset
 
-theorem subsingleton_zero_smul_set (s : Set β) : ((0 : α) • s).Subsingleton :=
+lemma subsingleton_zero_smul_set (s : Set β) : ((0 : α) • s).Subsingleton :=
   subsingleton_singleton.anti <| zero_smul_set_subset s
 #align set.subsingleton_zero_smul_set Set.subsingleton_zero_smul_set
 
@@ -839,7 +839,7 @@ lemma zero_mem_smul_iff :
     · exact ⟨a, 0, ha, ht, smul_zero _⟩
 #align set.zero_mem_smul_iff Set.zero_mem_smul_iff
 
-theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
+lemma zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   refine' ⟨_, zero_mem_smul_set⟩
   rintro ⟨b, hb, h⟩
   rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
@@ -852,7 +852,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-theorem op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
+lemma op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
     op a • s * t = s * a • t :=
   op_smul_set_smul_eq_smul_smul_set _ _ _ fun _ _ _ => mul_assoc _ _ _
 #align set.op_smul_set_mul_eq_mul_smul_set Set.op_smul_set_mul_eq_mul_smul_set
@@ -896,13 +896,13 @@ lemma mem_inv_smul_set_iff : x ∈ a⁻¹ • A ↔ a • x ∈ A := by
 #align set.mem_neg_vadd_set_iff Set.mem_neg_vadd_set_iff
 
 @[to_additive]
-theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
+lemma preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
   ((MulAction.toPerm a).symm.image_eq_preimage _).symm
 #align set.preimage_smul Set.preimage_smul
 #align set.preimage_vadd Set.preimage_vadd
 
 @[to_additive]
-theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
+lemma preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
   preimage_smul (toUnits a)⁻¹ t
 #align set.preimage_smul_inv Set.preimage_smul_inv
 #align set.preimage_vadd_neg Set.preimage_vadd_neg
@@ -1012,52 +1012,52 @@ section GroupWithZero
 variable [GroupWithZero α] [MulAction α β] {s t : Set β} {a : α}
 
 @[simp]
-theorem smul_mem_smul_set_iff₀ (ha : a ≠ 0) (A : Set β) (x : β) : a • x ∈ a • A ↔ x ∈ A :=
+lemma smul_mem_smul_set_iff₀ (ha : a ≠ 0) (A : Set β) (x : β) : a • x ∈ a • A ↔ x ∈ A :=
   show Units.mk0 a ha • _ ∈ _ ↔ _ from smul_mem_smul_set_iff
 #align set.smul_mem_smul_set_iff₀ Set.smul_mem_smul_set_iff₀
 
-theorem mem_smul_set_iff_inv_smul_mem₀ (ha : a ≠ 0) (A : Set β) (x : β) : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
+lemma mem_smul_set_iff_inv_smul_mem₀ (ha : a ≠ 0) (A : Set β) (x : β) : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
   show _ ∈ Units.mk0 a ha • _ ↔ _ from mem_smul_set_iff_inv_smul_mem
 #align set.mem_smul_set_iff_inv_smul_mem₀ Set.mem_smul_set_iff_inv_smul_mem₀
 
-theorem mem_inv_smul_set_iff₀ (ha : a ≠ 0) (A : Set β) (x : β) : x ∈ a⁻¹ • A ↔ a • x ∈ A :=
+lemma mem_inv_smul_set_iff₀ (ha : a ≠ 0) (A : Set β) (x : β) : x ∈ a⁻¹ • A ↔ a • x ∈ A :=
   show _ ∈ (Units.mk0 a ha)⁻¹ • _ ↔ _ from mem_inv_smul_set_iff
 #align set.mem_inv_smul_set_iff₀ Set.mem_inv_smul_set_iff₀
 
-theorem preimage_smul₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
+lemma preimage_smul₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
   preimage_smul (Units.mk0 a ha) t
 #align set.preimage_smul₀ Set.preimage_smul₀
 
-theorem preimage_smul_inv₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
+lemma preimage_smul_inv₀ (ha : a ≠ 0) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
   preimage_smul (Units.mk0 a ha)⁻¹ t
 #align set.preimage_smul_inv₀ Set.preimage_smul_inv₀
 
 @[simp]
-theorem set_smul_subset_set_smul_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ a • B ↔ A ⊆ B :=
+lemma set_smul_subset_set_smul_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ a • B ↔ A ⊆ B :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from set_smul_subset_set_smul_iff
 #align set.set_smul_subset_set_smul_iff₀ Set.set_smul_subset_set_smul_iff₀
 
-theorem set_smul_subset_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
+lemma set_smul_subset_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from set_smul_subset_iff
 #align set.set_smul_subset_iff₀ Set.set_smul_subset_iff₀
 
-theorem subset_set_smul_iff₀ (ha : a ≠ 0) {A B : Set β} : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
+lemma subset_set_smul_iff₀ (ha : a ≠ 0) {A B : Set β} : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
   show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_set_smul_iff
 #align set.subset_set_smul_iff₀ Set.subset_set_smul_iff₀
 
-theorem smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
+lemma smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
   show Units.mk0 a ha • _ = _ from smul_set_inter
 #align set.smul_set_inter₀ Set.smul_set_inter₀
 
-theorem smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
+lemma smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective₀ ha) _ _
 #align set.smul_set_sdiff₀ Set.smul_set_sdiff₀
 
-theorem smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
+lemma smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective₀ ha) _ _
 #align set.smul_set_symm_diff₀ Set.smul_set_symmDiff₀
 
-theorem smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
+lemma smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective₀ ha
 #align set.smul_set_univ₀ Set.smul_set_univ₀
 
@@ -1094,7 +1094,7 @@ section Semiring
 variable [Semiring α] [AddCommMonoid β] [Module α β]
 
 -- porting note: new lemma
-theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
+lemma add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
 

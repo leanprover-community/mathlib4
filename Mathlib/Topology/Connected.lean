@@ -124,7 +124,7 @@ lemma isPreconnected_of_forall_pair {s : Set α}
 #align is_preconnected_of_forall_pair isPreconnected_of_forall_pair
 
 /-- A union of a family of preconnected sets with a common point is preconnected as well. -/
-theorem isPreconnected_sUnion (x : α) (c : Set (Set α)) (H1 : ∀ s ∈ c, x ∈ s)
+lemma isPreconnected_sUnion (x : α) (c : Set (Set α)) (H1 : ∀ s ∈ c, x ∈ s)
     (H2 : ∀ s ∈ c, IsPreconnected s) : IsPreconnected (⋃₀ c) := by
   apply isPreconnected_of_forall x
   rintro y ⟨s, sc, ys⟩
@@ -136,7 +136,7 @@ lemma isPreconnected_iUnion {ι : Sort*} {s : ι → Set α} (h₁ : (⋂ i, s i
   Exists.elim h₁ fun f hf => isPreconnected_sUnion f _ hf (forall_range_iff.2 h₂)
 #align is_preconnected_Union isPreconnected_iUnion
 
-theorem IsPreconnected.union (x : α) {s t : Set α} (H1 : x ∈ s) (H2 : x ∈ t) (H3 : IsPreconnected s)
+lemma IsPreconnected.union (x : α) {s t : Set α} (H1 : x ∈ s) (H2 : x ∈ t) (H3 : IsPreconnected s)
     (H4 : IsPreconnected t) : IsPreconnected (s ∪ t) :=
   sUnion_pair s t ▸ isPreconnected_sUnion x {s, t} (by rintro r (rfl | rfl | h) <;> assumption)
     (by rintro r (rfl | rfl | h) <;> assumption)
@@ -412,7 +412,7 @@ lemma IsConnected.preimage_of_closedMap [TopologicalSpace β] {s : Set β} (hs :
   ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_closed_map hinj hf hsf⟩
 #align is_connected.preimage_of_closed_map IsConnected.preimage_of_closedMap
 
-theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : Disjoint u v)
+lemma IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : Disjoint u v)
     (hsuv : s ⊆ u ∪ v) (hs : IsPreconnected s) : s ⊆ u ∨ s ⊆ v := by
   specialize hs u v hu hv hsuv
   obtain hsu | hsu := (s ∩ u).eq_empty_or_nonempty
@@ -423,7 +423,7 @@ theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : D
     exact Or.inl ((hs s.disjoint_empty).subset_left_of_subset_union hsuv)
 #align is_preconnected.subset_or_subset IsPreconnected.subset_or_subset
 
-theorem IsPreconnected.subset_left_of_subset_union (hu : IsOpen u) (hv : IsOpen v)
+lemma IsPreconnected.subset_left_of_subset_union (hu : IsOpen u) (hv : IsOpen v)
     (huv : Disjoint u v) (hsuv : s ⊆ u ∪ v) (hsu : (s ∩ u).Nonempty) (hs : IsPreconnected s) :
     s ⊆ u :=
   Disjoint.subset_left_of_subset_union hsuv
@@ -434,7 +434,7 @@ theorem IsPreconnected.subset_left_of_subset_union (hu : IsOpen u) (hv : IsOpen 
       exact Set.disjoint_iff.1 huv hx)
 #align is_preconnected.subset_left_of_subset_union IsPreconnected.subset_left_of_subset_union
 
-theorem IsPreconnected.subset_right_of_subset_union (hu : IsOpen u) (hv : IsOpen v)
+lemma IsPreconnected.subset_right_of_subset_union (hu : IsOpen u) (hv : IsOpen v)
     (huv : Disjoint u v) (hsuv : s ⊆ u ∪ v) (hsv : (s ∩ v).Nonempty) (hs : IsPreconnected s) :
     s ⊆ v :=
   hs.subset_left_of_subset_union hv hu huv.symm (union_comm u v ▸ hsuv) hsv
@@ -449,7 +449,7 @@ lemma IsPreconnected.subset_clopen {s t : Set α} (hs : IsPreconnected s) (ht : 
 
 /-- If a preconnected set `s` intersects an open set `u`, and limit points of `u` inside `s` are
 contained in `u`, then the whole set `s` is contained in `u`. -/
-theorem IsPreconnected.subset_of_closure_inter_subset (hs : IsPreconnected s) (hu : IsOpen u)
+lemma IsPreconnected.subset_of_closure_inter_subset (hs : IsPreconnected s) (hu : IsOpen u)
     (h'u : (s ∩ u).Nonempty) (h : closure u ∩ s ⊆ u) : s ⊆ u := by
   have A : s ⊆ u ∪ (closure u)ᶜ := by
     intro x hx
@@ -609,7 +609,7 @@ lemma connectedComponentIn_nonempty_iff {x : α} {F : Set α} :
   split_ifs <;> simp [connectedComponent_nonempty, *]
 #align connected_component_in_nonempty_iff connectedComponentIn_nonempty_iff
 
-theorem connectedComponentIn_subset (F : Set α) (x : α) : connectedComponentIn F x ⊆ F := by
+lemma connectedComponentIn_subset (F : Set α) (x : α) : connectedComponentIn F x ⊆ F := by
   rw [connectedComponentIn]
   split_ifs <;> simp
 #align connected_component_in_subset connectedComponentIn_subset
@@ -684,7 +684,7 @@ lemma connectedComponentIn_eq {x y : α} {F : Set α} (h : y ∈ connectedCompon
   simp_rw [connectedComponentIn_eq_image hy, connectedComponent_eq h2y]
 #align connected_component_in_eq connectedComponentIn_eq
 
-theorem connectedComponentIn_univ (x : α) : connectedComponentIn univ x = connectedComponent x :=
+lemma connectedComponentIn_univ (x : α) : connectedComponentIn univ x = connectedComponent x :=
   subset_antisymm
     (isPreconnected_connectedComponentIn.subset_connectedComponent <|
       mem_connectedComponentIn trivial)
@@ -722,7 +722,7 @@ lemma irreducibleComponent_subset_connectedComponent {x : α} :
   irreducibleComponent_subset_connectedComponent
 
 @[mono]
-theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
+lemma connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
     connectedComponentIn F x ⊆ connectedComponentIn G x := by
   by_cases hx : x ∈ F
   · rw [connectedComponentIn_eq_image hx, connectedComponentIn_eq_image (h hx), ←
@@ -1622,7 +1622,7 @@ end ConnectedComponents
 
 variable [TopologicalSpace β] [TotallyDisconnectedSpace β] {f : α → β}
 
-theorem Continuous.image_eq_of_connectedComponent_eq (h : Continuous f) (a b : α)
+lemma Continuous.image_eq_of_connectedComponent_eq (h : Continuous f) (a b : α)
     (hab : connectedComponent a = connectedComponent b) : f a = f b :=
   singleton_eq_singleton_iff.1 <|
     h.image_connectedComponent_eq_singleton a ▸
@@ -1637,19 +1637,19 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
 #align continuous.connected_components_lift Continuous.connectedComponentsLift
 
 @[continuity]
-theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
+lemma Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
   h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq
 #align continuous.connected_components_lift_continuous Continuous.connectedComponentsLift_continuous
 
 @[simp]
-theorem Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
+lemma Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
     h.connectedComponentsLift x = f x :=
   rfl
 #align continuous.connected_components_lift_apply_coe Continuous.connectedComponentsLift_apply_coe
 
 @[simp]
-theorem Continuous.connectedComponentsLift_comp_coe (h : Continuous f) :
+lemma Continuous.connectedComponentsLift_comp_coe (h : Continuous f) :
     h.connectedComponentsLift ∘ (↑) = f :=
   rfl
 #align continuous.connected_components_lift_comp_coe Continuous.connectedComponentsLift_comp_coe
@@ -1659,7 +1659,7 @@ lemma connectedComponents_lift_unique' {β : Sort*} {g₁ g₂ : ConnectedCompon
   ConnectedComponents.surjective_coe.injective_comp_right hg
 #align connected_components_lift_unique' connectedComponents_lift_unique'
 
-theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : ConnectedComponents α → β)
+lemma Continuous.connectedComponentsLift_unique (h : Continuous f) (g : ConnectedComponents α → β)
     (hg : g ∘ (↑) = f) : g = h.connectedComponentsLift :=
   connectedComponents_lift_unique' <| hg.trans h.connectedComponentsLift_comp_coe.symm
 #align continuous.connected_components_lift_unique Continuous.connectedComponentsLift_unique
@@ -1674,7 +1674,7 @@ lemma connectedComponents_preimage_singleton {x : α} :
 
 /-- The preimage of the image of a set under the quotient map to `connectedComponents α`
 is the union of the connected components of the elements in it. -/
-theorem connectedComponents_preimage_image (U : Set α) :
+lemma connectedComponents_preimage_image (U : Set α) :
     (↑) ⁻¹' ((↑) '' U : Set (ConnectedComponents α)) = ⋃ x ∈ U, connectedComponent x := by
   simp only [connectedComponents_preimage_singleton, preimage_iUnion₂, image_eq_iUnion]
 #align connected_components_preimage_image connectedComponents_preimage_image

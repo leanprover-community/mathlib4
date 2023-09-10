@@ -154,7 +154,7 @@ lemma mapPair_equifibered {F F' : Discrete WalkingPair ⥤ C} (α : F ⟶ F') :
     exact IsPullback.of_horiz_isIso ⟨by simp only [Category.comp_id, Category.id_comp]⟩
 #align category_theory.map_pair_equifibered CategoryTheory.mapPair_equifibered
 
-theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
+lemma BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
     IsVanKampenColimit c ↔
       ∀ {X' Y' : C} (c' : BinaryCofan X' Y') (αX : X' ⟶ X) (αY : Y' ⟶ Y) (f : c'.pt ⟶ c.pt)
         (_ : αX ≫ c.inl = c'.inl ≫ f) (_ : αY ≫ c.inr = c'.inr ≫ f),
@@ -293,7 +293,7 @@ instance (priority := 100) hasStrictInitialObjects_of_finitaryExtensive [Finitar
       infer_instance)).some).isUniversal
 #align category_theory.has_strict_initial_objects_of_finitary_extensive CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive
 
-theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFiniteCoproducts C]
+lemma finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFiniteCoproducts C]
     (T : C) (HT : IsTerminal T) (c₀ : BinaryCofan T T) (hc₀ : IsColimit c₀) :
     FinitaryExtensive C ↔ IsVanKampenColimit c₀ := by
   refine' ⟨fun H => H.2 c₀ hc₀, fun H => _⟩
@@ -566,14 +566,14 @@ instance [HasPullbacks C] [FinitaryExtensive C] : FinitaryExtensive (D ⥤ C) :=
   ⟨fun c hc => isVanKampenColimit_of_evaluation _ c fun _ =>
     FinitaryExtensive.vanKampen _ <| PreservesColimit.preserves hc⟩
 
-theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExtensive D]
+lemma finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExtensive D]
     [HasFiniteCoproducts C] [PreservesLimitsOfShape WalkingCospan F]
     [ReflectsLimitsOfShape WalkingCospan F] [PreservesColimitsOfShape (Discrete WalkingPair) F]
     [ReflectsColimitsOfShape (Discrete WalkingPair) F] : FinitaryExtensive C :=
   ⟨fun _ hc => (FinitaryExtensive.vanKampen _ (isColimitOfPreserves F hc)).of_map F⟩
 #align category_theory.finitary_extensive_of_preserves_and_reflects CategoryTheory.finitaryExtensive_of_preserves_and_reflects
 
-theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [FinitaryExtensive D]
+lemma finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [FinitaryExtensive D]
     [HasFiniteCoproducts C] [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
     [PreservesColimitsOfShape (Discrete WalkingPair) F] [ReflectsIsomorphisms F] :
     FinitaryExtensive C := by

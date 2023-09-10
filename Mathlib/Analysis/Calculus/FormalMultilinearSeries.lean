@@ -58,10 +58,10 @@ instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
   ⟨0⟩
 
 @[simp] -- porting note: new; was not needed in Lean 3
-theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
+lemma zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
 @[simp] -- porting note: new; was not needed in Lean 3
-theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
+lemma neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
 section Module
 
@@ -94,17 +94,17 @@ def removeZero (p : FormalMultilinearSeries 𝕜 E F) : FormalMultilinearSeries 
 #align formal_multilinear_series.remove_zero FormalMultilinearSeries.removeZero
 
 @[simp]
-theorem removeZero_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) : p.removeZero 0 = 0 :=
+lemma removeZero_coeff_zero (p : FormalMultilinearSeries 𝕜 E F) : p.removeZero 0 = 0 :=
   rfl
 #align formal_multilinear_series.remove_zero_coeff_zero FormalMultilinearSeries.removeZero_coeff_zero
 
 @[simp]
-theorem removeZero_coeff_succ (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
+lemma removeZero_coeff_succ (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
     p.removeZero (n + 1) = p (n + 1) :=
   rfl
 #align formal_multilinear_series.remove_zero_coeff_succ FormalMultilinearSeries.removeZero_coeff_succ
 
-theorem removeZero_of_pos (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (h : 0 < n) :
+lemma removeZero_of_pos (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (h : 0 < n) :
     p.removeZero n = p n := by
   rw [← Nat.succ_pred_eq_of_pos h]
   rfl
@@ -112,7 +112,7 @@ theorem removeZero_of_pos (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (h : 
 
 /-- Convenience congruence lemma stating in a dependent setting that, if the arguments to a formal
 multilinear series are equal, then the values are also equal. -/
-theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → E} {w : Fin n → E}
+lemma congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → E} {w : Fin n → E}
     (h1 : m = n) (h2 : ∀ (i : ℕ) (him : i < m) (hin : i < n), v ⟨i, him⟩ = w ⟨i, hin⟩) :
     p m v = p n w := by
   subst n
@@ -127,7 +127,7 @@ def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[�
 #align formal_multilinear_series.comp_continuous_linear_map FormalMultilinearSeries.compContinuousLinearMap
 
 @[simp]
-theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (n : ℕ)
+lemma compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (n : ℕ)
     (v : Fin n → E) : (p.compContinuousLinearMap u) n v = p n (u ∘ v) :=
   rfl
 #align formal_multilinear_series.comp_continuous_linear_map_apply FormalMultilinearSeries.compContinuousLinearMap_apply
@@ -188,12 +188,12 @@ def compFormalMultilinearSeries (f : F →L[𝕜] G) (p : FormalMultilinearSerie
 #align continuous_linear_map.comp_formal_multilinear_series ContinuousLinearMap.compFormalMultilinearSeries
 
 @[simp]
-theorem compFormalMultilinearSeries_apply (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F)
+lemma compFormalMultilinearSeries_apply (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F)
     (n : ℕ) : (f.compFormalMultilinearSeries p) n = f.compContinuousMultilinearMap (p n) :=
   rfl
 #align continuous_linear_map.comp_formal_multilinear_series_apply ContinuousLinearMap.compFormalMultilinearSeries_apply
 
-theorem compFormalMultilinearSeries_apply' (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F)
+lemma compFormalMultilinearSeries_apply' (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F)
     (n : ℕ) (v : Fin n → E) : (f.compFormalMultilinearSeries p) n v = f (p n v) :=
   rfl
 #align continuous_linear_map.comp_formal_multilinear_series_apply' ContinuousLinearMap.compFormalMultilinearSeries_apply'
@@ -220,7 +220,7 @@ noncomputable def order (p : FormalMultilinearSeries 𝕜 E F) : ℕ :=
 lemma order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp [order]
 #align formal_multilinear_series.order_zero FormalMultilinearSeries.order_zero
 
-theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
+lemma ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
 #align formal_multilinear_series.ne_zero_of_order_ne_zero FormalMultilinearSeries.ne_zero_of_order_ne_zero
 
 lemma order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
@@ -237,19 +237,19 @@ lemma order_eq_zero_iff' : p.order = 0 ↔ p = 0 ∨ p 0 ≠ 0 := by
     using or_comm
 #align formal_multilinear_series.order_eq_zero_iff' FormalMultilinearSeries.order_eq_zero_iff'
 
-theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
+lemma order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
   simp [order_eq_zero_iff', hp]
 #align formal_multilinear_series.order_eq_zero_iff FormalMultilinearSeries.order_eq_zero_iff
 
-theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
+lemma apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
   Nat.sInf_mem (FormalMultilinearSeries.ne_iff.1 hp)
 #align formal_multilinear_series.apply_order_ne_zero FormalMultilinearSeries.apply_order_ne_zero
 
-theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
+lemma apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
   apply_order_ne_zero (ne_zero_of_order_ne_zero hp)
 #align formal_multilinear_series.apply_order_ne_zero' FormalMultilinearSeries.apply_order_ne_zero'
 
-theorem apply_eq_zero_of_lt_order (hp : n < p.order) : p n = 0 :=
+lemma apply_eq_zero_of_lt_order (hp : n < p.order) : p n = 0 :=
   by_contra <| Nat.not_mem_of_lt_sInf hp
 #align formal_multilinear_series.apply_eq_zero_of_lt_order FormalMultilinearSeries.apply_eq_zero_of_lt_order
 
@@ -267,7 +267,7 @@ def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=
   p n 1
 #align formal_multilinear_series.coeff FormalMultilinearSeries.coeff
 
-theorem mkPiField_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
+lemma mkPiField_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
     ContinuousMultilinearMap.mkPiField 𝕜 (Fin n) (p.coeff n) = p n :=
   (p n).mkPiField_apply_one_eq_self
 #align formal_multilinear_series.mk_pi_field_coeff_eq FormalMultilinearSeries.mkPiField_coeff_eq
@@ -313,7 +313,7 @@ lemma coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by
 #align formal_multilinear_series.coeff_fslope FormalMultilinearSeries.coeff_fslope
 
 @[simp]
-theorem coeff_iterate_fslope (k n : ℕ) : (fslope^[k] p).coeff n = p.coeff (n + k) := by
+lemma coeff_iterate_fslope (k n : ℕ) : (fslope^[k] p).coeff n = p.coeff (n + k) := by
   induction k generalizing p with
   | zero => rfl
   | succ k ih => simp [ih, add_assoc]

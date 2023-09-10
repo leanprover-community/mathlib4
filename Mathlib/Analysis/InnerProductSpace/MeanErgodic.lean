@@ -81,7 +81,7 @@ the Birkhoff averages
 birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
 ```
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`. -/
-theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
+lemma ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
     (hf : ‖f‖ ≤ 1) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
       (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by

@@ -59,12 +59,12 @@ def unsym : αˢʸᵐ ≃ α :=
 #align sym_alg.unsym SymAlg.unsym
 
 @[simp]
-theorem unsym_sym (a : α) : unsym (sym a) = a :=
+lemma unsym_sym (a : α) : unsym (sym a) = a :=
   rfl
 #align sym_alg.unsym_sym SymAlg.unsym_sym
 
 @[simp]
-theorem sym_unsym (a : α) : sym (unsym a) = a :=
+lemma sym_unsym (a : α) : sym (unsym a) = a :=
   rfl
 #align sym_alg.sym_unsym SymAlg.sym_unsym
 

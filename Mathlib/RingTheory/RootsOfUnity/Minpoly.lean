@@ -35,7 +35,7 @@ variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 -- Porting note: `hpos` was in the `variable` line, with an `omit` in mathlib3 just after this
 -- declaration. For some reason, in Lean4, `hpos` gets included also in the declarations below,
 -- even if it is not used in the proof.
-theorem isIntegral (hpos : 0 < n) : IsIntegral ℤ μ := by
+lemma isIntegral (hpos : 0 < n) : IsIntegral ℤ μ := by
   use X ^ n - 1
   constructor
   · exact monic_X_pow_sub_C 1 (ne_of_lt hpos).symm

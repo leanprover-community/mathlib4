@@ -136,27 +136,27 @@ section Commute
 variable {A} [NonUnitalNonAssocRing A] [IsJordan A]
 
 @[simp]
-theorem commute_lmul_rmul (a : A) : Commute (L a) (R a) :=
+lemma commute_lmul_rmul (a : A) : Commute (L a) (R a) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul _ _).symm
 #align commute_lmul_rmul commute_lmul_rmul
 
 @[simp]
-theorem commute_lmul_lmul_sq (a : A) : Commute (L a) (L (a * a)) :=
+lemma commute_lmul_lmul_sq (a : A) : Commute (L a) (L (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_lmul_comm_lmul _ _).symm
 #align commute_lmul_lmul_sq commute_lmul_lmul_sq
 
 @[simp]
-theorem commute_lmul_rmul_sq (a : A) : Commute (L a) (R (a * a)) :=
+lemma commute_lmul_rmul_sq (a : A) : Commute (L a) (R (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul_rmul _ _).symm
 #align commute_lmul_rmul_sq commute_lmul_rmul_sq
 
 @[simp]
-theorem commute_lmul_sq_rmul (a : A) : Commute (L (a * a)) (R a) :=
+lemma commute_lmul_sq_rmul (a : A) : Commute (L (a * a)) (R a) :=
   AddMonoidHom.ext fun _ => IsJordan.lmul_lmul_comm_rmul _ _
 #align commute_lmul_sq_rmul commute_lmul_sq_rmul
 
 @[simp]
-theorem commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
+lemma commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.rmul_comm_rmul_rmul _ _).symm
 #align commute_rmul_rmul_sq commute_rmul_rmul_sq
 
@@ -170,7 +170,7 @@ with a Lie Bracket via `Ring.bracket`.
 -/
 
 
-theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
+lemma two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
     rwa [← sub_eq_zero, ← sub_sub, sub_eq_add_neg, sub_eq_add_neg, lie_skew, lie_skew, nsmul_add]
@@ -242,7 +242,7 @@ private lemma aux3 {a b c : A} :
   iterate 2 rw [← lie_skew (L (a * a)), ← lie_skew (L (b * b)), ← lie_skew (L (c * c))]
   abel
 
-theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
+lemma two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
     2 • (⁅L a, L (b * c)⁆ + ⁅L b, L (c * a)⁆ + ⁅L c, L (a * b)⁆) = 0 := by
   symm
   calc

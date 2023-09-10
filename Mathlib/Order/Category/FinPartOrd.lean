@@ -53,7 +53,7 @@ def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd :=
 #align FinPartOrd.of FinPartOrd.of
 
 @[simp]
-theorem coe_of (α : Type*) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
+lemma coe_of (α : Type*) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
 #align FinPartOrd.coe_of FinPartOrd.coe_of
 
 instance : Inhabited FinPartOrd :=

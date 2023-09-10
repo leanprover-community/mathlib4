@@ -33,15 +33,15 @@ structure DiffContOnCl (f : E → F) (s : Set E) : Prop where
 
 variable {𝕜}
 
-theorem DifferentiableOn.diffContOnCl (h : DifferentiableOn 𝕜 f (closure s)) : DiffContOnCl 𝕜 f s :=
+lemma DifferentiableOn.diffContOnCl (h : DifferentiableOn 𝕜 f (closure s)) : DiffContOnCl 𝕜 f s :=
   ⟨h.mono subset_closure, h.continuousOn⟩
 #align differentiable_on.diff_cont_on_cl DifferentiableOn.diffContOnCl
 
-theorem Differentiable.diffContOnCl (h : Differentiable 𝕜 f) : DiffContOnCl 𝕜 f s :=
+lemma Differentiable.diffContOnCl (h : Differentiable 𝕜 f) : DiffContOnCl 𝕜 f s :=
   ⟨h.differentiableOn, h.continuous.continuousOn⟩
 #align differentiable.diff_cont_on_cl Differentiable.diffContOnCl
 
-theorem IsClosed.diffContOnCl_iff (hs : IsClosed s) : DiffContOnCl 𝕜 f s ↔ DifferentiableOn 𝕜 f s :=
+lemma IsClosed.diffContOnCl_iff (hs : IsClosed s) : DiffContOnCl 𝕜 f s ↔ DifferentiableOn 𝕜 f s :=
   ⟨fun h => h.differentiableOn, fun h => ⟨h, hs.closure_eq.symm ▸ h.continuousOn⟩⟩
 #align is_closed.diff_cont_on_cl_iff IsClosed.diffContOnCl_iff
 
@@ -74,44 +74,44 @@ lemma mk_ball {x : E} {r : ℝ} (hd : DifferentiableOn 𝕜 f (ball x r))
   ⟨hd, hc.mono <| closure_ball_subset_closedBall⟩
 #align diff_cont_on_cl.mk_ball DiffContOnCl.mk_ball
 
-protected theorem differentiableAt (h : DiffContOnCl 𝕜 f s) (hs : IsOpen s) (hx : x ∈ s) :
+protected lemma differentiableAt (h : DiffContOnCl 𝕜 f s) (hs : IsOpen s) (hx : x ∈ s) :
     DifferentiableAt 𝕜 f x :=
   h.differentiableOn.differentiableAt <| hs.mem_nhds hx
 #align diff_cont_on_cl.differentiable_at DiffContOnCl.differentiableAt
 
-theorem differentiableAt' (h : DiffContOnCl 𝕜 f s) (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
+lemma differentiableAt' (h : DiffContOnCl 𝕜 f s) (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
   h.differentiableOn.differentiableAt hx
 #align diff_cont_on_cl.differentiable_at' DiffContOnCl.differentiableAt'
 
-protected theorem mono (h : DiffContOnCl 𝕜 f s) (ht : t ⊆ s) : DiffContOnCl 𝕜 f t :=
+protected lemma mono (h : DiffContOnCl 𝕜 f s) (ht : t ⊆ s) : DiffContOnCl 𝕜 f t :=
   ⟨h.differentiableOn.mono ht, h.continuousOn.mono (closure_mono ht)⟩
 #align diff_cont_on_cl.mono DiffContOnCl.mono
 
-theorem add (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g s) : DiffContOnCl 𝕜 (f + g) s :=
+lemma add (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g s) : DiffContOnCl 𝕜 (f + g) s :=
   ⟨hf.1.add hg.1, hf.2.add hg.2⟩
 #align diff_cont_on_cl.add DiffContOnCl.add
 
-theorem add_const (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => f x + c) s :=
+lemma add_const (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => f x + c) s :=
   hf.add diffContOnCl_const
 #align diff_cont_on_cl.add_const DiffContOnCl.add_const
 
-theorem const_add (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => c + f x) s :=
+lemma const_add (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => c + f x) s :=
   diffContOnCl_const.add hf
 #align diff_cont_on_cl.const_add DiffContOnCl.const_add
 
-theorem neg (hf : DiffContOnCl 𝕜 f s) : DiffContOnCl 𝕜 (-f) s :=
+lemma neg (hf : DiffContOnCl 𝕜 f s) : DiffContOnCl 𝕜 (-f) s :=
   ⟨hf.1.neg, hf.2.neg⟩
 #align diff_cont_on_cl.neg DiffContOnCl.neg
 
-theorem sub (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g s) : DiffContOnCl 𝕜 (f - g) s :=
+lemma sub (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g s) : DiffContOnCl 𝕜 (f - g) s :=
   ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
 #align diff_cont_on_cl.sub DiffContOnCl.sub
 
-theorem sub_const (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => f x - c) s :=
+lemma sub_const (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => f x - c) s :=
   hf.sub diffContOnCl_const
 #align diff_cont_on_cl.sub_const DiffContOnCl.sub_const
 
-theorem const_sub (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => c - f x) s :=
+lemma const_sub (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => c - f x) s :=
   diffContOnCl_const.sub hf
 #align diff_cont_on_cl.const_sub DiffContOnCl.const_sub
 

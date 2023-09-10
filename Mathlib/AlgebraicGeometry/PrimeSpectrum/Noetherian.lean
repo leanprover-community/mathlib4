@@ -25,7 +25,7 @@ variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
 /-- In a noetherian ring, every ideal contains a product of prime ideals
 ([samuel, § 3.3, Lemma 3])-/
-theorem exists_primeSpectrum_prod_le (I : Ideal R) :
+lemma exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   -- Porting note: Need to specify `P` explicitly
   refine' IsNoetherian.induction
@@ -58,7 +58,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
 /-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
   product or prime ideals ([samuel, § 3.3, Lemma 3]) -/
-theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
+lemma exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥ := by

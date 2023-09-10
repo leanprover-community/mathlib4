@@ -105,7 +105,7 @@ def grade : α → 𝕆 :=
   GradeOrder.grade
 #align grade grade
 
-protected theorem Covby.grade (h : a ⋖ b) : grade 𝕆 a ⋖ grade 𝕆 b :=
+protected lemma Covby.grade (h : a ⋖ b) : grade 𝕆 a ⋖ grade 𝕆 b :=
   GradeOrder.covby_grade h
 #align covby.grade Covby.grade
 
@@ -126,7 +126,7 @@ section GradeMinOrder
 
 variable (𝕆) [Preorder 𝕆] [GradeMinOrder 𝕆 α] {a : α}
 
-protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
+protected lemma IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
   GradeMinOrder.isMin_grade h
 #align is_min.grade IsMin.grade
 
@@ -143,7 +143,7 @@ section GradeMaxOrder
 
 variable (𝕆) [Preorder 𝕆] [GradeMaxOrder 𝕆 α] {a : α}
 
-protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
+protected lemma IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
   GradeMaxOrder.isMax_grade h
 #align is_max.grade IsMax.grade
 
@@ -230,7 +230,7 @@ instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α where
 #align preorder.to_grade_bounded_order Preorder.toGradeBoundedOrder
 
 @[simp]
-theorem grade_self (a : α) : grade α a = a :=
+lemma grade_self (a : α) : grade α a = a :=
   rfl
 #align grade_self grade_self
 

@@ -179,7 +179,7 @@ lemma rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (Fi
 #align matrix.rank_le_height Matrix.rank_le_height
 
 /-- The rank of a matrix is the rank of the space spanned by its columns. -/
-theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
+lemma rank_eq_finrank_span_cols (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range Aᵀ)) := by rw [rank, Matrix.range_mulVecLin]
 #align matrix.rank_eq_finrank_span_cols Matrix.rank_eq_finrank_span_cols
 
@@ -215,13 +215,13 @@ section StarOrderedField
 
 variable [Fintype m] [Field R] [PartialOrder R] [StarOrderedRing R]
 
-theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
+lemma ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᴴ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
   ext x
   simp only [LinearMap.mem_ker, mulVecLin_apply, conjTranspose_mul_self_mulVec_eq_zero]
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
 
-theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.rank := by
+lemma rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
   dsimp only
@@ -234,7 +234,7 @@ theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.ran
 -- this follows the proof here https://math.stackexchange.com/a/81903/1896
 /-- TODO: prove this in greater generality. -/
 @[simp]
-theorem rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank :=
+lemma rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank :=
   le_antisymm
     (((rank_conjTranspose_mul_self _).symm.trans_le <| rank_mul_le_left _ _).trans_eq <|
       congr_arg _ <| conjTranspose_conjTranspose _)
@@ -242,7 +242,7 @@ theorem rank_conjTranspose (A : Matrix m n R) : Aᴴ.rank = A.rank :=
 #align matrix.rank_conj_transpose Matrix.rank_conjTranspose
 
 @[simp]
-theorem rank_self_mul_conjTranspose (A : Matrix m n R) : (A * Aᴴ).rank = A.rank := by
+lemma rank_self_mul_conjTranspose (A : Matrix m n R) : (A * Aᴴ).rank = A.rank := by
   simpa only [rank_conjTranspose, conjTranspose_conjTranspose] using
     rank_conjTranspose_mul_self Aᴴ
 #align matrix.rank_self_mul_conj_transpose Matrix.rank_self_mul_conjTranspose
@@ -253,7 +253,7 @@ section LinearOrderedField
 
 variable [Fintype m] [LinearOrderedField R]
 
-theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
+lemma ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᵀ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
   ext x
   simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
@@ -265,7 +265,7 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_transpose_mul_self Matrix.ker_mulVecLin_transpose_mul_self
 
-theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank := by
+lemma rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) _
   dsimp only
@@ -277,13 +277,13 @@ theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank :=
 
 /-- TODO: prove this in greater generality. -/
 @[simp]
-theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank :=
+lemma rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank :=
   le_antisymm ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
     ((rank_transpose_mul_self _).symm.trans_le <| rank_mul_le_left _ _)
 #align matrix.rank_transpose Matrix.rank_transpose
 
 @[simp]
-theorem rank_self_mul_transpose (A : Matrix m n R) : (A * Aᵀ).rank = A.rank := by
+lemma rank_self_mul_transpose (A : Matrix m n R) : (A * Aᵀ).rank = A.rank := by
   simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
 #align matrix.rank_self_mul_transpose Matrix.rank_self_mul_transpose
 

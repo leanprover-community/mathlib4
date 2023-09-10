@@ -308,7 +308,7 @@ lemma not_lt_of_gt {a b : α} (h : a > b) : ¬a < b :=
   lt_asymm h
 #align not_lt_of_gt not_lt_of_gt
 
-theorem lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
+lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
   Or.elim (le_total a b)
     (fun h : a ≤ b =>
       Or.elim (Decidable.lt_or_eq_of_le h) (fun h : a < b => Or.inl h) fun h : a = b =>
@@ -333,11 +333,11 @@ lemma lt_of_not_ge {a b : α} (h : ¬a ≥ b) : a < b :=
   lt_of_le_not_le ((le_total _ _).resolve_right h) h
 #align lt_of_not_ge lt_of_not_ge
 
-theorem lt_or_le (a b : α) : a < b ∨ b ≤ a :=
+lemma lt_or_le (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 #align lt_or_le lt_or_le
 
-theorem le_or_lt (a b : α) : a ≤ b ∨ b < a :=
+lemma le_or_lt (a b : α) : a ≤ b ∨ b < a :=
   (lt_or_le b a).symm
 #align le_or_lt le_or_lt
 
@@ -360,7 +360,7 @@ lemma ne_iff_lt_or_gt {a b : α} : a ≠ b ↔ a < b ∨ a > b :=
   ⟨lt_or_gt_of_ne, fun o => Or.elim o ne_of_lt ne_of_gt⟩
 #align ne_iff_lt_or_gt ne_iff_lt_or_gt
 
-theorem lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y :=
+lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y :=
   ⟨not_le_of_gt, lt_of_not_ge⟩
 #align lt_iff_not_ge lt_iff_not_ge
 
@@ -447,7 +447,7 @@ lemma compare_ge_iff_ge {a b : α} : (compare a b ≠ .lt) ↔ a ≥ b := by
   · exact true_iff_iff.2 <| le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
   · exact true_iff_iff.2 <| le_of_lt <| compare_gt_iff_gt.1 h
 
-theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b := by
+lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b := by
   cases o <;> simp only [Ordering.toRel]
   · exact compare_lt_iff_lt
   · exact compare_eq_iff_eq

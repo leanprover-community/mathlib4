@@ -67,7 +67,7 @@ initialize_simps_projections BoxIntegral.BoxAdditiveMap (toFun → apply)
 #noalign box_integral.box_additive_map.to_fun_eq_coe
 
 @[simp]
-theorem coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f := rfl
+lemma coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f := rfl
 #align box_integral.box_additive_map.coe_mk BoxIntegral.BoxAdditiveMap.coe_mk
 
 lemma coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
@@ -78,7 +78,7 @@ lemma coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
 lemma coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := FunLike.coe_fn_eq
 #align box_integral.box_additive_map.coe_inj BoxIntegral.BoxAdditiveMap.coe_inj
 
-theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
+lemma sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
     (h : π.IsPartition) : ∑ J in π.boxes, f J = f I :=
   f.sum_partition_boxes' I hI π h
 #align box_integral.box_additive_map.sum_partition_boxes BoxIntegral.BoxAdditiveMap.sum_partition_boxes
@@ -104,7 +104,7 @@ instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[simp]
-theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
+lemma map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
     (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I := by
   rw [← f.sum_partition_boxes hI (isPartitionSplit I i x), sum_split_boxes]
 #align box_integral.box_additive_map.map_split_add BoxIntegral.BoxAdditiveMap.map_split_add
@@ -180,7 +180,7 @@ def toSMul (f : ι →ᵇᵃ[I₀] ℝ) : ι →ᵇᵃ[I₀] E →L[ℝ] E :=
 #align box_integral.box_additive_map.to_smul BoxIntegral.BoxAdditiveMap.toSMul
 
 @[simp]
-theorem toSMul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSMul I x = f I • x := rfl
+lemma toSMul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSMul I x = f I • x := rfl
 #align box_integral.box_additive_map.to_smul_apply BoxIntegral.BoxAdditiveMap.toSMul_apply
 
 end ToSMul

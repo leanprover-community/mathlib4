@@ -43,7 +43,7 @@ scoped[Heyting] prefix:120 "∂ " => Coheyting.boundary
 open Heyting
 
 -- Porting note: Should hnot be named hNot?
-theorem inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
+lemma inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
   rfl
 #align coheyting.inf_hnot_self Coheyting.inf_hnot_self
 
@@ -64,21 +64,21 @@ lemma boundary_bot : ∂ (⊥ : α) = ⊥ :=
 lemma boundary_top : ∂ (⊤ : α) = ⊥ := by rw [boundary, hnot_top, inf_bot_eq]
 #align coheyting.boundary_top Coheyting.boundary_top
 
-theorem boundary_hnot_le (a : α) : ∂ (￢a) ≤ ∂ a :=
+lemma boundary_hnot_le (a : α) : ∂ (￢a) ≤ ∂ a :=
   inf_comm.trans_le <| inf_le_inf_right _ hnot_hnot_le
 #align coheyting.boundary_hnot_le Coheyting.boundary_hnot_le
 
 @[simp]
-theorem boundary_hnot_hnot (a : α) : ∂ (￢￢a) = ∂ (￢a) := by
+lemma boundary_hnot_hnot (a : α) : ∂ (￢￢a) = ∂ (￢a) := by
   simp_rw [boundary, hnot_hnot_hnot, inf_comm]
 #align coheyting.boundary_hnot_hnot Coheyting.boundary_hnot_hnot
 
 @[simp]
-theorem hnot_boundary (a : α) : ￢∂ a = ⊤ := by rw [boundary, hnot_inf_distrib, sup_hnot_self]
+lemma hnot_boundary (a : α) : ￢∂ a = ⊤ := by rw [boundary, hnot_inf_distrib, sup_hnot_self]
 #align coheyting.hnot_boundary Coheyting.hnot_boundary
 
 /-- **Leibniz rule** for the co-Heyting boundary. -/
-theorem boundary_inf (a b : α) : ∂ (a ⊓ b) = ∂ a ⊓ b ⊔ a ⊓ ∂ b := by
+lemma boundary_inf (a b : α) : ∂ (a ⊓ b) = ∂ a ⊓ b ⊔ a ⊓ ∂ b := by
   unfold boundary
   rw [hnot_inf_distrib, inf_sup_left, inf_right_comm, ← inf_assoc]
 #align coheyting.boundary_inf Coheyting.boundary_inf
@@ -123,17 +123,17 @@ lemma boundary_le_boundary_sup_sup_boundary_inf_right : ∂ b ≤ ∂ (a ⊔ b) 
   exact boundary_le_boundary_sup_sup_boundary_inf_left
 #align coheyting.boundary_le_boundary_sup_sup_boundary_inf_right Coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
 
-theorem boundary_sup_sup_boundary_inf (a b : α) : ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) = ∂ a ⊔ ∂ b :=
+lemma boundary_sup_sup_boundary_inf (a b : α) : ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) = ∂ a ⊔ ∂ b :=
   le_antisymm (sup_le boundary_sup_le boundary_inf_le) <|
     sup_le boundary_le_boundary_sup_sup_boundary_inf_left
       boundary_le_boundary_sup_sup_boundary_inf_right
 #align coheyting.boundary_sup_sup_boundary_inf Coheyting.boundary_sup_sup_boundary_inf
 
 @[simp]
-theorem boundary_idem (a : α) : ∂ ∂ a = ∂ a := by rw [boundary, hnot_boundary, inf_top_eq]
+lemma boundary_idem (a : α) : ∂ ∂ a = ∂ a := by rw [boundary, hnot_boundary, inf_top_eq]
 #align coheyting.boundary_idem Coheyting.boundary_idem
 
-theorem hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
+lemma hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
   rw [boundary, sup_inf_left, hnot_sup_self, inf_top_eq, sup_eq_right]
   exact hnot_hnot_le
 #align coheyting.hnot_hnot_sup_boundary Coheyting.hnot_hnot_sup_boundary
@@ -153,7 +153,7 @@ section BooleanAlgebra
 variable [BooleanAlgebra α]
 
 @[simp]
-theorem Coheyting.boundary_eq_bot (a : α) : ∂ a = ⊥ :=
+lemma Coheyting.boundary_eq_bot (a : α) : ∂ a = ⊥ :=
   inf_compl_eq_bot
 #align coheyting.boundary_eq_bot Coheyting.boundary_eq_bot
 

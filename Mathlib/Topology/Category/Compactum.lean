@@ -139,14 +139,14 @@ def incl (X : Compactum) : X → Ultrafilter X :=
 #align Compactum.incl Compactum.incl
 
 @[simp]
-theorem str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
+lemma str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
   change ((β ).η.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.unit]
   rfl
 #align Compactum.str_incl Compactum.str_incl
 
 @[simp]
-theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
+lemma str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
     f (X.str xs) = Y.str (map f xs) := by
   change (X.a ≫ f.f) _ = _
   rw [← f.h]
@@ -154,7 +154,7 @@ theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
 #align Compactum.str_hom_commute Compactum.str_hom_commute
 
 @[simp]
-theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
+lemma join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
     X.str (X.join uux) = X.str (map X.str uux) := by
   change ((β ).μ.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.assoc]

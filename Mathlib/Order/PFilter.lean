@@ -95,7 +95,7 @@ lemma mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h => F.
 
 /-- Two filters are equal when their underlying sets are equal. -/
 @[ext]
-theorem ext (h : (s : Set P) = t) : s = t := SetLike.ext' h
+lemma ext (h : (s : Set P) = t) : s = t := SetLike.ext' h
 #align order.pfilter.ext Order.PFilter.ext
 
 @[trans]
@@ -109,7 +109,7 @@ def principal (p : P) : PFilter P :=
 #align order.pfilter.principal Order.PFilter.principal
 
 @[simp]
-theorem mem_mk (x : P) (I : Ideal Pᵒᵈ) : x ∈ (⟨I⟩ : PFilter P) ↔ toDual x ∈ I :=
+lemma mem_mk (x : P) (I : Ideal Pᵒᵈ) : x ∈ (⟨I⟩ : PFilter P) ↔ toDual x ∈ I :=
   Iff.rfl
 #align order.pfilter.mem_def Order.PFilter.mem_mk
 
@@ -156,7 +156,7 @@ section SemilatticeInf
 variable [SemilatticeInf P] {x y : P} {F : PFilter P}
 
 /-- A specific witness of `pfilter.directed` when `P` has meets. -/
-theorem inf_mem (hx : x ∈ F) (hy : y ∈ F) : x ⊓ y ∈ F :=
+lemma inf_mem (hx : x ∈ F) (hy : y ∈ F) : x ⊓ y ∈ F :=
   Ideal.sup_mem hx hy
 #align order.pfilter.inf_mem Order.PFilter.inf_mem
 

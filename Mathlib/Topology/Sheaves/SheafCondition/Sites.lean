@@ -44,7 +44,7 @@ def coveringOfPresieve (U : Opens X) (R : Presieve U) : (ΣV, { f : V ⟶ U // R
 #align Top.presheaf.covering_of_presieve TopCat.Presheaf.coveringOfPresieve
 
 @[simp]
-theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : ΣV, { f : V ⟶ U // R f }) :
+lemma coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : ΣV, { f : V ⟶ U // R f }) :
     coveringOfPresieve U R f = f.1 := rfl
 #align Top.presheaf.covering_of_presieve_apply TopCat.Presheaf.coveringOfPresieve_apply
 
@@ -55,7 +55,7 @@ variable (U : Opens X) (R : Presieve U)
 /-- If `R` is a presieve in the grothendieck topology on `Opens X`, the covering family associated
 to `R` really is _covering_, i.e. the union of all open sets equals `U`.
 -/
-theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendieckTopology X U) :
+lemma iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendieckTopology X U) :
     iSup (coveringOfPresieve U R) = U := by
   apply le_antisymm
   · refine' iSup_le _
@@ -121,7 +121,7 @@ def indexOfHom (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) : ι :=
   f.2.2.choose
 #align Top.presheaf.presieve_of_covering.index_of_hom TopCat.Presheaf.presieveOfCovering.indexOfHom
 
-theorem indexOfHom_spec (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) :
+lemma indexOfHom_spec (f : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f }) :
     f.1 = U (indexOfHom U f) :=
   f.2.2.choose_spec
 #align Top.presheaf.presieve_of_covering.index_of_hom_spec TopCat.Presheaf.presieveOfCovering.indexOfHom_spec
@@ -158,7 +158,7 @@ variable {C : Type u} [Category.{v} C]
 
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
-theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
+lemma OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.isOpenMap.functor := by
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
   apply compatiblePreservingOfDownwardsClosed
@@ -168,7 +168,7 @@ theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
   exact ⟨_, rfl⟩
 #align open_embedding.compatible_preserving OpenEmbedding.compatiblePreserving
 
-theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
+lemma IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
   constructor
   rintro U S hU _ ⟨x, hx, rfl⟩
@@ -176,7 +176,7 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
 #align is_open_map.cover_preserving IsOpenMap.coverPreserving
 
-theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
+lemma TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) :=
   pullback_isSheaf_of_coverPreserving h.compatiblePreserving h.isOpenMap.coverPreserving ⟨_, hF⟩
 #align Top.presheaf.is_sheaf_of_open_embedding TopCat.Presheaf.isSheaf_of_openEmbedding
@@ -213,7 +213,7 @@ def restrictHomEquivHom : ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op
 #align Top.sheaf.restrict_hom_equiv_hom TopCat.Sheaf.restrictHomEquivHom
 
 @[simp]
-theorem extend_hom_app (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
+lemma extend_hom_app (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
     (restrictHomEquivHom F F' h α).app (op (B i)) = α.app (op i) := by
   nth_rw 2 [← (restrictHomEquivHom F F' h).left_inv α]
   rfl

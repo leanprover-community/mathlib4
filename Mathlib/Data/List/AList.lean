@@ -80,7 +80,7 @@ def keys (s : AList β) : List α :=
   s.entries.keys
 #align alist.keys AList.keys
 
-theorem keys_nodup (s : AList β) : s.keys.Nodup :=
+lemma keys_nodup (s : AList β) : s.keys.Nodup :=
   s.nodupKeys
 #align alist.keys_nodup AList.keys_nodup
 
@@ -110,7 +110,7 @@ instance : Inhabited (AList β) :=
   ⟨∅⟩
 
 @[simp]
-theorem not_mem_empty (a : α) : a ∉ (∅ : AList β) :=
+lemma not_mem_empty (a : α) : a ∉ (∅ : AList β) :=
   not_mem_nil a
 #align alist.not_mem_empty AList.not_mem_empty
 
@@ -133,12 +133,12 @@ def singleton (a : α) (b : β a) : AList β :=
 #align alist.singleton AList.singleton
 
 @[simp]
-theorem singleton_entries (a : α) (b : β a) : (singleton a b).entries = [Sigma.mk a b] :=
+lemma singleton_entries (a : α) (b : β a) : (singleton a b).entries = [Sigma.mk a b] :=
   rfl
 #align alist.singleton_entries AList.singleton_entries
 
 @[simp]
-theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = [a] :=
+lemma keys_singleton (a : α) (b : β a) : (singleton a b).keys = [a] :=
   rfl
 #align alist.keys_singleton AList.keys_singleton
 
@@ -155,7 +155,7 @@ def lookup (a : α) (s : AList β) : Option (β a) :=
 #align alist.lookup AList.lookup
 
 @[simp]
-theorem lookup_empty (a) : lookup a (∅ : AList β) = none :=
+lemma lookup_empty (a) : lookup a (∅ : AList β) = none :=
   rfl
 #align alist.lookup_empty AList.lookup_empty
 
@@ -199,7 +199,7 @@ def replace (a : α) (b : β a) (s : AList β) : AList β :=
 #align alist.replace AList.replace
 
 @[simp]
-theorem keys_replace (a : α) (b : β a) (s : AList β) : (replace a b s).keys = s.keys :=
+lemma keys_replace (a : α) (b : β a) (s : AList β) : (replace a b s).keys = s.keys :=
   keys_kreplace _ _ _
 #align alist.keys_replace AList.keys_replace
 
@@ -233,7 +233,7 @@ def erase (a : α) (s : AList β) : AList β :=
 #align alist.erase AList.erase
 
 @[simp]
-theorem keys_erase (a : α) (s : AList β) : (erase a s).keys = s.keys.erase a :=
+lemma keys_erase (a : α) (s : AList β) : (erase a s).keys = s.keys.erase a :=
   keys_kerase
 #align alist.keys_erase AList.keys_erase
 
@@ -248,7 +248,7 @@ lemma perm_erase {a : α} {s₁ s₂ : AList β} :
 #align alist.perm_erase AList.perm_erase
 
 @[simp]
-theorem lookup_erase (a) (s : AList β) : lookup a (erase a s) = none :=
+lemma lookup_erase (a) (s : AList β) : lookup a (erase a s) = none :=
   dlookup_kerase a s.nodupKeys
 #align alist.lookup_erase AList.lookup_erase
 
@@ -257,7 +257,7 @@ lemma lookup_erase_ne {a a'} {s : AList β} (h : a ≠ a') : lookup a (erase a' 
   dlookup_kerase_ne h
 #align alist.lookup_erase_ne AList.lookup_erase_ne
 
-theorem erase_erase (a a' : α) (s : AList β) : (s.erase a).erase a' = (s.erase a').erase a :=
+lemma erase_erase (a a' : α) (s : AList β) : (s.erase a).erase a' = (s.erase a').erase a :=
   ext <| kerase_kerase
 #align alist.erase_erase AList.erase_erase
 
@@ -287,7 +287,7 @@ lemma insert_of_neg {a} {b : β a} {s : AList β} (h : a ∉ s) :
 #align alist.insert_of_neg AList.insert_of_neg
 
 @[simp]
-theorem insert_empty (a) (b : β a) : insert a b ∅ = singleton a b :=
+lemma insert_empty (a) (b : β a) : insert a b ∅ = singleton a b :=
   rfl
 #align alist.insert_empty AList.insert_empty
 
@@ -342,16 +342,16 @@ lemma insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') =
 #align alist.insert_singleton_eq AList.insert_singleton_eq
 
 @[simp]
-theorem entries_toAList (xs : List (Sigma β)) : (List.toAList xs).entries = dedupKeys xs :=
+lemma entries_toAList (xs : List (Sigma β)) : (List.toAList xs).entries = dedupKeys xs :=
   rfl
 #align alist.entries_to_alist AList.entries_toAList
 
-theorem toAList_cons (a : α) (b : β a) (xs : List (Sigma β)) :
+lemma toAList_cons (a : α) (b : β a) (xs : List (Sigma β)) :
     List.toAList (⟨a, b⟩ :: xs) = insert a b xs.toAList :=
   rfl
 #align alist.to_alist_cons AList.toAList_cons
 
-theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).NodupKeys) :
+lemma mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).NodupKeys) :
     (⟨c :: l, h⟩ : AList β) = insert c.1 c.2 ⟨l, nodupKeys_of_nodupKeys_cons h⟩ := by
   simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
 #align alist.mk_cons_eq_insert AList.mk_cons_eq_insert
@@ -412,7 +412,7 @@ def extract (a : α) (s : AList β) : Option (β a) × AList β :=
 #align alist.extract AList.extract
 
 @[simp]
-theorem extract_eq_lookup_erase (a : α) (s : AList β) : extract a s = (lookup a s, erase a s) := by
+lemma extract_eq_lookup_erase (a : α) (s : AList β) : extract a s = (lookup a s, erase a s) := by
   simp [extract]; constructor <;> rfl
 #align alist.extract_eq_lookup_erase AList.extract_eq_lookup_erase
 
@@ -454,7 +454,7 @@ lemma perm_union {s₁ s₂ s₃ s₄ : AList β} (p₁₂ : s₁.entries ~ s₂
   simp [p₁₂.kunion s₃.nodupKeys p₃₄]
 #align alist.perm_union AList.perm_union
 
-theorem union_erase (a : α) (s₁ s₂ : AList β) : erase a (s₁ ∪ s₂) = erase a s₁ ∪ erase a s₂ :=
+lemma union_erase (a : α) (s₁ s₂ : AList β) : erase a (s₁ ∪ s₂) = erase a s₁ ∪ erase a s₂ :=
   ext kunion_kerase.symm
 #align alist.union_erase AList.union_erase
 

@@ -32,17 +32,17 @@ section CommSemiring -- porting note: generalized from `CommRing`
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 
-theorem proj_diagonal (i : n) (w : n → R) : (proj i).comp (toLin' (diagonal w)) = w i • proj i :=
+lemma proj_diagonal (i : n) (w : n → R) : (proj i).comp (toLin' (diagonal w)) = w i • proj i :=
   LinearMap.ext fun _ => mulVec_diagonal _ _ _
 #align matrix.proj_diagonal Matrix.proj_diagonal
 
-theorem diagonal_comp_stdBasis (w : n → R) (i : n) :
+lemma diagonal_comp_stdBasis (w : n → R) (i : n) :
     (diagonal w).toLin'.comp (LinearMap.stdBasis R (fun _ : n => R) i) =
       w i • LinearMap.stdBasis R (fun _ : n => R) i :=
   LinearMap.ext fun x => (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
 #align matrix.diagonal_comp_std_basis Matrix.diagonal_comp_stdBasis
 
-theorem diagonal_toLin' (w : n → R) :
+lemma diagonal_toLin' (w : n → R) :
     toLin' (diagonal w) = LinearMap.pi fun i => w i • LinearMap.proj i :=
   LinearMap.ext fun _ => funext fun _ => mulVec_diagonal _ _ _
 #align matrix.diagonal_to_lin' Matrix.diagonal_toLin'

@@ -53,12 +53,12 @@ def stepSet (S : Set σ) (a : α) : Set σ :=
   ⋃ s ∈ S, M.step s a
 #align NFA.step_set NFA.stepSet
 
-theorem mem_stepSet (s : σ) (S : Set σ) (a : α) : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.step t a := by
+lemma mem_stepSet (s : σ) (S : Set σ) (a : α) : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.step t a := by
   simp [stepSet]
 #align NFA.mem_step_set NFA.mem_stepSet
 
 @[simp]
-theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by simp [stepSet]
+lemma stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by simp [stepSet]
 #align NFA.step_set_empty NFA.stepSet_empty
 
 /-- `M.evalFrom S x` computes all possible paths though `M` with input `x` starting at an element
@@ -68,17 +68,17 @@ def evalFrom (start : Set σ) : List α → Set σ :=
 #align NFA.eval_from NFA.evalFrom
 
 @[simp]
-theorem evalFrom_nil (S : Set σ) : M.evalFrom S [] = S :=
+lemma evalFrom_nil (S : Set σ) : M.evalFrom S [] = S :=
   rfl
 #align NFA.eval_from_nil NFA.evalFrom_nil
 
 @[simp]
-theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet S a :=
+lemma evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet S a :=
   rfl
 #align NFA.eval_from_singleton NFA.evalFrom_singleton
 
 @[simp]
-theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
+lemma evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
   simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
 #align NFA.eval_from_append_singleton NFA.evalFrom_append_singleton
@@ -95,12 +95,12 @@ lemma eval_nil : M.eval [] = M.start :=
 #align NFA.eval_nil NFA.eval_nil
 
 @[simp]
-theorem eval_singleton (a : α) : M.eval [a] = M.stepSet M.start a :=
+lemma eval_singleton (a : α) : M.eval [a] = M.stepSet M.start a :=
   rfl
 #align NFA.eval_singleton NFA.eval_singleton
 
 @[simp]
-theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
+lemma eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
   evalFrom_append_singleton _ _ _ _
 #align NFA.eval_append_singleton NFA.eval_append_singleton
 
@@ -148,7 +148,7 @@ namespace DFA
 #align DFA.to_NFA DFA.toNFA
 
 @[simp]
-theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
+lemma toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
     M.toNFA.evalFrom {start} s = {M.evalFrom start s} := by
   change List.foldl M.toNFA.stepSet {start} s = {List.foldl M.step start s}
   induction' s with a s ih generalizing start
@@ -159,7 +159,7 @@ theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
 #align DFA.to_NFA_eval_from_match DFA.toNFA_evalFrom_match
 
 @[simp]
-theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
+lemma toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
   ext x
   rw [NFA.mem_accepts, toNFA_start, toNFA_evalFrom_match]
   constructor

@@ -126,7 +126,7 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M
 variable {hcomm}
 
 @[to_additive (attr := simp)]
-theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
+lemma noncommPiCoprod_mulSingle (i : ι) (y : N i) :
     noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
   change Finset.univ.noncommProd (fun j => ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
     = ϕ i y
@@ -289,7 +289,7 @@ section CommutingSubgroups
 variable (hcomm : ∀ i j : ι, i ≠ j → ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y)
 
 @[to_additive]
-theorem commute_subtype_of_commute (i j : ι) (hne : i ≠ j) :
+lemma commute_subtype_of_commute (i j : ι) (hne : i ≠ j) :
     ∀ (x : H i) (y : H j), Commute ((H i).subtype x) ((H j).subtype y) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩
   exact hcomm i j hne x y hx hy
@@ -308,7 +308,7 @@ def noncommPiCoprod : (∀ i : ι, H i) →* G :=
 variable {hcomm}
 
 @[to_additive (attr := simp)]
-theorem noncommPiCoprod_mulSingle (i : ι) (y : H i) :
+lemma noncommPiCoprod_mulSingle (i : ι) (y : H i) :
     noncommPiCoprod hcomm (Pi.mulSingle i y) = y := by apply MonoidHom.noncommPiCoprod_mulSingle
 #align subgroup.noncomm_pi_coprod_mul_single Subgroup.noncommPiCoprod_mulSingle
 #align add_subgroup.noncomm_pi_coprod_single AddSubgroup.noncommPiCoprod_single
@@ -320,7 +320,7 @@ lemma noncommPiCoprod_range : (noncommPiCoprod hcomm).range = ⨆ i : ι, H i :=
 #align add_subgroup.noncomm_pi_coprod_range AddSubgroup.noncommPiCoprod_range
 
 @[to_additive]
-theorem injective_noncommPiCoprod_of_independent (hind : CompleteLattice.Independent H) :
+lemma injective_noncommPiCoprod_of_independent (hind : CompleteLattice.Independent H) :
     Function.Injective (noncommPiCoprod hcomm) := by
   apply MonoidHom.injective_noncommPiCoprod_of_independent
   · simpa using hind

@@ -65,10 +65,10 @@ lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.na
   by rw [←coe_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
-theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
+lemma natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
-theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
+lemma sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
 #align int.sign_mul_abs Int.sign_mul_abs
 
@@ -97,11 +97,11 @@ lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign
 /-! ### succ and pred -/
 
 
-theorem lt_succ_self (a : ℤ) : a < succ a :=
+lemma lt_succ_self (a : ℤ) : a < succ a :=
   lt_add_of_pos_right _ zero_lt_one
 #align int.lt_succ_self Int.lt_succ_self
 
-theorem pred_self_lt (a : ℤ) : pred a < a :=
+lemma pred_self_lt (a : ℤ) : pred a < a :=
   sub_lt_self _ zero_lt_one
 #align int.pred_self_lt Int.pred_self_lt
 
@@ -224,7 +224,7 @@ attribute [local simp] Int.zero_ediv Int.ediv_zero
 
 
 @[simp]
-theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
+lemma emod_abs (a b : ℤ) : a % |b| = a % b :=
   abs_by_cases (fun i => a % i = a % b) rfl (emod_neg _ _)
 #align int.mod_abs Int.emod_abs
 
@@ -232,7 +232,7 @@ theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
 
 #align int.mod_lt_of_pos Int.emod_lt_of_pos
 
-theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
+lemma emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 #align int.mod_lt Int.emod_lt
 
@@ -285,7 +285,7 @@ attribute [local simp] Int.zero_emod
 #align int.mod_eq_mod_iff_mod_sub_eq_zero Int.emod_eq_emod_iff_emod_sub_eq_zero
 
 @[simp]
-theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
+lemma neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
   convert Int.mul_emod_right 2 (-i) using 2
   rw [two_mul, sub_eq_add_neg]
@@ -312,7 +312,7 @@ lemma abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
 
 #align int.div_le_self Int.ediv_le_self
 
-theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
+lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   have h : n % 2 < 2 := abs_of_nonneg (show 0 ≤ (2 : ℤ) by decide) ▸ Int.emod_lt _ (by decide)
   have h₁ : 0 ≤ n % 2 := Int.emod_nonneg _ (by decide)
   match n % 2, h, h₁ with
@@ -379,7 +379,7 @@ lemma abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
 
 /-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`
   for some `k`. -/
-theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
+lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
     (∃ k, n * k < m ∧ m < n * (k + 1)) ↔ ¬n ∣ m := by
   constructor
   · rintro ⟨k, h1k, h2k⟩ ⟨l, rfl⟩
@@ -407,7 +407,7 @@ attribute [local simp] Int.ediv_zero
 
 #align int.sub_div_of_dvd_sub Int.sub_ediv_of_dvd_sub
 
-protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
+protected lemma sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
 #align int.sign_eq_div_abs Int.sign_eq_ediv_abs
@@ -415,7 +415,7 @@ protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
 /-! ### `/` and ordering -/
 
 
-protected theorem ediv_mul_le (a : ℤ) {b : ℤ} (H : b ≠ 0) : a / b * b ≤ a :=
+protected lemma ediv_mul_le (a : ℤ) {b : ℤ} (H : b ≠ 0) : a / b * b ≤ a :=
   le_of_sub_nonneg <| by rw [mul_comm, ← emod_def]; apply emod_nonneg _ H
 #align int.div_mul_le Int.ediv_mul_le
 

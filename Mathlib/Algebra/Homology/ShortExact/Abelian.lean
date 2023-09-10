@@ -29,7 +29,7 @@ variable [Abelian 𝒜]
 
 open ZeroObject
 
-theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortExact f' g')
+lemma isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortExact f' g')
     (i₁ : A ⟶ A') (i₂ : B ⟶ B') (i₃ : C ⟶ C')
     (comm₁ : i₁ ≫ f' = f ≫ i₂ := by aesop_cat)
     (comm₂ : i₂ ≫ g' = g ≫ i₃ := by aesop_cat) [IsIso i₁] [IsIso i₃] : IsIso i₂ := by

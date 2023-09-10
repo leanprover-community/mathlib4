@@ -132,7 +132,7 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
   ⟨fun x => ((initial.to Scheme.empty : _).1.base x).elim⟩
 #align algebraic_geometry.initial_is_empty AlgebraicGeometry.initial_isEmpty
 
-theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
+lemma bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
   convert rangeIsAffineOpenOfOpenImmersion (initial.to X)
   ext
   -- Porting note : added this `erw` to turn LHS to `False`

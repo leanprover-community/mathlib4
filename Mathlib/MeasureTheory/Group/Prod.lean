@@ -102,7 +102,7 @@ lemma measurePreserving_prod_mul_swap [IsMulLeftInvariant μ] :
 #align measure_theory.measure_preserving_prod_add_swap MeasureTheory.measurePreserving_prod_add_swap
 
 @[to_additive]
-theorem measurable_measure_mul_right (hs : MeasurableSet s) :
+lemma measurable_measure_mul_right (hs : MeasurableSet s) :
     Measurable fun x => μ ((fun y => y * x) ⁻¹' s) := by
   suffices
     Measurable fun y =>
@@ -209,7 +209,7 @@ lemma lintegral_lintegral_mul_inv [IsMulLeftInvariant ν] (f : G → G → ℝ�
 #align measure_theory.lintegral_lintegral_add_neg MeasureTheory.lintegral_lintegral_add_neg
 
 @[to_additive]
-theorem measure_mul_right_null (y : G) : μ ((fun x => x * y) ⁻¹' s) = 0 ↔ μ s = 0 :=
+lemma measure_mul_right_null (y : G) : μ ((fun x => x * y) ⁻¹' s) = 0 ↔ μ s = 0 :=
   calc
     μ ((fun x => x * y) ⁻¹' s) = 0 ↔ μ ((fun x => y⁻¹ * x) ⁻¹' s⁻¹)⁻¹ = 0 := by
       simp_rw [← inv_preimage, preimage_preimage, mul_inv_rev, inv_inv]
@@ -218,20 +218,20 @@ theorem measure_mul_right_null (y : G) : μ ((fun x => x * y) ⁻¹' s) = 0 ↔ 
 #align measure_theory.measure_add_right_null MeasureTheory.measure_add_right_null
 
 @[to_additive]
-theorem measure_mul_right_ne_zero (h2s : μ s ≠ 0) (y : G) : μ ((fun x => x * y) ⁻¹' s) ≠ 0 :=
+lemma measure_mul_right_ne_zero (h2s : μ s ≠ 0) (y : G) : μ ((fun x => x * y) ⁻¹' s) ≠ 0 :=
   (not_congr (measure_mul_right_null μ y)).mpr h2s
 #align measure_theory.measure_mul_right_ne_zero MeasureTheory.measure_mul_right_ne_zero
 #align measure_theory.measure_add_right_ne_zero MeasureTheory.measure_add_right_ne_zero
 
 @[to_additive]
-theorem absolutelyContinuous_map_mul_right (g : G) : μ ≪ map (· * g) μ := by
+lemma absolutelyContinuous_map_mul_right (g : G) : μ ≪ map (· * g) μ := by
   refine' AbsolutelyContinuous.mk fun s hs => _
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 #align measure_theory.absolutely_continuous_map_mul_right MeasureTheory.absolutelyContinuous_map_mul_right
 #align measure_theory.absolutely_continuous_map_add_right MeasureTheory.absolutelyContinuous_map_add_right
 
 @[to_additive]
-theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) μ := by
+lemma absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) μ := by
   simp_rw [div_eq_mul_inv]
   erw [← map_map (measurable_const_mul g) measurable_inv]
   conv_lhs => rw [← map_mul_left_eq_self μ g]

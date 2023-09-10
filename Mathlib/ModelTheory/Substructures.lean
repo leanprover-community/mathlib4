@@ -72,17 +72,17 @@ variable {L f s} {t : Set M}
 
 namespace ClosedUnder
 
-theorem inter (hs : ClosedUnder f s) (ht : ClosedUnder f t) : ClosedUnder f (s ∩ t) := fun x h =>
+lemma inter (hs : ClosedUnder f s) (ht : ClosedUnder f t) : ClosedUnder f (s ∩ t) := fun x h =>
   mem_inter (hs x fun i => mem_of_mem_inter_left (h i)) (ht x fun i => mem_of_mem_inter_right (h i))
 #align first_order.language.closed_under.inter FirstOrder.Language.ClosedUnder.inter
 
-theorem inf (hs : ClosedUnder f s) (ht : ClosedUnder f t) : ClosedUnder f (s ⊓ t) :=
+lemma inf (hs : ClosedUnder f s) (ht : ClosedUnder f t) : ClosedUnder f (s ⊓ t) :=
   hs.inter ht
 #align first_order.language.closed_under.inf FirstOrder.Language.ClosedUnder.inf
 
 variable {S : Set (Set M)}
 
-theorem sInf (hS : ∀ s, s ∈ S → ClosedUnder f s) : ClosedUnder f (sInf S) := fun x h s hs =>
+lemma sInf (hS : ∀ s, s ∈ S → ClosedUnder f s) : ClosedUnder f (sInf S) := fun x h s hs =>
   hS s hs x fun i => h i s hs
 #align first_order.language.closed_under.Inf FirstOrder.Language.ClosedUnder.sInf
 
@@ -156,7 +156,7 @@ lemma copy_eq {s : Set M} (hs : s = S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 #align first_order.language.substructure.copy_eq FirstOrder.Language.Substructure.copy_eq
 
-theorem constants_mem (c : L.Constants) : (c : M) ∈ S :=
+lemma constants_mem (c : L.Constants) : (c : M) ∈ S :=
   mem_carrier.2 (S.fun_mem c _ finZeroElim)
 #align first_order.language.substructure.constants_mem FirstOrder.Language.Substructure.constants_mem
 
@@ -171,7 +171,7 @@ instance instInhabited : Inhabited (L.Substructure M) :=
 #align first_order.language.substructure.inhabited FirstOrder.Language.Substructure.instInhabited
 
 @[simp]
-theorem mem_top (x : M) : x ∈ (⊤ : L.Substructure M) :=
+lemma mem_top (x : M) : x ∈ (⊤ : L.Substructure M) :=
   Set.mem_univ x
 #align first_order.language.substructure.mem_top FirstOrder.Language.Substructure.mem_top
 
@@ -188,7 +188,7 @@ instance instInf : Inf (L.Substructure M) :=
 #align first_order.language.substructure.has_inf FirstOrder.Language.Substructure.instInf
 
 @[simp]
-theorem coe_inf (p p' : L.Substructure M) :
+lemma coe_inf (p p' : L.Substructure M) :
     ((p ⊓ p' : L.Substructure M) : Set M) = (p : Set M) ∩ (p' : Set M) :=
   rfl
 #align first_order.language.substructure.coe_inf FirstOrder.Language.Substructure.coe_inf
@@ -211,7 +211,7 @@ instance instInfSet : InfSet (L.Substructure M) :=
 #align first_order.language.substructure.has_Inf FirstOrder.Language.Substructure.instInfSet
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (L.Substructure M)) :
+lemma coe_sInf (S : Set (L.Substructure M)) :
     ((sInf S : L.Substructure M) : Set M) = ⋂ s ∈ S, (s : Set M) :=
   rfl
 #align first_order.language.substructure.coe_Inf FirstOrder.Language.Substructure.coe_sInf
@@ -272,7 +272,7 @@ lemma not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := f
 #align first_order.language.substructure.not_mem_of_not_mem_closure FirstOrder.Language.Substructure.not_mem_of_not_mem_closure
 
 @[simp]
-theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
+lemma closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
   congr rfl ((closure L).eq_of_le Set.Subset.rfl fun _x xS => mem_closure.2 fun _T hT => hT xS)
 #align first_order.language.substructure.closed FirstOrder.Language.Substructure.closed
 
@@ -290,7 +290,7 @@ theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L
   (closure L).monotone h
 #align first_order.language.substructure.closure_mono FirstOrder.Language.Substructure.closure_mono
 
-theorem closure_eq_of_le (h₁ : s ⊆ S) (h₂ : S ≤ closure L s) : closure L s = S :=
+lemma closure_eq_of_le (h₁ : s ⊆ S) (h₂ : S ≤ closure L s) : closure L s = S :=
   (closure L).eq_of_le h₁ h₂
 #align first_order.language.substructure.closure_eq_of_le FirstOrder.Language.Substructure.closure_eq_of_le
 
@@ -388,7 +388,7 @@ lemma closure_univ : closure L (univ : Set M) = ⊤ :=
   @coe_top L M _ ▸ closure_eq ⊤
 #align first_order.language.substructure.closure_univ FirstOrder.Language.Substructure.closure_univ
 
-theorem closure_union (s t : Set M) : closure L (s ∪ t) = closure L s ⊔ closure L t :=
+lemma closure_union (s t : Set M) : closure L (s ∪ t) = closure L s ⊔ closure L t :=
   (Substructure.gi L M).gc.l_sup
 #align first_order.language.substructure.closure_union FirstOrder.Language.Substructure.closure_union
 
@@ -422,13 +422,13 @@ lemma mem_comap {S : L.Substructure N} {f : M →[L] N} {x : M} : x ∈ S.comap 
   Iff.rfl
 #align first_order.language.substructure.mem_comap FirstOrder.Language.Substructure.mem_comap
 
-theorem comap_comap (S : L.Substructure P) (g : N →[L] P) (f : M →[L] N) :
+lemma comap_comap (S : L.Substructure P) (g : N →[L] P) (f : M →[L] N) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   rfl
 #align first_order.language.substructure.comap_comap FirstOrder.Language.Substructure.comap_comap
 
 @[simp]
-theorem comap_id (S : L.Substructure P) : S.comap (Hom.id _ _) = S :=
+lemma comap_id (S : L.Substructure P) : S.comap (Hom.id _ _) = S :=
   ext (by simp)
 #align first_order.language.substructure.comap_id FirstOrder.Language.Substructure.comap_id
 
@@ -451,15 +451,15 @@ lemma mem_map {f : M →[L] N} {S : L.Substructure M} {y : N} :
   Iff.rfl
 #align first_order.language.substructure.mem_map FirstOrder.Language.Substructure.mem_map
 
-theorem mem_map_of_mem (f : M →[L] N) {S : L.Substructure M} {x : M} (hx : x ∈ S) : f x ∈ S.map f :=
+lemma mem_map_of_mem (f : M →[L] N) {S : L.Substructure M} {x : M} (hx : x ∈ S) : f x ∈ S.map f :=
   mem_image_of_mem f hx
 #align first_order.language.substructure.mem_map_of_mem FirstOrder.Language.Substructure.mem_map_of_mem
 
-theorem apply_coe_mem_map (f : M →[L] N) (S : L.Substructure M) (x : S) : f x ∈ S.map f :=
+lemma apply_coe_mem_map (f : M →[L] N) (S : L.Substructure M) (x : S) : f x ∈ S.map f :=
   mem_map_of_mem f x.prop
 #align first_order.language.substructure.apply_coe_mem_map FirstOrder.Language.Substructure.apply_coe_mem_map
 
-theorem map_map (g : N →[L] P) (f : M →[L] N) : (S.map f).map g = S.map (g.comp f) :=
+lemma map_map (g : N →[L] P) (f : M →[L] N) : (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 #align first_order.language.substructure.map_map FirstOrder.Language.Substructure.map_map
 
@@ -468,7 +468,7 @@ lemma map_le_iff_le_comap {f : M →[L] N} {S : L.Substructure M} {T : L.Substru
   image_subset_iff
 #align first_order.language.substructure.map_le_iff_le_comap FirstOrder.Language.Substructure.map_le_iff_le_comap
 
-theorem gc_map_comap (f : M →[L] N) : GaloisConnection (map f) (comap f) := fun _ _ =>
+lemma gc_map_comap (f : M →[L] N) : GaloisConnection (map f) (comap f) := fun _ _ =>
   map_le_iff_le_comap
 #align first_order.language.substructure.gc_map_comap FirstOrder.Language.Substructure.gc_map_comap
 
@@ -507,7 +507,7 @@ lemma comap_map_comap {S : L.Substructure N} {f : M →[L] N} :
   (gc_map_comap f).u_l_u_eq_u _
 #align first_order.language.substructure.comap_map_comap FirstOrder.Language.Substructure.comap_map_comap
 
-theorem map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.map f ⊔ T.map f :=
+lemma map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.map f ⊔ T.map f :=
   (gc_map_comap f).l_sup
 #align first_order.language.substructure.map_sup FirstOrder.Language.Substructure.map_sup
 
@@ -516,7 +516,7 @@ lemma map_iSup {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure M) :
   (gc_map_comap f).l_iSup
 #align first_order.language.substructure.map_supr FirstOrder.Language.Substructure.map_iSup
 
-theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
+lemma comap_inf (S T : L.Substructure N) (f : M →[L] N) :
     (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
   (gc_map_comap f).u_inf
 #align first_order.language.substructure.comap_inf FirstOrder.Language.Substructure.comap_inf
@@ -527,28 +527,28 @@ lemma comap_iInf {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure N) :
 #align first_order.language.substructure.comap_infi FirstOrder.Language.Substructure.comap_iInf
 
 @[simp]
-theorem map_bot (f : M →[L] N) : (⊥ : L.Substructure M).map f = ⊥ :=
+lemma map_bot (f : M →[L] N) : (⊥ : L.Substructure M).map f = ⊥ :=
   (gc_map_comap f).l_bot
 #align first_order.language.substructure.map_bot FirstOrder.Language.Substructure.map_bot
 
 @[simp]
-theorem comap_top (f : M →[L] N) : (⊤ : L.Substructure N).comap f = ⊤ :=
+lemma comap_top (f : M →[L] N) : (⊤ : L.Substructure N).comap f = ⊤ :=
   (gc_map_comap f).u_top
 #align first_order.language.substructure.comap_top FirstOrder.Language.Substructure.comap_top
 
 @[simp]
-theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
+lemma map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
   ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
 #align first_order.language.substructure.map_id FirstOrder.Language.Substructure.map_id
 
-theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
+lemma map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
   Eq.symm <|
     closure_eq_of_le (Set.image_subset f subset_closure) <|
       map_le_iff_le_comap.2 <| closure_le.2 fun x hx => subset_closure ⟨x, hx, rfl⟩
 #align first_order.language.substructure.map_closure FirstOrder.Language.Substructure.map_closure
 
 @[simp]
-theorem closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s) :=
+lemma closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s) :=
   (map_closure f s).symm
 #align first_order.language.substructure.closure_image FirstOrder.Language.Substructure.closure_image
 
@@ -561,7 +561,7 @@ def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 #align first_order.language.substructure.gci_map_comap FirstOrder.Language.Substructure.gciMapComap
 
-theorem comap_map_eq_of_injective (S : L.Substructure M) : (S.map f).comap f = S :=
+lemma comap_map_eq_of_injective (S : L.Substructure M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
 #align first_order.language.substructure.comap_map_eq_of_injective FirstOrder.Language.Substructure.comap_map_eq_of_injective
 
@@ -573,20 +573,20 @@ lemma map_injective_of_injective : Function.Injective (map f) :=
   (gciMapComap hf).l_injective
 #align first_order.language.substructure.map_injective_of_injective FirstOrder.Language.Substructure.map_injective_of_injective
 
-theorem comap_inf_map_of_injective (S T : L.Substructure M) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
+lemma comap_inf_map_of_injective (S T : L.Substructure M) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
   (gciMapComap hf).u_inf_l _ _
 #align first_order.language.substructure.comap_inf_map_of_injective FirstOrder.Language.Substructure.comap_inf_map_of_injective
 
-theorem comap_iInf_map_of_injective (S : ι → L.Substructure M) :
+lemma comap_iInf_map_of_injective (S : ι → L.Substructure M) :
     (⨅ i, (S i).map f).comap f = iInf S :=
   (gciMapComap hf).u_iInf_l _
 #align first_order.language.substructure.comap_infi_map_of_injective FirstOrder.Language.Substructure.comap_iInf_map_of_injective
 
-theorem comap_sup_map_of_injective (S T : L.Substructure M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
+lemma comap_sup_map_of_injective (S T : L.Substructure M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 #align first_order.language.substructure.comap_sup_map_of_injective FirstOrder.Language.Substructure.comap_sup_map_of_injective
 
-theorem comap_iSup_map_of_injective (S : ι → L.Substructure M) :
+lemma comap_iSup_map_of_injective (S : ι → L.Substructure M) :
     (⨆ i, (S i).map f).comap f = iSup S :=
   (gciMapComap hf).u_iSup_l _
 #align first_order.language.substructure.comap_supr_map_of_injective FirstOrder.Language.Substructure.comap_iSup_map_of_injective
@@ -612,7 +612,7 @@ def giMapComap : GaloisInsertion (map f) (comap f) :=
     mem_map.2 ⟨y, by simp [hy, h]⟩
 #align first_order.language.substructure.gi_map_comap FirstOrder.Language.Substructure.giMapComap
 
-theorem map_comap_eq_of_surjective (S : L.Substructure N) : (S.comap f).map f = S :=
+lemma map_comap_eq_of_surjective (S : L.Substructure N) : (S.comap f).map f = S :=
   (giMapComap hf).l_u_eq _
 #align first_order.language.substructure.map_comap_eq_of_surjective FirstOrder.Language.Substructure.map_comap_eq_of_surjective
 
@@ -624,22 +624,22 @@ lemma comap_injective_of_surjective : Function.Injective (comap f) :=
   (giMapComap hf).u_injective
 #align first_order.language.substructure.comap_injective_of_surjective FirstOrder.Language.Substructure.comap_injective_of_surjective
 
-theorem map_inf_comap_of_surjective (S T : L.Substructure N) :
+lemma map_inf_comap_of_surjective (S T : L.Substructure N) :
     (S.comap f ⊓ T.comap f).map f = S ⊓ T :=
   (giMapComap hf).l_inf_u _ _
 #align first_order.language.substructure.map_inf_comap_of_surjective FirstOrder.Language.Substructure.map_inf_comap_of_surjective
 
-theorem map_iInf_comap_of_surjective (S : ι → L.Substructure N) :
+lemma map_iInf_comap_of_surjective (S : ι → L.Substructure N) :
     (⨅ i, (S i).comap f).map f = iInf S :=
   (giMapComap hf).l_iInf_u _
 #align first_order.language.substructure.map_infi_comap_of_surjective FirstOrder.Language.Substructure.map_iInf_comap_of_surjective
 
-theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
+lemma map_sup_comap_of_surjective (S T : L.Substructure N) :
     (S.comap f ⊔ T.comap f).map f = S ⊔ T :=
   (giMapComap hf).l_sup_u _ _
 #align first_order.language.substructure.map_sup_comap_of_surjective FirstOrder.Language.Substructure.map_sup_comap_of_surjective
 
-theorem map_iSup_comap_of_surjective (S : ι → L.Substructure N) :
+lemma map_iSup_comap_of_surjective (S : ι → L.Substructure N) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
 #align first_order.language.substructure.map_supr_comap_of_surjective FirstOrder.Language.Substructure.map_iSup_comap_of_surjective
@@ -687,7 +687,7 @@ lemma coe_topEquiv :
 
 /-- A dependent version of `Substructure.closure_induction`. -/
 @[elab_as_elim]
-theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
+lemma closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f { x | ∃ hx, p x hx }) {x}
     (hx : x ∈ closure L s) : p x hx := by
@@ -805,13 +805,13 @@ def codRestrict (p : L.Substructure N) (f : M →[L] N) (h : ∀ c, f c ∈ p) :
 #align first_order.language.hom.cod_restrict_to_fun_coe FirstOrder.Language.Hom.codRestrict_toFun_coe
 
 @[simp]
-theorem comp_codRestrict (f : M →[L] N) (g : N →[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
+lemma comp_codRestrict (f : M →[L] N) (g : N →[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M →[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
 #align first_order.language.hom.comp_cod_restrict FirstOrder.Language.Hom.comp_codRestrict
 
 @[simp]
-theorem subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
+lemma subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
     p.subtype.toHom.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 #align first_order.language.hom.subtype_comp_cod_restrict FirstOrder.Language.Hom.subtype_comp_codRestrict
@@ -822,7 +822,7 @@ def range (f : M →[L] N) : L.Substructure N :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 #align first_order.language.hom.range FirstOrder.Language.Hom.range
 
-theorem range_coe (f : M →[L] N) : (range f : Set N) = Set.range f :=
+lemma range_coe (f : M →[L] N) : (range f : Set N) = Set.range f :=
   rfl
 #align first_order.language.hom.range_coe FirstOrder.Language.Hom.range_coe
 
@@ -831,12 +831,12 @@ lemma mem_range {f : M →[L] N} {x} : x ∈ range f ↔ ∃ y, f y = x :=
   Iff.rfl
 #align first_order.language.hom.mem_range FirstOrder.Language.Hom.mem_range
 
-theorem range_eq_map (f : M →[L] N) : f.range = map f ⊤ := by
+lemma range_eq_map (f : M →[L] N) : f.range = map f ⊤ := by
   ext
   simp
 #align first_order.language.hom.range_eq_map FirstOrder.Language.Hom.range_eq_map
 
-theorem mem_range_self (f : M →[L] N) (x : M) : f x ∈ f.range :=
+lemma mem_range_self (f : M →[L] N) (x : M) : f x ∈ f.range :=
   ⟨x, rfl⟩
 #align first_order.language.hom.mem_range_self FirstOrder.Language.Hom.mem_range_self
 
@@ -845,11 +845,11 @@ lemma range_id : range (id L M) = ⊤ :=
   SetLike.coe_injective Set.range_id
 #align first_order.language.hom.range_id FirstOrder.Language.Hom.range_id
 
-theorem range_comp (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L] P) = map g (range f) :=
+lemma range_comp (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L] P) = map g (range f) :=
   SetLike.coe_injective (Set.range_comp g f)
 #align first_order.language.hom.range_comp FirstOrder.Language.Hom.range_comp
 
-theorem range_comp_le_range (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L] P) ≤ range g :=
+lemma range_comp_le_range (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L] P) ≤ range g :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 #align first_order.language.hom.range_comp_le_range FirstOrder.Language.Hom.range_comp_le_range
 
@@ -888,7 +888,7 @@ lemma eq_of_eqOn_top {f g : M →[L] N} (h : Set.EqOn f g (⊤ : Substructure L 
 
 variable {s : Set M}
 
-theorem eq_of_eqOn_dense (hs : closure L s = ⊤) {f g : M →[L] N} (h : s.EqOn f g) : f = g :=
+lemma eq_of_eqOn_dense (hs : closure L s = ⊤) {f g : M →[L] N} (h : s.EqOn f g) : f = g :=
   eq_of_eqOn_top <| hs ▸ eqOn_closure h
 #align first_order.language.hom.eq_of_eq_on_dense FirstOrder.Language.Hom.eq_of_eqOn_dense
 
@@ -905,7 +905,7 @@ def domRestrict (f : M ↪[L] N) (p : L.Substructure M) : p ↪[L] N :=
 #align first_order.language.embedding.dom_restrict FirstOrder.Language.Embedding.domRestrict
 
 @[simp]
-theorem domRestrict_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) : f.domRestrict p x = f x :=
+lemma domRestrict_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) : f.domRestrict p x = f x :=
   rfl
 #align first_order.language.embedding.dom_restrict_apply FirstOrder.Language.Embedding.domRestrict_apply
 
@@ -924,19 +924,19 @@ def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) :
 #align first_order.language.embedding.cod_restrict FirstOrder.Language.Embedding.codRestrict
 
 @[simp]
-theorem codRestrict_apply (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
+lemma codRestrict_apply (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
     (codRestrict p f h x : N) = f x :=
   rfl
 #align first_order.language.embedding.cod_restrict_apply FirstOrder.Language.Embedding.codRestrict_apply
 
 @[simp]
-theorem comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
+lemma comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
 #align first_order.language.embedding.comp_cod_restrict FirstOrder.Language.Embedding.comp_codRestrict
 
 @[simp]
-theorem subtype_comp_codRestrict (f : M ↪[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
+lemma subtype_comp_codRestrict (f : M ↪[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 #align first_order.language.embedding.subtype_comp_cod_restrict FirstOrder.Language.Embedding.subtype_comp_codRestrict
@@ -959,7 +959,7 @@ noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
 #align first_order.language.embedding.substructure_equiv_map FirstOrder.Language.Embedding.substructureEquivMap
 
 @[simp]
-theorem substructureEquivMap_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) :
+lemma substructureEquivMap_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) :
     (f.substructureEquivMap p x : N) = f x :=
   rfl
 #align first_order.language.embedding.substructure_equiv_map_apply FirstOrder.Language.Embedding.substructureEquivMap_apply
@@ -976,7 +976,7 @@ noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
 #align first_order.language.embedding.equiv_range FirstOrder.Language.Embedding.equivRange
 
 @[simp]
-theorem equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
+lemma equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
   rfl
 #align first_order.language.embedding.equiv_range_apply FirstOrder.Language.Embedding.equivRange_apply
 
@@ -984,7 +984,7 @@ end Embedding
 
 namespace Equiv
 
-theorem toHom_range (f : M ≃[L] N) : f.toHom.range = ⊤ := by
+lemma toHom_range (f : M ≃[L] N) : f.toHom.range = ⊤ := by
   ext n
   simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true_iff]
   exact ⟨f.symm n, apply_symm_apply _ _⟩
@@ -1005,7 +1005,7 @@ lemma coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
   rfl
 #align first_order.language.substructure.coe_inclusion FirstOrder.Language.Substructure.coe_inclusion
 
-theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
+lemma range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
   simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
   refine' ⟨_, fun h => ⟨⟨x, h⟩, rfl⟩⟩

@@ -115,12 +115,12 @@ def swap : Sum C D ⥤ Sum D C where
 #align category_theory.sum.swap CategoryTheory.Sum.swap
 
 @[simp]
-theorem swap_obj_inl (X : C) : (swap C D).obj (inl X) = inr X :=
+lemma swap_obj_inl (X : C) : (swap C D).obj (inl X) = inr X :=
   rfl
 #align category_theory.sum.swap_obj_inl CategoryTheory.Sum.swap_obj_inl
 
 @[simp]
-theorem swap_obj_inr (X : D) : (swap C D).obj (inr X) = inl X :=
+lemma swap_obj_inr (X : D) : (swap C D).obj (inr X) = inl X :=
   rfl
 #align category_theory.sum.swap_obj_inr CategoryTheory.Sum.swap_obj_inr
 
@@ -190,23 +190,23 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
 #align category_theory.functor.sum CategoryTheory.Functor.sum
 
 @[simp]
-theorem sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) = inl (F.obj a) :=
+lemma sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) = inl (F.obj a) :=
   rfl
 #align category_theory.functor.sum_obj_inl CategoryTheory.Functor.sum_obj_inl
 
 @[simp]
-theorem sum_obj_inr (F : A ⥤ B) (G : C ⥤ D) (c : C) : (F.sum G).obj (inr c) = inr (G.obj c) :=
+lemma sum_obj_inr (F : A ⥤ B) (G : C ⥤ D) (c : C) : (F.sum G).obj (inr c) = inr (G.obj c) :=
   rfl
 #align category_theory.functor.sum_obj_inr CategoryTheory.Functor.sum_obj_inr
 
 @[simp]
-theorem sum_map_inl (F : A ⥤ B) (G : C ⥤ D) {a a' : A} (f : inl a ⟶ inl a') :
+lemma sum_map_inl (F : A ⥤ B) (G : C ⥤ D) {a a' : A} (f : inl a ⟶ inl a') :
     (F.sum G).map f = F.map f :=
   rfl
 #align category_theory.functor.sum_map_inl CategoryTheory.Functor.sum_map_inl
 
 @[simp]
-theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : inr c ⟶ inr c') :
+lemma sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : inr c ⟶ inr c') :
     (F.sum G).map f = G.map f :=
   rfl
 #align category_theory.functor.sum_map_inr CategoryTheory.Functor.sum_map_inr

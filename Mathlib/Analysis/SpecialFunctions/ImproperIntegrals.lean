@@ -29,7 +29,7 @@ open Real Set Filter MeasureTheory intervalIntegral
 
 open scoped Topology
 
-theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
+lemma integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   refine'
     integrableOn_Iic_of_intervalIntegral_norm_bounded (exp c) c
       (fun y => intervalIntegrable_exp.1) tendsto_id
@@ -38,7 +38,7 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   exact (exp_pos _).le
 #align integrable_on_exp_Iic integrableOn_exp_Iic
 
-theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
+lemma integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine'
     tendsto_nhds_unique
       (intervalIntegral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) _
@@ -50,7 +50,7 @@ lemma integral_exp_Iic_zero : ∫ x : ℝ in Iic 0, exp x = 1 :=
   exp_zero ▸ integral_exp_Iic 0
 #align integral_exp_Iic_zero integral_exp_Iic_zero
 
-theorem integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp (-c) := by
+lemma integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp (-c) := by
   simpa only [integral_comp_neg_Ioi] using integral_exp_Iic (-c)
 #align integral_exp_neg_Ioi integral_exp_neg_Ioi
 

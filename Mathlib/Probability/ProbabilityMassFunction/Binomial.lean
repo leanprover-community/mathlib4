@@ -34,21 +34,21 @@ def binomial (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) : Pmf (Fin (n + 1)) :=
       rw [dif_pos hi, Fin.last]
     · simp [h])
 
-theorem binomial_apply (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) (i : Fin (n + 1)) :
+lemma binomial_apply (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) (i : Fin (n + 1)) :
     binomial p h n i = p^(i : ℕ) * (1-p)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := rfl
 
 @[simp]
-theorem binomial_apply_zero (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
+lemma binomial_apply_zero (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
     binomial p h n 0 = (1-p)^n := by
   simp [binomial_apply]
 
 @[simp]
-theorem binomial_apply_self (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
+lemma binomial_apply_self (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
     binomial p h n n = p^n := by
   simp [binomial_apply, Nat.mod_eq_of_lt]
 
 /-- The binomial distribution on one coin is the bernoully distribution. -/
-theorem binomial_one_eq_bernoulli (p : ℝ≥0∞) (h : p ≤ 1) :
+lemma binomial_one_eq_bernoulli (p : ℝ≥0∞) (h : p ≤ 1) :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
   ext i; fin_cases i <;> simp [tsum_bool, binomial_apply]
 

@@ -35,7 +35,7 @@ initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
   instead of `x.1`. A similar result is `Subtype.mem` in `Data.Set.Basic`. -/
-theorem prop (x : Subtype p) : p x :=
+lemma prop (x : Subtype p) : p x :=
   x.2
 #align subtype.prop Subtype.prop
 
@@ -70,7 +70,7 @@ lemma ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
   ⟨congr_arg _, Subtype.ext⟩
 #align subtype.ext_iff Subtype.ext_iff
 
-theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
+lemma heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
   Eq.rec (motive := λ (pp: (α → Prop)) _ => ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
          (λ _ => heq_iff_eq.trans ext_iff) (funext $ λ x => propext (h x)) a2
@@ -92,11 +92,11 @@ lemma ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
 #align subtype.ext_iff_val Subtype.ext_iff_val
 
 @[simp]
-theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
+lemma coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
   Subtype.ext rfl
 #align subtype.coe_eta Subtype.coe_eta
 
-theorem coe_mk (a h) : (@mk α p a h : α) = a :=
+lemma coe_mk (a h) : (@mk α p a h : α) = a :=
   rfl
 #align subtype.coe_mk Subtype.coe_mk
 
@@ -232,7 +232,7 @@ lemma equiv_iff [HasEquiv α] {p : α → Prop} {s t : Subtype p} : s ≈ t ↔ 
 
 variable [Setoid α]
 
-protected theorem refl (s : Subtype p) : s ≈ s :=
+protected lemma refl (s : Subtype p) : s ≈ s :=
   Setoid.refl _
 #align subtype.refl Subtype.refl
 
@@ -244,7 +244,7 @@ protected lemma trans {s t u : Subtype p} (h₁ : s ≈ t) (h₂ : t ≈ u) : s 
   Setoid.trans h₁ h₂
 #align subtype.trans Subtype.trans
 
-theorem equivalence (p : α → Prop) : Equivalence (@HasEquiv.Equiv (Subtype p) _) :=
+lemma equivalence (p : α → Prop) : Equivalence (@HasEquiv.Equiv (Subtype p) _) :=
   .mk (Subtype.refl) (@Subtype.symm _ p _) (@Subtype.trans _ p _)
 #align subtype.equivalence Subtype.equivalence
 

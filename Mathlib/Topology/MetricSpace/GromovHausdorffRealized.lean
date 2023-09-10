@@ -117,16 +117,16 @@ private lemma maxVar_bound : dist x y ≤ maxVar X Y :=
     _ = 1 * diam (univ : Set X) + 1 + 1 * diam (univ : Set Y) := by simp
     _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> norm_num
 
-private theorem candidates_symm (fA : f ∈ candidates X Y) : f (x, y) = f (y, x) :=
+private lemma candidates_symm (fA : f ∈ candidates X Y) : f (x, y) = f (y, x) :=
   fA.1.1.1.2 x y
 
-private theorem candidates_triangle (fA : f ∈ candidates X Y) : f (x, z) ≤ f (x, y) + f (y, z) :=
+private lemma candidates_triangle (fA : f ∈ candidates X Y) : f (x, z) ≤ f (x, y) + f (y, z) :=
   fA.1.1.2 x y z
 
-private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
+private lemma candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
-private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
+private lemma candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
   have : 0 ≤ 2 * f (x, y) :=
     calc
       0 = f (x, x) := (candidates_refl fA).symm
@@ -135,19 +135,19 @@ private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) :
       _ = 2 * f (x, y) := by ring
   linarith
 
-private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
+private lemma candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
   fA.1.1.1.1.1 x y
 
-private theorem candidates_dist_inr (fA : f ∈ candidates X Y) (x y : Y) :
+private lemma candidates_dist_inr (fA : f ∈ candidates X Y) (x y : Y) :
     f (inr x, inr y) = dist x y :=
   fA.1.1.1.1.2 x y
 
-private theorem candidates_le_maxVar (fA : f ∈ candidates X Y) : f (x, y) ≤ maxVar X Y :=
+private lemma candidates_le_maxVar (fA : f ∈ candidates X Y) : f (x, y) ≤ maxVar X Y :=
   fA.2 x y
 
 /-- candidates are bounded by `maxVar X Y` -/
-private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
+private lemma candidates_dist_bound (fA : f ∈ candidates X Y) :
     ∀ {x y : X ⊕ Y}, f (x, y) ≤ maxVar X Y * dist x y
   | inl x, inl y =>
     calc
@@ -177,7 +177,7 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
       _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
 /-- Technical lemma to prove that candidates are Lipschitz -/
-private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
+private lemma candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
   calc
     f (x, y) - f (z, t) ≤ f (x, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
@@ -195,7 +195,7 @@ private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     _ = 2 * maxVar X Y * dist (x, y) (z, t) := rfl
 
 /-- Candidates are Lipschitz -/
-private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :
+private lemma candidates_lipschitz (fA : f ∈ candidates X Y) :
     LipschitzWith (2 * maxVar X Y) f := by
   apply LipschitzWith.of_dist_le_mul
   rintro ⟨x, y⟩ ⟨z, t⟩
@@ -209,7 +209,7 @@ def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
   BoundedContinuousFunction.mkOfCompact ⟨f, (candidates_lipschitz fA).continuous⟩
 #align Gromov_Hausdorff.candidates_b_of_candidates GromovHausdorff.candidatesBOfCandidates
 
-theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
+lemma candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
     candidatesBOfCandidates f fA ∈ candidatesB X Y :=
   fA
 #align Gromov_Hausdorff.candidates_b_of_candidates_mem GromovHausdorff.candidatesBOfCandidates_mem
@@ -296,7 +296,7 @@ lemma HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
   ⟨cf + C, forall_range_iff.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 #align Gromov_Hausdorff.HD_below_aux1 GromovHausdorff.HD_below_aux1
 
-private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
+private lemma HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2 with ⟨Cf, hCf⟩
   refine' ⟨Cf + C, forall_range_iff.2 fun x => _⟩
@@ -310,7 +310,7 @@ lemma HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
   ⟨cf + C, forall_range_iff.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 #align Gromov_Hausdorff.HD_below_aux2 GromovHausdorff.HD_below_aux2
 
-private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
+private lemma HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2 with ⟨Cf, hCf⟩
   refine' ⟨Cf + C, forall_range_iff.2 fun y => _⟩
@@ -345,7 +345,7 @@ lemma HD_candidatesBDist_le :
 
 /- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
-private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
+private lemma HD_lipschitz_aux1 (f g : Cb X Y) :
     (⨆ x, ⨅ y, f (inl x, inr y)) ≤ (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g := by
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 g.bounded_range).1 with ⟨cg, hcg⟩
   have Hcg : ∀ x, cg ≤ g x := fun x => hcg (mem_range_self x)
@@ -373,7 +373,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
   -- deduce the result from the above two steps
   simpa [E2, E1, Function.comp]
 
-private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
+private lemma HD_lipschitz_aux2 (f g : Cb X Y) :
     (⨆ y, ⨅ x, f (inl x, inr y)) ≤ (⨆ y, ⨅ x, g (inl x, inr y)) + dist f g := by
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 g.bounded_range).1 with ⟨cg, hcg⟩
   have Hcg : ∀ x, cg ≤ g x := fun x => hcg (mem_range_self x)
@@ -401,7 +401,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
   -- deduce the result from the above two steps
   simpa [E2, E1]
 
-private theorem HD_lipschitz_aux3 (f g : Cb X Y) : HD f ≤ HD g + dist f g :=
+private lemma HD_lipschitz_aux3 (f g : Cb X Y) : HD f ≤ HD g + dist f g :=
   max_le (le_trans (HD_lipschitz_aux1 f g) (add_le_add_right (le_max_left _ _) _))
     (le_trans (HD_lipschitz_aux2 f g) (add_le_add_right (le_max_right _ _) _))
 
@@ -429,7 +429,7 @@ private lemma optimalGHDist_mem_candidatesB : optimalGHDist X Y ∈ candidatesB 
   cases Classical.choose_spec (exists_minimizer X Y)
   assumption
 
-private theorem HD_optimalGHDist_le (g : Cb X Y) (hg : g ∈ candidatesB X Y) :
+private lemma HD_optimalGHDist_le (g : Cb X Y) (hg : g ∈ candidatesB X Y) :
     HD (optimalGHDist X Y) ≤ HD g :=
   let ⟨_, Z2⟩ := Classical.choose_spec (exists_minimizer X Y)
   Z2 g hg

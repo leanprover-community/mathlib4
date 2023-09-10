@@ -213,7 +213,7 @@ protected def gen (V : Set (β × β)) : Set ((α →ᵤ β) × (α →ᵤ β)) 
 `V ∈ 𝓕` is a filter basis on `(α →ᵤ β) × (α →ᵤ β)`. This will only be applied to `𝓕 = 𝓤 β` when
 `β` is equipped with a `UniformSpace` structure, but it is useful to define it for any filter in
 order to be able to state that it has a lower adjoint (see `UniformFun.gc`). -/
-protected theorem isBasis_gen (𝓑 : Filter <| β × β) :
+protected lemma isBasis_gen (𝓑 : Filter <| β × β) :
     IsBasis (fun V : Set (β × β) => V ∈ 𝓑) (UniformFun.gen α β) :=
   ⟨⟨univ, univ_mem⟩, @fun U V hU hV =>
     ⟨U ∩ V, inter_mem hU hV, fun _ huv => ⟨fun x => (huv x).left, fun x => (huv x).right⟩⟩⟩
@@ -323,7 +323,7 @@ protected lemma hasBasis_uniformity_of_basis {ι : Sort*} {p : ι → Prop} {s :
 
 /-- For `f : α →ᵤ β`, `𝓝 f` admits the family `{g | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓑` as a filter
 basis, for any basis `𝓑` of `𝓤 β`. -/
-protected theorem hasBasis_nhds_of_basis (f) {p : ι → Prop} {s : ι → Set (β × β)}
+protected lemma hasBasis_nhds_of_basis (f) {p : ι → Prop} {s : ι → Set (β × β)}
     (h : HasBasis (𝓤 β) p s) :
     (𝓝 f).HasBasis p fun i => { g | (f, g) ∈ UniformFun.gen α β (s i) } :=
   nhds_basis_uniformity' (UniformFun.hasBasis_uniformity_of_basis α β h)
@@ -331,7 +331,7 @@ protected theorem hasBasis_nhds_of_basis (f) {p : ι → Prop} {s : ι → Set (
 
 /-- For `f : α →ᵤ β`, `𝓝 f` admits the family `{g | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓤 β` as a
 filter basis. -/
-protected theorem hasBasis_nhds (f) :
+protected lemma hasBasis_nhds (f) :
     (𝓝 f).HasBasis (fun V => V ∈ 𝓤 β) fun V => { g | (f, g) ∈ UniformFun.gen α β V } :=
   UniformFun.hasBasis_nhds_of_basis α β f (Filter.basis_sets _)
 #align uniform_fun.has_basis_nhds UniformFun.hasBasis_nhds
@@ -339,7 +339,7 @@ protected theorem hasBasis_nhds (f) :
 variable {α}
 
 /-- Evaluation at a fixed point is uniformly continuous on `α →ᵤ β`. -/
-theorem uniformContinuous_eval (x : α) :
+lemma uniformContinuous_eval (x : α) :
     UniformContinuous (Function.eval x ∘ toFun : (α →ᵤ β) → β) := by
   change _ ≤ _
   rw [map_le_iff_le_comap,
@@ -589,7 +589,7 @@ family `UniformOnFun.gen 𝔖 S V` for `S ∈ 𝔖` and `V ∈ 𝓑` is a filter
 `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] β)`.
 We will show in `has_basis_uniformity_of_basis` that, if `𝓑` is a basis for `𝓤 β`, then the
 corresponding filter is the uniformity of `α →ᵤ[𝔖] β`. -/
-protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
+protected lemma isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
     (𝓑 : FilterBasis <| β × β) :
     IsBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓑) fun SV =>
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
@@ -637,7 +637,7 @@ protected lemma hasBasis_uniformity_of_basis_aux₁ {p : ι → Prop} {s : ι �
   exact (UniformFun.hasBasis_uniformity_of_basis S β hb).comap _
 #align uniform_on_fun.has_basis_uniformity_of_basis_aux₁ UniformOnFun.hasBasis_uniformity_of_basis_aux₁
 
-protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
+protected lemma hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
     DirectedOn
       ((fun s : Set α => (UniformFun.uniformSpace s β).comap (s.restrict : (α →ᵤ β) → s →ᵤ β)) ⁻¹'o
@@ -652,7 +652,7 @@ protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·
 /-- If `𝔖 : Set (Set α)` is nonempty and directed and `𝓑` is a filter basis of `𝓤 β`, then the
 uniformity of `α →ᵤ[𝔖] β` admits the family `{(f, g) | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and
 `V ∈ 𝓑` as a filter basis. -/
-protected theorem hasBasis_uniformity_of_basis (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
+protected lemma hasBasis_uniformity_of_basis (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
     {p : ι → Prop} {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
     (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       UniformOnFun.gen 𝔖 Si.1 (s Si.2) := by
@@ -665,7 +665,7 @@ protected theorem hasBasis_uniformity_of_basis (h : 𝔖.Nonempty) (h' : Directe
 
 /-- If `𝔖 : Set (Set α)` is nonempty and directed, then the uniformity of `α →ᵤ[𝔖] β` admits the
 family `{(f, g) | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓤 β` as a filter basis. -/
-protected theorem hasBasis_uniformity (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
+protected lemma hasBasis_uniformity (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
     (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV =>
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
   UniformOnFun.hasBasis_uniformity_of_basis α β 𝔖 h h' (𝓤 β).basis_sets
@@ -674,7 +674,7 @@ protected theorem hasBasis_uniformity (h : 𝔖.Nonempty) (h' : DirectedOn (· �
 /-- For `f : α →ᵤ[𝔖] β`, where `𝔖 : Set (Set α)` is nonempty and directed, `𝓝 f` admits the
 family `{g | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓑` as a filter basis, for any basis
 `𝓑` of `𝓤 β`. -/
-protected theorem hasBasis_nhds_of_basis (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty)
+protected lemma hasBasis_nhds_of_basis (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty)
     (h' : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
     (𝓝 f).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { g | (g, f) ∈ UniformOnFun.gen 𝔖 Si.1 (s Si.2) } :=
@@ -684,7 +684,7 @@ protected theorem hasBasis_nhds_of_basis (f : α →ᵤ[𝔖] β) (h : 𝔖.None
 
 /-- For `f : α →ᵤ[𝔖] β`, where `𝔖 : Set (Set α)` is nonempty and directed, `𝓝 f` admits the
 family `{g | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓤 β` as a filter basis. -/
-protected theorem hasBasis_nhds (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
+protected lemma hasBasis_nhds (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
     (𝓝 f).HasBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV =>
       { g | (g, f) ∈ UniformOnFun.gen 𝔖 SV.1 SV.2 } :=
   UniformOnFun.hasBasis_nhds_of_basis α β 𝔖 f h h' (Filter.basis_sets _)
@@ -692,7 +692,7 @@ protected theorem hasBasis_nhds (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty) (h'
 
 /-- If `S ∈ 𝔖`, then the restriction to `S` is a uniformly continuous map from `α →ᵤ[𝔖] β` to
 `↥S →ᵤ β`. -/
-protected theorem uniformContinuous_restrict (h : s ∈ 𝔖) :
+protected lemma uniformContinuous_restrict (h : s ∈ 𝔖) :
     UniformContinuous (UniformFun.ofFun ∘ (s.restrict : (α → β) → s → β) ∘ toFun 𝔖) := by
   change _ ≤ _
   simp only [UniformOnFun.uniformSpace, map_le_iff_le_comap, iInf_uniformity]
@@ -854,7 +854,7 @@ uniformly continuous.
 
 In other words, if `𝔖` covers `α`, then the uniform structure of `𝔖`-convergence is finer than
 that of pointwise convergence. -/
-protected theorem uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
+protected lemma uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
     UniformContinuous (toFun 𝔖 : (α →ᵤ[𝔖] β) → α → β) := by
   rw [uniformContinuous_pi]
   intro x

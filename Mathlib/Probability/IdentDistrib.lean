@@ -79,13 +79,13 @@ open TopologicalSpace
 
 variable {μ : Measure α} {ν : Measure β} {f : α → γ} {g : β → γ}
 
-protected theorem refl (hf : AEMeasurable f μ) : IdentDistrib f f μ μ :=
+protected lemma refl (hf : AEMeasurable f μ) : IdentDistrib f f μ μ :=
   { aemeasurable_fst := hf
     aemeasurable_snd := hf
     map_eq := rfl }
 #align probability_theory.ident_distrib.refl ProbabilityTheory.IdentDistrib.refl
 
-protected theorem symm (h : IdentDistrib f g μ ν) : IdentDistrib g f ν μ :=
+protected lemma symm (h : IdentDistrib f g μ ν) : IdentDistrib g f ν μ :=
   { aemeasurable_fst := h.aemeasurable_snd
     aemeasurable_snd := h.aemeasurable_fst
     map_eq := h.map_eq.symm }
@@ -120,7 +120,7 @@ protected lemma of_ae_eq {g : α → γ} (hf : AEMeasurable f μ) (heq : f =ᵐ[
     map_eq := Measure.map_congr heq }
 #align probability_theory.ident_distrib.of_ae_eq ProbabilityTheory.IdentDistrib.of_ae_eq
 
-theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : MeasurableSet s) :
+lemma measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : MeasurableSet s) :
     μ (f ⁻¹' s) = ν (g ⁻¹' s) := by
   rw [← Measure.map_apply_of_aemeasurable h.aemeasurable_fst hs, ←
     Measure.map_apply_of_aemeasurable h.aemeasurable_snd hs, h.map_eq]
@@ -129,14 +129,14 @@ theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : Measurabl
 alias measure_preimage_eq := measure_mem_eq
 #align probability_theory.ident_distrib.measure_preimage_eq ProbabilityTheory.IdentDistrib.measure_preimage_eq
 
-theorem ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : MeasurableSet {x | p x})
+lemma ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : MeasurableSet {x | p x})
     (hp : ∀ᵐ x ∂μ, p (f x)) : ∀ᵐ x ∂ν, p (g x) := by
   apply (ae_map_iff h.aemeasurable_snd pmeas).1
   rw [← h.map_eq]
   exact (ae_map_iff h.aemeasurable_fst pmeas).2 hp
 #align probability_theory.ident_distrib.ae_snd ProbabilityTheory.IdentDistrib.ae_snd
 
-theorem ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : MeasurableSet t)
+lemma ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : MeasurableSet t)
     (ht : ∀ᵐ x ∂μ, f x ∈ t) : ∀ᵐ x ∂ν, g x ∈ t :=
   h.ae_snd tmeas ht
 #align probability_theory.ident_distrib.ae_mem_snd ProbabilityTheory.IdentDistrib.ae_mem_snd

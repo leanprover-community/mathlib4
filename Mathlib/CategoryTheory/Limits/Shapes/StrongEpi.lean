@@ -185,12 +185,12 @@ lemma StrongMono.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
 end
 
 /-- A strong epimorphism that is a monomorphism is an isomorphism. -/
-theorem isIso_of_mono_of_strongEpi (f : P ⟶ Q) [Mono f] [StrongEpi f] : IsIso f :=
+lemma isIso_of_mono_of_strongEpi (f : P ⟶ Q) [Mono f] [StrongEpi f] : IsIso f :=
   ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
 #align category_theory.is_iso_of_mono_of_strong_epi CategoryTheory.isIso_of_mono_of_strongEpi
 
 /-- A strong monomorphism that is an epimorphism is an isomorphism. -/
-theorem isIso_of_epi_of_strongMono (f : P ⟶ Q) [Epi f] [StrongMono f] : IsIso f :=
+lemma isIso_of_epi_of_strongMono (f : P ⟶ Q) [Epi f] [StrongMono f] : IsIso f :=
   ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
 #align category_theory.is_iso_of_epi_of_strong_mono CategoryTheory.isIso_of_epi_of_strongMono
 

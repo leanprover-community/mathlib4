@@ -91,7 +91,7 @@ pairs of balls `Metric.ball (c i) (r i)`, `Metric.ball (c i) (r' i)` such that
 
 This is a simple corollary of `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set`
 and `exists_subset_iUnion_ball_radius_pos_lt`. -/
-theorem exists_locallyFinite_subset_iUnion_ball_radius_lt (hs : IsClosed s) {R : α → ℝ}
+lemma exists_locallyFinite_subset_iUnion_ball_radius_lt (hs : IsClosed s) {R : α → ℝ}
     (hR : ∀ x ∈ s, 0 < R x) :
     ∃ (ι : Type u) (c : ι → α) (r r' : ι → ℝ),
       (∀ i, c i ∈ s ∧ 0 < r i ∧ r i < r' i ∧ r' i < R (c i)) ∧

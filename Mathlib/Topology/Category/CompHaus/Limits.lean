@@ -203,7 +203,7 @@ def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
   Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X)
     (Limits.colimit.isColimit _)
 
-theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
+lemma Sigma.ι_comp_toFiniteCoproduct (a : α) :
     (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv = finiteCoproduct.ι X a := by
   dsimp [coproductIsoCoproduct]
   simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,

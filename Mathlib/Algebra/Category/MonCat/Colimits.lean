@@ -131,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.colimits.quot_one MonCat.Colimits.quot_one
 
 @[simp]
-theorem quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
+lemma quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
     @HMul.hMul (ColimitType F) (ColimitType F) (ColimitType F) _
       (Quot.mk Setoid.r x) (Quot.mk Setoid.r y) :=
   rfl
@@ -168,7 +168,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.colimits.cocone_naturality MonCat.Colimits.cocone_naturality
 
 @[simp]
-theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
+lemma cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl

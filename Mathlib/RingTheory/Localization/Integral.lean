@@ -53,13 +53,13 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
   else 0
 #align is_localization.coeff_integer_normalization IsLocalization.coeffIntegerNormalization
 
-theorem coeffIntegerNormalization_of_not_mem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
+lemma coeffIntegerNormalization_of_not_mem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
   simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne.def,
     dif_neg, not_false_iff]
 #align is_localization.coeff_integer_normalization_of_not_mem_support IsLocalization.coeffIntegerNormalization_of_not_mem_support
 
-theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
+lemma coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
   rw [Ne.def, Classical.not_not, coeffIntegerNormalization, dif_neg h]
@@ -72,13 +72,13 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 #align is_localization.integer_normalization IsLocalization.integerNormalization
 
 @[simp]
-theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
+lemma integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
   simp (config := { contextual := true }) [integerNormalization, coeff_monomial,
     coeffIntegerNormalization_of_not_mem_support]
 #align is_localization.integer_normalization_coeff IsLocalization.integerNormalization_coeff
 
-theorem integerNormalization_spec (p : S[X]) :
+lemma integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
   use Classical.choose (exist_integer_multiples_of_finset M (p.support.image p.coeff))
   intro i
@@ -94,7 +94,7 @@ theorem integerNormalization_spec (p : S[X]) :
     -- Porting note: was `convert (smul_zero _).symm, ...`
 #align is_localization.integer_normalization_spec IsLocalization.integerNormalization_spec
 
-theorem integerNormalization_map_to_map (p : S[X]) :
+lemma integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
   let ⟨b, hb⟩ := integerNormalization_spec M p
   ⟨b,
@@ -105,7 +105,7 @@ theorem integerNormalization_map_to_map (p : S[X]) :
 
 variable {R' : Type*} [CommRing R']
 
-theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
+lemma integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
   let ⟨b, hb⟩ := integerNormalization_map_to_map M p
   _root_.trans (eval₂_map (algebraMap R S) g x).symm
@@ -225,7 +225,7 @@ lemma is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval x 
 `Rₘ` is the localization of `R` at `M`,
 and `Sₘ` is the localization of `S` at the image of `M` under the extension map,
 then the induced map `Rₘ → Sₘ` is also an integral extension -/
-theorem isIntegral_localization (H : Algebra.IsIntegral R S) :
+lemma isIntegral_localization (H : Algebra.IsIntegral R S) :
     (map Sₘ (algebraMap R S)
           (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
         Rₘ →+* _).IsIntegral := by
@@ -260,7 +260,7 @@ lemma isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R �
 
 variable (M)
 
-theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
+lemma IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     (hp : p.leadingCoeff ∈ (algebraMap R Rₘ).range) :
     p.scaleRoots (algebraMap R Rₘ <| IsLocalization.commonDenom M p.support p.coeff) ∈
       Polynomial.lifts (algebraMap R Rₘ) := by
@@ -319,7 +319,7 @@ open Algebra
 
 /-- If the field `L` is an algebraic extension of the integral domain `A`,
 the integral closure `C` of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_algebraic (alg : IsAlgebraic A L)
+lemma isFractionRing_of_algebraic (alg : IsAlgebraic A L)
     (inj : ∀ x, algebraMap A L x = 0 → x = 0) : IsFractionRing C L :=
   { map_units' := fun ⟨y, hy⟩ =>
       IsUnit.mk0 _

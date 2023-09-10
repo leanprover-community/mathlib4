@@ -35,7 +35,7 @@ lemma nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
   ⟨fun h ↦ h.exists_pair_ne, fun h ↦ ⟨h⟩⟩
 #align nontrivial_iff nontrivial_iff
 
-theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
+lemma exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
   Nontrivial.exists_pair_ne
 #align exists_pair_ne exists_pair_ne
 
@@ -52,11 +52,11 @@ lemma exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := Decidable.exists_ne
 #align exists_ne exists_ne
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
-theorem nontrivial_of_ne (x y : α) (h : x ≠ y) : Nontrivial α :=
+lemma nontrivial_of_ne (x y : α) (h : x ≠ y) : Nontrivial α :=
   ⟨⟨x, y, h⟩⟩
 #align nontrivial_of_ne nontrivial_of_ne
 
-theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
+lemma nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
   ⟨fun h ↦ @exists_ne α h x, fun ⟨_, hy⟩ ↦ nontrivial_of_ne _ _ hy⟩
 #align nontrivial_iff_exists_ne nontrivial_iff_exists_ne
 
@@ -82,21 +82,21 @@ lemma not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := b
   simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, not_not]
 #align not_nontrivial_iff_subsingleton not_nontrivial_iff_subsingleton
 
-theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
+lemma not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
   fun ⟨⟨x, y, h⟩⟩ ↦ h <| Subsingleton.elim x y
 #align not_nontrivial not_nontrivial
 
-theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
+lemma not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
   fun _ => not_nontrivial _ ‹_›
 #align not_subsingleton not_subsingleton
 
 /-- A type is either a subsingleton or nontrivial. -/
-theorem subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by
+lemma subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by
   rw [← not_nontrivial_iff_subsingleton, or_comm]
   exact Classical.em _
 #align subsingleton_or_nontrivial subsingleton_or_nontrivial
 
-theorem false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsingleton α] : False :=
+lemma false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsingleton α] : False :=
   not_nontrivial _ ‹_›
 #align false_of_nontrivial_of_subsingleton false_of_nontrivial_of_subsingleton
 

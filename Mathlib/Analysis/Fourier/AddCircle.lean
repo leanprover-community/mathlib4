@@ -89,7 +89,7 @@ def toCircle : AddCircle T → circle :=
   (@scaled_exp_map_periodic T).lift
 #align add_circle.to_circle AddCircle.toCircle
 
-theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
+lemma toCircle_add (x : AddCircle T) (y : AddCircle T) :
     @toCircle T (x + y) = toCircle x * toCircle y := by
   induction x using QuotientAddGroup.induction_on'
   induction y using QuotientAddGroup.induction_on'
@@ -101,7 +101,7 @@ lemma continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (expMapCircle.continuous.comp <| continuous_const.mul continuous_id')
 #align add_circle.continuous_to_circle AddCircle.continuous_toCircle
 
-theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
+lemma injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h
   induction a using QuotientAddGroup.induction_on'
   induction b using QuotientAddGroup.induction_on'
@@ -185,7 +185,7 @@ lemma fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
   rw [← this]; exact fourier_zero
 
 -- @[simp] -- Porting note: simp normal form is *also* `fourier_zero'`
-theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
+lemma fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, mul_zero,
     zero_div, Complex.exp_zero]
 #align fourier_eval_zero fourier_eval_zero
@@ -301,7 +301,7 @@ abbrev fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) : Lp ℂ p (@haarAd
 set_option linter.uppercaseLean3 false in
 #align fourier_Lp fourierLp
 
-theorem coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
+lemma coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
     @fourierLp T hT p _ n =ᵐ[haarAddCircle] fourier n :=
   coeFn_toLp haarAddCircle (fourier n)
 set_option linter.uppercaseLean3 false in
@@ -356,7 +356,7 @@ def fourierCoeff (f : AddCircle T → E) (n : ℤ) : E :=
 
 /-- The Fourier coefficients of a function on `AddCircle T` can be computed as an integral
 over `[a, a + T]`, for any real `a`. -/
-theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : ℝ) :
+lemma fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : ℝ) :
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
@@ -366,13 +366,13 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
 #align fourier_coeff_eq_interval_integral fourierCoeff_eq_intervalIntegral
 
-theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
+lemma fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f) n = c • fourierCoeff f n := by
   simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul,
     smul_assoc, integral_smul]
 #align fourier_coeff.const_smul fourierCoeff.const_smul
 
-theorem fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
+lemma fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
     fourierCoeff (fun x => c * f x) n = c * fourierCoeff f n :=
   fourierCoeff.const_smul f c n
 #align fourier_coeff.const_mul fourierCoeff.const_mul
@@ -448,7 +448,7 @@ lemma coe_fourierBasis : ⇑(@fourierBasis T hT) = @fourierLp T hT 2 _ :=
 /-- Under the isometric isomorphism `fourierBasis` from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`, the
 `i`-th coefficient is `fourierCoeff f i`, i.e., the integral over `AddCircle T` of
 `fun t => fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
-theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
+lemma fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
     fourierBasis.repr f i = fourierCoeff f i := by
   trans ∫ t : AddCircle T, conj ((@fourierLp T hT 2 _ i : AddCircle T → ℂ) t) * f t ∂haarAddCircle
   · rw [fourierBasis.repr_apply_apply f i, MeasureTheory.L2.inner_def, coe_fourierBasis]
@@ -459,7 +459,7 @@ theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
 #align fourier_basis_repr fourierBasis_repr
 
 /-- The Fourier series of an `L2` function `f` sums to `f`, in the `L²` space of `AddCircle T`. -/
-theorem hasSum_fourier_series_L2 (f : Lp ℂ 2 <| @haarAddCircle T hT) :
+lemma hasSum_fourier_series_L2 (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     HasSum (fun i => fourierCoeff f i • fourierLp 2 i) f := by
   simp_rw [← fourierBasis_repr]; rw [← coe_fourierBasis]
   exact HilbertBasis.hasSum_repr fourierBasis f
@@ -468,7 +468,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- **Parseval's identity**: for an `L²` function `f` on `AddCircle T`, the sum of the squared
 norms of the Fourier coefficients equals the `L²` norm of `f`. -/
-theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
+lemma tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
   simp_rw [← fourierBasis_repr]
   have H₁ : ‖fourierBasis.repr f‖ ^ 2 = ∑' i, ‖fourierBasis.repr f i‖ ^ 2 := by
@@ -489,7 +489,7 @@ section Convergence
 
 variable (f : C(AddCircle T, ℂ))
 
-theorem fourierCoeff_toLp (n : ℤ) :
+lemma fourierCoeff_toLp (n : ℤ) :
     fourierCoeff (toLp (E := ℂ) 2 haarAddCircle ℂ f) n = fourierCoeff f n :=
   integral_congr_ae (Filter.EventuallyEq.mul (Filter.eventually_of_forall (by tauto))
     (ContinuousMap.coeFn_toAEEqFun haarAddCircle f))
@@ -500,7 +500,7 @@ variable {f}
 
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
-theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
+lemma hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
     HasSum (fun i => fourierCoeff f i • fourier i) f := by
   have sum_L2 := hasSum_fourier_series_L2 (toLp (E := ℂ) 2 haarAddCircle ℂ f)
   simp_rw [fourierCoeff_toLp] at sum_L2
@@ -511,7 +511,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series of `f`
 converges everywhere pointwise to `f`. -/
-theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
+lemma has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
     (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
   convert (ContinuousMap.evalClm ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 #align has_pointwise_sum_fourier_series_of_summable has_pointwise_sum_fourier_series_of_summable
@@ -528,7 +528,7 @@ open scoped Interval
 
 variable (T)
 
-theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
+lemma hasDerivAt_fourier (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier n (y : AddCircle T))
       (2 * π * I * n / T * fourier n (x : AddCircle T)) x := by
   simp_rw [fourier_coe_apply]
@@ -539,7 +539,7 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
   ext1 y; ring
 #align has_deriv_at_fourier hasDerivAt_fourier
 
-theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
+lemma hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier (-n) (y : AddCircle T))
       (-2 * π * I * n / T * fourier (-n) (x : AddCircle T)) x := by
   simpa using hasDerivAt_fourier T (-n) x
@@ -547,7 +547,7 @@ theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
 
 variable {T}
 
-theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
+lemma has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (T : ℂ) / (-2 * π * I * n) * fourier (-n) (y : AddCircle T))
       (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1

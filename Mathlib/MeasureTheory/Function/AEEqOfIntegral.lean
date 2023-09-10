@@ -239,7 +239,7 @@ section Real
 variable {f : α → ℝ}
 
 /-- Don't use this lemma. Use `ae_nonneg_of_forall_set_integral_nonneg`. -/
-theorem ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable (hfm : StronglyMeasurable f)
+lemma ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable (hfm : StronglyMeasurable f)
     (hf : Integrable f μ) (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → 0 ≤ ∫ x in s, f x ∂μ) :
     0 ≤ᵐ[μ] f := by
   simp_rw [EventuallyLE, Pi.zero_apply]
@@ -278,7 +278,7 @@ theorem ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable (hfm : Str
   · exact absurd hμs_eq_top mus.ne
 #align measure_theory.ae_nonneg_of_forall_set_integral_nonneg_of_strongly_measurable MeasureTheory.ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable
 
-theorem ae_nonneg_of_forall_set_integral_nonneg (hf : Integrable f μ)
+lemma ae_nonneg_of_forall_set_integral_nonneg (hf : Integrable f μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → 0 ≤ ∫ x in s, f x ∂μ) : 0 ≤ᵐ[μ] f := by
   rcases hf.1 with ⟨f', hf'_meas, hf_ae⟩
   have hf'_integrable : Integrable f' μ := Integrable.congr hf hf_ae
@@ -469,7 +469,7 @@ lemma AEFinStronglyMeasurable.ae_eq_of_forall_set_integral_eq {f g : α → E}
   exact (hf.sub hg).ae_eq_zero_of_forall_set_integral_eq_zero hfg_int hfg
 #align measure_theory.ae_fin_strongly_measurable.ae_eq_of_forall_set_integral_eq MeasureTheory.AEFinStronglyMeasurable.ae_eq_of_forall_set_integral_eq
 
-theorem Lp.ae_eq_zero_of_forall_set_integral_eq_zero (f : Lp E p μ) (hp_ne_zero : p ≠ 0)
+lemma Lp.ae_eq_zero_of_forall_set_integral_eq_zero (f : Lp E p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 :=
   AEFinStronglyMeasurable.ae_eq_zero_of_forall_set_integral_eq_zero hf_int_finite hf_zero
@@ -477,7 +477,7 @@ theorem Lp.ae_eq_zero_of_forall_set_integral_eq_zero (f : Lp E p μ) (hp_ne_zero
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero
 
-theorem Lp.ae_eq_of_forall_set_integral_eq (f g : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+lemma Lp.ae_eq_of_forall_set_integral_eq (f g : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn g s μ)
     (hfg : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ) :
@@ -488,7 +488,7 @@ theorem Lp.ae_eq_of_forall_set_integral_eq (f g : Lp E p μ) (hp_ne_zero : p ≠
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp.ae_eq_of_forall_set_integral_eq MeasureTheory.Lp.ae_eq_of_forall_set_integral_eq
 
-theorem ae_eq_zero_of_forall_set_integral_eq_of_finStronglyMeasurable_trim (hm : m ≤ m0) {f : α → E}
+lemma ae_eq_zero_of_forall_set_integral_eq_of_finStronglyMeasurable_trim (hm : m ≤ m0) {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
     (hf : FinStronglyMeasurable f (μ.trim hm)) : f =ᵐ[μ] 0 := by
@@ -530,7 +530,7 @@ lemma Integrable.ae_eq_zero_of_forall_set_integral_eq_zero {f : α → E} (hf : 
     exact hf_zero s hs hμs
 #align measure_theory.integrable.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.Integrable.ae_eq_zero_of_forall_set_integral_eq_zero
 
-theorem Integrable.ae_eq_of_forall_set_integral_eq (f g : α → E) (hf : Integrable f μ)
+lemma Integrable.ae_eq_of_forall_set_integral_eq (f g : α → E) (hf : Integrable f μ)
     (hg : Integrable g μ)
     (hfg : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ) :
     f =ᵐ[μ] g := by

@@ -62,7 +62,7 @@ noncomputable def toBipointed (X : TwoP) : Bipointed :=
 #align Twop.to_Bipointed TwoP.toBipointed
 
 @[simp]
-theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
+lemma coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
   rfl
 #align Twop.coe_to_Bipointed TwoP.coe_toBipointed
 

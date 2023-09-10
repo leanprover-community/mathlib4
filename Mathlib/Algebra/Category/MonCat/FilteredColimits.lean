@@ -64,7 +64,7 @@ abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
 #align AddMon.filtered_colimits.M.mk AddMonCat.FilteredColimits.M.mk
 
 @[to_additive]
-theorem M.mk_eq (x y : Σ j, F.obj j)
+lemma M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
   M.mk.{v, u} F x = M.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
@@ -92,7 +92,7 @@ object `j`.
       "The definition of the \"zero\" in the colimit is independent of the chosen object
       of `J`. In particular, this lemma allows us to \"unfold\" the definition of `colimit_zero` at
       a custom chosen object `j`."]
-theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
+lemma colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
   refine' ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
   simp
@@ -187,7 +187,7 @@ using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`.
       "Addition in the colimit is independent of the chosen \"maximum\" in the filtered
       category. In particular, this lemma allows us to \"unfold\" the definition of the addition of
       `x` and `y`, using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`."]
-theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k) :
+lemma colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k) :
     M.mk.{v, u} F x * M.mk F y = M.mk F ⟨k, F.map f x.2 * F.map g y.2⟩ := by
   cases' x with j₁ x; cases' y with j₂ y
   obtain ⟨s, α, β, h₁, h₂⟩ := IsFiltered.bowtie (IsFiltered.leftToMax j₁ j₂) f

@@ -73,7 +73,7 @@ def IsCompact (s : Set α) :=
 
 /-- The complement to a compact set belongs to a filter `f` if it belongs to each filter
 `𝓝 a ⊓ f`, `a ∈ s`. -/
-theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter α} (hf : ∀ a ∈ s, sᶜ ∈ 𝓝 a ⊓ f) :
+lemma IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter α} (hf : ∀ a ∈ s, sᶜ ∈ 𝓝 a ⊓ f) :
     sᶜ ∈ f := by
   contrapose! hf
   simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
@@ -82,7 +82,7 @@ theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter α} (hf : ∀ a 
 
 /-- The complement to a compact set belongs to a filter `f` if each `a ∈ s` has a neighborhood `t`
 within `s` such that `tᶜ` belongs to `f`. -/
-theorem IsCompact.compl_mem_sets_of_nhdsWithin (hs : IsCompact s) {f : Filter α}
+lemma IsCompact.compl_mem_sets_of_nhdsWithin (hs : IsCompact s) {f : Filter α}
     (hf : ∀ a ∈ s, ∃ t ∈ 𝓝[s] a, tᶜ ∈ f) : sᶜ ∈ f := by
   refine' hs.compl_mem_sets fun a ha => _
   rcases hf a ha with ⟨t, ht, hst⟩
@@ -108,7 +108,7 @@ lemma IsCompact.induction_on {s : Set α} (hs : IsCompact s) {p : Set α → Pro
 #align is_compact.induction_on IsCompact.induction_on
 
 /-- The intersection of a compact set and a closed set is a compact set. -/
-theorem IsCompact.inter_right (hs : IsCompact s) (ht : IsClosed t) : IsCompact (s ∩ t) := by
+lemma IsCompact.inter_right (hs : IsCompact s) (ht : IsClosed t) : IsCompact (s ∩ t) := by
   intro f hnf hstf
   obtain ⟨a, hsa, ha⟩ : ∃ a ∈ s, ClusterPt a f :=
     hs (le_trans hstf (le_principal_iff.2 (inter_subset_left _ _)))
@@ -118,17 +118,17 @@ theorem IsCompact.inter_right (hs : IsCompact s) (ht : IsClosed t) : IsCompact (
 #align is_compact.inter_right IsCompact.inter_right
 
 /-- The intersection of a closed set and a compact set is a compact set. -/
-theorem IsCompact.inter_left (ht : IsCompact t) (hs : IsClosed s) : IsCompact (s ∩ t) :=
+lemma IsCompact.inter_left (ht : IsCompact t) (hs : IsClosed s) : IsCompact (s ∩ t) :=
   inter_comm t s ▸ ht.inter_right hs
 #align is_compact.inter_left IsCompact.inter_left
 
 /-- The set difference of a compact set and an open set is a compact set. -/
-theorem IsCompact.diff (hs : IsCompact s) (ht : IsOpen t) : IsCompact (s \ t) :=
+lemma IsCompact.diff (hs : IsCompact s) (ht : IsOpen t) : IsCompact (s \ t) :=
   hs.inter_right (isClosed_compl_iff.mpr ht)
 #align is_compact.diff IsCompact.diff
 
 /-- A closed subset of a compact set is a compact set. -/
-theorem isCompact_of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
+lemma isCompact_of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
     IsCompact t :=
   inter_eq_self_of_subset_right h ▸ hs.inter_right ht
 #align is_compact_of_is_closed_subset isCompact_of_isClosed_subset
@@ -196,14 +196,14 @@ lemma IsCompact.elim_finite_subcover {ι : Type v} (hs : IsCompact s) (U : ι �
     (iUnion_eq_iUnion_finset U ▸ hsU) (directed_of_sup fun _ _ h => biUnion_subset_biUnion_left h)
 #align is_compact.elim_finite_subcover IsCompact.elim_finite_subcover
 
-theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set α)
+lemma IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set α)
     (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U (x : s) x.2 :=
   (hs.elim_finite_subcover (fun x : s => interior (U x x.2)) (fun _ => isOpen_interior) fun x hx =>
         mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩).imp
     fun _t ht => ht.trans <| iUnion₂_mono fun _ _ => interior_subset
 #align is_compact.elim_nhds_subcover' IsCompact.elim_nhds_subcover'
 
-theorem IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : α → Set α) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
+lemma IsCompact.elim_nhds_subcover (hs : IsCompact s) (U : α → Set α) (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
     ∃ t : Finset α, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x :=
   let ⟨t, ht⟩ := hs.elim_nhds_subcover' (fun x _ => U x) hU
   ⟨t.image (↑), fun x hx =>
@@ -300,7 +300,7 @@ lemma IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type v
 
 /-- Cantor's intersection theorem for sequences indexed by `ℕ`:
 the intersection of a decreasing sequence of nonempty compact closed sets is nonempty. -/
-theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ → Set α)
+lemma IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ → Set α)
     (hZd : ∀ i, Z (i + 1) ⊆ Z i) (hZn : ∀ i, (Z i).Nonempty) (hZ0 : IsCompact (Z 0))
     (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty :=
   have Zmono : Antitone Z := antitone_nat_of_succ_le hZd
@@ -436,7 +436,7 @@ lemma Set.Finite.isCompact_biUnion {s : Set ι} {f : ι → Set α} (hs : s.Fini
     exact ⟨x, mem_iUnion₂.2 ⟨i, his, hxi⟩, hlx⟩
 #align set.finite.is_compact_bUnion Set.Finite.isCompact_biUnion
 
-theorem Finset.isCompact_biUnion (s : Finset ι) {f : ι → Set α} (hf : ∀ i ∈ s, IsCompact (f i)) :
+lemma Finset.isCompact_biUnion (s : Finset ι) {f : ι → Set α} (hf : ∀ i ∈ s, IsCompact (f i)) :
     IsCompact (⋃ i ∈ s, f i) :=
   s.finite_toSet.isCompact_biUnion hf
 #align finset.is_compact_bUnion Finset.isCompact_biUnion
@@ -457,7 +457,7 @@ lemma isCompact_iUnion {ι : Sort*} {f : ι → Set α} [Finite ι] (h : ∀ i, 
   (finite_range f).isCompact_sUnion <| forall_range_iff.2 h
 #align is_compact_Union isCompact_iUnion
 
-theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
+lemma Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
   biUnion_of_singleton s ▸ hs.isCompact_biUnion fun _ _ => isCompact_singleton
 #align set.finite.is_compact Set.Finite.isCompact
 
@@ -473,11 +473,11 @@ lemma isCompact_iff_finite [DiscreteTopology α] {s : Set α} : IsCompact s ↔ 
   ⟨fun h => h.finite_of_discrete, fun h => h.isCompact⟩
 #align is_compact_iff_finite isCompact_iff_finite
 
-theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪ t) := by
+lemma IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪ t) := by
   rw [union_eq_iUnion]; exact isCompact_iUnion fun b => by cases b <;> assumption
 #align is_compact.union IsCompact.union
 
-protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
+protected lemma IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 #align is_compact.insert IsCompact.insert
 
@@ -507,7 +507,7 @@ lemma exists_subset_nhds_of_isCompact' {ι : Type*} [Nonempty ι] {V : ι → Se
 
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
   it is a finite union of some elements in the basis -/
-theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Set α)
+lemma isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Set α)
     (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   constructor
@@ -558,7 +558,7 @@ lemma mem_cocompact' : s ∈ cocompact α ↔ ∃ t, IsCompact t ∧ sᶜ ⊆ t 
   mem_cocompact.trans <| exists_congr fun _ => and_congr_right fun _ => compl_subset_comm
 #align filter.mem_cocompact' Filter.mem_cocompact'
 
-theorem _root_.IsCompact.compl_mem_cocompact (hs : IsCompact s) : sᶜ ∈ Filter.cocompact α :=
+lemma _root_.IsCompact.compl_mem_cocompact (hs : IsCompact s) : sᶜ ∈ Filter.cocompact α :=
   hasBasis_cocompact.mem_of_mem hs
 #align is_compact.compl_mem_cocompact IsCompact.compl_mem_cocompact
 
@@ -566,7 +566,7 @@ lemma cocompact_le_cofinite : cocompact α ≤ cofinite := fun s hs =>
   compl_compl s ▸ hs.isCompact.compl_mem_cocompact
 #align filter.cocompact_le_cofinite Filter.cocompact_le_cofinite
 
-theorem cocompact_eq_cofinite (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
+lemma cocompact_eq_cofinite (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
     cocompact α = cofinite := by
   simp only [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]
 #align filter.cocompact_eq_cofinite Filter.cocompact_eq_cofinite
@@ -633,7 +633,7 @@ lemma cocompact_le_coclosedCompact : cocompact α ≤ coclosedCompact α :=
 
 end Filter
 
-theorem IsCompact.compl_mem_coclosedCompact_of_isClosed (hs : IsCompact s) (hs' : IsClosed s) :
+lemma IsCompact.compl_mem_coclosedCompact_of_isClosed (hs : IsCompact s) (hs' : IsClosed s) :
     sᶜ ∈ Filter.coclosedCompact α :=
   hasBasis_coclosedCompact.mem_of_mem ⟨hs', hs⟩
 #align is_compact.compl_mem_coclosed_compact_of_is_closed IsCompact.compl_mem_coclosedCompact_of_isClosed
@@ -677,7 +677,7 @@ lemma IsCompact.nhdsSet_prod_eq {s : Set α} {t : Set β} (hs : IsCompact s) (ht
 
 /-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
 formulated in terms of a filter inequality. -/
-theorem nhdsSet_prod_le (s : Set α) (t : Set β) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
+lemma nhdsSet_prod_le (s : Set α) (t : Set β) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
   ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).ge_iff.2 fun (_u, _v) ⟨⟨huo, hsu⟩, hvo, htv⟩ ↦
     (huo.prod hvo).mem_nhdsSet.2 <| prod_mono hsu htv
 
@@ -764,7 +764,7 @@ lemma Filter.cocompact_eq_bot [CompactSpace α] : Filter.cocompact α = ⊥ :=
 instance [NoncompactSpace α] : NeBot (Filter.coclosedCompact α) :=
   neBot_of_le Filter.cocompact_le_coclosedCompact
 
-theorem noncompactSpace_of_neBot (_ : NeBot (Filter.cocompact α)) : NoncompactSpace α :=
+lemma noncompactSpace_of_neBot (_ : NeBot (Filter.cocompact α)) : NoncompactSpace α :=
   ⟨fun h' => (Filter.nonempty_of_mem h'.compl_mem_cocompact).ne_empty compl_univ⟩
 #align noncompact_space_of_ne_bot noncompactSpace_of_neBot
 
@@ -785,7 +785,7 @@ lemma finite_of_compact_of_discrete [CompactSpace α] [DiscreteTopology α] : Fi
   Finite.of_finite_univ <| isCompact_univ.finite_of_discrete
 #align finite_of_compact_of_discrete finite_of_compact_of_discrete
 
-theorem exists_nhds_ne_neBot (α : Type*) [TopologicalSpace α] [CompactSpace α] [Infinite α] :
+lemma exists_nhds_ne_neBot (α : Type*) [TopologicalSpace α] [CompactSpace α] [Infinite α] :
     ∃ z : α, (𝓝[≠] z).NeBot := by
   by_contra' H
   simp_rw [not_neBot] at H
@@ -1314,7 +1314,7 @@ instance (priority := 200) CompactSpace.sigma_compact [CompactSpace α] : SigmaC
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
 #align compact_space.sigma_compact CompactSpace.sigma_compact
 
-theorem SigmaCompactSpace.of_countable (S : Set (Set α)) (Hc : S.Countable)
+lemma SigmaCompactSpace.of_countable (S : Set (Set α)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace α :=
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
 #align sigma_compact_space.of_countable SigmaCompactSpace.of_countable
@@ -1339,7 +1339,7 @@ def compactCovering : ℕ → Set α :=
   Accumulate exists_compact_covering.choose
 #align compact_covering compactCovering
 
-theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering α n) :=
+lemma isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering α n) :=
   isCompact_accumulate (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).1 n
 #align is_compact_compact_covering isCompact_compactCovering
 
@@ -1355,7 +1355,7 @@ theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering �
 
 variable {α}
 
-theorem exists_mem_compactCovering (x : α) : ∃ n, x ∈ compactCovering α n :=
+lemma exists_mem_compactCovering (x : α) : ∃ n, x ∈ compactCovering α n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering α) x
 #align exists_mem_compact_covering exists_mem_compactCovering
 
@@ -1488,11 +1488,11 @@ variable (K : CompactExhaustion α)
 @[simp]
 lemma toFun_eq_coe : K.toFun = K := rfl
 
-protected theorem isCompact (n : ℕ) : IsCompact (K n) :=
+protected lemma isCompact (n : ℕ) : IsCompact (K n) :=
   K.isCompact' n
 #align compact_exhaustion.is_compact CompactExhaustion.isCompact
 
-theorem subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
+lemma subset_interior_succ (n : ℕ) : K n ⊆ interior (K (n + 1)) :=
   K.subset_interior_succ' n
 #align compact_exhaustion.subset_interior_succ CompactExhaustion.subset_interior_succ
 
@@ -1501,7 +1501,7 @@ protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 #align compact_exhaustion.subset CompactExhaustion.subset
 
-theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
+lemma subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset n.le_succ
 #align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
 theorem subset_interior ⦃m n : ℕ⦄ (h : m < n) : K m ⊆ interior (K n) :=
@@ -1512,7 +1512,7 @@ lemma iUnion_eq : ⋃ n, K n = univ :=
   K.iUnion_eq'
 #align compact_exhaustion.Union_eq CompactExhaustion.iUnion_eq
 
-theorem exists_mem (x : α) : ∃ n, x ∈ K n :=
+lemma exists_mem (x : α) : ∃ n, x ∈ K n :=
   iUnion_eq_univ_iff.1 K.iUnion_eq x
 #align compact_exhaustion.exists_mem CompactExhaustion.exists_mem
 
@@ -1521,7 +1521,7 @@ protected noncomputable def find (x : α) : ℕ :=
   Nat.find (K.exists_mem x)
 #align compact_exhaustion.find CompactExhaustion.find
 
-theorem mem_find (x : α) : x ∈ K (K.find x) :=
+lemma mem_find (x : α) : x ∈ K (K.find x) :=
   Nat.find_spec (K.exists_mem x)
 #align compact_exhaustion.mem_find CompactExhaustion.mem_find
 
@@ -1538,11 +1538,11 @@ def shiftr : CompactExhaustion α where
 #align compact_exhaustion.shiftr CompactExhaustion.shiftr
 
 @[simp]
-theorem find_shiftr (x : α) : K.shiftr.find x = K.find x + 1 :=
+lemma find_shiftr (x : α) : K.shiftr.find x = K.find x + 1 :=
   Nat.find_comp_succ _ _ (not_mem_empty _)
 #align compact_exhaustion.find_shiftr CompactExhaustion.find_shiftr
 
-theorem mem_diff_shiftr_find (x : α) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
+lemma mem_diff_shiftr_find (x : α) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,
     mt K.shiftr.mem_iff_find_le.1 <| by simp only [find_shiftr, not_le, Nat.lt_succ_self]⟩
 #align compact_exhaustion.mem_diff_shiftr_find CompactExhaustion.mem_diff_shiftr_find
@@ -1578,10 +1578,10 @@ def IsClopen (s : Set α) : Prop :=
   IsOpen s ∧ IsClosed s
 #align is_clopen IsClopen
 
-protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.1
+protected lemma IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.1
 #align is_clopen.is_open IsClopen.isOpen
 
-protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.2
+protected lemma IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.2
 #align is_clopen.is_closed IsClopen.isClosed
 
 lemma isClopen_iff_frontier_eq_empty {s : Set α} : IsClopen s ↔ frontier s = ∅ := by
@@ -1703,7 +1703,7 @@ protected lemma QuotientMap.isClopen_preimage {f : α → β} (hf : QuotientMap 
 
 variable {X : Type*} [TopologicalSpace X]
 
-theorem continuous_boolIndicator_iff_clopen (U : Set X) :
+lemma continuous_boolIndicator_iff_clopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by
   constructor
   · intro hc
@@ -1714,7 +1714,7 @@ theorem continuous_boolIndicator_iff_clopen (U : Set X) :
     exacts [isOpen_univ, hU.1, hU.2.isOpen_compl, isOpen_empty]
 #align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_clopen
 
-theorem continuousOn_boolIndicator_iff_clopen (s U : Set X) :
+lemma continuousOn_boolIndicator_iff_clopen (s U : Set X) :
     ContinuousOn U.boolIndicator s ↔ IsClopen (((↑) : s → X) ⁻¹' U) := by
   rw [continuousOn_iff_continuous_restrict, ← continuous_boolIndicator_iff_clopen]
   rfl
@@ -1776,7 +1776,7 @@ protected alias ⟨_, IsPreirreducible.closure⟩ := isPreirreducible_iff_closur
 protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 #align is_irreducible.closure IsIrreducible.closure
 
-theorem exists_preirreducible (s : Set α) (H : IsPreirreducible s) :
+lemma exists_preirreducible (s : Set α) (H : IsPreirreducible s) :
     ∃ t : Set α, IsPreirreducible t ∧ s ⊆ t ∧ ∀ u, IsPreirreducible u → t ⊆ u → u = t :=
   let ⟨m, hm, hsm, hmm⟩ :=
     zorn_subset_nonempty { t : Set α | IsPreirreducible t }
@@ -1801,13 +1801,13 @@ def irreducibleComponents (α : Type*) [TopologicalSpace α] : Set (Set α) :=
   maximals (· ≤ ·) { s : Set α | IsIrreducible s }
 #align irreducible_components irreducibleComponents
 
-theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents α) :
+lemma isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents α) :
     IsClosed s := by
   rw [← closure_eq_iff_isClosed, eq_comm]
   exact subset_closure.antisymm (H.2 H.1.closure subset_closure)
 #align is_closed_of_mem_irreducible_components isClosed_of_mem_irreducibleComponents
 
-theorem irreducibleComponents_eq_maximals_closed (α : Type*) [TopologicalSpace α] :
+lemma irreducibleComponents_eq_maximals_closed (α : Type*) [TopologicalSpace α] :
     irreducibleComponents α = maximals (· ≤ ·) { s : Set α | IsClosed s ∧ IsIrreducible s } := by
   ext s
   constructor
@@ -1824,7 +1824,7 @@ def irreducibleComponent (x : α) : Set α :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 #align irreducible_component irreducibleComponent
 
-theorem irreducibleComponent_property (x : α) :
+lemma irreducibleComponent_property (x : α) :
     IsPreirreducible (irreducibleComponent x) ∧
       {x} ⊆ irreducibleComponent x ∧
         ∀ u, IsPreirreducible u → irreducibleComponent x ⊆ u → u = irreducibleComponent x :=
@@ -1844,7 +1844,7 @@ lemma eq_irreducibleComponent {x : α} {s : Set α} :
   (irreducibleComponent_property x).2.2 _
 #align eq_irreducible_component eq_irreducibleComponent
 
-theorem irreducibleComponent_mem_irreducibleComponents (x : α) :
+lemma irreducibleComponent_mem_irreducibleComponents (x : α) :
     irreducibleComponent x ∈ irreducibleComponents α :=
   ⟨isIrreducible_irreducibleComponent, fun _ h₁ h₂ => (eq_irreducibleComponent h₁.2 h₂).le⟩
 #align irreducible_component_mem_irreducible_components irreducibleComponent_mem_irreducibleComponents
@@ -1868,12 +1868,12 @@ class IrreducibleSpace (α : Type u) [TopologicalSpace α] extends Preirreducibl
 -- see Note [lower instance priority]
 attribute [instance 50] IrreducibleSpace.toNonempty
 
-theorem IrreducibleSpace.isIrreducible_univ (α : Type u) [TopologicalSpace α] [IrreducibleSpace α] :
+lemma IrreducibleSpace.isIrreducible_univ (α : Type u) [TopologicalSpace α] [IrreducibleSpace α] :
     IsIrreducible (univ : Set α) :=
   ⟨univ_nonempty, PreirreducibleSpace.isPreirreducible_univ⟩
 #align irreducible_space.is_irreducible_univ IrreducibleSpace.isIrreducible_univ
 
-theorem irreducibleSpace_def (α : Type u) [TopologicalSpace α] :
+lemma irreducibleSpace_def (α : Type u) [TopologicalSpace α] :
     IrreducibleSpace α ↔ IsIrreducible (⊤ : Set α) :=
   ⟨@IrreducibleSpace.isIrreducible_univ α _, fun h =>
     haveI : PreirreducibleSpace α := ⟨h.2⟩

@@ -43,11 +43,11 @@ namespace Quaternion
 instance : Inner ℝ ℍ :=
   ⟨fun a b => (a * star b).re⟩
 
-theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
+lemma inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
   rfl
 #align quaternion.inner_self Quaternion.inner_self
 
-theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
+lemma inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 #align quaternion.inner_def Quaternion.inner_def
 
@@ -63,7 +63,7 @@ noncomputable instance : NormedAddCommGroup ℍ :=
 noncomputable instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
-theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
+lemma normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
   rw [← inner_self, real_inner_self_eq_norm_mul_norm]
 #align quaternion.norm_sq_eq_norm_sq Quaternion.normSq_eq_norm_mul_self
 
@@ -71,22 +71,22 @@ instance : NormOneClass ℍ :=
   ⟨by rw [norm_eq_sqrt_real_inner, inner_self, normSq.map_one, Real.sqrt_one]⟩
 
 @[simp, norm_cast]
-theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
+lemma norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
   rw [norm_eq_sqrt_real_inner, inner_self, normSq_coe, Real.sqrt_sq_eq_abs, Real.norm_eq_abs]
 #align quaternion.norm_coe Quaternion.norm_coe
 
 @[simp, norm_cast]
-theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
+lemma nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 #align quaternion.nnnorm_coe Quaternion.nnnorm_coe
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
-theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
+lemma norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 #align quaternion.norm_star Quaternion.norm_star
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
-theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
+lemma nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 #align quaternion.nnnorm_star Quaternion.nnnorm_star
 
@@ -110,31 +110,31 @@ instance : CstarRing ℍ where
 instance : Coe ℂ ℍ := ⟨coeComplex⟩
 
 @[simp, norm_cast]
-theorem coeComplex_re (z : ℂ) : (z : ℍ).re = z.re :=
+lemma coeComplex_re (z : ℂ) : (z : ℍ).re = z.re :=
   rfl
 #align quaternion.coe_complex_re Quaternion.coeComplex_re
 
 @[simp, norm_cast]
-theorem coeComplex_imI (z : ℂ) : (z : ℍ).imI = z.im :=
+lemma coeComplex_imI (z : ℂ) : (z : ℍ).imI = z.im :=
   rfl
 #align quaternion.coe_complex_im_i Quaternion.coeComplex_imI
 
 @[simp, norm_cast]
-theorem coeComplex_imJ (z : ℂ) : (z : ℍ).imJ = 0 :=
+lemma coeComplex_imJ (z : ℂ) : (z : ℍ).imJ = 0 :=
   rfl
 #align quaternion.coe_complex_im_j Quaternion.coeComplex_imJ
 
 @[simp, norm_cast]
-theorem coeComplex_imK (z : ℂ) : (z : ℍ).imK = 0 :=
+lemma coeComplex_imK (z : ℂ) : (z : ℍ).imK = 0 :=
   rfl
 #align quaternion.coe_complex_im_k Quaternion.coeComplex_imK
 
 @[simp, norm_cast]
-theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
+lemma coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
 #align quaternion.coe_complex_add Quaternion.coeComplex_add
 
 @[simp, norm_cast]
-theorem coeComplex_mul (z w : ℂ) : ↑(z * w) = (z * w : ℍ) := by ext <;> simp
+lemma coeComplex_mul (z w : ℂ) : ↑(z * w) = (z * w : ℍ) := by ext <;> simp
 #align quaternion.coe_complex_mul Quaternion.coeComplex_mul
 
 @[simp, norm_cast]
@@ -148,11 +148,11 @@ lemma coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
 #align quaternion.coe_complex_one Quaternion.coeComplex_one
 
 @[simp, norm_cast, nolint simpNF] -- Porting note: simp cannot prove this
-theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
+lemma coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
 #align quaternion.coe_real_complex_mul Quaternion.coe_real_complex_mul
 
 @[simp, norm_cast]
-theorem coeComplex_coe (r : ℝ) : ((r : ℂ) : ℍ) = r :=
+lemma coeComplex_coe (r : ℝ) : ((r : ℂ) : ℍ) = r :=
   rfl
 #align quaternion.coe_complex_coe Quaternion.coeComplex_coe
 
@@ -171,7 +171,7 @@ lemma coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 #align quaternion.coe_of_complex Quaternion.coe_ofComplex
 
 /-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
-theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
+lemma norm_piLp_equiv_symm_equivTuple (x : ℍ) :
     ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
@@ -249,7 +249,7 @@ lemma summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summab
 #align quaternion.summable_coe Quaternion.summable_coe
 
 @[norm_cast]
-theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by
+lemma tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by
   by_cases hf : Summable f
   · exact (hasSum_coe.mpr hf.hasSum).tsum_eq
   · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (summable_coe.not.mpr hf)]

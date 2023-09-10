@@ -68,7 +68,7 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 -- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
+lemma OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (· * ·) (· ≤ ·) where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
@@ -79,7 +79,7 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 -- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
+lemma OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
@@ -357,13 +357,13 @@ lemma mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b := 
 #align add_neg_le_neg_add_iff add_neg_le_neg_add_iff
 
 @[to_additive (attr := simp)]
-theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
+lemma div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
   simp [div_eq_mul_inv]
 #align div_le_self_iff div_le_self_iff
 #align sub_le_self_iff sub_le_self_iff
 
 @[to_additive (attr := simp)]
-theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
+lemma le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
   simp [div_eq_mul_inv]
 #align le_div_self_iff le_div_self_iff
 #align le_sub_self_iff le_sub_self_iff
@@ -415,7 +415,7 @@ lemma mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
 #align add_neg_lt_neg_add_iff add_neg_lt_neg_add_iff
 
 @[to_additive (attr := simp)]
-theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
+lemma div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
   simp [div_eq_mul_inv]
 #align div_lt_self_iff div_lt_self_iff
 #align sub_lt_self_iff sub_lt_self_iff
@@ -434,7 +434,7 @@ section LeftLE
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a : α}
 
 @[to_additive]
-theorem Left.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
+lemma Left.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
   le_trans (Left.inv_le_one_iff.mpr h) h
 #align left.inv_le_self Left.inv_le_self
 #align left.neg_le_self Left.neg_le_self
@@ -443,7 +443,7 @@ alias neg_le_self := Left.neg_le_self
 #align neg_le_self neg_le_self
 
 @[to_additive]
-theorem Left.self_le_inv (h : a ≤ 1) : a ≤ a⁻¹ :=
+lemma Left.self_le_inv (h : a ≤ 1) : a ≤ a⁻¹ :=
   le_trans h (Left.one_le_inv_iff.mpr h)
 #align left.self_le_inv Left.self_le_inv
 #align left.self_le_neg Left.self_le_neg
@@ -455,7 +455,7 @@ section LeftLT
 variable [CovariantClass α α (· * ·) (· < ·)] {a : α}
 
 @[to_additive]
-theorem Left.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
+lemma Left.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
   (Left.inv_lt_one_iff.mpr h).trans h
 #align left.inv_lt_self Left.inv_lt_self
 #align left.neg_lt_self Left.neg_lt_self
@@ -464,7 +464,7 @@ alias neg_lt_self := Left.neg_lt_self
 #align neg_lt_self neg_lt_self
 
 @[to_additive]
-theorem Left.self_lt_inv (h : a < 1) : a < a⁻¹ :=
+lemma Left.self_lt_inv (h : a < 1) : a < a⁻¹ :=
   lt_trans h (Left.one_lt_inv_iff.mpr h)
 #align left.self_lt_inv Left.self_lt_inv
 #align left.self_lt_neg Left.self_lt_neg
@@ -476,13 +476,13 @@ section RightLE
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
 
 @[to_additive]
-theorem Right.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
+lemma Right.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
   le_trans (Right.inv_le_one_iff.mpr h) h
 #align right.inv_le_self Right.inv_le_self
 #align right.neg_le_self Right.neg_le_self
 
 @[to_additive]
-theorem Right.self_le_inv (h : a ≤ 1) : a ≤ a⁻¹ :=
+lemma Right.self_le_inv (h : a ≤ 1) : a ≤ a⁻¹ :=
   le_trans h (Right.one_le_inv_iff.mpr h)
 #align right.self_le_inv Right.self_le_inv
 #align right.self_le_neg Right.self_le_neg
@@ -494,13 +494,13 @@ section RightLT
 variable [CovariantClass α α (swap (· * ·)) (· < ·)] {a : α}
 
 @[to_additive]
-theorem Right.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
+lemma Right.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
   (Right.inv_lt_one_iff.mpr h).trans h
 #align right.inv_lt_self Right.inv_lt_self
 #align right.neg_lt_self Right.neg_lt_self
 
 @[to_additive]
-theorem Right.self_lt_inv (h : a < 1) : a < a⁻¹ :=
+lemma Right.self_lt_inv (h : a < 1) : a < a⁻¹ :=
   lt_trans h (Right.one_lt_inv_iff.mpr h)
 #align right.self_lt_inv Right.self_lt_inv
 #align right.self_lt_neg Right.self_lt_neg
@@ -706,13 +706,13 @@ section Right
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
 @[to_additive (attr := simp)]
-theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
+lemma div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 #align div_le_div_iff_right div_le_div_iff_right
 #align sub_le_sub_iff_right sub_le_sub_iff_right
 
 @[to_additive sub_le_sub_right]
-theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
+lemma div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
 #align div_le_div_right' div_le_div_right'
 #align sub_le_sub_right sub_le_sub_right
@@ -770,14 +770,14 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
 @[to_additive (attr := simp)]
-theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
+lemma div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
 #align div_le_div_iff_left div_le_div_iff_left
 #align sub_le_sub_iff_left sub_le_sub_iff_left
 
 @[to_additive sub_le_sub_left]
-theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
+lemma div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
   (div_le_div_iff_left c).2 h
 #align div_le_div_left' div_le_div_left'
 #align sub_le_sub_left sub_le_sub_left
@@ -848,7 +848,7 @@ section Preorder
 variable [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
 @[to_additive sub_le_sub]
-theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
+lemma div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_le_inv_mul_iff, mul_comm]
   exact mul_le_mul' hab hcd
 #align div_le_div'' div_le_div''
@@ -869,13 +869,13 @@ section Right
 variable [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c d : α}
 
 @[to_additive (attr := simp)]
-theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
+lemma div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
   simpa only [div_eq_mul_inv] using mul_lt_mul_iff_right _
 #align div_lt_div_iff_right div_lt_div_iff_right
 #align sub_lt_sub_iff_right sub_lt_sub_iff_right
 
 @[to_additive sub_lt_sub_right]
-theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
+lemma div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
 #align div_lt_div_right' div_lt_div_right'
 #align sub_lt_sub_right sub_lt_sub_right
@@ -931,7 +931,7 @@ variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap 
   {a b c : α}
 
 @[to_additive (attr := simp)]
-theorem div_lt_div_iff_left (a : α) : a / b < a / c ↔ c < b := by
+lemma div_lt_div_iff_left (a : α) : a / b < a / c ↔ c < b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_lt_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_lt_inv_iff]
 #align div_lt_div_iff_left div_lt_div_iff_left
@@ -944,7 +944,7 @@ lemma inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
 #align neg_lt_sub_iff_lt_add neg_lt_sub_iff_lt_add
 
 @[to_additive sub_lt_sub_left]
-theorem div_lt_div_left' (h : a < b) (c : α) : c / b < c / a :=
+lemma div_lt_div_left' (h : a < b) (c : α) : c / b < c / a :=
   (div_lt_div_iff_left c).2 h
 #align div_lt_div_left' div_lt_div_left'
 #align sub_lt_sub_left sub_lt_sub_left
@@ -1010,7 +1010,7 @@ section Preorder
 variable [Preorder α] [CovariantClass α α (· * ·) (· < ·)] {a b c d : α}
 
 @[to_additive sub_lt_sub]
-theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
+lemma div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_lt_inv_mul_iff, mul_comm]
   exact mul_lt_mul_of_lt_of_lt hab hcd
 #align div_lt_div'' div_lt_div''
@@ -1037,7 +1037,7 @@ section VariableNames
 variable {a b c : α}
 
 @[to_additive]
-theorem le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=
+lemma le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=
   le_of_not_lt fun h₁ => lt_irrefl a (by simpa using h _ (lt_inv_mul_iff_lt.mpr h₁))
 #align le_of_forall_one_lt_lt_mul le_of_forall_one_lt_lt_mul
 #align le_of_forall_pos_lt_add le_of_forall_pos_lt_add
@@ -1106,13 +1106,13 @@ section LinearOrderedCommGroup
 variable [LinearOrderedCommGroup α] {a b c : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
-theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
+lemma LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
   _root_.mul_lt_mul_left' h c
 #align linear_ordered_comm_group.mul_lt_mul_left' LinearOrderedCommGroup.mul_lt_mul_left'
 #align linear_ordered_add_comm_group.add_lt_add_left LinearOrderedAddCommGroup.add_lt_add_left
 
 @[to_additive eq_zero_of_neg_eq]
-theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
+lemma eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
   match lt_trichotomy a 1 with
   | Or.inl h₁ =>
     have : 1 < a := h ▸ one_lt_inv_of_inv h₁
@@ -1277,25 +1277,25 @@ variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α (· * ·) (
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem Monotone.inv (hf : Monotone f) : Antitone fun x => (f x)⁻¹ := fun _ _ hxy =>
+lemma Monotone.inv (hf : Monotone f) : Antitone fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_le_inv_iff.2 (hf hxy)
 #align monotone.inv Monotone.inv
 #align monotone.neg Monotone.neg
 
 @[to_additive]
-theorem Antitone.inv (hf : Antitone f) : Monotone fun x => (f x)⁻¹ := fun _ _ hxy =>
+lemma Antitone.inv (hf : Antitone f) : Monotone fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_le_inv_iff.2 (hf hxy)
 #align antitone.inv Antitone.inv
 #align antitone.neg Antitone.neg
 
 @[to_additive]
-theorem MonotoneOn.inv (hf : MonotoneOn f s) : AntitoneOn (fun x => (f x)⁻¹) s :=
+lemma MonotoneOn.inv (hf : MonotoneOn f s) : AntitoneOn (fun x => (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
 #align monotone_on.inv MonotoneOn.inv
 #align monotone_on.neg MonotoneOn.neg
 
 @[to_additive]
-theorem AntitoneOn.inv (hf : AntitoneOn f s) : MonotoneOn (fun x => (f x)⁻¹) s :=
+lemma AntitoneOn.inv (hf : AntitoneOn f s) : MonotoneOn (fun x => (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
 #align antitone_on.inv AntitoneOn.inv
 #align antitone_on.neg AntitoneOn.neg
@@ -1308,25 +1308,25 @@ variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α (· * ·) (
   [CovariantClass α α (swap (· * ·)) (· < ·)] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun _ _ hxy =>
+lemma StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_lt_inv_iff.2 (hf hxy)
 #align strict_mono.inv StrictMono.inv
 #align strict_mono.neg StrictMono.neg
 
 @[to_additive]
-theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x => (f x)⁻¹ := fun _ _ hxy =>
+lemma StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_lt_inv_iff.2 (hf hxy)
 #align strict_anti.inv StrictAnti.inv
 #align strict_anti.neg StrictAnti.neg
 
 @[to_additive]
-theorem StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x => (f x)⁻¹) s :=
+lemma StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x => (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
 #align strict_mono_on.inv StrictMonoOn.inv
 #align strict_mono_on.neg StrictMonoOn.neg
 
 @[to_additive]
-theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)⁻¹) s :=
+lemma StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
 #align strict_anti_on.inv StrictAntiOn.inv
 #align strict_anti_on.neg StrictAntiOn.neg

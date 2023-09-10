@@ -55,35 +55,35 @@ lemma pointwise_smul_def {a : M} (S : Subsemiring R) :
 #align subsemiring.pointwise_smul_def Subsemiring.pointwise_smul_def
 
 @[simp]
-theorem coe_pointwise_smul (m : M) (S : Subsemiring R) : ↑(m • S) = m • (S : Set R) :=
+lemma coe_pointwise_smul (m : M) (S : Subsemiring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 #align subsemiring.coe_pointwise_smul Subsemiring.coe_pointwise_smul
 
 @[simp]
-theorem pointwise_smul_toAddSubmonoid (m : M) (S : Subsemiring R) :
+lemma pointwise_smul_toAddSubmonoid (m : M) (S : Subsemiring R) :
     (m • S).toAddSubmonoid = m • S.toAddSubmonoid :=
   rfl
 #align subsemiring.pointwise_smul_to_add_submonoid Subsemiring.pointwise_smul_toAddSubmonoid
 
-theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S → m • r ∈ m • S :=
+lemma smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 #align subsemiring.smul_mem_pointwise_smul Subsemiring.smul_mem_pointwise_smul
 
-theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
+lemma mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
   (Set.mem_smul_set : r ∈ m • (S : Set R) ↔ _)
 #align subsemiring.mem_smul_pointwise_iff_exists Subsemiring.mem_smul_pointwise_iff_exists
 
 @[simp]
-theorem smul_bot (a : M) : a • (⊥ : Subsemiring R) = ⊥ :=
+lemma smul_bot (a : M) : a • (⊥ : Subsemiring R) = ⊥ :=
   map_bot _
 #align subsemiring.smul_bot Subsemiring.smul_bot
 
-theorem smul_sup (a : M) (S T : Subsemiring R) : a • (S ⊔ T) = a • S ⊔ a • T :=
+lemma smul_sup (a : M) (S T : Subsemiring R) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 #align subsemiring.smul_sup Subsemiring.smul_sup
 
-theorem smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :=
+lemma smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :=
   RingHom.map_closureS _ _
 #align subsemiring.smul_closure Subsemiring.smul_closure
 

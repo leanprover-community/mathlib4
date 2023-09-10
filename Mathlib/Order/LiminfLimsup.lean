@@ -80,7 +80,7 @@ lemma isBounded_bot : IsBounded r ⊥ ↔ Nonempty α := by simp [IsBounded, exi
 lemma isBounded_top : IsBounded r ⊤ ↔ ∃ t, ∀ x, r x t := by simp [IsBounded, eq_univ_iff_forall]
 #align filter.is_bounded_top Filter.isBounded_top
 
-theorem isBounded_principal (s : Set α) : IsBounded r (𝓟 s) ↔ ∃ t, ∀ x ∈ s, r x t := by
+lemma isBounded_principal (s : Set α) : IsBounded r (𝓟 s) ↔ ∃ t, ∀ x ∈ s, r x t := by
   simp [IsBounded, subset_def]
 #align filter.is_bounded_principal Filter.isBounded_principal
 
@@ -92,7 +92,7 @@ lemma isBounded_sup [IsTrans α r] [IsDirected α r] :
       ⟨h₁.mono fun _ h => _root_.trans h rb₁b, h₂.mono fun _ h => _root_.trans h rb₂b⟩⟩
 #align filter.is_bounded_sup Filter.isBounded_sup
 
-theorem IsBounded.mono (h : f ≤ g) : IsBounded r g → IsBounded r f
+lemma IsBounded.mono (h : f ≤ g) : IsBounded r g → IsBounded r f
   | ⟨b, hb⟩ => ⟨b, h hb⟩
 #align filter.is_bounded.mono Filter.IsBounded.mono
 
@@ -254,11 +254,11 @@ lemma isCobounded_top : IsCobounded r ⊤ ↔ Nonempty α := by
     exists_true_iff_nonempty]
 #align filter.is_cobounded_top Filter.isCobounded_top
 
-theorem isCobounded_principal (s : Set α) :
+lemma isCobounded_principal (s : Set α) :
     (𝓟 s).IsCobounded r ↔ ∃ b, ∀ a, (∀ x ∈ s, r x a) → r b a := by simp [IsCobounded, subset_def]
 #align filter.is_cobounded_principal Filter.isCobounded_principal
 
-theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
+lemma IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
   | ⟨b, hb⟩ => ⟨b, fun a ha => hb a (h ha)⟩
 #align filter.is_cobounded.mono Filter.IsCobounded.mono
 
@@ -430,12 +430,12 @@ lemma bliminf_eq : bliminf u f p = sSup { a | ∀ᶠ x in f, p x → a ≤ u x }
 end
 
 @[simp]
-theorem blimsup_true (f : Filter β) (u : β → α) : (blimsup u f fun _ => True) = limsup u f := by
+lemma blimsup_true (f : Filter β) (u : β → α) : (blimsup u f fun _ => True) = limsup u f := by
   simp [blimsup_eq, limsup_eq]
 #align filter.blimsup_true Filter.blimsup_true
 
 @[simp]
-theorem bliminf_true (f : Filter β) (u : β → α) : (bliminf u f fun _ => True) = liminf u f := by
+lemma bliminf_true (f : Filter β) (u : β → α) : (bliminf u f fun _ => True) = liminf u f := by
   simp [bliminf_eq, liminf_eq]
 #align filter.bliminf_true Filter.bliminf_true
 
@@ -679,7 +679,7 @@ lemma limsSup_bot : limsSup (⊥ : Filter α) = ⊥ :=
 set_option linter.uppercaseLean3 false in
 #align filter.Limsup_bot Filter.limsSup_bot
 
-@[simp] theorem limsup_bot (f : β → α) : limsup f ⊥ = ⊥ := by simp [limsup]
+@[simp] lemma limsup_bot (f : β → α) : limsup f ⊥ = ⊥ := by simp [limsup]
 
 @[simp]
 lemma limsInf_bot : limsInf (⊥ : Filter α) = ⊤ :=
@@ -687,7 +687,7 @@ lemma limsInf_bot : limsInf (⊥ : Filter α) = ⊤ :=
 set_option linter.uppercaseLean3 false in
 #align filter.Liminf_bot Filter.limsInf_bot
 
-@[simp] theorem liminf_bot (f : β → α) : liminf f ⊥ = ⊤ := by simp [liminf]
+@[simp] lemma liminf_bot (f : β → α) : liminf f ⊥ = ⊤ := by simp [liminf]
 
 @[simp]
 lemma limsSup_top : limsSup (⊤ : Filter α) = ⊤ :=
@@ -867,7 +867,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: simp_nf linter incorrectly says: lhs does not simplify when using simp on itself.
 @[simp, nolint simpNF]
-theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
+lemma liminf_nat_add (f : ℕ → α) (k : ℕ) :
     liminf (fun i => f (i + k)) atTop = liminf f atTop := by
   simp_rw [liminf_eq_iSup_iInf_of_nat]
   exact iSup_iInf_ge_nat_add f k
@@ -875,7 +875,7 @@ theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
 
 -- Porting note: simp_nf linter incorrectly says: lhs does not simplify when using simp on itself.
 @[simp, nolint simpNF]
-theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
+lemma limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 #align filter.limsup_nat_add Filter.limsup_nat_add
 
@@ -898,7 +898,7 @@ lemma le_limsup_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α} {
 /-- If `f : α → α` is a morphism of complete lattices, then the limsup of its iterates of any
 `a : α` is a fixed point. -/
 @[simp]
-theorem CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (a : α) :
+lemma CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (a : α) :
     f (limsup (fun n => f^[n] a) atTop) = limsup (fun n => f^[n] a) atTop := by
   rw [limsup_eq_iInf_iSup_of_nat', map_iInf]
   simp_rw [_root_.map_iSup, ← Function.comp_apply (f := f), ← Function.iterate_succ' f,
@@ -912,42 +912,42 @@ theorem CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (
 
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
 `a : α` is a fixed point. -/
-theorem CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
+lemma CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
     f (liminf (fun n => f^[n] a) atTop) = liminf (fun n => f^[n] a) atTop :=
   apply_limsup_iterate (CompleteLatticeHom.dual f) _
 #align filter.complete_lattice_hom.apply_liminf_iterate Filter.CompleteLatticeHom.apply_liminf_iterate
 
 variable {f g : Filter β} {p q : β → Prop} {u v : β → α}
 
-theorem blimsup_mono (h : ∀ x, p x → q x) : blimsup u f p ≤ blimsup u f q :=
+lemma blimsup_mono (h : ∀ x, p x → q x) : blimsup u f p ≤ blimsup u f q :=
   sInf_le_sInf fun a ha => ha.mono <| by tauto
 #align filter.blimsup_mono Filter.blimsup_mono
 
-theorem bliminf_antitone (h : ∀ x, p x → q x) : bliminf u f q ≤ bliminf u f p :=
+lemma bliminf_antitone (h : ∀ x, p x → q x) : bliminf u f q ≤ bliminf u f p :=
   sSup_le_sSup fun a ha => ha.mono <| by tauto
 #align filter.bliminf_antitone Filter.bliminf_antitone
 
-theorem mono_blimsup' (h : ∀ᶠ x in f, p x → u x ≤ v x) : blimsup u f p ≤ blimsup v f p :=
+lemma mono_blimsup' (h : ∀ᶠ x in f, p x → u x ≤ v x) : blimsup u f p ≤ blimsup v f p :=
   sInf_le_sInf fun _ ha => (ha.and h).mono fun _ hx hx' => (hx.2 hx').trans (hx.1 hx')
 #align filter.mono_blimsup' Filter.mono_blimsup'
 
-theorem mono_blimsup (h : ∀ x, p x → u x ≤ v x) : blimsup u f p ≤ blimsup v f p :=
+lemma mono_blimsup (h : ∀ x, p x → u x ≤ v x) : blimsup u f p ≤ blimsup v f p :=
   mono_blimsup' <| eventually_of_forall h
 #align filter.mono_blimsup Filter.mono_blimsup
 
-theorem mono_bliminf' (h : ∀ᶠ x in f, p x → u x ≤ v x) : bliminf u f p ≤ bliminf v f p :=
+lemma mono_bliminf' (h : ∀ᶠ x in f, p x → u x ≤ v x) : bliminf u f p ≤ bliminf v f p :=
   sSup_le_sSup fun _ ha => (ha.and h).mono fun _ hx hx' => (hx.1 hx').trans (hx.2 hx')
 #align filter.mono_bliminf' Filter.mono_bliminf'
 
-theorem mono_bliminf (h : ∀ x, p x → u x ≤ v x) : bliminf u f p ≤ bliminf v f p :=
+lemma mono_bliminf (h : ∀ x, p x → u x ≤ v x) : bliminf u f p ≤ bliminf v f p :=
   mono_bliminf' <| eventually_of_forall h
 #align filter.mono_bliminf Filter.mono_bliminf
 
-theorem bliminf_antitone_filter (h : f ≤ g) : bliminf u g p ≤ bliminf u f p :=
+lemma bliminf_antitone_filter (h : f ≤ g) : bliminf u g p ≤ bliminf u f p :=
   sSup_le_sSup fun _ ha => ha.filter_mono h
 #align filter.bliminf_antitone_filter Filter.bliminf_antitone_filter
 
-theorem blimsup_monotone_filter (h : f ≤ g) : blimsup u f p ≤ blimsup u g p :=
+lemma blimsup_monotone_filter (h : f ≤ g) : blimsup u f p ≤ blimsup u g p :=
   sInf_le_sInf fun _ ha => ha.filter_mono h
 #align filter.blimsup_monotone_filter Filter.blimsup_monotone_filter
 
@@ -1065,13 +1065,13 @@ lemma inf_liminf [NeBot f] (a : α) : a ⊓ liminf u f = liminf (fun x => a ⊓ 
   sup_limsup (α := αᵒᵈ) a
 #align filter.inf_liminf Filter.inf_liminf
 
-theorem sup_liminf (a : α) : a ⊔ liminf u f = liminf (fun x => a ⊔ u x) f := by
+lemma sup_liminf (a : α) : a ⊔ liminf u f = liminf (fun x => a ⊔ u x) f := by
   simp only [liminf_eq_iSup_iInf]
   rw [sup_comm, biSup_sup (⟨univ, univ_mem⟩ : ∃ i : Set β, i ∈ f)]
   simp_rw [iInf₂_sup_eq, sup_comm (a := a)]
 #align filter.sup_liminf Filter.sup_liminf
 
-theorem inf_limsup (a : α) : a ⊓ limsup u f = limsup (fun x => a ⊓ u x) f :=
+lemma inf_limsup (a : α) : a ⊓ limsup u f = limsup (fun x => a ⊓ u x) f :=
   sup_liminf (α := αᵒᵈ) a
 #align filter.inf_limsup Filter.inf_limsup
 
@@ -1089,7 +1089,7 @@ lemma liminf_compl : (liminf u f)ᶜ = limsup (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 #align filter.liminf_compl Filter.liminf_compl
 
-theorem limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b => u b \ a) f := by
+lemma limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b => u b \ a) f := by
   simp only [limsup_eq_iInf_iSup, sdiff_eq]
   rw [biInf_inf (⟨univ, univ_mem⟩ : ∃ i : Set β, i ∈ f)]
   simp_rw [inf_comm, inf_iSup₂_eq, inf_comm]
@@ -1104,7 +1104,7 @@ lemma sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b => a \ u 
   simp only [sdiff_eq, liminf_compl, (· ∘ ·), compl_inf, compl_compl, sup_limsup]
 #align filter.sdiff_limsup Filter.sdiff_limsup
 
-theorem sdiff_liminf (a : α) : a \ liminf u f = limsup (fun b => a \ u b) f := by
+lemma sdiff_liminf (a : α) : a \ liminf u f = limsup (fun b => a \ u b) f := by
   rw [← compl_inj_iff]
   simp only [sdiff_eq, limsup_compl, (· ∘ ·), compl_inf, compl_compl, sup_liminf]
 #align filter.sdiff_liminf Filter.sdiff_liminf

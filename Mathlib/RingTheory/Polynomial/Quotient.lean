@@ -41,13 +41,13 @@ noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
 #align polynomial.quotient_span_X_sub_C_alg_equiv Polynomial.quotientSpanXSubCAlgEquiv
 
 @[simp]
-theorem quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
+lemma quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
     quotientSpanXSubCAlgEquiv x (Ideal.Quotient.mk _ p) = p.eval x :=
   rfl
 #align polynomial.quotient_span_X_sub_C_alg_equiv_mk Polynomial.quotientSpanXSubCAlgEquiv_mk
 
 @[simp]
-theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
+lemma quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
     (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y :=
   rfl
 #align polynomial.quotient_span_X_sub_C_alg_equiv_symm_apply Polynomial.quotientSpanXSubCAlgEquiv_symm_apply
@@ -143,7 +143,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
 #align ideal.polynomial_quotient_equiv_quotient_polynomial Ideal.polynomialQuotientEquivQuotientPolynomial
 
 @[simp]
-theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
+lemma polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
     I.polynomialQuotientEquivQuotientPolynomial.symm (Quotient.mk _ f) = f.map (Quotient.mk I) := by
   rw [polynomialQuotientEquivQuotientPolynomial, RingEquiv.symm_mk, RingEquiv.coe_mk,
     Equiv.coe_fn_mk, Quotient.lift_mk, coe_eval₂RingHom, eval₂_eq_eval_map, ← Polynomial.map_map,
@@ -151,7 +151,7 @@ theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X
 #align ideal.polynomial_quotient_equiv_quotient_polynomial_symm_mk Ideal.polynomialQuotientEquivQuotientPolynomial_symm_mk
 
 @[simp]
-theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
+lemma polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
     I.polynomialQuotientEquivQuotientPolynomial (f.map <| Quotient.mk I) =
     Quotient.mk (map C I : Ideal R[X]) f := by
   apply (polynomialQuotientEquivQuotientPolynomial I).symm.injective
@@ -168,7 +168,7 @@ lemma isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
   If we let `R` be the image of `R` in `R[x]/I` then we also have a map `R[x] → R'[x]`.
   In particular we can map `I` across this map, to get `I'` and a new map `R' → R'[x] → R'[x]/I`.
   This theorem shows `I'` will not contain any non-zero constant polynomials. -/
-theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk I).comp C).range)
+lemma eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk I).comp C).range)
     (hx : C x ∈ I.map (Polynomial.mapRingHom ((Quotient.mk I).comp C).rangeRestrict)) : x = 0 := by
   let i := ((Quotient.mk I).comp C).rangeRestrict
   have hi' : RingHom.ker (Polynomial.mapRingHom i) ≤ I := by

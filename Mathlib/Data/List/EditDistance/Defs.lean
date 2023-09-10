@@ -86,7 +86,7 @@ variable (x : α) (xs : List α) (y : β) (d : δ) (ds : List δ) (w : 0 < (d ::
 
 -- Note this lemma has an unspecified proof `w'` on the right-hand-side,
 -- which will become an extra goal when rewriting.
-theorem impl_cons (w' : 0 < List.length ds) :
+lemma impl_cons (w' : 0 < List.length ds) :
     impl C (x :: xs) y ⟨d :: ds, w⟩ =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       ⟨min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :: r, by simp⟩ :=
@@ -94,13 +94,13 @@ theorem impl_cons (w' : 0 < List.length ds) :
 
 -- Note this lemma has two unspecified proofs: `h` appears on the left-hand-side
 -- and should be found by matching, but `w'` will become an extra goal when rewriting.
-theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
+lemma impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
     (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
       let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :=
   match ds, w' with | _ :: _, _ => rfl
 
-theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.length + 1) :
+lemma impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.length + 1) :
     (impl C xs y d).1.length = xs.length + 1 := by
   induction xs generalizing d
   · case nil =>
@@ -140,7 +140,7 @@ def suffixLevenshtein (xs : List α) (ys : List β) : {r : List δ // 0 < r.leng
 
 variable {C}
 
-theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
+lemma suffixLevenshtein_length (xs : List α) (ys : List β) :
     (suffixLevenshtein C xs ys).1.length = xs.length + 1 := by
   induction ys
   · case nil =>
@@ -155,7 +155,7 @@ theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
     exact ih
 
 -- This is only used in keeping track of estimates.
-theorem suffixLevenshtein_eq (xs : List α) (y ys) :
+lemma suffixLevenshtein_eq (xs : List α) (y ys) :
     impl C xs y (suffixLevenshtein C xs ys) = suffixLevenshtein C xs (y :: ys) := by
   rfl
 
@@ -183,17 +183,17 @@ lemma suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
   rfl
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
-theorem List.eq_of_length_one (x : List α) (w : x.length = 1) :
+lemma List.eq_of_length_one (x : List α) (w : x.length = 1) :
     have : 0 < x.length := (lt_of_lt_of_eq Nat.zero_lt_one w.symm)
     x = [x[0]] := by
   match x, w with
   | [r], _ => rfl
 
-theorem suffixLevenshtein_nil' (ys : List β) :
+lemma suffixLevenshtein_nil' (ys : List β) :
     (suffixLevenshtein C [] ys).1 = [levenshtein C [] ys] :=
   List.eq_of_length_one _ (suffixLevenshtein_length [] _)
 
-theorem suffixLevenshtein_cons₂ (xs : List α) (y ys) :
+lemma suffixLevenshtein_cons₂ (xs : List α) (y ys) :
     suffixLevenshtein C xs (y :: ys) = (impl C xs) y (suffixLevenshtein C xs ys) :=
   rfl
 
@@ -217,7 +217,7 @@ theorem suffixLevenshtein_cons₁
       · rfl
       · simp [suffixLevenshtein_length]
 
-theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
+lemma suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
     (suffixLevenshtein C (x :: xs) ys).1 =
       levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1 := by
@@ -241,7 +241,7 @@ theorem suffixLevenshtein_cons_cons_fst_get_zero
   rw [impl_cons_fst_zero]
   rfl
 
-theorem suffixLevenshtein_eq_tails_map (xs ys) :
+lemma suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
   induction xs
   · case nil =>
@@ -254,7 +254,7 @@ lemma levenshtein_nil_nil : levenshtein C [] [] = 0 := by
   simp [levenshtein]
 
 @[simp]
-theorem levenshtein_nil_cons (y) (ys) :
+lemma levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
   dsimp [levenshtein]
   congr
@@ -268,7 +268,7 @@ theorem levenshtein_nil_cons (y) (ys) :
     rw [impl_length] <;> simp [ih]
 
 @[simp]
-theorem levenshtein_cons_nil (x : α) (xs : List α) :
+lemma levenshtein_cons_nil (x : α) (xs : List α) :
     levenshtein C (x :: xs) [] = C.delete x + levenshtein C xs [] :=
   rfl
 

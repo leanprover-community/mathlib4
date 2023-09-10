@@ -28,7 +28,7 @@ namespace Set
 
 variable {s t : Set α}
 
-theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
+lemma toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype (s ×ˢ t)] :
     (s ×ˢ t).toFinset = s.toFinset ×ˢ t.toFinset := by
   ext
   simp
@@ -51,7 +51,7 @@ lemma Finset.univ_product_univ {α β : Type*} [Fintype α] [Fintype β] :
 #align finset.univ_product_univ Finset.univ_product_univ
 
 @[simp]
-theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
+lemma Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
     Fintype.card (α × β) = Fintype.card α * Fintype.card β :=
   card_product _ _
 #align fintype.card_prod Fintype.card_prod

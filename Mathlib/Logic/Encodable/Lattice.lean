@@ -32,7 +32,7 @@ lemma iSup_decode₂ [CompleteLattice α] (f : β → α) :
   simp only [mem_decode₂, iSup_iSup_eq_right]
 #align encodable.supr_decode₂ Encodable.iSup_decode₂
 
-theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
+lemma iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
   iSup_decode₂ f
 #align encodable.Union_decode₂ Encodable.iUnion_decode₂
 

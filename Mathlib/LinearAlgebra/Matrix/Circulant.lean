@@ -106,7 +106,7 @@ lemma circulant_neg [Neg α] [Sub n] (v : n → α) : circulant (-v) = -circulan
 #align matrix.circulant_neg Matrix.circulant_neg
 
 @[simp]
-theorem circulant_zero (α n) [Zero α] [Sub n] : circulant 0 = (0 : Matrix n n α) :=
+lemma circulant_zero (α n) [Zero α] [Sub n] : circulant 0 = (0 : Matrix n n α) :=
   ext fun _ _ => rfl
 #align matrix.circulant_zero Matrix.circulant_zero
 
@@ -161,14 +161,14 @@ lemma circulant_smul [Sub n] [SMul R α] (k : R) (v : n → α) :
 #align matrix.circulant_smul Matrix.circulant_smul
 
 @[simp]
-theorem circulant_single_one (α n) [Zero α] [One α] [DecidableEq n] [AddGroup n] :
+lemma circulant_single_one (α n) [Zero α] [One α] [DecidableEq n] [AddGroup n] :
     circulant (Pi.single 0 1 : n → α) = (1 : Matrix n n α) := by
   ext i j
   simp [one_apply, Pi.single_apply, sub_eq_zero]
 #align matrix.circulant_single_one Matrix.circulant_single_one
 
 @[simp]
-theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype n] (a : α) :
+lemma circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype n] (a : α) :
     circulant (Pi.single 0 a : n → α) = scalar n a := by
   ext i j
   simp [Pi.single_apply, one_apply, sub_eq_zero]
@@ -176,7 +176,7 @@ theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype
 
 /-- Note we use `↑i = 0` instead of `i = 0` as `Fin 0` has no `0`.
 This means that we cannot state this with `Pi.single` as we did with `Matrix.circulant_single`. -/
-theorem Fin.circulant_ite (α) [Zero α] [One α] :
+lemma Fin.circulant_ite (α) [Zero α] [One α] :
     ∀ n, circulant (fun i => ite (i.1 = 0) 1 0 : Fin n → α) = 1
   | 0 => by simp [Injective]
   | n + 1 => by

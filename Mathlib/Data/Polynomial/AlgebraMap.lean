@@ -53,18 +53,18 @@ instance algebraOfAlgebra : Algebra R A[X]
   toRingHom := C.comp (algebraMap R A)
 #align polynomial.algebra_of_algebra Polynomial.algebraOfAlgebra
 
-theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
+lemma algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
   rfl
 #align polynomial.algebra_map_apply Polynomial.algebraMap_apply
 
 @[simp]
-theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
+lemma toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
   show toFinsupp (C (algebraMap _ _ r)) = _ by
     rw [toFinsupp_C]
     rfl
 #align polynomial.to_finsupp_algebra_map Polynomial.toFinsupp_algebraMap
 
-theorem ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebraMap R A[X] r :=
+lemma ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebraMap R A[X] r :=
   toFinsupp_injective (toFinsupp_algebraMap _).symm
 #align polynomial.of_finsupp_algebra_map Polynomial.ofFinsupp_algebraMap
 
@@ -73,7 +73,7 @@ theorem ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebra
 (But note that `C` is defined when `R` is not necessarily commutative, in which case
 `algebraMap` is not available.)
 -/
-theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
+lemma C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
@@ -183,7 +183,7 @@ lemma algHom_ext {f g : R[X] →ₐ[R] A} (h : f X = g X) : f = g :=
   AlgHom.ext_of_adjoin_eq_top adjoin_X fun _p hp => (Set.mem_singleton_iff.1 hp).symm ▸ h
 #align polynomial.alg_hom_ext Polynomial.algHom_ext
 
-theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
+lemma aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 #align polynomial.aeval_def Polynomial.aeval_def
 
@@ -199,7 +199,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_X Polynomial.aeval_X
 
 @[simp]
-theorem aeval_C (r : R) : aeval x (C r) = algebraMap R A r :=
+lemma aeval_C (r : R) : aeval x (C r) = algebraMap R A r :=
   eval₂_C _ x
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_C Polynomial.aeval_C
@@ -243,7 +243,7 @@ lemma aeval_bit1 : aeval x (bit1 p) = bit1 (aeval x p) :=
 end deprecated
 
 -- porting note: removed `@[simp]` because `simp` can prove this
-theorem aeval_nat_cast (n : ℕ) : aeval x (n : R[X]) = n :=
+lemma aeval_nat_cast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
 #align polynomial.aeval_nat_cast Polynomial.aeval_nat_cast
 
@@ -256,7 +256,7 @@ lemma aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
   eval₂_comp (algebraMap R A)
 #align polynomial.aeval_comp Polynomial.aeval_comp
 
-theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
+lemma aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
 #align polynomial.aeval_alg_hom Polynomial.aeval_algHom
 
@@ -266,12 +266,12 @@ lemma aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_X_left Polynomial.aeval_X_left
 
-theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
+lemma aeval_X_left_apply (p : R[X]) : aeval X p = p :=
   AlgHom.congr_fun (@aeval_X_left R _) p
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_X_left_apply Polynomial.aeval_X_left_apply
 
-theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A) (φ X) p := by
+lemma eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A) (φ X) p := by
   rw [← aeval_def, aeval_algHom, aeval_X_left, AlgHom.comp_id]
 #align polynomial.eval_unique Polynomial.eval_unique
 
@@ -282,22 +282,22 @@ lemma aeval_algHom_apply {F : Type*} [AlgHomClass F R A B] (f : F) (x : A) (p : 
   rw [map_add, hp, hq, ← map_add, ← map_add]
 #align polynomial.aeval_alg_hom_apply Polynomial.aeval_algHom_apply
 
-theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ[R] B).comp (aeval x) :=
+lemma aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ[R] B).comp (aeval x) :=
   aeval_algHom (f : A →ₐ[R] B) x
 #align polynomial.aeval_alg_equiv Polynomial.aeval_algEquiv
 
-theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :
+lemma aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :
     aeval (algebraMap R A x) p = algebraMap R A (p.eval x) :=
   aeval_algHom_apply (Algebra.ofId R A) x p
 #align polynomial.aeval_algebra_map_apply_eq_algebra_map_eval Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval
 
 @[simp]
-theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
+lemma coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
   rfl
 #align polynomial.coe_aeval_eq_eval Polynomial.coe_aeval_eq_eval
 
 @[simp]
-theorem coe_aeval_eq_evalRingHom (x : R) :
+lemma coe_aeval_eq_evalRingHom (x : R) :
     ((aeval x : R[X] →ₐ[R] R) : R[X] →+* R) = evalRingHom x :=
   rfl
 #align polynomial.coe_aeval_eq_eval_ring_hom Polynomial.coe_aeval_eq_evalRingHom
@@ -309,16 +309,16 @@ lemma aeval_fn_apply {X : Type*} (g : R[X]) (f : X → R) (x : X) :
 #align polynomial.aeval_fn_apply Polynomial.aeval_fn_apply
 
 @[norm_cast]
-theorem aeval_subalgebra_coe (g : R[X]) {A : Type*} [Semiring A] [Algebra R A] (s : Subalgebra R A)
+lemma aeval_subalgebra_coe (g : R[X]) {A : Type*} [Semiring A] [Algebra R A] (s : Subalgebra R A)
     (f : s) : (aeval f g : A) = aeval (f : A) g :=
   (aeval_algHom_apply s.val f g).symm
 #align polynomial.aeval_subalgebra_coe Polynomial.aeval_subalgebra_coe
 
-theorem coeff_zero_eq_aeval_zero (p : R[X]) : p.coeff 0 = aeval 0 p := by
+lemma coeff_zero_eq_aeval_zero (p : R[X]) : p.coeff 0 = aeval 0 p := by
   simp [coeff_zero_eq_eval_zero]
 #align polynomial.coeff_zero_eq_aeval_zero Polynomial.coeff_zero_eq_aeval_zero
 
-theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeval (0 : A) p := by
+lemma coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeval (0 : A) p := by
   simp [aeval_def]
 #align polynomial.coeff_zero_eq_aeval_zero' Polynomial.coeff_zero_eq_aeval_zero'
 
@@ -338,7 +338,7 @@ lemma aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Alge
 
 variable (R)
 
-theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
+lemma _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
     Algebra.adjoin R {x} = (Polynomial.aeval x).range := by
   rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
 #align algebra.adjoin_singleton_eq_range_aeval Algebra.adjoin_singleton_eq_range_aeval
@@ -361,7 +361,7 @@ lemma aeval_eq_sum_range' [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.natDegree <
   exact eval₂_eq_sum_range' (algebraMap R S) hn x
 #align polynomial.aeval_eq_sum_range' Polynomial.aeval_eq_sum_range'
 
-theorem isRoot_of_eval₂_map_eq_zero (hf : Function.Injective f) {r : R} :
+lemma isRoot_of_eval₂_map_eq_zero (hf : Function.Injective f) {r : R} :
     eval₂ f (f r) p = 0 → p.IsRoot r := by
   intro h
   apply hf
@@ -397,7 +397,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_tower_X Polynomial.aevalTower_X
 
 @[simp]
-theorem aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
+lemma aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
   eval₂_C _ _
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_tower_C Polynomial.aevalTower_C
@@ -409,7 +409,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_tower_comp_C Polynomial.aevalTower_comp_C
 
 @[simp]
-theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R R[X] x) = g x :=
+lemma aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R R[X] x) = g x :=
   eval₂_C _ _
 #align polynomial.aeval_tower_algebra_map Polynomial.aevalTower_algebraMap
 
@@ -418,7 +418,7 @@ lemma aevalTower_comp_algebraMap : (aevalTower g y : R[X] →+* A').comp (algebr
   aevalTower_comp_C _ _
 #align polynomial.aeval_tower_comp_algebra_map Polynomial.aevalTower_comp_algebraMap
 
-theorem aevalTower_toAlgHom (x : R) : aevalTower g y (IsScalarTower.toAlgHom S R R[X] x) = g x :=
+lemma aevalTower_toAlgHom (x : R) : aevalTower g y (IsScalarTower.toAlgHom S R R[X] x) = g x :=
   aevalTower_algebraMap _ _ _
 #align polynomial.aeval_tower_to_alg_hom Polynomial.aevalTower_toAlgHom
 

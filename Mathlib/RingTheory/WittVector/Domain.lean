@@ -60,13 +60,13 @@ def shift (x : 𝕎 R) (n : ℕ) : 𝕎 R :=
   @mk' p R fun i => x.coeff (n + i)
 #align witt_vector.shift WittVector.shift
 
-theorem shift_coeff (x : 𝕎 R) (n k : ℕ) : (x.shift n).coeff k = x.coeff (n + k) :=
+lemma shift_coeff (x : 𝕎 R) (n k : ℕ) : (x.shift n).coeff k = x.coeff (n + k) :=
   rfl
 #align witt_vector.shift_coeff WittVector.shift_coeff
 
 variable [hp : Fact p.Prime] [CommRing R]
 
-theorem verschiebung_shift (x : 𝕎 R) (k : ℕ) (h : ∀ i < k + 1, x.coeff i = 0) :
+lemma verschiebung_shift (x : 𝕎 R) (k : ℕ) (h : ∀ i < k + 1, x.coeff i = 0) :
     verschiebung (x.shift k.succ) = x.shift k := by
   ext ⟨j⟩
   · rw [verschiebung_coeff_zero, shift_coeff, h]

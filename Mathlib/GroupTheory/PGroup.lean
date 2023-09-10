@@ -77,7 +77,7 @@ lemma of_injective {H : Type*} [Group H] (ϕ : H →* G) (hϕ : Function.Injecti
   exact fun h => hG (ϕ h)
 #align is_p_group.of_injective IsPGroup.of_injective
 
-theorem to_subgroup (H : Subgroup G) : IsPGroup p H :=
+lemma to_subgroup (H : Subgroup G) : IsPGroup p H :=
   hG.of_injective H.subtype Subtype.coe_injective
 #align is_p_group.to_subgroup IsPGroup.to_subgroup
 
@@ -87,7 +87,7 @@ lemma of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surjec
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 #align is_p_group.of_surjective IsPGroup.of_surjective
 
-theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
+lemma to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
   hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_Quotient_mk''
 #align is_p_group.to_quotient IsPGroup.to_quotient
 
@@ -132,7 +132,7 @@ noncomputable def powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
   powEquiv hG (hp.out.coprime_iff_not_dvd.mpr hn)
 #align is_p_group.pow_equiv' IsPGroup.powEquiv'
 
-theorem index (H : Subgroup G) [H.FiniteIndex] : ∃ n : ℕ, H.index = p ^ n := by
+lemma index (H : Subgroup G) [H.FiniteIndex] : ∃ n : ℕ, H.index = p ^ n := by
   haveI := H.normalCore.fintypeQuotientOfFiniteIndex
   obtain ⟨n, hn⟩ := iff_card.mp (hG.to_quotient H.normalCore)
   obtain ⟨k, _, hk2⟩ :=
@@ -167,7 +167,7 @@ lemma nontrivial_iff_card [Fintype G] : Nontrivial G ↔ ∃ n > 0, card G = p ^
 
 variable {α : Type*} [MulAction G α]
 
-theorem card_orbit (a : α) [Fintype (orbit G a)] : ∃ n : ℕ, card (orbit G a) = p ^ n := by
+lemma card_orbit (a : α) [Fintype (orbit G a)] : ∃ n : ℕ, card (orbit G a) = p ^ n := by
   let ϕ := orbitEquivQuotientStabilizer G a
   haveI := Fintype.ofEquiv (orbit G a) ϕ
   haveI := (stabilizer G a).finiteIndex_of_finite_quotient
@@ -217,7 +217,7 @@ lemma card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
 
 /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
   of `p` then the action has a fixed point. -/
-theorem nonempty_fixed_point_of_prime_not_dvd_card (hpα : ¬p ∣ card α) [Finite (fixedPoints G α)] :
+lemma nonempty_fixed_point_of_prime_not_dvd_card (hpα : ¬p ∣ card α) [Finite (fixedPoints G α)] :
     (fixedPoints G α).Nonempty :=
   @Set.nonempty_of_nonempty_subtype _ _
     (by
@@ -230,7 +230,7 @@ theorem nonempty_fixed_point_of_prime_not_dvd_card (hpα : ¬p ∣ card α) [Fin
 
 /-- If a p-group acts on `α` and the cardinality of `α` is a multiple
   of `p`, and the action has one fixed point, then it has another fixed point. -/
-theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ card α) {a : α}
+lemma exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ card α) {a : α}
     (ha : a ∈ fixedPoints G α) : ∃ b, b ∈ fixedPoints G α ∧ a ≠ b := by
   cases nonempty_fintype (fixedPoints G α)
   have hpf : p ∣ card (fixedPoints G α) :=
@@ -348,7 +348,7 @@ lemma coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ : 
 #align is_p_group.coprime_card_of_ne IsPGroup.coprime_card_of_ne
 
 /-- p-groups with different p are disjoint -/
-theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂)
+lemma disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂)
     (H₁ H₂ : Subgroup G) (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) : Disjoint H₁ H₂ := by
   rw [Subgroup.disjoint_def]
   intro x hx₁ hx₂
@@ -368,7 +368,7 @@ variable [Fintype G] [Fact p.Prime] {n : ℕ} (hGpn : card G = p ^ n)
 open Subgroup
 
 /-- The cardinality of the `center` of a `p`-group is `p ^ k` where `k` is positive. -/
-theorem card_center_eq_prime_pow (hn : 0 < n) [Fintype (center G)] :
+lemma card_center_eq_prime_pow (hn : 0 < n) [Fintype (center G)] :
     ∃ k > 0, card (center G) = p ^ k := by
   have hcG := to_subgroup (of_card hGpn) (center G)
   rcases iff_card.1 hcG with _
@@ -377,7 +377,7 @@ theorem card_center_eq_prime_pow (hn : 0 < n) [Fintype (center G)] :
 #align is_p_group.card_center_eq_prime_pow IsPGroup.card_center_eq_prime_pow
 
 /-- The quotient by the center of a group of cardinality `p ^ 2` is cyclic. -/
-theorem cyclic_center_quotient_of_card_eq_prime_sq (hG : card G = p ^ 2) :
+lemma cyclic_center_quotient_of_card_eq_prime_sq (hG : card G = p ^ 2) :
     IsCyclic (G ⧸ center G) := by
   classical
     rcases card_center_eq_prime_pow hG zero_lt_two with ⟨k, hk0, hk⟩
@@ -402,7 +402,7 @@ def commGroupOfCardEqPrimeSq (hG : card G = p ^ 2) : CommGroup G :=
 
 /-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commGroupOfCardEqPrimeSq`
 for the `CommGroup` instance. -/
-theorem commutative_of_card_eq_prime_sq (hG : card G = p ^ 2) : ∀ a b : G, a * b = b * a :=
+lemma commutative_of_card_eq_prime_sq (hG : card G = p ^ 2) : ∀ a b : G, a * b = b * a :=
   (commGroupOfCardEqPrimeSq hG).mul_comm
 #align is_p_group.commutative_of_card_eq_prime_sq IsPGroup.commutative_of_card_eq_prime_sq
 

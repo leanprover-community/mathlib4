@@ -44,7 +44,7 @@ instance (c : RingCon A) : Algebra S c.Quotient where
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
 
 @[simp, norm_cast]
-theorem coe_algebraMap (c : RingCon A) (s : S) :
+lemma coe_algebraMap (c : RingCon A) (s : S) :
     (algebraMap S A s : c.Quotient) = algebraMap S _ s :=
   rfl
 #align ring_con.coe_algebra_map RingCon.coe_algebraMap
@@ -123,7 +123,7 @@ def ringCon (r : R → R → Prop) : RingCon R where
     | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
 #align ring_quot.ring_con RingQuot.ringCon
 
-theorem eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r := by
+lemma eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r := by
   ext x₁ x₂
   constructor
   · intro h
@@ -425,7 +425,7 @@ lemma mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r x
   simp [mkRingHom_def, Quot.sound (Rel.of w)]
 #align ring_quot.mk_ring_hom_rel RingQuot.mkRingHom_rel
 
-theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
+lemma mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
   simp [mkRingHom_def]
   rintro ⟨⟨⟩⟩
   simp
@@ -480,14 +480,14 @@ irreducible_def lift {r : R → R → Prop} :
 #align ring_quot.lift RingQuot.lift
 
 @[simp]
-theorem lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
+lemma lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
     lift ⟨f, w⟩ (mkRingHom r x) = f x := by
   simp_rw [lift_def, preLift_def, mkRingHom_def]
   rfl
 #align ring_quot.lift_mk_ring_hom_apply RingQuot.lift_mkRingHom_apply
 
 -- note this is essentially `lift.symm_apply_eq.mp h`
-theorem lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y)
+lemma lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y)
     (g : RingQuot r →+* T) (h : g.comp (mkRingHom r) = f) : g = lift ⟨f, w⟩ := by
   ext
   simp [h]
@@ -518,7 +518,7 @@ def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Idea
 #align ring_quot.ring_quot_to_ideal_quotient RingQuot.ringQuotToIdealQuotient
 
 @[simp]
-theorem ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
+lemma ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
     ringQuotToIdealQuotient r (mkRingHom r x) = Ideal.Quotient.mk (Ideal.ofRel r) x := by
   simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
   rfl
@@ -541,7 +541,7 @@ def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* R
 #align ring_quot.ideal_quotient_to_ring_quot RingQuot.idealQuotientToRingQuot
 
 @[simp]
-theorem idealQuotientToRingQuot_apply (r : B → B → Prop) (x : B) :
+lemma idealQuotientToRingQuot_apply (r : B → B → Prop) (x : B) :
     idealQuotientToRingQuot r (Ideal.Quotient.mk _ x) = mkRingHom r x :=
   rfl
 #align ring_quot.ideal_quotient_to_ring_quot_apply RingQuot.idealQuotientToRingQuot_apply
@@ -585,7 +585,7 @@ theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
 private irreducible_def star' : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (star : R → R) (Rel.star r hr) a⟩
 
-theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
+lemma star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
 #align ring_quot.star'_quot RingQuot.star'_quot
 
@@ -618,7 +618,7 @@ irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
 #align ring_quot.mk_alg_hom RingQuot.mkAlgHom
 
 @[simp]
-theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := by
+lemma mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := by
   simp_rw [mkAlgHom_def, mkRingHom_def]
   rfl
 #align ring_quot.mk_alg_hom_coe RingQuot.mkAlgHom_coe
@@ -627,7 +627,7 @@ lemma mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) : mkAlgHom S s x
   by simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
 #align ring_quot.mk_alg_hom_rel RingQuot.mkAlgHom_rel
 
-theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
+lemma mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
   suffices : Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s)
   · simpa [mkAlgHom_def, mkRingHom_def]
   rintro ⟨⟨a⟩⟩
@@ -687,14 +687,14 @@ irreducible_def liftAlgHom {s : A → A → Prop} :
 #align ring_quot.lift_alg_hom RingQuot.liftAlgHom
 
 @[simp]
-theorem liftAlgHom_mkAlgHom_apply (f : A →ₐ[S] B) {s : A → A → Prop}
+lemma liftAlgHom_mkAlgHom_apply (f : A →ₐ[S] B) {s : A → A → Prop}
     (w : ∀ ⦃x y⦄, s x y → f x = f y) (x) : (liftAlgHom S ⟨f, w⟩) ((mkAlgHom S s) x) = f x := by
   simp_rw [liftAlgHom_def, preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def]
   rfl
 #align ring_quot.lift_alg_hom_mk_alg_hom_apply RingQuot.liftAlgHom_mkAlgHom_apply
 
 -- note this is essentially `(liftAlgHom S).symm_apply_eq.mp h`
-theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ ⦃x y⦄, s x y → f x = f y)
+lemma liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ ⦃x y⦄, s x y → f x = f y)
     (g : RingQuot s →ₐ[S] B) (h : g.comp (mkAlgHom S s) = f) : g = liftAlgHom S ⟨f, w⟩ := by
   ext
   simp [h]

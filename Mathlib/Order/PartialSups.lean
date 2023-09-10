@@ -49,17 +49,17 @@ def partialSups (f : ℕ → α) : ℕ →o α :=
 #align partial_sups partialSups
 
 @[simp]
-theorem partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
+lemma partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
   rfl
 #align partial_sups_zero partialSups_zero
 
 @[simp]
-theorem partialSups_succ (f : ℕ → α) (n : ℕ) :
+lemma partialSups_succ (f : ℕ → α) (n : ℕ) :
     partialSups f (n + 1) = partialSups f n ⊔ f (n + 1) :=
   rfl
 #align partial_sups_succ partialSups_succ
 
-theorem le_partialSups_of_le (f : ℕ → α) {m n : ℕ} (h : m ≤ n) : f m ≤ partialSups f n := by
+lemma le_partialSups_of_le (f : ℕ → α) {m n : ℕ} (h : m ≤ n) : f m ≤ partialSups f n := by
   induction' n with n ih
   · rw [nonpos_iff_eq_zero.mp h, partialSups_zero]
   · cases' h with h h
@@ -67,10 +67,10 @@ theorem le_partialSups_of_le (f : ℕ → α) {m n : ℕ} (h : m ≤ n) : f m �
     · exact (ih h).trans le_sup_left
 #align le_partial_sups_of_le le_partialSups_of_le
 
-theorem le_partialSups (f : ℕ → α) : f ≤ partialSups f := fun _n => le_partialSups_of_le f le_rfl
+lemma le_partialSups (f : ℕ → α) : f ≤ partialSups f := fun _n => le_partialSups_of_le f le_rfl
 #align le_partial_sups le_partialSups
 
-theorem partialSups_le (f : ℕ → α) (n : ℕ) (a : α) (w : ∀ m, m ≤ n → f m ≤ a) :
+lemma partialSups_le (f : ℕ → α) (n : ℕ) (a : α) (w : ∀ m, m ≤ n → f m ≤ a) :
     partialSups f n ≤ a := by
   induction' n with n ih
   · apply w 0 le_rfl
@@ -116,7 +116,7 @@ def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)
 #align partial_sups.gi partialSups.gi
 
-theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
+lemma partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
     partialSups f n = (Finset.range (n + 1)).sup' ⟨n, Finset.self_mem_range_succ n⟩ f := by
   induction' n with n ih
   · simp
@@ -149,7 +149,7 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α]
 
-theorem partialSups_eq_ciSup_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i : Set.Iic n, f i := by
+lemma partialSups_eq_ciSup_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i : Set.Iic n, f i := by
   have : Set.Iio (n + 1) = Set.Iic n := Set.ext fun _ => Nat.lt_succ_iff
   rw [partialSups_eq_sup'_range, Finset.sup'_eq_csSup_image, Finset.coe_range, iSup, this]
   simp only [Set.range, Subtype.exists, Set.mem_Iic, exists_prop, (· '' ·)]
@@ -170,12 +170,12 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
+lemma partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
   simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
 #align partial_sups_eq_bsupr partialSups_eq_biSup
 
 -- Porting note: simp can prove this @[simp]
-theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
+lemma iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq iSup_partialSups_eq
 

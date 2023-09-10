@@ -97,11 +97,11 @@ variable {S}
 
 -- Not a `simp` lemma since there are more interesting ways to rewrite `trace R S x`,
 -- for example `trace_trace`
-theorem trace_apply (x) : trace R S x = LinearMap.trace R S (lmul R S x) :=
+lemma trace_apply (x) : trace R S x = LinearMap.trace R S (lmul R S x) :=
   rfl
 #align algebra.trace_apply Algebra.trace_apply
 
-theorem trace_eq_zero_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) :
+lemma trace_eq_zero_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) :
     trace R S = 0 := by ext s; simp [trace_apply, LinearMap.trace, h]
 #align algebra.trace_eq_zero_of_not_exists_basis Algebra.trace_eq_zero_of_not_exists_basis
 
@@ -114,7 +114,7 @@ lemma trace_eq_matrix_trace [DecidableEq ι] (b : Basis ι R S) (s : S) :
 #align algebra.trace_eq_matrix_trace Algebra.trace_eq_matrix_trace
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`. -/
-theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Fintype.card ι • x := by
+lemma trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Fintype.card ι • x := by
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
@@ -128,7 +128,7 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
 (If `L` is not finite-dimensional over `K`, then `trace` and `finrank` return `0`.)
 -/
 @[simp]
-theorem trace_algebraMap (x : K) : trace K L (algebraMap K L x) = finrank K L • x := by
+lemma trace_algebraMap (x : K) : trace K L (algebraMap K L x) = finrank K L • x := by
   by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
   · rw [trace_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
   · simp [trace_eq_zero_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis_finset H]
@@ -202,7 +202,7 @@ variable {S}
 
 -- This is a nicer lemma than the one produced by `@[simps] def traceForm`.
 @[simp]
-theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
+lemma traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
 #align algebra.trace_form_apply Algebra.traceForm_apply
 
@@ -214,7 +214,7 @@ lemma traceForm_toMatrix [DecidableEq ι] (i j) :
   rw [BilinForm.toMatrix_apply, traceForm_apply]
 #align algebra.trace_form_to_matrix Algebra.traceForm_toMatrix
 
-theorem traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
+lemma traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
     BilinForm.toMatrix h.basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) :=
   by ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 #align algebra.trace_form_to_matrix_power_basis Algebra.traceForm_toMatrix_powerBasis
@@ -267,7 +267,7 @@ lemma trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   · exact subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.trace_gen_eq_zero IntermediateField.AdjoinSimple.trace_gen_eq_zero
 
-theorem trace_gen_eq_sum_roots (x : L) (hf : (minpoly K x).Splits (algebraMap K F)) :
+lemma trace_gen_eq_sum_roots (x : L) (hf : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (trace K K⟮x⟯ (AdjoinSimple.gen K x)) =
       ((minpoly K x).aroots F).sum := by
   have injKxL := (algebraMap K⟮x⟯ L).injective
@@ -341,7 +341,7 @@ open Algebra IntermediateField
 
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
-theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
+lemma trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : (minpoly K pb.gen).Separable) :
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
@@ -399,7 +399,7 @@ lemma trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L} 
     exact IsSeparable.separable K _
 #align trace_eq_sum_embeddings trace_eq_sum_embeddings
 
-theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
+lemma trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
     algebraMap K L (Algebra.trace K L x) = ∑ σ : L ≃ₐ[K] L, σ x := by
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
@@ -433,7 +433,7 @@ noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
 
 -- TODO: set as an equation lemma for `traceMatrix`, see mathlib4#3024
 @[simp]
-theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
+lemma traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
   rfl
 #align algebra.trace_matrix_apply Algebra.traceMatrix_apply
 
@@ -478,7 +478,7 @@ lemma traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
   rw [traceMatrix_apply, traceForm_apply, traceForm_toMatrix]
 #align algebra.trace_matrix_of_basis Algebra.traceMatrix_of_basis
 
-theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
+lemma traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     (traceMatrix A b).mulVec (b.equivFun z) = fun i => trace A B (z * b i) := by
   ext i
   rw [← col_apply ((traceMatrix A b).mulVec (b.equivFun z)) i Unit.unit, col_mulVec,
@@ -512,7 +512,7 @@ def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
 
 -- TODO: set as an equation lemma for `embeddingsMatrix`, see mathlib4#3024
 @[simp]
-theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
+lemma embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
     embeddingsMatrix A C b i σ = σ (b i) :=
   rfl
 #align algebra.embeddings_matrix_apply Algebra.embeddingsMatrix_apply
@@ -528,7 +528,7 @@ def embeddingsMatrixReindex (b : κ → B) (e : κ ≃ (B →ₐ[A] C)) :=
 
 variable {A}
 
-theorem embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
+lemma embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
     (e : Fin pb.dim ≃ (B →ₐ[A] C)) :
     embeddingsMatrixReindex A C pb.basis e = (vandermonde fun i => e i pb.gen)ᵀ := by
   ext i j

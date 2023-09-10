@@ -46,7 +46,7 @@ lemma pairwise_lt_range' : ∀ s n (step := 1) (_ : 0 < step := by simp),
   | s, n + 1, _, h => chain_iff_pairwise.1 (chain_lt_range' s n h)
 #align list.pairwise_lt_range' List.pairwise_lt_range'
 
-theorem nodup_range' (s n : ℕ) (step := 1) (h : 0 < step := by simp) : Nodup (range' s n step) :=
+lemma nodup_range' (s n : ℕ) (step := 1) (h : 0 < step := by simp) : Nodup (range' s n step) :=
   (pairwise_lt_range' s n step h).imp _root_.ne_of_lt
 #align list.nodup_range' List.nodup_range'
 #align list.range'_append List.range'_append
@@ -73,15 +73,15 @@ lemma nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
 #align list.length_range List.length_range
 #align list.range_eq_nil List.range_eq_nil
 
-theorem pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
+lemma pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
   simp only [range_eq_range', pairwise_lt_range']
 #align list.pairwise_lt_range List.pairwise_lt_range
 
-theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
+lemma pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
 
-theorem nodup_range (n : ℕ) : Nodup (range n) := by simp only [range_eq_range', nodup_range']
+lemma nodup_range (n : ℕ) : Nodup (range n) := by simp only [range_eq_range', nodup_range']
 #align list.nodup_range List.nodup_range
 #align list.range_sublist List.range_sublist
 #align list.range_subset List.range_subset
@@ -92,7 +92,7 @@ theorem nodup_range (n : ℕ) : Nodup (range n) := by simp only [range_eq_range'
 #align list.range_succ List.range_succ
 #align list.range_zero List.range_zero
 
-theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
+lemma chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
   rw [range_succ]
   induction' n with n hn
@@ -103,7 +103,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     rw [hn, forall_lt_succ]
 #align list.chain'_range_succ List.chain'_range_succ
 
-theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
+lemma chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
@@ -113,11 +113,11 @@ theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
 #align list.iota_eq_reverse_range' List.iota_eq_reverse_range'
 #align list.length_iota List.length_iota
 
-theorem pairwise_gt_iota (n : ℕ) : Pairwise (· > ·) (iota n) := by
+lemma pairwise_gt_iota (n : ℕ) : Pairwise (· > ·) (iota n) := by
   simpa only [iota_eq_reverse_range', pairwise_reverse] using pairwise_lt_range' 1 n
 #align list.pairwise_gt_iota List.pairwise_gt_iota
 
-theorem nodup_iota (n : ℕ) : Nodup (iota n) :=
+lemma nodup_iota (n : ℕ) : Nodup (iota n) :=
   (pairwise_gt_iota n).imp _root_.ne_of_gt
 #align list.nodup_iota List.nodup_iota
 
@@ -142,12 +142,12 @@ lemma mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n :=
       rfl⟩
 #align list.mem_fin_range List.mem_finRange
 
-theorem nodup_finRange (n : ℕ) : (finRange n).Nodup :=
+lemma nodup_finRange (n : ℕ) : (finRange n).Nodup :=
   (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_vne _ ⟨_, _⟩ ⟨_, _⟩
 #align list.nodup_fin_range List.nodup_finRange
 
 @[simp]
-theorem length_finRange (n : ℕ) : (finRange n).length = n := by
+lemma length_finRange (n : ℕ) : (finRange n).length = n := by
   rw [finRange, length_pmap, length_range]
 #align list.length_fin_range List.length_finRange
 
@@ -177,21 +177,21 @@ lemma prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
 #align list.enum_from_map_fst List.enumFrom_map_fst
 #align list.enum_map_fst List.enum_map_fst
 
-theorem enum_eq_zip_range (l : List α) : l.enum = (range l.length).zip l :=
+lemma enum_eq_zip_range (l : List α) : l.enum = (range l.length).zip l :=
   zip_of_prod (enum_map_fst _) (enum_map_snd _)
 #align list.enum_eq_zip_range List.enum_eq_zip_range
 
 @[simp]
-theorem unzip_enum_eq_prod (l : List α) : l.enum.unzip = (range l.length, l) := by
+lemma unzip_enum_eq_prod (l : List α) : l.enum.unzip = (range l.length, l) := by
   simp only [enum_eq_zip_range, unzip_zip, length_range]
 #align list.unzip_enum_eq_prod List.unzip_enum_eq_prod
 
-theorem enumFrom_eq_zip_range' (l : List α) {n : ℕ} : l.enumFrom n = (range' n l.length).zip l :=
+lemma enumFrom_eq_zip_range' (l : List α) {n : ℕ} : l.enumFrom n = (range' n l.length).zip l :=
   zip_of_prod (enumFrom_map_fst _ _) (enumFrom_map_snd _ _)
 #align list.enum_from_eq_zip_range' List.enumFrom_eq_zip_range'
 
 @[simp]
-theorem unzip_enumFrom_eq_prod (l : List α) {n : ℕ} :
+lemma unzip_enumFrom_eq_prod (l : List α) {n : ℕ} :
     (l.enumFrom n).unzip = (range' n l.length, l) := by
   simp only [enumFrom_eq_zip_range', unzip_zip, length_range']
 #align list.unzip_enum_from_eq_prod List.unzip_enumFrom_eq_prod
@@ -210,7 +210,7 @@ lemma get_finRange {n : ℕ} {i : ℕ} (h) :
 
 --Porting note: new theorem, corresponding theorem used to be in Data.List.FinRange
 @[simp]
-theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
+lemma finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
 #align list.map_nth_le List.finRange_map_get
 

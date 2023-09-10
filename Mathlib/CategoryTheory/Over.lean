@@ -64,16 +64,16 @@ lemma OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.le
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
 -- @[simp] : Porting note : simp can prove this
-theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
+lemma over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 #align category_theory.over.over_right CategoryTheory.Over.over_right
 
 @[simp]
-theorem id_left (U : Over X) : CommaMorphism.left (𝟙 U) = 𝟙 U.left :=
+lemma id_left (U : Over X) : CommaMorphism.left (𝟙 U) = 𝟙 U.left :=
   rfl
 #align category_theory.over.id_left CategoryTheory.Over.id_left
 
 @[simp]
-theorem comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left = f.left ≫ g.left :=
+lemma comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left = f.left ≫ g.left :=
   rfl
 #align category_theory.over.comp_left CategoryTheory.Over.comp_left
 
@@ -360,16 +360,16 @@ lemma UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext
 
 -- @[simp] Porting note: simp can prove this
-theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
+lemma under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 #align category_theory.under.under_left CategoryTheory.Under.under_left
 
 @[simp]
-theorem id_right (U : Under X) : CommaMorphism.right (𝟙 U) = 𝟙 U.right :=
+lemma id_right (U : Under X) : CommaMorphism.right (𝟙 U) = 𝟙 U.right :=
   rfl
 #align category_theory.under.id_right CategoryTheory.Under.id_right
 
 @[simp]
-theorem comp_right (a b c : Under X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).right = f.right ≫ g.right :=
+lemma comp_right (a b c : Under X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).right = f.right ≫ g.right :=
   rfl
 #align category_theory.under.comp_right CategoryTheory.Under.comp_right
 

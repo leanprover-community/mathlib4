@@ -67,7 +67,7 @@ noncomputable def cardQuot (S : Submodule R M) : ℕ :=
 #align submodule.card_quot Submodule.cardQuot
 
 @[simp]
-theorem cardQuot_apply (S : Submodule R M) [h : Fintype (M ⧸ S)] :
+lemma cardQuot_apply (S : Submodule R M) [h : Fintype (M ⧸ S)] :
     cardQuot S = Fintype.card (M ⧸ S) := by
   -- Porting note: original proof was AddSubgroup.index_eq_card _
   suffices Fintype (M ⧸ S.toAddSubgroup) by convert AddSubgroup.index_eq_card S.toAddSubgroup
@@ -132,7 +132,7 @@ lemma cardQuot_mul_of_coprime [IsDedekindDomain S] [Module.Free ℤ S] [Module.F
 /-- If the `d` from `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
 then so are the `c`s, up to `P ^ (i + 1)`.
 Inspired by [Neukirch], proposition 6.1 -/
-theorem Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S) (a_mem : a ∈ P ^ i)
+lemma Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S) (a_mem : a ∈ P ^ i)
     (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1)) (h : d - d' ∈ P) :
     a * d + e - (a * d' + e') ∈ P ^ (i + 1) := by
   have : a * d - a * d' ∈ P ^ (i + 1) := by
@@ -259,7 +259,7 @@ namespace Ideal
 
 variable [Infinite S] [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S]
 
-theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
+lemma absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 #align ideal.abs_norm_apply Ideal.absNorm_apply
 
 @[simp]
@@ -275,7 +275,7 @@ lemma absNorm_eq_one_iff {I : Ideal S} : absNorm I = 1 ↔ I = ⊤ := by
   rw [absNorm_apply, cardQuot_eq_one_iff]
 #align ideal.abs_norm_eq_one_iff Ideal.absNorm_eq_one_iff
 
-theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S ⧸ I) :=
+lemma absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S ⧸ I) :=
   ⟨fun h => Nat.finite_of_card_ne_zero h, fun h =>
     (@AddSubgroup.finiteIndex_of_finite_quotient _ _ _ h).finiteIndex⟩
 #align ideal.abs_norm_ne_zero_iff Ideal.absNorm_ne_zero_iff
@@ -283,7 +283,7 @@ theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S 
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
-theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [AddEquivClass E S I] (e : E) :
+lemma natAbs_det_equiv (I : Ideal S) {E : Type*} [AddEquivClass E S I] (e : E) :
     Int.natAbs
         (LinearMap.det
           ((Submodule.subtype I).restrictScalars ℤ ∘ₗ AddMonoidHom.toIntLinearMap (e : S →+ I))) =
@@ -359,7 +359,7 @@ lemma natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Ba
 #align ideal.nat_abs_det_basis_change Ideal.natAbs_det_basis_change
 
 @[simp]
-theorem absNorm_span_singleton (r : S) :
+lemma absNorm_span_singleton (r : S) :
     absNorm (span ({r} : Set S)) = (Algebra.norm ℤ r).natAbs := by
   rw [Algebra.norm_apply]
   by_cases hr : r = 0
@@ -384,7 +384,7 @@ lemma absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
 #align ideal.abs_norm_dvd_norm_of_mem Ideal.absNorm_dvd_norm_of_mem
 
 @[simp]
-theorem absNorm_span_insert (r : S) (s : Set S) :
+lemma absNorm_span_insert (r : S) (s : Set S) :
     absNorm (span (insert r s)) ∣ gcd (absNorm (span s)) (Algebra.norm ℤ r).natAbs :=
   (dvd_gcd_iff _ _ _).mpr
     ⟨absNorm_dvd_absNorm_of_le (span_mono (Set.subset_insert _ _)),
@@ -415,12 +415,12 @@ lemma prime_of_irreducible_absNorm_span {a : S} (ha : a ≠ 0)
   (Ideal.span_singleton_prime ha).mp (isPrime_of_irreducible_absNorm hI)
 #align ideal.prime_of_irreducible_abs_norm_span Ideal.prime_of_irreducible_absNorm_span
 
-theorem absNorm_mem (I : Ideal S) : ↑(Ideal.absNorm I) ∈ I := by
+lemma absNorm_mem (I : Ideal S) : ↑(Ideal.absNorm I) ∈ I := by
   rw [absNorm_apply, cardQuot, ← Ideal.Quotient.eq_zero_iff_mem, map_natCast,
     Quotient.index_eq_zero]
 #align ideal.abs_norm_mem Ideal.absNorm_mem
 
-theorem span_singleton_absNorm_le (I : Ideal S) : Ideal.span {(Ideal.absNorm I : S)} ≤ I := by
+lemma span_singleton_absNorm_le (I : Ideal S) : Ideal.span {(Ideal.absNorm I : S)} ≤ I := by
   simp only [Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe, Ideal.absNorm_mem I]
 #align ideal.span_singleton_abs_norm_le Ideal.span_singleton_absNorm_le
 
@@ -505,7 +505,7 @@ lemma spanNorm_top : spanNorm R (⊤ : Ideal S) = ⊤ := by
   simp
 #align ideal.span_norm_top Ideal.spanNorm_top
 
-theorem map_spanNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
+lemma map_spanNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
     map f (spanNorm R I) = span (f ∘ Algebra.norm R '' (I : Set S)) := by
   rw [spanNorm, map_span, Set.image_image]
   -- Porting note: `Function.comp` reducibility
@@ -517,7 +517,7 @@ lemma spanNorm_mono {I J : Ideal S} (h : I ≤ J) : spanNorm R I ≤ spanNorm R 
   Ideal.span_mono (Set.monotone_image h)
 #align ideal.span_norm_mono Ideal.spanNorm_mono
 
-theorem spanNorm_localization (I : Ideal S) [Module.Finite R S] [Module.Free R S] (M : Submonoid R)
+lemma spanNorm_localization (I : Ideal S) [Module.Finite R S] [Module.Free R S] (M : Submonoid R)
     {Rₘ : Type*} (Sₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
     [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
     [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] :
@@ -545,7 +545,7 @@ theorem spanNorm_localization (I : Ideal S) [Module.Finite R S] [Module.Free R S
     exact subset_span (Set.mem_image_of_mem _ (mem_map_of_mem _ ha))
 #align ideal.span_norm_localization Ideal.spanNorm_localization
 
-theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
+lemma spanNorm_mul_spanNorm_le (I J : Ideal S) :
     spanNorm R I * spanNorm R J ≤ spanNorm R (I * J) := by
   rw [spanNorm, spanNorm, spanNorm, Ideal.span_mul_span', ← Set.image_mul]
   refine Ideal.span_mono (Set.monotone_image ?_)
@@ -581,7 +581,7 @@ variable [IsDomain R] [IsDomain S] [IsDedekindDomain R] [IsDedekindDomain S]
 variable [Module.Finite R S] [Module.Free R S]
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
-theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
+lemma spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
   nontriviality R
   cases subsingleton_or_nontrivial S
   · have : ∀ I : Ideal S, I = ⊤ := fun I => Subsingleton.elim I ⊤
@@ -624,12 +624,12 @@ def relNorm : Ideal S →*₀ Ideal R where
   map_mul' := spanNorm_mul R
 #align ideal.rel_norm Ideal.relNorm
 
-theorem relNorm_apply (I : Ideal S) : relNorm R I = span (Algebra.norm R '' (I : Set S) : Set R) :=
+lemma relNorm_apply (I : Ideal S) : relNorm R I = span (Algebra.norm R '' (I : Set S) : Set R) :=
   rfl
 #align ideal.rel_norm_apply Ideal.relNorm_apply
 
 @[simp]
-theorem spanNorm_eq (I : Ideal S) : spanNorm R I = relNorm R I := rfl
+lemma spanNorm_eq (I : Ideal S) : spanNorm R I = relNorm R I := rfl
 #align ideal.span_norm_eq Ideal.spanNorm_eq
 
 @[simp]
@@ -651,16 +651,16 @@ lemma relNorm_eq_bot_iff {I : Ideal S} : relNorm R I = ⊥ ↔ I = ⊥ :=
 
 variable (R)
 
-theorem norm_mem_relNorm (I : Ideal S) {x : S} (hx : x ∈ I) : Algebra.norm R x ∈ relNorm R I :=
+lemma norm_mem_relNorm (I : Ideal S) {x : S} (hx : x ∈ I) : Algebra.norm R x ∈ relNorm R I :=
   norm_mem_spanNorm R x hx
 #align ideal.norm_mem_rel_norm Ideal.norm_mem_relNorm
 
 @[simp]
-theorem relNorm_singleton (r : S) : relNorm R (span ({r} : Set S)) = span {Algebra.norm R r} :=
+lemma relNorm_singleton (r : S) : relNorm R (span ({r} : Set S)) = span {Algebra.norm R r} :=
   spanNorm_singleton R
 #align ideal.rel_norm_singleton Ideal.relNorm_singleton
 
-theorem map_relNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
+lemma map_relNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
     map f (relNorm R I) = span (f ∘ Algebra.norm R '' (I : Set S)) :=
   map_spanNorm R I f
 #align ideal.map_rel_norm Ideal.map_relNorm

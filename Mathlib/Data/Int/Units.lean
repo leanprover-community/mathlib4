@@ -20,23 +20,23 @@ namespace Int
 /-! ### units -/
 
 @[simp]
-theorem units_natAbs (u : ℤˣ) : natAbs u = 1 :=
+lemma units_natAbs (u : ℤˣ) : natAbs u = 1 :=
   Units.ext_iff.1 <|
     Nat.units_eq_one
       ⟨natAbs u, natAbs ↑u⁻¹, by rw [← natAbs_mul, Units.mul_inv]; rfl, by
         rw [← natAbs_mul, Units.inv_mul]; rfl⟩
 #align int.units_nat_abs Int.units_natAbs
 
-theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
+lemma units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
   simpa only [Units.ext_iff, units_natAbs] using natAbs_eq u
 #align int.units_eq_one_or Int.units_eq_one_or
 
 @[simp]
-theorem units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
+lemma units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
   rcases units_eq_one_or u with rfl | rfl <;> decide
 
 @[simp]
-theorem neg_units_ne_self (u : ℤˣ) : -u ≠ u := (units_ne_neg_self u).symm
+lemma neg_units_ne_self (u : ℤˣ) : -u ≠ u := (units_ne_neg_self u).symm
 
 lemma units_ne_iff_eq_neg {u u' : ℤˣ} : u ≠ u' ↔ u = -u' := by
   rcases units_eq_one_or u with rfl | rfl <;>

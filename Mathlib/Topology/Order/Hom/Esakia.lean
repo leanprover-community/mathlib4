@@ -122,7 +122,7 @@ instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem toOrderHom_eq_coe (f : PseudoEpimorphism α β) : ⇑f.toOrderHom = f := rfl
+lemma toOrderHom_eq_coe (f : PseudoEpimorphism α β) : ⇑f.toOrderHom = f := rfl
 
 lemma toFun_eq_coe {f : PseudoEpimorphism α β} : f.toFun = (f : α → β) := rfl
 #align pseudo_epimorphism.to_fun_eq_coe PseudoEpimorphism.toFun_eq_coe
@@ -139,10 +139,10 @@ protected def copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) :
 #align pseudo_epimorphism.copy PseudoEpimorphism.copy
 
 @[simp]
-theorem coe_copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' := rfl
+lemma coe_copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' := rfl
 #align pseudo_epimorphism.coe_copy PseudoEpimorphism.coe_copy
 
-theorem copy_eq (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align pseudo_epimorphism.copy_eq PseudoEpimorphism.copy_eq
 
@@ -167,7 +167,7 @@ lemma coe_id_orderHom : (PseudoEpimorphism.id α : α →o α) = OrderHom.id := 
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : PseudoEpimorphism.id α a = a := rfl
+lemma id_apply (a : α) : PseudoEpimorphism.id α a = a := rfl
 #align pseudo_epimorphism.id_apply PseudoEpimorphism.id_apply
 
 /-- Composition of `PseudoEpimorphism`s as a `PseudoEpimorphism`. -/
@@ -179,32 +179,32 @@ def comp (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) : PseudoEpi
 #align pseudo_epimorphism.comp PseudoEpimorphism.comp
 
 @[simp]
-theorem coe_comp (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) :
+lemma coe_comp (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) :
     (g.comp f : α → γ) = g ∘ f := rfl
 #align pseudo_epimorphism.coe_comp PseudoEpimorphism.coe_comp
 
 @[simp]
-theorem coe_comp_orderHom (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) :
+lemma coe_comp_orderHom (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) :
     (g.comp f : α →o γ) = (g : β →o γ).comp f := rfl
 #align pseudo_epimorphism.coe_comp_order_hom PseudoEpimorphism.coe_comp_orderHom
 
 @[simp]
-theorem comp_apply (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) (a : α) :
+lemma comp_apply (g : PseudoEpimorphism β γ) (f : PseudoEpimorphism α β) (a : α) :
     (g.comp f) a = g (f a) := rfl
 #align pseudo_epimorphism.comp_apply PseudoEpimorphism.comp_apply
 
 @[simp]
-theorem comp_assoc (h : PseudoEpimorphism γ δ) (g : PseudoEpimorphism β γ)
+lemma comp_assoc (h : PseudoEpimorphism γ δ) (g : PseudoEpimorphism β γ)
     (f : PseudoEpimorphism α β) : (h.comp g).comp f = h.comp (g.comp f) := rfl
 #align pseudo_epimorphism.comp_assoc PseudoEpimorphism.comp_assoc
 
 @[simp]
-theorem comp_id (f : PseudoEpimorphism α β) : f.comp (PseudoEpimorphism.id α) = f :=
+lemma comp_id (f : PseudoEpimorphism α β) : f.comp (PseudoEpimorphism.id α) = f :=
   ext fun _ => rfl
 #align pseudo_epimorphism.comp_id PseudoEpimorphism.comp_id
 
 @[simp]
-theorem id_comp (f : PseudoEpimorphism α β) : (PseudoEpimorphism.id β).comp f = f :=
+lemma id_comp (f : PseudoEpimorphism α β) : (PseudoEpimorphism.id β).comp f = f :=
   ext fun _ => rfl
 #align pseudo_epimorphism.id_comp PseudoEpimorphism.id_comp
 
@@ -271,10 +271,10 @@ protected def copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : EsakiaH
 #align esakia_hom.copy EsakiaHom.copy
 
 @[simp]
-theorem coe_copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' := rfl
+lemma coe_copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' := rfl
 #align esakia_hom.coe_copy EsakiaHom.coe_copy
 
-theorem copy_eq (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align esakia_hom.copy_eq EsakiaHom.copy_eq
 
@@ -300,7 +300,7 @@ lemma coe_id_pseudoEpimorphism :
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : EsakiaHom.id α a = a := rfl
+lemma id_apply (a : α) : EsakiaHom.id α a = a := rfl
 #align esakia_hom.id_apply EsakiaHom.id_apply
 
 @[simp]
@@ -316,35 +316,35 @@ def comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : EsakiaHom α γ :=
 #align esakia_hom.comp EsakiaHom.comp
 
 @[simp]
-theorem coe_comp_continuousOrderHom (g : EsakiaHom β γ) (f : EsakiaHom α β) :
+lemma coe_comp_continuousOrderHom (g : EsakiaHom β γ) (f : EsakiaHom α β) :
     (g.comp f : α →Co γ) = (g: β →Co γ).comp f := rfl
 #align esakia_hom.coe_comp_continuous_order_hom EsakiaHom.coe_comp_continuousOrderHom
 
 @[simp]
-theorem coe_comp_pseudoEpimorphism (g : EsakiaHom β γ) (f : EsakiaHom α β) :
+lemma coe_comp_pseudoEpimorphism (g : EsakiaHom β γ) (f : EsakiaHom α β) :
     (g.comp f : PseudoEpimorphism α γ) = (g : PseudoEpimorphism β γ).comp f := rfl
 #align esakia_hom.coe_comp_pseudo_epimorphism EsakiaHom.coe_comp_pseudoEpimorphism
 
 @[simp]
-theorem coe_comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : (g.comp f : α → γ) = g ∘ f := rfl
+lemma coe_comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : (g.comp f : α → γ) = g ∘ f := rfl
 #align esakia_hom.coe_comp EsakiaHom.coe_comp
 
 @[simp]
-theorem comp_apply (g : EsakiaHom β γ) (f : EsakiaHom α β) (a : α) : (g.comp f) a = g (f a) := rfl
+lemma comp_apply (g : EsakiaHom β γ) (f : EsakiaHom α β) (a : α) : (g.comp f) a = g (f a) := rfl
 #align esakia_hom.comp_apply EsakiaHom.comp_apply
 
 @[simp]
-theorem comp_assoc (h : EsakiaHom γ δ) (g : EsakiaHom β γ) (f : EsakiaHom α β) :
+lemma comp_assoc (h : EsakiaHom γ δ) (g : EsakiaHom β γ) (f : EsakiaHom α β) :
     (h.comp g).comp f = h.comp (g.comp f) := rfl
 #align esakia_hom.comp_assoc EsakiaHom.comp_assoc
 
 @[simp]
-theorem comp_id (f : EsakiaHom α β) : f.comp (EsakiaHom.id α) = f :=
+lemma comp_id (f : EsakiaHom α β) : f.comp (EsakiaHom.id α) = f :=
   ext fun _ => rfl
 #align esakia_hom.comp_id EsakiaHom.comp_id
 
 @[simp]
-theorem id_comp (f : EsakiaHom α β) : (EsakiaHom.id β).comp f = f :=
+lemma id_comp (f : EsakiaHom α β) : (EsakiaHom.id β).comp f = f :=
   ext fun _ => rfl
 #align esakia_hom.id_comp EsakiaHom.id_comp
 

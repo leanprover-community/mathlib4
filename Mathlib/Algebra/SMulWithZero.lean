@@ -67,7 +67,7 @@ instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero R�
 variable {M} [Zero R] [Zero M] [SMulWithZero R M]
 
 @[simp]
-theorem zero_smul (m : M) : (0 : R) • m = 0 :=
+lemma zero_smul (m : M) : (0 : R) • m = 0 :=
   SMulWithZero.zero_smul m
 #align zero_smul zero_smul
 

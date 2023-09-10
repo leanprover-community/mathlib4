@@ -249,7 +249,7 @@ lemma cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
 #align free_add_group.red.cons_cons FreeAddGroup.Red.cons_cons
 
 @[to_additive]
-theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
+lemma cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
   Iff.intro
     (by
       generalize eq₁ : (p :: L₁ : List _) = LL₁
@@ -281,7 +281,7 @@ lemma append_append_left_iff : ∀ L, Red (L ++ L₁) (L ++ L₂) ↔ Red L₁ L
 #align free_add_group.red.append_append_left_iff FreeAddGroup.Red.append_append_left_iff
 
 @[to_additive]
-theorem append_append (h₁ : Red L₁ L₃) (h₂ : Red L₂ L₄) : Red (L₁ ++ L₂) (L₃ ++ L₄) :=
+lemma append_append (h₁ : Red L₁ L₃) (h₂ : Red L₂ L₄) : Red (L₁ ++ L₂) (L₃ ++ L₄) :=
   (h₁.lift (fun L => L ++ L₂) fun _ _ => Step.append_right).trans ((append_append_left_iff _).2 h₂)
 #align free_group.red.append_append FreeGroup.Red.append_append
 #align free_add_group.red.append_append FreeAddGroup.Red.append_append
@@ -376,7 +376,7 @@ lemma inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
 open List -- for <+ notation
 
 @[to_additive]
-theorem Step.sublist (H : Red.Step L₁ L₂) : Sublist L₂ L₁ := by
+lemma Step.sublist (H : Red.Step L₁ L₂) : Sublist L₂ L₁ := by
   cases H; simp; constructor; constructor; rfl
 #align free_group.red.step.sublist FreeGroup.Red.Step.sublist
 #align free_add_group.red.step.sublist FreeAddGroup.Red.Step.sublist
@@ -394,7 +394,7 @@ protected lemma sublist : Red L₁ L₂ → L₂ <+ L₁ :=
 #align free_add_group.red.sublist FreeAddGroup.Red.sublist
 
 @[to_additive]
-theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
+lemma length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
   h.sublist.length_le
 #align free_group.red.length_le FreeGroup.Red.length_le
 #align free_add_group.red.length_le FreeAddGroup.Red.length_le
@@ -425,7 +425,7 @@ lemma sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 #align free_add_group.red.sizeof_of_step FreeAddGroup.Red.sizeof_of_step
 
 @[to_additive]
-theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n := by
+lemma length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n := by
   induction' h with L₂ L₃ _h₁₂ h₂₃ ih
   · exact ⟨0, rfl⟩
   · rcases ih with ⟨n, eq⟩
@@ -435,7 +435,7 @@ theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n :=
 #align free_add_group.red.length FreeAddGroup.Red.length
 
 @[to_additive]
-theorem antisymm (h₁₂ : Red L₁ L₂) (h₂₁ : Red L₂ L₁) : L₁ = L₂ :=
+lemma antisymm (h₁₂ : Red L₁ L₂) (h₂₁ : Red L₂ L₁) : L₁ = L₂ :=
   h₂₁.sublist.antisymm h₁₂.sublist
 #align free_group.red.antisymm FreeGroup.Red.antisymm
 #align free_add_group.red.antisymm FreeAddGroup.Red.antisymm
@@ -452,7 +452,7 @@ lemma equivalence_join_red : Equivalence (Join (@Red α)) :=
 #align free_add_group.equivalence_join_red FreeAddGroup.equivalence_join_red
 
 @[to_additive FreeAddGroup.join_red_of_step]
-theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
+lemma join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
   join_of_single reflexive_reflTransGen h.to_red
 #align free_group.join_red_of_step FreeGroup.join_red_of_step
 #align free_add_group.join_red_of_step FreeAddGroup.join_red_of_step
@@ -497,21 +497,21 @@ lemma quot_mk_eq_mk : Quot.mk Red.Step L = mk L :=
 #align free_add_group.quot_mk_eq_mk FreeAddGroup.quot_mk_eq_mk
 
 @[to_additive (attr := simp)]
-theorem quot_lift_mk (β : Type v) (f : List (α × Bool) → β)
+lemma quot_lift_mk (β : Type v) (f : List (α × Bool) → β)
     (H : ∀ L₁ L₂, Red.Step L₁ L₂ → f L₁ = f L₂) : Quot.lift f H (mk L) = f L :=
   rfl
 #align free_group.quot_lift_mk FreeGroup.quot_lift_mk
 #align free_add_group.quot_lift_mk FreeAddGroup.quot_lift_mk
 
 @[to_additive (attr := simp)]
-theorem quot_liftOn_mk (β : Type v) (f : List (α × Bool) → β)
+lemma quot_liftOn_mk (β : Type v) (f : List (α × Bool) → β)
     (H : ∀ L₁ L₂, Red.Step L₁ L₂ → f L₁ = f L₂) : Quot.liftOn (mk L) f H = f L :=
   rfl
 #align free_group.quot_lift_on_mk FreeGroup.quot_liftOn_mk
 #align free_add_group.quot_lift_on_mk FreeAddGroup.quot_liftOn_mk
 
 @[to_additive (attr := simp)]
-theorem quot_map_mk (β : Type v) (f : List (α × Bool) → List (β × Bool))
+lemma quot_map_mk (β : Type v) (f : List (α × Bool) → List (β × Bool))
     (H : (Red.Step ⇒ Red.Step) f f) : Quot.map f H (mk L) = mk (f L) :=
   rfl
 #align free_group.quot_map_mk FreeGroup.quot_map_mk
@@ -734,7 +734,7 @@ lemma lift.of {x} : lift f (of x) = f x :=
 #align free_add_group.lift.of FreeAddGroup.lift.of
 
 @[to_additive]
-theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
+lemma lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
   g x = FreeGroup.lift f x :=
   FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
 #align free_group.lift.unique FreeGroup.lift.unique
@@ -752,7 +752,7 @@ lemma ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f (o
 #align free_add_group.ext_hom FreeAddGroup.ext_hom
 
 @[to_additive]
-theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
+lemma lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
   FunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
@@ -802,12 +802,12 @@ lemma map.mk : map f (mk L) = mk (L.map fun x => (f x.1, x.2)) :=
 #align free_add_group.map.mk FreeAddGroup.map.mk
 
 @[to_additive (attr := simp)]
-theorem map.id (x : FreeGroup α) : map id x = x := by rcases x with ⟨L⟩; simp [List.map_id']
+lemma map.id (x : FreeGroup α) : map id x = x := by rcases x with ⟨L⟩; simp [List.map_id']
 #align free_group.map.id FreeGroup.map.id
 #align free_add_group.map.id FreeAddGroup.map.id
 
 @[to_additive (attr := simp)]
-theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
+lemma map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
   map.id x
 #align free_group.map.id' FreeGroup.map.id'
 #align free_add_group.map.id' FreeAddGroup.map.id'
@@ -826,7 +826,7 @@ lemma map.of {x} : map f (of x) = of (f x) :=
 #align free_add_group.map.of FreeAddGroup.map.of
 
 @[to_additive]
-theorem map.unique (g : FreeGroup α →* FreeGroup β)
+lemma map.unique (g : FreeGroup α →* FreeGroup β)
   (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
   ∀ {x}, g x = map f x := by
   rintro ⟨L⟩
@@ -913,7 +913,7 @@ lemma prod.of {x : α} : prod (of x) = x :=
 #align free_add_group.sum.of FreeAddGroup.sum.of
 
 @[to_additive]
-theorem prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (FreeGroup.of x) = x) {x} : g x = prod x :=
+lemma prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (FreeGroup.of x) = x) {x} : g x = prod x :=
   lift.unique g hg
 #align free_group.prod.unique FreeGroup.prod.unique
 #align free_add_group.sum.unique FreeAddGroup.sum.unique
@@ -1027,50 +1027,50 @@ protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 
 
 -- porting note: simp can prove this: by simp only [@map_pure]
 @[to_additive]
-theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
+lemma map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
 #align free_group.map_pure FreeGroup.map_pure
 #align free_add_group.map_pure FreeAddGroup.map_pure
 
 @[to_additive (attr := simp)]
-theorem map_one (f : α → β) : f <$> (1 : FreeGroup α) = 1 :=
+lemma map_one (f : α → β) : f <$> (1 : FreeGroup α) = 1 :=
   (map f).map_one
 #align free_group.map_one FreeGroup.map_one
 #align free_add_group.map_zero FreeAddGroup.map_zero
 
 @[to_additive (attr := simp)]
-theorem map_mul (f : α → β) (x y : FreeGroup α) : f <$> (x * y) = f <$> x * f <$> y :=
+lemma map_mul (f : α → β) (x y : FreeGroup α) : f <$> (x * y) = f <$> x * f <$> y :=
   (map f).map_mul x y
 #align free_group.map_mul FreeGroup.map_mul
 #align free_add_group.map_add FreeAddGroup.map_add
 
 @[to_additive (attr := simp)]
-theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻¹ :=
+lemma map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻¹ :=
   (map f).map_inv x
 #align free_group.map_inv FreeGroup.map_inv
 #align free_add_group.map_neg FreeAddGroup.map_neg
 
 -- porting note: simp can prove this: by simp only [@pure_bind]
 @[to_additive]
-theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
+lemma pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift.of
 #align free_group.pure_bind FreeGroup.pure_bind
 #align free_add_group.pure_bind FreeAddGroup.pure_bind
 
 @[to_additive (attr := simp)]
-theorem one_bind (f : α → FreeGroup β) : 1 >>= f = 1 :=
+lemma one_bind (f : α → FreeGroup β) : 1 >>= f = 1 :=
   (lift f).map_one
 #align free_group.one_bind FreeGroup.one_bind
 #align free_add_group.zero_bind FreeAddGroup.zero_bind
 
 @[to_additive (attr := simp)]
-theorem mul_bind (f : α → FreeGroup β) (x y : FreeGroup α) : x * y >>= f = (x >>= f) * (y >>= f) :=
+lemma mul_bind (f : α → FreeGroup β) (x y : FreeGroup α) : x * y >>= f = (x >>= f) * (y >>= f) :=
   (lift f).map_mul _ _
 #align free_group.mul_bind FreeGroup.mul_bind
 #align free_add_group.add_bind FreeAddGroup.add_bind
 
 @[to_additive (attr := simp)]
-theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (x >>= f)⁻¹ :=
+lemma inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (x >>= f)⁻¹ :=
   (lift f).map_inv _
 #align free_group.inv_bind FreeGroup.inv_bind
 #align free_add_group.neg_bind FreeAddGroup.neg_bind
@@ -1109,7 +1109,7 @@ def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
 #align free_add_group.reduce FreeAddGroup.reduce
 
 @[to_additive (attr := simp)]
-theorem reduce.cons (x) :
+lemma reduce.cons (x) :
     reduce (x :: L) =
       List.casesOn (reduce L) [x] fun hd tl =>
         if x.1 = hd.1 ∧ x.2 = not hd.2 then tl else x :: hd :: tl :=
@@ -1187,7 +1187,7 @@ lemma reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α} 
 only reduces to itself. -/
 @[to_additive "The second theorem that characterises the function `reduce`: the maximal reduction of
   a word only reduces to itself."]
-theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
+lemma reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction' H with L1 L' L2 H1 H2 ih
   · rfl
   · cases' H1 with L4 L5 x b
@@ -1205,7 +1205,7 @@ lemma reduce.idem : reduce (reduce L) = reduce L :=
 #align free_add_group.reduce.idem FreeAddGroup.reduce.idem
 
 @[to_additive]
-theorem reduce.Step.eq (H : Red.Step L₁ L₂) : reduce L₁ = reduce L₂ :=
+lemma reduce.Step.eq (H : Red.Step L₁ L₂) : reduce L₁ = reduce L₂ :=
   let ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (reduce.red.head H)
   (reduce.min HR13).trans (reduce.min HR23).symm
 #align free_group.reduce.step.eq FreeGroup.reduce.Step.eq
@@ -1213,7 +1213,7 @@ theorem reduce.Step.eq (H : Red.Step L₁ L₂) : reduce L₁ = reduce L₂ :=
 
 /-- If a word reduces to another word, then they have a common maximal reduction. -/
 @[to_additive "If a word reduces to another word, then they have a common maximal reduction."]
-theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
+lemma reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
   let ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (Red.trans H reduce.red)
   (reduce.min HR13).trans (reduce.min HR23).symm
 #align free_group.reduce.eq_of_red FreeGroup.reduce.eq_of_red
@@ -1226,13 +1226,13 @@ alias freeAddGroup.red.reduce_eq := FreeAddGroup.reduce.eq_of_red
 #align free_group.free_add_group.red.reduce_eq FreeGroup.freeAddGroup.red.reduce_eq
 
 @[to_additive]
-theorem Red.reduce_right (h : Red L₁ L₂) : Red L₁ (reduce L₂) :=
+lemma Red.reduce_right (h : Red L₁ L₂) : Red L₁ (reduce L₂) :=
   reduce.eq_of_red h ▸ reduce.red
 #align free_group.red.reduce_right FreeGroup.Red.reduce_right
 #align free_add_group.red.reduce_right FreeAddGroup.Red.reduce_right
 
 @[to_additive]
-theorem Red.reduce_left (h : Red L₁ L₂) : Red L₂ (reduce L₁) :=
+lemma Red.reduce_left (h : Red L₁ L₂) : Red L₂ (reduce L₁) :=
   (reduce.eq_of_red h).symm ▸ reduce.red
 #align free_group.red.reduce_left FreeGroup.Red.reduce_left
 #align free_add_group.red.reduce_left FreeAddGroup.Red.reduce_left
@@ -1243,7 +1243,7 @@ an element of the free group to its maximal reduction is well-defined. -/
 @[to_additive "If two words correspond to the same element in the additive free group, then they
   have a common maximal reduction. This is the proof that the function that sends an element of the
   free group to its maximal reduction is well-defined."]
-theorem reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
+lemma reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
   let ⟨_L₃, H13, H23⟩ := Red.exact.1 H
   (reduce.eq_of_red H13).trans (reduce.eq_of_red H23).symm
 #align free_group.reduce.sound FreeGroup.reduce.sound
@@ -1253,7 +1253,7 @@ theorem reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
   free group. -/
 @[to_additive "If two words have a common maximal reduction, then they correspond to the same
   element in the additive free group."]
-theorem reduce.exact (H : reduce L₁ = reduce L₂) : mk L₁ = mk L₂ :=
+lemma reduce.exact (H : reduce L₁ = reduce L₂) : mk L₁ = mk L₂ :=
   Red.exact.2 ⟨reduce L₂, H ▸ reduce.red, reduce.red⟩
 #align free_group.reduce.exact FreeGroup.reduce.exact
 #align free_add_group.reduce.exact FreeAddGroup.reduce.exact
@@ -1270,7 +1270,7 @@ lemma reduce.self : mk (reduce L) = mk L :=
   of `w₁`. -/
 @[to_additive "If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal
   reduction of `w₁`."]
-theorem reduce.rev (H : Red L₁ L₂) : Red L₂ (reduce L₁) :=
+lemma reduce.rev (H : Red L₁ L₂) : Red L₂ (reduce L₁) :=
   (reduce.eq_of_red H).symm ▸ reduce.red
 #align free_group.reduce.rev FreeGroup.reduce.rev
 #align free_add_group.reduce.rev FreeAddGroup.reduce.rev
@@ -1377,11 +1377,11 @@ def Red.enum (L₁ : List (α × Bool)) : List (List (α × Bool)) :=
   List.filter (Red L₁) (List.sublists L₁)
 #align free_group.red.enum FreeGroup.Red.enum
 
-theorem Red.enum.sound (H : L₂ ∈ List.filter (Red L₁) (List.sublists L₁)) : Red L₁ L₂ :=
+lemma Red.enum.sound (H : L₂ ∈ List.filter (Red L₁) (List.sublists L₁)) : Red L₁ L₂ :=
   of_decide_eq_true (@List.of_mem_filter _ _ L₂ _ H)
 #align free_group.red.enum.sound FreeGroup.Red.enum.sound
 
-theorem Red.enum.complete (H : Red L₁ L₂) : L₂ ∈ Red.enum L₁ :=
+lemma Red.enum.complete (H : Red L₁ L₂) : L₂ ∈ Red.enum L₁ :=
   List.mem_filter_of_mem (List.mem_sublists.2 <| Red.sublist H) (decide_eq_true H)
 #align free_group.red.enum.complete FreeGroup.Red.enum.complete
 
@@ -1428,7 +1428,7 @@ lemma norm_mk_le : norm (mk L₁) ≤ L₁.length :=
 #align free_add_group.norm_mk_le FreeAddGroup.norm_mk_le
 
 @[to_additive]
-theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
+lemma norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
   calc
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le

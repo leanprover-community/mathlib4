@@ -45,12 +45,12 @@ def parallelepiped (v : ι → E) : Set E :=
   (fun t : ι → ℝ => ∑ i, t i • v i) '' Icc 0 1
 #align parallelepiped parallelepiped
 
-theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
+lemma mem_parallelepiped_iff (v : ι → E) (x : E) :
     x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ) (_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
-theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
+lemma image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
@@ -59,7 +59,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
 @[simp]
-theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
+lemma parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     parallelepiped (v ∘ e) = parallelepiped v := by
   simp only [parallelepiped]
   let K : (ι' → ℝ) ≃ (ι → ℝ) := Equiv.piCongrLeft' (fun _a : ι' => ℝ) e
@@ -81,7 +81,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
 #align parallelepiped_comp_equiv parallelepiped_comp_equiv
 
 -- The parallelepiped associated to an orthonormal basis of `ℝ` is either `[0, 1]` or `[-1, 0]`.
-theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
+lemma parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     parallelepiped b = Icc 0 1 ∨ parallelepiped b = Icc (-1) 0 := by
   have e : ι ≃ Fin 1 := by
     apply Fintype.equivFinOfCardEq
@@ -111,7 +111,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg, preimage_neg_Icc, neg_zero]
 #align parallelepiped_orthonormal_basis_one_dim parallelepiped_orthonormalBasis_one_dim
 
-theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
+lemma parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
   ext
   simp only [mem_parallelepiped_iff, Set.mem_finset_sum, Finset.mem_univ, forall_true_left,
     segment_eq_image, smul_zero, zero_add, ← Set.pi_univ_Icc, Set.mem_univ_pi]
@@ -124,13 +124,13 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
   simp_rw [hg]
 #align parallelepiped_eq_sum_segment parallelepiped_eq_sum_segment
 
-theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
+lemma convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
   exact convex_sum _ fun _i _hi => convex_segment _ _
 #align convex_parallelepiped convex_parallelepiped
 
 /-- A `parallelepiped` is the convex hull of its vertices -/
-theorem parallelepiped_eq_convexHull (v : ι → E) :
+lemma parallelepiped_eq_convexHull (v : ι → E) :
     parallelepiped v = convexHull ℝ (∑ i, {(0 : E), v i}) := by
   simp_rw [convexHull_sum, convexHull_pair, parallelepiped_eq_sum_segment]
 #align parallelepiped_eq_convex_hull parallelepiped_eq_convexHull
@@ -192,18 +192,18 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
 #align basis.parallelepiped Basis.parallelepiped
 
 @[simp]
-theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
+lemma Basis.coe_parallelepiped (b : Basis ι ℝ E) :
    (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
 #align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
-theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+lemma Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (b.reindex e).parallelepiped = b.parallelepiped :=
   PositiveCompacts.ext <|
     (congr_arg _root_.parallelepiped (b.coe_reindex e)).trans (parallelepiped_comp_equiv b e.symm)
 #align basis.parallelepiped_reindex Basis.parallelepiped_reindex
 
-theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
+lemma Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
     (have := FiniteDimensional.of_fintype_basis b
     -- Porting note: Lean cannot infer the instance above
@@ -226,7 +226,7 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
+lemma Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
 

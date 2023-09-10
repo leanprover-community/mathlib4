@@ -25,7 +25,7 @@ noncomputable section
 
 namespace TopologicalSpace
 
-theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
+lemma eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
   · rw [le_iInf_iff]

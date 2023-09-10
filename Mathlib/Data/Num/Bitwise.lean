@@ -326,10 +326,10 @@ def bit1 : SNum → SNum :=
   bit true
 #align snum.bit1 SNum.bit1
 
-theorem bit_zero (b : Bool) : (b :: zero b) = zero b := by cases b <;> rfl
+lemma bit_zero (b : Bool) : (b :: zero b) = zero b := by cases b <;> rfl
 #align snum.bit_zero SNum.bit_zero
 
-theorem bit_one (b : Bool) : (b :: zero (Not b)) = msb b := by cases b <;> rfl
+lemma bit_one (b : Bool) : (b :: zero (Not b)) = msb b := by cases b <;> rfl
 #align snum.bit_one SNum.bit_one
 
 end SNum

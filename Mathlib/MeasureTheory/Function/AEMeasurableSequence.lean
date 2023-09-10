@@ -47,7 +47,7 @@ namespace aeSeq
 
 section MemAESeqSet
 
-theorem mk_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p)
+lemma mk_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p)
     (i : ι) : (hf i).mk (f i) x = f i x :=
   haveI h_ss : aeSeqSet hf p ⊆ { x | ∀ i, f i x = (hf i).mk (f i) x } := by
     rw [aeSeqSet, ← compl_compl { x | ∀ i, f i x = (hf i).mk (f i) x }, Set.compl_subset_compl]
@@ -56,17 +56,17 @@ theorem mk_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (
   (h_ss hx i).symm
 #align ae_seq.mk_eq_fun_of_mem_ae_seq_set aeSeq.mk_eq_fun_of_mem_aeSeqSet
 
-theorem aeSeq_eq_mk_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
+lemma aeSeq_eq_mk_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
     (hx : x ∈ aeSeqSet hf p) (i : ι) : aeSeq hf p i x = (hf i).mk (f i) x := by
   simp only [aeSeq, hx, if_true]
 #align ae_seq.ae_seq_eq_mk_of_mem_ae_seq_set aeSeq.aeSeq_eq_mk_of_mem_aeSeqSet
 
-theorem aeSeq_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
+lemma aeSeq_eq_fun_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α}
     (hx : x ∈ aeSeqSet hf p) (i : ι) : aeSeq hf p i x = f i x := by
   simp only [aeSeq_eq_mk_of_mem_aeSeqSet hf hx i, mk_eq_fun_of_mem_aeSeqSet hf hx i]
 #align ae_seq.ae_seq_eq_fun_of_mem_ae_seq_set aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet
 
-theorem prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p) :
+lemma prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p) :
     p x fun n => aeSeq hf p n x := by
   simp only [aeSeq, hx, if_true]
   rw [funext fun n => mk_eq_fun_of_mem_aeSeqSet hf hx n]
@@ -78,7 +78,7 @@ theorem prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : 
   exact hx'
 #align ae_seq.prop_of_mem_ae_seq_set aeSeq.prop_of_mem_aeSeqSet
 
-theorem fun_prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p) :
+lemma fun_prop_of_mem_aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) {x : α} (hx : x ∈ aeSeqSet hf p) :
     p x fun n => f n x := by
   have h_eq : (fun n => f n x) = fun n => aeSeq hf p n x :=
     funext fun n => (aeSeq_eq_fun_of_mem_aeSeqSet hf hx n).symm
@@ -92,7 +92,7 @@ lemma aeSeqSet_measurableSet {hf : ∀ i, AEMeasurable (f i) μ} : MeasurableSet
   (measurableSet_toMeasurable _ _).compl
 #align ae_seq.ae_seq_set_measurable_set aeSeq.aeSeqSet_measurableSet
 
-theorem measurable (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) (i : ι) :
+lemma measurable (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) (i : ι) :
     Measurable (aeSeq hf p i) :=
   Measurable.ite aeSeqSet_measurableSet (hf i).measurable_mk <| measurable_const' fun _ _ => rfl
 #align ae_seq.measurable aeSeq.measurable

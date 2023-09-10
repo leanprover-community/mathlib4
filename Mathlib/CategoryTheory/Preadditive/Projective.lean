@@ -132,7 +132,7 @@ instance {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀
     Projective (⨁ g) where
   factors f e epi := ⟨biproduct.desc fun b => factorThru (biproduct.ι g b ≫ f) e, by aesop_cat⟩
 
-theorem projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
+lemma projective_iff_preservesEpimorphisms_coyoneda_obj (P : C) :
     Projective P ↔ (coyoneda.obj (op P)).PreservesEpimorphisms :=
   ⟨fun hP =>
     ⟨fun f _ =>
@@ -202,7 +202,7 @@ namespace Adjunction
 
 variable {D : Type u'} [Category.{v'} D] {F : C ⥤ D} {G : D ⥤ C}
 
-theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
+lemma map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
     Projective (F.obj P) where
   factors f g _ := by
     rcases hP.factors (adj.unit.app P ≫ G.map f) (G.map g) with ⟨f', hf'⟩
@@ -211,7 +211,7 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     simp
 #align category_theory.adjunction.map_projective CategoryTheory.Adjunction.map_projective
 
-theorem projective_of_map_projective (adj : F ⊣ G) [Full F] [Faithful F] (P : C)
+lemma projective_of_map_projective (adj : F ⊣ G) [Full F] [Faithful F] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
     haveI := Adjunction.leftAdjointPreservesColimits.{0, 0} adj
@@ -247,7 +247,7 @@ def projectivePresentationOfMapProjectivePresentation (X : C)
   epi := epi_comp _ _
 #align category_theory.equivalence.projective_presentation_of_map_projective_presentation CategoryTheory.Equivalence.projectivePresentationOfMapProjectivePresentation
 
-theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProjectives D := by
+lemma enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProjectives D := by
   constructor
   all_goals intro H; constructor; intro X; constructor
   · exact F.symm.projectivePresentationOfMapProjectivePresentation _

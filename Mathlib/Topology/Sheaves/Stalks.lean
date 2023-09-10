@@ -91,7 +91,7 @@ set_option linter.uppercaseLean3 false in
 
 -- -- colimit ((open_nhds.inclusion x).op ⋙ ℱ)
 @[simp]
-theorem stalkFunctor_obj (ℱ : X.Presheaf C) (x : X) : (stalkFunctor C x).obj ℱ = ℱ.stalk x :=
+lemma stalkFunctor_obj (ℱ : X.Presheaf C) (x : X) : (stalkFunctor C x).obj ℱ = ℱ.stalk x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_obj TopCat.Presheaf.stalkFunctor_obj
@@ -103,7 +103,7 @@ def germ (F : X.Presheaf C) {U : Opens X} (x : U) : F.obj (op U) ⟶ stalk F x :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ TopCat.Presheaf.germ
 
-theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
+lemma germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
     F.map i.op ≫ germ F x = germ F (i x : V) :=
   let i' : (⟨U, x.2⟩ : OpenNhds x.1) ⟶ ⟨V, (i x : V).2⟩ := i
   colimit.w ((OpenNhds.inclusion x.1).op ⋙ F) i'.op
@@ -111,7 +111,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
 
 -- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
-theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
+lemma germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
   (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
@@ -120,7 +120,7 @@ set_option linter.uppercaseLean3 false in
 composition with the `germ` morphisms.
 -/
 @[ext]
-theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ Y}
+lemma stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ Y}
     (ih : ∀ (U : Opens X) (hxU : x ∈ U), F.germ ⟨x, hxU⟩ ≫ f₁ = F.germ ⟨x, hxU⟩ ≫ f₂) : f₁ = f₂ :=
   colimit.hom_ext fun U => by
     induction' U using Opposite.rec with U; cases' U with U hxU; exact ih U hxU
@@ -148,7 +148,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward TopCat.Presheaf.stalkPushforward
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
+lemma stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
     (x : (Opens.map f).obj U) :
       (f _* F).germ ⟨(f : X → Y) (x : X), x.2⟩ ≫ F.stalkPushforward C f x = F.germ x := by
   rw [stalkPushforward, germ, colimit.ι_map_assoc, colimit.ι_pre, whiskerRight_app]
@@ -174,7 +174,7 @@ set_option linter.uppercaseLean3 false in
 namespace stalkPushforward
 
 @[simp]
-theorem id (ℱ : X.Presheaf C) (x : X) :
+lemma id (ℱ : X.Presheaf C) (x : X) :
     ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).hom := by
   -- Porting note: We need to this to help ext tactic.
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
@@ -189,7 +189,7 @@ set_option linter.uppercaseLean3 false in
 -- This proof is sadly not at all robust:
 -- having to use `erw` at all is a bad sign.
 @[simp]
-theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+lemma comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
       (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
@@ -325,14 +325,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes TopCat.Presheaf.stalkSpecializes
 
 @[reassoc (attr := simp), elementwise nosimp]
-theorem germ_stalkSpecializes (F : X.Presheaf C) {U : Opens X} {y : U} {x : X} (h : x ⤳ y) :
+lemma germ_stalkSpecializes (F : X.Presheaf C) {U : Opens X} {y : U} {x : X} (h : x ⤳ y) :
     F.germ y ≫ F.stalkSpecializes h = F.germ (⟨x, h.mem_open U.isOpen y.prop⟩ : U) :=
   colimit.ι_desc _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_stalk_specializes TopCat.Presheaf.germ_stalkSpecializes
 
 @[reassoc, elementwise nosimp]
-theorem germ_stalkSpecializes' (F : X.Presheaf C) {U : Opens X} {x y : X} (h : x ⤳ y)
+lemma germ_stalkSpecializes' (F : X.Presheaf C) {U : Opens X} {x y : X} (h : x ⤳ y)
     (hy : y ∈ U) : F.germ ⟨y, hy⟩ ≫ F.stalkSpecializes h = F.germ ⟨x, h.mem_open U.isOpen hy⟩ :=
   colimit.ι_desc _ _
 set_option linter.uppercaseLean3 false in
@@ -365,7 +365,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_stalk_functor_map TopCat.Presheaf.stalkSpecializes_stalkFunctor_map
 
 @[simp, reassoc, elementwise]
-theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
+lemma stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
@@ -398,7 +398,7 @@ attribute [local instance] ConcreteCategory.hasCoeToSort
 
 -- Porting note: Todo: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
-theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
+lemma germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}
     (ih : F.map iWU.op sU = F.map iWV.op sV) :
       F.germ ⟨x, hxU⟩ sU = F.germ ⟨x, hxV⟩ sV := by
@@ -412,7 +412,7 @@ variable [PreservesFilteredColimits (forget C)]
 For presheaves valued in a concrete category whose forgetful functor preserves filtered colimits,
 every element of the stalk is the germ of a section.
 -/
-theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) :
+lemma germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) :
     ∃ (U : Opens X) (m : x ∈ U) (s : F.obj (op U)), F.germ ⟨x, m⟩ s = t := by
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
@@ -424,7 +424,7 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) 
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_exist TopCat.Presheaf.germ_exist
 
-theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
+lemma germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     (s : F.obj (op U)) (t : F.obj (op V)) (h : germ F ⟨x, mU⟩ s = germ F ⟨x, mV⟩ t) :
     ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
   obtain ⟨W, iU, iV, e⟩ :=
@@ -454,7 +454,7 @@ variable [HasLimits C] [PreservesLimits (forget C)] [ReflectsIsomorphisms (forge
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.
 -/
-theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : F.1.obj (op U))
+lemma section_ext (F : Sheaf C X) (U : Opens X) (s t : F.1.obj (op U))
     (h : ∀ x : U, F.presheaf.germ x s = F.presheaf.germ x t) : s = t := by
   -- We use `germ_eq` and the axiom of choice, to pick for every point `x` a neighbourhood
   -- `V x`, such that the restrictions of `s` and `t` to `V x` coincide.

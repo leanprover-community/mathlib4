@@ -33,7 +33,7 @@ section OrderClosedTopology
 
 variable [SemilatticeSup α] [TopologicalSpace α] [OrderTopology α]
 
-theorem isBounded_le_nhds (a : α) : (𝓝 a).IsBounded (· ≤ ·) :=
+lemma isBounded_le_nhds (a : α) : (𝓝 a).IsBounded (· ≤ ·) :=
   (isTop_or_exists_gt a).elim (fun h ↦ ⟨a, eventually_of_forall h⟩) fun ⟨b, hb⟩ ↦
     ⟨b, ge_mem_nhds hb⟩
 #align is_bounded_le_nhds isBounded_le_nhds
@@ -53,7 +53,7 @@ lemma Filter.Tendsto.bddAbove_range {u : ℕ → α} {a : α} (h : Tendsto u atT
   h.isBoundedUnder_le.bddAbove_range
 #align filter.tendsto.bdd_above_range Filter.Tendsto.bddAbove_range
 
-theorem isCobounded_ge_nhds (a : α) : (𝓝 a).IsCobounded (· ≥ ·) :=
+lemma isCobounded_ge_nhds (a : α) : (𝓝 a).IsCobounded (· ≥ ·) :=
   (isBounded_le_nhds a).isCobounded_flip
 #align is_cobounded_ge_nhds isCobounded_ge_nhds
 
@@ -62,7 +62,7 @@ lemma Filter.Tendsto.isCoboundedUnder_ge {f : Filter β} {u : β → α} {a : α
   h.isBoundedUnder_le.isCobounded_flip
 #align filter.tendsto.is_cobounded_under_ge Filter.Tendsto.isCoboundedUnder_ge
 
-theorem isBounded_le_atBot (α : Type*) [hα : Nonempty α] [Preorder α] :
+lemma isBounded_le_atBot (α : Type*) [hα : Nonempty α] [Preorder α] :
     (atBot : Filter α).IsBounded (· ≤ ·) :=
   isBounded_iff.2 ⟨Set.Iic hα.some, mem_atBot _, hα.some, fun _ hx ↦ hx⟩
 #align is_bounded_le_at_bot isBounded_le_atBot
@@ -83,7 +83,7 @@ section OrderClosedTopology
 
 variable [SemilatticeInf α] [TopologicalSpace α] [OrderTopology α]
 
-theorem isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·) :=
+lemma isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·) :=
   isBounded_le_nhds (α := αᵒᵈ) a
 #align is_bounded_ge_nhds isBounded_ge_nhds
 
@@ -102,7 +102,7 @@ lemma Filter.Tendsto.bddBelow_range {u : ℕ → α} {a : α} (h : Tendsto u atT
   h.isBoundedUnder_ge.bddBelow_range
 #align filter.tendsto.bdd_below_range Filter.Tendsto.bddBelow_range
 
-theorem isCobounded_le_nhds (a : α) : (𝓝 a).IsCobounded (· ≤ ·) :=
+lemma isCobounded_le_nhds (a : α) : (𝓝 a).IsCobounded (· ≤ ·) :=
   (isBounded_ge_nhds a).isCobounded_flip
 #align is_cobounded_le_nhds isCobounded_le_nhds
 
@@ -111,7 +111,7 @@ lemma Filter.Tendsto.isCoboundedUnder_le {f : Filter β} {u : β → α} {a : α
   h.isBoundedUnder_ge.isCobounded_flip
 #align filter.tendsto.is_cobounded_under_le Filter.Tendsto.isCoboundedUnder_le
 
-theorem isBounded_ge_atTop (α : Type*) [Nonempty α] [Preorder α] :
+lemma isBounded_ge_atTop (α : Type*) [Nonempty α] [Preorder α] :
     (atTop : Filter α).IsBounded (· ≥ ·) :=
   isBounded_le_atBot αᵒᵈ
 #align is_bounded_ge_at_top isBounded_ge_atTop
@@ -156,7 +156,7 @@ lemma le_nhds_of_limsSup_eq_limsInf {f : Filter α} {a : α} (hl : f.IsBounded (
 set_option linter.uppercaseLean3 false in
 #align le_nhds_of_Limsup_eq_Liminf le_nhds_of_limsSup_eq_limsInf
 
-theorem limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
+lemma limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
   csInf_eq_of_forall_ge_of_forall_gt_exists_lt (isBounded_le_nhds a)
     (fun a' (h : { n : α | n ≤ a' } ∈ 𝓝 a) ↦ show a ≤ a' from @mem_of_mem_nhds α _ a _ h)
     fun b (hba : a < b) ↦
@@ -251,7 +251,7 @@ lemma tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β → 
 
 variable [FirstCountableTopology α] {f : Filter β} [CountableInterFilter f] {u : β → α}
 
-theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+lemma eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, u b ≤ f.limsup u := by
   obtain ha | ha := isTop_or_exists_gt (f.limsup u)
   · exact eventually_of_forall fun _ => ha _
@@ -270,7 +270,7 @@ theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBounde
     exact hx hy
 #align eventually_le_limsup eventually_le_limsup
 
-theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+lemma eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, f.liminf u ≤ u b :=
   eventually_le_limsup (α := αᵒᵈ) hf
 #align eventually_liminf_le eventually_liminf_le
@@ -483,7 +483,7 @@ section Indicator
 
 open BigOperators
 
-theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
+lemma limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     limsup s atTop = { ω | Tendsto
       (fun n ↦ ∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω) atTop atTop } := by
   ext ω
@@ -541,7 +541,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     exact not_le.2 (lt_of_lt_of_le i.lt_succ_self <| h _ le_rfl) this
 #align limsup_eq_tendsto_sum_indicator_nat_at_top limsup_eq_tendsto_sum_indicator_nat_atTop
 
-theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R] [Archimedean R]
+lemma limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R] [Archimedean R]
     (s : ℕ → Set α) : limsup s atTop = { ω | Tendsto
       (fun n ↦ ∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) atTop atTop } := by
   rw [limsup_eq_tendsto_sum_indicator_nat_atTop s]

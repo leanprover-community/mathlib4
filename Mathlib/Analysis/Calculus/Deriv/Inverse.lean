@@ -76,7 +76,7 @@ at `a` in the strict sense.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasStrictDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜}
+lemma LocalHomeomorph.hasStrictDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜}
     (ha : a ∈ f.target) (hf' : f' ≠ 0) (htff' : HasStrictDerivAt f f' (f.symm a)) :
     HasStrictDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
@@ -98,18 +98,18 @@ nonzero derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜} (ha : a ∈ f.target)
+lemma LocalHomeomorph.hasDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜} (ha : a ∈ f.target)
     (hf' : f' ≠ 0) (htff' : HasDerivAt f f' (f.symm a)) : HasDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 #align local_homeomorph.has_deriv_at_symm LocalHomeomorph.hasDerivAt_symm
 
-theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
+lemma HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ f x :=
   (hasDerivAt_iff_hasFDerivAt.1 h).eventually_ne
     ⟨‖f'‖⁻¹, fun z => by field_simp [norm_smul, mt norm_eq_zero.1 hf'] ⟩
 #align has_deriv_at.eventually_ne HasDerivAt.eventually_ne
 
-theorem HasDerivAt.tendsto_punctured_nhds (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
+lemma HasDerivAt.tendsto_punctured_nhds (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
     (h.eventually_ne hf')

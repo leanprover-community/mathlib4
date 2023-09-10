@@ -26,7 +26,7 @@ section One
 variable [One M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 
 @[to_additive]
-theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
+lemma mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
     mulIndicator s f =ᶠ[l] mulIndicator t g :=
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
@@ -41,7 +41,7 @@ section Monoid
 variable [Monoid M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 
 @[to_additive]
-theorem mulIndicator_union_eventuallyEq (h : ∀ᶠ a in l, a ∉ s ∩ t) :
+lemma mulIndicator_union_eventuallyEq (h : ∀ᶠ a in l, a ∉ s ∩ t) :
     mulIndicator (s ∪ t) f =ᶠ[l] mulIndicator s f * mulIndicator t f :=
   h.mono fun _a ha => mulIndicator_union_of_not_mem_inter ha _
 #align indicator_union_eventually_eq indicator_union_eventuallyEq
@@ -53,7 +53,7 @@ section Order
 variable [One β] [Preorder β] {s t : Set α} {f g : α → β} {a : α} {l : Filter α}
 
 @[to_additive]
-theorem mulIndicator_eventuallyLE_mulIndicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :
+lemma mulIndicator_eventuallyLE_mulIndicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :
     mulIndicator s f ≤ᶠ[l] mulIndicator s g :=
   (eventually_inf_principal.1 h).mono fun _ => mulIndicator_rel_mulIndicator le_rfl
 #align indicator_eventually_le_indicator indicator_eventuallyLE_indicator

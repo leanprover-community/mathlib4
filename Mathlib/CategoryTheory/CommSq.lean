@@ -52,7 +52,7 @@ namespace CommSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-theorem flip (p : CommSq f g h i) : CommSq g f i h :=
+lemma flip (p : CommSq f g h i) : CommSq g f i h :=
   ⟨p.w.symm⟩
 #align category_theory.comm_sq.flip CategoryTheory.CommSq.flip
 
@@ -61,7 +61,7 @@ lemma of_arrow {f g : Arrow C} (h : f ⟶ g) : CommSq f.hom h.left h.right g.hom
 #align category_theory.comm_sq.of_arrow CategoryTheory.CommSq.of_arrow
 
 /-- The commutative square in the opposite category associated to a commutative square. -/
-theorem op (p : CommSq f g h i) : CommSq i.op h.op g.op f.op :=
+lemma op (p : CommSq f g h i) : CommSq i.op h.op g.op f.op :=
   ⟨by simp only [← op_comp, p.w]⟩
 #align category_theory.comm_sq.op CategoryTheory.CommSq.op
 
@@ -79,7 +79,7 @@ variable {D : Type*} [Category D]
 
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
+lemma map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
   ⟨by simpa using congr_arg (fun k : W ⟶ Z => F.map k) s.w⟩
 #align category_theory.functor.map_comm_sq CategoryTheory.Functor.map_commSq
 
@@ -192,7 +192,7 @@ namespace HasLift
 
 variable {sq}
 
-theorem mk' (l : sq.LiftStruct) : HasLift sq :=
+lemma mk' (l : sq.LiftStruct) : HasLift sq :=
   ⟨Nonempty.intro l⟩
 #align category_theory.comm_sq.has_lift.mk' CategoryTheory.CommSq.HasLift.mk'
 

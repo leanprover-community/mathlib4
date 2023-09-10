@@ -115,17 +115,17 @@ instance repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
 #align matrix.has_repr Matrix.repr
 
 @[simp]
-theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
+lemma cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
     vecCons v B i j = vecCons (v j) (fun i => B i j) i := by refine' Fin.cases _ _ i <;> simp
 #align matrix.cons_val' Matrix.cons_val'
 
 @[simp, nolint simpNF] -- Porting note: LHS does not simplify.
-theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
+lemma head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
   rfl
 #align matrix.head_val' Matrix.head_val'
 
 @[simp, nolint simpNF] -- Porting note: LHS does not simplify.
-theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
+lemma tail_val' (B : Fin m.succ → n' → α) (j : n') :
     (vecTail fun i => B i j) = fun i => vecTail B i j := by
   ext
   simp [vecTail]
@@ -136,24 +136,24 @@ section DotProduct
 variable [AddCommMonoid α] [Mul α]
 
 @[simp]
-theorem dotProduct_empty (v w : Fin 0 → α) : dotProduct v w = 0 :=
+lemma dotProduct_empty (v w : Fin 0 → α) : dotProduct v w = 0 :=
   Finset.sum_empty
 #align matrix.dot_product_empty Matrix.dotProduct_empty
 
 @[simp]
-theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
+lemma cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     dotProduct (vecCons x v) w = x * vecHead w + dotProduct v (vecTail w) := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 #align matrix.cons_dot_product Matrix.cons_dotProduct
 
 @[simp]
-theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
+lemma dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
     dotProduct v (vecCons x w) = vecHead v * x + dotProduct (vecTail v) w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 #align matrix.dot_product_cons Matrix.dotProduct_cons
 
 -- @[simp] -- Porting note: simp can prove this
-theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
+lemma cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
     dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
 #align matrix.cons_dot_product_cons Matrix.cons_dotProduct_cons
 
@@ -162,12 +162,12 @@ end DotProduct
 section ColRow
 
 @[simp]
-theorem col_empty (v : Fin 0 → α) : col v = vecEmpty :=
+lemma col_empty (v : Fin 0 → α) : col v = vecEmpty :=
   empty_eq _
 #align matrix.col_empty Matrix.col_empty
 
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) : col (vecCons x u) = vecCons (fun _ => x) (col u) := by
+lemma col_cons (x : α) (u : Fin m → α) : col (vecCons x u) = vecCons (fun _ => x) (col u) := by
   ext i j
   refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.col_cons Matrix.col_cons
@@ -179,7 +179,7 @@ lemma row_empty : row (vecEmpty : Fin 0 → α) = fun _ => vecEmpty := by
 #align matrix.row_empty Matrix.row_empty
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = fun _ => vecCons x u := by
+lemma row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = fun _ => vecCons x u := by
   ext
   rfl
 #align matrix.row_cons Matrix.row_cons
@@ -189,30 +189,30 @@ end ColRow
 section Transpose
 
 @[simp]
-theorem transpose_empty_rows (A : Matrix m' (Fin 0) α) : Aᵀ = of ![] :=
+lemma transpose_empty_rows (A : Matrix m' (Fin 0) α) : Aᵀ = of ![] :=
   empty_eq _
 #align matrix.transpose_empty_rows Matrix.transpose_empty_rows
 
 @[simp]
-theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![] :=
+lemma transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![] :=
   funext fun _ => empty_eq _
 #align matrix.transpose_empty_cols Matrix.transpose_empty_cols
 
 @[simp]
-theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
+lemma cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
     (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
   ext i j
   refine' Fin.cases _ _ j <;> simp
 #align matrix.cons_transpose Matrix.cons_transpose
 
 @[simp]
-theorem head_transpose (A : Matrix m' (Fin n.succ) α) :
+lemma head_transpose (A : Matrix m' (Fin n.succ) α) :
     vecHead (of.symm Aᵀ) = vecHead ∘ of.symm A :=
   rfl
 #align matrix.head_transpose Matrix.head_transpose
 
 @[simp]
-theorem tail_transpose (A : Matrix m' (Fin n.succ) α) : vecTail (of.symm Aᵀ) = (vecTail ∘ A)ᵀ := by
+lemma tail_transpose (A : Matrix m' (Fin n.succ) α) : vecTail (of.symm Aᵀ) = (vecTail ∘ A)ᵀ := by
   ext i j
   rfl
 #align matrix.tail_transpose Matrix.tail_transpose
@@ -229,7 +229,7 @@ lemma empty_mul [Fintype n'] (A : Matrix (Fin 0) n' α) (B : Matrix n' o' α) : 
 #align matrix.empty_mul Matrix.empty_mul
 
 @[simp]
-theorem empty_mul_empty (A : Matrix m' (Fin 0) α) (B : Matrix (Fin 0) o' α) : A * B = 0 :=
+lemma empty_mul_empty (A : Matrix m' (Fin 0) α) (B : Matrix (Fin 0) o' α) : A * B = 0 :=
   rfl
 #align matrix.empty_mul_empty Matrix.empty_mul_empty
 
@@ -260,7 +260,7 @@ section VecMul
 variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
-theorem empty_vecMul (v : Fin 0 → α) (B : Matrix (Fin 0) o' α) : vecMul v B = 0 :=
+lemma empty_vecMul (v : Fin 0 → α) (B : Matrix (Fin 0) o' α) : vecMul v B = 0 :=
   rfl
 #align matrix.empty_vec_mul Matrix.empty_vecMul
 
@@ -270,21 +270,21 @@ lemma vecMul_empty [Fintype n'] (v : n' → α) (B : Matrix n' (Fin 0) α) : vec
 #align matrix.vec_mul_empty Matrix.vecMul_empty
 
 @[simp]
-theorem cons_vecMul (x : α) (v : Fin n → α) (B : Fin n.succ → o' → α) :
+lemma cons_vecMul (x : α) (v : Fin n → α) (B : Fin n.succ → o' → α) :
     vecMul (vecCons x v) (of B) = x • vecHead B + vecMul v (of <| vecTail B) := by
   ext i
   simp [vecMul]
 #align matrix.cons_vec_mul Matrix.cons_vecMul
 
 @[simp]
-theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' → α) :
+lemma vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' → α) :
     vecMul v (of <| vecCons w B) = vecHead v • w + vecMul (vecTail v) (of B) := by
   ext i
   simp [vecMul]
 #align matrix.vec_mul_cons Matrix.vecMul_cons
 
 -- @[simp] -- Porting note: simp can prove this
-theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
+lemma cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
     vecMul (vecCons x v) (of <| vecCons w B) = x • w + vecMul v (of B) := by simp
 #align matrix.cons_vec_mul_cons Matrix.cons_vecMul_cons
 
@@ -300,7 +300,7 @@ lemma empty_mulVec [Fintype n'] (A : Matrix (Fin 0) n' α) (v : n' → α) : mul
 #align matrix.empty_mul_vec Matrix.empty_mulVec
 
 @[simp]
-theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : mulVec A v = 0 :=
+lemma mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : mulVec A v = 0 :=
   rfl
 #align matrix.mul_vec_empty Matrix.mulVec_empty
 
@@ -325,24 +325,24 @@ section VecMulVec
 variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
-theorem empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![] :=
+lemma empty_vecMulVec (v : Fin 0 → α) (w : n' → α) : vecMulVec v w = ![] :=
   empty_eq _
 #align matrix.empty_vec_mul_vec Matrix.empty_vecMulVec
 
 @[simp]
-theorem vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = fun _ => ![] :=
+lemma vecMulVec_empty (v : m' → α) (w : Fin 0 → α) : vecMulVec v w = fun _ => ![] :=
   funext fun _ => empty_eq _
 #align matrix.vec_mul_vec_empty Matrix.vecMulVec_empty
 
 @[simp]
-theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
+lemma cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
     vecMulVec (vecCons x v) w = vecCons (x • w) (vecMulVec v w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [vecMulVec]
 #align matrix.cons_vec_mul_vec Matrix.cons_vecMulVec
 
 @[simp]
-theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
+lemma vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
     vecMulVec v (vecCons x w) = fun i => v i • vecCons x w := by
   ext i j
   rw [vecMulVec_apply, Pi.smul_apply, smul_eq_mul]
@@ -360,7 +360,7 @@ lemma smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A =
 #align matrix.smul_mat_empty Matrix.smul_mat_empty
 
 -- @[simp] -- Porting note: simp can prove this
-theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
+lemma smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
     x • vecCons v A = vecCons (x • v) (x • A) := by
   ext i
   refine' Fin.cases _ _ i <;> simp
@@ -371,13 +371,13 @@ end Smul
 section Submatrix
 
 @[simp]
-theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' → n') :
+lemma submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' → n') :
     submatrix A row col = ![] :=
   empty_eq _
 #align matrix.submatrix_empty Matrix.submatrix_empty
 
 @[simp]
-theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
+lemma submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
     submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by
   ext i j
   refine' Fin.cases _ _ i <;> simp [submatrix]
@@ -385,14 +385,14 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
 
 /-- Updating a row then removing it is the same as removing it. -/
 @[simp]
-theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
+lemma submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
     (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
   ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) : _)
 #align matrix.submatrix_update_row_succ_above Matrix.submatrix_updateRow_succAbove
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
-theorem submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
+lemma submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
     (i : Fin n.succ) : (A.updateColumn i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
   ext fun _r s => updateColumn_ne (Fin.succAbove_ne i s)
 #align matrix.submatrix_update_column_succ_above Matrix.submatrix_updateColumn_succAbove
@@ -417,12 +417,12 @@ lemma one_fin_three : (1 : Matrix (Fin 3) (Fin 3) α) = !![1, 0, 0; 0, 1, 0; 0, 
 
 end One
 
-theorem eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] := by
+lemma eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.eta_fin_two Matrix.eta_fin_two
 
-theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
+lemma eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
     A = !![A 0 0, A 0 1, A 0 2;
            A 1 0, A 1 1, A 1 2;
            A 2 0, A 2 1, A 2 2] := by
@@ -490,7 +490,7 @@ lemma vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀,
 #align matrix.vec2_dot_product' Matrix.vec2_dotProduct'
 
 @[simp]
-theorem vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 :=
+lemma vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 :=
   vec2_dotProduct'
 #align matrix.vec2_dot_product Matrix.vec2_dotProduct
 
@@ -501,7 +501,7 @@ lemma vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
 #align matrix.vec3_dot_product' Matrix.vec3_dotProduct'
 
 @[simp]
-theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
+lemma vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
   vec3_dotProduct'
 #align matrix.vec3_dot_product Matrix.vec3_dotProduct
 

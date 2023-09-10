@@ -187,13 +187,13 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
 #align sym2.lift Sym2.lift
 
 @[simp]
-theorem lift_mk'' (f : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ }) (a₁ a₂ : α) :
+lemma lift_mk'' (f : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ }) (a₁ a₂ : α) :
     lift f ⟦(a₁, a₂)⟧ = (f : α → α → β) a₁ a₂ :=
   rfl
 #align sym2.lift_mk Sym2.lift_mk''
 
 @[simp]
-theorem coe_lift_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
+lemma coe_lift_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
     (lift.symm F : α → α → β) a₁ a₂ = F ⟦(a₁, a₂)⟧ :=
   rfl
 #align sym2.coe_lift_symm_apply Sym2.coe_lift_symm_apply
@@ -227,7 +227,7 @@ theorem lift₂_mk''
 #align sym2.lift₂_mk Sym2.lift₂_mk''
 
 @[simp]
-theorem coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α) (b₁ b₂ : β) :
+lemma coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α) (b₁ b₂ : β) :
     (lift₂.symm F : α → α → β → β → γ) a₁ a₂ b₁ b₂ = F ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧ :=
   rfl
 #align sym2.coe_lift₂_symm_apply Sym2.coe_lift₂_symm_apply
@@ -259,7 +259,7 @@ lemma map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) = 
 #align sym2.map_map Sym2.map_map
 
 @[simp]
-theorem map_pair_eq (f : α → β) (x y : α) : map f ⟦(x, y)⟧ = ⟦(f x, f y)⟧ :=
+lemma map_pair_eq (f : α → β) (x y : α) : map f ⟦(x, y)⟧ = ⟦(f x, f y)⟧ :=
   rfl
 #align sym2.map_pair_eq Sym2.map_pair_eq
 
@@ -323,11 +323,11 @@ lemma ext {p q : Sym2 α} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align sym2.ext Sym2.ext
 
-theorem mem_mk''_left (x y : α) : x ∈ (⟦(x, y)⟧ : Sym2 α) :=
+lemma mem_mk''_left (x y : α) : x ∈ (⟦(x, y)⟧ : Sym2 α) :=
   ⟨y, rfl⟩
 #align sym2.mem_mk_left Sym2.mem_mk''_left
 
-theorem mem_mk''_right (x y : α) : y ∈ (⟦(x, y)⟧ : Sym2 α) :=
+lemma mem_mk''_right (x y : α) : y ∈ (⟦(x, y)⟧ : Sym2 α) :=
   eq_swap.subst <| mem_mk''_left y x
 #align sym2.mem_mk_right Sym2.mem_mk''_right
 
@@ -336,11 +336,11 @@ lemma mem_iff {a b c : α} : a ∈ (⟦(b, c)⟧ : Sym2 α) ↔ a = b ∨ a = c 
   mem_iff'
 #align sym2.mem_iff Sym2.mem_iff
 
-theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
+lemma out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
   ⟨e.out.2, by rw [e.out_eq]⟩
 #align sym2.out_fst_mem Sym2.out_fst_mem
 
-theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
+lemma out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, e.out_eq]⟩
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
@@ -439,12 +439,12 @@ lemma mk''_isDiag_iff {x y : α} : IsDiag ⟦(x, y)⟧ ↔ x = y :=
 #align sym2.mk_is_diag_iff Sym2.mk''_isDiag_iff
 
 @[simp]
-theorem isDiag_iff_proj_eq (z : α × α) : IsDiag ⟦z⟧ ↔ z.1 = z.2 :=
+lemma isDiag_iff_proj_eq (z : α × α) : IsDiag ⟦z⟧ ↔ z.1 = z.2 :=
   Prod.recOn z fun _ _ => mk''_isDiag_iff
 #align sym2.is_diag_iff_proj_eq Sym2.isDiag_iff_proj_eq
 
 @[simp]
-theorem diag_isDiag (a : α) : IsDiag (diag a) :=
+lemma diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 #align sym2.diag_is_diag Sym2.diag_isDiag
 
@@ -454,7 +454,7 @@ lemma IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@diag 
   exact ⟨_, rfl⟩
 #align sym2.is_diag.mem_range_diag Sym2.IsDiag.mem_range_diag
 
-theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
+lemma isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 #align sym2.is_diag_iff_mem_range_diag Sym2.isDiag_iff_mem_range_diag
 
@@ -531,18 +531,18 @@ def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
 #align sym2.to_rel Sym2.ToRel
 
 @[simp]
-theorem toRel_prop (s : Set (Sym2 α)) (x y : α) : ToRel s x y ↔ ⟦(x, y)⟧ ∈ s :=
+lemma toRel_prop (s : Set (Sym2 α)) (x y : α) : ToRel s x y ↔ ⟦(x, y)⟧ ∈ s :=
   Iff.rfl
 #align sym2.to_rel_prop Sym2.toRel_prop
 
-theorem toRel_symmetric (s : Set (Sym2 α)) : Symmetric (ToRel s) := fun x y => by simp [eq_swap]
+lemma toRel_symmetric (s : Set (Sym2 α)) : Symmetric (ToRel s) := fun x y => by simp [eq_swap]
 #align sym2.to_rel_symmetric Sym2.toRel_symmetric
 
-theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
+lemma toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
   rfl
 #align sym2.to_rel_from_rel Sym2.toRel_fromRel
 
-theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
+lemma fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
   Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
 #align sym2.from_rel_to_rel Sym2.fromRel_toRel
 

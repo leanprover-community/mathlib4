@@ -25,13 +25,13 @@ namespace Int
 instance : Dist ℤ :=
   ⟨fun x y => dist (x : ℝ) y⟩
 
-theorem dist_eq (x y : ℤ) : dist x y = |(x : ℝ) - y| := rfl
+lemma dist_eq (x y : ℤ) : dist x y = |(x : ℝ) - y| := rfl
 #align int.dist_eq Int.dist_eq
 
-theorem dist_eq' (m n : ℤ) : dist m n = |m - n| := by rw [dist_eq]; norm_cast
+lemma dist_eq' (m n : ℤ) : dist m n = |m - n| := by rw [dist_eq]; norm_cast
 
 @[norm_cast, simp]
-theorem dist_cast_real (x y : ℤ) : dist (x : ℝ) y = dist x y :=
+lemma dist_cast_real (x y : ℤ) : dist (x : ℝ) y = dist x y :=
   rfl
 #align int.dist_cast_real Int.dist_cast_real
 
@@ -50,17 +50,17 @@ lemma closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℤ → ℝ) :=
 
 instance : MetricSpace ℤ := Int.uniformEmbedding_coe_real.comapMetricSpace _
 
-theorem preimage_ball (x : ℤ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
+lemma preimage_ball (x : ℤ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
 #align int.preimage_ball Int.preimage_ball
 
-theorem preimage_closedBall (x : ℤ) (r : ℝ) : (↑) ⁻¹' closedBall (x : ℝ) r = closedBall x r := rfl
+lemma preimage_closedBall (x : ℤ) (r : ℝ) : (↑) ⁻¹' closedBall (x : ℝ) r = closedBall x r := rfl
 #align int.preimage_closed_ball Int.preimage_closedBall
 
-theorem ball_eq_Ioo (x : ℤ) (r : ℝ) : ball x r = Ioo ⌊↑x - r⌋ ⌈↑x + r⌉ := by
+lemma ball_eq_Ioo (x : ℤ) (r : ℝ) : ball x r = Ioo ⌊↑x - r⌋ ⌈↑x + r⌉ := by
   rw [← preimage_ball, Real.ball_eq_Ioo, preimage_Ioo]
 #align int.ball_eq_Ioo Int.ball_eq_Ioo
 
-theorem closedBall_eq_Icc (x : ℤ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉ ⌊↑x + r⌋ := by
+lemma closedBall_eq_Icc (x : ℤ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉ ⌊↑x + r⌋ := by
   rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
 #align int.closed_ball_eq_Icc Int.closedBall_eq_Icc
 

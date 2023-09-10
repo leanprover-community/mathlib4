@@ -86,7 +86,7 @@ def preinclusion (B : Type u) [Quiver.{v + 1} B] :
 #align category_theory.free_bicategory.preinclusion CategoryTheory.FreeBicategory.preinclusion
 
 @[simp]
-theorem preinclusion_obj (a : B) : (preinclusion B).obj a = a :=
+lemma preinclusion_obj (a : B) : (preinclusion B).obj a = a :=
   rfl
 #align category_theory.free_bicategory.preinclusion_obj CategoryTheory.FreeBicategory.preinclusion_obj
 

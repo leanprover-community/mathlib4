@@ -53,19 +53,19 @@ lemma rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ 
       Relator.rel_and (Relator.rel_not (rel_mem hr hab h)) (rel_nodup hr h)
 #align list.rel_nodup List.rel_nodup
 
-protected theorem Nodup.cons (ha : a ∉ l) (hl : Nodup l) : Nodup (a :: l) :=
+protected lemma Nodup.cons (ha : a ∉ l) (hl : Nodup l) : Nodup (a :: l) :=
   nodup_cons.2 ⟨ha, hl⟩
 #align list.nodup.cons List.Nodup.cons
 
-theorem nodup_singleton (a : α) : Nodup [a] :=
+lemma nodup_singleton (a : α) : Nodup [a] :=
   pairwise_singleton _ _
 #align list.nodup_singleton List.nodup_singleton
 
-theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
+lemma Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
   (nodup_cons.1 h).2
 #align list.nodup.of_cons List.Nodup.of_cons
 
-theorem Nodup.not_mem (h : (a :: l).Nodup) : a ∉ l :=
+lemma Nodup.not_mem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
 #align list.nodup.not_mem List.Nodup.not_mem
 
@@ -77,7 +77,7 @@ protected lemma Nodup.sublist : l₁ <+ l₂ → Nodup l₂ → Nodup l₁ :=
   Pairwise.sublist
 #align list.nodup.sublist List.Nodup.sublist
 
-theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
+lemma not_nodup_pair (a : α) : ¬Nodup [a, a] :=
   not_nodup_cons_of_mem <| mem_singleton_self _
 #align list.not_nodup_pair List.not_nodup_pair
 
@@ -147,14 +147,14 @@ lemma Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
         exact ⟨y, mem_cons_of_mem _ hy, hx⟩
 #align list.nodup.ne_singleton_iff List.Nodup.ne_singleton_iff
 
-theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
+lemma not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
     (h : xs.get n = xs.get m) (hne : n ≠ m) : ¬Nodup xs := by
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
 set_option linter.deprecated false in
 @[deprecated not_nodup_of_get_eq_of_ne]
-theorem nthLe_eq_of_ne_imp_not_nodup (xs : List α) (n m : ℕ) (hn : n < xs.length)
+lemma nthLe_eq_of_ne_imp_not_nodup (xs : List α) (n m : ℕ) (hn : n < xs.length)
     (hm : m < xs.length) (h : xs.nthLe n hn = xs.nthLe m hm) (hne : n ≠ m) : ¬Nodup xs := by
   rw [nodup_iff_nthLe_inj]
   simp only [exists_prop, exists_and_right, not_forall]
@@ -182,7 +182,7 @@ lemma nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a,
       (not_congr this).trans not_lt
 #align list.nodup_iff_count_le_one List.nodup_iff_count_le_one
 
-theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n ≤ 1
+lemma nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n ≤ 1
   | 0 => by simp [Nat.zero_le]
   | 1 => by simp
   | n + 2 =>
@@ -220,7 +220,7 @@ lemma disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) 
   (nodup_append.1 d).2.2
 #align list.disjoint_of_nodup_append List.disjoint_of_nodup_append
 
-theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
+lemma Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
   nodup_append.2 ⟨d₁, d₂, dj⟩
 #align list.nodup.append List.Nodup.append
 
@@ -234,7 +234,7 @@ lemma nodup_middle {a : α} {l₁ l₂ : List α} :
     disjoint_cons_right]
 #align list.nodup_middle List.nodup_middle
 
-theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
+lemma Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
   (Pairwise.of_map f) fun _ _ => mt <| congr_arg f
 #align list.nodup.of_map List.Nodup.of_mapₓ -- Porting note: different universe order
 
@@ -288,7 +288,7 @@ lemma Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
   exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
 #align list.nodup.pmap List.Nodup.pmap
 
-theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
+lemma Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using Pairwise.filter (fun a ↦ p a)
 #align list.nodup.filter List.Nodup.filter
 
@@ -365,7 +365,7 @@ protected lemma Nodup.filterMap {f : α → Option β} (h : ∀ a a' b, b ∈ f 
   (Pairwise.filter_map f) @fun a a' n b bm b' bm' e => n <| h a a' b' (by rw [← e]; exact bm) bm'
 #align list.nodup.filter_map List.Nodup.filterMap
 
-protected theorem Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup := by
+protected lemma Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup := by
   rw [concat_eq_append]; exact h'.append (nodup_singleton _) (disjoint_singleton.2 h)
 #align list.nodup.concat List.Nodup.concat
 

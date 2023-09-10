@@ -39,7 +39,7 @@ lemma mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1
 
 /-- The cardinality of the antidiagonal of `n` is `n+1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : card (antidiagonal n) = n + 1 := by
+lemma card_antidiagonal (n : ℕ) : card (antidiagonal n) = n + 1 := by
   rw [antidiagonal, coe_card, List.Nat.length_antidiagonal]
 #align multiset.nat.card_antidiagonal Multiset.Nat.card_antidiagonal
 
@@ -51,7 +51,7 @@ lemma antidiagonal_zero : antidiagonal 0 = {(0, 0)} :=
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 @[simp]
-theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
+lemma nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
   coe_nodup.2 <| List.Nat.nodup_antidiagonal n
 #align multiset.nat.nodup_antidiagonal Multiset.Nat.nodup_antidiagonal
 

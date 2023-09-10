@@ -46,7 +46,7 @@ variable {e : ℂ → ℂ} {e' : ℂ} {z : ℝ}
 
 /-- If a complex function is differentiable at a real point, then the induced real function is also
 differentiable at this point, with a derivative equal to the real part of the complex derivative. -/
-theorem HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
+lemma HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
     HasStrictDerivAt (fun x : ℝ => (e x).re) e'.re z := by
   have A : HasStrictFDerivAt ((↑) : ℝ → ℂ) ofRealClm z := ofRealClm.hasStrictFDerivAt
   have B :
@@ -65,7 +65,7 @@ theorem HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
 /-- If a complex function `e` is differentiable at a real point, then the function `ℝ → ℝ` given by
 the real part of `e` is also differentiable at this point, with a derivative equal to the real part
 of the complex derivative. -/
-theorem HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
+lemma HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
     HasDerivAt (fun x : ℝ => (e x).re) e'.re z := by
   have A : HasFDerivAt ((↑) : ℝ → ℂ) ofRealClm z := ofRealClm.hasFDerivAt
   have B :
@@ -132,7 +132,7 @@ lemma HasDerivWithinAt.complexToReal_fderiv {f : ℂ → ℂ} {s : Set ℂ} {f' 
 
 /-- If a complex function `e` is differentiable at a real point, then its restriction to `ℝ` is
 differentiable there as a function `ℝ → ℂ`, with the same derivative. -/
-theorem HasDerivAt.comp_ofReal (hf : HasDerivAt e e' ↑z) : HasDerivAt (fun y : ℝ => e ↑y) e' z :=
+lemma HasDerivAt.comp_ofReal (hf : HasDerivAt e e' ↑z) : HasDerivAt (fun y : ℝ => e ↑y) e' z :=
   by simpa only [ofRealClm_apply, ofReal_one, mul_one] using hf.comp z ofRealClm.hasDerivAt
 #align has_deriv_at.comp_of_real HasDerivAt.comp_ofReal
 
@@ -159,7 +159,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {z : ℂ} {f : �
 /-- A real differentiable function of the complex plane into some complex normed space `E` is
     conformal at a point `z` if it is holomorphic at that point with a nonvanishing differential.
     This is a version of the Cauchy-Riemann equations. -/
-theorem DifferentiableAt.conformalAt (h : DifferentiableAt ℂ f z) (hf' : deriv f z ≠ 0) :
+lemma DifferentiableAt.conformalAt (h : DifferentiableAt ℂ f z) (hf' : deriv f z ≠ 0) :
     ConformalAt f z := by
   rw [conformalAt_iff_isConformalMap_fderiv, (h.hasFDerivAt.restrictScalars ℝ).fderiv]
   apply isConformalMap_complex_linear

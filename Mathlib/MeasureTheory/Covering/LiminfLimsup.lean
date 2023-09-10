@@ -39,7 +39,7 @@ variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure
 
 NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
-theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s : ℕ → Set α}
+lemma blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s : ℕ → Set α}
     (hs : ∀ i, IsClosed (s i)) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0)) (hrp : 0 ≤ r₁)
     {M : ℝ} (hM : 0 < M) (hM' : M < 1) (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
     (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
@@ -155,7 +155,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
 
 NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
-theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : ℕ → Set α} {M : ℝ}
+lemma blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : ℕ → Set α} {M : ℝ}
     (hM : 0 < M) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0))
     (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
     (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
@@ -191,7 +191,7 @@ See also `blimsup_thickening_mul_ae_eq`.
 
 NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
-theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
+lemma blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
     (r : ℕ → ℝ) (hr : Tendsto r atTop (𝓝 0)) :
     (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) := by
@@ -245,7 +245,7 @@ lemma blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ �
 #align blimsup_cthickening_ae_eq_blimsup_thickening blimsup_cthickening_ae_eq_blimsup_thickening
 
 /-- An auxiliary result en route to `blimsup_thickening_mul_ae_eq`. -/
-theorem blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
+lemma blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
     (r : ℕ → ℝ) (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
     (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
@@ -269,7 +269,7 @@ See also `blimsup_cthickening_mul_ae_eq`.
 
 NB: The `: Set α` type ascription is present because of
 https://github.com/leanprover-community/mathlib/issues/16932. -/
-theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M) (r : ℕ → ℝ)
+lemma blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M) (r : ℕ → ℝ)
     (hr : Tendsto r atTop (𝓝 0)) :
     (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by

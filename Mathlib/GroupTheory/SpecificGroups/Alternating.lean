@@ -131,7 +131,7 @@ lemma isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ : 
       simp [mul_assoc]
 #align alternating_group.is_conj_of alternatingGroup.isConj_of
 
-theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
+lemma isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
     (hσ : IsThreeCycle (σ : Perm α)) (hτ : IsThreeCycle (τ : Perm α)) : IsConj σ τ :=
   alternatingGroup.isConj_of (isConj_iff_cycleType_eq.2 (hσ.trans hτ.symm))
     (by rwa [hσ.card_support])
@@ -172,7 +172,7 @@ lemma closure_three_cycles_eq_alternating :
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
-theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}
+lemma IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}
     (hf : IsThreeCycle f) :
     normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ :=
   eq_top_iff.2
@@ -213,7 +213,7 @@ namespace alternatingGroup
 
 open Equiv.Perm
 
-theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
+lemma nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
   haveI := Fintype.one_lt_card_iff_nontrivial.1 (lt_trans (by decide) h3)
   rw [← Fintype.one_lt_card_iff_nontrivial]
   refine' lt_of_mul_lt_mul_left _ (le_of_lt Nat.prime_two.pos)

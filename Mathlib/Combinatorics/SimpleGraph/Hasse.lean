@@ -52,12 +52,12 @@ def hasseDualIso : hasse αᵒᵈ ≃g hasse α :=
 #align simple_graph.hasse_dual_iso SimpleGraph.hasseDualIso
 
 @[simp]
-theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
+lemma hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
   rfl
 #align simple_graph.hasse_dual_iso_apply SimpleGraph.hasseDualIso_apply
 
 @[simp]
-theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
+lemma hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
   rfl
 #align simple_graph.hasse_dual_iso_symm_apply SimpleGraph.hasseDualIso_symm_apply
 
@@ -103,11 +103,11 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
   hasse _
 #align simple_graph.path_graph SimpleGraph.pathGraph
 
-theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
+lemma pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
   hasse_preconnected_of_succ _
 #align simple_graph.path_graph_preconnected SimpleGraph.pathGraph_preconnected
 
-theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
+lemma pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
   ⟨pathGraph_preconnected _⟩
 #align simple_graph.path_graph_connected SimpleGraph.pathGraph_connected
 

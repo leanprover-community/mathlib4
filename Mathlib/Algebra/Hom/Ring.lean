@@ -131,21 +131,21 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
 initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
 @[simp]
-theorem coe_toMulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
+lemma coe_toMulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
   rfl
 #align non_unital_ring_hom.coe_to_mul_hom NonUnitalRingHom.coe_toMulHom
 
 @[simp]
-theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
+lemma coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁⟩, h₂, h₃⟩ : α →ₙ+* β) : α →ₙ* β) = ⟨f, h₁⟩ :=
   rfl
 #align non_unital_ring_hom.coe_mul_hom_mk NonUnitalRingHom.coe_mulHom_mk
 
-theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
+lemma coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
 #align non_unital_ring_hom.coe_to_add_monoid_hom NonUnitalRingHom.coe_toAddMonoidHom
 
 @[simp]
-theorem coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃) :
+lemma coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃) :
     ((⟨⟨f, h₁⟩, h₂, h₃⟩ : α →ₙ+* β) : α →+ β) = ⟨⟨f, h₂⟩, h₃⟩ :=
   rfl
 #align non_unital_ring_hom.coe_add_monoid_hom_mk NonUnitalRingHom.coe_addMonoidHom_mk
@@ -157,11 +157,11 @@ protected def copy (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : α →�
 #align non_unital_ring_hom.copy NonUnitalRingHom.copy
 
 @[simp]
-theorem coe_copy (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align non_unital_ring_hom.coe_copy NonUnitalRingHom.coe_copy
 
-theorem copy_eq (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align non_unital_ring_hom.copy_eq NonUnitalRingHom.copy_eq
 
@@ -182,7 +182,7 @@ lemma ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
 #align non_unital_ring_hom.ext_iff NonUnitalRingHom.ext_iff
 
 @[simp]
-theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
+lemma mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
@@ -217,12 +217,12 @@ lemma coe_zero : ⇑(0 : α →ₙ+* β) = 0 :=
 #align non_unital_ring_hom.coe_zero NonUnitalRingHom.coe_zero
 
 @[simp]
-theorem zero_apply (x : α) : (0 : α →ₙ+* β) x = 0 :=
+lemma zero_apply (x : α) : (0 : α →ₙ+* β) x = 0 :=
   rfl
 #align non_unital_ring_hom.zero_apply NonUnitalRingHom.zero_apply
 
 @[simp]
-theorem id_apply (x : α) : NonUnitalRingHom.id α x = x :=
+lemma id_apply (x : α) : NonUnitalRingHom.id α x = x :=
   rfl
 #align non_unital_ring_hom.id_apply NonUnitalRingHom.id_apply
 
@@ -250,47 +250,47 @@ lemma comp_assoc {δ} {_ : NonUnitalNonAssocSemiring δ} (f : α →ₙ+* β) (g
 #align non_unital_ring_hom.comp_assoc NonUnitalRingHom.comp_assoc
 
 @[simp]
-theorem coe_comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : ⇑(g.comp f) = g ∘ f :=
+lemma coe_comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : ⇑(g.comp f) = g ∘ f :=
   rfl
 #align non_unital_ring_hom.coe_comp NonUnitalRingHom.coe_comp
 
 @[simp]
-theorem comp_apply (g : β →ₙ+* γ) (f : α →ₙ+* β) (x : α) : g.comp f x = g (f x) :=
+lemma comp_apply (g : β →ₙ+* γ) (f : α →ₙ+* β) (x : α) : g.comp f x = g (f x) :=
   rfl
 #align non_unital_ring_hom.comp_apply NonUnitalRingHom.comp_apply
 variable (g : β →ₙ+* γ) (f : α →ₙ+* β)
 
 @[simp]
-theorem coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
+lemma coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
     AddMonoidHom.mk ⟨g ∘ f, (g.comp f).map_zero'⟩ (g.comp f).map_add' = (g : β →+ γ).comp f :=
   rfl
 #align non_unital_ring_hom.coe_comp_add_monoid_hom NonUnitalRingHom.coe_comp_addMonoidHom
 
 @[simp]
-theorem coe_comp_mulHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
+lemma coe_comp_mulHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
     MulHom.mk (g ∘ f) (g.comp f).map_mul' = (g : β →ₙ* γ).comp f :=
   rfl
 #align non_unital_ring_hom.coe_comp_mul_hom NonUnitalRingHom.coe_comp_mulHom
 
 @[simp]
-theorem comp_zero (g : β →ₙ+* γ) : g.comp (0 : α →ₙ+* β) = 0 := by
+lemma comp_zero (g : β →ₙ+* γ) : g.comp (0 : α →ₙ+* β) = 0 := by
   ext
   simp
 #align non_unital_ring_hom.comp_zero NonUnitalRingHom.comp_zero
 
 @[simp]
-theorem zero_comp (f : α →ₙ+* β) : (0 : β →ₙ+* γ).comp f = 0 := by
+lemma zero_comp (f : α →ₙ+* β) : (0 : β →ₙ+* γ).comp f = 0 := by
   ext
   rfl
 #align non_unital_ring_hom.zero_comp NonUnitalRingHom.zero_comp
 
 @[simp]
-theorem comp_id (f : α →ₙ+* β) : f.comp (NonUnitalRingHom.id α) = f :=
+lemma comp_id (f : α →ₙ+* β) : f.comp (NonUnitalRingHom.id α) = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.comp_id NonUnitalRingHom.comp_id
 
 @[simp]
-theorem id_comp (f : α →ₙ+* β) : (NonUnitalRingHom.id β).comp f = f :=
+lemma id_comp (f : α →ₙ+* β) : (NonUnitalRingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.id_comp NonUnitalRingHom.id_comp
 
@@ -313,12 +313,12 @@ lemma coe_one : ⇑(1 : α →ₙ+* α) = id :=
   rfl
 #align non_unital_ring_hom.coe_one NonUnitalRingHom.coe_one
 
-theorem mul_def (f g : α →ₙ+* α) : f * g = f.comp g :=
+lemma mul_def (f g : α →ₙ+* α) : f * g = f.comp g :=
   rfl
 #align non_unital_ring_hom.mul_def NonUnitalRingHom.mul_def
 
 @[simp]
-theorem coe_mul (f g : α →ₙ+* α) : ⇑(f * g) = f ∘ g :=
+lemma coe_mul (f g : α →ₙ+* α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align non_unital_ring_hom.coe_mul NonUnitalRingHom.coe_mul
 
@@ -444,12 +444,12 @@ initialize_simps_projections RingHom (toFun → apply)
 -- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
 -- be a simp lemma anymore
 -- @[simp]
-theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
+lemma toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α → β) = f :=
+lemma coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α → β) = f :=
   rfl
 #align ring_hom.coe_mk RingHom.coe_mk
 
@@ -468,18 +468,18 @@ instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
 #noalign ring_hom.coe_monoid_hom
 
 @[simp]
-theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
+lemma toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 #align ring_hom.to_monoid_hom_eq_coe RingHom.toMonoidHom_eq_coe
 
 -- Porting note: this can't be a simp lemma anymore
 -- @[simp]
-theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
+lemma toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 
 @[simp]
-theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
+lemma coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
 #align ring_hom.coe_monoid_hom_mk RingHom.coe_monoidHom_mk
 
@@ -487,12 +487,12 @@ theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : 
 #noalign ring_hom.coe_add_monoid_hom
 
 @[simp]
-theorem toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
+lemma toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
   rfl
 #align ring_hom.to_add_monoid_hom_eq_coe RingHom.toAddMonoidHom_eq_coe
 
 @[simp]
-theorem coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
+lemma coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →+ β) = ⟨⟨f, h₃⟩, h₄⟩ :=
   rfl
 #align ring_hom.coe_add_monoid_hom_mk RingHom.coe_addMonoidHom_mk
@@ -504,11 +504,11 @@ def copy (f : α →+* β) (f' : α → β) (h : f' = f) : α →+* β :=
 #align ring_hom.copy RingHom.copy
 
 @[simp]
-theorem coe_copy (f : α →+* β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : α →+* β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align ring_hom.coe_copy RingHom.coe_copy
 
-theorem copy_eq (f : α →+* β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : α →+* β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align ring_hom.copy_eq RingHom.copy_eq
 
@@ -522,7 +522,7 @@ lemma congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   FunLike.congr_fun h x
 #align ring_hom.congr_fun RingHom.congr_fun
 
-theorem congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
+lemma congr_arg (f : α →+* β) {x y : α} (h : x = y) : f x = f y :=
   FunLike.congr_arg f h
 #align ring_hom.congr_arg RingHom.congr_arg
 
@@ -540,7 +540,7 @@ lemma ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
 #align ring_hom.ext_iff RingHom.ext_iff
 
 @[simp]
-theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
+lemma mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
   ext fun _ => rfl
 #align ring_hom.mk_coe RingHom.mk_coe
 
@@ -554,22 +554,22 @@ lemma coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* �
 #align ring_hom.coe_monoid_hom_injective RingHom.coe_monoidHom_injective
 
 /-- Ring homomorphisms map zero to zero. -/
-protected theorem map_zero (f : α →+* β) : f 0 = 0 :=
+protected lemma map_zero (f : α →+* β) : f 0 = 0 :=
   map_zero f
 #align ring_hom.map_zero RingHom.map_zero
 
 /-- Ring homomorphisms map one to one. -/
-protected theorem map_one (f : α →+* β) : f 1 = 1 :=
+protected lemma map_one (f : α →+* β) : f 1 = 1 :=
   map_one f
 #align ring_hom.map_one RingHom.map_one
 
 /-- Ring homomorphisms preserve addition. -/
-protected theorem map_add (f : α →+* β) : ∀ a b, f (a + b) = f a + f b :=
+protected lemma map_add (f : α →+* β) : ∀ a b, f (a + b) = f a + f b :=
   map_add f
 #align ring_hom.map_add RingHom.map_add
 
 /-- Ring homomorphisms preserve multiplication. -/
-protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
+protected lemma map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
   map_mul f
 #align ring_hom.map_mul RingHom.map_mul
 
@@ -613,7 +613,7 @@ lemma domain_nontrivial [Nontrivial β] : Nontrivial α :=
   ⟨⟨1, 0, mt (fun h => show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩
 #align ring_hom.domain_nontrivial RingHom.domain_nontrivial
 
-theorem codomain_trivial (f : α →+* β) [h : Subsingleton α] : Subsingleton β :=
+lemma codomain_trivial (f : α →+* β) [h : Subsingleton α] : Subsingleton β :=
   (subsingleton_or_nontrivial β).resolve_right fun _ =>
     not_nontrivial_iff_subsingleton.mpr h f.domain_nontrivial
 #align ring_hom.codomain_trivial RingHom.codomain_trivial
@@ -641,11 +641,11 @@ section Semiring
 
 variable [Semiring α] [Semiring β]
 
-theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
+lemma isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
   IsUnit.map f
 #align ring_hom.is_unit_map RingHom.isUnit_map
 
-protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
+protected lemma map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
   map_dvd f
 #align ring_hom.map_dvd RingHom.map_dvd
 
@@ -662,7 +662,7 @@ instance : Inhabited (α →+* α) :=
   ⟨id α⟩
 
 @[simp]
-theorem id_apply (x : α) : RingHom.id α x = x :=
+lemma id_apply (x : α) : RingHom.id α x = x :=
   rfl
 #align ring_hom.id_apply RingHom.id_apply
 
@@ -690,22 +690,22 @@ lemma comp_assoc {δ} {_ : NonAssocSemiring δ} (f : α →+* β) (g : β →+* 
 #align ring_hom.comp_assoc RingHom.comp_assoc
 
 @[simp]
-theorem coe_comp (hnp : β →+* γ) (hmn : α →+* β) : (hnp.comp hmn : α → γ) = hnp ∘ hmn :=
+lemma coe_comp (hnp : β →+* γ) (hmn : α →+* β) : (hnp.comp hmn : α → γ) = hnp ∘ hmn :=
   rfl
 #align ring_hom.coe_comp RingHom.coe_comp
 
-theorem comp_apply (hnp : β →+* γ) (hmn : α →+* β) (x : α) :
+lemma comp_apply (hnp : β →+* γ) (hmn : α →+* β) (x : α) :
     (hnp.comp hmn : α → γ) x = hnp (hmn x) :=
   rfl
 #align ring_hom.comp_apply RingHom.comp_apply
 
 @[simp]
-theorem comp_id (f : α →+* β) : f.comp (id α) = f :=
+lemma comp_id (f : α →+* β) : f.comp (id α) = f :=
   ext fun _ => rfl
 #align ring_hom.comp_id RingHom.comp_id
 
 @[simp]
-theorem id_comp (f : α →+* β) : (id β).comp f = f :=
+lemma id_comp (f : α →+* β) : (id β).comp f = f :=
   ext fun _ => rfl
 #align ring_hom.id_comp RingHom.id_comp
 
@@ -720,7 +720,7 @@ lemma one_def : (1 : α →+* α) = id α :=
   rfl
 #align ring_hom.one_def RingHom.one_def
 
-theorem mul_def (f g : α →+* α) : f * g = f.comp g :=
+lemma mul_def (f g : α →+* α) : f * g = f.comp g :=
   rfl
 #align ring_hom.mul_def RingHom.mul_def
 
@@ -730,7 +730,7 @@ lemma coe_one : ⇑(1 : α →+* α) = _root_.id :=
 #align ring_hom.coe_one RingHom.coe_one
 
 @[simp]
-theorem coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g :=
+lemma coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align ring_hom.coe_mul RingHom.coe_mul
 
@@ -783,14 +783,14 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
 #align add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
 
 @[simp]
-theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
+lemma coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
 #align add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
 
 -- Porting note: `simp` can prove this
 -- @[simp]
-theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
+lemma coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext
   rfl

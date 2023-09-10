@@ -107,7 +107,7 @@ noncomputable def charFn (hU : IsClopen U) : LocallyConstant X Y :=
   indicator 1 hU
 #align locally_constant.char_fn LocallyConstant.charFn
 
-theorem coe_charFn (hU : IsClopen U) : (charFn Y hU : X → Y) = Set.indicator U 1 :=
+lemma coe_charFn (hU : IsClopen U) : (charFn Y hU : X → Y) = Set.indicator U 1 :=
   rfl
 #align locally_constant.coe_char_fn LocallyConstant.coe_charFn
 
@@ -288,7 +288,7 @@ instance : Algebra R (LocallyConstant X Y) where
     exact Algebra.smul_def' _ _
 
 @[simp]
-theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = algebraMap R (X → Y) r :=
+lemma coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = algebraMap R (X → Y) r :=
   rfl
 #align locally_constant.coe_algebra_map LocallyConstant.coe_algebraMap
 

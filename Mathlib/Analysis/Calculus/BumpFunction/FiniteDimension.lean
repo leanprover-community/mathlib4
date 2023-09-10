@@ -271,15 +271,15 @@ lemma u_compact_support : HasCompactSupport (u : E → ℝ) := by
 
 variable {E}
 
-theorem u_nonneg (x : E) : 0 ≤ u x :=
+lemma u_nonneg (x : E) : 0 ≤ u x :=
   ((Classical.choose_spec (u_exists E)).2.1 x).1
 #align exists_cont_diff_bump_base.u_nonneg ExistsContDiffBumpBase.u_nonneg
 
-theorem u_le_one (x : E) : u x ≤ 1 :=
+lemma u_le_one (x : E) : u x ≤ 1 :=
   ((Classical.choose_spec (u_exists E)).2.1 x).2
 #align exists_cont_diff_bump_base.u_le_one ExistsContDiffBumpBase.u_le_one
 
-theorem u_neg (x : E) : u (-x) = u x :=
+lemma u_neg (x : E) : u (-x) = u x :=
   (Classical.choose_spec (u_exists E)).2.2.2 x
 #align exists_cont_diff_bump_base.u_neg ExistsContDiffBumpBase.u_neg
 
@@ -305,12 +305,12 @@ def w (D : ℝ) (x : E) : ℝ :=
   ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x)
 #align exists_cont_diff_bump_base.W ExistsContDiffBumpBase.w
 
-theorem w_def (D : ℝ) :
+lemma w_def (D : ℝ) :
     (w D : E → ℝ) = fun x => ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x) := by
   ext1 x; rfl
 #align exists_cont_diff_bump_base.W_def ExistsContDiffBumpBase.w_def
 
-theorem w_nonneg (D : ℝ) (x : E) : 0 ≤ w D x := by
+lemma w_nonneg (D : ℝ) (x : E) : 0 ≤ w D x := by
   apply mul_nonneg _ (u_nonneg _)
   apply inv_nonneg.2
   apply mul_nonneg (u_int_pos E).le
@@ -318,7 +318,7 @@ theorem w_nonneg (D : ℝ) (x : E) : 0 ≤ w D x := by
   apply pow_nonneg (abs_nonneg D)
 #align exists_cont_diff_bump_base.W_nonneg ExistsContDiffBumpBase.w_nonneg
 
-theorem w_mul_φ_nonneg (D : ℝ) (x y : E) : 0 ≤ w D y * φ (x - y) :=
+lemma w_mul_φ_nonneg (D : ℝ) (x y : E) : 0 ≤ w D y * φ (x - y) :=
   mul_nonneg (w_nonneg D y) (indicator_nonneg (by simp only [zero_le_one, imp_true_iff]) _)
 #align exists_cont_diff_bump_base.W_mul_φ_nonneg ExistsContDiffBumpBase.w_mul_φ_nonneg
 
@@ -356,7 +356,7 @@ def y (D : ℝ) : E → ℝ :=
   w D ⋆[lsmul ℝ ℝ, μ] φ
 #align exists_cont_diff_bump_base.Y ExistsContDiffBumpBase.y
 
-theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
+lemma y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
   apply convolution_neg_of_neg_eq
   · apply eventually_of_forall fun x => _
     simp only [w_def, Real.rpow_nat_cast, mul_inv_rev, smul_neg, u_neg, smul_eq_mul, forall_const]
@@ -401,7 +401,7 @@ lemma y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ bal
   simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, mul_zero, integral_const]
 #align exists_cont_diff_bump_base.Y_eq_zero_of_not_mem_ball ExistsContDiffBumpBase.y_eq_zero_of_not_mem_ball
 
-theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
+lemma y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
   integral_nonneg (w_mul_φ_nonneg D x)
 #align exists_cont_diff_bump_base.Y_nonneg ExistsContDiffBumpBase.y_nonneg
 

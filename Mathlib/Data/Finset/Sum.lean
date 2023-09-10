@@ -79,33 +79,33 @@ lemma inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t :=
   Multiset.inr_mem_disjSum
 #align finset.inr_mem_disj_sum Finset.inr_mem_disjSum
 
-theorem disjSum_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁.disjSum t₁ ⊆ s₂.disjSum t₂ :=
+lemma disjSum_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁.disjSum t₁ ⊆ s₂.disjSum t₂ :=
   val_le_iff.1 <| Multiset.disjSum_mono (val_le_iff.2 hs) (val_le_iff.2 ht)
 #align finset.disj_sum_mono Finset.disjSum_mono
 
-theorem disjSum_mono_left (t : Finset β) : Monotone fun s : Finset α => s.disjSum t :=
+lemma disjSum_mono_left (t : Finset β) : Monotone fun s : Finset α => s.disjSum t :=
   fun _ _ hs => disjSum_mono hs Subset.rfl
 #align finset.disj_sum_mono_left Finset.disjSum_mono_left
 
-theorem disjSum_mono_right (s : Finset α) : Monotone (s.disjSum : Finset β → Finset (Sum α β)) :=
+lemma disjSum_mono_right (s : Finset α) : Monotone (s.disjSum : Finset β → Finset (Sum α β)) :=
   fun _ _ => disjSum_mono Subset.rfl
 #align finset.disj_sum_mono_right Finset.disjSum_mono_right
 
-theorem disjSum_ssubset_disjSum_of_ssubset_of_subset (hs : s₁ ⊂ s₂) (ht : t₁ ⊆ t₂) :
+lemma disjSum_ssubset_disjSum_of_ssubset_of_subset (hs : s₁ ⊂ s₂) (ht : t₁ ⊆ t₂) :
     s₁.disjSum t₁ ⊂ s₂.disjSum t₂ :=
   val_lt_iff.1 <| disjSum_lt_disjSum_of_lt_of_le (val_lt_iff.2 hs) (val_le_iff.2 ht)
 #align finset.disj_sum_ssubset_disj_sum_of_ssubset_of_subset Finset.disjSum_ssubset_disjSum_of_ssubset_of_subset
 
-theorem disjSum_ssubset_disjSum_of_subset_of_ssubset (hs : s₁ ⊆ s₂) (ht : t₁ ⊂ t₂) :
+lemma disjSum_ssubset_disjSum_of_subset_of_ssubset (hs : s₁ ⊆ s₂) (ht : t₁ ⊂ t₂) :
     s₁.disjSum t₁ ⊂ s₂.disjSum t₂ :=
   val_lt_iff.1 <| disjSum_lt_disjSum_of_le_of_lt (val_le_iff.2 hs) (val_lt_iff.2 ht)
 #align finset.disj_sum_ssubset_disj_sum_of_subset_of_ssubset Finset.disjSum_ssubset_disjSum_of_subset_of_ssubset
 
-theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α => s.disjSum t :=
+lemma disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α => s.disjSum t :=
   fun _ _ hs => disjSum_ssubset_disjSum_of_ssubset_of_subset hs Subset.rfl
 #align finset.disj_sum_strict_mono_left Finset.disjSum_strictMono_left
 
-theorem disj_sum_strictMono_right (s : Finset α) :
+lemma disj_sum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (Sum α β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
 #align finset.disj_sum_strict_mono_right Finset.disj_sum_strictMono_right

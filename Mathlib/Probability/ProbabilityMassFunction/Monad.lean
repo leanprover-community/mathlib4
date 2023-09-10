@@ -58,7 +58,7 @@ lemma pure_apply_self : pure a a = 1 :=
   if_pos rfl
 #align pmf.pure_apply_self Pmf.pure_apply_self
 
-theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
+lemma pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
   if_neg h
 #align pmf.pure_apply_of_ne Pmf.pure_apply_of_ne
 
@@ -83,7 +83,7 @@ variable [MeasurableSpace α]
 
 /-- The measure of a set under `pure a` is `1` for sets containing `a` and `0` otherwise. -/
 @[simp]
-theorem toMeasure_pure_apply (hs : MeasurableSet s) :
+lemma toMeasure_pure_apply (hs : MeasurableSet s) :
     (pure a).toMeasure s = if a ∈ s then 1 else 0 :=
   (toMeasure_apply_eq_toOuterMeasure_apply (pure a) s hs).trans (toOuterMeasure_pure_apply a s)
 #align pmf.to_measure_pure_apply Pmf.toMeasure_pure_apply
@@ -114,7 +114,7 @@ def bind (p : Pmf α) (f : α → Pmf β) : Pmf β :=
 variable (p : Pmf α) (f : α → Pmf β) (g : β → Pmf γ)
 
 @[simp]
-theorem bind_apply (b : β) : p.bind f b = ∑' a, p a * f a b := rfl
+lemma bind_apply (b : β) : p.bind f b = ∑' a, p a * f a b := rfl
 #align pmf.bind_apply Pmf.bind_apply
 
 @[simp]
@@ -122,13 +122,13 @@ lemma support_bind : (p.bind f).support = ⋃ a ∈ p.support, (f a).support :=
   Set.ext fun b => by simp [mem_support_iff, ENNReal.tsum_eq_zero, not_or]
 #align pmf.support_bind Pmf.support_bind
 
-theorem mem_support_bind_iff (b : β) :
+lemma mem_support_bind_iff (b : β) :
     b ∈ (p.bind f).support ↔ ∃ a ∈ p.support, b ∈ (f a).support := by
   simp only [support_bind, Set.mem_iUnion, Set.mem_setOf_eq, exists_prop]
 #align pmf.mem_support_bind_iff Pmf.mem_support_bind_iff
 
 @[simp]
-theorem pure_bind (a : α) (f : α → Pmf β) : (pure a).bind f = f a := by
+lemma pure_bind (a : α) (f : α → Pmf β) : (pure a).bind f = f a := by
   have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
     split_ifs with h <;> simp; subst h; simp
   ext b
@@ -143,7 +143,7 @@ lemma bind_pure : p.bind pure = p :=
 #align pmf.bind_pure Pmf.bind_pure
 
 @[simp]
-theorem bind_const (p : Pmf α) (q : Pmf β) : (p.bind fun _ => q) = q :=
+lemma bind_const (p : Pmf α) (q : Pmf β) : (p.bind fun _ => q) = q :=
   Pmf.ext fun x => by rw [bind_apply, ENNReal.tsum_mul_right, tsum_coe, one_mul]
 #align pmf.bind_const Pmf.bind_const
 
@@ -154,7 +154,7 @@ lemma bind_bind : (p.bind f).bind g = p.bind fun a => (f a).bind g :=
       ENNReal.tsum_mul_right.symm, mul_assoc, mul_left_comm, mul_comm] using ENNReal.tsum_comm
 #align pmf.bind_bind Pmf.bind_bind
 
-theorem bind_comm (p : Pmf α) (q : Pmf β) (f : α → β → Pmf γ) :
+lemma bind_comm (p : Pmf α) (q : Pmf β) (f : α → β → Pmf γ) :
     (p.bind fun a => q.bind (f a)) = q.bind fun b => p.bind fun a => f a b :=
   Pmf.ext fun b => by
     simpa only [ENNReal.coe_eq_coe.symm, bind_apply, ENNReal.tsum_mul_left.symm,
@@ -216,7 +216,7 @@ def bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf β) : Pmf β :=
 variable {p : Pmf α} (f : ∀ a ∈ p.support, Pmf β)
 
 @[simp]
-theorem bindOnSupport_apply (b : β) :
+lemma bindOnSupport_apply (b : β) :
     p.bindOnSupport f b = ∑' a, p a * if h : p a = 0 then 0 else f a h b := rfl
 #align pmf.bind_on_support_apply Pmf.bindOnSupport_apply
 
@@ -235,14 +235,14 @@ lemma support_bindOnSupport :
       ⟨a, ⟨ha, by simpa [(mem_support_iff _ a).1 ha] using ha'⟩⟩⟩
 #align pmf.support_bind_on_support Pmf.support_bindOnSupport
 
-theorem mem_support_bindOnSupport_iff (b : β) :
+lemma mem_support_bindOnSupport_iff (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
   simp only [support_bindOnSupport, Set.mem_setOf_eq, Set.mem_iUnion]
 #align pmf.mem_support_bind_on_support_iff Pmf.mem_support_bindOnSupport_iff
 
 /-- `bindOnSupport` reduces to `bind` if `f` doesn't depend on the additional hypothesis. -/
 @[simp]
-theorem bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
+lemma bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
     (p.bindOnSupport fun a _ => f a) = p.bind f := by
   ext b
   have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b :=
@@ -251,7 +251,7 @@ theorem bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
     mul_zero, this]
 #align pmf.bind_on_support_eq_bind Pmf.bindOnSupport_eq_bind
 
-theorem bindOnSupport_eq_zero_iff (b : β) :
+lemma bindOnSupport_eq_zero_iff (b : β) :
     p.bindOnSupport f b = 0 ↔ ∀ (a) (ha : p a ≠ 0), f a ha b = 0 := by
   simp only [bindOnSupport_apply, ENNReal.tsum_eq_zero, mul_eq_zero, or_iff_not_imp_left]
   exact ⟨fun h a ha => Trans.trans (dif_neg ha).symm (h a ha),
@@ -259,7 +259,7 @@ theorem bindOnSupport_eq_zero_iff (b : β) :
 #align pmf.bind_on_support_eq_zero_iff Pmf.bindOnSupport_eq_zero_iff
 
 @[simp]
-theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).support), Pmf β) :
+lemma pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).support), Pmf β) :
     (pure a).bindOnSupport f = f a ((mem_support_pure_iff a a).mpr rfl) := by
   refine' Pmf.ext fun b => _
   simp only [bindOnSupport_apply, pure_apply]
@@ -267,12 +267,12 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
   by_cases h : a' = a <;> simp [h]
 #align pmf.pure_bind_on_support Pmf.pure_bindOnSupport
 
-theorem bindOnSupport_pure (p : Pmf α) : (p.bindOnSupport fun a _ => pure a) = p := by
+lemma bindOnSupport_pure (p : Pmf α) : (p.bindOnSupport fun a _ => pure a) = p := by
   simp only [Pmf.bind_pure, Pmf.bindOnSupport_eq_bind]
 #align pmf.bind_on_support_pure Pmf.bindOnSupport_pure
 
 @[simp]
-theorem bindOnSupport_bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf β)
+lemma bindOnSupport_bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf β)
     (g : ∀ b ∈ (p.bindOnSupport f).support, Pmf γ) :
     (p.bindOnSupport f).bindOnSupport g =
       p.bindOnSupport fun a ha =>
@@ -291,7 +291,7 @@ theorem bindOnSupport_bindOnSupport (p : Pmf α) (f : ∀ a ∈ p.support, Pmf �
   · simp [h_2]
 #align pmf.bind_on_support_bind_on_support Pmf.bindOnSupport_bindOnSupport
 
-theorem bindOnSupport_comm (p : Pmf α) (q : Pmf β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, Pmf γ) :
+lemma bindOnSupport_comm (p : Pmf α) (q : Pmf β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, Pmf γ) :
     (p.bindOnSupport fun a ha => q.bindOnSupport (f a ha)) =
       q.bindOnSupport fun b hb => p.bindOnSupport fun a ha => f a ha b hb := by
   apply Pmf.ext; rintro c

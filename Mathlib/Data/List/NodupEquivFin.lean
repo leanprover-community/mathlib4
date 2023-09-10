@@ -79,10 +79,10 @@ namespace Sorted
 
 variable [Preorder α] {l : List α}
 
-theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
+lemma get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
 #align list.sorted.nth_le_mono List.Sorted.get_mono
 
-theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
+lemma get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
 #align list.sorted.nth_le_strict_mono List.Sorted.get_strictMono
 
 variable [DecidableEq α]

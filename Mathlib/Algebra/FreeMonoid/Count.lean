@@ -29,11 +29,11 @@ def countP : FreeAddMonoid α →+ ℕ where
   map_add' := List.countP_append _
 #align free_add_monoid.countp FreeAddMonoid.countP
 
-theorem countP_of (x : α) : countP p (of x) = if p x = true then 1 else 0 := by
+lemma countP_of (x : α) : countP p (of x) = if p x = true then 1 else 0 := by
   simp [countP, List.countP, List.countP.go]
 #align free_add_monoid.countp_of FreeAddMonoid.countP_of
 
-theorem countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rfl
+lemma countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rfl
 #align free_add_monoid.countp_apply FreeAddMonoid.countP_apply
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
@@ -59,18 +59,18 @@ def countP : FreeMonoid α →* Multiplicative ℕ :=
     AddMonoidHom.toMultiplicative (FreeAddMonoid.countP p)
 #align free_monoid.countp FreeMonoid.countP
 
-theorem countP_of' (x : α) :
+lemma countP_of' (x : α) :
     countP p (of x) = if p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
     erw [FreeAddMonoid.countP_of]
     simp only [eq_iff_iff, iff_true, ofAdd_zero]; rfl
 #align free_monoid.countp_of' FreeMonoid.countP_of'
 
-theorem countP_of (x : α) : countP p (of x) = if p x then Multiplicative.ofAdd 1 else 1 := by
+lemma countP_of (x : α) : countP p (of x) = if p x then Multiplicative.ofAdd 1 else 1 := by
   rw [countP_of', ofAdd_zero]
 #align free_monoid.countp_of FreeMonoid.countP_of
 
 -- `rfl` is not transitive
-theorem countP_apply (l : FreeAddMonoid α) : countP p l = Multiplicative.ofAdd (List.countP p l) :=
+lemma countP_apply (l : FreeAddMonoid α) : countP p l = Multiplicative.ofAdd (List.countP p l) :=
   rfl
 #align free_monoid.countp_apply FreeMonoid.countP_apply
 

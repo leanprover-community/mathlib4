@@ -189,7 +189,7 @@ lemma isCobounded_inter : IsCobounded (s ∩ t) ↔ IsCobounded s ∧ IsCobounde
   inter_mem_iff
 #align bornology.is_cobounded_inter Bornology.isCobounded_inter
 
-theorem IsCobounded.inter (hs : IsCobounded s) (ht : IsCobounded t) : IsCobounded (s ∩ t) :=
+lemma IsCobounded.inter (hs : IsCobounded s) (ht : IsCobounded t) : IsCobounded (s ∩ t) :=
   isCobounded_inter.2 ⟨hs, ht⟩
 #align bornology.is_cobounded.inter Bornology.IsCobounded.inter
 
@@ -198,15 +198,15 @@ lemma isBounded_union : IsBounded (s ∪ t) ↔ IsBounded s ∧ IsBounded t := b
   simp only [← isCobounded_compl_iff, compl_union, isCobounded_inter]
 #align bornology.is_bounded_union Bornology.isBounded_union
 
-theorem IsBounded.union (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ∪ t) :=
+lemma IsBounded.union (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ∪ t) :=
   isBounded_union.2 ⟨hs, ht⟩
 #align bornology.is_bounded.union Bornology.IsBounded.union
 
-theorem IsCobounded.superset (hs : IsCobounded s) (ht : s ⊆ t) : IsCobounded t :=
+lemma IsCobounded.superset (hs : IsCobounded s) (ht : s ⊆ t) : IsCobounded t :=
   mem_of_superset hs ht
 #align bornology.is_cobounded.superset Bornology.IsCobounded.superset
 
-theorem IsBounded.subset (ht : IsBounded t) (hs : s ⊆ t) : IsBounded s :=
+lemma IsBounded.subset (ht : IsBounded t) (hs : s ⊆ t) : IsBounded s :=
   ht.superset (compl_subset_compl.mpr hs)
 #align bornology.is_bounded.subset Bornology.IsBounded.subset
 
@@ -242,12 +242,12 @@ lemma ext_iff_isBounded {t t' : Bornology α} :
 
 variable {s : Set α}
 
-theorem isCobounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union_mem sUnion_univ} :
+lemma isCobounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union_mem sUnion_univ} :
     @IsCobounded _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ) s ↔ sᶜ ∈ B :=
   Iff.rfl
 #align bornology.is_cobounded_of_bounded_iff Bornology.isCobounded_ofBounded_iff
 
-theorem isBounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union_mem sUnion_univ} :
+lemma isBounded_ofBounded_iff (B : Set (Set α)) {empty_mem subset_mem union_mem sUnion_univ} :
     @IsBounded _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ) s ↔ s ∈ B := by
   rw [@isBounded_def _ (ofBounded B empty_mem subset_mem union_mem sUnion_univ), ← Filter.mem_sets,
    ofBounded_cobounded_sets, Set.mem_setOf_eq, compl_compl]
@@ -262,7 +262,7 @@ lemma isCobounded_biInter {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
 #align bornology.is_cobounded_bInter Bornology.isCobounded_biInter
 
 @[simp]
-theorem isCobounded_biInter_finset (s : Finset ι) {f : ι → Set α} :
+lemma isCobounded_biInter_finset (s : Finset ι) {f : ι → Set α} :
     IsCobounded (⋂ i ∈ s, f i) ↔ ∀ i ∈ s, IsCobounded (f i) :=
   biInter_finset_mem s
 #align bornology.is_cobounded_bInter_finset Bornology.isCobounded_biInter_finset
@@ -283,7 +283,7 @@ lemma isBounded_biUnion {s : Set ι} {f : ι → Set α} (hs : s.Finite) :
   simp only [← isCobounded_compl_iff, compl_iUnion, isCobounded_biInter hs]
 #align bornology.is_bounded_bUnion Bornology.isBounded_biUnion
 
-theorem isBounded_biUnion_finset (s : Finset ι) {f : ι → Set α} :
+lemma isBounded_biUnion_finset (s : Finset ι) {f : ι → Set α} :
     IsBounded (⋃ i ∈ s, f i) ↔ ∀ i ∈ s, IsBounded (f i) :=
   isBounded_biUnion s.finite_toSet
 #align bornology.is_bounded_bUnion_finset Bornology.isBounded_biUnion_finset
@@ -336,11 +336,11 @@ lemma cobounded_eq_bot_iff : cobounded α = ⊥ ↔ BoundedSpace α := by
 
 variable [BoundedSpace α]
 
-theorem IsBounded.all (s : Set α) : IsBounded s :=
+lemma IsBounded.all (s : Set α) : IsBounded s :=
   BoundedSpace.bounded_univ.subset s.subset_univ
 #align bornology.is_bounded.all Bornology.IsBounded.all
 
-theorem IsCobounded.all (s : Set α) : IsCobounded s :=
+lemma IsCobounded.all (s : Set α) : IsCobounded s :=
   compl_compl s ▸ IsBounded.all sᶜ
 #align bornology.is_cobounded.all Bornology.IsCobounded.all
 

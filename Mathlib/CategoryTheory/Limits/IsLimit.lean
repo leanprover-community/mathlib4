@@ -221,14 +221,14 @@ def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t
 
 variable {t : Cone F}
 
-theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
+lemma hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
     m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
   h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun b => rfl
 #align category_theory.limits.is_limit.hom_lift CategoryTheory.Limits.IsLimit.hom_lift
 
 /-- Two morphisms into a limit are equal if their compositions with
   each cone morphism are equal. -/
-theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt}
+lemma hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt}
     (w : ∀ j, f ≫ t.π.app j = f' ≫ t.π.app j) :
     f = f' := by
   rw [h.hom_lift f, h.hom_lift f']; congr; exact funext w
@@ -401,7 +401,7 @@ def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (
 #align category_theory.limits.is_limit.hom_iso CategoryTheory.Limits.IsLimit.homIso
 
 @[simp]
-theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :
+lemma homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :
     (IsLimit.homIso h W).hom f = (t.extend f.down).π :=
   rfl
 #align category_theory.limits.is_limit.hom_iso_hom CategoryTheory.Limits.IsLimit.homIso_hom
@@ -479,7 +479,7 @@ def homOfCone (s : Cone F) : s.pt ⟶ X :=
 #align category_theory.limits.is_limit.of_nat_iso.hom_of_cone CategoryTheory.Limits.IsLimit.OfNatIso.homOfCone
 
 @[simp]
-theorem coneOfHom_homOfCone (s : Cone F) : coneOfHom h (homOfCone h s) = s := by
+lemma coneOfHom_homOfCone (s : Cone F) : coneOfHom h (homOfCone h s) = s := by
   dsimp [coneOfHom, homOfCone]
   match s with
   | .mk s_pt s_π =>
@@ -512,7 +512,7 @@ lemma coneOfHom_fac {Y : C} (f : Y ⟶ X) : coneOfHom h f = (limitCone h).extend
 
 /-- If `F.cones` is represented by `X`, any cone is the extension of the limit cone by the
 corresponding morphism. -/
-theorem cone_fac (s : Cone F) : (limitCone h).extend (homOfCone h s) = s := by
+lemma cone_fac (s : Cone F) : (limitCone h).extend (homOfCone h s) = s := by
   rw [← coneOfHom_homOfCone h s]
   conv_lhs => simp only [homOfCone_coneOfHom]
   apply (coneOfHom_fac _ _).symm
@@ -721,7 +721,7 @@ def ofPointIso {r t : Cocone F} (P : IsColimit r) [i : IsIso (P.desc t)] : IsCol
 
 variable {t : Cocone F}
 
-theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
+lemma hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
     m =
       h.desc
         { pt := W
@@ -738,7 +738,7 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
 
 /-- Two morphisms out of a colimit are equal if their compositions with
   each cocone morphism are equal. -/
-theorem hom_ext (h : IsColimit t) {W : C} {f f' : t.pt ⟶ W}
+lemma hom_ext (h : IsColimit t) {W : C} {f f' : t.pt ⟶ W}
     (w : ∀ j, t.ι.app j ≫ f = t.ι.app j ≫ f') : f = f' := by
   rw [h.hom_desc f, h.hom_desc f']; congr; exact funext w
 #align category_theory.limits.is_colimit.hom_ext CategoryTheory.Limits.IsColimit.hom_ext
@@ -915,7 +915,7 @@ def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅
 #align category_theory.limits.is_colimit.hom_iso CategoryTheory.Limits.IsColimit.homIso
 
 @[simp]
-theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
+lemma homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
     (IsColimit.homIso h W).hom f = (t.extend f.down).ι :=
   rfl
 #align category_theory.limits.is_colimit.hom_iso_hom CategoryTheory.Limits.IsColimit.homIso_hom
@@ -993,7 +993,7 @@ def homOfCocone (s : Cocone F) : X ⟶ s.pt :=
 #align category_theory.limits.is_colimit.of_nat_iso.hom_of_cocone CategoryTheory.Limits.IsColimit.OfNatIso.homOfCocone
 
 @[simp]
-theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s := by
+lemma coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s := by
   dsimp [coconeOfHom, homOfCocone];
   have ⟨s_pt,s_ι⟩ := s
   congr; dsimp
@@ -1025,7 +1025,7 @@ lemma coconeOfHom_fac {Y : C} (f : X ⟶ Y) : coconeOfHom h f = (colimitCocone h
 
 /-- If `F.cocones` is corepresented by `X`, any cocone is the extension of the colimit cocone by the
 corresponding morphism. -/
-theorem cocone_fac (s : Cocone F) : (colimitCocone h).extend (homOfCocone h s) = s := by
+lemma cocone_fac (s : Cocone F) : (colimitCocone h).extend (homOfCocone h s) = s := by
   rw [← coconeOfHom_homOfCocone h s]
   conv_lhs => simp only [homOfCocone_cooneOfHom]
   apply (coconeOfHom_fac _ _).symm

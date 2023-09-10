@@ -38,7 +38,7 @@ lemma countable_coe_iff {s : Set α} : Countable s ↔ s.Countable :=
 #align set.countable_coe_iff Set.countable_coe_iff
 
 /-- Prove `Set.Countable` from a `Countable` instance on the subtype. -/
-theorem to_countable (s : Set α) [Countable s] : s.Countable :=
+lemma to_countable (s : Set α) [Countable s] : s.Countable :=
   countable_coe_iff.mp ‹_›
 #align set.to_countable Set.to_countable
 
@@ -128,7 +128,7 @@ lemma Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonempty
 @[simp] lemma countable_empty : (∅ : Set α).Countable := to_countable _
 #align set.countable_empty Set.countable_empty
 
-@[simp] theorem countable_singleton (a : α) : ({a} : Set α).Countable := to_countable _
+@[simp] lemma countable_singleton (a : α) : ({a} : Set α).Countable := to_countable _
 #align set.countable_singleton Set.countable_singleton
 
 lemma Countable.image {s : Set α} (hs : s.Countable) (f : α → β) : (f '' s).Countable := by
@@ -245,11 +245,11 @@ lemma Subsingleton.countable {s : Set α} (hs : s.Subsingleton) : s.Countable :=
   hs.finite.countable
 #align set.subsingleton.countable Set.Subsingleton.countable
 
-theorem countable_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Countable :=
+lemma countable_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Countable :=
   (finite_isTop α).countable
 #align set.countable_is_top Set.countable_isTop
 
-theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Countable :=
+lemma countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Countable :=
   (finite_isBot α).countable
 #align set.countable_is_bot Set.countable_isBot
 
@@ -311,6 +311,6 @@ lemma countable_setOf_nonempty_of_disjoint {f : β → Set α}
 
 end Set
 
-theorem Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=
+lemma Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=
   s.finite_toSet.countable
 #align finset.countable_to_set Finset.countable_toSet

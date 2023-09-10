@@ -244,11 +244,11 @@ lemma radical_le_jacobson : radical I ≤ jacobson I :=
   le_sInf fun _ hJ => (radical_eq_sInf I).symm ▸ sInf_le ⟨hJ.left, IsMaximal.isPrime hJ.right⟩
 #align ideal.radical_le_jacobson Ideal.radical_le_jacobson
 
-theorem isRadical_of_eq_jacobson (h : jacobson I = I) : I.IsRadical :=
+lemma isRadical_of_eq_jacobson (h : jacobson I = I) : I.IsRadical :=
   radical_le_jacobson.trans h.le
 #align ideal.is_radical_of_eq_jacobson Ideal.isRadical_of_eq_jacobson
 
-theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ : Ideal R)) :
+lemma isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ : Ideal R)) :
     IsUnit r := by
   cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r h with s hs
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
@@ -343,7 +343,7 @@ lemma jacobson_bot_polynomial_le_sInf_map_maximal :
   --   using eq_C_of_degree_eq_zero (degree_eq_zero_of_is_unit ((mem_jacobson_bot.1 hf) X))
 #align ideal.jacobson_bot_polynomial_le_Inf_map_maximal Ideal.jacobson_bot_polynomial_le_sInf_map_maximal
 
-theorem jacobson_bot_polynomial_of_jacobson_bot (h : jacobson (⊥ : Ideal R) = ⊥) :
+lemma jacobson_bot_polynomial_of_jacobson_bot (h : jacobson (⊥ : Ideal R) = ⊥) :
     jacobson (⊥ : Ideal R[X]) = ⊥ := by
   refine' eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_sInf_map_maximal _)
   refine' fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>

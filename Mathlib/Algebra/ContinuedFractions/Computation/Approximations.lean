@@ -234,7 +234,7 @@ lemma fib_le_of_continuantsAux_b :
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/
-theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
+lemma succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     (fib (n + 1) : K) ≤ (of v).denominators n := by
   rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]
   have : n + 1 ≤ 1 ∨ ¬(of v).TerminatedAt (n - 1) := by
@@ -317,7 +317,7 @@ Next we prove the so-called *determinant formula* for `GeneralizedContinuedFract
 -/
 
 
-theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
+lemma determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     ((of v).continuantsAux n).a * ((of v).continuantsAux (n + 1)).b -
       ((of v).continuantsAux n).b * ((of v).continuantsAux (n + 1)).a = (-1) ^ n := by
   induction' n with n IH
@@ -357,7 +357,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
 #align generalized_continued_fraction.determinant_aux GeneralizedContinuedFraction.determinant_aux
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/
-theorem determinant (not_terminated_at_n : ¬(of v).TerminatedAt n) :
+lemma determinant (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     (of v).numerators n * (of v).denominators (n + 1) -
       (of v).denominators n * (of v).numerators (n + 1) = (-1) ^ (n + 1) :=
   determinant_aux <| Or.inr <| not_terminated_at_n
@@ -463,7 +463,7 @@ lemma sub_convergents_eq {ifp : IntFractPair K}
 #align generalized_continued_fraction.sub_convergents_eq GeneralizedContinuedFraction.sub_convergents_eq
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. -/
-theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
+lemma abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     |v - (of v).convergents n| ≤ 1 / ((of v).denominators n * ((of v).denominators <| n + 1)) := by
   -- shorthand notation
   let g := of v

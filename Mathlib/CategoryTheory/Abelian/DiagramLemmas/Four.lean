@@ -92,7 +92,7 @@ v         v         v         v
 A' --f'-> B' --g'-> C' --h'-> D'
 ```
 -/
-theorem mono_of_epi_of_mono_of_mono (hα : Epi α) (hβ : Mono β) (hδ : Mono δ) : Mono γ :=
+lemma mono_of_epi_of_mono_of_mono (hα : Epi α) (hβ : Mono β) (hδ : Mono δ) : Mono γ :=
   mono_of_zero_of_map_zero _ fun c hc =>
     have : h c = 0 :=
       suffices δ (h c) = 0 from zero_of_map_zero _ (pseudo_injective_of_mono _) _ this
@@ -139,7 +139,7 @@ v         v         v         v
 A' --f'-> B' --g'-> C' --h'-> D'
 ```
 -/
-theorem epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) : Epi β :=
+lemma epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) : Epi β :=
   Preadditive.epi_of_cancel_zero _ fun {R} r hβr => by
     have hf'r : f' ≫ r = 0 :=
       Limits.zero_of_epi_comp α <|

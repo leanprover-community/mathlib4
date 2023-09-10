@@ -133,7 +133,7 @@ instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :
 #noalign measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
 
 @[simp]
-theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) :=
+lemma val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) :=
   rfl
 #align measure_theory.probability_measure.val_eq_to_measure MeasureTheory.ProbabilityMeasure.val_eq_to_measure
 
@@ -142,11 +142,11 @@ lemma toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω �
 #align measure_theory.probability_measure.coe_injective MeasureTheory.ProbabilityMeasure.toMeasure_injective
 
 -- porting note: removed `@[simp]` because `simp` can prove it
-theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
+lemma coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
   congr_arg ENNReal.toNNReal ν.prop.measure_univ
 #align measure_theory.probability_measure.coe_fn_univ MeasureTheory.ProbabilityMeasure.coeFn_univ
 
-theorem coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
+lemma coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
   simp only [coeFn_univ, Ne.def, one_ne_zero, not_false_iff]
 #align measure_theory.probability_measure.coe_fn_univ_ne_zero MeasureTheory.ProbabilityMeasure.coeFn_univ_ne_zero
 
@@ -156,33 +156,33 @@ def toFiniteMeasure (μ : ProbabilityMeasure Ω) : FiniteMeasure Ω :=
 #align measure_theory.probability_measure.to_finite_measure MeasureTheory.ProbabilityMeasure.toFiniteMeasure
 
 @[simp]
-theorem toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω) :
+lemma toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Measure Ω) = (ν : Measure Ω) :=
   rfl
 #align measure_theory.probability_measure.coe_comp_to_finite_measure_eq_coe MeasureTheory.ProbabilityMeasure.toMeasure_comp_toFiniteMeasure_eq_toMeasure
 
 @[simp]
-theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
+lemma coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0) :=
   rfl
 #align measure_theory.probability_measure.coe_fn_comp_to_finite_measure_eq_coe_fn MeasureTheory.ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn
 
 @[simp]
-theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+lemma ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     (ν s : ℝ≥0∞) = (ν : Measure Ω) s := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure,
     toMeasure_comp_toFiniteMeasure_eq_toMeasure]
 #align measure_theory.probability_measure.ennreal_coe_fn_eq_coe_fn_to_measure MeasureTheory.ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure
 
-theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
+lemma apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
   exact MeasureTheory.FiniteMeasure.apply_mono _ h
 #align measure_theory.probability_measure.apply_mono MeasureTheory.ProbabilityMeasure.apply_mono
 
-@[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
+@[simp] lemma apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
   simpa using apply_mono μ (subset_univ s)
 
-theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω := by
+lemma nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω := by
   by_contra maybe_empty
   have zero : (μ : Measure Ω) univ = 0 := by
     rw [univ_eq_empty_iff.mpr (not_nonempty_iff.mp maybe_empty), measure_empty]
@@ -191,32 +191,32 @@ theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω := by
 #align measure_theory.probability_measure.nonempty_of_probability_measure MeasureTheory.ProbabilityMeasure.nonempty
 
 @[ext]
-theorem eq_of_forall_toMeasure_apply_eq (μ ν : ProbabilityMeasure Ω)
+lemma eq_of_forall_toMeasure_apply_eq (μ ν : ProbabilityMeasure Ω)
     (h : ∀ s : Set Ω, MeasurableSet s → (μ : Measure Ω) s = (ν : Measure Ω) s) : μ = ν := by
   apply toMeasure_injective
   ext1 s s_mble
   exact h s s_mble
 #align measure_theory.probability_measure.eq_of_forall_measure_apply_eq MeasureTheory.ProbabilityMeasure.eq_of_forall_toMeasure_apply_eq
 
-theorem eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
+lemma eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
     (h : ∀ s : Set Ω, MeasurableSet s → μ s = ν s) : μ = ν := by
   ext1 s s_mble
   simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (h s s_mble)
 #align measure_theory.probability_measure.eq_of_forall_apply_eq MeasureTheory.ProbabilityMeasure.eq_of_forall_apply_eq
 
 @[simp]
-theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
+lemma mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
   μ.coeFn_univ
 #align measure_theory.probability_measure.mass_to_finite_measure MeasureTheory.ProbabilityMeasure.mass_toFiniteMeasure
 
-theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
+lemma toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
   rw [← FiniteMeasure.mass_nonzero_iff, μ.mass_toFiniteMeasure]
   exact one_ne_zero
 #align measure_theory.probability_measure.to_finite_measure_nonzero MeasureTheory.ProbabilityMeasure.toFiniteMeasure_nonzero
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
-theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
+lemma testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
     LipschitzWith 1 fun f : Ω →ᵇ ℝ≥0 => μ.toFiniteMeasure.testAgainstNN f :=
   μ.mass_toFiniteMeasure ▸ μ.toFiniteMeasure.testAgainstNN_lipschitz
 #align measure_theory.probability_measure.test_against_nn_lipschitz MeasureTheory.ProbabilityMeasure.testAgainstNN_lipschitz
@@ -239,13 +239,13 @@ def toWeakDualBCNN : ProbabilityMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ�
 #align measure_theory.probability_measure.to_weak_dual_bcnn MeasureTheory.ProbabilityMeasure.toWeakDualBCNN
 
 @[simp]
-theorem coe_toWeakDualBCNN (μ : ProbabilityMeasure Ω) :
+lemma coe_toWeakDualBCNN (μ : ProbabilityMeasure Ω) :
     ⇑μ.toWeakDualBCNN = μ.toFiniteMeasure.testAgainstNN :=
   rfl
 #align measure_theory.probability_measure.coe_to_weak_dual_bcnn MeasureTheory.ProbabilityMeasure.coe_toWeakDualBCNN
 
 @[simp]
-theorem toWeakDualBCNN_apply (μ : ProbabilityMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
+lemma toWeakDualBCNN_apply (μ : ProbabilityMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
     μ.toWeakDualBCNN f = (∫⁻ ω, f ω ∂(μ : Measure Ω)).toNNReal :=
   rfl
 #align measure_theory.probability_measure.to_weak_dual_bcnn_apply MeasureTheory.ProbabilityMeasure.toWeakDualBCNN_apply
@@ -256,13 +256,13 @@ lemma toWeakDualBCNN_continuous : Continuous fun μ : ProbabilityMeasure Ω => �
 
 /- Integration of (nonnegative bounded continuous) test functions against Borel probability
 measures depends continuously on the measure. -/
-theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
+lemma continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : ProbabilityMeasure Ω => μ.toFiniteMeasure.testAgainstNN f :=
   (FiniteMeasure.continuous_testAgainstNN_eval f).comp toFiniteMeasure_continuous
 #align measure_theory.probability_measure.continuous_test_against_nn_eval MeasureTheory.ProbabilityMeasure.continuous_testAgainstNN_eval
 
 -- The canonical mapping from probability measures to finite measures is an embedding.
-theorem toFiniteMeasure_embedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
+lemma toFiniteMeasure_embedding (Ω : Type*) [MeasurableSpace Ω] [TopologicalSpace Ω]
     [OpensMeasurableSpace Ω] :
     Embedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) :=
   { induced := rfl
@@ -338,7 +338,7 @@ def normalize : ProbabilityMeasure Ω :=
 #align measure_theory.finite_measure.normalize MeasureTheory.FiniteMeasure.normalize
 
 @[simp]
-theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
+lemma self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0
   · simp only [zero_mass, coeFn_zero, Pi.zero_apply, zero_mul]
     rfl
@@ -358,12 +358,12 @@ lemma self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasur
     ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 #align measure_theory.finite_measure.self_eq_mass_smul_normalize MeasureTheory.FiniteMeasure.self_eq_mass_smul_normalize
 
-theorem normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
+lemma normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
   simp only [μ.self_eq_mass_mul_normalize, μ.mass_nonzero_iff.mpr nonzero, inv_mul_cancel_left₀,
     Ne.def, not_false_iff]
 #align measure_theory.finite_measure.normalize_eq_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_of_nonzero
 
-theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
+lemma normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
   rw [← smul_assoc]
@@ -371,7 +371,7 @@ theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
     not_false_iff, one_smul]
 #align measure_theory.finite_measure.normalize_eq_inv_mass_smul_of_nonzero MeasureTheory.FiniteMeasure.normalize_eq_inv_mass_smul_of_nonzero
 
-theorem toMeasure_normalize_eq_of_nonzero (nonzero : μ ≠ 0) :
+lemma toMeasure_normalize_eq_of_nonzero (nonzero : μ ≠ 0) :
     (μ.normalize : Measure Ω) = μ.mass⁻¹ • μ := by
   ext1 s _s_mble
   rw [← μ.normalize.ennreal_coeFn_eq_coeFn_toMeasure s, μ.normalize_eq_of_nonzero nonzero s,
@@ -402,13 +402,13 @@ lemma average_eq_integral_normalize {E : Type*} [NormedAddCommGroup E] [NormedSp
 
 variable [TopologicalSpace Ω]
 
-theorem testAgainstNN_eq_mass_mul (f : Ω →ᵇ ℝ≥0) :
+lemma testAgainstNN_eq_mass_mul (f : Ω →ᵇ ℝ≥0) :
     μ.testAgainstNN f = μ.mass * μ.normalize.toFiniteMeasure.testAgainstNN f := by
   nth_rw 1 [μ.self_eq_mass_smul_normalize]
   rw [μ.normalize.toFiniteMeasure.smul_testAgainstNN_apply μ.mass f, smul_eq_mul]
 #align measure_theory.finite_measure.test_against_nn_eq_mass_mul MeasureTheory.FiniteMeasure.testAgainstNN_eq_mass_mul
 
-theorem normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
+lemma normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
     μ.normalize.toFiniteMeasure.testAgainstNN f = μ.mass⁻¹ * μ.testAgainstNN f := by
   simp [μ.testAgainstNN_eq_mass_mul, inv_mul_cancel_left₀ <| μ.mass_nonzero_iff.mpr nonzero]
 #align measure_theory.finite_measure.normalize_test_against_nn MeasureTheory.FiniteMeasure.normalize_testAgainstNN

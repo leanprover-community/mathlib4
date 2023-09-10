@@ -92,7 +92,7 @@ lemma Real.mem_closure_iff {s : Set ℝ} {x : ℝ} : x ∈ closure s ↔ ∀ ε 
   by simp [mem_closure_iff_nhds_basis nhds_basis_ball, Real.dist_eq]
 #align real.mem_closure_iff Real.mem_closure_iff
 
-theorem Real.uniformContinuous_inv (s : Set ℝ) {r : ℝ} (r0 : 0 < r) (H : ∀ x ∈ s, r ≤ |x|) :
+lemma Real.uniformContinuous_inv (s : Set ℝ) {r : ℝ} (r0 : 0 < r) (H : ∀ x ∈ s, r ≤ |x|) :
     UniformContinuous fun p : s => p.1⁻¹ :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
     let ⟨δ, δ0, Hδ⟩ := rat_inv_continuous_lemma abs ε0 r0
@@ -123,7 +123,7 @@ lemma Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous ((· * ·) 
   uniformContinuous_const_smul x
 #align real.uniform_continuous_const_mul Real.uniformContinuous_const_mul
 
-theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
+lemma Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
     (H : ∀ x ∈ s, |(x : ℝ × ℝ).1| < r₁ ∧ |x.2| < r₂) :
     UniformContinuous fun p : s => p.1.1 * p.1.2 :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
@@ -149,7 +149,7 @@ instance : CompleteSpace ℝ := by
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
   refine' this.imp fun N hN n hn => hε (hN n hn)
 
-theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
+lemma Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
 #align real.totally_bounded_ball Real.totallyBounded_ball
 
@@ -261,7 +261,7 @@ namespace AddSubgroup
 
 /-- The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite. -/
-theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
+lemma tendsto_zmultiples_subtype_cofinite (a : ℝ) :
     Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) :=
   (zmultiples a).tendsto_coe_cofinite_of_discrete
 #align add_subgroup.tendsto_zmultiples_subtype_cofinite AddSubgroup.tendsto_zmultiples_subtype_cofinite

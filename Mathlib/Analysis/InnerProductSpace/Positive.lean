@@ -101,7 +101,7 @@ lemma IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F �
   rw [adjoint_adjoint]
 #align continuous_linear_map.is_positive.adjoint_conj ContinuousLinearMap.IsPositive.adjoint_conj
 
-theorem IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
+lemma IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [CompleteSpace U] :
     (U.subtypeL ∘L
         orthogonalProjection U ∘L T ∘L U.subtypeL ∘L orthogonalProjection U).IsPositive := by
@@ -119,7 +119,7 @@ section Complex
 
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E'] [CompleteSpace E']
 
-theorem isPositive_iff_complex (T : E' →L[ℂ] E') :
+lemma isPositive_iff_complex (T : E' →L[ℂ] E') :
     IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by
   simp_rw [IsPositive, forall_and, isSelfAdjoint_iff_isSymmetric,
     LinearMap.isSymmetric_iff_inner_map_self_real, conj_eq_iff_re]

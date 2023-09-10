@@ -130,7 +130,7 @@ lemma integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
   simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 1)
 #align integrable_mul_exp_neg_mul_sq integrable_mul_exp_neg_mul_sq
 
-theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
+lemma norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
     ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
   rw [Complex.norm_eq_abs, Complex.abs_exp, ←ofReal_pow, mul_comm (-b) _, ofReal_mul_re, neg_re,
     mul_comm]
@@ -211,7 +211,7 @@ lemma integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       ring
 #align integral_gaussian_sq_complex integral_gaussian_sq_complex
 
-theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π / b) := by
+lemma integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π / b) := by
   -- First we deal with the crazy case where `b ≤ 0`: then both sides vanish.
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos]
@@ -226,7 +226,7 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π /
   rw [ofReal_exp, ofReal_mul, ofReal_pow, ofReal_neg]
 #align integral_gaussian integral_gaussian
 
-theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
+lemma continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
     ContinuousAt (fun c : ℂ => ∫ x : ℝ, cexp (-c * (x : ℂ) ^ 2)) b := by
   let f : ℂ → ℝ → ℂ := fun (c : ℂ) (x : ℝ) => cexp (-c * (x : ℂ) ^ 2)
   obtain ⟨d, hd, hd'⟩ := exists_between hb
@@ -311,7 +311,7 @@ lemma integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
 #align integral_gaussian_complex_Ioi integral_gaussian_complex_Ioi
 
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for real `b`.
-theorem integral_gaussian_Ioi (b : ℝ) :
+lemma integral_gaussian_Ioi (b : ℝ) :
     ∫ x in Ioi (0 : ℝ), exp (-b * x ^ 2) = sqrt (π / b) / 2 := by
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
@@ -372,7 +372,7 @@ def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
 
 /-- Explicit formula for the norm of the Gaussian function along the vertical
 edges. -/
-theorem norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
+lemma norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ = exp (-(b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2)) := by
   rw [Complex.norm_eq_abs, Complex.abs_exp, neg_mul, neg_re, ← re_add_im b]
   simp only [sq, re_add_im, mul_re, mul_im, add_re, add_im, ofReal_re, ofReal_im, I_re, I_im]
@@ -380,7 +380,7 @@ theorem norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I
 
-theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
+lemma norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ =
       exp (-(b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re))) := by
   have :
@@ -391,7 +391,7 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I' GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I'
 
-theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤ T) :
+lemma verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤ T) :
     ‖verticalIntegral b c T‖ ≤
       (2 : ℝ) * |c| * exp (-(b.re * T ^ 2 - (2 : ℝ) * |b.im| * |c| * T - b.re * c ^ 2)) := by
   -- first get uniform bound for integrand
@@ -436,7 +436,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy
 #align gaussian_fourier.vertical_integral_norm_le GaussianFourier.verticalIntegral_norm_le
 
-theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
+lemma tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
     Tendsto (verticalIntegral b c) atTop (𝓝 0) := by
   -- complete proof using squeeze theorem:
   rw [tendsto_zero_iff_norm_tendsto_zero]
@@ -453,7 +453,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 #align gaussian_fourier.tendsto_vertical_integral GaussianFourier.tendsto_verticalIntegral
 
-theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
+lemma integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     Integrable fun x : ℝ => cexp (-b * (x + c * I) ^ 2) := by
   refine'
     ⟨(Complex.continuous_exp.comp
@@ -470,7 +470,7 @@ theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.integrable_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integrable_cexp_neg_mul_sq_add_real_mul_I
 
-theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
+lemma integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     ∫ x : ℝ, cexp (-b * (x + c * I) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   refine'
     tendsto_nhds_unique
@@ -512,7 +512,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.integral_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integral_cexp_neg_mul_sq_add_real_mul_I
 
-theorem _root_.integral_cexp_neg_mul_sq_add_const (hb : 0 < b.re) (c : ℂ) :
+lemma _root_.integral_cexp_neg_mul_sq_add_const (hb : 0 < b.re) (c : ℂ) :
     ∫ x : ℝ, cexp (-b * (x + c) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   rw [← re_add_im c]
   simp_rw [← add_assoc, ← ofReal_add]
@@ -520,7 +520,7 @@ theorem _root_.integral_cexp_neg_mul_sq_add_const (hb : 0 < b.re) (c : ℂ) :
   · apply integral_cexp_neg_mul_sq_add_real_mul_I hb
 #align integral_cexp_neg_mul_sq_add_const integral_cexp_neg_mul_sq_add_const
 
-theorem _root_.fourier_transform_gaussian (hb : 0 < b.re) (t : ℂ) :
+lemma _root_.fourier_transform_gaussian (hb : 0 < b.re) (t : ℂ) :
     ∫ x : ℝ, cexp (I * t * x) * cexp (-b * (x : ℂ) ^ 2) =
       cexp (-t ^ 2 / (4 * b)) * (π / b) ^ (1 / 2 : ℂ) := by
   have : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
@@ -534,7 +534,7 @@ theorem _root_.fourier_transform_gaussian (hb : 0 < b.re) (t : ℂ) :
   simp_rw [this, Complex.exp_add, integral_mul_left, integral_cexp_neg_mul_sq_add_const hb]
 #align fourier_transform_gaussian fourier_transform_gaussian
 
-theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
+lemma _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun x : ℝ => cexp (-π * b * (x : ℂ) ^ 2)) = fun t : ℝ =>
       (1 : ℂ) / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t : ℂ) ^ 2) := by
   ext1 t

@@ -89,11 +89,11 @@ lemma mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜} (h : spectralRadi
 
 variable [CompleteSpace A]
 
-theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
+lemma isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
 #align spectrum.is_open_resolvent_set spectrum.isOpen_resolventSet
 
-protected theorem isClosed (a : A) : IsClosed (σ a) :=
+protected lemma isClosed (a : A) : IsClosed (σ a) :=
   (isOpen_resolventSet a).isClosed_compl
 #align spectrum.is_closed spectrum.isClosed
 
@@ -121,7 +121,7 @@ lemma norm_le_norm_of_mem [NormOneClass A] {a : A} {k : 𝕜} (hk : k ∈ σ a) 
   le_of_not_lt <| mt mem_resolventSet_of_norm_lt hk
 #align spectrum.norm_le_norm_of_mem spectrum.norm_le_norm_of_mem
 
-theorem subset_closedBall_norm_mul (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) (‖a‖ * ‖(1 : A)‖) :=
+lemma subset_closedBall_norm_mul (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) (‖a‖ * ‖(1 : A)‖) :=
   fun k hk => by simp [norm_le_norm_mul_of_mem hk]
 #align spectrum.subset_closed_ball_norm_mul spectrum.subset_closedBall_norm_mul
 
@@ -129,7 +129,7 @@ lemma subset_closedBall_norm [NormOneClass A] (a : A) : σ a ⊆ Metric.closedBa
   fun k hk => by simp [norm_le_norm_of_mem hk]
 #align spectrum.subset_closed_ball_norm spectrum.subset_closedBall_norm
 
-theorem is_bounded (a : A) : Metric.Bounded (σ a) :=
+lemma is_bounded (a : A) : Metric.Bounded (σ a) :=
   (Metric.bounded_iff_subset_ball 0).mpr ⟨‖a‖ * ‖(1 : A)‖, subset_closedBall_norm_mul a⟩
 #align spectrum.is_bounded spectrum.is_bounded
 
@@ -160,7 +160,7 @@ open ENNReal Polynomial
 
 variable (𝕜)
 
-theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
+lemma spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
     spectralRadius 𝕜 a ≤ (‖a ^ (n + 1)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) *
       (‖(1 : A)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) := by
   refine' iSup₂_le fun k hk => _
@@ -180,7 +180,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
   rw [Nat.cast_succ, ENNReal.coe_mul_rpow]
 #align spectrum.spectral_radius_le_pow_nnnorm_pow_one_div spectrum.spectralRadius_le_pow_nnnorm_pow_one_div
 
-theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
+lemma spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
   refine' ENNReal.le_of_forall_lt_one_mul_le fun ε hε => _
   by_cases ε = 0
@@ -223,7 +223,7 @@ lemma hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
 /- TODO: Once there is sufficient API for bornology, we should get a nice filter / asymptotics
 version of this, for example: `Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0)` or more specifically
 `(resolvent a) =O[cobounded 𝕜] (fun z ↦ z⁻¹)`. -/
-theorem norm_resolvent_le_forall (a : A) :
+lemma norm_resolvent_le_forall (a : A) :
     ∀ ε > 0, ∃ R > 0, ∀ z : 𝕜, R ≤ ‖z‖ → ‖resolvent a z‖ ≤ ε := by
   obtain ⟨c, c_pos, hc⟩ := (@NormedRing.inverse_one_sub_norm A _ _).exists_pos
   rw [isBigOWith_iff, eventually_iff, Metric.mem_nhds_iff] at hc
@@ -341,7 +341,7 @@ open scoped Topology
 variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 /-- The `limsup` relationship for the spectral radius used to prove `spectrum.gelfand_formula`. -/
-theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
+lemma limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
     limsup (fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) atTop ≤ spectralRadius ℂ a := by
   refine' ENNReal.inv_le_inv.mp (le_of_forall_pos_nnreal_lt fun r r_pos r_lt => _)
   simp_rw [inv_limsup, ← one_div]
@@ -361,7 +361,7 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
 
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
 `spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖₊ ^ (1 / n)`. -/
-theorem pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
+lemma pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) atTop (𝓝 (spectralRadius ℂ a)) :=
   tendsto_of_le_liminf_of_limsup_le (spectralRadius_le_liminf_pow_nnnorm_pow_one_div ℂ a)
     (limsup_pow_nnnorm_pow_one_div_le_spectralRadius a)
@@ -371,7 +371,7 @@ theorem pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
 instead of `nnnorm`. -/
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
 `spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖₊ ^ (1 / n)`. -/
-theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
+lemma pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => ENNReal.ofReal (‖a ^ n‖ ^ (1 / n : ℝ))) atTop
       (𝓝 (spectralRadius ℂ a)) := by
   convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
@@ -438,7 +438,7 @@ open scoped Polynomial
 open Polynomial
 
 /-- The **spectral mapping theorem** for polynomials in a Banach algebra over `ℂ`. -/
-theorem map_polynomial_aeval (p : ℂ[X]) :
+lemma map_polynomial_aeval (p : ℂ[X]) :
     spectrum ℂ (aeval a p) = (fun k => eval k p) '' spectrum ℂ a :=
   map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
 #align spectrum.map_polynomial_aeval spectrum.map_polynomial_aeval
@@ -446,7 +446,7 @@ theorem map_polynomial_aeval (p : ℂ[X]) :
 -- Porting note: Replaced `x ^ n` with `HPow.hPow x n`
 /-- A specialization of the spectral mapping theorem for polynomials in a Banach algebra over `ℂ`
 to monic monomials. -/
-protected theorem map_pow (n : ℕ) :
+protected lemma map_pow (n : ℕ) :
     spectrum ℂ (a ^ n) = (fun x : ℂ => HPow.hPow x n) '' spectrum ℂ a := by
   simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
 #align spectrum.map_pow spectrum.map_pow
@@ -545,7 +545,7 @@ def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : A →L[𝕜] 𝕜 :=
 #align alg_hom.to_continuous_linear_map AlgHom.toContinuousLinearMap
 
 @[simp]
-theorem coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
+lemma coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
   rfl
 #align alg_hom.coe_to_continuous_linear_map AlgHom.coe_toContinuousLinearMap
 
@@ -597,12 +597,12 @@ def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
 #align weak_dual.character_space.equiv_alg_hom WeakDual.CharacterSpace.equivAlgHom
 
 @[simp]
-theorem equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=
+lemma equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=
   rfl
 #align weak_dual.character_space.equiv_alg_hom_coe WeakDual.CharacterSpace.equivAlgHom_coe
 
 @[simp]
-theorem equivAlgHom_symm_coe (f : A →ₐ[𝕜] 𝕜) : ⇑(equivAlgHom.symm f) = f :=
+lemma equivAlgHom_symm_coe (f : A →ₐ[𝕜] 𝕜) : ⇑(equivAlgHom.symm f) = f :=
   rfl
 #align weak_dual.character_space.equiv_alg_hom_symm_coe WeakDual.CharacterSpace.equivAlgHom_symm_coe
 

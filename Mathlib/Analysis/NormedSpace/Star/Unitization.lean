@@ -82,7 +82,7 @@ variable {E}
 /-- This is the key lemma used to establish the instance `Unitization.instCstarRing`
 (i.e., proving that the norm on `Unitization 𝕜 E` satisfies the C⋆-property). We split this one
 out so that declaring the `CstarRing` instance doesn't time out. -/
-theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
+lemma Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤ ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖ := by
   /- The key idea is that we can use `sSup_closed_unit_ball_eq_norm` to make this about
   applying this linear map to elements of norm at most one. There is a bit of `sqrt` and `sq`

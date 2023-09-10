@@ -210,7 +210,7 @@ lemma mul_basis_toMatrix [DecidableEq ι] [DecidableEq ι'] (b₁ : Basis ι R M
   rwa [LinearMap.toMatrix_toLin] at this
 #align mul_basis_to_matrix mul_basis_toMatrix
 
-theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι ι R) :
+lemma basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι ι R) :
     b.toMatrix (Pi.basisFun R ι) * A = of fun i j => b.repr (Aᵀ j) i := by
   classical
     simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
@@ -261,7 +261,7 @@ def Basis.invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂
 #align basis.invertible_to_matrix Basis.invertibleToMatrix
 
 @[simp]
-theorem Basis.toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
+lemma Basis.toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
     (b.reindex e).toMatrix v = (b.toMatrix v).submatrix e.symm _root_.id := by
   ext
   simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.submatrix_apply, id.def,
@@ -269,7 +269,7 @@ theorem Basis.toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι
 #align basis.to_matrix_reindex Basis.toMatrix_reindex
 
 @[simp]
-theorem Basis.toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :
+lemma Basis.toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :
     (b.map f).toMatrix v = b.toMatrix (f.symm ∘ v) := by
   ext
   simp only [Basis.toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]

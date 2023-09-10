@@ -181,7 +181,7 @@ lemma isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C �
   · exact Equivalence.isIdempotentComplete ε.symm
 #align category_theory.idempotents.is_idempotent_complete_iff_of_equivalence CategoryTheory.Idempotents.isIdempotentComplete_iff_of_equivalence
 
-theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentComplete Cᵒᵖ) :
+lemma isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentComplete Cᵒᵖ) :
     IsIdempotentComplete C := by
   refine' ⟨_⟩
   intro X p hp

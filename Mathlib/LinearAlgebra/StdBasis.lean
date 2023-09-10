@@ -49,53 +49,53 @@ def stdBasis : ∀ i : ι, φ i →ₗ[R] ∀ i, φ i :=
   single
 #align linear_map.std_basis LinearMap.stdBasis
 
-theorem stdBasis_apply (i : ι) (b : φ i) : stdBasis R φ i b = update (0 : (a : ι) → φ a) i b :=
+lemma stdBasis_apply (i : ι) (b : φ i) : stdBasis R φ i b = update (0 : (a : ι) → φ a) i b :=
   rfl
 #align linear_map.std_basis_apply LinearMap.stdBasis_apply
 
 @[simp]
-theorem stdBasis_apply' (i i' : ι) : (stdBasis R (fun _x : ι => R) i) 1 i' = ite (i = i') 1 0 := by
+lemma stdBasis_apply' (i i' : ι) : (stdBasis R (fun _x : ι => R) i) 1 i' = ite (i = i') 1 0 := by
   rw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
   congr 1; rw [eq_iff_iff, eq_comm]
 #align linear_map.std_basis_apply' LinearMap.stdBasis_apply'
 
-theorem coe_stdBasis (i : ι) : ⇑(stdBasis R φ i) = Pi.single i :=
+lemma coe_stdBasis (i : ι) : ⇑(stdBasis R φ i) = Pi.single i :=
   rfl
 #align linear_map.coe_std_basis LinearMap.coe_stdBasis
 
 @[simp]
-theorem stdBasis_same (i : ι) (b : φ i) : stdBasis R φ i b i = b :=
+lemma stdBasis_same (i : ι) (b : φ i) : stdBasis R φ i b i = b :=
   Pi.single_eq_same i b
 #align linear_map.std_basis_same LinearMap.stdBasis_same
 
-theorem stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 0 :=
+lemma stdBasis_ne (i j : ι) (h : j ≠ i) (b : φ i) : stdBasis R φ i b j = 0 :=
   Pi.single_eq_of_ne h b
 #align linear_map.std_basis_ne LinearMap.stdBasis_ne
 
-theorem stdBasis_eq_pi_diag (i : ι) : stdBasis R φ i = pi (diag i) := by
+lemma stdBasis_eq_pi_diag (i : ι) : stdBasis R φ i = pi (diag i) := by
   ext x j
   -- Porting note: made types explicit
   convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
   rfl
 #align linear_map.std_basis_eq_pi_diag LinearMap.stdBasis_eq_pi_diag
 
-theorem ker_stdBasis (i : ι) : ker (stdBasis R φ i) = ⊥ :=
+lemma ker_stdBasis (i : ι) : ker (stdBasis R φ i) = ⊥ :=
   ker_eq_bot_of_injective <| Pi.single_injective _ _
 #align linear_map.ker_std_basis LinearMap.ker_stdBasis
 
-theorem proj_comp_stdBasis (i j : ι) : (proj i).comp (stdBasis R φ j) = diag j i := by
+lemma proj_comp_stdBasis (i j : ι) : (proj i).comp (stdBasis R φ j) = diag j i := by
   rw [stdBasis_eq_pi_diag, proj_pi]
 #align linear_map.proj_comp_std_basis LinearMap.proj_comp_stdBasis
 
-theorem proj_stdBasis_same (i : ι) : (proj i).comp (stdBasis R φ i) = id :=
+lemma proj_stdBasis_same (i : ι) : (proj i).comp (stdBasis R φ i) = id :=
   LinearMap.ext <| stdBasis_same R φ i
 #align linear_map.proj_std_basis_same LinearMap.proj_stdBasis_same
 
-theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ j) = 0 :=
+lemma proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ j) = 0 :=
   LinearMap.ext <| stdBasis_ne R φ _ _ h
 #align linear_map.proj_std_basis_ne LinearMap.proj_stdBasis_ne
 
-theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
+lemma iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 _
   simp only [←ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
@@ -139,7 +139,7 @@ lemma iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ := 
   · rw [Finset.coe_univ, Set.union_empty]
 #align linear_map.supr_range_std_basis LinearMap.iSup_range_stdBasis
 
-theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
+lemma disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
     Disjoint (⨆ i ∈ I, range (stdBasis R φ i)) (⨆ i ∈ J, range (stdBasis R φ i)) := by
   refine'
     Disjoint.mono (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
@@ -260,7 +260,7 @@ lemma basis_apply [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (ji) :
 #align pi.basis_apply Pi.basis_apply
 
 @[simp]
-theorem basis_repr (s : ∀ j, Basis (ιs j) R (Ms j)) (x) (ji) :
+lemma basis_repr (s : ∀ j, Basis (ιs j) R (Ms j)) (x) (ji) :
     (Pi.basis s).repr x ji = (s ji.1).repr (x ji.1) ji.2 :=
   rfl
 #align pi.basis_repr Pi.basis_repr
@@ -283,7 +283,7 @@ lemma basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun _ 
 #align pi.basis_fun_apply Pi.basisFun_apply
 
 @[simp]
-theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]
+lemma basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]
 #align pi.basis_fun_repr Pi.basisFun_repr
 
 @[simp]
@@ -308,7 +308,7 @@ noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=
 
 variable {n m}
 
-theorem stdBasis_eq_stdBasisMatrix (i : n) (j : m) [DecidableEq n] [DecidableEq m] :
+lemma stdBasis_eq_stdBasisMatrix (i : n) (j : m) [DecidableEq n] [DecidableEq m] :
     stdBasis R n m (i, j) = stdBasisMatrix i j (1 : R) := by
   -- Porting note: `simp` fails to apply `Pi.basis_apply`
   ext a b

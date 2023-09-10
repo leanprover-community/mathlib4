@@ -58,12 +58,12 @@ lemma hasStrictDerivAt_pow :
       (hasStrictDerivAt_pow (n + 1) x).mul (hasStrictDerivAt_id x)
 #align has_strict_deriv_at_pow hasStrictDerivAt_pow
 
-theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
+lemma hasDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x :=
   (hasStrictDerivAt_pow n x).hasDerivAt
 #align has_deriv_at_pow hasDerivAt_pow
 
-theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) (s : Set 𝕜) :
+lemma hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) (s : Set 𝕜) :
     HasDerivWithinAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) s x :=
   (hasDerivAt_pow n x).hasDerivWithinAt
 #align has_deriv_within_at_pow hasDerivWithinAt_pow
@@ -93,29 +93,29 @@ lemma deriv_pow' : (deriv fun x : 𝕜 => x ^ n) = fun x => (n : 𝕜) * x ^ (n 
   funext fun _ => deriv_pow n
 #align deriv_pow' deriv_pow'
 
-theorem derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
+lemma derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun x : 𝕜 => x ^ n) s x = (n : 𝕜) * x ^ (n - 1) :=
   (hasDerivWithinAt_pow n x s).derivWithin hxs
 #align deriv_within_pow derivWithin_pow
 
-theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
+lemma HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
     HasDerivWithinAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
   (hasDerivAt_pow n (c x)).comp_hasDerivWithinAt x hc
 #align has_deriv_within_at.pow HasDerivWithinAt.pow
 
-theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
+lemma HasDerivAt.pow (hc : HasDerivAt c c' x) :
     HasDerivAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.pow n
 #align has_deriv_at.pow HasDerivAt.pow
 
-theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+lemma derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x :=
   (hc.hasDerivWithinAt.pow n).derivWithin hxs
 #align deriv_within_pow' derivWithin_pow'
 
 @[simp]
-theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
+lemma deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
     deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
   (hc.hasDerivAt.pow n).deriv
 #align deriv_pow'' deriv_pow''

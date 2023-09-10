@@ -52,7 +52,7 @@ lemma preserves_exact_of_PreservesFiniteColimits_of_epi [PreservesFiniteColimits
     Limits.isColimitCoforkMapOfIsColimit' _ ex.w (Abelian.isColimitOfExactOfEpi _ _ ex)
 #align category_theory.abelian.functor.preserves_exact_of_preserves_finite_colimits_of_epi CategoryTheory.Abelian.Functor.preserves_exact_of_PreservesFiniteColimits_of_epi
 
-theorem exact_of_map_projectiveResolution (P : ProjectiveResolution X)
+lemma exact_of_map_projectiveResolution (P : ProjectiveResolution X)
     [PreservesFiniteColimits F] :
     Exact (((F.mapHomologicalComplex (ComplexShape.down ℕ)).obj P.complex).dTo 0)
       (F.map (P.π.f 0)) :=

@@ -145,7 +145,7 @@ lemma localization_localization_isLocalization_of_has_all_units [IsLocalization 
 Given a submodule `M ⊆ R` and a prime ideal `p` of `S = M⁻¹R`, with `f : R →+* S` the localization
 map, then `T = Sₚ` is the localization of `R` at `f⁻¹(p)`.
 -/
-theorem isLocalization_isLocalization_atPrime_isLocalization (p : Ideal S) [Hp : p.IsPrime]
+lemma isLocalization_isLocalization_atPrime_isLocalization (p : Ideal S) [Hp : p.IsPrime]
     [IsLocalization.AtPrime T p] : IsLocalization.AtPrime T (p.comap (algebraMap R S)) := by
   apply localization_localization_isLocalization_of_has_all_units M p.primeCompl T
   intro x hx hx'
@@ -187,7 +187,7 @@ noncomputable def localizationAlgebraOfSubmonoidLe (M N : Submonoid R) (h : M �
 
 /-- If `M ≤ N` are submonoids of `R`, then the natural map `M⁻¹S →+* N⁻¹S` commutes with the
 localization maps -/
-theorem localization_isScalarTower_of_submonoid_le (M N : Submonoid R) (h : M ≤ N)
+lemma localization_isScalarTower_of_submonoid_le (M N : Submonoid R) (h : M ≤ N)
     [IsLocalization M S] [IsLocalization N T] :
     @IsScalarTower R S T _ (localizationAlgebraOfSubmonoidLe S T M N h).toSMul _ :=
   letI := localizationAlgebraOfSubmonoidLe S T M N h
@@ -203,7 +203,7 @@ noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
       exact fun h => ha (h.symm ▸ x.zero_mem))
 
 /-- If `M ≤ N` are submonoids of `R`, then `N⁻¹S` is also the localization of `M⁻¹S` at `N`. -/
-theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLocalization M S]
+lemma isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLocalization M S]
     [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] :
     IsLocalization (N.map (algebraMap R S)) T :=
   { map_units' := by
@@ -244,7 +244,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
 
 /-- If `M ≤ N` are submonoids of `R` such that `∀ x : N, ∃ m : R, m * x ∈ M`, then the
 localization at `N` is equal to the localizaton of `M`. -/
-theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization M S] (h : M ≤ N)
+lemma isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization M S] (h : M ≤ N)
     (h' : ∀ x : N, ∃ m : R, m * x ∈ M) : IsLocalization N S :=
   { map_units' := fun y => by
       obtain ⟨m, hm⟩ := h' y
@@ -271,7 +271,7 @@ namespace IsFractionRing
 
 open IsLocalization
 
-theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
+lemma isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM

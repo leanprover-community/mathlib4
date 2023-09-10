@@ -117,13 +117,13 @@ instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair wher
 #align category_theory.limits.walking_parallel_pair_hom_category CategoryTheory.Limits.walkingParallelPairHomCategory
 
 @[simp]
-theorem walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPairHom.id X = 𝟙 X :=
+lemma walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPairHom.id X = 𝟙 X :=
   rfl
 #align category_theory.limits.walking_parallel_pair_hom_id CategoryTheory.Limits.walkingParallelPairHom_id
 
 -- Porting note: simpNF asked me to do this because the LHS of the non-primed version reduced
 @[simp]
-theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
+lemma WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
     (WalkingParallelPairHom._sizeOf_inst X X).sizeOf (𝟙 X) = 1 + sizeOf X := by cases X <;> rfl
 
 /-- The functor `WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ` sending left to left and right to
@@ -223,19 +223,19 @@ def parallelPair (f g : X ⟶ Y) : WalkingParallelPair ⥤ C where
 #align category_theory.limits.parallel_pair CategoryTheory.Limits.parallelPair
 
 @[simp]
-theorem parallelPair_obj_zero (f g : X ⟶ Y) : (parallelPair f g).obj zero = X := rfl
+lemma parallelPair_obj_zero (f g : X ⟶ Y) : (parallelPair f g).obj zero = X := rfl
 #align category_theory.limits.parallel_pair_obj_zero CategoryTheory.Limits.parallelPair_obj_zero
 
 @[simp]
-theorem parallelPair_obj_one (f g : X ⟶ Y) : (parallelPair f g).obj one = Y := rfl
+lemma parallelPair_obj_one (f g : X ⟶ Y) : (parallelPair f g).obj one = Y := rfl
 #align category_theory.limits.parallel_pair_obj_one CategoryTheory.Limits.parallelPair_obj_one
 
 @[simp]
-theorem parallelPair_map_left (f g : X ⟶ Y) : (parallelPair f g).map left = f := rfl
+lemma parallelPair_map_left (f g : X ⟶ Y) : (parallelPair f g).map left = f := rfl
 #align category_theory.limits.parallel_pair_map_left CategoryTheory.Limits.parallelPair_map_left
 
 @[simp]
-theorem parallelPair_map_right (f g : X ⟶ Y) : (parallelPair f g).map right = g := rfl
+lemma parallelPair_map_right (f g : X ⟶ Y) : (parallelPair f g).map right = g := rfl
 #align category_theory.limits.parallel_pair_map_right CategoryTheory.Limits.parallelPair_map_right
 
 @[simp]
@@ -319,7 +319,7 @@ def Fork.ι (t : Fork f g) :=
 #align category_theory.limits.fork.ι CategoryTheory.Limits.Fork.ι
 
 @[simp]
-theorem Fork.app_zero_eq_ι (t : Fork f g) : t.π.app zero = t.ι :=
+lemma Fork.app_zero_eq_ι (t : Fork f g) : t.π.app zero = t.ι :=
   rfl
 #align category_theory.limits.fork.app_zero_eq_ι CategoryTheory.Limits.Fork.app_zero_eq_ι
 
@@ -331,27 +331,27 @@ def Cofork.π (t : Cofork f g) :=
 #align category_theory.limits.cofork.π CategoryTheory.Limits.Cofork.π
 
 @[simp]
-theorem Cofork.app_one_eq_π (t : Cofork f g) : t.ι.app one = t.π :=
+lemma Cofork.app_one_eq_π (t : Cofork f g) : t.ι.app one = t.π :=
   rfl
 #align category_theory.limits.cofork.app_one_eq_π CategoryTheory.Limits.Cofork.app_one_eq_π
 
 @[simp]
-theorem Fork.app_one_eq_ι_comp_left (s : Fork f g) : s.π.app one = s.ι ≫ f := by
+lemma Fork.app_one_eq_ι_comp_left (s : Fork f g) : s.π.app one = s.ι ≫ f := by
   rw [← s.app_zero_eq_ι, ← s.w left, parallelPair_map_left]
 #align category_theory.limits.fork.app_one_eq_ι_comp_left CategoryTheory.Limits.Fork.app_one_eq_ι_comp_left
 
 @[reassoc]
-theorem Fork.app_one_eq_ι_comp_right (s : Fork f g) : s.π.app one = s.ι ≫ g := by
+lemma Fork.app_one_eq_ι_comp_right (s : Fork f g) : s.π.app one = s.ι ≫ g := by
   rw [← s.app_zero_eq_ι, ← s.w right, parallelPair_map_right]
 #align category_theory.limits.fork.app_one_eq_ι_comp_right CategoryTheory.Limits.Fork.app_one_eq_ι_comp_right
 
 @[simp]
-theorem Cofork.app_zero_eq_comp_π_left (s : Cofork f g) : s.ι.app zero = f ≫ s.π := by
+lemma Cofork.app_zero_eq_comp_π_left (s : Cofork f g) : s.ι.app zero = f ≫ s.π := by
   rw [← s.app_one_eq_π, ← s.w left, parallelPair_map_left]
 #align category_theory.limits.cofork.app_zero_eq_comp_π_left CategoryTheory.Limits.Cofork.app_zero_eq_comp_π_left
 
 @[reassoc]
-theorem Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g ≫ s.π := by
+lemma Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g ≫ s.π := by
   rw [← s.app_one_eq_π, ← s.w right, parallelPair_map_right]
 #align category_theory.limits.cofork.app_zero_eq_comp_π_right CategoryTheory.Limits.Cofork.app_zero_eq_comp_π_right
 
@@ -388,18 +388,18 @@ lemma Cofork.π_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫ π) : (Cofork.
 #align category_theory.limits.cofork.π_of_π CategoryTheory.Limits.Cofork.π_ofπ
 
 @[reassoc (attr := simp)]
-theorem Fork.condition (t : Fork f g) : t.ι ≫ f = t.ι ≫ g := by
+lemma Fork.condition (t : Fork f g) : t.ι ≫ f = t.ι ≫ g := by
   rw [← t.app_one_eq_ι_comp_left, ← t.app_one_eq_ι_comp_right]
 #align category_theory.limits.fork.condition CategoryTheory.Limits.Fork.condition
 
 @[reassoc (attr := simp)]
-theorem Cofork.condition (t : Cofork f g) : f ≫ t.π = g ≫ t.π := by
+lemma Cofork.condition (t : Cofork f g) : f ≫ t.π = g ≫ t.π := by
   rw [← t.app_zero_eq_comp_π_left, ← t.app_zero_eq_comp_π_right]
 #align category_theory.limits.cofork.condition CategoryTheory.Limits.Cofork.condition
 
 /-- To check whether two maps are equalized by both maps of a fork, it suffices to check it for the
     first map -/
-theorem Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ s.ι = l ≫ s.ι) :
+lemma Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ s.ι = l ≫ s.ι) :
     ∀ j : WalkingParallelPair, k ≫ s.π.app j = l ≫ s.π.app j
   | zero => h
   | one => by
@@ -410,7 +410,7 @@ theorem Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ 
 
 /-- To check whether two maps are coequalized by both maps of a cofork, it suffices to check it for
     the second map -/
-theorem Cofork.coequalizer_ext (s : Cofork f g) {W : C} {k l : s.pt ⟶ W}
+lemma Cofork.coequalizer_ext (s : Cofork f g) {W : C} {k l : s.pt ⟶ W}
     (h : Cofork.π s ≫ k = Cofork.π s ≫ l) : ∀ j : WalkingParallelPair, s.ι.app j ≫ k = s.ι.app j ≫ l
   | zero => by simp only [s.app_zero_eq_comp_π_left, Category.assoc, h]
   | one => h
@@ -855,7 +855,7 @@ def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
 #align category_theory.limits.is_limit_id_fork CategoryTheory.Limits.isLimitIdFork
 
 /-- Every equalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
-theorem isIso_limit_cone_parallelPair_of_eq (h₀ : f = g) {c : Fork f g} (h : IsLimit c) :
+lemma isIso_limit_cone_parallelPair_of_eq (h₀ : f = g) {c : Fork f g} (h : IsLimit c) :
     IsIso c.ι :=
   IsIso.of_iso <| IsLimit.conePointUniqueUpToIso h <| isLimitIdFork h₀
 #align category_theory.limits.is_iso_limit_cone_parallel_pair_of_eq CategoryTheory.Limits.isIso_limit_cone_parallelPair_of_eq
@@ -876,7 +876,7 @@ lemma isIso_limit_cone_parallelPair_of_epi {c : Fork f g} (h : IsLimit c) [Epi c
 #align category_theory.limits.is_iso_limit_cone_parallel_pair_of_epi CategoryTheory.Limits.isIso_limit_cone_parallelPair_of_epi
 
 /-- Two morphisms are equal if there is a fork whose inclusion is epi. -/
-theorem eq_of_epi_fork_ι (t : Fork f g) [Epi (Fork.ι t)] : f = g :=
+lemma eq_of_epi_fork_ι (t : Fork f g) [Epi (Fork.ι t)] : f = g :=
   (cancel_epi (Fork.ι t)).1 <| Fork.condition t
 #align category_theory.limits.eq_of_epi_fork_ι CategoryTheory.Limits.eq_of_epi_fork_ι
 
@@ -1044,7 +1044,7 @@ def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
 #align category_theory.limits.is_colimit_id_cofork CategoryTheory.Limits.isColimitIdCofork
 
 /-- Every coequalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
-theorem isIso_colimit_cocone_parallelPair_of_eq (h₀ : f = g) {c : Cofork f g} (h : IsColimit c) :
+lemma isIso_colimit_cocone_parallelPair_of_eq (h₀ : f = g) {c : Cofork f g} (h : IsColimit c) :
     IsIso c.π :=
   IsIso.of_iso <| IsColimit.coconePointUniqueUpToIso (isColimitIdCofork h₀) h
 #align category_theory.limits.is_iso_colimit_cocone_parallel_pair_of_eq CategoryTheory.Limits.isIso_colimit_cocone_parallelPair_of_eq
@@ -1066,7 +1066,7 @@ lemma isIso_limit_cocone_parallelPair_of_epi {c : Cofork f g} (h : IsColimit c) 
 #align category_theory.limits.is_iso_limit_cocone_parallel_pair_of_epi CategoryTheory.Limits.isIso_limit_cocone_parallelPair_of_epi
 
 /-- Two morphisms are equal if there is a cofork whose projection is mono. -/
-theorem eq_of_mono_cofork_π (t : Cofork f g) [Mono (Cofork.π t)] : f = g :=
+lemma eq_of_mono_cofork_π (t : Cofork f g) [Mono (Cofork.π t)] : f = g :=
   (cancel_mono (Cofork.π t)).1 <| Cofork.condition t
 #align category_theory.limits.eq_of_mono_cofork_π CategoryTheory.Limits.eq_of_mono_cofork_π
 

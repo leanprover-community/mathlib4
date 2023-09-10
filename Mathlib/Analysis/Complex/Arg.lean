@@ -54,15 +54,15 @@ lemma abs_sub_eq_iff : abs (x - y) = |abs x - abs y| ↔ x = 0 ∨ y = 0 ∨ x.a
   sameRay_iff_norm_sub.symm.trans sameRay_iff
 #align complex.abs_sub_eq_iff Complex.abs_sub_eq_iff
 
-theorem sameRay_of_arg_eq (h : x.arg = y.arg) : SameRay ℝ x y :=
+lemma sameRay_of_arg_eq (h : x.arg = y.arg) : SameRay ℝ x y :=
   sameRay_iff.mpr <| Or.inr <| Or.inr h
 #align complex.same_ray_of_arg_eq Complex.sameRay_of_arg_eq
 
-theorem abs_add_eq (h : x.arg = y.arg) : abs (x + y) = abs x + abs y :=
+lemma abs_add_eq (h : x.arg = y.arg) : abs (x + y) = abs x + abs y :=
   (sameRay_of_arg_eq h).norm_add
 #align complex.abs_add_eq Complex.abs_add_eq
 
-theorem abs_sub_eq (h : x.arg = y.arg) : abs (x - y) = ‖abs x - abs y‖ :=
+lemma abs_sub_eq (h : x.arg = y.arg) : abs (x - y) = ‖abs x - abs y‖ :=
   (sameRay_of_arg_eq h).norm_sub
 #align complex.abs_sub_eq Complex.abs_sub_eq
 

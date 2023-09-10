@@ -76,22 +76,22 @@ def cocone (s : CommSq f g h i) : PushoutCocone f g :=
 #align category_theory.comm_sq.cocone CategoryTheory.CommSq.cocone
 
 @[simp]
-theorem cone_fst (s : CommSq f g h i) : s.cone.fst = f :=
+lemma cone_fst (s : CommSq f g h i) : s.cone.fst = f :=
   rfl
 #align category_theory.comm_sq.cone_fst CategoryTheory.CommSq.cone_fst
 
 @[simp]
-theorem cone_snd (s : CommSq f g h i) : s.cone.snd = g :=
+lemma cone_snd (s : CommSq f g h i) : s.cone.snd = g :=
   rfl
 #align category_theory.comm_sq.cone_snd CategoryTheory.CommSq.cone_snd
 
 @[simp]
-theorem cocone_inl (s : CommSq f g h i) : s.cocone.inl = h :=
+lemma cocone_inl (s : CommSq f g h i) : s.cocone.inl = h :=
   rfl
 #align category_theory.comm_sq.cocone_inl CategoryTheory.CommSq.cocone_inl
 
 @[simp]
-theorem cocone_inr (s : CommSq f g h i) : s.cocone.inr = i :=
+lemma cocone_inr (s : CommSq f g h i) : s.cocone.inr = i :=
   rfl
 #align category_theory.comm_sq.cocone_inr CategoryTheory.CommSq.cocone_inr
 
@@ -204,12 +204,12 @@ def cone (h : IsPullback fst snd f g) : PullbackCone f g :=
 #align category_theory.is_pullback.cone CategoryTheory.IsPullback.cone
 
 @[simp]
-theorem cone_fst (h : IsPullback fst snd f g) : h.cone.fst = fst :=
+lemma cone_fst (h : IsPullback fst snd f g) : h.cone.fst = fst :=
   rfl
 #align category_theory.is_pullback.cone_fst CategoryTheory.IsPullback.cone_fst
 
 @[simp]
-theorem cone_snd (h : IsPullback fst snd f g) : h.cone.snd = snd :=
+lemma cone_snd (h : IsPullback fst snd f g) : h.cone.snd = snd :=
   rfl
 #align category_theory.is_pullback.cone_snd CategoryTheory.IsPullback.cone_snd
 
@@ -227,13 +227,13 @@ lemma of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fs
 #align category_theory.is_pullback.of_is_limit CategoryTheory.IsPullback.of_isLimit
 
 /-- A variant of `of_isLimit` that is more useful with `apply`. -/
-theorem of_isLimit' (w : CommSq fst snd f g) (h : Limits.IsLimit w.cone) :
+lemma of_isLimit' (w : CommSq fst snd f g) (h : Limits.IsLimit w.cone) :
     IsPullback fst snd f g :=
   of_isLimit h
 #align category_theory.is_pullback.of_is_limit' CategoryTheory.IsPullback.of_isLimit'
 
 /-- The pullback provided by `HasPullback f g` fits into an `IsPullback`. -/
-theorem of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
+lemma of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsPullback (pullback.fst : pullback f g ⟶ X) (pullback.snd : pullback f g ⟶ Y) f g :=
   of_isLimit (limit.isLimit (cospan f g))
 #align category_theory.is_pullback.of_has_pullback CategoryTheory.IsPullback.of_hasPullback
@@ -254,7 +254,7 @@ lemma of_is_product {c : BinaryFan X Y} (h : Limits.IsLimit c) (t : IsTerminal Z
 #align category_theory.is_pullback.of_is_product CategoryTheory.IsPullback.of_is_product
 
 /-- A variant of `of_is_product` that is more useful with `apply`. -/
-theorem of_is_product' (h : Limits.IsLimit (BinaryFan.mk fst snd)) (t : IsTerminal Z) :
+lemma of_is_product' (h : Limits.IsLimit (BinaryFan.mk fst snd)) (t : IsTerminal Z) :
     IsPullback fst snd (t.from _) (t.from _) :=
   of_is_product h t
 #align category_theory.is_pullback.of_is_product' CategoryTheory.IsPullback.of_is_product'
@@ -282,30 +282,30 @@ noncomputable def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P
 #align category_theory.is_pullback.iso_pullback CategoryTheory.IsPullback.isoPullback
 
 @[simp]
-theorem isoPullback_hom_fst (h : IsPullback fst snd f g) [HasPullback f g] :
+lemma isoPullback_hom_fst (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.fst = fst := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 #align category_theory.is_pullback.iso_pullback_hom_fst CategoryTheory.IsPullback.isoPullback_hom_fst
 
 @[simp]
-theorem isoPullback_hom_snd (h : IsPullback fst snd f g) [HasPullback f g] :
+lemma isoPullback_hom_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.snd = snd := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 #align category_theory.is_pullback.iso_pullback_hom_snd CategoryTheory.IsPullback.isoPullback_hom_snd
 
 @[simp]
-theorem isoPullback_inv_fst (h : IsPullback fst snd f g) [HasPullback f g] :
+lemma isoPullback_inv_fst (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ fst = pullback.fst := by simp [Iso.inv_comp_eq]
 #align category_theory.is_pullback.iso_pullback_inv_fst CategoryTheory.IsPullback.isoPullback_inv_fst
 
 @[simp]
-theorem isoPullback_inv_snd (h : IsPullback fst snd f g) [HasPullback f g] :
+lemma isoPullback_inv_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ snd = pullback.snd := by simp [Iso.inv_comp_eq]
 #align category_theory.is_pullback.iso_pullback_inv_snd CategoryTheory.IsPullback.isoPullback_inv_snd
 
-theorem of_iso_pullback (h : CommSq fst snd f g) [HasPullback f g] (i : P ≅ pullback f g)
+lemma of_iso_pullback (h : CommSq fst snd f g) [HasPullback f g] (i : P ≅ pullback f g)
     (w₁ : i.hom ≫ pullback.fst = fst) (w₂ : i.hom ≫ pullback.snd = snd) : IsPullback fst snd f g :=
   of_isLimit' h
     (Limits.IsLimit.ofIsoLimit (limit.isLimit _)
@@ -335,12 +335,12 @@ def cocone (h : IsPushout f g inl inr) : PushoutCocone f g :=
 #align category_theory.is_pushout.cocone CategoryTheory.IsPushout.cocone
 
 @[simp]
-theorem cocone_inl (h : IsPushout f g inl inr) : h.cocone.inl = inl :=
+lemma cocone_inl (h : IsPushout f g inl inr) : h.cocone.inl = inl :=
   rfl
 #align category_theory.is_pushout.cocone_inl CategoryTheory.IsPushout.cocone_inl
 
 @[simp]
-theorem cocone_inr (h : IsPushout f g inl inr) : h.cocone.inr = inr :=
+lemma cocone_inr (h : IsPushout f g inl inr) : h.cocone.inr = inr :=
   rfl
 #align category_theory.is_pushout.cocone_inr CategoryTheory.IsPushout.cocone_inr
 
@@ -359,13 +359,13 @@ lemma of_isColimit {c : PushoutCocone f g} (h : Limits.IsColimit c) : IsPushout 
 #align category_theory.is_pushout.of_is_colimit CategoryTheory.IsPushout.of_isColimit
 
 /-- A variant of `of_isColimit` that is more useful with `apply`. -/
-theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
+lemma of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
     IsPushout f g inl inr :=
   of_isColimit h
 #align category_theory.is_pushout.of_is_colimit' CategoryTheory.IsPushout.of_isColimit'
 
 /-- The pushout provided by `HasPushout f g` fits into an `IsPushout`. -/
-theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
+lemma of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
     IsPushout f g (pushout.inl : X ⟶ pushout f g) (pushout.inr : Y ⟶ pushout f g) :=
   of_isColimit (colimit.isColimit (span f g))
 #align category_theory.is_pushout.of_has_pushout CategoryTheory.IsPushout.of_hasPushout
@@ -386,7 +386,7 @@ lemma of_is_coproduct {c : BinaryCofan X Y} (h : Limits.IsColimit c) (t : IsInit
 #align category_theory.is_pushout.of_is_coproduct CategoryTheory.IsPushout.of_is_coproduct
 
 /-- A variant of `of_is_coproduct` that is more useful with `apply`. -/
-theorem of_is_coproduct' (h : Limits.IsColimit (BinaryCofan.mk inl inr)) (t : IsInitial Z) :
+lemma of_is_coproduct' (h : Limits.IsColimit (BinaryCofan.mk inl inr)) (t : IsInitial Z) :
     IsPushout (t.to _) (t.to _) inl inr :=
   of_is_coproduct h t
 #align category_theory.is_pushout.of_is_coproduct' CategoryTheory.IsPushout.of_is_coproduct'
@@ -414,30 +414,30 @@ noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P �
 #align category_theory.is_pushout.iso_pushout CategoryTheory.IsPushout.isoPushout
 
 @[simp]
-theorem inl_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
+lemma inl_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inl ≫ h.isoPushout.inv = inl := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inl_iso_pushout_inv CategoryTheory.IsPushout.inl_isoPushout_inv
 
 @[simp]
-theorem inr_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
+lemma inr_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inr ≫ h.isoPushout.inv = inr := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inr_iso_pushout_inv CategoryTheory.IsPushout.inr_isoPushout_inv
 
 @[simp]
-theorem inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
+lemma inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inl ≫ h.isoPushout.hom = pushout.inl := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inl_iso_pushout_hom CategoryTheory.IsPushout.inl_isoPushout_hom
 
 @[simp]
-theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
+lemma inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inr ≫ h.isoPushout.hom = pushout.inr := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inr_iso_pushout_hom CategoryTheory.IsPushout.inr_isoPushout_hom
 
-theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ pushout f g)
+lemma of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ pushout f g)
     (w₁ : inl ≫ i.hom = pushout.inl) (w₂ : inr ≫ i.hom = pushout.inr) : IsPushout f g inl inr :=
   of_isColimit' h
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
@@ -450,7 +450,7 @@ namespace IsPullback
 
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
-theorem flip (h : IsPullback fst snd f g) : IsPullback snd fst g f :=
+lemma flip (h : IsPullback fst snd f g) : IsPullback snd fst g f :=
   of_isLimit (@PullbackCone.flipIsLimit _ _ _ _ _ _ _ _ _ _ h.w.symm h.isLimit)
 #align category_theory.is_pullback.flip CategoryTheory.IsPullback.flip
 
@@ -466,7 +466,7 @@ open ZeroObject
 
 /-- The square with `0 : 0 ⟶ 0` on the left and `𝟙 X` on the right is a pullback square. -/
 @[simp]
-theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
+lemma zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
   { w := by simp
     isLimit' :=
       ⟨{  lift := fun s => 0
@@ -478,20 +478,20 @@ theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X
 
 /-- The square with `0 : 0 ⟶ 0` on the top and `𝟙 X` on the bottom is a pullback square. -/
 @[simp]
-theorem zero_top (X : C) : IsPullback (0 : (0 : C) ⟶ 0) (0 : 0 ⟶ X) (0 : 0 ⟶ X) (𝟙 X) :=
+lemma zero_top (X : C) : IsPullback (0 : (0 : C) ⟶ 0) (0 : 0 ⟶ X) (0 : 0 ⟶ X) (𝟙 X) :=
   (zero_left X).flip
 #align category_theory.is_pullback.zero_top CategoryTheory.IsPullback.zero_top
 
 /-- The square with `0 : 0 ⟶ 0` on the right and `𝟙 X` on the left is a pullback square. -/
 @[simp]
-theorem zero_right (X : C) : IsPullback (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=
+lemma zero_right (X : C) : IsPullback (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=
   of_iso_pullback (by simp) ((zeroProdIso X).symm ≪≫ (pullbackZeroZeroIso _ _).symm) (by simp)
     (by simp)
 #align category_theory.is_pullback.zero_right CategoryTheory.IsPullback.zero_right
 
 /-- The square with `0 : 0 ⟶ 0` on the bottom and `𝟙 X` on the top is a pullback square. -/
 @[simp]
-theorem zero_bot (X : C) : IsPullback (𝟙 X) (0 : X ⟶ 0) (0 : X ⟶ 0) (0 : (0 : C) ⟶ 0) :=
+lemma zero_bot (X : C) : IsPullback (𝟙 X) (0 : X ⟶ 0) (0 : X ⟶ 0) (0 : (0 : C) ⟶ 0) :=
   (zero_right X).flip
 #align category_theory.is_pullback.zero_bot CategoryTheory.IsPullback.zero_bot
 
@@ -560,7 +560,7 @@ lemma of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
 #align category_theory.is_pullback.of_is_bilimit CategoryTheory.IsPullback.of_isBilimit
 
 @[simp]
-theorem of_has_biproduct (X Y : C) [HasBinaryBiproduct X Y] :
+lemma of_has_biproduct (X Y : C) [HasBinaryBiproduct X Y] :
     IsPullback biprod.fst biprod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) :=
   of_isBilimit (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pullback.of_has_biproduct CategoryTheory.IsPullback.of_has_biproduct
@@ -583,7 +583,7 @@ lemma inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
 is a pullback square.
 -/
 @[simp]
-theorem inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
+lemma inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
     IsPullback biprod.inl (0 : X ⟶ 0) biprod.snd (0 : 0 ⟶ Y) :=
   inl_snd' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pullback.inl_snd CategoryTheory.IsPullback.inl_snd
@@ -607,7 +607,7 @@ lemma inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
 is a pullback square.
 -/
 @[simp]
-theorem inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
+lemma inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
     IsPullback biprod.inr (0 : Y ⟶ 0) biprod.fst (0 : 0 ⟶ X) :=
   inr_fst' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pullback.inr_fst CategoryTheory.IsPullback.inr_fst
@@ -618,7 +618,7 @@ lemma of_is_bilimit' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   simp
 #align category_theory.is_pullback.of_is_bilimit' CategoryTheory.IsPullback.of_is_bilimit'
 
-theorem of_hasBinaryBiproduct (X Y : C) [HasBinaryBiproduct X Y] :
+lemma of_hasBinaryBiproduct (X Y : C) [HasBinaryBiproduct X Y] :
     IsPullback (0 : 0 ⟶ X) (0 : 0 ⟶ Y) biprod.inl biprod.inr :=
   of_is_bilimit' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pullback.of_has_binary_biproduct CategoryTheory.IsPullback.of_hasBinaryBiproduct
@@ -636,7 +636,7 @@ def pullbackBiprodInlBiprodInr [HasBinaryBiproduct X Y] :
 
 end
 
-theorem op (h : IsPullback fst snd f g) : IsPushout g.op f.op snd.op fst.op :=
+lemma op (h : IsPullback fst snd f g) : IsPushout g.op f.op snd.op fst.op :=
   IsPushout.of_isColimit
     (IsColimit.ofIsoColimit (Limits.PullbackCone.isLimitEquivIsColimitOp h.flip.cone h.flip.isLimit)
       h.toCommSq.flip.coneOp)
@@ -660,7 +660,7 @@ namespace IsPushout
 
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
-theorem flip (h : IsPushout f g inl inr) : IsPushout g f inr inl :=
+lemma flip (h : IsPushout f g inl inr) : IsPushout g f inr inl :=
   of_isColimit (@PushoutCocone.flipIsColimit _ _ _ _ _ _ _ _ _ _ h.w.symm h.isColimit)
 #align category_theory.is_pushout.flip CategoryTheory.IsPushout.flip
 
@@ -676,7 +676,7 @@ open ZeroObject
 
 /-- The square with `0 : 0 ⟶ 0` on the right and `𝟙 X` on the left is a pushout square. -/
 @[simp]
-theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=
+lemma zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=
   { w := by simp
     isColimit' :=
       ⟨{  desc := fun s => 0
@@ -690,20 +690,20 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
 
 /-- The square with `0 : 0 ⟶ 0` on the bottom and `𝟙 X` on the top is a pushout square. -/
 @[simp]
-theorem zero_bot (X : C) : IsPushout (𝟙 X) (0 : X ⟶ 0) (0 : X ⟶ 0) (0 : (0 : C) ⟶ 0) :=
+lemma zero_bot (X : C) : IsPushout (𝟙 X) (0 : X ⟶ 0) (0 : X ⟶ 0) (0 : (0 : C) ⟶ 0) :=
   (zero_right X).flip
 #align category_theory.is_pushout.zero_bot CategoryTheory.IsPushout.zero_bot
 
 /-- The square with `0 : 0 ⟶ 0` on the right left `𝟙 X` on the right is a pushout square. -/
 @[simp]
-theorem zero_left (X : C) : IsPushout (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
+lemma zero_left (X : C) : IsPushout (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
   of_iso_pushout (by simp) ((coprodZeroIso X).symm ≪≫ (pushoutZeroZeroIso _ _).symm) (by simp)
     (by simp)
 #align category_theory.is_pushout.zero_left CategoryTheory.IsPushout.zero_left
 
 /-- The square with `0 : 0 ⟶ 0` on the top and `𝟙 X` on the bottom is a pushout square. -/
 @[simp]
-theorem zero_top (X : C) : IsPushout (0 : (0 : C) ⟶ 0) (0 : 0 ⟶ X) (0 : 0 ⟶ X) (𝟙 X) :=
+lemma zero_top (X : C) : IsPushout (0 : (0 : C) ⟶ 0) (0 : 0 ⟶ X) (0 : 0 ⟶ X) (𝟙 X) :=
   (zero_left X).flip
 #align category_theory.is_pushout.zero_top CategoryTheory.IsPushout.zero_top
 
@@ -772,7 +772,7 @@ lemma of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
 #align category_theory.is_pushout.of_is_bilimit CategoryTheory.IsPushout.of_isBilimit
 
 @[simp]
-theorem of_has_biproduct (X Y : C) [HasBinaryBiproduct X Y] :
+lemma of_has_biproduct (X Y : C) [HasBinaryBiproduct X Y] :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) biprod.inl biprod.inr :=
   of_isBilimit (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pushout.of_has_biproduct CategoryTheory.IsPushout.of_has_biproduct
@@ -795,7 +795,7 @@ lemma inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
 ```
 is a pushout square.
 -/
-theorem inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
+lemma inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
     IsPushout biprod.inl (0 : X ⟶ 0) biprod.snd (0 : 0 ⟶ Y) :=
   inl_snd' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pushout.inl_snd CategoryTheory.IsPushout.inl_snd
@@ -817,7 +817,7 @@ lemma inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
 ```
 is a pushout square.
 -/
-theorem inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
+lemma inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
     IsPushout biprod.inr (0 : Y ⟶ 0) biprod.fst (0 : 0 ⟶ X) :=
   inr_fst' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pushout.inr_fst CategoryTheory.IsPushout.inr_fst
@@ -828,7 +828,7 @@ lemma of_is_bilimit' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   simp
 #align category_theory.is_pushout.of_is_bilimit' CategoryTheory.IsPushout.of_is_bilimit'
 
-theorem of_hasBinaryBiproduct (X Y : C) [HasBinaryBiproduct X Y] :
+lemma of_hasBinaryBiproduct (X Y : C) [HasBinaryBiproduct X Y] :
     IsPushout biprod.fst biprod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) :=
   of_is_bilimit' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pushout.of_has_binary_biproduct CategoryTheory.IsPushout.of_hasBinaryBiproduct
@@ -846,7 +846,7 @@ def pushoutBiprodFstBiprodSnd [HasBinaryBiproduct X Y] :
 
 end
 
-theorem op (h : IsPushout f g inl inr) : IsPullback inr.op inl.op g.op f.op :=
+lemma op (h : IsPushout f g inl inr) : IsPullback inr.op inl.op g.op f.op :=
   IsPullback.of_isLimit
     (IsLimit.ofIsoLimit
       (Limits.PushoutCocone.isColimitEquivIsLimitOp h.flip.cocone h.flip.isColimit)
@@ -909,12 +909,12 @@ namespace BicartesianSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-theorem of_isPullback_isPushout (p₁ : IsPullback f g h i) (p₂ : IsPushout f g h i) :
+lemma of_isPullback_isPushout (p₁ : IsPullback f g h i) (p₂ : IsPushout f g h i) :
     BicartesianSq f g h i :=
   BicartesianSq.mk p₁ p₂.isColimit'
 #align category_theory.bicartesian_sq.of_is_pullback_is_pushout CategoryTheory.BicartesianSq.of_isPullback_isPushout
 
-theorem flip (p : BicartesianSq f g h i) : BicartesianSq g f i h :=
+lemma flip (p : BicartesianSq f g h i) : BicartesianSq g f i h :=
   of_isPullback_isPushout p.toIsPullback.flip p.toIsPushout.flip
 #align category_theory.bicartesian_sq.flip CategoryTheory.BicartesianSq.flip
 

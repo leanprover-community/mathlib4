@@ -104,7 +104,7 @@ def squashSeq (s : Stream'.Seq <| Pair K) (n : ℕ) : Stream'.Seq (Pair K) :=
 
 
 /-- If the sequence already terminated at position `n + 1`, nothing gets squashed. -/
-theorem squashSeq_eq_self_of_terminated (terminated_at_succ_n : s.TerminatedAt (n + 1)) :
+lemma squashSeq_eq_self_of_terminated (terminated_at_succ_n : s.TerminatedAt (n + 1)) :
     squashSeq s n = s := by
   change s.get? (n + 1) = none at terminated_at_succ_n
   cases s_nth_eq : s.get? n <;> simp only [*, squashSeq]
@@ -204,7 +204,7 @@ squashed gcf. -/
 
 
 /-- If the gcf already terminated at position `n`, nothing gets squashed. -/
-theorem squashGCF_eq_self_of_terminated (terminated_at_n : TerminatedAt g n) :
+lemma squashGCF_eq_self_of_terminated (terminated_at_n : TerminatedAt g n) :
     squashGCF g n = g := by
   cases n
   case zero =>

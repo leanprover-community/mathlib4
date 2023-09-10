@@ -106,7 +106,7 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
 
 @[simp]
-theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
+lemma id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
   rfl
 #align algebraic_geometry.Scheme.id_val_base AlgebraicGeometry.Scheme.id_val_base
 
@@ -205,7 +205,7 @@ def specObj (R : CommRingCat) : Scheme where
 #align algebraic_geometry.Scheme.Spec_obj AlgebraicGeometry.Scheme.specObj
 
 @[simp]
-theorem specObj_toLocallyRingedSpace (R : CommRingCat) :
+lemma specObj_toLocallyRingedSpace (R : CommRingCat) :
     (specObj R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
 #align algebraic_geometry.Scheme.Spec_obj_to_LocallyRingedSpace AlgebraicGeometry.Scheme.specObj_toLocallyRingedSpace
@@ -217,7 +217,7 @@ def specMap {R S : CommRingCat} (f : R ⟶ S) : specObj S ⟶ specObj R :=
 #align algebraic_geometry.Scheme.Spec_map AlgebraicGeometry.Scheme.specMap
 
 @[simp]
-theorem specMap_id (R : CommRingCat) : specMap (𝟙 R) = 𝟙 (specObj R) :=
+lemma specMap_id (R : CommRingCat) : specMap (𝟙 R) = 𝟙 (specObj R) :=
   Spec.locallyRingedSpaceMap_id R
 #align algebraic_geometry.Scheme.Spec_map_id AlgebraicGeometry.Scheme.specMap_id
 
@@ -267,11 +267,11 @@ lemma Γ_def : Γ = (inducedFunctor Scheme.toLocallyRingedSpace).op ⋙ LocallyR
 #align algebraic_geometry.Scheme.Γ_def AlgebraicGeometry.Scheme.Γ_def
 
 @[simp]
-theorem Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
+lemma Γ_obj (X : Schemeᵒᵖ) : Γ.obj X = (unop X).presheaf.obj (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_obj AlgebraicGeometry.Scheme.Γ_obj
 
-theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
+lemma Γ_obj_op (X : Scheme) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
 #align algebraic_geometry.Scheme.Γ_obj_op AlgebraicGeometry.Scheme.Γ_obj_op
 
@@ -294,7 +294,7 @@ def basicOpen : Opens X.carrier :=
 #align algebraic_geometry.Scheme.basic_open AlgebraicGeometry.Scheme.basicOpen
 
 @[simp]
-theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
+lemma mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
   RingedSpace.mem_basicOpen _ _ _
 #align algebraic_geometry.Scheme.mem_basic_open AlgebraicGeometry.Scheme.mem_basicOpen
 
@@ -308,19 +308,19 @@ lemma mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrie
     exact ⟨⟨x, m⟩, hm, rfl⟩
 
 @[simp]
-theorem mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :
+lemma mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :
     x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens _)) f) :=
   RingedSpace.mem_basicOpen _ f ⟨x, trivial⟩
 #align algebraic_geometry.Scheme.mem_basic_open_top AlgebraicGeometry.Scheme.mem_basicOpen_top
 
 @[simp]
-theorem basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V ⊓ X.basicOpen f :=
+lemma basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V ⊓ X.basicOpen f :=
   RingedSpace.basicOpen_res _ i f
 #align algebraic_geometry.Scheme.basic_open_res AlgebraicGeometry.Scheme.basicOpen_res
 
 -- This should fire before `basicOpen_res`.
 @[simp 1100]
-theorem basicOpen_res_eq (i : op U ⟶ op V) [IsIso i] :
+lemma basicOpen_res_eq (i : op U ⟶ op V) [IsIso i] :
     X.basicOpen (X.presheaf.map i f) = X.basicOpen f :=
   RingedSpace.basicOpen_res_eq _ i f
 #align algebraic_geometry.Scheme.basic_open_res_eq AlgebraicGeometry.Scheme.basicOpen_res_eq
@@ -339,7 +339,7 @@ lemma preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y.carrier}
 #align algebraic_geometry.Scheme.preimage_basic_open AlgebraicGeometry.Scheme.preimage_basicOpen
 
 @[simp]
-theorem basicOpen_zero (U : Opens X.carrier) : X.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ :=
+lemma basicOpen_zero (U : Opens X.carrier) : X.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ :=
   LocallyRingedSpace.basicOpen_zero _ U
 #align algebraic_geometry.Scheme.basic_open_zero AlgebraicGeometry.Scheme.basicOpen_zero
 

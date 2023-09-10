@@ -122,12 +122,12 @@ namespace Function
 variable (β) [One α] [Preorder α] {a : α}
 
 @[to_additive const_nonneg_of_nonneg]
-theorem one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
+lemma one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
 #align function.one_le_const_of_one_le Function.one_le_const_of_one_le
 #align function.const_nonneg_of_nonneg Function.const_nonneg_of_nonneg
 
 @[to_additive]
-theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
+lemma const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
 #align function.const_le_one_of_le_one Function.const_le_one_of_le_one
 #align function.const_nonpos_of_nonpos Function.const_nonpos_of_nonpos
 

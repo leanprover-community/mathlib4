@@ -77,15 +77,15 @@ def Dom (f : α →. β) : Set α :=
 #align pfun.dom PFun.Dom
 
 @[simp]
-theorem mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := by simp [Dom, Part.dom_iff_mem]
+lemma mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := by simp [Dom, Part.dom_iff_mem]
 #align pfun.mem_dom PFun.mem_dom
 
 @[simp]
-theorem dom_mk (p : α → Prop) (f : ∀ a, p a → β) : (PFun.Dom fun x => ⟨p x, f x⟩) = { x | p x } :=
+lemma dom_mk (p : α → Prop) (f : ∀ a, p a → β) : (PFun.Dom fun x => ⟨p x, f x⟩) = { x | p x } :=
   rfl
 #align pfun.dom_mk PFun.dom_mk
 
-theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
+lemma dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
   Set.ext (mem_dom f)
 #align pfun.dom_eq PFun.dom_eq
 
@@ -95,7 +95,7 @@ def fn (f : α →. β) (a : α) : Dom f a → β :=
 #align pfun.fn PFun.fn
 
 @[simp]
-theorem fn_apply (f : α →. β) (a : α) : f.fn a = (f a).get :=
+lemma fn_apply (f : α →. β) (a : α) : f.fn a = (f a).get :=
   rfl
 #align pfun.fn_apply PFun.fn_apply
 
@@ -141,12 +141,12 @@ instance coe : Coe (α → β) (α →. β) :=
 #align pfun.has_coe PFun.coe
 
 @[simp]
-theorem coe_val (f : α → β) (a : α) : (f : α →. β) a = Part.some (f a) :=
+lemma coe_val (f : α → β) (a : α) : (f : α →. β) a = Part.some (f a) :=
   rfl
 #align pfun.coe_val PFun.coe_val
 
 @[simp]
-theorem dom_coe (f : α → β) : (f : α →. β).Dom = Set.univ :=
+lemma dom_coe (f : α → β) : (f : α →. β).Dom = Set.univ :=
   rfl
 #align pfun.dom_coe PFun.dom_coe
 
@@ -186,15 +186,15 @@ def res (f : α → β) (s : Set α) : α →. β :=
   (PFun.lift f).restrict s.subset_univ
 #align pfun.res PFun.res
 
-theorem mem_res (f : α → β) (s : Set α) (a : α) (b : β) : b ∈ res f s a ↔ a ∈ s ∧ f a = b := by
+lemma mem_res (f : α → β) (s : Set α) (a : α) (b : β) : b ∈ res f s a ↔ a ∈ s ∧ f a = b := by
   simp [res, @eq_comm _ b]
 #align pfun.mem_res PFun.mem_res
 
-theorem res_univ (f : α → β) : PFun.res f Set.univ = f :=
+lemma res_univ (f : α → β) : PFun.res f Set.univ = f :=
   rfl
 #align pfun.res_univ PFun.res_univ
 
-theorem dom_iff_graph (f : α →. β) (x : α) : x ∈ f.Dom ↔ ∃ y, (x, y) ∈ f.graph :=
+lemma dom_iff_graph (f : α →. β) (x : α) : x ∈ f.Dom ↔ ∃ y, (x, y) ∈ f.graph :=
   Part.dom_iff_mem
 #align pfun.dom_iff_graph PFun.dom_iff_graph
 
@@ -211,7 +211,7 @@ def bind (f : α →. β) (g : β → α →. γ) : α →. γ := fun a => (f a)
 #align pfun.bind PFun.bind
 
 @[simp]
-theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g a = (f a).bind fun b => g b a :=
+lemma bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g a = (f a).bind fun b => g b a :=
   rfl
 #align pfun.bind_apply PFun.bind_apply
 
@@ -232,7 +232,7 @@ instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
 #align pfun.is_lawful_monad PFun.lawfulMonad
 
-theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
+lemma pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
   p.subset_univ
 #align pfun.pure_defined PFun.pure_defined
 
@@ -398,11 +398,11 @@ def image (s : Set α) : Set β :=
   f.graph'.image s
 #align pfun.image PFun.image
 
-theorem image_def (s : Set α) : f.image s = { y | ∃ x ∈ s, y ∈ f x } :=
+lemma image_def (s : Set α) : f.image s = { y | ∃ x ∈ s, y ∈ f x } :=
   rfl
 #align pfun.image_def PFun.image_def
 
-theorem mem_image (y : β) (s : Set α) : y ∈ f.image s ↔ ∃ x ∈ s, y ∈ f x :=
+lemma mem_image (y : β) (s : Set α) : y ∈ f.image s ↔ ∃ x ∈ s, y ∈ f x :=
   Iff.rfl
 #align pfun.mem_image PFun.mem_image
 
@@ -410,11 +410,11 @@ lemma image_mono {s t : Set α} (h : s ⊆ t) : f.image s ⊆ f.image t :=
   Rel.image_mono _ h
 #align pfun.image_mono PFun.image_mono
 
-theorem image_inter (s t : Set α) : f.image (s ∩ t) ⊆ f.image s ∩ f.image t :=
+lemma image_inter (s t : Set α) : f.image (s ∩ t) ⊆ f.image s ∩ f.image t :=
   Rel.image_inter _ s t
 #align pfun.image_inter PFun.image_inter
 
-theorem image_union (s t : Set α) : f.image (s ∪ t) = f.image s ∪ f.image t :=
+lemma image_union (s t : Set α) : f.image (s ∪ t) = f.image s ∪ f.image t :=
   Rel.image_union _ s t
 #align pfun.image_union PFun.image_union
 
@@ -423,16 +423,16 @@ def preimage (s : Set β) : Set α :=
   Rel.image (fun x y => x ∈ f y) s
 #align pfun.preimage PFun.preimage
 
-theorem Preimage_def (s : Set β) : f.preimage s = { x | ∃ y ∈ s, y ∈ f x } :=
+lemma Preimage_def (s : Set β) : f.preimage s = { x | ∃ y ∈ s, y ∈ f x } :=
   rfl
 #align pfun.preimage_def PFun.Preimage_def
 
 @[simp]
-theorem mem_preimage (s : Set β) (x : α) : x ∈ f.preimage s ↔ ∃ y ∈ s, y ∈ f x :=
+lemma mem_preimage (s : Set β) (x : α) : x ∈ f.preimage s ↔ ∃ y ∈ s, y ∈ f x :=
   Iff.rfl
 #align pfun.mem_preimage PFun.mem_preimage
 
-theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y, _, fxy⟩ =>
+lemma preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y, _, fxy⟩ =>
   Part.dom_iff_mem.mpr ⟨y, fxy⟩
 #align pfun.preimage_subset_dom PFun.preimage_subset_dom
 
@@ -440,18 +440,18 @@ lemma preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t
   Rel.preimage_mono _ h
 #align pfun.preimage_mono PFun.preimage_mono
 
-theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) ⊆ f.preimage s ∩ f.preimage t :=
+lemma preimage_inter (s t : Set β) : f.preimage (s ∩ t) ⊆ f.preimage s ∩ f.preimage t :=
   Rel.preimage_inter _ s t
 #align pfun.preimage_inter PFun.preimage_inter
 
-theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ f.preimage t :=
+lemma preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ f.preimage t :=
   Rel.preimage_union _ s t
 #align pfun.preimage_union PFun.preimage_union
 
 lemma preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 #align pfun.preimage_univ PFun.preimage_univ
 
-theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
+lemma coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
 #align pfun.coe_preimage PFun.coe_preimage
 
 /-- Core of a set `s : Set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
@@ -460,16 +460,16 @@ def core (s : Set β) : Set α :=
   f.graph'.core s
 #align pfun.core PFun.core
 
-theorem core_def (s : Set β) : f.core s = { x | ∀ y, y ∈ f x → y ∈ s } :=
+lemma core_def (s : Set β) : f.core s = { x | ∀ y, y ∈ f x → y ∈ s } :=
   rfl
 #align pfun.core_def PFun.core_def
 
 @[simp]
-theorem mem_core (x : α) (s : Set β) : x ∈ f.core s ↔ ∀ y, y ∈ f x → y ∈ s :=
+lemma mem_core (x : α) (s : Set β) : x ∈ f.core s ↔ ∀ y, y ∈ f x → y ∈ s :=
   Iff.rfl
 #align pfun.mem_core PFun.mem_core
 
-theorem compl_dom_subset_core (s : Set β) : f.Domᶜ ⊆ f.core s := fun x hx y fxy =>
+lemma compl_dom_subset_core (s : Set β) : f.Domᶜ ⊆ f.core s := fun x hx y fxy =>
   absurd ((mem_dom f x).mpr ⟨y, fxy⟩) hx
 #align pfun.compl_dom_subset_core PFun.compl_dom_subset_core
 
@@ -477,11 +477,11 @@ lemma core_mono {s t : Set β} (h : s ⊆ t) : f.core s ⊆ f.core t :=
   Rel.core_mono _ h
 #align pfun.core_mono PFun.core_mono
 
-theorem core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
+lemma core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
   Rel.core_inter _ s t
 #align pfun.core_inter PFun.core_inter
 
-theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
+lemma mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
     x ∈ (res f s).core t ↔ x ∈ s → f x ∈ t := by simp [mem_core, mem_res]
 #align pfun.mem_core_res PFun.mem_core_res
 
@@ -489,7 +489,7 @@ section
 
 open Classical
 
-theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
+lemma core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
   ext x
   rw [mem_core_res]
   by_cases h : x ∈ s <;> simp [h]
@@ -497,17 +497,17 @@ theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = 
 
 end
 
-theorem core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
+lemma core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
   ext x; simp [core_def]
 #align pfun.core_restrict PFun.core_restrict
 
-theorem preimage_subset_core (f : α →. β) (s : Set β) : f.preimage s ⊆ f.core s :=
+lemma preimage_subset_core (f : α →. β) (s : Set β) : f.preimage s ⊆ f.core s :=
   fun _ ⟨y, ys, fxy⟩ y' fxy' =>
   have : y = y' := Part.mem_unique fxy fxy'
   this ▸ ys
 #align pfun.preimage_subset_core PFun.preimage_subset_core
 
-theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ f.Dom :=
+lemma preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ f.Dom :=
   Set.eq_of_subset_of_subset (Set.subset_inter (f.preimage_subset_core s) (f.preimage_subset_dom s))
     fun x ⟨xcore, xdom⟩ =>
     let y := (f x).get xdom
@@ -515,12 +515,12 @@ theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ 
     show x ∈ f.preimage s from ⟨(f x).get xdom, ys, Part.get_mem _⟩
 #align pfun.preimage_eq PFun.preimage_eq
 
-theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
+lemma core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
   rw [preimage_eq, Set.union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
     Set.inter_univ, Set.union_eq_self_of_subset_right (f.compl_dom_subset_core s)]
 #align pfun.core_eq PFun.core_eq
 
-theorem preimage_asSubtype (f : α →. β) (s : Set β) :
+lemma preimage_asSubtype (f : α →. β) (s : Set β) :
     f.asSubtype ⁻¹' s = Subtype.val ⁻¹' f.preimage s := by
   ext x
   simp only [Set.mem_preimage, Set.mem_setOf_eq, PFun.asSubtype, PFun.mem_preimage]
@@ -536,12 +536,12 @@ def toSubtype (p : β → Prop) (f : α → β) : α →. Subtype p := fun a => 
 #align pfun.to_subtype PFun.toSubtype
 
 @[simp]
-theorem dom_toSubtype (p : β → Prop) (f : α → β) : (toSubtype p f).Dom = { a | p (f a) } :=
+lemma dom_toSubtype (p : β → Prop) (f : α → β) : (toSubtype p f).Dom = { a | p (f a) } :=
   rfl
 #align pfun.dom_to_subtype PFun.dom_toSubtype
 
 @[simp]
-theorem toSubtype_apply (p : β → Prop) (f : α → β) (a : α) :
+lemma toSubtype_apply (p : β → Prop) (f : α → β) (a : α) :
     toSubtype p f a = ⟨p (f a), Subtype.mk _⟩ :=
   rfl
 #align pfun.to_subtype_apply PFun.toSubtype_apply
@@ -562,12 +562,12 @@ protected def id (α : Type*) : α →. α :=
 #align pfun.id PFun.id
 
 @[simp]
-theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
+lemma coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
   rfl
 #align pfun.coe_id PFun.coe_id
 
 @[simp]
-theorem id_apply (a : α) : PFun.id α a = Part.some a :=
+lemma id_apply (a : α) : PFun.id α a = Part.some a :=
   rfl
 #align pfun.id_apply PFun.id_apply
 
@@ -576,22 +576,22 @@ def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a => (g a).bind f
 #align pfun.comp PFun.comp
 
 @[simp]
-theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
+lemma comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
   rfl
 #align pfun.comp_apply PFun.comp_apply
 
 @[simp]
-theorem id_comp (f : α →. β) : (PFun.id β).comp f = f :=
+lemma id_comp (f : α →. β) : (PFun.id β).comp f = f :=
   ext fun _ _ => by simp
 #align pfun.id_comp PFun.id_comp
 
 @[simp]
-theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
+lemma comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
   ext fun _ _ => by simp
 #align pfun.comp_id PFun.comp_id
 
 @[simp]
-theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
+lemma dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
   simp_rw [mem_preimage, mem_dom, comp_apply, Part.mem_bind_iff, ← exists_and_right]
   rw [exists_comm]
@@ -599,7 +599,7 @@ theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage
 #align pfun.dom_comp PFun.dom_comp
 
 @[simp]
-theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
+lemma preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
     (f.comp g).preimage s = g.preimage (f.preimage s) := by
   ext
   simp_rw [mem_preimage, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
@@ -608,7 +608,7 @@ theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
 #align pfun.preimage_comp PFun.preimage_comp
 
 @[simp]
-theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
+lemma Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
     a.bind (f.comp g) = (a.bind g).bind f := by
   ext c
   simp_rw [Part.mem_bind_iff, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
@@ -617,12 +617,12 @@ theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
 #align part.bind_comp PFun.Part.bind_comp
 
 @[simp]
-theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=
+lemma comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=
   ext fun _ _ => by simp only [comp_apply, Part.bind_comp]
 #align pfun.comp_assoc PFun.comp_assoc
 
 -- This can't be `simp`
-theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α →. γ) = (g : β →. γ).comp f :=
+lemma coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α →. γ) = (g : β →. γ).comp f :=
   ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
 #align pfun.coe_comp PFun.coe_comp
 
@@ -632,18 +632,18 @@ def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ := fun x =>
 #align pfun.prod_lift PFun.prodLift
 
 @[simp]
-theorem dom_prodLift (f : α →. β) (g : α →. γ) :
+lemma dom_prodLift (f : α →. β) (g : α →. γ) :
     (f.prodLift g).Dom = { x | (f x).Dom ∧ (g x).Dom } :=
   rfl
 #align pfun.dom_prod_lift PFun.dom_prodLift
 
-theorem get_prodLift (f : α →. β) (g : α →. γ) (x : α) (h) :
+lemma get_prodLift (f : α →. β) (g : α →. γ) (x : α) (h) :
     (f.prodLift g x).get h = ((f x).get h.1, (g x).get h.2) :=
   rfl
 #align pfun.get_prod_lift PFun.get_prodLift
 
 @[simp]
-theorem prodLift_apply (f : α →. β) (g : α →. γ) (x : α) :
+lemma prodLift_apply (f : α →. β) (g : α →. γ) (x : α) :
     f.prodLift g x = ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩ :=
   rfl
 #align pfun.prod_lift_apply PFun.prodLift_apply
@@ -662,18 +662,18 @@ def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x 
 #align pfun.prod_map PFun.prodMap
 
 @[simp]
-theorem dom_prodMap (f : α →. γ) (g : β →. δ) :
+lemma dom_prodMap (f : α →. γ) (g : β →. δ) :
     (f.prodMap g).Dom = { x | (f x.1).Dom ∧ (g x.2).Dom } :=
   rfl
 #align pfun.dom_prod_map PFun.dom_prodMap
 
-theorem get_prodMap (f : α →. γ) (g : β →. δ) (x : α × β) (h) :
+lemma get_prodMap (f : α →. γ) (g : β →. δ) (x : α × β) (h) :
     (f.prodMap g x).get h = ((f x.1).get h.1, (g x.2).get h.2) :=
   rfl
 #align pfun.get_prod_map PFun.get_prodMap
 
 @[simp]
-theorem prodMap_apply (f : α →. γ) (g : β →. δ) (x : α × β) :
+lemma prodMap_apply (f : α →. γ) (g : β →. δ) (x : α × β) :
     f.prodMap g x = ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h => ((f x.1).get h.1, (g x.2).get h.2)⟩ :=
   rfl
 #align pfun.prod_map_apply PFun.prodMap_apply
@@ -686,7 +686,7 @@ lemma mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × δ
 #align pfun.mem_prod_map PFun.mem_prodMap
 
 @[simp]
-theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
+lemma prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))
         (g.comp ((Prod.snd : α × β → β) : α × β →. β)) =
       prodMap f g :=
@@ -699,7 +699,7 @@ lemma prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 #align pfun.prod_map_id_id PFun.prodMap_id_id
 
 @[simp]
-theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
+lemma prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
   -- Porting note: was `by tidy`, below is a golf'd version of the `tidy?` proof
   ext $ λ ⟨_, _⟩ ⟨_, _⟩ =>

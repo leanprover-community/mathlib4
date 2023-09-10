@@ -24,13 +24,13 @@ def zipWith : Vector α n → Vector β n → Vector γ n := fun x y => ⟨List.
 #align vector.zip_with Vector.zipWith
 
 @[simp]
-theorem zipWith_toList (x : Vector α n) (y : Vector β n) :
+lemma zipWith_toList (x : Vector α n) (y : Vector β n) :
     (Vector.zipWith f x y).toList = List.zipWith f x.toList y.toList :=
   rfl
 #align vector.zip_with_to_list Vector.zipWith_toList
 
 @[simp]
-theorem zipWith_get (x : Vector α n) (y : Vector β n) (i) :
+lemma zipWith_get (x : Vector α n) (y : Vector β n) (i) :
     (Vector.zipWith f x y).get i = f (x.get i) (y.get i) := by
   dsimp only [Vector.zipWith, Vector.get]
   cases x; cases y
@@ -38,7 +38,7 @@ theorem zipWith_get (x : Vector α n) (y : Vector β n) (i) :
 #align vector.zip_with_nth Vector.zipWith_get
 
 @[simp]
-theorem zipWith_tail (x : Vector α n) (y : Vector β n) :
+lemma zipWith_tail (x : Vector α n) (y : Vector β n) :
     (Vector.zipWith f x y).tail = Vector.zipWith f x.tail y.tail := by
   ext
   simp [get_tail]

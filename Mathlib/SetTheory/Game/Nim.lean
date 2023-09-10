@@ -56,7 +56,7 @@ termination_by nim o => o
 
 open Ordinal
 
-theorem nim_def (o : Ordinal) :
+lemma nim_def (o : Ordinal) :
     have : IsWellOrder (Quotient.out o).α (· < ·) := inferInstance
     nim o =
       PGame.mk o.out.α o.out.α (fun o₂ => nim (Ordinal.typein (· < ·) o₂)) fun o₂ =>
@@ -64,18 +64,18 @@ theorem nim_def (o : Ordinal) :
   rw [nim]; rfl
 #align pgame.nim_def SetTheory.PGame.nim_def
 
-theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.out.α := by rw [nim_def]; rfl
+lemma leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.out.α := by rw [nim_def]; rfl
 #align pgame.left_moves_nim SetTheory.PGame.leftMoves_nim
 
-theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.out.α := by rw [nim_def]; rfl
+lemma rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.out.α := by rw [nim_def]; rfl
 #align pgame.right_moves_nim SetTheory.PGame.rightMoves_nim
 
-theorem moveLeft_nim_hEq (o : Ordinal) :
+lemma moveLeft_nim_hEq (o : Ordinal) :
     have : IsWellOrder (Quotient.out o).α (· < ·) := inferInstance
     HEq (nim o).moveLeft fun i : o.out.α => nim (typein (· < ·) i) := by rw [nim_def]; rfl
 #align pgame.move_left_nim_heq SetTheory.PGame.moveLeft_nim_hEq
 
-theorem moveRight_nim_hEq (o : Ordinal) :
+lemma moveRight_nim_hEq (o : Ordinal) :
     have : IsWellOrder (Quotient.out o).α (· < ·) := inferInstance
     HEq (nim o).moveRight fun i : o.out.α => nim (typein (· < ·) i) := by rw [nim_def]; rfl
 #align pgame.move_right_nim_heq SetTheory.PGame.moveRight_nim_hEq
@@ -173,19 +173,19 @@ lemma default_nim_one_rightMoves_eq :
 #align pgame.default_nim_one_right_moves_eq SetTheory.PGame.default_nim_one_rightMoves_eq
 
 @[simp]
-theorem toLeftMovesNim_one_symm (i) :
+lemma toLeftMovesNim_one_symm (i) :
     (@toLeftMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by simp
 #align pgame.to_left_moves_nim_one_symm SetTheory.PGame.toLeftMovesNim_one_symm
 
 @[simp]
-theorem toRightMovesNim_one_symm (i) :
+lemma toRightMovesNim_one_symm (i) :
     (@toRightMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by simp
 #align pgame.to_right_moves_nim_one_symm SetTheory.PGame.toRightMovesNim_one_symm
 
-theorem nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by simp
+lemma nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by simp
 #align pgame.nim_one_move_left SetTheory.PGame.nim_one_moveLeft
 
-theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
+lemma nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 #align pgame.nim_one_move_right SetTheory.PGame.nim_one_moveRight
 
 /-- `nim 1` has exactly the same moves as `star`. -/
@@ -201,7 +201,7 @@ lemma nim_one_equiv : nim 1 ≈ star :=
 #align pgame.nim_one_equiv SetTheory.PGame.nim_one_equiv
 
 @[simp]
-theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
+lemma nim_birthday (o : Ordinal) : (nim o).birthday = o := by
   induction' o using Ordinal.induction with o IH
   rw [nim_def, birthday_def]
   dsimp
@@ -211,7 +211,7 @@ theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
 #align pgame.nim_birthday SetTheory.PGame.nim_birthday
 
 @[simp]
-theorem neg_nim (o : Ordinal) : -nim o = nim o := by
+lemma neg_nim (o : Ordinal) : -nim o = nim o := by
   induction' o using Ordinal.induction with o IH
   rw [nim_def]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 #align pgame.neg_nim SetTheory.PGame.neg_nim
@@ -229,7 +229,7 @@ lemma nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
 #align pgame.nim_fuzzy_zero_of_ne_zero SetTheory.PGame.nim_fuzzy_zero_of_ne_zero
 
 @[simp]
-theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
+lemma nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
   constructor
   · refine' not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 _
     wlog h : o₁ < o₂
@@ -262,7 +262,7 @@ termination_by grundyValue G => G
 decreasing_by pgame_wf_tac
 #align pgame.grundy_value SetTheory.PGame.grundyValue
 
-theorem grundyValue_eq_mex_left (G : PGame) :
+lemma grundyValue_eq_mex_left (G : PGame) :
     grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i) := by rw [grundyValue]
 #align pgame.grundy_value_eq_mex_left SetTheory.PGame.grundyValue_eq_mex_left
 
@@ -314,11 +314,11 @@ lemma grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Ordinal} :
 #align pgame.grundy_value_eq_iff_equiv_nim SetTheory.PGame.grundyValue_eq_iff_equiv_nim
 
 @[simp]
-theorem nim_grundyValue (o : Ordinal.{u}) : grundyValue (nim o) = o :=
+lemma nim_grundyValue (o : Ordinal.{u}) : grundyValue (nim o) = o :=
   grundyValue_eq_iff_equiv_nim.2 PGame.equiv_rfl
 #align pgame.nim_grundy_value SetTheory.PGame.nim_grundyValue
 
-theorem grundyValue_eq_iff_equiv (G H : PGame) [G.Impartial] [H.Impartial] :
+lemma grundyValue_eq_iff_equiv (G H : PGame) [G.Impartial] [H.Impartial] :
     grundyValue G = grundyValue H ↔ (G ≈ H) :=
   grundyValue_eq_iff_equiv_nim.trans (equiv_congr_left.1 (equiv_nim_grundyValue H) _).symm
 #align pgame.grundy_value_eq_iff_equiv SetTheory.PGame.grundyValue_eq_iff_equiv
@@ -328,7 +328,7 @@ lemma grundyValue_zero : grundyValue 0 = 0 :=
   grundyValue_eq_iff_equiv_nim.2 (Equiv.symm nim_zero_equiv)
 #align pgame.grundy_value_zero SetTheory.PGame.grundyValue_zero
 
-theorem grundyValue_iff_equiv_zero (G : PGame) [G.Impartial] : grundyValue G = 0 ↔ (G ≈ 0) := by
+lemma grundyValue_iff_equiv_zero (G : PGame) [G.Impartial] : grundyValue G = 0 ↔ (G ≈ 0) := by
   rw [← grundyValue_eq_iff_equiv, grundyValue_zero]
 #align pgame.grundy_value_iff_equiv_zero SetTheory.PGame.grundyValue_iff_equiv_zero
 
@@ -338,7 +338,7 @@ lemma grundyValue_star : grundyValue star = 1 :=
 #align pgame.grundy_value_star SetTheory.PGame.grundyValue_star
 
 @[simp]
-theorem grundyValue_neg (G : PGame) [G.Impartial] : grundyValue (-G) = grundyValue G := by
+lemma grundyValue_neg (G : PGame) [G.Impartial] : grundyValue (-G) = grundyValue G := by
   rw [grundyValue_eq_iff_equiv_nim, neg_equiv_iff, neg_nim, ← grundyValue_eq_iff_equiv_nim]
 #align pgame.grundy_value_neg SetTheory.PGame.grundyValue_neg
 
@@ -358,7 +358,7 @@ lemma grundyValue_eq_mex_right :
 /-- The Grundy value of the sum of two nim games with natural numbers of piles equals their bitwise
 xor. -/
 @[simp]
-theorem grundyValue_nim_add_nim (n m : ℕ) :
+lemma grundyValue_nim_add_nim (n m : ℕ) :
     grundyValue (nim.{u} n + nim.{u} m) = Nat.lxor' n m := by
   -- We do strong induction on both variables.
   induction' n using Nat.strong_induction_on with n hn generalizing m
@@ -401,7 +401,7 @@ lemma nim_add_nim_equiv {n m : ℕ} : nim n + nim m ≈ nim (Nat.lxor' n m) := b
   rw [← grundyValue_eq_iff_equiv_nim, grundyValue_nim_add_nim]
 #align pgame.nim_add_nim_equiv SetTheory.PGame.nim_add_nim_equiv
 
-theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ} (hG : grundyValue G = n)
+lemma grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ} (hG : grundyValue G = n)
     (hH : grundyValue H = m) : grundyValue (G + H) = Nat.lxor' n m := by
   rw [← nim_grundyValue (Nat.lxor' n m), grundyValue_eq_iff_equiv]
   refine' Equiv.trans _ nim_add_nim_equiv

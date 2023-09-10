@@ -270,12 +270,12 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_def AlgebraicGeometry.LocallyRingedSpace.Γ_def
 
 @[simp]
-theorem Γ_obj (X : LocallyRingedSpaceᵒᵖ) : Γ.obj X = X.unop.presheaf.obj (op ⊤) :=
+lemma Γ_obj (X : LocallyRingedSpaceᵒᵖ) : Γ.obj X = X.unop.presheaf.obj (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_obj AlgebraicGeometry.LocallyRingedSpace.Γ_obj
 
-theorem Γ_obj_op (X : LocallyRingedSpace) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
+lemma Γ_obj_op (X : LocallyRingedSpace) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_obj_op AlgebraicGeometry.LocallyRingedSpace.Γ_obj_op
@@ -310,7 +310,7 @@ set_option linter.uppercaseLean3 false in
 
 -- This actually holds for all ringed spaces with nontrivial stalks.
 @[simp]
-theorem basicOpen_zero (X : LocallyRingedSpace) (U : Opens X.carrier) :
+lemma basicOpen_zero (X : LocallyRingedSpace) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
   simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,

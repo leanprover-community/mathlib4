@@ -53,14 +53,14 @@ add_decl_doc AddSubmonoid.FG
 /-- An equivalent expression of `Submonoid.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive "An equivalent expression of `AddSubmonoid.FG` in terms of `Set.Finite` instead of
 `Finset`."]
-theorem Submonoid.fg_iff (P : Submonoid M) :
+lemma Submonoid.fg_iff (P : Submonoid M) :
     Submonoid.FG P ↔ ∃ S : Set M, Submonoid.closure S = P ∧ S.Finite :=
   ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
     ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
 #align submonoid.fg_iff Submonoid.fg_iff
 #align add_submonoid.fg_iff AddSubmonoid.fg_iff
 
-theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
+lemma Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
   ⟨fun h =>
     let ⟨S, hS, hf⟩ := (Submonoid.fg_iff _).1 h
     (AddSubmonoid.fg_iff _).mpr
@@ -71,7 +71,7 @@ theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG
       ⟨Multiplicative.ofAdd ⁻¹' T, by simp [← AddSubmonoid.toSubmonoid'_closure, hT], hf⟩⟩
 #align submonoid.fg_iff_add_fg Submonoid.fg_iff_add_fg
 
-theorem AddSubmonoid.fg_iff_mul_fg (P : AddSubmonoid N) : P.FG ↔ P.toSubmonoid.FG := by
+lemma AddSubmonoid.fg_iff_mul_fg (P : AddSubmonoid N) : P.FG ↔ P.toSubmonoid.FG := by
   convert (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
 #align add_submonoid.fg_iff_mul_fg AddSubmonoid.fg_iff_mul_fg
 
@@ -163,7 +163,7 @@ lemma Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e :
 #align add_submonoid.fg.map_injective AddSubmonoid.FG.map_injective
 
 @[to_additive (attr := simp)]
-theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
+lemma Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
   conv_rhs => rw [← N.range_subtype, MonoidHom.mrange_eq_map]
   exact ⟨fun h => h.out.map N.subtype, fun h => ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
 #align monoid.fg_iff_submonoid_fg Monoid.fg_iff_submonoid_fg
@@ -188,7 +188,7 @@ instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') 
 #align add_monoid.fg_range AddMonoid.fg_range
 
 @[to_additive AddSubmonoid.multiples_fg]
-theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
+lemma Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
   ⟨{r}, (Finset.coe_singleton r).symm ▸ (Submonoid.powers_eq_closure r).symm⟩
 #align submonoid.powers_fg Submonoid.powers_fg
 #align add_submonoid.multiples_fg AddSubmonoid.multiples_fg
@@ -234,7 +234,7 @@ add_decl_doc AddSubgroup.FG
 /-- An equivalent expression of `Subgroup.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive "An equivalent expression of `AddSubgroup.fg` in terms of `Set.Finite` instead of
 `Finset`."]
-theorem Subgroup.fg_iff (P : Subgroup G) :
+lemma Subgroup.fg_iff (P : Subgroup G) :
     Subgroup.FG P ↔ ∃ S : Set G, Subgroup.closure S = P ∧ S.Finite :=
   ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
     ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
@@ -244,7 +244,7 @@ theorem Subgroup.fg_iff (P : Subgroup G) :
 /-- A subgroup is finitely generated if and only if it is finitely generated as a submonoid. -/
 @[to_additive "An additive subgroup is finitely generated if
 and only if it is finitely generated as an additive submonoid."]
-theorem Subgroup.fg_iff_submonoid_fg (P : Subgroup G) : P.FG ↔ P.toSubmonoid.FG := by
+lemma Subgroup.fg_iff_submonoid_fg (P : Subgroup G) : P.FG ↔ P.toSubmonoid.FG := by
   constructor
   · rintro ⟨S, rfl⟩
     rw [Submonoid.fg_iff]
@@ -259,12 +259,12 @@ theorem Subgroup.fg_iff_submonoid_fg (P : Subgroup G) : P.FG ↔ P.toSubmonoid.F
 #align subgroup.fg_iff_submonoid_fg Subgroup.fg_iff_submonoid_fg
 #align add_subgroup.fg_iff_add_submonoid.fg AddSubgroup.fg_iff_addSubmonoid_fg
 
-theorem Subgroup.fg_iff_add_fg (P : Subgroup G) : P.FG ↔ P.toAddSubgroup.FG := by
+lemma Subgroup.fg_iff_add_fg (P : Subgroup G) : P.FG ↔ P.toAddSubgroup.FG := by
   rw [Subgroup.fg_iff_submonoid_fg, AddSubgroup.fg_iff_addSubmonoid_fg]
   exact (Subgroup.toSubmonoid P).fg_iff_add_fg
 #align subgroup.fg_iff_add_fg Subgroup.fg_iff_add_fg
 
-theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG := by
+lemma AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG := by
   rw [AddSubgroup.fg_iff_addSubmonoid_fg, Subgroup.fg_iff_submonoid_fg]
   exact AddSubmonoid.fg_iff_mul_fg (AddSubgroup.toAddSubmonoid P)
 #align add_subgroup.fg_iff_mul_fg AddSubgroup.fg_iff_mul_fg
@@ -323,7 +323,7 @@ lemma Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
 #align add_group.fg_iff_add_monoid.fg AddGroup.fg_iff_addMonoid_fg
 
 @[to_additive (attr := simp)]
-theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
+lemma Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
   (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
     (Subgroup.fg_iff_submonoid_fg _).symm
 
@@ -440,7 +440,7 @@ lemma rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) :
 #align add_subgroup.rank_congr AddSubgroup.rank_congr
 
 @[to_additive]
-theorem rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Set G)) ≤ s.card := by
+lemma rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Set G)) ≤ s.card := by
   classical
     let t : Finset (closure (s : Set G)) := s.preimage Subtype.val (Subtype.coe_injective.injOn _)
     have ht : closure (t : Set (closure (s : Set G))) = ⊤ := by
@@ -455,7 +455,7 @@ theorem rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Se
 #align add_subgroup.rank_closure_finset_le_card AddSubgroup.rank_closure_finset_le_card
 
 @[to_additive]
-theorem rank_closure_finite_le_nat_card (s : Set G) [Finite s] :
+lemma rank_closure_finite_le_nat_card (s : Set G) [Finite s] :
     Group.rank (closure s) ≤ Nat.card s := by
   haveI := Fintype.ofFinite s
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]

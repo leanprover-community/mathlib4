@@ -159,7 +159,7 @@ def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbac
     P.map (pullback.fst : Limits.pullback f₁ f₂ ⟶ _).op (x f₁ h₁) = P.map pullback.snd.op (x f₂ h₂)
 #align category_theory.presieve.family_of_elements.pullback_compatible CategoryTheory.Presieve.FamilyOfElements.PullbackCompatible
 
-theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
+lemma pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
     x.Compatible ↔ x.PullbackCompatible := by
   constructor
   · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
@@ -227,7 +227,7 @@ def FamilyOfElements.SieveCompatible (x : FamilyOfElements P (S : Presieve X)) :
   ∀ ⦃Y Z⦄ (f : Y ⟶ X) (g : Z ⟶ Y) (hf), x (g ≫ f) (S.downward_closed hf g) = P.map g.op (x f hf)
 #align category_theory.presieve.family_of_elements.sieve_compatible CategoryTheory.Presieve.FamilyOfElements.SieveCompatible
 
-theorem compatible_iff_sieveCompatible (x : FamilyOfElements P (S : Presieve X)) :
+lemma compatible_iff_sieveCompatible (x : FamilyOfElements P (S : Presieve X)) :
     x.Compatible ↔ x.SieveCompatible := by
   constructor
   · intro h Y Z f g hf
@@ -282,7 +282,7 @@ noncomputable def compatibleEquivGenerateSieveCompatible :
   right_inv x := Subtype.ext (extend_restrict x.2)
 #align category_theory.presieve.compatible_equiv_generate_sieve_compatible CategoryTheory.Presieve.compatibleEquivGenerateSieveCompatible
 
-theorem FamilyOfElements.comp_of_compatible (S : Sieve X) {x : FamilyOfElements P S}
+lemma FamilyOfElements.comp_of_compatible (S : Sieve X) {x : FamilyOfElements P S}
     (t : x.Compatible) {f : Y ⟶ X} (hf : S f) {Z} (g : Z ⟶ Y) :
     x (g ≫ f) (S.downward_closed hf g) = P.map g.op (x f hf) := by
   simpa using t (𝟙 _) g (S.downward_closed hf g) hf (id_comp _)
@@ -302,7 +302,7 @@ def FamilyOfElements.functorPullback (x : FamilyOfElements P T) :
     FamilyOfElements (F.op ⋙ P) (T.functorPullback F) := fun _ f hf => x (F.map f) hf
 #align category_theory.presieve.family_of_elements.functor_pullback CategoryTheory.Presieve.FamilyOfElements.functorPullback
 
-theorem FamilyOfElements.Compatible.functorPullback (h : x.Compatible) :
+lemma FamilyOfElements.Compatible.functorPullback (h : x.Compatible) :
     (x.functorPullback F).Compatible := by
   intro Z₁ Z₂ W g₁ g₂ f₁ f₂ h₁ h₂ eq
   exact h (F.map g₁) (F.map g₂) h₁ h₂ (by simp only [← F.map_comp, eq])
@@ -330,7 +330,7 @@ def FamilyOfElements.pullback (f : Y ⟶ X) (x : FamilyOfElements P (S : Presiev
     FamilyOfElements P (S.pullback f : Presieve Y) := fun _ g hg => x (g ≫ f) hg
 #align category_theory.presieve.family_of_elements.pullback CategoryTheory.Presieve.FamilyOfElements.pullback
 
-theorem FamilyOfElements.Compatible.pullback (f : Y ⟶ X) {x : FamilyOfElements P S}
+lemma FamilyOfElements.Compatible.pullback (f : Y ⟶ X) {x : FamilyOfElements P S}
     (h : x.Compatible) : (x.pullback f).Compatible := by
   simp only [compatible_iff_sieveCompatible] at h ⊢
   intro W Z f₁ f₂ hf
@@ -350,18 +350,18 @@ def FamilyOfElements.compPresheafMap (f : P ⟶ Q) (x : FamilyOfElements P R) :
 #align category_theory.presieve.family_of_elements.comp_presheaf_map CategoryTheory.Presieve.FamilyOfElements.compPresheafMap
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_id (x : FamilyOfElements P R) :
+lemma FamilyOfElements.compPresheafMap_id (x : FamilyOfElements P R) :
     x.compPresheafMap (𝟙 P) = x :=
   rfl
 #align category_theory.presieve.family_of_elements.comp_presheaf_map_id CategoryTheory.Presieve.FamilyOfElements.compPresheafMap_id
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_comp (x : FamilyOfElements P R) (f : P ⟶ Q)
+lemma FamilyOfElements.compPresheafMap_comp (x : FamilyOfElements P R) (f : P ⟶ Q)
     (g : Q ⟶ U) : (x.compPresheafMap f).compPresheafMap g = x.compPresheafMap (f ≫ g) :=
   rfl
 #align category_theory.presieve.family_of_elements.comp_prersheaf_map_comp CategoryTheory.Presieve.FamilyOfElements.compPresheafMap_comp
 
-theorem FamilyOfElements.Compatible.compPresheafMap (f : P ⟶ Q) {x : FamilyOfElements P R}
+lemma FamilyOfElements.Compatible.compPresheafMap (f : P ⟶ Q) {x : FamilyOfElements P R}
     (h : x.Compatible) : (x.compPresheafMap f).Compatible := by
   intro Z₁ Z₂ W g₁ g₂ f₁ f₂ h₁ h₂ eq
   unfold FamilyOfElements.compPresheafMap
@@ -388,7 +388,7 @@ lemma FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P R}
   rw [← f.naturality, types_comp_apply, h g hg]
 #align category_theory.presieve.family_of_elements.is_amalgamation.comp_presheaf_map CategoryTheory.Presieve.FamilyOfElements.IsAmalgamation.compPresheafMap
 
-theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
+lemma is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
   cases' h with t ht
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ comm
@@ -431,7 +431,7 @@ lemma isSeparatedFor_iff_generate :
     · exact isAmalgamation_sieveExtend x t₂ ht₂
 #align category_theory.presieve.is_separated_for_iff_generate CategoryTheory.Presieve.isSeparatedFor_iff_generate
 
-theorem isSeparatedFor_top (P : Cᵒᵖ ⥤ Type w) : IsSeparatedFor P (⊤ : Presieve X) :=
+lemma isSeparatedFor_top (P : Cᵒᵖ ⥤ Type w) : IsSeparatedFor P (⊤ : Presieve X) :=
   fun x t₁ t₂ h₁ h₂ => by
   have q₁ := h₁ (𝟙 X) (by tauto)
   have q₂ := h₂ (𝟙 X) (by tauto)
@@ -595,7 +595,7 @@ lemma isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
 
 /-- If `P` is separated for `R` and every family has an amalgamation, then `P` is a sheaf for `R`.
 -/
-theorem IsSeparatedFor.isSheafFor (t : IsSeparatedFor P R) :
+lemma IsSeparatedFor.isSheafFor (t : IsSeparatedFor P R) :
     (∀ x : FamilyOfElements P R, x.Compatible → ∃ t, x.IsAmalgamation t) → IsSheafFor P R := by
   rw [← isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
   exact And.intro t
@@ -612,19 +612,19 @@ noncomputable def IsSheafFor.amalgamate (t : IsSheafFor P R) (x : FamilyOfElemen
   (t x hx).exists.choose
 #align category_theory.presieve.is_sheaf_for.amalgamate CategoryTheory.Presieve.IsSheafFor.amalgamate
 
-theorem IsSheafFor.isAmalgamation (t : IsSheafFor P R) {x : FamilyOfElements P R}
+lemma IsSheafFor.isAmalgamation (t : IsSheafFor P R) {x : FamilyOfElements P R}
     (hx : x.Compatible) : x.IsAmalgamation (t.amalgamate x hx) :=
   (t x hx).exists.choose_spec
 #align category_theory.presieve.is_sheaf_for.is_amalgamation CategoryTheory.Presieve.IsSheafFor.isAmalgamation
 
 @[simp]
-theorem IsSheafFor.valid_glue (t : IsSheafFor P R) {x : FamilyOfElements P R} (hx : x.Compatible)
+lemma IsSheafFor.valid_glue (t : IsSheafFor P R) {x : FamilyOfElements P R} (hx : x.Compatible)
     (f : Y ⟶ X) (Hf : R f) : P.map f.op (t.amalgamate x hx) = x f Hf :=
   t.isAmalgamation hx f Hf
 #align category_theory.presieve.is_sheaf_for.valid_glue CategoryTheory.Presieve.IsSheafFor.valid_glue
 
 /-- C2.1.3 in [Elephant] -/
-theorem isSheafFor_iff_generate (R : Presieve X) :
+lemma isSheafFor_iff_generate (R : Presieve X) :
     IsSheafFor P R ↔ IsSheafFor P (generate R : Presieve X) := by
   rw [← isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
   rw [← isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
@@ -645,7 +645,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 
 [Elephant] C2.1.5(i)
 -/
-theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
+lemma isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
   refine' ⟨x _ (Presieve.singleton_self _), _, _⟩
   · rintro _ _ ⟨rfl, rfl⟩
@@ -658,7 +658,7 @@ theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presie
 
 [Elephant] C2.1.5(ii)
 -/
-theorem isSheafFor_top_sieve (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P ((⊤ : Sieve X) : Presieve X) := by
+lemma isSheafFor_top_sieve (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P ((⊤ : Sieve X) : Presieve X) := by
   rw [← generate_of_singleton_isSplitEpi (𝟙 X)]
   rw [← isSheafFor_iff_generate]
   apply isSheafFor_singleton_iso
@@ -690,7 +690,7 @@ then `P` is a sheaf for `R`.
 
 This is closely related to [Elephant] C2.1.6(i).
 -/
-theorem isSheafFor_subsieve_aux (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
+lemma isSheafFor_subsieve_aux (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
     (h : (S : Presieve X) ≤ R) (hS : IsSheafFor P (S : Presieve X))
     (trans : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, R f → IsSeparatedFor P (S.pullback f : Presieve Y)) :
     IsSheafFor P R := by
@@ -715,7 +715,7 @@ If `P` is a sheaf for every pullback of the sieve `S`, then `P` is a sheaf for a
 contains `S`.
 This is closely related to [Elephant] C2.1.6.
 -/
-theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
+lemma isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
     (h : (S : Presieve X) ≤ R) (trans : ∀ ⦃Y⦄ (f : Y ⟶ X),
       IsSheafFor P (S.pullback f : Presieve Y)) :
     IsSheafFor P R :=
@@ -741,11 +741,11 @@ lemma IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Presie
   (isSheafFor_iff_generate R).2 <| hp _ hr
 #align category_theory.presieve.is_sheaf.is_sheaf_for CategoryTheory.Presieve.IsSheaf.isSheafFor
 
-theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
+lemma isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
 #align category_theory.presieve.is_sheaf_of_le CategoryTheory.Presieve.isSheaf_of_le
 
-theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
+lemma isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
   fun S hS => (h S hS).isSeparatedFor
 #align category_theory.presieve.is_separated_of_is_sheaf CategoryTheory.Presieve.isSeparated_of_isSheaf
 
@@ -819,7 +819,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 variable {X : C}
 
-theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
+lemma yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
     FamilyOfElements.Compatible <| yonedaFamilyOfElements_fromCocone S.arrows s := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ hgf
   have Hs := s.ι.naturality
@@ -839,7 +839,7 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
 The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
 the sheaf condition for `S`.
 -/
-theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
+lemma forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
     (∀ W : C, Presieve.IsSheafFor (yoneda.obj W) (S : Presieve X)) ↔
       Nonempty (IsColimit S.arrows.cocone) := by
   constructor
@@ -971,7 +971,7 @@ lemma w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ secondMa
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
 -/
-theorem compatible_iff (x : FirstObj P S) :
+lemma compatible_iff (x : FirstObj P S) :
     ((firstObjEqFamily P S).hom x).Compatible ↔ firstMap P S x = secondMap P S x := by
   rw [Presieve.compatible_iff_sieveCompatible]
   constructor
@@ -1058,7 +1058,7 @@ lemma w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
 -/
-theorem compatible_iff (x : FirstObj P R) :
+lemma compatible_iff (x : FirstObj P R) :
     ((firstObjEqFamily P R).hom x).Compatible ↔ firstMap P R x = secondMap P R x := by
   rw [Presieve.pullbackCompatible_iff]
   constructor

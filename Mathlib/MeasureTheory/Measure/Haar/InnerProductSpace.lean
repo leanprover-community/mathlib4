@@ -33,7 +33,7 @@ variable {m n : ℕ} [_i : Fact (finrank ℝ F = n)]
 /-- The volume form coming from an orientation in an inner product space gives measure `1` to the
 parallelepiped associated to any orthonormal basis. This is a rephrasing of
 `abs_volumeForm_apply_of_orthonormal` in terms of measures. -/
-theorem Orientation.measure_orthonormalBasis (o : Orientation ℝ F (Fin n))
+lemma Orientation.measure_orthonormalBasis (o : Orientation ℝ F (Fin n))
     (b : OrthonormalBasis ι ℝ F) : o.volumeForm.measure (parallelepiped b) = 1 := by
   have e : ι ≃ Fin n := by
     refine' Fintype.equivFinOfCardEq _
@@ -47,7 +47,7 @@ theorem Orientation.measure_orthonormalBasis (o : Orientation ℝ F (Fin n))
 
 /-- In an oriented inner product space, the measure coming from the canonical volume form
 associated to an orientation coincides with the volume. -/
-theorem Orientation.measure_eq_volume (o : Orientation ℝ F (Fin n)) :
+lemma Orientation.measure_eq_volume (o : Orientation ℝ F (Fin n)) :
     o.volumeForm.measure = volume := by
   have A : o.volumeForm.measure (stdOrthonormalBasis ℝ F).toBasis.parallelepiped = 1 :=
     Orientation.measure_orthonormalBasis o (stdOrthonormalBasis ℝ F)
@@ -60,7 +60,7 @@ end
 
 /-- The volume measure in a finite-dimensional inner product space gives measure `1` to the
 parallelepiped spanned by any orthonormal basis. -/
-theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
+lemma OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
     volume (parallelepiped b) = 1 := by
   haveI : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
   let o := (stdOrthonormalBasis ℝ F).toBasis.orientation

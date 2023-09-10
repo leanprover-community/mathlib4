@@ -151,13 +151,13 @@ def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
 local infixl:60 " ∘ᴸ " => LHom.comp
 
 @[simp]
-theorem id_comp (F : L →ᴸ L') : LHom.id L' ∘ᴸ F = F := by
+lemma id_comp (F : L →ᴸ L') : LHom.id L' ∘ᴸ F = F := by
   cases F
   rfl
 #align first_order.language.Lhom.id_comp FirstOrder.Language.LHom.id_comp
 
 @[simp]
-theorem comp_id (F : L →ᴸ L') : F ∘ᴸ LHom.id L = F := by
+lemma comp_id (F : L →ᴸ L') : F ∘ᴸ LHom.id L = F := by
   cases F
   rfl
 #align first_order.language.Lhom.comp_id FirstOrder.Language.LHom.comp_id
@@ -178,11 +178,11 @@ protected def sumElim : L.sum L'' →ᴸ L' where
   onRelation _n := Sum.elim (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
 #align first_order.language.Lhom.sum_elim FirstOrder.Language.LHom.sumElim
 
-theorem sumElim_comp_inl (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘ᴸ LHom.sumInl = ϕ :=
+lemma sumElim_comp_inl (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘ᴸ LHom.sumInl = ϕ :=
   LHom.funext (funext fun _ => rfl) (funext fun _ => rfl)
 #align first_order.language.Lhom.sum_elim_comp_inl FirstOrder.Language.LHom.sumElim_comp_inl
 
-theorem sumElim_comp_inr (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘ᴸ LHom.sumInr = ψ :=
+lemma sumElim_comp_inr (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘ᴸ LHom.sumInr = ψ :=
   LHom.funext (funext fun _ => rfl) (funext fun _ => rfl)
 #align first_order.language.Lhom.sum_elim_comp_inr FirstOrder.Language.LHom.sumElim_comp_inr
 

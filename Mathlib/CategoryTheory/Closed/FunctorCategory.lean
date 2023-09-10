@@ -78,15 +78,15 @@ instance monoidalClosed : MonoidalClosed (D ⥤ C) where
   closed := by infer_instance
 #align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
 
-theorem ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=
+lemma ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=
   rfl
 #align category_theory.functor.ihom_map CategoryTheory.Functor.ihom_map
 
-theorem ihom_ev_app (F G : D ⥤ C) : (ihom.ev F).app G = (closedCounit F).app G :=
+lemma ihom_ev_app (F G : D ⥤ C) : (ihom.ev F).app G = (closedCounit F).app G :=
   rfl
 #align category_theory.functor.ihom_ev_app CategoryTheory.Functor.ihom_ev_app
 
-theorem ihom_coev_app (F G : D ⥤ C) : (ihom.coev F).app G = (closedUnit F).app G :=
+lemma ihom_coev_app (F G : D ⥤ C) : (ihom.coev F).app G = (closedUnit F).app G :=
   rfl
 #align category_theory.functor.ihom_coev_app CategoryTheory.Functor.ihom_coev_app
 

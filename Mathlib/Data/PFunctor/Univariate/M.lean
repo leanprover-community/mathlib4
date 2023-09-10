@@ -126,7 +126,7 @@ def sCorec : X → ∀ n, CofixA F n
   | j, succ _ => CofixA.intro (f j).1 fun i => sCorec ((f j).2 i) _
 #align pfunctor.approx.s_corec PFunctor.Approx.sCorec
 
-theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
+lemma P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n n_ih generalizing i
   constructor
   cases' h : f i with y g
@@ -150,7 +150,7 @@ open List Nat
 instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
-theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x) :
+lemma head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x) :
     head' (x (succ n)) = head' (x (succ m)) := by
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
   clear m n
@@ -215,7 +215,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace M
 
-theorem ext' (x y : M F) (H : ∀ i : ℕ, x.approx i = y.approx i) : x = y := by
+lemma ext' (x y : M F) (H : ∀ i : ℕ, x.approx i = y.approx i) : x = y := by
   cases x
   cases y
   congr with n
@@ -266,7 +266,7 @@ def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.IdxCat) (x : M F) : M F
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ichildren PFunctor.M.ichildren
 
-theorem head_succ (n m : ℕ) (x : M F) : head' (x.approx (succ n)) = head' (x.approx (succ m)) :=
+lemma head_succ (n m : ℕ) (x : M F) : head' (x.approx (succ n)) = head' (x.approx (succ m)) :=
   head_succ' n m _ x.consistent
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.head_succ PFunctor.M.head_succ
@@ -281,7 +281,7 @@ lemma head'_eq_head : ∀ (x : M F) (n : ℕ), head' (x.approx <| n + 1) = head 
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.head'_eq_head PFunctor.M.head'_eq_head
 
-theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.approx n :=
+lemma truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.approx n :=
   truncate_eq_of_agree _ _ (x.consistent _)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.truncate_approx PFunctor.M.truncate_approx
@@ -301,7 +301,7 @@ protected def sMk (x : F.Obj <| M F) : ∀ n, CofixA F n
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.approx.s_mk PFunctor.M.Approx.sMk
 
-protected theorem P_mk (x : F.Obj <| M F) : AllAgree (Approx.sMk x)
+protected lemma P_mk (x : F.Obj <| M F) : AllAgree (Approx.sMk x)
   | 0 => by constructor
   | succ n => by
     constructor
@@ -330,12 +330,12 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree' PFunctor.M.Agree'
 
 @[simp]
-theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x := rfl
+lemma dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x := rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_mk PFunctor.M.dest_mk
 
 @[simp]
-theorem mk_dest (x : M F) : M.mk (dest x) = x := by
+lemma mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
   intro n
   dsimp only [M.mk]
@@ -388,7 +388,7 @@ protected def casesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk ⟨a
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_on' PFunctor.M.casesOn'
 
-theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
+lemma approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
     (M.mk ⟨a, f⟩).approx (succ i) = CofixA.intro a fun j => (f j).approx i :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -531,7 +531,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_eq_default PFunctor.M.iselect_eq_default
 
 @[simp]
-theorem head_mk (x : F.Obj (M F)) : head (M.mk x) = x.1 :=
+lemma head_mk (x : F.Obj (M F)) : head (M.mk x) = x.1 :=
   Eq.symm <|
     calc
       x.1 = (dest (M.mk x)).1 := by rw [dest_mk]
@@ -717,12 +717,12 @@ set_option linter.uppercaseLean3 false in
 
 variable {P : PFunctor.{u}} {α : Type u}
 
-theorem dest_corec (g : α → P.Obj α) (x : α) : M.dest (M.corec g x) = M.corec g <$> g x := by
+lemma dest_corec (g : α → P.Obj α) (x : α) : M.dest (M.corec g x) = M.corec g <$> g x := by
   rw [corec_def, dest_mk]
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_corec PFunctor.M.dest_corec
 
-theorem bisim (R : M P → M P → Prop)
+lemma bisim (R : M P → M P → Prop)
     (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   introv h'
@@ -757,7 +757,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim' PFunctor.M.bisim'
 
 -- for the record, show M_bisim follows from _bisim'
-theorem bisim_equiv (R : M P → M P → Prop)
+lemma bisim_equiv (R : M P → M P → Prop)
     (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := fun x y Rxy =>
   let Q : M P × M P → Prop := fun p => R p.fst p.snd
@@ -769,7 +769,7 @@ theorem bisim_equiv (R : M P → M P → Prop)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim_equiv PFunctor.M.bisim_equiv
 
-theorem corec_unique (g : α → P.Obj α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = f <$> g x) :
+lemma corec_unique (g : α → P.Obj α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = f <$> g x) :
     f = M.corec g := by
   ext x
   apply bisim' (fun _ => True) _ _ _ _ trivial

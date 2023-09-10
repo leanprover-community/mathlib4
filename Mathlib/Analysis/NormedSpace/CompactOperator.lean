@@ -75,7 +75,7 @@ section
 variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R₁ →+* R₂} {M₁ M₂ : Type*}
   [TopologicalSpace M₁] [AddCommMonoid M₁] [TopologicalSpace M₂]
 
-theorem isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ → M₂) :
+lemma isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ → M₂) :
     IsCompactOperator f ↔ ∃ V ∈ (𝓝 0 : Filter M₁), ∃ K : Set M₂, IsCompact K ∧ f '' V ⊆ K :=
   ⟨fun ⟨K, hK, hKf⟩ => ⟨f ⁻¹' K, hKf, K, hK, image_preimage_subset _ _⟩, fun ⟨_, hV, K, hK, hVK⟩ =>
     ⟨K, hK, mem_of_superset hV (image_subset_iff.mp hVK)⟩⟩

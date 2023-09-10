@@ -84,7 +84,7 @@ lemma aleph0_le_continuum : ℵ₀ ≤ 𝔠 :=
 lemma beth_one : beth 1 = 𝔠 := by simpa using beth_succ 0
 #align cardinal.beth_one Cardinal.beth_one
 
-theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
+lemma nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
   (nat_lt_aleph0 n).trans aleph0_lt_continuum
 #align cardinal.nat_lt_continuum Cardinal.nat_lt_continuum
 
@@ -135,12 +135,12 @@ lemma continuum_add_self : 𝔠 + 𝔠 = 𝔠 :=
 #align cardinal.continuum_add_self Cardinal.continuum_add_self
 
 @[simp]
-theorem nat_add_continuum (n : ℕ) : ↑n + 𝔠 = 𝔠 :=
+lemma nat_add_continuum (n : ℕ) : ↑n + 𝔠 = 𝔠 :=
   add_eq_right aleph0_le_continuum (nat_lt_continuum n).le
 #align cardinal.nat_add_continuum Cardinal.nat_add_continuum
 
 @[simp]
-theorem continuum_add_nat (n : ℕ) : 𝔠 + n = 𝔠 :=
+lemma continuum_add_nat (n : ℕ) : 𝔠 + n = 𝔠 :=
   (add_comm _ _).trans (nat_add_continuum n)
 #align cardinal.continuum_add_nat Cardinal.continuum_add_nat
 

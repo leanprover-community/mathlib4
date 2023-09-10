@@ -85,7 +85,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
     Quotient.inductionOn' q fun T =>
       congr_arg Quotient.mk'' (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
 
-theorem smul_diff' (h : H) :
+lemma smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, ←Finset.card_univ, ←Finset.prod_const, ←Finset.prod_mul_distrib]
@@ -96,7 +96,7 @@ theorem smul_diff' (h : H) :
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
-theorem eq_one_of_smul_eq_one (hH : Nat.coprime (Nat.card H) H.index) (α : H.QuotientDiff)
+lemma eq_one_of_smul_eq_one (hH : Nat.coprime (Nat.card H) H.index) (α : H.QuotientDiff)
   (h : H) : h • α = α → h = 1 :=
   Quotient.inductionOn' α fun α hα =>
     (powCoprime hH).injective <|
@@ -107,7 +107,7 @@ theorem eq_one_of_smul_eq_one (hH : Nat.coprime (Nat.card H) H.index) (α : H.Qu
 
 #align subgroup.eq_one_of_smul_eq_one Subgroup.eq_one_of_smul_eq_one
 
-theorem exists_smul_eq (hH : Nat.coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
+lemma exists_smul_eq (hH : Nat.coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
     ∃ h : H, h • α = β :=
   Quotient.inductionOn' α
     (Quotient.inductionOn' β fun β α =>
@@ -125,7 +125,7 @@ lemma isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
 #align subgroup.is_complement'_stabilizer_of_coprime Subgroup.isComplement'_stabilizer_of_coprime
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem exists_right_complement'_of_coprime_aux (hH : Nat.coprime (Nat.card H) H.index) :
+private lemma exists_right_complement'_of_coprime_aux (hH : Nat.coprime (Nat.card H) H.index) :
     ∃ K : Subgroup G, IsComplement' H K :=
   instNonempty.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
 
@@ -170,7 +170,7 @@ private lemma step0 : N ≠ ⊥ := by
   exact h3 ⊤ isComplement'_bot_top
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
+private lemma step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
   have h4 : (N.comap K.subtype).index = N.index := by
     rw [← N.relindex_top_right, ← hK]
@@ -193,7 +193,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   exact ⟨H.map K.subtype, isComplement'_of_coprime h7 h8⟩
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
+private lemma step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
   have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
   have h4 := step1 h1 h2 h3
   contrapose! h4
@@ -223,7 +223,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     · exact h4.2 (le_antisymm hK hH)
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ K = ⊤ := by
+private lemma step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ K = ⊤ := by
   have key := step2 h1 h2 h3 (K.map N.subtype) (map_subtype_le K)
   rw [← map_bot N.subtype] at key
   conv at key =>

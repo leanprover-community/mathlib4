@@ -98,17 +98,17 @@ def const.get (x : (const n A).Obj α) : A :=
 #align mvpfunctor.const.get MvPFunctor.const.get
 
 @[simp]
-theorem const.get_map (f : α ⟹ β) (x : (const n A).Obj α) : const.get (f <$$> x) = const.get x := by
+lemma const.get_map (f : α ⟹ β) (x : (const n A).Obj α) : const.get (f <$$> x) = const.get x := by
   cases x
   rfl
 #align mvpfunctor.const.get_map MvPFunctor.const.get_map
 
 @[simp]
-theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := rfl
+lemma const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := rfl
 #align mvpfunctor.const.get_mk MvPFunctor.const.get_mk
 
 @[simp]
-theorem const.mk_get (x : (const n A).Obj α) : const.mk n (const.get x) = x := by
+lemma const.mk_get (x : (const n A).Obj α) : const.mk n (const.get x) = x := by
   cases x
   dsimp [const.get, const.mk]
   congr with (_⟨⟩)
@@ -135,18 +135,18 @@ def comp.get (x : (comp P Q).Obj α) : P.Obj fun i => (Q i).Obj α :=
   ⟨x.1.1, fun i a => ⟨x.fst.snd i a, fun (j : Fin2 m) (b : (Q i).B _ j) => x.snd j ⟨i, ⟨a, b⟩⟩⟩⟩
 #align mvpfunctor.comp.get MvPFunctor.comp.get
 
-theorem comp.get_map (f : α ⟹ β) (x : (comp P Q).Obj α) :
+lemma comp.get_map (f : α ⟹ β) (x : (comp P Q).Obj α) :
     comp.get (f <$$> x) = (fun i (x : (Q i).Obj α) => f <$$> x) <$$> comp.get x := by
   rfl
 #align mvpfunctor.comp.get_map MvPFunctor.comp.get_map
 
 @[simp]
-theorem comp.get_mk (x : P.Obj fun i => (Q i).Obj α) : comp.get (comp.mk x) = x := by
+lemma comp.get_mk (x : P.Obj fun i => (Q i).Obj α) : comp.get (comp.mk x) = x := by
   rfl
 #align mvpfunctor.comp.get_mk MvPFunctor.comp.get_mk
 
 @[simp]
-theorem comp.mk_get (x : (comp P Q).Obj α) : comp.mk (comp.get x) = x := by
+lemma comp.mk_get (x : (comp P Q).Obj α) : comp.mk (comp.get x) = x := by
   rfl
 #align mvpfunctor.comp.mk_get MvPFunctor.comp.mk_get
 

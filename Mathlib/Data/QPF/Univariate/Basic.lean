@@ -199,7 +199,7 @@ lemma recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
 set_option linter.uppercaseLean3 false in
 #align qpf.recF_eq_of_Wequiv Qpf.recF_eq_of_Wequiv
 
-theorem Wequiv.abs' (x y : q.P.W) (h : Qpf.abs x.dest = Qpf.abs y.dest) : Wequiv x y := by
+lemma Wequiv.abs' (x y : q.P.W) (h : Qpf.abs x.dest = Qpf.abs y.dest) : Wequiv x y := by
   cases x
   cases y
   apply Wequiv.abs
@@ -207,13 +207,13 @@ theorem Wequiv.abs' (x y : q.P.W) (h : Qpf.abs x.dest = Qpf.abs y.dest) : Wequiv
 set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.abs' Qpf.Wequiv.abs'
 
-theorem Wequiv.refl (x : q.P.W) : Wequiv x x := by
+lemma Wequiv.refl (x : q.P.W) : Wequiv x x := by
   cases' x with a f
   exact Wequiv.abs a f a f rfl
 set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.refl Qpf.Wequiv.refl
 
-theorem Wequiv.symm (x y : q.P.W) : Wequiv x y → Wequiv y x := by
+lemma Wequiv.symm (x y : q.P.W) : Wequiv x y → Wequiv y x := by
   intro h
   induction h
   case ind a f f' _ ih => exact Wequiv.ind _ _ _ ih
@@ -228,7 +228,7 @@ def Wrepr : q.P.W → q.P.W :=
 set_option linter.uppercaseLean3 false in
 #align qpf.Wrepr Qpf.Wrepr
 
-theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
+lemma Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
   induction' x with a f ih
   apply Wequiv.trans
   · change Wequiv (Wrepr ⟨a, f⟩) (PFunctor.W.mk (Wrepr <$> ⟨a, f⟩))
@@ -293,7 +293,7 @@ lemma Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     ← h, abs_repr, this]
 #align qpf.fix.rec_eq Qpf.Fix.rec_eq
 
-theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
+lemma Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
     Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ := by
   have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
     apply Quot.sound; apply Wequiv.abs'
@@ -327,7 +327,7 @@ lemma Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
   rw [hyp, ← hyp', Fix.rec_eq]
 #align qpf.fix.rec_unique Qpf.Fix.rec_unique
 
-theorem Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x := by
+lemma Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x := by
   change (Fix.mk ∘ Fix.dest) x = id x
   apply Fix.ind_rec (mk ∘ dest) id
   intro x
@@ -336,7 +336,7 @@ theorem Fix.mk_dest (x : Fix F) : Fix.mk (Fix.dest x) = x := by
   rw [h]
 #align qpf.fix.mk_dest Qpf.Fix.mk_dest
 
-theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
+lemma Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
   unfold Fix.dest; rw [Fix.rec_eq, ← Fix.dest, ← comp_map]
   conv =>
     rhs
@@ -345,7 +345,7 @@ theorem Fix.dest_mk (x : F (Fix F)) : Fix.dest (Fix.mk x) = x := by
   apply Fix.mk_dest
 #align qpf.fix.dest_mk Qpf.Fix.dest_mk
 
-theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fix.mk x)) : ∀ x, p x := by
+lemma Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fix.mk x)) : ∀ x, p x := by
   apply Quot.ind
   intro x
   induction' x with a f ih
@@ -428,7 +428,7 @@ lemma Cofix.dest_corec {α : Type u} (g : α → F α) (x : α) :
 #align qpf.cofix.dest_corec Qpf.Cofix.dest_corec
 
 -- Porting note: Needed to add `(motive := _)` to get `Quot.inductionOn` to work
-private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, r x x)
+private lemma Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, r x x)
     (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
   intro x
@@ -464,7 +464,7 @@ private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
     rw [PFunctor.comp_map _ _ f, PFunctor.comp_map _ _ (Quot.mk r), abs_map, abs_map, abs_map]
   refine' ⟨r', this, rxy⟩
 
-theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
+lemma Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
   let r' (x y) := x = y ∨ r x y
@@ -484,7 +484,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
   right; exact rxy
 #align qpf.cofix.bisim_rel Qpf.Cofix.bisim_rel
 
-theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
+lemma Cofix.bisim (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel
   intro x y rxy
@@ -668,7 +668,7 @@ def SuppPreservation : Prop :=
   ∀ ⦃α⦄ (x : q.P.Obj α), supp (abs x) = supp x
 #align qpf.supp_preservation Qpf.SuppPreservation
 
-theorem supp_eq_of_isUniform (h : q.IsUniform) {α : Type u} (a : q.P.A) (f : q.P.B a → α) :
+lemma supp_eq_of_isUniform (h : q.IsUniform) {α : Type u} (a : q.P.A) (f : q.P.B a → α) :
     supp (abs ⟨a, f⟩) = f '' univ := by
   ext u; rw [mem_supp]; constructor
   · intro h'
@@ -677,7 +677,7 @@ theorem supp_eq_of_isUniform (h : q.IsUniform) {α : Type u} (a : q.P.A) (f : q.
   rw [← h _ _ _ _ e.symm]; apply h'
 #align qpf.supp_eq_of_is_uniform Qpf.supp_eq_of_isUniform
 
-theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : α → Prop) :
+lemma liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : α → Prop) :
     Liftp p x ↔ ∀ u ∈ supp x, p u := by
   rw [liftp_iff, ← abs_repr x]
   cases' repr x with a f; constructor
@@ -692,7 +692,7 @@ theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : �
   exact ⟨i, mem_univ i, rfl⟩
 #align qpf.liftp_iff_of_is_uniform Qpf.liftp_iff_of_isUniform
 
-theorem supp_map (h : q.IsUniform) {α β : Type u} (g : α → β) (x : F α) :
+lemma supp_map (h : q.IsUniform) {α β : Type u} (g : α → β) (x : F α) :
     supp (g <$> x) = g '' supp x := by
   rw [← abs_repr x]; cases' repr x with a f; rw [← abs_map, PFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, image_comp]

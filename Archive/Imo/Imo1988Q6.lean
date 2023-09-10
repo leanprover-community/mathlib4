@@ -63,7 +63,7 @@ The user must provide a proof that the proposition `claim` is true
 if there exists an integral point `(x,y)` on the hyperbola `H` that lies in the base locus.
 If such a base locus is not necessary, once can simply let it be `fun x y ↦ False`.
 -/
-theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → ℕ → Prop} (h₀ : H x y)
+lemma constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → ℕ → Prop} (h₀ : H x y)
     (B : ℕ → ℤ) (C : ℕ → ℤ) (base : ℕ → ℕ → Prop)
     (H_quad : ∀ {x y}, H x y ↔ (y : ℤ) * y - B x * y + C x = 0) (H_symm : ∀ {x y}, H x y ↔ H y x)
     (H_zero : ∀ {x}, H x 0 → claim) (H_diag : ∀ {x}, H x x → claim)

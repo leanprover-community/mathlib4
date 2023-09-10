@@ -63,7 +63,7 @@ deduce corresponding results for Euclidean affine spaces.
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 /-- Law of cosines (cosine rule), vector angle form. -/
-theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle (x y : V) :
+lemma norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle (x y : V) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ - 2 * ‖x‖ * ‖y‖ * Real.cos (angle x y) := by
   rw [show 2 * ‖x‖ * ‖y‖ * Real.cos (angle x y) = 2 * (Real.cos (angle x y) * (‖x‖ * ‖y‖)) by ring,
     cos_angle_mul_norm_mul_norm, ← real_inner_self_eq_norm_mul_norm, ←
@@ -270,7 +270,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P]
 
 /-- **Law of cosines** (cosine rule), angle-at-point form. -/
-theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (p1 p2 p3 : P) :
+lemma dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (p1 p2 p3 : P) :
     dist p1 p3 * dist p1 p3 = dist p1 p2 * dist p1 p2 + dist p3 p2 * dist p3 p2 -
       2 * dist p1 p2 * dist p3 p2 * Real.cos (∠ p1 p2 p3) := by
   rw [dist_eq_norm_vsub V p1 p3, dist_eq_norm_vsub V p1 p2, dist_eq_norm_vsub V p3 p2]
@@ -328,7 +328,7 @@ lemma oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
 #align euclidean_geometry.oangle_add_oangle_add_oangle_eq_pi EuclideanGeometry.oangle_add_oangle_add_oangle_eq_pi
 
 /-- **Stewart's Theorem**. -/
-theorem dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π) :
+lemma dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π) :
     dist a b ^ 2 * dist c p + dist a c ^ 2 * dist b p =
     dist b c * (dist a p ^ 2 + dist b p * dist c p) := by
   rw [pow_two, pow_two, law_cos a p b, law_cos a p c,
@@ -338,7 +338,7 @@ theorem dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π)
 #align euclidean_geometry.dist_sq_mul_dist_add_dist_sq_mul_dist EuclideanGeometry.dist_sq_mul_dist_add_dist_sq_mul_dist
 
 /-- **Apollonius's Theorem**. -/
-theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c : P) :
+lemma dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c : P) :
     dist a b ^ 2 + dist a c ^ 2 = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
   by_cases hbc : b = c
   · simp [hbc, midpoint_self, dist_self, two_mul]
@@ -352,7 +352,7 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by rw [hm]; field_simp; ring
 #align euclidean_geometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq EuclideanGeometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq
 
-theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
+lemma dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
     dist a' c' = r * dist a c := by
   have h' : dist a' c' ^ 2 = (r * dist a c) ^ 2

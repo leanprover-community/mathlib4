@@ -48,7 +48,7 @@ lemma Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set �
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
 complex conjugation. -/
-theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
+lemma Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
     (hc : UniformContinuous ψ) : ψ.toFun = K.subtype ∨ ψ.toFun = conj ∘ K.subtype := by
   letI : TopologicalDivisionRing ℂ := TopologicalDivisionRing.mk
   letI : TopologicalRing K.topologicalClosure :=

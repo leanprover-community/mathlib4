@@ -93,7 +93,7 @@ lemma lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank K V) : ↑n < Module.rank
     exact n.zero_le
 #align finite_dimensional.rank_lt_of_finrank_lt FiniteDimensional.lt_rank_of_lt_finrank
 
-theorem one_lt_rank_of_one_lt_finrank (h : 1 < finrank K V) : 1 < Module.rank K V := by
+lemma one_lt_rank_of_one_lt_finrank (h : 1 < finrank K V) : 1 < Module.rank K V := by
   simpa using lt_rank_of_lt_finrank h
 
 theorem finrank_le_finrank_of_rank_le_rank
@@ -107,7 +107,7 @@ section
 variable [Nontrivial K] [NoZeroSMulDivisors K V]
 
 /-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
-theorem nontrivial_of_finrank_pos (h : 0 < finrank K V) : Nontrivial V :=
+lemma nontrivial_of_finrank_pos (h : 0 < finrank K V) : Nontrivial V :=
   rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
 #align finite_dimensional.nontrivial_of_finrank_pos FiniteDimensional.nontrivial_of_finrank_pos
 
@@ -193,7 +193,7 @@ theorem finrank_eq_zero_of_basis_imp_not_finite
   exact dif_neg fun rank_lt => h _ b (b.finite_index_of_rank_lt_aleph0 rank_lt)
 #align finrank_eq_zero_of_basis_imp_not_finite finrank_eq_zero_of_basis_imp_not_finite
 
-theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset V, Basis.{v} (s : Set V) K V → False) :
+lemma finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset V, Basis.{v} (s : Set V) K V → False) :
     finrank K V = 0 :=
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs =>
     h hs.toFinset
@@ -212,7 +212,7 @@ theorem finrank_eq_zero_of_not_exists_basis_finite
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs => h ⟨s, b, hs⟩
 #align finrank_eq_zero_of_not_exists_basis_finite finrank_eq_zero_of_not_exists_basis_finite
 
-theorem finrank_eq_zero_of_not_exists_basis_finset (h : ¬∃ s : Finset V, Nonempty (Basis s K V)) :
+lemma finrank_eq_zero_of_not_exists_basis_finset (h : ¬∃ s : Finset V, Nonempty (Basis s K V)) :
     finrank K V = 0 :=
   finrank_eq_zero_of_basis_imp_false fun s b => h ⟨s, ⟨b⟩⟩
 #align finrank_eq_zero_of_not_exists_basis_finset finrank_eq_zero_of_not_exists_basis_finset
@@ -230,13 +230,13 @@ variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
 variable [Module R M] [Module R M₂]
 
 /-- The dimension of a finite dimensional space is preserved under linear equivalence. -/
-theorem finrank_eq (f : M ≃ₗ[R] M₂) : finrank R M = finrank R M₂ := by
+lemma finrank_eq (f : M ≃ₗ[R] M₂) : finrank R M = finrank R M₂ := by
   unfold finrank
   rw [← Cardinal.toNat_lift, f.lift_rank_eq, Cardinal.toNat_lift]
 #align linear_equiv.finrank_eq LinearEquiv.finrank_eq
 
 /-- Pushforwards of finite-dimensional submodules along a `LinearEquiv` have the same finrank. -/
-theorem finrank_map_eq (f : M ≃ₗ[R] M₂) (p : Submodule R M) :
+lemma finrank_map_eq (f : M ≃ₗ[R] M₂) (p : Submodule R M) :
     finrank R (p.map (f : M →ₗ[R] M₂)) = finrank R p :=
   (f.submoduleMap p).finrank_eq.symm
 #align linear_equiv.finrank_map_eq LinearEquiv.finrank_map_eq
@@ -319,11 +319,11 @@ protected noncomputable def Set.finrank (s : Set V) : ℕ :=
 
 variable {K}
 
-theorem finrank_span_le_card (s : Set V) [Fintype s] : finrank K (span K s) ≤ s.toFinset.card :=
+lemma finrank_span_le_card (s : Set V) [Fintype s] : finrank K (span K s) ≤ s.toFinset.card :=
   finrank_le_of_rank_le (by simpa using rank_span_le (K := K) s)
 #align finrank_span_le_card finrank_span_le_card
 
-theorem finrank_span_finset_le_card (s : Finset V) : (s : Set V).finrank K ≤ s.card :=
+lemma finrank_span_finset_le_card (s : Finset V) : (s : Set V).finrank K ≤ s.card :=
   calc
     (s : Set V).finrank K ≤ (s : Set V).toFinset.card := finrank_span_le_card (V := V) s
     _ = s.card := by simp
@@ -346,7 +346,7 @@ lemma finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → V} (hb : Linear
         lift_eq_nat_iff] at this)
 #align finrank_span_eq_card finrank_span_eq_card
 
-theorem finrank_span_set_eq_card (s : Set V) [Fintype s] (hs : LinearIndependent K ((↑) : s → V)) :
+lemma finrank_span_set_eq_card (s : Set V) [Fintype s] (hs : LinearIndependent K ((↑) : s → V)) :
     finrank K (span K s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
@@ -354,7 +354,7 @@ theorem finrank_span_set_eq_card (s : Set V) [Fintype s] (hs : LinearIndependent
       rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
 #align finrank_span_set_eq_card finrank_span_set_eq_card
 
-theorem finrank_span_finset_eq_card (s : Finset V) (hs : LinearIndependent K ((↑) : s → V)) :
+lemma finrank_span_finset_eq_card (s : Finset V) (hs : LinearIndependent K ((↑) : s → V)) :
     finrank K (span K (s : Set V)) = s.card := by
   convert finrank_span_set_eq_card (s : Set V) hs
   ext
@@ -528,7 +528,7 @@ variable [NoZeroSMulDivisors K V] [StrongRankCondition K]
 
 /-- If there is a nonzero vector and every other vector is a multiple of it,
 then the module has dimension one. -/
-theorem finrank_eq_one (v : V) (n : v ≠ 0) (h : ∀ w : V, ∃ c : K, c • v = w) : finrank K V = 1 := by
+lemma finrank_eq_one (v : V) (n : v ≠ 0) (h : ∀ w : V, ∃ c : K, c • v = w) : finrank K V = 1 := by
   haveI := nontrivial_of_invariantBasisNumber K
   obtain ⟨b⟩ := (Basis.basis_singleton_iff.{u} PUnit).mpr ⟨v, n, h⟩
   rw [finrank_eq_card_basis b, Fintype.card_punit]
@@ -536,7 +536,7 @@ theorem finrank_eq_one (v : V) (n : v ≠ 0) (h : ∀ w : V, ∃ c : K, c • v 
 
 /-- If every vector is a multiple of some `v : V`, then `V` has dimension at most one.
 -/
-theorem finrank_le_one (v : V) (h : ∀ w : V, ∃ c : K, c • v = w) : finrank K V ≤ 1 := by
+lemma finrank_le_one (v : V) (h : ∀ w : V, ∃ c : K, c • v = w) : finrank K V ≤ 1 := by
   haveI := nontrivial_of_invariantBasisNumber K
   rcases eq_or_ne v 0 with (rfl | hn)
   · haveI :=
@@ -557,13 +557,13 @@ open Module
 variable {F E : Type*} [CommRing F] [Ring E] [Algebra F E]
 
 @[simp]
-theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :
+lemma Subalgebra.rank_toSubmodule (S : Subalgebra F E) :
     Module.rank F (Subalgebra.toSubmodule S) = Module.rank F S :=
   rfl
 #align subalgebra.rank_to_submodule Subalgebra.rank_toSubmodule
 
 @[simp]
-theorem Subalgebra.finrank_toSubmodule (S : Subalgebra F E) :
+lemma Subalgebra.finrank_toSubmodule (S : Subalgebra F E) :
     finrank F (Subalgebra.toSubmodule S) = finrank F S :=
   rfl
 #align subalgebra.finrank_to_submodule Subalgebra.finrank_toSubmodule

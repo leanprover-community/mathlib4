@@ -57,14 +57,14 @@ def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
 variable {n}
 
 @[simp]
-theorem filter_dvd_eq_divisors (h : n ≠ 0) : (Finset.range n.succ).filter (· ∣ n) = n.divisors := by
+lemma filter_dvd_eq_divisors (h : n ≠ 0) : (Finset.range n.succ).filter (· ∣ n) = n.divisors := by
   ext
   simp only [divisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
   exact fun ha _ => succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
 #align nat.filter_dvd_eq_divisors Nat.filter_dvd_eq_divisors
 
 @[simp]
-theorem filter_dvd_eq_properDivisors (h : n ≠ 0) :
+lemma filter_dvd_eq_properDivisors (h : n ≠ 0) :
     (Finset.range n).filter (· ∣ n) = n.properDivisors := by
   ext
   simp only [properDivisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
@@ -80,12 +80,12 @@ lemma mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < 
   simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
 #align nat.mem_proper_divisors Nat.mem_properDivisors
 
-theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
+lemma insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
   rw [divisors, properDivisors, Ico_succ_right_eq_insert_Ico (one_le_iff_ne_zero.2 h),
     Finset.filter_insert, if_pos (dvd_refl n)]
 #align nat.insert_self_proper_divisors Nat.insert_self_properDivisors
 
-theorem cons_self_properDivisors (h : n ≠ 0) :
+lemma cons_self_properDivisors (h : n ≠ 0) :
     cons n (properDivisors n) properDivisors.not_self_mem = divisors n := by
   rw [cons_eq_insert, insert_self_properDivisors h]
 #align nat.cons_self_proper_divisors Nat.cons_self_properDivisors
@@ -101,7 +101,7 @@ lemma mem_divisors {m : ℕ} : n ∈ divisors m ↔ n ∣ m ∧ m ≠ 0 := by
 lemma one_mem_divisors : 1 ∈ divisors n ↔ n ≠ 0 := by simp
 #align nat.one_mem_divisors Nat.one_mem_divisors
 
-theorem mem_divisors_self (n : ℕ) (h : n ≠ 0) : n ∈ n.divisors :=
+lemma mem_divisors_self (n : ℕ) (h : n ≠ 0) : n ∈ n.divisors :=
   mem_divisors.2 ⟨dvd_rfl, h⟩
 #align nat.mem_divisors_self Nat.mem_divisors_self
 
@@ -292,11 +292,11 @@ def Perfect (n : ℕ) : Prop :=
   ∑ i in properDivisors n, i = n ∧ 0 < n
 #align nat.perfect Nat.Perfect
 
-theorem perfect_iff_sum_properDivisors (h : 0 < n) : Perfect n ↔ ∑ i in properDivisors n, i = n :=
+lemma perfect_iff_sum_properDivisors (h : 0 < n) : Perfect n ↔ ∑ i in properDivisors n, i = n :=
   and_iff_left h
 #align nat.perfect_iff_sum_proper_divisors Nat.perfect_iff_sum_properDivisors
 
-theorem perfect_iff_sum_divisors_eq_two_mul (h : 0 < n) :
+lemma perfect_iff_sum_divisors_eq_two_mul (h : 0 < n) :
     Perfect n ↔ ∑ i in divisors n, i = 2 * n := by
   rw [perfect_iff_sum_properDivisors h, sum_divisors_eq_sum_properDivisors_add_self, two_mul]
   constructor <;> intro h
@@ -355,7 +355,7 @@ lemma eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆ n
     apply hlt
 #align nat.eq_proper_divisors_of_subset_of_sum_eq_sum Nat.eq_properDivisors_of_subset_of_sum_eq_sum
 
-theorem sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
+lemma sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
     ∑ x in n.properDivisors, x = 1 ∨ ∑ x in n.properDivisors, x = n := by
   cases' n with n
   · simp
@@ -479,7 +479,7 @@ lemma prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ →
 #align nat.sum_divisors_antidiagonal' Nat.sum_divisorsAntidiagonal'
 
 /-- The factors of `n` are the prime divisors -/
-theorem prime_divisors_eq_to_filter_divisors_prime (n : ℕ) :
+lemma prime_divisors_eq_to_filter_divisors_prime (n : ℕ) :
     n.factors.toFinset = (divisors n).filter Prime := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
@@ -488,7 +488,7 @@ theorem prime_divisors_eq_to_filter_divisors_prime (n : ℕ) :
 #align nat.prime_divisors_eq_to_filter_divisors_prime Nat.prime_divisors_eq_to_filter_divisors_prime
 
 @[simp]
-theorem image_div_divisors_eq_divisors (n : ℕ) :
+lemma image_div_divisors_eq_divisors (n : ℕ) :
     image (fun x : ℕ => n / x) n.divisors = n.divisors := by
   by_cases hn : n = 0
   · simp [hn]

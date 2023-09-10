@@ -138,11 +138,11 @@ lemma compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a
       rwa [ho.inj (h hab)]
 #align ordering.compares_iff_of_compares_impl Ordering.compares_iff_of_compares_impl
 
-theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := by
+lemma swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := by
   cases o₁ <;> rfl
 #align ordering.swap_or_else Ordering.swap_orElse
 
-theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
+lemma orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
   cases o₁ <;> cases o₂ <;> exact by decide
 #align ordering.or_else_eq_lt Ordering.orElse_eq_lt
 
@@ -248,32 +248,32 @@ lemma cmp_eq_cmp_symm : cmp x y = cmp x' y' ↔ cmp y x = cmp y' x' :=
    fun h => by rwa [← cmp_swap y', ← cmp_swap, swap_inj]⟩
 #align cmp_eq_cmp_symm cmp_eq_cmp_symm
 
-theorem lt_iff_lt_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x < y ↔ x' < y' := by
+lemma lt_iff_lt_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x < y ↔ x' < y' := by
   rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff, h]
 #align lt_iff_lt_of_cmp_eq_cmp lt_iff_lt_of_cmp_eq_cmp
 
-theorem le_iff_le_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x ≤ y ↔ x' ≤ y' := by
+lemma le_iff_le_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x ≤ y ↔ x' ≤ y' := by
   rw [← not_lt, ← not_lt]
   apply not_congr
   apply lt_iff_lt_of_cmp_eq_cmp
   rwa [cmp_eq_cmp_symm]
 #align le_iff_le_of_cmp_eq_cmp le_iff_le_of_cmp_eq_cmp
 
-theorem eq_iff_eq_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x = y ↔ x' = y' := by
+lemma eq_iff_eq_of_cmp_eq_cmp (h : cmp x y = cmp x' y') : x = y ↔ x' = y' := by
   rw [le_antisymm_iff, le_antisymm_iff, le_iff_le_of_cmp_eq_cmp h,
       le_iff_le_of_cmp_eq_cmp (cmp_eq_cmp_symm.1 h)]
 #align eq_iff_eq_of_cmp_eq_cmp eq_iff_eq_of_cmp_eq_cmp
 
-theorem LT.lt.cmp_eq_lt (h : x < y) : cmp x y = Ordering.lt :=
+lemma LT.lt.cmp_eq_lt (h : x < y) : cmp x y = Ordering.lt :=
   (cmp_eq_lt_iff _ _).2 h
 
-theorem LT.lt.cmp_eq_gt (h : x < y) : cmp y x = Ordering.gt :=
+lemma LT.lt.cmp_eq_gt (h : x < y) : cmp y x = Ordering.gt :=
   (cmp_eq_gt_iff _ _).2 h
 
-theorem Eq.cmp_eq_eq (h : x = y) : cmp x y = Ordering.eq :=
+lemma Eq.cmp_eq_eq (h : x = y) : cmp x y = Ordering.eq :=
   (cmp_eq_eq_iff _ _).2 h
 #align eq.cmp_eq_eq Eq.cmp_eq_eq
 
-theorem Eq.cmp_eq_eq' (h : x = y) : cmp y x = Ordering.eq :=
+lemma Eq.cmp_eq_eq' (h : x = y) : cmp y x = Ordering.eq :=
   h.symm.cmp_eq_eq
 #align eq.cmp_eq_eq' Eq.cmp_eq_eq'

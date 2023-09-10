@@ -28,7 +28,7 @@ section CommRing
 
 variable [CommRing K] [Algebra A K] [IsFractionRing A K]
 
-theorem map_isUnit_of_le (hS : S ≤ A⁰) (s : S) : IsUnit (algebraMap A K s) := by
+lemma map_isUnit_of_le (hS : S ≤ A⁰) (s : S) : IsUnit (algebraMap A K s) := by
   apply IsLocalization.map_units K (⟨s.1, hS s.2⟩ : A⁰)
 #align localization.map_is_unit_of_le Localization.map_isUnit_of_le
 
@@ -46,7 +46,7 @@ lemma mapToFractionRing_apply {B : Type*} [CommRing B] [Algebra A B] [IsLocaliza
   rfl
 #align localization.map_to_fraction_ring_apply Localization.mapToFractionRing_apply
 
-theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
+lemma mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) (x : K) :
     x ∈ (mapToFractionRing K S B hS).range ↔
       ∃ (a s : A) (hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ :=
@@ -112,7 +112,7 @@ variable [Field K] [Algebra A K] [IsFractionRing A K]
 
 namespace subalgebra
 
-theorem mem_range_mapToFractionRing_iff_ofField (B : Type*) [CommRing B] [Algebra A B]
+lemma mem_range_mapToFractionRing_iff_ofField (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (x : K) :
     x ∈ (mapToFractionRing K S B hS).range ↔
       ∃ (a s : A) (_ : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ := by

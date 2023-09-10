@@ -118,17 +118,17 @@ lemma mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
 
 -- Also known as the maximality axiom.
 @[simp]
-theorem top_mem (X : C) : ⊤ ∈ J X :=
+lemma top_mem (X : C) : ⊤ ∈ J X :=
   J.top_mem' X
 #align category_theory.grothendieck_topology.top_mem CategoryTheory.GrothendieckTopology.top_mem
 
 -- Also known as the stability axiom.
 @[simp]
-theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
+lemma pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS
 #align category_theory.grothendieck_topology.pullback_stable CategoryTheory.GrothendieckTopology.pullback_stable
 
-theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ J Y) :
+lemma transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ J Y) :
     R ∈ J X :=
   J.transitive' hS R h
 #align category_theory.grothendieck_topology.transitive CategoryTheory.GrothendieckTopology.transitive
@@ -141,7 +141,7 @@ lemma covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_me
 See <https://stacks.math.columbia.edu/tag/00Z5> (2), or discussion after [MM92] Chapter III,
 Section 2, Definition 1.
 -/
-theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
+lemma superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   apply J.transitive sjx R fun Y f hf => _
   intros Y f hf
   apply covering_of_eq_top
@@ -154,7 +154,7 @@ theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
 See <https://stacks.math.columbia.edu/tag/00Z5> (1), or [MM92] Chapter III,
 Section 2, Definition 1 (iv).
 -/
-theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
+lemma intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
   apply J.transitive rj _ fun Y f Hf => _
   intros Y f hf
   rw [Sieve.pullback_inter, R.pullback_eq_top_of_mem hf]
@@ -179,21 +179,21 @@ def Covers (S : Sieve X) (f : Y ⟶ X) : Prop :=
   S.pullback f ∈ J Y
 #align category_theory.grothendieck_topology.covers CategoryTheory.GrothendieckTopology.Covers
 
-theorem covers_iff (S : Sieve X) (f : Y ⟶ X) : J.Covers S f ↔ S.pullback f ∈ J Y :=
+lemma covers_iff (S : Sieve X) (f : Y ⟶ X) : J.Covers S f ↔ S.pullback f ∈ J Y :=
   Iff.rfl
 #align category_theory.grothendieck_topology.covers_iff CategoryTheory.GrothendieckTopology.covers_iff
 
-theorem covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X) := by simp [covers_iff]
+lemma covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X) := by simp [covers_iff]
 #align category_theory.grothendieck_topology.covering_iff_covers_id CategoryTheory.GrothendieckTopology.covering_iff_covers_id
 
 /-- The maximality axiom in 'arrow' form: Any arrow `f` in `S` is covered by `S`. -/
-theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
+lemma arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
   rw [Covers, (Sieve.pullback_eq_top_iff_mem f).1 hf]
   apply J.top_mem
 #align category_theory.grothendieck_topology.arrow_max CategoryTheory.GrothendieckTopology.arrow_max
 
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
-theorem arrow_stable (f : Y ⟶ X) (S : Sieve X) (h : J.Covers S f) {Z : C} (g : Z ⟶ Y) :
+lemma arrow_stable (f : Y ⟶ X) (S : Sieve X) (h : J.Covers S f) {Z : C} (g : Z ⟶ Y) :
     J.Covers S (g ≫ f) := by
   rw [covers_iff] at h ⊢
   simp [h, Sieve.pullback_comp]
@@ -202,7 +202,7 @@ theorem arrow_stable (f : Y ⟶ X) (S : Sieve X) (h : J.Covers S f) {Z : C} (g :
 /-- The transitivity axiom in 'arrow' form: If `S` covers `f` and every arrow in `S` is covered by
 `R`, then `R` covers `f`.
 -/
-theorem arrow_trans (f : Y ⟶ X) (S R : Sieve X) (h : J.Covers S f) :
+lemma arrow_trans (f : Y ⟶ X) (S R : Sieve X) (h : J.Covers S f) :
     (∀ {Z : C} (g : Z ⟶ X), S g → J.Covers R g) → J.Covers R f := by
   intro k
   apply J.transitive h
@@ -211,7 +211,7 @@ theorem arrow_trans (f : Y ⟶ X) (S R : Sieve X) (h : J.Covers S f) :
   apply k (g ≫ f) hg
 #align category_theory.grothendieck_topology.arrow_trans CategoryTheory.GrothendieckTopology.arrow_trans
 
-theorem arrow_intersect (f : Y ⟶ X) (S R : Sieve X) (hS : J.Covers S f) (hR : J.Covers R f) :
+lemma arrow_intersect (f : Y ⟶ X) (S R : Sieve X) (hS : J.Covers S f) (hR : J.Covers R f) :
     J.Covers (S ⊓ R) f := by simpa [covers_iff] using And.intro hS hR
 #align category_theory.grothendieck_topology.arrow_intersect CategoryTheory.GrothendieckTopology.arrow_intersect
 
@@ -283,7 +283,7 @@ instance : InfSet (GrothendieckTopology C)
           J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf => h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
-theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
+lemma isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine' @IsGLB.of_image _ _ _ _ sieves _ _ _ _
   · intros
     rfl
@@ -332,12 +332,12 @@ lemma top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
   ⟨⟩
 #align category_theory.grothendieck_topology.top_covering CategoryTheory.GrothendieckTopology.top_covering
 
-theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).Covers S f ↔ S f := by
+lemma bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).Covers S f ↔ S f := by
   rw [covers_iff, bot_covering, ← Sieve.pullback_eq_top_iff_mem]
 #align category_theory.grothendieck_topology.bot_covers CategoryTheory.GrothendieckTopology.bot_covers
 
 @[simp]
-theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
+lemma top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
   simp [covers_iff]
 #align category_theory.grothendieck_topology.top_covers CategoryTheory.GrothendieckTopology.top_covers
 
@@ -445,17 +445,17 @@ instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
 Porting note: This is now a syntactic tautology.
 
 @[simp]
-theorem coe_fun_coe (S : J.Cover X) (f : Y ⟶ X) : S.sieve f = S f :=
+lemma coe_fun_coe (S : J.Cover X) (f : Y ⟶ X) : S.sieve f = S f :=
   rfl
 #align category_theory.grothendieck_topology.cover.coe_fun_coe CategoryTheory.GrothendieckTopology.Cover.coe_fun_coe
 -/
 
-theorem condition (S : J.Cover X) : S.sieve ∈ J X :=
+lemma condition (S : J.Cover X) : S.sieve ∈ J X :=
   S.2
 #align category_theory.grothendieck_topology.cover.condition CategoryTheory.GrothendieckTopology.Cover.condition
 
 @[ext]
-theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S = T :=
+lemma ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S = T :=
   Subtype.ext <| Sieve.ext h
 #align category_theory.grothendieck_topology.cover.ext CategoryTheory.GrothendieckTopology.Cover.ext
 

@@ -119,24 +119,24 @@ section
 
 variable {f g}
 
-theorem Split.exact (h : Split f g) : Exact f g := by
+lemma Split.exact (h : Split f g) : Exact f g := by
   obtain ⟨φ, χ, -, -, h1, -, h2⟩ := h
   exact exact_of_split h1 h2
 #align category_theory.split.exact CategoryTheory.Split.exact
 
-theorem Split.leftSplit (h : Split f g) : LeftSplit f g where
+lemma Split.leftSplit (h : Split f g) : LeftSplit f g where
   left_split := let ⟨φ, _χ, h1, _⟩ := h; ⟨φ, h1⟩
   epi := let ⟨_φ, _χ, _, h2, _⟩ := h; epi_of_epi_fac h2
   exact := h.exact
 #align category_theory.split.left_split CategoryTheory.Split.leftSplit
 
-theorem Split.rightSplit (h : Split f g) : RightSplit f g where
+lemma Split.rightSplit (h : Split f g) : RightSplit f g where
   right_split := let ⟨_φ, χ, _, h1, _⟩ := h; ⟨χ, h1⟩
   mono := let ⟨_φ, _χ, h1, _⟩ := h; mono_of_mono_fac h1
   exact := h.exact
 #align category_theory.split.right_split CategoryTheory.Split.rightSplit
 
-theorem Split.shortExact (h : Split f g) : ShortExact f g :=
+lemma Split.shortExact (h : Split f g) : ShortExact f g :=
   h.leftSplit.shortExact
 #align category_theory.split.short_exact CategoryTheory.Split.shortExact
 
@@ -287,7 +287,7 @@ lemma π_section_eq_id_sub : g ≫ h.section = 𝟙 _ - h.retraction ≫ f :=
   eq_sub_iff_add_eq.mpr ((add_comm _ _).trans h.split_add)
 #align category_theory.splitting.π_section_eq_id_sub CategoryTheory.Splitting.π_section_eq_id_sub
 
-theorem splittings_comm (h h' : Splitting f g) :
+lemma splittings_comm (h h' : Splitting f g) :
     h'.section ≫ h.retraction = -h.section ≫ h'.retraction := by
   haveI := h.mono
   rw [← cancel_mono f]

@@ -46,7 +46,7 @@ namespace ZMod
 variable (p : ℕ) [Fact p.Prime]
 
 /-- Euler's Criterion: A unit `x` of `ZMod p` is a square if and only if `x ^ (p / 2) = 1`. -/
-theorem euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x) ↔ x ^ (p / 2) = 1 := by
+lemma euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x) ↔ x ^ (p / 2) = 1 := by
   by_cases hc : p = 2
   · subst hc
     simp only [eq_iff_true_of_subsingleton, exists_const]
@@ -112,7 +112,7 @@ def legendreSym (a : ℤ) : ℤ :=
 namespace legendreSym
 
 /-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
-theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
+lemma eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
   cases' eq_or_ne (ringChar (ZMod p)) 2 with hc hc
   · by_cases ha : (a : ZMod p) = 0
     · rw [legendreSym, ha, quadraticChar_zero,
@@ -145,7 +145,7 @@ lemma eq_neg_one_iff_not_one {a : ℤ} (ha : (a : ZMod p) ≠ 0) :
 #align legendre_sym.eq_neg_one_iff_not_one legendreSym.eq_neg_one_iff_not_one
 
 /-- The Legendre symbol of `p` and `a` is zero iff `p ∣ a`. -/
-theorem eq_zero_iff (a : ℤ) : legendreSym p a = 0 ↔ (a : ZMod p) = 0 :=
+lemma eq_zero_iff (a : ℤ) : legendreSym p a = 0 ↔ (a : ZMod p) = 0 :=
   quadraticChar_eq_zero_iff
 #align legendre_sym.eq_zero_iff legendreSym.eq_zero_iff
 
@@ -158,7 +158,7 @@ lemma at_one : legendreSym p 1 = 1 := by rw [legendreSym, Int.cast_one, MulChar.
 #align legendre_sym.at_one legendreSym.at_one
 
 /-- The Legendre symbol is multiplicative in `a` for `p` fixed. -/
-protected theorem mul (a b : ℤ) : legendreSym p (a * b) = legendreSym p a * legendreSym p b := by
+protected lemma mul (a b : ℤ) : legendreSym p (a * b) = legendreSym p a * legendreSym p b := by
   simp [legendreSym, Int.cast_mul, map_mul, quadraticCharFun_mul]
 #align legendre_sym.mul legendreSym.mul
 
@@ -184,7 +184,7 @@ lemma sq_one' {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p (a ^ 2) = 1 :=
 #align legendre_sym.sq_one' legendreSym.sq_one'
 
 /-- The Legendre symbol depends only on `a` mod `p`. -/
-protected theorem mod (a : ℤ) : legendreSym p a = legendreSym p (a % p) := by
+protected lemma mod (a : ℤ) : legendreSym p a = legendreSym p (a % p) := by
   simp only [legendreSym, int_cast_mod]
 #align legendre_sym.mod legendreSym.mod
 
@@ -207,7 +207,7 @@ lemma eq_neg_one_iff' {a : ℕ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod 
 #align legendre_sym.eq_neg_one_iff' legendreSym.eq_neg_one_iff'
 
 /-- The number of square roots of `a` modulo `p` is determined by the Legendre symbol. -/
-theorem card_sqrts (hp : p ≠ 2) (a : ℤ) :
+lemma card_sqrts (hp : p ≠ 2) (a : ℤ) :
     ↑{x : ZMod p | x ^ 2 = a}.toFinset.card = legendreSym p a + 1 :=
   quadraticChar_card_sqrts ((ringChar_zmod_n p).substr hp) a
 #align legendre_sym.card_sqrts legendreSym.card_sqrts
@@ -290,7 +290,7 @@ variable {p : ℕ} [Fact p.Prime]
 open ZMod
 
 /-- `legendreSym p (-1)` is given by `χ₄ p`. -/
-theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := by
+lemma legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := by
   simp only [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
     Int.cast_neg, Int.cast_one]
 #align legendre_sym.at_neg_one legendreSym.at_neg_one

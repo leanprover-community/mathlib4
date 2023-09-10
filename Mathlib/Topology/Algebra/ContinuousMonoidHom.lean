@@ -362,7 +362,7 @@ lemma continuous_comp [LocallyCompactSpace B] :
 #align continuous_add_monoid_hom.continuous_comp ContinuousAddMonoidHom.continuous_comp
 
 @[to_additive]
-theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
+lemma continuous_comp_left (f : ContinuousMonoidHom A B) :
     Continuous fun g : ContinuousMonoidHom B C => g.comp f :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_comp_left.comp (inducing_toContinuousMap B C).continuous
@@ -370,7 +370,7 @@ theorem continuous_comp_left (f : ContinuousMonoidHom A B) :
 #align continuous_add_monoid_hom.continuous_comp_left ContinuousAddMonoidHom.continuous_comp_left
 
 @[to_additive]
-theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
+lemma continuous_comp_right (f : ContinuousMonoidHom B C) :
     Continuous fun g : ContinuousMonoidHom A B => f.comp g :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_comp.comp (inducing_toContinuousMap A B).continuous
@@ -448,7 +448,7 @@ noncomputable def map (f : ContinuousMonoidHom A B) :
 #align pontryagin_dual.map PontryaginDual.map
 
 @[simp]
-theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
+lemma map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
     map f x y = x (f y) :=
   rfl
 #align pontryagin_dual.map_apply PontryaginDual.map_apply
@@ -459,14 +459,14 @@ lemma map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
 #align pontryagin_dual.map_one PontryaginDual.map_one
 
 @[simp]
-theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
+lemma map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
   ext fun _x => ext fun _y => rfl
 #align pontryagin_dual.map_comp PontryaginDual.map_comp
 
 
 @[simp]
-nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
+nonrec lemma map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
   ext fun x => ext fun y => map_mul x (f y) (g y)
 #align pontryagin_dual.map_mul PontryaginDual.map_mul
 

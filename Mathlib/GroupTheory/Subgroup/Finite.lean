@@ -62,7 +62,7 @@ protected lemma multiset_prod_mem {G} [CommGroup G] (K : Subgroup G) (g : Multis
 #align add_subgroup.multiset_sum_mem AddSubgroup.multiset_sum_mem
 
 @[to_additive]
-theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
+lemma multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
     (∀ a ∈ g, a ∈ K) → g.noncommProd comm ∈ K :=
   K.toSubmonoid.multiset_noncommProd_mem g comm
 #align subgroup.multiset_noncomm_prod_mem Subgroup.multiset_noncommProd_mem
@@ -79,7 +79,7 @@ protected lemma prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*}
 #align add_subgroup.sum_mem AddSubgroup.sum_mem
 
 @[to_additive]
-theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι → G} (comm) :
+lemma noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι → G} (comm) :
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
   K.toSubmonoid.noncommProd_mem t f comm
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
@@ -87,7 +87,7 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι �
 
 -- porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
+lemma val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 #align subgroup.coe_list_prod Subgroup.val_list_prod
 #align add_subgroup.coe_list_sum AddSubgroup.val_list_sum

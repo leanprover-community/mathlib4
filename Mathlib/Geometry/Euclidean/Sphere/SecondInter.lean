@@ -41,7 +41,7 @@ def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
 /-- The distance between `secondInter` and the center equals the distance between the original
 point and the center. -/
 @[simp]
-theorem Sphere.secondInter_dist (s : Sphere P) (p : P) (v : V) :
+lemma Sphere.secondInter_dist (s : Sphere P) (p : P) (v : V) :
     dist (s.secondInter p v) s.center = dist p s.center := by
   rw [Sphere.secondInter]
   by_cases hv : v = 0; · simp [hv]
@@ -59,7 +59,7 @@ variable (V)
 
 /-- If the vector is zero, `secondInter` gives the original point. -/
 @[simp]
-theorem Sphere.secondInter_zero (s : Sphere P) (p : P) : s.secondInter p (0 : V) = p := by
+lemma Sphere.secondInter_zero (s : Sphere P) (p : P) : s.secondInter p (0 : V) = p := by
   simp [Sphere.secondInter]
 #align euclidean_geometry.sphere.second_inter_zero EuclideanGeometry.Sphere.secondInter_zero
 
@@ -100,7 +100,7 @@ lemma Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Sphere 
 
 /-- `secondInter` is unchanged by multiplying the vector by a nonzero real. -/
 @[simp]
-theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r ≠ 0) :
+lemma Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r ≠ 0) :
     s.secondInter p (r • v) = s.secondInter p v := by
   simp_rw [Sphere.secondInter, real_inner_smul_left, inner_smul_right, smul_smul,
     div_mul_eq_div_div]
@@ -110,14 +110,14 @@ theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r
 
 /-- `secondInter` is unchanged by negating the vector. -/
 @[simp]
-theorem Sphere.secondInter_neg (s : Sphere P) (p : P) (v : V) :
+lemma Sphere.secondInter_neg (s : Sphere P) (p : P) (v : V) :
     s.secondInter p (-v) = s.secondInter p v := by
   rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by norm_num : (-1 : ℝ) ≠ 0)]
 #align euclidean_geometry.sphere.second_inter_neg EuclideanGeometry.Sphere.secondInter_neg
 
 /-- Applying `secondInter` twice returns the original point. -/
 @[simp]
-theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
+lemma Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
     s.secondInter (s.secondInter p v) v = p := by
   by_cases hv : v = 0; · simp [hv]
   have hv' : ⟪v, v⟫ ≠ 0 := inner_self_ne_zero.2 hv
@@ -131,7 +131,7 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
 
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
-theorem Sphere.secondInter_eq_lineMap (s : Sphere P) (p p' : P) :
+lemma Sphere.secondInter_eq_lineMap (s : Sphere P) (p p' : P) :
     s.secondInter p (p' -ᵥ p) =
       AffineMap.lineMap p p' (-2 * ⟪p' -ᵥ p, p -ᵥ s.center⟫ / ⟪p' -ᵥ p, p' -ᵥ p⟫) :=
   rfl
@@ -139,14 +139,14 @@ theorem Sphere.secondInter_eq_lineMap (s : Sphere P) (p p' : P) :
 
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result lies in the span of the two points. -/
-theorem Sphere.secondInter_vsub_mem_affineSpan (s : Sphere P) (p₁ p₂ : P) :
+lemma Sphere.secondInter_vsub_mem_affineSpan (s : Sphere P) (p₁ p₂ : P) :
     s.secondInter p₁ (p₂ -ᵥ p₁) ∈ line[ℝ, p₁, p₂] :=
   smul_vsub_vadd_mem_affineSpan_pair _ _ _
 #align euclidean_geometry.sphere.second_inter_vsub_mem_affine_span EuclideanGeometry.Sphere.secondInter_vsub_mem_affineSpan
 
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the three points are collinear. -/
-theorem Sphere.secondInter_collinear (s : Sphere P) (p p' : P) :
+lemma Sphere.secondInter_collinear (s : Sphere P) (p p' : P) :
     Collinear ℝ ({p, p', s.secondInter p (p' -ᵥ p)} : Set P) := by
   rw [Set.pair_comm, Set.insert_comm]
   exact

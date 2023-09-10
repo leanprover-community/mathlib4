@@ -313,7 +313,7 @@ instance hasSMul : SMul S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M where
 #align category_theory.Module.coextend_scalars.has_smul ModuleCat.CoextendScalars.hasSMul
 
 @[simp]
-theorem smul_apply' (s : S) (g : (restrictScalars f).obj ⟨S⟩ →ₗ[R] M) (s' : S) :
+lemma smul_apply' (s : S) (g : (restrictScalars f).obj ⟨S⟩ →ₗ[R] M) (s' : S) :
     (s • g) s' = g (s' * s : S) :=
   rfl
 #align category_theory.Module.coextend_scalars.smul_apply' ModuleCat.CoextendScalars.smul_apply'
@@ -384,7 +384,7 @@ variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
   inferInstanceAs <| CoeFun (CoextendScalars.obj' f M) _
 
-theorem smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
+lemma smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
     (s • g) s' = g (s' * s) :=
   rfl
 #align category_theory.Module.coextend_scalars.smul_apply ModuleCat.CoextendScalars.smul_apply

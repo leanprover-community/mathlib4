@@ -83,7 +83,7 @@ instance : AddCommGroup (DirectSum ι β) :=
 variable {β}
 
 @[simp]
-theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
+lemma sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
   rfl
 #align direct_sum.sub_apply DirectSum.sub_apply
 
@@ -92,14 +92,14 @@ end AddCommGroup
 variable [∀ i, AddCommMonoid (β i)]
 
 @[simp]
-theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
+lemma zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
   rfl
 #align direct_sum.zero_apply DirectSum.zero_apply
 
 variable {β}
 
 @[simp]
-theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
+lemma add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
 #align direct_sum.add_apply DirectSum.add_apply
 
@@ -123,11 +123,11 @@ def of (i : ι) : β i →+ ⨁ i, β i :=
 #align direct_sum.of DirectSum.of
 
 @[simp]
-theorem of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
+lemma of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
   DFinsupp.single_eq_same
 #align direct_sum.of_eq_same DirectSum.of_eq_same
 
-theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
+lemma of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
   DFinsupp.single_eq_of_ne h
 #align direct_sum.of_eq_of_ne DirectSum.of_eq_of_ne
 
@@ -154,11 +154,11 @@ lemma sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i, 
 
 variable {β}
 
-theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
+lemma mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
   DFinsupp.mk_injective s
 #align direct_sum.mk_injective DirectSum.mk_injective
 
-theorem of_injective (i : ι) : Function.Injective (of β i) :=
+lemma of_injective (i : ι) : Function.Injective (of β i) :=
   DFinsupp.single_injective
 #align direct_sum.of_injective DirectSum.of_injective
 
@@ -204,11 +204,11 @@ def toAddMonoid : (⨁ i, β i) →+ γ :=
 #align direct_sum.to_add_monoid DirectSum.toAddMonoid
 
 @[simp]
-theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
+lemma toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
   DFinsupp.liftAddHom_apply_single φ i x
 #align direct_sum.to_add_monoid_of DirectSum.toAddMonoid_of
 
-theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
+lemma toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
   -- Porting note: ext applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
@@ -228,12 +228,12 @@ def fromAddMonoid : (⨁ i, γ →+ β i) →+ γ →+ ⨁ i, β i :=
 #align direct_sum.from_add_monoid DirectSum.fromAddMonoid
 
 @[simp]
-theorem fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f := by
+lemma fromAddMonoid_of (i : ι) (f : γ →+ β i) : fromAddMonoid (of _ i f) = (of _ i).comp f := by
   rw [fromAddMonoid, toAddMonoid_of]
   rfl
 #align direct_sum.from_add_monoid_of DirectSum.fromAddMonoid_of
 
-theorem fromAddMonoid_of_apply (i : ι) (f : γ →+ β i) (x : γ) :
+lemma fromAddMonoid_of_apply (i : ι) (f : γ →+ β i) (x : γ) :
     fromAddMonoid (of _ i f) x = of _ i (f x) := by
       rw [fromAddMonoid_of, AddMonoidHom.coe_comp, Function.comp]
 #align direct_sum.from_add_monoid_of_apply DirectSum.fromAddMonoid_of_apply
@@ -289,7 +289,7 @@ def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
 #align direct_sum.equiv_congr_left DirectSum.equivCongrLeft
 
 @[simp]
-theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
+lemma equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
     equivCongrLeft h f k = f (h.symm k) := by
   exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
 #align direct_sum.equiv_congr_left_apply DirectSum.equivCongrLeft_apply
@@ -324,7 +324,7 @@ def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
 #align direct_sum.sigma_curry DirectSum.sigmaCurry
 
 @[simp]
-theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) :
+lemma sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) :
     sigmaCurry f i j = f ⟨i, j⟩ :=
   DFinsupp.sigmaCurry_apply (δ := δ) _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply

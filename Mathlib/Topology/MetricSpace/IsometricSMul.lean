@@ -168,7 +168,7 @@ def constSMul (c : G) : X ≃ᵢ X where
 #align isometry_equiv.const_vadd_apply IsometryEquiv.constVAdd_apply
 
 @[to_additive (attr := simp)]
-theorem constSMul_symm (c : G) : (constSMul c : X ≃ᵢ X).symm = constSMul c⁻¹ :=
+lemma constSMul_symm (c : G) : (constSMul c : X ≃ᵢ X).symm = constSMul c⁻¹ :=
   ext fun _ => rfl
 #align isometry_equiv.const_smul_symm IsometryEquiv.constSMul_symm
 #align isometry_equiv.const_vadd_symm IsometryEquiv.constVAdd_symm
@@ -270,25 +270,25 @@ end IsometryEquiv
 namespace EMetric
 
 @[to_additive (attr := simp)]
-theorem smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c • x) r :=
+lemma smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c • x) r :=
   (IsometryEquiv.constSMul c).image_emetric_ball _ _
 #align emetric.smul_ball EMetric.smul_ball
 #align emetric.vadd_ball EMetric.vadd_ball
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r :=
+lemma preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r :=
   by rw [preimage_smul, smul_ball]
 #align emetric.preimage_smul_ball EMetric.preimage_smul_ball
 #align emetric.preimage_vadd_ball EMetric.preimage_vadd_ball
 
 @[to_additive (attr := simp)]
-theorem smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) : c • closedBall x r = closedBall (c • x) r :=
+lemma smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) : c • closedBall x r = closedBall (c • x) r :=
   (IsometryEquiv.constSMul c).image_emetric_closedBall _ _
 #align emetric.smul_closed_ball EMetric.smul_closedBall
 #align emetric.vadd_closed_ball EMetric.vadd_closedBall
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) :
+lemma preimage_smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) :
     (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
   rw [preimage_smul, smul_closedBall]
 #align emetric.preimage_smul_closed_ball EMetric.preimage_smul_closedBall
@@ -434,37 +434,37 @@ lemma Bounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsometricSMul G X]
 
 @[to_additive (attr := simp)]
-theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r :=
+lemma smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r :=
   (IsometryEquiv.constSMul c).image_ball _ _
 #align metric.smul_ball Metric.smul_ball
 #align metric.vadd_ball Metric.vadd_ball
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
+lemma preimage_smul_ball (c : G) (x : X) (r : ℝ) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
   rw [preimage_smul, smul_ball]
 #align metric.preimage_smul_ball Metric.preimage_smul_ball
 #align metric.preimage_vadd_ball Metric.preimage_vadd_ball
 
 @[to_additive (attr := simp)]
-theorem smul_closedBall (c : G) (x : X) (r : ℝ) : c • closedBall x r = closedBall (c • x) r :=
+lemma smul_closedBall (c : G) (x : X) (r : ℝ) : c • closedBall x r = closedBall (c • x) r :=
   (IsometryEquiv.constSMul c).image_closedBall _ _
 #align metric.smul_closed_ball Metric.smul_closedBall
 #align metric.vadd_closed_ball Metric.vadd_closedBall
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ) :
+lemma preimage_smul_closedBall (c : G) (x : X) (r : ℝ) :
     (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
 #align metric.preimage_smul_closed_ball Metric.preimage_smul_closedBall
 #align metric.preimage_vadd_closed_ball Metric.preimage_vadd_closedBall
 
 @[to_additive (attr := simp)]
-theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c • x) r :=
+lemma smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c • x) r :=
   (IsometryEquiv.constSMul c).image_sphere _ _
 #align metric.smul_sphere Metric.smul_sphere
 #align metric.vadd_sphere Metric.vadd_sphere
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_sphere (c : G) (x : X) (r : ℝ) :
+lemma preimage_smul_sphere (c : G) (x : X) (r : ℝ) :
     (· • ·) c ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
 #align metric.preimage_smul_sphere Metric.preimage_smul_sphere
 #align metric.preimage_vadd_sphere Metric.preimage_vadd_sphere

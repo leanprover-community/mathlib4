@@ -282,7 +282,7 @@ lemma exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parallel
         exact Seq.mem_cons_of_mem _ dS'
 #align computation.exists_of_mem_parallel Computation.exists_of_mem_parallel
 
-theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
+lemma map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
   refine'
     eq_of_bisim
       (fun c1 c2 =>
@@ -312,7 +312,7 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
         exact ⟨_, _, rfl, rfl⟩
 #align computation.map_parallel Computation.map_parallel
 
-theorem parallel_empty (S : WSeq (Computation α)) (h : S.head ~> none) : parallel S = empty _ :=
+lemma parallel_empty (S : WSeq (Computation α)) (h : S.head ~> none) : parallel S = empty _ :=
   eq_empty_of_not_terminates fun ⟨⟨a, m⟩⟩ => by
     let ⟨c, cs, _⟩ := exists_of_mem_parallel m
     let ⟨n, nm⟩ := WSeq.exists_get?_of_mem cs

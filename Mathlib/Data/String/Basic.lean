@@ -55,7 +55,7 @@ def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂
     else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
   else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
-theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) :
+lemma ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) :
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ = ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ := by
   apply ltb.inductionOn ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ (motive := fun ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ ↦
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ =
@@ -125,7 +125,7 @@ lemma toList_empty : "".toList = [] :=
   rfl
 #align string.to_list_empty String.toList_empty
 
-theorem asString_inv_toList (s : String) : s.toList.asString = s :=
+lemma asString_inv_toList (s : String) : s.toList.asString = s :=
   rfl
 #align string.as_string_inv_to_list String.asString_inv_toList
 
@@ -171,12 +171,12 @@ end String
 
 open String
 
-theorem List.toList_inv_asString (l : List Char) : l.asString.toList = l :=
+lemma List.toList_inv_asString (l : List Char) : l.asString.toList = l :=
   rfl
 #align list.to_list_inv_as_string List.toList_inv_asString
 
 @[simp]
-theorem List.length_asString (l : List Char) : l.asString.length = l.length :=
+lemma List.length_asString (l : List Char) : l.asString.length = l.length :=
   rfl
 #align list.length_as_string List.length_asString
 
@@ -187,7 +187,7 @@ lemma List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l'
 #align list.as_string_inj List.asString_inj
 
 @[simp]
-theorem String.length_data (s : String) : s.data.length = s.length :=
+lemma String.length_data (s : String) : s.data.length = s.length :=
   rfl
 #align string.length_to_list String.length_data
 

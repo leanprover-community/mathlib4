@@ -63,16 +63,16 @@ lemma finite_iff_exists_equiv_fin {α : Sort*} : Finite α ↔ ∃ n, Nonempty (
   ⟨fun ⟨e⟩ => ⟨_, ⟨e⟩⟩, fun ⟨_, ⟨e⟩⟩ => ⟨e⟩⟩
 #align finite_iff_exists_equiv_fin finite_iff_exists_equiv_fin
 
-theorem Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, Nonempty (α ≃ Fin n) :=
+lemma Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, Nonempty (α ≃ Fin n) :=
   finite_iff_exists_equiv_fin.mp h
 #align finite.exists_equiv_fin Finite.exists_equiv_fin
 
-theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β := by
+lemma Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β := by
   cases' h with n e
   exact Finite.intro (f.symm.trans e)
 #align finite.of_equiv Finite.of_equiv
 
-theorem Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=
+lemma Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=
   ⟨fun _ => Finite.of_equiv _ f, fun _ => Finite.of_equiv _ f.symm⟩
 #align equiv.finite_iff Equiv.finite_iff
 
@@ -107,7 +107,7 @@ lemma not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
   not_finite_iff_infinite.not_right.symm
 #align not_infinite_iff_finite not_infinite_iff_finite
 
-theorem Equiv.infinite_iff (e : α ≃ β) : Infinite α ↔ Infinite β :=
+lemma Equiv.infinite_iff (e : α ≃ β) : Infinite α ↔ Infinite β :=
   not_finite_iff_infinite.symm.trans <| e.finite_iff.not.trans not_finite_iff_infinite
 #align equiv.infinite_iff Equiv.infinite_iff
 
@@ -117,12 +117,12 @@ instance [Infinite α] : Infinite (PLift α) :=
 instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
   Equiv.ulift.infinite_iff.2 ‹_›
 
-theorem finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=
+lemma finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=
   or_iff_not_imp_left.2 not_finite_iff_infinite.1
 #align finite_or_infinite finite_or_infinite
 
 /-- `Infinite α` is not `Finite`-/
-theorem not_finite (α : Sort*) [Infinite α] [Finite α] : False :=
+lemma not_finite (α : Sort*) [Infinite α] [Finite α] : False :=
   @Infinite.not_finite α ‹_› ‹_›
 #align not_finite not_finite
 

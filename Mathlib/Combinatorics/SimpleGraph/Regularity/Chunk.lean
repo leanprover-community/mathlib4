@@ -92,7 +92,7 @@ lemma star_subset_chunk : star hP G ε hU V ⊆ (chunk hP G ε hU).parts :=
   filter_subset _ _
 #align szemeredi_regularity.star_subset_chunk SzemerediRegularity.star_subset_chunk
 
-private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (hUV : U ≠ V)
+private lemma card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (hUV : U ≠ V)
     (h₂ : ¬G.IsUniform ε U V) :
     (G.nonuniformWitness ε U V \ (star hP G ε hU V).biUnion id).card ≤
     2 ^ (P.parts.card - 1) * m := by
@@ -126,7 +126,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
   refine' t.trans (pow_le_pow (by norm_num) <| tsub_le_tsub_right _ _)
   exact card_image_le.trans (card_le_of_subset <| filter_subset _ _)
 
-private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
+private lemma one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
     (hUV : U ≠ V) (hunif : ¬G.IsUniform ε U V) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) :
     (1 - ε / 10) * (G.nonuniformWitness ε U V).card ≤ ((star hP G ε hU V).biUnion id).card := by
@@ -180,7 +180,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
 /-! ### `chunk` -/
 
 
-theorem card_chunk (hm : m ≠ 0) : (chunk hP G ε hU).parts.card = 4 ^ P.parts.card := by
+lemma card_chunk (hm : m ≠ 0) : (chunk hP G ε hU).parts.card = 4 ^ P.parts.card := by
   unfold chunk
   split_ifs
   · rw [card_parts_equitabilise _ _ hm, tsub_add_cancel_of_le]
@@ -188,17 +188,17 @@ theorem card_chunk (hm : m ≠ 0) : (chunk hP G ε hU).parts.card = 4 ^ P.parts.
   · rw [card_parts_equitabilise _ _ hm, tsub_add_cancel_of_le a_add_one_le_four_pow_parts_card]
 #align szemeredi_regularity.card_chunk SzemerediRegularity.card_chunk
 
-theorem card_eq_of_mem_parts_chunk (hs : s ∈ (chunk hP G ε hU).parts) :
+lemma card_eq_of_mem_parts_chunk (hs : s ∈ (chunk hP G ε hU).parts) :
     s.card = m ∨ s.card = m + 1 := by
   unfold chunk at hs
   split_ifs at hs <;> exact card_eq_of_mem_parts_equitabilise hs
 #align szemeredi_regularity.card_eq_of_mem_parts_chunk SzemerediRegularity.card_eq_of_mem_parts_chunk
 
-theorem m_le_card_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : m ≤ s.card :=
+lemma m_le_card_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : m ≤ s.card :=
   (card_eq_of_mem_parts_chunk hs).elim ge_of_eq fun i => by simp [i]
 #align szemeredi_regularity.m_le_card_of_mem_chunk_parts SzemerediRegularity.m_le_card_of_mem_chunk_parts
 
-theorem card_le_m_add_one_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : s.card ≤ m + 1 :=
+lemma card_le_m_add_one_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : s.card ≤ m + 1 :=
   (card_eq_of_mem_parts_chunk hs).elim (fun i => by simp [i]) fun i => i.le
 #align szemeredi_regularity.card_le_m_add_one_of_mem_chunk_parts SzemerediRegularity.card_le_m_add_one_of_mem_chunk_parts
 
@@ -208,7 +208,7 @@ lemma card_biUnion_star_le_m_add_one_card_star_mul :
     card_le_m_add_one_of_mem_chunk_parts <| star_subset_chunk hs
 #align szemeredi_regularity.card_bUnion_star_le_m_add_one_card_star_mul SzemerediRegularity.card_biUnion_star_le_m_add_one_card_star_mul
 
-private theorem le_sum_card_subset_chunk_parts (h𝒜 : 𝒜 ⊆ (chunk hP G ε hU).parts) (hs : s ∈ 𝒜) :
+private lemma le_sum_card_subset_chunk_parts (h𝒜 : 𝒜 ⊆ (chunk hP G ε hU).parts) (hs : s ∈ 𝒜) :
     (𝒜.card : ℝ) * s.card * (m / (m + 1)) ≤ (𝒜.sup id).card := by
   rw [mul_div_assoc', div_le_iff coe_m_add_one_pos, mul_right_comm]
   refine' mul_le_mul _ _ (cast_nonneg _) (cast_nonneg _)
@@ -216,7 +216,7 @@ private theorem le_sum_card_subset_chunk_parts (h𝒜 : 𝒜 ⊆ (chunk hP G ε 
     exact card_nsmul_le_sum _ _ _ fun x hx => m_le_card_of_mem_chunk_parts <| h𝒜 hx
   · exact_mod_cast card_le_m_add_one_of_mem_chunk_parts (h𝒜 hs)
 
-private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
+private lemma sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
     (h𝒜 : 𝒜 ⊆ (chunk hP G ε hU).parts) (hs : s ∈ 𝒜) :
     ((𝒜.sup id).card : ℝ) ≤ 𝒜.card * s.card * ((m + 1) / m) := by
   rw [sup_eq_biUnion, mul_div_assoc', le_div_iff m_pos, mul_right_comm]
@@ -377,7 +377,7 @@ private lemma edgeDensity_chunk_aux [Nonempty α]
     show (2 : ℝ) / 50 = 25⁻¹ by norm_num]
   exact mul_le_of_le_one_right (by sz_positivity) (by exact_mod_cast G.edgeDensity_le_one _ _)
 
-private theorem abs_density_star_sub_density_le_eps (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
+private lemma abs_density_star_sub_density_le_eps (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} (hUV' : U ≠ V) (hUV : ¬G.IsUniform ε U V) :
     |(G.edgeDensity ((star hP G ε hU V).biUnion id) ((star hP G ε hV U).biUnion id) : ℝ) -
       G.edgeDensity (G.nonuniformWitness ε U V) (G.nonuniformWitness ε V U)| ≤ ε / 5 := by

@@ -119,7 +119,7 @@ lemma Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑
 #align mul_action.quotient.coe_smul_out' MulAction.Quotient.coe_smul_out'
 #align add_action.quotient.coe_vadd_out' AddAction.Quotient.coe_vadd_out'
 
-theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
+lemma _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
     q.out'⁻¹ * a ^ Function.minimalPeriod ((· • ·) a) q * q.out' ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq', QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
@@ -135,7 +135,7 @@ def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H :=
 #align mul_action_hom.to_quotient MulActionHom.toQuotient
 
 @[simp]
-theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
+lemma _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
     MulActionHom.toQuotient H g = g :=
   rfl
 #align mul_action_hom.to_quotient_apply MulActionHom.toQuotient_apply
@@ -160,19 +160,19 @@ def ofQuotientStabilizer (g : α ⧸ MulAction.stabilizer α x) : β :=
 #align add_action.of_quotient_stabilizer AddAction.ofQuotientStabilizer
 
 @[to_additive (attr := simp)]
-theorem ofQuotientStabilizer_mk (g : α) : ofQuotientStabilizer α x (QuotientGroup.mk g) = g • x :=
+lemma ofQuotientStabilizer_mk (g : α) : ofQuotientStabilizer α x (QuotientGroup.mk g) = g • x :=
   rfl
 #align mul_action.of_quotient_stabilizer_mk MulAction.ofQuotientStabilizer_mk
 #align add_action.of_quotient_stabilizer_mk AddAction.ofQuotientStabilizer_mk
 
 @[to_additive]
-theorem ofQuotientStabilizer_mem_orbit (g) : ofQuotientStabilizer α x g ∈ orbit α x :=
+lemma ofQuotientStabilizer_mem_orbit (g) : ofQuotientStabilizer α x g ∈ orbit α x :=
   Quotient.inductionOn' g fun g => ⟨g, rfl⟩
 #align mul_action.of_quotient_stabilizer_mem_orbit MulAction.ofQuotientStabilizer_mem_orbit
 #align add_action.of_quotient_stabilizer_mem_orbit AddAction.ofQuotientStabilizer_mem_orbit
 
 @[to_additive]
-theorem ofQuotientStabilizer_smul (g : α) (g' : α ⧸ MulAction.stabilizer α x) :
+lemma ofQuotientStabilizer_smul (g : α) (g' : α ⧸ MulAction.stabilizer α x) :
     ofQuotientStabilizer α x (g • g') = g • ofQuotientStabilizer α x g' :=
   Quotient.inductionOn' g' fun _ => mul_smul _ _ _
 #align mul_action.of_quotient_stabilizer_smul MulAction.ofQuotientStabilizer_smul
@@ -209,7 +209,7 @@ noncomputable def orbitProdStabilizerEquivGroup (b : β) : orbit α b × stabili
 
 /-- Orbit-stabilizer theorem. -/
 @[to_additive "Orbit-stabilizer theorem."]
-theorem card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fintype <| orbit α b]
+lemma card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fintype <| orbit α b]
     [Fintype <| stabilizer α b] :
     Fintype.card (orbit α b) * Fintype.card (stabilizer α b) = Fintype.card α := by
   rw [← Fintype.card_prod, Fintype.card_congr (orbitProdStabilizerEquivGroup α b)]
@@ -217,7 +217,7 @@ theorem card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fint
 #align add_action.card_orbit_add_card_stabilizer_eq_card_add_group AddAction.card_orbit_add_card_stabilizer_eq_card_addGroup
 
 @[to_additive (attr := simp)]
-theorem orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
+lemma orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
     ((orbitEquivQuotientStabilizer α b).symm a : β) = a • b :=
   rfl
 #align mul_action.orbit_equiv_quotient_stabilizer_symm_apply MulAction.orbitEquivQuotientStabilizer_symm_apply
@@ -392,7 +392,7 @@ noncomputable def quotientCentralizerEmbedding (g : G) :
       fun _ _ => Subtype.ext ∘ mul_right_cancel ∘ Subtype.ext_iff.mp⟩
 #align subgroup.quotient_centralizer_embedding Subgroup.quotientCentralizerEmbedding
 
-theorem quotientCentralizerEmbedding_apply (g : G) (x : G) :
+lemma quotientCentralizerEmbedding_apply (g : G) (x : G) :
     quotientCentralizerEmbedding g x = ⟨⁅x, g⁆, x, g, rfl⟩ :=
   rfl
 #align subgroup.quotient_centralizer_embedding_apply Subgroup.quotientCentralizerEmbedding_apply
@@ -417,7 +417,7 @@ section conjClasses
 
 open Fintype
 
-theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
+lemma card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
     Nat.card { p : G × G // Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
   classical
   rcases fintypeOrInfinite G; swap

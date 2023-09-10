@@ -99,7 +99,7 @@ v|    u|     w|
 ```
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
 `Sum.inr`. If `v` spans `N` and `w` spans `P`, then `u` spans `M`. -/
-theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
+lemma span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
     (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range (g ∘ u ∘ Sum.inr))) :
     ⊤ ≤ span R (range u) := by

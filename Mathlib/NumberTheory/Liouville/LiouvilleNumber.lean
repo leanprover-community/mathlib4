@@ -90,7 +90,7 @@ lemma remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
   tsum_pos (remainder_summable hm k) (fun _ => by positivity) 0 (by positivity)
 #align liouville_number.remainder_pos LiouvilleNumber.remainder_pos
 
-theorem partialSum_succ (m : ℝ) (n : ℕ) :
+lemma partialSum_succ (m : ℝ) (n : ℕ) :
     partialSum m (n + 1) = partialSum m n + 1 / m ^ (n + 1)! :=
   sum_range_succ _ _
 #align liouville_number.partial_sum_succ LiouvilleNumber.partialSum_succ
@@ -107,7 +107,7 @@ lemma partialSum_add_remainder {m : ℝ} (hm : 1 < m) (k : ℕ) :
 /-- An upper estimate on the remainder. This estimate works with `m ∈ ℝ` satisfying `1 < m` and is
 stronger than the estimate `LiouvilleNumber.remainder_lt` below. However, the latter estimate is
 more useful for the proof. -/
-theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
+lemma remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
     remainder m n < (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) :=
   -- two useful inequalities
   have m0 : 0 < m := zero_lt_one.trans m1
@@ -134,7 +134,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
     _ = (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) := by rw [tsum_geometric_of_lt_1 (by positivity) mi]
 #align liouville_number.remainder_lt' LiouvilleNumber.remainder_lt'
 
-theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
+lemma aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
     (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) ≤ 1 / (m ^ n !) ^ n :=
   calc
     (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) ≤ 2 * (1 / m ^ (n + 1)!) :=
@@ -162,7 +162,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
 /-- An upper estimate on the remainder. This estimate works with `m ∈ ℝ` satisfying `2 ≤ m` and is
 weaker than the estimate `LiouvilleNumber.remainder_lt'` above. However, this estimate is
 more useful for the proof. -/
-theorem remainder_lt (n : ℕ) {m : ℝ} (m2 : 2 ≤ m) : remainder m n < 1 / (m ^ n !) ^ n :=
+lemma remainder_lt (n : ℕ) {m : ℝ} (m2 : 2 ≤ m) : remainder m n < 1 / (m ^ n !) ^ n :=
   (remainder_lt' n <| one_lt_two.trans_le m2).trans_le (aux_calc _ m2)
 #align liouville_number.remainder_lt LiouvilleNumber.remainder_lt
 

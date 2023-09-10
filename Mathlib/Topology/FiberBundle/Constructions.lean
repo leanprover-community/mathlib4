@@ -86,7 +86,7 @@ instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
     (inducing_const_prod.2 inducing_id)
 #align bundle.trivial.fiber_bundle Bundle.Trivial.fiberBundle
 
-theorem eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
+lemma eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
     [i : MemTrivializationAtlas e] : e = trivialization B F := i.out
 #align bundle.trivial.eq_trivialization Bundle.Trivial.eq_trivialization
 
@@ -235,7 +235,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
 lemma baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet := rfl
 #align trivialization.base_set_prod Trivialization.baseSet_prod
 
-theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
+lemma prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toLocalEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
 #align trivialization.prod_symm_apply Trivialization.prod_symm_apply
 
@@ -297,17 +297,17 @@ instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (
   pullbackTopology F E f
 #align pullback.total_space.topological_space Pullback.TotalSpace.topologicalSpace
 
-theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
+lemma Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_left
 #align pullback.continuous_proj Pullback.continuous_proj
 
-theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
+lemma Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_right
 #align pullback.continuous_lift Pullback.continuous_lift
 
-theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
+lemma inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     Inducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,

@@ -75,31 +75,31 @@ infixl:2 " on " => onFun
 -- porting note: removed, it was never used
 -- notation f " -[" op "]- " g => combine f op g
 
-theorem left_id (f : α → β) : id ∘ f = f :=
+lemma left_id (f : α → β) : id ∘ f = f :=
   rfl
 #align function.left_id Function.left_id
 
-theorem right_id (f : α → β) : f ∘ id = f :=
+lemma right_id (f : α → β) : f ∘ id = f :=
   rfl
 #align function.right_id Function.right_id
 
 #align function.comp_app Function.comp_apply
 
-theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+lemma comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
 #align function.comp.assoc Function.comp.assoc
 
 @[simp, mfld_simps]
-theorem comp.left_id (f : α → β) : id ∘ f = f :=
+lemma comp.left_id (f : α → β) : id ∘ f = f :=
   rfl
 #align function.comp.left_id Function.comp.left_id
 
 @[simp, mfld_simps]
-theorem comp.right_id (f : α → β) : f ∘ id = f :=
+lemma comp.right_id (f : α → β) : f ∘ id = f :=
   rfl
 #align function.comp.right_id Function.comp.right_id
 
-theorem comp_const_right (f : β → φ) (b : β) : f ∘ const α b = const α (f b) :=
+lemma comp_const_right (f : β → φ) (b : β) : f ∘ const α b = const α (f b) :=
   rfl
 #align function.comp_const_right Function.comp_const_right
 
@@ -216,12 +216,12 @@ def uncurry : (α → β → φ) → α × β → φ := fun f a => f a.1 a.2
 #align function.uncurry Function.uncurry
 
 @[simp]
-theorem curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
+lemma curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
   rfl
 #align function.curry_uncurry Function.curry_uncurry
 
 @[simp]
-theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
+lemma uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
   funext fun ⟨_a, _b⟩ => rfl
 #align function.uncurry_curry Function.uncurry_curry
 

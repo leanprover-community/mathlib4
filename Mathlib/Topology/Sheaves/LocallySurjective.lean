@@ -59,7 +59,7 @@ def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
 
-theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
+lemma isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
   Iff.rfl
@@ -72,7 +72,7 @@ variable [Limits.HasColimits C] [Limits.PreservesFilteredColimits (forget C)]
 
 /-- An equivalent condition for a map of presheaves to be locally surjective
 is for all the induced maps on stalks to be surjective. -/
-theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
+lemma locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔ ∀ x : X, Function.Surjective ((stalkFunctor C x).map T) := by
   constructor <;> intro hT
   · /- human proof:

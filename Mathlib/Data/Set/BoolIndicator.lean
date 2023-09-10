@@ -24,12 +24,12 @@ noncomputable def boolIndicator (x : α) :=
   @ite _ (x ∈ s) (Classical.propDecidable _) true false
 #align set.bool_indicator Set.boolIndicator
 
-theorem mem_iff_boolIndicator (x : α) : x ∈ s ↔ s.boolIndicator x = true := by
+lemma mem_iff_boolIndicator (x : α) : x ∈ s ↔ s.boolIndicator x = true := by
   unfold boolIndicator
   split_ifs with h <;> simp [h]
 #align set.mem_iff_bool_indicator Set.mem_iff_boolIndicator
 
-theorem not_mem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
+lemma not_mem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
   unfold boolIndicator
   split_ifs with h <;> simp [h]
 #align set.not_mem_iff_bool_indicator Set.not_mem_iff_boolIndicator
@@ -44,14 +44,14 @@ lemma preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
 
 open Classical
 
-theorem preimage_boolIndicator_eq_union (t : Set Bool) :
+lemma preimage_boolIndicator_eq_union (t : Set Bool) :
     s.boolIndicator ⁻¹' t = (if true ∈ t then s else ∅) ∪ if false ∈ t then sᶜ else ∅ := by
   ext x
   simp only [boolIndicator, mem_preimage]
   split_ifs <;> simp [*]
 #align set.preimage_bool_indicator_eq_union Set.preimage_boolIndicator_eq_union
 
-theorem preimage_boolIndicator (t : Set Bool) :
+lemma preimage_boolIndicator (t : Set Bool) :
     s.boolIndicator ⁻¹' t = univ ∨
       s.boolIndicator ⁻¹' t = s ∨ s.boolIndicator ⁻¹' t = sᶜ ∨ s.boolIndicator ⁻¹' t = ∅ := by
   simp only [preimage_boolIndicator_eq_union]

@@ -47,7 +47,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.differential_object.X_eq_to_hom CategoryTheory.DifferentialObject.objEqToHom
 
 @[simp]
-theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
+lemma objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.differential_object.X_eq_to_hom_refl CategoryTheory.DifferentialObject.objEqToHom_refl
@@ -78,7 +78,7 @@ variable (V : Type*) [Category V] [HasZeroMorphisms V]
 -- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version
 -- do not simplify under themselves
 @[reassoc (attr := simp, nolint simpNF)]
-theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
+lemma d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 #align homological_complex.d_eq_to_hom HomologicalComplex.d_eqToHom
 

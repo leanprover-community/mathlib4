@@ -36,7 +36,7 @@ lemma forall₂_cons {a b l₁ l₂} : Forall₂ R (a :: l₁) (b :: l₂) ↔ R
     Forall₂.cons h₁ h₂⟩
 #align list.forall₂_cons List.forall₂_cons
 
-theorem Forall₂.imp (H : ∀ a b, R a b → S a b) {l₁ l₂} (h : Forall₂ R l₁ l₂) : Forall₂ S l₁ l₂ := by
+lemma Forall₂.imp (H : ∀ a b, R a b → S a b) {l₁ l₂} (h : Forall₂ R l₁ l₂) : Forall₂ S l₁ l₂ := by
   induction h <;> constructor <;> solve_by_elim
 #align list.forall₂.imp List.Forall₂.imp
 
@@ -131,28 +131,28 @@ lemma forall₂_map_right_iff {f : γ → β} :
   | _, b :: u => by simp only [map, forall₂_cons_right_iff, forall₂_map_right_iff]
 #align list.forall₂_map_right_iff List.forall₂_map_right_iff
 
-theorem left_unique_forall₂' (hr : LeftUnique R) : ∀ {a b c}, Forall₂ R a c → Forall₂ R b c → a = b
+lemma left_unique_forall₂' (hr : LeftUnique R) : ∀ {a b c}, Forall₂ R a c → Forall₂ R b c → a = b
   | _, _, _, Forall₂.nil, Forall₂.nil => rfl
   | _, _, _, Forall₂.cons ha₀ h₀, Forall₂.cons ha₁ h₁ =>
     hr ha₀ ha₁ ▸ left_unique_forall₂' hr h₀ h₁ ▸ rfl
 #align list.left_unique_forall₂' List.left_unique_forall₂'
 
-theorem _root_.Relator.LeftUnique.forall₂ (hr : LeftUnique R) : LeftUnique (Forall₂ R) :=
+lemma _root_.Relator.LeftUnique.forall₂ (hr : LeftUnique R) : LeftUnique (Forall₂ R) :=
   @left_unique_forall₂' _ _ _ hr
 #align relator.left_unique.forall₂ Relator.LeftUnique.forall₂
 
-theorem right_unique_forall₂' (hr : RightUnique R) :
+lemma right_unique_forall₂' (hr : RightUnique R) :
     ∀ {a b c}, Forall₂ R a b → Forall₂ R a c → b = c
   | _, _, _, Forall₂.nil, Forall₂.nil => rfl
   | _, _, _, Forall₂.cons ha₀ h₀, Forall₂.cons ha₁ h₁ =>
     hr ha₀ ha₁ ▸ right_unique_forall₂' hr h₀ h₁ ▸ rfl
 #align list.right_unique_forall₂' List.right_unique_forall₂'
 
-theorem _root_.Relator.RightUnique.forall₂ (hr : RightUnique R) : RightUnique (Forall₂ R) :=
+lemma _root_.Relator.RightUnique.forall₂ (hr : RightUnique R) : RightUnique (Forall₂ R) :=
   @right_unique_forall₂' _ _ _ hr
 #align relator.right_unique.forall₂ Relator.RightUnique.forall₂
 
-theorem _root_.Relator.BiUnique.forall₂ (hr : BiUnique R) : BiUnique (Forall₂ R) :=
+lemma _root_.Relator.BiUnique.forall₂ (hr : BiUnique R) : BiUnique (Forall₂ R) :=
   ⟨hr.left.forall₂, hr.right.forall₂⟩
 #align relator.bi_unique.forall₂ Relator.BiUnique.forall₂
 
@@ -219,21 +219,21 @@ lemma forall₂_drop : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ 
   | n + 1, _, _, Forall₂.cons h₁ h₂ => by simp [And.intro h₁ h₂, forall₂_drop n]
 #align list.forall₂_drop List.forall₂_drop
 
-theorem forall₂_take_append (l : List α) (l₁ : List β) (l₂ : List β) (h : Forall₂ R l (l₁ ++ l₂)) :
+lemma forall₂_take_append (l : List α) (l₁ : List β) (l₂ : List β) (h : Forall₂ R l (l₁ ++ l₂)) :
     Forall₂ R (List.take (length l₁) l) l₁ := by
   have h' : Forall₂ R (take (length l₁) l) (take (length l₁) (l₁ ++ l₂)) :=
     forall₂_take (length l₁) h
   rwa [take_left] at h'
 #align list.forall₂_take_append List.forall₂_take_append
 
-theorem forall₂_drop_append (l : List α) (l₁ : List β) (l₂ : List β) (h : Forall₂ R l (l₁ ++ l₂)) :
+lemma forall₂_drop_append (l : List α) (l₁ : List β) (l₂ : List β) (h : Forall₂ R l (l₁ ++ l₂)) :
     Forall₂ R (List.drop (length l₁) l) l₂ := by
   have h' : Forall₂ R (drop (length l₁) l) (drop (length l₁) (l₁ ++ l₂)) :=
     forall₂_drop (length l₁) h
   rwa [drop_left] at h'
 #align list.forall₂_drop_append List.forall₂_drop_append
 
-theorem rel_mem (hr : BiUnique R) : (R ⇒ Forall₂ R ⇒ Iff) (· ∈ ·) (· ∈ ·)
+lemma rel_mem (hr : BiUnique R) : (R ⇒ Forall₂ R ⇒ Iff) (· ∈ ·) (· ∈ ·)
   | a, b, _, [], [], Forall₂.nil => by simp only [not_mem_nil]
   | a, b, h, a' :: as, b' :: bs, Forall₂.cons h₁ h₂ => by
     simp only [mem_cons]

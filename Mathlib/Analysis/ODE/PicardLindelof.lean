@@ -126,7 +126,7 @@ lemma tDist_nonneg : 0 ≤ v.tDist :=
   le_max_iff.2 <| Or.inl <| sub_nonneg.2 v.t₀.2.2
 #align picard_lindelof.t_dist_nonneg PicardLindelof.tDist_nonneg
 
-theorem dist_t₀_le (t : Icc v.tMin v.tMax) : dist t v.t₀ ≤ v.tDist := by
+lemma dist_t₀_le (t : Icc v.tMin v.tMax) : dist t v.t₀ ≤ v.tDist := by
   rw [Subtype.dist_eq, Real.dist_eq]
   cases' le_total t v.t₀ with ht ht
   · rw [abs_of_nonpos (sub_nonpos.2 <| Subtype.coe_le_coe.2 ht), neg_sub]
@@ -141,7 +141,7 @@ def proj : ℝ → Icc v.tMin v.tMax :=
   projIcc v.tMin v.tMax v.tMin_le_tMax
 #align picard_lindelof.proj PicardLindelof.proj
 
-theorem proj_coe (t : Icc v.tMin v.tMax) : v.proj t = t :=
+lemma proj_coe (t : Icc v.tMin v.tMax) : v.proj t = t :=
   projIcc_val _ _
 #align picard_lindelof.proj_coe PicardLindelof.proj_coe
 
@@ -206,7 +206,7 @@ lemma map_t₀ : f v.t₀ = v.x₀ :=
   f.map_t₀'
 #align picard_lindelof.fun_space.map_t₀ PicardLindelof.FunSpace.map_t₀
 
-protected theorem mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.x₀ v.R :=
+protected lemma mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.x₀ v.R :=
   calc
     dist (f t) v.x₀ = dist (f t) (f.toFun v.t₀) := by rw [f.map_t₀']
     _ ≤ v.C * dist t v.t₀ := (f.lipschitz.dist_le_mul _ _)
@@ -221,7 +221,7 @@ def vComp (t : ℝ) : E :=
   v (v.proj t) (f (v.proj t))
 #align picard_lindelof.fun_space.v_comp PicardLindelof.FunSpace.vComp
 
-theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
+lemma vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
   simp only [vComp, proj_coe]
 #align picard_lindelof.fun_space.v_comp_apply_coe PicardLindelof.FunSpace.vComp_apply_coe
 
@@ -231,11 +231,11 @@ lemma continuous_vComp : Continuous f.vComp := by
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 #align picard_lindelof.fun_space.continuous_v_comp PicardLindelof.FunSpace.continuous_vComp
 
-theorem norm_vComp_le (t : ℝ) : ‖f.vComp t‖ ≤ v.C :=
+lemma norm_vComp_le (t : ℝ) : ‖f.vComp t‖ ≤ v.C :=
   v.norm_le (v.proj t).2 <| f.mem_closedBall _
 #align picard_lindelof.fun_space.norm_v_comp_le PicardLindelof.FunSpace.norm_vComp_le
 
-theorem dist_apply_le_dist (f₁ f₂ : FunSpace v) (t : Icc v.tMin v.tMax) :
+lemma dist_apply_le_dist (f₁ f₂ : FunSpace v) (t : Icc v.tMin v.tMax) :
     dist (f₁ t) (f₂ t) ≤ dist f₁ f₂ :=
   @ContinuousMap.dist_apply_le_dist _ _ _ _ _ (toContinuousMap f₁) (toContinuousMap f₂) _
 #align picard_lindelof.fun_space.dist_apply_le_dist PicardLindelof.FunSpace.dist_apply_le_dist
@@ -255,7 +255,7 @@ instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
     isClosed_setOf_lipschitzWith v.C
   exact this.preimage ContinuousMap.continuous_coe
 
-theorem intervalIntegrable_vComp (t₁ t₂ : ℝ) : IntervalIntegrable f.vComp volume t₁ t₂ :=
+lemma intervalIntegrable_vComp (t₁ t₂ : ℝ) : IntervalIntegrable f.vComp volume t₁ t₂ :=
   f.continuous_vComp.intervalIntegrable _ _
 #align picard_lindelof.fun_space.interval_integrable_v_comp PicardLindelof.FunSpace.intervalIntegrable_vComp
 
@@ -274,11 +274,11 @@ def next (f : FunSpace v) : FunSpace v where
     exact norm_integral_le_of_norm_le_const fun t _ => f.norm_vComp_le _
 #align picard_lindelof.fun_space.next PicardLindelof.FunSpace.next
 
-theorem next_apply (t : Icc v.tMin v.tMax) : f.next t = v.x₀ + ∫ τ : ℝ in v.t₀..t, f.vComp τ :=
+lemma next_apply (t : Icc v.tMin v.tMax) : f.next t = v.x₀ + ∫ τ : ℝ in v.t₀..t, f.vComp τ :=
   rfl
 #align picard_lindelof.fun_space.next_apply PicardLindelof.FunSpace.next_apply
 
-theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
+lemma hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
     HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
   haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
   simp only [(· ∘ ·), next_apply]
@@ -319,7 +319,7 @@ lemma dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
         pow_succ (v.L : ℝ), Nat.factorial_succ, Nat.cast_mul, Nat.cast_succ, mul_inv, mul_assoc]
 #align picard_lindelof.fun_space.dist_next_apply_le_of_le PicardLindelof.FunSpace.dist_next_apply_le_of_le
 
-theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
+lemma dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
     dist (next^[n] f₁ t) (next^[n] f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
   induction' n with n ihn generalizing t
   · rw [Nat.zero_eq, pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
@@ -328,7 +328,7 @@ theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v
     exact dist_next_apply_le_of_le ihn _
 #align picard_lindelof.fun_space.dist_iterate_next_apply_le PicardLindelof.FunSpace.dist_iterate_next_apply_le
 
-theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
+lemma dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
     dist (next^[n] f₁) (next^[n] f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
   refine' dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans _
   have : |(t - v.t₀ : ℝ)| ≤ v.tDist := v.dist_t₀_le t
@@ -460,7 +460,7 @@ lemma exists_forall_deriv_at_Ioo_eq_of_contDiffOn_nhds {s : Set E} (hv : ContDif
 #align exists_forall_deriv_at_Ioo_eq_of_cont_diff_on_nhds exists_forall_deriv_at_Ioo_eq_of_contDiffOn_nhds
 
 /-- A time-independent, continuously differentiable ODE admits a solution in some open interval. -/
-theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
+lemma exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
     ∃ ε > (0 : ℝ), ∃ f : ℝ → E, f t₀ = x₀ ∧ ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t :=
   let ⟨ε, hε, f, hf1, hf2⟩ :=
     exists_forall_deriv_at_Ioo_eq_of_contDiffOn_nhds t₀ x₀ hv.contDiffOn

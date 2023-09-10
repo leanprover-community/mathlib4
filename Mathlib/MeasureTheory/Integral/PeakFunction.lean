@@ -51,7 +51,7 @@ variable {α E ι : Type*} {hm : MeasurableSpace α} {μ : Measure α} [Topologi
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀`, and
 `g` is integrable and continuous at `x₀`, then `φᵢ • g` is eventually integrable. -/
-theorem integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt (hs : MeasurableSet s)
+lemma integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt (hs : MeasurableSet s)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
     (hiφ : ∀ᶠ i in l, ∫ x in s, φ i x ∂μ = 1) (hmg : IntegrableOn g s μ)
     (hcg : ContinuousWithinAt g s x₀) : ∀ᶠ i in l, IntegrableOn (fun x => φ i x • g x) s μ := by
@@ -157,7 +157,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
 
 /- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀`, and
 `g` is integrable and continuous at `x₀`, then `∫ φᵢ • g` converges to `x₀`. -/
-theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt (hs : MeasurableSet s)
+lemma tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt (hs : MeasurableSet s)
     (h's : μ s ≠ ∞) (hnφ : ∀ᶠ i in l, ∀ x ∈ s, 0 ≤ φ i x)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
     (hiφ : (fun i => ∫ x in s, φ i x ∂μ) =ᶠ[l] 1) (hmg : IntegrableOn g s μ)

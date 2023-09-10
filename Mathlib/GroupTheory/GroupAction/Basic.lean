@@ -55,37 +55,37 @@ lemma mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x �
 #align add_action.mem_orbit_iff AddAction.mem_orbit_iff
 
 @[to_additive (attr := simp)]
-theorem mem_orbit (a : α) (x : M) : x • a ∈ orbit M a :=
+lemma mem_orbit (a : α) (x : M) : x • a ∈ orbit M a :=
   ⟨x, rfl⟩
 #align mul_action.mem_orbit MulAction.mem_orbit
 #align add_action.mem_orbit AddAction.mem_orbit
 
 @[to_additive (attr := simp)]
-theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
+lemma mem_orbit_self (a : α) : a ∈ orbit M a :=
   ⟨1, by simp [MulAction.one_smul]⟩
 #align mul_action.mem_orbit_self MulAction.mem_orbit_self
 #align add_action.mem_orbit_self AddAction.mem_orbit_self
 
 @[to_additive]
-theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
+lemma orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
   Set.range_nonempty _
 #align mul_action.orbit_nonempty MulAction.orbit_nonempty
 #align add_action.orbit_nonempty AddAction.orbit_nonempty
 
 @[to_additive]
-theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo ((· • ·) m) (orbit M a) (orbit M a) :=
+lemma mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo ((· • ·) m) (orbit M a) (orbit M a) :=
   Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
 #align mul_action.maps_to_smul_orbit MulAction.mapsTo_smul_orbit
 #align add_action.maps_to_vadd_orbit AddAction.mapsTo_vadd_orbit
 
 @[to_additive]
-theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
+lemma smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
   (mapsTo_smul_orbit m a).image_subset
 #align mul_action.smul_orbit_subset MulAction.smul_orbit_subset
 #align add_action.vadd_orbit_subset AddAction.vadd_orbit_subset
 
 @[to_additive]
-theorem orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
+lemma orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
   Set.range_subset_iff.2 fun m' => mul_smul m' m a ▸ mem_orbit _ _
 #align mul_action.orbit_smul_subset MulAction.orbit_smul_subset
 #align add_action.orbit_vadd_subset AddAction.orbit_vadd_subset
@@ -214,7 +214,7 @@ lemma mem_stabilizer_iff {g : G} {a : α} : g ∈ stabilizer G a ↔ g • a = a
 #align add_action.mem_stabilizer_iff AddAction.mem_stabilizer_iff
 
 @[to_additive (attr := simp)]
-theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
+lemma smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
   (smul_orbit_subset g a).antisymm <|
     calc
       orbit G a = g • g⁻¹ • orbit G a := (smul_inv_smul _ _).symm
@@ -223,7 +223,7 @@ theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
 #align add_action.vadd_orbit AddAction.vadd_orbit
 
 @[to_additive (attr := simp)]
-theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
+lemma orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
   (orbit_smul_subset g a).antisymm <|
     calc
       orbit G a = orbit G (g⁻¹ • g • a) := by rw [inv_smul_smul]
@@ -249,13 +249,13 @@ lemma orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
 variable (G)
 
 @[to_additive]
-theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
+lemma mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
   simp only [orbit_smul, mem_orbit_self]
 #align mul_action.mem_orbit_smul MulAction.mem_orbit_smul
 #align add_action.mem_orbit_vadd AddAction.mem_orbit_vadd
 
 @[to_additive]
-theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) := by
+lemma smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) := by
   simp only [orbit_smul, mem_orbit]
 #align mul_action.smul_mem_orbit_smul MulAction.smul_mem_orbit_smul
 #align add_action.vadd_mem_orbit_vadd AddAction.vadd_mem_orbit_vadd
@@ -285,7 +285,7 @@ of the orbit of `U` under `G`. -/
 @[to_additive
       "When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the
       union of the orbit of `U` under `G`."]
-theorem quotient_preimage_image_eq_union_mul (U : Set α) :
+lemma quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (· • ·) g '' U := by
   letI := orbitRel G α
@@ -326,7 +326,7 @@ lemma disjoint_image_image_iff {U V : Set α} :
 #align add_action.disjoint_image_image_iff AddAction.disjoint_image_image_iff
 
 @[to_additive]
-theorem image_inter_image_iff (U V : Set α) :
+lemma image_inter_image_iff (U V : Set α) :
     letI := orbitRel G α
     Quotient.mk' '' U ∩ Quotient.mk' '' V = ∅ ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V :=
   Set.disjoint_iff_inter_eq_empty.symm.trans disjoint_image_image_iff
@@ -353,7 +353,7 @@ nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
 #align add_action.orbit_rel.quotient.orbit AddAction.orbitRel.Quotient.orbit
 
 @[to_additive (attr := simp)]
-theorem orbitRel.Quotient.orbit_mk (a : α) :
+lemma orbitRel.Quotient.orbit_mk (a : α) :
     orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MulAction.orbit G a :=
   rfl
 #align mul_action.orbit_rel.quotient.orbit_mk MulAction.orbitRel.Quotient.orbit_mk
@@ -370,7 +370,7 @@ lemma orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
 
 /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
 @[to_additive "Note that `hφ = quotient.out_eq'` is m useful choice here."]
-theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
+lemma orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
   conv_lhs => rw [← hφ x]
@@ -415,7 +415,7 @@ def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
 variable {G α}
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
-theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
+lemma stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
@@ -439,7 +439,7 @@ namespace AddAction
 variable (G : Type u) (α : Type v) [AddGroup G] [AddAction G α]
 
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
-theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
+lemma stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,

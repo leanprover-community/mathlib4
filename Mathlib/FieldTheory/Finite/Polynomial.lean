@@ -22,7 +22,7 @@ variable {σ : Type*}
 
 /-- A polynomial over the integers is divisible by `n : ℕ`
 if and only if it is zero over `ZMod n`. -/
-theorem C_dvd_iff_zmod (n : ℕ) (φ : MvPolynomial σ ℤ) :
+lemma C_dvd_iff_zmod (n : ℕ) (φ : MvPolynomial σ ℤ) :
     C (n : ℤ) ∣ φ ↔ map (Int.castRingHom (ZMod n)) φ = 0 :=
   C_dvd_iff_map_hom_eq_zero _ _ (CharP.int_cast_eq_zero_iff (ZMod n) n) _
 set_option linter.uppercaseLean3 false in
@@ -32,7 +32,7 @@ section frobenius
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem frobenius_zmod (f : MvPolynomial σ (ZMod p)) : frobenius _ p f = expand p f := by
+lemma frobenius_zmod (f : MvPolynomial σ (ZMod p)) : frobenius _ p f = expand p f := by
   apply induction_on f
   · intro a; rw [expand_C, frobenius_def, ← C_pow, ZMod.pow_card]
   · simp only [AlgHom.map_add, RingHom.map_add]; intro _ _ hf hg; rw [hf, hg]
@@ -40,7 +40,7 @@ theorem frobenius_zmod (f : MvPolynomial σ (ZMod p)) : frobenius _ p f = expand
     intro _ _ hf; rw [hf, frobenius_def]
 #align mv_polynomial.frobenius_zmod MvPolynomial.frobenius_zmod
 
-theorem expand_zmod (f : MvPolynomial σ (ZMod p)) : expand p f = f ^ p :=
+lemma expand_zmod (f : MvPolynomial σ (ZMod p)) : expand p f = f ^ p :=
   (frobenius_zmod _).symm
 #align mv_polynomial.expand_zmod MvPolynomial.expand_zmod
 
@@ -71,14 +71,14 @@ section CommRing
 
 variable [CommRing K]
 
-theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 := by
+lemma eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 := by
   nontriviality
   have : 0 < Fintype.card K - 1 := tsub_pos_of_lt Fintype.one_lt_card
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
     zero_pow this, sub_zero, Finset.prod_const_one]
 #align mv_polynomial.eval_indicator_apply_eq_one MvPolynomial.eval_indicator_apply_eq_one
 
-theorem degrees_indicator (c : σ → K) :
+lemma degrees_indicator (c : σ → K) :
     degrees (indicator c) ≤ ∑ s : σ, (Fintype.card K - 1) • {s} := by
   rw [indicator]
   refine' le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => _)
@@ -90,7 +90,7 @@ theorem degrees_indicator (c : σ → K) :
   exact degrees_X' _
 #align mv_polynomial.degrees_indicator MvPolynomial.degrees_indicator
 
-theorem indicator_mem_restrictDegree (c : σ → K) :
+lemma indicator_mem_restrictDegree (c : σ → K) :
     indicator c ∈ restrictDegree σ K (Fintype.card K - 1) := by
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
@@ -109,7 +109,7 @@ end CommRing
 
 variable [Field K]
 
-theorem eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
+lemma eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
   obtain ⟨i, hi⟩ : ∃ i, a i ≠ b i := by rwa [Ne, Function.funext_iff, not_forall] at h
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
     Finset.prod_eq_zero_iff]

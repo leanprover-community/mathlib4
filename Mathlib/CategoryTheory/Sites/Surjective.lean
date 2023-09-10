@@ -165,7 +165,7 @@ variable {B : Type w} [Category.{max u v} B] [ConcreteCategory.{max u v} B]
   [∀ (α β : Type max u v) (fst snd : β → α),
       Limits.HasLimitsOfShape (Limits.WalkingMulticospan fst snd) B]
 
-theorem toSheafify_isLocallySurjective (F : Cᵒᵖ ⥤ B) : IsLocallySurjective J (J.toSheafify F) := by
+lemma toSheafify_isLocallySurjective (F : Cᵒᵖ ⥤ B) : IsLocallySurjective J (J.toSheafify F) := by
   rw [isLocallySurjective_iff_whisker_forget, ← toSheafify_comp_sheafifyCompIso_inv]
   apply IsLocallySurjective.comp
   · rw [isLocallySurjective_iff_imagePresheaf_sheafify_eq_top, Subpresheaf.eq_top_iff_isIso]

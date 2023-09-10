@@ -136,14 +136,14 @@ I couldn't find a detailed proof in print, but this is discussed in:
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
 
-theorem braiding_leftUnitor_aux₁ (X : C) :
+lemma braiding_leftUnitor_aux₁ (X : C) :
     (α_ (𝟙_ C) (𝟙_ C) X).hom ≫
         (𝟙 (𝟙_ C) ⊗ (β_ X (𝟙_ C)).inv) ≫ (α_ _ X _).inv ≫ ((λ_ X).hom ⊗ 𝟙 _) =
       ((λ_ _).hom ⊗ 𝟙 X) ≫ (β_ X (𝟙_ C)).inv :=
   by rw [← leftUnitor_tensor, leftUnitor_naturality]; simp
 #align category_theory.braiding_left_unitor_aux₁ CategoryTheory.braiding_leftUnitor_aux₁
 
-theorem braiding_leftUnitor_aux₂ (X : C) :
+lemma braiding_leftUnitor_aux₂ (X : C) :
     ((β_ X (𝟙_ C)).hom ⊗ 𝟙 (𝟙_ C)) ≫ ((λ_ X).hom ⊗ 𝟙 (𝟙_ C)) = (ρ_ X).hom ⊗ 𝟙 (𝟙_ C) :=
   calc
     ((β_ X (𝟙_ C)).hom ⊗ 𝟙 (𝟙_ C)) ≫ ((λ_ X).hom ⊗ 𝟙 (𝟙_ C)) =
@@ -165,18 +165,18 @@ theorem braiding_leftUnitor_aux₂ (X : C) :
 #align category_theory.braiding_left_unitor_aux₂ CategoryTheory.braiding_leftUnitor_aux₂
 
 @[simp]
-theorem braiding_leftUnitor (X : C) : (β_ X (𝟙_ C)).hom ≫ (λ_ X).hom = (ρ_ X).hom := by
+lemma braiding_leftUnitor (X : C) : (β_ X (𝟙_ C)).hom ≫ (λ_ X).hom = (ρ_ X).hom := by
   rw [← tensor_right_iff, comp_tensor_id, braiding_leftUnitor_aux₂]
 #align category_theory.braiding_left_unitor CategoryTheory.braiding_leftUnitor
 
-theorem braiding_rightUnitor_aux₁ (X : C) :
+lemma braiding_rightUnitor_aux₁ (X : C) :
     (α_ X (𝟙_ C) (𝟙_ C)).inv ≫
         ((β_ (𝟙_ C) X).inv ⊗ 𝟙 (𝟙_ C)) ≫ (α_ _ X _).hom ≫ (𝟙 _ ⊗ (ρ_ X).hom) =
       (𝟙 X ⊗ (ρ_ _).hom) ≫ (β_ (𝟙_ C) X).inv :=
   by rw [← rightUnitor_tensor, rightUnitor_naturality]; simp
 #align category_theory.braiding_right_unitor_aux₁ CategoryTheory.braiding_rightUnitor_aux₁
 
-theorem braiding_rightUnitor_aux₂ (X : C) :
+lemma braiding_rightUnitor_aux₂ (X : C) :
     (𝟙 (𝟙_ C) ⊗ (β_ (𝟙_ C) X).hom) ≫ (𝟙 (𝟙_ C) ⊗ (ρ_ X).hom) = 𝟙 (𝟙_ C) ⊗ (λ_ X).hom :=
   calc
     (𝟙 (𝟙_ C) ⊗ (β_ (𝟙_ C) X).hom) ≫ (𝟙 (𝟙_ C) ⊗ (ρ_ X).hom) =
@@ -198,18 +198,18 @@ theorem braiding_rightUnitor_aux₂ (X : C) :
 #align category_theory.braiding_right_unitor_aux₂ CategoryTheory.braiding_rightUnitor_aux₂
 
 @[simp]
-theorem braiding_rightUnitor (X : C) : (β_ (𝟙_ C) X).hom ≫ (ρ_ X).hom = (λ_ X).hom := by
+lemma braiding_rightUnitor (X : C) : (β_ (𝟙_ C) X).hom ≫ (ρ_ X).hom = (λ_ X).hom := by
   rw [← tensor_left_iff, id_tensor_comp, braiding_rightUnitor_aux₂]
 #align category_theory.braiding_right_unitor CategoryTheory.braiding_rightUnitor
 
 @[simp]
-theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).hom = (ρ_ X).inv := by
+lemma leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).hom = (ρ_ X).inv := by
   apply (cancel_mono (ρ_ X).hom).1
   simp only [assoc, braiding_rightUnitor, Iso.inv_hom_id]
 #align category_theory.left_unitor_inv_braiding CategoryTheory.leftUnitor_inv_braiding
 
 @[simp]
-theorem rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).hom = (λ_ X).inv := by
+lemma rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).hom = (λ_ X).inv := by
   apply (cancel_mono (λ_ X).hom).1
   simp only [assoc, braiding_leftUnitor, Iso.inv_hom_id]
 #align category_theory.right_unitor_inv_braiding CategoryTheory.rightUnitor_inv_braiding
@@ -393,13 +393,13 @@ def tensor_μ (X Y : C × C) : (tensor C).obj X ⊗ (tensor C).obj Y ⟶ (tensor
         (𝟙 X.1 ⊗ (α_ Y.1 X.2 Y.2).hom) ≫ (α_ X.1 Y.1 (X.2 ⊗ Y.2)).inv
 #align category_theory.tensor_μ CategoryTheory.tensor_μ
 
-theorem tensor_μ_def₁ (X₁ X₂ Y₁ Y₂ : C) :
+lemma tensor_μ_def₁ (X₁ X₂ Y₁ Y₂ : C) :
     tensor_μ C (X₁, X₂) (Y₁, Y₂) ≫ (α_ X₁ Y₁ (X₂ ⊗ Y₂)).hom ≫ (𝟙 X₁ ⊗ (α_ Y₁ X₂ Y₂).inv) =
       (α_ X₁ X₂ (Y₁ ⊗ Y₂)).hom ≫ (𝟙 X₁ ⊗ (α_ X₂ Y₁ Y₂).inv) ≫ (𝟙 X₁ ⊗ (β_ X₂ Y₁).hom ⊗ 𝟙 Y₂) :=
   by dsimp [tensor_μ]; simp
 #align category_theory.tensor_μ_def₁ CategoryTheory.tensor_μ_def₁
 
-theorem tensor_μ_def₂ (X₁ X₂ Y₁ Y₂ : C) :
+lemma tensor_μ_def₂ (X₁ X₂ Y₁ Y₂ : C) :
     (𝟙 X₁ ⊗ (α_ X₂ Y₁ Y₂).hom) ≫ (α_ X₁ X₂ (Y₁ ⊗ Y₂)).inv ≫ tensor_μ C (X₁, X₂) (Y₁, Y₂) =
       (𝟙 X₁ ⊗ (β_ X₂ Y₁).hom ⊗ 𝟙 Y₂) ≫ (𝟙 X₁ ⊗ (α_ Y₁ X₂ Y₂).hom) ≫ (α_ X₁ Y₁ (X₂ ⊗ Y₂)).inv :=
   by dsimp [tensor_μ]; simp
@@ -421,7 +421,7 @@ lemma tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X�
   simp only [assoc]
 #align category_theory.tensor_μ_natural CategoryTheory.tensor_μ_natural
 
-theorem tensor_left_unitality (X₁ X₂ : C) :
+lemma tensor_left_unitality (X₁ X₂ : C) :
     (λ_ (X₁ ⊗ X₂)).hom =
       ((λ_ (𝟙_ C)).inv ⊗ 𝟙 (X₁ ⊗ X₂)) ≫
         tensor_μ C (𝟙_ C, 𝟙_ C) (X₁, X₂) ≫ ((λ_ X₁).hom ⊗ (λ_ X₂).hom) := by
@@ -438,7 +438,7 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
   coherence
 #align category_theory.tensor_left_unitality CategoryTheory.tensor_left_unitality
 
-theorem tensor_right_unitality (X₁ X₂ : C) :
+lemma tensor_right_unitality (X₁ X₂ : C) :
     (ρ_ (X₁ ⊗ X₂)).hom =
       (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) ≫
         tensor_μ C (X₁, X₂) (𝟙_ C, 𝟙_ C) ≫ ((ρ_ X₁).hom ⊗ (ρ_ X₂).hom) := by
@@ -458,7 +458,7 @@ theorem tensor_right_unitality (X₁ X₂ : C) :
 /-
 Diagram B6 from Proposition 1 of [Joyal and Street, *Braided monoidal categories*][Joyal_Street].
 -/
-theorem tensor_associativity_aux (W X Y Z : C) :
+lemma tensor_associativity_aux (W X Y Z : C) :
     ((β_ W X).hom ⊗ 𝟙 (Y ⊗ Z)) ≫
         (α_ X W (Y ⊗ Z)).hom ≫
           (𝟙 X ⊗ (α_ W Y Z).inv) ≫ (𝟙 X ⊗ (β_ (W ⊗ Y) Z).hom) ≫ (𝟙 X ⊗ (α_ Z W Y).inv) =
@@ -476,7 +476,7 @@ theorem tensor_associativity_aux (W X Y Z : C) :
 #align category_theory.tensor_associativity_aux CategoryTheory.tensor_associativity_aux
 
 set_option maxHeartbeats 400000 in
-theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
+lemma tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     (tensor_μ C (X₁, X₂) (Y₁, Y₂) ⊗ 𝟙 (Z₁ ⊗ Z₂)) ≫
         tensor_μ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
       (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (Z₁ ⊗ Z₂)).hom ≫
@@ -574,7 +574,7 @@ def tensorMonoidal : MonoidalFunctor (C × C) C :=
     μ_isIso := by dsimp [tensor_μ]; infer_instance }
 #align category_theory.tensor_monoidal CategoryTheory.tensorMonoidal
 
-theorem leftUnitor_monoidal (X₁ X₂ : C) :
+lemma leftUnitor_monoidal (X₁ X₂ : C) :
     (λ_ X₁).hom ⊗ (λ_ X₂).hom =
       tensor_μ C (𝟙_ C, X₁) (𝟙_ C, X₂) ≫ ((λ_ (𝟙_ C)).hom ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).hom := by
   dsimp [tensor_μ]
@@ -590,7 +590,7 @@ theorem leftUnitor_monoidal (X₁ X₂ : C) :
   coherence
 #align category_theory.left_unitor_monoidal CategoryTheory.leftUnitor_monoidal
 
-theorem rightUnitor_monoidal (X₁ X₂ : C) :
+lemma rightUnitor_monoidal (X₁ X₂ : C) :
     (ρ_ X₁).hom ⊗ (ρ_ X₂).hom =
       tensor_μ C (X₁, 𝟙_ C) (X₂, 𝟙_ C) ≫ (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).hom) ≫ (ρ_ (X₁ ⊗ X₂)).hom := by
   dsimp [tensor_μ]
@@ -606,7 +606,7 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
   coherence
 #align category_theory.right_unitor_monoidal CategoryTheory.rightUnitor_monoidal
 
-theorem associator_monoidal_aux (W X Y Z : C) :
+lemma associator_monoidal_aux (W X Y Z : C) :
     (𝟙 W ⊗ (β_ X (Y ⊗ Z)).hom) ≫
         (𝟙 W ⊗ (α_ Y Z X).hom) ≫ (α_ W Y (Z ⊗ X)).inv ≫ ((β_ W Y).hom ⊗ 𝟙 (Z ⊗ X)) =
       (α_ W X (Y ⊗ Z)).inv ≫
@@ -625,7 +625,7 @@ theorem associator_monoidal_aux (W X Y Z : C) :
 #align category_theory.associator_monoidal_aux CategoryTheory.associator_monoidal_aux
 
 set_option maxHeartbeats 400000 in
-theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
+lemma associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ⊗ 𝟙 (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
       ((α_ X₁ X₂ X₃).hom ⊗ (α_ Y₁ Y₂ Y₃).hom) ≫

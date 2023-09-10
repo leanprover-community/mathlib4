@@ -81,7 +81,7 @@ section PrimitiveElementInf
 
 variable {F : Type*} [Field F] [Infinite F] {E : Type*} [Field E] (ϕ : F →+* E) (α β : E)
 
-theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
+lemma primitive_element_inf_aux_exists_c (f g : F[X]) :
     ∃ c : F, ∀ α' ∈ (f.map ϕ).roots, ∀ β' ∈ (g.map ϕ).roots, -(α' - α) / (β' - β) ≠ ϕ c := by
   let sf := (f.map ϕ).roots
   let sg := (g.map ϕ).roots
@@ -217,7 +217,7 @@ end SeparableAssumption
 end Field
 
 @[simp]
-theorem AlgHom.card (F E K : Type*) [Field F] [Field E] [Field K] [IsAlgClosed K] [Algebra F E]
+lemma AlgHom.card (F E K : Type*) [Field F] [Field E] [Field K] [IsAlgClosed K] [Algebra F E]
     [FiniteDimensional F E] [IsSeparable F E] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E := by
   convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)

@@ -28,7 +28,7 @@ variable {α : Sort u} {β : α → Sort v} {r : α → α → Prop} {s : ∀ a 
 #align psigma.lex_accessible PSigma.lexAccessible
 
 /-- The lexicographical order of well-founded relations is well-founded. -/
-theorem lex_wf (ha : WellFounded r) (hb : ∀ x, WellFounded (s x)) : WellFounded (Lex r s) :=
+lemma lex_wf (ha : WellFounded r) (hb : ∀ x, WellFounded (s x)) : WellFounded (Lex r s) :=
   WellFounded.intro fun ⟨a, b⟩ => lexAccessible (WellFounded.apply ha a) hb b
 #align psigma.lex_wf PSigma.lex_wf
 
@@ -46,7 +46,7 @@ variable {α : Sort u} {β : Sort v} {r : α → α → Prop} {s : β → β →
 #align psigma.rev_lex PSigma.RevLex
 #align psigma.rev_lex_accessible PSigma.revLexAccessible
 
-theorem revLex_wf (ha : WellFounded r) (hb : WellFounded s) : WellFounded (RevLex r s) :=
+lemma revLex_wf (ha : WellFounded r) (hb : WellFounded s) : WellFounded (RevLex r s) :=
   WellFounded.intro fun ⟨a, b⟩ => revLexAccessible (apply hb b) (WellFounded.apply ha) a
 #align psigma.rev_lex_wf PSigma.revLex_wf
 
@@ -56,7 +56,7 @@ section
 
 #align psigma.skip_left PSigma.SkipLeft
 
-theorem skipLeft_wf (α : Type u) {β : Type v} {s : β → β → Prop} (hb : WellFounded s) :
+lemma skipLeft_wf (α : Type u) {β : Type v} {s : β → β → Prop} (hb : WellFounded s) :
     WellFounded (SkipLeft α s) :=
   revLex_wf emptyWf.wf hb
 #align psigma.skip_left_wf PSigma.skipLeft_wf

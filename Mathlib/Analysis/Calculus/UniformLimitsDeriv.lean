@@ -109,7 +109,7 @@ variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 :
 neighborhood of `x`, they are Cauchy _at_ `x`, and their derivatives
 are a uniform Cauchy sequence in a neighborhood of `x`, then the functions form a uniform Cauchy
 sequence in a neighborhood of `x`. -/
-theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
+lemma uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
@@ -256,7 +256,7 @@ lemma cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's :
 /-- If `f_n → g` pointwise and the derivatives `(f_n)' → h` _uniformly_ converge, then
 in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z - f_n y)` converge
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/
-theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
+lemma difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : ∀ᶠ y : E in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) :
     TendstoUniformlyOnFilter (fun n : ι => fun y : E => (‖y - x‖⁻¹ : 𝕜) • (f n y - f n x))
@@ -476,7 +476,7 @@ lemma UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
   gcongr
 #align uniform_cauchy_seq_on_filter.one_smul_right UniformCauchySeqOnFilter.one_smulRight
 
-theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
+lemma uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf

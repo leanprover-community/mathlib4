@@ -125,7 +125,7 @@ lemma UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : Unifor
 #align uniform_continuous.const_nsmul UniformContinuous.const_nsmul
 
 @[to_additive uniformContinuous_const_nsmul]
-theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => x ^ n :=
+lemma uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => x ^ n :=
   uniformContinuous_id.pow_const n
 #align uniform_continuous_pow_const uniformContinuous_pow_const
 #align uniform_continuous_const_nsmul uniformContinuous_const_nsmul
@@ -143,7 +143,7 @@ lemma UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : Unifo
 #align uniform_continuous.const_zsmul UniformContinuous.const_zsmul
 
 @[to_additive uniformContinuous_const_zsmul]
-theorem uniformContinuous_zpow_const (n : ℤ) : UniformContinuous fun x : α => x ^ n :=
+lemma uniformContinuous_zpow_const (n : ℤ) : UniformContinuous fun x : α => x ^ n :=
   uniformContinuous_id.zpow_const n
 #align uniform_continuous_zpow_const uniformContinuous_zpow_const
 #align uniform_continuous_const_zsmul uniformContinuous_const_zsmul
@@ -163,7 +163,7 @@ instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β
         (uniformContinuous_snd.comp uniformContinuous_snd))⟩
 
 @[to_additive]
-theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
+lemma uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a)) = 𝓤 α :=
   le_antisymm (uniformContinuous_id.mul uniformContinuous_const)
     (calc
       𝓤 α =
@@ -177,7 +177,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
 #align uniformity_translate_add uniformity_translate_add
 
 @[to_additive]
-theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
+lemma uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
   { comap_uniformity := by
       nth_rewrite 1 [← uniformity_translate_mul a, comap_map]
       rfl
@@ -366,7 +366,7 @@ lemma Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → Pr
 #align filter.has_basis.uniformity_of_nhds_zero_neg_add_swapped Filter.HasBasis.uniformity_of_nhds_zero_neg_add_swapped
 
 @[to_additive]
-theorem group_separationRel (x y : α) : (x, y) ∈ separationRel α ↔ x / y ∈ closure ({1} : Set α) :=
+lemma group_separationRel (x y : α) : (x, y) ∈ separationRel α ↔ x / y ∈ closure ({1} : Set α) :=
   have : Embedding fun a => a * (y / x) := (uniformEmbedding_translate_mul (y / x)).embedding
   show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α) by
     rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, sInter_comap_sets]
@@ -471,7 +471,7 @@ section UniformConvergence
 variable {ι : Type*} {l : Filter ι} {l' : Filter β} {f f' : ι → β → α} {g g' : β → α} {s : Set β}
 
 @[to_additive]
-theorem TendstoUniformlyOnFilter.mul (hf : TendstoUniformlyOnFilter f g l l')
+lemma TendstoUniformlyOnFilter.mul (hf : TendstoUniformlyOnFilter f g l l')
     (hf' : TendstoUniformlyOnFilter f' g' l l') : TendstoUniformlyOnFilter (f * f') (g * g') l l' :=
   fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformlyOnFilter (hf.prod hf')) u hu).diag_of_prod_left
@@ -479,7 +479,7 @@ theorem TendstoUniformlyOnFilter.mul (hf : TendstoUniformlyOnFilter f g l l')
 #align tendsto_uniformly_on_filter.add TendstoUniformlyOnFilter.add
 
 @[to_additive]
-theorem TendstoUniformlyOnFilter.div (hf : TendstoUniformlyOnFilter f g l l')
+lemma TendstoUniformlyOnFilter.div (hf : TendstoUniformlyOnFilter f g l l')
     (hf' : TendstoUniformlyOnFilter f' g' l l') : TendstoUniformlyOnFilter (f / f') (g / g') l l' :=
   fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformlyOnFilter (hf.prod hf')) u hu).diag_of_prod_left
@@ -487,42 +487,42 @@ theorem TendstoUniformlyOnFilter.div (hf : TendstoUniformlyOnFilter f g l l')
 #align tendsto_uniformly_on_filter.sub TendstoUniformlyOnFilter.sub
 
 @[to_additive]
-theorem TendstoUniformlyOn.mul (hf : TendstoUniformlyOn f g l s)
+lemma TendstoUniformlyOn.mul (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f * f') (g * g') l s := fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformlyOn (hf.prod hf')) u hu).diag_of_prod
 #align tendsto_uniformly_on.mul TendstoUniformlyOn.mul
 #align tendsto_uniformly_on.add TendstoUniformlyOn.add
 
 @[to_additive]
-theorem TendstoUniformlyOn.div (hf : TendstoUniformlyOn f g l s)
+lemma TendstoUniformlyOn.div (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f / f') (g / g') l s := fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformlyOn (hf.prod hf')) u hu).diag_of_prod
 #align tendsto_uniformly_on.div TendstoUniformlyOn.div
 #align tendsto_uniformly_on.sub TendstoUniformlyOn.sub
 
 @[to_additive]
-theorem TendstoUniformly.mul (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
+lemma TendstoUniformly.mul (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f * f') (g * g') l := fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformly (hf.prod hf')) u hu).diag_of_prod
 #align tendsto_uniformly.mul TendstoUniformly.mul
 #align tendsto_uniformly.add TendstoUniformly.add
 
 @[to_additive]
-theorem TendstoUniformly.div (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
+lemma TendstoUniformly.div (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f / f') (g / g') l := fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformly (hf.prod hf')) u hu).diag_of_prod
 #align tendsto_uniformly.div TendstoUniformly.div
 #align tendsto_uniformly.sub TendstoUniformly.sub
 
 @[to_additive]
-theorem UniformCauchySeqOn.mul (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
+lemma UniformCauchySeqOn.mul (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
     UniformCauchySeqOn (f * f') l s := fun u hu => by
   simpa using (uniformContinuous_mul.comp_uniformCauchySeqOn (hf.prod' hf')) u hu
 #align uniform_cauchy_seq_on.mul UniformCauchySeqOn.mul
 #align uniform_cauchy_seq_on.add UniformCauchySeqOn.add
 
 @[to_additive]
-theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
+lemma UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
     UniformCauchySeqOn (f / f') l s := fun u hu => by
   simpa using (uniformContinuous_div.comp_uniformCauchySeqOn (hf.prod' hf')) u hu
 #align uniform_cauchy_seq_on.div UniformCauchySeqOn.div
@@ -720,7 +720,7 @@ variable [TopologicalSpace β] [Group β]
 variable [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
 
 @[to_additive]
-theorem tendsto_div_comap_self (x₀ : α) :
+lemma tendsto_div_comap_self (x₀ : α) :
     Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
       (𝓝 1) := by
   have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
@@ -764,7 +764,7 @@ variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
-private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂)
+private lemma extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂)
     (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
@@ -782,7 +782,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   exact lim W' W'_nhd
 #noalign dense_inducing.extend_Z_bilin_aux
 
-private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
+private lemma extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
     ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
   let ee := fun u : β × β => (e u.1, e u.2)

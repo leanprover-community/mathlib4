@@ -27,7 +27,7 @@ variable {α : Type*} [DecidableEq α] [CommGroup α] (s : Finset α) {t : Finse
 
 /-- **Ruzsa's covering lemma**. -/
 @[to_additive "**Ruzsa's covering lemma**"]
-theorem exists_subset_mul_div (ht : t.Nonempty) :
+lemma exists_subset_mul_div (ht : t.Nonempty) :
     ∃ u : Finset α, u.card * t.card ≤ (s * t).card ∧ s ⊆ u * t / t := by
   haveI : ∀ u, Decidable ((u : Set α).PairwiseDisjoint (· • t)) := fun u ↦ Classical.dec _
   set C := s.powerset.filter fun u ↦ u.toSet.PairwiseDisjoint (· • t)

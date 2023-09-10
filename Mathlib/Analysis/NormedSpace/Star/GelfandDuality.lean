@@ -113,7 +113,7 @@ lemma WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
 #align weak_dual.character_space.mem_spectrum_iff_exists WeakDual.CharacterSpace.mem_spectrum_iff_exists
 
 /-- The Gelfand transform is spectrum-preserving. -/
-theorem spectrum.gelfandTransform_eq (a : A) :
+lemma spectrum.gelfandTransform_eq (a : A) :
     spectrum ℂ (gelfandTransform ℂ A a) = spectrum ℂ a := by
   ext z
   rw [ContinuousMap.spectrum_eq_range, WeakDual.CharacterSpace.mem_spectrum_iff_exists]
@@ -132,7 +132,7 @@ variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
-theorem gelfandTransform_map_star (a : A) :
+lemma gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
   ContinuousMap.ext fun φ => map_star φ a
 #align gelfand_transform_map_star gelfandTransform_map_star
@@ -238,7 +238,7 @@ variable {A}
 
 /-- `WeakDual.CharacterSpace.compContinuousMap` is functorial. -/
 @[simp]
-theorem compContinuousMap_comp (ψ₂ : B →⋆ₐ[ℂ] C) (ψ₁ : A →⋆ₐ[ℂ] B) :
+lemma compContinuousMap_comp (ψ₂ : B →⋆ₐ[ℂ] C) (ψ₁ : A →⋆ₐ[ℂ] B) :
     compContinuousMap (ψ₂.comp ψ₁) = (compContinuousMap ψ₁).comp (compContinuousMap ψ₂) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
 #align weak_dual.character_space.comp_continuous_map_comp WeakDual.CharacterSpace.compContinuousMap_comp

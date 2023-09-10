@@ -99,7 +99,7 @@ lemma mono_cast : Monotone (Nat.cast : ℕ → α) :=
 #align nat.mono_cast Nat.mono_cast
 
 @[simp low]
-theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
+lemma cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
   @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
 
 -- without this more specific version Lean often chokes
@@ -112,7 +112,7 @@ section Nontrivial
 
 variable [NeZero (1 : α)]
 
-theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
+lemma cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
   zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg'
 #align nat.cast_add_one_pos Nat.cast_add_one_pos
 
@@ -307,7 +307,7 @@ lemma eq_natCast' {R} [NonAssocSemiring R] (f : ℕ →+* R) : f = Nat.castRingH
 end RingHom
 
 @[simp, norm_cast]
-theorem Nat.cast_id (n : ℕ) : n.cast = n :=
+lemma Nat.cast_id (n : ℕ) : n.cast = n :=
   rfl
 #align nat.cast_id Nat.cast_id
 
@@ -330,17 +330,17 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
 instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
 
-theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
+lemma nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
 #align pi.nat_apply Pi.nat_apply
 
 @[simp]
-theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
+lemma coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.coe_nat
 
 @[simp]
-theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
+lemma ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 
 end Pi
 

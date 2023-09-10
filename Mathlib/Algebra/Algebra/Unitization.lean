@@ -734,7 +734,7 @@ def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   right_inv φ := Unitization.algHom_ext' <| by ext; simp
 #align unitization.lift Unitization.lift
 
-theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
+lemma lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl
 #align unitization.lift_symm_apply Unitization.lift_symm_apply
@@ -775,7 +775,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   right_inv := fun φ => Unitization.algHom_ext'' <| by simp }
 
 @[simp]
-theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
+lemma starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl
 

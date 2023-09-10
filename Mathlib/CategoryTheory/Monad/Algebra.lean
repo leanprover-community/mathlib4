@@ -117,12 +117,12 @@ lemma comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
 #align category_theory.monad.algebra.comp_eq_comp CategoryTheory.Monad.Algebra.comp_eq_comp
 
 @[simp]
-theorem id_eq_id (A : Algebra T) : Algebra.Hom.id A = 𝟙 A :=
+lemma id_eq_id (A : Algebra T) : Algebra.Hom.id A = 𝟙 A :=
   rfl
 #align category_theory.monad.algebra.id_eq_id CategoryTheory.Monad.Algebra.id_eq_id
 
 @[simp]
-theorem id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
+lemma id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
   rfl
 #align category_theory.monad.algebra.id_f CategoryTheory.Monad.Algebra.id_f
 
@@ -399,12 +399,12 @@ lemma comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :
 #align category_theory.comonad.coalgebra.comp_eq_comp CategoryTheory.Comonad.Coalgebra.comp_eq_comp
 
 @[simp]
-theorem id_eq_id (A : Coalgebra G) : Coalgebra.Hom.id A = 𝟙 A :=
+lemma id_eq_id (A : Coalgebra G) : Coalgebra.Hom.id A = 𝟙 A :=
   rfl
 #align category_theory.comonad.coalgebra.id_eq_id CategoryTheory.Comonad.Coalgebra.id_eq_id
 
 @[simp]
-theorem id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
+lemma id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
   rfl
 #align category_theory.comonad.coalgebra.id_f CategoryTheory.Comonad.Coalgebra.id_f
 

@@ -55,29 +55,29 @@ def foldr (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 #align clifford_algebra.foldr CliffordAlgebra.foldr
 
 @[simp]
-theorem foldr_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldr Q f hf n (ι Q m) = f m n :=
+lemma foldr_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldr Q f hf n (ι Q m) = f m n :=
   LinearMap.congr_fun (lift_ι_apply _ _ _) n
 #align clifford_algebra.foldr_ι CliffordAlgebra.foldr_ι
 
 @[simp]
-theorem foldr_algebraMap (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
+lemma foldr_algebraMap (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
     foldr Q f hf n (algebraMap R _ r) = r • n :=
   LinearMap.congr_fun (AlgHom.commutes _ r) n
 #align clifford_algebra.foldr_algebra_map CliffordAlgebra.foldr_algebraMap
 
 @[simp]
-theorem foldr_one (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) : foldr Q f hf n 1 = n :=
+lemma foldr_one (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) : foldr Q f hf n 1 = n :=
   LinearMap.congr_fun (AlgHom.map_one _) n
 #align clifford_algebra.foldr_one CliffordAlgebra.foldr_one
 
 @[simp]
-theorem foldr_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAlgebra Q) :
+lemma foldr_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAlgebra Q) :
     foldr Q f hf n (a * b) = foldr Q f hf (foldr Q f hf n b) a :=
   LinearMap.congr_fun (AlgHom.map_mul _ _ _) n
 #align clifford_algebra.foldr_mul CliffordAlgebra.foldr_mul
 
 /-- This lemma demonstrates the origin of the `foldr` name. -/
-theorem foldr_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
+lemma foldr_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
     foldr Q f hf n (l.map <| ι Q).prod = List.foldr (fun m n => f m n) n l := by
   induction' l with hd tl ih
   · rw [List.map_nil, List.prod_nil, List.foldr_nil, foldr_one]
@@ -98,41 +98,41 @@ def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 #align clifford_algebra.foldl CliffordAlgebra.foldl
 
 @[simp]
-theorem foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
+lemma foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
     foldl Q f hf n (reverse x) = foldr Q f hf n x :=
   FunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
 #align clifford_algebra.foldl_reverse CliffordAlgebra.foldl_reverse
 
 @[simp]
-theorem foldr_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
+lemma foldr_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
     foldr Q f hf n (reverse x) = foldl Q f hf n x :=
   rfl
 #align clifford_algebra.foldr_reverse CliffordAlgebra.foldr_reverse
 
 @[simp]
-theorem foldl_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldl Q f hf n (ι Q m) = f m n := by
+lemma foldl_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldl Q f hf n (ι Q m) = f m n := by
   rw [← foldr_reverse, reverse_ι, foldr_ι]
 #align clifford_algebra.foldl_ι CliffordAlgebra.foldl_ι
 
 @[simp]
-theorem foldl_algebraMap (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
+lemma foldl_algebraMap (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
     foldl Q f hf n (algebraMap R _ r) = r • n := by
   rw [← foldr_reverse, reverse.commutes, foldr_algebraMap]
 #align clifford_algebra.foldl_algebra_map CliffordAlgebra.foldl_algebraMap
 
 @[simp]
-theorem foldl_one (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) : foldl Q f hf n 1 = n := by
+lemma foldl_one (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) : foldl Q f hf n 1 = n := by
   rw [← foldr_reverse, reverse.map_one, foldr_one]
 #align clifford_algebra.foldl_one CliffordAlgebra.foldl_one
 
 @[simp]
-theorem foldl_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAlgebra Q) :
+lemma foldl_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAlgebra Q) :
     foldl Q f hf n (a * b) = foldl Q f hf (foldl Q f hf n a) b := by
   rw [← foldr_reverse, ← foldr_reverse, ← foldr_reverse, reverse.map_mul, foldr_mul]
 #align clifford_algebra.foldl_mul CliffordAlgebra.foldl_mul
 
 /-- This lemma demonstrates the origin of the `foldl` name. -/
-theorem foldl_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
+lemma foldl_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
     foldl Q f hf n (l.map <| ι Q).prod = List.foldl (fun m n => f n m) n l := by
   rw [← foldr_reverse, reverse_prod_map_ι, ← List.map_reverse, foldr_prod_map_ι, List.foldr_reverse]
 #align clifford_algebra.foldl_prod_map_ι CliffordAlgebra.foldl_prod_map_ι
@@ -188,12 +188,12 @@ def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
             (LinearMap.congr_fun (f.map_smul _ _) x) }
 #align clifford_algebra.foldr'_aux CliffordAlgebra.foldr'Aux
 
-theorem foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) (m : M) (x_fx) :
+lemma foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) (m : M) (x_fx) :
     foldr'Aux Q f m x_fx = (ι Q m * x_fx.1, f m x_fx) :=
   rfl
 #align clifford_algebra.foldr'_aux_apply_apply CliffordAlgebra.foldr'Aux_apply_apply
 
-theorem foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
+lemma foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (v : M) (x_fx) :
     foldr'Aux Q f v (foldr'Aux Q f v x_fx) = Q v • x_fx := by
   cases' x_fx with x fx
@@ -210,19 +210,19 @@ def foldr' (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
   LinearMap.snd _ _ _ ∘ₗ foldr Q (foldr'Aux Q f) (foldr'Aux_foldr'Aux Q _ hf) (1, n)
 #align clifford_algebra.foldr' CliffordAlgebra.foldr'
 
-theorem foldr'_algebraMap (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
+lemma foldr'_algebraMap (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n r) :
     foldr' Q f hf n (algebraMap R _ r) = r • n :=
   congr_arg Prod.snd (foldr_algebraMap _ _ _ _ _)
 #align clifford_algebra.foldr'_algebra_map CliffordAlgebra.foldr'_algebraMap
 
-theorem foldr'_ι (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
+lemma foldr'_ι (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n m) :
     foldr' Q f hf n (ι Q m) = f m (1, n) :=
   congr_arg Prod.snd (foldr_ι _ _ _ _ _)
 #align clifford_algebra.foldr'_ι CliffordAlgebra.foldr'_ι
 
-theorem foldr'_ι_mul (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
+lemma foldr'_ι_mul (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n m) (x) :
     foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x) := by
   dsimp [foldr']

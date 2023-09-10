@@ -339,7 +339,7 @@ def lift : DirectLimit G f →ₗ[ℤ] P :=
 variable {G f}
 
 @[simp]
-theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
+lemma lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   Module.DirectLimit.lift_of _ _ _
 #align add_comm_group.direct_limit.lift_of AddCommGroup.DirectLimit.lift_of
 
@@ -671,7 +671,7 @@ variable {G f}
 
 -- porting note: the @[simp] attribute would trigger a `simpNF` linter error:
 -- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
-theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
+lemma lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   FreeCommRing.lift_of _ _
 #align ring.direct_limit.lift_of Ring.DirectLimit.lift_of
 

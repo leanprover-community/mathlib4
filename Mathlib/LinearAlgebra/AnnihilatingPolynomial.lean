@@ -97,7 +97,7 @@ end
 
 /-- `annIdealGenerator 𝕜 a` is indeed a generator. -/
 @[simp]
-theorem span_singleton_annIdealGenerator (a : A) :
+lemma span_singleton_annIdealGenerator (a : A) :
     Ideal.span {annIdealGenerator 𝕜 a} = annIdeal 𝕜 a := by
   by_cases h : annIdealGenerator 𝕜 a = 0
   · rw [h, annIdealGenerator_eq_zero_iff.mp h, Set.singleton_zero, Ideal.span_zero]
@@ -110,7 +110,7 @@ theorem span_singleton_annIdealGenerator (a : A) :
 #align polynomial.span_singleton_ann_ideal_generator Polynomial.span_singleton_annIdealGenerator
 
 /-- The annihilating ideal generator is a member of the annihilating ideal. -/
-theorem annIdealGenerator_mem (a : A) : annIdealGenerator 𝕜 a ∈ annIdeal 𝕜 a :=
+lemma annIdealGenerator_mem (a : A) : annIdealGenerator 𝕜 a ∈ annIdeal 𝕜 a :=
   Ideal.mul_mem_right _ _ (Submodule.IsPrincipal.generator_mem _)
 #align polynomial.ann_ideal_generator_mem Polynomial.annIdealGenerator_mem
 
@@ -120,7 +120,7 @@ lemma mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
 #align polynomial.mem_iff_eq_smul_ann_ideal_generator Polynomial.mem_iff_eq_smul_annIdealGenerator
 
 /-- The generator we chose for the annihilating ideal is monic when the ideal is non-zero. -/
-theorem monic_annIdealGenerator (a : A) (hg : annIdealGenerator 𝕜 a ≠ 0) :
+lemma monic_annIdealGenerator (a : A) (hg : annIdealGenerator 𝕜 a ≠ 0) :
     Monic (annIdealGenerator 𝕜 a) :=
   monic_mul_leadingCoeff_inv (mul_ne_zero_iff.mp hg).1
 #align polynomial.monic_ann_ideal_generator Polynomial.monic_annIdealGenerator
@@ -132,7 +132,7 @@ theorem of the minimal polynomial.
 This is the first condition: it must annihilate the original element `a : A`. -/
 
 
-theorem annIdealGenerator_aeval_eq_zero (a : A) : aeval a (annIdealGenerator 𝕜 a) = 0 :=
+lemma annIdealGenerator_aeval_eq_zero (a : A) : aeval a (annIdealGenerator 𝕜 a) = 0 :=
   mem_annIdeal_iff_aeval_eq_zero.mp (annIdealGenerator_mem 𝕜 a)
 #align polynomial.ann_ideal_generator_aeval_eq_zero Polynomial.annIdealGenerator_aeval_eq_zero
 
@@ -145,7 +145,7 @@ lemma mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
 
 /-- The generator of the annihilating ideal has minimal degree among
  the non-zero members of the annihilating ideal -/
-theorem degree_annIdealGenerator_le_of_mem (a : A) (p : 𝕜[X]) (hp : p ∈ annIdeal 𝕜 a)
+lemma degree_annIdealGenerator_le_of_mem (a : A) (p : 𝕜[X]) (hp : p ∈ annIdeal 𝕜 a)
     (hpn0 : p ≠ 0) : degree (annIdealGenerator 𝕜 a) ≤ degree p :=
   degree_le_of_dvd (mem_iff_annIdealGenerator_dvd.1 hp) hpn0
 #align polynomial.degree_ann_ideal_generator_le_of_mem Polynomial.degree_annIdealGenerator_le_of_mem
@@ -153,7 +153,7 @@ theorem degree_annIdealGenerator_le_of_mem (a : A) (p : 𝕜[X]) (hp : p ∈ ann
 variable (𝕜)
 
 /-- The generator of the annihilating ideal is the minimal polynomial. -/
-theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpoly 𝕜 a := by
+lemma annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpoly 𝕜 a := by
   by_cases h : annIdealGenerator 𝕜 a = 0
   · rw [h, minpoly.eq_zero]
     rintro ⟨p, p_monic, hp : aeval a p = 0⟩
@@ -167,7 +167,7 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
 
 /-- If a monic generates the annihilating ideal, it must match our choice
  of the annihilating ideal generator. -/
-theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
+lemma monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
     (p_gen : Ideal.span {p} = annIdeal 𝕜 a) : annIdealGenerator 𝕜 a = p := by
   by_cases h : p = 0
   · rwa [h, annIdealGenerator_eq_zero_iff, ← p_gen, Ideal.span_singleton_eq_bot.mpr]

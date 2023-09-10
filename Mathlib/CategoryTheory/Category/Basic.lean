@@ -198,7 +198,7 @@ lemma eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h :
 #align category_theory.eq_whisker CategoryTheory.eq_whisker
 
 /-- precompose an equation between morphisms by another morphism -/
-theorem whisker_eq (f : X ⟶ Y) {g h : Y ⟶ Z} (w : g = h) : f ≫ g = f ≫ h := by rw [w]
+lemma whisker_eq (f : X ⟶ Y) {g h : Y ⟶ Z} (w : g = h) : f ≫ g = f ≫ h := by rw [w]
 #align category_theory.whisker_eq CategoryTheory.whisker_eq
 
 /--
@@ -225,22 +225,22 @@ lemma eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ 
   aesop
 #align category_theory.eq_of_comp_right_eq CategoryTheory.eq_of_comp_right_eq
 
-theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
+lemma eq_of_comp_left_eq' (f g : X ⟶ Y)
     (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
   eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
 #align category_theory.eq_of_comp_left_eq' CategoryTheory.eq_of_comp_left_eq'
 
-theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
+lemma eq_of_comp_right_eq' (f g : Y ⟶ Z)
     (w : (fun {X} (h : X ⟶ Y) => h ≫ f) = fun {X} (h : X ⟶ Y) => h ≫ g) : f = g :=
   eq_of_comp_right_eq @fun X h => by convert congr_fun (congr_fun w X) h
 #align category_theory.eq_of_comp_right_eq' CategoryTheory.eq_of_comp_right_eq'
 
-theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
+lemma id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
   aesop
 #align category_theory.id_of_comp_left_id CategoryTheory.id_of_comp_left_id
 
-theorem id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
+lemma id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
   convert w (𝟙 X)
   aesop
 #align category_theory.id_of_comp_right_id CategoryTheory.id_of_comp_right_id
@@ -289,21 +289,21 @@ instance (X : C) : Epi (𝟙 X) :=
 instance (X : C) : Mono (𝟙 X) :=
   ⟨fun g h w => by aesop⟩
 
-theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
+lemma cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
   ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
 #align category_theory.cancel_epi CategoryTheory.cancel_epi
 
-theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f ↔ g = h :=
+lemma cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f ↔ g = h :=
   -- Porting note: in Lean 3 we could just write `congr_arg _` here.
   ⟨fun p => Mono.right_cancellation g h p, congr_arg (fun k => k ≫ f)⟩
 #align category_theory.cancel_mono CategoryTheory.cancel_mono
 
-theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
+lemma cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
   convert cancel_epi f
   simp
 #align category_theory.cancel_epi_id CategoryTheory.cancel_epi_id
 
-theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
+lemma cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
   convert cancel_mono f
   simp
 #align category_theory.cancel_mono_id CategoryTheory.cancel_mono_id

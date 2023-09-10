@@ -63,20 +63,20 @@ lemma isBounded_image_fst_and_snd {s : Set (α × β)} :
 
 variable {s : Set α} {t : Set β} {S : ∀ i, Set (π i)}
 
-theorem IsBounded.fst_of_prod (h : IsBounded (s ×ˢ t)) (ht : t.Nonempty) : IsBounded s :=
+lemma IsBounded.fst_of_prod (h : IsBounded (s ×ˢ t)) (ht : t.Nonempty) : IsBounded s :=
   fst_image_prod s ht ▸ (isBounded_image_fst_and_snd.2 h).1
 #align bornology.is_bounded.fst_of_prod Bornology.IsBounded.fst_of_prod
 
-theorem IsBounded.snd_of_prod (h : IsBounded (s ×ˢ t)) (hs : s.Nonempty) : IsBounded t :=
+lemma IsBounded.snd_of_prod (h : IsBounded (s ×ˢ t)) (hs : s.Nonempty) : IsBounded t :=
   snd_image_prod hs t ▸ (isBounded_image_fst_and_snd.2 h).2
 #align bornology.is_bounded.snd_of_prod Bornology.IsBounded.snd_of_prod
 
-theorem IsBounded.prod (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ˢ t) :=
+lemma IsBounded.prod (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ˢ t) :=
   isBounded_image_fst_and_snd.1
     ⟨hs.subset <| fst_image_prod_subset _ _, ht.subset <| snd_image_prod_subset _ _⟩
 #align bornology.is_bounded.prod Bornology.IsBounded.prod
 
-theorem isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
+lemma isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
     IsBounded (s ×ˢ t) ↔ IsBounded s ∧ IsBounded t :=
   ⟨fun h => ⟨h.fst_of_prod hne.snd, h.snd_of_prod hne.fst⟩, fun h => h.1.prod h.2⟩
 #align bornology.is_bounded_prod_of_nonempty Bornology.isBounded_prod_of_nonempty
@@ -106,11 +106,11 @@ lemma forall_isBounded_image_eval_iff {s : Set (∀ i, π i)} :
   compl_mem_coprodᵢ.symm
 #align bornology.forall_is_bounded_image_eval_iff Bornology.forall_isBounded_image_eval_iff
 
-theorem IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded (pi univ S) :=
+lemma IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded (pi univ S) :=
   forall_isBounded_image_eval_iff.1 fun i => (h i).subset eval_image_univ_pi_subset
 #align bornology.is_bounded.pi Bornology.IsBounded.pi
 
-theorem isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
+lemma isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
     IsBounded (pi univ S) ↔ ∀ i, IsBounded (S i) :=
   ⟨fun H i => @eval_image_univ_pi _ _ _ i hne ▸ forall_isBounded_image_eval_iff.2 H i, IsBounded.pi⟩
 #align bornology.is_bounded_pi_of_nonempty Bornology.isBounded_pi_of_nonempty

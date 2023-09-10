@@ -166,7 +166,7 @@ rectangle, and $\frac{\partial f}{\partial \bar z}$ is integrable on this rectan
 integral of `f` over the boundary of the rectangle is equal to the integral of
 $2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}$
 over the rectangle. -/
-theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E) (f' : ℂ → ℂ →L[ℝ] E)
+lemma integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E) (f' : ℂ → ℂ →L[ℝ] E)
     (z w : ℂ) (s : Set ℂ) (hs : s.Countable)
     (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hd : ∀ x ∈ Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im) \ s,
@@ -212,7 +212,7 @@ $\frac{\partial f}{\partial \bar z}$ is integrable on this rectangle. Then the i
 the boundary of the rectangle is equal to the integral of
 $2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}$
 over the rectangle. -/
-theorem integral_boundary_rect_of_continuousOn_of_hasFDerivAt_real (f : ℂ → E) (f' : ℂ → ℂ →L[ℝ] E)
+lemma integral_boundary_rect_of_continuousOn_of_hasFDerivAt_real (f : ℂ → E) (f' : ℂ → ℂ →L[ℝ] E)
     (z w : ℂ) (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hd : ∀ x ∈ Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im),
       HasFDerivAt f (f' x) x)
@@ -230,7 +230,7 @@ corners at `z w : ℂ` and $\frac{\partial f}{\partial \bar z}$ is integrable on
 the integral of `f` over the boundary of the rectangle is equal to the integral of
 $2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}$
 over the rectangle. -/
-theorem integral_boundary_rect_of_differentiableOn_real (f : ℂ → E) (z w : ℂ)
+lemma integral_boundary_rect_of_differentiableOn_real (f : ℂ → E) (z w : ℂ)
     (Hd : DifferentiableOn ℝ f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hi : IntegrableOn (fun z => I • fderiv ℝ f z 1 - fderiv ℝ f z I)
       ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
@@ -250,7 +250,7 @@ theorem integral_boundary_rect_of_differentiableOn_real (f : ℂ → E) (z w : �
 over the boundary of a rectangle equals zero. More precisely, if `f` is continuous on a closed
 rectangle and is complex differentiable at all but countably many points of the corresponding open
 rectangle, then its integral over the boundary of the rectangle equals zero. -/
-theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : ℂ → E) (z w : ℂ)
+lemma integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : ℂ → E) (z w : ℂ)
     (s : Set ℂ) (hs : s.Countable) (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hd : ∀ x ∈ Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im) \ s,
       DifferentiableAt ℂ f x) :
@@ -269,7 +269,7 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
 over the boundary of a rectangle equals zero. More precisely, if `f` is continuous on a closed
 rectangle and is complex differentiable on the corresponding open rectangle, then its integral over
 the boundary of the rectangle equals zero. -/
-theorem integral_boundary_rect_eq_zero_of_continuousOn_of_differentiableOn (f : ℂ → E) (z w : ℂ)
+lemma integral_boundary_rect_eq_zero_of_continuousOn_of_differentiableOn (f : ℂ → E) (z w : ℂ)
     (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hd : DifferentiableOn ℂ f
       (Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im))) :
@@ -283,7 +283,7 @@ theorem integral_boundary_rect_eq_zero_of_continuousOn_of_differentiableOn (f : 
 /-- **Cauchy-Goursat theorem** for a rectangle: the integral of a complex differentiable function
 over the boundary of a rectangle equals zero. More precisely, if `f` is complex differentiable on a
 closed rectangle, then its integral over the boundary of the rectangle equals zero. -/
-theorem integral_boundary_rect_eq_zero_of_differentiableOn (f : ℂ → E) (z w : ℂ)
+lemma integral_boundary_rect_eq_zero_of_differentiableOn (f : ℂ → E) (z w : ℂ)
     (H : DifferentiableOn ℂ f ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -

@@ -312,7 +312,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [T
   [MeasurableSpace β] [OpensMeasurableSpace β] [TopologicalSpace γ] [MeasurableSpace γ]
   [BorelSpace γ] [TopologicalSpace γ₂] [MeasurableSpace γ₂] [BorelSpace γ₂] [MeasurableSpace δ]
 
-theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
+lemma IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 #align is_open.measurable_set IsOpen.measurableSet
 
@@ -325,7 +325,7 @@ lemma measurableSet_interior : MeasurableSet (interior s) :=
   isOpen_interior.measurableSet
 #align measurable_set_interior measurableSet_interior
 
-theorem IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
+lemma IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
   rcases h with ⟨S, hSo, hSc, rfl⟩
   exact MeasurableSet.sInter hSc fun t ht => (hSo t ht).measurableSet
 set_option linter.uppercaseLean3 false in
@@ -336,7 +336,7 @@ lemma measurableSet_of_continuousAt {β} [EMetricSpace β] (f : α → β) :
   (isGδ_setOf_continuousAt f).measurableSet
 #align measurable_set_of_continuous_at measurableSet_of_continuousAt
 
-theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
+lemma IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
   h.isOpen_compl.measurableSet.of_compl
 #align is_closed.measurable_set IsClosed.measurableSet
 
@@ -622,7 +622,7 @@ lemma nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g :
   (hf.prod_mk hg).nullMeasurable measurableSet_lt'
 #align null_measurable_set_lt nullMeasurableSet_lt
 
-theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
+lemma Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
   have huopen : IsOpen u := isOpen_biUnion fun _ _ => isOpen_biUnion fun _ _ => isOpen_Ioo
   have humeas : MeasurableSet u := huopen.measurableSet
@@ -633,7 +633,7 @@ theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s :=
   exact humeas.union hfinite.measurableSet
 #align set.ord_connected.measurable_set Set.OrdConnected.measurableSet
 
-theorem IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
+lemma IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
   h.ordConnected.measurableSet
 #align is_preconnected.measurable_set IsPreconnected.measurableSet
 
@@ -692,7 +692,7 @@ lemma Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [Li
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 #align dense.borel_eq_generate_from_Ico_mem Dense.borel_eq_generateFrom_Ico_mem
 
-theorem borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
+lemma borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
     borel α = .generateFrom { S : Set α | ∃ (l u : α), l < u ∧ Ico l u = S } := by
   simpa only [exists_prop, mem_univ, true_and_iff] using
@@ -721,7 +721,7 @@ lemma Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [Li
     ((nonempty_Ioo.2 hxy).ne_empty H).elim
 #align dense.borel_eq_generate_from_Ioc_mem Dense.borel_eq_generateFrom_Ioc_mem
 
-theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
+lemma borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
     borel α = .generateFrom { S : Set α | ∃ l u, l < u ∧ Ioc l u = S } := by
   simpa only [exists_prop, mem_univ, true_and_iff] using
@@ -974,7 +974,7 @@ end Lattice
 section Homeomorph
 
 @[measurability]
-protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
+protected lemma Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 #align homeomorph.measurable Homeomorph.measurable
 
@@ -986,12 +986,12 @@ def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
 #align homeomorph.to_measurable_equiv Homeomorph.toMeasurableEquiv
 
 @[simp]
-theorem Homeomorph.toMeasurableEquiv_coe (h : γ ≃ₜ γ₂) : (h.toMeasurableEquiv : γ → γ₂) = h :=
+lemma Homeomorph.toMeasurableEquiv_coe (h : γ ≃ₜ γ₂) : (h.toMeasurableEquiv : γ → γ₂) = h :=
   rfl
 #align homeomorph.to_measurable_equiv_coe Homeomorph.toMeasurableEquiv_coe
 
 @[simp]
-theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
+lemma Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
     (h.toMeasurableEquiv.symm : γ₂ → γ) = h.symm :=
   rfl
 #align homeomorph.to_measurable_equiv_symm_coe Homeomorph.toMeasurableEquiv_symm_coe
@@ -999,7 +999,7 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
 end Homeomorph
 
 @[measurability]
-theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
+lemma ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 #align continuous_map.measurable ContinuousMap.measurable
 

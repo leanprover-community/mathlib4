@@ -51,7 +51,7 @@ def factor (f : K[X]) : K[X] :=
   if H : ∃ g, Irreducible g ∧ g ∣ f then Classical.choose H else X
 #align polynomial.factor Polynomial.factor
 
-theorem irreducible_factor (f : K[X]) : Irreducible (factor f) := by
+lemma irreducible_factor (f : K[X]) : Irreducible (factor f) := by
   rw [factor]
   split_ifs with H
   · exact (Classical.choose_spec H).1
@@ -59,7 +59,7 @@ theorem irreducible_factor (f : K[X]) : Irreducible (factor f) := by
 #align polynomial.irreducible_factor Polynomial.irreducible_factor
 
 /-- See note [fact non-instances]. -/
-theorem fact_irreducible_factor (f : K[X]) : Fact (Irreducible (factor f)) :=
+lemma fact_irreducible_factor (f : K[X]) : Fact (Irreducible (factor f)) :=
   ⟨irreducible_factor f⟩
 #align polynomial.fact_irreducible_factor Polynomial.fact_irreducible_factor
 
@@ -84,7 +84,7 @@ def removeFactor (f : K[X]) : Polynomial (AdjoinRoot <| factor f) :=
   map (AdjoinRoot.of f.factor) f /ₘ (X - C (AdjoinRoot.root f.factor))
 #align polynomial.remove_factor Polynomial.removeFactor
 
-theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
+lemma X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
     (X - C (AdjoinRoot.root f.factor)) * f.removeFactor = map (AdjoinRoot.of f.factor) f := by
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
   apply (mul_divByMonic_eq_iff_isRoot
@@ -93,7 +93,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
-theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegree - 1 := by
+lemma natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegree - 1 := by
   -- Porting note: `(map (AdjoinRoot.of f.factor) f)` was `_`
   rw [removeFactor, natDegree_divByMonic (map (AdjoinRoot.of f.factor) f) (monic_X_sub_C _),
     natDegree_map, natDegree_X_sub_C]
@@ -143,7 +143,7 @@ instance SplittingFieldAux.algebra (n : ℕ) {K : Type u} [Field K] (f : K[X]) :
 
 namespace SplittingFieldAux
 
-theorem succ (n : ℕ) (f : K[X]) :
+lemma succ (n : ℕ) (f : K[X]) :
     SplittingFieldAux (n + 1) f = SplittingFieldAux n f.removeFactor :=
   rfl
 #align polynomial.splitting_field_aux.succ Polynomial.SplittingFieldAux.succ
@@ -166,14 +166,14 @@ instance scalar_tower' {n : ℕ} {f : K[X]} :
   IsScalarTower.of_algebraMap_eq fun _ => rfl
 #align polynomial.splitting_field_aux.scalar_tower' Polynomial.SplittingFieldAux.scalar_tower'
 
-theorem algebraMap_succ (n : ℕ) (f : K[X]) :
+lemma algebraMap_succ (n : ℕ) (f : K[X]) :
     algebraMap K (SplittingFieldAux (n + 1) f) =
       (algebraMap (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor)).comp
         (AdjoinRoot.of f.factor) :=
   rfl
 #align polynomial.splitting_field_aux.algebra_map_succ Polynomial.SplittingFieldAux.algebraMap_succ
 
-protected theorem splits (n : ℕ) :
+protected lemma splits (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f :=
   Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K],
@@ -187,7 +187,7 @@ protected theorem splits (n : ℕ) :
     exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
 #align polynomial.splitting_field_aux.splits Polynomial.SplittingFieldAux.splits
 
-theorem adjoin_rootSet (n : ℕ) :
+lemma adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤ :=

@@ -123,30 +123,30 @@ def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
   else (IsometryEquiv.vaddConst c).toHomeomorph.toLocalHomeomorph
 
 @[simp]
-theorem univBall_source (c : P) (r : ℝ) : (univBall c r).source = univ := by
+lemma univBall_source (c : P) (r : ℝ) : (univBall c r).source = univ := by
   unfold univBall; split_ifs <;> rfl
 
-theorem univBall_target (c : P) {r : ℝ} (hr : 0 < r) : (univBall c r).target = ball c r := by
+lemma univBall_target (c : P) {r : ℝ} (hr : 0 < r) : (univBall c r).target = ball c r := by
   rw [univBall, dif_pos hr]; rfl
 
-theorem ball_subset_univBall_target (c : P) (r : ℝ) : ball c r ⊆ (univBall c r).target := by
+lemma ball_subset_univBall_target (c : P) (r : ℝ) : ball c r ⊆ (univBall c r).target := by
   by_cases hr : 0 < r
   · rw [univBall_target c hr]
   · rw [univBall, dif_neg hr]
     exact subset_univ _
 
 @[simp]
-theorem univBall_apply_zero (c : P) (r : ℝ) : univBall c r 0 = c := by
+lemma univBall_apply_zero (c : P) (r : ℝ) : univBall c r 0 = c := by
   unfold univBall; split_ifs <;> simp
 
 @[simp]
-theorem univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0 := by
+lemma univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0 := by
   have : 0 ∈ (univBall c r).source := by simp
   simpa only [univBall_apply_zero] using (univBall c r).left_inv this
 
 @[continuity]
-theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
+lemma continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
   simpa [continuous_iff_continuousOn_univ] using (univBall c r).continuousOn
 
-theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
+lemma continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
   (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r

@@ -218,13 +218,13 @@ instance (priority := 100) hasColimits_of_completeLattice : HasColimits α where
 
 /-- The limit of a functor into a complete lattice is the infimum of the objects in the image.
 -/
-theorem limit_eq_iInf (F : J ⥤ α) : limit F = iInf F.obj :=
+lemma limit_eq_iInf (F : J ⥤ α) : limit F = iInf F.obj :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit F) (limitCone F).isLimit).to_eq
 #align category_theory.limits.complete_lattice.limit_eq_infi CategoryTheory.Limits.CompleteLattice.limit_eq_iInf
 
 /-- The colimit of a functor into a complete lattice is the supremum of the objects in the image.
 -/
-theorem colimit_eq_iSup (F : J ⥤ α) : colimit F = iSup F.obj :=
+lemma colimit_eq_iSup (F : J ⥤ α) : colimit F = iSup F.obj :=
   (IsColimit.coconePointUniqueUpToIso (colimit.isColimit F) (colimitCocone F).isColimit).to_eq
 #align category_theory.limits.complete_lattice.colimit_eq_supr CategoryTheory.Limits.CompleteLattice.colimit_eq_iSup
 

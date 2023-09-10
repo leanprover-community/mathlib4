@@ -66,7 +66,7 @@ lemma tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : Fi
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
-theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
+lemma StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
     ∀ᵐ x, HasDerivAt f (rnDeriv f.measure volume x).toReal x := by
   /- Denote by `μ` the Stieltjes measure associated to `f`.
     The general theorem `VitaliFamily.ae_tendsto_rnDeriv` ensures that `μ [x, y] / (y - x)` tends

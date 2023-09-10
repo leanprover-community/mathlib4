@@ -84,7 +84,7 @@ lemma stronglyMeasurable_le {i j : ι} (hf : Adapted f u) (hij : i ≤ j) :
 
 end Adapted
 
-theorem adapted_const (f : Filtration ι m) (x : β) : Adapted f fun _ _ => x := fun _ =>
+lemma adapted_const (f : Filtration ι m) (x : β) : Adapted f fun _ _ => x := fun _ =>
   stronglyMeasurable_const
 #align measure_theory.adapted_const MeasureTheory.adapted_const
 
@@ -124,7 +124,7 @@ namespace ProgMeasurable
 
 variable [MeasurableSpace ι]
 
-protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
+protected lemma adapted (h : ProgMeasurable f u) : Adapted f u := by
   intro i
   have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
     rfl

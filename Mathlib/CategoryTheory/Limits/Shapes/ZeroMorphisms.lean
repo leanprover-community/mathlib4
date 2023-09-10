@@ -86,7 +86,7 @@ instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
 namespace HasZeroMorphisms
 
 /-- This lemma will be immediately superseded by `ext`, below. -/
-private theorem ext_aux (I J : HasZeroMorphisms C)
+private lemma ext_aux (I J : HasZeroMorphisms C)
     (w : ∀ X Y : C, (I.Zero X Y).zero = (J.Zero X Y).zero) : I = J := by
   have : I.Zero = J.Zero := by
     funext X Y
@@ -104,7 +104,7 @@ instances of `HasZeroMorphisms` to exist at all.
 
 See, particularly, the note on `zeroMorphismsOfZeroObject` below.
 -/
-theorem ext (I J : HasZeroMorphisms C) : I = J := by
+lemma ext (I J : HasZeroMorphisms C) : I = J := by
   apply ext_aux
   intro X Y
   have : (I.Zero X Y).zero ≫ (J.Zero Y Y).zero = (I.Zero X Y).zero := by
@@ -170,7 +170,7 @@ instance : HasZeroMorphisms (C ⥤ D) where
     ext X; dsimp; apply zero_comp
 
 @[simp]
-theorem zero_app (F G : C ⥤ D) (j : C) : (0 : F ⟶ G).app j = 0 := rfl
+lemma zero_app (F G : C ⥤ D) (j : C) : (0 : F ⟶ G).app j = 0 := rfl
 #align category_theory.limits.zero_app CategoryTheory.Limits.zero_app
 
 end
@@ -187,7 +187,7 @@ lemma eq_zero_of_tgt {X Y : C} (o : IsZero Y) (f : X ⟶ Y) : f = 0 :=
   o.eq_of_tgt _ _
 #align category_theory.limits.is_zero.eq_zero_of_tgt CategoryTheory.Limits.IsZero.eq_zero_of_tgt
 
-theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
+lemma iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
   ⟨fun h => h.eq_of_src _ _, fun h =>
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
         rw [← id_comp f, ← id_comp (0: X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
@@ -195,11 +195,11 @@ theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
         rw [← comp_id f, ← comp_id (0 : Y ⟶ X), h, comp_zero, comp_zero]; simp only ⟩⟩⟩⟩
 #align category_theory.limits.is_zero.iff_id_eq_zero CategoryTheory.Limits.IsZero.iff_id_eq_zero
 
-theorem of_mono_zero (X Y : C) [Mono (0 : X ⟶ Y)] : IsZero X :=
+lemma of_mono_zero (X Y : C) [Mono (0 : X ⟶ Y)] : IsZero X :=
   (iff_id_eq_zero X).mpr ((cancel_mono (0 : X ⟶ Y)).1 (by simp))
 #align category_theory.limits.is_zero.of_mono_zero CategoryTheory.Limits.IsZero.of_mono_zero
 
-theorem of_epi_zero (X Y : C) [Epi (0 : X ⟶ Y)] : IsZero Y :=
+lemma of_epi_zero (X Y : C) [Epi (0 : X ⟶ Y)] : IsZero Y :=
   (iff_id_eq_zero Y).mpr ((cancel_epi (0 : X ⟶ Y)).1 (by simp))
 #align category_theory.limits.is_zero.of_epi_zero CategoryTheory.Limits.IsZero.of_epi_zero
 
@@ -423,12 +423,12 @@ def idZeroEquivIsoZero (X : C) : 𝟙 X = 0 ≃ (X ≅ 0) where
 #align category_theory.limits.id_zero_equiv_iso_zero CategoryTheory.Limits.idZeroEquivIsoZero
 
 @[simp]
-theorem idZeroEquivIsoZero_apply_hom (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIsoZero X) h).hom = 0 :=
+lemma idZeroEquivIsoZero_apply_hom (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIsoZero X) h).hom = 0 :=
   rfl
 #align category_theory.limits.id_zero_equiv_iso_zero_apply_hom CategoryTheory.Limits.idZeroEquivIsoZero_apply_hom
 
 @[simp]
-theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIsoZero X) h).inv = 0 :=
+lemma idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIsoZero X) h).inv = 0 :=
   rfl
 #align category_theory.limits.id_zero_equiv_iso_zero_apply_inv CategoryTheory.Limits.idZeroEquivIsoZero_apply_inv
 

@@ -151,15 +151,15 @@ instance instSMul : SMul S 𝓜(𝕜, A) where
           simp only [ContinuousLinearMap.smul_apply, mul_smul_comm, smul_mul_assoc, central] }
 
 @[simp]
-theorem smul_toProd (s : S) (a : 𝓜(𝕜, A)) : (s • a).toProd = s • a.toProd :=
+lemma smul_toProd (s : S) (a : 𝓜(𝕜, A)) : (s • a).toProd = s • a.toProd :=
   rfl
 #align double_centralizer.smul_to_prod DoubleCentralizer.smul_toProd
 
-theorem smul_fst (s : S) (a : 𝓜(𝕜, A)) : (s • a).fst = s • a.fst :=
+lemma smul_fst (s : S) (a : 𝓜(𝕜, A)) : (s • a).fst = s • a.fst :=
   rfl
 #align double_centralizer.smul_fst DoubleCentralizer.smul_fst
 
-theorem smul_snd (s : S) (a : 𝓜(𝕜, A)) : (s • a).snd = s • a.snd :=
+lemma smul_snd (s : S) (a : 𝓜(𝕜, A)) : (s • a).snd = s • a.snd :=
   rfl
 #align double_centralizer.smul_snd DoubleCentralizer.smul_snd
 
@@ -211,7 +211,7 @@ instance instInhabited : Inhabited 𝓜(𝕜, A) :=
   ⟨0⟩
 
 @[simp]
-theorem add_toProd (a b : 𝓜(𝕜, A)) : (a + b).toProd = a.toProd + b.toProd :=
+lemma add_toProd (a b : 𝓜(𝕜, A)) : (a + b).toProd = a.toProd + b.toProd :=
   rfl
 #align double_centralizer.add_to_prod DoubleCentralizer.add_toProd
 
@@ -221,12 +221,12 @@ lemma zero_toProd : (0 : 𝓜(𝕜, A)).toProd = 0 :=
 #align double_centralizer.zero_to_prod DoubleCentralizer.zero_toProd
 
 @[simp]
-theorem neg_toProd (a : 𝓜(𝕜, A)) : (-a).toProd = -a.toProd :=
+lemma neg_toProd (a : 𝓜(𝕜, A)) : (-a).toProd = -a.toProd :=
   rfl
 #align double_centralizer.neg_to_prod DoubleCentralizer.neg_toProd
 
 @[simp]
-theorem sub_toProd (a b : 𝓜(𝕜, A)) : (a - b).toProd = a.toProd - b.toProd :=
+lemma sub_toProd (a b : 𝓜(𝕜, A)) : (a - b).toProd = a.toProd - b.toProd :=
   rfl
 #align double_centralizer.sub_to_prod DoubleCentralizer.sub_toProd
 
@@ -236,25 +236,25 @@ lemma one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
 #align double_centralizer.one_to_prod DoubleCentralizer.one_toProd
 
 @[simp]
-theorem nat_cast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
+lemma nat_cast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
 #align double_centralizer.nat_cast_to_prod DoubleCentralizer.nat_cast_toProd
 
 @[simp]
-theorem int_cast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
+lemma int_cast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
 #align double_centralizer.int_cast_to_prod DoubleCentralizer.int_cast_toProd
 
 @[simp]
-theorem pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
+lemma pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
   rfl
 #align double_centralizer.pow_to_prod DoubleCentralizer.pow_toProd
 
-theorem add_fst (a b : 𝓜(𝕜, A)) : (a + b).fst = a.fst + b.fst :=
+lemma add_fst (a b : 𝓜(𝕜, A)) : (a + b).fst = a.fst + b.fst :=
   rfl
 #align double_centralizer.add_fst DoubleCentralizer.add_fst
 
-theorem add_snd (a b : 𝓜(𝕜, A)) : (a + b).snd = a.snd + b.snd :=
+lemma add_snd (a b : 𝓜(𝕜, A)) : (a + b).snd = a.snd + b.snd :=
   rfl
 #align double_centralizer.add_snd DoubleCentralizer.add_snd
 
@@ -266,19 +266,19 @@ lemma zero_snd : (0 : 𝓜(𝕜, A)).snd = 0 :=
   rfl
 #align double_centralizer.zero_snd DoubleCentralizer.zero_snd
 
-theorem neg_fst (a : 𝓜(𝕜, A)) : (-a).fst = -a.fst :=
+lemma neg_fst (a : 𝓜(𝕜, A)) : (-a).fst = -a.fst :=
   rfl
 #align double_centralizer.neg_fst DoubleCentralizer.neg_fst
 
-theorem neg_snd (a : 𝓜(𝕜, A)) : (-a).snd = -a.snd :=
+lemma neg_snd (a : 𝓜(𝕜, A)) : (-a).snd = -a.snd :=
   rfl
 #align double_centralizer.neg_snd DoubleCentralizer.neg_snd
 
-theorem sub_fst (a b : 𝓜(𝕜, A)) : (a - b).fst = a.fst - b.fst :=
+lemma sub_fst (a b : 𝓜(𝕜, A)) : (a - b).fst = a.fst - b.fst :=
   rfl
 #align double_centralizer.sub_fst DoubleCentralizer.sub_fst
 
-theorem sub_snd (a b : 𝓜(𝕜, A)) : (a - b).snd = a.snd - b.snd :=
+lemma sub_snd (a b : 𝓜(𝕜, A)) : (a - b).snd = a.snd - b.snd :=
   rfl
 #align double_centralizer.sub_snd DoubleCentralizer.sub_snd
 
@@ -291,36 +291,36 @@ lemma one_snd : (1 : 𝓜(𝕜, A)).snd = 1 :=
 #align double_centralizer.one_snd DoubleCentralizer.one_snd
 
 @[simp]
-theorem mul_fst (a b : 𝓜(𝕜, A)) : (a * b).fst = a.fst * b.fst :=
+lemma mul_fst (a b : 𝓜(𝕜, A)) : (a * b).fst = a.fst * b.fst :=
   rfl
 #align double_centralizer.mul_fst DoubleCentralizer.mul_fst
 
 @[simp]
-theorem mul_snd (a b : 𝓜(𝕜, A)) : (a * b).snd = b.snd * a.snd :=
+lemma mul_snd (a b : 𝓜(𝕜, A)) : (a * b).snd = b.snd * a.snd :=
   rfl
 #align double_centralizer.mul_snd DoubleCentralizer.mul_snd
 
-theorem nat_cast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
+lemma nat_cast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 #align double_centralizer.nat_cast_fst DoubleCentralizer.nat_cast_fst
 
-theorem nat_cast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
+lemma nat_cast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
 #align double_centralizer.nat_cast_snd DoubleCentralizer.nat_cast_snd
 
-theorem int_cast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
+lemma int_cast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 #align double_centralizer.int_cast_fst DoubleCentralizer.int_cast_fst
 
-theorem int_cast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
+lemma int_cast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
 #align double_centralizer.int_cast_snd DoubleCentralizer.int_cast_snd
 
-theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
+lemma pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl
 #align double_centralizer.pow_fst DoubleCentralizer.pow_fst
 
-theorem pow_snd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).snd = a.snd ^ n :=
+lemma pow_snd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).snd = a.snd ^ n :=
   rfl
 #align double_centralizer.pow_snd DoubleCentralizer.pow_snd
 
@@ -399,15 +399,15 @@ instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
     Prod.ext (Algebra.smul_def _ _) ((Algebra.smul_def _ _).trans <| Algebra.commutes _ _)
 
 @[simp]
-theorem algebraMap_toProd (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).toProd = algebraMap 𝕜 _ k :=
+lemma algebraMap_toProd (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).toProd = algebraMap 𝕜 _ k :=
   rfl
 #align double_centralizer.algebra_map_to_prod DoubleCentralizer.algebraMap_toProd
 
-theorem algebraMap_fst (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).fst = algebraMap 𝕜 _ k :=
+lemma algebraMap_fst (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).fst = algebraMap 𝕜 _ k :=
   rfl
 #align double_centralizer.algebra_map_fst DoubleCentralizer.algebraMap_fst
 
-theorem algebraMap_snd (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).snd = algebraMap 𝕜 _ k :=
+lemma algebraMap_snd (k : 𝕜) : (algebraMap 𝕜 𝓜(𝕜, A) k).snd = algebraMap 𝕜 _ k :=
   rfl
 #align double_centralizer.algebra_map_snd DoubleCentralizer.algebraMap_snd
 
@@ -434,12 +434,12 @@ instance instStar : Star 𝓜(𝕜, A) where
         simpa only [star_mul, star_star] using (congr_arg star (a.central (star y) (star x))).symm }
 
 @[simp]
-theorem star_fst (a : 𝓜(𝕜, A)) (b : A) : (star a).fst b = star (a.snd (star b)) :=
+lemma star_fst (a : 𝓜(𝕜, A)) (b : A) : (star a).fst b = star (a.snd (star b)) :=
   rfl
 #align double_centralizer.star_fst DoubleCentralizer.star_fst
 
 @[simp]
-theorem star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (star b)) :=
+lemma star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (star b)) :=
   rfl
 #align double_centralizer.star_snd DoubleCentralizer.star_snd
 
@@ -494,12 +494,12 @@ noncomputable instance : CoeTC A 𝓜(𝕜, A) where
   coe := DoubleCentralizer.coe 𝕜
 
 @[simp, norm_cast]
-theorem coe_fst (a : A) : (a : 𝓜(𝕜, A)).fst = ContinuousLinearMap.mul 𝕜 A a :=
+lemma coe_fst (a : A) : (a : 𝓜(𝕜, A)).fst = ContinuousLinearMap.mul 𝕜 A a :=
   rfl
 #align double_centralizer.coe_fst DoubleCentralizer.coe_fst
 
 @[simp, norm_cast]
-theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul 𝕜 A).flip a :=
+lemma coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul 𝕜 A).flip a :=
   rfl
 #align double_centralizer.coe_snd DoubleCentralizer.coe_snd
 
@@ -547,19 +547,19 @@ noncomputable instance : NormedRing 𝓜(𝕜, A) :=
 
 -- even though the definition is actually in terms of `DoubleCentralizer.toProdMulOpposite`, we
 -- choose to see through that here to avoid `MulOpposite.op` appearing.
-theorem norm_def (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdHom a‖ :=
+lemma norm_def (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdHom a‖ :=
   rfl
 #align double_centralizer.norm_def DoubleCentralizer.norm_def
 
-theorem nnnorm_def (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdHom a‖₊ :=
+lemma nnnorm_def (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdHom a‖₊ :=
   rfl
 #align double_centralizer.nnnorm_def DoubleCentralizer.nnnorm_def
 
-theorem norm_def' (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdMulOppositeHom a‖ :=
+lemma norm_def' (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdMulOppositeHom a‖ :=
   rfl
 #align double_centralizer.norm_def' DoubleCentralizer.norm_def'
 
-theorem nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
+lemma nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
   rfl
 #align double_centralizer.nnnorm_def' DoubleCentralizer.nnnorm_def'
 
@@ -588,7 +588,7 @@ variable [StarRing A] [CstarRing A]
 
 /-- For `a : 𝓜(𝕜, A)`, the norms of `a.fst` and `a.snd` coincide, and hence these
 also coincide with `‖a‖` which is `max (‖a.fst‖) (‖a.snd‖)`. -/
-theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
+lemma norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
   -- a handy lemma for this proof
   have h0 : ∀ f : A →L[𝕜] A, ∀ C : ℝ≥0, (∀ b : A, ‖f b‖₊ ^ 2 ≤ C * ‖f b‖₊ * ‖b‖₊) → ‖f‖₊ ≤ C := by
     intro f C h
@@ -629,27 +629,27 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
 #align double_centralizer.norm_fst_eq_snd DoubleCentralizer.norm_fst_eq_snd
 
-theorem nnnorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
+lemma nnnorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
   Subtype.ext <| norm_fst_eq_snd a
 #align double_centralizer.nnnorm_fst_eq_snd DoubleCentralizer.nnnorm_fst_eq_snd
 
 @[simp]
-theorem norm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a‖ := by
+lemma norm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a‖ := by
   simp only [norm_def, toProdHom_apply, Prod.norm_def, norm_fst_eq_snd, max_eq_right le_rfl]
 
 #align double_centralizer.norm_fst DoubleCentralizer.norm_fst
 
 @[simp]
-theorem norm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖ = ‖a‖ := by rw [← norm_fst, norm_fst_eq_snd]
+lemma norm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖ = ‖a‖ := by rw [← norm_fst, norm_fst_eq_snd]
 #align double_centralizer.norm_snd DoubleCentralizer.norm_snd
 
 @[simp]
-theorem nnnorm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a‖₊ :=
+lemma nnnorm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a‖₊ :=
   Subtype.ext (norm_fst a)
 #align double_centralizer.nnnorm_fst DoubleCentralizer.nnnorm_fst
 
 @[simp]
-theorem nnnorm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖₊ = ‖a‖₊ :=
+lemma nnnorm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖₊ = ‖a‖₊ :=
   Subtype.ext (norm_snd a)
 #align double_centralizer.nnnorm_snd DoubleCentralizer.nnnorm_snd
 

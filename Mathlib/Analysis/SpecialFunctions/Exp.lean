@@ -31,7 +31,7 @@ namespace Complex
 
 variable {z y x : ℝ}
 
-theorem exp_bound_sq (x z : ℂ) (hz : ‖z‖ ≤ 1) :
+lemma exp_bound_sq (x z : ℂ) (hz : ‖z‖ ≤ 1) :
     ‖exp (x + z) - exp x - z • exp x‖ ≤ ‖exp x‖ * ‖z‖ ^ 2 :=
   calc
     ‖exp (x + z) - exp x - z * exp x‖ = ‖exp x * (exp z - 1 - z)‖ := by
@@ -94,21 +94,21 @@ lemma Filter.Tendsto.cexp {l : Filter α} {f : α → ℂ} {z : ℂ} (hf : Tends
 variable [TopologicalSpace α] {f : α → ℂ} {s : Set α} {x : α}
 
 nonrec
-theorem ContinuousWithinAt.cexp (h : ContinuousWithinAt f s x) :
+lemma ContinuousWithinAt.cexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y => exp (f y)) s x :=
   h.cexp
 #align continuous_within_at.cexp ContinuousWithinAt.cexp
 
 nonrec
-theorem ContinuousAt.cexp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
+lemma ContinuousAt.cexp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
   h.cexp
 #align continuous_at.cexp ContinuousAt.cexp
 
-theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s :=
+lemma ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s :=
   fun x hx => (h x hx).cexp
 #align continuous_on.cexp ContinuousOn.cexp
 
-theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
+lemma Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 #align continuous.cexp Continuous.cexp
 
@@ -141,21 +141,21 @@ lemma Filter.Tendsto.exp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendst
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
 nonrec
-theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
+lemma ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y => exp (f y)) s x :=
   h.exp
 #align continuous_within_at.exp ContinuousWithinAt.exp
 
 nonrec
-theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
+lemma ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
   h.exp
 #align continuous_at.exp ContinuousAt.exp
 
-theorem ContinuousOn.exp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s := fun x hx =>
+lemma ContinuousOn.exp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s := fun x hx =>
   (h x hx).exp
 #align continuous_on.exp ContinuousOn.exp
 
-theorem Continuous.exp (h : Continuous f) : Continuous fun y => exp (f y) :=
+lemma Continuous.exp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.exp
 #align continuous.exp Continuous.exp
 
@@ -165,7 +165,7 @@ namespace Real
 
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
-theorem exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
+lemma exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
   rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 #align real.exp_half Real.exp_half
 
@@ -199,7 +199,7 @@ lemma tendsto_exp_atBot_nhdsWithin : Tendsto exp atBot (𝓝[>] 0) :=
 #align real.tendsto_exp_at_bot_nhds_within Real.tendsto_exp_atBot_nhdsWithin
 
 @[simp]
-theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
+lemma isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
     IsBoundedUnder (· ≥ ·) l fun x => exp (f x) :=
   isBoundedUnder_of ⟨0, fun _ => (exp_pos _).le⟩
 #align real.is_bounded_under_ge_exp_comp Real.isBoundedUnder_ge_exp_comp
@@ -211,7 +211,7 @@ lemma isBoundedUnder_le_exp_comp {f : α → ℝ} :
 #align real.is_bounded_under_le_exp_comp Real.isBoundedUnder_le_exp_comp
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/
-theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) atTop atTop := by
+lemma tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) atTop atTop := by
   refine' (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => _
   have hC₀ : 0 < C := zero_lt_one.trans_le hC₁
   have : 0 < (exp 1 * C)⁻¹ := inv_pos.2 (mul_pos (exp_pos _) hC₀)
@@ -234,7 +234,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
 #align real.tendsto_exp_div_pow_at_top Real.tendsto_exp_div_pow_atTop
 
 /-- The function `x^n * exp(-x)` tends to `0` at `+∞`, for any natural number `n`. -/
-theorem tendsto_pow_mul_exp_neg_atTop_nhds_0 (n : ℕ) :
+lemma tendsto_pow_mul_exp_neg_atTop_nhds_0 (n : ℕ) :
     Tendsto (fun x => x ^ n * exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x => by
     rw [comp_apply, inv_eq_one_div, div_div_eq_mul_div, one_mul, div_eq_mul_inv, exp_neg]
@@ -242,7 +242,7 @@ theorem tendsto_pow_mul_exp_neg_atTop_nhds_0 (n : ℕ) :
 
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is positive. -/
-theorem tendsto_mul_exp_add_div_pow_atTop (b c : ℝ) (n : ℕ) (hb : 0 < b) :
+lemma tendsto_mul_exp_add_div_pow_atTop (b c : ℝ) (n : ℕ) (hb : 0 < b) :
     Tendsto (fun x => (b * exp x + c) / x ^ n) atTop atTop := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp only [pow_zero, div_one]
@@ -255,7 +255,7 @@ theorem tendsto_mul_exp_add_div_pow_atTop (b c : ℝ) (n : ℕ) (hb : 0 < b) :
 
 /-- The function `(x ^ n) / (b * exp x + c)` tends to `0` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is nonzero. -/
-theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
+lemma tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
   have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0) := by
     intro b' c' h
@@ -280,7 +280,7 @@ def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
 #align real.exp_order_iso Real.expOrderIso
 
 @[simp]
-theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
+lemma coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
   rfl
 #align real.coe_exp_order_iso_apply Real.coe_expOrderIso_apply
 
@@ -347,11 +347,11 @@ lemma openEmbedding_exp : OpenEmbedding exp :=
   isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
 
 -- Porting note: new lemma; TODO: backport & make `@[simp]`
-theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
+lemma map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
   openEmbedding_exp.map_nhds_eq x
 
 -- Porting note: new lemma; TODO: backport & make `@[simp]`
-theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
+lemma comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
   (openEmbedding_exp.nhds_eq_comap x).symm
 
 lemma isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Real.exp := by

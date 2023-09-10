@@ -50,12 +50,12 @@ def zeroProdIso (X : C) : (0 : C) ⨯ X ≅ X :=
 #align category_theory.limits.zero_prod_iso CategoryTheory.Limits.zeroProdIso
 
 @[simp]
-theorem zeroProdIso_hom (X : C) : (zeroProdIso X).hom = prod.snd :=
+lemma zeroProdIso_hom (X : C) : (zeroProdIso X).hom = prod.snd :=
   rfl
 #align category_theory.limits.zero_prod_iso_hom CategoryTheory.Limits.zeroProdIso_hom
 
 @[simp]
-theorem zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X := by
+lemma zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X := by
   dsimp [zeroProdIso, binaryFanZeroLeft]
   simp
 #align category_theory.limits.zero_prod_iso_inv_snd CategoryTheory.Limits.zeroProdIso_inv_snd
@@ -81,12 +81,12 @@ def prodZeroIso (X : C) : X ⨯ (0 : C) ≅ X :=
 #align category_theory.limits.prod_zero_iso CategoryTheory.Limits.prodZeroIso
 
 @[simp]
-theorem prodZeroIso_hom (X : C) : (prodZeroIso X).hom = prod.fst :=
+lemma prodZeroIso_hom (X : C) : (prodZeroIso X).hom = prod.fst :=
   rfl
 #align category_theory.limits.prod_zero_iso_hom CategoryTheory.Limits.prodZeroIso_hom
 
 @[simp]
-theorem prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = 𝟙 X := by
+lemma prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = 𝟙 X := by
   dsimp [prodZeroIso, binaryFanZeroRight]
   simp
 #align category_theory.limits.prod_zero_iso_iso_inv_snd CategoryTheory.Limits.prodZeroIso_iso_inv_snd
@@ -112,13 +112,13 @@ def zeroCoprodIso (X : C) : (0 : C) ⨿ X ≅ X :=
 #align category_theory.limits.zero_coprod_iso CategoryTheory.Limits.zeroCoprodIso
 
 @[simp]
-theorem inr_zeroCoprodIso_hom (X : C) : coprod.inr ≫ (zeroCoprodIso X).hom = 𝟙 X := by
+lemma inr_zeroCoprodIso_hom (X : C) : coprod.inr ≫ (zeroCoprodIso X).hom = 𝟙 X := by
   dsimp [zeroCoprodIso, binaryCofanZeroLeft]
   simp
 #align category_theory.limits.inr_zero_coprod_iso_hom CategoryTheory.Limits.inr_zeroCoprodIso_hom
 
 @[simp]
-theorem zeroCoprodIso_inv (X : C) : (zeroCoprodIso X).inv = coprod.inr :=
+lemma zeroCoprodIso_inv (X : C) : (zeroCoprodIso X).inv = coprod.inr :=
   rfl
 #align category_theory.limits.zero_coprod_iso_inv CategoryTheory.Limits.zeroCoprodIso_inv
 
@@ -143,13 +143,13 @@ def coprodZeroIso (X : C) : X ⨿ (0 : C) ≅ X :=
 #align category_theory.limits.coprod_zero_iso CategoryTheory.Limits.coprodZeroIso
 
 @[simp]
-theorem inr_coprodZeroIso_hom (X : C) : coprod.inl ≫ (coprodZeroIso X).hom = 𝟙 X := by
+lemma inr_coprodZeroIso_hom (X : C) : coprod.inl ≫ (coprodZeroIso X).hom = 𝟙 X := by
   dsimp [coprodZeroIso, binaryCofanZeroRight]
   simp
 #align category_theory.limits.inr_coprod_zeroiso_hom CategoryTheory.Limits.inr_coprodZeroIso_hom
 
 @[simp]
-theorem coprodZeroIso_inv (X : C) : (coprodZeroIso X).inv = coprod.inl :=
+lemma coprodZeroIso_inv (X : C) : (coprodZeroIso X).inv = coprod.inl :=
   rfl
 #align category_theory.limits.coprod_zero_iso_inv CategoryTheory.Limits.coprodZeroIso_inv
 
@@ -167,26 +167,26 @@ def pullbackZeroZeroIso (X Y : C) [HasBinaryProduct X Y] :
 #align category_theory.limits.pullback_zero_zero_iso CategoryTheory.Limits.pullbackZeroZeroIso
 
 @[simp]
-theorem pullbackZeroZeroIso_inv_fst (X Y : C) [HasBinaryProduct X Y] :
+lemma pullbackZeroZeroIso_inv_fst (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).inv ≫ pullback.fst = prod.fst := by
   dsimp [pullbackZeroZeroIso]
   simp
 #align category_theory.limits.pullback_zero_zero_iso_inv_fst CategoryTheory.Limits.pullbackZeroZeroIso_inv_fst
 
 @[simp]
-theorem pullbackZeroZeroIso_inv_snd (X Y : C) [HasBinaryProduct X Y] :
+lemma pullbackZeroZeroIso_inv_snd (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).inv ≫ pullback.snd = prod.snd := by
   dsimp [pullbackZeroZeroIso]
   simp
 #align category_theory.limits.pullback_zero_zero_iso_inv_snd CategoryTheory.Limits.pullbackZeroZeroIso_inv_snd
 
 @[simp]
-theorem pullbackZeroZeroIso_hom_fst (X Y : C) [HasBinaryProduct X Y] :
+lemma pullbackZeroZeroIso_hom_fst (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).hom ≫ prod.fst = pullback.fst := by simp [← Iso.eq_inv_comp]
 #align category_theory.limits.pullback_zero_zero_iso_hom_fst CategoryTheory.Limits.pullbackZeroZeroIso_hom_fst
 
 @[simp]
-theorem pullbackZeroZeroIso_hom_snd (X Y : C) [HasBinaryProduct X Y] :
+lemma pullbackZeroZeroIso_hom_snd (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).hom ≫ prod.snd = pullback.snd := by simp [← Iso.eq_inv_comp]
 #align category_theory.limits.pullback_zero_zero_iso_hom_snd CategoryTheory.Limits.pullbackZeroZeroIso_hom_snd
 
@@ -204,26 +204,26 @@ def pushoutZeroZeroIso (X Y : C) [HasBinaryCoproduct X Y] :
 #align category_theory.limits.pushout_zero_zero_iso CategoryTheory.Limits.pushoutZeroZeroIso
 
 @[simp]
-theorem inl_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
+lemma inl_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
     pushout.inl ≫ (pushoutZeroZeroIso X Y).hom = coprod.inl := by
   dsimp [pushoutZeroZeroIso]
   simp
 #align category_theory.limits.inl_pushout_zero_zero_iso_hom CategoryTheory.Limits.inl_pushoutZeroZeroIso_hom
 
 @[simp]
-theorem inr_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
+lemma inr_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
     pushout.inr ≫ (pushoutZeroZeroIso X Y).hom = coprod.inr := by
   dsimp [pushoutZeroZeroIso]
   simp
 #align category_theory.limits.inr_pushout_zero_zero_iso_hom CategoryTheory.Limits.inr_pushoutZeroZeroIso_hom
 
 @[simp]
-theorem inl_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
+lemma inl_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
     coprod.inl ≫ (pushoutZeroZeroIso X Y).inv = pushout.inl := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inl_pushout_zero_zero_iso_inv CategoryTheory.Limits.inl_pushoutZeroZeroIso_inv
 
 @[simp]
-theorem inr_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
+lemma inr_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
     coprod.inr ≫ (pushoutZeroZeroIso X Y).inv = pushout.inr := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inr_pushout_zero_zero_iso_inv CategoryTheory.Limits.inr_pushoutZeroZeroIso_inv
 

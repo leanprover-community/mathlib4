@@ -37,7 +37,7 @@ variable [IsScalarTower R A B]
 variable {R B}
 
 @[simp]
-theorem aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) p) = aeval x p := by
+lemma aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) p) = aeval x p := by
   rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
 #align polynomial.aeval_map_algebra_map Polynomial.aeval_map_algebraMap
 
@@ -51,7 +51,7 @@ variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 
 variable {R A}
 
-theorem aeval_algebraMap_apply (x : A) (p : R[X]) :
+lemma aeval_algebraMap_apply (x : A) (p : R[X]) :
     aeval (algebraMap A B x) p = algebraMap A B (aeval x p) := by
   rw [aeval_def, aeval_def, hom_eval₂, ← IsScalarTower.algebraMap_eq]
 #align polynomial.aeval_algebra_map_apply Polynomial.aeval_algebraMap_apply
@@ -83,7 +83,7 @@ section CommSemiring
 variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 @[simp]
-theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = aeval x p :=
+lemma aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = aeval x p :=
   aeval_algebraMap_apply A x p
 #align subalgebra.aeval_coe Subalgebra.aeval_coe
 

@@ -44,7 +44,7 @@ attribute [instance] pi'
 namespace Pi
 
 @[simp]
-theorem id_apply (X : ∀ i, C i) (i) : (𝟙 X : ∀ i, X i ⟶ X i) i = 𝟙 (X i) :=
+lemma id_apply (X : ∀ i, C i) (i) : (𝟙 X : ∀ i, X i ⟶ X i) i = 𝟙 (X i) :=
   rfl
 #align category_theory.pi.id_apply CategoryTheory.Pi.id_apply
 
@@ -177,7 +177,7 @@ def isoApp {X Y : ∀ i, C i} (f : X ≅ Y) (i : I) : X i ≅ Y i :=
 #align category_theory.pi.iso_app CategoryTheory.Pi.isoApp
 
 @[simp]
-theorem isoApp_refl (X : ∀ i, C i) (i : I) : isoApp (Iso.refl X) i = Iso.refl (X i) :=
+lemma isoApp_refl (X : ∀ i, C i) (i : I) : isoApp (Iso.refl X) i = Iso.refl (X i) :=
   rfl
 #align category_theory.pi.iso_app_refl CategoryTheory.Pi.isoApp_refl
 
@@ -230,7 +230,7 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
+lemma pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
   intro _ _ _
   · simp
@@ -239,7 +239,7 @@ theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i :=
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
-theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i))
+lemma pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i))
     : f = f' := by
   apply Functor.ext; rotate_left
   · intro X

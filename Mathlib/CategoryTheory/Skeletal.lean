@@ -196,7 +196,7 @@ def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where
   map {X} {Y} := Quotient.recOnSubsingleton₂ X Y fun x y k => homOfLE (k.le.elim fun t => ⟨F.map t⟩)
 #align category_theory.thin_skeleton.map CategoryTheory.ThinSkeleton.map
 
-theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkeleton C ⋙ map F :=
+lemma comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkeleton C ⋙ map F :=
   rfl
 #align category_theory.thin_skeleton.comp_to_thin_skeleton CategoryTheory.ThinSkeleton.comp_toThinSkeleton
 
@@ -299,7 +299,7 @@ lemma skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
   Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i => i.1.le.antisymm i.2.le
 #align category_theory.thin_skeleton.skeletal CategoryTheory.ThinSkeleton.skeletal
 
-theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
+lemma map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|
     NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _
 #align category_theory.thin_skeleton.map_comp_eq CategoryTheory.ThinSkeleton.map_comp_eq

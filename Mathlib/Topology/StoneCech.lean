@@ -50,12 +50,12 @@ lemma ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafilt
 #align ultrafilter_basis_is_basis ultrafilterBasis_is_basis
 
 /-- The basic open sets for the topology on ultrafilters are open. -/
-theorem ultrafilter_isOpen_basic (s : Set α) : IsOpen { u : Ultrafilter α | s ∈ u } :=
+lemma ultrafilter_isOpen_basic (s : Set α) : IsOpen { u : Ultrafilter α | s ∈ u } :=
   ultrafilterBasis_is_basis.isOpen ⟨s, rfl⟩
 #align ultrafilter_is_open_basic ultrafilter_isOpen_basic
 
 /-- The basic open sets for the topology on ultrafilters are also closed. -/
-theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α | s ∈ u } := by
+lemma ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α | s ∈ u } := by
   rw [← isOpen_compl_iff]
   convert ultrafilter_isOpen_basic sᶜ using 1
   ext u
@@ -101,13 +101,13 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
 
-@[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
+@[simp] lemma Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
   rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
   ext s
   change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
   simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
 
-theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
+lemma ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]
   simp only [comap_iInf, comap_principal]
   intro s hs
@@ -176,7 +176,7 @@ def Ultrafilter.extend (f : α → γ) : Ultrafilter α → γ :=
 
 variable [T2Space γ]
 
-theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
+lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
   letI : TopologicalSpace α := ⊥
   haveI : DiscreteTopology α := ⟨rfl⟩
   exact funext (denseInducing_pure.extend_eq continuous_of_discreteTopology)
@@ -184,7 +184,7 @@ theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pu
 
 variable [CompactSpace γ]
 
-theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
+lemma continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
   have h : ∀ b : Ultrafilter α, ∃ c, Tendsto f (comap pure (𝓝 b)) (𝓝 c) := fun b =>
     -- b.map f is an ultrafilter on γ, which is compact, so it converges to some c in γ.
     let ⟨c, _, h'⟩ :=

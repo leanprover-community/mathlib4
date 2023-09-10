@@ -249,7 +249,7 @@ noncomputable def topToCompHaus : TopCat.{u} ⥤ CompHaus.{u} :=
 set_option linter.uppercaseLean3 false in
 #align Top_to_CompHaus topToCompHaus
 
-theorem topToCompHaus_obj (X : TopCat) : ↥(topToCompHaus.obj X) = StoneCech X :=
+lemma topToCompHaus_obj (X : TopCat) : ↥(topToCompHaus.obj X) = StoneCech X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top_to_CompHaus_obj topToCompHaus_obj

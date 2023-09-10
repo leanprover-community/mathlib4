@@ -84,17 +84,17 @@ def inr : N →* M ∗ N where
   map_one' := (Con.eq _).mpr (ConGen.Rel.of _ _ Coprod.Rel.of_one_right)
   map_mul' x y := Eq.symm <| (Con.eq _).mpr (ConGen.Rel.of _ _ (Coprod.Rel.of_mul_right x y))
 
-theorem inl_apply (m : M) : (inl m : M ∗ N) = Con.mk' _ (FreeMonoid.of <| .inl m) :=
+lemma inl_apply (m : M) : (inl m : M ∗ N) = Con.mk' _ (FreeMonoid.of <| .inl m) :=
   rfl
 
-theorem inr_apply (n : N) : (inr n : M ∗ N) = Con.mk' _ (FreeMonoid.of <| .inr n) :=
+lemma inr_apply (n : N) : (inr n : M ∗ N) = Con.mk' _ (FreeMonoid.of <| .inr n) :=
   rfl
 
 variable {P : Type*} [Monoid P]
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext 1100]
-theorem ext_hom (f g : M ∗ N →* P)
+lemma ext_hom (f g : M ∗ N →* P)
   (hl : f.comp (inl : M →* _) = g.comp inl)
   (hr : f.comp (inr : N →* _) = g.comp inr) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
@@ -114,11 +114,11 @@ def lift (left : M →* P) (right : N →* P) : M ∗ N →* P :=
         induction h <;> simp
 
 @[simp]
-theorem lift_inl (left : M →* P) (right : N →* P) (m : M) :
+lemma lift_inl (left : M →* P) (right : N →* P) (m : M) :
     lift left right (inl m) = left m := rfl
 
 @[simp]
-theorem lift_inr (left : M →* P) (right : N →* P) (n : N) :
+lemma lift_inr (left : M →* P) (right : N →* P) (n : N) :
     lift left right (inr n) = right n := rfl
 
 @[elab_as_elim]
@@ -152,7 +152,7 @@ lemma inl_injective : Function.Injective (inl : M →* M ∗ N) :=
 lemma inr_injective : Function.Injective (inr : N →* M ∗ N) :=
   inr_leftInverse.injective
 
-theorem lift_mrange_le (left : M →* P) (right : N →* P) {s : Submonoid P}
+lemma lift_mrange_le (left : M →* P) (right : N →* P) {s : Submonoid P}
     (hleft : MonoidHom.mrange left ≤ s)
     (hright : MonoidHom.mrange right ≤ s) :
     MonoidHom.mrange (lift left right) ≤ s := by
@@ -165,7 +165,7 @@ theorem lift_mrange_le (left : M →* P) (right : N →* P) {s : Submonoid P}
   · simp only [map_mul, SetLike.mem_coe]
     exact s.mul_mem hx hy
 
-theorem mrange_eq_sup (left : M →* P) (right : N →* P) :
+lemma mrange_eq_sup (left : M →* P) (right : N →* P) :
     MonoidHom.mrange (lift left right) = MonoidHom.mrange left ⊔ MonoidHom.mrange right := by
   refine le_antisymm (lift_mrange_le left right le_sup_left le_sup_right) ?_
   refine sup_le ?_ ?_
@@ -184,7 +184,7 @@ instance : Inv (G ∗ H)
       lift ((inl : G →* _).op.comp (MulEquiv.inv' G).toMonoidHom)
            ((inr : H →* _).op.comp (MulEquiv.inv' H).toMonoidHom)
 
-theorem inv_def (x : G ∗ H) :
+lemma inv_def (x : G ∗ H) :
     x⁻¹ =
       MulOpposite.unop
       (lift ((inl : G →* G ∗ H).op.comp (MulEquiv.inv' G).toMonoidHom)

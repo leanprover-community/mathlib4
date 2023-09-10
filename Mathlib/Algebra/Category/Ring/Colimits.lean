@@ -189,7 +189,7 @@ lemma quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 #align CommRing.colimits.quot_one CommRingCat.Colimits.quot_one
 
 @[simp]
-theorem quot_neg (x : Prequotient F) :
+lemma quot_neg (x : Prequotient F) :
 -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- so use `Neg.neg (α := ColimitType F)` to tell Lean negation happens inside `ColimitType F`.
   (Quot.mk Setoid.r (neg x) : ColimitType F) = Neg.neg (α := ColimitType F) (Quot.mk Setoid.r x) :=
@@ -199,7 +199,7 @@ theorem quot_neg (x : Prequotient F) :
 -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- so use `Add.add (α := ColimitType F)` to tell Lean addition happens inside `ColimitType F`.
 @[simp]
-theorem quot_add (x y) :
+lemma quot_add (x y) :
     Quot.mk Setoid.r (add x y) = Add.add (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_add CommRingCat.Colimits.quot_add
@@ -207,7 +207,7 @@ theorem quot_add (x y) :
 -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- so use `Mul.mul (α := ColimitType F)` to tell Lean multiplication happens inside `ColimitType F`.
 @[simp]
-theorem quot_mul (x y) :
+lemma quot_mul (x y) :
     Quot.mk Setoid.r (mul x y) = Mul.mul (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_mul CommRingCat.Colimits.quot_mul
@@ -241,7 +241,7 @@ lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
 #align CommRing.colimits.cocone_naturality CommRingCat.Colimits.cocone_naturality
 
 @[simp]
-theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
+lemma cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f, comp_apply]
 #align CommRing.colimits.cocone_naturality_components CommRingCat.Colimits.cocone_naturality_components

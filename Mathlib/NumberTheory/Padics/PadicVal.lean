@@ -99,7 +99,7 @@ protected lemma one : padicValNat p 1 = 0 := by
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValNat p p` is `1`. -/
 @[simp]
-theorem self (hp : 1 < p) : padicValNat p p = 1 := by
+lemma self (hp : 1 < p) : padicValNat p p = 1 := by
   have neq_one : ¬p = 1 ↔ True := iff_of_true hp.ne' trivial
   have eq_zero_false : p = 0 ↔ False := iff_false_intro (zero_lt_one.trans hp).ne'
   simp [padicValNat, neq_one, eq_zero_false]
@@ -186,7 +186,7 @@ lemma of_nat {n : ℕ} : padicValInt p n = padicValNat p n := by simp [padicValI
 #align padic_val_int.of_nat padicValInt.of_nat
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValInt p p` is `1`. -/
-theorem self (hp : 1 < p) : padicValInt p p = 1 := by simp [padicValNat.self hp]
+lemma self (hp : 1 < p) : padicValInt p p = 1 := by simp [padicValNat.self hp]
 #align padic_val_int.self padicValInt.self
 
 lemma eq_zero_of_not_dvd {z : ℤ} (h : ¬(p : ℤ) ∣ z) : padicValInt p z = 0 := by
@@ -210,7 +210,7 @@ variable {p : ℕ}
 
 /-- `padicValRat p q` is symmetric in `q`. -/
 @[simp]
-protected theorem neg (q : ℚ) : padicValRat p (-q) = padicValRat p q := by
+protected lemma neg (q : ℚ) : padicValRat p (-q) = padicValRat p q := by
   simp [padicValRat, padicValInt]
 #align padic_val_rat.neg padicValRat.neg
 
@@ -253,7 +253,7 @@ lemma of_nat {n : ℕ} : padicValRat p n = padicValNat p n := by simp [padicValR
 #align padic_val_rat.of_nat padicValRat.of_nat
 
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValRat p p` is `1`. -/
-theorem self (hp : 1 < p) : padicValRat p p = 1 := by simp [hp]
+lemma self (hp : 1 < p) : padicValRat p p = 1 := by simp [hp]
 #align padic_val_rat.self padicValRat.self
 
 end padicValRat
@@ -262,12 +262,12 @@ section padicValNat
 
 variable {p : ℕ}
 
-theorem zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
+lemma zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
 #align zero_le_padic_val_rat_of_nat zero_le_padicValRat_of_nat
 
 /-- `padicValRat` coincides with `padicValNat`. -/
 @[norm_cast]
-theorem padicValRat_of_nat (n : ℕ) : ↑(padicValNat p n) = padicValRat p n := by simp
+lemma padicValRat_of_nat (n : ℕ) : ↑(padicValNat p n) = padicValRat p n := by simp
 #align padic_val_rat_of_nat padicValRat_of_nat
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
@@ -313,7 +313,7 @@ lemma finite_int_prime_iff {a : ℤ} : Finite (p : ℤ) a ↔ a ≠ 0 := by
 #align padic_val_rat.finite_int_prime_iff padicValRat.finite_int_prime_iff
 
 /-- A rewrite lemma for `padicValRat p q` when `q` is expressed in terms of `Rat.mk`. -/
-protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz : q ≠ 0)
+protected lemma defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz : q ≠ 0)
     (qdf : q = n /. d) :
     padicValRat p q =
       (multiplicity (p : ℤ) n).get
@@ -357,7 +357,7 @@ protected lemma pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} : padicValRat p (q ^ k) =
 #align padic_val_rat.pow padicValRat.pow
 
 /-- A rewrite lemma for `padicValRat p (q⁻¹)` with condition `q ≠ 0`. -/
-protected theorem inv (q : ℚ) : padicValRat p q⁻¹ = -padicValRat p q := by
+protected lemma inv (q : ℚ) : padicValRat p q⁻¹ = -padicValRat p q := by
   by_cases hq : q = 0
   · simp [hq]
   · rw [eq_neg_iff_add_eq_zero, ← padicValRat.mul (inv_ne_zero hq) hq, inv_mul_cancel hq,
@@ -459,7 +459,7 @@ protected lemma mul : a ≠ 0 → b ≠ 0 → padicValNat p (a * b) = padicValNa
   by exact_mod_cast @padicValRat.mul p _ a b
 #align padic_val_nat.mul padicValNat.mul
 
-protected theorem div_of_dvd (h : b ∣ a) :
+protected lemma div_of_dvd (h : b ∣ a) :
     padicValNat p (a / b) = padicValNat p a - padicValNat p b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
@@ -469,21 +469,21 @@ protected theorem div_of_dvd (h : b ∣ a) :
 #align padic_val_nat.div_of_dvd padicValNat.div_of_dvd
 
 /-- Dividing out by a prime factor reduces the `padicValNat` by `1`. -/
-protected theorem div (dvd : p ∣ b) : padicValNat p (b / p) = padicValNat p b - 1 := by
+protected lemma div (dvd : p ∣ b) : padicValNat p (b / p) = padicValNat p b - 1 := by
   rw [padicValNat.div_of_dvd dvd, padicValNat_self]
 #align padic_val_nat.div padicValNat.div
 
 /-- A version of `padicValRat.pow` for `padicValNat`. -/
-protected theorem pow (n : ℕ) (ha : a ≠ 0) : padicValNat p (a ^ n) = n * padicValNat p a := by
+protected lemma pow (n : ℕ) (ha : a ≠ 0) : padicValNat p (a ^ n) = n * padicValNat p a := by
   simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow (Nat.cast_ne_zero.mpr ha)
 #align padic_val_nat.pow padicValNat.pow
 
 @[simp]
-protected theorem prime_pow (n : ℕ) : padicValNat p (p ^ n) = n := by
+protected lemma prime_pow (n : ℕ) : padicValNat p (p ^ n) = n := by
   rw [padicValNat.pow _ (@Fact.out p.Prime).ne_zero, padicValNat_self, mul_one]
 #align padic_val_nat.prime_pow padicValNat.prime_pow
 
-protected theorem div_pow (dvd : p ^ a ∣ b) : padicValNat p (b / p ^ a) = padicValNat p b - a := by
+protected lemma div_pow (dvd : p ^ a ∣ b) : padicValNat p (b / p ^ a) = padicValNat p b - a := by
   rw [padicValNat.div_of_dvd dvd, padicValNat.prime_pow]
 #align padic_val_nat.div_pow padicValNat.div_pow
 
@@ -516,7 +516,7 @@ lemma padicValNat_dvd_iff_le [hp : Fact p.Prime] {a n : ℕ} (ha : a ≠ 0) :
   rw [pow_dvd_iff_le_multiplicity, ← padicValNat_def' hp.out.ne_one ha.bot_lt, PartENat.coe_le_coe]
 #align padic_val_nat_dvd_iff_le padicValNat_dvd_iff_le
 
-theorem padicValNat_dvd_iff (n : ℕ) [hp : Fact p.Prime] (a : ℕ) :
+lemma padicValNat_dvd_iff (n : ℕ) [hp : Fact p.Prime] (a : ℕ) :
     p ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValNat p a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact iff_of_true (dvd_zero _) (Or.inl rfl)
@@ -559,7 +559,7 @@ lemma range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
-theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime]:
+lemma padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime]:
     padicValNat p (p * n) ! = padicValNat p n ! + n := by
   refine' PartENat.natCast_inj.mp _
   rw [padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos (p * n), Nat.cast_add,
@@ -585,7 +585,7 @@ lemma padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h :
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
 largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
-@[simp] theorem padicValNat_mul_div_factorial (n : ℕ) [hp : Fact p.Prime] :
+@[simp] lemma padicValNat_mul_div_factorial (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * (n / p))! = padicValNat p n ! := by
   nth_rw 2 [← div_add_mod n p]
   exact (padicValNat_factorial_mul_add (n / p) <| mod_lt n hp.out.pos).symm
@@ -663,12 +663,12 @@ section padicValInt
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
-theorem padicValInt_dvd_iff (n : ℕ) (a : ℤ) : (p : ℤ) ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValInt p a := by
+lemma padicValInt_dvd_iff (n : ℕ) (a : ℤ) : (p : ℤ) ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValInt p a := by
   rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.coe_nat_dvd_left,
     Int.coe_nat_pow]
 #align padic_val_int_dvd_iff padicValInt_dvd_iff
 
-theorem padicValInt_dvd (a : ℤ) : (p : ℤ) ^ padicValInt p a ∣ a := by
+lemma padicValInt_dvd (a : ℤ) : (p : ℤ) ^ padicValInt p a ∣ a := by
   rw [padicValInt_dvd_iff]
   exact Or.inr le_rfl
 #align padic_val_int_dvd padicValInt_dvd
@@ -683,7 +683,7 @@ lemma padicValInt.mul {a b : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) :
   rw [Int.natAbs_mul, padicValNat.mul] <;> rwa [Int.natAbs_ne_zero]
 #align padic_val_int.mul padicValInt.mul
 
-theorem padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
+lemma padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.coe_nat_ne_zero.mpr hp.out.ne_zero)]
   simp only [eq_self_iff_true, padicValInt.of_nat, padicValNat_self]

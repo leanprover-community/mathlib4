@@ -71,7 +71,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
 
 @[simp]
-theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
+lemma id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Fintype.id_apply FintypeCat.id_apply
@@ -137,7 +137,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.len FintypeCat.Skeleton.len
 
 @[ext]
-theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
+lemma ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
   ULift.ext _ _
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.ext FintypeCat.Skeleton.ext
@@ -199,7 +199,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.equivalence FintypeCat.Skeleton.equivalence
 
 @[simp]
-theorem incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
+lemma incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
   convert Finset.card_fin n
   apply Fintype.ofEquiv_card
 set_option linter.uppercaseLean3 false in

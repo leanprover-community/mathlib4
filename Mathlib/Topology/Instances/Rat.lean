@@ -25,11 +25,11 @@ namespace Rat
 instance : MetricSpace ℚ :=
   MetricSpace.induced (↑) Rat.cast_injective Real.metricSpace
 
-theorem dist_eq (x y : ℚ) : dist x y = |(x : ℝ) - y| := rfl
+lemma dist_eq (x y : ℚ) : dist x y = |(x : ℝ) - y| := rfl
 #align rat.dist_eq Rat.dist_eq
 
 @[norm_cast, simp]
-theorem dist_cast (x y : ℚ) : dist (x : ℝ) y = dist x y :=
+lemma dist_cast (x y : ℚ) : dist (x : ℝ) y = dist x y :=
   rfl
 #align rat.dist_cast Rat.dist_cast
 
@@ -56,7 +56,7 @@ lemma continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
 end Rat
 
 @[norm_cast, simp]
-theorem Nat.dist_cast_rat (x y : ℕ) : dist (x : ℚ) y = dist x y := by
+lemma Nat.dist_cast_rat (x y : ℕ) : dist (x : ℚ) y = dist x y := by
   rw [← Nat.dist_cast_real, ← Rat.dist_cast]; congr
 #align nat.dist_cast_rat Nat.dist_cast_rat
 
@@ -69,7 +69,7 @@ lemma Nat.closedEmbedding_coe_rat : ClosedEmbedding ((↑) : ℕ → ℚ) :=
 #align nat.closed_embedding_coe_rat Nat.closedEmbedding_coe_rat
 
 @[norm_cast, simp]
-theorem Int.dist_cast_rat (x y : ℤ) : dist (x : ℚ) y = dist x y := by
+lemma Int.dist_cast_rat (x y : ℤ) : dist (x : ℚ) y = dist x y := by
   rw [← Int.dist_cast_real, ← Rat.dist_cast]; congr
 #align int.dist_cast_rat Int.dist_cast_rat
 
@@ -116,7 +116,7 @@ instance : TopologicalRing ℚ := inferInstance
 protected lemma continuous_mul : Continuous fun p : ℚ × ℚ => p.1 * p.2 := continuous_mul
 #align rat.continuous_mul Rat.continuous_mul
 
-nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
+nonrec lemma totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc] using
     totallyBounded_preimage Rat.uniformEmbedding_coe_real (totallyBounded_Icc (a : ℝ) b)
 #align rat.totally_bounded_Icc Rat.totallyBounded_Icc

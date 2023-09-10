@@ -58,7 +58,7 @@ lemma enumerate_eq_none :
         exact enumerate_eq_none h hm
 #align set.enumerate_eq_none Set.enumerate_eq_none
 
-theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
+lemma enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
     ∀ {s n a}, enumerate sel s n = some a → a ∈ s
   | s, 0, a => h_sel s a
   | s, n + 1, a => by

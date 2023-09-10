@@ -90,7 +90,7 @@ def inclusionInDoubleDual : E →L[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
 #align normed_space.inclusion_in_double_dual NormedSpace.inclusionInDoubleDual
 
 @[simp]
-theorem dual_def (x : E) (f : Dual 𝕜 E) : inclusionInDoubleDual 𝕜 E x f = f x :=
+lemma dual_def (x : E) (f : Dual 𝕜 E) : inclusionInDoubleDual 𝕜 E x f = f x :=
   rfl
 #align normed_space.dual_def NormedSpace.dual_def
 
@@ -104,7 +104,7 @@ lemma inclusionInDoubleDual_norm_le : ‖inclusionInDoubleDual 𝕜 E‖ ≤ 1 :
   exact ContinuousLinearMap.norm_id_le
 #align normed_space.inclusion_in_double_dual_norm_le NormedSpace.inclusionInDoubleDual_norm_le
 
-theorem double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
+lemma double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
   simpa using ContinuousLinearMap.le_of_op_norm_le _ (inclusionInDoubleDual_norm_le 𝕜 E) x
 #align normed_space.double_dual_bound NormedSpace.double_dual_bound
 
@@ -131,7 +131,7 @@ variable (𝕜 : Type v) [IsROrC 𝕜] {E : Type u} [NormedAddCommGroup E] [Norm
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `x`.
     Compare `ContinuousLinearMap.op_norm_le_bound`. -/
-theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 𝕜 E, ‖f x‖ ≤ M * ‖f‖) :
+lemma norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 𝕜 E, ‖f x‖ ≤ M * ‖f‖) :
     ‖x‖ ≤ M := by
   classical
     by_cases h : x = 0
@@ -148,7 +148,7 @@ lemma eq_zero_of_forall_dual_eq_zero {x : E} (h : ∀ f : Dual 𝕜 E, f x = (0 
   norm_le_zero_iff.mp (norm_le_dual_bound 𝕜 x le_rfl fun f => by simp [h f])
 #align normed_space.eq_zero_of_forall_dual_eq_zero NormedSpace.eq_zero_of_forall_dual_eq_zero
 
-theorem eq_zero_iff_forall_dual_eq_zero (x : E) : x = 0 ↔ ∀ g : Dual 𝕜 E, g x = 0 :=
+lemma eq_zero_iff_forall_dual_eq_zero (x : E) : x = 0 ↔ ∀ g : Dual 𝕜 E, g x = 0 :=
   ⟨fun hx => by simp [hx], fun h => eq_zero_of_forall_dual_eq_zero 𝕜 h⟩
 #align normed_space.eq_zero_iff_forall_dual_eq_zero NormedSpace.eq_zero_iff_forall_dual_eq_zero
 
@@ -199,7 +199,7 @@ lemma polar_univ : polar 𝕜 (univ : Set E) = {(0 : Dual 𝕜 E)} :=
     (LinearMap.flip_separatingRight.mpr (dualPairing_separatingLeft 𝕜 E))
 #align normed_space.polar_univ NormedSpace.polar_univ
 
-theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
+lemma isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   dsimp only [NormedSpace.polar]
   simp only [LinearMap.polar_eq_iInter, LinearMap.flip_apply]
   refine' isClosed_biInter fun z _ => _
@@ -207,7 +207,7 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
 #align normed_space.is_closed_polar NormedSpace.isClosed_polar
 
 @[simp]
-theorem polar_closure (s : Set E) : polar 𝕜 (closure s) = polar 𝕜 s :=
+lemma polar_closure (s : Set E) : polar 𝕜 (closure s) = polar 𝕜 s :=
   ((dualPairing 𝕜 E).flip.polar_antitone subset_closure).antisymm <|
     (dualPairing 𝕜 E).flip.polar_gc.l_le <|
       closure_minimal ((dualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by

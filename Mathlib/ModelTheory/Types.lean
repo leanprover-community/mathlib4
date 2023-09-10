@@ -75,26 +75,26 @@ instance Sentence.instSetLike : SetLike (T.CompleteType α) (L[[α]].Sentence) :
     congr ⟩
 #align first_order.language.Theory.complete_type.sentence.set_like FirstOrder.Language.Theory.CompleteType.Sentence.instSetLike
 
-theorem isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
+lemma isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
   p.isMaximal'
 #align first_order.language.Theory.complete_type.is_maximal FirstOrder.Language.Theory.CompleteType.isMaximal
 
-theorem subset (p : T.CompleteType α) : (L.lhomWithConstants α).onTheory T ⊆ (p : L[[α]].Theory) :=
+lemma subset (p : T.CompleteType α) : (L.lhomWithConstants α).onTheory T ⊆ (p : L[[α]].Theory) :=
   p.subset'
 #align first_order.language.Theory.complete_type.subset FirstOrder.Language.Theory.CompleteType.subset
 
-theorem mem_or_not_mem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
+lemma mem_or_not_mem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
   p.isMaximal.mem_or_not_mem φ
 #align first_order.language.Theory.complete_type.mem_or_not_mem FirstOrder.Language.Theory.CompleteType.mem_or_not_mem
 
-theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
+lemma mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     (h : (L.lhomWithConstants α).onTheory T ⊨ᵇ φ) : φ ∈ p :=
   (p.mem_or_not_mem φ).resolve_right fun con =>
     ((models_iff_not_satisfiable _).1 h)
       (p.isMaximal.1.mono (union_subset p.subset (singleton_subset_iff.2 con)))
 #align first_order.language.Theory.complete_type.mem_of_models FirstOrder.Language.Theory.CompleteType.mem_of_models
 
-theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ ¬φ ∈ p :=
+lemma not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ ¬φ ∈ p :=
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
       rintro ⟨@⟨_, _, h, _⟩⟩
@@ -111,7 +111,7 @@ lemma compl_setOf_mem {φ : L[[α]].Sentence} :
   ext fun _ => (not_mem_iff _ _).symm
 #align first_order.language.Theory.complete_type.compl_set_of_mem FirstOrder.Language.Theory.CompleteType.compl_setOf_mem
 
-theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
+lemma setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
     { p : T.CompleteType α | S ⊆ ↑p } = ∅ ↔
       ¬((L.lhomWithConstants α).onTheory T ∪ S).IsSatisfiable := by
   rw [iff_not_comm, ← not_nonempty_iff_eq_empty, Classical.not_not, Set.Nonempty]
@@ -125,13 +125,13 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
   exact p.isMaximal.1.mono (union_subset p.subset hp)
 #align first_order.language.Theory.complete_type.set_of_subset_eq_empty_iff FirstOrder.Language.Theory.CompleteType.setOf_subset_eq_empty_iff
 
-theorem setOf_mem_eq_univ_iff (φ : L[[α]].Sentence) :
+lemma setOf_mem_eq_univ_iff (φ : L[[α]].Sentence) :
     { p : T.CompleteType α | φ ∈ p } = Set.univ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ φ := by
   rw [models_iff_not_satisfiable, ← compl_empty_iff, compl_setOf_mem, ← setOf_subset_eq_empty_iff]
   simp
 #align first_order.language.Theory.complete_type.set_of_mem_eq_univ_iff FirstOrder.Language.Theory.CompleteType.setOf_mem_eq_univ_iff
 
-theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
+lemma setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
     { p : T.CompleteType α | S ⊆ ↑p } = Set.univ ↔
       ∀ φ, φ ∈ S → (L.lhomWithConstants α).onTheory T ⊨ᵇ φ := by
   have h : { p : T.CompleteType α | S ⊆ ↑p } = ⋂₀ ((fun φ => { p | φ ∈ p }) '' S) := by
@@ -210,7 +210,7 @@ section
 -- Porting note: This instance interrupts synthesizing instances.
 attribute [-instance] FirstOrder.Language.withConstants_expansion
 
-theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
+lemma exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
   obtain ⟨M⟩ := p.isMaximal.1
   refine' ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a => (L.con a : M), _⟩

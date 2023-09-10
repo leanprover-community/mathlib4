@@ -75,7 +75,7 @@ lemma Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
 #align nat.measurable_floor Nat.measurable_floor
 
 @[measurability]
-theorem Measurable.nat_floor (hf : Measurable f) : Measurable fun x => ⌊f x⌋₊ :=
+lemma Measurable.nat_floor (hf : Measurable f) : Measurable fun x => ⌊f x⌋₊ :=
   Nat.measurable_floor.comp hf
 #align measurable.nat_floor Measurable.nat_floor
 
@@ -85,7 +85,7 @@ lemma Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
 #align nat.measurable_ceil Nat.measurable_ceil
 
 @[measurability]
-theorem Measurable.nat_ceil (hf : Measurable f) : Measurable fun x => ⌈f x⌉₊ :=
+lemma Measurable.nat_ceil (hf : Measurable f) : Measurable fun x => ⌈f x⌉₊ :=
   Nat.measurable_ceil.comp hf
 #align measurable.nat_ceil Measurable.nat_ceil
 

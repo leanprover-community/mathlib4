@@ -104,18 +104,18 @@ lemma coe_toSubfield : (S.toSubfield : Set L) = S :=
 #align intermediate_field.coe_to_subfield IntermediateField.coe_toSubfield
 
 @[simp]
-theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
+lemma mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
     x ∈ IntermediateField.mk (Subalgebra.mk s hK) hi ↔ x ∈ s :=
   Iff.rfl
 #align intermediate_field.mem_mk IntermediateField.mem_mkₓ
 
 @[simp]
-theorem mem_toSubalgebra (s : IntermediateField K L) (x : L) : x ∈ s.toSubalgebra ↔ x ∈ s :=
+lemma mem_toSubalgebra (s : IntermediateField K L) (x : L) : x ∈ s.toSubalgebra ↔ x ∈ s :=
   Iff.rfl
 #align intermediate_field.mem_to_subalgebra IntermediateField.mem_toSubalgebra
 
 @[simp]
-theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield ↔ x ∈ s :=
+lemma mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield ↔ x ∈ s :=
   Iff.rfl
 #align intermediate_field.mem_to_subfield IntermediateField.mem_toSubfield
 
@@ -130,12 +130,12 @@ protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : Int
 #align intermediate_field.copy IntermediateField.copy
 
 @[simp]
-theorem coe_copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
+lemma coe_copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
     (S.copy s hs : Set L) = s :=
   rfl
 #align intermediate_field.coe_copy IntermediateField.coe_copy
 
-theorem copy_eq (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : S.copy s hs = S :=
+lemma copy_eq (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 #align intermediate_field.copy_eq IntermediateField.copy_eq
 
@@ -150,7 +150,7 @@ subobject class.
 
 
 /-- An intermediate field contains the image of the smaller field. -/
-theorem algebraMap_mem (x : K) : algebraMap K L x ∈ S :=
+lemma algebraMap_mem (x : K) : algebraMap K L x ∈ S :=
   S.algebraMap_mem' x
 #align intermediate_field.algebra_map_mem IntermediateField.algebraMap_mem
 
@@ -205,12 +205,12 @@ protected lemma list_sum_mem {l : List L} : (∀ x ∈ l, x ∈ S) → l.sum ∈
 #align intermediate_field.list_sum_mem IntermediateField.list_sum_mem
 
 /-- Product of a multiset of elements in an intermediate field is in the intermediate_field. -/
-protected theorem multiset_prod_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.prod ∈ S :=
+protected lemma multiset_prod_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.prod ∈ S :=
   multiset_prod_mem m
 #align intermediate_field.multiset_prod_mem IntermediateField.multiset_prod_mem
 
 /-- Sum of a multiset of elements in an `IntermediateField` is in the `IntermediateField`. -/
-protected theorem multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.sum ∈ S :=
+protected lemma multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.sum ∈ S :=
   multiset_sum_mem m
 #align intermediate_field.multiset_sum_mem IntermediateField.multiset_sum_mem
 
@@ -236,23 +236,23 @@ protected lemma zsmul_mem {x : L} (hx : x ∈ S) (n : ℤ) : n • x ∈ S :=
   zsmul_mem hx n
 #align intermediate_field.zsmul_mem IntermediateField.zsmul_mem
 
-protected theorem coe_int_mem (n : ℤ) : (n : L) ∈ S :=
+protected lemma coe_int_mem (n : ℤ) : (n : L) ∈ S :=
   coe_int_mem S n
 #align intermediate_field.coe_int_mem IntermediateField.coe_int_mem
 
-protected theorem coe_add (x y : S) : (↑(x + y) : L) = ↑x + ↑y :=
+protected lemma coe_add (x y : S) : (↑(x + y) : L) = ↑x + ↑y :=
   rfl
 #align intermediate_field.coe_add IntermediateField.coe_add
 
-protected theorem coe_neg (x : S) : (↑(-x) : L) = -↑x :=
+protected lemma coe_neg (x : S) : (↑(-x) : L) = -↑x :=
   rfl
 #align intermediate_field.coe_neg IntermediateField.coe_neg
 
-protected theorem coe_mul (x y : S) : (↑(x * y) : L) = ↑x * ↑y :=
+protected lemma coe_mul (x y : S) : (↑(x * y) : L) = ↑x * ↑y :=
   rfl
 #align intermediate_field.coe_mul IntermediateField.coe_mul
 
-protected theorem coe_inv (x : S) : (↑x⁻¹ : L) = (↑x)⁻¹ :=
+protected lemma coe_inv (x : S) : (↑x⁻¹ : L) = (↑x)⁻¹ :=
   rfl
 #align intermediate_field.coe_inv IntermediateField.coe_inv
 
@@ -264,13 +264,13 @@ protected lemma coe_one : ((1 : S) : L) = 1 :=
   rfl
 #align intermediate_field.coe_one IntermediateField.coe_one
 
-protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n :=
+protected lemma coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n :=
   SubmonoidClass.coe_pow x n
 #align intermediate_field.coe_pow IntermediateField.coe_pow
 
 end InheritedLemmas
 
-theorem coe_nat_mem (n : ℕ) : (n : L) ∈ S := by simpa using coe_int_mem S n
+lemma coe_nat_mem (n : ℕ) : (n : L) ∈ S := by simpa using coe_int_mem S n
 #align intermediate_field.coe_nat_mem IntermediateField.coe_nat_mem
 
 end IntermediateField
@@ -283,14 +283,14 @@ def Subalgebra.toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, 
 #align subalgebra.to_intermediate_field Subalgebra.toIntermediateField
 
 @[simp]
-theorem toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, x⁻¹ ∈ S) :
+lemma toSubalgebra_toIntermediateField (S : Subalgebra K L) (inv_mem : ∀ x ∈ S, x⁻¹ ∈ S) :
     (S.toIntermediateField inv_mem).toSubalgebra = S := by
   ext
   rfl
 #align to_subalgebra_to_intermediate_field toSubalgebra_toIntermediateField
 
 @[simp]
-theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
+lemma toIntermediateField_toSubalgebra (S : IntermediateField K L) :
     (S.toSubalgebra.toIntermediateField fun x => S.inv_mem) = S := by
   ext
   rfl
@@ -309,14 +309,14 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
 #align subalgebra.to_intermediate_field' Subalgebra.toIntermediateField'
 
 @[simp]
-theorem toSubalgebra_toIntermediateField' (S : Subalgebra K L) (hS : IsField S) :
+lemma toSubalgebra_toIntermediateField' (S : Subalgebra K L) (hS : IsField S) :
     (S.toIntermediateField' hS).toSubalgebra = S := by
   ext
   rfl
 #align to_subalgebra_to_intermediate_field' toSubalgebra_toIntermediateField'
 
 @[simp]
-theorem toIntermediateField'_toSubalgebra (S : IntermediateField K L) :
+lemma toIntermediateField'_toSubalgebra (S : IntermediateField K L) :
     S.toSubalgebra.toIntermediateField' (Field.toIsField S) = S := by
   ext
   rfl
@@ -413,7 +413,7 @@ def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L
 #align intermediate_field.map IntermediateField.map
 
 @[simp]
-theorem coe_map (f : L →ₐ[K] L') : (S.map f : Set L') = f '' S :=
+lemma coe_map (f : L →ₐ[K] L') : (S.map f : Set L') = f '' S :=
   rfl
 #align intermediate_field.coe_map IntermediateField.coe_map
 
@@ -423,7 +423,7 @@ lemma map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁]
   SetLike.coe_injective <| Set.image_image _ _ _
 #align intermediate_field.map_map IntermediateField.map_map
 
-theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
+lemma map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
   SetLike.coe_mono (Set.image_subset f h)
 
@@ -437,13 +437,13 @@ def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E �
 /- We manually add these two simp lemmas because `@[simps]` before `intermediate_field_map`
   led to a timeout. -/
 @[simp]
-theorem intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
+lemma intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
     ↑(intermediateFieldMap e E a) = e a :=
   rfl
 #align intermediate_field.intermediate_field_map_apply_coe IntermediateField.intermediateFieldMap_apply_coe
 
 @[simp]
-theorem intermediateFieldMap_symm_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L)
+lemma intermediateFieldMap_symm_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L)
     (a : E.map e.toAlgHom) : ↑((intermediateFieldMap e E).symm a) = e.symm a :=
   rfl
 #align intermediate_field.intermediate_field_map_symm_apply_coe IntermediateField.intermediateFieldMap_symm_apply_coe
@@ -721,7 +721,7 @@ lemma isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
   rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
 #align intermediate_field.is_integral_iff IntermediateField.isIntegral_iff
 
-theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := by
+lemma minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := by
   by_cases hx : IsIntegral K x
   · exact minpoly.eq_of_algebraMap_eq (algebraMap S L).injective hx rfl
   · exact (minpoly.eq_zero hx).trans (minpoly.eq_zero (mt isIntegral_iff.mpr hx)).symm
@@ -740,13 +740,13 @@ def subalgebraEquivIntermediateField (alg : Algebra.IsAlgebraic K L) :
 #align subalgebra_equiv_intermediate_field subalgebraEquivIntermediateField
 
 @[simp]
-theorem mem_subalgebraEquivIntermediateField (alg : Algebra.IsAlgebraic K L) {S : Subalgebra K L}
+lemma mem_subalgebraEquivIntermediateField (alg : Algebra.IsAlgebraic K L) {S : Subalgebra K L}
     {x : L} : x ∈ subalgebraEquivIntermediateField alg S ↔ x ∈ S :=
   Iff.rfl
 #align mem_subalgebra_equiv_intermediate_field mem_subalgebraEquivIntermediateField
 
 @[simp]
-theorem mem_subalgebraEquivIntermediateField_symm (alg : Algebra.IsAlgebraic K L)
+lemma mem_subalgebraEquivIntermediateField_symm (alg : Algebra.IsAlgebraic K L)
     {S : IntermediateField K L} {x : L} :
     x ∈ (subalgebraEquivIntermediateField alg).symm S ↔ x ∈ S :=
   Iff.rfl

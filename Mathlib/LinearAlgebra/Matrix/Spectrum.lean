@@ -73,17 +73,17 @@ noncomputable instance : Invertible hA.eigenvectorMatrixInv :=
 noncomputable instance : Invertible hA.eigenvectorMatrix :=
   invertibleOfRightInverse _ _ hA.eigenvectorMatrix_mul_inv
 
-theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenvectorBasis j i := by
+lemma eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenvectorBasis j i := by
   simp_rw [eigenvectorMatrix, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis,
     PiLp.basisFun_repr]
 #align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorMatrix_apply
 
 /-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
-theorem transpose_eigenvectorMatrix_apply (i : n) :
+lemma transpose_eigenvectorMatrix_apply (i : n) :
     hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
   funext <| fun j => eigenvectorMatrix_apply hA j i
 
-theorem eigenvectorMatrixInv_apply (i j : n) :
+lemma eigenvectorMatrixInv_apply (i j : n) :
     hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
   rw [eigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
     OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, WithLp.equiv_symm_single,
@@ -121,7 +121,7 @@ lemma spectral_theorem :
       OrthonormalBasis.repr_reindex, eigenvalues₀, PiLp.basisFun_apply, WithLp.equiv_symm_single]
 #align matrix.is_hermitian.spectral_theorem Matrix.IsHermitian.spectral_theorem
 
-theorem eigenvalues_eq (i : n) :
+lemma eigenvalues_eq (i : n) :
     hA.eigenvalues i =
       IsROrC.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A.mulVec (hA.eigenvectorMatrixᵀ i)) := by
   have := hA.spectral_theorem

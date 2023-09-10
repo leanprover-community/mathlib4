@@ -63,7 +63,7 @@ lemma not_dvd_one_of_finite_one_right {a : α} : Finite a 1 → ¬a ∣ 1 := fun
 #align multiplicity.not_dvd_one_of_finite_one_right multiplicity.not_dvd_one_of_finite_one_right
 
 @[norm_cast]
-theorem Int.coe_nat_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b := by
+lemma Int.coe_nat_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b := by
   apply Part.ext'
   · rw [← @finite_iff_dom ℕ, @finite_def ℕ, ← @finite_iff_dom ℤ, @finite_def ℤ]
     norm_cast
@@ -183,7 +183,7 @@ lemma isUnit_left {a : α} (b : α) (ha : IsUnit a) : multiplicity a b = ⊤ :=
 #align multiplicity.is_unit_left multiplicity.isUnit_left
 
 -- @[simp] Porting note: simp can prove this
-theorem one_left (b : α) : multiplicity 1 b = ⊤ :=
+lemma one_left (b : α) : multiplicity 1 b = ⊤ :=
   isUnit_left b isUnit_one
 #align multiplicity.one_left multiplicity.one_left
 
@@ -194,7 +194,7 @@ lemma get_one_right {a : α} (ha : Finite a 1) : get (multiplicity a 1) ha = 0 :
 #align multiplicity.get_one_right multiplicity.get_one_right
 
 -- @[simp] Porting note: simp can prove this
-theorem unit_left (a : α) (u : αˣ) : multiplicity (u : α) a = ⊤ :=
+lemma unit_left (a : α) (u : αˣ) : multiplicity (u : α) a = ⊤ :=
   isUnit_left a u.isUnit
 #align multiplicity.unit_left multiplicity.unit_left
 
@@ -354,12 +354,12 @@ lemma ne_zero_of_finite {a b : α} (h : Finite a b) : b ≠ 0 :=
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
 @[simp]
-protected theorem zero (a : α) : multiplicity a 0 = ⊤ :=
+protected lemma zero (a : α) : multiplicity a 0 = ⊤ :=
   Part.eq_none_iff.2 fun _ ⟨⟨_, hk⟩, _⟩ => hk (dvd_zero _)
 #align multiplicity.zero multiplicity.zero
 
 @[simp]
-theorem multiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : multiplicity 0 a = 0 :=
+lemma multiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : multiplicity 0 a = 0 :=
   multiplicity.multiplicity_eq_zero.2 <| mt zero_dvd_iff.1 ha
 #align multiplicity.multiplicity_zero_eq_zero_of_ne_zero multiplicity.multiplicity_zero_eq_zero_of_ne_zero
 
@@ -416,7 +416,7 @@ section Ring
 variable [Ring α] [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
 @[simp]
-protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
+protected lemma neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
   Part.ext' (by simp only [multiplicity, PartENat.find, dvd_neg]) fun h₁ h₂ =>
     PartENat.natCast_inj.1 (by
       rw [PartENat.natCast_get]
@@ -425,7 +425,7 @@ protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
                 (mt dvd_neg.1 (is_greatest' _ (lt_succ_self _)))))
 #align multiplicity.neg multiplicity.neg
 
-theorem Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
+lemma Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
   cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
   · rw [Int.coe_nat_multiplicity]
   · rw [multiplicity.neg, Int.coe_nat_multiplicity]

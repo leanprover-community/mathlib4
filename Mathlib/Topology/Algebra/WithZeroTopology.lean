@@ -65,13 +65,13 @@ lemma hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠
   exact directedOn_iff_directed.2 (directed_of_inf fun a b hab => Iio_subset_Iio hab)
 #align with_zero_topology.has_basis_nhds_zero WithZeroTopology.hasBasis_nhds_zero
 
-theorem Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=
+lemma Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=
   hasBasis_nhds_zero.mem_of_mem hγ
 #align with_zero_topology.Iio_mem_nhds_zero WithZeroTopology.Iio_mem_nhds_zero
 
 /-- If `γ` is an invertible element of a linearly ordered group with zero element adjoined, then
 `Iio (γ : Γ₀)` is a neighbourhood of `0`. -/
-theorem nhds_zero_of_units (γ : Γ₀ˣ) : Iio ↑γ ∈ 𝓝 (0 : Γ₀) :=
+lemma nhds_zero_of_units (γ : Γ₀ˣ) : Iio ↑γ ∈ 𝓝 (0 : Γ₀) :=
   Iio_mem_nhds_zero γ.ne_zero
 #align with_zero_topology.nhds_zero_of_units WithZeroTopology.nhds_zero_of_units
 
@@ -92,18 +92,18 @@ lemma nhds_of_ne_zero {γ : Γ₀} (h₀ : γ ≠ 0) : 𝓝 γ = pure γ := by
 
 /-- The neighbourhood filter of an invertible element consists of all sets containing that
 element. -/
-theorem nhds_coe_units (γ : Γ₀ˣ) : 𝓝 (γ : Γ₀) = pure (γ : Γ₀) :=
+lemma nhds_coe_units (γ : Γ₀ˣ) : 𝓝 (γ : Γ₀) = pure (γ : Γ₀) :=
   nhds_of_ne_zero γ.ne_zero
 #align with_zero_topology.nhds_coe_units WithZeroTopology.nhds_coe_units
 
 /-- If `γ` is an invertible element of a linearly ordered group with zero element adjoined, then
 `{γ}` is a neighbourhood of `γ`. -/
-theorem singleton_mem_nhds_of_units (γ : Γ₀ˣ) : ({↑γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp
+lemma singleton_mem_nhds_of_units (γ : Γ₀ˣ) : ({↑γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp
 #align with_zero_topology.singleton_mem_nhds_of_units WithZeroTopology.singleton_mem_nhds_of_units
 
 /-- If `γ` is a nonzero element of a linearly ordered group with zero element adjoined, then `{γ}`
 is a neighbourhood of `γ`. -/
-theorem singleton_mem_nhds_of_ne_zero (h : γ ≠ 0) : ({γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp [h]
+lemma singleton_mem_nhds_of_ne_zero (h : γ ≠ 0) : ({γ} : Set Γ₀) ∈ 𝓝 (γ : Γ₀) := by simp [h]
 #align with_zero_topology.singleton_mem_nhds_of_ne_zero WithZeroTopology.singleton_mem_nhds_of_ne_zero
 
 lemma hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
@@ -112,7 +112,7 @@ lemma hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
   exact hasBasis_pure _
 #align with_zero_topology.has_basis_nhds_of_ne_zero WithZeroTopology.hasBasis_nhds_of_ne_zero
 
-theorem hasBasis_nhds_units (γ : Γ₀ˣ) :
+lemma hasBasis_nhds_units (γ : Γ₀ˣ) :
     HasBasis (𝓝 (γ : Γ₀)) (fun _ : Unit => True) fun _ => {↑γ} :=
   hasBasis_nhds_of_ne_zero γ.ne_zero
 #align with_zero_topology.has_basis_nhds_units WithZeroTopology.hasBasis_nhds_units
@@ -125,7 +125,7 @@ lemma tendsto_units {γ₀ : Γ₀ˣ} : Tendsto f l (𝓝 (γ₀ : Γ₀)) ↔ �
   tendsto_of_ne_zero γ₀.ne_zero
 #align with_zero_topology.tendsto_units WithZeroTopology.tendsto_units
 
-theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
+lemma Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
   rcases eq_or_ne γ₁ 0 with (rfl | h₀) <;> simp [*, h.ne', Iio_mem_nhds_zero]
 #align with_zero_topology.Iio_mem_nhds WithZeroTopology.Iio_mem_nhds
 

@@ -107,7 +107,7 @@ def relabel (g : α → β) : L.Term α → L.Term β
   | func f ts => func f fun {i} => (ts i).relabel g
 #align first_order.language.term.relabel FirstOrder.Language.Term.relabel
 
-theorem relabel_id (t : L.Term α) : t.relabel id = t := by
+lemma relabel_id (t : L.Term α) : t.relabel id = t := by
   induction' t with _ _ _ _ ih
   · rfl
   · simp [ih]
@@ -119,7 +119,7 @@ lemma relabel_id_eq_id : (Term.relabel id : L.Term α → L.Term α) = id :=
 #align first_order.language.term.relabel_id_eq_id FirstOrder.Language.Term.relabel_id_eq_id
 
 @[simp]
-theorem relabel_relabel (f : α → β) (g : β → γ) (t : L.Term α) :
+lemma relabel_relabel (f : α → β) (g : β → γ) (t : L.Term α) :
     (t.relabel f).relabel g = t.relabel (g ∘ f) := by
   induction' t with _ _ _ _ ih
   · rfl
@@ -127,7 +127,7 @@ theorem relabel_relabel (f : α → β) (g : β → γ) (t : L.Term α) :
 #align first_order.language.term.relabel_relabel FirstOrder.Language.Term.relabel_relabel
 
 @[simp]
-theorem relabel_comp_relabel (f : α → β) (g : β → γ) :
+lemma relabel_comp_relabel (f : α → β) (g : β → γ) :
     (Term.relabel g ∘ Term.relabel f : L.Term α → L.Term γ) = Term.relabel (g ∘ f) :=
   funext (relabel_relabel f g)
 #align first_order.language.term.relabel_comp_relabel FirstOrder.Language.Term.relabel_comp_relabel
@@ -224,13 +224,13 @@ def constantsVarsEquivLeft : L[[γ]].Term (Sum α β) ≃ L.Term (Sum (Sum γ α
 #align first_order.language.term.constants_vars_equiv_left FirstOrder.Language.Term.constantsVarsEquivLeft
 
 @[simp]
-theorem constantsVarsEquivLeft_apply (t : L[[γ]].Term (Sum α β)) :
+lemma constantsVarsEquivLeft_apply (t : L[[γ]].Term (Sum α β)) :
     constantsVarsEquivLeft t = (constantsToVars t).relabel (Equiv.sumAssoc _ _ _).symm :=
   rfl
 #align first_order.language.term.constants_vars_equiv_left_apply FirstOrder.Language.Term.constantsVarsEquivLeft_apply
 
 @[simp]
-theorem constantsVarsEquivLeft_symm_apply (t : L.Term (Sum (Sum γ α) β)) :
+lemma constantsVarsEquivLeft_symm_apply (t : L.Term (Sum (Sum γ α) β)) :
     constantsVarsEquivLeft.symm t = varsToConstants (t.relabel (Equiv.sumAssoc _ _ _)) :=
   rfl
 #align first_order.language.term.constants_vars_equiv_left_symm_apply FirstOrder.Language.Term.constantsVarsEquivLeft_symm_apply
@@ -580,7 +580,7 @@ lemma sum_elim_comp_relabelAux {m : ℕ} {g : α → Sum β (Fin n)} {v : β →
 #align first_order.language.bounded_formula.sum_elim_comp_relabel_aux FirstOrder.Language.BoundedFormula.sum_elim_comp_relabelAux
 
 @[simp]
-theorem relabelAux_sum_inl (k : ℕ) :
+lemma relabelAux_sum_inl (k : ℕ) :
     relabelAux (Sum.inl : α → Sum α (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
   cases x <;> · simp [relabelAux]
@@ -599,41 +599,41 @@ def relabelEquiv (g : α ≃ β) {k} : L.BoundedFormula α k ≃ L.BoundedFormul
 #align first_order.language.bounded_formula.relabel_equiv FirstOrder.Language.BoundedFormula.relabelEquiv
 
 @[simp]
-theorem relabel_falsum (g : α → Sum β (Fin n)) {k} :
+lemma relabel_falsum (g : α → Sum β (Fin n)) {k} :
     (falsum : L.BoundedFormula α k).relabel g = falsum :=
   rfl
 #align first_order.language.bounded_formula.relabel_falsum FirstOrder.Language.BoundedFormula.relabel_falsum
 
 @[simp]
-theorem relabel_bot (g : α → Sum β (Fin n)) {k} : (⊥ : L.BoundedFormula α k).relabel g = ⊥ :=
+lemma relabel_bot (g : α → Sum β (Fin n)) {k} : (⊥ : L.BoundedFormula α k).relabel g = ⊥ :=
   rfl
 #align first_order.language.bounded_formula.relabel_bot FirstOrder.Language.BoundedFormula.relabel_bot
 
 @[simp]
-theorem relabel_imp (g : α → Sum β (Fin n)) {k} (φ ψ : L.BoundedFormula α k) :
+lemma relabel_imp (g : α → Sum β (Fin n)) {k} (φ ψ : L.BoundedFormula α k) :
     (φ.imp ψ).relabel g = (φ.relabel g).imp (ψ.relabel g) :=
   rfl
 #align first_order.language.bounded_formula.relabel_imp FirstOrder.Language.BoundedFormula.relabel_imp
 
 @[simp]
-theorem relabel_not (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α k) :
+lemma relabel_not (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α k) :
     φ.not.relabel g = (φ.relabel g).not := by simp [BoundedFormula.not]
 #align first_order.language.bounded_formula.relabel_not FirstOrder.Language.BoundedFormula.relabel_not
 
 @[simp]
-theorem relabel_all (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
+lemma relabel_all (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.all.relabel g = (φ.relabel g).all := by
   rw [relabel, mapTermRel, relabel]
   simp
 #align first_order.language.bounded_formula.relabel_all FirstOrder.Language.BoundedFormula.relabel_all
 
 @[simp]
-theorem relabel_ex (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
+lemma relabel_ex (g : α → Sum β (Fin n)) {k} (φ : L.BoundedFormula α (k + 1)) :
     φ.ex.relabel g = (φ.relabel g).ex := by simp [BoundedFormula.ex]
 #align first_order.language.bounded_formula.relabel_ex FirstOrder.Language.BoundedFormula.relabel_ex
 
 @[simp]
-theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
+lemma relabel_sum_inl (φ : L.BoundedFormula α n) :
     (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (ge_of_eq (zero_add n)) := by
   simp only [relabel, relabelAux_sum_inl]
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
@@ -689,11 +689,11 @@ inductive IsAtomic : L.BoundedFormula α n → Prop
     IsAtomic (R.boundedFormula ts)
 #align first_order.language.bounded_formula.is_atomic FirstOrder.Language.BoundedFormula.IsAtomic
 
-theorem not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic := fun con => by
+lemma not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic := fun con => by
   cases con
 #align first_order.language.bounded_formula.not_all_is_atomic FirstOrder.Language.BoundedFormula.not_all_isAtomic
 
-theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con => by cases con
+lemma not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con => by cases con
 #align first_order.language.bounded_formula.not_ex_is_atomic FirstOrder.Language.BoundedFormula.not_ex_isAtomic
 
 lemma IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
@@ -742,12 +742,12 @@ lemma IsQF.castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 #align first_order.language.bounded_formula.is_qf.cast_le FirstOrder.Language.BoundedFormula.IsQF.castLE
 
-theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
+lemma not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
   cases' con with _ con
   exact φ.not_all_isAtomic con
 #align first_order.language.bounded_formula.not_all_is_qf FirstOrder.Language.BoundedFormula.not_all_isQF
 
-theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
+lemma not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
   cases' con with _ con _ _ con
   · exact φ.not_ex_isAtomic con
   · exact not_all_isQF _ con
@@ -783,7 +783,7 @@ lemma IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     fun _ h => by simp [h.ex]
 #align first_order.language.bounded_formula.is_prenex.relabel FirstOrder.Language.BoundedFormula.IsPrenex.relabel
 
-theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
+lemma IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
   IsPrenex.recOn (motive := @fun l φ _ => ∀ (n : ℕ) (h : l ≤ n), (φ.castLE h).IsPrenex) hφ
     (@fun _ _ ih _ _ => ih.castLE.isPrenex)
     (@fun _ _ _ ih _ _ => (ih _ _).all)
@@ -866,7 +866,7 @@ def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
   | _, all f => f.toPrenex.all
 #align first_order.language.bounded_formula.to_prenex FirstOrder.Language.BoundedFormula.toPrenex
 
-theorem toPrenex_isPrenex (φ : L.BoundedFormula α n) : φ.toPrenex.IsPrenex :=
+lemma toPrenex_isPrenex (φ : L.BoundedFormula α n) : φ.toPrenex.IsPrenex :=
   BoundedFormula.recOn φ isQF_bot.isPrenex (fun _ _ => (IsAtomic.equal _ _).isPrenex)
     (fun _ _ => (IsAtomic.rel _ _).isPrenex) (fun _ _ h1 h2 => isPrenex_toPrenexImp h1 h2)
     fun _ => IsPrenex.all
@@ -962,7 +962,7 @@ def onBoundedFormula (φ : L ≃ᴸ L') : L.BoundedFormula α n ≃ L'.BoundedFo
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lequiv.on_bounded_formula FirstOrder.Language.LEquiv.onBoundedFormula
 
-theorem onBoundedFormula_symm (φ : L ≃ᴸ L') :
+lemma onBoundedFormula_symm (φ : L ≃ᴸ L') :
     (φ.onBoundedFormula.symm : L'.BoundedFormula α n ≃ L.BoundedFormula α n) =
       φ.symm.onBoundedFormula :=
   rfl
@@ -976,14 +976,14 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.Lequiv.on_formula FirstOrder.Language.LEquiv.onFormula
 
 @[simp]
-theorem onFormula_apply (φ : L ≃ᴸ L') :
+lemma onFormula_apply (φ : L ≃ᴸ L') :
     (φ.onFormula : L.Formula α → L'.Formula α) = φ.toLHom.onFormula :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lequiv.on_formula_apply FirstOrder.Language.LEquiv.onFormula_apply
 
 @[simp]
-theorem onFormula_symm (φ : L ≃ᴸ L') :
+lemma onFormula_symm (φ : L ≃ᴸ L') :
     (φ.onFormula.symm : L'.Formula α ≃ L.Formula α) = φ.symm.onFormula :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -1058,7 +1058,7 @@ protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 #align first_order.language.formula.iff FirstOrder.Language.Formula.iff
 
-theorem isAtomic_graph (f : L.Functions n) : (graph f).IsAtomic :=
+lemma isAtomic_graph (f : L.Functions n) : (graph f).IsAtomic :=
   BoundedFormula.IsAtomic.equal _ _
 #align first_order.language.formula.is_atomic_graph FirstOrder.Language.Formula.isAtomic_graph
 
@@ -1067,11 +1067,11 @@ def equivSentence : L.Formula α ≃ L[[α]].Sentence :=
   (BoundedFormula.constantsVarsEquiv.trans (BoundedFormula.relabelEquiv (Equiv.sumEmpty _ _))).symm
 #align first_order.language.formula.equiv_sentence FirstOrder.Language.Formula.equivSentence
 
-theorem equivSentence_not (φ : L.Formula α) : equivSentence φ.not = (equivSentence φ).not :=
+lemma equivSentence_not (φ : L.Formula α) : equivSentence φ.not = (equivSentence φ).not :=
   rfl
 #align first_order.language.formula.equiv_sentence_not FirstOrder.Language.Formula.equivSentence_not
 
-theorem equivSentence_inf (φ ψ : L.Formula α) :
+lemma equivSentence_inf (φ ψ : L.Formula α) :
     equivSentence (φ ⊓ ψ) = equivSentence φ ⊓ equivSentence ψ :=
   rfl
 #align first_order.language.formula.equiv_sentence_inf FirstOrder.Language.Formula.equivSentence_inf
@@ -1155,7 +1155,7 @@ lemma directed_distinctConstantsTheory :
   Monotone.directed_le monotone_distinctConstantsTheory
 #align first_order.language.directed_distinct_constants_theory FirstOrder.Language.directed_distinctConstantsTheory
 
-theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
+lemma distinctConstantsTheory_eq_iUnion (s : Set α) :
     L.distinctConstantsTheory s =
       ⋃ t : Finset s,
         L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x => x ∈ s)) := by

@@ -134,22 +134,22 @@ function instead. -/
 instance : CoeFun (ContDiffBump c) fun _ => E → ℝ :=
   ⟨toFun⟩
 
-protected theorem apply (x : E) :
+protected lemma apply (x : E) :
     f x = (someContDiffBumpBase E).toFun (f.rOut / f.rIn) (f.rIn⁻¹ • (x - c)) :=
   rfl
 #align cont_diff_bump.def ContDiffBump.apply
 
-protected theorem sub (x : E) : f (c - x) = f (c + x) := by
+protected lemma sub (x : E) : f (c - x) = f (c + x) := by
   simp [f.apply, ContDiffBumpBase.symmetric]
 #align cont_diff_bump.sub ContDiffBump.sub
 
-protected theorem neg (f : ContDiffBump (0 : E)) (x : E) : f (-x) = f x := by
+protected lemma neg (f : ContDiffBump (0 : E)) (x : E) : f (-x) = f x := by
   simp_rw [← zero_sub, f.sub, zero_add]
 #align cont_diff_bump.neg ContDiffBump.neg
 
 open Metric
 
-theorem one_of_mem_closedBall (hx : x ∈ closedBall c f.rIn) : f x = 1 := by
+lemma one_of_mem_closedBall (hx : x ∈ closedBall c f.rIn) : f x = 1 := by
   apply ContDiffBumpBase.eq_one _ _ f.one_lt_rOut_div_rIn
   simpa only [norm_smul, Real.norm_eq_abs, abs_inv, abs_of_nonneg f.rIn_pos.le, ← div_eq_inv_mul,
     div_le_one f.rIn_pos] using mem_closedBall_iff_norm.1 hx
@@ -160,7 +160,7 @@ lemma nonneg : 0 ≤ f x :=
 #align cont_diff_bump.nonneg ContDiffBump.nonneg
 
 /-- A version of `ContDiffBump.nonneg` with `x` explicit -/
-theorem nonneg' (x : E) : 0 ≤ f x := f.nonneg
+lemma nonneg' (x : E) : 0 ≤ f x := f.nonneg
 #align cont_diff_bump.nonneg' ContDiffBump.nonneg'
 
 lemma le_one : f x ≤ 1 :=
@@ -178,11 +178,11 @@ lemma tsupport_eq : tsupport f = closedBall c f.rOut := by
   simp_rw [tsupport, f.support_eq, closure_ball _ f.rOut_pos.ne']
 #align cont_diff_bump.tsupport_eq ContDiffBump.tsupport_eq
 
-theorem pos_of_mem_ball (hx : x ∈ ball c f.rOut) : 0 < f x :=
+lemma pos_of_mem_ball (hx : x ∈ ball c f.rOut) : 0 < f x :=
   f.nonneg.lt_of_ne' <| by rwa [← support_eq, mem_support] at hx
 #align cont_diff_bump.pos_of_mem_ball ContDiffBump.pos_of_mem_ball
 
-theorem zero_of_le_dist (hx : f.rOut ≤ dist x c) : f x = 0 := by
+lemma zero_of_le_dist (hx : f.rOut ≤ dist x c) : f x = 0 := by
   rwa [← nmem_support, support_eq, mem_ball, not_lt]
 #align cont_diff_bump.zero_of_le_dist ContDiffBump.zero_of_le_dist
 
@@ -190,7 +190,7 @@ protected lemma hasCompactSupport [FiniteDimensional ℝ E] : HasCompactSupport 
   simp_rw [HasCompactSupport, f.tsupport_eq, isCompact_closedBall]
 #align cont_diff_bump.has_compact_support ContDiffBump.hasCompactSupport
 
-theorem eventuallyEq_one_of_mem_ball (h : x ∈ ball c f.rIn) : f =ᶠ[𝓝 x] 1 :=
+lemma eventuallyEq_one_of_mem_ball (h : x ∈ ball c f.rIn) : f =ᶠ[𝓝 x] 1 :=
   mem_of_superset (closedBall_mem_nhds_of_mem h) fun _ ↦ f.one_of_mem_closedBall
 #align cont_diff_bump.eventually_eq_one_of_mem_ball ContDiffBump.eventuallyEq_one_of_mem_ball
 

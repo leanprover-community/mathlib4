@@ -70,14 +70,14 @@ variable {R}
 
 /-- As well as being linear, `ι m` squares to zero. -/
 -- @[simp] -- Porting note: simp can prove this
-theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
+lemma ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
 #align exterior_algebra.ι_sq_zero ExteriorAlgebra.ι_sq_zero
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 
 -- @[simp] -- Porting note: simp can prove this
-theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
+lemma comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
   rw [← AlgHom.map_mul, ι_sq_zero, AlgHom.map_zero]
 #align exterior_algebra.comp_ι_sq_zero ExteriorAlgebra.comp_ι_sq_zero
 
@@ -93,19 +93,19 @@ def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = 0 } ≃ (ExteriorAlgebra R 
 #align exterior_algebra.lift ExteriorAlgebra.lift
 
 @[simp]
-theorem ι_comp_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) :
+lemma ι_comp_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) :
     (lift R ⟨f, cond⟩).toLinearMap.comp (ι R) = f :=
   CliffordAlgebra.ι_comp_lift f _
 #align exterior_algebra.ι_comp_lift ExteriorAlgebra.ι_comp_lift
 
 @[simp]
-theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (x) :
+lemma lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (x) :
     lift R ⟨f, cond⟩ (ι R x) = f x :=
   CliffordAlgebra.lift_ι_apply f _ x
 #align exterior_algebra.lift_ι_apply ExteriorAlgebra.lift_ι_apply
 
 @[simp]
-theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : ExteriorAlgebra R M →ₐ[R] A) :
+lemma lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : ExteriorAlgebra R M →ₐ[R] A) :
     g.toLinearMap.comp (ι R) = f ↔ g = lift R ⟨f, cond⟩ :=
   CliffordAlgebra.lift_unique f _ _
 #align exterior_algebra.lift_unique ExteriorAlgebra.lift_unique
@@ -113,7 +113,7 @@ theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : Exter
 variable {R}
 
 @[simp]
-theorem lift_comp_ι (g : ExteriorAlgebra R M →ₐ[R] A) :
+lemma lift_comp_ι (g : ExteriorAlgebra R M →ₐ[R] A) :
     lift R ⟨g.toLinearMap.comp (ι R), comp_ι_sq_zero _⟩ = g :=
   CliffordAlgebra.lift_comp_ι g
 #align exterior_algebra.lift_comp_ι ExteriorAlgebra.lift_comp_ι
@@ -149,22 +149,22 @@ lemma algebraMap_leftInverse :
 #align exterior_algebra.algebra_map_left_inverse ExteriorAlgebra.algebraMap_leftInverse
 
 @[simp]
-theorem algebraMap_inj (x y : R) :
+lemma algebraMap_inj (x y : R) :
     algebraMap R (ExteriorAlgebra R M) x = algebraMap R (ExteriorAlgebra R M) y ↔ x = y :=
   (algebraMap_leftInverse M).injective.eq_iff
 #align exterior_algebra.algebra_map_inj ExteriorAlgebra.algebraMap_inj
 
 @[simp]
-theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 0 ↔ x = 0 :=
+lemma algebraMap_eq_zero_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 0 ↔ x = 0 :=
   map_eq_zero_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align exterior_algebra.algebra_map_eq_zero_iff ExteriorAlgebra.algebraMap_eq_zero_iff
 
 @[simp]
-theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
+lemma algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align exterior_algebra.algebra_map_eq_one_iff ExteriorAlgebra.algebraMap_eq_one_iff
 
-theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
+lemma isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
 #align exterior_algebra.is_unit_algebra_map ExteriorAlgebra.isUnit_algebraMap
 
@@ -211,18 +211,18 @@ lemma ι_leftInverse : Function.LeftInverse ιInv.1 (ι R : M → ExteriorAlgebr
 variable (R)
 
 @[simp]
-theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
+lemma ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
   ι_leftInverse.injective.eq_iff
 #align exterior_algebra.ι_inj ExteriorAlgebra.ι_inj
 
 variable {R}
 
 @[simp]
-theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+lemma ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
 #align exterior_algebra.ι_eq_zero_iff ExteriorAlgebra.ι_eq_zero_iff
 
 @[simp]
-theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
+lemma ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine' ⟨fun h => _, _⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -251,7 +251,7 @@ lemma ι_range_disjoint_one :
 #align exterior_algebra.ι_range_disjoint_one ExteriorAlgebra.ι_range_disjoint_one
 
 @[simp]
-theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
+lemma ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
   calc
     _ = ι R (y + x) * ι R (y + x) := by simp [mul_add, add_mul]
     _ = _ := ι_sq_zero _
@@ -315,7 +315,7 @@ lemma ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn fun
 #align exterior_algebra.ι_multi_apply ExteriorAlgebra.ιMulti_apply
 
 @[simp]
-theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
+lemma ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
   rfl
 #align exterior_algebra.ι_multi_zero_apply ExteriorAlgebra.ιMulti_zero_apply
 
@@ -346,7 +346,7 @@ def toExterior : TensorAlgebra R M →ₐ[R] ExteriorAlgebra R M :=
 #align tensor_algebra.to_exterior TensorAlgebra.toExterior
 
 @[simp]
-theorem toExterior_ι (m : M) :
+lemma toExterior_ι (m : M) :
     TensorAlgebra.toExterior (TensorAlgebra.ι R m) = ExteriorAlgebra.ι R m := by
   simp [toExterior]
 #align tensor_algebra.to_exterior_ι TensorAlgebra.toExterior_ι

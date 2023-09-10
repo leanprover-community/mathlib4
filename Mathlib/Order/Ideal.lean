@@ -113,28 +113,28 @@ lemma ext {s t : Ideal P} : (s : Set P) = t → s = t :=
 #align order.ideal.ext Order.Ideal.ext
 
 @[simp]
-theorem carrier_eq_coe (s : Ideal P) : s.carrier = s :=
+lemma carrier_eq_coe (s : Ideal P) : s.carrier = s :=
   rfl
 #align order.ideal.carrier_eq_coe Order.Ideal.carrier_eq_coe
 
 @[simp]
-theorem coe_toLowerSet (s : Ideal P) : (s.toLowerSet : Set P) = s :=
+lemma coe_toLowerSet (s : Ideal P) : (s.toLowerSet : Set P) = s :=
   rfl
 #align order.ideal.coe_to_lower_set Order.Ideal.coe_toLowerSet
 
-protected theorem lower (s : Ideal P) : IsLowerSet (s : Set P) :=
+protected lemma lower (s : Ideal P) : IsLowerSet (s : Set P) :=
   s.lower'
 #align order.ideal.lower Order.Ideal.lower
 
-protected theorem nonempty (s : Ideal P) : (s : Set P).Nonempty :=
+protected lemma nonempty (s : Ideal P) : (s : Set P).Nonempty :=
   s.nonempty'
 #align order.ideal.nonempty Order.Ideal.nonempty
 
-protected theorem directed (s : Ideal P) : DirectedOn (· ≤ ·) (s : Set P) :=
+protected lemma directed (s : Ideal P) : DirectedOn (· ≤ ·) (s : Set P) :=
   s.directed'
 #align order.ideal.directed Order.Ideal.directed
 
-protected theorem isIdeal (s : Ideal P) : IsIdeal (s : Set P) :=
+protected lemma isIdeal (s : Ideal P) : IsIdeal (s : Set P) :=
   ⟨s.lower, s.nonempty, s.directed⟩
 #align order.ideal.is_ideal Order.Ideal.isIdeal
 
@@ -214,15 +214,15 @@ lemma coe_top : ((⊤ : Ideal P) : Set P) = univ :=
   rfl
 #align order.ideal.coe_top Order.Ideal.coe_top
 
-theorem isProper_of_ne_top (ne_top : I ≠ ⊤) : IsProper I :=
+lemma isProper_of_ne_top (ne_top : I ≠ ⊤) : IsProper I :=
   ⟨fun h ↦ ne_top <| ext h⟩
 #align order.ideal.is_proper_of_ne_top Order.Ideal.isProper_of_ne_top
 
-theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
+lemma IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
   fun h ↦ IsProper.ne_univ <| congr_arg SetLike.coe h
 #align order.ideal.is_proper.ne_top Order.Ideal.IsProper.ne_top
 
-theorem _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
+lemma _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
   isProper_of_ne_top hI.1
 #align is_coatom.is_proper IsCoatom.isProper
 
@@ -230,7 +230,7 @@ lemma isProper_iff_ne_top : IsProper I ↔ I ≠ ⊤ :=
   ⟨fun h ↦ h.ne_top, fun h ↦ isProper_of_ne_top h⟩
 #align order.ideal.is_proper_iff_ne_top Order.Ideal.isProper_iff_ne_top
 
-theorem IsMaximal.isCoatom (_ : IsMaximal I) : IsCoatom I :=
+lemma IsMaximal.isCoatom (_ : IsMaximal I) : IsCoatom I :=
   ⟨IsMaximal.toIsProper.ne_top, fun _ h ↦ ext <| IsMaximal.maximal_proper h⟩
 #align order.ideal.is_maximal.is_coatom Order.Ideal.IsMaximal.isCoatom
 
@@ -238,7 +238,7 @@ lemma IsMaximal.isCoatom' [IsMaximal I] : IsCoatom I :=
   IsMaximal.isCoatom ‹_›
 #align order.ideal.is_maximal.is_coatom' Order.Ideal.IsMaximal.isCoatom'
 
-theorem _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
+lemma _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
   { IsCoatom.isProper hI with maximal_proper := fun _ hJ ↦ by simp [hI.2 _ hJ] }
 #align is_coatom.is_maximal IsCoatom.isMaximal
 
@@ -253,7 +253,7 @@ section OrderBot
 variable [OrderBot P]
 
 @[simp]
-theorem bot_mem (s : Ideal P) : ⊥ ∈ s :=
+lemma bot_mem (s : Ideal P) : ⊥ ∈ s :=
   s.lower bot_le s.nonempty'.some_mem
 #align order.ideal.bot_mem Order.Ideal.bot_mem
 
@@ -263,12 +263,12 @@ section OrderTop
 
 variable [OrderTop P] {I : Ideal P}
 
-theorem top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
+lemma top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
   ext
   exact iff_of_true (I.lower le_top h) trivial
 #align order.ideal.top_of_top_mem Order.Ideal.top_of_top_mem
 
-theorem IsProper.top_not_mem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
+lemma IsProper.top_not_mem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
 #align order.ideal.is_proper.top_not_mem Order.Ideal.IsProper.top_not_mem
 
 end OrderTop
@@ -340,7 +340,7 @@ section SemilatticeSup
 variable [SemilatticeSup P] {x y : P} {I s : Ideal P}
 
 /-- A specific witness of `I.directed` when `P` has joins. -/
-theorem sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
+lemma sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
   let ⟨_, hz, hx, hy⟩ := s.directed x hx y hy
   s.lower (sup_le hx hy) hz
 #align order.ideal.sup_mem Order.Ideal.sup_mem
@@ -420,7 +420,7 @@ lemma mem_sup : x ∈ I ⊔ J ↔ ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j :=
   Iff.rfl
 #align order.ideal.mem_sup Order.Ideal.mem_sup
 
-theorem lt_sup_principal_of_not_mem (hx : x ∉ I) : I < I ⊔ principal x :=
+lemma lt_sup_principal_of_not_mem (hx : x ∉ I) : I < I ⊔ principal x :=
   le_sup_left.lt_of_ne fun h ↦ hx <| by simpa only [left_eq_sup, principal_le_iff] using h
 #align order.ideal.lt_sup_principal_of_not_mem Order.Ideal.lt_sup_principal_of_not_mem
 
@@ -490,14 +490,14 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
-theorem IsProper.not_mem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
+lemma IsProper.not_mem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
   intro hx
   apply hI.top_not_mem
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 #align order.ideal.is_proper.not_mem_of_compl_mem Order.Ideal.IsProper.not_mem_of_compl_mem
 
-theorem IsProper.not_mem_or_compl_not_mem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
+lemma IsProper.not_mem_or_compl_not_mem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
   have h : xᶜ ∈ I → x ∉ I := hI.not_mem_of_compl_mem
   tauto
 #align order.ideal.is_proper.not_mem_or_compl_not_mem Order.Ideal.IsProper.not_mem_or_compl_not_mem
@@ -567,7 +567,7 @@ lemma sequenceOfCofinals.monotone : Monotone (sequenceOfCofinals p 𝒟) := by
   · apply Cofinal.le_above
 #align order.sequence_of_cofinals.monotone Order.sequenceOfCofinals.monotone
 
-theorem sequenceOfCofinals.encode_mem (i : ι) :
+lemma sequenceOfCofinals.encode_mem (i : ι) :
     sequenceOfCofinals p 𝒟 (Encodable.encode i + 1) ∈ 𝒟 i := by
   dsimp only [sequenceOfCofinals, Nat.add]
   rw [Encodable.encodek]
@@ -594,7 +594,7 @@ lemma mem_idealOfCofinals : p ∈ idealOfCofinals p 𝒟 :=
 #align order.mem_ideal_of_cofinals Order.mem_idealOfCofinals
 
 /-- `idealOfCofinals p 𝒟` is `𝒟`-generic. -/
-theorem cofinal_meets_idealOfCofinals (i : ι) : ∃ x : P, x ∈ 𝒟 i ∧ x ∈ idealOfCofinals p 𝒟 :=
+lemma cofinal_meets_idealOfCofinals (i : ι) : ∃ x : P, x ∈ 𝒟 i ∧ x ∈ idealOfCofinals p 𝒟 :=
   ⟨_, sequenceOfCofinals.encode_mem p 𝒟 i, _, le_rfl⟩
 #align order.cofinal_meets_ideal_of_cofinals Order.cofinal_meets_idealOfCofinals
 

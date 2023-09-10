@@ -45,7 +45,7 @@ set_option linter.uppercaseLean3 false in
 #align LinOrd.of LinOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align LinOrd.coe_of LinOrdCat.coe_of

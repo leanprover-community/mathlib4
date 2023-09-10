@@ -200,11 +200,11 @@ lemma sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
   simpa only [inf_comm] using @inf_sSup_eq α _ s b
 #align Sup_inf_eq sSup_inf_eq
 
-theorem iSup_inf_eq (f : ι → α) (a : α) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
+lemma iSup_inf_eq (f : ι → α) (a : α) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
   rw [iSup, sSup_inf_eq, iSup_range]
 #align supr_inf_eq iSup_inf_eq
 
-theorem inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
+lemma inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
   simpa only [inf_comm] using iSup_inf_eq f a
 #align inf_supr_eq inf_iSup_eq
 
@@ -306,11 +306,11 @@ lemma sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b :=
   @sSup_inf_eq αᵒᵈ _ _ _
 #align Inf_sup_eq sInf_sup_eq
 
-theorem iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a :=
+lemma iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a :=
   @iSup_inf_eq αᵒᵈ _ _ _ _
 #align infi_sup_eq iInf_sup_eq
 
-theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i :=
+lemma sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i :=
   @inf_iSup_eq αᵒᵈ _ _ _ _
 #align sup_infi_eq sup_iInf_eq
 

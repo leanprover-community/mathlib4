@@ -41,7 +41,7 @@ lemma charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] 
       rw [RingHom.map_zero] }
 #align char_p_of_injective_algebra_map charP_of_injective_algebraMap
 
-theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
+lemma charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
     [Nontrivial A] (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_algebraMap (algebraMap R A).injective p
 #align char_p_of_injective_algebra_map' charP_of_injective_algebraMap'
@@ -98,7 +98,7 @@ section
 
 variable (K L : Type*) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
 
-theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
+lemma Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p
 #align algebra.char_p_iff Algebra.charP_iff
 

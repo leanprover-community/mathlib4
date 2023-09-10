@@ -71,7 +71,7 @@ lemma quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
 #align quadratic_eq_zero_iff_discrim_eq_sq quadratic_eq_zero_iff_discrim_eq_sq
 
 /-- A quadratic has no root if its discriminant has no square root. -/
-theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
+lemma quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
     a * x * x + b * x + c ≠ 0 :=
   mt discrim_eq_sq_of_quadratic_eq_zero (h _)
 #align quadratic_ne_zero_of_discrim_ne_sq quadratic_ne_zero_of_discrim_ne_sq
@@ -83,7 +83,7 @@ section Field
 variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c x : K}
 
 /-- Roots of a quadratic equation. -/
-theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
+lemma quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
     a * x * x + b * x + c = 0 ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
   rw [quadratic_eq_zero_iff_discrim_eq_sq ha, h, sq, mul_self_eq_mul_self_iff]
   field_simp
@@ -93,7 +93,7 @@ theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s)
 #align quadratic_eq_zero_iff quadratic_eq_zero_iff
 
 /-- A quadratic has roots if its discriminant has square roots -/
-theorem exists_quadratic_eq_zero (ha : a ≠ 0) (h : ∃ s, discrim a b c = s * s) :
+lemma exists_quadratic_eq_zero (ha : a ≠ 0) (h : ∃ s, discrim a b c = s * s) :
     ∃ x, a * x * x + b * x + c = 0 := by
   rcases h with ⟨s, hs⟩
   use (-b + s) / (2 * a)
@@ -102,7 +102,7 @@ theorem exists_quadratic_eq_zero (ha : a ≠ 0) (h : ∃ s, discrim a b c = s * 
 #align exists_quadratic_eq_zero exists_quadratic_eq_zero
 
 /-- Root of a quadratic when its discriminant equals zero -/
-theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b c = 0) (x : K) :
+lemma quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b c = 0) (x : K) :
     a * x * x + b * x + c = 0 ↔ x = -b / (2 * a) := by
   have : discrim a b c = 0 * 0 := by rw [h, mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
@@ -115,7 +115,7 @@ section LinearOrderedField
 variable {K : Type*} [LinearOrderedField K] {a b c : K}
 
 /-- If a polynomial of degree 2 is always nonnegative, then its discriminant is nonpositive -/
-theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a b c ≤ 0 := by
+lemma discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a b c ≤ 0 := by
   rw [discrim, sq]
   obtain ha | rfl | ha : a < 0 ∨ a = 0 ∨ 0 < a := lt_trichotomy a 0
   -- if a < 0
@@ -145,7 +145,7 @@ lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * x * x + b * x + c ≤ 0) : d
 /-- If a polynomial of degree 2 is always positive, then its discriminant is negative,
 at least when the coefficient of the quadratic term is nonzero.
 -/
-theorem discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * x * x + b * x + c) :
+lemma discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * x * x + b * x + c) :
     discrim a b c < 0 := by
   have : ∀ x : K, 0 ≤ a * x * x + b * x + c := fun x => le_of_lt (h x)
   refine lt_of_le_of_ne (discrim_le_zero this) fun h' ↦ ?_

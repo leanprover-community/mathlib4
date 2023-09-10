@@ -65,7 +65,7 @@ lemma eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (hN 
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `eq_smul_of_le_smul_of_le_jacobson` for a generalisation
 to the `jacobson` of any ideal -/
-theorem eq_bot_of_le_smul_of_le_jacobson_bot (I : Ideal R) (N : Submodule R M) (hN : N.FG)
+lemma eq_bot_of_le_smul_of_le_jacobson_bot (I : Ideal R) (N : Submodule R M) (hN : N.FG)
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson ⊥) : N = ⊥ := by
   rw [eq_smul_of_le_smul_of_le_jacobson hN hIN hIjac, Submodule.bot_smul]
 #align submodule.eq_bot_of_le_smul_of_le_jacobson_bot Submodule.eq_bot_of_le_smul_of_le_jacobson_bot

@@ -61,7 +61,7 @@ instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
 -- @[simp] -- Porting note: dsimp can prove this
-theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
+lemma coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 #align ctop.coe_mk Ctop.coe_mk
 
 /-- Map a Ctop to an equivalent representation type. -/
@@ -76,7 +76,7 @@ def ofEquiv (E : σ ≃ τ) : Ctop α σ → Ctop α τ
 #align ctop.of_equiv Ctop.ofEquiv
 
 @[simp]
-theorem ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
+lemma ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
   cases F; rfl
 #align ctop.of_equiv_val Ctop.ofEquiv_val
 
@@ -86,7 +86,7 @@ end
 def toTopsp (F : Ctop α σ) : TopologicalSpace α := TopologicalSpace.generateFrom (Set.range F.f)
 #align ctop.to_topsp Ctop.toTopsp
 
-theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :
+lemma toTopsp_isTopologicalBasis (F : Ctop α σ) :
     @TopologicalSpace.IsTopologicalBasis _ F.toTopsp (Set.range F.f) :=
   letI := F.toTopsp
   ⟨fun _u ⟨a, e₁⟩ _v ⟨b, e₂⟩ ↦
@@ -95,7 +95,7 @@ theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :
 #align ctop.to_topsp_is_topological_basis Ctop.toTopsp_isTopologicalBasis
 
 @[simp]
-theorem mem_nhds_toTopsp (F : Ctop α σ) {s : Set α} {a : α} :
+lemma mem_nhds_toTopsp (F : Ctop α σ) {s : Set α} {a : α} :
     s ∈ @nhds _ F.toTopsp a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s :=
   (@TopologicalSpace.IsTopologicalBasis.mem_nhds_iff _ F.toTopsp _ _ _
         F.toTopsp_isTopologicalBasis).trans <|
@@ -197,11 +197,11 @@ def ofEquiv (F : Realizer α) (E : F.σ ≃ τ) : Realizer α :=
 #align ctop.realizer.of_equiv Ctop.Realizer.ofEquiv
 
 @[simp]
-theorem ofEquiv_σ (F : Realizer α) (E : F.σ ≃ τ) : (F.ofEquiv E).σ = τ := rfl
+lemma ofEquiv_σ (F : Realizer α) (E : F.σ ≃ τ) : (F.ofEquiv E).σ = τ := rfl
 #align ctop.realizer.of_equiv_σ Ctop.Realizer.ofEquiv_σ
 
 @[simp]
-theorem ofEquiv_F (F : Realizer α) (E : F.σ ≃ τ) (s : τ) : (F.ofEquiv E).F s = F.F (E.symm s) := by
+lemma ofEquiv_F (F : Realizer α) (E : F.σ ≃ τ) (s : τ) : (F.ofEquiv E).F s = F.F (E.symm s) := by
   delta ofEquiv; simp
 set_option linter.uppercaseLean3 false in
 #align ctop.realizer.of_equiv_F Ctop.Realizer.ofEquiv_F
@@ -222,11 +222,11 @@ protected def nhds (F : Realizer α) (a : α) : (𝓝 a).Realizer :=
 #align ctop.realizer.nhds Ctop.Realizer.nhds
 
 @[simp]
-theorem nhds_σ (F : Realizer α) (a : α) : (F.nhds a).σ = { s : F.σ // a ∈ F.F s } := rfl
+lemma nhds_σ (F : Realizer α) (a : α) : (F.nhds a).σ = { s : F.σ // a ∈ F.F s } := rfl
 #align ctop.realizer.nhds_σ Ctop.Realizer.nhds_σ
 
 @[simp]
-theorem nhds_F (F : Realizer α) (a : α) (s) : (F.nhds a).F s = F.F s.1 := rfl
+lemma nhds_F (F : Realizer α) (a : α) (s) : (F.nhds a).F s = F.F s.1 := rfl
 set_option linter.uppercaseLean3 false in
 #align ctop.realizer.nhds_F Ctop.Realizer.nhds_F
 

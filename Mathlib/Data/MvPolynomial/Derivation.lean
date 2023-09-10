@@ -41,30 +41,30 @@ def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
 
 end
 
-theorem mkDerivationₗ_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
+lemma mkDerivationₗ_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivationₗ R f (monomial s r) =
       r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
   sum_monomial_eq <| LinearMap.map_zero _
 #align mv_polynomial.mk_derivationₗ_monomial MvPolynomial.mkDerivationₗ_monomial
 
-theorem mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0 :=
+lemma mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0 :=
   (mkDerivationₗ_monomial f _ _).trans (smul_zero _)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.mk_derivationₗ_C MvPolynomial.mkDerivationₗ_C
 
-theorem mkDerivationₗ_X (f : σ → A) (i : σ) : mkDerivationₗ R f (X i) = f i :=
+lemma mkDerivationₗ_X (f : σ → A) (i : σ) : mkDerivationₗ R f (X i) = f i :=
   (mkDerivationₗ_monomial f _ _).trans <| by simp
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.mk_derivationₗ_X MvPolynomial.mkDerivationₗ_X
 
 @[simp]
-theorem derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) = 0 :=
+lemma derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) = 0 :=
   D.map_algebraMap a
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.derivation_C MvPolynomial.derivation_C
 
 @[simp]
-theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
+lemma derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : MvPolynomial σ R) :
     C (σ := σ) a • D f = a • D f := by
   have : C (σ := σ) a • D f = D (C a * f) := by simp
   rw [this, C_mul', D.map_smul]
@@ -95,7 +95,7 @@ lemma derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀ i
 
 variable [IsScalarTower R (MvPolynomial σ R) A]
 
-theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
+lemma leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     (∀ p q, D (p * q) = p • D q + q • D p) ↔ ∀ s i, D (monomial s 1 * X i) =
     (monomial s 1 : MvPolynomial σ R) • D (X i) + (X i : MvPolynomial σ R) • D (monomial s 1) := by
   refine' ⟨fun H p i => H _ _, fun H => _⟩
@@ -137,12 +137,12 @@ def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
 #align mv_polynomial.mk_derivation MvPolynomial.mkDerivation
 
 @[simp]
-theorem mkDerivation_X (f : σ → A) (i : σ) : mkDerivation R f (X i) = f i :=
+lemma mkDerivation_X (f : σ → A) (i : σ) : mkDerivation R f (X i) = f i :=
   mkDerivationₗ_X f i
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.mk_derivation_X MvPolynomial.mkDerivation_X
 
-theorem mkDerivation_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
+lemma mkDerivation_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivation R f (monomial s r) =
       r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
   mkDerivationₗ_monomial f s r

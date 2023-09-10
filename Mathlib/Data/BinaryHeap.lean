@@ -38,7 +38,7 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
 termination_by _ => a.size - i
 decreasing_by assumption
 
-@[simp] theorem size_heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
+@[simp] lemma size_heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyDown lt a i).1.size = a.size := (heapifyDown lt a i).2
 
 /-- Core operation for binary heaps, expressed directly on arrays.
@@ -53,7 +53,7 @@ def mkHeap (lt : α → α → Bool) (a : Array α) : {a' : Array α // a'.size 
     ⟨a₂, h₂.trans a'.2⟩
   loop (a.size / 2) a (Nat.div_le_self ..)
 
-@[simp] theorem size_mkHeap (lt : α → α → Bool) (a : Array α) :
+@[simp] lemma size_mkHeap (lt : α → α → Bool) (a : Array α) :
   (mkHeap lt a).1.size = a.size := (mkHeap lt a).2
 
 /-- Core operation for binary heaps, expressed directly on arrays.
@@ -72,7 +72,7 @@ if i0 : i.1 = 0 then ⟨a, rfl⟩ else
 termination_by _ => i.1
 decreasing_by assumption
 
-@[simp] theorem size_heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
+@[simp] lemma size_heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyUp lt a i).1.size = a.size := (heapifyUp lt a i).2
 
 /-- `O(1)`. Build a new empty heap. -/

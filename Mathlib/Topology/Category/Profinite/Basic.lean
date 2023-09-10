@@ -126,7 +126,7 @@ instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
 
 -- Porting note: have changed statement as the original LHS simplified.
 @[simp]
-theorem coe_id (X : Profinite) : (𝟙 ((forget Profinite).obj X)) = id :=
+lemma coe_id (X : Profinite) : (𝟙 ((forget Profinite).obj X)) = id :=
   rfl
 #align Profinite.coe_id Profinite.coe_id
 
@@ -215,7 +215,7 @@ def CompHaus.toProfinite : CompHaus ⥤ Profinite :=
   Adjunction.leftAdjointOfEquiv Profinite.toCompHausEquivalence fun _ _ _ _ _ => rfl
 #align CompHaus.to_Profinite CompHaus.toProfinite
 
-theorem CompHaus.toProfinite_obj' (X : CompHaus) :
+lemma CompHaus.toProfinite_obj' (X : CompHaus) :
     ↥(CompHaus.toProfinite.obj X) = ConnectedComponents X :=
   rfl
 #align CompHaus.to_Profinite_obj' CompHaus.toProfinite_obj'
@@ -228,7 +228,7 @@ section DiscreteTopology
 
 attribute [local instance] FintypeCat.botTopology
 
-theorem FintypeCat.discreteTopology (A : FintypeCat) : DiscreteTopology A :=
+lemma FintypeCat.discreteTopology (A : FintypeCat) : DiscreteTopology A :=
   ⟨rfl⟩
 #align Fintype.discrete_topology FintypeCat.discreteTopology
 
@@ -318,7 +318,7 @@ lemma isClosedMap : IsClosedMap f :=
 #align Profinite.is_closed_map Profinite.isClosedMap
 
 /-- Any continuous bijection of profinite spaces induces an isomorphism. -/
-theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
+lemma isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
   haveI := CompHaus.isIso_of_bijective (profiniteToCompHaus.map f) bij
   isIso_of_fully_faithful profiniteToCompHaus _
 #align Profinite.is_iso_of_bijective Profinite.isIso_of_bijective

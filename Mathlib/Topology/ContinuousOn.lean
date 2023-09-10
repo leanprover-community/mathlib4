@@ -71,12 +71,12 @@ lemma eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 #align eventually_nhds_within_nhds_within eventually_nhdsWithin_nhdsWithin
 
-theorem nhdsWithin_eq (a : α) (s : Set α) :
+lemma nhdsWithin_eq (a : α) (s : Set α) :
     𝓝[s] a = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (t ∩ s) :=
   ((nhds_basis_opens a).inf_principal s).eq_biInf
 #align nhds_within_eq nhdsWithin_eq
 
-theorem nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
+lemma nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
   rw [nhdsWithin, principal_univ, inf_top_eq]
 #align nhds_within_univ nhdsWithin_univ
 
@@ -85,7 +85,7 @@ lemma nhdsWithin_hasBasis {p : β → Prop} {s : β → Set α} {a : α} (h : (�
   h.inf_principal t
 #align nhds_within_has_basis nhdsWithin_hasBasis
 
-theorem nhdsWithin_basis_open (a : α) (t : Set α) :
+lemma nhdsWithin_basis_open (a : α) (t : Set α) :
     (𝓝[t] a).HasBasis (fun u => a ∈ u ∧ IsOpen u) fun u => u ∩ t :=
   nhdsWithin_hasBasis (nhds_basis_opens a) t
 #align nhds_within_basis_open nhdsWithin_basis_open
@@ -156,11 +156,11 @@ lemma eventually_mem_nhdsWithin {a : α} {s : Set α} : ∀ᶠ x in 𝓝[s] a, x
   self_mem_nhdsWithin
 #align eventually_mem_nhds_within eventually_mem_nhdsWithin
 
-theorem inter_mem_nhdsWithin (s : Set α) {t : Set α} {a : α} (h : t ∈ 𝓝 a) : s ∩ t ∈ 𝓝[s] a :=
+lemma inter_mem_nhdsWithin (s : Set α) {t : Set α} {a : α} (h : t ∈ 𝓝 a) : s ∩ t ∈ 𝓝[s] a :=
   inter_mem self_mem_nhdsWithin (mem_inf_of_left h)
 #align inter_mem_nhds_within inter_mem_nhdsWithin
 
-theorem nhdsWithin_mono (a : α) {s t : Set α} (h : s ⊆ t) : 𝓝[s] a ≤ 𝓝[t] a :=
+lemma nhdsWithin_mono (a : α) {s t : Set α} (h : s ⊆ t) : 𝓝[s] a ≤ 𝓝[t] a :=
   inf_le_inf_left _ (principal_mono.mpr h)
 #align nhds_within_mono nhdsWithin_mono
 
@@ -233,10 +233,10 @@ lemma preimage_nhds_within_coinduced {π : α → β} {s : Set β} {t : Set α} 
 #align preimage_nhds_within_coinduced preimage_nhds_within_coinduced
 
 @[simp]
-theorem nhdsWithin_empty (a : α) : 𝓝[∅] a = ⊥ := by rw [nhdsWithin, principal_empty, inf_bot_eq]
+lemma nhdsWithin_empty (a : α) : 𝓝[∅] a = ⊥ := by rw [nhdsWithin, principal_empty, inf_bot_eq]
 #align nhds_within_empty nhdsWithin_empty
 
-theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a ⊔ 𝓝[t] a := by
+lemma nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a ⊔ 𝓝[t] a := by
   delta nhdsWithin
   rw [← inf_sup_left, sup_principal]
 #align nhds_within_union nhdsWithin_union
@@ -257,12 +257,12 @@ lemma nhdsWithin_iUnion {ι} [Finite ι] (s : ι → Set α) (a : α) :
   rw [← sUnion_range, nhdsWithin_sUnion (finite_range s), iSup_range]
 #align nhds_within_Union nhdsWithin_iUnion
 
-theorem nhdsWithin_inter (a : α) (s t : Set α) : 𝓝[s ∩ t] a = 𝓝[s] a ⊓ 𝓝[t] a := by
+lemma nhdsWithin_inter (a : α) (s t : Set α) : 𝓝[s ∩ t] a = 𝓝[s] a ⊓ 𝓝[t] a := by
   delta nhdsWithin
   rw [inf_left_comm, inf_assoc, inf_principal, ← inf_assoc, inf_idem]
 #align nhds_within_inter nhdsWithin_inter
 
-theorem nhdsWithin_inter' (a : α) (s t : Set α) : 𝓝[s ∩ t] a = 𝓝[s] a ⊓ 𝓟 t := by
+lemma nhdsWithin_inter' (a : α) (s t : Set α) : 𝓝[s ∩ t] a = 𝓝[s] a ⊓ 𝓟 t := by
   delta nhdsWithin
   rw [← inf_principal, inf_assoc]
 #align nhds_within_inter' nhdsWithin_inter'
@@ -277,12 +277,12 @@ lemma nhdsWithin_inter_of_mem' {a : α} {s t : Set α} (h : t ∈ 𝓝[s] a) : �
 #align nhds_within_inter_of_mem' nhdsWithin_inter_of_mem'
 
 @[simp]
-theorem nhdsWithin_singleton (a : α) : 𝓝[{a}] a = pure a := by
+lemma nhdsWithin_singleton (a : α) : 𝓝[{a}] a = pure a := by
   rw [nhdsWithin, principal_singleton, inf_eq_right.2 (pure_le_nhds a)]
 #align nhds_within_singleton nhdsWithin_singleton
 
 @[simp]
-theorem nhdsWithin_insert (a : α) (s : Set α) : 𝓝[insert a s] a = pure a ⊔ 𝓝[s] a := by
+lemma nhdsWithin_insert (a : α) (s : Set α) : 𝓝[insert a s] a = pure a ⊔ 𝓝[s] a := by
   rw [← singleton_union, nhdsWithin_union, nhdsWithin_singleton]
 #align nhds_within_insert nhdsWithin_insert
 
@@ -300,7 +300,7 @@ lemma insert_mem_nhds_iff {a : α} {s : Set α} : insert a s ∈ 𝓝 a ↔ s �
 #align insert_mem_nhds_iff insert_mem_nhds_iff
 
 @[simp]
-theorem nhdsWithin_compl_singleton_sup_pure (a : α) : 𝓝[≠] a ⊔ pure a = 𝓝 a := by
+lemma nhdsWithin_compl_singleton_sup_pure (a : α) : 𝓝[≠] a ⊔ pure a = 𝓝 a := by
   rw [← nhdsWithin_singleton, ← nhdsWithin_union, compl_union_self, nhdsWithin_univ]
 #align nhds_within_compl_singleton_sup_pure nhdsWithin_compl_singleton_sup_pure
 
@@ -357,7 +357,7 @@ lemma Filter.Tendsto.if_nhdsWithin {f g : α → β} {p : α → Prop} [Decidabl
   h₀.piecewise_nhdsWithin h₁
 #align filter.tendsto.if_nhds_within Filter.Tendsto.if_nhdsWithin
 
-theorem map_nhdsWithin (f : α → β) (a : α) (s : Set α) :
+lemma map_nhdsWithin (f : α → β) (a : α) (s : Set α) :
     map f (𝓝[s] a) = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (f '' (t ∩ s)) :=
   ((nhdsWithin_basis_open a s).map f).eq_biInf
 #align map_nhds_within map_nhdsWithin
@@ -487,7 +487,7 @@ lemma mem_nhdsWithin_subtype {s : Set α} {a : { x // x ∈ s }} {t u : Set { x 
   rw [nhdsWithin, nhds_subtype, principal_subtype, ← comap_inf, ← nhdsWithin]
 #align mem_nhds_within_subtype mem_nhdsWithin_subtype
 
-theorem nhdsWithin_subtype (s : Set α) (a : { x // x ∈ s }) (t : Set { x // x ∈ s }) :
+lemma nhdsWithin_subtype (s : Set α) (a : { x // x ∈ s }) (t : Set { x // x ∈ s }) :
     𝓝[t] a = comap ((↑) : s → α) (𝓝[(↑) '' t] a) :=
   Filter.ext fun _ => mem_nhdsWithin_subtype
 #align nhds_within_subtype nhdsWithin_subtype
@@ -538,12 +538,12 @@ lemma ContinuousOn.continuousWithinAt {f : α → β} {s : Set α} {x : α} (hf 
   hf x hx
 #align continuous_on.continuous_within_at ContinuousOn.continuousWithinAt
 
-theorem continuousWithinAt_univ (f : α → β) (x : α) :
+lemma continuousWithinAt_univ (f : α → β) (x : α) :
     ContinuousWithinAt f Set.univ x ↔ ContinuousAt f x := by
   rw [ContinuousAt, ContinuousWithinAt, nhdsWithin_univ]
 #align continuous_within_at_univ continuousWithinAt_univ
 
-theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
+lemma continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
     ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
   tendsto_nhdsWithin_iff_subtype h f _
 #align continuous_within_at_iff_continuous_at_restrict continuousWithinAt_iff_continuousAt_restrict
@@ -663,10 +663,10 @@ lemma continuous_of_cover_nhds {ι : Sort*} {f : α → β} {s : ι → Set α}
     exact hf _ _ (mem_of_mem_nhds hi)
 #align continuous_of_cover_nhds continuous_of_cover_nhds
 
-theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
+lemma continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
 #align continuous_on_empty continuousOn_empty
 
-theorem continuousOn_singleton (f : α → β) (a : α) : ContinuousOn f {a} :=
+lemma continuousOn_singleton (f : α → β) (a : α) : ContinuousOn f {a} :=
   forall_eq.2 <| by
     simpa only [ContinuousWithinAt, nhdsWithin_singleton, tendsto_pure_left] using fun s =>
       mem_of_mem_nhds
@@ -1198,13 +1198,13 @@ lemma Continuous.if {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
   continuous_if hp hf.continuousOn hg.continuousOn
 #align continuous.if Continuous.if
 
-theorem continuous_if_const (p : Prop) {f g : α → β} [Decidable p] (hf : p → Continuous f)
+lemma continuous_if_const (p : Prop) {f g : α → β} [Decidable p] (hf : p → Continuous f)
     (hg : ¬p → Continuous g) : Continuous fun a => if p then f a else g a := by
   split_ifs with h
   exacts [hf h, hg h]
 #align continuous_if_const continuous_if_const
 
-theorem Continuous.if_const (p : Prop) {f g : α → β} [Decidable p] (hf : Continuous f)
+lemma Continuous.if_const (p : Prop) {f g : α → β} [Decidable p] (hf : Continuous f)
     (hg : Continuous g) : Continuous fun a => if p then f a else g a :=
   continuous_if_const p (fun _ => hf) fun _ => hg
 #align continuous.if_const Continuous.if_const

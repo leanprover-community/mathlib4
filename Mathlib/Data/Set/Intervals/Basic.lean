@@ -80,35 +80,35 @@ def Ioi (a : α) :=
   { x | a < x }
 #align set.Ioi Set.Ioi
 
-theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b :=
+lemma Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b :=
   rfl
 #align set.Ioo_def Set.Ioo_def
 
-theorem Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b :=
+lemma Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b :=
   rfl
 #align set.Ico_def Set.Ico_def
 
-theorem Iio_def (a : α) : { x | x < a } = Iio a :=
+lemma Iio_def (a : α) : { x | x < a } = Iio a :=
   rfl
 #align set.Iio_def Set.Iio_def
 
-theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b :=
+lemma Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b :=
   rfl
 #align set.Icc_def Set.Icc_def
 
-theorem Iic_def (b : α) : { x | x ≤ b } = Iic b :=
+lemma Iic_def (b : α) : { x | x ≤ b } = Iic b :=
   rfl
 #align set.Iic_def Set.Iic_def
 
-theorem Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b :=
+lemma Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b :=
   rfl
 #align set.Ioc_def Set.Ioc_def
 
-theorem Ici_def (a : α) : { x | a ≤ x } = Ici a :=
+lemma Ici_def (a : α) : { x | a ≤ x } = Ici a :=
   rfl
 #align set.Ici_def Set.Ici_def
 
-theorem Ioi_def (a : α) : { x | a < x } = Ioi a :=
+lemma Ioi_def (a : α) : { x | a < x } = Ioi a :=
   rfl
 #align set.Ioi_def Set.Ioi_def
 
@@ -302,15 +302,15 @@ lemma nonempty_Iio [NoMinOrder α] : (Iio a).Nonempty :=
   exists_lt a
 #align set.nonempty_Iio Set.nonempty_Iio
 
-theorem nonempty_Icc_subtype (h : a ≤ b) : Nonempty (Icc a b) :=
+lemma nonempty_Icc_subtype (h : a ≤ b) : Nonempty (Icc a b) :=
   Nonempty.to_subtype (nonempty_Icc.mpr h)
 #align set.nonempty_Icc_subtype Set.nonempty_Icc_subtype
 
-theorem nonempty_Ico_subtype (h : a < b) : Nonempty (Ico a b) :=
+lemma nonempty_Ico_subtype (h : a < b) : Nonempty (Ico a b) :=
   Nonempty.to_subtype (nonempty_Ico.mpr h)
 #align set.nonempty_Ico_subtype Set.nonempty_Ico_subtype
 
-theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
+lemma nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
   Nonempty.to_subtype (nonempty_Ioc.mpr h)
 #align set.nonempty_Ioc_subtype Set.nonempty_Ioc_subtype
 
@@ -355,60 +355,60 @@ instance [NoMaxOrder α] : NoMaxOrder (Ici a) :=
   OrderDual.noMaxOrder (α := Iic (toDual a))
 
 @[simp]
-theorem Icc_eq_empty (h : ¬a ≤ b) : Icc a b = ∅ :=
+lemma Icc_eq_empty (h : ¬a ≤ b) : Icc a b = ∅ :=
   eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans hb)
 #align set.Icc_eq_empty Set.Icc_eq_empty
 
 @[simp]
-theorem Ico_eq_empty (h : ¬a < b) : Ico a b = ∅ :=
+lemma Ico_eq_empty (h : ¬a < b) : Ico a b = ∅ :=
   eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans_lt hb)
 #align set.Ico_eq_empty Set.Ico_eq_empty
 
 @[simp]
-theorem Ioc_eq_empty (h : ¬a < b) : Ioc a b = ∅ :=
+lemma Ioc_eq_empty (h : ¬a < b) : Ioc a b = ∅ :=
   eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans_le hb)
 #align set.Ioc_eq_empty Set.Ioc_eq_empty
 
 @[simp]
-theorem Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
+lemma Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
   eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans hb)
 #align set.Ioo_eq_empty Set.Ioo_eq_empty
 
 @[simp]
-theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
+lemma Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
   Icc_eq_empty h.not_le
 #align set.Icc_eq_empty_of_lt Set.Icc_eq_empty_of_lt
 
 @[simp]
-theorem Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
+lemma Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
   Ico_eq_empty h.not_lt
 #align set.Ico_eq_empty_of_le Set.Ico_eq_empty_of_le
 
 @[simp]
-theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
+lemma Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
   Ioc_eq_empty h.not_lt
 #align set.Ioc_eq_empty_of_le Set.Ioc_eq_empty_of_le
 
 @[simp]
-theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
+lemma Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 #align set.Ioo_eq_empty_of_le Set.Ioo_eq_empty_of_le
 
 -- Porting note: `simp` can prove this
 -- @[simp]
-theorem Ico_self (a : α) : Ico a a = ∅ :=
+lemma Ico_self (a : α) : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 #align set.Ico_self Set.Ico_self
 
 -- Porting note: `simp` can prove this
 -- @[simp]
-theorem Ioc_self (a : α) : Ioc a a = ∅ :=
+lemma Ioc_self (a : α) : Ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 #align set.Ioc_self Set.Ioc_self
 
 -- Porting note: `simp` can prove this
 -- @[simp]
-theorem Ioo_self (a : α) : Ioo a a = ∅ :=
+lemma Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 #align set.Ioo_self Set.Ioo_self
 
@@ -428,43 +428,43 @@ lemma Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h right_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 #align set.Iic_subset_Iio Set.Iic_subset_Iio
 
-theorem Ioo_subset_Ioo (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
+lemma Ioo_subset_Ioo (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans_lt hx₁, hx₂.trans_le h₂⟩
 #align set.Ioo_subset_Ioo Set.Ioo_subset_Ioo
 
-theorem Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
+lemma Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
   Ioo_subset_Ioo h le_rfl
 #align set.Ioo_subset_Ioo_left Set.Ioo_subset_Ioo_left
 
-theorem Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
+lemma Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
   Ioo_subset_Ioo le_rfl h
 #align set.Ioo_subset_Ioo_right Set.Ioo_subset_Ioo_right
 
-theorem Ico_subset_Ico (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ico a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
+lemma Ico_subset_Ico (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ico a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans hx₁, hx₂.trans_le h₂⟩
 #align set.Ico_subset_Ico Set.Ico_subset_Ico
 
-theorem Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
+lemma Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
   Ico_subset_Ico h le_rfl
 #align set.Ico_subset_Ico_left Set.Ico_subset_Ico_left
 
-theorem Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
+lemma Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
   Ico_subset_Ico le_rfl h
 #align set.Ico_subset_Ico_right Set.Ico_subset_Ico_right
 
-theorem Icc_subset_Icc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
+lemma Icc_subset_Icc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans hx₁, le_trans hx₂ h₂⟩
 #align set.Icc_subset_Icc Set.Icc_subset_Icc
 
-theorem Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
+lemma Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
   Icc_subset_Icc h le_rfl
 #align set.Icc_subset_Icc_left Set.Icc_subset_Icc_left
 
-theorem Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
+lemma Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
   Icc_subset_Icc le_rfl h
 #align set.Icc_subset_Icc_right Set.Icc_subset_Icc_right
 
-theorem Icc_subset_Ioo (ha : a₂ < a₁) (hb : b₁ < b₂) : Icc a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ hx =>
+lemma Icc_subset_Ioo (ha : a₂ < a₁) (hb : b₁ < b₂) : Icc a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ hx =>
   ⟨ha.trans_le hx.1, hx.2.trans_lt hb⟩
 #align set.Icc_subset_Ioo Set.Icc_subset_Ioo
 
@@ -477,27 +477,27 @@ lemma Icc_subset_Iic_self : Icc a b ⊆ Iic b := fun _ => And.right
 lemma Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := fun _ => And.right
 #align set.Ioc_subset_Iic_self Set.Ioc_subset_Iic_self
 
-theorem Ioc_subset_Ioc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
+lemma Ioc_subset_Ioc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans_lt hx₁, hx₂.trans h₂⟩
 #align set.Ioc_subset_Ioc Set.Ioc_subset_Ioc
 
-theorem Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
+lemma Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
   Ioc_subset_Ioc h le_rfl
 #align set.Ioc_subset_Ioc_left Set.Ioc_subset_Ioc_left
 
-theorem Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
+lemma Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
   Ioc_subset_Ioc le_rfl h
 #align set.Ioc_subset_Ioc_right Set.Ioc_subset_Ioc_right
 
-theorem Ico_subset_Ioo_left (h₁ : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b := fun _ =>
+lemma Ico_subset_Ioo_left (h₁ : a₁ < a₂) : Ico a₂ b ⊆ Ioo a₁ b := fun _ =>
   And.imp_left h₁.trans_le
 #align set.Ico_subset_Ioo_left Set.Ico_subset_Ioo_left
 
-theorem Ioc_subset_Ioo_right (h : b₁ < b₂) : Ioc a b₁ ⊆ Ioo a b₂ := fun _ =>
+lemma Ioc_subset_Ioo_right (h : b₁ < b₂) : Ioc a b₁ ⊆ Ioo a b₂ := fun _ =>
   And.imp_right fun h' => h'.trans_lt h
 #align set.Ioc_subset_Ioo_right Set.Ioc_subset_Ioo_right
 
-theorem Icc_subset_Ico_right (h₁ : b₁ < b₂) : Icc a b₁ ⊆ Ico a b₂ := fun _ =>
+lemma Icc_subset_Ico_right (h₁ : b₁ < b₂) : Icc a b₁ ⊆ Ico a b₂ := fun _ =>
   And.imp_right fun h₂ => h₂.trans_lt h₁
 #align set.Icc_subset_Ico_right Set.Icc_subset_Ico_right
 
@@ -546,48 +546,48 @@ lemma Iio_ssubset_Iic_self : Iio a ⊂ Iic a :=
   @Ioi_ssubset_Ici_self αᵒᵈ _ _
 #align set.Iio_ssubset_Iic_self Set.Iio_ssubset_Iic_self
 
-theorem Icc_subset_Icc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Icc a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
+lemma Icc_subset_Icc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Icc a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h => ⟨(h ⟨le_rfl, h₁⟩).1, (h ⟨h₁, le_rfl⟩).2⟩, fun ⟨h, h'⟩ _ ⟨hx, hx'⟩ =>
     ⟨h.trans hx, hx'.trans h'⟩⟩
 #align set.Icc_subset_Icc_iff Set.Icc_subset_Icc_iff
 
-theorem Icc_subset_Ioo_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ < a₁ ∧ b₁ < b₂ :=
+lemma Icc_subset_Ioo_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ < a₁ ∧ b₁ < b₂ :=
   ⟨fun h => ⟨(h ⟨le_rfl, h₁⟩).1, (h ⟨h₁, le_rfl⟩).2⟩, fun ⟨h, h'⟩ _ ⟨hx, hx'⟩ =>
     ⟨h.trans_le hx, hx'.trans_lt h'⟩⟩
 #align set.Icc_subset_Ioo_iff Set.Icc_subset_Ioo_iff
 
-theorem Icc_subset_Ico_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ < b₂ :=
+lemma Icc_subset_Ico_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ < b₂ :=
   ⟨fun h => ⟨(h ⟨le_rfl, h₁⟩).1, (h ⟨h₁, le_rfl⟩).2⟩, fun ⟨h, h'⟩ _ ⟨hx, hx'⟩ =>
     ⟨h.trans hx, hx'.trans_lt h'⟩⟩
 #align set.Icc_subset_Ico_iff Set.Icc_subset_Ico_iff
 
-theorem Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ a₂ < a₁ ∧ b₁ ≤ b₂ :=
+lemma Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ a₂ < a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h => ⟨(h ⟨le_rfl, h₁⟩).1, (h ⟨h₁, le_rfl⟩).2⟩, fun ⟨h, h'⟩ _ ⟨hx, hx'⟩ =>
     ⟨h.trans_le hx, hx'.trans h'⟩⟩
 #align set.Icc_subset_Ioc_iff Set.Icc_subset_Ioc_iff
 
-theorem Icc_subset_Iio_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Iio b₂ ↔ b₁ < b₂ :=
+lemma Icc_subset_Iio_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Iio b₂ ↔ b₁ < b₂ :=
   ⟨fun h => h ⟨h₁, le_rfl⟩, fun h _ ⟨_, hx'⟩ => hx'.trans_lt h⟩
 #align set.Icc_subset_Iio_iff Set.Icc_subset_Iio_iff
 
-theorem Icc_subset_Ioi_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioi a₂ ↔ a₂ < a₁ :=
+lemma Icc_subset_Ioi_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioi a₂ ↔ a₂ < a₁ :=
   ⟨fun h => h ⟨le_rfl, h₁⟩, fun h _ ⟨hx, _⟩ => h.trans_le hx⟩
 #align set.Icc_subset_Ioi_iff Set.Icc_subset_Ioi_iff
 
-theorem Icc_subset_Iic_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Iic b₂ ↔ b₁ ≤ b₂ :=
+lemma Icc_subset_Iic_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Iic b₂ ↔ b₁ ≤ b₂ :=
   ⟨fun h => h ⟨h₁, le_rfl⟩, fun h _ ⟨_, hx'⟩ => hx'.trans h⟩
 #align set.Icc_subset_Iic_iff Set.Icc_subset_Iic_iff
 
-theorem Icc_subset_Ici_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ici a₂ ↔ a₂ ≤ a₁ :=
+lemma Icc_subset_Ici_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ici a₂ ↔ a₂ ≤ a₁ :=
   ⟨fun h => h ⟨le_rfl, h₁⟩, fun h _ ⟨hx, _⟩ => h.trans hx⟩
 #align set.Icc_subset_Ici_iff Set.Icc_subset_Ici_iff
 
-theorem Icc_ssubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊂ Icc a₂ b₂ :=
+lemma Icc_ssubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊂ Icc a₂ b₂ :=
   (ssubset_iff_of_subset (Icc_subset_Icc (le_of_lt ha) hb)).mpr
     ⟨a₂, left_mem_Icc.mpr hI, not_and.mpr fun f _ => lt_irrefl a₂ (ha.trans_le f)⟩
 #align set.Icc_ssubset_Icc_left Set.Icc_ssubset_Icc_left
 
-theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
+lemma Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ :=
   (ssubset_iff_of_subset (Icc_subset_Icc ha (le_of_lt hb))).mpr
     ⟨b₂, right_mem_Icc.mpr hI, fun f => lt_irrefl b₁ (hb.trans_le f.2)⟩
@@ -595,23 +595,23 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
 
 /-- If `a ≤ b`, then `(b, +∞) ⊆ (a, +∞)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Ioi_subset_Ioi_iff`. -/
-theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := fun _ hx => h.trans_lt hx
+lemma Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := fun _ hx => h.trans_lt hx
 #align set.Ioi_subset_Ioi Set.Ioi_subset_Ioi
 
 /-- If `a ≤ b`, then `(b, +∞) ⊆ [a, +∞)`. In preorders, this is just an implication. If you need
 the equivalence in dense linear orders, use `Ioi_subset_Ici_iff`. -/
-theorem Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
+lemma Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
   Subset.trans (Ioi_subset_Ioi h) Ioi_subset_Ici_self
 #align set.Ioi_subset_Ici Set.Ioi_subset_Ici
 
 /-- If `a ≤ b`, then `(-∞, a) ⊆ (-∞, b)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Iio_subset_Iio_iff`. -/
-theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := fun _ hx => lt_of_lt_of_le hx h
+lemma Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := fun _ hx => lt_of_lt_of_le hx h
 #align set.Iio_subset_Iio Set.Iio_subset_Iio
 
 /-- If `a ≤ b`, then `(-∞, a) ⊆ (-∞, b]`. In preorders, this is just an implication. If you need
 the equivalence in dense linear orders, use `Iio_subset_Iic_iff`. -/
-theorem Iio_subset_Iic (h : a ≤ b) : Iio a ⊆ Iic b :=
+lemma Iio_subset_Iic (h : a ≤ b) : Iio a ⊆ Iic b :=
   Subset.trans (Iio_subset_Iio h) Iio_subset_Iic_self
 #align set.Iio_subset_Iic Set.Iio_subset_Iic
 
@@ -647,31 +647,31 @@ lemma Iio_inter_Ioi : Iio a ∩ Ioi b = Ioo b a :=
   inter_comm _ _
 #align set.Iio_inter_Ioi Set.Iio_inter_Ioi
 
-theorem mem_Icc_of_Ioo (h : x ∈ Ioo a b) : x ∈ Icc a b :=
+lemma mem_Icc_of_Ioo (h : x ∈ Ioo a b) : x ∈ Icc a b :=
   Ioo_subset_Icc_self h
 #align set.mem_Icc_of_Ioo Set.mem_Icc_of_Ioo
 
-theorem mem_Ico_of_Ioo (h : x ∈ Ioo a b) : x ∈ Ico a b :=
+lemma mem_Ico_of_Ioo (h : x ∈ Ioo a b) : x ∈ Ico a b :=
   Ioo_subset_Ico_self h
 #align set.mem_Ico_of_Ioo Set.mem_Ico_of_Ioo
 
-theorem mem_Ioc_of_Ioo (h : x ∈ Ioo a b) : x ∈ Ioc a b :=
+lemma mem_Ioc_of_Ioo (h : x ∈ Ioo a b) : x ∈ Ioc a b :=
   Ioo_subset_Ioc_self h
 #align set.mem_Ioc_of_Ioo Set.mem_Ioc_of_Ioo
 
-theorem mem_Icc_of_Ico (h : x ∈ Ico a b) : x ∈ Icc a b :=
+lemma mem_Icc_of_Ico (h : x ∈ Ico a b) : x ∈ Icc a b :=
   Ico_subset_Icc_self h
 #align set.mem_Icc_of_Ico Set.mem_Icc_of_Ico
 
-theorem mem_Icc_of_Ioc (h : x ∈ Ioc a b) : x ∈ Icc a b :=
+lemma mem_Icc_of_Ioc (h : x ∈ Ioc a b) : x ∈ Icc a b :=
   Ioc_subset_Icc_self h
 #align set.mem_Icc_of_Ioc Set.mem_Icc_of_Ioc
 
-theorem mem_Ici_of_Ioi (h : x ∈ Ioi a) : x ∈ Ici a :=
+lemma mem_Ici_of_Ioi (h : x ∈ Ioi a) : x ∈ Ici a :=
   Ioi_subset_Ici_self h
 #align set.mem_Ici_of_Ioi Set.mem_Ici_of_Ioi
 
-theorem mem_Iic_of_Iio (h : x ∈ Iio a) : x ∈ Iic a :=
+lemma mem_Iic_of_Iio (h : x ∈ Iio a) : x ∈ Iic a :=
   Iio_subset_Iic_self h
 #align set.mem_Iic_of_Iio Set.mem_Iic_of_Iio
 
@@ -691,36 +691,36 @@ lemma Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← not_nonempty_iff_eq_empty, not_iff_not, nonempty_Ioo]
 #align set.Ioo_eq_empty_iff Set.Ioo_eq_empty_iff
 
-theorem _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
+lemma _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
   eq_univ_of_forall h
 #align is_top.Iic_eq IsTop.Iic_eq
 
-theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
+lemma _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
   eq_univ_of_forall h
 #align is_bot.Ici_eq IsBot.Ici_eq
 
-theorem _root_.IsMax.Ioi_eq (h : IsMax a) : Ioi a = ∅ :=
+lemma _root_.IsMax.Ioi_eq (h : IsMax a) : Ioi a = ∅ :=
   eq_empty_of_subset_empty fun _ => h.not_lt
 #align is_max.Ioi_eq IsMax.Ioi_eq
 
-theorem _root_.IsMin.Iio_eq (h : IsMin a) : Iio a = ∅ :=
+lemma _root_.IsMin.Iio_eq (h : IsMin a) : Iio a = ∅ :=
   eq_empty_of_subset_empty fun _ => h.not_lt
 #align is_min.Iio_eq IsMin.Iio_eq
 
-theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
+lemma Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
 #align set.Iic_inter_Ioc_of_le Set.Iic_inter_Ioc_of_le
 
-theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
+lemma not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
 #align set.not_mem_Icc_of_lt Set.not_mem_Icc_of_lt
 
-theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
+lemma not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
 #align set.not_mem_Icc_of_gt Set.not_mem_Icc_of_gt
 
-theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
+lemma not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
 #align set.not_mem_Ico_of_lt Set.not_mem_Ico_of_lt
 
-theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
+lemma not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
 #align set.not_mem_Ioc_of_gt Set.not_mem_Ioc_of_gt
 
 -- Porting note: `simp` can prove this
@@ -733,16 +733,16 @@ lemma not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
 lemma not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
 #align set.not_mem_Iio_self Set.not_mem_Iio_self
 
-theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+lemma not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 #align set.not_mem_Ioc_of_le Set.not_mem_Ioc_of_le
 
-theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+lemma not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
 #align set.not_mem_Ico_of_ge Set.not_mem_Ico_of_ge
 
-theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+lemma not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 #align set.not_mem_Ioo_of_le Set.not_mem_Ioo_of_le
 
-theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+lemma not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
 #align set.not_mem_Ioo_of_ge Set.not_mem_Ioo_of_ge
 
 end Preorder
@@ -752,7 +752,7 @@ section PartialOrder
 variable [PartialOrder α] {a b c : α}
 
 @[simp]
-theorem Icc_self (a : α) : Icc a a = {a} :=
+lemma Icc_self (a : α) : Icc a a = {a} :=
   Set.ext <| by simp [Icc, le_antisymm_iff, and_comm]
 #align set.Icc_self Set.Icc_self
 
@@ -815,27 +815,27 @@ lemma Iic_diff_right : Iic a \ {a} = Iio a :=
 #align set.Iic_diff_right Set.Iic_diff_right
 
 @[simp]
-theorem Ico_diff_Ioo_same (h : a < b) : Ico a b \ Ioo a b = {a} := by
+lemma Ico_diff_Ioo_same (h : a < b) : Ico a b \ Ioo a b = {a} := by
   rw [← Ico_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 <| left_mem_Ico.2 h)]
 #align set.Ico_diff_Ioo_same Set.Ico_diff_Ioo_same
 
 @[simp]
-theorem Ioc_diff_Ioo_same (h : a < b) : Ioc a b \ Ioo a b = {b} := by
+lemma Ioc_diff_Ioo_same (h : a < b) : Ioc a b \ Ioo a b = {b} := by
   rw [← Ioc_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 <| right_mem_Ioc.2 h)]
 #align set.Ioc_diff_Ioo_same Set.Ioc_diff_Ioo_same
 
 @[simp]
-theorem Icc_diff_Ico_same (h : a ≤ b) : Icc a b \ Ico a b = {b} := by
+lemma Icc_diff_Ico_same (h : a ≤ b) : Icc a b \ Ico a b = {b} := by
   rw [← Icc_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 <| right_mem_Icc.2 h)]
 #align set.Icc_diff_Ico_same Set.Icc_diff_Ico_same
 
 @[simp]
-theorem Icc_diff_Ioc_same (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by
+lemma Icc_diff_Ioc_same (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by
   rw [← Icc_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 <| left_mem_Icc.2 h)]
 #align set.Icc_diff_Ioc_same Set.Icc_diff_Ioc_same
 
 @[simp]
-theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
+lemma Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
   rw [← Icc_diff_both, diff_diff_cancel_left]
   simp [insert_subset_iff, h]
 #align set.Icc_diff_Ioo_same Set.Icc_diff_Ioo_same
@@ -862,41 +862,41 @@ lemma Iio_union_right : Iio a ∪ {a} = Iic a :=
   ext fun _ => le_iff_lt_or_eq.symm
 #align set.Iio_union_right Set.Iio_union_right
 
-theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
+lemma Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
   rw [← Ico_diff_left, diff_union_self,
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Ico.2 hab)]
 #align set.Ioo_union_left Set.Ioo_union_left
 
-theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
+lemma Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
   simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
 #align set.Ioo_union_right Set.Ioo_union_right
 
-theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
+lemma Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
   rw [← Icc_diff_left, diff_union_self,
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Icc.2 hab)]
 #align set.Ioc_union_left Set.Ioc_union_left
 
-theorem Ico_union_right (hab : a ≤ b) : Ico a b ∪ {b} = Icc a b := by
+lemma Ico_union_right (hab : a ≤ b) : Ico a b ∪ {b} = Icc a b := by
   simpa only [dual_Ioc, dual_Icc] using Ioc_union_left hab.dual
 #align set.Ico_union_right Set.Ico_union_right
 
 @[simp]
-theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
+lemma Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
   rw [insert_eq, union_comm, Ico_union_right h]
 #align set.Ico_insert_right Set.Ico_insert_right
 
 @[simp]
-theorem Ioc_insert_left (h : a ≤ b) : insert a (Ioc a b) = Icc a b := by
+lemma Ioc_insert_left (h : a ≤ b) : insert a (Ioc a b) = Icc a b := by
   rw [insert_eq, union_comm, Ioc_union_left h]
 #align set.Ioc_insert_left Set.Ioc_insert_left
 
 @[simp]
-theorem Ioo_insert_left (h : a < b) : insert a (Ioo a b) = Ico a b := by
+lemma Ioo_insert_left (h : a < b) : insert a (Ioo a b) = Ico a b := by
   rw [insert_eq, union_comm, Ioo_union_left h]
 #align set.Ioo_insert_left Set.Ioo_insert_left
 
 @[simp]
-theorem Ioo_insert_right (h : a < b) : insert b (Ioo a b) = Ioc a b := by
+lemma Ioo_insert_right (h : a < b) : insert b (Ioo a b) = Ioc a b := by
   rw [insert_eq, union_comm, Ioo_union_right h]
 #align set.Ioo_insert_right Set.Ioo_insert_right
 
@@ -957,11 +957,11 @@ lemma eq_endpoints_or_mem_Ioo_of_mem_Icc {x : α} (hmem : x ∈ Icc a b) :
   hmem.1.eq_or_gt.imp_right fun h => eq_right_or_mem_Ioo_of_mem_Ioc ⟨h, hmem.2⟩
 #align set.eq_endpoints_or_mem_Ioo_of_mem_Icc Set.eq_endpoints_or_mem_Ioo_of_mem_Icc
 
-theorem _root_.IsMax.Ici_eq (h : IsMax a) : Ici a = {a} :=
+lemma _root_.IsMax.Ici_eq (h : IsMax a) : Ici a = {a} :=
   eq_singleton_iff_unique_mem.2 ⟨left_mem_Ici, fun _ => h.eq_of_ge⟩
 #align is_max.Ici_eq IsMax.Ici_eq
 
-theorem _root_.IsMin.Iic_eq (h : IsMin a) : Iic a = {a} :=
+lemma _root_.IsMin.Iic_eq (h : IsMin a) : Iic a = {a} :=
   h.toDual.Ici_eq
 #align is_min.Iic_eq IsMin.Iic_eq
 
@@ -1136,14 +1136,14 @@ lemma Iio_inj : Iio a = Iio b ↔ a = b :=
   Iio_injective.eq_iff
 #align set.Iio_inj Set.Iio_inj
 
-theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
+lemma Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h =>
     have : a₂ ≤ a₁ ∧ a₁ < b₂ := h ⟨le_rfl, h₁⟩
     ⟨this.1, le_of_not_lt fun h' => lt_irrefl b₂ (h ⟨this.2.le, h'⟩).2⟩,
     fun ⟨h₁, h₂⟩ => Ico_subset_Ico h₁ h₂⟩
 #align set.Ico_subset_Ico_iff Set.Ico_subset_Ico_iff
 
-theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
+lemma Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
   convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@dual_Ico α _ _ _).symm
 #align set.Ioc_subset_Ioc_iff Set.Ioc_subset_Ioc_iff
 
@@ -1159,7 +1159,7 @@ lemma Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     fun ⟨h₁, h₂⟩ => Ioo_subset_Ioo h₁ h₂⟩
 #align set.Ioo_subset_Ioo_iff Set.Ioo_subset_Ioo_iff
 
-theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
+lemma Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun e => by
       simp [Subset.antisymm_iff] at e
       simp [le_antisymm_iff]
@@ -1215,19 +1215,19 @@ lemma Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := by
 /-! #### Two infinite intervals -/
 
 
-theorem Iic_union_Ioi_of_le (h : a ≤ b) : Iic b ∪ Ioi a = univ :=
+lemma Iic_union_Ioi_of_le (h : a ≤ b) : Iic b ∪ Ioi a = univ :=
   eq_univ_of_forall fun x => (h.lt_or_le x).symm
 #align set.Iic_union_Ioi_of_le Set.Iic_union_Ioi_of_le
 
-theorem Iio_union_Ici_of_le (h : a ≤ b) : Iio b ∪ Ici a = univ :=
+lemma Iio_union_Ici_of_le (h : a ≤ b) : Iio b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.le_or_lt x).symm
 #align set.Iio_union_Ici_of_le Set.Iio_union_Ici_of_le
 
-theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
+lemma Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.le_or_le x).symm
 #align set.Iic_union_Ici_of_le Set.Iic_union_Ici_of_le
 
-theorem Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
+lemma Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
   eq_univ_of_forall fun x => (h.lt_or_lt x).symm
 #align set.Iio_union_Ioi_of_lt Set.Iio_union_Ioi_of_lt
 
@@ -1254,7 +1254,7 @@ lemma Iio_union_Ioi : Iio a ∪ Ioi a = {a}ᶜ :=
 /-! #### A finite and an infinite interval -/
 
 
-theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
+lemma Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ioo, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
@@ -1263,7 +1263,7 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
     simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Ioo_union_Ioi' Set.Ioo_union_Ioi'
 
-theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
+lemma Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   cases' le_total a b with hab hab <;> simp [hab] at h
   · exact Ioo_union_Ioi' h
   · rw [min_comm]
@@ -1275,7 +1275,7 @@ lemma Ioi_subset_Ioo_union_Ici : Ioi a ⊆ Ioo a b ∪ Ici b := fun x hx =>
 #align set.Ioi_subset_Ioo_union_Ici Set.Ioi_subset_Ioo_union_Ici
 
 @[simp]
-theorem Ioo_union_Ici_eq_Ioi (h : a < b) : Ioo a b ∪ Ici b = Ioi a :=
+lemma Ioo_union_Ici_eq_Ioi (h : a < b) : Ioo a b ∪ Ici b = Ioi a :=
   Subset.antisymm (fun _ hx => hx.elim And.left h.trans_le) Ioi_subset_Ioo_union_Ici
 #align set.Ioo_union_Ici_eq_Ioi Set.Ioo_union_Ici_eq_Ioi
 
@@ -1284,11 +1284,11 @@ lemma Ici_subset_Ico_union_Ici : Ici a ⊆ Ico a b ∪ Ici b := fun x hx =>
 #align set.Ici_subset_Ico_union_Ici Set.Ici_subset_Ico_union_Ici
 
 @[simp]
-theorem Ico_union_Ici_eq_Ici (h : a ≤ b) : Ico a b ∪ Ici b = Ici a :=
+lemma Ico_union_Ici_eq_Ici (h : a ≤ b) : Ico a b ∪ Ici b = Ici a :=
   Subset.antisymm (fun _ hx => hx.elim And.left h.trans) Ici_subset_Ico_union_Ici
 #align set.Ico_union_Ici_eq_Ici Set.Ico_union_Ici_eq_Ici
 
-theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := by
+lemma Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ico, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
@@ -1297,7 +1297,7 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
     simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Ico_union_Ici' Set.Ico_union_Ici'
 
-theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
+lemma Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
   cases' le_total a b with hab hab <;> simp [hab] at h
   · exact Ico_union_Ici' h
   · simp [*]
@@ -1308,11 +1308,11 @@ lemma Ioi_subset_Ioc_union_Ioi : Ioi a ⊆ Ioc a b ∪ Ioi b := fun x hx =>
 #align set.Ioi_subset_Ioc_union_Ioi Set.Ioi_subset_Ioc_union_Ioi
 
 @[simp]
-theorem Ioc_union_Ioi_eq_Ioi (h : a ≤ b) : Ioc a b ∪ Ioi b = Ioi a :=
+lemma Ioc_union_Ioi_eq_Ioi (h : a ≤ b) : Ioc a b ∪ Ioi b = Ioi a :=
   Subset.antisymm (fun _ hx => hx.elim And.left h.trans_lt) Ioi_subset_Ioc_union_Ioi
 #align set.Ioc_union_Ioi_eq_Ioi Set.Ioc_union_Ioi_eq_Ioi
 
-theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
+lemma Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ioc, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
@@ -1321,7 +1321,7 @@ theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := b
     simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Ioc_union_Ioi' Set.Ioc_union_Ioi'
 
-theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
+lemma Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
   cases' le_total a b with hab hab <;> simp [hab] at h
   · exact Ioc_union_Ioi' h
   · simp [*]
@@ -1332,7 +1332,7 @@ lemma Ici_subset_Icc_union_Ioi : Ici a ⊆ Icc a b ∪ Ioi b := fun x hx =>
 #align set.Ici_subset_Icc_union_Ioi Set.Ici_subset_Icc_union_Ioi
 
 @[simp]
-theorem Icc_union_Ioi_eq_Ici (h : a ≤ b) : Icc a b ∪ Ioi b = Ici a :=
+lemma Icc_union_Ioi_eq_Ici (h : a ≤ b) : Icc a b ∪ Ioi b = Ici a :=
   Subset.antisymm (fun _ hx => (hx.elim And.left) fun hx' => h.trans <| le_of_lt hx')
     Ici_subset_Icc_union_Ioi
 #align set.Icc_union_Ioi_eq_Ici Set.Icc_union_Ioi_eq_Ici
@@ -1342,7 +1342,7 @@ lemma Ioi_subset_Ioc_union_Ici : Ioi a ⊆ Ioc a b ∪ Ici b :=
 #align set.Ioi_subset_Ioc_union_Ici Set.Ioi_subset_Ioc_union_Ici
 
 @[simp]
-theorem Ioc_union_Ici_eq_Ioi (h : a < b) : Ioc a b ∪ Ici b = Ioi a :=
+lemma Ioc_union_Ici_eq_Ioi (h : a < b) : Ioc a b ∪ Ici b = Ioi a :=
   Subset.antisymm (fun _ hx => hx.elim And.left h.trans_le) Ioi_subset_Ioc_union_Ici
 #align set.Ioc_union_Ici_eq_Ioi Set.Ioc_union_Ici_eq_Ioi
 
@@ -1351,11 +1351,11 @@ lemma Ici_subset_Icc_union_Ici : Ici a ⊆ Icc a b ∪ Ici b :=
 #align set.Ici_subset_Icc_union_Ici Set.Ici_subset_Icc_union_Ici
 
 @[simp]
-theorem Icc_union_Ici_eq_Ici (h : a ≤ b) : Icc a b ∪ Ici b = Ici a :=
+lemma Icc_union_Ici_eq_Ici (h : a ≤ b) : Icc a b ∪ Ici b = Ici a :=
   Subset.antisymm (fun _ hx => hx.elim And.left h.trans) Ici_subset_Icc_union_Ici
 #align set.Icc_union_Ici_eq_Ici Set.Icc_union_Ici_eq_Ici
 
-theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := by
+lemma Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Icc, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
@@ -1364,7 +1364,7 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
     simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Icc_union_Ici' Set.Icc_union_Ici'
 
-theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
+lemma Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   cases' le_or_lt a b with hab hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
   · cases' h with h h
@@ -1381,7 +1381,7 @@ lemma Iic_subset_Iio_union_Icc : Iic b ⊆ Iio a ∪ Icc a b := fun x hx =>
 #align set.Iic_subset_Iio_union_Icc Set.Iic_subset_Iio_union_Icc
 
 @[simp]
-theorem Iio_union_Icc_eq_Iic (h : a ≤ b) : Iio a ∪ Icc a b = Iic b :=
+lemma Iio_union_Icc_eq_Iic (h : a ≤ b) : Iio a ∪ Icc a b = Iic b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx => (le_of_lt hx).trans h) And.right)
     Iic_subset_Iio_union_Icc
 #align set.Iio_union_Icc_eq_Iic Set.Iio_union_Icc_eq_Iic
@@ -1391,12 +1391,12 @@ lemma Iio_subset_Iio_union_Ico : Iio b ⊆ Iio a ∪ Ico a b := fun x hx =>
 #align set.Iio_subset_Iio_union_Ico Set.Iio_subset_Iio_union_Ico
 
 @[simp]
-theorem Iio_union_Ico_eq_Iio (h : a ≤ b) : Iio a ∪ Ico a b = Iio b :=
+lemma Iio_union_Ico_eq_Iio (h : a ≤ b) : Iio a ∪ Ico a b = Iio b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx' => lt_of_lt_of_le hx' h) And.right)
     Iio_subset_Iio_union_Ico
 #align set.Iio_union_Ico_eq_Iio Set.Iio_union_Ico_eq_Iio
 
-theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
+lemma Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iio, mem_Ico, lt_max_iff]
   by_cases hc : c ≤ x
@@ -1405,7 +1405,7 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
     simp only [hxb, true_or] -- Porting note: restore `tauto`
 #align set.Iio_union_Ico' Set.Iio_union_Ico'
 
-theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
+lemma Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
   cases' le_total c d with hcd hcd <;> simp [hcd] at h
   · exact Iio_union_Ico' h
   · simp [*]
@@ -1416,12 +1416,12 @@ lemma Iic_subset_Iic_union_Ioc : Iic b ⊆ Iic a ∪ Ioc a b := fun x hx =>
 #align set.Iic_subset_Iic_union_Ioc Set.Iic_subset_Iic_union_Ioc
 
 @[simp]
-theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b :=
+lemma Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx' => le_trans hx' h) And.right)
     Iic_subset_Iic_union_Ioc
 #align set.Iic_union_Ioc_eq_Iic Set.Iic_union_Ioc_eq_Iic
 
-theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
+lemma Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Ioc, le_max_iff]
   by_cases hc : c < x
@@ -1430,7 +1430,7 @@ theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
     simp only [hxb, true_or] -- Porting note: restore `tauto`
 #align set.Iic_union_Ioc' Set.Iic_union_Ioc'
 
-theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
+lemma Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
   cases' le_total c d with hcd hcd <;> simp [hcd] at h
   · exact Iic_union_Ioc' h
   · rw [max_comm]
@@ -1442,12 +1442,12 @@ lemma Iio_subset_Iic_union_Ioo : Iio b ⊆ Iic a ∪ Ioo a b := fun x hx =>
 #align set.Iio_subset_Iic_union_Ioo Set.Iio_subset_Iic_union_Ioo
 
 @[simp]
-theorem Iic_union_Ioo_eq_Iio (h : a < b) : Iic a ∪ Ioo a b = Iio b :=
+lemma Iic_union_Ioo_eq_Iio (h : a < b) : Iic a ∪ Ioo a b = Iio b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx' => lt_of_le_of_lt hx' h) And.right)
     Iio_subset_Iic_union_Ioo
 #align set.Iic_union_Ioo_eq_Iio Set.Iic_union_Ioo_eq_Iio
 
-theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
+lemma Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   ext x
   cases' lt_or_le x b with hba hba
   · simp [hba, h₁]
@@ -1456,7 +1456,7 @@ theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
     exact fun h₂ => ⟨h₁.trans_le hba, h₂⟩
 #align set.Iio_union_Ioo' Set.Iio_union_Ioo'
 
-theorem Iio_union_Ioo (h : min c d < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
+lemma Iio_union_Ioo (h : min c d < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   cases' le_total c d with hcd hcd <;> simp [hcd] at h
   · exact Iio_union_Ioo' h
   · rw [max_comm]
@@ -1468,12 +1468,12 @@ lemma Iic_subset_Iic_union_Icc : Iic b ⊆ Iic a ∪ Icc a b :=
 #align set.Iic_subset_Iic_union_Icc Set.Iic_subset_Iic_union_Icc
 
 @[simp]
-theorem Iic_union_Icc_eq_Iic (h : a ≤ b) : Iic a ∪ Icc a b = Iic b :=
+lemma Iic_union_Icc_eq_Iic (h : a ≤ b) : Iic a ∪ Icc a b = Iic b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx' => le_trans hx' h) And.right)
     Iic_subset_Iic_union_Icc
 #align set.Iic_union_Icc_eq_Iic Set.Iic_union_Icc_eq_Iic
 
-theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
+lemma Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Icc, le_max_iff]
   by_cases hc : c ≤ x
@@ -1482,7 +1482,7 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
     simp only [hxb, true_or] -- Porting note: restore `tauto`
 #align set.Iic_union_Icc' Set.Iic_union_Icc'
 
-theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
+lemma Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   cases' le_or_lt c d with hcd hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
   · cases' h with h h
@@ -1496,7 +1496,7 @@ lemma Iio_subset_Iic_union_Ico : Iio b ⊆ Iic a ∪ Ico a b :=
 #align set.Iio_subset_Iic_union_Ico Set.Iio_subset_Iic_union_Ico
 
 @[simp]
-theorem Iic_union_Ico_eq_Iio (h : a < b) : Iic a ∪ Ico a b = Iio b :=
+lemma Iic_union_Ico_eq_Iio (h : a < b) : Iic a ∪ Ico a b = Iio b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx' => lt_of_le_of_lt hx' h) And.right)
     Iio_subset_Iic_union_Ico
 #align set.Iic_union_Ico_eq_Iio Set.Iic_union_Ico_eq_Iio
@@ -1509,7 +1509,7 @@ lemma Ioo_subset_Ioo_union_Ico : Ioo a c ⊆ Ioo a b ∪ Ico b c := fun x hx =>
 #align set.Ioo_subset_Ioo_union_Ico Set.Ioo_subset_Ioo_union_Ico
 
 @[simp]
-theorem Ioo_union_Ico_eq_Ioo (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Ico b c = Ioo a c :=
+lemma Ioo_union_Ico_eq_Ioo (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Ico b c = Ioo a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_le h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
     Ioo_subset_Ioo_union_Ico
@@ -1520,13 +1520,13 @@ lemma Ico_subset_Ico_union_Ico : Ico a c ⊆ Ico a b ∪ Ico b c := fun x hx =>
 #align set.Ico_subset_Ico_union_Ico Set.Ico_subset_Ico_union_Ico
 
 @[simp]
-theorem Ico_union_Ico_eq_Ico (h₁ : a ≤ b) (h₂ : b ≤ c) : Ico a b ∪ Ico b c = Ico a c :=
+lemma Ico_union_Ico_eq_Ico (h₁ : a ≤ b) (h₂ : b ≤ c) : Ico a b ∪ Ico b c = Ico a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_le h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Ico_subset_Ico_union_Ico
 #align set.Ico_union_Ico_eq_Ico Set.Ico_union_Ico_eq_Ico
 
-theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
+lemma Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Ico, min_le_iff, lt_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x < d
@@ -1538,7 +1538,7 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
   · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
 #align set.Ico_union_Ico' Set.Ico_union_Ico'
 
-theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
+lemma Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;> simp [hab, hcd] at h₁ h₂
   · exact Ico_union_Ico' h₂ h₁
@@ -1550,7 +1550,7 @@ lemma Icc_subset_Ico_union_Icc : Icc a c ⊆ Ico a b ∪ Icc b c := fun x hx =>
 #align set.Icc_subset_Ico_union_Icc Set.Icc_subset_Ico_union_Icc
 
 @[simp]
-theorem Ico_union_Icc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : Ico a b ∪ Icc b c = Icc a c :=
+lemma Ico_union_Icc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : Ico a b ∪ Icc b c = Icc a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.le.trans h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Icc_subset_Ico_union_Icc
@@ -1561,7 +1561,7 @@ lemma Ioc_subset_Ioo_union_Icc : Ioc a c ⊆ Ioo a b ∪ Icc b c := fun x hx =>
 #align set.Ioc_subset_Ioo_union_Icc Set.Ioc_subset_Ioo_union_Icc
 
 @[simp]
-theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b c = Ioc a c :=
+lemma Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b c = Ioc a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.le.trans h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
     Ioc_subset_Ioo_union_Icc
@@ -1575,7 +1575,7 @@ lemma Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>
 #align set.Ioo_subset_Ioc_union_Ioo Set.Ioo_subset_Ioc_union_Ioo
 
 @[simp]
-theorem Ioc_union_Ioo_eq_Ioo (h₁ : a ≤ b) (h₂ : b < c) : Ioc a b ∪ Ioo b c = Ioo a c :=
+lemma Ioc_union_Ioo_eq_Ioo (h₁ : a ≤ b) (h₂ : b < c) : Ioc a b ∪ Ioo b c = Ioo a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
     Ioo_subset_Ioc_union_Ioo
@@ -1586,7 +1586,7 @@ lemma Ico_subset_Icc_union_Ioo : Ico a c ⊆ Icc a b ∪ Ioo b c := fun x hx =>
 #align set.Ico_subset_Icc_union_Ioo Set.Ico_subset_Icc_union_Ioo
 
 @[simp]
-theorem Icc_union_Ioo_eq_Ico (h₁ : a ≤ b) (h₂ : b < c) : Icc a b ∪ Ioo b c = Ico a c :=
+lemma Icc_union_Ioo_eq_Ico (h₁ : a ≤ b) (h₂ : b < c) : Icc a b ∪ Ioo b c = Ico a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans hx.1.le, hx.2⟩)
     Ico_subset_Icc_union_Ioo
@@ -1597,7 +1597,7 @@ lemma Icc_subset_Icc_union_Ioc : Icc a c ⊆ Icc a b ∪ Ioc b c := fun x hx =>
 #align set.Icc_subset_Icc_union_Ioc Set.Icc_subset_Icc_union_Ioc
 
 @[simp]
-theorem Icc_union_Ioc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : Icc a b ∪ Ioc b c = Icc a c :=
+lemma Icc_union_Ioc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : Icc a b ∪ Ioc b c = Icc a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans hx.1.le, hx.2⟩)
     Icc_subset_Icc_union_Ioc
@@ -1608,13 +1608,13 @@ lemma Ioc_subset_Ioc_union_Ioc : Ioc a c ⊆ Ioc a b ∪ Ioc b c := fun x hx =>
 #align set.Ioc_subset_Ioc_union_Ioc Set.Ioc_subset_Ioc_union_Ioc
 
 @[simp]
-theorem Ioc_union_Ioc_eq_Ioc (h₁ : a ≤ b) (h₂ : b ≤ c) : Ioc a b ∪ Ioc b c = Ioc a c :=
+lemma Ioc_union_Ioc_eq_Ioc (h₁ : a ≤ b) (h₂ : b ≤ c) : Ioc a b ∪ Ioc b c = Ioc a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
     Ioc_subset_Ioc_union_Ioc
 #align set.Ioc_union_Ioc_eq_Ioc Set.Ioc_union_Ioc_eq_Ioc
 
-theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
+lemma Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Ioc, min_lt_iff, le_max_iff]
   by_cases hc : c < x <;> by_cases hd : x ≤ d
@@ -1626,7 +1626,7 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
   · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
 #align set.Ioc_union_Ioc' Set.Ioc_union_Ioc'
 
-theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
+lemma Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
   cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;> simp [hab, hcd] at h₁ h₂
   · exact Ioc_union_Ioc' h₂ h₁
@@ -1641,7 +1641,7 @@ lemma Ioo_subset_Ioc_union_Ico : Ioo a c ⊆ Ioc a b ∪ Ico b c :=
 #align set.Ioo_subset_Ioc_union_Ico Set.Ioo_subset_Ioc_union_Ico
 
 @[simp]
-theorem Ioc_union_Ico_eq_Ioo (h₁ : a < b) (h₂ : b < c) : Ioc a b ∪ Ico b c = Ioo a c :=
+lemma Ioc_union_Ico_eq_Ioo (h₁ : a < b) (h₂ : b < c) : Ioc a b ∪ Ico b c = Ioo a c :=
   Subset.antisymm
     (fun _ hx =>
       hx.elim (fun hx' => ⟨hx'.1, hx'.2.trans_lt h₂⟩) fun hx' => ⟨h₁.trans_le hx'.1, hx'.2⟩)
@@ -1653,7 +1653,7 @@ lemma Ico_subset_Icc_union_Ico : Ico a c ⊆ Icc a b ∪ Ico b c :=
 #align set.Ico_subset_Icc_union_Ico Set.Ico_subset_Icc_union_Ico
 
 @[simp]
-theorem Icc_union_Ico_eq_Ico (h₁ : a ≤ b) (h₂ : b < c) : Icc a b ∪ Ico b c = Ico a c :=
+lemma Icc_union_Ico_eq_Ico (h₁ : a ≤ b) (h₂ : b < c) : Icc a b ∪ Ico b c = Ico a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Ico_subset_Icc_union_Ico
@@ -1664,13 +1664,13 @@ lemma Icc_subset_Icc_union_Icc : Icc a c ⊆ Icc a b ∪ Icc b c :=
 #align set.Icc_subset_Icc_union_Icc Set.Icc_subset_Icc_union_Icc
 
 @[simp]
-theorem Icc_union_Icc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : Icc a b ∪ Icc b c = Icc a c :=
+lemma Icc_union_Icc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : Icc a b ∪ Icc b c = Icc a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Icc_subset_Icc_union_Icc
 #align set.Icc_union_Icc_eq_Icc Set.Icc_union_Icc_eq_Icc
 
-theorem Icc_union_Icc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Icc a b ∪ Icc c d = Icc (min a c) (max b d) := by
+lemma Icc_union_Icc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Icc a b ∪ Icc c d = Icc (min a c) (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Icc, min_le_iff, le_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x ≤ d
@@ -1685,7 +1685,7 @@ theorem Icc_union_Icc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Icc a b ∪ Icc c d =
 /-- We cannot replace `<` by `≤` in the hypotheses.
 Otherwise for `b < a = d < c` the l.h.s. is `∅` and the r.h.s. is `{a}`.
 -/
-theorem Icc_union_Icc (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
+lemma Icc_union_Icc (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Icc a b ∪ Icc c d = Icc (min a c) (max b d) := by
   cases' le_or_lt a b with hab hab <;> cases' le_or_lt c d with hcd hcd <;>
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, min_eq_left_of_lt,
@@ -1699,13 +1699,13 @@ lemma Ioc_subset_Ioc_union_Icc : Ioc a c ⊆ Ioc a b ∪ Icc b c :=
 #align set.Ioc_subset_Ioc_union_Icc Set.Ioc_subset_Ioc_union_Icc
 
 @[simp]
-theorem Ioc_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioc a b ∪ Icc b c = Ioc a c :=
+lemma Ioc_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioc a b ∪ Icc b c = Ioc a c :=
   Subset.antisymm
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
     Ioc_subset_Ioc_union_Icc
 #align set.Ioc_union_Icc_eq_Ioc Set.Ioc_union_Icc_eq_Ioc
 
-theorem Ioo_union_Ioo' (h₁ : c < b) (h₂ : a < d) : Ioo a b ∪ Ioo c d = Ioo (min a c) (max b d) := by
+lemma Ioo_union_Ioo' (h₁ : c < b) (h₂ : a < d) : Ioo a b ∪ Ioo c d = Ioo (min a c) (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Ioo, min_lt_iff, lt_max_iff]
   by_cases hc : c < x <;> by_cases hd : x < d
@@ -1717,7 +1717,7 @@ theorem Ioo_union_Ioo' (h₁ : c < b) (h₂ : a < d) : Ioo a b ∪ Ioo c d = Ioo
   · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
 #align set.Ioo_union_Ioo' Set.Ioo_union_Ioo'
 
-theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
+lemma Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Ioo a b ∪ Ioo c d = Ioo (min a c) (max b d) := by
   cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;>
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, hab, hcd] at h₁ h₂
@@ -1742,7 +1742,7 @@ lemma Iic_inter_Iic {a b : α} : Iic a ∩ Iic b = Iic (a ⊓ b) := by
 #align set.Iic_inter_Iic Set.Iic_inter_Iic
 
 @[simp]
-theorem Ioc_inter_Iic (a b c : α) : Ioc a b ∩ Iic c = Ioc a (b ⊓ c) := by
+lemma Ioc_inter_Iic (a b c : α) : Ioc a b ∩ Iic c = Ioc a (b ⊓ c) := by
   rw [← Ioi_inter_Iic, ← Ioi_inter_Iic, inter_assoc, Iic_inter_Iic]
 #align set.Ioc_inter_Iic Set.Ioc_inter_Iic
 
@@ -1759,7 +1759,7 @@ lemma Ici_inter_Ici {a b : α} : Ici a ∩ Ici b = Ici (a ⊔ b) := by
 #align set.Ici_inter_Ici Set.Ici_inter_Ici
 
 @[simp]
-theorem Ico_inter_Ici (a b c : α) : Ico a b ∩ Ici c = Ico (a ⊔ c) b := by
+lemma Ico_inter_Ici (a b c : α) : Ico a b ∩ Ici c = Ico (a ⊔ c) b := by
   rw [← Ici_inter_Iio, ← Ici_inter_Iio, ← Ici_inter_Ici, inter_right_comm]
 #align set.Ico_inter_Ici Set.Ico_inter_Ici
 
@@ -1774,7 +1774,7 @@ lemma Icc_inter_Icc : Icc a₁ b₁ ∩ Icc a₂ b₂ = Icc (a₁ ⊔ a₂) (b�
 #align set.Icc_inter_Icc Set.Icc_inter_Icc
 
 @[simp]
-theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
+lemma Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
   rw [Icc_inter_Icc, sup_of_le_right hab, inf_of_le_left hbc, Icc_self]
 #align set.Icc_inter_Icc_eq_singleton Set.Icc_inter_Icc_eq_singleton
 
@@ -1808,22 +1808,22 @@ lemma Ioo_inter_Ioo : Ioo a₁ b₁ ∩ Ioo a₂ b₂ = Ioo (a₁ ⊔ a₂) (b�
   simp only [Ioi_inter_Iio.symm, Ioi_inter_Ioi.symm, Iio_inter_Iio.symm]; ac_rfl
 #align set.Ioo_inter_Ioo Set.Ioo_inter_Ioo
 
-theorem Ioc_inter_Ioo_of_left_lt (h : b₁ < b₂) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioc (max a₁ a₂) b₁ :=
+lemma Ioc_inter_Ioo_of_left_lt (h : b₁ < b₂) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioc (max a₁ a₂) b₁ :=
   ext fun x => by
     simp [and_assoc, @and_left_comm (x ≤ _), and_iff_left_iff_imp.2 fun h' => lt_of_le_of_lt h' h]
 #align set.Ioc_inter_Ioo_of_left_lt Set.Ioc_inter_Ioo_of_left_lt
 
-theorem Ioc_inter_Ioo_of_right_le (h : b₂ ≤ b₁) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioo (max a₁ a₂) b₂ :=
+lemma Ioc_inter_Ioo_of_right_le (h : b₂ ≤ b₁) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioo (max a₁ a₂) b₂ :=
   ext fun x => by
     simp [and_assoc, @and_left_comm (x ≤ _),
       and_iff_right_iff_imp.2 fun h' => (le_of_lt h').trans h]
 #align set.Ioc_inter_Ioo_of_right_le Set.Ioc_inter_Ioo_of_right_le
 
-theorem Ioo_inter_Ioc_of_left_le (h : b₁ ≤ b₂) : Ioo a₁ b₁ ∩ Ioc a₂ b₂ = Ioo (max a₁ a₂) b₁ := by
+lemma Ioo_inter_Ioc_of_left_le (h : b₁ ≤ b₂) : Ioo a₁ b₁ ∩ Ioc a₂ b₂ = Ioo (max a₁ a₂) b₁ := by
   rw [inter_comm, Ioc_inter_Ioo_of_right_le h, max_comm]
 #align set.Ioo_inter_Ioc_of_left_le Set.Ioo_inter_Ioc_of_left_le
 
-theorem Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂ b₂ = Ioc (max a₁ a₂) b₂ := by
+lemma Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂ b₂ = Ioc (max a₁ a₂) b₂ := by
   rw [inter_comm, Ioc_inter_Ioo_of_left_lt h, max_comm]
 #align set.Ioo_inter_Ioc_of_right_lt Set.Ioo_inter_Ioc_of_right_lt
 
@@ -1895,30 +1895,30 @@ section Prod
 variable [Preorder α] [Preorder β]
 
 @[simp]
-theorem Iic_prod_Iic (a : α) (b : β) : Iic a ×ˢ Iic b = Iic (a, b) :=
+lemma Iic_prod_Iic (a : α) (b : β) : Iic a ×ˢ Iic b = Iic (a, b) :=
   rfl
 #align set.Iic_prod_Iic Set.Iic_prod_Iic
 
 @[simp]
-theorem Ici_prod_Ici (a : α) (b : β) : Ici a ×ˢ Ici b = Ici (a, b) :=
+lemma Ici_prod_Ici (a : α) (b : β) : Ici a ×ˢ Ici b = Ici (a, b) :=
   rfl
 #align set.Ici_prod_Ici Set.Ici_prod_Ici
 
-theorem Ici_prod_eq (a : α × β) : Ici a = Ici a.1 ×ˢ Ici a.2 :=
+lemma Ici_prod_eq (a : α × β) : Ici a = Ici a.1 ×ˢ Ici a.2 :=
   rfl
 #align set.Ici_prod_eq Set.Ici_prod_eq
 
-theorem Iic_prod_eq (a : α × β) : Iic a = Iic a.1 ×ˢ Iic a.2 :=
+lemma Iic_prod_eq (a : α × β) : Iic a = Iic a.1 ×ˢ Iic a.2 :=
   rfl
 #align set.Iic_prod_eq Set.Iic_prod_eq
 
 @[simp]
-theorem Icc_prod_Icc (a₁ a₂ : α) (b₁ b₂ : β) : Icc a₁ a₂ ×ˢ Icc b₁ b₂ = Icc (a₁, b₁) (a₂, b₂) := by
+lemma Icc_prod_Icc (a₁ a₂ : α) (b₁ b₂ : β) : Icc a₁ a₂ ×ˢ Icc b₁ b₂ = Icc (a₁, b₁) (a₂, b₂) := by
   ext ⟨x, y⟩
   simp [and_assoc, and_comm, and_left_comm]
 #align set.Icc_prod_Icc Set.Icc_prod_Icc
 
-theorem Icc_prod_eq (a b : α × β) : Icc a b = Icc a.1 b.1 ×ˢ Icc a.2 b.2 := by simp
+lemma Icc_prod_eq (a b : α × β) : Icc a b = Icc a.1 b.1 ×ˢ Icc a.2 b.2 := by simp
 #align set.Icc_prod_eq Set.Icc_prod_eq
 
 end Prod

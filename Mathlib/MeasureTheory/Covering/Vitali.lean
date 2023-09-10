@@ -56,7 +56,7 @@ element `b` of `u` of size larger than that of `a` up to `τ`, i.e., `δ b ≥ �
 We state the lemma slightly more generally, with an indexed family of sets `B a` for `a ∈ t`, for
 wider applicability.
 -/
-theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : Set ι) (δ : ι → ℝ)
+lemma exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : Set ι) (δ : ι → ℝ)
     (τ : ℝ) (hτ : 1 < τ) (δnonneg : ∀ a ∈ t, 0 ≤ δ a) (R : ℝ) (δle : ∀ a ∈ t, δ a ≤ R)
     (hne : ∀ a ∈ t, (B a).Nonempty) :
     ∃ (u : _) (_ : u ⊆ t),

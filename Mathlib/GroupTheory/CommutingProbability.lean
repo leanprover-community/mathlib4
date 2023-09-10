@@ -48,14 +48,14 @@ lemma commProb_def :
   rfl
 #align comm_prob_def commProb_def
 
-theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
+lemma commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
   simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
     ←Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
+lemma commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
     ←Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
@@ -199,7 +199,7 @@ lemma commProb_cons (n : ℕ) (l : List ℕ) :
   simp [Product, commProb_pi, Fin.prod_univ_succ]
 
 /-- Construction of a group with commuting probability `1 / n`. -/
-theorem commProb_reciprocal (n : ℕ) :
+lemma commProb_reciprocal (n : ℕ) :
     commProb (Product (reciprocalFactors n)) = 1 / n := by
   by_cases h0 : n = 0
   · rw [h0, reciprocalFactors_zero, commProb_cons, commProb_nil, mul_one, Nat.cast_zero, div_zero]

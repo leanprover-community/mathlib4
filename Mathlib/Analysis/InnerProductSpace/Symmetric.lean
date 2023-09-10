@@ -65,7 +65,7 @@ section Real
 
 /-- An operator `T` on an inner product space is symmetric if and only if it is
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
-theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
+lemma isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
     T.IsSymmetric ↔ @LinearMap.IsSelfAdjoint 𝕜 E _ _ _ (starRingEnd 𝕜) sesqFormOfInner T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
 #align linear_map.is_symmetric_iff_sesq_form LinearMap.isSymmetric_iff_sesqForm
@@ -143,7 +143,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v.-/
-theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
+lemma isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
     IsSymmetric T ↔ ∀ v : V, conj ⟪T v, v⟫_ℂ = ⟪T v, v⟫_ℂ := by
   constructor
   · intro hT v

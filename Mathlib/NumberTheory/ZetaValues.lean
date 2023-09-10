@@ -50,7 +50,7 @@ def bernoulliFun (k : ℕ) (x : ℝ) : ℝ :=
   (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli k)).eval x
 #align bernoulli_fun bernoulliFun
 
-theorem bernoulliFun_eval_zero (k : ℕ) : bernoulliFun k 0 = bernoulli k := by
+lemma bernoulliFun_eval_zero (k : ℕ) : bernoulliFun k 0 = bernoulli k := by
   rw [bernoulliFun, Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
 #align bernoulli_fun_eval_zero bernoulliFun_eval_zero
 
@@ -60,7 +60,7 @@ lemma bernoulliFun_endpoints_eq_of_ne_one {k : ℕ} (hk : k ≠ 1) :
     bernoulli_eq_bernoulli'_of_ne_one hk, eq_ratCast]
 #align bernoulli_fun_endpoints_eq_of_ne_one bernoulliFun_endpoints_eq_of_ne_one
 
-theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + ite (k = 1) 1 0 := by
+lemma bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + ite (k = 1) 1 0 := by
   rw [bernoulliFun, bernoulliFun_eval_zero, Polynomial.eval_one_map, Polynomial.bernoulli_eval_one]
   split_ifs with h
   · rw [h, bernoulli_one, bernoulli'_one, eq_ratCast]
@@ -68,14 +68,14 @@ theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + 
   · rw [bernoulli_eq_bernoulli'_of_ne_one h, add_zero, eq_ratCast]
 #align bernoulli_fun_eval_one bernoulliFun_eval_one
 
-theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
+lemma hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (bernoulliFun k) (k * bernoulliFun (k - 1) x) x := by
   convert ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
   simp only [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
     Polynomial.map_mul, Polynomial.map_nat_cast, Polynomial.eval_mul, Polynomial.eval_nat_cast]
 #align has_deriv_at_bernoulli_fun hasDerivAt_bernoulliFun
 
-theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
+lemma antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   field_simp [Nat.cast_add_one_ne_zero k]
@@ -105,7 +105,7 @@ def bernoulliFourierCoeff (k : ℕ) (n : ℤ) : ℂ :=
 #align bernoulli_fourier_coeff bernoulliFourierCoeff
 
 /-- Recurrence relation (in `k`) for the `n`-th Fourier coefficient of `Bₖ`. -/
-theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
+lemma bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
     bernoulliFourierCoeff k n =
       1 / (-2 * π * I * n) * (ite (k = 1) 1 0 - k * bernoulliFourierCoeff (k - 1) n) := by
   unfold bernoulliFourierCoeff

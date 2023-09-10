@@ -52,11 +52,11 @@ noncomputable def hermite : ℕ → Polynomial ℤ
 
 /-- The recursion `hermite (n+1) = (x - d/dx) (hermite n)` -/
 @[simp]
-theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (hermite n) := by
+lemma hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (hermite n) := by
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
+lemma hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -79,11 +79,11 @@ lemma hermite_one : hermite 1 = X := by
 
 section coeff
 
-theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (hermite n) 1 := by
+lemma coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (hermite n) 1 := by
   simp [coeff_derivative]
 #align polynomial.coeff_hermite_succ_zero Polynomial.coeff_hermite_succ_zero
 
-theorem coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite (n + 1)) (k + 1) =
+lemma coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite (n + 1)) (k + 1) =
     coeff (hermite n) k - (k + 2) * coeff (hermite n) (k + 2) := by
   rw [hermite_succ, coeff_sub, coeff_X_mul, coeff_derivative, mul_comm]
   norm_cast
@@ -100,7 +100,7 @@ lemma coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 :=
 #align polynomial.coeff_hermite_of_lt Polynomial.coeff_hermite_of_lt
 
 @[simp]
-theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
+lemma coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
   induction' n with n ih
   · apply coeff_C
   · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
@@ -108,7 +108,7 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
 @[simp]
-theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
+lemma degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
   simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
   · rintro m hnm
@@ -122,11 +122,11 @@ lemma natDegree_hermite {n : ℕ} : (hermite n).natDegree = n :=
 #align polynomial.nat_degree_hermite Polynomial.natDegree_hermite
 
 @[simp]
-theorem leadingCoeff_hermite (n : ℕ) : (hermite n).leadingCoeff = 1 := by
+lemma leadingCoeff_hermite (n : ℕ) : (hermite n).leadingCoeff = 1 := by
   rw [← coeff_natDegree, natDegree_hermite, coeff_hermite_self]
 #align polynomial.leading_coeff_hermite Polynomial.leadingCoeff_hermite
 
-theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
+lemma hermite_monic (n : ℕ) : (hermite n).Monic :=
   leadingCoeff_hermite n
 #align polynomial.hermite_monic Polynomial.hermite_monic
 
@@ -213,7 +213,7 @@ lemma coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 #align polynomial.coeff_hermite_of_even_add Polynomial.coeff_hermite_of_even_add
 
-theorem coeff_hermite (n k : ℕ) :
+lemma coeff_hermite (n k : ℕ) :
     coeff (hermite n) k =
       if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h

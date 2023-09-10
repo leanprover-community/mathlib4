@@ -183,11 +183,11 @@ lemma continuous_qRight : Continuous qRight :=
     Continuous.div (by continuity) (by continuity) fun x => (add_pos zero_lt_one).ne'
 #align unit_interval.continuous_Q_right unitInterval.continuous_qRight
 
-theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
+lemma qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
   Set.projIcc_of_le_left _ <| by simp only [coe_zero, mul_zero, zero_div, le_refl]
 #align unit_interval.Q_right_zero_left unitInterval.qRight_zero_left
 
-theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
+lemma qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
     (le_div_iff <| add_pos zero_lt_one).2 <| by
       dsimp only
@@ -196,7 +196,7 @@ theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
       exact le_one _
 #align unit_interval.Q_right_one_left unitInterval.qRight_one_left
 
-theorem qRight_zero_right (t : I) :
+lemma qRight_zero_right (t : I) :
     (qRight (t, 0) : ℝ) = if (t : ℝ) ≤ 1 / 2 then (2 : ℝ) * t else 1 := by
   simp only [qRight, coe_zero, add_zero, div_one]
   split_ifs
@@ -208,7 +208,7 @@ theorem qRight_zero_right (t : I) :
     · exact zero_lt_one
 #align unit_interval.Q_right_zero_right unitInterval.qRight_zero_right
 
-theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
+lemma qRight_one_right (t : I) : qRight (t, 1) = t :=
   Eq.trans
       (by
         rw [qRight]
@@ -246,7 +246,7 @@ lemma continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflR
       continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
 #align path.continuous_delay_refl_right Path.continuous_delayReflRight
 
-theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
+lemma delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
   simp only [delayReflRight, trans_apply, refl_extend, Path.coe_mk_mk, Function.comp_apply,
     refl_apply]
@@ -255,7 +255,7 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
   exacts [if_neg h, if_pos h]
 #align path.delay_refl_right_zero Path.delayReflRight_zero
 
-theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
+lemma delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
   exact congr_arg γ (qRight_one_right t)
 #align path.delay_refl_right_one Path.delayReflRight_one
@@ -272,11 +272,11 @@ lemma continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLe
       continuous_fst.prod_mk <| Path.continuous_symm.comp continuous_snd
 #align path.continuous_delay_refl_left Path.continuous_delayReflLeft
 
-theorem delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
+lemma delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
   simp only [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]
 #align path.delay_refl_left_zero Path.delayReflLeft_zero
 
-theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
+lemma delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
 #align path.delay_refl_left_one Path.delayReflLeft_one
 

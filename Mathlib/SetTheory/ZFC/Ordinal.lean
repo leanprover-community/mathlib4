@@ -45,7 +45,7 @@ def IsTransitive (x : ZFSet) : Prop :=
 lemma empty_isTransitive : IsTransitive ∅ := fun y hy => (not_mem_empty y hy).elim
 #align Set.empty_is_transitive ZFSet.empty_isTransitive
 
-theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x :=
+lemma IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x :=
   h y
 #align Set.is_transitive.subset_of_mem ZFSet.IsTransitive.subset_of_mem
 
@@ -56,25 +56,25 @@ lemma isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y
 alias ⟨IsTransitive.mem_trans, _⟩ := isTransitive_iff_mem_trans
 #align Set.is_transitive.mem_trans ZFSet.IsTransitive.mem_trans
 
-protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
+protected lemma IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∩ y).IsTransitive := fun z hz w hw => by
   rw [mem_inter] at hz ⊢
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 #align Set.is_transitive.inter ZFSet.IsTransitive.inter
 
-protected theorem IsTransitive.sUnion (h : x.IsTransitive) :
+protected lemma IsTransitive.sUnion (h : x.IsTransitive) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem hz (h.mem_trans hw' hw)
 #align Set.is_transitive.sUnion ZFSet.IsTransitive.sUnion
 
-theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
+lemma IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
 #align Set.is_transitive.sUnion' ZFSet.IsTransitive.sUnion'
 
-protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
+protected lemma IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
   rw [← sUnion_pair]
   apply IsTransitive.sUnion' fun z => _
@@ -84,7 +84,7 @@ protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive)
   assumption'
 #align Set.is_transitive.union ZFSet.IsTransitive.union
 
-protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
+protected lemma IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
   fun y hy z hz => by
   rw [mem_powerset] at hy ⊢
   exact h.subset_of_mem (hy hz)

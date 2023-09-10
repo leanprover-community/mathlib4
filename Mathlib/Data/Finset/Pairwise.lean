@@ -48,7 +48,7 @@ lemma PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f : 
   exact hs.image_of_le hf
 #align set.pairwise_disjoint.image_finset_of_le Set.PairwiseDisjoint.image_finset_of_le
 
-theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
+lemma PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
     (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
   hs i.2 j.2 <| mt Subtype.ext_val hij
 #align set.pairwise_disjoint.attach Set.PairwiseDisjoint.attach
@@ -77,13 +77,13 @@ namespace List
 
 variable {β : Type*} [DecidableEq α] {r : α → α → Prop} {l : List α}
 
-theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
+lemma pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
     l.Pairwise r := by
   rw [coe_toFinset] at hl
   exact hn.pairwise_of_set_pairwise hl
 #align list.pairwise_of_coe_to_finset_pairwise List.pairwise_of_coe_toFinset_pairwise
 
-theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
+lemma pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
     (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r := by
   letI : IsSymm α r := ⟨hs⟩
   rw [coe_toFinset, hn.pairwise_coe]

@@ -82,17 +82,17 @@ section UniformAddGroup
 variable [UniformSpace α] [AddGroup α] [UniformAddGroup α]
 
 @[norm_cast]
-theorem coe_neg (a : α) : ((-a : α) : Completion α) = -a :=
+lemma coe_neg (a : α) : ((-a : α) : Completion α) = -a :=
   (map_coe uniformContinuous_neg a).symm
 #align uniform_space.completion.coe_neg UniformSpace.Completion.coe_neg
 
 @[norm_cast]
-theorem coe_sub (a b : α) : ((a - b : α) : Completion α) = a - b :=
+lemma coe_sub (a b : α) : ((a - b : α) : Completion α) = a - b :=
   (map₂_coe_coe a b Sub.sub uniformContinuous_sub).symm
 #align uniform_space.completion.coe_sub UniformSpace.Completion.coe_sub
 
 @[norm_cast]
-theorem coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
+lemma coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
   (map₂_coe_coe a b (· + ·) uniformContinuous_add).symm
 #align uniform_space.completion.coe_add UniformSpace.Completion.coe_add
 
@@ -268,12 +268,12 @@ def AddMonoidHom.completion (f : α →+ β) (hf : Continuous f) : Completion α
 #align add_monoid_hom.completion AddMonoidHom.completion
 
 @[continuity]
-theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) :
+lemma AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) :
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
 #align add_monoid_hom.continuous_completion AddMonoidHom.continuous_completion
 
-theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
+lemma AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
     AddMonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
 #align add_monoid_hom.completion_coe AddMonoidHom.completion_coe

@@ -59,7 +59,7 @@ instance : Mul (SubMulAction R M)
         h ▸ smul_mul_assoc r m₁ m₂ ▸ Set.mul_mem_mul (p.smul_mem _ hm₁) hm₂ }
 
 @[norm_cast]
-theorem coe_mul (p q : SubMulAction R M) : ↑(p * q) = (p * q : Set M) :=
+lemma coe_mul (p q : SubMulAction R M) : ↑(p * q) = (p * q : Set M) :=
   rfl
 #align sub_mul_action.coe_mul SubMulAction.coe_mul
 
@@ -117,14 +117,14 @@ instance : Monoid (SubMulAction R M) :=
     mul := (· * ·)
     one := 1 }
 
-theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), (p ^ n : Set M) = ((p : Set M) ^ n)
+lemma coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), (p ^ n : Set M) = ((p : Set M) ^ n)
   | 0, hn => (hn rfl).elim
   | 1, _ => by rw [pow_one, pow_one]
   | n + 2, _ => by
     rw [pow_succ _ (n + 1), pow_succ _ (n + 1), coe_mul, coe_pow _ n.succ_ne_zero]
 #align sub_mul_action.coe_pow SubMulAction.coe_pow
 
-theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, ((p : Set M) ^ n) ⊆ (p ^ n : Set M)
+lemma subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, ((p : Set M) ^ n) ⊆ (p ^ n : Set M)
   | 0 => by
     rw [pow_zero, pow_zero]
     exact subset_coe_one

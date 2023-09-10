@@ -161,7 +161,7 @@ variable {α}
 
 -- TODO: set as an equation lemma for `adjMatrix`, see mathlib4#3024
 @[simp]
-theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
+lemma adjMatrix_apply (v w : V) [Zero α] [One α] :
     G.adjMatrix α v w = if G.Adj v w then 1 else 0 :=
   rfl
 #align simple_graph.adj_matrix_apply SimpleGraph.adjMatrix_apply

@@ -51,7 +51,7 @@ def tensorDistrib : QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] Q
 -- TODO: make the RHS `MulOpposite.op (Q₂ m₂) • Q₁ m₁` so that this has a nicer defeq for
 -- `R = A` of `Q₁ m₁ * Q₂ m₂`.
 @[simp]
-theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
+lemma tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
     tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   (BilinForm.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
@@ -75,7 +75,7 @@ protected def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] 
   QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticForm.sq (R := A)) Q
 
 @[simp]
-theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
+lemma baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
     Q.baseChange A (a ⊗ₜ m₂) = Q m₂ • (a * a) :=
   tensorDistrib_tmul _ _ _ _
 

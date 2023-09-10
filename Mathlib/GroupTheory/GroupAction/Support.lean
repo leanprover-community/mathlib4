@@ -36,14 +36,14 @@ def Supports (s : Set α) (b : β) :=
 variable {s t : Set α} {a : α} {b : β}
 
 @[to_additive]
-theorem supports_of_mem (ha : a ∈ s) : Supports G s a := fun _ h => h ha
+lemma supports_of_mem (ha : a ∈ s) : Supports G s a := fun _ h => h ha
 #align mul_action.supports_of_mem MulAction.supports_of_mem
 #align add_action.supports_of_mem AddAction.supports_of_mem
 
 variable {G}
 
 @[to_additive]
-theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fun _ hg =>
+lemma Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fun _ hg =>
   (hs _) fun _ ha => hg <| h ha
 #align mul_action.supports.mono MulAction.Supports.mono
 #align add_action.supports.mono AddAction.Supports.mono
@@ -55,7 +55,7 @@ variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCom
 
 -- TODO: This should work without `SMulCommClass`
 @[to_additive]
-theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g • b) := by
+lemma Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g • b) := by
   rintro g' hg'
   rw [smul_comm, h]
   rintro a ha

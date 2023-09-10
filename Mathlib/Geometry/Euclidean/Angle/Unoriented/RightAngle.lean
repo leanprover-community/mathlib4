@@ -44,27 +44,27 @@ namespace InnerProductGeometry
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 /-- Pythagorean theorem, if-and-only-if vector angle form. -/
-theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
+lemma norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ angle x y = π / 2 := by
   rw [norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
   exact inner_eq_zero_iff_angle_eq_pi_div_two x y
 #align inner_product_geometry.norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two InnerProductGeometry.norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two
 
 /-- Pythagorean theorem, vector angle form. -/
-theorem norm_add_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
+lemma norm_add_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ :=
   (norm_add_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two x y).2 h
 #align inner_product_geometry.norm_add_sq_eq_norm_sq_add_norm_sq' InnerProductGeometry.norm_add_sq_eq_norm_sq_add_norm_sq'
 
 /-- Pythagorean theorem, subtracting vectors, if-and-only-if vector angle form. -/
-theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
+lemma norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two (x y : V) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ angle x y = π / 2 := by
   rw [norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
   exact inner_eq_zero_iff_angle_eq_pi_div_two x y
 #align inner_product_geometry.norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two InnerProductGeometry.norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two
 
 /-- Pythagorean theorem, subtracting vectors, vector angle form. -/
-theorem norm_sub_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
+lemma norm_sub_sq_eq_norm_sq_add_norm_sq' (x y : V) (h : angle x y = π / 2) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ :=
   (norm_sub_sq_eq_norm_sq_add_norm_sq_iff_angle_eq_pi_div_two x y).2 h
 #align inner_product_geometry.norm_sub_sq_eq_norm_sq_add_norm_sq' InnerProductGeometry.norm_sub_sq_eq_norm_sq_add_norm_sq'
@@ -361,7 +361,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P]
 
 /-- **Pythagorean theorem**, if-and-only-if angle-at-point form. -/
-theorem dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p1 p2 p3 : P) :
+lemma dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two (p1 p2 p3 : P) :
     dist p1 p3 * dist p1 p3 = dist p1 p2 * dist p1 p2 + dist p3 p2 * dist p3 p2 ↔
       ∠ p1 p2 p3 = π / 2 := by
   erw [dist_comm p3 p2, dist_eq_norm_vsub V p1 p3, dist_eq_norm_vsub V p1 p2,

@@ -78,7 +78,7 @@ instance : CoeFun (PartialRefinement u s) fun _ => ι → Set X := ⟨toFun⟩
 #align shrinking_lemma.partial_refinement.apply_eq ShrinkingLemma.PartialRefinement.apply_eq
 #align shrinking_lemma.partial_refinement.is_open ShrinkingLemma.PartialRefinement.isOpen
 
-protected theorem subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i :=
+protected lemma subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i :=
   if h : i ∈ v.carrier then subset_closure.trans (v.closure_subset h) else (v.apply_eq h).le
 #align shrinking_lemma.partial_refinement.subset ShrinkingLemma.PartialRefinement.subset
 
@@ -171,7 +171,7 @@ lemma le_chainSup {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) c)
 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
-theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i ∉ v.carrier) :
+lemma exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i ∉ v.carrier) :
     ∃ v' : PartialRefinement u s, v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
@@ -215,7 +215,7 @@ variable {u : ι → Set X} {s : Set X}
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new open cover so that the closure of each new open set is contained in the
 corresponding original open set. -/
-theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpen (u i))
+lemma exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsOpen (v i)) ∧ ∀ i, closure (v i) ⊆ u i := by
   haveI : Nonempty (PartialRefinement u s) := ⟨⟨u, ∅, uo, us, False.elim, fun _ => rfl⟩⟩
@@ -234,7 +234,7 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new closed cover so that each new closed set is contained in the corresponding
 original open set. See also `exists_subset_iUnion_closure_subset` for a stronger statement. -/
-theorem exists_subset_iUnion_closed_subset (hs : IsClosed s) (uo : ∀ i, IsOpen (u i))
+lemma exists_subset_iUnion_closed_subset (hs : IsClosed s) (uo : ∀ i, IsOpen (u i))
     (uf : ∀ x ∈ s, { i | x ∈ u i }.Finite) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, s ⊆ iUnion v ∧ (∀ i, IsClosed (v i)) ∧ ∀ i, v i ⊆ u i :=
   let ⟨v, hsv, _, hv⟩ := exists_subset_iUnion_closure_subset hs uo uf us
@@ -245,7 +245,7 @@ theorem exists_subset_iUnion_closed_subset (hs : IsClosed s) (uo : ∀ i, IsOpen
 /-- Shrinking lemma. A point-finite open cover of a closed subset of a normal space can be "shrunk"
 to a new open cover so that the closure of each new open set is contained in the corresponding
 original open set. -/
-theorem exists_iUnion_eq_closure_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
+lemma exists_iUnion_eq_closure_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
     (uU : ⋃ i, u i = univ) :
     ∃ v : ι → Set X, iUnion v = univ ∧ (∀ i, IsOpen (v i)) ∧ ∀ i, closure (v i) ⊆ u i :=
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closure_subset isClosed_univ uo (fun x _ => uf x) uU.ge
@@ -255,7 +255,7 @@ theorem exists_iUnion_eq_closure_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, 
 /-- Shrinking lemma. A point-finite open cover of a closed subset of a normal space can be "shrunk"
 to a new closed cover so that each of the new closed sets is contained in the corresponding
 original open set. See also `exists_iUnion_eq_closure_subset` for a stronger statement. -/
-theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
+lemma exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
     (uU : ⋃ i, u i = univ) :
     ∃ v : ι → Set X, iUnion v = univ ∧ (∀ i, IsClosed (v i)) ∧ ∀ i, v i ⊆ u i :=
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closed_subset isClosed_univ uo (fun x _ => uf x) uU.ge

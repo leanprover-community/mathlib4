@@ -103,7 +103,7 @@ attribute [local instance] WellFoundedGT.toWellFoundedRelation in
 If `Estimator.improveUntil a p e` returns `some e'`, then `bound a e'` satisfies `p`.
 Otherwise, that value `a` must not satisfy `p`.
 -/
-theorem Estimator.improveUntilAux_spec (a : Thunk α) (p : α → Bool)
+lemma Estimator.improveUntilAux_spec (a : Thunk α) (p : α → Bool)
     [Estimator a ε] [WellFoundedGT (range (bound a : ε → α))] (e : ε) (r : Bool) :
     match Estimator.improveUntilAux a p e r with
     | .error _ => ¬ p a.get

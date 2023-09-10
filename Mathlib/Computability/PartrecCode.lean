@@ -199,7 +199,7 @@ lemma ofNatCode_eq : ofNat Code = ofNatCode :=
   rfl
 #align nat.partrec.code.of_nat_code_eq Nat.Partrec.Code.ofNatCode_eq
 
-theorem encode_lt_pair (cf cg) :
+lemma encode_lt_pair (cf cg) :
     encode cf < encode (pair cf cg) ∧ encode cg < encode (pair cf cg) := by
   simp [encodeCode_eq, encodeCode]
   have := Nat.mul_le_mul_right (Nat.pair cf.encodeCode cg.encodeCode) (by decide : 1 ≤ 2 * 2)
@@ -208,19 +208,19 @@ theorem encode_lt_pair (cf cg) :
   exact ⟨lt_of_le_of_lt (Nat.left_le_pair _ _) this, lt_of_le_of_lt (Nat.right_le_pair _ _) this⟩
 #align nat.partrec.code.encode_lt_pair Nat.Partrec.Code.encode_lt_pair
 
-theorem encode_lt_comp (cf cg) :
+lemma encode_lt_comp (cf cg) :
     encode cf < encode (comp cf cg) ∧ encode cg < encode (comp cf cg) := by
   suffices; exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
   change _; simp [encodeCode_eq, encodeCode]
 #align nat.partrec.code.encode_lt_comp Nat.Partrec.Code.encode_lt_comp
 
-theorem encode_lt_prec (cf cg) :
+lemma encode_lt_prec (cf cg) :
     encode cf < encode (prec cf cg) ∧ encode cg < encode (prec cf cg) := by
   suffices; exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
   change _; simp [encodeCode_eq, encodeCode]
 #align nat.partrec.code.encode_lt_prec Nat.Partrec.Code.encode_lt_prec
 
-theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
+lemma encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp [encodeCode_eq, encodeCode]
   have := Nat.mul_le_mul_right cf.encodeCode (by decide : 1 ≤ 2 * 2)
   rw [one_mul, mul_assoc] at this
@@ -636,14 +636,14 @@ def eval : Code → ℕ →. ℕ
 
 /-- Helper lemma for the evaluation of `prec` in the base case. -/
 @[simp]
-theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 0) = eval cf a := by
+lemma eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 0) = eval cf a := by
   rw [eval, Nat.unpaired, Nat.unpair_pair]
   simp (config := { Lean.Meta.Simp.neutralConfig with proj := true }) only []
   rw [Nat.rec_zero]
 #align nat.partrec.code.eval_prec_zero Nat.Partrec.Code.eval_prec_zero
 
 /-- Helper lemma for the evaluation of `prec` in the recursive case. -/
-theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
+lemma eval_prec_succ (cf cg : Code) (a k : ℕ) :
     eval (prec cf cg) (Nat.pair a (Nat.succ k)) =
       do {let ih ← eval (prec cf cg) (Nat.pair a k); eval cg (Nat.pair a (Nat.pair k ih))} := by
   rw [eval, Nat.unpaired, Part.bind_eq_bind, Nat.unpair_pair]
@@ -660,11 +660,11 @@ lemma eval_const : ∀ n m, eval (Code.const n) m = Part.some n
 #align nat.partrec.code.eval_const Nat.Partrec.Code.eval_const
 
 @[simp]
-theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq]
+lemma eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq]
 #align nat.partrec.code.eval_id Nat.Partrec.Code.eval_id
 
 @[simp]
-theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq]
+lemma eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq]
 #align nat.partrec.code.eval_curry Nat.Partrec.Code.eval_curry
 
 lemma const_prim : Primrec Code.const :=
@@ -1070,7 +1070,7 @@ private lemma hG : Primrec G := by
         (Primrec₂.natPair.comp (z.comp Primrec.fst) (_root_.Primrec.succ.comp m)))).comp
       Primrec.fst
 
-private theorem evaln_map (k c n) :
+private lemma evaln_map (k c n) :
     ((((List.range k).get? n).map (evaln k c)).bind fun b => b) = evaln k c n := by
   by_cases kn : n < k
   · simp [List.get?_range kn]
@@ -1149,7 +1149,7 @@ section
 
 open Partrec Computable
 
-theorem eval_eq_rfindOpt (c n) : eval c n = Nat.rfindOpt fun k => evaln k c n :=
+lemma eval_eq_rfindOpt (c n) : eval c n = Nat.rfindOpt fun k => evaln k c n :=
   Part.ext fun x => by
     refine' evaln_complete.trans (Nat.rfindOpt_mono _).symm
     intro a m n hl; apply evaln_mono hl

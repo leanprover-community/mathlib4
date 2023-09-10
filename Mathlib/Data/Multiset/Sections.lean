@@ -33,7 +33,7 @@ lemma sections_zero : Sections (0 : Multiset (Multiset α)) = {0} :=
 #align multiset.sections_zero Multiset.sections_zero
 
 @[simp]
-theorem sections_cons (s : Multiset (Multiset α)) (m : Multiset α) :
+lemma sections_cons (s : Multiset (Multiset α)) (m : Multiset α) :
     Sections (m ::ₘ s) = m.bind fun a => (Sections s).map (Multiset.cons a) :=
   recOn_cons m s
 #align multiset.sections_cons Multiset.sections_cons
@@ -50,7 +50,7 @@ lemma coe_sections :
 #align multiset.coe_sections Multiset.coe_sections
 
 @[simp]
-theorem sections_add (s t : Multiset (Multiset α)) :
+lemma sections_add (s t : Multiset (Multiset α)) :
     Sections (s + t) = (Sections s).bind fun m => (Sections t).map ((· + ·) m) :=
   Multiset.induction_on s (by simp) fun a s ih => by
     simp [ih, bind_assoc, map_bind, bind_map]

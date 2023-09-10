@@ -40,7 +40,7 @@ class LieModule.IsTrivial (L : Type v) (M : Type w) [Bracket L M] [Zero M] : Pro
 #align lie_module.is_trivial LieModule.IsTrivial
 
 @[simp]
-theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieModule.IsTrivial L M]
+lemma trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieModule.IsTrivial L M]
     (x : L) (m : M) : ⁅x, m⁆ = 0 :=
   LieModule.IsTrivial.trivial x m
 #align trivial_lie_zero trivial_lie_zero
@@ -87,7 +87,7 @@ lemma commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
 
-theorem LieAlgebra.isLieAbelian_bot (R : Type u) (L : Type v) [CommRing R] [LieRing L]
+lemma LieAlgebra.isLieAbelian_bot (R : Type u) (L : Type v) [CommRing R] [LieRing L]
     [LieAlgebra R L] : IsLieAbelian (⊥ : LieIdeal R L) :=
   ⟨fun ⟨x, hx⟩ _ => by simp⟩
 #align lie_algebra.is_lie_abelian_bot LieAlgebra.isLieAbelian_bot
@@ -110,7 +110,7 @@ protected def ker : LieIdeal R L :=
 #align lie_module.ker LieModule.ker
 
 @[simp]
-protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅x, m⁆ = 0 := by
+protected lemma mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅x, m⁆ = 0 := by
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEndomorphism_apply_apply]
 #align lie_module.mem_ker LieModule.mem_ker
@@ -125,14 +125,14 @@ def maxTrivSubmodule : LieSubmodule R L M where
 #align lie_module.max_triv_submodule LieModule.maxTrivSubmodule
 
 @[simp]
-theorem mem_maxTrivSubmodule (m : M) : m ∈ maxTrivSubmodule R L M ↔ ∀ x : L, ⁅x, m⁆ = 0 :=
+lemma mem_maxTrivSubmodule (m : M) : m ∈ maxTrivSubmodule R L M ↔ ∀ x : L, ⁅x, m⁆ = 0 :=
   Iff.rfl
 #align lie_module.mem_max_triv_submodule LieModule.mem_maxTrivSubmodule
 
 instance : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := Subtype.ext (m.property x)
 
 @[simp]
-theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
+lemma ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
     ⁅I, maxTrivSubmodule R L M⁆ = ⊥ := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.lieIdeal_oper_eq_linear_span,
     LieSubmodule.bot_coeSubmodule, Submodule.span_eq_bot]
@@ -150,7 +150,7 @@ lemma le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
     exact fun x => h x (LieSubmodule.mem_top x) m hm
 #align lie_module.le_max_triv_iff_bracket_eq_bot LieModule.le_max_triv_iff_bracket_eq_bot
 
-theorem trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
+lemma trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
     IsTrivial L N ↔ N ≤ maxTrivSubmodule R L M :=
   ⟨fun h m hm x => IsTrivial.casesOn h fun h => Subtype.ext_iff.mp (h x ⟨m, hm⟩), fun h =>
     { trivial := fun x m => Subtype.ext (h m.2 x) }⟩
@@ -176,7 +176,7 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
 #align lie_module.max_triv_hom LieModule.maxTrivHom
 
 @[norm_cast, simp]
-theorem coe_maxTrivHom_apply (f : M →ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
+lemma coe_maxTrivHom_apply (f : M →ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
     (maxTrivHom f m : N) = f m :=
   rfl
 #align lie_module.coe_max_triv_hom_apply LieModule.coe_maxTrivHom_apply
@@ -191,7 +191,7 @@ def maxTrivEquiv (e : M ≃ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M ≃ₗ⁅R,L
 #align lie_module.max_triv_equiv LieModule.maxTrivEquiv
 
 @[norm_cast, simp]
-theorem coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
+lemma coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
     (maxTrivEquiv e m : N) = e ↑m :=
   rfl
 #align lie_module.coe_max_triv_equiv_apply LieModule.coe_maxTrivEquiv_apply
@@ -203,7 +203,7 @@ lemma maxTrivEquiv_of_refl_eq_refl :
 #align lie_module.max_triv_equiv_of_refl_eq_refl LieModule.maxTrivEquiv_of_refl_eq_refl
 
 @[simp]
-theorem maxTrivEquiv_of_equiv_symm_eq_symm (e : M ≃ₗ⁅R,L⁆ N) :
+lemma maxTrivEquiv_of_equiv_symm_eq_symm (e : M ≃ₗ⁅R,L⁆ N) :
     (maxTrivEquiv e).symm = maxTrivEquiv e.symm :=
   rfl
 #align lie_module.max_triv_equiv_of_equiv_symm_eq_symm LieModule.maxTrivEquiv_of_equiv_symm_eq_symm
@@ -224,23 +224,23 @@ def maxTrivLinearMapEquivLieModuleHom : maxTrivSubmodule R L (M →ₗ[R] N) ≃
 #align lie_module.max_triv_linear_map_equiv_lie_module_hom LieModule.maxTrivLinearMapEquivLieModuleHom
 
 @[simp]
-theorem coe_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
+lemma coe_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
     (maxTrivLinearMapEquivLieModuleHom f : M → N) = f := by ext; rfl
 #align lie_module.coe_max_triv_linear_map_equiv_lie_module_hom LieModule.coe_maxTrivLinearMapEquivLieModuleHom
 
 @[simp]
-theorem coe_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
+lemma coe_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
     (maxTrivLinearMapEquivLieModuleHom.symm f : M → N) = f :=
   rfl
 #align lie_module.coe_max_triv_linear_map_equiv_lie_module_hom_symm LieModule.coe_maxTrivLinearMapEquivLieModuleHom_symm
 
 @[simp]
-theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
+lemma coe_linearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
     (maxTrivLinearMapEquivLieModuleHom f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by ext; rfl
 #align lie_module.coe_linear_map_max_triv_linear_map_equiv_lie_module_hom LieModule.coe_linearMap_maxTrivLinearMapEquivLieModuleHom
 
 @[simp]
-theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
+lemma coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
     (maxTrivLinearMapEquivLieModuleHom.symm f : M →ₗ[R] N) = (f : M →ₗ[R] N) :=
   rfl
 #align lie_module.coe_linear_map_max_triv_linear_map_equiv_lie_module_hom_symm LieModule.coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm
@@ -270,7 +270,7 @@ lemma self_module_ker_eq_center : LieModule.ker R L L = center R L := by
   simp only [LieModule.mem_maxTrivSubmodule, LieModule.mem_ker, ← lie_skew _ y, neg_eq_zero]
 #align lie_algebra.self_module_ker_eq_center LieAlgebra.self_module_ker_eq_center
 
-theorem abelian_of_le_center (I : LieIdeal R L) (h : I ≤ center R L) : IsLieAbelian I :=
+lemma abelian_of_le_center (I : LieIdeal R L) (h : I ≤ center R L) : IsLieAbelian I :=
   haveI : LieModule.IsTrivial L I := (LieModule.trivial_iff_le_maximal_trivial R L L I).mpr h
   LieIdeal.isLieAbelian_of_trivial R L I
 #align lie_algebra.abelian_of_le_center LieAlgebra.abelian_of_le_center

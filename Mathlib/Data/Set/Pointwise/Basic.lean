@@ -133,7 +133,7 @@ lemma subset_one_iff_eq : s ⊆ 1 ↔ s = ∅ ∨ s = 1 :=
 #align set.subset_zero_iff_eq Set.subset_zero_iff_eq
 
 @[to_additive]
-theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
+lemma Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
   h.subset_singleton_iff
 #align set.nonempty.subset_one_iff Set.Nonempty.subset_one_iff
 #align set.nonempty.subset_zero_iff Set.Nonempty.subset_zero_iff
@@ -213,13 +213,13 @@ lemma union_inv : (s ∪ t)⁻¹ = s⁻¹ ∪ t⁻¹ :=
 #align set.union_neg Set.union_neg
 
 @[to_additive (attr := simp)]
-theorem iInter_inv (s : ι → Set α) : (⋂ i, s i)⁻¹ = ⋂ i, (s i)⁻¹ :=
+lemma iInter_inv (s : ι → Set α) : (⋂ i, s i)⁻¹ = ⋂ i, (s i)⁻¹ :=
   preimage_iInter
 #align set.Inter_inv Set.iInter_inv
 #align set.Inter_neg Set.iInter_neg
 
 @[to_additive (attr := simp)]
-theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :=
+lemma iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :=
   preimage_iUnion
 #align set.Union_inv Set.iUnion_inv
 #align set.Union_neg Set.iUnion_neg
@@ -248,7 +248,7 @@ lemma nonempty_inv : s⁻¹.Nonempty ↔ s.Nonempty :=
 #align set.nonempty_neg Set.nonempty_neg
 
 @[to_additive]
-theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
+lemma Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
   nonempty_inv.2 h
 #align set.nonempty.inv Set.Nonempty.inv
 #align set.nonempty.neg Set.Nonempty.neg
@@ -276,12 +276,12 @@ lemma inv_subset : s⁻¹ ⊆ t ↔ s ⊆ t⁻¹ := by rw [← inv_subset_inv, i
 #align set.neg_subset Set.neg_subset
 
 @[to_additive (attr := simp)]
-theorem inv_singleton (a : α) : ({a} : Set α)⁻¹ = {a⁻¹} := by rw [← image_inv, image_singleton]
+lemma inv_singleton (a : α) : ({a} : Set α)⁻¹ = {a⁻¹} := by rw [← image_inv, image_singleton]
 #align set.inv_singleton Set.inv_singleton
 #align set.neg_singleton Set.neg_singleton
 
 @[to_additive (attr := simp)]
-theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s⁻¹ := by
+lemma inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s⁻¹ := by
   rw [insert_eq, union_inv, inv_singleton, insert_eq]
 #align set.inv_insert Set.inv_insert
 #align set.neg_insert Set.neg_insert
@@ -485,13 +485,13 @@ lemma iUnion_mul_right_image : ⋃ a ∈ t, (· * a) '' s = s * t :=
 #align set.Union_add_right_image Set.iUnion_add_right_image
 
 @[to_additive]
-theorem iUnion_mul (s : ι → Set α) (t : Set α) : (⋃ i, s i) * t = ⋃ i, s i * t :=
+lemma iUnion_mul (s : ι → Set α) (t : Set α) : (⋃ i, s i) * t = ⋃ i, s i * t :=
   image2_iUnion_left _ _ _
 #align set.Union_mul Set.iUnion_mul
 #align set.Union_add Set.iUnion_add
 
 @[to_additive]
-theorem mul_iUnion (s : Set α) (t : ι → Set α) : (s * ⋃ i, t i) = ⋃ i, s * t i :=
+lemma mul_iUnion (s : Set α) (t : ι → Set α) : (s * ⋃ i, t i) = ⋃ i, s * t i :=
   image2_iUnion_right _ _ _
 #align set.mul_Union Set.mul_iUnion
 #align set.add_Union Set.add_iUnion
@@ -499,7 +499,7 @@ theorem mul_iUnion (s : Set α) (t : ι → Set α) : (s * ⋃ i, t i) = ⋃ i, 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem iUnion₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
+lemma iUnion₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) * t = ⋃ (i) (j), s i j * t :=
   image2_iUnion₂_left _ _ _
 #align set.Union₂_mul Set.iUnion₂_mul
@@ -508,20 +508,20 @@ theorem iUnion₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem mul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
+lemma mul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋃ (i) (j), t i j) = ⋃ (i) (j), s * t i j :=
   image2_iUnion₂_right _ _ _
 #align set.mul_Union₂ Set.mul_iUnion₂
 #align set.add_Union₂ Set.add_iUnion₂
 
 @[to_additive]
-theorem iInter_mul_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) * t ⊆ ⋂ i, s i * t :=
+lemma iInter_mul_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) * t ⊆ ⋂ i, s i * t :=
   image2_iInter_subset_left _ _ _
 #align set.Inter_mul_subset Set.iInter_mul_subset
 #align set.Inter_add_subset Set.iInter_add_subset
 
 @[to_additive]
-theorem mul_iInter_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) ⊆ ⋂ i, s * t i :=
+lemma mul_iInter_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) ⊆ ⋂ i, s * t i :=
   image2_iInter_subset_right _ _ _
 #align set.mul_Inter_subset Set.mul_iInter_subset
 #align set.add_Inter_subset Set.add_iInter_subset
@@ -529,7 +529,7 @@ theorem mul_iInter_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) �
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
+lemma iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) * t ⊆ ⋂ (i) (j), s i j * t :=
   image2_iInter₂_subset_left _ _ _
 #align set.Inter₂_mul_subset Set.iInter₂_mul_subset
@@ -538,7 +538,7 @@ theorem iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
+lemma mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s * t i j :=
   image2_iInter₂_subset_right _ _ _
 #align set.mul_Inter₂_subset Set.mul_iInter₂_subset
@@ -558,7 +558,7 @@ lemma coe_singletonMulHom : (singletonMulHom : α → Set α) = singleton :=
 #align set.coe_singleton_add_hom Set.coe_singletonAddHom
 
 @[to_additive (attr := simp)]
-theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
+lemma singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
   rfl
 #align set.singleton_mul_hom_apply Set.singletonMulHom_apply
 #align set.singleton_add_hom_apply Set.singletonAddHom_apply
@@ -751,13 +751,13 @@ lemma iUnion_div_right_image : ⋃ a ∈ t, (· / a) '' s = s / t :=
 #align set.Union_sub_right_image Set.iUnion_sub_right_image
 
 @[to_additive]
-theorem iUnion_div (s : ι → Set α) (t : Set α) : (⋃ i, s i) / t = ⋃ i, s i / t :=
+lemma iUnion_div (s : ι → Set α) (t : Set α) : (⋃ i, s i) / t = ⋃ i, s i / t :=
   image2_iUnion_left _ _ _
 #align set.Union_div Set.iUnion_div
 #align set.Union_sub Set.iUnion_sub
 
 @[to_additive]
-theorem div_iUnion (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, s / t i :=
+lemma div_iUnion (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, s / t i :=
   image2_iUnion_right _ _ _
 #align set.div_Union Set.div_iUnion
 #align set.sub_Union Set.sub_iUnion
@@ -765,7 +765,7 @@ theorem div_iUnion (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem iUnion₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
+lemma iUnion₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) / t = ⋃ (i) (j), s i j / t :=
   image2_iUnion₂_left _ _ _
 #align set.Union₂_div Set.iUnion₂_div
@@ -774,20 +774,20 @@ theorem iUnion₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem div_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
+lemma div_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋃ (i) (j), t i j) = ⋃ (i) (j), s / t i j :=
   image2_iUnion₂_right _ _ _
 #align set.div_Union₂ Set.div_iUnion₂
 #align set.sub_Union₂ Set.sub_iUnion₂
 
 @[to_additive]
-theorem iInter_div_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) / t ⊆ ⋂ i, s i / t :=
+lemma iInter_div_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) / t ⊆ ⋂ i, s i / t :=
   image2_iInter_subset_left _ _ _
 #align set.Inter_div_subset Set.iInter_div_subset
 #align set.Inter_sub_subset Set.iInter_sub_subset
 
 @[to_additive]
-theorem div_iInter_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) ⊆ ⋂ i, s / t i :=
+lemma div_iInter_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) ⊆ ⋂ i, s / t i :=
   image2_iInter_subset_right _ _ _
 #align set.div_Inter_subset Set.div_iInter_subset
 #align set.sub_Inter_subset Set.sub_iInter_subset
@@ -795,7 +795,7 @@ theorem div_iInter_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) �
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem iInter₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
+lemma iInter₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) / t ⊆ ⋂ (i) (j), s i j / t :=
   image2_iInter₂_subset_left _ _ _
 #align set.Inter₂_div_subset Set.iInter₂_div_subset
@@ -804,7 +804,7 @@ theorem iInter₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
-theorem div_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
+lemma div_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s / t i j :=
   image2_iInter₂_subset_right _ _ _
 #align set.div_Inter₂_subset Set.div_iInter₂_subset
@@ -893,7 +893,7 @@ scoped[Pointwise]
     Set.addCommSemigroup
 
 @[to_additive]
-theorem subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun x hx =>
+lemma subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun x hx =>
   ⟨x, 1, hx, ht, mul_one _⟩
 #align set.subset_mul_left Set.subset_mul_left
 #align set.subset_add_left Set.subset_add_left
@@ -918,7 +918,7 @@ lemma coe_singletonMonoidHom : (singletonMonoidHom : α → Set α) = singleton 
 #align set.coe_singleton_add_monoid_hom Set.coe_singletonAddMonoidHom
 
 @[to_additive (attr := simp)]
-theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
+lemma singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
   rfl
 #align set.singleton_monoid_hom_apply Set.singletonMonoidHom_apply
 #align set.singleton_add_monoid_hom_apply Set.singletonAddMonoidHom_apply
@@ -939,7 +939,7 @@ protected noncomputable def monoid : Monoid (Set α) :=
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 
 @[to_additive]
-theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
+lemma pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
     rw [pow_zero]
     exact one_mem_one
@@ -950,7 +950,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
 #align set.nsmul_mem_nsmul Set.nsmul_mem_nsmul
 
 @[to_additive]
-theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
+lemma pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
   | 0 => by
     rw [pow_zero]
     exact Subset.rfl
@@ -961,7 +961,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 #align set.nsmul_subset_nsmul Set.nsmul_subset_nsmul
 
 @[to_additive]
-theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
+lemma pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
   -- Porting note: `Nat.le_induction` didn't work as an induction principle in mathlib3, this was
   -- `refine Nat.le_induction ...`
   induction' n, hn using Nat.le_induction with _ _ ih
@@ -979,13 +979,13 @@ lemma empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
 #align set.empty_nsmul Set.empty_nsmul
 
 @[to_additive]
-theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
+lemma mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
   eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, hs, mem_univ _, one_mul _⟩
 #align set.mul_univ_of_one_mem Set.mul_univ_of_one_mem
 #align set.add_univ_of_zero_mem Set.add_univ_of_zero_mem
 
 @[to_additive]
-theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
+lemma univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
   eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, mem_univ _, ht, mul_one _⟩
 #align set.univ_mul_of_one_mem Set.univ_mul_of_one_mem
 #align set.univ_add_of_zero_mem Set.univ_add_of_zero_mem
@@ -1134,17 +1134,17 @@ variable [MulZeroClass α] {s t : Set α}
 /-! Note that `Set` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
 
 
-theorem mul_zero_subset (s : Set α) : s * 0 ⊆ 0 := by simp [subset_def, mem_mul]
+lemma mul_zero_subset (s : Set α) : s * 0 ⊆ 0 := by simp [subset_def, mem_mul]
 #align set.mul_zero_subset Set.mul_zero_subset
 
-theorem zero_mul_subset (s : Set α) : 0 * s ⊆ 0 := by simp [subset_def, mem_mul]
+lemma zero_mul_subset (s : Set α) : 0 * s ⊆ 0 := by simp [subset_def, mem_mul]
 #align set.zero_mul_subset Set.zero_mul_subset
 
-theorem Nonempty.mul_zero (hs : s.Nonempty) : s * 0 = 0 :=
+lemma Nonempty.mul_zero (hs : s.Nonempty) : s * 0 = 0 :=
   s.mul_zero_subset.antisymm <| by simpa [mem_mul] using hs
 #align set.nonempty.mul_zero Set.Nonempty.mul_zero
 
-theorem Nonempty.zero_mul (hs : s.Nonempty) : 0 * s = 0 :=
+lemma Nonempty.zero_mul (hs : s.Nonempty) : 0 * s = 0 :=
   s.zero_mul_subset.antisymm <| by simpa [mem_mul] using hs
 #align set.nonempty.zero_mul Set.Nonempty.zero_mul
 
@@ -1176,14 +1176,14 @@ attribute [to_additive] Disjoint.one_not_mem_div_set
 #align disjoint.zero_not_mem_sub_set Disjoint.zero_not_mem_sub_set
 
 @[to_additive]
-theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
+lemma Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
   let ⟨a, ha⟩ := h
   mem_div.2 ⟨a, a, ha, ha, div_self' _⟩
 #align set.nonempty.one_mem_div Set.Nonempty.one_mem_div
 #align set.nonempty.zero_mem_sub Set.Nonempty.zero_mem_sub
 
 @[to_additive]
-theorem isUnit_singleton (a : α) : IsUnit ({a} : Set α) :=
+lemma isUnit_singleton (a : α) : IsUnit ({a} : Set α) :=
   (Group.isUnit a).set
 #align set.is_unit_singleton Set.isUnit_singleton
 #align set.is_add_unit_singleton Set.isAddUnit_singleton
@@ -1251,14 +1251,14 @@ lemma preimage_mul_right_one' : (· * b⁻¹) ⁻¹' 1 = {b} := by simp
 #align set.preimage_add_right_zero' Set.preimage_add_right_zero'
 
 @[to_additive (attr := simp)]
-theorem mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
+lemma mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
   let ⟨a, ha⟩ := hs
   eq_univ_of_forall fun b => ⟨a, a⁻¹ * b, ha, trivial, mul_inv_cancel_left _ _⟩
 #align set.mul_univ Set.mul_univ
 #align set.add_univ Set.add_univ
 
 @[to_additive (attr := simp)]
-theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
+lemma univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   let ⟨a, ha⟩ := ht
   eq_univ_of_forall fun b => ⟨b * a⁻¹, a, trivial, ha, inv_mul_cancel_right _ _⟩
 #align set.univ_mul Set.univ_mul
@@ -1270,17 +1270,17 @@ section GroupWithZero
 
 variable [GroupWithZero α] {s t : Set α}
 
-theorem div_zero_subset (s : Set α) : s / 0 ⊆ 0 := by simp [subset_def, mem_div]
+lemma div_zero_subset (s : Set α) : s / 0 ⊆ 0 := by simp [subset_def, mem_div]
 #align set.div_zero_subset Set.div_zero_subset
 
-theorem zero_div_subset (s : Set α) : 0 / s ⊆ 0 := by simp [subset_def, mem_div]
+lemma zero_div_subset (s : Set α) : 0 / s ⊆ 0 := by simp [subset_def, mem_div]
 #align set.zero_div_subset Set.zero_div_subset
 
-theorem Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
+lemma Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
   s.div_zero_subset.antisymm <| by simpa [mem_div] using hs
 #align set.nonempty.div_zero Set.Nonempty.div_zero
 
-theorem Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
+lemma Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
   s.zero_div_subset.antisymm <| by simpa [mem_div] using hs
 #align set.nonempty.zero_div Set.Nonempty.zero_div
 

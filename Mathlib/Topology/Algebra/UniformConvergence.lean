@@ -177,7 +177,7 @@ instance : UniformGroup (α →ᵤ[𝔖] G) :=
     UniformOnFun.uniformEquivProdArrow.symm.uniformContinuous⟩
 
 @[to_additive]
-protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
+protected lemma UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
@@ -191,7 +191,7 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
 #align uniform_on_fun.has_basis_nhds_zero_of_basis UniformOnFun.hasBasis_nhds_zero_of_basis
 
 @[to_additive]
-protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
+protected lemma UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis
       (fun SV : Set α × Set G => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 1 : Filter G)) fun SV =>
@@ -216,7 +216,7 @@ For convenience, we don't literally ask for `H : Submodule (α →ᵤ[𝔖] E)`.
 result for any vector space `H` equipped with a linear inducing to `α →ᵤ[𝔖] E`, which is often
 easier to use. We also state the `Submodule` version as
 `UniformOnFun.continuousSMul_submodule_of_image_bounded`. -/
-theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.Nonempty)
+lemma UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.Nonempty)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) (φ : hom) (hφ : Inducing φ)
     (h : ∀ u : H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 ((φ u : α → E) '' s)) :
     ContinuousSMul 𝕜 H := by
@@ -267,7 +267,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
 equipped with the topology of `𝔖`-convergence, is a TVS.
 
 If you have a hard time using this lemma, try the one above instead. -/
-theorem UniformOnFun.continuousSMul_submodule_of_image_bounded (h𝔖₁ : 𝔖.Nonempty)
+lemma UniformOnFun.continuousSMul_submodule_of_image_bounded (h𝔖₁ : 𝔖.Nonempty)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) (H : Submodule 𝕜 (α →ᵤ[𝔖] E))
     (h : ∀ u ∈ H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 (u '' s)) :
     @ContinuousSMul 𝕜 H _ _ ((UniformOnFun.topologicalSpace α E 𝔖).induced ((↑) : H → α →ᵤ[𝔖] E)) :=

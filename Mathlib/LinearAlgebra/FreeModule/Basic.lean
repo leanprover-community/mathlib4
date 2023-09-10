@@ -123,7 +123,7 @@ instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
 
 variable {R M N}
 
-theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
+lemma of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
   of_basis <| (chooseBasis R M).map e
 #align module.free.of_equiv Module.Free.of_equiv
 

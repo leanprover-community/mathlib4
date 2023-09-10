@@ -60,7 +60,7 @@ lemma pos_of_pos {x : ℝ} (hx : 0 < x) : 0 < expNegInvGlue x := by
 #align exp_neg_inv_glue.pos_of_pos expNegInvGlue.pos_of_pos
 
 /-- The function `expNegInvGlue` is nonnegative. -/
-theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
+lemma nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
   cases le_or_gt x 0 with
   | inl h => exact ge_of_eq (zero_of_nonpos h)
   | inr h => exact le_of_lt (pos_of_pos h)
@@ -93,7 +93,7 @@ induction, then deduce smoothness of $f$ by setting $p=1$.
 #noalign exp_neg_inv_glue.f_aux_has_deriv_at
 
 /-- Our function tends to zero at zero faster than any $P(x^{-1})$, $P∈ℝ[X]$, tends to infinity. -/
-theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
+lemma tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
     Tendsto (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) (𝓝 0) (𝓝 0) := by
   simp only [expNegInvGlue, mul_ite, mul_zero]
   refine tendsto_const_nhds.if ?_
@@ -103,7 +103,7 @@ theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
   simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
 
-theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
+lemma hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     HasDerivAt (fun x ↦ p.eval x⁻¹ * expNegInvGlue x)
       ((X ^ 2 * (p - derivative (R := ℝ) p)).eval x⁻¹ * expNegInvGlue x) x := by
   rcases lt_trichotomy x 0 with hx | rfl | hx
@@ -121,11 +121,11 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     · filter_upwards [lt_mem_nhds hx] with y hy
       simp [expNegInvGlue, hy.not_le]
 
-theorem differentiable_polynomial_eval_inv_mul (p : ℝ[X]) :
+lemma differentiable_polynomial_eval_inv_mul (p : ℝ[X]) :
     Differentiable ℝ (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := fun x ↦
   (hasDerivAt_polynomial_eval_inv_mul p x).differentiableAt
 
-theorem continuous_polynomial_eval_inv_mul (p : ℝ[X]) :
+lemma continuous_polynomial_eval_inv_mul (p : ℝ[X]) :
     Continuous (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) :=
   (differentiable_polynomial_eval_inv_mul p).continuous
 
@@ -160,12 +160,12 @@ variable {x : ℝ}
 
 open expNegInvGlue
 
-theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
+lemma pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
   (zero_lt_one.lt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
     fun hx => add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
 #align real.smooth_transition.pos_denom Real.smoothTransition.pos_denom
 
-theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
+lemma one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
   (div_eq_one_iff_eq <| (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
 #align real.smooth_transition.one_of_one_le Real.smoothTransition.one_of_one_le
 
@@ -173,7 +173,7 @@ theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
 nonrec lemma zero_iff_nonpos : smoothTransition x = 0 ↔ x ≤ 0 := by
   simp only [smoothTransition, _root_.div_eq_zero_iff, (pos_denom x).ne', zero_iff_nonpos, or_false]
 
-theorem zero_of_nonpos (h : x ≤ 0) : smoothTransition x = 0 := zero_iff_nonpos.2 h
+lemma zero_of_nonpos (h : x ≤ 0) : smoothTransition x = 0 := zero_iff_nonpos.2 h
 #align real.smooth_transition.zero_of_nonpos Real.smoothTransition.zero_of_nonpos
 
 @[simp]
@@ -196,19 +196,19 @@ protected lemma projIcc :
   · rw [smoothTransition.one, one_of_one_le hx.le]
 #align real.smooth_transition.proj_Icc Real.smoothTransition.projIcc
 
-theorem le_one (x : ℝ) : smoothTransition x ≤ 1 :=
+lemma le_one (x : ℝ) : smoothTransition x ≤ 1 :=
   (div_le_one (pos_denom x)).2 <| le_add_of_nonneg_right (nonneg _)
 #align real.smooth_transition.le_one Real.smoothTransition.le_one
 
-theorem nonneg (x : ℝ) : 0 ≤ smoothTransition x :=
+lemma nonneg (x : ℝ) : 0 ≤ smoothTransition x :=
   div_nonneg (expNegInvGlue.nonneg _) (pos_denom x).le
 #align real.smooth_transition.nonneg Real.smoothTransition.nonneg
 
-theorem lt_one_of_lt_one (h : x < 1) : smoothTransition x < 1 :=
+lemma lt_one_of_lt_one (h : x < 1) : smoothTransition x < 1 :=
   (div_lt_one <| pos_denom x).2 <| lt_add_of_pos_right _ <| pos_of_pos <| sub_pos.2 h
 #align real.smooth_transition.lt_one_of_lt_one Real.smoothTransition.lt_one_of_lt_one
 
-theorem pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
+lemma pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
   div_pos (expNegInvGlue.pos_of_pos h) (pos_denom x)
 #align real.smooth_transition.pos_of_pos Real.smoothTransition.pos_of_pos
 

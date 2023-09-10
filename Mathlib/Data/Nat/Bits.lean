@@ -36,27 +36,27 @@ variable {n : ℕ}
 
 
 @[simp]
-theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
+lemma boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
   unfold bodd div2; cases boddDiv2 n; rfl
 #align nat.bodd_div2_eq Nat.boddDiv2_eq
 
 @[simp]
-theorem bodd_bit0 (n) : bodd (bit0 n) = false :=
+lemma bodd_bit0 (n) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align nat.bodd_bit0 Nat.bodd_bit0
 
 @[simp]
-theorem bodd_bit1 (n) : bodd (bit1 n) = true :=
+lemma bodd_bit1 (n) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align nat.bodd_bit1 Nat.bodd_bit1
 
 @[simp]
-theorem div2_bit0 (n) : div2 (bit0 n) = n :=
+lemma div2_bit0 (n) : div2 (bit0 n) = n :=
   div2_bit false n
 #align nat.div2_bit0 Nat.div2_bit0
 
 @[simp]
-theorem div2_bit1 (n) : div2 (bit1 n) = n :=
+lemma div2_bit1 (n) : div2 (bit1 n) = n :=
   div2_bit true n
 #align nat.div2_bit1 Nat.div2_bit1
 
@@ -97,7 +97,7 @@ lemma bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false
   | false => bit0_add
 #align nat.bit_add' Nat.bit_add'
 
-theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
+lemma bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> [exact Nat.bit0_ne_zero h; exact Nat.bit1_ne_zero _]
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
@@ -212,19 +212,19 @@ lemma zero_bits : bits 0 = [] := by simp [Nat.bits]
 #align nat.zero_bits Nat.zero_bits
 
 @[simp]
-theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
+lemma bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
   rw [Nat.bits, binaryRec_eq']
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit
 
 @[simp]
-theorem bit0_bits (n : ℕ) (hn : n ≠ 0) : (bit0 n).bits = false :: n.bits :=
+lemma bit0_bits (n : ℕ) (hn : n ≠ 0) : (bit0 n).bits = false :: n.bits :=
   bits_append_bit n false fun hn' => absurd hn' hn
 #align nat.bit0_bits Nat.bit0_bits
 
 @[simp]
-theorem bit1_bits (n : ℕ) : (bit1 n).bits = true :: n.bits :=
+lemma bit1_bits (n : ℕ) : (bit1 n).bits = true :: n.bits :=
   bits_append_bit n true fun _ => rfl
 #align nat.bit1_bits Nat.bit1_bits
 
@@ -237,12 +237,12 @@ lemma one_bits : Nat.bits 1 = [true] := by
 -- example : bits 3423 = [true, true, true, true, true, false, true, false, true, false, true, true]
 -- := by norm_num
 
-theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
+lemma bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
   induction' n using Nat.binaryRec' with b n h _; · simp
   simp [bodd_bit, bits_append_bit _ _ h]
 #align nat.bodd_eq_bits_head Nat.bodd_eq_bits_head
 
-theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
+lemma div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
   induction' n using Nat.binaryRec' with b n h _; · simp
   simp [div2_bit, bits_append_bit _ _ h]
 #align nat.div2_bits_eq_tail Nat.div2_bits_eq_tail

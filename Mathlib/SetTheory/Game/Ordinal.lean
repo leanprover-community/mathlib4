@@ -43,19 +43,19 @@ termination_by toPGame x => x
 #align ordinal.to_pgame Ordinal.toPGame
 
 @[nolint unusedHavesSuffices]
-theorem toPGame_def (o : Ordinal) :
+lemma toPGame_def (o : Ordinal) :
     have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     o.toPGame = ⟨o.out.α, PEmpty, fun x => (typein (· < ·) x).toPGame, PEmpty.elim⟩ := by
   rw [toPGame]
 #align ordinal.to_pgame_def Ordinal.toPGame_def
 
 @[simp, nolint unusedHavesSuffices]
-theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.out.α := by
+lemma toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.out.α := by
   rw [toPGame, LeftMoves]
 #align ordinal.to_pgame_left_moves Ordinal.toPGame_leftMoves
 
 @[simp, nolint unusedHavesSuffices]
-theorem toPGame_rightMoves (o : Ordinal) : o.toPGame.RightMoves = PEmpty := by
+lemma toPGame_rightMoves (o : Ordinal) : o.toPGame.RightMoves = PEmpty := by
   rw [toPGame, RightMoves]
 #align ordinal.to_pgame_right_moves Ordinal.toPGame_rightMoves
 
@@ -113,12 +113,12 @@ lemma one_toPGame_leftMoves_default_eq :
 #align ordinal.one_to_pgame_left_moves_default_eq Ordinal.one_toPGame_leftMoves_default_eq
 
 @[simp]
-theorem to_leftMoves_one_toPGame_symm (i) :
+lemma to_leftMoves_one_toPGame_symm (i) :
     (@toLeftMovesToPGame 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
   simp
 #align ordinal.to_left_moves_one_to_pgame_symm Ordinal.to_leftMoves_one_toPGame_symm
 
-theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
+lemma one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 #align ordinal.one_to_pgame_move_left Ordinal.one_toPGame_moveLeft
 
 /-- `1.to_pgame` has the same moves as `1`. -/
@@ -141,7 +141,7 @@ lemma toPGame_lt {a b : Ordinal} (h : a < b) : a.toPGame < b.toPGame :=
   ⟨toPGame_le h.le, toPGame_lf h⟩
 #align ordinal.to_pgame_lt Ordinal.toPGame_lt
 
-theorem toPGame_nonneg (a : Ordinal) : 0 ≤ a.toPGame :=
+lemma toPGame_nonneg (a : Ordinal) : 0 ≤ a.toPGame :=
   zeroToPgameRelabelling.ge.trans <| toPGame_le <| Ordinal.zero_le a
 #align ordinal.to_pgame_nonneg Ordinal.toPGame_nonneg
 
@@ -208,7 +208,7 @@ termination_by toPGame_add a b => (a, b)
 #align ordinal.to_pgame_add Ordinal.toPGame_add
 
 @[simp]
-theorem toPGame_add_mk' (a b : Ordinal) : (⟦a.toPGame⟧ + ⟦b.toPGame⟧ : Game) = ⟦(a ♯ b).toPGame⟧ :=
+lemma toPGame_add_mk' (a b : Ordinal) : (⟦a.toPGame⟧ + ⟦b.toPGame⟧ : Game) = ⟦(a ♯ b).toPGame⟧ :=
   Quot.sound (toPGame_add a b)
 #align ordinal.to_pgame_add_mk Ordinal.toPGame_add_mk'
 

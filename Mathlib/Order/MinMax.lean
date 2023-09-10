@@ -74,18 +74,18 @@ lemma max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
   sup_le_sup
 #align max_le_max max_le_max
 
-@[gcongr] theorem max_le_max_left (c) (h : a ≤ b) : max c a ≤ max c b := sup_le_sup_left h c
+@[gcongr] lemma max_le_max_left (c) (h : a ≤ b) : max c a ≤ max c b := sup_le_sup_left h c
 
-@[gcongr] theorem max_le_max_right (c) (h : a ≤ b) : max a c ≤ max b c := sup_le_sup_right h c
+@[gcongr] lemma max_le_max_right (c) (h : a ≤ b) : max a c ≤ max b c := sup_le_sup_right h c
 
 @[gcongr]
 lemma min_le_min : a ≤ c → b ≤ d → min a b ≤ min c d :=
   inf_le_inf
 #align min_le_min min_le_min
 
-@[gcongr] theorem min_le_min_left (c) (h : a ≤ b) : min c a ≤ min c b := inf_le_inf_left c h
+@[gcongr] lemma min_le_min_left (c) (h : a ≤ b) : min c a ≤ min c b := inf_le_inf_left c h
 
-@[gcongr] theorem min_le_min_right (c) (h : a ≤ b) : min a c ≤ min b c := inf_le_inf_right c h
+@[gcongr] lemma min_le_min_right (c) (h : a ≤ b) : min a c ≤ min b c := inf_le_inf_right c h
 
 lemma le_max_of_le_left : a ≤ b → a ≤ max b c :=
   le_sup_of_le_left
@@ -95,11 +95,11 @@ lemma le_max_of_le_right : a ≤ c → a ≤ max b c :=
   le_sup_of_le_right
 #align le_max_of_le_right le_max_of_le_right
 
-theorem lt_max_of_lt_left (h : a < b) : a < max b c :=
+lemma lt_max_of_lt_left (h : a < b) : a < max b c :=
   h.trans_le (le_max_left b c)
 #align lt_max_of_lt_left lt_max_of_lt_left
 
-theorem lt_max_of_lt_right (h : a < c) : a < max b c :=
+lemma lt_max_of_lt_right (h : a < c) : a < max b c :=
   h.trans_le (le_max_right b c)
 #align lt_max_of_lt_right lt_max_of_lt_right
 
@@ -111,11 +111,11 @@ lemma min_le_of_right_le : b ≤ c → min a b ≤ c :=
   inf_le_of_right_le
 #align min_le_of_right_le min_le_of_right_le
 
-theorem min_lt_of_left_lt (h : a < c) : min a b < c :=
+lemma min_lt_of_left_lt (h : a < c) : min a b < c :=
   (min_le_left a b).trans_lt h
 #align min_lt_of_left_lt min_lt_of_left_lt
 
-theorem min_lt_of_right_lt (h : b < c) : min a b < c :=
+lemma min_lt_of_right_lt (h : b < c) : min a b < c :=
   (min_le_right a b).trans_lt h
 #align min_lt_of_right_lt min_lt_of_right_lt
 
@@ -162,7 +162,7 @@ lemma max_eq_right_iff : max a b = b ↔ a ≤ b :=
 /-- For elements `a` and `b` of a linear order, either `min a b = a` and `a ≤ b`,
     or `min a b = b` and `b < a`.
     Use cases on this lemma to automate linarith in inequalities -/
-theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
+lemma min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
   by_cases h : a ≤ b
   · left
     exact ⟨min_eq_left h, h⟩
@@ -173,7 +173,7 @@ theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
     or `max a b = b` and `a < b`.
     Use cases on this lemma to automate linarith in inequalities -/
-theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b :=
+lemma max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b :=
   @min_cases αᵒᵈ _ a b
 #align max_cases max_cases
 
@@ -222,64 +222,64 @@ lemma min_lt_max : min a b < max a b ↔ a ≠ b :=
 #align min_lt_max min_lt_max
 
 -- Porting note: was `by simp [lt_max_iff, max_lt_iff, *]`
-theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
+lemma max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
   max_lt (lt_max_of_lt_left h₁) (lt_max_of_lt_right h₂)
 #align max_lt_max max_lt_max
 
-theorem min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
+lemma min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
   @max_lt_max αᵒᵈ _ _ _ _ _ h₁ h₂
 #align min_lt_min min_lt_min
 
-theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b :=
+lemma min_right_comm (a b c : α) : min (min a b) c = min (min a c) b :=
   right_comm min min_comm min_assoc a b c
 #align min_right_comm min_right_comm
 
-theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
+lemma Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
   _root_.left_comm max max_comm max_assoc a b c
 #align max.left_comm Max.left_comm
 
-theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
+lemma Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
   _root_.right_comm max max_comm max_assoc a b c
 #align max.right_comm Max.right_comm
 
-theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
+lemma MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
   cases' le_total a b with h h <;>
     simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 #align monotone_on.map_max MonotoneOn.map_max
 
-theorem MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
+lemma MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
     min (f a) (f b) := hf.dual.map_max ha hb
 #align monotone_on.map_min MonotoneOn.map_min
 
-theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
+lemma AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
   min (f a) (f b) := hf.dual_right.map_max ha hb
 #align antitone_on.map_max AntitoneOn.map_max
 
-theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
+lemma AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
     max (f a) (f b) := hf.dual.map_max ha hb
 #align antitone_on.map_min AntitoneOn.map_min
 
-theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
+lemma Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
   cases' le_total a b with h h <;> simp [h, hf h]
 #align monotone.map_max Monotone.map_max
 
-theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
+lemma Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
   hf.dual.map_max
 #align monotone.map_min Monotone.map_min
 
-theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
+lemma Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
   cases' le_total a b with h h <;> simp [h, hf h]
 #align antitone.map_max Antitone.map_max
 
-theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
+lemma Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
   hf.dual.map_max
 #align antitone.map_min Antitone.map_min
 
-theorem min_choice (a b : α) : min a b = a ∨ min a b = b := by cases le_total a b <;> simp [*]
+lemma min_choice (a b : α) : min a b = a ∨ min a b = b := by cases le_total a b <;> simp [*]
 #align min_choice min_choice
 
-theorem max_choice (a b : α) : max a b = a ∨ max a b = b :=
+lemma max_choice (a b : α) : max a b = a ∨ max a b = b :=
   @min_choice αᵒᵈ _ a b
 #align max_choice max_choice
 

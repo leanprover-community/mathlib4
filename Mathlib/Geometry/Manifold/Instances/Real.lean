@@ -80,7 +80,7 @@ instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
 @[ext] -- porting note: new theorem
-theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
+lemma EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
 @[ext] -- porting note: new theorem
@@ -88,12 +88,12 @@ lemma EuclideanHalfSpace.ext [Zero (Fin n)] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-theorem range_half_space (n : ℕ) [Zero (Fin n)] :
+lemma range_half_space (n : ℕ) [Zero (Fin n)] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
 #align range_half_space range_half_space
 
-theorem range_quadrant (n : ℕ) :
+lemma range_quadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
 #align range_quadrant range_quadrant

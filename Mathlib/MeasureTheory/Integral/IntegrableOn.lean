@@ -44,12 +44,12 @@ lemma stronglyMeasurableAt_bot {f : α → β} : StronglyMeasurableAtFilter f �
   ⟨∅, mem_bot, by simp⟩
 #align strongly_measurable_at_bot stronglyMeasurableAt_bot
 
-protected theorem StronglyMeasurableAtFilter.eventually (h : StronglyMeasurableAtFilter f l μ) :
+protected lemma StronglyMeasurableAtFilter.eventually (h : StronglyMeasurableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, AEStronglyMeasurable f (μ.restrict s) :=
   (eventually_smallSets' fun _ _ => AEStronglyMeasurable.mono_set).2 h
 #align strongly_measurable_at_filter.eventually StronglyMeasurableAtFilter.eventually
 
-protected theorem StronglyMeasurableAtFilter.filter_mono (h : StronglyMeasurableAtFilter f l μ)
+protected lemma StronglyMeasurableAtFilter.filter_mono (h : StronglyMeasurableAtFilter f l μ)
     (h' : l' ≤ l) : StronglyMeasurableAtFilter f l' μ :=
   let ⟨s, hsl, hs⟩ := h
   ⟨s, h' hsl, hs⟩
@@ -92,13 +92,13 @@ def IntegrableOn (f : α → E) (s : Set α) (μ : Measure α := by volume_tac) 
 #align measure_theory.integrable_on MeasureTheory.IntegrableOn
 
 -- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
+lemma integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
     IntegrableOn f s μ ↔ Integrable f (μ.restrict s) :=
   Iff.rfl
 
 attribute [eqns integrableOn_def] IntegrableOn
 
-theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
+lemma IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 #align measure_theory.integrable_on.integrable MeasureTheory.IntegrableOn.integrable
 
@@ -120,64 +120,64 @@ lemma integrableOn_const {C : E} : IntegrableOn (fun _ => C) s μ ↔ C = 0 ∨ 
   integrable_const_iff.trans <| by rw [Measure.restrict_apply_univ]
 #align measure_theory.integrable_on_const MeasureTheory.integrableOn_const
 
-theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
+lemma IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
 #align measure_theory.integrable_on.mono MeasureTheory.IntegrableOn.mono
 
-theorem IntegrableOn.mono_set (h : IntegrableOn f t μ) (hst : s ⊆ t) : IntegrableOn f s μ :=
+lemma IntegrableOn.mono_set (h : IntegrableOn f t μ) (hst : s ⊆ t) : IntegrableOn f s μ :=
   h.mono hst le_rfl
 #align measure_theory.integrable_on.mono_set MeasureTheory.IntegrableOn.mono_set
 
-theorem IntegrableOn.mono_measure (h : IntegrableOn f s ν) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
+lemma IntegrableOn.mono_measure (h : IntegrableOn f s ν) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono (Subset.refl _) hμ
 #align measure_theory.integrable_on.mono_measure MeasureTheory.IntegrableOn.mono_measure
 
-theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t) : IntegrableOn f s μ :=
+lemma IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t) : IntegrableOn f s μ :=
   h.integrable.mono_measure <| Measure.restrict_mono_ae hst
 #align measure_theory.integrable_on.mono_set_ae MeasureTheory.IntegrableOn.mono_set_ae
 
-theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐ[μ] t) : IntegrableOn f s μ :=
+lemma IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐ[μ] t) : IntegrableOn f s μ :=
   h.mono_set_ae hst.le
 #align measure_theory.integrable_on.congr_set_ae MeasureTheory.IntegrableOn.congr_set_ae
 
-theorem IntegrableOn.congr_fun_ae (h : IntegrableOn f s μ) (hst : f =ᵐ[μ.restrict s] g) :
+lemma IntegrableOn.congr_fun_ae (h : IntegrableOn f s μ) (hst : f =ᵐ[μ.restrict s] g) :
     IntegrableOn g s μ :=
   Integrable.congr h hst
 #align measure_theory.integrable_on.congr_fun_ae MeasureTheory.IntegrableOn.congr_fun_ae
 
-theorem integrableOn_congr_fun_ae (hst : f =ᵐ[μ.restrict s] g) :
+lemma integrableOn_congr_fun_ae (hst : f =ᵐ[μ.restrict s] g) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
   ⟨fun h => h.congr_fun_ae hst, fun h => h.congr_fun_ae hst.symm⟩
 #align measure_theory.integrable_on_congr_fun_ae MeasureTheory.integrableOn_congr_fun_ae
 
-theorem IntegrableOn.congr_fun (h : IntegrableOn f s μ) (hst : EqOn f g s) (hs : MeasurableSet s) :
+lemma IntegrableOn.congr_fun (h : IntegrableOn f s μ) (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn g s μ :=
   h.congr_fun_ae ((ae_restrict_iff' hs).2 (eventually_of_forall hst))
 #align measure_theory.integrable_on.congr_fun MeasureTheory.IntegrableOn.congr_fun
 
-theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
+lemma integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
   ⟨fun h => h.congr_fun hst hs, fun h => h.congr_fun hst.symm hs⟩
 #align measure_theory.integrable_on_congr_fun MeasureTheory.integrableOn_congr_fun
 
-theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ :=
+lemma Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_le_self
 #align measure_theory.integrable.integrable_on MeasureTheory.Integrable.integrableOn
 
-theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
+lemma IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     IntegrableOn f s (μ.restrict t) := by
   rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set (inter_subset_left _ _)
 #align measure_theory.integrable_on.restrict MeasureTheory.IntegrableOn.restrict
 
-theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
+lemma IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
   h.mono_set <| subset_union_left _ _
 #align measure_theory.integrable_on.left_of_union MeasureTheory.IntegrableOn.left_of_union
 
-theorem IntegrableOn.right_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f t μ :=
+lemma IntegrableOn.right_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f t μ :=
   h.mono_set <| subset_union_right _ _
 #align measure_theory.integrable_on.right_of_union MeasureTheory.IntegrableOn.right_of_union
 
-theorem IntegrableOn.union (hs : IntegrableOn f s μ) (ht : IntegrableOn f t μ) :
+lemma IntegrableOn.union (hs : IntegrableOn f s μ) (ht : IntegrableOn f t μ) :
     IntegrableOn f (s ∪ t) μ :=
   (hs.add_measure ht).mono_measure <| Measure.restrict_union_le _ _
 #align measure_theory.integrable_on.union MeasureTheory.IntegrableOn.union
@@ -218,7 +218,7 @@ lemma integrableOn_finite_iUnion [Finite β] {t : β → Set α} :
   simpa using @integrableOn_finset_iUnion _ _ _ _ _ f μ Finset.univ t
 #align measure_theory.integrable_on_finite_Union MeasureTheory.integrableOn_finite_iUnion
 
-theorem IntegrableOn.add_measure (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
+lemma IntegrableOn.add_measure (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
     IntegrableOn f s (μ + ν) := by
   delta IntegrableOn; rw [Measure.restrict_add]; exact hμ.integrable.add_measure hν
 #align measure_theory.integrable_on.add_measure MeasureTheory.IntegrableOn.add_measure
@@ -254,23 +254,23 @@ lemma MeasurePreserving.integrableOn_image [MeasurableSpace β] {e : α → β} 
   ((h₁.restrict_image_emb h₂ s).integrable_comp_emb h₂).symm
 #align measure_theory.measure_preserving.integrable_on_image MeasureTheory.MeasurePreserving.integrableOn_image
 
-theorem integrable_indicator_iff (hs : MeasurableSet s) :
+lemma integrable_indicator_iff (hs : MeasurableSet s) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ := by
   simp [IntegrableOn, Integrable, HasFiniteIntegral, nnnorm_indicator_eq_indicator_nnnorm,
     ENNReal.coe_indicator, lintegral_indicator _ hs, aestronglyMeasurable_indicator_iff hs]
 #align measure_theory.integrable_indicator_iff MeasureTheory.integrable_indicator_iff
 
-theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
+lemma IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   (integrable_indicator_iff hs).2 h
 #align measure_theory.integrable_on.integrable_indicator MeasureTheory.IntegrableOn.integrable_indicator
 
-theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
+lemma Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   h.integrableOn.integrable_indicator hs
 #align measure_theory.integrable.indicator MeasureTheory.Integrable.indicator
 
-theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) :
+lemma IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) :
     IntegrableOn (indicator t f) s μ :=
   Integrable.indicator h ht
 #align measure_theory.integrable_on.indicator MeasureTheory.IntegrableOn.indicator
@@ -288,7 +288,7 @@ set_option linter.uppercaseLean3 false in
 /-- If a function is integrable on a set `s` and nonzero there, then the measurable hull of `s` is
 well behaved: the restriction of the measure to `toMeasurable μ s` coincides with its restriction
 to `s`. -/
-theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀ x ∈ s, f x ≠ 0) :
+lemma IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀ x ∈ s, f x ≠ 0) :
     μ.restrict (toMeasurable μ s) = μ.restrict s := by
   rcases exists_seq_strictAnti_tendsto (0 : ℝ) with ⟨u, _, u_pos, u_lim⟩
   let v n := toMeasurable (μ.restrict s) { x | u n ≤ ‖f x‖ }
@@ -307,7 +307,7 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is null-measurable. -/
-theorem IntegrableOn.of_ae_diff_eq_zero (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
+lemma IntegrableOn.of_ae_diff_eq_zero (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
     (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) : IntegrableOn f t μ := by
   let u := { x ∈ s | f x ≠ 0 }
   have hu : IntegrableOn f u μ := hf.mono_set fun x hx => hx.1
@@ -331,14 +331,14 @@ theorem IntegrableOn.of_ae_diff_eq_zero (hf : IntegrableOn f s μ) (ht : NullMea
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
 if `t` is measurable. -/
-theorem IntegrableOn.of_forall_diff_eq_zero (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
+lemma IntegrableOn.of_forall_diff_eq_zero (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
   hf.of_ae_diff_eq_zero ht.nullMeasurableSet (eventually_of_forall h't)
 #align measure_theory.integrable_on.of_forall_diff_eq_zero MeasureTheory.IntegrableOn.of_forall_diff_eq_zero
 
 /-- If a function is integrable on a set `s` and vanishes almost everywhere on its complement,
 then it is integrable. -/
-theorem IntegrableOn.integrable_of_ae_not_mem_eq_zero (hf : IntegrableOn f s μ)
+lemma IntegrableOn.integrable_of_ae_not_mem_eq_zero (hf : IntegrableOn f s μ)
     (h't : ∀ᵐ x ∂μ, x ∉ s → f x = 0) : Integrable f μ := by
   rw [← integrableOn_univ]
   apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
@@ -347,12 +347,12 @@ theorem IntegrableOn.integrable_of_ae_not_mem_eq_zero (hf : IntegrableOn f s μ)
 
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
 then it is integrable. -/
-theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero (hf : IntegrableOn f s μ)
+lemma IntegrableOn.integrable_of_forall_not_mem_eq_zero (hf : IntegrableOn f s μ)
     (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
   hf.integrable_of_ae_not_mem_eq_zero (eventually_of_forall fun x hx => h't x hx)
 #align measure_theory.integrable_on.integrable_of_forall_not_mem_eq_zero MeasureTheory.IntegrableOn.integrable_of_forall_not_mem_eq_zero
 
-theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
+lemma integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
     IntegrableOn f s μ ↔ Integrable f μ := by
   refine' ⟨fun h => _, fun h => h.integrableOn⟩
   refine h.integrable_of_forall_not_mem_eq_zero fun x hx => ?_
@@ -390,12 +390,12 @@ def IntegrableAtFilter (f : α → E) (l : Filter α) (μ : Measure α := by vol
 
 variable {l l' : Filter α}
 
-theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
+lemma Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
     IntegrableAtFilter f l μ :=
   ⟨univ, Filter.univ_mem, integrableOn_univ.2 h⟩
 #align measure_theory.integrable.integrable_at_filter MeasureTheory.Integrable.integrableAtFilter
 
-protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) :
+protected lemma IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) :
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
   Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
 #align measure_theory.integrable_at_filter.eventually MeasureTheory.IntegrableAtFilter.eventually
@@ -425,18 +425,18 @@ protected lemma IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜]
   rcases hf with ⟨s, sl, hs⟩
   refine ⟨s, sl, hs.smul c⟩
 
-theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
+lemma IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
   let ⟨s, hs, hsf⟩ := hl'
   ⟨s, hl hs, hsf⟩
 #align measure_theory.integrable_at_filter.filter_mono MeasureTheory.IntegrableAtFilter.filter_mono
 
-theorem IntegrableAtFilter.inf_of_left (hl : IntegrableAtFilter f l μ) :
+lemma IntegrableAtFilter.inf_of_left (hl : IntegrableAtFilter f l μ) :
     IntegrableAtFilter f (l ⊓ l') μ :=
   hl.filter_mono inf_le_left
 #align measure_theory.integrable_at_filter.inf_of_left MeasureTheory.IntegrableAtFilter.inf_of_left
 
-theorem IntegrableAtFilter.inf_of_right (hl : IntegrableAtFilter f l μ) :
+lemma IntegrableAtFilter.inf_of_right (hl : IntegrableAtFilter f l μ) :
     IntegrableAtFilter f (l' ⊓ l) μ :=
   hl.filter_mono inf_le_right
 #align measure_theory.integrable_at_filter.inf_of_right MeasureTheory.IntegrableAtFilter.inf_of_right
@@ -640,7 +640,7 @@ section PartialOrder
 
 variable [PartialOrder α] [MeasurableSingletonClass α] {f : α → E} {μ : Measure α} {a b : α}
 
-theorem integrableOn_Icc_iff_integrableOn_Ioc' (ha : μ {a} ≠ ∞) :
+lemma integrableOn_Icc_iff_integrableOn_Ioc' (ha : μ {a} ≠ ∞) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ := by
   by_cases hab : a ≤ b
   · rw [← Ioc_union_left hab, integrableOn_union,
@@ -650,7 +650,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ioc' (ha : μ {a} ≠ ∞) :
     exact hab.le
 #align integrable_on_Icc_iff_integrable_on_Ioc' integrableOn_Icc_iff_integrableOn_Ioc'
 
-theorem integrableOn_Icc_iff_integrableOn_Ico' (hb : μ {b} ≠ ∞) :
+lemma integrableOn_Icc_iff_integrableOn_Ico' (hb : μ {b} ≠ ∞) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ico a b) μ := by
   by_cases hab : a ≤ b
   · rw [← Ico_union_right hab, integrableOn_union,
@@ -660,7 +660,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ico' (hb : μ {b} ≠ ∞) :
     exact hab.le
 #align integrable_on_Icc_iff_integrable_on_Ico' integrableOn_Icc_iff_integrableOn_Ico'
 
-theorem integrableOn_Ico_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) :
+lemma integrableOn_Ico_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) :
     IntegrableOn f (Ico a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
   by_cases hab : a < b
   · rw [← Ioo_union_left hab, integrableOn_union,
@@ -668,7 +668,7 @@ theorem integrableOn_Ico_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) :
   · rw [Ioo_eq_empty hab, Ico_eq_empty hab]
 #align integrable_on_Ico_iff_integrable_on_Ioo' integrableOn_Ico_iff_integrableOn_Ioo'
 
-theorem integrableOn_Ioc_iff_integrableOn_Ioo' (hb : μ {b} ≠ ∞) :
+lemma integrableOn_Ioc_iff_integrableOn_Ioo' (hb : μ {b} ≠ ∞) :
     IntegrableOn f (Ioc a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
   by_cases hab : a < b
   · rw [← Ioo_union_right hab, integrableOn_union,
@@ -676,18 +676,18 @@ theorem integrableOn_Ioc_iff_integrableOn_Ioo' (hb : μ {b} ≠ ∞) :
   · rw [Ioo_eq_empty hab, Ioc_eq_empty hab]
 #align integrable_on_Ioc_iff_integrable_on_Ioo' integrableOn_Ioc_iff_integrableOn_Ioo'
 
-theorem integrableOn_Icc_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) (hb : μ {b} ≠ ∞) :
+lemma integrableOn_Icc_iff_integrableOn_Ioo' (ha : μ {a} ≠ ∞) (hb : μ {b} ≠ ∞) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioo a b) μ := by
   rw [integrableOn_Icc_iff_integrableOn_Ioc' ha, integrableOn_Ioc_iff_integrableOn_Ioo' hb]
 #align integrable_on_Icc_iff_integrable_on_Ioo' integrableOn_Icc_iff_integrableOn_Ioo'
 
-theorem integrableOn_Ici_iff_integrableOn_Ioi' (hb : μ {b} ≠ ∞) :
+lemma integrableOn_Ici_iff_integrableOn_Ioi' (hb : μ {b} ≠ ∞) :
     IntegrableOn f (Ici b) μ ↔ IntegrableOn f (Ioi b) μ := by
   rw [← Ioi_union_left, integrableOn_union,
     eq_true (integrableOn_singleton_iff.mpr <| Or.inr hb.lt_top), and_true_iff]
 #align integrable_on_Ici_iff_integrable_on_Ioi' integrableOn_Ici_iff_integrableOn_Ioi'
 
-theorem integrableOn_Iic_iff_integrableOn_Iio' (hb : μ {b} ≠ ∞) :
+lemma integrableOn_Iic_iff_integrableOn_Iio' (hb : μ {b} ≠ ∞) :
     IntegrableOn f (Iic b) μ ↔ IntegrableOn f (Iio b) μ := by
   rw [← Iio_union_right, integrableOn_union,
     eq_true (integrableOn_singleton_iff.mpr <| Or.inr hb.lt_top), and_true_iff]

@@ -279,7 +279,7 @@ lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y
 `Prod.map f id : X × Z → Y × Z` is closed. We will prove in `isProperMap_iff_universally_closed`
 that proper maps are exactly continuous maps which have this property, but this result should be
 easier to use because it allows `Z` to live in any universe. -/
-theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap f) :
+lemma IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap f) :
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prod_map isProperMap_id).isClosedMap

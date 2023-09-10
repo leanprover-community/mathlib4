@@ -90,17 +90,17 @@ nonrec def support (x : HahnSeries Γ R) : Set Γ :=
 #align hahn_series.support HahnSeries.support
 
 @[simp]
-theorem isPwo_support (x : HahnSeries Γ R) : x.support.IsPwo :=
+lemma isPwo_support (x : HahnSeries Γ R) : x.support.IsPwo :=
   x.isPwo_support'
 #align hahn_series.is_pwo_support HahnSeries.isPwo_support
 
 @[simp]
-theorem isWf_support (x : HahnSeries Γ R) : x.support.IsWf :=
+lemma isWf_support (x : HahnSeries Γ R) : x.support.IsWf :=
   x.isPwo_support.isWf
 #align hahn_series.is_wf_support HahnSeries.isWf_support
 
 @[simp]
-theorem mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff a ≠ 0 :=
+lemma mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff a ≠ 0 :=
   Iff.refl _
 #align hahn_series.mem_support HahnSeries.mem_support
 
@@ -154,12 +154,12 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
 variable {a b : Γ} {r : R}
 
 @[simp]
-theorem single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r :=
+lemma single_coeff_same (a : Γ) (r : R) : (single a r).coeff a = r :=
   Pi.single_eq_same (f := fun _ => R) a r
 #align hahn_series.single_coeff_same HahnSeries.single_coeff_same
 
 @[simp]
-theorem single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 :=
+lemma single_coeff_of_ne (h : b ≠ a) : (single a r).coeff b = 0 :=
   Pi.single_eq_of_ne (f := fun _ => R) h r
 #align hahn_series.single_coeff_of_ne HahnSeries.single_coeff_of_ne
 
@@ -168,7 +168,7 @@ lemma single_coeff : (single a r).coeff b = if b = a then r else 0 := by
 #align hahn_series.single_coeff HahnSeries.single_coeff
 
 @[simp]
-theorem support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} :=
+lemma support_single_of_ne (h : r ≠ 0) : support (single a r) = {a} :=
   Pi.support_single_of_ne h
 #align hahn_series.support_single_of_ne HahnSeries.support_single_of_ne
 
@@ -185,11 +185,11 @@ lemma single_eq_zero : single a (0 : R) = 0 :=
   (single a).map_zero
 #align hahn_series.single_eq_zero HahnSeries.single_eq_zero
 
-theorem single_injective (a : Γ) : Function.Injective (single a : R → HahnSeries Γ R) :=
+lemma single_injective (a : Γ) : Function.Injective (single a : R → HahnSeries Γ R) :=
   fun r s rs => by rw [← single_coeff_same a r, ← single_coeff_same a s, rs]
 #align hahn_series.single_injective HahnSeries.single_injective
 
-theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
+lemma single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
   h (single_injective a (con.trans single_eq_zero.symm))
 #align hahn_series.single_ne_zero HahnSeries.single_ne_zero
 
@@ -240,7 +240,7 @@ lemma order_le_of_coeff_ne_zero {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : 
 #align hahn_series.order_le_of_coeff_ne_zero HahnSeries.order_le_of_coeff_ne_zero
 
 @[simp]
-theorem order_single (h : r ≠ 0) : (single a r).order = a :=
+lemma order_single (h : r ≠ 0) : (single a r).order = a :=
   (order_of_ne (single_ne_zero h)).trans
     (support_single_subset
       ((single a r).isWf_support.min_mem (support_nonempty_iff.2 (single_ne_zero h))))
@@ -412,7 +412,7 @@ section Domain
 
 variable {Γ' : Type*} [PartialOrder Γ']
 
-theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
+lemma embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
     embDomain f (x + y) = embDomain f x + embDomain f y := by
   ext g
   by_cases hg : g ∈ Set.range f
@@ -561,7 +561,7 @@ section Domain
 
 variable {Γ' : Type*} [PartialOrder Γ']
 
-theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
+lemma embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
     embDomain f (r • x) = r • embDomain f x := by
   ext g
   by_cases hg : g ∈ Set.range f
@@ -1173,7 +1173,7 @@ lemma ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
 
 /-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
 failures elsewhere-/
-theorem ofPowerSeries_apply (x : PowerSeries R) :
+lemma ofPowerSeries_apply (x : PowerSeries R) :
     ofPowerSeries Γ R x =
       HahnSeries.embDomain
         ⟨⟨((↑) : ℕ → Γ), Nat.strictMono_cast.injective⟩, by
@@ -1183,12 +1183,12 @@ theorem ofPowerSeries_apply (x : PowerSeries R) :
   rfl
 #align hahn_series.of_power_series_apply HahnSeries.ofPowerSeries_apply
 
-theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
+lemma ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
     (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff R n x := by simp [ofPowerSeries_apply]
 #align hahn_series.of_power_series_apply_coeff HahnSeries.ofPowerSeries_apply_coeff
 
 @[simp]
-theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnSeries.C r := by
+lemma ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnSeries.C r := by
   ext n
   simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, ne_eq,
     single_coeff]
@@ -1311,13 +1311,13 @@ instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries
 variable {R}
 variable {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)]
 
-theorem algebraMap_apply' (x : S) :
+lemma algebraMap_apply' (x : S) :
     algebraMap S (HahnSeries Γ R) x = ofPowerSeries Γ R (algebraMap S (PowerSeries R) x) :=
   rfl
 #align hahn_series.algebra_map_apply' HahnSeries.algebraMap_apply'
 
 @[simp]
-theorem _root_.Polynomial.algebraMap_hahnSeries_apply (f : R[X]) :
+lemma _root_.Polynomial.algebraMap_hahnSeries_apply (f : R[X]) :
     algebraMap R[X] (HahnSeries Γ R) f = ofPowerSeries Γ R f :=
   rfl
 #align polynomial.algebra_map_hahn_series_apply Polynomial.algebraMap_hahnSeries_apply
@@ -1416,11 +1416,11 @@ instance : FunLike (SummableFamily Γ R α) α fun _ => HahnSeries Γ R where
   coe := toFun
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
-theorem isPwo_iUnion_support (s : SummableFamily Γ R α) : Set.IsPwo (⋃ a : α, (s a).support) :=
+lemma isPwo_iUnion_support (s : SummableFamily Γ R α) : Set.IsPwo (⋃ a : α, (s a).support) :=
   s.isPwo_iUnion_support'
 #align hahn_series.summable_family.is_pwo_Union_support HahnSeries.SummableFamily.isPwo_iUnion_support
 
-theorem finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
+lemma finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
     (Function.support fun a => (s a).coeff g).Finite :=
   s.finite_co_support' g
 #align hahn_series.summable_family.finite_co_support HahnSeries.SummableFamily.finite_co_support
@@ -1733,7 +1733,7 @@ lemma embDomain_image : s.embDomain f (f a) = s a := by
 #align hahn_series.summable_family.emb_domain_image HahnSeries.SummableFamily.embDomain_image
 
 @[simp]
-theorem embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
+lemma embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := by
   rw [embDomain_apply, dif_neg h]
 #align hahn_series.summable_family.emb_domain_notin_range HahnSeries.SummableFamily.embDomain_notin_range
 
@@ -1820,7 +1820,7 @@ section IsDomain
 
 variable [CommRing R] [IsDomain R]
 
-theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
+lemma unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
     0 < addVal Γ R (1 - C r * single (-x.order) 1 * x) := by
   have h10 : (1 : R) ≠ 0 := one_ne_zero
   have x0 : x ≠ 0 := ne_zero_of_coeff_ne_zero (right_ne_zero_of_mul_eq_one hr)

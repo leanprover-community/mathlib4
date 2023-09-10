@@ -63,23 +63,23 @@ lemma mono : Monotone f :=
   f.mono'
 #align stieltjes_function.mono StieltjesFunction.mono
 
-theorem right_continuous (x : ℝ) : ContinuousWithinAt f (Ici x) x :=
+lemma right_continuous (x : ℝ) : ContinuousWithinAt f (Ici x) x :=
   f.right_continuous' x
 #align stieltjes_function.right_continuous StieltjesFunction.right_continuous
 
-theorem rightLim_eq (f : StieltjesFunction) (x : ℝ) : Function.rightLim f x = f x := by
+lemma rightLim_eq (f : StieltjesFunction) (x : ℝ) : Function.rightLim f x = f x := by
   rw [← f.mono.continuousWithinAt_Ioi_iff_rightLim_eq, continuousWithinAt_Ioi_iff_Ici]
   exact f.right_continuous' x
 #align stieltjes_function.right_lim_eq StieltjesFunction.rightLim_eq
 
-theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
+lemma iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
   suffices Function.rightLim f x = ⨅ r : Ioi x, f r by rw [← this, f.rightLim_eq]
   rw [f.mono.rightLim_eq_sInf, sInf_image']
   rw [← neBot_iff]
   infer_instance
 #align stieltjes_function.infi_Ioi_eq StieltjesFunction.iInf_Ioi_eq
 
-theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
+lemma iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
   refine' (Real.iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
@@ -98,7 +98,7 @@ protected def id : StieltjesFunction where
 #align stieltjes_function.id_apply StieltjesFunction.id_apply
 
 @[simp]
-theorem id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
+lemma id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
   tendsto_nhds_unique (StieltjesFunction.id.mono.tendsto_leftLim x) <|
     continuousAt_id.tendsto.mono_left nhdsWithin_le_nhds
 #align stieltjes_function.id_left_lim StieltjesFunction.id_leftLim
@@ -134,7 +134,7 @@ lemma _root_.Monotone.stieltjesFunction_eq {f : ℝ → ℝ} (hf : Monotone f) (
   rfl
 #align monotone.stieltjes_function_eq Monotone.stieltjesFunction_eq
 
-theorem countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftLim f x ≠ f x } := by
+lemma countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftLim f x ≠ f x } := by
   refine Countable.mono ?_ f.mono.countable_not_continuousAt
   intro x hx h'x
   apply hx
@@ -156,7 +156,7 @@ lemma length_empty : f.length ∅ = 0 :=
 #align stieltjes_function.length_empty StieltjesFunction.length_empty
 
 @[simp]
-theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
+lemma length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   refine'
     le_antisymm (iInf_le_of_le a <| iInf₂_le b Subset.rfl)
       (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 _)
@@ -178,7 +178,7 @@ protected def outer : OuterMeasure ℝ :=
   OuterMeasure.ofFunction f.length f.length_empty
 #align stieltjes_function.outer StieltjesFunction.outer
 
-theorem outer_le_length (s : Set ℝ) : f.outer s ≤ f.length s :=
+lemma outer_le_length (s : Set ℝ) : f.outer s ≤ f.length s :=
   OuterMeasure.ofFunction_le _
 #align stieltjes_function.outer_le_length StieltjesFunction.outer_le_length
 
@@ -221,7 +221,7 @@ lemma length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b �
 #align stieltjes_function.length_subadditive_Icc_Ioo StieltjesFunction.length_subadditive_Icc_Ioo
 
 @[simp]
-theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
+lemma outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
   /- It suffices to show that, if `(a, b]` is covered by sets `s i`, then `f b - f a` is bounded
     by `∑ f.length (s i) + ε`. The difficulty is that `f.length` is expressed in terms of half-open
     intervals, while we would like to have a compact interval covered by open intervals to use
@@ -349,13 +349,13 @@ protected irreducible_def measure : Measure ℝ :=
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]
-theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
+lemma measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   rw [StieltjesFunction.measure]
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
 
 @[simp]
-theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
+lemma measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=
     exists_seq_strictMono_tendsto a
@@ -382,7 +382,7 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
 #align stieltjes_function.measure_singleton StieltjesFunction.measure_singleton
 
 @[simp]
-theorem measure_Icc (a b : ℝ) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
+lemma measure_Icc (a b : ℝ) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
   rcases le_or_lt a b with (hab | hab)
   · have A : Disjoint {a} (Ioc a b) := by simp
     simp [← Icc_union_Ioc_eq_Icc le_rfl hab, -singleton_union, ← ENNReal.ofReal_add,
@@ -410,7 +410,7 @@ lemma measure_Ioo {a b : ℝ} : f.measure (Ioo a b) = ofReal (leftLim f b - f a)
 #align stieltjes_function.measure_Ioo StieltjesFunction.measure_Ioo
 
 @[simp]
-theorem measure_Ico (a b : ℝ) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
+lemma measure_Ico (a b : ℝ) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
   rcases le_or_lt b a with (hab | hab)
   · simp only [hab, measure_empty, Ico_eq_empty, not_lt]
     symm

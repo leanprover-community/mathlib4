@@ -86,7 +86,7 @@ def card : List α → Nat
 @[simp] lemma card_cons_of_not_mem {a : α} {as : List α} (h : a ∉ as) :
     card (a :: as) = card as + 1 := by simp [card, h]
 
-theorem card_le_card_cons (a : α) (as : List α) : card as ≤ card (a :: as) := by
+lemma card_le_card_cons (a : α) (as : List α) : card as ≤ card (a :: as) := by
   cases Decidable.em (a ∈ as) with
   | inl h => simp [h, Nat.le_refl]
   | inr h => simp [h, Nat.le_succ]
@@ -137,7 +137,7 @@ lemma card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card bs
       rw [mem_remove_iff]
       exact ⟨hsub (mem_cons_of_mem _ xmem), fun h ↦ h' (h ▸ xmem)⟩
 
-theorem card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as := by
+lemma card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as := by
   induction as with
   | nil => simp
   | cons a as ih =>

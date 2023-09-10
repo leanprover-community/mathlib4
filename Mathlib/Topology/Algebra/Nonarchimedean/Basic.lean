@@ -68,7 +68,7 @@ variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
 @[to_additive]
-theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : NonarchimedeanGroup H :=
+lemma nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : NonarchimedeanGroup H :=
   { is_nonarchimedean := fun U hU =>
       have h₁ : f ⁻¹' U ∈ nhds (1 : G) := by
         apply emb.continuous.tendsto
@@ -135,13 +135,13 @@ instance : NonarchimedeanRing (R × S)
 
 /-- Given an open subgroup `U` and an element `r` of a nonarchimedean ring, there is an open
   subgroup `V` such that `r • V` is contained in `U`. -/
-theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
+lemma left_mul_subset (U : OpenAddSubgroup R) (r : R) :
     ∃ V : OpenAddSubgroup R, r • (V : Set R) ⊆ U :=
   ⟨U.comap (AddMonoidHom.mulLeft r) (continuous_mul_left r), (U : Set R).image_preimage_subset _⟩
 #align nonarchimedean_ring.left_mul_subset NonarchimedeanRing.left_mul_subset
 
 /-- An open subgroup of a nonarchimedean ring contains the square of another one. -/
-theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
+lemma mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
   let ⟨V, H⟩ :=
     prod_self_subset
       (IsOpen.mem_nhds (IsOpen.preimage continuous_mul U.isOpen)

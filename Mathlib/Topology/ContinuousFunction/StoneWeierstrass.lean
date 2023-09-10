@@ -59,11 +59,11 @@ def attachBound (f : C(X, ℝ)) : C(X, Set.Icc (-‖f‖) ‖f‖)
 #align continuous_map.attach_bound ContinuousMap.attachBound
 
 @[simp]
-theorem attachBound_apply_coe (f : C(X, ℝ)) (x : X) : ((attachBound f) x : ℝ) = f x :=
+lemma attachBound_apply_coe (f : C(X, ℝ)) (x : X) : ((attachBound f) x : ℝ) = f x :=
   rfl
 #align continuous_map.attach_bound_apply_coe ContinuousMap.attachBound_apply_coe
 
-theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : ℝ[X]) :
+lemma polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : ℝ[X]) :
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound =
       Polynomial.aeval f g := by
   ext
@@ -80,13 +80,13 @@ we take `f`, and think of it as a function into the restricted target `Set.Icc (
 and then postcompose with a polynomial function on that interval.
 This is in fact the same situation as above, and so also gives a function in `A`.
 -/
-theorem polynomial_comp_attachBound_mem (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : ℝ[X]) :
+lemma polynomial_comp_attachBound_mem (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : ℝ[X]) :
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound ∈ A := by
   rw [polynomial_comp_attachBound]
   apply SetLike.coe_mem
 #align continuous_map.polynomial_comp_attach_bound_mem ContinuousMap.polynomial_comp_attachBound_mem
 
-theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
+lemma comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
     (p : C(Set.Icc (-‖f‖) ‖f‖, ℝ)) : p.comp (attachBound (f : C(X, ℝ))) ∈ A.topologicalClosure := by
   -- `p` itself is in the closure of polynomials, by the Weierstrass theorem,
   have mem_closure : p ∈ (polynomialFunctions (Set.Icc (-‖f‖) ‖f‖)).topologicalClosure :=
@@ -108,7 +108,7 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
   apply polynomial_comp_attachBound_mem
 #align continuous_map.comp_attach_bound_mem_closure ContinuousMap.comp_attachBound_mem_closure
 
-theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
+lemma abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
     (f : C(X, ℝ)).abs ∈ A.topologicalClosure := by
   let f' := attachBound (f : C(X, ℝ))
   let abs : C(Set.Icc (-‖f‖) ‖f‖, ℝ) := { toFun := fun x : Set.Icc (-‖f‖) ‖f‖ => |(x : ℝ)| }
@@ -116,7 +116,7 @@ theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
   apply comp_attachBound_mem_closure
 #align continuous_map.abs_mem_subalgebra_closure ContinuousMap.abs_mem_subalgebra_closure
 
-theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
+lemma inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊓ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
   rw [inf_eq_half_smul_add_sub_abs_sub' ℝ]
   refine'
@@ -129,7 +129,7 @@ theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
   exact_mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.inf_mem_subalgebra_closure ContinuousMap.inf_mem_subalgebra_closure
 
-theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
+lemma inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
     (f g : A) : (f : C(X, ℝ)) ⊓ (g : C(X, ℝ)) ∈ A := by
   convert inf_mem_subalgebra_closure A f g
   apply SetLike.ext'
@@ -138,7 +138,7 @@ theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
   exact h
 #align continuous_map.inf_mem_closed_subalgebra ContinuousMap.inf_mem_closed_subalgebra
 
-theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
+lemma sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
   rw [sup_eq_half_smul_add_add_abs_sub' ℝ]
   refine'
@@ -151,7 +151,7 @@ theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
   exact_mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.sup_mem_subalgebra_closure ContinuousMap.sup_mem_subalgebra_closure
 
-theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
+lemma sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
     (f g : A) : (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A := by
   convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
@@ -163,7 +163,7 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
 open scoped Topology
 
 -- Here's the fun part of Stone-Weierstrass!
-theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
+lemma sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     (inf_mem : ∀ (f) (_ : f ∈ L) (g) (_ : g ∈ L), f ⊓ g ∈ L)
     (sup_mem : ∀ (f) (_ : f ∈ L) (g) (_ : g ∈ L), f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
     closure L = ⊤ := by
@@ -267,7 +267,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
 that a subalgebra `A` of `C(X, ℝ)`, where `X` is a compact topological space,
 is dense if it separates points.
 -/
-theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
+lemma subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
     (w : A.SeparatesPoints) : A.topologicalClosure = ⊤ := by
   -- The closure of `A` is closed under taking `sup` and `inf`,
   -- and separates points strongly (since `A` does),
@@ -289,7 +289,7 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
 If `A` is a subalgebra of `C(X, ℝ)` which separates points (and `X` is compact),
 every real-valued continuous function on `X` is a uniform limit of elements of `A`.
 -/
-theorem continuousMap_mem_subalgebra_closure_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
+lemma continuousMap_mem_subalgebra_closure_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
     (w : A.SeparatesPoints) (f : C(X, ℝ)) : f ∈ A.topologicalClosure := by
   rw [subalgebra_topologicalClosure_eq_top_of_separatesPoints A w]
   simp
@@ -301,7 +301,7 @@ for those who like their epsilons.
 If `A` is a subalgebra of `C(X, ℝ)` which separates points (and `X` is compact),
 every real-valued continuous function on `X` is within any `ε > 0` of some element of `A`.
 -/
-theorem exists_mem_subalgebra_near_continuousMap_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
+lemma exists_mem_subalgebra_near_continuousMap_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
     (w : A.SeparatesPoints) (f : C(X, ℝ)) (ε : ℝ) (pos : 0 < ε) :
     ∃ g : A, ‖(g : C(X, ℝ)) - f‖ < ε := by
   have w :=
@@ -318,7 +318,7 @@ for those who like their epsilons and don't like bundled continuous functions.
 If `A` is a subalgebra of `C(X, ℝ)` which separates points (and `X` is compact),
 every real-valued continuous function on `X` is within any `ε > 0` of some element of `A`.
 -/
-theorem exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
+lemma exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
     (w : A.SeparatesPoints) (f : X → ℝ) (c : Continuous f) (ε : ℝ) (pos : 0 < ε) :
     ∃ g : A, ∀ x, ‖(g : X → ℝ) x - f x‖ < ε := by
   obtain ⟨g, b⟩ := exists_mem_subalgebra_near_continuousMap_of_separatesPoints A w ⟨f, c⟩ ε pos
@@ -430,7 +430,7 @@ open scoped Polynomial
 See `polynomialFunctions_closure_eq_top` for the special case `s = Set.Icc a b` which does not use
 the full Stone-Weierstrass theorem. Of course, that version could be used to prove this one as
 well. -/
-theorem polynomialFunctions.topologicalClosure (s : Set ℝ)
+lemma polynomialFunctions.topologicalClosure (s : Set ℝ)
     [CompactSpace s] : (polynomialFunctions s).topologicalClosure = ⊤ :=
   ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (polynomialFunctions_separatesPoints s)

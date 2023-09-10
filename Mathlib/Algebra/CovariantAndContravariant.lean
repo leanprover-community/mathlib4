@@ -133,11 +133,11 @@ section flip
 
 variable {M N μ r}
 
-theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
+lemma Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
   fun a _ _ hbc ↦ h a hbc
 #align covariant.flip Covariant.flip
 
-theorem Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) :=
+lemma Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) :=
   fun a _ _ hbc ↦ h a hbc
 #align contravariant.flip Contravariant.flip
 
@@ -147,7 +147,7 @@ section Covariant
 
 variable {M N μ r} [CovariantClass M N μ r]
 
-theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) :=
+lemma act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) :=
   CovariantClass.elim _ ab
 #align act_rel_act_of_rel act_rel_act_of_rel
 
@@ -190,11 +190,11 @@ section Trans
 variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
-theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
+lemma act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
   _root_.trans (act_rel_act_of_rel m ab) rl
 #align act_rel_of_rel_of_act_rel act_rel_of_rel_of_act_rel
 
-theorem rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
+lemma rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
   _root_.trans rr (act_rel_act_of_rel _ ab)
 #align rel_act_of_rel_of_rel_act rel_act_of_rel_of_rel_act
 
@@ -208,7 +208,7 @@ section MEqN
 variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
   [i' : CovariantClass N N (swap mu) r] {a b c d : N}
 
-theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
+lemma act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
   _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
 #align act_rel_act_of_rel_of_rel act_rel_act_of_rel_of_rel
 
@@ -218,7 +218,7 @@ section Contravariant
 
 variable {M N μ r} [ContravariantClass M N μ r]
 
-theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b :=
+lemma rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b :=
   ContravariantClass.elim _ ab
 #align rel_of_act_rel_act rel_of_act_rel_act
 
@@ -227,12 +227,12 @@ section Trans
 variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
-theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
+lemma act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
     r (μ m a) c :=
   _root_.trans ab (rel_of_act_rel_act m rl)
 #align act_rel_of_act_rel_of_rel_act_rel act_rel_of_act_rel_of_rel_act_rel
 
-theorem rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
+lemma rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
     r a (μ m c) :=
   _root_.trans (rel_of_act_rel_act m ab) rr
 #align rel_act_of_act_rel_act_of_rel_act rel_act_of_act_rel_act_of_rel_act

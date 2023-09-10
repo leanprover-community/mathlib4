@@ -55,14 +55,14 @@ section IsDomain
 
 variable [IsDomain R]
 
-theorem _root_.isRoot_of_unity_iff (h : 0 < n) (R : Type*) [CommRing R] [IsDomain R] {ζ : R} :
+lemma _root_.isRoot_of_unity_iff (h : 0 < n) (R : Type*) [CommRing R] [IsDomain R] {ζ : R} :
     ζ ^ n = 1 ↔ ∃ i ∈ n.divisors, (cyclotomic i R).IsRoot ζ := by
   rw [← mem_nthRoots h, nthRoots, mem_roots <| X_pow_sub_C_ne_zero h _, C_1, ←
       prod_cyclotomic_eq_X_pow_sub_one h, isRoot_prod]
 #align is_root_of_unity_iff isRoot_of_unity_iff
 
 /-- Any `n`-th primitive root of unity is a root of `cyclotomic n R`.-/
-theorem _root_.IsPrimitiveRoot.isRoot_cyclotomic (hpos : 0 < n) {μ : R} (h : IsPrimitiveRoot μ n) :
+lemma _root_.IsPrimitiveRoot.isRoot_cyclotomic (hpos : 0 < n) {μ : R} (h : IsPrimitiveRoot μ n) :
     IsRoot (cyclotomic n R) μ := by
   rw [← mem_roots (cyclotomic_ne_zero n R), cyclotomic_eq_prod_X_sub_primitiveRoots h,
     roots_prod_X_sub_C, ← Finset.mem_def]

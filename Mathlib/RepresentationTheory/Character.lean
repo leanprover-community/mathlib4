@@ -44,23 +44,23 @@ def character (V : FdRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
 #align fdRep.character FdRep.character
 
-theorem char_mul_comm (V : FdRep k G) (g : G) (h : G) : V.character (h * g) = V.character (g * h) :=
+lemma char_mul_comm (V : FdRep k G) (g : G) (h : G) : V.character (h * g) = V.character (g * h) :=
   by simp only [trace_mul_comm, character, map_mul]
 #align fdRep.char_mul_comm FdRep.char_mul_comm
 
 @[simp]
-theorem char_one (V : FdRep k G) : V.character 1 = FiniteDimensional.finrank k V := by
+lemma char_one (V : FdRep k G) : V.character 1 = FiniteDimensional.finrank k V := by
   simp only [character, map_one, trace_one]
 #align fdRep.char_one FdRep.char_one
 
 /-- The character is multiplicative under the tensor product. -/
-theorem char_tensor (V W : FdRep k G) : (V ⊗ W).character = V.character * W.character := by
+lemma char_tensor (V W : FdRep k G) : (V ⊗ W).character = V.character * W.character := by
   ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
 #align fdRep.char_tensor FdRep.char_tensor
 
 -- Porting note: adding variant of `char_tensor` to make the simp-set confluent
 @[simp]
-theorem char_tensor' (V W : FdRep k G) :
+lemma char_tensor' (V W : FdRep k G) :
   character (Action.FunctorCategoryEquivalence.inverse.obj
     (Action.FunctorCategoryEquivalence.functor.obj V ⊗
      Action.FunctorCategoryEquivalence.functor.obj W)) = V.character * W.character := by
@@ -79,24 +79,24 @@ variable {G : Type u} [Group G]
 
 /-- The character of a representation is constant on conjugacy classes. -/
 @[simp]
-theorem char_conj (V : FdRep k G) (g : G) (h : G) : V.character (h * g * h⁻¹) = V.character g := by
+lemma char_conj (V : FdRep k G) (g : G) (h : G) : V.character (h * g * h⁻¹) = V.character g := by
   rw [char_mul_comm, inv_mul_cancel_left]
 #align fdRep.char_conj FdRep.char_conj
 
 @[simp]
-theorem char_dual (V : FdRep k G) (g : G) : (of (dual V.ρ)).character g = V.character g⁻¹ :=
+lemma char_dual (V : FdRep k G) (g : G) : (of (dual V.ρ)).character g = V.character g⁻¹ :=
   trace_transpose' (V.ρ g⁻¹)
 #align fdRep.char_dual FdRep.char_dual
 
 @[simp]
-theorem char_linHom (V W : FdRep k G) (g : G) :
+lemma char_linHom (V W : FdRep k G) (g : G) :
     (of (linHom V.ρ W.ρ)).character g = V.character g⁻¹ * W.character g := by
   rw [← char_iso (dualTensorIsoLinHom _ _), char_tensor, Pi.mul_apply, char_dual]
 #align fdRep.char_lin_hom FdRep.char_linHom
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
-theorem average_char_eq_finrank_invariants (V : FdRep k G) :
+lemma average_char_eq_finrank_invariants (V : FdRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
   erw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
   simp [character, GroupAlgebra.average, _root_.map_sum]
@@ -114,7 +114,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
-theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
+lemma char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
       if Nonempty (V ≅ W) then ↑1 else ↑0 := by
   -- First, we can rewrite the summand `V.character g * W.character g⁻¹` as the character

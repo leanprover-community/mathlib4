@@ -83,7 +83,7 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
   f
 #align algebraic_geometry.AffineScheme.of_hom AlgebraicGeometry.AffineScheme.ofHom
 
-theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
+lemma mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩, fun h => @mem_essImage_of_unit_isIso _ _ _ _ _ _ X h.1⟩
 #align algebraic_geometry.mem_Spec_ess_image AlgebraicGeometry.mem_Spec_essImage
 
@@ -182,7 +182,7 @@ lemma rangeIsAffineOpenOfOpenImmersion {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
   exact Subtype.range_val.symm
 #align algebraic_geometry.range_is_affine_open_of_open_immersion AlgebraicGeometry.rangeIsAffineOpenOfOpenImmersion
 
-theorem topIsAffineOpen (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : Opens X) := by
+lemma topIsAffineOpen (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : Opens X) := by
   convert rangeIsAffineOpenOfOpenImmersion (𝟙 X)
   ext1
   exact Set.range_id.symm
@@ -198,7 +198,7 @@ instance Scheme.affineBasisCoverIsAffine (X : Scheme) (i : X.affineBasisCover.J)
   AlgebraicGeometry.SpecIsAffine _
 #align algebraic_geometry.Scheme.affine_basis_cover_is_affine AlgebraicGeometry.Scheme.affineBasisCoverIsAffine
 
-theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
+lemma isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rw [Opens.isBasis_iff_nbhd]
   rintro U x (hU : x ∈ (U : Set X))
   obtain ⟨S, hS, hxS, hSU⟩ := X.affineBasisCover_is_basis.exists_subset_of_mem_open hU U.isOpen
@@ -394,7 +394,7 @@ lemma IsAffineOpen.mapRestrictBasicOpen {X : Scheme} (r : X.presheaf.obj (op ⊤
   exact hU.basicOpenIsAffine _
 #align algebraic_geometry.is_affine_open.map_restrict_basic_open AlgebraicGeometry.IsAffineOpen.mapRestrictBasicOpen
 
-theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
+lemma Scheme.map_PrimeSpectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
     (f : Scheme.Γ.obj (op X)) :
     (Opens.map X.isoSpec.hom.1.base).obj (PrimeSpectrum.basicOpen f) = X.basicOpen f := by
   rw [← basicOpen_eq_of_affine]
@@ -416,7 +416,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
     erw [IsIso.inv_hom_id_apply, Scheme.basicOpen_res_eq]
 #align algebraic_geometry.Scheme.map_prime_spectrum_basic_open_of_affine AlgebraicGeometry.Scheme.map_PrimeSpectrum_basicOpen_of_affine
 
-theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
+lemma isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : X.presheaf.obj (op ⊤) → Opens X)) := by
   delta Opens.IsBasis
   convert PrimeSpectrum.isBasis_basic_opens.inducing

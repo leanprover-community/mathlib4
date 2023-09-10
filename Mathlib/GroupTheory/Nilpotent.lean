@@ -101,7 +101,7 @@ def upperCentralSeriesStep : Subgroup G where
     exact Subgroup.Normal.mem_comm inferInstance hx
 #align upper_central_series_step upperCentralSeriesStep
 
-theorem mem_upperCentralSeriesStep (x : G) :
+lemma mem_upperCentralSeriesStep (x : G) :
     x ∈ upperCentralSeriesStep H ↔ ∀ y, x * y * x⁻¹ * y⁻¹ ∈ H := Iff.rfl
 #align mem_upper_central_series_step mem_upperCentralSeriesStep
 
@@ -157,7 +157,7 @@ lemma upperCentralSeries_one : upperCentralSeries G 1 = center G := by
 
 /-- The `n+1`st term of the upper central series `H i` has underlying set equal to the `x` such
 that `⁅x,G⁆ ⊆ H n`-/
-theorem mem_upperCentralSeries_succ_iff (n : ℕ) (x : G) :
+lemma mem_upperCentralSeries_succ_iff (n : ℕ) (x : G) :
     x ∈ upperCentralSeries G (n + 1) ↔ ∀ y : G, x * y * x⁻¹ * y⁻¹ ∈ upperCentralSeries G n :=
   Iff.rfl
 #align mem_upper_central_series_succ_iff mem_upperCentralSeries_succ_iff
@@ -190,7 +190,7 @@ def IsDescendingCentralSeries (H : ℕ → Subgroup G) :=
 #align is_descending_central_series IsDescendingCentralSeries
 
 /-- Any ascending central series for a group is bounded above by the upper central series. -/
-theorem ascending_central_series_le_upper (H : ℕ → Subgroup G) (hH : IsAscendingCentralSeries H) :
+lemma ascending_central_series_le_upper (H : ℕ → Subgroup G) (hH : IsAscendingCentralSeries H) :
     ∀ n : ℕ, H n ≤ upperCentralSeries G n
   | 0 => hH.1.symm ▸ le_refl ⊥
   | n + 1 => by
@@ -292,13 +292,13 @@ lemma lowerCentralSeries_zero : lowerCentralSeries G 0 = ⊤ := rfl
 lemma lowerCentralSeries_one : lowerCentralSeries G 1 = commutator G := rfl
 #align lower_central_series_one lowerCentralSeries_one
 
-theorem mem_lowerCentralSeries_succ_iff (n : ℕ) (q : G) :
+lemma mem_lowerCentralSeries_succ_iff (n : ℕ) (q : G) :
     q ∈ lowerCentralSeries G (n + 1) ↔
     q ∈ closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), p * q * p⁻¹ * q⁻¹ = x }
   := Iff.rfl
 #align mem_lower_central_series_succ_iff mem_lowerCentralSeries_succ_iff
 
-theorem lowerCentralSeries_succ (n : ℕ) :
+lemma lowerCentralSeries_succ (n : ℕ) :
     lowerCentralSeries G (n + 1) =
       closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), p * q * p⁻¹ * q⁻¹ = x } :=
   rfl
@@ -329,7 +329,7 @@ lemma lowerCentralSeries_isDescendingCentralSeries :
 #align lower_central_series_is_descending_central_series lowerCentralSeries_isDescendingCentralSeries
 
 /-- Any descending central series for a group is bounded below by the lower central series. -/
-theorem descending_central_series_ge_lower (H : ℕ → Subgroup G) (hH : IsDescendingCentralSeries H) :
+lemma descending_central_series_ge_lower (H : ℕ → Subgroup G) (hH : IsDescendingCentralSeries H) :
     ∀ n : ℕ, lowerCentralSeries G n ≤ H n
   | 0 => hH.1.symm ▸ le_refl ⊤
   | n + 1 => commutator_le.mpr fun x hx q _ =>
@@ -445,7 +445,7 @@ lemma lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
 
 end Classical
 
-theorem lowerCentralSeries_map_subtype_le (H : Subgroup G) (n : ℕ) :
+lemma lowerCentralSeries_map_subtype_le (H : Subgroup G) (n : ℕ) :
     (lowerCentralSeries H n).map H.subtype ≤ lowerCentralSeries G n := by
   induction' n with d hd
   · simp
@@ -466,7 +466,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
 #align subgroup.is_nilpotent Subgroup.isNilpotent
 
 /-- The nilpotency class of a subgroup is less or equal to the nilpotency class of the group -/
-theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
+lemma Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
     Group.nilpotencyClass H ≤ Group.nilpotencyClass G := by
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   --- Porting note : Lean needs to be told that predicates are decidable
@@ -580,7 +580,7 @@ instance nilpotent_quotient_of_nilpotent (H : Subgroup G) [H.Normal] [_h : IsNil
 #align nilpotent_quotient_of_nilpotent nilpotent_quotient_of_nilpotent
 
 /-- The nilpotency class of a quotient of `G` is less or equal the nilpotency class of `G` -/
-theorem nilpotencyClass_quotient_le (H : Subgroup G) [H.Normal] [_h : IsNilpotent G] :
+lemma nilpotencyClass_quotient_le (H : Subgroup G) [H.Normal] [_h : IsNilpotent G] :
     Group.nilpotencyClass (G ⧸ H) ≤ Group.nilpotencyClass G :=
   nilpotencyClass_le_of_surjective (QuotientGroup.mk' H) QuotientGroup.mk_surjective
 #align nilpotency_class_quotient_le nilpotencyClass_quotient_le
@@ -589,7 +589,7 @@ theorem nilpotencyClass_quotient_le (H : Subgroup G) [H.Normal] [_h : IsNilpoten
 private lemma comap_center_subst {H₁ H₂ : Subgroup G} [Normal H₁] [Normal H₂] (h : H₁ = H₂) :
     comap (mk' H₁) (center (G ⧸ H₁)) = comap (mk' H₂) (center (G ⧸ H₂)) := by subst h; rfl
 
-theorem comap_upperCentralSeries_quotient_center (n : ℕ) :
+lemma comap_upperCentralSeries_quotient_center (n : ℕ) :
     comap (mk' (center G)) (upperCentralSeries (G ⧸ center G) n) = upperCentralSeries G n.succ := by
   induction' n with n ih
   · simp only [Nat.zero_eq, upperCentralSeries_zero, MonoidHom.comap_bot, ker_mk',
@@ -649,7 +649,7 @@ lemma nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontrivi
 #align nilpotency_class_eq_quotient_center_plus_one nilpotencyClass_eq_quotient_center_plus_one
 
 /-- If the quotient by `center G` is nilpotent, then so is G. -/
-theorem of_quotient_center_nilpotent (h : IsNilpotent (G ⧸ center G)) : IsNilpotent G := by
+lemma of_quotient_center_nilpotent (h : IsNilpotent (G ⧸ center G)) : IsNilpotent G := by
   obtain ⟨n, hn⟩ := h.nilpotent
   use n.succ
   simp [← comap_upperCentralSeries_quotient_center, hn]
@@ -672,7 +672,7 @@ lemma nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Prop
     exact hstep _ (ih _ hn)
 #align nilpotent_center_quotient_ind nilpotent_center_quotient_ind
 
-theorem derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowerCentralSeries G n := by
+lemma derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowerCentralSeries G n := by
   induction' n with i ih
   · simp
   · apply commutator_mono ih
@@ -705,7 +705,7 @@ section Prod
 
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂]
 
-theorem lowerCentralSeries_prod (n : ℕ) :
+lemma lowerCentralSeries_prod (n : ℕ) :
     lowerCentralSeries (G₁ × G₂) n = (lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n) := by
   induction' n with n ih
   · simp
@@ -745,7 +745,7 @@ section BoundedPi
 -- First the case of infinite products with bounded nilpotency class
 variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 
-theorem lowerCentralSeries_pi_le (n : ℕ) :
+lemma lowerCentralSeries_pi_le (n : ℕ) :
     lowerCentralSeries (∀ i, Gs i) n ≤ Subgroup.pi Set.univ
       fun i => lowerCentralSeries (Gs i) n := by
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f

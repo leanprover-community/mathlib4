@@ -215,12 +215,12 @@ lemma arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
 #align category_theory.subobject.arrow_congr CategoryTheory.Subobject.arrow_congr
 
 @[simp]
-theorem representative_coe (Y : Subobject X) : (representative.obj Y : C) = (Y : C) :=
+lemma representative_coe (Y : Subobject X) : (representative.obj Y : C) = (Y : C) :=
   rfl
 #align category_theory.subobject.representative_coe CategoryTheory.Subobject.representative_coe
 
 @[simp]
-theorem representative_arrow (Y : Subobject X) : (representative.obj Y).arrow = Y.arrow :=
+lemma representative_arrow (Y : Subobject X) : (representative.obj Y).arrow = Y.arrow :=
   rfl
 #align category_theory.subobject.representative_arrow CategoryTheory.Subobject.representative_arrow
 
@@ -256,7 +256,7 @@ lemma mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ B}
 #align category_theory.subobject.mk_le_mk_of_comm CategoryTheory.Subobject.mk_le_mk_of_comm
 
 @[simp]
-theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
+lemma mk_arrow (P : Subobject X) : mk P.arrow = P :=
   Quotient.inductionOn' P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
@@ -504,7 +504,7 @@ def lower {Y : D} (F : MonoOver X ⥤ MonoOver Y) : Subobject X ⥤ Subobject Y 
 /-- Isomorphic functors become equal when lowered to `Subobject`.
 (It's not as evil as usual to talk about equality between functors
 because the categories are thin and skeletal.) -/
-theorem lower_iso (F₁ F₂ : MonoOver X ⥤ MonoOver Y) (h : F₁ ≅ F₂) : lower F₁ = lower F₂ :=
+lemma lower_iso (F₁ F₂ : MonoOver X ⥤ MonoOver Y) (h : F₁ ≅ F₂) : lower F₁ = lower F₂ :=
   ThinSkeleton.map_iso_eq h
 #align category_theory.subobject.lower_iso CategoryTheory.Subobject.lower_iso
 
@@ -514,7 +514,7 @@ def lower₂ (F : MonoOver X ⥤ MonoOver Y ⥤ MonoOver Z) : Subobject X ⥤ Su
 #align category_theory.subobject.lower₂ CategoryTheory.Subobject.lower₂
 
 @[simp]
-theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
+lemma lower_comm (F : MonoOver Y ⥤ MonoOver X) :
     toThinSkeleton _ ⋙ lower F = F ⋙ toThinSkeleton _ :=
   rfl
 #align category_theory.subobject.lower_comm CategoryTheory.Subobject.lower_comm
@@ -554,12 +554,12 @@ def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
 #align category_theory.subobject.pullback CategoryTheory.Subobject.pullback
 
-theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
+lemma pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
   induction' x using Quotient.inductionOn' with f
   exact Quotient.sound ⟨MonoOver.pullbackId.app f⟩
 #align category_theory.subobject.pullback_id CategoryTheory.Subobject.pullback_id
 
-theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
+lemma pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
@@ -578,12 +578,12 @@ def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y :=
   lower (MonoOver.map f)
 #align category_theory.subobject.map CategoryTheory.Subobject.map
 
-theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
+lemma map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
   induction' x using Quotient.inductionOn' with f
   exact Quotient.sound ⟨MonoOver.mapId.app f⟩
 #align category_theory.subobject.map_id CategoryTheory.Subobject.map_id
 
-theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
+lemma map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
     (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.mapComp _ _).app t⟩
@@ -618,13 +618,13 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
 #align category_theory.subobject.map_iso_to_order_iso CategoryTheory.Subobject.mapIsoToOrderIso
 
 @[simp]
-theorem mapIsoToOrderIso_apply (e : X ≅ Y) (P : Subobject X) :
+lemma mapIsoToOrderIso_apply (e : X ≅ Y) (P : Subobject X) :
     mapIsoToOrderIso e P = (map e.hom).obj P :=
   rfl
 #align category_theory.subobject.map_iso_to_order_iso_apply CategoryTheory.Subobject.mapIsoToOrderIso_apply
 
 @[simp]
-theorem mapIsoToOrderIso_symm_apply (e : X ≅ Y) (Q : Subobject Y) :
+lemma mapIsoToOrderIso_symm_apply (e : X ≅ Y) (Q : Subobject Y) :
     (mapIsoToOrderIso e).symm Q = (map e.inv).obj Q :=
   rfl
 #align category_theory.subobject.map_iso_to_order_iso_symm_apply CategoryTheory.Subobject.mapIsoToOrderIso_symm_apply
@@ -683,7 +683,7 @@ def «exists» (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
 
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
 -/
-theorem exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
+lemma exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
   lower_iso _ _ (MonoOver.existsIsoMap f)
 #align category_theory.subobject.exists_iso_map CategoryTheory.Subobject.exists_iso_map
 

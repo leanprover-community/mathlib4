@@ -83,9 +83,9 @@ variable {R : Type*}
 section semiring
 variable [Semiring R]
 
-theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
+lemma natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
 
-theorem natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
+lemma natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
 lemma natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 lemma natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
@@ -157,7 +157,7 @@ end semiring
 section ring
 variable [Ring R]
 
-theorem natDegree_int_cast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
+lemma natDegree_int_cast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
 
 lemma coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub

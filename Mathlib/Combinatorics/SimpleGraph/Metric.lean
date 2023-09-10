@@ -57,7 +57,7 @@ protected lemma Reachable.exists_walk_of_dist {u v : V} (hr : G.Reachable u v) :
   Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
 #align simple_graph.reachable.exists_walk_of_dist SimpleGraph.Reachable.exists_walk_of_dist
 
-protected theorem Connected.exists_walk_of_dist (hconn : G.Connected) (u v : V) :
+protected lemma Connected.exists_walk_of_dist (hconn : G.Connected) (u v : V) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
   (hconn u v).exists_walk_of_dist
 #align simple_graph.connected.exists_walk_of_dist SimpleGraph.Connected.exists_walk_of_dist
@@ -83,7 +83,7 @@ protected lemma Reachable.pos_dist_of_ne {u v : V} (h : G.Reachable u v) (hne : 
   Nat.pos_of_ne_zero (by simp [h, hne])
 #align simple_graph.reachable.pos_dist_of_ne SimpleGraph.Reachable.pos_dist_of_ne
 
-protected theorem Connected.dist_eq_zero_iff (hconn : G.Connected) {u v : V} :
+protected lemma Connected.dist_eq_zero_iff (hconn : G.Connected) {u v : V} :
     G.dist u v = 0 ↔ u = v := by simp [hconn u v]
 #align simple_graph.connected.dist_eq_zero_iff SimpleGraph.Connected.dist_eq_zero_iff
 
@@ -102,7 +102,7 @@ lemma nonempty_of_pos_dist {u v : V} (h : 0 < G.dist u v) :
     Nat.nonempty_of_pos_sInf h
 #align simple_graph.nonempty_of_pos_dist SimpleGraph.nonempty_of_pos_dist
 
-protected theorem Connected.dist_triangle (hconn : G.Connected) {u v w : V} :
+protected lemma Connected.dist_triangle (hconn : G.Connected) {u v w : V} :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   obtain ⟨p, hp⟩ := hconn.exists_walk_of_dist u v
   obtain ⟨q, hq⟩ := hconn.exists_walk_of_dist v w

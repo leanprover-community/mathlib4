@@ -39,14 +39,14 @@ lemma aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   exact ⟨fun _ => f default, measurable_const, rfl⟩
 #align ae_measurable_zero_measure aemeasurable_zero_measure
 
-theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
+lemma aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 #align probability_theory.ae_measurable_id'' aemeasurable_id''
 
 namespace AEMeasurable
 
-theorem mono_measure (h : AEMeasurable f μ) (h' : ν ≤ μ) : AEMeasurable f ν :=
+lemma mono_measure (h : AEMeasurable f μ) (h' : ν ≤ μ) : AEMeasurable f ν :=
   ⟨h.mk f, h.measurable_mk, Eventually.filter_mono (ae_mono h') h.ae_eq_mk⟩
 #align ae_measurable.mono_measure AEMeasurable.mono_measure
 
@@ -55,7 +55,7 @@ lemma mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
   ht.mono_measure (restrict_mono h le_rfl)
 #align ae_measurable.mono_set AEMeasurable.mono_set
 
-protected theorem mono' (h : AEMeasurable f μ) (h' : ν ≪ μ) : AEMeasurable f ν :=
+protected lemma mono' (h : AEMeasurable f μ) (h' : ν ≪ μ) : AEMeasurable f ν :=
   ⟨h.mk f, h.measurable_mk, h' h.ae_eq_mk⟩
 #align ae_measurable.mono' AEMeasurable.mono'
 
@@ -193,7 +193,7 @@ lemma prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEM
     EventuallyEq.prod_mk hf.ae_eq_mk hg.ae_eq_mk⟩
 #align ae_measurable.prod_mk AEMeasurable.prod_mk
 
-theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
+lemma exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
   let s : Set α := toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ
   let g : α → β := piecewise s (fun _ => h₀.some) (H.mk f)
@@ -224,7 +224,7 @@ lemma exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpa
   exact ⟨G, hG_meas, fun x => hG_mem (mem_range_self x), hG_ae_eq⟩
 #align ae_measurable.exists_measurable_nonneg AEMeasurable.exists_measurable_nonneg
 
-theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s} :
+lemma subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s} :
     AEMeasurable (codRestrict f s hfs) μ := by
   nontriviality α; inhabit α
   obtain ⟨g, g_meas, hg, fg⟩ : ∃ g : α → β, Measurable g ∧ range g ⊆ s ∧ f =ᵐ[μ] g :=
@@ -234,14 +234,14 @@ theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s}
   simpa [Subtype.ext_iff]
 #align ae_measurable.subtype_mk AEMeasurable.subtype_mk
 
-protected theorem nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :=
+protected lemma nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :=
   let ⟨_g, hgm, hg⟩ := h
   hgm.nullMeasurable.congr hg.symm
 #align ae_measurable.null_measurable AEMeasurable.nullMeasurable
 
 end AEMeasurable
 
-theorem aemeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable f μ := by
+lemma aemeasurable_const' (h : ∀ᵐ (x) (y) ∂μ, f x = f y) : AEMeasurable f μ := by
   rcases eq_or_ne μ 0 with (rfl | hμ)
   · exact aemeasurable_zero_measure
   · haveI := ae_neBot.2 hμ
@@ -303,14 +303,14 @@ lemma aemeasurable_restrict_of_measurable_subtype {s : Set α} (hs : MeasurableS
   (aemeasurable_restrict_iff_comap_subtype hs).2 hf.aemeasurable
 #align ae_measurable_restrict_of_measurable_subtype aemeasurable_restrict_of_measurable_subtype
 
-theorem aemeasurable_map_equiv_iff (e : α ≃ᵐ β) {f : β → γ} :
+lemma aemeasurable_map_equiv_iff (e : α ≃ᵐ β) {f : β → γ} :
     AEMeasurable f (μ.map e) ↔ AEMeasurable (f ∘ e) μ :=
   e.measurableEmbedding.aemeasurable_map_iff
 #align ae_measurable_map_equiv_iff aemeasurable_map_equiv_iff
 
 end
 
-theorem AEMeasurable.restrict (hfm : AEMeasurable f μ) {s} : AEMeasurable f (μ.restrict s) :=
+lemma AEMeasurable.restrict (hfm : AEMeasurable f μ) {s} : AEMeasurable f (μ.restrict s) :=
   ⟨AEMeasurable.mk f hfm, hfm.measurable_mk, ae_restrict_of_ae hfm.ae_eq_mk⟩
 #align ae_measurable.restrict AEMeasurable.restrict
 
@@ -364,12 +364,12 @@ lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β
   · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
 
 @[measurability]
-theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
+lemma AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff hs).mpr hfm.restrict
 #align ae_measurable.indicator AEMeasurable.indicator
 
-theorem AEMeasurable.indicator₀ (hfm : AEMeasurable f μ) {s} (hs : NullMeasurableSet s μ) :
+lemma AEMeasurable.indicator₀ (hfm : AEMeasurable f μ) {s} (hs : NullMeasurableSet s μ) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff₀ hs).mpr hfm.restrict
 

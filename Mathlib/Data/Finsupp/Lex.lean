@@ -44,7 +44,7 @@ lemma lex_def {r : α → α → Prop} {s : N → N → Prop} {a b : α →₀ N
   Iff.rfl
 #align finsupp.lex_def Finsupp.lex_def
 
-theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → Prop) :
+lemma lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → Prop) :
     Finsupp.Lex r s = InvImage (DFinsupp.Lex r fun _ ↦ s) toDFinsupp :=
   rfl
 #align finsupp.lex_eq_inv_image_dfinsupp_lex Finsupp.lex_eq_invImage_dfinsupp_lex
@@ -89,7 +89,7 @@ lemma toLex_monotone : Monotone (@toLex (α →₀ N)) :=
   fun a b h ↦ DFinsupp.toLex_monotone (id h : ∀ i, ofLex (toDFinsupp a) i ≤ ofLex (toDFinsupp b) i)
 #align finsupp.to_lex_monotone Finsupp.toLex_monotone
 
-theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
+lemma lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
 #align finsupp.lt_of_forall_lt_of_lt Finsupp.lt_of_forall_lt_of_lt

@@ -172,23 +172,23 @@ lemma le_rfl : a ≤ a :=
 #align le_rfl le_rfl
 
 @[simp]
-theorem lt_self_iff_false (x : α) : x < x ↔ False :=
+lemma lt_self_iff_false (x : α) : x < x ↔ False :=
   ⟨lt_irrefl x, False.elim⟩
 #align lt_self_iff_false lt_self_iff_false
 
-theorem le_of_le_of_eq (hab : a ≤ b) (hbc : b = c) : a ≤ c :=
+lemma le_of_le_of_eq (hab : a ≤ b) (hbc : b = c) : a ≤ c :=
   hab.trans hbc.le
 #align le_of_le_of_eq le_of_le_of_eq
 
-theorem le_of_eq_of_le (hab : a = b) (hbc : b ≤ c) : a ≤ c :=
+lemma le_of_eq_of_le (hab : a = b) (hbc : b ≤ c) : a ≤ c :=
   hab.le.trans hbc
 #align le_of_eq_of_le le_of_eq_of_le
 
-theorem lt_of_lt_of_eq (hab : a < b) (hbc : b = c) : a < c :=
+lemma lt_of_lt_of_eq (hab : a < b) (hbc : b = c) : a < c :=
   hab.trans_le hbc.le
 #align lt_of_lt_of_eq lt_of_lt_of_eq
 
-theorem lt_of_eq_of_lt (hab : a = b) (hbc : b < c) : a < c :=
+lemma lt_of_eq_of_lt (hab : a = b) (hbc : b < c) : a < c :=
   hab.le.trans_lt hbc
 #align lt_of_eq_of_lt lt_of_eq_of_lt
 
@@ -236,14 +236,14 @@ variable [Preorder α] {x y z : α}
 
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
 almost exclusively in mathlib. -/
-protected theorem ge (h : x = y) : y ≤ x :=
+protected lemma ge (h : x = y) : y ≤ x :=
   h.symm.le
 #align eq.ge Eq.ge
 
-theorem not_lt (h : x = y) : ¬x < y := fun h' ↦ h'.ne h
+lemma not_lt (h : x = y) : ¬x < y := fun h' ↦ h'.ne h
 #align eq.not_lt Eq.not_lt
 
-theorem not_gt (h : x = y) : ¬y < x :=
+lemma not_gt (h : x = y) : ¬y < x :=
   h.symm.not_lt
 #align eq.not_gt Eq.not_gt
 
@@ -273,27 +273,27 @@ section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
-theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
+lemma lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 #align has_le.le.lt_iff_ne LE.le.lt_iff_ne
 
-theorem gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
+lemma gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
   ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
 #align has_le.le.gt_iff_ne LE.le.gt_iff_ne
 
-theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
+lemma not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 #align has_le.le.not_lt_iff_eq LE.le.not_lt_iff_eq
 
-theorem not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
+lemma not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
   h.gt_iff_ne.not_left
 #align has_le.le.not_gt_iff_eq LE.le.not_gt_iff_eq
 
-theorem le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
+lemma le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
   ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
 #align has_le.le.le_iff_eq LE.le.le_iff_eq
 
-theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
+lemma ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
   ⟨h.antisymm, Eq.ge⟩
 #align has_le.le.ge_iff_eq LE.le.ge_iff_eq
 
@@ -746,16 +746,16 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
-theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
+lemma Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
 #align order_dual.preorder.dual_dual OrderDual.Preorder.dual_dual
 
-theorem instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
+lemma instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
     OrderDual.instPartialOrder αᵒᵈ = H :=
   PartialOrder.ext fun _ _ ↦ Iff.rfl
 #align order_dual.partial_order.dual_dual OrderDual.instPartialOrder.dual_dual
 
-theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
+lemma instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
     OrderDual.instLinearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
 #align order_dual.linear_order.dual_dual OrderDual.instLinearOrder.dual_dual
@@ -844,7 +844,7 @@ local infixl:50 " ≺ " => StrongLT
 
 variable [∀ i, Preorder (π i)] {a b c : ∀ i, π i}
 
-theorem le_of_strongLT (h : a ≺ b) : a ≤ b := fun _ ↦ (h _).le
+lemma le_of_strongLT (h : a ≺ b) : a ≤ b := fun _ ↦ (h _).le
 #align le_of_strong_lt le_of_strongLT
 
 lemma lt_of_strongLT [Nonempty ι] (h : a ≺ b) : a < b := by
@@ -852,11 +852,11 @@ lemma lt_of_strongLT [Nonempty ι] (h : a ≺ b) : a < b := by
   exact Pi.lt_def.2 ⟨le_of_strongLT h, default, h _⟩
 #align lt_of_strong_lt lt_of_strongLT
 
-theorem strongLT_of_strongLT_of_le (hab : a ≺ b) (hbc : b ≤ c) : a ≺ c := fun _ ↦
+lemma strongLT_of_strongLT_of_le (hab : a ≺ b) (hbc : b ≤ c) : a ≺ c := fun _ ↦
   (hab _).trans_le <| hbc _
 #align strong_lt_of_strong_lt_of_le strongLT_of_strongLT_of_le
 
-theorem strongLT_of_le_of_strongLT (hab : a ≤ b) (hbc : b ≺ c) : a ≺ c := fun _ ↦
+lemma strongLT_of_le_of_strongLT (hab : a ≤ b) (hbc : b ≺ c) : a ≺ c := fun _ ↦
   (hab _).trans_lt <| hbc _
 #align strong_lt_of_le_of_strong_lt strongLT_of_le_of_strongLT
 
@@ -954,29 +954,29 @@ section MinMaxRec
 
 variable [LinearOrder α] {p : α → Prop} {x y : α}
 
-theorem min_rec (hx : x ≤ y → p x) (hy : y ≤ x → p y) : p (min x y) :=
+lemma min_rec (hx : x ≤ y → p x) (hy : y ≤ x → p y) : p (min x y) :=
   (le_total x y).rec (fun h ↦ (min_eq_left h).symm.subst (hx h)) fun h ↦
     (min_eq_right h).symm.subst (hy h)
 #align min_rec min_rec
 
-theorem max_rec (hx : y ≤ x → p x) (hy : x ≤ y → p y) : p (max x y) :=
+lemma max_rec (hx : y ≤ x → p x) (hy : x ≤ y → p y) : p (max x y) :=
   @min_rec αᵒᵈ _ _ _ _ hx hy
 #align max_rec max_rec
 
-theorem min_rec' (p : α → Prop) (hx : p x) (hy : p y) : p (min x y) :=
+lemma min_rec' (p : α → Prop) (hx : p x) (hy : p y) : p (min x y) :=
   min_rec (fun _ ↦ hx) fun _ ↦ hy
 #align min_rec' min_rec'
 
-theorem max_rec' (p : α → Prop) (hx : p x) (hy : p y) : p (max x y) :=
+lemma max_rec' (p : α → Prop) (hx : p x) (hy : p y) : p (max x y) :=
   max_rec (fun _ ↦ hx) fun _ ↦ hy
 #align max_rec' max_rec'
 
-theorem min_def_lt (x y : α) : min x y = if x < y then x else y := by
+lemma min_def_lt (x y : α) : min x y = if x < y then x else y := by
   rw [min_comm, min_def, ← ite_not]
   simp only [not_le]
 #align min_def_lt min_def_lt
 
-theorem max_def_lt (x y : α) : max x y = if x < y then y else x := by
+lemma max_def_lt (x y : α) : max x y = if x < y then y else x := by
   rw [max_comm, max_def, ← ite_not]
   simp only [not_le]
 #align max_def_lt max_def_lt
@@ -1027,7 +1027,7 @@ def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective
   { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
 #align partial_order.lift PartialOrder.lift
 
-theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
+lemma compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [DecidableEq α] (f : α → β) (inj : Injective f)
     [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
     compare (f a) (f b) =

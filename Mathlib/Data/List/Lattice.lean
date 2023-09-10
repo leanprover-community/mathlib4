@@ -41,7 +41,7 @@ variable {α : Type*} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 section Disjoint
 
 @[symm]
-theorem Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ => d i₁ i₂
+lemma Disjoint.symm (d : Disjoint l₁ l₂) : Disjoint l₂ l₁ := fun _ i₂ i₁ => d i₁ i₂
 #align list.disjoint.symm List.Disjoint.symm
 
 #align list.disjoint_comm List.disjoint_comm
@@ -79,11 +79,11 @@ section Union
 #align list.cons_union List.cons_unionₓ
 #align list.mem_union List.mem_union_iff
 
-theorem mem_union_left (h : a ∈ l₁) (l₂ : List α) : a ∈ l₁ ∪ l₂ :=
+lemma mem_union_left (h : a ∈ l₁) (l₂ : List α) : a ∈ l₁ ∪ l₂ :=
   mem_union_iff.2 (Or.inl h)
 #align list.mem_union_left List.mem_union_left
 
-theorem mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ :=
+lemma mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ :=
   mem_union_iff.2 (Or.inr h)
 #align list.mem_union_right List.mem_union_right
 
@@ -99,11 +99,11 @@ lemma sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ t 
         simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
 #align list.sublist_suffix_of_union List.sublist_suffix_of_union
 
-theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
+lemma suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
   (sublist_suffix_of_union l₁ l₂).imp fun _ => And.right
 #align list.suffix_union_right List.suffix_union_right
 
-theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l₂ :=
+lemma union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l₂ :=
   let ⟨_, s, e⟩ := sublist_suffix_of_union l₁ l₂
   e ▸ (append_sublist_append_right _).2 s
 #align list.union_sublist_append List.union_sublist_append
@@ -112,11 +112,11 @@ lemma forall_mem_union : (∀ x ∈ l₁ ∪ l₂, p x) ↔ (∀ x ∈ l₁, p x
   simp only [mem_union_iff, or_imp, forall_and]
 #align list.forall_mem_union List.forall_mem_union
 
-theorem forall_mem_of_forall_mem_union_left (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₁, p x :=
+lemma forall_mem_of_forall_mem_union_left (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₁, p x :=
   (forall_mem_union.1 h).1
 #align list.forall_mem_of_forall_mem_union_left List.forall_mem_of_forall_mem_union_left
 
-theorem forall_mem_of_forall_mem_union_right (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₂, p x :=
+lemma forall_mem_of_forall_mem_union_right (h : ∀ x ∈ l₁ ∪ l₂, p x) : ∀ x ∈ l₂, p x :=
   (forall_mem_union.1 h).2
 #align list.forall_mem_of_forall_mem_union_right List.forall_mem_of_forall_mem_union_right
 
@@ -128,17 +128,17 @@ end Union
 section Inter
 
 @[simp]
-theorem inter_nil (l : List α) : [] ∩ l = [] :=
+lemma inter_nil (l : List α) : [] ∩ l = [] :=
   rfl
 #align list.inter_nil List.inter_nil
 
 @[simp]
-theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
+lemma inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
   simp only [Inter.inter, List.inter, filter_cons_of_pos, h]
 #align list.inter_cons_of_mem List.inter_cons_of_mem
 
 @[simp]
-theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
+lemma inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
   simp only [Inter.inter, List.inter, filter_cons_of_neg, h]
 #align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
 
@@ -146,20 +146,20 @@ lemma mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
   mem_of_mem_filter
 #align list.mem_of_mem_inter_left List.mem_of_mem_inter_left
 
-theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simpa using of_mem_filter h
+lemma mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simpa using of_mem_filter h
 #align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
-theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
+lemma mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
   mem_filter_of_mem h₁ $ by simpa using h₂
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
 #align list.mem_inter List.mem_inter_iff
 
-theorem inter_subset_left (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₁ :=
+lemma inter_subset_left (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₁ :=
   filter_subset _
 #align list.inter_subset_left List.inter_subset_left
 
-theorem inter_subset_right (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
+lemma inter_subset_right (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
 #align list.inter_subset_right List.inter_subset_right
 
 lemma subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h =>
@@ -171,12 +171,12 @@ lemma inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ := b
   rfl
 #align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint
 
-theorem forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
+lemma forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
   BAll.imp_left (fun _ => mem_of_mem_inter_left) h
 #align list.forall_mem_inter_of_forall_left List.forall_mem_inter_of_forall_left
 
-theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p x) :
+lemma forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p x) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
   BAll.imp_left (fun _ => mem_of_mem_inter_right) h
 #align list.forall_mem_inter_of_forall_right List.forall_mem_inter_of_forall_right
@@ -194,15 +194,15 @@ end Inter
 section BagInter
 
 @[simp]
-theorem nil_bagInter (l : List α) : [].bagInter l = [] := by cases l <;> rfl
+lemma nil_bagInter (l : List α) : [].bagInter l = [] := by cases l <;> rfl
 #align list.nil_bag_inter List.nil_bagInter
 
 @[simp]
-theorem bagInter_nil (l : List α) : l.bagInter [] = [] := by cases l <;> rfl
+lemma bagInter_nil (l : List α) : l.bagInter [] = [] := by cases l <;> rfl
 #align list.bag_inter_nil List.bagInter_nil
 
 @[simp]
-theorem cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
+lemma cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
     (a :: l₁).bagInter l₂ = a :: l₁.bagInter (l₂.erase a) := by
   cases l₂
   · exact if_pos h
@@ -210,7 +210,7 @@ theorem cons_bagInter_of_pos (l₁ : List α) (h : a ∈ l₂) :
 #align list.cons_bag_inter_of_pos List.cons_bagInter_of_pos
 
 @[simp]
-theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
+lemma cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
     (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
   cases l₂; · simp only [bagInter_nil]
   simp only [erase_of_not_mem h, List.bagInter, if_neg (mt mem_of_elem_eq_true h)]

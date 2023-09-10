@@ -87,7 +87,7 @@ section Field
 
 variable {k : Type*} [Field k] [CharP k p]
 
-theorem isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUnit x := by
+lemma isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUnit x := by
   let y : kˣ := Units.mk0 (x.coeff 0) hx
   have hy : x.coeff 0 = y := rfl
   exact (mkUnit hy).isUnit
@@ -120,7 +120,7 @@ section PerfectRing
 
 variable {k : Type*} [CommRing k] [CharP k p] [PerfectRing k p]
 
-theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
+lemma exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
     ∃ (m : ℕ) (b : 𝕎 k), b.coeff 0 ≠ 0 ∧ a = (p : 𝕎 k) ^ m * b := by
   obtain ⟨m, c, hc, hcm⟩ := WittVector.verschiebung_nonzero ha
   obtain ⟨b, rfl⟩ := (frobenius_bijective p k).surjective.iterate m c
@@ -144,7 +144,7 @@ section PerfectField
 
 variable {k : Type*} [Field k] [CharP k p] [PerfectRing k p]
 
-theorem exists_eq_pow_p_mul' (a : 𝕎 k) (ha : a ≠ 0) :
+lemma exists_eq_pow_p_mul' (a : 𝕎 k) (ha : a ≠ 0) :
     ∃ (m : ℕ) (b : Units (𝕎 k)), a = (p : 𝕎 k) ^ m * b := by
   obtain ⟨m, b, h₁, h₂⟩ := exists_eq_pow_p_mul a ha
   let b₀ := Units.mk0 (b.coeff 0) h₁

@@ -55,7 +55,7 @@ namespace SubMulAction
 
 variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : SubMulAction R A) :=
+lemma algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : SubMulAction R A) :=
   ⟨r, (algebraMap_eq_smul_one r).symm⟩
 #align sub_mul_action.algebra_map_mem SubMulAction.algebraMap_mem
 
@@ -92,7 +92,7 @@ lemma le_one_toAddSubmonoid : 1 ≤ (1 : Submodule R A).toAddSubmonoid := by
   exact ⟨n, map_natCast (algebraMap R A) n⟩
 #align submodule.le_one_to_add_submonoid Submodule.le_one_toAddSubmonoid
 
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) :=
+lemma algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) :=
   LinearMap.mem_range_self _ _
 #align submodule.algebra_map_mem Submodule.algebraMap_mem
 
@@ -160,7 +160,7 @@ instance mul : Mul (Submodule R A) :=
   ⟨Submodule.map₂ <| LinearMap.mul R A⟩
 #align submodule.has_mul Submodule.mul
 
-theorem mul_mem_mul (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
+lemma mul_mem_mul (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
   apply_mem_map₂ _ hm hn
 #align submodule.mul_mem_mul Submodule.mul_mem_mul
 
@@ -168,7 +168,7 @@ lemma mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
   map₂_le
 #align submodule.mul_le Submodule.mul_le
 
-theorem mul_toAddSubmonoid (M N : Submodule R A) :
+lemma mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
   dsimp [HMul.hMul, Mul.mul]  --porting note: added `hMul`
   rw [map₂, iSup_toAddSubmonoid]
@@ -229,15 +229,15 @@ protected lemma mul_one : M * 1 = M := by
 variable {M N P Q}
 
 @[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
+lemma mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
   map₂_le_map₂ hmp hnq
 #align submodule.mul_le_mul Submodule.mul_le_mul
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
+lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
   map₂_le_map₂_left h
 #align submodule.mul_le_mul_left Submodule.mul_le_mul_left
 
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
+lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
   map₂_le_map₂_right h
 #align submodule.mul_le_mul_right Submodule.mul_le_mul_right
 
@@ -298,7 +298,7 @@ lemma comap_unop_mul :
   by simp_rw [← map_equiv_eq_comap_symm, map_op_mul]
 #align submodule.comap_unop_mul Submodule.comap_unop_mul
 
-theorem map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
+lemma map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M * N) =
       map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) N *
         map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M :=
@@ -309,7 +309,7 @@ theorem map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
       LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap, map_id, map_id, map_id]
 #align submodule.map_unop_mul Submodule.map_unop_mul
 
-theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
+lemma comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
     comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M * N) =
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) N *
         comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M :=
@@ -348,15 +348,15 @@ lemma mem_span_mul_finite_of_mem_span_mul {R A} [Semiring R] [AddCommMonoid A] [
 
 end DecidableEq
 
-theorem mul_eq_span_mul_set (s t : Submodule R A) : s * t = span R ((s : Set A) * (t : Set A)) :=
+lemma mul_eq_span_mul_set (s t : Submodule R A) : s * t = span R ((s : Set A) * (t : Set A)) :=
   map₂_eq_span_image2 _ s t
 #align submodule.mul_eq_span_mul_set Submodule.mul_eq_span_mul_set
 
-theorem iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
+lemma iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
   map₂_iSup_left _ s t
 #align submodule.supr_mul Submodule.iSup_mul
 
-theorem mul_iSup (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
+lemma mul_iSup (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
   map₂_iSup_right _ t s
 #align submodule.mul_supr Submodule.mul_iSup
 
@@ -397,12 +397,12 @@ instance idemSemiring : IdemSemiring (Submodule R A) :=
 
 variable (M)
 
-theorem span_pow (s : Set A) : ∀ n : ℕ, span R s ^ n = span R (s ^ n)
+lemma span_pow (s : Set A) : ∀ n : ℕ, span R s ^ n = span R (s ^ n)
   | 0 => by rw [pow_zero, pow_zero, one_eq_span_one_set]
   | n + 1 => by rw [pow_succ, pow_succ, span_pow s n, span_mul_span]
 #align submodule.span_pow Submodule.span_pow
 
-theorem pow_eq_span_pow_set (n : ℕ) : M ^ n = span R ((M : Set A) ^ n) := by
+lemma pow_eq_span_pow_set (n : ℕ) : M ^ n = span R ((M : Set A) ^ n) := by
   rw [← span_pow, span_eq]
 #align submodule.pow_eq_span_pow_set Submodule.pow_eq_span_pow_set
 
@@ -523,25 +523,25 @@ protected lemma map_pow {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') (
   map_pow (mapHom f) M n
 #align submodule.map_pow Submodule.map_pow
 
-theorem comap_unop_pow (n : ℕ) :
+lemma comap_unop_pow (n : ℕ) :
     comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M ^ n) =
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n :=
   (equivOpposite : Submodule R Aᵐᵒᵖ ≃+* _).symm.map_pow (op M) n
 #align submodule.comap_unop_pow Submodule.comap_unop_pow
 
-theorem comap_op_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
+lemma comap_op_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
     comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M ^ n) =
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n :=
   op_injective <| (equivOpposite : Submodule R Aᵐᵒᵖ ≃+* _).map_pow M n
 #align submodule.comap_op_pow Submodule.comap_op_pow
 
-theorem map_op_pow (n : ℕ) :
+lemma map_op_pow (n : ℕ) :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M ^ n) =
       map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n :=
   by rw [map_equiv_eq_comap_symm, map_equiv_eq_comap_symm, comap_unop_pow]
 #align submodule.map_op_pow Submodule.map_op_pow
 
-theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
+lemma map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M ^ n) =
       map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n :=
   by rw [← comap_equiv_eq_map_symm, ← comap_equiv_eq_map_symm, comap_op_pow]
@@ -588,7 +588,7 @@ variable {A : Type v} [CommSemiring A] [Algebra R A]
 
 variable {M N : Submodule R A} {m n : A}
 
-theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=
+lemma mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=
   mul_comm m n ▸ mul_mem_mul hm hn
 #align submodule.mul_mem_mul_rev Submodule.mul_mem_mul_rev
 
@@ -637,7 +637,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 
 variable {R A}
 
-theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
+lemma smul_def (s : SetSemiring A) (P : Submodule R A) :
   s • P = span R (SetSemiring.down s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
@@ -648,7 +648,7 @@ lemma smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul
 
-theorem smul_singleton (a : A) (M : Submodule R A) :
+lemma smul_singleton (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
   change span _ _ * span _ _ = _

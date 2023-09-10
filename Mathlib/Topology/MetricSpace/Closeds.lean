@@ -69,7 +69,7 @@ set_option linter.uppercaseLean3 false in
 #align emetric.continuous_infEdist_hausdorffEdist EMetric.continuous_infEdist_hausdorffEdist
 
 /-- Subsets of a given closed subset form a closed set -/
-theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
+lemma isClosed_subsets_of_isClosed (hs : IsClosed s) :
     IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
   refine' isClosed_of_closure_subset fun t ht x hx => _
   -- t : Closeds α, ht : t ∈ closure {t : Closeds α | t ⊆ s},
@@ -417,7 +417,7 @@ lemma NonemptyCompacts.dist_eq {x y : NonemptyCompacts α} :
   rfl
 #align metric.nonempty_compacts.dist_eq Metric.NonemptyCompacts.dist_eq
 
-theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
+lemma lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
   LipschitzWith.of_le_add fun s t => by
     rw [dist_comm]
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)

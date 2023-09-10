@@ -34,17 +34,17 @@ def invUnitsSub (u : Rˣ) : PowerSeries R :=
 #align power_series.inv_units_sub PowerSeries.invUnitsSub
 
 @[simp]
-theorem coeff_invUnitsSub (u : Rˣ) (n : ℕ) : coeff R n (invUnitsSub u) = 1 /ₚ u ^ (n + 1) :=
+lemma coeff_invUnitsSub (u : Rˣ) (n : ℕ) : coeff R n (invUnitsSub u) = 1 /ₚ u ^ (n + 1) :=
   coeff_mk _ _
 #align power_series.coeff_inv_units_sub PowerSeries.coeff_invUnitsSub
 
 @[simp]
-theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 1 /ₚ u := by
+lemma constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 1 /ₚ u := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invUnitsSub, zero_add, pow_one]
 #align power_series.constant_coeff_inv_units_sub PowerSeries.constantCoeff_invUnitsSub
 
 @[simp]
-theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
+lemma invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
   · simp
   · simp [n.succ_ne_zero, pow_succ]
@@ -52,11 +52,11 @@ set_option linter.uppercaseLean3 false in
 #align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
 @[simp]
-theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C R u - X) = 1 := by
+lemma invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C R u - X) = 1 := by
   simp [mul_sub, sub_sub_cancel]
 #align power_series.inv_units_sub_mul_sub PowerSeries.invUnitsSub_mul_sub
 
-theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
+lemma map_invUnitsSub (f : R →+* S) (u : Rˣ) :
     map f (invUnitsSub u) = invUnitsSub (Units.map (f : R →* S) u) := by
   ext
   simp only [← map_pow, coeff_map, coeff_invUnitsSub, one_divp]

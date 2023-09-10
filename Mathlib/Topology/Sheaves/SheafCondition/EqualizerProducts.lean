@@ -78,7 +78,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.res TopCat.Presheaf.SheafConditionEqualizerProducts.res
 
 @[simp, elementwise]
-theorem res_π (i : ι) : res F U ≫ limit.π _ ⟨i⟩ = F.map (Opens.leSupr U i).op := by
+lemma res_π (i : ι) : res F U ≫ limit.π _ ⟨i⟩ = F.map (Opens.leSupr U i).op := by
   rw [res, limit.lift_π, Fan.mk_π_app]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.res_π TopCat.Presheaf.SheafConditionEqualizerProducts.res_π
@@ -532,7 +532,7 @@ open SheafConditionPairwiseIntersections
 /-- The sheaf condition in terms of an equalizer diagram is equivalent
 to the default sheaf condition.
 -/
-theorem isSheaf_iff_isSheafEqualizerProducts (F : Presheaf C X) :
+lemma isSheaf_iff_isSheafEqualizerProducts (F : Presheaf C X) :
     F.IsSheaf ↔ F.IsSheafEqualizerProducts :=
   (isSheaf_iff_isSheafPairwiseIntersections F).trans <|
     Iff.intro (fun h _ U => ⟨isLimitSheafConditionForkOfIsLimitMapCone F U (h U).some⟩) fun h _ U =>

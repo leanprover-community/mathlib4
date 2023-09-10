@@ -34,13 +34,13 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 
 @[reassoc (attr := simp)]
-theorem limit.lift_π_app (H : J ⥤ K ⥤ C) [HasLimit H] (c : Cone H) (j : J) (k : K) :
+lemma limit.lift_π_app (H : J ⥤ K ⥤ C) [HasLimit H] (c : Cone H) (j : J) (k : K) :
     (limit.lift H c).app k ≫ (limit.π H j).app k = (c.π.app j).app k :=
   congr_app (limit.lift_π c j) k
 #align category_theory.limits.limit.lift_π_app CategoryTheory.Limits.limit.lift_π_app
 
 @[reassoc (attr := simp)]
-theorem colimit.ι_desc_app (H : J ⥤ K ⥤ C) [HasColimit H] (c : Cocone H) (j : J) (k : K) :
+lemma colimit.ι_desc_app (H : J ⥤ K ⥤ C) [HasColimit H] (c : Cocone H) (j : J) (k : K) :
     (colimit.ι H j).app k ≫ (colimit.desc H c).app k = (c.ι.app j).app k :=
   congr_app (colimit.ι_desc c j) k
 #align category_theory.limits.colimit.ι_desc_app CategoryTheory.Limits.colimit.ι_desc_app

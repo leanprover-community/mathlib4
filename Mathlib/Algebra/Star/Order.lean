@@ -148,11 +148,11 @@ section NonUnitalSemiring
 
 variable [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
 
-theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
+lemma star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩
 #align star_mul_self_nonneg star_mul_self_nonneg
 
-theorem star_mul_self_nonneg' (r : R) : 0 ≤ r * star r := by
+lemma star_mul_self_nonneg' (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
 #align star_mul_self_nonneg' star_mul_self_nonneg'
 

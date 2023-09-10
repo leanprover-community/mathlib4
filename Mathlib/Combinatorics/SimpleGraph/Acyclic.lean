@@ -115,7 +115,7 @@ lemma IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q
       exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hp.2
 #align simple_graph.is_acyclic.path_unique SimpleGraph.IsAcyclic.path_unique
 
-theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
+lemma isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
   simp only [Walk.isCycle_def, Ne.def] at hc
   cases c with

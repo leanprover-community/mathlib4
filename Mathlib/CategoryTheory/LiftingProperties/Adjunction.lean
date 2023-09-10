@@ -125,7 +125,7 @@ end CommSq
 
 namespace Adjunction
 
-theorem hasLiftingProperty_iff (adj : G ⊣ F) {A B : C} {X Y : D} (i : A ⟶ B) (p : X ⟶ Y) :
+lemma hasLiftingProperty_iff (adj : G ⊣ F) {A B : C} {X Y : D} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty (G.map i) p ↔ HasLiftingProperty i (F.map p) := by
   constructor <;> intro <;> constructor <;> intro f g sq
   · rw [← sq.left_adjoint_hasLift_iff adj]

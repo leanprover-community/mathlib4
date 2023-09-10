@@ -34,7 +34,7 @@ section InvolutiveInv
 variable [InvolutiveInv α] {s : Set α}
 
 @[to_additive]
-theorem Finite.inv (hs : s.Finite) : s⁻¹.Finite :=
+lemma Finite.inv (hs : s.Finite) : s⁻¹.Finite :=
   hs.preimage <| inv_injective.injOn _
 #align set.finite.inv Set.Finite.inv
 #align set.finite.neg Set.Finite.neg
@@ -118,7 +118,7 @@ section Vsub
 
 variable [VSub α β] {s t : Set β}
 
-theorem Finite.vsub (hs : s.Finite) (ht : t.Finite) : Set.Finite (s -ᵥ t) :=
+lemma Finite.vsub (hs : s.Finite) (ht : t.Finite) : Set.Finite (s -ᵥ t) :=
   hs.image2 _ ht
 #align set.finite.vsub Set.Finite.vsub
 

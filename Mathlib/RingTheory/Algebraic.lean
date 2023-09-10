@@ -61,7 +61,7 @@ def Algebra.IsAlgebraic : Prop :=
 variable {R A}
 
 /-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
-theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
+lemma Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
     S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
   delta Algebra.IsAlgebraic Subalgebra.IsAlgebraic
   rw [Subtype.forall']
@@ -123,7 +123,7 @@ lemma isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
   exact isAlgebraic_algebraMap (Int.cast n)
 #align is_algebraic_int isAlgebraic_int
 
-theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
+lemma isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
     IsAlgebraic R (n : A) := by
   rw [← map_ratCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Rat.cast n)
@@ -223,7 +223,7 @@ theorem isAlgebraic_of_larger_base_of_injective
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
-theorem Algebra.isAlgebraic_of_larger_base_of_injective (hinj : Function.Injective (algebraMap R S))
+lemma Algebra.isAlgebraic_of_larger_base_of_injective (hinj : Function.Injective (algebraMap R S))
     (A_alg : IsAlgebraic R A) : IsAlgebraic S A := fun x =>
   _root_.isAlgebraic_of_larger_base_of_injective hinj (A_alg x)
 #align algebra.is_algebraic_of_larger_base_of_injective Algebra.isAlgebraic_of_larger_base_of_injective
@@ -245,13 +245,13 @@ lemma isAlgebraic_of_larger_base {x : A} (A_alg : IsAlgebraic K x) :
 #align is_algebraic_of_larger_base isAlgebraic_of_larger_base
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
-theorem Algebra.isAlgebraic_of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebraic L A :=
+lemma Algebra.isAlgebraic_of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebraic L A :=
   isAlgebraic_of_larger_base_of_injective (algebraMap K L).injective A_alg
 #align algebra.is_algebraic_of_larger_base Algebra.isAlgebraic_of_larger_base
 
 variable (K)
 
-theorem isAlgebraic_of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
+lemma isAlgebraic_of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
   isAlgebraic_iff_isIntegral.mpr (isIntegral_of_finite K e)
 
 variable (A)
@@ -273,7 +273,7 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
 then A is algebraic over K. -/
-theorem Algebra.isAlgebraic_trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) :
+lemma Algebra.isAlgebraic_trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) :
     IsAlgebraic K A := by
   simp only [IsAlgebraic, isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
   exact isIntegral_trans L_alg A_alg
@@ -287,7 +287,7 @@ variable [Field K] [Field L]
 
 variable [Algebra K L]
 
-theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
+lemma Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
     Function.Bijective f := by
   refine' ⟨f.toRingHom.injective, fun b => _⟩
   obtain ⟨p, hp, he⟩ := ha b
@@ -419,7 +419,7 @@ lemma Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : L)
 #align subalgebra.inv_mem_of_algebraic Subalgebra.inv_mem_of_algebraic
 
 /-- In an algebraic extension L/K, an intermediate subalgebra is a field. -/
-theorem Subalgebra.isField_of_algebraic (hKL : Algebra.IsAlgebraic K L) : IsField A :=
+lemma Subalgebra.isField_of_algebraic (hKL : Algebra.IsAlgebraic K L) : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>
       ⟨⟨a⁻¹, A.inv_mem_of_algebraic (hKL a)⟩,

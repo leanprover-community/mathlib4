@@ -65,12 +65,12 @@ lemma coe_one : ↑(1 : Icc (0 : α) 1) = (1 : α) :=
 #align set.Icc.coe_one Set.Icc.coe_one
 
 @[simp]
-theorem mk_zero (h : (0 : α) ∈ Icc (0 : α) 1) : (⟨0, h⟩ : Icc (0 : α) 1) = 0 :=
+lemma mk_zero (h : (0 : α) ∈ Icc (0 : α) 1) : (⟨0, h⟩ : Icc (0 : α) 1) = 0 :=
   rfl
 #align set.Icc.mk_zero Set.Icc.mk_zero
 
 @[simp]
-theorem mk_one (h : (1 : α) ∈ Icc (0 : α) 1) : (⟨1, h⟩ : Icc (0 : α) 1) = 1 :=
+lemma mk_one (h : (1 : α) ∈ Icc (0 : α) 1) : (⟨1, h⟩ : Icc (0 : α) 1) = 1 :=
   rfl
 #align set.Icc.mk_one Set.Icc.mk_one
 
@@ -94,11 +94,11 @@ lemma coe_ne_one {x : Icc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 #align set.Icc.coe_ne_one Set.Icc.coe_ne_one
 
-theorem coe_nonneg (x : Icc (0 : α) 1) : 0 ≤ (x : α) :=
+lemma coe_nonneg (x : Icc (0 : α) 1) : 0 ≤ (x : α) :=
   x.2.1
 #align set.Icc.coe_nonneg Set.Icc.coe_nonneg
 
-theorem coe_le_one (x : Icc (0 : α) 1) : (x : α) ≤ 1 :=
+lemma coe_le_one (x : Icc (0 : α) 1) : (x : α) ≤ 1 :=
   x.2.2
 #align set.Icc.coe_le_one Set.Icc.coe_le_one
 
@@ -121,12 +121,12 @@ instance pow : Pow (Icc (0 : α) 1) ℕ where
 #align set.Icc.has_pow Set.Icc.pow
 
 @[simp, norm_cast]
-theorem coe_mul (x y : Icc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
+lemma coe_mul (x y : Icc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Icc.coe_mul Set.Icc.coe_mul
 
 @[simp, norm_cast]
-theorem coe_pow (x : Icc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
+lemma coe_pow (x : Icc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Icc.coe_pow Set.Icc.coe_pow
 
@@ -170,10 +170,10 @@ lemma mem_iff_one_sub_mem {t : β} : t ∈ Icc (0 : β) 1 ↔ 1 - t ∈ Icc (0 :
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 #align set.Icc.mem_iff_one_sub_mem Set.Icc.mem_iff_one_sub_mem
 
-theorem one_sub_nonneg (x : Icc (0 : β) 1) : 0 ≤ 1 - (x : β) := by simpa using x.2.2
+lemma one_sub_nonneg (x : Icc (0 : β) 1) : 0 ≤ 1 - (x : β) := by simpa using x.2.2
 #align set.Icc.one_sub_nonneg Set.Icc.one_sub_nonneg
 
-theorem one_sub_le_one (x : Icc (0 : β) 1) : 1 - (x : β) ≤ 1 := by simpa using x.2.1
+lemma one_sub_le_one (x : Icc (0 : β) 1) : 1 - (x : β) ≤ 1 := by simpa using x.2.1
 #align set.Icc.one_sub_le_one Set.Icc.one_sub_le_one
 
 end Set.Icc
@@ -206,11 +206,11 @@ lemma coe_ne_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) ≠ 0 ↔ x �
   not_iff_not.mpr coe_eq_zero
 #align set.Ico.coe_ne_zero Set.Ico.coe_ne_zero
 
-theorem coe_nonneg (x : Ico (0 : α) 1) : 0 ≤ (x : α) :=
+lemma coe_nonneg (x : Ico (0 : α) 1) : 0 ≤ (x : α) :=
   x.2.1
 #align set.Ico.coe_nonneg Set.Ico.coe_nonneg
 
-theorem coe_lt_one (x : Ico (0 : α) 1) : (x : α) < 1 :=
+lemma coe_lt_one (x : Ico (0 : α) 1) : (x : α) < 1 :=
   x.2.2
 #align set.Ico.coe_lt_one Set.Ico.coe_lt_one
 
@@ -225,7 +225,7 @@ instance mul : Mul (Ico (0 : α) 1) where
 #align set.Ico.has_mul Set.Ico.mul
 
 @[simp, norm_cast]
-theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
+lemma coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Ico.coe_mul Set.Ico.coe_mul
 
@@ -271,11 +271,11 @@ lemma coe_ne_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠
   not_iff_not.mpr coe_eq_one
 #align set.Ioc.coe_ne_one Set.Ioc.coe_ne_one
 
-theorem coe_pos (x : Ioc (0 : α) 1) : 0 < (x : α) :=
+lemma coe_pos (x : Ioc (0 : α) 1) : 0 < (x : α) :=
   x.2.1
 #align set.Ioc.coe_pos Set.Ioc.coe_pos
 
-theorem coe_le_one (x : Ioc (0 : α) 1) : (x : α) ≤ 1 :=
+lemma coe_le_one (x : Ioc (0 : α) 1) : (x : α) ≤ 1 :=
   x.2.2
 #align set.Ioc.coe_le_one Set.Ioc.coe_le_one
 
@@ -293,12 +293,12 @@ instance pow : Pow (Ioc (0 : α) 1) ℕ where
 #align set.Ioc.has_pow Set.Ioc.pow
 
 @[simp, norm_cast]
-theorem coe_mul (x y : Ioc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
+lemma coe_mul (x y : Ioc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Ioc.coe_mul Set.Ioc.coe_mul
 
 @[simp, norm_cast]
-theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
+lemma coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Ioc.coe_pow Set.Ioc.coe_pow
 
@@ -340,11 +340,11 @@ end Set.Ioc
 
 namespace Set.Ioo
 
-theorem pos (x : Ioo (0 : α) 1) : 0 < (x : α) :=
+lemma pos (x : Ioo (0 : α) 1) : 0 < (x : α) :=
   x.2.1
 #align set.Ioo.pos Set.Ioo.pos
 
-theorem lt_one (x : Ioo (0 : α) 1) : (x : α) < 1 :=
+lemma lt_one (x : Ioo (0 : α) 1) : (x : α) < 1 :=
   x.2.2
 #align set.Ioo.lt_one Set.Ioo.lt_one
 
@@ -354,7 +354,7 @@ instance mul : Mul (Ioo (0 : α) 1) where
 #align set.Ioo.has_mul Set.Ioo.mul
 
 @[simp, norm_cast]
-theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
+lemma coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Ioo.coe_mul Set.Ioo.coe_mul
 
@@ -378,10 +378,10 @@ lemma mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 :
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 #align set.Ioo.mem_iff_one_sub_mem Set.Ioo.mem_iff_one_sub_mem
 
-theorem one_minus_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
+lemma one_minus_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
 #align set.Ioo.one_minus_pos Set.Ioo.one_minus_pos
 
-theorem one_minus_lt_one (x : Ioo (0 : β) 1) : 1 - (x : β) < 1 := by simpa using x.2.1
+lemma one_minus_lt_one (x : Ioo (0 : β) 1) : 1 - (x : β) < 1 := by simpa using x.2.1
 #align set.Ioo.one_minus_lt_one Set.Ioo.one_minus_lt_one
 
 end Set.Ioo

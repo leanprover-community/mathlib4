@@ -97,7 +97,7 @@ lemma sumLift₂_nonempty :
   simp only [nonempty_iff_ne_empty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, not_imp]
 #align finset.sum_lift₂_nonempty Finset.sumLift₂_nonempty
 
-theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
+lemma sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
     ∀ a b, sumLift₂ f₁ f₂ a b ⊆ sumLift₂ g₁ g₂ a b
   | inl _, inl _ => map_subset_map.2 (h₁ _ _)
   | inl _, inr _ => Subset.rfl

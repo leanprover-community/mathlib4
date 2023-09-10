@@ -75,7 +75,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.splits_of_map_eq_C Polynomial.splits_of_map_eq_C
 
 @[simp]
-theorem splits_C (a : K) : Splits i (C a) :=
+lemma splits_C (a : K) : Splits i (C a) :=
   splits_of_map_eq_C i (map_C i)
 set_option linter.uppercaseLean3 false in
 #align polynomial.splits_C Polynomial.splits_C
@@ -126,7 +126,7 @@ lemma splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Splits
       Or.resolve_left h hfg hgi (by rw [Polynomial.map_mul]; exact hg.trans (dvd_mul_left _ _))⟩
 #align polynomial.splits_of_splits_mul' Polynomial.splits_of_splits_mul'
 
-theorem splits_map_iff (j : L →+* F) {f : K[X]} : Splits j (f.map i) ↔ Splits (j.comp i) f := by
+lemma splits_map_iff (j : L →+* F) {f : K[X]} : Splits j (f.map i) ↔ Splits (j.comp i) f := by
   simp [Splits, Polynomial.map_map]
 #align polynomial.splits_map_iff Polynomial.splits_map_iff
 
@@ -160,7 +160,7 @@ lemma splits_pow {f : K[X]} (hf : f.Splits i) (n : ℕ) : (f ^ n).Splits i := by
   exact splits_prod i fun j _ => hf
 #align polynomial.splits_pow Polynomial.splits_pow
 
-theorem splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
+lemma splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
   splits_pow i (splits_X i) n
 set_option linter.uppercaseLean3 false in
 #align polynomial.splits_X_pow Polynomial.splits_X_pow
@@ -231,7 +231,7 @@ variable [Field K] [Field L] [Field F]
 variable (i : K →+* L)
 
 /-- This lemma is for polynomials over a field. -/
-theorem splits_iff (f : K[X]) :
+lemma splits_iff (f : K[X]) :
     Splits i f ↔ f = 0 ∨ ∀ {g : L[X]}, Irreducible g → g ∣ f.map i → degree g = 1 := by
   rw [Splits, map_eq_zero]
 #align polynomial.splits_iff Polynomial.splits_iff
@@ -371,7 +371,7 @@ lemma eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Splits 
 set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_splits_of_single_root Polynomial.eq_X_sub_C_of_splits_of_single_root
 
-theorem mem_lift_of_splits_of_roots_mem_range (R : Type*) [CommRing R] [Algebra R K] {f : K[X]}
+lemma mem_lift_of_splits_of_roots_mem_range (R : Type*) [CommRing R] [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
   rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
@@ -424,7 +424,7 @@ lemma splits_iff_exists_multiset {f : K[X]} :
     splits_of_exists_multiset i hs⟩
 #align polynomial.splits_iff_exists_multiset Polynomial.splits_iff_exists_multiset
 
-theorem splits_comp_of_splits (j : L →+* F) {f : K[X]} (h : Splits i f) : Splits (j.comp i) f := by
+lemma splits_comp_of_splits (j : L →+* F) {f : K[X]} (h : Splits i f) : Splits (j.comp i) f := by
   -- Porting note: was
   -- change i with (RingHom.id _).comp i at h
   rw [← splits_map_iff]

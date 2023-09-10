@@ -85,7 +85,7 @@ lemma coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = s�
 
 --Porting note: new theorem
 @[simp]
-theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
+lemma val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
@@ -117,20 +117,20 @@ def cons (a : α) (s : Sym α n) : Sym α n.succ :=
 infixr:67 " ::ₛ " => cons
 
 @[simp]
-theorem cons_inj_right (a : α) (s s' : Sym α n) : a ::ₛ s = a ::ₛ s' ↔ s = s' :=
+lemma cons_inj_right (a : α) (s s' : Sym α n) : a ::ₛ s = a ::ₛ s' ↔ s = s' :=
   Subtype.ext_iff.trans <| (Multiset.cons_inj_right _).trans Subtype.ext_iff.symm
 #align sym.cons_inj_right Sym.cons_inj_right
 
 @[simp]
-theorem cons_inj_left (a a' : α) (s : Sym α n) : a ::ₛ s = a' ::ₛ s ↔ a = a' :=
+lemma cons_inj_left (a a' : α) (s : Sym α n) : a ::ₛ s = a' ::ₛ s ↔ a = a' :=
   Subtype.ext_iff.trans <| Multiset.cons_inj_left _
 #align sym.cons_inj_left Sym.cons_inj_left
 
-theorem cons_swap (a b : α) (s : Sym α n) : a ::ₛ b ::ₛ s = b ::ₛ a ::ₛ s :=
+lemma cons_swap (a b : α) (s : Sym α n) : a ::ₛ b ::ₛ s = b ::ₛ a ::ₛ s :=
   Subtype.ext <| Multiset.cons_swap a b s.1
 #align sym.cons_swap Sym.cons_swap
 
-theorem coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s :=
+lemma coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s :=
   rfl
 #align sym.coe_cons Sym.coe_cons
 
@@ -151,7 +151,7 @@ lemma ofVector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
 #align sym.of_vector_nil Sym.ofVector_nil
 
 @[simp]
-theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
+lemma ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
   rfl
 #align sym.of_vector_cons Sym.ofVector_cons
@@ -166,7 +166,7 @@ instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a �
 #align sym.decidable_mem Sym.decidableMem
 
 @[simp]
-theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
+lemma mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
 #align sym.mem_mk Sym.mem_mk
 
@@ -180,16 +180,16 @@ lemma mem_coe : a ∈ (s : Multiset α) ↔ a ∈ s :=
   Iff.rfl
 #align sym.mem_coe Sym.mem_coe
 
-theorem mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
+lemma mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
   Multiset.mem_cons_of_mem h
 #align sym.mem_cons_of_mem Sym.mem_cons_of_mem
 
 --@[simp] Porting note: simp can prove it
-theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
+lemma mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
   Multiset.mem_cons_self a s.1
 #align sym.mem_cons_self Sym.mem_cons_self
 
-theorem cons_of_coe_eq (a : α) (v : Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
+lemma cons_of_coe_eq (a : α) (v : Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
   Subtype.ext <| by
     cases v
     rfl
@@ -251,7 +251,7 @@ def symEquivSym' {α : Type*} {n : ℕ} : Sym α n ≃ Sym' α n :=
   Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ => by rfl) fun _ _ => by rfl
 #align sym.sym_equiv_sym' Sym.symEquivSym'
 
-theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
+lemma cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
     (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
   rcases s with ⟨⟨l⟩, _⟩
   rfl
@@ -263,7 +263,7 @@ instance instZeroSym : Zero (Sym α 0) :=
 instance : EmptyCollection (Sym α 0) :=
   ⟨0⟩
 
-theorem eq_nil_of_card_zero (s : Sym α 0) : s = nil :=
+lemma eq_nil_of_card_zero (s : Sym α 0) : s = nil :=
   Subtype.ext <| Multiset.card_eq_zero.1 s.2
 #align sym.eq_nil_of_card_zero Sym.eq_nil_of_card_zero
 
@@ -294,11 +294,11 @@ lemma eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
   exact and_iff_right s.2
 #align sym.eq_replicate_iff Sym.eq_replicate_iff
 
-theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
+lemma exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
 
-theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
+lemma exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
   classical exact ⟨a, s.erase a ha, (cons_erase ha).symm⟩
 #align sym.exists_eq_cons_of_succ Sym.exists_eq_cons_of_succ
@@ -376,7 +376,7 @@ lemma map_map {α β γ : Type*} {n : ℕ} (g : β → γ) (f : α → β) (s : 
 #align sym.map_map Sym.map_map
 
 @[simp]
-theorem map_zero (f : α → β) : Sym.map f (0 : Sym α 0) = (0 : Sym β 0) :=
+lemma map_zero (f : α → β) : Sym.map f (0 : Sym α 0) = (0 : Sym β 0) :=
   rfl
 #align sym.map_zero Sym.map_zero
 
@@ -397,7 +397,7 @@ lemma map_mk {f : α → β} {m : Multiset α} {hc : Multiset.card m = n} :
 #align sym.map_mk Sym.map_mk
 
 @[simp]
-theorem coe_map (s : Sym α n) (f : α → β) : ↑(s.map f) = Multiset.map f s :=
+lemma coe_map (s : Sym α n) (f : α → β) : ↑(s.map f) = Multiset.map f s :=
   rfl
 #align sym.coe_map Sym.coe_map
 
@@ -431,17 +431,17 @@ lemma attach_mk {m : Multiset α} {hc : Multiset.card m = n} :
 #align sym.attach_mk Sym.attach_mk
 
 @[simp]
-theorem coe_attach (s : Sym α n) : (s.attach : Multiset { a // a ∈ s }) =
+lemma coe_attach (s : Sym α n) : (s.attach : Multiset { a // a ∈ s }) =
     Multiset.attach (s : Multiset α) :=
   rfl
 #align sym.coe_attach Sym.coe_attach
 
-theorem attach_map_coe (s : Sym α n) : s.attach.map (↑) = s :=
+lemma attach_map_coe (s : Sym α n) : s.attach.map (↑) = s :=
   coe_injective <| Multiset.attach_map_val _
 #align sym.attach_map_coe Sym.attach_map_coe
 
 @[simp]
-theorem mem_attach (s : Sym α n) (x : { x // x ∈ s }) : x ∈ s.attach :=
+lemma mem_attach (s : Sym α n) (x : { x // x ∈ s }) : x ∈ s.attach :=
   Multiset.mem_attach _ _
 #align sym.mem_attach Sym.mem_attach
 
@@ -451,7 +451,7 @@ lemma attach_nil : (nil : Sym α 0).attach = nil :=
 #align sym.attach_nil Sym.attach_nil
 
 @[simp]
-theorem attach_cons (x : α) (s : Sym α n) :
+lemma attach_cons (x : α) (s : Sym α n) :
     (cons x s).attach =
       cons ⟨x, mem_cons_self _ _⟩ (s.attach.map fun x => ⟨x, mem_cons_of_mem x.prop⟩) :=
   coe_injective <| Multiset.attach_cons _ _
@@ -478,12 +478,12 @@ lemma cast_cast {n'' : ℕ} (h : n = n') (h' : n' = n'') :
 #align sym.cast_cast Sym.cast_cast
 
 @[simp]
-theorem coe_cast (h : n = m) : (Sym.cast h s : Multiset α) = s :=
+lemma coe_cast (h : n = m) : (Sym.cast h s : Multiset α) = s :=
   rfl
 #align sym.coe_cast Sym.coe_cast
 
 @[simp]
-theorem mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
+lemma mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
   Iff.rfl
 #align sym.mem_cast Sym.mem_cast
 
@@ -493,7 +493,7 @@ def append (s : Sym α n) (s' : Sym α n') : Sym α (n + n') :=
 #align sym.append Sym.append
 
 @[simp]
-theorem append_inj_right (s : Sym α n) {t t' : Sym α n'} : s.append t = s.append t' ↔ t = t' :=
+lemma append_inj_right (s : Sym α n) {t t' : Sym α n'} : s.append t = s.append t' ↔ t = t' :=
   Subtype.ext_iff.trans <| (add_right_inj _).trans Subtype.ext_iff.symm
 #align sym.append_inj_right Sym.append_inj_right
 
@@ -502,14 +502,14 @@ lemma append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.append
   Subtype.ext_iff.trans <| (add_left_inj _).trans Subtype.ext_iff.symm
 #align sym.append_inj_left Sym.append_inj_left
 
-theorem append_comm (s : Sym α n') (s' : Sym α n') :
+lemma append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
   ext
   simp [append, add_comm]
 #align sym.append_comm Sym.append_comm
 
 @[simp, norm_cast]
-theorem coe_append (s : Sym α n) (s' : Sym α n') : (s.append s' : Multiset α) = s + s' :=
+lemma coe_append (s : Sym α n) (s' : Sym α n') : (s.append s' : Multiset α) = s + s' :=
   rfl
 #align sym.coe_append Sym.coe_append
 
@@ -630,12 +630,12 @@ def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
 
 -- Porting note: new theorem
 @[simp]
-theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
+lemma decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
   rfl
 
 --Porting note: new theorem
 @[simp]
-theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
+lemma decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
   rfl
 
 @[simp]

@@ -61,13 +61,13 @@ lemma coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) 
 #align path.homotopy.coe_fn_injective Path.Homotopy.coeFn_injective
 
 @[simp]
-theorem source (F : Homotopy p₀ p₁) (t : I) : F (t, 0) = x₀ :=
+lemma source (F : Homotopy p₀ p₁) (t : I) : F (t, 0) = x₀ :=
   calc F (t, 0) = p₀ 0 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inl rfl)
   _ = x₀ := p₀.source
 #align path.homotopy.source Path.Homotopy.source
 
 @[simp]
-theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
+lemma target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
   calc F (t, 1) = p₀ 1 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inr rfl)
   _ = x₁ := p₀.target
 #align path.homotopy.target Path.Homotopy.target
@@ -81,13 +81,13 @@ def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
 #align path.homotopy.eval Path.Homotopy.eval
 
 @[simp]
-theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
+lemma eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
   ext t
   simp [eval]
 #align path.homotopy.eval_zero Path.Homotopy.eval_zero
 
 @[simp]
-theorem eval_one (F : Homotopy p₀ p₁) : F.eval 1 = p₁ := by
+lemma eval_one (F : Homotopy p₀ p₁) : F.eval 1 = p₁ := by
   ext t
   simp [eval]
 #align path.homotopy.eval_one Path.Homotopy.eval_one
@@ -113,7 +113,7 @@ def symm (F : Homotopy p₀ p₁) : Homotopy p₁ p₀ :=
 #align path.homotopy.symm Path.Homotopy.symm
 
 @[simp]
-theorem symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
+lemma symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
   ContinuousMap.HomotopyRel.symm_symm F
 #align path.homotopy.symm_symm Path.Homotopy.symm_symm
 
@@ -125,7 +125,7 @@ def trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) : Homotopy p₀ p₂
   ContinuousMap.HomotopyRel.trans F G
 #align path.homotopy.trans Path.Homotopy.trans
 
-theorem trans_apply (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) (x : I × I) :
+lemma trans_apply (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) (x : I × I) :
     (F.trans G) x =
       if h : (x.1 : ℝ) ≤ 1 / 2 then
         F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.2.1, h⟩⟩, x.2)
@@ -134,7 +134,7 @@ theorem trans_apply (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) (x : I × 
   ContinuousMap.HomotopyRel.trans_apply _ _ _
 #align path.homotopy.trans_apply Path.Homotopy.trans_apply
 
-theorem symm_trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) :
+lemma symm_trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) :
     (F.trans G).symm = G.symm.trans F.symm :=
   ContinuousMap.HomotopyRel.symm_trans _ _
 #align path.homotopy.symm_trans Path.Homotopy.symm_trans
@@ -171,7 +171,7 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
       norm_num [ht]
 #align path.homotopy.hcomp Path.Homotopy.hcomp
 
-theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :
+lemma hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :
     F.hcomp G x =
       if h : (x.2 : ℝ) ≤ 1 / 2 then
         F.eval x.1 ⟨2 * x.2, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.2.2.1, h⟩⟩
@@ -181,7 +181,7 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_extends _ _
 #align path.homotopy.hcomp_apply Path.Homotopy.hcomp_apply
 
-theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
+lemma hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
   show ite _ _ _ = _ by norm_num
 #align path.homotopy.hcomp_half Path.Homotopy.hcomp_half
@@ -261,7 +261,7 @@ def Homotopic (p₀ p₁ : Path x₀ x₁) : Prop :=
 namespace Homotopic
 
 @[refl]
-theorem refl (p : Path x₀ x₁) : p.Homotopic p :=
+lemma refl (p : Path x₀ x₁) : p.Homotopic p :=
   ⟨Homotopy.refl p⟩
 #align path.homotopic.refl Path.Homotopic.refl
 
@@ -315,7 +315,7 @@ def Quotient.comp (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homoto
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 #align path.homotopic.quotient.comp Path.Homotopic.Quotient.comp
 
-theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ :=
+lemma comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ :=
   rfl
 #align path.homotopic.comp_lift Path.Homotopic.comp_lift
 
@@ -326,7 +326,7 @@ def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
   Quotient.map (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 #align path.homotopic.quotient.map_fn Path.Homotopic.Quotient.mapFn
 
-theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuous⟧ = Quotient.mapFn ⟦P₀⟧ f :=
+lemma map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuous⟧ = Quotient.mapFn ⟦P₀⟧ f :=
   rfl
 #align path.homotopic.map_lift Path.Homotopic.map_lift
 

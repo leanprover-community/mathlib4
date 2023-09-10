@@ -133,12 +133,12 @@ lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l)
   simpa [(· ∘ ·), hc, imp_false] using h.comp (· = c)
 
 @[to_additive]
-theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
+lemma mulIndicator_const (h : EventuallyConst s l) (c : β) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l := by
   classical exact h.comp (if · then c else 1)
 
 @[to_additive]
-theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
+lemma mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst s l :=
   ⟨(of_mulIndicator_const · hc), (mulIndicator_const · c)⟩
 

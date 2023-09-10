@@ -124,7 +124,7 @@ def prodFun (x : E) : F × G :=
 #align implicit_function_data.prod_fun ImplicitFunctionData.prodFun
 
 @[simp]
-theorem prodFun_apply (x : E) : φ.prodFun x = (φ.leftFun x, φ.rightFun x) :=
+lemma prodFun_apply (x : E) : φ.prodFun x = (φ.leftFun x, φ.rightFun x) :=
   rfl
 #align implicit_function_data.prod_fun_apply ImplicitFunctionData.prodFun_apply
 
@@ -158,7 +158,7 @@ lemma toLocalHomeomorph_coe : ⇑φ.toLocalHomeomorph = φ.prodFun :=
   rfl
 #align implicit_function_data.to_local_homeomorph_coe ImplicitFunctionData.toLocalHomeomorph_coe
 
-theorem toLocalHomeomorph_apply (x : E) : φ.toLocalHomeomorph x = (φ.leftFun x, φ.rightFun x) :=
+lemma toLocalHomeomorph_apply (x : E) : φ.toLocalHomeomorph x = (φ.leftFun x, φ.rightFun x) :=
   rfl
 #align implicit_function_data.to_local_homeomorph_apply ImplicitFunctionData.toLocalHomeomorph_apply
 
@@ -196,7 +196,7 @@ lemma map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
     rw [← map_map, φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, map_fst_nhds]
 #align implicit_function_data.map_nhds_eq ImplicitFunctionData.map_nhds_eq
 
-theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
+lemma implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
@@ -274,13 +274,13 @@ def implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range 
 end Defs
 
 @[simp]
-theorem implicitToLocalHomeomorphOfComplemented_fst (hf : HasStrictFDerivAt f f' a)
+lemma implicitToLocalHomeomorphOfComplemented_fst (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (x : E) :
     (hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker x).fst = f x :=
   rfl
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_fst HasStrictFDerivAt.implicitToLocalHomeomorphOfComplemented_fst
 
-theorem implicitToLocalHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt f f' a)
+lemma implicitToLocalHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (y : E) :
     hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker y =
       (f y, Classical.choose hker (y - a)) :=
@@ -288,7 +288,7 @@ theorem implicitToLocalHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt f 
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_apply HasStrictFDerivAt.implicitToLocalHomeomorphOfComplemented_apply
 
 @[simp]
-theorem implicitToLocalHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
+lemma implicitToLocalHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (y : ker f') :
     hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker (y + a) = (f (y + a), y) := by
   simp only [implicitToLocalHomeomorphOfComplemented_apply, add_sub_cancel,
@@ -296,19 +296,19 @@ theorem implicitToLocalHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivA
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_apply_ker HasStrictFDerivAt.implicitToLocalHomeomorphOfComplemented_apply_ker
 
 @[simp]
-theorem implicitToLocalHomeomorphOfComplemented_self (hf : HasStrictFDerivAt f f' a)
+lemma implicitToLocalHomeomorphOfComplemented_self (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
     hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker a = (f a, 0) := by
   simp [hf.implicitToLocalHomeomorphOfComplemented_apply]
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_self HasStrictFDerivAt.implicitToLocalHomeomorphOfComplemented_self
 
-theorem mem_implicitToLocalHomeomorphOfComplemented_source (hf : HasStrictFDerivAt f f' a)
+lemma mem_implicitToLocalHomeomorphOfComplemented_source (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
     a ∈ (hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker).source :=
   ImplicitFunctionData.pt_mem_toLocalHomeomorph_source _
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_of_complemented_source HasStrictFDerivAt.mem_implicitToLocalHomeomorphOfComplemented_source
 
-theorem mem_implicitToLocalHomeomorphOfComplemented_target (hf : HasStrictFDerivAt f f' a)
+lemma mem_implicitToLocalHomeomorphOfComplemented_target (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
     (f a, (0 : ker f')) ∈ (hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker).target := by
   simpa only [implicitToLocalHomeomorphOfComplemented_self] using
@@ -317,7 +317,7 @@ theorem mem_implicitToLocalHomeomorphOfComplemented_target (hf : HasStrictFDeriv
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_of_complemented_target HasStrictFDerivAt.mem_implicitToLocalHomeomorphOfComplemented_target
 
 /-- `HasStrictFDerivAt.implicitFunctionOfComplemented` sends `(z, y)` to a point in `f ⁻¹' z`. -/
-theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+lemma map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hker : (ker f').ClosedComplemented) :
     ∀ᶠ p : F × ker f' in 𝓝 (f a, 0),
       f (hf.implicitFunctionOfComplemented f f' hf' hker p.1 p.2) = p.1 :=
@@ -328,7 +328,7 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
 
 /-- Any point in some neighborhood of `a` can be represented as
 `HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/
-theorem eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+lemma eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hker : (ker f').ClosedComplemented) :
     ∀ᶠ x in 𝓝 a, hf.implicitFunctionOfComplemented f f' hf' hker (f x)
       (hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker x).snd = x :=
@@ -336,7 +336,7 @@ theorem eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
 #align has_strict_fderiv_at.eq_implicit_function_of_complemented HasStrictFDerivAt.eq_implicitFunctionOfComplemented
 
 @[simp]
-theorem implicitFunctionOfComplemented_apply_image (hf : HasStrictFDerivAt f f' a)
+lemma implicitFunctionOfComplemented_apply_image (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
     hf.implicitFunctionOfComplemented f f' hf' hker (f a) 0 = a := by
   simpa only [implicitToLocalHomeomorphOfComplemented_self] using
@@ -344,7 +344,7 @@ theorem implicitFunctionOfComplemented_apply_image (hf : HasStrictFDerivAt f f' 
       (hf.mem_implicitToLocalHomeomorphOfComplemented_source hf' hker)
 #align has_strict_fderiv_at.implicit_function_of_complemented_apply_image HasStrictFDerivAt.implicitFunctionOfComplemented_apply_image
 
-theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+lemma to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hker : (ker f').ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       (ker f').subtypeL 0 := by
@@ -406,13 +406,13 @@ def implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) : F 
 variable {f f'}
 
 @[simp]
-theorem implicitToLocalHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) (x : E) :
+lemma implicitToLocalHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) (x : E) :
     (hf.implicitToLocalHomeomorph f f' hf' x).fst = f x :=
   rfl
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_fst HasStrictFDerivAt.implicitToLocalHomeomorph_fst
 
 @[simp]
-theorem implicitToLocalHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+lemma implicitToLocalHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (y : ker f') : hf.implicitToLocalHomeomorph f f' hf' (y + a) = (f (y + a), y) :=
   -- porting note: had to add `haveI` (here and below)
   haveI := FiniteDimensional.complete 𝕜 F
@@ -420,25 +420,25 @@ theorem implicitToLocalHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf'
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_apply_ker HasStrictFDerivAt.implicitToLocalHomeomorph_apply_ker
 
 @[simp]
-theorem implicitToLocalHomeomorph_self (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
+lemma implicitToLocalHomeomorph_self (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     hf.implicitToLocalHomeomorph f f' hf' a = (f a, 0) :=
   haveI := FiniteDimensional.complete 𝕜 F
   implicitToLocalHomeomorphOfComplemented_self ..
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_self HasStrictFDerivAt.implicitToLocalHomeomorph_self
 
-theorem mem_implicitToLocalHomeomorph_source (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
+lemma mem_implicitToLocalHomeomorph_source (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     a ∈ (hf.implicitToLocalHomeomorph f f' hf').source :=
   haveI := FiniteDimensional.complete 𝕜 F
   ImplicitFunctionData.pt_mem_toLocalHomeomorph_source _
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_source HasStrictFDerivAt.mem_implicitToLocalHomeomorph_source
 
-theorem mem_implicitToLocalHomeomorph_target (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
+lemma mem_implicitToLocalHomeomorph_target (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     (f a, (0 : ker f')) ∈ (hf.implicitToLocalHomeomorph f f' hf').target :=
   haveI := FiniteDimensional.complete 𝕜 F
   mem_implicitToLocalHomeomorphOfComplemented_target ..
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_target HasStrictFDerivAt.mem_implicitToLocalHomeomorph_target
 
-theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) {α : Type*}
+lemma tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) {α : Type*}
     {l : Filter α} {g₁ : α → F} {g₂ : α → ker f'} (h₁ : Tendsto g₁ l (𝓝 <| f a))
     (h₂ : Tendsto g₂ l (𝓝 0)) :
     Tendsto (fun t => hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) := by
@@ -452,14 +452,14 @@ alias _root_.Filter.Tendsto.implicitFunction := tendsto_implicitFunction
 #align filter.tendsto.implicit_function Filter.Tendsto.implicitFunction
 
 /-- `HasStrictFDerivAt.implicitFunction` sends `(z, y)` to a point in `f ⁻¹' z`. -/
-theorem map_implicitFunction_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
+lemma map_implicitFunction_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     ∀ᶠ p : F × ker f' in 𝓝 (f a, 0), f (hf.implicitFunction f f' hf' p.1 p.2) = p.1 :=
   haveI := FiniteDimensional.complete 𝕜 F
   map_implicitFunctionOfComplemented_eq ..
 #align has_strict_fderiv_at.map_implicit_function_eq HasStrictFDerivAt.map_implicitFunction_eq
 
 @[simp]
-theorem implicitFunction_apply_image (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
+lemma implicitFunction_apply_image (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     hf.implicitFunction f f' hf' (f a) 0 = a := by
   haveI := FiniteDimensional.complete 𝕜 F
   apply implicitFunctionOfComplemented_apply_image
@@ -467,14 +467,14 @@ theorem implicitFunction_apply_image (hf : HasStrictFDerivAt f f' a) (hf' : rang
 
 /-- Any point in some neighborhood of `a` can be represented as `HasStrictFDerivAt.implicitFunction`
 of some point. -/
-theorem eq_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
+lemma eq_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     ∀ᶠ x in 𝓝 a,
       hf.implicitFunction f f' hf' (f x) (hf.implicitToLocalHomeomorph f f' hf' x).snd = x :=
   haveI := FiniteDimensional.complete 𝕜 F
   eq_implicitFunctionOfComplemented ..
 #align has_strict_fderiv_at.eq_implicit_function HasStrictFDerivAt.eq_implicitFunction
 
-theorem to_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
+lemma to_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     HasStrictFDerivAt (hf.implicitFunction f f' hf' (f a)) (ker f').subtypeL 0 :=
   haveI := FiniteDimensional.complete 𝕜 F
   to_implicitFunctionOfComplemented ..

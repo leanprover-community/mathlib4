@@ -105,10 +105,10 @@ lemma to_withUpperSetTopology_symm_eq : (@toUpperSet α).symm = ofUpperSet := rf
 lemma of_withUpperSetTopology_symm_eq : (@ofUpperSet α).symm = toUpperSet := rfl
 
 @[simp]
-theorem toUpperSet_ofUpperSet (a : WithUpperSetTopology α) : toUpperSet (ofUpperSet a) = a := rfl
+lemma toUpperSet_ofUpperSet (a : WithUpperSetTopology α) : toUpperSet (ofUpperSet a) = a := rfl
 
 @[simp]
-theorem ofUpperSet_toUpperSet (a : α) : ofUpperSet (toUpperSet a) = a := rfl
+lemma ofUpperSet_toUpperSet (a : α) : ofUpperSet (toUpperSet a) = a := rfl
 
 lemma toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
 
@@ -163,10 +163,10 @@ lemma to_withLowerSetTopology_symm_eq : (@toLowerSet α).symm = ofLowerSet := rf
 lemma of_withLowerSetTopology_symm_eq : (@ofLowerSet α).symm = toLowerSet := rfl
 
 @[simp]
-theorem toLowerSet_ofLowerSet (a : WithLowerSetTopology α) : toLowerSet (ofLowerSet a) = a := rfl
+lemma toLowerSet_ofLowerSet (a : WithLowerSetTopology α) : toLowerSet (ofLowerSet a) = a := rfl
 
 @[simp]
-theorem ofLowerSet_toLowerSet (a : α) : ofLowerSet (toLowerSet a) = a := rfl
+lemma ofLowerSet_toLowerSet (a : α) : ofLowerSet (toLowerSet a) = a := rfl
 
 lemma toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl
 

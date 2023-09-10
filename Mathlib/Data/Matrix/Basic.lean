@@ -116,12 +116,12 @@ def of : (m → n → α) ≃ Matrix m n α :=
 #align matrix.of Matrix.of
 
 @[simp]
-theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
+lemma of_apply (f : m → n → α) (i j) : of f i j = f i j :=
   rfl
 #align matrix.of_apply Matrix.of_apply
 
 @[simp]
-theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
+lemma of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
 #align matrix.of_symm_apply Matrix.of_symm_apply
 
@@ -148,7 +148,7 @@ lemma map_apply {M : Matrix m n α} {f : α → β} {i : m} {j : n} : M.map f i 
 #align matrix.map_apply Matrix.map_apply
 
 @[simp]
-theorem map_id (M : Matrix m n α) : M.map id = M := by
+lemma map_id (M : Matrix m n α) : M.map id = M := by
   ext
   rfl
 #align matrix.map_id Matrix.map_id
@@ -172,7 +172,7 @@ def transpose (M : Matrix m n α) : Matrix n m α :=
 
 -- TODO: set as an equation lemma for `transpose`, see mathlib4#3024
 @[simp]
-theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
+lemma transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
   rfl
 #align matrix.transpose_apply Matrix.transpose_apply
 
@@ -194,7 +194,7 @@ def col (w : m → α) : Matrix m Unit α :=
 
 -- TODO: set as an equation lemma for `col`, see mathlib4#3024
 @[simp]
-theorem col_apply (w : m → α) (i j) : col w i j = w i :=
+lemma col_apply (w : m → α) (i j) : col w i j = w i :=
   rfl
 #align matrix.col_apply Matrix.col_apply
 
@@ -205,7 +205,7 @@ def row (v : n → α) : Matrix Unit n α :=
 
 -- TODO: set as an equation lemma for `row`, see mathlib4#3024
 @[simp]
-theorem row_apply (v : n → α) (i j) : row v i j = v j :=
+lemma row_apply (v : n → α) (i j) : row v i j = v j :=
   rfl
 #align matrix.row_apply Matrix.row_apply
 
@@ -533,7 +533,7 @@ lemma one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
 #align matrix.one_apply Matrix.one_apply
 
 @[simp]
-theorem one_apply_eq (i) : (1 : Matrix n n α) i i = 1 :=
+lemma one_apply_eq (i) : (1 : Matrix n n α) i i = 1 :=
   diagonal_apply_eq _ i
 #align matrix.one_apply_eq Matrix.one_apply_eq
 
@@ -573,7 +573,7 @@ lemma bit0_apply [Add α] (M : Matrix m m α) (i : m) (j : m) : (bit0 M) i j = b
 variable [AddZeroClass α] [One α]
 
 @[deprecated]
-theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
+lemma bit1_apply (M : Matrix n n α) (i : n) (j : n) :
     (bit1 M) i j = if i = j then bit1 (M i j) else bit0 (M i j) := by
   dsimp [bit1]
   by_cases h : i = j <;>
@@ -581,12 +581,12 @@ theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
 #align matrix.bit1_apply Matrix.bit1_apply
 
 @[deprecated, simp]
-theorem bit1_apply_eq (M : Matrix n n α) (i : n) : (bit1 M) i i = bit1 (M i i) := by
+lemma bit1_apply_eq (M : Matrix n n α) (i : n) : (bit1 M) i i = bit1 (M i i) := by
   simp [bit1_apply]
 #align matrix.bit1_apply_eq Matrix.bit1_apply_eq
 
 @[deprecated, simp]
-theorem bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) : (bit1 M) i j = bit0 (M i j) := by
+lemma bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) : (bit1 M) i j = bit0 (M i j) := by
   simp [bit1_apply, h]
 #align matrix.bit1_apply_ne Matrix.bit1_apply_ne
 
@@ -605,7 +605,7 @@ def diag (A : Matrix n n α) (i : n) : α :=
 -- Porting note: new, because of removed `simp` above.
 -- TODO: set as an equation lemma for `diag`, see mathlib4#3024
 @[simp]
-theorem diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
+lemma diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
   rfl
 
 @[simp]
@@ -614,7 +614,7 @@ lemma diag_diagonal [DecidableEq n] [Zero α] (a : n → α) : diag (diagonal a)
 #align matrix.diag_diagonal Matrix.diag_diagonal
 
 @[simp]
-theorem diag_transpose (A : Matrix n n α) : diag Aᵀ = diag A :=
+lemma diag_transpose (A : Matrix n n α) : diag Aᵀ = diag A :=
   rfl
 #align matrix.diag_transpose Matrix.diag_transpose
 
@@ -729,10 +729,10 @@ section MulOneClass
 
 variable [MulOneClass α] [AddCommMonoid α]
 
-theorem dotProduct_one (v : n → α) : v ⬝ᵥ 1 = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+lemma dotProduct_one (v : n → α) : v ⬝ᵥ 1 = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
 #align matrix.dot_product_one Matrix.dotProduct_one
 
-theorem one_dotProduct (v : n → α) : 1 ⬝ᵥ v = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+lemma one_dotProduct (v : n → α) : 1 ⬝ᵥ v = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
 #align matrix.one_dot_product Matrix.one_dotProduct
 
 end MulOneClass
@@ -776,20 +776,20 @@ lemma sum_elim_dotProduct_sum_elim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ
 
 /-- Permuting a vector on the left of a dot product can be transferred to the right. -/
 @[simp]
-theorem comp_equiv_symm_dotProduct (e : m ≃ n) : u ∘ e.symm ⬝ᵥ x = u ⬝ᵥ x ∘ e :=
+lemma comp_equiv_symm_dotProduct (e : m ≃ n) : u ∘ e.symm ⬝ᵥ x = u ⬝ᵥ x ∘ e :=
   (e.sum_comp _).symm.trans <|
     Finset.sum_congr rfl fun _ _ => by simp only [Function.comp, Equiv.symm_apply_apply]
 #align matrix.comp_equiv_symm_dot_product Matrix.comp_equiv_symm_dotProduct
 
 /-- Permuting a vector on the right of a dot product can be transferred to the left. -/
 @[simp]
-theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘ e ⬝ᵥ x := by
+lemma dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘ e ⬝ᵥ x := by
   simpa only [Equiv.symm_symm] using (comp_equiv_symm_dotProduct u x e.symm).symm
 #align matrix.dot_product_comp_equiv_symm Matrix.dotProduct_comp_equiv_symm
 
 /-- Permuting vectors on both sides of a dot product is a no-op. -/
 @[simp]
-theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
+lemma comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   -- Porting note: was `simp only` with all three lemmas
   rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp, Equiv.apply_symm_apply]
 #align matrix.comp_equiv_dot_product_comp_equiv Matrix.comp_equiv_dotProduct_comp_equiv
@@ -801,28 +801,28 @@ section NonUnitalNonAssocSemiringDecidable
 variable [DecidableEq m] [NonUnitalNonAssocSemiring α] (u v w : m → α)
 
 @[simp]
-theorem diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
+lemma diagonal_dotProduct (i : m) : diagonal v i ⬝ᵥ w = v i * w i := by
   have : ∀ (j) (_ : j ≠ i), diagonal v i j * w j = 0 := fun j hij => by
     simp [diagonal_apply_ne' _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.diagonal_dot_product Matrix.diagonal_dotProduct
 
 @[simp]
-theorem dotProduct_diagonal (i : m) : v ⬝ᵥ diagonal w i = v i * w i := by
+lemma dotProduct_diagonal (i : m) : v ⬝ᵥ diagonal w i = v i * w i := by
   have : ∀ (j) (_ : j ≠ i), v j * diagonal w i j = 0 := fun j hij => by
     simp [diagonal_apply_ne' _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_diagonal Matrix.dotProduct_diagonal
 
 @[simp]
-theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i * w i := by
+lemma dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i * w i := by
   have : ∀ (j) (_ : j ≠ i), v j * diagonal w j i = 0 := fun j hij => by
     simp [diagonal_apply_ne _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 #align matrix.dot_product_diagonal' Matrix.dotProduct_diagonal'
 
 @[simp]
-theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i := by
+lemma single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i := by
   -- Porting note: (implicit arg) added `(f := fun _ => α)`
   have : ∀ (j) (_ : j ≠ i), Pi.single (f := fun _ => α) i x j * v j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
@@ -830,7 +830,7 @@ theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i :=
 #align matrix.single_dot_product Matrix.single_dotProduct
 
 @[simp]
-theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x := by
+lemma dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x := by
   -- Porting note: (implicit arg) added `(f := fun _ => α)`
   have : ∀ (j) (_ : j ≠ i), v j * Pi.single (f := fun _ => α) i x j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
@@ -1044,7 +1044,7 @@ lemma smul_eq_diagonal_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) (a : 
 #align matrix.smul_eq_diagonal_mul Matrix.smul_eq_diagonal_mul
 
 @[simp]
-theorem diag_col_mul_row (a b : n → α) : diag (col a * row b) = a * b := by
+lemma diag_col_mul_row (a b : n → α) : diag (col a * row b) = a * b := by
   ext
   simp [Matrix.mul_apply, col, row]
 #align matrix.diag_col_mul_row Matrix.diag_col_mul_row
@@ -1145,7 +1145,7 @@ section NonUnitalSemiring
 
 variable [NonUnitalSemiring α] [Fintype m] [Fintype n]
 
-protected theorem mul_assoc (L : Matrix l m α) (M : Matrix m n α) (N : Matrix n o α) :
+protected lemma mul_assoc (L : Matrix l m α) (M : Matrix m n α) (N : Matrix n o α) :
     L * M * N = L * (M * N) := by
   ext
   apply dotProduct_assoc
@@ -1170,23 +1170,23 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing α] [Fintype n]
 
 @[simp]
-protected theorem neg_mul (M : Matrix m n α) (N : Matrix n o α) : (-M) * N = -(M * N) := by
+protected lemma neg_mul (M : Matrix m n α) (N : Matrix n o α) : (-M) * N = -(M * N) := by
   ext
   apply neg_dotProduct
 #align matrix.neg_mul Matrix.neg_mul
 
 @[simp]
-protected theorem mul_neg (M : Matrix m n α) (N : Matrix n o α) : M * (-N) = -(M * N) := by
+protected lemma mul_neg (M : Matrix m n α) (N : Matrix n o α) : M * (-N) = -(M * N) := by
   ext
   apply dotProduct_neg
 #align matrix.mul_neg Matrix.mul_neg
 
-protected theorem sub_mul (M M' : Matrix m n α) (N : Matrix n o α) :
+protected lemma sub_mul (M M' : Matrix m n α) (N : Matrix n o α) :
     (M - M') * N = M * N - M' * N := by
   rw [sub_eq_add_neg, Matrix.add_mul, Matrix.neg_mul, sub_eq_add_neg]
 #align matrix.sub_mul Matrix.sub_mul
 
-protected theorem mul_sub (M : Matrix m n α) (N N' : Matrix n o α) :
+protected lemma mul_sub (M : Matrix m n α) (N N' : Matrix n o α) :
     M * (N - N') = M * N - M * N' := by
   rw [sub_eq_add_neg, Matrix.mul_add, Matrix.mul_neg, sub_eq_add_neg]
 #align matrix.mul_sub Matrix.mul_sub
@@ -1246,12 +1246,12 @@ lemma coe_scalar : (scalar n : α → Matrix n n α) = fun a => a • (1 : Matri
   rfl
 #align matrix.coe_scalar Matrix.coe_scalar
 
-theorem scalar_apply_eq (a : α) (i : n) : scalar n a i i = a := by
+lemma scalar_apply_eq (a : α) (i : n) : scalar n a i i = a := by
   -- Porting note: replaced `Pi.smul_apply` with the new `Matrix.smul_apply`
   simp only [coe_scalar, Matrix.smul_apply, one_apply_eq, smul_eq_mul, mul_one]
 #align matrix.scalar_apply_eq Matrix.scalar_apply_eq
 
-theorem scalar_apply_ne (a : α) (i j : n) (h : i ≠ j) : scalar n a i j = 0 := by
+lemma scalar_apply_ne (a : α) (i j : n) (h : i ≠ j) : scalar n a i j = 0 := by
   -- Porting note: replaced `Pi.smul_apply` with the new `Matrix.smul_apply`
   simp only [h, coe_scalar, one_apply_ne, Ne.def, not_false_iff, Matrix.smul_apply, smul_zero]
 #align matrix.scalar_apply_ne Matrix.scalar_apply_ne
@@ -1281,7 +1281,7 @@ lemma smul_eq_mul_diagonal [DecidableEq n] (M : Matrix m n α) (a : α) :
 #align matrix.smul_eq_mul_diagonal Matrix.smul_eq_mul_diagonal
 
 @[simp]
-theorem mul_mul_right (M : Matrix m n α) (N : Matrix n o α) (a : α) :
+lemma mul_mul_right (M : Matrix m n α) (N : Matrix n o α) (a : α) :
     (M * of fun i j => a * N i j) = a • (M * N) :=
   mul_smul M a N
 #align matrix.mul_mul_right Matrix.mul_mul_right
@@ -1312,13 +1312,13 @@ lemma algebraMap_matrix_apply {r : R} {i j : n} :
   split_ifs with h <;> simp [h, Matrix.one_apply_ne]
 #align matrix.algebra_map_matrix_apply Matrix.algebraMap_matrix_apply
 
-theorem algebraMap_eq_diagonal (r : R) :
+lemma algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) :=
   Matrix.ext fun _ _ => algebraMap_matrix_apply
 #align matrix.algebra_map_eq_diagonal Matrix.algebraMap_eq_diagonal
 
 @[simp]
-theorem algebraMap_eq_smul (r : R) : algebraMap R (Matrix n n R) r = r • (1 : Matrix n n R) :=
+lemma algebraMap_eq_smul (r : R) : algebraMap R (Matrix n n R) r = r • (1 : Matrix n n R) :=
   rfl
 #align matrix.algebra_map_eq_smul Matrix.algebraMap_eq_smul
 
@@ -1328,7 +1328,7 @@ lemma algebraMap_eq_diagonalRingHom :
 #align matrix.algebra_map_eq_diagonal_ring_hom Matrix.algebraMap_eq_diagonalRingHom
 
 @[simp]
-theorem map_algebraMap (r : R) (f : α → β) (hf : f 0 = 0)
+lemma map_algebraMap (r : R) (f : α → β) (hf : f 0 = 0)
     (hf₂ : f (algebraMap R α r) = algebraMap R β r) :
     (algebraMap R (Matrix n n α) r).map f = algebraMap R (Matrix n n β) r := by
   rw [algebraMap_eq_diagonal, algebraMap_eq_diagonal, diagonal_map hf]
@@ -1380,12 +1380,12 @@ lemma mapMatrix_refl : (Equiv.refl α).mapMatrix = Equiv.refl (Matrix m n α) :=
 #align equiv.map_matrix_refl Equiv.mapMatrix_refl
 
 @[simp]
-theorem mapMatrix_symm (f : α ≃ β) : f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃ _) :=
+lemma mapMatrix_symm (f : α ≃ β) : f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃ _) :=
   rfl
 #align equiv.map_matrix_symm Equiv.mapMatrix_symm
 
 @[simp]
-theorem mapMatrix_trans (f : α ≃ β) (g : β ≃ γ) :
+lemma mapMatrix_trans (f : α ≃ β) (g : β ≃ γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃ _) :=
   rfl
 #align equiv.map_matrix_trans Equiv.mapMatrix_trans
@@ -1411,7 +1411,7 @@ lemma mapMatrix_id : (AddMonoidHom.id α).mapMatrix = AddMonoidHom.id (Matrix m 
 #align add_monoid_hom.map_matrix_id AddMonoidHom.mapMatrix_id
 
 @[simp]
-theorem mapMatrix_comp (f : β →+ γ) (g : α →+ β) :
+lemma mapMatrix_comp (f : β →+ γ) (g : α →+ β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →+ _) :=
   rfl
 #align add_monoid_hom.map_matrix_comp AddMonoidHom.mapMatrix_comp
@@ -1438,12 +1438,12 @@ lemma mapMatrix_refl : (AddEquiv.refl α).mapMatrix = AddEquiv.refl (Matrix m n 
 #align add_equiv.map_matrix_refl AddEquiv.mapMatrix_refl
 
 @[simp]
-theorem mapMatrix_symm (f : α ≃+ β) : f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃+ _) :=
+lemma mapMatrix_symm (f : α ≃+ β) : f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃+ _) :=
   rfl
 #align add_equiv.map_matrix_symm AddEquiv.mapMatrix_symm
 
 @[simp]
-theorem mapMatrix_trans (f : α ≃+ β) (g : β ≃+ γ) :
+lemma mapMatrix_trans (f : α ≃+ β) (g : β ≃+ γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃+ _) :=
   rfl
 #align add_equiv.map_matrix_trans AddEquiv.mapMatrix_trans
@@ -1471,7 +1471,7 @@ lemma mapMatrix_id : LinearMap.id.mapMatrix = (LinearMap.id : Matrix m n α →�
 #align linear_map.map_matrix_id LinearMap.mapMatrix_id
 
 @[simp]
-theorem mapMatrix_comp (f : β →ₗ[R] γ) (g : α →ₗ[R] β) :
+lemma mapMatrix_comp (f : β →ₗ[R] γ) (g : α →ₗ[R] β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →ₗ[R] _) :=
   rfl
 #align linear_map.map_matrix_comp LinearMap.mapMatrix_comp
@@ -1500,13 +1500,13 @@ lemma mapMatrix_refl : (LinearEquiv.refl R α).mapMatrix = LinearEquiv.refl R (M
 #align linear_equiv.map_matrix_refl LinearEquiv.mapMatrix_refl
 
 @[simp]
-theorem mapMatrix_symm (f : α ≃ₗ[R] β) :
+lemma mapMatrix_symm (f : α ≃ₗ[R] β) :
     f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m n β ≃ₗ[R] _) :=
   rfl
 #align linear_equiv.map_matrix_symm LinearEquiv.mapMatrix_symm
 
 @[simp]
-theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
+lemma mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃ₗ[R] _) :=
   rfl
 #align linear_equiv.map_matrix_trans LinearEquiv.mapMatrix_trans
@@ -1535,7 +1535,7 @@ lemma mapMatrix_id : (RingHom.id α).mapMatrix = RingHom.id (Matrix m m α) :=
 #align ring_hom.map_matrix_id RingHom.mapMatrix_id
 
 @[simp]
-theorem mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
+lemma mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →+* _) :=
   rfl
 #align ring_hom.map_matrix_comp RingHom.mapMatrix_comp
@@ -1564,12 +1564,12 @@ lemma mapMatrix_refl : (RingEquiv.refl α).mapMatrix = RingEquiv.refl (Matrix m 
 #align ring_equiv.map_matrix_refl RingEquiv.mapMatrix_refl
 
 @[simp]
-theorem mapMatrix_symm (f : α ≃+* β) : f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m m β ≃+* _) :=
+lemma mapMatrix_symm (f : α ≃+* β) : f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m m β ≃+* _) :=
   rfl
 #align ring_equiv.map_matrix_symm RingEquiv.mapMatrix_symm
 
 @[simp]
-theorem mapMatrix_trans (f : α ≃+* β) (g : β ≃+* γ) :
+lemma mapMatrix_trans (f : α ≃+* β) (g : β ≃+* γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃+* _) :=
   rfl
 #align ring_equiv.map_matrix_trans RingEquiv.mapMatrix_trans
@@ -1599,7 +1599,7 @@ lemma mapMatrix_id : (AlgHom.id R α).mapMatrix = AlgHom.id R (Matrix m m α) :=
 #align alg_hom.map_matrix_id AlgHom.mapMatrix_id
 
 @[simp]
-theorem mapMatrix_comp (f : β →ₐ[R] γ) (g : α →ₐ[R] β) :
+lemma mapMatrix_comp (f : β →ₐ[R] γ) (g : α →ₐ[R] β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →ₐ[R] _) :=
   rfl
 #align alg_hom.map_matrix_comp AlgHom.mapMatrix_comp
@@ -1630,13 +1630,13 @@ lemma mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α 
 #align alg_equiv.map_matrix_refl AlgEquiv.mapMatrix_refl
 
 @[simp]
-theorem mapMatrix_symm (f : α ≃ₐ[R] β) :
+lemma mapMatrix_symm (f : α ≃ₐ[R] β) :
     f.mapMatrix.symm = (f.symm.mapMatrix : Matrix m m β ≃ₐ[R] _) :=
   rfl
 #align alg_equiv.map_matrix_symm AlgEquiv.mapMatrix_symm
 
 @[simp]
-theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
+lemma mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃ₐ[R] _) :=
   rfl
 #align alg_equiv.map_matrix_trans AlgEquiv.mapMatrix_trans
@@ -1873,13 +1873,13 @@ lemma vec_one_mul [Fintype m] (A : Matrix m n α) : vecMul 1 A = fun j => ∑ i,
 variable [Fintype m] [Fintype n] [DecidableEq m]
 
 @[simp]
-theorem one_mulVec (v : m → α) : mulVec 1 v = v := by
+lemma one_mulVec (v : m → α) : mulVec 1 v = v := by
   ext
   rw [← diagonal_one, mulVec_diagonal, one_mul]
 #align matrix.one_mul_vec Matrix.one_mulVec
 
 @[simp]
-theorem vecMul_one (v : m → α) : vecMul v 1 = v := by
+lemma vecMul_one (v : m → α) : vecMul v 1 = v := by
   ext
   rw [← diagonal_one, vecMul_diagonal, mul_one]
 #align matrix.vec_mul_one Matrix.vecMul_one
@@ -1961,7 +1961,7 @@ section Transpose
 open Matrix
 
 @[simp]
-theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
+lemma transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   ext
   rfl
 #align matrix.transpose_transpose Matrix.transpose_transpose
@@ -2413,13 +2413,13 @@ def submatrix (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) : 
 #align matrix.submatrix Matrix.submatrix
 
 @[simp]
-theorem submatrix_apply (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) (i j) :
+lemma submatrix_apply (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) (i j) :
     A.submatrix r_reindex c_reindex i j = A (r_reindex i) (c_reindex j) :=
   rfl
 #align matrix.submatrix_apply Matrix.submatrix_apply
 
 @[simp]
-theorem submatrix_id_id (A : Matrix m n α) : A.submatrix id id = A :=
+lemma submatrix_id_id (A : Matrix m n α) : A.submatrix id id = A :=
   ext fun _ _ => rfl
 #align matrix.submatrix_id_id Matrix.submatrix_id_id
 
@@ -2431,7 +2431,7 @@ lemma submatrix_submatrix {l₂ o₂ : Type*} (A : Matrix m n α) (r₁ : l → 
 #align matrix.submatrix_submatrix Matrix.submatrix_submatrix
 
 @[simp]
-theorem transpose_submatrix (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) :
+lemma transpose_submatrix (A : Matrix m n α) (r_reindex : l → m) (c_reindex : o → n) :
     (A.submatrix r_reindex c_reindex)ᵀ = Aᵀ.submatrix c_reindex r_reindex :=
   ext fun _ _ => rfl
 #align matrix.transpose_submatrix Matrix.transpose_submatrix
@@ -2468,7 +2468,7 @@ lemma submatrix_smul {R : Type*} [SMul R α] (r : R) (A : Matrix m n α) :
   rfl
 #align matrix.submatrix_smul Matrix.submatrix_smul
 
-theorem submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Matrix m n α) :
+lemma submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Matrix m n α) :
     (A.map f).submatrix e₁ e₂ = (A.submatrix e₁ e₂).map f :=
   rfl
 #align matrix.submatrix_map Matrix.submatrix_map
@@ -2497,7 +2497,7 @@ lemma submatrix_mul [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p q : T
   ext fun _ _ => (he₂.sum_comp _).symm
 #align matrix.submatrix_mul Matrix.submatrix_mul
 
-theorem diag_submatrix (A : Matrix m m α) (e : l → m) : diag (A.submatrix e e) = A.diag ∘ e :=
+lemma diag_submatrix (A : Matrix m m α) (e : l → m) : diag (A.submatrix e e) = A.diag ∘ e :=
   rfl
 #align matrix.diag_submatrix Matrix.diag_submatrix
 
@@ -2582,18 +2582,18 @@ def reindex (eₘ : m ≃ l) (eₙ : n ≃ o) : Matrix m n α ≃ Matrix l o α 
 #align matrix.reindex Matrix.reindex
 
 @[simp]
-theorem reindex_apply (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
+lemma reindex_apply (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     reindex eₘ eₙ M = M.submatrix eₘ.symm eₙ.symm :=
   rfl
 #align matrix.reindex_apply Matrix.reindex_apply
 
 -- @[simp] -- Porting note: simp can prove this
-theorem reindex_refl_refl (A : Matrix m n α) : reindex (Equiv.refl _) (Equiv.refl _) A = A :=
+lemma reindex_refl_refl (A : Matrix m n α) : reindex (Equiv.refl _) (Equiv.refl _) A = A :=
   A.submatrix_id_id
 #align matrix.reindex_refl_refl Matrix.reindex_refl_refl
 
 @[simp]
-theorem reindex_symm (eₘ : m ≃ l) (eₙ : n ≃ o) :
+lemma reindex_symm (eₘ : m ≃ l) (eₙ : n ≃ o) :
     (reindex eₘ eₙ).symm = (reindex eₘ.symm eₙ.symm : Matrix l o α ≃ _) :=
   rfl
 #align matrix.reindex_symm Matrix.reindex_symm
@@ -2605,7 +2605,7 @@ lemma reindex_trans {l₂ o₂ : Type*} (eₘ : m ≃ l) (eₙ : n ≃ o) (eₘ�
   Equiv.ext fun A => (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm : _)
 #align matrix.reindex_trans Matrix.reindex_trans
 
-theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
+lemma transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᵀ = reindex eₙ eₘ Mᵀ :=
   rfl
 #align matrix.transpose_reindex Matrix.transpose_reindex
@@ -2727,13 +2727,13 @@ lemma row_smul [SMul R α] (x : R) (v : m → α) : row (x • v) = x • row v 
 #align matrix.row_smul Matrix.row_smul
 
 @[simp]
-theorem transpose_col (v : m → α) : (Matrix.col v)ᵀ = Matrix.row v := by
+lemma transpose_col (v : m → α) : (Matrix.col v)ᵀ = Matrix.row v := by
   ext
   rfl
 #align matrix.transpose_col Matrix.transpose_col
 
 @[simp]
-theorem transpose_row (v : m → α) : (Matrix.row v)ᵀ = Matrix.col v := by
+lemma transpose_row (v : m → α) : (Matrix.row v)ᵀ = Matrix.col v := by
   ext
   rfl
 #align matrix.transpose_row Matrix.transpose_row
@@ -2983,7 +2983,7 @@ namespace RingHom
 
 variable [Fintype n] [NonAssocSemiring α] [NonAssocSemiring β]
 
-theorem map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (f : α →+* β) :
+lemma map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (f : α →+* β) :
     f ((M * N) i j) = (M.map f * N.map f) i j := by
   simp [Matrix.mul_apply, map_sum]
 #align ring_hom.map_matrix_mul RingHom.map_matrix_mul

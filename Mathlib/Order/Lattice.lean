@@ -148,19 +148,19 @@ lemma le_sup_right' : b ≤ a ⊔ b :=
   le_sup_right
 #align le_sup_right' le_sup_right'
 
-theorem le_sup_of_le_left (h : c ≤ a) : c ≤ a ⊔ b :=
+lemma le_sup_of_le_left (h : c ≤ a) : c ≤ a ⊔ b :=
   le_trans h le_sup_left
 #align le_sup_of_le_left le_sup_of_le_left
 
-theorem le_sup_of_le_right (h : c ≤ b) : c ≤ a ⊔ b :=
+lemma le_sup_of_le_right (h : c ≤ b) : c ≤ a ⊔ b :=
   le_trans h le_sup_right
 #align le_sup_of_le_right le_sup_of_le_right
 
-theorem lt_sup_of_lt_left (h : c < a) : c < a ⊔ b :=
+lemma lt_sup_of_lt_left (h : c < a) : c < a ⊔ b :=
   h.trans_le le_sup_left
 #align lt_sup_of_lt_left lt_sup_of_lt_left
 
-theorem lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
+lemma lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
   h.trans_le le_sup_right
 #align lt_sup_of_lt_right lt_sup_of_lt_right
 
@@ -213,7 +213,7 @@ lemma right_lt_sup : b < a ⊔ b ↔ ¬a ≤ b :=
   le_sup_right.lt_iff_ne.trans $ not_congr right_eq_sup
 #align right_lt_sup right_lt_sup
 
-theorem left_or_right_lt_sup (h : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
+lemma left_or_right_lt_sup (h : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
   h.not_le_or_not_le.symm.imp left_lt_sup.2 right_lt_sup.2
 #align left_or_right_lt_sup left_or_right_lt_sup
 
@@ -226,17 +226,17 @@ lemma le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
 #align le_iff_exists_sup le_iff_exists_sup
 
 @[gcongr]
-theorem sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
+lemma sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
   sup_le (le_sup_of_le_left h₁) (le_sup_of_le_right h₂)
 #align sup_le_sup sup_le_sup
 
 @[gcongr]
-theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
+lemma sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
   sup_le_sup le_rfl h₁
 #align sup_le_sup_left sup_le_sup_left
 
 @[gcongr]
-theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
+lemma sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
 
@@ -260,7 +260,7 @@ lemma sup_assoc : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
 instance : IsAssociative α (· ⊔ ·) :=
   ⟨@sup_assoc _ _⟩
 
-theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
+lemma sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, @sup_comm _ _ a, sup_assoc]
 #align sup_left_right_swap sup_left_right_swap
 
@@ -272,31 +272,31 @@ lemma sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 lemma sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by simp
 #align sup_right_idem sup_right_idem
 
-theorem sup_left_comm (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (a ⊔ c) := by
+lemma sup_left_comm (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (a ⊔ c) := by
   rw [← sup_assoc, ← sup_assoc, @sup_comm α _ a]
 #align sup_left_comm sup_left_comm
 
-theorem sup_right_comm (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ b := by
+lemma sup_right_comm (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ b := by
   rw [sup_assoc, sup_assoc, @sup_comm _ _ b]
 #align sup_right_comm sup_right_comm
 
-theorem sup_sup_sup_comm (a b c d : α) : a ⊔ b ⊔ (c ⊔ d) = a ⊔ c ⊔ (b ⊔ d) := by
+lemma sup_sup_sup_comm (a b c d : α) : a ⊔ b ⊔ (c ⊔ d) = a ⊔ c ⊔ (b ⊔ d) := by
   rw [sup_assoc, sup_left_comm b, ← sup_assoc]
 #align sup_sup_sup_comm sup_sup_sup_comm
 
-theorem sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔ c) := by
+lemma sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 #align sup_sup_distrib_left sup_sup_distrib_left
 
-theorem sup_sup_distrib_right (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ (b ⊔ c) := by
+lemma sup_sup_distrib_right (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ (b ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 #align sup_sup_distrib_right sup_sup_distrib_right
 
-theorem sup_congr_left (hb : b ≤ a ⊔ c) (hc : c ≤ a ⊔ b) : a ⊔ b = a ⊔ c :=
+lemma sup_congr_left (hb : b ≤ a ⊔ c) (hc : c ≤ a ⊔ b) : a ⊔ b = a ⊔ c :=
   (sup_le le_sup_left hb).antisymm $ sup_le le_sup_left hc
 #align sup_congr_left sup_congr_left
 
-theorem sup_congr_right (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a ⊔ c = b ⊔ c :=
+lemma sup_congr_right (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a ⊔ c = b ⊔ c :=
   (sup_le ha le_sup_right).antisymm $ sup_le hb le_sup_right
 #align sup_congr_right sup_congr_right
 
@@ -308,7 +308,7 @@ lemma sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔
   ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
 #align sup_eq_sup_iff_right sup_eq_sup_iff_right
 
-theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
+lemma Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
   hab.symm.not_le_or_not_le.imp left_lt_sup.2 right_lt_sup.2
 #align ne.lt_sup_or_lt_sup Ne.lt_sup_or_lt_sup
 
@@ -338,7 +338,7 @@ lemma SemilatticeSup.ext {α} {A B : SemilatticeSup α}
   congr
 #align semilattice_sup.ext SemilatticeSup.ext
 
-theorem ite_le_sup (s s' : α) (P : Prop) [Decidable P] : ite P s s' ≤ s ⊔ s' :=
+lemma ite_le_sup (s s' : α) (P : Prop) [Decidable P] : ite P s s' ≤ s ⊔ s' :=
   if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
 #align ite_le_sup ite_le_sup
 
@@ -375,7 +375,7 @@ instance OrderDual.semilatticeInf (α) [SemilatticeSup α] : SemilatticeInf α�
   inf_le_right := @le_sup_right α _
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
 
-theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
+lemma SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
   OrderDual.semilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext $ fun _ _ => Iff.rfl
 #align semilattice_sup.dual_dual SemilatticeSup.dual_dual
@@ -410,19 +410,19 @@ lemma le_inf : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
   SemilatticeInf.le_inf a b c
 #align le_inf le_inf
 
-theorem inf_le_of_left_le (h : a ≤ c) : a ⊓ b ≤ c :=
+lemma inf_le_of_left_le (h : a ≤ c) : a ⊓ b ≤ c :=
   le_trans inf_le_left h
 #align inf_le_of_left_le inf_le_of_left_le
 
-theorem inf_le_of_right_le (h : b ≤ c) : a ⊓ b ≤ c :=
+lemma inf_le_of_right_le (h : b ≤ c) : a ⊓ b ≤ c :=
   le_trans inf_le_right h
 #align inf_le_of_right_le inf_le_of_right_le
 
-theorem inf_lt_of_left_lt (h : a < c) : a ⊓ b < c :=
+lemma inf_lt_of_left_lt (h : a < c) : a ⊓ b < c :=
   lt_of_le_of_lt inf_le_left h
 #align inf_lt_of_left_lt inf_lt_of_left_lt
 
-theorem inf_lt_of_right_lt (h : b < c) : a ⊓ b < c :=
+lemma inf_lt_of_right_lt (h : b < c) : a ⊓ b < c :=
   lt_of_le_of_lt inf_le_right h
 #align inf_lt_of_right_lt inf_lt_of_right_lt
 
@@ -470,22 +470,22 @@ lemma inf_lt_right : a ⊓ b < b ↔ ¬b ≤ a :=
   @right_lt_sup αᵒᵈ _ _ _
 #align inf_lt_right inf_lt_right
 
-theorem inf_lt_left_or_right (h : a ≠ b) : a ⊓ b < a ∨ a ⊓ b < b :=
+lemma inf_lt_left_or_right (h : a ≠ b) : a ⊓ b < a ∨ a ⊓ b < b :=
   @left_or_right_lt_sup αᵒᵈ _ _ _ h
 #align inf_lt_left_or_right inf_lt_left_or_right
 
 @[gcongr]
-theorem inf_le_inf (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊓ c ≤ b ⊓ d :=
+lemma inf_le_inf (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊓ c ≤ b ⊓ d :=
   @sup_le_sup αᵒᵈ _ _ _ _ _ h₁ h₂
 #align inf_le_inf inf_le_inf
 
 @[gcongr]
-theorem inf_le_inf_right (a : α) {b c : α} (h : b ≤ c) : b ⊓ a ≤ c ⊓ a :=
+lemma inf_le_inf_right (a : α) {b c : α} (h : b ≤ c) : b ⊓ a ≤ c ⊓ a :=
   inf_le_inf h le_rfl
 #align inf_le_inf_right inf_le_inf_right
 
 @[gcongr]
-theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c :=
+lemma inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c :=
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
 
@@ -511,7 +511,7 @@ lemma inf_assoc : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) :=
 instance : IsAssociative α (· ⊓ ·) :=
   ⟨@inf_assoc _ _⟩
 
-theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
+lemma inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
 #align inf_left_right_swap inf_left_right_swap
 
@@ -525,31 +525,31 @@ lemma inf_right_idem : a ⊓ b ⊓ b = a ⊓ b :=
   @sup_right_idem αᵒᵈ _ a b
 #align inf_right_idem inf_right_idem
 
-theorem inf_left_comm (a b c : α) : a ⊓ (b ⊓ c) = b ⊓ (a ⊓ c) :=
+lemma inf_left_comm (a b c : α) : a ⊓ (b ⊓ c) = b ⊓ (a ⊓ c) :=
   @sup_left_comm αᵒᵈ _ a b c
 #align inf_left_comm inf_left_comm
 
-theorem inf_right_comm (a b c : α) : a ⊓ b ⊓ c = a ⊓ c ⊓ b :=
+lemma inf_right_comm (a b c : α) : a ⊓ b ⊓ c = a ⊓ c ⊓ b :=
   @sup_right_comm αᵒᵈ _ a b c
 #align inf_right_comm inf_right_comm
 
-theorem inf_inf_inf_comm (a b c d : α) : a ⊓ b ⊓ (c ⊓ d) = a ⊓ c ⊓ (b ⊓ d) :=
+lemma inf_inf_inf_comm (a b c d : α) : a ⊓ b ⊓ (c ⊓ d) = a ⊓ c ⊓ (b ⊓ d) :=
   @sup_sup_sup_comm αᵒᵈ _ _ _ _ _
 #align inf_inf_inf_comm inf_inf_inf_comm
 
-theorem inf_inf_distrib_left (a b c : α) : a ⊓ (b ⊓ c) = a ⊓ b ⊓ (a ⊓ c) :=
+lemma inf_inf_distrib_left (a b c : α) : a ⊓ (b ⊓ c) = a ⊓ b ⊓ (a ⊓ c) :=
   @sup_sup_distrib_left αᵒᵈ _ _ _ _
 #align inf_inf_distrib_left inf_inf_distrib_left
 
-theorem inf_inf_distrib_right (a b c : α) : a ⊓ b ⊓ c = a ⊓ c ⊓ (b ⊓ c) :=
+lemma inf_inf_distrib_right (a b c : α) : a ⊓ b ⊓ c = a ⊓ c ⊓ (b ⊓ c) :=
   @sup_sup_distrib_right αᵒᵈ _ _ _ _
 #align inf_inf_distrib_right inf_inf_distrib_right
 
-theorem inf_congr_left (hb : a ⊓ c ≤ b) (hc : a ⊓ b ≤ c) : a ⊓ b = a ⊓ c :=
+lemma inf_congr_left (hb : a ⊓ c ≤ b) (hc : a ⊓ b ≤ c) : a ⊓ b = a ⊓ c :=
   @sup_congr_left αᵒᵈ _ _ _ _ hb hc
 #align inf_congr_left inf_congr_left
 
-theorem inf_congr_right (h1 : b ⊓ c ≤ a) (h2 : a ⊓ c ≤ b) : a ⊓ c = b ⊓ c :=
+lemma inf_congr_right (h1 : b ⊓ c ≤ a) (h2 : a ⊓ c ≤ b) : a ⊓ c = b ⊓ c :=
   @sup_congr_right αᵒᵈ _ _ _ _ h1 h2
 #align inf_congr_right inf_congr_right
 
@@ -582,12 +582,12 @@ lemma SemilatticeInf.ext {α} {A B : SemilatticeInf α}
   congr
 #align semilattice_inf.ext SemilatticeInf.ext
 
-theorem SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
+lemma SemilatticeInf.dual_dual (α : Type*) [H : SemilatticeInf α] :
   OrderDual.semilatticeInf αᵒᵈ = H :=
   SemilatticeInf.ext $ fun _ _ => Iff.rfl
 #align semilattice_inf.dual_dual SemilatticeInf.dual_dual
 
-theorem inf_le_ite (s s' : α) (P : Prop) [Decidable P] : s ⊓ s' ≤ ite P s s' :=
+lemma inf_le_ite (s s' : α) (P : Prop) [Decidable P] : s ⊓ s' ≤ ite P s s' :=
   @ite_le_sup αᵒᵈ _ _ _ _ _
 #align inf_le_ite inf_le_ite
 
@@ -787,7 +787,7 @@ lemma inf_sup_right : (y ⊔ z) ⊓ x = y ⊓ x ⊔ z ⊓ x := by
   simp only [inf_sup_left, fun y : α => @inf_comm α _ y x, eq_self_iff_true]
 #align inf_sup_right inf_sup_right
 
-theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y ⊔ z) : x ≤ y :=
+lemma le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y ⊔ z) : x ≤ y :=
   calc
     x ≤ y ⊓ z ⊔ x := le_sup_right
     _ = (y ⊔ x) ⊓ (x ⊔ z) := by rw [sup_inf_right, @sup_comm _ _ x]
@@ -840,7 +840,7 @@ lemma inf_eq_min : a ⊓ b = min a b :=
   rfl
 #align inf_eq_min inf_eq_min
 
-theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
+lemma sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
   (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
   rwa [sup_eq_left.2 h]
 #align sup_ind sup_ind
@@ -870,7 +870,7 @@ lemma sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
    fun h => @sup_ind α _ b c (fun x => x < a) h.1 h.2⟩
 #align sup_lt_iff sup_lt_iff
 
-theorem inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=
+lemma inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=
   @sup_ind αᵒᵈ _ _ _ _
 #align inf_ind inf_ind
 
@@ -978,22 +978,22 @@ section LinearOrder
 variable [LinearOrder α]
 
 @[simp]
-theorem ofDual_min (a b : αᵒᵈ) : ofDual (min a b) = max (ofDual a) (ofDual b) :=
+lemma ofDual_min (a b : αᵒᵈ) : ofDual (min a b) = max (ofDual a) (ofDual b) :=
   rfl
 #align of_dual_min ofDual_min
 
 @[simp]
-theorem ofDual_max (a b : αᵒᵈ) : ofDual (max a b) = min (ofDual a) (ofDual b) :=
+lemma ofDual_max (a b : αᵒᵈ) : ofDual (max a b) = min (ofDual a) (ofDual b) :=
   rfl
 #align of_dual_max ofDual_max
 
 @[simp]
-theorem toDual_min (a b : α) : toDual (min a b) = max (toDual a) (toDual b) :=
+lemma toDual_min (a b : α) : toDual (min a b) = max (toDual a) (toDual b) :=
   rfl
 #align to_dual_min toDual_min
 
 @[simp]
-theorem toDual_max (a b : α) : toDual (max a b) = min (toDual a) (toDual b) :=
+lemma toDual_max (a b : α) : toDual (max a b) = min (toDual a) (toDual b) :=
   rfl
 #align to_dual_max toDual_max
 

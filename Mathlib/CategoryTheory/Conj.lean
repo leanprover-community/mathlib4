@@ -79,12 +79,12 @@ def conj : End X ≃* End Y :=
   { homCongr α α with map_mul' := fun f g => homCongr_comp α α α g f }
 #align category_theory.iso.conj CategoryTheory.Iso.conj
 
-theorem conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.hom :=
+lemma conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.hom :=
   rfl
 #align category_theory.iso.conj_apply CategoryTheory.Iso.conj_apply
 
 @[simp]
-theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
+lemma conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
   α.conj.map_mul g f
 #align category_theory.iso.conj_comp CategoryTheory.Iso.conj_comp
 
@@ -94,7 +94,7 @@ lemma conj_id : α.conj (𝟙 X) = 𝟙 Y :=
 #align category_theory.iso.conj_id CategoryTheory.Iso.conj_id
 
 @[simp]
-theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
+lemma refl_conj (f : End X) : (Iso.refl X).conj f = f := by
   rw [conj_apply, Iso.refl_inv, Iso.refl_hom, Category.id_comp, Category.comp_id]
 #align category_theory.iso.refl_conj CategoryTheory.Iso.refl_conj
 
@@ -104,17 +104,17 @@ lemma trans_conj {Z : C} (β : Y ≅ Z) (f : End X) : (α ≪≫ β).conj f = β
 #align category_theory.iso.trans_conj CategoryTheory.Iso.trans_conj
 
 @[simp]
-theorem symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by
+lemma symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by
   rw [← trans_conj, α.self_symm_id, refl_conj]
 #align category_theory.iso.symm_self_conj CategoryTheory.Iso.symm_self_conj
 
 @[simp]
-theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
+lemma self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
   α.symm.symm_self_conj f
 #align category_theory.iso.self_symm_conj CategoryTheory.Iso.self_symm_conj
 
 /- Porting note: removed `@[simp]`; simp can prove this -/
-theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
+lemma conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 #align category_theory.iso.conj_pow CategoryTheory.Iso.conj_pow
 
@@ -125,12 +125,12 @@ def conjAut : Aut X ≃* Aut Y :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut CategoryTheory.Iso.conjAut
 
-theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by aesop_cat
+lemma conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_apply CategoryTheory.Iso.conjAut_apply
 
 @[simp]
-theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
+lemma conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_hom CategoryTheory.Iso.conjAut_hom
@@ -143,25 +143,25 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.iso.trans_conj_Aut CategoryTheory.Iso.trans_conjAut
 
 /- Porting note: removed `@[simp]`; simp can prove this -/
-theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
+lemma conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
   α.conjAut.map_mul f g
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_mul CategoryTheory.Iso.conjAut_mul
 
 @[simp]
-theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪≫ α.conjAut g :=
+lemma conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪≫ α.conjAut g :=
   conjAut_mul α g f
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_trans CategoryTheory.Iso.conjAut_trans
 
 /- Porting note: removed `@[simp]`; simp can prove this -/
-theorem conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
+lemma conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   α.conjAut.toMonoidHom.map_pow f n
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_pow CategoryTheory.Iso.conjAut_pow
 
 /- Porting note: removed `@[simp]`; simp can prove this -/
-theorem conjAut_zpow (f : Aut X) (n : ℤ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
+lemma conjAut_zpow (f : Aut X) (n : ℤ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   α.conjAut.toMonoidHom.map_zpow f n
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_zpow CategoryTheory.Iso.conjAut_zpow
@@ -183,7 +183,7 @@ lemma map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
   map_homCongr F α α f
 #align category_theory.functor.map_conj CategoryTheory.Functor.map_conj
 
-theorem map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
+lemma map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
     F.mapIso (α.conjAut f) = (F.mapIso α).conjAut (F.mapIso f) := by
   ext; simp only [mapIso_hom, Iso.conjAut_hom, F.map_conj]
 set_option linter.uppercaseLean3 false in

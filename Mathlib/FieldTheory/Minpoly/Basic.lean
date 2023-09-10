@@ -49,7 +49,7 @@ variable [CommRing A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
 variable {x : B}
 
 /-- A minimal polynomial is monic. -/
-theorem monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
+lemma monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
   delta minpoly
   rw [dif_pos hx]
   exact (degree_lt_wf.min_mem _ hx).1
@@ -60,18 +60,18 @@ lemma ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
   (monic hx).ne_zero
 #align minpoly.ne_zero minpoly.ne_zero
 
-theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
+lemma eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 #align minpoly.eq_zero minpoly.eq_zero
 
-theorem minpoly_algHom (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
+lemma minpoly_algHom (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
   refine' dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => _) fun _ => rfl
   simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 #align minpoly.minpoly_alg_hom minpoly.minpoly_algHom
 
 @[simp]
-theorem minpoly_algEquiv (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
+lemma minpoly_algEquiv (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
   minpoly_algHom (f : B →ₐ[A] B') f.injective x
 #align minpoly.minpoly_alg_equiv minpoly.minpoly_algEquiv
 
@@ -112,7 +112,7 @@ lemma not_isUnit [Nontrivial B] : ¬IsUnit (minpoly A x) := by
     exact not_isUnit_zero
 #align minpoly.not_is_unit minpoly.not_isUnit
 
-theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
+lemma mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
     x ∈ (algebraMap A B).range := by
   have h : IsIntegral A x := by
     by_contra h
@@ -198,7 +198,7 @@ lemma degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A x)
 
 /-- If `B/A` is an injective ring extension, and `a` is an element of `A`,
 then the minimal polynomial of `algebraMap A B a` is `X - C a`. -/
-theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMap A B)) :
+lemma eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMap A B)) :
     minpoly A (algebraMap A B a) = X - C a := by
   nontriviality A
   refine' (unique' A _ (monic_X_sub_C a) _ _).symm
@@ -237,7 +237,7 @@ lemma aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamo
 variable [IsDomain A] [IsDomain B]
 
 /-- A minimal polynomial is irreducible. -/
-theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
+lemma irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   refine' (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => _
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
   by_contra' h

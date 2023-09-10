@@ -99,25 +99,25 @@ lemma factors_chain {n : ℕ} :
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 #align nat.factors_chain Nat.factors_chain
 
-theorem factors_chain_2 (n) : List.Chain (· ≤ ·) 2 (factors n) :=
+lemma factors_chain_2 (n) : List.Chain (· ≤ ·) 2 (factors n) :=
   factors_chain fun _ pp _ => pp.two_le
 #align nat.factors_chain_2 Nat.factors_chain_2
 
-theorem factors_chain' (n) : List.Chain' (· ≤ ·) (factors n) :=
+lemma factors_chain' (n) : List.Chain' (· ≤ ·) (factors n) :=
   @List.Chain'.tail _ _ (_ :: _) (factors_chain_2 _)
 #align nat.factors_chain' Nat.factors_chain'
 
-theorem factors_sorted (n : ℕ) : List.Sorted (· ≤ ·) (factors n) :=
+lemma factors_sorted (n : ℕ) : List.Sorted (· ≤ ·) (factors n) :=
   List.chain'_iff_pairwise.1 (factors_chain' _)
 #align nat.factors_sorted Nat.factors_sorted
 
 /-- `factors` can be constructed inductively by extracting `minFac`, for sufficiently large `n`. -/
-theorem factors_add_two (n : ℕ) :
+lemma factors_add_two (n : ℕ) :
     factors (n + 2) = minFac (n + 2) :: factors ((n + 2) / minFac (n + 2)) := by rw [factors]
 #align nat.factors_add_two Nat.factors_add_two
 
 @[simp]
-theorem factors_eq_nil (n : ℕ) : n.factors = [] ↔ n = 0 ∨ n = 1 := by
+lemma factors_eq_nil (n : ℕ) : n.factors = [] ↔ n = 0 ∨ n = 1 := by
   constructor <;> intro h
   · rcases n with (_ | _ | n)
     · exact Or.inl rfl
@@ -291,7 +291,7 @@ lemma mem_factors_mul_right {p a b : ℕ} (hpb : p ∈ b.factors) (ha : a ≠ 0)
   exact mem_factors_mul_left hpb ha
 #align nat.mem_factors_mul_right Nat.mem_factors_mul_right
 
-theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
+lemma eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
     (∃ k : ℕ, n = 2 ^ k) ∨ ∃ p, Nat.Prime p ∧ p ∣ n ∧ Odd p :=
   (eq_or_ne n 0).elim (fun hn => Or.inr ⟨3, prime_three, hn.symm ▸ dvd_zero 3, ⟨1, rfl⟩⟩) fun hn =>
     or_iff_not_imp_right.mpr fun H =>

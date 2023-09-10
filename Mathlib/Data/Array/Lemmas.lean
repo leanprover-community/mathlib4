@@ -145,18 +145,18 @@ section Length
 
 -- variable {n : ℕ} {α : Type u}
 
--- theorem rev_list_length_aux (a : Array' n α) (i h) :
+-- lemma rev_list_length_aux (a : Array' n α) (i h) :
 --     (a.iterateAux (fun _ => (· :: ·)) i h []).length = i := by
 --   induction i <;> simp [*, DArray.iterateAux]
 #noalign array.rev_list_length_aux -- Array'.rev_list_length_aux
 
 -- @[simp]
--- theorem revList_length (a : Array' n α) : a.revList.length = n :=
+-- lemma revList_length (a : Array' n α) : a.revList.length = n :=
 --   rev_list_length_aux a _ _
 #noalign array.rev_list_length --Array'.revList_length
 
 -- @[simp]
--- theorem toList_length (a : Array' n α) : a.toList.length = n := by
+-- lemma toList_length (a : Array' n α) : a.toList.length = n := by
 --   rw [← rev_list_reverse, List.length_reverse, rev_list_length]
 #noalign array.to_list_length --Array'.toList_length
 
@@ -167,7 +167,7 @@ section Nth
 
 -- variable {n : ℕ} {α : Type u} {a : Array' n α}
 
--- theorem to_list_nthLe_aux (i : ℕ) (ih : i < n) :
+-- lemma to_list_nthLe_aux (i : ℕ) (ih : i < n) :
 --     ∀ (j) {jh t h'},
 --       (∀ k tl, j + k = i → List.nthLe t k tl = a.read ⟨i, ih⟩) →
 --         (a.revIterateAux (fun _ => (· :: ·)) j jh t).nthLe i h' = a.read ⟨i, ih⟩
@@ -183,12 +183,12 @@ section Nth
 --           simp [List.nthLe] <;> exact al _ _ (by simp [add_comm, add_assoc, *] <;> cc)
 #noalign array.to_list_nth_le_aux --Array'.to_list_nthLe_aux
 
--- theorem toList_nthLe (i : ℕ) (h h') : List.nthLe a.toList i h' = a.read ⟨i, h⟩ :=
+-- lemma toList_nthLe (i : ℕ) (h h') : List.nthLe a.toList i h' = a.read ⟨i, h⟩ :=
 --   to_list_nthLe_aux _ _ _ fun k tl => absurd tl k.not_lt_zero
 #noalign array.to_list_nth_le --Array'.toList_nthLe
 
 -- @[simp]
--- theorem toList_nth_le' (a : Array' n α) (i : Fin n) (h') : List.nthLe a.toList i h'
+-- lemma toList_nth_le' (a : Array' n α) (i : Fin n) (h') : List.nthLe a.toList i h'
 --    = a.read i := by
 --   cases i <;> apply to_list_nth_le
 #noalign array.to_list_nth_le' -- Array'.toList_nth_le'
@@ -236,7 +236,7 @@ section ToArray
 -- variable {n : ℕ} {α : Type u}
 
 -- @[simp]
--- theorem toList_toArray (a : Array' n α) : HEq a.toList.toArray a :=
+-- lemma toList_toArray (a : Array' n α) : HEq a.toList.toArray a :=
 --   hEq_of_hEq_of_eq
 --       (@Eq.drecOn
 --         (fun m (e : a.toList.length = m) =>
@@ -247,7 +247,7 @@ section ToArray
 #noalign array.to_list_to_array --Array'.toList_toArray
 
 -- @[simp]
--- theorem toArray_toList (l : List α) : l.toArray.toList = l :=
+-- lemma toArray_toList (l : List α) : l.toArray.toList = l :=
 --   List.ext_nthLe (toList_length _) fun n h1 h2 => toList_nthLe _ h2 _
 #noalign array.to_array_to_list --Array'.toArray_toList
 
@@ -286,7 +286,7 @@ section PushBack
 #noalign array.push_back_to_list -- Array'.pushBack_toList
 
 -- @[simp]
--- theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read i.cast_succ = a.read i := by
+-- lemma read_pushBack_left (i : Fin n) : (a.pushBack v).read i.cast_succ = a.read i := by
 --   cases' i with i hi
 --   have : ¬i = n := ne_of_lt hi
 --   simp [push_back, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]

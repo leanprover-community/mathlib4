@@ -120,7 +120,7 @@ protected noncomputable irreducible_def inv (z : K) : K := open Classical in
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 #align is_fraction_ring.inv IsFractionRing.inv
 
-protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
+protected lemma mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
   rw [IsFractionRing.inv, dif_neg hx, ←
     IsUnit.mul_left_inj
       (map_units K
@@ -162,13 +162,13 @@ lemma mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / al
   mk'_mk_eq_div s.2
 #align is_fraction_ring.mk'_eq_div IsFractionRing.mk'_eq_div
 
-theorem div_surjective (z : K) :
+lemma div_surjective (z : K) :
     ∃ (x y : A) (hy : y ∈ nonZeroDivisors A), algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 #align is_fraction_ring.div_surjective IsFractionRing.div_surjective
 
-theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
+lemma isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
     IsUnit (g y) :=
   IsUnit.mk0 (g y) <|
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
@@ -206,7 +206,7 @@ and an injective ring hom `g : A →+* L` where `L` is a field,
 the field hom induced from `K` to `L` maps `x` to `g x` for all
 `x : A`. -/
 @[simp]
-theorem lift_algebraMap (hg : Injective g) (x) : lift hg (algebraMap A K x) = g x :=
+lemma lift_algebraMap (hg : Injective g) (x) : lift hg (algebraMap A K x) = g x :=
   lift_eq _ _
 #align is_fraction_ring.lift_algebra_map IsFractionRing.lift_algebraMap
 
@@ -214,7 +214,7 @@ theorem lift_algebraMap (hg : Injective g) (x) : lift hg (algebraMap A K x) = g 
 and an injective ring hom `g : A →+* L` where `L` is a field,
 field hom induced from `K` to `L` maps `f x / f y` to `g x / g y` for all
 `x : A, y ∈ NonZeroDivisors A`. -/
-theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) : lift hg (mk' K x y) = g x / g y :=
+lemma lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) : lift hg (mk' K x y) = g x / g y :=
   by simp only [mk'_eq_div, map_div₀, lift_algebraMap]
 #align is_fraction_ring.lift_mk' IsFractionRing.lift_mk'
 
@@ -244,7 +244,7 @@ noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : 
       exact h.symm.map_ne_zero_iff)
 #align is_fraction_ring.field_equiv_of_ring_equiv IsFractionRing.fieldEquivOfRingEquiv
 
-theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
+lemma isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
@@ -263,7 +263,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     rw [← h.symm.map_mul, hz, h.symm.map_zero]
 #align is_fraction_ring.is_fraction_ring_iff_of_base_ring_equiv IsFractionRing.isFractionRing_iff_of_base_ringEquiv
 
-protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
+protected lemma nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
   apply nontrivial_of_ne
   intro h

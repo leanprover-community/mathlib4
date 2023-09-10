@@ -114,7 +114,7 @@ irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 #align tensor_algebra.ι TensorAlgebra.ι
 
-theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
+lemma ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
     RingQuot.mkAlgHom R (Rel R M) (FreeAlgebra.ι R m) = ι R m := by
   rw [ι]
   rfl
@@ -226,18 +226,18 @@ lemma algebraMap_leftInverse :
 #align tensor_algebra.algebra_map_left_inverse TensorAlgebra.algebraMap_leftInverse
 
 @[simp]
-theorem algebraMap_inj (x y : R) :
+lemma algebraMap_inj (x y : R) :
     algebraMap R (TensorAlgebra R M) x = algebraMap R (TensorAlgebra R M) y ↔ x = y :=
   (algebraMap_leftInverse M).injective.eq_iff
 #align tensor_algebra.algebra_map_inj TensorAlgebra.algebraMap_inj
 
 @[simp]
-theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 0 ↔ x = 0 :=
+lemma algebraMap_eq_zero_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 0 ↔ x = 0 :=
   map_eq_zero_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align tensor_algebra.algebra_map_eq_zero_iff TensorAlgebra.algebraMap_eq_zero_iff
 
 @[simp]
-theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 ↔ x = 1 :=
+lemma algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align tensor_algebra.algebra_map_eq_one_iff TensorAlgebra.algebraMap_eq_one_iff
 
@@ -251,7 +251,7 @@ def toTrivSqZeroExt [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
 #align tensor_algebra.to_triv_sq_zero_ext TensorAlgebra.toTrivSqZeroExt
 
 @[simp]
-theorem toTrivSqZeroExt_ι (x : M) [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
+lemma toTrivSqZeroExt_ι (x : M) [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     toTrivSqZeroExt (ι R x) = TrivSqZeroExt.inr x :=
   lift_ι_apply _ _
 #align tensor_algebra.to_triv_sq_zero_ext_ι TensorAlgebra.toTrivSqZeroExt_ι
@@ -274,18 +274,18 @@ lemma ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R 
 variable (R)
 
 @[simp]
-theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
+lemma ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
   ι_leftInverse.injective.eq_iff
 #align tensor_algebra.ι_inj TensorAlgebra.ι_inj
 
 @[simp]
-theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+lemma ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
 #align tensor_algebra.ι_eq_zero_iff TensorAlgebra.ι_eq_zero_iff
 
 variable {R}
 
 @[simp]
-theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
+lemma ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine' ⟨fun h => _, _⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -342,7 +342,7 @@ def toTensor : FreeAlgebra R M →ₐ[R] TensorAlgebra R M :=
 #align free_algebra.to_tensor FreeAlgebra.toTensor
 
 @[simp]
-theorem toTensor_ι (m : M) : FreeAlgebra.toTensor (FreeAlgebra.ι R m) = TensorAlgebra.ι R m := by
+lemma toTensor_ι (m : M) : FreeAlgebra.toTensor (FreeAlgebra.ι R m) = TensorAlgebra.ι R m := by
   simp [toTensor]
 #align free_algebra.to_tensor_ι FreeAlgebra.toTensor_ι
 

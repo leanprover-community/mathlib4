@@ -89,7 +89,7 @@ lemma if_eq_of_eq_false {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (h
   @ite α c d t e = e :=
   if_neg (not_of_eq_false h)
 
-theorem if_eq_of_eq (c : Prop) [d : Decidable c] {α : Sort u} {t e : α} (h : t = e) :
+lemma if_eq_of_eq (c : Prop) [d : Decidable c] {α : Sort u} {t e : α} (h : t = e) :
   @ite α c d t e = t :=
   match d with
   | isTrue _ => rfl

@@ -82,7 +82,7 @@ open Polynomial
 /-- Half of the spectral mapping theorem for polynomials. We prove it separately
 because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degree_pos` and
 `spectrum.map_polynomial_aeval_of_nonempty` need the field to be algebraically closed. -/
-theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
+lemma subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
   rintro _ ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
   have hroot : IsRoot q k := by simp only [eval_C, eval_sub, sub_self, IsRoot.def]
@@ -130,7 +130,7 @@ lemma map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
 #align spectrum.map_polynomial_aeval_of_nonempty spectrum.map_polynomial_aeval_of_nonempty
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
-theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
+lemma pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
   simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
 #align spectrum.pow_image_subset spectrum.pow_image_subset
 

@@ -100,7 +100,7 @@ def OrderIso.mulRight (a : α) : α ≃o α where
 #align order_iso.mul_right_to_equiv OrderIso.mulRight_toEquiv
 
 @[to_additive (attr := simp)]
-theorem OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
+lemma OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
   ext x
   rfl
 #align order_iso.mul_right_symm OrderIso.mulRight_symm
@@ -133,7 +133,7 @@ def OrderIso.mulLeft (a : α) : α ≃o α where
 #align order_iso.add_left_to_equiv OrderIso.addLeft_toEquiv
 
 @[to_additive (attr := simp)]
-theorem OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
+lemma OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
   ext x
   rfl
 #align order_iso.mul_left_symm OrderIso.mulLeft_symm

@@ -28,10 +28,10 @@ variable {r r' : α → α → Prop}
 
 #align well_founded_relation.r WellFoundedRelation.rel
 
-protected theorem isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric⟩
+protected lemma isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric⟩
 #align well_founded.is_asymm WellFounded.isAsymm
 
-protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
+protected lemma isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
 #align well_founded.is_irrefl WellFounded.isIrrefl
 
 instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
@@ -39,7 +39,7 @@ instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
 
 instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
 
-theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
+lemma mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr
 #align well_founded.mono WellFounded.mono
 
@@ -206,12 +206,12 @@ noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
 #align function.argmin_on Function.argminOn
 
 @[simp]
-theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
+lemma argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
   WellFounded.min_mem _ _ _
 #align function.argmin_on_mem Function.argminOn_mem
 
 --Porting note: @[simp] removed as it will never apply
-theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
+lemma not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h) s hs ha
 #align function.not_lt_argmin_on Function.not_lt_argminOn
@@ -223,12 +223,12 @@ section LinearOrder
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
 
 --Porting note: @[simp] removed as it will never apply
-theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
+lemma argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 #align function.argmin_le Function.argmin_le
 
 --Porting note: @[simp] removed as it will never apply
-theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
+lemma argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f h s ha hs
 #align function.argmin_on_le Function.argminOn_le

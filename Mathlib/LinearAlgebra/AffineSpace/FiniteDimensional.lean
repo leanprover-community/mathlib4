@@ -323,7 +323,7 @@ def Collinear (s : Set P) : Prop :=
 #align collinear Collinear
 
 /-- The definition of `Collinear`. -/
-theorem collinear_iff_rank_le_one (s : Set P) :
+lemma collinear_iff_rank_le_one (s : Set P) :
     Collinear k s ↔ Module.rank k (vectorSpan k s) ≤ 1 := Iff.rfl
 #align collinear_iff_rank_le_one collinear_iff_rank_le_one
 
@@ -371,7 +371,7 @@ lemma collinear_empty : Collinear k (∅ : Set P) := by
 variable {P}
 
 /-- A single point is collinear. -/
-theorem collinear_singleton (p : P) : Collinear k ({p} : Set P) := by
+lemma collinear_singleton (p : P) : Collinear k ({p} : Set P) := by
   rw [collinear_iff_rank_le_one, vectorSpan_singleton]
   simp
 #align collinear_singleton collinear_singleton
@@ -411,7 +411,7 @@ lemma collinear_iff_of_mem {s : Set P} {p₀ : P} (h : p₀ ∈ s) :
 /-- A set of points is collinear if and only if they can all be
 expressed as multiples of the same vector, added to the same base
 point. -/
-theorem collinear_iff_exists_forall_eq_smul_vadd (s : Set P) :
+lemma collinear_iff_exists_forall_eq_smul_vadd (s : Set P) :
     Collinear k s ↔ ∃ (p₀ : P) (v : V), ∀ p ∈ s, ∃ r : k, p = r • v +ᵥ p₀ := by
   rcases Set.eq_empty_or_nonempty s with (rfl | ⟨⟨p₁, hp₁⟩⟩)
   · simp [collinear_empty]
@@ -430,7 +430,7 @@ theorem collinear_iff_exists_forall_eq_smul_vadd (s : Set P) :
 variable (k)
 
 /-- Two points are collinear. -/
-theorem collinear_pair (p₁ p₂ : P) : Collinear k ({p₁, p₂} : Set P) := by
+lemma collinear_pair (p₁ p₂ : P) : Collinear k ({p₁, p₂} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]
   use p₁, p₂ -ᵥ p₁
   intro p hp
@@ -655,12 +655,12 @@ lemma coplanar_empty : Coplanar k (∅ : Set P) :=
 variable {P}
 
 /-- A single point is coplanar. -/
-theorem coplanar_singleton (p : P) : Coplanar k ({p} : Set P) :=
+lemma coplanar_singleton (p : P) : Coplanar k ({p} : Set P) :=
   (collinear_singleton k p).coplanar
 #align coplanar_singleton coplanar_singleton
 
 /-- Two points are coplanar. -/
-theorem coplanar_pair (p₁ p₂ : P) : Coplanar k ({p₁, p₂} : Set P) :=
+lemma coplanar_pair (p₁ p₂ : P) : Coplanar k ({p₁, p₂} : Set P) :=
   (collinear_pair k p₁ p₂).coplanar
 #align coplanar_pair coplanar_pair
 
@@ -683,7 +683,7 @@ open AffineSubspace FiniteDimensional Module
 variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- Adding a point to a finite-dimensional subspace increases the dimension by at most one. -/
-theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
+lemma finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     finrank k (vectorSpan k (insert p (s : Set P))) ≤ finrank k s.direction + 1 := by
   by_cases hf : FiniteDimensional k s.direction; swap
   · have hf' : ¬FiniteDimensional k (vectorSpan k (insert p (s : Set P))) := by
@@ -718,7 +718,7 @@ variable (k)
 
 /-- Adding a point to a set with a finite-dimensional span increases the dimension by at most
 one. -/
-theorem finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :
+lemma finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :
     finrank k (vectorSpan k (insert p s)) ≤ finrank k (vectorSpan k s) + 1 := by
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
   refine' (finrank_vectorSpan_insert_le _ _).trans (add_le_add_right _ _)
@@ -736,21 +736,21 @@ lemma Collinear.coplanar_insert {s : Set P} (h : Collinear k s) (p : P) :
 #align collinear.coplanar_insert Collinear.coplanar_insert
 
 /-- A set of points in a two-dimensional space is coplanar. -/
-theorem coplanar_of_finrank_eq_two (s : Set P) (h : finrank k V = 2) : Coplanar k s := by
+lemma coplanar_of_finrank_eq_two (s : Set P) (h : finrank k V = 2) : Coplanar k s := by
   have : FiniteDimensional k V := finiteDimensional_of_finrank_eq_succ h
   rw [coplanar_iff_finrank_le_two, ← h]
   exact Submodule.finrank_le _
 #align coplanar_of_finrank_eq_two coplanar_of_finrank_eq_two
 
 /-- A set of points in a two-dimensional space is coplanar. -/
-theorem coplanar_of_fact_finrank_eq_two (s : Set P) [h : Fact (finrank k V = 2)] : Coplanar k s :=
+lemma coplanar_of_fact_finrank_eq_two (s : Set P) [h : Fact (finrank k V = 2)] : Coplanar k s :=
   coplanar_of_finrank_eq_two s h.out
 #align coplanar_of_fact_finrank_eq_two coplanar_of_fact_finrank_eq_two
 
 variable (k)
 
 /-- Three points are coplanar. -/
-theorem coplanar_triple (p₁ p₂ p₃ : P) : Coplanar k ({p₁, p₂, p₃} : Set P) :=
+lemma coplanar_triple (p₁ p₂ p₃ : P) : Coplanar k ({p₁, p₂, p₃} : Set P) :=
   (collinear_pair k p₂ p₃).coplanar_insert p₁
 #align coplanar_triple coplanar_triple
 

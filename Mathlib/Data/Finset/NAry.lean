@@ -46,12 +46,12 @@ lemma mem_image₂ : c ∈ image₂ f s t ↔ ∃ a b, a ∈ s ∧ b ∈ t ∧ f
 #align finset.mem_image₂ Finset.mem_image₂
 
 @[simp, norm_cast]
-theorem coe_image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) :
+lemma coe_image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) :
     (image₂ f s t : Set γ) = Set.image2 f s t :=
   Set.ext fun _ => mem_image₂
 #align finset.coe_image₂ Finset.coe_image₂
 
-theorem card_image₂_le (f : α → β → γ) (s : Finset α) (t : Finset β) :
+lemma card_image₂_le (f : α → β → γ) (s : Finset α) (t : Finset β) :
     (image₂ f s t).card ≤ s.card * t.card :=
   card_image_le.trans_eq <| card_product _ _
 #align finset.card_image₂_le Finset.card_image₂_le
@@ -62,37 +62,37 @@ lemma card_image₂_iff :
   exact card_image_iff
 #align finset.card_image₂_iff Finset.card_image₂_iff
 
-theorem card_image₂ (hf : Injective2 f) (s : Finset α) (t : Finset β) :
+lemma card_image₂ (hf : Injective2 f) (s : Finset α) (t : Finset β) :
     (image₂ f s t).card = s.card * t.card :=
   (card_image_of_injective _ hf.uncurry).trans <| card_product _ _
 #align finset.card_image₂ Finset.card_image₂
 
-theorem mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f s t :=
+lemma mem_image₂_of_mem (ha : a ∈ s) (hb : b ∈ t) : f a b ∈ image₂ f s t :=
   mem_image₂.2 ⟨a, b, ha, hb, rfl⟩
 #align finset.mem_image₂_of_mem Finset.mem_image₂_of_mem
 
-theorem mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by
+lemma mem_image₂_iff (hf : Injective2 f) : f a b ∈ image₂ f s t ↔ a ∈ s ∧ b ∈ t := by
   rw [← mem_coe, coe_image₂, mem_image2_iff hf, mem_coe, mem_coe]
 #align finset.mem_image₂_iff Finset.mem_image₂_iff
 
-theorem image₂_subset (hs : s ⊆ s') (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s' t' := by
+lemma image₂_subset (hs : s ⊆ s') (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s' t' := by
   rw [← coe_subset, coe_image₂, coe_image₂]
   exact image2_subset hs ht
 #align finset.image₂_subset Finset.image₂_subset
 
-theorem image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t' :=
+lemma image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t' :=
   image₂_subset Subset.rfl ht
 #align finset.image₂_subset_left Finset.image₂_subset_left
 
-theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
+lemma image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
   image₂_subset hs Subset.rfl
 #align finset.image₂_subset_right Finset.image₂_subset_right
 
-theorem image_subset_image₂_left (hb : b ∈ t) : s.image (fun a => f a b) ⊆ image₂ f s t :=
+lemma image_subset_image₂_left (hb : b ∈ t) : s.image (fun a => f a b) ⊆ image₂ f s t :=
   image_subset_iff.2 fun _ ha => mem_image₂_of_mem ha hb
 #align finset.image_subset_image₂_left Finset.image_subset_image₂_left
 
-theorem image_subset_image₂_right (ha : a ∈ s) : t.image (fun b => f a b) ⊆ image₂ f s t :=
+lemma image_subset_image₂_right (ha : a ∈ s) : t.image (fun b => f a b) ⊆ image₂ f s t :=
   image_subset_iff.2 fun _ => mem_image₂_of_mem ha
 #align finset.image_subset_image₂_right Finset.image_subset_image₂_right
 
@@ -120,15 +120,15 @@ lemma image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Non
   exact image2_nonempty_iff
 #align finset.image₂_nonempty_iff Finset.image₂_nonempty_iff
 
-theorem Nonempty.image₂ (hs : s.Nonempty) (ht : t.Nonempty) : (image₂ f s t).Nonempty :=
+lemma Nonempty.image₂ (hs : s.Nonempty) (ht : t.Nonempty) : (image₂ f s t).Nonempty :=
   image₂_nonempty_iff.2 ⟨hs, ht⟩
 #align finset.nonempty.image₂ Finset.Nonempty.image₂
 
-theorem Nonempty.of_image₂_left (h : (s.image₂ f t).Nonempty) : s.Nonempty :=
+lemma Nonempty.of_image₂_left (h : (s.image₂ f t).Nonempty) : s.Nonempty :=
   (image₂_nonempty_iff.1 h).1
 #align finset.nonempty.of_image₂_left Finset.Nonempty.of_image₂_left
 
-theorem Nonempty.of_image₂_right (h : (s.image₂ f t).Nonempty) : t.Nonempty :=
+lemma Nonempty.of_image₂_right (h : (s.image₂ f t).Nonempty) : t.Nonempty :=
   (image₂_nonempty_iff.1 h).2
 #align finset.nonempty.of_image₂_right Finset.Nonempty.of_image₂_right
 
@@ -220,14 +220,14 @@ lemma image₂_inter_subset_right [DecidableEq β] :
     exact image2_inter_subset_right
 #align finset.image₂_inter_subset_right Finset.image₂_inter_subset_right
 
-theorem image₂_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image₂ f s t = image₂ f' s t :=
+lemma image₂_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image₂ f s t = image₂ f' s t :=
   coe_injective <| by
     push_cast
     exact image2_congr h
 #align finset.image₂_congr Finset.image₂_congr
 
 /-- A common special case of `image₂_congr` -/
-theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image₂ f' s t :=
+lemma image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image₂ f' s t :=
   image₂_congr fun a _ b _ => h a b
 #align finset.image₂_congr' Finset.image₂_congr'
 
@@ -251,11 +251,11 @@ lemma subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
 
 variable (s t)
 
-theorem card_image₂_singleton_left (hf : Injective (f a)) : (image₂ f {a} t).card = t.card := by
+lemma card_image₂_singleton_left (hf : Injective (f a)) : (image₂ f {a} t).card = t.card := by
   rw [image₂_singleton_left, card_image_of_injective _ hf]
 #align finset.card_image₂_singleton_left Finset.card_image₂_singleton_left
 
-theorem card_image₂_singleton_right (hf : Injective fun a => f a b) :
+lemma card_image₂_singleton_right (hf : Injective fun a => f a b) :
     (image₂ f s {b}).card = s.card := by rw [image₂_singleton_right, card_image_of_injective _ hf]
 #align finset.card_image₂_singleton_right Finset.card_image₂_singleton_right
 
@@ -307,21 +307,21 @@ The proof pattern is `image₂_lemma operation_lemma`. For example, `image₂_co
 `image₂ (*) f g = image₂ (*) g f` in a `CommSemigroup`.
 -/
 
-theorem image_image₂ (f : α → β → γ) (g : γ → δ) :
+lemma image_image₂ (f : α → β → γ) (g : γ → δ) :
     (image₂ f s t).image g = image₂ (fun a b => g (f a b)) s t :=
   coe_injective <| by
     push_cast
     exact image_image2 _ _
 #align finset.image_image₂ Finset.image_image₂
 
-theorem image₂_image_left (f : γ → β → δ) (g : α → γ) :
+lemma image₂_image_left (f : γ → β → δ) (g : α → γ) :
     image₂ f (s.image g) t = image₂ (fun a b => f (g a) b) s t :=
   coe_injective <| by
     push_cast
     exact image2_image_left _ _
 #align finset.image₂_image_left Finset.image₂_image_left
 
-theorem image₂_image_right (f : α → γ → δ) (g : β → γ) :
+lemma image₂_image_right (f : α → γ → δ) (g : β → γ) :
     image₂ f s (t.image g) = image₂ (fun a b => f a (g b)) s t :=
   coe_injective <| by
     push_cast
@@ -334,17 +334,17 @@ lemma image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α) (
 #align finset.image₂_mk_eq_product Finset.image₂_mk_eq_product
 
 @[simp]
-theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
+lemma image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
     image₂ (curry f) s t = (s ×ˢ t).image f := by
   classical rw [← image₂_mk_eq_product, image_image₂]; dsimp [curry]
 #align finset.image₂_curry Finset.image₂_curry
 
 @[simp]
-theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
+lemma image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
     (s ×ˢ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
 #align finset.image_uncurry_product Finset.image_uncurry_product
 
-theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
+lemma image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = image₂ (fun a b => f b a) t s :=
   coe_injective <| by
     push_cast
@@ -518,7 +518,7 @@ lemma image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a b 
 /-- If each partial application of `f` is injective, and images of `s` under those partial
 applications are disjoint (but not necessarily distinct!), then the size of `t` divides the size of
 `finset.image₂ f s t`. -/
-theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
+lemma card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : t.card ∣ (image₂ f s t).card := by
   classical
   induction' s using Finset.induction with a s _ ih
@@ -540,7 +540,7 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
 /-- If each partial application of `f` is injective, and images of `t` under those partial
 applications are disjoint (but not necessarily distinct!), then the size of `s` divides the size of
 `finset.image₂ f s t`. -/
-theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
+lemma card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
     (ht : ((fun b => s.image fun a => f a b) '' t).PairwiseDisjoint id) :
     s.card ∣ (image₂ f s t).card := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht
 #align finset.card_dvd_card_image₂_left Finset.card_dvd_card_image₂_left
@@ -582,12 +582,12 @@ namespace Set
 variable [DecidableEq γ] {s : Set α} {t : Set β}
 
 @[simp]
-theorem toFinset_image2 (f : α → β → γ) (s : Set α) (t : Set β) [Fintype s] [Fintype t]
+lemma toFinset_image2 (f : α → β → γ) (s : Set α) (t : Set β) [Fintype s] [Fintype t]
     [Fintype (image2 f s t)] : (image2 f s t).toFinset = Finset.image₂ f s.toFinset t.toFinset :=
   Finset.coe_injective <| by simp
 #align set.to_finset_image2 Set.toFinset_image2
 
-theorem Finite.toFinset_image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite)
+lemma Finite.toFinset_image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite)
     (hf := hs.image2 f ht) : hf.toFinset = Finset.image₂ f hs.toFinset ht.toFinset :=
   Finset.coe_injective <| by simp
 #align set.finite.to_finset_image2 Set.Finite.toFinset_image2

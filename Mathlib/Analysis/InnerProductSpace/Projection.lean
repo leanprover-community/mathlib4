@@ -291,7 +291,7 @@ Let `u` be a point in an inner product space, and let `K` be a nonempty complete
 Then there exists a (unique) `v` in `K` that minimizes the distance `‖u - v‖` to `u`.
 This point `v` is usually called the orthogonal projection of `u` onto `K`.
 -/
-theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E)) :
+lemma exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E)) :
     ∀ u : E, ∃ v ∈ K, ‖u - v‖ = ⨅ w : (K : Set E), ‖u - w‖ := by
   letI : InnerProductSpace ℝ E := InnerProductSpace.isROrCToReal 𝕜 E
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
@@ -306,7 +306,7 @@ for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subs
 This is superceded by `norm_eq_iInf_iff_inner_eq_zero` that gives the same conclusion over
 any `IsROrC` field.
 -/
-theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F} (hv : v ∈ K) :
+lemma norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : (↑K : Set F), ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫_ℝ = 0 :=
   Iff.intro
     (by
@@ -426,14 +426,14 @@ variable {K}
 /-- The unbundled orthogonal projection is in the given subspace.
 This lemma is only intended for use in setting up the bundled version
 and should not be used once that is defined. -/
-theorem orthogonalProjectionFn_mem (v : E) : orthogonalProjectionFn K v ∈ K :=
+lemma orthogonalProjectionFn_mem (v : E) : orthogonalProjectionFn K v ∈ K :=
   (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose_spec.left
 #align orthogonal_projection_fn_mem orthogonalProjectionFn_mem
 
 /-- The characterization of the unbundled orthogonal projection.  This
 lemma is only intended for use in setting up the bundled version
 and should not be used once that is defined. -/
-theorem orthogonalProjectionFn_inner_eq_zero (v : E) :
+lemma orthogonalProjectionFn_inner_eq_zero (v : E) :
     ∀ w ∈ K, ⟪v - orthogonalProjectionFn K v, w⟫ = 0 :=
   (K.mem_orthogonal' _).1 (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose_spec.right
 #align orthogonal_projection_fn_inner_eq_zero orthogonalProjectionFn_inner_eq_zero
@@ -457,7 +457,7 @@ lemma eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈ K
 
 variable (K)
 
-theorem orthogonalProjectionFn_norm_sq (v : E) :
+lemma orthogonalProjectionFn_norm_sq (v : E) :
     ‖v‖ * ‖v‖ =
       ‖v - orthogonalProjectionFn K v‖ * ‖v - orthogonalProjectionFn K v‖ +
         ‖orthogonalProjectionFn K v‖ * ‖orthogonalProjectionFn K v‖ := by
@@ -500,21 +500,21 @@ def orthogonalProjection : E →L[𝕜] K :=
 variable {K}
 
 @[simp]
-theorem orthogonalProjectionFn_eq (v : E) :
+lemma orthogonalProjectionFn_eq (v : E) :
     orthogonalProjectionFn K v = (orthogonalProjection K v : E) :=
   rfl
 #align orthogonal_projection_fn_eq orthogonalProjectionFn_eq
 
 /-- The characterization of the orthogonal projection.  -/
 @[simp]
-theorem orthogonalProjection_inner_eq_zero (v : E) :
+lemma orthogonalProjection_inner_eq_zero (v : E) :
     ∀ w ∈ K, ⟪v - orthogonalProjection K v, w⟫ = 0 :=
   orthogonalProjectionFn_inner_eq_zero v
 #align orthogonal_projection_inner_eq_zero orthogonalProjection_inner_eq_zero
 
 /-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`.  -/
 @[simp]
-theorem sub_orthogonalProjection_mem_orthogonal (v : E) : v - orthogonalProjection K v ∈ Kᗮ := by
+lemma sub_orthogonalProjection_mem_orthogonal (v : E) : v - orthogonalProjection K v ∈ Kᗮ := by
   intro w hw
   rw [inner_eq_zero_symm]
   exact orthogonalProjection_inner_eq_zero _ _ hw
@@ -567,7 +567,7 @@ lemma eq_orthogonalProjection_of_eq_submodule {K' : Submodule 𝕜 E} [HasOrthog
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
-theorem orthogonalProjection_mem_subspace_eq_self (v : K) : orthogonalProjection K v = v := by
+lemma orthogonalProjection_mem_subspace_eq_self (v : K) : orthogonalProjection K v = v := by
   ext
   apply eq_orthogonalProjection_of_mem_of_inner_eq_zero <;> simp
 #align orthogonal_projection_mem_subspace_eq_self orthogonalProjection_mem_subspace_eq_self
@@ -705,7 +705,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
 variable {K}
 
 /-- The result of reflecting. -/
-theorem reflection_apply (p : E) : reflection K p = 2 • (orthogonalProjection K p : E) - p :=
+lemma reflection_apply (p : E) : reflection K p = 2 • (orthogonalProjection K p : E) - p :=
   rfl
 #align reflection_apply reflection_applyₓ
 
@@ -725,7 +725,7 @@ variable (K)
 
 /-- Reflecting twice in the same subspace. -/
 @[simp]
-theorem reflection_reflection (p : E) : reflection K (reflection K p) = p :=
+lemma reflection_reflection (p : E) : reflection K (reflection K p) = p :=
   (reflection K).left_inv p
 #align reflection_reflection reflection_reflection
 
@@ -747,7 +747,7 @@ lemma reflection_mul_reflection : reflection K * reflection K = 1 :=
   reflection_trans_reflection _
 #align reflection_mul_reflection reflection_mul_reflection
 
-theorem reflection_orthogonal_apply (v : E) : reflection Kᗮ v = -reflection K v := by
+lemma reflection_orthogonal_apply (v : E) : reflection Kᗮ v = -reflection K v := by
   simp [reflection_apply]; abel
 
 lemma reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _) := by
@@ -755,12 +755,12 @@ lemma reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _) :
 
 variable {K}
 
-theorem reflection_singleton_apply (u v : E) :
+lemma reflection_singleton_apply (u v : E) :
     reflection (𝕜 ∙ u) v = 2 • (⟪u, v⟫ / ((‖u‖ : 𝕜) ^ 2)) • u - v := by
   rw [reflection_apply, orthogonalProjection_singleton, ofReal_pow]
 
 /-- A point is its own reflection if and only if it is in the subspace. -/
-theorem reflection_eq_self_iff (x : E) : reflection K x = x ↔ x ∈ K := by
+lemma reflection_eq_self_iff (x : E) : reflection K x = x ↔ x ∈ K := by
   rw [← orthogonalProjection_eq_self_iff, reflection_apply, sub_eq_iff_eq_add', ← two_smul 𝕜,
     two_smul ℕ, ← two_smul 𝕜]
   refine' (smul_right_injective E _).eq_iff
@@ -1000,31 +1000,31 @@ open Submodule
 
 variable {x y : E}
 
-theorem eq_zero_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = 0) : x = 0 := by
+lemma eq_zero_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = 0) : x = 0 := by
   have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
     hK continuous_const (Subtype.forall.1 h)
   simpa using congr_fun this x
 #align dense.eq_zero_of_inner_left Dense.eq_zero_of_inner_left
 
-theorem eq_zero_of_mem_orthogonal (hK : Dense (K : Set E)) (h : x ∈ Kᗮ) : x = 0 :=
+lemma eq_zero_of_mem_orthogonal (hK : Dense (K : Set E)) (h : x ∈ Kᗮ) : x = 0 :=
   eq_zero_of_inner_left hK fun v ↦ (mem_orthogonal' _ _).1 h _ v.2
 #align dense.eq_zero_of_mem_orthogonal Dense.eq_zero_of_mem_orthogonal
 
 /-- If `S` is dense and `x - y ∈ Kᗮ`, then `x = y`. -/
-theorem eq_of_sub_mem_orthogonal (hK : Dense (K : Set E)) (h : x - y ∈ Kᗮ) : x = y :=
+lemma eq_of_sub_mem_orthogonal (hK : Dense (K : Set E)) (h : x - y ∈ Kᗮ) : x = y :=
   sub_eq_zero.1 <| eq_zero_of_mem_orthogonal hK h
 #align dense.eq_of_sub_mem_orthogonal Dense.eq_of_sub_mem_orthogonal
 
-theorem eq_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x = y :=
+lemma eq_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x = y :=
   hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_left h)
 #align dense.eq_of_inner_left Dense.eq_of_inner_left
 
-theorem eq_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
+lemma eq_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
     x = y :=
   hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_right h)
 #align dense.eq_of_inner_right Dense.eq_of_inner_right
 
-theorem eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = 0) : x = 0 :=
+lemma eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = 0) : x = 0 :=
   hK.eq_of_inner_right fun v => by rw [inner_zero_right, h v]
 #align dense.eq_zero_of_inner_right Dense.eq_zero_of_inner_right
 
@@ -1037,14 +1037,14 @@ lemma reflection_mem_subspace_orthogonal_precomplement_eq_neg [HasOrthogonalProj
 #align reflection_mem_subspace_orthogonal_precomplement_eq_neg reflection_mem_subspace_orthogonal_precomplement_eq_neg
 
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
-theorem orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
+lemma orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
     orthogonalProjection (𝕜 ∙ v)ᗮ v = 0 :=
   orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
     (Submodule.mem_span_singleton_self v)
 #align orthogonal_projection_orthogonal_complement_singleton_eq_zero orthogonalProjection_orthogonalComplement_singleton_eq_zero
 
 /-- The reflection in `(𝕜 ∙ v)ᗮ` of `v` is `-v`. -/
-theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
+lemma reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
 #align reflection_orthogonal_complement_singleton_eq_neg reflection_orthogonalComplement_singleton_eq_neg
 
@@ -1075,7 +1075,7 @@ lemma orthogonalProjection_add_orthogonalProjection_orthogonal [HasOrthogonalPro
 #align eq_sum_orthogonal_projection_self_orthogonal_complement orthogonalProjection_add_orthogonalProjection_orthogonalₓ
 
 /-- The Pythagorean theorem, for an orthogonal projection.-/
-theorem norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [HasOrthogonalProjection S] :
+lemma norm_sq_eq_add_norm_sq_projection (x : E) (S : Submodule 𝕜 E) [HasOrthogonalProjection S] :
     ‖x‖ ^ 2 = ‖orthogonalProjection S x‖ ^ 2 + ‖orthogonalProjection Sᗮ x‖ ^ 2 :=
   calc
     ‖x‖ ^ 2 = ‖(orthogonalProjection S x : E) + orthogonalProjection Sᗮ x‖ ^ 2 := by
@@ -1383,7 +1383,7 @@ open FiniteDimensional Submodule Set
 
 /-- An orthonormal set in an `InnerProductSpace` is maximal, if and only if the orthogonal
 complement of its span is empty. -/
-theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal 𝕜 ((↑) : v → E)) :
+lemma maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal 𝕜 ((↑) : v → E)) :
     (∀ (u) (_ : u ⊇ v), Orthonormal 𝕜 ((↑) : u → E) → u = v) ↔ (span 𝕜 v)ᗮ = ⊥ := by
   rw [Submodule.eq_bot_iff]
   constructor
@@ -1449,7 +1449,7 @@ variable [FiniteDimensional 𝕜 E]
 
 /-- An orthonormal set in a finite-dimensional `InnerProductSpace` is maximal, if and only if it
 is a basis. -/
-theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal 𝕜 ((↑) : v → E)) :
+lemma maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal 𝕜 ((↑) : v → E)) :
     (∀ (u) (_ : u ⊇ v), Orthonormal 𝕜 ((↑) : u → E) → u = v) ↔
       ∃ b : Basis v 𝕜 E, ⇑b = ((↑) : v → E) := by
   haveI := proper_isROrC 𝕜 (span 𝕜 v)

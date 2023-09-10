@@ -124,7 +124,7 @@ lemma ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : 
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
 
-theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
+lemma Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.closedEmbedding.paracompactSpace, fun _ ↦ e.closedEmbedding.paracompactSpace⟩
 
 /-- The product of a compact space and a paracompact space is a paracompact space. The formalization

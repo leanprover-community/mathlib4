@@ -272,7 +272,7 @@ def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
 An alternative characterization of the Grothendieck topology associated to a coverage `K`:
 it is the infimum of all Grothendieck topologies whose associated coverage contains `K`.
 -/
-theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
+lemma toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     sInf {J | K ≤ ofGrothendieck _ J } := by
   apply le_antisymm
   · apply le_sInf; intro J hJ
@@ -315,7 +315,7 @@ The main theorem of this file: Given a coverage `K` on `C`,
 a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
 the associated Grothendieck topology.
 -/
-theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
+lemma isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (toGrothendieck _ K) P ↔
     (∀ {X : C} (R : Presieve X), R ∈ K X → Presieve.IsSheafFor P R) := by
   constructor

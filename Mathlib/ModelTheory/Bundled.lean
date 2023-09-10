@@ -103,7 +103,7 @@ def of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : T.ModelType :=
 #align first_order.language.Theory.Model.of FirstOrder.Language.Theory.ModelType.of
 
 @[simp]
-theorem coe_of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : (of T M : Type w) = M :=
+lemma coe_of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : (of T M : Type w) = M :=
   rfl
 #align first_order.language.Theory.Model.coe_of FirstOrder.Language.Theory.ModelType.coe_of
 

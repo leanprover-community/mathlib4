@@ -94,7 +94,7 @@ lemma mem_toSubalgebra {S : StarSubalgebra R A} {x} : x ∈ S.toSubalgebra ↔ x
 #align star_subalgebra.mem_to_subalgebra StarSubalgebra.mem_toSubalgebra
 
 @[simp]
-theorem coe_toSubalgebra (S : StarSubalgebra R A) : (S.toSubalgebra : Set A) = S :=
+lemma coe_toSubalgebra (S : StarSubalgebra R A) : (S.toSubalgebra : Set A) = S :=
   rfl
 #align star_subalgebra.coe_to_subalgebra StarSubalgebra.coe_toSubalgebra
 
@@ -121,17 +121,17 @@ protected def copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : StarSu
 #align star_subalgebra.copy StarSubalgebra.copy
 
 @[simp]
-theorem coe_copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : (S.copy s hs : Set A) = s :=
+lemma coe_copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : (S.copy s hs : Set A) = s :=
   rfl
 #align star_subalgebra.coe_copy StarSubalgebra.coe_copy
 
-theorem copy_eq (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
+lemma copy_eq (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 #align star_subalgebra.copy_eq StarSubalgebra.copy_eq
 
 variable (S : StarSubalgebra R A)
 
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
+lemma algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
   S.algebraMap_mem' r
 #align star_subalgebra.algebra_map_mem StarSubalgebra.algebraMap_mem
 
@@ -159,7 +159,7 @@ lemma coe_subtype : (S.subtype : S → A) = Subtype.val :=
   rfl
 #align star_subalgebra.coe_subtype StarSubalgebra.coe_subtype
 
-theorem subtype_apply (x : S) : S.subtype x = (x : A) :=
+lemma subtype_apply (x : S) : S.subtype x = (x : A) :=
   rfl
 #align star_subalgebra.subtype_apply StarSubalgebra.subtype_apply
 
@@ -211,11 +211,11 @@ lemma map_injective {f : A →⋆ₐ[R] B} (hf : Function.Injective f) : Functio
 #align star_subalgebra.map_injective StarSubalgebra.map_injective
 
 @[simp]
-theorem map_id (S : StarSubalgebra R A) : S.map (StarAlgHom.id R A) = S :=
+lemma map_id (S : StarSubalgebra R A) : S.map (StarAlgHom.id R A) = S :=
   SetLike.coe_injective <| Set.image_id _
 #align star_subalgebra.map_id StarSubalgebra.map_id
 
-theorem map_map (S : StarSubalgebra R A) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ[R] B) :
+lemma map_map (S : StarSubalgebra R A) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ[R] B) :
     (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 #align star_subalgebra.map_map StarSubalgebra.map_map
@@ -232,7 +232,7 @@ lemma map_toSubalgebra {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} :
 #align star_subalgebra.map_to_subalgebra StarSubalgebra.map_toSubalgebra
 
 @[simp]
-theorem coe_map (S : StarSubalgebra R A) (f : A →⋆ₐ[R] B) : (S.map f : Set B) = f '' S :=
+lemma coe_map (S : StarSubalgebra R A) (f : A →⋆ₐ[R] B) : (S.map f : Set B) = f '' S :=
   rfl
 #align star_subalgebra.coe_map StarSubalgebra.coe_map
 
@@ -247,7 +247,7 @@ lemma map_le_iff_le_comap {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} {U : S
   Set.image_subset_iff
 #align star_subalgebra.map_le_iff_le_comap StarSubalgebra.map_le_iff_le_comap
 
-theorem gc_map_comap (f : A →⋆ₐ[R] B) : GaloisConnection (map f) (comap f) := fun _S _U =>
+lemma gc_map_comap (f : A →⋆ₐ[R] B) : GaloisConnection (map f) (comap f) := fun _S _U =>
   map_le_iff_le_comap
 #align star_subalgebra.gc_map_comap StarSubalgebra.gc_map_comap
 
@@ -265,23 +265,23 @@ lemma comap_injective {f : A →⋆ₐ[R] B} (hf : Function.Surjective f) :
 #align star_subalgebra.comap_injective StarSubalgebra.comap_injective
 
 @[simp]
-theorem comap_id (S : StarSubalgebra R A) : S.comap (StarAlgHom.id R A) = S :=
+lemma comap_id (S : StarSubalgebra R A) : S.comap (StarAlgHom.id R A) = S :=
   SetLike.coe_injective <| Set.preimage_id
 #align star_subalgebra.comap_id StarSubalgebra.comap_id
 
-theorem comap_comap (S : StarSubalgebra R C) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ[R] B) :
+lemma comap_comap (S : StarSubalgebra R C) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ[R] B) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   SetLike.coe_injective <| by exact Set.preimage_preimage
   -- porting note: the `by exact` trick still works sometimes
 #align star_subalgebra.comap_comap StarSubalgebra.comap_comap
 
 @[simp]
-theorem mem_comap (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) (x : A) : x ∈ S.comap f ↔ f x ∈ S :=
+lemma mem_comap (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) (x : A) : x ∈ S.comap f ↔ f x ∈ S :=
   Iff.rfl
 #align star_subalgebra.mem_comap StarSubalgebra.mem_comap
 
 @[simp, norm_cast]
-theorem coe_comap (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) :
+lemma coe_comap (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) :
     (S.comap f : Set A) = f ⁻¹' (S : Set B) :=
   rfl
 #align star_subalgebra.coe_comap StarSubalgebra.coe_comap
@@ -299,7 +299,7 @@ def centralizer (s : Set A) : StarSubalgebra R A where
 #align star_subalgebra.centralizer StarSubalgebra.centralizer
 
 @[simp, norm_cast]
-theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
+lemma coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
   rfl
 #align star_subalgebra.coe_centralizer StarSubalgebra.coe_centralizer
 
@@ -311,7 +311,7 @@ lemma mem_centralizer_iff {s : Set A} {z : A} :
     ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
 #align star_subalgebra.mem_centralizer_iff StarSubalgebra.mem_centralizer_iff
 
-theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
+lemma centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 #align star_subalgebra.centralizer_le StarSubalgebra.centralizer_le
 
@@ -352,17 +352,17 @@ instance involutiveStar : InvolutiveStar (Subalgebra R A) where
       ⟨fun hx => star_star x ▸ hx, fun hx => ((star_star x).symm ▸ hx : star (star x) ∈ S)⟩
 
 @[simp]
-theorem mem_star_iff (S : Subalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ S :=
+lemma mem_star_iff (S : Subalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ S :=
   Iff.rfl
 #align subalgebra.mem_star_iff Subalgebra.mem_star_iff
 
 -- porting note: removed `@[simp]` tag because `simp` can prove this
-theorem star_mem_star_iff (S : Subalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
+lemma star_mem_star_iff (S : Subalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
   simp only [mem_star_iff, star_star]
 #align subalgebra.star_mem_star_iff Subalgebra.star_mem_star_iff
 
 @[simp]
-theorem coe_star (S : Subalgebra R A) : ((star S : Subalgebra R A) : Set A) = star (S : Set A) :=
+lemma coe_star (S : Subalgebra R A) : ((star S : Subalgebra R A) : Set A) = star (S : Set A) :=
   rfl
 #align subalgebra.coe_star Subalgebra.coe_star
 
@@ -372,7 +372,7 @@ lemma star_mono : Monotone (star : Subalgebra R A → Subalgebra R A) := fun _ _
 variable (R)
 
 /-- The star operation on `Subalgebra` commutes with `Algebra.adjoin`. -/
-theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
+lemma star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
   have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun t =>
     Algebra.adjoin_le fun x hx => Algebra.subset_adjoin hx
   le_antisymm (by simpa only [star_star] using Subalgebra.star_mono (this (star s))) (this s)
@@ -391,7 +391,7 @@ def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
     simpa using ha
 #align subalgebra.star_closure Subalgebra.starClosure
 
-theorem starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
+lemma starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
   rfl
 
 lemma starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
@@ -430,30 +430,30 @@ def adjoin (s : Set A) : StarSubalgebra R A :=
         Set.union_star, star_star, Set.union_comm] }
 #align star_subalgebra.adjoin StarSubalgebra.adjoin
 
-theorem adjoin_eq_starClosure_adjoin (s : Set A) : adjoin R s = (Algebra.adjoin R s).starClosure :=
+lemma adjoin_eq_starClosure_adjoin (s : Set A) : adjoin R s = (Algebra.adjoin R s).starClosure :=
   toSubalgebra_injective <|
     show Algebra.adjoin R (s ∪ star s) = Algebra.adjoin R s ⊔ star (Algebra.adjoin R s) from
       (Subalgebra.star_adjoin_comm R s).symm ▸ Algebra.adjoin_union s (star s)
 #align star_subalgebra.adjoin_eq_star_closure_adjoin StarSubalgebra.adjoin_eq_starClosure_adjoin
 
-theorem adjoin_toSubalgebra (s : Set A) :
+lemma adjoin_toSubalgebra (s : Set A) :
     (adjoin R s).toSubalgebra = Algebra.adjoin R (s ∪ star s) :=
   rfl
 #align star_subalgebra.adjoin_to_subalgebra StarSubalgebra.adjoin_toSubalgebra
 
-theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
+lemma subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarSubalgebra.subset_adjoin
 
-theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
+lemma star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   (Set.subset_union_right s (star s)).trans Algebra.subset_adjoin
 #align star_subalgebra.star_subset_adjoin StarSubalgebra.star_subset_adjoin
 
-theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
+lemma self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin <| Set.mem_union_left _ (Set.mem_singleton x)
 #align star_subalgebra.self_mem_adjoin_singleton StarSubalgebra.self_mem_adjoin_singleton
 
-theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set A) :=
+lemma star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set A) :=
   star_mem <| self_mem_adjoin_singleton R x
 #align star_subalgebra.star_self_mem_adjoin_singleton StarSubalgebra.star_self_mem_adjoin_singleton
 
@@ -483,7 +483,7 @@ lemma adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ 
   StarSubalgebra.gc _ _
 #align star_subalgebra.adjoin_le_iff StarSubalgebra.adjoin_le_iff
 
-theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
+lemma _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
     S.starClosure = adjoin R (S : Set A) :=
   le_antisymm (Subalgebra.starClosure_le_iff.2 <| subset_adjoin R (S : Set A))
     (adjoin_le (le_sup_left : S ≤ S ⊔ star S))
@@ -646,12 +646,12 @@ lemma mul_mem_sup {S T : StarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y �
   mul_mem (mem_sup_left hx) (mem_sup_right hy)
 #align star_subalgebra.mul_mem_sup StarSubalgebra.mul_mem_sup
 
-theorem map_sup (f : A →⋆ₐ[R] B) (S T : StarSubalgebra R A) : map f (S ⊔ T) = map f S ⊔ map f T :=
+lemma map_sup (f : A →⋆ₐ[R] B) (S T : StarSubalgebra R A) : map f (S ⊔ T) = map f S ⊔ map f T :=
   (StarSubalgebra.gc_map_comap f).l_sup
 #align star_subalgebra.map_sup StarSubalgebra.map_sup
 
 @[simp, norm_cast]
-theorem coe_inf (S T : StarSubalgebra R A) : (↑(S ⊓ T) : Set A) = (S : Set A) ∩ T :=
+lemma coe_inf (S T : StarSubalgebra R A) : (↑(S ⊓ T) : Set A) = (S : Set A) ∩ T :=
   rfl
 #align star_subalgebra.coe_inf StarSubalgebra.coe_inf
 
@@ -661,14 +661,14 @@ lemma mem_inf {S T : StarSubalgebra R A} {x : A} : x ∈ S ⊓ T ↔ x ∈ S ∧
 #align star_subalgebra.mem_inf StarSubalgebra.mem_inf
 
 @[simp]
-theorem inf_toSubalgebra (S T : StarSubalgebra R A) :
+lemma inf_toSubalgebra (S T : StarSubalgebra R A) :
     (S ⊓ T).toSubalgebra = S.toSubalgebra ⊓ T.toSubalgebra := by
   ext; simp
 -- porting note: Lean can no longer prove this by `rfl`, it times out
 #align star_subalgebra.inf_to_subalgebra StarSubalgebra.inf_toSubalgebra
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (StarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
+lemma coe_sInf (S : Set (StarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 #align star_subalgebra.coe_Inf StarSubalgebra.coe_sInf
 
@@ -677,7 +677,7 @@ lemma mem_sInf {S : Set (StarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p �
 #align star_subalgebra.mem_Inf StarSubalgebra.mem_sInf
 
 @[simp]
-theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
+lemma sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
     (sInf S).toSubalgebra = sInf (StarSubalgebra.toSubalgebra '' S) :=
   SetLike.coe_injective <| by simp
 #align star_subalgebra.Inf_to_subalgebra StarSubalgebra.sInf_toSubalgebra
@@ -738,7 +738,7 @@ def equalizer : StarSubalgebra R A :=
 #align star_alg_hom.equalizer StarAlgHom.equalizer
 
 @[simp]
-theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=
+lemma mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=
   Iff.rfl
 #align star_alg_hom.mem_equalizer StarAlgHom.mem_equalizer
 
@@ -782,7 +782,7 @@ protected def range
   toSubalgebra := φ.toAlgHom.range
   star_mem' := by rintro _ ⟨b, rfl⟩; exact ⟨star b, map_star φ b⟩
 
-theorem range_eq_map_top (φ : A →⋆ₐ[R] B) : φ.range = (⊤ : StarSubalgebra R A).map φ :=
+lemma range_eq_map_top (φ : A →⋆ₐ[R] B) : φ.range = (⊤ : StarSubalgebra R A).map φ :=
   StarSubalgebra.ext fun x =>
     ⟨by rintro ⟨a, ha⟩; exact ⟨a, by simp, ha⟩, by rintro ⟨a, -, ha⟩; exact ⟨a, ha⟩⟩
 
@@ -793,16 +793,16 @@ protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : 
   map_star' := fun x => Subtype.ext (map_star f x)
 
 @[simp]
-theorem coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
+lemma coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
     ↑(f.codRestrict S hf x) = f x :=
   rfl
 
 @[simp]
-theorem subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
+lemma subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
     (hf : ∀ x : A, f x ∈ S) : S.subtype.comp (f.codRestrict S hf) = f :=
   StarAlgHom.ext <| coe_codRestrict _ S hf
 
-theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+lemma injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (StarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
 

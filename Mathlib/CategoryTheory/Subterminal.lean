@@ -51,7 +51,7 @@ lemma IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f
 /-- If `A` is subterminal, the unique morphism from it to a terminal object is a monomorphism.
 The converse of `isSubterminal_of_mono_isTerminal_from`.
 -/
-theorem IsSubterminal.mono_isTerminal_from (hA : IsSubterminal A) {T : C} (hT : IsTerminal T) :
+lemma IsSubterminal.mono_isTerminal_from (hA : IsSubterminal A) {T : C} (hT : IsTerminal T) :
     Mono (hT.from A) :=
   { right_cancellation := fun _ _ _ => hA _ _ }
 #align category_theory.is_subterminal.mono_is_terminal_from CategoryTheory.IsSubterminal.mono_isTerminal_from
@@ -93,7 +93,7 @@ lemma isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun 
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
 The converse of `isSubterminal_of_isIso_diag`.
 -/
-theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] : IsIso (diag A) :=
+lemma IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] : IsIso (diag A) :=
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
         rw [IsSubterminal.def] at hA

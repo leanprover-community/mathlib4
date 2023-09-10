@@ -74,7 +74,7 @@ lemma IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHer
 #align matrix.is_hermitian.transpose Matrix.IsHermitian.transpose
 
 @[simp]
-theorem isHermitian_transpose_iff (A : Matrix n n α) : Aᵀ.IsHermitian ↔ A.IsHermitian :=
+lemma isHermitian_transpose_iff (A : Matrix n n α) : Aᵀ.IsHermitian ↔ A.IsHermitian :=
   ⟨by intro h; rw [← transpose_transpose A]; exact IsHermitian.transpose h, IsHermitian.transpose⟩
 #align matrix.is_hermitian_transpose_iff Matrix.isHermitian_transpose_iff
 
@@ -100,7 +100,7 @@ section InvolutiveStar
 variable [InvolutiveStar α]
 
 @[simp]
-theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian :=
+lemma isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian :=
   IsSelfAdjoint.star_iff
 #align matrix.is_hermitian_conj_transpose_iff Matrix.isHermitian_conjTranspose_iff
 
@@ -162,11 +162,11 @@ section AddCommMonoid
 
 variable [AddCommMonoid α] [StarAddMonoid α]
 
-theorem isHermitian_add_transpose_self (A : Matrix n n α) : (A + Aᴴ).IsHermitian :=
+lemma isHermitian_add_transpose_self (A : Matrix n n α) : (A + Aᴴ).IsHermitian :=
   isSelfAdjoint_add_star_self A
 #align matrix.is_hermitian_add_transpose_self Matrix.isHermitian_add_transpose_self
 
-theorem isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermitian :=
+lemma isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermitian :=
   isSelfAdjoint_star_add_self A
 #align matrix.is_hermitian_transpose_add_self Matrix.isHermitian_transpose_add_self
 

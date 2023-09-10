@@ -41,11 +41,11 @@ def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
 initialize_simps_projections ClopenUpperSet (carrier → coe)
 
-theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
+lemma upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'
 #align clopen_upper_set.upper ClopenUpperSet.upper
 
-theorem clopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
+lemma clopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
   s.clopen'
 #align clopen_upper_set.clopen ClopenUpperSet.clopen
 
@@ -61,7 +61,7 @@ protected lemma ext {s t : ClopenUpperSet α} (h : (s : Set α) = t) : s = t :=
 #align clopen_upper_set.ext ClopenUpperSet.ext
 
 @[simp]
-theorem coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
+lemma coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
   rfl
 #align clopen_upper_set.coe_mk ClopenUpperSet.coe_mk
 
@@ -84,12 +84,12 @@ instance : BoundedOrder (ClopenUpperSet α) :=
   BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_sup (s t : ClopenUpperSet α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
+lemma coe_sup (s t : ClopenUpperSet α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
 #align clopen_upper_set.coe_sup ClopenUpperSet.coe_sup
 
 @[simp]
-theorem coe_inf (s t : ClopenUpperSet α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
+lemma coe_inf (s t : ClopenUpperSet α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 #align clopen_upper_set.coe_inf ClopenUpperSet.coe_inf
 

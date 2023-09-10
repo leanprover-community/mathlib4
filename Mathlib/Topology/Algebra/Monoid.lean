@@ -91,13 +91,13 @@ lemma Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
 #align continuous.add Continuous.add
 
 @[to_additive (attr := continuity)]
-theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
+lemma continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
   continuous_const.mul continuous_id
 #align continuous_mul_left continuous_mul_left
 #align continuous_add_left continuous_add_left
 
 @[to_additive (attr := continuity)]
-theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
+lemma continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
   continuous_id.mul continuous_const
 #align continuous_mul_right continuous_mul_right
 #align continuous_add_right continuous_add_right
@@ -123,21 +123,21 @@ lemma Filter.Tendsto.mul {f g : α → M} {x : Filter α} {a b : M} (hf : Tendst
 #align filter.tendsto.add Filter.Tendsto.add
 
 @[to_additive]
-theorem Filter.Tendsto.const_mul (b : M) {c : M} {f : α → M} {l : Filter α}
+lemma Filter.Tendsto.const_mul (b : M) {c : M} {f : α → M} {l : Filter α}
     (h : Tendsto (fun k : α => f k) l (𝓝 c)) : Tendsto (fun k : α => b * f k) l (𝓝 (b * c)) :=
   tendsto_const_nhds.mul h
 #align filter.tendsto.const_mul Filter.Tendsto.const_mul
 #align filter.tendsto.const_add Filter.Tendsto.const_add
 
 @[to_additive]
-theorem Filter.Tendsto.mul_const (b : M) {c : M} {f : α → M} {l : Filter α}
+lemma Filter.Tendsto.mul_const (b : M) {c : M} {f : α → M} {l : Filter α}
     (h : Tendsto (fun k : α => f k) l (𝓝 c)) : Tendsto (fun k : α => f k * b) l (𝓝 (c * b)) :=
   h.mul tendsto_const_nhds
 #align filter.tendsto.mul_const Filter.Tendsto.mul_const
 #align filter.tendsto.add_const Filter.Tendsto.add_const
 
 @[to_additive]
-theorem le_nhds_mul (a b : M) : 𝓝 a * 𝓝 b ≤ 𝓝 (a * b) := by
+lemma le_nhds_mul (a b : M) : 𝓝 a * 𝓝 b ≤ 𝓝 (a * b) := by
   rw [← map₂_mul, ← map_uncurry_prod, ← nhds_prod_eq]
   exact continuous_mul.tendsto _
 #align le_nhds_mul le_nhds_mul
@@ -293,7 +293,7 @@ lemma ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
 #align has_continuous_add.of_nhds_zero ContinuousAdd.of_nhds_zero
 
 @[to_additive]
-theorem continuousMul_of_comm_of_nhds_one (M : Type u) [CommMonoid M] [TopologicalSpace M]
+lemma continuousMul_of_comm_of_nhds_one (M : Type u) [CommMonoid M] [TopologicalSpace M]
     (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1)) : ContinuousMul M := by
   apply ContinuousMul.of_nhds_one hmul hleft
@@ -407,7 +407,7 @@ section ContinuousMul
 variable [TopologicalSpace M] [Monoid M] [ContinuousMul M]
 
 @[to_additive]
-theorem Submonoid.top_closure_mul_self_subset (s : Submonoid M) :
+lemma Submonoid.top_closure_mul_self_subset (s : Submonoid M) :
     _root_.closure (s : Set M) * _root_.closure s ⊆ _root_.closure s :=
   image2_subset_iff.2 fun _ hx _ hy =>
     map_mem_closure₂ continuous_mul hx hy fun _ ha _ hb => s.mul_mem ha hb
@@ -415,7 +415,7 @@ theorem Submonoid.top_closure_mul_self_subset (s : Submonoid M) :
 #align add_submonoid.top_closure_add_self_subset AddSubmonoid.top_closure_add_self_subset
 
 @[to_additive]
-theorem Submonoid.top_closure_mul_self_eq (s : Submonoid M) :
+lemma Submonoid.top_closure_mul_self_eq (s : Submonoid M) :
     _root_.closure (s : Set M) * _root_.closure s = _root_.closure s :=
   Subset.antisymm s.top_closure_mul_self_subset fun x hx =>
     ⟨x, 1, hx, _root_.subset_closure s.one_mem, mul_one _⟩
@@ -435,23 +435,23 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 
 -- Porting note: new lemma
 @[to_additive]
-theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
+lemma Submonoid.coe_topologicalClosure (s : Submonoid M) :
   (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
 
 @[to_additive]
-theorem Submonoid.le_topologicalClosure (s : Submonoid M) : s ≤ s.topologicalClosure :=
+lemma Submonoid.le_topologicalClosure (s : Submonoid M) : s ≤ s.topologicalClosure :=
   _root_.subset_closure
 #align submonoid.le_topological_closure Submonoid.le_topologicalClosure
 #align add_submonoid.le_topological_closure AddSubmonoid.le_topologicalClosure
 
 @[to_additive]
-theorem Submonoid.isClosed_topologicalClosure (s : Submonoid M) :
+lemma Submonoid.isClosed_topologicalClosure (s : Submonoid M) :
     IsClosed (s.topologicalClosure : Set M) := isClosed_closure
 #align submonoid.is_closed_topological_closure Submonoid.isClosed_topologicalClosure
 #align add_submonoid.is_closed_topological_closure AddSubmonoid.isClosed_topologicalClosure
 
 @[to_additive]
-theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M} (h : s ≤ t)
+lemma Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M} (h : s ≤ t)
     (ht : IsClosed (t : Set M)) : s.topologicalClosure ≤ t := closure_minimal h ht
 #align submonoid.topological_closure_minimal Submonoid.topologicalClosure_minimal
 #align add_submonoid.topological_closure_minimal AddSubmonoid.topologicalClosure_minimal
@@ -586,7 +586,7 @@ lemma continuousOn_pow {s : Set M} (n : ℕ) : ContinuousOn (fun (x : M) => x ^ 
 #align continuous_on_nsmul continuousOn_nsmul
 
 @[to_additive]
-theorem continuousAt_pow (x : M) (n : ℕ) : ContinuousAt (fun (x : M) => x ^ n) x :=
+lemma continuousAt_pow (x : M) (n : ℕ) : ContinuousAt (fun (x : M) => x ^ n) x :=
   (continuous_pow n).continuousAt
 #align continuous_at_pow continuousAt_pow
 #align continuous_at_nsmul continuousAt_nsmul
@@ -716,7 +716,7 @@ section
 variable [TopologicalSpace M] [CommMonoid M]
 
 @[to_additive]
-theorem Submonoid.mem_nhds_one (S : Submonoid M) (oS : IsOpen (S : Set M)) :
+lemma Submonoid.mem_nhds_one (S : Submonoid M) (oS : IsOpen (S : Set M)) :
     (S : Set M) ∈ 𝓝 (1 : M) :=
   IsOpen.mem_nhds oS S.one_mem
 #align submonoid.mem_nhds_one Submonoid.mem_nhds_one
@@ -875,7 +875,7 @@ protected def mulRight (x : X) : C(X, X) :=
 #align continuous_map.add_right ContinuousMap.addRight
 
 @[to_additive (attr := simp)]
-theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
+lemma coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 #align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
 #align continuous_map.coe_add_right ContinuousMap.coe_addRight
@@ -888,7 +888,7 @@ protected def mulLeft (x : X) : C(X, X) :=
 #align continuous_map.add_left ContinuousMap.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
+lemma coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
 #align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft
 #align continuous_map.coe_add_left ContinuousMap.coe_addLeft

@@ -52,7 +52,7 @@ lemma embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0
 #align Kuratowski_embedding.embedding_of_subset_coe KuratowskiEmbedding.embeddingOfSubset_coe
 
 /-- The embedding map is always a semi-contraction. -/
-theorem embeddingOfSubset_dist_le (a b : α) :
+lemma embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
   refine' lp.norm_le_of_forall_le dist_nonneg fun n => _
   simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe, Real.dist_eq]
@@ -61,7 +61,7 @@ theorem embeddingOfSubset_dist_le (a b : α) :
 #align Kuratowski_embedding.embedding_of_subset_dist_le KuratowskiEmbedding.embeddingOfSubset_dist_le
 
 /-- When the reference set is dense, the embedding map is an isometry on its image. -/
-theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) := by
+lemma embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) := by
   refine' Isometry.of_dist_eq fun a b => _
   refine' (embeddingOfSubset_dist_le x a b).antisymm (le_of_forall_pos_le_add fun e epos => _)
   -- First step: find n with dist a (x n) < e
@@ -91,7 +91,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
 #align Kuratowski_embedding.embedding_of_subset_isometry KuratowskiEmbedding.embeddingOfSubset_isometry
 
 /-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
-theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
+lemma exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
     ∃ f : α → ℓ^∞(ℕ), Isometry f := by
   cases' (univ : Set α).eq_empty_or_nonempty with h h
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
@@ -118,7 +118,7 @@ def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α 
 /--
 The Kuratowski embedding is an isometry.
 Theorem 2.1 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]. -/
-protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
+protected lemma kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
     Isometry (kuratowskiEmbedding α) :=
   Classical.choose_spec (exists_isometric_embedding α)
 #align Kuratowski_embedding.isometry kuratowskiEmbedding.isometry

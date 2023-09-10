@@ -94,7 +94,7 @@ instance canLift :
     where prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩
 #align continuous_map.can_lift ContinuousMap.canLift
 
-theorem isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=
+lemma isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=
   Iff.intro (fun h => fun x => ⟨unitsLift.symm h.unit x, rfl⟩) fun h =>
     ⟨ContinuousMap.unitsLift (unitsOfForallIsUnit h), by ext; rfl⟩
 #align continuous_map.is_unit_iff_forall_is_unit ContinuousMap.isUnit_iff_forall_isUnit
@@ -105,11 +105,11 @@ section NormedField
 
 variable [NormedField 𝕜] [CompleteSpace 𝕜]
 
-theorem isUnit_iff_forall_ne_zero (f : C(X, 𝕜)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
+lemma isUnit_iff_forall_ne_zero (f : C(X, 𝕜)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
   simp_rw [f.isUnit_iff_forall_isUnit, isUnit_iff_ne_zero]
 #align continuous_map.is_unit_iff_forall_ne_zero ContinuousMap.isUnit_iff_forall_ne_zero
 
-theorem spectrum_eq_range (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
+lemma spectrum_eq_range (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
   ext x
   simp only [spectrum.mem_iff, isUnit_iff_forall_ne_zero, not_forall, coe_sub, Pi.sub_apply,
     algebraMap_apply, Algebra.id.smul_eq_mul, mul_one, Classical.not_not, Set.mem_range,

@@ -69,7 +69,7 @@ attribute [local instance] monoidalOfHasFiniteProducts
 open scoped MonoidalCategory
 
 @[simp]
-theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
+lemma tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.tensor_obj CategoryTheory.monoidalOfHasFiniteProducts.tensorObj
 
@@ -79,36 +79,36 @@ lemma tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.pro
 #align category_theory.monoidal_of_has_finite_products.tensor_hom CategoryTheory.monoidalOfHasFiniteProducts.tensorHom
 
 @[simp]
-theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
+lemma leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.left_unitor_hom CategoryTheory.monoidalOfHasFiniteProducts.leftUnitor_hom
 
 @[simp]
-theorem leftUnitor_inv (X : C) : (λ_ X).inv = prod.lift (terminal.from X) (𝟙 _) :=
+lemma leftUnitor_inv (X : C) : (λ_ X).inv = prod.lift (terminal.from X) (𝟙 _) :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.left_unitor_inv CategoryTheory.monoidalOfHasFiniteProducts.leftUnitor_inv
 
 @[simp]
-theorem rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
+lemma rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.right_unitor_hom CategoryTheory.monoidalOfHasFiniteProducts.rightUnitor_hom
 
 @[simp]
-theorem rightUnitor_inv (X : C) : (ρ_ X).inv = prod.lift (𝟙 _) (terminal.from X) :=
+lemma rightUnitor_inv (X : C) : (ρ_ X).inv = prod.lift (𝟙 _) (terminal.from X) :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.right_unitor_inv CategoryTheory.monoidalOfHasFiniteProducts.rightUnitor_inv
 
 -- We don't mark this as a simp lemma, even though in many particular
 -- categories the right hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
-theorem associator_hom (X Y Z : C) :
+lemma associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =
       prod.lift (Limits.prod.fst ≫ Limits.prod.fst)
         (prod.lift (Limits.prod.fst ≫ Limits.prod.snd) Limits.prod.snd) :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.associator_hom CategoryTheory.monoidalOfHasFiniteProducts.associator_hom
 
-theorem associator_inv (X Y Z : C) :
+lemma associator_inv (X Y Z : C) :
     (α_ X Y Z).inv =
       prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
   rfl
@@ -161,7 +161,7 @@ attribute [local instance] monoidalOfHasFiniteCoproducts
 open scoped MonoidalCategory
 
 @[simp]
-theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
+lemma tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.tensor_obj CategoryTheory.monoidalOfHasFiniteCoproducts.tensorObj
 
@@ -171,35 +171,35 @@ lemma tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.cop
 #align category_theory.monoidal_of_has_finite_coproducts.tensor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.tensorHom
 
 @[simp]
-theorem leftUnitor_hom (X : C) : (λ_ X).hom = coprod.desc (initial.to X) (𝟙 _) :=
+lemma leftUnitor_hom (X : C) : (λ_ X).hom = coprod.desc (initial.to X) (𝟙 _) :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.left_unitor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.leftUnitor_hom
 
 @[simp]
-theorem rightUnitor_hom (X : C) : (ρ_ X).hom = coprod.desc (𝟙 _) (initial.to X) :=
+lemma rightUnitor_hom (X : C) : (ρ_ X).hom = coprod.desc (𝟙 _) (initial.to X) :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.right_unitor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.rightUnitor_hom
 
 @[simp]
-theorem leftUnitor_inv (X : C) : (λ_ X).inv = Limits.coprod.inr :=
+lemma leftUnitor_inv (X : C) : (λ_ X).inv = Limits.coprod.inr :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.left_unitor_inv CategoryTheory.monoidalOfHasFiniteCoproducts.leftUnitor_inv
 
 @[simp]
-theorem rightUnitor_inv (X : C) : (ρ_ X).inv = Limits.coprod.inl :=
+lemma rightUnitor_inv (X : C) : (ρ_ X).inv = Limits.coprod.inl :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.right_unitor_inv CategoryTheory.monoidalOfHasFiniteCoproducts.rightUnitor_inv
 
 -- We don't mark this as a simp lemma, even though in many particular
 -- categories the right hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
-theorem associator_hom (X Y Z : C) :
+lemma associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =
       coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ coprod.inr) :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.associator_hom CategoryTheory.monoidalOfHasFiniteCoproducts.associator_hom
 
-theorem associator_inv (X Y Z : C) :
+lemma associator_inv (X Y Z : C) :
     (α_ X Y Z).inv =
       coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) coprod.inr) :=
   rfl

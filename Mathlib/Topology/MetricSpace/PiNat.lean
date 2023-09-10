@@ -84,11 +84,11 @@ lemma apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff 
   · exact (not_lt_zero' hn).elim
 #align pi_nat.apply_eq_of_lt_first_diff PiNat.apply_eq_of_lt_firstDiff
 
-theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
+lemma firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
   simp only [firstDiff_def, ne_comm]
 #align pi_nat.first_diff_comm PiNat.firstDiff_comm
 
-theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
+lemma min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     min (firstDiff x y) (firstDiff y z) ≤ firstDiff x z := by
   by_contra' H
   rw [lt_min_iff] at H
@@ -108,17 +108,17 @@ def cylinder (x : ∀ n, E n) (n : ℕ) : Set (∀ n, E n) :=
   { y | ∀ i, i < n → y i = x i }
 #align pi_nat.cylinder PiNat.cylinder
 
-theorem cylinder_eq_pi (x : ∀ n, E n) (n : ℕ) :
+lemma cylinder_eq_pi (x : ∀ n, E n) (n : ℕ) :
     cylinder x n = Set.pi (Finset.range n : Set ℕ) fun i : ℕ => {x i} := by
   ext y
   simp [cylinder]
 #align pi_nat.cylinder_eq_pi PiNat.cylinder_eq_pi
 
 @[simp]
-theorem cylinder_zero (x : ∀ n, E n) : cylinder x 0 = univ := by simp [cylinder_eq_pi]
+lemma cylinder_zero (x : ∀ n, E n) : cylinder x 0 = univ := by simp [cylinder_eq_pi]
 #align pi_nat.cylinder_zero PiNat.cylinder_zero
 
-theorem cylinder_anti (x : ∀ n, E n) {m n : ℕ} (h : m ≤ n) : cylinder x n ⊆ cylinder x m :=
+lemma cylinder_anti (x : ∀ n, E n) {m n : ℕ} (h : m ≤ n) : cylinder x n ⊆ cylinder x m :=
   fun _y hy i hi => hy i (hi.trans_le h)
 #align pi_nat.cylinder_anti PiNat.cylinder_anti
 
@@ -127,7 +127,7 @@ lemma mem_cylinder_iff {x y : ∀ n, E n} {n : ℕ} : y ∈ cylinder x n ↔ ∀
   Iff.rfl
 #align pi_nat.mem_cylinder_iff PiNat.mem_cylinder_iff
 
-theorem self_mem_cylinder (x : ∀ n, E n) (n : ℕ) : x ∈ cylinder x n := by simp
+lemma self_mem_cylinder (x : ∀ n, E n) (n : ℕ) : x ∈ cylinder x n := by simp
 #align pi_nat.self_mem_cylinder PiNat.self_mem_cylinder
 
 lemma mem_cylinder_iff_eq {x y : ∀ n, E n} {n : ℕ} :
@@ -146,7 +146,7 @@ lemma mem_cylinder_iff_eq {x y : ∀ n, E n} {n : ℕ} :
     exact self_mem_cylinder _ _
 #align pi_nat.mem_cylinder_iff_eq PiNat.mem_cylinder_iff_eq
 
-theorem mem_cylinder_comm (x y : ∀ n, E n) (n : ℕ) : y ∈ cylinder x n ↔ x ∈ cylinder y n := by
+lemma mem_cylinder_comm (x y : ∀ n, E n) (n : ℕ) : y ∈ cylinder x n ↔ x ∈ cylinder y n := by
   simp [mem_cylinder_iff_eq, eq_comm]
 #align pi_nat.mem_cylinder_comm PiNat.mem_cylinder_comm
 
@@ -160,18 +160,18 @@ lemma mem_cylinder_iff_le_firstDiff {x y : ∀ n, E n} (hne : x ≠ y) (i : ℕ)
     exact apply_eq_of_lt_firstDiff (hj.trans_le hi)
 #align pi_nat.mem_cylinder_iff_le_first_diff PiNat.mem_cylinder_iff_le_firstDiff
 
-theorem mem_cylinder_firstDiff (x y : ∀ n, E n) : x ∈ cylinder y (firstDiff x y) := fun _i hi =>
+lemma mem_cylinder_firstDiff (x y : ∀ n, E n) : x ∈ cylinder y (firstDiff x y) := fun _i hi =>
   apply_eq_of_lt_firstDiff hi
 #align pi_nat.mem_cylinder_first_diff PiNat.mem_cylinder_firstDiff
 
-theorem cylinder_eq_cylinder_of_le_firstDiff (x y : ∀ n, E n) {n : ℕ} (hn : n ≤ firstDiff x y) :
+lemma cylinder_eq_cylinder_of_le_firstDiff (x y : ∀ n, E n) {n : ℕ} (hn : n ≤ firstDiff x y) :
     cylinder x n = cylinder y n := by
   rw [← mem_cylinder_iff_eq]
   intro i hi
   exact apply_eq_of_lt_firstDiff (hi.trans_le hn)
 #align pi_nat.cylinder_eq_cylinder_of_le_first_diff PiNat.cylinder_eq_cylinder_of_le_firstDiff
 
-theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
+lemma iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
     ⋃ k, cylinder (update x n k) (n + 1) = cylinder x n := by
   ext y
   simp only [mem_cylinder_iff, mem_iUnion]
@@ -185,7 +185,7 @@ theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
     · simp
 #align pi_nat.Union_cylinder_update PiNat.iUnion_cylinder_update
 
-theorem update_mem_cylinder (x : ∀ n, E n) (n : ℕ) (y : E n) : update x n y ∈ cylinder x n :=
+lemma update_mem_cylinder (x : ∀ n, E n) (n : ℕ) (y : E n) : update x n y ∈ cylinder x n :=
   mem_cylinder_iff.2 fun i hi => by simp [hi.ne]
 #align pi_nat.update_mem_cylinder PiNat.update_mem_cylinder
 
@@ -205,17 +205,17 @@ def res (x : ℕ → α) : ℕ → List α
 #align pi_nat.res PiNat.res
 
 @[simp]
-theorem res_zero (x : ℕ → α) : res x 0 = @nil α :=
+lemma res_zero (x : ℕ → α) : res x 0 = @nil α :=
   rfl
 #align pi_nat.res_zero PiNat.res_zero
 
 @[simp]
-theorem res_succ (x : ℕ → α) (n : ℕ) : res x n.succ = x n :: res x n :=
+lemma res_succ (x : ℕ → α) (n : ℕ) : res x n.succ = x n :: res x n :=
   rfl
 #align pi_nat.res_succ PiNat.res_succ
 
 @[simp]
-theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induction n <;> simp [*]
+lemma res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induction n <;> simp [*]
 #align pi_nat.res_length PiNat.res_length
 
 /-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`.-/
@@ -243,7 +243,7 @@ lemma res_injective : Injective (@res α) := by
 #align pi_nat.res_injective PiNat.res_injective
 
 /-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`.-/
-theorem cylinder_eq_res (x : ℕ → α) (n : ℕ) :
+lemma cylinder_eq_res (x : ℕ → α) (n : ℕ) :
     cylinder x n = { y | res y n = res x n } := by
   ext y
   dsimp [cylinder]
@@ -274,20 +274,20 @@ lemma dist_eq_of_ne {x y : ∀ n, E n} (h : x ≠ y) : dist x y = (1 / 2 : ℝ) 
   simp [dist, h]
 #align pi_nat.dist_eq_of_ne PiNat.dist_eq_of_ne
 
-protected theorem dist_self (x : ∀ n, E n) : dist x x = 0 := by simp [dist]
+protected lemma dist_self (x : ∀ n, E n) : dist x x = 0 := by simp [dist]
 #align pi_nat.dist_self PiNat.dist_self
 
-protected theorem dist_comm (x y : ∀ n, E n) : dist x y = dist y x := by
+protected lemma dist_comm (x y : ∀ n, E n) : dist x y = dist y x := by
   simp [dist, @eq_comm _ x y, firstDiff_comm]
 #align pi_nat.dist_comm PiNat.dist_comm
 
-protected theorem dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
+protected lemma dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
   rcases eq_or_ne x y with (rfl | h)
   · simp [dist]
   · simp [dist, h, zero_le_two]
 #align pi_nat.dist_nonneg PiNat.dist_nonneg
 
-theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y) (dist y z) := by
+lemma dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y) (dist y z) := by
   rcases eq_or_ne x z with (rfl | hxz)
   · simp [PiNat.dist_self x, PiNat.dist_nonneg]
   rcases eq_or_ne x y with (rfl | hxy)
@@ -299,13 +299,13 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 #align pi_nat.dist_triangle_nonarch PiNat.dist_triangle_nonarch
 
-protected theorem dist_triangle (x y z : ∀ n, E n) : dist x z ≤ dist x y + dist y z :=
+protected lemma dist_triangle (x y z : ∀ n, E n) : dist x z ≤ dist x y + dist y z :=
   calc
     dist x z ≤ max (dist x y) (dist y z) := dist_triangle_nonarch x y z
     _ ≤ dist x y + dist y z := max_le_add_of_nonneg (PiNat.dist_nonneg _ _) (PiNat.dist_nonneg _ _)
 #align pi_nat.dist_triangle PiNat.dist_triangle
 
-protected theorem eq_of_dist_eq_zero (x y : ∀ n, E n) (hxy : dist x y = 0) : x = y := by
+protected lemma eq_of_dist_eq_zero (x y : ∀ n, E n) (hxy : dist x y = 0) : x = y := by
   rcases eq_or_ne x y with (rfl | h); · rfl
   simp [dist_eq_of_ne h] at hxy
   exact (two_ne_zero (pow_eq_zero hxy)).elim
@@ -357,7 +357,7 @@ lemma lipschitz_with_one_iff_forall_dist_image_le_of_mem_cylinder {α : Type*}
 variable (E)
 variable [∀ n, TopologicalSpace (E n)] [∀ n, DiscreteTopology (E n)]
 
-theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
+lemma isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
   rw [PiNat.cylinder_eq_pi]
   exact isOpen_set_pi (Finset.range n).finite_toSet fun a _ => isOpen_discrete _
 #align pi_nat.is_open_cylinder PiNat.isOpen_cylinder
@@ -387,7 +387,7 @@ lemma isTopologicalBasis_cylinders :
 
 variable {E}
 
-theorem isOpen_iff_dist (s : Set (∀ n, E n)) :
+lemma isOpen_iff_dist (s : Set (∀ n, E n)) :
     IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ∀ y, dist x y < ε → y ∈ s := by
   constructor
   · intro hs x hx
@@ -719,7 +719,7 @@ open PiNat
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
 `exists_nat_nat_continuous_surjective_of_polishSpace`. -/
-theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [MetricSpace α]
+lemma exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [MetricSpace α]
     [CompleteSpace α] [SecondCountableTopology α] [Nonempty α] :
     ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f := by
   /- First, we define a surjective map from a closed subset `s` of `ℕ → ℕ`. Then, we compose
@@ -825,19 +825,19 @@ protected def dist : Dist (∀ i, F i) :=
 
 attribute [local instance] PiCountable.dist
 
-theorem dist_eq_tsum (x y : ∀ i, F i) :
+lemma dist_eq_tsum (x y : ∀ i, F i) :
     dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) :=
   rfl
 #align pi_countable.dist_eq_tsum PiCountable.dist_eq_tsum
 
-theorem dist_summable (x y : ∀ i, F i) :
+lemma dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
   refine summable_of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
     summable_geometric_two_encode
   exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
 #align pi_countable.dist_summable PiCountable.dist_summable
 
-theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
+lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) ≤ dist x y :=
   le_tsum (dist_summable x y) i fun j _ => le_min (by simp) dist_nonneg
 #align pi_countable.min_dist_le_dist_pi PiCountable.min_dist_le_dist_pi

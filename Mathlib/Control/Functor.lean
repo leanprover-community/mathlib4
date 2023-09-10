@@ -41,7 +41,7 @@ variable [Functor F] [LawfulFunctor F]
 lemma Functor.map_id : (· <$> ·) id = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
-theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
+lemma Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((· <$> ·) g ∘ (· <$> ·) f : F α → F γ) = (· <$> ·) (g ∘ f) :=
   funext <| fun _ => (comp_map _ _ _).symm
   -- porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
@@ -207,7 +207,7 @@ protected lemma id_map : ∀ x : Comp F G α, Comp.map id x = x
   -- porting note: `rfl` wasn't needed in mathlib3
 #align functor.comp.id_map Functor.Comp.id_map
 
-protected theorem comp_map (g' : α → β) (h : β → γ) :
+protected lemma comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
   -- porting note: `Comp.mk` wasn't needed in mathlib3

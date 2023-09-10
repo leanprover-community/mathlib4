@@ -38,7 +38,7 @@ variable {R : Type*} [CommSemiring R]
 /-- A sum version of Vieta's formula for `Multiset`: the product of the linear terms `X + λ` where
 `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
 `esymm s` of the `λ`'s .-/
-theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
+lemma prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     (s.map fun r => X + C r).prod =
       ∑ j in Finset.range (Multiset.card s + 1), (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
   classical
@@ -56,7 +56,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Vieta's formula for the coefficients of the product of linear terms `X + λ` where `λ` runs
 through a multiset `s` : the `k`th coefficient is the symmetric function `esymm (card s - k) s`. -/
-theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s) :
+lemma prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s) :
     (s.map fun r => X + C r).prod.coeff k = s.esymm (Multiset.card s - k) := by
   convert Polynomial.ext_iff.mp (prod_X_add_C_eq_sum_esymm s) k using 1
   simp_rw [finset_sum_coeff, coeff_C_mul_X_pow]
@@ -91,7 +91,7 @@ section Ring
 
 variable {R : Type*} [CommRing R]
 
-theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ k * esymm s k := by
+lemma esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ k * esymm s k := by
   rw [esymm, esymm, ← Multiset.sum_map_mul_left, Multiset.powersetLen_map, Multiset.map_map,
     map_congr (Eq.refl _)]
   intro x hx
@@ -101,7 +101,7 @@ theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ 
   exact fun z _ => neg_one_mul z
 #align multiset.esymm_neg Multiset.esymm_neg
 
-theorem prod_X_sub_X_eq_sum_esymm (s : Multiset R) :
+lemma prod_X_sub_X_eq_sum_esymm (s : Multiset R) :
     (s.map fun t => X - C t).prod =
       ∑ j in Finset.range (Multiset.card s + 1),
         (-1) ^ j * (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
@@ -117,7 +117,7 @@ theorem prod_X_sub_X_eq_sum_esymm (s : Multiset R) :
 set_option linter.uppercaseLean3 false in
 #align multiset.prod_X_sub_C_eq_sum_esymm Multiset.prod_X_sub_X_eq_sum_esymm
 
-theorem prod_X_sub_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s) :
+lemma prod_X_sub_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s) :
     (s.map fun t => X - C t).prod.coeff k =
     (-1) ^ (Multiset.card s - k) * s.esymm (Multiset.card s - k) := by
   conv_lhs =>
@@ -178,7 +178,7 @@ lemma MvPolynomial.prod_C_add_X_eq_sum_esymm :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prod_C_add_X_eq_sum_esymm MvPolynomial.prod_C_add_X_eq_sum_esymm
 
-theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
+lemma MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i)) : Polynomial _).coeff k =
     MvPolynomial.esymm σ R (card σ - k) := by
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)

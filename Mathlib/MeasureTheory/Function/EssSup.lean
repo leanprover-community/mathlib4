@@ -69,11 +69,11 @@ lemma essInf_const' [NeZero μ] (c : β) : essInf (fun _ : α => c) μ = c :=
   liminf_const _
 #align ess_inf_const' essInf_const'
 
-theorem essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c :=
+lemma essSup_const (c : β) (hμ : μ ≠ 0) : essSup (fun _ : α => c) μ = c :=
   have := NeZero.mk hμ; essSup_const' _
 #align ess_sup_const essSup_const
 
-theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c :=
+lemma essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c :=
   have := NeZero.mk hμ; essInf_const' _
 #align ess_inf_const essInf_const
 
@@ -95,13 +95,13 @@ lemma essInf_eq_sSup {m : MeasurableSpace α} (μ : Measure α) (f : α → β) 
   simp only [eventually_map, ae_iff, not_le]
 #align ess_inf_eq_Sup essInf_eq_sSup
 
-theorem ae_lt_of_essSup_lt (hx : essSup f μ < x)
+lemma ae_lt_of_essSup_lt (hx : essSup f μ < x)
     (hf : IsBoundedUnder (· ≤ ·) μ.ae f := by isBoundedDefault) :
     ∀ᵐ y ∂μ, f y < x :=
   eventually_lt_of_limsup_lt hx hf
 #align ae_lt_of_ess_sup_lt ae_lt_of_essSup_lt
 
-theorem ae_lt_of_lt_essInf (hx : x < essInf f μ)
+lemma ae_lt_of_lt_essInf (hx : x < essInf f μ)
     (hf : IsBoundedUnder (· ≥ ·) μ.ae f := by isBoundedDefault) :
     ∀ᵐ y ∂μ, x < f y :=
   eventually_lt_of_lt_liminf hx hf
@@ -218,7 +218,7 @@ section TopologicalSpace
 
 variable {γ : Type*} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
 
-theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
+lemma essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
     essSup (g ∘ f) μ ≤ essSup g (Measure.map f μ) := by
   refine' limsSup_le_limsSup_of_le (fun t => _) (by isBoundedDefault) (by isBoundedDefault)
   simp_rw [Filter.mem_map]
@@ -229,7 +229,7 @@ theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
   exact fun h => mem_ae_of_mem_ae_map hf h
 #align ess_sup_comp_le_ess_sup_map_measure essSup_comp_le_essSup_map_measure
 
-theorem MeasurableEmbedding.essSup_map_measure (hf : MeasurableEmbedding f) :
+lemma MeasurableEmbedding.essSup_map_measure (hf : MeasurableEmbedding f) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
   refine' le_antisymm _ (essSup_comp_le_essSup_map_measure hf.measurable.aemeasurable)
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_le => _)
@@ -240,7 +240,7 @@ theorem MeasurableEmbedding.essSup_map_measure (hf : MeasurableEmbedding f) :
 variable [MeasurableSpace β] [TopologicalSpace β] [SecondCountableTopology β]
   [OrderClosedTopology β] [OpensMeasurableSpace β]
 
-theorem essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable f μ) :
+lemma essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable f μ) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
   refine' le_antisymm _ (essSup_comp_le_essSup_map_measure hf)
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_le => _)
@@ -249,7 +249,7 @@ theorem essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable 
   exact h_le
 #align ess_sup_map_measure_of_measurable essSup_map_measure_of_measurable
 
-theorem essSup_map_measure (hg : AEMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ) :
+lemma essSup_map_measure (hg : AEMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
   rw [essSup_congr_ae hg.ae_eq_mk, essSup_map_measure_of_measurable hg.measurable_mk hf]
   refine' essSup_congr_ae _
@@ -301,7 +301,7 @@ namespace ENNReal
 
 variable {f : α → ℝ≥0∞}
 
-theorem ae_le_essSup (f : α → ℝ≥0∞) : ∀ᵐ y ∂μ, f y ≤ essSup f μ :=
+lemma ae_le_essSup (f : α → ℝ≥0∞) : ∀ᵐ y ∂μ, f y ≤ essSup f μ :=
   eventually_le_limsup f
 #align ennreal.ae_le_ess_sup ENNReal.ae_le_essSup
 
@@ -314,11 +314,11 @@ lemma essSup_const_mul {a : ℝ≥0∞} : essSup (fun x : α => a * f x) μ = a 
   limsup_const_mul
 #align ennreal.ess_sup_const_mul ENNReal.essSup_const_mul
 
-theorem essSup_mul_le (f g : α → ℝ≥0∞) : essSup (f * g) μ ≤ essSup f μ * essSup g μ :=
+lemma essSup_mul_le (f g : α → ℝ≥0∞) : essSup (f * g) μ ≤ essSup f μ * essSup g μ :=
   limsup_mul_le f g
 #align ennreal.ess_sup_mul_le ENNReal.essSup_mul_le
 
-theorem essSup_add_le (f g : α → ℝ≥0∞) : essSup (f + g) μ ≤ essSup f μ + essSup g μ :=
+lemma essSup_add_le (f g : α → ℝ≥0∞) : essSup (f + g) μ ≤ essSup f μ + essSup g μ :=
   limsup_add_le f g
 #align ennreal.ess_sup_add_le ENNReal.essSup_add_le
 

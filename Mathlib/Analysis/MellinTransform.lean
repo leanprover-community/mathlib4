@@ -108,22 +108,22 @@ def mellin (f : ℝ → E) (s : ℂ) : E :=
 #align mellin mellin
 
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
-theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
+lemma mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
     mellin (fun t => (t : ℂ) ^ a • f t) s = mellin f (s + a) := by
   refine' set_integral_congr measurableSet_Ioi fun t ht => _
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 #align mellin_cpow_smul mellin_cpow_smul
 
-theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+lemma mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     mellin (fun t => c • f t) s = c • mellin f s := by simp only [mellin, smul_comm, integral_smul]
 #align mellin_const_smul mellin_const_smul
 
-theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
+lemma mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 #align mellin_div_const mellin_div_const
 
-theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : a ≠ 0) :
+lemma mellin_comp_rpow (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : a ≠ 0) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   -- note: this is also true for a = 0 (both sides are zero), but this is mathematically
   -- uninteresting and rather time-consuming to check
@@ -138,7 +138,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : a ≠ 0) :
     mul_div_cancel' _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 #align mellin_comp_rpow mellin_comp_rpow
 
-theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
+lemma mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     mellin (fun t => f (a * t)) s = (a : ℂ) ^ (-s) • mellin f s := by
   simp_rw [mellin]
   have : EqOn (fun t : ℝ => (t : ℂ) ^ (s - 1) • f (a * t))
@@ -156,12 +156,12 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     mul_assoc, mul_comm, inv_mul_cancel_right₀ (ofReal_ne_zero.mpr ha.ne')]
 #align mellin_comp_mul_left mellin_comp_mul_left
 
-theorem mellin_comp_mul_right (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
+lemma mellin_comp_mul_right (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     mellin (fun t => f (t * a)) s = (a : ℂ) ^ (-s) • mellin f s := by
   simpa only [mul_comm] using mellin_comp_mul_left f s ha
 #align mellin_comp_mul_right mellin_comp_mul_right
 
-theorem mellin_comp_inv (f : ℝ → E) (s : ℂ) : mellin (fun t => f t⁻¹) s = mellin f (-s) := by
+lemma mellin_comp_inv (f : ℝ → E) (s : ℂ) : mellin (fun t => f t⁻¹) s = mellin f (-s) := by
   simp_rw [← rpow_neg_one, mellin_comp_rpow _ _ (neg_ne_zero.mpr one_ne_zero), abs_neg, abs_one,
     inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one]
 #align mellin_comp_inv mellin_comp_inv
@@ -478,7 +478,7 @@ lemma hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
 #align has_mellin_one_Ioc hasMellin_one_Ioc
 
 /-- The Mellin transform of a power function restricted to `Ioc 0 1`. -/
-theorem hasMellin_cpow_Ioc (a : ℂ) {s : ℂ} (hs : 0 < re s + re a) :
+lemma hasMellin_cpow_Ioc (a : ℂ) {s : ℂ} (hs : 0 < re s + re a) :
     HasMellin (indicator (Ioc 0 1) (fun t => ↑t ^ a : ℝ → ℂ)) s (1 / (s + a)) := by
   have := hasMellin_one_Ioc (by rwa [add_re] : 0 < (s + a).re)
   simp_rw [HasMellin, ← MellinConvergent.cpow_smul, ← mellin_cpow_smul, ← indicator_smul,

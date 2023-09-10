@@ -44,7 +44,7 @@ open Matrix LinearMap
 
 /-- The linear map built from `TensorProduct.map` corresponds to the matrix built from
 `Matrix.kronecker`. -/
-theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
+lemma TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
     toMatrix (bM.tensorProduct bN) (bM'.tensorProduct bN') (TensorProduct.map f g) =
       toMatrix bM bM' f ⊗ₖ toMatrix bN bN' g := by
   ext ⟨i, j⟩ ⟨i', j'⟩
@@ -54,7 +54,7 @@ theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
 
 /-- The matrix built from `Matrix.kronecker` corresponds to the linear map built from
 `TensorProduct.map`. -/
-theorem Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
+lemma Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
     toLin (bM.tensorProduct bN) (bM'.tensorProduct bN') (A ⊗ₖ B) =
       TensorProduct.map (toLin bM bM' A) (toLin bN bN' B) := by
   rw [← LinearEquiv.eq_symm_apply, toLin_symm, TensorProduct.toMatrix_map, toMatrix_toLin,

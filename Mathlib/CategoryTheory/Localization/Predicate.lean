@@ -122,7 +122,7 @@ end Localization
 
 namespace Functor
 
-theorem IsLocalization.mk' (h₁ : Localization.StrictUniversalPropertyFixedTarget L W D)
+lemma IsLocalization.mk' (h₁ : Localization.StrictUniversalPropertyFixedTarget L W D)
     (h₂ : Localization.StrictUniversalPropertyFixedTarget L W W.Localization) :
     IsLocalization L W :=
   { inverts := h₁.inverts
@@ -147,7 +147,7 @@ theorem IsLocalization.mk' (h₁ : Localization.StrictUniversalPropertyFixedTarg
             rfl } }
 #align category_theory.functor.is_localization.mk' CategoryTheory.Functor.IsLocalization.mk'
 
-theorem IsLocalization.for_id (hW : W ⊆ MorphismProperty.isomorphisms C) : (𝟭 C).IsLocalization W :=
+lemma IsLocalization.for_id (hW : W ⊆ MorphismProperty.isomorphisms C) : (𝟭 C).IsLocalization W :=
   IsLocalization.mk' _ _ (Localization.strictUniversalPropertyFixedTargetId W _ hW)
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
 #align category_theory.functor.is_localization.for_id CategoryTheory.Functor.IsLocalization.for_id
@@ -261,7 +261,7 @@ lemma whiskeringLeftFunctor'_eq :
 variable {E}
 
 @[simp]
-theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E).obj F = L ⋙ F :=
+lemma whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E).obj F = L ⋙ F :=
   rfl
 #align category_theory.localization.whiskering_left_functor'_obj CategoryTheory.Localization.whiskeringLeftFunctor'_obj
 
@@ -338,7 +338,7 @@ def liftNatTrans (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁
 #align category_theory.localization.lift_nat_trans CategoryTheory.Localization.liftNatTrans
 
 @[simp]
-theorem liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
+lemma liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
     (τ : F₁ ⟶ F₂) (X : C) :
     (liftNatTrans L W F₁ F₂ F₁' F₂' τ).app (L.obj X) =
       (Lifting.iso L W F₁ F₁').hom.app X ≫ τ.app X ≫ (Lifting.iso L W F₂ F₂').inv.app X :=
@@ -346,7 +346,7 @@ theorem liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting 
 #align category_theory.localization.lift_nat_trans_app CategoryTheory.Localization.liftNatTrans_app
 
 @[reassoc (attr := simp)]
-theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ E) [h₁ : Lifting L W F₁ F₁']
+lemma comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ E) [h₁ : Lifting L W F₁ F₁']
     [h₂ : Lifting L W F₂ F₂'] [h₃ : Lifting L W F₃ F₃'] (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
     liftNatTrans L W F₁ F₂ F₁' F₂' τ ≫ liftNatTrans L W F₂ F₃ F₂' F₃' τ' =
       liftNatTrans L W F₁ F₃ F₁' F₃' (τ ≫ τ') :=
@@ -355,7 +355,7 @@ theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ 
 #align category_theory.localization.comp_lift_nat_trans CategoryTheory.Localization.comp_liftNatTrans
 
 @[simp]
-theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
+lemma liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
     liftNatTrans L W F F F' F' (𝟙 F) = 𝟙 F' :=
   natTrans_ext L W _ _ fun X => by
     simp only [liftNatTrans_app, NatTrans.id_app, id_comp, Iso.hom_inv_id_app]

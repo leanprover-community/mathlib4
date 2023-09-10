@@ -173,7 +173,7 @@ local postfix:1024 "♯" => continuousLinearMapOfBilin
 variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
 
 @[simp]
-theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
+lemma continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
   simp [continuousLinearMapOfBilin]
 #align inner_product_space.continuous_linear_map_of_bilin_apply InnerProductSpace.continuousLinearMapOfBilin_apply
 

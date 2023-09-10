@@ -19,7 +19,7 @@ section CanonicallyLinearOrderedSemifield
 
 variable [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
 
-theorem tsub_div (a b c : α) : (a - b) / c = a / c - b / c := by simp_rw [div_eq_mul_inv, tsub_mul]
+lemma tsub_div (a b c : α) : (a - b) / c = a / c - b / c := by simp_rw [div_eq_mul_inv, tsub_mul]
 #align tsub_div tsub_div
 
 end CanonicallyLinearOrderedSemifield

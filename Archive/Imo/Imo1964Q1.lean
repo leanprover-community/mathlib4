@@ -30,7 +30,7 @@ open Nat
 
 namespace Imo1964Q1
 
-theorem two_pow_mod_seven (n : ℕ) : 2 ^ n ≡ 2 ^ (n % 3) [MOD 7] :=
+lemma two_pow_mod_seven (n : ℕ) : 2 ^ n ≡ 2 ^ (n % 3) [MOD 7] :=
   let t := n % 3
   calc 2 ^ n = 2 ^ (3 * (n / 3) + t) := by rw [Nat.div_add_mod]
     _ = (2 ^ 3) ^ (n / 3) * 2 ^ t := by rw [pow_add, pow_mul]
@@ -46,7 +46,7 @@ def ProblemPredicate (n : ℕ) : Prop :=
   7 ∣ 2 ^ n - 1
 #align imo1964_q1.problem_predicate Imo1964Q1.ProblemPredicate
 
-theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
+lemma imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
   let t := n % 3
   have : t < 3 := Nat.mod_lt _ (by decide)
   calc 7 ∣ 2 ^ n - 1 ↔ 2 ^ n ≡ 1 [MOD 7] := by
@@ -61,7 +61,7 @@ end Imo1964Q1
 
 open Imo1964Q1
 
-theorem imo1964_q1b (n : ℕ) : ¬7 ∣ 2 ^ n + 1 := by
+lemma imo1964_q1b (n : ℕ) : ¬7 ∣ 2 ^ n + 1 := by
   intro h
   let t := n % 3
   have : t < 3 := Nat.mod_lt _ (by decide)

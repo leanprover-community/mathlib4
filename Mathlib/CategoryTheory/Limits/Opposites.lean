@@ -237,18 +237,18 @@ def isColimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop} (hc : 
 
 /-- If `F.leftOp : Jᵒᵖ ⥤ C` has a colimit, we can construct a limit for `F : J ⥤ Cᵒᵖ`.
 -/
-theorem hasLimit_of_hasColimit_leftOp (F : J ⥤ Cᵒᵖ) [HasColimit F.leftOp] : HasLimit F :=
+lemma hasLimit_of_hasColimit_leftOp (F : J ⥤ Cᵒᵖ) [HasColimit F.leftOp] : HasLimit F :=
   HasLimit.mk
     { cone := coneOfCoconeLeftOp (colimit.cocone F.leftOp)
       isLimit := isLimitConeOfCoconeLeftOp _ (colimit.isColimit _) }
 #align category_theory.limits.has_limit_of_has_colimit_left_op CategoryTheory.Limits.hasLimit_of_hasColimit_leftOp
 
-theorem hasLimit_of_hasColimit_op (F : J ⥤ C) [HasColimit F.op] : HasLimit F :=
+lemma hasLimit_of_hasColimit_op (F : J ⥤ C) [HasColimit F.op] : HasLimit F :=
   HasLimit.mk
     { cone := (colimit.cocone F.op).unop
       isLimit := isLimitCoconeUnop _ (colimit.isColimit _) }
 
-theorem hasLimit_op_of_hasColimit (F : J ⥤ C) [HasColimit F] : HasLimit F.op :=
+lemma hasLimit_op_of_hasColimit (F : J ⥤ C) [HasColimit F] : HasLimit F.op :=
   HasLimit.mk
     { cone := (colimit.cocone F).op
       isLimit := isLimitCoconeOp _ (colimit.isColimit _) }
@@ -290,19 +290,19 @@ lemma has_cofiltered_limits_of_has_filtered_colimits_op [HasFilteredColimitsOfSi
 
 /-- If `F.leftOp : Jᵒᵖ ⥤ C` has a limit, we can construct a colimit for `F : J ⥤ Cᵒᵖ`.
 -/
-theorem hasColimit_of_hasLimit_leftOp (F : J ⥤ Cᵒᵖ) [HasLimit F.leftOp] : HasColimit F :=
+lemma hasColimit_of_hasLimit_leftOp (F : J ⥤ Cᵒᵖ) [HasLimit F.leftOp] : HasColimit F :=
   HasColimit.mk
     { cocone := coconeOfConeLeftOp (limit.cone F.leftOp)
       isColimit := isColimitCoconeOfConeLeftOp _ (limit.isLimit _) }
 #align category_theory.limits.has_colimit_of_has_limit_left_op CategoryTheory.Limits.hasColimit_of_hasLimit_leftOp
 
-theorem hasColimit_of_hasLimit_op (F : J ⥤ C) [HasLimit F.op] : HasColimit F :=
+lemma hasColimit_of_hasLimit_op (F : J ⥤ C) [HasLimit F.op] : HasColimit F :=
   HasColimit.mk
     { cocone := (limit.cone F.op).unop
       isColimit := isColimitConeUnop _ (limit.isLimit _) }
 #align category_theory.limits.has_colimit_of_has_limit_op CategoryTheory.Limits.hasColimit_of_hasLimit_op
 
-theorem hasColimit_op_of_hasLimit (F : J ⥤ C) [HasLimit F] : HasColimit F.op :=
+lemma hasColimit_op_of_hasLimit (F : J ⥤ C) [HasLimit F] : HasColimit F.op :=
   HasColimit.mk
     { cocone := (limit.cone F).op
       isColimit := isColimitConeOp _ (limit.isLimit _) }

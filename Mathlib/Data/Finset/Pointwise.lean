@@ -133,7 +133,7 @@ lemma subset_one_iff_eq : s ⊆ 1 ↔ s = ∅ ∨ s = 1 :=
 #align finset.subset_zero_iff_eq Finset.subset_zero_iff_eq
 
 @[to_additive]
-theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
+lemma Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
   h.subset_singleton_iff
 #align finset.nonempty.subset_one_iff Finset.Nonempty.subset_one_iff
 #align finset.nonempty.subset_zero_iff Finset.Nonempty.subset_zero_iff
@@ -158,7 +158,7 @@ lemma coe_singletonOneHom : (singletonOneHom : α → Finset α) = singleton :=
 #align finset.coe_singleton_zero_hom Finset.coe_singletonZeroHom
 
 @[to_additive (attr := simp)]
-theorem singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
+lemma singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
   rfl
 #align finset.singleton_one_hom_apply Finset.singletonOneHom_apply
 #align finset.singleton_zero_hom_apply Finset.singletonZeroHom_apply
@@ -210,7 +210,7 @@ lemma mem_inv {x : α} : x ∈ s⁻¹ ↔ ∃ y ∈ s, y⁻¹ = x :=
 #align finset.mem_neg Finset.mem_neg
 
 @[to_additive]
-theorem inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
+lemma inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
   mem_image_of_mem _ ha
 #align finset.inv_mem_inv Finset.inv_mem_inv
 #align finset.neg_mem_neg Finset.neg_mem_neg
@@ -240,19 +240,19 @@ alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
 attribute [to_additive] Nonempty.inv Nonempty.of_inv
 
 @[to_additive (attr := mono)]
-theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
+lemma inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
   image_subset_image h
 #align finset.inv_subset_inv Finset.inv_subset_inv
 #align finset.neg_subset_neg Finset.neg_subset_neg
 
 @[to_additive (attr := simp)]
-theorem inv_singleton (a : α) : ({a} : Finset α)⁻¹ = {a⁻¹} :=
+lemma inv_singleton (a : α) : ({a} : Finset α)⁻¹ = {a⁻¹} :=
   image_singleton _ _
 #align finset.inv_singleton Finset.inv_singleton
 #align finset.neg_singleton Finset.neg_singleton
 
 @[to_additive (attr := simp)]
-theorem inv_insert (a : α) (s : Finset α) : (insert a s)⁻¹ = insert a⁻¹ s⁻¹ :=
+lemma inv_insert (a : α) (s : Finset α) : (insert a s)⁻¹ = insert a⁻¹ s⁻¹ :=
   image_insert _ _ _
 #align finset.inv_insert Finset.inv_insert
 #align finset.neg_insert Finset.neg_insert
@@ -324,7 +324,7 @@ lemma mem_mul {x : α} : x ∈ s * t ↔ ∃ y z, y ∈ s ∧ z ∈ t ∧ y * z 
 #align finset.mem_add Finset.mem_add
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_mul (s t : Finset α) : (↑(s * t) : Set α) = ↑s * ↑t :=
+lemma coe_mul (s t : Finset α) : (↑(s * t) : Set α) = ↑s * ↑t :=
   coe_image₂ _ _ _
 #align finset.coe_mul Finset.coe_mul
 #align finset.coe_add Finset.coe_add
@@ -349,13 +349,13 @@ lemma card_mul_iff :
 #align finset.card_add_iff Finset.card_add_iff
 
 @[to_additive (attr := simp)]
-theorem empty_mul (s : Finset α) : ∅ * s = ∅ :=
+lemma empty_mul (s : Finset α) : ∅ * s = ∅ :=
   image₂_empty_left
 #align finset.empty_mul Finset.empty_mul
 #align finset.empty_add Finset.empty_add
 
 @[to_additive (attr := simp)]
-theorem mul_empty (s : Finset α) : s * ∅ = ∅ :=
+lemma mul_empty (s : Finset α) : s * ∅ = ∅ :=
   image₂_empty_right
 #align finset.mul_empty Finset.mul_empty
 #align finset.add_empty Finset.add_empty
@@ -391,19 +391,19 @@ lemma Nonempty.of_mul_right : (s * t).Nonempty → t.Nonempty :=
 #align finset.nonempty.of_add_right Finset.Nonempty.of_add_right
 
 @[to_additive]
-theorem mul_singleton (a : α) : s * {a} = s.image (· * a) :=
+lemma mul_singleton (a : α) : s * {a} = s.image (· * a) :=
   image₂_singleton_right
 #align finset.mul_singleton Finset.mul_singleton
 #align finset.add_singleton Finset.add_singleton
 
 @[to_additive]
-theorem singleton_mul (a : α) : {a} * s = s.image ((· * ·) a) :=
+lemma singleton_mul (a : α) : {a} * s = s.image ((· * ·) a) :=
   image₂_singleton_left
 #align finset.singleton_mul Finset.singleton_mul
 #align finset.singleton_add Finset.singleton_add
 
 @[to_additive (attr := simp)]
-theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
+lemma singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
   image₂_singleton
 #align finset.singleton_mul_singleton Finset.singleton_mul_singleton
 #align finset.singleton_add_singleton Finset.singleton_add_singleton
@@ -499,7 +499,7 @@ lemma coe_singletonMulHom : (singletonMulHom : α → Finset α) = singleton :=
 #align finset.coe_singleton_add_hom Finset.coe_singletonAddHom
 
 @[to_additive (attr := simp)]
-theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
+lemma singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
   rfl
 #align finset.singleton_mul_hom_apply Finset.singletonMulHom_apply
 #align finset.singleton_add_hom_apply Finset.singletonAddHom_apply
@@ -552,7 +552,7 @@ lemma mem_div : a ∈ s / t ↔ ∃ b c, b ∈ s ∧ c ∈ t ∧ b / c = a :=
 #align finset.mem_sub Finset.mem_sub
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_div (s t : Finset α) : (↑(s / t) : Set α) = ↑s / ↑t :=
+lemma coe_div (s t : Finset α) : (↑(s / t) : Set α) = ↑s / ↑t :=
   coe_image₂ _ _ _
 #align finset.coe_div Finset.coe_div
 #align finset.coe_sub Finset.coe_sub
@@ -570,13 +570,13 @@ lemma div_card_le : (s / t).card ≤ s.card * t.card :=
 #align finset.sub_card_le Finset.sub_card_le
 
 @[to_additive (attr := simp)]
-theorem empty_div (s : Finset α) : ∅ / s = ∅ :=
+lemma empty_div (s : Finset α) : ∅ / s = ∅ :=
   image₂_empty_left
 #align finset.empty_div Finset.empty_div
 #align finset.empty_sub Finset.empty_sub
 
 @[to_additive (attr := simp)]
-theorem div_empty (s : Finset α) : s / ∅ = ∅ :=
+lemma div_empty (s : Finset α) : s / ∅ = ∅ :=
   image₂_empty_right
 #align finset.div_empty Finset.div_empty
 #align finset.sub_empty Finset.sub_empty
@@ -612,20 +612,20 @@ lemma Nonempty.of_div_right : (s / t).Nonempty → t.Nonempty :=
 #align finset.nonempty.of_sub_right Finset.Nonempty.of_sub_right
 
 @[to_additive (attr := simp)]
-theorem div_singleton (a : α) : s / {a} = s.image (· / a) :=
+lemma div_singleton (a : α) : s / {a} = s.image (· / a) :=
   image₂_singleton_right
 #align finset.div_singleton Finset.div_singleton
 #align finset.sub_singleton Finset.sub_singleton
 
 @[to_additive (attr := simp)]
-theorem singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
+lemma singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
   image₂_singleton_left
 #align finset.singleton_div Finset.singleton_div
 #align finset.singleton_sub Finset.singleton_sub
 
 -- @[to_additive (attr := simp )] -- Porting note: simp can prove this & the additive version
 @[to_additive]
-theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
+lemma singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
 #align finset.singleton_div_singleton Finset.singleton_div_singleton
 #align finset.singleton_sub_singleton Finset.singleton_sub_singleton
@@ -789,7 +789,7 @@ scoped[Pointwise] attribute [instance] Finset.semigroup Finset.addSemigroup Fins
   Finset.addCommSemigroup Finset.mulOneClass Finset.addZeroClass
 
 @[to_additive]
-theorem subset_mul_left (s : Finset α) {t : Finset α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun a ha =>
+lemma subset_mul_left (s : Finset α) {t : Finset α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun a ha =>
   mem_mul.2 ⟨a, 1, ha, ht, mul_one _⟩
 #align finset.subset_mul_left Finset.subset_mul_left
 #align finset.subset_add_left Finset.subset_add_left
@@ -814,7 +814,7 @@ lemma coe_singletonMonoidHom : (singletonMonoidHom : α → Finset α) = singlet
 #align finset.coe_singleton_add_monoid_hom Finset.coe_singletonAddMonoidHom
 
 @[to_additive (attr := simp)]
-theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
+lemma singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
   rfl
 #align finset.singleton_monoid_hom_apply Finset.singletonMonoidHom_apply
 #align finset.singleton_add_monoid_hom_apply Finset.singletonAddMonoidHom_apply
@@ -835,7 +835,7 @@ lemma coe_coeMonoidHom : (coeMonoidHom : Finset α → Set α) = CoeTC.coe :=
 #align finset.coe_coe_add_monoid_hom Finset.coe_coeAddMonoidHom
 
 @[to_additive (attr := simp)]
-theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
+lemma coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
   rfl
 #align finset.coe_monoid_hom_apply Finset.coeMonoidHom_apply
 #align finset.coe_add_monoid_hom_apply Finset.coeAddMonoidHom_apply
@@ -854,7 +854,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
+lemma coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -871,7 +871,7 @@ protected def monoid : Monoid (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 
 @[to_additive]
-theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
+lemma pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
     rw [pow_zero]
     exact one_mem_one
@@ -882,7 +882,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
 #align finset.nsmul_mem_nsmul Finset.nsmul_mem_nsmul
 
 @[to_additive]
-theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
+lemma pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
   | 0 => by
     simp [pow_zero]
   | n + 1 => by
@@ -892,7 +892,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 #align finset.nsmul_subset_nsmul Finset.nsmul_subset_nsmul
 
 @[to_additive]
-theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
+lemma pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ s ^ n := by
   apply Nat.le_induction
   · exact fun _ hn => hn
   · intro n _ hmn
@@ -902,7 +902,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ 
 #align finset.nsmul_subset_nsmul_of_zero_mem Finset.nsmul_subset_nsmul_of_zero_mem
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_list_prod (s : List (Finset α)) : (↑s.prod : Set α) = (s.map (↑)).prod :=
+lemma coe_list_prod (s : List (Finset α)) : (↑s.prod : Set α) = (s.map (↑)).prod :=
   map_list_prod (coeMonoidHom : Finset α →* Set α) _
 #align finset.coe_list_prod Finset.coe_list_prod
 #align finset.coe_list_sum Finset.coe_list_sum
@@ -923,7 +923,7 @@ lemma mem_pow {a : α} {n : ℕ} :
 #align finset.mem_nsmul Finset.mem_nsmul
 
 @[to_additive (attr := simp)]
-theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
+lemma empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
 #align finset.empty_pow Finset.empty_pow
 #align finset.empty_nsmul Finset.empty_nsmul
@@ -989,7 +989,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
-theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
+lemma coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
     refine' (coe_inv _).trans _
@@ -1085,17 +1085,17 @@ variable [MulZeroClass α] {s t : Finset α}
 /-! Note that `Finset` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
 
 
-theorem mul_zero_subset (s : Finset α) : s * 0 ⊆ 0 := by simp [subset_iff, mem_mul]
+lemma mul_zero_subset (s : Finset α) : s * 0 ⊆ 0 := by simp [subset_iff, mem_mul]
 #align finset.mul_zero_subset Finset.mul_zero_subset
 
-theorem zero_mul_subset (s : Finset α) : 0 * s ⊆ 0 := by simp [subset_iff, mem_mul]
+lemma zero_mul_subset (s : Finset α) : 0 * s ⊆ 0 := by simp [subset_iff, mem_mul]
 #align finset.zero_mul_subset Finset.zero_mul_subset
 
-theorem Nonempty.mul_zero (hs : s.Nonempty) : s * 0 = 0 :=
+lemma Nonempty.mul_zero (hs : s.Nonempty) : s * 0 = 0 :=
   s.mul_zero_subset.antisymm <| by simpa [mem_mul] using hs
 #align finset.nonempty.mul_zero Finset.Nonempty.mul_zero
 
-theorem Nonempty.zero_mul (hs : s.Nonempty) : 0 * s = 0 :=
+lemma Nonempty.zero_mul (hs : s.Nonempty) : 0 * s = 0 :=
   s.zero_mul_subset.antisymm <| by simpa [mem_mul] using hs
 #align finset.nonempty.zero_mul Finset.Nonempty.zero_mul
 
@@ -1121,14 +1121,14 @@ lemma not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 #align finset.not_zero_mem_sub_iff Finset.not_zero_mem_sub_iff
 
 @[to_additive]
-theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
+lemma Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
   let ⟨a, ha⟩ := h
   mem_div.2 ⟨a, a, ha, ha, div_self' _⟩
 #align finset.nonempty.one_mem_div Finset.Nonempty.one_mem_div
 #align finset.nonempty.zero_mem_sub Finset.Nonempty.zero_mem_sub
 
 @[to_additive]
-theorem isUnit_singleton (a : α) : IsUnit ({a} : Finset α) :=
+lemma isUnit_singleton (a : α) : IsUnit ({a} : Finset α) :=
   (Group.isUnit a).finset
 #align finset.is_unit_singleton Finset.isUnit_singleton
 #align finset.is_add_unit_singleton Finset.isAddUnit_singleton
@@ -1183,17 +1183,17 @@ section GroupWithZero
 
 variable [GroupWithZero α] {s t : Finset α}
 
-theorem div_zero_subset (s : Finset α) : s / 0 ⊆ 0 := by simp [subset_iff, mem_div]
+lemma div_zero_subset (s : Finset α) : s / 0 ⊆ 0 := by simp [subset_iff, mem_div]
 #align finset.div_zero_subset Finset.div_zero_subset
 
-theorem zero_div_subset (s : Finset α) : 0 / s ⊆ 0 := by simp [subset_iff, mem_div]
+lemma zero_div_subset (s : Finset α) : 0 / s ⊆ 0 := by simp [subset_iff, mem_div]
 #align finset.zero_div_subset Finset.zero_div_subset
 
-theorem Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
+lemma Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
   s.div_zero_subset.antisymm <| by simpa [mem_div] using hs
 #align finset.nonempty.div_zero Finset.Nonempty.div_zero
 
-theorem Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
+lemma Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
   s.zero_div_subset.antisymm <| by simpa [mem_div] using hs
 #align finset.nonempty.zero_div Finset.Nonempty.zero_div
 
@@ -1280,7 +1280,7 @@ lemma mem_smul {x : β} : x ∈ s • t ↔ ∃ y z, y ∈ s ∧ z ∈ t ∧ y �
 #align finset.mem_vadd Finset.mem_vadd
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) • (t : Set β) :=
+lemma coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) • (t : Set β) :=
   coe_image₂ _ _ _
 #align finset.coe_smul Finset.coe_smul
 #align finset.coe_vadd Finset.coe_vadd
@@ -1298,13 +1298,13 @@ lemma smul_card_le : (s • t).card ≤ s.card • t.card :=
 #align finset.vadd_card_le Finset.vadd_card_le
 
 @[to_additive (attr := simp)]
-theorem empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ :=
+lemma empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ :=
   image₂_empty_left
 #align finset.empty_smul Finset.empty_smul
 #align finset.empty_vadd Finset.empty_vadd
 
 @[to_additive (attr := simp)]
-theorem smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ :=
+lemma smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ :=
   image₂_empty_right
 #align finset.smul_empty Finset.smul_empty
 #align finset.vadd_empty Finset.vadd_empty
@@ -1340,13 +1340,13 @@ lemma Nonempty.of_smul_right : (s • t).Nonempty → t.Nonempty :=
 #align finset.nonempty.of_vadd_right Finset.Nonempty.of_vadd_right
 
 @[to_additive]
-theorem smul_singleton (b : β) : s • ({b} : Finset β) = s.image (· • b) :=
+lemma smul_singleton (b : β) : s • ({b} : Finset β) = s.image (· • b) :=
   image₂_singleton_right
 #align finset.smul_singleton Finset.smul_singleton
 #align finset.vadd_singleton Finset.vadd_singleton
 
 @[to_additive]
-theorem singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} : Finset β) = {a • b} :=
+lemma singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} : Finset β) = {a • b} :=
   image₂_singleton
 #align finset.singleton_smul_singleton Finset.singleton_smul_singleton
 #align finset.singleton_vadd_singleton Finset.singleton_vadd_singleton
@@ -1453,7 +1453,7 @@ lemma mem_vsub : a ∈ s -ᵥ t ↔ ∃ b c, b ∈ s ∧ c ∈ t ∧ b -ᵥ c = 
 #align finset.mem_vsub Finset.mem_vsub
 
 @[simp, norm_cast]
-theorem coe_vsub (s t : Finset β) : (↑(s -ᵥ t) : Set α) = (s : Set β) -ᵥ t :=
+lemma coe_vsub (s t : Finset β) : (↑(s -ᵥ t) : Set α) = (s : Set β) -ᵥ t :=
   coe_image₂ _ _ _
 #align finset.coe_vsub Finset.coe_vsub
 
@@ -1466,12 +1466,12 @@ lemma vsub_card_le : (s -ᵥ t : Finset α).card ≤ s.card * t.card :=
 #align finset.vsub_card_le Finset.vsub_card_le
 
 @[simp]
-theorem empty_vsub (t : Finset β) : (∅ : Finset β) -ᵥ t = ∅ :=
+lemma empty_vsub (t : Finset β) : (∅ : Finset β) -ᵥ t = ∅ :=
   image₂_empty_left
 #align finset.empty_vsub Finset.empty_vsub
 
 @[simp]
-theorem vsub_empty (s : Finset β) : s -ᵥ (∅ : Finset β) = ∅ :=
+lemma vsub_empty (s : Finset β) : s -ᵥ (∅ : Finset β) = ∅ :=
   image₂_empty_right
 #align finset.vsub_empty Finset.vsub_empty
 
@@ -1498,16 +1498,16 @@ lemma Nonempty.of_vsub_right : (s -ᵥ t : Finset α).Nonempty → t.Nonempty :=
 #align finset.nonempty.of_vsub_right Finset.Nonempty.of_vsub_right
 
 @[simp]
-theorem vsub_singleton (b : β) : s -ᵥ ({b} : Finset β) = s.image (· -ᵥ b) :=
+lemma vsub_singleton (b : β) : s -ᵥ ({b} : Finset β) = s.image (· -ᵥ b) :=
   image₂_singleton_right
 #align finset.vsub_singleton Finset.vsub_singleton
 
-theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image ((· -ᵥ ·) a) :=
+lemma singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image ((· -ᵥ ·) a) :=
   image₂_singleton_left
 #align finset.singleton_vsub Finset.singleton_vsub
 
 -- @[simp] -- Porting note: simp can prove this
-theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
+lemma singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 #align finset.singleton_vsub_singleton Finset.singleton_vsub_singleton
 
@@ -1596,7 +1596,7 @@ lemma mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y = 
 #align finset.mem_vadd_finset Finset.mem_vadd_finset
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) :=
+lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) :=
   coe_image
 #align finset.coe_smul_finset Finset.coe_smul_finset
 #align finset.coe_vadd_finset Finset.coe_vadd_finset
@@ -1614,7 +1614,7 @@ lemma smul_finset_card_le : (a • s).card ≤ s.card :=
 #align finset.vadd_finset_card_le Finset.vadd_finset_card_le
 
 @[to_additive (attr := simp)]
-theorem smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ :=
+lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ :=
   image_empty _
 #align finset.smul_finset_empty Finset.smul_finset_empty
 #align finset.vadd_finset_empty Finset.vadd_finset_empty
@@ -1632,13 +1632,13 @@ lemma smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
 #align finset.vadd_finset_nonempty Finset.vadd_finset_nonempty
 
 @[to_additive]
-theorem Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
+lemma Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
   hs.image _
 #align finset.nonempty.smul_finset Finset.Nonempty.smul_finset
 #align finset.nonempty.vadd_finset Finset.Nonempty.vadd_finset
 
 @[to_additive (attr := simp)]
-theorem singleton_smul (a : α) : ({a} : Finset α) • t = a • t :=
+lemma singleton_smul (a : α) : ({a} : Finset α) • t = a • t :=
   image₂_singleton_left
 #align finset.singleton_smul Finset.singleton_smul
 #align finset.singleton_vadd Finset.singleton_vadd
@@ -1650,7 +1650,7 @@ lemma smul_finset_subset_smul_finset : s ⊆ t → a • s ⊆ a • t :=
 #align finset.vadd_finset_subset_vadd_finset Finset.vadd_finset_subset_vadd_finset
 
 @[to_additive (attr := simp)]
-theorem smul_finset_singleton (b : β) : a • ({b} : Finset β) = {a • b} :=
+lemma smul_finset_singleton (b : β) : a • ({b} : Finset β) = {a • b} :=
   image_singleton _ _
 #align finset.smul_finset_singleton Finset.smul_finset_singleton
 #align finset.vadd_finset_singleton Finset.vadd_finset_singleton
@@ -1674,7 +1674,7 @@ lemma smul_finset_subset_smul {s : Finset α} : a ∈ s → a • t ⊆ s • t 
 #align finset.vadd_finset_subset_vadd Finset.vadd_finset_subset_vadd
 
 @[to_additive (attr := simp)]
-theorem biUnion_smul_finset (s : Finset α) (t : Finset β) : s.biUnion (· • t) = s • t :=
+lemma biUnion_smul_finset (s : Finset α) (t : Finset β) : s.biUnion (· • t) = s • t :=
   biUnion_image_left
 #align finset.bUnion_smul_finset Finset.biUnion_smul_finset
 #align finset.bUnion_vadd_finset Finset.biUnion_vadd_finset
@@ -1817,7 +1817,7 @@ variable [DecidableEq β] [DecidableEq γ] [SMul αᵐᵒᵖ β] [SMul β γ] [S
 
 -- TODO: replace hypothesis and conclusion with a typeclass
 @[to_additive]
-theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Finset γ)
+lemma op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Finset γ)
     (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
   ext
   simp [mem_smul, mem_smul_finset, h]
@@ -1837,7 +1837,7 @@ lemma op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
 #align finset.op_vadd_finset_subset_add Finset.op_vadd_finset_subset_add
 
 @[to_additive (attr := simp)]
-theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a => op a • s) = s * t :=
+lemma biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a => op a • s) = s * t :=
   biUnion_image_right
 #align finset.bUnion_op_smul_finset Finset.biUnion_op_smul_finset
 #align finset.bUnion_op_vadd_finset Finset.biUnion_op_vadd_finset
@@ -1861,7 +1861,7 @@ section Semigroup
 variable [Semigroup α] [DecidableEq α]
 
 @[to_additive]
-theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Finset α) :
+lemma op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Finset α) :
     op a • s * t = s * a • t :=
   op_smul_finset_smul_eq_smul_smul_finset _ _ _ fun _ _ _ => mul_assoc _ _ _
 #align finset.op_smul_finset_mul_eq_mul_smul_finset Finset.op_smul_finset_mul_eq_mul_smul_finset
@@ -1945,7 +1945,7 @@ section Group
 variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α} {b : β}
 
 @[to_additive (attr := simp)]
-theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
+lemma smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
   (MulAction.injective _).mem_finset_image
 #align finset.smul_mem_smul_finset_iff Finset.smul_mem_smul_finset_iff
 #align finset.vadd_mem_vadd_finset_iff Finset.vadd_mem_vadd_finset_iff
@@ -2017,7 +2017,7 @@ lemma smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : F
 #align finset.vadd_univ Finset.vadd_univ
 
 @[to_additive (attr := simp)]
-theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
+lemma card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ <| MulAction.injective _
 #align finset.card_smul_finset Finset.card_smul_finset
 #align finset.card_vadd_finset Finset.card_vadd_finset
@@ -2060,40 +2060,40 @@ section GroupWithZero
 variable [DecidableEq β] [GroupWithZero α] [MulAction α β] {s t : Finset β} {a : α} {b : β}
 
 @[simp]
-theorem smul_mem_smul_finset_iff₀ (ha : a ≠ 0) : a • b ∈ a • s ↔ b ∈ s :=
+lemma smul_mem_smul_finset_iff₀ (ha : a ≠ 0) : a • b ∈ a • s ↔ b ∈ s :=
   smul_mem_smul_finset_iff (Units.mk0 a ha)
 #align finset.smul_mem_smul_finset_iff₀ Finset.smul_mem_smul_finset_iff₀
 
-theorem inv_smul_mem_iff₀ (ha : a ≠ 0) : a⁻¹ • b ∈ s ↔ b ∈ a • s :=
+lemma inv_smul_mem_iff₀ (ha : a ≠ 0) : a⁻¹ • b ∈ s ↔ b ∈ a • s :=
   show _ ↔ _ ∈ Units.mk0 a ha • _ from inv_smul_mem_iff
 #align finset.inv_smul_mem_iff₀ Finset.inv_smul_mem_iff₀
 
-theorem mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a • b ∈ s :=
+lemma mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a • b ∈ s :=
   show _ ∈ (Units.mk0 a ha)⁻¹ • _ ↔ _ from mem_inv_smul_finset_iff
 #align finset.mem_inv_smul_finset_iff₀ Finset.mem_inv_smul_finset_iff₀
 
 @[simp]
-theorem smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
+lemma smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
 #align finset.smul_finset_subset_smul_finset_iff₀ Finset.smul_finset_subset_smul_finset_iff₀
 
-theorem smul_finset_subset_iff₀ (ha : a ≠ 0) : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
+lemma smul_finset_subset_iff₀ (ha : a ≠ 0) : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_iff
 #align finset.smul_finset_subset_iff₀ Finset.smul_finset_subset_iff₀
 
-theorem subset_smul_finset_iff₀ (ha : a ≠ 0) : s ⊆ a • t ↔ a⁻¹ • s ⊆ t :=
+lemma subset_smul_finset_iff₀ (ha : a ≠ 0) : s ⊆ a • t ↔ a⁻¹ • s ⊆ t :=
   show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_finset_iff
 #align finset.subset_smul_finset_iff₀ Finset.subset_smul_finset_iff₀
 
-theorem smul_finset_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
+lemma smul_finset_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
   image_inter _ _ <| MulAction.injective₀ ha
 #align finset.smul_finset_inter₀ Finset.smul_finset_inter₀
 
-theorem smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
+lemma smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_sdiff _ _ <| MulAction.injective₀ ha
 #align finset.smul_finset_sdiff₀ Finset.smul_finset_sdiff₀
 
-theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
+lemma smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff _ _ <| MulAction.injective₀ ha
 #align finset.smul_finset_symm_diff₀ Finset.smul_finset_symmDiff₀
 
@@ -2122,17 +2122,17 @@ because `0 * ∅ ≠ 0`.
 -/
 
 
-theorem smul_zero_subset (s : Finset α) : s • (0 : Finset β) ⊆ 0 := by simp [subset_iff, mem_smul]
+lemma smul_zero_subset (s : Finset α) : s • (0 : Finset β) ⊆ 0 := by simp [subset_iff, mem_smul]
 #align finset.smul_zero_subset Finset.smul_zero_subset
 
-theorem zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp [subset_iff, mem_smul]
+lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp [subset_iff, mem_smul]
 #align finset.zero_smul_subset Finset.zero_smul_subset
 
-theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
+lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
   s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
 #align finset.nonempty.smul_zero Finset.Nonempty.smul_zero
 
-theorem Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
+lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
   t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
 #align finset.nonempty.zero_smul Finset.Nonempty.zero_smul
 
@@ -2141,7 +2141,7 @@ lemma zero_smul_finset {s : Finset β} (h : s.Nonempty) : (0 : α) • s = (0 : 
   coe_injective <| by simpa using @Set.zero_smul_set α _ _ _ _ _ h
 #align finset.zero_smul_finset Finset.zero_smul_finset
 
-theorem zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
+lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ => mem_zero.2 <| zero_smul α x
 #align finset.zero_smul_finset_subset Finset.zero_smul_finset_subset
 
@@ -2157,7 +2157,7 @@ lemma zero_mem_smul_iff :
   rfl
 #align finset.zero_mem_smul_iff Finset.zero_mem_smul_iff
 
-theorem zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
+lemma zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
 #align finset.zero_mem_smul_finset_iff Finset.zero_mem_smul_finset_iff
 
@@ -2217,7 +2217,7 @@ lemma toFinset_one : (1 : Set α).toFinset = 1 :=
 
 -- Porting note: should take priority over `Finite.toFinset_singleton`
 @[to_additive (attr := simp high)]
-theorem Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
+lemma Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
   Finite.toFinset_singleton _
 #align set.finite.to_finset_one Set.Finite.toFinset_one
 #align set.finite.to_finset_zero Set.Finite.toFinset_zero
@@ -2229,14 +2229,14 @@ section Mul
 variable [DecidableEq α] [Mul α] {s t : Set α}
 
 @[to_additive (attr := simp)]
-theorem toFinset_mul (s t : Set α) [Fintype s] [Fintype t] [Fintype ↑(s * t)] :
+lemma toFinset_mul (s t : Set α) [Fintype s] [Fintype t] [Fintype ↑(s * t)] :
     (s * t).toFinset = s.toFinset * t.toFinset :=
   toFinset_image2 _ _ _
 #align set.to_finset_mul Set.toFinset_mul
 #align set.to_finset_add Set.toFinset_add
 
 @[to_additive]
-theorem Finite.toFinset_mul (hs : s.Finite) (ht : t.Finite) (hf := hs.mul ht) :
+lemma Finite.toFinset_mul (hs : s.Finite) (ht : t.Finite) (hf := hs.mul ht) :
     hf.toFinset = hs.toFinset * ht.toFinset :=
   Finite.toFinset_image2 _ _ _
 #align set.finite.to_finset_mul Set.Finite.toFinset_mul
@@ -2249,14 +2249,14 @@ section SMul
 variable [SMul α β] [DecidableEq β] {a : α} {s : Set α} {t : Set β}
 
 @[to_additive (attr := simp)]
-theorem toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s • t)] :
+lemma toFinset_smul (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s • t)] :
     (s • t).toFinset = s.toFinset • t.toFinset :=
   toFinset_image2 _ _ _
 #align set.to_finset_smul Set.toFinset_smul
 #align set.to_finset_vadd Set.toFinset_vadd
 
 @[to_additive]
-theorem Finite.toFinset_smul (hs : s.Finite) (ht : t.Finite) (hf := hs.smul ht) :
+lemma Finite.toFinset_smul (hs : s.Finite) (ht : t.Finite) (hf := hs.smul ht) :
     hf.toFinset = hs.toFinset • ht.toFinset :=
   Finite.toFinset_image2 _ _ _
 #align set.finite.to_finset_smul Set.Finite.toFinset_smul
@@ -2269,14 +2269,14 @@ section SMul
 variable [DecidableEq β] [SMul α β] {a : α} {s : Set β}
 
 @[to_additive (attr := simp)]
-theorem toFinset_smul_set (a : α) (s : Set β) [Fintype s] [Fintype ↑(a • s)] :
+lemma toFinset_smul_set (a : α) (s : Set β) [Fintype s] [Fintype ↑(a • s)] :
     (a • s).toFinset = a • s.toFinset :=
   toFinset_image _ _
 #align set.to_finset_smul_set Set.toFinset_smul_set
 #align set.to_finset_vadd_set Set.toFinset_vadd_set
 
 @[to_additive]
-theorem Finite.toFinset_smul_set (hs : s.Finite) (hf : (a • s).Finite := hs.smul_set) :
+lemma Finite.toFinset_smul_set (hs : s.Finite) (hf : (a • s).Finite := hs.smul_set) :
     hf.toFinset = a • hs.toFinset :=
   Finite.toFinset_image _ _ _
 #align set.finite.to_finset_smul_set Set.Finite.toFinset_smul_set
@@ -2289,12 +2289,12 @@ section VSub
 variable [DecidableEq α] [VSub α β] {s t : Set β}
 
 @[simp]
-theorem toFinset_vsub (s t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s -ᵥ t)] :
+lemma toFinset_vsub (s t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s -ᵥ t)] :
     (s -ᵥ t : Set α).toFinset = s.toFinset -ᵥ t.toFinset :=
   toFinset_image2 _ _ _
 #align set.to_finset_vsub Set.toFinset_vsub
 
-theorem Finite.toFinset_vsub (hs : s.Finite) (ht : t.Finite) (hf := hs.vsub ht) :
+lemma Finite.toFinset_vsub (hs : s.Finite) (ht : t.Finite) (hf := hs.vsub ht) :
     hf.toFinset = hs.toFinset -ᵥ ht.toFinset :=
   Finite.toFinset_image2 _ _ _
 #align set.finite.to_finset_vsub Set.Finite.toFinset_vsub

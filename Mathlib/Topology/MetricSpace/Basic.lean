@@ -181,50 +181,50 @@ def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist :
 #align pseudo_metric_space.of_dist_topology PseudoMetricSpace.ofDistTopology
 
 @[simp]
-theorem dist_self (x : α) : dist x x = 0 :=
+lemma dist_self (x : α) : dist x x = 0 :=
   PseudoMetricSpace.dist_self x
 #align dist_self dist_self
 
-theorem dist_comm (x y : α) : dist x y = dist y x :=
+lemma dist_comm (x y : α) : dist x y = dist y x :=
   PseudoMetricSpace.dist_comm x y
 #align dist_comm dist_comm
 
-theorem edist_dist (x y : α) : edist x y = ENNReal.ofReal (dist x y) :=
+lemma edist_dist (x y : α) : edist x y = ENNReal.ofReal (dist x y) :=
   PseudoMetricSpace.edist_dist x y
 #align edist_dist edist_dist
 
-theorem dist_triangle (x y z : α) : dist x z ≤ dist x y + dist y z :=
+lemma dist_triangle (x y z : α) : dist x z ≤ dist x y + dist y z :=
   PseudoMetricSpace.dist_triangle x y z
 #align dist_triangle dist_triangle
 
-theorem dist_triangle_left (x y z : α) : dist x y ≤ dist z x + dist z y := by
+lemma dist_triangle_left (x y z : α) : dist x y ≤ dist z x + dist z y := by
   rw [dist_comm z]; apply dist_triangle
 #align dist_triangle_left dist_triangle_left
 
-theorem dist_triangle_right (x y z : α) : dist x y ≤ dist x z + dist y z := by
+lemma dist_triangle_right (x y z : α) : dist x y ≤ dist x z + dist y z := by
   rw [dist_comm y]; apply dist_triangle
 #align dist_triangle_right dist_triangle_right
 
-theorem dist_triangle4 (x y z w : α) : dist x w ≤ dist x y + dist y z + dist z w :=
+lemma dist_triangle4 (x y z w : α) : dist x w ≤ dist x y + dist y z + dist z w :=
   calc
     dist x w ≤ dist x z + dist z w := dist_triangle x z w
     _ ≤ dist x y + dist y z + dist z w := add_le_add_right (dist_triangle x y z) _
 #align dist_triangle4 dist_triangle4
 
-theorem dist_triangle4_left (x₁ y₁ x₂ y₂ : α) :
+lemma dist_triangle4_left (x₁ y₁ x₂ y₂ : α) :
     dist x₂ y₂ ≤ dist x₁ y₁ + (dist x₁ x₂ + dist y₁ y₂) := by
   rw [add_left_comm, dist_comm x₁, ← add_assoc]
   apply dist_triangle4
 #align dist_triangle4_left dist_triangle4_left
 
-theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
+lemma dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
     dist x₁ y₁ ≤ dist x₁ x₂ + dist y₁ y₂ + dist x₂ y₂ := by
   rw [add_right_comm, dist_comm y₁]
   apply dist_triangle4
 #align dist_triangle4_right dist_triangle4_right
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
-theorem dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
+lemma dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
     dist (f m) (f n) ≤ ∑ i in Finset.Ico m n, dist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction with
   | base => rw [Finset.Ico_self, Finset.sum_empty, dist_self]
@@ -237,7 +237,7 @@ theorem dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
 #align dist_le_Ico_sum_dist dist_le_Ico_sum_dist
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
-theorem dist_le_range_sum_dist (f : ℕ → α) (n : ℕ) :
+lemma dist_le_range_sum_dist (f : ℕ → α) (n : ℕ) :
     dist (f 0) (f n) ≤ ∑ i in Finset.range n, dist (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_dist f (Nat.zero_le n)
 #align dist_le_range_sum_dist dist_le_range_sum_dist
@@ -262,7 +262,7 @@ lemma dist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ}
 lemma swap_dist : Function.swap (@dist α _) = dist := by funext x y; exact dist_comm _ _
 #align swap_dist swap_dist
 
-theorem abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
+lemma abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add.2 (dist_triangle _ _ _), sub_le_iff_le_add.2 (dist_triangle_left _ _ _)⟩
 #align abs_dist_sub_le abs_dist_sub_le
@@ -303,25 +303,25 @@ instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
 #align pseudo_metric_space.to_has_nndist PseudoMetricSpace.toNNDist
 
 /-- Express `dist` in terms of `nndist`-/
-theorem dist_nndist (x y : α) : dist x y = nndist x y := rfl
+lemma dist_nndist (x y : α) : dist x y = nndist x y := rfl
 #align dist_nndist dist_nndist
 
 @[simp, norm_cast]
-theorem coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
+lemma coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
 #align coe_nndist coe_nndist
 
 /-- Express `edist` in terms of `nndist`-/
-theorem edist_nndist (x y : α) : edist x y = nndist x y := by
+lemma edist_nndist (x y : α) : edist x y = nndist x y := by
   rw [edist_dist, dist_nndist, ENNReal.ofReal_coe_nnreal]
 #align edist_nndist edist_nndist
 
 /-- Express `nndist` in terms of `edist`-/
-theorem nndist_edist (x y : α) : nndist x y = (edist x y).toNNReal := by
+lemma nndist_edist (x y : α) : nndist x y = (edist x y).toNNReal := by
   simp [edist_nndist]
 #align nndist_edist nndist_edist
 
 @[simp, norm_cast]
-theorem coe_nnreal_ennreal_nndist (x y : α) : ↑(nndist x y) = edist x y :=
+lemma coe_nnreal_ennreal_nndist (x y : α) : ↑(nndist x y) = edist x y :=
   (edist_nndist x y).symm
 #align coe_nnreal_ennreal_nndist coe_nnreal_ennreal_nndist
 
@@ -341,13 +341,13 @@ lemma edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y < 
 #align edist_lt_top edist_lt_top
 
 /-- In a pseudometric space, the extended distance is always finite-/
-theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
+lemma edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 #align edist_ne_top edist_ne_top
 
 /-- `nndist x x` vanishes-/
 @[simp]
-theorem nndist_self (a : α) : nndist a a = 0 :=
+lemma nndist_self (a : α) : nndist a a = 0 :=
   (NNReal.coe_eq_zero _).1 (dist_self a)
 #align nndist_self nndist_self
 
@@ -375,28 +375,28 @@ lemma edist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
 #align edist_le_of_real edist_le_ofReal
 
 /-- Express `nndist` in terms of `dist`-/
-theorem nndist_dist (x y : α) : nndist x y = Real.toNNReal (dist x y) := by
+lemma nndist_dist (x y : α) : nndist x y = Real.toNNReal (dist x y) := by
   rw [dist_nndist, Real.toNNReal_coe]
 #align nndist_dist nndist_dist
 
-theorem nndist_comm (x y : α) : nndist x y = nndist y x := NNReal.eq <| dist_comm x y
+lemma nndist_comm (x y : α) : nndist x y = nndist y x := NNReal.eq <| dist_comm x y
 #align nndist_comm nndist_comm
 
 /-- Triangle inequality for the nonnegative distance-/
-theorem nndist_triangle (x y z : α) : nndist x z ≤ nndist x y + nndist y z :=
+lemma nndist_triangle (x y z : α) : nndist x z ≤ nndist x y + nndist y z :=
   dist_triangle _ _ _
 #align nndist_triangle nndist_triangle
 
-theorem nndist_triangle_left (x y z : α) : nndist x y ≤ nndist z x + nndist z y :=
+lemma nndist_triangle_left (x y z : α) : nndist x y ≤ nndist z x + nndist z y :=
   dist_triangle_left _ _ _
 #align nndist_triangle_left nndist_triangle_left
 
-theorem nndist_triangle_right (x y z : α) : nndist x y ≤ nndist x z + nndist y z :=
+lemma nndist_triangle_right (x y z : α) : nndist x y ≤ nndist x z + nndist y z :=
   dist_triangle_right _ _ _
 #align nndist_triangle_right nndist_triangle_right
 
 /-- Express `dist` in terms of `edist`-/
-theorem dist_edist (x y : α) : dist x y = (edist x y).toReal := by
+lemma dist_edist (x y : α) : dist x y = (edist x y).toReal := by
   rw [edist_dist, ENNReal.toReal_ofReal dist_nonneg]
 #align dist_edist dist_edist
 
@@ -418,11 +418,11 @@ lemma mem_ball : y ∈ ball x ε ↔ dist y x < ε :=
 lemma mem_ball' : y ∈ ball x ε ↔ dist x y < ε := by rw [dist_comm, mem_ball]
 #align metric.mem_ball' Metric.mem_ball'
 
-theorem pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
+lemma pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
   dist_nonneg.trans_lt hy
 #align metric.pos_of_mem_ball Metric.pos_of_mem_ball
 
-theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
+lemma mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
   rwa [mem_ball, dist_self]
 #align metric.mem_ball_self Metric.mem_ball_self
 
@@ -444,29 +444,29 @@ lemma ball_zero : ball x 0 = ∅ := by rw [ball_eq_empty]
 contains it.
 
 See also `exists_lt_subset_ball`. -/
-theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x ∈ ball y ε' := by
+lemma exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x ∈ ball y ε' := by
   simp only [mem_ball] at h ⊢
   exact ⟨(dist x y + ε) / 2, by linarith, by linarith⟩
 #align metric.exists_lt_mem_ball_of_mem_ball Metric.exists_lt_mem_ball_of_mem_ball
 
-theorem ball_eq_ball (ε : ℝ) (x : α) :
+lemma ball_eq_ball (ε : ℝ) (x : α) :
     UniformSpace.ball x { p | dist p.2 p.1 < ε } = Metric.ball x ε :=
   rfl
 #align metric.ball_eq_ball Metric.ball_eq_ball
 
-theorem ball_eq_ball' (ε : ℝ) (x : α) :
+lemma ball_eq_ball' (ε : ℝ) (x : α) :
     UniformSpace.ball x { p | dist p.1 p.2 < ε } = Metric.ball x ε := by
   ext
   simp [dist_comm, UniformSpace.ball]
 #align metric.ball_eq_ball' Metric.ball_eq_ball'
 
 @[simp]
-theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
+lemma iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
   iUnion_eq_univ_iff.2 fun y => exists_nat_gt (dist y x)
 #align metric.Union_ball_nat Metric.iUnion_ball_nat
 
 @[simp]
-theorem iUnion_ball_nat_succ (x : α) : ⋃ n : ℕ, ball x (n + 1) = univ :=
+lemma iUnion_ball_nat_succ (x : α) : ⋃ n : ℕ, ball x (n + 1) = univ :=
   iUnion_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
 #align metric.Union_ball_nat_succ Metric.iUnion_ball_nat_succ
 
@@ -491,16 +491,16 @@ def sphere (x : α) (ε : ℝ) := { y | dist y x = ε }
 lemma mem_sphere' : y ∈ sphere x ε ↔ dist x y = ε := by rw [dist_comm, mem_sphere]
 #align metric.mem_sphere' Metric.mem_sphere'
 
-theorem ne_of_mem_sphere (h : y ∈ sphere x ε) (hε : ε ≠ 0) : y ≠ x :=
+lemma ne_of_mem_sphere (h : y ∈ sphere x ε) (hε : ε ≠ 0) : y ≠ x :=
   ne_of_mem_of_not_mem h <| by simpa using hε.symm
 #align metric.ne_of_mem_sphere Metric.ne_of_mem_sphere
 
-theorem nonneg_of_mem_sphere (hy : y ∈ sphere x ε) : 0 ≤ ε :=
+lemma nonneg_of_mem_sphere (hy : y ∈ sphere x ε) : 0 ≤ ε :=
   dist_nonneg.trans_eq hy
 #align metric.nonneg_of_mem_sphere Metric.nonneg_of_mem_sphere
 
 @[simp]
-theorem sphere_eq_empty_of_neg (hε : ε < 0) : sphere x ε = ∅ :=
+lemma sphere_eq_empty_of_neg (hε : ε < 0) : sphere x ε = ∅ :=
   Set.eq_empty_iff_forall_not_mem.mpr fun _y hy => (nonneg_of_mem_sphere hy).not_lt hε
 #align metric.sphere_eq_empty_of_neg Metric.sphere_eq_empty_of_neg
 
@@ -512,7 +512,7 @@ lemma sphere_isEmpty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : IsEmpt
   rw [sphere_eq_empty_of_subsingleton hε]; infer_instance
 #align metric.sphere_is_empty_of_subsingleton Metric.sphere_isEmpty_of_subsingleton
 
-theorem mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
+lemma mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
   rwa [mem_closedBall, dist_self]
 #align metric.mem_closed_ball_self Metric.mem_closedBall_self
 
@@ -527,7 +527,7 @@ lemma closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
 #align metric.closed_ball_eq_empty Metric.closedBall_eq_empty
 
 /-- Closed balls and spheres coincide when the radius is non-positive -/
-theorem closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
+lemma closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
   Set.ext fun _ => (hε.trans dist_nonneg).le_iff_eq
 #align metric.closed_ball_eq_sphere_of_nonpos Metric.closedBall_eq_sphere_of_nonpos
 
@@ -538,20 +538,20 @@ lemma ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
 lemma sphere_subset_closedBall : sphere x ε ⊆ closedBall x ε := fun _ => le_of_eq
 #align metric.sphere_subset_closed_ball Metric.sphere_subset_closedBall
 
-theorem closedBall_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (closedBall x δ) (ball y ε) :=
+lemma closedBall_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (closedBall x δ) (ball y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
     (h.trans <| dist_triangle_left _ _ _).not_lt <| add_lt_add_of_le_of_lt ha1 ha2
 #align metric.closed_ball_disjoint_ball Metric.closedBall_disjoint_ball
 
-theorem ball_disjoint_closedBall (h : δ + ε ≤ dist x y) : Disjoint (ball x δ) (closedBall y ε) :=
+lemma ball_disjoint_closedBall (h : δ + ε ≤ dist x y) : Disjoint (ball x δ) (closedBall y ε) :=
   (closedBall_disjoint_ball <| by rwa [add_comm, dist_comm]).symm
 #align metric.ball_disjoint_closed_ball Metric.ball_disjoint_closedBall
 
-theorem ball_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (ball x δ) (ball y ε) :=
+lemma ball_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (ball x δ) (ball y ε) :=
   (closedBall_disjoint_ball h).mono_left ball_subset_closedBall
 #align metric.ball_disjoint_ball Metric.ball_disjoint_ball
 
-theorem closedBall_disjoint_closedBall (h : δ + ε < dist x y) :
+lemma closedBall_disjoint_closedBall (h : δ + ε < dist x y) :
     Disjoint (closedBall x δ) (closedBall y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
     h.not_le <| (dist_triangle_left _ _ _).trans <| add_le_add ha1 ha2
@@ -591,7 +591,7 @@ lemma mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε := b
 lemma mem_sphere_comm : x ∈ sphere y ε ↔ y ∈ sphere x ε := by rw [mem_sphere', mem_sphere]
 #align metric.mem_sphere_comm Metric.mem_sphere_comm
 
-theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y yx =>
+lemma ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y yx =>
   lt_of_lt_of_le (mem_ball.1 yx) h
 #align metric.ball_subset_ball Metric.ball_subset_ball
 
@@ -599,18 +599,18 @@ lemma closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := by
   ext y; rw [mem_closedBall, ← forall_lt_iff_le', mem_iInter₂]; rfl
 #align metric.closed_ball_eq_bInter_ball Metric.closedBall_eq_bInter_ball
 
-theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
+lemma ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
     _ < ε₁ + dist x y := add_lt_add_right (mem_ball.1 hz) _
     _ ≤ ε₂ := h
 #align metric.ball_subset_ball' Metric.ball_subset_ball'
 
-theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
+lemma closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 #align metric.closed_ball_subset_closed_ball Metric.closedBall_subset_closedBall
 
-theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
+lemma closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     closedBall x ε₁ ⊆ closedBall y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
@@ -618,11 +618,11 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     _ ≤ ε₂ := h
 #align metric.closed_ball_subset_closed_ball' Metric.closedBall_subset_closedBall'
 
-theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
+lemma closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
   fun y (yh : dist y x ≤ ε₁) => lt_of_le_of_lt yh h
 #align metric.closed_ball_subset_ball Metric.closedBall_subset_ball
 
-theorem closedBall_subset_ball' (h : ε₁ + dist x y < ε₂) :
+lemma closedBall_subset_ball' (h : ε₁ + dist x y < ε₂) :
     closedBall x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
@@ -638,7 +638,7 @@ theorem dist_le_add_of_nonempty_closedBall_inter_closedBall
     _ ≤ ε₁ + ε₂ := add_le_add hz.1 hz.2
 #align metric.dist_le_add_of_nonempty_closed_ball_inter_closed_ball Metric.dist_le_add_of_nonempty_closedBall_inter_closedBall
 
-theorem dist_lt_add_of_nonempty_closedBall_inter_ball (h : (closedBall x ε₁ ∩ ball y ε₂).Nonempty) :
+lemma dist_lt_add_of_nonempty_closedBall_inter_ball (h : (closedBall x ε₁ ∩ ball y ε₂).Nonempty) :
     dist x y < ε₁ + ε₂ :=
   let ⟨z, hz⟩ := h
   calc
@@ -646,44 +646,44 @@ theorem dist_lt_add_of_nonempty_closedBall_inter_ball (h : (closedBall x ε₁ �
     _ < ε₁ + ε₂ := add_lt_add_of_le_of_lt hz.1 hz.2
 #align metric.dist_lt_add_of_nonempty_closed_ball_inter_ball Metric.dist_lt_add_of_nonempty_closedBall_inter_ball
 
-theorem dist_lt_add_of_nonempty_ball_inter_closedBall (h : (ball x ε₁ ∩ closedBall y ε₂).Nonempty) :
+lemma dist_lt_add_of_nonempty_ball_inter_closedBall (h : (ball x ε₁ ∩ closedBall y ε₂).Nonempty) :
     dist x y < ε₁ + ε₂ := by
   rw [inter_comm] at h
   rw [add_comm, dist_comm]
   exact dist_lt_add_of_nonempty_closedBall_inter_ball h
 #align metric.dist_lt_add_of_nonempty_ball_inter_closed_ball Metric.dist_lt_add_of_nonempty_ball_inter_closedBall
 
-theorem dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε₂).Nonempty) :
+lemma dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε₂).Nonempty) :
     dist x y < ε₁ + ε₂ :=
   dist_lt_add_of_nonempty_closedBall_inter_ball <|
     h.mono (inter_subset_inter ball_subset_closedBall Subset.rfl)
 #align metric.dist_lt_add_of_nonempty_ball_inter_ball Metric.dist_lt_add_of_nonempty_ball_inter_ball
 
 @[simp]
-theorem iUnion_closedBall_nat (x : α) : ⋃ n : ℕ, closedBall x n = univ :=
+lemma iUnion_closedBall_nat (x : α) : ⋃ n : ℕ, closedBall x n = univ :=
   iUnion_eq_univ_iff.2 fun y => exists_nat_ge (dist y x)
 #align metric.Union_closed_ball_nat Metric.iUnion_closedBall_nat
 
-theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ closedBall x n = s := by
+lemma iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ closedBall x n = s := by
   rw [← inter_iUnion, iUnion_closedBall_nat, inter_univ]
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
-theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
+lemma ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
   rw [← add_sub_cancel'_right ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 #align metric.ball_subset Metric.ball_subset
 
-theorem ball_half_subset (y) (h : y ∈ ball x (ε / 2)) : ball y (ε / 2) ⊆ ball x ε :=
+lemma ball_half_subset (y) (h : y ∈ ball x (ε / 2)) : ball y (ε / 2) ⊆ ball x ε :=
   ball_subset <| by rw [sub_self_div_two]; exact le_of_lt h
 #align metric.ball_half_subset Metric.ball_half_subset
 
-theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε :=
+lemma exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε :=
   ⟨_, sub_pos.2 h, ball_subset <| by rw [sub_sub_self]⟩
 #align metric.exists_ball_subset_ball Metric.exists_ball_subset_ball
 
 /-- If a property holds for all points in closed balls of arbitrarily large radii, then it holds for
 all points. -/
-theorem forall_of_forall_mem_closedBall (p : α → Prop) (x : α)
+lemma forall_of_forall_mem_closedBall (p : α → Prop) (x : α)
     (H : ∃ᶠ R : ℝ in atTop, ∀ y ∈ closedBall x R, p y) (y : α) : p y := by
   obtain ⟨R, hR, h⟩ : ∃ R ≥ dist y x, ∀ z : α, z ∈ closedBall x R → p z :=
     frequently_iff.1 H (Ici_mem_atTop (dist y x))
@@ -692,7 +692,7 @@ theorem forall_of_forall_mem_closedBall (p : α → Prop) (x : α)
 
 /-- If a property holds for all points in balls of arbitrarily large radii, then it holds for all
 points. -/
-theorem forall_of_forall_mem_ball (p : α → Prop) (x : α)
+lemma forall_of_forall_mem_ball (p : α → Prop) (x : α)
     (H : ∃ᶠ R : ℝ in atTop, ∀ y ∈ ball x R, p y) (y : α) : p y := by
   obtain ⟨R, hR, h⟩ : ∃ R > dist y x, ∀ z : α, z ∈ ball x R → p z :=
     frequently_iff.1 H (Ioi_mem_atTop (dist y x))
@@ -1020,11 +1020,11 @@ lemma isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 #align metric.is_open_ball Metric.isOpen_ball
 
-theorem ball_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
+lemma ball_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
   isOpen_ball.mem_nhds (mem_ball_self ε0)
 #align metric.ball_mem_nhds Metric.ball_mem_nhds
 
-theorem closedBall_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : closedBall x ε ∈ 𝓝 x :=
+lemma closedBall_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : closedBall x ε ∈ 𝓝 x :=
   mem_of_superset (ball_mem_nhds x ε0) ball_subset_closedBall
 #align metric.closed_ball_mem_nhds Metric.closedBall_mem_nhds
 
@@ -1199,7 +1199,7 @@ protected lemma Metric.uniformity_basis_edist :
 #align pseudo_metric.uniformity_basis_edist Metric.uniformity_basis_edist
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
-theorem Metric.eball_top_eq_univ (x : α) : EMetric.ball x ∞ = Set.univ :=
+lemma Metric.eball_top_eq_univ (x : α) : EMetric.ball x ∞ = Set.univ :=
   Set.eq_univ_iff_forall.mpr fun y => edist_lt_top y x
 #align metric.eball_top_eq_univ Metric.eball_top_eq_univ
 
@@ -1232,7 +1232,7 @@ lemma Metric.emetric_closedBall_nnreal {x : α} {ε : ℝ≥0} :
 #align metric.emetric_closed_ball_nnreal Metric.emetric_closedBall_nnreal
 
 @[simp]
-theorem Metric.emetric_ball_top (x : α) : EMetric.ball x ⊤ = univ :=
+lemma Metric.emetric_ball_top (x : α) : EMetric.ball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
 #align metric.emetric_ball_top Metric.emetric_ball_top
 
@@ -1342,7 +1342,7 @@ which satisfy a bound of the form `dist (u n) (u m) < B N` for all `n m ≥ N` a
 converging. This is often applied for `B N = 2^{-N}`, i.e., with a very fast convergence to
 `0`, which makes it possible to use arguments of converging series, while this is impossible
 to do in general for arbitrary Cauchy sequences. -/
-theorem Metric.complete_of_convergent_controlled_sequences (B : ℕ → Real) (hB : ∀ n, 0 < B n)
+lemma Metric.complete_of_convergent_controlled_sequences (B : ℕ → Real) (hB : ∀ n, 0 < B n)
     (H : ∀ u : ℕ → α, (∀ N n m : ℕ, N ≤ n → N ≤ m → dist (u n) (u m) < B N) →
       ∃ x, Tendsto u atTop (𝓝 x)) :
     CompleteSpace α :=
@@ -1366,17 +1366,17 @@ instance Real.pseudoMetricSpace : PseudoMetricSpace ℝ where
   edist_dist := fun x y => by exact ENNReal.coe_nnreal_eq _
 #align real.pseudo_metric_space Real.pseudoMetricSpace
 
-theorem Real.dist_eq (x y : ℝ) : dist x y = |x - y| := rfl
+lemma Real.dist_eq (x y : ℝ) : dist x y = |x - y| := rfl
 #align real.dist_eq Real.dist_eq
 
-theorem Real.nndist_eq (x y : ℝ) : nndist x y = Real.nnabs (x - y) := rfl
+lemma Real.nndist_eq (x y : ℝ) : nndist x y = Real.nnabs (x - y) := rfl
 #align real.nndist_eq Real.nndist_eq
 
-theorem Real.nndist_eq' (x y : ℝ) : nndist x y = Real.nnabs (y - x) :=
+lemma Real.nndist_eq' (x y : ℝ) : nndist x y = Real.nnabs (y - x) :=
   nndist_comm _ _
 #align real.nndist_eq' Real.nndist_eq'
 
-theorem Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
+lemma Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
 #align real.dist_0_eq_abs Real.dist_0_eq_abs
 
 lemma Real.dist_left_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist x y ≤ dist x z := by
@@ -1406,7 +1406,7 @@ instance : OrderTopology ℝ :=
   orderTopology_of_nhds_abs fun x => by
     simp only [nhds_basis_ball.eq_biInf, ball, Real.dist_eq, abs_sub_comm]
 
-theorem Real.ball_eq_Ioo (x r : ℝ) : ball x r = Ioo (x - r) (x + r) :=
+lemma Real.ball_eq_Ioo (x r : ℝ) : ball x r = Ioo (x - r) (x + r) :=
   Set.ext fun y => by
     rw [mem_ball, dist_comm, Real.dist_eq, abs_sub_lt_iff, mem_Ioo, ← sub_lt_iff_lt_add',
       sub_lt_comm]
@@ -1418,12 +1418,12 @@ lemma Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r) 
     sub_le_comm]
 #align real.closed_ball_eq_Icc Real.closedBall_eq_Icc
 
-theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
+lemma Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
   rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two,
     ← add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
 #align real.Ioo_eq_ball Real.Ioo_eq_ball
 
-theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
+lemma Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
   rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two, ←
     add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
@@ -1432,19 +1432,19 @@ section MetricOrdered
 
 variable [Preorder α] [CompactIccSpace α]
 
-theorem totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
+lemma totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
   isCompact_Icc.totallyBounded
 #align totally_bounded_Icc totallyBounded_Icc
 
-theorem totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
+lemma totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
   totallyBounded_subset Ico_subset_Icc_self (totallyBounded_Icc a b)
 #align totally_bounded_Ico totallyBounded_Ico
 
-theorem totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
+lemma totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
   totallyBounded_subset Ioc_subset_Icc_self (totallyBounded_Icc a b)
 #align totally_bounded_Ioc totallyBounded_Ioc
 
-theorem totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
+lemma totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
   totallyBounded_subset Ioo_subset_Icc_self (totallyBounded_Icc a b)
 #align totally_bounded_Ioo totallyBounded_Ioo
 
@@ -1670,22 +1670,22 @@ instance instPseudoMetricSpaceMulOpposite : PseudoMetricSpace αᵐᵒᵖ :=
   PseudoMetricSpace.induced MulOpposite.unop ‹_›
 
 @[to_additive (attr := simp)]
-theorem dist_unop (x y : αᵐᵒᵖ) : dist (unop x) (unop y) = dist x y := rfl
+lemma dist_unop (x y : αᵐᵒᵖ) : dist (unop x) (unop y) = dist x y := rfl
 #align mul_opposite.dist_unop MulOpposite.dist_unop
 #align add_opposite.dist_unop AddOpposite.dist_unop
 
 @[to_additive (attr := simp)]
-theorem dist_op (x y : α) : dist (op x) (op y) = dist x y := rfl
+lemma dist_op (x y : α) : dist (op x) (op y) = dist x y := rfl
 #align mul_opposite.dist_op MulOpposite.dist_op
 #align add_opposite.dist_op AddOpposite.dist_op
 
 @[to_additive (attr := simp)]
-theorem nndist_unop (x y : αᵐᵒᵖ) : nndist (unop x) (unop y) = nndist x y := rfl
+lemma nndist_unop (x y : αᵐᵒᵖ) : nndist (unop x) (unop y) = nndist x y := rfl
 #align mul_opposite.nndist_unop MulOpposite.nndist_unop
 #align add_opposite.nndist_unop AddOpposite.nndist_unop
 
 @[to_additive (attr := simp)]
-theorem nndist_op (x y : α) : nndist (op x) (op y) = nndist x y := rfl
+lemma nndist_op (x y : α) : nndist (op x) (op y) = nndist x y := rfl
 #align mul_opposite.nndist_op MulOpposite.nndist_op
 #align add_opposite.nndist_op AddOpposite.nndist_op
 
@@ -1695,27 +1695,27 @@ section NNReal
 
 instance : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
 
-theorem NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
+lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 #align nnreal.dist_eq NNReal.dist_eq
 
-theorem NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
+lemma NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
     simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, max_le_iff, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
 #align nnreal.nndist_eq NNReal.nndist_eq
 
 @[simp]
-theorem NNReal.nndist_zero_eq_val (z : ℝ≥0) : nndist 0 z = z := by
+lemma NNReal.nndist_zero_eq_val (z : ℝ≥0) : nndist 0 z = z := by
   simp only [NNReal.nndist_eq, max_eq_right, tsub_zero, zero_tsub, zero_le']
 #align nnreal.nndist_zero_eq_val NNReal.nndist_zero_eq_val
 
 @[simp]
-theorem NNReal.nndist_zero_eq_val' (z : ℝ≥0) : nndist z 0 = z := by
+lemma NNReal.nndist_zero_eq_val' (z : ℝ≥0) : nndist z 0 = z := by
   rw [nndist_comm]
   exact NNReal.nndist_zero_eq_val z
 #align nnreal.nndist_zero_eq_val' NNReal.nndist_zero_eq_val'
 
-theorem NNReal.le_add_nndist (a b : ℝ≥0) : a ≤ b + nndist a b := by
+lemma NNReal.le_add_nndist (a b : ℝ≥0) : a ≤ b + nndist a b := by
   suffices (a : ℝ) ≤ (b : ℝ) + dist a b by
     rwa [← NNReal.coe_le_coe, NNReal.coe_add, coe_nndist]
   rw [← sub_le_iff_le_add']
@@ -1731,18 +1731,18 @@ variable [PseudoMetricSpace β]
 instance : PseudoMetricSpace (ULift β) :=
   PseudoMetricSpace.induced ULift.down ‹_›
 
-theorem ULift.dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
+lemma ULift.dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
 #align ulift.dist_eq ULift.dist_eq
 
-theorem ULift.nndist_eq (x y : ULift β) : nndist x y = nndist x.down y.down := rfl
+lemma ULift.nndist_eq (x y : ULift β) : nndist x y = nndist x.down y.down := rfl
 #align ulift.nndist_eq ULift.nndist_eq
 
 @[simp]
-theorem ULift.dist_up_up (x y : β) : dist (ULift.up x) (ULift.up y) = dist x y := rfl
+lemma ULift.dist_up_up (x y : β) : dist (ULift.up x) (ULift.up y) = dist x y := rfl
 #align ulift.dist_up_up ULift.dist_up_up
 
 @[simp]
-theorem ULift.nndist_up_up (x y : β) : nndist (ULift.up x) (ULift.up y) = nndist x y := rfl
+lemma ULift.nndist_up_up (x y : β) : nndist (ULift.up x) (ULift.up y) = nndist x y := rfl
 #align ulift.nndist_up_up ULift.nndist_up_up
 
 end ULift
@@ -1777,16 +1777,16 @@ lemma dist_prod_same_right {x₁ x₂ : α} {y : β} : dist (x₁, y) (x₂, y) 
   simp [Prod.dist_eq, dist_nonneg]
 #align dist_prod_same_right dist_prod_same_right
 
-theorem ball_prod_same (x : α) (y : β) (r : ℝ) : ball x r ×ˢ ball y r = ball (x, y) r :=
+lemma ball_prod_same (x : α) (y : β) (r : ℝ) : ball x r ×ˢ ball y r = ball (x, y) r :=
   ext fun z => by simp [Prod.dist_eq]
 #align ball_prod_same ball_prod_same
 
-theorem closedBall_prod_same (x : α) (y : β) (r : ℝ) :
+lemma closedBall_prod_same (x : α) (y : β) (r : ℝ) :
     closedBall x r ×ˢ closedBall y r = closedBall (x, y) r :=
   ext fun z => by simp [Prod.dist_eq]
 #align closed_ball_prod_same closedBall_prod_same
 
-theorem sphere_prod (x : α × β) (r : ℝ) :
+lemma sphere_prod (x : α × β) (r : ℝ) :
     sphere x r = sphere x.1 r ×ˢ closedBall x.2 r ∪ closedBall x.1 r ×ˢ sphere x.2 r := by
   obtain hr | rfl | hr := lt_trichotomy r 0
   · simp [hr]
@@ -1802,13 +1802,13 @@ theorem sphere_prod (x : α × β) (r : ℝ) :
 end Prod
 
 -- porting note: 3 new lemmas
-theorem dist_dist_dist_le_left (x y z : α) : dist (dist x z) (dist y z) ≤ dist x y :=
+lemma dist_dist_dist_le_left (x y z : α) : dist (dist x z) (dist y z) ≤ dist x y :=
   abs_dist_sub_le ..
 
-theorem dist_dist_dist_le_right (x y z : α) : dist (dist x y) (dist x z) ≤ dist y z := by
+lemma dist_dist_dist_le_right (x y z : α) : dist (dist x y) (dist x z) ≤ dist y z := by
   simpa only [dist_comm x] using dist_dist_dist_le_left y z x
 
-theorem dist_dist_dist_le (x y x' y' : α) : dist (dist x y) (dist x' y') ≤ dist x x' + dist y y' :=
+lemma dist_dist_dist_le (x y x' y' : α) : dist (dist x y) (dist x' y') ≤ dist x x' + dist y y' :=
   (dist_triangle _ _ _).trans <|
     add_le_add (dist_dist_dist_le_left _ _ _) (dist_dist_dist_le_right _ _ _)
 
@@ -1844,7 +1844,7 @@ protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
   (continuous_dist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.dist Filter.Tendsto.dist
 
-theorem nhds_comap_dist (a : α) : ((𝓝 (0 : ℝ)).comap (dist · a)) = 𝓝 a := by
+lemma nhds_comap_dist (a : α) : ((𝓝 (0 : ℝ)).comap (dist · a)) = 𝓝 a := by
   simp only [@nhds_eq_comap_uniformity α, Metric.uniformity_eq_comap_nhds_zero, comap_comap,
     (· ∘ ·), dist_comm]
 #align nhds_comap_dist nhds_comap_dist
@@ -1944,7 +1944,7 @@ lemma mem_of_closed' {s : Set α} (hs : IsClosed s) {a : α} :
   simpa only [hs.closure_eq] using @mem_closure_iff _ _ s a
 #align metric.mem_of_closed' Metric.mem_of_closed'
 
-theorem closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
+lemma closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
   Subset.antisymm
     (fun _y hy =>
       mem_closure_iff.2 fun _ε ε0 => ⟨x, mem_singleton x, (mem_closedBall.1 hy).trans_lt ε0⟩)
@@ -2025,11 +2025,11 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
   simpa only using Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
 #align pseudo_metric_space_pi pseudoMetricSpacePi
 
-theorem nndist_pi_def (f g : ∀ b, π b) : nndist f g = sup univ fun b => nndist (f b) (g b) :=
+lemma nndist_pi_def (f g : ∀ b, π b) : nndist f g = sup univ fun b => nndist (f b) (g b) :=
   NNReal.eq rfl
 #align nndist_pi_def nndist_pi_def
 
-theorem dist_pi_def (f g : ∀ b, π b) : dist f g = (sup univ fun b => nndist (f b) (g b) : ℝ≥0) :=
+lemma dist_pi_def (f g : ∀ b, π b) : dist f g = (sup univ fun b => nndist (f b) (g b) : ℝ≥0) :=
   rfl
 #align dist_pi_def dist_pi_def
 
@@ -2077,11 +2077,11 @@ lemma dist_pi_le_iff' [Nonempty β] {f g : ∀ b, π b} {r : ℝ} :
       hr <| dist_nonneg.trans <| h <| Classical.arbitrary _
 #align dist_pi_le_iff' dist_pi_le_iff'
 
-theorem dist_pi_const_le (a b : α) : (dist (fun _ : β => a) fun _ => b) ≤ dist a b :=
+lemma dist_pi_const_le (a b : α) : (dist (fun _ : β => a) fun _ => b) ≤ dist a b :=
   (dist_pi_le_iff dist_nonneg).2 fun _ => le_rfl
 #align dist_pi_const_le dist_pi_const_le
 
-theorem nndist_pi_const_le (a b : α) : (nndist (fun _ : β => a) fun _ => b) ≤ nndist a b :=
+lemma nndist_pi_const_le (a b : α) : (nndist (fun _ : β => a) fun _ => b) ≤ nndist a b :=
   nndist_pi_le_iff.2 fun _ => le_rfl
 #align nndist_pi_const_le nndist_pi_const_le
 
@@ -2096,18 +2096,18 @@ lemma nndist_pi_const [Nonempty β] (a b : α) :
   NNReal.eq <| dist_pi_const a b
 #align nndist_pi_const nndist_pi_const
 
-theorem nndist_le_pi_nndist (f g : ∀ b, π b) (b : β) : nndist (f b) (g b) ≤ nndist f g := by
+lemma nndist_le_pi_nndist (f g : ∀ b, π b) (b : β) : nndist (f b) (g b) ≤ nndist f g := by
   rw [← ENNReal.coe_le_coe, ← edist_nndist, ← edist_nndist]
   exact edist_le_pi_edist f g b
 #align nndist_le_pi_nndist nndist_le_pi_nndist
 
-theorem dist_le_pi_dist (f g : ∀ b, π b) (b : β) : dist (f b) (g b) ≤ dist f g := by
+lemma dist_le_pi_dist (f g : ∀ b, π b) (b : β) : dist (f b) (g b) ≤ dist f g := by
   simp only [dist_nndist, NNReal.coe_le_coe, nndist_le_pi_nndist f g b]
 #align dist_le_pi_dist dist_le_pi_dist
 
 /-- An open ball in a product space is a product of open balls. See also `ball_pi'`
 for a version assuming `Nonempty β` instead of `0 < r`. -/
-theorem ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
+lemma ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
     ball x r = Set.pi univ fun b => ball (x b) r := by
   ext p
   simp [dist_pi_lt_iff hr]
@@ -2122,7 +2122,7 @@ lemma ball_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
 
 /-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi'`
 for a version assuming `Nonempty β` instead of `0 ≤ r`. -/
-theorem closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
+lemma closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r := by
   ext p
   simp [dist_pi_le_iff hr]
@@ -2137,7 +2137,7 @@ lemma closedBall_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
 
 /-- A sphere in a product space is a union of spheres on each component restricted to the closed
 ball. -/
-theorem sphere_pi (x : ∀ b, π b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
+lemma sphere_pi (x : ∀ b, π b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
     sphere x r = (⋃ i : β, Function.eval i ⁻¹' sphere (x i) r) ∩ closedBall x r := by
   obtain hr | rfl | hr := lt_trichotomy r 0
   · simp [hr]
@@ -2239,7 +2239,7 @@ lemma tendsto_dist_left_cocompact_atTop [ProperSpace α] (x : α) :
 
 /-- If all closed balls of large enough radius are compact, then the space is proper. Especially
 useful when the lower bound for the radius is 0. -/
-theorem properSpace_of_compact_closedBall_of_le (R : ℝ)
+lemma properSpace_of_compact_closedBall_of_le (R : ℝ)
     (h : ∀ x : α, ∀ r, R ≤ r → IsCompact (closedBall x r)) : ProperSpace α :=
   ⟨fun x r => isCompact_of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
@@ -2295,7 +2295,7 @@ variable [ProperSpace α] {x : α} {r : ℝ} {s : Set α}
 
 /-- If a nonempty ball in a proper space includes a closed set `s`, then there exists a nonempty
 ball with the same center and a strictly smaller radius that includes `s`. -/
-theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball x r) :
+lemma exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball x r) :
     ∃ r' ∈ Ioo 0 r, s ⊆ ball x r' := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · exact ⟨r / 2, ⟨half_pos hr, half_lt_self hr⟩, empty_subset _⟩
@@ -2311,7 +2311,7 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
 
 /-- If a ball in a proper space includes a closed set `s`, then there exists a ball with the same
 center and a strictly smaller radius that includes `s`. -/
-theorem exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < r, s ⊆ ball x r' := by
+lemma exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < r, s ⊆ ball x r' := by
   cases' le_or_lt r 0 with hr hr
   · rw [ball_eq_empty.2 hr, subset_empty_iff] at h
     subst s
@@ -2374,7 +2374,7 @@ section Bounded
 
 variable {x : α} {s t : Set α} {r : ℝ}
 
-theorem bounded_iff_isBounded (s : Set α) : Bounded s ↔ IsBounded s := by
+lemma bounded_iff_isBounded (s : Set α) : Bounded s ↔ IsBounded s := by
   change Bounded s ↔ sᶜ ∈ (cobounded α).sets
   simp [PseudoMetricSpace.cobounded_sets, Metric.Bounded]
 #align metric.bounded_iff_is_bounded Metric.bounded_iff_isBounded
@@ -2388,7 +2388,7 @@ lemma bounded_iff_mem_bounded : Bounded s ↔ ∀ x ∈ s, Bounded s :=
 #align metric.bounded_iff_mem_bounded Metric.bounded_iff_mem_bounded
 
 /-- Subsets of a bounded set are also bounded -/
-theorem Bounded.mono (incl : s ⊆ t) : Bounded t → Bounded s :=
+lemma Bounded.mono (incl : s ⊆ t) : Bounded t → Bounded s :=
   Exists.imp fun _C hC x hx y hy => hC x (incl hx) y (incl hy)
 #align metric.bounded.mono Metric.Bounded.mono
 
@@ -2410,7 +2410,7 @@ lemma bounded_sphere : Bounded (sphere x r) :=
 #align metric.bounded_sphere Metric.bounded_sphere
 
 /-- Given a point, a bounded subset is included in some ball around this point -/
-theorem bounded_iff_subset_ball (c : α) : Bounded s ↔ ∃ r, s ⊆ closedBall c r := by
+lemma bounded_iff_subset_ball (c : α) : Bounded s ↔ ∃ r, s ⊆ closedBall c r := by
   constructor <;> rintro ⟨C, hC⟩
   · rcases s.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
     · exact ⟨0, by simp⟩
@@ -2420,24 +2420,24 @@ theorem bounded_iff_subset_ball (c : α) : Bounded s ↔ ∃ r, s ⊆ closedBall
   · exact bounded_closedBall.mono hC
 #align metric.bounded_iff_subset_ball Metric.bounded_iff_subset_ball
 
-theorem Bounded.subset_ball (h : Bounded s) (c : α) : ∃ r, s ⊆ closedBall c r :=
+lemma Bounded.subset_ball (h : Bounded s) (c : α) : ∃ r, s ⊆ closedBall c r :=
   (bounded_iff_subset_ball c).1 h
 #align metric.bounded.subset_ball Metric.Bounded.subset_ball
 
-theorem Bounded.subset_ball_lt (h : Bounded s) (a : ℝ) (c : α) :
+lemma Bounded.subset_ball_lt (h : Bounded s) (a : ℝ) (c : α) :
     ∃ r, a < r ∧ s ⊆ closedBall c r := by
   rcases h.subset_ball c with ⟨r, hr⟩
   refine' ⟨max r (a + 1), lt_of_lt_of_le (by linarith) (le_max_right _ _), _⟩
   exact hr.trans (closedBall_subset_closedBall (le_max_left _ _))
 #align metric.bounded.subset_ball_lt Metric.Bounded.subset_ball_lt
 
-theorem bounded_closure_of_bounded (h : Bounded s) : Bounded (closure s) :=
+lemma bounded_closure_of_bounded (h : Bounded s) : Bounded (closure s) :=
   let ⟨C, h⟩ := h
   ⟨C, fun _a ha _b hb => (isClosed_le' C).closure_subset <|
     map_mem_closure₂ continuous_dist ha hb h⟩
 #align metric.bounded_closure_of_bounded Metric.bounded_closure_of_bounded
 
-protected theorem Bounded.closure (h : Bounded s) : Bounded (closure s) :=
+protected lemma Bounded.closure (h : Bounded s) : Bounded (closure s) :=
   bounded_closure_of_bounded h
 #align metric.bounded.closure Metric.Bounded.closure
 
@@ -2452,7 +2452,7 @@ lemma bounded_closure_iff : Bounded (closure s) ↔ Bounded s :=
 #align metric.bounded_union Metric.bounded_union
 
 /-- The union of two bounded sets is bounded. -/
-theorem Bounded.union (hs : Bounded s) (ht : Bounded t) : Bounded (s ∪ t) :=
+lemma Bounded.union (hs : Bounded s) (ht : Bounded t) : Bounded (s ∪ t) :=
   bounded_union.2 ⟨hs, ht⟩
 #align metric.bounded.union Metric.Bounded.union
 
@@ -2529,7 +2529,7 @@ lemma bounded_of_compactSpace [CompactSpace α] : Bounded s :=
   isCompact_univ.bounded.mono (subset_univ _)
 #align metric.bounded_of_compact_space Metric.bounded_of_compactSpace
 
-theorem bounded_range_of_tendsto (u : ℕ → α) {x : α} (hu : Tendsto u atTop (𝓝 x)) :
+lemma bounded_range_of_tendsto (u : ℕ → α) {x : α} (hu : Tendsto u atTop (𝓝 x)) :
     Bounded (range u) :=
   hu.cauchySeq.bounded_range
 #align metric.bounded_range_of_tendsto Metric.bounded_range_of_tendsto
@@ -2617,19 +2617,19 @@ section ConditionallyCompleteLinearOrder
 
 variable [Preorder α] [CompactIccSpace α]
 
-theorem bounded_Icc (a b : α) : Bounded (Icc a b) :=
+lemma bounded_Icc (a b : α) : Bounded (Icc a b) :=
   (totallyBounded_Icc a b).bounded
 #align metric.bounded_Icc Metric.bounded_Icc
 
-theorem bounded_Ico (a b : α) : Bounded (Ico a b) :=
+lemma bounded_Ico (a b : α) : Bounded (Ico a b) :=
   (totallyBounded_Ico a b).bounded
 #align metric.bounded_Ico Metric.bounded_Ico
 
-theorem bounded_Ioc (a b : α) : Bounded (Ioc a b) :=
+lemma bounded_Ioc (a b : α) : Bounded (Ioc a b) :=
   (totallyBounded_Ioc a b).bounded
 #align metric.bounded_Ioc Metric.bounded_Ioc
 
-theorem bounded_Ioo (a b : α) : Bounded (Ioo a b) :=
+lemma bounded_Ioo (a b : α) : Bounded (Ioo a b) :=
   (totallyBounded_Ioo a b).bounded
 #align metric.bounded_Ioo Metric.bounded_Ioo
 
@@ -2661,7 +2661,7 @@ lemma diam_nonneg : 0 ≤ diam s :=
   ENNReal.toReal_nonneg
 #align metric.diam_nonneg Metric.diam_nonneg
 
-theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
+lemma diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
   simp only [diam, EMetric.diam_subsingleton hs, ENNReal.zero_toReal]
 #align metric.diam_subsingleton Metric.diam_subsingleton
 
@@ -2705,7 +2705,7 @@ lemma diam_le_of_forall_dist_le {C : ℝ} (h₀ : 0 ≤ C) (h : ∀ x ∈ s, ∀
 
 /-- If the distance between any two points in a nonempty set is bounded by some constant,
 this constant bounds the diameter. -/
-theorem diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
+lemma diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
     (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) : diam s ≤ C :=
   have h₀ : 0 ≤ C :=
     let ⟨x, hx⟩ := hs
@@ -2714,7 +2714,7 @@ theorem diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
 #align metric.diam_le_of_forall_dist_le_of_nonempty Metric.diam_le_of_forall_dist_le_of_nonempty
 
 /-- The distance between two points in a set is controlled by the diameter of the set. -/
-theorem dist_le_diam_of_mem' (h : EMetric.diam s ≠ ⊤) (hx : x ∈ s) (hy : y ∈ s) :
+lemma dist_le_diam_of_mem' (h : EMetric.diam s ≠ ⊤) (hx : x ∈ s) (hy : y ∈ s) :
     dist x y ≤ diam s := by
   rw [diam, dist_edist]
   rw [ENNReal.toReal_le_toReal (edist_ne_top _ _) h]
@@ -2728,7 +2728,7 @@ lemma bounded_iff_ediam_ne_top : Bounded s ↔ EMetric.diam s ≠ ⊤ :=
     fun h => ⟨diam s, fun _x hx _y hy => dist_le_diam_of_mem' h hx hy⟩
 #align metric.bounded_iff_ediam_ne_top Metric.bounded_iff_ediam_ne_top
 
-theorem Bounded.ediam_ne_top (h : Bounded s) : EMetric.diam s ≠ ⊤ :=
+lemma Bounded.ediam_ne_top (h : Bounded s) : EMetric.diam s ≠ ⊤ :=
   bounded_iff_ediam_ne_top.1 h
 #align metric.bounded.ediam_ne_top Metric.Bounded.ediam_ne_top
 
@@ -2753,16 +2753,16 @@ lemma diam_univ_of_noncompact [ProperSpace α] [NoncompactSpace α] : diam (univ
 #align metric.diam_univ_of_noncompact Metric.diam_univ_of_noncompact
 
 /-- The distance between two points in a set is controlled by the diameter of the set. -/
-theorem dist_le_diam_of_mem (h : Bounded s) (hx : x ∈ s) (hy : y ∈ s) : dist x y ≤ diam s :=
+lemma dist_le_diam_of_mem (h : Bounded s) (hx : x ∈ s) (hy : y ∈ s) : dist x y ≤ diam s :=
   dist_le_diam_of_mem' h.ediam_ne_top hx hy
 #align metric.dist_le_diam_of_mem Metric.dist_le_diam_of_mem
 
-theorem ediam_of_unbounded (h : ¬Bounded s) : EMetric.diam s = ∞ := ediam_eq_top_iff_unbounded.2 h
+lemma ediam_of_unbounded (h : ¬Bounded s) : EMetric.diam s = ∞ := ediam_eq_top_iff_unbounded.2 h
 #align metric.ediam_of_unbounded Metric.ediam_of_unbounded
 
 /-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `EMetric.diam`.
 This lemma makes it possible to avoid side conditions in some situations -/
-theorem diam_eq_zero_of_unbounded (h : ¬Bounded s) : diam s = 0 := by
+lemma diam_eq_zero_of_unbounded (h : ¬Bounded s) : diam s = 0 := by
   rw [diam, ediam_of_unbounded h, ENNReal.top_toReal]
 #align metric.diam_eq_zero_of_unbounded Metric.diam_eq_zero_of_unbounded
 
@@ -2868,14 +2868,14 @@ def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
-theorem comap_dist_right_atTop_le_cocompact (x : α) :
+lemma comap_dist_right_atTop_le_cocompact (x : α) :
     comap (fun y => dist y x) atTop ≤ cocompact α := by
   refine' Filter.hasBasis_cocompact.ge_iff.2 fun s hs => mem_comap.2 _
   rcases hs.bounded.subset_ball x with ⟨r, hr⟩
   exact ⟨Ioi r, Ioi_mem_atTop r, fun y hy hys => (mem_closedBall.1 <| hr hys).not_lt hy⟩
 #align comap_dist_right_at_top_le_cocompact comap_dist_right_atTop_le_cocompact
 
-theorem comap_dist_left_atTop_le_cocompact (x : α) : comap (dist x) atTop ≤ cocompact α := by
+lemma comap_dist_left_atTop_le_cocompact (x : α) : comap (dist x) atTop ≤ cocompact α := by
   simpa only [dist_comm _ x] using comap_dist_right_atTop_le_cocompact x
 #align comap_dist_left_at_top_le_cocompact comap_dist_left_atTop_le_cocompact
 
@@ -2979,7 +2979,7 @@ variable {x : γ} {s : Set γ}
 @[simp] lemma sphere_zero : sphere x 0 = {x} := Set.ext fun _ => dist_eq_zero
 #align metric.sphere_zero Metric.sphere_zero
 
-theorem subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall x r).Subsingleton := by
+lemma subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall x r).Subsingleton := by
   rcases hr.lt_or_eq with (hr | rfl)
   · rw [closedBall_eq_empty.2 hr]
     exact subsingleton_empty
@@ -2987,7 +2987,7 @@ theorem subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall 
     exact subsingleton_singleton
 #align metric.subsingleton_closed_ball Metric.subsingleton_closedBall
 
-theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Subsingleton :=
+lemma subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Subsingleton :=
   (subsingleton_closedBall x hr).anti sphere_subset_closedBall
 #align metric.subsingleton_sphere Metric.subsingleton_sphere
 
@@ -3269,16 +3269,16 @@ variable [Dist X]
 instance : Dist (Additive X) := ‹Dist X›
 instance : Dist (Multiplicative X) := ‹Dist X›
 
-@[simp] theorem dist_ofMul (a b : X) : dist (ofMul a) (ofMul b) = dist a b := rfl
+@[simp] lemma dist_ofMul (a b : X) : dist (ofMul a) (ofMul b) = dist a b := rfl
 #align dist_of_mul dist_ofMul
 
-@[simp] theorem dist_ofAdd (a b : X) : dist (ofAdd a) (ofAdd b) = dist a b := rfl
+@[simp] lemma dist_ofAdd (a b : X) : dist (ofAdd a) (ofAdd b) = dist a b := rfl
 #align dist_of_add dist_ofAdd
 
-@[simp] theorem dist_toMul (a b : Additive X) : dist (toMul a) (toMul b) = dist a b := rfl
+@[simp] lemma dist_toMul (a b : Additive X) : dist (toMul a) (toMul b) = dist a b := rfl
 #align dist_to_mul dist_toMul
 
-@[simp] theorem dist_toAdd (a b : Multiplicative X) : dist (toAdd a) (toAdd b) = dist a b := rfl
+@[simp] lemma dist_toAdd (a b : Multiplicative X) : dist (toAdd a) (toAdd b) = dist a b := rfl
 #align dist_to_add dist_toAdd
 
 end
@@ -3290,17 +3290,17 @@ variable [PseudoMetricSpace X]
 instance : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
 instance : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
 
-@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
+@[simp] lemma nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
 #align nndist_of_mul nndist_ofMul
 
-@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
+@[simp] lemma nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
 #align nndist_of_add nndist_ofAdd
 
-@[simp] theorem nndist_toMul (a b : Additive X) : nndist (toMul a) (toMul b) = nndist a b := rfl
+@[simp] lemma nndist_toMul (a b : Additive X) : nndist (toMul a) (toMul b) = nndist a b := rfl
 #align nndist_to_mul nndist_toMul
 
 @[simp]
-theorem nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nndist a b := rfl
+lemma nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nndist a b := rfl
 #align nndist_to_add nndist_toAdd
 
 end
@@ -3325,10 +3325,10 @@ variable [Dist X]
 
 instance : Dist Xᵒᵈ := ‹Dist X›
 
-@[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
+@[simp] lemma dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
 #align dist_to_dual dist_toDual
 
-@[simp] theorem dist_ofDual (a b : Xᵒᵈ) : dist (ofDual a) (ofDual b) = dist a b := rfl
+@[simp] lemma dist_ofDual (a b : Xᵒᵈ) : dist (ofDual a) (ofDual b) = dist a b := rfl
 #align dist_of_dual dist_ofDual
 
 end
@@ -3339,10 +3339,10 @@ variable [PseudoMetricSpace X]
 
 instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
 
-@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
+@[simp] lemma nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
 #align nndist_to_dual nndist_toDual
 
-@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
+@[simp] lemma nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
 #align nndist_of_dual nndist_ofDual
 
 end

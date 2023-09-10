@@ -75,7 +75,7 @@ lemma toCotangent_eq {x y : I} : I.toCotangent x = I.toCotangent y ↔ (x - y : 
   exact I.mem_toCotangent_ker
 #align ideal.to_cotangent_eq Ideal.toCotangent_eq
 
-theorem toCotangent_eq_zero (x : I) : I.toCotangent x = 0 ↔ (x : R) ∈ I ^ 2 := I.mem_toCotangent_ker
+lemma toCotangent_eq_zero (x : I) : I.toCotangent x = 0 ↔ (x : R) ∈ I ^ 2 := I.mem_toCotangent_ker
 #align ideal.to_cotangent_eq_zero Ideal.toCotangent_eq_zero
 
 lemma toCotangent_surjective : Function.Surjective I.toCotangent := Submodule.mkQ_surjective _
@@ -109,7 +109,7 @@ lemma to_quotient_square_comp_toCotangent :
 #align ideal.to_quotient_square_comp_to_cotangent Ideal.to_quotient_square_comp_toCotangent
 
 -- @[simp] -- Porting note: not in simpNF
-theorem toCotangent_to_quotient_square (x : I) :
+lemma toCotangent_to_quotient_square (x : I) :
     I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
 
@@ -118,7 +118,7 @@ def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
   Submodule.map (Quotient.mk (I ^ 2)|>.toSemilinearMap) I
 #align ideal.cotangent_ideal Ideal.cotangentIdeal
 
-theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
+lemma cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   rw [eq_bot_iff, pow_two I.cotangentIdeal, ← smul_eq_mul]
   intro x hx
   refine Submodule.smul_induction_on hx ?_ ?_
@@ -153,11 +153,11 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
 #align ideal.cotangent_equiv_ideal Ideal.cotangentEquivIdeal
 
 @[simp]
-theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
+lemma cotangentEquivIdeal_apply (x : I.Cotangent) :
     ↑(I.cotangentEquivIdeal x) = I.cotangentToQuotientSquare x := rfl
 #align ideal.cotangent_equiv_ideal_apply Ideal.cotangentEquivIdeal_apply
 
-theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
+lemma cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
     I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
       I.toCotangent ⟨x, hx⟩ := by
   apply I.cotangentEquivIdeal.injective
@@ -178,7 +178,7 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     exact f.map_algebraMap r
 #align alg_hom.ker_square_lift AlgHom.kerSquareLift
 
-theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
+lemma _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
     RingHom.ker f.kerSquareLift.toRingHom = f.toRingHom.ker.cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩

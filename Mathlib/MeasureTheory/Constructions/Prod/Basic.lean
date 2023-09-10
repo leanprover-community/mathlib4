@@ -300,7 +300,7 @@ instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : Measure
 
 variable [SigmaFinite ν]
 
-theorem volume_eq_prod (α β) [MeasureSpace α] [MeasureSpace β] :
+lemma volume_eq_prod (α β) [MeasureSpace α] [MeasureSpace β] :
     (volume : Measure (α × β)) = (volume : Measure α).prod (volume : Measure β) :=
   rfl
 #align measure_theory.measure.volume_eq_prod MeasureTheory.Measure.volume_eq_prod
@@ -314,7 +314,7 @@ lemma prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
 /-- The product measure of the product of two sets is the product of their measures. Note that we
 do not need the sets to be measurable. -/
 @[simp]
-theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
   apply le_antisymm
   · set ST := toMeasurable μ s ×ˢ toMeasurable ν t
     have hSTm : MeasurableSet ST :=
@@ -542,26 +542,26 @@ lemma prodAssoc_prod [SigmaFinite τ] :
 /-! ### The product of specific measures -/
 
 
-theorem prod_restrict (s : Set α) (t : Set β) :
+lemma prod_restrict (s : Set α) (t : Set β) :
     (μ.restrict s).prod (ν.restrict t) = (μ.prod ν).restrict (s ×ˢ t) := by
   refine' prod_eq fun s' t' hs' ht' => _
   rw [restrict_apply (hs'.prod ht'), prod_inter_prod, prod_prod, restrict_apply hs',
     restrict_apply ht']
 #align measure_theory.measure.prod_restrict MeasureTheory.Measure.prod_restrict
 
-theorem restrict_prod_eq_prod_univ (s : Set α) :
+lemma restrict_prod_eq_prod_univ (s : Set α) :
     (μ.restrict s).prod ν = (μ.prod ν).restrict (s ×ˢ univ) := by
   have : ν = ν.restrict Set.univ := Measure.restrict_univ.symm
   rw [this, Measure.prod_restrict, ← this]
 #align measure_theory.measure.restrict_prod_eq_prod_univ MeasureTheory.Measure.restrict_prod_eq_prod_univ
 
-theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
+lemma prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
   refine' prod_eq fun s t hs ht => _
   simp_rw [map_apply measurable_prod_mk_right (hs.prod ht), mk_preimage_prod_left_eq_if, measure_if,
     dirac_apply' _ ht, ← indicator_mul_right _ fun _ => μ s, Pi.one_apply, mul_one]
 #align measure_theory.measure.prod_dirac MeasureTheory.Measure.prod_dirac
 
-theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
+lemma dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
   refine' prod_eq fun s t hs ht => _
   simp_rw [map_apply measurable_prod_mk_left (hs.prod ht), mk_preimage_prod_right_eq_if, measure_if,
     dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => ν t, Pi.one_apply, one_mul]
@@ -583,24 +583,24 @@ lemma sum_prod {ι : Type*} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFi
   simp_rw [sum_apply _ (hs.prod ht), sum_apply _ hs, prod_prod, ENNReal.tsum_mul_right]
 #align measure_theory.measure.sum_prod MeasureTheory.Measure.sum_prod
 
-theorem prod_add (ν' : Measure β) [SigmaFinite ν'] : μ.prod (ν + ν') = μ.prod ν + μ.prod ν' := by
+lemma prod_add (ν' : Measure β) [SigmaFinite ν'] : μ.prod (ν + ν') = μ.prod ν + μ.prod ν' := by
   refine' prod_eq fun s t _ _ => _
   simp_rw [add_apply, prod_prod, left_distrib]
 #align measure_theory.measure.prod_add MeasureTheory.Measure.prod_add
 
-theorem add_prod (μ' : Measure α) [SigmaFinite μ'] : (μ + μ').prod ν = μ.prod ν + μ'.prod ν := by
+lemma add_prod (μ' : Measure α) [SigmaFinite μ'] : (μ + μ').prod ν = μ.prod ν + μ'.prod ν := by
   refine' prod_eq fun s t _ _ => _
   simp_rw [add_apply, prod_prod, right_distrib]
 #align measure_theory.measure.add_prod MeasureTheory.Measure.add_prod
 
 @[simp]
-theorem zero_prod (ν : Measure β) : (0 : Measure α).prod ν = 0 := by
+lemma zero_prod (ν : Measure β) : (0 : Measure α).prod ν = 0 := by
   rw [Measure.prod]
   exact bind_zero_left _
 #align measure_theory.measure.zero_prod MeasureTheory.Measure.zero_prod
 
 @[simp]
-theorem prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [Measure.prod]
+lemma prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [Measure.prod]
 #align measure_theory.measure.prod_zero MeasureTheory.Measure.prod_zero
 
 lemma map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} {μa : Measure α}
@@ -756,7 +756,7 @@ lemma lintegral_prod_of_measurable :
 
 /-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued almost everywhere measurable functions on `α × β`,
   the integral of `f` is equal to the iterated integral. -/
-theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
+lemma lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
   have A : ∫⁻ z, f z ∂μ.prod ν = ∫⁻ z, hf.mk f z ∂μ.prod ν := lintegral_congr_ae hf.ae_eq_mk
   have B : (∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂ν ∂μ := by

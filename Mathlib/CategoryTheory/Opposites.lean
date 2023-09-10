@@ -273,7 +273,7 @@ def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
 
 /-- Whenever possible, it is advisable to use the isomorphism `rightOpLeftOpIso`
 instead of this equality of functors. -/
-theorem rightOp_leftOp_eq (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp = F := by
+lemma rightOp_leftOp_eq (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp = F := by
   cases F
   rfl
 #align category_theory.functor.right_op_left_op_eq CategoryTheory.Functor.rightOp_leftOp_eq
@@ -298,7 +298,7 @@ protected def op (α : F ⟶ G) : G.op ⟶ F.op where
 #align category_theory.nat_trans.op CategoryTheory.NatTrans.op
 
 @[simp]
-theorem op_id (F : C ⥤ D) : NatTrans.op (𝟙 F) = 𝟙 F.op :=
+lemma op_id (F : C ⥤ D) : NatTrans.op (𝟙 F) = 𝟙 F.op :=
   rfl
 #align category_theory.nat_trans.op_id CategoryTheory.NatTrans.op_id
 
@@ -310,7 +310,7 @@ protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ⟶ G) : G.unop ⟶ F.uno
 #align category_theory.nat_trans.unop CategoryTheory.NatTrans.unop
 
 @[simp]
-theorem unop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.unop (𝟙 F) = 𝟙 F.unop :=
+lemma unop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.unop (𝟙 F) = 𝟙 F.unop :=
   rfl
 #align category_theory.nat_trans.unop_id CategoryTheory.NatTrans.unop_id
 
@@ -325,7 +325,7 @@ protected def removeOp (α : F.op ⟶ G.op) : G ⟶ F where
 #align category_theory.nat_trans.remove_op CategoryTheory.NatTrans.removeOp
 
 @[simp]
-theorem removeOp_id (F : C ⥤ D) : NatTrans.removeOp (𝟙 F.op) = 𝟙 F :=
+lemma removeOp_id (F : C ⥤ D) : NatTrans.removeOp (𝟙 F.op) = 𝟙 F :=
   rfl
 #align category_theory.nat_trans.remove_op_id CategoryTheory.NatTrans.removeOp_id
 
@@ -339,7 +339,7 @@ protected def removeUnop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F.unop ⟶ G.unop) : 
 #align category_theory.nat_trans.remove_unop CategoryTheory.NatTrans.removeUnop
 
 @[simp]
-theorem removeUnop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.removeUnop (𝟙 F.unop) = 𝟙 F :=
+lemma removeUnop_id (F : Cᵒᵖ ⥤ Dᵒᵖ) : NatTrans.removeUnop (𝟙 F.unop) = 𝟙 F :=
   rfl
 #align category_theory.nat_trans.remove_unop_id CategoryTheory.NatTrans.removeUnop_id
 
@@ -364,7 +364,7 @@ lemma leftOp_id : NatTrans.leftOp (𝟙 F : F ⟶ F) = 𝟙 F.leftOp :=
 #align category_theory.nat_trans.left_op_id CategoryTheory.NatTrans.leftOp_id
 
 @[simp]
-theorem leftOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.leftOp (α ≫ β) =
+lemma leftOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.leftOp (α ≫ β) =
     NatTrans.leftOp β ≫ NatTrans.leftOp α :=
   rfl
 #align category_theory.nat_trans.left_op_comp CategoryTheory.NatTrans.leftOp_comp
@@ -405,7 +405,7 @@ lemma rightOp_id : NatTrans.rightOp (𝟙 F : F ⟶ F) = 𝟙 F.rightOp :=
 #align category_theory.nat_trans.right_op_id CategoryTheory.NatTrans.rightOp_id
 
 @[simp]
-theorem rightOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.rightOp (α ≫ β) =
+lemma rightOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.rightOp (α ≫ β) =
     NatTrans.rightOp β ≫ NatTrans.rightOp α :=
   rfl
 #align category_theory.nat_trans.right_op_comp CategoryTheory.NatTrans.rightOp_comp

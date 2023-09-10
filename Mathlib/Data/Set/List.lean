@@ -22,7 +22,7 @@ variable {α β : Type*} (l : List α)
 
 namespace Set
 
-theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
+lemma range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
   refine'
     antisymm (range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => mem_range_self _)
       fun l hl => _
@@ -32,7 +32,7 @@ theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x �
   exact ⟨a :: l, map_cons _ _ _⟩
 #align set.range_list_map Set.range_list_map
 
-theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
+lemma range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
   rw [range_list_map, Subtype.range_coe]
 #align set.range_list_map_coe Set.range_list_map_coe
 
@@ -51,7 +51,7 @@ lemma range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := 
 #align set.range_list_nth Set.range_list_get?
 
 @[simp]
-theorem range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | x ∈ l } :=
+lemma range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | x ∈ l } :=
   calc
     (range fun n => l.getD n d) = (fun o : Option α => o.getD d) '' range l.get? := by
       simp only [← range_comp, (· ∘ ·), getD_eq_getD_get?]

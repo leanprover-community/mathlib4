@@ -112,7 +112,7 @@ section
 
 variable [CommSemiring R]
 
-theorem isHomogeneous_monomial (d : σ →₀ ℕ) (r : R) (n : ℕ) (hn : ∑ i in d.support, d i = n) :
+lemma isHomogeneous_monomial (d : σ →₀ ℕ) (r : R) (n : ℕ) (hn : ∑ i in d.support, d i = n) :
     IsHomogeneous (monomial d r) n := by
   intro c hc
   classical
@@ -133,7 +133,7 @@ lemma isHomogeneous_of_totalDegree_zero {p : MvPolynomial σ R} (hp : p.totalDeg
   exact hp
 #align mv_polynomial.is_homogeneous_of_total_degree_zero MvPolynomial.isHomogeneous_of_totalDegree_zero
 
-theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
+lemma isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
   apply isHomogeneous_monomial
   simp only [Finsupp.zero_apply, Finset.sum_const_zero]
 set_option linter.uppercaseLean3 false in
@@ -141,7 +141,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (R)
 
-theorem isHomogeneous_zero (n : ℕ) : IsHomogeneous (0 : MvPolynomial σ R) n :=
+lemma isHomogeneous_zero (n : ℕ) : IsHomogeneous (0 : MvPolynomial σ R) n :=
   (homogeneousSubmodule σ R n).zero_mem
 #align mv_polynomial.is_homogeneous_zero MvPolynomial.isHomogeneous_zero
 
@@ -151,7 +151,7 @@ lemma isHomogeneous_one : IsHomogeneous (1 : MvPolynomial σ R) 0 :=
 
 variable {σ}
 
-theorem isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
+lemma isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
   apply isHomogeneous_monomial
   rw [Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton]
   exact Finsupp.single_eq_same
@@ -164,19 +164,19 @@ namespace IsHomogeneous
 
 variable [CommSemiring R] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
-theorem coeff_eq_zero (hφ : IsHomogeneous φ n) (d : σ →₀ ℕ) (hd : ∑ i in d.support, d i ≠ n) :
+lemma coeff_eq_zero (hφ : IsHomogeneous φ n) (d : σ →₀ ℕ) (hd : ∑ i in d.support, d i ≠ n) :
     coeff d φ = 0 := by
   have aux := mt (@hφ d) hd
   classical
   rwa [Classical.not_not] at aux
 #align mv_polynomial.is_homogeneous.coeff_eq_zero MvPolynomial.IsHomogeneous.coeff_eq_zero
 
-theorem inj_right (hm : IsHomogeneous φ m) (hn : IsHomogeneous φ n) (hφ : φ ≠ 0) : m = n := by
+lemma inj_right (hm : IsHomogeneous φ m) (hn : IsHomogeneous φ n) (hφ : φ ≠ 0) : m = n := by
   obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero hφ
   rw [← hm hd, ← hn hd]
 #align mv_polynomial.is_homogeneous.inj_right MvPolynomial.IsHomogeneous.inj_right
 
-theorem add (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ + ψ) n :=
+lemma add (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ + ψ) n :=
   (homogeneousSubmodule σ R n).add_mem hφ hψ
 #align mv_polynomial.is_homogeneous.add MvPolynomial.IsHomogeneous.add
 
@@ -185,7 +185,7 @@ lemma sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ℕ)
   (homogeneousSubmodule σ R n).sum_mem h
 #align mv_polynomial.is_homogeneous.sum MvPolynomial.IsHomogeneous.sum
 
-theorem mul (hφ : IsHomogeneous φ m) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ * ψ) (m + n) :=
+lemma mul (hφ : IsHomogeneous φ m) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ * ψ) (m + n) :=
   homogeneousSubmodule_mul m n <| Submodule.mul_mem_mul hφ hψ
 #align mv_polynomial.is_homogeneous.mul MvPolynomial.IsHomogeneous.mul
 
@@ -203,7 +203,7 @@ lemma prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι 
     exact h j (Finset.mem_insert_of_mem hjs)
 #align mv_polynomial.is_homogeneous.prod MvPolynomial.IsHomogeneous.prod
 
-theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
+lemma totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
   rw [totalDegree]
   apply le_antisymm
   · apply Finset.sup_le
@@ -251,7 +251,7 @@ open Finset
 
 variable [CommSemiring R] (n : ℕ) (φ ψ : MvPolynomial σ R)
 
-theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
+lemma coeff_homogeneousComponent (d : σ →₀ ℕ) :
     coeff d (homogeneousComponent n φ) = if (∑ i in d.support, d i) = n then coeff d φ else 0 :=
   Finsupp.filter_apply (fun d : σ →₀ ℕ => ∑ i in d.support, d i = n) φ d
 #align mv_polynomial.coeff_homogeneous_component MvPolynomial.coeff_homogeneousComponent
@@ -281,7 +281,7 @@ lemma homogeneousComponent_zero : homogeneousComponent 0 φ = C (coeff 0 φ) := 
 #align mv_polynomial.homogeneous_component_zero MvPolynomial.homogeneousComponent_zero
 
 @[simp]
-theorem homogeneousComponent_C_mul (n : ℕ) (r : R) :
+lemma homogeneousComponent_C_mul (n : ℕ) (r : R) :
     homogeneousComponent n (C r * φ) = C r * homogeneousComponent n φ := by
   simp only [C_mul', LinearMap.map_smul]
 set_option linter.uppercaseLean3 false in
@@ -295,7 +295,7 @@ theorem homogeneousComponent_eq_zero'
   exfalso; exact h _ hd.1 hd.2
 #align mv_polynomial.homogeneous_component_eq_zero' MvPolynomial.homogeneousComponent_eq_zero'
 
-theorem homogeneousComponent_eq_zero (h : φ.totalDegree < n) : homogeneousComponent n φ = 0 := by
+lemma homogeneousComponent_eq_zero (h : φ.totalDegree < n) : homogeneousComponent n φ = 0 := by
   apply homogeneousComponent_eq_zero'
   rw [totalDegree, Finset.sup_lt_iff] at h
   · intro d hd
@@ -311,7 +311,7 @@ lemma sum_homogeneousComponent :
   exact fun h => (coeff_eq_zero_of_totalDegree_lt h).symm
 #align mv_polynomial.sum_homogeneous_component MvPolynomial.sum_homogeneousComponent
 
-theorem homogeneousComponent_homogeneous_polynomial (m n : ℕ) (p : MvPolynomial σ R)
+lemma homogeneousComponent_homogeneous_polynomial (m n : ℕ) (p : MvPolynomial σ R)
     (h : p ∈ homogeneousSubmodule σ R n) : homogeneousComponent m p = if m = n then p else 0 := by
   simp only [mem_homogeneousSubmodule] at h
   ext x

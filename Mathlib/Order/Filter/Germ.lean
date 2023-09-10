@@ -124,29 +124,29 @@ instance coeTC : CoeTC β (Germ l β) :=
   ⟨const⟩
 
 @[simp]
-theorem quot_mk_eq_coe (l : Filter α) (f : α → β) : Quot.mk _ f = (f : Germ l β) :=
+lemma quot_mk_eq_coe (l : Filter α) (f : α → β) : Quot.mk _ f = (f : Germ l β) :=
   rfl
 #align filter.germ.quot_mk_eq_coe Filter.Germ.quot_mk_eq_coe
 
 @[simp]
-theorem mk'_eq_coe (l : Filter α) (f : α → β) :
+lemma mk'_eq_coe (l : Filter α) (f : α → β) :
     @Quotient.mk' _ (germSetoid _ _) f = (f : Germ l β) :=
   rfl
 #align filter.germ.mk'_eq_coe Filter.Germ.mk'_eq_coe
 
 @[elab_as_elim]
-theorem inductionOn (f : Germ l β) {p : Germ l β → Prop} (h : ∀ f : α → β, p f) : p f :=
+lemma inductionOn (f : Germ l β) {p : Germ l β → Prop} (h : ∀ f : α → β, p f) : p f :=
   Quotient.inductionOn' f h
 #align filter.germ.induction_on Filter.Germ.inductionOn
 
 @[elab_as_elim]
-theorem inductionOn₂ (f : Germ l β) (g : Germ l γ) {p : Germ l β → Germ l γ → Prop}
+lemma inductionOn₂ (f : Germ l β) (g : Germ l γ) {p : Germ l β → Germ l γ → Prop}
     (h : ∀ (f : α → β) (g : α → γ), p f g) : p f g :=
   Quotient.inductionOn₂' f g h
 #align filter.germ.induction_on₂ Filter.Germ.inductionOn₂
 
 @[elab_as_elim]
-theorem inductionOn₃ (f : Germ l β) (g : Germ l γ) (h : Germ l δ)
+lemma inductionOn₃ (f : Germ l β) (g : Germ l γ) (h : Germ l δ)
     {p : Germ l β → Germ l γ → Germ l δ → Prop}
     (H : ∀ (f : α → β) (g : α → γ) (h : α → δ), p f g h) : p f g h :=
   Quotient.inductionOn₃' f g h H
@@ -186,7 +186,7 @@ def map (op : β → γ) : Germ l β → Germ l γ :=
 #align filter.germ.map Filter.Germ.map
 
 @[simp]
-theorem map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op ∘ f :=
+lemma map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op ∘ f :=
   rfl
 #align filter.germ.map_coe Filter.Germ.map_coe
 
@@ -196,7 +196,7 @@ lemma map_id : map id = (id : Germ l β → Germ l β) := by
   rfl
 #align filter.germ.map_id Filter.Germ.map_id
 
-theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
+lemma map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
     map op₁ (map op₂ f) = map (op₁ ∘ op₂) f :=
   inductionOn f fun _ => rfl
 #align filter.germ.map_map Filter.Germ.map_map
@@ -208,7 +208,7 @@ def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
 #align filter.germ.map₂ Filter.Germ.map₂
 
 @[simp]
-theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
+lemma map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
     map₂ op (f : Germ l β) g = fun x => op (f x) (g x) :=
   rfl
 #align filter.germ.map₂_coe Filter.Germ.map₂_coe
@@ -235,7 +235,7 @@ def compTendsto' (f : Germ l β) {lc : Filter γ} (g : Germ lc α) (hg : g.Tends
 #align filter.germ.comp_tendsto' Filter.Germ.compTendsto'
 
 @[simp]
-theorem coe_compTendsto' (f : α → β) {lc : Filter γ} {g : Germ lc α} (hg : g.Tendsto l) :
+lemma coe_compTendsto' (f : α → β) {lc : Filter γ} {g : Germ lc α} (hg : g.Tendsto l) :
     (f : Germ l β).compTendsto' g hg = g.map f :=
   rfl
 #align filter.germ.coe_comp_tendsto' Filter.Germ.coe_compTendsto'
@@ -247,13 +247,13 @@ def compTendsto (f : Germ l β) {lc : Filter γ} (g : γ → α) (hg : Tendsto g
 #align filter.germ.comp_tendsto Filter.Germ.compTendsto
 
 @[simp]
-theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
+lemma coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     (f : Germ l β).compTendsto g hg = f ∘ g :=
   rfl
 #align filter.germ.coe_comp_tendsto Filter.Germ.coe_compTendsto
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
-theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
+lemma compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
 #align filter.germ.comp_tendsto'_coe Filter.Germ.compTendsto'_coe
@@ -263,12 +263,12 @@ lemma const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
 #align filter.germ.const_inj Filter.Germ.const_inj
 
 @[simp]
-theorem map_const (l : Filter α) (a : β) (f : β → γ) : (↑a : Germ l β).map f = ↑(f a) :=
+lemma map_const (l : Filter α) (a : β) (f : β → γ) : (↑a : Germ l β).map f = ↑(f a) :=
   rfl
 #align filter.germ.map_const Filter.Germ.map_const
 
 @[simp]
-theorem map₂_const (l : Filter α) (b : β) (c : γ) (f : β → γ → δ) :
+lemma map₂_const (l : Filter α) (b : β) (c : γ) (f : β → γ → δ) :
     map₂ f (↑b : Germ l β) ↑c = ↑(f b c) :=
   rfl
 #align filter.germ.map₂_const Filter.Germ.map₂_const

@@ -97,7 +97,7 @@ instance : CoeFun (RingSeminorm R) fun _ => R → ℝ :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe (p : RingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
+lemma toFun_eq_coe (p : RingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
   rfl
 #align ring_seminorm.to_fun_eq_coe RingSeminorm.toFun_eq_coe
 
@@ -145,7 +145,7 @@ section Ring
 
 variable [Ring R] (p : RingSeminorm R)
 
-theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
+lemma seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
   refine'
     ⟨fun h =>
       ne_zero_iff.mpr
@@ -197,7 +197,7 @@ instance : CoeFun (RingNorm R) fun _ => R → ℝ :=
 
 -- Porting note: This is a syntactic tautology in Lean 4
 -- @[simp]
--- theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
+-- lemma toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
 #noalign ring_norm.to_fun_eq_coe
 
 @[ext]
@@ -246,7 +246,7 @@ instance : CoeFun (MulRingSeminorm R) fun _ => R → ℝ :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe (p : MulRingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
+lemma toFun_eq_coe (p : MulRingSeminorm R) : (p.toAddGroupSeminorm : R → ℝ) = p :=
   rfl
 #align mul_ring_seminorm.to_fun_eq_coe MulRingSeminorm.toFun_eq_coe
 
@@ -270,7 +270,7 @@ instance : One (MulRingSeminorm R) :=
         · simp [hx, hy] }⟩
 
 @[simp]
-theorem apply_one (x : R) : (1 : MulRingSeminorm R) x = if x = 0 then 0 else 1 :=
+lemma apply_one (x : R) : (1 : MulRingSeminorm R) x = if x = 0 then 0 else 1 :=
   rfl
 #align mul_ring_seminorm.apply_one MulRingSeminorm.apply_one
 
@@ -305,7 +305,7 @@ instance : CoeFun (MulRingNorm R) fun _ => R → ℝ :=
 
 -- Porting note: This is a syntactic tautology in Lean 4
 -- @[simp]
--- theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
+-- lemma toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
 #noalign mul_ring_norm.to_fun_eq_coe
 
 @[ext]
@@ -323,7 +323,7 @@ instance : One (MulRingNorm R) :=
   ⟨{ (1 : MulRingSeminorm R), (1 : AddGroupNorm R) with }⟩
 
 @[simp]
-theorem apply_one (x : R) : (1 : MulRingNorm R) x = if x = 0 then 0 else 1 :=
+lemma apply_one (x : R) : (1 : MulRingNorm R) x = if x = 0 then 0 else 1 :=
   rfl
 #align mul_ring_norm.apply_one MulRingNorm.apply_one
 

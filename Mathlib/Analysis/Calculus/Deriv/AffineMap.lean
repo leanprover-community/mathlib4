@@ -40,7 +40,7 @@ lemma hasDerivAtFilter : HasDerivAtFilter f (f.linear 1) x L := by
 lemma hasDerivWithinAt : HasDerivWithinAt f (f.linear 1) s x := f.hasDerivAtFilter
 lemma hasDerivAt : HasDerivAt f (f.linear 1) x := f.hasDerivAtFilter
 
-protected theorem derivWithin (hs : UniqueDiffWithinAt 𝕜 s x) :
+protected lemma derivWithin (hs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = f.linear 1 :=
   f.hasDerivWithinAt.derivWithin hs
 

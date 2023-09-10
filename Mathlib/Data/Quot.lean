@@ -95,13 +95,13 @@ lemma factor_mk_eq {α : Type*} (r s : α → α → Prop) (h : ∀ x y, r x y �
 variable {γ : Sort*} {r : α → α → Prop} {s : β → β → Prop}
 
 -- Porting note: used to be an Alias of `quot.lift_beta`.
-theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) :
+lemma lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) :
     Quot.lift f h (Quot.mk r a) = f a :=
   rfl
 #align quot.lift_beta Quot.lift_mk
 #align quot.lift_mk Quot.lift_mk
 
-theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
+lemma liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
   Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
 #align quot.lift_on_mk Quot.liftOn_mk
@@ -121,7 +121,7 @@ protected def lift₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ 
 #align quot.lift₂ Quot.lift₂
 
 @[simp]
-theorem lift₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
+lemma lift₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b)
     (a : α) (b : β) : Quot.lift₂ f hr hs (Quot.mk r a) (Quot.mk s b) = f a b :=
   rfl
@@ -136,7 +136,7 @@ protected def liftOn₂ (p : Quot r) (q : Quot s) (f : α → β → γ)
 #align quot.lift_on₂ Quot.liftOn₂
 
 @[simp]
-theorem liftOn₂_mk (a : α) (b : β) (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
+lemma liftOn₂_mk (a : α) (b : β) (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) :
     Quot.liftOn₂ (Quot.mk r a) (Quot.mk s b) f hr hs = f a b :=
   rfl
@@ -153,7 +153,7 @@ protected def map₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ �
 #align quot.map₂ Quot.map₂
 
 @[simp]
-theorem map₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → t (f a b₁) (f a b₂))
+lemma map₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → t (f a b₁) (f a b₂))
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → t (f a₁ b) (f a₂ b)) (a : α) (b : β) :
     Quot.map₂ f hr hs (Quot.mk r a) (Quot.mk s b) = Quot.mk t (f a b) :=
   rfl
@@ -247,7 +247,7 @@ protected def map (f : α → β) (h : ((· ≈ ·) ⇒ (· ≈ ·)) f f) : Quot
 #align quotient.map Quotient.map
 
 @[simp]
-theorem map_mk (f : α → β) (h : ((· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) :
+lemma map_mk (f : α → β) (h : ((· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) :
     Quotient.map f h (⟦x⟧ : Quotient sa) = (⟦f x⟧ : Quotient sb) :=
   rfl
 #align quotient.map_mk Quotient.map_mk
@@ -263,7 +263,7 @@ protected def map₂ (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) �
 #align quotient.map₂ Quotient.map₂
 
 @[simp]
-theorem map₂_mk (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) (y : β) :
+lemma map₂_mk (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (· ≈ ·)) f f) (x : α) (y : β) :
     Quotient.map₂ f h (⟦x⟧ : Quotient sa) (⟦y⟧ : Quotient sb) = (⟦f x y⟧ : Quotient sc) :=
   rfl
 #align quotient.map₂_mk Quotient.map₂_mk
@@ -338,12 +338,12 @@ lemma Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} [Setoid α] (f : α → α
 #align quotient.lift_on₂_mk Quotient.liftOn₂_mk
 
 /-- `Quot.mk r` is a surjective function. -/
-theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
+lemma surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
 /-- `Quotient.mk` is a surjective function. -/
-theorem surjective_quotient_mk (α : Sort*) [s : Setoid α] :
+lemma surjective_quotient_mk (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk _ : α → Quotient s) :=
   Quot.exists_rep
 #align surjective_quotient_mk surjective_quotient_mk
@@ -437,7 +437,7 @@ lemma Quotient.induction_on_pi {ι : Type*} {α : ι → Sort*} [s : ∀ i, Seto
 
 end Pi
 
-theorem nonempty_quotient_iff (s : Setoid α) : Nonempty (Quotient s) ↔ Nonempty α :=
+lemma nonempty_quotient_iff (s : Setoid α) : Nonempty (Quotient s) ↔ Nonempty α :=
   ⟨fun ⟨a⟩ ↦ Quotient.inductionOn a Nonempty.intro, fun ⟨a⟩ ↦ ⟨⟦a⟧⟩⟩
 #align nonempty_quotient_iff nonempty_quotient_iff
 
@@ -483,7 +483,7 @@ lemma ind {β : Trunc α → Prop} : (∀ a : α, β (mk a)) → ∀ q : Trunc �
   Quot.ind
 #align trunc.ind Trunc.ind
 
-protected theorem lift_mk (f : α → β) (c) (a : α) : lift f c (mk a) = f a :=
+protected lemma lift_mk (f : α → β) (c) (a : α) : lift f c (mk a) = f a :=
   rfl
 #align trunc.lift_mk Trunc.lift_mk
 
@@ -499,7 +499,7 @@ protected lemma induction_on {β : Trunc α → Prop} (q : Trunc α) (h : ∀ a,
   ind h q
 #align trunc.induction_on Trunc.induction_on
 
-theorem exists_rep (q : Trunc α) : ∃ a : α, mk a = q :=
+lemma exists_rep (q : Trunc α) : ∃ a : α, mk a = q :=
   Quot.exists_rep q
 #align trunc.exists_rep Trunc.exists_rep
 
@@ -509,7 +509,7 @@ protected lemma induction_on₂ {C : Trunc α → Trunc β → Prop} (q₁ : Tru
   Trunc.induction_on q₁ fun a₁ ↦ Trunc.induction_on q₂ (h a₁)
 #align trunc.induction_on₂ Trunc.induction_on₂
 
-protected theorem eq (a b : Trunc α) : a = b :=
+protected lemma eq (a b : Trunc α) : a = b :=
   Trunc.induction_on₂ a b fun _ _ ↦ Quot.sound trivial
 #align trunc.eq Trunc.eq
 
@@ -575,11 +575,11 @@ noncomputable def out : Trunc α → α :=
 #align trunc.out Trunc.out
 
 @[simp]
-theorem out_eq (q : Trunc α) : mk q.out = q :=
+lemma out_eq (q : Trunc α) : mk q.out = q :=
   Trunc.eq _ _
 #align trunc.out_eq Trunc.out_eq
 
-protected theorem nonempty (q : Trunc α) : Nonempty α :=
+protected lemma nonempty (q : Trunc α) : Nonempty α :=
   nonempty_of_exists q.exists_rep
 #align trunc.nonempty Trunc.nonempty
 
@@ -621,7 +621,7 @@ protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, @Setoid.
 #align quotient.lift_on' Quotient.liftOn'
 
 @[simp]
-protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
+protected lemma liftOn'_mk'' (f : α → φ) (h) (x : α) :
     Quotient.liftOn' (@Quotient.mk'' _ s₁ x) f h = f x :=
   rfl
 
@@ -640,7 +640,7 @@ protected def liftOn₂' (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α �
 #align quotient.lift_on₂' Quotient.liftOn₂'
 
 @[simp]
-protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
+protected lemma liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (@Quotient.mk'' _ s₁ a) (@Quotient.mk'' _ s₂ b) f h = f a b :=
   rfl
 
@@ -744,7 +744,7 @@ protected def map' (f : α → β) (h : (s₁.r ⇒ s₂.r) f f) : Quotient s₁
 #align quotient.map' Quotient.map'
 
 @[simp]
-theorem map'_mk'' (f : α → β) (h) (x : α) :
+lemma map'_mk'' (f : α → β) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map' f h = (Quotient.mk'' (f x) : Quotient s₂) :=
   rfl
 
@@ -755,7 +755,7 @@ protected def map₂' (f : α → β → γ) (h : (s₁.r ⇒ s₂.r ⇒ s₃.r)
 #align quotient.map₂' Quotient.map₂'
 
 @[simp]
-theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
+lemma map₂'_mk'' (f : α → β → γ) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map₂' f h =
       (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
   rfl
@@ -787,11 +787,11 @@ noncomputable def out' (a : Quotient s₁) : α :=
 #align quotient.out' Quotient.out'
 
 @[simp]
-theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
+lemma out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
   q.out_eq
 #align quotient.out_eq' Quotient.out_eq'
 
-theorem mk_out' (a : α) : @Setoid.r α s₁ (Quotient.mk'' a : Quotient s₁).out' a :=
+lemma mk_out' (a : α) : @Setoid.r α s₁ (Quotient.mk'' a : Quotient s₁).out' a :=
   Quotient.exact (Quotient.out_eq _)
 #align quotient.mk_out' Quotient.mk_out'
 
@@ -799,11 +799,11 @@ section
 
 variable [s : Setoid α]
 
-protected theorem mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
+protected lemma mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
   rfl
 
 @[simp]
-protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
+protected lemma liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
   rfl
 #align quotient.lift_on'_mk Quotient.liftOn'_mk
 

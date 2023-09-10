@@ -73,7 +73,7 @@ def gaussSum (χ : MulChar R R') (ψ : AddChar R R') : R' :=
 #align gauss_sum gaussSum
 
 /-- Replacing `ψ` by `mulShift ψ a` and multiplying the Gauss sum by `χ a` does not change it. -/
-theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
+lemma gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
     χ a * gaussSum χ (mulShift ψ a) = gaussSum χ ψ := by
   simp only [gaussSum, mulShift_apply, Finset.mul_sum]
   simp_rw [← mul_assoc, ← map_mul]
@@ -150,7 +150,7 @@ variable (p : ℕ) [fp : Fact p.Prime] [hch : CharP R' p]
 
 /-- When `R'` has prime characteristic `p`, then the `p`th power of the Gauss sum
 of `χ` and `ψ` is the Gauss sum of `χ^p` and `ψ^p`. -/
-theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
+lemma gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
     gaussSum χ ψ ^ p = gaussSum (χ ^ p) (ψ ^ p) := by
   rw [← frobenius_def, gaussSum, gaussSum, map_sum]
   simp_rw [pow_apply' χ fp.1.pos, map_mul, frobenius_def]
@@ -161,7 +161,7 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
 is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
 -- Porting note: Added `nonrec` to avoid error `failed to prove termination`
-nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
+nonrec lemma MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p = χ p * gaussSum χ ψ := by
   rw [gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit, ← mul_assoc,
     hp.unit_spec, ← pow_two, ← pow_apply' _ (by norm_num : 0 < 2), hχ.sq_eq_one, ← hp.unit_spec,
@@ -171,7 +171,7 @@ nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : Mul
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
 sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
-theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
+lemma MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
     gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
   induction' n with n ih

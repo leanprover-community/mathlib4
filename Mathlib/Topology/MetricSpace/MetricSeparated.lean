@@ -33,7 +33,7 @@ namespace IsMetricSeparated
 variable {X : Type*} [EMetricSpace X] {s t : Set X} {x y : X}
 
 @[symm]
-theorem symm (h : IsMetricSeparated s t) : IsMetricSeparated t s :=
+lemma symm (h : IsMetricSeparated s t) : IsMetricSeparated t s :=
   let ⟨r, r0, hr⟩ := h
   ⟨r, r0, fun y hy x hx => edist_comm x y ▸ hr x hx y hy⟩
 #align is_metric_separated.symm IsMetricSeparated.symm
@@ -43,21 +43,21 @@ lemma comm : IsMetricSeparated s t ↔ IsMetricSeparated t s :=
 #align is_metric_separated.comm IsMetricSeparated.comm
 
 @[simp]
-theorem empty_left (s : Set X) : IsMetricSeparated ∅ s :=
+lemma empty_left (s : Set X) : IsMetricSeparated ∅ s :=
   ⟨1, one_ne_zero, fun _x => False.elim⟩
 #align is_metric_separated.empty_left IsMetricSeparated.empty_left
 
 @[simp]
-theorem empty_right (s : Set X) : IsMetricSeparated s ∅ :=
+lemma empty_right (s : Set X) : IsMetricSeparated s ∅ :=
   (empty_left s).symm
 #align is_metric_separated.empty_right IsMetricSeparated.empty_right
 
-protected theorem disjoint (h : IsMetricSeparated s t) : Disjoint s t :=
+protected lemma disjoint (h : IsMetricSeparated s t) : Disjoint s t :=
   let ⟨r, r0, hr⟩ := h
   Set.disjoint_left.mpr fun x hx1 hx2 => r0 <| by simpa using hr x hx1 x hx2
 #align is_metric_separated.disjoint IsMetricSeparated.disjoint
 
-theorem subset_compl_right (h : IsMetricSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
+lemma subset_compl_right (h : IsMetricSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
   h.disjoint.le_bot ⟨hs, ht⟩
 #align is_metric_separated.subset_compl_right IsMetricSeparated.subset_compl_right
 

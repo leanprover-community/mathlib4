@@ -52,7 +52,7 @@ instance vertexGroup (c : C) : Group (c ⟶ c) where
 #align category_theory.groupoid.vertex_group CategoryTheory.Groupoid.vertexGroup
 
 /-- The inverse in the group is equal to the inverse given by `CategoryTheory.inv`. -/
-theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
+lemma vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
   Groupoid.inv_eq_inv γ
 #align category_theory.groupoid.vertex_group.inv_eq_inv CategoryTheory.Groupoid.vertexGroup.inv_eq_inv
 

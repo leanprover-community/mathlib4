@@ -54,12 +54,12 @@ lemma mem_product {p : α × β} : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Multiset.mem_product
 #align finset.mem_product Finset.mem_product
 
-theorem mk_mem_product (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
+lemma mk_mem_product (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
   mem_product.2 ⟨ha, hb⟩
 #align finset.mk_mem_product Finset.mk_mem_product
 
 @[simp, norm_cast]
-theorem coe_product (s : Finset α) (t : Finset β) :
+lemma coe_product (s : Finset α) (t : Finset β) :
     (↑(s ×ˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
 #align finset.coe_product Finset.coe_product
@@ -87,19 +87,19 @@ lemma subset_product [DecidableEq α] [DecidableEq β] {s : Finset (α × β)} :
   mem_product.2 ⟨mem_image_of_mem _ hp, mem_image_of_mem _ hp⟩
 #align finset.subset_product Finset.subset_product
 
-theorem product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ˢ t ⊆ s' ×ˢ t' := fun ⟨_, _⟩ h =>
+lemma product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ˢ t ⊆ s' ×ˢ t' := fun ⟨_, _⟩ h =>
   mem_product.2 ⟨hs (mem_product.1 h).1, ht (mem_product.1 h).2⟩
 #align finset.product_subset_product Finset.product_subset_product
 
-theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
+lemma product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
   product_subset_product hs (Subset.refl _)
 #align finset.product_subset_product_left Finset.product_subset_product_left
 
-theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
+lemma product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
 #align finset.product_subset_product_right Finset.product_subset_product_right
 
-theorem map_swap_product (s : Finset α) (t : Finset β) :
+lemma map_swap_product (s : Finset α) (t : Finset β) :
     (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=
   coe_injective <| by
     push_cast
@@ -136,27 +136,27 @@ lemma product_biUnion [DecidableEq γ] (s : Finset α) (t : Finset β) (f : α �
 #align finset.product_bUnion Finset.product_biUnion
 
 @[simp]
-theorem card_product (s : Finset α) (t : Finset β) : card (s ×ˢ t) = card s * card t :=
+lemma card_product (s : Finset α) (t : Finset β) : card (s ×ˢ t) = card s * card t :=
   Multiset.card_product _ _
 #align finset.card_product Finset.card_product
 
-theorem filter_product (p : α → Prop) (q : β → Prop) [DecidablePred p] [DecidablePred q] :
+lemma filter_product (p : α → Prop) (q : β → Prop) [DecidablePred p] [DecidablePred q] :
     ((s ×ˢ t).filter fun x : α × β => p x.1 ∧ q x.2) = s.filter p ×ˢ t.filter q := by
   ext ⟨a, b⟩
   simp [mem_filter, mem_product, decide_eq_true_eq, and_comm, and_left_comm, and_assoc]
 #align finset.filter_product Finset.filter_product
 
-theorem filter_product_left (p : α → Prop) [DecidablePred p] :
+lemma filter_product_left (p : α → Prop) [DecidablePred p] :
     ((s ×ˢ t).filter fun x : α × β => p x.1) = s.filter p ×ˢ t := by
   simpa using filter_product p fun _ => true
 #align finset.filter_product_left Finset.filter_product_left
 
-theorem filter_product_right (q : β → Prop) [DecidablePred q] :
+lemma filter_product_right (q : β → Prop) [DecidablePred q] :
     ((s ×ˢ t).filter fun x : α × β => q x.2) = s ×ˢ t.filter q := by
   simpa using filter_product (fun _ : α => true) q
 #align finset.filter_product_right Finset.filter_product_right
 
-theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q : β → Prop)
+lemma filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q : β → Prop)
     [DecidablePred p] [DecidablePred q] :
     ((s ×ˢ t).filter fun x : α × β => (p x.1) = (q x.2)).card =
       (s.filter p).card * (t.filter q).card +
@@ -175,26 +175,26 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
       exact (disjoint_compl_right.inf_left _).inf_right _
 #align finset.filter_product_card Finset.filter_product_card
 
-theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
+lemma empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
   rfl
 #align finset.empty_product Finset.empty_product
 
-theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
+lemma product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
   eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
 #align finset.product_empty Finset.product_empty
 
-theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
+lemma Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
   let ⟨x, hx⟩ := hs
   let ⟨y, hy⟩ := ht
   ⟨(x, y), mem_product.2 ⟨hx, hy⟩⟩
 #align finset.nonempty.product Finset.Nonempty.product
 
-theorem Nonempty.fst (h : (s ×ˢ t).Nonempty) : s.Nonempty :=
+lemma Nonempty.fst (h : (s ×ˢ t).Nonempty) : s.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.1, (mem_product.1 hxy).1⟩
 #align finset.nonempty.fst Finset.Nonempty.fst
 
-theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
+lemma Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.2, (mem_product.1 hxy).2⟩
 #align finset.nonempty.snd Finset.Nonempty.snd
@@ -261,13 +261,13 @@ lemma disjoint_product : Disjoint (s ×ˢ t) (s' ×ˢ t') ↔ Disjoint s s' ∨ 
 #align finset.disjoint_product Finset.disjoint_product
 
 @[simp]
-theorem disjUnion_product (hs : Disjoint s s') :
+lemma disjUnion_product (hs : Disjoint s s') :
     s.disjUnion s' hs ×ˢ t = (s ×ˢ t).disjUnion (s' ×ˢ t) (disjoint_product.mpr <| Or.inl hs) :=
   eq_of_veq <| Multiset.add_product _ _ _
 #align finset.disj_union_product Finset.disjUnion_product
 
 @[simp]
-theorem product_disjUnion (ht : Disjoint t t') :
+lemma product_disjUnion (ht : Disjoint t t') :
     s ×ˢ t.disjUnion t' ht = (s ×ˢ t).disjUnion (s ×ˢ t') (disjoint_product.mpr <| Or.inr ht) :=
   eq_of_veq <| Multiset.product_add _ _ _
 #align finset.product_disj_union Finset.product_disjUnion
@@ -393,7 +393,7 @@ lemma diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by
 
 variable {s t}
 
-theorem offDiag_union (h : Disjoint s t) :
+lemma offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s :=
   coe_injective <| by
     push_cast
@@ -414,7 +414,7 @@ lemma diag_insert : (insert a s).diag = insert (a, a) s.diag := by
   rw [insert_eq, insert_eq, diag_union, diag_singleton]
 #align finset.diag_insert Finset.diag_insert
 
-theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
+lemma offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   rw [insert_eq, union_comm, offDiag_union (disjoint_singleton_right.2 has), offDiag_singleton,
     union_empty, union_right_comm]
 #align finset.off_diag_insert Finset.offDiag_insert

@@ -60,11 +60,11 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     simp
 
 @[simp]
-theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
+lemma mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
   Iff.refl _
 #align projectivization.subspace.mem_carrier_iff Projectivization.Subspace.mem_carrier_iff
 
-theorem mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
+lemma mem_add (T : Subspace K V) (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) (hvw : v + w ≠ 0) :
     Projectivization.mk K v hv ∈ T →
       Projectivization.mk K w hw ∈ T → Projectivization.mk K (v + w) hvw ∈ T :=
   T.mem_add' v w hv hw hvw
@@ -87,7 +87,7 @@ def span (S : Set (ℙ K V)) : Subspace K V where
 #align projectivization.subspace.span Projectivization.Subspace.span
 
 /-- The span of a set of points contains the set of points. -/
-theorem subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => spanCarrier.of _ hx
+lemma subset_span (S : Set (ℙ K V)) : S ⊆ span S := fun _x hx => spanCarrier.of _ hx
 #align projectivization.subspace.subset_span Projectivization.Subspace.subset_span
 
 /-- The span of a set of points is a Galois insertion between sets of points of a projective space
@@ -108,7 +108,7 @@ def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe whe
 
 /-- The span of a subspace is the subspace. -/
 @[simp]
-theorem span_coe (W : Subspace K V) : span ↑W = W :=
+lemma span_coe (W : Subspace K V) : span ↑W = W :=
   GaloisInsertion.l_u_eq gi W
 #align projectivization.subspace.span_coe Projectivization.Subspace.span_coe
 
@@ -176,7 +176,7 @@ lemma subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T �
 #align projectivization.subspace.subset_span_trans Projectivization.Subspace.subset_span_trans
 
 /-- The supremum of two subspaces is equal to the span of their union. -/
-theorem span_union (S T : Set (ℙ K V)) : span (S ∪ T) = span S ⊔ span T :=
+lemma span_union (S T : Set (ℙ K V)) : span (S ∪ T) = span S ⊔ span T :=
   (@gi K V _ _ _).gc.l_sup
 #align projectivization.subspace.span_union Projectivization.Subspace.span_union
 

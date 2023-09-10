@@ -116,12 +116,12 @@ lemma ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
 #align centroid_hom.ext CentroidHom.ext
 
 @[simp, norm_cast]
-theorem coe_toAddMonoidHom (f : CentroidHom α) : ⇑(f : α →+ α) = f :=
+lemma coe_toAddMonoidHom (f : CentroidHom α) : ⇑(f : α →+ α) = f :=
   rfl
 #align centroid_hom.coe_to_add_monoid_hom CentroidHom.coe_toAddMonoidHom
 
 @[simp]
-theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
+lemma toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
   rfl
 #align centroid_hom.to_add_monoid_hom_eq_coe CentroidHom.toAddMonoidHom_eq_coe
 
@@ -150,11 +150,11 @@ protected def copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : Centroid
 #align centroid_hom.copy CentroidHom.copy
 
 @[simp]
-theorem coe_copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align centroid_hom.coe_copy CentroidHom.coe_copy
 
-theorem copy_eq (f : CentroidHom α) (f' : α → α) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : CentroidHom α) (f' : α → α) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align centroid_hom.copy_eq CentroidHom.copy_eq
 
@@ -183,7 +183,7 @@ lemma toAddMonoidHom_id : (CentroidHom.id α : α →+ α) = AddMonoidHom.id α 
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : CentroidHom.id α a = a :=
+lemma id_apply (a : α) : CentroidHom.id α a = a :=
   rfl
 #align centroid_hom.id_apply CentroidHom.id_apply
 
@@ -196,32 +196,32 @@ def comp (g f : CentroidHom α) : CentroidHom α :=
 #align centroid_hom.comp CentroidHom.comp
 
 @[simp, norm_cast]
-theorem coe_comp (g f : CentroidHom α) : ⇑(g.comp f) = g ∘ f :=
+lemma coe_comp (g f : CentroidHom α) : ⇑(g.comp f) = g ∘ f :=
   rfl
 #align centroid_hom.coe_comp CentroidHom.coe_comp
 
 @[simp]
-theorem comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
+lemma comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
   rfl
 #align centroid_hom.comp_apply CentroidHom.comp_apply
 
 @[simp, norm_cast]
-theorem coe_comp_addMonoidHom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
+lemma coe_comp_addMonoidHom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
   rfl
 #align centroid_hom.coe_comp_add_monoid_hom CentroidHom.coe_comp_addMonoidHom
 
 @[simp]
-theorem comp_assoc (h g f : CentroidHom α) : (h.comp g).comp f = h.comp (g.comp f) :=
+lemma comp_assoc (h g f : CentroidHom α) : (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align centroid_hom.comp_assoc CentroidHom.comp_assoc
 
 @[simp]
-theorem comp_id (f : CentroidHom α) : f.comp (CentroidHom.id α) = f :=
+lemma comp_id (f : CentroidHom α) : f.comp (CentroidHom.id α) = f :=
   rfl
 #align centroid_hom.comp_id CentroidHom.comp_id
 
 @[simp]
-theorem id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
+lemma id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
   rfl
 #align centroid_hom.id_comp CentroidHom.id_comp
 
@@ -297,44 +297,44 @@ lemma coe_one : ⇑(1 : CentroidHom α) = id :=
 #align centroid_hom.coe_one CentroidHom.coe_one
 
 @[simp, norm_cast]
-theorem coe_add (f g : CentroidHom α) : ⇑(f + g) = f + g :=
+lemma coe_add (f g : CentroidHom α) : ⇑(f + g) = f + g :=
   rfl
 #align centroid_hom.coe_add CentroidHom.coe_add
 
 @[simp, norm_cast]
-theorem coe_mul (f g : CentroidHom α) : ⇑(f * g) = f ∘ g :=
+lemma coe_mul (f g : CentroidHom α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align centroid_hom.coe_mul CentroidHom.coe_mul
 
 -- Eligible for `dsimp`
 @[simp, norm_cast, nolint simpNF]
-theorem coe_nsmul (f : CentroidHom α) (n : ℕ) : ⇑(n • f) = n • (⇑f) :=
+lemma coe_nsmul (f : CentroidHom α) (n : ℕ) : ⇑(n • f) = n • (⇑f) :=
   rfl
 #align centroid_hom.coe_nsmul CentroidHom.coe_nsmul
 
 @[simp]
-theorem zero_apply (a : α) : (0 : CentroidHom α) a = 0 :=
+lemma zero_apply (a : α) : (0 : CentroidHom α) a = 0 :=
   rfl
 #align centroid_hom.zero_apply CentroidHom.zero_apply
 
 @[simp]
-theorem one_apply (a : α) : (1 : CentroidHom α) a = a :=
+lemma one_apply (a : α) : (1 : CentroidHom α) a = a :=
   rfl
 #align centroid_hom.one_apply CentroidHom.one_apply
 
 @[simp]
-theorem add_apply (f g : CentroidHom α) (a : α) : (f + g) a = f a + g a :=
+lemma add_apply (f g : CentroidHom α) (a : α) : (f + g) a = f a + g a :=
   rfl
 #align centroid_hom.add_apply CentroidHom.add_apply
 
 @[simp]
-theorem mul_apply (f g : CentroidHom α) (a : α) : (f * g) a = f (g a) :=
+lemma mul_apply (f g : CentroidHom α) (a : α) : (f * g) a = f (g a) :=
   rfl
 #align centroid_hom.mul_apply CentroidHom.mul_apply
 
 -- Eligible for `dsimp`
 @[simp, nolint simpNF]
-theorem nsmul_apply (f : CentroidHom α) (n : ℕ) (a : α) : (n • f) a = n • f a :=
+lemma nsmul_apply (f : CentroidHom α) (n : ℕ) (a : α) : (n • f) a = n • f a :=
   rfl
 #align centroid_hom.nsmul_apply CentroidHom.nsmul_apply
 
@@ -344,11 +344,11 @@ lemma toEnd_zero : (0 : CentroidHom α).toEnd = 0 :=
 #align centroid_hom.to_End_zero CentroidHom.toEnd_zero
 
 @[simp]
-theorem toEnd_add (x y : CentroidHom α) : (x + y).toEnd = x.toEnd + y.toEnd :=
+lemma toEnd_add (x y : CentroidHom α) : (x + y).toEnd = x.toEnd + y.toEnd :=
   rfl
 #align centroid_hom.to_End_add CentroidHom.toEnd_add
 
-theorem toEnd_nsmul (x : CentroidHom α) (n : ℕ) : (n • x).toEnd = n • x.toEnd :=
+lemma toEnd_nsmul (x : CentroidHom α) (n : ℕ) : (n • x).toEnd = n • x.toEnd :=
   rfl
 #align centroid_hom.to_End_nsmul CentroidHom.toEnd_nsmul
 
@@ -361,11 +361,11 @@ instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
-theorem coe_nat_cast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
+lemma coe_nat_cast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
 #align centroid_hom.coe_nat_cast CentroidHom.coe_nat_cast
 
-theorem nat_cast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
+lemma nat_cast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
   rfl
 #align centroid_hom.nat_cast_apply CentroidHom.nat_cast_apply
 
@@ -375,17 +375,17 @@ lemma toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
 #align centroid_hom.to_End_one CentroidHom.toEnd_one
 
 @[simp]
-theorem toEnd_mul (x y : CentroidHom α) : (x * y).toEnd = x.toEnd * y.toEnd :=
+lemma toEnd_mul (x y : CentroidHom α) : (x * y).toEnd = x.toEnd * y.toEnd :=
   rfl
 #align centroid_hom.to_End_mul CentroidHom.toEnd_mul
 
 @[simp]
-theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :=
+lemma toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :=
   rfl
 #align centroid_hom.to_End_pow CentroidHom.toEnd_pow
 
 @[simp, norm_cast]
-theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
+lemma toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
 #align centroid_hom.to_End_nat_cast CentroidHom.toEnd_nat_cast
 
@@ -394,7 +394,7 @@ instance : Semiring (CentroidHom α) :=
   toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_nsmul toEnd_pow
     toEnd_nat_cast
 
-theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S ∘ T) (a * b) := by
+lemma comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S ∘ T) (a * b) := by
   simp
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
@@ -441,25 +441,25 @@ instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
-theorem coe_int_cast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
+lemma coe_int_cast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
 #align centroid_hom.coe_int_cast CentroidHom.coe_int_cast
 
-theorem int_cast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
+lemma int_cast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
   rfl
 #align centroid_hom.int_cast_apply CentroidHom.int_cast_apply
 
 @[simp]
-theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
+lemma toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
   rfl
 #align centroid_hom.to_End_neg CentroidHom.toEnd_neg
 
 @[simp]
-theorem toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
+lemma toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
   rfl
 #align centroid_hom.to_End_sub CentroidHom.toEnd_sub
 
-theorem toEnd_zsmul (x : CentroidHom α) (n : ℤ) : (n • x).toEnd = n • x.toEnd :=
+lemma toEnd_zsmul (x : CentroidHom α) (n : ℤ) : (n • x).toEnd = n • x.toEnd :=
   rfl
 #align centroid_hom.to_End_zsmul CentroidHom.toEnd_zsmul
 
@@ -467,27 +467,27 @@ instance : AddCommGroup (CentroidHom α) :=
   toEnd_injective.addCommGroup _ toEnd_zero toEnd_add toEnd_neg toEnd_sub toEnd_nsmul toEnd_zsmul
 
 @[simp, norm_cast]
-theorem coe_neg (f : CentroidHom α) : ⇑(-f) = -f :=
+lemma coe_neg (f : CentroidHom α) : ⇑(-f) = -f :=
   rfl
 #align centroid_hom.coe_neg CentroidHom.coe_neg
 
 @[simp, norm_cast]
-theorem coe_sub (f g : CentroidHom α) : ⇑(f - g) = f - g :=
+lemma coe_sub (f g : CentroidHom α) : ⇑(f - g) = f - g :=
   rfl
 #align centroid_hom.coe_sub CentroidHom.coe_sub
 
 @[simp]
-theorem neg_apply (f : CentroidHom α) (a : α) : (-f) a = -f a :=
+lemma neg_apply (f : CentroidHom α) (a : α) : (-f) a = -f a :=
   rfl
 #align centroid_hom.neg_apply CentroidHom.neg_apply
 
 @[simp]
-theorem sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
+lemma sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
   rfl
 #align centroid_hom.sub_apply CentroidHom.sub_apply
 
 @[simp, norm_cast]
-theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
+lemma toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
 

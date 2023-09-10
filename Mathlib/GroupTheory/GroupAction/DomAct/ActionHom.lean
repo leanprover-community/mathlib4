@@ -35,12 +35,12 @@ instance [SMul M' α] [SMulCommClass M' N α] [SMulCommClass M M' α] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (α →[N] β) :=
   FunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-theorem smul_mulActionHom_apply (c : Mᵈᵐᵃ) (f : α →[N] β) (a : α) :
+lemma smul_mulActionHom_apply (c : Mᵈᵐᵃ) (f : α →[N] β) (a : α) :
     (c • f) a = f (mk.symm c • a) :=
   rfl
 
 @[simp]
-theorem mk_smul_mulActionHom_apply (c : M) (f : α →[N] β) (a : α) : (mk c • f) a = f (c • a) := rfl
+lemma mk_smul_mulActionHom_apply (c : M) (f : α →[N] β) (a : α) : (mk c • f) a = f (c • a) := rfl
 
 end SMul
 
@@ -64,12 +64,12 @@ instance [DistribSMul M' A] [SMulCommClass M' N A] [SMulCommClass M M' A] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+[N] B) :=
   FunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-theorem smul_mulDistribActionHom_apply (c : Mᵈᵐᵃ) (f : A →+[N] B) (a : A) :
+lemma smul_mulDistribActionHom_apply (c : Mᵈᵐᵃ) (f : A →+[N] B) (a : A) :
     (c • f) a = f (mk.symm c • a) :=
   rfl
 
 @[simp]
-theorem mk_smul_mulDistribActionHom_apply (c : M) (f : A →+[N] B) (a : A) :
+lemma mk_smul_mulDistribActionHom_apply (c : M) (f : A →+[N] B) (a : A) :
     (mk c • f) a = f (c • a) := rfl
 
 end SMul

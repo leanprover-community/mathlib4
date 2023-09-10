@@ -34,7 +34,7 @@ instance (priority := 100) : Abs C(α, β) :=
   ⟨fun f => abs f⟩
 
 @[simp]
-theorem abs_apply (f : C(α, β)) (x : α) : |f| x = |f x| :=
+lemma abs_apply (f : C(α, β)) (x : α) : |f| x = |f x| :=
   rfl
 #align continuous_map.abs_apply ContinuousMap.abs_apply
 
@@ -158,7 +158,7 @@ def IccExtend (f : C(Set.Icc a b, β)) : C(α, β) where
 #align continuous_map.Icc_extend ContinuousMap.IccExtend
 
 @[simp]
-theorem coe_IccExtend (f : C(Set.Icc a b, β)) :
+lemma coe_IccExtend (f : C(Set.Icc a b, β)) :
     ((IccExtend h f : C(α, β)) : α → β) = Set.IccExtend h f :=
   rfl
 #align continuous_map.coe_Icc_extend ContinuousMap.coe_IccExtend

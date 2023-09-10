@@ -129,7 +129,7 @@ def skewAdjointPart : A →ₗ[R] skewAdjoint A where
       show r * ⅟ 2 = ⅟ 2 * r from Commute.invOf_right <| (2 : ℕ).commute_cast r]
 #align skew_adjoint_part skewAdjointPart
 
-theorem StarModule.selfAdjointPart_add_skewAdjointPart (x : A) :
+lemma StarModule.selfAdjointPart_add_skewAdjointPart (x : A) :
     (selfAdjointPart R x : A) + skewAdjointPart R x = x := by
   simp only [smul_sub, selfAdjointPart_apply_coe, smul_add, skewAdjointPart_apply_coe,
     add_add_sub_cancel, invOf_two_smul_add_invOf_two_smul]

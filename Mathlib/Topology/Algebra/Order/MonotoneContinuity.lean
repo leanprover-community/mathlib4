@@ -302,7 +302,7 @@ namespace OrderIso
 variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
   [OrderTopology α] [OrderTopology β]
 
-protected theorem continuous (e : α ≃o β) : Continuous e := by
+protected lemma continuous (e : α ≃o β) : Continuous e := by
   rw [‹OrderTopology β›.topology_eq_generate_intervals]
   refine' continuous_generateFrom fun s hs => _
   rcases hs with ⟨a, rfl | rfl⟩
@@ -320,12 +320,12 @@ def toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
 #align order_iso.to_homeomorph OrderIso.toHomeomorph
 
 @[simp]
-theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
+lemma coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
   rfl
 #align order_iso.coe_to_homeomorph OrderIso.coe_toHomeomorph
 
 @[simp]
-theorem coe_toHomeomorph_symm (e : α ≃o β) : ⇑e.toHomeomorph.symm = e.symm :=
+lemma coe_toHomeomorph_symm (e : α ≃o β) : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 #align order_iso.coe_to_homeomorph_symm OrderIso.coe_toHomeomorph_symm
 

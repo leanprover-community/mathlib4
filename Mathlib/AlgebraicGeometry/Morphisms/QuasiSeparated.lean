@@ -54,7 +54,7 @@ def QuasiSeparated.affineProperty : AffineTargetMorphismProperty := fun X _ _ _ 
   QuasiSeparatedSpace X.carrier
 #align algebraic_geometry.quasi_separated.affine_property AlgebraicGeometry.QuasiSeparated.affineProperty
 
-theorem quasiSeparatedSpace_iff_affine (X : Scheme) :
+lemma quasiSeparatedSpace_iff_affine (X : Scheme) :
     QuasiSeparatedSpace X.carrier ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X.carrier) := by
   rw [QuasiSeparatedSpace_iff]
   constructor
@@ -214,7 +214,7 @@ lemma quasiSeparated_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     QuasiSeparated.affineProperty_isLocal.affine_target_iff f, QuasiSeparated.affineProperty]
 #align algebraic_geometry.quasi_separated_over_affine_iff AlgebraicGeometry.quasiSeparated_over_affine_iff
 
-theorem quasiSeparatedSpace_iff_quasiSeparated (X : Scheme) :
+lemma quasiSeparatedSpace_iff_quasiSeparated (X : Scheme) :
     QuasiSeparatedSpace X.carrier ↔ QuasiSeparated (terminal.from X) :=
   (quasiSeparated_over_affine_iff _).symm
 #align algebraic_geometry.quasi_separated_space_iff_quasi_separated AlgebraicGeometry.quasiSeparatedSpace_iff_quasiSeparated
@@ -300,7 +300,7 @@ lemma quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : Qua
     apply mono_comp
 #align algebraic_geometry.quasi_separated_of_comp AlgebraicGeometry.quasiSeparatedOfComp
 
-theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : Opens X.carrier) (hU : IsAffineOpen U)
+lemma exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : Opens X.carrier) (hU : IsAffineOpen U)
     (f : X.presheaf.obj (op U)) (x : X.presheaf.obj (op <| X.basicOpen f)) :
     ∃ (n : ℕ) (y : X.presheaf.obj (op U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
   have := (isLocalization_basicOpen hU f).2
@@ -311,7 +311,7 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : Opens X.carrier) (hU
 #align algebraic_geometry.exists_eq_pow_mul_of_is_affine_open AlgebraicGeometry.exists_eq_pow_mul_of_isAffineOpen
 
 set_option maxHeartbeats 500000 in
-theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme)
+lemma exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme)
     (S : X.affineOpens) (U₁ U₂ : Opens X.carrier) {n₁ n₂ : ℕ} {y₁ : X.presheaf.obj (op U₁)}
     {y₂ : X.presheaf.obj (op U₂)} {f : X.presheaf.obj (op <| U₁ ⊔ U₂)}
     {x : X.presheaf.obj (op <| X.basicOpen f)} (h₁ : S.1 ≤ U₁) (h₂ : S.1 ≤ U₂)
@@ -373,7 +373,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
 #align algebraic_geometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux AlgebraicGeometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
 
 set_option maxHeartbeats 700000 in
-theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : Opens X.carrier)
+lemma exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : Opens X.carrier)
     (hU : IsCompact U.1) (hU' : IsQuasiSeparated U.1) (f : X.presheaf.obj (op U))
     (x : X.presheaf.obj (op <| X.basicOpen f)) :
     ∃ (n : ℕ) (y : X.presheaf.obj (op U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by

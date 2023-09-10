@@ -305,7 +305,7 @@ def AddMonoidHom.mul : R →+ R →+ R where
   map_add' a b := AddMonoidHom.ext <| add_mul a b
 #align add_monoid_hom.mul AddMonoidHom.mul
 
-theorem AddMonoidHom.mul_apply (x y : R) : AddMonoidHom.mul x y = x * y :=
+lemma AddMonoidHom.mul_apply (x y : R) : AddMonoidHom.mul x y = x * y :=
   rfl
 #align add_monoid_hom.mul_apply AddMonoidHom.mul_apply
 
@@ -324,7 +324,7 @@ lemma AddMonoidHom.coe_flip_mul :
 `AddMonoidHom.mul` are equivalent. By converting the statement into an equality of
 `AddMonoidHom`s, this lemma allows various specialized `ext` lemmas about `→+` to then be applied.
 -/
-theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
+lemma AddMonoidHom.map_mul_iff (f : R →+ S) :
     (∀ x y, f (x * y) = f x * f y) ↔
       (AddMonoidHom.mul : R →+ R →+ R).compr₂ f = (AddMonoidHom.mul.comp f).compl₂ f :=
   Iff.symm AddMonoidHom.ext_iff₂

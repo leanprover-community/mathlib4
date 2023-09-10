@@ -85,15 +85,15 @@ protected lemma blockTriangular_transpose_iff {b : m → αᵒᵈ} :
 lemma blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
 #align matrix.block_triangular_zero Matrix.blockTriangular_zero
 
-protected theorem BlockTriangular.neg (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
+protected lemma BlockTriangular.neg (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
   fun _ _ h => neg_eq_zero.2 <| hM h
 #align matrix.block_triangular.neg Matrix.BlockTriangular.neg
 
-theorem BlockTriangular.add (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
+lemma BlockTriangular.add (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M + N) b := fun i j h => by simp_rw [Matrix.add_apply, hM h, hN h, zero_add]
 #align matrix.block_triangular.add Matrix.BlockTriangular.add
 
-theorem BlockTriangular.sub (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
+lemma BlockTriangular.sub (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b := fun i j h => by simp_rw [Matrix.sub_apply, hM h, hN h, sub_zero]
 #align matrix.block_triangular.sub Matrix.BlockTriangular.sub
 
@@ -149,18 +149,18 @@ lemma upper_two_blockTriangular [Preorder α] (A : Matrix m m R) (B : Matrix m n
 
 variable [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
-theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
+lemma equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
     (e : ∀ x, q x ↔ p x) : (toSquareBlockProp M p).det = (toSquareBlockProp M q).det := by
   convert Matrix.det_reindex_self (Equiv.subtypeEquivRight e) (toSquareBlockProp M q)
 #align matrix.equiv_block_det Matrix.equiv_block_det
 
 @[simp]
-theorem det_toSquareBlock_id (M : Matrix m m R) (i : m) : (M.toSquareBlock id i).det = M i i :=
+lemma det_toSquareBlock_id (M : Matrix m m R) (i : m) : (M.toSquareBlock id i).det = M i i :=
   letI : Unique { a // id a = i } := ⟨⟨⟨i, rfl⟩⟩, fun j => Subtype.ext j.property⟩
   (det_unique _).trans rfl
 #align matrix.det_to_square_block_id Matrix.det_toSquareBlock_id
 
-theorem det_toBlock (M : Matrix m m R) (p : m → Prop) [DecidablePred p] :
+lemma det_toBlock (M : Matrix m m R) (p : m → Prop) [DecidablePred p] :
     M.det =
       (fromBlocks (toBlock M p p) (toBlock M p fun j => ¬p j) (toBlock M (fun j => ¬p j) p) <|
           toBlock M (fun j => ¬p j) fun j => ¬p j).det := by
@@ -174,7 +174,7 @@ theorem det_toBlock (M : Matrix m m R) (p : m → Prop) [DecidablePred p] :
       fromBlocks_apply₂₂, Matrix.submatrix_apply]
 #align matrix.det_to_block Matrix.det_toBlock
 
-theorem twoBlockTriangular_det (M : Matrix m m R) (p : m → Prop) [DecidablePred p]
+lemma twoBlockTriangular_det (M : Matrix m m R) (p : m → Prop) [DecidablePred p]
     (h : ∀ i, ¬p i → ∀ j, p j → M i j = 0) :
     M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
   rw [det_toBlock M p]
@@ -184,7 +184,7 @@ theorem twoBlockTriangular_det (M : Matrix m m R) (p : m → Prop) [DecidablePre
   exact h (↑i) i.2 (↑j) j.2
 #align matrix.two_block_triangular_det Matrix.twoBlockTriangular_det
 
-theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePred p]
+lemma twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePred p]
     (h : ∀ i, p i → ∀ j, ¬p j → M i j = 0) :
     M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
   rw [M.twoBlockTriangular_det fun i => ¬p i, mul_comm]

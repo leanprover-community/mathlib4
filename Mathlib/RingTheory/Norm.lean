@@ -72,16 +72,16 @@ noncomputable def norm : S →* R :=
   LinearMap.det.comp (lmul R S).toRingHom.toMonoidHom
 #align algebra.norm Algebra.norm
 
-theorem norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
+lemma norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
 #align algebra.norm_apply Algebra.norm_apply
 
-theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :
+lemma norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :
     norm R x = 1 := by rw [norm_apply, LinearMap.det]; split_ifs <;> trivial
 #align algebra.norm_eq_one_of_not_exists_basis Algebra.norm_eq_one_of_not_exists_basis
 
 variable {R}
 
-theorem norm_eq_one_of_not_module_finite (h : ¬Module.Finite R S) (x : S) : norm R x = 1 := by
+lemma norm_eq_one_of_not_module_finite (h : ¬Module.Finite R S) (x : S) : norm R x = 1 := by
   refine norm_eq_one_of_not_exists_basis _ (mt ?_ h) _
   rintro ⟨s, ⟨b⟩⟩
   exact Module.Finite.of_basis b
@@ -121,7 +121,7 @@ section EqProdRoots
 
 /-- Given `pb : PowerBasis K S`, then the norm of `pb.gen` is
 `(-1) ^ pb.dim * coeff (minpoly K pb.gen) 0`. -/
-theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
+lemma PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
     norm R pb.gen = (-1) ^ pb.dim * coeff (minpoly R pb.gen) 0 := by
   rw [norm_eq_matrix_det pb.basis, det_eq_sign_charpoly_coeff, charpoly_leftMulMatrix,
     Fintype.card_fin]
@@ -226,7 +226,7 @@ lemma _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIn
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.norm_gen_eq_one IntermediateField.AdjoinSimple.norm_gen_eq_one
 
-theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
+lemma _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : (minpoly K x).Splits (algebraMap K F)) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
       ((minpoly K x).aroots F).prod := by

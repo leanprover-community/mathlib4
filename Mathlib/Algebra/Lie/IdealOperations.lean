@@ -104,7 +104,7 @@ lemma lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ �
   exact h x hx m hm
 #align lie_submodule.lie_le_iff LieSubmodule.lie_le_iff
 
-theorem lie_coe_mem_lie (x : I) (m : N) : ⁅(x : L), (m : M)⁆ ∈ ⁅I, N⁆ := by
+lemma lie_coe_mem_lie (x : I) (m : N) : ⁅(x : L), (m : M)⁆ ∈ ⁅I, N⁆ := by
   rw [lieIdeal_oper_eq_span]; apply subset_lieSpan; use x, m
 #align lie_submodule.lie_coe_mem_lie LieSubmodule.lie_coe_mem_lie
 
@@ -149,18 +149,18 @@ lemma lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L)
   exact h x hx n hn
 #align lie_submodule.lie_eq_bot_iff LieSubmodule.lie_eq_bot_iff
 
-theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
+lemma mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
   rw [lieIdeal_oper_eq_span, mem_lieSpan] at h; rw [lieIdeal_oper_eq_span, mem_lieSpan]
   intro N hN; apply h; rintro m' ⟨⟨x, hx⟩, ⟨n, hn⟩, hm⟩; rw [← hm]; apply hN
   use ⟨x, h₁ hx⟩, ⟨n, h₂ hn⟩
 #align lie_submodule.mono_lie LieSubmodule.mono_lie
 
-theorem mono_lie_left (h : I ≤ J) : ⁅I, N⁆ ≤ ⁅J, N⁆ :=
+lemma mono_lie_left (h : I ≤ J) : ⁅I, N⁆ ≤ ⁅J, N⁆ :=
   mono_lie _ _ _ _ h (le_refl N)
 #align lie_submodule.mono_lie_left LieSubmodule.mono_lie_left
 
-theorem mono_lie_right (h : N ≤ N') : ⁅I, N⁆ ≤ ⁅I, N'⁆ :=
+lemma mono_lie_right (h : N ≤ N') : ⁅I, N⁆ ≤ ⁅I, N'⁆ :=
   mono_lie _ _ _ _ (le_refl I) h
 #align lie_submodule.mono_lie_right LieSubmodule.mono_lie_right
 
@@ -222,7 +222,7 @@ lemma map_comap_le : map f (comap f N₂) ≤ N₂ :=
   (N₂ : Set M₂).image_preimage_subset f
 #align lie_submodule.map_comap_le LieSubmodule.map_comap_le
 
-theorem map_comap_eq (hf : N₂ ≤ f.range) : map f (comap f N₂) = N₂ := by
+lemma map_comap_eq (hf : N₂ ≤ f.range) : map f (comap f N₂) = N₂ := by
   rw [SetLike.ext'_iff]
   exact Set.image_preimage_eq_of_subset hf
 #align lie_submodule.map_comap_eq LieSubmodule.map_comap_eq
@@ -231,12 +231,12 @@ lemma le_comap_map : N ≤ comap f (map f N) :=
   (N : Set M).subset_preimage_image f
 #align lie_submodule.le_comap_map LieSubmodule.le_comap_map
 
-theorem comap_map_eq (hf : f.ker = ⊥) : comap f (map f N) = N := by
+lemma comap_map_eq (hf : f.ker = ⊥) : comap f (map f N) = N := by
   rw [SetLike.ext'_iff]
   exact (N : Set M).preimage_image_eq (f.ker_eq_bot.mp hf)
 #align lie_submodule.comap_map_eq LieSubmodule.comap_map_eq
 
-theorem comap_bracket_eq (hf₁ : f.ker = ⊥) (hf₂ : N₂ ≤ f.range) :
+lemma comap_bracket_eq (hf₁ : f.ker = ⊥) (hf₂ : N₂ ≤ f.range) :
     comap f ⁅I, N₂⁆ = ⁅I, comap f N₂⁆ := by
   conv_lhs => rw [← map_comap_eq N₂ f hf₂]
   rw [← map_bracket_eq, comap_map_eq _ f hf₁]

@@ -24,12 +24,12 @@ namespace List
 
 
 @[simp]
-theorem nil_product (l : List β) : (@nil α) ×ˢ l = [] :=
+lemma nil_product (l : List β) : (@nil α) ×ˢ l = [] :=
   rfl
 #align list.nil_product List.nil_product
 
 @[simp]
-theorem product_cons (a : α) (l₁ : List α) (l₂ : List β) :
+lemma product_cons (a : α) (l₁ : List α) (l₂ : List β) :
     (a :: l₁) ×ˢ l₂ = map (fun b => (a, b)) l₂ ++ (l₁ ×ˢ l₂) :=
   rfl
 #align list.product_cons List.product_cons
@@ -47,7 +47,7 @@ lemma mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
     exists_and_left, exists_eq_left, exists_eq_right]
 #align list.mem_product List.mem_product
 
-theorem length_product (l₁ : List α) (l₂ : List β) :
+lemma length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
   induction' l₁ with x l₁ IH
   · exact (zero_mul _).symm
@@ -61,12 +61,12 @@ theorem length_product (l₁ : List α) (l₂ : List β) :
 variable {σ : α → Type*}
 
 @[simp]
-theorem nil_sigma (l : ∀ a, List (σ a)) : (@nil α).sigma l = [] :=
+lemma nil_sigma (l : ∀ a, List (σ a)) : (@nil α).sigma l = [] :=
   rfl
 #align list.nil_sigma List.nil_sigma
 
 @[simp]
-theorem sigma_cons (a : α) (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+lemma sigma_cons (a : α) (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     (a :: l₁).sigma l₂ = map (Sigma.mk a) (l₂ a) ++ l₁.sigma l₂ :=
   rfl
 #align list.sigma_cons List.sigma_cons
@@ -84,7 +84,7 @@ lemma mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ a}
     exists_eq_left, heq_iff_eq, exists_eq_right]
 #align list.mem_sigma List.mem_sigma
 
-theorem length_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+lemma length_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = (l₁.map fun a => length (l₂ a)).sum := by
   induction' l₁ with x l₁ IH
   · rfl

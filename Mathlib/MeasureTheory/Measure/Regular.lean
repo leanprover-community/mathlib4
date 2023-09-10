@@ -150,14 +150,14 @@ namespace InnerRegular
 variable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} {p q : Set α → Prop} {U : Set α}
   {ε : ℝ≥0∞}
 
-theorem measure_eq_iSup (H : InnerRegular μ p q) (hU : q U) :
+lemma measure_eq_iSup (H : InnerRegular μ p q) (hU : q U) :
     μ U = ⨆ (K) (_ : K ⊆ U) (_ : p K), μ K := by
   refine'
     le_antisymm (le_of_forall_lt fun r hr => _) (iSup₂_le fun K hK => iSup_le fun _ => μ.mono hK)
   simpa only [lt_iSup_iff, exists_prop] using H hU r hr
 #align measure_theory.measure.inner_regular.measure_eq_supr MeasureTheory.Measure.InnerRegular.measure_eq_iSup
 
-theorem exists_subset_lt_add (H : InnerRegular μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
+lemma exists_subset_lt_add (H : InnerRegular μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
     (hε : ε ≠ 0) : ∃ K, K ⊆ U ∧ p K ∧ μ U < μ K + ε := by
   cases' eq_or_ne (μ U) 0 with h₀ h₀
   · refine' ⟨∅, empty_subset _, h0, _⟩
@@ -178,7 +178,7 @@ lemma map {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {p
   rwa [map_apply_of_aemeasurable hf (hB₁ _ <| hAB' _ hKc), f.preimage_image]
 #align measure_theory.measure.inner_regular.map MeasureTheory.Measure.InnerRegular.map
 
-theorem smul (H : InnerRegular μ p q) (c : ℝ≥0∞) : InnerRegular (c • μ) p q := by
+lemma smul (H : InnerRegular μ p q) (c : ℝ≥0∞) : InnerRegular (c • μ) p q := by
   intro U hU r hr
   rw [smul_apply, H.measure_eq_iSup hU, smul_eq_mul] at hr
   simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using hr
@@ -249,7 +249,7 @@ lemma _root_.Set.exists_isOpen_lt_of_lt [OuterRegular μ] (A : Set α) (r : ℝ�
 
 /-- For an outer regular measure, the measure of a set is the infimum of the measures of open sets
 containing it. -/
-theorem _root_.Set.measure_eq_iInf_isOpen (A : Set α) (μ : Measure α) [OuterRegular μ] :
+lemma _root_.Set.measure_eq_iInf_isOpen (A : Set α) (μ : Measure α) [OuterRegular μ] :
     μ A = ⨅ (U : Set α) (_ : A ⊆ U) (_ : IsOpen U), μ U := by
   refine' le_antisymm (le_iInf₂ fun s hs => le_iInf fun _ => μ.mono hs) _
   refine' le_of_forall_lt' fun r hr => _
@@ -261,7 +261,7 @@ lemma _root_.Set.exists_isOpen_lt_add [OuterRegular μ] (A : Set α) (hA : μ A 
   A.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hA hε)
 #align set.exists_is_open_lt_add Set.exists_isOpen_lt_add
 
-theorem _root_.Set.exists_isOpen_le_add (A : Set α) (μ : Measure α) [OuterRegular μ] {ε : ℝ≥0∞}
+lemma _root_.Set.exists_isOpen_le_add (A : Set α) (μ : Measure α) [OuterRegular μ] {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U ≤ μ A + ε := by
   rcases eq_or_ne (μ A) ∞ with (H | H)
   · exact ⟨univ, subset_univ _, isOpen_univ, by simp only [H, _root_.top_add, le_top]⟩
@@ -288,7 +288,7 @@ protected lemma map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalS
   rwa [map_apply f.measurable this.measurableSet, f.preimage_symm, f.preimage_image]
 #align measure_theory.measure.outer_regular.map MeasureTheory.Measure.OuterRegular.map
 
-protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
+protected lemma smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) :
     (x • μ).OuterRegular := by
   rcases eq_or_ne x 0 with (rfl | h0)
   · rw [zero_smul]

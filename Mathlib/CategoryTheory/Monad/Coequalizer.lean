@@ -126,7 +126,7 @@ def beckCoequalizer : IsColimit (beckCofork X) :=
 #align category_theory.monad.beck_coequalizer CategoryTheory.Monad.beckCoequalizer
 
 @[simp]
-theorem beckCoequalizer_desc (s : Cofork (T.toFunctor.map X.a) (T.μ.app X.A)) :
+lemma beckCoequalizer_desc (s : Cofork (T.toFunctor.map X.a) (T.μ.app X.A)) :
     (beckCoequalizer X).desc s = T.η.app _ ≫ s.π :=
   rfl
 #align category_theory.monad.beck_coequalizer_desc CategoryTheory.Monad.beckCoequalizer_desc

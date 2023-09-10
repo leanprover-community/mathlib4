@@ -129,7 +129,7 @@ characterising ω-limits:
 /-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
     preimages of an arbitrary neighbourhood of `y` frequently
     (w.r.t. `f`) intersects of `s`. -/
-theorem mem_omegaLimit_iff_frequently (y : β) :
+lemma mem_omegaLimit_iff_frequently (y : β) :
     y ∈ ω f ϕ s ↔ ∀ n ∈ 𝓝 y, ∃ᶠ t in f, (s ∩ ϕ t ⁻¹' n).Nonempty := by
   simp_rw [frequently_iff, omegaLimit_def, mem_iInter, mem_closure_iff_nhds]
   constructor
@@ -144,7 +144,7 @@ theorem mem_omegaLimit_iff_frequently (y : β) :
 /-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
     forward images of `s` frequently (w.r.t. `f`) intersect arbitrary
     neighbourhoods of `y`. -/
-theorem mem_omegaLimit_iff_frequently₂ (y : β) :
+lemma mem_omegaLimit_iff_frequently₂ (y : β) :
     y ∈ ω f ϕ s ↔ ∀ n ∈ 𝓝 y, ∃ᶠ t in f, (ϕ t '' s ∩ n).Nonempty := by
   simp_rw [mem_omegaLimit_iff_frequently, image_inter_nonempty_iff]
 #align mem_omega_limit_iff_frequently₂ mem_omegaLimit_iff_frequently₂
@@ -152,7 +152,7 @@ theorem mem_omegaLimit_iff_frequently₂ (y : β) :
 /-- An element `y` is in the ω-limit of `x` w.r.t. `f` if the forward
     images of `x` frequently (w.r.t. `f`) falls within an arbitrary
     neighbourhood of `y`. -/
-theorem mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
+lemma mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff, singleton_inter_nonempty, mem_preimage]
 #align mem_omega_limit_singleton_iff_map_cluster_point mem_omegaLimit_singleton_iff_map_cluster_point
@@ -167,7 +167,7 @@ lemma omegaLimit_inter : ω f ϕ (s₁ ∩ s₂) ⊆ ω f ϕ s₁ ∩ ω f ϕ s�
     (omegaLimit_mono_right _ _ (inter_subset_right _ _))
 #align omega_limit_inter omegaLimit_inter
 
-theorem omegaLimit_iInter (p : ι → Set α) : ω f ϕ (⋂ i, p i) ⊆ ⋂ i, ω f ϕ (p i) :=
+lemma omegaLimit_iInter (p : ι → Set α) : ω f ϕ (⋂ i, p i) ⊆ ⋂ i, ω f ϕ (p i) :=
   subset_iInter fun _i ↦ omegaLimit_mono_right _ _ (iInter_subset _ _)
 #align omega_limit_Inter omegaLimit_iInter
 
@@ -186,7 +186,7 @@ lemma omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s₂
       omegaLimit_mono_right _ _ (subset_union_right _ _) hy]
 #align omega_limit_union omegaLimit_union
 
-theorem omegaLimit_iUnion (p : ι → Set α) : ⋃ i, ω f ϕ (p i) ⊆ ω f ϕ (⋃ i, p i) := by
+lemma omegaLimit_iUnion (p : ι → Set α) : ⋃ i, ω f ϕ (p i) ⊆ ω f ϕ (⋃ i, p i) := by
   rw [iUnion_subset_iff]
   exact fun i ↦ omegaLimit_mono_right _ _ (subset_iUnion _ _)
 #align omega_limit_Union omegaLimit_iUnion
@@ -340,14 +340,14 @@ variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] {�
 
 open omegaLimit
 
-theorem isInvariant_omegaLimit (hf : ∀ t, Tendsto ((· + ·) t) f f) : IsInvariant ϕ (ω f ϕ s) := by
+lemma isInvariant_omegaLimit (hf : ∀ t, Tendsto ((· + ·) t) f f) : IsInvariant ϕ (ω f ϕ s) := by
   refine' fun t ↦ MapsTo.mono_right _ (omegaLimit_subset_of_tendsto ϕ s (hf t))
   exact
     mapsTo_omegaLimit _ (mapsTo_id _) (fun t' x ↦ (ϕ.map_add _ _ _).symm)
       (continuous_const.flow ϕ continuous_id)
 #align flow.is_invariant_omega_limit Flow.isInvariant_omegaLimit
 
-theorem omegaLimit_image_subset (t : τ) (ht : Tendsto (· + t) f f) :
+lemma omegaLimit_image_subset (t : τ) (ht : Tendsto (· + t) f f) :
     ω f ϕ (ϕ t '' s) ⊆ ω f ϕ s := by
   simp only [omegaLimit_image_eq, ← map_add]
   exact omegaLimit_subset_of_tendsto ϕ s ht
@@ -369,14 +369,14 @@ open omegaLimit
 
 /-- the ω-limit of a forward image of `s` is the same as the ω-limit of `s`. -/
 @[simp]
-theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f ϕ (ϕ t '' s) = ω f ϕ s :=
+lemma omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f ϕ (ϕ t '' s) = ω f ϕ s :=
   Subset.antisymm (omegaLimit_image_subset _ _ _ _ (hf t)) <|
     calc
       ω f ϕ s = ω f ϕ (ϕ (-t) '' (ϕ t '' s)) := by simp [image_image, ← map_add]
       _ ⊆ ω f ϕ (ϕ t '' s) := omegaLimit_image_subset _ _ _ _ (hf _)
 #align flow.omega_limit_image_eq Flow.omegaLimit_image_eq
 
-theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto ((· + ·) t) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by
+lemma omegaLimit_omegaLimit (hf : ∀ t, Tendsto ((· + ·) t) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by
   simp only [subset_def, mem_omegaLimit_iff_frequently₂, frequently_iff]
   intro _ h
   rintro n hn u hu

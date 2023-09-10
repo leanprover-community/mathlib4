@@ -187,7 +187,7 @@ def karoubiUniversal₁ : C ⥤ Karoubi D ≌ Karoubi C ⥤ Karoubi D where
       eqToHom_refl, comp_id, comp_p, ←comp_f, ← F.map_comp, P.idem]
 #align category_theory.idempotents.karoubi_universal₁ CategoryTheory.Idempotents.karoubiUniversal₁
 
-theorem functorExtension₁_comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
+lemma functorExtension₁_comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
     (functorExtension₁ C E).obj (F ⋙ (functorExtension₁ D E).obj G) =
       (functorExtension₁ C D).obj F ⋙ (functorExtension₁ D E).obj G := by
   refine' Functor.ext _ _

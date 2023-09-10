@@ -40,13 +40,13 @@ def Function.Embedding.toEquivRange : α ≃ Set.range f :=
 #align function.embedding.to_equiv_range Function.Embedding.toEquivRange
 
 @[simp]
-theorem Function.Embedding.toEquivRange_apply (a : α) :
+lemma Function.Embedding.toEquivRange_apply (a : α) :
     f.toEquivRange a = ⟨f a, Set.mem_range_self a⟩ :=
   rfl
 #align function.embedding.to_equiv_range_apply Function.Embedding.toEquivRange_apply
 
 @[simp]
-theorem Function.Embedding.toEquivRange_symm_apply_self (a : α) :
+lemma Function.Embedding.toEquivRange_symm_apply_self (a : α) :
     f.toEquivRange.symm ⟨f a, Set.mem_range_self a⟩ = a := by simp [Equiv.symm_apply_eq]
 #align function.embedding.to_equiv_range_symm_apply_self Function.Embedding.toEquivRange_symm_apply_self
 
@@ -68,7 +68,7 @@ def Equiv.Perm.viaFintypeEmbedding : Equiv.Perm β :=
 #align equiv.perm.via_fintype_embedding Equiv.Perm.viaFintypeEmbedding
 
 @[simp]
-theorem Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
+lemma Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
     e.viaFintypeEmbedding f (f a) = f (e a) := by
   rw [Equiv.Perm.viaFintypeEmbedding]
   convert Equiv.Perm.extendDomain_apply_image e (Function.Embedding.toEquivRange f) a
@@ -114,27 +114,27 @@ noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α
   subtypeCongr e e.toCompl
 #align equiv.extend_subtype Equiv.extendSubtype
 
-theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
+lemma extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     e.extendSubtype x = e ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
   rw [sumCompl_apply_symm_of_pos _ _ hx, Sum.map_inl, sumCompl_apply_inl]
 #align equiv.extend_subtype_apply_of_mem Equiv.extendSubtype_apply_of_mem
 
-theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
+lemma extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     q (e.extendSubtype x) := by
   convert (e ⟨x, hx⟩).2
   rw [e.extendSubtype_apply_of_mem _ hx]
 #align equiv.extend_subtype_mem Equiv.extendSubtype_mem
 
-theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
+lemma extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
   rw [sumCompl_apply_symm_of_neg _ _ hx, Sum.map_inr, sumCompl_apply_inr]
 #align equiv.extend_subtype_apply_of_not_mem Equiv.extendSubtype_apply_of_not_mem
 
-theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
+lemma extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) := by
   convert (e.toCompl ⟨x, hx⟩).2
   rw [e.extendSubtype_apply_of_not_mem _ hx]

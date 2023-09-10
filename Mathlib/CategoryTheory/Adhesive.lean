@@ -68,7 +68,7 @@ lemma IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) :
     H' g' f' i' h' αW αY αX αZ hg hf hi hh w.flip
 #align category_theory.is_pushout.is_van_kampen.flip CategoryTheory.IsPushout.IsVanKampen.flip
 
-theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
+lemma IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
     H.IsVanKampen ↔ IsVanKampenColimit (PushoutCocone.mk h i H.w) := by
   constructor
   · intro H F' c' α fα eα hα

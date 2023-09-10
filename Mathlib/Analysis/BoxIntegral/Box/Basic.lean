@@ -88,7 +88,7 @@ lemma lower_le_upper : I.lower ≤ I.upper :=
   fun i ↦ (I.lower_lt_upper i).le
 #align box_integral.box.lower_le_upper BoxIntegral.Box.lower_le_upper
 
-theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
+lemma lower_ne_upper (i) : I.lower i ≠ I.upper i :=
   (I.lower_lt_upper i).ne
 #align box_integral.box.lower_ne_upper BoxIntegral.Box.lower_ne_upper
 
@@ -184,11 +184,11 @@ lemma coe_inj : (I : Set (ι → ℝ)) = J ↔ I = J :=
 #align box_integral.box.coe_inj BoxIntegral.Box.coe_inj
 
 @[ext]
-theorem ext (H : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
+lemma ext (H : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   injective_coe <| Set.ext H
 #align box_integral.box.ext BoxIntegral.Box.ext
 
-theorem ne_of_disjoint_coe (h : Disjoint (I : Set (ι → ℝ)) J) : I ≠ J :=
+lemma ne_of_disjoint_coe (h : Disjoint (I : Set (ι → ℝ)) J) : I ≠ J :=
   mt coe_inj.2 <| h.ne I.coe_ne_empty
 #align box_integral.box.ne_of_disjoint_coe BoxIntegral.Box.ne_of_disjoint_coe
 
@@ -204,16 +204,16 @@ lemma Icc_def : Box.Icc I = Icc I.lower I.upper := rfl
 #align box_integral.box.Icc_def BoxIntegral.Box.Icc_def
 
 @[simp]
-theorem upper_mem_Icc (I : Box ι) : I.upper ∈ Box.Icc I :=
+lemma upper_mem_Icc (I : Box ι) : I.upper ∈ Box.Icc I :=
   right_mem_Icc.2 I.lower_le_upper
 #align box_integral.box.upper_mem_Icc BoxIntegral.Box.upper_mem_Icc
 
 @[simp]
-theorem lower_mem_Icc (I : Box ι) : I.lower ∈ Box.Icc I :=
+lemma lower_mem_Icc (I : Box ι) : I.lower ∈ Box.Icc I :=
   left_mem_Icc.2 I.lower_le_upper
 #align box_integral.box.lower_mem_Icc BoxIntegral.Box.lower_mem_Icc
 
-protected theorem isCompact_Icc (I : Box ι) : IsCompact (Box.Icc I) :=
+protected lemma isCompact_Icc (I : Box ι) : IsCompact (Box.Icc I) :=
   isCompact_Icc
 #align box_integral.box.is_compact_Icc BoxIntegral.Box.isCompact_Icc
 
@@ -288,7 +288,7 @@ lemma isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ
     simp [I.nonempty_coe]
 #align box_integral.box.is_some_iff BoxIntegral.Box.isSome_iff
 
-theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
+lemma biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
   induction I using WithBot.recBotCoe <;> simp [WithBot.coe_eq_coe]
 #align box_integral.box.bUnion_coe_eq_coe BoxIntegral.Box.biUnion_coe_eq_coe
@@ -328,7 +328,7 @@ lemma mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.uppe
 #align box_integral.box.mk'_eq_coe BoxIntegral.Box.mk'_eq_coe
 
 @[simp]
-theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun i ↦ Ioc (l i) (u i) := by
+lemma coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun i ↦ Ioc (l i) (u i) := by
   rw [mk']; split_ifs with h
   · exact coe_eq_pi _
   · rcases not_forall.mp h with ⟨i, hi⟩
@@ -342,7 +342,7 @@ instance WithBot.inf : Inf (WithBot (Box ι)) :=
       (fun I J ↦ WithBot.recBotCoe ⊥ (fun J ↦ mk' (I.lower ⊔ J.lower) (I.upper ⊓ J.upper)) J) I⟩
 
 @[simp]
-theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (I : Set _) ∩ J := by
+lemma coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (I : Set _) ∩ J := by
   induction I using WithBot.recBotCoe
   · change ∅ = _
     simp
@@ -444,11 +444,11 @@ protected def Ioo : Box ι →o Set (ι → ℝ) where
     pi_mono fun i _ ↦ Ioo_subset_Ioo ((le_iff_bounds.1 h).1 i) ((le_iff_bounds.1 h).2 i)
 #align box_integral.box.Ioo BoxIntegral.Box.Ioo
 
-theorem Ioo_subset_coe (I : Box ι) : Box.Ioo I ⊆ I :=
+lemma Ioo_subset_coe (I : Box ι) : Box.Ioo I ⊆ I :=
   fun _ hx i ↦ Ioo_subset_Ioc_self (hx i trivial)
 #align box_integral.box.Ioo_subset_coe BoxIntegral.Box.Ioo_subset_coe
 
-protected theorem Ioo_subset_Icc (I : Box ι) : Box.Ioo I ⊆ Box.Icc I :=
+protected lemma Ioo_subset_Icc (I : Box ι) : Box.Ioo I ⊆ Box.Icc I :=
   I.Ioo_subset_coe.trans coe_subset_Icc
 #align box_integral.box.Ioo_subset_Icc BoxIntegral.Box.Ioo_subset_Icc
 
@@ -469,7 +469,7 @@ lemma iUnion_Ioo_of_tendsto [Finite ι] {I : Box ι} {J : ℕ → Box ι} (hJ : 
           (isLUB_of_tendsto_atTop (hu' i) (tendsto_pi_nhds.1 hu _))
 #align box_integral.box.Union_Ioo_of_tendsto BoxIntegral.Box.iUnion_Ioo_of_tendsto
 
-theorem exists_seq_mono_tendsto (I : Box ι) :
+lemma exists_seq_mono_tendsto (I : Box ι) :
     ∃ J : ℕ →o Box ι,
       (∀ n, Box.Icc (J n) ⊆ Box.Ioo I) ∧
         Tendsto (lower ∘ J) atTop (𝓝 I.lower) ∧ Tendsto (upper ∘ J) atTop (𝓝 I.upper) := by
@@ -507,7 +507,7 @@ lemma distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
   simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right _ hn0]
 #align box_integral.box.distortion_eq_of_sub_eq_div BoxIntegral.Box.distortion_eq_of_sub_eq_div
 
-theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
+lemma nndist_le_distortion_mul (I : Box ι) (i : ι) :
     nndist I.lower I.upper ≤ I.distortion * nndist (I.lower i) (I.upper i) :=
   calc
     nndist I.lower I.upper =
@@ -518,14 +518,14 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
       apply Finset.le_sup (Finset.mem_univ i)
 #align box_integral.box.nndist_le_distortion_mul BoxIntegral.Box.nndist_le_distortion_mul
 
-theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
+lemma dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by
   have A : I.lower i - I.upper i < 0 := sub_neg.2 (I.lower_lt_upper i)
   simpa only [← NNReal.coe_le_coe, ← dist_nndist, NNReal.coe_mul, Real.dist_eq, abs_of_neg A,
     neg_sub] using I.nndist_le_distortion_mul i
 #align box_integral.box.dist_le_distortion_mul BoxIntegral.Box.dist_le_distortion_mul
 
-theorem diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.distortion ≤ c) :
+lemma diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.distortion ≤ c) :
     diam (Box.Icc I) ≤ c * (I.upper i - I.lower i) :=
   have : (0 : ℝ) ≤ c * (I.upper i - I.lower i) :=
     mul_nonneg c.coe_nonneg (sub_nonneg.2 <| I.lower_le_upper _)

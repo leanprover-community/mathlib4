@@ -104,7 +104,7 @@ lemma finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
 #align ideal.finite_mul_support_inv Ideal.finite_mulSupport_inv
 
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
-theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
+lemma finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
     ¬v.asIdeal ^ ((Associates.mk v.asIdeal).count (Associates.mk I).factors + 1) ∣
         ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I := by
   have hf := finite_mulSupport hI
@@ -122,7 +122,7 @@ theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
 
 end Ideal
 
-theorem Associates.finprod_ne_zero (I : Ideal R) :
+lemma Associates.finprod_ne_zero (I : Ideal R) :
     Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) ≠ 0 := by
   rw [Associates.mk_ne_zero, finprod_def]
   split_ifs
@@ -135,7 +135,7 @@ theorem Associates.finprod_ne_zero (I : Ideal R) :
 namespace Ideal
 
 /-- The multiplicity of `v` in `∏_v v^(val_v(I))` equals `val_v(I)`. -/
-theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).count
+lemma finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).count
     (Associates.mk (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I)).factors =
     (Associates.mk v.asIdeal).count (Associates.mk I).factors := by
   have h_ne_zero := Associates.finprod_ne_zero I
@@ -151,7 +151,7 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
 #align ideal.finprod_count Ideal.finprod_count
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
-theorem finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
+lemma finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
   apply Associates.eq_of_eq_counts
@@ -167,7 +167,7 @@ theorem finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`, when both sides are regarded as fractional
 ideals of `R`. -/
-theorem finprod_heightOneSpectrum_factorization_coe (I : Ideal R) (hI : I ≠ 0) :
+lemma finprod_heightOneSpectrum_factorization_coe (I : Ideal R) (hI : I ≠ 0) :
     (∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) = I := by
   conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization I hI]

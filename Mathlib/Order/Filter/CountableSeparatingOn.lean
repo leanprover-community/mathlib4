@@ -86,13 +86,13 @@ class HasCountableSeparatingOn (α : Type*) (p : Set α → Prop) (t : Set α) :
   exists_countable_separating : ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
     ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y
 
-theorem exists_countable_separating (α : Type*) (p : Set α → Prop) (t : Set α)
+lemma exists_countable_separating (α : Type*) (p : Set α → Prop) (t : Set α)
     [h : HasCountableSeparatingOn α p t] :
     ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
       ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y :=
   h.1
 
-theorem exists_nonempty_countable_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p s₀)
+lemma exists_nonempty_countable_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p s₀)
     (t : Set α) [HasCountableSeparatingOn α p t] :
     ∃ S : Set (Set α), S.Nonempty ∧ S.Countable ∧ (∀ s ∈ S, p s) ∧
       ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y :=
@@ -100,7 +100,7 @@ theorem exists_nonempty_countable_separating (α : Type*) {p : Set α → Prop} 
   ⟨insert s₀ S, insert_nonempty _ _, hSc.insert _, forall_insert_of_forall hSp hp,
     fun x hx y hy hxy ↦ hSt x hx y hy <| forall_of_forall_insert hxy⟩
 
-theorem exists_seq_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p s₀) (t : Set α)
+lemma exists_seq_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p s₀) (t : Set α)
     [HasCountableSeparatingOn α p t] :
     ∃ S : ℕ → Set α, (∀ n, p (S n)) ∧ ∀ x ∈ t, ∀ y ∈ t, (∀ n, x ∈ S n ↔ y ∈ S n) → x = y := by
   rcases exists_nonempty_countable_separating α hp t with ⟨S, hSne, hSc, hS⟩
@@ -142,7 +142,7 @@ With extra `Nonempty`/`Set.Nonempty` assumptions one can ensure that `t` is a si
 If `s ∈ l`, then it suffices to assume that the countable family separates only points of `s`.
 -/
 
-theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop)
+lemma exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop)
     {s : Set α} [h : HasCountableSeparatingOn α p s] (hs : s ∈ l)
     (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) : ∃ t, t ⊆ s ∧ t.Subsingleton ∧ t ∈ l := by
   rcases h.1 with ⟨S, hSc, hSp, hS⟩
@@ -158,7 +158,7 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
       (inter_mem hs ((countable_sInter_mem (hSc.mono (inter_subset_left _ _))).2 fun _ h ↦ h.2))
       ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem.2 id)
 
-theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Set α → Prop)
+lemma exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Set α → Prop)
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hne : s.Nonempty)
     (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) : ∃ a ∈ s, {a} ∈ l := by
   rcases exists_subset_subsingleton_mem_of_forall_separating p hs hl with ⟨t, hts, ht, htl⟩
@@ -174,7 +174,7 @@ lemma exists_singleton_mem_of_mem_of_forall_separating [Nonempty α] (p : Set α
   · exact (exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating p hs hne hl).imp fun _ ↦
       And.right
 
-theorem exists_subsingleton_mem_of_forall_separating (p : Set α → Prop)
+lemma exists_subsingleton_mem_of_forall_separating (p : Set α → Prop)
     [HasCountableSeparatingOn α p univ] (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) :
     ∃ s : Set α, s.Subsingleton ∧ s ∈ l :=
   let ⟨t, _, hts, htl⟩ := exists_subset_subsingleton_mem_of_forall_separating p univ_mem hl
@@ -193,7 +193,7 @@ that `f : α → β` is eventually constant along `l` if for every `U` from the 
 either `∀ᶠ x in l, f x ∈ U` or `∀ᶠ x in l, f x ∉ U`.
 -/
 
-theorem exists_mem_eventuallyEq_const_of_eventually_mem_of_forall_separating (p : Set β → Prop)
+lemma exists_mem_eventuallyEq_const_of_eventually_mem_of_forall_separating (p : Set β → Prop)
     {s : Set β} [HasCountableSeparatingOn β p s] (hs : ∀ᶠ x in l, f x ∈ s) (hne : s.Nonempty)
     (h : ∀ U, p U → (∀ᶠ x in l, f x ∈ U) ∨ (∀ᶠ x in l, f x ∉ U)) :
     ∃ a ∈ s, f =ᶠ[l] const α a :=
@@ -221,7 +221,7 @@ property if the preimages of all sets from a countable separating family of sets
 the filter.
 -/
 
-theorem of_eventually_mem_of_forall_separating_mem_iff (p : Set β → Prop) {s : Set β}
+lemma of_eventually_mem_of_forall_separating_mem_iff (p : Set β → Prop) {s : Set β}
     [h' : HasCountableSeparatingOn β p s] (hf : ∀ᶠ x in l, f x ∈ s) (hg : ∀ᶠ x in l, g x ∈ s)
     (h : ∀ U : Set β, p U → ∀ᶠ x in l, f x ∈ U ↔ g x ∈ U) : f =ᶠ[l] g := by
   rcases h'.1 with ⟨S, hSc, hSp, hS⟩
@@ -229,16 +229,16 @@ theorem of_eventually_mem_of_forall_separating_mem_iff (p : Set β → Prop) {s 
     (eventually_countable_ball hSc).2 fun s hs ↦ (h _ (hSp _ hs))
   filter_upwards [H, hf, hg] with x hx hxf hxg using hS _ hxf _ hxg hx
 
-theorem of_forall_separating_mem_iff (p : Set β → Prop)
+lemma of_forall_separating_mem_iff (p : Set β → Prop)
     [HasCountableSeparatingOn β p univ] (h : ∀ U : Set β, p U → ∀ᶠ x in l, f x ∈ U ↔ g x ∈ U) :
     f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_mem_iff p (s := univ) univ_mem univ_mem h
 
-theorem of_eventually_mem_of_forall_separating_preimage (p : Set β → Prop) {s : Set β}
+lemma of_eventually_mem_of_forall_separating_preimage (p : Set β → Prop) {s : Set β}
     [HasCountableSeparatingOn β p s] (hf : ∀ᶠ x in l, f x ∈ s) (hg : ∀ᶠ x in l, g x ∈ s)
     (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_mem_iff p hf hg fun U hU ↦ (h U hU).mem_iff
 
-theorem of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparatingOn β p univ]
+lemma of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparatingOn β p univ]
     (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_preimage p (s := univ) univ_mem univ_mem h

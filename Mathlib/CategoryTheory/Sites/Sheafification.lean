@@ -319,7 +319,7 @@ lemma sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj (
     simpa [id_apply] using y.condition Ry
 #align category_theory.grothendieck_topology.plus.sep CategoryTheory.GrothendieckTopology.Plus.sep
 
-theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
+lemma inj_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
       ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
@@ -362,7 +362,7 @@ def meqOfSep (P : Cᵒᵖ ⥤ D)
     exact s.condition IR
 #align category_theory.grothendieck_topology.plus.meq_of_sep CategoryTheory.GrothendieckTopology.Plus.meqOfSep
 
-theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
+lemma exists_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
       ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
@@ -417,7 +417,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
 variable [ReflectsIsomorphisms (forget D)]
 
 /-- If `P` is separated, then `P⁺` is a sheaf. -/
-theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
+lemma isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
       ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y) :
@@ -448,7 +448,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
 variable (J)
 
 /-- `P⁺⁺` is always a sheaf. -/
-theorem isSheaf_plus_plus (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.plusObj (J.plusObj P)) := by
+lemma isSheaf_plus_plus (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.plusObj (J.plusObj P)) := by
   apply isSheaf_of_sep
   intro X S x y
   apply sep
@@ -480,7 +480,7 @@ noncomputable def sheafifyMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.sheafify 
 #align category_theory.grothendieck_topology.sheafify_map CategoryTheory.GrothendieckTopology.sheafifyMap
 
 @[simp]
-theorem sheafifyMap_id (P : Cᵒᵖ ⥤ D) : J.sheafifyMap (𝟙 P) = 𝟙 (J.sheafify P) := by
+lemma sheafifyMap_id (P : Cᵒᵖ ⥤ D) : J.sheafifyMap (𝟙 P) = 𝟙 (J.sheafify P) := by
   dsimp [sheafifyMap, sheafify]
   simp
 #align category_theory.grothendieck_topology.sheafify_map_id CategoryTheory.GrothendieckTopology.sheafifyMap_id
@@ -508,7 +508,7 @@ noncomputable def sheafification : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
 #align category_theory.grothendieck_topology.sheafification CategoryTheory.GrothendieckTopology.sheafification
 
 @[simp]
-theorem sheafification_obj (P : Cᵒᵖ ⥤ D) : (J.sheafification D).obj P = J.sheafify P :=
+lemma sheafification_obj (P : Cᵒᵖ ⥤ D) : (J.sheafification D).obj P = J.sheafify P :=
   rfl
 #align category_theory.grothendieck_topology.sheafification_obj CategoryTheory.GrothendieckTopology.sheafification_obj
 
@@ -525,7 +525,7 @@ noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
 #align category_theory.grothendieck_topology.to_sheafification CategoryTheory.GrothendieckTopology.toSheafification
 
 @[simp]
-theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (J.toSheafification D).app P = J.toSheafify P :=
+lemma toSheafification_app (P : Cᵒᵖ ⥤ D) : (J.toSheafification D).app P = J.toSheafify P :=
   rfl
 #align category_theory.grothendieck_topology.to_sheafification_app CategoryTheory.GrothendieckTopology.toSheafification_app
 
@@ -605,7 +605,7 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
 
-theorem GrothendieckTopology.sheafify_isSheaf (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.sheafify P) :=
+lemma GrothendieckTopology.sheafify_isSheaf (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.sheafify P) :=
   GrothendieckTopology.Plus.isSheaf_plus_plus _ _
 #align category_theory.grothendieck_topology.sheafify_is_sheaf CategoryTheory.GrothendieckTopology.sheafify_isSheaf
 

@@ -21,15 +21,15 @@ namespace Nat
 
 open Nat Function
 
-theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
+lemma periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
   simp only [forall_const, gcd_add_self_right, eq_self_iff_true, Periodic]
 #align nat.periodic_gcd Nat.periodic_gcd
 
-theorem periodic_coprime (a : ℕ) : Periodic (coprime a) a := by
+lemma periodic_coprime (a : ℕ) : Periodic (coprime a) a := by
   simp only [coprime_add_self_right, forall_const, iff_self_iff, eq_iff_iff, Periodic]
 #align nat.periodic_coprime Nat.periodic_coprime
 
-theorem periodic_mod (a : ℕ) : Periodic (fun n => n % a) a := by
+lemma periodic_mod (a : ℕ) : Periodic (fun n => n % a) a := by
   simp only [forall_const, eq_self_iff_true, add_mod_right, Periodic]
 #align nat.periodic_mod Nat.periodic_mod
 
@@ -44,7 +44,7 @@ open Multiset
 
 /-- An interval of length `a` filtered over a periodic predicate of period `a` has cardinality
 equal to the number naturals below `a` for which `p a` is true. -/
-theorem filter_multiset_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [DecidablePred p]
+lemma filter_multiset_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [DecidablePred p]
     (pp : Periodic p a) : card (filter p (Ico n (n + a))) = a.count p := by
   rw [count_eq_card_filter_range, Finset.card, Finset.filter_val, Finset.range_val, ←
     multiset_Ico_map_mod n, ← map_count_True_eq_filter_card, ← map_count_True_eq_filter_card,
@@ -61,7 +61,7 @@ open Finset
 
 /-- An interval of length `a` filtered over a periodic predicate of period `a` has cardinality
 equal to the number naturals below `a` for which `p a` is true. -/
-theorem filter_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [DecidablePred p]
+lemma filter_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [DecidablePred p]
     (pp : Periodic p a) : ((Ico n (n + a)).filter p).card = a.count p :=
   filter_multiset_Ico_card_eq_of_periodic n a p pp
 #align nat.filter_Ico_card_eq_of_periodic Nat.filter_Ico_card_eq_of_periodic

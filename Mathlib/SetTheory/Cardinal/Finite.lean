@@ -48,15 +48,15 @@ lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 :=
   mk_toNat_of_infinite
 #align nat.card_eq_zero_of_infinite Nat.card_eq_zero_of_infinite
 
-theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α :=
+lemma finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α :=
   not_infinite_iff_finite.mp <| h ∘ @Nat.card_eq_zero_of_infinite α
 #align nat.finite_of_card_ne_zero Nat.finite_of_card_ne_zero
 
-theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
+lemma card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
   Cardinal.toNat_congr f
 #align nat.card_congr Nat.card_congr
 
-theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
+lemma card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)
 #align nat.card_eq_of_bijective Nat.card_eq_of_bijective
 
@@ -72,7 +72,7 @@ def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.car
   · simp only [card_eq_zero_of_infinite, ne_eq] at h
 #align nat.equiv_fin_of_card_pos Nat.equivFinOfCardPos
 
-theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
+lemma card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   letI := Fintype.ofSubsingleton a
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 #align nat.card_of_subsingleton Nat.card_of_subsingleton
@@ -90,7 +90,7 @@ lemma card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @
   toNat_eq_ofNat.trans mk_eq_two_iff
 #align nat.card_eq_two_iff Nat.card_eq_two_iff
 
-theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
+lemma card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
   toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 #align nat.card_eq_two_iff' Nat.card_eq_two_iff'
 
@@ -104,17 +104,17 @@ lemma card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Na
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
 
 @[simp]
-theorem card_prod (α β : Type*) : Nat.card (α × β) = Nat.card α * Nat.card β := by
+lemma card_prod (α β : Type*) : Nat.card (α × β) = Nat.card α * Nat.card β := by
   simp only [Nat.card, mk_prod, toNat_mul, toNat_lift]
 #align nat.card_prod Nat.card_prod
 
 @[simp]
-theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
+lemma card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
   card_congr Equiv.ulift
 #align nat.card_ulift Nat.card_ulift
 
 @[simp]
-theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
+lemma card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
   card_congr Equiv.plift
 #align nat.card_plift Nat.card_plift
 
@@ -128,7 +128,7 @@ lemma card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α :=
 #align nat.card_fun Nat.card_fun
 
 @[simp]
-theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
+lemma card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
   cases n
   · exact @Nat.card_eq_zero_of_infinite _ Int.infinite
   · rw [Nat.card_eq_fintype_card, ZMod.card]
@@ -155,7 +155,7 @@ lemma card_eq_top_of_infinite [Infinite α] : card α = ⊤ :=
 #align part_enat.card_eq_top_of_infinite PartENat.card_eq_top_of_infinite
 
 @[simp]
-theorem card_sum (α β : Type*) :
+lemma card_sum (α β : Type*) :
     PartENat.card (α ⊕ β) = PartENat.card α + PartENat.card β := by
   simp only [PartENat.card, Cardinal.mk_sum, map_add, Cardinal.toPartENat_lift]
 
@@ -163,12 +163,12 @@ lemma card_congr {α : Type*} {β : Type*} (f : α ≃ β) : PartENat.card α = 
   Cardinal.toPartENat_congr f
 #align part_enat.card_congr PartENat.card_congr
 
-theorem card_uLift (α : Type*) : card (ULift α) = card α :=
+lemma card_uLift (α : Type*) : card (ULift α) = card α :=
   card_congr Equiv.ulift
 #align part_enat.card_ulift PartENat.card_uLift
 
 @[simp]
-theorem card_pLift (α : Type*) : card (PLift α) = card α :=
+lemma card_pLift (α : Type*) : card (PLift α) = card α :=
   card_congr Equiv.plift
 #align part_enat.card_plift PartENat.card_pLift
 
@@ -220,21 +220,21 @@ lemma _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
 by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 #align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 
-theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
+lemma card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   conv_rhs => rw [← Nat.cast_zero]
   simp only [← Cardinal.toPartENat_eq_natCast_iff]
   simp only [PartENat.card, Nat.cast_zero]
 #align part_enat.card_eq_zero_iff_empty PartENat.card_eq_zero_iff_empty
 
-theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
+lemma card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   conv_rhs => rw [← Nat.cast_one]
   rw [← Cardinal.toPartENat_le_natCast_iff]
   simp only [PartENat.card, Nat.cast_one]
 #align part_enat.card_le_one_iff_subsingleton PartENat.card_le_one_iff_subsingleton
 
-theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
+lemma one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toPartENat_iff]

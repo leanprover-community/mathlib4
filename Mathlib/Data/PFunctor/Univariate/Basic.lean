@@ -108,11 +108,11 @@ def W.mk : P.Obj (W P) → W P
 #align pfunctor.W.mk PFunctor.W.mk
 
 @[simp]
-theorem W.dest_mk (p : P.Obj (W P)) : W.dest (W.mk p) = p := by cases p; rfl
+lemma W.dest_mk (p : P.Obj (W P)) : W.dest (W.mk p) = p := by cases p; rfl
 #align pfunctor.W.dest_mk PFunctor.W.dest_mk
 
 @[simp]
-theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
+lemma W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
 #align pfunctor.W.mk_dest PFunctor.W.mk_dest
 
 variable (P)

@@ -19,10 +19,10 @@ instance : WellFoundedRelation (WithTop ℕ) where
   rel := (· < ·)
   wf := IsWellFounded.wf
 
-theorem Nat.cast_withTop (n : ℕ) :  Nat.cast n = WithTop.some n :=
+lemma Nat.cast_withTop (n : ℕ) :  Nat.cast n = WithTop.some n :=
   rfl
 #align nat.cast_with_top Nat.cast_withTop
 
-theorem Nat.cast_withBot (n : ℕ) : Nat.cast n = WithBot.some n :=
+lemma Nat.cast_withBot (n : ℕ) : Nat.cast n = WithBot.some n :=
   rfl
 #align nat.cast_with_bot Nat.cast_withBot

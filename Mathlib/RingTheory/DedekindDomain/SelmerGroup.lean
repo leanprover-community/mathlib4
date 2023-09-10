@@ -91,7 +91,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_to_fun IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroToFun
 
 @[simp]
-theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
+lemma valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
   rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
@@ -112,12 +112,12 @@ def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero IsDedekindDomain.HeightOneSpectrum.valuationOfNeZero
 
 @[simp]
-theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation (x : K) :=
+lemma valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation (x : K) :=
   valuationOfNeZeroToFun_eq v x
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_eq IsDedekindDomain.HeightOneSpectrum.valuationOfNeZero_eq
 
 @[simp]
-theorem valuation_of_unit_eq (x : Rˣ) :
+lemma valuation_of_unit_eq (x : Rˣ) :
     v.valuationOfNeZero (Units.map (algebraMap R K : R →* K) x) = 1 := by
   rw [← WithZero.coe_inj, valuationOfNeZero_eq, Units.coe_map, eq_iff_le_not_lt]
   constructor
@@ -147,7 +147,7 @@ def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_mod IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroMod
 
 @[simp]
-theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
+lemma valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
     v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K/n) = 1 := by
   rw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
     QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
@@ -174,7 +174,7 @@ local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ _ K _ _ _ S n
 
 namespace selmerGroup
 
-theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => hx v ∘ mt (@hS v)
+lemma monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => hx v ∘ mt (@hS v)
 #align is_dedekind_domain.selmer_group.monotone IsDedekindDomain.selmerGroup.monotone
 
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/

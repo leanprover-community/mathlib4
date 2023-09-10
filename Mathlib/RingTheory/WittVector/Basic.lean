@@ -74,13 +74,13 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 namespace mapFun
 
 -- porting note: switched the proof to tactic mode. I think that `ext` was the issue.
-theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
+lemma injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
   intros _ _ h
   ext p
   exact hf (congr_arg (fun x => coeff x p) h : _)
 #align witt_vector.map_fun.injective WittVector.mapFun.injective
 
-theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
+lemma surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 #align witt_vector.map_fun.surjective WittVector.mapFun.surjective
@@ -121,21 +121,21 @@ lemma mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 lemma neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
-theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
+lemma nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
-theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
+lemma zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
-theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
+lemma pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
 #align witt_vector.map_fun.pow WittVector.mapFun.pow
 
-theorem nat_cast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
+lemma nat_cast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.unaryCast = (n : WittVector p S) by
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
 #align witt_vector.map_fun.nat_cast WittVector.mapFun.nat_cast
 
-theorem int_cast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
+lemma int_cast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
     cases n <;> simp [*, Int.castDef, add, one, neg, zero, nat_cast] <;> rfl
 #align witt_vector.map_fun.int_cast WittVector.mapFun.int_cast
@@ -192,7 +192,7 @@ private lemma ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
 private lemma ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
   ghost_fun_tac X 0 + X 1, ![x.coeff, y.coeff]
 
-private theorem ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
+private lemma ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.unaryCast = _ by
     induction i <;>
       simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.coe_nat]
@@ -205,21 +205,21 @@ private lemma ghostFun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
 
 private lemma ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -X 0, ![x.coeff]
 
-private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
+private lemma ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
     cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
 
-private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
+private lemma ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
-private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
+private lemma ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
   --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
-private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
+private lemma ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
   ghost_fun_tac X 0 ^ m, ![x.coeff]
 
 end GhostFun
@@ -278,16 +278,16 @@ noncomputable def map (f : R →+* S) : 𝕎 R →+* 𝕎 S where
   map_mul' := mapFun.mul f
 #align witt_vector.map WittVector.map
 
-theorem map_injective (f : R →+* S) (hf : Injective f) : Injective (map f : 𝕎 R → 𝕎 S) :=
+lemma map_injective (f : R →+* S) (hf : Injective f) : Injective (map f : 𝕎 R → 𝕎 S) :=
   mapFun.injective f hf
 #align witt_vector.map_injective WittVector.map_injective
 
-theorem map_surjective (f : R →+* S) (hf : Surjective f) : Surjective (map f : 𝕎 R → 𝕎 S) :=
+lemma map_surjective (f : R →+* S) (hf : Surjective f) : Surjective (map f : 𝕎 R → 𝕎 S) :=
   mapFun.surjective f hf
 #align witt_vector.map_surjective WittVector.map_surjective
 
 @[simp]
-theorem map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f (x.coeff n) :=
+lemma map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f (x.coeff n) :=
   rfl
 #align witt_vector.map_coeff WittVector.map_coeff
 
@@ -307,12 +307,12 @@ def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
   (Pi.evalRingHom _ n).comp ghostMap
 #align witt_vector.ghost_component WittVector.ghostComponent
 
-theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
+lemma ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
   rfl
 #align witt_vector.ghost_component_apply WittVector.ghostComponent_apply
 
 @[simp]
-theorem ghostMap_apply (x : 𝕎 R) (n : ℕ) : ghostMap x n = ghostComponent n x :=
+lemma ghostMap_apply (x : 𝕎 R) (n : ℕ) : ghostMap x n = ghostComponent n x :=
   rfl
 #align witt_vector.ghost_map_apply WittVector.ghostMap_apply
 

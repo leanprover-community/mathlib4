@@ -95,7 +95,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
   [ContinuousAdd E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 @[simp]
-theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
+lemma closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact
     (image_closure_of_isCompact (bounded_Ioo _ _).isCompact_closure <|

@@ -57,7 +57,7 @@ lemma cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
 #align list.lex.cons_iff List.Lex.cons_iff
 
 @[simp]
-theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
+lemma not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
   fun.
 #align list.lex.not_nil_right List.Lex.not_nil_right
 
@@ -137,13 +137,13 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
       · exact Or.inl h
 #align list.lex.decidable_rel List.Lex.decidableRel
 
-theorem append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
+lemma append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
   | _, _, _, nil => nil
   | _, _, _, cons h => cons (append_right r _ h)
   | _, _, _, rel r => rel r
 #align list.lex.append_right List.Lex.append_right
 
-theorem append_left (R : α → α → Prop) {t₁ t₂} (h : Lex R t₁ t₂) : ∀ s, Lex R (s ++ t₁) (s ++ t₂)
+lemma append_left (R : α → α → Prop) {t₁ t₂} (h : Lex R t₁ t₂) : ∀ s, Lex R (s ++ t₁) (s ++ t₂)
   | [] => h
   | _ :: l => cons (append_left R h l)
 #align list.lex.append_left List.Lex.append_left

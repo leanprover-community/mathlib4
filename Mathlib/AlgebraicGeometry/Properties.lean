@@ -98,7 +98,7 @@ instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj
   exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
     (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
-theorem affine_isReduced_iff (R : CommRingCat) :
+lemma affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Scheme.Spec.obj <| op R) ↔ _root_.IsReduced R := by
   refine' ⟨_, fun h => inferInstance⟩
   intro h
@@ -121,7 +121,7 @@ lemma isReducedOfIsAffineIsReduced [IsAffine X] [h : _root_.IsReduced (X.preshea
   the image of `f`.
 3. `P` holds for the entire space of an affine scheme.
 -/
-theorem reduce_to_affine_global (P : ∀ (X : Scheme) (_ : Opens X.carrier), Prop)
+lemma reduce_to_affine_global (P : ∀ (X : Scheme) (_ : Opens X.carrier), Prop)
     (h₁ : ∀ (X : Scheme) (U : Opens X.carrier),
       (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P X V) → P X U)
     (h₂ : ∀ {X Y} (f : X ⟶ Y) [hf : IsOpenImmersion f],
@@ -142,7 +142,7 @@ theorem reduce_to_affine_global (P : ∀ (X : Scheme) (_ : Opens X.carrier), Pro
   apply h₃
 #align algebraic_geometry.reduce_to_affine_global AlgebraicGeometry.reduce_to_affine_global
 
-theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X.carrier), Prop)
+lemma reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X.carrier), Prop)
     (h₁ : ∀ (R : CommRingCat) (x : PrimeSpectrum R), P (Scheme.Spec.obj <| op R) x)
     (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X.carrier), P X x → P Y (f.1.base x)) :
     ∀ (X : Scheme) (x : X.carrier), P X x := by
@@ -302,7 +302,7 @@ instance {R : CommRingCat} [H : IsDomain R] :
 instance {R : CommRingCat} [IsDomain R] : IsIntegral (Scheme.Spec.obj <| op R) :=
   isIntegralOfIsIrreducibleIsReduced _
 
-theorem affine_isIntegral_iff (R : CommRingCat) :
+lemma affine_isIntegral_iff (R : CommRingCat) :
     IsIntegral (Scheme.Spec.obj <| op R) ↔ IsDomain R :=
   ⟨fun _ => MulEquiv.isDomain ((Scheme.Spec.obj <| op R).presheaf.obj (op ⊤))
     (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv.toMulEquiv, fun _ => inferInstance⟩

@@ -111,11 +111,11 @@ lemma cons_eq_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
   cons_injective2.eq_iff
 #align fin.cons_eq_cons Fin.cons_eq_cons
 
-theorem cons_left_injective (x : ∀ i : Fin n, α i.succ) : Function.Injective fun x₀ ↦ cons x₀ x :=
+lemma cons_left_injective (x : ∀ i : Fin n, α i.succ) : Function.Injective fun x₀ ↦ cons x₀ x :=
   cons_injective2.left _
 #align fin.cons_left_injective Fin.cons_left_injective
 
-theorem cons_right_injective (x₀ : α 0) : Function.Injective (cons x₀) :=
+lemma cons_right_injective (x₀ : α 0) : Function.Injective (cons x₀) :=
   cons_injective2.right _
 #align fin.cons_right_injective Fin.cons_right_injective
 
@@ -666,12 +666,12 @@ def insertNth (i : Fin (n + 1)) (x : α i) (p : ∀ j : Fin n, α (i.succAbove j
 #align fin.insert_nth Fin.insertNth
 
 @[simp]
-theorem insertNth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j)) :
+lemma insertNth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j)) :
     insertNth i x p i = x := by simp [insertNth, succAboveCases]
 #align fin.insert_nth_apply_same Fin.insertNth_apply_same
 
 @[simp]
-theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
+lemma insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j))
     (j : Fin n) : insertNth i x p (i.succAbove j) = p j := by
   simp only [insertNth, succAboveCases, dif_neg (succAbove_ne _ _), succAbove_lt_iff]
   split_ifs with hlt
@@ -693,7 +693,7 @@ lemma succAbove_cases_eq_insertNth : @succAboveCases.{u + 1} = @insertNth.{u} :=
 /- Porting note: Had to `unfold comp`. Sometimes, when I use a placeholder, if I try to insert
 what Lean says it synthesized, it gives me a type error anyway. In this case, it's `x` and `p`. -/
 @[simp]
-theorem insertNth_comp_succAbove (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
+lemma insertNth_comp_succAbove (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
     insertNth i x p ∘ i.succAbove = p :=
   funext (by unfold comp; exact insertNth_apply_succAbove i _ _)
 #align fin.insert_nth_comp_succ_above Fin.insertNth_comp_succAbove
@@ -724,7 +724,7 @@ lemma insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
   rw [insertNth, succAboveCases, dif_neg h.ne', dif_neg h.not_lt]
 #align fin.insert_nth_apply_above Fin.insertNth_apply_above
 
-theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
+lemma insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
     insertNth 0 x p =
       cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) := by
   refine' insertNth_eq_iff.2 ⟨by simp, _⟩
@@ -733,11 +733,11 @@ theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
 #align fin.insert_nth_zero Fin.insertNth_zero
 
 @[simp]
-theorem insertNth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ β) 0 x p = cons x p := by
+lemma insertNth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ β) 0 x p = cons x p := by
   simp [insertNth_zero]
 #align fin.insert_nth_zero' Fin.insertNth_zero'
 
-theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAbove j)) :
+lemma insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAbove j)) :
     insertNth (last n) x p =
       snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x := by
   refine' insertNth_eq_iff.2 ⟨by simp, _⟩
@@ -751,7 +751,7 @@ theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAb
 #align fin.insert_nth_last Fin.insertNth_last
 
 @[simp]
-theorem insertNth_last' (x : β) (p : Fin n → β) :
+lemma insertNth_last' (x : β) (p : Fin n → β) :
     @insertNth _ (fun _ ↦ β) (last n) x p = snoc p x := by simp [insertNth_last]
 #align fin.insert_nth_last' Fin.insertNth_last'
 
@@ -761,7 +761,7 @@ lemma insertNth_zero_right [∀ j, Zero (α j)] (i : Fin (n + 1)) (x : α i) :
   insertNth_eq_iff.2 <| by simp [succAbove_ne, Pi.zero_def]
 #align fin.insert_nth_zero_right Fin.insertNth_zero_right
 
-theorem insertNth_binop (op : ∀ j, α j → α j → α j) (i : Fin (n + 1)) (x y : α i)
+lemma insertNth_binop (op : ∀ j, α j → α j → α j) (i : Fin (n + 1)) (x y : α i)
     (p q : ∀ j, α (i.succAbove j)) :
     (i.insertNth (op i x y) fun j ↦ op _ (p j) (q j)) = fun j ↦
       op j (i.insertNth x p j) (i.insertNth y q j) :=
@@ -964,23 +964,23 @@ def contractNth (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → �
   else if (k : ℕ) = j then op (g (Fin.castSucc k)) (g k.succ) else g k.succ
 #align fin.contract_nth Fin.contractNth
 
-theorem contractNth_apply_of_lt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+lemma contractNth_apply_of_lt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (k : ℕ) < j) : contractNth j op g k = g (Fin.castSucc k) :=
   if_pos h
 #align fin.contract_nth_apply_of_lt Fin.contractNth_apply_of_lt
 
-theorem contractNth_apply_of_eq (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+lemma contractNth_apply_of_eq (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (k : ℕ) = j) : contractNth j op g k = op (g (Fin.castSucc k)) (g k.succ) := by
   have : ¬(k : ℕ) < j := not_lt.2 (le_of_eq h.symm)
   rw [contractNth, if_neg this, if_pos h]
 #align fin.contract_nth_apply_of_eq Fin.contractNth_apply_of_eq
 
-theorem contractNth_apply_of_gt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+lemma contractNth_apply_of_gt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (h : (j : ℕ) < k) : contractNth j op g k = g k.succ := by
   rw [contractNth, if_neg (not_lt_of_gt h), if_neg (Ne.symm <| ne_of_lt h)]
 #align fin.contract_nth_apply_of_gt Fin.contractNth_apply_of_gt
 
-theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+lemma contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
     (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [j.succAbove_below, contractNth_apply_of_lt]

@@ -277,7 +277,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s
 
 -- porting note: @[simp] removed as the linter complains the LHS is not in normal form
-theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
+lemma ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
         S.section_ := by
@@ -286,7 +286,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
   rfl
 
 -- porting note: @[simp] removed as the linter complains the LHS is not in normal form
-theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
+lemma ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
       @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
   dsimp [ExtraDegeneracy.s]
@@ -297,7 +297,7 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_π_succ CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_π_succ
 
 -- porting note: @[simp] removed as the linter complains the LHS is not in normal form
-theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
+lemma ExtraDegeneracy.s_comp_base (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
   apply WidePullback.lift_base
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_base CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_base

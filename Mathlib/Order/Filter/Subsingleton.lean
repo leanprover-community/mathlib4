@@ -32,10 +32,10 @@ lemma Subsingleton.anti {l'} (hl : l.Subsingleton) (hl' : l' ≤ l) : l'.Subsing
 lemma Subsingleton.of_subsingleton [Subsingleton α] : l.Subsingleton :=
   ⟨univ, univ_mem, subsingleton_univ⟩
 
-theorem Subsingleton.map (hl : l.Subsingleton) (f : α → β) : (map f l).Subsingleton :=
+lemma Subsingleton.map (hl : l.Subsingleton) (f : α → β) : (map f l).Subsingleton :=
   let ⟨s, hsl, hs⟩ := hl; ⟨f '' s, image_mem_map hsl, hs.image f⟩
 
-theorem Subsingleton.prod (hl : l.Subsingleton) {l' : Filter β} (hl' : l'.Subsingleton) :
+lemma Subsingleton.prod (hl : l.Subsingleton) {l' : Filter β} (hl' : l'.Subsingleton) :
     (l ×ˢ l').Subsingleton :=
   let ⟨s, hsl, hs⟩ := hl; let ⟨t, htl', ht⟩ := hl'; ⟨s ×ˢ t, prod_mem_prod hsl htl', hs.prod ht⟩
 

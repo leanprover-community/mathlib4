@@ -134,14 +134,14 @@ instance : Faithful (RightExactFunctor.ofExact C D) :=
 variable {C D}
 
 @[simp]
-theorem LeftExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
+lemma LeftExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
     (LeftExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.1⟩ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.of_exact_obj CategoryTheory.LeftExactFunctor.ofExact_obj
 
 @[simp]
-theorem RightExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
+lemma RightExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
     (RightExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.2⟩ :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -162,19 +162,19 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.of_exact_map CategoryTheory.RightExactFunctor.ofExact_map
 
 @[simp]
-theorem LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.1 :=
+lemma LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.forget_obj CategoryTheory.LeftExactFunctor.forget_obj
 
 @[simp]
-theorem RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.1 :=
+lemma RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.forget_obj CategoryTheory.RightExactFunctor.forget_obj
 
 @[simp]
-theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.1 :=
+lemma ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.forget_obj CategoryTheory.ExactFunctor.forget_obj
@@ -218,39 +218,39 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.of CategoryTheory.ExactFunctor.of
 
 @[simp]
-theorem LeftExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteLimits F] :
+lemma LeftExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteLimits F] :
     (LeftExactFunctor.of F).obj = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.of_fst CategoryTheory.LeftExactFunctor.of_fst
 
 @[simp]
-theorem RightExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteColimits F] :
+lemma RightExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteColimits F] :
     (RightExactFunctor.of F).obj = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.of_fst CategoryTheory.RightExactFunctor.of_fst
 
 @[simp]
-theorem ExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
+lemma ExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
     (ExactFunctor.of F).obj = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.of_fst CategoryTheory.ExactFunctor.of_fst
 
-theorem LeftExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F] :
+lemma LeftExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F] :
     (LeftExactFunctor.forget C D).obj (LeftExactFunctor.of F) = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.forget_obj_of CategoryTheory.LeftExactFunctor.forget_obj_of
 
-theorem RightExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteColimits F] :
+lemma RightExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteColimits F] :
     (RightExactFunctor.forget C D).obj (RightExactFunctor.of F) = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.forget_obj_of CategoryTheory.RightExactFunctor.forget_obj_of
 
-theorem ExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F]
+lemma ExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F]
     [PreservesFiniteColimits F] : (ExactFunctor.forget C D).obj (ExactFunctor.of F) = F :=
   rfl
 set_option linter.uppercaseLean3 false in

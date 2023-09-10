@@ -43,7 +43,7 @@ lemma mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
 #align list.map_with_index_nil List.mapIdx_nil
 
 -- Porting note: new theorem.
-protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
+protected lemma oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
     l.oldMapIdxCore f n = l.oldMapIdx fun i a ↦ f (i + n) a := by
   induction' l with hd tl hl generalizing f n
   · rfl
@@ -57,7 +57,7 @@ protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : �
 --   2. Prove that `oldMapIdx f (l ++ [e]) = oldMapIdx f l ++ [f l.length e]`
 --   3. Prove list induction using `∀ l e, p [] → (p l → p (l ++ [e])) → p l`
 -- Porting note: new theorem.
-theorem list_reverse_induction (p : List α → Prop) (base : p [])
+lemma list_reverse_induction (p : List α → Prop) (base : p [])
     (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
   let q := fun l ↦ p (reverse l)
   have pq : ∀ l, p (reverse l) → q l := by simp only [reverse_reverse]; intro; exact id
@@ -161,7 +161,7 @@ lemma map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → 
       simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
       simp only [length_cons, Nat.succ.injEq] at e; exact e
 
-theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
+lemma mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = l.enum.map (Function.uncurry f) := by
   rw [List.new_def_eq_old_def]
   induction' l with hd tl hl generalizing f
@@ -216,31 +216,31 @@ def foldrIdxSpec (f : ℕ → α → β → β) (b : β) (as : List α) (start :
   foldr (uncurry f) b <| enumFrom start as
 #align list.foldr_with_index_aux_spec List.foldrIdxSpecₓ
 
-theorem foldrIdxSpec_cons (f : ℕ → α → β → β) (b a as start) :
+lemma foldrIdxSpec_cons (f : ℕ → α → β → β) (b a as start) :
     foldrIdxSpec f b (a :: as) start = f start a (foldrIdxSpec f b as (start + 1)) :=
   rfl
 #align list.foldr_with_index_aux_spec_cons List.foldrIdxSpec_consₓ
 
-theorem foldrIdx_eq_foldrIdxSpec (f : ℕ → α → β → β) (b as start) :
+lemma foldrIdx_eq_foldrIdxSpec (f : ℕ → α → β → β) (b as start) :
     foldrIdx f b as start = foldrIdxSpec f b as start := by
   induction as generalizing start
   · rfl
   · simp only [foldrIdx, foldrIdxSpec_cons, *]
 #align list.foldr_with_index_aux_eq_foldr_with_index_aux_spec List.foldrIdx_eq_foldrIdxSpecₓ
 
-theorem foldrIdx_eq_foldr_enum (f : ℕ → α → β → β) (b : β) (as : List α) :
+lemma foldrIdx_eq_foldr_enum (f : ℕ → α → β → β) (b : β) (as : List α) :
     foldrIdx f b as = foldr (uncurry f) b (enum as) := by
   simp only [foldrIdx, foldrIdxSpec, foldrIdx_eq_foldrIdxSpec, enum]
 #align list.foldr_with_index_eq_foldr_enum List.foldrIdx_eq_foldr_enum
 
 end FoldrIdx
 
-theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
+lemma indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
   simp [indexesValues, foldrIdx_eq_foldr_enum, uncurry, filter_eq_foldr]
 #align list.indexes_values_eq_filter_enum List.indexesValues_eq_filter_enum
 
-theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
+lemma findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
     findIdxs p as = map Prod.fst (indexesValues p as) := by
   simp only [indexesValues_eq_filter_enum, map_filter_eq_foldr, findIdxs, uncurry,
     foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply, Bool.cond_decide]
@@ -254,19 +254,19 @@ def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start :
   foldl (fun a p ↦ f p.fst a p.snd) a <| enumFrom start bs
 #align list.foldl_with_index_aux_spec List.foldlIdxSpecₓ
 
-theorem foldlIdxSpec_cons (f : ℕ → α → β → α) (a b bs start) :
+lemma foldlIdxSpec_cons (f : ℕ → α → β → α) (a b bs start) :
     foldlIdxSpec f a (b :: bs) start = foldlIdxSpec f (f start a b) bs (start + 1) :=
   rfl
 #align list.foldl_with_index_aux_spec_cons List.foldlIdxSpec_consₓ
 
-theorem foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
+lemma foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
     foldlIdx f a bs start = foldlIdxSpec f a bs start := by
   induction bs generalizing start a
   · rfl
   · simp [foldlIdxSpec, *]
 #align list.foldl_with_index_aux_eq_foldl_with_index_aux_spec List.foldlIdx_eq_foldlIdxSpecₓ
 
-theorem foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : List β) :
+lemma foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : List β) :
     foldlIdx f a bs = foldl (fun a p ↦ f p.fst a p.snd) a (enum bs) := by
   simp only [foldlIdx, foldlIdxSpec, foldlIdx_eq_foldlIdxSpec, enum]
 #align list.foldl_with_index_eq_foldl_enum List.foldlIdx_eq_foldl_enum

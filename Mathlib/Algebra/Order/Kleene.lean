@@ -130,7 +130,7 @@ section IdemSemiring
 
 variable [IdemSemiring α] {a b c : α}
 
-theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
+lemma add_eq_sup (a b : α) : a + b = a ⊔ b :=
   IdemSemiring.add_eq_sup _ _
 #align add_eq_sup add_eq_sup
 
@@ -138,7 +138,7 @@ theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
 --               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
-theorem add_idem (a : α) : a + a = a := by simp
+lemma add_idem (a : α) : a + a = a := by simp
 #align add_idem add_idem
 
 lemma nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
@@ -162,7 +162,7 @@ alias ⟨_, LE.le.add_eq_right⟩ := add_eq_right_iff_le
 lemma add_le_iff : a + b ≤ c ↔ a ≤ c ∧ b ≤ c := by simp
 #align add_le_iff add_le_iff
 
-theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
+lemma add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 #align add_le add_le
 
@@ -216,19 +216,19 @@ lemma kstar_mul_le_self : a * b ≤ b → a∗ * b ≤ b :=
   KleeneAlgebra.kstar_mul_le_self _ _
 #align kstar_mul_le_self kstar_mul_le_self
 
-theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c :=
+lemma mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c :=
   (mul_le_mul_right' hb _).trans <| mul_kstar_le_self ha
 #align mul_kstar_le mul_kstar_le
 
-theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c :=
+lemma kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c :=
   (mul_le_mul_left' hb _).trans <| kstar_mul_le_self ha
 #align kstar_mul_le kstar_mul_le
 
-theorem kstar_le_of_mul_le_left (hb : 1 ≤ b) : b * a ≤ b → a∗ ≤ b := by
+lemma kstar_le_of_mul_le_left (hb : 1 ≤ b) : b * a ≤ b → a∗ ≤ b := by
   simpa using mul_kstar_le hb
 #align kstar_le_of_mul_le_left kstar_le_of_mul_le_left
 
-theorem kstar_le_of_mul_le_right (hb : 1 ≤ b) : a * b ≤ b → a∗ ≤ b := by
+lemma kstar_le_of_mul_le_right (hb : 1 ≤ b) : a * b ≤ b → a∗ ≤ b := by
   simpa using kstar_mul_le hb
 #align kstar_le_of_mul_le_right kstar_le_of_mul_le_right
 
@@ -260,7 +260,7 @@ lemma kstar_one : (1 : α)∗ = 1 :=
 #align kstar_one kstar_one
 
 @[simp]
-theorem kstar_mul_kstar (a : α) : a∗ * a∗ = a∗ :=
+lemma kstar_mul_kstar (a : α) : a∗ * a∗ = a∗ :=
   (mul_kstar_le le_rfl <| kstar_mul_le_kstar).antisymm <| le_mul_of_one_le_left' one_le_kstar
 #align kstar_mul_kstar kstar_mul_kstar
 
@@ -271,7 +271,7 @@ lemma kstar_eq_self : a∗ = a ↔ a * a = a ∧ 1 ≤ a :=
 #align kstar_eq_self kstar_eq_self
 
 @[simp]
-theorem kstar_idem (a : α) : a∗∗ = a∗ :=
+lemma kstar_idem (a : α) : a∗∗ = a∗ :=
   kstar_eq_self.2 ⟨kstar_mul_kstar _, one_le_kstar⟩
 #align kstar_idem kstar_idem
 
@@ -305,17 +305,17 @@ instance : KleeneAlgebra (α × β) :=
     mul_kstar_le_self := fun _ _ ↦ And.imp mul_kstar_le_self mul_kstar_le_self
     kstar_mul_le_self := fun _ _ ↦ And.imp kstar_mul_le_self kstar_mul_le_self }
 
-theorem kstar_def (a : α × β) : a∗ = (a.1∗, a.2∗) :=
+lemma kstar_def (a : α × β) : a∗ = (a.1∗, a.2∗) :=
   rfl
 #align prod.kstar_def Prod.kstar_def
 
 @[simp]
-theorem fst_kstar (a : α × β) : a∗.1 = a.1∗ :=
+lemma fst_kstar (a : α × β) : a∗.1 = a.1∗ :=
   rfl
 #align prod.fst_kstar Prod.fst_kstar
 
 @[simp]
-theorem snd_kstar (a : α × β) : a∗.2 = a.2∗ :=
+lemma snd_kstar (a : α × β) : a∗.2 = a.2∗ :=
   rfl
 #align prod.snd_kstar Prod.snd_kstar
 
@@ -341,12 +341,12 @@ instance : KleeneAlgebra (∀ i, π i) :=
     mul_kstar_le_self := fun _ _ h _ ↦ mul_kstar_le_self <| h _
     kstar_mul_le_self := fun _ _ h _ ↦ kstar_mul_le_self <| h _ }
 
-theorem kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
+lemma kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
   rfl
 #align pi.kstar_def Pi.kstar_def
 
 @[simp]
-theorem kstar_apply (a : ∀ i, π i) (i : ι) : a∗ i = (a i)∗ :=
+lemma kstar_apply (a : ∀ i, π i) (i : ι) : a∗ i = (a i)∗ :=
   rfl
 #align pi.kstar_apply Pi.kstar_apply
 

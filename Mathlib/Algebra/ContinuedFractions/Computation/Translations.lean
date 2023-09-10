@@ -57,7 +57,7 @@ stream of integer and fractional parts of a value.
 -/
 
 
-theorem stream_zero (v : K) : IntFractPair.stream v 0 = some (IntFractPair.of v) :=
+lemma stream_zero (v : K) : IntFractPair.stream v 0 = some (IntFractPair.of v) :=
   rfl
 #align generalized_continued_fraction.int_fract_pair.stream_zero GeneralizedContinuedFraction.IntFractPair.stream_zero
 
@@ -102,7 +102,7 @@ lemma stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = so
 
 /-- The stream of `IntFractPair`s of an integer stops after the first term.
 -/
-theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
+lemma stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
   induction' n with n ih
   · refine' IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) _
     simp only [IntFractPair.of, Int.fract_intCast]
@@ -125,7 +125,7 @@ lemma exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
 of `v` for non-integer `v` in terms of the `n`th term of the stream associated to
 the inverse of the fractional part of `v`.
 -/
-theorem stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
+lemma stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
     IntFractPair.stream v (n + 1) = IntFractPair.stream (Int.fract v)⁻¹ n := by
   induction' n with n ih
   · have H : (IntFractPair.of v).fr = Int.fract v := rfl
@@ -259,7 +259,7 @@ lemma get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFractPa
 
 open Int IntFractPair
 
-theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind (some ∘ fun p =>
+lemma of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind (some ∘ fun p =>
     { a := 1
       b := p.b }) := by
   rw [of, IntFractPair.seq1]
@@ -271,7 +271,7 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.
 -/
-theorem of_s_head (h : fract v ≠ 0) : (of v).s.head = some ⟨1, ⌊(fract v)⁻¹⌋⟩ := by
+lemma of_s_head (h : fract v ≠ 0) : (of v).s.head = some ⟨1, ⌊(fract v)⁻¹⌋⟩ := by
   change (of v).s.get? 0 = _
   rw [of_s_head_aux, stream_succ_of_some (stream_zero v) h, Option.bind]
   rfl
@@ -281,7 +281,7 @@ variable (K)
 
 /-- If `a` is an integer, then the coefficient sequence of its continued fraction is empty.
 -/
-theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Stream'.Seq.nil :=
+lemma of_s_of_int (a : ℤ) : (of (a : K)).s = Stream'.Seq.nil :=
   haveI h : ∀ n, (of (a : K)).s.get? n = none := by
     intro n
     induction' n with n ih
@@ -295,7 +295,7 @@ variable {K} (v)
 /-- Recurrence for the `GeneralizedContinuedFraction.of` an element `v` of `K` in terms of
 that of the inverse of the fractional part of `v`.
 -/
-theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get? n := by
+lemma of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get? n := by
   cases' eq_or_ne (fract v) 0 with h h
   · obtain ⟨a, rfl⟩ : ∃ a : ℤ, v = a := ⟨⌊v⌋, eq_of_sub_eq_zero h⟩
     rw [fract_intCast, inv_zero, of_s_of_int, ← cast_zero, of_s_of_int,
@@ -324,7 +324,7 @@ variable (K) (n)
 /-- If `a` is an integer, then the `convergents'` of its continued fraction expansion
 are all equal to `a`.
 -/
-theorem convergents'_of_int (a : ℤ) : (of (a : K)).convergents' n = a := by
+lemma convergents'_of_int (a : ℤ) : (of (a : K)).convergents' n = a := by
   induction' n with n
   · simp only [zeroth_convergent'_eq_h, of_h_eq_floor, floor_intCast, Nat.zero_eq]
   · rw [convergents', of_h_eq_floor, floor_intCast, add_right_eq_self]

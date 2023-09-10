@@ -36,7 +36,7 @@ lemma le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
     _ ≤ count s := le_sum_apply _ _
 #align measure_theory.measure.le_count_apply MeasureTheory.Measure.le_count_apply
 
-theorem count_apply (hs : MeasurableSet s) : count s = ∑' i : s, 1 := by
+lemma count_apply (hs : MeasurableSet s) : count s = ∑' i : s, 1 := by
   simp only [count, sum_apply, hs, dirac_apply', ← tsum_subtype s (1 : α → ℝ≥0∞), Pi.one_apply]
 #align measure_theory.measure.count_apply MeasureTheory.Measure.count_apply
 
@@ -71,7 +71,7 @@ lemma count_apply_finite [MeasurableSingletonClass α] (s : Set α) (hs : s.Fini
 #align measure_theory.measure.count_apply_finite MeasureTheory.Measure.count_apply_finite
 
 /-- `count` measure evaluates to infinity at infinite sets. -/
-theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
+lemma count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
   refine' top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n => _)
   rcases hs.exists_subset_card_eq n with ⟨t, ht, rfl⟩
   calc
@@ -83,7 +83,7 @@ theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
 #align measure_theory.measure.count_apply_infinite MeasureTheory.Measure.count_apply_infinite
 
 @[simp]
-theorem count_apply_eq_top' (s_mble : MeasurableSet s) : count s = ∞ ↔ s.Infinite := by
+lemma count_apply_eq_top' (s_mble : MeasurableSet s) : count s = ∞ ↔ s.Infinite := by
   by_cases hs : s.Finite
   · simp [Set.Infinite, hs, count_apply_finite' hs s_mble]
   · change s.Infinite at hs
@@ -99,7 +99,7 @@ lemma count_apply_eq_top [MeasurableSingletonClass α] : count s = ∞ ↔ s.Inf
 #align measure_theory.measure.count_apply_eq_top MeasureTheory.Measure.count_apply_eq_top
 
 @[simp]
-theorem count_apply_lt_top' (s_mble : MeasurableSet s) : count s < ∞ ↔ s.Finite :=
+lemma count_apply_lt_top' (s_mble : MeasurableSet s) : count s < ∞ ↔ s.Finite :=
   calc
     count s < ∞ ↔ count s ≠ ∞ := lt_top_iff_ne_top
     _ ↔ ¬s.Infinite := (not_congr (count_apply_eq_top' s_mble))
@@ -116,7 +116,7 @@ lemma count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.Fin
 
 #align measure_theory.measure.count_apply_lt_top MeasureTheory.Measure.count_apply_lt_top
 
-theorem empty_of_count_eq_zero' (s_mble : MeasurableSet s) (hsc : count s = 0) : s = ∅ := by
+lemma empty_of_count_eq_zero' (s_mble : MeasurableSet s) (hsc : count s = 0) : s = ∅ := by
   have hs : s.Finite := by
     rw [← count_apply_lt_top' s_mble, hsc]
     exact WithTop.zero_lt_top
@@ -131,7 +131,7 @@ lemma empty_of_count_eq_zero [MeasurableSingletonClass α] (hsc : count s = 0) :
 #align measure_theory.measure.empty_of_count_eq_zero MeasureTheory.Measure.empty_of_count_eq_zero
 
 @[simp]
-theorem count_eq_zero_iff' (s_mble : MeasurableSet s) : count s = 0 ↔ s = ∅ :=
+lemma count_eq_zero_iff' (s_mble : MeasurableSet s) : count s = 0 ↔ s = ∅ :=
   ⟨empty_of_count_eq_zero' s_mble, fun h => h.symm ▸ count_empty⟩
 #align measure_theory.measure.count_eq_zero_iff' MeasureTheory.Measure.count_eq_zero_iff'
 
@@ -140,7 +140,7 @@ lemma count_eq_zero_iff [MeasurableSingletonClass α] : count s = 0 ↔ s = ∅ 
   ⟨empty_of_count_eq_zero, fun h => h.symm ▸ count_empty⟩
 #align measure_theory.measure.count_eq_zero_iff MeasureTheory.Measure.count_eq_zero_iff
 
-theorem count_ne_zero' (hs' : s.Nonempty) (s_mble : MeasurableSet s) : count s ≠ 0 := by
+lemma count_ne_zero' (hs' : s.Nonempty) (s_mble : MeasurableSet s) : count s ≠ 0 := by
   rw [Ne.def, count_eq_zero_iff' s_mble]
   exact hs'.ne_empty
 #align measure_theory.measure.count_ne_zero' MeasureTheory.Measure.count_ne_zero'

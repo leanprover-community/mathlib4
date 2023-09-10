@@ -26,7 +26,7 @@ open Finset Function
 instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
 
-theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
+lemma univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
 #align univ_option univ_option
 

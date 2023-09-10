@@ -45,21 +45,21 @@ section Semiring
 
 variable {S : Type*} [Semiring S]
 
-theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
+lemma natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
   List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
 #align polynomial.nat_degree_list_sum_le Polynomial.natDegree_list_sum_le
 
-theorem natDegree_multiset_sum_le (l : Multiset S[X]) :
+lemma natDegree_multiset_sum_le (l : Multiset S[X]) :
     natDegree l.sum ≤ (l.map natDegree).foldr max max_left_comm 0 :=
   Quotient.inductionOn l (by simpa using natDegree_list_sum_le)
 #align polynomial.nat_degree_multiset_sum_le Polynomial.natDegree_multiset_sum_le
 
-theorem natDegree_sum_le (f : ι → S[X]) :
+lemma natDegree_sum_le (f : ι → S[X]) :
     natDegree (∑ i in s, f i) ≤ s.fold max 0 (natDegree ∘ f) := by
   simpa using natDegree_multiset_sum_le (s.val.map f)
 #align polynomial.nat_degree_sum_le Polynomial.natDegree_sum_le
 
-theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
+lemma degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
   by_cases h : l.sum = 0
   · simp [h]
   · rw [degree_eq_natDegree h]
@@ -73,19 +73,19 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     simp [h]
 #align polynomial.degree_list_sum_le Polynomial.degree_list_sum_le
 
-theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
+lemma natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
   induction' l with hd tl IH
   · simp
   · simpa using natDegree_mul_le.trans (add_le_add_left IH _)
 #align polynomial.nat_degree_list_prod_le Polynomial.natDegree_list_prod_le
 
-theorem degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum := by
+lemma degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum := by
   induction' l with hd tl IH
   · simp
   · simpa using (degree_mul_le _ _).trans (add_le_add_left IH _)
 #align polynomial.degree_list_prod_le Polynomial.degree_list_prod_le
 
-theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p ∈ l, natDegree p ≤ n) :
+lemma coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p ∈ l, natDegree p ≤ n) :
     coeff (List.prod l) (l.length * n) = (l.map fun p => coeff p n).prod := by
   induction' l with hd tl IH
   · simp
@@ -138,7 +138,7 @@ the product of the leading coefficients, provided that this product is nonzero.
 See `Polynomial.leadingCoeff_multiset_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
-theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
+lemma leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
   induction' t using Multiset.induction_on with a t ih; · simp
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
@@ -154,7 +154,7 @@ the product of the leading coefficients, provided that this product is nonzero.
 See `Polynomial.leadingCoeff_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
-theorem leadingCoeff_prod' (h : (∏ i in s, (f i).leadingCoeff) ≠ 0) :
+lemma leadingCoeff_prod' (h : (∏ i in s, (f i).leadingCoeff) ≠ 0) :
     (∏ i in s, f i).leadingCoeff = ∏ i in s, (f i).leadingCoeff := by
   simpa using leadingCoeff_multiset_prod' (s.1.map f) (by simpa using h)
 #align polynomial.leading_coeff_prod' Polynomial.leadingCoeff_prod'
@@ -165,7 +165,7 @@ the sum of the degrees, provided that the product of leading coefficients is non
 See `Polynomial.natDegree_multiset_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
-theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0) :
+lemma natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0) :
     t.prod.natDegree = (t.map fun f => natDegree f).sum := by
   revert h
   refine' Multiset.induction_on t _ fun a t ih ht => _; · simp
@@ -182,12 +182,12 @@ the sum of the degrees, provided that the product of leading coefficients is non
 See `Polynomial.natDegree_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
-theorem natDegree_prod' (h : (∏ i in s, (f i).leadingCoeff) ≠ 0) :
+lemma natDegree_prod' (h : (∏ i in s, (f i).leadingCoeff) ≠ 0) :
     (∏ i in s, f i).natDegree = ∑ i in s, (f i).natDegree := by
   simpa using natDegree_multiset_prod' (s.1.map f) (by simpa using h)
 #align polynomial.nat_degree_prod' Polynomial.natDegree_prod'
 
-theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
+lemma natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     t.prod.natDegree = (t.map natDegree).sum := by
   nontriviality R
   apply natDegree_multiset_prod'
@@ -203,18 +203,18 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
   · simp
 #align polynomial.nat_degree_multiset_prod_of_monic Polynomial.natDegree_multiset_prod_of_monic
 
-theorem natDegree_prod_of_monic (h : ∀ i ∈ s, (f i).Monic) :
+lemma natDegree_prod_of_monic (h : ∀ i ∈ s, (f i).Monic) :
     (∏ i in s, f i).natDegree = ∑ i in s, (f i).natDegree := by
   simpa using natDegree_multiset_prod_of_monic (s.1.map f) (by simpa using h)
 #align polynomial.nat_degree_prod_of_monic Polynomial.natDegree_prod_of_monic
 
-theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegree p ≤ n) :
+lemma coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegree p ≤ n) :
     coeff t.prod ((Multiset.card t) * n) = (t.map fun p => coeff p n).prod := by
   induction t using Quotient.inductionOn
   simpa using coeff_list_prod_of_natDegree_le _ _ hl
 #align polynomial.coeff_multiset_prod_of_nat_degree_le Polynomial.coeff_multiset_prod_of_natDegree_le
 
-theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s, natDegree (f p) ≤ n) :
+lemma coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s, natDegree (f p) ≤ n) :
     coeff (∏ i in s, f i) (s.card * n) = ∏ i in s, coeff (f i) n := by
   cases' s with l hl
   convert coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
@@ -242,7 +242,7 @@ open Monic
 
 -- Eventually this can be generalized with Vieta's formulas
 -- plus the connection between roots and factorization.
-theorem multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
+lemma multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
     nextCoeff (t.map fun x => X - C x).prod = -t.sum := by
   rw [nextCoeff_multiset_prod]
   · simp only [nextCoeff_X_sub_C]
@@ -258,7 +258,7 @@ lemma prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.prod_X_sub_C_next_coeff Polynomial.prod_X_sub_C_nextCoeff
 
-theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
+lemma multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
@@ -275,7 +275,7 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_coeff_card_pred Polynomial.multiset_prod_X_sub_C_coeff_card_pred
 
-theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < s.card) :
+lemma prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < s.card) :
     (∏ i in s, (X - C (f i))).coeff (s.card - 1) = -∑ i in s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
 set_option linter.uppercaseLean3 false in
@@ -309,7 +309,7 @@ the sum of the degrees.
 See `Polynomial.natDegree_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
-theorem natDegree_prod (h : ∀ i ∈ s, f i ≠ 0) :
+lemma natDegree_prod (h : ∀ i ∈ s, f i ≠ 0) :
     (∏ i in s, f i).natDegree = ∑ i in s, (f i).natDegree := by
   nontriviality R
   apply natDegree_prod'
@@ -317,7 +317,7 @@ theorem natDegree_prod (h : ∀ i ∈ s, f i ≠ 0) :
   intro x hx; simp [h x hx]
 #align polynomial.nat_degree_prod Polynomial.natDegree_prod
 
-theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
+lemma natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
     natDegree t.prod = (t.map natDegree).sum := by
   nontriviality R
   rw [natDegree_multiset_prod']

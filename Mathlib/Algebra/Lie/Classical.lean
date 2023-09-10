@@ -115,7 +115,7 @@ def Eb (h : j ≠ i) : sl n R :=
 #align lie_algebra.special_linear.Eb LieAlgebra.SpecialLinear.Eb
 
 @[simp]
-theorem eb_val (h : j ≠ i) : (Eb R i j h).val = Matrix.stdBasisMatrix i j 1 :=
+lemma eb_val (h : j ≠ i) : (Eb R i j h).val = Matrix.stdBasisMatrix i j 1 :=
   rfl
 #align lie_algebra.special_linear.Eb_val LieAlgebra.SpecialLinear.eb_val
 

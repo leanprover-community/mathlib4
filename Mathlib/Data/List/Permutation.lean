@@ -51,20 +51,20 @@ variable {α β : Type*}
 
 namespace List
 
-theorem permutationsAux2_fst (t : α) (ts : List α) (r : List β) :
+lemma permutationsAux2_fst (t : α) (ts : List α) (r : List β) :
     ∀ (ys : List α) (f : List α → β), (permutationsAux2 t ts r ys f).1 = ys ++ ts
   | [], f => rfl
   | y :: ys, f => by simp [permutationsAux2, permutationsAux2_fst t _ _ ys]
 #align list.permutations_aux2_fst List.permutationsAux2_fst
 
 @[simp]
-theorem permutationsAux2_snd_nil (t : α) (ts : List α) (r : List β) (f : List α → β) :
+lemma permutationsAux2_snd_nil (t : α) (ts : List α) (r : List β) (f : List α → β) :
     (permutationsAux2 t ts r [] f).2 = r :=
   rfl
 #align list.permutations_aux2_snd_nil List.permutationsAux2_snd_nil
 
 @[simp]
-theorem permutationsAux2_snd_cons (t : α) (ts : List α) (r : List β) (y : α) (ys : List α)
+lemma permutationsAux2_snd_cons (t : α) (ts : List α) (r : List β) (y : α) (ys : List α)
     (f : List α → β) :
     (permutationsAux2 t ts r (y :: ys) f).2 =
       f (t :: y :: ys ++ ts) :: (permutationsAux2 t ts r ys fun x : List α => f (y :: x)).2 :=
@@ -72,7 +72,7 @@ theorem permutationsAux2_snd_cons (t : α) (ts : List α) (r : List β) (y : α)
 #align list.permutations_aux2_snd_cons List.permutationsAux2_snd_cons
 
 /-- The `r` argument to `permutationsAux2` is the same as appending. -/
-theorem permutationsAux2_append (t : α) (ts : List α) (r : List β) (ys : List α) (f : List α → β) :
+lemma permutationsAux2_append (t : α) (ts : List α) (r : List β) (ys : List α) (f : List α → β) :
     (permutationsAux2 t ts nil ys f).2 ++ r = (permutationsAux2 t ts r ys f).2 := by
   induction ys generalizing f <;> simp [*]
 #align list.permutations_aux2_append List.permutationsAux2_append
@@ -99,7 +99,7 @@ lemma map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β') (
 #align list.map_permutations_aux2' List.map_permutationsAux2'
 
 /-- The `f` argument to `permutationsAux2` when `r = []` can be eliminated. -/
-theorem map_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :
+lemma map_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :
     (permutationsAux2 t ts [] ys id).2.map f = (permutationsAux2 t ts [] ys f).2 := by
   rw [map_permutationsAux2' id, map_id, map_id]; rfl
   simp
@@ -115,7 +115,7 @@ produced by inserting `t` into every non-terminal position of `ys` in order. As 
 -- [[1, 2, 3, 4], [2, 1, 3, 4], [2, 3, 1, 4]]
 ```
 -/
-theorem permutationsAux2_snd_eq (t : α) (ts : List α) (r : List β) (ys : List α) (f : List α → β) :
+lemma permutationsAux2_snd_eq (t : α) (ts : List α) (r : List β) (ys : List α) (f : List α → β) :
     (permutationsAux2 t ts r ys f).2 =
       ((permutationsAux2 t [] [] ys id).2.map fun x => f (x ++ ts)) ++ r :=
   by rw [← permutationsAux2_append, map_permutationsAux2, permutationsAux2_comp_append]
@@ -127,12 +127,12 @@ lemma map_map_permutationsAux2 {α α'} (g : α → α') (t : α) (ts ys : List 
   map_permutationsAux2' _ _ _ _ _ _ _ _ fun _ => rfl
 #align list.map_map_permutations_aux2 List.map_map_permutationsAux2
 
-theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
+lemma map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
   induction' ts with a ts ih <;> [rfl; (simp [← ih]; rfl)]
 #align list.map_map_permutations'_aux List.map_map_permutations'Aux
 
-theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
+lemma permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by
   induction' ts with a ts ih; · rfl
   simp [permutations'Aux, permutationsAux2_snd_cons, ih]
@@ -164,12 +164,12 @@ lemma mem_permutationsAux2' {t : α} {ts : List α} {ys : List α} {l : List α}
   by rw [show @id (List α) = ([] ++ ·) by funext _; rfl]; apply mem_permutationsAux2
 #align list.mem_permutations_aux2' List.mem_permutationsAux2'
 
-theorem length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :
+lemma length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :
     length (permutationsAux2 t ts [] ys f).2 = length ys := by
   induction ys generalizing f <;> simp [*]
 #align list.length_permutations_aux2 List.length_permutationsAux2
 
-theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
+lemma foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     foldr (fun y r => (permutationsAux2 t ts r y id).2) r L =
       (L.bind fun y => (permutationsAux2 t ts [] y id).2) ++ r := by
   induction' L with l L ih
@@ -192,13 +192,13 @@ lemma mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)} 
     append_assoc, cons_append, exists_prop]
 #align list.mem_foldr_permutations_aux2 List.mem_foldr_permutationsAux2
 
-theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
+lemma length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) =
       sum (map length L) + length r :=
   by simp [foldr_permutationsAux2, (· ∘ ·), length_permutationsAux2]
 #align list.length_foldr_permutations_aux2 List.length_foldr_permutationsAux2
 
-theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List α)) (n)
+lemma length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List α)) (n)
     (H : ∀ l ∈ L, length l = n) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) = n * length L + length r := by
   rw [length_foldr_permutationsAux2, (_ : List.sum (map length L) = n * length L)]
@@ -210,12 +210,12 @@ theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List
 #align list.length_foldr_permutations_aux2' List.length_foldr_permutationsAux2'
 
 @[simp]
-theorem permutationsAux_nil (is : List α) : permutationsAux [] is = [] := by
+lemma permutationsAux_nil (is : List α) : permutationsAux [] is = [] := by
   rw [permutationsAux, permutationsAux.rec]
 #align list.permutations_aux_nil List.permutationsAux_nil
 
 @[simp]
-theorem permutationsAux_cons (t : α) (ts is : List α) :
+lemma permutationsAux_cons (t : α) (ts is : List α) :
     permutationsAux (t :: ts) is =
       foldr (fun y r => (permutationsAux2 t ts r y id).2) (permutationsAux ts (t :: is))
         (permutations is) :=
@@ -227,7 +227,7 @@ lemma permutations_nil : permutations ([] : List α) = [[]] := by
   rw [permutations, permutationsAux_nil]
 #align list.permutations_nil List.permutations_nil
 
-theorem map_permutationsAux (f : α → β) :
+lemma map_permutationsAux (f : α → β) :
     ∀ ts is :
     List α, map (map f) (permutationsAux ts is) = permutationsAux (map f ts) (map f is) := by
   refine' permutationsAux.rec (by simp) _
@@ -236,17 +236,17 @@ theorem map_permutationsAux (f : α → β) :
     bind_map, IH1, append_assoc, permutationsAux_cons, cons_bind, ← IH2, map_bind]
 #align list.map_permutations_aux List.map_permutationsAux
 
-theorem map_permutations (f : α → β) (ts : List α) :
+lemma map_permutations (f : α → β) (ts : List α) :
     map (map f) (permutations ts) = permutations (map f ts) := by
   rw [permutations, permutations, map, map_permutationsAux, map]
 #align list.map_permutations List.map_permutations
 
-theorem map_permutations' (f : α → β) (ts : List α) :
+lemma map_permutations' (f : α → β) (ts : List α) :
     map (map f) (permutations' ts) = permutations' (map f ts) := by
   induction' ts with t ts ih <;> [rfl; simp [← ih, map_bind, ← map_map_permutations'Aux, bind_map]]
 #align list.map_permutations' List.map_permutations'
 
-theorem permutationsAux_append (is is' ts : List α) :
+lemma permutationsAux_append (is is' ts : List α) :
     permutationsAux (is ++ ts) is' =
       (permutationsAux is is').map (· ++ ts) ++ permutationsAux ts (is.reverse ++ is') := by
   induction' is with t is ih generalizing is'; · simp
@@ -259,7 +259,7 @@ theorem permutationsAux_append (is is' ts : List α) :
   simp only [id, append_assoc]
 #align list.permutations_aux_append List.permutationsAux_append
 
-theorem permutations_append (is ts : List α) :
+lemma permutations_append (is ts : List α) :
     permutations (is ++ ts) = (permutations is).map (· ++ ts) ++ permutationsAux ts is.reverse := by
   simp [permutations, permutationsAux_append]
 #align list.permutations_append List.permutations_append

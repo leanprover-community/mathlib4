@@ -81,7 +81,7 @@ noncomputable def wittPolynomial (n : ℕ) : MvPolynomial ℕ R :=
   ∑ i in range (n + 1), monomial (single i (p ^ (n - i))) ((p : R) ^ i)
 #align witt_polynomial wittPolynomial
 
-theorem wittPolynomial_eq_sum_C_mul_X_pow (n : ℕ) :
+lemma wittPolynomial_eq_sum_C_mul_X_pow (n : ℕ) :
     wittPolynomial p R n = ∑ i in range (n + 1), C ((p : R) ^ i) * X i ^ p ^ (n - i) := by
   apply sum_congr rfl
   rintro i -
@@ -116,7 +116,7 @@ section
 variable {R} {S : Type*} [CommRing S]
 
 @[simp]
-theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
+lemma map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
   rw [wittPolynomial, map_sum, wittPolynomial]
   refine sum_congr rfl fun i _ => ?_
   rw [map_monomial, RingHom.map_pow, map_natCast]
@@ -155,7 +155,7 @@ lemma aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A
 by expanding the `n`th Witt polynomial by `p`.
 -/
 @[simp]
-theorem wittPolynomial_zmod_self (n : ℕ) :
+lemma wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
@@ -185,7 +185,7 @@ lemma wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars =
     rwa [mem_singleton]
 #align witt_polynomial_vars wittPolynomial_vars
 
-theorem wittPolynomial_vars_subset (n : ℕ) : (wittPolynomial p R n).vars ⊆ range (n + 1) := by
+lemma wittPolynomial_vars_subset (n : ℕ) : (wittPolynomial p R n).vars ⊆ range (n + 1) := by
   rw [← map_wittPolynomial p (Int.castRingHom R), ← wittPolynomial_vars p ℤ]
   apply vars_map
 #align witt_polynomial_vars_subset wittPolynomial_vars_subset
@@ -251,7 +251,7 @@ section PPrime
 
 variable [hp : Fact p.Prime]
 
-theorem xInTermsOfW_vars_aux (n : ℕ) :
+lemma xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
   apply Nat.strongInductionOn n; clear n
   intro n ih
@@ -281,7 +281,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_vars_aux xInTermsOfW_vars_aux
 
-theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
+lemma xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_vars_subset xInTermsOfW_vars_subset

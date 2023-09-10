@@ -88,26 +88,26 @@ namespace Content
 
 variable (μ : Content G)
 
-theorem apply_eq_coe_toFun (K : Compacts G) : μ K = μ.toFun K :=
+lemma apply_eq_coe_toFun (K : Compacts G) : μ K = μ.toFun K :=
   rfl
 #align measure_theory.content.apply_eq_coe_to_fun MeasureTheory.Content.apply_eq_coe_toFun
 
-theorem mono (K₁ K₂ : Compacts G) (h : (K₁ : Set G) ⊆ K₂) : μ K₁ ≤ μ K₂ := by
+lemma mono (K₁ K₂ : Compacts G) (h : (K₁ : Set G) ⊆ K₂) : μ K₁ ≤ μ K₂ := by
   simp [apply_eq_coe_toFun, μ.mono' _ _ h]
 #align measure_theory.content.mono MeasureTheory.Content.mono
 
-theorem sup_disjoint (K₁ K₂ : Compacts G) (h : Disjoint (K₁ : Set G) K₂) :
+lemma sup_disjoint (K₁ K₂ : Compacts G) (h : Disjoint (K₁ : Set G) K₂) :
     μ (K₁ ⊔ K₂) = μ K₁ + μ K₂ := by
   simp [apply_eq_coe_toFun, μ.sup_disjoint' _ _ h]
 #align measure_theory.content.sup_disjoint MeasureTheory.Content.sup_disjoint
 
-theorem sup_le (K₁ K₂ : Compacts G) : μ (K₁ ⊔ K₂) ≤ μ K₁ + μ K₂ := by
+lemma sup_le (K₁ K₂ : Compacts G) : μ (K₁ ⊔ K₂) ≤ μ K₁ + μ K₂ := by
   simp only [apply_eq_coe_toFun]
   norm_cast
   exact μ.sup_le' _ _
 #align measure_theory.content.sup_le MeasureTheory.Content.sup_le
 
-theorem lt_top (K : Compacts G) : μ K < ∞ :=
+lemma lt_top (K : Compacts G) : μ K < ∞ :=
   ENNReal.coe_lt_top
 #align measure_theory.content.lt_top MeasureTheory.Content.lt_top
 
@@ -123,12 +123,12 @@ def innerContent (U : Opens G) : ℝ≥0∞ :=
   ⨆ (K : Compacts G) (_ : (K : Set G) ⊆ U), μ K
 #align measure_theory.content.inner_content MeasureTheory.Content.innerContent
 
-theorem le_innerContent (K : Compacts G) (U : Opens G) (h2 : (K : Set G) ⊆ U) :
+lemma le_innerContent (K : Compacts G) (U : Opens G) (h2 : (K : Set G) ⊆ U) :
     μ K ≤ μ.innerContent U :=
   le_iSup_of_le K <| le_iSup (fun _ ↦ (μ.toFun K : ℝ≥0∞)) h2
 #align measure_theory.content.le_inner_content MeasureTheory.Content.le_innerContent
 
-theorem innerContent_le (U : Opens G) (K : Compacts G) (h2 : (U : Set G) ⊆ K) :
+lemma innerContent_le (U : Opens G) (K : Compacts G) (h2 : (U : Set G) ⊆ K) :
     μ.innerContent U ≤ μ K :=
   iSup₂_le fun _ hK' => μ.mono _ _ (Subset.trans hK' h2)
 #align measure_theory.content.inner_content_le MeasureTheory.Content.innerContent_le
@@ -202,7 +202,7 @@ lemma innerContent_iUnion_nat [T2Space G] ⦃U : ℕ → Set G⦄ (hU : ∀ i : 
   rwa [Opens.iSup_def] at this
 #align measure_theory.content.inner_content_Union_nat MeasureTheory.Content.innerContent_iUnion_nat
 
-theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)
+lemma innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)
     (U : Opens G) : μ.innerContent (Opens.comap f.toContinuousMap U) = μ.innerContent U := by
   refine' (Compacts.equiv f).surjective.iSup_congr _ fun K => iSup_congr_Prop image_subset_iff _
   intro hK
@@ -251,21 +251,21 @@ protected def outerMeasure : OuterMeasure G :=
 
 variable [T2Space G]
 
-theorem outerMeasure_opens (U : Opens G) : μ.outerMeasure U = μ.innerContent U :=
+lemma outerMeasure_opens (U : Opens G) : μ.outerMeasure U = μ.innerContent U :=
   inducedOuterMeasure_eq' (fun _ => isOpen_iUnion) μ.innerContent_iUnion_nat μ.innerContent_mono U.2
 #align measure_theory.content.outer_measure_opens MeasureTheory.Content.outerMeasure_opens
 
-theorem outerMeasure_of_isOpen (U : Set G) (hU : IsOpen U) :
+lemma outerMeasure_of_isOpen (U : Set G) (hU : IsOpen U) :
     μ.outerMeasure U = μ.innerContent ⟨U, hU⟩ :=
   μ.outerMeasure_opens ⟨U, hU⟩
 #align measure_theory.content.outer_measure_of_is_open MeasureTheory.Content.outerMeasure_of_isOpen
 
-theorem outerMeasure_le (U : Opens G) (K : Compacts G) (hUK : (U : Set G) ⊆ K) :
+lemma outerMeasure_le (U : Opens G) (K : Compacts G) (hUK : (U : Set G) ⊆ K) :
     μ.outerMeasure U ≤ μ K :=
   (μ.outerMeasure_opens U).le.trans <| μ.innerContent_le U K hUK
 #align measure_theory.content.outer_measure_le MeasureTheory.Content.outerMeasure_le
 
-theorem le_outerMeasure_compacts (K : Compacts G) : μ K ≤ μ.outerMeasure K := by
+lemma le_outerMeasure_compacts (K : Compacts G) : μ K ≤ μ.outerMeasure K := by
   rw [Content.outerMeasure, inducedOuterMeasure_eq_iInf]
   · exact le_iInf fun U => le_iInf fun hU => le_iInf <| μ.le_innerContent K ⟨U, hU⟩
   · exact fun U hU => isOpen_iUnion hU
@@ -273,12 +273,12 @@ theorem le_outerMeasure_compacts (K : Compacts G) : μ K ≤ μ.outerMeasure K :
   · exact μ.innerContent_mono
 #align measure_theory.content.le_outer_measure_compacts MeasureTheory.Content.le_outerMeasure_compacts
 
-theorem outerMeasure_eq_iInf (A : Set G) :
+lemma outerMeasure_eq_iInf (A : Set G) :
     μ.outerMeasure A = ⨅ (U : Set G) (hU : IsOpen U) (_ : A ⊆ U), μ.innerContent ⟨U, hU⟩ :=
   inducedOuterMeasure_eq_iInf _ μ.innerContent_iUnion_nat μ.innerContent_mono A
 #align measure_theory.content.outer_measure_eq_infi MeasureTheory.Content.outerMeasure_eq_iInf
 
-theorem outerMeasure_interior_compacts (K : Compacts G) : μ.outerMeasure (interior K) ≤ μ K :=
+lemma outerMeasure_interior_compacts (K : Compacts G) : μ.outerMeasure (interior K) ≤ μ K :=
   (μ.outerMeasure_opens <| Opens.interior K).le.trans <| μ.innerContent_le _ _ interior_subset
 #align measure_theory.content.outer_measure_interior_compacts MeasureTheory.Content.outerMeasure_interior_compacts
 
@@ -297,7 +297,7 @@ lemma outerMeasure_exists_open {A : Set G} (hA : μ.outerMeasure A ≠ ∞) {ε 
   exact ⟨⟨U, hU⟩, h2U, h3U⟩
 #align measure_theory.content.outer_measure_exists_open MeasureTheory.Content.outerMeasure_exists_open
 
-theorem outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)
+lemma outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)
     (A : Set G) : μ.outerMeasure (f ⁻¹' A) = μ.outerMeasure A := by
   refine' inducedOuterMeasure_preimage _ μ.innerContent_iUnion_nat μ.innerContent_mono _
     (fun _ => f.isOpen_preimage) _
@@ -324,7 +324,7 @@ lemma is_mul_left_invariant_outerMeasure [Group G] [TopologicalGroup G]
 #align measure_theory.content.is_mul_left_invariant_outer_measure MeasureTheory.Content.is_mul_left_invariant_outerMeasure
 #align measure_theory.content.is_add_left_invariant_outer_measure MeasureTheory.Content.is_add_left_invariant_outerMeasure
 
-theorem outerMeasure_caratheodory (A : Set G) :
+lemma outerMeasure_caratheodory (A : Set G) :
     MeasurableSet[μ.outerMeasure.caratheodory] A ↔
       ∀ U : Opens G, μ.outerMeasure (U ∩ A) + μ.outerMeasure (U \ A) ≤ μ.outerMeasure U := by
   rw [Opens.forall]
@@ -417,7 +417,7 @@ def ContentRegular :=
     μ K = ⨅ (K' : TopologicalSpace.Compacts G) (_ : (K : Set G) ⊆ interior (K' : Set G)), μ K'
 #align measure_theory.content.content_regular MeasureTheory.Content.ContentRegular
 
-theorem contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSpace.Compacts G)
+lemma contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSpace.Compacts G)
     {ε : NNReal} (hε : ε ≠ 0) :
     ∃ K' : TopologicalSpace.Compacts G, K.carrier ⊆ interior K'.carrier ∧ μ K' ≤ μ K + ε := by
   by_contra hc
@@ -434,7 +434,7 @@ variable [MeasurableSpace G] [T2Space G] [BorelSpace G]
 
 /-- If `μ` is a regular content, then the measure induced by `μ` will agree with `μ`
   on compact sets. -/
-theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular μ)
+lemma measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular μ)
     (K : TopologicalSpace.Compacts G) : μ.measure ↑K = μ K := by
   refine' le_antisymm _ _
   · apply ENNReal.le_of_forall_pos_le_add

@@ -53,12 +53,12 @@ instance quasiIso_comp (f : C ⟶ D) [QuasiIso f] (g : D ⟶ E) [QuasiIso g] : Q
     infer_instance
 #align quasi_iso_comp quasiIso_comp
 
-theorem quasiIso_of_comp_left (f : C ⟶ D) [QuasiIso f] (g : D ⟶ E) [QuasiIso (f ≫ g)] :
+lemma quasiIso_of_comp_left (f : C ⟶ D) [QuasiIso f] (g : D ⟶ E) [QuasiIso (f ≫ g)] :
     QuasiIso g :=
   { isIso := fun i => IsIso.of_isIso_fac_left ((homologyFunctor V c i).map_comp f g).symm }
 #align quasi_iso_of_comp_left quasiIso_of_comp_left
 
-theorem quasiIso_of_comp_right (f : C ⟶ D) (g : D ⟶ E) [QuasiIso g] [QuasiIso (f ≫ g)] :
+lemma quasiIso_of_comp_right (f : C ⟶ D) (g : D ⟶ E) [QuasiIso g] [QuasiIso (f ≫ g)] :
     QuasiIso f :=
   { isIso := fun i => IsIso.of_isIso_fac_right ((homologyFunctor V c i).map_comp f g).symm }
 #align quasi_iso_of_comp_right quasiIso_of_comp_right

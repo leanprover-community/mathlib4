@@ -69,39 +69,39 @@ lemma inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   exact inl_ne_inr ha
 #align multiset.inr_mem_disj_sum Multiset.inr_mem_disjSum
 
-theorem disjSum_mono (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.disjSum t₁ ≤ s₂.disjSum t₂ :=
+lemma disjSum_mono (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.disjSum t₁ ≤ s₂.disjSum t₂ :=
   add_le_add (map_le_map hs) (map_le_map ht)
 #align multiset.disj_sum_mono Multiset.disjSum_mono
 
-theorem disjSum_mono_left (t : Multiset β) : Monotone fun s : Multiset α => s.disjSum t :=
+lemma disjSum_mono_left (t : Multiset β) : Monotone fun s : Multiset α => s.disjSum t :=
   fun _ _ hs => add_le_add_right (map_le_map hs) _
 #align multiset.disj_sum_mono_left Multiset.disjSum_mono_left
 
-theorem disjSum_mono_right (s : Multiset α) :
+lemma disjSum_mono_right (s : Multiset α) :
     Monotone (s.disjSum : Multiset β → Multiset (Sum α β)) := fun _ _ ht =>
   add_le_add_left (map_le_map ht) _
 #align multiset.disj_sum_mono_right Multiset.disjSum_mono_right
 
-theorem disjSum_lt_disjSum_of_lt_of_le (hs : s₁ < s₂) (ht : t₁ ≤ t₂) :
+lemma disjSum_lt_disjSum_of_lt_of_le (hs : s₁ < s₂) (ht : t₁ ≤ t₂) :
     s₁.disjSum t₁ < s₂.disjSum t₂ :=
   add_lt_add_of_lt_of_le (map_lt_map hs) (map_le_map ht)
 #align multiset.disj_sum_lt_disj_sum_of_lt_of_le Multiset.disjSum_lt_disjSum_of_lt_of_le
 
-theorem disjSum_lt_disjSum_of_le_of_lt (hs : s₁ ≤ s₂) (ht : t₁ < t₂) :
+lemma disjSum_lt_disjSum_of_le_of_lt (hs : s₁ ≤ s₂) (ht : t₁ < t₂) :
     s₁.disjSum t₁ < s₂.disjSum t₂ :=
   add_lt_add_of_le_of_lt (map_le_map hs) (map_lt_map ht)
 #align multiset.disj_sum_lt_disj_sum_of_le_of_lt Multiset.disjSum_lt_disjSum_of_le_of_lt
 
-theorem disjSum_strictMono_left (t : Multiset β) : StrictMono fun s : Multiset α => s.disjSum t :=
+lemma disjSum_strictMono_left (t : Multiset β) : StrictMono fun s : Multiset α => s.disjSum t :=
   fun _ _ hs => disjSum_lt_disjSum_of_lt_of_le hs le_rfl
 #align multiset.disj_sum_strict_mono_left Multiset.disjSum_strictMono_left
 
-theorem disjSum_strictMono_right (s : Multiset α) :
+lemma disjSum_strictMono_right (s : Multiset α) :
     StrictMono (s.disjSum : Multiset β → Multiset (Sum α β)) := fun _ _ =>
   disjSum_lt_disjSum_of_le_of_lt le_rfl
 #align multiset.disj_sum_strict_mono_right Multiset.disjSum_strictMono_right
 
-protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by
+protected lemma Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by
   refine' ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 fun x hs ht => _
   rw [Multiset.mem_map] at hs ht
   obtain ⟨a, _, rfl⟩ := hs

@@ -48,7 +48,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.taylor_X Polynomial.taylor_X
 
 @[simp]
-theorem taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
+lemma taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
 set_option linter.uppercaseLean3 false in
 #align polynomial.taylor_C Polynomial.taylor_C
 
@@ -59,7 +59,7 @@ lemma taylor_zero' : taylor (0 : R) = LinearMap.id := by
     Function.comp_apply, LinearMap.coe_comp]
 #align polynomial.taylor_zero' Polynomial.taylor_zero'
 
-theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]
+lemma taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMap.id_apply]
 #align polynomial.taylor_zero Polynomial.taylor_zero
 
 @[simp]
@@ -67,12 +67,12 @@ lemma taylor_one : taylor r (1 : R[X]) = C 1 := by rw [← C_1, taylor_C]
 #align polynomial.taylor_one Polynomial.taylor_one
 
 @[simp]
-theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X + C r) ^ i := by
+lemma taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X + C r) ^ i := by
   simp [taylor_apply]
 #align polynomial.taylor_monomial Polynomial.taylor_monomial
 
 /-- The `k`th coefficient of `Polynomial.taylor r f` is `(Polynomial.hasseDeriv k f).eval r`. -/
-theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r :=
+lemma taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r :=
   show (lcoeff R n).comp (taylor r) f = (leval r).comp (hasseDeriv n) f by
     congr 1; clear! f; ext i
     simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, coeff_C_mul,
@@ -95,7 +95,7 @@ lemma taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 #align polynomial.taylor_coeff_one Polynomial.taylor_coeff_one
 
 @[simp]
-theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
+lemma natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
   refine' map_natDegree_eq_natDegree _ _
   nontriviality R
   intro n c c0

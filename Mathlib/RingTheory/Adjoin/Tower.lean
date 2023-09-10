@@ -27,7 +27,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁)
 
 namespace Algebra
 
-theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D] [CommSemiring E]
+lemma adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D] [CommSemiring E]
     [Algebra C D] [Algebra C E] [Algebra D E] [IsScalarTower C D E] (S : Set E) :
     (Algebra.adjoin D S).restrictScalars C =
       (Algebra.adjoin ((⊤ : Subalgebra C D).map (IsScalarTower.toAlgHom C D E)) S).restrictScalars
@@ -46,7 +46,7 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     exact ⟨z, Eq.trans h1 h2⟩
 #align algebra.adjoin_restrict_scalars Algebra.adjoin_restrictScalars
 
-theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
+lemma adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
     [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
     [Algebra E F] [IsScalarTower C D F] [IsScalarTower C E F] {S : Set D} {T : Set E}
     (hS : Algebra.adjoin C S = ⊤) (hT : Algebra.adjoin C T = ⊤) :
@@ -90,7 +90,7 @@ open Finset Submodule
 
 open Classical
 
-theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
+lemma exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
   cases' hAC with x hx
   cases' hBC with y hy

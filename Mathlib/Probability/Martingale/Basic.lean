@@ -67,7 +67,7 @@ def Submartingale [LE E] (f : ι → Ω → E) (ℱ : Filtration ι m0) (μ : Me
   Adapted ℱ f ∧ (∀ i j, i ≤ j → f i ≤ᵐ[μ] μ[f j|ℱ i]) ∧ ∀ i, Integrable (f i) μ
 #align measure_theory.submartingale MeasureTheory.Submartingale
 
-theorem martingale_const (ℱ : Filtration ι m0) (μ : Measure Ω) [IsFiniteMeasure μ] (x : E) :
+lemma martingale_const (ℱ : Filtration ι m0) (μ : Measure Ω) [IsFiniteMeasure μ] (x : E) :
     Martingale (fun _ _ => x) ℱ μ :=
   ⟨adapted_const ℱ _, fun i j _ => by rw [condexp_const (ℱ.le _)]⟩
 #align measure_theory.martingale_const MeasureTheory.martingale_const
@@ -81,7 +81,7 @@ lemma martingale_const_fun [OrderBot ι] (ℱ : Filtration ι m0) (μ : Measure 
 
 variable (E)
 
-theorem martingale_zero (ℱ : Filtration ι m0) (μ : Measure Ω) : Martingale (0 : ι → Ω → E) ℱ μ :=
+lemma martingale_zero (ℱ : Filtration ι m0) (μ : Measure Ω) : Martingale (0 : ι → Ω → E) ℱ μ :=
   ⟨adapted_zero E ℱ, fun i j _ => by rw [Pi.zero_apply, condexp_zero]; simp; rfl⟩
 #align measure_theory.martingale_zero MeasureTheory.martingale_zero
 
@@ -89,20 +89,20 @@ variable {E}
 
 namespace Martingale
 
-protected theorem adapted (hf : Martingale f ℱ μ) : Adapted ℱ f :=
+protected lemma adapted (hf : Martingale f ℱ μ) : Adapted ℱ f :=
   hf.1
 #align measure_theory.martingale.adapted MeasureTheory.Martingale.adapted
 
-protected theorem stronglyMeasurable (hf : Martingale f ℱ μ) (i : ι) :
+protected lemma stronglyMeasurable (hf : Martingale f ℱ μ) (i : ι) :
     StronglyMeasurable[ℱ i] (f i) :=
   hf.adapted i
 #align measure_theory.martingale.strongly_measurable MeasureTheory.Martingale.stronglyMeasurable
 
-theorem condexp_ae_eq (hf : Martingale f ℱ μ) {i j : ι} (hij : i ≤ j) : μ[f j|ℱ i] =ᵐ[μ] f i :=
+lemma condexp_ae_eq (hf : Martingale f ℱ μ) {i j : ι} (hij : i ≤ j) : μ[f j|ℱ i] =ᵐ[μ] f i :=
   hf.2 i j hij
 #align measure_theory.martingale.condexp_ae_eq MeasureTheory.Martingale.condexp_ae_eq
 
-protected theorem integrable (hf : Martingale f ℱ μ) (i : ι) : Integrable (f i) μ :=
+protected lemma integrable (hf : Martingale f ℱ μ) (i : ι) : Integrable (f i) μ :=
   integrable_condexp.congr (hf.condexp_ae_eq (le_refl i))
 #align measure_theory.martingale.integrable MeasureTheory.Martingale.integrable
 
@@ -113,20 +113,20 @@ lemma set_integral_eq [SigmaFiniteFiltration μ ℱ] (hf : Martingale f ℱ μ) 
   filter_upwards [hf.2 i j hij] with _ heq _ using heq.symm
 #align measure_theory.martingale.set_integral_eq MeasureTheory.Martingale.set_integral_eq
 
-theorem add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
+lemma add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
   refine' ⟨hf.adapted.add hg.adapted, fun i j hij => _⟩
   exact (condexp_add (hf.integrable j) (hg.integrable j)).trans ((hf.2 i j hij).add (hg.2 i j hij))
 #align measure_theory.martingale.add MeasureTheory.Martingale.add
 
-theorem neg (hf : Martingale f ℱ μ) : Martingale (-f) ℱ μ :=
+lemma neg (hf : Martingale f ℱ μ) : Martingale (-f) ℱ μ :=
   ⟨hf.adapted.neg, fun i j hij => (condexp_neg (f j)).trans (hf.2 i j hij).neg⟩
 #align measure_theory.martingale.neg MeasureTheory.Martingale.neg
 
-theorem sub (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f - g) ℱ μ := by
+lemma sub (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 #align measure_theory.martingale.sub MeasureTheory.Martingale.sub
 
-theorem smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ := by
+lemma smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ := by
   refine' ⟨hf.adapted.smul c, fun i j hij => _⟩
   refine' (condexp_smul c (f j)).trans ((hf.2 i j hij).mono fun x hx => _)
   rw [Pi.smul_apply, hx, Pi.smul_apply, Pi.smul_apply]
@@ -148,7 +148,7 @@ lemma martingale_iff [PartialOrder E] :
     ⟨hf₁.1, fun i j hij => (hf₁.2.1 i j hij).antisymm (hf₂.2.1 i j hij)⟩⟩
 #align measure_theory.martingale_iff MeasureTheory.martingale_iff
 
-theorem martingale_condexp (f : Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω)
+lemma martingale_condexp (f : Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω)
     [SigmaFiniteFiltration μ ℱ] : Martingale (fun i => μ[f|ℱ i]) ℱ μ :=
   ⟨fun _ => stronglyMeasurable_condexp, fun _ j hij => condexp_condexp_of_le (ℱ.mono hij) (ℱ.le j)⟩
 #align measure_theory.martingale_condexp MeasureTheory.martingale_condexp

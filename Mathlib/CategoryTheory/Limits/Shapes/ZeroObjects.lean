@@ -57,11 +57,11 @@ protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
   @default _ <| (h.unique_to Y).some.toInhabited
 #align category_theory.limits.is_zero.to CategoryTheory.Limits.IsZero.to_
 
-theorem eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to_ Y :=
+lemma eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to_ Y :=
   @Unique.eq_default _ (id _) _
 #align category_theory.limits.is_zero.eq_to CategoryTheory.Limits.IsZero.eq_to
 
-theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
+lemma to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
   (h.eq_to f).symm
 #align category_theory.limits.is_zero.to_eq CategoryTheory.Limits.IsZero.to_eq
 
@@ -71,19 +71,19 @@ protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
   @default _ <| (h.unique_from Y).some.toInhabited
 #align category_theory.limits.is_zero.from CategoryTheory.Limits.IsZero.from_
 
-theorem eq_from (h : IsZero X) (f : Y ⟶ X) : f = h.from_ Y :=
+lemma eq_from (h : IsZero X) (f : Y ⟶ X) : f = h.from_ Y :=
   @Unique.eq_default _ (id _) _
 #align category_theory.limits.is_zero.eq_from CategoryTheory.Limits.IsZero.eq_from
 
-theorem from_eq (h : IsZero X) (f : Y ⟶ X) : h.from_ Y = f :=
+lemma from_eq (h : IsZero X) (f : Y ⟶ X) : h.from_ Y = f :=
   (h.eq_from f).symm
 #align category_theory.limits.is_zero.from_eq CategoryTheory.Limits.IsZero.from_eq
 
-theorem eq_of_src (hX : IsZero X) (f g : X ⟶ Y) : f = g :=
+lemma eq_of_src (hX : IsZero X) (f g : X ⟶ Y) : f = g :=
   (hX.eq_to f).trans (hX.eq_to g).symm
 #align category_theory.limits.is_zero.eq_of_src CategoryTheory.Limits.IsZero.eq_of_src
 
-theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
+lemma eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
   (hX.eq_from f).trans (hX.eq_from g).symm
 #align category_theory.limits.is_zero.eq_of_tgt CategoryTheory.Limits.IsZero.eq_of_tgt
 
@@ -116,7 +116,7 @@ def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
   IsTerminal.uniqueUpToIso hX.isTerminal hY
 #align category_theory.limits.is_zero.iso_is_terminal CategoryTheory.Limits.IsZero.isoIsTerminal
 
-theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
+lemma of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
   refine' ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => _⟩⟩,
     fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f => _⟩⟩⟩
   · rw [← cancel_epi e.inv]
@@ -125,7 +125,7 @@ theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
     apply hY.eq_of_tgt
 #align category_theory.limits.is_zero.of_iso CategoryTheory.Limits.IsZero.of_iso
 
-theorem op (h : IsZero X) : IsZero (Opposite.op X) :=
+lemma op (h : IsZero X) : IsZero (Opposite.op X) :=
   ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.unop Y)).op⟩, fun _ => Quiver.Hom.unop_inj (h.eq_of_tgt _ _)⟩⟩,
     fun Y => ⟨⟨⟨(h.to_ (Opposite.unop Y)).op⟩, fun _ => Quiver.Hom.unop_inj (h.eq_of_src _ _)⟩⟩⟩
 #align category_theory.limits.is_zero.op CategoryTheory.Limits.IsZero.op
@@ -145,7 +145,7 @@ lemma Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
   ⟨fun h => h.of_iso e.symm, fun h => h.of_iso e⟩
 #align category_theory.iso.is_zero_iff CategoryTheory.Iso.isZero_iff
 
-theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
+lemma Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
   constructor <;> intro G <;> refine' ⟨⟨⟨_⟩, _⟩⟩
   · refine'
       { app := fun X => (hF _).to_ _

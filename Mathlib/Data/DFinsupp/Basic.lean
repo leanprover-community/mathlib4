@@ -95,7 +95,7 @@ instance : CoeFun (Π₀ i, β i) fun _ => ∀ i, β i :=
   inferInstance
 
 @[simp]
-theorem toFun_eq_coe (f : Π₀ i, β i) : f.toFun = f :=
+lemma toFun_eq_coe (f : Π₀ i, β i) : f.toFun = f :=
   rfl
 #align dfinsupp.to_fun_eq_coe DFinsupp.toFun_eq_coe
 
@@ -121,7 +121,7 @@ instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
 
 @[simp]
-theorem coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f :=
+lemma coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f :=
   rfl
 #align dfinsupp.coe_mk' DFinsupp.coe_mk'
 
@@ -130,7 +130,7 @@ lemma coe_zero : ⇑(0 : Π₀ i, β i) = 0 :=
   rfl
 #align dfinsupp.coe_zero DFinsupp.coe_zero
 
-theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
+lemma zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
   rfl
 #align dfinsupp.zero_apply DFinsupp.zero_apply
 
@@ -152,19 +152,19 @@ def mapRange (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (x : Π₀
 #align dfinsupp.map_range DFinsupp.mapRange
 
 @[simp]
-theorem mapRange_apply (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (g : Π₀ i, β₁ i) (i : ι) :
+lemma mapRange_apply (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (g : Π₀ i, β₁ i) (i : ι) :
     mapRange f hf g i = f i (g i) :=
   rfl
 #align dfinsupp.map_range_apply DFinsupp.mapRange_apply
 
 @[simp]
-theorem mapRange_id (h : ∀ i, id (0 : β₁ i) = 0 := fun i => rfl) (g : Π₀ i : ι, β₁ i) :
+lemma mapRange_id (h : ∀ i, id (0 : β₁ i) = 0 := fun i => rfl) (g : Π₀ i : ι, β₁ i) :
     mapRange (fun i => (id : β₁ i → β₁ i)) h g = g := by
   ext
   rfl
 #align dfinsupp.map_range_id DFinsupp.mapRange_id
 
-theorem mapRange_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → β₁ i) (hf : ∀ i, f i 0 = 0)
+lemma mapRange_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → β₁ i) (hf : ∀ i, f i 0 = 0)
     (hf₂ : ∀ i, f₂ i 0 = 0) (h : ∀ i, (f i ∘ f₂ i) 0 = 0) (g : Π₀ i : ι, β i) :
     mapRange (fun i => f i ∘ f₂ i) h g = mapRange f hf (mapRange f₂ hf₂ g) := by
   ext
@@ -172,7 +172,7 @@ theorem mapRange_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → �
 #align dfinsupp.map_range_comp DFinsupp.mapRange_comp
 
 @[simp]
-theorem mapRange_zero (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
+lemma mapRange_zero (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
     mapRange f hf (0 : Π₀ i, β₁ i) = 0 := by
   ext
   simp only [mapRange_apply, coe_zero, Pi.zero_apply, hf]
@@ -200,7 +200,7 @@ def zipWith (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0) 
 #align dfinsupp.zip_with DFinsupp.zipWith
 
 @[simp]
-theorem zipWith_apply (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0) (g₁ : Π₀ i, β₁ i)
+lemma zipWith_apply (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0) (g₁ : Π₀ i, β₁ i)
     (g₂ : Π₀ i, β₂ i) (i : ι) : zipWith f hf g₁ g₂ i = f i (g₁ i) (g₂ i) :=
   rfl
 #align dfinsupp.zip_with_apply DFinsupp.zipWith_apply
@@ -215,7 +215,7 @@ def piecewise : Π₀ i, β i :=
   zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 #align dfinsupp.piecewise DFinsupp.piecewise
 
-theorem piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
+lemma piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
   zipWith_apply _ _ x y i
 #align dfinsupp.piecewise_apply DFinsupp.piecewise_apply
 
@@ -560,7 +560,7 @@ section Basic
 
 variable [∀ i, Zero (β i)]
 
-theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } := by
+lemma finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } := by
   classical!
   exact Trunc.induction_on f.support' fun xs =>
         (Multiset.toFinset xs.1).finite_toSet.subset fun i H =>
@@ -581,15 +581,15 @@ lemma mk_apply : (mk s x : ∀ i, β i) i = if H : i ∈ s then x ⟨i, H⟩ els
   rfl
 #align dfinsupp.mk_apply DFinsupp.mk_apply
 
-theorem mk_of_mem (hi : i ∈ s) : (mk s x : ∀ i, β i) i = x ⟨i, hi⟩ :=
+lemma mk_of_mem (hi : i ∈ s) : (mk s x : ∀ i, β i) i = x ⟨i, hi⟩ :=
   dif_pos hi
 #align dfinsupp.mk_of_mem DFinsupp.mk_of_mem
 
-theorem mk_of_not_mem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
+lemma mk_of_not_mem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
   dif_neg hi
 #align dfinsupp.mk_of_not_mem DFinsupp.mk_of_not_mem
 
-theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := by
+lemma mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := by
   intro x y H
   ext i
   have h1 : (mk s x : ∀ i, β i) i = (mk s y : ∀ i, β i) i := by rw [H]
@@ -642,7 +642,7 @@ lemma single_apply {i i' b} :
 #align dfinsupp.single_apply DFinsupp.single_apply
 
 @[simp]
-theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
+lemma single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
   FunLike.coe_injective <| Pi.single_zero _
 #align dfinsupp.single_zero DFinsupp.single_zero
 
@@ -660,7 +660,7 @@ lemma single_injective {i} : Function.Injective (single i : β i → Π₀ i, β
 #align dfinsupp.single_injective DFinsupp.single_injective
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
-theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
+lemma single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
     DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ HEq xi xj ∨ xi = 0 ∧ xj = 0 := by
   constructor
   · intro h
@@ -692,7 +692,7 @@ lemma single_eq_zero {i : ι} {xi : β i} : single i xi = 0 ↔ xi = 0 := by
   simp
 #align dfinsupp.single_eq_zero DFinsupp.single_eq_zero
 
-theorem filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
+lemma filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
     (single i x).filter p = if p i then single i x else 0 := by
   ext j
   have := apply_ite (fun x : Π₀ i, β i => x j) (p i) (single i x) 0
@@ -753,7 +753,7 @@ lemma erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 lemma erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
 #align dfinsupp.erase_ne DFinsupp.erase_ne
 
-theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι)
+lemma piecewise_single_erase (x : Π₀ i, β i) (i : ι)
     [∀ i' : ι, Decidable <| (i' ∈ ({i} : Set ι))] : -- Porting note: added Decidable hypothesis
     (single i (x i)).piecewise (x.erase i) {i} = x := by
   ext j; rw [piecewise_apply]; split_ifs with h
@@ -770,30 +770,30 @@ lemma erase_eq_sub_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π�
 #align dfinsupp.erase_eq_sub_single DFinsupp.erase_eq_sub_single
 
 @[simp]
-theorem erase_zero (i : ι) : erase i (0 : Π₀ i, β i) = 0 :=
+lemma erase_zero (i : ι) : erase i (0 : Π₀ i, β i) = 0 :=
   ext fun _ => ite_self _
 #align dfinsupp.erase_zero DFinsupp.erase_zero
 
 @[simp]
-theorem filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = f.erase i := by
+lemma filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = f.erase i := by
   ext1 j
   simp only [DFinsupp.filter_apply, DFinsupp.erase_apply, ite_not]
 #align dfinsupp.filter_ne_eq_erase DFinsupp.filter_ne_eq_erase
 
 @[simp]
-theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter ((· ≠ ·) i) = f.erase i := by
+lemma filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter ((· ≠ ·) i) = f.erase i := by
   rw [← filter_ne_eq_erase f i]
   congr with j
   exact ne_comm
 #align dfinsupp.filter_ne_eq_erase' DFinsupp.filter_ne_eq_erase'
 
-theorem erase_single (j : ι) (i : ι) (x : β i) :
+lemma erase_single (j : ι) (i : ι) (x : β i) :
     (single i x).erase j = if i = j then 0 else single i x := by
   rw [← filter_ne_eq_erase, filter_single, ite_not]
 #align dfinsupp.erase_single DFinsupp.erase_single
 
 @[simp]
-theorem erase_single_same (i : ι) (x : β i) : (single i x).erase i = 0 := by
+lemma erase_single_same (i : ι) (x : β i) : (single i x).erase i = 0 := by
   rw [erase_single, if_pos rfl]
 #align dfinsupp.erase_single_same DFinsupp.erase_single_same
 
@@ -873,7 +873,7 @@ section AddMonoid
 variable [∀ i, AddZeroClass (β i)]
 
 @[simp]
-theorem single_add (i : ι) (b₁ b₂ : β i) : single i (b₁ + b₂) = single i b₁ + single i b₂ :=
+lemma single_add (i : ι) (b₁ b₂ : β i) : single i (b₁ + b₂) = single i b₁ + single i b₂ :=
   ext fun i' => by
     by_cases h : i = i'
     · subst h
@@ -882,7 +882,7 @@ theorem single_add (i : ι) (b₁ b₂ : β i) : single i (b₁ + b₂) = single
 #align dfinsupp.single_add DFinsupp.single_add
 
 @[simp]
-theorem erase_add (i : ι) (f₁ f₂ : Π₀ i, β i) : erase i (f₁ + f₂) = erase i f₁ + erase i f₂ :=
+lemma erase_add (i : ι) (f₁ f₂ : Π₀ i, β i) : erase i (f₁ + f₂) = erase i f₁ + erase i f₂ :=
   ext fun _ => by simp [ite_zero_add]
 #align dfinsupp.erase_add DFinsupp.erase_add
 
@@ -934,7 +934,7 @@ lemma erase_sub {β : ι → Type v} [∀ i, AddGroup (β i)] (i : ι) (f g : Π
   (eraseAddHom β i).map_sub f g
 #align dfinsupp.erase_sub DFinsupp.erase_sub
 
-theorem single_add_erase (i : ι) (f : Π₀ i, β i) : single i (f i) + f.erase i = f :=
+lemma single_add_erase (i : ι) (f : Π₀ i, β i) : single i (f i) + f.erase i = f :=
   ext fun i' =>
     if h : i = i' then by
       subst h; simp only [add_apply, single_apply, erase_apply, add_zero, dite_eq_ite, if_true]
@@ -942,7 +942,7 @@ theorem single_add_erase (i : ι) (f : Π₀ i, β i) : single i (f i) + f.erase
       simp only [add_apply, single_apply, erase_apply, dif_neg h, if_neg (Ne.symm h), zero_add]
 #align dfinsupp.single_add_erase DFinsupp.single_add_erase
 
-theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f i) = f :=
+lemma erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f i) = f :=
   ext fun i' =>
     if h : i = i' then by
       subst h; simp only [add_apply, single_apply, erase_apply, zero_add, dite_eq_ite, if_true]
@@ -1112,7 +1112,7 @@ lemma support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
 #align dfinsupp.support_mk'_subset DFinsupp.support_mk'_subset
 
 @[simp]
-theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
+lemma mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
   cases' f with f s
   induction' s using Trunc.induction_on with s
   dsimp only [support, Trunc.lift_mk]
@@ -1120,7 +1120,7 @@ theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 
   exact and_iff_right_of_imp (s.prop i).resolve_right
 #align dfinsupp.mem_support_to_fun DFinsupp.mem_support_toFun
 
-theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
+lemma eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
   change f = mk f.support fun i => f i.1
   ext i
   by_cases h : f i ≠ 0 <;> [skip; rw [not_not] at h] <;> simp [h]
@@ -1236,20 +1236,20 @@ lemma support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i
 
 end MapRangeAndZipWith
 
-theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase i) fun j => f j.1 := by
+lemma erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase i) fun j => f j.1 := by
   ext j
   by_cases h1 : j = i <;> by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.erase_def DFinsupp.erase_def
 
 @[simp]
-theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
+lemma support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
   ext j
   by_cases h1 : j = i
   simp [h1]
   by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.support_erase DFinsupp.support_erase
 
-theorem support_update_ne_zero (f : Π₀ i, β i) (i : ι) {b : β i} (h : b ≠ 0) :
+lemma support_update_ne_zero (f : Π₀ i, β i) (i : ι) {b : β i} (h : b ≠ 0) :
     support (f.update i b) = insert i f.support := by
   ext j
   rcases eq_or_ne i j with (rfl | hi)
@@ -1257,7 +1257,7 @@ theorem support_update_ne_zero (f : Π₀ i, β i) (i : ι) {b : β i} (h : b �
   · simp [hi.symm]
 #align dfinsupp.support_update_ne_zero DFinsupp.support_update_ne_zero
 
-theorem support_update (f : Π₀ i, β i) (i : ι) (b : β i) [Decidable (b = 0)] :
+lemma support_update (f : Π₀ i, β i) (i : ι) (b : β i) [Decidable (b = 0)] :
     support (f.update i b) = if b = 0 then support (f.erase i) else insert i f.support := by
   ext j
   split_ifs with hb
@@ -1270,16 +1270,16 @@ section FilterAndSubtypeDomain
 
 variable {p : ι → Prop} [DecidablePred p]
 
-theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fun i => f i.1 := by
+lemma filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fun i => f i.1 := by
   ext i; by_cases h1 : p i <;> by_cases h2 : f i ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.filter_def DFinsupp.filter_def
 
 @[simp]
-theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = f.support.filter p := by
+lemma support_filter (f : Π₀ i, β i) : (f.filter p).support = f.support.filter p := by
   ext i; by_cases h : p i <;> simp [h]
 #align dfinsupp.support_filter DFinsupp.support_filter
 
-theorem subtypeDomain_def (f : Π₀ i, β i) :
+lemma subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
   ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
 #align dfinsupp.subtype_domain_def DFinsupp.subtypeDomain_def
@@ -1965,7 +1965,7 @@ theorem _root_.AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom
 `DFinsupp.sumAddHom` composed with `DFinsupp.filterAddMonoidHom`; that is, every element in the
 bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
-theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
+lemma _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
     ⨆ (i) (_ : p i), S i = -- Porting note: Removing `h` results in a timeout
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
@@ -1995,7 +1995,7 @@ lemma _root_.AddSubmonoid.mem_iSup_iff_exists_dfinsupp' [AddCommMonoid γ] (S : 
   rfl
 #align add_submonoid.mem_supr_iff_exists_dfinsupp' AddSubmonoid.mem_iSup_iff_exists_dfinsupp'
 
-theorem _root_.AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p]
+lemma _root_.AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) (x : γ) :
     (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i, DFinsupp.sumAddHom (fun i => (S i).subtype) (f.filter p) = x :=
@@ -2151,7 +2151,7 @@ section MapRange
 
 variable [∀ i, AddZeroClass (β i)] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]
 
-theorem mapRange_add (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0)
+lemma mapRange_add (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0)
     (hf' : ∀ i x y, f i (x + y) = f i x + f i y) (g₁ g₂ : Π₀ i, β₁ i) :
     mapRange f hf (g₁ + g₂) = mapRange f hf g₁ + mapRange f hf g₂ := by
   ext
@@ -2174,7 +2174,7 @@ lemma mapRange.addMonoidHom_id :
   AddMonoidHom.ext mapRange_id
 #align dfinsupp.map_range.add_monoid_hom_id DFinsupp.mapRange.addMonoidHom_id
 
-theorem mapRange.addMonoidHom_comp (f : ∀ i, β₁ i →+ β₂ i) (f₂ : ∀ i, β i →+ β₁ i) :
+lemma mapRange.addMonoidHom_comp (f : ∀ i, β₁ i →+ β₂ i) (f₂ : ∀ i, β i →+ β₁ i) :
     (mapRange.addMonoidHom fun i => (f i).comp (f₂ i)) =
       (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom f₂) := by
   refine' AddMonoidHom.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x) _ _ _
@@ -2207,7 +2207,7 @@ lemma mapRange.addEquiv_refl :
   AddEquiv.ext mapRange_id
 #align dfinsupp.map_range.add_equiv_refl DFinsupp.mapRange.addEquiv_refl
 
-theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
+lemma mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
     (mapRange.addEquiv fun i => (f i).trans (f₂ i)) =
       (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) := by
   refine' AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) _ _ _
@@ -2217,7 +2217,7 @@ theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β
 #align dfinsupp.map_range.add_equiv_trans DFinsupp.mapRange.addEquiv_trans
 
 @[simp]
-theorem mapRange.addEquiv_symm (e : ∀ i, β₁ i ≃+ β₂ i) :
+lemma mapRange.addEquiv_symm (e : ∀ i, β₁ i ≃+ β₂ i) :
     (mapRange.addEquiv e).symm = mapRange.addEquiv fun i => (e i).symm :=
   rfl
 #align dfinsupp.map_range.add_equiv_symm DFinsupp.mapRange.addEquiv_symm

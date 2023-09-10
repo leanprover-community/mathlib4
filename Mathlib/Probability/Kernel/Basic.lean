@@ -80,7 +80,7 @@ lemma coeFn_zero : ⇑(0 : kernel α β) = 0 :=
 #align probability_theory.kernel.coe_fn_zero ProbabilityTheory.kernel.coeFn_zero
 
 @[simp]
-theorem coeFn_add (κ η : kernel α β) : ⇑(κ + η) = κ + η :=
+lemma coeFn_add (κ η : kernel α β) : ⇑(κ + η) = κ + η :=
   rfl
 #align probability_theory.kernel.coe_fn_add ProbabilityTheory.kernel.coeFn_add
 
@@ -91,20 +91,20 @@ def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
 #align probability_theory.kernel.coe_add_hom ProbabilityTheory.kernel.coeAddHom
 
 @[simp]
-theorem zero_apply (a : α) : (0 : kernel α β) a = 0 :=
+lemma zero_apply (a : α) : (0 : kernel α β) a = 0 :=
   rfl
 #align probability_theory.kernel.zero_apply ProbabilityTheory.kernel.zero_apply
 
 @[simp]
-theorem coe_finset_sum (I : Finset ι) (κ : ι → kernel α β) : ⇑(∑ i in I, κ i) = ∑ i in I, ⇑(κ i) :=
+lemma coe_finset_sum (I : Finset ι) (κ : ι → kernel α β) : ⇑(∑ i in I, κ i) = ∑ i in I, ⇑(κ i) :=
   (coeAddHom α β).map_sum _ _
 #align probability_theory.kernel.coe_finset_sum ProbabilityTheory.kernel.coe_finset_sum
 
-theorem finset_sum_apply (I : Finset ι) (κ : ι → kernel α β) (a : α) :
+lemma finset_sum_apply (I : Finset ι) (κ : ι → kernel α β) (a : α) :
     (∑ i in I, κ i) a = ∑ i in I, κ i a := by rw [coe_finset_sum, Finset.sum_apply]
 #align probability_theory.kernel.finset_sum_apply ProbabilityTheory.kernel.finset_sum_apply
 
-theorem finset_sum_apply' (I : Finset ι) (κ : ι → kernel α β) (a : α) (s : Set β) :
+lemma finset_sum_apply' (I : Finset ι) (κ : ι → kernel α β) (a : α) (s : Set β) :
     (∑ i in I, κ i) a s = ∑ i in I, κ i a s := by rw [finset_sum_apply, Measure.finset_sum_apply]
 #align probability_theory.kernel.finset_sum_apply' ProbabilityTheory.kernel.finset_sum_apply'
 
@@ -129,17 +129,17 @@ noncomputable def IsFiniteKernel.bound (κ : kernel α β) [h : IsFiniteKernel �
   h.exists_univ_le.choose
 #align probability_theory.is_finite_kernel.bound ProbabilityTheory.IsFiniteKernel.bound
 
-theorem IsFiniteKernel.bound_lt_top (κ : kernel α β) [h : IsFiniteKernel κ] :
+lemma IsFiniteKernel.bound_lt_top (κ : kernel α β) [h : IsFiniteKernel κ] :
     IsFiniteKernel.bound κ < ∞ :=
   h.exists_univ_le.choose_spec.1
 #align probability_theory.is_finite_kernel.bound_lt_top ProbabilityTheory.IsFiniteKernel.bound_lt_top
 
-theorem IsFiniteKernel.bound_ne_top (κ : kernel α β) [IsFiniteKernel κ] :
+lemma IsFiniteKernel.bound_ne_top (κ : kernel α β) [IsFiniteKernel κ] :
     IsFiniteKernel.bound κ ≠ ∞ :=
   (IsFiniteKernel.bound_lt_top κ).ne
 #align probability_theory.is_finite_kernel.bound_ne_top ProbabilityTheory.IsFiniteKernel.bound_ne_top
 
-theorem kernel.measure_le_bound (κ : kernel α β) [h : IsFiniteKernel κ] (a : α) (s : Set β) :
+lemma kernel.measure_le_bound (κ : kernel α β) [h : IsFiniteKernel κ] (a : α) (s : Set β) :
     κ a s ≤ IsFiniteKernel.bound κ :=
   (measure_mono (Set.subset_univ s)).trans (h.exists_univ_le.choose_spec.2 a)
 #align probability_theory.kernel.measure_le_bound ProbabilityTheory.kernel.measure_le_bound
@@ -201,11 +201,11 @@ lemma ext_fun_iff {η : kernel α β} :
   ⟨fun h a f _ => by rw [h], ext_fun⟩
 #align probability_theory.kernel.ext_fun_iff ProbabilityTheory.kernel.ext_fun_iff
 
-protected theorem measurable (κ : kernel α β) : Measurable κ :=
+protected lemma measurable (κ : kernel α β) : Measurable κ :=
   κ.prop
 #align probability_theory.kernel.measurable ProbabilityTheory.kernel.measurable
 
-protected theorem measurable_coe (κ : kernel α β) {s : Set β} (hs : MeasurableSet s) :
+protected lemma measurable_coe (κ : kernel α β) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => κ a s :=
   (Measure.measurable_coe hs).comp (kernel.measurable κ)
 #align probability_theory.kernel.measurable_coe ProbabilityTheory.kernel.measurable_coe
@@ -295,11 +295,11 @@ noncomputable def seq (κ : kernel α β) [h : IsSFiniteKernel κ] : ℕ → ker
   h.tsum_finite.choose
 #align probability_theory.kernel.seq ProbabilityTheory.kernel.seq
 
-theorem kernel_sum_seq (κ : kernel α β) [h : IsSFiniteKernel κ] : kernel.sum (seq κ) = κ :=
+lemma kernel_sum_seq (κ : kernel α β) [h : IsSFiniteKernel κ] : kernel.sum (seq κ) = κ :=
   h.tsum_finite.choose_spec.2.symm
 #align probability_theory.kernel.kernel_sum_seq ProbabilityTheory.kernel.kernel_sum_seq
 
-theorem measure_sum_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (a : α) :
+lemma measure_sum_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (a : α) :
     (Measure.sum fun n => seq κ n a) = κ a := by rw [← kernel.sum_apply, kernel_sum_seq κ]
 #align probability_theory.kernel.measure_sum_seq ProbabilityTheory.kernel.measure_sum_seq
 
@@ -442,7 +442,7 @@ def const (α : Type*) {β : Type*} [MeasurableSpace α] {_ : MeasurableSpace β
   property := measurable_const
 #align probability_theory.kernel.const ProbabilityTheory.kernel.const
 
-theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
+lemma const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
   rfl
 #align probability_theory.kernel.const_apply ProbabilityTheory.kernel.const_apply
 
@@ -501,12 +501,12 @@ protected noncomputable def restrict (κ : kernel α β) (hs : MeasurableSet s) 
     exact kernel.measurable_coe κ (ht.inter hs)
 #align probability_theory.kernel.restrict ProbabilityTheory.kernel.restrict
 
-theorem restrict_apply (κ : kernel α β) (hs : MeasurableSet s) (a : α) :
+lemma restrict_apply (κ : kernel α β) (hs : MeasurableSet s) (a : α) :
     kernel.restrict κ hs a = (κ a).restrict s :=
   rfl
 #align probability_theory.kernel.restrict_apply ProbabilityTheory.kernel.restrict_apply
 
-theorem restrict_apply' (κ : kernel α β) (hs : MeasurableSet s) (a : α) (ht : MeasurableSet t) :
+lemma restrict_apply' (κ : kernel α β) (hs : MeasurableSet s) (a : α) (ht : MeasurableSet t) :
     kernel.restrict κ hs a t = (κ a) (t ∩ s) := by
   rw [restrict_apply κ hs a, Measure.restrict_apply ht]
 #align probability_theory.kernel.restrict_apply' ProbabilityTheory.kernel.restrict_apply'
@@ -518,12 +518,12 @@ lemma restrict_univ : kernel.restrict κ MeasurableSet.univ = κ := by
 #align probability_theory.kernel.restrict_univ ProbabilityTheory.kernel.restrict_univ
 
 @[simp]
-theorem lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞) :
+lemma lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞) :
     ∫⁻ b, f b ∂kernel.restrict κ hs a = ∫⁻ b in s, f b ∂κ a := by rw [restrict_apply]
 #align probability_theory.kernel.lintegral_restrict ProbabilityTheory.kernel.lintegral_restrict
 
 @[simp]
-theorem set_lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞)
+lemma set_lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞)
     (t : Set β) : ∫⁻ b in t, f b ∂kernel.restrict κ hs a = ∫⁻ b in t ∩ s, f b ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
 #align probability_theory.kernel.set_lintegral_restrict ProbabilityTheory.kernel.set_lintegral_restrict
@@ -569,18 +569,18 @@ noncomputable def comapRight (κ : kernel α β) (hf : MeasurableEmbedding f) : 
     exact kernel.measurable_coe _ (hf.measurableSet_image.mpr ht)
 #align probability_theory.kernel.comap_right ProbabilityTheory.kernel.comapRight
 
-theorem comapRight_apply (κ : kernel α β) (hf : MeasurableEmbedding f) (a : α) :
+lemma comapRight_apply (κ : kernel α β) (hf : MeasurableEmbedding f) (a : α) :
     comapRight κ hf a = Measure.comap f (κ a) :=
   rfl
 #align probability_theory.kernel.comap_right_apply ProbabilityTheory.kernel.comapRight_apply
 
-theorem comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : α) {t : Set γ}
+lemma comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : α) {t : Set γ}
     (ht : MeasurableSet t) : comapRight κ hf a t = κ a (f '' t) := by
   rw [comapRight_apply,
     Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
 #align probability_theory.kernel.comap_right_apply' ProbabilityTheory.kernel.comapRight_apply'
 
-theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
+lemma IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
   refine' ⟨fun a => ⟨_⟩⟩
   rw [comapRight_apply' κ hf a MeasurableSet.univ]
@@ -625,11 +625,11 @@ def piecewise (hs : MeasurableSet s) (κ η : kernel α β) : kernel α β where
   property := Measurable.piecewise hs (kernel.measurable _) (kernel.measurable _)
 #align probability_theory.kernel.piecewise ProbabilityTheory.kernel.piecewise
 
-theorem piecewise_apply (a : α) : piecewise hs κ η a = if a ∈ s then κ a else η a :=
+lemma piecewise_apply (a : α) : piecewise hs κ η a = if a ∈ s then κ a else η a :=
   rfl
 #align probability_theory.kernel.piecewise_apply ProbabilityTheory.kernel.piecewise_apply
 
-theorem piecewise_apply' (a : α) (t : Set β) :
+lemma piecewise_apply' (a : α) (t : Set β) :
     piecewise hs κ η a t = if a ∈ s then κ a t else η a t := by
   rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.piecewise_apply' ProbabilityTheory.kernel.piecewise_apply'
@@ -656,12 +656,12 @@ protected instance IsSFiniteKernel.piecewise [IsSFiniteKernel κ] [IsSFiniteKern
   split_ifs <;> exact (measure_sum_seq _ a).symm
 #align probability_theory.kernel.is_s_finite_kernel.piecewise ProbabilityTheory.kernel.IsSFiniteKernel.piecewise
 
-theorem lintegral_piecewise (a : α) (g : β → ℝ≥0∞) :
+lemma lintegral_piecewise (a : α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂piecewise hs κ η a = if a ∈ s then ∫⁻ b, g b ∂κ a else ∫⁻ b, g b ∂η a := by
   simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.lintegral_piecewise ProbabilityTheory.kernel.lintegral_piecewise
 
-theorem set_lintegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
+lemma set_lintegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
     ∫⁻ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a :=
   by simp_rw [piecewise_apply]; split_ifs <;> rfl

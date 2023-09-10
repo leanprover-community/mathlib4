@@ -8,7 +8,7 @@ import Mathlib.Algebra.Associated
 -- set_option trace.Meta.Tactic.solveByElim true
 set_option autoImplicit true
 
-theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
+lemma foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 
 /--
 info: Try this: have : List.Disjoint M L := List.disjoint_symm w
@@ -83,7 +83,7 @@ info: Try this: have : ¬IsUnit p := not_unit hp
 -- From Mathlib.Algebra.Associated:
 variable {α : Type} [CommMonoidWithZero α] in
 open Prime in
-theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
+lemma dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction' n with n ih
   · rw [pow_zero] at h
     -- In mathlib, we proceed by two `have` statements:

@@ -68,7 +68,7 @@ lemma SlashInvariantForm.toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun = 
 #align slash_invariant_form_to_fun_eq_coe SlashInvariantForm.toFun_eq_coe
 
 @[simp]
-theorem SlashInvariantForm.coe_mk (f : ℍ → ℂ) (hf : ∀ γ : Γ, f ∣[k] γ = f) : ⇑(mk f hf) = f := rfl
+lemma SlashInvariantForm.coe_mk (f : ℍ → ℂ) (hf : ∀ γ : Γ, f ∣[k] γ = f) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 lemma SlashInvariantForm.ext {f g : SlashInvariantForm Γ k} (h : ∀ x, f x = g x) : f = g :=
@@ -101,7 +101,7 @@ lemma slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) : ↑f
   SlashInvariantFormClass.slash_action_eq f γ
 #align slash_invariant_form.slash_action_eqn SlashInvariantForm.slash_action_eqn
 
-theorem slash_action_eqn' (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [SlashInvariantFormClass F Γ k] (f : F)
+lemma slash_action_eqn' (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [SlashInvariantFormClass F Γ k] (f : F)
     (γ : Γ) (z : ℍ) : f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn]
 #align slash_invariant_form.slash_action_eqn' SlashInvariantForm.slash_action_eqn'
@@ -125,12 +125,12 @@ instance instAdd : Add (SlashInvariantForm Γ k) :=
 #align slash_invariant_form.has_add SlashInvariantForm.instAdd
 
 @[simp]
-theorem coe_add (f g : SlashInvariantForm Γ k) : ⇑(f + g) = f + g :=
+lemma coe_add (f g : SlashInvariantForm Γ k) : ⇑(f + g) = f + g :=
   rfl
 #align slash_invariant_form.coe_add SlashInvariantForm.coe_add
 
 @[simp]
-theorem add_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
+lemma add_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
   rfl
 #align slash_invariant_form.add_apply SlashInvariantForm.add_apply
 
@@ -155,12 +155,12 @@ instance instSMul : SMul α (SlashInvariantForm Γ k) :=
 #align slash_invariant_form.has_smul SlashInvariantForm.instSMul
 
 @[simp]
-theorem coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
+lemma coe_smul (f : SlashInvariantForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
   rfl
 #align slash_invariant_form.coe_smul SlashInvariantForm.coe_smul
 
 @[simp]
-theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
+lemma smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
   rfl
 #align slash_invariant_form.smul_apply SlashInvariantForm.smul_apply
 
@@ -173,12 +173,12 @@ instance instNeg : Neg (SlashInvariantForm Γ k) :=
 #align slash_invariant_form.has_neg SlashInvariantForm.instNeg
 
 @[simp]
-theorem coe_neg (f : SlashInvariantForm Γ k) : ⇑(-f) = -f :=
+lemma coe_neg (f : SlashInvariantForm Γ k) : ⇑(-f) = -f :=
   rfl
 #align slash_invariant_form.coe_neg SlashInvariantForm.coe_neg
 
 @[simp]
-theorem neg_apply (f : SlashInvariantForm Γ k) (z : ℍ) : (-f) z = -f z :=
+lemma neg_apply (f : SlashInvariantForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 #align slash_invariant_form.neg_apply SlashInvariantForm.neg_apply
 
@@ -187,12 +187,12 @@ instance instSub : Sub (SlashInvariantForm Γ k) :=
 #align slash_invariant_form.has_sub SlashInvariantForm.instSub
 
 @[simp]
-theorem coe_sub (f g : SlashInvariantForm Γ k) : ⇑(f - g) = f - g :=
+lemma coe_sub (f g : SlashInvariantForm Γ k) : ⇑(f - g) = f - g :=
   rfl
 #align slash_invariant_form.coe_sub SlashInvariantForm.coe_sub
 
 @[simp]
-theorem sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
+lemma sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 #align slash_invariant_form.sub_apply SlashInvariantForm.sub_apply
 

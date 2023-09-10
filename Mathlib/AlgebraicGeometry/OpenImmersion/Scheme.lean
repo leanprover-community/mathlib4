@@ -244,12 +244,12 @@ def affineBasisCoverRing (X : Scheme) (i : X.affineBasisCover.J) : CommRingCat :
   CommRingCat.of <| @Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2
 #align algebraic_geometry.Scheme.affine_basis_cover_ring AlgebraicGeometry.Scheme.affineBasisCoverRing
 
-theorem affineBasisCover_obj (X : Scheme) (i : X.affineBasisCover.J) :
+lemma affineBasisCover_obj (X : Scheme) (i : X.affineBasisCover.J) :
     X.affineBasisCover.obj i = Spec.obj (op <| X.affineBasisCoverRing i) :=
   rfl
 #align algebraic_geometry.Scheme.affine_basis_cover_obj AlgebraicGeometry.Scheme.affineBasisCover_obj
 
-theorem affineBasisCover_map_range (X : Scheme) (x : X)
+lemma affineBasisCover_map_range (X : Scheme) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.map ⟨x, r⟩).1.base =
       (X.affineCover.map x).1.base '' (PrimeSpectrum.basicOpen r).1 := by
@@ -259,7 +259,7 @@ theorem affineBasisCover_map_range (X : Scheme) (x : X)
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
 #align algebraic_geometry.Scheme.affine_basis_cover_map_range AlgebraicGeometry.Scheme.affineBasisCover_map_range
 
-theorem affineBasisCover_is_basis (X : Scheme) :
+lemma affineBasisCover_is_basis (X : Scheme) :
     TopologicalSpace.IsTopologicalBasis
       {x : Set X |
         ∃ a : X.affineBasisCover.J, x = Set.range (X.affineBasisCover.map a).1.base} := by
@@ -607,11 +607,11 @@ def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
 #align algebraic_geometry.IsOpenImmersion.lift AlgebraicGeometry.IsOpenImmersion.lift
 
 @[simp, reassoc]
-theorem lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g :=
+lemma lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g :=
   LocallyRingedSpace.IsOpenImmersion.lift_fac f g H'
 #align algebraic_geometry.IsOpenImmersion.lift_fac AlgebraicGeometry.IsOpenImmersion.lift_fac
 
-theorem lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
+lemma lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H' :=
   LocallyRingedSpace.IsOpenImmersion.lift_uniq f g H' l hl
 #align algebraic_geometry.IsOpenImmersion.lift_uniq AlgebraicGeometry.IsOpenImmersion.lift_uniq

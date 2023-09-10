@@ -106,7 +106,7 @@ lemma ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 
 /-- `ofFn` on an empty domain is the empty list. -/
 @[simp]
-theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
+lemma ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
   rfl
 #align list.of_fn_zero List.ofFn_zero
 

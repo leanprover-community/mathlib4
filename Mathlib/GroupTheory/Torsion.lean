@@ -86,7 +86,7 @@ variable [Group G] {N : Subgroup G} [Group H]
 
 /-- Subgroups of torsion groups are torsion groups. -/
 @[to_additive "Subgroups of additive torsion groups are additive torsion groups."]
-theorem IsTorsion.subgroup (tG : IsTorsion G) (H : Subgroup G) : IsTorsion H := fun h =>
+lemma IsTorsion.subgroup (tG : IsTorsion G) (H : Subgroup G) : IsTorsion H := fun h =>
   (isOfFinOrder_iff_coe H.toSubmonoid h).mpr <| tG h
 #align is_torsion.subgroup IsTorsion.subgroup
 #align is_torsion.add_subgroup IsTorsion.addSubgroup
@@ -129,7 +129,7 @@ lemma IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN : N
 /-- If a group exponent exists, the group is torsion. -/
 @[to_additive ExponentExists.is_add_torsion
       "If a group exponent exists, the group is additively torsion."]
-theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g => by
+lemma ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g => by
   obtain ⟨n, npos, hn⟩ := h
   exact (isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, npos, hn g⟩
 #align exponent_exists.is_torsion ExponentExists.isTorsion
@@ -138,7 +138,7 @@ theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g =
 /-- The group exponent exists for any bounded torsion group. -/
 @[to_additive IsAddTorsion.exponentExists
       "The group exponent exists for any bounded additive torsion group."]
-theorem IsTorsion.exponentExists (tG : IsTorsion G)
+lemma IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G => orderOf g).Finite) : ExponentExists G :=
   exponentExists_iff_ne_zero.mpr <|
     (exponent_ne_zero_iff_range_orderOf_finite fun g => orderOf_pos' (tG g)).mpr bounded
@@ -236,7 +236,7 @@ variable {G} {p}
 /-- Elements of the `p`-primary component have order `p^n` for some `n`. -/
 @[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
   "Elements of the `p`-primary component have additive order `p^n` for some `n`"]
-theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
+lemma primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
     ∃ n : ℕ, orderOf g = p ^ n := by simpa [primaryComponent] using g.property
 #align comm_monoid.primary_component.exists_order_of_eq_prime_pow CommMonoid.primaryComponent.exists_orderOf_eq_prime_pow
 #align add_comm_monoid.primary_component.exists_order_of_eq_prime_nsmul AddCommMonoid.primaryComponent.exists_orderOf_eq_prime_nsmul
@@ -263,7 +263,7 @@ variable {G}
 
 /-- The torsion submonoid of a torsion monoid is `⊤`. -/
 @[to_additive (attr := simp) "The additive torsion submonoid of an additive torsion monoid is `⊤`."]
-theorem torsion_eq_top (tG : IsTorsion G) : torsion G = ⊤ := by ext; tauto
+lemma torsion_eq_top (tG : IsTorsion G) : torsion G = ⊤ := by ext; tauto
 #align monoid.is_torsion.torsion_eq_top Monoid.IsTorsion.torsion_eq_top
 #align add_monoid.is_torsion.torsion_eq_top AddMonoid.IsTorsion.torsion_eq_top
 
@@ -275,14 +275,14 @@ def torsionMulEquiv (tG : IsTorsion G) : torsion G ≃* G :=
 #align add_monoid.is_torsion.torsion_add_equiv AddMonoid.IsTorsion.torsionAddEquiv
 
 @[to_additive]
-theorem torsionMulEquiv_apply (tG : IsTorsion G) (a : torsion G) :
+lemma torsionMulEquiv_apply (tG : IsTorsion G) (a : torsion G) :
     tG.torsionMulEquiv a = MulEquiv.submonoidCongr tG.torsion_eq_top a :=
   rfl
 #align monoid.is_torsion.torsion_mul_equiv_apply Monoid.IsTorsion.torsionMulEquiv_apply
 #align add_monoid.is_torsion.torsion_add_equiv_apply AddMonoid.IsTorsion.torsionAddEquiv_apply
 
 @[to_additive]
-theorem torsionMulEquiv_symm_apply_coe (tG : IsTorsion G) (a : G) :
+lemma torsionMulEquiv_symm_apply_coe (tG : IsTorsion G) (a : G) :
     tG.torsionMulEquiv.symm a = ⟨Submonoid.topEquiv.symm a, tG _⟩ :=
   rfl
 #align monoid.is_torsion.torsion_mul_equiv_symm_apply_coe Monoid.IsTorsion.torsionMulEquiv_symm_apply_coe
@@ -324,7 +324,7 @@ lemma torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubmon
 #align add_comm_group.add_torsion_eq_add_torsion_submonoid AddCommGroup.add_torsion_eq_add_torsion_submonoid
 
 @[to_additive]
-theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
+lemma mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
 variable (p : ℕ) [hp : Fact p.Prime]
 
@@ -399,7 +399,7 @@ lemma IsTorsionFree.not_torsion [hN : Nontrivial G] : IsTorsionFree G → ¬IsTo
 
 /-- Subgroups of torsion-free groups are torsion-free. -/
 @[to_additive "Subgroups of additive torsion-free groups are additively torsion-free."]
-theorem IsTorsionFree.subgroup (tG : IsTorsionFree G) (H : Subgroup G) : IsTorsionFree H :=
+lemma IsTorsionFree.subgroup (tG : IsTorsionFree G) (H : Subgroup G) : IsTorsionFree H :=
   fun h hne =>
   (isOfFinOrder_iff_coe H.toSubmonoid h).not.mpr <|
     tG h <| by norm_cast

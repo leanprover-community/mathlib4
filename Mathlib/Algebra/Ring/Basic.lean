@@ -50,7 +50,7 @@ variable {F : Type*} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F 
 set_option linter.deprecated false in
 /-- Additive homomorphisms preserve `bit0`. -/
 @[deprecated, simp]
-theorem map_bit0 (f : F) (a : α) : (f (bit0 a) : β) = bit0 (f a) :=
+lemma map_bit0 (f : F) (a : α) : (f (bit0 a) : β) = bit0 (f a) :=
   map_add _ _ _
 #align map_bit0 map_bit0
 
@@ -111,7 +111,7 @@ section Group
 variable [Group α] [HasDistribNeg α]
 
 @[simp]
-theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
+lemma inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
   rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, mul_left_inv]
 #align inv_neg' inv_neg'
 

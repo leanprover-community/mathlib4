@@ -55,17 +55,17 @@ noncomputable def extend (hs : LinearIndependent K ((↑) : s → V)) :
     (SetLike.coe_subset_coe.mp <| by simpa using hs.subset_span_extend (subset_univ s))
 #align basis.extend Basis.extend
 
-theorem extend_apply_self (hs : LinearIndependent K ((↑) : s → V)) (x : hs.extend _) :
+lemma extend_apply_self (hs : LinearIndependent K ((↑) : s → V)) (x : hs.extend _) :
     Basis.extend hs x = x :=
   Basis.mk_apply _ _ _
 #align basis.extend_apply_self Basis.extend_apply_self
 
 @[simp]
-theorem coe_extend (hs : LinearIndependent K ((↑) : s → V)) : ⇑(Basis.extend hs) = ((↑) : _ → _) :=
+lemma coe_extend (hs : LinearIndependent K ((↑) : s → V)) : ⇑(Basis.extend hs) = ((↑) : _ → _) :=
   funext (extend_apply_self hs)
 #align basis.coe_extend Basis.coe_extend
 
-theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
+lemma range_extend (hs : LinearIndependent K ((↑) : s → V)) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
 #align basis.range_extend Basis.range_extend
@@ -115,7 +115,7 @@ instance (priority := 100) _root_.Module.Free.of_divisionRing : Module.Free K V 
   Module.Free.of_basis (ofVectorSpace K V)
 #align module.free.of_division_ring Module.Free.of_divisionRing
 
-theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K V x = x := by
+lemma ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K V x = x := by
   unfold ofVectorSpace
   exact Basis.mk_apply _ _ _
 #align basis.of_vector_space_apply_self Basis.ofVectorSpace_apply_self
@@ -161,7 +161,7 @@ variable {K V}
 
 /-- For a module over a division ring, the span of a nonzero element is an atom of the
 lattice of submodules. -/
-theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodule K V) := by
+lemma nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodule K V) := by
   constructor
   · rw [Submodule.ne_bot_iff]
     exact ⟨v, ⟨mem_span_singleton_self v, hv⟩⟩
@@ -179,7 +179,7 @@ theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodul
 
 /-- The atoms of the lattice of submodules of a module over a division ring are the
 submodules equal to the span of a nonzero element of the module. -/
-theorem atom_iff_nonzero_span (W : Submodule K V) :
+lemma atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ (v : V) (_ : v ≠ 0), W = span K {v} := by
   refine' ⟨fun h => _, fun h => _⟩
   · cases' h with hbot h
@@ -204,7 +204,7 @@ end AtomsOfSubmoduleLattice
 
 variable {K V}
 
-theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
+lemma LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
     ∃ g : V' →ₗ[K] V, g.comp f = LinearMap.id := by
   let B := Basis.ofVectorSpaceIndex K V
   let hB := Basis.ofVectorSpace K V
@@ -227,7 +227,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 #align linear_map.exists_left_inverse_of_injective LinearMap.exists_leftInverse_of_injective
 
-theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
+lemma Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
   let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
 #align submodule.exists_is_compl Submodule.exists_isCompl
@@ -236,7 +236,7 @@ instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K
   ⟨Submodule.exists_isCompl⟩
 #align module.submodule.complemented_lattice Module.Submodule.complementedLattice
 
-theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
+lemma LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
     ∃ g : V' →ₗ[K] V, f.comp g = LinearMap.id := by
   let C := Basis.ofVectorSpaceIndex K V'
   let hC := Basis.ofVectorSpace K V'
@@ -258,7 +258,7 @@ open Submodule LinearMap
 
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
-theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
+lemma Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
   rcases(LinearPMap.supSpanSingleton ⟨p, 0⟩ v (1 : K) hpv).toFun.exists_extend with ⟨f, hf⟩
@@ -272,7 +272,7 @@ theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     simpa using (LinearMap.congr_fun hf _).trans this
 #align submodule.exists_le_ker_of_lt_top Submodule.exists_le_ker_of_lt_top
 
-theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
+lemma quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
   let ⟨q, hq⟩ := p.exists_isCompl
   Nonempty.intro <|
     ((quotientEquivOfIsCompl p q hq).prod (LinearEquiv.refl _ _)).trans

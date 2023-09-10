@@ -175,7 +175,7 @@ def unitCofork (A : (adj).toMonad.Algebra)
 #align category_theory.monad.monadicity_internal.unit_cofork CategoryTheory.Monad.MonadicityInternal.unitCofork
 
 @[simp]
-theorem unitCofork_π (A : (adj).toMonad.Algebra)
+lemma unitCofork_π (A : (adj).toMonad.Algebra)
     [HasCoequalizer ((F).map A.a) ((adj).counit.app ((F).obj A.A))] :
     (unitCofork A).π = G.map (coequalizer.π ((F).map A.a) ((adj).counit.app ((F).obj A.A))) :=
   rfl

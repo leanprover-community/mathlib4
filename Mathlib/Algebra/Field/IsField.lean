@@ -38,13 +38,13 @@ structure IsField (R : Type u) [Semiring R] : Prop where
 #align is_field IsField
 
 /-- Transferring from `Semifield` to `IsField`. -/
-theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
+lemma Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
   { ‹Semifield R› with
     mul_inv_cancel := @fun a ha => ⟨a⁻¹, mul_inv_cancel a ha⟩ }
 #align semifield.to_is_field Semifield.toIsField
 
 /-- Transferring from `Field` to `IsField`. -/
-theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
+lemma Field.toIsField (R : Type u) [Field R] : IsField R :=
   Semifield.toIsField _
 #align field.to_is_field Field.toIsField
 
@@ -54,7 +54,7 @@ lemma IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial 
 #align is_field.nontrivial IsField.nontrivial
 
 @[simp]
-theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
+lemma not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>
   let ⟨_, _, h⟩ := h.exists_pair_ne
   h (Subsingleton.elim _ _)
@@ -81,7 +81,7 @@ noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field 
 Since `IsField` doesn't remember the data of an `inv` function and as such,
 a lemma that there is a unique inverse could be useful.
 -/
-theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
+lemma uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
     ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
   intro x hx
   apply exists_unique_of_exists_of_unique

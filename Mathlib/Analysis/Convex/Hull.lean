@@ -69,16 +69,16 @@ lemma mem_convexHull_iff : x ∈ convexHull 𝕜 s ↔ ∀ t, s ⊆ t → Convex
   simp_rw [convexHull_eq_iInter, mem_iInter]
 #align mem_convex_hull_iff mem_convexHull_iff
 
-theorem convexHull_min (hst : s ⊆ t) (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t :=
+lemma convexHull_min (hst : s ⊆ t) (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t :=
   ClosureOperator.closure_le_mk₃_iff (show s ≤ t from hst) ht
 #align convex_hull_min convexHull_min
 
-theorem Convex.convexHull_subset_iff (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t ↔ s ⊆ t :=
+lemma Convex.convexHull_subset_iff (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t ↔ s ⊆ t :=
   ⟨(subset_convexHull _ _).trans, fun h => convexHull_min h ht⟩
 #align convex.convex_hull_subset_iff Convex.convexHull_subset_iff
 
 @[mono]
-theorem convexHull_mono (hst : s ⊆ t) : convexHull 𝕜 s ⊆ convexHull 𝕜 t :=
+lemma convexHull_mono (hst : s ⊆ t) : convexHull 𝕜 s ⊆ convexHull 𝕜 t :=
   (convexHull 𝕜).monotone hst
 #align convex_hull_mono convexHull_mono
 
@@ -114,12 +114,12 @@ lemma convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := b
 protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
 #align set.nonempty.convex_hull Set.Nonempty.convexHull
 
-theorem segment_subset_convexHull (hx : x ∈ s) (hy : y ∈ s) : segment 𝕜 x y ⊆ convexHull 𝕜 s :=
+lemma segment_subset_convexHull (hx : x ∈ s) (hy : y ∈ s) : segment 𝕜 x y ⊆ convexHull 𝕜 s :=
   (convex_convexHull _ _).segment_subset (subset_convexHull _ _ hx) (subset_convexHull _ _ hy)
 #align segment_subset_convex_hull segment_subset_convexHull
 
 @[simp]
-theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
+lemma convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
   (convex_singleton x).convexHull_eq
 #align convex_hull_singleton convexHull_singleton
 
@@ -129,19 +129,19 @@ lemma convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
 #align convex_hull_zero convexHull_zero
 
 @[simp]
-theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
+lemma convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
   rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 #align convex_hull_pair convexHull_pair
 
-theorem convexHull_convexHull_union_left (s t : Set E) :
+lemma convexHull_convexHull_union_left (s t : Set E) :
     convexHull 𝕜 (convexHull 𝕜 s ∪ t) = convexHull 𝕜 (s ∪ t) :=
   ClosureOperator.closure_sup_closure_left _ _ _
 #align convex_hull_convex_hull_union_left convexHull_convexHull_union_left
 
-theorem convexHull_convexHull_union_right (s t : Set E) :
+lemma convexHull_convexHull_union_right (s t : Set E) :
     convexHull 𝕜 (s ∪ convexHull 𝕜 t) = convexHull 𝕜 (s ∪ t) :=
   ClosureOperator.closure_sup_closure_right _ _ _
 #align convex_hull_convex_hull_union_right convexHull_convexHull_union_right
@@ -173,7 +173,7 @@ lemma IsLinearMap.convexHull_image {f : E → F} (hf : IsLinearMap 𝕜 f) (s : 
         ((convex_convexHull 𝕜 _).is_linear_preimage hf))
 #align is_linear_map.convex_hull_image IsLinearMap.convexHull_image
 
-theorem LinearMap.convexHull_image (f : E →ₗ[𝕜] F) (s : Set E) :
+lemma LinearMap.convexHull_image (f : E →ₗ[𝕜] F) (s : Set E) :
     convexHull 𝕜 (f '' s) = f '' convexHull 𝕜 s :=
   f.isLinear.convexHull_image s
 #align linear_map.convex_hull_image LinearMap.convexHull_image
@@ -186,7 +186,7 @@ section OrderedCommSemiring
 
 variable [OrderedCommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
-theorem convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
+lemma convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
   (LinearMap.lsmul _ _ a).convexHull_image _
 #align convex_hull_smul convexHull_smul
 
@@ -200,7 +200,7 @@ section AddCommGroup
 
 variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] (s : Set E)
 
-theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) :
+lemma AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) := by
   apply Set.Subset.antisymm
   · rw [Set.image_subset_iff]
@@ -222,7 +222,7 @@ lemma affineSpan_convexHull : affineSpan 𝕜 (convexHull 𝕜 s) = affineSpan �
   exact convexHull_subset_affineSpan s
 #align affine_span_convex_hull affineSpan_convexHull
 
-theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
+lemma convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
   simp_rw [← image_neg]
   exact (AffineMap.image_convexHull _ <| -1).symm
 #align convex_hull_neg convexHull_neg

@@ -56,12 +56,12 @@ namespace AEStronglyMeasurable'
 variable {α β 𝕜 : Type*} {m m0 : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
   {f g : α → β}
 
-theorem congr (hf : AEStronglyMeasurable' m f μ) (hfg : f =ᵐ[μ] g) : AEStronglyMeasurable' m g μ :=
+lemma congr (hf : AEStronglyMeasurable' m f μ) (hfg : f =ᵐ[μ] g) : AEStronglyMeasurable' m g μ :=
   by obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas, hfg.symm.trans hff'⟩
 #align measure_theory.ae_strongly_measurable'.congr MeasureTheory.AEStronglyMeasurable'.congr
 
 set_option autoImplicit true in
-theorem mono (hf : AEStronglyMeasurable' m f μ) (hm : m ≤ m') : AEStronglyMeasurable' m' f μ := by
+lemma mono (hf : AEStronglyMeasurable' m f μ) (hm : m ≤ m') : AEStronglyMeasurable' m' f μ := by
   obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas.mono hm, hff'⟩
 
 lemma add [Add β] [ContinuousAdd β] (hf : AEStronglyMeasurable' m f μ)
@@ -279,7 +279,7 @@ variable {ι : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
 
 /-- If `f` belongs to `lpMeasSubgroup F m p μ`, then the measurable function it is almost
 everywhere equal to (given by `AEMeasurable.mk`) belongs to `ℒp` for the measure `μ.trim hm`. -/
-theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
+lemma memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
     (hf_meas : f ∈ lpMeasSubgroup F m p μ) :
     Memℒp (mem_lpMeasSubgroup_iff_aeStronglyMeasurable'.mp hf_meas).choose p (μ.trim hm) := by
   have hf : AEStronglyMeasurable' m f μ :=
@@ -297,7 +297,7 @@ theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
 
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
 `lpMeasSubgroup F m p μ`. -/
-theorem mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
+lemma mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     (memℒp_of_memℒp_trim hm (Lp.memℒp f)).toLp f ∈ lpMeasSubgroup F m p μ := by
   let hf_mem_ℒp := memℒp_of_memℒp_trim hm (Lp.memℒp f)
   rw [mem_lpMeasSubgroup_iff_aeStronglyMeasurable']
@@ -343,34 +343,34 @@ noncomputable def lpTrimToLpMeas (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) : lpM
 
 variable {F 𝕜 p μ}
 
-theorem lpMeasSubgroupToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
+lemma lpMeasSubgroupToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm f =ᵐ[μ] f :=
   -- Porting note: replaced `(↑f)` with `f.1` here.
   (ae_eq_of_ae_eq_trim (Memℒp.coeFn_toLp (memℒp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem))).trans
     (mem_lpMeasSubgroup_iff_aeStronglyMeasurable'.mp f.mem).choose_spec.2.symm
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_ae_eq MeasureTheory.lpMeasSubgroupToLpTrim_ae_eq
 
-theorem lpTrimToLpMeasSubgroup_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
+lemma lpTrimToLpMeasSubgroup_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     lpTrimToLpMeasSubgroup F p μ hm f =ᵐ[μ] f :=
   -- Porting note: filled in the argument
   Memℒp.coeFn_toLp (memℒp_of_memℒp_trim hm (Lp.memℒp f))
 #align measure_theory.Lp_trim_to_Lp_meas_subgroup_ae_eq MeasureTheory.lpTrimToLpMeasSubgroup_ae_eq
 
-theorem lpMeasToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) :
+lemma lpMeasToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) :
     lpMeasToLpTrim F 𝕜 p μ hm f =ᵐ[μ] f :=
   -- Porting note: replaced `(↑f)` with `f.1` here.
   (ae_eq_of_ae_eq_trim (Memℒp.coeFn_toLp (memℒp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem))).trans
     (mem_lpMeasSubgroup_iff_aeStronglyMeasurable'.mp f.mem).choose_spec.2.symm
 #align measure_theory.Lp_meas_to_Lp_trim_ae_eq MeasureTheory.lpMeasToLpTrim_ae_eq
 
-theorem lpTrimToLpMeas_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
+lemma lpTrimToLpMeas_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     lpTrimToLpMeas F 𝕜 p μ hm f =ᵐ[μ] f :=
   -- Porting note: filled in the argument
   Memℒp.coeFn_toLp (memℒp_of_memℒp_trim hm (Lp.memℒp f))
 #align measure_theory.Lp_trim_to_Lp_meas_ae_eq MeasureTheory.lpTrimToLpMeas_ae_eq
 
 /-- `lpTrimToLpMeasSubgroup` is a right inverse of `lpMeasSubgroupToLpTrim`. -/
-theorem lpMeasSubgroupToLpTrim_right_inv (hm : m ≤ m0) :
+lemma lpMeasSubgroupToLpTrim_right_inv (hm : m ≤ m0) :
     Function.RightInverse (lpTrimToLpMeasSubgroup F p μ hm) (lpMeasSubgroupToLpTrim F p μ hm) := by
   intro f
   ext1
@@ -380,7 +380,7 @@ theorem lpMeasSubgroupToLpTrim_right_inv (hm : m ≤ m0) :
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_right_inv MeasureTheory.lpMeasSubgroupToLpTrim_right_inv
 
 /-- `lpTrimToLpMeasSubgroup` is a left inverse of `lpMeasSubgroupToLpTrim`. -/
-theorem lpMeasSubgroupToLpTrim_left_inv (hm : m ≤ m0) :
+lemma lpMeasSubgroupToLpTrim_left_inv (hm : m ≤ m0) :
     Function.LeftInverse (lpTrimToLpMeasSubgroup F p μ hm) (lpMeasSubgroupToLpTrim F p μ hm) := by
   intro f
   ext1
@@ -389,7 +389,7 @@ theorem lpMeasSubgroupToLpTrim_left_inv (hm : m ≤ m0) :
   exact (lpTrimToLpMeasSubgroup_ae_eq hm _).trans (lpMeasSubgroupToLpTrim_ae_eq hm _)
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_left_inv MeasureTheory.lpMeasSubgroupToLpTrim_left_inv
 
-theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
+lemma lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (f + g) =
       lpMeasSubgroupToLpTrim F p μ hm f + lpMeasSubgroupToLpTrim F p μ hm g := by
   ext1
@@ -406,7 +406,7 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
   exact eventually_of_forall fun x => by rfl
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_add MeasureTheory.lpMeasSubgroupToLpTrim_add
 
-theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
+lemma lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (-f) = -lpMeasSubgroupToLpTrim F p μ hm f := by
   ext1
   refine' EventuallyEq.trans _ (Lp.coeFn_neg _).symm
@@ -419,14 +419,14 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   exact eventually_of_forall fun x => by rfl
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_neg MeasureTheory.lpMeasSubgroupToLpTrim_neg
 
-theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
+lemma lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (f - g) =
       lpMeasSubgroupToLpTrim F p μ hm f - lpMeasSubgroupToLpTrim F p μ hm g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, lpMeasSubgroupToLpTrim_add,
     lpMeasSubgroupToLpTrim_neg]
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_sub MeasureTheory.lpMeasSubgroupToLpTrim_sub
 
-theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ) :
+lemma lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ) :
     lpMeasToLpTrim F 𝕜 p μ hm (c • f) = c • lpMeasToLpTrim F 𝕜 p μ hm f := by
   ext1
   refine' EventuallyEq.trans _ (Lp.coeFn_smul _ _).symm
@@ -521,7 +521,7 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α}
 /-- We do not get `ae_fin_strongly_measurable f (μ.trim hm)`, since we don't have
 `f =ᵐ[μ.trim hm] Lp_meas_to_Lp_trim F 𝕜 p μ hm f` but only the weaker
 `f =ᵐ[μ] Lp_meas_to_Lp_trim F 𝕜 p μ hm f`. -/
-theorem lpMeas.ae_fin_strongly_measurable' (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) (hp_ne_zero : p ≠ 0)
+lemma lpMeas.ae_fin_strongly_measurable' (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) :
     -- Porting note: changed `f` to `f.1` in the next line. Not certain this is okay.
     ∃ g, FinStronglyMeasurable g (μ.trim hm) ∧ f.1 =ᵐ[μ] g :=
@@ -565,7 +565,7 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α} [Fact (1 ≤ p)] [NormedS
 
 /-- Auxiliary lemma for `Lp.induction_stronglyMeasurable`. -/
 @[elab_as_elim]
-theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
+lemma Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
     (h_ind : ∀ (c : F) {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s < ∞),
       P (Lp.simpleFunc.indicatorConst p (hm s hs) hμs.ne c))
     (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, ∀ _ : AEStronglyMeasurable' m f μ,
@@ -618,7 +618,7 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
   closed.
 -/
 @[elab_as_elim]
-theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
+lemma Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
     (h_ind : ∀ (c : F) {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s < ∞),
       P (Lp.simpleFunc.indicatorConst p (hm s hs) hμs.ne c))
     (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, ∀ _ : StronglyMeasurable[m] f,
@@ -684,7 +684,7 @@ to a sub-σ-algebra `m` in a normed space, it suffices to show that
 * the property is closed under the almost-everywhere equal relation.
 -/
 @[elab_as_elim]
-theorem Memℒp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : (α → F) → Prop)
+lemma Memℒp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : (α → F) → Prop)
     (h_ind : ∀ (c : F) ⦃s⦄, MeasurableSet[m] s → μ s < ∞ → P (s.indicator fun _ => c))
     (h_add : ∀ ⦃f g : α → F⦄, Disjoint (Function.support f) (Function.support g) →
       Memℒp f p μ → Memℒp g p μ → StronglyMeasurable[m] f → StronglyMeasurable[m] g →

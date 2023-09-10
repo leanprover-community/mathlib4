@@ -32,27 +32,27 @@ def fold : α → Multiset α → α :=
   foldr op (left_comm _ hc.comm ha.assoc)
 #align multiset.fold Multiset.fold
 
-theorem fold_eq_foldr (b : α) (s : Multiset α) :
+lemma fold_eq_foldr (b : α) (s : Multiset α) :
     fold op b s = foldr op (left_comm _ hc.comm ha.assoc) b s :=
   rfl
 #align multiset.fold_eq_foldr Multiset.fold_eq_foldr
 
 @[simp]
-theorem coe_fold_r (b : α) (l : List α) : fold op b l = l.foldr op b :=
+lemma coe_fold_r (b : α) (l : List α) : fold op b l = l.foldr op b :=
   rfl
 #align multiset.coe_fold_r Multiset.coe_fold_r
 
-theorem coe_fold_l (b : α) (l : List α) : fold op b l = l.foldl op b :=
+lemma coe_fold_l (b : α) (l : List α) : fold op b l = l.foldl op b :=
   (coe_foldr_swap op _ b l).trans <| by simp [hc.comm]
 #align multiset.coe_fold_l Multiset.coe_fold_l
 
-theorem fold_eq_foldl (b : α) (s : Multiset α) :
+lemma fold_eq_foldl (b : α) (s : Multiset α) :
     fold op b s = foldl op (right_comm _ hc.comm ha.assoc) b s :=
   Quot.inductionOn s fun _ => coe_fold_l _ _ _
 #align multiset.fold_eq_foldl Multiset.fold_eq_foldl
 
 @[simp]
-theorem fold_zero (b : α) : (0 : Multiset α).fold op b = b :=
+lemma fold_zero (b : α) : (0 : Multiset α).fold op b = b :=
   rfl
 #align multiset.fold_zero Multiset.fold_zero
 
@@ -61,19 +61,19 @@ lemma fold_cons_left : ∀ (b a : α) (s : Multiset α), (a ::ₘ s).fold op b =
   foldr_cons _ _
 #align multiset.fold_cons_left Multiset.fold_cons_left
 
-theorem fold_cons_right (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op b * a := by
+lemma fold_cons_right (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op b * a := by
   simp [hc.comm]
 #align multiset.fold_cons_right Multiset.fold_cons_right
 
-theorem fold_cons'_right (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op (b * a) := by
+lemma fold_cons'_right (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op (b * a) := by
   rw [fold_eq_foldl, foldl_cons, ← fold_eq_foldl]
 #align multiset.fold_cons'_right Multiset.fold_cons'_right
 
-theorem fold_cons'_left (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op (a * b) := by
+lemma fold_cons'_left (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op (a * b) := by
   rw [fold_cons'_right, hc.comm]
 #align multiset.fold_cons'_left Multiset.fold_cons'_left
 
-theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
+lemma fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
     (s₁ + s₂).fold op (b₁ * b₂) = s₁.fold op b₁ * s₂.fold op b₂ :=
   Multiset.induction_on s₂ (by rw [add_zero, fold_zero, ← fold_cons'_right, ← fold_cons_right op])
     (fun a b h => by rw [fold_cons_left, add_cons, fold_cons_left, h, ← ha.assoc, hc.comm a,
@@ -88,7 +88,7 @@ lemma fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι 
   · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 #align multiset.fold_bind Multiset.fold_bind
 
-theorem fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
+lemma fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
   foldr_singleton _ _ _ _
 #align multiset.fold_singleton Multiset.fold_singleton
 
@@ -130,7 +130,7 @@ lemma max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddMonoid α] (l
   simpa using List.max_le_of_forall_le _ _ h
 #align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
 
-theorem max_nat_le_of_forall_le (l : Multiset ℕ) (n : ℕ) (h : ∀ x ∈ l, x ≤ n) : l.fold max 0 ≤ n :=
+lemma max_nat_le_of_forall_le (l : Multiset ℕ) (n : ℕ) (h : ∀ x ∈ l, x ≤ n) : l.fold max 0 ≤ n :=
   max_le_of_forall_le l n h
 #align multiset.max_nat_le_of_forall_le Multiset.max_nat_le_of_forall_le
 

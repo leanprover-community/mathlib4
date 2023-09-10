@@ -72,7 +72,7 @@ lemma neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : �
 
 /-- If all elements in a list are bounded below by `1`, then the length of the list is bounded
 by the sum of the elements. -/
-theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum := by
+lemma length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum := by
   induction' L with j L IH h; · simp
   rw [sum_cons, length, add_comm]
   exact add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
@@ -145,7 +145,7 @@ lemma op_list_prod : ∀ l : List M, op l.prod = (l.map op).reverse.prod := by
     rw [List.prod_cons, List.map_cons, List.reverse_cons', List.prod_concat, op_mul, ih]
 #align mul_opposite.op_list_prod MulOpposite.op_list_prod
 
-theorem unop_list_prod (l : List Mᵐᵒᵖ) : l.prod.unop = (l.map unop).reverse.prod := by
+lemma unop_list_prod (l : List Mᵐᵒᵖ) : l.prod.unop = (l.map unop).reverse.prod := by
   rw [← op_inj, op_unop, MulOpposite.op_list_prod, map_reverse, map_map, reverse_reverse,
     op_comp_unop, map_id]
 #align mul_opposite.unop_list_prod MulOpposite.unop_list_prod
@@ -166,7 +166,7 @@ namespace MonoidHom
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
 @[deprecated _root_.unop_map_list_prod]
-protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
+protected lemma unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l
 #align monoid_hom.unop_map_list_prod MonoidHom.unop_map_list_prod

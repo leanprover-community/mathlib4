@@ -156,7 +156,7 @@ lemma compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
 #align category_theory.compatible_preserving_of_flat CategoryTheory.compatiblePreservingOfFlat
 
-theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [Full F] [Faithful F]
+lemma compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [Full F] [Faithful F]
     (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor
   introv hx he

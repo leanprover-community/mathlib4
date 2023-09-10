@@ -45,12 +45,12 @@ def mapEquiv (h : M ≃* N) : Mˣ ≃* Nˣ :=
 #align units.map_equiv Units.mapEquiv
 
 @[simp]
-theorem mapEquiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=
+lemma mapEquiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=
   rfl
 #align units.map_equiv_symm Units.mapEquiv_symm
 
 @[simp]
-theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
+lemma coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
   rfl
 #align units.coe_map_equiv Units.coe_mapEquiv
 
@@ -68,13 +68,13 @@ def mulLeft (u : Mˣ) : Equiv.Perm M where
 #align add_units.add_left_apply AddUnits.addLeft_apply
 
 @[to_additive (attr := simp)]
-theorem mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
+lemma mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
   Equiv.ext fun _ => rfl
 #align units.mul_left_symm Units.mulLeft_symm
 #align add_units.add_left_symm AddUnits.addLeft_symm
 
 @[to_additive]
-theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
+lemma mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
   (mulLeft a).bijective
 #align units.mul_left_bijective Units.mulLeft_bijective
 #align add_units.add_left_bijective AddUnits.addLeft_bijective
@@ -93,13 +93,13 @@ def mulRight (u : Mˣ) : Equiv.Perm M where
 #align add_units.add_right_apply AddUnits.addRight_apply
 
 @[to_additive (attr := simp)]
-theorem mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
+lemma mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
   Equiv.ext fun _ => rfl
 #align units.mul_right_symm Units.mulRight_symm
 #align add_units.add_right_symm AddUnits.addRight_symm
 
 @[to_additive]
-theorem mulRight_bijective (a : Mˣ) : Function.Bijective ((· * a) : M → M) :=
+lemma mulRight_bijective (a : Mˣ) : Function.Bijective ((· * a) : M → M) :=
   (mulRight a).bijective
 #align units.mul_right_bijective Units.mulRight_bijective
 #align add_units.add_right_bijective AddUnits.addRight_bijective
@@ -120,7 +120,7 @@ protected def mulLeft (a : G) : Perm G :=
 #align equiv.add_left Equiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
+lemma coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
   rfl
 #align equiv.coe_mul_left Equiv.coe_mulLeft
 #align equiv.coe_add_left Equiv.coe_addLeft
@@ -130,19 +130,19 @@ theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
   simp, nolint simpNF]
-theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
+lemma mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
   rfl
 #align equiv.mul_left_symm_apply Equiv.mulLeft_symm_apply
 #align equiv.add_left_symm_apply Equiv.addLeft_symm_apply
 
 @[to_additive (attr := simp)]
-theorem mulLeft_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
+lemma mulLeft_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
   ext fun _ => rfl
 #align equiv.mul_left_symm Equiv.mulLeft_symm
 #align equiv.add_left_symm Equiv.addLeft_symm
 
 @[to_additive]
-theorem _root_.Group.mulLeft_bijective (a : G) : Function.Bijective (a * ·) :=
+lemma _root_.Group.mulLeft_bijective (a : G) : Function.Bijective (a * ·) :=
   (Equiv.mulLeft a).bijective
 #align group.mul_left_bijective Group.mulLeft_bijective
 #align add_group.add_left_bijective AddGroup.addLeft_bijective
@@ -155,13 +155,13 @@ protected def mulRight (a : G) : Perm G :=
 #align equiv.add_right Equiv.addRight
 
 @[to_additive (attr := simp)]
-theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
+lemma coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
   rfl
 #align equiv.coe_mul_right Equiv.coe_mulRight
 #align equiv.coe_add_right Equiv.coe_addRight
 
 @[to_additive (attr := simp)]
-theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ :=
+lemma mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ :=
   ext fun _ => rfl
 #align equiv.mul_right_symm Equiv.mulRight_symm
 #align equiv.add_right_symm Equiv.addRight_symm
@@ -169,13 +169,13 @@ theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
   simp, nolint simpNF]
-theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
+lemma mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
   rfl
 #align equiv.mul_right_symm_apply Equiv.mulRight_symm_apply
 #align equiv.add_right_symm_apply Equiv.addRight_symm_apply
 
 @[to_additive]
-theorem _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=
+lemma _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=
   (Equiv.mulRight a).bijective
 #align group.mul_right_bijective Group.mulRight_bijective
 #align add_group.add_right_bijective AddGroup.addRight_bijective
@@ -195,7 +195,7 @@ protected def divLeft (a : G) : G ≃ G where
 #align equiv.sub_left_symm_apply Equiv.subLeft_symm_apply
 
 @[to_additive]
-theorem divLeft_eq_inv_trans_mulLeft (a : G) :
+lemma divLeft_eq_inv_trans_mulLeft (a : G) :
     Equiv.divLeft a = (Equiv.inv G).trans (Equiv.mulLeft a) :=
   ext fun _ => div_eq_mul_inv _ _
 #align equiv.div_left_eq_inv_trans_mul_left Equiv.divLeft_eq_inv_trans_mulLeft
@@ -217,7 +217,7 @@ protected def divRight (a : G) : G ≃
 #align equiv.sub_right_apply Equiv.subRight_apply
 
 @[to_additive]
-theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a⁻¹ :=
+lemma divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a⁻¹ :=
   ext fun _ => div_eq_mul_inv _ _
 #align equiv.div_right_eq_mul_right_inv Equiv.divRight_eq_mulRight_inv
 #align equiv.sub_right_eq_add_right_neg Equiv.subRight_eq_addRight_neg
@@ -242,7 +242,7 @@ def MulEquiv.inv (G : Type*) [DivisionCommMonoid G] : G ≃* G :=
 #align add_equiv.neg_apply AddEquiv.neg_apply
 
 @[to_additive (attr := simp)]
-theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
+lemma MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm

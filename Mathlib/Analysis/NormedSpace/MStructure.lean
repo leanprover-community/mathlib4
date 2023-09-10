@@ -98,7 +98,7 @@ lemma Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
     exact h.Lnorm x⟩
 #align is_Lprojection.Lcomplement IsLprojection.Lcomplement
 
-theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) :=
+lemma Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) :=
   ⟨Lcomplement, fun h => sub_sub_cancel 1 P ▸ h.Lcomplement⟩
 #align is_Lprojection.Lcomplement_iff IsLprojection.Lcomplement_iff
 
@@ -174,7 +174,7 @@ instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
-theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑P :=
+lemma coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑P :=
   rfl
 #align is_Lprojection.coe_compl IsLprojection.coe_compl
 

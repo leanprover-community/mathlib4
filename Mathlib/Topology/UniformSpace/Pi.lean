@@ -50,7 +50,7 @@ lemma uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α 
 
 variable (α)
 
-theorem Pi.uniformContinuous_proj (i : ι) : UniformContinuous fun a : ∀ i : ι, α i => a i :=
+lemma Pi.uniformContinuous_proj (i : ι) : UniformContinuous fun a : ∀ i : ι, α i => a i :=
   uniformContinuous_pi.1 uniformContinuous_id i
 #align Pi.uniform_continuous_proj Pi.uniformContinuous_proj
 

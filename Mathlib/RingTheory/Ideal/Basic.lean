@@ -72,12 +72,12 @@ lemma ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
 #align ideal.ext Ideal.ext
 
-theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
+lemma sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
     (∀ c ∈ t, f c ∈ I) → (∑ i in t, f i) ∈ I :=
   Submodule.sum_mem I
 #align ideal.sum_mem Ideal.sum_mem
 
-theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
+lemma eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc
       z = z * (y * x) := by simp [h]
@@ -126,7 +126,7 @@ lemma span_univ : span (Set.univ : Set α) = ⊤ :=
   Submodule.span_univ
 #align ideal.span_univ Ideal.span_univ
 
-theorem span_union (s t : Set α) : span (s ∪ t) = span s ⊔ span t :=
+lemma span_union (s t : Set α) : span (s ∪ t) = span s ⊔ span t :=
   Submodule.span_union _ _
 #align ideal.span_union Ideal.span_union
 
@@ -179,7 +179,7 @@ lemma span_singleton_mul_left_unit {a : α} (h2 : IsUnit a) (x : α) :
   exacts [⟨a, rfl⟩, ⟨_, h2.unit.inv_mul_cancel_left x⟩]
 #align ideal.span_singleton_mul_left_unit Ideal.span_singleton_mul_left_unit
 
-theorem span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
+lemma span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
   Submodule.span_insert x s
 #align ideal.span_insert Ideal.span_insert
 
@@ -207,7 +207,7 @@ lemma span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span
 lemma span_one : span (1 : Set α) = ⊤ := by rw [← Set.singleton_one, span_singleton_one]
 #align ideal.span_one Ideal.span_one
 
-theorem span_eq_top_iff_finite (s : Set α) :
+lemma span_eq_top_iff_finite (s : Set α) :
     span s = ⊤ ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ span (s' : Set α) = ⊤ := by
   simp_rw [eq_top_iff_one]
   exact ⟨Submodule.mem_span_finite_of_mem_span, fun ⟨s', h₁, h₂⟩ => span_mono h₁ h₂⟩
@@ -327,7 +327,7 @@ lemma IsMaximal.coprime_of_ne {M M' : Ideal α} (hM : M.IsMaximal) (hM' : M'.IsM
 
 /-- **Krull's theorem**: if `I` is an ideal that is not the whole ring, then it is included in some
     maximal ideal. -/
-theorem exists_le_maximal (I : Ideal α) (hI : I ≠ ⊤) : ∃ M : Ideal α, M.IsMaximal ∧ I ≤ M :=
+lemma exists_le_maximal (I : Ideal α) (hI : I ≠ ⊤) : ∃ M : Ideal α, M.IsMaximal ∧ I ≤ M :=
   let ⟨m, hm⟩ := (eq_top_or_exists_le_coatom I).resolve_left hI
   ⟨m, ⟨⟨hm.1⟩, hm.2⟩⟩
 #align ideal.exists_le_maximal Ideal.exists_le_maximal
@@ -451,7 +451,7 @@ def pi : Ideal (ι → α) where
   smul_mem' a _b hb i := I.mul_mem_left (a i) (hb i)
 #align ideal.pi Ideal.pi
 
-theorem mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
+lemma mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
   Iff.rfl
 #align ideal.mem_pi Ideal.mem_pi
 
@@ -496,7 +496,7 @@ lemma mem_span_singleton {x y : α} : x ∈ span ({y} : Set α) ↔ y ∣ x :=
   mem_span_singleton'.trans <| exists_congr fun _ => by rw [eq_comm, mul_comm]
 #align ideal.mem_span_singleton Ideal.mem_span_singleton
 
-theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
+lemma mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
   mem_span_singleton.mpr dvd_rfl
 #align ideal.mem_span_singleton_self Ideal.mem_span_singleton_self
 
@@ -559,13 +559,13 @@ lemma factors_decreasing [CommRing β] [IsDomain β] (b₁ b₂ : β) (h₁ : b�
 
 variable (b)
 
-theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
+lemma mul_mem_right (h : a ∈ I) : a * b ∈ I :=
   mul_comm b a ▸ I.mul_mem_left b h
 #align ideal.mul_mem_right Ideal.mul_mem_right
 
 variable {b}
 
-theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
+lemma pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))
     (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_right (a ^ m) ha) hn
 #align ideal.pow_mem_of_mem Ideal.pow_mem_of_mem
@@ -616,7 +616,7 @@ lemma sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
 #align ideal.sum_pow_mem_span_pow Ideal.sum_pow_mem_span_pow
 
-theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
+lemma span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
   rw [eq_top_iff_one]
   cases' n with n
@@ -672,7 +672,7 @@ lemma mem_span_insert' {s : Set α} {x y} : x ∈ span (insert y s) ↔ ∃ a, x
 #align ideal.mem_span_insert' Ideal.mem_span_insert'
 
 @[simp]
-theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
+lemma span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
   ext
   simp only [mem_span_singleton']
   exact ⟨fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_comm y x⟩, fun ⟨y, h⟩ => ⟨-y, h ▸ neg_mul_neg y x⟩⟩
@@ -804,7 +804,7 @@ namespace Ideal
 
 variable {R : Type u} [CommRing R] [Nontrivial R]
 
-theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
+lemma bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
   rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩
   constructor; · simp
   intro mle

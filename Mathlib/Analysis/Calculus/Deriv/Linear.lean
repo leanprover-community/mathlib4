@@ -67,7 +67,7 @@ protected lemma ContinuousLinearMap.deriv : deriv e x = e 1 :=
   e.hasDerivAt.deriv
 #align continuous_linear_map.deriv ContinuousLinearMap.deriv
 
-protected theorem ContinuousLinearMap.derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
+protected lemma ContinuousLinearMap.derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin e s x = e 1 :=
   e.hasDerivWithinAt.derivWithin hxs
 #align continuous_linear_map.deriv_within ContinuousLinearMap.derivWithin
@@ -101,7 +101,7 @@ protected lemma LinearMap.deriv : deriv e x = e 1 :=
   e.hasDerivAt.deriv
 #align linear_map.deriv LinearMap.deriv
 
-protected theorem LinearMap.derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
+protected lemma LinearMap.derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin e s x = e 1 :=
   e.hasDerivWithinAt.derivWithin hxs
 #align linear_map.deriv_within LinearMap.derivWithin

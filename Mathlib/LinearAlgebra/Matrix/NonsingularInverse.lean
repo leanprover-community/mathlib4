@@ -161,19 +161,19 @@ lemma isUnit_det_of_invertible [Invertible A] : IsUnit A.det :=
 
 variable {A B}
 
-theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
+lemma isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
   ⟨⟨A, B, mul_eq_one_comm.mp h, h⟩, rfl⟩
 #align matrix.is_unit_of_left_inverse Matrix.isUnit_of_left_inverse
 
-theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
+lemma isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
   ⟨⟨A, B, h, mul_eq_one_comm.mp h⟩, rfl⟩
 #align matrix.is_unit_of_right_inverse Matrix.isUnit_of_right_inverse
 
-theorem isUnit_det_of_left_inverse (h : B * A = 1) : IsUnit A.det :=
+lemma isUnit_det_of_left_inverse (h : B * A = 1) : IsUnit A.det :=
   @isUnit_of_invertible _ _ _ (detInvertibleOfLeftInverse _ _ h)
 #align matrix.is_unit_det_of_left_inverse Matrix.isUnit_det_of_left_inverse
 
-theorem isUnit_det_of_right_inverse (h : A * B = 1) : IsUnit A.det :=
+lemma isUnit_det_of_right_inverse (h : A * B = 1) : IsUnit A.det :=
   @isUnit_of_invertible _ _ _ (detInvertibleOfRightInverse _ _ h)
 #align matrix.is_unit_det_of_right_inverse Matrix.isUnit_det_of_right_inverse
 
@@ -191,7 +191,7 @@ variable [Fintype n] [DecidableEq n] [CommRing α]
 
 variable (A : Matrix n n α) (B : Matrix n n α)
 
-theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
+lemma isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
   rw [det_transpose]
   exact h
 #align matrix.is_unit_det_transpose Matrix.isUnit_det_transpose
@@ -203,15 +203,15 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
 noncomputable instance inv : Inv (Matrix n n α) :=
   ⟨fun A => Ring.inverse A.det • A.adjugate⟩
 
-theorem inv_def (A : Matrix n n α) : A⁻¹ = Ring.inverse A.det • A.adjugate :=
+lemma inv_def (A : Matrix n n α) : A⁻¹ = Ring.inverse A.det • A.adjugate :=
   rfl
 #align matrix.inv_def Matrix.inv_def
 
-theorem nonsing_inv_apply_not_isUnit (h : ¬IsUnit A.det) : A⁻¹ = 0 := by
+lemma nonsing_inv_apply_not_isUnit (h : ¬IsUnit A.det) : A⁻¹ = 0 := by
   rw [inv_def, Ring.inverse_non_unit _ h, zero_smul]
 #align matrix.nonsing_inv_apply_not_is_unit Matrix.nonsing_inv_apply_not_isUnit
 
-theorem nonsing_inv_apply (h : IsUnit A.det) : A⁻¹ = (↑h.unit⁻¹ : α) • A.adjugate := by
+lemma nonsing_inv_apply (h : IsUnit A.det) : A⁻¹ = (↑h.unit⁻¹ : α) • A.adjugate := by
   rw [inv_def, ← Ring.inverse_unit h.unit, IsUnit.unit_spec]
 #align matrix.nonsing_inv_apply Matrix.nonsing_inv_apply
 
@@ -225,7 +225,7 @@ lemma invOf_eq_nonsing_inv [Invertible A] : ⅟ A = A⁻¹ := by
 /-- Coercing the result of `Units.instInv` is the same as coercing first and applying the
 nonsingular inverse. -/
 @[simp, norm_cast]
-theorem coe_units_inv (A : (Matrix n n α)ˣ) : ↑A⁻¹ = (A⁻¹ : Matrix n n α) := by
+lemma coe_units_inv (A : (Matrix n n α)ˣ) : ↑A⁻¹ = (A⁻¹ : Matrix n n α) := by
   letI := A.invertible
   rw [← invOf_eq_nonsing_inv, invOf_units]
 #align matrix.coe_units_inv Matrix.coe_units_inv
@@ -250,14 +250,14 @@ lemma conjTranspose_nonsing_inv [StarRing α] : A⁻¹ᴴ = Aᴴ⁻¹ := by
 
 /-- The `nonsing_inv` of `A` is a right inverse. -/
 @[simp]
-theorem mul_nonsing_inv (h : IsUnit A.det) : A * A⁻¹ = 1 := by
+lemma mul_nonsing_inv (h : IsUnit A.det) : A * A⁻¹ = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible
   rw [← invOf_eq_nonsing_inv, mul_invOf_self]
 #align matrix.mul_nonsing_inv Matrix.mul_nonsing_inv
 
 /-- The `nonsing_inv` of `A` is a left inverse. -/
 @[simp]
-theorem nonsing_inv_mul (h : IsUnit A.det) : A⁻¹ * A = 1 := by
+lemma nonsing_inv_mul (h : IsUnit A.det) : A⁻¹ * A = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible
   rw [← invOf_eq_nonsing_inv, invOf_mul_self]
 #align matrix.nonsing_inv_mul Matrix.nonsing_inv_mul
@@ -272,22 +272,22 @@ lemma inv_inv_of_invertible [Invertible A] : A⁻¹⁻¹ = A := by
 #align matrix.inv_inv_of_invertible Matrix.inv_inv_of_invertible
 
 @[simp]
-theorem mul_nonsing_inv_cancel_right (B : Matrix m n α) (h : IsUnit A.det) : B * A * A⁻¹ = B := by
+lemma mul_nonsing_inv_cancel_right (B : Matrix m n α) (h : IsUnit A.det) : B * A * A⁻¹ = B := by
   simp [Matrix.mul_assoc, mul_nonsing_inv A h]
 #align matrix.mul_nonsing_inv_cancel_right Matrix.mul_nonsing_inv_cancel_right
 
 @[simp]
-theorem mul_nonsing_inv_cancel_left (B : Matrix n m α) (h : IsUnit A.det) : A * (A⁻¹ * B) = B := by
+lemma mul_nonsing_inv_cancel_left (B : Matrix n m α) (h : IsUnit A.det) : A * (A⁻¹ * B) = B := by
   simp [← Matrix.mul_assoc, mul_nonsing_inv A h]
 #align matrix.mul_nonsing_inv_cancel_left Matrix.mul_nonsing_inv_cancel_left
 
 @[simp]
-theorem nonsing_inv_mul_cancel_right (B : Matrix m n α) (h : IsUnit A.det) : B * A⁻¹ * A = B := by
+lemma nonsing_inv_mul_cancel_right (B : Matrix m n α) (h : IsUnit A.det) : B * A⁻¹ * A = B := by
   simp [Matrix.mul_assoc, nonsing_inv_mul A h]
 #align matrix.nonsing_inv_mul_cancel_right Matrix.nonsing_inv_mul_cancel_right
 
 @[simp]
-theorem nonsing_inv_mul_cancel_left (B : Matrix n m α) (h : IsUnit A.det) : A⁻¹ * (A * B) = B := by
+lemma nonsing_inv_mul_cancel_left (B : Matrix n m α) (h : IsUnit A.det) : A⁻¹ * (A * B) = B := by
   simp [← Matrix.mul_assoc, nonsing_inv_mul A h]
 #align matrix.nonsing_inv_mul_cancel_left Matrix.nonsing_inv_mul_cancel_left
 
@@ -302,32 +302,32 @@ lemma inv_mul_of_invertible [Invertible A] : A⁻¹ * A = 1 :=
 #align matrix.inv_mul_of_invertible Matrix.inv_mul_of_invertible
 
 @[simp]
-theorem mul_inv_cancel_right_of_invertible (B : Matrix m n α) [Invertible A] : B * A * A⁻¹ = B :=
+lemma mul_inv_cancel_right_of_invertible (B : Matrix m n α) [Invertible A] : B * A * A⁻¹ = B :=
   mul_nonsing_inv_cancel_right A B (isUnit_det_of_invertible A)
 #align matrix.mul_inv_cancel_right_of_invertible Matrix.mul_inv_cancel_right_of_invertible
 
 @[simp]
-theorem mul_inv_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A * (A⁻¹ * B) = B :=
+lemma mul_inv_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A * (A⁻¹ * B) = B :=
   mul_nonsing_inv_cancel_left A B (isUnit_det_of_invertible A)
 #align matrix.mul_inv_cancel_left_of_invertible Matrix.mul_inv_cancel_left_of_invertible
 
 @[simp]
-theorem inv_mul_cancel_right_of_invertible (B : Matrix m n α) [Invertible A] : B * A⁻¹ * A = B :=
+lemma inv_mul_cancel_right_of_invertible (B : Matrix m n α) [Invertible A] : B * A⁻¹ * A = B :=
   nonsing_inv_mul_cancel_right A B (isUnit_det_of_invertible A)
 #align matrix.inv_mul_cancel_right_of_invertible Matrix.inv_mul_cancel_right_of_invertible
 
 @[simp]
-theorem inv_mul_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A⁻¹ * (A * B) = B :=
+lemma inv_mul_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A⁻¹ * (A * B) = B :=
   nonsing_inv_mul_cancel_left A B (isUnit_det_of_invertible A)
 #align matrix.inv_mul_cancel_left_of_invertible Matrix.inv_mul_cancel_left_of_invertible
 
-theorem inv_mul_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
+lemma inv_mul_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     A⁻¹ * B = C ↔ B = A * C :=
   ⟨fun h => by rw [← h, mul_inv_cancel_left_of_invertible],
    fun h => by rw [h, inv_mul_cancel_left_of_invertible]⟩
 #align matrix.inv_mul_eq_iff_eq_mul_of_invertible Matrix.inv_mul_eq_iff_eq_mul_of_invertible
 
-theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
+lemma mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     B * A⁻¹ = C ↔ B = C * A :=
   ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible],
    fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
@@ -353,7 +353,7 @@ lemma nonsing_inv_cancel_or_zero : A⁻¹ * A = 1 ∧ A * A⁻¹ = 1 ∨ A⁻¹ 
   · exact Or.inr (nonsing_inv_apply_not_isUnit _ h)
 #align matrix.nonsing_inv_cancel_or_zero Matrix.nonsing_inv_cancel_or_zero
 
-theorem det_nonsing_inv_mul_det (h : IsUnit A.det) : A⁻¹.det * A.det = 1 := by
+lemma det_nonsing_inv_mul_det (h : IsUnit A.det) : A⁻¹.det * A.det = 1 := by
   rw [← det_mul, A.nonsing_inv_mul h, det_one]
 #align matrix.det_nonsing_inv_mul_det Matrix.det_nonsing_inv_mul_det
 
@@ -368,12 +368,12 @@ lemma det_nonsing_inv : A⁻¹.det = Ring.inverse A.det := by
   · rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit _ h, det_zero ‹_›]
 #align matrix.det_nonsing_inv Matrix.det_nonsing_inv
 
-theorem isUnit_nonsing_inv_det (h : IsUnit A.det) : IsUnit A⁻¹.det :=
+lemma isUnit_nonsing_inv_det (h : IsUnit A.det) : IsUnit A⁻¹.det :=
   isUnit_of_mul_eq_one _ _ (A.det_nonsing_inv_mul_det h)
 #align matrix.is_unit_nonsing_inv_det Matrix.isUnit_nonsing_inv_det
 
 @[simp]
-theorem nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=
+lemma nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=
   calc
     A⁻¹⁻¹ = 1 * A⁻¹⁻¹ := by rw [Matrix.one_mul]
     _ = A * A⁻¹ * A⁻¹⁻¹ := by rw [A.mul_nonsing_inv h]
@@ -408,13 +408,13 @@ lemma unitOfDetInvertible_eq_nonsingInvUnit [Invertible A.det] :
 variable {A} {B}
 
 /-- If matrix A is left invertible, then its inverse equals its left inverse. -/
-theorem inv_eq_left_inv (h : B * A = 1) : A⁻¹ = B :=
+lemma inv_eq_left_inv (h : B * A = 1) : A⁻¹ = B :=
   letI := invertibleOfLeftInverse _ _ h
   invOf_eq_nonsing_inv A ▸ invOf_eq_left_inv h
 #align matrix.inv_eq_left_inv Matrix.inv_eq_left_inv
 
 /-- If matrix A is right invertible, then its inverse equals its right inverse. -/
-theorem inv_eq_right_inv (h : A * B = 1) : A⁻¹ = B :=
+lemma inv_eq_right_inv (h : A * B = 1) : A⁻¹ = B :=
   inv_eq_left_inv (mul_eq_one_comm.2 h)
 #align matrix.inv_eq_right_inv Matrix.inv_eq_right_inv
 
@@ -423,21 +423,21 @@ section InvEqInv
 variable {C : Matrix n n α}
 
 /-- The left inverse of matrix A is unique when existing. -/
-theorem left_inv_eq_left_inv (h : B * A = 1) (g : C * A = 1) : B = C := by
+lemma left_inv_eq_left_inv (h : B * A = 1) (g : C * A = 1) : B = C := by
   rw [← inv_eq_left_inv h, ← inv_eq_left_inv g]
 #align matrix.left_inv_eq_left_inv Matrix.left_inv_eq_left_inv
 
 /-- The right inverse of matrix A is unique when existing. -/
-theorem right_inv_eq_right_inv (h : A * B = 1) (g : A * C = 1) : B = C := by
+lemma right_inv_eq_right_inv (h : A * B = 1) (g : A * C = 1) : B = C := by
   rw [← inv_eq_right_inv h, ← inv_eq_right_inv g]
 #align matrix.right_inv_eq_right_inv Matrix.right_inv_eq_right_inv
 
 /-- The right inverse of matrix A equals the left inverse of A when they exist. -/
-theorem right_inv_eq_left_inv (h : A * B = 1) (g : C * A = 1) : B = C := by
+lemma right_inv_eq_left_inv (h : A * B = 1) (g : C * A = 1) : B = C := by
   rw [← inv_eq_right_inv h, ← inv_eq_left_inv g]
 #align matrix.right_inv_eq_left_inv Matrix.right_inv_eq_left_inv
 
-theorem inv_inj (h : A⁻¹ = B⁻¹) (h' : IsUnit A.det) : A = B := by
+lemma inv_inj (h : A⁻¹ = B⁻¹) (h' : IsUnit A.det) : A = B := by
   refine' left_inv_eq_left_inv (mul_nonsing_inv _ h') _
   rw [h]
   refine' mul_nonsing_inv _ _
@@ -465,15 +465,15 @@ lemma inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
 
-theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟ k • A⁻¹ :=
+lemma inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟ k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul Matrix.inv_smul
 
-theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
+lemma inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul' Matrix.inv_smul'
 
-theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
+lemma inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine' inv_eq_left_inv _
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
 #align matrix.inv_adjugate Matrix.inv_adjugate
@@ -529,7 +529,7 @@ lemma isUnit_diagonal {v : n → α} : IsUnit (diagonal v) ↔ IsUnit v := by
     (diagonalInvertibleEquivInvertible v).nonempty_congr]
 #align matrix.is_unit_diagonal Matrix.isUnit_diagonal
 
-theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse v) := by
+lemma inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse v) := by
   rw [nonsing_inv_eq_ring_inverse]
   by_cases h : IsUnit v
   · have := isUnit_diagonal.mpr h
@@ -543,13 +543,13 @@ theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse
 end Diagonal
 
 @[simp]
-theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
+lemma inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
   by_cases h : IsUnit A.det
   · rw [nonsing_inv_nonsing_inv _ h]
   · simp [nonsing_inv_apply_not_isUnit _ h]
 #align matrix.inv_inv_inv Matrix.inv_inv_inv
 
-theorem mul_inv_rev (A B : Matrix n n α) : (A * B)⁻¹ = B⁻¹ * A⁻¹ := by
+lemma mul_inv_rev (A B : Matrix n n α) : (A * B)⁻¹ = B⁻¹ * A⁻¹ := by
   simp only [inv_def]
   rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, det_mul, adjugate_mul_distrib,
     Ring.mul_inverse_rev]
@@ -565,7 +565,7 @@ lemma list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.rev
 
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
-theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
+lemma det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹.mulVec b = cramer A b := by
   rw [cramer_eq_adjugate_mulVec, A.nonsing_inv_apply h, ← smul_mulVec_assoc, smul_smul,
     h.mul_val_inv, one_smul]
@@ -573,7 +573,7 @@ theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : Is
 
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
-theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
+lemma det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹.vecMul b = cramer Aᵀ b := by
   rw [← A⁻¹.transpose_transpose, vecMul_transpose, transpose_nonsing_inv, ← det_transpose,
     Aᵀ.det_smul_inv_mulVec_eq_cramer _ (isUnit_det_transpose A h)]
@@ -612,7 +612,7 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
     rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 #align matrix.invertible_of_submatrix_equiv_invertible Matrix.invertibleOfSubmatrixEquivInvertible
 
-theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A]
+lemma invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A]
     [Invertible (A.submatrix e₁ e₂)] : ⅟ (A.submatrix e₁ e₂) = (⅟ A).submatrix e₂ e₁ := by
   letI := submatrixEquivInvertible A e₁ e₂
   -- Porting note: no longer need `haveI := Invertible.subsingleton (A.submatrix e₁ e₂)`
@@ -640,7 +640,7 @@ lemma isUnit_submatrix_equiv {A : Matrix m m α} (e₁ e₂ : n ≃ m) :
 #align matrix.is_unit_submatrix_equiv Matrix.isUnit_submatrix_equiv
 
 @[simp]
-theorem inv_submatrix_equiv (A : Matrix m m α) (e₁ e₂ : n ≃ m) :
+lemma inv_submatrix_equiv (A : Matrix m m α) (e₁ e₂ : n ≃ m) :
     (A.submatrix e₁ e₂)⁻¹ = A⁻¹.submatrix e₂ e₁ := by
   by_cases h : IsUnit A
   · cases h.nonempty_invertible
@@ -651,7 +651,7 @@ theorem inv_submatrix_equiv (A : Matrix m m α) (e₁ e₂ : n ≃ m) :
       submatrix_zero, Pi.zero_apply]
 #align matrix.inv_submatrix_equiv Matrix.inv_submatrix_equiv
 
-theorem inv_reindex (e₁ e₂ : n ≃ m) (A : Matrix n n α) : (reindex e₁ e₂ A)⁻¹ = reindex e₂ e₁ A⁻¹ :=
+lemma inv_reindex (e₁ e₂ : n ≃ m) (A : Matrix n n α) : (reindex e₁ e₂ A)⁻¹ = reindex e₂ e₁ A⁻¹ :=
   inv_submatrix_equiv A e₁.symm e₂.symm
 #align matrix.inv_reindex Matrix.inv_reindex
 

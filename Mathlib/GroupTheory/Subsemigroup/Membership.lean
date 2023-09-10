@@ -118,7 +118,7 @@ then it holds for all elements of the supremum of `S`. -/
 "An induction principle for elements of `⨆ i, S i`. If `C` holds all
 elements of `S i` for all `i`, and is preserved under addition, then it holds for all elements of
 the supremum of `S`."]
-theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
+lemma iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
     (hp : ∀ (i) (x₂ : M) (_hxS : x₂ ∈ S i), C x₂) (hmul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
   refine' closure_induction hx₁ (fun x₂ hx₂ => _) hmul
@@ -130,7 +130,7 @@ theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (
 /-- A dependent version of `Subsemigroup.iSup_induction`. -/
 @[to_additive (attr := elab_as_elim)
 "A dependent version of `AddSubsemigroup.iSup_induction`."]
-theorem iSup_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+lemma iSup_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i ‹_›))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}
     (hx₁ : x₁ ∈ ⨆ i, S i) : C x₁ hx₁ := by

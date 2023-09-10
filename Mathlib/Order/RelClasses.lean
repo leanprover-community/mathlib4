@@ -47,7 +47,7 @@ lemma antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a 
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
 @[elab_without_expected_type]
-theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
+lemma antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
   antisymm
 #align antisymm_of antisymm_of
 
@@ -55,66 +55,66 @@ theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a 
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
 @[elab_without_expected_type]
-theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
+lemma antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
   antisymm'
 #align antisymm_of' antisymm_of'
 
 /-- A version of `comm` with `r` explicit.
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
-theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
+lemma comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
   comm
 #align comm_of comm_of
 
-theorem IsRefl.swap (r) [IsRefl α r] : IsRefl α (swap r) :=
+lemma IsRefl.swap (r) [IsRefl α r] : IsRefl α (swap r) :=
   ⟨refl_of r⟩
 #align is_refl.swap IsRefl.swap
 
-theorem IsIrrefl.swap (r) [IsIrrefl α r] : IsIrrefl α (swap r) :=
+lemma IsIrrefl.swap (r) [IsIrrefl α r] : IsIrrefl α (swap r) :=
   ⟨irrefl_of r⟩
 #align is_irrefl.swap IsIrrefl.swap
 
-theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
+lemma IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
   ⟨fun _ _ _ h₁ h₂ => trans_of r h₂ h₁⟩
 #align is_trans.swap IsTrans.swap
 
-theorem IsAntisymm.swap (r) [IsAntisymm α r] : IsAntisymm α (swap r) :=
+lemma IsAntisymm.swap (r) [IsAntisymm α r] : IsAntisymm α (swap r) :=
   ⟨fun _ _ h₁ h₂ => _root_.antisymm h₂ h₁⟩
 #align is_antisymm.swap IsAntisymm.swap
 
-theorem IsAsymm.swap (r) [IsAsymm α r] : IsAsymm α (swap r) :=
+lemma IsAsymm.swap (r) [IsAsymm α r] : IsAsymm α (swap r) :=
   ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
 #align is_asymm.swap IsAsymm.swap
 
-theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
+lemma IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
   ⟨fun a b => (total_of r a b).symm⟩
 #align is_total.swap IsTotal.swap
 
-theorem IsTrichotomous.swap (r) [IsTrichotomous α r] : IsTrichotomous α (swap r) :=
+lemma IsTrichotomous.swap (r) [IsTrichotomous α r] : IsTrichotomous α (swap r) :=
   ⟨fun a b => by simpa [Function.swap, or_comm, or_left_comm] using trichotomous_of r a b⟩
 #align is_trichotomous.swap IsTrichotomous.swap
 
-theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
+lemma IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
   { @IsRefl.swap α r _, @IsTrans.swap α r _ with }
 #align is_preorder.swap IsPreorder.swap
 
-theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
+lemma IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
   { @IsIrrefl.swap α r _, @IsTrans.swap α r _ with }
 #align is_strict_order.swap IsStrictOrder.swap
 
-theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
+lemma IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 #align is_partial_order.swap IsPartialOrder.swap
 
-theorem IsTotalPreorder.swap (r) [IsTotalPreorder α r] : IsTotalPreorder α (swap r) :=
+lemma IsTotalPreorder.swap (r) [IsTotalPreorder α r] : IsTotalPreorder α (swap r) :=
   { @IsPreorder.swap α r _, @IsTotal.swap α r _ with }
 #align is_total_preorder.swap IsTotalPreorder.swap
 
-theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
+lemma IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
   { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
 #align is_linear_order.swap IsLinearOrder.swap
 
-protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
+protected lemma IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
   ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
 #align is_asymm.is_antisymm IsAsymm.isAntisymm
 
@@ -122,7 +122,7 @@ protected lemma IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
   ⟨fun _ h => _root_.asymm h h⟩
 #align is_asymm.is_irrefl IsAsymm.isIrrefl
 
-protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
+protected lemma IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
 #align is_total.is_trichotomous IsTotal.isTrichotomous
 
@@ -138,20 +138,20 @@ lemma ne_of_irrefl' {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → y ≠ x
   | _, _, h, rfl => irrefl _ h
 #align ne_of_irrefl' ne_of_irrefl'
 
-theorem not_rel_of_subsingleton (r) [IsIrrefl α r] [Subsingleton α] (x y) : ¬r x y :=
+lemma not_rel_of_subsingleton (r) [IsIrrefl α r] [Subsingleton α] (x y) : ¬r x y :=
   Subsingleton.elim x y ▸ irrefl x
 #align not_rel_of_subsingleton not_rel_of_subsingleton
 
-theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
+lemma rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
   Subsingleton.elim x y ▸ refl x
 #align rel_of_subsingleton rel_of_subsingleton
 
 @[simp]
-theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
+lemma empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
   Iff.rfl
 #align empty_relation_apply empty_relation_apply
 
-theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
+lemma eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
 #align eq_empty_relation eq_empty_relation
 
@@ -172,11 +172,11 @@ lemma trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
   exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
 #align trans_trichotomous_right trans_trichotomous_right
 
-theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
+lemma transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 #align transitive_of_trans transitive_of_trans
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
-theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
+lemma extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
     {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
   ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
     <| irrefl b
@@ -227,7 +227,7 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
 set_option linter.uppercaseLean3 false in
 #align linear_order_of_STO linearOrderOfSTO
 
-theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
+lemma IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
   { IsTrichotomous.swap r, IsStrictOrder.swap r with }
 #align is_strict_total_order.swap IsStrictTotalOrder.swap
 
@@ -364,11 +364,11 @@ instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFou
 instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
   h
 
-theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
+lemma wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 #align well_founded_gt_dual_iff wellFoundedGT_dual_iff
 
-theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
+lemma wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 #align well_founded_lt_dual_iff wellFoundedLT_dual_iff
 
@@ -514,7 +514,7 @@ instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellF
 instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
   ⟨(measure f).wf⟩
 
-theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
+lemma Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 #align subrelation.is_well_founded Subrelation.isWellFounded
@@ -601,7 +601,7 @@ lemma right_iff_left_not_left {r s : α → α → Prop} [IsNonstrictStrictOrder
 #align right_iff_left_not_left right_iff_left_not_left
 
 /-- A version of `right_iff_left_not_left` with explicit `r` and `s`. -/
-theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrictOrder α r s] {a b : α} :
+lemma right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrictOrder α r s] {a b : α} :
     s a b ↔ r a b ∧ ¬r b a :=
   right_iff_left_not_left
 #align right_iff_left_not_left_of right_iff_left_not_left_of
@@ -739,18 +739,18 @@ lemma ssubset_iff_subset_not_subset : a ⊂ b ↔ a ⊆ b ∧ ¬b ⊆ a :=
   right_iff_left_not_left
 #align ssubset_iff_subset_not_subset ssubset_iff_subset_not_subset
 
-theorem subset_of_ssubset (h : a ⊂ b) : a ⊆ b :=
+lemma subset_of_ssubset (h : a ⊂ b) : a ⊆ b :=
   (ssubset_iff_subset_not_subset.1 h).1
 #align subset_of_ssubset subset_of_ssubset
 
-theorem not_subset_of_ssubset (h : a ⊂ b) : ¬b ⊆ a :=
+lemma not_subset_of_ssubset (h : a ⊂ b) : ¬b ⊆ a :=
   (ssubset_iff_subset_not_subset.1 h).2
 #align not_subset_of_ssubset not_subset_of_ssubset
 
-theorem not_ssubset_of_subset (h : a ⊆ b) : ¬b ⊂ a := fun h' => not_subset_of_ssubset h' h
+lemma not_ssubset_of_subset (h : a ⊆ b) : ¬b ⊂ a := fun h' => not_subset_of_ssubset h' h
 #align not_ssubset_of_subset not_ssubset_of_subset
 
-theorem ssubset_of_subset_not_subset (h₁ : a ⊆ b) (h₂ : ¬b ⊆ a) : a ⊂ b :=
+lemma ssubset_of_subset_not_subset (h₁ : a ⊆ b) (h₂ : ¬b ⊆ a) : a ⊂ b :=
   ssubset_iff_subset_not_subset.2 ⟨h₁, h₂⟩
 #align ssubset_of_subset_not_subset ssubset_of_subset_not_subset
 

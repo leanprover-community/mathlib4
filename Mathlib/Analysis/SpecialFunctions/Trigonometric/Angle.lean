@@ -80,35 +80,35 @@ lemma coe_zero : ↑(0 : ℝ) = (0 : Angle) :=
 #align real.angle.coe_zero Real.Angle.coe_zero
 
 @[simp]
-theorem coe_add (x y : ℝ) : ↑(x + y : ℝ) = (↑x + ↑y : Angle) :=
+lemma coe_add (x y : ℝ) : ↑(x + y : ℝ) = (↑x + ↑y : Angle) :=
   rfl
 #align real.angle.coe_add Real.Angle.coe_add
 
 @[simp]
-theorem coe_neg (x : ℝ) : ↑(-x : ℝ) = -(↑x : Angle) :=
+lemma coe_neg (x : ℝ) : ↑(-x : ℝ) = -(↑x : Angle) :=
   rfl
 #align real.angle.coe_neg Real.Angle.coe_neg
 
 @[simp]
-theorem coe_sub (x y : ℝ) : ↑(x - y : ℝ) = (↑x - ↑y : Angle) :=
+lemma coe_sub (x y : ℝ) : ↑(x - y : ℝ) = (↑x - ↑y : Angle) :=
   rfl
 #align real.angle.coe_sub Real.Angle.coe_sub
 
-theorem coe_nsmul (n : ℕ) (x : ℝ) : ↑(n • x : ℝ) = n • (↑x : Angle) :=
+lemma coe_nsmul (n : ℕ) (x : ℝ) : ↑(n • x : ℝ) = n • (↑x : Angle) :=
   rfl
 #align real.angle.coe_nsmul Real.Angle.coe_nsmul
 
-theorem coe_zsmul (z : ℤ) (x : ℝ) : ↑(z • x : ℝ) = z • (↑x : Angle) :=
+lemma coe_zsmul (z : ℤ) (x : ℝ) : ↑(z • x : ℝ) = z • (↑x : Angle) :=
   rfl
 #align real.angle.coe_zsmul Real.Angle.coe_zsmul
 
 @[simp, norm_cast]
-theorem coe_nat_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (↑x : Angle) := by
+lemma coe_nat_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (↑x : Angle) := by
   simpa only [nsmul_eq_mul] using coeHom.map_nsmul x n
 #align real.angle.coe_nat_mul_eq_nsmul Real.Angle.coe_nat_mul_eq_nsmul
 
 @[simp, norm_cast]
-theorem coe_int_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
+lemma coe_int_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
   simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
 #align real.angle.coe_int_mul_eq_zsmul Real.Angle.coe_int_mul_eq_zsmul
 
@@ -134,12 +134,12 @@ lemma neg_coe_pi : -(π : Angle) = π := by
 #align real.angle.neg_coe_pi Real.Angle.neg_coe_pi
 
 @[simp]
-theorem two_nsmul_coe_div_two (θ : ℝ) : (2 : ℕ) • (↑(θ / 2) : Angle) = θ := by
+lemma two_nsmul_coe_div_two (θ : ℝ) : (2 : ℕ) • (↑(θ / 2) : Angle) = θ := by
   rw [← coe_nsmul, two_nsmul, add_halves]
 #align real.angle.two_nsmul_coe_div_two Real.Angle.two_nsmul_coe_div_two
 
 @[simp]
-theorem two_zsmul_coe_div_two (θ : ℝ) : (2 : ℤ) • (↑(θ / 2) : Angle) = θ := by
+lemma two_zsmul_coe_div_two (θ : ℝ) : (2 : ℤ) • (↑(θ / 2) : Angle) = θ := by
   rw [← coe_zsmul, two_zsmul, add_halves]
 #align real.angle.two_zsmul_coe_div_two Real.Angle.two_zsmul_coe_div_two
 
@@ -153,7 +153,7 @@ lemma two_zsmul_neg_pi_div_two : (2 : ℤ) • (↑(-π / 2) : Angle) = π := by
   rw [two_zsmul, ← two_nsmul, two_nsmul_neg_pi_div_two]
 #align real.angle.two_zsmul_neg_pi_div_two Real.Angle.two_zsmul_neg_pi_div_two
 
-theorem sub_coe_pi_eq_add_coe_pi (θ : Angle) : θ - π = θ + π := by
+lemma sub_coe_pi_eq_add_coe_pi (θ : Angle) : θ - π = θ + π := by
   rw [sub_eq_add_neg, neg_coe_pi]
 #align real.angle.sub_coe_pi_eq_add_coe_pi Real.Angle.sub_coe_pi_eq_add_coe_pi
 
@@ -304,7 +304,7 @@ def sin (θ : Angle) : ℝ :=
 #align real.angle.sin Real.Angle.sin
 
 @[simp]
-theorem sin_coe (x : ℝ) : sin (x : Angle) = Real.sin x :=
+lemma sin_coe (x : ℝ) : sin (x : Angle) = Real.sin x :=
   rfl
 #align real.angle.sin_coe Real.Angle.sin_coe
 
@@ -319,7 +319,7 @@ def cos (θ : Angle) : ℝ :=
 #align real.angle.cos Real.Angle.cos
 
 @[simp]
-theorem cos_coe (x : ℝ) : cos (x : Angle) = Real.cos x :=
+lemma cos_coe (x : ℝ) : cos (x : Angle) = Real.cos x :=
   rfl
 #align real.angle.cos_coe Real.Angle.cos_coe
 
@@ -369,7 +369,7 @@ lemma sin_ne_zero_iff {θ : Angle} : sin θ ≠ 0 ↔ θ ≠ 0 ∧ θ ≠ π := 
 #align real.angle.sin_ne_zero_iff Real.Angle.sin_ne_zero_iff
 
 @[simp]
-theorem sin_neg (θ : Angle) : sin (-θ) = -sin θ := by
+lemma sin_neg (θ : Angle) : sin (-θ) = -sin θ := by
   induction θ using Real.Angle.induction_on
   exact Real.sin_neg _
 #align real.angle.sin_neg Real.Angle.sin_neg
@@ -381,12 +381,12 @@ lemma sin_antiperiodic : Function.Antiperiodic sin (π : Angle) := by
 #align real.angle.sin_antiperiodic Real.Angle.sin_antiperiodic
 
 @[simp]
-theorem sin_add_pi (θ : Angle) : sin (θ + π) = -sin θ :=
+lemma sin_add_pi (θ : Angle) : sin (θ + π) = -sin θ :=
   sin_antiperiodic θ
 #align real.angle.sin_add_pi Real.Angle.sin_add_pi
 
 @[simp]
-theorem sin_sub_pi (θ : Angle) : sin (θ - π) = -sin θ :=
+lemma sin_sub_pi (θ : Angle) : sin (θ - π) = -sin θ :=
   sin_antiperiodic.sub_eq θ
 #align real.angle.sin_sub_pi Real.Angle.sin_sub_pi
 
@@ -399,7 +399,7 @@ lemma cos_coe_pi : cos (π : Angle) = -1 := by rw [cos_coe, Real.cos_pi]
 #align real.angle.cos_coe_pi Real.Angle.cos_coe_pi
 
 @[simp]
-theorem cos_neg (θ : Angle) : cos (-θ) = cos θ := by
+lemma cos_neg (θ : Angle) : cos (-θ) = cos θ := by
   induction θ using Real.Angle.induction_on
   exact Real.cos_neg _
 #align real.angle.cos_neg Real.Angle.cos_neg
@@ -411,12 +411,12 @@ lemma cos_antiperiodic : Function.Antiperiodic cos (π : Angle) := by
 #align real.angle.cos_antiperiodic Real.Angle.cos_antiperiodic
 
 @[simp]
-theorem cos_add_pi (θ : Angle) : cos (θ + π) = -cos θ :=
+lemma cos_add_pi (θ : Angle) : cos (θ + π) = -cos θ :=
   cos_antiperiodic θ
 #align real.angle.cos_add_pi Real.Angle.cos_add_pi
 
 @[simp]
-theorem cos_sub_pi (θ : Angle) : cos (θ - π) = -cos θ :=
+lemma cos_sub_pi (θ : Angle) : cos (θ - π) = -cos θ :=
   cos_antiperiodic.sub_eq θ
 #align real.angle.cos_sub_pi Real.Angle.cos_sub_pi
 
@@ -424,50 +424,50 @@ lemma cos_eq_zero_iff {θ : Angle} : cos θ = 0 ↔ θ = (π / 2 : ℝ) ∨ θ =
   rw [← cos_pi_div_two, ← cos_coe, cos_eq_iff_eq_or_eq_neg, ← coe_neg, ← neg_div]
 #align real.angle.cos_eq_zero_iff Real.Angle.cos_eq_zero_iff
 
-theorem sin_add (θ₁ θ₂ : Real.Angle) : sin (θ₁ + θ₂) = sin θ₁ * cos θ₂ + cos θ₁ * sin θ₂ := by
+lemma sin_add (θ₁ θ₂ : Real.Angle) : sin (θ₁ + θ₂) = sin θ₁ * cos θ₂ + cos θ₁ * sin θ₂ := by
   induction θ₁ using Real.Angle.induction_on
   induction θ₂ using Real.Angle.induction_on
   exact Real.sin_add _ _
 #align real.angle.sin_add Real.Angle.sin_add
 
-theorem cos_add (θ₁ θ₂ : Real.Angle) : cos (θ₁ + θ₂) = cos θ₁ * cos θ₂ - sin θ₁ * sin θ₂ := by
+lemma cos_add (θ₁ θ₂ : Real.Angle) : cos (θ₁ + θ₂) = cos θ₁ * cos θ₂ - sin θ₁ * sin θ₂ := by
   induction θ₂ using Real.Angle.induction_on
   induction θ₁ using Real.Angle.induction_on
   exact Real.cos_add _ _
 #align real.angle.cos_add Real.Angle.cos_add
 
 @[simp]
-theorem cos_sq_add_sin_sq (θ : Real.Angle) : cos θ ^ 2 + sin θ ^ 2 = 1 := by
+lemma cos_sq_add_sin_sq (θ : Real.Angle) : cos θ ^ 2 + sin θ ^ 2 = 1 := by
   induction θ using Real.Angle.induction_on
   exact Real.cos_sq_add_sin_sq _
 #align real.angle.cos_sq_add_sin_sq Real.Angle.cos_sq_add_sin_sq
 
-theorem sin_add_pi_div_two (θ : Angle) : sin (θ + ↑(π / 2)) = cos θ := by
+lemma sin_add_pi_div_two (θ : Angle) : sin (θ + ↑(π / 2)) = cos θ := by
   induction θ using Real.Angle.induction_on
   exact Real.sin_add_pi_div_two _
 #align real.angle.sin_add_pi_div_two Real.Angle.sin_add_pi_div_two
 
-theorem sin_sub_pi_div_two (θ : Angle) : sin (θ - ↑(π / 2)) = -cos θ := by
+lemma sin_sub_pi_div_two (θ : Angle) : sin (θ - ↑(π / 2)) = -cos θ := by
   induction θ using Real.Angle.induction_on
   exact Real.sin_sub_pi_div_two _
 #align real.angle.sin_sub_pi_div_two Real.Angle.sin_sub_pi_div_two
 
-theorem sin_pi_div_two_sub (θ : Angle) : sin (↑(π / 2) - θ) = cos θ := by
+lemma sin_pi_div_two_sub (θ : Angle) : sin (↑(π / 2) - θ) = cos θ := by
   induction θ using Real.Angle.induction_on
   exact Real.sin_pi_div_two_sub _
 #align real.angle.sin_pi_div_two_sub Real.Angle.sin_pi_div_two_sub
 
-theorem cos_add_pi_div_two (θ : Angle) : cos (θ + ↑(π / 2)) = -sin θ := by
+lemma cos_add_pi_div_two (θ : Angle) : cos (θ + ↑(π / 2)) = -sin θ := by
   induction θ using Real.Angle.induction_on
   exact Real.cos_add_pi_div_two _
 #align real.angle.cos_add_pi_div_two Real.Angle.cos_add_pi_div_two
 
-theorem cos_sub_pi_div_two (θ : Angle) : cos (θ - ↑(π / 2)) = sin θ := by
+lemma cos_sub_pi_div_two (θ : Angle) : cos (θ - ↑(π / 2)) = sin θ := by
   induction θ using Real.Angle.induction_on
   exact Real.cos_sub_pi_div_two _
 #align real.angle.cos_sub_pi_div_two Real.Angle.cos_sub_pi_div_two
 
-theorem cos_pi_div_two_sub (θ : Angle) : cos (↑(π / 2) - θ) = sin θ := by
+lemma cos_pi_div_two_sub (θ : Angle) : cos (↑(π / 2) - θ) = sin θ := by
   induction θ using Real.Angle.induction_on
   exact Real.cos_pi_div_two_sub _
 #align real.angle.cos_pi_div_two_sub Real.Angle.cos_pi_div_two_sub
@@ -501,14 +501,14 @@ lemma abs_cos_eq_of_two_zsmul_eq {θ ψ : Angle} (h : (2 : ℤ) • θ = (2 : �
 #align real.angle.abs_cos_eq_of_two_zsmul_eq Real.Angle.abs_cos_eq_of_two_zsmul_eq
 
 @[simp]
-theorem coe_toIcoMod (θ ψ : ℝ) : ↑(toIcoMod two_pi_pos ψ θ) = (θ : Angle) := by
+lemma coe_toIcoMod (θ ψ : ℝ) : ↑(toIcoMod two_pi_pos ψ θ) = (θ : Angle) := by
   rw [angle_eq_iff_two_pi_dvd_sub]
   refine' ⟨-toIcoDiv two_pi_pos ψ θ, _⟩
   rw [toIcoMod_sub_self, zsmul_eq_mul, mul_comm]
 #align real.angle.coe_to_Ico_mod Real.Angle.coe_toIcoMod
 
 @[simp]
-theorem coe_toIocMod (θ ψ : ℝ) : ↑(toIocMod two_pi_pos ψ θ) = (θ : Angle) := by
+lemma coe_toIocMod (θ ψ : ℝ) : ↑(toIocMod two_pi_pos ψ θ) = (θ : Angle) := by
   rw [angle_eq_iff_two_pi_dvd_sub]
   refine' ⟨-toIocDiv two_pi_pos ψ θ, _⟩
   rw [toIocMod_sub_self, zsmul_eq_mul, mul_comm]
@@ -519,7 +519,7 @@ def toReal (θ : Angle) : ℝ :=
   (toIocMod_periodic two_pi_pos (-π)).lift θ
 #align real.angle.to_real Real.Angle.toReal
 
-theorem toReal_coe (θ : ℝ) : (θ : Angle).toReal = toIocMod two_pi_pos (-π) θ :=
+lemma toReal_coe (θ : ℝ) : (θ : Angle).toReal = toIocMod two_pi_pos (-π) θ :=
   rfl
 #align real.angle.to_real_coe Real.Angle.toReal_coe
 
@@ -547,32 +547,32 @@ lemma toReal_inj {θ ψ : Angle} : θ.toReal = ψ.toReal ↔ θ = ψ :=
 #align real.angle.to_real_inj Real.Angle.toReal_inj
 
 @[simp]
-theorem coe_toReal (θ : Angle) : (θ.toReal : Angle) = θ := by
+lemma coe_toReal (θ : Angle) : (θ.toReal : Angle) = θ := by
   induction θ using Real.Angle.induction_on
   exact coe_toIocMod _ _
 #align real.angle.coe_to_real Real.Angle.coe_toReal
 
-theorem neg_pi_lt_toReal (θ : Angle) : -π < θ.toReal := by
+lemma neg_pi_lt_toReal (θ : Angle) : -π < θ.toReal := by
   induction θ using Real.Angle.induction_on
   exact left_lt_toIocMod _ _ _
 #align real.angle.neg_pi_lt_to_real Real.Angle.neg_pi_lt_toReal
 
-theorem toReal_le_pi (θ : Angle) : θ.toReal ≤ π := by
+lemma toReal_le_pi (θ : Angle) : θ.toReal ≤ π := by
   induction θ using Real.Angle.induction_on
   convert toIocMod_le_right two_pi_pos _ _
   ring
 #align real.angle.to_real_le_pi Real.Angle.toReal_le_pi
 
-theorem abs_toReal_le_pi (θ : Angle) : |θ.toReal| ≤ π :=
+lemma abs_toReal_le_pi (θ : Angle) : |θ.toReal| ≤ π :=
   abs_le.2 ⟨(neg_pi_lt_toReal _).le, toReal_le_pi _⟩
 #align real.angle.abs_to_real_le_pi Real.Angle.abs_toReal_le_pi
 
-theorem toReal_mem_Ioc (θ : Angle) : θ.toReal ∈ Set.Ioc (-π) π :=
+lemma toReal_mem_Ioc (θ : Angle) : θ.toReal ∈ Set.Ioc (-π) π :=
   ⟨neg_pi_lt_toReal _, toReal_le_pi _⟩
 #align real.angle.to_real_mem_Ioc Real.Angle.toReal_mem_Ioc
 
 @[simp]
-theorem toIocMod_toReal (θ : Angle) : toIocMod two_pi_pos (-π) θ.toReal = θ.toReal := by
+lemma toIocMod_toReal (θ : Angle) : toIocMod two_pi_pos (-π) θ.toReal = θ.toReal := by
   induction θ using Real.Angle.induction_on
   rw [toReal_coe]
   exact toIocMod_toIocMod _ _ _ _
@@ -720,12 +720,12 @@ lemma two_zsmul_toReal_eq_two_mul_add_two_pi {θ : Angle} :
 #align real.angle.two_zsmul_to_real_eq_two_mul_add_two_pi Real.Angle.two_zsmul_toReal_eq_two_mul_add_two_pi
 
 @[simp]
-theorem sin_toReal (θ : Angle) : Real.sin θ.toReal = sin θ := by
+lemma sin_toReal (θ : Angle) : Real.sin θ.toReal = sin θ := by
   conv_rhs => rw [← coe_toReal θ, sin_coe]
 #align real.angle.sin_to_real Real.Angle.sin_toReal
 
 @[simp]
-theorem cos_toReal (θ : Angle) : Real.cos θ.toReal = cos θ := by
+lemma cos_toReal (θ : Angle) : Real.cos θ.toReal = cos θ := by
   conv_rhs => rw [← coe_toReal θ, cos_coe]
 #align real.angle.cos_to_real Real.Angle.cos_toReal
 
@@ -772,12 +772,12 @@ def tan (θ : Angle) : ℝ :=
   sin θ / cos θ
 #align real.angle.tan Real.Angle.tan
 
-theorem tan_eq_sin_div_cos (θ : Angle) : tan θ = sin θ / cos θ :=
+lemma tan_eq_sin_div_cos (θ : Angle) : tan θ = sin θ / cos θ :=
   rfl
 #align real.angle.tan_eq_sin_div_cos Real.Angle.tan_eq_sin_div_cos
 
 @[simp]
-theorem tan_coe (x : ℝ) : tan (x : Angle) = Real.tan x := by
+lemma tan_coe (x : ℝ) : tan (x : Angle) = Real.tan x := by
   rw [tan, sin_coe, cos_coe, Real.tan_eq_sin_div_cos]
 #align real.angle.tan_coe Real.Angle.tan_coe
 
@@ -797,17 +797,17 @@ lemma tan_periodic : Function.Periodic tan (π : Angle) := by
 #align real.angle.tan_periodic Real.Angle.tan_periodic
 
 @[simp]
-theorem tan_add_pi (θ : Angle) : tan (θ + π) = tan θ :=
+lemma tan_add_pi (θ : Angle) : tan (θ + π) = tan θ :=
   tan_periodic θ
 #align real.angle.tan_add_pi Real.Angle.tan_add_pi
 
 @[simp]
-theorem tan_sub_pi (θ : Angle) : tan (θ - π) = tan θ :=
+lemma tan_sub_pi (θ : Angle) : tan (θ - π) = tan θ :=
   tan_periodic.sub_eq θ
 #align real.angle.tan_sub_pi Real.Angle.tan_sub_pi
 
 @[simp]
-theorem tan_toReal (θ : Angle) : Real.tan θ.toReal = tan θ := by
+lemma tan_toReal (θ : Angle) : Real.tan θ.toReal = tan θ := by
   conv_rhs => rw [← coe_toReal θ, tan_coe]
 #align real.angle.tan_to_real Real.Angle.tan_toReal
 
@@ -859,7 +859,7 @@ lemma sign_coe_pi : (π : Angle).sign = 0 := by rw [sign, sin_coe_pi, _root_.sig
 #align real.angle.sign_coe_pi Real.Angle.sign_coe_pi
 
 @[simp]
-theorem sign_neg (θ : Angle) : (-θ).sign = -θ.sign := by
+lemma sign_neg (θ : Angle) : (-θ).sign = -θ.sign := by
   simp_rw [sign, sin_neg, Left.sign_neg]
 #align real.angle.sign_neg Real.Angle.sign_neg
 
@@ -868,21 +868,21 @@ lemma sign_antiperiodic : Function.Antiperiodic sign (π : Angle) := fun θ => b
 #align real.angle.sign_antiperiodic Real.Angle.sign_antiperiodic
 
 @[simp]
-theorem sign_add_pi (θ : Angle) : (θ + π).sign = -θ.sign :=
+lemma sign_add_pi (θ : Angle) : (θ + π).sign = -θ.sign :=
   sign_antiperiodic θ
 #align real.angle.sign_add_pi Real.Angle.sign_add_pi
 
 @[simp]
-theorem sign_pi_add (θ : Angle) : ((π : Angle) + θ).sign = -θ.sign := by rw [add_comm, sign_add_pi]
+lemma sign_pi_add (θ : Angle) : ((π : Angle) + θ).sign = -θ.sign := by rw [add_comm, sign_add_pi]
 #align real.angle.sign_pi_add Real.Angle.sign_pi_add
 
 @[simp]
-theorem sign_sub_pi (θ : Angle) : (θ - π).sign = -θ.sign :=
+lemma sign_sub_pi (θ : Angle) : (θ - π).sign = -θ.sign :=
   sign_antiperiodic.sub_eq θ
 #align real.angle.sign_sub_pi Real.Angle.sign_sub_pi
 
 @[simp]
-theorem sign_pi_sub (θ : Angle) : ((π : Angle) - θ).sign = θ.sign := by
+lemma sign_pi_sub (θ : Angle) : ((π : Angle) - θ).sign = θ.sign := by
   simp [sign_antiperiodic.sub_eq']
 #align real.angle.sign_pi_sub Real.Angle.sign_pi_sub
 

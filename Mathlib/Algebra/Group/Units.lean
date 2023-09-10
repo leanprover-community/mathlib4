@@ -130,7 +130,7 @@ initialize_simps_projections AddUnits
 
 -- Porting note: removed `simp` tag because of the tautology
 @[to_additive]
-theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
+lemma val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
   rfl
 #align units.coe_mk Units.val_mk
 #align add_units.coe_mk AddUnits.val_mk
@@ -161,7 +161,7 @@ if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
 
 @[to_additive (attr := simp)]
-theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
+lemma mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 #align units.mk_coe Units.mk_val
 #align add_units.mk_coe AddUnits.mk_val
@@ -178,7 +178,7 @@ def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) 
 #align add_units.coe_neg_copy AddUnits.val_neg_copy
 
 @[to_additive]
-theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
+lemma copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
   ext hv
 #align units.copy_eq Units.copy_eq
 #align add_units.copy_eq AddUnits.copy_eq
@@ -244,7 +244,7 @@ lemma val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one
 #align add_units.coe_eq_zero AddUnits.val_eq_zero
 
 @[to_additive (attr := simp)]
-theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
+lemma inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
   rfl
 #align units.inv_mk Units.inv_mk
 #align add_units.neg_mk AddUnits.neg_mk
@@ -282,38 +282,38 @@ lemma mul_inv_of_eq {a : α} (h : ↑u = a) : a * ↑u⁻¹ = 1 := by rw [← h,
 #align add_units.add_neg_of_eq AddUnits.add_neg_of_eq
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_left (a : αˣ) (b : α) : (a : α) * (↑a⁻¹ * b) = b := by
+lemma mul_inv_cancel_left (a : αˣ) (b : α) : (a : α) * (↑a⁻¹ * b) = b := by
   rw [← mul_assoc, mul_inv, one_mul]
 #align units.mul_inv_cancel_left Units.mul_inv_cancel_left
 #align add_units.add_neg_cancel_left AddUnits.add_neg_cancel_left
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_left (a : αˣ) (b : α) : (↑a⁻¹ : α) * (a * b) = b := by
+lemma inv_mul_cancel_left (a : αˣ) (b : α) : (↑a⁻¹ : α) * (a * b) = b := by
   rw [← mul_assoc, inv_mul, one_mul]
 #align units.inv_mul_cancel_left Units.inv_mul_cancel_left
 #align add_units.neg_add_cancel_left AddUnits.neg_add_cancel_left
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_right (a : α) (b : αˣ) : a * b * ↑b⁻¹ = a := by
+lemma mul_inv_cancel_right (a : α) (b : αˣ) : a * b * ↑b⁻¹ = a := by
   rw [mul_assoc, mul_inv, mul_one]
 #align units.mul_inv_cancel_right Units.mul_inv_cancel_right
 #align add_units.add_neg_cancel_right AddUnits.add_neg_cancel_right
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_right (a : α) (b : αˣ) : a * ↑b⁻¹ * b = a := by
+lemma inv_mul_cancel_right (a : α) (b : αˣ) : a * ↑b⁻¹ * b = a := by
   rw [mul_assoc, inv_mul, mul_one]
 #align units.inv_mul_cancel_right Units.inv_mul_cancel_right
 #align add_units.neg_add_cancel_right AddUnits.neg_add_cancel_right
 
 @[to_additive (attr := simp)]
-theorem mul_right_inj (a : αˣ) {b c : α} : (a : α) * b = a * c ↔ b = c :=
+lemma mul_right_inj (a : αˣ) {b c : α} : (a : α) * b = a * c ↔ b = c :=
   ⟨fun h => by simpa only [inv_mul_cancel_left] using congr_arg (fun x : α => ↑(a⁻¹ : αˣ) * x) h,
     congr_arg _⟩
 #align units.mul_right_inj Units.mul_right_inj
 #align add_units.add_right_inj AddUnits.add_right_inj
 
 @[to_additive (attr := simp)]
-theorem mul_left_inj (a : αˣ) {b c : α} : b * a = c * a ↔ b = c :=
+lemma mul_left_inj (a : αˣ) {b c : α} : b * a = c * a ↔ b = c :=
   ⟨fun h => by simpa only [mul_inv_cancel_right] using congr_arg (fun x : α => x * ↑(a⁻¹ : αˣ)) h,
     congr_arg (· * a.val)⟩
 #align units.mul_left_inj Units.mul_left_inj
@@ -440,47 +440,47 @@ def divp (a : α) (u : Units α) : α :=
 infixl:70 " /ₚ " => divp
 
 @[simp]
-theorem divp_self (u : αˣ) : (u : α) /ₚ u = 1 :=
+lemma divp_self (u : αˣ) : (u : α) /ₚ u = 1 :=
   Units.mul_inv _
 #align divp_self divp_self
 
 @[simp]
-theorem divp_one (a : α) : a /ₚ 1 = a :=
+lemma divp_one (a : α) : a /ₚ 1 = a :=
   mul_one _
 #align divp_one divp_one
 
-theorem divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
+lemma divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
   mul_assoc _ _ _
 #align divp_assoc divp_assoc
 
 /-- `field_simp` needs the reverse direction of `divp_assoc` to move all `/ₚ` to the right. -/
 @[field_simps]
-theorem divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
+lemma divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
   (divp_assoc _ _ _).symm
 #align divp_assoc' divp_assoc'
 
 @[simp]
-theorem divp_inv (u : αˣ) : a /ₚ u⁻¹ = a * u :=
+lemma divp_inv (u : αˣ) : a /ₚ u⁻¹ = a * u :=
   rfl
 #align divp_inv divp_inv
 
 @[simp]
-theorem divp_mul_cancel (a : α) (u : αˣ) : a /ₚ u * u = a :=
+lemma divp_mul_cancel (a : α) (u : αˣ) : a /ₚ u * u = a :=
   (mul_assoc _ _ _).trans <| by rw [Units.inv_mul, mul_one]
 #align divp_mul_cancel divp_mul_cancel
 
 @[simp]
-theorem mul_divp_cancel (a : α) (u : αˣ) : a * u /ₚ u = a :=
+lemma mul_divp_cancel (a : α) (u : αˣ) : a * u /ₚ u = a :=
   (mul_assoc _ _ _).trans <| by rw [Units.mul_inv, mul_one]
 #align mul_divp_cancel mul_divp_cancel
 
 @[simp]
-theorem divp_left_inj (u : αˣ) {a b : α} : a /ₚ u = b /ₚ u ↔ a = b :=
+lemma divp_left_inj (u : αˣ) {a b : α} : a /ₚ u = b /ₚ u ↔ a = b :=
   Units.mul_left_inj _
 #align divp_left_inj divp_left_inj
 
 @[field_simps]
-theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u₂ = x /ₚ (u₂ * u₁) := by
+lemma divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u₂ = x /ₚ (u₂ * u₁) := by
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 #align divp_divp_eq_divp_mul divp_divp_eq_divp_mul
 
@@ -501,13 +501,13 @@ lemma divp_eq_one_iff_eq {a : α} {u : αˣ} : a /ₚ u = 1 ↔ a = u :=
 #align divp_eq_one_iff_eq divp_eq_one_iff_eq
 
 @[simp]
-theorem one_divp (u : αˣ) : 1 /ₚ u = ↑u⁻¹ :=
+lemma one_divp (u : αˣ) : 1 /ₚ u = ↑u⁻¹ :=
   one_mul _
 #align one_divp one_divp
 
 /-- Used for `field_simp` to deal with inverses of units. -/
 @[field_simps]
-theorem inv_eq_one_divp (u : αˣ) : ↑u⁻¹ = 1 /ₚ u := by rw [one_divp]
+lemma inv_eq_one_divp (u : αˣ) : ↑u⁻¹ = 1 /ₚ u := by rw [one_divp]
 #align inv_eq_one_divp inv_eq_one_divp
 
 /-- Used for `field_simp` to deal with inverses of units. This form of the lemma
@@ -515,7 +515,7 @@ is essential since `field_simp` likes to use `inv_eq_one_div` to rewrite
 `↑u⁻¹ = ↑(1 / u)`.
 -/
 @[field_simps]
-theorem inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
+lemma inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
   rw [one_div, one_divp]
 #align inv_eq_one_divp' inv_eq_one_divp'
 
@@ -523,7 +523,7 @@ theorem inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
 lifts the calculation to `α`.
 -/
 @[field_simps]
-theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u₂ := by
+lemma val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u₂ := by
   rw [divp, division_def, Units.val_mul]
 #align coe_div_eq_divp val_div_eq_divp
 
@@ -534,7 +534,7 @@ section CommMonoid
 variable [CommMonoid α]
 
 @[field_simps]
-theorem divp_mul_eq_mul_divp (x y : α) (u : αˣ) : x /ₚ u * y = x * y /ₚ u := by
+lemma divp_mul_eq_mul_divp (x y : α) (u : αˣ) : x /ₚ u * y = x * y /ₚ u := by
   rw [divp, divp, mul_right_comm]
 #align divp_mul_eq_mul_divp divp_mul_eq_mul_divp
 
@@ -546,20 +546,20 @@ lemma divp_eq_divp_iff {x y : α} {ux uy : αˣ} : x /ₚ ux = y /ₚ uy ↔ x *
 
 -- Theoretically redundant as `field_simp` lemma.
 @[field_simps]
-theorem divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * y /ₚ (ux * uy) := by
+lemma divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * y /ₚ (ux * uy) := by
   rw [divp_mul_eq_mul_divp, divp_assoc', divp_divp_eq_divp_mul]
 #align divp_mul_divp divp_mul_divp
 
 variable [Subsingleton αˣ] {a b : α}
 
 @[to_additive]
-theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+lemma eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
   congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by rwa [mul_comm]) h) 1
 #align eq_one_of_mul_right eq_one_of_mul_right
 #align eq_zero_of_add_right eq_zero_of_add_right
 
 @[to_additive]
-theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 :=
+lemma eq_one_of_mul_left (h : a * b = 1) : b = 1 :=
   congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ h <| by rwa [mul_comm]) 1
 #align eq_one_of_mul_left eq_one_of_mul_left
 #align eq_zero_of_add_left eq_zero_of_add_left
@@ -737,19 +737,19 @@ lemma unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
 #align is_add_unit.add_unit_of_coe_add_units IsAddUnit.addUnit_of_val_addUnits
 
 @[to_additive (attr := simp)]
-theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
+lemma unit_spec (h : IsUnit a) : ↑h.unit = a :=
   rfl
 #align is_unit.unit_spec IsUnit.unit_spec
 #align is_add_unit.add_unit_spec IsAddUnit.addUnit_spec
 
 @[to_additive (attr := simp)]
-theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
+lemma val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
   Units.mul_inv _
 #align is_unit.coe_inv_mul IsUnit.val_inv_mul
 #align is_add_unit.coe_neg_add IsAddUnit.val_neg_add
 
 @[to_additive (attr := simp)]
-theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
+lemma mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
   rw [←h.unit.mul_inv]; congr
 #align is_unit.mul_coe_inv IsUnit.mul_val_inv
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
@@ -760,39 +760,39 @@ instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) 
   h
 
 @[to_additive]
-theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
+lemma mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
   let ⟨u, hu⟩ := h
   hu ▸ u.mul_left_inj
 #align is_unit.mul_left_inj IsUnit.mul_left_inj
 #align is_add_unit.add_left_inj IsAddUnit.add_left_inj
 
 @[to_additive]
-theorem mul_right_inj (h : IsUnit a) : a * b = a * c ↔ b = c :=
+lemma mul_right_inj (h : IsUnit a) : a * b = a * c ↔ b = c :=
   let ⟨u, hu⟩ := h
   hu ▸ u.mul_right_inj
 #align is_unit.mul_right_inj IsUnit.mul_right_inj
 #align is_add_unit.add_right_inj IsAddUnit.add_right_inj
 
 @[to_additive]
-protected theorem mul_left_cancel (h : IsUnit a) : a * b = a * c → b = c :=
+protected lemma mul_left_cancel (h : IsUnit a) : a * b = a * c → b = c :=
   h.mul_right_inj.1
 #align is_unit.mul_left_cancel IsUnit.mul_left_cancel
 #align is_add_unit.add_left_cancel IsAddUnit.add_left_cancel
 
 @[to_additive]
-protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
+protected lemma mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
   h.mul_left_inj.1
 #align is_unit.mul_right_cancel IsUnit.mul_right_cancel
 #align is_add_unit.add_right_cancel IsAddUnit.add_right_cancel
 
 @[to_additive]
-protected theorem mul_right_injective (h : IsUnit a) : Injective ((· * ·) a) :=
+protected lemma mul_right_injective (h : IsUnit a) : Injective ((· * ·) a) :=
   fun _ _ => h.mul_left_cancel
 #align is_unit.mul_right_injective IsUnit.mul_right_injective
 #align is_add_unit.add_right_injective IsAddUnit.add_right_injective
 
 @[to_additive]
-protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
+protected lemma mul_left_injective (h : IsUnit b) : Injective (· * b) :=
   fun _ _ => h.mul_right_cancel
 #align is_unit.mul_left_injective IsUnit.mul_left_injective
 #align is_add_unit.add_left_injective IsAddUnit.add_left_injective

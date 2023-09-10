@@ -56,7 +56,7 @@ lemma div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y 
   ⟨div_nonneg hx hy, div_le_one_of_le hxy hy⟩
 #align unit_interval.div_mem unitInterval.div_mem
 
-theorem fract_mem (x : ℝ) : fract x ∈ I :=
+lemma fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 #align unit_interval.fract_mem unitInterval.fract_mem
 
@@ -114,12 +114,12 @@ lemma symm_one : σ 1 = 0 :=
 #align unit_interval.symm_one unitInterval.symm_one
 
 @[simp]
-theorem symm_symm (x : I) : σ (σ x) = x :=
+lemma symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_symm unitInterval.symm_symm
 
 @[simp]
-theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
+lemma coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 #align unit_interval.coe_symm_eq unitInterval.coe_symm_eq
 
@@ -135,18 +135,18 @@ instance : ConnectedSpace I :=
 /-- Verify there is an instance for `CompactSpace I`. -/
 example : CompactSpace I := by infer_instance
 
-theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
+lemma nonneg (x : I) : 0 ≤ (x : ℝ) :=
   x.2.1
 #align unit_interval.nonneg unitInterval.nonneg
 
-theorem one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
+lemma one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
 #align unit_interval.one_minus_nonneg unitInterval.one_minus_nonneg
 
-theorem le_one (x : I) : (x : ℝ) ≤ 1 :=
+lemma le_one (x : I) : (x : ℝ) ≤ 1 :=
   x.2.2
 #align unit_interval.le_one unitInterval.le_one
 
-theorem one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
+lemma one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
 #align unit_interval.one_minus_le_one unitInterval.one_minus_le_one
 
 lemma add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
@@ -211,7 +211,7 @@ variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [Topol
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.
 /-- The image of `[0,1]` under the homeomorphism `fun x ↦ a * x + b` is `[b, a+b]`.
 -/
-theorem affineHomeomorph_image_I (a b : 𝕜) (h : 0 < a) :
+lemma affineHomeomorph_image_I (a b : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne.symm '' Set.Icc 0 1 = Set.Icc b (a + b) := by simp [h]
 set_option linter.uppercaseLean3 false in
 #align affine_homeomorph_image_I affineHomeomorph_image_I
@@ -228,14 +228,14 @@ set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I iccHomeoI
 
 @[simp]
-theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
+lemma iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
     ((iccHomeoI a b h) x : 𝕜) = (x - a) / (b - a) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I_apply_coe iccHomeoI_apply_coe
 
 @[simp]
-theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜) (1 : 𝕜)) :
+lemma iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜) (1 : 𝕜)) :
     ((iccHomeoI a b h).symm x : 𝕜) = (b - a) * x + a :=
   rfl
 set_option linter.uppercaseLean3 false in

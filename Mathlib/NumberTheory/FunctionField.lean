@@ -59,7 +59,7 @@ abbrev FunctionField [Algebra (RatFunc Fq) F] : Prop :=
 
 -- Porting note: Removed `protected`
 /-- `F` is a function field over `Fq` iff it is a finite extension of `Fq(t)`. -/
-theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
+lemma functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     [IsFractionRing Fq[X] Fqt] [Algebra (RatFunc Fq) F] [Algebra Fqt F] [Algebra Fq[X] F]
     [IsScalarTower Fq[X] Fqt F] [IsScalarTower Fq[X] (RatFunc Fq) F] :
     FunctionField Fq F ↔ FiniteDimensional Fqt F := by
@@ -165,7 +165,7 @@ lemma InftyValuation.map_one' : inftyValuationDef Fq 1 = 1 :=
   (if_neg one_ne_zero).trans <| by rw [RatFunc.intDegree_one, ofAdd_zero, WithZero.coe_one]
 #align function_field.infty_valuation.map_one' FunctionField.InftyValuation.map_one'
 
-theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
+lemma InftyValuation.map_mul' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x * y) = inftyValuationDef Fq x * inftyValuationDef Fq y := by
   rw [inftyValuationDef, inftyValuationDef, inftyValuationDef]
   by_cases hx : x = 0
@@ -176,7 +176,7 @@ theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
         ← ofAdd_add, RatFunc.intDegree_mul hx hy]
 #align function_field.infty_valuation.map_mul' FunctionField.InftyValuation.map_mul'
 
-theorem InftyValuation.map_add_le_max' (x y : RatFunc Fq) :
+lemma InftyValuation.map_add_le_max' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x + y) ≤ max (inftyValuationDef Fq x) (inftyValuationDef Fq y) := by
   by_cases hx : x = 0
   · rw [hx, zero_add]

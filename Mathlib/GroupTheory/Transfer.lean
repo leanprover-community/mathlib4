@@ -77,7 +77,7 @@ lemma diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
 #align add_subgroup.left_transversals.diff_neg AddSubgroup.leftTransversals.diff_neg
 
 @[to_additive]
-theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
+lemma smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
   let _ := H.fintypeQuotientOfFiniteIndex
   prod_bij' (fun q _ => g⁻¹ • q) (fun _ _ => mem_univ _)
     (fun _ _ =>
@@ -144,7 +144,7 @@ lemma transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
 #align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
-theorem transfer_eq_pow_aux (g : G)
+lemma transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     g ^ H.index ∈ H := by
   by_cases hH : H.index = 0
@@ -222,7 +222,7 @@ noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Sub
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
 /-- Auxiliary lemma in order to state `transferSylow_eq_pow`. -/
-theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
+lemma transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   haveI : (P : Subgroup G).IsCommutative :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
@@ -233,7 +233,7 @@ theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
 
 variable [FiniteIndex (P : Subgroup G)]
 
-theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
+lemma transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
   @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
@@ -267,7 +267,7 @@ lemma not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker
     mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite
 #align monoid_hom.not_dvd_card_ker_transfer_sylow MonoidHom.not_dvd_card_ker_transferSylow
 
-theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
+lemma ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
     Disjoint (transferSylow P hP).ker Q :=
   disjoint_iff.mpr <|
     card_eq_one.mp <|

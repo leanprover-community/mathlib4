@@ -58,7 +58,7 @@ def bernstein (n ν : ℕ) : C(I, ℝ) :=
 #align bernstein bernstein
 
 @[simp]
-theorem bernstein_apply (n ν : ℕ) (x : I) :
+lemma bernstein_apply (n ν : ℕ) (x : I) :
     bernstein n ν x = (n.choose ν : ℝ) * (x : ℝ) ^ ν * (1 - (x : ℝ)) ^ (n - ν) := by
   dsimp [bernstein, Polynomial.toContinuousMapOn, Polynomial.toContinuousMap, bernsteinPolynomial]
   simp
@@ -105,7 +105,7 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
 
 local postfix:90 "/ₙ" => z
 
-theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
+lemma probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
   simp [AlgHom.map_sum, Finset.sum_range] at this
@@ -163,7 +163,7 @@ We show that if `k ∉ S`, then `1 ≤ δ^-2 * (x - k/n)^2`.
 namespace bernsteinApproximation
 
 @[simp]
-theorem apply (n : ℕ) (f : C(I, ℝ)) (x : I) :
+lemma apply (n : ℕ) (f : C(I, ℝ)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), f k/ₙ * bernstein n k x := by
   simp [bernsteinApproximation]
 #align bernstein_approximation.apply bernsteinApproximation.apply
@@ -224,7 +224,7 @@ for a continuous function `f : C([0,1], ℝ)` converge uniformly to `f` as `n` t
 This is the proof given in [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D,
 and reproduced on wikipedia.
 -/
-theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
+lemma bernsteinApproximation_uniform (f : C(I, ℝ)) :
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
   simp only [Metric.nhds_basis_ball.tendsto_right_iff, Metric.mem_ball, dist_eq_norm]
   intro ε h

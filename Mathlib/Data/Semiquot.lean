@@ -54,7 +54,7 @@ lemma ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a �
   ext_s.trans Set.ext_iff
 #align semiquot.ext Semiquot.ext
 
-theorem exists_mem (q : Semiquot α) : ∃ a, a ∈ q :=
+lemma exists_mem (q : Semiquot α) : ∃ a, a ∈ q :=
   let ⟨⟨a, h⟩, _⟩ := q.2.exists_rep
   ⟨a, h⟩
 #align semiquot.exists_mem Semiquot.exists_mem
@@ -63,7 +63,7 @@ lemma eq_mk_of_mem {q : Semiquot α} {a : α} (h : a ∈ q) : q = @mk _ a q.1 h 
   ext_s.2 rfl
 #align semiquot.eq_mk_of_mem Semiquot.eq_mk_of_mem
 
-theorem nonempty (q : Semiquot α) : q.s.Nonempty :=
+lemma nonempty (q : Semiquot α) : q.s.Nonempty :=
   q.exists_mem
 #align semiquot.nonempty Semiquot.nonempty
 
@@ -87,12 +87,12 @@ def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
   blur' q (Set.subset_union_right s q.s)
 #align semiquot.blur Semiquot.blur
 
-theorem blur_eq_blur' (q : Semiquot α) (s : Set α) (h : q.s ⊆ s) : blur s q = blur' q h := by
+lemma blur_eq_blur' (q : Semiquot α) (s : Set α) (h : q.s ⊆ s) : blur s q = blur' q h := by
   unfold blur; congr; exact Set.union_eq_self_of_subset_right h
 #align semiquot.blur_eq_blur' Semiquot.blur_eq_blur'
 
 @[simp]
-theorem mem_blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) {a : α} : a ∈ blur' q h ↔ a ∈ s :=
+lemma mem_blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) {a : α} : a ∈ blur' q h ↔ a ∈ s :=
   Iff.rfl
 #align semiquot.mem_blur' Semiquot.mem_blur'
 
@@ -116,7 +116,7 @@ def liftOn (q : Semiquot α) (f : α → β) (h : ∀ (a) (_ : a ∈ q) (b) (_ :
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
 warning: expanding binder collection (a b «expr ∈ » q) -/
-theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
+lemma liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a :=
   by revert h; rw [eq_mk_of_mem aq]; intro; rfl
 #align semiquot.lift_on_of_mem Semiquot.liftOn_ofMem
@@ -127,7 +127,7 @@ def map (f : α → β) (q : Semiquot α) : Semiquot β :=
 #align semiquot.map Semiquot.map
 
 @[simp]
-theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ f a = b :=
+lemma mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ f a = b :=
   Set.mem_image _ _ _
 #align semiquot.mem_map Semiquot.mem_map
 
@@ -137,7 +137,7 @@ def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
 #align semiquot.bind Semiquot.bind
 
 @[simp]
-theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
+lemma mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
   by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
@@ -161,7 +161,7 @@ lemma mem_pure {a b : α} : a ∈ (pure b : Semiquot α) ↔ a = b :=
   Set.mem_singleton_iff
 #align semiquot.mem_pure Semiquot.mem_pure
 
-theorem mem_pure_self (a : α) : a ∈ (pure a : Semiquot α) :=
+lemma mem_pure_self (a : α) : a ∈ (pure a : Semiquot α) :=
   Set.mem_singleton a
 #align semiquot.mem_pure_self Semiquot.mem_pure_self
 
@@ -223,7 +223,7 @@ lemma eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
 #align semiquot.eq_pure Semiquot.eq_pure
 
 @[simp]
-theorem pure_isPure (a : α) : IsPure (pure a)
+lemma pure_isPure (a : α) : IsPure (pure a)
   | b, ab, c, ac => by
     rw [mem_pure] at ab ac
     rwa [←ac] at ab
@@ -262,7 +262,7 @@ lemma mem_univ [Inhabited α] : ∀ a, a ∈ @univ α _ :=
 #align semiquot.mem_univ Semiquot.mem_univ
 
 @[congr]
-theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
+lemma univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
   ext.2 <| fun a => refl (a ∈ univ)
 #align semiquot.univ_unique Semiquot.univ_unique
 

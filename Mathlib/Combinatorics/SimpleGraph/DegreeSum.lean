@@ -80,14 +80,14 @@ lemma dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
 
 variable {G} [DecidableEq V]
 
-theorem Dart.edge_fiber (d : G.Dart) :
+lemma Dart.edge_fiber (d : G.Dart) :
     (univ.filter fun d' : G.Dart => d'.edge = d.edge) = {d, d.symm} :=
   Finset.ext fun d' => by simpa using dart_edge_eq_iff d' d
 #align simple_graph.dart.edge_fiber SimpleGraph.Dart.edge_fiber
 
 variable (G)
 
-theorem dart_edge_fiber_card (e : Sym2 V) (h : e ∈ G.edgeSet) :
+lemma dart_edge_fiber_card (e : Sym2 V) (h : e ∈ G.edgeSet) :
     (univ.filter fun d : G.Dart => d.edge = e).card = 2 := by
   refine' Sym2.ind (fun v w h => _) e h
   let d : G.Dart := ⟨(v, w), h⟩

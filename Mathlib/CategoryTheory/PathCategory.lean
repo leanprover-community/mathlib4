@@ -141,7 +141,7 @@ variable (W : Type u₂) [Quiver.{v₂ + 1} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
-theorem Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.mapPath (f ≫ g) = (F.mapPath f).comp (F.mapPath g) :=
   Prefunctor.mapPath_comp _ _ _
 #align category_theory.prefunctor.map_path_comp' CategoryTheory.Prefunctor.mapPath_comp'

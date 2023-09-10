@@ -96,37 +96,37 @@ def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
 #align Top.pullback_iso_prod_subtype TopCat.pullbackIsoProdSubtype
 
 @[reassoc (attr := simp)]
-theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
+lemma pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).inv ≫ pullback.fst = pullbackFst f g := by
   simp [pullbackCone, pullbackIsoProdSubtype]
 #align Top.pullback_iso_prod_subtype_inv_fst TopCat.pullbackIsoProdSubtype_inv_fst
 
 @[simp]
-theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
+lemma pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     (pullback.fst : pullback f g ⟶ _) ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
   ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_fst f g) x
 #align Top.pullback_iso_prod_subtype_inv_fst_apply TopCat.pullbackIsoProdSubtype_inv_fst_apply
 
 @[reassoc (attr := simp)]
-theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
+lemma pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).inv ≫ pullback.snd = pullbackSnd f g := by
   simp [pullbackCone, pullbackIsoProdSubtype]
 #align Top.pullback_iso_prod_subtype_inv_snd TopCat.pullbackIsoProdSubtype_inv_snd
 
 @[simp]
-theorem pullbackIsoProdSubtype_inv_snd_apply (f : X ⟶ Z) (g : Y ⟶ Z)
+lemma pullbackIsoProdSubtype_inv_snd_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     (pullback.snd : pullback f g ⟶ _) ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).snd :=
   ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_snd f g) x
 #align Top.pullback_iso_prod_subtype_inv_snd_apply TopCat.pullbackIsoProdSubtype_inv_snd_apply
 
-theorem pullbackIsoProdSubtype_hom_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
+lemma pullbackIsoProdSubtype_hom_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).hom ≫ pullbackFst f g = pullback.fst := by
   rw [← Iso.eq_inv_comp, pullbackIsoProdSubtype_inv_fst]
 #align Top.pullback_iso_prod_subtype_hom_fst TopCat.pullbackIsoProdSubtype_hom_fst
 
-theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
+lemma pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).hom ≫ pullbackSnd f g = pullback.snd := by
   rw [← Iso.eq_inv_comp, pullbackIsoProdSubtype_inv_snd]
 #align Top.pullback_iso_prod_subtype_hom_snd TopCat.pullbackIsoProdSubtype_hom_snd
@@ -368,7 +368,7 @@ lemma snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf 
   convert IsIso.of_iso (isoOfHomeo esto)
 #align Top.snd_iso_of_left_embedding_range_subset TopCat.snd_iso_of_left_embedding_range_subset
 
-theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :
+lemma pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :
     (pullback.snd : pullback f g ⟶ _) '' ((pullback.fst : pullback f g ⟶ _) ⁻¹' U) =
       g ⁻¹' (f '' U) := by
   ext x
@@ -380,7 +380,7 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
     exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩
 #align Top.pullback_snd_image_fst_preimage TopCat.pullback_snd_image_fst_preimage
 
-theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
+lemma pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
     (pullback.fst : pullback f g ⟶ _) '' ((pullback.snd : pullback f g ⟶ _) ⁻¹' U) =
       f ⁻¹' (g '' U) := by
   ext x
@@ -404,19 +404,19 @@ lemma coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc : I
   exact isOpen_iSup_iff
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 
-theorem colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
+lemma colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit F)
 #align Top.colimit_topology TopCat.colimit_topology
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _) : Type max v u)) :
+lemma colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _) : Type max v u)) :
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   dsimp [topologicalSpace_coe]
   conv_lhs => rw [colimit_topology F]
   exact isOpen_iSup_iff
 #align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff
 
-theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
+lemma coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
     (U : Set ((colimit F : _) : Type u)) :
     IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
   rw [colimit_isOpen_iff]

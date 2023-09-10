@@ -76,7 +76,7 @@ lemma hasDerivWithinAt_iff_tendsto_slope :
   exact hasDerivAtFilter_iff_tendsto_slope
 #align has_deriv_within_at_iff_tendsto_slope hasDerivWithinAt_iff_tendsto_slope
 
-theorem hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
+lemma hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s] x) (𝓝 f') := by
   rw [hasDerivWithinAt_iff_tendsto_slope, diff_singleton_eq_self hs]
 #align has_deriv_within_at_iff_tendsto_slope' hasDerivWithinAt_iff_tendsto_slope'
@@ -109,17 +109,17 @@ section Real
 
 variable {f : ℝ → ℝ} {f' : ℝ} {s : Set ℝ} {x : ℝ} {r : ℝ}
 
-theorem HasDerivWithinAt.limsup_slope_le (hf : HasDerivWithinAt f f' s x) (hr : f' < r) :
+lemma HasDerivWithinAt.limsup_slope_le (hf : HasDerivWithinAt f f' s x) (hr : f' < r) :
     ∀ᶠ z in 𝓝[s \ {x}] x, slope f x z < r :=
   hasDerivWithinAt_iff_tendsto_slope.1 hf (IsOpen.mem_nhds isOpen_Iio hr)
 #align has_deriv_within_at.limsup_slope_le HasDerivWithinAt.limsup_slope_le
 
-theorem HasDerivWithinAt.limsup_slope_le' (hf : HasDerivWithinAt f f' s x) (hs : x ∉ s)
+lemma HasDerivWithinAt.limsup_slope_le' (hf : HasDerivWithinAt f f' s x) (hs : x ∉ s)
     (hr : f' < r) : ∀ᶠ z in 𝓝[s] x, slope f x z < r :=
   (hasDerivWithinAt_iff_tendsto_slope' hs).1 hf (IsOpen.mem_nhds isOpen_Iio hr)
 #align has_deriv_within_at.limsup_slope_le' HasDerivWithinAt.limsup_slope_le'
 
-theorem HasDerivWithinAt.liminf_right_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
+lemma HasDerivWithinAt.liminf_right_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : f' < r) : ∃ᶠ z in 𝓝[>] x, slope f x z < r :=
   (hf.Ioi_of_Ici.limsup_slope_le' (lt_irrefl x) hr).frequently
 #align has_deriv_within_at.liminf_right_slope_le HasDerivWithinAt.liminf_right_slope_le
@@ -137,7 +137,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E}
 `‖f z - f x‖ / ‖z - x‖` is less than `r` in some neighborhood of `x` within `s`.
 In other words, the limit superior of this ratio as `z` tends to `x` along `s`
 is less than or equal to `‖f'‖`. -/
-theorem HasDerivWithinAt.limsup_norm_slope_le (hf : HasDerivWithinAt f f' s x) (hr : ‖f'‖ < r) :
+lemma HasDerivWithinAt.limsup_norm_slope_le (hf : HasDerivWithinAt f f' s x) (hr : ‖f'‖ < r) :
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * ‖f z - f x‖ < r := by
   have hr₀ : 0 < r := lt_of_le_of_lt (norm_nonneg f') hr
   have A : ∀ᶠ z in 𝓝[s \ {x}] x, ‖(z - x)⁻¹ • (f z - f x)‖ ∈ Iio r :=
@@ -158,7 +158,7 @@ is less than or equal to `‖f'‖`.
 
 This lemma is a weaker version of `HasDerivWithinAt.limsup_norm_slope_le`
 where `‖f z‖ - ‖f x‖` is replaced by `‖f z - f x‖`. -/
-theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (hr : ‖f'‖ < r) :
+lemma HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (hr : ‖f'‖ < r) :
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   apply (hf.limsup_norm_slope_le hr).mono
   intro z hz
@@ -171,7 +171,7 @@ theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (
 In other words, the limit inferior of this ratio as `z` tends to `x+0`
 is less than or equal to `‖f'‖`. See also `HasDerivWithinAt.limsup_norm_slope_le`
 for a stronger version using limit superior and any set `s`. -/
-theorem HasDerivWithinAt.liminf_right_norm_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
+lemma HasDerivWithinAt.liminf_right_norm_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, ‖z - x‖⁻¹ * ‖f z - f x‖ < r :=
   (hf.Ioi_of_Ici.limsup_norm_slope_le hr).frequently
 #align has_deriv_within_at.liminf_right_norm_slope_le HasDerivWithinAt.liminf_right_norm_slope_le
@@ -187,7 +187,7 @@ See also
   limit superior and any set `s`;
 * `HasDerivWithinAt.liminf_right_norm_slope_le` for a stronger version using
   `‖f z - f xp‖` instead of `‖f z‖ - ‖f x‖`. -/
-theorem HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' (Ici x) x)
+lemma HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, (z - x)⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   have := (hf.Ioi_of_Ici.limsup_slope_norm_le hr).frequently
   refine this.mp (Eventually.mono self_mem_nhdsWithin fun z hxz hz ↦ ?_)

@@ -120,7 +120,7 @@ lemma ext {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
   Hom.ext _ _ w
 
 @[simp]
-theorem id_hom' (M : Mon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
+lemma id_hom' (M : Mon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
   rfl
 #align Mon_.id_hom' Mon_.id_hom'
 
@@ -404,7 +404,7 @@ lemma one_rightUnitor {M : Mon_ C} :
 
 variable [BraidedCategory C]
 
-theorem Mon_tensor_one_mul (M N : Mon_ C) :
+lemma Mon_tensor_one_mul (M N : Mon_ C) :
     ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) ⊗ 𝟙 (M.X ⊗ N.X)) ≫
         tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) =
       (λ_ (M.X ⊗ N.X)).hom := by
@@ -415,7 +415,7 @@ theorem Mon_tensor_one_mul (M N : Mon_ C) :
   exact tensor_left_unitality C M.X N.X
 #align Mon_.Mon_tensor_one_mul Mon_.Mon_tensor_one_mul
 
-theorem Mon_tensor_mul_one (M N : Mon_ C) :
+lemma Mon_tensor_mul_one (M N : Mon_ C) :
     (𝟙 (M.X ⊗ N.X) ⊗ (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)) ≫
         tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) =
       (ρ_ (M.X ⊗ N.X)).hom := by
@@ -426,7 +426,7 @@ theorem Mon_tensor_mul_one (M N : Mon_ C) :
   exact tensor_right_unitality C M.X N.X
 #align Mon_.Mon_tensor_mul_one Mon_.Mon_tensor_mul_one
 
-theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
+lemma Mon_tensor_mul_assoc (M N : Mon_ C) :
     (tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) ⊗ 𝟙 (M.X ⊗ N.X)) ≫
         tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) =
       (α_ (M.X ⊗ N.X) (M.X ⊗ N.X) (M.X ⊗ N.X)).hom ≫

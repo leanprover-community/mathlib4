@@ -134,7 +134,7 @@ section T1Space
 
 variable [T1Space α]
 
-theorem isGδ_compl_singleton (a : α) : IsGδ ({a}ᶜ : Set α) :=
+lemma isGδ_compl_singleton (a : α) : IsGδ ({a}ᶜ : Set α) :=
   isOpen_compl_singleton.isGδ
 #align is_Gδ_compl_singleton isGδ_compl_singleton
 
@@ -151,13 +151,13 @@ lemma Set.Subsingleton.isGδ_compl {s : Set α} (hs : s.Subsingleton) : IsGδ s�
   hs.finite.isGδ_compl
 #align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
 
-theorem Finset.isGδ_compl (s : Finset α) : IsGδ (sᶜ : Set α) :=
+lemma Finset.isGδ_compl (s : Finset α) : IsGδ (sᶜ : Set α) :=
   s.finite_toSet.isGδ_compl
 #align finset.is_Gδ_compl Finset.isGδ_compl
 
 variable [FirstCountableTopology α]
 
-theorem isGδ_singleton (a : α) : IsGδ ({a} : Set α) := by
+lemma isGδ_singleton (a : α) : IsGδ ({a} : Set α) := by
   rcases (nhds_basis_opens a).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact isGδ_biInter (to_countable _) fun n _ => (hU n).2.isGδ

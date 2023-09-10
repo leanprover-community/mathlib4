@@ -54,13 +54,13 @@ def smul (c : G) : α ≃ᵐ α where
 #align measurable_equiv.vadd MeasurableEquiv.vadd
 
 @[to_additive]
-theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding ((· • ·) c : α → α) :=
+lemma _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding ((· • ·) c : α → α) :=
   (smul c).measurableEmbedding
 #align measurable_embedding_const_smul measurableEmbedding_const_smul
 #align measurable_embedding_const_vadd measurableEmbedding_const_vadd
 
 @[to_additive (attr := simp)]
-theorem symm_smul (c : G) : (smul c : α ≃ᵐ α).symm = smul c⁻¹ :=
+lemma symm_smul (c : G) : (smul c : α ≃ᵐ α).symm = smul c⁻¹ :=
   ext rfl
 #align measurable_equiv.symm_smul MeasurableEquiv.symm_smul
 #align measurable_equiv.symm_vadd MeasurableEquiv.symm_vadd
@@ -102,25 +102,25 @@ def mulLeft (g : G) : G ≃ᵐ G :=
 #align measurable_equiv.add_left MeasurableEquiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (· * ·) g :=
+lemma coe_mulLeft (g : G) : ⇑(mulLeft g) = (· * ·) g :=
   rfl
 #align measurable_equiv.coe_mul_left MeasurableEquiv.coe_mulLeft
 #align measurable_equiv.coe_add_left MeasurableEquiv.coe_addLeft
 
 @[to_additive (attr := simp)]
-theorem symm_mulLeft (g : G) : (mulLeft g).symm = mulLeft g⁻¹ :=
+lemma symm_mulLeft (g : G) : (mulLeft g).symm = mulLeft g⁻¹ :=
   ext rfl
 #align measurable_equiv.symm_mul_left MeasurableEquiv.symm_mulLeft
 #align measurable_equiv.symm_add_left MeasurableEquiv.symm_addLeft
 
 @[to_additive (attr := simp)]
-theorem toEquiv_mulLeft (g : G) : (mulLeft g).toEquiv = Equiv.mulLeft g :=
+lemma toEquiv_mulLeft (g : G) : (mulLeft g).toEquiv = Equiv.mulLeft g :=
   rfl
 #align measurable_equiv.to_equiv_mul_left MeasurableEquiv.toEquiv_mulLeft
 #align measurable_equiv.to_equiv_add_left MeasurableEquiv.toEquiv_addLeft
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding ((· * ·) g) :=
+lemma _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding ((· * ·) g) :=
   (mulLeft g).measurableEmbedding
 #align measurable_embedding_mul_left measurableEmbedding_mulLeft
 #align measurable_embedding_add_left measurableEmbedding_addLeft
@@ -138,25 +138,25 @@ def mulRight (g : G) : G ≃ᵐ G where
 #align measurable_equiv.add_right MeasurableEquiv.addRight
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mulRight (g : G) : MeasurableEmbedding fun x => x * g :=
+lemma _root_.measurableEmbedding_mulRight (g : G) : MeasurableEmbedding fun x => x * g :=
   (mulRight g).measurableEmbedding
 #align measurable_embedding_mul_right measurableEmbedding_mulRight
 #align measurable_embedding_add_right measurableEmbedding_addRight
 
 @[to_additive (attr := simp)]
-theorem coe_mulRight (g : G) : ⇑(mulRight g) = fun x => x * g :=
+lemma coe_mulRight (g : G) : ⇑(mulRight g) = fun x => x * g :=
   rfl
 #align measurable_equiv.coe_mul_right MeasurableEquiv.coe_mulRight
 #align measurable_equiv.coe_add_right MeasurableEquiv.coe_addRight
 
 @[to_additive (attr := simp)]
-theorem symm_mulRight (g : G) : (mulRight g).symm = mulRight g⁻¹ :=
+lemma symm_mulRight (g : G) : (mulRight g).symm = mulRight g⁻¹ :=
   ext rfl
 #align measurable_equiv.symm_mul_right MeasurableEquiv.symm_mulRight
 #align measurable_equiv.symm_add_right MeasurableEquiv.symm_addRight
 
 @[to_additive (attr := simp)]
-theorem toEquiv_mulRight (g : G) : (mulRight g).toEquiv = Equiv.mulRight g :=
+lemma toEquiv_mulRight (g : G) : (mulRight g).toEquiv = Equiv.mulRight g :=
   rfl
 #align measurable_equiv.to_equiv_mul_right MeasurableEquiv.toEquiv_mulRight
 #align measurable_equiv.to_equiv_add_right MeasurableEquiv.toEquiv_addRight

@@ -131,7 +131,7 @@ def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] :
   right_inv := by aesop_cat
 #align category_theory.single_obj.map_hom CategoryTheory.SingleObj.mapHom
 
-theorem mapHom_id (α : Type u) [Monoid α] : mapHom α α (MonoidHom.id α) = 𝟭 _ :=
+lemma mapHom_id (α : Type u) [Monoid α] : mapHom α α (MonoidHom.id α) = 𝟭 _ :=
   rfl
 #align category_theory.single_obj.map_hom_id CategoryTheory.SingleObj.mapHom_id
 
@@ -173,7 +173,7 @@ def toFunctor {α : Type u} {β : Type v} [Monoid α] [Monoid β] (f : α →* �
 #align monoid_hom.to_functor MonoidHom.toFunctor
 
 @[simp]
-theorem id_toFunctor (α : Type u) [Monoid α] : (id α).toFunctor = 𝟭 _ :=
+lemma id_toFunctor (α : Type u) [Monoid α] : (id α).toFunctor = 𝟭 _ :=
   rfl
 #align monoid_hom.id_to_functor MonoidHom.id_toFunctor
 
@@ -200,13 +200,13 @@ set_option linter.uppercaseLean3 false in
 #align units.to_Aut Units.toAut
 
 @[simp]
-theorem toAut_hom (x : αˣ) : (toAut α x).hom = SingleObj.toEnd α x :=
+lemma toAut_hom (x : αˣ) : (toAut α x).hom = SingleObj.toEnd α x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align units.to_Aut_hom Units.toAut_hom
 
 @[simp]
-theorem toAut_inv (x : αˣ) : (toAut α x).inv = SingleObj.toEnd α (x⁻¹ : αˣ) :=
+lemma toAut_inv (x : αˣ) : (toAut α x).inv = SingleObj.toEnd α (x⁻¹ : αˣ) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align units.to_Aut_inv Units.toAut_inv

@@ -70,7 +70,7 @@ def frobeniusPolyRat (n : ℕ) : MvPolynomial ℕ ℚ :=
   bind₁ (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
 #align witt_vector.frobenius_poly_rat WittVector.frobeniusPolyRat
 
-theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
+lemma bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
     bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) := by
   delta frobeniusPolyRat
   rw [← bind₁_bind₁, bind₁_xInTermsOfW_wittPolynomial, bind₁_X_right, Function.comp_apply]
@@ -96,7 +96,7 @@ noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
           * ↑p ^ (j - v p ⟨j + 1, Nat.succ_pos j⟩) : ℕ) : ℤ)
 #align witt_vector.frobenius_poly_aux WittVector.frobeniusPolyAux
 
-theorem frobeniusPolyAux_eq (n : ℕ) :
+lemma frobeniusPolyAux_eq (n : ℕ) :
     frobeniusPolyAux p n =
       X (n + 1) - ∑ i in range n,
           ∑ j in range (p ^ (n - i)),
@@ -122,7 +122,7 @@ This lemma has a rather long proof, but it mostly boils down to applying inducti
 and then using the following two key facts at the right point.
 -/
 /-- A key divisibility fact for the proof of `WittVector.map_frobeniusPoly`. -/
-theorem map_frobeniusPoly.key₁ (n j : ℕ) (hj : j < p ^ n) :
+lemma map_frobeniusPoly.key₁ (n j : ℕ) (hj : j < p ^ n) :
     p ^ (n - v p ⟨j + 1, j.succ_pos⟩) ∣ (p ^ n).choose (j + 1) := by
   apply multiplicity.pow_dvd_of_le_multiplicity
   rw [hp.out.multiplicity_choose_prime_pow hj j.succ_ne_zero]
@@ -142,7 +142,7 @@ lemma map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n - i
      Nat.le_of_lt_succ ((Nat.lt_pow_self hp.1.one_lt m).trans_le hle)⟩
 #align witt_vector.map_frobenius_poly.key₂ WittVector.map_frobeniusPoly.key₂
 
-theorem map_frobeniusPoly (n : ℕ) :
+lemma map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_mul, RingHom.map_pow, map_C, map_X, eq_intCast,
     Int.cast_ofNat, frobeniusPolyRat]
@@ -196,14 +196,14 @@ theorem map_frobeniusPoly (n : ℕ) :
   ring
 #align witt_vector.map_frobenius_poly WittVector.map_frobeniusPoly
 
-theorem frobeniusPoly_zmod (n : ℕ) :
+lemma frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_pow, RingHom.map_mul, map_X, map_C]
   simp only [Int.cast_ofNat, add_zero, eq_intCast, ZMod.nat_cast_self, zero_mul, C_0]
 #align witt_vector.frobenius_poly_zmod WittVector.frobeniusPoly_zmod
 
 @[simp]
-theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
+lemma bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
     bind₁ (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_bind₁, map_frobeniusPoly, bind₁_frobeniusPolyRat_wittPolynomial,
@@ -218,7 +218,7 @@ def frobeniusFun (x : 𝕎 R) : 𝕎 R :=
   mk p fun n => MvPolynomial.aeval x.coeff (frobeniusPoly p n)
 #align witt_vector.frobenius_fun WittVector.frobeniusFun
 
-theorem coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
+lemma coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
     coeff (frobeniusFun x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) := by
   rw [frobeniusFun, coeff_mk]
 #align witt_vector.coeff_frobenius_fun WittVector.coeff_frobeniusFun
@@ -236,7 +236,7 @@ instance frobeniusFun_isPoly : IsPoly p fun R _Rcr => @frobeniusFun p R _ _Rcr :
 variable {p}
 
 @[ghost_simps]
-theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
+lemma ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobeniusFun x) = ghostComponent (n + 1) x := by
   simp only [ghostComponent_apply, frobeniusFun, coeff_mk, ← bind₁_frobeniusPoly_wittPolynomial,
     aeval_bind₁]
@@ -269,13 +269,13 @@ def frobenius : 𝕎 R →+* 𝕎 R where
   map_mul' := by ghost_calc _ _; ghost_simp
 #align witt_vector.frobenius WittVector.frobenius
 
-theorem coeff_frobenius (x : 𝕎 R) (n : ℕ) :
+lemma coeff_frobenius (x : 𝕎 R) (n : ℕ) :
     coeff (frobenius x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) :=
   coeff_frobeniusFun _ _
 #align witt_vector.coeff_frobenius WittVector.coeff_frobenius
 
 @[ghost_simps]
-theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
+lemma ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobenius x) = ghostComponent (n + 1) x :=
   ghostComponent_frobeniusFun _ _
 #align witt_vector.ghost_component_frobenius WittVector.ghostComponent_frobenius
@@ -293,7 +293,7 @@ section CharP
 variable [CharP R p]
 
 @[simp]
-theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x.coeff n ^ p := by
+lemma coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x.coeff n ^ p := by
   rw [coeff_frobenius]
   letI : Algebra (ZMod p) R := ZMod.algebra _ _
   -- outline of the calculation, proofs follow below
@@ -315,7 +315,7 @@ lemma frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius R 
 #align witt_vector.frobenius_eq_map_frobenius WittVector.frobenius_eq_map_frobenius
 
 @[simp]
-theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
+lemma frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
   simp only [ext_iff, coeff_frobenius_charP, ZMod.pow_card, eq_self_iff_true, forall_const]
 #align witt_vector.frobenius_zmodp WittVector.frobenius_zmodp
 

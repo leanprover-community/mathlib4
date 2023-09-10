@@ -113,7 +113,7 @@ lemma mem_toSubgroup : g ∈ (U : Subgroup G) ↔ g ∈ U := Iff.rfl
 #align open_add_subgroup.mem_coe_add_subgroup OpenAddSubgroup.mem_toAddSubgroup
 
 @[to_additive (attr := ext)]
-theorem ext (h : ∀ x, x ∈ U ↔ x ∈ V) : U = V :=
+lemma ext (h : ∀ x, x ∈ U ↔ x ∈ V) : U = V :=
   SetLike.ext h
 #align open_subgroup.ext OpenSubgroup.ext
 #align open_add_subgroup.ext OpenAddSubgroup.ext
@@ -137,7 +137,7 @@ variable {U}
 @[to_additive] instance : Top (OpenSubgroup G) := ⟨⟨⊤, isOpen_univ⟩⟩
 
 @[to_additive (attr := simp)]
-theorem mem_top (x : G) : x ∈ (⊤ : OpenSubgroup G) :=
+lemma mem_top (x : G) : x ∈ (⊤ : OpenSubgroup G) :=
   trivial
 #align open_subgroup.mem_top OpenSubgroup.mem_top
 #align open_add_subgroup.mem_top OpenAddSubgroup.mem_top
@@ -195,14 +195,14 @@ def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
 #align open_add_subgroup.sum OpenAddSubgroup.sum
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
+lemma coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 #align open_subgroup.coe_prod OpenSubgroup.coe_prod
 #align open_add_subgroup.coe_sum OpenAddSubgroup.coe_sum
 
 @[to_additive (attr := simp, norm_cast)]
-theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
+lemma toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Subgroup (G × H)) = (U : Subgroup G).prod V :=
   rfl
 #align open_subgroup.coe_subgroup_prod OpenSubgroup.toSubgroup_prod
@@ -271,14 +271,14 @@ def comap (f : G →* N) (hf : Continuous f) (H : OpenSubgroup N) : OpenSubgroup
 #align open_add_subgroup.comap OpenAddSubgroup.comap
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_comap (H : OpenSubgroup N) (f : G →* N) (hf : Continuous f) :
+lemma coe_comap (H : OpenSubgroup N) (f : G →* N) (hf : Continuous f) :
     (H.comap f hf : Set G) = f ⁻¹' H :=
   rfl
 #align open_subgroup.coe_comap OpenSubgroup.coe_comap
 #align open_add_subgroup.coe_comap OpenAddSubgroup.coe_comap
 
 @[to_additive (attr := simp, norm_cast)]
-theorem toSubgroup_comap (H : OpenSubgroup N) (f : G →* N) (hf : Continuous f) :
+lemma toSubgroup_comap (H : OpenSubgroup N) (f : G →* N) (hf : Continuous f) :
     (H.comap f hf : Subgroup G) = (H : Subgroup N).comap f :=
   rfl
 #align open_subgroup.coe_subgroup_comap OpenSubgroup.toSubgroup_comap
@@ -332,7 +332,7 @@ lemma isOpen_of_openSubgroup {U : OpenSubgroup G} (h : ↑U ≤ H) : IsOpen (H :
 /-- If a subgroup of a topological group has `1` in its interior, then it is open. -/
 @[to_additive "If a subgroup of an additive topological group has `0` in its interior, then it is
 open."]
-theorem isOpen_of_one_mem_interior (h_1_int : (1 : G) ∈ interior (H : Set G)) :
+lemma isOpen_of_one_mem_interior (h_1_int : (1 : G) ∈ interior (H : Set G)) :
     IsOpen (H : Set G) :=
   isOpen_of_mem_nhds H <| mem_interior_iff_mem_nhds.1 h_1_int
 #align subgroup.is_open_of_one_mem_interior Subgroup.isOpen_of_one_mem_interior
@@ -349,7 +349,7 @@ instance : Sup (OpenSubgroup G) :=
   ⟨fun U V => ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
+lemma toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
 #align open_subgroup.coe_subgroup_sup OpenSubgroup.toSubgroup_sup
 #align open_add_subgroup.coe_add_subgroup_sup OpenAddSubgroup.toAddSubgroup_sup
 

@@ -202,25 +202,25 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of CategoryTheory.AdditiveFunctor.of
 
 @[simp]
-theorem AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).1 = F :=
+lemma AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).1 = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_fst CategoryTheory.AdditiveFunctor.of_fst
 
 @[simp]
-theorem AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.1 :=
+lemma AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget_obj CategoryTheory.AdditiveFunctor.forget_obj
 
-theorem AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
+lemma AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
     (AdditiveFunctor.forget C D).obj (AdditiveFunctor.of F) = F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget_obj_of CategoryTheory.AdditiveFunctor.forget_obj_of
 
 @[simp]
-theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
+lemma AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
     (AdditiveFunctor.forget C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -282,21 +282,21 @@ end
 variable {C D}
 
 @[simp]
-theorem AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
+lemma AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
     ((AdditiveFunctor.ofLeftExact C D).obj F).obj = F.obj :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_left_exact_obj_fst CategoryTheory.AdditiveFunctor.ofLeftExact_obj_fst
 
 @[simp]
-theorem AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
+lemma AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
     ((AdditiveFunctor.ofRightExact C D).obj F).obj = F.obj :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_right_exact_obj_fst CategoryTheory.AdditiveFunctor.ofRightExact_obj_fst
 
 @[simp]
-theorem AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
+lemma AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
     ((AdditiveFunctor.ofExact C D).obj F).obj = F.obj :=
   rfl
 set_option linter.uppercaseLean3 false in

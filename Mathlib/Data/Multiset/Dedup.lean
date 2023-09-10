@@ -27,7 +27,7 @@ def dedup (s : Multiset α) : Multiset α :=
 #align multiset.dedup Multiset.dedup
 
 @[simp]
-theorem coe_dedup (l : List α) : @dedup α _ l = l.dedup :=
+lemma coe_dedup (l : List α) : @dedup α _ l = l.dedup :=
   rfl
 #align multiset.coe_dedup Multiset.coe_dedup
 
@@ -51,15 +51,15 @@ lemma dedup_cons_of_not_mem {a : α} {s : Multiset α} : a ∉ s → dedup (a ::
   Quot.induction_on s fun _ m => congr_arg ofList <| List.dedup_cons_of_not_mem m
 #align multiset.dedup_cons_of_not_mem Multiset.dedup_cons_of_not_mem
 
-theorem dedup_le (s : Multiset α) : dedup s ≤ s :=
+lemma dedup_le (s : Multiset α) : dedup s ≤ s :=
   Quot.induction_on s fun _ => (dedup_sublist _).subperm
 #align multiset.dedup_le Multiset.dedup_le
 
-theorem dedup_subset (s : Multiset α) : dedup s ⊆ s :=
+lemma dedup_subset (s : Multiset α) : dedup s ⊆ s :=
   subset_of_le <| dedup_le _
 #align multiset.dedup_subset Multiset.dedup_subset
 
-theorem subset_dedup (s : Multiset α) : s ⊆ dedup s := fun _ => mem_dedup.2
+lemma subset_dedup (s : Multiset α) : s ⊆ dedup s := fun _ => mem_dedup.2
 #align multiset.subset_dedup Multiset.subset_dedup
 
 @[simp]
@@ -73,7 +73,7 @@ lemma subset_dedup' {s t : Multiset α} : s ⊆ dedup t ↔ s ⊆ t :=
 #align multiset.subset_dedup' Multiset.subset_dedup'
 
 @[simp]
-theorem nodup_dedup (s : Multiset α) : Nodup (dedup s) :=
+lemma nodup_dedup (s : Multiset α) : Nodup (dedup s) :=
   Quot.induction_on s List.nodup_dedup
 #align multiset.nodup_dedup Multiset.nodup_dedup
 
@@ -84,7 +84,7 @@ lemma dedup_eq_self {s : Multiset α} : dedup s = s ↔ Nodup s :=
 alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 #align multiset.nodup.dedup Multiset.Nodup.dedup
 
-theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
+lemma count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
   Quot.induction_on m fun _ => by
     simp only [quot_mk_to_coe'', coe_dedup, mem_coe, List.mem_dedup, coe_nodup, coe_count]
     apply List.count_dedup _ _

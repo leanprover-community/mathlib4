@@ -39,7 +39,7 @@ lemma isColimit_exists_rep {c : Cocone F} (hc : IsColimit c) (x : c.pt) :
 #align algebraic_geometry.SheafedSpace.is_colimit_exists_rep AlgebraicGeometry.SheafedSpaceₓ.isColimit_exists_rep
 
 -- Porting note : argument `C` of colimit need to be made explicit, odd
-theorem colimit_exists_rep (x : colimit (C := SheafedSpace C) F) :
+lemma colimit_exists_rep (x : colimit (C := SheafedSpace C) F) :
     ∃ (i : J) (y : F.obj i), (colimit.ι F i).base y = x :=
   Concrete.isColimit_exists_rep (F ⋙ SheafedSpace.forget C)
     (isColimitOfPreserves (SheafedSpace.forget _) (colimit.isColimit F)) x

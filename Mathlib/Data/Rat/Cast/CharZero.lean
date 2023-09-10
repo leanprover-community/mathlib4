@@ -101,27 +101,27 @@ lemma coe_cast_hom : ⇑(castHom α) = ((↑) : ℚ → α) :=
 #align rat.coe_cast_hom Rat.coe_cast_hom
 
 @[simp, norm_cast]
-theorem cast_inv (n) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
+lemma cast_inv (n) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ :=
   map_inv₀ (castHom α) _
 #align rat.cast_inv Rat.cast_inv
 
 @[simp, norm_cast]
-theorem cast_div (m n) : ((m / n : ℚ) : α) = m / n :=
+lemma cast_div (m n) : ((m / n : ℚ) : α) = m / n :=
   map_div₀ (castHom α) _ _
 #align rat.cast_div Rat.cast_div
 
 @[simp, norm_cast]
-theorem cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
+lemma cast_zpow (q : ℚ) (n : ℤ) : ((q ^ n : ℚ) : α) = (q : α) ^ n :=
   map_zpow₀ (castHom α) q n
 #align rat.cast_zpow Rat.cast_zpow
 
 @[norm_cast]
-theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
+lemma cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
   simp only [divInt_eq_div, cast_div, cast_coe_int]
 #align rat.cast_mk Rat.cast_mk
 
 @[simp, norm_cast]
-theorem cast_pow (q) (k : ℕ) : ((q : ℚ) ^ k : α) = (q : α) ^ k :=
+lemma cast_pow (q) (k : ℕ) : ((q : ℚ) ^ k : α) = (q : α) ^ k :=
   (castHom α).map_pow q k
 #align rat.cast_pow Rat.cast_pow
 

@@ -98,12 +98,12 @@ lemma eqOn_source : EqOn f (f.toContDiffBump ∘ extChartAt I c) (chartAt H c).s
   eqOn_indicator
 #align smooth_bump_function.eq_on_source SmoothBumpFunction.eqOn_source
 
-theorem eventuallyEq_of_mem_source (hx : x ∈ (chartAt H c).source) :
+lemma eventuallyEq_of_mem_source (hx : x ∈ (chartAt H c).source) :
     f =ᶠ[𝓝 x] f.toContDiffBump ∘ extChartAt I c :=
   f.eqOn_source.eventuallyEq_of_mem <| IsOpen.mem_nhds (chartAt H c).open_source hx
 #align smooth_bump_function.eventually_eq_of_mem_source SmoothBumpFunction.eventuallyEq_of_mem_source
 
-theorem one_of_dist_le (hs : x ∈ (chartAt H c).source)
+lemma one_of_dist_le (hs : x ∈ (chartAt H c).source)
     (hd : dist (extChartAt I c x) (extChartAt I c c) ≤ f.rIn) : f x = 1 := by
   simp only [f.eqOn_source hs, (· ∘ ·), f.one_of_mem_closedBall hd]
 #align smooth_bump_function.one_of_dist_le SmoothBumpFunction.one_of_dist_le
@@ -159,7 +159,7 @@ lemma le_one : f x ≤ 1 :=
   f.mem_Icc.2
 #align smooth_bump_function.le_one SmoothBumpFunction.le_one
 
-theorem eventuallyEq_one_of_dist_lt (hs : x ∈ (chartAt H c).source)
+lemma eventuallyEq_one_of_dist_lt (hs : x ∈ (chartAt H c).source)
     (hd : dist (extChartAt I c x) (extChartAt I c c) < f.rIn) : f =ᶠ[𝓝 x] 1 := by
   filter_upwards [IsOpen.mem_nhds (isOpen_extChartAt_preimage I c isOpen_ball) ⟨hs, hd⟩]
   rintro z ⟨hzs, hzd⟩

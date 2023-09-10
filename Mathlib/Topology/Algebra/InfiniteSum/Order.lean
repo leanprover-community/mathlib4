@@ -27,7 +27,7 @@ section Preorder
 variable [Preorder α] [AddCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] [T2Space α]
   {f : ℕ → α} {c : α}
 
-theorem tsum_le_of_sum_range_le (hf : Summable f) (h : ∀ n, ∑ i in range n, f i ≤ c) :
+lemma tsum_le_of_sum_range_le (hf : Summable f) (h : ∀ n, ∑ i in range n, f i ≤ c) :
     ∑' n, f n ≤ c :=
   let ⟨_l, hl⟩ := hf
   hl.tsum_eq.symm ▸ le_of_tendsto' hl.tendsto_sum_nat h
@@ -40,20 +40,20 @@ section OrderedAddCommMonoid
 variable [OrderedAddCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f g : ι → α}
   {a a₁ a₂ : α}
 
-theorem hasSum_le (h : ∀ i, f i ≤ g i) (hf : HasSum f a₁) (hg : HasSum g a₂) : a₁ ≤ a₂ :=
+lemma hasSum_le (h : ∀ i, f i ≤ g i) (hf : HasSum f a₁) (hg : HasSum g a₂) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto' hf hg fun _ => sum_le_sum fun i _ => h i
 #align has_sum_le hasSum_le
 
 @[mono]
-theorem hasSum_mono (hf : HasSum f a₁) (hg : HasSum g a₂) (h : f ≤ g) : a₁ ≤ a₂ :=
+lemma hasSum_mono (hf : HasSum f a₁) (hg : HasSum g a₂) (h : f ≤ g) : a₁ ≤ a₂ :=
   hasSum_le h hf hg
 #align has_sum_mono hasSum_mono
 
-theorem hasSum_le_of_sum_le (hf : HasSum f a) (h : ∀ s, ∑ i in s, f i ≤ a₂) : a ≤ a₂ :=
+lemma hasSum_le_of_sum_le (hf : HasSum f a) (h : ∀ s, ∑ i in s, f i ≤ a₂) : a ≤ a₂ :=
   le_of_tendsto' hf h
 #align has_sum_le_of_sum_le hasSum_le_of_sum_le
 
-theorem le_hasSum_of_le_sum (hf : HasSum f a) (h : ∀ s, a₂ ≤ ∑ i in s, f i) : a₂ ≤ a :=
+lemma le_hasSum_of_le_sum (hf : HasSum f a) (h : ∀ s, a₂ ≤ ∑ i in s, f i) : a₂ ≤ a :=
   ge_of_tendsto' hf h
 #align le_has_sum_of_le_sum le_hasSum_of_le_sum
 
@@ -75,18 +75,18 @@ lemma tsum_le_tsum_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
   hasSum_le_inj _ he hs h hf.hasSum hg.hasSum
 #align tsum_le_tsum_of_inj tsum_le_tsum_of_inj
 
-theorem sum_le_hasSum (s : Finset ι) (hs : ∀ i, i ∉ s → 0 ≤ f i) (hf : HasSum f a) :
+lemma sum_le_hasSum (s : Finset ι) (hs : ∀ i, i ∉ s → 0 ≤ f i) (hf : HasSum f a) :
     ∑ i in s, f i ≤ a :=
   ge_of_tendsto hf (eventually_atTop.2
     ⟨s, fun _t hst => sum_le_sum_of_subset_of_nonneg hst fun i _ hbs => hs i hbs⟩)
 #align sum_le_has_sum sum_le_hasSum
 
-theorem isLUB_hasSum (h : ∀ i, 0 ≤ f i) (hf : HasSum f a) :
+lemma isLUB_hasSum (h : ∀ i, 0 ≤ f i) (hf : HasSum f a) :
     IsLUB (Set.range fun s => ∑ i in s, f i) a :=
   isLUB_of_tendsto_atTop (Finset.sum_mono_set_of_nonneg h) hf
 #align is_lub_has_sum isLUB_hasSum
 
-theorem le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ a :=
+lemma le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ a :=
   calc
     f i = ∑ i in {i}, f i := Finset.sum_singleton.symm
     _ ≤ a := sum_le_hasSum _ (by simpa) hf
@@ -97,53 +97,53 @@ lemma sum_le_tsum {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 0 ≤
   sum_le_hasSum s hs hf.hasSum
 #align sum_le_tsum sum_le_tsum
 
-theorem le_tsum (hf : Summable f) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ ∑' i, f i :=
+lemma le_tsum (hf : Summable f) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ ∑' i, f i :=
   le_hasSum hf.hasSum i hb
 #align le_tsum le_tsum
 
-theorem tsum_le_tsum (h : ∀ i, f i ≤ g i) (hf : Summable f) (hg : Summable g) :
+lemma tsum_le_tsum (h : ∀ i, f i ≤ g i) (hf : Summable f) (hg : Summable g) :
     ∑' i, f i ≤ ∑' i, g i :=
   hasSum_le h hf.hasSum hg.hasSum
 #align tsum_le_tsum tsum_le_tsum
 
 @[mono]
-theorem tsum_mono (hf : Summable f) (hg : Summable g) (h : f ≤ g) : ∑' n, f n ≤ ∑' n, g n :=
+lemma tsum_mono (hf : Summable f) (hg : Summable g) (h : f ≤ g) : ∑' n, f n ≤ ∑' n, g n :=
   tsum_le_tsum h hf hg
 #align tsum_mono tsum_mono
 
-theorem tsum_le_of_sum_le (hf : Summable f) (h : ∀ s, ∑ i in s, f i ≤ a₂) : ∑' i, f i ≤ a₂ :=
+lemma tsum_le_of_sum_le (hf : Summable f) (h : ∀ s, ∑ i in s, f i ≤ a₂) : ∑' i, f i ≤ a₂ :=
   hasSum_le_of_sum_le hf.hasSum h
 #align tsum_le_of_sum_le tsum_le_of_sum_le
 
-theorem tsum_le_of_sum_le' (ha₂ : 0 ≤ a₂) (h : ∀ s, ∑ i in s, f i ≤ a₂) : ∑' i, f i ≤ a₂ := by
+lemma tsum_le_of_sum_le' (ha₂ : 0 ≤ a₂) (h : ∀ s, ∑ i in s, f i ≤ a₂) : ∑' i, f i ≤ a₂ := by
   by_cases hf : Summable f
   · exact tsum_le_of_sum_le hf h
   · rw [tsum_eq_zero_of_not_summable hf]
     exact ha₂
 #align tsum_le_of_sum_le' tsum_le_of_sum_le'
 
-theorem HasSum.nonneg (h : ∀ i, 0 ≤ g i) (ha : HasSum g a) : 0 ≤ a :=
+lemma HasSum.nonneg (h : ∀ i, 0 ≤ g i) (ha : HasSum g a) : 0 ≤ a :=
   hasSum_le h hasSum_zero ha
 #align has_sum.nonneg HasSum.nonneg
 
-theorem HasSum.nonpos (h : ∀ i, g i ≤ 0) (ha : HasSum g a) : a ≤ 0 :=
+lemma HasSum.nonpos (h : ∀ i, g i ≤ 0) (ha : HasSum g a) : a ≤ 0 :=
   hasSum_le h ha hasSum_zero
 #align has_sum.nonpos HasSum.nonpos
 
-theorem tsum_nonneg (h : ∀ i, 0 ≤ g i) : 0 ≤ ∑' i, g i := by
+lemma tsum_nonneg (h : ∀ i, 0 ≤ g i) : 0 ≤ ∑' i, g i := by
   by_cases hg : Summable g
   · exact hg.hasSum.nonneg h
   · rw [tsum_eq_zero_of_not_summable hg]
 #align tsum_nonneg tsum_nonneg
 
-theorem tsum_nonpos (h : ∀ i, f i ≤ 0) : ∑' i, f i ≤ 0 := by
+lemma tsum_nonpos (h : ∀ i, f i ≤ 0) : ∑' i, f i ≤ 0 := by
   by_cases hf : Summable f
   · exact hf.hasSum.nonpos h
   · rw [tsum_eq_zero_of_not_summable hf]
 #align tsum_nonpos tsum_nonpos
 
 -- porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
-theorem hasSum_zero_iff_of_nonneg (hf : ∀ i, 0 ≤ f i) : HasSum f 0 ↔ f = 0 := by
+lemma hasSum_zero_iff_of_nonneg (hf : ∀ i, 0 ≤ f i) : HasSum f 0 ↔ f = 0 := by
   refine' ⟨fun hf' => _, _⟩
   · ext i
     exact (hf i).antisymm' (le_hasSum hf' _ fun j _ => hf j)
@@ -158,31 +158,31 @@ section OrderedAddCommGroup
 variable [OrderedAddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
-theorem hasSum_lt (h : f ≤ g) (hi : f i < g i) (hf : HasSum f a₁) (hg : HasSum g a₂) : a₁ < a₂ := by
+lemma hasSum_lt (h : f ≤ g) (hi : f i < g i) (hf : HasSum f a₁) (hg : HasSum g a₂) : a₁ < a₂ := by
   have : update f i 0 ≤ update g i 0 := update_le_update_iff.mpr ⟨rfl.le, fun i _ => h i⟩
   have : 0 - f i + a₁ ≤ 0 - g i + a₂ := hasSum_le this (hf.update i 0) (hg.update i 0)
   simpa only [zero_sub, add_neg_cancel_left] using add_lt_add_of_lt_of_le hi this
 #align has_sum_lt hasSum_lt
 
 @[mono]
-theorem hasSum_strict_mono (hf : HasSum f a₁) (hg : HasSum g a₂) (h : f < g) : a₁ < a₂ :=
+lemma hasSum_strict_mono (hf : HasSum f a₁) (hg : HasSum g a₂) (h : f < g) : a₁ < a₂ :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hasSum_lt hle hi hf hg
 #align has_sum_strict_mono hasSum_strict_mono
 
-theorem tsum_lt_tsum (h : f ≤ g) (hi : f i < g i) (hf : Summable f) (hg : Summable g) :
+lemma tsum_lt_tsum (h : f ≤ g) (hi : f i < g i) (hf : Summable f) (hg : Summable g) :
     ∑' n, f n < ∑' n, g n :=
   hasSum_lt h hi hf.hasSum hg.hasSum
 #align tsum_lt_tsum tsum_lt_tsum
 
 @[mono]
-theorem tsum_strict_mono (hf : Summable f) (hg : Summable g) (h : f < g) :
+lemma tsum_strict_mono (hf : Summable f) (hg : Summable g) (h : f < g) :
     ∑' n, f n < ∑' n, g n :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   tsum_lt_tsum hle hi hf hg
 #align tsum_strict_mono tsum_strict_mono
 
-theorem tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < g i) :
+lemma tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < g i) :
     0 < ∑' i, g i := by
   rw [← tsum_zero]
   exact tsum_lt_tsum hg hi summable_zero hsum
@@ -195,11 +195,11 @@ section CanonicallyOrderedAddMonoid
 variable [CanonicallyOrderedAddMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f : ι → α}
   {a : α}
 
-theorem le_hasSum' (hf : HasSum f a) (i : ι) : f i ≤ a :=
+lemma le_hasSum' (hf : HasSum f a) (i : ι) : f i ≤ a :=
   le_hasSum hf i fun _ _ => zero_le _
 #align le_has_sum' le_hasSum'
 
-theorem le_tsum' (hf : Summable f) (i : ι) : f i ≤ ∑' i, f i :=
+lemma le_tsum' (hf : Summable f) (i : ι) : f i ≤ ∑' i, f i :=
   le_tsum hf i fun _ _ => zero_le _
 #align le_tsum' le_tsum'
 
@@ -207,15 +207,15 @@ lemma hasSum_zero_iff : HasSum f 0 ↔ ∀ x, f x = 0 :=
   (hasSum_zero_iff_of_nonneg fun _ => zero_le _).trans funext_iff
 #align has_sum_zero_iff hasSum_zero_iff
 
-theorem tsum_eq_zero_iff (hf : Summable f) : ∑' i, f i = 0 ↔ ∀ x, f x = 0 := by
+lemma tsum_eq_zero_iff (hf : Summable f) : ∑' i, f i = 0 ↔ ∀ x, f x = 0 := by
   rw [← hasSum_zero_iff, hf.hasSum_iff]
 #align tsum_eq_zero_iff tsum_eq_zero_iff
 
-theorem tsum_ne_zero_iff (hf : Summable f) : ∑' i, f i ≠ 0 ↔ ∃ x, f x ≠ 0 := by
+lemma tsum_ne_zero_iff (hf : Summable f) : ∑' i, f i ≠ 0 ↔ ∃ x, f x ≠ 0 := by
   rw [Ne.def, tsum_eq_zero_iff hf, not_forall]
 #align tsum_ne_zero_iff tsum_ne_zero_iff
 
-theorem isLUB_hasSum' (hf : HasSum f a) : IsLUB (Set.range fun s => ∑ i in s, f i) a :=
+lemma isLUB_hasSum' (hf : HasSum f a) : IsLUB (Set.range fun s => ∑ i in s, f i) a :=
   isLUB_of_tendsto_atTop (Finset.sum_mono_set f) hf
 #align is_lub_has_sum' isLUB_hasSum'
 

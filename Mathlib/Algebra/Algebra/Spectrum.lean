@@ -192,7 +192,7 @@ lemma inv_mem_iff {r : Rˣ} {a : Aˣ} : (r : R) ∈ σ (a : A) ↔ (↑r⁻¹ : 
   not_iff_not.2 <| ⟨inv_mem_resolventSet, inv_mem_resolventSet⟩
 #align spectrum.inv_mem_iff spectrum.inv_mem_iff
 
-theorem zero_mem_resolventSet_of_unit (a : Aˣ) : 0 ∈ resolventSet R (a : A) := by
+lemma zero_mem_resolventSet_of_unit (a : Aˣ) : 0 ∈ resolventSet R (a : A) := by
   simpa only [mem_resolventSet_iff, ← not_mem_iff, zero_not_mem_iff] using a.isUnit
 #align spectrum.zero_mem_resolvent_set_of_unit spectrum.zero_mem_resolventSet_of_unit
 
@@ -213,7 +213,7 @@ lemma smul_mem_smul_iff {a : A} {s : R} {r : Rˣ} : r • s ∈ σ (r • a) ↔
     isUnit_smul_iff]
 #align spectrum.smul_mem_smul_iff spectrum.smul_mem_smul_iff
 
-theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
+lemma unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   ext x
   have x_eq : x = r • r⁻¹ • x := by simp
   nth_rw 1 [x_eq]
@@ -260,7 +260,7 @@ lemma star_mem_resolventSet_iff {r : R} {a : A} :
       star_star, star_one] using IsUnit.star h
 #align spectrum.star_mem_resolvent_set_iff spectrum.star_mem_resolventSet_iff
 
-protected theorem map_star (a : A) : σ (star a) = star (σ a) := by
+protected lemma map_star (a : A) : σ (star a) = star (σ a) := by
   ext
   simpa only [Set.mem_star, mem_iff, not_iff_not] using star_mem_resolventSet_iff.symm
 #align spectrum.map_star spectrum.map_star
@@ -290,31 +290,31 @@ lemma subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : Star
   compl_subset_compl.2 fun _ => IsUnit.map S.subtype
 #align spectrum.subset_star_subalgebra spectrum.subset_starSubalgebra
 
-theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
+lemma singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by
     rw [singleton_add, image_add_left, mem_preimage]
     simp only
     rw [add_comm, add_mem_iff, map_neg, neg_neg]
 #align spectrum.singleton_add_eq spectrum.singleton_add_eq
 
-theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
+lemma add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
   add_comm {r} (σ a) ▸ add_comm (algebraMap R A r) a ▸ singleton_add_eq a r
 #align spectrum.add_singleton_eq spectrum.add_singleton_eq
 
-theorem vadd_eq (a : A) (r : R) : r +ᵥ σ a = σ (↑ₐ r + a) :=
+lemma vadd_eq (a : A) (r : R) : r +ᵥ σ a = σ (↑ₐ r + a) :=
   singleton_add.symm.trans <| singleton_add_eq a r
 #align spectrum.vadd_eq spectrum.vadd_eq
 
-theorem neg_eq (a : A) : -σ a = σ (-a) :=
+lemma neg_eq (a : A) : -σ a = σ (-a) :=
   Set.ext fun x => by
     simp only [mem_neg, mem_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
 #align spectrum.neg_eq spectrum.neg_eq
 
-theorem singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
+lemma singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
   rw [sub_eq_add_neg, neg_eq, singleton_add_eq, sub_eq_add_neg]
 #align spectrum.singleton_sub_eq spectrum.singleton_sub_eq
 
-theorem sub_singleton_eq (a : A) (r : R) : σ a - {r} = σ (a - ↑ₐ r) := by
+lemma sub_singleton_eq (a : A) (r : R) : σ a - {r} = σ (a - ↑ₐ r) := by
   simpa only [neg_sub, neg_eq] using congr_arg Neg.neg (singleton_sub_eq a r)
 #align spectrum.sub_singleton_eq spectrum.sub_singleton_eq
 
@@ -363,7 +363,7 @@ lemma smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
   · exact unit_smul_eq_smul a (Units.mk0 k h)
 #align spectrum.smul_eq_smul spectrum.smul_eq_smul
 
-theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
+lemma nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
   suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0}
   · exact Set.eq_of_subset_of_subset (h a b) (h b a)
   · rintro _ _ k ⟨k_mem, k_neq⟩
@@ -371,7 +371,7 @@ theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} 
     exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
 #align spectrum.nonzero_mul_eq_swap_mul spectrum.nonzero_mul_eq_swap_mul
 
-protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
+protected lemma map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
   refine' Set.eq_of_subset_of_subset (fun k hk => _) fun k hk => _
   · rw [Set.mem_inv] at hk
     have : k ≠ 0 := by simpa only [inv_inv] using inv_ne_zero (ne_zero_of_mem_of_unit hk)
@@ -398,12 +398,12 @@ local notation "σ" => spectrum R
 
 local notation "↑ₐ" => algebraMap R A
 
-theorem mem_resolventSet_apply (φ : F) {a : A} {r : R} (h : r ∈ resolventSet R a) :
+lemma mem_resolventSet_apply (φ : F) {a : A} {r : R} (h : r ∈ resolventSet R a) :
     r ∈ resolventSet R ((φ : A → B) a) := by
   simpa only [map_sub, AlgHomClass.commutes] using h.map φ
 #align alg_hom.mem_resolvent_set_apply AlgHom.mem_resolventSet_apply
 
-theorem spectrum_apply_subset (φ : F) (a : A) : σ ((φ : A → B) a) ⊆ σ a := fun _ =>
+lemma spectrum_apply_subset (φ : F) (a : A) : σ ((φ : A → B) a) ⊆ σ a := fun _ =>
   mt (mem_resolventSet_apply φ)
 #align alg_hom.spectrum_apply_subset AlgHom.spectrum_apply_subset
 

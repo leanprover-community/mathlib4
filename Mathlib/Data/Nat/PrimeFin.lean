@@ -34,7 +34,7 @@ lemma factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     List.toFinset_union _ _
 #align nat.factors_mul_to_finset Nat.factors_mul_toFinset
 
-theorem pow_succ_factors_toFinset (n k : ℕ) :
+lemma pow_succ_factors_toFinset (n k : ℕ) :
     (n ^ (k + 1)).factors.toFinset = n.factors.toFinset := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
@@ -43,7 +43,7 @@ theorem pow_succ_factors_toFinset (n k : ℕ) :
   · rw [pow_succ', factors_mul_toFinset hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
 #align nat.pow_succ_factors_to_finset Nat.pow_succ_factors_toFinset
 
-theorem pow_factors_toFinset (n : ℕ) {k : ℕ} (hk : k ≠ 0) :
+lemma pow_factors_toFinset (n : ℕ) {k : ℕ} (hk : k ≠ 0) :
     (n ^ k).factors.toFinset = n.factors.toFinset := by
   cases k
   · simp at hk

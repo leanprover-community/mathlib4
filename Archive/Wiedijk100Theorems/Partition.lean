@@ -122,7 +122,7 @@ lemma mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
       exact hf x
 #align theorems_100.mem_cut Theorems100.mem_cut
 
-theorem cut_equiv_antidiag (n : ℕ) :
+lemma cut_equiv_antidiag (n : ℕ) :
     Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = Nat.antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
@@ -130,7 +130,7 @@ theorem cut_equiv_antidiag (n : ℕ) :
   simp [mem_cut, add_comm]
 #align theorems_100.cut_equiv_antidiag Theorems100.cut_equiv_antidiag
 
-theorem cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
+lemma cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
     cut univ n = Nat.antidiagonalTuple k n := by ext; simp [Nat.mem_antidiagonalTuple, mem_cut]
 #align theorems_100.cut_univ_fin_eq_antidiagonal_tuple Theorems100.cut_univ_fin_eq_antidiagonalTuple
 
@@ -231,25 +231,25 @@ def indicatorSeries (α : Type _) [Semiring α] (s : Set ℕ) : PowerSeries α :
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 #align theorems_100.indicator_series Theorems100.indicatorSeries
 
-theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
+lemma coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
   coeff_mk _ _
 #align theorems_100.coeff_indicator Theorems100.coeff_indicator
 
-theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
+lemma coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
     coeff α n (indicatorSeries _ s) = 1 := by rw [coeff_indicator, if_pos h]
 #align theorems_100.coeff_indicator_pos Theorems100.coeff_indicator_pos
 
-theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
+lemma coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 #align theorems_100.coeff_indicator_neg Theorems100.coeff_indicator_neg
 
-theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
+lemma constantCoeff_indicator (s : Set ℕ) [Semiring α] :
     constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
   rfl
 #align theorems_100.constant_coeff_indicator Theorems100.constantCoeff_indicator
 
-theorem two_series (i : ℕ) [Semiring α] :
+lemma two_series (i : ℕ) [Semiring α] :
     1 + (X : PowerSeries α) ^ i.succ = indicatorSeries α {0, i.succ} := by
   ext n
   simp only [coeff_indicator, coeff_one, coeff_X_pow, Set.mem_insert_iff, Set.mem_singleton_iff,
@@ -309,7 +309,7 @@ def mkOdd : ℕ ↪ ℕ :=
 #align theorems_100.mk_odd Theorems100.mkOdd
 
 -- The main workhorse of the partition theorem proof.
-theorem partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
+lemma partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>
@@ -524,7 +524,7 @@ lemma same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
   exact_mod_cast Nat.lt_succ_of_le (le_add_right h)
 #align theorems_100.same_coeffs Theorems100.same_coeffs
 
-theorem partition_lemma (n : ℕ) :
+lemma partition_lemma (n : ℕ) :
     (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
   -- We need the counts to live in some field (which contains ℕ), so let's just use ℚ
   suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card by

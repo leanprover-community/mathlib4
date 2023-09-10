@@ -67,7 +67,7 @@ def IsAtom (a : α) : Prop :=
   a ≠ ⊥ ∧ ∀ b, b < a → b = ⊥
 #align is_atom IsAtom
 
-theorem IsAtom.Iic (ha : IsAtom a) (hax : a ≤ x) : IsAtom (⟨a, hax⟩ : Set.Iic x) :=
+lemma IsAtom.Iic (ha : IsAtom a) (hax : a ≤ x) : IsAtom (⟨a, hax⟩ : Set.Iic x) :=
   ⟨fun con => ha.1 (Subtype.mk_eq_mk.1 con), fun ⟨b, _⟩ hba => Subtype.mk_eq_mk.2 (ha.2 b hba)⟩
 #align is_atom.Iic IsAtom.Iic
 
@@ -87,14 +87,14 @@ section PartialOrder
 
 variable [PartialOrder α] [OrderBot α] {a b x : α}
 
-theorem IsAtom.lt_iff (h : IsAtom a) : x < a ↔ x = ⊥ :=
+lemma IsAtom.lt_iff (h : IsAtom a) : x < a ↔ x = ⊥ :=
   ⟨h.2 x, fun hx => hx.symm ▸ h.1.bot_lt⟩
 #align is_atom.lt_iff IsAtom.lt_iff
 
-theorem IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [le_iff_lt_or_eq, h.lt_iff]
+lemma IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [le_iff_lt_or_eq, h.lt_iff]
 #align is_atom.le_iff IsAtom.le_iff
 
-theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
+lemma IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
 #align is_atom.Iic_eq IsAtom.Iic_eq
 
@@ -156,7 +156,7 @@ alias ⟨_, IsCoatom.dual⟩ := isAtom_dual_iff_isCoatom
 
 variable [OrderTop α] {a x : α}
 
-theorem IsCoatom.Ici (ha : IsCoatom a) (hax : x ≤ a) : IsCoatom (⟨a, hax⟩ : Set.Ici x) :=
+lemma IsCoatom.Ici (ha : IsCoatom a) (hax : x ≤ a) : IsCoatom (⟨a, hax⟩ : Set.Ici x) :=
   ha.dual.Iic hax
 #align is_coatom.Ici IsCoatom.Ici
 
@@ -174,15 +174,15 @@ section PartialOrder
 
 variable [PartialOrder α] [OrderTop α] {a b x : α}
 
-theorem IsCoatom.lt_iff (h : IsCoatom a) : a < x ↔ x = ⊤ :=
+lemma IsCoatom.lt_iff (h : IsCoatom a) : a < x ↔ x = ⊤ :=
   h.dual.lt_iff
 #align is_coatom.lt_iff IsCoatom.lt_iff
 
-theorem IsCoatom.le_iff (h : IsCoatom a) : a ≤ x ↔ x = ⊤ ∨ x = a :=
+lemma IsCoatom.le_iff (h : IsCoatom a) : a ≤ x ↔ x = ⊤ ∨ x = a :=
   h.dual.le_iff
 #align is_coatom.le_iff IsCoatom.le_iff
 
-theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
+lemma IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
   h.dual.Iic_eq
 #align is_coatom.Ici_eq IsCoatom.Ici_eq
 
@@ -221,10 +221,10 @@ lemma Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
   simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Iic
 #align set.Iic.is_coatom_iff Set.Iic.isCoatom_iff
 
-theorem covby_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
+lemma covby_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
 #align covby_iff_atom_Ici covby_iff_atom_Ici
 
-theorem covby_iff_coatom_Iic (h : a ≤ b) : a ⋖ b ↔ IsCoatom (⟨a, h⟩ : Set.Iic b) := by simp
+lemma covby_iff_coatom_Iic (h : a ≤ b) : a ⋖ b ↔ IsCoatom (⟨a, h⟩ : Set.Iic b) := by simp
 #align covby_iff_coatom_Iic covby_iff_coatom_Iic
 
 end PartialOrder
@@ -443,7 +443,7 @@ section IsAtomistic
 variable [IsAtomistic α]
 
 @[simp]
-theorem sSup_atoms_le_eq (b : α) : sSup { a : α | IsAtom a ∧ a ≤ b } = b := by
+lemma sSup_atoms_le_eq (b : α) : sSup { a : α | IsAtom a ∧ a ≤ b } = b := by
   rcases eq_sSup_atoms b with ⟨s, rfl, hs⟩
   exact le_antisymm (sSup_le fun _ => And.right) (sSup_le_sSup fun a ha => ⟨hs a ha, le_sSup ha⟩)
 #align Sup_atoms_le_eq sSup_atoms_le_eq
@@ -1078,11 +1078,11 @@ end Pi
 
 namespace Set
 
-theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
+lemma isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
   ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
 #align set.is_atom_singleton Set.isAtom_singleton
 
-theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} := by
+lemma isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} := by
   refine'
     ⟨_, by
       rintro ⟨x, rfl⟩
@@ -1094,12 +1094,12 @@ theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} := by
         ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
 #align set.is_atom_iff Set.isAtom_iff
 
-theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
+lemma isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
   rw [isCompl_compl.isCoatom_iff_isAtom, isAtom_iff]
   simp_rw [@eq_comm _ s, compl_eq_comm]
 #align set.is_coatom_iff Set.isCoatom_iff
 
-theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
+lemma isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
   (isCoatom_iff {x}ᶜ).mpr ⟨x, rfl⟩
 #align set.is_coatom_singleton_compl Set.isCoatom_singleton_compl
 

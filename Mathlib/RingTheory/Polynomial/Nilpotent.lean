@@ -96,7 +96,7 @@ protected lemma isNilpotent_iff :
 nilpotent, then `P` is a unit.
 
 See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`. -/
-theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
+lemma isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
   induction' h : P.natDegree using Nat.strong_induction_on with k hind generalizing P
   by_cases hdeg : P.natDegree = 0
@@ -122,7 +122,7 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
 except its constant term which is a unit.
 
 See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`. -/
-theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
+lemma coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor

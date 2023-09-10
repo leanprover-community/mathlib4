@@ -130,12 +130,12 @@ protected def copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
 #align non_unital_subsemiring.copy NonUnitalSubsemiring.copy
 
 @[simp]
-theorem coe_copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
+lemma coe_copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
     (S.copy s hs : Set R) = s :=
   rfl
 #align non_unital_subsemiring.coe_copy NonUnitalSubsemiring.coe_copy
 
-theorem copy_eq (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
+lemma copy_eq (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 #align non_unital_subsemiring.copy_eq NonUnitalSubsemiring.copy_eq
 
@@ -216,12 +216,12 @@ lemma coe_zero : ((0 : s) : R) = (0 : R) :=
 #align non_unital_subsemiring.coe_zero NonUnitalSubsemiring.coe_zero
 
 @[simp, norm_cast]
-theorem coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
+lemma coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
   rfl
 #align non_unital_subsemiring.coe_add NonUnitalSubsemiring.coe_add
 
 @[simp, norm_cast]
-theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
+lemma coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
   rfl
 #align non_unital_subsemiring.coe_mul NonUnitalSubsemiring.coe_mul
 
@@ -234,7 +234,7 @@ lemma mem_toSubsemigroup {s : NonUnitalSubsemiring R} {x : R} : x ∈ s.toSubsem
 #align non_unital_subsemiring.mem_to_subsemigroup NonUnitalSubsemiring.mem_toSubsemigroup
 
 @[simp high]
-theorem coe_toSubsemigroup (s : NonUnitalSubsemiring R) : (s.toSubsemigroup : Set R) = s :=
+lemma coe_toSubsemigroup (s : NonUnitalSubsemiring R) : (s.toSubsemigroup : Set R) = s :=
   rfl
 #align non_unital_subsemiring.coe_to_subsemigroup NonUnitalSubsemiring.coe_toSubsemigroup
 
@@ -244,7 +244,7 @@ lemma mem_toAddSubmonoid {s : NonUnitalSubsemiring R} {x : R} : x ∈ s.toAddSub
 #align non_unital_subsemiring.mem_to_add_submonoid NonUnitalSubsemiring.mem_toAddSubmonoid
 
 @[simp]
-theorem coe_toAddSubmonoid (s : NonUnitalSubsemiring R) : (s.toAddSubmonoid : Set R) = s :=
+lemma coe_toAddSubmonoid (s : NonUnitalSubsemiring R) : (s.toAddSubmonoid : Set R) = s :=
   rfl
 #align non_unital_subsemiring.coe_to_add_submonoid NonUnitalSubsemiring.coe_toAddSubmonoid
 
@@ -253,7 +253,7 @@ instance : Top (NonUnitalSubsemiring R) :=
   ⟨{ (⊤ : Subsemigroup R), (⊤ : AddSubmonoid R) with }⟩
 
 @[simp]
-theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubsemiring R) :=
+lemma mem_top (x : R) : x ∈ (⊤ : NonUnitalSubsemiring R) :=
   Set.mem_univ x
 #align non_unital_subsemiring.mem_top NonUnitalSubsemiring.mem_top
 
@@ -275,7 +275,7 @@ def comap (f : F) (s : NonUnitalSubsemiring S) : NonUnitalSubsemiring R :=
 #align non_unital_subsemiring.comap NonUnitalSubsemiring.comap
 
 @[simp]
-theorem coe_comap (s : NonUnitalSubsemiring S) (f : F) : (s.comap f : Set R) = f ⁻¹' s :=
+lemma coe_comap (s : NonUnitalSubsemiring S) (f : F) : (s.comap f : Set R) = f ⁻¹' s :=
   rfl
 #align non_unital_subsemiring.coe_comap NonUnitalSubsemiring.coe_comap
 
@@ -285,7 +285,7 @@ lemma mem_comap {s : NonUnitalSubsemiring S} {f : F} {x : R} : x ∈ s.comap f �
 #align non_unital_subsemiring.mem_comap NonUnitalSubsemiring.mem_comap
 
 -- this has some nasty coercions, how to deal with it?
-theorem comap_comap (s : NonUnitalSubsemiring T) (g : G) (f : F) :
+lemma comap_comap (s : NonUnitalSubsemiring T) (g : G) (f : F) :
     ((s.comap g : NonUnitalSubsemiring S).comap f : NonUnitalSubsemiring R) =
       s.comap ((g : S →ₙ+* T).comp (f : R →ₙ+* S)) :=
   rfl
@@ -297,7 +297,7 @@ def map (f : F) (s : NonUnitalSubsemiring R) : NonUnitalSubsemiring S :=
 #align non_unital_subsemiring.map NonUnitalSubsemiring.map
 
 @[simp]
-theorem coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' s :=
+lemma coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' s :=
   rfl
 #align non_unital_subsemiring.coe_map NonUnitalSubsemiring.coe_map
 
@@ -313,7 +313,7 @@ lemma map_id : s.map (NonUnitalRingHom.id R) = s :=
 #align non_unital_subsemiring.map_id NonUnitalSubsemiring.map_id
 
 -- unavoidable coercions?
-theorem map_map (g : G) (f : F) :
+lemma map_map (g : G) (f : F) :
     (s.map (f : R →ₙ+* S)).map (g : S →ₙ+* T) = s.map ((g : S →ₙ+* T).comp (f : R →ₙ+* S)) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 #align non_unital_subsemiring.map_map NonUnitalSubsemiring.map_map
@@ -323,7 +323,7 @@ lemma map_le_iff_le_comap {f : F} {s : NonUnitalSubsemiring R} {t : NonUnitalSub
   Set.image_subset_iff
 #align non_unital_subsemiring.map_le_iff_le_comap NonUnitalSubsemiring.map_le_iff_le_comap
 
-theorem gc_map_comap (f : F) :
+lemma gc_map_comap (f : F) :
     @GaloisConnection (NonUnitalSubsemiring R) (NonUnitalSubsemiring S) _ _ (map f) (comap f) :=
   fun _ _ => map_le_iff_le_comap
 #align non_unital_subsemiring.gc_map_comap NonUnitalSubsemiring.gc_map_comap
@@ -337,7 +337,7 @@ noncomputable def equivMapOfInjective (f : F) (hf : Function.Injective (f : R �
 #align non_unital_subsemiring.equiv_map_of_injective NonUnitalSubsemiring.equivMapOfInjective
 
 @[simp]
-theorem coe_equivMapOfInjective_apply (f : F) (hf : Function.Injective f) (x : s) :
+lemma coe_equivMapOfInjective_apply (f : F) (hf : Function.Injective f) (x : s) :
     (equivMapOfInjective s f hf x : S) = f x :=
   rfl
 #align non_unital_subsemiring.coe_equiv_map_of_injective_apply NonUnitalSubsemiring.coe_equivMapOfInjective_apply
@@ -371,11 +371,11 @@ lemma srange_eq_map : @srange R S _ _ _ _ f = (⊤ : NonUnitalSubsemiring R).map
   simp
 #align non_unital_ring_hom.srange_eq_map NonUnitalRingHom.srange_eq_map
 
-theorem mem_srange_self (f : F) (x : R) : f x ∈ @srange R S _ _ _ _ f :=
+lemma mem_srange_self (f : F) (x : R) : f x ∈ @srange R S _ _ _ _ f :=
   mem_srange.mpr ⟨x, rfl⟩
 #align non_unital_ring_hom.mem_srange_self NonUnitalRingHom.mem_srange_self
 
-theorem map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = srange (g.comp f) := by
+lemma map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = srange (g.comp f) := by
   simpa only [srange_eq_map] using (⊤ : NonUnitalSubsemiring R).map_map g f
 #align non_unital_ring_hom.map_srange NonUnitalRingHom.map_srange
 
@@ -413,7 +413,7 @@ instance : Inf (NonUnitalSubsemiring R) :=
       carrier := s ∩ t }⟩
 
 @[simp]
-theorem coe_inf (p p' : NonUnitalSubsemiring R) :
+lemma coe_inf (p p' : NonUnitalSubsemiring R) :
     ((p ⊓ p' : NonUnitalSubsemiring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 #align non_unital_subsemiring.coe_inf NonUnitalSubsemiring.coe_inf
@@ -429,7 +429,7 @@ instance : InfSet (NonUnitalSubsemiring R) :=
       (by simp) (⨅ t ∈ s, NonUnitalSubsemiring.toAddSubmonoid t) (by simp)⟩
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (NonUnitalSubsemiring R)) :
+lemma coe_sInf (S : Set (NonUnitalSubsemiring R)) :
     ((sInf S : NonUnitalSubsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 #align non_unital_subsemiring.coe_Inf NonUnitalSubsemiring.coe_sInf
@@ -439,13 +439,13 @@ lemma mem_sInf {S : Set (NonUnitalSubsemiring R)} {x : R} : x ∈ sInf S ↔ ∀
 #align non_unital_subsemiring.mem_Inf NonUnitalSubsemiring.mem_sInf
 
 @[simp]
-theorem sInf_toSubsemigroup (s : Set (NonUnitalSubsemiring R)) :
+lemma sInf_toSubsemigroup (s : Set (NonUnitalSubsemiring R)) :
     (sInf s).toSubsemigroup = ⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t :=
   mk'_toSubsemigroup _ _
 #align non_unital_subsemiring.Inf_to_subsemigroup NonUnitalSubsemiring.sInf_toSubsemigroup
 
 @[simp]
-theorem sInf_toAddSubmonoid (s : Set (NonUnitalSubsemiring R)) :
+lemma sInf_toAddSubmonoid (s : Set (NonUnitalSubsemiring R)) :
     (sInf s).toAddSubmonoid = ⨅ t ∈ s, NonUnitalSubsemiring.toAddSubmonoid t :=
   mk'_toAddSubmonoid _ _
 #align non_unital_subsemiring.Inf_to_add_submonoid NonUnitalSubsemiring.sInf_toAddSubmonoid
@@ -463,7 +463,7 @@ instance : CompleteLattice (NonUnitalSubsemiring R) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
-theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
+lemma eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 #align non_unital_subsemiring.eq_top_iff' NonUnitalSubsemiring.eq_top_iff'
 
@@ -477,12 +477,12 @@ def center (R) [NonUnitalSemiring R] : NonUnitalSubsemiring R :=
     add_mem' := Set.add_mem_center }
 #align non_unital_subsemiring.center NonUnitalSubsemiring.center
 
-theorem coe_center (R) [NonUnitalSemiring R] : ↑(center R) = Set.center R :=
+lemma coe_center (R) [NonUnitalSemiring R] : ↑(center R) = Set.center R :=
   rfl
 #align non_unital_subsemiring.coe_center NonUnitalSubsemiring.coe_center
 
 @[simp]
-theorem center_toSubsemigroup (R) [NonUnitalSemiring R] :
+lemma center_toSubsemigroup (R) [NonUnitalSemiring R] :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
@@ -496,7 +496,7 @@ instance decidableMemCenter {R} [NonUnitalSemiring R] [DecidableEq R] [Fintype R
 #align non_unital_subsemiring.decidable_mem_center NonUnitalSubsemiring.decidableMemCenter
 
 @[simp]
-theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
+lemma center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 #align non_unital_subsemiring.center_eq_top NonUnitalSubsemiring.center_eq_top
 
@@ -597,12 +597,12 @@ lemma mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubsemiring R} {x : S} :
   convert @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
 #align non_unital_subsemiring.mem_map_equiv NonUnitalSubsemiring.mem_map_equiv
 
-theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubsemiring R) :
+lemma map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubsemiring R) :
     K.map (f : R →ₙ+* S) = K.comap f.symm :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
 #align non_unital_subsemiring.map_equiv_eq_comap_symm NonUnitalSubsemiring.map_equiv_eq_comap_symm
 
-theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : NonUnitalSubsemiring S) :
+lemma comap_equiv_eq_map_symm (f : R ≃+* S) (K : NonUnitalSubsemiring S) :
     K.comap (f : R →ₙ+* S) = K.map f.symm :=
   (map_equiv_eq_comap_symm f.symm K).symm
 #align non_unital_subsemiring.comap_equiv_eq_map_symm NonUnitalSubsemiring.comap_equiv_eq_map_symm
@@ -644,7 +644,7 @@ end Subsemigroup
 namespace NonUnitalSubsemiring
 
 @[simp]
-theorem closure_subsemigroup_closure (s : Set R) : closure ↑(Subsemigroup.closure s) = closure s :=
+lemma closure_subsemigroup_closure (s : Set R) : closure ↑(Subsemigroup.closure s) = closure s :=
   le_antisymm
     (closure_le.mpr fun _ hy =>
       (Subsemigroup.mem_closure.mp hy) (closure s).toSubsemigroup subset_closure)
@@ -653,7 +653,7 @@ theorem closure_subsemigroup_closure (s : Set R) : closure ↑(Subsemigroup.clos
 
 /-- The elements of the non-unital subsemiring closure of `M` are exactly the elements of the
 additive closure of a multiplicative subsemigroup `M`. -/
-theorem coe_closure_eq (s : Set R) :
+lemma coe_closure_eq (s : Set R) :
     (closure s : Set R) = AddSubmonoid.closure (Subsemigroup.closure s : Set R) := by
   simp [← Subsemigroup.nonUnitalSubsemiringClosure_toAddSubmonoid,
     Subsemigroup.nonUnitalSubsemiringClosure_eq_closure]
@@ -712,7 +712,7 @@ variable {R}
 variable {F : Type*} [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
-theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
+lemma closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
   (NonUnitalSubsemiring.gi R).l_u_eq s
 #align non_unital_subsemiring.closure_eq NonUnitalSubsemiring.closure_eq
 
@@ -726,7 +726,7 @@ lemma closure_univ : closure (Set.univ : Set R) = ⊤ :=
   @coe_top R _ ▸ closure_eq ⊤
 #align non_unital_subsemiring.closure_univ NonUnitalSubsemiring.closure_univ
 
-theorem closure_union (s t : Set R) : closure (s ∪ t) = closure s ⊔ closure t :=
+lemma closure_union (s t : Set R) : closure (s ∪ t) = closure s ⊔ closure t :=
   (NonUnitalSubsemiring.gi R).gc.l_sup
 #align non_unital_subsemiring.closure_union NonUnitalSubsemiring.closure_union
 
@@ -734,11 +734,11 @@ lemma closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, clo
   (NonUnitalSubsemiring.gi R).gc.l_iSup
 #align non_unital_subsemiring.closure_Union NonUnitalSubsemiring.closure_iUnion
 
-theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
+lemma closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (NonUnitalSubsemiring.gi R).gc.l_sSup
 #align non_unital_subsemiring.closure_sUnion NonUnitalSubsemiring.closure_sUnion
 
-theorem map_sup (s t : NonUnitalSubsemiring R) (f : F) :
+lemma map_sup (s t : NonUnitalSubsemiring R) (f : F) :
     (map f (s ⊔ t) : NonUnitalSubsemiring S) = map f s ⊔ map f t :=
   @GaloisConnection.l_sup _ _ s t _ _ _ _ (gc_map_comap f)
 #align non_unital_subsemiring.map_sup NonUnitalSubsemiring.map_sup
@@ -748,7 +748,7 @@ lemma map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring R) :
   @GaloisConnection.l_iSup _ _ _ _ _ _ _ (gc_map_comap f) s
 #align non_unital_subsemiring.map_supr NonUnitalSubsemiring.map_iSup
 
-theorem comap_inf (s t : NonUnitalSubsemiring S) (f : F) :
+lemma comap_inf (s t : NonUnitalSubsemiring S) (f : F) :
     (comap f (s ⊓ t) : NonUnitalSubsemiring R) = comap f s ⊓ comap f t :=
   @GaloisConnection.u_inf _ _ s t _ _ _ _ (gc_map_comap f)
 #align non_unital_subsemiring.comap_inf NonUnitalSubsemiring.comap_inf
@@ -759,12 +759,12 @@ lemma comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring S) :
 #align non_unital_subsemiring.comap_infi NonUnitalSubsemiring.comap_iInf
 
 @[simp]
-theorem map_bot (f : F) : map f (⊥ : NonUnitalSubsemiring R) = (⊥ : NonUnitalSubsemiring S) :=
+lemma map_bot (f : F) : map f (⊥ : NonUnitalSubsemiring R) = (⊥ : NonUnitalSubsemiring S) :=
   (gc_map_comap f).l_bot
 #align non_unital_subsemiring.map_bot NonUnitalSubsemiring.map_bot
 
 @[simp]
-theorem comap_top (f : F) : comap f (⊤ : NonUnitalSubsemiring S) = (⊤ : NonUnitalSubsemiring R) :=
+lemma comap_top (f : F) : comap f (⊤ : NonUnitalSubsemiring S) = (⊤ : NonUnitalSubsemiring R) :=
   (gc_map_comap f).u_top
 #align non_unital_subsemiring.comap_top NonUnitalSubsemiring.comap_top
 
@@ -776,7 +776,7 @@ def prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : NonUnitalSu
 #align non_unital_subsemiring.prod NonUnitalSubsemiring.prod
 
 @[norm_cast]
-theorem coe_prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) :
+lemma coe_prod (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) :
     (s.prod t : Set (R × S)) = (s : Set R) ×ˢ (t : Set S) :=
   rfl
 #align non_unital_subsemiring.coe_prod NonUnitalSubsemiring.coe_prod
@@ -792,21 +792,21 @@ theorem prod_mono ⦃s₁ s₂ : NonUnitalSubsemiring R⦄ (hs : s₁ ≤ s₂) 
   Set.prod_mono hs ht
 #align non_unital_subsemiring.prod_mono NonUnitalSubsemiring.prod_mono
 
-theorem prod_mono_right (s : NonUnitalSubsemiring R) :
+lemma prod_mono_right (s : NonUnitalSubsemiring R) :
     Monotone fun t : NonUnitalSubsemiring S => s.prod t :=
   prod_mono (le_refl s)
 #align non_unital_subsemiring.prod_mono_right NonUnitalSubsemiring.prod_mono_right
 
-theorem prod_mono_left (t : NonUnitalSubsemiring S) :
+lemma prod_mono_left (t : NonUnitalSubsemiring S) :
     Monotone fun s : NonUnitalSubsemiring R => s.prod t := fun _ _ hs => prod_mono hs (le_refl t)
 #align non_unital_subsemiring.prod_mono_left NonUnitalSubsemiring.prod_mono_left
 
-theorem prod_top (s : NonUnitalSubsemiring R) :
+lemma prod_top (s : NonUnitalSubsemiring R) :
     s.prod (⊤ : NonUnitalSubsemiring S) = s.comap (NonUnitalRingHom.fst R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
 #align non_unital_subsemiring.prod_top NonUnitalSubsemiring.prod_top
 
-theorem top_prod (s : NonUnitalSubsemiring S) :
+lemma top_prod (s : NonUnitalSubsemiring S) :
     (⊤ : NonUnitalSubsemiring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
 #align non_unital_subsemiring.top_prod NonUnitalSubsemiring.top_prod
@@ -879,11 +879,11 @@ def srangeRestrict (f : F) : R →ₙ+* (srange f : NonUnitalSubsemiring S) :=
 #align non_unital_ring_hom.srange_restrict NonUnitalRingHom.srangeRestrict
 
 @[simp]
-theorem coe_srangeRestrict (f : F) (x : R) : (srangeRestrict f x : S) = f x :=
+lemma coe_srangeRestrict (f : F) (x : R) : (srangeRestrict f x : S) = f x :=
   rfl
 #align non_unital_ring_hom.coe_srange_restrict NonUnitalRingHom.coe_srangeRestrict
 
-theorem srangeRestrict_surjective (f : F) :
+lemma srangeRestrict_surjective (f : F) :
     Function.Surjective (srangeRestrict f : R → (srange f : NonUnitalSubsemiring S)) :=
   fun ⟨_, hy⟩ =>
   let ⟨x, hx⟩ := mem_srange.mp hy
@@ -897,7 +897,7 @@ lemma srange_top_iff_surjective {f : F} :
 
 /-- The range of a surjective non-unital ring homomorphism is the whole of the codomain. -/
 @[simp]
-theorem srange_top_of_surjective (f : F) (hf : Function.Surjective (f : R → S)) :
+lemma srange_top_of_surjective (f : F) (hf : Function.Surjective (f : R → S)) :
     srange f = (⊤ : NonUnitalSubsemiring S) :=
   srange_top_iff_surjective.2 hf
 #align non_unital_ring_hom.srange_top_of_surjective NonUnitalRingHom.srange_top_of_surjective
@@ -925,14 +925,14 @@ lemma eq_of_eqOn_sdense {s : Set R} (hs : closure s = ⊤) {f g : F}
   eq_of_eqOn_stop <| hs ▸ eqOn_sclosure h
 #align non_unital_ring_hom.eq_of_eq_on_sdense NonUnitalRingHom.eq_of_eqOn_sdense
 
-theorem sclosure_preimage_le (f : F) (s : Set S) :
+lemma sclosure_preimage_le (f : F) (s : Set S) :
     closure ((f : R → S) ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 #align non_unital_ring_hom.sclosure_preimage_le NonUnitalRingHom.sclosure_preimage_le
 
 /-- The image under a ring homomorphism of the subsemiring generated by a set equals
 the subsemiring generated by the image of the set. -/
-theorem map_sclosure (f : F) (s : Set R) : (closure s).map f = closure ((f : R → S) '' s) :=
+lemma map_sclosure (f : F) (s : Set R) : (closure s).map f = closure ((f : R → S) '' s) :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       le_trans (closure_mono <| Set.subset_preimage_image _ _) (sclosure_preimage_le _ _))
@@ -952,7 +952,7 @@ def inclusion {S T : NonUnitalSubsemiring R} (h : S ≤ T) : S →ₙ+* T :=
 #align non_unital_subsemiring.inclusion NonUnitalSubsemiring.inclusion
 
 @[simp]
-theorem srange_subtype (s : NonUnitalSubsemiring R) : NonUnitalRingHom.srange (subtype s) = s :=
+lemma srange_subtype (s : NonUnitalSubsemiring R) : NonUnitalRingHom.srange (subtype s) = s :=
   SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
 #align non_unital_subsemiring.srange_subtype NonUnitalSubsemiring.srange_subtype
 

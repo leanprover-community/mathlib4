@@ -92,7 +92,7 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
 on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
 interval (t, t + T]. -/
-protected theorem measurePreserving_mk (t : ℝ) :
+protected lemma measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) := by
   apply MeasurePreservingQuotientAddGroup.mk'
@@ -153,7 +153,7 @@ noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T
 
 /-- The lower integral of a function over `AddCircle T` is equal to the lower integral over an
 interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
-protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) :
+protected lemma lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) :
     (∫⁻ a in Ioc t (t + T), f a) = ∫⁻ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
   have := lintegral_map_equiv (μ := volume) f (measurableEquivIoc T t).symm
@@ -175,7 +175,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
 
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
-protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
+protected lemma integral_preimage (t : ℝ) (f : AddCircle T → E) :
     (∫ a in Ioc t (t + T), f a) = ∫ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
   have := integral_map_equiv (μ := volume) (measurableEquivIoc T t).symm f
@@ -191,7 +191,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
 
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
-protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
+protected lemma intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
     ∫ a in t..t + T, f a = ∫ b : AddCircle T, f b := by
   rw [integral_of_le, AddCircle.integral_preimage T t f]
   linarith [hT.out]
@@ -219,7 +219,7 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure UnitAddCircle) :=
 considered with respect to the standard measure (defined to be the Haar measure of total mass 1)
 on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
 interval (t, t + 1]. -/
-protected theorem measurePreserving_mk (t : ℝ) :
+protected lemma measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := UnitAddCircle) ((↑) : ℝ → UnitAddCircle)
       (volume.restrict (Ioc t (t + 1))) :=
   AddCircle.measurePreserving_mk 1 t
@@ -227,7 +227,7 @@ protected theorem measurePreserving_mk (t : ℝ) :
 
 /-- The integral of a measurable function over `UnitAddCircle` is equal to the integral over an
 interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
-protected theorem lintegral_preimage (t : ℝ) (f : UnitAddCircle → ℝ≥0∞) :
+protected lemma lintegral_preimage (t : ℝ) (f : UnitAddCircle → ℝ≥0∞) :
     (∫⁻ a in Ioc t (t + 1), f a) = ∫⁻ b : UnitAddCircle, f b :=
   AddCircle.lintegral_preimage 1 t f
 #align unit_add_circle.lintegral_preimage UnitAddCircle.lintegral_preimage
@@ -236,14 +236,14 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
 
 /-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
 equal to the integral over an interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
-protected theorem integral_preimage (t : ℝ) (f : UnitAddCircle → E) :
+protected lemma integral_preimage (t : ℝ) (f : UnitAddCircle → E) :
     (∫ a in Ioc t (t + 1), f a) = ∫ b : UnitAddCircle, f b :=
   AddCircle.integral_preimage 1 t f
 #align unit_add_circle.integral_preimage UnitAddCircle.integral_preimage
 
 /-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
 equal to the integral over an interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
-protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) :
+protected lemma intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) :
     ∫ a in t..t + 1, f a = ∫ b : UnitAddCircle, f b :=
   AddCircle.intervalIntegral_preimage 1 t f
 #align unit_add_circle.interval_integral_preimage UnitAddCircle.intervalIntegral_preimage
@@ -259,7 +259,7 @@ namespace Periodic
 variable {f : ℝ → E} {T : ℝ}
 
 /-- An auxiliary lemma for a more general `Function.Periodic.intervalIntegral_add_eq`. -/
-theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : ℝ) :
+lemma intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : ℝ) :
     ∫ x in t..t + T, f x = ∫ x in s..s + T, f x := by
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
   haveI : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
@@ -270,7 +270,7 @@ theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : �
 
 /-- If `f` is a periodic function with period `T`, then its integral over `[t, t + T]` does not
 depend on `t`. -/
-theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
+lemma intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
     ∫ x in t..t + T, f x = ∫ x in s..s + T, f x := by
   rcases lt_trichotomy (0 : ℝ) T with (hT | rfl | hT)
   · exact hf.intervalIntegral_add_eq_of_pos hT t s
@@ -282,7 +282,7 @@ theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
 
 /-- If `f` is an integrable periodic function with period `T`, then its integral over `[t, s + T]`
 is the sum of its integrals over the intervals `[t, s]` and `[t, t + T]`. -/
-theorem intervalIntegral_add_eq_add (hf : Periodic f T) (t s : ℝ)
+lemma intervalIntegral_add_eq_add (hf : Periodic f T) (t s : ℝ)
     (h_int : ∀ t₁ t₂, IntervalIntegrable f MeasureSpace.volume t₁ t₂) :
     ∫ x in t..s + T, f x = (∫ x in t..s, f x) + ∫ x in t..t + T, f x := by
   rw [hf.intervalIntegral_add_eq t s, integral_add_adjacent_intervals (h_int t s) (h_int s _)]
@@ -290,7 +290,7 @@ theorem intervalIntegral_add_eq_add (hf : Periodic f T) (t s : ℝ)
 
 /-- If `f` is an integrable periodic function with period `T`, and `n` is an integer, then its
 integral over `[t, t + n • T]` is `n` times its integral over `[t, t + T]`. -/
-theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
+lemma intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
     (h_int : ∀ t₁ t₂, IntervalIntegrable f MeasureSpace.volume t₁ t₂) :
     ∫ x in t..t + n • T, f x = n • ∫ x in t..t + T, f x := by
   -- Reduce to the case `b = 0`
@@ -323,7 +323,7 @@ variable (hg : Periodic g T) (h_int : ∀ t₁ t₂, IntervalIntegrable g Measur
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded below by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
 `Y`. -/
-theorem sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
+lemma sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
     (sInf ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x) ≤
       ∫ x in (0)..t, g x := by
   let ε := Int.fract (t / T) * T
@@ -339,7 +339,7 @@ theorem sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
 `t ↦ ∫ x in 0..t, g x` is bounded above by `t ↦ X + ⌊t/T⌋ • Y` for appropriate constants `X` and
 `Y`. -/
-theorem integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
+lemma integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
     (∫ x in (0)..t, g x) ≤
       sSup ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x := by
   let ε := Int.fract (t / T) * T
@@ -354,7 +354,7 @@ theorem integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. -/
-theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
+lemma tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop := by
   apply tendsto_atTop_mono (hg.sInf_add_zsmul_le_integral_of_pos h_int hT)
   apply atTop.tendsto_atTop_add_const_left (sInf <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
@@ -364,7 +364,7 @@ theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `-∞` as `t` tends to `-∞`. -/
-theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
+lemma tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
   apply tendsto_atBot_mono (hg.integral_le_sSup_add_zsmul_of_pos h_int hT)
   apply atBot.tendsto_atBot_add_const_left (sSup <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
@@ -374,14 +374,14 @@ theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `∞` as `t` tends to `∞`. -/
-theorem tendsto_atTop_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
+lemma tendsto_atTop_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop :=
   hg.tendsto_atTop_intervalIntegral_of_pos h_int (intervalIntegral_pos_of_pos (h_int 0 T) h₀ hT) hT
 #align function.periodic.tendsto_at_top_interval_integral_of_pos' Function.Periodic.tendsto_atTop_intervalIntegral_of_pos'
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `-∞` as `t` tends to `-∞`. -/
-theorem tendsto_atBot_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
+lemma tendsto_atBot_intervalIntegral_of_pos' (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
     Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot :=
   hg.tendsto_atBot_intervalIntegral_of_pos h_int (intervalIntegral_pos_of_pos (h_int 0 T) h₀ hT) hT
 #align function.periodic.tendsto_at_bot_interval_integral_of_pos' Function.Periodic.tendsto_atBot_intervalIntegral_of_pos'

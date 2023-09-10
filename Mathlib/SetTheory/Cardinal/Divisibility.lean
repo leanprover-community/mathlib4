@@ -68,12 +68,12 @@ lemma le_of_dvd : ∀ {a b : Cardinal}, b ≠ 0 → a ∣ b → a ≤ b
       mul_le_mul_left' (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
 #align cardinal.le_of_dvd Cardinal.le_of_dvd
 
-theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
+lemma dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
   ⟨b, (mul_eq_right hb h ha).symm⟩
 #align cardinal.dvd_of_le_of_aleph_0_le Cardinal.dvd_of_le_of_aleph0_le
 
 @[simp]
-theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
+lemma prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   refine' ⟨(aleph0_pos.trans_le ha).ne', _, fun b c hbc => _⟩
   · rw [isUnit_iff]
     exact (one_lt_aleph0.trans_le ha).ne'
@@ -88,7 +88,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   rwa [mul_eq_max' <| ha.trans <| habc, max_def', if_pos h] at hbc
 #align cardinal.prime_of_aleph_0_le Cardinal.prime_of_aleph0_le
 
-theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
+lemma not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
   refine' Or.inr fun h => _
   simpa [mul_aleph0_eq ha, isUnit_iff, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using

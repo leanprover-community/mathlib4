@@ -103,7 +103,7 @@ instance distrib : Distrib ℕ :=
 instance semiring : Semiring ℕ :=
   inferInstance
 
-protected theorem nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
+protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
   rfl
 #align nat.nsmul_eq_mul Nat.nsmul_eq_mul
 
@@ -181,12 +181,12 @@ lemma succ_ne_succ {n m : ℕ} : succ n ≠ succ m ↔ n ≠ m :=
 #align nat.succ_ne_succ Nat.succ_ne_succ
 
 -- Porting note: no longer a simp lemma, as simp can prove this
-theorem succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 :=
+lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 :=
   succ_ne_succ.mpr n.succ_ne_zero
 #align nat.succ_succ_ne_one Nat.succ_succ_ne_one
 
 @[simp]
-theorem one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ :=
+lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ :=
   succ_lt_succ <| succ_pos n
 #align nat.one_lt_succ_succ Nat.one_lt_succ_succ
 
@@ -280,29 +280,29 @@ lemma mul_def {a b : ℕ} : Nat.mul a b = a * b :=
   rfl
 #align nat.mul_def Nat.mul_def
 
-theorem exists_eq_add_of_le (h : m ≤ n) : ∃ k : ℕ, n = m + k :=
+lemma exists_eq_add_of_le (h : m ≤ n) : ∃ k : ℕ, n = m + k :=
   ⟨n - m, (add_sub_of_le h).symm⟩
 #align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
 
-theorem exists_eq_add_of_le' (h : m ≤ n) : ∃ k : ℕ, n = k + m :=
+lemma exists_eq_add_of_le' (h : m ≤ n) : ∃ k : ℕ, n = k + m :=
   ⟨n - m, (Nat.sub_add_cancel h).symm⟩
 #align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
 
-theorem exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
+lemma exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
   ⟨n - (m + 1), by rw [Nat.add_right_comm, add_sub_of_le h]⟩
 #align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 /-! ### `pred` -/
 
 @[simp]
-theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
+lemma add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
 #align nat.add_succ_sub_one Nat.add_succ_sub_one
 
 @[simp]
-theorem succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, succ_sub_one]
+lemma succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, succ_sub_one]
 #align nat.succ_add_sub_one Nat.succ_add_sub_one
 
-theorem pred_eq_sub_one (n : ℕ) : pred n = n - 1 :=
+lemma pred_eq_sub_one (n : ℕ) : pred n = n - 1 :=
   rfl
 #align nat.pred_eq_sub_one Nat.pred_eq_sub_one
 
@@ -314,7 +314,7 @@ lemma pred_eq_succ_iff {n m : ℕ} : pred n = succ m ↔ n = m + 2 := by
   cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
 #align nat.pred_eq_succ_iff Nat.pred_eq_succ_iff
 
-theorem pred_sub (n m : ℕ) : pred n - m = pred (n - m) := by
+lemma pred_sub (n m : ℕ) : pred n - m = pred (n - m) := by
   rw [← Nat.sub_one, Nat.sub_sub, one_add, sub_succ]
 #align nat.pred_sub Nat.pred_sub
 
@@ -329,7 +329,7 @@ lemma le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
 
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
 @[simp]
-theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, Nat.pred_succ]
+lemma pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, Nat.pred_succ]
 #align nat.pred_one_add Nat.pred_one_add
 
 /-! ### `mul` -/
@@ -598,7 +598,7 @@ def decreasingInduction' {P : ℕ → Sort*} {m n : ℕ} (h : ∀ k < n, m ≤ k
 attribute [simp] Nat.div_self
 
 /-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
-theorem div_lt_self' (n b : ℕ) : (n + 1) / (b + 2) < n + 1 :=
+lemma div_lt_self' (n b : ℕ) : (n + 1) / (b + 2) < n + 1 :=
   Nat.div_lt_self (Nat.succ_pos n) (Nat.succ_lt_succ (Nat.succ_pos _))
 #align nat.div_lt_self' Nat.div_lt_self'
 
@@ -641,7 +641,7 @@ lemma lt_mul_of_div_lt {a b c : ℕ} (h : a / c < b) (w : 0 < c) : a < b * c :=
   lt_of_not_ge <| not_le_of_gt h ∘ (Nat.le_div_iff_mul_le w).2
 #align nat.lt_mul_of_div_lt Nat.lt_mul_of_div_lt
 
-theorem mul_div_le_mul_div_assoc (a b c : ℕ) : a * (b / c) ≤ a * b / c :=
+lemma mul_div_le_mul_div_assoc (a b c : ℕ) : a * (b / c) ≤ a * b / c :=
   if hc0 : c = 0 then by simp [hc0]
   else
     (Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero hc0)).2
@@ -701,12 +701,12 @@ lemma mod_succ_eq_iff_lt {a b : ℕ} : a % b.succ = a ↔ a < b.succ :=
 
 -- Porting note `Nat.div_add_mod` is now in core.
 
-theorem mod_add_div' (m k : ℕ) : m % k + m / k * k = m := by
+lemma mod_add_div' (m k : ℕ) : m % k + m / k * k = m := by
   rw [mul_comm]
   exact mod_add_div _ _
 #align nat.mod_add_div' Nat.mod_add_div'
 
-theorem div_add_mod' (m k : ℕ) : m / k * k + m % k = m := by
+lemma div_add_mod' (m k : ℕ) : m / k * k + m % k = m := by
   rw [mul_comm]
   exact div_add_mod _ _
 #align nat.div_add_mod' Nat.div_add_mod'
@@ -737,7 +737,7 @@ protected lemma mul_dvd_mul_iff_right {a b c : ℕ} (hc : 0 < c) : a * c ∣ b *
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
 
 @[simp]
-theorem mod_mod_of_dvd (n : Nat) {m k : Nat} (h : m ∣ k) : n % k % m = n % m := by
+lemma mod_mod_of_dvd (n : Nat) {m k : Nat} (h : m ∣ k) : n % k % m = n % m := by
   conv =>
   rhs
   rw [← mod_add_div n k]
@@ -791,12 +791,12 @@ lemma lt_iff_le_pred : ∀ {m n : ℕ}, 0 < n → (m < n ↔ m ≤ n - 1)
 -- Moved to Std
 #align nat.mul_div_le Nat.mul_div_le
 
-theorem lt_mul_div_succ (m : ℕ) {n : ℕ} (n0 : 0 < n) : m < n * (m / n + 1) := by
+lemma lt_mul_div_succ (m : ℕ) {n : ℕ} (n0 : 0 < n) : m < n * (m / n + 1) := by
   rw [mul_comm, ← Nat.div_lt_iff_lt_mul' n0]
   exact lt_succ_self _
 #align nat.lt_mul_div_succ Nat.lt_mul_div_succ
 
-theorem mul_add_mod (a b c : ℕ) : (a * b + c) % b = c % b := by simp [Nat.add_mod]
+lemma mul_add_mod (a b c : ℕ) : (a * b + c) % b = c % b := by simp [Nat.add_mod]
 #align nat.mul_add_mod Nat.mul_add_mod
 
 lemma mul_add_mod_of_lt {a b c : ℕ} (h : c < b) : (a * b + c) % b = c := by
@@ -814,7 +814,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
-theorem find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
+lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
   constructor
   · rintro rfl
     exact ⟨Nat.find_spec h, fun _ => Nat.find_min h⟩
@@ -823,31 +823,31 @@ theorem find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < 
 #align nat.find_eq_iff Nat.find_eq_iff
 
 @[simp]
-theorem find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m :=
+lemma find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m :=
   ⟨fun h2 => ⟨Nat.find h, h2, Nat.find_spec h⟩,
    fun ⟨_, hmn, hm⟩ => (Nat.find_min' h hm).trans_lt hmn⟩
 #align nat.find_lt_iff Nat.find_lt_iff
 
 @[simp]
-theorem find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
+lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
   simp only [exists_prop, ← lt_succ_iff, find_lt_iff]
 #align nat.find_le_iff Nat.find_le_iff
 
 @[simp]
-theorem le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
+lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
   simp_rw [← not_lt, find_lt_iff, not_exists, not_and]
 #align nat.le_find_iff Nat.le_find_iff
 
 @[simp]
-theorem lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
+lemma lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
   simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
 #align nat.lt_find_iff Nat.lt_find_iff
 
 @[simp]
-theorem find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
+lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 #align nat.find_eq_zero Nat.find_eq_zero
 
-theorem find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
+lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
     Nat.find hp ≤ Nat.find hq :=
   Nat.find_min' _ (h _ (Nat.find_spec hq))
 #align nat.find_mono Nat.find_mono
@@ -856,7 +856,7 @@ lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_rfl, hn⟩
 #align nat.find_le Nat.find_le
 
-theorem find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0) :
+lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn => _⟩
   cases' n with n
@@ -884,7 +884,7 @@ lemma findGreatest_zero : Nat.findGreatest P 0 = 0 :=
   rfl
 #align nat.find_greatest_zero Nat.findGreatest_zero
 
-theorem findGreatest_succ (n : ℕ) :
+lemma findGreatest_succ (n : ℕ) :
     Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n :=
   rfl
 #align nat.find_greatest_succ Nat.findGreatest_succ
@@ -896,7 +896,7 @@ lemma findGreatest_eq : ∀ {b}, P b → Nat.findGreatest P b = b
 #align nat.find_greatest_eq Nat.findGreatest_eq
 
 @[simp]
-theorem findGreatest_of_not (h : ¬P (b + 1)) :
+lemma findGreatest_of_not (h : ¬P (b + 1)) :
     Nat.findGreatest P (b + 1) = Nat.findGreatest P b := by
   simp [Nat.findGreatest, h]
 #align nat.find_greatest_of_not Nat.findGreatest_of_not

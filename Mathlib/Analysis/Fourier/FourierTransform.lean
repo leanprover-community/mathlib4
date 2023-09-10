@@ -77,7 +77,7 @@ def fourierIntegral (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V) (L : V 
   ∫ v, e[-L v w] • f v ∂μ
 #align vector_fourier.fourier_integral VectorFourier.fourierIntegral
 
-theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
+lemma fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
@@ -89,7 +89,7 @@ theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Mea
 #align vector_fourier.fourier_integral_smul_const VectorFourier.fourierIntegral_smul_const
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
-theorem norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
+lemma norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (w : W) :
     ‖fourierIntegral e μ L f w‖ ≤ ∫ v : V, ‖f v‖ ∂μ := by
   refine' (norm_integral_le_integral_norm _).trans (le_of_eq _)
@@ -126,7 +126,7 @@ variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [Bo
   [TopologicalSpace W] {e : Multiplicative 𝕜 →* 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
-theorem fourier_integral_convergent_iff (he : Continuous e)
+lemma fourier_integral_convergent_iff (he : Continuous e)
     (hL : Continuous fun p : V × W => L p.1 p.2) {f : V → E} (w : W) :
     Integrable f μ ↔ Integrable (fun v : V => e[-L v w] • f v) μ := by
   -- first prove one-way implication
@@ -149,7 +149,7 @@ theorem fourier_integral_convergent_iff (he : Continuous e)
 
 variable [CompleteSpace E]
 
-theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W => L p.1 p.2)
+lemma fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W => L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) := by
   ext1 w
@@ -197,18 +197,18 @@ def fourierIntegral (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f :
   VectorFourier.fourierIntegral e μ (LinearMap.mul 𝕜 𝕜) f w
 #align fourier.fourier_integral Fourier.fourierIntegral
 
-theorem fourierIntegral_def (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) :
+lemma fourierIntegral_def (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) :
     fourierIntegral e μ f w = ∫ v : 𝕜, e[-(v * w)] • f v ∂μ :=
   rfl
 #align fourier.fourier_integral_def Fourier.fourierIntegral_def
 
-theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
+lemma fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
     fourierIntegral e μ (r • f) = r • fourierIntegral e μ f :=
   VectorFourier.fourierIntegral_smul_const _ _ _ _ _
 #align fourier.fourier_integral_smul_const Fourier.fourierIntegral_smul_const
 
 /-- The uniform norm of the Fourier transform of `f` is bounded by the `L¹` norm of `f`. -/
-theorem norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜)
+lemma norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜)
     (f : 𝕜 → E) (w : 𝕜) : ‖fourierIntegral e μ f w‖ ≤ ∫ x : 𝕜, ‖f x‖ ∂μ :=
   VectorFourier.norm_fourierIntegral_le_integral_norm _ _ _ _ _
 #align fourier.norm_fourier_integral_le_integral_norm Fourier.norm_fourierIntegral_le_integral_norm
@@ -235,7 +235,7 @@ def fourierChar : Multiplicative ℝ →* 𝕊 where
   map_mul' x y := by simp only; rw [toAdd_mul, mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 
-theorem fourierChar_apply (x : ℝ) : Real.fourierChar[x] = Complex.exp (↑(2 * π * x) * Complex.I) :=
+lemma fourierChar_apply (x : ℝ) : Real.fourierChar[x] = Complex.exp (↑(2 * π * x) * Complex.I) :=
   by rfl
 #align real.fourier_char_apply Real.fourierChar_apply
 
@@ -260,7 +260,7 @@ def fourierIntegral (f : ℝ → E) (w : ℝ) :=
   Fourier.fourierIntegral fourierChar volume f w
 #align real.fourier_integral Real.fourierIntegral
 
-theorem fourierIntegral_def (f : ℝ → E) (w : ℝ) :
+lemma fourierIntegral_def (f : ℝ → E) (w : ℝ) :
     fourierIntegral f w = ∫ v : ℝ, fourierChar[-(v * w)] • f v :=
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_def

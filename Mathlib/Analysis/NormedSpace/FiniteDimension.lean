@@ -72,13 +72,13 @@ def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ =
 #align linear_isometry.to_linear_isometry_equiv LinearIsometry.toLinearIsometryEquiv
 
 @[simp]
-theorem coe_toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
+lemma coe_toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
     (li.toLinearIsometryEquiv h : E₁ → F) = li :=
   rfl
 #align linear_isometry.coe_to_linear_isometry_equiv LinearIsometry.coe_toLinearIsometryEquiv
 
 @[simp]
-theorem toLinearIsometryEquiv_apply (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F)
+lemma toLinearIsometryEquiv_apply (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F)
     (x : E₁) : (li.toLinearIsometryEquiv h) x = li x :=
   rfl
 #align linear_isometry.to_linear_isometry_equiv_apply LinearIsometry.toLinearIsometryEquiv_apply
@@ -129,11 +129,11 @@ section Affine
 variable {PE PF : Type*} [MetricSpace PE] [NormedAddTorsor E PE] [MetricSpace PF]
   [NormedAddTorsor F PF] [FiniteDimensional 𝕜 E]
 
-theorem AffineMap.continuous_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) : Continuous f :=
+lemma AffineMap.continuous_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) : Continuous f :=
   AffineMap.continuous_linear_iff.1 f.linear.continuous_of_finiteDimensional
 #align affine_map.continuous_of_finite_dimensional AffineMap.continuous_of_finiteDimensional
 
-theorem AffineEquiv.continuous_of_finiteDimensional (f : PE ≃ᵃ[𝕜] PF) : Continuous f :=
+lemma AffineEquiv.continuous_of_finiteDimensional (f : PE ≃ᵃ[𝕜] PF) : Continuous f :=
   f.toAffineMap.continuous_of_finiteDimensional
 #align affine_equiv.continuous_of_finite_dimensional AffineEquiv.continuous_of_finiteDimensional
 
@@ -147,13 +147,13 @@ def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE �
 #align affine_equiv.to_homeomorph_of_finite_dimensional AffineEquiv.toHomeomorphOfFiniteDimensional
 
 @[simp]
-theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) :
+lemma AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) :
     ⇑f.toHomeomorphOfFiniteDimensional = f :=
   rfl
 #align affine_equiv.coe_to_homeomorph_of_finite_dimensional AffineEquiv.coe_toHomeomorphOfFiniteDimensional
 
 @[simp]
-theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜] PF) :
+lemma AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜] PF) :
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 #align affine_equiv.coe_to_homeomorph_of_finite_dimensional_symm AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm
@@ -186,7 +186,7 @@ irreducible_def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] 
   max (‖A.symm.toContinuousLinearMap‖₊ * ‖A.toContinuousLinearMap‖₊) 1
 #align lipschitz_extension_constant lipschitzExtensionConstant
 
-theorem lipschitzExtensionConstant_pos (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
+lemma lipschitzExtensionConstant_pos (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
     [FiniteDimensional ℝ E'] : 0 < lipschitzExtensionConstant E' := by
   rw [lipschitzExtensionConstant]
   exact zero_lt_one.trans_le (le_max_right _ _)
@@ -259,7 +259,7 @@ lemma isOpen_setOf_linearIndependent {ι : Type*} [Finite ι] :
   isOpen_iff_mem_nhds.2 fun _ => LinearIndependent.eventually
 #align is_open_set_of_linear_independent isOpen_setOf_linearIndependent
 
-theorem isOpen_setOf_nat_le_rank (n : ℕ) :
+lemma isOpen_setOf_nat_le_rank (n : ℕ) :
     IsOpen { f : E →L[𝕜] F | ↑n ≤ (f : E →ₗ[𝕜] F).rank } := by
   simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, setOf_exists, ← exists_prop]
   refine' isOpen_biUnion fun t _ => _
@@ -409,7 +409,7 @@ lemma exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ
   exact exists_norm_le_le_norm_sub_of_finset hc hR h s
 #align exists_seq_norm_le_one_le_norm_sub' exists_seq_norm_le_one_le_norm_sub'
 
-theorem exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
+lemma exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
     ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ := by
   obtain ⟨c, hc⟩ : ∃ c : 𝕜, 1 < ‖c‖ := NormedField.exists_one_lt_norm 𝕜
   have A : ‖c‖ < ‖c‖ + 1 := by linarith

@@ -47,12 +47,12 @@ lemma optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=
 #align equiv.option_congr_refl Equiv.optionCongr_refl
 
 @[simp]
-theorem optionCongr_symm (e : α ≃ β) : (optionCongr e).symm = optionCongr e.symm :=
+lemma optionCongr_symm (e : α ≃ β) : (optionCongr e).symm = optionCongr e.symm :=
   rfl
 #align equiv.option_congr_symm Equiv.optionCongr_symm
 
 @[simp]
-theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+lemma optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
     (optionCongr e₁).trans (optionCongr e₂) = optionCongr (e₁.trans e₂) :=
   ext <| Option.map_map _ _
 #align equiv.option_congr_trans Equiv.optionCongr_trans
@@ -97,7 +97,7 @@ lemma removeNone_aux_none {x : α} (h : e (some x) = none) :
 -- Porting note: private
 -- #align equiv.remove_none_aux_none Equiv.removeNone_aux_none
 
-theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x) = x :=
+lemma removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x) = x :=
   Option.some_injective _
     (by
       cases h1 : e.symm (some (removeNone_aux e x)) <;> cases h2 : e (some x)
@@ -157,7 +157,7 @@ lemma some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm n
 #align equiv.some_remove_none_iff Equiv.some_removeNone_iff
 
 @[simp]
-theorem removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
+lemma removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
   Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
 #align equiv.remove_none_option_congr Equiv.removeNone_optionCongr
 

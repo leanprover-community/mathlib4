@@ -113,7 +113,7 @@ def sumInv (pqr : Multiset ℕ+) : ℚ :=
   Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
 #align ADE_inequality.sum_inv ADEInequality.sumInv
 
-theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
+lemma sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
   simp only [sumInv, add_zero, insert_eq_cons, add_assoc, map_cons, sum_cons,
     map_singleton, sum_singleton]
 #align ADE_inequality.sum_inv_pqr ADEInequality.sumInv_pqr
@@ -124,11 +124,11 @@ def Admissible (pqr : Multiset ℕ+) : Prop :=
   (∃ q r, A' q r = pqr) ∨ (∃ r, D' r = pqr) ∨ E' 3 = pqr ∨ E' 4 = pqr ∨ E' 5 = pqr
 #align ADE_inequality.admissible ADEInequality.Admissible
 
-theorem admissible_A' (q r : ℕ+) : Admissible (A' q r) :=
+lemma admissible_A' (q r : ℕ+) : Admissible (A' q r) :=
   Or.inl ⟨q, r, rfl⟩
 #align ADE_inequality.admissible_A' ADEInequality.admissible_A'
 
-theorem admissible_D' (n : ℕ+) : Admissible (D' n) :=
+lemma admissible_D' (n : ℕ+) : Admissible (D' n) :=
   Or.inr <| Or.inl ⟨n, rfl⟩
 #align ADE_inequality.admissible_D' ADEInequality.admissible_D'
 
@@ -275,7 +275,7 @@ it is `admissible` which means it is one of:
 * `D' r := {2,2,r}`
 * `E6 := {2,3,3}`, or `E7 := {2,3,4}`, or `E8 := {2,3,5}`
 -/
-theorem classification (p q r : ℕ+) : 1 < sumInv {p, q, r} ↔ Admissible {p, q, r} :=
+lemma classification (p q r : ℕ+) : 1 < sumInv {p, q, r} ↔ Admissible {p, q, r} :=
   ⟨admissible_of_one_lt_sumInv, Admissible.one_lt_sumInv⟩
 #align ADE_inequality.classification ADEInequality.classification
 

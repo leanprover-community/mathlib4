@@ -69,7 +69,7 @@ lemma PInfty_f_0 : (PInfty.f 0 : X _[0] ⟶ X _[0]) = 𝟙 _ :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_f_0 AlgebraicTopology.DoldKan.PInfty_f_0
 
-theorem PInfty_f (n : ℕ) : (PInfty.f n : X _[n] ⟶ X _[n]) = (P n).f n :=
+lemma PInfty_f (n : ℕ) : (PInfty.f n : X _[n] ⟶ X _[n]) = (P n).f n :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_f AlgebraicTopology.DoldKan.PInfty_f
@@ -81,27 +81,27 @@ lemma QInfty_f_0 : (QInfty.f 0 : X _[0] ⟶ X _[0]) = 0 := by
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_infty_f_0 AlgebraicTopology.DoldKan.QInfty_f_0
 
-theorem QInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ X _[n]) = (Q n).f n :=
+lemma QInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ X _[n]) = (Q n).f n :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_infty_f AlgebraicTopology.DoldKan.QInfty_f
 
 @[reassoc (attr := simp)]
-theorem PInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
+lemma PInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op [n]) ≫ PInfty.f n = PInfty.f n ≫ f.app (op [n]) :=
   P_f_naturality n n f
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_f_naturality AlgebraicTopology.DoldKan.PInfty_f_naturality
 
 @[reassoc (attr := simp)]
-theorem QInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
+lemma QInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op [n]) ≫ QInfty.f n = QInfty.f n ≫ f.app (op [n]) :=
   Q_f_naturality n n f
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_infty_f_naturality AlgebraicTopology.DoldKan.QInfty_f_naturality
 
 @[reassoc (attr := simp)]
-theorem PInfty_f_idem (n : ℕ) : (PInfty.f n : X _[n] ⟶ _) ≫ PInfty.f n = PInfty.f n := by
+lemma PInfty_f_idem (n : ℕ) : (PInfty.f n : X _[n] ⟶ _) ≫ PInfty.f n = PInfty.f n := by
   simp only [PInfty_f, P_f_idem]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_f_idem AlgebraicTopology.DoldKan.PInfty_f_idem
@@ -114,7 +114,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_idem AlgebraicTopology.DoldKan.PInfty_idem
 
 @[reassoc (attr := simp)]
-theorem QInfty_f_idem (n : ℕ) : (QInfty.f n : X _[n] ⟶ _) ≫ QInfty.f n = QInfty.f n :=
+lemma QInfty_f_idem (n : ℕ) : (QInfty.f n : X _[n] ⟶ _) ≫ QInfty.f n = QInfty.f n :=
   Q_f_idem _ _
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_infty_f_idem AlgebraicTopology.DoldKan.QInfty_f_idem
@@ -127,7 +127,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_infty_idem AlgebraicTopology.DoldKan.QInfty_idem
 
 @[reassoc (attr := simp)]
-theorem PInfty_f_comp_QInfty_f (n : ℕ) : (PInfty.f n : X _[n] ⟶ _) ≫ QInfty.f n = 0 := by
+lemma PInfty_f_comp_QInfty_f (n : ℕ) : (PInfty.f n : X _[n] ⟶ _) ≫ QInfty.f n = 0 := by
   dsimp only [QInfty]
   simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, comp_id,
     PInfty_f_idem, sub_self]
@@ -142,7 +142,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_comp_Q_infty AlgebraicTopology.DoldKan.PInfty_comp_QInfty
 
 @[reassoc (attr := simp)]
-theorem QInfty_f_comp_PInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ _) ≫ PInfty.f n = 0 := by
+lemma QInfty_f_comp_PInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ _) ≫ PInfty.f n = 0 := by
   dsimp only [QInfty]
   simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, sub_comp, id_comp,
     PInfty_f_idem, sub_self]
@@ -163,7 +163,7 @@ lemma PInfty_add_QInfty : (PInfty : K[X] ⟶ _) + QInfty = 𝟙 _ := by
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_add_Q_infty AlgebraicTopology.DoldKan.PInfty_add_QInfty
 
-theorem PInfty_f_add_QInfty_f (n : ℕ) : (PInfty.f n : X _[n] ⟶ _) + QInfty.f n = 𝟙 _ :=
+lemma PInfty_f_add_QInfty_f (n : ℕ) : (PInfty.f n : X _[n] ⟶ _) + QInfty.f n = 𝟙 _ :=
   HomologicalComplex.congr_hom PInfty_add_QInfty n
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_f_add_Q_infty_f AlgebraicTopology.DoldKan.PInfty_f_add_QInfty_f

@@ -20,7 +20,7 @@ open scoped BigOperators Polynomial
 
 variable {R A : Type*} [CommRing R] [IsDomain R] [GCDMonoid R] [CommRing A] [Algebra R A]
 
-theorem IsLocalization.surj_of_gcd_domain (M : Submonoid R) [IsLocalization M A] (z : A) :
+lemma IsLocalization.surj_of_gcd_domain (M : Submonoid R) [IsLocalization M A] (z : A) :
     ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by
   obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.mk'_surjective M z
   obtain ⟨x', y', hx', hy', hu⟩ := extract_gcd x y

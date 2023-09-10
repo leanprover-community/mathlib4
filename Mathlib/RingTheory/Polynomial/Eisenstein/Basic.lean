@@ -159,7 +159,7 @@ section ScaleRoots
 
 variable {A : Type*} [CommRing R] [CommRing A]
 
-theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
+lemma scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by
   refine' ⟨fun i => _⟩
   rw [coeff_scaleRoots]
@@ -195,11 +195,11 @@ section CommSemiring
 
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsEisensteinAt 𝓟)
 
-theorem _root_.Polynomial.Monic.leadingCoeff_not_mem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
+lemma _root_.Polynomial.Monic.leadingCoeff_not_mem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
     ¬f.leadingCoeff ∈ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
 #align polynomial.monic.leading_coeff_not_mem Polynomial.Monic.leadingCoeff_not_mem
 
-theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem (hf : f.Monic) (h : 𝓟 ≠ ⊤)
+lemma _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem (hf : f.Monic) (h : 𝓟 ≠ ⊤)
     (hmem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟) (hnot_mem : f.coeff 0 ∉ 𝓟 ^ 2) :
     f.IsEisensteinAt 𝓟 :=
   { leading := Polynomial.Monic.leadingCoeff_not_mem hf h
@@ -226,7 +226,7 @@ variable [CommRing R] [IsDomain R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsEisenst
 
 /-- If a primitive `f` satisfies `f.IsEisensteinAt 𝓟`, where `𝓟.IsPrime`,
 then `f` is irreducible. -/
-theorem irreducible (hprime : 𝓟.IsPrime) (hu : f.IsPrimitive) (hfd0 : 0 < f.natDegree) :
+lemma irreducible (hprime : 𝓟.IsPrime) (hu : f.IsPrimitive) (hfd0 : 0 < f.natDegree) :
     Irreducible f :=
   irreducible_of_eisenstein_criterion hprime hf.leading (fun _ hn => hf.mem (coe_lt_degree.1 hn))
     (natDegree_pos_iff_degree_pos.1 hfd0) hf.not_mem hu

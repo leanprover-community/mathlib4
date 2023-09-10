@@ -174,7 +174,7 @@ lemma ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α, �
   coe_fn_eq.symm
 #align fun_like.ext'_iff FunLike.ext'_iff
 
-theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
+lemma ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
   FunLike.coe_injective' (funext h)
 #align fun_like.ext FunLike.ext
 
@@ -215,7 +215,7 @@ protected lemma congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x =
   congr (congr_arg _ h₁) h₂
 #align fun_like.congr FunLike.congr
 
-protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
+protected lemma congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
   congr_arg _ h₂
 #align fun_like.congr_arg FunLike.congr_arg
 

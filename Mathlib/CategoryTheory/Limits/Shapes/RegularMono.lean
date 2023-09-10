@@ -145,7 +145,7 @@ instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono 
 #align category_theory.strong_mono_of_regular_mono CategoryTheory.strongMono_of_regularMono
 
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
-theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) [RegularMono f] [Epi f] : IsIso f :=
+lemma isIso_of_regularMono_of_epi (f : X ⟶ Y) [RegularMono f] [Epi f] : IsIso f :=
   isIso_of_epi_of_strongMono _
 #align category_theory.is_iso_of_regular_mono_of_epi CategoryTheory.isIso_of_regularMono_of_epi
 
@@ -286,7 +286,7 @@ instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] 
 #align category_theory.strong_epi_of_regular_epi CategoryTheory.strongEpi_of_regularEpi
 
 /-- A regular epimorphism is an isomorphism if it is a monomorphism. -/
-theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) [RegularEpi f] [Mono f] : IsIso f :=
+lemma isIso_of_regularEpi_of_mono (f : X ⟶ Y) [RegularEpi f] [Mono f] : IsIso f :=
   isIso_of_mono_of_strongEpi _
 #align category_theory.is_iso_of_regular_epi_of_mono CategoryTheory.isIso_of_regularEpi_of_mono
 

@@ -93,7 +93,7 @@ abbrev AgreedTriple.judgePair : AgreedTriple C J → JudgePair J :=
 #align imo1998_q2.agreed_triple.judge_pair Imo1998Q2.AgreedTriple.judgePair
 
 @[simp]
-theorem JudgePair.agree_iff_same_rating (p : JudgePair J) (c : C) :
+lemma JudgePair.agree_iff_same_rating (p : JudgePair J) (c : C) :
     p.Agree r c ↔ (r c p.judge₁ ↔ r c p.judge₂) :=
   Iff.rfl
 #align imo1998_q2.judge_pair.agree_iff_same_rating Imo1998Q2.JudgePair.agree_iff_same_rating
@@ -112,11 +112,11 @@ def A : Finset (AgreedTriple C J) :=
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 #align imo1998_q2.A Imo1998Q2.A
 
-theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
+lemma A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
     a ∈ A r → a.judgePair ∈ Finset.offDiag (@Finset.univ J _) := by simp [A, Finset.mem_offDiag]
 #align imo1998_q2.A_maps_to_off_diag_judge_pair Imo1998Q2.A_maps_to_offDiag_judgePair
 
-theorem A_fibre_over_contestant (c : C) :
+lemma A_fibre_over_contestant (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
   ext p
@@ -126,7 +126,7 @@ theorem A_fibre_over_contestant (c : C) :
   · intro h; aesop
 #align imo1998_q2.A_fibre_over_contestant Imo1998Q2.A_fibre_over_contestant
 
-theorem A_fibre_over_contestant_card (c : C) :
+lemma A_fibre_over_contestant_card (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
   rw [A_fibre_over_contestant r]

@@ -51,11 +51,11 @@ def ofInt (n : ℤ) : ℤ√d :=
   ⟨n, 0⟩
 #align zsqrtd.of_int Zsqrtd.ofInt
 
-theorem ofInt_re (n : ℤ) : (ofInt n : ℤ√d).re = n :=
+lemma ofInt_re (n : ℤ) : (ofInt n : ℤ√d).re = n :=
   rfl
 #align zsqrtd.of_int_re Zsqrtd.ofInt_re
 
-theorem ofInt_im (n : ℤ) : (ofInt n : ℤ√d).im = 0 :=
+lemma ofInt_im (n : ℤ) : (ofInt n : ℤ√d).im = 0 :=
   rfl
 #align zsqrtd.of_int_im Zsqrtd.ofInt_im
 
@@ -110,17 +110,17 @@ instance : Add (ℤ√d) :=
   ⟨fun z w => ⟨z.1 + w.1, z.2 + w.2⟩⟩
 
 @[simp]
-theorem add_def (x y x' y' : ℤ) : (⟨x, y⟩ + ⟨x', y'⟩ : ℤ√d) = ⟨x + x', y + y'⟩ :=
+lemma add_def (x y x' y' : ℤ) : (⟨x, y⟩ + ⟨x', y'⟩ : ℤ√d) = ⟨x + x', y + y'⟩ :=
   rfl
 #align zsqrtd.add_def Zsqrtd.add_def
 
 @[simp]
-theorem add_re (z w : ℤ√d) : (z + w).re = z.re + w.re :=
+lemma add_re (z w : ℤ√d) : (z + w).re = z.re + w.re :=
   rfl
 #align zsqrtd.add_re Zsqrtd.add_re
 
 @[simp]
-theorem add_im (z w : ℤ√d) : (z + w).im = z.im + w.im :=
+lemma add_im (z w : ℤ√d) : (z + w).im = z.im + w.im :=
   rfl
 #align zsqrtd.add_im Zsqrtd.add_im
 
@@ -128,22 +128,22 @@ section bit
 set_option linter.deprecated false
 
 @[simp]
-theorem bit0_re (z) : (bit0 z : ℤ√d).re = bit0 z.re :=
+lemma bit0_re (z) : (bit0 z : ℤ√d).re = bit0 z.re :=
   rfl
 #align zsqrtd.bit0_re Zsqrtd.bit0_re
 
 @[simp]
-theorem bit0_im (z) : (bit0 z : ℤ√d).im = bit0 z.im :=
+lemma bit0_im (z) : (bit0 z : ℤ√d).im = bit0 z.im :=
   rfl
 #align zsqrtd.bit0_im Zsqrtd.bit0_im
 
 @[simp]
-theorem bit1_re (z) : (bit1 z : ℤ√d).re = bit1 z.re :=
+lemma bit1_re (z) : (bit1 z : ℤ√d).re = bit1 z.re :=
   rfl
 #align zsqrtd.bit1_re Zsqrtd.bit1_re
 
 @[simp]
-theorem bit1_im (z) : (bit1 z : ℤ√d).im = bit0 z.im := by simp [bit1]
+lemma bit1_im (z) : (bit1 z : ℤ√d).im = bit0 z.im := by simp [bit1]
 #align zsqrtd.bit1_im Zsqrtd.bit1_im
 
 end bit
@@ -153,12 +153,12 @@ instance : Neg (ℤ√d) :=
   ⟨fun z => ⟨-z.1, -z.2⟩⟩
 
 @[simp]
-theorem neg_re (z : ℤ√d) : (-z).re = -z.re :=
+lemma neg_re (z : ℤ√d) : (-z).re = -z.re :=
   rfl
 #align zsqrtd.neg_re Zsqrtd.neg_re
 
 @[simp]
-theorem neg_im (z : ℤ√d) : (-z).im = -z.im :=
+lemma neg_im (z : ℤ√d) : (-z).im = -z.im :=
   rfl
 #align zsqrtd.neg_im Zsqrtd.neg_im
 
@@ -167,12 +167,12 @@ instance : Mul (ℤ√d) :=
   ⟨fun z w => ⟨z.1 * w.1 + d * z.2 * w.2, z.1 * w.2 + z.2 * w.1⟩⟩
 
 @[simp]
-theorem mul_re (z w : ℤ√d) : (z * w).re = z.re * w.re + d * z.im * w.im :=
+lemma mul_re (z w : ℤ√d) : (z * w).re = z.re * w.re + d * z.im * w.im :=
   rfl
 #align zsqrtd.mul_re Zsqrtd.mul_re
 
 @[simp]
-theorem mul_im (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
+lemma mul_im (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
   rfl
 #align zsqrtd.mul_im Zsqrtd.mul_im
 
@@ -247,17 +247,17 @@ instance : Star (ℤ√d) where
   star z := ⟨z.1, -z.2⟩
 
 @[simp]
-theorem star_mk (x y : ℤ) : star (⟨x, y⟩ : ℤ√d) = ⟨x, -y⟩ :=
+lemma star_mk (x y : ℤ) : star (⟨x, y⟩ : ℤ√d) = ⟨x, -y⟩ :=
   rfl
 #align zsqrtd.star_mk Zsqrtd.star_mk
 
 @[simp]
-theorem star_re (z : ℤ√d) : (star z).re = z.re :=
+lemma star_re (z : ℤ√d) : (star z).re = z.re :=
   rfl
 #align zsqrtd.star_re Zsqrtd.star_re
 
 @[simp]
-theorem star_im (z : ℤ√d) : (star z).im = -z.im :=
+lemma star_im (z : ℤ√d) : (star z).im = -z.im :=
   rfl
 #align zsqrtd.star_im Zsqrtd.star_im
 
@@ -271,56 +271,56 @@ instance nontrivial : Nontrivial (ℤ√d) :=
   ⟨⟨0, 1, ext.not.mpr <| by simp⟩⟩
 
 @[simp]
-theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
+lemma coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
 #align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
 
 @[simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
+lemma ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
-theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
+lemma coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 #align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
 
 @[simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
+lemma ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
   rfl
 
-theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
+lemma coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
   rfl
 #align zsqrtd.coe_nat_val Zsqrtd.coe_nat_val
 
 @[simp]
-theorem coe_int_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
+lemma coe_int_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
 #align zsqrtd.coe_int_re Zsqrtd.coe_int_re
 
 @[simp]
-theorem coe_int_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
+lemma coe_int_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
 #align zsqrtd.coe_int_im Zsqrtd.coe_int_im
 
-theorem coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by simp [ext]
+lemma coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by simp [ext]
 #align zsqrtd.coe_int_val Zsqrtd.coe_int_val
 
 instance : CharZero (ℤ√d) where cast_injective m n := by simp [ext]
 
 @[simp]
-theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by simp [ext, ofInt_re, ofInt_im]
+lemma ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by simp [ext, ofInt_re, ofInt_im]
 #align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_coe
 
 @[simp]
-theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by simp [ext]
+lemma smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by simp [ext]
 #align zsqrtd.smul_val Zsqrtd.smul_val
 
-theorem smul_re (a : ℤ) (b : ℤ√d) : (↑a * b).re = a * b.re := by simp
+lemma smul_re (a : ℤ) (b : ℤ√d) : (↑a * b).re = a * b.re := by simp
 #align zsqrtd.smul_re Zsqrtd.smul_re
 
-theorem smul_im (a : ℤ) (b : ℤ√d) : (↑a * b).im = a * b.im := by simp
+lemma smul_im (a : ℤ) (b : ℤ√d) : (↑a * b).im = a * b.im := by simp
 #align zsqrtd.smul_im Zsqrtd.smul_im
 
 @[simp]
-theorem muld_val (x y : ℤ) : sqrtd (d := d) * ⟨x, y⟩ = ⟨d * y, x⟩ := by simp [ext]
+lemma muld_val (x y : ℤ) : sqrtd (d := d) * ⟨x, y⟩ = ⟨d * y, x⟩ := by simp [ext]
 #align zsqrtd.muld_val Zsqrtd.muld_val
 
 @[simp]
@@ -328,7 +328,7 @@ lemma dmuld : sqrtd (d := d) * sqrtd (d := d) = d := by simp [ext]
 #align zsqrtd.dmuld Zsqrtd.dmuld
 
 @[simp]
-theorem smuld_val (n x y : ℤ) : sqrtd * (n : ℤ√d) * ⟨x, y⟩ = ⟨d * n * y, n * x⟩ := by simp [ext]
+lemma smuld_val (n x y : ℤ) : sqrtd * (n : ℤ√d) * ⟨x, y⟩ = ⟨d * n * y, n * x⟩ := by simp [ext]
 #align zsqrtd.smuld_val Zsqrtd.smuld_val
 
 lemma decompose {x y : ℤ} : (⟨x, y⟩ : ℤ√d) = x + sqrtd (d := d) * y := by simp [ext]
@@ -338,15 +338,15 @@ lemma mul_star {x y : ℤ} : (⟨x, y⟩ * star ⟨x, y⟩ : ℤ√d) = x * x - 
   simp [ext, sub_eq_add_neg, mul_comm]
 #align zsqrtd.mul_star Zsqrtd.mul_star
 
-protected theorem coe_int_add (m n : ℤ) : (↑(m + n) : ℤ√d) = ↑m + ↑n :=
+protected lemma coe_int_add (m n : ℤ) : (↑(m + n) : ℤ√d) = ↑m + ↑n :=
   (Int.castRingHom _).map_add _ _
 #align zsqrtd.coe_int_add Zsqrtd.coe_int_add
 
-protected theorem coe_int_sub (m n : ℤ) : (↑(m - n) : ℤ√d) = ↑m - ↑n :=
+protected lemma coe_int_sub (m n : ℤ) : (↑(m - n) : ℤ√d) = ↑m - ↑n :=
   (Int.castRingHom _).map_sub _ _
 #align zsqrtd.coe_int_sub Zsqrtd.coe_int_sub
 
-protected theorem coe_int_mul (m n : ℤ) : (↑(m * n) : ℤ√d) = ↑m * ↑n :=
+protected lemma coe_int_mul (m n : ℤ) : (↑(m * n) : ℤ√d) = ↑m * ↑n :=
   (Int.castRingHom _).map_mul _ _
 #align zsqrtd.coe_int_mul Zsqrtd.coe_int_mul
 
@@ -354,7 +354,7 @@ protected lemma coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n :=
   simpa using congr_arg re h
 #align zsqrtd.coe_int_inj Zsqrtd.coe_int_inj
 
-theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
+lemma coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
     simp only [add_zero, coe_int_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
@@ -366,7 +366,7 @@ theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ 
 #align zsqrtd.coe_int_dvd_iff Zsqrtd.coe_int_dvd_iff
 
 @[simp, norm_cast]
-theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
+lemma coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
   rw [coe_int_dvd_iff]
   constructor
   · rintro ⟨hre, -⟩
@@ -383,11 +383,11 @@ protected lemma eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0)
 
 section Gcd
 
-theorem gcd_eq_zero_iff (a : ℤ√d) : Int.gcd a.re a.im = 0 ↔ a = 0 := by
+lemma gcd_eq_zero_iff (a : ℤ√d) : Int.gcd a.re a.im = 0 ↔ a = 0 := by
   simp only [Int.gcd_eq_zero_iff, ext, eq_self_iff_true, zero_im, zero_re]
 #align zsqrtd.gcd_eq_zero_iff Zsqrtd.gcd_eq_zero_iff
 
-theorem gcd_pos_iff (a : ℤ√d) : 0 < Int.gcd a.re a.im ↔ a ≠ 0 :=
+lemma gcd_pos_iff (a : ℤ√d) : 0 < Int.gcd a.re a.im ↔ a ≠ 0 :=
   pos_iff_ne_zero.trans <| not_congr a.gcd_eq_zero_iff
 #align zsqrtd.gcd_pos_iff Zsqrtd.gcd_pos_iff
 
@@ -519,7 +519,7 @@ def norm (n : ℤ√d) : ℤ :=
   n.re * n.re - d * n.im * n.im
 #align zsqrtd.norm Zsqrtd.norm
 
-theorem norm_def (n : ℤ√d) : n.norm = n.re * n.re - d * n.im * n.im :=
+lemma norm_def (n : ℤ√d) : n.norm = n.re * n.re - d * n.im * n.im :=
   rfl
 #align zsqrtd.norm_def Zsqrtd.norm_def
 
@@ -532,16 +532,16 @@ lemma norm_one : norm (1 : ℤ√d) = 1 := by simp [norm]
 #align zsqrtd.norm_one Zsqrtd.norm_one
 
 @[simp]
-theorem norm_int_cast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
+lemma norm_int_cast (n : ℤ) : norm (n : ℤ√d) = n * n := by simp [norm]
 #align zsqrtd.norm_int_cast Zsqrtd.norm_int_cast
 
 @[simp]
-theorem norm_nat_cast (n : ℕ) : norm (n : ℤ√d) = n * n :=
+lemma norm_nat_cast (n : ℕ) : norm (n : ℤ√d) = n * n :=
   norm_int_cast n
 #align zsqrtd.norm_nat_cast Zsqrtd.norm_nat_cast
 
 @[simp]
-theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
+lemma norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
   simp only [norm, mul_im, mul_re]
   ring
 #align zsqrtd.norm_mul Zsqrtd.norm_mul
@@ -553,26 +553,26 @@ def normMonoidHom : ℤ√d →* ℤ where
   map_one' := norm_one
 #align zsqrtd.norm_monoid_hom Zsqrtd.normMonoidHom
 
-theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
+lemma norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
   cases n
   simp [norm, star, Zsqrtd.ext, mul_comm, sub_eq_add_neg]
 #align zsqrtd.norm_eq_mul_conj Zsqrtd.norm_eq_mul_conj
 
 @[simp]
-theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
+lemma norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 #align zsqrtd.norm_neg Zsqrtd.norm_neg
 
 @[simp]
-theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
+lemma norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 #align zsqrtd.norm_conj Zsqrtd.norm_conj
 
-theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
+lemma norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
   add_nonneg (mul_self_nonneg _)
     (by
       rw [mul_assoc, neg_mul_eq_neg_mul]
@@ -750,7 +750,7 @@ protected lemma nonneg_total : ∀ a : ℤ√d, Nonneg a ∨ Nonneg (-a)
   | ⟨-[_+1], (_ + 1 : ℕ)⟩ => Nat.le_total _ _
 #align zsqrtd.nonneg_total Zsqrtd.nonneg_total
 
-protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
+protected lemma le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   have t := (b - a).nonneg_total
   rwa [neg_sub] at t
 #align zsqrtd.le_total Zsqrtd.le_total
@@ -763,7 +763,7 @@ instance preorder : Preorder (ℤ√d) where
   lt_iff_le_not_le a b := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
-theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
+lemma le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
@@ -781,15 +781,15 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   exact h (y + 1)
 #align zsqrtd.le_arch Zsqrtd.le_arch
 
-protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : c + a ≤ c + b :=
+protected lemma add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : c + a ≤ c + b :=
   show Nonneg _ by rw [add_sub_add_left_eq_sub]; exact ab
 #align zsqrtd.add_le_add_left Zsqrtd.add_le_add_left
 
-protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
+protected lemma le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
   simpa using Zsqrtd.add_le_add_left _ _ h (-c)
 #align zsqrtd.le_of_add_le_add_left Zsqrtd.le_of_add_le_add_left
 
-protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
+protected lemma add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
   h (Zsqrtd.le_of_add_le_add_left _ _ _ h')
 #align zsqrtd.add_lt_add_left Zsqrtd.add_lt_add_left
 
@@ -862,12 +862,12 @@ lemma nonneg_mul {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a * b
           (sqLe_mul.right.right.right (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
 #align zsqrtd.nonneg_mul Zsqrtd.nonneg_mul
 
-protected theorem mul_nonneg (a b : ℤ√d) : 0 ≤ a → 0 ≤ b → 0 ≤ a * b := by
+protected lemma mul_nonneg (a b : ℤ√d) : 0 ≤ a → 0 ≤ b → 0 ≤ a * b := by
   simp_rw [← nonneg_iff_zero_le]
   exact nonneg_mul
 #align zsqrtd.mul_nonneg Zsqrtd.mul_nonneg
 
-theorem not_sqLe_succ (c d y) (h : 0 < c) : ¬SqLe (y + 1) c 0 d :=
+lemma not_sqLe_succ (c d y) (h : 0 < c) : ¬SqLe (y + 1) c 0 d :=
   not_le_of_gt <| mul_pos (mul_pos h <| Nat.succ_pos _) <| Nat.succ_pos _
 #align zsqrtd.not_sq_le_succ Zsqrtd.not_sqLe_succ
 
@@ -879,7 +879,7 @@ class Nonsquare (x : ℕ) : Prop where
   ns' : ∀ n : ℕ, x ≠ n * n
 #align zsqrtd.nonsquare Zsqrtd.Nonsquare
 
-theorem Nonsquare.ns (x : ℕ) [Nonsquare x] : ∀ n : ℕ, x ≠ n * n := ns'
+lemma Nonsquare.ns (x : ℕ) [Nonsquare x] : ∀ n : ℕ, x ≠ n * n := ns'
 
 variable [dnsq : Nonsquare d]
 
@@ -918,7 +918,7 @@ lemma divides_sq_eq_zero_z {x y : ℤ} (h : x * x = d * y * y) : x = 0 ∧ y = 0
     ⟨Int.natAbs_eq_zero.mp h1, Int.natAbs_eq_zero.mp h2⟩
 #align zsqrtd.divides_sq_eq_zero_z Zsqrtd.divides_sq_eq_zero_z
 
-theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fun e => by
+lemma not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fun e => by
   have t := (divides_sq_eq_zero e).left
   contradiction
 #align zsqrtd.not_divides_sq Zsqrtd.not_divides_sq
@@ -988,7 +988,7 @@ instance : NoZeroDivisors (ℤ√d) where
 instance : IsDomain (ℤ√d) :=
   NoZeroDivisors.to_isDomain _
 
-protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
+protected lemma mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
       (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))

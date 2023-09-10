@@ -142,7 +142,7 @@ lemma hom_ext {M N : Bimod A B} (f g : M ⟶ N) (h : f.hom = g.hom) : f = g :=
   Hom.ext _ _ h
 
 @[simp]
-theorem id_hom' (M : Bimod A B) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
+lemma id_hom' (M : Bimod A B) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.id_hom' Bimod.id_hom'

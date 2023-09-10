@@ -123,7 +123,7 @@ section Integrability
 
 variable [NormedAddCommGroup F] {f : Ω → F}
 
-theorem _root_.MeasureTheory.Integrable.condexpKernel_ae (hf_int : Integrable f μ) :
+lemma _root_.MeasureTheory.Integrable.condexpKernel_ae (hf_int : Integrable f μ) :
     ∀ᵐ ω ∂μ, Integrable f (condexpKernel μ m ω) := by
   rw [condexpKernel]
   exact Integrable.condDistrib_ae
@@ -131,7 +131,7 @@ theorem _root_.MeasureTheory.Integrable.condexpKernel_ae (hf_int : Integrable f 
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
 #align measure_theory.integrable.condexp_kernel_ae MeasureTheory.Integrable.condexpKernel_ae
 
-theorem _root_.MeasureTheory.Integrable.integral_norm_condexpKernel (hf_int : Integrable f μ) :
+lemma _root_.MeasureTheory.Integrable.integral_norm_condexpKernel (hf_int : Integrable f μ) :
     Integrable (fun ω => ∫ y, ‖f y‖ ∂condexpKernel μ m ω) μ := by
   rw [condexpKernel]
   exact Integrable.integral_norm_condDistrib

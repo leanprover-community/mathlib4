@@ -164,7 +164,7 @@ lemma isEmpty_psigma {α} {E : α → Sort*} : IsEmpty (PSigma E) ↔ ∀ a, IsE
 #align is_empty_psigma isEmpty_psigma
 
 @[simp]
-theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x := by
+lemma isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x := by
   simp only [← not_nonempty_iff, nonempty_subtype, not_exists]
 #align is_empty_subtype isEmpty_subtype
 

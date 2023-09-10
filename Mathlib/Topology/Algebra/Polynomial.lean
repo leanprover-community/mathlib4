@@ -130,7 +130,7 @@ lemma tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Alge
 
 variable {α R : Type*} [NormedRing R] [IsAbsoluteValue (norm : R → ℝ)]
 
-theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
+lemma tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (fun x => ‖z x‖) l atTop) : Tendsto (fun x => ‖p.eval (z x)‖) l atTop :=
   p.tendsto_abv_atTop norm h hz
 #align polynomial.tendsto_norm_at_top Polynomial.tendsto_norm_atTop

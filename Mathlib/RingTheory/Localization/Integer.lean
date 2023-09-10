@@ -76,7 +76,7 @@ variable [IsLocalization M S]
 
 This version multiplies `a` on the right, matching the argument order in `LocalizationMap.surj`.
 -/
-theorem exists_integer_multiple' (a : S) : ∃ b : M, IsInteger R (a * algebraMap R S b) :=
+lemma exists_integer_multiple' (a : S) : ∃ b : M, IsInteger R (a * algebraMap R S b) :=
   let ⟨⟨Num, denom⟩, h⟩ := IsLocalization.surj _ a
   ⟨denom, Set.mem_range.mpr ⟨Num, h.symm⟩⟩
 #align is_localization.exists_integer_multiple' IsLocalization.exists_integer_multiple'
@@ -85,7 +85,7 @@ theorem exists_integer_multiple' (a : S) : ∃ b : M, IsInteger R (a * algebraMa
 
 This version multiplies `a` on the left, matching the argument order in the `SMul` instance.
 -/
-theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a) := by
+lemma exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a) := by
   simp_rw [Algebra.smul_def, mul_comm _ a]
   apply exists_integer_multiple'
 #align is_localization.exists_integer_multiple IsLocalization.exists_integer_multiple
@@ -115,7 +115,7 @@ lemma exist_integer_multiples_of_finite {ι : Type*} [Finite ι] (f : ι → S) 
 #align is_localization.exist_integer_multiples_of_finite IsLocalization.exist_integer_multiples_of_finite
 
 /-- We can clear the denominators of a finite set of fractions. -/
-theorem exist_integer_multiples_of_finset (s : Finset S) :
+lemma exist_integer_multiples_of_finset (s : Finset S) :
     ∃ b : M, ∀ a ∈ s, IsInteger R ((b : R) • a) :=
   exist_integer_multiples M s id
 #align is_localization.exist_integer_multiples_of_finset IsLocalization.exist_integer_multiples_of_finset

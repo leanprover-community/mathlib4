@@ -58,7 +58,7 @@ lemma eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin
                 (Finset.sum_le_sum fun j _ => mul_le_of_le_one_right (norm_nonneg _) (h_le j))
 
 /-- If `A` is a row strictly dominant diagonal matrix, then it's determinant is nonzero. -/
-theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j in Finset.univ.erase k, ‖A k j‖ < ‖A k k‖) :
+lemma det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j in Finset.univ.erase k, ‖A k j‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   contrapose! h
   suffices ∃ k, 0 ∈ Metric.closedBall (A k k) (∑ j in Finset.univ.erase k, ‖A k j‖) by
@@ -68,7 +68,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j in Finset.univ.erase k,
   exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
 
 /-- If `A` is a column strictly dominant diagonal matrix, then it's determinant is nonzero. -/
-theorem det_ne_zero_of_sum_col_lt_diag (h : ∀ k, ∑ i in Finset.univ.erase k, ‖A i k‖ < ‖A k k‖) :
+lemma det_ne_zero_of_sum_col_lt_diag (h : ∀ k, ∑ i in Finset.univ.erase k, ‖A i k‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]
   exact det_ne_zero_of_sum_row_lt_diag (by simp_rw [Matrix.transpose_apply]; exact h)

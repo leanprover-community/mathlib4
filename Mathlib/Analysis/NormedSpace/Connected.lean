@@ -102,19 +102,19 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is
 connected. -/
-theorem Set.Countable.isConnected_compl_of_one_lt_rank (h : 1 < Module.rank ℝ E) {s : Set E}
+lemma Set.Countable.isConnected_compl_of_one_lt_rank (h : 1 < Module.rank ℝ E) {s : Set E}
     (hs : s.Countable) : IsConnected sᶜ :=
   (hs.isPathConnected_compl_of_one_lt_rank h).isConnected
 
 /-- In a real vector space of dimension `> 1`, the complement of a singleton is path
 connected. -/
-theorem isPathConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
+lemma isPathConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsPathConnected {x}ᶜ :=
   Set.Countable.isPathConnected_compl_of_one_lt_rank h (countable_singleton x)
 
 /-- In a real vector space of dimension `> 1`, the complement of a singleton is
 connected. -/
-theorem isConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
+lemma isConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsConnected {x}ᶜ :=
   (isPathConnected_compl_singleton_of_one_lt_rank h x).isConnected
 
@@ -126,7 +126,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is
 path connected. -/
-theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
+lemma isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     IsPathConnected (sphere x r) := by
   /- when `r > 0`, we write the sphere as the image of `{0}ᶜ` under the map
   `y ↦ x + (r * ‖y‖⁻¹) • y`. Since the image under a continuous map of a path connected set
@@ -156,12 +156,12 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
   rwa [this] at C
 
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is connected. -/
-theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
+lemma isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     IsConnected (sphere x r) :=
   (isPathConnected_sphere h x hr).isConnected
 
 /-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
-theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
+lemma isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
   rcases le_or_lt 0 r with hr|hr
   · exact (isConnected_sphere h x hr).isPreconnected

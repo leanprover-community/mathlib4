@@ -54,7 +54,7 @@ def PiToModule.fromEnd : Module.End R M →ₗ[R] (ι → R) →ₗ[R] M :=
   LinearMap.lcomp _ _ (Fintype.total R R b)
 #align pi_to_module.from_End PiToModule.fromEnd
 
-theorem PiToModule.fromEnd_apply (f : Module.End R M) (w : ι → R) :
+lemma PiToModule.fromEnd_apply (f : Module.End R M) (w : ι → R) :
     PiToModule.fromEnd R b f w = f (Fintype.total R R b w) :=
   rfl
 #align pi_to_module.from_End_apply PiToModule.fromEnd_apply
@@ -67,7 +67,7 @@ lemma PiToModule.fromEnd_apply_single_one [DecidableEq ι] (f : Module.End R M) 
   rw [one_smul]
 #align pi_to_module.from_End_apply_single_one PiToModule.fromEnd_apply_single_one
 
-theorem PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤) :
+lemma PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤) :
     Function.Injective (PiToModule.fromEnd R b) := by
   intro x y e
   ext m
@@ -176,18 +176,18 @@ noncomputable def Matrix.isRepresentation.toEnd : Matrix.isRepresentation R b �
     (r • (1 : Matrix.isRepresentation R b)).2.choose_spec.eq hb (Matrix.Represents.one.smul r)
 #align matrix.is_representation.to_End Matrix.isRepresentation.toEnd
 
-theorem Matrix.isRepresentation.toEnd_represents (A : Matrix.isRepresentation R b) :
+lemma Matrix.isRepresentation.toEnd_represents (A : Matrix.isRepresentation R b) :
     (A : Matrix ι ι R).Represents b (Matrix.isRepresentation.toEnd R b hb A) :=
   A.2.choose_spec
 #align matrix.is_representation.to_End_represents Matrix.isRepresentation.toEnd_represents
 
-theorem Matrix.isRepresentation.eq_toEnd_of_represents (A : Matrix.isRepresentation R b)
+lemma Matrix.isRepresentation.eq_toEnd_of_represents (A : Matrix.isRepresentation R b)
     {f : Module.End R M} (h : (A : Matrix ι ι R).Represents b f) :
     Matrix.isRepresentation.toEnd R b hb A = f :=
   A.2.choose_spec.eq hb h
 #align matrix.is_representation.eq_to_End_of_represents Matrix.isRepresentation.eq_toEnd_of_represents
 
-theorem Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I : Ideal R)
+lemma Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I : Ideal R)
     (hI : LinearMap.range f ≤ I • ⊤) :
     ∃ M, Matrix.isRepresentation.toEnd R b hb M = f ∧ ∀ i j, M.1 i j ∈ I := by
   have : ∀ x, f x ∈ LinearMap.range (Ideal.finsuppTotal ι M I b) := by

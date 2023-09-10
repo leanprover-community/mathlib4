@@ -54,7 +54,7 @@ open MiuAtom List Nat
 /-- We start by showing that an `Miustr` `M::w` can be derived, where `w` consists only of `I`s and
 where `count I w` is a power of 2.
 -/
-private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n) I) := by
+private lemma der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n) I) := by
   induction' n with k hk
   · -- base case
     constructor
@@ -108,7 +108,7 @@ In fine-tuning my application of `simp`, I issued the following commend to deter
 /-- We may replace several consecutive occurrences of `"III"` with the same number of `"U"`s.
 In application of the following lemma, `xs` will either be `[]` or `[U]`.
 -/
-theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (c k : ℕ)
+lemma der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (c k : ℕ)
     (_ : c % 3 = 1 ∨ c % 3 = 2) (xs : Miustr)
     (hder : Derivable (↑(M :: replicate (c + 3 * k) I) ++ xs)) :
     Derivable (↑(M :: (replicate c I ++ replicate k U)) ++ xs) := by
@@ -140,13 +140,13 @@ section Arithmetic
 
 /-- For every `a`, the number `a + a % 2` is even.
 -/
-theorem add_mod2 (a : ℕ) : ∃ t, a + a % 2 = t * 2 := by
+lemma add_mod2 (a : ℕ) : ∃ t, a + a % 2 = t * 2 := by
   simp only [mul_comm _ 2] -- write `t*2` as `2*t`
   apply dvd_of_mod_eq_zero -- it suffices to prove `(a + a % 2) % 2 = 0`
   rw [add_mod, mod_mod, ← two_mul, mul_mod_right]
 #align miu.add_mod2 Miu.add_mod2
 
-private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c = 2) :
+private lemma le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c = 2) :
     ∃ m : ℕ, c + 3 * x ≤ 2 ^ m ∧ 2 ^ m % 3 = c % 3 := by
   induction' x with k hk
   · use c + 1
@@ -163,7 +163,7 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
 
 /-- If `a` is 1 or 2 modulo 3, then exists `k` a power of 2 for which `a ≤ k` and `a ≡ k [MOD 3]`.
 -/
-theorem le_pow2_and_pow2_eq_mod3 (a : ℕ) (h : a % 3 = 1 ∨ a % 3 = 2) :
+lemma le_pow2_and_pow2_eq_mod3 (a : ℕ) (h : a % 3 = 1 ∨ a % 3 = 2) :
     ∃ m : ℕ, a ≤ 2 ^ m ∧ 2 ^ m % 3 = a % 3 := by
   cases' le_pow2_and_pow2_eq_mod3' (a % 3) (a / 3) h with m hm
   use m
@@ -184,7 +184,7 @@ lemma replicate_pow_minus_append {m : ℕ} :
 `der_replicate_I_of_mod3` states that `M::y` is `Derivable` if `y` is any `Miustr` consisiting just
 of `I`s, where `count I y` is 1 or 2 modulo 3.
 -/
-theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
+lemma der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
     Derivable (M :: replicate c I) := by
   -- From `der_cons_replicate`, we can derive the `Miustr` `M::w` described in the introduction.
   cases' le_pow2_and_pow2_eq_mod3 c h with m hm -- `2^m` will be the number of `I`s in `M::w`
@@ -274,7 +274,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- `base_case_suf` is the base case of the sufficiency result.
 -/
-theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Derivable en := by
+lemma base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Derivable en := by
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
     intro k; simp only [k, count, countP, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
@@ -311,7 +311,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- `ind_hyp_suf` is the inductive step of the sufficiency result.
 -/
-theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : Decstr ys) :
+lemma ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : Decstr ys) :
     ∃ as bs : Miustr,
       ys = M :: as ++ U :: bs ∧
       count U (↑(M :: as) ++ ↑[I, I, I] ++ bs : Miustr) = k ∧

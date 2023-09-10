@@ -159,13 +159,13 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
 #align category_theory.monoidal_nat_iso.of_components CategoryTheory.MonoidalNatIso.ofComponents
 
 @[simp]
-theorem ofComponents.hom_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
+lemma ofComponents.hom_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
     (ofComponents app naturality unit tensor).hom.app X = (app X).hom :=
   rfl
 #align category_theory.monoidal_nat_iso.of_components.hom_app CategoryTheory.MonoidalNatIso.ofComponents.hom_app
 
 @[simp]
-theorem ofComponents.inv_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
+lemma ofComponents.inv_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
     (ofComponents app naturality unit tensor).inv.app X = (app X).inv := by simp [ofComponents]
 #align category_theory.monoidal_nat_iso.of_components.inv_app CategoryTheory.MonoidalNatIso.ofComponents.inv_app
 

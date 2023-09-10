@@ -129,16 +129,16 @@ lemma isClosedMap_ofAdd : IsClosedMap (ofAdd : α → Multiplicative α) := IsCl
 lemma isClosedMap_toAdd : IsClosedMap (toAdd : Multiplicative α → α) := IsClosedMap.id
 #align is_closed_map_to_add isClosedMap_toAdd
 
-theorem nhds_ofMul (a : α) : 𝓝 (ofMul a) = map ofMul (𝓝 a) := rfl
+lemma nhds_ofMul (a : α) : 𝓝 (ofMul a) = map ofMul (𝓝 a) := rfl
 #align nhds_of_mul nhds_ofMul
 
-theorem nhds_ofAdd (a : α) : 𝓝 (ofAdd a) = map ofAdd (𝓝 a) := rfl
+lemma nhds_ofAdd (a : α) : 𝓝 (ofAdd a) = map ofAdd (𝓝 a) := rfl
 #align nhds_of_add nhds_ofAdd
 
-theorem nhds_toMul (a : Additive α) : 𝓝 (toMul a) = map toMul (𝓝 a) := rfl
+lemma nhds_toMul (a : Additive α) : 𝓝 (toMul a) = map toMul (𝓝 a) := rfl
 #align nhds_to_mul nhds_toMul
 
-theorem nhds_toAdd (a : Multiplicative α) : 𝓝 (toAdd a) = map toAdd (𝓝 a) := rfl
+lemma nhds_toAdd (a : Multiplicative α) : 𝓝 (toAdd a) = map toAdd (𝓝 a) := rfl
 #align nhds_to_add nhds_toAdd
 
 end
@@ -177,10 +177,10 @@ lemma isClosedMap_toDual : IsClosedMap (toDual : α → αᵒᵈ) := IsClosedMap
 lemma isClosedMap_ofDual : IsClosedMap (ofDual : αᵒᵈ → α) := IsClosedMap.id
 #align is_closed_map_of_dual isClosedMap_ofDual
 
-theorem nhds_toDual (a : α) : 𝓝 (toDual a) = map toDual (𝓝 a) := rfl
+lemma nhds_toDual (a : α) : 𝓝 (toDual a) = map toDual (𝓝 a) := rfl
 #align nhds_to_dual nhds_toDual
 
-theorem nhds_ofDual (a : α) : 𝓝 (ofDual a) = map ofDual (𝓝 a) := rfl
+lemma nhds_ofDual (a : α) : 𝓝 (ofDual a) = map ofDual (𝓝 a) := rfl
 #align nhds_of_dual nhds_ofDual
 
 end
@@ -222,12 +222,12 @@ variable [TopologicalSpace α]
 /-
 The 𝓝 filter and the subspace topology.
 -/
-theorem mem_nhds_subtype (s : Set α) (a : { x // x ∈ s }) (t : Set { x // x ∈ s }) :
+lemma mem_nhds_subtype (s : Set α) (a : { x // x ∈ s }) (t : Set { x // x ∈ s }) :
     t ∈ 𝓝 a ↔ ∃ u ∈ 𝓝 (a : α), Subtype.val ⁻¹' u ⊆ t :=
   mem_nhds_induced _ a t
 #align mem_nhds_subtype mem_nhds_subtype
 
-theorem nhds_subtype (s : Set α) (a : { x // x ∈ s }) : 𝓝 a = comap (↑) (𝓝 (a : α)) :=
+lemma nhds_subtype (s : Set α) (a : { x // x ∈ s }) : 𝓝 a = comap (↑) (𝓝 (a : α)) :=
   nhds_induced _ a
 #align nhds_subtype nhds_subtype
 
@@ -293,7 +293,7 @@ lemma isClosed_iff {s : Set (CofiniteTopology α)} : IsClosed s ↔ s = univ ∨
   simp only [← isOpen_compl_iff, isOpen_iff', compl_compl, compl_empty_iff]
 #align cofinite_topology.is_closed_iff CofiniteTopology.isClosed_iff
 
-theorem nhds_eq (a : CofiniteTopology α) : 𝓝 a = pure a ⊔ cofinite := by
+lemma nhds_eq (a : CofiniteTopology α) : 𝓝 a = pure a ⊔ cofinite := by
   ext U
   rw [mem_nhds_iff]
   constructor
@@ -405,12 +405,12 @@ lemma Continuous.prod_mk {f : γ → α} {g : γ → β} (hf : Continuous f) (hg
 #align continuous.prod_mk Continuous.prod_mk
 
 @[continuity]
-theorem Continuous.Prod.mk (a : α) : Continuous fun b : β => (a, b) :=
+lemma Continuous.Prod.mk (a : α) : Continuous fun b : β => (a, b) :=
   continuous_const.prod_mk continuous_id
 #align continuous.prod.mk Continuous.Prod.mk
 
 @[continuity]
-theorem Continuous.Prod.mk_left (b : β) : Continuous fun a : α => (a, b) :=
+lemma Continuous.Prod.mk_left (b : β) : Continuous fun a : α => (a, b) :=
   continuous_id.prod_mk continuous_const
 #align continuous.prod.mk_left Continuous.Prod.mk_left
 
@@ -517,7 +517,7 @@ lemma nhds_prod_eq {a : α} {b : β} : 𝓝 (a, b) = 𝓝 a ×ˢ 𝓝 b := by
 #align nhds_prod_eq nhds_prod_eq
 
 -- porting note: moved from `topology.continuous_on`
-theorem nhdsWithin_prod_eq (a : α) (b : β) (s : Set α) (t : Set β) :
+lemma nhdsWithin_prod_eq (a : α) (b : β) (s : Set α) (t : Set β) :
     𝓝[s ×ˢ t] (a, b) = 𝓝[s] a ×ˢ 𝓝[t] b := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 #align nhds_within_prod_eq nhdsWithin_prod_eq
@@ -584,7 +584,7 @@ lemma Filter.Eventually.prod_nhds {p : α → Prop} {q : β → Prop} {a : α} {
   prod_mem_nhds ha hb
 #align filter.eventually.prod_nhds Filter.Eventually.prod_nhds
 
-theorem nhds_swap (a : α) (b : β) : 𝓝 (a, b) = (𝓝 (b, a)).map Prod.swap := by
+lemma nhds_swap (a : α) (b : β) : 𝓝 (a, b) = (𝓝 (b, a)).map Prod.swap := by
   rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
 #align nhds_swap nhds_swap
 
@@ -668,7 +668,7 @@ lemma isOpen_prod_iff {s : Set (α × β)} :
 #align is_open_prod_iff isOpen_prod_iff
 
 /-- A product of induced topologies is induced by the product map -/
-theorem prod_induced_induced (f : α → β) (g : γ → δ) :
+lemma prod_induced_induced (f : α → β) (g : γ → δ) :
     @instTopologicalSpaceProd α γ (induced f ‹_›) (induced g ‹_›) =
       induced (fun p => (f p.1, g p.2)) instTopologicalSpaceProd := by
   delta instTopologicalSpaceProd
@@ -692,7 +692,7 @@ lemma exists_nhds_square {s : Set (α × α)} {x : α} (hx : s ∈ 𝓝 (x, x)) 
 
 /-- `Prod.fst` maps neighborhood of `x : α × β` within the section `Prod.snd ⁻¹' {x.2}`
 to `𝓝 x.1`. -/
-theorem map_fst_nhdsWithin (x : α × β) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.2}] x) = 𝓝 x.1 := by
+lemma map_fst_nhdsWithin (x : α × β) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.2}] x) = 𝓝 x.1 := by
   refine' le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => _
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
@@ -702,7 +702,7 @@ theorem map_fst_nhdsWithin (x : α × β) : map Prod.fst (𝓝[Prod.snd ⁻¹' {
 #align map_fst_nhds_within map_fst_nhdsWithin
 
 @[simp]
-theorem map_fst_nhds (x : α × β) : map Prod.fst (𝓝 x) = 𝓝 x.1 :=
+lemma map_fst_nhds (x : α × β) : map Prod.fst (𝓝 x) = 𝓝 x.1 :=
   le_antisymm continuousAt_fst <| (map_fst_nhdsWithin x).symm.trans_le (map_mono inf_le_left)
 #align map_fst_nhds map_fst_nhds
 
@@ -713,7 +713,7 @@ lemma isOpenMap_fst : IsOpenMap (@Prod.fst α β) :=
 
 /-- `Prod.snd` maps neighborhood of `x : α × β` within the section `Prod.fst ⁻¹' {x.1}`
 to `𝓝 x.2`. -/
-theorem map_snd_nhdsWithin (x : α × β) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.1}] x) = 𝓝 x.2 := by
+lemma map_snd_nhdsWithin (x : α × β) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.1}] x) = 𝓝 x.2 := by
   refine' le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => _
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
@@ -723,7 +723,7 @@ theorem map_snd_nhdsWithin (x : α × β) : map Prod.snd (𝓝[Prod.fst ⁻¹' {
 #align map_snd_nhds_within map_snd_nhdsWithin
 
 @[simp]
-theorem map_snd_nhds (x : α × β) : map Prod.snd (𝓝 x) = 𝓝 x.2 :=
+lemma map_snd_nhds (x : α × β) : map Prod.snd (𝓝 x) = 𝓝 x.2 :=
   le_antisymm continuousAt_snd <| (map_snd_nhdsWithin x).symm.trans_le (map_mono inf_le_left)
 #align map_snd_nhds map_snd_nhds
 
@@ -758,22 +758,22 @@ lemma closure_prod_eq {s : Set α} {t : Set β} : closure (s ×ˢ t) = closure s
     simp_rw [mem_prod, mem_closure_iff_nhdsWithin_neBot, nhdsWithin_prod_eq, prod_neBot]
 #align closure_prod_eq closure_prod_eq
 
-theorem interior_prod_eq (s : Set α) (t : Set β) : interior (s ×ˢ t) = interior s ×ˢ interior t :=
+lemma interior_prod_eq (s : Set α) (t : Set β) : interior (s ×ˢ t) = interior s ×ˢ interior t :=
   Set.ext fun ⟨a, b⟩ => by simp only [mem_interior_iff_mem_nhds, mem_prod, prod_mem_nhds_iff]
 #align interior_prod_eq interior_prod_eq
 
-theorem frontier_prod_eq (s : Set α) (t : Set β) :
+lemma frontier_prod_eq (s : Set α) (t : Set β) :
     frontier (s ×ˢ t) = closure s ×ˢ frontier t ∪ frontier s ×ˢ closure t := by
   simp only [frontier, closure_prod_eq, interior_prod_eq, prod_diff_prod]
 #align frontier_prod_eq frontier_prod_eq
 
 @[simp]
-theorem frontier_prod_univ_eq (s : Set α) : frontier (s ×ˢ (univ : Set β)) = frontier s ×ˢ univ :=
+lemma frontier_prod_univ_eq (s : Set α) : frontier (s ×ˢ (univ : Set β)) = frontier s ×ˢ univ :=
   by simp [frontier_prod_eq]
 #align frontier_prod_univ_eq frontier_prod_univ_eq
 
 @[simp]
-theorem frontier_univ_prod_eq (s : Set β) : frontier ((univ : Set α) ×ˢ s) = univ ×ˢ frontier s :=
+lemma frontier_univ_prod_eq (s : Set β) : frontier ((univ : Set α) ×ˢ s) = univ ×ˢ frontier s :=
   by simp [frontier_prod_eq]
 #align frontier_univ_prod_eq frontier_univ_prod_eq
 
@@ -844,7 +844,7 @@ lemma embedding_graph {f : α → β} (hf : Continuous f) : Embedding fun x => (
   embedding_of_embedding_compose (continuous_id.prod_mk hf) continuous_fst embedding_id
 #align embedding_graph embedding_graph
 
-theorem embedding_prod_mk (x : α) : Embedding (Prod.mk x : β → α × β) :=
+lemma embedding_prod_mk (x : α) : Embedding (Prod.mk x : β → α × β) :=
   embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
 
 end Prod
@@ -950,11 +950,11 @@ lemma closedEmbedding_inr : ClosedEmbedding (inr : β → Sum α β) :=
   ⟨embedding_inr, isClosed_range_inr⟩
 #align closed_embedding_inr closedEmbedding_inr
 
-theorem nhds_inl (x : α) : 𝓝 (inl x : Sum α β) = map inl (𝓝 x) :=
+lemma nhds_inl (x : α) : 𝓝 (inl x : Sum α β) = map inl (𝓝 x) :=
   (openEmbedding_inl.map_nhds_eq _).symm
 #align nhds_inl nhds_inl
 
-theorem nhds_inr (x : β) : 𝓝 (inr x : Sum α β) = map inr (𝓝 x) :=
+lemma nhds_inr (x : β) : 𝓝 (inr x : Sum α β) = map inr (𝓝 x) :=
   (openEmbedding_inr.map_nhds_eq _).symm
 #align nhds_inr nhds_inr
 
@@ -1005,7 +1005,7 @@ lemma embedding_subtype_val : Embedding ((↑) : Subtype p → α) :=
   ⟨inducing_subtype_val, Subtype.coe_injective⟩
 #align embedding_subtype_coe embedding_subtype_val
 
-theorem closedEmbedding_subtype_val (h : IsClosed { a | p a }) :
+lemma closedEmbedding_subtype_val (h : IsClosed { a | p a }) :
     ClosedEmbedding ((↑) : Subtype p → α) :=
   ⟨embedding_subtype_val, by rwa [Subtype.range_coe_subtype]⟩
 #align closed_embedding_subtype_coe closedEmbedding_subtype_val
@@ -1214,12 +1214,12 @@ lemma continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := b
 #align continuous_pi_iff continuous_pi_iff
 
 @[continuity]
-theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
+lemma continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
   continuous_pi_iff.2 h
 #align continuous_pi continuous_pi
 
 @[continuity]
-theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, π i => p i :=
+lemma continuous_apply (i : ι) : Continuous fun p : ∀ i, π i => p i :=
   continuous_iInf_dom continuous_induced_dom
 #align continuous_apply continuous_apply
 
@@ -1229,7 +1229,7 @@ lemma continuous_apply_apply {ρ : κ → ι → Type*} [∀ j i, TopologicalSpa
   (continuous_apply i).comp (continuous_apply j)
 #align continuous_apply_apply continuous_apply_apply
 
-theorem continuousAt_apply (i : ι) (x : ∀ i, π i) : ContinuousAt (fun p : ∀ i, π i => p i) x :=
+lemma continuousAt_apply (i : ι) (x : ∀ i, π i) : ContinuousAt (fun p : ∀ i, π i => p i) x :=
   (continuous_apply i).continuousAt
 #align continuous_at_apply continuousAt_apply
 
@@ -1522,20 +1522,20 @@ lemma embedding_sigmaMk {i : ι} : Embedding (@Sigma.mk ι σ i) :=
   closedEmbedding_sigmaMk.1
 #align embedding_sigma_mk embedding_sigmaMk
 
-theorem Sigma.nhds_mk (i : ι) (x : σ i) : 𝓝 (⟨i, x⟩ : Sigma σ) = Filter.map (Sigma.mk i) (𝓝 x) :=
+lemma Sigma.nhds_mk (i : ι) (x : σ i) : 𝓝 (⟨i, x⟩ : Sigma σ) = Filter.map (Sigma.mk i) (𝓝 x) :=
   (openEmbedding_sigmaMk.map_nhds_eq x).symm
 #align sigma.nhds_mk Sigma.nhds_mk
 
-theorem Sigma.nhds_eq (x : Sigma σ) : 𝓝 x = Filter.map (Sigma.mk x.1) (𝓝 x.2) := by
+lemma Sigma.nhds_eq (x : Sigma σ) : 𝓝 x = Filter.map (Sigma.mk x.1) (𝓝 x.2) := by
   cases x
   apply Sigma.nhds_mk
 #align sigma.nhds_eq Sigma.nhds_eq
 
-theorem comap_sigmaMk_nhds (i : ι) (x : σ i) : comap (Sigma.mk i) (𝓝 ⟨i, x⟩) = 𝓝 x :=
+lemma comap_sigmaMk_nhds (i : ι) (x : σ i) : comap (Sigma.mk i) (𝓝 ⟨i, x⟩) = 𝓝 x :=
   (embedding_sigmaMk.nhds_eq_comap _).symm
 #align comap_sigma_mk_nhds comap_sigmaMk_nhds
 
-theorem isOpen_sigma_fst_preimage (s : Set ι) : IsOpen (Sigma.fst ⁻¹' s : Set (Σ a, σ a)) := by
+lemma isOpen_sigma_fst_preimage (s : Set ι) : IsOpen (Sigma.fst ⁻¹' s : Set (Σ a, σ a)) := by
   rw [← biUnion_of_singleton s, preimage_iUnion₂]
   simp only [← range_sigmaMk]
   exact isOpen_biUnion fun _ _ => isOpen_range_sigmaMk
@@ -1644,13 +1644,13 @@ section Monad
 
 variable [TopologicalSpace α] {β : Set α} {γ : Set β}
 
-theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
+lemma IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
   rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
   convert IsOpen.inter hβ hδ
   ext
   exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
 
-theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
+lemma IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
   rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
   convert IsClosed.inter hβ hδ
   ext

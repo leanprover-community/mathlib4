@@ -48,7 +48,7 @@ lemma expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^
 #align polynomial.expand_eq_sum Polynomial.expand_eq_sum
 
 @[simp]
-theorem expand_C (r : R) : expand R p (C r) = C r :=
+lemma expand_C (r : R) : expand R p (C r) = C r :=
   eval₂_C _ _
 set_option linter.uppercaseLean3 false in
 #align polynomial.expand_C Polynomial.expand_C
@@ -60,37 +60,37 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.expand_X Polynomial.expand_X
 
 @[simp]
-theorem expand_monomial (r : R) : expand R p (monomial q r) = monomial (q * p) r := by
+lemma expand_monomial (r : R) : expand R p (monomial q r) = monomial (q * p) r := by
   simp_rw [← smul_X_eq_monomial, AlgHom.map_smul, AlgHom.map_pow, expand_X, mul_comm, pow_mul]
 #align polynomial.expand_monomial Polynomial.expand_monomial
 
-theorem expand_expand (f : R[X]) : expand R p (expand R q f) = expand R (p * q) f :=
+lemma expand_expand (f : R[X]) : expand R p (expand R q f) = expand R (p * q) f :=
   Polynomial.induction_on f (fun r => by simp_rw [expand_C])
     (fun f g ihf ihg => by simp_rw [AlgHom.map_add, ihf, ihg]) fun n r _ => by
     simp_rw [AlgHom.map_mul, expand_C, AlgHom.map_pow, expand_X, AlgHom.map_pow, expand_X, pow_mul]
 #align polynomial.expand_expand Polynomial.expand_expand
 
-theorem expand_mul (f : R[X]) : expand R (p * q) f = expand R p (expand R q f) :=
+lemma expand_mul (f : R[X]) : expand R (p * q) f = expand R p (expand R q f) :=
   (expand_expand p q f).symm
 #align polynomial.expand_mul Polynomial.expand_mul
 
 @[simp]
-theorem expand_zero (f : R[X]) : expand R 0 f = C (eval 1 f) := by simp [expand]
+lemma expand_zero (f : R[X]) : expand R 0 f = C (eval 1 f) := by simp [expand]
 #align polynomial.expand_zero Polynomial.expand_zero
 
 @[simp]
-theorem expand_one (f : R[X]) : expand R 1 f = f :=
+lemma expand_one (f : R[X]) : expand R 1 f = f :=
   Polynomial.induction_on f (fun r => by rw [expand_C])
     (fun f g ihf ihg => by rw [AlgHom.map_add, ihf, ihg]) fun n r _ => by
     rw [AlgHom.map_mul, expand_C, AlgHom.map_pow, expand_X, pow_one]
 #align polynomial.expand_one Polynomial.expand_one
 
-theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
+lemma expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
   Nat.recOn q (by rw [pow_zero, expand_one, Function.iterate_zero, id]) fun n ih => by
     rw [Function.iterate_succ_apply', pow_succ, expand_mul, ih]
 #align polynomial.expand_pow Polynomial.expand_pow
 
-theorem derivative_expand (f : R[X]) : Polynomial.derivative (expand R p f) =
+lemma derivative_expand (f : R[X]) : Polynomial.derivative (expand R p f) =
     expand R p (Polynomial.derivative f) * (p * (X ^ (p - 1) : R[X])) := by
   rw [coe_expand, derivative_eval₂_C, derivative_pow, C_eq_nat_cast, derivative_X, mul_one]
 #align polynomial.derivative_expand Polynomial.derivative_expand
@@ -148,7 +148,7 @@ lemma expand_eq_C {p : ℕ} (hp : 0 < p) {f : R[X]} {r : R} : expand R p f = C r
 set_option linter.uppercaseLean3 false in
 #align polynomial.expand_eq_C Polynomial.expand_eq_C
 
-theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
+lemma natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
   cases' p.eq_zero_or_pos with hp hp
   · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
@@ -185,7 +185,7 @@ lemma map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :
 #align polynomial.map_expand Polynomial.map_expand
 
 @[simp]
-theorem expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval (r ^ p) P := by
+lemma expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval (r ^ p) P := by
   refine' Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => _) fun n a _ => by simp
   rw [AlgHom.map_add, eval_add, eval_add, hf, hg]
 #align polynomial.expand_eval Polynomial.expand_eval
@@ -242,7 +242,7 @@ lemma expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative 
 
 variable [hp : Fact p.Prime]
 
-theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
+lemma expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine' f.induction_on' (fun a b ha hb => _) fun n a => _
   · rw [AlgHom.map_add, Polynomial.map_add, ha, hb, add_pow_char]
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
@@ -250,7 +250,7 @@ theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := b
     ring
 #align polynomial.expand_char Polynomial.expand_char
 
-theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
+lemma map_expand_pow_char (f : R[X]) (n : ℕ) :
     map (frobenius R p ^ n) (expand R (p ^ n) f) = f ^ p ^ n := by
   induction' n with _ n_ih
   · simp [RingHom.one_def]

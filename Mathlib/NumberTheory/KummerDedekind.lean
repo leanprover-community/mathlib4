@@ -82,11 +82,11 @@ lemma mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R
   ⟨fun h => h, fun h => h⟩
 #align mem_conductor_iff mem_conductor_iff
 
-theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
+lemma conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
   simp only [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
 #align conductor_eq_top_of_adjoin_eq_top conductor_eq_top_of_adjoin_eq_top
 
-theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
+lemma conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.gen = ⊤ :=
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
 #align conductor_eq_top_of_power_basis conductor_eq_top_of_powerBasis
 
@@ -204,7 +204,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
 -- Porting note: on-line linter fails with `failed to synthesize` instance
 -- but #lint does not report any problem
 @[simp, nolint simpNF]
-theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
+lemma quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
     quotAdjoinEquivQuotMap hx h_alg (Ideal.Quotient.mk (I.map (algebraMap R R<x>)) a) =
       Ideal.Quotient.mk (I.map (algebraMap R S)) ↑a := rfl
@@ -251,7 +251,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
 
 /-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
     bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
-theorem multiplicity_factors_map_eq_multiplicity (hI : IsMaximal I) (hI' : I ≠ ⊥)
+lemma multiplicity_factors_map_eq_multiplicity (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) {J : Ideal S}
     (hJ : J ∈ normalizedFactors (I.map (algebraMap R S))) :
     multiplicity J (I.map (algebraMap R S)) =
@@ -263,7 +263,7 @@ theorem multiplicity_factors_map_eq_multiplicity (hI : IsMaximal I) (hI' : I ≠
 #align kummer_dedekind.multiplicity_factors_map_eq_multiplicity KummerDedekind.multiplicity_factors_map_eq_multiplicity
 
 /-- The **Kummer-Dedekind Theorem**. -/
-theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
+lemma normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     normalizedFactors (I.map (algebraMap R S)) =
       Multiset.map
@@ -307,7 +307,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
       map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)]
 #align kummer_dedekind.normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map KummerDedekind.normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map
 
-theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
+lemma Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x)
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
     Irreducible (I.map (algebraMap R S)) := by

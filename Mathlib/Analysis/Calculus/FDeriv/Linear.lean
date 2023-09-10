@@ -89,7 +89,7 @@ protected lemma ContinuousLinearMap.fderiv : fderiv 𝕜 e x = e :=
   e.hasFDerivAt.fderiv
 #align continuous_linear_map.fderiv ContinuousLinearMap.fderiv
 
-protected theorem ContinuousLinearMap.fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
+protected lemma ContinuousLinearMap.fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 e s x = e := by
   rw [DifferentiableAt.fderivWithin e.differentiableAt hxs]
   exact e.fderiv
@@ -104,46 +104,46 @@ protected lemma ContinuousLinearMap.differentiableOn : DifferentiableOn 𝕜 e s
   e.differentiable.differentiableOn
 #align continuous_linear_map.differentiable_on ContinuousLinearMap.differentiableOn
 
-theorem IsBoundedLinearMap.hasFDerivAtFilter (h : IsBoundedLinearMap 𝕜 f) :
+lemma IsBoundedLinearMap.hasFDerivAtFilter (h : IsBoundedLinearMap 𝕜 f) :
     HasFDerivAtFilter f h.toContinuousLinearMap x L :=
   h.toContinuousLinearMap.hasFDerivAtFilter
 #align is_bounded_linear_map.has_fderiv_at_filter IsBoundedLinearMap.hasFDerivAtFilter
 
-theorem IsBoundedLinearMap.hasFDerivWithinAt (h : IsBoundedLinearMap 𝕜 f) :
+lemma IsBoundedLinearMap.hasFDerivWithinAt (h : IsBoundedLinearMap 𝕜 f) :
     HasFDerivWithinAt f h.toContinuousLinearMap s x :=
   h.hasFDerivAtFilter
 #align is_bounded_linear_map.has_fderiv_within_at IsBoundedLinearMap.hasFDerivWithinAt
 
-theorem IsBoundedLinearMap.hasFDerivAt (h : IsBoundedLinearMap 𝕜 f) :
+lemma IsBoundedLinearMap.hasFDerivAt (h : IsBoundedLinearMap 𝕜 f) :
     HasFDerivAt f h.toContinuousLinearMap x :=
   h.hasFDerivAtFilter
 #align is_bounded_linear_map.has_fderiv_at IsBoundedLinearMap.hasFDerivAt
 
-theorem IsBoundedLinearMap.differentiableAt (h : IsBoundedLinearMap 𝕜 f) : DifferentiableAt 𝕜 f x :=
+lemma IsBoundedLinearMap.differentiableAt (h : IsBoundedLinearMap 𝕜 f) : DifferentiableAt 𝕜 f x :=
   h.hasFDerivAt.differentiableAt
 #align is_bounded_linear_map.differentiable_at IsBoundedLinearMap.differentiableAt
 
-theorem IsBoundedLinearMap.differentiableWithinAt (h : IsBoundedLinearMap 𝕜 f) :
+lemma IsBoundedLinearMap.differentiableWithinAt (h : IsBoundedLinearMap 𝕜 f) :
     DifferentiableWithinAt 𝕜 f s x :=
   h.differentiableAt.differentiableWithinAt
 #align is_bounded_linear_map.differentiable_within_at IsBoundedLinearMap.differentiableWithinAt
 
-theorem IsBoundedLinearMap.fderiv (h : IsBoundedLinearMap 𝕜 f) :
+lemma IsBoundedLinearMap.fderiv (h : IsBoundedLinearMap 𝕜 f) :
     fderiv 𝕜 f x = h.toContinuousLinearMap :=
   HasFDerivAt.fderiv h.hasFDerivAt
 #align is_bounded_linear_map.fderiv IsBoundedLinearMap.fderiv
 
-theorem IsBoundedLinearMap.fderivWithin (h : IsBoundedLinearMap 𝕜 f)
+lemma IsBoundedLinearMap.fderivWithin (h : IsBoundedLinearMap 𝕜 f)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = h.toContinuousLinearMap := by
   rw [DifferentiableAt.fderivWithin h.differentiableAt hxs]
   exact h.fderiv
 #align is_bounded_linear_map.fderiv_within IsBoundedLinearMap.fderivWithin
 
-theorem IsBoundedLinearMap.differentiable (h : IsBoundedLinearMap 𝕜 f) : Differentiable 𝕜 f :=
+lemma IsBoundedLinearMap.differentiable (h : IsBoundedLinearMap 𝕜 f) : Differentiable 𝕜 f :=
   fun _ => h.differentiableAt
 #align is_bounded_linear_map.differentiable IsBoundedLinearMap.differentiable
 
-theorem IsBoundedLinearMap.differentiableOn (h : IsBoundedLinearMap 𝕜 f) : DifferentiableOn 𝕜 f s :=
+lemma IsBoundedLinearMap.differentiableOn (h : IsBoundedLinearMap 𝕜 f) : DifferentiableOn 𝕜 f s :=
   h.differentiable.differentiableOn
 #align is_bounded_linear_map.differentiable_on IsBoundedLinearMap.differentiableOn
 

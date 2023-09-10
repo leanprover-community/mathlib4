@@ -103,7 +103,7 @@ variable [dec : ∀ x : M, Decidable (x = 0)]
 
 open Ideal Submodule.IsPrincipal
 
-theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
+lemma _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     torsionOf R M x = span {p ^ pOrder hM x} := by
   dsimp only [pOrder]
   rw [← (torsionOf R M x).span_singleton_generator, Ideal.span_singleton_eq_span_singleton, ←
@@ -167,7 +167,7 @@ open Finset Multiset
 set_option maxHeartbeats 800000 in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p ^ e i)` for some `e i`.-/
-theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoid.powers p))
+lemma torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoid.powers p))
     [h' : Module.Finite R N] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'

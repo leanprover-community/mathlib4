@@ -56,7 +56,7 @@ lemma toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
 --  simp [bits_to_nat_to_list]
 --  unfold bits_to_nat add_lsb List.foldl cond
 --  simp [cond_to_bool_mod_two]
-theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ Vector.nil) = n % 2 := by
+lemma bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ Vector.nil) = n % 2 := by
   simp [bitsToNat_toList]
   unfold bitsToNat addLsb List.foldl
   simp [Nat.cond_decide_mod_two, -Bool.cond_decide]

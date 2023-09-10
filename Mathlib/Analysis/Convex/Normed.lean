@@ -36,7 +36,7 @@ variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s t : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
 and `convexOn_univ_norm`. -/
-theorem convexOn_norm (hs : Convex ℝ s) : ConvexOn ℝ s norm :=
+lemma convexOn_norm (hs : Convex ℝ s) : ConvexOn ℝ s norm :=
   ⟨hs, fun x _ y _ a b ha hb _ =>
     calc
       ‖a • x + b • y‖ ≤ ‖a • x‖ + ‖b • y‖ := norm_add_le _ _
@@ -50,29 +50,29 @@ lemma convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 #align convex_on_univ_norm convexOn_univ_norm
 
-theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
+lemma convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
   simpa [dist_eq_norm, preimage_preimage] using
     (convexOn_norm (hs.translate (-z))).comp_affineMap (AffineMap.id ℝ E - AffineMap.const ℝ E z)
 #align convex_on_dist convexOn_dist
 
-theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
+lemma convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
   convexOn_dist z convex_univ
 #align convex_on_univ_dist convexOn_univ_dist
 
-theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
+lemma convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
   simpa only [Metric.ball, sep_univ] using (convexOn_univ_dist a).convex_lt r
 #align convex_ball convex_ball
 
-theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
+lemma convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
 #align convex_closed_ball convex_closedBall
 
-theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
+lemma Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
   rw [← add_ball_zero]
   exact hs.add (convex_ball 0 _)
 #align convex.thickening Convex.thickening
 
-theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
+lemma Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
   obtain hδ | hδ := le_total 0 δ
   · rw [cthickening_eq_iInter_thickening hδ]
     exact convex_iInter₂ fun _ _ => hs.thickening _
@@ -99,7 +99,7 @@ lemma convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHull 
 
 /-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
-theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
+lemma convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
   refine' (EMetric.diam_le fun x hx y hy => _).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
   rcases convexHull_exists_dist_ge2 hx hy with ⟨x', hx', y', hy', H⟩
   rw [edist_dist]
@@ -110,7 +110,7 @@ theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric
 
 /-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
-theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.diam s := by
+lemma convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.diam s := by
   simp only [Metric.diam, convexHull_ediam]
 #align convex_hull_diam convexHull_diam
 
@@ -136,7 +136,7 @@ lemma dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
 #align dist_add_dist_of_mem_segment dist_add_dist_of_mem_segment
 
 /-- The set of vectors in the same ray as `x` is connected. -/
-theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
+lemma isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
   exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn

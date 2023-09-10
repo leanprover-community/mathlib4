@@ -51,7 +51,7 @@ lemma card_le : #L ≤ #R := by
 variable (L)
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
-theorem card (hS : S ≤ R⁰) : #R = #L :=
+lemma card (hS : S ≤ R⁰) : #R = #L :=
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
 #align is_localization.card IsLocalization.card
 

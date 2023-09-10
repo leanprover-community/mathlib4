@@ -558,7 +558,7 @@ lemma extension_coe [SeparatedSpace β] (hf : UniformContinuous f) (a : α) :
 
 variable [SeparatedSpace β] [CompleteSpace β]
 
-theorem extension_unique (hf : UniformContinuous f) {g : Completion α → β}
+lemma extension_unique (hf : UniformContinuous f) {g : Completion α → β}
     (hg : UniformContinuous g) (h : ∀ a : α, f a = g (a : Completion α)) :
     Completion.extension f = g :=
   cPkg.extend_unique hf hg h
@@ -592,7 +592,7 @@ lemma continuous_map : Continuous (Completion.map f) :=
 
 /- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
 Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
-theorem map_coe (hf : UniformContinuous f) (a : α) : (Completion.map f) a = f a :=
+lemma map_coe (hf : UniformContinuous f) (a : α) : (Completion.map f) a = f a :=
   cPkg.map_coe cPkg hf a
 #align uniform_space.completion.map_coe UniformSpace.Completion.map_coe
 
@@ -682,7 +682,7 @@ variable [SeparatedSpace γ] {f}
 
 /- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
 Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
-theorem extension₂_coe_coe (hf : UniformContinuous₂ f) (a : α) (b : β) :
+lemma extension₂_coe_coe (hf : UniformContinuous₂ f) (a : α) (b : β) :
     Completion.extension₂ f a b = f a b :=
   cPkg.extension₂_coe_coe cPkg hf a b
 #align uniform_space.completion.extension₂_coe_coe UniformSpace.Completion.extension₂_coe_coe
@@ -706,7 +706,7 @@ protected def map₂ (f : α → β → γ) : Completion α → Completion β �
   cPkg.map₂ cPkg cPkg f
 #align uniform_space.completion.map₂ UniformSpace.Completion.map₂
 
-theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (Completion.map₂ f) :=
+lemma uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (Completion.map₂ f) :=
   cPkg.uniformContinuous_map₂ cPkg cPkg f
 #align uniform_space.completion.uniform_continuous_map₂ UniformSpace.Completion.uniformContinuous_map₂
 
@@ -716,7 +716,7 @@ lemma continuous_map₂ {δ} [TopologicalSpace δ] {f : α → β → γ} {a : �
   cPkg.continuous_map₂ cPkg cPkg ha hb
 #align uniform_space.completion.continuous_map₂ UniformSpace.Completion.continuous_map₂
 
-theorem map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformContinuous₂ f) :
+lemma map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformContinuous₂ f) :
     Completion.map₂ f (a : Completion α) (b : Completion β) = f a b :=
   cPkg.map₂_coe_coe cPkg cPkg a b f hf
 #align uniform_space.completion.map₂_coe_coe UniformSpace.Completion.map₂_coe_coe

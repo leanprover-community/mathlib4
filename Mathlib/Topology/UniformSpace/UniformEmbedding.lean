@@ -255,7 +255,7 @@ lemma closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α →
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩
 #align closure_image_mem_nhds_of_uniform_inducing closure_image_mem_nhds_of_uniformInducing
 
-theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : UniformEmbedding e)
+lemma uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : UniformEmbedding e)
     (de : DenseEmbedding e) : UniformEmbedding (DenseEmbedding.subtypeEmb p e) :=
   { comap_uniformity := by
       simp [comap_comap, (· ∘ ·), DenseEmbedding.subtypeEmb, uniformity_subtype,
@@ -489,7 +489,7 @@ lemma uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuous 
 
 variable [SeparatedSpace γ]
 
-theorem uniformly_extend_of_ind (b : β) : ψ (e b) = f b :=
+lemma uniformly_extend_of_ind (b : β) : ψ (e b) = f b :=
   DenseInducing.extend_eq_at _ h_f.continuous.continuousAt
 #align uniformly_extend_of_ind uniformly_extend_of_ind
 

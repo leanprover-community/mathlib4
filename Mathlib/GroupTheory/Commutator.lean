@@ -34,7 +34,7 @@ lemma commutatorElement_eq_one_iff_commute : ⁅g₁, g₂⁆ = 1 ↔ Commute g�
   commutatorElement_eq_one_iff_mul_comm
 #align commutator_element_eq_one_iff_commute commutatorElement_eq_one_iff_commute
 
-theorem Commute.commutator_eq (h : Commute g₁ g₂) : ⁅g₁, g₂⁆ = 1 :=
+lemma Commute.commutator_eq (h : Commute g₁ g₂) : ⁅g₁, g₂⁆ = 1 :=
   commutatorElement_eq_one_iff_commute.mpr h
 #align commute.commutator_eq Commute.commutator_eq
 
@@ -75,14 +75,14 @@ instance commutator : Bracket (Subgroup G) (Subgroup G) :=
   ⟨fun H₁ H₂ => closure { g | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = g }⟩
 #align subgroup.commutator Subgroup.commutator
 
-theorem commutator_def (H₁ H₂ : Subgroup G) :
+lemma commutator_def (H₁ H₂ : Subgroup G) :
     ⁅H₁, H₂⁆ = closure { g | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = g } :=
   rfl
 #align subgroup.commutator_def Subgroup.commutator_def
 
 variable {g₁ g₂ g₃} {H₁ H₂ H₃ K₁ K₂ : Subgroup G}
 
-theorem commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) : ⁅g₁, g₂⁆ ∈ ⁅H₁, H₂⁆ :=
+lemma commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) : ⁅g₁, g₂⁆ ∈ ⁅H₁, H₂⁆ :=
   subset_closure ⟨g₁, h₁, g₂, h₂, rfl⟩
 #align subgroup.commutator_mem_commutator Subgroup.commutator_mem_commutator
 
@@ -91,7 +91,7 @@ lemma commutator_le : ⁅H₁, H₂⁆ ≤ H₃ ↔ ∀ g₁ ∈ H₁, ∀ g₂ 
     ⟨fun h a b c d => h ⟨a, b, c, d, rfl⟩, fun h _g ⟨a, b, c, d, h_eq⟩ => h_eq ▸ h a b c d⟩
 #align subgroup.commutator_le Subgroup.commutator_le
 
-theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁, H₂⁆ ≤ ⁅K₁, K₂⁆ :=
+lemma commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁, H₂⁆ ≤ ⁅K₁, K₂⁆ :=
   commutator_le.mpr fun _g₁ hg₁ _g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
 #align subgroup.commutator_mono Subgroup.commutator_mono
 
@@ -103,7 +103,7 @@ lemma commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤
 #align subgroup.commutator_eq_bot_iff_le_centralizer Subgroup.commutator_eq_bot_iff_le_centralizer
 
 /-- **The Three Subgroups Lemma** (via the Hall-Witt identity) -/
-theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
+lemma commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
     ⁅⁅H₁, H₂⁆, H₃⁆ = ⊥ := by
   simp_rw [commutator_eq_bot_iff_le_centralizer, commutator_le,
     mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2 ⊢
@@ -168,7 +168,7 @@ lemma commutator_le_inf [Normal H₁] [Normal H₂] : ⁅H₁, H₂⁆ ≤ H₁ 
 
 end Normal
 
-theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ := by
+lemma map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ := by
   simp_rw [le_antisymm_iff, map_le_iff_le_comap, commutator_le, mem_comap, map_commutatorElement]
   constructor
   · intro p hp q hq
@@ -194,7 +194,7 @@ instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characte
       (characteristic_iff_le_map.mp h₂ ϕ)
 #align subgroup.commutator_characteristic Subgroup.commutator_characteristic
 
-theorem commutator_prod_prod (K₁ K₂ : Subgroup G') :
+lemma commutator_prod_prod (K₁ K₂ : Subgroup G') :
     ⁅H₁.prod K₁, H₂.prod K₂⁆ = ⁅H₁, H₂⁆.prod ⁅K₁, K₂⁆ := by
   apply le_antisymm
   · rw [commutator_le]

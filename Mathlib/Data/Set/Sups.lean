@@ -181,7 +181,7 @@ lemma iUnion_image_sup_right : ⋃ b ∈ t, (· ⊔ b) '' s = s ⊻ t :=
 #align set.Union_image_sup_right Set.iUnion_image_sup_right
 
 @[simp]
-theorem image_sup_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊔ x_1) s t = s ⊻ t := by
+lemma image_sup_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊔ x_1) s t = s ⊻ t := by
   have : (s ×ˢ t).image (uncurry (· ⊔ ·)) = Set.image2 (fun x x_1 => x ⊔ x_1) s t := by
     simp only [ge_iff_le, image_uncurry_prod]
   rw [← this]
@@ -336,7 +336,7 @@ lemma iUnion_image_inf_right : ⋃ b ∈ t, (· ⊓ b) '' s = s ⊼ t :=
 #align set.Union_image_inf_right Set.iUnion_image_inf_right
 
 @[simp]
-theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by
+lemma image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by
   have : (s ×ˢ t).image (uncurry (· ⊓ ·)) = Set.image2 (fun x x_1 => x ⊓ x_1) s t := by
     simp only [@ge_iff_le, @Set.image_uncurry_prod]
   rw [← this]

@@ -1150,13 +1150,13 @@ section Left
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
 
 @[to_additive eq_zero_of_add_nonneg_left]
-theorem eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : a = 1 :=
+lemma eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : a = 1 :=
   ha.eq_of_not_lt fun h => hab.not_lt <| mul_lt_one_of_lt_of_le h hb
 #align eq_one_of_one_le_mul_left eq_one_of_one_le_mul_left
 #align eq_zero_of_add_nonneg_left eq_zero_of_add_nonneg_left
 
 @[to_additive]
-theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
+lemma eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
   ha.eq_of_not_gt fun h => hab.not_lt <| one_lt_mul_of_lt_of_le' h hb
 #align eq_one_of_mul_le_one_left eq_one_of_mul_le_one_left
 #align eq_zero_of_add_nonpos_left eq_zero_of_add_nonpos_left
@@ -1168,13 +1168,13 @@ section Right
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
 
 @[to_additive eq_zero_of_add_nonneg_right]
-theorem eq_one_of_one_le_mul_right (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : b = 1 :=
+lemma eq_one_of_one_le_mul_right (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : b = 1 :=
   hb.eq_of_not_lt fun h => hab.not_lt <| Right.mul_lt_one_of_le_of_lt ha h
 #align eq_one_of_one_le_mul_right eq_one_of_one_le_mul_right
 #align eq_zero_of_add_nonneg_right eq_zero_of_add_nonneg_right
 
 @[to_additive]
-theorem eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : b = 1 :=
+lemma eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : b = 1 :=
   hb.eq_of_not_gt fun h => hab.not_lt <| Right.one_lt_mul_of_le_of_lt ha h
 #align eq_one_of_mul_le_one_right eq_one_of_mul_le_one_right
 #align eq_zero_of_add_nonpos_right eq_zero_of_add_nonpos_right
@@ -1371,26 +1371,26 @@ section Left
 variable [CovariantClass α α (· * ·) (· < ·)]
 
 @[to_additive const_add]
-theorem StrictMono.const_mul' (hf : StrictMono f) (c : α) : StrictMono fun x => c * f x :=
+lemma StrictMono.const_mul' (hf : StrictMono f) (c : α) : StrictMono fun x => c * f x :=
   fun _ _ ab => mul_lt_mul_left' (hf ab) c
 #align strict_mono.const_mul' StrictMono.const_mul'
 #align strict_mono.const_add StrictMono.const_add
 
 @[to_additive const_add]
-theorem StrictMonoOn.const_mul' (hf : StrictMonoOn f s) (c : α) :
+lemma StrictMonoOn.const_mul' (hf : StrictMonoOn f s) (c : α) :
     StrictMonoOn (fun x => c * f x) s :=
   fun _ ha _ hb ab => mul_lt_mul_left' (hf ha hb ab) c
 #align strict_mono_on.const_mul' StrictMonoOn.const_mul'
 #align strict_mono_on.const_add StrictMonoOn.const_add
 
 @[to_additive const_add]
-theorem StrictAnti.const_mul' (hf : StrictAnti f) (c : α) : StrictAnti fun x => c * f x :=
+lemma StrictAnti.const_mul' (hf : StrictAnti f) (c : α) : StrictAnti fun x => c * f x :=
   fun _ _ ab => mul_lt_mul_left' (hf ab) c
 #align strict_anti.const_mul' StrictAnti.const_mul'
 #align strict_anti.const_add StrictAnti.const_add
 
 @[to_additive const_add]
-theorem StrictAntiOn.const_mul' (hf : StrictAntiOn f s) (c : α) :
+lemma StrictAntiOn.const_mul' (hf : StrictAntiOn f s) (c : α) :
     StrictAntiOn (fun x => c * f x) s :=
   fun _ ha _ hb ab => mul_lt_mul_left' (hf ha hb ab) c
 #align strict_anti_on.const_mul' StrictAntiOn.const_mul'
@@ -1403,26 +1403,26 @@ section Right
 variable [CovariantClass α α (swap (· * ·)) (· < ·)]
 
 @[to_additive add_const]
-theorem StrictMono.mul_const' (hf : StrictMono f) (c : α) : StrictMono fun x => f x * c :=
+lemma StrictMono.mul_const' (hf : StrictMono f) (c : α) : StrictMono fun x => f x * c :=
   fun _ _ ab => mul_lt_mul_right' (hf ab) c
 #align strict_mono.mul_const' StrictMono.mul_const'
 #align strict_mono.add_const StrictMono.add_const
 
 @[to_additive add_const]
-theorem StrictMonoOn.mul_const' (hf : StrictMonoOn f s) (c : α) :
+lemma StrictMonoOn.mul_const' (hf : StrictMonoOn f s) (c : α) :
     StrictMonoOn (fun x => f x * c) s :=
   fun _ ha _ hb ab => mul_lt_mul_right' (hf ha hb ab) c
 #align strict_mono_on.mul_const' StrictMonoOn.mul_const'
 #align strict_mono_on.add_const StrictMonoOn.add_const
 
 @[to_additive add_const]
-theorem StrictAnti.mul_const' (hf : StrictAnti f) (c : α) : StrictAnti fun x => f x * c :=
+lemma StrictAnti.mul_const' (hf : StrictAnti f) (c : α) : StrictAnti fun x => f x * c :=
   fun _ _ ab => mul_lt_mul_right' (hf ab) c
 #align strict_anti.mul_const' StrictAnti.mul_const'
 #align strict_anti.add_const StrictAnti.add_const
 
 @[to_additive add_const]
-theorem StrictAntiOn.mul_const' (hf : StrictAntiOn f s) (c : α) :
+lemma StrictAntiOn.mul_const' (hf : StrictAntiOn f s) (c : α) :
     StrictAntiOn (fun x => f x * c) s :=
   fun _ ha _ hb ab => mul_lt_mul_right' (hf ha hb ab) c
 #align strict_anti_on.mul_const' StrictAntiOn.mul_const'
@@ -1514,7 +1514,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swa
 /-- The product of a strictly monotone function and a monotone function is strictly monotone. -/
 @[to_additive add_monotone "The sum of a strictly monotone function and a monotone function is
 strictly monotone."]
-theorem StrictMono.mul_monotone' (hf : StrictMono f) (hg : Monotone g) :
+lemma StrictMono.mul_monotone' (hf : StrictMono f) (hg : Monotone g) :
     StrictMono fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_lt_of_le (hf h) (hg h.le)
 #align strict_mono.mul_monotone' StrictMono.mul_monotone'
@@ -1523,7 +1523,7 @@ theorem StrictMono.mul_monotone' (hf : StrictMono f) (hg : Monotone g) :
 /-- The product of a strictly monotone function and a monotone function is strictly monotone. -/
 @[to_additive add_monotone "The sum of a strictly monotone function and a monotone function is
 strictly monotone."]
-theorem StrictMonoOn.mul_monotone' (hf : StrictMonoOn f s) (hg : MonotoneOn g s) :
+lemma StrictMonoOn.mul_monotone' (hf : StrictMonoOn f s) (hg : MonotoneOn g s) :
     StrictMonoOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_lt_of_le (hf hx hy h) (hg hx hy h.le)
 #align strict_mono_on.mul_monotone' StrictMonoOn.mul_monotone'
@@ -1532,7 +1532,7 @@ theorem StrictMonoOn.mul_monotone' (hf : StrictMonoOn f s) (hg : MonotoneOn g s)
 /-- The product of a strictly antitone function and an antitone function is strictly antitone. -/
 @[to_additive add_antitone "The sum of a strictly antitone function and an antitone function is
 strictly antitone."]
-theorem StrictAnti.mul_antitone' (hf : StrictAnti f) (hg : Antitone g) :
+lemma StrictAnti.mul_antitone' (hf : StrictAnti f) (hg : Antitone g) :
     StrictAnti fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_lt_of_le (hf h) (hg h.le)
 #align strict_anti.mul_antitone' StrictAnti.mul_antitone'
@@ -1541,7 +1541,7 @@ theorem StrictAnti.mul_antitone' (hf : StrictAnti f) (hg : Antitone g) :
 /-- The product of a strictly antitone function and an antitone function is strictly antitone. -/
 @[to_additive add_antitone "The sum of a strictly antitone function and an antitone function is
 strictly antitone."]
-theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s) :
+lemma StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s) :
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_lt_of_le (hf hx hy h) (hg hx hy h.le)
 #align strict_anti_on.mul_antitone' StrictAntiOn.mul_antitone'

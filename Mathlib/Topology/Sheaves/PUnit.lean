@@ -49,12 +49,12 @@ lemma isSheaf_iff_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤)
     isSheaf_of_isTerminal_of_indiscrete hind F it⟩
 #align Top.presheaf.is_sheaf_iff_is_terminal_of_indiscrete TopCat.Presheaf.isSheaf_iff_isTerminal_of_indiscrete
 
-theorem isSheaf_on_punit_of_isTerminal (F : Presheaf C (TopCat.of PUnit))
+lemma isSheaf_on_punit_of_isTerminal (F : Presheaf C (TopCat.of PUnit))
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf :=
   isSheaf_of_isTerminal_of_indiscrete (@Subsingleton.elim (TopologicalSpace PUnit) _ _ _) F it
 #align Top.presheaf.is_sheaf_on_punit_of_is_terminal TopCat.Presheaf.isSheaf_on_punit_of_isTerminal
 
-theorem isSheaf_on_punit_iff_isTerminal (F : Presheaf C (TopCat.of PUnit)) :
+lemma isSheaf_on_punit_iff_isTerminal (F : Presheaf C (TopCat.of PUnit)) :
     F.IsSheaf ↔ Nonempty (IsTerminal <| F.obj <| op ⊥) :=
   ⟨fun h => ⟨Sheaf.isTerminalOfEmpty ⟨F, h⟩⟩, fun ⟨it⟩ => isSheaf_on_punit_of_isTerminal F it⟩
 #align Top.presheaf.is_sheaf_on_punit_iff_is_terminal TopCat.Presheaf.isSheaf_on_punit_iff_isTerminal

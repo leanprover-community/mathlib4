@@ -71,12 +71,12 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_neg MvPolynomial.C_neg
 
 @[simp]
-theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
+lemma coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
   Finsupp.neg_apply _ _
 #align mv_polynomial.coeff_neg MvPolynomial.coeff_neg
 
 @[simp]
-theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
+lemma coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
   Finsupp.sub_apply _ _ _
 #align mv_polynomial.coeff_sub MvPolynomial.coeff_sub
 
@@ -94,7 +94,7 @@ variable {σ} (p)
 
 section Degrees
 
-theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
+lemma degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 #align mv_polynomial.degrees_neg MvPolynomial.degrees_neg
 
@@ -135,7 +135,7 @@ lemma eval₂_sub : (p - q).eval₂ f g = p.eval₂ f g - q.eval₂ f g :=
   (eval₂Hom f g).map_sub _ _
 #align mv_polynomial.eval₂_sub MvPolynomial.eval₂_sub
 
-theorem eval_sub (f : σ → R) : eval f (p - q) = eval f p - eval f q :=
+lemma eval_sub (f : σ → R) : eval f (p - q) = eval f p - eval f q :=
   eval₂_sub _ _ _
 
 @[simp]
@@ -143,10 +143,10 @@ lemma eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g :=
   (eval₂Hom f g).map_neg _
 #align mv_polynomial.eval₂_neg MvPolynomial.eval₂_neg
 
-theorem eval_neg (f : σ → R) : eval f (-p) = -eval f p :=
+lemma eval_neg (f : σ → R) : eval f (-p) = -eval f p :=
   eval₂_neg _ _ _
 
-theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
+lemma hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
   eq_intCast (f.comp C) n
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.hom_C MvPolynomial.hom_C
@@ -202,11 +202,11 @@ end DegreeOf
 section TotalDegree
 
 @[simp]
-theorem totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := by
+lemma totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := by
   simp only [totalDegree, support_neg]
 #align mv_polynomial.total_degree_neg MvPolynomial.totalDegree_neg
 
-theorem totalDegree_sub (a b : MvPolynomial σ R) :
+lemma totalDegree_sub (a b : MvPolynomial σ R) :
     (a - b).totalDegree ≤ max a.totalDegree b.totalDegree :=
   calc
     (a - b).totalDegree = (a + -b).totalDegree := by rw [sub_eq_add_neg]

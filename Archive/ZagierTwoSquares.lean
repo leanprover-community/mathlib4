@@ -85,7 +85,7 @@ lemma obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
 
 /-- If `obvInvo k` has a fixed point, a representation of `4 * k + 1` as a sum of two squares
 can be extracted from it. -/
-theorem sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (obvInvo k)).Nonempty) :
+lemma sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (obvInvo k)).Nonempty) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
   simp only [sq]
   obtain ⟨⟨⟨x, y, z⟩, he⟩, hf⟩ := hn

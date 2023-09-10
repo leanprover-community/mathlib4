@@ -108,7 +108,7 @@ lemma IsDiag.smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (k : R) {A :
 #align matrix.is_diag.smul Matrix.IsDiag.smul
 
 @[simp]
-theorem isDiag_smul_one (n) [Semiring α] [DecidableEq n] (k : α) :
+lemma isDiag_smul_one (n) [Semiring α] [DecidableEq n] (k : α) :
     (k • (1 : Matrix n n α)).IsDiag :=
   isDiag_one.smul k
 #align matrix.is_diag_smul_one Matrix.isDiag_smul_one

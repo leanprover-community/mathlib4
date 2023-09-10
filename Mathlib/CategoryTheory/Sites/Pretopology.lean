@@ -125,7 +125,7 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
     apply t₃ (RS _ hg) _ hf
 #align category_theory.pretopology.to_grothendieck CategoryTheory.Pretopology.toGrothendieck
 
-theorem mem_toGrothendieck (K : Pretopology C) (X S) :
+lemma mem_toGrothendieck (K : Pretopology C) (X S) :
     S ∈ toGrothendieck C K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=
   Iff.rfl
 #align category_theory.pretopology.mem_to_grothendieck CategoryTheory.Pretopology.mem_toGrothendieck

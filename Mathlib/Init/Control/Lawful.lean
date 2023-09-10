@@ -64,7 +64,7 @@ In Lean 4, `StateT` doesn't require a constructor, but it appears confusing to d
 following theorem as a simp theorem.
 ```lean
 @[simp]
-theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
+lemma run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
   rfl
 ```
 If we decleare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
@@ -76,7 +76,7 @@ protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
 #align state_t.mk StateT.mk
 
 @[simp]
-theorem run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
+lemma run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
   rfl
 
 #align state_t.ext StateTₓ.ext
@@ -110,7 +110,7 @@ variable {α β ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 
 -- Porting note: This is proven by proj reduction in Lean 3.
 @[simp]
-theorem run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
+lemma run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
   rfl
 
 variable [Monad m]
@@ -152,7 +152,7 @@ In Lean 4, `ReaderT` doesn't require a constructor, but it appears confusing to 
 following theorem as a simp theorem.
 ```lean
 @[simp]
-theorem run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' => f r') r = f r :=
+lemma run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' => f r') r = f r :=
   rfl
 ```
 If we decleare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
@@ -164,7 +164,7 @@ protected def mk (f : σ → m α) : ReaderT σ m α := f
 #align reader_t.mk ReaderT.mk
 
 @[simp]
-theorem run_mk (f : σ → m α) (r : σ) : ReaderT.run (ReaderT.mk f) r = f r :=
+lemma run_mk (f : σ → m α) (r : σ) : ReaderT.run (ReaderT.mk f) r = f r :=
   rfl
 
 #align reader_t.ext ReaderTₓ.ext
@@ -195,18 +195,18 @@ lemma ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
 
 -- Porting note: This is proven by proj reduction in Lean 3.
 @[simp]
-theorem run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
+lemma run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
   rfl
 
 variable [Monad m]
 
 @[simp]
-theorem run_pure (a) : (pure a : OptionT m α).run = pure (some a) :=
+lemma run_pure (a) : (pure a : OptionT m α).run = pure (some a) :=
   rfl
 #align option_t.run_pure OptionTₓ.run_pure
 
 @[simp]
-theorem run_bind (f : α → OptionT m β) :
+lemma run_bind (f : α → OptionT m β) :
     (x >>= f).run = x.run >>= fun
                               | some a => OptionT.run (f a)
                               | none   => pure none :=
@@ -214,7 +214,7 @@ theorem run_bind (f : α → OptionT m β) :
 #align option_t.run_bind OptionTₓ.run_bind
 
 @[simp]
-theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run := by
+lemma run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run := by
   rw [← bind_pure_comp _ x.run]
   change x.run >>= (fun
                      | some a => OptionT.run (pure (f a))

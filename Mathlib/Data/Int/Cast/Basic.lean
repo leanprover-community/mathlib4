@@ -50,7 +50,7 @@ namespace Int
 variable {R : Type u} [AddGroupWithOne R]
 
 @[simp, norm_cast]
-theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
+lemma cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 #align int.cast_neg_succ_of_nat Int.cast_negSuccₓ
 -- expected `n` to be implicit, and `HasLiftT`
@@ -62,14 +62,14 @@ lemma cast_zero : ((0 : ℤ) : R) = 0 :=
 -- type had `HasLiftT`
 
 @[simp high, nolint simpNF, norm_cast] -- this lemma competes with `Int.ofNat_eq_cast` to come later
-theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
+lemma cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_ofNatₓ
 -- expected `n` to be implicit, and `HasLiftT`
 #align int.cast_of_nat Int.cast_ofNatₓ
 
 @[simp, norm_cast]
-theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+lemma int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
   simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
@@ -88,7 +88,7 @@ lemma cast_neg : ∀ n, ((-n : ℤ) : R) = -n
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
-theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
+lemma cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   unfold subNatNat
   cases e : n - m
   · simp only [ofNat_eq_coe]
@@ -101,7 +101,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
 #align int.neg_of_nat_eq Int.negOfNat_eq
 
 @[simp]
-theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.cast_neg, negOfNat_eq]
+lemma cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.cast_neg, negOfNat_eq]
 #align int.cast_neg_of_nat Int.cast_negOfNat
 
 @[simp, norm_cast]
@@ -119,7 +119,7 @@ lemma cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
-theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
+lemma cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
   simp [Int.sub_eq_add_neg, sub_eq_add_neg, Int.cast_neg, Int.cast_add]
 #align int.cast_sub Int.cast_subₓ
 -- type had `HasLiftT`
@@ -128,22 +128,22 @@ section deprecated
 set_option linter.deprecated false
 
 @[norm_cast, deprecated]
-theorem ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n :=
+lemma ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n :=
   rfl
 #align int.coe_nat_bit0 Int.ofNat_bit0
 
 @[norm_cast, deprecated]
-theorem ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n :=
+lemma ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n :=
   rfl
 #align int.coe_nat_bit1 Int.ofNat_bit1
 
 @[norm_cast, deprecated]
-theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
+lemma cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
   Int.cast_add _ _
 #align int.cast_bit0 Int.cast_bit0
 
 @[norm_cast, deprecated]
-theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
+lemma cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
   by rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
 #align int.cast_bit1 Int.cast_bit1
 

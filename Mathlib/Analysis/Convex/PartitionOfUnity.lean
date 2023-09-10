@@ -48,7 +48,7 @@ each point `x : X`, there exists a neighborhood `U ∈ 𝓝 X` and a function `g
 continuous on `U` and sends each `y ∈ U` to a point of `t y`. Then there exists a continuous map
 `g : C(X, E)` such that `g x ∈ t x` for all `x`. See also
 `exists_continuous_forall_mem_convex_of_local_const`. -/
-theorem exists_continuous_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
+lemma exists_continuous_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (H : ∀ x : X, ∃ U ∈ 𝓝 x, ∃ g : X → E, ContinuousOn g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C(X, E), ∀ x, g x ∈ t x := by
   choose U hU g hgc hgt using H
@@ -65,7 +65,7 @@ a topological real vector space. Let `t : X → Set E` be a family of convex set
 each point `x : X`, there exists a vector `c : E` that belongs to `t y` for all `y` in a
 neighborhood of `x`. Then there exists a continuous map `g : C(X, E)` such that `g x ∈ t x` for all
 `x`. See also `exists_continuous_forall_mem_convex_of_local`. -/
-theorem exists_continuous_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
+lemma exists_continuous_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
     (H : ∀ x : X, ∃ c : E, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C(X, E), ∀ x, g x ∈ t x :=
   exists_continuous_forall_mem_convex_of_local ht fun x =>
     let ⟨c, hc⟩ := H x

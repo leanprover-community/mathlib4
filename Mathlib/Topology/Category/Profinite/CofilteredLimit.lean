@@ -115,7 +115,7 @@ lemma exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_clopen_of_cofiltered Profinite.exists_clopen_of_cofiltered
 
-theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
+lemma exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _) := by
   let U := f ⁻¹' {0}
   have hU : IsClopen U := f.isLocallyConstant.isClopen_fiber _

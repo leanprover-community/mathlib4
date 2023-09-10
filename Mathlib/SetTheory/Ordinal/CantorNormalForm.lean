@@ -59,7 +59,7 @@ lemma CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec_zero Ordinal.CNFRec_zero
 
-theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
+lemma CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     @CNFRec b C H0 H o = H o ho (@CNFRec b C H0 H _) := by rw [CNFRec, dif_neg ho]
 set_option linter.uppercaseLean3 false in
@@ -78,7 +78,7 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF Ordinal.CNF
 
 @[simp]
-theorem CNF_zero (b : Ordinal) : CNF b 0 = [] :=
+lemma CNF_zero (b : Ordinal) : CNF b 0 = [] :=
   CNFRec_zero b _ _
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_zero Ordinal.CNF_zero
@@ -111,7 +111,7 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_of_lt Ordinal.CNF_of_lt
 
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
-theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o :=
+lemma CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o :=
   CNFRec b (by rw [CNF_zero]; rfl)
     (fun o ho IH ↦ by rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]) o
 set_option linter.uppercaseLean3 false in
@@ -160,7 +160,7 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_snd_lt Ordinal.CNF_snd_lt
 
 /-- The exponents of the Cantor normal form are decreasing. -/
-theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
+lemma CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
   refine' CNFRec b _ (fun o ho IH ↦ _) o
   · simp only [CNF_zero]
   · cases' le_or_lt b 1 with hb hb

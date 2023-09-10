@@ -128,7 +128,7 @@ lemma exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k] (
   exists_eval₂_eq_zero (algebraMap R k) p hp
 #align is_alg_closed.exists_aeval_eq_zero IsAlgClosed.exists_aeval_eq_zero
 
-theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
+lemma of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
   refine ⟨fun p ↦ Or.inr ?_⟩
   intro q hq _
@@ -139,7 +139,7 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root this hx
 #align is_alg_closed.of_exists_root IsAlgClosed.of_exists_root
 
-theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
+lemma of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by
   apply IsAlgClosed.of_exists_root
   intro p hmp hp
@@ -191,7 +191,7 @@ class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K
   algebraic : Algebra.IsAlgebraic R K
 #align is_alg_closure IsAlgClosure
 
-theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
+lemma isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
     IsAlgClosure k K ↔ IsAlgClosed K ∧ Algebra.IsAlgebraic k K :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 #align is_alg_closure_iff isAlgClosure_iff
@@ -248,7 +248,7 @@ lemma le_def : E₁ ≤ E₂ ↔ ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E
   Iff.rfl
 #align lift.subfield_with_hom.le_def IsAlgClosed.lift.SubfieldWithHom.le_def
 
-theorem compat (h : E₁ ≤ E₂) : ∀ x, E₂.emb (inclusion h.fst x) = E₁.emb x := by
+lemma compat (h : E₁ ≤ E₂) : ∀ x, E₂.emb (inclusion h.fst x) = E₁.emb x := by
   rw [le_def] at h; cases h; assumption
 #align lift.subfield_with_hom.compat IsAlgClosed.lift.SubfieldWithHom.compat
 
@@ -261,7 +261,7 @@ instance : Preorder (SubfieldWithHom K L M) where
 
 open Lattice
 
-theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
+lemma maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
     (hc : IsChain (· ≤ ·) c) : ∃ ub : SubfieldWithHom K L M, ∀ N, N ∈ c → N ≤ ub := by
   by_cases hcn : c.Nonempty
   case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
@@ -466,7 +466,7 @@ variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarT
 
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
   also an algebraic closure of `K`. -/
-theorem ofAlgebraic (hKJ : Algebra.IsAlgebraic K J) : IsAlgClosure K L :=
+lemma ofAlgebraic (hKJ : Algebra.IsAlgebraic K J) : IsAlgClosure K L :=
   ⟨IsAlgClosure.alg_closed J, Algebra.isAlgebraic_trans hKJ IsAlgClosure.algebraic⟩
 #align is_alg_closure.of_algebraic IsAlgClosure.ofAlgebraic
 
@@ -527,25 +527,25 @@ noncomputable def equivOfEquiv (hSR : S ≃+* R) : L ≃+* M :=
 #align is_alg_closure.equiv_of_equiv IsAlgClosure.equivOfEquiv
 
 @[simp]
-theorem equivOfEquiv_comp_algebraMap (hSR : S ≃+* R) :
+lemma equivOfEquiv_comp_algebraMap (hSR : S ≃+* R) :
     (↑(equivOfEquiv L M hSR) : L →+* M).comp (algebraMap S L) = (algebraMap R M).comp hSR :=
   (equivOfEquivAux L M hSR).2
 #align is_alg_closure.equiv_of_equiv_comp_algebra_map IsAlgClosure.equivOfEquiv_comp_algebraMap
 
 @[simp]
-theorem equivOfEquiv_algebraMap (hSR : S ≃+* R) (s : S) :
+lemma equivOfEquiv_algebraMap (hSR : S ≃+* R) (s : S) :
     equivOfEquiv L M hSR (algebraMap S L s) = algebraMap R M (hSR s) :=
   RingHom.ext_iff.1 (equivOfEquiv_comp_algebraMap L M hSR) s
 #align is_alg_closure.equiv_of_equiv_algebra_map IsAlgClosure.equivOfEquiv_algebraMap
 
 @[simp]
-theorem equivOfEquiv_symm_algebraMap (hSR : S ≃+* R) (r : R) :
+lemma equivOfEquiv_symm_algebraMap (hSR : S ≃+* R) (r : R) :
     (equivOfEquiv L M hSR).symm (algebraMap R M r) = algebraMap S L (hSR.symm r) :=
   (equivOfEquiv L M hSR).injective (by simp)
 #align is_alg_closure.equiv_of_equiv_symm_algebra_map IsAlgClosure.equivOfEquiv_symm_algebraMap
 
 @[simp]
-theorem equivOfEquiv_symm_comp_algebraMap (hSR : S ≃+* R) :
+lemma equivOfEquiv_symm_comp_algebraMap (hSR : S ≃+* R) :
     ((equivOfEquiv L M hSR).symm : M →+* L).comp (algebraMap R M) =
       (algebraMap S L).comp hSR.symm :=
   RingHom.ext_iff.2 (equivOfEquiv_symm_algebraMap L M hSR)

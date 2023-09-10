@@ -90,7 +90,7 @@ def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = 
 variable {ρ₁₂ σ₁₂}
 
 @[simp]
-theorem mk₂'ₛₗ_apply (f : M → N → P) {H1 H2 H3 H4} (m : M) (n : N) :
+lemma mk₂'ₛₗ_apply (f : M → N → P) {H1 H2 H3 H4} (m : M) (n : N) :
     (mk₂'ₛₗ ρ₁₂ σ₁₂ f H1 H2 H3 H4 : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) m n = f m n := rfl
 #align linear_map.mk₂'ₛₗ_apply LinearMap.mk₂'ₛₗ_apply
 
@@ -108,7 +108,7 @@ def mk₂' (f : M → N → Pₗ) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m
 variable {R S}
 
 @[simp]
-theorem mk₂'_apply (f : M → N → Pₗ) {H1 H2 H3 H4} (m : M) (n : N) :
+lemma mk₂'_apply (f : M → N → Pₗ) {H1 H2 H3 H4} (m : M) (n : N) :
     (mk₂' R S f H1 H2 H3 H4 : M →ₗ[R] N →ₗ[S] Pₗ) m n = f m n := rfl
 #align linear_map.mk₂'_apply LinearMap.mk₂'_apply
 
@@ -136,13 +136,13 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
 end
 
 @[simp]
-theorem flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n := rfl
+lemma flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n := rfl
 #align linear_map.flip_apply LinearMap.flip_apply
 
 attribute [local instance] SMulCommClass.symm
 
 @[simp]
-theorem flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.flip = f :=
+lemma flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.flip = f :=
   LinearMap.ext₂ fun _x _y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
 #align linear_map.flip_flip LinearMap.flip_flip
 
@@ -152,27 +152,27 @@ lemma flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]
 #align linear_map.flip_inj LinearMap.flip_inj
 
-theorem map_zero₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (y) : f 0 y = 0 :=
+lemma map_zero₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (y) : f 0 y = 0 :=
   (flip f y).map_zero
 #align linear_map.map_zero₂ LinearMap.map_zero₂
 
-theorem map_neg₂ (f : M' →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P') (x y) : f (-x) y = -f x y :=
+lemma map_neg₂ (f : M' →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P') (x y) : f (-x) y = -f x y :=
   (flip f y).map_neg _
 #align linear_map.map_neg₂ LinearMap.map_neg₂
 
-theorem map_sub₂ (f : M' →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P') (x y z) : f (x - y) z = f x z - f y z :=
+lemma map_sub₂ (f : M' →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P') (x y z) : f (x - y) z = f x z - f y z :=
   (flip f z).map_sub _ _
 #align linear_map.map_sub₂ LinearMap.map_sub₂
 
-theorem map_add₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (x₁ x₂ y) : f (x₁ + x₂) y = f x₁ y + f x₂ y :=
+lemma map_add₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (x₁ x₂ y) : f (x₁ + x₂) y = f x₁ y + f x₂ y :=
   (flip f y).map_add _ _
 #align linear_map.map_add₂ LinearMap.map_add₂
 
-theorem map_smul₂ (f : M₂ →ₗ[R] N₂ →ₛₗ[σ₁₂] P₂) (r : R) (x y) : f (r • x) y = r • f x y :=
+lemma map_smul₂ (f : M₂ →ₗ[R] N₂ →ₛₗ[σ₁₂] P₂) (r : R) (x y) : f (r • x) y = r • f x y :=
   (flip f y).map_smul _ _
 #align linear_map.map_smul₂ LinearMap.map_smul₂
 
-theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r : R) (x y) : f (r • x) y = ρ₁₂ r • f x y :=
+lemma map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r : R) (x y) : f (r • x) y = ρ₁₂ r • f x y :=
   (flip f y).map_smulₛₗ _ _
 #align linear_map.map_smulₛₗ₂ LinearMap.map_smulₛₗ₂
 
@@ -190,7 +190,7 @@ def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Subm
     LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, smul_apply]
 #align linear_map.dom_restrict₂ LinearMap.domRestrict₂
 
-theorem domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
+lemma domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
     f.domRestrict₂ q x y = f x y := rfl
 #align linear_map.dom_restrict₂_apply LinearMap.domRestrict₂_apply
 
@@ -200,7 +200,7 @@ def domRestrict₁₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (p : S
   (f.domRestrict p).domRestrict₂ q
 #align linear_map.dom_restrict₁₂ LinearMap.domRestrict₁₂
 
-theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (p : Submodule R M) (q : Submodule S N)
+lemma domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (p : Submodule R M) (q : Submodule S N)
     (x : p) (y : q) : f.domRestrict₁₂ p q x y = f x y := rfl
 #align linear_map.dom_restrict₁₂_apply LinearMap.domRestrict₁₂_apply
 
@@ -245,7 +245,7 @@ def mk₂ (f : M → Nₗ → Pₗ) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f
 #align linear_map.mk₂ LinearMap.mk₂
 
 @[simp]
-theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
+lemma mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
     (mk₂ R f H1 H2 H3 H4 : M →ₗ[R] Nₗ →ₗ[R] Pₗ) m n = f m n := rfl
 #align linear_map.mk₂_apply LinearMap.mk₂_apply
 
@@ -263,7 +263,7 @@ def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →�
 variable (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
 
 @[simp]
-theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
+lemma lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
 #align linear_map.lflip_apply LinearMap.lflip_apply
 
 variable (R Pₗ)
@@ -276,10 +276,10 @@ def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] P
 variable {R Pₗ}
 
 @[simp]
-theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp _ _ f g x = g (f x) := rfl
+lemma lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp _ _ f g x = g (f x) := rfl
 #align linear_map.lcomp_apply LinearMap.lcomp_apply
 
-theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
+lemma lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
 #align linear_map.lcomp_apply' LinearMap.lcomp_apply'
 
 variable (P σ₂₃)
@@ -293,7 +293,7 @@ def lcompₛₗ (f : M →ₛₗ[σ₁₂] N) : (N →ₛₗ[σ₂₃] P) →ₗ
 variable {P σ₂₃}
 
 @[simp]
-theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
+lemma lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
     lcompₛₗ P σ₂₃ f g x = g (f x) := rfl
 #align linear_map.lcompₛₗ_apply LinearMap.lcompₛₗ_apply
 
@@ -312,11 +312,11 @@ variable {R M Nₗ Pₗ}
 section
 
 @[simp]
-theorem llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
+lemma llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
     llcomp R M Nₗ Pₗ f g x = f (g x) := rfl
 #align linear_map.llcomp_apply LinearMap.llcomp_apply
 
-theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
+lemma llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
 #align linear_map.llcomp_apply' LinearMap.llcomp_apply'
 
 end
@@ -328,7 +328,7 @@ def compl₂ (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[�
 #align linear_map.compl₂ LinearMap.compl₂
 
 @[simp]
-theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) := rfl
+lemma compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) := rfl
 #align linear_map.compl₂_apply LinearMap.compl₂_apply
 
 @[simp]
@@ -345,12 +345,12 @@ def compl₁₂ (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] M�
 #align linear_map.compl₁₂ LinearMap.compl₁₂
 
 @[simp]
-theorem compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] Mₗ) (g' : Qₗ' →ₗ[R] Nₗ) (x : Qₗ)
+lemma compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] Mₗ) (g' : Qₗ' →ₗ[R] Nₗ) (x : Qₗ)
     (y : Qₗ') : f.compl₁₂ g g' x y = f (g x) (g' y) := rfl
 #align linear_map.compl₁₂_apply LinearMap.compl₁₂_apply
 
 @[simp]
-theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f := by
+lemma compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f := by
   ext
   simp_rw [compl₁₂_apply, id_coe, id.def]
 #align linear_map.compl₁₂_id_id LinearMap.compl₁₂_id_id
@@ -377,7 +377,7 @@ def compr₂ (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) : M
 #align linear_map.compr₂ LinearMap.compr₂
 
 @[simp]
-theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
+lemma compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
 #align linear_map.compr₂_apply LinearMap.compr₂_apply
 
@@ -392,7 +392,7 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 variable {R M}
 
 @[simp]
-theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
+lemma lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
 end CommSemiring

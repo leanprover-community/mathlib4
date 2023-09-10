@@ -51,7 +51,7 @@ noncomputable def leastGE (f : ℕ → Ω → ℝ) (r : ℝ) (n : ℕ) :=
   hitting f (Set.Ici r) 0 n
 #align measure_theory.least_ge MeasureTheory.leastGE
 
-theorem Adapted.isStoppingTime_leastGE (r : ℝ) (n : ℕ) (hf : Adapted ℱ f) :
+lemma Adapted.isStoppingTime_leastGE (r : ℝ) (n : ℕ) (hf : Adapted ℱ f) :
     IsStoppingTime ℱ (leastGE f r n) :=
   hitting_isStoppingTime hf measurableSet_Ici
 #align measure_theory.adapted.is_stopping_time_least_ge MeasureTheory.Adapted.isStoppingTime_leastGE
@@ -68,7 +68,7 @@ lemma leastGE_mono {n m : ℕ} (hnm : n ≤ m) (r : ℝ) (ω : Ω) : leastGE f r
   hitting_mono hnm
 #align measure_theory.least_ge_mono MeasureTheory.leastGE_mono
 
-theorem leastGE_eq_min (π : Ω → ℕ) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : ∀ ω, π ω ≤ n) :
+lemma leastGE_eq_min (π : Ω → ℕ) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : ∀ ω, π ω ≤ n) :
     leastGE f r (π ω) ω = min (π ω) (leastGE f r n ω) := by
   classical
   refine' le_antisymm (le_min (leastGE_le _) (leastGE_mono (hπn ω) r ω)) _
@@ -86,7 +86,7 @@ theorem leastGE_eq_min (π : Ω → ℕ) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : �
       ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
 #align measure_theory.least_ge_eq_min MeasureTheory.leastGE_eq_min
 
-theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → ℕ) (r : ℝ) {n : ℕ}
+lemma stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → ℕ) (r : ℝ) {n : ℕ}
     (hπn : ∀ ω, π ω ≤ n) : stoppedValue (fun i => stoppedValue f (leastGE f r i)) π =
       stoppedValue (stoppedProcess f (leastGE f r n)) π := by
   ext1 ω; simp_rw [stoppedProcess, stoppedValue]; rw [leastGE_eq_min _ _ _ hπn]
@@ -111,7 +111,7 @@ lemma Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ] (hf : Submartingal
 
 variable {r : ℝ} {R : ℝ≥0}
 
-theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
+lemma norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     ∀ᵐ ω ∂μ, stoppedValue f (leastGE f r i) ω ≤ r + R := by
   filter_upwards [hbdd] with ω hbddω
@@ -281,12 +281,12 @@ variable {s : ℕ → Set Ω}
 lemma process_zero : process s 0 = 0 := by rw [process, Finset.range_zero, Finset.sum_empty]
 #align measure_theory.borel_cantelli.process_zero MeasureTheory.BorelCantelli.process_zero
 
-theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (process s) := fun _ =>
+lemma adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (process s) := fun _ =>
   Finset.stronglyMeasurable_sum' _ fun _ hk =>
     stronglyMeasurable_one.indicator <| ℱ.mono (Finset.mem_range.1 hk) _ <| hs _
 #align measure_theory.borel_cantelli.adapted_process MeasureTheory.BorelCantelli.adapted_process
 
-theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
+lemma martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
     martingalePart (process s) ℱ μ n =
       ∑ k in Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1|ℱ k]) := by
   simp only [martingalePart_eq_sum, process_zero, zero_add]
@@ -294,7 +294,7 @@ theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω)
   simp only [process, Finset.sum_range_succ_sub_sum]
 #align measure_theory.borel_cantelli.martingale_part_process_ae_eq MeasureTheory.BorelCantelli.martingalePart_process_ae_eq
 
-theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω)
+lemma predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω)
     (n : ℕ) : predictablePart (process s) ℱ μ n =
     ∑ k in Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k] := by
   have := martingalePart_process_ae_eq ℱ μ s n
@@ -302,7 +302,7 @@ theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω
   exact sub_right_injective this
 #align measure_theory.borel_cantelli.predictable_part_process_ae_eq MeasureTheory.BorelCantelli.predictablePart_process_ae_eq
 
-theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
+lemma process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
     |process s (n + 1) ω - process s n ω| ≤ (1 : ℝ≥0) := by
   norm_cast
   rw [process, process, Finset.sum_apply, Finset.sum_apply,
@@ -311,7 +311,7 @@ theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
   rw [Pi.one_apply, norm_one]
 #align measure_theory.borel_cantelli.process_difference_le MeasureTheory.BorelCantelli.process_difference_le
 
-theorem integrable_process (μ : Measure Ω) [IsFiniteMeasure μ] (hs : ∀ n, MeasurableSet[ℱ n] (s n))
+lemma integrable_process (μ : Measure Ω) [IsFiniteMeasure μ] (hs : ∀ n, MeasurableSet[ℱ n] (s n))
     (n : ℕ) : Integrable (process s n) μ :=
   integrable_finset_sum' _ fun _ _ =>
     IntegrableOn.integrable_indicator (integrable_const 1) <| ℱ.le _ _ <| hs _
@@ -373,7 +373,7 @@ lemma tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set Ω}
 /-- **Lévy's generalization of the Borel-Cantelli lemma**: given a sequence of sets `s` and a
 filtration `ℱ` such that for all `n`, `s n` is `ℱ n`-measurable, `limsup s atTop` is almost
 everywhere equal to the set for which `∑ k, ℙ(s (k + 1) | ℱ k) = ∞`. -/
-theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ → Set Ω}
+lemma ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ → Set Ω}
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
     Tendsto (fun n => ∑ k in Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop :=

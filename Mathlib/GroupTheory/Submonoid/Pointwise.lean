@@ -64,13 +64,13 @@ lemma mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S :
 #align add_submonoid.add_subset AddSubmonoid.add_subset
 
 @[to_additive]
-theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.closure u :=
+lemma mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.closure u :=
   mul_subset (Subset.trans hs Submonoid.subset_closure) (Subset.trans ht Submonoid.subset_closure)
 #align submonoid.mul_subset_closure Submonoid.mul_subset_closure
 #align add_submonoid.add_subset_closure AddSubmonoid.add_subset_closure
 
 @[to_additive]
-theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
+lemma coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
   ext x
   refine' ⟨_, fun h => ⟨x, 1, h, s.one_mem, mul_one x⟩⟩
   rintro ⟨a, b, ha, hb, rfl⟩
@@ -79,7 +79,7 @@ theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
 #align add_submonoid.coe_add_self_eq AddSubmonoid.coe_add_self_eq
 
 @[to_additive]
-theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
+lemma closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, _t, hs, ht, hx⟩ => hx ▸
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
@@ -87,7 +87,7 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
 #align add_submonoid.closure_add_le AddSubmonoid.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
+lemma sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
@@ -124,7 +124,7 @@ protected def inv : Inv (Submonoid G) where
 scoped[Pointwise] attribute [instance] Submonoid.inv AddSubmonoid.neg
 
 @[to_additive (attr := simp)]
-theorem coe_inv (S : Submonoid G) : ↑S⁻¹ = (S : Set G)⁻¹ :=
+lemma coe_inv (S : Submonoid G) : ↑S⁻¹ = (S : Set G)⁻¹ :=
   rfl
 #align submonoid.coe_inv Submonoid.coe_inv
 #align add_submonoid.coe_neg AddSubmonoid.coe_neg
@@ -143,13 +143,13 @@ def involutiveInv : InvolutiveInv (Submonoid G) :=
 scoped[Pointwise] attribute [instance] Submonoid.involutiveInv AddSubmonoid.involutiveNeg
 
 @[to_additive (attr := simp)]
-theorem inv_le_inv (S T : Submonoid G) : S⁻¹ ≤ T⁻¹ ↔ S ≤ T :=
+lemma inv_le_inv (S T : Submonoid G) : S⁻¹ ≤ T⁻¹ ↔ S ≤ T :=
   SetLike.coe_subset_coe.symm.trans Set.inv_subset_inv
 #align submonoid.inv_le_inv Submonoid.inv_le_inv
 #align add_submonoid.neg_le_neg AddSubmonoid.neg_le_neg
 
 @[to_additive]
-theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
+lemma inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
   SetLike.coe_subset_coe.symm.trans Set.inv_subset
 #align submonoid.inv_le Submonoid.inv_le
 #align add_submonoid.neg_le AddSubmonoid.neg_le
@@ -163,7 +163,7 @@ def invOrderIso : Submonoid G ≃o Submonoid G where
 #align add_submonoid.neg_order_iso AddSubmonoid.negOrderIso
 
 @[to_additive]
-theorem closure_inv (s : Set G) : closure s⁻¹ = (closure s)⁻¹ := by
+lemma closure_inv (s : Set G) : closure s⁻¹ = (closure s)⁻¹ := by
   apply le_antisymm
   · rw [closure_le, coe_inv, ← Set.inv_subset, inv_inv]
     exact subset_closure
@@ -173,13 +173,13 @@ theorem closure_inv (s : Set G) : closure s⁻¹ = (closure s)⁻¹ := by
 #align add_submonoid.closure_neg AddSubmonoid.closure_neg
 
 @[to_additive (attr := simp)]
-theorem inv_inf (S T : Submonoid G) : (S ⊓ T)⁻¹ = S⁻¹ ⊓ T⁻¹ :=
+lemma inv_inf (S T : Submonoid G) : (S ⊓ T)⁻¹ = S⁻¹ ⊓ T⁻¹ :=
   SetLike.coe_injective Set.inter_inv
 #align submonoid.inv_inf Submonoid.inv_inf
 #align add_submonoid.neg_inf AddSubmonoid.neg_inf
 
 @[to_additive (attr := simp)]
-theorem inv_sup (S T : Submonoid G) : (S ⊔ T)⁻¹ = S⁻¹ ⊔ T⁻¹ :=
+lemma inv_sup (S T : Submonoid G) : (S ⊔ T)⁻¹ = S⁻¹ ⊔ T⁻¹ :=
   (invOrderIso : Submonoid G ≃o Submonoid G).map_sup S T
 #align submonoid.inv_sup Submonoid.inv_sup
 #align add_submonoid.neg_sup AddSubmonoid.neg_sup
@@ -233,29 +233,29 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
 scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
 
 @[simp]
-theorem coe_pointwise_smul (a : α) (S : Submonoid M) : ↑(a • S) = a • (S : Set M) :=
+lemma coe_pointwise_smul (a : α) (S : Submonoid M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 #align submonoid.coe_pointwise_smul Submonoid.coe_pointwise_smul
 
-theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S → a • m ∈ a • S :=
+lemma smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submonoid.smul_mem_pointwise_smul Submonoid.smul_mem_pointwise_smul
 
-theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
+lemma mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
     m ∈ a • S ↔ ∃ s : M, s ∈ S ∧ a • s = m :=
   (Set.mem_smul_set : m ∈ a • (S : Set M) ↔ _)
 #align submonoid.mem_smul_pointwise_iff_exists Submonoid.mem_smul_pointwise_iff_exists
 
 @[simp]
-theorem smul_bot (a : α) : a • (⊥ : Submonoid M) = ⊥ :=
+lemma smul_bot (a : α) : a • (⊥ : Submonoid M) = ⊥ :=
   map_bot _
 #align submonoid.smul_bot Submonoid.smul_bot
 
-theorem smul_sup (a : α) (S T : Submonoid M) : a • (S ⊔ T) = a • S ⊔ a • T :=
+lemma smul_sup (a : α) (S T : Submonoid M) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 #align submonoid.smul_sup Submonoid.smul_sup
 
-theorem smul_closure (a : α) (s : Set M) : a • closure s = closure (a • s) :=
+lemma smul_closure (a : α) (s : Set M) : a • closure s = closure (a • s) :=
   MonoidHom.map_mclosure _ _
 #align submonoid.smul_closure Submonoid.smul_closure
 
@@ -366,30 +366,30 @@ protected def pointwiseMulAction : MulAction α (AddSubmonoid A) where
 scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
 
 @[simp]
-theorem coe_pointwise_smul (a : α) (S : AddSubmonoid A) : ↑(a • S) = a • (S : Set A) :=
+lemma coe_pointwise_smul (a : α) (S : AddSubmonoid A) : ↑(a • S) = a • (S : Set A) :=
   rfl
 #align add_submonoid.coe_pointwise_smul AddSubmonoid.coe_pointwise_smul
 
-theorem smul_mem_pointwise_smul (m : A) (a : α) (S : AddSubmonoid A) : m ∈ S → a • m ∈ a • S :=
+lemma smul_mem_pointwise_smul (m : A) (a : α) (S : AddSubmonoid A) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set A))
 #align add_submonoid.smul_mem_pointwise_smul AddSubmonoid.smul_mem_pointwise_smul
 
-theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubmonoid A) :
+lemma mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubmonoid A) :
     m ∈ a • S ↔ ∃ s : A, s ∈ S ∧ a • s = m :=
   (Set.mem_smul_set : m ∈ a • (S : Set A) ↔ _)
 #align add_submonoid.mem_smul_pointwise_iff_exists AddSubmonoid.mem_smul_pointwise_iff_exists
 
 @[simp]
-theorem smul_bot (a : α) : a • (⊥ : AddSubmonoid A) = ⊥ :=
+lemma smul_bot (a : α) : a • (⊥ : AddSubmonoid A) = ⊥ :=
   map_bot _
 #align add_submonoid.smul_bot AddSubmonoid.smul_bot
 
-theorem smul_sup (a : α) (S T : AddSubmonoid A) : a • (S ⊔ T) = a • S ⊔ a • T :=
+lemma smul_sup (a : α) (S T : AddSubmonoid A) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 #align add_submonoid.smul_sup AddSubmonoid.smul_sup
 
 @[simp]
-theorem smul_closure (a : α) (s : Set A) : a • closure s = closure (a • s) :=
+lemma smul_closure (a : α) (s : Set A) : a • closure s = closure (a • s) :=
   AddMonoidHom.map_mclosure _ _
 #align add_submonoid.smul_closure AddSubmonoid.smul_closure
 
@@ -498,7 +498,7 @@ lemma one_eq_mrange : (1 : AddSubmonoid R) = AddMonoidHom.mrange (Nat.castAddMon
   rfl
 #align add_submonoid.one_eq_mrange AddSubmonoid.one_eq_mrange
 
-theorem natCast_mem_one (n : ℕ) : (n : R) ∈ (1 : AddSubmonoid R) :=
+lemma natCast_mem_one (n : ℕ) : (n : R) ∈ (1 : AddSubmonoid R) :=
   ⟨_, rfl⟩
 #align add_submonoid.nat_cast_mem_one AddSubmonoid.natCast_mem_one
 
@@ -548,7 +548,7 @@ protected lemma mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : R}
 
 -- this proof is copied directly from `Submodule.span_mul_span`
 -- porting note: proof rewritten
-theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
+lemma closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · refine mul_le.2 fun a ha b hb => ?_
     rw [← AddMonoidHom.mulRight_apply, ← AddSubmonoid.mem_comap]
@@ -562,19 +562,19 @@ theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S *
     exact mul_mem_mul (subset_closure ha) (subset_closure hb)
 #align add_submonoid.closure_mul_closure AddSubmonoid.closure_mul_closure
 
-theorem mul_eq_closure_mul_set (M N : AddSubmonoid R) :
+lemma mul_eq_closure_mul_set (M N : AddSubmonoid R) :
     M * N = closure ((M : Set R) * (N : Set R)) := by
   rw [← closure_mul_closure, closure_eq, closure_eq]
 #align add_submonoid.mul_eq_closure_mul_set AddSubmonoid.mul_eq_closure_mul_set
 
 @[simp]
-theorem mul_bot (S : AddSubmonoid R) : S * ⊥ = ⊥ :=
+lemma mul_bot (S : AddSubmonoid R) : S * ⊥ = ⊥ :=
   eq_bot_iff.2 <| mul_le.2 fun m _ n hn => by
     rw [AddSubmonoid.mem_bot] at hn ⊢; rw [hn, mul_zero]
 #align add_submonoid.mul_bot AddSubmonoid.mul_bot
 
 @[simp]
-theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
+lemma bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
   eq_bot_iff.2 <| mul_le.2 fun m hm n hn => by
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 #align add_submonoid.bot_mul AddSubmonoid.bot_mul
@@ -676,12 +676,12 @@ protected def monoid : Monoid (AddSubmonoid R) :=
     mul := (· * ·) }
 scoped[Pointwise] attribute [instance] AddSubmonoid.monoid
 
-theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
+lemma closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
   | 0 => by rw [pow_zero, pow_zero, one_eq_closure_one_set]
   | n + 1 => by rw [pow_succ, pow_succ, closure_pow s n, closure_mul_closure]
 #align add_submonoid.closure_pow AddSubmonoid.closure_pow
 
-theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) : s ^ n = closure ((s : Set R) ^ n) :=
+lemma pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) : s ^ n = closure ((s : Set R) ^ n) :=
   by rw [← closure_pow, closure_eq]
 #align add_submonoid.pow_eq_closure_pow_set AddSubmonoid.pow_eq_closure_pow_set
 
@@ -698,7 +698,7 @@ namespace Set.IsPwo
 variable [OrderedCancelCommMonoid α] {s : Set α}
 
 @[to_additive]
-theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPwo) :
+lemma submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPwo) :
     IsPwo (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
   refine' (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on _

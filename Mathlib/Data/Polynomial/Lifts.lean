@@ -58,25 +58,25 @@ def lifts (f : R →+* S) : Subsemiring S[X] :=
   RingHom.rangeS (mapRingHom f)
 #align polynomial.lifts Polynomial.lifts
 
-theorem mem_lifts (p : S[X]) : p ∈ lifts f ↔ ∃ q : R[X], map f q = p := by
+lemma mem_lifts (p : S[X]) : p ∈ lifts f ↔ ∃ q : R[X], map f q = p := by
   simp only [coe_mapRingHom, lifts, RingHom.mem_rangeS]
 #align polynomial.mem_lifts Polynomial.mem_lifts
 
-theorem lifts_iff_set_range (p : S[X]) : p ∈ lifts f ↔ p ∈ Set.range (map f) := by
+lemma lifts_iff_set_range (p : S[X]) : p ∈ lifts f ↔ p ∈ Set.range (map f) := by
   simp only [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_set_range Polynomial.lifts_iff_set_range
 
-theorem lifts_iff_ringHom_rangeS (p : S[X]) : p ∈ lifts f ↔ p ∈ (mapRingHom f).rangeS := by
+lemma lifts_iff_ringHom_rangeS (p : S[X]) : p ∈ lifts f ↔ p ∈ (mapRingHom f).rangeS := by
   simp only [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_ring_hom_srange Polynomial.lifts_iff_ringHom_rangeS
 
-theorem lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coeff n ∈ Set.range f := by
+lemma lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coeff n ∈ Set.range f := by
   rw [lifts_iff_ringHom_rangeS, mem_map_rangeS f]
   rfl
 #align polynomial.lifts_iff_coeff_lifts Polynomial.lifts_iff_coeff_lifts
 
 /-- If `(r : R)`, then `C (f r)` lifts. -/
-theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
+lemma C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by
     simp only [coe_mapRingHom, map_C, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
       and_self_iff]⟩
@@ -93,7 +93,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.C'_mem_lifts Polynomial.C'_mem_lifts
 
 /-- The polynomial `X` lifts. -/
-theorem X_mem_lifts (f : R →+* S) : (X : S[X]) ∈ lifts f :=
+lemma X_mem_lifts (f : R →+* S) : (X : S[X]) ∈ lifts f :=
   ⟨X, by
     simp only [coe_mapRingHom, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true, map_X,
       and_self_iff]⟩
@@ -101,7 +101,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.X_mem_lifts Polynomial.X_mem_lifts
 
 /-- The polynomial `X ^ n` lifts. -/
-theorem X_pow_mem_lifts (f : R →+* S) (n : ℕ) : (X ^ n : S[X]) ∈ lifts f :=
+lemma X_pow_mem_lifts (f : R →+* S) (n : ℕ) : (X ^ n : S[X]) ∈ lifts f :=
   ⟨X ^ n, by
     simp only [coe_mapRingHom, map_pow, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
       map_X, and_self_iff]⟩
@@ -254,7 +254,7 @@ def liftsRing (f : R →+* S) : Subring S[X] :=
 
 /-- If `R` and `S` are rings, `p` is in the subring of polynomials that lift if and only if it is in
 the subsemiring of polynomials that lift. -/
-theorem lifts_iff_liftsRing (p : S[X]) : p ∈ lifts f ↔ p ∈ liftsRing f := by
+lemma lifts_iff_liftsRing (p : S[X]) : p ∈ lifts f ↔ p ∈ liftsRing f := by
   simp only [lifts, liftsRing, RingHom.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_lifts_ring Polynomial.lifts_iff_liftsRing
 
@@ -271,13 +271,13 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
 #align polynomial.map_alg Polynomial.mapAlg
 
 /-- `mapAlg` is the morphism induced by `R → S`. -/
-theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
+lemma mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
   simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
   ext; congr
 #align polynomial.map_alg_eq_map Polynomial.mapAlg_eq_map
 
 /-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
-theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
+lemma mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
     (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by
   simp only [coe_mapRingHom, lifts, mapAlg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
 #align polynomial.mem_lifts_iff_mem_alg Polynomial.mem_lifts_iff_mem_alg

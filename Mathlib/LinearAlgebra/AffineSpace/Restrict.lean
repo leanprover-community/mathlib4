@@ -52,7 +52,7 @@ def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F
     apply AffineMap.map_vadd
 #align affine_map.restrict AffineMap.restrict
 
-theorem AffineMap.restrict.coe_apply (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
+lemma AffineMap.restrict.coe_apply (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) (x : E) :
     ↑(φ.restrict hEF x) = φ x :=
   rfl
@@ -64,7 +64,7 @@ lemma AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubspa
   exact AffineSubspace.direction_le hEF
 #align affine_map.restrict.linear_aux AffineMap.restrict.linear_aux
 
-theorem AffineMap.restrict.linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
+lemma AffineMap.restrict.linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) :
     (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict.linear_aux hEF) :=
   rfl
@@ -78,7 +78,7 @@ lemma AffineMap.restrict.injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.In
   exact hφ h
 #align affine_map.restrict.injective AffineMap.restrict.injective
 
-theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
+lemma AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (h : E.map φ = F) :
     Function.Surjective (AffineMap.restrict φ (le_of_eq h)) := by
   rintro ⟨x, hx : x ∈ F⟩

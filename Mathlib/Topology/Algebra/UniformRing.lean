@@ -65,7 +65,7 @@ end one_and_mul
 variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
 
 @[norm_cast]
-theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
+lemma coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
   ((denseInducing_coe.prod denseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 #align uniform_space.completion.coe_mul UniformSpace.Completion.coe_mul
@@ -190,7 +190,7 @@ variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [TopologicalR
   [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
 
 @[simp]
-theorem map_smul_eq_mul_coe (r : R) :
+lemma map_smul_eq_mul_coe (r : R) :
     Completion.map ((· • ·) r) = (· * ·) (algebraMap R A r : Completion A) := by
   ext x
   refine' Completion.induction_on x _ fun a => _
@@ -206,7 +206,7 @@ instance algebra : Algebra R (Completion A) :=
         simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
     smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x }
 
-theorem algebraMap_def (r : R) :
+lemma algebraMap_def (r : R) :
     algebraMap R (Completion A) r = (algebraMap R A r : Completion A) :=
   rfl
 #align uniform_space.completion.algebra_map_def UniformSpace.Completion.algebraMap_def
@@ -236,13 +236,13 @@ namespace UniformSpace
 
 variable {α : Type*}
 
-theorem ring_sep_rel (α) [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
+lemma ring_sep_rel (α) [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
     separationSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
     (addGroup_separationRel x y).trans <| Iff.trans (by rfl) (Submodule.quotientRel_r_def _).symm
 #align uniform_space.ring_sep_rel UniformSpace.ring_sep_rel
 
-theorem ring_sep_quot (α : Type u) [r : CommRing α] [UniformSpace α] [UniformAddGroup α]
+lemma ring_sep_quot (α : Type u) [r : CommRing α] [UniformSpace α] [UniformAddGroup α]
     [TopologicalRing α] : Quotient (separationSetoid α) = (α ⧸ (⊥ : Ideal α).closure) := by
   rw [@ring_sep_rel α r]
   rfl

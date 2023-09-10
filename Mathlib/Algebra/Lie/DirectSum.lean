@@ -58,7 +58,7 @@ instance : LieRingModule L (⨁ i, M i) where
     simp only [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
 
 @[simp]
-theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ i = ⁅x, m i⁆ :=
+lemma lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ i = ⁅x, m i⁆ :=
   mapRange_apply _ _ m i
 #align direct_sum.lie_module_bracket_apply DirectSum.lie_module_bracket_apply
 
@@ -118,7 +118,7 @@ instance lieRing : LieRing (⨁ i, L i) :=
 #align direct_sum.lie_ring DirectSum.lieRing
 
 @[simp]
-theorem bracket_apply (x y : ⨁ i, L i) (i : ι) : ⁅x, y⁆ i = ⁅x i, y i⁆ :=
+lemma bracket_apply (x y : ⨁ i, L i) (i : ι) : ⁅x, y⁆ i = ⁅x i, y i⁆ :=
   zipWith_apply _ _ x y i
 #align direct_sum.bracket_apply DirectSum.bracket_apply
 

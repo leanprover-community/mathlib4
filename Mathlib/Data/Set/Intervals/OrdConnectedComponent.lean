@@ -73,7 +73,7 @@ lemma ordConnectedComponent_univ : ordConnectedComponent univ x = univ := by
   simp [ordConnectedComponent]
 #align set.ord_connected_component_univ Set.ordConnectedComponent_univ
 
-theorem ordConnectedComponent_inter (s t : Set α) (x : α) :
+lemma ordConnectedComponent_inter (s t : Set α) (x : α) :
     ordConnectedComponent (s ∩ t) x = ordConnectedComponent s x ∩ ordConnectedComponent t x := by
   simp [ordConnectedComponent, setOf_and]
 #align set.ord_connected_component_inter Set.ordConnectedComponent_inter
@@ -83,14 +83,14 @@ lemma mem_ordConnectedComponent_comm :
   rw [mem_ordConnectedComponent, mem_ordConnectedComponent, uIcc_comm]
 #align set.mem_ord_connected_component_comm Set.mem_ordConnectedComponent_comm
 
-theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
+lemma mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
     (hyz : z ∈ ordConnectedComponent s y) : z ∈ ordConnectedComponent s x :=
   calc
     [[x, z]] ⊆ [[x, y]] ∪ [[y, z]] := uIcc_subset_uIcc_union_uIcc
     _ ⊆ s := union_subset hxy hyz
 #align set.mem_ord_connected_component_trans Set.mem_ordConnectedComponent_trans
 
-theorem ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
+lemma ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
     ordConnectedComponent s x = ordConnectedComponent s y :=
   ext fun _ =>
     ⟨mem_ordConnectedComponent_trans (mem_ordConnectedComponent_comm.2 h),
@@ -106,18 +106,18 @@ noncomputable def ordConnectedProj (s : Set α) : s → α := fun x : s =>
   (nonempty_ordConnectedComponent.2 x.2).some
 #align set.ord_connected_proj Set.ordConnectedProj
 
-theorem ordConnectedProj_mem_ordConnectedComponent (s : Set α) (x : s) :
+lemma ordConnectedProj_mem_ordConnectedComponent (s : Set α) (x : s) :
     ordConnectedProj s x ∈ ordConnectedComponent s x :=
   Nonempty.some_mem _
 #align set.ord_connected_proj_mem_ord_connected_component Set.ordConnectedProj_mem_ordConnectedComponent
 
-theorem mem_ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
+lemma mem_ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
     ↑x ∈ ordConnectedComponent s (ordConnectedProj s x) :=
   mem_ordConnectedComponent_comm.2 <| ordConnectedProj_mem_ordConnectedComponent s x
 #align set.mem_ord_connected_component_ord_connected_proj Set.mem_ordConnectedComponent_ordConnectedProj
 
 @[simp]
-theorem ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
+lemma ordConnectedComponent_ordConnectedProj (s : Set α) (x : s) :
     ordConnectedComponent s (ordConnectedProj s x) = ordConnectedComponent s x :=
   ordConnectedComponent_eq <| mem_ordConnectedComponent_ordConnectedProj _ _
 #align set.ord_connected_component_ord_connected_proj Set.ordConnectedComponent_ordConnectedProj
@@ -138,7 +138,7 @@ def ordConnectedSection (s : Set α) : Set α :=
   range <| ordConnectedProj s
 #align set.ord_connected_section Set.ordConnectedSection
 
-theorem dual_ordConnectedSection (s : Set α) :
+lemma dual_ordConnectedSection (s : Set α) :
     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
   simp_rw [ordConnectedSection, ordConnectedProj]
   ext x
@@ -150,7 +150,7 @@ lemma ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
   range_subset_iff.2 fun _ => ordConnectedComponent_subset <| Nonempty.some_mem _
 #align set.ord_connected_section_subset Set.ordConnectedSection_subset
 
-theorem eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSection s)
+lemma eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSection s)
     (hy : y ∈ ordConnectedSection s) (h : [[x, y]] ⊆ s) : x = y := by
   rcases hx with ⟨x, rfl⟩; rcases hy with ⟨y, rfl⟩
   exact
@@ -168,7 +168,7 @@ def ordSeparatingSet (s t : Set α) : Set α :=
   (⋃ x ∈ s, ordConnectedComponent tᶜ x) ∩ ⋃ x ∈ t, ordConnectedComponent sᶜ x
 #align set.ord_separating_set Set.ordSeparatingSet
 
-theorem ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparatingSet t s :=
+lemma ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparatingSet t s :=
   inter_comm _ _
 #align set.ord_separating_set_comm Set.ordSeparatingSet_comm
 

@@ -106,7 +106,7 @@ instance : EquivLike (α ≃ β) α β where
 instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
 
-@[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
+@[simp] lemma coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
 #align equiv.coe_fn_mk Equiv.coe_fn_mk
 
@@ -168,8 +168,8 @@ initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 -- Added these lemmas as restatements of `left_inv` and `right_inv`,
 -- which use the coercions.
 -- We might even consider switching the names, and having these as a public API.
-theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
-theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
+lemma left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
+lemma right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 @[trans, pp_dot]
@@ -183,36 +183,36 @@ instance : Trans Equiv Equiv Equiv where
 
 -- porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
-@[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+@[simp, mfld_simps] lemma toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
 -- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
 -- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
 -- If this issue is fixed then the simp linter probably will start complaining, and
 -- this theorem can be deleted hopefully without breaking any `simp` proofs.
-@[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
+@[simp] lemma toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
-@[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+@[simp, mfld_simps] lemma invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 #align equiv.inv_fun_as_coe Equiv.invFun_as_coe
 
-protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
+protected lemma injective (e : α ≃ β) : Injective e := EquivLike.injective e
 #align equiv.injective Equiv.injective
 
-protected theorem surjective (e : α ≃ β) : Surjective e := EquivLike.surjective e
+protected lemma surjective (e : α ≃ β) : Surjective e := EquivLike.surjective e
 #align equiv.surjective Equiv.surjective
 
-protected theorem bijective (e : α ≃ β) : Bijective e := EquivLike.bijective e
+protected lemma bijective (e : α ≃ β) : Bijective e := EquivLike.bijective e
 #align equiv.bijective Equiv.bijective
 
-protected theorem subsingleton (e : α ≃ β) [Subsingleton β] : Subsingleton α :=
+protected lemma subsingleton (e : α ≃ β) [Subsingleton β] : Subsingleton α :=
   e.injective.subsingleton
 #align equiv.subsingleton Equiv.subsingleton
 
-protected theorem subsingleton.symm (e : α ≃ β) [Subsingleton α] : Subsingleton β :=
+protected lemma subsingleton.symm (e : α ≃ β) [Subsingleton α] : Subsingleton β :=
   e.symm.injective.subsingleton
 #align equiv.subsingleton.symm Equiv.subsingleton.symm
 
-theorem subsingleton_congr (e : α ≃ β) : Subsingleton α ↔ Subsingleton β :=
+lemma subsingleton_congr (e : α ≃ β) : Subsingleton α ↔ Subsingleton β :=
   ⟨fun _ => e.symm.subsingleton, fun _ => e.subsingleton⟩
 #align equiv.subsingleton_congr Equiv.subsingleton_congr
 
@@ -234,10 +234,10 @@ protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
 #align equiv.decidable_eq Equiv.decidableEq
 
-theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty.congr e e.symm
+lemma nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty.congr e e.symm
 #align equiv.nonempty_congr Equiv.nonempty_congr
 
-protected theorem nonempty (e : α ≃ β) [Nonempty β] : Nonempty α := e.nonempty_congr.mpr ‹_›
+protected lemma nonempty (e : α ≃ β) [Nonempty β] : Nonempty α := e.nonempty_congr.mpr ‹_›
 #align equiv.nonempty Equiv.nonempty
 
 /-- If `α ≃ β` and `β` is inhabited, then so is `α`. -/
@@ -253,7 +253,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
   ⟨cast h, cast h.symm, fun _ => by cases h; rfl, fun _ => by cases h; rfl⟩
 #align equiv.cast Equiv.cast
 
-@[simp] theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
+@[simp] lemma coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
 #align equiv.coe_fn_symm_mk Equiv.coe_fn_symm_mk
 
 @[simp] lemma coe_refl : (Equiv.refl α : α → α) = id := rfl
@@ -267,42 +267,42 @@ lemma Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e : 
 
 -- porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_refl`
 -- in an expression such as `Equiv.refl a x`
-@[simp] theorem refl_apply (x : α) : Equiv.refl α x = x := rfl
+@[simp] lemma refl_apply (x : α) : Equiv.refl α x = x := rfl
 #align equiv.refl_apply Equiv.refl_apply
 
-@[simp] theorem coe_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g : α → γ) = g ∘ f := rfl
+@[simp] lemma coe_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g : α → γ) = g ∘ f := rfl
 #align equiv.coe_trans Equiv.coe_trans
 
 -- porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_trans`
 -- in an expression such as `Equiv.trans f g x`
-@[simp] theorem trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) := rfl
+@[simp] lemma trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) := rfl
 #align equiv.trans_apply Equiv.trans_apply
 
-@[simp] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
+@[simp] lemma apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
 #align equiv.apply_symm_apply Equiv.apply_symm_apply
 
-@[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x := e.left_inv x
+@[simp] lemma symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x := e.left_inv x
 #align equiv.symm_apply_apply Equiv.symm_apply_apply
 
-@[simp] theorem symm_comp_self (e : α ≃ β) : e.symm ∘ e = id := funext e.symm_apply_apply
+@[simp] lemma symm_comp_self (e : α ≃ β) : e.symm ∘ e = id := funext e.symm_apply_apply
 #align equiv.symm_comp_self Equiv.symm_comp_self
 
-@[simp] theorem self_comp_symm (e : α ≃ β) : e ∘ e.symm = id := funext e.apply_symm_apply
+@[simp] lemma self_comp_symm (e : α ≃ β) : e ∘ e.symm = id := funext e.apply_symm_apply
 #align equiv.self_comp_symm Equiv.self_comp_symm
 
-@[simp] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
+@[simp] lemma symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
 #align equiv.symm_trans_apply Equiv.symm_trans_apply
 
 -- The `simp` attribute is needed to make this a `dsimp` lemma.
 -- `simp` will always rewrite with `Equiv.symm_symm` before this has a chance to fire.
-@[simp, nolint simpNF] theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
+@[simp, nolint simpNF] lemma symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 #align equiv.symm_symm_apply Equiv.symm_symm_apply
 
-theorem apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
+lemma apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
 #align equiv.apply_eq_iff_eq Equiv.apply_eq_iff_eq
 
-theorem apply_eq_iff_eq_symm_apply (f : α ≃ β) : f x = y ↔ x = f.symm y := by
+lemma apply_eq_iff_eq_symm_apply (f : α ≃ β) : f x = y ↔ x = f.symm y := by
   conv_lhs => rw [← apply_symm_apply f y]
   rw [apply_eq_iff_eq]
 #align equiv.apply_eq_iff_eq_symm_apply Equiv.apply_eq_iff_eq_symm_apply
@@ -333,55 +333,55 @@ lemma eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :=
   (eq_comm.trans e.symm_apply_eq).trans eq_comm
 #align equiv.eq_symm_apply Equiv.eq_symm_apply
 
-@[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := by cases e; rfl
+@[simp] lemma symm_symm (e : α ≃ β) : e.symm.symm = e := by cases e; rfl
 #align equiv.symm_symm Equiv.symm_symm
 
-@[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
+@[simp] lemma trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 #align equiv.trans_refl Equiv.trans_refl
 
 @[simp] lemma refl_symm : (Equiv.refl α).symm = Equiv.refl α := rfl
 #align equiv.refl_symm Equiv.refl_symm
 
-@[simp] theorem refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := by cases e; rfl
+@[simp] lemma refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := by cases e; rfl
 #align equiv.refl_trans Equiv.refl_trans
 
-@[simp] theorem symm_trans_self (e : α ≃ β) : e.symm.trans e = Equiv.refl β := ext <| by simp
+@[simp] lemma symm_trans_self (e : α ≃ β) : e.symm.trans e = Equiv.refl β := ext <| by simp
 #align equiv.symm_trans_self Equiv.symm_trans_self
 
-@[simp] theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α := ext <| by simp
+@[simp] lemma self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α := ext <| by simp
 #align equiv.self_trans_symm Equiv.self_trans_symm
 
 lemma trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
     (ab.trans bc).trans cd = ab.trans (bc.trans cd) := Equiv.ext fun _ => rfl
 #align equiv.trans_assoc Equiv.trans_assoc
 
-theorem leftInverse_symm (f : Equiv α β) : LeftInverse f.symm f := f.left_inv
+lemma leftInverse_symm (f : Equiv α β) : LeftInverse f.symm f := f.left_inv
 #align equiv.left_inverse_symm Equiv.leftInverse_symm
 
-theorem rightInverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := f.right_inv
+lemma rightInverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := f.right_inv
 #align equiv.right_inverse_symm Equiv.rightInverse_symm
 
-theorem injective_comp (e : α ≃ β) (f : β → γ) : Injective (f ∘ e) ↔ Injective f :=
+lemma injective_comp (e : α ≃ β) (f : β → γ) : Injective (f ∘ e) ↔ Injective f :=
   EquivLike.injective_comp e f
 #align equiv.injective_comp Equiv.injective_comp
 
-theorem comp_injective (f : α → β) (e : β ≃ γ) : Injective (e ∘ f) ↔ Injective f :=
+lemma comp_injective (f : α → β) (e : β ≃ γ) : Injective (e ∘ f) ↔ Injective f :=
   EquivLike.comp_injective f e
 #align equiv.comp_injective Equiv.comp_injective
 
-theorem surjective_comp (e : α ≃ β) (f : β → γ) : Surjective (f ∘ e) ↔ Surjective f :=
+lemma surjective_comp (e : α ≃ β) (f : β → γ) : Surjective (f ∘ e) ↔ Surjective f :=
   EquivLike.surjective_comp e f
 #align equiv.surjective_comp Equiv.surjective_comp
 
-theorem comp_surjective (f : α → β) (e : β ≃ γ) : Surjective (e ∘ f) ↔ Surjective f :=
+lemma comp_surjective (f : α → β) (e : β ≃ γ) : Surjective (e ∘ f) ↔ Surjective f :=
   EquivLike.comp_surjective f e
 #align equiv.comp_surjective Equiv.comp_surjective
 
-theorem bijective_comp (e : α ≃ β) (f : β → γ) : Bijective (f ∘ e) ↔ Bijective f :=
+lemma bijective_comp (e : α ≃ β) (f : β → γ) : Bijective (f ∘ e) ↔ Bijective f :=
   EquivLike.bijective_comp e f
 #align equiv.bijective_comp Equiv.bijective_comp
 
-theorem comp_bijective (f : α → β) (e : β ≃ γ) : Bijective (e ∘ f) ↔ Bijective f :=
+lemma comp_bijective (f : α → β) (e : β ≃ γ) : Bijective (e ∘ f) ↔ Bijective f :=
   EquivLike.comp_bijective f e
 #align equiv.comp_bijective Equiv.comp_bijective
 
@@ -427,7 +427,7 @@ variable {α' β' : Type*} (e : α' ≃ β')
 def permCongr : Perm α' ≃ Perm β' := equivCongr e e
 #align equiv.perm_congr Equiv.permCongr
 
-theorem permCongr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).trans e := rfl
+lemma permCongr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).trans e := rfl
 #align equiv.perm_congr_def Equiv.permCongr_def
 
 @[simp] lemma permCongr_refl : e.permCongr (Equiv.refl _) = Equiv.refl _ := by
@@ -437,14 +437,14 @@ theorem permCongr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).tr
 @[simp] lemma permCongr_symm : e.permCongr.symm = e.symm.permCongr := rfl
 #align equiv.perm_congr_symm Equiv.permCongr_symm
 
-@[simp] theorem permCongr_apply (p : Equiv.Perm α') (x) : e.permCongr p x = e (p (e.symm x)) := rfl
+@[simp] lemma permCongr_apply (p : Equiv.Perm α') (x) : e.permCongr p x = e (p (e.symm x)) := rfl
 #align equiv.perm_congr_apply Equiv.permCongr_apply
 
-theorem permCongr_symm_apply (p : Equiv.Perm β') (x) :
+lemma permCongr_symm_apply (p : Equiv.Perm β') (x) :
     e.permCongr.symm p x = e.symm (p (e x)) := rfl
 #align equiv.perm_congr_symm_apply Equiv.permCongr_symm_apply
 
-theorem permCongr_trans (p p' : Equiv.Perm α') :
+lemma permCongr_trans (p p' : Equiv.Perm α') :
     (e.permCongr p).trans (e.permCongr p') = e.permCongr (p.trans p') := by
   ext; simp only [trans_apply, comp_apply, permCongr_apply, symm_apply_apply]
 #align equiv.perm_congr_trans Equiv.permCongr_trans
@@ -528,11 +528,11 @@ lemma arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ 
     arrowCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) := rfl
 #align equiv.arrow_congr_refl Equiv.arrowCongr_refl
 
-@[simp] theorem arrowCongr_trans (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂) (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
+@[simp] lemma arrowCongr_trans (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂) (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
     arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') := rfl
 #align equiv.arrow_congr_trans Equiv.arrowCongr_trans
 
-@[simp] theorem arrowCongr_symm (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+@[simp] lemma arrowCongr_symm (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm := rfl
 #align equiv.arrow_congr_symm Equiv.arrowCongr_symm
 
@@ -558,7 +558,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ :
   rfl
 #align equiv.arrow_congr'_trans Equiv.arrowCongr'_trans
 
-@[simp] theorem arrowCongr'_symm (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+@[simp] lemma arrowCongr'_symm (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (arrowCongr' e₁ e₂).symm = arrowCongr' e₁.symm e₂.symm := rfl
 #align equiv.arrow_congr'_symm Equiv.arrowCongr'_symm
 
@@ -570,17 +570,17 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ :
 @[simp] lemma conj_refl : conj (Equiv.refl α) = Equiv.refl (α → α) := rfl
 #align equiv.conj_refl Equiv.conj_refl
 
-@[simp] theorem conj_symm (e : α ≃ β) : e.conj.symm = e.symm.conj := rfl
+@[simp] lemma conj_symm (e : α ≃ β) : e.conj.symm = e.symm.conj := rfl
 #align equiv.conj_symm Equiv.conj_symm
 
-@[simp] theorem conj_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+@[simp] lemma conj_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
     (e₁.trans e₂).conj = e₁.conj.trans e₂.conj := rfl
 #align equiv.conj_trans Equiv.conj_trans
 
 -- This should not be a simp lemma as long as `(∘)` is reducible:
 -- when `(∘)` is reducible, Lean can unify `f₁ ∘ f₂` with any `g` using
 -- `f₁ := g` and `f₂ := fun x ↦ x`. This causes nontermination.
-theorem conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f₂) = e.conj f₁ ∘ e.conj f₂ := by
+lemma conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f₂) = e.conj f₁ ∘ e.conj f₂ := by
   apply arrowCongr_comp
 #align equiv.conj_comp Equiv.conj_comp
 

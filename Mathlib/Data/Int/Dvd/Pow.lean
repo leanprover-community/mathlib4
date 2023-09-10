@@ -19,7 +19,7 @@ namespace Int
 
 set_option linter.deprecated false in
 @[simp]
-theorem sign_pow_bit1 (k : ℕ) : ∀ n : ℤ, n.sign ^ bit1 k = n.sign
+lemma sign_pow_bit1 (k : ℕ) : ∀ n : ℤ, n.sign ^ bit1 k = n.sign
   | (_ + 1 : ℕ) => one_pow (bit1 k)
   | 0 => zero_pow (Nat.zero_lt_bit1 k)
   | -[_+1] => (neg_pow_bit1 1 k).trans (congr_arg (fun x => -x) (one_pow (bit1 k)))

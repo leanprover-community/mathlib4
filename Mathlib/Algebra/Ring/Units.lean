@@ -33,7 +33,7 @@ instance : Neg αˣ :=
 /-- Representing an element of a ring's unit group as an element of the ring commutes with
     mapping this element to its additive inverse. -/
 @[simp, norm_cast]
-protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
+protected lemma val_neg (u : αˣ) : (↑(-u) : α) = -u :=
   rfl
 #align units.coe_neg Units.val_neg
 
@@ -46,7 +46,7 @@ instance : HasDistribNeg αˣ :=
   Units.ext.hasDistribNeg _ Units.val_neg Units.val_mul
 
 @[field_simps]
-theorem neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [divp, neg_mul]
+lemma neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [divp, neg_mul]
 #align units.neg_divp Units.neg_divp
 
 end HasDistribNeg
@@ -57,33 +57,33 @@ variable [Ring α] {a b : α}
 
 -- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
 @[field_simps 1010]
-theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
+lemma divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
   simp only [divp, add_mul]
 #align units.divp_add_divp_same Units.divp_add_divp_same
 
 -- Needs to have higher simp priority than divp_sub_divp. 1000 is the default priority.
 @[field_simps 1010]
-theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
+lemma divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 #align units.divp_sub_divp_same Units.divp_sub_divp_same
 
 @[field_simps]
-theorem add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
+lemma add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
   simp only [divp, add_mul, Units.mul_inv_cancel_right]
 #align units.add_divp Units.add_divp
 
 @[field_simps]
-theorem sub_divp (a b : α) (u : αˣ) : a - b /ₚ u = (a * u - b) /ₚ u := by
+lemma sub_divp (a b : α) (u : αˣ) : a - b /ₚ u = (a * u - b) /ₚ u := by
   simp only [divp, sub_mul, Units.mul_inv_cancel_right]
 #align units.sub_divp Units.sub_divp
 
 @[field_simps]
-theorem divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
+lemma divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
   simp only [divp, add_mul, Units.mul_inv_cancel_right]
 #align units.divp_add Units.divp_add
 
 @[field_simps]
-theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
+lemma divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
   simp only [divp, sub_mul, sub_right_inj]
   rw [mul_assoc, Units.mul_inv, mul_one]
 #align units.divp_sub Units.divp_sub

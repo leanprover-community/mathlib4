@@ -108,7 +108,7 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
   map_continuous f := f.continuous_toFun
 
 -- porting note: new lemma
-@[simp] theorem coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
+@[simp] lemma coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
 
 lemma toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl
 #align continuous_order_hom.to_fun_eq_coe ContinuousOrderHom.toFun_eq_coe
@@ -125,11 +125,11 @@ protected def copy (f : α →Co β) (f' : α → β) (h : f' = f) : α →Co β
 #align continuous_order_hom.copy ContinuousOrderHom.copy
 
 @[simp]
-theorem coe_copy (f : α →Co β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : α →Co β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align continuous_order_hom.coe_copy ContinuousOrderHom.coe_copy
 
-theorem copy_eq (f : α →Co β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : α →Co β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align continuous_order_hom.copy_eq ContinuousOrderHom.copy_eq
 
@@ -151,7 +151,7 @@ lemma coe_id : ⇑(ContinuousOrderHom.id α) = id :=
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : ContinuousOrderHom.id α a = a :=
+lemma id_apply (a : α) : ContinuousOrderHom.id α a = a :=
   rfl
 #align continuous_order_hom.id_apply ContinuousOrderHom.id_apply
 
@@ -161,28 +161,28 @@ def comp (f : β →Co γ) (g : α →Co β) : ContinuousOrderHom α γ :=
 #align continuous_order_hom.comp ContinuousOrderHom.comp
 
 @[simp]
-theorem coe_comp (f : β →Co γ) (g : α →Co β) : (f.comp g : α → γ) = f ∘ g :=
+lemma coe_comp (f : β →Co γ) (g : α →Co β) : (f.comp g : α → γ) = f ∘ g :=
   rfl
 #align continuous_order_hom.coe_comp ContinuousOrderHom.coe_comp
 
 @[simp]
-theorem comp_apply (f : β →Co γ) (g : α →Co β) (a : α) : (f.comp g) a = f (g a) :=
+lemma comp_apply (f : β →Co γ) (g : α →Co β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 #align continuous_order_hom.comp_apply ContinuousOrderHom.comp_apply
 
 @[simp]
-theorem comp_assoc (f : γ →Co δ) (g : β →Co γ) (h : α →Co β) :
+lemma comp_assoc (f : γ →Co δ) (g : β →Co γ) (h : α →Co β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align continuous_order_hom.comp_assoc ContinuousOrderHom.comp_assoc
 
 @[simp]
-theorem comp_id (f : α →Co β) : f.comp (ContinuousOrderHom.id α) = f :=
+lemma comp_id (f : α →Co β) : f.comp (ContinuousOrderHom.id α) = f :=
   ext fun _ => rfl
 #align continuous_order_hom.comp_id ContinuousOrderHom.comp_id
 
 @[simp]
-theorem id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
+lemma id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
   ext fun _ => rfl
 #align continuous_order_hom.id_comp ContinuousOrderHom.id_comp
 

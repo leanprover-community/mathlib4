@@ -52,11 +52,11 @@ def disjointed (f : ℕ → α) : ℕ → α
 #align disjointed disjointed
 
 @[simp]
-theorem disjointed_zero (f : ℕ → α) : disjointed f 0 = f 0 :=
+lemma disjointed_zero (f : ℕ → α) : disjointed f 0 = f 0 :=
   rfl
 #align disjointed_zero disjointed_zero
 
-theorem disjointed_succ (f : ℕ → α) (n : ℕ) : disjointed f (n + 1) = f (n + 1) \ partialSups f n :=
+lemma disjointed_succ (f : ℕ → α) (n : ℕ) : disjointed f (n + 1) = f (n + 1) \ partialSups f n :=
   rfl
 #align disjointed_succ disjointed_succ
 
@@ -67,11 +67,11 @@ lemma disjointed_le_id : disjointed ≤ (id : (ℕ → α) → ℕ → α) := by
   · exact sdiff_le
 #align disjointed_le_id disjointed_le_id
 
-theorem disjointed_le (f : ℕ → α) : disjointed f ≤ f :=
+lemma disjointed_le (f : ℕ → α) : disjointed f ≤ f :=
   disjointed_le_id f
 #align disjointed_le disjointed_le
 
-theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed f) := by
+lemma disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed f) := by
   refine' (Symmetric.pairwise_on Disjoint.symm _).2 fun m n h => _
   cases n
   · exact (Nat.not_lt_zero _ h).elim
@@ -107,7 +107,7 @@ lemma Monotone.disjointed_eq {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
 #align monotone.disjointed_eq Monotone.disjointed_eq
 
 @[simp]
-theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = partialSups f := by
+lemma partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = partialSups f := by
   ext n
   induction' n with k ih
   · rw [partialSups_zero, partialSups_zero, disjointed_zero]
@@ -138,11 +138,11 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α]
 
-theorem iSup_disjointed (f : ℕ → α) : ⨆ n, disjointed f n = ⨆ n, f n :=
+lemma iSup_disjointed (f : ℕ → α) : ⨆ n, disjointed f n = ⨆ n, f n :=
   iSup_eq_iSup_of_partialSups_eq_partialSups (partialSups_disjointed f)
 #align supr_disjointed iSup_disjointed
 
-theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, (f i)ᶜ := by
+lemma disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, (f i)ᶜ := by
   cases n
   · rw [disjointed_zero, eq_comm, inf_eq_left]
     simp_rw [le_iInf_iff]
@@ -158,7 +158,7 @@ end CompleteBooleanAlgebra
 /-! ### Set notation variants of lemmas -/
 
 
-theorem disjointed_subset (f : ℕ → Set α) (n : ℕ) : disjointed f n ⊆ f n :=
+lemma disjointed_subset (f : ℕ → Set α) (n : ℕ) : disjointed f n ⊆ f n :=
   disjointed_le f n
 #align disjointed_subset disjointed_subset
 
@@ -166,12 +166,12 @@ lemma iUnion_disjointed {f : ℕ → Set α} : ⋃ n, disjointed f n = ⋃ n, f 
   iSup_disjointed f
 #align Union_disjointed iUnion_disjointed
 
-theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
+lemma disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
     disjointed f n = f n ∩ ⋂ i < n, (f i)ᶜ :=
   disjointed_eq_inf_compl f n
 #align disjointed_eq_inter_compl disjointed_eq_inter_compl
 
-theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x ∈ s n)
+lemma preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x ∈ s n)
     [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
   ext x
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]

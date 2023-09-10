@@ -43,7 +43,7 @@ lemma fold_empty : (∅ : Finset α).fold op b f = b :=
 #align finset.fold_empty Finset.fold_empty
 
 @[simp]
-theorem fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f := by
+lemma fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f := by
   dsimp only [fold]
   rw [cons_val, Multiset.map_cons, fold_cons_left]
 #align finset.fold_cons Finset.fold_cons

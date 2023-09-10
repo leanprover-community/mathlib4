@@ -48,7 +48,7 @@ namespace Finset
 
 variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M}
 
-theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in Ico 1 (2 ^ n), f k) ≤ ∑ k in range n, 2 ^ k • f (2 ^ k) := by
   induction' n with n ihn
   · simp
@@ -62,13 +62,13 @@ theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
   simp [pow_succ, two_mul]
 #align finset.le_sum_condensed' Finset.le_sum_condensed'
 
-theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (2 ^ n), f k) ≤ f 0 + ∑ k in range n, 2 ^ k • f (2 ^ k) := by
   convert add_le_add_left (le_sum_condensed' hf n) (f 0)
   rw [← sum_range_add_sum_Ico _ n.one_le_two_pow, sum_range_succ, sum_range_zero, zero_add]
 #align finset.le_sum_condensed Finset.le_sum_condensed
 
-theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
   induction' n with n ihn
   · simp
@@ -84,7 +84,7 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
   simp [pow_succ, two_mul]
 #align finset.sum_condensed_le' Finset.sum_condensed_le'
 
-theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+lemma sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
   convert add_le_add_left (nsmul_le_nsmul_of_le_right (sum_condensed_le' hf n) 2) (f 1)
   simp [sum_range_succ', add_comm, pow_succ, mul_nsmul', sum_nsmul]
@@ -96,7 +96,7 @@ namespace ENNReal
 
 variable {f : ℕ → ℝ≥0∞}
 
-theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
+lemma le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
   rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
   refine' iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left _ _)
@@ -104,7 +104,7 @@ theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
   apply ENNReal.sum_le_tsum
 #align ennreal.le_tsum_condensed ENNReal.le_tsum_condensed
 
-theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
+lemma tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
     (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k := by
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id), two_mul, ← two_nsmul]
   refine'
@@ -313,7 +313,7 @@ lemma sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     positivity
 #align sum_Ioc_inv_sq_le_sub sum_Ioc_inv_sq_le_sub
 
-theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, ((i : α) ^ 2)⁻¹) ≤ 2 / (k + 1) :=
+lemma sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, ((i : α) ^ 2)⁻¹) ≤ 2 / (k + 1) :=
   calc
     (∑ i in Ioo k n, ((i : α) ^ 2)⁻¹) ≤ ∑ i in Ioc k (max (k + 1) n), ((i : α) ^ 2)⁻¹ := by
       apply sum_le_sum_of_subset_of_nonneg

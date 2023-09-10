@@ -85,11 +85,11 @@ lemma coe_inv_of_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
 
 variable {K}
 
-theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y ∈ (1 : FractionalIdeal R₁⁰ K) :=
+lemma mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y ∈ (1 : FractionalIdeal R₁⁰ K) :=
   mem_div_iff_of_nonzero hI
 #align fractional_ideal.mem_inv_iff FractionalIdeal.mem_inv_iff
 
-theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
+lemma inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
   -- Porting note: in Lean3, introducing `x` would just give `x ∈ J⁻¹ → x ∈ I⁻¹`, but
   --  in Lean4, it goes all the way down to the subtypes
   intro x
@@ -104,13 +104,13 @@ lemma le_self_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : Fractiona
 
 variable (K)
 
-theorem coe_ideal_le_self_mul_inv (I : Ideal R₁) :
+lemma coe_ideal_le_self_mul_inv (I : Ideal R₁) :
     (I : FractionalIdeal R₁⁰ K) ≤ I * (I : FractionalIdeal R₁⁰ K)⁻¹ :=
   le_self_mul_inv coeIdeal_le_one
 #align fractional_ideal.coe_ideal_le_self_mul_inv FractionalIdeal.coe_ideal_le_self_mul_inv
 
 /-- `I⁻¹` is the inverse of `I` if `I` has an inverse. -/
-theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J = I⁻¹ := by
+lemma right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J = I⁻¹ := by
   have hI : I ≠ 0 := ne_zero_of_mul_eq_one I J h
   suffices h' : I * (1 / I) = 1
   · exact congr_arg Units.inv <|
@@ -139,19 +139,19 @@ lemma mul_inv_cancel_iff_isUnit {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1
 variable {K' : Type*} [Field K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
 
 @[simp]
-theorem map_inv (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
+lemma map_inv (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     I⁻¹.map (h : K →ₐ[R₁] K') = (I.map h)⁻¹ := by rw [inv_eq, map_div, map_one, inv_eq]
 #align fractional_ideal.map_inv FractionalIdeal.map_inv
 
 open Submodule Submodule.IsPrincipal
 
 @[simp]
-theorem spanSingleton_inv (x : K) : (spanSingleton R₁⁰ x)⁻¹ = spanSingleton _ x⁻¹ :=
+lemma spanSingleton_inv (x : K) : (spanSingleton R₁⁰ x)⁻¹ = spanSingleton _ x⁻¹ :=
   one_div_spanSingleton x
 #align fractional_ideal.span_singleton_inv FractionalIdeal.spanSingleton_inv
 
 -- @[simp] -- Porting note: not in simpNF form
-theorem spanSingleton_div_spanSingleton (x y : K) :
+lemma spanSingleton_div_spanSingleton (x y : K) :
     spanSingleton R₁⁰ x / spanSingleton R₁⁰ y = spanSingleton R₁⁰ (x / y) := by
   rw [div_spanSingleton, mul_comm, spanSingleton_mul_spanSingleton, div_eq_mul_inv]
 #align fractional_ideal.span_singleton_div_span_singleton FractionalIdeal.spanSingleton_div_spanSingleton
@@ -202,13 +202,13 @@ lemma mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [Is
   rw [eq_spanSingleton_of_principal I, generator_I_eq_zero, spanSingleton_zero]
 #align fractional_ideal.mul_generator_self_inv FractionalIdeal.mul_generator_self_inv
 
-theorem invertible_of_principal (I : FractionalIdeal R₁⁰ K)
+lemma invertible_of_principal (I : FractionalIdeal R₁⁰ K)
     [Submodule.IsPrincipal (I : Submodule R₁ K)] (h : I ≠ 0) : I * I⁻¹ = 1 :=
   mul_div_self_cancel_iff.mpr
     ⟨spanSingleton _ (generator (I : Submodule R₁ K))⁻¹, mul_generator_self_inv _ I h⟩
 #align fractional_ideal.invertible_of_principal FractionalIdeal.invertible_of_principal
 
-theorem invertible_iff_generator_nonzero (I : FractionalIdeal R₁⁰ K)
+lemma invertible_iff_generator_nonzero (I : FractionalIdeal R₁⁰ K)
     [Submodule.IsPrincipal (I : Submodule R₁ K)] :
     I * I⁻¹ = 1 ↔ generator (I : Submodule R₁ K) ≠ 0 := by
   constructor
@@ -224,7 +224,7 @@ theorem invertible_iff_generator_nonzero (I : FractionalIdeal R₁⁰ K)
     contradiction
 #align fractional_ideal.invertible_iff_generator_nonzero FractionalIdeal.invertible_iff_generator_nonzero
 
-theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)]
+lemma isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)]
     (h : I ≠ 0) : Submodule.IsPrincipal I⁻¹.1 := by
   rw [val_eq_coe, isPrincipal_iff]
   use (generator (I : Submodule R₁ K))⁻¹
@@ -722,20 +722,20 @@ lemma Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨ P
     hp.elim (fun h => h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
 #align ideal.is_prime_iff_bot_or_prime Ideal.isPrime_iff_bot_or_prime
 
-theorem Ideal.strictAnti_pow (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
+lemma Ideal.strictAnti_pow (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti ((· ^ ·) I : ℕ → Ideal A) :=
   strictAnti_nat_of_succ_lt fun e =>
     Ideal.dvdNotUnit_iff_lt.mp ⟨pow_ne_zero _ hI0, I, mt isUnit_iff.mp hI1, pow_succ' I e⟩
 #align ideal.strict_anti_pow Ideal.strictAnti_pow
 
-theorem Ideal.pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) (he : 2 ≤ e) :
+lemma Ideal.pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) (he : 2 ≤ e) :
     I ^ e < I := by
   convert I.strictAnti_pow hI0 hI1 he
   dsimp only
   rw [pow_one]
 #align ideal.pow_lt_self Ideal.pow_lt_self
 
-theorem Ideal.exists_mem_pow_not_mem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
+lemma Ideal.exists_mem_pow_not_mem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
     ∃ x ∈ I ^ e, x ∉ I ^ (e + 1) :=
   SetLike.exists_of_lt (I.strictAnti_pow hI0 hI1 e.lt_succ_self)
 #align ideal.exists_mem_pow_not_mem_pow_succ Ideal.exists_mem_pow_not_mem_pow_succ
@@ -764,7 +764,7 @@ lemma Ideal.pow_succ_lt_pow {P : Ideal A} [P_prime : P.IsPrime] (hP : P ≠ ⊥)
     (mt (pow_eq_pow_iff hP (mt Ideal.isUnit_iff.mp P_prime.ne_top)).mp i.succ_ne_self)
 #align ideal.pow_succ_lt_pow Ideal.pow_succ_lt_pow
 
-theorem Associates.le_singleton_iff (x : A) (n : ℕ) (I : Ideal A) :
+lemma Associates.le_singleton_iff (x : A) (n : ℕ) (I : Ideal A) :
     Associates.mk I ^ n ≤ Associates.mk (Ideal.span {x}) ↔ x ∈ I ^ n := by
   simp_rw [← Associates.dvd_eq_le, ← Associates.mk_pow, Associates.mk_dvd_mk,
     Ideal.dvd_span_singleton]
@@ -826,7 +826,7 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 
 
 @[simp]
-theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
+lemma sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
   letI := Classical.decEq (Ideal A)
   letI := Classical.decEq (Associates (Ideal A))
   letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
@@ -864,11 +864,11 @@ instance : NormalizedGCDMonoid (Ideal A) :=
 
 -- In fact, any lawful gcd and lcm would equal sup and inf respectively.
 @[simp]
-theorem gcd_eq_sup (I J : Ideal A) : gcd I J = I ⊔ J := rfl
+lemma gcd_eq_sup (I J : Ideal A) : gcd I J = I ⊔ J := rfl
 #align ideal.gcd_eq_sup Ideal.gcd_eq_sup
 
 @[simp]
-theorem lcm_eq_inf (I J : Ideal A) : lcm I J = I ⊓ J := rfl
+lemma lcm_eq_inf (I J : Ideal A) : lcm I J = I ⊓ J := rfl
 #align ideal.lcm_eq_inf Ideal.lcm_eq_inf
 
 lemma inf_eq_mul_of_coprime {I J : Ideal A} (coprime : I ⊔ J = ⊤) : I ⊓ J = I * J := by
@@ -889,7 +889,7 @@ open scoped Classical
 
 open Multiset UniqueFactorizationMonoid Ideal
 
-theorem prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
+lemma prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
   associated_iff_eq.1 (normalizedFactors_prod hI)
 #align prod_normalized_factors_eq_self prod_normalizedFactors_eq_self
 
@@ -900,7 +900,7 @@ lemma count_le_of_ideal_ge {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : I
     _
 #align count_le_of_ideal_ge count_le_of_ideal_ge
 
-theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+lemma sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊔ J = (normalizedFactors I ∩ normalizedFactors J).prod := by
   have H : normalizedFactors (normalizedFactors I ∩ normalizedFactors J).prod =
       normalizedFactors I ∩ normalizedFactors J := by
@@ -929,13 +929,13 @@ theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     · exact this
 #align sup_eq_prod_inf_factors sup_eq_prod_inf_factors
 
-theorem irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
+lemma irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
     J ^ n ⊔ I = J ^ min ((normalizedFactors I).count J) n := by
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
 #align irreducible_pow_sup irreducible_pow_sup
 
-theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
+lemma irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ multiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
   by_cases hI : I = ⊥
   · simp_all
@@ -943,7 +943,7 @@ theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : ↑n ≤ 
   rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
 #align irreducible_pow_sup_of_le irreducible_pow_sup_of_le
 
-theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
+lemma irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
     (hn : multiplicity J I ≤ n) :
     J ^ n ⊔ I = J ^ (multiplicity J I).get (PartENat.dom_of_le_natCast hn) := by
   rw [irreducible_pow_sup hI hJ, min_eq_left]
@@ -1123,7 +1123,7 @@ open UniqueFactorizationMonoid
 
 variable [DecidableEq (Ideal R)] [DecidableEq (Ideal A)]
 
-theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors (hJ : J ≠ ⊥)
+lemma idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors (hJ : J ≠ ⊥)
     {L : Ideal R} (hL : L ∈ normalizedFactors I) :
     ↑(idealFactorsEquivOfQuotEquiv f ⟨L, dvd_of_mem_normalizedFactors hL⟩)
       ∈ normalizedFactors J := by
@@ -1157,7 +1157,7 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
 #align normalized_factors_equiv_of_quot_equiv normalizedFactorsEquivOfQuotEquiv
 
 @[simp]
-theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+lemma normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     (normalizedFactorsEquivOfQuotEquiv f hI hJ).symm =
       normalizedFactorsEquivOfQuotEquiv f.symm hJ hI := rfl
 #align normalized_factors_equiv_of_quot_equiv_symm normalizedFactorsEquivOfQuotEquiv_symm
@@ -1167,7 +1167,7 @@ variable [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
 variable [DecidableRel ((· ∣ ·) : Ideal A → Ideal A → Prop)]
 
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
-theorem normalizedFactorsEquivOfQuotEquiv_multiplicity_eq_multiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
+lemma normalizedFactorsEquivOfQuotEquiv_multiplicity_eq_multiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
     (L : Ideal R) (hL : L ∈ normalizedFactors I) :
     multiplicity (↑(normalizedFactorsEquivOfQuotEquiv f hI hJ ⟨L, hL⟩)) J = multiplicity L I := by
   rw [normalizedFactorsEquivOfQuotEquiv, Equiv.coe_fn_mk, Subtype.coe_mk]
@@ -1202,7 +1202,7 @@ section DedekindDomain
 
 variable [IsDomain R] [IsDedekindDomain R]
 
-theorem Ideal.IsPrime.mul_mem_pow (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : ℕ}
+lemma Ideal.IsPrime.mul_mem_pow (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : ℕ}
     (h : a * b ∈ I ^ n) : a ∈ I ∨ b ∈ I ^ n := by
   cases n; · simp
   by_cases hI0 : I = ⊥; · simpa [pow_succ, hI0] using h

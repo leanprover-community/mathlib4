@@ -99,7 +99,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.of SemiRingCat.of
 
 @[simp]
-theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
@@ -238,7 +238,7 @@ instance (R : RingCat) : Ring R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
@@ -348,7 +348,7 @@ instance (R : CommSemiRingCat) : CommSemiring R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.coe_of CommSemiRingCat.coe_of
@@ -463,7 +463,7 @@ instance (R : CommRingCat) : CommRing R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.coe_of CommRingCat.coe_of

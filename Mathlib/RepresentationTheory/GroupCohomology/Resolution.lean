@@ -173,7 +173,7 @@ def diagonalSucc (n : ℕ) :
 
 variable {k G n}
 
-theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
+lemma diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
 /- Porting note: broken proof was
@@ -196,7 +196,7 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
   rfl
 #align group_cohomology.resolution.diagonal_succ_hom_single GroupCohomology.Resolution.diagonalSucc_hom_single
 
-theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
+lemma diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
       single (g • partialProd f) (a * b) := by
 /- Porting note: broken proof was
@@ -217,7 +217,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
   rfl
 #align group_cohomology.resolution.diagonal_succ_inv_single_single GroupCohomology.Resolution.diagonalSucc_inv_single_single
 
-theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
+lemma diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
       Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
   refine' f.induction _ _
@@ -235,7 +235,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     · rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_left GroupCohomology.Resolution.diagonalSucc_inv_single_left
 
-theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
+lemma diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
       Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
   refine' g.induction _ _
@@ -328,7 +328,7 @@ variable {n A}
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
 sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
 `(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
-theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) (x : Fin n → G) :
+lemma diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) (x : Fin n → G) :
     diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
 /- Porting note: broken proof was
   unfold diagonalHomEquiv
@@ -348,7 +348,7 @@ the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. 
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
 `(g₀, ... gₙ) ↦ ρ(g₀)(f(g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`, where `ρ` is the representation attached
 to `A`. -/
-theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
+lemma diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
       A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
   unfold diagonalHomEquiv
@@ -384,7 +384,7 @@ set_option linter.uppercaseLean3 false in
 /-- Auxiliary lemma for defining group cohomology, used to show that the isomorphism
 `diagonalHomEquiv` commutes with the differentials in two complexes which compute
 group cohomology. -/
-theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
+lemma diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
     (a : Fin (n + 1)) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
       = f (Fin.contractNth a (· * ·) g) := by
@@ -530,7 +530,7 @@ def xIso (n : ℕ) : (GroupCohomology.resolution k G).X n ≅ Rep.ofMulAction k 
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.X_iso GroupCohomology.Resolution.xIso
 
-theorem x_projective (G : Type u) [Group G] (n : ℕ) :
+lemma x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((GroupCohomology.resolution k G).X n) :=
   Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _
@@ -541,7 +541,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((GroupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
+lemma d_eq (n : ℕ) : ((GroupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
   refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
   dsimp [GroupCohomology.resolution]
 /- Porting note: broken proof was

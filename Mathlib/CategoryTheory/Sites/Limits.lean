@@ -136,7 +136,7 @@ then the limit presheaf is again a sheaf.
 
 This is used to show that the forgetful functor from sheaves to presheaves creates limits.
 -/
-theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D))
+lemma isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPresheaf J D))
     (hE : IsLimit E) : Presheaf.IsSheaf J E.pt := by
   rw [Presheaf.isSheaf_iff_multifork]
   intro X S

@@ -39,7 +39,7 @@ structure IsNat [AddMonoidWithOne α] (a : α) (n : ℕ) : Prop where
   /-- The element is equal to the coercion of the natural number. -/
   out : a = n
 
-theorem IsNat.raw_refl (n : ℕ) : IsNat n n := ⟨rfl⟩
+lemma IsNat.raw_refl (n : ℕ) : IsNat n n := ⟨rfl⟩
 
 /--
 A "raw nat cast" is an expression of the form `(Nat.rawCast lit : α)` where `lit` is a raw
@@ -54,7 +54,7 @@ lemma IsNat.to_eq [AddMonoidWithOne α] {n} : {a a' : α} → IsNat a n → n = 
 lemma IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
 
-theorem IsNat.of_raw (α) [AddMonoidWithOne α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
+lemma IsNat.of_raw (α) [AddMonoidWithOne α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
 
 @[elab_as_elim]
 lemma isNat.natElim {p : ℕ → Prop} : {n : ℕ} → {n' : ℕ} → IsNat n n' → p n' → p n
@@ -86,7 +86,7 @@ lemma IsNat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsInt a (.
 lemma IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
 
-theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
+lemma IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
 
 lemma IsInt.neg_to_eq {α} [Ring α] {n} :
     {a a' : α} → IsInt a (.negOfNat n) → n = a' → a = -a'
@@ -170,7 +170,7 @@ lemma IsRat.nonneg_to_eq {α} [DivisionRing α] {n d} :
     {a n' d' : α} → IsRat a (.ofNat n) d → n = n' → d = d' → a = n' / d'
   | _, _, _, ⟨_, rfl⟩, rfl, rfl => by simp [div_eq_mul_inv]
 
-theorem IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
+lemma IsRat.of_raw (α) [DivisionRing α] (n : ℤ) (d : ℕ)
     (h : (d : α) ≠ 0) : IsRat (Rat.rawCast n d : α) n d :=
   have := invertibleOfNonzero h
   ⟨this, by simp [div_eq_mul_inv]⟩

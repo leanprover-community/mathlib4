@@ -83,7 +83,7 @@ set_option linter.uppercaseLean3 false in
 /-- Describes the counit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
-theorem ihom_ev_app (M N : ModuleCat.{u} R) :
+lemma ihom_ev_app (M N : ModuleCat.{u} R) :
     (ihom.ev M).app N = TensorProduct.uncurry _ _ _ _ LinearMap.id.flip := by
   apply TensorProduct.ext'
   apply ModuleCat.monoidalClosed_uncurry
@@ -93,7 +93,7 @@ set_option linter.uppercaseLean3 false in
 /-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
 `R`-bilinear map `M ⟶ N ⟶ M ⊗ N`. -/
-theorem ihom_coev_app (M N : ModuleCat.{u} R) :
+lemma ihom_coev_app (M N : ModuleCat.{u} R) :
     (ihom.coev M).app N = (TensorProduct.mk _ _ _).flip :=
   rfl
 set_option linter.uppercaseLean3 false in

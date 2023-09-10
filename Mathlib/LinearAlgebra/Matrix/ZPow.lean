@@ -39,20 +39,20 @@ noncomputable instance : DivInvMonoid M :=
 section NatPow
 
 @[simp]
-theorem inv_pow' (A : M) (n : ℕ) : A⁻¹ ^ n = (A ^ n)⁻¹ := by
+lemma inv_pow' (A : M) (n : ℕ) : A⁻¹ ^ n = (A ^ n)⁻¹ := by
   induction' n with n ih
   · simp
   · rw [pow_succ A, mul_inv_rev, ← ih, ← pow_succ']
 #align matrix.inv_pow' Matrix.inv_pow'
 
-theorem pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
+lemma pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
     A ^ (m - n) = A ^ m * (A ^ n)⁻¹ := by
   rw [← tsub_add_cancel_of_le h, pow_add, Matrix.mul_assoc, mul_nonsing_inv,
     tsub_add_cancel_of_le h, Matrix.mul_one]
   simpa using ha.pow n
 #align matrix.pow_sub' Matrix.pow_sub'
 
-theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ ^ m := by
+lemma pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ ^ m := by
   induction' n with n IH generalizing m
   · simp
   cases' m with m m
@@ -89,29 +89,29 @@ lemma zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : M) ^ z = 0
   | -[n+1], _ => by simp [zero_pow n.zero_lt_succ]
 #align matrix.zero_zpow Matrix.zero_zpow
 
-theorem zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
+lemma zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
   split_ifs with h
   · rw [h, zpow_zero]
   · rw [zero_zpow _ h]
 #align matrix.zero_zpow_eq Matrix.zero_zpow_eq
 
-theorem inv_zpow (A : M) : ∀ n : ℤ, A⁻¹ ^ n = (A ^ n)⁻¹
+lemma inv_zpow (A : M) : ∀ n : ℤ, A⁻¹ ^ n = (A ^ n)⁻¹
   | (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, inv_pow']
   | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, inv_pow']
 #align matrix.inv_zpow Matrix.inv_zpow
 
 @[simp]
-theorem zpow_neg_one (A : M) : A ^ (-1 : ℤ) = A⁻¹ := by
+lemma zpow_neg_one (A : M) : A ^ (-1 : ℤ) = A⁻¹ := by
   convert DivInvMonoid.zpow_neg' 0 A
   simp only [zpow_one, Int.ofNat_zero, Int.ofNat_succ, zpow_eq_pow, zero_add]
 #align matrix.zpow_neg_one Matrix.zpow_neg_one
 
-theorem zpow_coe_nat (A : M) (n : ℕ) : A ^ (n : ℤ) = A ^ n :=
+lemma zpow_coe_nat (A : M) (n : ℕ) : A ^ (n : ℤ) = A ^ n :=
   zpow_ofNat _ _
 #align matrix.zpow_coe_nat Matrix.zpow_coe_nat
 
 @[simp]
-theorem zpow_neg_coe_nat (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
+lemma zpow_neg_coe_nat (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
   cases n
   · simp
   · exact DivInvMonoid.zpow_neg' _ _
@@ -226,20 +226,20 @@ lemma Commute.zpow_zpow {A B : M} (h : Commute A B) (m n : ℤ) : Commute (A ^ m
   Commute.zpow_right (Commute.zpow_left h _) _
 #align matrix.commute.zpow_zpow Matrix.Commute.zpow_zpow
 
-theorem Commute.zpow_self (A : M) (n : ℤ) : Commute (A ^ n) A :=
+lemma Commute.zpow_self (A : M) (n : ℤ) : Commute (A ^ n) A :=
   Commute.zpow_left (Commute.refl A) _
 #align matrix.commute.zpow_self Matrix.Commute.zpow_self
 
-theorem Commute.self_zpow (A : M) (n : ℤ) : Commute A (A ^ n) :=
+lemma Commute.self_zpow (A : M) (n : ℤ) : Commute A (A ^ n) :=
   Commute.zpow_right (Commute.refl A) _
 #align matrix.commute.self_zpow Matrix.Commute.self_zpow
 
-theorem Commute.zpow_zpow_self (A : M) (m n : ℤ) : Commute (A ^ m) (A ^ n) :=
+lemma Commute.zpow_zpow_self (A : M) (m n : ℤ) : Commute (A ^ m) (A ^ n) :=
   Commute.zpow_zpow (Commute.refl A) _ _
 #align matrix.commute.zpow_zpow_self Matrix.Commute.zpow_zpow_self
 
 set_option linter.deprecated false in
-theorem zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
+lemma zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
   cases' le_total 0 n with nonneg nonpos
   · exact zpow_add_of_nonneg nonneg nonneg
   · exact zpow_add_of_nonpos nonpos nonpos
@@ -256,13 +256,13 @@ lemma zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 1)
 #align matrix.zpow_add_one_of_ne_neg_one Matrix.zpow_add_one_of_ne_neg_one
 
 set_option linter.deprecated false in
-theorem zpow_bit1 (A : M) (n : ℤ) : A ^ bit1 n = A ^ n * A ^ n * A := by
+lemma zpow_bit1 (A : M) (n : ℤ) : A ^ bit1 n = A ^ n * A ^ n * A := by
   rw [bit1, zpow_add_one_of_ne_neg_one, zpow_bit0]
   intro h
   simpa using congr_arg bodd h
 #align matrix.zpow_bit1 Matrix.zpow_bit1
 
-theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ m) ^ n
+lemma zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ m) ^ n
   | (m : ℕ), (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, ← pow_mul, ← zpow_ofNat, Int.ofNat_mul]
   | (m : ℕ), -[n+1] => by
     rw [zpow_ofNat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg_coe_nat]
@@ -276,13 +276,13 @@ theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ 
     exact h.pow _
 #align matrix.zpow_mul Matrix.zpow_mul
 
-theorem zpow_mul' (A : M) (h : IsUnit A.det) (m n : ℤ) : A ^ (m * n) = (A ^ n) ^ m := by
+lemma zpow_mul' (A : M) (h : IsUnit A.det) (m n : ℤ) : A ^ (m * n) = (A ^ n) ^ m := by
   rw [mul_comm, zpow_mul _ h]
 #align matrix.zpow_mul' Matrix.zpow_mul'
 
 
 @[simp, norm_cast]
-theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ n
+lemma coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ n
   | (n : ℕ) => by rw [_root_.zpow_coe_nat, zpow_ofNat, Units.val_pow_eq_pow_val]
   | -[k+1] => by
     rw [zpow_negSucc, zpow_negSucc, ← inv_pow, u⁻¹.val_pow_eq_pow_val, ← inv_pow', coe_units_inv]
@@ -308,16 +308,16 @@ lemma Commute.mul_zpow {A B : M} (h : Commute A B) : ∀ i : ℤ, (A * B) ^ i = 
 #align matrix.commute.mul_zpow Matrix.Commute.mul_zpow
 
 set_option linter.deprecated false in
-theorem zpow_bit0' (A : M) (n : ℤ) : A ^ bit0 n = (A * A) ^ n :=
+lemma zpow_bit0' (A : M) (n : ℤ) : A ^ bit0 n = (A * A) ^ n :=
   (zpow_bit0 A n).trans (Commute.mul_zpow (Commute.refl A) n).symm
 #align matrix.zpow_bit0' Matrix.zpow_bit0'
 
 set_option linter.deprecated false in
-theorem zpow_bit1' (A : M) (n : ℤ) : A ^ bit1 n = (A * A) ^ n * A := by
+lemma zpow_bit1' (A : M) (n : ℤ) : A ^ bit1 n = (A * A) ^ n * A := by
   rw [zpow_bit1, Commute.mul_zpow (Commute.refl A)]
 #align matrix.zpow_bit1' Matrix.zpow_bit1'
 
-theorem zpow_neg_mul_zpow_self (n : ℤ) {A : M} (h : IsUnit A.det) : A ^ (-n) * A ^ n = 1 := by
+lemma zpow_neg_mul_zpow_self (n : ℤ) {A : M} (h : IsUnit A.det) : A ^ (-n) * A ^ n = 1 := by
   rw [zpow_neg h, nonsing_inv_mul _ (h.det_zpow _)]
 #align matrix.zpow_neg_mul_zpow_self Matrix.zpow_neg_mul_zpow_self
 
@@ -328,7 +328,7 @@ lemma one_div_zpow {A : M} (n : ℤ) : (1 / A) ^ n = 1 / A ^ n := by simp only [
 #align matrix.one_div_zpow Matrix.one_div_zpow
 
 @[simp]
-theorem transpose_zpow (A : M) : ∀ n : ℤ, (A ^ n)ᵀ = Aᵀ ^ n
+lemma transpose_zpow (A : M) : ∀ n : ℤ, (A ^ n)ᵀ = Aᵀ ^ n
   | (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, transpose_pow]
   | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, transpose_nonsing_inv, transpose_pow]
 #align matrix.transpose_zpow Matrix.transpose_zpow

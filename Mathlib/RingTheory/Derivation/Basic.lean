@@ -86,12 +86,12 @@ instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
 #noalign derivation.to_linear_map_eq_coe -- porting note: not needed anymore
 
 @[simp]
-theorem mk_coe (f : A →ₗ[R] M) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : Derivation R A M) : A → M) = f :=
+lemma mk_coe (f : A →ₗ[R] M) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : Derivation R A M) : A → M) = f :=
   rfl
 #align derivation.mk_coe Derivation.mk_coe
 
 @[simp, norm_cast]
-theorem coeFn_coe (f : Derivation R A M) : ⇑(f : A →ₗ[R] M) = f :=
+lemma coeFn_coe (f : Derivation R A M) : ⇑(f : A →ₗ[R] M) = f :=
   rfl
 #align derivation.coe_fn_coe Derivation.coeFn_coe
 
@@ -100,11 +100,11 @@ lemma coe_injective : @Function.Injective (Derivation R A M) (A → M) FunLike.c
 #align derivation.coe_injective Derivation.coe_injective
 
 @[ext]
-theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
+lemma ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   FunLike.ext _ _ H
 #align derivation.ext Derivation.ext
 
-theorem congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
+lemma congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
   FunLike.congr_fun h a
 #align derivation.congr_fun Derivation.congr_fun
 
@@ -148,12 +148,12 @@ lemma map_algebraMap : D (algebraMap R A r) = 0 := by
 #align derivation.map_algebra_map Derivation.map_algebraMap
 
 @[simp]
-theorem map_coe_nat (n : ℕ) : D (n : A) = 0 := by
+lemma map_coe_nat (n : ℕ) : D (n : A) = 0 := by
   rw [← nsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 #align derivation.map_coe_nat Derivation.map_coe_nat
 
 @[simp]
-theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
+lemma leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction' n with n ihn
   · rw [Nat.zero_eq, pow_zero, map_one_eq_zero, zero_smul]
   · rcases (zero_le n).eq_or_lt with (rfl | hpos)
@@ -170,7 +170,7 @@ lemma eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R 
 
 /-- If adjoin of a set is the whole algebra, then any two derivations equal on this set are equal
 on the whole algebra. -/
-theorem ext_of_adjoin_eq_top (s : Set A) (hs : adjoin R s = ⊤) (h : Set.EqOn D1 D2 s) : D1 = D2 :=
+lemma ext_of_adjoin_eq_top (s : Set A) (hs : adjoin R s = ⊤) (h : Set.EqOn D1 D2 s) : D1 = D2 :=
   ext fun _ => eqOn_adjoin h <| hs.symm ▸ trivial
 #align derivation.ext_of_adjoin_eq_top Derivation.ext_of_adjoin_eq_top
 
@@ -190,7 +190,7 @@ lemma coe_zero_linearMap : ↑(0 : Derivation R A M) = (0 : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_zero_linear_map Derivation.coe_zero_linearMap
 
-theorem zero_apply (a : A) : (0 : Derivation R A M) a = 0 :=
+lemma zero_apply (a : A) : (0 : Derivation R A M) a = 0 :=
   rfl
 #align derivation.zero_apply Derivation.zero_apply
 
@@ -202,12 +202,12 @@ instance : Add (Derivation R A M) :=
         simp only [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
 
 @[simp]
-theorem coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
+lemma coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
   rfl
 #align derivation.coe_add Derivation.coe_add
 
 @[simp]
-theorem coe_add_linearMap (D1 D2 : Derivation R A M) : ↑(D1 + D2) = (D1 + D2 : A →ₗ[R] M) :=
+lemma coe_add_linearMap (D1 D2 : Derivation R A M) : ↑(D1 + D2) = (D1 + D2 : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_add_linear_map Derivation.coe_add_linearMap
 
@@ -234,16 +234,16 @@ instance : SMul S (Derivation R A M) :=
         smul_comm r (_ : A) (_ : M)] }⟩
 
 @[simp]
-theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
+lemma coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
   rfl
 #align derivation.coe_smul Derivation.coe_smul
 
 @[simp]
-theorem coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = r • (D : A →ₗ[R] M) :=
+lemma coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = r • (D : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_smul_linear_map Derivation.coe_smul_linearMap
 
-theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
+lemma smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
   rfl
 #align derivation.smul_apply Derivation.smul_apply
 
@@ -357,12 +357,12 @@ def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : D
 #align derivation.mk' Derivation.mk'
 
 @[simp]
-theorem coe_mk' (D : A →ₗ[R] M) (h) : ⇑(mk' D h) = D :=
+lemma coe_mk' (D : A →ₗ[R] M) (h) : ⇑(mk' D h) = D :=
   rfl
 #align derivation.coe_mk' Derivation.coe_mk'
 
 @[simp]
-theorem coe_mk'_linearMap (D : A →ₗ[R] M) (h) : (mk' D h : A →ₗ[R] M) = D :=
+lemma coe_mk'_linearMap (D : A →ₗ[R] M) (h) : (mk' D h : A →ₗ[R] M) = D :=
   rfl
 #align derivation.coe_mk'_linear_map Derivation.coe_mk'_linearMap
 
@@ -389,7 +389,7 @@ protected lemma map_sub : D (a - b) = D a - D b :=
 #align derivation.map_sub Derivation.map_sub
 
 @[simp]
-theorem map_coe_int (n : ℤ) : D (n : A) = 0 := by
+lemma map_coe_int (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 #align derivation.map_coe_int Derivation.map_coe_int
 
@@ -420,12 +420,12 @@ instance : Neg (Derivation R A M) :=
       simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
 
 @[simp]
-theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
+lemma coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
   rfl
 #align derivation.coe_neg Derivation.coe_neg
 
 @[simp]
-theorem coe_neg_linearMap (D : Derivation R A M) : ↑(-D) = (-D : A →ₗ[R] M) :=
+lemma coe_neg_linearMap (D : Derivation R A M) : ↑(-D) = (-D : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_neg_linear_map Derivation.coe_neg_linearMap
 
@@ -439,12 +439,12 @@ instance : Sub (Derivation R A M) :=
       simp only [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
 
 @[simp]
-theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
+lemma coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
   rfl
 #align derivation.coe_sub Derivation.coe_sub
 
 @[simp]
-theorem coe_sub_linearMap (D1 D2 : Derivation R A M) : ↑(D1 - D2) = (D1 - D2 : A →ₗ[R] M) :=
+lemma coe_sub_linearMap (D1 D2 : Derivation R A M) : ↑(D1 - D2) = (D1 - D2 : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_sub_linear_map Derivation.coe_sub_linearMap
 

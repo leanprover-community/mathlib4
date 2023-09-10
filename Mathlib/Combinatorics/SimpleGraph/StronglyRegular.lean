@@ -134,14 +134,14 @@ lemma sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     rwa [adj_comm]
 #align simple_graph.sdiff_compl_neighbor_finset_inter_eq SimpleGraph.sdiff_compl_neighborFinset_inter_eq
 
-theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
+lemma IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
   Gᶜ.IsRegularOfDegree (n - k - 1) := by
   rw [← h.card, Nat.sub_sub, add_comm, ← Nat.sub_sub]
   exact h.regular.compl
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.compl_is_regular SimpleGraph.IsSRGWith.compl_is_regular
 
-theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
+lemma IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
     (ha : Gᶜ.Adj v w) : Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - μ) - 2 := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
     Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighborFinset_def]
@@ -157,7 +157,7 @@ theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ 
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_common_neighbors_eq_of_adj_compl SimpleGraph.IsSRGWith.card_commonNeighbors_eq_of_adj_compl
 
-theorem IsSRGWith.card_commonNeighbors_eq_of_not_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
+lemma IsSRGWith.card_commonNeighbors_eq_of_not_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
     (hn : v ≠ w) (hna : ¬Gᶜ.Adj v w) :
     Fintype.card (Gᶜ.commonNeighbors v w) = n - (2 * k - ℓ) := by
   simp only [← Set.toFinset_card, commonNeighbors, Set.toFinset_inter, neighborSet_compl,
@@ -170,7 +170,7 @@ set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_common_neighbors_eq_of_not_adj_compl SimpleGraph.IsSRGWith.card_commonNeighbors_eq_of_not_adj_compl
 
 /-- The complement of a strongly regular graph is strongly regular. -/
-theorem IsSRGWith.compl (h : G.IsSRGWith n k ℓ μ) :
+lemma IsSRGWith.compl (h : G.IsSRGWith n k ℓ μ) :
     Gᶜ.IsSRGWith n (n - k - 1) (n - (2 * k - μ) - 2) (n - (2 * k - ℓ)) where
   card := h.card
   regular := h.compl_is_regular
@@ -181,7 +181,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The parameters of a strongly regular graph with at least one vertex satisfy
 `k * (k - ℓ - 1) = (n - k - 1) * μ`. -/
-theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
+lemma IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn

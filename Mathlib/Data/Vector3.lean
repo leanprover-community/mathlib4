@@ -71,12 +71,12 @@ end
 scoped notation a " :: " b => cons a b
 
 @[simp]
-theorem cons_fz (a : α) (v : Vector3 α n) : (a :: v) fz = a :=
+lemma cons_fz (a : α) (v : Vector3 α n) : (a :: v) fz = a :=
   rfl
 #align vector3.cons_fz Vector3.cons_fz
 
 @[simp]
-theorem cons_fs (a : α) (v : Vector3 α n) (i) : (a :: v) (fs i) = v i :=
+lemma cons_fs (a : α) (v : Vector3 α n) (i) : (a :: v) (fs i) = v i :=
   rfl
 #align vector3.cons_fs Vector3.cons_fs
 
@@ -101,11 +101,11 @@ def head (v : Vector3 α (succ n)) : α :=
 def tail (v : Vector3 α (succ n)) : Vector3 α n := fun i => v (fs i)
 #align vector3.tail Vector3.tail
 
-theorem eq_nil (v : Vector3 α 0) : v = [] :=
+lemma eq_nil (v : Vector3 α 0) : v = [] :=
   funext fun i => nomatch i
 #align vector3.eq_nil Vector3.eq_nil
 
-theorem cons_head_tail (v : Vector3 α (succ n)) : (head v :: tail v) = v :=
+lemma cons_head_tail (v : Vector3 α (succ n)) : (head v :: tail v) = v :=
   funext fun i => Fin2.cases' rfl (fun _ => rfl) i
 #align vector3.cons_head_tail Vector3.cons_head_tail
 
@@ -157,12 +157,12 @@ A local infix notation for `Vector3.append`
 local infixl:65 " +-+ " => Vector3.append
 
 @[simp]
-theorem append_nil (w : Vector3 α n) : [] +-+ w = w :=
+lemma append_nil (w : Vector3 α n) : [] +-+ w = w :=
   rfl
 #align vector3.append_nil Vector3.append_nil
 
 @[simp]
-theorem append_cons (a : α) (v : Vector3 α m) (w : Vector3 α n) : (a :: v) +-+ w = a :: v +-+ w :=
+lemma append_cons (a : α) (v : Vector3 α m) (w : Vector3 α n) : (a :: v) +-+ w = a :: v +-+ w :=
   rfl
 #align vector3.append_cons Vector3.append_cons
 
@@ -186,19 +186,19 @@ def insert (a : α) (v : Vector3 α n) (i : Fin2 (succ n)) : Vector3 α (succ n)
 #align vector3.insert Vector3.insert
 
 @[simp]
-theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
+lemma insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
   refine' funext fun j => j.cases' _ _ <;> intros <;> rfl
 #align vector3.insert_fz Vector3.insert_fz
 
 @[simp]
-theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (succ n)) :
+lemma insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (succ n)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=
   funext fun j => by
     refine' j.cases' _ fun j => _ <;> simp [insert, insertPerm]
     refine' Fin2.cases' _ _ (insertPerm i j) <;> simp [insertPerm]
 #align vector3.insert_fs Vector3.insert_fs
 
-theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (succ n))
+lemma append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (succ n))
     (e : succ n + m = succ (n + m)) :
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
   refine' Vector3.recOn t (fun e => _) (@fun k b t IH _ => _) e; rfl
@@ -231,11 +231,11 @@ def VectorAll : ∀ k, (Vector3 α k → Prop) → Prop
   | succ k, f => ∀ x : α, VectorAll k fun v => f (x :: v)
 #align vector_all VectorAll
 
-theorem exists_vector_zero (f : Vector3 α 0 → Prop) : Exists f ↔ f [] :=
+lemma exists_vector_zero (f : Vector3 α 0 → Prop) : Exists f ↔ f [] :=
   ⟨fun ⟨v, fv⟩ => by rw [← eq_nil v]; exact fv, fun f0 => ⟨[], f0⟩⟩
 #align exists_vector_zero exists_vector_zero
 
-theorem exists_vector_succ (f : Vector3 α (succ n) → Prop) : Exists f ↔ ∃ x v, f (x :: v) :=
+lemma exists_vector_succ (f : Vector3 α (succ n) → Prop) : Exists f ↔ ∃ x v, f (x :: v) :=
   ⟨fun ⟨v, fv⟩ => ⟨_, _, by rw [cons_head_tail v]; exact fv⟩, fun ⟨x, v, fxv⟩ => ⟨_, fxv⟩⟩
 #align exists_vector_succ exists_vector_succ
 
@@ -260,22 +260,22 @@ def VectorAllP (p : α → Prop) (v : Vector3 α n) : Prop :=
 #align vector_allp VectorAllP
 
 @[simp]
-theorem vectorAllP_nil (p : α → Prop) : VectorAllP p [] = True :=
+lemma vectorAllP_nil (p : α → Prop) : VectorAllP p [] = True :=
   rfl
 #align vector_allp_nil vectorAllP_nil
 
 @[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
-theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x []) = p x :=
+lemma vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x []) = p x :=
   rfl
 #align vector_allp_singleton vectorAllP_singleton
 
 @[simp]
-theorem vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
+lemma vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
     VectorAllP p (x :: v) ↔ p x ∧ VectorAllP p v :=
   Vector3.recOn v (and_true_iff _).symm fun _ _ _ => Iff.rfl
 #align vector_allp_cons vectorAllP_cons
 
-theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
+lemma vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by
   refine' v.recOn _ _
   · exact ⟨fun _ => Fin2.elim0, fun _ => trivial⟩

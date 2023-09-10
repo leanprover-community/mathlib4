@@ -151,7 +151,7 @@ we allow `f` to be non-differentiable (but still continuous) at a countable set 
 TODO: If `n > 0`, then the condition at `x ∈ s` can be replaced by a much weaker estimate but this
 requires either better integrability theorems, or usage of a filter depending on the countable set
 `s` (we need to ensure that none of the faces of a partition contain a point from `s`). -/
-theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
+lemma hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] E) (s : Set (Fin (n + 1) → ℝ))
     (hs : s.Countable) (Hs : ∀ x ∈ s, ContinuousWithinAt f (Box.Icc I) x)
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x) (i : Fin (n + 1)) :

@@ -27,7 +27,7 @@ open scoped Real
 
 namespace Real
 
-theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
+lemma pi_gt_sqrtTwoAddSeries (n : ℕ) :
     (2 : ℝ) ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) < π := by
   have : sqrt (2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) * (2 : ℝ) ^ (n + 2) < π := by
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
@@ -36,7 +36,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
   rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
-theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
+lemma pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < (2 : ℝ) ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) + 1 / (4 : ℝ) ^ n := by
   have : π <
       (sqrt (2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) + (1 : ℝ) / ((2 : ℝ) ^ n) ^ 3 / 4) *
@@ -70,7 +70,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
 /-- From an upper bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
 `sqrtTwoAddSeries 0 n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2)`, one can deduce the lower bound `a < π`
 thanks to basic trigonometric inequalities as expressed in `pi_gt_sqrtTwoAddSeries`. -/
-theorem pi_lower_bound_start (n : ℕ) {a}
+lemma pi_lower_bound_start (n : ℕ) {a}
     (h : sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n ≤ (2 : ℝ) - (a / (2 : ℝ) ^ (n + 1)) ^ 2) :
     a < π := by
   refine' lt_of_le_of_lt _ (pi_gt_sqrtTwoAddSeries n); rw [mul_comm]
@@ -78,7 +78,7 @@ theorem pi_lower_bound_start (n : ℕ) {a}
   rwa [le_sub_comm, show (0 : ℝ) = (0 : ℕ) / (1 : ℕ) by rw [Nat.cast_zero, zero_div]]
 #align real.pi_lower_bound_start Real.pi_lower_bound_start
 
-theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
+lemma sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
     (hb : 0 < b) (hd : 0 < d) (h : (2 * b + a) * d ^ 2 ≤ c ^ 2 * b) :
     sqrtTwoAddSeries (a / b) (n + 1) ≤ z := by
   refine' le_trans _ hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left
@@ -121,7 +121,7 @@ end Tactic
 /-- From a lower bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
 `2 - ((a - 1 / 4 ^ n) / 2 ^ (n + 1)) ^ 2 ≤ sqrtTwoAddSeries 0 n`, one can deduce the upper bound
 `π < a` thanks to basic trigonometric formulas as expressed in `pi_lt_sqrtTwoAddSeries`. -/
-theorem pi_upper_bound_start (n : ℕ) {a}
+lemma pi_upper_bound_start (n : ℕ) {a}
     (h : (2 : ℝ) - ((a - 1 / (4 : ℝ) ^ n) / (2 : ℝ) ^ (n + 1)) ^ 2 ≤
         sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n)
     (h₂ : (1 : ℝ) / (4 : ℝ) ^ n ≤ a) : π < a := by
@@ -132,7 +132,7 @@ theorem pi_upper_bound_start (n : ℕ) {a}
   · exact pow_pos zero_lt_two _
 #align real.pi_upper_bound_start Real.pi_upper_bound_start
 
-theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
+lemma sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
     (hz : z ≤ sqrtTwoAddSeries (a / b) n) (hb : 0 < b) (hd : 0 < d)
     (h : a ^ 2 * d ≤ (2 * d + c) * b ^ 2) : z ≤ sqrtTwoAddSeries (c / d) (n + 1) := by
   apply le_trans hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left

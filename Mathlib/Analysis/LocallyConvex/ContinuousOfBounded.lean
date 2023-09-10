@@ -99,7 +99,7 @@ variable [IsROrC 𝕜'] [Module 𝕜' F] [ContinuousSMul 𝕜' F]
 
 variable {σ : 𝕜 →+* 𝕜'}
 
-theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
+lemma LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     (hf : ∀ (s : Set E) (_ : IsVonNBounded 𝕜 s), IsVonNBounded 𝕜' (f '' s)) : ContinuousAt f 0 := by
   -- Assume that f is not continuous at 0
   by_contra h

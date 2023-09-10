@@ -105,7 +105,7 @@ lemma independent_iff_not_dependent : Independent f ↔ ¬Dependent f := by
 
 /-- Two points in a projective space are dependent if and only if they are equal. -/
 @[simp]
-theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := by
+lemma dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := by
   rw [dependent_iff_not_independent, independent_iff, linearIndependent_fin2,
     Function.comp_apply, Matrix.cons_val_one, Matrix.head_cons, Ne.def]
   simp only [Matrix.cons_val_zero, not_and, not_forall, Classical.not_not, Function.comp_apply,
@@ -115,7 +115,7 @@ theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := b
 
 /-- Two points in a projective space are independent if and only if the points are not equal. -/
 @[simp]
-theorem independent_pair_iff_neq (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
+lemma independent_pair_iff_neq (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
   rw [independent_iff_not_dependent, dependent_pair_iff_eq u v]
 #align projectivization.independent_pair_iff_neq Projectivization.independent_pair_iff_neq
 

@@ -134,7 +134,7 @@ instance (priority := 100) hasOneLatticeHasPosPart : PosPart α :=
 #align lattice_ordered_comm_group.has_zero_lattice_has_pos_part LatticeOrderedGroup.hasZeroLatticeHasPosPart
 
 @[to_additive pos_part_def]
-theorem m_pos_part_def (a : α) : a⁺ = a ⊔ 1 :=
+lemma m_pos_part_def (a : α) : a⁺ = a ⊔ 1 :=
   rfl
 #align lattice_ordered_comm_group.m_pos_part_def LatticeOrderedGroup.m_pos_part_def
 #align lattice_ordered_comm_group.pos_part_def LatticeOrderedGroup.pos_part_def
@@ -153,7 +153,7 @@ instance (priority := 100) hasOneLatticeHasNegPart : NegPart α :=
 #align lattice_ordered_comm_group.has_zero_lattice_has_neg_part LatticeOrderedGroup.hasZeroLatticeHasNegPart
 
 @[to_additive neg_part_def]
-theorem m_neg_part_def (a : α) : a⁻ = a⁻¹ ⊔ 1 :=
+lemma m_neg_part_def (a : α) : a⁻ = a⁻¹ ⊔ 1 :=
   rfl
 #align lattice_ordered_comm_group.m_neg_part_def LatticeOrderedGroup.m_neg_part_def
 #align lattice_ordered_comm_group.neg_part_def LatticeOrderedGroup.neg_part_def
@@ -179,33 +179,33 @@ theorem neg_eq_inv_inf_one
 #align lattice_ordered_comm_group.neg_eq_neg_inf_zero LatticeOrderedGroup.neg_eq_neg_inf_zero
 
 @[to_additive le_abs]
-theorem le_mabs (a : α) : a ≤ |a| :=
+lemma le_mabs (a : α) : a ≤ |a| :=
   le_sup_left
 #align lattice_ordered_comm_group.le_mabs LatticeOrderedGroup.le_mabs
 #align lattice_ordered_comm_group.le_abs LatticeOrderedGroup.le_abs
 
 -- -a ≤ |a|
 @[to_additive]
-theorem inv_le_abs (a : α) : a⁻¹ ≤ |a| :=
+lemma inv_le_abs (a : α) : a⁻¹ ≤ |a| :=
   le_sup_right
 #align lattice_ordered_comm_group.inv_le_abs LatticeOrderedGroup.inv_le_abs
 #align lattice_ordered_comm_group.neg_le_abs LatticeOrderedGroup.neg_le_abs
 
 @[to_additive (attr := simp)]
-theorem abs_inv (a : α) : |a⁻¹| = |a| := calc
+lemma abs_inv (a : α) : |a⁻¹| = |a| := calc
   |a⁻¹| = a⁻¹ ⊔ (a⁻¹)⁻¹ := rfl
   _ = a ⊔ a⁻¹ := by rw [inv_inv, sup_comm]
 
 -- 0 ≤ a⁺
 @[to_additive pos_nonneg]
-theorem one_le_pos (a : α) : 1 ≤ a⁺ :=
+lemma one_le_pos (a : α) : 1 ≤ a⁺ :=
   le_sup_right
 #align lattice_ordered_comm_group.one_le_pos LatticeOrderedGroup.one_le_pos
 #align lattice_ordered_comm_group.pos_nonneg LatticeOrderedGroup.pos_nonneg
 
 -- 0 ≤ a⁻
 @[to_additive neg_nonneg]
-theorem one_le_neg (a : α) : 1 ≤ a⁻ :=
+lemma one_le_neg (a : α) : 1 ≤ a⁻ :=
   le_sup_right
 #align lattice_ordered_comm_group.one_le_neg LatticeOrderedGroup.one_le_neg
 #align lattice_ordered_comm_group.neg_nonneg LatticeOrderedGroup.neg_nonneg
@@ -243,14 +243,14 @@ lemma neg_eq_one_iff [CovariantClass α α Mul.mul LE.le] {a : α} : a⁻ = 1 �
 #align lattice_ordered_comm_group.neg_eq_zero_iff LatticeOrderedGroup.neg_eq_zero_iff
 
 @[to_additive le_pos]
-theorem m_le_pos (a : α) : a ≤ a⁺ :=
+lemma m_le_pos (a : α) : a ≤ a⁺ :=
   le_sup_left
 #align lattice_ordered_comm_group.m_le_pos LatticeOrderedGroup.m_le_pos
 #align lattice_ordered_comm_group.le_pos LatticeOrderedGroup.le_pos
 
 -- -a ≤ a⁻
 @[to_additive]
-theorem inv_le_neg (a : α) : a⁻¹ ≤ a⁻ :=
+lemma inv_le_neg (a : α) : a⁻¹ ≤ a⁻ :=
   le_sup_left
 #align lattice_ordered_comm_group.inv_le_neg LatticeOrderedGroup.inv_le_neg
 #align lattice_ordered_comm_group.neg_le_neg LatticeOrderedGroup.neg_le_neg
@@ -258,14 +258,14 @@ theorem inv_le_neg (a : α) : a⁻¹ ≤ a⁻ :=
 -- Bourbaki A.VI.12
 --  a⁻ = (-a)⁺
 @[to_additive]
-theorem neg_eq_pos_inv (a : α) : a⁻ = a⁻¹⁺ :=
+lemma neg_eq_pos_inv (a : α) : a⁻ = a⁻¹⁺ :=
   rfl
 #align lattice_ordered_comm_group.neg_eq_pos_inv LatticeOrderedGroup.neg_eq_pos_inv
 #align lattice_ordered_comm_group.neg_eq_pos_neg LatticeOrderedGroup.neg_eq_pos_neg
 
 -- a⁺ = (-a)⁻
 @[to_additive]
-theorem pos_eq_neg_inv (a : α) : a⁺ = a⁻¹⁻ := by rw [neg_eq_pos_inv, inv_inv]
+lemma pos_eq_neg_inv (a : α) : a⁺ = a⁻¹⁻ := by rw [neg_eq_pos_inv, inv_inv]
 #align lattice_ordered_comm_group.pos_eq_neg_inv LatticeOrderedGroup.pos_eq_neg_inv
 #align lattice_ordered_comm_group.pos_eq_neg_neg LatticeOrderedGroup.pos_eq_neg_neg
 
@@ -297,7 +297,7 @@ lemma pos_div_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁺ /
 -- pos_of_nonneg
 /-- If `a` is positive, then it is equal to its positive component `a⁺`. -/
 @[to_additive "If `a` is positive, then it is equal to its positive component `a⁺`."]
-theorem pos_of_one_le (a : α) (h : 1 ≤ a) : a⁺ = a := by
+lemma pos_of_one_le (a : α) (h : 1 ≤ a) : a⁺ = a := by
   rw [m_pos_part_def]
   exact sup_of_le_left h
 #align lattice_ordered_comm_group.pos_of_one_le LatticeOrderedGroup.pos_of_one_le
@@ -306,13 +306,13 @@ theorem pos_of_one_le (a : α) (h : 1 ≤ a) : a⁺ = a := by
 -- 0 ≤ a implies a⁺ = a
 -- pos_of_nonpos
 @[to_additive]
-theorem pos_of_le_one (a : α) (h : a ≤ 1) : a⁺ = 1 :=
+lemma pos_of_le_one (a : α) (h : a ≤ 1) : a⁺ = 1 :=
   pos_eq_one_iff.mpr h
 #align lattice_ordered_comm_group.pos_of_le_one LatticeOrderedGroup.pos_of_le_one
 #align lattice_ordered_comm_group.pos_of_nonpos LatticeOrderedGroup.pos_of_nonpos
 
 @[to_additive neg_of_inv_nonneg]
-theorem neg_of_one_le_inv (a : α) (h : 1 ≤ a⁻¹) : a⁻ = a⁻¹ := by
+lemma neg_of_one_le_inv (a : α) (h : 1 ≤ a⁻¹) : a⁻ = a⁻¹ := by
   rw [neg_eq_pos_inv]
   exact pos_of_one_le _ h
 #align lattice_ordered_comm_group.neg_of_one_le_inv LatticeOrderedGroup.neg_of_one_le_inv
@@ -320,7 +320,7 @@ theorem neg_of_one_le_inv (a : α) (h : 1 ≤ a⁻¹) : a⁻ = a⁻¹ := by
 
 -- neg_of_neg_nonpos
 @[to_additive]
-theorem neg_of_inv_le_one (a : α) (h : a⁻¹ ≤ 1) : a⁻ = 1 :=
+lemma neg_of_inv_le_one (a : α) (h : a⁻¹ ≤ 1) : a⁻ = 1 :=
   neg_eq_one_iff'.mpr h
 #align lattice_ordered_comm_group.neg_of_inv_le_one LatticeOrderedGroup.neg_of_inv_le_one
 #align lattice_ordered_comm_group.neg_of_neg_nonpos LatticeOrderedGroup.neg_of_neg_nonpos
@@ -358,7 +358,7 @@ lemma mabs_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h : 
 
 -- |a - b| = |b - a|
 @[to_additive]
-theorem abs_div_comm (a b : α) : |a / b| = |b / a| := by
+lemma abs_div_comm (a b : α) : |a / b| = |b / a| := by
   dsimp only [Abs.abs]
   rw [inv_div a b, ← inv_inv (a / b), inv_div, sup_comm]
 #align lattice_ordered_comm_group.abs_inv_comm LatticeOrderedGroup.abs_div_comm
@@ -698,11 +698,11 @@ def IsSolid (s : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, |y| ≤
 def solidClosure (s : Set β) : Set β := { y | ∃ x ∈ s, |y| ≤ |x| }
 #align lattice_ordered_add_comm_group.solid_closure LatticeOrderedAddCommGroup.solidClosure
 
-theorem isSolid_solidClosure (s : Set β) : IsSolid (solidClosure s) :=
+lemma isSolid_solidClosure (s : Set β) : IsSolid (solidClosure s) :=
   fun _ ⟨y, hy, hxy⟩ _ hzx => ⟨y, hy, hzx.trans hxy⟩
 #align lattice_ordered_add_comm_group.is_solid_solid_closure LatticeOrderedAddCommGroup.isSolid_solidClosure
 
-theorem solidClosure_min (s t : Set β) (h1 : s ⊆ t) (h2 : IsSolid t) : solidClosure s ⊆ t :=
+lemma solidClosure_min (s t : Set β) (h1 : s ⊆ t) (h2 : IsSolid t) : solidClosure s ⊆ t :=
   fun _ ⟨_, hy, hxy⟩ => h2 (h1 hy) hxy
 #align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
 

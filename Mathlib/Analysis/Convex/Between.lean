@@ -45,11 +45,11 @@ def affineSegment (x y : P) :=
   lineMap x y '' Set.Icc (0 : R) 1
 #align affine_segment affineSegment
 
-theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
+lemma affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
   rw [segment_eq_image_lineMap, affineSegment]
 #align affine_segment_eq_segment affineSegment_eq_segment
 
-theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
+lemma affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
   refine' Set.ext fun z => _
   constructor <;>
     · rintro ⟨t, ht, hxy⟩
@@ -58,16 +58,16 @@ theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x
       · rwa [lineMap_apply_one_sub]
 #align affine_segment_comm affineSegment_comm
 
-theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
+lemma left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
   ⟨0, Set.left_mem_Icc.2 zero_le_one, lineMap_apply_zero _ _⟩
 #align left_mem_affine_segment left_mem_affineSegment
 
-theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
+lemma right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
   ⟨1, Set.right_mem_Icc.2 zero_le_one, lineMap_apply_one _ _⟩
 #align right_mem_affine_segment right_mem_affineSegment
 
 @[simp]
-theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
+lemma affineSegment_same (x : P) : affineSegment R x x = {x} := by
   -- porting note: added as this doesn't do anything in `simp_rw` any more
   rw [affineSegment]
   -- Note: when adding "simp made no progress" in lean4#2336,
@@ -80,7 +80,7 @@ theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
 variable {R}
 
 @[simp]
-theorem affineSegment_image (f : P →ᵃ[R] P') (x y : P) :
+lemma affineSegment_image (f : P →ᵃ[R] P') (x y : P) :
     f '' affineSegment R x y = affineSegment R (f x) (f y) := by
   rw [affineSegment, affineSegment, Set.image_image, ← comp_lineMap]
   rfl
@@ -89,25 +89,25 @@ theorem affineSegment_image (f : P →ᵃ[R] P') (x y : P) :
 variable (R)
 
 @[simp]
-theorem affineSegment_const_vadd_image (x y : P) (v : V) :
+lemma affineSegment_const_vadd_image (x y : P) (v : V) :
     (v +ᵥ ·) '' affineSegment R x y = affineSegment R (v +ᵥ x) (v +ᵥ y) :=
   affineSegment_image (AffineEquiv.constVAdd R P v : P →ᵃ[R] P) x y
 #align affine_segment_const_vadd_image affineSegment_const_vadd_image
 
 @[simp]
-theorem affineSegment_vadd_const_image (x y : V) (p : P) :
+lemma affineSegment_vadd_const_image (x y : V) (p : P) :
     (· +ᵥ p) '' affineSegment R x y = affineSegment R (x +ᵥ p) (y +ᵥ p) :=
   affineSegment_image (AffineEquiv.vaddConst R p : V →ᵃ[R] P) x y
 #align affine_segment_vadd_const_image affineSegment_vadd_const_image
 
 @[simp]
-theorem affineSegment_const_vsub_image (x y p : P) :
+lemma affineSegment_const_vsub_image (x y p : P) :
     (p -ᵥ ·) '' affineSegment R x y = affineSegment R (p -ᵥ x) (p -ᵥ y) :=
   affineSegment_image (AffineEquiv.constVSub R p : P →ᵃ[R] V) x y
 #align affine_segment_const_vsub_image affineSegment_const_vsub_image
 
 @[simp]
-theorem affineSegment_vsub_const_image (x y p : P) :
+lemma affineSegment_vsub_const_image (x y p : P) :
     (· -ᵥ p) '' affineSegment R x y = affineSegment R (x -ᵥ p) (y -ᵥ p) :=
   affineSegment_image ((AffineEquiv.vaddConst R p).symm : P →ᵃ[R] V) x y
 #align affine_segment_vsub_const_image affineSegment_vsub_const_image
@@ -287,12 +287,12 @@ alias ⟨Sbtw.symm, _⟩ := sbtw_comm
 variable (R)
 
 @[simp]
-theorem wbtw_self_left (x y : P) : Wbtw R x x y :=
+lemma wbtw_self_left (x y : P) : Wbtw R x x y :=
   left_mem_affineSegment _ _ _
 #align wbtw_self_left wbtw_self_left
 
 @[simp]
-theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
+lemma wbtw_self_right (x y : P) : Wbtw R x y y :=
   right_mem_affineSegment _ _ _
 #align wbtw_self_right wbtw_self_right
 
@@ -307,12 +307,12 @@ lemma wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
 #align wbtw_self_iff wbtw_self_iff
 
 @[simp]
-theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
+lemma not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
   fun h => h.ne_left rfl
 #align not_sbtw_self_left not_sbtw_self_left
 
 @[simp]
-theorem not_sbtw_self_right (x y : P) : ¬Sbtw R x y y :=
+lemma not_sbtw_self_right (x y : P) : ¬Sbtw R x y y :=
   fun h => h.ne_right rfl
 #align not_sbtw_self_right not_sbtw_self_right
 
@@ -347,7 +347,7 @@ lemma sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
 variable (R)
 
 @[simp]
-theorem not_sbtw_self (x y : P) : ¬Sbtw R x y x :=
+lemma not_sbtw_self (x y : P) : ¬Sbtw R x y x :=
   fun h => h.left_ne_right rfl
 #align not_sbtw_self not_sbtw_self
 
@@ -760,42 +760,42 @@ lemma Sbtw.left_mem_affineSpan {x y z : P} (h : Sbtw R x y z) : x ∈ line[R, z,
   h.symm.right_mem_affineSpan
 #align sbtw.left_mem_affine_span Sbtw.left_mem_affineSpan
 
-theorem wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁)
+lemma wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁)
     (hr₂ : r₁ ≤ r₂) : Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) := by
   refine' ⟨r₁ / r₂, ⟨div_nonneg hr₁ (hr₁.trans hr₂), div_le_one_of_le hr₂ (hr₁.trans hr₂)⟩, _⟩
   by_cases h : r₁ = 0; · simp [h]
   simp [lineMap_apply, smul_smul, ((hr₁.lt_of_ne' h).trans_le hr₂).ne.symm]
 #align wbtw_smul_vadd_smul_vadd_of_nonneg_of_le wbtw_smul_vadd_smul_vadd_of_nonneg_of_le
 
-theorem wbtw_or_wbtw_smul_vadd_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁) (hr₂ : 0 ≤ r₂) :
+lemma wbtw_or_wbtw_smul_vadd_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁) (hr₂ : 0 ≤ r₂) :
     Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) ∨ Wbtw R x (r₂ • v +ᵥ x) (r₁ • v +ᵥ x) := by
   rcases le_total r₁ r₂ with (h | h)
   · exact Or.inl (wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x v hr₁ h)
   · exact Or.inr (wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x v hr₂ h)
 #align wbtw_or_wbtw_smul_vadd_of_nonneg wbtw_or_wbtw_smul_vadd_of_nonneg
 
-theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
+lemma wbtw_smul_vadd_smul_vadd_of_nonpos_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : r₂ ≤ r₁) : Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) := by
   convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x (-v) (Left.nonneg_neg_iff.2 hr₁)
       (neg_le_neg_iff.2 hr₂) using 1 <;>
     rw [neg_smul_neg]
 #align wbtw_smul_vadd_smul_vadd_of_nonpos_of_le wbtw_smul_vadd_smul_vadd_of_nonpos_of_le
 
-theorem wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0) (hr₂ : r₂ ≤ 0) :
+lemma wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0) (hr₂ : r₂ ≤ 0) :
     Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) ∨ Wbtw R x (r₂ • v +ᵥ x) (r₁ • v +ᵥ x) := by
   rcases le_total r₁ r₂ with (h | h)
   · exact Or.inr (wbtw_smul_vadd_smul_vadd_of_nonpos_of_le x v hr₂ h)
   · exact Or.inl (wbtw_smul_vadd_smul_vadd_of_nonpos_of_le x v hr₁ h)
 #align wbtw_or_wbtw_smul_vadd_of_nonpos wbtw_or_wbtw_smul_vadd_of_nonpos
 
-theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
+lemma wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : 0 ≤ r₂) : Wbtw R (r₁ • v +ᵥ x) x (r₂ • v +ᵥ x) := by
   convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (r₁ • v +ᵥ x) v (Left.nonneg_neg_iff.2 hr₁)
       (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using 1 <;>
     simp [sub_smul, ← add_vadd]
 #align wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg
 
-theorem wbtw_smul_vadd_smul_vadd_of_nonneg_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁)
+lemma wbtw_smul_vadd_smul_vadd_of_nonneg_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁)
     (hr₂ : r₂ ≤ 0) : Wbtw R (r₁ • v +ᵥ x) x (r₂ • v +ᵥ x) := by
   rw [wbtw_comm]
   exact wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg x v hr₂ hr₁
@@ -904,7 +904,7 @@ lemma wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x) 
 
 variable (R)
 
-theorem wbtw_pointReflection (x y : P) : Wbtw R y x (pointReflection R x y) := by
+lemma wbtw_pointReflection (x y : P) : Wbtw R y x (pointReflection R x y) := by
   refine' ⟨2⁻¹, ⟨by norm_num, by norm_num⟩, _⟩
   rw [lineMap_apply, pointReflection_apply, vadd_vsub_assoc, ← two_smul R (x -ᵥ y)]
   simp
@@ -916,7 +916,7 @@ lemma sbtw_pointReflection_of_ne {x y : P} (h : x ≠ y) : Sbtw R y x (pointRefl
   exact (pointReflection_involutive R x).injective.ne h
 #align sbtw_point_reflection_of_ne sbtw_pointReflection_of_ne
 
-theorem wbtw_midpoint (x y : P) : Wbtw R x (midpoint R x y) y := by
+lemma wbtw_midpoint (x y : P) : Wbtw R x (midpoint R x y) y := by
   convert wbtw_pointReflection R (midpoint R x y) x
   rw [pointReflection_midpoint_left]
 #align wbtw_midpoint wbtw_midpoint

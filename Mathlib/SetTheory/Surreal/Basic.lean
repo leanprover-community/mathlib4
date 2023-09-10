@@ -188,16 +188,16 @@ lemma lt_or_equiv_or_gt {x y : PGame} (ox : Numeric x) (oy : Numeric y) :
   ((lf_or_equiv_or_gf x y).imp fun h => h.lt ox oy) <| Or.imp_right fun h => h.lt oy ox
 #align pgame.lt_or_equiv_or_gt SetTheory.PGame.lt_or_equiv_or_gt
 
-theorem numeric_of_isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : Numeric x :=
+lemma numeric_of_isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : Numeric x :=
   Numeric.mk isEmptyElim isEmptyElim isEmptyElim
 #align pgame.numeric_of_is_empty SetTheory.PGame.numeric_of_isEmpty
 
-theorem numeric_of_isEmpty_leftMoves (x : PGame) [IsEmpty x.LeftMoves] :
+lemma numeric_of_isEmpty_leftMoves (x : PGame) [IsEmpty x.LeftMoves] :
     (∀ j, Numeric (x.moveRight j)) → Numeric x :=
   Numeric.mk isEmptyElim isEmptyElim
 #align pgame.numeric_of_is_empty_left_moves SetTheory.PGame.numeric_of_isEmpty_leftMoves
 
-theorem numeric_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves]
+lemma numeric_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves]
     (H : ∀ i, Numeric (x.moveLeft i)) : Numeric x :=
   Numeric.mk (fun _ => isEmptyElim) H isEmptyElim
 #align pgame.numeric_of_is_empty_right_moves SetTheory.PGame.numeric_of_isEmpty_rightMoves
@@ -267,7 +267,7 @@ lemma numeric_nat : ∀ n : ℕ, Numeric n
 #align pgame.numeric_nat SetTheory.PGame.numeric_nat
 
 /-- Ordinal games are numeric. -/
-theorem numeric_toPGame (o : Ordinal) : o.toPGame.Numeric := by
+lemma numeric_toPGame (o : Ordinal) : o.toPGame.Numeric := by
   induction' o using Ordinal.induction with o IH
   apply numeric_of_isEmpty_rightMoves
   simpa using fun i => IH _ (Ordinal.toLeftMovesToPGame_symm_lt i)

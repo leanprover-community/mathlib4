@@ -31,46 +31,46 @@ def slope (f : k → PE) (a b : k) : E :=
   (b - a)⁻¹ • (f b -ᵥ f a)
 #align slope slope
 
-theorem slope_fun_def (f : k → PE) : slope f = fun a b => (b - a)⁻¹ • (f b -ᵥ f a) :=
+lemma slope_fun_def (f : k → PE) : slope f = fun a b => (b - a)⁻¹ • (f b -ᵥ f a) :=
   rfl
 #align slope_fun_def slope_fun_def
 
-theorem slope_def_field (f : k → k) (a b : k) : slope f a b = (f b - f a) / (b - a) :=
+lemma slope_def_field (f : k → k) (a b : k) : slope f a b = (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 #align slope_def_field slope_def_field
 
-theorem slope_fun_def_field (f : k → k) (a : k) : slope f a = fun b => (f b - f a) / (b - a) :=
+lemma slope_fun_def_field (f : k → k) (a : k) : slope f a = fun b => (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 #align slope_fun_def_field slope_fun_def_field
 
 @[simp]
-theorem slope_same (f : k → PE) (a : k) : (slope f a a : E) = 0 := by
+lemma slope_same (f : k → PE) (a : k) : (slope f a a : E) = 0 := by
   rw [slope, sub_self, inv_zero, zero_smul]
 #align slope_same slope_same
 
-theorem slope_def_module (f : k → E) (a b : k) : slope f a b = (b - a)⁻¹ • (f b - f a) :=
+lemma slope_def_module (f : k → E) (a b : k) : slope f a b = (b - a)⁻¹ • (f b - f a) :=
   rfl
 #align slope_def_module slope_def_module
 
 @[simp]
-theorem sub_smul_slope (f : k → PE) (a b : k) : (b - a) • slope f a b = f b -ᵥ f a := by
+lemma sub_smul_slope (f : k → PE) (a b : k) : (b - a) • slope f a b = f b -ᵥ f a := by
   rcases eq_or_ne a b with (rfl | hne)
   · rw [sub_self, zero_smul, vsub_self]
   · rw [slope, smul_inv_smul₀ (sub_ne_zero.2 hne.symm)]
 #align sub_smul_slope sub_smul_slope
 
-theorem sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +ᵥ f a = f b := by
+lemma sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +ᵥ f a = f b := by
   rw [sub_smul_slope, vsub_vadd]
 #align sub_smul_slope_vadd sub_smul_slope_vadd
 
 @[simp]
-theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
+lemma slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
   ext a b
   simp only [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
 #align slope_vadd_const slope_vadd_const
 
 @[simp]
-theorem slope_sub_smul (f : k → E) {a b : k} (h : a ≠ b) :
+lemma slope_sub_smul (f : k → E) {a b : k} (h : a ≠ b) :
     slope (fun x => (x - a) • f x) a b = f b := by
   simp [slope, inv_smul_smul₀ (sub_ne_zero.2 h.symm)]
 #align slope_sub_smul slope_sub_smul
@@ -89,14 +89,14 @@ lemma LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →�
   f.toAffineMap.slope_comp g a b
 #align linear_map.slope_comp LinearMap.slope_comp
 
-theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
+lemma slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
   rw [slope, slope, ← neg_vsub_eq_vsub_rev, smul_neg, ← neg_smul, neg_inv, neg_sub]
 #align slope_comm slope_comm
 
 /-- `slope f a c` is a linear combination of `slope f a b` and `slope f b c`. This version
 explicitly provides coefficients. If `a ≠ c`, then the sum of the coefficients is `1`, so it is
 actually an affine combination, see `lineMap_slope_slope_sub_div_sub`. -/
-theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c : k) :
+lemma sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c : k) :
     ((b - a) / (c - a)) • slope f a b + ((c - b) / (c - a)) • slope f b c = slope f a c := by
   by_cases hab : a = b
   · subst hab
@@ -115,7 +115,7 @@ theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c 
 
 /-- `slope f a c` is an affine combination of `slope f a b` and `slope f b c`. This version uses
 `lineMap` to express this property. -/
-theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c) :
+lemma lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c) :
     lineMap (slope f a b) (slope f b c) ((c - b) / (c - a)) = slope f a c := by
   field_simp [sub_ne_zero.2 h.symm, ← sub_div_sub_smul_slope_add_sub_div_sub_smul_slope f a b c,
     lineMap_apply_module]
@@ -123,7 +123,7 @@ theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c)
 
 /-- `slope f a b` is an affine combination of `slope f a (lineMap a b r)` and
 `slope f (lineMap a b r) b`. We use `lineMap` to express this property. -/
-theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :
+lemma lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :
     lineMap (slope f (lineMap a b r) b) (slope f a (lineMap a b r)) r = slope f a b := by
   obtain rfl | hab : a = b ∨ a ≠ b := Classical.em _; · simp
   rw [slope_comm _ a, slope_comm _ a, slope_comm _ _ b]

@@ -80,7 +80,7 @@ lemma coe_toContinuousMultilinearMap : ⇑f.toContinuousMultilinearMap = f :=
   rfl
 
 @[simp]
-theorem coe_mk (f : ContinuousMultilinearMap R (fun _ : ι => M) N) (h) : ⇑(mk f h) = f :=
+lemma coe_mk (f : ContinuousMultilinearMap R (fun _ : ι => M) N) (h) : ⇑(mk f h) = f :=
   rfl
 
 -- not a `simp` lemma because this projection is a reducible call to `mk`, so `simp` can prove
@@ -125,10 +125,10 @@ lemma map_update_zero [DecidableEq ι] (m : ι → M) (i : ι) : f (update m i 0
 lemma map_zero [Nonempty ι] : f 0 = 0 :=
   f.toMultilinearMap.map_zero
 
-theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
+lemma map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
   f.map_eq_zero_of_eq' v i j h hij
 
-theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 :=
+lemma map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 :=
   f.toAlternatingMap.map_eq_zero_of_not_injective v hv
 
 /-- Restrict the codomain of a continuous alternating map to a submodule. -/
@@ -164,19 +164,19 @@ instance : SMul R' (M [Λ^ι]→L[A] N) :=
   ⟨fun c f => ⟨c • f.1, (c • f.toAlternatingMap).map_eq_zero_of_eq⟩⟩
 
 @[simp]
-theorem coe_smul (f : M [Λ^ι]→L[A] N) (c : R') : ⇑(c • f) = c • ⇑f :=
+lemma coe_smul (f : M [Λ^ι]→L[A] N) (c : R') : ⇑(c • f) = c • ⇑f :=
   rfl
 
-theorem smul_apply (f : M [Λ^ι]→L[A] N) (c : R') (v : ι → M) : (c • f) v = c • f v :=
+lemma smul_apply (f : M [Λ^ι]→L[A] N) (c : R') (v : ι → M) : (c • f) v = c • f v :=
   rfl
 
 @[simp]
-theorem toContinuousMultilinearMap_smul (c : R') (f : M [Λ^ι]→L[A] N) :
+lemma toContinuousMultilinearMap_smul (c : R') (f : M [Λ^ι]→L[A] N) :
     (c • f).toContinuousMultilinearMap = c • f.toContinuousMultilinearMap :=
   rfl
 
 @[simp]
-theorem toAlternatingMap_smul (c : R') (f : M [Λ^ι]→L[A] N) :
+lemma toAlternatingMap_smul (c : R') (f : M [Λ^ι]→L[A] N) :
     (c • f).toAlternatingMap = c • f.toAlternatingMap :=
   rfl
 
@@ -206,15 +206,15 @@ lemma coe_add : ⇑(f + g) = ⇑f + ⇑g :=
   rfl
 
 @[simp]
-theorem add_apply (v : ι → M) : (f + g) v = f v + g v :=
+lemma add_apply (v : ι → M) : (f + g) v = f v + g v :=
   rfl
 
 @[simp]
-theorem toContinuousMultilinearMap_add (f g : M [Λ^ι]→L[R] N) : (f + g).1 = f.1 + g.1 :=
+lemma toContinuousMultilinearMap_add (f g : M [Λ^ι]→L[R] N) : (f + g).1 = f.1 + g.1 :=
   rfl
 
 @[simp]
-theorem toAlternatingMap_add (f g : M [Λ^ι]→L[R] N) :
+lemma toAlternatingMap_add (f g : M [Λ^ι]→L[R] N) :
     (f + g).toAlternatingMap = f.toAlternatingMap + g.toAlternatingMap :=
   rfl
 
@@ -305,7 +305,7 @@ def compContinuousLinearMap (g : M [Λ^ι]→L[R] N) (f : M' →L[R] M) : M' [Λ
     toContinuousMultilinearMap := g.1.compContinuousLinearMap fun _ => f }
 
 @[simp]
-theorem compContinuousLinearMap_apply (g : M [Λ^ι]→L[R] N) (f : M' →L[R] M) (m : ι → M') :
+lemma compContinuousLinearMap_apply (g : M [Λ^ι]→L[R] N) (f : M' →L[R] M) (m : ι → M') :
     g.compContinuousLinearMap f m = g (f ∘ m) :=
   rfl
 
@@ -317,7 +317,7 @@ def _root_.ContinuousLinearMap.compContinuousAlternatingMap (g : N →L[R] N') (
     toContinuousMultilinearMap := g.compContinuousMultilinearMap f.1 }
 
 @[simp]
-theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[R] N')
+lemma _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[R] N')
     (f : M [Λ^ι]→L[R] N) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
   rfl
 
@@ -362,28 +362,28 @@ def piEquiv {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 additivity of an alternating map along the first variable. -/
-theorem cons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
+lemma cons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
     f (Fin.cons (x + y) m) = f (Fin.cons x m) + f (Fin.cons y m) :=
   f.toMultilinearMap.cons_add m x y
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 additivity of an alternating map along the first variable. -/
-theorem vecCons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
+lemma vecCons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
     f (vecCons (x + y) m) = f (vecCons x m) + f (vecCons y m) :=
   f.toMultilinearMap.cons_add m x y
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 multiplicativity of an alternating map along the first variable. -/
-theorem cons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
+lemma cons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
     (x : M) : f (Fin.cons (c • x) m) = c • f (Fin.cons x m) :=
   f.toMultilinearMap.cons_smul m c x
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 multiplicativity of an alternating map along the first variable. -/
-theorem vecCons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
+lemma vecCons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
     (x : M) : f (vecCons (c • x) m) = c • f (vecCons x m) :=
   f.toMultilinearMap.cons_smul m c x
 
@@ -432,7 +432,7 @@ def restrictScalars (f : M [Λ^ι]→L[A] N) : M [Λ^ι]→L[R] N :=
   { f with toContinuousMultilinearMap := f.1.restrictScalars R }
 
 @[simp]
-theorem coe_restrictScalars (f : M [Λ^ι]→L[A] N) : ⇑(f.restrictScalars R) = f :=
+lemma coe_restrictScalars (f : M [Λ^ι]→L[A] N) : ⇑(f.restrictScalars R) = f :=
   rfl
 
 end RestrictScalar
@@ -462,7 +462,7 @@ instance : Neg (M [Λ^ι]→L[R] N) :=
 lemma coe_neg : ⇑(-f) = -f :=
   rfl
 
-theorem neg_apply (m : ι → M) : (-f) m = -f m :=
+lemma neg_apply (m : ι → M) : (-f) m = -f m :=
   rfl
 
 instance : Sub (M [Λ^ι]→L[R] N) :=
@@ -471,7 +471,7 @@ instance : Sub (M [Λ^ι]→L[R] N) :=
 
 @[simp] lemma coe_sub : ⇑(f - g) = ⇑f - ⇑g := rfl
 
-theorem sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
+lemma sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
 
 instance : AddCommGroup (M [Λ^ι]→L[R] N) :=
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
@@ -602,7 +602,7 @@ def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [Λ^
   map_zero' := by ext; simp
   map_add' _ _ := by ext; simp [Finset.sum_add_distrib]
 
-theorem alternatization_apply_apply (v : ι → M) :
+lemma alternatization_apply_apply (v : ι → M) :
     alternatization f v = ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f (v ∘ σ) := by
   simp [alternatization, (· ∘ ·)]
 

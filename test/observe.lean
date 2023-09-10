@@ -4,7 +4,7 @@ import Mathlib.Data.Nat.Prime
 
 open Nat
 
-theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
+lemma euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   let N := n.factorial + 1
   let p := minFac N
   use p

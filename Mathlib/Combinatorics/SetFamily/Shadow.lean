@@ -89,7 +89,7 @@ lemma mem_shadow_iff : s ∈ ∂ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ a ∈ t, erase t a
   simp only [shadow, mem_sup, mem_image]
 #align finset.mem_shadow_iff Finset.mem_shadow_iff
 
-theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ 𝒜 :=
+lemma erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ 𝒜 :=
   mem_shadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 #align finset.erase_mem_shadow Finset.erase_mem_shadow
 
@@ -105,14 +105,14 @@ lemma mem_shadow_iff_insert_mem : s ∈ ∂ 𝒜 ↔ ∃ (a : _) (_ : a ∉ s), 
 #align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
 /-- The shadow of a family of `r`-sets is a family of `r - 1`-sets. -/
-protected theorem Set.Sized.shadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+protected lemma Set.Sized.shadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     (∂ 𝒜 : Set (Finset α)).Sized (r - 1) := by
   intro A h
   obtain ⟨A, hA, i, hi, rfl⟩ := mem_shadow_iff.1 h
   rw [card_erase_of_mem hi, h𝒜 hA]
 #align finset.set.sized.shadow Finset.Set.Sized.shadow
 
-theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
+lemma sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
   refine' ⟨fun h𝒜 s hs => _, Set.Sized.shadow⟩
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 (ne_of_mem_of_not_mem hs h)
@@ -134,7 +134,7 @@ lemma mem_shadow_iff_exists_mem_card_add_one :
 #align finset.mem_shadow_iff_exists_mem_card_add_one Finset.mem_shadow_iff_exists_mem_card_add_one
 
 /-- Being in the shadow of `𝒜` means we have a superset in `𝒜`. -/
-theorem exists_subset_of_mem_shadow (hs : s ∈ ∂ 𝒜) : ∃ t ∈ 𝒜, s ⊆ t :=
+lemma exists_subset_of_mem_shadow (hs : s ∈ ∂ 𝒜) : ∃ t ∈ 𝒜, s ⊆ t :=
   let ⟨t, ht, hst⟩ := mem_shadow_iff_exists_mem_card_add_one.1 hs
   ⟨t, ht, hst.1⟩
 #align finset.exists_subset_of_mem_shadow Finset.exists_subset_of_mem_shadow
@@ -204,12 +204,12 @@ lemma mem_upShadow_iff : s ∈ ∂⁺ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ (a : _) (_ : 
   simp_rw [upShadow, mem_sup, mem_image, exists_prop, mem_compl]
 #align finset.mem_up_shadow_iff Finset.mem_upShadow_iff
 
-theorem insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ ∂⁺ 𝒜 :=
+lemma insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ ∂⁺ 𝒜 :=
   mem_upShadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 #align finset.insert_mem_up_shadow Finset.insert_mem_upShadow
 
 /-- The upper shadow of a family of `r`-sets is a family of `r + 1`-sets. -/
-protected theorem Set.Sized.upShadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+protected lemma Set.Sized.upShadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     (∂⁺ 𝒜 : Set (Finset α)).Sized (r + 1) := by
   intro A h
   obtain ⟨A, hA, i, hi, rfl⟩ := mem_upShadow_iff.1 h
@@ -241,7 +241,7 @@ lemma mem_upShadow_iff_exists_mem_card_add_one :
 #align finset.mem_up_shadow_iff_exists_mem_card_add_one Finset.mem_upShadow_iff_exists_mem_card_add_one
 
 /-- Being in the upper shadow of `𝒜` means we have a superset in `𝒜`. -/
-theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜, t ⊆ s :=
+lemma exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜, t ⊆ s :=
   let ⟨t, ht, hts, _⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 hs
   ⟨t, ht, hts⟩
 #align finset.exists_subset_of_mem_up_shadow Finset.exists_subset_of_mem_upShadow

@@ -326,7 +326,7 @@ private lemma exists_mono_in_high_dimension' :
 
 /-- The Hales-Jewett theorem: for any finite types `α` and `κ`, there exists a finite type `ι` such
 that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial line. -/
-theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
+lemma exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
   let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
   ⟨ι, ιfin, fun C =>

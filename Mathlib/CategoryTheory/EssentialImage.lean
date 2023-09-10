@@ -71,7 +71,7 @@ lemma essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essImag
 #align category_theory.functor.ess_image_eq_of_nat_iso CategoryTheory.Functor.essImage_eq_of_natIso
 
 /-- An object in the image is in the essential image. -/
-theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
+lemma obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
   ⟨Y, ⟨Iso.refl _⟩⟩
 #align category_theory.functor.obj_mem_ess_image CategoryTheory.Functor.obj_mem_essImage
 

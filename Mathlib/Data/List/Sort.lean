@@ -103,7 +103,7 @@ lemma sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : 
 #align list.sublist_of_subperm_of_sorted List.sublist_of_subperm_of_sorted
 
 @[simp 1100] --Porting note: higher priority for linter
-theorem sorted_singleton (a : α) : Sorted r [a] :=
+lemma sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
 #align list.sorted_singleton List.sorted_singleton
 
@@ -191,7 +191,7 @@ def insertionSort : List α → List α
 #align list.insertion_sort List.insertionSort
 
 @[simp]
-theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
+lemma orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
   rfl
 #align list.ordered_insert_nil List.orderedInsert_nil
 
@@ -203,7 +203,7 @@ lemma orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).l
 #align list.ordered_insert_length List.orderedInsert_length
 
 /-- An alternative definition of `orderedInsert` using `takeWhile` and `dropWhile`. -/
-theorem orderedInsert_eq_take_drop (a : α) :
+lemma orderedInsert_eq_take_drop (a : α) :
     ∀ l : List α,
       l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b
   | [] => rfl
@@ -212,7 +212,7 @@ theorem orderedInsert_eq_take_drop (a : α) :
     split_ifs with h <;> simp [takeWhile, dropWhile, *, orderedInsert_eq_take_drop a l]
 #align list.ordered_insert_eq_take_drop List.orderedInsert_eq_take_drop
 
-theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
+lemma insertionSort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
       ((insertionSort r l).takeWhile fun b => ¬a ≼ b) ++
         a :: (insertionSort r l).dropWhile fun b => ¬a ≼ b :=
@@ -223,7 +223,7 @@ section Correctness
 
 open Perm
 
-theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
+lemma perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
   | [] => Perm.refl _
   | b :: l => by
     by_cases h : a ≼ b
@@ -258,7 +258,7 @@ section TotalAndTransitive
 
 variable [IsTotal α r] [IsTrans α r]
 
-theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedInsert r a l)
+lemma Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedInsert r a l)
   | [], _ => sorted_singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
@@ -307,7 +307,7 @@ def split : List α → List α × List α
     (a :: l₂, l₁)
 #align list.split List.split
 
-theorem split_cons_of_eq (a : α) {l l₁ l₂ : List α} (h : split l = (l₁, l₂)) :
+lemma split_cons_of_eq (a : α) {l l₁ l₂ : List α} (h : split l = (l₁, l₂)) :
     split (a :: l) = (a :: l₂, l₁) := by rw [split, h]
 #align list.split_cons_of_eq List.split_cons_of_eq
 
@@ -396,7 +396,7 @@ lemma perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
 #align list.perm_merge_sort List.perm_mergeSort
 
 @[simp]
-theorem length_mergeSort (l : List α) : (mergeSort r l).length = l.length :=
+lemma length_mergeSort (l : List α) : (mergeSort r l).length = l.length :=
   (perm_mergeSort r _).length_eq
 #align list.length_merge_sort List.length_mergeSort
 
@@ -465,7 +465,7 @@ lemma mergeSort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
 #align list.merge_sort_nil List.mergeSort_nil
 
 @[simp]
-theorem mergeSort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mergeSort]
+lemma mergeSort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mergeSort]
 #align list.merge_sort_singleton List.mergeSort_singleton
 
 end MergeSort

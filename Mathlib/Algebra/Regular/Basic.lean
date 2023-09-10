@@ -99,7 +99,7 @@ variable [Semigroup R] {a b : R}
 
 /-- In a semigroup, the product of left-regular elements is left-regular. -/
 @[to_additive "In an additive semigroup, the sum of add-left-regular elements is add-left.regular."]
-theorem IsLeftRegular.mul (lra : IsLeftRegular a) (lrb : IsLeftRegular b) : IsLeftRegular (a * b) :=
+lemma IsLeftRegular.mul (lra : IsLeftRegular a) (lrb : IsLeftRegular b) : IsLeftRegular (a * b) :=
   show Function.Injective (((a * b) * ·)) from comp_mul_left a b ▸ lra.comp lrb
 #align is_left_regular.mul IsLeftRegular.mul
 #align is_add_left_regular.add IsAddLeftRegular.add
@@ -107,7 +107,7 @@ theorem IsLeftRegular.mul (lra : IsLeftRegular a) (lrb : IsLeftRegular b) : IsLe
 /-- In a semigroup, the product of right-regular elements is right-regular. -/
 @[to_additive "In an additive semigroup, the sum of add-right-regular elements is
 add-right-regular."]
-theorem IsRightRegular.mul (rra : IsRightRegular a) (rrb : IsRightRegular b) :
+lemma IsRightRegular.mul (rra : IsRightRegular a) (rrb : IsRightRegular b) :
     IsRightRegular (a * b) :=
   show Function.Injective (· * (a * b)) from comp_mul_right b a ▸ rrb.comp rra
 #align is_right_regular.mul IsRightRegular.mul
@@ -117,7 +117,7 @@ theorem IsRightRegular.mul (rra : IsRightRegular a) (rrb : IsRightRegular b) :
 element, then `b` is left-regular. -/
 @[to_additive "If an element `b` becomes add-left-regular after adding to it on the left
 an add-left-regular element, then `b` is add-left-regular."]
-theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
+lemma IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
   Function.Injective.of_comp (by rwa [comp_mul_left a b])
 #align is_left_regular.of_mul IsLeftRegular.of_mul
 #align is_add_left_regular.of_add IsAddLeftRegular.of_add
@@ -126,7 +126,7 @@ theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
 is left-regular. -/
 @[to_additive (attr := simp) "An element is add-left-regular if and only if adding to it on the left
 an add-left-regular element is add-left-regular."]
-theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
+lemma mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
     IsLeftRegular (a * b) ↔ IsLeftRegular b :=
   ⟨fun ab => IsLeftRegular.of_mul ab, fun ab => IsLeftRegular.mul ha ab⟩
 #align mul_is_left_regular_iff mul_isLeftRegular_iff
@@ -136,7 +136,7 @@ theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
 element, then `b` is right-regular. -/
 @[to_additive "If an element `b` becomes add-right-regular after adding to it on the right
 an add-right-regular element, then `b` is add-right-regular."]
-theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
+lemma IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
   refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
   exact congr_fun (congr_arg (· * ·) xy) a
@@ -148,7 +148,7 @@ element is right-regular. -/
 @[to_additive (attr := simp)
 "An element is add-right-regular if and only if adding it on the right to
 an add-right-regular element is add-right-regular."]
-theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
+lemma mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
     IsRightRegular (b * a) ↔ IsRightRegular b :=
   ⟨fun ab => IsRightRegular.of_mul ab, fun ab => IsRightRegular.mul ab ha⟩
 #align mul_is_right_regular_iff mul_isRightRegular_iff
@@ -177,7 +177,7 @@ lemma isRegular_mul_and_mul_iff :
 /-- The "most used" implication of `mul_and_mul_iff`, with split hypotheses, instead of `∧`. -/
 @[to_additive "The \"most used\" implication of `add_and_add_iff`, with split
 hypotheses, instead of `∧`."]
-theorem IsRegular.and_of_mul_of_mul (ab : IsRegular (a * b)) (ba : IsRegular (b * a)) :
+lemma IsRegular.and_of_mul_of_mul (ab : IsRegular (a * b)) (ba : IsRegular (b * a)) :
     IsRegular a ∧ IsRegular b :=
   isRegular_mul_and_mul_iff.mp ⟨ab, ba⟩
 #align is_regular.and_of_mul_of_mul IsRegular.and_of_mul_of_mul
@@ -190,17 +190,17 @@ section MulZeroClass
 variable [MulZeroClass R] {a b : R}
 
 /-- The element `0` is left-regular if and only if `R` is trivial. -/
-theorem IsLeftRegular.subsingleton (h : IsLeftRegular (0 : R)) : Subsingleton R :=
+lemma IsLeftRegular.subsingleton (h : IsLeftRegular (0 : R)) : Subsingleton R :=
   ⟨fun a b => h <| Eq.trans (zero_mul a) (zero_mul b).symm⟩
 #align is_left_regular.subsingleton IsLeftRegular.subsingleton
 
 /-- The element `0` is right-regular if and only if `R` is trivial. -/
-theorem IsRightRegular.subsingleton (h : IsRightRegular (0 : R)) : Subsingleton R :=
+lemma IsRightRegular.subsingleton (h : IsRightRegular (0 : R)) : Subsingleton R :=
   ⟨fun a b => h <| Eq.trans (mul_zero a) (mul_zero b).symm⟩
 #align is_right_regular.subsingleton IsRightRegular.subsingleton
 
 /-- The element `0` is regular if and only if `R` is trivial. -/
-theorem IsRegular.subsingleton (h : IsRegular (0 : R)) : Subsingleton R :=
+lemma IsRegular.subsingleton (h : IsRegular (0 : R)) : Subsingleton R :=
   h.left.subsingleton
 #align is_regular.subsingleton IsRegular.subsingleton
 
@@ -313,28 +313,28 @@ variable [Monoid R] {a b : R}
 
 /-- An element admitting a left inverse is left-regular. -/
 @[to_additive "An element admitting a left additive opposite is add-left-regular."]
-theorem isLeftRegular_of_mul_eq_one (h : b * a = 1) : IsLeftRegular a :=
+lemma isLeftRegular_of_mul_eq_one (h : b * a = 1) : IsLeftRegular a :=
   @IsLeftRegular.of_mul R _ _ _ (by rw [h]; exact isRegular_one.left)
 #align is_left_regular_of_mul_eq_one isLeftRegular_of_mul_eq_one
 #align is_add_left_regular_of_add_eq_zero isAddLeftRegular_of_add_eq_zero
 
 /-- An element admitting a right inverse is right-regular. -/
 @[to_additive "An element admitting a right additive opposite is add-right-regular."]
-theorem isRightRegular_of_mul_eq_one (h : a * b = 1) : IsRightRegular a :=
+lemma isRightRegular_of_mul_eq_one (h : a * b = 1) : IsRightRegular a :=
   IsRightRegular.of_mul (by rw [h]; exact isRegular_one.right)
 #align is_right_regular_of_mul_eq_one isRightRegular_of_mul_eq_one
 #align is_add_right_regular_of_add_eq_zero isAddRightRegular_of_add_eq_zero
 
 /-- If `R` is a monoid, an element in `Rˣ` is regular. -/
 @[to_additive "If `R` is an additive monoid, an element in `add_units R` is add-regular."]
-theorem Units.isRegular (a : Rˣ) : IsRegular (a : R) :=
+lemma Units.isRegular (a : Rˣ) : IsRegular (a : R) :=
   ⟨isLeftRegular_of_mul_eq_one a.inv_mul, isRightRegular_of_mul_eq_one a.mul_inv⟩
 #align units.is_regular Units.isRegular
 #align add_units.is_add_regular AddUnits.isAddRegular
 
 /-- A unit in a monoid is regular. -/
 @[to_additive "An additive unit in an additive monoid is add-regular."]
-theorem IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
+lemma IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
   rcases ua with ⟨a, rfl⟩
   exact Units.isRegular a
 #align is_unit.is_regular IsUnit.isRegular
@@ -365,7 +365,7 @@ variable [CancelMonoid R]
 /-- Elements of a cancel monoid are regular.  Cancel semigroups do not appear to exist. -/
 @[to_additive "Elements of an add cancel monoid are regular.
 Add cancel semigroups do not appear to exist."]
-theorem isRegular_of_cancelMonoid (g : R) : IsRegular g :=
+lemma isRegular_of_cancelMonoid (g : R) : IsRegular g :=
   ⟨mul_right_injective g, mul_left_injective g⟩
 #align is_regular_of_cancel_monoid isRegular_of_cancelMonoid
 #align is_add_regular_of_cancel_add_monoid isAddRegular_of_addCancelMonoid
@@ -377,7 +377,7 @@ section CancelMonoidWithZero
 variable [CancelMonoidWithZero R] {a : R}
 
 /-- Non-zero elements of an integral domain are regular. -/
-theorem isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
+lemma isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
   ⟨fun _ _ => (mul_right_inj' a0).mp, fun _ _ => (mul_left_inj' a0).mp⟩
 #align is_regular_of_ne_zero isRegular_of_ne_zero
 

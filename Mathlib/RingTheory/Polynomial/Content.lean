@@ -143,7 +143,7 @@ lemma content_X : content (X : R[X]) = 1 := by rw [← mul_one X, content_X_mul,
 set_option linter.uppercaseLean3 false in
 #align polynomial.content_X Polynomial.content_X
 
-theorem content_C_mul (r : R) (p : R[X]) : (C r * p).content = normalize r * p.content := by
+lemma content_C_mul (r : R) (p : R[X]) : (C r * p).content = normalize r * p.content := by
   by_cases h0 : r = 0; · simp [h0]
   rw [content]; rw [content]; rw [← Finset.gcd_mul_left]
   refine' congr (congr rfl _) _ <;> ext <;> simp [h0, mem_support_iff]
@@ -181,7 +181,7 @@ lemma normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
     apply mul_left_cancel₀ hp0
     erw [← normalize_apply, normalize_content, mul_one]
 
-theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
+lemma content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     p.content = (Finset.range n).gcd p.coeff := by
   apply dvd_antisymm_of_normalize_eq normalize_content Finset.normalize_gcd
   · rw [Finset.dvd_gcd_iff]
@@ -195,12 +195,12 @@ theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     apply coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le h h1)
 #align polynomial.content_eq_gcd_range_of_lt Polynomial.content_eq_gcd_range_of_lt
 
-theorem content_eq_gcd_range_succ (p : R[X]) :
+lemma content_eq_gcd_range_succ (p : R[X]) :
     p.content = (Finset.range p.natDegree.succ).gcd p.coeff :=
   content_eq_gcd_range_of_lt _ _ (Nat.lt_succ_self _)
 #align polynomial.content_eq_gcd_range_succ Polynomial.content_eq_gcd_range_succ
 
-theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
+lemma content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
     p.content = GCDMonoid.gcd p.leadingCoeff (eraseLead p).content := by
   by_cases h : p = 0
   · simp [h]
@@ -224,7 +224,7 @@ lemma dvd_content_iff_C_dvd {p : R[X]} {r : R} : r ∣ p.content ↔ C r ∣ p :
 set_option linter.uppercaseLean3 false in
 #align polynomial.dvd_content_iff_C_dvd Polynomial.dvd_content_iff_C_dvd
 
-theorem C_content_dvd (p : R[X]) : C p.content ∣ p :=
+lemma C_content_dvd (p : R[X]) : C p.content ∣ p :=
   dvd_content_iff_C_dvd.1 dvd_rfl
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_content_dvd Polynomial.C_content_dvd
@@ -249,7 +249,7 @@ noncomputable def primPart (p : R[X]) : R[X] :=
   if p = 0 then 1 else Classical.choose (C_content_dvd p)
 #align polynomial.prim_part Polynomial.primPart
 
-theorem eq_C_content_mul_primPart (p : R[X]) : p = C p.content * p.primPart := by
+lemma eq_C_content_mul_primPart (p : R[X]) : p = C p.content * p.primPart := by
   by_cases h : p = 0; · simp [h]
   rw [primPart, if_neg h, ← Classical.choose_spec (C_content_dvd p)]
 set_option linter.uppercaseLean3 false in
@@ -260,7 +260,7 @@ lemma primPart_zero : primPart (0 : R[X]) = 1 :=
   if_pos rfl
 #align polynomial.prim_part_zero Polynomial.primPart_zero
 
-theorem isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive := by
+lemma isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive := by
   by_cases h : p = 0; · simp [h]
   rw [← content_eq_zero_iff] at h
   rw [isPrimitive_iff_content_eq_one]
@@ -268,15 +268,15 @@ theorem isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive := by
   conv_rhs => rw [p.eq_C_content_mul_primPart, mul_one, content_C_mul, normalize_content]
 #align polynomial.is_primitive_prim_part Polynomial.isPrimitive_primPart
 
-theorem content_primPart (p : R[X]) : p.primPart.content = 1 :=
+lemma content_primPart (p : R[X]) : p.primPart.content = 1 :=
   p.isPrimitive_primPart.content_eq_one
 #align polynomial.content_prim_part Polynomial.content_primPart
 
-theorem primPart_ne_zero (p : R[X]) : p.primPart ≠ 0 :=
+lemma primPart_ne_zero (p : R[X]) : p.primPart ≠ 0 :=
   p.isPrimitive_primPart.ne_zero
 #align polynomial.prim_part_ne_zero Polynomial.primPart_ne_zero
 
-theorem natDegree_primPart (p : R[X]) : p.primPart.natDegree = p.natDegree := by
+lemma natDegree_primPart (p : R[X]) : p.primPart.natDegree = p.natDegree := by
   by_cases h : C p.content = 0
   · rw [C_eq_zero, content_eq_zero_iff] at h
     simp [h]
@@ -289,7 +289,7 @@ lemma IsPrimitive.primPart_eq {p : R[X]} (hp : p.IsPrimitive) : p.primPart = p :
   rw [← one_mul p.primPart, ← C_1, ← hp.content_eq_one, ← p.eq_C_content_mul_primPart]
 #align polynomial.is_primitive.prim_part_eq Polynomial.IsPrimitive.primPart_eq
 
-theorem isUnit_primPart_C (r : R) : IsUnit (C r).primPart := by
+lemma isUnit_primPart_C (r : R) : IsUnit (C r).primPart := by
   by_cases h0 : r = 0
   · simp [h0]
   unfold IsUnit
@@ -305,7 +305,7 @@ theorem isUnit_primPart_C (r : R) : IsUnit (C r).primPart := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.is_unit_prim_part_C Polynomial.isUnit_primPart_C
 
-theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
+lemma primPart_dvd (p : R[X]) : p.primPart ∣ p :=
   Dvd.intro_left (C p.content) p.eq_C_content_mul_primPart.symm
 #align polynomial.prim_part_dvd Polynomial.primPart_dvd
 
@@ -503,7 +503,7 @@ lemma degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) : (gcd p q).degree ≤ p.
   rwa [degree_eq_natDegree hp]
 #align polynomial.degree_gcd_le_left Polynomial.degree_gcd_le_left
 
-theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤ q.degree := by
+lemma degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤ q.degree := by
   rw [gcd_comm]
   exact degree_gcd_le_left hq p
 #align polynomial.degree_gcd_le_right Polynomial.degree_gcd_le_right

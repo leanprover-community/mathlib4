@@ -39,12 +39,12 @@ section WithDivRing
 variable [DivisionRing α]
 
 @[simp, norm_cast]
-theorem cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
+lemma cast_coe_int (n : ℤ) : ((n : ℚ) : α) = n :=
   (cast_def _).trans <| show (n / (1 : ℕ) : α) = n by rw [Nat.cast_one, div_one]
 #align rat.cast_coe_int Rat.cast_coe_int
 
 @[simp, norm_cast]
-theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
+lemma cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_ofNat, cast_coe_int, Int.cast_ofNat]
 #align rat.cast_coe_nat Rat.cast_coe_nat
 
@@ -59,20 +59,20 @@ lemma cast_one : ((1 : ℚ) : α) = 1 :=
   (cast_coe_int _).trans Int.cast_one
 #align rat.cast_one Rat.cast_one
 
-theorem cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
+lemma cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
   simpa only [cast_def] using (r.1.cast_commute a).div_left (r.2.cast_commute a)
 #align rat.cast_commute Rat.cast_commute
 
-theorem cast_comm (r : ℚ) (a : α) : (r : α) * a = a * r :=
+lemma cast_comm (r : ℚ) (a : α) : (r : α) * a = a * r :=
   (cast_commute r a).eq
 #align rat.cast_comm Rat.cast_comm
 
-theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
+lemma commute_cast (a : α) (r : ℚ) : Commute a r :=
   (r.cast_commute a).symm
 #align rat.commute_cast Rat.commute_cast
 
 @[norm_cast]
-theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
+lemma cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
     refine' mt _ b0
     simp (config := { contextual := true })
@@ -145,7 +145,7 @@ lemma cast_mul_of_ne_zero :
 
 -- Porting note: rewrote proof
 @[simp]
-theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
+lemma cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n
   · simp
   rw [cast_def, inv_coe_nat_num, inv_coe_nat_den, if_neg n.succ_ne_zero,
@@ -154,7 +154,7 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 
 -- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
-theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
+lemma cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n n
   · simp [ofInt_eq_cast, cast_inv_nat]
   · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
@@ -187,7 +187,7 @@ end WithDivRing
 
 -- Porting note: statement made more explicit
 @[norm_cast]
-theorem cast_id (n : ℚ) : Rat.cast n = n := rfl
+lemma cast_id (n : ℚ) : Rat.cast n = n := rfl
 #align rat.cast_id Rat.cast_id
 
 @[simp]
@@ -215,7 +215,7 @@ variable {M₀ : Type*} [MonoidWithZero M₀] [MonoidWithZeroHomClass F ℚ M₀
 
 
 /-- If `f` and `g` agree on the integers then they are equal `φ`. -/
-theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
+lemma ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
   (FunLike.ext f g) fun r => by
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
       eq_on_inv₀ f g]
@@ -232,7 +232,7 @@ lemma ext_rat {f g : ℚ →*₀ M₀}
 #align monoid_with_zero_hom.ext_rat MonoidWithZeroHom.ext_rat
 
 /-- Positive integer values of a morphism `φ` and its value on `-1` completely determine `φ`. -/
-theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
+lemma ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
     (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_rat' <|
     FunLike.congr_fun <|

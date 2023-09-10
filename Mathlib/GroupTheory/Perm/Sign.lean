@@ -67,7 +67,7 @@ lemma perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈
   simp only [inv_apply_self]
 #align equiv.perm.perm_inv_on_of_perm_on_finset Equiv.Perm.perm_inv_on_of_perm_on_finset
 
-theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
+lemma perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
     Set.MapsTo (f⁻¹ : _) s s := by
   cases nonempty_fintype s;
     exact fun x hx =>
@@ -100,12 +100,12 @@ abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Fintype { x // p x 
 #align equiv.perm.subtype_perm_of_fintype Equiv.Perm.subtypePermOfFintype
 
 @[simp]
-theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Fintype { x // p x }]
+lemma subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Fintype { x // p x }]
     (h : ∀ x, p x → p (f x)) (x : { x // p x }) : subtypePermOfFintype f h x = ⟨f x, h x x.2⟩ :=
   rfl
 #align equiv.perm.subtype_perm_of_fintype_apply Equiv.Perm.subtypePermOfFintype_apply
 
-theorem subtypePermOfFintype_one (p : α → Prop) [Fintype { x // p x }]
+lemma subtypePermOfFintype_one (p : α → Prop) [Fintype { x // p x }]
     (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermOfFintype α 1 p _ h = 1 :=
   rfl
 #align equiv.perm.subtype_perm_of_fintype_one Equiv.Perm.subtypePermOfFintype_one
@@ -313,7 +313,7 @@ def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
 #align equiv.perm.sign_aux Equiv.Perm.signAux
 
 @[simp]
-theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
+lemma signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   unfold signAux
   conv => rhs; rw [← @Finset.prod_const_one ℤˣ _ (finPairsLT n)]
   exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_le
@@ -419,7 +419,7 @@ lemma signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f *
       rfl
 #align equiv.perm.sign_aux_mul Equiv.Perm.signAux_mul
 
-private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
+private lemma signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
   show _ = ∏ x : Σ_a : Fin (n + 2), Fin (n + 2) in {(⟨1, 0⟩ : Σa : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
     refine' Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
@@ -541,12 +541,12 @@ section SignType.sign
 variable [Fintype α]
 
 --@[simp] porting note: simp can prove
-theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
+lemma sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
   MonoidHom.map_mul sign f g
 #align equiv.perm.sign_mul Equiv.Perm.sign_mul
 
 @[simp]
-theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
+lemma sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
   rw [← mul_def, sign_mul]
 #align equiv.perm.sign_trans Equiv.Perm.sign_trans
 
@@ -561,12 +561,12 @@ lemma sign_refl : sign (Equiv.refl α) = 1 :=
 #align equiv.perm.sign_refl Equiv.Perm.sign_refl
 
 --@[simp] porting note: simp can prove
-theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
+lemma sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
   rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
 #align equiv.perm.sign_inv Equiv.Perm.sign_inv
 
 @[simp]
-theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
+lemma sign_symm (e : Perm α) : sign e.symm = sign e :=
   sign_inv e
 #align equiv.perm.sign_symm Equiv.Perm.sign_symm
 
@@ -654,7 +654,7 @@ lemma eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) : s
       sign_prod_list_swap hl₂]
 #align equiv.perm.eq_sign_of_surjective_hom Equiv.Perm.eq_sign_of_surjective_hom
 
-theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁ : ∀ x, p x ↔ p (f x))
+lemma sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁ : ∀ x, p x ↔ p (f x))
     (h₂ : ∀ x, f x ≠ x → p x) : sign (subtypePerm f h₁) = sign f := by
   let l := (truncSwapFactors (subtypePerm f h₁)).out
   have hl' : ∀ g' ∈ l.1.map ofSubtype, IsSwap g' := fun g' hg' =>
@@ -732,7 +732,7 @@ section congr
 variable [DecidableEq β] [Fintype β]
 
 @[simp]
-theorem sign_prodExtendRight (a : α) (σ : Perm β) : sign (prodExtendRight a σ) = sign σ :=
+lemma sign_prodExtendRight (a : α) (σ : Perm β) : sign (prodExtendRight a σ) = sign σ :=
   sign_bij (fun (ab : α × β) _ => ab.snd)
     (fun ⟨a', b⟩ hab _ => by simp [eq_of_prodExtendRight_ne hab])
     (fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ hab₁ hab₂ h => by
@@ -740,7 +740,7 @@ theorem sign_prodExtendRight (a : α) (σ : Perm β) : sign (prodExtendRight a �
     fun y hy => ⟨(a, y), by simpa, by simp⟩
 #align equiv.perm.sign_prod_extend_right Equiv.Perm.sign_prodExtendRight
 
-theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = ∏ k, sign (σ k) := by
+lemma sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = ∏ k, sign (σ k) := by
   obtain ⟨l, hl, mem_l⟩ := Finite.exists_univ_list α
   have l_to_finset : l.toFinset = Finset.univ := by
     apply eq_top_iff.mpr
@@ -751,19 +751,19 @@ theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = �
   simp_rw [← fun a => sign_prodExtendRight a (σ a), Function.comp]
 #align equiv.perm.sign_prod_congr_right Equiv.Perm.sign_prodCongrRight
 
-theorem sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏ k, sign (σ k) := by
+lemma sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏ k, sign (σ k) := by
   refine' (sign_eq_sign_of_equiv _ _ (prodComm β α) _).trans (sign_prodCongrRight σ)
   rintro ⟨b, α⟩
   rfl
 #align equiv.perm.sign_prod_congr_left Equiv.Perm.sign_prodCongrLeft
 
 @[simp]
-theorem sign_permCongr (e : α ≃ β) (p : Perm α) : sign (e.permCongr p) = sign p :=
+lemma sign_permCongr (e : α ≃ β) (p : Perm α) : sign (e.permCongr p) = sign p :=
   sign_eq_sign_of_equiv _ _ e.symm (by simp)
 #align equiv.perm.sign_perm_congr Equiv.Perm.sign_permCongr
 
 @[simp]
-theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) = sign σa * sign σb := by
+lemma sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) = sign σa * sign σb := by
   suffices sign (sumCongr σa (1 : Perm β)) = sign σa ∧ sign (sumCongr (1 : Perm α) σb) = sign σb
     by rw [← this.1, ← this.2, ← sign_mul, sumCongr_mul, one_mul, mul_one]
   constructor
@@ -784,7 +784,7 @@ lemma sign_subtypeCongr {p : α → Prop} [DecidablePred p] (ep : Perm { a // p 
 #align equiv.perm.sign_subtype_congr Equiv.Perm.sign_subtypeCongr
 
 @[simp]
-theorem sign_extendDomain (e : Perm α) {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) :
+lemma sign_extendDomain (e : Perm α) {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) :
     Equiv.Perm.sign (e.extendDomain f) = Equiv.Perm.sign e := by
   simp only [Equiv.Perm.extendDomain, sign_subtypeCongr, sign_permCongr, sign_refl, mul_one]
 #align equiv.perm.sign_extend_domain Equiv.Perm.sign_extendDomain

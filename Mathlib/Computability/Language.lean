@@ -70,11 +70,11 @@ lemma one_def : (1 : Language α) = ({[]} : Set (List α)) :=
   rfl
 #align language.one_def Language.one_def
 
-theorem add_def (l m : Language α) : l + m = (l ∪ m : Set (List α)) :=
+lemma add_def (l m : Language α) : l + m = (l ∪ m : Set (List α)) :=
   rfl
 #align language.add_def Language.add_def
 
-theorem mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
+lemma mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
   rfl
 #align language.mul_def Language.mul_def
 
@@ -93,19 +93,19 @@ lemma ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l =
   Set.ext h
 
 @[simp]
-theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
+lemma not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
 #align language.not_mem_zero Language.not_mem_zero
 
 @[simp]
-theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
+lemma mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
 #align language.mem_one Language.mem_one
 
 lemma nil_mem_one : [] ∈ (1 : Language α) :=
   Set.mem_singleton _
 #align language.nil_mem_one Language.nil_mem_one
 
-theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ x ∈ m :=
+lemma mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ x ∈ m :=
   Iff.rfl
 #align language.mem_add Language.mem_add
 
@@ -125,7 +125,7 @@ lemma join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.join �
   ⟨L, rfl, h⟩
 #align language.join_mem_kstar Language.join_mem_kstar
 
-theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
+lemma nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 #align language.nil_mem_kstar Language.nil_mem_kstar
 
@@ -150,7 +150,7 @@ instance instSemiring : Semiring (Language α) where
   right_distrib _ _ _ := image2_union_left
 
 @[simp]
-theorem add_self (l : Language α) : l + l = l :=
+lemma add_self (l : Language α) : l + l = l :=
   sup_idem
 #align language.add_self Language.add_self
 
@@ -164,15 +164,15 @@ def map (f : α → β) : Language α →+* Language β where
 #align language.map Language.map
 
 @[simp]
-theorem map_id (l : Language α) : map id l = l := by simp [map]
+lemma map_id (l : Language α) : map id l = l := by simp [map]
 #align language.map_id Language.map_id
 
 @[simp]
-theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
+lemma map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
 #align language.map_map Language.map_map
 
-theorem kstar_def_nonempty (l : Language α) :
+lemma kstar_def_nonempty (l : Language α) :
     l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
   ext x
   constructor
@@ -187,7 +187,7 @@ theorem kstar_def_nonempty (l : Language α) :
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 #align language.kstar_def_nonempty Language.kstar_def_nonempty
 
-theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
+lemma le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
 #align language.le_iff Language.le_iff
 
@@ -243,7 +243,7 @@ lemma mem_pow {l : Language α} {x : List α} {n : ℕ} :
       exact ⟨a, _, hS.1, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
 #align language.mem_pow Language.mem_pow
 
-theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
+lemma kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
   simp only [mem_kstar, mem_iSup, mem_pow]
   constructor
@@ -254,24 +254,24 @@ theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
 #align language.kstar_eq_supr_pow Language.kstar_eq_iSup_pow
 
 @[simp]
-theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
+lemma map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
   rw [kstar_eq_iSup_pow, kstar_eq_iSup_pow]
   simp_rw [← map_pow]
   exact image_iUnion
 #align language.map_kstar Language.map_kstar
 
-theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
+lemma mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, iSup_mul, ← pow_succ, ← pow_succ']
 #align language.mul_self_kstar_comm Language.mul_self_kstar_comm
 
 @[simp]
-theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
+lemma one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, ← pow_succ, ← pow_zero l]
   exact sup_iSup_nat_succ _
 #align language.one_add_self_mul_kstar_eq_kstar Language.one_add_self_mul_kstar_eq_kstar
 
 @[simp]
-theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
+lemma one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 

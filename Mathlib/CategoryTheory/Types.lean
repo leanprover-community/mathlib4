@@ -60,7 +60,7 @@ lemma types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   funext x
   exact h x
 
-theorem types_id (X : Type u) : 𝟙 X = id :=
+lemma types_id (X : Type u) : 𝟙 X = id :=
   rfl
 #align category_theory.types_id CategoryTheory.types_id
 
@@ -69,7 +69,7 @@ lemma types_comp {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = g ∘ 
 #align category_theory.types_comp CategoryTheory.types_comp
 
 @[simp]
-theorem types_id_apply (X : Type u) (x : X) : (𝟙 X : X → X) x = x :=
+lemma types_id_apply (X : Type u) (x : X) : (𝟙 X : X → X) x = x :=
   rfl
 #align category_theory.types_id_apply CategoryTheory.types_id_apply
 
@@ -140,47 +140,47 @@ variable {C : Type u} [Category.{v} C] (F G H : C ⥤ Type w) {X Y Z : C}
 variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 @[simp]
-theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
+lemma map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
     (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) := by simp [types_comp]
 #align category_theory.functor_to_types.map_comp_apply CategoryTheory.FunctorToTypes.map_comp_apply
 
 @[simp]
-theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp [types_id]
+lemma map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp [types_id]
 #align category_theory.functor_to_types.map_id_apply CategoryTheory.FunctorToTypes.map_id_apply
 
-theorem naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map f) (σ.app X x) :=
+lemma naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map f) (σ.app X x) :=
   congr_fun (σ.naturality f) x
 #align category_theory.functor_to_types.naturality CategoryTheory.FunctorToTypes.naturality
 
 @[simp]
-theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
+lemma comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   rfl
 #align category_theory.functor_to_types.comp CategoryTheory.FunctorToTypes.comp
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
 @[simp]
-theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (σ.app (I.obj W) x) :=
+lemma hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (σ.app (I.obj W) x) :=
   rfl
 #align category_theory.functor_to_types.hcomp CategoryTheory.FunctorToTypes.hcomp
 
 @[simp]
-theorem map_inv_map_hom_apply (f : X ≅ Y) (x : F.obj X) : F.map f.inv (F.map f.hom x) = x :=
+lemma map_inv_map_hom_apply (f : X ≅ Y) (x : F.obj X) : F.map f.inv (F.map f.hom x) = x :=
   congr_fun (F.mapIso f).hom_inv_id x
 #align category_theory.functor_to_types.map_inv_map_hom_apply CategoryTheory.FunctorToTypes.map_inv_map_hom_apply
 
 @[simp]
-theorem map_hom_map_inv_apply (f : X ≅ Y) (y : F.obj Y) : F.map f.hom (F.map f.inv y) = y :=
+lemma map_hom_map_inv_apply (f : X ≅ Y) (y : F.obj Y) : F.map f.hom (F.map f.inv y) = y :=
   congr_fun (F.mapIso f).inv_hom_id y
 #align category_theory.functor_to_types.map_hom_map_inv_apply CategoryTheory.FunctorToTypes.map_hom_map_inv_apply
 
 @[simp]
-theorem hom_inv_id_app_apply (α : F ≅ G) (X) (x) : α.inv.app X (α.hom.app X x) = x :=
+lemma hom_inv_id_app_apply (α : F ≅ G) (X) (x) : α.inv.app X (α.hom.app X x) = x :=
   congr_fun (α.hom_inv_id_app X) x
 #align category_theory.functor_to_types.hom_inv_id_app_apply CategoryTheory.FunctorToTypes.hom_inv_id_app_apply
 
 @[simp]
-theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X x) = x :=
+lemma inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X x) = x :=
   congr_fun (α.inv_hom_id_app X) x
 #align category_theory.functor_to_types.inv_hom_id_app_apply CategoryTheory.FunctorToTypes.inv_hom_id_app_apply
 
@@ -349,17 +349,17 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
 
 @[simp]
-theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
+lemma toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
 #align category_theory.iso.to_equiv_fun CategoryTheory.Iso.toEquiv_fun
 
 @[simp]
-theorem toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm : Y → X) = i.inv :=
+lemma toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm : Y → X) = i.inv :=
   rfl
 #align category_theory.iso.to_equiv_symm_fun CategoryTheory.Iso.toEquiv_symm_fun
 
 @[simp]
-theorem toEquiv_id (X : Type u) : (Iso.refl X).toEquiv = Equiv.refl X :=
+lemma toEquiv_id (X : Type u) : (Iso.refl X).toEquiv = Equiv.refl X :=
   rfl
 #align category_theory.iso.to_equiv_id CategoryTheory.Iso.toEquiv_id
 

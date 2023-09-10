@@ -94,11 +94,11 @@ export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
 attribute [simp] edist_self
 
 /-- Triangle inequality for the extended distance -/
-theorem edist_triangle_left (x y z : α) : edist x y ≤ edist z x + edist z y := by
+lemma edist_triangle_left (x y z : α) : edist x y ≤ edist z x + edist z y := by
   rw [edist_comm z]; apply edist_triangle
 #align edist_triangle_left edist_triangle_left
 
-theorem edist_triangle_right (x y z : α) : edist x y ≤ edist x z + edist y z := by
+lemma edist_triangle_right (x y z : α) : edist x y ≤ edist x z + edist y z := by
   rw [edist_comm y]; apply edist_triangle
 #align edist_triangle_right edist_triangle_right
 
@@ -121,14 +121,14 @@ lemma edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
     edist w y = edist x z :=
   (edist_congr_right hl).trans (edist_congr_left hr)
 
-theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t :=
+lemma edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t :=
   calc
     edist x t ≤ edist x z + edist z t := edist_triangle x z t
     _ ≤ edist x y + edist y z + edist z t := add_le_add_right (edist_triangle x y z) _
 #align edist_triangle4 edist_triangle4
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
-theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
+lemma edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
     edist (f m) (f n) ≤ ∑ i in Finset.Ico m n, edist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction
   case base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
@@ -141,7 +141,7 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
 #align edist_le_Ico_sum_edist edist_le_Ico_sum_edist
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
-theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
+lemma edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
     edist (f 0) (f n) ≤ ∑ i in Finset.range n, edist (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
 #align edist_le_range_sum_edist edist_le_range_sum_edist
@@ -222,14 +222,14 @@ lemma uniformity_basis_edist_le :
   EMetric.mk_uniformity_basis_le (fun _ => id) fun ε ε₀ => ⟨ε, ε₀, le_refl ε⟩
 #align uniformity_basis_edist_le uniformity_basis_edist_le
 
-theorem uniformity_basis_edist' (ε' : ℝ≥0∞) (hε' : 0 < ε') :
+lemma uniformity_basis_edist' (ε' : ℝ≥0∞) (hε' : 0 < ε') :
     (𝓤 α).HasBasis (fun ε : ℝ≥0∞ => ε ∈ Ioo 0 ε') fun ε => { p : α × α | edist p.1 p.2 < ε } :=
   EMetric.mk_uniformity_basis (fun _ => And.left) fun ε ε₀ =>
     let ⟨δ, hδ⟩ := exists_between hε'
     ⟨min ε δ, ⟨lt_min ε₀ hδ.1, lt_of_le_of_lt (min_le_right _ _) hδ.2⟩, min_le_left _ _⟩
 #align uniformity_basis_edist' uniformity_basis_edist'
 
-theorem uniformity_basis_edist_le' (ε' : ℝ≥0∞) (hε' : 0 < ε') :
+lemma uniformity_basis_edist_le' (ε' : ℝ≥0∞) (hε' : 0 < ε') :
     (𝓤 α).HasBasis (fun ε : ℝ≥0∞ => ε ∈ Ioo 0 ε') fun ε => { p : α × α | edist p.1 p.2 ≤ ε } :=
   EMetric.mk_uniformity_basis_le (fun _ => And.left) fun ε ε₀ =>
     let ⟨δ, hδ⟩ := exists_between hε'
@@ -326,7 +326,7 @@ which satisfy a bound of the form `edist (u n) (u m) < B N` for all `n m ≥ N` 
 converging. This is often applied for `B N = 2^{-N}`, i.e., with a very fast convergence to
 `0`, which makes it possible to use arguments of converging series, while this is impossible
 to do in general for arbitrary Cauchy sequences. -/
-theorem complete_of_convergent_controlled_sequences (B : ℕ → ℝ≥0∞) (hB : ∀ n, 0 < B n)
+lemma complete_of_convergent_controlled_sequences (B : ℕ → ℝ≥0∞) (hB : ∀ n, 0 < B n)
     (H : ∀ u : ℕ → α, (∀ N n m : ℕ, N ≤ n → N ≤ m → edist (u n) (u m) < B N) →
       ∃ x, Tendsto u atTop (𝓝 x)) :
     CompleteSpace α :=
@@ -422,12 +422,12 @@ instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :
   PseudoEMetricSpace.induced unop ‹_›
 
 @[to_additive]
-theorem edist_unop (x y : αᵐᵒᵖ) : edist (unop x) (unop y) = edist x y := rfl
+lemma edist_unop (x y : αᵐᵒᵖ) : edist (unop x) (unop y) = edist x y := rfl
 #align mul_opposite.edist_unop MulOpposite.edist_unop
 #align add_opposite.edist_unop AddOpposite.edist_unop
 
 @[to_additive]
-theorem edist_op (x y : α) : edist (op x) (op y) = edist x y := rfl
+lemma edist_op (x y : α) : edist (op x) (op y) = edist x y := rfl
 #align mul_opposite.edist_op MulOpposite.edist_op
 #align add_opposite.edist_op AddOpposite.edist_op
 
@@ -437,11 +437,11 @@ section ULift
 
 instance : PseudoEMetricSpace (ULift α) := PseudoEMetricSpace.induced ULift.down ‹_›
 
-theorem ULift.edist_eq (x y : ULift α) : edist x y = edist x.down y.down := rfl
+lemma ULift.edist_eq (x y : ULift α) : edist x y = edist x.down y.down := rfl
 #align ulift.edist_eq ULift.edist_eq
 
 @[simp]
-theorem ULift.edist_up_up (x y : α) : edist (ULift.up x) (ULift.up y) = edist x y := rfl
+lemma ULift.edist_up_up (x y : α) : edist (ULift.up x) (ULift.up y) = edist x y := rfl
 #align ulift.edist_up_up ULift.edist_up_up
 
 end ULift
@@ -491,7 +491,7 @@ lemma edist_pi_le_iff [∀ b, EDist (π b)] {f g : ∀ b, π b} {d : ℝ≥0∞}
   Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
 #align edist_pi_le_iff edist_pi_le_iff
 
-theorem edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ edist a b :=
+lemma edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ edist a b :=
   edist_pi_le_iff.2 fun _ => le_rfl
 #align edist_pi_const_le edist_pi_const_le
 
@@ -548,18 +548,18 @@ lemma mem_closedBall' : y ∈ closedBall x ε ↔ edist x y ≤ ε := by rw [edi
 #align emetric.mem_closed_ball' EMetric.mem_closedBall'
 
 @[simp]
-theorem closedBall_top (x : α) : closedBall x ∞ = univ :=
+lemma closedBall_top (x : α) : closedBall x ∞ = univ :=
   eq_univ_of_forall fun _ => mem_setOf.2 le_top
 #align emetric.closed_ball_top EMetric.closedBall_top
 
 lemma ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _ h => le_of_lt h.out
 #align emetric.ball_subset_closed_ball EMetric.ball_subset_closedBall
 
-theorem pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
+lemma pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
   lt_of_le_of_lt (zero_le _) hy
 #align emetric.pos_of_mem_ball EMetric.pos_of_mem_ball
 
-theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
+lemma mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
   rwa [mem_ball, edist_self]
 #align emetric.mem_ball_self EMetric.mem_ball_self
 
@@ -574,20 +574,20 @@ lemma mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε := b
   rw [mem_closedBall', mem_closedBall]
 #align emetric.mem_closed_ball_comm EMetric.mem_closedBall_comm
 
-theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y (yx : _ < ε₁) =>
+lemma ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y (yx : _ < ε₁) =>
   lt_of_lt_of_le yx h
 #align emetric.ball_subset_ball EMetric.ball_subset_ball
 
-theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
+lemma closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 #align emetric.closed_ball_subset_closed_ball EMetric.closedBall_subset_closedBall
 
-theorem ball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (ball x ε₁) (ball y ε₂) :=
+lemma ball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (ball x ε₁) (ball y ε₂) :=
   Set.disjoint_left.mpr fun z h₁ h₂ =>
     (edist_triangle_left x y z).not_lt <| (ENNReal.add_lt_add h₁ h₂).trans_le h
 #align emetric.ball_disjoint EMetric.ball_disjoint
 
-theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : ball x ε₁ ⊆ ball y ε₂ :=
+lemma ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : ball x ε₁ ⊆ ball y ε₂ :=
   fun z zx =>
   calc
     edist z y ≤ edist z x + edist x y := edist_triangle _ _ _
@@ -596,7 +596,7 @@ theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) :
     _ ≤ ε₂ := h
 #align emetric.ball_subset EMetric.ball_subset
 
-theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε := by
+lemma exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε := by
   have : 0 < ε - edist y x := by simpa using h
   refine' ⟨ε - edist y x, this, ball_subset _ (ne_top_of_lt h)⟩
   exact (add_tsub_cancel_of_le (mem_ball.mp h).le).le
@@ -608,12 +608,12 @@ lemma ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
       not_lt_of_le (le_of_eq ε0) (pos_of_mem_ball h)⟩
 #align emetric.ball_eq_empty_iff EMetric.ball_eq_empty_iff
 
-theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
+lemma ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
     OrdConnected { r | closedBall x r ⊆ s } :=
   ⟨fun _ _ _ h₁ _ h₂ => (closedBall_subset_closedBall h₂.2).trans h₁⟩
 #align emetric.ord_connected_set_of_closed_ball_subset EMetric.ordConnected_setOf_closedBall_subset
 
-theorem ordConnected_setOf_ball_subset (x : α) (s : Set α) : OrdConnected { r | ball x r ⊆ s } :=
+lemma ordConnected_setOf_ball_subset (x : α) (s : Set α) : OrdConnected { r | ball x r ⊆ s } :=
   ⟨fun _ _ _ h₁ _ h₂ => (ball_subset_ball h₂.2).trans h₁⟩
 #align emetric.ord_connected_set_of_ball_subset EMetric.ordConnected_setOf_ball_subset
 
@@ -699,11 +699,11 @@ lemma isClosed_ball_top : IsClosed (ball x ⊤) :=
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
 #align emetric.is_closed_ball_top EMetric.isClosed_ball_top
 
-theorem ball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
+lemma ball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
   isOpen_ball.mem_nhds (mem_ball_self ε0)
 #align emetric.ball_mem_nhds EMetric.ball_mem_nhds
 
-theorem closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBall x ε ∈ 𝓝 x :=
+lemma closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBall x ε ∈ 𝓝 x :=
   mem_of_superset (ball_mem_nhds x ε0) ball_subset_closedBall
 #align emetric.closed_ball_mem_nhds EMetric.closedBall_mem_nhds
 
@@ -779,7 +779,7 @@ section Compact
 -- porting note: todo: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
-theorem subset_countable_closure_of_almost_dense_set (s : Set α)
+lemma subset_countable_closure_of_almost_dense_set (s : Set α)
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨x₀, hx₀⟩)
@@ -875,7 +875,7 @@ noncomputable def diam (s : Set α) :=
   ⨆ (x ∈ s) (y ∈ s), edist x y
 #align emetric.diam EMetric.diam
 
-theorem diam_eq_sSup (s : Set α) : diam s = sSup (image2 edist s s) := sSup_image2.symm
+lemma diam_eq_sSup (s : Set α) : diam s = sSup (image2 edist s s) := sSup_image2.symm
 
 lemma diam_le_iff {d : ℝ≥0∞} : diam s ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d := by
   simp only [diam, iSup_le_iff]
@@ -891,7 +891,7 @@ lemma edist_le_of_diam_le {d} (hx : x ∈ s) (hy : y ∈ s) (hd : diam s ≤ d) 
 #align emetric.edist_le_of_diam_le EMetric.edist_le_of_diam_le
 
 /-- If two points belong to some set, their edistance is bounded by the diameter of the set -/
-theorem edist_le_diam_of_mem (hx : x ∈ s) (hy : y ∈ s) : edist x y ≤ diam s :=
+lemma edist_le_diam_of_mem (hx : x ∈ s) (hy : y ∈ s) : edist x y ≤ diam s :=
   edist_le_of_diam_le hx hy le_rfl
 #align emetric.edist_le_diam_of_mem EMetric.edist_le_diam_of_mem
 
@@ -902,7 +902,7 @@ lemma diam_le {d : ℝ≥0∞} (h : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ d) :
 #align emetric.diam_le EMetric.diam_le
 
 /-- The diameter of a subsingleton vanishes. -/
-theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 :=
+lemma diam_subsingleton (hs : s.Subsingleton) : diam s = 0 :=
   nonpos_iff_eq_zero.1 <| diam_le fun _x hx y hy => (hs hx hy).symm ▸ edist_self y ▸ le_rfl
 #align emetric.diam_subsingleton EMetric.diam_subsingleton
 
@@ -1189,22 +1189,22 @@ instance : EDist (Additive X) := ‹EDist X›
 instance : EDist (Multiplicative X) := ‹EDist X›
 
 @[simp]
-theorem edist_ofMul (a b : X) : edist (ofMul a) (ofMul b) = edist a b :=
+lemma edist_ofMul (a b : X) : edist (ofMul a) (ofMul b) = edist a b :=
   rfl
 #align edist_of_mul edist_ofMul
 
 @[simp]
-theorem edist_ofAdd (a b : X) : edist (ofAdd a) (ofAdd b) = edist a b :=
+lemma edist_ofAdd (a b : X) : edist (ofAdd a) (ofAdd b) = edist a b :=
   rfl
 #align edist_of_add edist_ofAdd
 
 @[simp]
-theorem edist_toMul (a b : Additive X) : edist (toMul a) (toMul b) = edist a b :=
+lemma edist_toMul (a b : Additive X) : edist (toMul a) (toMul b) = edist a b :=
   rfl
 #align edist_to_mul edist_toMul
 
 @[simp]
-theorem edist_toAdd (a b : Multiplicative X) : edist (toAdd a) (toAdd b) = edist a b :=
+lemma edist_toAdd (a b : Multiplicative X) : edist (toAdd a) (toAdd b) = edist a b :=
   rfl
 #align edist_to_add edist_toAdd
 
@@ -1231,12 +1231,12 @@ variable [EDist X]
 instance : EDist Xᵒᵈ := ‹EDist X›
 
 @[simp]
-theorem edist_toDual (a b : X) : edist (toDual a) (toDual b) = edist a b :=
+lemma edist_toDual (a b : X) : edist (toDual a) (toDual b) = edist a b :=
   rfl
 #align edist_to_dual edist_toDual
 
 @[simp]
-theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :=
+lemma edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :=
   rfl
 #align edist_of_dual edist_ofDual
 

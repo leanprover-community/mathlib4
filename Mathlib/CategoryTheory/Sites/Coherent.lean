@@ -96,7 +96,7 @@ For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a
 coherent topology.
 Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is needed for the proof.
 -/
-theorem mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
+lemma mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
     (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
           (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
@@ -112,7 +112,7 @@ theorem mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
   exact Coverage.saturate.of X _ ⟨α, inferInstance, Y, π, ⟨rfl, hπ.1⟩⟩
 
 /-- Every Yoneda-presheaf is a sheaf for the coherent topology. -/
-theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yoneda.obj W) := by
+lemma isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yoneda.obj W) := by
   rw [isSheaf_coherent]
   intro X α _ Y π H
   have h_colim := isColimitOfEffectiveEpiFamilyStruct Y π H.effectiveEpiFamily.some
@@ -182,7 +182,7 @@ lemma EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α �
 A sieve belongs to the coherent topology if and only if it contains a finite
 `EffectiveEpiFamily`.
 -/
-theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
+lemma coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
 (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by

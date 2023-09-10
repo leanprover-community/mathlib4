@@ -35,7 +35,7 @@ variable {n : ℕ}
 lemma superFactorial_zero : sf 0 = 1 :=
   rfl
 
-theorem superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * sf n :=
+lemma superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * sf n :=
   rfl
 
 @[simp]

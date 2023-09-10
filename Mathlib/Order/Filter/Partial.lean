@@ -65,23 +65,23 @@ def rmap (r : Rel α β) (l : Filter α) : Filter β where
     rw [←Rel.core_inter]
 #align filter.rmap Filter.rmap
 
-theorem rmap_sets (r : Rel α β) (l : Filter α) : (l.rmap r).sets = r.core ⁻¹' l.sets :=
+lemma rmap_sets (r : Rel α β) (l : Filter α) : (l.rmap r).sets = r.core ⁻¹' l.sets :=
   rfl
 #align filter.rmap_sets Filter.rmap_sets
 
 @[simp]
-theorem mem_rmap (r : Rel α β) (l : Filter α) (s : Set β) : s ∈ l.rmap r ↔ r.core s ∈ l :=
+lemma mem_rmap (r : Rel α β) (l : Filter α) (s : Set β) : s ∈ l.rmap r ↔ r.core s ∈ l :=
   Iff.rfl
 #align filter.mem_rmap Filter.mem_rmap
 
 @[simp]
-theorem rmap_rmap (r : Rel α β) (s : Rel β γ) (l : Filter α) :
+lemma rmap_rmap (r : Rel α β) (s : Rel β γ) (l : Filter α) :
     rmap s (rmap r l) = rmap (r.comp s) l :=
   filter_eq <| by simp [rmap_sets, Set.preimage, Rel.core_comp]
 #align filter.rmap_rmap Filter.rmap_rmap
 
 @[simp]
-theorem rmap_compose (r : Rel α β) (s : Rel β γ) : rmap s ∘ rmap r = rmap (r.comp s) :=
+lemma rmap_compose (r : Rel α β) (s : Rel β γ) : rmap s ∘ rmap r = rmap (r.comp s) :=
   funext <| rmap_rmap _ _
 #align filter.rmap_compose Filter.rmap_compose
 
@@ -92,7 +92,7 @@ def RTendsto (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.rmap r ≤ l₂
 #align filter.rtendsto Filter.RTendsto
 
-theorem rtendsto_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
+lemma rtendsto_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto r l₁ l₂ ↔ ∀ s ∈ l₂, r.core s ∈ l₁ :=
   Iff.rfl
 #align filter.rtendsto_def Filter.rtendsto_def
@@ -107,12 +107,12 @@ def rcomap (r : Rel α β) (f : Filter β) : Filter α where
     ⟨a' ∩ b', inter_mem ha₁ hb₁, (r.core_inter a' b').subset.trans (Set.inter_subset_inter ha₂ hb₂)⟩
 #align filter.rcomap Filter.rcomap
 
-theorem rcomap_sets (r : Rel α β) (f : Filter β) :
+lemma rcomap_sets (r : Rel α β) (f : Filter β) :
     (rcomap r f).sets = Rel.image (fun s t => r.core s ⊆ t) f.sets :=
   rfl
 #align filter.rcomap_sets Filter.rcomap_sets
 
-theorem rcomap_rcomap (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
+lemma rcomap_rcomap (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
     rcomap r (rcomap s l) = rcomap (r.comp s) l :=
   filter_eq <| by
     ext t; simp [rcomap_sets, Rel.image, Rel.core_comp]; constructor
@@ -123,11 +123,11 @@ theorem rcomap_rcomap (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
 #align filter.rcomap_rcomap Filter.rcomap_rcomap
 
 @[simp]
-theorem rcomap_compose (r : Rel α β) (s : Rel β γ) : rcomap r ∘ rcomap s = rcomap (r.comp s) :=
+lemma rcomap_compose (r : Rel α β) (s : Rel β γ) : rcomap r ∘ rcomap s = rcomap (r.comp s) :=
   funext <| rcomap_rcomap _ _
 #align filter.rcomap_compose Filter.rcomap_compose
 
-theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
+lemma rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
   simp_rw [←l₂.mem_sets]
@@ -151,18 +151,18 @@ def rcomap' (r : Rel α β) (f : Filter β) : Filter α where
 #align filter.rcomap' Filter.rcomap'
 
 @[simp]
-theorem mem_rcomap' (r : Rel α β) (l : Filter β) (s : Set α) :
+lemma mem_rcomap' (r : Rel α β) (l : Filter β) (s : Set α) :
     s ∈ l.rcomap' r ↔ ∃ t ∈ l, r.preimage t ⊆ s :=
   Iff.rfl
 #align filter.mem_rcomap' Filter.mem_rcomap'
 
-theorem rcomap'_sets (r : Rel α β) (f : Filter β) :
+lemma rcomap'_sets (r : Rel α β) (f : Filter β) :
     (rcomap' r f).sets = Rel.image (fun s t => r.preimage s ⊆ t) f.sets :=
   rfl
 #align filter.rcomap'_sets Filter.rcomap'_sets
 
 @[simp]
-theorem rcomap'_rcomap' (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
+lemma rcomap'_rcomap' (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
     rcomap' r (rcomap' s l) = rcomap' (r.comp s) l :=
   Filter.ext fun t => by
     simp only [mem_rcomap', Rel.preimage_comp]
@@ -174,7 +174,7 @@ theorem rcomap'_rcomap' (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
 #align filter.rcomap'_rcomap' Filter.rcomap'_rcomap'
 
 @[simp]
-theorem rcomap'_compose (r : Rel α β) (s : Rel β γ) : rcomap' r ∘ rcomap' s = rcomap' (r.comp s) :=
+lemma rcomap'_compose (r : Rel α β) (s : Rel β γ) : rcomap' r ∘ rcomap' s = rcomap' (r.comp s) :=
   funext <| rcomap'_rcomap' _ _
 #align filter.rcomap'_compose Filter.rcomap'_compose
 
@@ -185,19 +185,19 @@ def RTendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' r
 #align filter.rtendsto' Filter.RTendsto'
 
-theorem rtendsto'_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
+lemma rtendsto'_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.preimage s ∈ l₁ := by
   unfold RTendsto' rcomap'; simp [le_def, Rel.mem_image]; constructor
   · exact fun h s hs => h _ _ hs Set.Subset.rfl
   · exact fun h s t ht => mem_of_superset (h t ht)
 #align filter.rtendsto'_def Filter.rtendsto'_def
 
-theorem tendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
+lemma tendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
     Tendsto f l₁ l₂ ↔ RTendsto (Function.graph f) l₁ l₂ := by
   simp [tendsto_def, Function.graph, rtendsto_def, Rel.core, Set.preimage]
 #align filter.tendsto_iff_rtendsto Filter.tendsto_iff_rtendsto
 
-theorem tendsto_iff_rtendsto' (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
+lemma tendsto_iff_rtendsto' (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
     Tendsto f l₁ l₂ ↔ RTendsto' (Function.graph f) l₁ l₂ := by
   simp [tendsto_def, Function.graph, rtendsto'_def, Rel.preimage_def, Set.preimage]
 #align filter.tendsto_iff_rtendsto' Filter.tendsto_iff_rtendsto'
@@ -212,7 +212,7 @@ def pmap (f : α →. β) (l : Filter α) : Filter β :=
 #align filter.pmap Filter.pmap
 
 @[simp]
-theorem mem_pmap (f : α →. β) (l : Filter α) (s : Set β) : s ∈ l.pmap f ↔ f.core s ∈ l :=
+lemma mem_pmap (f : α →. β) (l : Filter α) (s : Set β) : s ∈ l.pmap f ↔ f.core s ∈ l :=
   Iff.rfl
 #align filter.mem_pmap Filter.mem_pmap
 
@@ -223,29 +223,29 @@ def PTendsto (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.pmap f ≤ l₂
 #align filter.ptendsto Filter.PTendsto
 
-theorem ptendsto_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
+lemma ptendsto_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
     PTendsto f l₁ l₂ ↔ ∀ s ∈ l₂, f.core s ∈ l₁ :=
   Iff.rfl
 #align filter.ptendsto_def Filter.ptendsto_def
 
-theorem ptendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α →. β) :
+lemma ptendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α →. β) :
     PTendsto f l₁ l₂ ↔ RTendsto f.graph' l₁ l₂ :=
   Iff.rfl
 #align filter.ptendsto_iff_rtendsto Filter.ptendsto_iff_rtendsto
 
-theorem pmap_res (l : Filter α) (s : Set α) (f : α → β) :
+lemma pmap_res (l : Filter α) (s : Set α) (f : α → β) :
     pmap (PFun.res f s) l = map f (l ⊓ 𝓟 s) := by
   ext t
   simp only [PFun.core_res, mem_pmap, mem_map, mem_inf_principal, imp_iff_not_or]
   rfl
 #align filter.pmap_res Filter.pmap_res
 
-theorem tendsto_iff_ptendsto (l₁ : Filter α) (l₂ : Filter β) (s : Set α) (f : α → β) :
+lemma tendsto_iff_ptendsto (l₁ : Filter α) (l₂ : Filter β) (s : Set α) (f : α → β) :
     Tendsto f (l₁ ⊓ 𝓟 s) l₂ ↔ PTendsto (PFun.res f s) l₁ l₂ := by
   simp only [Tendsto, PTendsto, pmap_res]
 #align filter.tendsto_iff_ptendsto Filter.tendsto_iff_ptendsto
 
-theorem tendsto_iff_ptendsto_univ (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
+lemma tendsto_iff_ptendsto_univ (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
     Tendsto f l₁ l₂ ↔ PTendsto (PFun.res f Set.univ) l₁ l₂ := by
   rw [← tendsto_iff_ptendsto]
   simp [principal_univ]
@@ -264,7 +264,7 @@ def PTendsto' (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' f.graph'
 #align filter.ptendsto' Filter.PTendsto'
 
-theorem ptendsto'_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
+lemma ptendsto'_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
     PTendsto' f l₁ l₂ ↔ ∀ s ∈ l₂, f.preimage s ∈ l₁ :=
   rtendsto'_def _ _ _
 #align filter.ptendsto'_def Filter.ptendsto'_def

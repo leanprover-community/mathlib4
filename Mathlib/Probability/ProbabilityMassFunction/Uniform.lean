@@ -48,16 +48,16 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : Pmf α := by
 variable {s : Finset α} (hs : s.Nonempty) {a : α}
 
 @[simp]
-theorem uniformOfFinset_apply (a : α) :
+lemma uniformOfFinset_apply (a : α) :
     uniformOfFinset s hs a = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 :=
   rfl
 #align pmf.uniform_of_finset_apply Pmf.uniformOfFinset_apply
 
-theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (s.card : ℝ≥0∞)⁻¹ := by
+lemma uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (s.card : ℝ≥0∞)⁻¹ := by
   simp [ha]
 #align pmf.uniform_of_finset_apply_of_mem Pmf.uniformOfFinset_apply_of_mem
 
-theorem uniformOfFinset_apply_of_not_mem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
+lemma uniformOfFinset_apply_of_not_mem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 #align pmf.uniform_of_finset_apply_of_not_mem Pmf.uniformOfFinset_apply_of_not_mem
 
 @[simp]
@@ -68,7 +68,7 @@ lemma support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
       simp [mem_support_iff, Finset.ne_empty_of_mem ha])
 #align pmf.support_uniform_of_finset Pmf.support_uniformOfFinset
 
-theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
+lemma mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp
 #align pmf.mem_support_uniform_of_finset_iff Pmf.mem_support_uniformOfFinset_iff
 
@@ -115,18 +115,18 @@ def uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] : Pmf α :=
 variable [Fintype α] [Nonempty α]
 
 @[simp]
-theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
+lemma uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
   simp [uniformOfFintype, Finset.mem_univ, if_true, uniformOfFinset_apply]
   rfl
 #align pmf.uniform_of_fintype_apply Pmf.uniformOfFintype_apply
 
 @[simp]
-theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
+lemma support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
   Set.ext fun x => by simp [mem_support_iff]
 #align pmf.support_uniform_of_fintype Pmf.support_uniformOfFintype
 
-theorem mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
+lemma mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
 #align pmf.mem_support_uniform_of_fintype Pmf.mem_support_uniformOfFintype
 
 section Measure
@@ -174,7 +174,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : Pmf α :=
 variable {s : Multiset α} (hs : s ≠ 0)
 
 @[simp]
-theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
+lemma ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
   rfl
 #align pmf.of_multiset_apply Pmf.ofMultiset_apply
 
@@ -183,7 +183,7 @@ lemma support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
   Set.ext (by simp [mem_support_iff, hs])
 #align pmf.support_of_multiset Pmf.support_ofMultiset
 
-theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
+lemma mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
   simp
 #align pmf.mem_support_of_multiset_iff Pmf.mem_support_ofMultiset_iff
 

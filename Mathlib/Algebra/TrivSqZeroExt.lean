@@ -94,12 +94,12 @@ def snd (x : tsze R M) : M :=
 #align triv_sq_zero_ext.snd TrivSqZeroExt.snd
 
 @[simp]
-theorem fst_mk (r : R) (m : M) : fst (r, m) = r :=
+lemma fst_mk (r : R) (m : M) : fst (r, m) = r :=
   rfl
 #align triv_sq_zero_ext.fst_mk TrivSqZeroExt.fst_mk
 
 @[simp]
-theorem snd_mk (r : R) (m : M) : snd (r, m) = m :=
+lemma snd_mk (r : R) (m : M) : snd (r, m) = m :=
   rfl
 #align triv_sq_zero_ext.snd_mk TrivSqZeroExt.snd_mk
 
@@ -764,7 +764,7 @@ lemma algebraMap_eq_inlHom : algebraMap R' (tsze R' M) = inlHom R' M :=
   rfl
 #align triv_sq_zero_ext.algebra_map_eq_inl_hom TrivSqZeroExt.algebraMap_eq_inlHom
 
-theorem algebraMap_eq_inl' (s : S) : algebraMap S (tsze R M) s = inl (algebraMap S R s) :=
+lemma algebraMap_eq_inl' (s : S) : algebraMap S (tsze R M) s = inl (algebraMap S R s) :=
   rfl
 #align triv_sq_zero_ext.algebra_map_eq_inl' TrivSqZeroExt.algebraMap_eq_inl'
 
@@ -813,13 +813,13 @@ def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →�
 #align triv_sq_zero_ext.lift_aux TrivSqZeroExt.liftAux
 
 @[simp]
-theorem liftAux_apply_inr (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) (m : M) :
+lemma liftAux_apply_inr (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) (m : M) :
     liftAux f hf (inr m) = f m :=
   show algebraMap R' A 0 + f m = f m by rw [RingHom.map_zero, zero_add]
 #align triv_sq_zero_ext.lift_aux_apply_inr TrivSqZeroExt.liftAux_apply_inr
 
 @[simp]
-theorem liftAux_comp_inrHom (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) :
+lemma liftAux_comp_inrHom (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) :
     (liftAux f hf).toLinearMap.comp (inrHom R' M) = f :=
   LinearMap.ext <| liftAux_apply_inr f hf
 #align triv_sq_zero_ext.lift_aux_comp_inr_hom TrivSqZeroExt.liftAux_comp_inrHom

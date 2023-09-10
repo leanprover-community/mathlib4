@@ -206,13 +206,13 @@ variable {G}
 variable [SMulInvariantMeasure G α μ]
 
 @[to_additive (attr := simp)]
-theorem measure_preimage_smul (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
+lemma measure_preimage_smul (s : Set α) : μ ((c • ·) ⁻¹' s) = μ s :=
   ((smulInvariantMeasure_tfae G μ).out 0 3 rfl rfl).mp ‹_› c s
 #align measure_theory.measure_preimage_smul MeasureTheory.measure_preimage_smul
 #align measure_theory.measure_preimage_vadd MeasureTheory.measure_preimage_vadd
 
 @[to_additive (attr := simp)]
-theorem measure_smul (s : Set α) : μ (c • s) = μ s :=
+lemma measure_smul (s : Set α) : μ (c • s) = μ s :=
   ((smulInvariantMeasure_tfae G μ).out 0 4 rfl rfl).mp ‹_› c s
 #align measure_theory.measure_smul MeasureTheory.measure_smul
 #align measure_theory.measure_vadd MeasureTheory.measure_vadd
@@ -240,7 +240,7 @@ variable [TopologicalSpace α] [ContinuousConstSMul G α] [MulAction.IsMinimal G
 positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0` instead of
 `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_smulInvariant_of_ne_zero`. -/
 @[to_additive]
-theorem measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K) (hμK : μ K ≠ 0)
+lemma measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K) (hμK : μ K ≠ 0)
     (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   let ⟨t, ht⟩ := hK.exists_finite_cover_smul G hU hne
   pos_iff_ne_zero.2 fun hμU =>
@@ -256,7 +256,7 @@ instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_
 add_decl_doc measure_isOpen_pos_of_vaddInvariant_of_compact_ne_zero
 
 @[to_additive]
-theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
+lemma isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
     IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
@@ -268,7 +268,7 @@ theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempt
 variable [Measure.Regular μ]
 
 @[to_additive]
-theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
+lemma measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
     (hne : U.Nonempty) : 0 < μ U :=
   let ⟨_K, hK, hμK⟩ := Regular.exists_compact_not_null.mpr hμ
   measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero G hK hμK hU hne
@@ -276,7 +276,7 @@ theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : Is
 #align measure_theory.measure_is_open_pos_of_vadd_invariant_of_ne_zero MeasureTheory.measure_isOpen_pos_of_vaddInvariant_of_ne_zero
 
 @[to_additive]
-theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
+lemma measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_of_measure_ne_zero h.ne',
     measure_isOpen_pos_of_smulInvariant_of_ne_zero G hμ hU⟩
@@ -284,7 +284,7 @@ theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen 
 #align measure_theory.measure_pos_iff_nonempty_of_vadd_invariant MeasureTheory.measure_pos_iff_nonempty_of_vaddInvariant
 
 @[to_additive]
-theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
+lemma measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ := by
   rw [← not_iff_not, ← Ne.def, ← pos_iff_ne_zero,
     measure_pos_iff_nonempty_of_smulInvariant G hμ hU, nonempty_iff_ne_empty]

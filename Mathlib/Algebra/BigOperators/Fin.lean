@@ -223,19 +223,19 @@ def partialProd (f : Fin n → α) (i : Fin (n + 1)) : α :=
 #align fin.partial_sum Fin.partialSum
 
 @[to_additive (attr := simp)]
-theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [partialProd]
+lemma partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [partialProd]
 #align fin.partial_prod_zero Fin.partialProd_zero
 #align fin.partial_sum_zero Fin.partialSum_zero
 
 @[to_additive]
-theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
+lemma partialProd_succ (f : Fin n → α) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
   simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt, ← Option.coe_def]
 #align fin.partial_prod_succ Fin.partialProd_succ
 #align fin.partial_sum_succ Fin.partialSum_succ
 
 @[to_additive]
-theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
+lemma partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
     partialProd f j.succ = f 0 * partialProd (Fin.tail f) j := by
   simp [partialProd]
   rfl

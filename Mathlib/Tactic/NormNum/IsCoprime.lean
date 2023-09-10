@@ -20,7 +20,7 @@ namespace NormNum
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-theorem int_not_isCoprime_helper (x y : ℤ) (d : ℕ) (hd : Int.gcd x y = d)
+lemma int_not_isCoprime_helper (x y : ℤ) (d : ℕ) (hd : Int.gcd x y = d)
     (h : Nat.beq d 1 = false) : ¬ IsCoprime x y := by
   rw [Int.isCoprime_iff_gcd_eq_one, hd]
   exact Nat.ne_of_beq_eq_false h

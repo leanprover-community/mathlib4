@@ -61,11 +61,11 @@ def reesAlgebra : Subalgebra R R[X] where
     · simp
 #align rees_algebra reesAlgebra
 
-theorem mem_reesAlgebra_iff (f : R[X]) : f ∈ reesAlgebra I ↔ ∀ i, f.coeff i ∈ I ^ i :=
+lemma mem_reesAlgebra_iff (f : R[X]) : f ∈ reesAlgebra I ↔ ∀ i, f.coeff i ∈ I ^ i :=
   Iff.rfl
 #align mem_rees_algebra_iff mem_reesAlgebra_iff
 
-theorem mem_reesAlgebra_iff_support (f : R[X]) :
+lemma mem_reesAlgebra_iff_support (f : R[X]) :
     f ∈ reesAlgebra I ↔ ∀ i ∈ f.support, f.coeff i ∈ I ^ i := by
   apply forall_congr'
   intro a
@@ -110,7 +110,7 @@ lemma adjoin_monomial_eq_reesAlgebra :
 
 variable {I}
 
-theorem reesAlgebra.fg (hI : I.FG) : (reesAlgebra I).FG := by
+lemma reesAlgebra.fg (hI : I.FG) : (reesAlgebra I).FG := by
   classical
     obtain ⟨s, hs⟩ := hI
     rw [← adjoin_monomial_eq_reesAlgebra, ← hs]

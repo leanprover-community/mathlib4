@@ -87,7 +87,7 @@ lemma base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :
     · ac_rfl
     · apply Nat.mul_pos hn <| pow_pos (pos_of_gt hp) e
 
-theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
+lemma pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   dsimp [maxPowDiv]
   rw [go_eq]
   by_cases (1 < p ∧ 0 < n ∧ n % p = 0)

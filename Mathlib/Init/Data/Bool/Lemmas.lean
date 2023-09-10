@@ -48,21 +48,21 @@ lemma cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cas
 #align cond_a_a Bool.cond_self
 
 @[simp]
-theorem xor_self (b : Bool) : xor b b = false := by cases b <;> simp
+lemma xor_self (b : Bool) : xor b b = false := by cases b <;> simp
 #align bxor_self Bool.xor_self
 
 @[simp]
-theorem xor_true (b : Bool) : xor b true = not b := by cases b <;> simp
+lemma xor_true (b : Bool) : xor b true = not b := by cases b <;> simp
 #align bxor_tt Bool.xor_true
 
-theorem xor_false (b : Bool) : xor b false = b := by cases b <;> simp
+lemma xor_false (b : Bool) : xor b false = b := by cases b <;> simp
 #align bxor_ff Bool.xor_false
 
 @[simp]
-theorem true_xor (b : Bool) : xor true b = not b := by cases b <;> simp
+lemma true_xor (b : Bool) : xor true b = not b := by cases b <;> simp
 #align tt_bxor Bool.true_xor
 
-theorem false_xor (b : Bool) : xor false b = b := by cases b <;> simp
+lemma false_xor (b : Bool) : xor false b = b := by cases b <;> simp
 #align ff_bxor Bool.false_xor
 
 lemma true_eq_false_eq_False : ¬true = false := by decide
@@ -71,10 +71,10 @@ lemma true_eq_false_eq_False : ¬true = false := by decide
 lemma false_eq_true_eq_False : ¬false = true := by decide
 #align ff_eq_tt_eq_false Bool.false_eq_true_eq_False
 
-theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by simp
+lemma eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by simp
 #align eq_ff_eq_not_eq_tt Bool.eq_false_eq_not_eq_true
 
-theorem eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by simp
+lemma eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by simp
 #align eq_tt_eq_not_eq_ft Bool.eq_true_eq_not_eq_false
 
 lemma eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
@@ -85,30 +85,30 @@ lemma eq_true_of_not_eq_false {b : Bool} : ¬b = false → b = true :=
   Eq.mp (eq_true_eq_not_eq_false b)
 #align eq_tt_of_not_eq_ff Bool.eq_true_of_not_eq_false
 
-theorem and_eq_true_eq_eq_true_and_eq_true (a b : Bool) :
+lemma and_eq_true_eq_eq_true_and_eq_true (a b : Bool) :
     ((a && b) = true) = (a = true ∧ b = true) := by simp
 #align band_eq_true_eq_eq_tt_and_eq_tt Bool.and_eq_true_eq_eq_true_and_eq_true
 
-theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
+lemma or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
     ((a || b) = true) = (a = true ∨ b = true) := by simp
 #align bor_eq_true_eq_eq_tt_or_eq_tt Bool.or_eq_true_eq_eq_true_or_eq_true
 
-theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
+lemma not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
 @[simp]
-theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
+lemma and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
 #align band_eq_false_eq_eq_ff_or_eq_ff Bool.and_eq_false_eq_eq_false_or_eq_false
 
 @[simp]
-theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
+lemma or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
     ((a || b) = false) = (a = false ∧ b = false) := by
   cases a <;> cases b <;> simp
 #align bor_eq_false_eq_eq_ff_and_eq_ff Bool.or_eq_false_eq_eq_false_and_eq_false
 
-theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
+lemma not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
 #align bnot_eq_ff_eq_eq_tt Bool.not_eq_false_eq_eq_true
 
 lemma coe_false : ↑false = False := by simp
@@ -123,7 +123,7 @@ lemma coe_sort_false : (↥false : Prop) = False := by simp
 lemma coe_sort_true : (↥true : Prop) = True := by simp
 #align coe_sort_tt Bool.coe_sort_true
 
-theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
+lemma decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
 #align to_bool_iff Bool.decide_iff
 
 lemma decide_true {p : Prop} [Decidable p] : p → decide p :=
@@ -142,7 +142,7 @@ lemma bool_eq_false {b : Bool} : ¬b → b = false :=
   bool_iff_false.1
 #align bool_eq_false Bool.bool_eq_false
 
-theorem decide_false_iff (p : Prop) [Decidable p] : decide p = false ↔ ¬p :=
+lemma decide_false_iff (p : Prop) [Decidable p] : decide p = false ↔ ¬p :=
   bool_iff_false.symm.trans (not_congr (decide_iff _))
 #align to_bool_ff_iff Bool.decide_false_iff
 
@@ -161,24 +161,24 @@ lemma decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
   | true => exact decide_true (h.2 <| of_decide_true h')
 #align to_bool_congr Bool.decide_congr
 
-theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
+lemma or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
 #align bor_coe_iff Bool.or_coe_iff
 
-theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
+lemma and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
 #align band_coe_iff Bool.and_coe_iff
 
 @[simp]
-theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
+lemma xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> exact by decide
 #align bxor_coe_iff Bool.xor_coe_iff
 
 @[simp]
-theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
+lemma ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
     ((if c then a else b) = true) = if c then a = true else b = true := by by_cases c <;> simp [*]
 #align ite_eq_tt_distrib Bool.ite_eq_true_distrib
 
 @[simp]
-theorem ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
+lemma ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
     ((if c then a else b) = false) = if c then a = false else b = false := by
   by_cases c <;> simp [*]
 #align ite_eq_ff_distrib Bool.ite_eq_false_distrib

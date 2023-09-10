@@ -72,12 +72,12 @@ lemma IsCoprime.prod_right_iff : IsCoprime x (∏ i in t, s i) ↔ ∀ i ∈ t, 
   simpa only [isCoprime_comm] using IsCoprime.prod_left_iff (R := R)
 #align is_coprime.prod_right_iff IsCoprime.prod_right_iff
 
-theorem IsCoprime.of_prod_left (H1 : IsCoprime (∏ i in t, s i) x) (i : I) (hit : i ∈ t) :
+lemma IsCoprime.of_prod_left (H1 : IsCoprime (∏ i in t, s i) x) (i : I) (hit : i ∈ t) :
     IsCoprime (s i) x :=
   IsCoprime.prod_left_iff.1 H1 i hit
 #align is_coprime.of_prod_left IsCoprime.of_prod_left
 
-theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i in t, s i)) (i : I) (hit : i ∈ t) :
+lemma IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i in t, s i)) (i : I) (hit : i ∈ t) :
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
 #align is_coprime.of_prod_right IsCoprime.of_prod_right
@@ -190,21 +190,21 @@ lemma pairwise_coprime_iff_coprime_prod [DecidableEq I] :
 
 variable {m n : ℕ}
 
-theorem IsCoprime.pow_left (H : IsCoprime x y) : IsCoprime (x ^ m) y := by
+lemma IsCoprime.pow_left (H : IsCoprime x y) : IsCoprime (x ^ m) y := by
   rw [← Finset.card_range m, ← Finset.prod_const]
   exact IsCoprime.prod_left fun _ _ ↦ H
 #align is_coprime.pow_left IsCoprime.pow_left
 
-theorem IsCoprime.pow_right (H : IsCoprime x y) : IsCoprime x (y ^ n) := by
+lemma IsCoprime.pow_right (H : IsCoprime x y) : IsCoprime x (y ^ n) := by
   rw [← Finset.card_range n, ← Finset.prod_const]
   exact IsCoprime.prod_right fun _ _ ↦ H
 #align is_coprime.pow_right IsCoprime.pow_right
 
-theorem IsCoprime.pow (H : IsCoprime x y) : IsCoprime (x ^ m) (y ^ n) :=
+lemma IsCoprime.pow (H : IsCoprime x y) : IsCoprime (x ^ m) (y ^ n) :=
   H.pow_left.pow_right
 #align is_coprime.pow IsCoprime.pow
 
-theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime x y := by
+lemma IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime x y := by
   refine' ⟨fun h ↦ _, IsCoprime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
@@ -212,10 +212,10 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   -- by Mathport, nor whether this is an issue
 #align is_coprime.pow_left_iff IsCoprime.pow_left_iff
 
-theorem IsCoprime.pow_right_iff (hm : 0 < m) : IsCoprime x (y ^ m) ↔ IsCoprime x y :=
+lemma IsCoprime.pow_right_iff (hm : 0 < m) : IsCoprime x (y ^ m) ↔ IsCoprime x y :=
   isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans <| isCoprime_comm
 #align is_coprime.pow_right_iff IsCoprime.pow_right_iff
 
-theorem IsCoprime.pow_iff (hm : 0 < m) (hn : 0 < n) : IsCoprime (x ^ m) (y ^ n) ↔ IsCoprime x y :=
+lemma IsCoprime.pow_iff (hm : 0 < m) (hn : 0 < n) : IsCoprime (x ^ m) (y ^ n) ↔ IsCoprime x y :=
   (IsCoprime.pow_left_iff hm).trans <| IsCoprime.pow_right_iff hn
 #align is_coprime.pow_iff IsCoprime.pow_iff

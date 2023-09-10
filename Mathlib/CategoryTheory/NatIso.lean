@@ -165,20 +165,20 @@ end
 
 variable {X Y : C}
 
-theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
+lemma naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
   simp
 #align category_theory.nat_iso.naturality_1 CategoryTheory.NatIso.naturality_1
 
-theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
+lemma naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
   simp
 #align category_theory.nat_iso.naturality_2 CategoryTheory.NatIso.naturality_2
 
-theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
+lemma naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
     inv (α.app X) ≫ F.map f ≫ α.app Y = G.map f := by simp
 #align category_theory.nat_iso.naturality_1' CategoryTheory.NatIso.naturality_1'
 
 @[reassoc (attr := simp)]
-theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
+lemma naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
     α.app X ≫ G.map f ≫ inv (α.app Y) = F.map f := by
   rw [← Category.assoc, ← naturality, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
 #align category_theory.nat_iso.naturality_2' CategoryTheory.NatIso.naturality_2'
@@ -193,7 +193,7 @@ instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
 #align category_theory.nat_iso.is_iso_app_of_is_iso CategoryTheory.NatIso.isIso_app_of_isIso
 
 @[simp]
-theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by
+lemma isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by
   -- Porting note: the next lemma used to be in `ext`, but that is no longer allowed.
   -- We've added an aesop apply rule;
   -- it would be nice to have a hook to run those without aesop warning it didn't close the goal.
@@ -203,7 +203,7 @@ theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (
 #align category_theory.nat_iso.is_iso_inv_app CategoryTheory.NatIso.isIso_inv_app
 
 @[simp]
-theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
+lemma inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by
   aesop_cat
 #align category_theory.nat_iso.inv_map_inv_app CategoryTheory.NatIso.inv_map_inv_app
@@ -228,14 +228,14 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
 #align category_theory.nat_iso.of_components_inv_app CategoryTheory.NatIso.ofComponents_inv_app
 
 @[simp]
-theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
+lemma ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
     (ofComponents app' naturality).app X = app' X := by aesop
 #align category_theory.nat_iso.of_components.app CategoryTheory.NatIso.ofComponents.app
 
 -- Making this an instance would cause a typeclass inference loop with `isIso_app_of_isIso`.
 /-- A natural transformation is an isomorphism if all its components are isomorphisms.
 -/
-theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
+lemma isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
   ⟨(IsIso.of_iso (ofComponents (fun X => asIso (α.app X)) (by aesop))).1⟩
 #align category_theory.nat_iso.is_iso_of_is_iso_app CategoryTheory.NatIso.isIso_of_isIso_app
 

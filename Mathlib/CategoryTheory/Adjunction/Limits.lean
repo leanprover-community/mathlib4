@@ -132,14 +132,14 @@ example (E : C ⥤ D) [IsEquivalence E] (c : Cocone K) (h : IsColimit c) :
     IsColimit (E.mapCocone c) :=
   PreservesColimit.preserves h
 
-theorem hasColimit_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimit K] :
+lemma hasColimit_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimit K] :
     HasColimit (K ⋙ E) :=
   HasColimit.mk
     { cocone := E.mapCocone (colimit.cocone K)
       isColimit := PreservesColimit.preserves (colimit.isColimit K) }
 #align category_theory.adjunction.has_colimit_comp_equivalence CategoryTheory.Adjunction.hasColimit_comp_equivalence
 
-theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimit (K ⋙ E)] :
+lemma hasColimit_of_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimit (K ⋙ E)] :
     HasColimit K :=
   @hasColimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
     (@hasColimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
@@ -147,13 +147,13 @@ theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColim
 #align category_theory.adjunction.has_colimit_of_comp_equivalence CategoryTheory.Adjunction.hasColimit_of_comp_equivalence
 
 /-- Transport a `HasColimitsOfShape` instance across an equivalence. -/
-theorem hasColimitsOfShape_of_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimitsOfShape J D] :
+lemma hasColimitsOfShape_of_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimitsOfShape J D] :
     HasColimitsOfShape J C :=
   ⟨fun F => hasColimit_of_comp_equivalence F E⟩
 #align category_theory.adjunction.has_colimits_of_shape_of_equivalence CategoryTheory.Adjunction.hasColimitsOfShape_of_equivalence
 
 /-- Transport a `HasColimitsOfSize` instance across an equivalence. -/
-theorem has_colimits_of_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimitsOfSize.{v, u} D] :
+lemma has_colimits_of_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimitsOfSize.{v, u} D] :
     HasColimitsOfSize.{v, u} C :=
   ⟨fun _ _ => hasColimitsOfShape_of_equivalence E⟩
 #align category_theory.adjunction.has_colimits_of_equivalence CategoryTheory.Adjunction.has_colimits_of_equivalence
@@ -245,13 +245,13 @@ instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [IsEquivalen
 example (E : D ⥤ C) [IsEquivalence E] (c : Cone K) (h : IsLimit c) : IsLimit (E.mapCone c) :=
   PreservesLimit.preserves h
 
-theorem hasLimit_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit K] : HasLimit (K ⋙ E) :=
+lemma hasLimit_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit K] : HasLimit (K ⋙ E) :=
   HasLimit.mk
     { cone := E.mapCone (limit.cone K)
       isLimit := PreservesLimit.preserves (limit.isLimit K) }
 #align category_theory.adjunction.has_limit_comp_equivalence CategoryTheory.Adjunction.hasLimit_comp_equivalence
 
-theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit (K ⋙ E)] :
+lemma hasLimit_of_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit (K ⋙ E)] :
     HasLimit K :=
   @hasLimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
     (@hasLimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
@@ -259,13 +259,13 @@ theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit (
 #align category_theory.adjunction.has_limit_of_comp_equivalence CategoryTheory.Adjunction.hasLimit_of_comp_equivalence
 
 /-- Transport a `HasLimitsOfShape` instance across an equivalence. -/
-theorem hasLimitsOfShape_of_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimitsOfShape J C] :
+lemma hasLimitsOfShape_of_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimitsOfShape J C] :
     HasLimitsOfShape J D :=
   ⟨fun F => hasLimit_of_comp_equivalence F E⟩
 #align category_theory.adjunction.has_limits_of_shape_of_equivalence CategoryTheory.Adjunction.hasLimitsOfShape_of_equivalence
 
 /-- Transport a `HasLimitsOfSize` instance across an equivalence. -/
-theorem has_limits_of_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimitsOfSize.{v, u} C] :
+lemma has_limits_of_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimitsOfSize.{v, u} C] :
     HasLimitsOfSize.{v, u} D :=
   ⟨fun _ _ => hasLimitsOfShape_of_equivalence E⟩
 #align category_theory.adjunction.has_limits_of_equivalence CategoryTheory.Adjunction.has_limits_of_equivalence

@@ -64,7 +64,7 @@ lemma mem_centralizer_iff {z : M} : z ∈ centralizer S ↔ ∀ g ∈ S, g * z =
 #align add_submonoid.mem_centralizer_iff AddSubmonoid.mem_centralizer_iff
 
 @[to_additive]
-theorem center_le_centralizer (s) : center M ≤ centralizer s :=
+lemma center_le_centralizer (s) : center M ≤ centralizer s :=
   s.center_subset_centralizer
 #align submonoid.center_le_centralizer Submonoid.center_le_centralizer
 #align add_submonoid.center_le_centralizer AddSubmonoid.center_le_centralizer
@@ -77,7 +77,7 @@ instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
 #align add_submonoid.decidable_mem_centralizer AddSubmonoid.decidableMemCentralizer
 
 @[to_additive]
-theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
+lemma centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
   Set.centralizer_subset h
 #align submonoid.centralizer_le Submonoid.centralizer_le
 #align add_submonoid.centralizer_le AddSubmonoid.centralizer_le

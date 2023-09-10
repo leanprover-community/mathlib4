@@ -238,7 +238,7 @@ lemma rq_eq : u.r + (u.bp + 1) * u.q = u.ap + 1 :=
   Nat.mod_add_div (u.ap + 1) (u.bp + 1)
 #align pnat.xgcd_type.rq_eq PNat.XgcdType.rq_eq
 
-theorem qp_eq (hr : u.r = 0) : u.q = u.qp + 1 := by
+lemma qp_eq (hr : u.r = 0) : u.q = u.qp + 1 := by
   by_cases hq : u.q = 0
   · let h := u.rq_eq
     rw [hr, hq, mul_zero, add_zero] at h
@@ -255,11 +255,11 @@ def start (a b : ℕ+) : XgcdType :=
   ⟨0, 0, 0, 0, a - 1, b - 1⟩
 #align pnat.xgcd_type.start PNat.XgcdType.start
 
-theorem start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
+lemma start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
   dsimp [start, IsSpecial]
 #align pnat.xgcd_type.start_is_special PNat.XgcdType.start_isSpecial
 
-theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
+lemma start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
   have : succ 0 = 1 := rfl
   rw [this, one_mul, one_mul, zero_mul, zero_mul, zero_add, add_zero]
@@ -277,13 +277,13 @@ lemma finish_isReduced : u.finish.IsReduced := by
   rfl
 #align pnat.xgcd_type.finish_is_reduced PNat.XgcdType.finish_isReduced
 
-theorem finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
+lemma finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
   dsimp [IsSpecial, finish] at hs ⊢
   rw [add_mul _ _ u.y, add_comm _ (u.x * u.y), ← hs]
   ring
 #align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_isSpecial
 
-theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
+lemma finish_v (hr : u.r = 0) : u.finish.v = u.v := by
   let ha : u.r + u.b * u.q = u.a := u.rq_eq
   rw [hr, zero_add] at ha
   ext
@@ -304,7 +304,7 @@ def step : XgcdType :=
 
 /-- We will apply the above step recursively.  The following result
  is used to ensure that the process terminates. -/
-theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
+lemma step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
   change u.r - 1 < u.bp
   have h₀ : u.r - 1 + 1 = u.r := Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hr)
   have h₁ : u.r < u.bp + 1 := Nat.mod_lt (u.ap + 1) u.bp.succ_pos
@@ -312,14 +312,14 @@ theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
   exact lt_of_succ_lt_succ h₁
 #align pnat.xgcd_type.step_wf PNat.XgcdType.step_wf
 
-theorem step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
+lemma step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
   dsimp [IsSpecial, step] at hs ⊢
   rw [mul_add, mul_comm u.y u.x, ← hs]
   ring
 #align pnat.xgcd_type.step_is_special PNat.XgcdType.step_isSpecial
 
 /-- The reduction step does not change the product vector. -/
-theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
+lemma step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
   let ha : u.r + u.b * u.q = u.a := u.rq_eq
   let hr : u.r - 1 + 1 = u.r := (add_comm _ 1).trans (add_tsub_cancel_of_le (Nat.pos_of_ne_zero hr))
   ext
@@ -367,7 +367,7 @@ lemma reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
       apply reduce_isReduced
 #align pnat.xgcd_type.reduce_reduced PNat.XgcdType.reduce_isReduced
 
-theorem reduce_isReduced' (u : XgcdType) : u.reduce.IsReduced' :=
+lemma reduce_isReduced' (u : XgcdType) : u.reduce.IsReduced' :=
   (isReduced_iff _).mp u.reduce_isReduced
 #align pnat.xgcd_type.reduce_reduced' PNat.XgcdType.reduce_isReduced'
 
@@ -383,7 +383,7 @@ lemma reduce_isSpecial : ∀ u : XgcdType, u.IsSpecial → u.reduce.IsSpecial
       exact (flip_isSpecial _).mpr (reduce_isSpecial _ (u.step_isSpecial hs))
 #align pnat.xgcd_type.reduce_special PNat.XgcdType.reduce_isSpecial
 
-theorem reduce_isSpecial' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial' :=
+lemma reduce_isSpecial' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial' :=
   (isSpecial_iff _).mp (u.reduce_isSpecial hs)
 #align pnat.xgcd_type.reduce_special' PNat.XgcdType.reduce_isSpecial'
 

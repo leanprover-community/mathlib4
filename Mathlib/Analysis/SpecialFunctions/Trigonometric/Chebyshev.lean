@@ -26,23 +26,23 @@ open Polynomial
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 @[simp]
-theorem aeval_T (x : A) (n : ℕ) : aeval x (T R n) = (T A n).eval x := by
+lemma aeval_T (x : A) (n : ℕ) : aeval x (T R n) = (T A n).eval x := by
   rw [aeval_def, eval₂_eq_eval_map, map_T]
 #align polynomial.chebyshev.aeval_T Polynomial.Chebyshev.aeval_T
 
 @[simp]
-theorem aeval_U (x : A) (n : ℕ) : aeval x (U R n) = (U A n).eval x := by
+lemma aeval_U (x : A) (n : ℕ) : aeval x (U R n) = (U A n).eval x := by
   rw [aeval_def, eval₂_eq_eval_map, map_U]
 #align polynomial.chebyshev.aeval_U Polynomial.Chebyshev.aeval_U
 
 @[simp]
-theorem algebraMap_eval_T (x : R) (n : ℕ) :
+lemma algebraMap_eval_T (x : R) (n : ℕ) :
     algebraMap R A ((T R n).eval x) = (T A n).eval (algebraMap R A x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_T]
 #align polynomial.chebyshev.algebra_map_eval_T Polynomial.Chebyshev.algebraMap_eval_T
 
 @[simp]
-theorem algebraMap_eval_U (x : R) (n : ℕ) :
+lemma algebraMap_eval_U (x : R) (n : ℕ) :
     algebraMap R A ((U R n).eval x) = (U A n).eval (algebraMap R A x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_U]
 #align polynomial.chebyshev.algebra_map_eval_U Polynomial.Chebyshev.algebraMap_eval_U
@@ -88,7 +88,7 @@ lemma T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
-theorem U_complex_cos (n : ℕ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
+lemma U_complex_cos (n : ℕ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
   induction' n with d hd
   · simp [U_zero, eval_one, zero_add, one_mul, Nat.zero_eq, CharP.cast_eq_zero]
   · rw [U_eq_X_mul_U_add_T]

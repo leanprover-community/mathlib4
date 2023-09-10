@@ -45,7 +45,7 @@ attribute [nolint simpNF] punitExt_hom_app_down_down punitExt_inv_app_down_down
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
 You probably want to use `punitExt` instead of this. -/
-theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
+lemma punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
   Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
 #align category_theory.functor.punit_ext' CategoryTheory.Functor.punit_ext'
 

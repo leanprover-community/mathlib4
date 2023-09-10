@@ -47,11 +47,11 @@ variable [TopologicalSpace α] [TopologicalSpace β]
 
 variable {i : α → β} (di : DenseInducing i)
 
-theorem nhds_eq_comap (di : DenseInducing i) : ∀ a : α, 𝓝 a = comap i (𝓝 <| i a) :=
+lemma nhds_eq_comap (di : DenseInducing i) : ∀ a : α, 𝓝 a = comap i (𝓝 <| i a) :=
   di.toInducing.nhds_eq_comap
 #align dense_inducing.nhds_eq_comap DenseInducing.nhds_eq_comap
 
-protected theorem continuous (di : DenseInducing i) : Continuous i :=
+protected lemma continuous (di : DenseInducing i) : Continuous i :=
   di.toInducing.continuous
 #align dense_inducing.continuous DenseInducing.continuous
 
@@ -74,7 +74,7 @@ lemma closure_image_mem_nhds {s : Set α} {a : α} (di : DenseInducing i) (hs : 
     _ ⊆ closure (i '' s) := closure_mono (image_subset i sub)
 #align dense_inducing.closure_image_mem_nhds DenseInducing.closure_image_mem_nhds
 
-theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
+lemma dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
   refine' ⟨fun H x => _, di.dense.dense_image di.continuous⟩
   rw [di.toInducing.closure_eq_preimage_closure_image, H.closure_eq, preimage_univ]
   trivial
@@ -125,11 +125,11 @@ lemma tendsto_comap_nhds_nhds {d : δ} {a : α} (di : DenseInducing i)
   exact le_trans lim1 lim2
 #align dense_inducing.tendsto_comap_nhds_nhds DenseInducing.tendsto_comap_nhds_nhds
 
-protected theorem nhdsWithin_neBot (di : DenseInducing i) (b : β) : NeBot (𝓝[range i] b) :=
+protected lemma nhdsWithin_neBot (di : DenseInducing i) (b : β) : NeBot (𝓝[range i] b) :=
   di.dense.nhdsWithin_neBot b
 #align dense_inducing.nhds_within_ne_bot DenseInducing.nhdsWithin_neBot
 
-theorem comap_nhds_neBot (di : DenseInducing i) (b : β) : NeBot (comap i (𝓝 b)) :=
+lemma comap_nhds_neBot (di : DenseInducing i) (b : β) : NeBot (comap i (𝓝 b)) :=
   comap_neBot fun s hs => by
     rcases mem_closure_iff_nhds.1 (di.dense b) s hs with ⟨_, ⟨ha, a, rfl⟩⟩
     exact ⟨a, ha⟩
@@ -218,7 +218,7 @@ lemma continuous_extend [T3Space γ] {f : α → γ} (di : DenseInducing i)
   continuous_iff_continuousAt.mpr fun _ => di.continuousAt_extend <| univ_mem' hf
 #align dense_inducing.continuous_extend DenseInducing.continuous_extend
 
-theorem mk' (i : α → β) (c : Continuous i) (dense : ∀ x, x ∈ closure (range i))
+lemma mk' (i : α → β) (c : Continuous i) (dense : ∀ x, x ∈ closure (range i))
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (i a), ∀ b, i b ∈ t → b ∈ s) : DenseInducing i :=
   { toInducing := inducing_iff_nhds.2 fun a =>
       le_antisymm (c.tendsto _).le_comap (by simpa [Filter.le_def] using H a)
@@ -276,7 +276,7 @@ def subtypeEmb {α : Type*} (p : α → Prop) (e : α → β) (x : { x // p x })
   ⟨e x, subset_closure <| mem_image_of_mem e x.prop⟩
 #align dense_embedding.subtype_emb DenseEmbedding.subtypeEmb
 
-protected theorem subtype (p : α → Prop) : DenseEmbedding (subtypeEmb p e) :=
+protected lemma subtype (p : α → Prop) : DenseEmbedding (subtypeEmb p e) :=
   { dense :=
       dense_iff_closure_eq.2 <| by
         ext ⟨x, hx⟩
@@ -356,7 +356,7 @@ variable [TopologicalSpace β] [TopologicalSpace γ] [T2Space γ]
 variable {f : α → β}
 
 /-- Two continuous functions to a t2-space that agree on the dense range of a function are equal. -/
-theorem DenseRange.equalizer (hfd : DenseRange f) {g h : β → γ} (hg : Continuous g)
+lemma DenseRange.equalizer (hfd : DenseRange f) {g h : β → γ} (hg : Continuous g)
     (hh : Continuous h) (H : g ∘ f = h ∘ f) : g = h :=
   funext fun y => hfd.induction_on y (isClosed_eq hg hh) <| congr_fun H
 #align dense_range.equalizer DenseRange.equalizer

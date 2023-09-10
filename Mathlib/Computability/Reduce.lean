@@ -218,11 +218,11 @@ lemma Equiv.Computable.trans {α β γ} [Primcodable α] [Primcodable β] [Primc
   | ⟨l₁, r₁⟩, ⟨l₂, r₂⟩ => ⟨l₂.comp l₁, r₁.comp r₂⟩
 #align equiv.computable.trans Equiv.Computable.trans
 
-theorem Computable.eqv (α) [Denumerable α] : (Denumerable.eqv α).Computable :=
+lemma Computable.eqv (α) [Denumerable α] : (Denumerable.eqv α).Computable :=
   ⟨Computable.encode, Computable.ofNat _⟩
 #align computable.eqv Computable.eqv
 
-theorem Computable.equiv₂ (α β) [Denumerable α] [Denumerable β] :
+lemma Computable.equiv₂ (α β) [Denumerable α] [Denumerable β] :
     (Denumerable.equiv₂ α β).Computable :=
   (Computable.eqv _).trans (Computable.eqv _).symm
 #align computable.equiv₂ Computable.equiv₂
@@ -355,7 +355,7 @@ lemma toNat_manyOneEquiv {p : Set α} : ManyOneEquiv (toNat p) p := by simp [Man
 #align to_nat_many_one_equiv toNat_manyOneEquiv
 
 @[simp]
-theorem manyOneEquiv_toNat (p : Set α) (q : Set β) :
+lemma manyOneEquiv_toNat (p : Set α) (q : Set β) :
     ManyOneEquiv (toNat p) (toNat q) ↔ ManyOneEquiv p q := by simp [ManyOneEquiv]
 #align many_one_equiv_to_nat manyOneEquiv_toNat
 
@@ -437,7 +437,7 @@ lemma of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ 
   manyOneReducible_toNat_toNat
 #align many_one_degree.of_le_of ManyOneDegree.of_le_of
 
-private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
+private lemma le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on; simp; rfl
 
 private lemma le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
@@ -474,7 +474,7 @@ instance instAdd : Add ManyOneDegree :=
 #align many_one_degree.has_add ManyOneDegree.instAdd
 
 @[simp]
-theorem add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
+lemma add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
   of_eq_of.mpr
     ⟨disjoin_manyOneReducible
         (manyOneReducible_toNat.trans OneOneReducible.disjoin_left.to_many_one)
@@ -493,12 +493,12 @@ protected lemma add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃ �
 #align many_one_degree.add_le ManyOneDegree.add_le
 
 @[simp]
-protected theorem le_add_left (d₁ d₂ : ManyOneDegree) : d₁ ≤ d₁ + d₂ :=
+protected lemma le_add_left (d₁ d₂ : ManyOneDegree) : d₁ ≤ d₁ + d₂ :=
   (ManyOneDegree.add_le.1 (by rfl)).1
 #align many_one_degree.le_add_left ManyOneDegree.le_add_left
 
 @[simp]
-protected theorem le_add_right (d₁ d₂ : ManyOneDegree) : d₂ ≤ d₁ + d₂ :=
+protected lemma le_add_right (d₁ d₂ : ManyOneDegree) : d₂ ≤ d₁ + d₂ :=
   (ManyOneDegree.add_le.1 (by rfl)).2
 #align many_one_degree.le_add_right ManyOneDegree.le_add_right
 

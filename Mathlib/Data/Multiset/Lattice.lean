@@ -31,7 +31,7 @@ def sup (s : Multiset α) : α :=
 #align multiset.sup Multiset.sup
 
 @[simp]
-theorem sup_coe (l : List α) : sup (l : Multiset α) = l.foldr (· ⊔ ·) ⊥ :=
+lemma sup_coe (l : List α) : sup (l : Multiset α) = l.foldr (· ⊔ ·) ⊥ :=
   rfl
 #align multiset.sup_coe Multiset.sup_coe
 
@@ -41,7 +41,7 @@ lemma sup_zero : (0 : Multiset α).sup = ⊥ :=
 #align multiset.sup_zero Multiset.sup_zero
 
 @[simp]
-theorem sup_cons (a : α) (s : Multiset α) : (a ::ₘ s).sup = a ⊔ s.sup :=
+lemma sup_cons (a : α) (s : Multiset α) : (a ::ₘ s).sup = a ⊔ s.sup :=
   fold_cons_left _ _ _ _
 #align multiset.sup_cons Multiset.sup_cons
 
@@ -51,7 +51,7 @@ lemma sup_singleton {a : α} : ({a} : Multiset α).sup = a :=
 #align multiset.sup_singleton Multiset.sup_singleton
 
 @[simp]
-theorem sup_add (s₁ s₂ : Multiset α) : (s₁ + s₂).sup = s₁.sup ⊔ s₂.sup :=
+lemma sup_add (s₁ s₂ : Multiset α) : (s₁ + s₂).sup = s₁.sup ⊔ s₂.sup :=
   Eq.trans (by simp [sup]) (fold_add _ _ _ _ _)
 #align multiset.sup_add Multiset.sup_add
 
@@ -71,22 +71,22 @@ lemma sup_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.sup ≤ s₂
 variable [DecidableEq α]
 
 @[simp]
-theorem sup_dedup (s : Multiset α) : (dedup s).sup = s.sup :=
+lemma sup_dedup (s : Multiset α) : (dedup s).sup = s.sup :=
   fold_dedup_idem _ _ _
 #align multiset.sup_dedup Multiset.sup_dedup
 
 @[simp]
-theorem sup_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).sup = s₁.sup ⊔ s₂.sup := by
+lemma sup_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).sup = s₁.sup ⊔ s₂.sup := by
   rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add]; simp
 #align multiset.sup_ndunion Multiset.sup_ndunion
 
 @[simp]
-theorem sup_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).sup = s₁.sup ⊔ s₂.sup := by
+lemma sup_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).sup = s₁.sup ⊔ s₂.sup := by
   rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_add]; simp
 #align multiset.sup_union Multiset.sup_union
 
 @[simp]
-theorem sup_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).sup = a ⊔ s.sup := by
+lemma sup_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).sup = a ⊔ s.sup := by
   rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_cons]; simp
 #align multiset.sup_ndinsert Multiset.sup_ndinsert
 
@@ -115,7 +115,7 @@ def inf (s : Multiset α) : α :=
 #align multiset.inf Multiset.inf
 
 @[simp]
-theorem inf_coe (l : List α) : inf (l : Multiset α) = l.foldr (· ⊓ ·) ⊤ :=
+lemma inf_coe (l : List α) : inf (l : Multiset α) = l.foldr (· ⊓ ·) ⊤ :=
   rfl
 #align multiset.inf_coe Multiset.inf_coe
 
@@ -125,7 +125,7 @@ lemma inf_zero : (0 : Multiset α).inf = ⊤ :=
 #align multiset.inf_zero Multiset.inf_zero
 
 @[simp]
-theorem inf_cons (a : α) (s : Multiset α) : (a ::ₘ s).inf = a ⊓ s.inf :=
+lemma inf_cons (a : α) (s : Multiset α) : (a ::ₘ s).inf = a ⊓ s.inf :=
   fold_cons_left _ _ _ _
 #align multiset.inf_cons Multiset.inf_cons
 
@@ -135,7 +135,7 @@ lemma inf_singleton {a : α} : ({a} : Multiset α).inf = a :=
 #align multiset.inf_singleton Multiset.inf_singleton
 
 @[simp]
-theorem inf_add (s₁ s₂ : Multiset α) : (s₁ + s₂).inf = s₁.inf ⊓ s₂.inf :=
+lemma inf_add (s₁ s₂ : Multiset α) : (s₁ + s₂).inf = s₁.inf ⊓ s₂.inf :=
   Eq.trans (by simp [inf]) (fold_add _ _ _ _ _)
 #align multiset.inf_add Multiset.inf_add
 
@@ -155,22 +155,22 @@ lemma inf_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.inf ≤ s₁
 variable [DecidableEq α]
 
 @[simp]
-theorem inf_dedup (s : Multiset α) : (dedup s).inf = s.inf :=
+lemma inf_dedup (s : Multiset α) : (dedup s).inf = s.inf :=
   fold_dedup_idem _ _ _
 #align multiset.inf_dedup Multiset.inf_dedup
 
 @[simp]
-theorem inf_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).inf = s₁.inf ⊓ s₂.inf := by
+lemma inf_ndunion (s₁ s₂ : Multiset α) : (ndunion s₁ s₂).inf = s₁.inf ⊓ s₂.inf := by
   rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add]; simp
 #align multiset.inf_ndunion Multiset.inf_ndunion
 
 @[simp]
-theorem inf_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).inf = s₁.inf ⊓ s₂.inf := by
+lemma inf_union (s₁ s₂ : Multiset α) : (s₁ ∪ s₂).inf = s₁.inf ⊓ s₂.inf := by
   rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_add]; simp
 #align multiset.inf_union Multiset.inf_union
 
 @[simp]
-theorem inf_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).inf = a ⊓ s.inf := by
+lemma inf_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).inf = a ⊓ s.inf := by
   rw [← inf_dedup, dedup_ext.2, inf_dedup, inf_cons]; simp
 #align multiset.inf_ndinsert Multiset.inf_ndinsert
 

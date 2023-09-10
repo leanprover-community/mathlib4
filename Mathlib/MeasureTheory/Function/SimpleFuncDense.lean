@@ -74,16 +74,16 @@ noncomputable def nearestPt (e : ℕ → α) (N : ℕ) : α →ₛ α :=
 #align measure_theory.simple_func.nearest_pt MeasureTheory.SimpleFunc.nearestPt
 
 @[simp]
-theorem nearestPtInd_zero (e : ℕ → α) : nearestPtInd e 0 = const α 0 :=
+lemma nearestPtInd_zero (e : ℕ → α) : nearestPtInd e 0 = const α 0 :=
   rfl
 #align measure_theory.simple_func.nearest_pt_ind_zero MeasureTheory.SimpleFunc.nearestPtInd_zero
 
 @[simp]
-theorem nearestPt_zero (e : ℕ → α) : nearestPt e 0 = const α (e 0) :=
+lemma nearestPt_zero (e : ℕ → α) : nearestPt e 0 = const α (e 0) :=
   rfl
 #align measure_theory.simple_func.nearest_pt_zero MeasureTheory.SimpleFunc.nearestPt_zero
 
-theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
+lemma nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
     nearestPtInd e (N + 1) x =
       if ∀ k ≤ N, edist (e (N + 1)) x < edist (e k) x then N + 1 else nearestPtInd e N x := by
   simp only [nearestPtInd, coe_piecewise, Set.piecewise]
@@ -91,14 +91,14 @@ theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
   simp
 #align measure_theory.simple_func.nearest_pt_ind_succ MeasureTheory.SimpleFunc.nearestPtInd_succ
 
-theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x ≤ N := by
+lemma nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x ≤ N := by
   induction' N with N ihN; · simp
   simp only [nearestPtInd_succ]
   split_ifs
   exacts [le_rfl, ihN.trans N.le_succ]
 #align measure_theory.simple_func.nearest_pt_ind_le MeasureTheory.SimpleFunc.nearestPtInd_le
 
-theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
+lemma edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
   induction' N with N ihN generalizing k
   · simp [nonpos_iff_eq_zero.1 hk, le_refl]

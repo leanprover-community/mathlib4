@@ -84,7 +84,7 @@ def IsCoveringMapOn :=
 
 namespace IsCoveringMapOn
 
-theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
+lemma mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, DiscreteTopology (F x)]
     (e : ∀ x ∈ s, Trivialization (F x) f) (h : ∀ (x : X) (hx : x ∈ s), x ∈ (e x hx).baseSet) :
     IsCoveringMapOn f s := fun x hx =>
   IsEvenlyCovered.to_isEvenlyCovered_preimage ⟨hF x, e x hx, h x hx⟩
@@ -92,16 +92,16 @@ theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [hF : ∀ x, Discre
 
 variable {f} {s}
 
-protected theorem continuousAt (hf : IsCoveringMapOn f s) {x : E} (hx : f x ∈ s) :
+protected lemma continuousAt (hf : IsCoveringMapOn f s) {x : E} (hx : f x ∈ s) :
     ContinuousAt f x :=
   (hf (f x) hx).continuousAt
 #align is_covering_map_on.continuous_at IsCoveringMapOn.continuousAt
 
-protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f ⁻¹' s) :=
+protected lemma continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f ⁻¹' s) :=
   ContinuousAt.continuousOn fun _ => hf.continuousAt
 #align is_covering_map_on.continuous_on IsCoveringMapOn.continuousOn
 
-protected theorem isLocallyHomeomorphOn (hf : IsCoveringMapOn f s) :
+protected lemma isLocallyHomeomorphOn (hf : IsCoveringMapOn f s) :
     IsLocallyHomeomorphOn f (f ⁻¹' s) := by
   refine' IsLocallyHomeomorphOn.mk f (f ⁻¹' s) fun x hx => _
   let e := (hf (f x) hx).toTrivialization
@@ -141,7 +141,7 @@ lemma isCoveringMap_iff_isCoveringMapOn_univ : IsCoveringMap f ↔ IsCoveringMap
   simp only [IsCoveringMap, IsCoveringMapOn, Set.mem_univ, forall_true_left]
 #align is_covering_map_iff_is_covering_map_on_univ isCoveringMap_iff_isCoveringMapOn_univ
 
-protected theorem IsCoveringMap.isCoveringMapOn (hf : IsCoveringMap f) :
+protected lemma IsCoveringMap.isCoveringMapOn (hf : IsCoveringMap f) :
     IsCoveringMapOn f Set.univ :=
   isCoveringMap_iff_isCoveringMapOn_univ.mp hf
 #align is_covering_map.is_covering_map_on IsCoveringMap.isCoveringMapOn
@@ -150,7 +150,7 @@ variable (f)
 
 namespace IsCoveringMap
 
-theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
+lemma mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTopology (F x)]
     (e : ∀ x, Trivialization (F x) f) (h : ∀ x, x ∈ (e x).baseSet) : IsCoveringMap f :=
   isCoveringMap_iff_isCoveringMapOn_univ.mpr
     (IsCoveringMapOn.mk f Set.univ F (fun x _ => e x) fun x _ => h x)
@@ -158,19 +158,19 @@ theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTop
 
 variable {f}
 
-protected theorem continuous (hf : IsCoveringMap f) : Continuous f :=
+protected lemma continuous (hf : IsCoveringMap f) : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
 #align is_covering_map.continuous IsCoveringMap.continuous
 
-protected theorem isLocallyHomeomorph (hf : IsCoveringMap f) : IsLocallyHomeomorph f :=
+protected lemma isLocallyHomeomorph (hf : IsCoveringMap f) : IsLocallyHomeomorph f :=
   isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ.mpr hf.isCoveringMapOn.isLocallyHomeomorphOn
 #align is_covering_map.is_locally_homeomorph IsCoveringMap.isLocallyHomeomorph
 
-protected theorem isOpenMap (hf : IsCoveringMap f) : IsOpenMap f :=
+protected lemma isOpenMap (hf : IsCoveringMap f) : IsOpenMap f :=
   hf.isLocallyHomeomorph.isOpenMap
 #align is_covering_map.is_open_map IsCoveringMap.isOpenMap
 
-protected theorem quotientMap (hf : IsCoveringMap f) (hf' : Function.Surjective f) :
+protected lemma quotientMap (hf : IsCoveringMap f) (hf' : Function.Surjective f) :
     QuotientMap f :=
   hf.isOpenMap.to_quotientMap hf.continuous hf'
 #align is_covering_map.quotient_map IsCoveringMap.quotientMap

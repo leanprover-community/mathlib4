@@ -46,7 +46,7 @@ set_option linter.uppercaseLean3 false in
 #align PartOrd.of PartOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align PartOrd.coe_of PartOrdCat.coe_of

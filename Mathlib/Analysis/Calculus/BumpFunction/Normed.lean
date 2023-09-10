@@ -34,7 +34,7 @@ lemma normed_def {μ : Measure E} (x : E) : f.normed μ x = f x / ∫ x, f x ∂
   rfl
 #align cont_diff_bump.normed_def ContDiffBump.normed_def
 
-theorem nonneg_normed (x : E) : 0 ≤ f.normed μ x :=
+lemma nonneg_normed (x : E) : 0 ≤ f.normed μ x :=
   div_nonneg f.nonneg <| integral_nonneg f.nonneg'
 #align cont_diff_bump.nonneg_normed ContDiffBump.nonneg_normed
 
@@ -46,11 +46,11 @@ lemma continuous_normed : Continuous (f.normed μ) :=
   f.continuous.div_const _
 #align cont_diff_bump.continuous_normed ContDiffBump.continuous_normed
 
-theorem normed_sub (x : E) : f.normed μ (c - x) = f.normed μ (c + x) := by
+lemma normed_sub (x : E) : f.normed μ (c - x) = f.normed μ (c + x) := by
   simp_rw [f.normed_def, f.sub]
 #align cont_diff_bump.normed_sub ContDiffBump.normed_sub
 
-theorem normed_neg (f : ContDiffBump (0 : E)) (x : E) : f.normed μ (-x) = f.normed μ x := by
+lemma normed_neg (f : ContDiffBump (0 : E)) (x : E) : f.normed μ (-x) = f.normed μ x := by
   simp_rw [f.normed_def, f.neg]
 #align cont_diff_bump.normed_neg ContDiffBump.normed_neg
 
@@ -114,7 +114,7 @@ lemma measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ 
         (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
   _ ≤ ∫ x, f x ∂μ := set_integral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
 
-theorem normed_le_div_measure_closedBall_rIn (x : E) :
+lemma normed_le_div_measure_closedBall_rIn (x : E) :
     f.normed μ x ≤ 1 / (μ (closedBall c f.rIn)).toReal := by
   rw [normed_def]
   gcongr

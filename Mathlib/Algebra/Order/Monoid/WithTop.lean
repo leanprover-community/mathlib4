@@ -52,7 +52,7 @@ lemma untop_one : (1 : WithTop α).untop coe_ne_top = 1 :=
 #align with_top.untop_zero WithTop.untop_zero
 
 @[to_additive (attr := simp)]
-theorem untop_one' (d : α) : (1 : WithTop α).untop' d = 1 :=
+lemma untop_one' (d : α) : (1 : WithTop α).untop' d = 1 :=
   rfl
 #align with_top.untop_one' WithTop.untop_one'
 #align with_top.untop_zero' WithTop.untop_zero'
@@ -139,12 +139,12 @@ lemma coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = (bit1 a : With
 end deprecated
 
 @[simp]
-theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
+lemma top_add (a : WithTop α) : ⊤ + a = ⊤ :=
   rfl
 #align with_top.top_add WithTop.top_add
 
 @[simp]
-theorem add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
+lemma add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
 #align with_top.add_top WithTop.add_top
 
 @[simp]
@@ -580,7 +580,7 @@ section Add
 variable [Add α] {a b c d : WithBot α} {x y : α}
 
 -- `norm_cast` proves those lemmas, because `WithTop`/`WithBot` are reducible
-theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
+lemma coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add
 
@@ -602,12 +602,12 @@ lemma coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = (bit1 a : With
 end deprecated
 
 @[simp]
-theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
+lemma bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
   rfl
 #align with_bot.bot_add WithBot.bot_add
 
 @[simp]
-theorem add_bot (a : WithBot α) : a + ⊥ = ⊥ := by cases a <;> rfl
+lemma add_bot (a : WithBot α) : a + ⊥ = ⊥ := by cases a <;> rfl
 #align with_bot.add_bot WithBot.add_bot
 
 @[simp]

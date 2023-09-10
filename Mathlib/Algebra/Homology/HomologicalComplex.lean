@@ -68,7 +68,7 @@ attribute [simp] shape
 variable {V} {c : ComplexShape ι}
 
 @[reassoc (attr := simp)]
-theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k = 0 := by
+lemma d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k = 0 := by
   by_cases hij : c.Rel i j
   · by_cases hjk : c.Rel j k
     · exact C.d_comp_d' i j k hij hjk
@@ -163,13 +163,13 @@ abbrev CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type 
 namespace ChainComplex
 
 @[simp]
-theorem prev (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
+lemma prev (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
     (ComplexShape.down α).prev i = i + 1 :=
   (ComplexShape.down α).prev_eq' rfl
 #align chain_complex.prev ChainComplex.prev
 
 @[simp]
-theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
+lemma next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
   (ComplexShape.down α).next_eq' <| sub_add_cancel _ _
 #align chain_complex.next ChainComplex.next
 
@@ -183,7 +183,7 @@ lemma next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
 #align chain_complex.next_nat_zero ChainComplex.next_nat_zero
 
 @[simp]
-theorem next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
+lemma next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
   (ComplexShape.down ℕ).next_eq' rfl
 #align chain_complex.next_nat_succ ChainComplex.next_nat_succ
 
@@ -192,12 +192,12 @@ end ChainComplex
 namespace CochainComplex
 
 @[simp]
-theorem prev (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.up α).prev i = i - 1 :=
+lemma prev (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.up α).prev i = i - 1 :=
   (ComplexShape.up α).prev_eq' <| sub_add_cancel _ _
 #align cochain_complex.prev CochainComplex.prev
 
 @[simp]
-theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
+lemma next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
     (ComplexShape.up α).next i = i + 1 :=
   (ComplexShape.up α).next_eq' rfl
 #align cochain_complex.next CochainComplex.next
@@ -212,7 +212,7 @@ lemma prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
 #align cochain_complex.prev_nat_zero CochainComplex.prev_nat_zero
 
 @[simp]
-theorem prev_nat_succ (i : ℕ) : (ComplexShape.up ℕ).prev (i + 1) = i :=
+lemma prev_nat_succ (i : ℕ) : (ComplexShape.up ℕ).prev (i + 1) = i :=
   (ComplexShape.up ℕ).prev_eq' rfl
 #align cochain_complex.prev_nat_succ CochainComplex.prev_nat_succ
 
@@ -272,7 +272,7 @@ lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
   apply h
 
 @[simp]
-theorem id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.X i) :=
+lemma id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.X i) :=
   rfl
 #align homological_complex.id_f HomologicalComplex.id_f
 
@@ -299,7 +299,7 @@ instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun i => 0}⟩
 
 @[simp]
-theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
+lemma zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
   rfl
 #align homological_complex.zero_apply HomologicalComplex.zero_f
 
@@ -509,7 +509,7 @@ set_option linter.uppercaseLean3 false in
 #align homological_complex.d_from_comp_X_next_iso_self HomologicalComplex.dFrom_comp_xNextIsoSelf
 
 @[simp 1100]
-theorem dTo_comp_dFrom (j : ι) : C.dTo j ≫ C.dFrom j = 0 :=
+lemma dTo_comp_dFrom (j : ι) : C.dTo j ≫ C.dFrom j = 0 :=
   C.d_comp_d _ _ _
 #align homological_complex.d_to_comp_d_from HomologicalComplex.dTo_comp_dFrom
 
@@ -562,14 +562,14 @@ def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
 #align homological_complex.hom.iso_of_components HomologicalComplex.Hom.isoOfComponents
 
 @[simp]
-theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
+lemma isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom) (i : ι) :
     isoApp (isoOfComponents f hf) i = f i := by
   ext
   simp
 #align homological_complex.hom.iso_of_components_app HomologicalComplex.Hom.isoOfComponents_app
 
-theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
+lemma isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
   IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n))
 #align homological_complex.hom.is_iso_of_components HomologicalComplex.Hom.isIso_of_components
 
@@ -581,7 +581,7 @@ abbrev prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
   f.f _
 #align homological_complex.hom.prev HomologicalComplex.Hom.prev
 
-theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
+lemma prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
     f.prev j = (C₁.xPrevIso w).hom ≫ f.f i ≫ (C₂.xPrevIso w).inv := by
   obtain rfl := c.prev_eq' w
   simp only [xPrevIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
@@ -592,14 +592,14 @@ abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
   f.f _
 #align homological_complex.hom.next HomologicalComplex.Hom.next
 
-theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
+lemma next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
     f.next i = (C₁.xNextIso w).hom ≫ f.f j ≫ (C₂.xNextIso w).inv := by
   obtain rfl := c.next_eq' w
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 #align homological_complex.hom.next_eq HomologicalComplex.Hom.next_eq
 
 @[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
-theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
+lemma comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 #align homological_complex.hom.comm_from HomologicalComplex.Hom.comm_from
 
@@ -607,7 +607,7 @@ attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
 @[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
-theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
+lemma comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 #align homological_complex.hom.comm_to HomologicalComplex.Hom.comm_to
 
@@ -622,22 +622,22 @@ def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (
 #align homological_complex.hom.sq_from HomologicalComplex.Hom.sqFrom
 
 @[simp]
-theorem sqFrom_left (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).left = f.f i :=
+lemma sqFrom_left (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).left = f.f i :=
   rfl
 #align homological_complex.hom.sq_from_left HomologicalComplex.Hom.sqFrom_left
 
 @[simp]
-theorem sqFrom_right (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).right = f.next i :=
+lemma sqFrom_right (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).right = f.next i :=
   rfl
 #align homological_complex.hom.sq_from_right HomologicalComplex.Hom.sqFrom_right
 
 @[simp]
-theorem sqFrom_id (C₁ : HomologicalComplex V c) (i : ι) : sqFrom (𝟙 C₁) i = 𝟙 _ :=
+lemma sqFrom_id (C₁ : HomologicalComplex V c) (i : ι) : sqFrom (𝟙 C₁) i = 𝟙 _ :=
   rfl
 #align homological_complex.hom.sq_from_id HomologicalComplex.Hom.sqFrom_id
 
 @[simp]
-theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
+lemma sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     sqFrom (f ≫ g) i = sqFrom f i ≫ sqFrom g i :=
   rfl
 #align homological_complex.hom.sq_from_comp HomologicalComplex.Hom.sqFrom_comp
@@ -650,12 +650,12 @@ def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂
 #align homological_complex.hom.sq_to HomologicalComplex.Hom.sqTo
 
 @[simp]
-theorem sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=
+lemma sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=
   rfl
 #align homological_complex.hom.sq_to_left HomologicalComplex.Hom.sqTo_left
 
 @[simp]
-theorem sqTo_right (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).right = f.f j :=
+lemma sqTo_right (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).right = f.f j :=
   rfl
 #align homological_complex.hom.sq_to_right HomologicalComplex.Hom.sqTo_right
 
@@ -688,13 +688,13 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 
 @[simp]
-theorem of_x (n : α) : (of X d sq).X n = X n :=
+lemma of_x (n : α) : (of X d sq).X n = X n :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align chain_complex.of_X ChainComplex.of_x
 
 @[simp]
-theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
+lemma of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.id_comp]
 #align chain_complex.of_d ChainComplex.of_d
@@ -849,7 +849,7 @@ have very slow proofs, because of bad simp lemmas.
 It would be better to write good lemmas here if possible, such as
 
 ```
-theorem mk'_X_succ (j : ℕ) :
+lemma mk'_X_succ (j : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (j + 2) = (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).1 := by
   sorry
 
@@ -919,7 +919,7 @@ lemma mkHom_f_1 : (mkHom P Q zero one one_zero_comm succ).f 1 = one :=
 #align chain_complex.mk_hom_f_1 ChainComplex.mkHom_f_1
 
 @[simp]
-theorem mkHom_f_succ_succ (n : ℕ) :
+lemma mkHom_f_succ_succ (n : ℕ) :
     (mkHom P Q zero one one_zero_comm succ).f (n + 2) =
       (succ n
           ⟨(mkHom P Q zero one one_zero_comm succ).f n,
@@ -959,13 +959,13 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
 
 @[simp]
-theorem of_x (n : α) : (of X d sq).X n = X n :=
+lemma of_x (n : α) : (of X d sq).X n = X n :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align cochain_complex.of_X CochainComplex.of_x
 
 @[simp]
-theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
+lemma of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.comp_id]
 #align cochain_complex.of_d CochainComplex.of_d
@@ -1168,7 +1168,7 @@ lemma mkHom_f_1 : (mkHom P Q zero one one_zero_comm succ).f 1 = one :=
 #align cochain_complex.mk_hom_f_1 CochainComplex.mkHom_f_1
 
 @[simp]
-theorem mkHom_f_succ_succ (n : ℕ) :
+lemma mkHom_f_succ_succ (n : ℕ) :
     (mkHom P Q zero one one_zero_comm succ).f (n + 2) =
       (succ n
           ⟨(mkHom P Q zero one one_zero_comm succ).f n,

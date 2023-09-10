@@ -169,7 +169,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
 
 -- Porting note: renamed argument `φ`: "expected '_' or identifier"
 @[simp]
-theorem embeddingsEquivPrimitiveRoots_apply_coe (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
+lemma embeddingsEquivPrimitiveRoots_apply_coe (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) (φ' : L →ₐ[K] C) :
     (hζ.embeddingsEquivPrimitiveRoots C hirr φ' : C) = φ' ζ :=
   rfl
@@ -183,7 +183,7 @@ variable {K} (L)
 
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the `finrank` of a
 cyclotomic extension is `n.totient`. -/
-theorem finrank (hirr : Irreducible (cyclotomic n K)) : finrank K L = (n : ℕ).totient := by
+lemma finrank (hirr : Irreducible (cyclotomic n K)) : finrank K L = (n : ℕ).totient := by
   haveI := IsCyclotomicExtension.neZero' n K L
   rw [((zeta_spec n K L).powerBasis K).finrank, IsPrimitiveRoot.powerBasis_dim, ←
     (zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible hirr, natDegree_cyclotomic]
@@ -204,7 +204,7 @@ variable [CommRing L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
 variable {K} [Field K] [Algebra K L]
 
 /-- This mathematically trivial result is complementary to `norm_eq_one` below. -/
-theorem norm_eq_neg_one_pow (hζ : IsPrimitiveRoot ζ 2) [IsDomain L] :
+lemma norm_eq_neg_one_pow (hζ : IsPrimitiveRoot ζ 2) [IsDomain L] :
     norm K ζ = (-1 : K) ^ finrank K L := by
   rw [hζ.eq_neg_one_of_two_right, show -1 = algebraMap K L (-1) by simp, Algebra.norm_algebraMap]
 #align is_primitive_root.norm_eq_neg_one_pow IsPrimitiveRoot.norm_eq_neg_one_pow
@@ -283,7 +283,7 @@ lemma sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 < (
 
 /-- If `IsPrimePow (n : ℕ)`, `n ≠ 2` and `Irreducible (cyclotomic n K)` (in particular for
 `K = ℚ`), then the norm of `ζ - 1` is `(n : ℕ).minFac`. -/
-theorem sub_one_norm_isPrimePow (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtension {n} K L]
+lemma sub_one_norm_isPrimePow (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtension {n} K L]
     (hirr : Irreducible (cyclotomic (n : ℕ) K)) (h : n ≠ 2) : norm K (ζ - 1) = (n : ℕ).minFac := by
   have :=
     (coe_lt_coe 2 _).1
@@ -504,7 +504,7 @@ lemma norm_zeta_eq_one [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
 
 /-- If `IsPrimePow (n : ℕ)`, `n ≠ 2` and `Irreducible (cyclotomic n K)` (in particular for
 `K = ℚ`), then the norm of `zeta n K L - 1` is `(n : ℕ).minFac`. -/
-theorem isPrimePow_norm_zeta_sub_one (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtension {n} K L]
+lemma isPrimePow_norm_zeta_sub_one (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtension {n} K L]
     (hirr : Irreducible (cyclotomic (n : ℕ) K)) (h : n ≠ 2) :
     norm K (zeta n K L - 1) = (n : ℕ).minFac :=
   (zeta_spec n K L).sub_one_norm_isPrimePow hn hirr h

@@ -33,12 +33,12 @@ section Group
 variable [Group α] [MulAction α β]
 
 @[to_additive (attr := simp)]
-theorem inv_smul_smul (c : α) (x : β) : c⁻¹ • c • x = x := by rw [smul_smul, mul_left_inv, one_smul]
+lemma inv_smul_smul (c : α) (x : β) : c⁻¹ • c • x = x := by rw [smul_smul, mul_left_inv, one_smul]
 #align inv_smul_smul inv_smul_smul
 #align neg_vadd_vadd neg_vadd_vadd
 
 @[to_additive (attr := simp)]
-theorem smul_inv_smul (c : α) (x : β) : c • c⁻¹ • x = x := by
+lemma smul_inv_smul (c : α) (x : β) : c • c⁻¹ • x = x := by
   rw [smul_smul, mul_right_inv, one_smul]
 #align smul_inv_smul smul_inv_smul
 #align vadd_neg_vadd vadd_neg_vadd
@@ -141,37 +141,37 @@ lemma Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower α 
 #align commute.smul_left_iff Commute.smul_left_iff
 
 @[to_additive]
-protected theorem MulAction.bijective (g : α) : Function.Bijective ((· • ·) g : β → β) :=
+protected lemma MulAction.bijective (g : α) : Function.Bijective ((· • ·) g : β → β) :=
   (MulAction.toPerm g).bijective
 #align mul_action.bijective MulAction.bijective
 #align add_action.bijective AddAction.bijective
 
 @[to_additive]
-protected theorem MulAction.injective (g : α) : Function.Injective ((· • ·) g : β → β) :=
+protected lemma MulAction.injective (g : α) : Function.Injective ((· • ·) g : β → β) :=
   (MulAction.bijective g).injective
 #align mul_action.injective MulAction.injective
 #align add_action.injective AddAction.injective
 
 @[to_additive]
-protected theorem MulAction.surjective (g : α) : Function.Surjective ((· • ·) g : β → β) :=
+protected lemma MulAction.surjective (g : α) : Function.Surjective ((· • ·) g : β → β) :=
   (MulAction.bijective g).surjective
 #align mul_action.surjective MulAction.surjective
 #align add_action.surjective AddAction.surjective
 
 @[to_additive]
-theorem smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y :=
+lemma smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y :=
   MulAction.injective g h
 #align smul_left_cancel smul_left_cancel
 #align vadd_left_cancel vadd_left_cancel
 
 @[to_additive (attr := simp)]
-theorem smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
+lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
   (MulAction.injective g).eq_iff
 #align smul_left_cancel_iff smul_left_cancel_iff
 #align vadd_left_cancel_iff vadd_left_cancel_iff
 
 @[to_additive]
-theorem smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
+lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
   (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
 #align smul_eq_iff_eq_inv_smul smul_eq_iff_eq_inv_smul
 #align vadd_eq_iff_eq_neg_vadd vadd_eq_iff_eq_neg_vadd
@@ -218,15 +218,15 @@ lemma Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower 
   Commute.smul_left_iff (Units.mk0 c hc)
 #align commute.smul_left_iff₀ Commute.smul_left_iff₀
 
-protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective ((· • ·) a : β → β) :=
+protected lemma MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective ((· • ·) a : β → β) :=
   MulAction.bijective <| Units.mk0 a ha
 #align mul_action.bijective₀ MulAction.bijective₀
 
-protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective ((· • ·) a : β → β) :=
+protected lemma MulAction.injective₀ (ha : a ≠ 0) : Function.Injective ((· • ·) a : β → β) :=
   (MulAction.bijective₀ ha).injective
 #align mul_action.injective₀ MulAction.injective₀
 
-protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective ((· • ·) a : β → β) :=
+protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective ((· • ·) a : β → β) :=
   (MulAction.bijective₀ ha).surjective
 #align mul_action.surjective₀ MulAction.surjective₀
 
@@ -267,11 +267,11 @@ def DistribMulAction.toAddAut : α →* AddAut β where
 
 variable {α β}
 
-theorem smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
+lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
   ⟨fun h => by rw [← inv_smul_smul a x, h, smul_zero], fun h => h.symm ▸ smul_zero _⟩
 #align smul_eq_zero_iff_eq smul_eq_zero_iff_eq
 
-theorem smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
+lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
   not_congr <| smul_eq_zero_iff_eq a
 #align smul_ne_zero_iff_ne smul_ne_zero_iff_ne
 

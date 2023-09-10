@@ -99,7 +99,7 @@ lemma Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, 
 #align directed.mono Directed.mono
 
 -- Porting note: due to some interaction with the local notation, `r` became explicit here in lean3
-theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
+lemma Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
 #align directed.mono_comp Directed.mono_comp
@@ -175,7 +175,7 @@ class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
 #align is_directed IsDirected
 #align is_directed.directed IsDirected.directed
 
-theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
+lemma directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
   IsDirected.directed _ _
 #align directed_of directed_of
 
@@ -228,7 +228,7 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
 
 section Reflexive
 
-protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+protected lemma DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
   · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
@@ -240,15 +240,15 @@ protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd 
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
 #align directed_on.insert DirectedOn.insert
 
-theorem directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
+lemma directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
   fun x hx _ hy => ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
 #align directed_on_singleton directedOn_singleton
 
-theorem directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
+lemma directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
   (directedOn_singleton h _).insert h _ fun c hc => ⟨c, hc, hc.symm ▸ hab, h _⟩
 #align directed_on_pair directedOn_pair
 
-theorem directedOn_pair' (h : Reflexive r) {a b : α} (hab : a ≼ b) :
+lemma directedOn_pair' (h : Reflexive r) {a b : α} (hab : a ≼ b) :
     DirectedOn r ({b, a} : Set α) := by
   rw [Set.pair_comm]
   apply directedOn_pair h hab

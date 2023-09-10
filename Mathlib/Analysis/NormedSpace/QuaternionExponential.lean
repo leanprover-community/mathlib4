@@ -30,7 +30,7 @@ open scoped Quaternion Nat
 namespace Quaternion
 
 @[simp, norm_cast]
-theorem exp_coe (r : ℝ) : exp ℝ (r : ℍ[ℝ]) = ↑(exp ℝ r) :=
+lemma exp_coe (r : ℝ) : exp ℝ (r : ℍ[ℝ]) = ↑(exp ℝ r) :=
   (map_exp ℝ (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
 #align quaternion.exp_coe Quaternion.exp_coe
 
@@ -89,7 +89,7 @@ lemma hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s : 
 #align quaternion.has_sum_exp_series_of_imaginary Quaternion.hasSum_expSeries_of_imaginary
 
 /-- The closed form for the quaternion exponential on imaginary quaternions. -/
-theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
+lemma exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
     exp ℝ q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
   rw [exp_eq_tsum]
   refine' HasSum.tsum_eq _
@@ -98,21 +98,21 @@ theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
 #align quaternion.exp_of_re_eq_zero Quaternion.exp_of_re_eq_zero
 
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/
-theorem exp_eq (q : Quaternion ℝ) :
+lemma exp_eq (q : Quaternion ℝ) :
     exp ℝ q = exp ℝ q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by
   rw [← exp_of_re_eq_zero q.im q.im_re, ← coe_mul_eq_smul, ← exp_coe, ← exp_add_of_commute,
     re_add_im]
   exact Algebra.commutes q.re (_ : ℍ[ℝ])
 #align quaternion.exp_eq Quaternion.exp_eq
 
-theorem re_exp (q : ℍ[ℝ]) : (exp ℝ q).re = exp ℝ q.re * Real.cos ‖q - q.re‖ := by simp [exp_eq]
+lemma re_exp (q : ℍ[ℝ]) : (exp ℝ q).re = exp ℝ q.re * Real.cos ‖q - q.re‖ := by simp [exp_eq]
 #align quaternion.re_exp Quaternion.re_exp
 
-theorem im_exp (q : ℍ[ℝ]) : (exp ℝ q).im = (exp ℝ q.re * (Real.sin ‖q.im‖ / ‖q.im‖)) • q.im := by
+lemma im_exp (q : ℍ[ℝ]) : (exp ℝ q).im = (exp ℝ q.re * (Real.sin ‖q.im‖ / ‖q.im‖)) • q.im := by
   simp [exp_eq, smul_smul]
 #align quaternion.im_exp Quaternion.im_exp
 
-theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
+lemma normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
   calc
     normSq (exp ℝ q) =
         normSq (exp ℝ q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im)) :=
@@ -133,7 +133,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
 /-- Note that this implies that exponentials of pure imaginary quaternions are unit quaternions
 since in that case the RHS is `1` via `exp_zero` and `norm_one`. -/
 @[simp]
-theorem norm_exp (q : ℍ[ℝ]) : ‖exp ℝ q‖ = ‖exp ℝ q.re‖ := by
+lemma norm_exp (q : ℍ[ℝ]) : ‖exp ℝ q‖ = ‖exp ℝ q.re‖ := by
   rw [norm_eq_sqrt_real_inner (exp ℝ q), inner_self, normSq_exp, Real.sqrt_sq_eq_abs,
     Real.norm_eq_abs]
 #align quaternion.norm_exp Quaternion.norm_exp

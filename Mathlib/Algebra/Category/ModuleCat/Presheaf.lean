@@ -59,7 +59,7 @@ def map (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     map_smul' := P.map_smul f, }
 
 @[simp]
-theorem map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
+lemma map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
     P.map f x = (P.presheaf.map f) x :=
   rfl
 
@@ -71,13 +71,13 @@ instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
   comp_eq := (R.map_comp f g).symm
 
 @[simp]
-theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
+lemma map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
     P.map (𝟙 X) = LinearMap.id' := by
   ext
   simp
 
 @[simp]
-theorem map_comp (P : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma map_comp (P : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     P.map (f ≫ g) = (P.map g).comp (P.map f) := by
   ext
   simp

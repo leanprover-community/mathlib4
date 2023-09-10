@@ -107,7 +107,7 @@ lemma rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x �
   rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
 #align right_lim_eq_Inf Monotone.rightLim_eq_sInf
 
-theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
+lemma leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
@@ -122,7 +122,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
     exact hf (hz.le.trans h)
 #align monotone.left_lim_le Monotone.leftLim_le
 
-theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
+lemma le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
@@ -144,11 +144,11 @@ protected lemma leftLim : Monotone (leftLim f) := by
   · exact (hf.leftLim_le le_rfl).trans (hf.le_leftLim hxy)
 #align monotone.left_lim Monotone.leftLim
 
-theorem le_rightLim (h : x ≤ y) : f x ≤ rightLim f y :=
+lemma le_rightLim (h : x ≤ y) : f x ≤ rightLim f y :=
   hf.dual.leftLim_le h
 #align monotone.le_right_lim Monotone.le_rightLim
 
-theorem rightLim_le (h : x < y) : rightLim f x ≤ f y :=
+lemma rightLim_le (h : x < y) : rightLim f x ≤ f y :=
   hf.dual.le_leftLim h
 #align monotone.right_lim_le Monotone.rightLim_le
 
@@ -156,11 +156,11 @@ theorem rightLim_le (h : x < y) : rightLim f x ≤ f y :=
 protected lemma rightLim : Monotone (rightLim f) := fun _ _ h => hf.dual.leftLim h
 #align monotone.right_lim Monotone.rightLim
 
-theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
+lemma leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
   (hf.leftLim_le le_rfl).trans (hf.le_rightLim h)
 #align monotone.left_lim_le_right_lim Monotone.leftLim_le_rightLim
 
-theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
+lemma rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
@@ -176,23 +176,23 @@ theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
 
 variable [TopologicalSpace α] [OrderTopology α]
 
-theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) := by
+lemma tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) := by
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [h']
   rw [leftLim_eq_sSup hf h']
   exact hf.tendsto_nhdsWithin_Iio x
 #align monotone.tendsto_left_lim Monotone.tendsto_leftLim
 
-theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
+lemma tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f (hf.tendsto_leftLim x)
   filter_upwards [@self_mem_nhdsWithin _ _ x (Iio x)] with y hy using hf.le_leftLim hy
 #align monotone.tendsto_left_lim_within Monotone.tendsto_leftLim_within
 
-theorem tendsto_rightLim (x : α) : Tendsto f (𝓝[>] x) (𝓝 (rightLim f x)) :=
+lemma tendsto_rightLim (x : α) : Tendsto f (𝓝[>] x) (𝓝 (rightLim f x)) :=
   hf.dual.tendsto_leftLim x
 #align monotone.tendsto_right_lim Monotone.tendsto_rightLim
 
-theorem tendsto_rightLim_within (x : α) : Tendsto f (𝓝[>] x) (𝓝[≥] rightLim f x) :=
+lemma tendsto_rightLim_within (x : α) : Tendsto f (𝓝[>] x) (𝓝[≥] rightLim f x) :=
   hf.dual.tendsto_leftLim_within x
 #align monotone.tendsto_right_lim_within Monotone.tendsto_rightLim_within
 
@@ -310,11 +310,11 @@ namespace Antitone
 variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
 
-theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
+lemma le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
   hf.dual_right.leftLim_le h
 #align antitone.le_left_lim Antitone.le_leftLim
 
-theorem leftLim_le (h : x < y) : leftLim f y ≤ f x :=
+lemma leftLim_le (h : x < y) : leftLim f y ≤ f x :=
   hf.dual_right.le_leftLim h
 #align antitone.left_lim_le Antitone.leftLim_le
 
@@ -323,11 +323,11 @@ protected lemma leftLim : Antitone (leftLim f) :=
   hf.dual_right.leftLim
 #align antitone.left_lim Antitone.leftLim
 
-theorem rightLim_le (h : x ≤ y) : rightLim f y ≤ f x :=
+lemma rightLim_le (h : x ≤ y) : rightLim f y ≤ f x :=
   hf.dual_right.le_rightLim h
 #align antitone.right_lim_le Antitone.rightLim_le
 
-theorem le_rightLim (h : x < y) : f y ≤ rightLim f x :=
+lemma le_rightLim (h : x < y) : f y ≤ rightLim f x :=
   hf.dual_right.rightLim_le h
 #align antitone.le_right_lim Antitone.le_rightLim
 
@@ -336,29 +336,29 @@ protected lemma rightLim : Antitone (rightLim f) :=
   hf.dual_right.rightLim
 #align antitone.right_lim Antitone.rightLim
 
-theorem rightLim_le_leftLim (h : x ≤ y) : rightLim f y ≤ leftLim f x :=
+lemma rightLim_le_leftLim (h : x ≤ y) : rightLim f y ≤ leftLim f x :=
   hf.dual_right.leftLim_le_rightLim h
 #align antitone.right_lim_le_left_lim Antitone.rightLim_le_leftLim
 
-theorem leftLim_le_rightLim (h : x < y) : leftLim f y ≤ rightLim f x :=
+lemma leftLim_le_rightLim (h : x < y) : leftLim f y ≤ rightLim f x :=
   hf.dual_right.rightLim_le_leftLim h
 #align antitone.left_lim_le_right_lim Antitone.leftLim_le_rightLim
 
 variable [TopologicalSpace α] [OrderTopology α]
 
-theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
+lemma tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
   hf.dual_right.tendsto_leftLim x
 #align antitone.tendsto_left_lim Antitone.tendsto_leftLim
 
-theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≥] leftLim f x) :=
+lemma tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≥] leftLim f x) :=
   hf.dual_right.tendsto_leftLim_within x
 #align antitone.tendsto_left_lim_within Antitone.tendsto_leftLim_within
 
-theorem tendsto_rightLim (x : α) : Tendsto f (𝓝[>] x) (𝓝 (rightLim f x)) :=
+lemma tendsto_rightLim (x : α) : Tendsto f (𝓝[>] x) (𝓝 (rightLim f x)) :=
   hf.dual_right.tendsto_rightLim x
 #align antitone.tendsto_right_lim Antitone.tendsto_rightLim
 
-theorem tendsto_rightLim_within (x : α) : Tendsto f (𝓝[>] x) (𝓝[≤] rightLim f x) :=
+lemma tendsto_rightLim_within (x : α) : Tendsto f (𝓝[>] x) (𝓝[≤] rightLim f x) :=
   hf.dual_right.tendsto_rightLim_within x
 #align antitone.tendsto_right_lim_within Antitone.tendsto_rightLim_within
 

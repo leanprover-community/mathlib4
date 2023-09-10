@@ -214,11 +214,11 @@ lemma of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrE
 
 /-- If `C` is filtered or empty, and we have a right adjoint functor `R : C ⥤ D`, then `D` is
 filtered or empty. -/
-theorem of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFilteredOrEmpty D :=
+lemma of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFilteredOrEmpty D :=
   of_right_adjoint (Adjunction.ofRightAdjoint R)
 
 /-- Being filtered or empty is preserved by equivalence of categories. -/
-theorem of_equivalence (h : C ≌ D) : IsFilteredOrEmpty D :=
+lemma of_equivalence (h : C ≌ D) : IsFilteredOrEmpty D :=
   of_right_adjoint h.symm.toAdjunction
 
 end IsFilteredOrEmpty
@@ -234,7 +234,7 @@ variable [IsFiltered C]
 
 /-- Any finite collection of objects in a filtered category has an object "to the right".
 -/
-theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (X ⟶ S) := by
+lemma sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (X ⟶ S) := by
   classical
   induction' O using Finset.induction with X O' nm h
   · exact ⟨Classical.choice IsFiltered.Nonempty, by intro; simp⟩
@@ -312,7 +312,7 @@ variable {J : Type v} [SmallCategory J] [FinCategory J]
 /-- If we have `IsFiltered C`, then for any functor `F : J ⥤ C` with `FinCategory J`,
 there exists a cocone over `F`.
 -/
-theorem cocone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cocone F) := by
+lemma cocone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cocone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
@@ -346,12 +346,12 @@ lemma of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered D 
 #align category_theory.is_filtered.of_right_adjoint CategoryTheory.IsFiltered.of_right_adjoint
 
 /-- If `C` is filtered, and we have a right adjoint functor `R : C ⥤ D`, then `D` is filtered. -/
-theorem of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFiltered D :=
+lemma of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFiltered D :=
   of_right_adjoint (Adjunction.ofRightAdjoint R)
 #align category_theory.is_filtered.of_is_right_adjoint CategoryTheory.IsFiltered.of_isRightAdjoint
 
 /-- Being filtered is preserved by equivalence of categories. -/
-theorem of_equivalence (h : C ≌ D) : IsFiltered D :=
+lemma of_equivalence (h : C ≌ D) : IsFiltered D :=
   of_right_adjoint h.symm.toAdjunction
 #align category_theory.is_filtered.of_equivalence CategoryTheory.IsFiltered.of_equivalence
 
@@ -628,7 +628,7 @@ lemma cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 #align category_theory.is_cofiltered.cospan CategoryTheory.IsCofiltered.cospan
 
-theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
+lemma _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
     Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine' ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
@@ -658,11 +658,11 @@ lemma of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofilteredOr
 
 /-- If `C` is cofiltered or empty, and we have a left adjoint functor `L : C ⥤ D`, then `D` is
 cofiltered or empty. -/
-theorem of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofilteredOrEmpty D :=
+lemma of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofilteredOrEmpty D :=
   of_left_adjoint (Adjunction.ofLeftAdjoint L)
 
 /-- Being cofiltered or empty is preserved by equivalence of categories. -/
-theorem of_equivalence (h : C ≌ D) : IsCofilteredOrEmpty D :=
+lemma of_equivalence (h : C ≌ D) : IsCofilteredOrEmpty D :=
   of_left_adjoint h.toAdjunction
 
 end IsCofilteredOrEmpty
@@ -678,7 +678,7 @@ variable [IsCofiltered C]
 
 /-- Any finite collection of objects in a cofiltered category has an object "to the left".
 -/
-theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (S ⟶ X) := by
+lemma inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (S ⟶ X) := by
   classical
   induction' O using Finset.induction with X O' nm h
   · exact ⟨Classical.choice IsCofiltered.Nonempty, by intro; simp⟩
@@ -756,7 +756,7 @@ variable {J : Type w} [SmallCategory J] [FinCategory J]
 /-- If we have `IsCofiltered C`, then for any functor `F : J ⥤ C` with `FinCategory J`,
 there exists a cone over `F`.
 -/
-theorem cone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cone F) := by
+lemma cone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
@@ -792,12 +792,12 @@ lemma of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered D
 #align category_theory.is_cofiltered.of_left_adjoint CategoryTheory.IsCofiltered.of_left_adjoint
 
 /-- If `C` is cofiltered, and we have a left adjoint functor `L : C ⥤ D`, then `D` is cofiltered. -/
-theorem of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofiltered D :=
+lemma of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofiltered D :=
   of_left_adjoint (Adjunction.ofLeftAdjoint L)
 #align category_theory.is_cofiltered.of_is_left_adjoint CategoryTheory.IsCofiltered.of_isLeftAdjoint
 
 /-- Being cofiltered is preserved by equivalence of categories. -/
-theorem of_equivalence (h : C ≌ D) : IsCofiltered D :=
+lemma of_equivalence (h : C ≌ D) : IsCofiltered D :=
   of_left_adjoint h.toAdjunction
 #align category_theory.is_cofiltered.of_equivalence CategoryTheory.IsCofiltered.of_equivalence
 

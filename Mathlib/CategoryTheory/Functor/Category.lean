@@ -59,17 +59,17 @@ namespace NatTrans
 lemma ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
 
 @[simp]
-theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl
+lemma vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl
 #align category_theory.nat_trans.vcomp_eq_comp CategoryTheory.NatTrans.vcomp_eq_comp
 
-theorem vcomp_app' (α : F ⟶ G) (β : G ⟶ H) (X : C) : (α ≫ β).app X = α.app X ≫ β.app X := rfl
+lemma vcomp_app' (α : F ⟶ G) (β : G ⟶ H) (X : C) : (α ≫ β).app X = α.app X ≫ β.app X := rfl
 #align category_theory.nat_trans.vcomp_app' CategoryTheory.NatTrans.vcomp_app'
 
 lemma congr_app {α β : F ⟶ G} (h : α = β) (X : C) : α.app X = β.app X := by rw [h]
 #align category_theory.nat_trans.congr_app CategoryTheory.NatTrans.congr_app
 
 @[simp]
-theorem id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
+lemma id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
 #align category_theory.nat_trans.id_app CategoryTheory.NatTrans.id_app
 
 @[simp]
@@ -90,14 +90,14 @@ lemma naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f : 
 #align category_theory.nat_trans.naturality_app CategoryTheory.NatTrans.naturality_app
 
 /-- A natural transformation is a monomorphism if each component is. -/
-theorem mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=
+lemma mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=
   ⟨fun g h eq => by
     ext X
     rw [← cancel_mono (α.app X), ← comp_app, eq, comp_app]⟩
 #align category_theory.nat_trans.mono_of_mono_app CategoryTheory.NatTrans.mono_of_mono_app
 
 /-- A natural transformation is an epimorphism if each component is. -/
-theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
+lemma epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
   ⟨fun g h eq => by
     ext X
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
@@ -153,14 +153,14 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 end Functor
 
 @[reassoc (attr := simp)]
-theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
+lemma map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
 #align category_theory.map_hom_inv_app_assoc CategoryTheory.map_hom_inv_app_assoc
 
 @[reassoc (attr := simp)]
-theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
+lemma map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_inv_hom_app CategoryTheory.map_inv_hom_app

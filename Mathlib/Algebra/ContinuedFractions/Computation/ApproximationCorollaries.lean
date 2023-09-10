@@ -77,7 +77,7 @@ lemma of_convergents_eq_convergents' : (of v).convergents = (of v).convergents' 
 /-- The recurrence relation for the `convergents` of the continued fraction expansion
 of an element `v` of `K` in terms of the convergents of the inverse of its fractional part.
 -/
-theorem convergents_succ (n : ℕ) :
+lemma convergents_succ (n : ℕ) :
     (of v).convergents (n + 1) = ⌊v⌋ + 1 / (of (Int.fract v)⁻¹).convergents n := by
   rw [of_convergents_eq_convergents', convergents'_succ, of_convergents_eq_convergents']
 #align generalized_continued_fraction.convergents_succ GeneralizedContinuedFraction.convergents_succ

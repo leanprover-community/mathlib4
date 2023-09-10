@@ -122,7 +122,7 @@ lemma ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n �
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
 #align add_circle.ergodic_nsmul AddCircle.ergodic_nsmul
 
-theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
+lemma ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
   set f : AddCircle T → AddCircle T := fun y => n • y + x
   let e : AddCircle T ≃ᵐ AddCircle T := MeasurableEquiv.addLeft (DivisibleBy.div x <| n - 1)
   have he : MeasurePreserving e volume volume :=
@@ -140,7 +140,7 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
   abel
 #align add_circle.ergodic_zsmul_add AddCircle.ergodic_zsmul_add
 
-theorem ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y => n • y + x :=
+lemma ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y => n • y + x :=
   ergodic_zsmul_add x (by simp [h] : 1 < |(n : ℤ)|)
 #align add_circle.ergodic_nsmul_add AddCircle.ergodic_nsmul_add
 

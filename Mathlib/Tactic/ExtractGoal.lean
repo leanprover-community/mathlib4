@@ -16,7 +16,7 @@ example (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
   extract_goal
 
 /-
-theorem extracted_1 (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry
+lemma extracted_1 (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry
 -/
 ```
 

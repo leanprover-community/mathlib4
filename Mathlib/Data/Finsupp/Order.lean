@@ -159,17 +159,17 @@ protected lemma bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
 #align finsupp.bot_eq_zero Finsupp.bot_eq_zero
 
 @[simp]
-theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
+lemma add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [FunLike.ext_iff, forall_and]
 #align finsupp.add_eq_zero_iff Finsupp.add_eq_zero_iff
 
-theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
+lemma le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _hs => h s, fun h s => by
     classical exact
         if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 #align finsupp.le_iff' Finsupp.le_iff'
 
-theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
+lemma le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _
 #align finsupp.le_iff Finsupp.le_iff
 
@@ -200,11 +200,11 @@ instance : CanonicallyOrderedAddMonoid (ι →₀ α) :=
     le_self_add := fun _f _g _x => le_self_add }
 
 @[simp]
-theorem coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g :=
+lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g :=
   rfl
 #align finsupp.coe_tsub Finsupp.coe_tsub
 
-theorem tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=
+lemma tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=
   rfl
 #align finsupp.tsub_apply Finsupp.tsub_apply
 

@@ -55,7 +55,7 @@ instance : CoeSort RingedSpace (Type*) where
 If the germ of a section `f` is a unit in the stalk at `x`, then `f` must be a unit on some small
 neighborhood around `x`.
 -/
-theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x : U)
+lemma isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x : U)
     (h : IsUnit (X.presheaf.germ x f)) :
     ∃ (V : Opens X) (i : V ⟶ U) (_ : x.1 ∈ V), IsUnit (X.presheaf.map i.op f) := by
   obtain ⟨g', heq⟩ := h.exists_right_inv
@@ -81,7 +81,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.is_unit_res_of_is_unit_germ AlgebraicGeometry.RingedSpace.isUnit_res_of_isUnit_germ
 
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
-theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
+lemma isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ x : U, IsUnit (X.presheaf.germ x f)) : IsUnit f := by
   -- We pick a cover of `U` by open sets `V x`, such that `f` is a unit on each `V x`.
   choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x (h x)
@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.mem_basic_open AlgebraicGeometry.RingedSpace.mem_basicOpen
 
 @[simp]
-theorem mem_top_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
+lemma mem_top_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
     x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ ⟨x, show x ∈ (⊤ : Opens X) by trivial⟩ f) :=
   mem_basicOpen X f ⟨x, _⟩
 set_option linter.uppercaseLean3 false in

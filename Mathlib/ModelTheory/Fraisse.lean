@@ -116,7 +116,7 @@ class IsFraisse : Prop where
 
 variable {K} (L) (M : Type w) [Structure L M]
 
-theorem age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N ≃[L] P)) :
+lemma age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N ≃[L] P)) :
     N ∈ L.age M ↔ P ∈ L.age M :=
   and_congr h.some.fg_iff
     ⟨Nonempty.map fun x => Embedding.comp x h.some.symm.toEmbedding,
@@ -125,11 +125,11 @@ theorem age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N 
 
 variable {L} {M} {N : Type w} [Structure L N]
 
-theorem Embedding.age_subset_age (MN : M ↪[L] N) : L.age M ⊆ L.age N := fun _ =>
+lemma Embedding.age_subset_age (MN : M ↪[L] N) : L.age M ⊆ L.age N := fun _ =>
   And.imp_right (Nonempty.map MN.comp)
 #align first_order.language.embedding.age_subset_age FirstOrder.Language.Embedding.age_subset_age
 
-theorem Equiv.age_eq_age (MN : M ≃[L] N) : L.age M = L.age N :=
+lemma Equiv.age_eq_age (MN : M ≃[L] N) : L.age M = L.age N :=
   le_antisymm MN.toEmbedding.age_subset_age MN.symm.toEmbedding.age_subset_age
 #align first_order.language.equiv.age_eq_age FirstOrder.Language.Equiv.age_eq_age
 
@@ -139,7 +139,7 @@ lemma Structure.FG.mem_age_of_equiv {M N : Bundled L.Structure} (h : Structure.F
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fg.mem_age_of_equiv FirstOrder.Language.Structure.FG.mem_age_of_equiv
 
-theorem Hereditary.is_equiv_invariant_of_fG (h : Hereditary K)
+lemma Hereditary.is_equiv_invariant_of_fG (h : Hereditary K)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (M N : Bundled.{w} L.Structure)
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
   ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn), fun NK =>
@@ -209,7 +209,7 @@ lemma age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] [N
 #align first_order.language.age_direct_limit FirstOrder.Language.age_directLimit
 
 /-- Sufficient conditions for a class to be the age of a countably-generated structure. -/
-theorem exists_cg_is_age_of (hn : K.Nonempty)
+lemma exists_cg_is_age_of (hn : K.Nonempty)
     (h : ∀ M N : Bundled.{w} L.Structure, Nonempty (M ≃[L] N) → (M ∈ K ↔ N ∈ K))
     (hc : (Quotient.mk' '' K).Countable)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (hp : Hereditary K)
@@ -280,7 +280,7 @@ structure IsFraisseLimit [Countable (Σ l, L.Functions l)] [Countable M] : Prop 
 
 variable {M}
 
-theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
+lemma IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
     Amalgamation (L.age M) := by
   rintro N P Q NP NQ ⟨Nfg, ⟨-⟩⟩ ⟨Pfg, ⟨PM⟩⟩ ⟨Qfg, ⟨QM⟩⟩
   obtain ⟨g, hg⟩ := h (PM.comp NP).toHom.range (Nfg.range _)

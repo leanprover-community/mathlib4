@@ -100,7 +100,7 @@ lemma memℓp_infty {f : ∀ i, E i} (hf : BddAbove (Set.range fun i => ‖f i�
   memℓp_infty_iff.2 hf
 #align mem_ℓp_infty memℓp_infty
 
-theorem memℓp_gen_iff (hp : 0 < p.toReal) {f : ∀ i, E i} :
+lemma memℓp_gen_iff (hp : 0 < p.toReal) {f : ∀ i, E i} :
     Memℓp f p ↔ Summable fun i => ‖f i‖ ^ p.toReal := by
   rw [ENNReal.toReal_pos_iff] at hp
   dsimp [Memℓp]
@@ -156,7 +156,7 @@ lemma bddAbove {f : ∀ i, E i} (hf : Memℓp f ∞) : BddAbove (Set.range fun i
   memℓp_infty_iff.1 hf
 #align mem_ℓp.bdd_above Memℓp.bddAbove
 
-theorem summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
+lemma summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
     Summable fun i => ‖f i‖ ^ p.toReal :=
   (memℓp_gen_iff hp).1 hf
 #align mem_ℓp.summable Memℓp.summable
@@ -352,7 +352,7 @@ protected lemma monotone {p q : ℝ≥0∞} (hpq : q ≤ p) : lp E q ≤ lp E p 
   fun _ hf => Memℓp.of_exponent_ge hf hpq
 #align lp.monotone lp.monotone
 
-protected theorem memℓp (f : lp E p) : Memℓp f p :=
+protected lemma memℓp (f : lp E p) : Memℓp f p :=
   f.prop
 #align lp.mem_ℓp lp.memℓp
 
@@ -366,12 +366,12 @@ lemma coeFn_zero : ⇑(0 : lp E p) = 0 :=
 variable {E p}
 
 @[simp]
-theorem coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
+lemma coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
   rfl
 #align lp.coe_fn_neg lp.coeFn_neg
 
 @[simp]
-theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
+lemma coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 #align lp.coe_fn_add lp.coeFn_add
 
@@ -382,7 +382,7 @@ lemma coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
 #align lp.coe_fn_sum lp.coeFn_sum
 
 @[simp]
-theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
+lemma coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
   rfl
 #align lp.coe_fn_sub lp.coeFn_sub
 
@@ -393,11 +393,11 @@ instance : Norm (lp E p) where
       exact ((lp.memℓp f).finite_dsupport.toFinset.card : ℝ)
     else if p = ∞ then ⨆ i, ‖f i‖ else (∑' i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal)
 
-theorem norm_eq_card_dsupport (f : lp E 0) : ‖f‖ = (lp.memℓp f).finite_dsupport.toFinset.card :=
+lemma norm_eq_card_dsupport (f : lp E 0) : ‖f‖ = (lp.memℓp f).finite_dsupport.toFinset.card :=
   dif_pos rfl
 #align lp.norm_eq_card_dsupport lp.norm_eq_card_dsupport
 
-theorem norm_eq_ciSup (f : lp E ∞) : ‖f‖ = ⨆ i, ‖f i‖ := by
+lemma norm_eq_ciSup (f : lp E ∞) : ‖f‖ = ⨆ i, ‖f i‖ := by
   dsimp [norm]
   rw [dif_neg ENNReal.top_ne_zero, if_pos rfl]
 #align lp.norm_eq_csupr lp.norm_eq_ciSup
@@ -407,14 +407,14 @@ lemma isLUB_norm [Nonempty α] (f : lp E ∞) : IsLUB (Set.range fun i => ‖f i
   exact isLUB_ciSup (lp.memℓp f)
 #align lp.is_lub_norm lp.isLUB_norm
 
-theorem norm_eq_tsum_rpow (hp : 0 < p.toReal) (f : lp E p) :
+lemma norm_eq_tsum_rpow (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ = (∑' i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal) := by
   dsimp [norm]
   rw [ENNReal.toReal_pos_iff] at hp
   rw [dif_neg hp.1.ne', if_neg hp.2.ne]
 #align lp.norm_eq_tsum_rpow lp.norm_eq_tsum_rpow
 
-theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
+lemma norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ ^ p.toReal = ∑' i, ‖f i‖ ^ p.toReal := by
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
@@ -425,13 +425,13 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     _ ≤ _ := Real.rpow_le_rpow rfl.le (norm_nonneg (f i)) hp.le
 #align lp.norm_rpow_eq_tsum lp.norm_rpow_eq_tsum
 
-theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
+lemma hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
     HasSum (fun i => ‖f i‖ ^ p.toReal) (‖f‖ ^ p.toReal) := by
   rw [norm_rpow_eq_tsum hp]
   exact ((lp.memℓp f).summable hp).hasSum
 #align lp.has_sum_norm lp.hasSum_norm
 
-theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
+lemma norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
   · cases' isEmpty_or_nonempty α with _i _i
@@ -556,7 +556,7 @@ protected lemma tsum_mul_le_mul_norm' {p q : ℝ≥0∞} (hpq : p.toReal.IsConju
 
 section ComparePointwise
 
-theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ ‖f‖ := by
+lemma norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ ‖f‖ := by
   rcases eq_or_ne p ∞ with (rfl | hp')
   · haveI : Nonempty α := ⟨i⟩
     exact (isLUB_norm f).1 ⟨i, rfl⟩
@@ -566,7 +566,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
   convert le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
 #align lp.norm_apply_le_norm lp.norm_apply_le_norm
 
-theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
+lemma sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ∑ i in s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
   rw [lp.norm_rpow_eq_tsum hp f]
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
@@ -588,13 +588,13 @@ lemma norm_le_of_forall_le {f : lp E ∞} {C : ℝ} (hC : 0 ≤ C) (hCf : ∀ i,
   · exact norm_le_of_forall_le' C hCf
 #align lp.norm_le_of_forall_le lp.norm_le_of_forall_le
 
-theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
+lemma norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
     (hf : ∑' i, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C := by
   rw [← Real.rpow_le_rpow_iff (norm_nonneg' _) hC hp, norm_rpow_eq_tsum hp]
   exact hf
 #align lp.norm_le_of_tsum_le lp.norm_le_of_tsum_le
 
-theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
+lemma norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
     (hf : ∀ s : Finset α, ∑ i in s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
   norm_le_of_tsum_le hp hC (tsum_le_of_sum_le ((lp.memℓp f).summable hp) hf)
 #align lp.norm_le_of_forall_sum_le lp.norm_le_of_forall_sum_le
@@ -623,7 +623,7 @@ instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)]
 
 variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
 
-theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
+lemma mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
   (lp.memℓp f).const_smul c
 #align lp.mem_lp_const_smul lp.mem_lp_const_smul
 
@@ -645,7 +645,7 @@ instance : Module 𝕜 (lp E p) :=
   { (lpSubmodule E p 𝕜).module with }
 
 @[simp]
-theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
+lemma coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align lp.coe_fn_smul lp.coeFn_smul
 
@@ -658,7 +658,7 @@ instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTow
 instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (lp E p) :=
   ⟨fun _ _ => Subtype.ext <| op_smul_eq_smul _ _⟩
 
-theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ := by
+lemma norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · exact absurd rfl hp
   · cases isEmpty_or_nonempty α
@@ -702,7 +702,7 @@ variable {𝕜 : Type*}
 
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
-theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
+lemma norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp
   refine' le_antisymm (norm_const_smul_le hp c f) _
@@ -744,12 +744,12 @@ instance : Star (lp E p) where
   star f := ⟨(star f : ∀ i, E i), f.property.star_mem⟩
 
 @[simp]
-theorem coeFn_star (f : lp E p) : ⇑(star f) = star (⇑f) :=
+lemma coeFn_star (f : lp E p) : ⇑(star f) = star (⇑f) :=
   rfl
 #align lp.coe_fn_star lp.coeFn_star
 
 @[simp]
-protected theorem star_apply (f : lp E p) (i : α) : star f i = star (f i) :=
+protected lemma star_apply (f : lp E p) (i : α) : star f i = star (f i) :=
   rfl
 #align lp.star_apply lp.star_apply
 
@@ -798,7 +798,7 @@ instance : Mul (lp B ∞) where
   mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _ , f.property.infty_mul g.property⟩
 
 @[simp]
-theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
+lemma infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 #align lp.infty_coe_fn_mul lp.infty_coeFn_mul
 
@@ -890,11 +890,11 @@ lemma _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ) :
   (lpInftySubring B).pow_mem hf n
 #align mem_ℓp.infty_pow Memℓp.infty_pow
 
-theorem _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
+lemma _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
 #align nat_cast_mem_ℓp_infty nat_cast_memℓp_infty
 
-theorem _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
+lemma _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   coe_int_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty int_cast_memℓp_infty
 
@@ -904,17 +904,17 @@ lemma infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
 #align lp.infty_coe_fn_one lp.infty_coeFn_one
 
 @[simp]
-theorem infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
+lemma infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 #align lp.infty_coe_fn_pow lp.infty_coeFn_pow
 
 @[simp]
-theorem infty_coeFn_nat_cast (n : ℕ) : ⇑(n : lp B ∞) = n :=
+lemma infty_coeFn_nat_cast (n : ℕ) : ⇑(n : lp B ∞) = n :=
   rfl
 #align lp.infty_coe_fn_nat_cast lp.infty_coeFn_nat_cast
 
 @[simp]
-theorem infty_coeFn_int_cast (z : ℤ) : ⇑(z : lp B ∞) = z :=
+lemma infty_coeFn_int_cast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
 #align lp.infty_coe_fn_int_cast lp.infty_coeFn_int_cast
 
@@ -959,7 +959,7 @@ instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
 
 variable [∀ i, NormOneClass (B i)]
 
-theorem _root_.algebraMap_memℓp_infty (k : 𝕜) : Memℓp (algebraMap 𝕜 (∀ i, B i) k) ∞ := by
+lemma _root_.algebraMap_memℓp_infty (k : 𝕜) : Memℓp (algebraMap 𝕜 (∀ i, B i) k) ∞ := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact (one_memℓp_infty.const_smul k : Memℓp (k • (1 : ∀ i, B i)) ∞)
 #align algebra_map_mem_ℓp_infty algebraMap_memℓp_infty
@@ -1000,22 +1000,22 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     simp⟩
 #align lp.single lp.single
 
-protected theorem single_apply (p) (i : α) (a : E i) (j : α) :
+protected lemma single_apply (p) (i : α) (a : E i) (j : α) :
     lp.single p i a j = if h : j = i then Eq.ndrec a h.symm else 0 :=
   rfl
 #align lp.single_apply lp.single_apply
 
-protected theorem single_apply_self (p) (i : α) (a : E i) : lp.single p i a i = a := by
+protected lemma single_apply_self (p) (i : α) (a : E i) : lp.single p i a i = a := by
   rw [lp.single_apply, dif_pos rfl]
 #align lp.single_apply_self lp.single_apply_self
 
-protected theorem single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i) :
+protected lemma single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i) :
     lp.single p i a j = 0 := by
   rw [lp.single_apply, dif_neg hij]
 #align lp.single_apply_ne lp.single_apply_ne
 
 @[simp]
-protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a := by
+protected lemma single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a := by
   refine' ext (funext (fun (j : α) => _))
   by_cases hi : j = i
   · subst hi
@@ -1024,7 +1024,7 @@ protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.s
 #align lp.single_neg lp.single_neg
 
 @[simp]
-protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
+protected lemma single_smul (p) (i : α) (a : E i) (c : 𝕜) :
     lp.single p i (c • a) = c • lp.single p i a := by
   refine' ext (funext (fun (j : α) => _))
   by_cases hi : j = i
@@ -1035,7 +1035,7 @@ protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
     simp [lp.single_apply_ne p i _ hi]
 #align lp.single_smul lp.single_smul
 
-protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
+protected lemma norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
     ‖∑ i in s, lp.single p i (f i)‖ ^ p.toReal = ∑ i in s, ‖f i‖ ^ p.toReal := by
   refine' (hasSum_norm hp (∑ i in s, lp.single p i (f i))).unique _
   simp only [lp.single_apply, coeFn_sum, Finset.sum_apply, Finset.sum_dite_eq]
@@ -1048,13 +1048,13 @@ protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Fins
   simpa [Finset.sum_congr rfl h'] using hasSum_sum_of_ne_finset_zero h
 #align lp.norm_sum_single lp.norm_sum_single
 
-protected theorem norm_single (hp : 0 < p.toReal) (f : ∀ i, E i) (i : α) :
+protected lemma norm_single (hp : 0 < p.toReal) (f : ∀ i, E i) (i : α) :
     ‖lp.single p i (f i)‖ = ‖f i‖ := by
   refine' Real.rpow_left_injOn hp.ne' (norm_nonneg' _) (norm_nonneg _) _
   simpa using lp.norm_sum_single hp f {i}
 #align lp.norm_single lp.norm_single
 
-protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
+protected lemma norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ‖f‖ ^ p.toReal - ‖f - ∑ i in s, lp.single p i (f i)‖ ^ p.toReal =
       ∑ i in s, ‖f i‖ ^ p.toReal := by
   refine' ((hasSum_norm hp f).sub (hasSum_norm hp (f - ∑ i in s, lp.single p i (f i)))).unique _
@@ -1074,7 +1074,7 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
   rwa [Finset.sum_congr rfl hF'] at this
 #align lp.norm_sub_norm_compl_sub_single lp.norm_sub_norm_compl_sub_single
 
-protected theorem norm_compl_sum_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
+protected lemma norm_compl_sum_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ‖f - ∑ i in s, lp.single p i (f i)‖ ^ p.toReal = ‖f‖ ^ p.toReal - ∑ i in s, ‖f i‖ ^ p.toReal :=
   by linarith [lp.norm_sub_norm_compl_sub_single hp f s]
 #align lp.norm_compl_sum_single lp.norm_compl_sum_single
@@ -1140,7 +1140,7 @@ lemma norm_apply_le_of_tendsto {C : ℝ} {F : ι → lp E ∞} (hCF : ∀ᶠ k i
 
 variable [_i : Fact (1 ≤ p)]
 
-theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C)
+lemma sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C)
     {f : ∀ a, E a} (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) (s : Finset α) :
     ∑ i : α in s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal := by
   have hp' : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'

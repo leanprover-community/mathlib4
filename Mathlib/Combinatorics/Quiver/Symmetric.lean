@@ -89,7 +89,7 @@ class _root_.Prefunctor.MapReverse (φ : U ⥤q V) : Prop where
 #align prefunctor.map_reverse Prefunctor.MapReverse
 
 @[simp]
-theorem _root_.Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse]
+lemma _root_.Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse]
     {u v : U} (e : u ⟶ v) : φ.map (reverse e) = reverse (φ.map e) :=
   Prefunctor.MapReverse.map_reverse' e
 #align prefunctor.map_reverse' Prefunctor.map_reverse

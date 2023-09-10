@@ -90,13 +90,13 @@ lemma Multiset.coe_mem {x : m} : ↑x ∈ m :=
 #align multiset.coe_mem Multiset.coe_mem
 
 @[simp]
-protected theorem Multiset.forall_coe (p : m → Prop) :
+protected lemma Multiset.forall_coe (p : m → Prop) :
     (∀ x : m, p x) ↔ ∀ (x : α) (i : Fin (m.count x)), p ⟨x, i⟩ :=
   Sigma.forall
 #align multiset.forall_coe Multiset.forall_coe
 
 @[simp]
-protected theorem Multiset.exists_coe (p : m → Prop) :
+protected lemma Multiset.exists_coe (p : m → Prop) :
     (∃ x : m, p x) ↔ ∃ (x : α) (i : Fin (m.count x)), p ⟨x, i⟩ :=
   Sigma.exists
 #align multiset.exists_coe Multiset.exists_coe
@@ -119,7 +119,7 @@ def Multiset.toEnumFinset (m : Multiset α) : Finset (α × ℕ) :=
 #align multiset.to_enum_finset Multiset.toEnumFinset
 
 @[simp]
-theorem Multiset.mem_toEnumFinset (m : Multiset α) (p : α × ℕ) :
+lemma Multiset.mem_toEnumFinset (m : Multiset α) (p : α × ℕ) :
     p ∈ m.toEnumFinset ↔ p.2 < m.count p.1 :=
   Set.mem_toFinset
 #align multiset.mem_to_enum_finset Multiset.mem_toEnumFinset
@@ -185,7 +185,7 @@ def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset
 #align multiset.coe_equiv Multiset.coeEquiv
 
 @[simp]
-theorem Multiset.toEmbedding_coeEquiv_trans (m : Multiset α) :
+lemma Multiset.toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 #align multiset.to_embedding_coe_equiv_trans Multiset.toEmbedding_coeEquiv_trans
 
@@ -194,7 +194,7 @@ instance Multiset.fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 #align multiset.fintype_coe Multiset.fintypeCoe
 
-theorem Multiset.map_univ_coeEmbedding (m : Multiset α) :
+lemma Multiset.map_univ_coeEmbedding (m : Multiset α) :
     (Finset.univ : Finset m).map m.coeEmbedding = m.toEnumFinset := by
   ext ⟨x, i⟩
   simp only [Fin.exists_iff, Finset.mem_map, Finset.mem_univ, Multiset.coeEmbedding_apply,
@@ -203,7 +203,7 @@ theorem Multiset.map_univ_coeEmbedding (m : Multiset α) :
     true_and_iff]
 #align multiset.map_univ_coe_embedding Multiset.map_univ_coeEmbedding
 
-theorem Multiset.toEnumFinset_filter_eq (m : Multiset α) (x : α) :
+lemma Multiset.toEnumFinset_filter_eq (m : Multiset α) (x : α) :
     (m.toEnumFinset.filter fun p ↦ x = p.1) =
       (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩ := by
   ext ⟨y, i⟩
@@ -215,20 +215,20 @@ theorem Multiset.toEnumFinset_filter_eq (m : Multiset α) (x : α) :
 #align multiset.to_enum_finset_filter_eq Multiset.toEnumFinset_filter_eq
 
 @[simp]
-theorem Multiset.map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
+lemma Multiset.map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext x
   simp only [Multiset.count_map, ← Finset.filter_val, Multiset.toEnumFinset_filter_eq,
     Finset.map_val, Finset.range_val, Multiset.card_map, Multiset.card_range]
 #align multiset.map_to_enum_finset_fst Multiset.map_toEnumFinset_fst
 
 @[simp]
-theorem Multiset.image_toEnumFinset_fst (m : Multiset α) :
+lemma Multiset.image_toEnumFinset_fst (m : Multiset α) :
     m.toEnumFinset.image Prod.fst = m.toFinset := by
   rw [Finset.image, Multiset.map_toEnumFinset_fst]
 #align multiset.image_to_enum_finset_fst Multiset.image_toEnumFinset_fst
 
 @[simp]
-theorem Multiset.map_univ_coe (m : Multiset α) :
+lemma Multiset.map_univ_coe (m : Multiset α) :
     (Finset.univ : Finset m).val.map (fun x : m ↦ (x : α)) = m := by
   have := m.map_toEnumFinset_fst
   rw [← m.map_univ_coeEmbedding] at this
@@ -244,14 +244,14 @@ lemma Multiset.map_univ {β : Type*} (m : Multiset α) (f : α → β) :
 #align multiset.map_univ Multiset.map_univ
 
 @[simp]
-theorem Multiset.card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.card m := by
+lemma Multiset.card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.card m := by
   rw [Finset.card, ←Multiset.card_map Prod.fst m.toEnumFinset.val]
   congr
   exact m.map_toEnumFinset_fst
 #align multiset.card_to_enum_finset Multiset.card_toEnumFinset
 
 @[simp]
-theorem Multiset.card_coe (m : Multiset α) : Fintype.card m = Multiset.card m := by
+lemma Multiset.card_coe (m : Multiset α) : Fintype.card m = Multiset.card m := by
   rw [Fintype.card_congr m.coeEquiv]
   simp only [Fintype.card_coe, card_toEnumFinset]
 #align multiset.card_coe Multiset.card_coe

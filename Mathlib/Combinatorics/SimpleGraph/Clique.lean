@@ -70,12 +70,12 @@ instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.Is
 
 variable {G H}
 
-theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := by
+lemma IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := by
   simp_rw [isClique_iff]
   exact Set.Pairwise.mono' h
 #align simple_graph.is_clique.mono SimpleGraph.IsClique.mono
 
-theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := by
+lemma IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := by
   simp_rw [isClique_iff]
   exact Set.Pairwise.mono h
 #align simple_graph.is_clique.subset SimpleGraph.IsClique.subset
@@ -113,7 +113,7 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 
 variable {G H}
 
-theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
+lemma IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
   simp_rw [isNClique_iff]
   exact And.imp_left (IsClique.mono h)
 #align simple_graph.is_n_clique.mono SimpleGraph.IsNClique.mono
@@ -160,7 +160,7 @@ def CliqueFree (n : ℕ) : Prop :=
 
 variable {G H} {s : Finset α}
 
-theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
+lemma IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG
 #align simple_graph.is_n_clique.not_clique_free SimpleGraph.IsNClique.not_cliqueFree
 
@@ -190,7 +190,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
   exact hb.symm
 #align simple_graph.top_embedding_of_not_clique_free SimpleGraph.topEmbeddingOfNotCliqueFree
 
-theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=
+lemma not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 #align simple_graph.not_clique_free_iff SimpleGraph.not_cliqueFree_iff
 
@@ -204,19 +204,19 @@ lemma not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph 
   exact ⟨(Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f⟩
 #align simple_graph.not_clique_free_card_of_top_embedding SimpleGraph.not_cliqueFree_card_of_top_embedding
 
-theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
+lemma cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
   intro t ht
   have := le_trans h (isNClique_bot_iff.1 ht).1
   simp only at this
 #align simple_graph.clique_free_bot SimpleGraph.cliqueFree_bot
 
-theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
+lemma CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
   intro hG s hs
   obtain ⟨t, hts, ht⟩ := s.exists_smaller_set _ (h.trans hs.card_eq.ge)
   exact hG _ ⟨hs.clique.subset hts, ht⟩
 #align simple_graph.clique_free.mono SimpleGraph.CliqueFree.mono
 
-theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
+lemma CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
 #align simple_graph.clique_free.anti SimpleGraph.CliqueFree.anti
 
@@ -268,11 +268,11 @@ alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 variable {G H}
 
 @[mono]
-theorem cliqueSet_mono (h : G ≤ H) : G.cliqueSet n ⊆ H.cliqueSet n :=
+lemma cliqueSet_mono (h : G ≤ H) : G.cliqueSet n ⊆ H.cliqueSet n :=
   fun _ ↦ IsNClique.mono h
 #align simple_graph.clique_set_mono SimpleGraph.cliqueSet_mono
 
-theorem cliqueSet_mono' (h : G ≤ H) : G.cliqueSet ≤ H.cliqueSet :=
+lemma cliqueSet_mono' (h : G ≤ H) : G.cliqueSet ≤ H.cliqueSet :=
   fun _ ↦ cliqueSet_mono h
 #align simple_graph.clique_set_mono' SimpleGraph.cliqueSet_mono'
 
@@ -295,7 +295,7 @@ lemma mem_cliqueFinset_iff : s ∈ G.cliqueFinset n ↔ G.IsNClique n s :=
 #align simple_graph.mem_clique_finset_iff SimpleGraph.mem_cliqueFinset_iff
 
 @[simp]
-theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cliqueSet n :=
+lemma coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cliqueSet n :=
   Set.ext fun _ ↦ mem_cliqueFinset_iff _
 #align simple_graph.coe_clique_finset SimpleGraph.coe_cliqueFinset
 
@@ -312,7 +312,7 @@ alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 variable {G} [DecidableRel H.Adj]
 
 @[mono]
-theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
+lemma cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
   monotone_filter_right _ fun _ ↦ IsNClique.mono h
 #align simple_graph.clique_finset_mono SimpleGraph.cliqueFinset_mono
 

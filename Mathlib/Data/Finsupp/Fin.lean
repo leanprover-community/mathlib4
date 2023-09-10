@@ -75,12 +75,12 @@ lemma cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
 
 variable {s} {y}
 
-theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
+lemma cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
 #align finsupp.cons_ne_zero_of_left Finsupp.cons_ne_zero_of_left
 
-theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
+lemma cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   ext a
   simp [← cons_succ a y s, c]

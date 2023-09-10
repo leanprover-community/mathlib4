@@ -35,7 +35,7 @@ namespace Commute
 variable [Semiring R] {x y : R}
 
 /-- A version of the **binomial theorem** for commuting elements in noncommutative semirings. -/
-theorem add_pow (h : Commute x y) (n : ℕ) :
+lemma add_pow (h : Commute x y) (n : ℕ) :
     (x + y) ^ n = ∑ m in range (n + 1), x ^ m * y ^ (n - m) * choose n m := by
   let t : ℕ → ℕ → R := fun n m ↦ x ^ m * y ^ (n - m) * choose n m
   change (x + y) ^ n = ∑ m in range (n + 1), t n m
@@ -70,7 +70,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
 
 /-- A version of `Commute.add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
 also with the binomial coefficient applied via scalar action of ℕ. -/
-theorem add_pow' (h : Commute x y) (n : ℕ) :
+lemma add_pow' (h : Commute x y) (n : ℕ) :
     (x + y) ^ n = ∑ m in Nat.antidiagonal n, choose n m.fst • (x ^ m.fst * y ^ m.snd) := by
   simp_rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun m p ↦ choose n m • (x ^ m * y ^ p),
     _root_.nsmul_eq_mul, cast_comm, h.add_pow]
@@ -87,12 +87,12 @@ lemma add_pow [CommSemiring R] (x y : R) (n : ℕ) :
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
-theorem sum_range_choose (n : ℕ) : (∑ m in range (n + 1), choose n m) = 2 ^ n := by
+lemma sum_range_choose (n : ℕ) : (∑ m in range (n + 1), choose n m) = 2 ^ n := by
   have := (add_pow 1 1 n).symm
   simpa [one_add_one_eq_two] using this
 #align nat.sum_range_choose Nat.sum_range_choose
 
-theorem sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 * m + 1) i) = 4 ^ m :=
+lemma sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 * m + 1) i) = 4 ^ m :=
   have : (∑ i in range (m + 1), choose (2 * m + 1) (2 * m + 1 - i)) =
       ∑ i in range (m + 1), choose (2 * m + 1) i :=
     sum_congr rfl fun i hi ↦ choose_symm <| by linarith [mem_range.1 hi]
@@ -116,13 +116,13 @@ theorem sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 
       _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
 #align nat.sum_range_choose_halfway Nat.sum_range_choose_halfway
 
-theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
+lemma choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
   have t : choose (2 * n + 1) n ≤ ∑ i in range (n + 1), choose (2 * n + 1) i :=
     single_le_sum (fun x _ ↦ by linarith) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 #align nat.choose_middle_le_pow Nat.choose_middle_le_pow
 
-theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
+lemma four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * choose (2 * n) n :=
   calc
     4 ^ n = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
@@ -209,7 +209,7 @@ lemma prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → 
 -- porting note: moved from `Mathlib.Analysis.Calculus.ContDiff`
 /-- The sum of `(n+1).choose i * f i (n+1-i)` can be split into two sums at rank `n`,
 respectively of `n.choose i * f i (n+1-i)` and `n.choose i * f (i+1) (n-i)`. -/
-theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
+lemma sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
     (∑ i in range (n + 2), ((n + 1).choose i : R) * f i (n + 1 - i)) =
       (∑ i in range (n + 1), (n.choose i : R) * f i (n + 1 - i)) +
         ∑ i in range (n + 1), (n.choose i : R) * f (i + 1) (n - i) := by
@@ -218,7 +218,7 @@ theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
 
 /-- The sum along the antidiagonal of `(n+1).choose i * f i j` can be split into two sums along the
 antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`. -/
-theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
+lemma sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
     (∑ ij in Nat.antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =
       (∑ ij in Nat.antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +
         ∑ ij in Nat.antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by

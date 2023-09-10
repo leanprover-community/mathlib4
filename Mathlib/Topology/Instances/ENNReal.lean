@@ -217,10 +217,10 @@ lemma nhdsWithin_Ioi_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).NeBot :=
 lemma nhdsWithin_Ioi_one_neBot : (𝓝[>] (1 : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
 
 @[instance]
-theorem nhdsWithin_Ioi_nat_neBot (n : ℕ) : (𝓝[>] (n : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
+lemma nhdsWithin_Ioi_nat_neBot (n : ℕ) : (𝓝[>] (n : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
 
 @[instance]
-theorem nhdsWithin_Ioi_ofNat_nebot (n : ℕ) [n.AtLeastTwo] :
+lemma nhdsWithin_Ioi_ofNat_nebot (n : ℕ) [n.AtLeastTwo] :
     (𝓝[>] (OfNat.ofNat n : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
 
 @[instance]
@@ -231,7 +231,7 @@ lemma nhdsWithin_Iio_neBot [NeZero x] : (𝓝[<] x).NeBot :=
 extended nonnegative real number `x ≠ ∞`. We use `Set.Icc` instead of `Set.Ioo` because this way the
 statement works for `x = 0`.
 -/
-theorem hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
+lemma hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
     (𝓝 x).HasBasis (· ≠ 0) (fun ε => Icc (x - ε) (x + ε)) := by
   rcases (zero_le x).eq_or_gt with rfl | x0
   · simp_rw [zero_tsub, zero_add, ← bot_eq_zero, Icc_bot, ← bot_lt_iff_ne_bot]
@@ -246,15 +246,15 @@ theorem hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
     · exact ⟨(x - ε, x + ε), ⟨ENNReal.sub_lt_self xt x0.ne' ε0,
         lt_add_right xt ε0⟩, Ioo_subset_Icc_self⟩
 
-theorem hasBasis_nhds_of_ne_top (xt : x ≠ ∞) :
+lemma hasBasis_nhds_of_ne_top (xt : x ≠ ∞) :
     (𝓝 x).HasBasis (0 < ·) (fun ε => Icc (x - ε) (x + ε)) := by
   simpa only [pos_iff_ne_zero] using hasBasis_nhds_of_ne_top' xt
 
-theorem Icc_mem_nhds (xt : x ≠ ∞) (ε0 : ε ≠ 0) : Icc (x - ε) (x + ε) ∈ 𝓝 x :=
+lemma Icc_mem_nhds (xt : x ≠ ∞) (ε0 : ε ≠ 0) : Icc (x - ε) (x + ε) ∈ 𝓝 x :=
   (hasBasis_nhds_of_ne_top' xt).mem_of_mem ε0
 #align ennreal.Icc_mem_nhds ENNReal.Icc_mem_nhds
 
-theorem nhds_of_ne_top (xt : x ≠ ⊤) : 𝓝 x = ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + ε)) :=
+lemma nhds_of_ne_top (xt : x ≠ ⊤) : 𝓝 x = ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + ε)) :=
   (hasBasis_nhds_of_ne_top xt).eq_biInf
 #align ennreal.nhds_of_ne_top ENNReal.nhds_of_ne_top
 
@@ -328,7 +328,7 @@ protected lemma Tendsto.sub {f : Filter α} {ma : α → ℝ≥0∞} {mb : α �
     Tendsto.comp (ENNReal.tendsto_sub h) (hma.prod_mk_nhds hmb)
 #align ennreal.tendsto.sub ENNReal.Tendsto.sub
 
-protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ⊤) (hb : b ≠ 0 ∨ a ≠ ⊤) :
+protected lemma tendsto_mul (ha : a ≠ 0 ∨ b ≠ ⊤) (hb : b ≠ 0 ∨ a ≠ ⊤) :
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) (𝓝 (a, b)) (𝓝 (a * b)) := by
   have ht : ∀ b : ℝ≥0∞, b ≠ 0 →
       Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) (𝓝 ((⊤ : ℝ≥0∞), b)) (𝓝 ⊤) := fun b hb => by
@@ -413,7 +413,7 @@ protected lemma continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ⊤) : Continu
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_mul_const (Or.inl ha)
 #align ennreal.continuous_mul_const ENNReal.continuous_mul_const
 
-protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
+protected lemma continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
     Continuous fun x : ℝ≥0∞ => x / c := by
   simp_rw [div_eq_mul_inv, continuous_iff_continuousAt]
   intro x
@@ -421,7 +421,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 #align ennreal.continuous_div_const ENNReal.continuous_div_const
 
 @[continuity]
-theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
+lemma continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
   simp_rw [Nat.succ_eq_add_one, pow_add, pow_one, continuous_iff_continuousAt]
@@ -452,14 +452,14 @@ lemma continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a 
   continuous_sub_left coe_ne_top
 #align ennreal.continuous_nnreal_sub ENNReal.continuous_nnreal_sub
 
-theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
+lemma continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
   rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]
   apply ContinuousOn.comp continuousOn_sub (Continuous.continuousOn (Continuous.Prod.mk a))
   rintro _ h (_ | _)
   exact h none_eq_top
 #align ennreal.continuous_on_sub_left ENNReal.continuousOn_sub_left
 
-theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
+lemma continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
   by_cases a_infty : a = ∞
   · simp [a_infty, continuous_const]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
@@ -824,7 +824,7 @@ protected lemma tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
   tsum_add ENNReal.summable ENNReal.summable
 #align ennreal.tsum_add ENNReal.tsum_add
 
-protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
+protected lemma tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   tsum_le_tsum h ENNReal.summable ENNReal.summable
 #align ennreal.tsum_le_tsum ENNReal.tsum_le_tsum
 
@@ -854,7 +854,7 @@ protected lemma tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
     ∑' i, f i = limsup (fun n => ∑ i in Finset.range n, f i) atTop :=
   ENNReal.summable.hasSum.tendsto_sum_nat.limsup_eq.symm
 
-protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
+protected lemma le_tsum (a : α) : f a ≤ ∑' a, f a :=
   le_tsum' ENNReal.summable a
 #align ennreal.le_tsum ENNReal.le_tsum
 
@@ -890,7 +890,7 @@ lemma tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞} (
   simpa [hc] using le_of_tendsto' A B
 #align ennreal.tsum_const_eq_top_of_ne_zero ENNReal.tsum_const_eq_top_of_ne_zero
 
-protected theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ∞) (a : α) : f a ≠ ∞ := fun ha =>
+protected lemma ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ∞) (a : α) : f a ≠ ∞ := fun ha =>
   h <| ENNReal.tsum_eq_top_of_eq_top ⟨a, ha⟩
 #align ennreal.ne_top_of_tsum_ne_top ENNReal.ne_top_of_tsum_ne_top
 
@@ -926,7 +926,7 @@ lemma hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0∞} (r : ℝ≥0∞) :
   · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset.2 hst)
 #align ennreal.has_sum_iff_tendsto_nat ENNReal.hasSum_iff_tendsto_nat
 
-theorem tendsto_nat_tsum (f : ℕ → ℝ≥0∞) :
+lemma tendsto_nat_tsum (f : ℕ → ℝ≥0∞) :
     Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop (𝓝 (∑' n, f n)) := by
   rw [← hasSum_iff_tendsto_nat]
   exact ENNReal.summable.hasSum
@@ -988,7 +988,7 @@ lemma tsum_le_tsum_comp_of_surjective {f : α → β} (hf : Surjective f) (g : �
   calc ∑' y, g y = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
   _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) _
 
-theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
+lemma tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
     ∑' x : s, f x ≤ ∑' x : t, f x :=
   tsum_comp_le_tsum_of_injective (inclusion_injective h) _
 #align ennreal.tsum_mono_subtype ENNReal.tsum_mono_subtype
@@ -1015,7 +1015,7 @@ lemma tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι �
   exact tsum_iUnion_le_tsum f t
 #align ennreal.tsum_Union_le ENNReal.tsum_iUnion_le
 
-theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
+lemma tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
   calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_subtype _ union_eq_iUnion
   _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
@@ -1118,7 +1118,7 @@ lemma summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summabl
 #align nnreal.summable_of_le NNReal.summable_of_le
 
 /-- Summable non-negative functions have countable support -/
-theorem _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
+lemma _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
     f.support.Countable := by
   rw [← NNReal.summable_coe] at h
   simpa [support] using h.countable_support
@@ -1194,7 +1194,7 @@ open Finset
 
 /-- For `f : ℕ → ℝ≥0`, then `∑' k, f (k + i)` tends to zero. This does not require a summability
 assumption on `f`, as otherwise all sums are zero. -/
-theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
+lemma tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   rw [← tendsto_coe]
   convert _root_.tendsto_sum_nat_add fun i => (f i : ℝ)
   norm_cast
@@ -1252,7 +1252,7 @@ lemma tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
   simp only [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsum]
 #align ennreal.tsum_to_real_eq ENNReal.tsum_toReal_eq
 
-theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) :
+lemma tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) :
     Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf
@@ -1396,7 +1396,7 @@ def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (ball a r) :=
   EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
 #align metric_space_emetric_ball metricSpaceEMetricBall
 
-theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ ball a r) :
+lemma nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ ball a r) :
     𝓝 x = map ((↑) : ball a r → β) (𝓝 ⟨x, h⟩) :=
   (map_nhds_subtype_coe_eq_nhds _ <| IsOpen.mem_nhds EMetric.isOpen_ball h).symm
 #align nhds_eq_nhds_emetric_ball nhds_eq_nhds_emetric_ball
@@ -1485,7 +1485,7 @@ lemma EMetric.isClosed_ball {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r
 #align emetric.is_closed_ball EMetric.isClosed_ball
 
 @[simp]
-theorem EMetric.diam_closure (s : Set α) : diam (closure s) = diam s := by
+lemma EMetric.diam_closure (s : Set α) : diam (closure s) = diam s := by
   refine' le_antisymm (diam_le fun x hx y hy => _) (diam_mono subset_closure)
   have : edist x y ∈ closure (Iic (diam s)) :=
     map_mem_closure₂ continuous_edist hx hy fun x hx y hy => edist_le_diam_of_mem hx hy
@@ -1536,27 +1536,27 @@ lemma diam_eq {s : Set ℝ} (h : Bounded s) : Metric.diam s = sSup s - sInf s :=
 #align real.diam_eq Real.diam_eq
 
 @[simp]
-theorem ediam_Ioo (a b : ℝ) : EMetric.diam (Ioo a b) = ENNReal.ofReal (b - a) := by
+lemma ediam_Ioo (a b : ℝ) : EMetric.diam (Ioo a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_lt b a with (h | h)
   · simp [h]
   · rw [Real.ediam_eq (bounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
 #align real.ediam_Ioo Real.ediam_Ioo
 
 @[simp]
-theorem ediam_Icc (a b : ℝ) : EMetric.diam (Icc a b) = ENNReal.ofReal (b - a) := by
+lemma ediam_Icc (a b : ℝ) : EMetric.diam (Icc a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_lt a b with (h | h)
   · rw [Real.ediam_eq (bounded_Icc _ _), csSup_Icc h, csInf_Icc h]
   · simp [h, h.le]
 #align real.ediam_Icc Real.ediam_Icc
 
 @[simp]
-theorem ediam_Ico (a b : ℝ) : EMetric.diam (Ico a b) = ENNReal.ofReal (b - a) :=
+lemma ediam_Ico (a b : ℝ) : EMetric.diam (Ico a b) = ENNReal.ofReal (b - a) :=
   le_antisymm (ediam_Icc a b ▸ diam_mono Ico_subset_Icc_self)
     (ediam_Ioo a b ▸ diam_mono Ioo_subset_Ico_self)
 #align real.ediam_Ico Real.ediam_Ico
 
 @[simp]
-theorem ediam_Ioc (a b : ℝ) : EMetric.diam (Ioc a b) = ENNReal.ofReal (b - a) :=
+lemma ediam_Ioc (a b : ℝ) : EMetric.diam (Ioc a b) = ENNReal.ofReal (b - a) :=
   le_antisymm (ediam_Icc a b ▸ diam_mono Ioc_subset_Icc_self)
     (ediam_Ioo a b ▸ diam_mono Ioo_subset_Ioc_self)
 #align real.ediam_Ioc Real.ediam_Ioc

@@ -192,7 +192,7 @@ lemma not_mem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
 #align add_subsemigroup.not_mem_bot AddSubsemigroup.not_mem_bot
 
 @[to_additive (attr := simp)]
-theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
+lemma mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
   Set.mem_univ x
 #align subsemigroup.mem_top Subsemigroup.mem_top
 #align add_subsemigroup.mem_top AddSubsemigroup.mem_top
@@ -217,7 +217,7 @@ instance : Inf (Subsemigroup M) :=
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
+lemma coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 #align subsemigroup.coe_inf Subsemigroup.coe_inf
 #align add_subsemigroup.coe_inf AddSubsemigroup.coe_inf
@@ -237,7 +237,7 @@ instance : InfSet (Subsemigroup M) :=
           i.mul_mem (by apply Set.mem_iInter₂.1 hx i h) (by apply Set.mem_iInter₂.1 hy i h) }⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_sInf (S : Set (Subsemigroup M)) : ((sInf S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
+lemma coe_sInf (S : Set (Subsemigroup M)) : ((sInf S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
 #align subsemigroup.coe_Inf Subsemigroup.coe_sInf
 #align add_subsemigroup.coe_Inf AddSubsemigroup.coe_sInf
@@ -339,7 +339,7 @@ theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :
 #align add_subsemigroup.closure_mono AddSubsemigroup.closure_mono
 
 @[to_additive]
-theorem closure_eq_of_le (h₁ : s ⊆ S) (h₂ : S ≤ closure s) : closure s = S :=
+lemma closure_eq_of_le (h₁ : s ⊆ S) (h₂ : S ≤ closure s) : closure s = S :=
   le_antisymm (closure_le.2 h₁) h₂
 #align subsemigroup.closure_eq_of_le Subsemigroup.closure_eq_of_le
 #align add_subsemigroup.closure_eq_of_le AddSubsemigroup.closure_eq_of_le
@@ -359,7 +359,7 @@ lemma closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x �
 
 /-- A dependent version of `Subsemigroup.closure_induction`.  -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubsemigroup.closure_induction`. "]
-theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
+lemma closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx := by
@@ -427,7 +427,7 @@ lemma closure_univ : closure (univ : Set M) = ⊤ :=
 #align add_subsemigroup.closure_univ AddSubsemigroup.closure_univ
 
 @[to_additive]
-theorem closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure t :=
+lemma closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure t :=
   (Subsemigroup.gi M).gc.l_sup
 #align subsemigroup.closure_union Subsemigroup.closure_union
 #align add_subsemigroup.closure_union AddSubsemigroup.closure_union
@@ -439,7 +439,7 @@ lemma closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, clo
 #align add_subsemigroup.closure_Union AddSubsemigroup.closure_iUnion
 
 @[to_additive]
-theorem closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} ≤ p ↔ m ∈ p := by
+lemma closure_singleton_le_iff_mem (m : M) (p : Subsemigroup M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]
 #align subsemigroup.closure_singleton_le_iff_mem Subsemigroup.closure_singleton_le_iff_mem
 #align add_subsemigroup.closure_singleton_le_iff_mem AddSubsemigroup.closure_singleton_le_iff_mem

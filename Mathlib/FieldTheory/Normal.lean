@@ -42,15 +42,15 @@ class Normal : Prop where
 
 variable {F K}
 
-theorem Normal.isAlgebraic (_ : Normal F K) (x : K) : IsAlgebraic F x :=
+lemma Normal.isAlgebraic (_ : Normal F K) (x : K) : IsAlgebraic F x :=
   Normal.isAlgebraic' x
 #align normal.is_algebraic Normal.isAlgebraic
 
-theorem Normal.isIntegral (h : Normal F K) (x : K) : IsIntegral F x :=
+lemma Normal.isIntegral (h : Normal F K) (x : K) : IsIntegral F x :=
   isAlgebraic_iff_isIntegral.mp (h.isAlgebraic' x)
 #align normal.is_integral Normal.isIntegral
 
-theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
+lemma Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
   Normal.splits' x
 #align normal.splits Normal.splits
 
@@ -146,7 +146,7 @@ lemma Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :=
           (minpoly.aeval _ _)
 #align normal.of_alg_equiv Normal.of_algEquiv
 
-theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
+lemma AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
   ⟨fun _ => Normal.of_algEquiv f, fun _ => Normal.of_algEquiv f.symm⟩
 #align alg_equiv.transfer_normal AlgEquiv.transfer_normal
 
@@ -158,7 +158,7 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
 -- salient in the future, or at least taking a closer look at the algebra instances it uses.
 attribute [-instance] AdjoinRoot.instSMulAdjoinRoot
 
-theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
+lemma Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · have := hFEp.adjoin_rootSet
     simp only [rootSet_zero, Algebra.adjoin_empty] at this
@@ -424,7 +424,7 @@ lemma AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
 #align alg_hom.lift_normal_commutes AlgHom.liftNormal_commutes
 
 @[simp]
-theorem AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [Normal F E] :
+lemma AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [Normal F E] :
     (ϕ.liftNormal E).restrictNormal K₁ = ϕ :=
   AlgHom.ext fun x =>
     (algebraMap K₁ E).injective
@@ -444,7 +444,7 @@ lemma AlgEquiv.liftNormal_commutes [Normal F E] (x : K₁) :
 #align alg_equiv.lift_normal_commutes AlgEquiv.liftNormal_commutes
 
 @[simp]
-theorem AlgEquiv.restrict_liftNormal (χ : K₁ ≃ₐ[F] K₁) [Normal F K₁] [Normal F E] :
+lemma AlgEquiv.restrict_liftNormal (χ : K₁ ≃ₐ[F] K₁) [Normal F K₁] [Normal F E] :
     (χ.liftNormal E).restrictNormal K₁ = χ :=
   AlgEquiv.ext fun x =>
     (algebraMap K₁ E).injective

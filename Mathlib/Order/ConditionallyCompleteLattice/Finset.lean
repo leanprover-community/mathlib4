@@ -55,20 +55,20 @@ lemma Finset.Nonempty.cInf_mem {s : Finset α} (h : s.Nonempty) : sInf (s : Set 
   @Finset.Nonempty.cSup_mem αᵒᵈ _ _ h
 #align finset.nonempty.cInf_mem Finset.Nonempty.cInf_mem
 
-theorem Set.Nonempty.cSup_mem (h : s.Nonempty) (hs : s.Finite) : sSup s ∈ s := by
+lemma Set.Nonempty.cSup_mem (h : s.Nonempty) (hs : s.Finite) : sSup s ∈ s := by
   lift s to Finset α using hs
   exact Finset.Nonempty.cSup_mem h
 #align set.nonempty.cSup_mem Set.Nonempty.cSup_mem
 
-theorem Set.Nonempty.cInf_mem (h : s.Nonempty) (hs : s.Finite) : sInf s ∈ s :=
+lemma Set.Nonempty.cInf_mem (h : s.Nonempty) (hs : s.Finite) : sInf s ∈ s :=
   @Set.Nonempty.cSup_mem αᵒᵈ _ _ h hs
 #align set.nonempty.cInf_mem Set.Nonempty.cInf_mem
 
-theorem Set.Finite.cSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a ↔ ∀ x ∈ s, x < a :=
+lemma Set.Finite.cSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a ↔ ∀ x ∈ s, x < a :=
   ⟨fun h _ hx => (le_csSup hs.bddAbove hx).trans_lt h, fun H => H _ <| h.cSup_mem hs⟩
 #align set.finite.cSup_lt_iff Set.Finite.cSup_lt_iff
 
-theorem Set.Finite.lt_cInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
+lemma Set.Finite.lt_cInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
   @Set.Finite.cSup_lt_iff αᵒᵈ _ _ _ hs h
 #align set.finite.lt_cInf_iff Set.Finite.lt_cInf_iff
 

@@ -91,7 +91,7 @@ instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) wher
   chart_mem_atlas _ := mem_image_of_mem _ (trivialization_mem_atlas F E _)
 #align fiber_bundle.charted_space FiberBundle.chartedSpace'
 
-theorem FiberBundle.chartedSpace'_chartAt (x : TotalSpace F E) :
+lemma FiberBundle.chartedSpace'_chartAt (x : TotalSpace F E) :
     chartAt (B × F) x = (trivializationAt F E x.proj).toLocalHomeomorph :=
   rfl
 
@@ -107,7 +107,7 @@ instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F 
   ChartedSpace.comp _ (B × F) _
 #align fiber_bundle.charted_space' FiberBundle.chartedSpace
 
-theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
+lemma FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (ModelProd HB F) x =
       (trivializationAt F E x.proj).toLocalHomeomorph ≫ₕ
         (chartAt HB x.proj).prod (LocalHomeomorph.refl F) := by
@@ -116,7 +116,7 @@ theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
   rw [Trivialization.coe_coe, Trivialization.coe_fst' _ (mem_baseSet_trivializationAt F E x.proj)]
 #align fiber_bundle.charted_space_chart_at FiberBundle.chartedSpace_chartAt
 
-theorem FiberBundle.chartedSpace_chartAt_symm_fst (x : TotalSpace F E) (y : ModelProd HB F)
+lemma FiberBundle.chartedSpace_chartAt_symm_fst (x : TotalSpace F E) (y : ModelProd HB F)
     (hy : y ∈ (chartAt (ModelProd HB F) x).target) :
     ((chartAt (ModelProd HB F) x).symm y).proj = (chartAt HB x.proj).symm y.1 := by
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps] at hy ⊢
@@ -137,7 +137,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
-protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
+protected lemma FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
       (trivializationAt F E x.proj).toLocalEquiv ≫
         (extChartAt IB x.proj).prod (LocalEquiv.refl F) := by
@@ -147,7 +147,7 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
   rw [LocalEquiv.prod_trans, LocalEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
-protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
+protected lemma FiberBundle.extChartAt_target (x : TotalSpace F E) :
     (extChartAt (IB.prod 𝓘(𝕜, F)) x).target =
       ((extChartAt IB x.proj).target ∩
         (extChartAt IB x.proj).symm ⁻¹' (trivializationAt F E x.proj).baseSet) ×ˢ univ := by
@@ -177,7 +177,7 @@ namespace Bundle
 variable {IB}
 
 /-- Characterization of C^n functions into a smooth vector bundle. -/
-theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
+lemma contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
@@ -199,7 +199,7 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
 #align bundle.cont_mdiff_within_at_total_space Bundle.contMDiffWithinAt_totalSpace
 
 /-- Characterization of C^n functions into a smooth vector bundle. -/
-theorem contMDiffAt_totalSpace (f : M → TotalSpace F E) (x₀ : M) :
+lemma contMDiffAt_totalSpace (f : M → TotalSpace F E) (x₀ : M) :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x => (f x).proj) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F) n (fun x => (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
@@ -207,7 +207,7 @@ theorem contMDiffAt_totalSpace (f : M → TotalSpace F E) (x₀ : M) :
 #align bundle.cont_mdiff_at_total_space Bundle.contMDiffAt_totalSpace
 
 /-- Characterization of C^n sections of a smooth vector bundle. -/
-theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
+lemma contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
@@ -327,12 +327,12 @@ lemma contMDiffOn_symm_coordChangeL :
 
 variable {e e'}
 
-theorem contMDiffAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+lemma contMDiffAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffOn_coordChangeL IB e e').contMDiffAt <|
     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
 
-theorem smoothAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+lemma smoothAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     SmoothAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   contMDiffAt_coordChangeL IB h h'
 
@@ -558,13 +558,13 @@ lemma Trivialization.smooth_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ 
       Smooth IM IB (fun x => (f x).proj) ∧ Smooth IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) :=
   e.contMDiff_iff IB he
 
-theorem Trivialization.smoothOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
+lemma Trivialization.smoothOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) e e.source := by
   have : SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) id e.source := smoothOn_id
   rw [e.smoothOn_iff IB (mapsTo_id _)] at this
   exact (this.1.prod_mk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
-theorem Trivialization.smoothOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
+lemma Trivialization.smoothOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) e.toLocalHomeomorph.symm e.target := by
   rw [e.smoothOn_iff IB e.toLocalHomeomorph.symm_mapsTo]
   refine ⟨smoothOn_fst.congr fun x hx ↦ e.proj_symm_apply hx, smoothOn_snd.congr fun x hx ↦ ?_⟩
@@ -585,7 +585,7 @@ class IsSmooth (IB : ModelWithCorners 𝕜 EB HB) : Prop where
     ∀ i j, SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
 #align vector_bundle_core.is_smooth VectorBundleCore.IsSmooth
 
-theorem smoothOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsSmooth IB] (i j : ι) :
+lemma smoothOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsSmooth IB] (i j : ι) :
     SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
   h.1 i j
 
@@ -679,19 +679,19 @@ noncomputable def smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
 
 variable {IB}
 
-theorem smoothOn_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
+lemma smoothOn_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) :
     SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (a.smoothCoordChange IB he he') (e.baseSet ∩ e'.baseSet) :=
   (Classical.choose_spec (ha.exists_smoothCoordChange e he e' he')).1
 #align vector_prebundle.smooth_on_smooth_coord_change VectorPrebundle.smoothOn_smoothCoordChange
 
-theorem smoothCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
+lemma smoothCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
     a.smoothCoordChange IB he he' b v = (e' ⟨b, e.symm b v⟩).2 :=
   (Classical.choose_spec (ha.exists_smoothCoordChange e he e' he')).2 b hb v
 #align vector_prebundle.smooth_coord_change_apply VectorPrebundle.smoothCoordChange_apply
 
-theorem mk_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
+lemma mk_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
     (b, a.smoothCoordChange IB he he' b v) = e' ⟨b, e.symm b v⟩ := by
   ext

@@ -51,7 +51,7 @@ variable [CommRing α]
 
 /-- LDU decomposition of a block matrix with an invertible top-left corner, using the
 Schur complement. -/
-theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix l m α)
+lemma fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix l m α)
     (D : Matrix l n α) [Invertible A] :
     fromBlocks A B C D =
       fromBlocks 1 0 (C * ⅟ A) 1 * fromBlocks A 0 0 (D - C * ⅟ A * B) *
@@ -63,7 +63,7 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
 Schur complement. -/
-theorem fromBlocks_eq_of_invertible₂₂ (A : Matrix l m α) (B : Matrix l n α) (C : Matrix n m α)
+lemma fromBlocks_eq_of_invertible₂₂ (A : Matrix l m α) (B : Matrix l n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] :
     fromBlocks A B C D =
       fromBlocks 1 (B * ⅟ D) 0 1 * fromBlocks (A - B * ⅟ D * C) 0 0 D *
@@ -99,14 +99,14 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       fromBlocks_one]
 #align matrix.from_blocks_zero₁₂_invertible Matrix.fromBlocksZero₁₂Invertible
 
-theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
+lemma invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A B 0 D)] :
     ⅟ (fromBlocks A B 0 D) = fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D) := by
   letI := fromBlocksZero₂₁Invertible A B D
   convert (rfl : ⅟ (fromBlocks A B 0 D) = _)
 #align matrix.inv_of_from_blocks_zero₂₁_eq Matrix.invOf_fromBlocks_zero₂₁_eq
 
-theorem invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
+lemma invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A 0 C D)] :
     ⅟ (fromBlocks A 0 C D) = fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A)) (⅟ D) := by
   letI := fromBlocksZero₁₂Invertible A C D
@@ -201,7 +201,7 @@ lemma isUnit_fromBlocks_zero₁₂ {A : Matrix m m α} {C : Matrix n m α} {D : 
 
 /-- An expression for the inverse of an upper block-triangular matrix, when either both elements of
 diagonal are invertible, or both are not. -/
-theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
+lemma inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     (hAD : IsUnit A ↔ IsUnit D) :
     (fromBlocks A B 0 D)⁻¹ = fromBlocks A⁻¹ (-(A⁻¹ * B * D⁻¹)) 0 D⁻¹ := by
   by_cases hA : IsUnit A
@@ -219,7 +219,7 @@ theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix 
 
 /-- An expression for the inverse of a lower block-triangular matrix, when either both elements of
 diagonal are invertible, or both are not. -/
-theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
+lemma inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     (hAD : IsUnit A ↔ IsUnit D) :
     (fromBlocks A 0 C D)⁻¹ = fromBlocks A⁻¹ 0 (-(D⁻¹ * C * A⁻¹)) D⁻¹ := by
   by_cases hA : IsUnit A
@@ -292,7 +292,7 @@ def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
 #align matrix.from_blocks₁₁_invertible Matrix.fromBlocks₁₁Invertible
 
-theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+lemma invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟ D * C)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
@@ -302,7 +302,7 @@ theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
   convert (rfl : ⅟ (fromBlocks A B C D) = _)
 #align matrix.inv_of_from_blocks₂₂_eq Matrix.invOf_fromBlocks₂₂_eq
 
-theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+lemma invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟ A * B)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
@@ -391,7 +391,7 @@ section Det
 
 /-- Determinant of a 2×2 block matrix, expanded around an invertible top left element in terms of
 the Schur complement. -/
-theorem det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+lemma det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] :
     (Matrix.fromBlocks A B C D).det = det A * det (D - C * ⅟ A * B) := by
   rw [fromBlocks_eq_of_invertible₁₁ (A := A), det_mul, det_mul, det_fromBlocks_zero₂₁,
@@ -399,7 +399,7 @@ theorem det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
 #align matrix.det_from_blocks₁₁ Matrix.det_fromBlocks₁₁
 
 @[simp]
-theorem det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
+lemma det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
     (Matrix.fromBlocks 1 B C D).det = det (D - C * B) := by
   haveI : Invertible (1 : Matrix m m α) := invertibleOne
   rw [det_fromBlocks₁₁, invOf_one, Matrix.mul_one, det_one, one_mul]
@@ -407,7 +407,7 @@ theorem det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Ma
 
 /-- Determinant of a 2×2 block matrix, expanded around an invertible bottom right element in terms
 of the Schur complement. -/
-theorem det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+lemma det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] :
     (Matrix.fromBlocks A B C D).det = det D * det (A - B * ⅟ D * C) := by
   have : fromBlocks A B C D =
@@ -418,7 +418,7 @@ theorem det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
 #align matrix.det_from_blocks₂₂ Matrix.det_fromBlocks₂₂
 
 @[simp]
-theorem det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
+lemma det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
     (Matrix.fromBlocks A B C 1).det = det (A - B * C) := by
   haveI : Invertible (1 : Matrix n n α) := invertibleOne
   rw [det_fromBlocks₂₂, invOf_one, Matrix.mul_one, det_one, one_mul]
@@ -426,7 +426,7 @@ theorem det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Ma
 
 /-- The **Weinstein–Aronszajn identity**. Note the `1` on the LHS is of shape m×m, while the `1` on
 the RHS is of shape n×n. -/
-theorem det_one_add_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
+lemma det_one_add_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (1 + A * B) = det (1 + B * A) :=
   calc
     det (1 + A * B) = det (fromBlocks 1 (-A) B 1) := by
@@ -435,11 +435,11 @@ theorem det_one_add_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
 #align matrix.det_one_add_mul_comm Matrix.det_one_add_mul_comm
 
 /-- Alternate statement of the **Weinstein–Aronszajn identity** -/
-theorem det_mul_add_one_comm (A : Matrix m n α) (B : Matrix n m α) :
+lemma det_mul_add_one_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (A * B + 1) = det (B * A + 1) := by rw [add_comm, det_one_add_mul_comm, add_comm]
 #align matrix.det_mul_add_one_comm Matrix.det_mul_add_one_comm
 
-theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
+lemma det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (1 - A * B) = det (1 - B * A) := by
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
 #align matrix.det_one_sub_mul_comm Matrix.det_one_sub_mul_comm
@@ -447,7 +447,7 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
 /-- A special case of the **Matrix determinant lemma** for when `A = I`.
 
 TODO: show this more generally. -/
-theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 + v ⬝ᵥ u := by
+lemma det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.row_mul_col_apply]
 #align matrix.det_one_add_col_mul_row Matrix.det_one_add_col_mul_row

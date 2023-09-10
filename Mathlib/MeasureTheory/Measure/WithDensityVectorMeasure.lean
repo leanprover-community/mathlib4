@@ -57,7 +57,7 @@ open Measure
 
 variable {f g : α → E}
 
-theorem withDensityᵥ_apply (hf : Integrable f μ) {s : Set α} (hs : MeasurableSet s) :
+lemma withDensityᵥ_apply (hf : Integrable f μ) {s : Set α} (hs : MeasurableSet s) :
     μ.withDensityᵥ f s = ∫ x in s, f x ∂μ := by rw [withDensityᵥ, dif_pos hf]; exact dif_pos hs
 #align measure_theory.with_densityᵥ_apply MeasureTheory.withDensityᵥ_apply
 
@@ -82,7 +82,7 @@ lemma withDensityᵥ_neg' : (μ.withDensityᵥ fun x => -f x) = -μ.withDensity�
 #align measure_theory.with_densityᵥ_neg' MeasureTheory.withDensityᵥ_neg'
 
 @[simp]
-theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
+lemma withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
     μ.withDensityᵥ (f + g) = μ.withDensityᵥ f + μ.withDensityᵥ g := by
   ext1 i hi
   rw [withDensityᵥ_apply (hf.add hg) hi, VectorMeasure.add_apply, withDensityᵥ_apply hf hi,
@@ -93,18 +93,18 @@ theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
   · exact hg.integrableOn.restrict MeasurableSet.univ
 #align measure_theory.with_densityᵥ_add MeasureTheory.withDensityᵥ_add
 
-theorem withDensityᵥ_add' (hf : Integrable f μ) (hg : Integrable g μ) :
+lemma withDensityᵥ_add' (hf : Integrable f μ) (hg : Integrable g μ) :
     (μ.withDensityᵥ fun x => f x + g x) = μ.withDensityᵥ f + μ.withDensityᵥ g :=
   withDensityᵥ_add hf hg
 #align measure_theory.with_densityᵥ_add' MeasureTheory.withDensityᵥ_add'
 
 @[simp]
-theorem withDensityᵥ_sub (hf : Integrable f μ) (hg : Integrable g μ) :
+lemma withDensityᵥ_sub (hf : Integrable f μ) (hg : Integrable g μ) :
     μ.withDensityᵥ (f - g) = μ.withDensityᵥ f - μ.withDensityᵥ g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, withDensityᵥ_add hf hg.neg, withDensityᵥ_neg]
 #align measure_theory.with_densityᵥ_sub MeasureTheory.withDensityᵥ_sub
 
-theorem withDensityᵥ_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
+lemma withDensityᵥ_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
     (μ.withDensityᵥ fun x => f x - g x) = μ.withDensityᵥ f - μ.withDensityᵥ g :=
   withDensityᵥ_sub hf hg
 #align measure_theory.with_densityᵥ_sub' MeasureTheory.withDensityᵥ_sub'
@@ -129,7 +129,7 @@ lemma withDensityᵥ_smul' {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Normed
   withDensityᵥ_smul f r
 #align measure_theory.with_densityᵥ_smul' MeasureTheory.withDensityᵥ_smul'
 
-theorem Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α → ℝ) :
+lemma Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α → ℝ) :
     μ.withDensityᵥ f ≪ᵥ μ.toENNRealVectorMeasure := by
   by_cases hf : Integrable f μ
   · refine' VectorMeasure.AbsolutelyContinuous.mk fun i hi₁ hi₂ => _

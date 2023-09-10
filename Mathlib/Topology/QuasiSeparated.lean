@@ -88,7 +88,7 @@ lemma IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s) 
     exact hV.trans (Set.image_subset_range _ _)
 #align is_quasi_separated.image_of_embedding IsQuasiSeparated.image_of_embedding
 
-theorem OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
+lemma OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
   refine' ⟨fun hs => hs.image_of_embedding h.toEmbedding, _⟩
   intro H U V hU hU' hU'' hV hV' hV''
@@ -98,7 +98,7 @@ theorem OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
       (Set.image_subset _ hV) (h.isOpenMap _ hV') (hV''.image h.continuous)
 #align open_embedding.is_quasi_separated_iff OpenEmbedding.isQuasiSeparated_iff
 
-theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
+lemma isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
     IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by
   rw [← isQuasiSeparated_univ_iff]
   convert (hs.openEmbedding_subtype_val.isQuasiSeparated_iff (s := Set.univ)).symm
@@ -120,12 +120,12 @@ instance (priority := 100) NoetherianSpace.to_quasiSeparatedSpace [NoetherianSpa
   ⟨fun _ _ _ _ _ _ => NoetherianSpace.isCompact _⟩
 #align noetherian_space.to_quasi_separated_space NoetherianSpace.to_quasiSeparatedSpace
 
-theorem IsQuasiSeparated.of_quasiSeparatedSpace (s : Set α) [QuasiSeparatedSpace α] :
+lemma IsQuasiSeparated.of_quasiSeparatedSpace (s : Set α) [QuasiSeparatedSpace α] :
     IsQuasiSeparated s :=
   isQuasiSeparated_univ.of_subset (Set.subset_univ _)
 #align is_quasi_separated.of_quasi_separated_space IsQuasiSeparated.of_quasiSeparatedSpace
 
-theorem QuasiSeparatedSpace.of_openEmbedding (h : OpenEmbedding f) [QuasiSeparatedSpace β] :
+lemma QuasiSeparatedSpace.of_openEmbedding (h : OpenEmbedding f) [QuasiSeparatedSpace β] :
     QuasiSeparatedSpace α :=
   isQuasiSeparated_univ_iff.mp
     (h.isQuasiSeparated_iff.mpr <| IsQuasiSeparated.of_quasiSeparatedSpace _)

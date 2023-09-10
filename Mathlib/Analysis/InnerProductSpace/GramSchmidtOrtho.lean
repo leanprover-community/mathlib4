@@ -58,17 +58,17 @@ decreasing_by exact mem_Iio.1 i.2
 #align gram_schmidt gramSchmidt
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`.-/
-theorem gramSchmidt_def (f : ι → E) (n : ι) :
+lemma gramSchmidt_def (f : ι → E) (n : ι) :
     gramSchmidt 𝕜 f n = f n - ∑ i in Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
   rw [← sum_attach, attach_eq_univ, gramSchmidt]
 #align gram_schmidt_def gramSchmidt_def
 
-theorem gramSchmidt_def' (f : ι → E) (n : ι) :
+lemma gramSchmidt_def' (f : ι → E) (n : ι) :
     f n = gramSchmidt 𝕜 f n + ∑ i in Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
   rw [gramSchmidt_def, sub_add_cancel]
 #align gram_schmidt_def' gramSchmidt_def'
 
-theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
+lemma gramSchmidt_def'' (f : ι → E) (n : ι) :
     f n = gramSchmidt 𝕜 f n + ∑ i in Iio n,
       (⟪gramSchmidt 𝕜 f i, f n⟫ / (‖gramSchmidt 𝕜 f i‖ : 𝕜) ^ 2) • gramSchmidt 𝕜 f i := by
   convert gramSchmidt_def' 𝕜 f n
@@ -83,7 +83,7 @@ lemma gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [Or
 
 /-- **Gram-Schmidt Orthogonalisation**:
 `gramSchmidt` produces an orthogonal system of vectors. -/
-theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
+lemma gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
     ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := by
   suffices ∀ a b : ι, a < b → ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 by
     cases' h₀.lt_or_lt with ha hb
@@ -112,12 +112,12 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
 #align gram_schmidt_orthogonal gramSchmidt_orthogonal
 
 /-- This is another version of `gramSchmidt_orthogonal` using `pairwise` instead. -/
-theorem gramSchmidt_pairwise_orthogonal (f : ι → E) :
+lemma gramSchmidt_pairwise_orthogonal (f : ι → E) :
     Pairwise fun a b => ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := fun _ _ =>
   gramSchmidt_orthogonal 𝕜 f
 #align gram_schmidt_pairwise_orthogonal gramSchmidt_pairwise_orthogonal
 
-theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
+lemma gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
     ⟪gramSchmidt 𝕜 v j, v i⟫ = 0 := by
   rw [gramSchmidt_def'' 𝕜 v]
   simp only [inner_add_right, inner_sum, inner_smul_right]
@@ -133,7 +133,7 @@ theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
 
 open Submodule Set Order
 
-theorem mem_span_gramSchmidt (f : ι → E) {i j : ι} (hij : i ≤ j) :
+lemma mem_span_gramSchmidt (f : ι → E) {i j : ι} (hij : i ≤ j) :
     f i ∈ span 𝕜 (gramSchmidt 𝕜 f '' Set.Iic j) := by
   rw [gramSchmidt_def' 𝕜 f i]
   simp_rw [orthogonalProjection_singleton]
@@ -142,7 +142,7 @@ theorem mem_span_gramSchmidt (f : ι → E) {i j : ι} (hij : i ≤ j) :
       subset_span <| mem_image_of_mem (gramSchmidt 𝕜 f) <| (Finset.mem_Iio.1 hk).le.trans hij)
 #align mem_span_gram_schmidt mem_span_gramSchmidt
 
-theorem gramSchmidt_mem_span (f : ι → E) :
+lemma gramSchmidt_mem_span (f : ι → E) :
     ∀ {j i}, i ≤ j → gramSchmidt 𝕜 f i ∈ span 𝕜 (f '' Set.Iic j) := by
   intro j i hij
   rw [gramSchmidt_def 𝕜 f i]
@@ -156,13 +156,13 @@ termination_by _ => j
 decreasing_by exact hkj
 #align gram_schmidt_mem_span gramSchmidt_mem_span
 
-theorem span_gramSchmidt_Iic (f : ι → E) (c : ι) :
+lemma span_gramSchmidt_Iic (f : ι → E) (c : ι) :
     span 𝕜 (gramSchmidt 𝕜 f '' Set.Iic c) = span 𝕜 (f '' Set.Iic c) :=
   span_eq_span (Set.image_subset_iff.2 fun _ => gramSchmidt_mem_span _ _) <|
     Set.image_subset_iff.2 fun _ => mem_span_gramSchmidt _ _
 #align span_gram_schmidt_Iic span_gramSchmidt_Iic
 
-theorem span_gramSchmidt_Iio (f : ι → E) (c : ι) :
+lemma span_gramSchmidt_Iio (f : ι → E) (c : ι) :
     span 𝕜 (gramSchmidt 𝕜 f '' Set.Iio c) = span 𝕜 (f '' Set.Iio c) :=
   span_eq_span (Set.image_subset_iff.2 fun _ hi =>
     span_mono (image_subset _ <| Iic_subset_Iio.2 hi) <| gramSchmidt_mem_span _ _ le_rfl) <|
@@ -171,7 +171,7 @@ theorem span_gramSchmidt_Iio (f : ι → E) (c : ι) :
 #align span_gram_schmidt_Iio span_gramSchmidt_Iio
 
 /-- `gramSchmidt` preserves span of vectors. -/
-theorem span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f)) = span 𝕜 (range f) :=
+lemma span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f)) = span 𝕜 (range f) :=
   span_eq_span (range_subset_iff.2 fun _ =>
     span_mono (image_subset_range _ _) <| gramSchmidt_mem_span _ _ le_rfl) <|
       range_subset_iff.2 fun _ =>
@@ -255,7 +255,7 @@ noncomputable def gramSchmidtBasis (b : Basis ι 𝕜 E) : Basis ι 𝕜 E :=
     ((span_gramSchmidt 𝕜 b).trans b.span_eq).ge
 #align gram_schmidt_basis gramSchmidtBasis
 
-theorem coe_gramSchmidtBasis (b : Basis ι 𝕜 E) : (gramSchmidtBasis b : ι → E) = gramSchmidt 𝕜 b :=
+lemma coe_gramSchmidtBasis (b : Basis ι 𝕜 E) : (gramSchmidtBasis b : ι → E) = gramSchmidt 𝕜 b :=
   Basis.coe_mk _ _
 #align coe_gram_schmidt_basis coe_gramSchmidtBasis
 
@@ -305,7 +305,7 @@ lemma gramSchmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
 /-- **Gram-Schmidt Orthonormalization**:
 `gramSchmidtNormed` produces an orthornormal system of vectors after removing the vectors which
 become zero in the process. -/
-theorem gramSchmidt_orthonormal' (f : ι → E) :
+lemma gramSchmidt_orthonormal' (f : ι → E) :
     Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i := by
   refine' ⟨fun i => gramSchmidtNormed_unit_length' i.prop, _⟩
   rintro i j (hij : ¬_)
@@ -313,7 +313,7 @@ theorem gramSchmidt_orthonormal' (f : ι → E) :
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
 #align gram_schmidt_orthonormal' gramSchmidt_orthonormal'
 
-theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
+lemma span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
     span 𝕜 (gramSchmidtNormed 𝕜 f '' s) = span 𝕜 (gramSchmidt 𝕜 f '' s) := by
   refine' span_eq_span
     (Set.image_subset_iff.2 fun i hi => smul_mem _ _ <| subset_span <| mem_image_of_mem _ hi)
@@ -326,7 +326,7 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
     exact_mod_cast norm_ne_zero_iff.2 h
 #align span_gram_schmidt_normed span_gramSchmidtNormed
 
-theorem span_gramSchmidtNormed_range (f : ι → E) :
+lemma span_gramSchmidtNormed_range (f : ι → E) :
     span 𝕜 (range (gramSchmidtNormed 𝕜 f)) = span 𝕜 (range (gramSchmidt 𝕜 f)) := by
   simpa only [image_univ.symm] using span_gramSchmidtNormed f univ
 #align span_gram_schmidt_normed_range span_gramSchmidtNormed_range

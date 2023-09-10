@@ -23,7 +23,7 @@ variable {α β γ : Type*}
 
 namespace List
 
-theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
+lemma injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
@@ -90,7 +90,7 @@ lemma foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
 -/
 section MapAccumr
 
-theorem mapAccumr_eq_foldr (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
+lemma mapAccumr_eq_foldr (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
     mapAccumr f as s = List.foldr (fun a s =>
                                     let r := f a s.1
                                     (r.1, r.2 :: s.2)
@@ -99,7 +99,7 @@ theorem mapAccumr_eq_foldr (f : α → σ → σ × β) : ∀ (as : List α) (s 
   | a :: as, s => by
     simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
 
-theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) :
+lemma mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) :
     ∀ (as : List α) (bs : List β) (s : σ),
     mapAccumr₂ f as bs s = foldr (fun ab s =>
                               let r := f ab.1 ab.2 s.1

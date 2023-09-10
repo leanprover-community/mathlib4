@@ -174,13 +174,13 @@ noncomputable def limitEquivSections (F : J ⥤ Type u) :
 #align category_theory.limits.types.limit_equiv_sections CategoryTheory.Limits.Types.limitEquivSections
 
 @[simp]
-theorem limitEquivSections_apply (F : J ⥤ Type u) (x : limit F) (j : J) :
+lemma limitEquivSections_apply (F : J ⥤ Type u) (x : limit F) (j : J) :
     ((limitEquivSections.{v, u} F) x : ∀ j, F.obj j) j = limit.π F j x := by
   simp [limitEquivSections, isLimitEquivSections, IsLimit.conePointUniqueUpToIso]
 #align category_theory.limits.types.limit_equiv_sections_apply CategoryTheory.Limits.Types.limitEquivSections_apply
 
 @[simp]
-theorem limitEquivSections_symm_apply (F : J ⥤ Type u) (x : F.sections) (j : J) :
+lemma limitEquivSections_symm_apply (F : J ⥤ Type u) (x : F.sections) (j : J) :
     limit.π F j ((limitEquivSections.{v, u} F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
 #align category_theory.limits.types.limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.limitEquivSections_symm_apply
@@ -188,7 +188,7 @@ theorem limitEquivSections_symm_apply (F : J ⥤ Type u) (x : F.sections) (j : J
 -- porting note : `limitEquivSections_symm_apply'` was removed because the linter
 --   complains it is unnecessary
 --@[simp]
---theorem limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : J) :
+--lemma limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : J) :
 --    limit.π F j ((limitEquivSections.{v, v} F).symm x) = (x : ∀ j, F.obj j) j :=
 --  isLimitEquivSections_symm_apply _ _ _
 --#align category_theory.limits.types.limit_equiv_sections_symm_apply' CategoryTheory.Limits.Types.limitEquivSections_symm_apply'
@@ -203,7 +203,7 @@ noncomputable def Limit.mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
 #align category_theory.limits.types.limit.mk CategoryTheory.Limits.Types.Limit.mk
 
 @[simp]
-theorem Limit.π_mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
+lemma Limit.π_mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
     (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
       limit.π F j (Limit.mk.{v, u} F x h) = x j := by
   dsimp [Limit.mk]
@@ -212,7 +212,7 @@ theorem Limit.π_mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
 
 -- porting note : `Limit.π_mk'` was removed because the linter complains it is unnecessary
 --@[simp]
---theorem Limit.π_mk' (F : J ⥤ Type v) (x : ∀ j, F.obj j)
+--lemma Limit.π_mk' (F : J ⥤ Type v) (x : ∀ j, F.obj j)
 --    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
 --    limit.π F j (Limit.mk.{v, v} F x h) = x j := by
 --  dsimp [Limit.mk]
@@ -221,7 +221,7 @@ theorem Limit.π_mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
 
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
-theorem limit_ext (F : J ⥤ Type u) (x y : limit F)
+lemma limit_ext (F : J ⥤ Type u) (x y : limit F)
     (w : ∀ j, limit.π F j x = limit.π F j y) : x = y := by
   apply (limitEquivSections.{v, u} F).injective
   ext j
@@ -229,17 +229,17 @@ theorem limit_ext (F : J ⥤ Type u) (x y : limit F)
 #align category_theory.limits.types.limit_ext CategoryTheory.Limits.Types.limit_ext
 
 @[ext]
-theorem limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
+lemma limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y :=
   limit_ext.{v, v} F x y w
 #align category_theory.limits.types.limit_ext' CategoryTheory.Limits.Types.limit_ext'
 
-theorem limit_ext_iff (F : J ⥤ Type u) (x y : limit F) :
+lemma limit_ext_iff (F : J ⥤ Type u) (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
   ⟨fun t _ => t ▸ rfl, limit_ext.{v, u} _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff CategoryTheory.Limits.Types.limit_ext_iff
 
-theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
+lemma limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
   ⟨fun t _ => t ▸ rfl, limit_ext'.{v} _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff' CategoryTheory.Limits.Types.limit_ext_iff'
@@ -255,7 +255,7 @@ lemma Limit.w_apply {F : J ⥤ Type u} {j j' : J} {x : limit F} (f : j ⟶ j') :
 #align category_theory.limits.types.limit.w_apply CategoryTheory.Limits.Types.Limit.w_apply
 
 --porting note: @[simp] was removed because the linter said it was useless
-theorem Limit.lift_π_apply (F : J ⥤ Type u) (s : Cone F) (j : J) (x : s.pt) :
+lemma Limit.lift_π_apply (F : J ⥤ Type u) (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
   congr_fun (limit.lift_π s j) x
 #align category_theory.limits.types.limit.lift_π_apply CategoryTheory.Limits.Types.Limit.lift_π_apply
@@ -273,7 +273,7 @@ lemma Limit.w_apply' {F : J ⥤ Type v} {j j' : J} {x : limit F} (f : j ⟶ j') 
 #align category_theory.limits.types.limit.w_apply' CategoryTheory.Limits.Types.Limit.w_apply'
 
 @[simp]
-theorem Limit.lift_π_apply' (F : J ⥤ Type v) (s : Cone F) (j : J) (x : s.pt) :
+lemma Limit.lift_π_apply' (F : J ⥤ Type v) (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
   congr_fun (limit.lift_π s j) x
 #align category_theory.limits.types.limit.lift_π_apply' CategoryTheory.Limits.Types.Limit.lift_π_apply'
@@ -372,13 +372,13 @@ noncomputable def colimitEquivQuot (F : J ⥤ TypeMax.{v, u}) : colimit F ≃ Qu
 #align category_theory.limits.types.colimit_equiv_quot CategoryTheory.Limits.Types.colimitEquivQuot
 
 @[simp]
-theorem colimitEquivQuot_symm_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.obj j) :
+lemma colimitEquivQuot_symm_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.obj j) :
     (colimitEquivQuot.{v, u} F).symm (Quot.mk _ ⟨j, x⟩) = colimit.ι F j x :=
   rfl
 #align category_theory.limits.types.colimit_equiv_quot_symm_apply CategoryTheory.Limits.Types.colimitEquivQuot_symm_apply
 
 @[simp]
-theorem colimitEquivQuot_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.obj j) :
+lemma colimitEquivQuot_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.obj j) :
     (colimitEquivQuot.{v, u} F) (colimit.ι F j x) = Quot.mk _ ⟨j, x⟩ := by
   apply (colimitEquivQuot F).symm.injective
   simp
@@ -391,7 +391,7 @@ lemma Colimit.w_apply {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} (f : j
 #align category_theory.limits.types.colimit.w_apply CategoryTheory.Limits.Types.Colimit.w_apply
 
 --porting note: @[simp] was removed because the linter said it was useless
-theorem Colimit.ι_desc_apply (F : J ⥤ TypeMax.{v, u}) (s : Cocone F) (j : J) (x : F.obj j) :
+lemma Colimit.ι_desc_apply (F : J ⥤ TypeMax.{v, u}) (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
    congr_fun (colimit.ι_desc s j) x
 #align category_theory.limits.types.colimit.ι_desc_apply CategoryTheory.Limits.Types.Colimit.ι_desc_apply
@@ -409,7 +409,7 @@ lemma Colimit.w_apply' {F : J ⥤ Type v} {j j' : J} {x : F.obj j} (f : j ⟶ j'
 #align category_theory.limits.types.colimit.w_apply' CategoryTheory.Limits.Types.Colimit.w_apply'
 
 @[simp]
-theorem Colimit.ι_desc_apply' (F : J ⥤ Type v) (s : Cocone F) (j : J) (x : F.obj j) :
+lemma Colimit.ι_desc_apply' (F : J ⥤ Type v) (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
   congr_fun (colimit.ι_desc s j) x
 #align category_theory.limits.types.colimit.ι_desc_apply' CategoryTheory.Limits.Types.Colimit.ι_desc_apply'
@@ -439,7 +439,7 @@ lemma colimit_eq {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} {x' : F.obj
   simpa using congr_arg (colimitEquivQuot.{v, u} F) w
 #align category_theory.limits.types.colimit_eq CategoryTheory.Limits.Types.colimit_eq
 
-theorem jointly_surjective (F : J ⥤ TypeMax.{v, u}) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
+lemma jointly_surjective (F : J ⥤ TypeMax.{v, u}) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
     ∃ j y, t.ι.app j y = x := by
   suffices (fun x : t.pt => ULift.up (∃ j y, t.ι.app j y = x)) = fun _ => ULift.up.{max v u} True by
     have := congr_fun this x
@@ -475,12 +475,12 @@ protected def Rel (x y : Σ j, F.obj j) : Prop :=
   ∃ (k : _) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2
 #align category_theory.limits.types.filtered_colimit.rel CategoryTheory.Limits.Types.FilteredColimit.Rel
 
-theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
+lemma rel_of_quot_rel (x y : Σ j, F.obj j) :
   Quot.Rel.{v, u} F x y → FilteredColimit.Rel.{v, u} F x y :=
   fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
 #align category_theory.limits.types.filtered_colimit.rel_of_quot_rel CategoryTheory.Limits.Types.FilteredColimit.rel_of_quot_rel
 
-theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
+lemma eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → EqvGen (Quot.Rel.{v, u} F) x y := fun ⟨k, f, g, h⟩ => by
   refine' EqvGen.trans _ ⟨k, F.map f x.2⟩ _ _ _
   · exact (EqvGen.rel _ _ ⟨f, rfl⟩)
@@ -602,7 +602,7 @@ noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
   (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
 #align category_theory.limits.types.image.lift CategoryTheory.Limits.Types.Image.lift
 
-theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
+lemma Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
   funext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]

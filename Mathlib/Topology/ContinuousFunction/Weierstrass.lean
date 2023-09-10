@@ -51,7 +51,7 @@ polynomials functions on `[a, b] ⊆ ℝ` are dense in `C([a,b],ℝ)`
 our proof of that relies on the fact that `abs` is in the closure of polynomials on `[-M, M]`,
 so we may as well get this done first.)
 -/
-theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
+lemma polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
   cases' lt_or_le a b with h h
   -- (Otherwise it's easy; we'll deal with that later.)
@@ -83,7 +83,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
 
 Every real-valued continuous function on `[a,b]` is a uniform limit of polynomials.
 -/
-theorem continuousMap_mem_polynomialFunctions_closure (a b : ℝ) (f : C(Set.Icc a b, ℝ)) :
+lemma continuousMap_mem_polynomialFunctions_closure (a b : ℝ) (f : C(Set.Icc a b, ℝ)) :
     f ∈ (polynomialFunctions (Set.Icc a b)).topologicalClosure := by
   rw [polynomialFunctions_closure_eq_top _ _]
   simp
@@ -96,7 +96,7 @@ for those who like their epsilons.
 
 Every real-valued continuous function on `[a,b]` is within any `ε > 0` of some polynomial.
 -/
-theorem exists_polynomial_near_continuousMap (a b : ℝ) (f : C(Set.Icc a b, ℝ)) (ε : ℝ)
+lemma exists_polynomial_near_continuousMap (a b : ℝ) (f : C(Set.Icc a b, ℝ)) (ε : ℝ)
     (pos : 0 < ε) : ∃ p : ℝ[X], ‖p.toContinuousMapOn _ - f‖ < ε := by
   have w := mem_closure_iff_frequently.mp (continuousMap_mem_polynomialFunctions_closure _ _ f)
   rw [Metric.nhds_basis_ball.frequently_iff] at w
@@ -111,7 +111,7 @@ for those who like epsilons, but not bundled continuous functions.
 Every real-valued function `ℝ → ℝ` which is continuous on `[a,b]`
 can be approximated to within any `ε > 0` on `[a,b]` by some polynomial.
 -/
-theorem exists_polynomial_near_of_continuousOn (a b : ℝ) (f : ℝ → ℝ)
+lemma exists_polynomial_near_of_continuousOn (a b : ℝ) (f : ℝ → ℝ)
     (c : ContinuousOn f (Set.Icc a b)) (ε : ℝ) (pos : 0 < ε) :
     ∃ p : ℝ[X], ∀ x ∈ Set.Icc a b, |p.eval x - f x| < ε := by
   let f' : C(Set.Icc a b, ℝ) := ⟨fun x => f x, continuousOn_iff_continuous_restrict.mp c⟩

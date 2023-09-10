@@ -393,14 +393,14 @@ lemma norm_image_sub_le_of_norm_deriv_le_segment_01 {C : ℝ}
     norm_image_sub_le_of_norm_deriv_le_segment hf bound 1 (right_mem_Icc.2 zero_le_one)
 #align norm_image_sub_le_of_norm_deriv_le_segment_01 norm_image_sub_le_of_norm_deriv_le_segment_01
 
-theorem constant_of_has_deriv_right_zero (hcont : ContinuousOn f (Icc a b))
+lemma constant_of_has_deriv_right_zero (hcont : ContinuousOn f (Icc a b))
     (hderiv : ∀ x ∈ Ico a b, HasDerivWithinAt f 0 (Ici x) x) : ∀ x ∈ Icc a b, f x = f a := by
   have : ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ 0 * (x - a) := fun x hx =>
     norm_image_sub_le_of_norm_deriv_right_le_segment hcont hderiv (fun _ _ => norm_zero.le) x hx
   simpa only [zero_mul, norm_le_zero_iff, sub_eq_zero] using this
 #align constant_of_has_deriv_right_zero constant_of_has_deriv_right_zero
 
-theorem constant_of_derivWithin_zero (hdiff : DifferentiableOn ℝ f (Icc a b))
+lemma constant_of_derivWithin_zero (hdiff : DifferentiableOn ℝ f (Icc a b))
     (hderiv : ∀ x ∈ Ico a b, derivWithin f (Icc a b) x = 0) : ∀ x ∈ Icc a b, f x = f a := by
   have H : ∀ x ∈ Ico a b, ‖derivWithin f (Icc a b) x‖ ≤ 0 := by
     simpa only [norm_le_zero_iff] using fun x hx => hderiv x hx
@@ -412,7 +412,7 @@ variable {f' g : ℝ → E}
 
 /-- If two continuous functions on `[a, b]` have the same right derivative and are equal at `a`,
   then they are equal everywhere on `[a, b]`. -/
-theorem eq_of_has_deriv_right_eq (derivf : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
+lemma eq_of_has_deriv_right_eq (derivf : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
     (derivg : ∀ x ∈ Ico a b, HasDerivWithinAt g (f' x) (Ici x) x) (fcont : ContinuousOn f (Icc a b))
     (gcont : ContinuousOn g (Icc a b)) (hi : f a = g a) : ∀ y ∈ Icc a b, f y = g y := by
   simp only [← @sub_eq_zero _ _ (f _)] at hi ⊢
@@ -422,7 +422,7 @@ theorem eq_of_has_deriv_right_eq (derivf : ∀ x ∈ Ico a b, HasDerivWithinAt f
 
 /-- If two differentiable functions on `[a, b]` have the same derivative within `[a, b]` everywhere
   on `[a, b)` and are equal at `a`, then they are equal everywhere on `[a, b]`. -/
-theorem eq_of_derivWithin_eq (fdiff : DifferentiableOn ℝ f (Icc a b))
+lemma eq_of_derivWithin_eq (fdiff : DifferentiableOn ℝ f (Icc a b))
     (gdiff : DifferentiableOn ℝ g (Icc a b))
     (hderiv : EqOn (derivWithin f (Icc a b)) (derivWithin g (Icc a b)) (Ico a b)) (hi : f a = g a) :
     ∀ y ∈ Icc a b, f y = g y := by
@@ -490,7 +490,7 @@ continuous within `s` at `x`. Then for any number `K : ℝ≥0` larger than `‖
 `K`-Lipschitz on some neighborhood of `x` within `s`. See also
 `Convex.exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt` for a version that claims
 existence of `K` instead of an explicit estimate. -/
-theorem exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt (hs : Convex ℝ s)
+lemma exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt (hs : Convex ℝ s)
     {f : E → G} (hder : ∀ᶠ y in 𝓝[s] x, HasFDerivWithinAt f (f' y) s y)
     (hcont : ContinuousWithinAt f' s x) (K : ℝ≥0) (hK : ‖f' x‖₊ < K) :
     ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
@@ -509,7 +509,7 @@ continuous within `s` at `x`. Then for any number `K : ℝ≥0` larger than `‖
 on some neighborhood of `x` within `s`. See also
 `Convex.exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt` for a version
 with an explicit estimate on the Lipschitz constant. -/
-theorem exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt (hs : Convex ℝ s) {f : E → G}
+lemma exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt (hs : Convex ℝ s) {f : E → G}
     (hder : ∀ᶠ y in 𝓝[s] x, HasFDerivWithinAt f (f' y) s y) (hcont : ContinuousWithinAt f' s x) :
     ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t :=
   (exists_gt _).imp <|
@@ -518,7 +518,7 @@ theorem exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt (hs : Convex ℝ 
 
 /-- The mean value theorem on a convex set: if the derivative of a function within this set is
 bounded by `C`, then the function is `C`-Lipschitz. Version with `fderivWithin`. -/
-theorem norm_image_sub_le_of_norm_fderivWithin_le (hf : DifferentiableOn 𝕜 f s)
+lemma norm_image_sub_le_of_norm_fderivWithin_le (hf : DifferentiableOn 𝕜 f s)
     (bound : ∀ x ∈ s, ‖fderivWithin 𝕜 f s x‖ ≤ C) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ‖f y - f x‖ ≤ C * ‖y - x‖ :=
   hs.norm_image_sub_le_of_norm_hasFDerivWithin_le (fun x hx => (hf x hx).hasFDerivWithinAt) bound
@@ -535,7 +535,7 @@ lemma lipschitzOnWith_of_nnnorm_fderivWithin_le {C : ℝ≥0} (hf : Differentiab
 
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`,
 then the function is `C`-Lipschitz. Version with `fderiv`. -/
-theorem norm_image_sub_le_of_norm_fderiv_le (hf : ∀ x ∈ s, DifferentiableAt 𝕜 f x)
+lemma norm_image_sub_le_of_norm_fderiv_le (hf : ∀ x ∈ s, DifferentiableAt 𝕜 f x)
     (bound : ∀ x ∈ s, ‖fderiv 𝕜 f x‖ ≤ C) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ‖f y - f x‖ ≤ C * ‖y - x‖ :=
   hs.norm_image_sub_le_of_norm_hasFDerivWithin_le
@@ -580,7 +580,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le'
 #align convex.norm_image_sub_le_of_norm_has_fderiv_within_le' Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
 
 /-- Variant of the mean value inequality on a convex set. Version with `fderivWithin`. -/
-theorem norm_image_sub_le_of_norm_fderivWithin_le' (hf : DifferentiableOn 𝕜 f s)
+lemma norm_image_sub_le_of_norm_fderivWithin_le' (hf : DifferentiableOn 𝕜 f s)
     (bound : ∀ x ∈ s, ‖fderivWithin 𝕜 f s x - φ‖ ≤ C) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ‖f y - f x - φ (y - x)‖ ≤ C * ‖y - x‖ :=
   hs.norm_image_sub_le_of_norm_hasFDerivWithin_le' (fun x hx => (hf x hx).hasFDerivWithinAt) bound
@@ -588,7 +588,7 @@ theorem norm_image_sub_le_of_norm_fderivWithin_le' (hf : DifferentiableOn 𝕜 f
 #align convex.norm_image_sub_le_of_norm_fderiv_within_le' Convex.norm_image_sub_le_of_norm_fderivWithin_le'
 
 /-- Variant of the mean value inequality on a convex set. Version with `fderiv`. -/
-theorem norm_image_sub_le_of_norm_fderiv_le' (hf : ∀ x ∈ s, DifferentiableAt 𝕜 f x)
+lemma norm_image_sub_le_of_norm_fderiv_le' (hf : ∀ x ∈ s, DifferentiableAt 𝕜 f x)
     (bound : ∀ x ∈ s, ‖fderiv 𝕜 f x - φ‖ ≤ C) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ‖f y - f x - φ (y - x)‖ ≤ C * ‖y - x‖ :=
   hs.norm_image_sub_le_of_norm_hasFDerivWithin_le'
@@ -597,7 +597,7 @@ theorem norm_image_sub_le_of_norm_fderiv_le' (hf : ∀ x ∈ s, DifferentiableAt
 
 /-- If a function has zero Fréchet derivative at every point of a convex set,
 then it is a constant on this set. -/
-theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
+lemma is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : ∀ x ∈ s, fderivWithin 𝕜 f s x = 0) (hx : x ∈ s) (hy : y ∈ s) : f x = f y := by
   have bound : ∀ x ∈ s, ‖fderivWithin 𝕜 f s x‖ ≤ 0 := fun x hx => by
     simp only [hf' x hx, norm_zero, le_rfl]
@@ -616,7 +616,7 @@ theorem _root_.is_const_of_fderiv_eq_zero
 
 /-- If two functions have equal Fréchet derivatives at every point of a convex set, and are equal at
 one point in that set, then they are equal on that set. -/
-theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
+lemma eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
     (hg : DifferentiableOn 𝕜 g s) (hs' : UniqueDiffOn 𝕜 s)
     (hf' : ∀ x ∈ s, fderivWithin 𝕜 f s x = fderivWithin 𝕜 g s x) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := fun y hy => by
@@ -706,7 +706,7 @@ lemma _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiable
 
 /-- If `f : 𝕜 → G`, `𝕜 = R` or `𝕜 = ℂ`, is differentiable everywhere and its derivative equal zero,
 then it is a constant function. -/
-theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
+lemma _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
   is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← deriv_fderiv, hf']) _ _
 #align is_const_of_deriv_eq_zero is_const_of_deriv_eq_zero

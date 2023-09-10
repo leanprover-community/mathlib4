@@ -150,12 +150,12 @@ lemma decompose_symm_zero : (decompose ℳ).symm 0 = (0 : M) :=
 #align direct_sum.decompose_symm_zero DirectSum.decompose_symm_zero
 
 @[simp]
-theorem decompose_add (x y : M) : decompose ℳ (x + y) = decompose ℳ x + decompose ℳ y :=
+lemma decompose_add (x y : M) : decompose ℳ (x + y) = decompose ℳ x + decompose ℳ y :=
   map_add (decomposeAddEquiv ℳ) x y
 #align direct_sum.decompose_add DirectSum.decompose_add
 
 @[simp]
-theorem decompose_symm_add (x y : ⨁ i, ℳ i) :
+lemma decompose_symm_add (x y : ⨁ i, ℳ i) :
     (decompose ℳ).symm (x + y) = (decompose ℳ).symm x + (decompose ℳ).symm y :=
   map_add (decomposeAddEquiv ℳ).symm x y
 #align direct_sum.decompose_symm_add DirectSum.decompose_symm_add
@@ -202,22 +202,22 @@ variable [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ)
 variable [Decomposition ℳ]
 
 @[simp]
-theorem decompose_neg (x : M) : decompose ℳ (-x) = -decompose ℳ x :=
+lemma decompose_neg (x : M) : decompose ℳ (-x) = -decompose ℳ x :=
   map_neg (decomposeAddEquiv ℳ) x
 #align direct_sum.decompose_neg DirectSum.decompose_neg
 
 @[simp]
-theorem decompose_symm_neg (x : ⨁ i, ℳ i) : (decompose ℳ).symm (-x) = -(decompose ℳ).symm x :=
+lemma decompose_symm_neg (x : ⨁ i, ℳ i) : (decompose ℳ).symm (-x) = -(decompose ℳ).symm x :=
   map_neg (decomposeAddEquiv ℳ).symm x
 #align direct_sum.decompose_symm_neg DirectSum.decompose_symm_neg
 
 @[simp]
-theorem decompose_sub (x y : M) : decompose ℳ (x - y) = decompose ℳ x - decompose ℳ y :=
+lemma decompose_sub (x y : M) : decompose ℳ (x - y) = decompose ℳ x - decompose ℳ y :=
   map_sub (decomposeAddEquiv ℳ) x y
 #align direct_sum.decompose_sub DirectSum.decompose_sub
 
 @[simp]
-theorem decompose_symm_sub (x y : ⨁ i, ℳ i) :
+lemma decompose_symm_sub (x y : ⨁ i, ℳ i) :
     (decompose ℳ).symm (x - y) = (decompose ℳ).symm x - (decompose ℳ).symm y :=
   map_sub (decomposeAddEquiv ℳ).symm x y
 #align direct_sum.decompose_symm_sub DirectSum.decompose_symm_sub
@@ -241,7 +241,7 @@ def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
 #align direct_sum.decompose_linear_equiv DirectSum.decomposeLinearEquiv
 
 @[simp]
-theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompose ℳ x :=
+lemma decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompose ℳ x :=
   map_smul (decomposeLinearEquiv ℳ) r x
 #align direct_sum.decompose_smul DirectSum.decompose_smul
 

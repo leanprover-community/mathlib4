@@ -106,20 +106,20 @@ def Subsemiring.topologicalClosure (s : Subsemiring α) : Subsemiring α :=
 #align subsemiring.topological_closure Subsemiring.topologicalClosure
 
 @[simp]
-theorem Subsemiring.topologicalClosure_coe (s : Subsemiring α) :
+lemma Subsemiring.topologicalClosure_coe (s : Subsemiring α) :
     (s.topologicalClosure : Set α) = _root_.closure (s : Set α) :=
   rfl
 #align subsemiring.topological_closure_coe Subsemiring.topologicalClosure_coe
 
-theorem Subsemiring.le_topologicalClosure (s : Subsemiring α) : s ≤ s.topologicalClosure :=
+lemma Subsemiring.le_topologicalClosure (s : Subsemiring α) : s ≤ s.topologicalClosure :=
   _root_.subset_closure
 #align subsemiring.le_topological_closure Subsemiring.le_topologicalClosure
 
-theorem Subsemiring.isClosed_topologicalClosure (s : Subsemiring α) :
+lemma Subsemiring.isClosed_topologicalClosure (s : Subsemiring α) :
     IsClosed (s.topologicalClosure : Set α) := isClosed_closure
 #align subsemiring.is_closed_topological_closure Subsemiring.isClosed_topologicalClosure
 
-theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring α) {t : Subsemiring α} (h : s ≤ t)
+lemma Subsemiring.topologicalClosure_minimal (s : Subsemiring α) {t : Subsemiring α} (h : s ≤ t)
     (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 #align subsemiring.topological_closure_minimal Subsemiring.topologicalClosure_minimal
@@ -227,12 +227,12 @@ section
 variable [NonUnitalNonAssocRing α] [TopologicalRing α]
 
 /-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
-theorem mulLeft_continuous (x : α) : Continuous (AddMonoidHom.mulLeft x) :=
+lemma mulLeft_continuous (x : α) : Continuous (AddMonoidHom.mulLeft x) :=
   continuous_const.mul continuous_id
 #align mul_left_continuous mulLeft_continuous
 
 /-- In a topological semiring, the right-multiplication `AddMonoidHom` is continuous. -/
-theorem mulRight_continuous (x : α) : Continuous (AddMonoidHom.mulRight x) :=
+lemma mulRight_continuous (x : α) : Continuous (AddMonoidHom.mulRight x) :=
   continuous_id.mul continuous_const
 #align mul_right_continuous mulRight_continuous
 
@@ -250,15 +250,15 @@ def Subring.topologicalClosure (S : Subring α) : Subring α :=
     carrier := _root_.closure (S : Set α) }
 #align subring.topological_closure Subring.topologicalClosure
 
-theorem Subring.le_topologicalClosure (s : Subring α) : s ≤ s.topologicalClosure :=
+lemma Subring.le_topologicalClosure (s : Subring α) : s ≤ s.topologicalClosure :=
   _root_.subset_closure
 #align subring.le_topological_closure Subring.le_topologicalClosure
 
-theorem Subring.isClosed_topologicalClosure (s : Subring α) :
+lemma Subring.isClosed_topologicalClosure (s : Subring α) :
     IsClosed (s.topologicalClosure : Set α) := isClosed_closure
 #align subring.is_closed_topological_closure Subring.isClosed_topologicalClosure
 
-theorem Subring.topologicalClosure_minimal (s : Subring α) {t : Subring α} (h : s ≤ t)
+lemma Subring.topologicalClosure_minimal (s : Subring α) {t : Subring α} (h : s ≤ t)
     (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 #align subring.topological_closure_minimal Subring.topologicalClosure_minimal

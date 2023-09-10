@@ -157,7 +157,7 @@ protected lemma bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
 #align dfinsupp.bot_eq_zero DFinsupp.bot_eq_zero
 
 @[simp]
-theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
+lemma add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [FunLike.ext_iff, forall_and]
 #align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
 
@@ -165,7 +165,7 @@ section LE
 
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
-theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
+lemma le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
     if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 #align dfinsupp.le_iff' DFinsupp.le_iff'
@@ -201,12 +201,12 @@ instance tsub : Sub (Π₀ i, α i) :=
 
 variable {α}
 
-theorem tsub_apply (f g : Π₀ i, α i) (i : ι) : (f - g) i = f i - g i :=
+lemma tsub_apply (f g : Π₀ i, α i) (i : ι) : (f - g) i = f i - g i :=
   zipWith_apply _ _ _ _ _
 #align dfinsupp.tsub_apply DFinsupp.tsub_apply
 
 @[simp]
-theorem coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
+lemma coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
   ext i
   exact tsub_apply f g i
 #align dfinsupp.coe_tsub DFinsupp.coe_tsub

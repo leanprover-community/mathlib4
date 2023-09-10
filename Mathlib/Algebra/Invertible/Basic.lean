@@ -167,7 +167,7 @@ variable [MonoidWithZero α]
 
 /-- A variant of `Ring.inverse_unit`. -/
 @[simp]
-theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟ x :=
+lemma Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟ x :=
   Ring.inverse_unit (unitOfInvertible _)
 #align ring.inverse_invertible Ring.inverse_invertible
 
@@ -178,17 +178,17 @@ section GroupWithZero
 variable [GroupWithZero α]
 
 @[simp]
-theorem div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
+lemma div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
   div_mul_cancel a (nonzero_of_invertible b)
 #align div_mul_cancel_of_invertible div_mul_cancel_of_invertible
 
 @[simp]
-theorem mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
+lemma mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
   mul_div_cancel a (nonzero_of_invertible b)
 #align mul_div_cancel_of_invertible mul_div_cancel_of_invertible
 
 @[simp]
-theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
+lemma div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
   div_self (nonzero_of_invertible a)
 #align div_self_of_invertible div_self_of_invertible
 
@@ -198,7 +198,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
 #align invertible_div invertibleDiv
 
 -- Porting note: removed `simp` attribute as `simp` can prove it
-theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
+lemma invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
 #align inv_of_div invOf_div

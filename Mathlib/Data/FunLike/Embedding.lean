@@ -140,12 +140,12 @@ namespace EmbeddingLike
 
 variable {F α β γ : Sort*} [i : EmbeddingLike F α β]
 
-protected theorem injective (f : F) : Function.Injective f :=
+protected lemma injective (f : F) : Function.Injective f :=
   injective' f
 #align embedding_like.injective EmbeddingLike.injective
 
 @[simp]
-theorem apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
+lemma apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
   (EmbeddingLike.injective f).eq_iff
 #align embedding_like.apply_eq_iff_eq EmbeddingLike.apply_eq_iff_eq
 

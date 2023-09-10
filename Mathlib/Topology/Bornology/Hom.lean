@@ -105,11 +105,11 @@ protected def copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) :
 #align locally_bounded_map.copy LocallyBoundedMap.copy
 
 @[simp]
-theorem coe_copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+lemma coe_copy (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 #align locally_bounded_map.coe_copy LocallyBoundedMap.coe_copy
 
-theorem copy_eq (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
+lemma copy_eq (f : LocallyBoundedMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align locally_bounded_map.copy_eq LocallyBoundedMap.copy_eq
 
@@ -122,12 +122,12 @@ def ofMapBounded (f : α → β) (h : ∀ ⦃s : Set α⦄, IsBounded s → IsBo
 #align locally_bounded_map.of_map_bounded LocallyBoundedMap.ofMapBounded
 
 @[simp]
-theorem coe_ofMapBounded (f : α → β) {h} : ⇑(ofMapBounded f h) = f :=
+lemma coe_ofMapBounded (f : α → β) {h} : ⇑(ofMapBounded f h) = f :=
   rfl
 #align locally_bounded_map.coe_of_map_bounded LocallyBoundedMap.coe_ofMapBounded
 
 @[simp]
-theorem ofMapBounded_apply (f : α → β) {h} (a : α) : ofMapBounded f h a = f a :=
+lemma ofMapBounded_apply (f : α → β) {h} (a : α) : ofMapBounded f h a = f a :=
   rfl
 #align locally_bounded_map.of_map_bounded_apply LocallyBoundedMap.ofMapBounded_apply
 
@@ -149,7 +149,7 @@ lemma coe_id : ⇑(LocallyBoundedMap.id α) = id :=
 variable {α}
 
 @[simp]
-theorem id_apply (a : α) : LocallyBoundedMap.id α a = a :=
+lemma id_apply (a : α) : LocallyBoundedMap.id α a = a :=
   rfl
 #align locally_bounded_map.id_apply LocallyBoundedMap.id_apply
 
@@ -162,29 +162,29 @@ def comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : LocallyBo
 #align locally_bounded_map.comp LocallyBoundedMap.comp
 
 @[simp]
-theorem coe_comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : ⇑(f.comp g) = f ∘ g :=
+lemma coe_comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : ⇑(f.comp g) = f ∘ g :=
   rfl
 #align locally_bounded_map.coe_comp LocallyBoundedMap.coe_comp
 
 @[simp]
-theorem comp_apply (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) (a : α) :
+lemma comp_apply (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) (a : α) :
     f.comp g a = f (g a) :=
   rfl
 #align locally_bounded_map.comp_apply LocallyBoundedMap.comp_apply
 
 @[simp]
-theorem comp_assoc (f : LocallyBoundedMap γ δ) (g : LocallyBoundedMap β γ)
+lemma comp_assoc (f : LocallyBoundedMap γ δ) (g : LocallyBoundedMap β γ)
     (h : LocallyBoundedMap α β) : (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 #align locally_bounded_map.comp_assoc LocallyBoundedMap.comp_assoc
 
 @[simp]
-theorem comp_id (f : LocallyBoundedMap α β) : f.comp (LocallyBoundedMap.id α) = f :=
+lemma comp_id (f : LocallyBoundedMap α β) : f.comp (LocallyBoundedMap.id α) = f :=
   ext fun _ => rfl
 #align locally_bounded_map.comp_id LocallyBoundedMap.comp_id
 
 @[simp]
-theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f = f :=
+lemma id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f = f :=
   ext fun _ => rfl
 #align locally_bounded_map.id_comp LocallyBoundedMap.id_comp
 

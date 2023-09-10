@@ -40,7 +40,7 @@ variable [MulZeroClass β]
 instance : Mul (α →₀ β) :=
   ⟨zipWith (· * ·) (mul_zero 0)⟩
 
-theorem coe_mul (g₁ g₂ : α →₀ β) : ⇑(g₁ * g₂) = g₁ * g₂ :=
+lemma coe_mul (g₁ g₂ : α →₀ β) : ⇑(g₁ * g₂) = g₁ * g₂ :=
   rfl
 #align finsupp.coe_mul Finsupp.coe_mul
 

@@ -107,7 +107,7 @@ def applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (c : Compo
     (Fin n → E) → Fin c.length → F := fun v i => p (c.blocksFun i) (v ∘ c.embedding i)
 #align formal_multilinear_series.apply_composition FormalMultilinearSeries.applyComposition
 
-theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
+lemma applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
     p.applyComposition (Composition.ones n) = fun v i =>
       p 1 fun _ => v (Fin.castLE (Composition.length_le _) i) := by
   funext v i
@@ -118,7 +118,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding, Fin.val_mk]
 #align formal_multilinear_series.apply_composition_ones FormalMultilinearSeries.applyComposition_ones
 
-theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
+lemma applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
   ext j
   refine' p.congr (by simp) fun i hi1 hi2 => _
@@ -132,7 +132,7 @@ theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
 #align formal_multilinear_series.apply_composition_single FormalMultilinearSeries.applyComposition_single
 
 @[simp]
-theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+lemma removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (c : Composition n) : p.removeZero.applyComposition c = p.applyComposition c := by
   ext v i
   simp [applyComposition, zero_lt_one.trans_le (c.one_le_blocksFun i), removeZero_of_pos]
@@ -141,7 +141,7 @@ theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : 
 /-- Technical lemma stating how `p.apply_composition` commutes with updating variables. This
 will be the key point to show that functions constructed from `apply_composition` retain
 multilinearity. -/
-theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (c : Composition n)
+lemma applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (c : Composition n)
     (j : Fin n) (v : Fin n → E) (z : E) :
     p.applyComposition c (Function.update v j z) =
       Function.update (p.applyComposition c v) (c.index j)
@@ -253,7 +253,7 @@ protected def comp (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinear
 /-- The `0`-th coefficient of `q.comp p` is `q 0`. Since these maps are multilinear maps in zero
 variables, but on different spaces, we can not state this directly, so we state it when applied to
 arbitrary vectors (which have to be the zero vector). -/
-theorem comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
+lemma comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (v : Fin 0 → E) (v' : Fin 0 → F) : (q.comp p) 0 v = q 0 v' := by
   let c : Composition 0 := Composition.ones 0
   dsimp [FormalMultilinearSeries.comp]
@@ -264,20 +264,20 @@ theorem comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultil
 #align formal_multilinear_series.comp_coeff_zero FormalMultilinearSeries.comp_coeff_zero
 
 @[simp]
-theorem comp_coeff_zero' (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
+lemma comp_coeff_zero' (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (v : Fin 0 → E) : (q.comp p) 0 v = q 0 fun _i => 0 :=
   q.comp_coeff_zero p v _
 #align formal_multilinear_series.comp_coeff_zero' FormalMultilinearSeries.comp_coeff_zero'
 
 /-- The `0`-th coefficient of `q.comp p` is `q 0`. When `p` goes from `E` to `E`, this can be
 expressed as a direct equality -/
-theorem comp_coeff_zero'' (q : FormalMultilinearSeries 𝕜 E F) (p : FormalMultilinearSeries 𝕜 E E) :
+lemma comp_coeff_zero'' (q : FormalMultilinearSeries 𝕜 E F) (p : FormalMultilinearSeries 𝕜 E E) :
     (q.comp p) 0 = q 0 := by ext v; exact q.comp_coeff_zero p _ _
 #align formal_multilinear_series.comp_coeff_zero'' FormalMultilinearSeries.comp_coeff_zero''
 
 /-- The first coefficient of a composition of formal multilinear series is the composition of the
 first coefficients seen as continuous linear maps. -/
-theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
+lemma comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (v : Fin 1 → E) : (q.comp p) 1 v = q 1 fun _i => p 1 v := by
   have : {Composition.ones 1} = (Finset.univ : Finset (Composition 1)) :=
     Finset.eq_univ_of_card _ (by simp [composition_card])
@@ -289,7 +289,7 @@ theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultili
 #align formal_multilinear_series.comp_coeff_one FormalMultilinearSeries.comp_coeff_one
 
 /-- Only `0`-th coefficient of `q.comp p` depends on `q 0`. -/
-theorem removeZero_comp_of_pos (q : FormalMultilinearSeries 𝕜 F G)
+lemma removeZero_comp_of_pos (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n) :
     q.removeZero.comp p n = q.comp p n := by
   ext v
@@ -300,7 +300,7 @@ theorem removeZero_comp_of_pos (q : FormalMultilinearSeries 𝕜 F G)
 #align formal_multilinear_series.remove_zero_comp_of_pos FormalMultilinearSeries.removeZero_comp_of_pos
 
 @[simp]
-theorem comp_removeZero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F) :
+lemma comp_removeZero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F) :
     q.comp p.removeZero = q.comp p := by ext n; simp [FormalMultilinearSeries.comp]
 #align formal_multilinear_series.comp_remove_zero FormalMultilinearSeries.comp_removeZero
 
@@ -372,7 +372,7 @@ def id : FormalMultilinearSeries 𝕜 E E
 
 /-- The first coefficient of `id 𝕜 E` is the identity. -/
 @[simp]
-theorem id_apply_one (v : Fin 1 → E) : (FormalMultilinearSeries.id 𝕜 E) 1 v = v 0 :=
+lemma id_apply_one (v : Fin 1 → E) : (FormalMultilinearSeries.id 𝕜 E) 1 v = v 0 :=
   rfl
 #align formal_multilinear_series.id_apply_one FormalMultilinearSeries.id_apply_one
 
@@ -397,7 +397,7 @@ lemma id_apply_ne_one {n : ℕ} (h : n ≠ 1) : (FormalMultilinearSeries.id 𝕜
 end
 
 @[simp]
-theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p := by
+lemma comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p := by
   ext1 n
   dsimp [FormalMultilinearSeries.comp]
   rw [Finset.sum_eq_single (Composition.ones n)]
@@ -430,7 +430,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
 #align formal_multilinear_series.comp_id FormalMultilinearSeries.comp_id
 
 @[simp]
-theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 F).comp p = p := by
+lemma id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 F).comp p = p := by
   ext1 n
   by_cases hn : n = 0
   · rw [hn, h]
@@ -466,7 +466,7 @@ set_option maxHeartbeats 300000 in
 /-- If two formal multilinear series have positive radius of convergence, then the terms appearing
 in the definition of their composition are also summable (when multiplied by a suitable positive
 geometric term). -/
-theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
+lemma comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (hq : 0 < q.radius) (hp : 0 < p.radius) :
     ∃ r > (0 : ℝ≥0),
       Summable fun i : Σ n, Composition n => ‖q.compAlongComposition p i.2‖₊ * r ^ i.1 := by
@@ -530,7 +530,7 @@ end
 
 /-- Bounding below the radius of the composition of two formal multilinear series assuming
 summability over all compositions. -/
-theorem le_comp_radius_of_summable (q : FormalMultilinearSeries 𝕜 F G)
+lemma le_comp_radius_of_summable (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (r : ℝ≥0)
     (hr : Summable fun i : Σ n, Composition n => ‖q.compAlongComposition p i.2‖₊ * r ^ i.1) :
     (r : ℝ≥0∞) ≤ (q.comp p).radius := by
@@ -568,7 +568,7 @@ def compPartialSumSource (m M N : ℕ) : Finset (Σ n, Fin n → ℕ) :=
 #align formal_multilinear_series.comp_partial_sum_source FormalMultilinearSeries.compPartialSumSource
 
 @[simp]
-theorem mem_compPartialSumSource_iff (m M N : ℕ) (i : Σ n, Fin n → ℕ) :
+lemma mem_compPartialSumSource_iff (m M N : ℕ) (i : Σ n, Fin n → ℕ) :
     i ∈ compPartialSumSource m M N ↔
       (m ≤ i.1 ∧ i.1 < M) ∧ ∀ a : Fin i.1, 1 ≤ i.2 a ∧ i.2 a < N := by
   simp only [compPartialSumSource, Finset.mem_Ico, Fintype.mem_piFinset, Finset.mem_sigma,
@@ -588,7 +588,7 @@ def compChangeOfVariables (m M N : ℕ) (i : Σ n, Fin n → ℕ) (hi : i ∈ co
 #align formal_multilinear_series.comp_change_of_variables FormalMultilinearSeries.compChangeOfVariables
 
 @[simp]
-theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
+lemma compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) :
     Composition.length (compChangeOfVariables m M N i hi).2 = i.1 := by
   rcases i with ⟨k, blocks_fun⟩
@@ -597,7 +597,7 @@ theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
 #align formal_multilinear_series.comp_change_of_variables_length FormalMultilinearSeries.compChangeOfVariables_length
 
 set_option linter.deprecated false in
-theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
+lemma compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) (j : Fin i.1) :
     (compChangeOfVariables m M N i hi).2.blocksFun
         ⟨j, (compChangeOfVariables_length m M N hi).symm ▸ j.2⟩ =
@@ -613,7 +613,7 @@ def compPartialSumTargetSet (m M N : ℕ) : Set (Σ n, Composition n) :=
   {i | m ≤ i.2.length ∧ i.2.length < M ∧ ∀ j : Fin i.2.length, i.2.blocksFun j < N}
 #align formal_multilinear_series.comp_partial_sum_target_set FormalMultilinearSeries.compPartialSumTargetSet
 
-theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
+lemma compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     (i : Σ n, Composition n) (hi : i ∈ compPartialSumTargetSet m M N) :
     ∃ (j : _) (hj : j ∈ compPartialSumSource m M N), i = compChangeOfVariables m M N j hj := by
   rcases i with ⟨n, c⟩
@@ -716,7 +716,7 @@ lemma compPartialSumTarget_tendsto_atTop :
 /-- Composing the partial sums of two multilinear series coincides with the sum over all
 compositions in `comp_partial_sum_target 0 N N`. This is precisely the motivation for the
 definition of `comp_partial_sum_target`. -/
-theorem comp_partialSum (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
+lemma comp_partialSum (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (N : ℕ) (z : E) :
     q.partialSum N (∑ i in Finset.Ico 1 N, p i fun _j => z) =
       ∑ i in compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z := by
@@ -940,7 +940,7 @@ variable {n : ℕ}
 
 /-- Rewriting equality in the dependent type `Σ (a : composition n), composition a.length)` in
 non-dependent terms with lists, requiring that the blocks coincide. -/
-theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.length) :
+lemma sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.length) :
     i = j ↔ i.1.blocks = j.1.blocks ∧ i.2.blocks = j.2.blocks := by
   refine' ⟨by rintro rfl; exact ⟨rfl, rfl⟩, _⟩
   rcases i with ⟨a, b⟩
@@ -1001,7 +1001,7 @@ def gather (a : Composition n) (b : Composition a.length) : Composition n where
   blocks_sum := by rw [← sum_join, join_splitWrtComposition, a.blocks_sum]
 #align composition.gather Composition.gather
 
-theorem length_gather (a : Composition n) (b : Composition a.length) :
+lemma length_gather (a : Composition n) (b : Composition a.length) :
     length (a.gather b) = b.length :=
   show (map List.sum (a.blocks.splitWrtComposition b)).length = b.blocks.length by
     rw [length_map, length_splitWrtComposition]
@@ -1028,7 +1028,7 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
 
 -- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
 set_option linter.deprecated false in
-theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
+lemma length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) :
     Composition.length (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩) =
       Composition.blocksFun b i :=
@@ -1038,7 +1038,7 @@ theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length
 
 -- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
 set_option linter.deprecated false in
-theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
+lemma blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
     blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
         ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
@@ -1056,7 +1056,7 @@ of `a` up to an index `size_up_to b i + j` (where the `j` corresponds to a set o
 that do not fill a whole block of `a.gather b`). The first part corresponds to a sum of blocks
 in `a.gather b`, and the second one to a sum of blocks in the next block of
 `sigma_composition_aux a b`. This is the content of this lemma. -/
-theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i j : ℕ}
+lemma sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i j : ℕ}
     (hi : i < b.length) (hj : j < blocksFun b ⟨i, hi⟩) :
     sizeUpTo a (sizeUpTo b i + j) =
       sizeUpTo (a.gather b) i +
@@ -1181,7 +1181,7 @@ namespace FormalMultilinearSeries
 open Composition
 
 set_option maxHeartbeats 500000 in
-theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
+lemma comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v
   /- First, rewrite the two compositions appearing in the theorem as two sums over complicated

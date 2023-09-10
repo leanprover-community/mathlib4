@@ -108,7 +108,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Top TopCat.presheafToTop
 
 @[simp]
-theorem presheafToTop_obj (T : TopCat.{v}) (U : (Opens X)ᵒᵖ) :
+lemma presheafToTop_obj (T : TopCat.{v}) (U : (Opens X)ᵒᵖ) :
     (presheafToTop X T).obj U = ((Opens.toTopCat X).obj (unop U) ⟶ T) :=
   rfl
 set_option linter.uppercaseLean3 false in

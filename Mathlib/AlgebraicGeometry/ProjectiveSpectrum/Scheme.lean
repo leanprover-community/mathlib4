@@ -155,7 +155,7 @@ def carrier : Ideal (A⁰_ f) :=
     (Ideal.span <| algebraMap A (Away f) '' x.val.asHomogeneousIdeal)
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.carrier AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.carrier
 
-theorem mem_carrier_iff (z : A⁰_ f) :
+lemma mem_carrier_iff (z : A⁰_ f) :
     z ∈ carrier x ↔ z.val ∈ Ideal.span (algebraMap A (Away f) '' x.1.asHomogeneousIdeal) :=
   Iff.rfl
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.mem_carrier_iff
@@ -278,7 +278,7 @@ The preimage of basic open set `D(a/f^n)` in `Spec A⁰_f` under the forward map
 `Spec A⁰_f` is the basic open set `D(a) ∩ D(f)` in `Proj A`. This lemma is used to prove that the
 forward map is continuous.
 -/
-theorem preimage_eq (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ 𝒜 k)
+lemma preimage_eq (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ 𝒜 k)
     (b_mem2 : b ∈ Submonoid.powers f) :
     toFun f ⁻¹'
         (@PrimeSpectrum.basicOpen (A⁰_ f) _ (Quotient.mk'' ⟨k, ⟨a, a_mem⟩, ⟨b, b_mem1⟩, b_mem2⟩) :
@@ -383,13 +383,13 @@ def carrier (q : Spec.T A⁰_ f) : Set A :=
               ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1}
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier
 
-theorem mem_carrier_iff (q : Spec.T A⁰_ f) (a : A) :
+lemma mem_carrier_iff (q : Spec.T A⁰_ f) (a : A) :
     a ∈ carrier f_deg q ↔ ∀ i, (Quotient.mk'' ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
       ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1 :=
   Iff.rfl
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.mem_carrier_iff AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.mem_carrier_iff
 
-theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
+lemma mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
     a ∈ carrier f_deg q ↔
       ∀ i, (Localization.mk (proj 𝒜 i a ^ m) ⟨f ^ i, ⟨i, rfl⟩⟩ : Localization.Away f) ∈
           algebraMap (HomogeneousLocalization.Away 𝒜 f) (Localization.Away f) '' { s | s ∈ q.1 } :=
@@ -404,7 +404,7 @@ theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
         dsimp only [Subtype.coe_mk]; rw [← hx]; rfl)
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.mem_carrier_iff' AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.mem_carrier_iff'
 
-theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
+lemma carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
     (hb : b ∈ carrier f_deg q) : a + b ∈ carrier f_deg q := by
   refine' fun i => (q.2.mem_or_mem _).elim id id
   change (Quotient.mk'' ⟨_, _, _, _⟩ : A⁰_ f) ∈ q.1; dsimp only [Subtype.coe_mk]
@@ -466,7 +466,7 @@ lemma carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
   convert Localization.mk_zero (S := Submonoid.powers f) _ using 1
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.zero_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.zero_mem
 
-theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ carrier f_deg q := by
+lemma carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ carrier f_deg q := by
   revert c
   refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
   · rw [zero_smul]; exact carrier.zero_mem f_deg hm _

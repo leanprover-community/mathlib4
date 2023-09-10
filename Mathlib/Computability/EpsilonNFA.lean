@@ -52,7 +52,7 @@ inductive εClosure (S : Set σ) : Set σ
 #align ε_NFA.ε_closure εNFA.εClosure
 
 @[simp]
-theorem subset_εClosure (S : Set σ) : S ⊆ M.εClosure S :=
+lemma subset_εClosure (S : Set σ) : S ⊆ M.εClosure S :=
   εClosure.base
 #align ε_NFA.subset_ε_closure εNFA.subset_εClosure
 
@@ -79,7 +79,7 @@ lemma mem_stepSet_iff : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.εClosure (
 #align ε_NFA.mem_step_set_iff εNFA.mem_stepSet_iff
 
 @[simp]
-theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by
+lemma stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by
   simp_rw [stepSet, mem_empty_iff_false, iUnion_false, iUnion_empty]
 #align ε_NFA.step_set_empty εNFA.stepSet_empty
 
@@ -92,23 +92,23 @@ def evalFrom (start : Set σ) : List α → Set σ :=
 #align ε_NFA.eval_from εNFA.evalFrom
 
 @[simp]
-theorem evalFrom_nil (S : Set σ) : M.evalFrom S [] = M.εClosure S :=
+lemma evalFrom_nil (S : Set σ) : M.evalFrom S [] = M.εClosure S :=
   rfl
 #align ε_NFA.eval_from_nil εNFA.evalFrom_nil
 
 @[simp]
-theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet (M.εClosure S) a :=
+lemma evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet (M.εClosure S) a :=
   rfl
 #align ε_NFA.eval_from_singleton εNFA.evalFrom_singleton
 
 @[simp]
-theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
+lemma evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
   rw [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
 #align ε_NFA.eval_from_append_singleton εNFA.evalFrom_append_singleton
 
 @[simp]
-theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
+lemma evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
   induction' x using List.reverseRecOn with x a ih
   · rw [evalFrom_nil, εClosure_empty]
   · rw [evalFrom_append_singleton, ih, stepSet_empty]
@@ -126,12 +126,12 @@ lemma eval_nil : M.eval [] = M.εClosure M.start :=
 #align ε_NFA.eval_nil εNFA.eval_nil
 
 @[simp]
-theorem eval_singleton (a : α) : M.eval [a] = M.stepSet (M.εClosure M.start) a :=
+lemma eval_singleton (a : α) : M.eval [a] = M.stepSet (M.εClosure M.start) a :=
   rfl
 #align ε_NFA.eval_singleton εNFA.eval_singleton
 
 @[simp]
-theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
+lemma eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
   evalFrom_append_singleton _ _ _ _
 #align ε_NFA.eval_append_singleton εNFA.eval_append_singleton
 
@@ -151,7 +151,7 @@ def toNFA : NFA α σ where
 #align ε_NFA.to_NFA εNFA.toNFA
 
 @[simp]
-theorem toNFA_evalFrom_match (start : Set σ) :
+lemma toNFA_evalFrom_match (start : Set σ) :
     M.toNFA.evalFrom (M.εClosure start) = M.evalFrom start :=
   rfl
 #align ε_NFA.to_NFA_eval_from_match εNFA.toNFA_evalFrom_match
@@ -181,7 +181,7 @@ def toεNFA (M : NFA α σ) : εNFA α σ where
 #align NFA.to_ε_NFA NFA.toεNFA
 
 @[simp]
-theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
+lemma toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
   ext a
   refine' ⟨_, εNFA.εClosure.base _⟩
   rintro (⟨_, h⟩ | ⟨_, _, h, _⟩)
@@ -190,7 +190,7 @@ theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S =
 #align NFA.to_ε_NFA_ε_closure NFA.toεNFA_εClosure
 
 @[simp]
-theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
+lemma toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
     M.toεNFA.evalFrom start = M.evalFrom start := by
   rw [evalFrom, εNFA.evalFrom, toεNFA_εClosure]
   suffices εNFA.stepSet (toεNFA M) = stepSet M by rw [this]
@@ -204,7 +204,7 @@ theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
 #align NFA.to_ε_NFA_eval_from_match NFA.toεNFA_evalFrom_match
 
 @[simp]
-theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
+lemma toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
   rw [εNFA.accepts, εNFA.eval, toεNFA_evalFrom_match]
   rfl
 #align NFA.to_ε_NFA_correct NFA.toεNFA_correct
@@ -228,12 +228,12 @@ instance : Inhabited (εNFA α σ) :=
 variable (P : εNFA α σ) (Q : εNFA α σ')
 
 @[simp]
-theorem step_zero (s a) : (0 : εNFA α σ).step s a = ∅ :=
+lemma step_zero (s a) : (0 : εNFA α σ).step s a = ∅ :=
   rfl
 #align ε_NFA.step_zero εNFA.step_zero
 
 @[simp]
-theorem step_one (s a) : (1 : εNFA α σ).step s a = ∅ :=
+lemma step_one (s a) : (1 : εNFA α σ).step s a = ∅ :=
   rfl
 #align ε_NFA.step_one εNFA.step_one
 

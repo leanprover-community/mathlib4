@@ -43,7 +43,7 @@ lemma sub_le_of_le_add {d} (h : μ ≤ d + ν) : μ - ν ≤ d :=
   sInf_le h
 #align measure_theory.measure.sub_le_of_le_add MeasureTheory.Measure.sub_le_of_le_add
 
-theorem sub_eq_zero_of_le (h : μ ≤ ν) : μ - ν = 0 :=
+lemma sub_eq_zero_of_le (h : μ ≤ ν) : μ - ν = 0 :=
   nonpos_iff_eq_zero'.1 <| sub_le_of_le_add <| by rwa [zero_add]
 #align measure_theory.measure.sub_eq_zero_of_le MeasureTheory.Measure.sub_eq_zero_of_le
 
@@ -101,7 +101,7 @@ lemma sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + �
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
 
-theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
+lemma restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
   repeat' rw [sub_def]
   have h_nonempty : { d | μ ≤ d + ν }.Nonempty := ⟨μ, Measure.le_add_right le_rfl⟩
@@ -133,7 +133,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     exact restrict_mono Subset.rfl h_t_in
 #align measure_theory.measure.restrict_sub_eq_restrict_sub_restrict MeasureTheory.Measure.restrict_sub_eq_restrict_sub_restrict
 
-theorem sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.restrict s)
+lemma sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.restrict s)
     (h_meas_s : MeasurableSet s) : (μ - ν) s = 0 := by
   rw [← restrict_apply_self, restrict_sub_eq_restrict_sub_restrict, sub_eq_zero_of_le] <;> simp [*]
 #align measure_theory.measure.sub_apply_eq_zero_of_restrict_le_restrict MeasureTheory.Measure.sub_apply_eq_zero_of_restrict_le_restrict

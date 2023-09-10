@@ -44,7 +44,7 @@ noncomputable def mirror :=
 lemma mirror_zero : (0 : R[X]).mirror = 0 := by simp [mirror]
 #align polynomial.mirror_zero Polynomial.mirror_zero
 
-theorem mirror_monomial (n : ℕ) (a : R) : (monomial n a).mirror = monomial n a := by
+lemma mirror_monomial (n : ℕ) (a : R) : (monomial n a).mirror = monomial n a := by
   classical
     by_cases ha : a = 0
     · rw [ha, monomial_zero_right, mirror_zero]
@@ -53,7 +53,7 @@ theorem mirror_monomial (n : ℕ) (a : R) : (monomial n a).mirror = monomial n a
         mul_one]
 #align polynomial.mirror_monomial Polynomial.mirror_monomial
 
-theorem mirror_C (a : R) : (C a).mirror = C a :=
+lemma mirror_C (a : R) : (C a).mirror = C a :=
   mirror_monomial 0 a
 set_option linter.uppercaseLean3 false in
 #align polynomial.mirror_C Polynomial.mirror_C
@@ -79,7 +79,7 @@ lemma mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDegre
       reverse_natTrailingDegree, zero_add]
 #align polynomial.mirror_nat_trailing_degree Polynomial.mirror_natTrailingDegree
 
-theorem coeff_mirror (n : ℕ) :
+lemma coeff_mirror (n : ℕ) :
     p.mirror.coeff n = p.coeff (revAt (p.natDegree + p.natTrailingDegree) n) := by
   by_cases h2 : p.natDegree < n
   · rw [coeff_eq_zero_of_natDegree_lt (by rwa [mirror_natDegree])]
@@ -206,7 +206,7 @@ lemma mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
   repeat' rw [mul_assoc]
 #align polynomial.mirror_mul_of_domain Polynomial.mirror_mul_of_domain
 
-theorem mirror_smul (a : R) : (a • p).mirror = a • p.mirror := by
+lemma mirror_smul (a : R) : (a • p).mirror = a • p.mirror := by
   rw [← C_mul', ← C_mul', mirror_mul_of_domain, mirror_C]
 #align polynomial.mirror_smul Polynomial.mirror_smul
 
@@ -216,7 +216,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] [NoZeroDivisors R] {f : R[X]}
 
-theorem irreducible_of_mirror (h1 : ¬IsUnit f)
+lemma irreducible_of_mirror (h1 : ¬IsUnit f)
     (h2 : ∀ k, f * f.mirror = k * k.mirror → k = f ∨ k = -f ∨ k = f.mirror ∨ k = -f.mirror)
     (h3 : ∀ g, g ∣ f → g ∣ f.mirror → IsUnit g) : Irreducible f := by
   constructor

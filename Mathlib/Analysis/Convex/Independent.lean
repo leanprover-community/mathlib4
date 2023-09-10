@@ -197,7 +197,7 @@ lemma convexIndependent_iff_finset {p : ι → E} :
 /-! ### Extreme points -/
 
 
-theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
+lemma Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
     ConvexIndependent 𝕜 ((↑) : s.extremePoints 𝕜 → E) :=
   convexIndependent_set_iff_not_mem_convexHull_diff.2 fun _ hx h =>
     (extremePoints_convexHull_subset

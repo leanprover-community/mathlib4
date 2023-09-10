@@ -256,7 +256,7 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
     simp only [eq_iff_true_of_subsingleton]
 #align category_theory.limits.is_limit_empty_cone_equiv CategoryTheory.Limits.isLimitEmptyConeEquiv
 
-theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
+lemma hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
   ⟨⟨⟨⟨limit F₁, by aesop_cat, by aesop_cat⟩,
     isLimitChangeEmptyCone C (limit.isLimit F₁) _ (eqToIso rfl)⟩⟩⟩
 #align category_theory.limits.has_terminal_change_diagram CategoryTheory.Limits.hasTerminalChangeDiagram
@@ -290,7 +290,7 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
     simp only [eq_iff_true_of_subsingleton]
 #align category_theory.limits.is_colimit_empty_cocone_equiv CategoryTheory.Limits.isColimitEmptyCoconeEquiv
 
-theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
+lemma hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
   ⟨⟨⟨⟨colimit F₁, by aesop_cat, by aesop_cat⟩,
     isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
 #align category_theory.limits.has_initial_change_diagram CategoryTheory.Limits.hasInitialChangeDiagram
@@ -330,7 +330,7 @@ variable {C}
 
 /-- We can more explicitly show that a category has a terminal object by specifying the object,
 and showing there is a unique morphism to it from any other object. -/
-theorem hasTerminal_of_unique (X : C) [h : ∀ Y : C, Unique (Y ⟶ X)] : HasTerminal C :=
+lemma hasTerminal_of_unique (X : C) [h : ∀ Y : C, Unique (Y ⟶ X)] : HasTerminal C :=
   { has_limit := fun F => HasLimit.mk ⟨_, (isTerminalEquivUnique F X).invFun h⟩ }
 #align category_theory.limits.has_terminal_of_unique CategoryTheory.Limits.hasTerminal_of_unique
 
@@ -341,7 +341,7 @@ lemma IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
 
 /-- We can more explicitly show that a category has an initial object by specifying the object,
 and showing there is a unique morphism from it to any other object. -/
-theorem hasInitial_of_unique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : HasInitial C :=
+lemma hasInitial_of_unique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : HasInitial C :=
   { has_colimit := fun F => HasColimit.mk ⟨_, (isInitialEquivUnique F X).invFun h⟩ }
 #align category_theory.limits.has_initial_of_unique CategoryTheory.Limits.hasInitial_of_unique
 

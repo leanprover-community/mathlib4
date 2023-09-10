@@ -41,7 +41,7 @@ lemma subst_abc {x y z : ℝ} (h : x * y * z = 1) :
   field_simp [*]
 #align imo2008_q2.subst_abc Imo2008Q2.subst_abc
 
-theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
+lemma imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
     x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 := by
   obtain ⟨a, b, c, ha, hb, hc, rfl, rfl, rfl⟩ := subst_abc h
   obtain ⟨m, n, rfl, rfl⟩ : ∃ m n, b = c - m ∧ a = c - m - n := by use c - b, b - a; simp

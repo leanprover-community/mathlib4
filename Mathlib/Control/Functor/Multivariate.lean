@@ -103,16 +103,16 @@ def LiftR' : F α → F α → Prop :=
 variable [LawfulMvFunctor F]
 
 @[simp]
-theorem id_map (x : F α) : TypeVec.id <$$> x = x :=
+lemma id_map (x : F α) : TypeVec.id <$$> x = x :=
   LawfulMvFunctor.id_map x
 #align mvfunctor.id_map MvFunctor.id_map
 
 @[simp]
-theorem id_map' (x : F α) : (fun _i a => a) <$$> x = x :=
+lemma id_map' (x : F α) : (fun _i a => a) <$$> x = x :=
   id_map x
 #align mvfunctor.id_map' MvFunctor.id_map'
 
-theorem map_map (g : α ⟹ β) (h : β ⟹ γ) (x : F α) : h <$$> g <$$> x = (h ⊚ g) <$$> x :=
+lemma map_map (g : α ⟹ β) (h : β ⟹ γ) (x : F α) : h <$$> g <$$> x = (h ⊚ g) <$$> x :=
   Eq.symm <| comp_map _ _ _
 #align mvfunctor.map_map MvFunctor.map_map
 
@@ -135,11 +135,11 @@ lemma exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
 
 variable {F}
 
-theorem LiftP_def (x : F α) : LiftP' P x ↔ ∃ u : F (Subtype_ P), subtypeVal P <$$> u = x :=
+lemma LiftP_def (x : F α) : LiftP' P x ↔ ∃ u : F (Subtype_ P), subtypeVal P <$$> u = x :=
   exists_iff_exists_of_mono F _ _ (toSubtype_of_subtype P) (by simp [MvFunctor.map_map])
 #align mvfunctor.liftp_def MvFunctor.LiftP_def
 
-theorem LiftR_def (x y : F α) :
+lemma LiftR_def (x y : F α) :
     LiftR' R x y ↔
       ∃ u : F (Subtype_ R),
         (TypeVec.prod.fst ⊚ subtypeVal R) <$$> u = x ∧
@@ -221,7 +221,7 @@ private def g' :
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
-theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
+lemma LiftR_RelLast_iff (x y : F (α ::: β)) :
     LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y := by
   dsimp only [LiftR, LiftR']
   apply exists_iff_exists_of_mono F (f' rr _ _) (g' rr _ _)

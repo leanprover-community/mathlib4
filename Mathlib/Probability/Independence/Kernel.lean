@@ -132,7 +132,7 @@ lemma Indep.symm {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {�
     Indep m₂ m₁ κ μ :=
   IndepSets.symm h
 
-theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
+lemma indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] :
     Indep m' ⊥ κ μ := by
   intros s t _ ht
@@ -142,7 +142,7 @@ theorem indep_bot_right (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
   · rw [ht, Set.inter_empty, measure_empty, mul_zero]
   · rw [ht, Set.inter_univ, measure_univ, mul_one]
 
-theorem indep_bot_left (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
+lemma indep_bot_left (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] :
     Indep ⊥ m' κ μ := (indep_bot_right m').symm
 
@@ -641,7 +641,7 @@ lemma Indep.indepSet_of_measurableSet {m₁ m₂ m0 : MeasurableSpace Ω} {κ : 
     · exact fun u hu => hu.compl
     · exact fun f hf => MeasurableSet.iUnion hf
 
-theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
+lemma indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (κ : kernel α Ω) (μ : Measure α) :
     Indep m₁ m₂ κ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t κ μ :=
   ⟨fun h => fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>

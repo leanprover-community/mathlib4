@@ -99,14 +99,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pi_opens_iso_sections_family TopCat.Presheaf.piOpensIsoSectionsFamily
 
 @[simp]
-theorem piOpensIsoSectionsFamily_apply (sf : piOpens F U) (i : ι) :
+lemma piOpensIsoSectionsFamily_apply (sf : piOpens F U) (i : ι) :
     piOpensIsoSectionsFamily F U sf i = Pi.π (fun i => F.obj (op (U i))) i sf := by
   simp [piOpensIsoSectionsFamily]
 
 /-- Under the isomorphism `piOpensIsoSectionsFamily`, compatibility of sections is the same
 as being equalized by the arrows `leftRes` and `rightRes` of the equalizer diagram.
 -/
-theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
+lemma compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
     IsCompatible F U (piOpensIsoSectionsFamily F U sf) ↔
     leftRes F U sf = rightRes F U sf := by
   constructor <;> intro h
@@ -130,7 +130,7 @@ sections `sf` is the same as lying in the preimage of `res` (the leftmost arrow 
 equalizer diagram).
 -/
 @[simp]
-theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
+lemma isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
     IsGluing F U (piOpensIsoSectionsFamily F U sf) s ↔ res F U s = sf := by
   constructor <;> intro h
   · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
@@ -148,7 +148,7 @@ set_option linter.uppercaseLean3 false in
 /-- The "equalizer" sheaf condition can be obtained from the sheaf condition
 in terms of unique gluings.
 -/
-theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.IsSheaf := by
+lemma isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.IsSheaf := by
   rw [isSheaf_iff_isSheafEqualizerProducts]
   intro ι U
   refine' ⟨Fork.IsLimit.mk' _ _⟩
@@ -177,7 +177,7 @@ set_option linter.uppercaseLean3 false in
 /-- The sheaf condition in terms of unique gluings can be obtained from the usual
 "equalizer" sheaf condition.
 -/
-theorem isSheafUniqueGluing_of_isSheaf_types (Fsh : F.IsSheaf) : F.IsSheafUniqueGluing := by
+lemma isSheafUniqueGluing_of_isSheaf_types (Fsh : F.IsSheaf) : F.IsSheafUniqueGluing := by
   rw [isSheaf_iff_isSheafEqualizerProducts] at Fsh
   intro ι U sf hsf
   let sf' := (piOpensIsoSectionsFamily F U).symm sf
@@ -247,7 +247,7 @@ variable {X : TopCat.{v}} (F : Sheaf C X) {ι : Type v} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.
 -/
-theorem existsUnique_gluing (sf : ∀ i : ι, F.1.obj (op (U i))) (h : IsCompatible F.1 U sf) :
+lemma existsUnique_gluing (sf : ∀ i : ι, F.1.obj (op (U i))) (h : IsCompatible F.1 U sf) :
     ∃! s : F.1.obj (op (iSup U)), IsGluing F.1 U sf s :=
   (isSheaf_iff_isSheafUniqueGluing F.1).mp F.cond U sf h
 set_option linter.uppercaseLean3 false in
@@ -256,7 +256,7 @@ set_option linter.uppercaseLean3 false in
 /-- In this version of the lemma, the inclusion homs `iUV` can be specified directly by the user,
 which can be more convenient in practice.
 -/
-theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
+lemma existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
     (sf : ∀ i : ι, F.1.obj (op (U i))) (h : IsCompatible F.1 U sf) :
     ∃! s : F.1.obj (op V), ∀ i : ι, F.1.map (iUV i).op s = sf i := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
@@ -274,7 +274,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.exists_unique_gluing' TopCat.Sheaf.existsUnique_gluing'
 
 @[ext]
-theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
+lemma eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
     (h : ∀ i, F.1.map (Opens.leSupr U i).op s = F.1.map (Opens.leSupr U i).op t) : s = t := by
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (Opens.leSupr U i).op s
   have sf_compatible : IsCompatible _ U sf := by
@@ -296,7 +296,7 @@ set_option linter.uppercaseLean3 false in
 /-- In this version of the lemma, the inclusion homs `iUV` can be specified directly by the user,
 which can be more convenient in practice.
 -/
-theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
+lemma eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
     (s t : F.1.obj (op V)) (h : ∀ i, F.1.map (iUV i).op s = F.1.map (iUV i).op t) : s = t := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   suffices F.1.map (eqToHom V_eq_supr_U.symm).op s = F.1.map (eqToHom V_eq_supr_U.symm).op t by

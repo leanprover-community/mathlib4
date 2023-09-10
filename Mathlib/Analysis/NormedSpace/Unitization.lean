@@ -74,7 +74,7 @@ def splitMul : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
 variable {𝕜 A}
 
 @[simp]
-theorem splitMul_apply (x : Unitization 𝕜 A) :
+lemma splitMul_apply (x : Unitization 𝕜 A) :
     splitMul 𝕜 A x = (x.fst, algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd) :=
   show (x.fst + 0, _) = (x.fst, _) by rw [add_zero]; rfl
 
@@ -128,20 +128,20 @@ noncomputable def normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
 
 attribute [local instance] Unitization.normedAlgebraAux
 
-theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
+lemma norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
   rfl
 
-theorem nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x‖₊ :=
+lemma nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x‖₊ :=
   rfl
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
-theorem norm_eq_sup (x : Unitization 𝕜 A) :
+lemma norm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖ = ‖x.fst‖ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖ := by
   rw [norm_def, splitMul_apply, Prod.norm_def, sup_eq_max]
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to
 `Unitization.nnnorm_def`. -/
-theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
+lemma nnnorm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
   NNReal.eq <| norm_eq_sup x
 

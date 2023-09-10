@@ -322,19 +322,19 @@ open UniformSpace Prod
 
 variable [UniformSpace X] {s : Set X}
 
-theorem IsSeqCompact.exists_tendsto_of_frequently_mem (hs : IsSeqCompact s) {u : ℕ → X}
+lemma IsSeqCompact.exists_tendsto_of_frequently_mem (hs : IsSeqCompact s) {u : ℕ → X}
     (hu : ∃ᶠ n in atTop, u n ∈ s) (huc : CauchySeq u) : ∃ x ∈ s, Tendsto u atTop (𝓝 x) :=
   let ⟨x, hxs, _φ, φ_mono, hx⟩ := hs.subseq_of_frequently_in hu
   ⟨x, hxs, tendsto_nhds_of_cauchySeq_of_subseq huc φ_mono.tendsto_atTop hx⟩
 #align is_seq_compact.exists_tendsto_of_frequently_mem IsSeqCompact.exists_tendsto_of_frequently_mem
 
-theorem IsSeqCompact.exists_tendsto (hs : IsSeqCompact s) {u : ℕ → X} (hu : ∀ n, u n ∈ s)
+lemma IsSeqCompact.exists_tendsto (hs : IsSeqCompact s) {u : ℕ → X} (hu : ∀ n, u n ∈ s)
     (huc : CauchySeq u) : ∃ x ∈ s, Tendsto u atTop (𝓝 x) :=
   hs.exists_tendsto_of_frequently_mem (frequently_of_forall hu) huc
 #align is_seq_compact.exists_tendsto IsSeqCompact.exists_tendsto
 
 /-- A sequentially compact set in a uniform space is totally bounded. -/
-protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBounded s := by
+protected lemma IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBounded s := by
   intro V V_in
   unfold IsSeqCompact at h
   contrapose! h
@@ -351,7 +351,7 @@ variable [IsCountablyGenerated (𝓤 X)]
 
 /-- A sequentially compact set in a uniform set with countably generated uniformity filter
 is complete. -/
-protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
+protected lemma IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1
   rcases exists_antitone_basis (𝓤 X) with ⟨V, hV⟩
   choose W hW hWV using fun n => comp_mem_uniformity_sets (hV.mem n)
@@ -382,7 +382,7 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
 #align is_seq_compact.is_complete IsSeqCompact.isComplete
 
 /-- If `𝓤 β` is countably generated, then any sequentially compact set is compact. -/
-protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
+protected lemma IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 #align is_seq_compact.is_compact IsSeqCompact.isCompact
 
@@ -415,7 +415,7 @@ variable [ProperSpace X] {s : Set X}
 /-- A version of **Bolzano-Weistrass**: in a proper metric space (eg. $ℝ^n$),
 every bounded sequence has a converging subsequence. This version assumes only
 that the sequence is frequently in some bounded set. -/
-theorem tendsto_subseq_of_frequently_bounded (hs : Bounded s) {x : ℕ → X}
+lemma tendsto_subseq_of_frequently_bounded (hs : Bounded s) {x : ℕ → X}
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
     ∃ a ∈ closure s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   have hcs : IsSeqCompact (closure s) := hs.isCompact_closure.isSeqCompact
@@ -425,7 +425,7 @@ theorem tendsto_subseq_of_frequently_bounded (hs : Bounded s) {x : ℕ → X}
 
 /-- A version of Bolzano-Weistrass: in a proper metric space (eg. $ℝ^n$),
 every bounded sequence has a converging subsequence. -/
-theorem tendsto_subseq_of_bounded (hs : Bounded s) {x : ℕ → X} (hx : ∀ n, x n ∈ s) :
+lemma tendsto_subseq_of_bounded (hs : Bounded s) {x : ℕ → X} (hx : ∀ n, x n ∈ s) :
     ∃ a ∈ closure s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   tendsto_subseq_of_frequently_bounded hs <| frequently_of_forall hx
 #align tendsto_subseq_of_bounded tendsto_subseq_of_bounded

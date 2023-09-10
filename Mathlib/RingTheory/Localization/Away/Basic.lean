@@ -77,12 +77,12 @@ noncomputable def lift (hg : IsUnit (g x)) : S →+* P :=
 #align is_localization.away.lift IsLocalization.Away.lift
 
 @[simp]
-theorem AwayMap.lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg ((algebraMap R S) a) = g a :=
+lemma AwayMap.lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg ((algebraMap R S) a) = g a :=
   IsLocalization.lift_eq _ _
 #align is_localization.away.away_map.lift_eq IsLocalization.Away.AwayMap.lift_eq
 
 @[simp]
-theorem AwayMap.lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
+lemma AwayMap.lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
 #align is_localization.away.away_map.lift_comp IsLocalization.Away.AwayMap.lift_comp
 
@@ -215,7 +215,7 @@ lemma selfZpow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZpow x B n = algebraMap 
 #align self_zpow_of_nonneg selfZpow_of_nonneg
 
 @[simp]
-theorem selfZpow_coe_nat (d : ℕ) : selfZpow x B d = algebraMap R B x ^ d :=
+lemma selfZpow_coe_nat (d : ℕ) : selfZpow x B d = algebraMap R B x ^ d :=
   selfZpow_of_nonneg _ _ (Int.coe_nat_nonneg d)
 #align self_zpow_coe_nat selfZpow_coe_nat
 
@@ -237,7 +237,7 @@ lemma selfZpow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
 #align self_zpow_of_nonpos selfZpow_of_nonpos
 
 @[simp]
-theorem selfZpow_neg_coe_nat (d : ℕ) : selfZpow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
+lemma selfZpow_neg_coe_nat (d : ℕ) : selfZpow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
   simp [selfZpow_of_nonpos _ _ (neg_nonpos.mpr (Int.coe_nat_nonneg d))]
 #align self_zpow_neg_coe_nat selfZpow_neg_coe_nat
 
@@ -272,7 +272,7 @@ lemma selfZpow_add {n m : ℤ} : selfZpow x B (n + m) = selfZpow x B n * selfZpo
     simp [pow_add]
 #align self_zpow_add selfZpow_add
 
-theorem selfZpow_mul_neg (d : ℤ) : selfZpow x B d * selfZpow x B (-d) = 1 := by
+lemma selfZpow_mul_neg (d : ℤ) : selfZpow x B d * selfZpow x B (-d) = 1 := by
   by_cases hd : d ≤ 0
   · erw [selfZpow_of_nonpos x B hd, selfZpow_of_nonneg, ← map_pow, Int.natAbs_neg,
       IsLocalization.mk'_spec, map_one]
@@ -285,11 +285,11 @@ theorem selfZpow_mul_neg (d : ℤ) : selfZpow x B d * selfZpow x B (-d) = 1 := b
     rwa [neg_neg, ← not_le]
 #align self_zpow_mul_neg selfZpow_mul_neg
 
-theorem selfZpow_neg_mul (d : ℤ) : selfZpow x B (-d) * selfZpow x B d = 1 := by
+lemma selfZpow_neg_mul (d : ℤ) : selfZpow x B (-d) * selfZpow x B d = 1 := by
   rw [mul_comm, selfZpow_mul_neg x B d]
 #align self_zpow_neg_mul selfZpow_neg_mul
 
-theorem selfZpow_pow_sub (a : R) (b : B) (m d : ℤ) :
+lemma selfZpow_pow_sub (a : R) (b : B) (m d : ℤ) :
     selfZpow x B (m - d) * mk' B a (1 : Submonoid.powers x) = b ↔
       selfZpow x B m * mk' B a (1 : Submonoid.powers x) = selfZpow x B d * b := by
   rw [sub_eq_add_neg, selfZpow_add, mul_assoc, mul_comm _ (mk' B a 1), ← mul_assoc]

@@ -56,17 +56,17 @@ lemma continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2
 
 /-- The angle ∡AAB at a point. -/
 @[simp]
-theorem oangle_self_left (p₁ p₂ : P) : ∡ p₁ p₁ p₂ = 0 := by simp [oangle]
+lemma oangle_self_left (p₁ p₂ : P) : ∡ p₁ p₁ p₂ = 0 := by simp [oangle]
 #align euclidean_geometry.oangle_self_left EuclideanGeometry.oangle_self_left
 
 /-- The angle ∡ABB at a point. -/
 @[simp]
-theorem oangle_self_right (p₁ p₂ : P) : ∡ p₁ p₂ p₂ = 0 := by simp [oangle]
+lemma oangle_self_right (p₁ p₂ : P) : ∡ p₁ p₂ p₂ = 0 := by simp [oangle]
 #align euclidean_geometry.oangle_self_right EuclideanGeometry.oangle_self_right
 
 /-- The angle ∡ABA at a point. -/
 @[simp]
-theorem oangle_self_left_right (p₁ p₂ : P) : ∡ p₁ p₂ p₁ = 0 :=
+lemma oangle_self_left_right (p₁ p₂ : P) : ∡ p₁ p₂ p₁ = 0 :=
   o.oangle_self _
 #align euclidean_geometry.oangle_self_left_right EuclideanGeometry.oangle_self_left_right
 
@@ -190,13 +190,13 @@ lemma left_ne_right_of_oangle_sign_eq_neg_one {p₁ p₂ p₃ : P} (h : (∡ p�
 #align euclidean_geometry.left_ne_right_of_oangle_sign_eq_neg_one EuclideanGeometry.left_ne_right_of_oangle_sign_eq_neg_one
 
 /-- Reversing the order of the points passed to `oangle` negates the angle. -/
-theorem oangle_rev (p₁ p₂ p₃ : P) : ∡ p₃ p₂ p₁ = -∡ p₁ p₂ p₃ :=
+lemma oangle_rev (p₁ p₂ p₃ : P) : ∡ p₃ p₂ p₁ = -∡ p₁ p₂ p₃ :=
   o.oangle_rev _ _
 #align euclidean_geometry.oangle_rev EuclideanGeometry.oangle_rev
 
 /-- Adding an angle to that with the order of the points reversed results in 0. -/
 @[simp]
-theorem oangle_add_oangle_rev (p₁ p₂ p₃ : P) : ∡ p₁ p₂ p₃ + ∡ p₃ p₂ p₁ = 0 :=
+lemma oangle_add_oangle_rev (p₁ p₂ p₃ : P) : ∡ p₁ p₂ p₃ + ∡ p₃ p₂ p₁ = 0 :=
   o.oangle_add_oangle_rev _ _
 #align euclidean_geometry.oangle_add_oangle_rev EuclideanGeometry.oangle_add_oangle_rev
 
@@ -441,7 +441,7 @@ lemma angle_rev_eq_pi_div_two_of_oangle_eq_neg_pi_div_two {p₁ p₂ p₃ : P}
 #align euclidean_geometry.angle_rev_eq_pi_div_two_of_oangle_eq_neg_pi_div_two EuclideanGeometry.angle_rev_eq_pi_div_two_of_oangle_eq_neg_pi_div_two
 
 /-- Swapping the first and second points in an oriented angle negates the sign of that angle. -/
-theorem oangle_swap₁₂_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₂ p₁ p₃).sign := by
+lemma oangle_swap₁₂_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₂ p₁ p₃).sign := by
   rw [eq_comm, oangle, oangle, ← o.oangle_neg_neg, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, ←
     vsub_sub_vsub_cancel_left p₁ p₃ p₂, ← neg_vsub_eq_vsub_rev p₃ p₂, sub_eq_add_neg,
     neg_vsub_eq_vsub_rev p₂ p₁, add_comm, ← @neg_one_smul ℝ]
@@ -451,17 +451,17 @@ theorem oangle_swap₁₂_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign
 #align euclidean_geometry.oangle_swap₁₂_sign EuclideanGeometry.oangle_swap₁₂_sign
 
 /-- Swapping the first and third points in an oriented angle negates the sign of that angle. -/
-theorem oangle_swap₁₃_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₃ p₂ p₁).sign := by
+lemma oangle_swap₁₃_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₃ p₂ p₁).sign := by
   rw [oangle_rev, Real.Angle.sign_neg, neg_neg]
 #align euclidean_geometry.oangle_swap₁₃_sign EuclideanGeometry.oangle_swap₁₃_sign
 
 /-- Swapping the second and third points in an oriented angle negates the sign of that angle. -/
-theorem oangle_swap₂₃_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₁ p₃ p₂).sign := by
+lemma oangle_swap₂₃_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₁ p₃ p₂).sign := by
   rw [oangle_swap₁₃_sign, ← oangle_swap₁₂_sign, oangle_swap₁₃_sign]
 #align euclidean_geometry.oangle_swap₂₃_sign EuclideanGeometry.oangle_swap₂₃_sign
 
 /-- Rotating the points in an oriented angle does not change the sign of that angle. -/
-theorem oangle_rotate_sign (p₁ p₂ p₃ : P) : (∡ p₂ p₃ p₁).sign = (∡ p₁ p₂ p₃).sign := by
+lemma oangle_rotate_sign (p₁ p₂ p₃ : P) : (∡ p₂ p₃ p₁).sign = (∡ p₁ p₂ p₃).sign := by
   rw [← oangle_swap₁₂_sign, oangle_swap₁₃_sign]
 #align euclidean_geometry.oangle_rotate_sign EuclideanGeometry.oangle_rotate_sign
 
@@ -576,7 +576,7 @@ lemma _root_.Sbtw.oangle_eq_right {p₁ p₂ p₃ p₃' : P} (h : Sbtw ℝ p₂ 
 /-- An oriented angle is unchanged by replacing the first point with the midpoint of the segment
 between it and the second point. -/
 @[simp]
-theorem oangle_midpoint_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₁ p₂) p₂ p₃ = ∡ p₁ p₂ p₃ := by
+lemma oangle_midpoint_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₁ p₂) p₂ p₃ = ∡ p₁ p₂ p₃ := by
   by_cases h : p₁ = p₂; · simp [h]
   exact (sbtw_midpoint_of_ne ℝ h).symm.oangle_eq_left
 #align euclidean_geometry.oangle_midpoint_left EuclideanGeometry.oangle_midpoint_left
@@ -584,14 +584,14 @@ theorem oangle_midpoint_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₁ p₂)
 /-- An oriented angle is unchanged by replacing the first point with the midpoint of the segment
 between the second point and that point. -/
 @[simp]
-theorem oangle_midpoint_rev_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₂ p₁) p₂ p₃ = ∡ p₁ p₂ p₃ := by
+lemma oangle_midpoint_rev_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₂ p₁) p₂ p₃ = ∡ p₁ p₂ p₃ := by
   rw [midpoint_comm, oangle_midpoint_left]
 #align euclidean_geometry.oangle_midpoint_rev_left EuclideanGeometry.oangle_midpoint_rev_left
 
 /-- An oriented angle is unchanged by replacing the third point with the midpoint of the segment
 between it and the second point. -/
 @[simp]
-theorem oangle_midpoint_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint ℝ p₃ p₂) = ∡ p₁ p₂ p₃ := by
+lemma oangle_midpoint_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint ℝ p₃ p₂) = ∡ p₁ p₂ p₃ := by
   by_cases h : p₃ = p₂; · simp [h]
   exact (sbtw_midpoint_of_ne ℝ h).symm.oangle_eq_right
 #align euclidean_geometry.oangle_midpoint_right EuclideanGeometry.oangle_midpoint_right
@@ -599,7 +599,7 @@ theorem oangle_midpoint_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint ℝ
 /-- An oriented angle is unchanged by replacing the third point with the midpoint of the segment
 between the second point and that point. -/
 @[simp]
-theorem oangle_midpoint_rev_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint ℝ p₂ p₃) = ∡ p₁ p₂ p₃ := by
+lemma oangle_midpoint_rev_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint ℝ p₂ p₃) = ∡ p₁ p₂ p₃ := by
   rw [midpoint_comm, oangle_midpoint_right]
 #align euclidean_geometry.oangle_midpoint_rev_right EuclideanGeometry.oangle_midpoint_rev_right
 

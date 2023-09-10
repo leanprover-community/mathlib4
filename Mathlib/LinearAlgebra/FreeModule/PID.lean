@@ -62,7 +62,7 @@ variable {ι : Type*} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
 
-theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodule R M}
+lemma eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodule R M}
     {ϕ : M →ₗ[R] R} (hϕ : ∀ ψ : M →ₗ[R] R, ¬N.map ϕ < N.map ψ) [(N.map ϕ).IsPrincipal]
     (hgen : generator (N.map ϕ) = (0 : R)) : N = ⊥ := by
   rw [Submodule.eq_bot_iff]
@@ -607,7 +607,7 @@ a `Basis.SmithNormalForm`.
 The definitions `Ideal.ringBasis`, `Ideal.selfBasis`, `Ideal.smithCoeffs` are (noncomputable)
 choices of values for this existential quantifier.
 -/
-theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
+lemma Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
   cases nonempty_fintype ι
   let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
@@ -664,13 +664,13 @@ find a basis for `S` and `I` such that the inclusion map is a square diagonal
 matrix.
 -/
 @[simp]
-theorem Ideal.selfBasis_def (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
+lemma Ideal.selfBasis_def (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     ∀ i, (Ideal.selfBasis b I hI i : S) = Ideal.smithCoeffs b I hI i • Ideal.ringBasis b I hI i :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose_spec
 #align ideal.self_basis_def Ideal.selfBasis_def
 
 @[simp]
-theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) (i) :
+lemma Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) (i) :
     Ideal.smithCoeffs b I hI i ≠ 0 := by
   intro hi
   apply Basis.ne_zero (Ideal.selfBasis b I hI) i

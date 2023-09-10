@@ -101,7 +101,7 @@ lemma finRotate_succ_eq_decomposeFin {n : ℕ} :
 #align fin_rotate_succ finRotate_succ_eq_decomposeFin
 
 @[simp]
-theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := by
+lemma sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := by
   induction' n with n ih
   · simp
   · rw [finRotate_succ_eq_decomposeFin]
@@ -222,7 +222,7 @@ lemma cycleRange_apply {n : ℕ} (i j : Fin n.succ) :
 #align fin.cycle_range_apply Fin.cycleRange_apply
 
 @[simp]
-theorem cycleRange_zero (n : ℕ) : cycleRange (0 : Fin n.succ) = 1 := by
+lemma cycleRange_zero (n : ℕ) : cycleRange (0 : Fin n.succ) = 1 := by
   ext j
   refine' Fin.cases _ (fun j => _) j
   · simp
@@ -230,7 +230,7 @@ theorem cycleRange_zero (n : ℕ) : cycleRange (0 : Fin n.succ) = 1 := by
 #align fin.cycle_range_zero Fin.cycleRange_zero
 
 @[simp]
-theorem cycleRange_last (n : ℕ) : cycleRange (last n) = finRotate (n + 1) := by
+lemma cycleRange_last (n : ℕ) : cycleRange (last n) = finRotate (n + 1) := by
   ext i
   rw [coe_cycleRange_of_le (le_last _), coe_finRotate]
 #align fin.cycle_range_last Fin.cycleRange_last

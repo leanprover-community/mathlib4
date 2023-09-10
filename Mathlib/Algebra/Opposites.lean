@@ -96,12 +96,12 @@ def unop : αᵐᵒᵖ → α :=
 #align add_opposite.unop AddOpposite.unop
 
 @[to_additive (attr := simp)]
-theorem unop_op (x : α) : unop (op x) = x := rfl
+lemma unop_op (x : α) : unop (op x) = x := rfl
 #align mul_opposite.unop_op MulOpposite.unop_op
 #align add_opposite.unop_op AddOpposite.unop_op
 
 @[to_additive (attr := simp)]
-theorem op_unop (x : αᵐᵒᵖ) : op (unop x) = x :=
+lemma op_unop (x : αᵐᵒᵖ) : op (unop x) = x :=
   rfl
 #align mul_opposite.op_unop MulOpposite.op_unop
 #align add_opposite.op_unop AddOpposite.op_unop

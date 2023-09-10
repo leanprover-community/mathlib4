@@ -28,18 +28,18 @@ section Monoid
 variable [Monoid R]
 
 /-- Any power of a left-regular element is left-regular. -/
-theorem IsLeftRegular.pow (n : ℕ) (rla : IsLeftRegular a) : IsLeftRegular (a ^ n) := by
+lemma IsLeftRegular.pow (n : ℕ) (rla : IsLeftRegular a) : IsLeftRegular (a ^ n) := by
   simp only [IsLeftRegular, ← mul_left_iterate, rla.iterate n]
 #align is_left_regular.pow IsLeftRegular.pow
 
 /-- Any power of a right-regular element is right-regular. -/
-theorem IsRightRegular.pow (n : ℕ) (rra : IsRightRegular a) : IsRightRegular (a ^ n) := by
+lemma IsRightRegular.pow (n : ℕ) (rra : IsRightRegular a) : IsRightRegular (a ^ n) := by
   rw [IsRightRegular, ← mul_right_iterate]
   exact rra.iterate n
 #align is_right_regular.pow IsRightRegular.pow
 
 /-- Any power of a regular element is regular. -/
-theorem IsRegular.pow (n : ℕ) (ra : IsRegular a) : IsRegular (a ^ n) :=
+lemma IsRegular.pow (n : ℕ) (ra : IsRegular a) : IsRegular (a ^ n) :=
   ⟨IsLeftRegular.pow n ra.left, IsRightRegular.pow n ra.right⟩
 #align is_regular.pow IsRegular.pow
 

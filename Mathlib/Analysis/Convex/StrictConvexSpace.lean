@@ -154,7 +154,7 @@ variable [StrictConvexSpace ℝ E] {x y z : E} {a b r : ℝ}
 
 /-- If `x ≠ y` belong to the same closed ball, then a convex combination of `x` and `y` with
 positive coefficients belongs to the corresponding open ball. -/
-theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r) (hne : x ≠ y)
+lemma combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r) (hne : x ≠ y)
     (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a • x + b • y ∈ ball z r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · rw [closedBall_zero, mem_singleton_iff] at hx hy
@@ -165,14 +165,14 @@ theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall 
 
 /-- If `x ≠ y` belong to the same closed ball, then the open segment with endpoints `x` and `y` is
 included in the corresponding open ball. -/
-theorem openSegment_subset_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r)
+lemma openSegment_subset_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r)
     (hne : x ≠ y) : openSegment ℝ x y ⊆ ball z r :=
   (openSegment_subset_iff _).2 fun _ _ => combo_mem_ball_of_ne hx hy hne
 #align open_segment_subset_ball_of_ne openSegment_subset_ball_of_ne
 
 /-- If `x` and `y` are two distinct vectors of norm at most `r`, then a convex combination of `x`
 and `y` with positive coefficients has norm strictly less than `r`. -/
-theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x ≠ y) (ha : 0 < a) (hb : 0 < b)
+lemma norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x ≠ y) (ha : 0 < a) (hb : 0 < b)
     (hab : a + b = 1) : ‖a • x + b • y‖ < r := by
   simp only [← mem_ball_zero_iff, ← mem_closedBall_zero_iff] at hx hy ⊢
   exact combo_mem_ball_of_ne hx hy hne ha hb hab
@@ -180,7 +180,7 @@ theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x �
 
 /-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ + ‖y‖`.
 -/
-theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
+lemma norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
   simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
   rcases h with ⟨hx, hy, hne⟩
   rw [← norm_pos_iff] at hx hy
@@ -194,12 +194,12 @@ theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x�
     div_eq_inv_mul, div_lt_one hxy] at this
 #align norm_add_lt_of_not_same_ray norm_add_lt_of_not_sameRay
 
-theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
+lemma lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
   nth_rw 1 [← sub_add_cancel x y] at h ⊢
   exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' => h <| H'.add_left SameRay.rfl)
 #align lt_norm_sub_of_not_same_ray lt_norm_sub_of_not_sameRay
 
-theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
+lemma abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
   refine' abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, _⟩
   rw [norm_sub_rev]
   exact lt_norm_sub_of_not_sameRay (mt SameRay.symm h)
@@ -213,7 +213,7 @@ lemma sameRay_iff_norm_add : SameRay ℝ x y ↔ ‖x + y‖ = ‖x‖ + ‖y‖
 
 /-- If `x` and `y` are two vectors in a strictly convex space have the same norm and the norm of
 their sum is equal to the sum of their norms, then they are equal. -/
-theorem eq_of_norm_eq_of_norm_add_eq (h₁ : ‖x‖ = ‖y‖) (h₂ : ‖x + y‖ = ‖x‖ + ‖y‖) : x = y :=
+lemma eq_of_norm_eq_of_norm_add_eq (h₁ : ‖x‖ = ‖y‖) (h₂ : ‖x + y‖ = ‖x‖ + ‖y‖) : x = y :=
   (sameRay_iff_norm_add.mpr h₂).eq_of_norm_eq h₁
 #align eq_of_norm_eq_of_norm_add_eq eq_of_norm_eq_of_norm_add_eq
 
@@ -239,7 +239,7 @@ lemma dist_add_dist_eq_iff : dist x y + dist y z = dist x z ↔ y ∈ [x -[ℝ] 
     eq_comm]
 #align dist_add_dist_eq_iff dist_add_dist_eq_iff
 
-theorem norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x + y)‖ < ‖x‖ ↔ x ≠ y := by
+lemma norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x + y)‖ < ‖x‖ ↔ x ≠ y := by
   rw [norm_smul, Real.norm_of_nonneg (one_div_nonneg.2 zero_le_two), ← inv_eq_one_div, ←
     div_eq_inv_mul, div_lt_iff (zero_lt_two' ℝ), mul_two, ← not_sameRay_iff_of_norm_eq h,
     not_sameRay_iff_norm_add_lt, h]

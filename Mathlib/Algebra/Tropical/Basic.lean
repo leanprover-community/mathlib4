@@ -80,22 +80,22 @@ lemma untrop_injective : Function.Injective (untrop : Tropical R → R) := fun _
 #align tropical.untrop_injective Tropical.untrop_injective
 
 @[simp]
-theorem trop_inj_iff (x y : R) : trop x = trop y ↔ x = y :=
+lemma trop_inj_iff (x y : R) : trop x = trop y ↔ x = y :=
   Iff.rfl
 #align tropical.trop_inj_iff Tropical.trop_inj_iff
 
 @[simp]
-theorem untrop_inj_iff (x y : Tropical R) : untrop x = untrop y ↔ x = y :=
+lemma untrop_inj_iff (x y : Tropical R) : untrop x = untrop y ↔ x = y :=
   Iff.rfl
 #align tropical.untrop_inj_iff Tropical.untrop_inj_iff
 
 @[simp]
-theorem trop_untrop (x : Tropical R) : trop (untrop x) = x :=
+lemma trop_untrop (x : Tropical R) : trop (untrop x) = x :=
   rfl
 #align tropical.trop_untrop Tropical.trop_untrop
 
 @[simp]
-theorem untrop_trop (x : R) : untrop (trop x) = x :=
+lemma untrop_trop (x : R) : untrop (trop x) = x :=
   rfl
 #align tropical.untrop_trop Tropical.untrop_trop
 
@@ -238,12 +238,12 @@ lemma trop_top [Top R] : trop (⊤ : R) = 0 :=
 #align tropical.trop_top Tropical.trop_top
 
 @[simp]
-theorem trop_coe_ne_zero (x : R) : trop (x : WithTop R) ≠ 0 :=
+lemma trop_coe_ne_zero (x : R) : trop (x : WithTop R) ≠ 0 :=
   fun.
 #align tropical.trop_coe_ne_zero Tropical.trop_coe_ne_zero
 
 @[simp]
-theorem zero_ne_trop_coe (x : R) : (0 : Tropical (WithTop R)) ≠ trop x :=
+lemma zero_ne_trop_coe (x : R) : (0 : Tropical (WithTop R)) ≠ trop x :=
   fun.
 #align tropical.zero_ne_trop_coe Tropical.zero_ne_trop_coe
 
@@ -267,21 +267,21 @@ instance instAddCommSemigroupTropical : AddCommSemigroup (Tropical R) where
   add_comm _ _ := untrop_injective (min_comm _ _)
 
 @[simp]
-theorem untrop_add (x y : Tropical R) : untrop (x + y) = min (untrop x) (untrop y) :=
+lemma untrop_add (x y : Tropical R) : untrop (x + y) = min (untrop x) (untrop y) :=
   rfl
 #align tropical.untrop_add Tropical.untrop_add
 
 @[simp]
-theorem trop_min (x y : R) : trop (min x y) = trop x + trop y :=
+lemma trop_min (x y : R) : trop (min x y) = trop x + trop y :=
   rfl
 #align tropical.trop_min Tropical.trop_min
 
 @[simp]
-theorem trop_inf (x y : R) : trop (x ⊓ y) = trop x + trop y :=
+lemma trop_inf (x y : R) : trop (x ⊓ y) = trop x + trop y :=
   rfl
 #align tropical.trop_inf Tropical.trop_inf
 
-theorem trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y)) :=
+lemma trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y)) :=
   rfl
 #align tropical.trop_add_def Tropical.trop_add_def
 
@@ -295,12 +295,12 @@ instance instLinearOrderTropical : LinearOrder (Tropical R) :=
     min_def := fun a b => untrop_injective (by simp [min_def]; split_ifs <;> simp) }
 
 @[simp]
-theorem untrop_sup (x y : Tropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=
+lemma untrop_sup (x y : Tropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=
   rfl
 #align tropical.untrop_sup Tropical.untrop_sup
 
 @[simp]
-theorem untrop_max (x y : Tropical R) : untrop (max x y) = max (untrop x) (untrop y) :=
+lemma untrop_max (x y : Tropical R) : untrop (max x y) = max (untrop x) (untrop y) :=
   rfl
 #align tropical.untrop_max Tropical.untrop_max
 
@@ -314,11 +314,11 @@ lemma inf_eq_add : ((· ⊓ ·) : Tropical R → Tropical R → Tropical R) = (�
   rfl
 #align tropical.inf_eq_add Tropical.inf_eq_add
 
-theorem trop_max_def (x y : Tropical R) : max x y = trop (max (untrop x) (untrop y)) :=
+lemma trop_max_def (x y : Tropical R) : max x y = trop (max (untrop x) (untrop y)) :=
   rfl
 #align tropical.trop_max_def Tropical.trop_max_def
 
-theorem trop_sup_def (x y : Tropical R) : x ⊔ y = trop (untrop x ⊔ untrop y) :=
+lemma trop_sup_def (x y : Tropical R) : x ⊔ y = trop (untrop x ⊔ untrop y) :=
   rfl
 #align tropical.trop_sup_def Tropical.trop_sup_def
 
@@ -341,13 +341,13 @@ lemma add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
 #align tropical.add_eq_right_iff Tropical.add_eq_right_iff
 
 --Porting note: removing `simp`. `simp` can prove it
-theorem add_self (x : Tropical R) : x + x = x :=
+lemma add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit0 (x : Tropical R) : bit0 x = x :=
+lemma bit0 (x : Tropical R) : bit0 x = x :=
   add_self x
 #align tropical.bit0 Tropical.bit0
 

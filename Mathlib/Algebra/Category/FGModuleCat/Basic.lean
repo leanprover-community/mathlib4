@@ -258,7 +258,7 @@ def FGModuleCatEvaluation : FGModuleCatDual K V ⊗ V ⟶ 𝟙_ (FGModuleCat K) 
 #align fgModule.fgModule_evaluation FGModuleCat.FGModuleCatEvaluation
 
 @[simp]
-theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
+lemma FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V) (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 #align fgModule.fgModule_evaluation_apply FGModuleCat.FGModuleCatEvaluation_apply

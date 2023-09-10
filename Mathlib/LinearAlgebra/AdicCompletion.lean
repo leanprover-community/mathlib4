@@ -53,7 +53,7 @@ class IsAdicComplete extends IsHausdorff I M, IsPrecomplete I M : Prop
 
 variable {I M}
 
-theorem IsHausdorff.haus (_ : IsHausdorff I M) :
+lemma IsHausdorff.haus (_ : IsHausdorff I M) :
     ∀ x : M, (∀ n : ℕ, x ≡ 0 [SMOD (I ^ n • ⊤ : Submodule R M)]) → x = 0 :=
   IsHausdorff.haus'
 #align is_Hausdorff.haus IsHausdorff.haus
@@ -63,7 +63,7 @@ lemma isHausdorff_iff :
   ⟨IsHausdorff.haus, fun h => ⟨h⟩⟩
 #align is_Hausdorff_iff isHausdorff_iff
 
-theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
+lemma IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
       ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
   IsPrecomplete.prec' _
@@ -106,7 +106,7 @@ instance bot : IsHausdorff (⊥ : Ideal R) M :=
 
 variable {M}
 
-protected theorem subsingleton (h : IsHausdorff (⊤ : Ideal R) M) : Subsingleton M :=
+protected lemma subsingleton (h : IsHausdorff (⊤ : Ideal R) M) : Subsingleton M :=
   ⟨fun x y => eq_of_sub_eq_zero <| h.haus (x - y) fun n => by
     rw [Ideal.top_pow, top_smul]
     exact SModEq.top⟩
@@ -120,7 +120,7 @@ instance (priority := 100) of_subsingleton [Subsingleton M] : IsHausdorff I M :=
 
 variable {I M}
 
-theorem iInf_pow_smul (h : IsHausdorff I M) : (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) = ⊥ :=
+lemma iInf_pow_smul (h : IsHausdorff I M) : (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) = ⊥ :=
   eq_bot_iff.2 fun x hx =>
     (mem_bot _).2 <| h.haus x fun n => SModEq.zero.2 <| (mem_iInf fun n : ℕ => I ^ n • ⊤).1 hx n
 #align is_Hausdorff.infi_pow_smul IsHausdorff.iInf_pow_smul
@@ -163,16 +163,16 @@ def lift (f : M →ₗ[R] N) : Hausdorffification I M →ₗ[R] N :=
       exact smul_mono le_rfl le_top
 #align Hausdorffification.lift Hausdorffification.lift
 
-theorem lift_of (f : M →ₗ[R] N) (x : M) : lift I f (of I M x) = f x :=
+lemma lift_of (f : M →ₗ[R] N) (x : M) : lift I f (of I M x) = f x :=
   rfl
 #align Hausdorffification.lift_of Hausdorffification.lift_of
 
-theorem lift_comp_of (f : M →ₗ[R] N) : (lift I f).comp (of I M) = f :=
+lemma lift_comp_of (f : M →ₗ[R] N) : (lift I f).comp (of I M) = f :=
   LinearMap.ext fun _ => rfl
 #align Hausdorffification.lift_comp_of Hausdorffification.lift_comp_of
 
 /-- Uniqueness of lift. -/
-theorem lift_eq (f : M →ₗ[R] N) (g : Hausdorffification I M →ₗ[R] N) (hg : g.comp (of I M) = f) :
+lemma lift_eq (f : M →ₗ[R] N) (g : Hausdorffification I M →ₗ[R] N) (hg : g.comp (of I M) = f) :
     g = lift I f :=
   LinearMap.ext fun x => induction_on x fun x => by rw [lift_of, ← hg, LinearMap.comp_apply]
 #align Hausdorffification.lift_eq Hausdorffification.lift_eq
@@ -214,7 +214,7 @@ def of : M →ₗ[R] adicCompletion I M where
 
 set_option maxHeartbeats 300000 in
 @[simp]
-theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
+lemma of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
   rfl
 #align adic_completion.of_apply adicCompletion.of_apply
 
@@ -226,27 +226,27 @@ def eval (n : ℕ) : adicCompletion I M →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodu
 #align adic_completion.eval adicCompletion.eval
 
 @[simp]
-theorem coe_eval (n : ℕ) :
+lemma coe_eval (n : ℕ) :
     (eval I M n : adicCompletion I M → M ⧸ (I ^ n • ⊤ : Submodule R M)) = fun f => f.1 n :=
   rfl
 #align adic_completion.coe_eval adicCompletion.coe_eval
 
-theorem eval_apply (n : ℕ) (f : adicCompletion I M) : eval I M n f = f.1 n :=
+lemma eval_apply (n : ℕ) (f : adicCompletion I M) : eval I M n f = f.1 n :=
   rfl
 #align adic_completion.eval_apply adicCompletion.eval_apply
 
 set_option maxHeartbeats 300000 in
-theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ _ x :=
+lemma eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ _ x :=
   rfl
 #align adic_completion.eval_of adicCompletion.eval_of
 
 @[simp]
-theorem eval_comp_of (n : ℕ) : (eval I M n).comp (of I M) = mkQ _ :=
+lemma eval_comp_of (n : ℕ) : (eval I M n).comp (of I M) = mkQ _ :=
   rfl
 #align adic_completion.eval_comp_of adicCompletion.eval_comp_of
 
 @[simp]
-theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
+lemma range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
   LinearMap.range_eq_top.2 fun x => Quotient.inductionOn' x fun x => ⟨of I M x, rfl⟩
 #align adic_completion.range_eval adicCompletion.range_eval
 
@@ -272,7 +272,7 @@ namespace IsAdicComplete
 instance bot : IsAdicComplete (⊥ : Ideal R) M where
 #align is_adic_complete.bot IsAdicComplete.bot
 
-protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=
+protected lemma subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=
   h.1.subsingleton
 #align is_adic_complete.subsingleton IsAdicComplete.subsingleton
 

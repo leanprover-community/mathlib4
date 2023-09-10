@@ -111,7 +111,7 @@ lemma one_neBot : (1 : Filter α).NeBot :=
 scoped[Pointwise] attribute [instance] Filter.one_neBot
 
 @[to_additive (attr := simp)]
-protected theorem map_one' (f : α → β) : (1 : Filter α).map f = pure (f 1) :=
+protected lemma map_one' (f : α → β) : (1 : Filter α).map f = pure (f 1) :=
   rfl
 #align filter.map_one' Filter.map_one'
 #align filter.map_zero' Filter.map_zero'
@@ -123,7 +123,7 @@ lemma le_one_iff : f ≤ 1 ↔ (1 : Set α) ∈ f :=
 #align filter.nonpos_iff Filter.nonpos_iff
 
 @[to_additive]
-protected theorem NeBot.le_one_iff (h : f.NeBot) : f ≤ 1 ↔ f = 1 :=
+protected lemma NeBot.le_one_iff (h : f.NeBot) : f ≤ 1 ↔ f = 1 :=
   h.le_pure_iff
 #align filter.ne_bot.le_one_iff Filter.NeBot.le_one_iff
 #align filter.ne_bot.nonpos_iff Filter.NeBot.nonpos_iff
@@ -160,7 +160,7 @@ lemma coe_pureOneHom : (pureOneHom : α → Filter α) = pure :=
 #align filter.coe_pure_zero_hom Filter.coe_pureZeroHom
 
 @[to_additive (attr := simp)]
-theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
+lemma pureOneHom_apply (a : α) : pureOneHom a = pure a :=
   rfl
 #align filter.pure_one_hom_apply Filter.pureOneHom_apply
 #align filter.pure_zero_hom_apply Filter.pureZeroHom_apply
@@ -200,7 +200,7 @@ lemma mem_inv : s ∈ f⁻¹ ↔ Inv.inv ⁻¹' s ∈ f :=
 #align filter.mem_neg Filter.mem_neg
 
 @[to_additive]
-protected theorem inv_le_inv (hf : f ≤ g) : f⁻¹ ≤ g⁻¹ :=
+protected lemma inv_le_inv (hf : f ≤ g) : f⁻¹ ≤ g⁻¹ :=
   map_mono hf
 #align filter.inv_le_inv Filter.inv_le_inv
 #align filter.neg_le_neg Filter.neg_le_neg
@@ -235,7 +235,7 @@ section InvolutiveInv
 variable [InvolutiveInv α] {f g : Filter α} {s : Set α}
 
 @[to_additive]
-theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_preimage, inv_inv]
+lemma inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_preimage, inv_inv]
 #align filter.inv_mem_inv Filter.inv_mem_inv
 #align filter.neg_mem_neg Filter.neg_mem_neg
 
@@ -402,7 +402,7 @@ lemma coe_pureMulHom : (pureMulHom : α → Filter α) = pure :=
 #align filter.coe_pure_add_hom Filter.coe_pureMulHom
 
 @[to_additive (attr := simp)]
-theorem pureMulHom_apply (a : α) : pureMulHom a = pure a :=
+lemma pureMulHom_apply (a : α) : pureMulHom a = pure a :=
   rfl
 #align filter.pure_mul_hom_apply Filter.pureMulHom_apply
 #align filter.pure_add_hom_apply Filter.pureMulHom_apply
@@ -647,7 +647,7 @@ lemma coe_pureMonoidHom : (pureMonoidHom : α → Filter α) = pure :=
 #align filter.coe_pure_add_monoid_hom Filter.coe_pureAddMonoidHom
 
 @[to_additive (attr := simp)]
-theorem pureMonoidHom_apply (a : α) : pureMonoidHom a = pure a :=
+lemma pureMonoidHom_apply (a : α) : pureMonoidHom a = pure a :=
   rfl
 #align filter.pure_monoid_hom_apply Filter.pureMonoidHom_apply
 #align filter.pure_add_monoid_hom_apply Filter.pureAddMonoidHom_apply
@@ -668,7 +668,7 @@ protected def monoid : Monoid (Filter α) :=
 scoped[Pointwise] attribute [instance] Filter.monoid Filter.addMonoid
 
 @[to_additive]
-theorem pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
+lemma pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
   | 0 => by
     rw [pow_zero]
     exact one_mem_one
@@ -685,7 +685,7 @@ lemma bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
 #align filter.nsmul_bot Filter.nsmul_bot
 
 @[to_additive]
-theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
+lemma mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
   refine' top_le_iff.1 fun s => _
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
@@ -694,7 +694,7 @@ theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
 #align filter.add_top_of_nonneg Filter.add_top_of_nonneg
 
 @[to_additive]
-theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
+lemma top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
   refine' top_le_iff.1 fun s => _
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
@@ -826,13 +826,13 @@ variable [MulZeroClass α] {f g : Filter α}
 /-! Note that `Filter` is not a `MulZeroClass` because `0 * ⊥ ≠ 0`. -/
 
 
-theorem NeBot.mul_zero_nonneg (hf : f.NeBot) : 0 ≤ f * 0 :=
+lemma NeBot.mul_zero_nonneg (hf : f.NeBot) : 0 ≤ f * 0 :=
   le_mul_iff.2 fun _ h₁ _ h₂ =>
     let ⟨_, ha⟩ := hf.nonempty_of_mem h₁
     ⟨_, _, ha, h₂, mul_zero _⟩
 #align filter.ne_bot.mul_zero_nonneg Filter.NeBot.mul_zero_nonneg
 
-theorem NeBot.zero_mul_nonneg (hg : g.NeBot) : 0 ≤ 0 * g :=
+lemma NeBot.zero_mul_nonneg (hg : g.NeBot) : 0 ≤ 0 * g :=
   le_mul_iff.2 fun _ h₁ _ h₂ =>
     let ⟨_, hb⟩ := hg.nonempty_of_mem h₂
     ⟨_, _, h₁, hb, zero_mul _⟩
@@ -865,7 +865,7 @@ lemma not_one_le_div_iff : ¬1 ≤ f / g ↔ Disjoint f g :=
 #align filter.not_nonneg_sub_iff Filter.not_nonneg_sub_iff
 
 @[to_additive]
-theorem NeBot.one_le_div (h : f.NeBot) : 1 ≤ f / f := by
+lemma NeBot.one_le_div (h : f.NeBot) : 1 ≤ f / f := by
   rintro s ⟨t₁, t₂, h₁, h₂, hs⟩
   obtain ⟨a, ha₁, ha₂⟩ := Set.not_disjoint_iff.1 (h.not_disjoint h₁ h₂)
   rw [mem_one, ← div_self' a]
@@ -874,7 +874,7 @@ theorem NeBot.one_le_div (h : f.NeBot) : 1 ≤ f / f := by
 #align filter.ne_bot.nonneg_sub Filter.NeBot.nonneg_sub
 
 @[to_additive]
-theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
+lemma isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
   (Group.isUnit a).filter
 #align filter.is_unit_pure Filter.isUnit_pure
 #align filter.is_add_unit_pure Filter.isAddUnit_pure
@@ -903,7 +903,7 @@ protected lemma map_div : (f / g).map m = f.map m / g.map m :=
 #align filter.map_sub Filter.map_sub
 
 @[to_additive]
-protected theorem Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g₁ g₂) :
+protected lemma Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g₁ g₂) :
     Tendsto m (f₁ / g₁) (f₂ / g₂) :=
   (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
 #align filter.tendsto.div_div Filter.Tendsto.div_div
@@ -917,13 +917,13 @@ section GroupWithZero
 
 variable [GroupWithZero α] {f g : Filter α}
 
-theorem NeBot.div_zero_nonneg (hf : f.NeBot) : 0 ≤ f / 0 :=
+lemma NeBot.div_zero_nonneg (hf : f.NeBot) : 0 ≤ f / 0 :=
   Filter.le_div_iff.2 fun _ h₁ _ h₂ =>
     let ⟨_, ha⟩ := hf.nonempty_of_mem h₁
     ⟨_, _, ha, h₂, div_zero _⟩
 #align filter.ne_bot.div_zero_nonneg Filter.NeBot.div_zero_nonneg
 
-theorem NeBot.zero_div_nonneg (hg : g.NeBot) : 0 ≤ 0 / g :=
+lemma NeBot.zero_div_nonneg (hg : g.NeBot) : 0 ≤ 0 / g :=
   Filter.le_div_iff.2 fun _ h₁ _ h₂ =>
     let ⟨_, hb⟩ := hg.nonempty_of_mem h₂
     ⟨_, _, h₁, hb, zero_div _⟩
@@ -1220,7 +1220,7 @@ lemma NeBot.of_smul_filter : (a • f).NeBot → f.NeBot :=
 #align filter.ne_bot.of_vadd_filter Filter.NeBot.of_vadd_filter
 
 @[to_additive]
-theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f₂ :=
+lemma smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f₂ :=
   map_mono hf
 #align filter.smul_filter_le_smul_filter Filter.smul_filter_le_smul_filter
 #align filter.vadd_filter_le_vadd_filter Filter.vadd_filter_le_vadd_filter
@@ -1345,13 +1345,13 @@ because `0 * ⊥ ≠ 0`.
 -/
 
 
-theorem NeBot.smul_zero_nonneg (hf : f.NeBot) : 0 ≤ f • (0 : Filter β) :=
+lemma NeBot.smul_zero_nonneg (hf : f.NeBot) : 0 ≤ f • (0 : Filter β) :=
   le_smul_iff.2 fun _ h₁ _ h₂ =>
     let ⟨_, ha⟩ := hf.nonempty_of_mem h₁
     ⟨_, _, ha, h₂, smul_zero _⟩
 #align filter.ne_bot.smul_zero_nonneg Filter.NeBot.smul_zero_nonneg
 
-theorem NeBot.zero_smul_nonneg (hg : g.NeBot) : 0 ≤ (0 : Filter α) • g :=
+lemma NeBot.zero_smul_nonneg (hg : g.NeBot) : 0 ≤ (0 : Filter α) • g :=
   le_smul_iff.2 fun _ h₁ _ h₂ =>
     let ⟨_, hb⟩ := hg.nonempty_of_mem h₂
     ⟨_, _, h₁, hb, zero_smul _ _⟩
@@ -1365,7 +1365,7 @@ lemma zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
   rwa [mem_preimage, zero_smul]
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 
-theorem zero_smul_filter (hg : g.NeBot) : (0 : α) • g = 0 :=
+lemma zero_smul_filter (hg : g.NeBot) : (0 : α) • g = 0 :=
   zero_smul_filter_nonpos.antisymm <|
     le_map_iff.2 fun s hs => by
       simp_rw [zero_smul, (hg.nonempty_of_mem hs).image_const]

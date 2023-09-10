@@ -29,7 +29,7 @@ open scoped Polynomial
 
 variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
 
-theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
+lemma eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
     eigenspace f (-q.coeff 0 / q.leadingCoeff) = LinearMap.ker (aeval f q) :=
   calc
     eigenspace f (-q.coeff 0 / q.leadingCoeff)
@@ -43,7 +43,7 @@ theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degr
     _ = LinearMap.ker (aeval f q) := by rwa [← eq_X_add_C_of_degree_eq_one]
 #align module.End.eigenspace_aeval_polynomial_degree_1 Module.End.eigenspace_aeval_polynomial_degree_1
 
-theorem ker_aeval_ring_hom'_unit_polynomial (f : End K V) (c : K[X]ˣ) :
+lemma ker_aeval_ring_hom'_unit_polynomial (f : End K V) (c : K[X]ˣ) :
     LinearMap.ker (aeval f (c : K[X])) = ⊥ := by
   rw [Polynomial.eq_C_of_degree_eq_zero (degree_coe_units c)]
   simp only [aeval_def, eval₂_C]
@@ -73,7 +73,7 @@ variable [FiniteDimensional K V] (f : End K V)
 
 variable {f} {μ : K}
 
-theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by
+lemma hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by
   cases' dvd_iff_isRoot.2 h with p hp
   rw [HasEigenvalue, eigenspace]
   intro con

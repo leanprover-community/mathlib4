@@ -34,7 +34,7 @@ namespace IsHomeomorphicTrivialFiberBundle
 
 variable {F} {proj : Z → B}
 
-protected theorem proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
+protected lemma proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
     ∃ e : Z ≃ₜ B × F, proj = Prod.fst ∘ e :=
   ⟨h.choose, (funext h.choose_spec).symm⟩
 #align is_homeomorphic_trivial_fiber_bundle.proj_eq IsHomeomorphicTrivialFiberBundle.proj_eq
@@ -47,12 +47,12 @@ protected lemma surjective_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBund
 #align is_homeomorphic_trivial_fiber_bundle.surjective_proj IsHomeomorphicTrivialFiberBundle.surjective_proj
 
 /-- The projection from a trivial fiber bundle to its base is continuous. -/
-protected theorem continuous_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : Continuous proj :=
+protected lemma continuous_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : Continuous proj :=
   by obtain ⟨e, rfl⟩ := h.proj_eq; exact continuous_fst.comp e.continuous
 #align is_homeomorphic_trivial_fiber_bundle.continuous_proj IsHomeomorphicTrivialFiberBundle.continuous_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/
-protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : IsOpenMap proj :=
+protected lemma isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : IsOpenMap proj :=
   by obtain ⟨e, rfl⟩ := h.proj_eq; exact isOpenMap_fst.comp e.isOpenMap
 #align is_homeomorphic_trivial_fiber_bundle.is_open_map_proj IsHomeomorphicTrivialFiberBundle.isOpenMap_proj
 

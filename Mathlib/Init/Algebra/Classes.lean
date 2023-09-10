@@ -400,7 +400,7 @@ variable [IsStrictWeakOrder α r]
 
 local infixl:50 " ≈ " => @Equiv _ r
 
-theorem erefl (a : α) : a ≈ a :=
+lemma erefl (a : α) : a ≈ a :=
   ⟨irrefl a, irrefl a⟩
 #align strict_weak_order.erefl StrictWeakOrder.erefl
 

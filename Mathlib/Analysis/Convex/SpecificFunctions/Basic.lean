@@ -74,7 +74,7 @@ lemma convexOn_exp : ConvexOn ℝ univ exp :=
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
+lemma convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   induction' n with k IH
   · exact convexOn_const (1 : ℝ) (convex_Ici _)
   refine' ⟨convex_Ici _, _⟩

@@ -66,7 +66,7 @@ def listDecode : List (Sum α (Σi, L.Functions i)) → List (Option (L.Term α)
     else [none]
 #align first_order.language.term.list_decode FirstOrder.Language.Term.listDecode
 
-theorem listDecode_encode_list (l : List (L.Term α)) :
+lemma listDecode_encode_list (l : List (L.Term α)) :
     listDecode (l.bind listEncode) = l.map Option.some := by
   suffices h : ∀ (t : L.Term α) (l : List (Sum α (Σi, L.Functions i))),
       listDecode (t.listEncode ++ l) = some t::listDecode l
@@ -234,7 +234,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
 #align first_order.language.bounded_formula.list_decode FirstOrder.Language.BoundedFormula.listDecode
 
 @[simp]
-theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
+lemma listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     (listDecode (l.bind fun φ => φ.2.listEncode)).1 = l.headI := by
   suffices h : ∀ (φ : Σn, L.BoundedFormula α n) (l),
       (listDecode (listEncode φ.2 ++ l)).1 = φ ∧ (listDecode (listEncode φ.2 ++ l)).2.1 = l

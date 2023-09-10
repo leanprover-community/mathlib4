@@ -48,11 +48,11 @@ section IsLeftCancelMulZero
 
 variable [Mul M₀] [Zero M₀] [IsLeftCancelMulZero M₀] {a b c : M₀}
 
-theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
+lemma mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
   IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h
 #align mul_left_cancel₀ mul_left_cancel₀
 
-theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a) :=
+lemma mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a) :=
   fun _ _ => mul_left_cancel₀ ha
 #align mul_right_injective₀ mul_right_injective₀
 
@@ -68,11 +68,11 @@ section IsRightCancelMulZero
 
 variable [Mul M₀] [Zero M₀] [IsRightCancelMulZero M₀] {a b c : M₀}
 
-theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
+lemma mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
   IsRightCancelMulZero.mul_right_cancel_of_ne_zero hb h
 #align mul_right_cancel₀ mul_right_cancel₀
 
-theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
+lemma mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
   fun _ _ => mul_right_cancel₀ hb
 #align mul_left_injective₀ mul_left_injective₀
 
@@ -124,11 +124,11 @@ section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
 
-theorem mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
+lemma mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
   (mul_left_injective₀ hc).eq_iff
 #align mul_left_inj' mul_left_inj'
 
-theorem mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
+lemma mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
   (mul_right_injective₀ ha).eq_iff
 #align mul_right_inj' mul_right_inj'
 
@@ -207,14 +207,14 @@ section GroupWithZero
 variable [GroupWithZero G₀] {a b c g h x : G₀}
 
 @[simp]
-theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
+lemma mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
   calc
     a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
     _ = a := by simp [h]
 #align mul_inv_cancel_right₀ mul_inv_cancel_right₀
 
 @[simp]
-theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
+lemma mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
   calc
     a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm
     _ = b := by simp [h]
@@ -229,7 +229,7 @@ variable [MulZeroClass M₀]
 lemma mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 := h.symm ▸ zero_mul b
 #align mul_eq_zero_of_left mul_eq_zero_of_left
 
-theorem mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 := h.symm ▸ mul_zero a
+lemma mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 := h.symm ▸ mul_zero a
 #align mul_eq_zero_of_right mul_eq_zero_of_right
 
 variable [NoZeroDivisors M₀] {a b : M₀}

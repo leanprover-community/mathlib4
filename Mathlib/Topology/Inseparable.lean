@@ -67,7 +67,7 @@ infixl:300 " ⤳ " => Specializes
 
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
-theorem specializes_TFAE (x y : X) :
+lemma specializes_TFAE (x y : X) :
     TFAE [x ⤳ y,
       pure x ≤ 𝓝 y,
       ∀ s : Set X , IsOpen s → y ∈ s → x ∈ s,
@@ -116,11 +116,11 @@ lemma specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y �
   (specializes_TFAE x y).out 0 2
 #align specializes_iff_forall_open specializes_iff_forall_open
 
-theorem Specializes.mem_open (h : x ⤳ y) (hs : IsOpen s) (hy : y ∈ s) : x ∈ s :=
+lemma Specializes.mem_open (h : x ⤳ y) (hs : IsOpen s) (hy : y ∈ s) : x ∈ s :=
   specializes_iff_forall_open.1 h s hs hy
 #align specializes.mem_open Specializes.mem_open
 
-theorem IsOpen.not_specializes (hs : IsOpen s) (hx : x ∉ s) (hy : y ∈ s) : ¬x ⤳ y := fun h =>
+lemma IsOpen.not_specializes (hs : IsOpen s) (hx : x ∉ s) (hy : y ∈ s) : ¬x ⤳ y := fun h =>
   hx <| h.mem_open hs hy
 #align is_open.not_specializes IsOpen.not_specializes
 
@@ -128,11 +128,11 @@ lemma specializes_iff_forall_closed : x ⤳ y ↔ ∀ s : Set X, IsClosed s → 
   (specializes_TFAE x y).out 0 3
 #align specializes_iff_forall_closed specializes_iff_forall_closed
 
-theorem Specializes.mem_closed (h : x ⤳ y) (hs : IsClosed s) (hx : x ∈ s) : y ∈ s :=
+lemma Specializes.mem_closed (h : x ⤳ y) (hs : IsClosed s) (hx : x ∈ s) : y ∈ s :=
   specializes_iff_forall_closed.1 h s hs hx
 #align specializes.mem_closed Specializes.mem_closed
 
-theorem IsClosed.not_specializes (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬x ⤳ y := fun h =>
+lemma IsClosed.not_specializes (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬x ⤳ y := fun h =>
   hy <| h.mem_closed hs hx
 #align is_closed.not_specializes IsClosed.not_specializes
 
@@ -163,7 +163,7 @@ lemma specializes_rfl : x ⤳ x := le_rfl
 #align specializes_rfl specializes_rfl
 
 @[refl]
-theorem specializes_refl (x : X) : x ⤳ x :=
+lemma specializes_refl (x : X) : x ⤳ x :=
   specializes_rfl
 #align specializes_refl specializes_refl
 
@@ -172,11 +172,11 @@ lemma Specializes.trans : x ⤳ y → y ⤳ z → x ⤳ z :=
   le_trans
 #align specializes.trans Specializes.trans
 
-theorem specializes_of_eq (e : x = y) : x ⤳ y :=
+lemma specializes_of_eq (e : x = y) : x ⤳ y :=
   e ▸ specializes_refl x
 #align specializes_of_eq specializes_of_eq
 
-theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈ s) : x ⤳ y :=
+lemma specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈ s) : x ⤳ y :=
   specializes_iff_pure.2 <|
     calc
       pure x ≤ 𝓝[s] x := le_inf (pure_le_nhds _) (le_principal_iff.2 h₂)
@@ -184,16 +184,16 @@ theorem specializes_of_nhdsWithin (h₁ : 𝓝[s] x ≤ 𝓝[s] y) (h₂ : x ∈
       _ ≤ 𝓝 y := inf_le_left
 #align specializes_of_nhds_within specializes_of_nhdsWithin
 
-theorem Specializes.map_of_continuousAt (h : x ⤳ y) (hy : ContinuousAt f y) : f x ⤳ f y :=
+lemma Specializes.map_of_continuousAt (h : x ⤳ y) (hy : ContinuousAt f y) : f x ⤳ f y :=
   specializes_iff_pure.2 fun _s hs =>
     mem_pure.2 <| mem_preimage.1 <| mem_of_mem_nhds <| hy.mono_left h hs
 #align specializes.map_of_continuous_at Specializes.map_of_continuousAt
 
-theorem Specializes.map (h : x ⤳ y) (hf : Continuous f) : f x ⤳ f y :=
+lemma Specializes.map (h : x ⤳ y) (hf : Continuous f) : f x ⤳ f y :=
   h.map_of_continuousAt hf.continuousAt
 #align specializes.map Specializes.map
 
-theorem Inducing.specializes_iff (hf : Inducing f) : f x ⤳ f y ↔ x ⤳ y := by
+lemma Inducing.specializes_iff (hf : Inducing f) : f x ⤳ f y ↔ x ⤳ y := by
   simp only [specializes_iff_mem_closure, hf.closure_eq_preimage_closure_image, image_singleton,
     mem_preimage]
 #align inducing.specializes_iff Inducing.specializes_iff
@@ -242,7 +242,7 @@ variable {X}
 
 /-- A continuous function is monotone with respect to the specialization preorders on the domain and
 the codomain. -/
-theorem Continuous.specialization_monotone (hf : Continuous f) :
+lemma Continuous.specialization_monotone (hf : Continuous f) :
     @Monotone _ _ (specializationPreorder X) (specializationPreorder Y) f := fun _ _ h => h.map hf
 #align continuous.specialization_monotone Continuous.specialization_monotone
 
@@ -273,13 +273,13 @@ lemma inseparable_iff_specializes_and : (x ~ᵢ y) ↔ x ⤳ y ∧ y ⤳ x :=
   le_antisymm_iff
 #align inseparable_iff_specializes_and inseparable_iff_specializes_and
 
-theorem Inseparable.specializes (h : x ~ᵢ y) : x ⤳ y := h.le
+lemma Inseparable.specializes (h : x ~ᵢ y) : x ⤳ y := h.le
 #align inseparable.specializes Inseparable.specializes
 
-theorem Inseparable.specializes' (h : x ~ᵢ y) : y ⤳ x := h.ge
+lemma Inseparable.specializes' (h : x ~ᵢ y) : y ⤳ x := h.ge
 #align inseparable.specializes' Inseparable.specializes'
 
-theorem Specializes.antisymm (h₁ : x ⤳ y) (h₂ : y ⤳ x) : x ~ᵢ y :=
+lemma Specializes.antisymm (h₁ : x ⤳ y) (h₂ : y ⤳ x) : x ~ᵢ y :=
   le_antisymm h₁ h₂
 #align specializes.antisymm Specializes.antisymm
 
@@ -308,11 +308,11 @@ lemma inseparable_iff_closure_eq : (x ~ᵢ y) ↔ closure ({x} : Set X) = closur
     eq_comm]
 #align inseparable_iff_closure_eq inseparable_iff_closure_eq
 
-theorem inseparable_of_nhdsWithin_eq (hx : x ∈ s) (hy : y ∈ s) (h : 𝓝[s] x = 𝓝[s] y) : x ~ᵢ y :=
+lemma inseparable_of_nhdsWithin_eq (hx : x ∈ s) (hy : y ∈ s) (h : 𝓝[s] x = 𝓝[s] y) : x ~ᵢ y :=
   (specializes_of_nhdsWithin h.le hx).antisymm (specializes_of_nhdsWithin h.ge hy)
 #align inseparable_of_nhds_within_eq inseparable_of_nhdsWithin_eq
 
-theorem Inducing.inseparable_iff (hf : Inducing f) : (f x ~ᵢ f y) ↔ (x ~ᵢ y) := by
+lemma Inducing.inseparable_iff (hf : Inducing f) : (f x ~ᵢ f y) ↔ (x ~ᵢ y) := by
   simp only [inseparable_iff_specializes_and, hf.specializes_iff]
 #align inducing.inseparable_iff Inducing.inseparable_iff
 
@@ -338,7 +338,7 @@ lemma inseparable_pi {f g : ∀ i, π i} : (f ~ᵢ g) ↔ ∀ i, f i ~ᵢ g i :=
 namespace Inseparable
 
 @[refl]
-theorem refl (x : X) : x ~ᵢ x :=
+lemma refl (x : X) : x ~ᵢ x :=
   Eq.refl (𝓝 x)
 #align inseparable.refl Inseparable.refl
 
@@ -346,45 +346,45 @@ lemma rfl : x ~ᵢ x :=
   refl x
 #align inseparable.rfl Inseparable.rfl
 
-theorem of_eq (e : x = y) : Inseparable x y :=
+lemma of_eq (e : x = y) : Inseparable x y :=
   e ▸ refl x
 #align inseparable.of_eq Inseparable.of_eq
 
 @[symm]
-nonrec theorem symm (h : x ~ᵢ y) : y ~ᵢ x := h.symm
+nonrec lemma symm (h : x ~ᵢ y) : y ~ᵢ x := h.symm
 #align inseparable.symm Inseparable.symm
 
 @[trans]
-nonrec theorem trans (h₁ : x ~ᵢ y) (h₂ : y ~ᵢ z) : x ~ᵢ z := h₁.trans h₂
+nonrec lemma trans (h₁ : x ~ᵢ y) (h₂ : y ~ᵢ z) : x ~ᵢ z := h₁.trans h₂
 #align inseparable.trans Inseparable.trans
 
-theorem nhds_eq (h : x ~ᵢ y) : 𝓝 x = 𝓝 y := h
+lemma nhds_eq (h : x ~ᵢ y) : 𝓝 x = 𝓝 y := h
 #align inseparable.nhds_eq Inseparable.nhds_eq
 
-theorem mem_open_iff (h : x ~ᵢ y) (hs : IsOpen s) : x ∈ s ↔ y ∈ s :=
+lemma mem_open_iff (h : x ~ᵢ y) (hs : IsOpen s) : x ∈ s ↔ y ∈ s :=
   inseparable_iff_forall_open.1 h s hs
 #align inseparable.mem_open_iff Inseparable.mem_open_iff
 
-theorem mem_closed_iff (h : x ~ᵢ y) (hs : IsClosed s) : x ∈ s ↔ y ∈ s :=
+lemma mem_closed_iff (h : x ~ᵢ y) (hs : IsClosed s) : x ∈ s ↔ y ∈ s :=
   inseparable_iff_forall_closed.1 h s hs
 #align inseparable.mem_closed_iff Inseparable.mem_closed_iff
 
-theorem map_of_continuousAt (h : x ~ᵢ y) (hx : ContinuousAt f x) (hy : ContinuousAt f y) :
+lemma map_of_continuousAt (h : x ~ᵢ y) (hx : ContinuousAt f x) (hy : ContinuousAt f y) :
     f x ~ᵢ f y :=
   (h.specializes.map_of_continuousAt hy).antisymm (h.specializes'.map_of_continuousAt hx)
 #align inseparable.map_of_continuous_at Inseparable.map_of_continuousAt
 
-theorem map (h : x ~ᵢ y) (hf : Continuous f) : f x ~ᵢ f y :=
+lemma map (h : x ~ᵢ y) (hf : Continuous f) : f x ~ᵢ f y :=
   h.map_of_continuousAt hf.continuousAt hf.continuousAt
 #align inseparable.map Inseparable.map
 
 end Inseparable
 
-theorem IsClosed.not_inseparable (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h =>
+lemma IsClosed.not_inseparable (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h =>
   hy <| (h.mem_closed_iff hs).1 hx
 #align is_closed.not_inseparable IsClosed.not_inseparable
 
-theorem IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h =>
+lemma IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h =>
   hy <| (h.mem_open_iff hs).1 hx
 #align is_open.not_inseparable IsOpen.not_inseparable
 
@@ -448,7 +448,7 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
-theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
+lemma preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
   refine' Subset.antisymm _ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
@@ -458,7 +458,7 @@ lemma isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =>
   quotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
 #align separation_quotient.is_open_map_mk SeparationQuotient.isOpenMap_mk
 
-theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
+lemma preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
   refine' Subset.antisymm _ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys
@@ -512,11 +512,11 @@ lemma image_mk_closure : mk '' closure s = closure (mk '' s) :=
     isClosedMap_mk.closure_image_subset _
 #align separation_quotient.image_mk_closure SeparationQuotient.image_mk_closure
 
-theorem map_prod_map_mk_nhds (x : X) (y : Y) : map (Prod.map mk mk) (𝓝 (x, y)) = 𝓝 (mk x, mk y) :=
+lemma map_prod_map_mk_nhds (x : X) (y : Y) : map (Prod.map mk mk) (𝓝 (x, y)) = 𝓝 (mk x, mk y) :=
   by rw [nhds_prod_eq, ← prod_map_map_eq', map_mk_nhds, map_mk_nhds, nhds_prod_eq]
 #align separation_quotient.map_prod_map_mk_nhds SeparationQuotient.map_prod_map_mk_nhds
 
-theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
+lemma map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
     map mk (𝓝[mk ⁻¹' s] x) = 𝓝[s] mk x := by
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 #align separation_quotient.map_mk_nhds_within_preimage SeparationQuotient.map_mk_nhdsWithin_preimage

@@ -233,7 +233,7 @@ lemma multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
 
 variable {p n k : ℕ}
 
-theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k ≤ p ^ n)
+lemma multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k ≤ p ^ n)
     (hk0 : k ≠ 0) : multiplicity p (choose (p ^ n) k) + multiplicity p k = n :=
   le_antisymm
     (by
@@ -260,7 +260,7 @@ lemma multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p 
     multiplicity_choose_prime_pow_add_multiplicity hp hkn hk0
 #align nat.prime.multiplicity_choose_prime_pow Nat.Prime.multiplicity_choose_prime_pow
 
-theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
+lemma dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_lt
   · simp [choose_eq_zero_of_lt hkp]
   refine' multiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt _
@@ -269,7 +269,7 @@ theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣
   exact H.1
 #align nat.prime.dvd_choose_pow Nat.Prime.dvd_choose_pow
 
-theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
+lemma dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
   refine' ⟨fun h => ⟨_, _⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
     simp [hp.ne_one] at h
 #align nat.prime.dvd_choose_pow_iff Nat.Prime.dvd_choose_pow_iff

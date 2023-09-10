@@ -71,13 +71,13 @@ lemma ext {M N : SemiNormedGroupCat} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f�
   FunLike.ext _ _ h
 
 @[simp]
-theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
+lemma coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
   rfl
 #align SemiNormedGroup.coe_of SemiNormedGroupCat.coe_of
 
 -- Porting note : marked with high priority to short circuit simplifier's path
 @[simp (high)]
-theorem coe_id (V : SemiNormedGroupCat) : (𝟙 V : V → V) = id :=
+lemma coe_id (V : SemiNormedGroupCat) : (𝟙 V : V → V) = id :=
   rfl
 #align SemiNormedGroup.coe_id SemiNormedGroupCat.coe_id
 
@@ -106,7 +106,7 @@ lemma zero_apply {V W : SemiNormedGroupCat} (x : V) : (0 : V ⟶ W) x = 0 :=
 
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
 
-theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
+lemma isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
@@ -203,13 +203,13 @@ instance : HasForget₂ SemiNormedGroupCat₁ SemiNormedGroupCat where
       map := fun f => f.1 }
 
 @[simp]
-theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat₁.of V : Type u) = V :=
+lemma coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat₁.of V : Type u) = V :=
   rfl
 #align SemiNormedGroup₁.coe_of SemiNormedGroupCat₁.coe_of
 
 -- Porting note : marked with high priority to short circuit simplifier's path
 @[simp (high)]
-theorem coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
+lemma coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
   rfl
 #align SemiNormedGroup₁.coe_id SemiNormedGroupCat₁.coe_id
 
@@ -242,7 +242,7 @@ lemma zero_apply {V W : SemiNormedGroupCat₁} (x : V) : (0 : V ⟶ W) x = 0 :=
 
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
 
-theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
+lemma isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim

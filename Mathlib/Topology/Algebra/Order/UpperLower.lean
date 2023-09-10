@@ -98,16 +98,16 @@ oooooxx
 oooooxx
 ```
 -/
-protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) := by
+protected lemma IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) := by
   rw [← isLowerSet_compl, ← closure_compl]
   exact h.compl.closure
 #align is_upper_set.interior IsUpperSet.interior
 
-protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
+protected lemma IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
   h.ofDual.interior
 #align is_lower_set.interior IsLowerSet.interior
 
-protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
+protected lemma Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
   rw [← h.upperClosure_inter_lowerClosure, interior_inter]
   exact
     (upperClosure s).upper.interior.ordConnected.inter (lowerClosure s).lower.interior.ordConnected

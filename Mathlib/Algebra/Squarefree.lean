@@ -89,7 +89,7 @@ section SquarefreeGcdOfSquarefree
 
 variable {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
 
-theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
+lemma Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)
 #align squarefree.gcd_right Squarefree.gcd_right
 
@@ -105,7 +105,7 @@ section CommMonoid
 
 variable [CommMonoid R] [DecidableRel (Dvd.dvd : R → R → Prop)]
 
-theorem squarefree_iff_multiplicity_le_one (r : R) :
+lemma squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
   refine' forall_congr' fun a => _
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
@@ -146,7 +146,7 @@ section Irreducible
 
 variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
-theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r : R) :
+lemma irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r : R) :
     (∀ x : R, Irreducible x → ¬x * x ∣ r) ↔ (r = 0 ∧ ∀ x : R, ¬Irreducible x) ∨ Squarefree r := by
   symm
   constructor

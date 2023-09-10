@@ -106,7 +106,7 @@ instance : Inhabited (AlgebraCat R) :=
   ⟨of R R⟩
 
 @[simp]
-theorem coe_of (X : Type u) [Ring X] [Algebra R X] : (of R X : Type u) = X :=
+lemma coe_of (X : Type u) [Ring X] [Algebra R X] : (of R X : Type u) = X :=
   rfl
 #align Algebra.coe_of AlgebraCat.coe_of
 
@@ -123,12 +123,12 @@ def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
 variable {M N U : ModuleCat.{v} R}
 
 @[simp]
-theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
+lemma id_apply (m : M) : (𝟙 M : M → M) m = m :=
   rfl
 #align Algebra.id_apply AlgebraCat.id_apply
 
 @[simp]
-theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
+lemma coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
   rfl
 #align Algebra.coe_comp AlgebraCat.coe_comp
 

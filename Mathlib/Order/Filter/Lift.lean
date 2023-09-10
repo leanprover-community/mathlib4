@@ -29,7 +29,7 @@ protected def lift (f : Filter α) (g : Set α → Filter β) :=
 variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 
 @[simp]
-theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
+lemma lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
 #align filter.lift_top Filter.lift_top
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
@@ -68,12 +68,12 @@ lemma HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (
   simp [Sigma.exists, and_assoc, exists_and_left]
 #align filter.has_basis.lift Filter.HasBasis.lift
 
-theorem mem_lift_sets (hg : Monotone g) {s : Set β} : s ∈ f.lift g ↔ ∃ t ∈ f, s ∈ g t :=
+lemma mem_lift_sets (hg : Monotone g) {s : Set β} : s ∈ f.lift g ↔ ∃ t ∈ f, s ∈ g t :=
   (f.basis_sets.mem_lift_iff (fun s => (g s).basis_sets) hg).trans <| by
     simp only [id, exists_mem_subset_iff]
 #align filter.mem_lift_sets Filter.mem_lift_sets
 
-theorem sInter_lift_sets (hg : Monotone g) :
+lemma sInter_lift_sets (hg : Monotone g) :
     ⋂₀ { s | s ∈ f.lift g } = ⋂ s ∈ f, ⋂₀ { t | t ∈ g s } := by
   simp only [sInter_eq_biInter, mem_setOf_eq, Filter.mem_sets, mem_lift_sets hg, iInter_exists,
     iInter_and, @iInter_comm _ (Set β)]
@@ -94,11 +94,11 @@ lemma le_lift {f : Filter α} {g : Set α → Filter β} {h : Filter β} :
   le_iInf₂_iff
 #align filter.le_lift Filter.le_lift
 
-theorem lift_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : f₁.lift g₁ ≤ f₂.lift g₂ :=
+lemma lift_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : f₁.lift g₁ ≤ f₂.lift g₂ :=
   iInf_mono fun s => iInf_mono' fun hs => ⟨hf hs, hg s⟩
 #align filter.lift_mono Filter.lift_mono
 
-theorem lift_mono' (hg : ∀ s ∈ f, g₁ s ≤ g₂ s) : f.lift g₁ ≤ f.lift g₂ := iInf₂_mono hg
+lemma lift_mono' (hg : ∀ s ∈ f, g₁ s ≤ g₂ s) : f.lift g₁ ≤ f.lift g₂ := iInf₂_mono hg
 #align filter.lift_mono' Filter.lift_mono'
 
 lemma tendsto_lift {m : γ → β} {l : Filter γ} :
@@ -172,7 +172,7 @@ lemma monotone_lift [Preorder γ] {f : γ → Filter α} {g : γ → Set α → 
     (hg : Monotone g) : Monotone fun c => (f c).lift (g c) := fun _ _ h => lift_mono (hf h) (hg h)
 #align filter.monotone_lift Filter.monotone_lift
 
-theorem lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
+lemma lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
   simp only [neBot_iff, Ne.def, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
 #align filter.lift_ne_bot_iff Filter.lift_neBot_iff
 
@@ -239,7 +239,7 @@ protected def lift' (f : Filter α) (h : Set α → Set β) :=
 variable {f f₁ f₂ : Filter α} {h h₁ h₂ : Set α → Set β}
 
 @[simp]
-theorem lift'_top (h : Set α → Set β) : (⊤ : Filter α).lift' h = 𝓟 (h univ) :=
+lemma lift'_top (h : Set α → Set β) : (⊤ : Filter α).lift' h = 𝓟 (h univ) :=
   lift_top _
 #align filter.lift'_top Filter.lift'_top
 
@@ -258,16 +258,16 @@ lemma HasBasis.lift' {ι} {p : ι → Prop} {s} (hf : f.HasBasis p s) (hh : Mono
     (monotone_principal.comp hh)).trans <| by simp only [exists_const, true_and, comp]⟩
 #align filter.has_basis.lift' Filter.HasBasis.lift'
 
-theorem mem_lift'_sets (hh : Monotone h) {s : Set β} : s ∈ f.lift' h ↔ ∃ t ∈ f, h t ⊆ s :=
+lemma mem_lift'_sets (hh : Monotone h) {s : Set β} : s ∈ f.lift' h ↔ ∃ t ∈ f, h t ⊆ s :=
   mem_lift_sets <| monotone_principal.comp hh
 #align filter.mem_lift'_sets Filter.mem_lift'_sets
 
-theorem eventually_lift'_iff (hh : Monotone h) {p : β → Prop} :
+lemma eventually_lift'_iff (hh : Monotone h) {p : β → Prop} :
     (∀ᶠ y in f.lift' h, p y) ↔ ∃ t ∈ f, ∀ y ∈ h t, p y :=
   mem_lift'_sets hh
 #align filter.eventually_lift'_iff Filter.eventually_lift'_iff
 
-theorem sInter_lift'_sets (hh : Monotone h) : ⋂₀ { s | s ∈ f.lift' h } = ⋂ s ∈ f, h s :=
+lemma sInter_lift'_sets (hh : Monotone h) : ⋂₀ { s | s ∈ f.lift' h } = ⋂ s ∈ f, h s :=
   (sInter_lift_sets (monotone_principal.comp hh)).trans <| iInter₂_congr fun _ _ => csInf_Ici
 #align filter.sInter_lift'_sets Filter.sInter_lift'_sets
 
@@ -276,15 +276,15 @@ lemma lift'_le {f : Filter α} {g : Set α → Set β} {h : Filter β} {s : Set 
   lift_le hs hg
 #align filter.lift'_le Filter.lift'_le
 
-theorem lift'_mono (hf : f₁ ≤ f₂) (hh : h₁ ≤ h₂) : f₁.lift' h₁ ≤ f₂.lift' h₂ :=
+lemma lift'_mono (hf : f₁ ≤ f₂) (hh : h₁ ≤ h₂) : f₁.lift' h₁ ≤ f₂.lift' h₂ :=
   lift_mono hf fun s => principal_mono.mpr <| hh s
 #align filter.lift'_mono Filter.lift'_mono
 
-theorem lift'_mono' (hh : ∀ s ∈ f, h₁ s ⊆ h₂ s) : f.lift' h₁ ≤ f.lift' h₂ :=
+lemma lift'_mono' (hh : ∀ s ∈ f, h₁ s ⊆ h₂ s) : f.lift' h₁ ≤ f.lift' h₂ :=
   iInf₂_mono fun s hs => principal_mono.mpr <| hh s hs
 #align filter.lift'_mono' Filter.lift'_mono'
 
-theorem lift'_cong (hh : ∀ s ∈ f, h₁ s = h₂ s) : f.lift' h₁ = f.lift' h₂ :=
+lemma lift'_cong (hh : ∀ s ∈ f, h₁ s = h₂ s) : f.lift' h₁ = f.lift' h₂ :=
   le_antisymm (lift'_mono' fun s hs => le_of_eq <| hh s hs)
     (lift'_mono' fun s hs => le_of_eq <| (hh s hs).symm)
 #align filter.lift'_cong Filter.lift'_cong
@@ -321,7 +321,7 @@ lemma lift'_pure {a : α} (hh : Monotone h) : (pure a : Filter α).lift' h = �
   rw [← principal_singleton, lift'_principal hh]
 #align filter.lift'_pure Filter.lift'_pure
 
-theorem lift'_bot (hh : Monotone h) : (⊥ : Filter α).lift' h = 𝓟 (h ∅) := by
+lemma lift'_bot (hh : Monotone h) : (⊥ : Filter α).lift' h = 𝓟 (h ∅) := by
   rw [← principal_empty, lift'_principal hh]
 #align filter.lift'_bot Filter.lift'_bot
 
@@ -372,7 +372,7 @@ lemma lift'_inf_principal_eq {h : Set α → Set β} {s : Set β} :
   simp only [Filter.lift', Filter.lift, (· ∘ ·), ← inf_principal, iInf_subtype', ← iInf_inf]
 #align filter.lift'_inf_principal_eq Filter.lift'_inf_principal_eq
 
-theorem lift'_neBot_iff (hh : Monotone h) : NeBot (f.lift' h) ↔ ∀ s ∈ f, (h s).Nonempty :=
+lemma lift'_neBot_iff (hh : Monotone h) : NeBot (f.lift' h) ↔ ∀ s ∈ f, (h s).Nonempty :=
   calc
     NeBot (f.lift' h) ↔ ∀ s ∈ f, NeBot (𝓟 (h s)) := lift_neBot_iff (monotone_principal.comp hh)
     _ ↔ ∀ s ∈ f, (h s).Nonempty := by simp only [principal_neBot_iff]
@@ -395,14 +395,14 @@ lemma lift'_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Set β}
     (by rw [Function.comp_apply, hg', principal_univ])
 #align filter.lift'_infi_of_map_univ Filter.lift'_iInf_of_map_univ
 
-theorem lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂, s (t₁ ∩ t₂) = s t₁ ∩ s t₂) :
+lemma lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂, s (t₁ ∩ t₂) = s t₁ ∩ s t₂) :
     (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s := by
   rw [inf_eq_iInf, inf_eq_iInf, lift'_iInf hs]
   refine iInf_congr ?_
   rintro (_|_) <;> rfl
 #align filter.lift'_inf Filter.lift'_inf
 
-theorem lift'_inf_le (f g : Filter α) (s : Set α → Set β) :
+lemma lift'_inf_le (f g : Filter α) (s : Set α → Set β) :
     (f ⊓ g).lift' s ≤ f.lift' s ⊓ g.lift' s :=
   le_inf (lift'_mono inf_le_left le_rfl) (lift'_mono inf_le_right le_rfl)
 #align filter.lift'_inf_le Filter.lift'_inf_le

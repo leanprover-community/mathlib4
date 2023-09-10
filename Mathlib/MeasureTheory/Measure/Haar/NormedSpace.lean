@@ -62,7 +62,7 @@ variable {s : Set E}
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
 thanks to the convention that a non-integrable function has integral zero. -/
-theorem integral_comp_smul (f : E → F) (R : ℝ) :
+lemma integral_comp_smul (f : E → F) (R : ℝ) :
     (∫ x, f (R • x) ∂μ) = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
   rcases eq_or_ne R 0 with (rfl | hR)
   · simp only [zero_smul, integral_const]
@@ -85,7 +85,7 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
 thanks to the convention that a non-integrable function has integral zero. -/
-theorem integral_comp_smul_of_nonneg (f : E → F) (R : ℝ) {hR : 0 ≤ R} :
+lemma integral_comp_smul_of_nonneg (f : E → F) (R : ℝ) {hR : 0 ≤ R} :
     (∫ x, f (R • x) ∂μ) = (R ^ finrank ℝ E)⁻¹ • ∫ x, f x ∂μ := by
   rw [integral_comp_smul μ f R, abs_of_nonneg (inv_nonneg.2 (pow_nonneg hR _))]
 #align measure_theory.measure.integral_comp_smul_of_nonneg MeasureTheory.Measure.integral_comp_smul_of_nonneg
@@ -93,7 +93,7 @@ theorem integral_comp_smul_of_nonneg (f : E → F) (R : ℝ) {hR : 0 ≤ R} :
 /-- The integral of `f (R⁻¹ • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
 thanks to the convention that a non-integrable function has integral zero. -/
-theorem integral_comp_inv_smul (f : E → F) (R : ℝ) :
+lemma integral_comp_inv_smul (f : E → F) (R : ℝ) :
     (∫ x, f (R⁻¹ • x) ∂μ) = |R ^ finrank ℝ E| • ∫ x, f x ∂μ := by
   rw [integral_comp_smul μ f R⁻¹, inv_pow, inv_inv]
 #align measure_theory.measure.integral_comp_inv_smul MeasureTheory.Measure.integral_comp_inv_smul
@@ -101,30 +101,30 @@ theorem integral_comp_inv_smul (f : E → F) (R : ℝ) :
 /-- The integral of `f (R⁻¹ • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
 thanks to the convention that a non-integrable function has integral zero. -/
-theorem integral_comp_inv_smul_of_nonneg (f : E → F) {R : ℝ} (hR : 0 ≤ R) :
+lemma integral_comp_inv_smul_of_nonneg (f : E → F) {R : ℝ} (hR : 0 ≤ R) :
     (∫ x, f (R⁻¹ • x) ∂μ) = R ^ finrank ℝ E • ∫ x, f x ∂μ := by
   rw [integral_comp_inv_smul μ f R, abs_of_nonneg (pow_nonneg hR _)]
 #align measure_theory.measure.integral_comp_inv_smul_of_nonneg MeasureTheory.Measure.integral_comp_inv_smul_of_nonneg
 
-theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
+lemma integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
   by simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_mul_left MeasureTheory.Measure.integral_comp_mul_left
 
-theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
+lemma integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a⁻¹ * x)) = |a| • ∫ y : ℝ, g y := by
   simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_inv_mul_left MeasureTheory.Measure.integral_comp_inv_mul_left
 
-theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
+lemma integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
   by simpa only [mul_comm] using integral_comp_mul_left g a
 #align measure_theory.measure.integral_comp_mul_right MeasureTheory.Measure.integral_comp_mul_right
 
-theorem integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :
+lemma integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (x * a⁻¹)) = |a| • ∫ y : ℝ, g y := by
   simpa only [mul_comm] using integral_comp_inv_mul_left g a
 #align measure_theory.measure.integral_comp_inv_mul_right MeasureTheory.Measure.integral_comp_inv_mul_right
 
-theorem integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) = |a| • ∫ y : ℝ, g y :=
+lemma integral_comp_div (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x / a)) = |a| • ∫ y : ℝ, g y :=
   integral_comp_inv_mul_right g a
 #align measure_theory.measure.integral_comp_div MeasureTheory.Measure.integral_comp_div
 
@@ -155,7 +155,7 @@ lemma Integrable.comp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
   (integrable_comp_smul_iff μ f hR).2 hf
 #align measure_theory.integrable.comp_smul MeasureTheory.Integrable.comp_smul
 
-theorem integrable_comp_mul_left_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
+lemma integrable_comp_mul_left_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (R * x)) ↔ Integrable g := by
   simpa only [smul_eq_mul] using integrable_comp_smul_iff volume g hR
 #align measure_theory.integrable_comp_mul_left_iff MeasureTheory.integrable_comp_mul_left_iff
@@ -165,7 +165,7 @@ lemma Integrable.comp_mul_left' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (h
   (integrable_comp_mul_left_iff g hR).2 hg
 #align measure_theory.integrable.comp_mul_left' MeasureTheory.Integrable.comp_mul_left'
 
-theorem integrable_comp_mul_right_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
+lemma integrable_comp_mul_right_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (x * R)) ↔ Integrable g := by
   simpa only [mul_comm] using integrable_comp_mul_left_iff g hR
 #align measure_theory.integrable_comp_mul_right_iff MeasureTheory.integrable_comp_mul_right_iff
@@ -175,7 +175,7 @@ lemma Integrable.comp_mul_right' {g : ℝ → F} (hg : Integrable g) {R : ℝ} (
   (integrable_comp_mul_right_iff g hR).2 hg
 #align measure_theory.integrable.comp_mul_right' MeasureTheory.Integrable.comp_mul_right'
 
-theorem integrable_comp_div_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
+lemma integrable_comp_div_iff (g : ℝ → F) {R : ℝ} (hR : R ≠ 0) :
     (Integrable fun x => g (x / R)) ↔ Integrable g :=
   integrable_comp_mul_right_iff g (inv_ne_zero hR)
 #align measure_theory.integrable_comp_div_iff MeasureTheory.integrable_comp_div_iff

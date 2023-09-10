@@ -132,11 +132,11 @@ directly. -/
 -- instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
   -- FunLike.hasCoeToFun
 
-theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
+lemma toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
 @[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
-theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWithZeroHom : R → Γ₀) = v
+lemma toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWithZeroHom : R → Γ₀) = v
     := rfl
 
 @[ext]
@@ -235,7 +235,7 @@ lemma ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠ 0
   map_ne_zero v
 #align valuation.ne_zero_iff Valuation.ne_zero_iff
 
-theorem unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :=
+lemma unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :=
   rfl
 #align valuation.unit_map_eq Valuation.unit_map_eq
 
@@ -285,15 +285,15 @@ section Group
 variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y z : R}
 
 @[simp]
-theorem map_neg (x : R) : v (-x) = v x :=
+lemma map_neg (x : R) : v (-x) = v x :=
   v.toMonoidWithZeroHom.toMonoidHom.map_neg x
 #align valuation.map_neg Valuation.map_neg
 
-theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
+lemma map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   v.toMonoidWithZeroHom.toMonoidHom.map_sub_swap x y
 #align valuation.map_sub_swap Valuation.map_sub_swap
 
-theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
+lemma map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
   calc
     v (x - y) = v (x + -y) := by rw [sub_eq_add_neg]
     _ ≤ max (v x) (v <| -y) := (v.map_add _ _)
@@ -305,7 +305,7 @@ lemma map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g := 
   exact v.map_add_le hx (le_trans (le_of_eq (v.map_neg y)) hy)
 #align valuation.map_sub_le Valuation.map_sub_le
 
-theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
+lemma map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
   suffices : ¬v (x + y) < max (v x) (v y)
   exact or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
@@ -320,32 +320,32 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
     _ < v x := max_lt h' vyx
 #align valuation.map_add_of_distinct_val Valuation.map_add_of_distinct_val
 
-theorem map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y :=
+lemma map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y :=
   (v.map_add_of_distinct_val h.ne).trans (max_eq_right_iff.mpr h.le)
 #align valuation.map_add_eq_of_lt_right Valuation.map_add_eq_of_lt_right
 
-theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
+lemma map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
   rw [add_comm]; exact map_add_eq_of_lt_right _ h
 #align valuation.map_add_eq_of_lt_left Valuation.map_add_eq_of_lt_left
 
-theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
+lemma map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
   have := Valuation.map_add_of_distinct_val v (ne_of_gt h).symm
   rw [max_eq_right (le_of_lt h)] at this
   simpa using this
 #align valuation.map_eq_of_sub_lt Valuation.map_eq_of_sub_lt
 
-theorem map_one_add_of_lt (h : v x < 1) : v (1 + x) = 1 := by
+lemma map_one_add_of_lt (h : v x < 1) : v (1 + x) = 1 := by
   rw [← v.map_one] at h
   simpa only [v.map_one] using v.map_add_eq_of_lt_left h
 #align valuation.map_one_add_of_lt Valuation.map_one_add_of_lt
 
-theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
+lemma map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
   rw [← v.map_one, ← v.map_neg] at h
   rw [sub_eq_add_neg 1 x]
   simpa only [v.map_one, v.map_neg] using v.map_add_eq_of_lt_left h
 #align valuation.map_one_sub_of_lt Valuation.map_one_sub_of_lt
 
-theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x ↔ v x⁻¹ < 1 := by
+lemma one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x ↔ v x⁻¹ < 1 := by
   simpa using (inv_lt_inv₀ (v.ne_zero_iff.2 h) one_ne_zero).symm
 #align valuation.one_lt_val_iff Valuation.one_lt_val_iff
 
@@ -372,11 +372,11 @@ lemma refl : v.IsEquiv v := fun _ _ => Iff.refl _
 #align valuation.is_equiv.refl Valuation.IsEquiv.refl
 
 @[symm]
-theorem symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ := fun _ _ => Iff.symm (h _ _)
+lemma symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ := fun _ _ => Iff.symm (h _ _)
 #align valuation.is_equiv.symm Valuation.IsEquiv.symm
 
 @[trans]
-theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ := fun _ _ =>
+lemma trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ := fun _ _ =>
   Iff.trans (h₁₂ _ _) (h₂₃ _ _)
 #align valuation.is_equiv.trans Valuation.IsEquiv.trans
 
@@ -398,11 +398,11 @@ lemma comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 #align valuation.is_equiv.comap Valuation.IsEquiv.comap
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
+lemma val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
 #align valuation.is_equiv.val_eq Valuation.IsEquiv.val_eq
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
+lemma ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
   have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
   rwa [v₁.map_zero, v₂.map_zero] at this
 #align valuation.is_equiv.ne_zero Valuation.IsEquiv.ne_zero
@@ -554,7 +554,7 @@ def supp : Ideal R where
 #align valuation.supp Valuation.supp
 
 @[simp]
-theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
+lemma mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
   Iff.rfl
 #align valuation.mem_supp_iff Valuation.mem_supp_iff
 
@@ -570,7 +570,7 @@ instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
     rw [v.map_mul x y] at hxy
     exact eq_zero_or_eq_zero_of_mul_eq_zero hxy⟩
 
-theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
+lemma map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
   have aux : ∀ a s, v s = 0 → v (a + s) ≤ v a := by
     intro a' s' h'
     refine' le_trans (v.map_add a' s') (max_le le_rfl _)
@@ -648,7 +648,7 @@ def valuation : Valuation R (Multiplicative Γ₀ᵒᵈ) :=
 #align add_valuation.valuation AddValuation.valuation
 
 @[simp]
-theorem valuation_apply (r : R) : v.valuation r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
+lemma valuation_apply (r : R) : v.valuation r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
   rfl
 #align add_valuation.valuation_apply AddValuation.valuation_apply
 
@@ -779,20 +779,20 @@ section Group
 variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y z : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
+lemma map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
   map_inv₀ v.valuation x
 #align add_valuation.map_inv AddValuation.map_inv
 
 @[simp]
-theorem map_neg (x : R) : v (-x) = v x :=
+lemma map_neg (x : R) : v (-x) = v x :=
   Valuation.map_neg v x
 #align add_valuation.map_neg AddValuation.map_neg
 
-theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
+lemma map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   Valuation.map_sub_swap v x y
 #align add_valuation.map_sub_swap AddValuation.map_sub_swap
 
-theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
+lemma map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
   Valuation.map_sub v x y
 #align add_valuation.map_sub AddValuation.map_sub
 
@@ -800,11 +800,11 @@ lemma map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤
   Valuation.map_sub_le v hx hy
 #align add_valuation.map_le_sub AddValuation.map_le_sub
 
-theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
+lemma map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
   Valuation.map_add_of_distinct_val v h
 #align add_valuation.map_add_of_distinct_val AddValuation.map_add_of_distinct_val
 
-theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
+lemma map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
   Valuation.map_eq_of_sub_lt v h
 #align add_valuation.map_eq_of_lt_sub AddValuation.map_eq_of_lt_sub
 
@@ -826,12 +826,12 @@ lemma refl : v.IsEquiv v :=
 #align add_valuation.is_equiv.refl AddValuation.IsEquiv.refl
 
 @[symm]
-theorem symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ :=
+lemma symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ :=
   Valuation.IsEquiv.symm h
 #align add_valuation.is_equiv.symm AddValuation.IsEquiv.symm
 
 @[trans]
-theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ :=
+lemma trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ :=
   Valuation.IsEquiv.trans h₁₂ h₂₃
 #align add_valuation.is_equiv.trans AddValuation.IsEquiv.trans
 
@@ -854,11 +854,11 @@ lemma comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
   Valuation.IsEquiv.comap f h
 #align add_valuation.is_equiv.comap AddValuation.IsEquiv.comap
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
+lemma val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
   Valuation.IsEquiv.val_eq h
 #align add_valuation.is_equiv.val_eq AddValuation.IsEquiv.val_eq
 
-theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
+lemma ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
   Valuation.IsEquiv.ne_zero h
 #align add_valuation.is_equiv.ne_top AddValuation.IsEquiv.ne_top
 
@@ -878,11 +878,11 @@ def supp : Ideal R :=
 #align add_valuation.supp AddValuation.supp
 
 @[simp]
-theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = (⊤ : Γ₀) :=
+lemma mem_supp_iff (x : R) : x ∈ supp v ↔ v x = (⊤ : Γ₀) :=
   Valuation.mem_supp_iff v x
 #align add_valuation.mem_supp_iff AddValuation.mem_supp_iff
 
-theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a :=
+lemma map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a :=
   Valuation.map_add_supp v a h
 #align add_valuation.map_add_supp AddValuation.map_add_supp
 

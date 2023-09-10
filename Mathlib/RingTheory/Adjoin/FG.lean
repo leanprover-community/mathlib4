@@ -37,7 +37,7 @@ namespace Algebra
 variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A] [Algebra R A]
   {s t : Set A}
 
-theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t).toSubmodule.FG) :
+lemma fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t).toSubmodule.FG) :
     (adjoin R (s ∪ t)).toSubmodule.FG := by
   rcases fg_def.1 h1 with ⟨p, hp, hp'⟩
   rcases fg_def.1 h2 with ⟨q, hq, hq'⟩
@@ -94,7 +94,7 @@ def FG (S : Subalgebra R A) : Prop :=
   ∃ t : Finset A, Algebra.adjoin R ↑t = S
 #align subalgebra.fg Subalgebra.FG
 
-theorem fg_adjoin_finset (s : Finset A) : (Algebra.adjoin R (↑s : Set A)).FG :=
+lemma fg_adjoin_finset (s : Finset A) : (Algebra.adjoin R (↑s : Set A)).FG :=
   ⟨s, rfl⟩
 #align subalgebra.fg_adjoin_finset Subalgebra.fg_adjoin_finset
 
@@ -120,7 +120,7 @@ lemma fg_of_noetherian [IsNoetherian R A] (S : Subalgebra R A) : S.FG :=
   fg_of_fg_toSubmodule (IsNoetherian.noetherian (Subalgebra.toSubmodule S))
 #align subalgebra.fg_of_noetherian Subalgebra.fg_of_noetherian
 
-theorem fg_of_submodule_fg (h : (⊤ : Submodule R A).FG) : (⊤ : Subalgebra R A).FG :=
+lemma fg_of_submodule_fg (h : (⊤ : Submodule R A).FG) : (⊤ : Subalgebra R A).FG :=
   let ⟨s, hs⟩ := h
   ⟨s, toSubmodule.injective <| by
     rw [Algebra.top_toSubmodule, eq_top_iff, ← hs, span_le]
@@ -149,7 +149,7 @@ lemma FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG
 
 end
 
-theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Injective f)
+lemma fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Injective f)
     (hs : (S.map f).FG) : S.FG :=
   let ⟨s, hs⟩ := hs
   ⟨s.preimage f fun _ _ _ _ h ↦ hf h,
@@ -159,7 +159,7 @@ theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Inj
       exact map_mono le_top⟩
 #align subalgebra.fg_of_fg_map Subalgebra.fg_of_fg_map
 
-theorem fg_top (S : Subalgebra R A) : (⊤ : Subalgebra R S).FG ↔ S.FG :=
+lemma fg_top (S : Subalgebra R A) : (⊤ : Subalgebra R S).FG ↔ S.FG :=
   ⟨fun h ↦ by
     rw [← S.range_val, ← Algebra.map_top]
     exact FG.map _ h, fun h ↦
@@ -208,7 +208,7 @@ lemma isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRing 
   ht ▸ (Algebra.adjoin_eq_range R (↑t : Set A)).symm ▸ AlgHom.isNoetherianRing_range _
 #align is_noetherian_ring_of_fg isNoetherianRing_of_fg
 
-theorem is_noetherian_subring_closure (s : Set R) (hs : s.Finite) :
+lemma is_noetherian_subring_closure (s : Set R) (hs : s.Finite) :
     IsNoetherianRing (Subring.closure s) :=
   show IsNoetherianRing (subalgebraOfSubring (Subring.closure s)) from
     Algebra.adjoin_int s ▸ isNoetherianRing_of_fg (Subalgebra.fg_def.2 ⟨s, hs, rfl⟩)

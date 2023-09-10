@@ -130,23 +130,23 @@ open LawfulTraversable Functor
 
 -- Porting note: Id.bind_eq is missing an `#align`.
 
-protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
+protected lemma id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
   -- Porting note: Changing this `simp` to an `rw` somehow breaks the proof of `comp_traverse`.
   simp [Equiv.traverse]
 #align equiv.id_traverse Equiv.id_traverse
 
-protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
+protected lemma traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
   simp [Equiv.traverse, traverse_eq_map_id, functor_norm]; rfl
 #align equiv.traverse_eq_map_id Equiv.traverse_eq_map_id
 
-protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
+protected lemma comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
   simp [Equiv.traverse, comp_traverse, functor_norm]; congr; ext; simp
 #align equiv.comp_traverse Equiv.comp_traverse
 
-protected theorem naturality (f : α → F β) (x : t' α) :
+protected lemma naturality (f : α → F β) (x : t' α) :
     η (Equiv.traverse eqv f x) = Equiv.traverse eqv (@η _ ∘ f) x := by
   simp only [Equiv.traverse, functor_norm]
 #align equiv.naturality Equiv.naturality

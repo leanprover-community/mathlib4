@@ -74,7 +74,7 @@ instance : Epi A.e :=
 lemma ext' : A = ⟨A.1, ⟨A.e, A.2.2⟩⟩ := rfl
 #align simplicial_object.splitting.index_set.ext' SimplicialObject.Splitting.IndexSet.ext'
 
-theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e ≫ eqToHom (by rw [h₁]) = A₂.e) :
+lemma ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e ≫ eqToHom (by rw [h₁]) = A₂.e) :
     A₁ = A₂ := by
   rcases A₁ with ⟨Δ₁, ⟨α₁, hα₁⟩⟩
   rcases A₂ with ⟨Δ₂, ⟨α₂, hα₂⟩⟩
@@ -262,11 +262,11 @@ def iso (Δ : SimplexCategoryᵒᵖ) : coprod s.N Δ ≅ X.obj Δ :=
 #align simplicial_object.splitting.iso SimplicialObject.Splitting.iso
 
 @[simp]
-theorem iso_hom (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).hom = Splitting.map X s.ι Δ :=
+lemma iso_hom (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).hom = Splitting.map X s.ι Δ :=
   rfl
 
 @[simp]
-theorem iso_inv (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).inv = inv (Splitting.map X s.ι Δ) :=
+lemma iso_inv (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).inv = inv (Splitting.map X s.ι Δ) :=
   rfl
 
 /-- Via the isomorphism `s.iso Δ`, this is the inclusion of a summand
@@ -282,7 +282,7 @@ lemma ιSummand_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
   erw [colimit.ι_desc, Cofan.mk_ι_app]
 #align simplicial_object.splitting.ι_summand_eq SimplicialObject.Splitting.ιSummand_eq
 
-theorem ιSummand_id (n : ℕ) : s.ιSummand (IndexSet.id (op [n])) = s.ι n := by
+lemma ιSummand_id (n : ℕ) : s.ιSummand (IndexSet.id (op [n])) = s.ι n := by
   erw [ιSummand_eq, X.map_id, comp_id]
   rfl
 #align simplicial_object.splitting.ι_summand_id SimplicialObject.Splitting.ιSummand_id
@@ -296,7 +296,7 @@ def φ (f : X ⟶ Y) (n : ℕ) : s.N n ⟶ Y _[n] :=
 #align simplicial_object.splitting.φ SimplicialObject.Splitting.φ
 
 @[reassoc (attr := simp)]
-theorem ιSummand_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
+lemma ιSummand_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     s.ιSummand A ≫ f.app Δ = s.φ f A.1.unop.len ≫ Y.map A.e.op := by
   simp only [ιSummand_eq_assoc, φ, assoc]
   erw [NatTrans.naturality]
@@ -309,7 +309,7 @@ lemma hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
   simpa only [ιSummand_eq, iso_hom, map, colimit.ι_desc_assoc, Cofan.mk_ι_app] using h A
 #align simplicial_object.splitting.hom_ext' SimplicialObject.Splitting.hom_ext'
 
-theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
+lemma hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
   ext Δ
   apply s.hom_ext'
   intro A
@@ -437,13 +437,13 @@ lemma congr_f {S₁ S₂ : Split C} {Φ₁ Φ₂ : S₁ ⟶ S₂} (h : Φ₁ = �
 #align simplicial_object.split.congr_f SimplicialObject.Split.congr_f
 
 @[simp]
-theorem id_F (S : Split C) : (𝟙 S : S ⟶ S).F = 𝟙 S.X :=
+lemma id_F (S : Split C) : (𝟙 S : S ⟶ S).F = 𝟙 S.X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align simplicial_object.split.id_F SimplicialObject.Split.id_F
 
 @[simp]
-theorem id_f (S : Split C) (n : ℕ) : (𝟙 S : S ⟶ S).f n = 𝟙 (S.s.N n) :=
+lemma id_f (S : Split C) (n : ℕ) : (𝟙 S : S ⟶ S).f n = 𝟙 (S.s.N n) :=
   rfl
 #align simplicial_object.split.id_f SimplicialObject.Split.id_f
 

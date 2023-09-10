@@ -49,7 +49,7 @@ def proj (i : I) : πₓ (TopCat.of (∀ i, X i)) ⥤ πₓ (X i) :=
 
 /-- The projection map is precisely path.homotopic.proj interpreted as a functor -/
 @[simp]
-theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ ⟶ x₁) :
+lemma proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ ⟶ x₁) :
     (proj X i).map p = @Path.Homotopic.proj _ _ _ _ _ i p :=
   rfl
 #align fundamental_groupoid_functor.proj_map FundamentalGroupoidFunctor.proj_map
@@ -149,13 +149,13 @@ def projRight : πₓ (TopCat.of (A × B)) ⥤ πₓ B :=
 #align fundamental_groupoid_functor.proj_right FundamentalGroupoidFunctor.projRight
 
 @[simp]
-theorem projLeft_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x₁) :
+lemma projLeft_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x₁) :
     (projLeft A B).map p = Path.Homotopic.projLeft p :=
   rfl
 #align fundamental_groupoid_functor.proj_left_map FundamentalGroupoidFunctor.projLeft_map
 
 @[simp]
-theorem projRight_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x₁) :
+lemma projRight_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x₁) :
     (projRight A B).map p = Path.Homotopic.projRight p :=
   rfl
 #align fundamental_groupoid_functor.proj_right_map FundamentalGroupoidFunctor.projRight_map

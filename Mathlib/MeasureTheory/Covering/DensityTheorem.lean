@@ -143,7 +143,7 @@ variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ
 not required to be fixed.
 
 See also `Besicovitch.ae_tendsto_measure_inter_div`. -/
-theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.restrict S,
+lemma ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.restrict S,
     ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
       (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
       Tendsto (fun j => μ (S ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) := by

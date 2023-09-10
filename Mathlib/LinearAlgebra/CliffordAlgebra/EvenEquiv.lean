@@ -53,7 +53,7 @@ def Q' : QuadraticForm R (M × R) :=
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra.equiv_even.Q' CliffordAlgebra.EquivEven.Q'
 
-theorem Q'_apply (m : M × R) : Q' Q m = Q m.1 - m.2 * m.2 :=
+lemma Q'_apply (m : M × R) : Q' Q m = Q m.1 - m.2 * m.2 :=
   (sub_eq_add_neg _ _).symm
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra.equiv_even.Q'_apply CliffordAlgebra.EquivEven.Q'_apply
@@ -68,7 +68,7 @@ def v : M →ₗ[R] CliffordAlgebra (Q' Q) :=
   ι (Q' Q) ∘ₗ LinearMap.inl _ _ _
 #align clifford_algebra.equiv_even.v CliffordAlgebra.EquivEven.v
 
-theorem ι_eq_v_add_smul_e0 (m : M) (r : R) : ι (Q' Q) (m, r) = v Q m + r • e0 Q := by
+lemma ι_eq_v_add_smul_e0 (m : M) (r : R) : ι (Q' Q) (m, r) = v Q m + r • e0 Q := by
   rw [e0, v, LinearMap.comp_apply, LinearMap.inl_apply, ← LinearMap.map_smul, Prod.smul_mk,
     smul_zero, smul_eq_mul, mul_one, ← LinearMap.map_add, Prod.mk_add_mk, zero_add, add_zero]
 #align clifford_algebra.equiv_even.ι_eq_v_add_smul_e0 CliffordAlgebra.EquivEven.ι_eq_v_add_smul_e0
@@ -77,34 +77,34 @@ lemma e0_mul_e0 : e0 Q * e0 Q = -1 :=
   (ι_sq_scalar _ _).trans <| by simp
 #align clifford_algebra.equiv_even.e0_mul_e0 CliffordAlgebra.EquivEven.e0_mul_e0
 
-theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
+lemma v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
   (ι_sq_scalar _ _).trans <| by simp
 #align clifford_algebra.equiv_even.v_sq_scalar CliffordAlgebra.EquivEven.v_sq_scalar
 
-theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
+lemma neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
   dsimp [QuadraticForm.polar]
   simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
     add_sub_cancel, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
-theorem neg_v_mul_e0 (m : M) : -(v Q m * e0 Q) = e0 Q * v Q m := by
+lemma neg_v_mul_e0 (m : M) : -(v Q m * e0 Q) = e0 Q * v Q m := by
   rw [neg_eq_iff_eq_neg]
   exact (neg_e0_mul_v _ m).symm
 #align clifford_algebra.equiv_even.neg_v_mul_e0 CliffordAlgebra.EquivEven.neg_v_mul_e0
 
 @[simp]
-theorem e0_mul_v_mul_e0 (m : M) : e0 Q * v Q m * e0 Q = v Q m := by
+lemma e0_mul_v_mul_e0 (m : M) : e0 Q * v Q m * e0 Q = v Q m := by
   rw [← neg_v_mul_e0, ← neg_mul, mul_assoc, e0_mul_e0, mul_neg_one, neg_neg]
 #align clifford_algebra.equiv_even.e0_mul_v_mul_e0 CliffordAlgebra.EquivEven.e0_mul_v_mul_e0
 
 @[simp]
-theorem reverse_v (m : M) : reverse (Q := Q' Q) (v Q m) = v Q m :=
+lemma reverse_v (m : M) : reverse (Q := Q' Q) (v Q m) = v Q m :=
   reverse_ι _
 #align clifford_algebra.equiv_even.reverse_v CliffordAlgebra.EquivEven.reverse_v
 
 @[simp]
-theorem involute_v (m : M) : involute (v Q m) = -v Q m :=
+lemma involute_v (m : M) : involute (v Q m) = -v Q m :=
   involute_ι _
 #align clifford_algebra.equiv_even.involute_v CliffordAlgebra.EquivEven.involute_v
 
@@ -137,7 +137,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
 #align clifford_algebra.to_even CliffordAlgebra.toEven
 
 @[simp]
-theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
+lemma toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
   -- porting note: was `rw`
   erw [LinearMap.codRestrict_apply]
@@ -174,7 +174,7 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
       Algebra.smul_def, ← mul_assoc, hm]
 #align clifford_algebra.of_even CliffordAlgebra.ofEven
 
-theorem ofEven_ι (x y : M × R) :
+lemma ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
   -- porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
@@ -240,7 +240,7 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
 
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
-theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
+lemma coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     ↑(toEven Q (reverse (involute x))) =
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
   induction x using CliffordAlgebra.induction
@@ -275,13 +275,13 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
 
 -- porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
 @[simp, nolint simpNF]
-theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
+lemma evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
     evenToNeg Q Q' h ((even.ι Q).bilin m₁ m₂) = -(even.ι Q').bilin m₁ m₂ :=
   even.lift_ι _ _ m₁ m₂
 #align clifford_algebra.even_to_neg_ι CliffordAlgebra.evenToNeg_ι
 
 set_option synthInstance.maxHeartbeats 100000 in
-theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
+lemma evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4
   dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,

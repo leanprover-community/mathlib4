@@ -126,7 +126,7 @@ protected lemma eq : mk I x = mk I y ↔ x - y ∈ I :=
 #align ideal.quotient.eq Ideal.Quotient.eq
 
 @[simp]
-theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
+lemma mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 #align ideal.quotient.mk_eq_mk Ideal.Quotient.mk_eq_mk
 
 lemma eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
@@ -134,7 +134,7 @@ lemma eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
 #align ideal.quotient.eq_zero_iff_mem Ideal.Quotient.eq_zero_iff_mem
 
 -- Porting note: new theorem
-theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
+lemma mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
 lemma zero_eq_one_iff {I : Ideal R} : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
@@ -166,7 +166,7 @@ instance : RingHomSurjective (mk I) :=
 
 /-- If `I` is an ideal of a commutative ring `R`, if `q : R → R/I` is the quotient map, and if
 `s ⊆ R` is a subset, then `q⁻¹(q(s)) = ⋃ᵢ(i + s)`, the union running over all `i ∈ I`. -/
-theorem quotient_ring_saturate (I : Ideal R) (s : Set R) :
+lemma quotient_ring_saturate (I : Ideal R) (s : Set R) :
     mk I ⁻¹' (mk I '' s) = ⋃ x : I, (fun y => x.1 + y) '' s := by
   ext x
   simp only [mem_preimage, mem_image, mem_iUnion, Ideal.Quotient.eq]
@@ -186,7 +186,7 @@ instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
   NoZeroDivisors.to_isDomain _
 #align ideal.quotient.is_domain Ideal.Quotient.isDomain
 
-theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
+lemma isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine' ⟨fun H => ⟨zero_ne_one_iff.1 _, fun {x y} h => _⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
@@ -231,7 +231,7 @@ protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R �
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
-theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal := by
+lemma maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal := by
   apply Ideal.isMaximal_iff.2
   constructor
   · intro h
@@ -244,7 +244,7 @@ theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal
 #align ideal.quotient.maximal_of_is_field Ideal.Quotient.maximal_of_isField
 
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
-theorem maximal_ideal_iff_isField_quotient (I : Ideal R) : I.IsMaximal ↔ IsField (R ⧸ I) :=
+lemma maximal_ideal_iff_isField_quotient (I : Ideal R) : I.IsMaximal ↔ IsField (R ⧸ I) :=
   ⟨fun h =>
     let _i := @Quotient.field _ _ I h
     Field.toIsField _,
@@ -264,12 +264,12 @@ def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R 
 #align ideal.quotient.lift Ideal.Quotient.lift
 
 @[simp]
-theorem lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
+lemma lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
     lift I f H (mk I a) = f a :=
   rfl
 #align ideal.quotient.lift_mk Ideal.Quotient.lift_mk
 
-theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
+lemma lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
     (hf : Function.Surjective f) : Function.Surjective (Ideal.Quotient.lift I f H) := by
   intro y
   obtain ⟨x, rfl⟩ := hf y
@@ -285,12 +285,12 @@ def factor (S T : Ideal R) (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
 #align ideal.quotient.factor Ideal.Quotient.factor
 
 @[simp]
-theorem factor_mk (S T : Ideal R) (H : S ≤ T) (x : R) : factor S T H (mk S x) = mk T x :=
+lemma factor_mk (S T : Ideal R) (H : S ≤ T) (x : R) : factor S T H (mk S x) = mk T x :=
   rfl
 #align ideal.quotient.factor_mk Ideal.Quotient.factor_mk
 
 @[simp]
-theorem factor_comp_mk (S T : Ideal R) (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
+lemma factor_comp_mk (S T : Ideal R) (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
   ext x
   rw [RingHom.comp_apply, factor_mk]
 #align ideal.quotient.factor_comp_mk Ideal.Quotient.factor_comp_mk
@@ -393,7 +393,7 @@ section ChineseRemainder
 
 variable {ι : Type v}
 
-theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
+lemma exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
     (hf : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → f i ⊔ f j = ⊤) (i : ι) (his : i ∈ s) :
     ∃ r : R, r - 1 ∈ f i ∧ ∀ j ∈ s, j ≠ i → r ∈ f j := by
   have : ∀ j ∈ s, j ≠ i → ∃ r : R, ∃ _ : r - 1 ∈ f i, r ∈ f j := by
@@ -502,21 +502,21 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ 
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 
 @[simp]
-theorem quotientInfEquivQuotientProd_fst (I J : Ideal R) (coprime : I ⊔ J = ⊤) (x : R ⧸ I ⊓ J) :
+lemma quotientInfEquivQuotientProd_fst (I J : Ideal R) (coprime : I ⊔ J = ⊤) (x : R ⧸ I ⊓ J) :
     (quotientInfEquivQuotientProd I J coprime x).fst =
       Ideal.Quotient.factor (I ⊓ J) I inf_le_left x :=
   Quot.inductionOn x fun _ => rfl
 #align ideal.quotient_inf_equiv_quotient_prod_fst Ideal.quotientInfEquivQuotientProd_fst
 
 @[simp]
-theorem quotientInfEquivQuotientProd_snd (I J : Ideal R) (coprime : I ⊔ J = ⊤) (x : R ⧸ I ⊓ J) :
+lemma quotientInfEquivQuotientProd_snd (I J : Ideal R) (coprime : I ⊔ J = ⊤) (x : R ⧸ I ⊓ J) :
     (quotientInfEquivQuotientProd I J coprime x).snd =
       Ideal.Quotient.factor (I ⊓ J) J inf_le_right x :=
   Quot.inductionOn x fun _ => rfl
 #align ideal.quotient_inf_equiv_quotient_prod_snd Ideal.quotientInfEquivQuotientProd_snd
 
 @[simp]
-theorem fst_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J = ⊤) :
+lemma fst_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J = ⊤) :
     (RingHom.fst _ _).comp
         (quotientInfEquivQuotientProd I J coprime : R ⧸ I ⊓ J →+* (R ⧸ I) × R ⧸ J) =
       Ideal.Quotient.factor (I ⊓ J) I inf_le_left := by
@@ -524,7 +524,7 @@ theorem fst_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J
 #align ideal.fst_comp_quotient_inf_equiv_quotient_prod Ideal.fst_comp_quotientInfEquivQuotientProd
 
 @[simp]
-theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J = ⊤) :
+lemma snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J = ⊤) :
     (RingHom.snd _ _).comp
         (quotientInfEquivQuotientProd I J coprime : R ⧸ I ⊓ J →+* (R ⧸ I) × R ⧸ J) =
       Ideal.Quotient.factor (I ⊓ J) J inf_le_right := by

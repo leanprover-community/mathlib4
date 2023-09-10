@@ -101,7 +101,7 @@ lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
-theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
+lemma tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ (a / (b * x + c))) atTop (𝓝 1) := by
   refine'
     Tendsto.congr' _
@@ -135,7 +135,7 @@ lemma tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝
 #align tendsto_rpow_neg_div tendsto_rpow_neg_div
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
-theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x ^ s) atTop atTop := by
+lemma tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x ^ s) atTop atTop := by
   cases' archimedean_iff_nat_lt.1 Real.instArchimedean s with n hn
   refine' tendsto_atTop_mono' _ _ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)]with x hx₀ hx₁
@@ -144,7 +144,7 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
 #align tendsto_exp_div_rpow_at_top tendsto_exp_div_rpow_atTop
 
 /-- The function `exp (b * x) / x ^ s` tends to `+∞` at `+∞`, for any real `s` and `b > 0`. -/
-theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
+lemma tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => exp (b * x) / x ^ s) atTop atTop := by
   refine' ((tendsto_rpow_atTop hb).comp (tendsto_exp_div_rpow_atTop (s / b))).congr' _
   filter_upwards [eventually_ge_atTop (0 : ℝ)]with x hx₀
@@ -153,7 +153,7 @@ theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
 #align tendsto_exp_mul_div_rpow_at_top tendsto_exp_mul_div_rpow_atTop
 
 /-- The function `x ^ s * exp (-b * x)` tends to `0` at `+∞`, for any real `s` and `b > 0`. -/
-theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 (s : ℝ) (b : ℝ) (hb : 0 < b) :
+lemma tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => x ^ s * exp (-b * x)) atTop (𝓝 0) := by
   refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
@@ -202,7 +202,7 @@ variable {α : Type*} {l : Filter α} {f g : α → ℂ}
 
 open Asymptotics
 
-theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
+lemma isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
     (fun x => Real.exp (arg (f x) * im (g x))) =Θ[l] fun _ => (1 : ℝ) := by
   rcases hl with ⟨b, hb⟩
   refine' Real.isTheta_exp_comp_one.2 ⟨π * b, _⟩
@@ -212,7 +212,7 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
   exact mul_le_mul (abs_arg_le_pi _) hx (abs_nonneg _) Real.pi_pos.le
 #align complex.is_Theta_exp_arg_mul_im Complex.isTheta_exp_arg_mul_im
 
-theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
+lemma isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
     (fun x => f x ^ g x) =O[l] fun x => abs (f x) ^ (g x).re :=
   calc
     (fun x => f x ^ g x) =O[l]
@@ -225,7 +225,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
       rfl
 #align complex.is_O_cpow_rpow Complex.isBigO_cpow_rpow
 
-theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
+lemma isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
     (fun x => f x ^ g x) =Θ[l] fun x => abs (f x) ^ (g x).re :=
   calc
@@ -261,7 +261,7 @@ namespace Asymptotics
 
 variable {α : Type*} {r c : ℝ} {l : Filter α} {f g : α → ℝ}
 
-theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) :
+lemma IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) :
     IsBigOWith (c ^ r) l (fun x => f x ^ r) fun x => g x ^ r := by
   apply IsBigOWith.of_bound
   filter_upwards [hg, h.bound]with x hgx hx
@@ -271,13 +271,13 @@ theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (
     _ = c ^ r * |g x ^ r| := by rw [mul_rpow hc (abs_nonneg _), abs_rpow_of_nonneg hgx]
 #align asymptotics.is_O_with.rpow Asymptotics.IsBigOWith.rpow
 
-theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
+lemma IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
     (fun x => f x ^ r) =O[l] fun x => g x ^ r :=
   let ⟨_, hc, h'⟩ := h.exists_nonneg
   (h'.rpow hc hr hg).isBigO
 #align asymptotics.is_O.rpow Asymptotics.IsBigO.rpow
 
-theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
+lemma IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
     (fun x => f x ^ r) =o[l] fun x => g x ^ r :=
   IsLittleO.of_isBigOWith fun c hc =>
     ((h.forall_isBigOWith (rpow_pos_of_pos hc r⁻¹)).rpow (rpow_nonneg_of_nonneg hc.le _) hr.le
@@ -290,7 +290,7 @@ end Asymptotics
 open Asymptotics
 
 /-- `x ^ s = o(exp(b * x))` as `x → ∞` for any real `s` and positive `b`. -/
-theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
+lemma isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ s) =o[atTop] fun x => exp (b * x) :=
   Iff.mpr (isLittleO_iff_tendsto fun x h => absurd h (exp_pos _).ne') <| by
     simpa only [div_eq_mul_inv, exp_neg, neg_mul] using
@@ -298,19 +298,19 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
 #align is_o_rpow_exp_pos_mul_at_top isLittleO_rpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/
-theorem isLittleO_zpow_exp_pos_mul_atTop (k : ℤ) {b : ℝ} (hb : 0 < b) :
+lemma isLittleO_zpow_exp_pos_mul_atTop (k : ℤ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ k) =o[atTop] fun x => exp (b * x) := by
   simpa only [rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
 #align is_o_zpow_exp_pos_mul_at_top isLittleO_zpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any natural `k` and positive `b`. -/
-theorem isLittleO_pow_exp_pos_mul_atTop (k : ℕ) {b : ℝ} (hb : 0 < b) :
+lemma isLittleO_pow_exp_pos_mul_atTop (k : ℕ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ k) =o[atTop] fun x => exp (b * x) := by
   simpa using isLittleO_zpow_exp_pos_mul_atTop k hb
 #align is_o_pow_exp_pos_mul_at_top isLittleO_pow_exp_pos_mul_atTop
 
 /-- `x ^ s = o(exp x)` as `x → ∞` for any real `s`. -/
-theorem isLittleO_rpow_exp_atTop (s : ℝ) : (fun x : ℝ => x ^ s) =o[atTop] exp := by
+lemma isLittleO_rpow_exp_atTop (s : ℝ) : (fun x : ℝ => x ^ s) =o[atTop] exp := by
   simpa only [one_mul] using isLittleO_rpow_exp_pos_mul_atTop s one_pos
 #align is_o_rpow_exp_at_top isLittleO_rpow_exp_atTop
 

@@ -23,7 +23,7 @@ section SemigroupWithZero
 
 variable [SemigroupWithZero α] {a : α}
 
-theorem eq_zero_of_zero_dvd (h : 0 ∣ a) : a = 0 :=
+lemma eq_zero_of_zero_dvd (h : 0 ∣ a) : a = 0 :=
   Dvd.elim h fun c H' => H'.trans (zero_mul c)
 #align eq_zero_of_zero_dvd eq_zero_of_zero_dvd
 
@@ -37,7 +37,7 @@ lemma zero_dvd_iff : 0 ∣ a ↔ a = 0 :=
 #align zero_dvd_iff zero_dvd_iff
 
 @[simp]
-theorem dvd_zero (a : α) : a ∣ 0 :=
+lemma dvd_zero (a : α) : a ∣ 0 :=
   Dvd.intro 0 (by simp)
 #align dvd_zero dvd_zero
 
@@ -129,11 +129,11 @@ alias Dvd.dvd.antisymm := dvd_antisymm
 alias Dvd.dvd.antisymm' := dvd_antisymm'
 #align has_dvd.dvd.antisymm' Dvd.dvd.antisymm'
 
-theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
+lemma eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
   ((h _).2 dvd_rfl).antisymm <| (h _).1 dvd_rfl
 #align eq_of_forall_dvd eq_of_forall_dvd
 
-theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
+lemma eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
   ((h _).1 dvd_rfl).antisymm <| (h _).2 dvd_rfl
 #align eq_of_forall_dvd' eq_of_forall_dvd'
 

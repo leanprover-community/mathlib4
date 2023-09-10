@@ -89,7 +89,7 @@ inductive WEquiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv MvQPF.WEquiv
 
-theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) → β) (x y : q.P.W α) :
+lemma recF_eq_of_wEquiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) → β) (x y : q.P.W α) :
     WEquiv x y → recF u x = recF u y := by
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
@@ -239,7 +239,7 @@ lemma Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 α
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 #align mvqpf.fix.rec_eq MvQPF.Fix.rec_eq
 
-theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
+lemma Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
     Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦q.P.wMk a f' f⟧ := by
   have : Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦wrepr (q.P.wMk a f' f)⟧ := by
     apply Quot.sound; apply wEquiv.abs'
@@ -284,7 +284,7 @@ lemma Fix.rec_unique {β : Type _} (g : F (append1 α β) → β) (h : Fix F α 
   rw [hyp, ← hyp', Fix.rec_eq]
 #align mvqpf.fix.rec_unique MvQPF.Fix.rec_unique
 
-theorem Fix.mk_dest (x : Fix F α) : Fix.mk (Fix.dest x) = x := by
+lemma Fix.mk_dest (x : Fix F α) : Fix.mk (Fix.dest x) = x := by
   change (Fix.mk ∘ Fix.dest) x = x
   apply Fix.ind_rec
   intro x; dsimp
@@ -294,7 +294,7 @@ theorem Fix.mk_dest (x : Fix F α) : Fix.mk (Fix.dest x) = x := by
   rw [appendFun_id_id, MvFunctor.id_map]
 #align mvqpf.fix.mk_dest MvQPF.Fix.mk_dest
 
-theorem Fix.dest_mk (x : F (append1 α (Fix F α))) : Fix.dest (Fix.mk x) = x := by
+lemma Fix.dest_mk (x : F (append1 α (Fix F α))) : Fix.dest (Fix.mk x) = x := by
   unfold Fix.dest
   rw [Fix.rec_eq, ← Fix.dest, ← comp_map]
   conv =>

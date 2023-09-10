@@ -75,12 +75,12 @@ lemma embeddingPiTangent_injOn : InjOn f.embeddingPiTangent s := by
   exact (extChartAt I (f.c _)).injOn (f.mem_extChartAt_ind_source x hx) this h₁
 #align smooth_bump_covering.embedding_pi_tangent_inj_on SmoothBumpCovering.embeddingPiTangent_injOn
 
-theorem embeddingPiTangent_injective (f : SmoothBumpCovering ι I M) :
+lemma embeddingPiTangent_injective (f : SmoothBumpCovering ι I M) :
     Injective f.embeddingPiTangent :=
   injective_iff_injOn_univ.2 f.embeddingPiTangent_injOn
 #align smooth_bump_covering.embedding_pi_tangent_injective SmoothBumpCovering.embeddingPiTangent_injective
 
-theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
+lemma comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
     ((ContinuousLinearMap.fst ℝ E ℝ).comp
             (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance)
               (f.ind x hx))).comp
@@ -98,7 +98,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
   rw [hy, Pi.one_apply, one_smul]
 #align smooth_bump_covering.comp_embedding_pi_tangent_mfderiv SmoothBumpCovering.comp_embeddingPiTangent_mfderiv
 
-theorem embeddingPiTangent_ker_mfderiv (x : M) (hx : x ∈ s) :
+lemma embeddingPiTangent_ker_mfderiv (x : M) (hx : x ∈ s) :
     LinearMap.ker (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) = ⊥ := by
   apply bot_unique
   rw [← (mdifferentiable_chart I (f.c (f.ind x hx))).ker_mfderiv_eq_bot
@@ -107,7 +107,7 @@ theorem embeddingPiTangent_ker_mfderiv (x : M) (hx : x ∈ s) :
   exact LinearMap.ker_le_ker_comp _ _
 #align smooth_bump_covering.embedding_pi_tangent_ker_mfderiv SmoothBumpCovering.embeddingPiTangent_ker_mfderiv
 
-theorem embeddingPiTangent_injective_mfderiv (x : M) (hx : x ∈ s) :
+lemma embeddingPiTangent_injective_mfderiv (x : M) (hx : x ∈ s) :
     Injective (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) :=
   LinearMap.ker_eq_bot.1 (f.embeddingPiTangent_ker_mfderiv x hx)
 #align smooth_bump_covering.embedding_pi_tangent_injective_mfderiv SmoothBumpCovering.embeddingPiTangent_injective_mfderiv

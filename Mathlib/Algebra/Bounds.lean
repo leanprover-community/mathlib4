@@ -41,13 +41,13 @@ lemma bddBelow_inv : BddBelow s⁻¹ ↔ BddAbove s :=
 #align bdd_below_neg bddBelow_neg
 
 @[to_additive]
-theorem BddAbove.inv (h : BddAbove s) : BddBelow s⁻¹ :=
+lemma BddAbove.inv (h : BddAbove s) : BddBelow s⁻¹ :=
   bddBelow_inv.2 h
 #align bdd_above.inv BddAbove.inv
 #align bdd_above.neg BddAbove.neg
 
 @[to_additive]
-theorem BddBelow.inv (h : BddBelow s) : BddAbove s⁻¹ :=
+lemma BddBelow.inv (h : BddBelow s) : BddAbove s⁻¹ :=
   bddAbove_inv.2 h
 #align bdd_below.inv BddBelow.inv
 #align bdd_below.neg BddBelow.neg
@@ -65,7 +65,7 @@ lemma isLUB_inv' : IsLUB s⁻¹ a⁻¹ ↔ IsGLB s a :=
 #align is_lub_neg' isLUB_neg'
 
 @[to_additive]
-theorem IsGLB.inv (h : IsGLB s a) : IsLUB s⁻¹ a⁻¹ :=
+lemma IsGLB.inv (h : IsGLB s a) : IsLUB s⁻¹ a⁻¹ :=
   isLUB_inv'.2 h
 #align is_glb.inv IsGLB.inv
 #align is_glb.neg IsGLB.neg
@@ -83,7 +83,7 @@ lemma isGLB_inv' : IsGLB s⁻¹ a⁻¹ ↔ IsLUB s a :=
 #align is_glb_neg' isGLB_neg'
 
 @[to_additive]
-theorem IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
+lemma IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
   isGLB_inv'.2 h
 #align is_lub.inv IsLUB.inv
 #align is_lub.neg IsLUB.neg
@@ -103,7 +103,7 @@ lemma mul_mem_upperBounds_mul {s t : Set M} {a b : M} (ha : a ∈ upperBounds s)
 #align add_mem_upper_bounds_add add_mem_upperBounds_add
 
 @[to_additive]
-theorem subset_upperBounds_mul (s t : Set M) :
+lemma subset_upperBounds_mul (s t : Set M) :
     upperBounds s * upperBounds t ⊆ upperBounds (s * t) :=
   image2_subset_iff.2 fun _ hx _ hy => mul_mem_upperBounds_mul hx hy
 #align subset_upper_bounds_mul subset_upperBounds_mul
@@ -117,7 +117,7 @@ lemma mul_mem_lowerBounds_mul {s t : Set M} {a b : M} (ha : a ∈ lowerBounds s)
 #align add_mem_lower_bounds_add add_mem_lowerBounds_add
 
 @[to_additive]
-theorem subset_lowerBounds_mul (s t : Set M) :
+lemma subset_lowerBounds_mul (s t : Set M) :
     lowerBounds s * lowerBounds t ⊆ lowerBounds (s * t) :=
   @subset_upperBounds_mul Mᵒᵈ _ _ _ _ _ _
 #align subset_lower_bounds_mul subset_lowerBounds_mul
@@ -145,13 +145,13 @@ variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
-theorem ciSup_mul (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) * a = ⨆ i, f i * a :=
+lemma ciSup_mul (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) * a = ⨆ i, f i * a :=
   (OrderIso.mulRight a).map_ciSup hf
 #align csupr_mul ciSup_mul
 #align csupr_add ciSup_add
 
 @[to_additive]
-theorem ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆ i, f i / a := by
+lemma ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆ i, f i / a := by
   simp only [div_eq_mul_inv, ciSup_mul hf]
 #align csupr_div ciSup_div
 #align csupr_sub ciSup_sub
@@ -164,7 +164,7 @@ variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
-theorem mul_ciSup (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆ i, a * f i :=
+lemma mul_ciSup (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆ i, a * f i :=
   (OrderIso.mulLeft a).map_ciSup hf
 #align mul_csupr mul_ciSup
 #align add_csupr add_ciSup

@@ -55,7 +55,7 @@ variable (T : E →L[𝕜] E)
 the quantity `re ⟪T x, x⟫ / ‖x‖ ^ 2`. -/
 noncomputable abbrev rayleighQuotient (x : E) := T.reApplyInnerSelf x / ‖(x : E)‖ ^ 2
 
-theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
+lemma rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
     rayleighQuotient T (c • x) = rayleighQuotient T x := by
   by_cases hx : x = 0
   · simp [hx]
@@ -119,7 +119,7 @@ variable [CompleteSpace F] {T : F →L[ℝ] F}
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
+lemma linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by
   have H : IsLocalExtrOn T.reApplyInnerSelf {x : F | ‖x‖ ^ 2 = ‖x₀‖ ^ 2} x₀ := by
@@ -140,7 +140,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
   simpa only [two_smul, smul_add, add_smul, add_zero] using h₂
 #align is_self_adjoint.linearly_dependent_of_is_local_extr_on IsSelfAdjoint.linearly_dependent_of_isLocalExtrOn
 
-theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
+lemma eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     T x₀ = T.rayleighQuotient x₀ • x₀ := by
   obtain ⟨a, b, h₁, h₂⟩ := hT.linearly_dependent_of_isLocalExtrOn hextr
@@ -169,7 +169,7 @@ section CompleteSpace
 
 variable [CompleteSpace E] {T : E →L[𝕜] E}
 
-theorem eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
+lemma eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     T x₀ = (↑(T.rayleighQuotient x₀) : 𝕜) • x₀ := by
   letI := InnerProductSpace.isROrCToReal 𝕜 E
@@ -179,7 +179,7 @@ theorem eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
 
 /-- For a self-adjoint operator `T`, a local extremum of the Rayleigh quotient of `T` on a sphere
 centred at the origin is an eigenvector of `T`. -/
-theorem hasEigenvector_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
+lemma hasEigenvector_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (↑(T.rayleighQuotient x₀)) x₀ := by
   refine' ⟨_, hx₀⟩
@@ -190,7 +190,7 @@ theorem hasEigenvector_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀
 /-- For a self-adjoint operator `T`, a maximum of the Rayleigh quotient of `T` on a sphere centred
 at the origin is an eigenvector of `T`, with eigenvalue the global supremum of the Rayleigh
 quotient. -/
-theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
+lemma hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMaxOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (↑(⨆ x : { x : E // x ≠ 0 }, T.rayleighQuotient x)) x₀ := by
   convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
@@ -210,7 +210,7 @@ theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x�
 /-- For a self-adjoint operator `T`, a minimum of the Rayleigh quotient of `T` on a sphere centred
 at the origin is an eigenvector of `T`, with eigenvalue the global infimum of the Rayleigh
 quotient. -/
-theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
+lemma hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMinOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (↑(⨅ x : { x : E // x ≠ 0 }, T.rayleighQuotient x)) x₀ := by
   convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
@@ -241,7 +241,7 @@ namespace IsSymmetric
 
 /-- The supremum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
-theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
+lemma hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
     HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2) := by
   haveI := FiniteDimensional.proper_isROrC 𝕜 E
   let T' := hT.toSelfAdjoint
@@ -261,7 +261,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
 
 /-- The infimum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
-theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
+lemma hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
     HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2) := by
   haveI := FiniteDimensional.proper_isROrC 𝕜 E
   let T' := hT.toSelfAdjoint
@@ -279,7 +279,7 @@ theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
   exact hasEigenvalue_of_hasEigenvector (T'.prop.hasEigenvector_of_isMinOn hx₀_ne this)
 #align linear_map.is_symmetric.has_eigenvalue_infi_of_finite_dimensional LinearMap.IsSymmetric.hasEigenvalue_iInf_of_finiteDimensional
 
-theorem subsingleton_of_no_eigenvalue_finiteDimensional (hT : T.IsSymmetric)
+lemma subsingleton_of_no_eigenvalue_finiteDimensional (hT : T.IsSymmetric)
     (hT' : ∀ μ : 𝕜, Module.End.eigenspace (T : E →ₗ[𝕜] E) μ = ⊥) : Subsingleton E :=
   (subsingleton_or_nontrivial E).resolve_right fun _h =>
     absurd (hT' _) hT.hasEigenvalue_iSup_of_finiteDimensional

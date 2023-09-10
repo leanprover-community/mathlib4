@@ -45,7 +45,7 @@ def of (α : Type*) [PartialOrder α] [BoundedOrder α] : BddOrdCat :=
 #align BddOrd.of BddOrdCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddOrd.coe_of BddOrdCat.coe_of
 

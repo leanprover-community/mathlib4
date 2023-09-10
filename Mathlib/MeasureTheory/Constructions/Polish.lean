@@ -722,7 +722,7 @@ variable [MeasurableSpace γ] [hγb : BorelSpace γ] {β : Type*} [tβ : Topolog
 
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a Polish space, then its image under
 a continuous injective map is also Borel-measurable. -/
-theorem _root_.MeasurableSet.image_of_continuousOn_injOn (hs : MeasurableSet s)
+lemma _root_.MeasurableSet.image_of_continuousOn_injOn (hs : MeasurableSet s)
     (f_cont : ContinuousOn f s) (f_inj : InjOn f s) : MeasurableSet (f '' s) := by
   obtain ⟨t', t't, t'_polish, s_closed, _⟩ :
     ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @PolishSpace γ t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s :=
@@ -754,7 +754,7 @@ lemma _root_.MeasurableSet.image_of_measurable_injOn [SecondCountableTopology β
 #align measurable_set.image_of_measurable_inj_on MeasurableSet.image_of_measurable_injOn
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
-theorem _root_.Continuous.measurableEmbedding (f_cont : Continuous f) (f_inj : Injective f) :
+lemma _root_.Continuous.measurableEmbedding (f_cont : Continuous f) (f_inj : Injective f) :
     MeasurableEmbedding f :=
   { injective := f_inj
     measurable := f_cont.measurable
@@ -764,7 +764,7 @@ theorem _root_.Continuous.measurableEmbedding (f_cont : Continuous f) (f_inj : I
 
 /-- If `s` is Borel-measurable in a Polish space and `f` is continuous injective on `s`, then
 the restriction of `f` to `s` is a measurable embedding. -/
-theorem _root_.ContinuousOn.measurableEmbedding (hs : MeasurableSet s) (f_cont : ContinuousOn f s)
+lemma _root_.ContinuousOn.measurableEmbedding (hs : MeasurableSet s) (f_cont : ContinuousOn f s)
     (f_inj : InjOn f s) : MeasurableEmbedding (s.restrict f) :=
   { injective := injOn_iff_injective.1 f_inj
     measurable := (continuousOn_iff_continuous_restrict.1 f_cont).measurable

@@ -66,19 +66,19 @@ lemma antitone_vecEmpty : Antitone (vecCons a vecEmpty)
 lemma strictAnti_vecEmpty : StrictAnti (vecCons a vecEmpty)
   | ⟨0, _⟩, ⟨0, _⟩, h => (irrefl _ h).elim
 
-theorem StrictMono.vecCons (hf : StrictMono f) (ha : a < f 0) : StrictMono (vecCons a f) :=
+lemma StrictMono.vecCons (hf : StrictMono f) (ha : a < f 0) : StrictMono (vecCons a f) :=
   strictMono_vecCons.2 ⟨ha, hf⟩
 #align strict_mono.vec_cons StrictMono.vecCons
 
-theorem StrictAnti.vecCons (hf : StrictAnti f) (ha : f 0 < a) : StrictAnti (vecCons a f) :=
+lemma StrictAnti.vecCons (hf : StrictAnti f) (ha : f 0 < a) : StrictAnti (vecCons a f) :=
   strictAnti_vecCons.2 ⟨ha, hf⟩
 #align strict_anti.vec_cons StrictAnti.vecCons
 
-theorem Monotone.vecCons (hf : Monotone f) (ha : a ≤ f 0) : Monotone (vecCons a f) :=
+lemma Monotone.vecCons (hf : Monotone f) (ha : a ≤ f 0) : Monotone (vecCons a f) :=
   monotone_vecCons.2 ⟨ha, hf⟩
 #align monotone.vec_cons Monotone.vecCons
 
-theorem Antitone.vecCons (hf : Antitone f) (ha : f 0 ≤ a) : Antitone (vecCons a f) :=
+lemma Antitone.vecCons (hf : Antitone f) (ha : f 0 ≤ a) : Antitone (vecCons a f) :=
   antitone_vecCons.2 ⟨ha, hf⟩
 #align antitone.vec_cons Antitone.vecCons
 

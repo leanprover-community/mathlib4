@@ -46,7 +46,7 @@ def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃
   apply Finite.equivFin
 #align finite.equiv_fin_of_card_eq Finite.equivFinOfCardEq
 
-theorem Nat.card_eq (α : Type*) :
+lemma Nat.card_eq (α : Type*) :
     Nat.card α = if h : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
   · letI := Fintype.ofFinite α
@@ -128,7 +128,7 @@ lemma card_le_of_injective' {f : α → β} (hf : Function.Injective f)
 
 /-- If `f` is an embedding, then `Nat.card α ≤ Nat.card β`. We must also assume
   `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
-theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card α = 0) :
+lemma card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card α = 0) :
     Nat.card α ≤ Nat.card β :=
   card_le_of_injective' f.2 h
 #align finite.card_le_of_embedding' Finite.card_le_of_embedding'
@@ -192,7 +192,7 @@ end Finite
 
 namespace PartENat
 
-theorem card_eq_coe_nat_card (α : Type*) [Finite α] : card α = Nat.card α := by
+lemma card_eq_coe_nat_card (α : Type*) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm
   rw [Cardinal.natCast_eq_toPartENat_iff]
@@ -203,7 +203,7 @@ end PartENat
 
 namespace Set
 
-theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
+lemma card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
   cases' _root_.finite_or_infinite (↥(s ∪ t)) with h h
   · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
     cases h

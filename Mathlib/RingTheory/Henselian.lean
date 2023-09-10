@@ -118,7 +118,7 @@ instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLoca
     exact ⟨a₀, h₁, sub_self _⟩
 #align field.henselian Field.henselian
 
-theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
+lemma HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     TFAE
       [HenselianLocalRing R,
         ∀ (f : R[X]) (_ : f.Monic) (a₀ : ResidueField R) (_ : aeval a₀ f = 0)

@@ -66,13 +66,13 @@ nonrec lemma ContinuousWithinAt.div_const {a} (hf : ContinuousWithinAt f s a) (y
   hf.div_const _
 #align continuous_within_at.div_const ContinuousWithinAt.div_const
 
-theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
+lemma ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
     ContinuousOn (fun x => f x / y) s := by
   simpa only [div_eq_mul_inv] using hf.mul continuousOn_const
 #align continuous_on.div_const ContinuousOn.div_const
 
 @[continuity]
-theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
+lemma Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
   simpa only [div_eq_mul_inv] using hf.mul continuous_const
 #align continuous.div_const Continuous.div_const
 
@@ -118,22 +118,22 @@ lemma Filter.Tendsto.inv₀ {a : G₀} (hf : Tendsto f l (𝓝 a)) (ha : a ≠ 0
 
 variable [TopologicalSpace α]
 
-nonrec theorem ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f a ≠ 0) :
+nonrec lemma ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f a ≠ 0) :
     ContinuousWithinAt (fun x => (f x)⁻¹) s a :=
   hf.inv₀ ha
 #align continuous_within_at.inv₀ ContinuousWithinAt.inv₀
 
-nonrec theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
+nonrec lemma ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
     ContinuousAt (fun x => (f x)⁻¹) a :=
   hf.inv₀ ha
 #align continuous_at.inv₀ ContinuousAt.inv₀
 
 @[continuity]
-theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x => (f x)⁻¹ :=
+lemma Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x => (f x)⁻¹ :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).inv₀ (h0 x)
 #align continuous.inv₀ Continuous.inv₀
 
-theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
+lemma ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
     ContinuousOn (fun x => (f x)⁻¹) s := fun x hx => (hf x hx).inv₀ (h0 x hx)
 #align continuous_on.inv₀ ContinuousOn.inv₀
 
@@ -174,24 +174,24 @@ lemma Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : 
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}
 
-nonrec theorem ContinuousWithinAt.div (hf : ContinuousWithinAt f s a)
+nonrec lemma ContinuousWithinAt.div (hf : ContinuousWithinAt f s a)
     (hg : ContinuousWithinAt g s a) (h₀ : g a ≠ 0) : ContinuousWithinAt (f / g) s a :=
   hf.div hg h₀
 #align continuous_within_at.div ContinuousWithinAt.div
 
-theorem ContinuousOn.div (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
+lemma ContinuousOn.div (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
     ContinuousOn (f / g) s := fun x hx => (hf x hx).div (hg x hx) (h₀ x hx)
 #align continuous_on.div ContinuousOn.div
 
 /-- Continuity at a point of the result of dividing two functions continuous at that point, where
 the denominator is nonzero. -/
-nonrec theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
+nonrec lemma ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
     ContinuousAt (f / g) a :=
   hf.div hg h₀
 #align continuous_at.div ContinuousAt.div
 
 @[continuity]
-theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
+lemma Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
     Continuous (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 #align continuous.div Continuous.div
 
@@ -252,23 +252,23 @@ protected def mulRight₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
 #align homeomorph.mul_right₀ Homeomorph.mulRight₀
 
 @[simp]
-theorem coe_mulLeft₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulLeft₀ c hc) = (c * ·) :=
+lemma coe_mulLeft₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulLeft₀ c hc) = (c * ·) :=
   rfl
 #align homeomorph.coe_mul_left₀ Homeomorph.coe_mulLeft₀
 
 @[simp]
-theorem mulLeft₀_symm_apply (c : α) (hc : c ≠ 0) :
+lemma mulLeft₀_symm_apply (c : α) (hc : c ≠ 0) :
     ((Homeomorph.mulLeft₀ c hc).symm : α → α) = (c⁻¹ * ·) :=
   rfl
 #align homeomorph.mul_left₀_symm_apply Homeomorph.mulLeft₀_symm_apply
 
 @[simp]
-theorem coe_mulRight₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulRight₀ c hc) = (· * c) :=
+lemma coe_mulRight₀ (c : α) (hc : c ≠ 0) : ⇑(Homeomorph.mulRight₀ c hc) = (· * c) :=
   rfl
 #align homeomorph.coe_mul_right₀ Homeomorph.coe_mulRight₀
 
 @[simp]
-theorem mulRight₀_symm_apply (c : α) (hc : c ≠ 0) :
+lemma mulRight₀_symm_apply (c : α) (hc : c ≠ 0) :
     ((Homeomorph.mulRight₀ c hc).symm : α → α) = (· * c⁻¹) :=
   rfl
 #align homeomorph.mul_right₀_symm_apply Homeomorph.mulRight₀_symm_apply
@@ -279,24 +279,24 @@ section map_comap
 
 variable [TopologicalSpace G₀] [GroupWithZero G₀] [ContinuousMul G₀] {a : G₀}
 
-theorem map_mul_left_nhds₀ (ha : a ≠ 0) (b : G₀) : map (a * ·) (𝓝 b) = 𝓝 (a * b) :=
+lemma map_mul_left_nhds₀ (ha : a ≠ 0) (b : G₀) : map (a * ·) (𝓝 b) = 𝓝 (a * b) :=
   (Homeomorph.mulLeft₀ a ha).map_nhds_eq b
 
-theorem map_mul_left_nhds_one₀ (ha : a ≠ 0) : map (a * ·) (𝓝 1) = 𝓝 (a) := by
+lemma map_mul_left_nhds_one₀ (ha : a ≠ 0) : map (a * ·) (𝓝 1) = 𝓝 (a) := by
   rw [map_mul_left_nhds₀ ha, mul_one]
 
-theorem map_mul_right_nhds₀ (ha : a ≠ 0) (b : G₀) : map (· * a) (𝓝 b) = 𝓝 (b * a) :=
+lemma map_mul_right_nhds₀ (ha : a ≠ 0) (b : G₀) : map (· * a) (𝓝 b) = 𝓝 (b * a) :=
   (Homeomorph.mulRight₀ a ha).map_nhds_eq b
 
-theorem map_mul_right_nhds_one₀ (ha : a ≠ 0) : map (· * a) (𝓝 1) = 𝓝 (a) := by
+lemma map_mul_right_nhds_one₀ (ha : a ≠ 0) : map (· * a) (𝓝 1) = 𝓝 (a) := by
   rw [map_mul_right_nhds₀ ha, one_mul]
 
-theorem nhds_translation_mul_inv₀ (ha : a ≠ 0) : comap (· * a⁻¹) (𝓝 1) = 𝓝 a :=
+lemma nhds_translation_mul_inv₀ (ha : a ≠ 0) : comap (· * a⁻¹) (𝓝 1) = 𝓝 a :=
   ((Homeomorph.mulRight₀ a ha).symm.comap_nhds_eq 1).trans <| by simp
 
 /-- If a group with zero has continuous multiplication and `fun x ↦ x⁻¹` is continuous at one,
 then it is continuous at any unit. -/
-theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (𝓝 1)) :
+lemma HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (𝓝 1)) :
     HasContinuousInv₀ G₀ where
   continuousAt_inv₀ x hx := by
     have hx' := inv_ne_zero hx
@@ -310,7 +310,7 @@ section Zpow
 
 variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] [ContinuousMul G₀]
 
-theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
+lemma continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
   cases' m with m m
   · simpa only [Int.ofNat_eq_coe, zpow_coe_nat] using continuousAt_pow x m
@@ -319,7 +319,7 @@ theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)
 #align continuous_at_zpow₀ continuousAt_zpow₀
 
-theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>
+lemma continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>
   (continuousAt_zpow₀ _ _ (Or.inl hx)).continuousWithinAt
 #align continuous_on_zpow₀ continuousOn_zpow₀
 
@@ -330,22 +330,22 @@ lemma Filter.Tendsto.zpow₀ {f : α → G₀} {l : Filter α} {a : G₀} (hf : 
 
 variable {X : Type*} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
 
-nonrec theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
+nonrec lemma ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => f x ^ m) a :=
   hf.zpow₀ m h
 #align continuous_at.zpow₀ ContinuousAt.zpow₀
 
-nonrec theorem ContinuousWithinAt.zpow₀ (hf : ContinuousWithinAt f s a) (m : ℤ)
+nonrec lemma ContinuousWithinAt.zpow₀ (hf : ContinuousWithinAt f s a) (m : ℤ)
     (h : f a ≠ 0 ∨ 0 ≤ m) : ContinuousWithinAt (fun x => f x ^ m) s a :=
   hf.zpow₀ m h
 #align continuous_within_at.zpow₀ ContinuousWithinAt.zpow₀
 
-theorem ContinuousOn.zpow₀ (hf : ContinuousOn f s) (m : ℤ) (h : ∀ a ∈ s, f a ≠ 0 ∨ 0 ≤ m) :
+lemma ContinuousOn.zpow₀ (hf : ContinuousOn f s) (m : ℤ) (h : ∀ a ∈ s, f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousOn (fun x => f x ^ m) s := fun a ha => (hf a ha).zpow₀ m (h a ha)
 #align continuous_on.zpow₀ ContinuousOn.zpow₀
 
 @[continuity]
-theorem Continuous.zpow₀ (hf : Continuous f) (m : ℤ) (h0 : ∀ a, f a ≠ 0 ∨ 0 ≤ m) :
+lemma Continuous.zpow₀ (hf : Continuous f) (m : ℤ) (h0 : ∀ a, f a ≠ 0 ∨ 0 ≤ m) :
     Continuous fun x => f x ^ m :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).zpow₀ m (h0 x)
 #align continuous.zpow₀ Continuous.zpow₀

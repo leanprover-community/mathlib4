@@ -64,7 +64,7 @@ lemma degree_pos_of_aeval_root [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S} (
   natDegree_pos_iff_degree_pos.mp (natDegree_pos_of_aeval_root hp hz inj)
 #align polynomial.degree_pos_of_aeval_root Polynomial.degree_pos_of_aeval_root
 
-theorem modByMonic_eq_of_dvd_sub (hq : q.Monic) {p₁ p₂ : R[X]} (h : q ∣ p₁ - p₂) :
+lemma modByMonic_eq_of_dvd_sub (hq : q.Monic) {p₁ p₂ : R[X]} (h : q ∣ p₁ - p₂) :
     p₁ %ₘ q = p₂ %ₘ q := by
   nontriviality R
   obtain ⟨f, sub_eq⟩ := h
@@ -72,7 +72,7 @@ theorem modByMonic_eq_of_dvd_sub (hq : q.Monic) {p₁ p₂ : R[X]} (h : q ∣ p�
   rw [sub_eq_iff_eq_add.mp sub_eq, mul_add, ← add_assoc, modByMonic_add_div _ hq, add_comm]
 #align polynomial.mod_by_monic_eq_of_dvd_sub Polynomial.modByMonic_eq_of_dvd_sub
 
-theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
+lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
   by_cases hq : q.Monic
   · cases' subsingleton_or_nontrivial R with hR hR
     · simp only [eq_iff_true_of_subsingleton]
@@ -86,7 +86,7 @@ theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q +
   · simp_rw [modByMonic_eq_of_not_monic _ hq]
 #align polynomial.add_mod_by_monic Polynomial.add_modByMonic
 
-theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
+lemma smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
   · cases' subsingleton_or_nontrivial R with hR hR
     · simp only [eq_iff_true_of_subsingleton]
@@ -132,7 +132,7 @@ instance : NoZeroDivisors R[X] where
     refine' eq_zero_or_eq_zero_of_mul_eq_zero _
     rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
 
-theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
+lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
   rw [← Nat.cast_inj (R := WithBot ℕ), ←degree_eq_natDegree (mul_ne_zero hp hq),
     Nat.cast_add,  ←degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
@@ -148,7 +148,7 @@ lemma trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailin
 #align polynomial.trailing_degree_mul Polynomial.trailingDegree_mul
 
 @[simp]
-theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
+lemma natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
   classical
   exact if hp0 : p = 0 then
     if hn0 : n = 0 then by simp [hp0, hn0]
@@ -158,7 +158,7 @@ theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p
       (by rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp0)
 #align polynomial.nat_degree_pow Polynomial.natDegree_pow
 
-theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
+lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
   classical
   exact if hp : p = 0 then by simp only [hp, zero_mul, le_refl]
   else by
@@ -208,7 +208,7 @@ lemma natDegree_sub_eq_of_prod_eq {p₁ p₂ q₁ q₂ : R[X]} (hp₁ : p₁ ≠
   rw [← natDegree_mul hp₁ hq₂, ← natDegree_mul hp₂ hq₁, h_eq]
 #align polynomial.nat_degree_sub_eq_of_prod_eq Polynomial.natDegree_sub_eq_of_prod_eq
 
-theorem natDegree_eq_zero_of_isUnit (h : IsUnit p) : natDegree p = 0 := by
+lemma natDegree_eq_zero_of_isUnit (h : IsUnit p) : natDegree p = 0 := by
   nontriviality R
   obtain ⟨q, hq⟩ := h.exists_right_inv
   have := natDegree_mul (left_ne_zero_of_mul_eq_one hq) (right_ne_zero_of_mul_eq_one hq)
@@ -240,18 +240,18 @@ variable [CharZero R]
 
 -- Porting note: bit0/bit1 are deprecated
 -- @[simp, deprecated]
--- theorem degree_bit0_eq (p : R[X]) : degree (bit0 p) = degree p := by
+-- lemma degree_bit0_eq (p : R[X]) : degree (bit0 p) = degree p := by
 --   rw [bit0_eq_two_mul, degree_mul, (by simp : (2 : R[X]) = C 2),
 --     @Polynomial.degree_C R _ _ two_ne_zero, zero_add]
 -- #align polynomial.degree_bit0_eq Polynomial.degree_bit0_eq
 --
 -- @[simp]
--- theorem natDegree_bit0_eq (p : R[X]) : natDegree (bit0 p) = natDegree p :=
+-- lemma natDegree_bit0_eq (p : R[X]) : natDegree (bit0 p) = natDegree p :=
 --   natDegree_eq_of_degree_eq <| degree_bit0_eq p
 -- #align polynomial.nat_degree_bit0_eq Polynomial.natDegree_bit0_eq
 --
 -- @[simp]
--- theorem natDegree_bit1_eq (p : R[X]) : natDegree (bit1 p) = natDegree p := by
+-- lemma natDegree_bit1_eq (p : R[X]) : natDegree (bit1 p) = natDegree p := by
 --   rw [bit1]
 --   apply le_antisymm
 --   convert natDegree_add_le _ _
@@ -275,7 +275,7 @@ section NoZeroDivisors
 
 variable [CommSemiring R] [NoZeroDivisors R] {p q : R[X]}
 
-theorem irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
+lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
   refine'
     ⟨fun h f g hf hg hp => (h.2 f g hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
@@ -288,7 +288,7 @@ theorem irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
       mul_comm, ← hfg]
 #align polynomial.irreducible_of_monic Polynomial.irreducible_of_monic
 
-theorem Monic.irreducible_iff_natDegree (hp : p.Monic) :
+lemma Monic.irreducible_iff_natDegree (hp : p.Monic) :
     Irreducible p ↔
       p ≠ 1 ∧ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f.natDegree = 0 ∨ g.natDegree = 0 := by
   by_cases hp1 : p = 1; · simp [hp1]
@@ -297,7 +297,7 @@ theorem Monic.irreducible_iff_natDegree (hp : p.Monic) :
   rw [ha.natDegree_eq_zero_iff_eq_one, hb.natDegree_eq_zero_iff_eq_one]
 #align polynomial.monic.irreducible_iff_nat_degree Polynomial.Monic.irreducible_iff_natDegree
 
-theorem Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 1 ∧
+lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 1 ∧
     ∀ f g : R[X], f.Monic → g.Monic → f * g = p → g.natDegree ∉ Ioc 0 (p.natDegree / 2) := by
   simp_rw [hp.irreducible_iff_natDegree, mem_Ioc, Nat.le_div_iff_mul_le zero_lt_two, mul_two]
   apply and_congr_right'
@@ -311,7 +311,7 @@ theorem Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p �
     · exact ⟨f, g, hf, hg, rfl, h.2, add_le_add_right hl _⟩
 #align polynomial.monic.irreducible_iff_nat_degree' Polynomial.Monic.irreducible_iff_natDegree'
 
-theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.natDegree = 2) :
+lemma Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.natDegree = 2) :
     ¬Irreducible p ↔ ∃ c₁ c₂, p.coeff 0 = c₁ * c₂ ∧ p.coeff 1 = c₁ + c₂ := by
   cases subsingleton_or_nontrivial R
   · simp [natDegree_of_subsingleton] at hnd
@@ -340,7 +340,7 @@ lemma root_mul : IsRoot (p * q) a ↔ IsRoot p a ∨ IsRoot q a := by
   simp_rw [IsRoot, eval_mul, mul_eq_zero]
 #align polynomial.root_mul Polynomial.root_mul
 
-theorem root_or_root_of_root_mul (h : IsRoot (p * q) a) : IsRoot p a ∨ IsRoot q a :=
+lemma root_or_root_of_root_mul (h : IsRoot (p * q) a) : IsRoot p a ∨ IsRoot q a :=
   root_mul.1 h
 #align polynomial.root_or_root_of_root_mul Polynomial.root_or_root_of_root_mul
 
@@ -403,7 +403,7 @@ section Roots
 
 open Multiset
 
-theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
+lemma prime_X_sub_C (r : R) : Prime (X - C r) :=
   ⟨X_sub_C_ne_zero r, not_isUnit_X_sub_C r, fun _ _ => by
     simp_rw [dvd_iff_isRoot, IsRoot.def, eval_mul, mul_eq_zero]
     exact id⟩
@@ -416,12 +416,12 @@ lemma prime_X : Prime (X : R[X]) := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.prime_X Polynomial.prime_X
 
-theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
+lemma Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
   have : p = X - C (-p.coeff 0) := by simpa [hm.leadingCoeff] using eq_X_add_C_of_degree_eq_one hp1
   this.symm ▸ prime_X_sub_C _
 #align polynomial.monic.prime_of_degree_eq_one Polynomial.Monic.prime_of_degree_eq_one
 
-theorem irreducible_X_sub_C (r : R) : Irreducible (X - C r) :=
+lemma irreducible_X_sub_C (r : R) : Irreducible (X - C r) :=
   (prime_X_sub_C r).irreducible
 set_option linter.uppercaseLean3 false in
 #align polynomial.irreducible_X_sub_C Polynomial.irreducible_X_sub_C
@@ -431,11 +431,11 @@ lemma irreducible_X : Irreducible (X : R[X]) :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.irreducible_X Polynomial.irreducible_X
 
-theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
+lemma Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
   (hm.prime_of_degree_eq_one hp1).irreducible
 #align polynomial.monic.irreducible_of_degree_eq_one Polynomial.Monic.irreducible_of_degree_eq_one
 
-theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
+lemma eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
   obtain ⟨u, hu⟩ := hpq
   unfold Monic at hp hq
   rw [eq_C_of_degree_le_zero (degree_coe_units _).le] at hu
@@ -471,7 +471,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C Polynomial.rootMultiplicity_X_sub_C
 
 /-- The multiplicity of `a` as root of `(X - a) ^ n` is `n`. -/
-theorem rootMultiplicity_X_sub_C_pow (a : R) (n : ℕ) : rootMultiplicity a ((X - C a) ^ n) = n := by
+lemma rootMultiplicity_X_sub_C_pow (a : R) (n : ℕ) : rootMultiplicity a ((X - C a) ^ n) = n := by
   induction' n with n hn
   · refine' rootMultiplicity_eq_zero _
     simp only [eval_one, IsRoot.def, not_false_iff, one_ne_zero, pow_zero, Nat.zero_eq]
@@ -551,14 +551,14 @@ lemma roots_zero : (0 : R[X]).roots = 0 :=
   dif_pos rfl
 #align polynomial.roots_zero Polynomial.roots_zero
 
-theorem card_roots (hp0 : p ≠ 0) : (Multiset.card (roots p) : WithBot ℕ) ≤ degree p := by
+lemma card_roots (hp0 : p ≠ 0) : (Multiset.card (roots p) : WithBot ℕ) ≤ degree p := by
   classical
   unfold roots
   rw [dif_neg hp0]
   exact (Classical.choose_spec (exists_multiset_roots hp0)).1
 #align polynomial.card_roots Polynomial.card_roots
 
-theorem card_roots' (p : R[X]) : Multiset.card p.roots ≤ natDegree p := by
+lemma card_roots' (p : R[X]) : Multiset.card p.roots ≤ natDegree p := by
   by_cases hp0 : p = 0
   · simp [hp0]
   exact WithBot.coe_le_coe.1 (le_trans (card_roots hp0) (le_of_eq <| degree_eq_natDegree hp0))
@@ -596,15 +596,15 @@ lemma mem_roots' : a ∈ p.roots ↔ p ≠ 0 ∧ IsRoot p a := by
   rw [← count_pos, count_roots p, rootMultiplicity_pos']
 #align polynomial.mem_roots' Polynomial.mem_roots'
 
-theorem mem_roots (hp : p ≠ 0) : a ∈ p.roots ↔ IsRoot p a :=
+lemma mem_roots (hp : p ≠ 0) : a ∈ p.roots ↔ IsRoot p a :=
   mem_roots'.trans <| and_iff_right hp
 #align polynomial.mem_roots Polynomial.mem_roots
 
-theorem ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
+lemma ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
   (mem_roots'.1 h).1
 #align polynomial.ne_zero_of_mem_roots Polynomial.ne_zero_of_mem_roots
 
-theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
+lemma isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 #align polynomial.is_root_of_mem_roots Polynomial.isRoot_of_mem_roots
 
@@ -624,7 +624,7 @@ lemma finite_setOf_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsRoot p 
     using p.roots.toFinset.finite_toSet
 #align polynomial.finite_set_of_is_root Polynomial.finite_setOf_isRoot
 
-theorem eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
+lemma eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
   not_imp_comm.mp finite_setOf_isRoot h
 #align polynomial.eq_zero_of_infinite_is_root Polynomial.eq_zero_of_infinite_isRoot
 
@@ -636,7 +636,7 @@ lemma exists_min_root [LinearOrder R] (p : R[X]) (hp : p ≠ 0) : ∃ x₀, ∀ 
   Set.exists_lower_bound_image _ _ <| finite_setOf_isRoot hp
 #align polynomial.exists_min_root Polynomial.exists_min_root
 
-theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = eval x q }) :
+lemma eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = eval x q }) :
     p = q := by
   rw [← sub_eq_zero]
   apply eq_zero_of_infinite_isRoot
@@ -649,7 +649,7 @@ lemma roots_mul {p q : R[X]} (hpq : p * q ≠ 0) : (p * q).roots = p.roots + q.r
     rw [count_add, count_roots, count_roots, count_roots, rootMultiplicity_mul hpq]
 #align polynomial.roots_mul Polynomial.roots_mul
 
-theorem roots.le_of_dvd (h : q ≠ 0) : p ∣ q → roots p ≤ roots q := by
+lemma roots.le_of_dvd (h : q ≠ 0) : p ∣ q → roots p ≤ roots q := by
   rintro ⟨k, rfl⟩
   exact Multiset.le_iff_exists_add.mpr ⟨k.roots, roots_mul h⟩
 #align polynomial.roots.le_of_dvd Polynomial.roots.le_of_dvd
@@ -666,7 +666,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.mem_roots_sub_C Polynomial.mem_roots_sub_C
 
 @[simp]
-theorem roots_X_sub_C (r : R) : roots (X - C r) = {r} := by
+lemma roots_X_sub_C (r : R) : roots (X - C r) = {r} := by
   classical
   ext s
   rw [count_roots, rootMultiplicity_X_sub_C, count_singleton]
@@ -679,7 +679,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.roots_X Polynomial.roots_X
 
 @[simp]
-theorem roots_C (x : R) : (C x).roots = 0 := by
+lemma roots_C (x : R) : (C x).roots = 0 := by
   classical exact
   if H : x = 0 then by rw [H, C_0, roots_zero]
   else
@@ -694,7 +694,7 @@ lemma roots_one : (1 : R[X]).roots = ∅ :=
 #align polynomial.roots_one Polynomial.roots_one
 
 @[simp]
-theorem roots_C_mul (p : R[X]) (ha : a ≠ 0) : (C a * p).roots = p.roots := by
+lemma roots_C_mul (p : R[X]) (ha : a ≠ 0) : (C a * p).roots = p.roots := by
   by_cases hp : p = 0 <;>
     simp only [roots_mul, *, Ne.def, mul_eq_zero, C_eq_zero, or_self_iff, not_false_iff, roots_C,
       zero_add, mul_zero]
@@ -702,11 +702,11 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.roots_C_mul Polynomial.roots_C_mul
 
 @[simp]
-theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots := by
+lemma roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots := by
   rw [smul_eq_C_mul, roots_C_mul _ ha]
 #align polynomial.roots_smul_nonzero Polynomial.roots_smul_nonzero
 
-theorem roots_list_prod (L : List R[X]) :
+lemma roots_list_prod (L : List R[X]) :
     (0 : R[X]) ∉ L → L.prod.roots = (L : Multiset R[X]).bind roots :=
   List.recOn L (fun _ => roots_one) fun hd tl ih H => by
     rw [List.mem_cons, not_or] at H
@@ -714,7 +714,7 @@ theorem roots_list_prod (L : List R[X]) :
       Multiset.cons_coe, Multiset.cons_bind, ih H.2]
 #align polynomial.roots_list_prod Polynomial.roots_list_prod
 
-theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
+lemma roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
   rcases m with ⟨L⟩
   simpa only [Multiset.coe_prod, quot_mk_to_coe''] using roots_list_prod L
 #align polynomial.roots_multiset_prod Polynomial.roots_multiset_prod
@@ -726,7 +726,7 @@ lemma roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
 #align polynomial.roots_prod Polynomial.roots_prod
 
 @[simp]
-theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
+lemma roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   induction' n with n ihn
   · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
@@ -735,23 +735,23 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
 
-theorem roots_X_pow (n : ℕ) : (X ^ n : R[X]).roots = n • ({0} : Multiset R) := by
+lemma roots_X_pow (n : ℕ) : (X ^ n : R[X]).roots = n • ({0} : Multiset R) := by
   rw [roots_pow, roots_X]
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_X_pow Polynomial.roots_X_pow
 
-theorem roots_C_mul_X_pow (ha : a ≠ 0) (n : ℕ) :
+lemma roots_C_mul_X_pow (ha : a ≠ 0) (n : ℕ) :
     Polynomial.roots (C a * X ^ n) = n • ({0} : Multiset R) := by
   rw [roots_C_mul _ ha, roots_X_pow]
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_C_mul_X_pow Polynomial.roots_C_mul_X_pow
 
 @[simp]
-theorem roots_monomial (ha : a ≠ 0) (n : ℕ) : (monomial n a).roots = n • ({0} : Multiset R) := by
+lemma roots_monomial (ha : a ≠ 0) (n : ℕ) : (monomial n a).roots = n • ({0} : Multiset R) := by
   rw [← C_mul_X_pow_eq_monomial, roots_C_mul_X_pow ha]
 #align polynomial.roots_monomial Polynomial.roots_monomial
 
-theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.val := by
+lemma roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.val := by
   apply (roots_prod (fun a => X - C a) s ?_).trans
   · simp_rw [roots_X_sub_C]
     rw [Multiset.bind_singleton, Multiset.map_id']
@@ -760,7 +760,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.roots_prod_X_sub_C Polynomial.roots_prod_X_sub_C
 
 @[simp]
-theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).prod.roots = s := by
+lemma roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).prod.roots = s := by
   rw [roots_multiset_prod, Multiset.bind_map]
   · simp_rw [roots_X_sub_C]
     rw [Multiset.bind_singleton, Multiset.map_id']
@@ -771,7 +771,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.roots_multiset_prod_X_sub_C Polynomial.roots_multiset_prod_X_sub_C
 
 @[simp]
-theorem natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
+lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
     (s.map fun a => X - C a).prod.natDegree = Multiset.card s := by
   rw [natDegree_multiset_prod_of_monic, Multiset.map_map]
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
@@ -804,11 +804,11 @@ lemma mem_nthRoots {n : ℕ} (hn : 0 < n) {a x : R} : x ∈ nthRoots n a ↔ x ^
 #align polynomial.mem_nth_roots Polynomial.mem_nthRoots
 
 @[simp]
-theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
+lemma nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
   simp only [empty_eq_zero, pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
 #align polynomial.nth_roots_zero Polynomial.nthRoots_zero
 
-theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := by
+lemma card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := by
   classical exact
   (if hn : n = 0 then
     if h : (X : R[X]) ^ n - C a = 0 then by
@@ -856,28 +856,28 @@ lemma nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nthRo
 
 end NthRoots
 
-theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
+lemma Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
   rw [Monic.def, leadingCoeff_comp h, Monic.def.1 hp, Monic.def.1 hq, one_pow, one_mul]
 #align polynomial.monic.comp Polynomial.Monic.comp
 
-theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
+lemma Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
   refine' hp.comp (monic_X_add_C _) fun ha => _
   rw [natDegree_X_add_C] at ha
   exact one_ne_zero ha
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic.comp_X_add_C Polynomial.Monic.comp_X_add_C
 
-theorem Monic.comp_X_sub_C (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
+lemma Monic.comp_X_sub_C (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
   simpa using hp.comp_X_add_C (-r)
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic.comp_X_sub_C Polynomial.Monic.comp_X_sub_C
 
-theorem units_coeff_zero_smul (c : R[X]ˣ) (p : R[X]) : (c : R[X]).coeff 0 • p = c * p := by
+lemma units_coeff_zero_smul (c : R[X]ˣ) (p : R[X]) : (c : R[X]).coeff 0 • p = c * p := by
   rw [← Polynomial.C_mul', ← Polynomial.eq_C_of_degree_eq_zero (degree_coe_units c)]
 #align polynomial.units_coeff_zero_smul Polynomial.units_coeff_zero_smul
 
 @[simp]
-theorem natDegree_coe_units (u : R[X]ˣ) : natDegree (u : R[X]) = 0 :=
+lemma natDegree_coe_units (u : R[X]ˣ) : natDegree (u : R[X]) = 0 :=
   natDegree_eq_of_degree_eq_some (degree_coe_units u)
 #align polynomial.nat_degree_coe_units Polynomial.natDegree_coe_units
 
@@ -917,7 +917,7 @@ the multiset of roots of `p` regarded as a polynomial over `S`. -/
 noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
   (p.map (algebraMap T S)).roots
 
-theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+lemma aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
     p.aroots S = (p.map (algebraMap T S)).roots :=
   rfl
 
@@ -953,7 +953,7 @@ lemma aroots_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).aroots S 
   rw [aroots_def, map_C, roots_C]
 
 @[simp]
-theorem aroots_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).aroots S = 0 := by
+lemma aroots_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).aroots S = 0 := by
   rw [← C_0, aroots_C]
 
 @[simp]
@@ -1004,7 +1004,7 @@ def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
   (p.aroots S).toFinset
 #align polynomial.root_set Polynomial.rootSet
 
-theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
+lemma rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
     p.rootSet S = (p.aroots S).toFinset := by
   rw [rootSet]
   convert rfl
@@ -1018,7 +1018,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_C Polynomial.rootSet_C
 
 @[simp]
-theorem rootSet_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).rootSet S = ∅ := by
+lemma rootSet_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).rootSet S = ∅ := by
   rw [← C_0, rootSet_C]
 #align polynomial.root_set_zero Polynomial.rootSet_zero
 
@@ -1027,7 +1027,7 @@ instance rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebr
   FinsetCoe.fintype _
 #align polynomial.root_set_fintype Polynomial.rootSetFintype
 
-theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
+lemma rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
     (p.rootSet S).Finite :=
   Set.toFinite _
 #align polynomial.root_set_finite Polynomial.rootSet_finite
@@ -1094,18 +1094,18 @@ lemma rootSet_mapsTo {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [
 
 end Roots
 
-theorem coeff_coe_units_zero_ne_zero (u : R[X]ˣ) : coeff (u : R[X]) 0 ≠ 0 := by
+lemma coeff_coe_units_zero_ne_zero (u : R[X]ˣ) : coeff (u : R[X]) 0 ≠ 0 := by
   conv in 0 => rw [← natDegree_coe_units u]
   rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero]
   exact Units.ne_zero _
 #align polynomial.coeff_coe_units_zero_ne_zero Polynomial.coeff_coe_units_zero_ne_zero
 
-theorem degree_eq_degree_of_associated (h : Associated p q) : degree p = degree q := by
+lemma degree_eq_degree_of_associated (h : Associated p q) : degree p = degree q := by
   let ⟨u, hu⟩ := h
   simp [hu.symm]
 #align polynomial.degree_eq_degree_of_associated Polynomial.degree_eq_degree_of_associated
 
-theorem degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : IsRoot p x) :
+lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : IsRoot p x) :
     degree p = 1 :=
   let ⟨g, hg⟩ := dvd_iff_isRoot.2 hx
   have : IsUnit (X - C x) ∨ IsUnit g := hi.isUnit_or_isUnit hg
@@ -1130,7 +1130,7 @@ lemma leadingCoeff_divByMonic_of_monic {R : Type u} [CommRing R] {p q : R[X]} (h
   exact (degree_modByMonic_lt p hmonic).trans_le hdegree
 #align polynomial.leading_coeff_div_by_monic_of_monic Polynomial.leadingCoeff_divByMonic_of_monic
 
-theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
+lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
   cases' hp.lt_or_lt with hd hd
@@ -1190,7 +1190,7 @@ lemma prod_multiset_root_eq_finset_root [DecidableEq R] :
 #align polynomial.prod_multiset_root_eq_finset_root Polynomial.prod_multiset_root_eq_finset_root
 
 /-- The product `∏ (X - a)` for `a` inside the multiset `p.roots` divides `p`. -/
-theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).prod ∣ p := by
+lemma prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).prod ∣ p := by
   classical
   rw [← map_dvd_map _ (IsFractionRing.injective R <| FractionRing R) monic_prod_multiset_X_sub_C]
   rw [prod_multiset_root_eq_finset_root, Polynomial.map_prod]
@@ -1215,7 +1215,7 @@ lemma _root_.Multiset.prod_X_sub_C_dvd_iff_le_roots {p : R[X]} (hp : p ≠ 0) (s
 set_option linter.uppercaseLean3 false in
 #align multiset.prod_X_sub_C_dvd_iff_le_roots Multiset.prod_X_sub_C_dvd_iff_le_roots
 
-theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
+lemma exists_prod_multiset_X_sub_C_mul (p : R[X]) :
     ∃ q,
       (p.roots.map fun a => X - C a).prod * q = p ∧
         Multiset.card p.roots + q.natDegree = p.natDegree ∧ q.roots = 0 := by
@@ -1236,7 +1236,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- A polynomial `p` that has as many roots as its degree
 can be written `p = p.leadingCoeff * ∏(X - a)`, for `a` in `p.roots`. -/
-theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
+lemma C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
     C p.leadingCoeff * (p.roots.map fun a => X - C a).prod = p :=
   (eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le monic_prod_multiset_X_sub_C
       p.prod_multiset_X_sub_C_dvd
@@ -1246,7 +1246,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- A monic polynomial `p` that has as many roots as its degree
 can be written `p = ∏(X - a)`, for `a` in `p.roots`. -/
-theorem prod_multiset_X_sub_C_of_monic_of_roots_card_eq (hp : p.Monic)
+lemma prod_multiset_X_sub_C_of_monic_of_roots_card_eq (hp : p.Monic)
     (hroots : Multiset.card p.roots = p.natDegree) : (p.roots.map fun a => X - C a).prod = p := by
   convert C_leadingCoeff_mul_prod_multiset_X_sub_C hroots
   rw [hp.leadingCoeff, C_1, one_mul]
@@ -1369,7 +1369,7 @@ variable [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] (φ : R →+* S)
 A special case of this lemma is that a polynomial over `ℤ` is irreducible if
   it is monic and irreducible over `ℤ/pℤ` for some prime `p`.
 -/
-theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
+lemma Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
     (h_irr : Irreducible (Polynomial.map φ f)) : Irreducible f := by
   refine' ⟨h_irr.not_unit ∘ IsUnit.map (mapRingHom φ), fun a b h => _⟩
   dsimp [Monic] at h_mon

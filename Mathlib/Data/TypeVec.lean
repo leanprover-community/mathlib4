@@ -123,7 +123,7 @@ lemma last_append1 {α : TypeVec n} {β : Type*} : last (append1 α β) = β :=
 #align typevec.last_append1 TypeVec.last_append1
 
 @[simp]
-theorem append1_drop_last (α : TypeVec (n + 1)) : append1 (drop α) (last α) = α :=
+lemma append1_drop_last (α : TypeVec (n + 1)) : append1 (drop α) (last α) = α :=
   funext fun i => by cases i <;> rfl
 #align typevec.append1_drop_last TypeVec.append1_drop_last
 
@@ -322,7 +322,7 @@ protected lemma casesNil_append1 {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) 
   rfl
 #align typevec.cases_nil_append1 TypeVec.casesNil_append1
 
-protected theorem casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort*}
+protected lemma casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort*}
     (f : ∀ (t) (v : TypeVec n), β (v ::: t)) (v : TypeVec n) (α) :
     TypeVec.casesCons n f (v ::: α) = f α v :=
   rfl
@@ -373,7 +373,7 @@ lemma typevecCasesNil₂_appendFun {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f
   rfl
 #align typevec.typevec_cases_nil₂_append_fun TypeVec.typevecCasesNil₂_appendFun
 
-theorem typevecCasesCons₂_appendFun (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
+lemma typevecCasesCons₂_appendFun (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
                                       {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
                                       (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f))
                                       (f fs) :
@@ -455,7 +455,7 @@ lemma repeat_eq_append1 {β} {n} (α : TypeVec n) :
 #align typevec.repeat_eq_append1 TypeVec.repeat_eq_append1
 
 @[typevec]
-theorem repeat_eq_nil (α : TypeVec 0) : repeatEq α = nilFun := by ext i; cases i
+lemma repeat_eq_nil (α : TypeVec 0) : repeatEq α = nilFun := by ext i; cases i
 #align typevec.repeat_eq_nil TypeVec.repeat_eq_nil
 
 /-- predicate on a type vector to constrain only the last object -/

@@ -95,54 +95,54 @@ section
 variable {f g : M → G} {s : Set M} {x : M} {n : ℕ∞}
 
 @[to_additive]
-theorem ContMDiffWithinAt.mul (hf : ContMDiffWithinAt I' I n f s x)
+lemma ContMDiffWithinAt.mul (hf : ContMDiffWithinAt I' I n f s x)
     (hg : ContMDiffWithinAt I' I n g s x) : ContMDiffWithinAt I' I n (f * g) s x :=
   ((smooth_mul I).smoothAt.of_le le_top).comp_contMDiffWithinAt x (hf.prod_mk hg)
 #align cont_mdiff_within_at.mul ContMDiffWithinAt.mul
 #align cont_mdiff_within_at.add ContMDiffWithinAt.add
 
 @[to_additive]
-nonrec theorem ContMDiffAt.mul (hf : ContMDiffAt I' I n f x) (hg : ContMDiffAt I' I n g x) :
+nonrec lemma ContMDiffAt.mul (hf : ContMDiffAt I' I n f x) (hg : ContMDiffAt I' I n g x) :
     ContMDiffAt I' I n (f * g) x :=
   hf.mul hg
 #align cont_mdiff_at.mul ContMDiffAt.mul
 #align cont_mdiff_at.add ContMDiffAt.add
 
 @[to_additive]
-theorem ContMDiffOn.mul (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s) :
+lemma ContMDiffOn.mul (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s) :
     ContMDiffOn I' I n (f * g) s := fun x hx => (hf x hx).mul (hg x hx)
 #align cont_mdiff_on.mul ContMDiffOn.mul
 #align cont_mdiff_on.add ContMDiffOn.add
 
 @[to_additive]
-theorem ContMDiff.mul (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
+lemma ContMDiff.mul (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
     ContMDiff I' I n (f * g) := fun x => (hf x).mul (hg x)
 #align cont_mdiff.mul ContMDiff.mul
 #align cont_mdiff.add ContMDiff.add
 
 @[to_additive]
-nonrec theorem SmoothWithinAt.mul (hf : SmoothWithinAt I' I f s x)
+nonrec lemma SmoothWithinAt.mul (hf : SmoothWithinAt I' I f s x)
     (hg : SmoothWithinAt I' I g s x) : SmoothWithinAt I' I (f * g) s x :=
   hf.mul hg
 #align smooth_within_at.mul SmoothWithinAt.mul
 #align smooth_within_at.add SmoothWithinAt.add
 
 @[to_additive]
-nonrec theorem SmoothAt.mul (hf : SmoothAt I' I f x) (hg : SmoothAt I' I g x) :
+nonrec lemma SmoothAt.mul (hf : SmoothAt I' I f x) (hg : SmoothAt I' I g x) :
     SmoothAt I' I (f * g) x :=
   hf.mul hg
 #align smooth_at.mul SmoothAt.mul
 #align smooth_at.add SmoothAt.add
 
 @[to_additive]
-nonrec theorem SmoothOn.mul (hf : SmoothOn I' I f s) (hg : SmoothOn I' I g s) :
+nonrec lemma SmoothOn.mul (hf : SmoothOn I' I f s) (hg : SmoothOn I' I g s) :
     SmoothOn I' I (f * g) s :=
   hf.mul hg
 #align smooth_on.mul SmoothOn.mul
 #align smooth_on.add SmoothOn.add
 
 @[to_additive]
-nonrec theorem Smooth.mul (hf : Smooth I' I f) (hg : Smooth I' I g) : Smooth I' I (f * g) :=
+nonrec lemma Smooth.mul (hf : Smooth I' I f) (hg : Smooth I' I g) : Smooth I' I (f * g) :=
   hf.mul hg
 #align smooth.mul Smooth.mul
 #align smooth.add Smooth.add
@@ -311,7 +311,7 @@ variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topologic
   {f : ι → M → G} {n : ℕ∞} {p : ι → Prop}
 
 @[to_additive]
-theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
+lemma contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
     ContMDiffWithinAt I' I n (∏ i in t, f i) s x :=
   Finset.prod_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
     contMDiffWithinAt_const h
@@ -319,27 +319,27 @@ theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I 
 #align cont_mdiff_within_at_finset_sum' contMDiffWithinAt_finset_sum'
 
 @[to_additive]
-theorem contMDiffAt_finset_prod' (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
+lemma contMDiffAt_finset_prod' (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
     ContMDiffAt I' I n (∏ i in t, f i) x :=
   contMDiffWithinAt_finset_prod' h
 #align cont_mdiff_at_finset_prod' contMDiffAt_finset_prod'
 #align cont_mdiff_at_finset_sum' contMDiffAt_finset_sum'
 
 @[to_additive]
-theorem contMDiffOn_finset_prod' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
+lemma contMDiffOn_finset_prod' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
     ContMDiffOn I' I n (∏ i in t, f i) s := fun x hx =>
   contMDiffWithinAt_finset_prod' fun i hi => h i hi x hx
 #align cont_mdiff_on_finset_prod' contMDiffOn_finset_prod'
 #align cont_mdiff_on_finset_sum' contMDiffOn_finset_sum'
 
 @[to_additive]
-theorem contMDiff_finset_prod' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
+lemma contMDiff_finset_prod' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
     ContMDiff I' I n (∏ i in t, f i) := fun x => contMDiffAt_finset_prod' fun i hi => h i hi x
 #align cont_mdiff_finset_prod' contMDiff_finset_prod'
 #align cont_mdiff_finset_sum' contMDiff_finset_sum'
 
 @[to_additive]
-theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
+lemma contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
     ContMDiffWithinAt I' I n (fun x => ∏ i in t, f i x) s x := by
   simp only [← Finset.prod_apply]
   exact contMDiffWithinAt_finset_prod' h
@@ -347,76 +347,76 @@ theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n
 #align cont_mdiff_within_at_finset_sum contMDiffWithinAt_finset_sum
 
 @[to_additive]
-theorem contMDiffAt_finset_prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
+lemma contMDiffAt_finset_prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
     ContMDiffAt I' I n (fun x => ∏ i in t, f i x) x :=
   contMDiffWithinAt_finset_prod h
 #align cont_mdiff_at_finset_prod contMDiffAt_finset_prod
 #align cont_mdiff_at_finset_sum contMDiffAt_finset_sum
 
 @[to_additive]
-theorem contMDiffOn_finset_prod (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
+lemma contMDiffOn_finset_prod (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
     ContMDiffOn I' I n (fun x => ∏ i in t, f i x) s := fun x hx =>
   contMDiffWithinAt_finset_prod fun i hi => h i hi x hx
 #align cont_mdiff_on_finset_prod contMDiffOn_finset_prod
 #align cont_mdiff_on_finset_sum contMDiffOn_finset_sum
 
 @[to_additive]
-theorem contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
+lemma contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
     ContMDiff I' I n fun x => ∏ i in t, f i x := fun x =>
   contMDiffAt_finset_prod fun i hi => h i hi x
 #align cont_mdiff_finset_prod contMDiff_finset_prod
 #align cont_mdiff_finset_sum contMDiff_finset_sum
 
 @[to_additive]
-theorem smoothWithinAt_finset_prod' (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
+lemma smoothWithinAt_finset_prod' (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
     SmoothWithinAt I' I (∏ i in t, f i) s x :=
   contMDiffWithinAt_finset_prod' h
 #align smooth_within_at_finset_prod' smoothWithinAt_finset_prod'
 #align smooth_within_at_finset_sum' smoothWithinAt_finset_sum'
 
 @[to_additive]
-theorem smoothAt_finset_prod' (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
+lemma smoothAt_finset_prod' (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
     SmoothAt I' I (∏ i in t, f i) x :=
   contMDiffAt_finset_prod' h
 #align smooth_at_finset_prod' smoothAt_finset_prod'
 #align smooth_at_finset_sum' smoothAt_finset_sum'
 
 @[to_additive]
-theorem smoothOn_finset_prod' (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
+lemma smoothOn_finset_prod' (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
     SmoothOn I' I (∏ i in t, f i) s :=
   contMDiffOn_finset_prod' h
 #align smooth_on_finset_prod' smoothOn_finset_prod'
 #align smooth_on_finset_sum' smoothOn_finset_sum'
 
 @[to_additive]
-theorem smooth_finset_prod' (h : ∀ i ∈ t, Smooth I' I (f i)) : Smooth I' I (∏ i in t, f i) :=
+lemma smooth_finset_prod' (h : ∀ i ∈ t, Smooth I' I (f i)) : Smooth I' I (∏ i in t, f i) :=
   contMDiff_finset_prod' h
 #align smooth_finset_prod' smooth_finset_prod'
 #align smooth_finset_sum' smooth_finset_sum'
 
 @[to_additive]
-theorem smoothWithinAt_finset_prod (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
+lemma smoothWithinAt_finset_prod (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
     SmoothWithinAt I' I (fun x => ∏ i in t, f i x) s x :=
   contMDiffWithinAt_finset_prod h
 #align smooth_within_at_finset_prod smoothWithinAt_finset_prod
 #align smooth_within_at_finset_sum smoothWithinAt_finset_sum
 
 @[to_additive]
-theorem smoothAt_finset_prod (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
+lemma smoothAt_finset_prod (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
     SmoothAt I' I (fun x => ∏ i in t, f i x) x :=
   contMDiffAt_finset_prod h
 #align smooth_at_finset_prod smoothAt_finset_prod
 #align smooth_at_finset_sum smoothAt_finset_sum
 
 @[to_additive]
-theorem smoothOn_finset_prod (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
+lemma smoothOn_finset_prod (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
     SmoothOn I' I (fun x => ∏ i in t, f i x) s :=
   contMDiffOn_finset_prod h
 #align smooth_on_finset_prod smoothOn_finset_prod
 #align smooth_on_finset_sum smoothOn_finset_sum
 
 @[to_additive]
-theorem smooth_finset_prod (h : ∀ i ∈ t, Smooth I' I (f i)) :
+lemma smooth_finset_prod (h : ∀ i ∈ t, Smooth I' I (f i)) :
     Smooth I' I fun x => ∏ i in t, f i x :=
   contMDiff_finset_prod h
 #align smooth_finset_prod smooth_finset_prod
@@ -425,7 +425,7 @@ theorem smooth_finset_prod (h : ∀ i ∈ t, Smooth I' I (f i)) :
 open Function Filter
 
 @[to_additive]
-theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
+lemma contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
     (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x := by
   intro x
   rcases finprod_eventually_eq_prod hfin x with ⟨s, hs⟩
@@ -434,7 +434,7 @@ theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
 #align cont_mdiff_finsum contMDiff_finsum
 
 @[to_additive]
-theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
+lemma contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     ContMDiff I' I n fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
@@ -443,14 +443,14 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
 #align cont_mdiff_finsum_cond contMDiff_finsum_cond
 
 @[to_additive]
-theorem smooth_finprod (h : ∀ i, Smooth I' I (f i))
+lemma smooth_finprod (h : ∀ i, Smooth I' I (f i))
     (hfin : LocallyFinite fun i => mulSupport (f i)) : Smooth I' I fun x => ∏ᶠ i, f i x :=
   contMDiff_finprod h hfin
 #align smooth_finprod smooth_finprod
 #align smooth_finsum smooth_finsum
 
 @[to_additive]
-theorem smooth_finprod_cond (hc : ∀ i, p i → Smooth I' I (f i))
+lemma smooth_finprod_cond (hc : ∀ i, p i → Smooth I' I (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     Smooth I' I fun x => ∏ᶠ (i) (_ : p i), f i x :=
   contMDiff_finprod_cond hc hf
@@ -482,40 +482,40 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 variable {f : M → G} {s : Set M} {x : M} {n : ℕ∞} (c : G)
 
 @[to_additive]
-theorem ContMDiffWithinAt.div_const (hf : ContMDiffWithinAt I' I n f s x) :
+lemma ContMDiffWithinAt.div_const (hf : ContMDiffWithinAt I' I n f s x) :
     ContMDiffWithinAt I' I n (fun x ↦ f x / c) s x := by
   simpa only [div_eq_mul_inv] using hf.mul contMDiffWithinAt_const
 
 @[to_additive]
-nonrec theorem ContMDiffAt.div_const (hf : ContMDiffAt I' I n f x) :
+nonrec lemma ContMDiffAt.div_const (hf : ContMDiffAt I' I n f x) :
     ContMDiffAt I' I n (fun x ↦ f x / c) x :=
   hf.div_const c
 
 @[to_additive]
-theorem ContMDiffOn.div_const (hf : ContMDiffOn I' I n f s) :
+lemma ContMDiffOn.div_const (hf : ContMDiffOn I' I n f s) :
     ContMDiffOn I' I n (fun x ↦ f x / c) s := fun x hx => (hf x hx).div_const c
 
 @[to_additive]
-theorem ContMDiff.div_const (hf : ContMDiff I' I n f) :
+lemma ContMDiff.div_const (hf : ContMDiff I' I n f) :
     ContMDiff I' I n (fun x ↦ f x / c) := fun x => (hf x).div_const c
 
 @[to_additive]
-nonrec theorem SmoothWithinAt.div_const (hf : SmoothWithinAt I' I f s x) :
+nonrec lemma SmoothWithinAt.div_const (hf : SmoothWithinAt I' I f s x) :
   SmoothWithinAt I' I (fun x ↦ f x / c) s x :=
   hf.div_const c
 
 @[to_additive]
-nonrec theorem SmoothAt.div_const (hf : SmoothAt I' I f x) :
+nonrec lemma SmoothAt.div_const (hf : SmoothAt I' I f x) :
     SmoothAt I' I (fun x ↦ f x / c) x :=
   hf.div_const c
 
 @[to_additive]
-nonrec theorem SmoothOn.div_const (hf : SmoothOn I' I f s) :
+nonrec lemma SmoothOn.div_const (hf : SmoothOn I' I f s) :
     SmoothOn I' I (fun x ↦ f x / c) s :=
   hf.div_const c
 
 @[to_additive]
-nonrec theorem Smooth.div_const (hf : Smooth I' I f) : Smooth I' I (fun x ↦ f x / c) :=
+nonrec lemma Smooth.div_const (hf : Smooth I' I f) : Smooth I' I (fun x ↦ f x / c) :=
   hf.div_const c
 
 end DivConst

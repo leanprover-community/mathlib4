@@ -96,7 +96,7 @@ there exists a measurable set `k ⊆ i` such that `1 / (n + 1) < s k`. -/
 private def ExistsOneDivLT (s : SignedMeasure α) (i : Set α) (n : ℕ) : Prop :=
   ∃ k : Set α, k ⊆ i ∧ MeasurableSet k ∧ (1 / (n + 1) : ℝ) < s k
 
-private theorem existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
+private lemma existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
     ∃ n : ℕ, ExistsOneDivLT s i n :=
   let ⟨k, hj₁, hj₂, hj⟩ := exists_pos_measure_of_not_restrict_le_zero s hi
   let ⟨n, hn⟩ := exists_nat_one_div_lt hj
@@ -107,12 +107,12 @@ least natural number `n` such that `ExistsOneDivLT s i n`, otherwise, it returns
 private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
   if hi : ¬s ≤[i] 0 then Nat.find (existsNatOneDivLTMeasure_of_not_negative hi) else 0
 
-private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
+private lemma findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     ExistsOneDivLT s i (findExistsOneDivLT s i) := by
   rw [findExistsOneDivLT, dif_pos hi]
   convert Nat.find_spec (existsNatOneDivLTMeasure_of_not_negative hi)
 
-private theorem findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
+private lemma findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
     (hm : m < findExistsOneDivLT s i) : ¬ExistsOneDivLT s i m := by
   rw [findExistsOneDivLT, dif_pos hi] at hm
   exact Nat.find_min _ hm
@@ -123,7 +123,7 @@ empty set. -/
 private def someExistsOneDivLT (s : SignedMeasure α) (i : Set α) : Set α :=
   if hi : ¬s ≤[i] 0 then Classical.choose (findExistsOneDivLT_spec hi) else ∅
 
-private theorem someExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
+private lemma someExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     someExistsOneDivLT s i ⊆ i ∧
       MeasurableSet (someExistsOneDivLT s i) ∧
         (1 / (findExistsOneDivLT s i + 1) : ℝ) < s (someExistsOneDivLT s i) := by
@@ -149,7 +149,7 @@ private lemma someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneDiv
   · rw [someExistsOneDivLT, dif_neg hi]
     exact MeasurableSet.empty
 
-private theorem someExistsOneDivLT_lt (hi : ¬s ≤[i] 0) :
+private lemma someExistsOneDivLT_lt (hi : ¬s ≤[i] 0) :
     (1 / (findExistsOneDivLT s i + 1) : ℝ) < s (someExistsOneDivLT s i) :=
   let ⟨_, _, h⟩ := someExistsOneDivLT_spec hi
   h
@@ -169,20 +169,20 @@ private def restrictNonposSeq (s : SignedMeasure α) (i : Set α) : ℕ → Set 
           have : k < n + 1 := Nat.lt_succ_iff.mpr H
           restrictNonposSeq s i k)
 
-private theorem restrictNonposSeq_succ (n : ℕ) :
+private lemma restrictNonposSeq_succ (n : ℕ) :
     restrictNonposSeq s i n.succ = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k) := by
   rw [restrictNonposSeq]
 
-private theorem restrictNonposSeq_subset (n : ℕ) : restrictNonposSeq s i n ⊆ i := by
+private lemma restrictNonposSeq_subset (n : ℕ) : restrictNonposSeq s i n ⊆ i := by
   cases n <;> · rw [restrictNonposSeq]; exact someExistsOneDivLT_subset'
 
-private theorem restrictNonposSeq_lt (n : ℕ) (hn : ¬s ≤[i \ ⋃ k ≤ n, restrictNonposSeq s i k] 0) :
+private lemma restrictNonposSeq_lt (n : ℕ) (hn : ¬s ≤[i \ ⋃ k ≤ n, restrictNonposSeq s i k] 0) :
     (1 / (findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k) + 1) : ℝ) <
       s (restrictNonposSeq s i n.succ) := by
   rw [restrictNonposSeq_succ]
   apply someExistsOneDivLT_lt hn
 
-private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
+private lemma measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
     (hn : ¬s ≤[i \ ⋃ k < n, restrictNonposSeq s i k] 0) : 0 < s (restrictNonposSeq s i n) := by
   cases n with
   | zero =>
@@ -198,7 +198,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
     rcases someExistsOneDivLT_spec h₁ with ⟨_, _, h⟩
     exact lt_trans Nat.one_div_pos_of_nat h
 
-private theorem restrictNonposSeq_measurableSet (n : ℕ) :
+private lemma restrictNonposSeq_measurableSet (n : ℕ) :
     MeasurableSet (restrictNonposSeq s i n) := by
   cases n <;>
     · rw [restrictNonposSeq]
@@ -221,7 +221,7 @@ private lemma restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposS
   · rw [restrictNonposSeq_disjoint' h]
   · rw [Set.inter_comm, restrictNonposSeq_disjoint' h]
 
-private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ : s i < 0)
+private lemma exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ : s i < 0)
     (hn : ¬∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
   by_cases s ≤[i] 0; · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
@@ -263,7 +263,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     exact restrictNonposSeq_subset _ hx
 
 /-- A measurable set of negative measure has a negative subset of negative measure. -/
-theorem exists_subset_restrict_nonpos (hi : s i < 0) :
+lemma exists_subset_restrict_nonpos (hi : s i < 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
   have hi₁ : MeasurableSet i := by_contradiction fun h => ne_of_lt hi <| s.not_measurable h
   by_cases s ≤[i] 0; · exact ⟨i, hi₁, Set.Subset.refl _, h, hi⟩
@@ -367,7 +367,7 @@ lemma bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
 
 /-- Alternative formulation of `measure_theory.signed_measure.exists_is_compl_positive_negative`
 (the Hahn decomposition theorem) using set complements. -/
-theorem exists_compl_positive_negative (s : SignedMeasure α) :
+lemma exists_compl_positive_negative (s : SignedMeasure α) :
     ∃ i : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ s ≤[iᶜ] 0 := by
   obtain ⟨f, _, hf₂, hf₁⟩ :=
     exists_seq_tendsto_sInf ⟨0, @zero_mem_measureOfNegatives _ _ s⟩ bddBelow_measureOfNegatives
@@ -410,7 +410,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
 
 /-- **The Hahn decomposition theorem**: Given a signed measure `s`, there exist
 complement measurable sets `i` and `j` such that `i` is positive, `j` is negative. -/
-theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
+lemma exists_isCompl_positive_negative (s : SignedMeasure α) :
     ∃ i j : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ MeasurableSet j ∧ s ≤[j] 0 ∧ IsCompl i j :=
   let ⟨i, hi₁, hi₂, hi₃⟩ := exists_compl_positive_negative s
   ⟨i, iᶜ, hi₁, hi₂, hi₁.compl, hi₃, isCompl_compl⟩

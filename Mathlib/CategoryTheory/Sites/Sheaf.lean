@@ -344,7 +344,7 @@ def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (
   ⟨ℱ.val ⋙ coyoneda.obj (op E), ℱ.cond E⟩
 #align category_theory.sheaf_over CategoryTheory.sheafOver
 
-theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
+lemma isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
   · intro hP
@@ -436,7 +436,7 @@ instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0
 instance : Add (P ⟶ Q) where add f g := Sheaf.Hom.mk <| f.1 + g.1
 
 @[simp]
-theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.1.app U :=
+lemma Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.1.app U :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.add_app CategoryTheory.Sheaf.Hom.add_app
@@ -666,7 +666,7 @@ Note this lemma applies for "algebraic" categories, eg groups, abelian groups an
 for the category of topological spaces, topological rings, etc since reflecting isomorphisms doesn't
 hold.
 -/
-theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
+lemma isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
     [ReflectsIsomorphisms s] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
   rw [isSheaf_iff_isSheaf', isSheaf_iff_isSheaf']
   refine' forall_congr' (fun U => ball_congr (fun R _ => _))

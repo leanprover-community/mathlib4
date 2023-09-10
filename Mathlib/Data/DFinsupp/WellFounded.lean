@@ -157,7 +157,7 @@ lemma Lex.acc [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π
   Lex.acc_of_single hbot x fun i hi => Lex.acc_single hbot hs (h i hi) _
 #align dfinsupp.lex.acc DFinsupp.Lex.acc
 
-theorem Lex.wellFounded (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded (DFinsupp.Lex r s) :=
+lemma Lex.wellFounded (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded (DFinsupp.Lex r s) :=
   ⟨fun x => by classical exact Lex.acc hbot hs x fun i _ => hr.apply i⟩
 #align dfinsupp.lex.well_founded DFinsupp.Lex.wellFounded
 

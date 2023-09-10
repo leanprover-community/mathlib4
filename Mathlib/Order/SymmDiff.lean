@@ -83,7 +83,7 @@ lemma bihimp_def [Inf α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ 
   rfl
 #align bihimp_def bihimp_def
 
-theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
+lemma symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
   rfl
 #align symm_diff_eq_xor symmDiff_eq_Xor'
 
@@ -106,7 +106,7 @@ lemma toDual_symmDiff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
 #align to_dual_symm_diff toDual_symmDiff
 
 @[simp]
-theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual b :=
+lemma ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual b :=
   rfl
 #align of_dual_bihimp ofDual_bihimp
 
@@ -227,7 +227,7 @@ lemma toDual_bihimp : toDual (a ⇔ b) = toDual a ∆ toDual b :=
 #align to_dual_bihimp toDual_bihimp
 
 @[simp]
-theorem ofDual_symmDiff (a b : αᵒᵈ) : ofDual (a ∆ b) = ofDual a ⇔ ofDual b :=
+lemma ofDual_symmDiff (a b : αᵒᵈ) : ofDual (a ∆ b) = ofDual a ⇔ ofDual b :=
   rfl
 #align of_dual_symm_diff ofDual_symmDiff
 
@@ -502,27 +502,27 @@ lemma symmDiff_symmDiff_self' : a ∆ b ∆ a = b := by
   rw [symmDiff_comm, symmDiff_symmDiff_cancel_left]
 #align symm_diff_symm_diff_self' symmDiff_symmDiff_self'
 
-theorem symmDiff_left_involutive (a : α) : Involutive (· ∆ a) :=
+lemma symmDiff_left_involutive (a : α) : Involutive (· ∆ a) :=
   symmDiff_symmDiff_cancel_right _
 #align symm_diff_left_involutive symmDiff_left_involutive
 
-theorem symmDiff_right_involutive (a : α) : Involutive ((· ∆ ·) a) :=
+lemma symmDiff_right_involutive (a : α) : Involutive ((· ∆ ·) a) :=
   symmDiff_symmDiff_cancel_left _
 #align symm_diff_right_involutive symmDiff_right_involutive
 
-theorem symmDiff_left_injective (a : α) : Injective (· ∆ a) :=
+lemma symmDiff_left_injective (a : α) : Injective (· ∆ a) :=
   Function.Involutive.injective (symmDiff_left_involutive a)
 #align symm_diff_left_injective symmDiff_left_injective
 
-theorem symmDiff_right_injective (a : α) : Injective ((· ∆ ·) a) :=
+lemma symmDiff_right_injective (a : α) : Injective ((· ∆ ·) a) :=
   Function.Involutive.injective (symmDiff_right_involutive _)
 #align symm_diff_right_injective symmDiff_right_injective
 
-theorem symmDiff_left_surjective (a : α) : Surjective (· ∆ a) :=
+lemma symmDiff_left_surjective (a : α) : Surjective (· ∆ a) :=
   Function.Involutive.surjective (symmDiff_left_involutive _)
 #align symm_diff_left_surjective symmDiff_left_surjective
 
-theorem symmDiff_right_surjective (a : α) : Surjective ((· ∆ ·) a) :=
+lemma symmDiff_right_surjective (a : α) : Surjective ((· ∆ ·) a) :=
   Function.Involutive.surjective (symmDiff_right_involutive _)
 #align symm_diff_right_surjective symmDiff_right_surjective
 
@@ -549,18 +549,18 @@ lemma symmDiff_eq_left : a ∆ b = a ↔ b = ⊥ :=
 lemma symmDiff_eq_right : a ∆ b = b ↔ a = ⊥ := by rw [symmDiff_comm, symmDiff_eq_left]
 #align symm_diff_eq_right symmDiff_eq_right
 
-protected theorem Disjoint.symmDiff_left (ha : Disjoint a c) (hb : Disjoint b c) :
+protected lemma Disjoint.symmDiff_left (ha : Disjoint a c) (hb : Disjoint b c) :
     Disjoint (a ∆ b) c := by
   rw [symmDiff_eq_sup_sdiff_inf]
   exact (ha.sup_left hb).disjoint_sdiff_left
 #align disjoint.symm_diff_left Disjoint.symmDiff_left
 
-protected theorem Disjoint.symmDiff_right (ha : Disjoint a b) (hb : Disjoint a c) :
+protected lemma Disjoint.symmDiff_right (ha : Disjoint a b) (hb : Disjoint a c) :
     Disjoint a (b ∆ c) :=
   (ha.symm.symmDiff_left hb.symm).symm
 #align disjoint.symm_diff_right Disjoint.symmDiff_right
 
-theorem symmDiff_eq_iff_sdiff_eq (ha : a ≤ c) : a ∆ b = c ↔ c \ a = b := by
+lemma symmDiff_eq_iff_sdiff_eq (ha : a ≤ c) : a ∆ b = c ↔ c \ a = b := by
   rw [← symmDiff_of_le ha]
   exact ((symmDiff_right_involutive a).toPerm _).apply_eq_iff_eq_symm_apply.trans eq_comm
 #align symm_diff_eq_iff_sdiff_eq symmDiff_eq_iff_sdiff_eq
@@ -649,27 +649,27 @@ lemma bihimp_bihimp_cancel_right : b ⇔ a ⇔ a = b := by simp [bihimp_assoc]
 lemma bihimp_bihimp_self : a ⇔ b ⇔ a = b := by rw [bihimp_comm, bihimp_bihimp_cancel_left]
 #align bihimp_bihimp_self bihimp_bihimp_self
 
-theorem bihimp_left_involutive (a : α) : Involutive (· ⇔ a) :=
+lemma bihimp_left_involutive (a : α) : Involutive (· ⇔ a) :=
   bihimp_bihimp_cancel_right _
 #align bihimp_left_involutive bihimp_left_involutive
 
-theorem bihimp_right_involutive (a : α) : Involutive ((· ⇔ ·) a) :=
+lemma bihimp_right_involutive (a : α) : Involutive ((· ⇔ ·) a) :=
   bihimp_bihimp_cancel_left _
 #align bihimp_right_involutive bihimp_right_involutive
 
-theorem bihimp_left_injective (a : α) : Injective (· ⇔ a) :=
+lemma bihimp_left_injective (a : α) : Injective (· ⇔ a) :=
   @symmDiff_left_injective αᵒᵈ _ _
 #align bihimp_left_injective bihimp_left_injective
 
-theorem bihimp_right_injective (a : α) : Injective ((· ⇔ ·) a) :=
+lemma bihimp_right_injective (a : α) : Injective ((· ⇔ ·) a) :=
   @symmDiff_right_injective αᵒᵈ _ _
 #align bihimp_right_injective bihimp_right_injective
 
-theorem bihimp_left_surjective (a : α) : Surjective (· ⇔ a) :=
+lemma bihimp_left_surjective (a : α) : Surjective (· ⇔ a) :=
   @symmDiff_left_surjective αᵒᵈ _ _
 #align bihimp_left_surjective bihimp_left_surjective
 
-theorem bihimp_right_surjective (a : α) : Surjective ((· ⇔ ·) a) :=
+lemma bihimp_right_surjective (a : α) : Surjective ((· ⇔ ·) a) :=
   @symmDiff_right_surjective αᵒᵈ _ _
 #align bihimp_right_surjective bihimp_right_surjective
 
@@ -695,12 +695,12 @@ lemma bihimp_eq_right : a ⇔ b = b ↔ a = ⊤ :=
   @symmDiff_eq_right αᵒᵈ _ _ _
 #align bihimp_eq_right bihimp_eq_right
 
-protected theorem Codisjoint.bihimp_left (ha : Codisjoint a c) (hb : Codisjoint b c) :
+protected lemma Codisjoint.bihimp_left (ha : Codisjoint a c) (hb : Codisjoint b c) :
     Codisjoint (a ⇔ b) c :=
   (ha.inf_left hb).mono_left inf_le_bihimp
 #align codisjoint.bihimp_left Codisjoint.bihimp_left
 
-protected theorem Codisjoint.bihimp_right (ha : Codisjoint a b) (hb : Codisjoint a c) :
+protected lemma Codisjoint.bihimp_right (ha : Codisjoint a b) (hb : Codisjoint a c) :
     Codisjoint a (b ⇔ c) :=
   (ha.inf_right hb).mono_right inf_le_bihimp
 #align codisjoint.bihimp_right Codisjoint.bihimp_right
@@ -787,23 +787,23 @@ lemma symmDiff_symmDiff_right' :
 
 variable {a b c}
 
-theorem Disjoint.le_symmDiff_sup_symmDiff_left (h : Disjoint a b) : c ≤ a ∆ c ⊔ b ∆ c := by
+lemma Disjoint.le_symmDiff_sup_symmDiff_left (h : Disjoint a b) : c ≤ a ∆ c ⊔ b ∆ c := by
   trans c \ (a ⊓ b)
   · rw [h.eq_bot, sdiff_bot]
   · rw [sdiff_inf]
     exact sup_le_sup le_sup_right le_sup_right
 #align disjoint.le_symm_diff_sup_symm_diff_left Disjoint.le_symmDiff_sup_symmDiff_left
 
-theorem Disjoint.le_symmDiff_sup_symmDiff_right (h : Disjoint b c) : a ≤ a ∆ b ⊔ a ∆ c := by
+lemma Disjoint.le_symmDiff_sup_symmDiff_right (h : Disjoint b c) : a ≤ a ∆ b ⊔ a ∆ c := by
   simp_rw [symmDiff_comm a]
   exact h.le_symmDiff_sup_symmDiff_left
 #align disjoint.le_symm_diff_sup_symm_diff_right Disjoint.le_symmDiff_sup_symmDiff_right
 
-theorem Codisjoint.bihimp_inf_bihimp_le_left (h : Codisjoint a b) : a ⇔ c ⊓ b ⇔ c ≤ c :=
+lemma Codisjoint.bihimp_inf_bihimp_le_left (h : Codisjoint a b) : a ⇔ c ⊓ b ⇔ c ≤ c :=
   h.dual.le_symmDiff_sup_symmDiff_left
 #align codisjoint.bihimp_inf_bihimp_le_left Codisjoint.bihimp_inf_bihimp_le_left
 
-theorem Codisjoint.bihimp_inf_bihimp_le_right (h : Codisjoint b c) : a ⇔ b ⊓ a ⇔ c ≤ a :=
+lemma Codisjoint.bihimp_inf_bihimp_le_right (h : Codisjoint b c) : a ⇔ b ⊓ a ⇔ c ≤ a :=
   h.dual.le_symmDiff_sup_symmDiff_right
 #align codisjoint.bihimp_inf_bihimp_le_right Codisjoint.bihimp_inf_bihimp_le_right
 

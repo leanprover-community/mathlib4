@@ -66,7 +66,7 @@ namespace IsSymmetric
 variable {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric)
 
 /-- A self-adjoint operator preserves orthogonal complements of its eigenspaces. -/
-theorem invariant_orthogonalComplement_eigenspace (μ : 𝕜) (v : E) (hv : v ∈ (eigenspace T μ)ᗮ) :
+lemma invariant_orthogonalComplement_eigenspace (μ : 𝕜) (v : E) (hv : v ∈ (eigenspace T μ)ᗮ) :
     T v ∈ (eigenspace T μ)ᗮ := by
   intro w hw
   have : T w = (μ : 𝕜) • w := by rwa [mem_eigenspace_iff] at hw
@@ -108,7 +108,7 @@ theorem orthogonalComplement_iSup_eigenspaces_invariant ⦃v : E⦄ (hv : v ∈ 
 
 /-- The mutual orthogonal complement of the eigenspaces of a self-adjoint operator on an inner
 product space has no eigenvalues. -/
-theorem orthogonalComplement_iSup_eigenspaces (μ : 𝕜) :
+lemma orthogonalComplement_iSup_eigenspaces (μ : 𝕜) :
     eigenspace (T.restrict hT.orthogonalComplement_iSup_eigenspaces_invariant) μ = ⊥ := by
   set p : Submodule 𝕜 E := (⨆ μ, eigenspace T μ)ᗮ
   refine' eigenspace_restrict_eq_bot hT.orthogonalComplement_iSup_eigenspaces_invariant _
@@ -171,7 +171,7 @@ noncomputable def diagonalization : E ≃ₗᵢ[𝕜] PiLp 2 fun μ : Eigenvalue
 #align linear_map.is_symmetric.diagonalization LinearMap.IsSymmetric.diagonalization
 
 @[simp]
-theorem diagonalization_symm_apply (w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ) :
+lemma diagonalization_symm_apply (w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ) :
     hT.diagonalization.symm w = ∑ μ, w μ :=
   hT.direct_sum_isInternal.isometryL2OfOrthogonalFamily_symm_apply
     hT.orthogonalFamily_eigenspaces' w
@@ -180,7 +180,7 @@ theorem diagonalization_symm_apply (w : PiLp 2 fun μ : Eigenvalues T => eigensp
 /-- *Diagonalization theorem*, *spectral theorem*; version 1: A self-adjoint operator `T` on a
 finite-dimensional inner product space `E` acts diagonally on the decomposition of `E` into the
 direct sum of the eigenspaces of `T`. -/
-theorem diagonalization_apply_self_apply (v : E) (μ : Eigenvalues T) :
+lemma diagonalization_apply_self_apply (v : E) (μ : Eigenvalues T) :
     hT.diagonalization (T v) μ = (μ : 𝕜) • hT.diagonalization v μ := by
   suffices
     ∀ w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ,
@@ -216,7 +216,7 @@ noncomputable irreducible_def eigenvalues (i : Fin n) : ℝ :=
     hT.orthogonalFamily_eigenspaces').val
 #align linear_map.is_symmetric.eigenvalues LinearMap.IsSymmetric.eigenvalues
 
-theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
+lemma hasEigenvector_eigenvectorBasis (i : Fin n) :
     HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
   let v : E := hT.eigenvectorBasis hn i
   let μ : 𝕜 :=
@@ -238,12 +238,12 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
   simpa [re_μ] using key
 #align linear_map.is_symmetric.has_eigenvector_eigenvector_basis LinearMap.IsSymmetric.hasEigenvector_eigenvectorBasis
 
-theorem hasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.eigenvalues hn i) :=
+lemma hasEigenvalue_eigenvalues (i : Fin n) : HasEigenvalue T (hT.eigenvalues hn i) :=
   Module.End.hasEigenvalue_of_hasEigenvector (hT.hasEigenvector_eigenvectorBasis hn i)
 #align linear_map.is_symmetric.has_eigenvalue_eigenvalues LinearMap.IsSymmetric.hasEigenvalue_eigenvalues
 
 @[simp]
-theorem apply_eigenvectorBasis (i : Fin n) :
+lemma apply_eigenvectorBasis (i : Fin n) :
     T (hT.eigenvectorBasis hn i) = (hT.eigenvalues hn i : 𝕜) • hT.eigenvectorBasis hn i :=
   mem_eigenspace_iff.mp (hT.hasEigenvector_eigenvectorBasis hn i).1
 #align linear_map.is_symmetric.apply_eigenvector_basis LinearMap.IsSymmetric.apply_eigenvectorBasis
@@ -251,7 +251,7 @@ theorem apply_eigenvectorBasis (i : Fin n) :
 /-- *Diagonalization theorem*, *spectral theorem*; version 2: A self-adjoint operator `T` on a
 finite-dimensional inner product space `E` acts diagonally on the identification of `E` with
 Euclidean space induced by an orthonormal basis of eigenvectors of `T`. -/
-theorem eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
+lemma eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
     (hT.eigenvectorBasis hn).repr (T v) i =
       hT.eigenvalues hn i * (hT.eigenvectorBasis hn).repr v i := by
   suffices

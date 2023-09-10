@@ -645,7 +645,7 @@ end Imo2019Q2
 
 open Imo2019Q2
 
-theorem imo2019_q2 (A B C A₁ B₁ P Q P₁ Q₁ : Pt)
+lemma imo2019_q2 (A B C A₁ B₁ P Q P₁ Q₁ : Pt)
     (affine_independent_ABC : AffineIndependent ℝ ![A, B, C]) (wbtw_B_A₁_C : Wbtw ℝ B A₁ C)
     (wbtw_A_B₁_C : Wbtw ℝ A B₁ C) (wbtw_A_P_A₁ : Wbtw ℝ A P A₁) (wbtw_B_Q_B₁ : Wbtw ℝ B Q B₁)
     (PQ_parallel_AB : line[ℝ, P, Q] ∥ line[ℝ, A, B]) (P_ne_Q : P ≠ Q)

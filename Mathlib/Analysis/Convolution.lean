@@ -129,14 +129,14 @@ lemma convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i, �
     simp only [nmem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
 #align convolution_integrand_bound_right_of_le_of_subset convolution_integrand_bound_right_of_le_of_subset
 
-theorem HasCompactSupport.convolution_integrand_bound_right_of_subset (hcg : HasCompactSupport g)
+lemma HasCompactSupport.convolution_integrand_bound_right_of_subset (hcg : HasCompactSupport g)
     (hg : Continuous g) {x t : G} {s u : Set G} (hx : x ∈ s) (hu : -tsupport g + s ⊆ u) :
     ‖L (f t) (g (x - t))‖ ≤ u.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i, ‖g i‖) t := by
   refine convolution_integrand_bound_right_of_le_of_subset _ (fun i => ?_) hx hu
   exact le_ciSup (hg.norm.bddAbove_range_of_hasCompactSupport hcg.norm) _
 #align has_compact_support.convolution_integrand_bound_right_of_subset HasCompactSupport.convolution_integrand_bound_right_of_subset
 
-theorem HasCompactSupport.convolution_integrand_bound_right (hcg : HasCompactSupport g)
+lemma HasCompactSupport.convolution_integrand_bound_right (hcg : HasCompactSupport g)
     (hg : Continuous g) {x t : G} {s : Set G} (hx : x ∈ s) :
     ‖L (f t) (g (x - t))‖ ≤ (-tsupport g + s).indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i, ‖g i‖) t :=
   hcg.convolution_integrand_bound_right_of_subset L hg hx Subset.rfl
@@ -147,7 +147,7 @@ lemma Continuous.convolution_integrand_fst [ContinuousSub G] (hg : Continuous g)
   L.continuous₂.comp₂ continuous_const <| hg.comp <| continuous_id.sub continuous_const
 #align continuous.convolution_integrand_fst Continuous.convolution_integrand_fst
 
-theorem HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupport f)
+lemma HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupport f)
     (hf : Continuous f) {x t : G} {s : Set G} (hx : x ∈ s) :
     ‖L (f (x - t)) (g t)‖ ≤
       (-tsupport f + s).indicator (fun t => (‖L‖ * ⨆ i, ‖f i‖) * ‖g t‖) t := by
@@ -258,7 +258,7 @@ section Left
 
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ] [IsAddRightInvariant μ]
 
-theorem MeasureTheory.AEStronglyMeasurable.convolution_integrand_snd (hf : AEStronglyMeasurable f μ)
+lemma MeasureTheory.AEStronglyMeasurable.convolution_integrand_snd (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (x : G) :
     AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
   hf.convolution_integrand_snd' L <|
@@ -290,14 +290,14 @@ section Right
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ] [IsAddRightInvariant μ]
   [SigmaFinite ν]
 
-theorem MeasureTheory.AEStronglyMeasurable.convolution_integrand (hf : AEStronglyMeasurable f ν)
+lemma MeasureTheory.AEStronglyMeasurable.convolution_integrand (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
   hf.convolution_integrand' L <|
     hg.mono' (quasiMeasurePreserving_sub_of_right_invariant μ ν).absolutelyContinuous
 #align measure_theory.ae_strongly_measurable.convolution_integrand MeasureTheory.AEStronglyMeasurable.convolution_integrand
 
-theorem MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable g μ) :
+lemma MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable g μ) :
     Integrable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) := by
   have h_meas : AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
     hf.aestronglyMeasurable.convolution_integrand L hg.aestronglyMeasurable
@@ -316,7 +316,7 @@ theorem MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (h
     exact integral_nonneg fun x => norm_nonneg _
 #align measure_theory.integrable.convolution_integrand MeasureTheory.Integrable.convolution_integrand
 
-theorem MeasureTheory.Integrable.ae_convolution_exists (hf : Integrable f ν) (hg : Integrable g μ) :
+lemma MeasureTheory.Integrable.ae_convolution_exists (hf : Integrable f ν) (hg : Integrable g μ) :
     ∀ᵐ x ∂μ, ConvolutionExistsAt f g x L ν :=
   ((integrable_prod_iff <|
           hf.aestronglyMeasurable.convolution_integrand L hg.aestronglyMeasurable).mp <|
@@ -346,7 +346,7 @@ lemma HasCompactSupport.convolutionExistsAt {x₀ : G}
     Homeomorph.coe_addLeft]
 #align has_compact_support.convolution_exists_at HasCompactSupport.convolutionExistsAt
 
-theorem HasCompactSupport.convolutionExists_right (hcg : HasCompactSupport g)
+lemma HasCompactSupport.convolutionExists_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : Continuous g) : ConvolutionExists f g L μ := by
   intro x₀
   refine' HasCompactSupport.convolutionExistsAt L _ hf hg
@@ -355,7 +355,7 @@ theorem HasCompactSupport.convolutionExists_right (hcg : HasCompactSupport g)
   simp_rw [ht, (L _).map_zero]
 #align has_compact_support.convolution_exists_right HasCompactSupport.convolutionExists_right
 
-theorem HasCompactSupport.convolutionExists_left_of_continuous_right (hcf : HasCompactSupport f)
+lemma HasCompactSupport.convolutionExists_left_of_continuous_right (hcf : HasCompactSupport f)
     (hf : LocallyIntegrable f μ) (hg : Continuous g) : ConvolutionExists f g L μ := by
   intro x₀
   refine' HasCompactSupport.convolutionExistsAt L _ hf hg
@@ -403,7 +403,7 @@ lemma convolutionExistsAt_flip :
     sub_sub_cancel, flip_apply]
 #align convolution_exists_at_flip convolutionExistsAt_flip
 
-theorem ConvolutionExistsAt.integrable_swap (h : ConvolutionExistsAt f g x L μ) :
+lemma ConvolutionExistsAt.integrable_swap (h : ConvolutionExistsAt f g x L μ) :
     Integrable (fun t => L (f (x - t)) (g t)) μ := by
   convert h.comp_sub_left x
   simp_rw [sub_sub_self]
@@ -419,12 +419,12 @@ end MeasurableGroup
 variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G] [IsAddLeftInvariant μ]
   [IsNegInvariant μ]
 
-theorem HasCompactSupport.convolutionExistsLeft (hcf : HasCompactSupport f) (hf : Continuous f)
+lemma HasCompactSupport.convolutionExistsLeft (hcf : HasCompactSupport f) (hf : Continuous f)
     (hg : LocallyIntegrable g μ) : ConvolutionExists f g L μ := fun x₀ =>
   convolutionExistsAt_flip.mp <| hcf.convolutionExists_right L.flip hg hf x₀
 #align has_compact_support.convolution_exists_left HasCompactSupport.convolutionExistsLeft
 
-theorem HasCompactSupport.convolutionExistsRightOfContinuousLeft (hcg : HasCompactSupport g)
+lemma HasCompactSupport.convolutionExistsRightOfContinuousLeft (hcg : HasCompactSupport g)
     (hf : Continuous f) (hg : LocallyIntegrable g μ) : ConvolutionExists f g L μ := fun x₀ =>
   convolutionExistsAt_flip.mp <| hcg.convolutionExists_left_of_continuous_right L.flip hg hf x₀
 #align has_compact_support.convolution_exists_right_of_continuous_left HasCompactSupport.convolutionExistsRightOfContinuousLeft
@@ -503,7 +503,7 @@ lemma ConvolutionExistsAt.distrib_add {x : G} (hfg : ConvolutionExistsAt f g x L
   simp only [convolution_def, (L _).map_add, Pi.add_apply, integral_add hfg hfg']
 #align convolution_exists_at.distrib_add ConvolutionExistsAt.distrib_add
 
-theorem ConvolutionExists.distrib_add (hfg : ConvolutionExists f g L μ)
+lemma ConvolutionExists.distrib_add (hfg : ConvolutionExists f g L μ)
     (hfg' : ConvolutionExists f g' L μ) : f ⋆[L, μ] (g + g') = f ⋆[L, μ] g + f ⋆[L, μ] g' := by
   ext x
   exact (hfg x).distrib_add (hfg' x)
@@ -515,7 +515,7 @@ lemma ConvolutionExistsAt.add_distrib {x : G} (hfg : ConvolutionExistsAt f g x L
   simp only [convolution_def, L.map_add₂, Pi.add_apply, integral_add hfg hfg']
 #align convolution_exists_at.add_distrib ConvolutionExistsAt.add_distrib
 
-theorem ConvolutionExists.add_distrib (hfg : ConvolutionExists f g L μ)
+lemma ConvolutionExists.add_distrib (hfg : ConvolutionExists f g L μ)
     (hfg' : ConvolutionExists f' g L μ) : (f + f') ⋆[L, μ] g = f ⋆[L, μ] g + f' ⋆[L, μ] g := by
   ext x
   exact (hfg x).add_distrib (hfg' x)
@@ -571,7 +571,7 @@ section
 
 variable [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ] [IsAddRightInvariant μ]
 
-theorem MeasureTheory.Integrable.integrable_convolution (hf : Integrable f μ)
+lemma MeasureTheory.Integrable.integrable_convolution (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⋆[L, μ] g) μ :=
   (hf.convolution_integrand L hg).integral_prod_left
 #align measure_theory.integrable.integrable_convolution MeasureTheory.Integrable.integrable_convolution
@@ -724,7 +724,7 @@ lemma continuousOn_convolution_right_with_param_comp [T2Space G] {s : Set P} {v 
 
 /-- The convolution is continuous if one function is locally integrable and the other has compact
 support and is continuous. -/
-theorem HasCompactSupport.continuous_convolution_right (hcg : HasCompactSupport g)
+lemma HasCompactSupport.continuous_convolution_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : Continuous g) : Continuous (f ⋆[L, μ] g) := by
   rw [continuous_iff_continuousOn_univ]
   let g' : G → G → E' := fun _ q => g q
@@ -795,7 +795,7 @@ lemma convolution_mul_swap [NormedSpace ℝ 𝕜] {f : G → 𝕜} {g : G → �
 #align convolution_mul_swap convolution_mul_swap
 
 /-- The convolution of two even functions is also even. -/
-theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀ᵐ x ∂μ, g (-x) = g x) :
+lemma convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀ᵐ x ∂μ, g (-x) = g x) :
     (f ⋆[L, μ] g) (-x) = (f ⋆[L, μ] g) x :=
   calc
     ∫ t : G, (L (f t)) (g (-x - t)) ∂μ = ∫ t : G, (L (f (-t))) (g (x + t)) ∂μ := by
@@ -1015,7 +1015,7 @@ variable [MeasurableAdd₂ G] [IsAddRightInvariant ν] [MeasurableNeg G]
 
 /-- Convolution is associative. This has a weak but inconvenient integrability condition.
 See also `convolution_assoc`. -/
-theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z))
+lemma convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z))
     {x₀ : G} (hfg : ∀ᵐ y ∂μ, ConvolutionExistsAt f g y L ν)
     (hgk : ∀ᵐ x ∂ν, ConvolutionExistsAt g k x L₄ μ)
     (hi : Integrable (uncurry fun x y => (L₃ (f y)) ((L₄ (g (x - y))) (k (x₀ - x)))) (μ.prod ν)) :
@@ -1042,7 +1042,7 @@ theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z 
 * `f ⋆[L, ν] g` exists almost everywhere
 * `‖g‖ ⋆[μ] ‖k‖` exists almost everywhere
 * `‖f‖ ⋆[ν] (‖g‖ ⋆[μ] ‖k‖)` exists at `x₀` -/
-theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z)) {x₀ : G}
+lemma convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z)) {x₀ : G}
     (hf : AEStronglyMeasurable f ν) (hg : AEStronglyMeasurable g μ) (hk : AEStronglyMeasurable k μ)
     (hfg : ∀ᵐ y ∂μ, ConvolutionExistsAt f g y L ν)
     (hgk : ∀ᵐ x ∂ν, ConvolutionExistsAt (fun x => ‖g x‖) (fun x => ‖k x‖) x (mul ℝ ℝ) μ)
@@ -1105,7 +1105,7 @@ variable [NormedSpace 𝕜 G] [SigmaFinite μ] [IsAddLeftInvariant μ]
 /-- Compute the total derivative of `f ⋆ g` if `g` is `C^1` with compact support and `f` is locally
 integrable. To write down the total derivative as a convolution, we use
 `ContinuousLinearMap.precompR`. -/
-theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport g)
+lemma HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : ContDiff 𝕜 1 g) (x₀ : G) :
     HasFDerivAt (f ⋆[L, μ] g) ((f ⋆[L.precompR G, μ] fderiv 𝕜 g) x₀) x₀ := by
   rcases hcg.eq_zero_or_finiteDimensional 𝕜 hg.continuous with (rfl | fin_dim)
@@ -1172,7 +1172,7 @@ variable {μ : MeasureTheory.Measure 𝕜}
 
 variable [IsAddLeftInvariant μ] [SigmaFinite μ]
 
-theorem HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyIntegrable f₀ μ)
+lemma HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyIntegrable f₀ μ)
     (hcg : HasCompactSupport g₀) (hg : ContDiff 𝕜 1 g₀) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((f₀ ⋆[L, μ] deriv g₀) x₀) x₀ := by
   convert (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt using 1
@@ -1530,7 +1530,7 @@ noncomputable def posConvolution (f : ℝ → E) (g : ℝ → E') (L : E →L[�
   indicator (Ioi (0 : ℝ)) fun x => ∫ t in (0)..x, L (f t) (g (x - t)) ∂ν
 #align pos_convolution posConvolution
 
-theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
+lemma posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
     (ν : MeasureTheory.Measure ℝ := by volume_tac) [NoAtoms ν] :
     posConvolution f g L ν = convolution (indicator (Ioi 0) f) (indicator (Ioi 0) g) L ν := by
   ext1 x

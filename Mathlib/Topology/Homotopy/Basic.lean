@@ -134,22 +134,22 @@ def Simps.apply (F : Homotopy f₀ f₁) : I × X → Y :=
 initialize_simps_projections Homotopy (toFun → apply, -toContinuousMap)
 
 /-- Deprecated. Use `map_continuous` instead. -/
-protected theorem continuous (F : Homotopy f₀ f₁) : Continuous F :=
+protected lemma continuous (F : Homotopy f₀ f₁) : Continuous F :=
   F.continuous_toFun
 #align continuous_map.homotopy.continuous ContinuousMap.Homotopy.continuous
 
 @[simp]
-theorem apply_zero (F : Homotopy f₀ f₁) (x : X) : F (0, x) = f₀ x :=
+lemma apply_zero (F : Homotopy f₀ f₁) (x : X) : F (0, x) = f₀ x :=
   F.map_zero_left x
 #align continuous_map.homotopy.apply_zero ContinuousMap.Homotopy.apply_zero
 
 @[simp]
-theorem apply_one (F : Homotopy f₀ f₁) (x : X) : F (1, x) = f₁ x :=
+lemma apply_one (F : Homotopy f₀ f₁) (x : X) : F (1, x) = f₁ x :=
   F.map_one_left x
 #align continuous_map.homotopy.apply_one ContinuousMap.Homotopy.apply_one
 
 @[simp]
-theorem coe_toContinuousMap (F : Homotopy f₀ f₁) : ⇑F.toContinuousMap = F :=
+lemma coe_toContinuousMap (F : Homotopy f₀ f₁) : ⇑F.toContinuousMap = F :=
   rfl
 #align continuous_map.homotopy.coe_to_continuous_map ContinuousMap.Homotopy.coe_toContinuousMap
 
@@ -160,7 +160,7 @@ def curry (F : Homotopy f₀ f₁) : C(I, C(X, Y)) :=
 #align continuous_map.homotopy.curry ContinuousMap.Homotopy.curry
 
 @[simp]
-theorem curry_apply (F : Homotopy f₀ f₁) (t : I) (x : X) : F.curry t x = F (t, x) :=
+lemma curry_apply (F : Homotopy f₀ f₁) (t : I) (x : X) : F.curry t x = F (t, x) :=
   rfl
 #align continuous_map.homotopy.curry_apply ContinuousMap.Homotopy.curry_apply
 
@@ -170,25 +170,25 @@ def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
   F.curry.IccExtend zero_le_one
 #align continuous_map.homotopy.extend ContinuousMap.Homotopy.extend
 
-theorem extend_apply_of_le_zero (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ≤ 0) (x : X) :
+lemma extend_apply_of_le_zero (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ≤ 0) (x : X) :
     F.extend t x = f₀ x := by
   rw [← F.apply_zero]
   exact ContinuousMap.congr_fun (Set.IccExtend_of_le_left (zero_le_one' ℝ) F.curry ht) x
 #align continuous_map.homotopy.extend_apply_of_le_zero ContinuousMap.Homotopy.extend_apply_of_le_zero
 
-theorem extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t) (x : X) :
+lemma extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t) (x : X) :
     F.extend t x = f₁ x := by
   rw [← F.apply_one]
   exact ContinuousMap.congr_fun (Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x
 #align continuous_map.homotopy.extend_apply_of_one_le ContinuousMap.Homotopy.extend_apply_of_one_le
 
 @[simp]
-theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
+lemma extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
   ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
 #align continuous_map.homotopy.extend_apply_coe ContinuousMap.Homotopy.extend_apply_coe
 
 @[simp]
-theorem extend_apply_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) (x : X) :
+lemma extend_apply_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) (x : X) :
     F.extend t x = F (⟨t, ht⟩, x) :=
   ContinuousMap.congr_fun (Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht) x
 set_option linter.uppercaseLean3 false in
@@ -198,7 +198,7 @@ lemma congr_fun {F G : Homotopy f₀ f₁} (h : F = G) (x : I × X) : F x = G x 
   ContinuousMap.congr_fun (congr_arg _ h) x
 #align continuous_map.homotopy.congr_fun ContinuousMap.Homotopy.congr_fun
 
-theorem congr_arg (F : Homotopy f₀ f₁) {x y : I × X} (h : x = y) : F x = F y :=
+lemma congr_arg (F : Homotopy f₀ f₁) {x y : I × X} (h : x = y) : F x = F y :=
   F.toContinuousMap.congr_arg h
 #align continuous_map.homotopy.congr_arg ContinuousMap.Homotopy.congr_arg
 
@@ -354,7 +354,7 @@ def Homotopic (f₀ f₁ : C(X, Y)) : Prop :=
 namespace Homotopic
 
 @[refl]
-theorem refl (f : C(X, Y)) : Homotopic f f :=
+lemma refl (f : C(X, Y)) : Homotopic f f :=
   ⟨Homotopy.refl f⟩
 #align continuous_map.homotopic.refl ContinuousMap.Homotopic.refl
 
@@ -443,34 +443,34 @@ initialize_simps_projections HomotopyWith (toHomotopy_toContinuousMap_toFun → 
   -toHomotopy_toContinuousMap)
 
 @[continuity]
-protected theorem continuous (F : HomotopyWith f₀ f₁ P) : Continuous F :=
+protected lemma continuous (F : HomotopyWith f₀ f₁ P) : Continuous F :=
   F.continuous_toFun
 #align continuous_map.homotopy_with.continuous ContinuousMap.HomotopyWith.continuous
 
 @[simp]
-theorem apply_zero (F : HomotopyWith f₀ f₁ P) (x : X) : F (0, x) = f₀ x :=
+lemma apply_zero (F : HomotopyWith f₀ f₁ P) (x : X) : F (0, x) = f₀ x :=
   F.map_zero_left x
 #align continuous_map.homotopy_with.apply_zero ContinuousMap.HomotopyWith.apply_zero
 
 @[simp]
-theorem apply_one (F : HomotopyWith f₀ f₁ P) (x : X) : F (1, x) = f₁ x :=
+lemma apply_one (F : HomotopyWith f₀ f₁ P) (x : X) : F (1, x) = f₁ x :=
   F.map_one_left x
 #align continuous_map.homotopy_with.apply_one ContinuousMap.HomotopyWith.apply_one
 
 -- porting note: removed `simp`
-theorem coe_toContinuousMap (F : HomotopyWith f₀ f₁ P) : ⇑F.toContinuousMap = F :=
+lemma coe_toContinuousMap (F : HomotopyWith f₀ f₁ P) : ⇑F.toContinuousMap = F :=
   rfl
 #align continuous_map.homotopy_with.coe_to_continuous_map ContinuousMap.HomotopyWith.coe_toContinuousMap
 
 @[simp]
-theorem coe_toHomotopy (F : HomotopyWith f₀ f₁ P) : ⇑F.toHomotopy = F :=
+lemma coe_toHomotopy (F : HomotopyWith f₀ f₁ P) : ⇑F.toHomotopy = F :=
   rfl
 #align continuous_map.homotopy_with.coe_to_homotopy ContinuousMap.HomotopyWith.coe_toHomotopy
 
-theorem prop (F : HomotopyWith f₀ f₁ P) (t : I) : P (F.toHomotopy.curry t) := F.prop' t
+lemma prop (F : HomotopyWith f₀ f₁ P) (t : I) : P (F.toHomotopy.curry t) := F.prop' t
 #align continuous_map.homotopy_with.prop ContinuousMap.HomotopyWith.prop
 
-theorem extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.extend t) := F.prop _
+lemma extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.extend t) := F.prop _
 #align continuous_map.homotopy_with.extend_prop ContinuousMap.HomotopyWith.extendProp
 
 end
@@ -556,7 +556,7 @@ namespace HomotopicWith
 variable {P : C(X, Y) → Prop}
 
 -- porting note: removed @[refl]
-theorem refl (f : C(X, Y)) (hf : P f) : HomotopicWith f f P :=
+lemma refl (f : C(X, Y)) (hf : P f) : HomotopicWith f f P :=
   ⟨HomotopyWith.refl f hf⟩
 #align continuous_map.homotopic_with.refl ContinuousMap.HomotopicWith.refl
 
@@ -586,15 +586,15 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {S : Set X}
 
-theorem eq_fst (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₀ x :=
+lemma eq_fst (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₀ x :=
   (F.prop t x hx).1
 #align continuous_map.homotopy_rel.eq_fst ContinuousMap.HomotopyRel.eq_fst
 
-theorem eq_snd (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₁ x :=
+lemma eq_snd (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₁ x :=
   (F.prop t x hx).2
 #align continuous_map.homotopy_rel.eq_snd ContinuousMap.HomotopyRel.eq_snd
 
-theorem fst_eq_snd (F : HomotopyRel f₀ f₁ S) {x : X} (hx : x ∈ S) : f₀ x = f₁ x :=
+lemma fst_eq_snd (F : HomotopyRel f₀ f₁ S) {x : X} (hx : x ∈ S) : f₀ x = f₁ x :=
   F.eq_fst 0 hx ▸ F.eq_snd 0 hx
 #align continuous_map.homotopy_rel.fst_eq_snd ContinuousMap.HomotopyRel.fst_eq_snd
 
@@ -621,7 +621,7 @@ def symm (F : HomotopyRel f₀ f₁ S) : HomotopyRel f₁ f₀ S where
 #align continuous_map.homotopy_rel.symm ContinuousMap.HomotopyRel.symm
 
 @[simp]
-theorem symm_symm (F : HomotopyRel f₀ f₁ S) : F.symm.symm = F :=
+lemma symm_symm (F : HomotopyRel f₀ f₁ S) : F.symm.symm = F :=
   HomotopyWith.symm_symm F
 #align continuous_map.homotopy_rel.symm_symm ContinuousMap.HomotopyRel.symm_symm
 
@@ -638,7 +638,7 @@ def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : Homotopy
       · simp [(HomotopyWith.extendProp G (2 * t - 1) x hx).1, F.fst_eq_snd hx, G.fst_eq_snd hx] }
 #align continuous_map.homotopy_rel.trans ContinuousMap.HomotopyRel.trans
 
-theorem trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) (x : I × X) :
+lemma trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) (x : I × X) :
     (F.trans G) x =
       if h : (x.1 : ℝ) ≤ 1 / 2 then
         F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.2.1, h⟩⟩, x.2)
@@ -647,7 +647,7 @@ theorem trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) 
   Homotopy.trans_apply _ _ _
 #align continuous_map.homotopy_rel.trans_apply ContinuousMap.HomotopyRel.trans_apply
 
-theorem symm_trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) :
+lemma symm_trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) :
     (F.trans G).symm = G.symm.trans F.symm :=
   HomotopyWith.ext <| Homotopy.congr_fun <| Homotopy.symm_trans _ _
 #align continuous_map.homotopy_rel.symm_trans ContinuousMap.HomotopyRel.symm_trans
@@ -679,7 +679,7 @@ protected lemma homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) :
   h.map fun F ↦ F.1
 
 -- porting note: removed @[refl]
-theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
+lemma refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩
 #align continuous_map.homotopic_rel.refl ContinuousMap.HomotopicRel.refl
 

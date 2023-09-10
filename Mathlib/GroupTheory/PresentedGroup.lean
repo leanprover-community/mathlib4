@@ -81,7 +81,7 @@ lemma toGroup.of {x : α} : toGroup h (of x) = f x :=
   FreeGroup.lift.of
 #align presented_group.to_group.of PresentedGroup.toGroup.of
 
-theorem toGroup.unique (g : PresentedGroup rels →* G)
+lemma toGroup.unique (g : PresentedGroup rels →* G)
     (hg : ∀ x : α, g (PresentedGroup.of x) = f x) : ∀ {x}, g x = toGroup h x := by
   intro x
   refine' QuotientGroup.induction_on x _

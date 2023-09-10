@@ -72,7 +72,7 @@ instance (F : C ⥤ D) : Functorial.{v₁, v₂} F.obj :=
   { F with map' := F.map }
 
 @[simp]
-theorem map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f = F.map f :=
+lemma map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f = F.map f :=
   rfl
 #align category_theory.map_functorial_obj CategoryTheory.map_functorial_obj
 

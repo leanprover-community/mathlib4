@@ -62,7 +62,7 @@ instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
 -- Porting note: simp can prove this; removed simp
-theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
+lemma id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
@@ -88,7 +88,7 @@ instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopC
   X.str
 
 @[simp]
-theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
+lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.coe_of TopCat.coe_of
 

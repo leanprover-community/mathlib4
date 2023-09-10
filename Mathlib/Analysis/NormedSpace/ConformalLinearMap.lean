@@ -59,17 +59,17 @@ lemma isConformalMap_id : IsConformalMap (id R M) :=
   ⟨1, one_ne_zero, id, by simp⟩
 #align is_conformal_map_id isConformalMap_id
 
-theorem IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) :
+lemma IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) :
     IsConformalMap (c • f) := by
   rcases hf with ⟨c', hc', li, rfl⟩
   exact ⟨c * c', mul_ne_zero hc hc', li, smul_smul _ _ _⟩
 #align is_conformal_map.smul IsConformalMap.smul
 
-theorem isConformalMap_const_smul (hc : c ≠ 0) : IsConformalMap (c • id R M) :=
+lemma isConformalMap_const_smul (hc : c ≠ 0) : IsConformalMap (c • id R M) :=
   isConformalMap_id.smul hc
 #align is_conformal_map_const_smul isConformalMap_const_smul
 
-protected theorem LinearIsometry.isConformalMap (f' : M →ₗᵢ[R] N) :
+protected lemma LinearIsometry.isConformalMap (f' : M →ₗᵢ[R] N) :
     IsConformalMap f'.toContinuousLinearMap :=
   ⟨1, one_ne_zero, f', (one_smul _ _).symm⟩
 #align linear_isometry.is_conformal_map LinearIsometry.isConformalMap
@@ -81,7 +81,7 @@ lemma isConformalMap_of_subsingleton [Subsingleton M] (f' : M →L[R] N) : IsCon
 
 namespace IsConformalMap
 
-theorem comp (hg : IsConformalMap g) (hf : IsConformalMap f) : IsConformalMap (g.comp f) := by
+lemma comp (hg : IsConformalMap g) (hf : IsConformalMap f) : IsConformalMap (g.comp f) := by
   rcases hf with ⟨cf, hcf, lif, rfl⟩
   rcases hg with ⟨cg, hcg, lig, rfl⟩
   refine' ⟨cg * cf, mul_ne_zero hcg hcf, lig.comp lif, _⟩

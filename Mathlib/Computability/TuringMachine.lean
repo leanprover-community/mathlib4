@@ -162,7 +162,7 @@ def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
   exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.below Turing.BlankRel.below
 
-theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) :=
+lemma BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) :=
   ⟨BlankRel.refl, @BlankRel.symm _ _, @BlankRel.trans _ _⟩
 #align turing.blank_rel.equivalence Turing.BlankRel.equivalence
 
@@ -1107,14 +1107,14 @@ def Supports (M : Machine₀) (S : Set Λ) :=
   default ∈ S ∧ ∀ {q a q' s}, (q', s) ∈ M q a → q ∈ S → q' ∈ S
 #align turing.TM0.supports Turing.TM0.Supports
 
-theorem step_supports (M : Machine₀) {S : Set Λ} (ss : Supports M S) :
+lemma step_supports (M : Machine₀) {S : Set Λ} (ss : Supports M S) :
     ∀ {c c' : Cfg₀}, c' ∈ step M c → c.q ∈ S → c'.q ∈ S := by
   intro ⟨q, T⟩ c' h₁ h₂
   rcases Option.map_eq_some'.1 h₁ with ⟨⟨q', a⟩, h, rfl⟩
   exact ss.2 h h₂
 #align turing.TM0.step_supports Turing.TM0.step_supports
 
-theorem univ_supports (M : Machine₀) : Supports M Set.univ := by
+lemma univ_supports (M : Machine₀) : Supports M Set.univ := by
   constructor <;> intros <;> apply Set.mem_univ
 #align turing.TM0.univ_supports Turing.TM0.univ_supports
 
@@ -1166,11 +1166,11 @@ lemma Machine.map_step {S : Set Λ} (f₂₁ : Function.RightInverse f₁ f₂)
       rfl
 #align turing.TM0.machine.map_step Turing.TM0.Machine.map_step
 
-theorem map_init (g₁ : PointedMap Λ Λ') (l : List Γ) : (init l).map f₁ g₁ = init (l.map f₁) :=
+lemma map_init (g₁ : PointedMap Λ Λ') (l : List Γ) : (init l).map f₁ g₁ = init (l.map f₁) :=
   congr (congr_arg Cfg.mk g₁.map_pt) (Tape.map_mk₁ _ _)
 #align turing.TM0.map_init Turing.TM0.map_init
 
-theorem Machine.map_respects (g₁ : PointedMap Λ Λ') (g₂ : Λ' → Λ) {S} (ss : Supports M S)
+lemma Machine.map_respects (g₁ : PointedMap Λ Λ') (g₂ : Λ' → Λ) {S} (ss : Supports M S)
     (f₂₁ : Function.RightInverse f₁ f₂) (g₂₁ : ∀ q ∈ S, g₂ (g₁ q) = q) :
     Respects (step M) (step (M.map f₁ f₂ g₁ g₂)) fun a b ↦ a.q ∈ S ∧ Cfg.map f₁ g₁ a = b := by
   intro c _ ⟨cs, rfl⟩
@@ -1378,7 +1378,7 @@ lemma stmts_supportsStmt {M : Λ → Stmt₁} {S : Finset Λ} {q : Stmt₁} (ss 
   exact fun l ls h ↦ stmts₁_supportsStmt_mono h (ss.2 _ ls)
 #align turing.TM1.stmts_supports_stmt Turing.TM1.stmts_supportsStmt
 
-theorem step_supports (M : Λ → Stmt₁) {S : Finset Λ} (ss : Supports M S) :
+lemma step_supports (M : Λ → Stmt₁) {S : Finset Λ} (ss : Supports M S) :
     ∀ {c c' : Cfg₁}, c' ∈ step M c → c.l ∈ Finset.insertNone S → c'.l ∈ Finset.insertNone S
   | ⟨some l₁, v, T⟩, c', h₁, h₂ => by
     replace h₂ := ss.2 _ (Finset.some_mem_insertNone.1 h₂)
@@ -1513,7 +1513,7 @@ lemma tr_respects :
       exact TransGen.single (congr_arg some (congr (congr_arg TM0.Cfg.mk rfl) (Tape.write_self T)))
 #align turing.TM1to0.tr_respects Turing.TM1to0.tr_respects
 
-theorem tr_eval (l : List Γ) : TM0.eval (tr M) l = TM1.eval M l :=
+lemma tr_eval (l : List Γ) : TM0.eval (tr M) l = TM1.eval M l :=
   (congr_arg _ (tr_eval' _ _ _ (tr_respects M) ⟨some _, _, _⟩)).trans
     (by
       rw [Part.map_eq_map, Part.map_map, TM1.eval]
@@ -1694,7 +1694,7 @@ def trNormal : Stmt₁ → Stmt'₁
   | Stmt.halt => Stmt.halt
 #align turing.TM1to1.tr_normal Turing.TM1to1.trNormal
 
-theorem stepAux_move (d : Dir) (q : Stmt'₁) (v : σ) (T : Tape Bool) :
+lemma stepAux_move (d : Dir) (q : Stmt'₁) (v : σ) (T : Tape Bool) :
     stepAux (moveₙ d q) v T = stepAux q v ((Tape.move d)^[n] T) := by
   suffices ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T) from this n
   intro i; induction' i with i IH generalizing T; · rfl
@@ -1743,7 +1743,7 @@ def trTape (T : Tape Γ) : Tape Bool :=
   trTape' enc0 T.left T.right₀
 #align turing.TM1to1.tr_tape Turing.TM1to1.trTape
 
-theorem trTape_mk' (L R : ListBlank Γ) : trTape enc0 (Tape.mk' L R) = trTape' enc0 L R := by
+lemma trTape_mk' (L R : ListBlank Γ) : trTape enc0 (Tape.mk' L R) = trTape' enc0 L R := by
   simp only [trTape, Tape.mk'_left, Tape.mk'_right₀]
 #align turing.TM1to1.tr_tape_mk' Turing.TM1to1.trTape_mk'
 
@@ -1764,7 +1764,7 @@ def trCfg : Cfg₁ → Cfg'₁
 
 variable {enc}
 
-theorem trTape'_move_left (L R : ListBlank Γ) :
+lemma trTape'_move_left (L R : ListBlank Γ) :
     (Tape.move Dir.left)^[n] (trTape' enc0 L R) = trTape' enc0 L.tail (R.cons L.head) := by
   obtain ⟨a, L, rfl⟩ := L.exists_cons
   simp only [trTape', ListBlank.cons_bind, ListBlank.head_cons, ListBlank.tail_cons]
@@ -1782,7 +1782,7 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
   simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
 #align turing.TM1to1.tr_tape'_move_left Turing.TM1to1.trTape'_move_left
 
-theorem trTape'_move_right (L R : ListBlank Γ) :
+lemma trTape'_move_right (L R : ListBlank Γ) :
     (Tape.move Dir.right)^[n] (trTape' enc0 L R) = trTape' enc0 (L.cons R.head) R.tail := by
   suffices ∀ i L, (Tape.move Dir.right)^[i] ((Tape.move Dir.left)^[i] L) = L by
     refine' (Eq.symm _).trans (this n _)
@@ -1794,7 +1794,7 @@ theorem trTape'_move_right (L R : ListBlank Γ) :
   rw [iterate_succ_apply, iterate_succ_apply', Tape.move_left_right, IH]
 #align turing.TM1to1.tr_tape'_move_right Turing.TM1to1.trTape'_move_right
 
-theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
+lemma stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
     stepAux (write (enc a).toList q) v (trTape' enc0 L (ListBlank.cons b R)) =
       stepAux q v (trTape' enc0 (ListBlank.cons a L) R) := by
   simp only [trTape', ListBlank.cons_bind]
@@ -1815,7 +1815,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
 
 variable (encdec : ∀ a, dec (enc a) = a)
 
-theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
+lemma stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
     stepAux (read dec f) v (trTape' enc0 L R) = stepAux (f R.head) v (trTape' enc0 L R) := by
   suffices ∀ f, stepAux (readAux n f) v (trTape' enc0 L R) =
       stepAux (f (enc R.head)) v (trTape' enc0 (L.cons R.head) R.tail) by
@@ -2246,7 +2246,7 @@ lemma stmts_supportsStmt {M : Λ → Stmt₂} {S : Finset Λ} {q : Stmt₂} (ss 
   exact fun l ls h ↦ stmts₁_supportsStmt_mono h (ss.2 _ ls)
 #align turing.TM2.stmts_supports_stmt Turing.TM2.stmts_supportsStmt
 
-theorem step_supports (M : Λ → Stmt₂) {S : Finset Λ} (ss : Supports M S) :
+lemma step_supports (M : Λ → Stmt₂) {S : Finset Λ} (ss : Supports M S) :
     ∀ {c c' : Cfg₂}, c' ∈ step M c → c.l ∈ Finset.insertNone S → c'.l ∈ Finset.insertNone S
   | ⟨some l₁, v, T⟩, c', h₁, h₂ => by
     replace h₂ := ss.2 _ (Finset.some_mem_insertNone.1 h₂)
@@ -2367,7 +2367,7 @@ def addBottom (L : ListBlank (∀ k, Option (Γ k))) : ListBlank Γ'₂₁ :=
   ListBlank.cons (true, L.head) (L.tail.map ⟨Prod.mk false, rfl⟩)
 #align turing.TM2to1.add_bottom Turing.TM2to1.addBottom
 
-theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
+lemma addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
     (addBottom L).map ⟨Prod.snd, by rfl⟩ = L := by
   simp only [addBottom, ListBlank.map_cons]
   convert ListBlank.cons_head_tail L
@@ -2375,7 +2375,7 @@ theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
   refine' L'.induction_on fun l ↦ _; simp
 #align turing.TM2to1.add_bottom_map Turing.TM2to1.addBottom_map
 
-theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k))
+lemma addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k))
     (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
     (addBottom L).modifyNth (fun a ↦ (a.1, f a.2)) n = addBottom (L.modifyNth f n) := by
   cases n <;>
@@ -2383,17 +2383,17 @@ theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k)
   congr; symm; apply ListBlank.map_modifyNth; intro; rfl
 #align turing.TM2to1.add_bottom_modify_nth Turing.TM2to1.addBottom_modifyNth
 
-theorem addBottom_nth_snd (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
+lemma addBottom_nth_snd (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
     ((addBottom L).nth n).2 = L.nth n := by
   conv => rhs; rw [← addBottom_map L, ListBlank.nth_map]
 #align turing.TM2to1.add_bottom_nth_snd Turing.TM2to1.addBottom_nth_snd
 
-theorem addBottom_nth_succ_fst (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
+lemma addBottom_nth_succ_fst (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
     ((addBottom L).nth (n + 1)).1 = false := by
   rw [ListBlank.nth_succ, addBottom, ListBlank.tail_cons, ListBlank.nth_map]
 #align turing.TM2to1.add_bottom_nth_succ_fst Turing.TM2to1.addBottom_nth_succ_fst
 
-theorem addBottom_head_fst (L : ListBlank (∀ k, Option (Γ k))) : (addBottom L).head.1 = true := by
+lemma addBottom_head_fst (L : ListBlank (∀ k, Option (Γ k))) : (addBottom L).head.1 = true := by
   rw [addBottom, ListBlank.head_cons]
 #align turing.TM2to1.add_bottom_head_fst Turing.TM2to1.addBottom_head_fst
 
@@ -2455,7 +2455,7 @@ def stmtStRec.{l} {C : Stmt₂ → Sort l} (H₁ : ∀ (k) (s : StAct₂ k) (q) 
   | TM2.Stmt.halt => H₅
 #align turing.TM2to1.stmt_st_rec Turing.TM2to1.stmtStRec
 
-theorem supports_run (S : Finset Λ) {k : K} (s : StAct₂ k) (q : Stmt₂) :
+lemma supports_run (S : Finset Λ) {k : K} (s : StAct₂ k) (q : Stmt₂) :
     TM2.SupportsStmt S (stRun s q) ↔ TM2.SupportsStmt S q := by
   cases s <;> rfl
 #align turing.TM2to1.supports_run Turing.TM2to1.supports_run
@@ -2720,7 +2720,7 @@ lemma tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
 #align turing.TM2to1.tr_respects Turing.TM2to1.tr_respects
 
-theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L) : Cfg₂₁) := by
+lemma trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L) : Cfg₂₁) := by
   rw [(_ : TM1.init _ = _)]
   · refine' ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ _⟩
     refine' ListBlank.ext fun i ↦ _
@@ -2743,12 +2743,12 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
     rfl
 #align turing.TM2to1.tr_cfg_init Turing.TM2to1.trCfg_init
 
-theorem tr_eval_dom (k) (L : List (Γ k)) :
+lemma tr_eval_dom (k) (L : List (Γ k)) :
     (TM1.eval (tr M) (trInit k L)).Dom ↔ (TM2.eval M k L).Dom :=
   Turing.tr_eval_dom (tr_respects M) (trCfg_init k L)
 #align turing.TM2to1.tr_eval_dom Turing.TM2to1.tr_eval_dom
 
-theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
+lemma tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
     (H₂ : L₂ ∈ TM2.eval M k L) :
     ∃ (S : ∀ k, List (Γ k)) (L' : ListBlank (∀ k, Option (Γ k))),
       addBottom L' = L₁ ∧

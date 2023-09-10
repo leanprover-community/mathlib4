@@ -79,7 +79,7 @@ variable {A}
 
 /-- If `x` is in the domain of the induced map of a scheme `A`,
 its image under this map is in each set along the corresponding branch. -/
-theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res x n) := by
+lemma map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res x n) := by
   have := x.property.some_mem
   rw [mem_iInter] at this
   exact this n
@@ -95,7 +95,7 @@ protected lemma Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorSc
 #align cantor_scheme.antitone.closure_antitone CantorScheme.Antitone.closureAntitone
 
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
-theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
+lemma Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   refine' Subtype.coe_injective (res_injective _)
   dsimp
@@ -127,7 +127,7 @@ def VanishingDiam : Prop :=
 
 variable {A}
 
-theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε) (x : ℕ → β) :
+lemma VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε) (x : ℕ → β) :
     ∃ n : ℕ, ∀ (y) (_ : y ∈ A (res x n)) (z) (_ : z ∈ A (res x n)), dist y z < ε := by
   specialize hA x
   rw [ENNReal.tendsto_atTop_zero] at hA

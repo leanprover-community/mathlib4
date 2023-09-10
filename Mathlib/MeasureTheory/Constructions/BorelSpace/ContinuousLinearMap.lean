@@ -27,11 +27,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpac
   [BorelSpace F]
 
 @[measurability]
-protected theorem measurable (L : E →L[𝕜] F) : Measurable L :=
+protected lemma measurable (L : E →L[𝕜] F) : Measurable L :=
   L.continuous.measurable
 #align continuous_linear_map.measurable ContinuousLinearMap.measurable
 
-theorem measurable_comp (L : E →L[𝕜] F) {φ : α → E} (φ_meas : Measurable φ) :
+lemma measurable_comp (L : E →L[𝕜] F) {φ : α → E} (φ_meas : Measurable φ) :
     Measurable fun a : α => L (φ a) :=
   L.measurable.comp φ_meas
 #align continuous_linear_map.measurable_comp ContinuousLinearMap.measurable_comp

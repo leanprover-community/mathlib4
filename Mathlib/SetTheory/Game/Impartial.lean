@@ -62,13 +62,13 @@ instance impartial_star : Impartial star := by
   rw [impartial_def]; simpa using Impartial.impartial_zero
 #align pgame.impartial.impartial_star SetTheory.PGame.Impartial.impartial_star
 
-theorem neg_equiv_self (G : PGame) [h : G.Impartial] : G ≈ -G :=
+lemma neg_equiv_self (G : PGame) [h : G.Impartial] : G ≈ -G :=
   (impartial_def.1 h).1
 #align pgame.impartial.neg_equiv_self SetTheory.PGame.Impartial.neg_equiv_self
 
 -- Porting note: Changed `-⟦G⟧` to `-(⟦G⟧ : Quotient setoid)`
 @[simp]
-theorem mk'_neg_equiv_self (G : PGame) [G.Impartial] : -(⟦G⟧ : Quotient setoid) = ⟦G⟧ :=
+lemma mk'_neg_equiv_self (G : PGame) [G.Impartial] : -(⟦G⟧ : Quotient setoid) = ⟦G⟧ :=
   Quot.sound (Equiv.symm (neg_equiv_self G))
 #align pgame.impartial.mk_neg_equiv_self SetTheory.PGame.Impartial.mk'_neg_equiv_self
 
@@ -167,14 +167,14 @@ lemma mk'_add_self : (⟦G⟧ : Quotient setoid) + ⟦G⟧ = 0 :=
 #align pgame.impartial.mk_add_self SetTheory.PGame.Impartial.mk'_add_self
 
 /-- This lemma doesn't require `H` to be impartial. -/
-theorem equiv_iff_add_equiv_zero (H : PGame) : (H ≈ G) ↔ (H + G ≈ 0) := by
+lemma equiv_iff_add_equiv_zero (H : PGame) : (H ≈ G) ↔ (H + G ≈ 0) := by
   rw [Game.PGame.equiv_iff_game_eq, ← @add_right_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
     Game.PGame.equiv_iff_game_eq]
   rfl
 #align pgame.impartial.equiv_iff_add_equiv_zero SetTheory.PGame.Impartial.equiv_iff_add_equiv_zero
 
 /-- This lemma doesn't require `H` to be impartial. -/
-theorem equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
+lemma equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
   rw [Game.PGame.equiv_iff_game_eq, ← @add_left_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
     Game.PGame.equiv_iff_game_eq]
   exact ⟨Eq.symm, Eq.symm⟩

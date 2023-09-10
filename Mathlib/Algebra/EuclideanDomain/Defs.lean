@@ -120,20 +120,20 @@ instance (priority := 70) : Div R :=
 instance (priority := 70) : Mod R :=
   ⟨EuclideanDomain.remainder⟩
 
-theorem div_add_mod (a b : R) : b * (a / b) + a % b = a :=
+lemma div_add_mod (a b : R) : b * (a / b) + a % b = a :=
   EuclideanDomain.quotient_mul_add_remainder_eq _ _
 #align euclidean_domain.div_add_mod EuclideanDomain.div_add_mod
 
-theorem mod_add_div (a b : R) : a % b + b * (a / b) = a :=
+lemma mod_add_div (a b : R) : a % b + b * (a / b) = a :=
   (add_comm _ _).trans (div_add_mod _ _)
 #align euclidean_domain.mod_add_div EuclideanDomain.mod_add_div
 
-theorem mod_add_div' (m k : R) : m % k + m / k * k = m := by
+lemma mod_add_div' (m k : R) : m % k + m / k * k = m := by
   rw [mul_comm]
   exact mod_add_div _ _
 #align euclidean_domain.mod_add_div' EuclideanDomain.mod_add_div'
 
-theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
+lemma div_add_mod' (m k : R) : m / k * k + m % k = m := by
   rw [mul_comm]
   exact div_add_mod _ _
 #align euclidean_domain.div_add_mod' EuclideanDomain.div_add_mod'
@@ -154,10 +154,10 @@ lemma mul_right_not_lt {a : R} (b) (h : a ≠ 0) : ¬a * b ≺ b := by
 #align euclidean_domain.mul_right_not_lt EuclideanDomain.mul_right_not_lt
 
 @[simp]
-theorem mod_zero (a : R) : a % 0 = a := by simpa only [zero_mul, zero_add] using div_add_mod a 0
+lemma mod_zero (a : R) : a % 0 = a := by simpa only [zero_mul, zero_add] using div_add_mod a 0
 #align euclidean_domain.mod_zero EuclideanDomain.mod_zero
 
-theorem lt_one (a : R) : a ≺ (1 : R) → a = 0 :=
+lemma lt_one (a : R) : a ≺ (1 : R) → a = 0 :=
   haveI := Classical.dec
   not_imp_not.1 fun h => by simpa only [one_mul] using mul_left_not_lt 1 h
 #align euclidean_domain.lt_one EuclideanDomain.lt_one
@@ -167,7 +167,7 @@ lemma val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
 #align euclidean_domain.val_dvd_le EuclideanDomain.val_dvd_le
 
 @[simp]
-theorem div_zero (a : R) : a / 0 = 0 :=
+lemma div_zero (a : R) : a / 0 = 0 :=
   EuclideanDomain.quotient_zero a
 #align euclidean_domain.div_zero EuclideanDomain.div_zero
 
@@ -206,7 +206,7 @@ termination_by _ => a
 #align euclidean_domain.gcd EuclideanDomain.gcd
 
 @[simp]
-theorem gcd_zero_left (a : R) : gcd 0 a = a := by
+lemma gcd_zero_left (a : R) : gcd 0 a = a := by
   rw [gcd]
   exact if_pos rfl
 #align euclidean_domain.gcd_zero_left EuclideanDomain.gcd_zero_left
@@ -271,7 +271,7 @@ lemma gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
   rw [xgcd, xgcd_zero_left]
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
-theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
+lemma xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
   rfl
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 

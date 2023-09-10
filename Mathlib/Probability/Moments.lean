@@ -59,13 +59,13 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
 #align probability_theory.central_moment ProbabilityTheory.centralMoment
 
 @[simp]
-theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
+lemma moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
   simp only [moment, hp, zero_pow', Ne.def, not_false_iff, Pi.zero_apply, integral_const,
     smul_eq_mul, mul_zero]
 #align probability_theory.moment_zero ProbabilityTheory.moment_zero
 
 @[simp]
-theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
+lemma centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
     mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow', Ne.def, not_false_iff]
 #align probability_theory.central_moment_zero ProbabilityTheory.centralMoment_zero
@@ -128,12 +128,12 @@ lemma cgf_zero_measure : cgf X (0 : Measure Ω) t = 0 := by
 #align probability_theory.cgf_zero_measure ProbabilityTheory.cgf_zero_measure
 
 @[simp]
-theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
+lemma mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
   simp only [mgf, integral_const, smul_eq_mul]
 #align probability_theory.mgf_const' ProbabilityTheory.mgf_const'
 
 -- @[simp] -- Porting note: `simp only` already proves this
-theorem mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = exp (t * c) := by
+lemma mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = exp (t * c) := by
   simp only [mgf_const', measure_univ, ENNReal.one_toReal, one_mul]
 #align probability_theory.mgf_const ProbabilityTheory.mgf_const
 
@@ -171,11 +171,11 @@ lemma cgf_zero [IsProbabilityMeasure μ] : cgf X μ 0 = 0 := by
   simp only [cgf_zero', measure_univ, ENNReal.one_toReal, log_one]
 #align probability_theory.cgf_zero ProbabilityTheory.cgf_zero
 
-theorem mgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : mgf X μ t = 0 := by
+lemma mgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : mgf X μ t = 0 := by
   simp only [mgf, integral_undef hX]
 #align probability_theory.mgf_undef ProbabilityTheory.mgf_undef
 
-theorem cgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : cgf X μ t = 0 := by
+lemma cgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : cgf X μ t = 0 := by
   simp only [cgf, mgf_undef hX, log_zero]
 #align probability_theory.cgf_undef ProbabilityTheory.cgf_undef
 
@@ -186,7 +186,7 @@ lemma mgf_nonneg : 0 ≤ mgf X μ t := by
   exact (exp_pos _).le
 #align probability_theory.mgf_nonneg ProbabilityTheory.mgf_nonneg
 
-theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω)) μ) :
+lemma mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω)) μ) :
     0 < mgf X μ t := by
   simp_rw [mgf]
   have : ∫ x : Ω, exp (t * X x) ∂μ = ∫ x : Ω in Set.univ, exp (t * X x) ∂μ := by

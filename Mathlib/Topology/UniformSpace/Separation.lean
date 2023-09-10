@@ -163,7 +163,7 @@ lemma eq_of_clusterPt_uniformity [SeparatedSpace α] {x y : α} (h : ClusterPt (
     isClosed_iff_clusterPt.1 hVc _ <| h.mono <| le_principal_iff.2 hV
 #align eq_of_cluster_pt_uniformity eq_of_clusterPt_uniformity
 
-theorem idRel_sub_separationRel (α : Type*) [UniformSpace α] : idRel ⊆ 𝓢 α := by
+lemma idRel_sub_separationRel (α : Type*) [UniformSpace α] : idRel ⊆ 𝓢 α := by
   unfold separationRel
   rw [idRel_subset]
   intro x
@@ -394,7 +394,7 @@ lemma map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f ⟦a⟧ 
   rw [map, lift_mk (uniformContinuous_quotient_mk'.comp h)]; rfl
 #align uniform_space.separation_quotient.map_mk UniformSpace.SeparationQuotient.map_mk
 
-theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
+lemma uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
   uniformContinuous_lift (Quotient.mk' ∘ f)
 #align uniform_space.separation_quotient.uniform_continuous_map UniformSpace.SeparationQuotient.uniformContinuous_map
 

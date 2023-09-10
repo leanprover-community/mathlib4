@@ -160,7 +160,7 @@ def outcome : List Instruction → State → State
 
 /-- A lemma on the concatenation of two programs (3.13). -/
 @[simp]
-theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :
+lemma outcome_append (p₁ p₂ : List Instruction) (η : State) :
     outcome (p₁ ++ p₂) η = outcome p₂ (outcome p₁ η) := by
   revert η
   induction' p₁ with _ _ p₁_ih <;> intros <;> simp
@@ -208,7 +208,7 @@ def StateEqRs (t : Register) (ζ₁ ζ₂ : State) : Prop :=
 notation:50 ζ₁ " ≃[" t "]/ac " ζ₂:50 => StateEqRs t ζ₁ ζ₂
 
 @[refl]
-protected theorem StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ := by simp [StateEqRs]
+protected lemma StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ := by simp [StateEqRs]
 #align arithcc.state_eq_rs.refl Arithcc.StateEqRs.refl
 
 @[symm]
@@ -231,7 +231,7 @@ def StateEq (t : Register) (ζ₁ ζ₂ : State) : Prop :=
 notation:50 ζ₁ " ≃[" t "] " ζ₂:50 => StateEq t ζ₁ ζ₂
 
 @[refl]
-protected theorem StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by simp [StateEq]; rfl
+protected lemma StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by simp [StateEq]; rfl
 #align arithcc.state_eq.refl Arithcc.StateEq.refl
 
 @[symm]
@@ -255,7 +255,7 @@ instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t 
 
 /-- Transitivity of chaining `≃[t]` and `≃[t]/ac`. -/
 @[trans]
-protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : State) :
+protected lemma StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
   simp [StateEq]; intros
   trans ζ₂ <;> assumption

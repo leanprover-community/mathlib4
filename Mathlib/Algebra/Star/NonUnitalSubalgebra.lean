@@ -135,7 +135,7 @@ lemma mem_toNonUnitalSubalgebra {S : NonUnitalStarSubalgebra R A} {x} :
   Iff.rfl
 
 @[simp]
-theorem coe_toNonUnitalSubalgebra (S : NonUnitalStarSubalgebra R A) :
+lemma coe_toNonUnitalSubalgebra (S : NonUnitalStarSubalgebra R A) :
     (↑S.toNonUnitalSubalgebra : Set A) = S :=
   rfl
 
@@ -164,11 +164,11 @@ protected def copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S)
       exact S.star_mem' hx }
 
 @[simp]
-theorem coe_copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) :
+lemma coe_copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     (S.copy s hs : Set A) = s :=
   rfl
 
-theorem copy_eq (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
+lemma copy_eq (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 
 variable (S : NonUnitalStarSubalgebra R A)
@@ -263,10 +263,10 @@ instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R 
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg ((↑) : S → A) h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
 
-protected theorem coe_add (x y : S) : (↑(x + y) : A) = ↑x + ↑y :=
+protected lemma coe_add (x y : S) : (↑(x + y) : A) = ↑x + ↑y :=
   rfl
 
-protected theorem coe_mul (x y : S) : (↑(x * y) : A) = ↑x * ↑y :=
+protected lemma coe_mul (x y : S) : (↑(x * y) : A) = ↑x * ↑y :=
   rfl
 
 protected lemma coe_zero : ((0 : S) : A) = 0 :=
@@ -314,10 +314,10 @@ lemma map_injective {f : F} (hf : Function.Injective f) :
   ext <| Set.ext_iff.1 <| Set.image_injective.2 hf <| Set.ext <| SetLike.ext_iff.mp ih
 
 @[simp]
-theorem map_id (S : NonUnitalStarSubalgebra R A) : map (NonUnitalStarAlgHom.id R A) S = S :=
+lemma map_id (S : NonUnitalStarSubalgebra R A) : map (NonUnitalStarAlgHom.id R A) S = S :=
   SetLike.coe_injective <| Set.image_id _
 
-theorem map_map (S : NonUnitalStarSubalgebra R A) (g : B →⋆ₙₐ[R] C) (f : A →⋆ₙₐ[R] B) :
+lemma map_map (S : NonUnitalStarSubalgebra R A) (g : B →⋆ₙₐ[R] C) (f : A →⋆ₙₐ[R] B) :
     (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
@@ -332,7 +332,7 @@ lemma map_toNonUnitalSubalgebra {S : NonUnitalStarSubalgebra R A} {f : F} :
   SetLike.coe_injective rfl
 
 @[simp]
-theorem coe_map (S : NonUnitalStarSubalgebra R A) (f : F) : map f S = f '' S :=
+lemma coe_map (S : NonUnitalStarSubalgebra R A) (f : F) : map f S = f '' S :=
   rfl
 
 /-- Preimage of a non-unital star subalgebra under a non-unital star algebra homomorphism. -/
@@ -345,15 +345,15 @@ lemma map_le {S : NonUnitalStarSubalgebra R A} {f : F} {U : NonUnitalStarSubalge
     map f S ≤ U ↔ S ≤ comap f U :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f : F) : GaloisConnection (map f) (comap f) :=
+lemma gc_map_comap (f : F) : GaloisConnection (map f) (comap f) :=
   fun _S _U => map_le
 
 @[simp]
-theorem mem_comap (S : NonUnitalStarSubalgebra R B) (f : F) (x : A) : x ∈ comap f S ↔ f x ∈ S :=
+lemma mem_comap (S : NonUnitalStarSubalgebra R B) (f : F) (x : A) : x ∈ comap f S ↔ f x ∈ S :=
   Iff.rfl
 
 @[simp, norm_cast]
-theorem coe_comap (S : NonUnitalStarSubalgebra R B) (f : F) : comap f S = f ⁻¹' (S : Set B) :=
+lemma coe_comap (S : NonUnitalStarSubalgebra R B) (f : F) : comap f S = f ⁻¹' (S : Set B) :=
   rfl
 
 instance instNoZeroDivisors {R A : Type*} [CommSemiring R] [NonUnitalSemiring A] [NoZeroDivisors A]
@@ -378,12 +378,12 @@ lemma mem_toNonUnitalStarSubalgebra {s : NonUnitalSubalgebra R A} {h_star} {x} :
   Iff.rfl
 
 @[simp]
-theorem coe_toNonUnitalStarSubalgebra (s : NonUnitalSubalgebra R A) (h_star) :
+lemma coe_toNonUnitalStarSubalgebra (s : NonUnitalSubalgebra R A) (h_star) :
     (s.toNonUnitalStarSubalgebra h_star : Set A) = s :=
   rfl
 
 @[simp]
-theorem toNonUnitalStarSubalgebra_toNonUnitalSubalgebra (s : NonUnitalSubalgebra R A) (h_star) :
+lemma toNonUnitalStarSubalgebra_toNonUnitalSubalgebra (s : NonUnitalSubalgebra R A) (h_star) :
     (s.toNonUnitalStarSubalgebra h_star).toNonUnitalSubalgebra = s :=
   SetLike.coe_injective rfl
 
@@ -408,24 +408,24 @@ protected def range (φ : F) : NonUnitalStarSubalgebra R B where
   star_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨star a, map_star φ a⟩
 
 @[simp]
-theorem mem_range (φ : F) {y : B} :
+lemma mem_range (φ : F) {y : B} :
     y ∈ (NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) ↔ ∃ x : A, φ x = y :=
   NonUnitalRingHom.mem_srange
 
-theorem mem_range_self (φ : F) (x : A) :
+lemma mem_range_self (φ : F) (x : A) :
     φ x ∈ (NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) :=
   (NonUnitalAlgHom.mem_range φ).2 ⟨x, rfl⟩
 
 @[simp]
-theorem coe_range (φ : F) :
+lemma coe_range (φ : F) :
     ((NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) : Set B) = Set.range (φ : A → B) :=
   by ext; rw [SetLike.mem_coe, mem_range]; rfl
 
-theorem range_comp (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
+lemma range_comp (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
   NonUnitalStarAlgHom.range (g.comp f) = (NonUnitalStarAlgHom.range f).map g :=
   SetLike.coe_injective (Set.range_comp g f)
 
-theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
+lemma range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
   NonUnitalStarAlgHom.range (g.comp f) ≤ NonUnitalStarAlgHom.range g :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
@@ -435,16 +435,16 @@ def codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S
   map_star' := fun a => Subtype.ext <| map_star f a
 
 @[simp]
-theorem subtype_comp_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+lemma subtype_comp_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     (NonUnitalStarSubalgebraClass.subtype S).comp (NonUnitalStarAlgHom.codRestrict f S hf) = f :=
   NonUnitalStarAlgHom.ext fun _ => rfl
 
 @[simp]
-theorem coe_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
+lemma coe_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
     ↑(NonUnitalStarAlgHom.codRestrict f S hf x) = f x :=
   rfl
 
-theorem injective_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+lemma injective_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (NonUnitalStarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
 
@@ -462,7 +462,7 @@ def equalizer (ϕ ψ : F) : NonUnitalStarSubalgebra R A where
   star_mem' := @fun x (hx : ϕ x = ψ x) => by simp [map_star, hx]
 
 @[simp]
-theorem mem_equalizer (φ ψ : F) (x : A) :
+lemma mem_equalizer (φ ψ : F) (x : A) :
     x ∈ NonUnitalStarAlgHom.equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
@@ -506,7 +506,7 @@ noncomputable def ofInjective' (f : F) (hf : Function.Injective f) :
   ofLeftInverse' (Classical.choose_spec hf.hasLeftInverse)
 
 @[simp]
-theorem ofInjective'_apply (f : F) (hf : Function.Injective f) (x : A) :
+lemma ofInjective'_apply (f : F) (hf : Function.Injective f) (x : A) :
     ofInjective' f hf x = f x :=
   rfl
 
@@ -541,14 +541,14 @@ instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A)
       ⟨fun hx => star_star x ▸ hx, fun hx => ((star_star x).symm ▸ hx : star (star x) ∈ S)⟩
 
 @[simp]
-theorem mem_star_iff (S : NonUnitalSubalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ S :=
+lemma mem_star_iff (S : NonUnitalSubalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ S :=
   Iff.rfl
 
-theorem star_mem_star_iff (S : NonUnitalSubalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
+lemma star_mem_star_iff (S : NonUnitalSubalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
   simp
 
 @[simp]
-theorem coe_star (S : NonUnitalSubalgebra R A) : star S = star (S : Set A) :=
+lemma coe_star (S : NonUnitalSubalgebra R A) : star S = star (S : Set A) :=
   rfl
 
 lemma star_mono : Monotone (star : NonUnitalSubalgebra R A → NonUnitalSubalgebra R A) :=
@@ -557,7 +557,7 @@ lemma star_mono : Monotone (star : NonUnitalSubalgebra R A → NonUnitalSubalgeb
 variable (R)
 
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
-theorem star_adjoin_comm (s : Set A) :
+lemma star_adjoin_comm (s : Set A) :
     star (NonUnitalAlgebra.adjoin R s) = NonUnitalAlgebra.adjoin R (star s) :=
   have this :
     ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun t =>
@@ -621,7 +621,7 @@ def adjoin (s : Set A) : NonUnitalStarSubalgebra R A where
     rwa [NonUnitalSubalgebra.mem_carrier, ← NonUnitalSubalgebra.mem_star_iff,
       NonUnitalSubalgebra.star_adjoin_comm, Set.union_star, star_star, Set.union_comm]
 
-theorem adjoin_eq_starClosure_adjoin (s : Set A) :
+lemma adjoin_eq_starClosure_adjoin (s : Set A) :
     adjoin R s = (NonUnitalAlgebra.adjoin R s).starClosure :=
   toNonUnitalSubalgebra_injective <| show
     NonUnitalAlgebra.adjoin R (s ∪ star s) =
@@ -629,20 +629,20 @@ theorem adjoin_eq_starClosure_adjoin (s : Set A) :
     from
       (NonUnitalSubalgebra.star_adjoin_comm R s).symm ▸ NonUnitalAlgebra.adjoin_union s (star s)
 
-theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
+lemma adjoin_toNonUnitalSubalgebra (s : Set A) :
     (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) :=
   rfl
 
-theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
+lemma subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
 
-theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
+lemma star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   (Set.subset_union_right s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
 
-theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
+lemma self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   NonUnitalAlgebra.subset_adjoin R <| Set.mem_union_left _ (Set.mem_singleton x)
 
-theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set A) :=
+lemma star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set A) :=
   star_mem <| self_mem_adjoin_singleton R x
 
 variable {R}
@@ -667,7 +667,7 @@ lemma adjoin_le {S : NonUnitalStarSubalgebra R A} {s : Set A} (hs : s ⊆ S) : a
 lemma adjoin_le_iff {S : NonUnitalStarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   NonUnitalStarAlgebra.gc _ _
 
-theorem _root_.NonUnitalSubalgebra.starClosure_eq_adjoin (S : NonUnitalSubalgebra R A) :
+lemma _root_.NonUnitalSubalgebra.starClosure_eq_adjoin (S : NonUnitalSubalgebra R A) :
     S.starClosure = adjoin R (S : Set A) :=
   le_antisymm (NonUnitalSubalgebra.starClosure_le_iff.2 <| subset_adjoin R (S : Set A))
     (adjoin_le (le_sup_left : S ≤ S ⊔ star S))
@@ -704,12 +704,12 @@ lemma mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S) (
     x * y ∈ S ⊔ T :=
   mul_mem (mem_sup_left hx) (mem_sup_right hy)
 
-theorem map_sup (f : F) (S T : NonUnitalStarSubalgebra R A) :
+lemma map_sup (f : F) (S T : NonUnitalStarSubalgebra R A) :
     ((S ⊔ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊔ T.map f :=
   (NonUnitalStarSubalgebra.gc_map_comap f).l_sup
 
 @[simp, norm_cast]
-theorem coe_inf (S T : NonUnitalStarSubalgebra R A) : (↑(S ⊓ T) : Set A) = (S : Set A) ∩ T :=
+lemma coe_inf (S T : NonUnitalStarSubalgebra R A) : (↑(S ⊓ T) : Set A) = (S : Set A) ∩ T :=
   rfl
 
 @[simp]
@@ -717,20 +717,20 @@ lemma mem_inf {S T : NonUnitalStarSubalgebra R A} {x : A} : x ∈ S ⊓ T ↔ x 
   Iff.rfl
 
 @[simp]
-theorem inf_toNonUnitalSubalgebra (S T : NonUnitalStarSubalgebra R A) :
+lemma inf_toNonUnitalSubalgebra (S T : NonUnitalStarSubalgebra R A) :
     (S ⊓ T).toNonUnitalSubalgebra = S.toNonUnitalSubalgebra ⊓ T.toNonUnitalSubalgebra :=
   SetLike.coe_injective <| coe_inf _ _
   -- it's a bit surprising `rfl` fails here.
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (NonUnitalStarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
+lemma coe_sInf (S : Set (NonUnitalStarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
 lemma mem_sInf {S : Set (NonUnitalStarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
 @[simp]
-theorem sInf_toNonUnitalSubalgebra (S : Set (NonUnitalStarSubalgebra R A)) :
+lemma sInf_toNonUnitalSubalgebra (S : Set (NonUnitalStarSubalgebra R A)) :
     (sInf S).toNonUnitalSubalgebra = sInf (NonUnitalStarSubalgebra.toNonUnitalSubalgebra '' S) :=
   SetLike.coe_injective <| by simp
 
@@ -767,7 +767,7 @@ lemma eq_top_iff {S : NonUnitalStarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x �
   ⟨fun h x => by rw [h]; exact mem_top,
     fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
-theorem range_top_iff_surjective (f : F) :
+lemma range_top_iff_surjective (f : F) :
     NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔ Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
 
@@ -776,15 +776,15 @@ lemma range_id : NonUnitalStarAlgHom.range (NonUnitalStarAlgHom.id R A) = ⊤ :=
   SetLike.coe_injective Set.range_id
 
 @[simp]
-theorem map_top (f : F) : (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalStarAlgHom.range f :=
+lemma map_top (f : F) : (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalStarAlgHom.range f :=
   SetLike.coe_injective Set.image_univ
 
 @[simp]
-theorem map_bot (f : F) : (⊥ : NonUnitalStarSubalgebra R A).map f = ⊥ :=
+lemma map_bot (f : F) : (⊥ : NonUnitalStarSubalgebra R A).map f = ⊥ :=
   SetLike.coe_injective <| by simp [NonUnitalAlgebra.coe_bot, NonUnitalStarSubalgebra.coe_map]
 
 @[simp]
-theorem comap_top (f : F) : (⊤ : NonUnitalStarSubalgebra R B).comap f = ⊤ :=
+lemma comap_top (f : F) : (⊤ : NonUnitalStarSubalgebra R B).comap f = ⊤ :=
   eq_top_iff.2 fun _x => mem_top
 
 /-- `NonUnitalStarAlgHom` to `⊤ : NonUnitalStarSubalgebra R A`. -/
@@ -1025,7 +1025,7 @@ lemma center_toNonUnitalSubalgebra :
   rfl
 
 @[simp]
-theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [StarRing A] [Module R A]
+lemma center_eq_top (A : Type*) [NonUnitalCommSemiring A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : center R A = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ A)
 
@@ -1053,7 +1053,7 @@ def centralizer (s : Set A) : NonUnitalStarSubalgebra R A :=
     star_mem' := Set.star_mem_centralizer }
 
 @[simp, norm_cast]
-theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
+lemma coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
   rfl
 
 lemma mem_centralizer_iff {s : Set A} {z : A} :
@@ -1063,7 +1063,7 @@ lemma mem_centralizer_iff {s : Set A} {z : A} :
   exact fun _ =>
     ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
 
-theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
+lemma centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 
 @[simp]

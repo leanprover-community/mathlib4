@@ -93,12 +93,12 @@ lemma coe_eq_coe {x y : X} : (x : OnePoint X) = y ↔ x = y :=
 #align alexandroff.coe_eq_coe OnePoint.coe_eq_coe
 
 @[simp]
-theorem coe_ne_infty (x : X) : (x : OnePoint X) ≠ ∞ :=
+lemma coe_ne_infty (x : X) : (x : OnePoint X) ≠ ∞ :=
   fun.
 #align alexandroff.coe_ne_infty OnePoint.coe_ne_infty
 
 @[simp]
-theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
+lemma infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
   fun.
 #align alexandroff.infty_ne_coe OnePoint.infty_ne_coe
 
@@ -137,7 +137,7 @@ lemma compl_infty : ({∞}ᶜ : Set (OnePoint X)) = range ((↑) : X → OnePoin
   (@isCompl_range_coe_infty X).symm.compl_eq
 #align alexandroff.compl_infty OnePoint.compl_infty
 
-theorem compl_image_coe (s : Set X) : ((↑) '' s : Set (OnePoint X))ᶜ = (↑) '' sᶜ ∪ {∞} := by
+lemma compl_image_coe (s : Set X) : ((↑) '' s : Set (OnePoint X))ᶜ = (↑) '' sᶜ ∪ {∞} := by
   rw [coe_injective.compl_image_eq, compl_range_coe]
 #align alexandroff.compl_image_coe OnePoint.compl_image_coe
 
@@ -208,26 +208,26 @@ lemma isOpen_def :
   Iff.rfl
 #align alexandroff.is_open_def OnePoint.isOpen_def
 
-theorem isOpen_iff_of_mem' (h : ∞ ∈ s) :
+lemma isOpen_iff_of_mem' (h : ∞ ∈ s) :
     IsOpen s ↔ IsCompact ((↑) ⁻¹' s : Set X)ᶜ ∧ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
 #align alexandroff.is_open_iff_of_mem' OnePoint.isOpen_iff_of_mem'
 
-theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
+lemma isOpen_iff_of_mem (h : ∞ ∈ s) :
     IsOpen s ↔ IsClosed ((↑) ⁻¹' s : Set X)ᶜ ∧ IsCompact ((↑) ⁻¹' s : Set X)ᶜ := by
   simp only [isOpen_iff_of_mem' h, isClosed_compl_iff, and_comm]
 #align alexandroff.is_open_iff_of_mem OnePoint.isOpen_iff_of_mem
 
-theorem isOpen_iff_of_not_mem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
+lemma isOpen_iff_of_not_mem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
 #align alexandroff.is_open_iff_of_not_mem OnePoint.isOpen_iff_of_not_mem
 
-theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
+lemma isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
   have : ∞ ∉ sᶜ := fun H => H h
   rw [← isOpen_compl_iff, isOpen_iff_of_not_mem this, ← isOpen_compl_iff, preimage_compl]
 #align alexandroff.is_closed_iff_of_mem OnePoint.isClosed_iff_of_mem
 
-theorem isClosed_iff_of_not_mem (h : ∞ ∉ s) :
+lemma isClosed_iff_of_not_mem (h : ∞ ∉ s) :
     IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) ∧ IsCompact ((↑) ⁻¹' s : Set X) := by
   rw [← isOpen_compl_iff, isOpen_iff_of_mem (mem_compl h), ← preimage_compl, compl_compl]
 #align alexandroff.is_closed_iff_of_not_mem OnePoint.isClosed_iff_of_not_mem
@@ -281,20 +281,20 @@ lemma isClosed_infty : IsClosed ({∞} : Set (OnePoint X)) := by
   exact isOpen_range_coe
 #align alexandroff.is_closed_infty OnePoint.isClosed_infty
 
-theorem nhds_coe_eq (x : X) : 𝓝 ↑x = map ((↑) : X → OnePoint X) (𝓝 x) :=
+lemma nhds_coe_eq (x : X) : 𝓝 ↑x = map ((↑) : X → OnePoint X) (𝓝 x) :=
   (openEmbedding_coe.map_nhds_eq x).symm
 #align alexandroff.nhds_coe_eq OnePoint.nhds_coe_eq
 
-theorem nhdsWithin_coe_image (s : Set X) (x : X) :
+lemma nhdsWithin_coe_image (s : Set X) (x : X) :
     𝓝[(↑) '' s] (x : OnePoint X) = map (↑) (𝓝[s] x) :=
   (openEmbedding_coe.toEmbedding.map_nhdsWithin_eq _ _).symm
 #align alexandroff.nhds_within_coe_image OnePoint.nhdsWithin_coe_image
 
-theorem nhdsWithin_coe (s : Set (OnePoint X)) (x : X) : 𝓝[s] ↑x = map (↑) (𝓝[(↑) ⁻¹' s] x) :=
+lemma nhdsWithin_coe (s : Set (OnePoint X)) (x : X) : 𝓝[s] ↑x = map (↑) (𝓝[(↑) ⁻¹' s] x) :=
   (openEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
 #align alexandroff.nhds_within_coe OnePoint.nhdsWithin_coe
 
-theorem comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = 𝓝 x :=
+lemma comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = 𝓝 x :=
   (openEmbedding_coe.toInducing.nhds_eq_comap x).symm
 #align alexandroff.comap_coe_nhds OnePoint.comap_coe_nhds
 

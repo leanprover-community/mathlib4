@@ -47,27 +47,27 @@ def prod : Multiset α → α :=
 #align multiset.sum Multiset.sum
 
 @[to_additive]
-theorem prod_eq_foldr (s : Multiset α) :
+lemma prod_eq_foldr (s : Multiset α) :
     prod s = foldr (· * ·) (fun x y z => by simp [mul_left_comm]) 1 s :=
   rfl
 #align multiset.prod_eq_foldr Multiset.prod_eq_foldr
 #align multiset.sum_eq_foldr Multiset.sum_eq_foldr
 
 @[to_additive]
-theorem prod_eq_foldl (s : Multiset α) :
+lemma prod_eq_foldl (s : Multiset α) :
     prod s = foldl (· * ·) (fun x y z => by simp [mul_right_comm]) 1 s :=
   (foldr_swap _ _ _ _).trans (by simp [mul_comm])
 #align multiset.prod_eq_foldl Multiset.prod_eq_foldl
 #align multiset.sum_eq_foldl Multiset.sum_eq_foldl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod (l : List α) : prod ↑l = l.prod :=
+lemma coe_prod (l : List α) : prod ↑l = l.prod :=
   prod_eq_foldl _
 #align multiset.coe_prod Multiset.coe_prod
 #align multiset.coe_sum Multiset.coe_sum
 
 @[to_additive (attr := simp)]
-theorem prod_toList (s : Multiset α) : s.toList.prod = s.prod := by
+lemma prod_toList (s : Multiset α) : s.toList.prod = s.prod := by
   conv_rhs => rw [← coe_toList s]
   rw [coe_prod]
 #align multiset.prod_to_list Multiset.prod_toList
@@ -80,7 +80,7 @@ lemma prod_zero : @prod α _ 0 = 1 :=
 #align multiset.sum_zero Multiset.sum_zero
 
 @[to_additive (attr := simp)]
-theorem prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
+lemma prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
   foldr_cons _ _ _ _ _
 #align multiset.prod_cons Multiset.prod_cons
 #align multiset.sum_cons Multiset.sum_cons
@@ -100,24 +100,24 @@ lemma prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
 #align multiset.sum_map_erase Multiset.sum_map_erase
 
 @[to_additive (attr := simp)]
-theorem prod_singleton (a : α) : prod {a} = a := by
+lemma prod_singleton (a : α) : prod {a} = a := by
   simp only [mul_one, prod_cons, ← cons_zero, eq_self_iff_true, prod_zero]
 #align multiset.prod_singleton Multiset.prod_singleton
 #align multiset.sum_singleton Multiset.sum_singleton
 
 @[to_additive]
-theorem prod_pair (a b : α) : ({a, b} : Multiset α).prod = a * b := by
+lemma prod_pair (a b : α) : ({a, b} : Multiset α).prod = a * b := by
   rw [insert_eq_cons, prod_cons, prod_singleton]
 #align multiset.prod_pair Multiset.prod_pair
 #align multiset.sum_pair Multiset.sum_pair
 
 @[to_additive (attr := simp)]
-theorem prod_add (s t : Multiset α) : prod (s + t) = prod s * prod t :=
+lemma prod_add (s t : Multiset α) : prod (s + t) = prod s * prod t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by simp
 #align multiset.prod_add Multiset.prod_add
 #align multiset.sum_add Multiset.sum_add
 
-theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
+lemma prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | 0 => by
     rw [zero_nsmul, pow_zero]
     rfl
@@ -125,7 +125,7 @@ theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
 #align multiset.prod_nsmul Multiset.prod_nsmul
 
 @[to_additive (attr := simp)]
-theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
+lemma prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
   simp [replicate, List.prod_replicate]
 #align multiset.prod_replicate Multiset.prod_replicate
 #align multiset.sum_replicate Multiset.sum_replicate
@@ -210,7 +210,7 @@ lemma prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ 
 #align multiset.sum_map_nsmul Multiset.sum_map_nsmul
 
 @[to_additive]
-theorem prod_map_prod_map (m : Multiset β) (n : Multiset γ) {f : β → γ → α} :
+lemma prod_map_prod_map (m : Multiset β) (n : Multiset γ) {f : β → γ → α} :
     prod (m.map fun a => prod <| n.map fun b => f a b) =
       prod (n.map fun b => prod <| m.map fun a => f a b) :=
   Multiset.induction_on m (by simp) fun a m ih => by simp [ih]
@@ -218,7 +218,7 @@ theorem prod_map_prod_map (m : Multiset β) (n : Multiset γ) {f : β → γ →
 #align multiset.sum_map_sum_map Multiset.sum_map_sum_map
 
 @[to_additive]
-theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a → p b → p (a * b))
+lemma prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a → p b → p (a * b))
     (p_one : p 1) (p_s : ∀ a ∈ s, p a) : p s.prod := by
   rw [prod_eq_foldr]
   exact foldr_induction (· * ·) (fun x y z => by simp [mul_left_comm]) 1 p s p_mul p_one p_s
@@ -226,7 +226,7 @@ theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a
 #align multiset.sum_induction Multiset.sum_induction
 
 @[to_additive]
-theorem prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
+lemma prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
     (p_s : ∀ a ∈ s, p a) : p s.prod := by
   -- Porting note: used `refine' Multiset.induction _ _`
   induction' s using Multiset.induction_on with a s hsa
@@ -239,7 +239,7 @@ theorem prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b 
 #align multiset.prod_induction_nonempty Multiset.prod_induction_nonempty
 #align multiset.sum_induction_nonempty Multiset.sum_induction_nonempty
 
-theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
+lemma prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
   obtain ⟨z, rfl⟩ := exists_add_of_le h
   simp only [prod_add, dvd_mul_right]
 #align multiset.prod_dvd_prod_of_le Multiset.prod_dvd_prod_of_le
@@ -290,7 +290,7 @@ lemma prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
     exact List.prod_eq_zero_iff
 #align multiset.prod_eq_zero_iff Multiset.prod_eq_zero_iff
 
-theorem prod_ne_zero (h : (0 : α) ∉ s) : s.prod ≠ 0 :=
+lemma prod_ne_zero (h : (0 : α) ∉ s) : s.prod ≠ 0 :=
   mt prod_eq_zero_iff.1 h
 #align multiset.prod_ne_zero Multiset.prod_ne_zero
 
@@ -301,7 +301,7 @@ section DivisionCommMonoid
 variable [DivisionCommMonoid α] {m : Multiset ι} {f g : ι → α}
 
 @[to_additive]
-theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
+lemma prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
   m.prod_hom (invMonoidHom : α →* α)
 #align multiset.prod_map_inv' Multiset.prod_map_inv'
 #align multiset.sum_map_neg' Multiset.sum_map_neg'
@@ -374,7 +374,7 @@ lemma single_le_prod : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.pr
 #align multiset.single_le_sum Multiset.single_le_sum
 
 @[to_additive sum_le_card_nsmul]
-theorem prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s := by
+lemma prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s := by
   induction s using Quotient.inductionOn
   simpa using List.prod_le_pow_card _ _ h
 #align multiset.prod_le_pow_card Multiset.prod_le_pow_card
@@ -390,7 +390,7 @@ lemma all_one_of_le_one_le_of_prod_eq_one :
 #align multiset.all_zero_of_le_zero_le_of_sum_eq_zero Multiset.all_zero_of_le_zero_le_of_sum_eq_zero
 
 @[to_additive]
-theorem prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
+lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
   induction' h with _ _ _ _ rh _ rt
   · rfl
   · rw [prod_cons, prod_cons]
@@ -406,19 +406,19 @@ lemma prod_map_le_prod_map {s : Multiset ι} (f : ι → α) (g : ι → α) (h 
 #align multiset.sum_map_le_sum_map Multiset.sum_map_le_sum_map
 
 @[to_additive]
-theorem prod_map_le_prod (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) : (s.map f).prod ≤ s.prod :=
+lemma prod_map_le_prod (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) : (s.map f).prod ≤ s.prod :=
   prod_le_prod_of_rel_le <| rel_map_left.2 <| rel_refl_of_refl_on h
 #align multiset.prod_map_le_prod Multiset.prod_map_le_prod
 #align multiset.sum_map_le_sum Multiset.sum_map_le_sum
 
 @[to_additive]
-theorem prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.prod ≤ (s.map f).prod :=
+lemma prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.prod ≤ (s.map f).prod :=
   @prod_map_le_prod αᵒᵈ _ _ f h
 #align multiset.prod_le_prod_map Multiset.prod_le_prod_map
 #align multiset.sum_le_sum_map Multiset.sum_le_sum_map
 
 @[to_additive card_nsmul_le_sum]
-theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
+lemma pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
   rw [← Multiset.prod_replicate, ← Multiset.map_const]
   exact prod_map_le_prod _ h
 #align multiset.pow_card_le_prod Multiset.pow_card_le_prod
@@ -512,7 +512,7 @@ lemma le_prod_nonempty_of_submultiplicative [CommMonoid α] [OrderedCommMonoid �
 #align multiset.le_sum_nonempty_of_subadditive Multiset.le_sum_nonempty_of_subadditive
 
 @[simp]
-theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α)).sum = s :=
+lemma sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α)).sum = s :=
   Multiset.induction_on s (by simp) (by simp)
 #align multiset.sum_map_singleton Multiset.sum_map_singleton
 
@@ -521,19 +521,19 @@ lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
 
-theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
+lemma sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
   induction s using Multiset.induction <;> simp [Nat.add_mod, *]
 #align multiset.sum_nat_mod Multiset.sum_nat_mod
 
-theorem prod_nat_mod (s : Multiset ℕ) (n : ℕ) : s.prod % n = (s.map (· % n)).prod % n := by
+lemma prod_nat_mod (s : Multiset ℕ) (n : ℕ) : s.prod % n = (s.map (· % n)).prod % n := by
   induction s using Multiset.induction <;> simp [Nat.mul_mod, *]
 #align multiset.prod_nat_mod Multiset.prod_nat_mod
 
-theorem sum_int_mod (s : Multiset ℤ) (n : ℤ) : s.sum % n = (s.map (· % n)).sum % n := by
+lemma sum_int_mod (s : Multiset ℤ) (n : ℤ) : s.sum % n = (s.map (· % n)).sum % n := by
   induction s using Multiset.induction <;> simp [Int.add_emod, *]
 #align multiset.sum_int_mod Multiset.sum_int_mod
 
-theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)).prod % n := by
+lemma prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)).prod % n := by
   induction s using Multiset.induction <;> simp [Int.mul_emod, *]
 #align multiset.prod_int_mod Multiset.prod_int_mod
 

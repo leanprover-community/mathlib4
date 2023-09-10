@@ -46,13 +46,13 @@ def mulTSupport (f : X → α) : Set X := closure (mulSupport f)
 #align tsupport tsupport
 
 @[to_additive]
-theorem subset_mulTSupport (f : X → α) : mulSupport f ⊆ mulTSupport f :=
+lemma subset_mulTSupport (f : X → α) : mulSupport f ⊆ mulTSupport f :=
   subset_closure
 #align subset_mul_tsupport subset_mulTSupport
 #align subset_tsupport subset_tsupport
 
 @[to_additive]
-theorem isClosed_mulTSupport (f : X → α) : IsClosed (mulTSupport f) :=
+lemma isClosed_mulTSupport (f : X → α) : IsClosed (mulTSupport f) :=
   isClosed_closure
 #align is_closed_mul_tsupport isClosed_mulTSupport
 #align is_closed_tsupport isClosed_tsupport
@@ -70,7 +70,7 @@ lemma image_eq_one_of_nmem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSu
 #align image_eq_zero_of_nmem_tsupport image_eq_zero_of_nmem_tsupport
 
 @[to_additive]
-theorem range_subset_insert_image_mulTSupport (f : X → α) :
+lemma range_subset_insert_image_mulTSupport (f : X → α) :
     range f ⊆ insert 1 (f '' mulTSupport f) :=
   (range_subset_insert_image_mulSupport f).trans <|
     insert_subset_insert <| image_subset _ subset_closure
@@ -78,7 +78,7 @@ theorem range_subset_insert_image_mulTSupport (f : X → α) :
 #align range_subset_insert_image_tsupport range_subset_insert_image_tsupport
 
 @[to_additive]
-theorem range_eq_image_mulTSupport_or (f : X → α) :
+lemma range_eq_image_mulTSupport_or (f : X → α) :
     range f = f '' mulTSupport f ∨ range f = insert 1 (f '' mulTSupport f) :=
   (wcovby_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
@@ -162,7 +162,7 @@ lemma HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set 
   isCompact_closure_of_subset_compact hK h
 
 @[to_additive]
-theorem HasCompactMulSupport.isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
+lemma HasCompactMulSupport.isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
   hf
 #align has_compact_mul_support.is_compact HasCompactMulSupport.isCompact
 #align has_compact_support.is_compact HasCompactSupport.isCompact
@@ -202,21 +202,21 @@ lemma HasCompactMulSupport.mono {f' : α → γ} (hf : HasCompactMulSupport f)
 #align has_compact_support.mono HasCompactSupport.mono
 
 @[to_additive]
-theorem HasCompactMulSupport.comp_left (hf : HasCompactMulSupport f) (hg : g 1 = 1) :
+lemma HasCompactMulSupport.comp_left (hf : HasCompactMulSupport f) (hg : g 1 = 1) :
     HasCompactMulSupport (g ∘ f) :=
   hf.mono <| mulSupport_comp_subset hg f
 #align has_compact_mul_support.comp_left HasCompactMulSupport.comp_left
 #align has_compact_support.comp_left HasCompactSupport.comp_left
 
 @[to_additive]
-theorem hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) :
+lemma hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) :
     HasCompactMulSupport (g ∘ f) ↔ HasCompactMulSupport f := by
   simp_rw [hasCompactMulSupport_def, mulSupport_comp_eq g (@hg) f]
 #align has_compact_mul_support_comp_left hasCompactMulSupport_comp_left
 #align has_compact_support_comp_left hasCompactSupport_comp_left
 
 @[to_additive]
-theorem HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
+lemma HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
     (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
   rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
   refine' isCompact_of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure _
@@ -226,7 +226,7 @@ theorem HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) 
 #align has_compact_support.comp_closed_embedding HasCompactSupport.comp_closedEmbedding
 
 @[to_additive]
-theorem HasCompactMulSupport.comp₂_left (hf : HasCompactMulSupport f)
+lemma HasCompactMulSupport.comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
@@ -243,7 +243,7 @@ variable [TopologicalSpace α] [Monoid β]
 variable {f f' : α → β} {x : α}
 
 @[to_additive]
-theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
+lemma HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
     HasCompactMulSupport (f * f') := hf.comp₂_left hf' (mul_one 1)
 #align has_compact_mul_support.mul HasCompactMulSupport.mul
 #align has_compact_support.add HasCompactSupport.add
@@ -256,7 +256,7 @@ variable [TopologicalSpace α] [MonoidWithZero R] [AddMonoid M] [DistribMulActio
 
 variable {f : α → R} {f' : α → M} {x : α}
 
-theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
+lemma HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left HasCompactSupport.smul_left
@@ -269,12 +269,12 @@ variable [TopologicalSpace α] [Zero R] [Zero M] [SMulWithZero R M]
 
 variable {f : α → R} {f' : α → M} {x : α}
 
-theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') := by
+lemma HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, zero_smul]
 #align has_compact_support.smul_right HasCompactSupport.smul_right
 
-theorem HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
+lemma HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left' HasCompactSupport.smul_left'
@@ -287,12 +287,12 @@ variable [TopologicalSpace α] [MulZeroClass β]
 
 variable {f f' : α → β} {x : α}
 
-theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by
+lemma HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, zero_mul]
 #align has_compact_support.mul_right HasCompactSupport.mul_right
 
-theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSupport (f * f') := by
+lemma HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSupport (f * f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, mul_zero]
 #align has_compact_support.mul_left HasCompactSupport.mul_left

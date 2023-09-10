@@ -66,7 +66,7 @@ example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a�
 ```
 -/
 @[simp]
-theorem map_eq (f : α → β) {m} (v : Fin m → α) : map f v = f ∘ v :=
+lemma map_eq (f : α → β) {m} (v : Fin m → α) : map f v = f ∘ v :=
   seq_eq _ _
 #align fin_vec.map_eq FinVec.map_eq
 

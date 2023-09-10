@@ -49,7 +49,7 @@ namespace Core
 
 @[simp]
 /- Porting note: abomination -/
-theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by
+lemma id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by
   rfl
 #align category_theory.core.id_hom CategoryTheory.Core.id_hom
 

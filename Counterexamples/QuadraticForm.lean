@@ -33,7 +33,7 @@ def B : BilinForm F (F × F) :=
 #align counterexample.B Counterexample.B
 
 @[simp]
-theorem B_apply (x y : F × F) : B F x y = x.1 * y.2 + x.2 * y.1 :=
+lemma B_apply (x y : F × F) : B F x y = x.1 * y.2 + x.2 * y.1 :=
   rfl
 #align counterexample.B_apply Counterexample.B_apply
 

@@ -121,25 +121,25 @@ instance : Category.{v₁} (Mat_ C) where
 lemma hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
 
-theorem id_def (M : Mat_ C) :
+lemma id_def (M : Mat_ C) :
     (𝟙 M : Hom M M) = fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_def CategoryTheory.Mat_.id_def
 
-theorem id_apply (M : Mat_ C) (i j : M.ι) :
+lemma id_apply (M : Mat_ C) (i j : M.ι) :
     (𝟙 M : Hom M M) i j = if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply CategoryTheory.Mat_.id_apply
 
 @[simp]
-theorem id_apply_self (M : Mat_ C) (i : M.ι) : (𝟙 M : Hom M M) i i = 𝟙 _ := by simp [id_apply]
+lemma id_apply_self (M : Mat_ C) (i : M.ι) : (𝟙 M : Hom M M) i i = 𝟙 _ := by simp [id_apply]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply_self CategoryTheory.Mat_.id_apply_self
 
 @[simp]
-theorem id_apply_of_ne (M : Mat_ C) (i j : M.ι) (h : i ≠ j) : (𝟙 M : Hom M M) i j = 0 := by
+lemma id_apply_of_ne (M : Mat_ C) (i j : M.ι) (h : i ≠ j) : (𝟙 M : Hom M M) i j = 0 := by
   simp [id_apply, h]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply_of_ne CategoryTheory.Mat_.id_apply_of_ne
@@ -400,7 +400,7 @@ lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
 variable [HasFiniteBiproducts D]
 
 @[reassoc]
-theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
+lemma additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
     (f : M ⟶ N) :
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
@@ -419,7 +419,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality
 
 @[reassoc]
-theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
+lemma additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
     (f : M ⟶ N) :
     (additiveObjIsoBiproduct F M).inv ≫ F.map f =
       biproduct.matrix (fun i j => F.map ((embedding C).map (f i j)) : _) ≫
@@ -577,23 +577,23 @@ lemma hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g
 
 variable (R)
 
-theorem id_def (M : Mat R) : 𝟙 M = fun i j => if i = j then 1 else 0 :=
+lemma id_def (M : Mat R) : 𝟙 M = fun i j => if i = j then 1 else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_def CategoryTheory.Mat.id_def
 
-theorem id_apply (M : Mat R) (i j : M) : (𝟙 M : Matrix M M R) i j = if i = j then 1 else 0 :=
+lemma id_apply (M : Mat R) (i j : M) : (𝟙 M : Matrix M M R) i j = if i = j then 1 else 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply CategoryTheory.Mat.id_apply
 
 @[simp]
-theorem id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := by simp [id_apply]
+lemma id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := by simp [id_apply]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply_self CategoryTheory.Mat.id_apply_self
 
 @[simp]
-theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
+lemma id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
   simp [id_apply, h]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply_of_ne CategoryTheory.Mat.id_apply_of_ne

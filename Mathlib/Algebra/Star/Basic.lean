@@ -138,10 +138,10 @@ section StarMul
 
 variable [Mul R] [StarMul R]
 
-theorem star_star_mul (x y : R) : star (star x * y) = star y * x := by rw [star_mul, star_star]
+lemma star_star_mul (x y : R) : star (star x * y) = star y * x := by rw [star_mul, star_star]
 #align star_star_mul star_star_mul
 
-theorem star_mul_star (x y : R) : star (x * star y) = y * star x := by rw [star_mul, star_star]
+lemma star_mul_star (x y : R) : star (x * star y) = y * star x := by rw [star_mul, star_star]
 #align star_mul_star star_mul_star
 
 @[simp]
@@ -530,12 +530,12 @@ instance : StarMul Rˣ where
   star_mul _ _ := Units.ext (star_mul _ _)
 
 @[simp]
-theorem coe_star (u : Rˣ) : ↑(star u) = (star ↑u : R) :=
+lemma coe_star (u : Rˣ) : ↑(star u) = (star ↑u : R) :=
   rfl
 #align units.coe_star Units.coe_star
 
 @[simp]
-theorem coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
+lemma coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
   rfl
 #align units.coe_star_inv Units.coe_star_inv
 

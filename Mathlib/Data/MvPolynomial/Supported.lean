@@ -44,7 +44,7 @@ variable {R}
 
 open Algebra
 
-theorem supported_eq_range_rename (s : Set σ) : supported R s = (rename ((↑) : s → σ)).range := by
+lemma supported_eq_range_rename (s : Set σ) : supported R s = (rename ((↑) : s → σ)).range := by
   rw [supported, Set.image_eq_range, adjoin_range_eq_range_aeval, rename]
   congr
 #align mv_polynomial.supported_eq_range_rename MvPolynomial.supported_eq_range_rename
@@ -56,7 +56,7 @@ noncomputable def supportedEquivMvPolynomial (s : Set σ) : supported R s ≃ₐ
 #align mv_polynomial.supported_equiv_mv_polynomial MvPolynomial.supportedEquivMvPolynomial
 
 @[simp, nolint simpNF]  -- porting note: the `simpNF` linter complained about this lemma.
-theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
+lemma supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
     (supportedEquivMvPolynomial s).symm (C x) = algebraMap R (supported R s) x := by
   ext1
   simp [supportedEquivMvPolynomial, MvPolynomial.algebraMap_eq]
@@ -64,7 +64,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.supported_equiv_mv_polynomial_symm_C MvPolynomial.supportedEquivMvPolynomial_symm_C
 
 @[simp, nolint simpNF]  -- porting note: the `simpNF` linter complained about this lemma.
-theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
+lemma supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
     (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
   by simp [supportedEquivMvPolynomial]
 set_option linter.uppercaseLean3 false in
@@ -88,7 +88,7 @@ lemma supported_eq_vars_subset : (supported R s : Set (MvPolynomial σ R)) = { p
 #align mv_polynomial.supported_eq_vars_subset MvPolynomial.supported_eq_vars_subset
 
 @[simp]
-theorem mem_supported_vars (p : MvPolynomial σ R) : p ∈ supported R (↑p.vars : Set σ) := by
+lemma mem_supported_vars (p : MvPolynomial σ R) : p ∈ supported R (↑p.vars : Set σ) := by
   rw [mem_supported]
 #align mv_polynomial.mem_supported_vars MvPolynomial.mem_supported_vars
 
@@ -109,7 +109,7 @@ lemma supported_empty : supported R (∅ : Set σ) = ⊥ := by simp [supported_e
 
 variable {s}
 
-theorem supported_mono (st : s ⊆ t) : supported R s ≤ supported R t :=
+lemma supported_mono (st : s ⊆ t) : supported R s ≤ supported R t :=
   Algebra.adjoin_mono (Set.image_subset _ st)
 #align mv_polynomial.supported_mono MvPolynomial.supported_mono
 
@@ -132,7 +132,7 @@ lemma supported_strictMono [Nontrivial R] :
   strictMono_of_le_iff_le fun _ _ ↦ supported_le_supported_iff.symm
 #align mv_polynomial.supported_strict_mono MvPolynomial.supported_strictMono
 
-theorem exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ ℤ}
+lemma exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ ℤ}
     (hF : ↑F.vars ⊆ s) : ∃ f : (s → R) → R, ∀ x : σ → R, f (x ∘ (↑) : s → R) = aeval x F := by
   rw [← mem_supported, supported_eq_range_rename, AlgHom.mem_range] at hF
   cases' hF with F' hF'

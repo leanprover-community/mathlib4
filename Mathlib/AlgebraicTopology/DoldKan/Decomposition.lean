@@ -49,7 +49,7 @@ As `Q q` is the complement projection to `P q`, this implies that in the case of
 simplicial abelian groups, any $(n+1)$-simplex $x$ can be decomposed as
 $x = x' + \sum (i=0}^{q-1} σ_{n-i}(y_i)$ where $x'$ is in the image of `P q` and
 the $y_i$ are in degree $n$. -/
-theorem decomposition_Q (n q : ℕ) :
+lemma decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1]) =
       ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
         (P i).f (n + 1) ≫ X.δ i.revPerm.succ ≫ X.σ (Fin.revPerm i) := by

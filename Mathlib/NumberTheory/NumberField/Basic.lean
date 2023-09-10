@@ -68,7 +68,7 @@ def ringOfIntegers :=
 
 scoped notation "𝓞" => NumberField.ringOfIntegers
 
-theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 K ↔ IsIntegral ℤ x :=
+lemma mem_ringOfIntegers (x : K) : x ∈ 𝓞 K ↔ IsIntegral ℤ x :=
   Iff.rfl
 #align number_field.mem_ring_of_integers NumberField.mem_ringOfIntegers
 
@@ -108,7 +108,7 @@ instance : IsIntegralClosure (𝓞 K) ℤ K :=
 instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
 
-theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
+lemma isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
   x.2
 #align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
 
@@ -161,7 +161,7 @@ noncomputable def integralBasis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℚ
 #align number_field.integral_basis NumberField.integralBasis
 
 @[simp]
-theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+lemma integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     integralBasis K i = algebraMap (𝓞 K) K (RingOfIntegers.basis K i) :=
   Basis.localizationLocalization_apply ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K) i
 #align number_field.integral_basis_apply NumberField.integralBasis_apply

@@ -117,7 +117,7 @@ def mongePointWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex (n
 
 /-- `mongePointWeightsWithCircumcenter` sums to 1. -/
 @[simp]
-theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
+lemma sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     ∑ i, mongePointWeightsWithCircumcenter n i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
@@ -442,13 +442,13 @@ def orthocenter (t : Triangle ℝ P) : P :=
 #align affine.triangle.orthocenter Affine.Triangle.orthocenter
 
 /-- The orthocenter equals the Monge point. -/
-theorem orthocenter_eq_mongePoint (t : Triangle ℝ P) : t.orthocenter = t.mongePoint :=
+lemma orthocenter_eq_mongePoint (t : Triangle ℝ P) : t.orthocenter = t.mongePoint :=
   rfl
 #align affine.triangle.orthocenter_eq_monge_point Affine.Triangle.orthocenter_eq_mongePoint
 
 /-- The position of the orthocenter in relation to the circumcenter
 and centroid. -/
-theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
+lemma orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
     t.orthocenter =
       (3 : ℝ) • ((univ : Finset (Fin 3)).centroid ℝ t.points -ᵥ t.circumcenter : V) +ᵥ
         t.circumcenter := by
@@ -457,7 +457,7 @@ theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
 #align affine.triangle.orthocenter_eq_smul_vsub_vadd_circumcenter Affine.Triangle.orthocenter_eq_smul_vsub_vadd_circumcenter
 
 /-- The orthocenter lies in the affine span. -/
-theorem orthocenter_mem_affineSpan (t : Triangle ℝ P) :
+lemma orthocenter_mem_affineSpan (t : Triangle ℝ P) :
     t.orthocenter ∈ affineSpan ℝ (Set.range t.points) :=
   t.mongePoint_mem_affineSpan
 #align affine.triangle.orthocenter_mem_affine_span Affine.Triangle.orthocenter_mem_affineSpan
@@ -470,7 +470,7 @@ lemma orthocenter_eq_of_range_eq {t₁ t₂ : Triangle ℝ P}
 
 /-- In the case of a triangle, altitudes are the same thing as Monge
 planes. -/
-theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+lemma altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
   have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by
     -- porting note: was `decide!`
@@ -487,7 +487,7 @@ theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h�
 #align affine.triangle.altitude_eq_monge_plane Affine.Triangle.altitude_eq_mongePlane
 
 /-- The orthocenter lies in the altitudes. -/
-theorem orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} :
+lemma orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} :
     t.orthocenter ∈ t.altitude i₁ := by
   obtain ⟨i₂, i₃, h₁₂, h₂₃, h₁₃⟩ : ∃ i₂ i₃, i₁ ≠ i₂ ∧ i₂ ≠ i₃ ∧ i₁ ≠ i₃ := by
     -- porting note: was `decide!`
@@ -521,7 +521,7 @@ lemma eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : Fi
 
 /-- The distance from the orthocenter to the reflection of the
 circumcenter in a side equals the circumradius. -/
-theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂ : Fin 3} (h : i₁ ≠ i₂) :
+lemma dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂ : Fin 3} (h : i₁ ≠ i₂) :
     dist t.orthocenter (reflection (affineSpan ℝ (t.points '' {i₁, i₂})) t.circumcenter) =
       t.circumradius := by
   rw [← mul_self_inj_of_nonneg dist_nonneg t.circumradius_nonneg,
@@ -547,7 +547,7 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
 /-- The distance from the orthocenter to the reflection of the
 circumcenter in a side equals the circumradius, variant using a
 `Finset`. -/
-theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i₁ i₂ : Fin 3}
+lemma dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i₁ i₂ : Fin 3}
     (h : i₁ ≠ i₂) :
     dist t.orthocenter
         (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.circumcenter) =
@@ -558,7 +558,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
 
 /-- The affine span of the orthocenter and a vertex is contained in
 the altitude. -/
-theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3) :
+lemma affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3) :
     line[ℝ, t.orthocenter, t.points i] ≤ t.altitude i := by
   refine' spanPoints_subset_coe_of_subset_coe _
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]

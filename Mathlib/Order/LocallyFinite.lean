@@ -345,22 +345,22 @@ lemma mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
 #align finset.mem_Ioo Finset.mem_Ioo
 
 @[simp, norm_cast]
-theorem coe_Icc (a b : α) : (Icc a b : Set α) = Set.Icc a b :=
+lemma coe_Icc (a b : α) : (Icc a b : Set α) = Set.Icc a b :=
   Set.ext fun _ => mem_Icc
 #align finset.coe_Icc Finset.coe_Icc
 
 @[simp, norm_cast]
-theorem coe_Ico (a b : α) : (Ico a b : Set α) = Set.Ico a b :=
+lemma coe_Ico (a b : α) : (Ico a b : Set α) = Set.Ico a b :=
   Set.ext fun _ => mem_Ico
 #align finset.coe_Ico Finset.coe_Ico
 
 @[simp, norm_cast]
-theorem coe_Ioc (a b : α) : (Ioc a b : Set α) = Set.Ioc a b :=
+lemma coe_Ioc (a b : α) : (Ioc a b : Set α) = Set.Ioc a b :=
   Set.ext fun _ => mem_Ioc
 #align finset.coe_Ioc Finset.coe_Ioc
 
 @[simp, norm_cast]
-theorem coe_Ioo (a b : α) : (Ioo a b : Set α) = Set.Ioo a b :=
+lemma coe_Ioo (a b : α) : (Ioo a b : Set α) = Set.Ioo a b :=
   Set.ext fun _ => mem_Ioo
 #align finset.coe_Ioo Finset.coe_Ioo
 
@@ -391,12 +391,12 @@ lemma mem_Ioi : x ∈ Ioi a ↔ a < x :=
 #align finset.mem_Ioi Finset.mem_Ioi
 
 @[simp, norm_cast]
-theorem coe_Ici (a : α) : (Ici a : Set α) = Set.Ici a :=
+lemma coe_Ici (a : α) : (Ici a : Set α) = Set.Ici a :=
   Set.ext fun _ => mem_Ici
 #align finset.coe_Ici Finset.coe_Ici
 
 @[simp, norm_cast]
-theorem coe_Ioi (a : α) : (Ioi a : Set α) = Set.Ioi a :=
+lemma coe_Ioi (a : α) : (Ioi a : Set α) = Set.Ioi a :=
   Set.ext fun _ => mem_Ioi
 #align finset.coe_Ioi Finset.coe_Ioi
 
@@ -427,12 +427,12 @@ lemma mem_Iio : x ∈ Iio a ↔ x < a :=
 #align finset.mem_Iio Finset.mem_Iio
 
 @[simp, norm_cast]
-theorem coe_Iic (a : α) : (Iic a : Set α) = Set.Iic a :=
+lemma coe_Iic (a : α) : (Iic a : Set α) = Set.Iic a :=
   Set.ext fun _ => mem_Iic
 #align finset.coe_Iic Finset.coe_Iic
 
 @[simp, norm_cast]
-theorem coe_Iio (a : α) : (Iio a : Set α) = Set.Iio a :=
+lemma coe_Iio (a : α) : (Iio a : Set α) = Set.Iio a :=
   Set.ext fun _ => mem_Iio
 #align finset.coe_Iio Finset.coe_Iio
 
@@ -451,11 +451,11 @@ instance (priority := 100) _root_.LocallyFiniteOrder.toLocallyFiniteOrderTop :
   finset_mem_Ioi a x := by rw [mem_Ioc, and_iff_left le_top]
 #align locally_finite_order.to_locally_finite_order_top LocallyFiniteOrder.toLocallyFiniteOrderTop
 
-theorem Ici_eq_Icc (a : α) : Ici a = Icc a ⊤ :=
+lemma Ici_eq_Icc (a : α) : Ici a = Icc a ⊤ :=
   rfl
 #align finset.Ici_eq_Icc Finset.Ici_eq_Icc
 
-theorem Ioi_eq_Ioc (a : α) : Ioi a = Ioc a ⊤ :=
+lemma Ioi_eq_Ioc (a : α) : Ioi a = Ioc a ⊤ :=
   rfl
 #align finset.Ioi_eq_Ioc Finset.Ioi_eq_Ioc
 
@@ -506,7 +506,7 @@ lemma mem_uIcc : x ∈ uIcc a b ↔ a ⊓ b ≤ x ∧ x ≤ a ⊔ b :=
 #align finset.mem_uIcc Finset.mem_uIcc
 
 @[simp, norm_cast]
-theorem coe_uIcc (a b : α) : (Finset.uIcc a b : Set α) = Set.uIcc a b :=
+lemma coe_uIcc (a b : α) : (Finset.uIcc a b : Set α) = Set.uIcc a b :=
   coe_Icc _ _
 #align finset.coe_uIcc Finset.coe_uIcc
 
@@ -858,28 +858,28 @@ lemma Ioo_toDual : Ioo (toDual a) (toDual b) = (Ioo b a).map toDual.toEmbedding 
   exact and_comm
 #align Ioo_to_dual Ioo_toDual
 
-theorem Icc_ofDual (a b : αᵒᵈ) : Icc (ofDual a) (ofDual b) = (Icc b a).map ofDual.toEmbedding := by
+lemma Icc_ofDual (a b : αᵒᵈ) : Icc (ofDual a) (ofDual b) = (Icc b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Icc, mem_Icc (α := αᵒᵈ)]
   exact and_comm
 #align Icc_of_dual Icc_ofDual
 
-theorem Ico_ofDual (a b : αᵒᵈ) : Ico (ofDual a) (ofDual b) = (Ioc b a).map ofDual.toEmbedding := by
+lemma Ico_ofDual (a b : αᵒᵈ) : Ico (ofDual a) (ofDual b) = (Ioc b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ico, mem_Ioc (α := αᵒᵈ)]
   exact and_comm
 #align Ico_of_dual Ico_ofDual
 
-theorem Ioc_ofDual (a b : αᵒᵈ) : Ioc (ofDual a) (ofDual b) = (Ico b a).map ofDual.toEmbedding := by
+lemma Ioc_ofDual (a b : αᵒᵈ) : Ioc (ofDual a) (ofDual b) = (Ico b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ioc, mem_Ico (α := αᵒᵈ)]
   exact and_comm
 #align Ioc_of_dual Ioc_ofDual
 
-theorem Ioo_ofDual (a b : αᵒᵈ) : Ioo (ofDual a) (ofDual b) = (Ioo b a).map ofDual.toEmbedding := by
+lemma Ioo_ofDual (a b : αᵒᵈ) : Ioo (ofDual a) (ofDual b) = (Ioo b a).map ofDual.toEmbedding := by
   refine' Eq.trans _ map_refl.symm
   ext c
   rw [mem_Ioo, mem_Ioo (α := αᵒᵈ)]
@@ -904,19 +904,19 @@ instance : LocallyFiniteOrderBot αᵒᵈ where
   finset_mem_Iic _ _ := mem_Ici (α := α)
   finset_mem_Iio _ _ := mem_Ioi (α := α)
 
-theorem Iic_toDual (a : α) : Iic (toDual a) = (Ici a).map toDual.toEmbedding :=
+lemma Iic_toDual (a : α) : Iic (toDual a) = (Ici a).map toDual.toEmbedding :=
   map_refl.symm
 #align Iic_to_dual Iic_toDual
 
-theorem Iio_toDual (a : α) : Iio (toDual a) = (Ioi a).map toDual.toEmbedding :=
+lemma Iio_toDual (a : α) : Iio (toDual a) = (Ioi a).map toDual.toEmbedding :=
   map_refl.symm
 #align Iio_to_dual Iio_toDual
 
-theorem Ici_ofDual (a : αᵒᵈ) : Ici (ofDual a) = (Iic a).map ofDual.toEmbedding :=
+lemma Ici_ofDual (a : αᵒᵈ) : Ici (ofDual a) = (Iic a).map ofDual.toEmbedding :=
   map_refl.symm
 #align Ici_of_dual Ici_ofDual
 
-theorem Ioi_ofDual (a : αᵒᵈ) : Ioi (ofDual a) = (Iio a).map ofDual.toEmbedding :=
+lemma Ioi_ofDual (a : αᵒᵈ) : Ioi (ofDual a) = (Iio a).map ofDual.toEmbedding :=
   map_refl.symm
 #align Ioi_of_dual Ioi_ofDual
 
@@ -938,19 +938,19 @@ instance : LocallyFiniteOrderTop αᵒᵈ where
   finset_mem_Ici _ _ := mem_Iic (α := α)
   finset_mem_Ioi _ _ := mem_Iio (α := α)
 
-theorem Ici_toDual (a : α) : Ici (toDual a) = (Iic a).map toDual.toEmbedding :=
+lemma Ici_toDual (a : α) : Ici (toDual a) = (Iic a).map toDual.toEmbedding :=
   map_refl.symm
 #align Ici_to_dual Ici_toDual
 
-theorem Ioi_toDual (a : α) : Ioi (toDual a) = (Iio a).map toDual.toEmbedding :=
+lemma Ioi_toDual (a : α) : Ioi (toDual a) = (Iio a).map toDual.toEmbedding :=
   map_refl.symm
 #align Ioi_to_dual Ioi_toDual
 
-theorem Iic_ofDual (a : αᵒᵈ) : Iic (ofDual a) = (Ici a).map ofDual.toEmbedding :=
+lemma Iic_ofDual (a : αᵒᵈ) : Iic (ofDual a) = (Ici a).map ofDual.toEmbedding :=
   map_refl.symm
 #align Iic_of_dual Iic_ofDual
 
-theorem Iio_ofDual (a : αᵒᵈ) : Iio (ofDual a) = (Ioi a).map ofDual.toEmbedding :=
+lemma Iio_ofDual (a : αᵒᵈ) : Iio (ofDual a) = (Ioi a).map ofDual.toEmbedding :=
   map_refl.symm
 #align Iio_of_dual Iio_ofDual
 

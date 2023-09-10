@@ -24,13 +24,13 @@ section OrderedCommMonoid
 variable {α : Type*} [OrderedCommMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
-theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
+lemma IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
   smul_set_subset_iff.2 fun _ ↦ hs <| le_mul_of_one_le_left' hx
 #align is_upper_set.smul_subset IsUpperSet.smul_subset
 #align is_upper_set.vadd_subset IsUpperSet.vadd_subset
 
 @[to_additive]
-theorem IsLowerSet.smul_subset (hs : IsLowerSet s) (hx : x ≤ 1) : x • s ⊆ s :=
+lemma IsLowerSet.smul_subset (hs : IsLowerSet s) (hx : x ≤ 1) : x • s ⊆ s :=
   smul_set_subset_iff.2 fun _ ↦ hs <| mul_le_of_le_one_left' hx
 #align is_lower_set.smul_subset IsLowerSet.smul_subset
 #align is_lower_set.vadd_subset IsLowerSet.vadd_subset
@@ -42,83 +42,83 @@ section OrderedCommGroup
 variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
 
 @[to_additive]
-theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := by
+lemma IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := by
   rintro _ y hxy ⟨x, hx, rfl⟩
   exact mem_smul_set_iff_inv_smul_mem.2 (hs (le_inv_mul_iff_mul_le.2 hxy) hx)
 #align is_upper_set.smul IsUpperSet.smul
 #align is_upper_set.vadd IsUpperSet.vadd
 
 @[to_additive]
-theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) :=
+lemma IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) :=
   hs.ofDual.smul
 #align is_lower_set.smul IsLowerSet.smul
 #align is_lower_set.vadd IsLowerSet.vadd
 
 @[to_additive]
-theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected := by
+lemma Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected := by
   rw [← hs.upperClosure_inter_lowerClosure, smul_set_inter]
   exact (upperClosure _).upper.smul.ordConnected.inter (lowerClosure _).lower.smul.ordConnected
 #align set.ord_connected.smul Set.OrdConnected.smul
 #align set.ord_connected.vadd Set.OrdConnected.vadd
 
 @[to_additive]
-theorem IsUpperSet.mul_left (ht : IsUpperSet t) : IsUpperSet (s * t) := by
+lemma IsUpperSet.mul_left (ht : IsUpperSet t) : IsUpperSet (s * t) := by
   rw [← smul_eq_mul, ← Set.iUnion_smul_set]
   exact isUpperSet_iUnion₂ fun x _ ↦ ht.smul
 #align is_upper_set.mul_left IsUpperSet.mul_left
 #align is_upper_set.add_left IsUpperSet.add_left
 
 @[to_additive]
-theorem IsUpperSet.mul_right (hs : IsUpperSet s) : IsUpperSet (s * t) := by
+lemma IsUpperSet.mul_right (hs : IsUpperSet s) : IsUpperSet (s * t) := by
   rw [mul_comm]
   exact hs.mul_left
 #align is_upper_set.mul_right IsUpperSet.mul_right
 #align is_upper_set.add_right IsUpperSet.add_right
 
 @[to_additive]
-theorem IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) :=
+lemma IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) :=
   ht.ofDual.mul_left
 #align is_lower_set.mul_left IsLowerSet.mul_left
 #align is_lower_set.add_left IsLowerSet.add_left
 
 @[to_additive]
-theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) :=
+lemma IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) :=
   hs.ofDual.mul_right
 #align is_lower_set.mul_right IsLowerSet.mul_right
 #align is_lower_set.add_right IsLowerSet.add_right
 
 @[to_additive]
-theorem IsUpperSet.inv (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
+lemma IsUpperSet.inv (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
 #align is_upper_set.inv IsUpperSet.inv
 #align is_upper_set.neg IsUpperSet.neg
 
 @[to_additive]
-theorem IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
+lemma IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
 #align is_lower_set.inv IsLowerSet.inv
 #align is_lower_set.neg IsLowerSet.neg
 
 @[to_additive]
-theorem IsUpperSet.div_left (ht : IsUpperSet t) : IsLowerSet (s / t) := by
+lemma IsUpperSet.div_left (ht : IsUpperSet t) : IsLowerSet (s / t) := by
   rw [div_eq_mul_inv]
   exact ht.inv.mul_left
 #align is_upper_set.div_left IsUpperSet.div_left
 #align is_upper_set.sub_left IsUpperSet.sub_left
 
 @[to_additive]
-theorem IsUpperSet.div_right (hs : IsUpperSet s) : IsUpperSet (s / t) := by
+lemma IsUpperSet.div_right (hs : IsUpperSet s) : IsUpperSet (s / t) := by
   rw [div_eq_mul_inv]
   exact hs.mul_right
 #align is_upper_set.div_right IsUpperSet.div_right
 #align is_upper_set.sub_right IsUpperSet.sub_right
 
 @[to_additive]
-theorem IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) :=
+lemma IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) :=
   ht.ofDual.div_left
 #align is_lower_set.div_left IsLowerSet.div_left
 #align is_lower_set.sub_left IsLowerSet.sub_left
 
 @[to_additive]
-theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) :=
+lemma IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) :=
   hs.ofDual.div_right
 #align is_lower_set.div_right IsLowerSet.div_right
 #align is_lower_set.sub_right IsLowerSet.sub_right
@@ -148,13 +148,13 @@ lemma coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
 #align upper_set.coe_zero UpperSet.coe_zero
 
 @[to_additive (attr := simp,norm_cast)]
-theorem coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
+lemma coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 #align upper_set.coe_mul UpperSet.coe_mul
 #align upper_set.coe_add UpperSet.coe_add
 
 @[to_additive (attr := simp,norm_cast)]
-theorem coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
+lemma coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 #align upper_set.coe_div UpperSet.coe_div
 #align upper_set.coe_sub UpperSet.coe_sub
@@ -175,7 +175,7 @@ instance commSemigroup : CommSemigroup (UpperSet α) :=
     mul := (· * ·) }
 
 @[to_additive]
-private theorem one_mul (s : UpperSet α) : 1 * s = s :=
+private lemma one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ left_mem_Ici).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
@@ -211,13 +211,13 @@ instance : SMul α (LowerSet α) :=
   ⟨fun a s ↦ ⟨(· • ·) a '' s, s.2.smul⟩⟩
 
 @[to_additive (attr := simp,norm_cast)]
-theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
+lemma coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 #align lower_set.coe_mul LowerSet.coe_mul
 #align lower_set.coe_add LowerSet.coe_add
 
 @[to_additive (attr := simp,norm_cast)]
-theorem coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
+lemma coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 #align lower_set.coe_div LowerSet.coe_div
 #align lower_set.coe_sub LowerSet.coe_sub
@@ -238,7 +238,7 @@ instance commSemigroup : CommSemigroup (LowerSet α) :=
     mul := (· * ·) }
 
 @[to_additive]
-private theorem one_mul (s : LowerSet α) : 1 * s = s :=
+private lemma one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ right_mem_Iic).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]

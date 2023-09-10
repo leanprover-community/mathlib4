@@ -81,21 +81,21 @@ def ceil (m : E) : span ℤ (Set.range b) := ∑ i, ⌈b.repr m i⌉ • b.restr
 #align zspan.ceil Zspan.ceil
 
 @[simp]
-theorem repr_floor_apply (m : E) (i : ι) : b.repr (floor b m) i = ⌊b.repr m i⌋ := by
+lemma repr_floor_apply (m : E) (i : ι) : b.repr (floor b m) i = ⌊b.repr m i⌋ := by
   classical simp only [floor, zsmul_eq_smul_cast K, b.repr.map_smul, Finsupp.single_apply,
     Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
     Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, LinearEquiv.map_sum]
 #align zspan.repr_floor_apply Zspan.repr_floor_apply
 
 @[simp]
-theorem repr_ceil_apply (m : E) (i : ι) : b.repr (ceil b m) i = ⌈b.repr m i⌉ := by
+lemma repr_ceil_apply (m : E) (i : ι) : b.repr (ceil b m) i = ⌈b.repr m i⌉ := by
   classical simp only [ceil, zsmul_eq_smul_cast K, b.repr.map_smul, Finsupp.single_apply,
     Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
     Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, LinearEquiv.map_sum]
 #align zspan.repr_ceil_apply Zspan.repr_ceil_apply
 
 @[simp]
-theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor b m : E) = m := by
+lemma floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor b m : E) = m := by
   apply b.ext_elem
   simp_rw [repr_floor_apply b]
   intro i
@@ -105,7 +105,7 @@ theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor
 #align zspan.floor_eq_self_of_mem Zspan.floor_eq_self_of_mem
 
 @[simp]
-theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b m : E) = m := by
+lemma ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b m : E) = m := by
   apply b.ext_elem
   simp_rw [repr_ceil_apply b]
   intro i
@@ -120,21 +120,21 @@ restricted to `fundamentalDomain`. -/
 def fract (m : E) : E := m - floor b m
 #align zspan.fract Zspan.fract
 
-theorem fract_apply (m : E) : fract b m = m - floor b m := rfl
+lemma fract_apply (m : E) : fract b m = m - floor b m := rfl
 #align zspan.fract_apply Zspan.fract_apply
 
 @[simp]
-theorem repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.repr m i) := by
+lemma repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.repr m i) := by
   rw [fract, LinearEquiv.map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
 #align zspan.repr_fract_apply Zspan.repr_fract_apply
 
 @[simp]
-theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
+lemma fract_fract (m : E) : fract b (fract b m) = fract b m :=
   Basis.ext_elem b fun _ => by classical simp only [repr_fract_apply, Int.fract_fract]
 #align zspan.fract_fract Zspan.fract_fract
 
 @[simp]
-theorem fract_zspan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
+lemma fract_zspan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (v + m) = fract b m := by
   classical
   refine (Basis.ext_elem_iff b).mpr fun i => ?_
@@ -145,7 +145,7 @@ theorem fract_zspan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
 #align zspan.fract_zspan_add Zspan.fract_zspan_add
 
 @[simp]
-theorem fract_add_zspan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
+lemma fract_add_zspan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (m + v) = fract b m := by rw [add_comm, fract_zspan_add b m h]
 #align zspan.fract_add_zspan Zspan.fract_add_zspan
 
@@ -158,7 +158,7 @@ lemma fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
 
 variable (b)
 
-theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
+lemma fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
   fract_eq_self.mp (fract_fract b _)
 #align zspan.fract_mem_fundamental_domain Zspan.fract_mem_fundamentalDomain
 
@@ -169,9 +169,9 @@ lemma fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
   fun x => ⟨↑x, Subtype.eq (fract_eq_self.mpr (Subtype.mem x))⟩
 
 @[simp]
-theorem fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl
+lemma fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl
 
-theorem fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ (Set.range b) := by
+lemma fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ (Set.range b) := by
   classical
   rw [eq_comm, Basis.ext_elem_iff b]
   simp_rw [repr_fract_apply, Int.fract_eq_fract, eq_comm, Basis.mem_span_iff_repr_mem,
@@ -201,12 +201,12 @@ section Unique
 variable [Unique ι]
 
 @[simp]
-theorem coe_floor_self (k : K) : (floor (Basis.singleton ι K) k : K) = ⌊k⌋ :=
+lemma coe_floor_self (k : K) : (floor (Basis.singleton ι K) k : K) = ⌊k⌋ :=
   Basis.ext_elem _ fun _ => by rw [repr_floor_apply, Basis.singleton_repr, Basis.singleton_repr]
 #align zspan.coe_floor_self Zspan.coe_floor_self
 
 @[simp]
-theorem coe_fract_self (k : K) : (fract (Basis.singleton ι K) k : K) = Int.fract k :=
+lemma coe_fract_self (k : K) : (fract (Basis.singleton ι K) k : K) = Int.fract k :=
   Basis.ext_elem _ fun _ => by rw [repr_fract_apply, Basis.singleton_repr, Basis.singleton_repr]
 #align zspan.coe_fract_self Zspan.coe_fract_self
 

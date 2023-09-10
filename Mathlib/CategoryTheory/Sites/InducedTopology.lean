@@ -128,7 +128,7 @@ abbrev CoverDense.inducedTopology [Full G] [Faithful G] (H : CoverDense K G) :
 
 variable (J)
 
-theorem over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
+lemma over_forget_locallyCoverDense (X : C) : LocallyCoverDense J (Over.forget X) := by
   intro Y T
   convert T.property
   ext Z f

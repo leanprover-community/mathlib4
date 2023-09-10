@@ -61,11 +61,11 @@ instance : SetLike (ConvexBody V) V where
     cases L
     congr
 
-protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
+protected lemma convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
 #align convex_body.convex ConvexBody.convex
 
-protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
+protected lemma isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
   K.isCompact'
 #align convex_body.is_compact ConvexBody.isCompact
 
@@ -73,7 +73,7 @@ protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
 protected lemma isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
   K.isCompact.isClosed
 
-protected theorem nonempty (K : ConvexBody V) : (K : Set V).Nonempty :=
+protected lemma nonempty (K : ConvexBody V) : (K : Set V).Nonempty :=
   K.nonempty'
 #align convex_body.nonempty ConvexBody.nonempty
 
@@ -83,7 +83,7 @@ protected lemma ext {K L : ConvexBody V} (h : (K : Set V) = L) : K = L :=
 #align convex_body.ext ConvexBody.ext
 
 @[simp]
-theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s :=
+lemma coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s :=
   rfl
 #align convex_body.coe_mk ConvexBody.coe_mk
 
@@ -113,7 +113,7 @@ instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
-theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
+lemma coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 #align convex_body.coe_add ConvexBody.coe_add
 
@@ -136,7 +136,7 @@ instance : SMul ℝ (ConvexBody V)
     where smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
-theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
+lemma coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 #align convex_body.coe_smul ConvexBody.coe_smul
 
@@ -146,7 +146,7 @@ instance : DistribMulAction ℝ (ConvexBody V) :=
   SetLike.coe_injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_smul
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
-theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
+lemma coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 #align convex_body.coe_smul' ConvexBody.coe_smul'
 

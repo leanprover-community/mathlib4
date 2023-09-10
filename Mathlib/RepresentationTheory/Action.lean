@@ -146,7 +146,7 @@ lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.
   Hom.ext _ _ h
 
 @[simp]
-theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
+lemma id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.id_hom Action.id_hom
@@ -626,7 +626,7 @@ instance : IsEquivalence (functorCategoryMonoidalEquivalence V G).toFunctor := b
   change IsEquivalence (Action.functorCategoryEquivalence _ _).functor; infer_instance
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
+lemma functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μ A B).app PUnit.unit = 𝟙 _ := by
   dsimp only [functorCategoryMonoidalEquivalence]
   simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_μ, NatTrans.comp_app]
@@ -644,7 +644,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_app Action.functorCategoryMonoidalEquivalence.μ_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
+lemma functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μIso A B).inv.app PUnit.unit = 𝟙 _ := by
   rw [← NatIso.app_inv, ← IsIso.Iso.inv_hom]
   refine' IsIso.inv_eq_of_hom_inv_id _
@@ -663,28 +663,28 @@ set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.ε_app Action.functorCategoryMonoidalEquivalence.ε_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.inv_counit_app_hom (A : Action V G) :
+lemma functorCategoryMonoidalEquivalence.inv_counit_app_hom (A : Action V G) :
     ((functorCategoryMonoidalEquivalence _ _).inv.adjunction.counit.app A).hom = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inv_counit_app_hom Action.functorCategoryMonoidalEquivalence.inv_counit_app_hom
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.counit_app (A : SingleObj G ⥤ V) :
+lemma functorCategoryMonoidalEquivalence.counit_app (A : SingleObj G ⥤ V) :
     ((functorCategoryMonoidalEquivalence _ _).adjunction.counit.app A).app PUnit.unit = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.counit_app Action.functorCategoryMonoidalEquivalence.counit_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.inv_unit_app_app (A : SingleObj G ⥤ V) :
+lemma functorCategoryMonoidalEquivalence.inv_unit_app_app (A : SingleObj G ⥤ V) :
     ((functorCategoryMonoidalEquivalence _ _).inv.adjunction.unit.app A).app PUnit.unit = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inv_unit_app_app Action.functorCategoryMonoidalEquivalence.inv_unit_app_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.unit_app_hom (A : Action V G) :
+lemma functorCategoryMonoidalEquivalence.unit_app_hom (A : Action V G) :
     ((functorCategoryMonoidalEquivalence _ _).adjunction.unit.app A).hom = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -1017,7 +1017,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action_ε_inv_hom CategoryTheory.MonoidalFunctor.mapAction_ε_inv_hom
 
 @[simp]
-theorem mapAction_μ_inv_hom (X Y : Action V G) :
+lemma mapAction_μ_inv_hom (X Y : Action V G) :
     (inv ((F.mapAction G).μ X Y)).hom = inv (F.μ X.V Y.V) := by
   rw [← cancel_mono (F.μ X.V Y.V), IsIso.inv_hom_id, ← F.mapAction_toLaxMonoidalFunctor_μ_hom G,
     ← Action.comp_hom, IsIso.inv_hom_id, Action.id_hom]

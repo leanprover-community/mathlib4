@@ -26,7 +26,7 @@ protected def map (f : α → β) (a : PLift α) : PLift β :=
 #align plift.map PLift.map
 
 @[simp]
-theorem map_up (f : α → β) (a : α) : (PLift.up a).map f = PLift.up (f a) :=
+lemma map_up (f : α → β) (a : α) : (PLift.up a).map f = PLift.up (f a) :=
   rfl
 #align plift.map_up PLift.map_up
 
@@ -42,7 +42,7 @@ protected def seq (f : PLift (α → β)) (x : Unit → PLift α) : PLift β :=
 #align plift.seq PLift.seq
 
 @[simp]
-theorem seq_up (f : α → β) (x : α) : (PLift.up f).seq (fun _ => PLift.up x) = PLift.up (f x) :=
+lemma seq_up (f : α → β) (x : α) : (PLift.up f).seq (fun _ => PLift.up x) = PLift.up (f x) :=
   rfl
 #align plift.seq_up PLift.seq_up
 
@@ -52,7 +52,7 @@ protected def bind (a : PLift α) (f : α → PLift β) : PLift β :=
 #align plift.bind PLift.bind
 
 @[simp]
-theorem bind_up (a : α) (f : α → PLift β) : (PLift.up a).bind f = f a :=
+lemma bind_up (a : α) (f : α → PLift β) : (PLift.up a).bind f = f a :=
   rfl
 #align plift.bind_up PLift.bind_up
 
@@ -82,7 +82,7 @@ instance : LawfulMonad PLift where
   bind_assoc := @fun _ _ _ ⟨_⟩ _ _ => rfl
 
 @[simp]
-theorem rec.constant {α : Sort u} {β : Type v} (b : β) :
+lemma rec.constant {α : Sort u} {β : Type v} (b : β) :
     (@PLift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
 #align plift.rec.constant PLift.rec.constant
 
@@ -98,7 +98,7 @@ protected def map (f : α → β) (a : ULift α) : ULift β :=
 #align ulift.map ULift.map
 
 @[simp]
-theorem map_up (f : α → β) (a : α) : (ULift.up.{u} a).map f = ULift.up.{u} (f a) :=
+lemma map_up (f : α → β) (a : α) : (ULift.up.{u} a).map f = ULift.up.{u} (f a) :=
   rfl
 #align ulift.map_up ULift.map_up
 
@@ -114,7 +114,7 @@ protected def seq {α β} (f : ULift (α → β)) (x : Unit → ULift α) : ULif
 #align ulift.seq ULift.seq
 
 @[simp]
-theorem seq_up (f : α → β) (x : α) : (ULift.up f).seq (fun _ => ULift.up x) = ULift.up (f x) :=
+lemma seq_up (f : α → β) (x : α) : (ULift.up f).seq (fun _ => ULift.up x) = ULift.up (f x) :=
   rfl
 #align ulift.seq_up ULift.seq_up
 
@@ -124,7 +124,7 @@ protected def bind (a : ULift α) (f : α → ULift β) : ULift β :=
 #align ulift.bind ULift.bind
 
 @[simp]
-theorem bind_up (a : α) (f : α → ULift β) : (ULift.up a).bind f = f a :=
+lemma bind_up (a : α) (f : α → ULift β) : (ULift.up a).bind f = f a :=
   rfl
 #align ulift.bind_up ULift.bind_up
 
@@ -154,7 +154,7 @@ instance : LawfulMonad ULift where
   bind_assoc := @fun _ _ _ ⟨_⟩ _ _ => rfl
 
 @[simp]
-theorem rec.constant {α : Type u} {β : Sort v} (b : β) :
+lemma rec.constant {α : Type u} {β : Sort v} (b : β) :
      (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
 #align ulift.rec.constant ULift.rec.constant
 

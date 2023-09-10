@@ -80,7 +80,7 @@ lemma acc_iff_no_decreasing_seq {x} :
     apply h
 #align rel_embedding.acc_iff_no_decreasing_seq RelEmbedding.acc_iff_no_decreasing_seq
 
-theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
+lemma not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Acc r (f k) := by
   rw [acc_iff_no_decreasing_seq, not_isEmpty_iff]
   exact ⟨⟨f, k, rfl⟩⟩
 #align rel_embedding.not_acc_of_decreasing_seq RelEmbedding.not_acc_of_decreasing_seq
@@ -95,7 +95,7 @@ lemma wellFounded_iff_no_descending_seq :
     exact ⟨fun x => acc_iff_no_decreasing_seq.2 inferInstance⟩
 #align rel_embedding.well_founded_iff_no_descending_seq RelEmbedding.wellFounded_iff_no_descending_seq
 
-theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
+lemma not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
   rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]
   exact ⟨f⟩
 #align rel_embedding.not_well_founded_of_decreasing_seq RelEmbedding.not_wellFounded_of_decreasing_seq
@@ -163,7 +163,7 @@ lemma exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : �
 
 end Nat
 
-theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f : ℕ → α) :
+lemma exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f : ℕ → α) :
     ∃ g : ℕ ↪o ℕ,
       (∀ n : ℕ, r (f (g n)) (f (g (n + 1)))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   classical
@@ -200,7 +200,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
 
 /-- This is the infinitary Erdős–Szekeres theorem, and an important lemma in the usual proof of
     Bolzano-Weierstrass for `ℝ`. -/
-theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTrans α r] (f : ℕ → α) :
+lemma exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTrans α r] (f : ℕ → α) :
     ∃ g : ℕ ↪o ℕ,
       (∀ m n : ℕ, m < n → r (f (g m)) (f (g n))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   obtain ⟨g, hr | hnr⟩ := exists_increasing_or_nonincreasing_subseq' r f

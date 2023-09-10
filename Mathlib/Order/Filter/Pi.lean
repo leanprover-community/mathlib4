@@ -42,7 +42,7 @@ instance pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f 
   iInf.isCountablyGenerated _
 #align filter.pi.is_countably_generated Filter.pi.isCountablyGenerated
 
-theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (pi f) (f i) :=
+lemma tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (pi f) (f i) :=
   tendsto_iInf' i tendsto_comap
 #align filter.tendsto_eval_pi Filter.tendsto_eval_pi
 
@@ -56,11 +56,11 @@ lemma le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i) 
 #align filter.le_pi Filter.le_pi
 
 @[mono]
-theorem pi_mono (h : ∀ i, f₁ i ≤ f₂ i) : pi f₁ ≤ pi f₂ :=
+lemma pi_mono (h : ∀ i, f₁ i ≤ f₂ i) : pi f₁ ≤ pi f₂ :=
   iInf_mono fun i => comap_mono <| h i
 #align filter.pi_mono Filter.pi_mono
 
-theorem mem_pi_of_mem (i : ι) {s : Set (α i)} (hs : s ∈ f i) : eval i ⁻¹' s ∈ pi f :=
+lemma mem_pi_of_mem (i : ι) {s : Set (α i)} (hs : s ∈ f i) : eval i ⁻¹' s ∈ pi f :=
   mem_iInf_of_mem i <| preimage_mem_comap hs
 #align filter.mem_pi_of_mem Filter.mem_pi_of_mem
 
@@ -162,7 +162,7 @@ instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
   pi_neBot.2 ‹_›
 
 @[simp]
-theorem map_eval_pi (f : ∀ i, Filter (α i)) [∀ i, NeBot (f i)] (i : ι) :
+lemma map_eval_pi (f : ∀ i, Filter (α i)) [∀ i, NeBot (f i)] (i : ι) :
     map (eval i) (pi f) = f i := by
   refine' le_antisymm (tendsto_eval_pi f i) fun s hs => _
   rcases mem_pi.1 (mem_map.1 hs) with ⟨I, hIf, t, htf, hI⟩
@@ -247,7 +247,7 @@ lemma coprodᵢ_neBot [∀ i, Nonempty (α i)] [Nonempty ι] (f : ∀ i, Filter 
 #align filter.Coprod_ne_bot Filter.coprodᵢ_neBot
 
 @[mono]
-theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
+lemma coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
   iSup_mono fun i => comap_mono (hf i)
 #align filter.Coprod_mono Filter.coprodᵢ_mono
 

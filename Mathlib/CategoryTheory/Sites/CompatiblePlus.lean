@@ -59,7 +59,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
 #align category_theory.grothendieck_topology.diagram_comp_iso CategoryTheory.GrothendieckTopology.diagramCompIso
 
 @[reassoc (attr := simp)]
-theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
+lemma diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
   (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
   F.map (Multiequalizer.ι _ _) := by
   delta diagramCompIso
@@ -113,7 +113,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
 #align category_theory.grothendieck_topology.plus_comp_iso CategoryTheory.GrothendieckTopology.plusCompIso
 
 @[reassoc (attr := simp)]
-theorem ι_plusCompIso_hom (X) (W) :
+lemma ι_plusCompIso_hom (X) (W) :
     F.map (colimit.ι _ W) ≫ (J.plusCompIso F P).hom.app X =
       (J.diagramCompIso F P X.unop).hom.app W ≫ colimit.ι _ W := by
   delta diagramCompIso plusCompIso
@@ -222,7 +222,7 @@ lemma toPlus_comp_plusCompIso_inv :
     J.toPlus _ ≫ (J.plusCompIso F P).inv = whiskerRight (J.toPlus _) _ := by simp [Iso.comp_inv_eq]
 #align category_theory.grothendieck_topology.to_plus_comp_plus_comp_iso_inv CategoryTheory.GrothendieckTopology.toPlus_comp_plusCompIso_inv
 
-theorem plusCompIso_inv_eq_plusLift (hP : Presheaf.IsSheaf J (J.plusObj P ⋙ F)) :
+lemma plusCompIso_inv_eq_plusLift (hP : Presheaf.IsSheaf J (J.plusObj P ⋙ F)) :
     (J.plusCompIso F P).inv = J.plusLift (whiskerRight (J.toPlus _) _) hP := by
   apply J.plusLift_unique
   simp [Iso.comp_inv_eq]

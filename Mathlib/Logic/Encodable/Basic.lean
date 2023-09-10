@@ -75,7 +75,7 @@ lemma encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
-theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
+lemma surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
     Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
 #align encodable.surjective_decode_iget Encodable.surjective_decode_iget
@@ -122,12 +122,12 @@ instance _root_.Nat.encodable : Encodable ℕ :=
 #align nat.encodable Nat.encodable
 
 @[simp]
-theorem encode_nat (n : ℕ) : encode n = n :=
+lemma encode_nat (n : ℕ) : encode n = n :=
   rfl
 #align encodable.encode_nat Encodable.encode_nat
 
 @[simp 1100]
-theorem decode_nat (n : ℕ) : decode n = some n :=
+lemma decode_nat (n : ℕ) : decode n = some n :=
   rfl
 #align encodable.decode_nat Encodable.decode_nat
 
@@ -150,7 +150,7 @@ lemma decode_unit_zero : decode 0 = some PUnit.unit :=
 #align encodable.decode_unit_zero Encodable.decode_unit_zero
 
 @[simp]
-theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
+lemma decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
   rfl
 #align encodable.decode_unit_succ Encodable.decode_unit_succ
 
@@ -282,18 +282,18 @@ instance _root_.Sum.encodable : Encodable (Sum α β) :=
 
 --Porting note: removing bit0 and bit1 from statement
 @[simp]
-theorem encode_inl (a : α) : @encode (Sum α β) _ (Sum.inl a) = 2 * (encode a) :=
+lemma encode_inl (a : α) : @encode (Sum α β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
 #align encodable.encode_inl Encodable.encode_inlₓ
 
 --Porting note: removing bit0 and bit1 from statement
 @[simp]
-theorem encode_inr (b : β) : @encode (Sum α β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
+lemma encode_inr (b : β) : @encode (Sum α β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
 #align encodable.encode_inr Encodable.encode_inrₓ
 
 @[simp]
-theorem decode_sum_val (n : ℕ) : (decode n : Option (Sum α β)) = decodeSum n :=
+lemma decode_sum_val (n : ℕ) : (decode n : Option (Sum α β)) = decodeSum n :=
   rfl
 #align encodable.decode_sum_val Encodable.decode_sum_val
 
@@ -323,7 +323,7 @@ lemma decode_one : (decode 1 : Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 
-theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
+lemma decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   suffices decodeSum n = none by
     change (decodeSum n).bind _ = none
     rw [this]
@@ -360,14 +360,14 @@ instance _root_.Sigma.encodable : Encodable (Sigma γ) :=
 #align sigma.encodable Sigma.encodable
 
 @[simp]
-theorem decode_sigma_val (n : ℕ) :
+lemma decode_sigma_val (n : ℕ) :
     (decode n : Option (Sigma γ)) =
       (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Sigma.mk a :=
   rfl
 #align encodable.decode_sigma_val Encodable.decode_sigma_val
 
 @[simp]
-theorem encode_sigma_val (a b) : @encode (Sigma γ) _ ⟨a, b⟩ = pair (encode a) (encode b) :=
+lemma encode_sigma_val (a b) : @encode (Sigma γ) _ ⟨a, b⟩ = pair (encode a) (encode b) :=
   rfl
 #align encodable.encode_sigma_val Encodable.encode_sigma_val
 
@@ -391,7 +391,7 @@ lemma decode_prod_val [i : Encodable α] (n : ℕ) :
 #align encodable.decode_prod_val Encodable.decode_prod_val
 
 @[simp]
-theorem encode_prod_val (a b) : @encode (α × β) _ (a, b) = pair (encode a) (encode b) :=
+lemma encode_prod_val (a b) : @encode (α × β) _ (a, b) = pair (encode a) (encode b) :=
   rfl
 #align encodable.encode_prod_val Encodable.encode_prod_val
 
@@ -422,7 +422,7 @@ instance _root_.Subtype.encodable : Encodable { a : α // P a } :=
   ⟨encodeSubtype, decodeSubtype, fun ⟨v, h⟩ => by simp [encodeSubtype, decodeSubtype, encodek, h]⟩
 #align subtype.encodable Subtype.encodable
 
-theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a; rfl
+lemma Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a; rfl
 #align encodable.subtype.encode_eq Encodable.Subtype.encode_eq
 
 end Subtype
@@ -469,7 +469,7 @@ lemma nonempty_encodable : Nonempty (Encodable α) ↔ Countable α :=
 end Encodable
 
 /-- See also `nonempty_fintype`, `nonempty_denumerable`. -/
-theorem nonempty_encodable (α : Type*) [Countable α] : Nonempty (Encodable α) :=
+lemma nonempty_encodable (α : Type*) [Countable α] : Nonempty (Encodable α) :=
   ⟨Encodable.ofCountable _⟩
 #align nonempty_encodable nonempty_encodable
 
@@ -585,7 +585,7 @@ def choose (h : ∃ x, p x) : α :=
   (chooseX h).1
 #align encodable.choose Encodable.choose
 
-theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
+lemma choose_spec (h : ∃ x, p x) : p (choose h) :=
   (chooseX h).2
 #align encodable.choose_spec Encodable.choose_spec
 
@@ -661,7 +661,7 @@ lemma sequence_mono : Monotone (f ∘ hf.sequence f) :=
   monotone_nat_of_le_succ <| hf.sequence_mono_nat
 #align directed.sequence_mono Directed.sequence_mono
 
-theorem le_sequence (a : α) : f a ≤ f (hf.sequence f (encode a + 1)) :=
+lemma le_sequence (a : α) : f a ≤ f (hf.sequence f (encode a + 1)) :=
   hf.rel_sequence a
 #align directed.le_sequence Directed.le_sequence
 
@@ -679,7 +679,7 @@ def Quotient.rep (q : Quotient s) : α :=
   choose (exists_rep q)
 #align quotient.rep Quotient.rep
 
-theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
+lemma Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
   choose_spec (exists_rep q)
 #align quotient.rep_spec Quotient.rep_spec
 

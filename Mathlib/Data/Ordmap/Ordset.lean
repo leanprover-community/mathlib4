@@ -153,7 +153,7 @@ lemma dual_dual : ∀ t : Ordnode α, dual (dual t) = t
 #align ordnode.dual_dual Ordnode.dual_dual
 
 @[simp]
-theorem size_dual (t : Ordnode α) : size (dual t) = size t := by cases t <;> rfl
+lemma size_dual (t : Ordnode α) : size (dual t) = size t := by cases t <;> rfl
 #align ordnode.size_dual Ordnode.size_dual
 
 /-! `Balanced` -/
@@ -254,12 +254,12 @@ def rotateL : Ordnode α → α → Ordnode α → Ordnode α
   | l, x, nil => node' l x nil
 #align ordnode.rotate_l Ordnode.rotateL
 
-theorem rotateL_node (l : Ordnode α) (x : α) (sz : ℕ) (m : Ordnode α) (y : α) (r : Ordnode α) :
+lemma rotateL_node (l : Ordnode α) (x : α) (sz : ℕ) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateL l x (node sz m y r) =
       if size m < ratio * size r then node3L l x m y r else node4L l x m y r :=
   rfl
 
-theorem rotateL_nil (l : Ordnode α) (x : α) : rotateL l x nil = node' l x nil :=
+lemma rotateL_nil (l : Ordnode α) (x : α) : rotateL l x nil = node' l x nil :=
   rfl
 
 attribute [eqns rotateL_node rotateL_nil] rotateL
@@ -272,12 +272,12 @@ def rotateR : Ordnode α → α → Ordnode α → Ordnode α
   | nil, y, r => node' nil y r
 #align ordnode.rotate_r Ordnode.rotateR
 
-theorem rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
+lemma rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateR (node sz l x m) y r =
       if size m < ratio * size l then node3R l x m y r else node4R l x m y r :=
   rfl
 
-theorem rotateR_nil (y : α) (r : Ordnode α) : rotateR nil y r = node' nil y r :=
+lemma rotateR_nil (y : α) (r : Ordnode α) : rotateR nil y r = node' nil y r :=
   rfl
 
   attribute [eqns rotateR_node rotateR_nil] rotateR
@@ -306,49 +306,49 @@ def balance' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
     else if size l > delta * size r then rotateR l x r else node' l x r
 #align ordnode.balance' Ordnode.balance'
 
-theorem dual_node' (l : Ordnode α) (x : α) (r : Ordnode α) :
+lemma dual_node' (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (node' l x r) = node' (dual r) x (dual l) := by simp [node', add_comm]
 #align ordnode.dual_node' Ordnode.dual_node'
 
-theorem dual_node3L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
+lemma dual_node3L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node3L l x m y r) = node3R (dual r) y (dual m) x (dual l) := by
   simp [node3L, node3R, dual_node', add_comm]
 #align ordnode.dual_node3_l Ordnode.dual_node3L
 
-theorem dual_node3R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
+lemma dual_node3R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node3R l x m y r) = node3L (dual r) y (dual m) x (dual l) := by
   simp [node3L, node3R, dual_node', add_comm]
 #align ordnode.dual_node3_r Ordnode.dual_node3R
 
-theorem dual_node4L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
+lemma dual_node4L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node4L l x m y r) = node4R (dual r) y (dual m) x (dual l) := by
   cases m <;> simp [node4L, node4R, node3R, dual_node3L, dual_node', add_comm]
 #align ordnode.dual_node4_l Ordnode.dual_node4L
 
-theorem dual_node4R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
+lemma dual_node4R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node4R l x m y r) = node4L (dual r) y (dual m) x (dual l) := by
   cases m <;> simp [node4L, node4R, node3L, dual_node3R, dual_node', add_comm]
 #align ordnode.dual_node4_r Ordnode.dual_node4R
 
-theorem dual_rotateL (l : Ordnode α) (x : α) (r : Ordnode α) :
+lemma dual_rotateL (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (rotateL l x r) = rotateR (dual r) x (dual l) := by
   cases r <;> simp [rotateL, rotateR, dual_node']; split_ifs <;>
     simp [dual_node3L, dual_node4L, node3R, add_comm]
 #align ordnode.dual_rotate_l Ordnode.dual_rotateL
 
-theorem dual_rotateR (l : Ordnode α) (x : α) (r : Ordnode α) :
+lemma dual_rotateR (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (rotateR l x r) = rotateL (dual r) x (dual l) := by
   rw [← dual_dual (rotateL _ _ _), dual_rotateL, dual_dual, dual_dual]
 #align ordnode.dual_rotate_r Ordnode.dual_rotateR
 
-theorem dual_balance' (l : Ordnode α) (x : α) (r : Ordnode α) :
+lemma dual_balance' (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balance' l x r) = balance' (dual r) x (dual l) := by
   simp [balance', add_comm]; split_ifs with h h_1 h_2 <;>
     simp [dual_node', dual_rotateL, dual_rotateR, add_comm]
   cases delta_lt_false h_1 h_2
 #align ordnode.dual_balance' Ordnode.dual_balance'
 
-theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
+lemma dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balanceL l x r) = balanceR (dual r) x (dual l) := by
   unfold balanceL balanceR
   cases' r with rs rl rx rr
@@ -364,7 +364,7 @@ theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
     split_ifs with h <;> simp [h, add_comm]
 #align ordnode.dual_balance_l Ordnode.dual_balanceL
 
-theorem dual_balanceR (l : Ordnode α) (x : α) (r : Ordnode α) :
+lemma dual_balanceR (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balanceR l x r) = balanceL (dual r) x (dual l) := by
   rw [← dual_dual (balanceL _ _ _), dual_balanceL, dual_dual, dual_dual]
 #align ordnode.dual_balance_r Ordnode.dual_balanceR
@@ -541,7 +541,7 @@ lemma toList_nil : toList (@nil α) = [] :=
 #align ordnode.to_list_nil Ordnode.toList_nil
 
 @[simp]
-theorem toList_node (s l x r) : toList (@node α s l x r) = toList l ++ x :: toList r := by
+lemma toList_node (s l x r) : toList (@node α s l x r) = toList l ++ x :: toList r := by
   rw [toList, foldr, foldr_cons_eq_toList]; rfl
 #align ordnode.to_list_node Ordnode.toList_node
 
@@ -580,7 +580,7 @@ lemma findMin'_dual : ∀ (t) (x : α), findMin' (dual t) x = findMax' x t
   | node _ _ x r, _ => findMin'_dual r x
 #align ordnode.find_min'_dual Ordnode.findMin'_dual
 
-theorem findMax'_dual (t) (x : α) : findMax' x (dual t) = findMin' t x := by
+lemma findMax'_dual (t) (x : α) : findMax' x (dual t) = findMin' t x := by
   rw [← findMin'_dual, dual_dual]
 #align ordnode.find_max'_dual Ordnode.findMax'_dual
 
@@ -589,7 +589,7 @@ lemma findMin_dual : ∀ t : Ordnode α, findMin (dual t) = findMax t
   | node _ _ _ _ => congr_arg some <| findMin'_dual _ _
 #align ordnode.find_min_dual Ordnode.findMin_dual
 
-theorem findMax_dual (t : Ordnode α) : findMax (dual t) = findMin t := by
+lemma findMax_dual (t : Ordnode α) : findMax (dual t) = findMin t := by
   rw [← findMin_dual, dual_dual]
 #align ordnode.find_max_dual Ordnode.findMax_dual
 
@@ -600,7 +600,7 @@ lemma dual_eraseMin : ∀ t : Ordnode α, dual (eraseMin t) = eraseMax (dual t)
     rw [eraseMin, dual_balanceR, dual_eraseMin (node sz l' y r'), dual, dual, dual, eraseMax]
 #align ordnode.dual_erase_min Ordnode.dual_eraseMin
 
-theorem dual_eraseMax (t : Ordnode α) : dual (eraseMax t) = eraseMin (dual t) := by
+lemma dual_eraseMax (t : Ordnode α) : dual (eraseMax t) = eraseMin (dual t) := by
   rw [← dual_dual (eraseMin _), dual_eraseMin, dual_dual]
 #align ordnode.dual_erase_max Ordnode.dual_eraseMax
 
@@ -635,11 +635,11 @@ lemma findMax'_all {P : α → Prop} : ∀ (x : α) (t), P x → All P t → P (
 
 
 @[simp]
-theorem merge_nil_left (t : Ordnode α) : merge t nil = t := by cases t <;> rfl
+lemma merge_nil_left (t : Ordnode α) : merge t nil = t := by cases t <;> rfl
 #align ordnode.merge_nil_left Ordnode.merge_nil_left
 
 @[simp]
-theorem merge_nil_right (t : Ordnode α) : merge nil t = t :=
+lemma merge_nil_right (t : Ordnode α) : merge nil t = t :=
   rfl
 #align ordnode.merge_nil_right Ordnode.merge_nil_right
 
@@ -795,13 +795,13 @@ lemma Raised.dist_le' {n m} (H : Raised n m) : Nat.dist m n ≤ 1 := by
   rw [Nat.dist_comm]; exact H.dist_le
 #align ordnode.raised.dist_le' Ordnode.Raised.dist_le'
 
-theorem Raised.add_left (k) {n m} (H : Raised n m) : Raised (k + n) (k + m) := by
+lemma Raised.add_left (k) {n m} (H : Raised n m) : Raised (k + n) (k + m) := by
   rcases H with (rfl | rfl)
   · exact Or.inl rfl
   · exact Or.inr rfl
 #align ordnode.raised.add_left Ordnode.Raised.add_left
 
-theorem Raised.add_right (k) {n m} (H : Raised n m) : Raised (n + k) (m + k) := by
+lemma Raised.add_right (k) {n m} (H : Raised n m) : Raised (n + k) (m + k) := by
   rw [add_comm, add_comm m]; exact H.add_left _
 #align ordnode.raised.add_right Ordnode.Raised.add_right
 

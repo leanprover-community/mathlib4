@@ -263,7 +263,7 @@ lemma of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
 #align not_mixed_char_to_equal_char_zero EqualCharZero.of_not_mixedCharZero
 
 /-- Equal characteristic implies not mixed characteristic. -/
-theorem to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
+lemma to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
     ∀ p > 0, ¬MixedCharZero R p := by
   intro p p_pos
   by_contra hp_mixedChar
@@ -343,7 +343,7 @@ Split any `Prop` over `R` into the three cases:
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.
 -/
-theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → P) (h_equal : Algebra ℚ R → P)
+lemma split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → P) (h_equal : Algebra ℚ R → P)
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
   cases CharP.exists R with
   | intro p p_charP =>

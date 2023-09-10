@@ -118,7 +118,7 @@ def isDigit (c : UInt8) : Bool :=
 def isAlphanum (c : UInt8) : Bool :=
   c.isAlpha || c.isDigit
 
-theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
+lemma toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
   rw [UInt32.val_eq_of_lt]
   exact Or.inl $ Nat.lt_trans h $ by decide
   exact Nat.lt_trans h $ by decide

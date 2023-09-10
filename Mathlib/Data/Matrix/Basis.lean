@@ -38,7 +38,7 @@ def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α := fun i' j' =>
 #align matrix.std_basis_matrix Matrix.stdBasisMatrix
 
 @[simp]
-theorem smul_stdBasisMatrix (i : m) (j : n) (a b : α) :
+lemma smul_stdBasisMatrix (i : m) (j : n) (a b : α) :
     b • stdBasisMatrix i j a = stdBasisMatrix i j (b • a) := by
   unfold stdBasisMatrix
   ext
@@ -46,13 +46,13 @@ theorem smul_stdBasisMatrix (i : m) (j : n) (a b : α) :
 #align matrix.smul_std_basis_matrix Matrix.smul_stdBasisMatrix
 
 @[simp]
-theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 := by
+lemma stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 := by
   unfold stdBasisMatrix
   ext
   simp
 #align matrix.std_basis_matrix_zero Matrix.stdBasisMatrix_zero
 
-theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
+lemma stdBasisMatrix_add (i : m) (j : n) (a b : α) :
     stdBasisMatrix i j (a + b) = stdBasisMatrix i j a + stdBasisMatrix i j b := by
   unfold stdBasisMatrix; ext
   split_ifs with h <;> simp [h]
@@ -78,7 +78,7 @@ lemma matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
 -- TODO: tie this up with the `Basis` machinery of linear algebra
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
-theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
+lemma std_basis_eq_basis_mul_basis (i : m) (j : n) :
     stdBasisMatrix i j 1 = vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
   ext i' j'
   -- Porting note: was `norm_num [std_basis_matrix, vec_mul_vec]` though there are no numerals
@@ -124,7 +124,7 @@ lemma apply_same : stdBasisMatrix i j c i j = c :=
 #align matrix.std_basis_matrix.apply_same Matrix.StdBasisMatrix.apply_same
 
 @[simp]
-theorem apply_of_ne (h : ¬(i = i' ∧ j = j')) : stdBasisMatrix i j c i' j' = 0 := by
+lemma apply_of_ne (h : ¬(i = i' ∧ j = j')) : stdBasisMatrix i j c i' j' = 0 := by
   simp only [stdBasisMatrix, and_imp, ite_eq_right_iff]
   tauto
 #align matrix.std_basis_matrix.apply_of_ne Matrix.StdBasisMatrix.apply_of_ne
@@ -135,7 +135,7 @@ lemma apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
 #align matrix.std_basis_matrix.apply_of_row_ne Matrix.StdBasisMatrix.apply_of_row_ne
 
 @[simp]
-theorem apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
+lemma apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
     stdBasisMatrix i j a i' j' = 0 := by simp [hj]
 #align matrix.std_basis_matrix.apply_of_col_ne Matrix.StdBasisMatrix.apply_of_col_ne
 
@@ -146,7 +146,7 @@ section
 variable (i j : n) (c : α) (i' j' : n)
 
 @[simp]
-theorem diag_zero (h : j ≠ i) : diag (stdBasisMatrix i j c) = 0 :=
+lemma diag_zero (h : j ≠ i) : diag (stdBasisMatrix i j c) = 0 :=
   funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₂.trans e₁.symm)
 #align matrix.std_basis_matrix.diag_zero Matrix.StdBasisMatrix.diag_zero
 
@@ -159,7 +159,7 @@ lemma diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
 variable [Fintype n]
 
 @[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
+lemma trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
   -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply, h]
 #align matrix.std_basis_matrix.trace_zero Matrix.StdBasisMatrix.trace_zero
@@ -171,27 +171,27 @@ lemma trace_eq : trace (stdBasisMatrix i i c) = c := by
 #align matrix.std_basis_matrix.trace_eq Matrix.StdBasisMatrix.trace_eq
 
 @[simp]
-theorem mul_left_apply_same (b : n) (M : Matrix n n α) :
+lemma mul_left_apply_same (b : n) (M : Matrix n n α) :
     (stdBasisMatrix i j c * M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
 #align matrix.std_basis_matrix.mul_left_apply_same Matrix.StdBasisMatrix.mul_left_apply_same
 
 @[simp]
-theorem mul_right_apply_same (a : n) (M : Matrix n n α) :
+lemma mul_right_apply_same (a : n) (M : Matrix n n α) :
     (M * stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
 #align matrix.std_basis_matrix.mul_right_apply_same Matrix.StdBasisMatrix.mul_right_apply_same
 
 @[simp]
-theorem mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
+lemma mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
     (stdBasisMatrix i j c * M) a b = 0 := by simp [mul_apply, h.symm]
 #align matrix.std_basis_matrix.mul_left_apply_of_ne Matrix.StdBasisMatrix.mul_left_apply_of_ne
 
 @[simp]
-theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
+lemma mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
     (M * stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
 #align matrix.std_basis_matrix.mul_right_apply_of_ne Matrix.StdBasisMatrix.mul_right_apply_of_ne
 
 @[simp]
-theorem mul_same (k : n) (d : α) :
+lemma mul_same (k : n) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
   ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]

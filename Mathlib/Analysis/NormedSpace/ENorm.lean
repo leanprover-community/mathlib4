@@ -79,7 +79,7 @@ lemma coe_inj {e₁ e₂ : ENorm 𝕜 V} : (e₁ : V → ℝ≥0∞) = e₂ ↔ 
 #align enorm.coe_inj ENorm.coe_inj
 
 @[simp]
-theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
+lemma map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   apply le_antisymm (e.map_smul_le' c x)
   by_cases hc : c = 0
   · simp [hc]
@@ -104,20 +104,20 @@ lemma eq_zero_iff {x : V} : e x = 0 ↔ x = 0 :=
 #align enorm.eq_zero_iff ENorm.eq_zero_iff
 
 @[simp]
-theorem map_neg (x : V) : e (-x) = e x :=
+lemma map_neg (x : V) : e (-x) = e x :=
   calc
     e (-x) = ‖(-1 : 𝕜)‖₊ * e x := by rw [← map_smul, neg_one_smul]
     _ = e x := by simp
 #align enorm.map_neg ENorm.map_neg
 
-theorem map_sub_rev (x y : V) : e (x - y) = e (y - x) := by rw [← neg_sub, e.map_neg]
+lemma map_sub_rev (x y : V) : e (x - y) = e (y - x) := by rw [← neg_sub, e.map_neg]
 #align enorm.map_sub_rev ENorm.map_sub_rev
 
-theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
+lemma map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
   e.map_add_le' x y
 #align enorm.map_add_le ENorm.map_add_le
 
-theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
+lemma map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
   calc
     e (x - y) = e (x + -y) := by rw [sub_eq_add_neg]
     _ ≤ e x + e (-y) := (e.map_add_le x (-y))
@@ -174,12 +174,12 @@ noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
     sup_le := fun e₁ e₂ e₃ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
 
 @[simp, norm_cast]
-theorem coe_max (e₁ e₂ : ENorm 𝕜 V) : ⇑(e₁ ⊔ e₂) = fun x => max (e₁ x) (e₂ x) :=
+lemma coe_max (e₁ e₂ : ENorm 𝕜 V) : ⇑(e₁ ⊔ e₂) = fun x => max (e₁ x) (e₂ x) :=
   rfl
 #align enorm.coe_max ENorm.coe_max
 
 @[norm_cast]
-theorem max_map (e₁ e₂ : ENorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e₁ x) (e₂ x) :=
+lemma max_map (e₁ e₂ : ENorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e₁ x) (e₂ x) :=
   rfl
 #align enorm.max_map ENorm.max_map
 
@@ -215,11 +215,11 @@ instance metricSpace : MetricSpace e.finiteSubspace := by
   change e (x - y) ≠ ⊤
   exact ne_top_of_le_ne_top (ENNReal.add_lt_top.2 ⟨x.2, y.2⟩).ne (e.map_sub_le x y)
 
-theorem finite_dist_eq (x y : e.finiteSubspace) : dist x y = (e (x - y)).toReal :=
+lemma finite_dist_eq (x y : e.finiteSubspace) : dist x y = (e (x - y)).toReal :=
   rfl
 #align enorm.finite_dist_eq ENorm.finite_dist_eq
 
-theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
+lemma finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
   rfl
 #align enorm.finite_edist_eq ENorm.finite_edist_eq
 
@@ -230,7 +230,7 @@ instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
     norm := fun x => (e x).toReal
     dist_eq := fun _ _ => rfl }
 
-theorem finite_norm_eq (x : e.finiteSubspace) : ‖x‖ = (e x).toReal :=
+lemma finite_norm_eq (x : e.finiteSubspace) : ‖x‖ = (e x).toReal :=
   rfl
 #align enorm.finite_norm_eq ENorm.finite_norm_eq
 

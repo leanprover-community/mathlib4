@@ -68,7 +68,7 @@ lemma fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
 #align first_order.language.substructure.fg_closure FirstOrder.Language.Substructure.fg_closure
 
-theorem fg_closure_singleton (x : M) : FG (closure L ({x} : Set M)) :=
+lemma fg_closure_singleton (x : M) : FG (closure L ({x} : Set M)) :=
   fg_closure (finite_singleton x)
 #align first_order.language.substructure.fg_closure_singleton FirstOrder.Language.Substructure.fg_closure_singleton
 
@@ -143,7 +143,7 @@ lemma cg_closure {s : Set M} (hs : s.Countable) : CG (closure L s) :=
   ⟨s, hs, rfl⟩
 #align first_order.language.substructure.cg_closure FirstOrder.Language.Substructure.cg_closure
 
-theorem cg_closure_singleton (x : M) : CG (closure L ({x} : Set M)) :=
+lemma cg_closure_singleton (x : M) : CG (closure L ({x} : Set M)) :=
   (fg_closure_singleton x).cg
 #align first_order.language.substructure.cg_closure_singleton FirstOrder.Language.Substructure.cg_closure_singleton
 
@@ -248,7 +248,7 @@ lemma cg_iff_countable [Countable (Σl, L.Functions l)] : CG L M ↔ Countable M
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
 #align first_order.language.Structure.cg_iff_countable FirstOrder.Language.Structure.cg_iff_countable
 
-theorem FG.cg (h : FG L M) : CG L M :=
+lemma FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg
 #align first_order.language.Structure.fg.cg FirstOrder.Language.Structure.FG.cg
 
@@ -264,7 +264,7 @@ lemma Equiv.fg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
     h.map_of_surjective f.symm.toHom f.toEquiv.symm.surjective⟩
 #align first_order.language.equiv.fg_iff FirstOrder.Language.Equiv.fg_iff
 
-theorem Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Structure.FG L S := by
+lemma Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Structure.FG L S := by
   rw [Structure.fg_def]
   refine' ⟨fun h => FG.of_map_embedding S.subtype _, fun h => _⟩
   · rw [← Hom.range_eq_map, range_subtype]
@@ -281,7 +281,7 @@ lemma Equiv.cg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
     h.map_of_surjective f.symm.toHom f.toEquiv.symm.surjective⟩
 #align first_order.language.equiv.cg_iff FirstOrder.Language.Equiv.cg_iff
 
-theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Structure.CG L S := by
+lemma Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Structure.CG L S := by
   rw [Structure.cg_def]
   refine' ⟨fun h => CG.of_map_embedding S.subtype _, fun h => _⟩
   · rw [← Hom.range_eq_map, range_subtype]

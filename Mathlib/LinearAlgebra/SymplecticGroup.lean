@@ -134,12 +134,12 @@ end SymplecticJ
 
 variable {A : Matrix (Sum l l) (Sum l l) R}
 
-theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
+lemma neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
   rw [mem_iff] at h ⊢
   simp [h]
 #align symplectic_group.neg_mem SymplecticGroup.neg_mem
 
-theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
+lemma symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [isUnit_iff_exists_inv]
   use A.det
   refine' (isUnit_det_J l R).mul_left_cancel _
@@ -151,7 +151,7 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   exact hA
 #align symplectic_group.symplectic_det SymplecticGroup.symplectic_det
 
-theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
+lemma transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
   rw [transpose_transpose]
   have huA := symplectic_det hA
@@ -183,10 +183,10 @@ instance hasInv : Inv (symplecticGroup l R) where
   inv A := ⟨(-J l R) * (A : Matrix (Sum l l) (Sum l l) R)ᵀ * J l R,
       mul_mem (mul_mem (neg_mem <| J_mem _ _) <| transpose_mem A.2) <| J_mem _ _⟩
 
-theorem coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
+lemma coe_inv (A : symplecticGroup l R) : (↑A⁻¹ : Matrix _ _ _) = (-J l R) * (↑A)ᵀ * J l R := rfl
 #align symplectic_group.coe_inv SymplecticGroup.coe_inv
 
-theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
+lemma inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l R * A) = 1 :=
   calc
     -(J l R * Aᵀ * J l R * A) = (-J l R) * (Aᵀ * J l R * A) := by
       simp only [Matrix.mul_assoc, Matrix.neg_mul]
@@ -198,12 +198,12 @@ theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l
     _ = 1 := by simp only [neg_smul_neg, one_smul]
 #align symplectic_group.inv_left_mul_aux SymplecticGroup.inv_left_mul_aux
 
-theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = (↑A)⁻¹ := by
+lemma coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = (↑A)⁻¹ := by
   refine' (coe_inv A).trans (inv_eq_left_inv _).symm
   simp [inv_left_mul_aux, coe_inv]
 #align symplectic_group.coe_inv' SymplecticGroup.coe_inv'
 
-theorem inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ symplecticGroup l R) :
+lemma inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ symplecticGroup l R) :
     A⁻¹ = (-J l R) * Aᵀ * J l R :=
   inv_eq_left_inv (by simp only [Matrix.neg_mul, inv_left_mul_aux hA])
 #align symplectic_group.inv_eq_symplectic_inv SymplecticGroup.inv_eq_symplectic_inv

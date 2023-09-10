@@ -24,7 +24,7 @@ The example is `{0, 1}` with saturating addition.
 namespace Counterexample
 
 @[simp]
-theorem add_one_eq_one (x : WithZero Unit) : x + 1 = 1 :=
+lemma add_one_eq_one (x : WithZero Unit) : x + 1 = 1 :=
   WithZero.cases_on x (by rfl) fun h => by rfl
 #align counterexample.add_one_eq_one Counterexample.add_one_eq_one
 

@@ -36,7 +36,7 @@ variable
 
 /-- A continuous function on a closed interval with `f a = f b`
 takes either its maximum or its minimum value at a point in the interior of the interval. -/
-theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
+lemma exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, IsExtrOn f (Icc a b) c := by
   have ne : (Icc a b).Nonempty := nonempty_Icc.2 (le_of_lt hab)
   -- Consider absolute min and max points
@@ -59,7 +59,7 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
 
 /-- A continuous function on a closed interval with `f a = f b`
 has a local extremum at some point of the corresponding open interval. -/
-theorem exists_isLocalExtr_Ioo (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
+lemma exists_isLocalExtr_Ioo (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, IsLocalExtr f c :=
   let ⟨c, cmem, hc⟩ := exists_Ioo_extr_on_Icc hab hfc hfI
   ⟨c, cmem, hc.isLocalExtr <| Icc_mem_nhds cmem.1 cmem.2⟩

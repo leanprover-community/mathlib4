@@ -73,17 +73,17 @@ protected instance applicative : Applicative Finset :=
     seqRight := fun s t => if s = ∅ then ∅ else t () }
 
 @[simp]
-theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
+lemma seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
   rfl
 #align finset.seq_def Finset.seq_def
 
 @[simp]
-theorem seqLeft_def (s : Finset α) (t : Finset β) : s <* t = if t = ∅ then ∅ else s :=
+lemma seqLeft_def (s : Finset α) (t : Finset β) : s <* t = if t = ∅ then ∅ else s :=
   rfl
 #align finset.seq_left_def Finset.seqLeft_def
 
 @[simp]
-theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then ∅ else t :=
+lemma seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then ∅ else t :=
   rfl
 #align finset.seq_right_def Finset.seqRight_def
 
@@ -205,12 +205,12 @@ lemma id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id 
 open Classical
 
 @[simp]
-theorem map_comp_coe (h : α → β) :
+lemma map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
   funext fun _ => image_toFinset
 #align finset.map_comp_coe Finset.map_comp_coe
 
-theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
+lemma map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
   simp only [map_comp_coe, functor_norm]

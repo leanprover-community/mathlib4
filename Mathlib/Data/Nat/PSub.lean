@@ -54,10 +54,10 @@ lemma psub_zero : psub m 0 = some m := rfl
 @[simp]
 lemma psub_succ : psub m (succ n) = psub m n >>= ppred := rfl
 
-theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
+lemma pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 
-theorem sub_eq_psub (m : ℕ) : ∀ n, m - n = (psub m n).getD 0
+lemma sub_eq_psub (m : ℕ) : ∀ n, m - n = (psub m n).getD 0
   | 0 => rfl
   | n + 1 => (pred_eq_ppred (m - n)).trans <| by rw [sub_eq_psub m n, psub]; cases psub m n <;> rfl
 #align nat.sub_eq_psub Nat.sub_eq_psub
@@ -105,7 +105,7 @@ lemma psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 #align nat.psub_eq_sub Nat.psub_eq_sub
 
 -- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
-theorem psub_add (m n k) :
+lemma psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k
     simp [Option.bind_eq_bind, Option.bind_some]
@@ -118,7 +118,7 @@ def psub' (m n : ℕ) : Option ℕ :=
   if n ≤ m then some (m - n) else none
 #align nat.psub' Nat.psub'
 
-theorem psub'_eq_psub (m n) : psub' m n = psub m n := by
+lemma psub'_eq_psub (m n) : psub' m n = psub m n := by
   rw [psub']
   split_ifs with h
   exact (psub_eq_sub h).symm

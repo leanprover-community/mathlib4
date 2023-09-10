@@ -135,7 +135,7 @@ lemma AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk
   (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl
 #align algebraic_closure.adjoin_monic.algebra_map AlgebraicClosure.AdjoinMonic.algebraMap
 
-theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
+lemma AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
   let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
   rw [← hp]
   induction p using MvPolynomial.induction_on generalizing z with
@@ -173,7 +173,7 @@ instance Step.field (n : ℕ) : Field (Step k n) :=
 #align algebraic_closure.step.field AlgebraicClosure.Step.field
 
 -- Porting note: added during the port to help in the proof of `Step.isIntegral` below.
-theorem Step.succ (n : ℕ) : Step k (n + 1) = AdjoinMonic (Step k n) := rfl
+lemma Step.succ (n : ℕ) : Step k (n + 1) = AdjoinMonic (Step k n) := rfl
 
 instance Step.inhabited (n) : Inhabited (Step k n) :=
   ⟨37⟩
@@ -207,7 +207,7 @@ lemma toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
 private def toStepOfLE' (m n : ℕ) (h : m ≤ n) : Step k m → Step k n :=
 Nat.leRecOn h @fun a => toStepSucc k a
 
-private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
+private lemma toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
     toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
     (toStepSucc k n) ∘ toStepOfLE' k m n h := by
   ext x
@@ -244,7 +244,7 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
 #align algebraic_closure.to_step_of_le AlgebraicClosure.toStepOfLE
 
 @[simp]
-theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
+lemma coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
     (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h @fun n => toStepSucc k n :=
   rfl
 #align algebraic_closure.coe_to_step_of_le AlgebraicClosure.coe_toStepOfLE
@@ -259,7 +259,7 @@ instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
 #align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
 
 --Porting Note: Added to make `Step.isIntegral` faster
-private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
+private lemma toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
     toStepOfLE k 0 (n + 1) (h.trans n.le_succ) =
     (toStepSucc k n).comp (toStepOfLE k 0 n h) := by
     ext1 x
@@ -268,7 +268,7 @@ private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
     change _ = (_ ∘ _) x
     rw [toStepOfLE'.succ k 0 n h]
 
-theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
+lemma Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
   induction' n with a h
   · intro z
     exact isIntegral_algebraMap
@@ -323,7 +323,7 @@ def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
 
 #noalign algebraic_closure.algebra_of_step
 
-theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
+lemma ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
   have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x:= Nat.leRecOn_succ' x
   unfold ofStep
@@ -341,7 +341,7 @@ theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofSte
   --     convert Ring.DirectLimit.of_f n.le_succ x; ext x; exact (Nat.leRecOn_succ' x).symm
 #noalign algebraic_closure.of_step_succ
 
-theorem exists_ofStep (z : AlgebraicClosureAux k) : ∃ n x, ofStep k n x = z :=
+lemma exists_ofStep (z : AlgebraicClosureAux k) : ∃ n x, ofStep k n x = z :=
   Ring.DirectLimit.exists_of z
 #noalign algebraic_closure.exists_of_step
 

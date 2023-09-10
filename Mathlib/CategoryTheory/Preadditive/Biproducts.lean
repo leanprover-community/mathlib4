@@ -376,7 +376,7 @@ def binaryBiconeIsBilimitOfLimitConeOfIsLimit {X Y : C} {t : Cone (pair X Y)} (h
 
 /-- In a preadditive category, if the product of `X` and `Y` exists, then the
     binary biproduct of `X` and `Y` exists. -/
-theorem HasBinaryBiproduct.of_hasBinaryProduct (X Y : C) [HasBinaryProduct X Y] :
+lemma HasBinaryBiproduct.of_hasBinaryProduct (X Y : C) [HasBinaryProduct X Y] :
     HasBinaryBiproduct X Y :=
   HasBinaryBiproduct.mk
     { bicone := _
@@ -430,7 +430,7 @@ def binaryBiconeIsBilimitOfColimitCoconeOfIsColimit {X Y : C} {t : Cocone (pair 
 
 /-- In a preadditive category, if the coproduct of `X` and `Y` exists, then the
     binary biproduct of `X` and `Y` exists. -/
-theorem HasBinaryBiproduct.of_hasBinaryCoproduct (X Y : C) [HasBinaryCoproduct X Y] :
+lemma HasBinaryBiproduct.of_hasBinaryCoproduct (X Y : C) [HasBinaryCoproduct X Y] :
     HasBinaryBiproduct X Y :=
   HasBinaryBiproduct.mk
     { bicone := _
@@ -705,7 +705,7 @@ lemma Biprod.ofComponents_snd :
 #align category_theory.biprod.of_components_snd CategoryTheory.Biprod.ofComponents_snd
 
 @[simp]
-theorem Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
+lemma Biprod.ofComponents_eq (f : X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂) :
     Biprod.ofComponents (biprod.inl ≫ f ≫ biprod.fst) (biprod.inl ≫ f ≫ biprod.snd)
         (biprod.inr ≫ f ≫ biprod.fst) (biprod.inr ≫ f ≫ biprod.snd) =
       f := by

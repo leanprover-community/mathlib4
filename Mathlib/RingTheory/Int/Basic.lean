@@ -73,11 +73,11 @@ instance : NormalizedGCDMonoid ℕ :=
     normalize_gcd := fun _ _ => normalize_eq _
     normalize_lcm := fun _ _ => normalize_eq _ }
 
-theorem gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
+lemma gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
   rfl
 #align gcd_eq_nat_gcd gcd_eq_nat_gcd
 
-theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
+lemma lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
   rfl
 #align lcm_eq_nat_lcm lcm_eq_nat_lcm
 
@@ -96,7 +96,7 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
       eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
 
 -- Porting note: added
-theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
+lemma normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 
 lemma normalize_of_nonneg {z : ℤ} (h : 0 ≤ z) : normalize z = z := by
   rw [normalize_apply, normUnit_eq, if_pos h, Units.val_one, mul_one]
@@ -109,11 +109,11 @@ lemma normalize_of_nonpos {z : ℤ} (h : z ≤ 0) : normalize z = -z := by
       mul_neg_one]
 #align int.normalize_of_nonpos Int.normalize_of_nonpos
 
-theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
+lemma normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
   normalize_of_nonneg (ofNat_le_ofNat_of_le <| Nat.zero_le n)
 #align int.normalize_coe_nat Int.normalize_coe_nat
 
-theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
+lemma abs_eq_normalize (z : ℤ) : |z| = normalize z := by
   cases le_total 0 z <;> simp [-normalize_apply, normalize_of_nonneg, normalize_of_nonpos, *]
 #align int.abs_eq_normalize Int.abs_eq_normalize
 
@@ -121,7 +121,7 @@ lemma nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z :=
   abs_eq_self.1 <| by rw [abs_eq_normalize, hz]
 #align int.nonneg_of_normalize_eq_self Int.nonneg_of_normalize_eq_self
 
-theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=
+lemma nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=
   ⟨nonneg_of_normalize_eq_self, normalize_of_nonneg⟩
 #align int.nonneg_iff_normalize_eq_self Int.nonneg_iff_normalize_eq_self
 
@@ -152,25 +152,25 @@ instance : NormalizedGCDMonoid ℤ :=
     normalize_gcd := fun _ _ => normalize_coe_nat _
     normalize_lcm := fun _ _ => normalize_coe_nat _ }
 
-theorem coe_gcd (i j : ℤ) : ↑(Int.gcd i j) = GCDMonoid.gcd i j :=
+lemma coe_gcd (i j : ℤ) : ↑(Int.gcd i j) = GCDMonoid.gcd i j :=
   rfl
 #align int.coe_gcd Int.coe_gcd
 
-theorem coe_lcm (i j : ℤ) : ↑(Int.lcm i j) = GCDMonoid.lcm i j :=
+lemma coe_lcm (i j : ℤ) : ↑(Int.lcm i j) = GCDMonoid.lcm i j :=
   rfl
 #align int.coe_lcm Int.coe_lcm
 
-theorem natAbs_gcd (i j : ℤ) : natAbs (GCDMonoid.gcd i j) = Int.gcd i j :=
+lemma natAbs_gcd (i j : ℤ) : natAbs (GCDMonoid.gcd i j) = Int.gcd i j :=
   rfl
 #align int.nat_abs_gcd Int.natAbs_gcd
 
-theorem natAbs_lcm (i j : ℤ) : natAbs (GCDMonoid.lcm i j) = Int.lcm i j :=
+lemma natAbs_lcm (i j : ℤ) : natAbs (GCDMonoid.lcm i j) = Int.lcm i j :=
   rfl
 #align int.nat_abs_lcm Int.natAbs_lcm
 
 end GCDMonoid
 
-theorem exists_unit_of_abs (a : ℤ) : ∃ (u : ℤ) (_ : IsUnit u), (Int.natAbs a : ℤ) = u * a := by
+lemma exists_unit_of_abs (a : ℤ) : ∃ (u : ℤ) (_ : IsUnit u), (Int.natAbs a : ℤ) = u * a := by
   cases' natAbs_eq a with h h
   · use 1, isUnit_one
     rw [← h, one_mul]
@@ -241,7 +241,7 @@ lemma sq_of_coprime {a b c : ℤ} (h : IsCoprime a b) (heq : a * b = c ^ 2) :
   sq_of_gcd_eq_one (gcd_eq_one_iff_coprime.mpr h) heq
 #align int.sq_of_coprime Int.sq_of_coprime
 
-theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
+lemma natAbs_euclideanDomain_gcd (a b : ℤ) :
     Int.natAbs (EuclideanDomain.gcd a b) = Int.gcd a b := by
   apply Nat.dvd_antisymm <;> rw [← Int.coe_nat_dvd]
   · rw [Int.natAbs_dvd]
@@ -359,7 +359,7 @@ lemma induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
     exact h p a hp.nat_prime ha
 #align induction_on_primes induction_on_primes
 
-theorem Int.associated_natAbs (k : ℤ) : Associated k k.natAbs :=
+lemma Int.associated_natAbs (k : ℤ) : Associated k k.natAbs :=
   associated_of_dvd_dvd (Int.coe_nat_dvd_right.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)
 #align int.associated_nat_abs Int.associated_natAbs
 
@@ -380,13 +380,13 @@ lemma Int.associated_iff {a b : ℤ} : Associated a b ↔ a = b ∨ a = -b := by
 
 namespace Int
 
-theorem zmultiples_natAbs (a : ℤ) :
+lemma zmultiples_natAbs (a : ℤ) :
     AddSubgroup.zmultiples (a.natAbs : ℤ) = AddSubgroup.zmultiples a :=
   le_antisymm (AddSubgroup.zmultiples_le_of_mem (mem_zmultiples_iff.mpr (dvd_natAbs.mpr dvd_rfl)))
     (AddSubgroup.zmultiples_le_of_mem (mem_zmultiples_iff.mpr (natAbs_dvd.mpr dvd_rfl)))
 #align int.zmultiples_nat_abs Int.zmultiples_natAbs
 
-theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Ideal.span {a} := by
+lemma span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Ideal.span {a} := by
   rw [Ideal.span_singleton_eq_span_singleton]
   exact (associated_natAbs _).symm
 #align int.span_nat_abs Int.span_natAbs

@@ -40,7 +40,7 @@ lemma braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
 #align category_theory.monoidal_of_chosen_finite_products.braiding_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.braiding_naturality
 
-theorem hexagon_forward (X Y Z : C) :
+lemma hexagon_forward (X Y Z : C) :
     (BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫
         (Limits.BinaryFan.braiding (ℬ X (tensorObj ℬ Y Z)).isLimit
               (ℬ (tensorObj ℬ Y Z) X).isLimit).hom ≫
@@ -55,7 +55,7 @@ theorem hexagon_forward (X Y Z : C) :
     rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
 #align category_theory.monoidal_of_chosen_finite_products.hexagon_forward CategoryTheory.MonoidalOfChosenFiniteProducts.hexagon_forward
 
-theorem hexagon_reverse (X Y Z : C) :
+lemma hexagon_reverse (X Y Z : C) :
     (BinaryFan.associatorOfLimitCone ℬ X Y Z).inv ≫
         (Limits.BinaryFan.braiding (ℬ (tensorObj ℬ X Y) Z).isLimit
               (ℬ Z (tensorObj ℬ X Y)).isLimit).hom ≫
@@ -75,7 +75,7 @@ theorem hexagon_reverse (X Y Z : C) :
     simp
 #align category_theory.monoidal_of_chosen_finite_products.hexagon_reverse CategoryTheory.MonoidalOfChosenFiniteProducts.hexagon_reverse
 
-theorem symmetry (X Y : C) :
+lemma symmetry (X Y : C) :
     (Limits.BinaryFan.braiding (ℬ X Y).isLimit (ℬ Y X).isLimit).hom ≫
         (Limits.BinaryFan.braiding (ℬ Y X).isLimit (ℬ X Y).isLimit).hom =
       𝟙 (tensorObj ℬ X Y) := by

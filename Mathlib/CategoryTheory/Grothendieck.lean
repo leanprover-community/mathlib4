@@ -125,7 +125,7 @@ instance : Category (Grothendieck F) where
       simp
 
 @[simp]
-theorem id_fiber' (X : Grothendieck F) :
+lemma id_fiber' (X : Grothendieck F) :
     Hom.fiber (𝟙 X) = eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber]) :=
   id_fiber X
 #align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'

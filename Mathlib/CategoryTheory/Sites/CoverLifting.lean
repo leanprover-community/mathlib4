@@ -141,7 +141,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.pulledback_family CategoryTheory.RanIsSheafOfCoverLifting.pulledbackFamily
 
 @[simp]
-theorem pulledbackFamily_apply (Y : StructuredArrow (op U) G.op) {W} {f : W ⟶ _} (Hf) :
+lemma pulledbackFamily_apply (Y : StructuredArrow (op U) G.op) {W} {f : W ⟶ _} (Hf) :
     pulledbackFamily ℱ S x Y f Hf =
       x (G.map f ≫ Y.hom.unop) Hf ≫ ((Ran.adjunction A G.op).counit.app ℱ.val).app (op W) :=
   rfl
@@ -162,13 +162,13 @@ def getSection (Y : StructuredArrow (op U) G.op) : X ⟶ ℱ.val.obj Y.right := 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.get_section CategoryTheory.RanIsSheafOfCoverLifting.getSection
 
-theorem getSection_isAmalgamation (Y : StructuredArrow (op U) G.op) :
+lemma getSection_isAmalgamation (Y : StructuredArrow (op U) G.op) :
     (pulledbackFamily ℱ S x Y).IsAmalgamation (getSection hu ℱ hS hx Y) :=
   IsSheafFor.isAmalgamation _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.get_section_is_amalgamation CategoryTheory.RanIsSheafOfCoverLifting.getSection_isAmalgamation
 
-theorem getSection_is_unique (Y : StructuredArrow (op U) G.op) {y}
+lemma getSection_is_unique (Y : StructuredArrow (op U) G.op) {y}
     (H : (pulledbackFamily ℱ S x Y).IsAmalgamation y) : y = getSection hu ℱ hS hx Y := by
   apply IsSheafFor.isSeparatedFor _ (pulledbackFamily ℱ S x Y)
   · exact H
@@ -207,7 +207,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_limit_cone CategoryTheory.RanIsSheafOfCoverLifting.gluedLimitCone
 
 @[simp]
-theorem gluedLimitCone_π_app (W) : (gluedLimitCone hu ℱ hS hx).π.app W = getSection hu ℱ hS hx W :=
+lemma gluedLimitCone_π_app (W) : (gluedLimitCone hu ℱ hS hx).π.app W = getSection hu ℱ hS hx W :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_limit_cone_π_app CategoryTheory.RanIsSheafOfCoverLifting.gluedLimitCone_π_app
@@ -269,7 +269,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_section_is_amalgamation CategoryTheory.RanIsSheafOfCoverLifting.gluedSection_isAmalgamation
 
 /-- Verify that the amalgamation is indeed unique. -/
-theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection hu ℱ hS hx := by
+lemma gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection hu ℱ hS hx := by
   unfold gluedSection limit.lift
   -- porting note: next line was `ext W`
   -- Now `ext` can't see that `ran` is defined as a limit.

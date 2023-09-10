@@ -102,7 +102,7 @@ def Functor.rightDerivedObjInjectiveSucc (F : C ⥤ D) [F.Additive] (n : ℕ) (X
 /-- We can compute a right derived functor on a morphism using a descent of that morphism
 to a cochain map between chosen injective resolutions.
 -/
-theorem Functor.rightDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : C} (f : Y ⟶ X)
+lemma Functor.rightDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : C} (f : Y ⟶ X)
     {P : InjectiveResolution X} {Q : InjectiveResolution Y} (g : Q.cocomplex ⟶ P.cocomplex)
     (w : Q.ι ≫ g = (CochainComplex.single₀ C).map f ≫ P.ι) :
     (F.rightDerived n).map f =
@@ -133,7 +133,7 @@ def NatTrans.rightDerived {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ 
 #align category_theory.nat_trans.right_derived CategoryTheory.NatTrans.rightDerived
 
 @[simp]
-theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
+lemma NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
     NatTrans.rightDerived (𝟙 F) n = 𝟙 (F.rightDerived n) := by
   simp [NatTrans.rightDerived]
   rfl
@@ -195,7 +195,7 @@ lemma preserves_exact_of_preservesFiniteLimits_of_mono [PreservesFiniteLimits F]
     Limits.isLimitForkMapOfIsLimit' _ ex.w (Abelian.isLimitOfExactOfMono _ _ ex)
 #align category_theory.abelian.functor.preserves_exact_of_preserves_finite_limits_of_mono CategoryTheory.Abelian.Functor.preserves_exact_of_preservesFiniteLimits_of_mono
 
-theorem exact_of_map_injectiveResolution (P : InjectiveResolution X) [PreservesFiniteLimits F] :
+lemma exact_of_map_injectiveResolution (P : InjectiveResolution X) [PreservesFiniteLimits F] :
     Exact (F.map (P.ι.f 0))
       (((F.mapHomologicalComplex (ComplexShape.up ℕ)).obj P.cocomplex).dFrom 0) :=
   Preadditive.exact_of_iso_of_exact' (F.map (P.ι.f 0)) (F.map (P.cocomplex.d 0 1)) _ _ (Iso.refl _)

@@ -98,16 +98,16 @@ def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
 #align matrix.unitary_group.to_lin' Matrix.UnitaryGroup.toLin'
 
-theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
+lemma ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
   Subtype.ext_iff_val.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
 #align matrix.unitary_group.ext_iff Matrix.UnitaryGroup.ext_iff
 
 @[ext]
-theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
+lemma ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
   (UnitaryGroup.ext_iff A B).mpr
 #align matrix.unitary_group.ext Matrix.UnitaryGroup.ext
 
-theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
+lemma star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 #align matrix.unitary_group.star_mul_self Matrix.UnitaryGroup.star_mul_self
 
@@ -171,7 +171,7 @@ def toGL (A : unitaryGroup n α) : GeneralLinearGroup α (n → α) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.to_GL Matrix.UnitaryGroup.toGL
 
-theorem coe_toGL (A : unitaryGroup n α) : (toGL A).1 = toLin' A := rfl
+lemma coe_toGL (A : unitaryGroup n α) : (toGL A).1 = toLin' A := rfl
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.coe_to_GL Matrix.UnitaryGroup.coe_toGL
 
@@ -183,7 +183,7 @@ set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.to_GL_one Matrix.UnitaryGroup.toGL_one
 
 @[simp]
-theorem toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := Units.ext <| by
+lemma toGL_mul (A B : unitaryGroup n α) : toGL (A * B) = toGL A * toGL B := Units.ext <| by
   simp only [coe_toGL, toLin'_mul]
   rfl
 set_option linter.uppercaseLean3 false in

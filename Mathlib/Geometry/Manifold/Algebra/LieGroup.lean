@@ -270,34 +270,34 @@ lemma SmoothOn_inv₀ : SmoothOn I I (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
 
 variable {I}
 
-theorem ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
+lemma ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
     ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s a :=
   (smoothAt_inv₀ I ha).contMDiffAt.comp_contMDiffWithinAt a hf
 
-theorem ContMDiffAt.inv₀ (hf : ContMDiffAt I' I n f a) (ha : f a ≠ 0) :
+lemma ContMDiffAt.inv₀ (hf : ContMDiffAt I' I n f a) (ha : f a ≠ 0) :
     ContMDiffAt I' I n (fun x ↦ (f x)⁻¹) a :=
   (smoothAt_inv₀ I ha).contMDiffAt.comp a hf
 
-theorem ContMDiff.inv₀ (hf : ContMDiff I' I n f) (h0 : ∀ x, f x ≠ 0) :
+lemma ContMDiff.inv₀ (hf : ContMDiff I' I n f) (h0 : ∀ x, f x ≠ 0) :
     ContMDiff I' I n (fun x ↦ (f x)⁻¹) :=
   fun x ↦ ContMDiffAt.inv₀ (hf x) (h0 x)
 
-theorem ContMDiffOn.inv₀ (hf : ContMDiffOn I' I n f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
+lemma ContMDiffOn.inv₀ (hf : ContMDiffOn I' I n f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
     ContMDiffOn I' I n (fun x => (f x)⁻¹) s :=
   fun x hx ↦ ContMDiffWithinAt.inv₀ (hf x hx) (h0 x hx)
 
-theorem SmoothWithinAt.inv₀ (hf : SmoothWithinAt I' I f s a) (ha : f a ≠ 0) :
+lemma SmoothWithinAt.inv₀ (hf : SmoothWithinAt I' I f s a) (ha : f a ≠ 0) :
     SmoothWithinAt I' I (fun x => (f x)⁻¹) s a :=
   ContMDiffWithinAt.inv₀ hf ha
 
-theorem SmoothAt.inv₀ (hf : SmoothAt I' I f a) (ha : f a ≠ 0) :
+lemma SmoothAt.inv₀ (hf : SmoothAt I' I f a) (ha : f a ≠ 0) :
     SmoothAt I' I (fun x => (f x)⁻¹) a :=
   ContMDiffAt.inv₀ hf ha
 
-theorem Smooth.inv₀ (hf : Smooth I' I f) (h0 : ∀ x, f x ≠ 0) : Smooth I' I fun x => (f x)⁻¹ :=
+lemma Smooth.inv₀ (hf : Smooth I' I f) (h0 : ∀ x, f x ≠ 0) : Smooth I' I fun x => (f x)⁻¹ :=
   ContMDiff.inv₀ hf h0
 
-theorem SmoothOn.inv₀ (hf : SmoothOn I' I f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
+lemma SmoothOn.inv₀ (hf : SmoothOn I' I f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
     SmoothOn I' I (fun x => (f x)⁻¹) s :=
   ContMDiffOn.inv₀ hf h0
 
@@ -317,30 +317,30 @@ theorem ContMDiffWithinAt.div₀
     ContMDiffWithinAt I' I n (f / g) s a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
-theorem ContMDiffOn.div₀ (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s)
+lemma ContMDiffOn.div₀ (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s)
     (h₀ : ∀ x ∈ s, g x ≠ 0) : ContMDiffOn I' I n (f / g) s := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
-theorem ContMDiffAt.div₀ (hf : ContMDiffAt I' I n f a) (hg : ContMDiffAt I' I n g a)
+lemma ContMDiffAt.div₀ (hf : ContMDiffAt I' I n f a) (hg : ContMDiffAt I' I n g a)
     (h₀ : g a ≠ 0) : ContMDiffAt I' I n (f / g) a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
-theorem ContMDiff.div₀ (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) (h₀ : ∀ x, g x ≠ 0) :
+lemma ContMDiff.div₀ (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) (h₀ : ∀ x, g x ≠ 0) :
     ContMDiff I' I n (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
-theorem SmoothWithinAt.div₀ (hf : SmoothWithinAt I' I f s a)
+lemma SmoothWithinAt.div₀ (hf : SmoothWithinAt I' I f s a)
     (hg : SmoothWithinAt I' I g s a) (h₀ : g a ≠ 0) : SmoothWithinAt I' I (f / g) s a :=
   ContMDiffWithinAt.div₀ hf hg h₀
 
-theorem SmoothOn.div₀ (hf : SmoothOn I' I f s) (hg : SmoothOn I' I g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
+lemma SmoothOn.div₀ (hf : SmoothOn I' I f s) (hg : SmoothOn I' I g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
     SmoothOn I' I (f / g) s :=
   ContMDiffOn.div₀ hf hg h₀
 
-theorem SmoothAt.div₀ (hf : SmoothAt I' I f a) (hg : SmoothAt I' I g a) (h₀ : g a ≠ 0) :
+lemma SmoothAt.div₀ (hf : SmoothAt I' I f a) (hg : SmoothAt I' I g a) (h₀ : g a ≠ 0) :
     SmoothAt I' I (f / g) a :=
   ContMDiffAt.div₀ hf hg h₀
 
-theorem Smooth.div₀ (hf : Smooth I' I f) (hg : Smooth I' I g) (h₀ : ∀ x, g x ≠ 0) :
+lemma Smooth.div₀ (hf : Smooth I' I f) (hg : Smooth I' I g) (h₀ : ∀ x, g x ≠ 0) :
     Smooth I' I (f / g) :=
   ContMDiff.div₀ hf hg h₀
 

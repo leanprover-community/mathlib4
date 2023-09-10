@@ -128,14 +128,14 @@ lemma quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
 #align AddCommGroup.colimits.quot_zero AddCommGroupCat.Colimits.quot_zero
 
 @[simp]
-theorem quot_neg (x) : Quot.mk Setoid.r (neg x) =
+lemma quot_neg (x) : Quot.mk Setoid.r (neg x) =
     -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
     Neg.neg (α := ColimitType.{w} F) (Quot.mk Setoid.r x : ColimitType.{w} F) :=
   rfl
 #align AddCommGroup.colimits.quot_neg AddCommGroupCat.Colimits.quot_neg
 
 @[simp]
-theorem quot_add (x y) :
+lemma quot_add (x y) :
     Quot.mk Setoid.r (add x y) =
     -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
     Add.add (α := ColimitType.{w} F) (Quot.mk Setoid.r x) (Quot.mk Setoid.r y) :=
@@ -169,7 +169,7 @@ lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
 #align AddCommGroup.colimits.cocone_naturality AddCommGroupCat.Colimits.cocone_naturality
 
 @[simp]
-theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
+lemma cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism.{w} F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl

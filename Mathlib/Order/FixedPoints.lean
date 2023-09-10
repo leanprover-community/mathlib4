@@ -162,7 +162,7 @@ lemma map_gfp_comp : f (gfp (g.comp f)) = gfp (f.comp g) :=
 #align order_hom.map_gfp_comp OrderHom.map_gfp_comp
 
 -- Diagonal rule
-theorem lfp_lfp (h : α →o α →o α) : lfp (lfp.comp h) = lfp h.onDiag := by
+lemma lfp_lfp (h : α →o α →o α) : lfp (lfp.comp h) = lfp h.onDiag := by
   let a := lfp (lfp.comp h)
   refine' (lfp_le _ _).antisymm (lfp_le _ (Eq.le _))
   · exact lfp_le _ h.onDiag.map_lfp.le
@@ -173,7 +173,7 @@ theorem lfp_lfp (h : α →o α →o α) : lfp (lfp.comp h) = lfp h.onDiag := by
     _ = a := ha
 #align order_hom.lfp_lfp OrderHom.lfp_lfp
 
-theorem gfp_gfp (h : α →o α →o α) : gfp (gfp.comp h) = gfp h.onDiag :=
+lemma gfp_gfp (h : α →o α →o α) : gfp (gfp.comp h) = gfp h.onDiag :=
   @lfp_lfp αᵒᵈ _ <| (OrderHom.dualIso αᵒᵈ αᵒᵈ).symm.toOrderEmbedding.toOrderHom.comp
     (OrderHom.dual h)
 #align order_hom.gfp_gfp OrderHom.gfp_gfp
@@ -184,7 +184,7 @@ section PrevNext
 
 variable [CompleteLattice α] (f : α →o α)
 
-theorem gfp_const_inf_le (x : α) : gfp (const α x ⊓ f) ≤ x :=
+lemma gfp_const_inf_le (x : α) : gfp (const α x ⊓ f) ≤ x :=
   (gfp_le _) fun _ hb => hb.trans inf_le_left
 #align order_hom.gfp_const_inf_le OrderHom.gfp_const_inf_le
 
@@ -237,23 +237,23 @@ lemma le_prevFixed {x : α} (hx : f x ≤ x) {y : fixedPoints f} (h : ↑y ≤ x
   (f.le_prevFixed_iff hx).2 h
 #align order_hom.le_prev_fixed OrderHom.le_prevFixed
 
-theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x ⊔ y) :=
+lemma le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x ⊔ y) :=
   calc
     (x ⊔ y : α) = f x ⊔ f y := congr_arg₂ (· ⊔ ·) x.2.symm y.2.symm
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 #align order_hom.le_map_sup_fixed_points OrderHom.le_map_sup_fixedPoints
 
 -- porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
-theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
+lemma map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
   f.dual.le_map_sup_fixedPoints x y
 #align order_hom.map_inf_fixed_points_le OrderHom.map_inf_fixedPoints_le
 
-theorem le_map_sSup_subset_fixedPoints (A : Set α) (hA : A ⊆ fixedPoints f) :
+lemma le_map_sSup_subset_fixedPoints (A : Set α) (hA : A ⊆ fixedPoints f) :
     sSup A ≤ f (sSup A) :=
   sSup_le fun _ hx => hA hx ▸ (f.mono <| le_sSup hx)
 #align order_hom.le_map_Sup_subset_fixed_points OrderHom.le_map_sSup_subset_fixedPoints
 
-theorem map_sInf_subset_fixedPoints_le (A : Set α) (hA : A ⊆ fixedPoints f) :
+lemma map_sInf_subset_fixedPoints_le (A : Set α) (hA : A ⊆ fixedPoints f) :
     f (sInf A) ≤ sInf A :=
   le_sInf fun _ hx => hA hx ▸ (f.mono <| sInf_le hx)
 #align order_hom.map_Inf_subset_fixed_points_le OrderHom.map_sInf_subset_fixedPoints_le

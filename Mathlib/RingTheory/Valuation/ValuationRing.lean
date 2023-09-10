@@ -105,7 +105,7 @@ instance : Inv (ValueGroup A K) :=
 
 variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
-protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
+protected lemma le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
   rcases a with ⟨a⟩; rcases b with ⟨b⟩
   obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
   obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
@@ -202,7 +202,7 @@ def valuation : Valuation K (ValueGroup A K) where
       congr 1; ring
 #align valuation_ring.valuation ValuationRing.valuation
 
-theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
+lemma mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
   constructor
   · rintro ⟨c, rfl⟩
     use c
@@ -232,7 +232,7 @@ noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
 #align valuation_ring.equiv_integer ValuationRing.equivInteger
 
 @[simp]
-theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A K a := rfl
+lemma coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A K a := rfl
 #align valuation_ring.coe_equiv_integer_apply ValuationRing.coe_equivInteger_apply
 
 lemma range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
@@ -378,7 +378,7 @@ lemma iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R :
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 #align valuation_ring.iff_local_bezout_domain ValuationRing.iff_local_bezout_domain
 
-protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
+protected lemma tFAE (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,

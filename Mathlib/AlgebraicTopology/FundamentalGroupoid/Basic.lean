@@ -53,7 +53,7 @@ lemma continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   norm_num [hx, mul_assoc]
 #align path.homotopy.continuous_refl_trans_symm_aux Path.Homotopy.continuous_reflTransSymmAux
 
-theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
+lemma reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
   dsimp only [reflTransSymmAux]
   split_ifs
   · constructor
@@ -134,7 +134,7 @@ lemma continuous_transReflReparamAux : Continuous transReflReparamAux := by
   simp [hx]
 #align path.homotopy.continuous_trans_refl_reparam_aux Path.Homotopy.continuous_transReflReparamAux
 
-theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
+lemma transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   unfold transReflReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 set_option linter.uppercaseLean3 false in
@@ -148,7 +148,7 @@ lemma transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_one Path.Homotopy.transReflReparamAux_one
 
-theorem trans_refl_reparam (p : Path x₀ x₁) :
+lemma trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
       p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by continuity)
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
@@ -195,7 +195,7 @@ lemma continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
       norm_num [hx]
 #align path.homotopy.continuous_trans_assoc_reparam_aux Path.Homotopy.continuous_transAssocReparamAux
 
-theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
+lemma transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   unfold transAssocReparamAux
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 set_option linter.uppercaseLean3 false in
@@ -310,10 +310,10 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
       show ⟦a.trans a.symm⟧ = ⟦Path.refl x⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
 
-theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
+lemma comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
 #align fundamental_groupoid.comp_eq FundamentalGroupoid.comp_eq
 
-theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x⟧ := rfl
+lemma id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x⟧ := rfl
 #align fundamental_groupoid.id_eq_path_refl FundamentalGroupoid.id_eq_path_refl
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/

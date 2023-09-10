@@ -34,7 +34,7 @@ namespace BoxIntegral
 
 /-- The indicator function of a measurable set is McShane integrable with respect to any
 locally-finite measure. -/
-theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = false)
+lemma hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = false)
     {s : Set (ι → ℝ)} (hs : MeasurableSet s) (I : Box ι) (y : E) (μ : Measure (ι → ℝ))
     [IsLocallyFiniteMeasure μ] :
     HasIntegral.{u, v, v} I l (s.indicator fun _ => y) μ.toBoxAdditive.toSMul
@@ -169,7 +169,7 @@ namespace MeasureTheory
 namespace SimpleFunc
 
 /-- A simple function is McShane integrable w.r.t. any locally finite measure. -/
-theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ]
+lemma hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ]
     (I : Box ι) (l : IntegrationParams) (hl : l.bRiemann = false) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (f.integral (μ.restrict I)) := by
   induction' f using MeasureTheory.SimpleFunc.induction with y s hs f g _ hfi hgi
@@ -184,7 +184,7 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
 
 /-- For a simple function, its McShane (or Henstock, or `⊥`) box integral is equal to its
 integral in the sense of `MeasureTheory.SimpleFunc.integral`. -/
-theorem box_integral_eq_integral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ))
+lemma box_integral_eq_integral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ))
     [IsLocallyFiniteMeasure μ] (I : Box ι) (l : IntegrationParams) (hl : l.bRiemann = false) :
     BoxIntegral.integral.{u, v, v} I l f μ.toBoxAdditive.toSMul = f.integral (μ.restrict I) :=
   (f.hasBoxIntegral μ I l hl).integral_eq

@@ -32,12 +32,12 @@ instance : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 instance : IsWellOrder ℕ+ (· < ·) where
 
 @[simp]
-theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
+lemma one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
   rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
 #align pnat.one_add_nat_pred PNat.one_add_natPred
 
 @[simp]
-theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
+lemma natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 #align pnat.nat_pred_add_one PNat.natPred_add_one
 
@@ -118,7 +118,7 @@ lemma coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
 #align pnat.coe_inj PNat.coe_inj
 
 @[simp, norm_cast]
-theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
+lemma add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 #align pnat.add_coe PNat.add_coe
 
@@ -186,12 +186,12 @@ set_option linter.deprecated false
 
 -- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp, deprecated]
-theorem mk_bit0 (n) {h} : (⟨bit0 n, h⟩ : ℕ+) = (bit0 ⟨n, pos_of_bit0_pos h⟩ : ℕ+) :=
+lemma mk_bit0 (n) {h} : (⟨bit0 n, h⟩ : ℕ+) = (bit0 ⟨n, pos_of_bit0_pos h⟩ : ℕ+) :=
   rfl
 #align pnat.mk_bit0 PNat.mk_bit0
 
 @[simp, deprecated]
-theorem mk_bit1 (n) {h} {k} : (⟨bit1 n, h⟩ : ℕ+) = (bit1 ⟨n, k⟩ : ℕ+) :=
+lemma mk_bit1 (n) {h} {k} : (⟨bit1 n, h⟩ : ℕ+) = (bit1 ⟨n, k⟩ : ℕ+) :=
   rfl
 #align pnat.mk_bit1 PNat.mk_bit1
 
@@ -203,29 +203,29 @@ theorem mk_bit1 (n) {h} {k} : (⟨bit1 n, h⟩ : ℕ+) = (bit1 ⟨n, k⟩ : ℕ+
 -- * 1 is not represented as a bit0 or bit1
 -- * strict inequalities?
 @[simp, deprecated]
-theorem bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
+lemma bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit0_le_bit0 PNat.bit0_le_bit0
 
 @[simp, deprecated]
-theorem bit0_le_bit1 (n m : ℕ+) : bit0 n ≤ bit1 m ↔ bit0 (n : ℕ) ≤ bit1 (m : ℕ) :=
+lemma bit0_le_bit1 (n m : ℕ+) : bit0 n ≤ bit1 m ↔ bit0 (n : ℕ) ≤ bit1 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit0_le_bit1 PNat.bit0_le_bit1
 
 @[simp, deprecated]
-theorem bit1_le_bit0 (n m : ℕ+) : bit1 n ≤ bit0 m ↔ bit1 (n : ℕ) ≤ bit0 (m : ℕ) :=
+lemma bit1_le_bit0 (n m : ℕ+) : bit1 n ≤ bit0 m ↔ bit1 (n : ℕ) ≤ bit0 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit1_le_bit0 PNat.bit1_le_bit0
 
 @[simp, deprecated]
-theorem bit1_le_bit1 (n m : ℕ+) : bit1 n ≤ bit1 m ↔ bit1 (n : ℕ) ≤ bit1 (m : ℕ) :=
+lemma bit1_le_bit1 (n m : ℕ+) : bit1 n ≤ bit1 m ↔ bit1 (n : ℕ) ≤ bit1 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit1_le_bit1 PNat.bit1_le_bit1
 
 end deprecated
 
 @[simp, norm_cast]
-theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
+lemma mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
 #align pnat.mul_coe PNat.mul_coe
 
@@ -246,11 +246,11 @@ lemma le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
   le_bot_iff
 #align pnat.le_one_iff PNat.le_one_iff
 
-theorem lt_add_left (n m : ℕ+) : n < m + n :=
+lemma lt_add_left (n m : ℕ+) : n < m + n :=
   lt_add_of_pos_left _ m.2
 #align pnat.lt_add_left PNat.lt_add_left
 
-theorem lt_add_right (n m : ℕ+) : n < n + m :=
+lemma lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
 #align pnat.lt_add_right PNat.lt_add_right
 
@@ -260,19 +260,19 @@ section deprecated
 set_option linter.deprecated false
 
 @[simp, norm_cast, deprecated]
-theorem coe_bit0 (a : ℕ+) : ((bit0 a : ℕ+) : ℕ) = bit0 (a : ℕ) :=
+lemma coe_bit0 (a : ℕ+) : ((bit0 a : ℕ+) : ℕ) = bit0 (a : ℕ) :=
   rfl
 #align pnat.coe_bit0 PNat.coe_bit0
 
 @[simp, norm_cast, deprecated]
-theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
+lemma coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
   rfl
 #align pnat.coe_bit1 PNat.coe_bit1
 
 end deprecated
 
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
+lemma pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
@@ -282,7 +282,7 @@ theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
 instance : Sub ℕ+ :=
   ⟨fun a b => toPNat' (a - b : ℕ)⟩
 
-theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
+lemma sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
   change (toPNat' _ : ℕ) = ite _ _ _
   split_ifs with h
   · exact toPNat'_coe (tsub_pos_of_lt h)
@@ -333,7 +333,7 @@ lemma recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
 #align pnat.rec_on_one PNat.recOn_one
 
 @[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
+lemma recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
   cases n <;> [exact absurd h (by decide); rfl]
@@ -349,7 +349,7 @@ lemma modDivAux_spec :
   | k, r + 1, q, _ => rfl
 #align pnat.mod_div_aux_spec PNat.modDivAux_spec
 
-theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
+lemma mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
   let h₀ := Nat.mod_add_div (m : ℕ) (k : ℕ)
   have : ¬((m : ℕ) % (k : ℕ) = 0 ∧ (m : ℕ) / (k : ℕ) = 0) := by
     rintro ⟨hr, hq⟩
@@ -359,21 +359,21 @@ theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
   exact this.trans h₀
 #align pnat.mod_add_div PNat.mod_add_div
 
-theorem div_add_mod (m k : ℕ+) : (k * div m k + mod m k : ℕ) = m :=
+lemma div_add_mod (m k : ℕ+) : (k * div m k + mod m k : ℕ) = m :=
   (add_comm _ _).trans (mod_add_div _ _)
 #align pnat.div_add_mod PNat.div_add_mod
 
-theorem mod_add_div' (m k : ℕ+) : (mod m k + div m k * k : ℕ) = m := by
+lemma mod_add_div' (m k : ℕ+) : (mod m k + div m k * k : ℕ) = m := by
   rw [mul_comm]
   exact mod_add_div _ _
 #align pnat.mod_add_div' PNat.mod_add_div'
 
-theorem div_add_mod' (m k : ℕ+) : (div m k * k + mod m k : ℕ) = m := by
+lemma div_add_mod' (m k : ℕ+) : (div m k * k + mod m k : ℕ) = m := by
   rw [mul_comm]
   exact div_add_mod _ _
 #align pnat.div_add_mod' PNat.div_add_mod'
 
-theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
+lemma mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   change (mod m k : ℕ) ≤ (m : ℕ) ∧ (mod m k : ℕ) ≤ (k : ℕ)
   rw [mod_coe]
   split_ifs with h
@@ -436,7 +436,7 @@ lemma dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm =
   (le_of_dvd hmn).antisymm (le_of_dvd hnm)
 #align pnat.dvd_antisymm PNat.dvd_antisymm
 
-theorem dvd_one_iff (n : ℕ+) : n ∣ 1 ↔ n = 1 :=
+lemma dvd_one_iff (n : ℕ+) : n ∣ 1 ↔ n = 1 :=
   ⟨fun h => dvd_antisymm h (one_dvd n), fun h => h.symm ▸ dvd_refl 1⟩
 #align pnat.dvd_one_iff PNat.dvd_one_iff
 

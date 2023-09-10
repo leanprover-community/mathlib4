@@ -172,13 +172,13 @@ lemma tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α} 
 
 /-! ### Continuity of addition -/
 
-theorem continuousAt_add_coe_coe (a b : ℝ) :
+lemma continuousAt_add_coe_coe (a b : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, b) := by
   simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, (· ∘ ·), tendsto_coe,
     tendsto_add]
 #align ereal.continuous_at_add_coe_coe EReal.continuousAt_add_coe_coe
 
-theorem continuousAt_add_top_coe (a : ℝ) :
+lemma continuousAt_add_top_coe (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, a) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_coe]
   refine fun r ↦ ((lt_mem_nhds (coe_lt_top (r - (a - 1)))).prod_nhds
@@ -186,7 +186,7 @@ theorem continuousAt_add_top_coe (a : ℝ) :
   simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_top_coe EReal.continuousAt_add_top_coe
 
-theorem continuousAt_add_coe_top (a : ℝ) :
+lemma continuousAt_add_coe_top (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊤) := by
   simpa only [add_comm, (· ∘ ·), ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_top_coe a) (continuous_swap.tendsto ((a : EReal), ⊤))
@@ -199,7 +199,7 @@ lemma continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 + p
   simpa only [coe_zero, zero_add] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_top_top EReal.continuousAt_add_top_top
 
-theorem continuousAt_add_bot_coe (a : ℝ) :
+lemma continuousAt_add_bot_coe (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, a) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
   refine fun r ↦ ((gt_mem_nhds (bot_lt_coe (r - (a + 1)))).prod_nhds
@@ -207,7 +207,7 @@ theorem continuousAt_add_bot_coe (a : ℝ) :
   simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_bot_coe EReal.continuousAt_add_bot_coe
 
-theorem continuousAt_add_coe_bot (a : ℝ) :
+lemma continuousAt_add_coe_bot (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊥) := by
   simpa only [add_comm, (· ∘ ·), ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_bot_coe a) (continuous_swap.tendsto ((a : EReal), ⊥))

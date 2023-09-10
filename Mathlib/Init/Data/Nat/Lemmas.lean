@@ -229,11 +229,11 @@ protected def ltByCases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a 
 section bit
 set_option linter.deprecated false
 
-protected theorem bit1_eq_succ_bit0 (n : ℕ) : bit1 n = succ (bit0 n) :=
+protected lemma bit1_eq_succ_bit0 (n : ℕ) : bit1 n = succ (bit0 n) :=
   rfl
 #align nat.bit1_eq_succ_bit0 Nat.bit1_eq_succ_bit0
 
-protected theorem bit1_succ_eq (n : ℕ) : bit1 (succ n) = succ (succ (bit1 n)) :=
+protected lemma bit1_succ_eq (n : ℕ) : bit1 (succ n) = succ (succ (bit1 n)) :=
   Eq.trans (Nat.bit1_eq_succ_bit0 (succ n)) (congr_arg succ (Nat.bit0_succ_eq n))
 #align nat.bit1_succ_eq Nat.bit1_succ_eq
 
@@ -297,11 +297,11 @@ protected lemma bit1_ne {n m : ℕ} : n ≠ m → bit1 n ≠ bit1 m := fun h₁ 
 protected lemma zero_ne_bit0 {n : ℕ} : n ≠ 0 → 0 ≠ bit0 n := fun h => Ne.symm (Nat.bit0_ne_zero h)
 #align nat.zero_ne_bit0 Nat.zero_ne_bit0
 
-protected theorem zero_ne_bit1 (n : ℕ) : 0 ≠ bit1 n :=
+protected lemma zero_ne_bit1 (n : ℕ) : 0 ≠ bit1 n :=
   Ne.symm (Nat.bit1_ne_zero n)
 #align nat.zero_ne_bit1 Nat.zero_ne_bit1
 
-protected theorem one_ne_bit0 (n : ℕ) : 1 ≠ bit0 n :=
+protected lemma one_ne_bit0 (n : ℕ) : 1 ≠ bit0 n :=
   Ne.symm (Nat.bit0_ne_one n)
 #align nat.one_ne_bit0 Nat.one_ne_bit0
 
@@ -345,7 +345,7 @@ protected lemma bit1_lt_bit0 : ∀ {n m : Nat}, n < m → bit1 n < bit0 m
     show succ (n + n) < succ (succ m + m) from lt_succ_of_le this
 #align nat.bit1_lt_bit0 Nat.bit1_lt_bit0
 
-protected theorem one_le_bit1 (n : ℕ) : 1 ≤ bit1 n :=
+protected lemma one_le_bit1 (n : ℕ) : 1 ≤ bit1 n :=
   show 1 ≤ succ (bit0 n) from succ_le_succ (bit0 n).zero_le
 #align nat.one_le_bit1 Nat.one_le_bit1
 
@@ -446,7 +446,7 @@ protected lemma le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔ x
 
 #align nat.succ_sub_sub_succ Nat.succ_sub_sub_succ
 
-protected theorem sub.right_comm (m n k : ℕ) : m - n - k = m - k - n := by
+protected lemma sub.right_comm (m n k : ℕ) : m - n - k = m - k - n := by
   rw [Nat.sub_sub, Nat.sub_sub, Nat.add_comm]
 #align nat.sub.right_comm Nat.sub.right_comm
 
@@ -556,7 +556,7 @@ protected lemma case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 0)
 
 #align nat.mul_mod_mul_right Nat.mul_mod_mul_right
 
-theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
+lemma cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
     cond (@decide (x % 2 = 1) d) 1 0 = x % 2 := by
   by_cases h : x % 2 = 1
   · simp! [*]

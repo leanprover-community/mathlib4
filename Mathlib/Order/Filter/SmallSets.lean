@@ -47,7 +47,7 @@ lemma HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p
   h.lift' monotone_powerset
 #align filter.has_basis.small_sets Filter.HasBasis.smallSets
 
-theorem hasBasis_smallSets (l : Filter α) :
+lemma hasBasis_smallSets (l : Filter α) :
     HasBasis l.smallSets (fun t : Set α => t ∈ l) powerset :=
   l.basis_sets.smallSets
 #align filter.has_basis_small_sets Filter.hasBasis_smallSets
@@ -77,7 +77,7 @@ lemma frequently_smallSets {p : Set α → Prop} :
   l.hasBasis_smallSets.frequently_iff
 #align filter.frequently_small_sets Filter.frequently_smallSets
 
-theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s ∈ l :=
+lemma frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s ∈ l :=
   frequently_smallSets.2 fun t ht => ⟨t, Subset.rfl, ht⟩
 #align filter.frequently_small_sets_mem Filter.frequently_smallSets_mem
 
@@ -103,16 +103,16 @@ lemma smallSets_top : (⊤ : Filter α).smallSets = ⊤ := by
 #align filter.small_sets_top Filter.smallSets_top
 
 @[simp]
-theorem smallSets_principal (s : Set α) : (𝓟 s).smallSets = 𝓟 (𝒫 s) :=
+lemma smallSets_principal (s : Set α) : (𝓟 s).smallSets = 𝓟 (𝒫 s) :=
   lift'_principal monotone_powerset
 #align filter.small_sets_principal Filter.smallSets_principal
 
-theorem smallSets_comap (l : Filter β) (f : α → β) :
+lemma smallSets_comap (l : Filter β) (f : α → β) :
     (comap f l).smallSets = l.lift' (powerset ∘ preimage f) :=
   comap_lift'_eq2 monotone_powerset
 #align filter.small_sets_comap Filter.smallSets_comap
 
-theorem comap_smallSets (l : Filter β) (f : α → Set β) :
+lemma comap_smallSets (l : Filter β) (f : α → Set β) :
     comap f l.smallSets = l.lift' (preimage f ∘ powerset) :=
   comap_lift'_eq
 #align filter.comap_small_sets Filter.comap_smallSets
@@ -121,7 +121,7 @@ lemma smallSets_iInf {f : ι → Filter α} : (iInf f).smallSets = ⨅ i, (f i).
   lift'_iInf_of_map_univ (powerset_inter _ _) powerset_univ
 #align filter.small_sets_infi Filter.smallSets_iInf
 
-theorem smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁.smallSets ⊓ l₂.smallSets :=
+lemma smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁.smallSets ⊓ l₂.smallSets :=
   lift'_inf _ _ powerset_inter
 #align filter.small_sets_inf Filter.smallSets_inf
 

@@ -30,7 +30,7 @@ def IsConj (a b : α) :=
 #align is_conj IsConj
 
 @[refl]
-theorem IsConj.refl (a : α) : IsConj a a :=
+lemma IsConj.refl (a : α) : IsConj a a :=
   ⟨1, SemiconjBy.one_left a⟩
 #align is_conj.refl IsConj.refl
 
@@ -55,7 +55,7 @@ lemma isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a =
     exact hc, fun h => by rw [h]⟩
 #align is_conj_iff_eq isConj_iff_eq
 
-protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
+protected lemma MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
   | ⟨c, hc⟩ => ⟨Units.map f c, by rw [Units.coe_map, SemiconjBy, ← f.map_mul, hc.eq, f.map_mul]⟩
 #align monoid_hom.map_is_conj MonoidHom.map_isConj
 
@@ -174,11 +174,11 @@ lemma mk_eq_mk_iff_isConj {a b : α} : ConjClasses.mk a = ConjClasses.mk b ↔ I
   Iff.intro Quotient.exact Quot.sound
 #align conj_classes.mk_eq_mk_iff_is_conj ConjClasses.mk_eq_mk_iff_isConj
 
-theorem quotient_mk_eq_mk (a : α) : ⟦a⟧ = ConjClasses.mk a :=
+lemma quotient_mk_eq_mk (a : α) : ⟦a⟧ = ConjClasses.mk a :=
   rfl
 #align conj_classes.quotient_mk_eq_mk ConjClasses.quotient_mk_eq_mk
 
-theorem quot_mk_eq_mk (a : α) : Quot.mk Setoid.r a = ConjClasses.mk a :=
+lemma quot_mk_eq_mk (a : α) : Quot.mk Setoid.r a = ConjClasses.mk a :=
   rfl
 #align conj_classes.quot_mk_eq_mk ConjClasses.quot_mk_eq_mk
 
@@ -197,7 +197,7 @@ lemma one_eq_mk_one : (1 : ConjClasses α) = ConjClasses.mk 1 :=
   rfl
 #align conj_classes.one_eq_mk_one ConjClasses.one_eq_mk_one
 
-theorem exists_rep (a : ConjClasses α) : ∃ a0 : α, ConjClasses.mk a0 = a :=
+lemma exists_rep (a : ConjClasses α) : ∃ a0 : α, ConjClasses.mk a0 = a :=
   Quot.exists_rep a
 #align conj_classes.exists_rep ConjClasses.exists_rep
 

@@ -40,11 +40,11 @@ def Separable (f : R[X]) : Prop :=
   IsCoprime f (derivative f)
 #align polynomial.separable Polynomial.Separable
 
-theorem separable_def (f : R[X]) : f.Separable ↔ IsCoprime f (derivative f) :=
+lemma separable_def (f : R[X]) : f.Separable ↔ IsCoprime f (derivative f) :=
   Iff.rfl
 #align polynomial.separable_def Polynomial.separable_def
 
-theorem separable_def' (f : R[X]) : f.Separable ↔ ∃ a b : R[X], a * f + b * (derivative f) = 1 :=
+lemma separable_def' (f : R[X]) : f.Separable ↔ ∃ a b : R[X], a * f + b * (derivative f) = 1 :=
   Iff.rfl
 #align polynomial.separable_def' Polynomial.separable_def'
 
@@ -62,7 +62,7 @@ lemma separable_of_subsingleton [Subsingleton R] (f : R[X]) : f.Separable := by
   simp [Separable, IsCoprime]
 #align polynomial.separable_of_subsingleton Polynomial.separable_of_subsingleton
 
-theorem separable_X_add_C (a : R) : (X + C a).Separable := by
+lemma separable_X_add_C (a : R) : (X + C a).Separable := by
   rw [separable_def, derivative_add, derivative_X, derivative_C, add_zero]
   exact isCoprime_one_right
 set_option linter.uppercaseLean3 false in
@@ -74,7 +74,7 @@ lemma separable_X : (X : R[X]).Separable := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable_X Polynomial.separable_X
 
-theorem separable_C (r : R) : (C r).Separable ↔ IsUnit r := by
+lemma separable_C (r : R) : (C r).Separable ↔ IsUnit r := by
   rw [separable_def, derivative_C, isCoprime_zero_right, isUnit_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable_C Polynomial.separable_C
@@ -283,7 +283,7 @@ lemma separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 #align polynomial.separable_iff_derivative_ne_zero Polynomial.separable_iff_derivative_ne_zero
 
-theorem separable_map (f : F →+* K) {p : F[X]} :
+lemma separable_map (f : F →+* K) {p : F[X]} :
     (p.map f).Separable ↔ p.Separable := by
   simp_rw [separable_def, derivative_map, isCoprime_map]
 #align polynomial.separable_map Polynomial.separable_map
@@ -446,7 +446,7 @@ lemma eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separable
 set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_separable_of_root_eq Polynomial.eq_X_sub_C_of_separable_of_root_eq
 
-theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits i f) :
+lemma exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits i f) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
   obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
   use s.toFinset
@@ -555,7 +555,7 @@ lemma isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F
 
 variable {E}
 
-theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
+lemma IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
     [IsSeparable F E'] : IsSeparable F E := by
   letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
@@ -572,7 +572,7 @@ variable {K L F : Type*} [Field K] [Field L] [Field F]
 
 variable [Algebra K S] [Algebra K L]
 
-theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)
+lemma AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))

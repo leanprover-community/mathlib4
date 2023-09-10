@@ -105,7 +105,7 @@ namespace approxOrderOf
 variable {A : Type*} [SeminormedCommGroup A] {a : A} {m n : ℕ} (δ : ℝ)
 
 @[to_additive]
-theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.coprime m) :
+lemma image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.coprime m) :
     (fun (y : A) => y ^ m) '' approxOrderOf A n δ ⊆ approxOrderOf A n (m * δ) := by
   rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb, hab⟩ := mem_approxOrderOf_iff.mp ha
@@ -118,7 +118,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.coprime m) :
 #align approx_add_order_of.image_nsmul_subset_of_coprime approxAddOrderOf.image_nsmul_subset_of_coprime
 
 @[to_additive]
-theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
+lemma image_pow_subset (n : ℕ) (hm : 0 < m) :
     (fun (y : A) => y ^ m) '' approxOrderOf A (n * m) δ ⊆ approxOrderOf A n (m * δ) := by
   rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb : orderOf b = n * m, hab : a ∈ ball b δ⟩ := mem_approxOrderOf_iff.mp ha
@@ -131,7 +131,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
 #align approx_add_order_of.image_nsmul_subset approxAddOrderOf.image_nsmul_subset
 
 @[to_additive]
-theorem smul_subset_of_coprime (han : (orderOf a).coprime n) :
+lemma smul_subset_of_coprime (han : (orderOf a).coprime n) :
     a • approxOrderOf A n δ ⊆ approxOrderOf A (orderOf a * n) δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
     smul_ball'', smul_eq_mul, mem_setOf_eq]
@@ -144,7 +144,7 @@ theorem smul_subset_of_coprime (han : (orderOf a).coprime n) :
 #align approx_add_order_of.vadd_subset_of_coprime approxAddOrderOf.vadd_subset_of_coprime
 
 @[to_additive vadd_eq_of_mul_dvd]
-theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
+lemma smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     a • approxOrderOf A n δ = approxOrderOf A n δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
     smul_ball'', smul_eq_mul, mem_setOf_eq]
@@ -181,7 +181,7 @@ lemma mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 0 
   · rintro ⟨m, hm₁, hm₂, hx⟩; exact ⟨↑((m : ℝ) / n), ⟨m, hm₁, hm₂, rfl⟩, hx⟩
 #align unit_add_circle.mem_approx_add_order_of_iff UnitAddCircle.mem_approxAddOrderOf_iff
 
-theorem mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
+lemma mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
     x ∈ addWellApproximable UnitAddCircle δ ↔
       {n : ℕ | ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ n}.Infinite := by
   simp only [mem_add_wellApproximable_iff, ← Nat.cofinite_eq_atTop, cofinite.blimsup_set_eq,
@@ -205,7 +205,7 @@ local notation a "∣∣" b => a ∣ b ∧ (a * a)∤b
 local notation "𝕊" => AddCircle T
 
 /-- **Gallagher's ergodic theorem** on Diophantine approximation. -/
-theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto δ atTop (𝓝 0)) :
+lemma addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto δ atTop (𝓝 0)) :
     (∀ᵐ x, ¬addWellApproximable 𝕊 δ x) ∨ ∀ᵐ x, addWellApproximable 𝕊 δ x := by
   /- Sketch of proof:
 

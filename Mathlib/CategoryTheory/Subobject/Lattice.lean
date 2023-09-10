@@ -43,12 +43,12 @@ def leTop (f : MonoOver X) : f ⟶ ⊤ :=
 #align category_theory.mono_over.le_top CategoryTheory.MonoOver.leTop
 
 @[simp]
-theorem top_left (X : C) : ((⊤ : MonoOver X) : C) = X :=
+lemma top_left (X : C) : ((⊤ : MonoOver X) : C) = X :=
   rfl
 #align category_theory.mono_over.top_left CategoryTheory.MonoOver.top_left
 
 @[simp]
-theorem top_arrow (X : C) : (⊤ : MonoOver X).arrow = 𝟙 X :=
+lemma top_arrow (X : C) : (⊤ : MonoOver X).arrow = 𝟙 X :=
   rfl
 #align category_theory.mono_over.top_arrow CategoryTheory.MonoOver.top_arrow
 
@@ -91,7 +91,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance {X : C} : Bot (MonoOver X) where bot := mk' (initial.to X)
 
 @[simp]
-theorem bot_left (X : C) : ((⊥ : MonoOver X) : C) = ⊥_ C :=
+lemma bot_left (X : C) : ((⊥ : MonoOver X) : C) = ⊥_ C :=
   rfl
 #align category_theory.mono_over.bot_left CategoryTheory.MonoOver.bot_left
 
@@ -226,7 +226,7 @@ instance orderTop {X : C} : OrderTop (Subobject X) where
 instance {X : C} : Inhabited (Subobject X) :=
   ⟨⊤⟩
 
-theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
+lemma top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
   rfl
 #align category_theory.subobject.top_eq_id CategoryTheory.Subobject.top_eq_id
 
@@ -247,7 +247,7 @@ lemma underlyingIso_inv_top_arrow {B : C} :
 #align category_theory.subobject.underlying_iso_inv_top_arrow CategoryTheory.Subobject.underlyingIso_inv_top_arrow
 
 @[simp]
-theorem map_top (f : X ⟶ Y) [Mono f] : (map f).obj ⊤ = Subobject.mk f :=
+lemma map_top (f : X ⟶ Y) [Mono f] : (map f).obj ⊤ = Subobject.mk f :=
   Quotient.sound' ⟨MonoOver.mapTop f⟩
 #align category_theory.subobject.map_top CategoryTheory.Subobject.map_top
 
@@ -280,7 +280,7 @@ section
 
 variable [HasPullbacks C]
 
-theorem pullback_top (f : X ⟶ Y) : (pullback f).obj ⊤ = ⊤ :=
+lemma pullback_top (f : X ⟶ Y) : (pullback f).obj ⊤ = ⊤ :=
   Quotient.sound' ⟨MonoOver.pullbackTop f⟩
 #align category_theory.subobject.pullback_top CategoryTheory.Subobject.pullback_top
 
@@ -312,7 +312,7 @@ def botCoeIsoInitial {B : C} : ((⊥ : Subobject B) : C) ≅ ⊥_ C :=
   underlyingIso _
 #align category_theory.subobject.bot_coe_iso_initial CategoryTheory.Subobject.botCoeIsoInitial
 
-theorem map_bot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ = ⊥ :=
+lemma map_bot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ = ⊥ :=
   Quotient.sound' ⟨MonoOver.mapBot f⟩
 #align category_theory.subobject.map_bot CategoryTheory.Subobject.map_bot
 

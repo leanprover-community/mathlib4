@@ -112,7 +112,7 @@ noncomputable instance (R : CommRingCat) [IsDomain R] :
   RingHom.toAlgebra <| by change CommRingCat.of R ⟶ _; apply StructureSheaf.toStalk
 
 @[simp]
-theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
+lemma genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Scheme.Spec.obj <| op R).carrier = (⟨0, Ideal.bot_prime⟩ : PrimeSpectrum R) := by
   apply (genericPoint_spec (Scheme.Spec.obj <| op R).carrier).eq
   rw [isGenericPoint_def]

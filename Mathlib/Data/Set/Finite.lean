@@ -79,7 +79,7 @@ lemma finite_coe_iff {s : Set α} : Finite s ↔ s.Finite := by
 #align set.finite_coe_iff Set.finite_coe_iff
 
 /-- Constructor for `Set.Finite` using a `Finite` instance. -/
-theorem toFinite (s : Set α) [Finite s] : s.Finite :=
+lemma toFinite (s : Set α) [Finite s] : s.Finite :=
   finite_coe_iff.mp ‹_›
 #align set.to_finite Set.toFinite
 
@@ -118,7 +118,7 @@ lemma Finite.toFinset_eq_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
 #align set.finite.to_finset_eq_to_finset Set.Finite.toFinset_eq_toFinset
 
 @[simp]
-theorem toFinite_toFinset (s : Set α) [Fintype s] : s.toFinite.toFinset = s.toFinset :=
+lemma toFinite_toFinset (s : Set α) [Fintype s] : s.toFinite.toFinset = s.toFinset :=
   s.toFinite.toFinset_eq_toFinset
 #align set.to_finite_to_finset Set.toFinite_toFinset
 
@@ -154,11 +154,11 @@ alias ⟨_, Finite.not_infinite⟩ := not_infinite
 attribute [simp] Finite.not_infinite
 
 /-- See also `finite_or_infinite`, `fintypeOrInfinite`. -/
-protected theorem finite_or_infinite (s : Set α) : s.Finite ∨ s.Infinite :=
+protected lemma finite_or_infinite (s : Set α) : s.Finite ∨ s.Infinite :=
   em _
 #align set.finite_or_infinite Set.finite_or_infinite
 
-protected theorem infinite_or_finite (s : Set α) : s.Infinite ∨ s.Finite :=
+protected lemma infinite_or_finite (s : Set α) : s.Infinite ∨ s.Finite :=
   em' _
 #align set.infinite_or_finite Set.infinite_or_finite
 
@@ -170,22 +170,22 @@ namespace Finite
 variable {s t : Set α} {a : α} {hs : s.Finite} {ht : t.Finite}
 
 @[simp]
-protected theorem mem_toFinset (h : s.Finite) : a ∈ h.toFinset ↔ a ∈ s :=
+protected lemma mem_toFinset (h : s.Finite) : a ∈ h.toFinset ↔ a ∈ s :=
   @mem_toFinset _ _ h.fintype _
 #align set.finite.mem_to_finset Set.Finite.mem_toFinset
 
 @[simp]
-protected theorem coe_toFinset (h : s.Finite) : (h.toFinset : Set α) = s :=
+protected lemma coe_toFinset (h : s.Finite) : (h.toFinset : Set α) = s :=
   @coe_toFinset _ _ h.fintype
 #align set.finite.coe_to_finset Set.Finite.coe_toFinset
 
 @[simp]
-protected theorem toFinset_nonempty (h : s.Finite) : h.toFinset.Nonempty ↔ s.Nonempty := by
+protected lemma toFinset_nonempty (h : s.Finite) : h.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, Finite.coe_toFinset]
 #align set.finite.to_finset_nonempty Set.Finite.toFinset_nonempty
 
 /-- Note that this is an equality of types not holding definitionally. Use wisely. -/
-theorem coeSort_toFinset (h : s.Finite) : ↥h.toFinset = ↥s := by
+lemma coeSort_toFinset (h : s.Finite) : ↥h.toFinset = ↥s := by
   rw [← Finset.coe_sort_coe _, h.coe_toFinset]
 #align set.finite.coe_sort_to_finset Set.Finite.coeSort_toFinset
 
@@ -280,7 +280,7 @@ protected lemma toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (h 
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
 -- porting note: was `@[simp]`, now `simp` can prove it
-protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
+protected lemma toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
   toFinite_toFinset _
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
@@ -542,12 +542,12 @@ namespace Finset
 /-- Gives a `Set.Finite` for the `Finset` coerced to a `Set`.
 This is a wrapper around `Set.toFinite`. -/
 @[simp]
-theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
+lemma finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
 #align finset.finite_to_set Finset.finite_toSet
 
 -- porting note: was @[simp], now `simp` can prove it
-theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
+lemma finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   rw [toFinite_toFinset, toFinset_coe]
 #align finset.finite_to_set_to_finset Finset.finite_toSet_toFinset
 
@@ -556,7 +556,7 @@ end Finset
 namespace Multiset
 
 @[simp]
-theorem finite_toSet (s : Multiset α) : { x | x ∈ s }.Finite := by
+lemma finite_toSet (s : Multiset α) : { x | x ∈ s }.Finite := by
   classical simpa only [← Multiset.mem_toFinset] using s.toFinset.finite_toSet
 #align multiset.finite_to_set Multiset.finite_toSet
 
@@ -570,7 +570,7 @@ lemma finite_toSet_toFinset [DecidableEq α] (s : Multiset α) :
 end Multiset
 
 @[simp]
-theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
+lemma List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
   (show Multiset α from ⟦l⟧).finite_toSet
 #align list.finite_to_set List.finite_toSet
 
@@ -610,7 +610,7 @@ instance finite_sep (s : Set α) (p : α → Prop) [Finite s] : Finite ({ a ∈ 
   infer_instance
 #align finite.set.finite_sep Finite.Set.finite_sep
 
-protected theorem subset (s : Set α) {t : Set α} [Finite s] (h : t ⊆ s) : Finite t := by
+protected lemma subset (s : Set α) {t : Set α} [Finite s] (h : t ⊆ s) : Finite t := by
   rw [← sep_eq_of_subset h]
   infer_instance
 #align finite.set.subset Finite.Set.subset
@@ -845,16 +845,16 @@ protected lemma Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :=
 #align set.infinite.nonempty Set.Infinite.nonempty
 
 @[simp]
-theorem finite_singleton (a : α) : ({a} : Set α).Finite :=
+lemma finite_singleton (a : α) : ({a} : Set α).Finite :=
   toFinite _
 #align set.finite_singleton Set.finite_singleton
 
-theorem finite_pure (a : α) : (pure a : Set α).Finite :=
+lemma finite_pure (a : α) : (pure a : Set α).Finite :=
   toFinite _
 #align set.finite_pure Set.finite_pure
 
 @[simp]
-protected theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite := by
+protected lemma Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite := by
   cases hs
   apply toFinite
 #align set.finite.insert Set.Finite.insert
@@ -864,7 +864,7 @@ lemma Finite.image {s : Set α} (f : α → β) (hs : s.Finite) : (f '' s).Finit
   apply toFinite
 #align set.finite.image Set.Finite.image
 
-theorem finite_range (f : ι → α) [Finite ι] : (range f).Finite :=
+lemma finite_range (f : ι → α) [Finite ι] : (range f).Finite :=
   toFinite _
 #align set.finite_range Set.finite_range
 
@@ -906,11 +906,11 @@ lemma Finite.preimage_embedding {s : Set β} (f : α ↪ β) (h : s.Finite) : (f
   h.preimage fun _ _ _ _ h' => f.injective h'
 #align set.finite.preimage_embedding Set.Finite.preimage_embedding
 
-theorem finite_lt_nat (n : ℕ) : Set.Finite { i | i < n } :=
+lemma finite_lt_nat (n : ℕ) : Set.Finite { i | i < n } :=
   toFinite _
 #align set.finite_lt_nat Set.finite_lt_nat
 
-theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
+lemma finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
   toFinite _
 #align set.finite_le_nat Set.finite_le_nat
 
@@ -918,25 +918,25 @@ section Prod
 
 variable {s : Set α} {t : Set β}
 
-protected theorem Finite.prod (hs : s.Finite) (ht : t.Finite) : (s ×ˢ t : Set (α × β)).Finite := by
+protected lemma Finite.prod (hs : s.Finite) (ht : t.Finite) : (s ×ˢ t : Set (α × β)).Finite := by
   cases hs
   cases ht
   apply toFinite
 #align set.finite.prod Set.Finite.prod
 
-theorem Finite.of_prod_left (h : (s ×ˢ t : Set (α × β)).Finite) : t.Nonempty → s.Finite :=
+lemma Finite.of_prod_left (h : (s ×ˢ t : Set (α × β)).Finite) : t.Nonempty → s.Finite :=
   fun ⟨b, hb⟩ => (h.image Prod.fst).subset fun a ha => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
 #align set.finite.of_prod_left Set.Finite.of_prod_left
 
-theorem Finite.of_prod_right (h : (s ×ˢ t : Set (α × β)).Finite) : s.Nonempty → t.Finite :=
+lemma Finite.of_prod_right (h : (s ×ˢ t : Set (α × β)).Finite) : s.Nonempty → t.Finite :=
   fun ⟨a, ha⟩ => (h.image Prod.snd).subset fun b hb => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
 #align set.finite.of_prod_right Set.Finite.of_prod_right
 
-protected theorem Infinite.prod_left (hs : s.Infinite) (ht : t.Nonempty) : (s ×ˢ t).Infinite :=
+protected lemma Infinite.prod_left (hs : s.Infinite) (ht : t.Nonempty) : (s ×ˢ t).Infinite :=
   fun h => hs <| h.of_prod_left ht
 #align set.infinite.prod_left Set.Infinite.prod_left
 
-protected theorem Infinite.prod_right (ht : t.Infinite) (hs : s.Nonempty) : (s ×ˢ t).Infinite :=
+protected lemma Infinite.prod_right (ht : t.Infinite) (hs : s.Nonempty) : (s ×ˢ t).Infinite :=
   fun h => ht <| h.of_prod_right hs
 #align set.infinite.prod_right Set.Infinite.prod_right
 
@@ -961,7 +961,7 @@ protected lemma Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite :
     apply Set.toFinite
 #align set.finite.off_diag Set.Finite.offDiag
 
-protected theorem Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
+protected lemma Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
     (image2 f s t).Finite := by
   cases hs
   cases ht
@@ -983,7 +983,7 @@ lemma Finite.seq' {α β : Type u} {f : Set (α → β)} {s : Set α} (hf : f.Fi
   hf.seq hs
 #align set.finite.seq' Set.Finite.seq'
 
-theorem finite_mem_finset (s : Finset α) : { a | a ∈ s }.Finite :=
+lemma finite_mem_finset (s : Finset α) : { a | a ∈ s }.Finite :=
   toFinite _
 #align set.finite_mem_finset Set.finite_mem_finset
 
@@ -1021,7 +1021,7 @@ lemma Finite.pi {δ : Type*} [Finite δ] {κ : δ → Type*} {t : ∀ d, Set (κ
 #align set.finite.pi Set.Finite.pi
 
 /-- A finite union of finsets is finite. -/
-theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f).Finite) :
+lemma union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f).Finite) :
     (⋃ a, (f a : Set β)).Finite := by
   rw [← biUnion_range]
   exact h.biUnion fun y _ => y.finite_toSet
@@ -1231,13 +1231,13 @@ lemma card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (f 
     _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
 #align set.card_image_of_inj_on Set.card_image_of_inj_on
 
-theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
+lemma card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
     (H : Function.Injective f) : Fintype.card (f '' s) = Fintype.card s :=
   card_image_of_inj_on fun _ _ _ _ h => H h
 #align set.card_image_of_injective Set.card_image_of_injective
 
 @[simp]
-theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
+lemma card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
   Fintype.card_ofSubsingleton _
 #align set.card_singleton Set.card_singleton
 
@@ -1323,7 +1323,7 @@ lemma infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.In
   simp only [Set.Infinite, finite_union, not_and_or]
 #align set.infinite_union Set.infinite_union
 
-theorem Infinite.of_image (f : α → β) {s : Set α} (hs : (f '' s).Infinite) : s.Infinite :=
+lemma Infinite.of_image (f : α → β) {s : Set α} (hs : (f '' s).Infinite) : s.Infinite :=
   mt (Finite.image f) hs
 #align set.infinite.of_image Set.Infinite.of_image
 
@@ -1342,17 +1342,17 @@ section Image2
 
 variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β}
 
-protected theorem Infinite.image2_left (hs : s.Infinite) (hb : b ∈ t)
+protected lemma Infinite.image2_left (hs : s.Infinite) (hb : b ∈ t)
     (hf : InjOn (fun a => f a b) s) : (image2 f s t).Infinite :=
   (hs.image hf).mono <| image_subset_image2_left hb
 #align set.infinite.image2_left Set.Infinite.image2_left
 
-protected theorem Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : InjOn (f a) t) :
+protected lemma Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : InjOn (f a) t) :
     (image2 f s t).Infinite :=
   (ht.image hf).mono <| image_subset_image2_right ha
 #align set.infinite.image2_right Set.Infinite.image2_right
 
-theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
+lemma infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
   refine' ⟨fun h => Set.infinite_prod.1 _, _⟩
   · rw [← image_uncurry_prod] at h
@@ -1409,7 +1409,7 @@ section Preorder
 
 variable [Preorder α] [Nonempty α] {s : Set α}
 
-theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
+lemma infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
   inhabit α
   set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun _ a => (h a).choose
   have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
@@ -1417,17 +1417,17 @@ theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinit
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
 #align set.infinite_of_forall_exists_gt Set.infinite_of_forall_exists_gt
 
-theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
+lemma infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
   @infinite_of_forall_exists_gt αᵒᵈ _ _ _ h
 #align set.infinite_of_forall_exists_lt Set.infinite_of_forall_exists_lt
 
 end Preorder
 
-theorem finite_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Finite :=
+lemma finite_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Finite :=
   (subsingleton_isTop α).finite
 #align set.finite_is_top Set.finite_isTop
 
-theorem finite_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Finite :=
+lemma finite_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Finite :=
   (subsingleton_isBot α).finite
 #align set.finite_is_bot Set.finite_isBot
 
@@ -1613,7 +1613,7 @@ section
 variable [SemilatticeSup α] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above.-/
-protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
+protected lemma Finite.bddAbove (hs : s.Finite) : BddAbove s :=
   Finite.induction_on hs bddAbove_empty fun _ _ h => h.insert _
 #align set.finite.bdd_above Set.Finite.bddAbove
 
@@ -1635,7 +1635,7 @@ section
 variable [SemilatticeInf α] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below.-/
-protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
+protected lemma Finite.bddBelow (hs : s.Finite) : BddBelow s :=
   @Finite.bddAbove αᵒᵈ _ _ _ hs
 #align set.finite.bdd_below Set.Finite.bddBelow
 

@@ -365,12 +365,12 @@ lemma coe_sub_interval : (↑(s - t) : Interval α) = s - t :=
   rfl
 #align nonempty_interval.coe_sub_interval NonemptyInterval.coe_sub_interval
 
-theorem sub_mem_sub (ha : a ∈ s) (hb : b ∈ t) : a - b ∈ s - t :=
+lemma sub_mem_sub (ha : a ∈ s) (hb : b ∈ t) : a - b ∈ s - t :=
   ⟨tsub_le_tsub ha.1 hb.2, tsub_le_tsub ha.2 hb.1⟩
 #align nonempty_interval.sub_mem_sub NonemptyInterval.sub_mem_sub
 
 @[simp]
-theorem pure_sub_pure (a b : α) : pure a - pure b = pure (a - b) :=
+lemma pure_sub_pure (a b : α) : pure a - pure b = pure (a - b) :=
   rfl
 #align nonempty_interval.pure_sub_pure NonemptyInterval.pure_sub_pure
 
@@ -433,7 +433,7 @@ lemma coe_div_interval : (↑(s / t) : Interval α) = s / t :=
 #align nonempty_interval.coe_div_interval NonemptyInterval.coe_div_interval
 
 @[to_additive existing]
-theorem div_mem_div (ha : a ∈ s) (hb : b ∈ t) : a / b ∈ s / t :=
+lemma div_mem_div (ha : a ∈ s) (hb : b ∈ t) : a / b ∈ s / t :=
   ⟨div_le_div'' ha.1 hb.2, div_le_div'' ha.2 hb.1⟩
 #align nonempty_interval.div_mem_div NonemptyInterval.div_mem_div
 
@@ -500,7 +500,7 @@ lemma coe_inv_interval : (↑(s⁻¹) : Interval α) = (↑s)⁻¹ :=
 #align nonempty_interval.coe_neg_interval NonemptyInterval.coe_neg_interval
 
 @[to_additive]
-theorem inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
+lemma inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
   ⟨inv_le_inv' ha.2, inv_le_inv' ha.1⟩
 #align nonempty_interval.inv_mem_inv NonemptyInterval.inv_mem_inv
 #align nonempty_interval.neg_mem_neg NonemptyInterval.neg_mem_neg
@@ -664,7 +664,7 @@ lemma length_sub : (s - t).length = s.length + t.length := by simp [sub_eq_add_n
 #align nonempty_interval.length_sub NonemptyInterval.length_sub
 
 @[simp]
-theorem length_sum (f : ι → NonemptyInterval α) (s : Finset ι) :
+lemma length_sum (f : ι → NonemptyInterval α) (s : Finset ι) :
     (∑ i in s, f i).length = ∑ i in s, (f i).length :=
   map_sum (⟨⟨length, length_zero⟩, length_add⟩ : NonemptyInterval α →+ α) _ _
 #align nonempty_interval.length_sum NonemptyInterval.length_sum
@@ -714,7 +714,7 @@ lemma length_sub_le : (s - t).length ≤ s.length + t.length := by
   simpa [sub_eq_add_neg] using length_add_le s (-t)
 #align interval.length_sub_le Interval.length_sub_le
 
-theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
+lemma length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i in s, f i).length ≤ ∑ i in s, (f i).length := by
   -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
   apply Finset.le_sum_of_subadditive

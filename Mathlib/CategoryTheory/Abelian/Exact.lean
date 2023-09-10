@@ -221,7 +221,7 @@ def isLimitOfExactOfMono [Mono f] (h : Exact f g) : IsLimit (KernelFork.ofι _ h
       fun j => by cases j <;> simp
 #align category_theory.abelian.is_limit_of_exact_of_mono CategoryTheory.Abelian.isLimitOfExactOfMono
 
-theorem exact_of_is_cokernel (w : f ≫ g = 0)
+lemma exact_of_is_cokernel (w : f ≫ g = 0)
     (h : IsColimit (CokernelCofork.ofπ _ w)) : Exact f g := by
   refine' (exact_iff _ _).2 ⟨w, _⟩
   have := h.fac (CokernelCofork.ofπ _ (cokernel.condition f)) WalkingParallelPair.one
@@ -229,7 +229,7 @@ theorem exact_of_is_cokernel (w : f ≫ g = 0)
   rw [← this, ← Category.assoc, kernel.condition, zero_comp]
 #align category_theory.abelian.exact_of_is_cokernel CategoryTheory.Abelian.exact_of_is_cokernel
 
-theorem exact_of_is_kernel (w : f ≫ g = 0) (h : IsLimit (KernelFork.ofι _ w)) : Exact f g := by
+lemma exact_of_is_kernel (w : f ≫ g = 0) (h : IsLimit (KernelFork.ofι _ w)) : Exact f g := by
   refine' (exact_iff _ _).2 ⟨w, _⟩
   have := h.fac (KernelFork.ofι _ (kernel.condition g)) WalkingParallelPair.zero
   simp only [Fork.ofι_π_app] at this
@@ -293,7 +293,7 @@ end
 
 section Opposite
 
-theorem Exact.op (h : Exact f g) : Exact g.op f.op := by
+lemma Exact.op (h : Exact f g) : Exact g.op f.op := by
   rw [exact_iff]
   refine' ⟨by simp [← op_comp, h.w], Quiver.Hom.unop_inj _⟩
   simp only [unop_comp, cokernel.π_op, eqToHom_refl, kernel.ι_op, Category.id_comp,

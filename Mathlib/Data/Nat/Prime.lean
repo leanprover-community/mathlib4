@@ -47,7 +47,7 @@ def Prime (p : ℕ) :=
   Irreducible p
 #align nat.prime Nat.Prime
 
-theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
+lemma irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 #align irreducible_iff_nat_prime Nat.irreducible_iff_nat_prime
 
@@ -143,7 +143,7 @@ lemma prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m
           rwa [one_mul, ← e]⟩
 #align nat.prime_def_le_sqrt Nat.prime_def_le_sqrt
 
-theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.coprime m) : Prime n := by
+lemma prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.coprime m) : Prime n := by
   refine' prime_def_lt.mpr ⟨h1, fun m mlt mdvd => _⟩
   have hm : m ≠ 0 := by
     rintro rfl
@@ -240,7 +240,7 @@ lemma Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p
 
 section MinFac
 
-theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k :=
+lemma minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k :=
   (tsub_lt_tsub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
 #align nat.min_fac_lemma Nat.minFac_lemma
 
@@ -273,7 +273,7 @@ lemma minFac_one : minFac 1 = 1 :=
   rfl
 #align nat.min_fac_one Nat.minFac_one
 
-theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
+lemma minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 #align nat.min_fac_eq Nat.minFac_eq
 
 private def minFacProp (n k : ℕ) :=
@@ -323,7 +323,7 @@ lemma minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
     exact fun e => e.symm ▸ d
 #align nat.min_fac_has_prop Nat.minFac_has_prop
 
-theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
+lemma minFac_dvd (n : ℕ) : minFac n ∣ n :=
   if n1 : n = 1 then by simp [n1] else (minFac_has_prop n1).2.1
 #align nat.min_fac_dvd Nat.minFac_dvd
 
@@ -337,7 +337,7 @@ lemma minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac
     apply (minFac_has_prop n1).2.2]
 #align nat.min_fac_le_of_dvd Nat.minFac_le_of_dvd
 
-theorem minFac_pos (n : ℕ) : 0 < minFac n := by
+lemma minFac_pos (n : ℕ) : 0 < minFac n := by
   by_cases n1 : n = 1 <;> [exact n1.symm ▸ (by decide); exact (minFac_prime n1).pos]
 #align nat.min_fac_pos Nat.minFac_pos
 
@@ -427,7 +427,7 @@ lemma minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
 #align nat.min_fac_eq_one_iff Nat.minFac_eq_one_iff
 
 @[simp]
-theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
+lemma minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
   constructor
   · intro h
     rw [←h]
@@ -469,7 +469,7 @@ lemma dvd_of_forall_prime_mul_dvd {a b : ℕ}
 
 /-- Euclid's theorem on the **infinitude of primes**.
 Here given in the form: for every `n`, there exists a prime number `p ≥ n`. -/
-theorem exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p :=
+lemma exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p :=
   let p := minFac (n ! + 1)
   have f1 : n ! + 1 ≠ 1 := ne_of_gt <| succ_lt_succ <| factorial_pos _
   have pp : Prime p := minFac_prime f1
@@ -776,7 +776,7 @@ lemma coe_nat_injective : Function.Injective (fun (a : Nat.Primes) ↦ (a : ℕ)
   Subtype.coe_injective
 #align nat.primes.coe_nat_injective Nat.Primes.coe_nat_injective
 
-theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
+lemma coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
   Subtype.ext_iff.symm
 #align nat.primes.coe_nat_inj Nat.Primes.coe_nat_inj
 

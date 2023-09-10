@@ -66,7 +66,7 @@ lemma continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set α)
   norm_num [δ_pos]
 #align continuous_thickened_indicator_aux continuous_thickenedIndicatorAux
 
-theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
+lemma thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by
   apply @tsub_le_self _ _ _ _ (1 : ℝ≥0∞)
 #align thickened_indicator_aux_le_one thickenedIndicatorAux_le_one
@@ -76,17 +76,17 @@ lemma thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
   lt_of_le_of_lt (thickenedIndicatorAux_le_one _ _ _) one_lt_top
 #align thickened_indicator_aux_lt_top thickenedIndicatorAux_lt_top
 
-theorem thickenedIndicatorAux_closure_eq (δ : ℝ) (E : Set α) :
+lemma thickenedIndicatorAux_closure_eq (δ : ℝ) (E : Set α) :
     thickenedIndicatorAux δ (closure E) = thickenedIndicatorAux δ E := by
   simp_rw [thickenedIndicatorAux, infEdist_closure]
 #align thickened_indicator_aux_closure_eq thickenedIndicatorAux_closure_eq
 
-theorem thickenedIndicatorAux_one (δ : ℝ) (E : Set α) {x : α} (x_in_E : x ∈ E) :
+lemma thickenedIndicatorAux_one (δ : ℝ) (E : Set α) {x : α} (x_in_E : x ∈ E) :
     thickenedIndicatorAux δ E x = 1 := by
   simp [thickenedIndicatorAux, infEdist_zero_of_mem x_in_E, tsub_zero]
 #align thickened_indicator_aux_one thickenedIndicatorAux_one
 
-theorem thickenedIndicatorAux_one_of_mem_closure (δ : ℝ) (E : Set α) {x : α}
+lemma thickenedIndicatorAux_one_of_mem_closure (δ : ℝ) (E : Set α) {x : α}
     (x_mem : x ∈ closure E) : thickenedIndicatorAux δ E x = 1 := by
   rw [← thickenedIndicatorAux_closure_eq, thickenedIndicatorAux_one δ (closure E) x_mem]
 #align thickened_indicator_aux_one_of_mem_closure thickenedIndicatorAux_one_of_mem_closure
@@ -107,7 +107,7 @@ lemma thickenedIndicatorAux_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E 
   fun _ => tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div rfl.le (ofReal_le_ofReal hle))
 #align thickened_indicator_aux_mono thickenedIndicatorAux_mono
 
-theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
+lemma indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
     (E.indicator fun _ => (1 : ℝ≥0∞)) ≤ thickenedIndicatorAux δ E := by
   intro a
   by_cases a ∈ E
@@ -115,7 +115,7 @@ theorem indicator_le_thickenedIndicatorAux (δ : ℝ) (E : Set α) :
   · simp only [h, indicator_of_not_mem, not_false_iff, zero_le]
 #align indicator_le_thickened_indicator_aux indicator_le_thickenedIndicatorAux
 
-theorem thickenedIndicatorAux_subset (δ : ℝ) {E₁ E₂ : Set α} (subset : E₁ ⊆ E₂) :
+lemma thickenedIndicatorAux_subset (δ : ℝ) {E₁ E₂ : Set α} (subset : E₁ ⊆ E₂) :
     thickenedIndicatorAux δ E₁ ≤ thickenedIndicatorAux δ E₂ :=
   fun _ => tsub_le_tsub (@rfl ℝ≥0∞ 1).le (ENNReal.div_le_div (infEdist_anti subset) rfl.le)
 #align thickened_indicator_aux_subset thickenedIndicatorAux_subset

@@ -26,7 +26,7 @@ open BigOperators
 open Polynomial Finset.Nat
 
 /-- Vandermonde's identity -/
-theorem Nat.add_choose_eq (m n k : ℕ) :
+lemma Nat.add_choose_eq (m n k : ℕ) :
     (m + n).choose k = ∑ ij : ℕ × ℕ in antidiagonal k, m.choose ij.1 * n.choose ij.2 := by
   calc
     (m + n).choose k = ((X + 1) ^ (m + n)).coeff k := by rw [coeff_X_add_one_pow, Nat.cast_id]

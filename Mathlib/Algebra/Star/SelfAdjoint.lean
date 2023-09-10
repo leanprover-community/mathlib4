@@ -145,11 +145,11 @@ section AddCommMonoid
 
 variable [AddCommMonoid R] [StarAddMonoid R]
 
-theorem _root_.isSelfAdjoint_add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
+lemma _root_.isSelfAdjoint_add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_add_star_self isSelfAdjoint_add_star_self
 
-theorem _root_.isSelfAdjoint_star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
+lemma _root_.isSelfAdjoint_star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_star_add_self isSelfAdjoint_star_add_self
 
@@ -206,7 +206,7 @@ lemma bit1 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit1 x) := by
 #align is_self_adjoint.bit1 IsSelfAdjoint.bit1
 
 @[simp]
-theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
+lemma _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 #align is_self_adjoint_nat_cast isSelfAdjoint_natCast
 
@@ -227,7 +227,7 @@ section Ring
 variable [Ring R] [StarRing R]
 
 @[simp]
-theorem _root_.isSelfAdjoint_intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
+lemma _root_.isSelfAdjoint_intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
   star_intCast _
 #align is_self_adjoint_int_cast isSelfAdjoint_intCast
 
@@ -251,7 +251,7 @@ section DivisionRing
 
 variable [DivisionRing R] [StarRing R]
 
-theorem _root_.isSelfAdjoint_ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
+lemma _root_.isSelfAdjoint_ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
   star_ratCast _
 #align is_self_adjoint_rat_cast isSelfAdjoint_ratCast
 
@@ -350,7 +350,7 @@ instance : Pow (selfAdjoint R) ℕ where
   pow x n := ⟨(x : R) ^ n, x.prop.pow n⟩
 
 @[simp, norm_cast]
-theorem val_pow (x : selfAdjoint R) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
+lemma val_pow (x : selfAdjoint R) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
   rfl
 #align self_adjoint.coe_pow selfAdjoint.val_pow
 
@@ -364,7 +364,7 @@ instance : Mul (selfAdjoint R) where
   mul x y := ⟨(x : R) * y, x.prop.mul y.prop⟩
 
 @[simp, norm_cast]
-theorem val_mul (x y : selfAdjoint R) : ↑(x * y) = (x : R) * y :=
+lemma val_mul (x y : selfAdjoint R) : ↑(x * y) = (x : R) * y :=
   rfl
 #align self_adjoint.coe_mul selfAdjoint.val_mul
 
@@ -390,7 +390,7 @@ instance : Inv (selfAdjoint R) where
   inv x := ⟨x.val⁻¹, x.prop.inv⟩
 
 @[simp, norm_cast]
-theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
+lemma val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
   rfl
 #align self_adjoint.coe_inv selfAdjoint.val_inv
 
@@ -398,7 +398,7 @@ instance : Div (selfAdjoint R) where
   div x y := ⟨x / y, x.prop.div y.prop⟩
 
 @[simp, norm_cast]
-theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
+lemma val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
   rfl
 #align self_adjoint.coe_div selfAdjoint.val_div
 
@@ -406,7 +406,7 @@ instance : Pow (selfAdjoint R) ℤ where
   pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
 
 @[simp, norm_cast]
-theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
+lemma val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
   rfl
 #align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
@@ -414,7 +414,7 @@ instance : RatCast (selfAdjoint R) where
   ratCast n := ⟨n, isSelfAdjoint_ratCast n⟩
 
 @[simp, norm_cast]
-theorem val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
+lemma val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
   rfl
 #align self_adjoint.coe_rat_cast selfAdjoint.val_ratCast
 
@@ -424,7 +424,7 @@ instance instQSMul : SMul ℚ (selfAdjoint R) where
 #align self_adjoint.has_qsmul selfAdjoint.instQSMul
 
 @[simp, norm_cast]
-theorem val_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R) :=
+lemma val_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R) :=
   rfl
 #align self_adjoint.coe_rat_smul selfAdjoint.val_rat_smul
 

@@ -57,7 +57,7 @@ def prod [Zero M] [CommMonoid N] (f : α →₀ M) (g : α → M → N) : N :=
 variable [Zero M] [Zero M'] [CommMonoid N]
 
 @[to_additive]
-theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
+lemma prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
     (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x in s, g x (f x) := by
   refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) ?_)
   exact not_mem_support_iff.1 hx
@@ -96,7 +96,7 @@ lemma prod_zero_index {h : α → M → N} : (0 : α →₀ M).prod h = 1 :=
 #align finsupp.sum_zero_index Finsupp.sum_zero_index
 
 @[to_additive]
-theorem prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → M' → N) :
+lemma prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → M' → N) :
     (f.prod fun x v => g.prod fun x' v' => h x v x' v') =
       g.prod fun x' v' => f.prod fun x v => h x v x' v' :=
   Finset.prod_comm
@@ -172,7 +172,7 @@ lemma onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : �
 @[to_additive
       " Taking a sum over over `f : α →₀ M` is the same as adding the value on a
       single element `y ∈ f.support` to the sum over `erase y f`. "]
-theorem mul_prod_erase (f : α →₀ M) (y : α) (g : α → M → N) (hyf : y ∈ f.support) :
+lemma mul_prod_erase (f : α →₀ M) (y : α) (g : α → M → N) (hyf : y ∈ f.support) :
     g y (f y) * (erase y f).prod g = f.prod g := by
   classical
     rw [Finsupp.prod, Finsupp.prod, ← Finset.mul_prod_erase _ _ hyf, Finsupp.support_erase,
@@ -189,7 +189,7 @@ then its product over `f : α →₀ M` is the same as multiplying the value on 
       " Generalization of `Finsupp.add_sum_erase`: if `g` maps a second argument of 0
       to 0, then its sum over `f : α →₀ M` is the same as adding the value on any element
       `y : α` to the sum over `erase y f`. "]
-theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
+lemma mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
     g y (f y) * (erase y f).prod g = f.prod g := by
   classical
     by_cases hyf : y ∈ f.support
@@ -666,11 +666,11 @@ section
 
 variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
 
-theorem Finsupp.sum_mul (b : S) (s : α →₀ R) {f : α → R → S} :
+lemma Finsupp.sum_mul (b : S) (s : α →₀ R) {f : α → R → S} :
     s.sum f * b = s.sum fun a c => f a c * b := by simp only [Finsupp.sum, Finset.sum_mul]
 #align finsupp.sum_mul Finsupp.sum_mul
 
-theorem Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
+lemma Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
     b * s.sum f = s.sum fun a c => b * f a c := by simp only [Finsupp.sum, Finset.mul_sum]
 #align finsupp.mul_sum Finsupp.mul_sum
 

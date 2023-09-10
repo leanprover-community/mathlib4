@@ -61,20 +61,20 @@ protected def Homeomorph.mulLeft (a : G) : G ≃ₜ G :=
 #align homeomorph.add_left Homeomorph.addLeft
 
 @[to_additive (attr := simp)]
-theorem Homeomorph.coe_mulLeft (a : G) : ⇑(Homeomorph.mulLeft a) = (· * ·) a :=
+lemma Homeomorph.coe_mulLeft (a : G) : ⇑(Homeomorph.mulLeft a) = (· * ·) a :=
   rfl
 #align homeomorph.coe_mul_left Homeomorph.coe_mulLeft
 #align homeomorph.coe_add_left Homeomorph.coe_addLeft
 
 @[to_additive]
-theorem Homeomorph.mulLeft_symm (a : G) : (Homeomorph.mulLeft a).symm = Homeomorph.mulLeft a⁻¹ := by
+lemma Homeomorph.mulLeft_symm (a : G) : (Homeomorph.mulLeft a).symm = Homeomorph.mulLeft a⁻¹ := by
   ext
   rfl
 #align homeomorph.mul_left_symm Homeomorph.mulLeft_symm
 #align homeomorph.add_left_symm Homeomorph.addLeft_symm
 
 @[to_additive]
-theorem isOpenMap_mul_left (a : G) : IsOpenMap fun x => a * x :=
+lemma isOpenMap_mul_left (a : G) : IsOpenMap fun x => a * x :=
   (Homeomorph.mulLeft a).isOpenMap
 #align is_open_map_mul_left isOpenMap_mul_left
 #align is_open_map_add_left isOpenMap_add_left
@@ -86,7 +86,7 @@ lemma IsOpen.leftCoset {U : Set G} (h : IsOpen U) (x : G) : IsOpen (leftCoset x 
 #align is_open.left_add_coset IsOpen.left_addCoset
 
 @[to_additive]
-theorem isClosedMap_mul_left (a : G) : IsClosedMap fun x => a * x :=
+lemma isClosedMap_mul_left (a : G) : IsClosedMap fun x => a * x :=
   (Homeomorph.mulLeft a).isClosedMap
 #align is_closed_map_mul_left isClosedMap_mul_left
 #align is_closed_map_add_left isClosedMap_add_left
@@ -107,13 +107,13 @@ protected def Homeomorph.mulRight (a : G) : G ≃ₜ G :=
 #align homeomorph.add_right Homeomorph.addRight
 
 @[to_additive (attr := simp)]
-theorem Homeomorph.coe_mulRight (a : G) : ⇑(Homeomorph.mulRight a) = fun g => g * a :=
+lemma Homeomorph.coe_mulRight (a : G) : ⇑(Homeomorph.mulRight a) = fun g => g * a :=
   rfl
 #align homeomorph.coe_mul_right Homeomorph.coe_mulRight
 #align homeomorph.coe_add_right Homeomorph.coe_addRight
 
 @[to_additive]
-theorem Homeomorph.mulRight_symm (a : G) :
+lemma Homeomorph.mulRight_symm (a : G) :
     (Homeomorph.mulRight a).symm = Homeomorph.mulRight a⁻¹ := by
   ext
   rfl
@@ -121,7 +121,7 @@ theorem Homeomorph.mulRight_symm (a : G) :
 #align homeomorph.add_right_symm Homeomorph.addRight_symm
 
 @[to_additive]
-theorem isOpenMap_mul_right (a : G) : IsOpenMap fun x => x * a :=
+lemma isOpenMap_mul_right (a : G) : IsOpenMap fun x => x * a :=
   (Homeomorph.mulRight a).isOpenMap
 #align is_open_map_mul_right isOpenMap_mul_right
 #align is_open_map_add_right isOpenMap_add_right
@@ -133,7 +133,7 @@ lemma IsOpen.rightCoset {U : Set G} (h : IsOpen U) (x : G) : IsOpen (rightCoset 
 #align is_open.right_add_coset IsOpen.right_addCoset
 
 @[to_additive]
-theorem isClosedMap_mul_right (a : G) : IsClosedMap fun x => x * a :=
+lemma isClosedMap_mul_right (a : G) : IsClosedMap fun x => x * a :=
   (Homeomorph.mulRight a).isClosedMap
 #align is_closed_map_mul_right isClosedMap_mul_right
 #align is_closed_map_add_right isClosedMap_add_right
@@ -145,7 +145,7 @@ lemma IsClosed.rightCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (right
 #align is_closed.right_add_coset IsClosed.right_addCoset
 
 @[to_additive]
-theorem discreteTopology_of_open_singleton_one (h : IsOpen ({1} : Set G)) : DiscreteTopology G := by
+lemma discreteTopology_of_open_singleton_one (h : IsOpen ({1} : Set G)) : DiscreteTopology G := by
   rw [← singletons_open_iff_discrete]
   intro g
   suffices {g} = (fun x : G => g⁻¹ * x) ⁻¹' {1} by
@@ -216,7 +216,7 @@ lemma continuousAt_inv {x : G} : ContinuousAt Inv.inv x :=
 #align continuous_at_neg continuousAt_neg
 
 @[to_additive]
-theorem tendsto_inv (a : G) : Tendsto Inv.inv (𝓝 a) (𝓝 a⁻¹) :=
+lemma tendsto_inv (a : G) : Tendsto Inv.inv (𝓝 a) (𝓝 a⁻¹) :=
   continuousAt_inv
 #align tendsto_inv tendsto_inv
 #align tendsto_neg tendsto_neg
@@ -236,25 +236,25 @@ lemma Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f l
 variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
 
 @[to_additive (attr := continuity)]
-theorem Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
+lemma Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
   continuous_inv.comp hf
 #align continuous.inv Continuous.inv
 #align continuous.neg Continuous.neg
 
 @[to_additive]
-theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x => (f x)⁻¹) x :=
+lemma ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x => (f x)⁻¹) x :=
   continuousAt_inv.comp hf
 #align continuous_at.inv ContinuousAt.inv
 #align continuous_at.neg ContinuousAt.neg
 
 @[to_additive]
-theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)⁻¹) s :=
+lemma ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)⁻¹) s :=
   continuous_inv.comp_continuousOn hf
 #align continuous_on.inv ContinuousOn.inv
 #align continuous_on.neg ContinuousOn.neg
 
 @[to_additive]
-theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
+lemma ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x => (f x)⁻¹) s x :=
   Filter.Tendsto.inv hf
 #align continuous_within_at.inv ContinuousWithinAt.inv
@@ -318,7 +318,7 @@ section ContinuousInvolutiveInv
 variable [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] {s : Set G}
 
 @[to_additive]
-theorem IsCompact.inv (hs : IsCompact s) : IsCompact s⁻¹ := by
+lemma IsCompact.inv (hs : IsCompact s) : IsCompact s⁻¹ := by
   rw [← image_inv]
   exact hs.image continuous_inv
 #align is_compact.inv IsCompact.inv
@@ -351,13 +351,13 @@ lemma isClosedMap_inv : IsClosedMap (Inv.inv : G → G) :=
 variable {G}
 
 @[to_additive]
-theorem IsOpen.inv (hs : IsOpen s) : IsOpen s⁻¹ :=
+lemma IsOpen.inv (hs : IsOpen s) : IsOpen s⁻¹ :=
   hs.preimage continuous_inv
 #align is_open.inv IsOpen.inv
 #align is_open.neg IsOpen.neg
 
 @[to_additive]
-theorem IsClosed.inv (hs : IsClosed s) : IsClosed s⁻¹ :=
+lemma IsClosed.inv (hs : IsClosed s) : IsClosed s⁻¹ :=
   hs.preimage continuous_inv
 #align is_closed.inv IsClosed.inv
 #align is_closed.neg IsClosed.neg
@@ -462,7 +462,7 @@ lemma TopologicalGroup.continuous_conj_prod [ContinuousInv G] :
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
 @[to_additive (attr := continuity)
   "Conjugation by a fixed element is continuous when `add` is continuous."]
-theorem TopologicalGroup.continuous_conj (g : G) : Continuous fun h : G => g * h * g⁻¹ :=
+lemma TopologicalGroup.continuous_conj (g : G) : Continuous fun h : G => g * h * g⁻¹ :=
   (continuous_mul_right g⁻¹).comp (continuous_mul_left g)
 #align topological_group.continuous_conj TopologicalGroup.continuous_conj
 #align topological_add_group.continuous_conj TopologicalAddGroup.continuous_conj
@@ -515,7 +515,7 @@ lemma continuousOn_zpow {s : Set G} (z : ℤ) : ContinuousOn (fun x => x ^ z) s 
 #align continuous_on_zsmul continuousOn_zsmul
 
 @[to_additive]
-theorem continuousAt_zpow (x : G) (z : ℤ) : ContinuousAt (fun x => x ^ z) x :=
+lemma continuousAt_zpow (x : G) (z : ℤ) : ContinuousAt (fun x => x ^ z) x :=
   (continuous_zpow z).continuousAt
 #align continuous_at_zpow continuousAt_zpow
 #align continuous_at_zsmul continuousAt_zsmul
@@ -714,19 +714,19 @@ lemma Subgroup.topologicalClosure_coe {s : Subgroup G} :
 #align add_subgroup.topological_closure_coe AddSubgroup.topologicalClosure_coe
 
 @[to_additive]
-theorem Subgroup.le_topologicalClosure (s : Subgroup G) : s ≤ s.topologicalClosure :=
+lemma Subgroup.le_topologicalClosure (s : Subgroup G) : s ≤ s.topologicalClosure :=
   _root_.subset_closure
 #align subgroup.le_topological_closure Subgroup.le_topologicalClosure
 #align add_subgroup.le_topological_closure AddSubgroup.le_topologicalClosure
 
 @[to_additive]
-theorem Subgroup.isClosed_topologicalClosure (s : Subgroup G) :
+lemma Subgroup.isClosed_topologicalClosure (s : Subgroup G) :
     IsClosed (s.topologicalClosure : Set G) := isClosed_closure
 #align subgroup.is_closed_topological_closure Subgroup.isClosed_topologicalClosure
 #align add_subgroup.is_closed_topological_closure AddSubgroup.isClosed_topologicalClosure
 
 @[to_additive]
-theorem Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h : s ≤ t)
+lemma Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h : s ≤ t)
     (ht : IsClosed (t : Set G)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 #align subgroup.topological_closure_minimal Subgroup.topologicalClosure_minimal
@@ -808,30 +808,30 @@ lemma exists_nhds_split_inv {s : Set G} (hs : s ∈ 𝓝 (1 : G)) :
 #align exists_nhds_half_neg exists_nhds_half_neg
 
 @[to_additive]
-theorem nhds_translation_mul_inv (x : G) : comap (fun y : G => y * x⁻¹) (𝓝 1) = 𝓝 x :=
+lemma nhds_translation_mul_inv (x : G) : comap (fun y : G => y * x⁻¹) (𝓝 1) = 𝓝 x :=
   ((Homeomorph.mulRight x⁻¹).comap_nhds_eq 1).trans <| show 𝓝 (1 * x⁻¹⁻¹) = 𝓝 x by simp
 #align nhds_translation_mul_inv nhds_translation_mul_inv
 #align nhds_translation_add_neg nhds_translation_add_neg
 
 @[to_additive (attr := simp)]
-theorem map_mul_left_nhds (x y : G) : map ((· * ·) x) (𝓝 y) = 𝓝 (x * y) :=
+lemma map_mul_left_nhds (x y : G) : map ((· * ·) x) (𝓝 y) = 𝓝 (x * y) :=
   (Homeomorph.mulLeft x).map_nhds_eq y
 #align map_mul_left_nhds map_mul_left_nhds
 #align map_add_left_nhds map_add_left_nhds
 
 @[to_additive]
-theorem map_mul_left_nhds_one (x : G) : map ((· * ·) x) (𝓝 1) = 𝓝 x := by simp
+lemma map_mul_left_nhds_one (x : G) : map ((· * ·) x) (𝓝 1) = 𝓝 x := by simp
 #align map_mul_left_nhds_one map_mul_left_nhds_one
 #align map_add_left_nhds_zero map_add_left_nhds_zero
 
 @[to_additive (attr := simp)]
-theorem map_mul_right_nhds (x y : G) : map (fun z => z * x) (𝓝 y) = 𝓝 (y * x) :=
+lemma map_mul_right_nhds (x y : G) : map (fun z => z * x) (𝓝 y) = 𝓝 (y * x) :=
   (Homeomorph.mulRight x).map_nhds_eq y
 #align map_mul_right_nhds map_mul_right_nhds
 #align map_add_right_nhds map_add_right_nhds
 
 @[to_additive]
-theorem map_mul_right_nhds_one (x : G) : map (fun y => y * x) (𝓝 1) = 𝓝 x := by simp
+lemma map_mul_right_nhds_one (x : G) : map (fun y => y * x) (𝓝 1) = 𝓝 x := by simp
 #align map_mul_right_nhds_one map_mul_right_nhds_one
 #align map_add_right_nhds_zero map_add_right_nhds_zero
 
@@ -1000,7 +1000,7 @@ instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
   "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
-theorem QuotientGroup.nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
+lemma QuotientGroup.nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
   le_antisymm ((QuotientGroup.isOpenMap_coe N).nhds_le x) continuous_quot_mk.continuousAt
 #align quotient_group.nhds_eq QuotientGroup.nhds_eq
 #align quotient_add_group.nhds_eq QuotientAddGroup.nhds_eq
@@ -1086,7 +1086,7 @@ lemma Filter.Tendsto.div' {f g : α → G} {l : Filter α} {a b : G} (hf : Tends
 #align filter.tendsto.sub Filter.Tendsto.sub
 
 @[to_additive const_sub]
-theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
+lemma Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
     (h : Tendsto f l (𝓝 c)) : Tendsto (fun k : α => b / f k) l (𝓝 (b / c)) :=
   tendsto_const_nhds.div' h
 #align filter.tendsto.const_div' Filter.Tendsto.const_div'
@@ -1102,19 +1102,19 @@ lemma Filter.Tendsto.div_const' {c : G} {f : α → G} {l : Filter α} (h : Tend
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
 @[to_additive (attr := continuity) sub]
-theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
+lemma Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
   continuous_div'.comp (hf.prod_mk hg : _)
 #align continuous.div' Continuous.div'
 #align continuous.sub Continuous.sub
 
 @[to_additive (attr := continuity) continuous_sub_left]
-theorem continuous_div_left' (a : G) : Continuous fun b : G => a / b :=
+lemma continuous_div_left' (a : G) : Continuous fun b : G => a / b :=
   continuous_const.div' continuous_id
 #align continuous_div_left' continuous_div_left'
 #align continuous_sub_left continuous_sub_left
 
 @[to_additive (attr := continuity) continuous_sub_right]
-theorem continuous_div_right' (a : G) : Continuous fun b : G => b / a :=
+lemma continuous_div_right' (a : G) : Continuous fun b : G => b / a :=
   continuous_id.div' continuous_const
 #align continuous_div_right' continuous_div_right'
 #align continuous_sub_right continuous_sub_right
@@ -1127,14 +1127,14 @@ lemma ContinuousAt.div' {f g : α → G} {x : α} (hf : ContinuousAt f x) (hg : 
 #align continuous_at.sub ContinuousAt.sub
 
 @[to_additive sub]
-theorem ContinuousWithinAt.div' (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+lemma ContinuousWithinAt.div' (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (fun x => f x / g x) s x :=
   Filter.Tendsto.div' hf hg
 #align continuous_within_at.div' ContinuousWithinAt.div'
 #align continuous_within_at.sub ContinuousWithinAt.sub
 
 @[to_additive sub]
-theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+lemma ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x / g x) s := fun x hx => (hf x hx).div' (hg x hx)
 #align continuous_on.div' ContinuousOn.div'
 #align continuous_on.sub ContinuousOn.sub
@@ -1156,13 +1156,13 @@ def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
 #align homeomorph.sub_left Homeomorph.subLeft
 
 @[to_additive]
-theorem isOpenMap_div_left (a : G) : IsOpenMap ((· / ·) a) :=
+lemma isOpenMap_div_left (a : G) : IsOpenMap ((· / ·) a) :=
   (Homeomorph.divLeft _).isOpenMap
 #align is_open_map_div_left isOpenMap_div_left
 #align is_open_map_sub_left isOpenMap_sub_left
 
 @[to_additive]
-theorem isClosedMap_div_left (a : G) : IsClosedMap ((· / ·) a) :=
+lemma isClosedMap_div_left (a : G) : IsClosedMap ((· / ·) a) :=
   (Homeomorph.divLeft _).isClosedMap
 #align is_closed_map_div_left isClosedMap_div_left
 #align is_closed_map_sub_left isClosedMap_sub_left
@@ -1178,13 +1178,13 @@ def Homeomorph.divRight (x : G) : G ≃ₜ G :=
 #align homeomorph.sub_right Homeomorph.subRight
 
 @[to_additive]
-theorem isOpenMap_div_right (a : G) : IsOpenMap fun x => x / a :=
+lemma isOpenMap_div_right (a : G) : IsOpenMap fun x => x / a :=
   (Homeomorph.divRight a).isOpenMap
 #align is_open_map_div_right isOpenMap_div_right
 #align is_open_map_sub_right isOpenMap_sub_right
 
 @[to_additive]
-theorem isClosedMap_div_right (a : G) : IsClosedMap fun x => x / a :=
+lemma isClosedMap_div_right (a : G) : IsClosedMap fun x => x / a :=
   (Homeomorph.divRight a).isClosedMap
 #align is_closed_map_div_right isClosedMap_div_right
 #align is_closed_map_sub_right isClosedMap_sub_right
@@ -1198,7 +1198,7 @@ lemma tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α → 
 #align tendsto_sub_nhds_zero_iff tendsto_sub_nhds_zero_iff
 
 @[to_additive]
-theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
+lemma nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
   simpa only [div_eq_mul_inv] using nhds_translation_mul_inv x
 #align nhds_translation_div nhds_translation_div
 #align nhds_translation_sub nhds_translation_sub
@@ -1220,7 +1220,7 @@ variable [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousConstSMul
   {t : Set β}
 
 @[to_additive]
-theorem IsOpen.smul_left (ht : IsOpen t) : IsOpen (s • t) := by
+lemma IsOpen.smul_left (ht : IsOpen t) : IsOpen (s • t) := by
   rw [← iUnion_smul_set]
   exact isOpen_biUnion fun a _ => ht.smul _
 #align is_open.smul_left IsOpen.smul_left
@@ -1233,7 +1233,7 @@ lemma subset_interior_smul_right : s • interior t ⊆ interior (s • t) :=
 #align subset_interior_vadd_right subset_interior_vadd_right
 
 @[to_additive]
-theorem smul_mem_nhds (a : α) {x : β} (ht : t ∈ 𝓝 x) : a • t ∈ 𝓝 (a • x) := by
+lemma smul_mem_nhds (a : α) {x : β} (ht : t ∈ 𝓝 x) : a • t ∈ 𝓝 (a • x) := by
   rcases mem_nhds_iff.1 ht with ⟨u, ut, u_open, hu⟩
   exact mem_nhds_iff.2 ⟨a • u, smul_set_mono ut, u_open.smul a, smul_mem_smul_set hu⟩
 #align smul_mem_nhds smul_mem_nhds
@@ -1255,7 +1255,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
 @[to_additive]
-theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
+lemma IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
     intro x ⟨g, y, hgs, hyt, hgyx⟩
@@ -1324,14 +1324,14 @@ lemma subset_interior_mul : interior s * interior t ⊆ interior (s * t) :=
 #align subset_interior_add subset_interior_add
 
 @[to_additive]
-theorem singleton_mul_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : {a} * s ∈ 𝓝 (a * b) := by
+lemma singleton_mul_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : {a} * s ∈ 𝓝 (a * b) := by
   have := smul_mem_nhds a h
   rwa [← singleton_smul] at this
 #align singleton_mul_mem_nhds singleton_mul_mem_nhds
 #align singleton_add_mem_nhds singleton_add_mem_nhds
 
 @[to_additive]
-theorem singleton_mul_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : {a} * s ∈ 𝓝 a := by
+lemma singleton_mul_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : {a} * s ∈ 𝓝 a := by
   simpa only [mul_one] using singleton_mul_mem_nhds a h
 #align singleton_mul_mem_nhds_of_nhds_one singleton_mul_mem_nhds_of_nhds_one
 #align singleton_add_mem_nhds_of_nhds_zero singleton_add_mem_nhds_of_nhds_zero
@@ -1343,7 +1343,7 @@ section ContinuousConstSMulOp
 variable [TopologicalSpace α] [Group α] [ContinuousConstSMul αᵐᵒᵖ α] {s t : Set α}
 
 @[to_additive]
-theorem IsOpen.mul_right (hs : IsOpen s) : IsOpen (s * t) := by
+lemma IsOpen.mul_right (hs : IsOpen s) : IsOpen (s * t) := by
   rw [← iUnion_op_smul_set]
   exact isOpen_biUnion fun a _ => hs.smul _
 #align is_open.mul_right IsOpen.mul_right
@@ -1362,14 +1362,14 @@ lemma subset_interior_mul' : interior s * interior t ⊆ interior (s * t) :=
 #align subset_interior_add' subset_interior_add'
 
 @[to_additive]
-theorem mul_singleton_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : s * {a} ∈ 𝓝 (b * a) := by
+lemma mul_singleton_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : s * {a} ∈ 𝓝 (b * a) := by
   simp only [← iUnion_op_smul_set, mem_singleton_iff, iUnion_iUnion_eq_left]
   exact smul_mem_nhds _ h
 #align mul_singleton_mem_nhds mul_singleton_mem_nhds
 #align add_singleton_mem_nhds add_singleton_mem_nhds
 
 @[to_additive]
-theorem mul_singleton_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : s * {a} ∈ 𝓝 a := by
+lemma mul_singleton_mem_nhds_of_nhds_one (a : α) (h : s ∈ 𝓝 (1 : α)) : s * {a} ∈ 𝓝 a := by
   simpa only [one_mul] using mul_singleton_mem_nhds a h
 #align mul_singleton_mem_nhds_of_nhds_one mul_singleton_mem_nhds_of_nhds_one
 #align add_singleton_mem_nhds_of_nhds_zero add_singleton_mem_nhds_of_nhds_zero
@@ -1381,14 +1381,14 @@ section TopologicalGroup
 variable [TopologicalSpace α] [Group α] [TopologicalGroup α] {s t : Set α}
 
 @[to_additive]
-theorem IsOpen.div_left (ht : IsOpen t) : IsOpen (s / t) := by
+lemma IsOpen.div_left (ht : IsOpen t) : IsOpen (s / t) := by
   rw [← iUnion_div_left_image]
   exact isOpen_biUnion fun a _ => isOpenMap_div_left a t ht
 #align is_open.div_left IsOpen.div_left
 #align is_open.sub_left IsOpen.sub_left
 
 @[to_additive]
-theorem IsOpen.div_right (hs : IsOpen s) : IsOpen (s / t) := by
+lemma IsOpen.div_right (hs : IsOpen s) : IsOpen (s / t) := by
   rw [← iUnion_div_right_image]
   exact isOpen_biUnion fun a _ => isOpenMap_div_right a s hs
 #align is_open.div_right IsOpen.div_right
@@ -1413,7 +1413,7 @@ lemma subset_interior_div : interior s / interior t ⊆ interior (s / t) :=
 #align subset_interior_sub subset_interior_sub
 
 @[to_additive]
-theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set α) : s * closure t = s * t := by
+lemma IsOpen.mul_closure (hs : IsOpen s) (t : Set α) : s * closure t = s * t := by
   refine' (mul_subset_iff.2 fun a ha b hb => _).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
   have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, a * b, Set.inv_mem_inv.2 ha, rfl, inv_mul_cancel_left _ _⟩
@@ -1423,30 +1423,30 @@ theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set α) : s * closure t = s * t 
 #align is_open.add_closure IsOpen.add_closure
 
 @[to_additive]
-theorem IsOpen.closure_mul (ht : IsOpen t) (s : Set α) : closure s * t = s * t := by
+lemma IsOpen.closure_mul (ht : IsOpen t) (s : Set α) : closure s * t = s * t := by
   rw [← inv_inv (closure s * t), mul_inv_rev, inv_closure, ht.inv.mul_closure, mul_inv_rev, inv_inv,
     inv_inv]
 #align is_open.closure_mul IsOpen.closure_mul
 #align is_open.closure_add IsOpen.closure_add
 
 @[to_additive]
-theorem IsOpen.div_closure (hs : IsOpen s) (t : Set α) : s / closure t = s / t := by
+lemma IsOpen.div_closure (hs : IsOpen s) (t : Set α) : s / closure t = s / t := by
   simp_rw [div_eq_mul_inv, inv_closure, hs.mul_closure]
 #align is_open.div_closure IsOpen.div_closure
 #align is_open.sub_closure IsOpen.sub_closure
 
 @[to_additive]
-theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t := by
+lemma IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t := by
   simp_rw [div_eq_mul_inv, ht.inv.closure_mul]
 #align is_open.closure_div IsOpen.closure_div
 #align is_open.closure_sub IsOpen.closure_sub
 
 @[to_additive]
-theorem IsClosed.mul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) : IsClosed (s * t) :=
+lemma IsClosed.mul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) : IsClosed (s * t) :=
   ht.smul_left_of_isCompact hs
 
 @[to_additive]
-theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
+lemma IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (t * s) := by
   rw [← image_op_smul]
   exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
@@ -1470,7 +1470,7 @@ section
 variable (G) [TopologicalSpace G] [Group G] [ContinuousMul G]
 
 @[to_additive]
-theorem TopologicalGroup.t1Space (h : @IsClosed G _ {1}) : T1Space G :=
+lemma TopologicalGroup.t1Space (h : @IsClosed G _ {1}) : T1Space G :=
   ⟨fun x => by simpa using isClosedMap_mul_right x _ h⟩
 #align topological_group.t1_space TopologicalGroup.t1Space
 #align topological_add_group.t1_space TopologicalAddGroup.t1Space
@@ -1513,7 +1513,7 @@ lemma TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Se
 #align topological_add_group.t2_space_iff_zero_closed TopologicalAddGroup.t2Space_iff_zero_closed
 
 @[to_additive]
-theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U ∈ 𝓝 (1 : G), x ∉ U) :
+lemma TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U ∈ 𝓝 (1 : G), x ∉ U) :
     T2Space G := by
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
@@ -1540,7 +1540,7 @@ it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See a
   "A subgroup `S` of an additive topological group `G` acts on `G` properly
   discontinuously on the left, if it is discrete in the sense that `S ∩ K` is finite for all compact
   `K`. (See also `DiscreteTopology`."]
-theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
+lemma Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
@@ -1568,7 +1568,7 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
 
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff."]
-theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
+lemma Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul (opposite S) G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
@@ -1749,7 +1749,7 @@ section
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 @[to_additive]
-theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
+lemma nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
   calc
     𝓝 (x * y) = map (x * ·) (map (· * y) (𝓝 1 * 𝓝 1)) := by simp
     _ = map₂ (fun a b => x * (a * b * y)) (𝓝 1) (𝓝 1) := by rw [← map₂_mul, map_map₂, map_map₂]
@@ -1791,7 +1791,7 @@ instance QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) wh
 #align quotient_add_group.has_continuous_const_vadd QuotientAddGroup.continuousConstVAdd
 
 @[to_additive]
-theorem QuotientGroup.continuous_smul₁ (x : G ⧸ Γ) : Continuous fun g : G => g • x := by
+lemma QuotientGroup.continuous_smul₁ (x : G ⧸ Γ) : Continuous fun g : G => g • x := by
   induction x using QuotientGroup.induction_on
   exact continuous_quotient_mk'.comp (continuous_mul_right _)
 #align quotient_group.continuous_smul₁ QuotientGroup.continuous_smul₁
@@ -1922,7 +1922,7 @@ variable [Group α]
 
 /-- A version of the global `continuous_mul` suitable for dot notation. -/
 @[to_additive "A version of the global `continuous_add` suitable for dot notation."]
-theorem continuous_mul' (g : GroupTopology α) :
+lemma continuous_mul' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous fun p : α × α => p.1 * p.2 := by
   letI := g.toTopologicalSpace
@@ -1933,7 +1933,7 @@ theorem continuous_mul' (g : GroupTopology α) :
 
 /-- A version of the global `continuous_inv` suitable for dot notation. -/
 @[to_additive "A version of the global `continuous_neg` suitable for dot notation."]
-theorem continuous_inv' (g : GroupTopology α) :
+lemma continuous_inv' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous (Inv.inv : α → α) := by
   letI := g.toTopologicalSpace
@@ -2010,7 +2010,7 @@ instance : BoundedOrder (GroupTopology α) where
 instance : Inf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
 
 @[to_additive (attr := simp)]
-theorem toTopologicalSpace_inf (x y : GroupTopology α) :
+lemma toTopologicalSpace_inf (x y : GroupTopology α) :
     (x ⊓ y).toTopologicalSpace = x.toTopologicalSpace ⊓ y.toTopologicalSpace :=
   rfl
 #align group_topology.to_topological_space_inf GroupTopology.toTopologicalSpace_inf
@@ -2033,7 +2033,7 @@ instance : InfSet (GroupTopology α) where
     ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| ball_image_iff.2 fun t _ => t.2⟩
 
 @[to_additive (attr := simp)]
-theorem toTopologicalSpace_sInf (s : Set (GroupTopology α)) :
+lemma toTopologicalSpace_sInf (s : Set (GroupTopology α)) :
     (sInf s).toTopologicalSpace = sInf (toTopologicalSpace '' s) := rfl
 #align group_topology.to_topological_space_Inf GroupTopology.toTopologicalSpace_sInf
 #align add_group_topology.to_topological_space_Inf AddGroupTopology.toTopologicalSpace_sInf

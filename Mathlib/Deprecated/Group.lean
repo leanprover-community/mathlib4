@@ -128,7 +128,7 @@ lemma coe_of {f : M → N} (hf : IsMonoidHom f) : ⇑(MonoidHom.of hf) = f :=
 #align add_monoid_hom.coe_of AddMonoidHom.coe_of
 
 @[to_additive]
-theorem isMonoidHom_coe (f : M →* N) : IsMonoidHom (f : M → N) :=
+lemma isMonoidHom_coe (f : M →* N) : IsMonoidHom (f : M → N) :=
   { map_mul := f.map_mul
     map_one := f.map_one }
 #align monoid_hom.is_monoid_hom_coe MonoidHom.isMonoidHom_coe
@@ -142,7 +142,7 @@ variable {M : Type*} {N : Type*} [MulOneClass M] [MulOneClass N]
 
 /-- A multiplicative isomorphism preserves multiplication (deprecated). -/
 @[to_additive "An additive isomorphism preserves addition (deprecated)."]
-theorem isMulHom (h : M ≃* N) : IsMulHom h :=
+lemma isMulHom (h : M ≃* N) : IsMulHom h :=
   ⟨h.map_mul⟩
 #align mul_equiv.is_mul_hom MulEquiv.isMulHom
 #align add_equiv.is_add_hom AddEquiv.isAddHom
@@ -152,7 +152,7 @@ theorem isMulHom (h : M ≃* N) : IsMulHom h :=
 @[to_additive
       "An additive bijection between two additive monoids is an additive
       monoid hom (deprecated). "]
-theorem isMonoidHom (h : M ≃* N) : IsMonoidHom h :=
+lemma isMonoidHom (h : M ≃* N) : IsMonoidHom h :=
   { map_mul := h.map_mul
     map_one := h.map_one }
 #align mul_equiv.is_monoid_hom MulEquiv.isMonoidHom
@@ -166,7 +166,7 @@ variable [MulOneClass α] [MulOneClass β] {f : α → β} (hf : IsMonoidHom f)
 
 /-- A monoid homomorphism preserves multiplication. -/
 @[to_additive "An additive monoid homomorphism preserves addition."]
-theorem map_mul' (x y) : f (x * y) = f x * f y :=
+lemma map_mul' (x y) : f (x * y) = f x * f y :=
   hf.map_mul x y
 #align is_monoid_hom.map_mul IsMonoidHom.map_mul'
 #align is_add_monoid_hom.map_add IsAddMonoidHom.map_add'
@@ -211,7 +211,7 @@ lemma id : IsMonoidHom (@id α) :=
 @[to_additive
       "The composite of two additive monoid homomorphisms is an additive monoid
       homomorphism."]
-theorem comp (hf : IsMonoidHom f) {γ} [MulOneClass γ] {g : β → γ} (hg : IsMonoidHom g) :
+lemma comp (hf : IsMonoidHom f) {γ} [MulOneClass γ] {g : β → γ} (hg : IsMonoidHom g) :
     IsMonoidHom (g ∘ f) :=
   { IsMulHom.comp hf.toIsMulHom hg.toIsMulHom with
     map_one := show g _ = 1 by rw [hf.map_one, hg.map_one] }
@@ -295,13 +295,13 @@ lemma map_one : f 1 = 1 :=
 
 /-- A group homomorphism sends inverses to inverses. -/
 @[to_additive "An additive group homomorphism sends negations to negations."]
-theorem map_inv (hf : IsGroupHom f) (a : α) : f a⁻¹ = (f a)⁻¹ :=
+lemma map_inv (hf : IsGroupHom f) (a : α) : f a⁻¹ = (f a)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| by rw [← hf.map_mul, inv_mul_self, hf.map_one]
 #align is_group_hom.map_inv IsGroupHom.map_inv
 #align is_add_group_hom.map_neg IsAddGroupHom.map_neg
 
 @[to_additive]
-theorem map_div (hf : IsGroupHom f) (a b : α) : f (a / b) = f a / f b := by
+lemma map_div (hf : IsGroupHom f) (a b : α) : f (a / b) = f a / f b := by
   simp_rw [div_eq_mul_inv, hf.map_mul, hf.map_inv]
 #align is_group_hom.map_div IsGroupHom.map_div
 #align is_add_group_hom.map_sub IsAddGroupHom.map_sub
@@ -317,7 +317,7 @@ lemma id : IsGroupHom (@id α) :=
 @[to_additive
       "The composition of two additive group homomorphisms is an additive
       group homomorphism."]
-theorem comp (hf : IsGroupHom f) {γ} [Group γ] {g : β → γ} (hg : IsGroupHom g) :
+lemma comp (hf : IsGroupHom f) {γ} [Group γ] {g : β → γ} (hg : IsGroupHom g) :
     IsGroupHom (g ∘ f) :=
   { IsMulHom.comp hf.toIsMulHom hg.toIsMulHom with }
 #align is_group_hom.comp IsGroupHom.comp
@@ -368,12 +368,12 @@ section
 
 variable [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem to_isMonoidHom (f : R →+* S) : IsMonoidHom f :=
+lemma to_isMonoidHom (f : R →+* S) : IsMonoidHom f :=
   { map_one := f.map_one
     map_mul := f.map_mul }
 #align ring_hom.to_is_monoid_hom RingHom.to_isMonoidHom
 
-theorem to_isAddMonoidHom (f : R →+* S) : IsAddMonoidHom f :=
+lemma to_isAddMonoidHom (f : R →+* S) : IsAddMonoidHom f :=
   { map_zero := f.map_zero
     map_add := f.map_add }
 #align ring_hom.to_is_add_monoid_hom RingHom.to_isAddMonoidHom
@@ -384,7 +384,7 @@ section
 
 variable [Ring R] [Ring S]
 
-theorem to_isAddGroupHom (f : R →+* S) : IsAddGroupHom f :=
+lemma to_isAddGroupHom (f : R →+* S) : IsAddGroupHom f :=
   { map_add := f.map_add }
 #align ring_hom.to_is_add_group_hom RingHom.to_isAddGroupHom
 

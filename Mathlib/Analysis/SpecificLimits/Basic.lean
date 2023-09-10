@@ -32,7 +32,7 @@ lemma tendsto_inverse_atTop_nhds_0_nat : Tendsto (fun n : ℕ => (n : ℝ)⁻¹)
   tendsto_inv_atTop_zero.comp tendsto_nat_cast_atTop_atTop
 #align tendsto_inverse_at_top_nhds_0_nat tendsto_inverse_atTop_nhds_0_nat
 
-theorem tendsto_const_div_atTop_nhds_0_nat (C : ℝ) : Tendsto (fun n : ℕ => C / n) atTop (𝓝 0) := by
+lemma tendsto_const_div_atTop_nhds_0_nat (C : ℝ) : Tendsto (fun n : ℕ => C / n) atTop (𝓝 0) := by
   simpa only [mul_zero] using tendsto_const_nhds.mul tendsto_inverse_atTop_nhds_0_nat
 #align tendsto_const_div_at_top_nhds_0_nat tendsto_const_div_atTop_nhds_0_nat
 
@@ -42,7 +42,7 @@ lemma NNReal.tendsto_inverse_atTop_nhds_0_nat :
   exact _root_.tendsto_inverse_atTop_nhds_0_nat
 #align nnreal.tendsto_inverse_at_top_nhds_0_nat NNReal.tendsto_inverse_atTop_nhds_0_nat
 
-theorem NNReal.tendsto_const_div_atTop_nhds_0_nat (C : ℝ≥0) :
+lemma NNReal.tendsto_const_div_atTop_nhds_0_nat (C : ℝ≥0) :
     Tendsto (fun n : ℕ => C / n) atTop (𝓝 0) := by
   simpa using tendsto_const_nhds.mul NNReal.tendsto_inverse_atTop_nhds_0_nat
 #align nnreal.tendsto_const_div_at_top_nhds_0_nat NNReal.tendsto_const_div_atTop_nhds_0_nat
@@ -53,13 +53,13 @@ lemma tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
-theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ≥0 𝕜]
+lemma NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ≥0 𝕜]
     [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
     Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ => (n : ℝ≥0)⁻¹) atTop (nhds 0) := by
   convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp tendsto_inverse_atTop_nhds_0_nat
   rw [map_zero]
 
-theorem tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
+lemma tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
     [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ 𝕜] :
     Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ => (n : ℝ)⁻¹) atTop (nhds 0) :=
   NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat 𝕜
@@ -238,7 +238,7 @@ lemma tsum_geometric_two : (∑' n : ℕ, ((1 : ℝ) / 2) ^ n) = 2 :=
   hasSum_geometric_two.tsum_eq
 #align tsum_geometric_two tsum_geometric_two
 
-theorem sum_geometric_two_le (n : ℕ) : (∑ i : ℕ in range n, (1 / (2 : ℝ)) ^ i) ≤ 2 := by
+lemma sum_geometric_two_le (n : ℕ) : (∑ i : ℕ in range n, (1 / (2 : ℝ)) ^ i) ≤ 2 := by
   have : ∀ i, 0 ≤ (1 / (2 : ℝ)) ^ i := by
     intro i
     apply pow_nonneg
@@ -252,7 +252,7 @@ lemma tsum_geometric_inv_two : (∑' n : ℕ, (2 : ℝ)⁻¹ ^ n) = 2 :=
 #align tsum_geometric_inv_two tsum_geometric_inv_two
 
 /-- The sum of `2⁻¹ ^ i` for `n ≤ i` equals `2 * 2⁻¹ ^ n`. -/
-theorem tsum_geometric_inv_two_ge (n : ℕ) :
+lemma tsum_geometric_inv_two_ge (n : ℕ) :
     (∑' i, ite (n ≤ i) ((2 : ℝ)⁻¹ ^ i) 0) = 2 * 2⁻¹ ^ n := by
   have A : Summable fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0 := by
     apply summable_of_nonneg_of_le _ _ summable_geometric_two <;>
@@ -265,7 +265,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
     le_add_iff_nonneg_left, pow_add, _root_.tsum_mul_right, tsum_geometric_inv_two]
 #align tsum_geometric_inv_two_ge tsum_geometric_inv_two_ge
 
-theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ => a / 2 / 2 ^ n) a := by
+lemma hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ => a / 2 / 2 ^ n) a := by
   convert HasSum.mul_left (a / 2)
       (hasSum_geometric_of_lt_1 (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
@@ -274,11 +274,11 @@ theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ => a / 2 / 2 ^ n) 
   · norm_num
 #align has_sum_geometric_two' hasSum_geometric_two'
 
-theorem summable_geometric_two' (a : ℝ) : Summable fun n : ℕ => a / 2 / 2 ^ n :=
+lemma summable_geometric_two' (a : ℝ) : Summable fun n : ℕ => a / 2 / 2 ^ n :=
   ⟨a, hasSum_geometric_two' a⟩
 #align summable_geometric_two' summable_geometric_two'
 
-theorem tsum_geometric_two' (a : ℝ) : ∑' n : ℕ, a / 2 / 2 ^ n = a :=
+lemma tsum_geometric_two' (a : ℝ) : ∑' n : ℕ, a / 2 / 2 ^ n = a :=
   (hasSum_geometric_two' a).tsum_eq
 #align tsum_geometric_two' tsum_geometric_two'
 
@@ -301,7 +301,7 @@ lemma tsum_geometric_nNReal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (
 /-- The series `pow r` converges to `(1-r)⁻¹`. For `r < 1` the RHS is a finite number,
 and for `1 ≤ r` the RHS equals `∞`. -/
 @[simp]
-theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
+lemma ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
   cases' lt_or_le r 1 with hr hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
@@ -372,7 +372,7 @@ lemma cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
 
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f n` to the limit of `f` is bounded above by `2 * C * 2^-n`. -/
-theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a ≤ 2 * C / 2 ^ n := by
+lemma edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a ≤ 2 * C / 2 ^ n := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at *
   rw [mul_assoc, mul_comm]
   convert edist_le_of_edist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1

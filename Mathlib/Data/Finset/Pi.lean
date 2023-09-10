@@ -41,7 +41,7 @@ def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :
 #align finset.pi Finset.pi
 
 @[simp]
-theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
+lemma pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
   rfl
 #align finset.pi_val Finset.pi_val
 
@@ -61,7 +61,7 @@ def Pi.cons (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (a
 #align finset.pi.cons Finset.Pi.cons
 
 @[simp]
-theorem Pi.cons_same (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (h : a ∈ insert a s) :
+lemma Pi.cons_same (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (h : a ∈ insert a s) :
     Pi.cons s a b f a h = b :=
   Multiset.Pi.cons_same _
 #align finset.pi.cons_same Finset.Pi.cons_same

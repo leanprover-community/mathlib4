@@ -31,12 +31,12 @@ section Preorder
 variable [Preorder α] {a b c : α}
 
 @[simp]
-theorem Iic_disjoint_Ioi (h : a ≤ b) : Disjoint (Iic a) (Ioi b) :=
+lemma Iic_disjoint_Ioi (h : a ≤ b) : Disjoint (Iic a) (Ioi b) :=
   disjoint_left.mpr fun _ ha hb => (h.trans_lt hb).not_le ha
 #align set.Iic_disjoint_Ioi Set.Iic_disjoint_Ioi
 
 @[simp]
-theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
+lemma Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   (Iic_disjoint_Ioi h).mono le_rfl fun _ => And.left
 #align set.Iic_disjoint_Ioc Set.Iic_disjoint_Ioc
 
@@ -71,22 +71,22 @@ lemma iUnion_Ici : ⋃ a : α, Ici a = univ :=
 #align set.Union_Ici Set.iUnion_Ici
 
 @[simp]
-theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
+lemma iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
   simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
 #align set.Union_Icc_right Set.iUnion_Icc_right
 
 @[simp]
-theorem iUnion_Ioc_right (a : α) : ⋃ b, Ioc a b = Ioi a := by
+lemma iUnion_Ioc_right (a : α) : ⋃ b, Ioc a b = Ioi a := by
   simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic, inter_univ]
 #align set.Union_Ioc_right Set.iUnion_Ioc_right
 
 @[simp]
-theorem iUnion_Icc_left (b : α) : ⋃ a, Icc a b = Iic b := by
+lemma iUnion_Icc_left (b : α) : ⋃ a, Icc a b = Iic b := by
   simp only [← Ici_inter_Iic, ← iUnion_inter, iUnion_Ici, univ_inter]
 #align set.Union_Icc_left Set.iUnion_Icc_left
 
 @[simp]
-theorem iUnion_Ico_left (b : α) : ⋃ a, Ico a b = Iio b := by
+lemma iUnion_Ico_left (b : α) : ⋃ a, Ico a b = Iio b := by
   simp only [← Ici_inter_Iio, ← iUnion_inter, iUnion_Ici, univ_inter]
 #align set.Union_Ico_left Set.iUnion_Ico_left
 
@@ -179,26 +179,26 @@ section UnionIxx
 
 variable [LinearOrder α] {s : Set α} {a : α} {f : ι → α}
 
-theorem IsGLB.biUnion_Ioi_eq (h : IsGLB s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
+lemma IsGLB.biUnion_Ioi_eq (h : IsGLB s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ioi_subset_Ioi (h.1 hx)
   · rcases h.exists_between hx with ⟨y, hys, _, hyx⟩
     exact mem_biUnion hys hyx
 #align is_glb.bUnion_Ioi_eq IsGLB.biUnion_Ioi_eq
 
-theorem IsGLB.iUnion_Ioi_eq (h : IsGLB (range f) a) : ⋃ x, Ioi (f x) = Ioi a :=
+lemma IsGLB.iUnion_Ioi_eq (h : IsGLB (range f) a) : ⋃ x, Ioi (f x) = Ioi a :=
   biUnion_range.symm.trans h.biUnion_Ioi_eq
 #align is_glb.Union_Ioi_eq IsGLB.iUnion_Ioi_eq
 
-theorem IsLUB.biUnion_Iio_eq (h : IsLUB s a) : ⋃ x ∈ s, Iio x = Iio a :=
+lemma IsLUB.biUnion_Iio_eq (h : IsLUB s a) : ⋃ x ∈ s, Iio x = Iio a :=
   h.dual.biUnion_Ioi_eq
 #align is_lub.bUnion_Iio_eq IsLUB.biUnion_Iio_eq
 
-theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :=
+lemma IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :=
   h.dual.iUnion_Ioi_eq
 #align is_lub.Union_Iio_eq IsLUB.iUnion_Iio_eq
 
-theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
+lemma IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
@@ -207,7 +207,7 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
     refine' ⟨y, hys, hyx.le⟩
 #align is_glb.bUnion_Ici_eq_Ioi IsGLB.biUnion_Ici_eq_Ioi
 
-theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
+lemma IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
     ⋃ x ∈ s, Ici x = Ici a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
@@ -215,12 +215,12 @@ theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
     refine' ⟨a, a_mem, hx⟩
 #align is_glb.bUnion_Ici_eq_Ici IsGLB.biUnion_Ici_eq_Ici
 
-theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :
+lemma IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :
     ⋃ x ∈ s, Iic x = Iio a :=
   a_lub.dual.biUnion_Ici_eq_Ioi a_not_mem
 #align is_lub.bUnion_Iic_eq_Iio IsLUB.biUnion_Iic_eq_Iio
 
-theorem IsLUB.biUnion_Iic_eq_Iic (a_lub : IsLUB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Iic x = Iic a :=
+lemma IsLUB.biUnion_Iic_eq_Iic (a_lub : IsLUB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Iic x = Iic a :=
   a_lub.dual.biUnion_Ici_eq_Ici a_mem
 #align is_lub.bUnion_Iic_eq_Iic IsLUB.biUnion_Iic_eq_Iic
 

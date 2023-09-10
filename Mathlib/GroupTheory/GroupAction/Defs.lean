@@ -90,7 +90,7 @@ instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α :=
 #align has_add.to_has_vadd Add.toVAdd
 
 @[to_additive (attr := simp)]
-theorem smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' :=
+lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' :=
   rfl
 #align smul_eq_mul smul_eq_mul
 #align vadd_eq_add vadd_eq_add
@@ -149,13 +149,13 @@ namespace MulAction
 variable (M) [SMul M α] [IsPretransitive M α]
 
 @[to_additive]
-theorem exists_smul_eq (x y : α) : ∃ m : M, m • x = y :=
+lemma exists_smul_eq (x y : α) : ∃ m : M, m • x = y :=
   IsPretransitive.exists_smul_eq x y
 #align mul_action.exists_smul_eq MulAction.exists_smul_eq
 #align add_action.exists_vadd_eq AddAction.exists_vadd_eq
 
 @[to_additive]
-theorem surjective_smul (x : α) : Surjective fun c : M => c • x :=
+lemma surjective_smul (x : α) : Surjective fun c : M => c • x :=
   exists_smul_eq M x
 #align mul_action.surjective_smul MulAction.surjective_smul
 #align add_action.surjective_vadd AddAction.surjective_vadd
@@ -216,7 +216,7 @@ An example of where this is used is `LinearMap.prod_equiv`.
 /-- Commutativity of actions is a symmetric relation. This lemma can't be an instance because this
 would cause a loop in the instance search graph. -/
 @[to_additive]
-theorem SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α] :
+lemma SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass N M α :=
   ⟨fun a' a b => (smul_comm a a' b).symm⟩
 #align smul_comm_class.symm SMulCommClass.symm
@@ -463,13 +463,13 @@ section ite
 variable [SMul M α] (p : Prop) [Decidable p]
 
 @[to_additive]
-theorem ite_smul (a₁ a₂ : M) (b : α) : ite p a₁ a₂ • b = ite p (a₁ • b) (a₂ • b) := by
+lemma ite_smul (a₁ a₂ : M) (b : α) : ite p a₁ a₂ • b = ite p (a₁ • b) (a₂ • b) := by
   split_ifs <;> rfl
 #align ite_smul ite_smul
 #align ite_vadd ite_vadd
 
 @[to_additive]
-theorem smul_ite (a : M) (b₁ b₂ : α) : a • ite p b₁ b₂ = ite p (a • b₁) (a • b₂) := by
+lemma smul_ite (a : M) (b₁ b₂ : α) : a • ite p b₁ b₂ = ite p (a • b₁) (a • b₂) := by
   split_ifs <;> rfl
 #align smul_ite smul_ite
 #align vadd_ite vadd_ite
@@ -481,7 +481,7 @@ section
 variable [Monoid M] [MulAction M α]
 
 @[to_additive]
-theorem smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂) • b :=
+lemma smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂) • b :=
   (mul_smul _ _ _).symm
 #align smul_smul smul_smul
 #align vadd_vadd vadd_vadd
@@ -489,7 +489,7 @@ theorem smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂)
 variable (M)
 
 @[to_additive (attr := simp)]
-theorem one_smul (b : α) : (1 : M) • b = b :=
+lemma one_smul (b : α) : (1 : M) • b = b :=
   MulAction.one_smul _
 #align one_smul one_smul
 #align zero_vadd zero_vadd
@@ -503,7 +503,7 @@ lemma one_smul_eq_id : ((· • ·) (1 : M) : α → α) = id :=
 
 /-- `SMul` version of `comp_mul_left` -/
 @[to_additive "`VAdd` version of `comp_add_left`"]
-theorem comp_smul_left (a₁ a₂ : M) : (· • ·) a₁ ∘ (· • ·) a₂ = ((· • ·) (a₁ * a₂) : α → α) :=
+lemma comp_smul_left (a₁ a₂ : M) : (· • ·) a₁ ∘ (· • ·) a₂ = ((· • ·) (a₁ * a₂) : α → α) :=
   funext fun _ => (mul_smul _ _ _).symm
 #align comp_smul_left comp_smul_left
 #align comp_vadd_left comp_vadd_left
@@ -614,7 +614,7 @@ add_decl_doc AddAction.toFun
 variable {M α}
 
 @[to_additive (attr := simp)]
-theorem toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y :=
+lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y :=
   rfl
 #align mul_action.to_fun_apply MulAction.toFun_apply
 #align add_action.to_fun_apply AddAction.toFun_apply
@@ -709,7 +709,7 @@ section smul_zero
 variable [Zero A] [SMulZeroClass M A]
 
 @[simp]
-theorem smul_zero (a : M) : a • (0 : A) = 0 :=
+lemma smul_zero (a : M) : a • (0 : A) = 0 :=
   SMulZeroClass.smul_zero _
 #align smul_zero smul_zero
 
@@ -784,7 +784,7 @@ section DistribSMul
 
 variable [AddZeroClass A] [DistribSMul M A]
 
-theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a • b₂ :=
+lemma smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a • b₂ :=
   DistribSMul.smul_add _ _ _
 #align smul_add smul_add
 
@@ -965,11 +965,11 @@ instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
 #align add_group.int_smul_comm_class' AddGroup.int_smulCommClass'
 
 @[simp]
-theorem smul_neg (r : M) (x : A) : r • -x = -(r • x) :=
+lemma smul_neg (r : M) (x : A) : r • -x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← smul_add, neg_add_self, smul_zero]
 #align smul_neg smul_neg
 
-theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
+lemma smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
   rw [sub_eq_add_neg, sub_eq_add_neg, smul_add, smul_neg]
 #align smul_sub smul_sub
 
@@ -994,7 +994,7 @@ section
 
 variable [Monoid M] [Monoid A] [MulDistribMulAction M A]
 
-theorem smul_mul' (a : M) (b₁ b₂ : A) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
+lemma smul_mul' (a : M) (b₁ b₂ : A) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
   MulDistribMulAction.smul_mul _ _ _
 #align smul_mul' smul_mul'
 
@@ -1048,7 +1048,7 @@ def MulDistribMulAction.toMonoidHom (r : M) :
 variable {A}
 
 @[simp]
-theorem MulDistribMulAction.toMonoidHom_apply (r : M) (x : A) :
+lemma MulDistribMulAction.toMonoidHom_apply (r : M) (x : A) :
     MulDistribMulAction.toMonoidHom A r x = r • x :=
   rfl
 #align mul_distrib_mul_action.to_monoid_hom_apply MulDistribMulAction.toMonoidHom_apply
@@ -1072,11 +1072,11 @@ section
 variable [Monoid M] [Group A] [MulDistribMulAction M A]
 
 @[simp]
-theorem smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
+lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
   (MulDistribMulAction.toMonoidHom A r).map_inv x
 #align smul_inv' smul_inv'
 
-theorem smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
+lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
 #align smul_div' smul_div'
 
@@ -1124,12 +1124,12 @@ instance Function.End.applyMulAction :
 #align function.End.apply_mul_action Function.End.applyMulAction
 
 @[simp]
-theorem Function.End.smul_def (f : Function.End α) (a : α) : f • a = f a :=
+lemma Function.End.smul_def (f : Function.End α) (a : α) : f • a = f a :=
   rfl
 #align function.End.smul_def Function.End.smul_def
 
 --TODO - This statement should be somethting like `toFun (f * g) = toFun f ∘ toFun g`
-theorem Function.End.mul_def (f g : Function.End α) : (f * g) = f ∘ g :=
+lemma Function.End.mul_def (f g : Function.End α) : (f * g) = f ∘ g :=
   rfl
 
 --TODO - This statement should be somethting like `toFun 1 = id`

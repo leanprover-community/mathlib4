@@ -121,7 +121,7 @@ protected lemma Antisymmetrization.induction_on {p : Antisymmetrization α r →
 #align antisymmetrization.induction_on Antisymmetrization.induction_on
 
 @[simp]
-theorem toAntisymmetrization_ofAntisymmetrization (a : Antisymmetrization α r) :
+lemma toAntisymmetrization_ofAntisymmetrization (a : Antisymmetrization α r) :
     toAntisymmetrization r (ofAntisymmetrization r a) = a :=
   Quotient.out_eq' _
 #align to_antisymmetrization_of_antisymmetrization toAntisymmetrization_ofAntisymmetrization
@@ -204,7 +204,7 @@ lemma ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrization
 lemma toAntisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun _ _ => id
 #align to_antisymmetrization_mono toAntisymmetrization_mono
 
-private theorem liftFun_antisymmRel (f : α →o β) :
+private lemma liftFun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
 
@@ -217,20 +217,20 @@ protected def OrderHom.antisymmetrization (f : α →o β) :
 #align order_hom.antisymmetrization OrderHom.antisymmetrization
 
 @[simp]
-theorem OrderHom.coe_antisymmetrization (f : α →o β) :
+lemma OrderHom.coe_antisymmetrization (f : α →o β) :
     ⇑f.antisymmetrization = Quotient.map' f (liftFun_antisymmRel f) :=
   rfl
 #align order_hom.coe_antisymmetrization OrderHom.coe_antisymmetrization
 
 /- Porting notes: Removed @[simp] attribute. With this `simp` lemma the LHS of
 `OrderHom.antisymmetrization_apply_mk` is not in normal-form -/
-theorem OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
+lemma OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
     f.antisymmetrization a = Quotient.map' f (liftFun_antisymmRel f) a :=
   rfl
 #align order_hom.antisymmetrization_apply OrderHom.antisymmetrization_apply
 
 @[simp]
-theorem OrderHom.antisymmetrization_apply_mk (f : α →o β) (a : α) :
+lemma OrderHom.antisymmetrization_apply_mk (f : α →o β) (a : α) :
     f.antisymmetrization (toAntisymmetrization _ a) = toAntisymmetrization _ (f a) :=
   @Quotient.map_mk _ _ (_root_.id _) (_root_.id _) f (liftFun_antisymmRel f) _
 #align order_hom.antisymmetrization_apply_mk OrderHom.antisymmetrization_apply_mk
@@ -255,14 +255,14 @@ def OrderIso.dualAntisymmetrization :
 #align order_iso.dual_antisymmetrization OrderIso.dualAntisymmetrization
 
 @[simp]
-theorem OrderIso.dualAntisymmetrization_apply (a : α) :
+lemma OrderIso.dualAntisymmetrization_apply (a : α) :
     OrderIso.dualAntisymmetrization _ (toDual <| toAntisymmetrization _ a) =
       toAntisymmetrization _ (toDual a) :=
   rfl
 #align order_iso.dual_antisymmetrization_apply OrderIso.dualAntisymmetrization_apply
 
 @[simp]
-theorem OrderIso.dualAntisymmetrization_symm_apply (a : α) :
+lemma OrderIso.dualAntisymmetrization_symm_apply (a : α) :
     (OrderIso.dualAntisymmetrization _).symm (toAntisymmetrization _ <| toDual a) =
       toDual (toAntisymmetrization _ a) :=
   rfl

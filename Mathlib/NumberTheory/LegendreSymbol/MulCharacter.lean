@@ -120,7 +120,7 @@ noncomputable def trivial : MulChar R R' where
 end trivial
 
 @[simp]
-theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
+lemma coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 #align mul_char.coe_mk MulChar.coe_mk
 
@@ -139,7 +139,7 @@ instance : MulCharClass (MulChar R R') R R' where
   map_one χ := χ.map_one'
   map_nonunit χ := χ.map_nonunit' _
 
-theorem map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
+lemma map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
   χ.map_nonunit' a ha
 #align mul_char.map_nonunit MulChar.map_nonunit
 
@@ -173,7 +173,7 @@ def toUnitHom (χ : MulChar R R') : Rˣ →* R'ˣ :=
   Units.map χ
 #align mul_char.to_unit_hom MulChar.toUnitHom
 
-theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a :=
+lemma coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a :=
   rfl
 #align mul_char.coe_to_unit_hom MulChar.coe_toUnitHom
 
@@ -200,7 +200,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
     simp only [ha, not_false_iff, dif_neg]
 #align mul_char.of_unit_hom MulChar.ofUnitHom
 
-theorem ofUnitHom_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : ofUnitHom f ↑a = f a := by simp [ofUnitHom]
+lemma ofUnitHom_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : ofUnitHom f ↑a = f a := by simp [ofUnitHom]
 #align mul_char.of_unit_hom_coe MulChar.ofUnitHom_coe
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups. -/
@@ -218,22 +218,22 @@ noncomputable def equivToUnitHom : MulChar R R' ≃ (Rˣ →* R'ˣ) where
 #align mul_char.equiv_to_unit_hom MulChar.equivToUnitHom
 
 @[simp]
-theorem toUnitHom_eq (χ : MulChar R R') : toUnitHom χ = equivToUnitHom χ :=
+lemma toUnitHom_eq (χ : MulChar R R') : toUnitHom χ = equivToUnitHom χ :=
   rfl
 #align mul_char.to_unit_hom_eq MulChar.toUnitHom_eq
 
 @[simp]
-theorem ofUnitHom_eq (χ : Rˣ →* R'ˣ) : ofUnitHom χ = equivToUnitHom.symm χ :=
+lemma ofUnitHom_eq (χ : Rˣ →* R'ˣ) : ofUnitHom χ = equivToUnitHom.symm χ :=
   rfl
 #align mul_char.of_unit_hom_eq MulChar.ofUnitHom_eq
 
 @[simp]
-theorem coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ a) = χ a :=
+lemma coe_equivToUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(equivToUnitHom χ a) = χ a :=
   coe_toUnitHom χ a
 #align mul_char.coe_equiv_to_unit_hom MulChar.coe_equivToUnitHom
 
 @[simp]
-theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
+lemma equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.symm f ↑a = f a :=
   ofUnitHom_coe f a
 #align mul_char.equiv_unit_hom_symm_coe MulChar.equivToUnitHom_symm_coe
 
@@ -244,7 +244,7 @@ The multiplicative characters `R → R'` form a commutative group.
 -/
 
 
-protected theorem map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
+protected lemma map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
   χ.map_one'
 #align mul_char.map_one MulChar.map_one
 
@@ -268,7 +268,7 @@ noncomputable instance inhabited : Inhabited (MulChar R R') :=
 
 /-- Evaluation of the trivial character -/
 @[simp]
-theorem one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by classical exact dif_pos a.isUnit
+lemma one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by classical exact dif_pos a.isUnit
 #align mul_char.one_apply_coe MulChar.one_apply_coe
 
 /-- Multiplication of multiplicative characters. (This needs the target to be commutative.) -/
@@ -282,21 +282,21 @@ instance hasMul : Mul (MulChar R R') :=
   ⟨mul⟩
 #align mul_char.has_mul MulChar.hasMul
 
-theorem mul_apply (χ χ' : MulChar R R') (a : R) : (χ * χ') a = χ a * χ' a :=
+lemma mul_apply (χ χ' : MulChar R R') (a : R) : (χ * χ') a = χ a * χ' a :=
   rfl
 #align mul_char.mul_apply MulChar.mul_apply
 
 @[simp]
-theorem coeToFun_mul (χ χ' : MulChar R R') : ⇑(χ * χ') = χ * χ' :=
+lemma coeToFun_mul (χ χ' : MulChar R R') : ⇑(χ * χ') = χ * χ' :=
   rfl
 #align mul_char.coe_to_fun_mul MulChar.coeToFun_mul
 
-protected theorem one_mul (χ : MulChar R R') : (1 : MulChar R R') * χ = χ := by
+protected lemma one_mul (χ : MulChar R R') : (1 : MulChar R R') * χ = χ := by
   ext
   simp only [one_mul, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
 #align mul_char.one_mul MulChar.one_mul
 
-protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
+protected lemma mul_one (χ : MulChar R R') : χ * 1 = χ := by
   ext
   simp only [mul_one, Pi.mul_apply, MulChar.coeToFun_mul, MulChar.one_apply_coe]
 #align mul_char.mul_one MulChar.mul_one
@@ -313,7 +313,7 @@ noncomputable instance hasInv : Inv (MulChar R R') :=
 #align mul_char.has_inv MulChar.hasInv
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`. -/
-theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse (χ a) :=
+lemma inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse (χ a) :=
   Eq.refl <| inv χ a
 #align mul_char.inv_apply_eq_inv MulChar.inv_apply_eq_inv
 
@@ -351,7 +351,7 @@ lemma inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a 
 
 /-- The product of a character with its inverse is the trivial character. -/
 -- Porting note: @[simp] can prove this (later)
-theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
+lemma inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
   -- Porting note: was
@@ -379,14 +379,14 @@ noncomputable instance commGroup : CommGroup (MulChar R R') :=
 #align mul_char.comm_group MulChar.commGroup
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
-theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
+lemma pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
   induction' n with n ih
   · rw [pow_zero, pow_zero, one_apply_coe]
   · rw [pow_succ, pow_succ, mul_apply, ih]
 #align mul_char.pow_apply_coe MulChar.pow_apply_coe
 
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
-theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : 0 < n) (a : R) : (χ ^ n) a = χ a ^ n := by
+lemma pow_apply' (χ : MulChar R R') {n : ℕ} (hn : 0 < n) (a : R) : (χ ^ n) a = χ a ^ n := by
   by_cases ha : IsUnit a
   · exact pow_apply_coe χ n ha.unit
   · rw [map_nonunit (χ ^ n) ha, map_nonunit χ ha, zero_pow hn]
@@ -422,7 +422,7 @@ def IsNontrivial (χ : MulChar R R') : Prop :=
 #align mul_char.is_nontrivial MulChar.IsNontrivial
 
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
-theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
+lemma isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
   simp only [IsNontrivial, Ne.def, ext_iff, not_forall, one_apply_coe]
 #align mul_char.is_nontrivial_iff MulChar.isNontrivial_iff
 

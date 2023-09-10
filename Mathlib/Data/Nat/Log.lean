@@ -69,7 +69,7 @@ lemma log_zero_left : ∀ n, log 0 n = 0 :=
 #align nat.log_zero_left Nat.log_zero_left
 
 @[simp]
-theorem log_zero_right (b : ℕ) : log b 0 = 0 :=
+lemma log_zero_right (b : ℕ) : log b 0 = 0 :=
   log_eq_zero_iff.2 (le_total 1 b)
 #align nat.log_zero_right Nat.log_zero_right
 
@@ -79,7 +79,7 @@ lemma log_one_left : ∀ n, log 1 n = 0 :=
 #align nat.log_one_left Nat.log_one_left
 
 @[simp]
-theorem log_one_right (b : ℕ) : log b 1 = 0 :=
+lemma log_one_right (b : ℕ) : log b 1 = 0 :=
   log_eq_zero_iff.2 (lt_or_le _ _)
 #align nat.log_one_right Nat.log_one_right
 
@@ -115,7 +115,7 @@ lemma le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log 
   exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
 #align nat.le_log_of_pow_le Nat.le_log_of_pow_le
 
-theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
+lemma pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
   pow_le_of_le_log hx le_rfl
 #align nat.pow_log_le_self Nat.pow_log_le_self
 
@@ -172,7 +172,7 @@ lemma log_mul_base {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) : log b (n * b) = log
     (mul_lt_mul_right (zero_lt_one.trans hb)).2 (lt_pow_succ_log_self hb _)]
 #align nat.log_mul_base Nat.log_mul_base
 
-theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
+lemma pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
   | 0 => by rw [log_zero_right, pow_zero]
   | x + 1 => (pow_log_le_self b x.succ_ne_zero).trans (x + 1).le_succ
 #align nat.pow_log_le_add_one Nat.pow_log_le_add_one
@@ -204,7 +204,7 @@ lemma log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) :=
 #align nat.log_antitone_left Nat.log_antitone_left
 
 @[simp]
-theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
+lemma log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   cases' le_or_lt b 1 with hb hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb, Nat.zero_sub]
   cases' lt_or_le n b with h h
@@ -213,7 +213,7 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
 #align nat.log_div_base Nat.log_div_base
 
 @[simp]
-theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
+lemma log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   cases' le_or_lt b 1 with hb hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   cases' lt_or_le n b with h h
@@ -252,22 +252,22 @@ lemma clog_of_right_le_one {n : ℕ} (hn : n ≤ 1) (b : ℕ) : clog b n = 0 := 
 #align nat.clog_of_right_le_one Nat.clog_of_right_le_one
 
 @[simp]
-theorem clog_zero_left (n : ℕ) : clog 0 n = 0 :=
+lemma clog_zero_left (n : ℕ) : clog 0 n = 0 :=
   clog_of_left_le_one zero_le_one _
 #align nat.clog_zero_left Nat.clog_zero_left
 
 @[simp]
-theorem clog_zero_right (b : ℕ) : clog b 0 = 0 :=
+lemma clog_zero_right (b : ℕ) : clog b 0 = 0 :=
   clog_of_right_le_one zero_le_one _
 #align nat.clog_zero_right Nat.clog_zero_right
 
 @[simp]
-theorem clog_one_left (n : ℕ) : clog 1 n = 0 :=
+lemma clog_one_left (n : ℕ) : clog 1 n = 0 :=
   clog_of_left_le_one le_rfl _
 #align nat.clog_one_left Nat.clog_one_left
 
 @[simp]
-theorem clog_one_right (b : ℕ) : clog b 1 = 0 :=
+lemma clog_one_right (b : ℕ) : clog b 1 = 0 :=
   clog_of_right_le_one le_rfl _
 #align nat.clog_one_right Nat.clog_one_right
 
@@ -310,7 +310,7 @@ lemma pow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x y : ℕ} : b ^ y < x ↔ y < 
   lt_iff_lt_of_le_iff_le (le_pow_iff_clog_le hb)
 #align nat.pow_lt_iff_lt_clog Nat.pow_lt_iff_lt_clog
 
-theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
+lemma clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
   eq_of_forall_ge_iff fun z => by
     rw [← le_pow_iff_clog_le hb]
     exact (pow_right_strictMono hb).le_iff_le
@@ -327,7 +327,7 @@ lemma le_pow_clog {b : ℕ} (hb : 1 < b) (x : ℕ) : x ≤ b ^ clog b x :=
 #align nat.le_pow_clog Nat.le_pow_clog
 
 @[mono]
-theorem clog_mono_right (b : ℕ) {n m : ℕ} (h : n ≤ m) : clog b n ≤ clog b m := by
+lemma clog_mono_right (b : ℕ) {n m : ℕ} (h : n ≤ m) : clog b n ≤ clog b m := by
   cases' le_or_lt b 1 with hb hb
   · rw [clog_of_left_le_one hb]
     exact zero_le _
@@ -343,14 +343,14 @@ lemma clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ cl
     _ ≤ b ^ clog c n := pow_le_pow_of_le_left hb _
 #align nat.clog_anti_left Nat.clog_anti_left
 
-theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_right _
+lemma clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_right _
 #align nat.clog_monotone Nat.clog_monotone
 
 lemma clog_antitone_left {n : ℕ} : AntitoneOn (fun b : ℕ => clog b n) (Set.Ioi 1) :=
   fun _ hc _ _ hb => clog_anti_left (Set.mem_Iio.1 hc) hb
 #align nat.clog_antitone_left Nat.clog_antitone_left
 
-theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
+lemma log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
   obtain hb | hb := le_or_lt b 1
   · rw [log_of_left_le_one hb]
     exact zero_le _

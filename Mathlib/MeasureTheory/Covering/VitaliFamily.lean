@@ -246,13 +246,13 @@ lemma eventually_filterAt_iff {x : α} {P : Set α → Prop} :
   v.mem_filterAt_iff
 #align vitali_family.eventually_filter_at_iff VitaliFamily.eventually_filterAt_iff
 
-theorem eventually_filterAt_mem_sets (x : α) : ∀ᶠ a in v.filterAt x, a ∈ v.setsAt x := by
+lemma eventually_filterAt_mem_sets (x : α) : ∀ᶠ a in v.filterAt x, a ∈ v.setsAt x := by
   simp (config := { contextual := true }) only [eventually_filterAt_iff, exists_prop, and_true_iff,
     gt_iff_lt, imp_true_iff]
   exact ⟨1, zero_lt_one⟩
 #align vitali_family.eventually_filter_at_mem_sets VitaliFamily.eventually_filterAt_mem_sets
 
-theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε) :
+lemma eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε) :
     ∀ᶠ a : Set α in v.filterAt x, a ⊆ closedBall x ε := by
   simp only [v.eventually_filterAt_iff]
   exact ⟨ε, hε, fun a _ ha' => ha'⟩
@@ -268,7 +268,7 @@ lemma tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set α} {x :
   filter_upwards [H.1, H.2 ε εpos]with i hi hiε using hε _ hi hiε
 #align vitali_family.tendsto_filter_at_iff VitaliFamily.tendsto_filterAt_iff
 
-theorem eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, MeasurableSet a := by
+lemma eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, MeasurableSet a := by
   filter_upwards [v.eventually_filterAt_mem_sets x]with _ ha using v.MeasurableSet' _ _ ha
 #align vitali_family.eventually_filter_at_measurable_set VitaliFamily.eventually_filterAt_measurableSet
 
@@ -286,7 +286,7 @@ lemma eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ 𝓝 
     fun a _ ha => ha.trans ((closedBall_subset_ball (half_lt_self εpos)).trans hε)⟩
 #align vitali_family.eventually_filter_at_subset_of_nhds VitaliFamily.eventually_filterAt_subset_of_nhds
 
-theorem fineSubfamilyOn_of_frequently (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
+lemma fineSubfamilyOn_of_frequently (v : VitaliFamily μ) (f : α → Set (Set α)) (s : Set α)
     (h : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, a ∈ f x) : v.FineSubfamilyOn f s := by
   intro x hx ε εpos
   obtain ⟨a, av, ha, af⟩ : ∃ (a : Set α) , a ∈ v.setsAt x ∧ a ⊆ closedBall x ε ∧ a ∈ f x :=

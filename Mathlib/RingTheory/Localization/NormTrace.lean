@@ -97,7 +97,7 @@ variable [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
+lemma Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
     Algebra.traceMatrix Rₘ (b.localizationLocalization Rₘ M Sₘ) =
       (algebraMap R Rₘ).mapMatrix (Algebra.traceMatrix R b) := by
   have : Module.Finite R S := Module.Finite.of_basis b
@@ -111,7 +111,7 @@ theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
 `b` be a `R`-basis of `S`. Then discriminant of the `Rₘ`-basis of `Sₘ` induced by `b` is the
 discriminant of `b`.
 -/
-theorem Algebra.discr_localizationLocalization (b : Basis ι R S) :
+lemma Algebra.discr_localizationLocalization (b : Basis ι R S) :
   Algebra.discr Rₘ (b.localizationLocalization Rₘ M Sₘ) =
     algebraMap R Rₘ (Algebra.discr R b) := by
   rw [Algebra.discr_def, Algebra.discr_def, RingHom.map_det,

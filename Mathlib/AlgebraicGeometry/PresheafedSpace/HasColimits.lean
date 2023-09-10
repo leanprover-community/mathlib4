@@ -55,7 +55,7 @@ attribute [local simp] eqToHom_map
 -- although it doesn't appear to help in this file, in any case.
 
 @[simp]
-theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
+lemma map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
     (F.map (𝟙 j)).c.app (op U) =
       (Pushforward.id (F.obj j).presheaf).inv.app (op U) ≫
         (pushforwardEq (by simp) (F.obj j).presheaf).hom.app
@@ -66,7 +66,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.map_id_c_app AlgebraicGeometry.PresheafedSpace.map_id_c_app
 
 @[simp]
-theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
+lemma map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
     (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃) (U) :
     (F.map (f ≫ g)).c.app (op U) =
       (F.map g).c.app (op U) ≫
@@ -185,14 +185,14 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit AlgebraicGeometry.PresheafedSpace.colimit
 
 @[simp]
-theorem colimit_carrier (F : J ⥤ PresheafedSpace.{_, _, v} C) :
+lemma colimit_carrier (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     (colimit F).carrier = Limits.colimit (F ⋙ PresheafedSpace.forget C) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_carrier AlgebraicGeometry.PresheafedSpace.colimit_carrier
 
 @[simp]
-theorem colimit_presheaf (F : J ⥤ PresheafedSpace.{_, _, v} C) :
+lemma colimit_presheaf (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     (colimit F).presheaf = limit (pushforwardDiagramToColimit F).leftOp :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -262,7 +262,7 @@ def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens 
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone_is_colimit.desc_c_app AlgebraicGeometry.PresheafedSpace.ColimitCoconeIsColimit.descCApp
 
-theorem desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
+lemma desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
     {U V : (Opens s.pt.carrier)ᵒᵖ} (i : U ⟶ V) :
     s.pt.presheaf.map i ≫ descCApp F s V =
       descCApp F s U ≫
@@ -296,7 +296,7 @@ def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ 
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone_is_colimit.desc AlgebraicGeometry.PresheafedSpace.ColimitCoconeIsColimit.desc
 
-theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
+lemma desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
   ext U
   · simp [desc]
@@ -409,7 +409,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_presheaf_obj_iso_componentwise_limit AlgebraicGeometry.PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit
 
 @[simp]
-theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ PresheafedSpace.{_, _, v} C)
+lemma colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ PresheafedSpace.{_, _, v} C)
     (U : Opens (Limits.colimit F).carrier) (j : J) :
     (colimitPresheafObjIsoComponentwiseLimit F U).inv ≫ (colimit.ι F j).c.app (op U) =
       limit.π _ (op j) := by
@@ -433,7 +433,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_presheaf_obj_iso_componentwise_limit_inv_ι_app AlgebraicGeometry.PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_inv_ι_app
 
 @[simp]
-theorem colimitPresheafObjIsoComponentwiseLimit_hom_π (F : J ⥤ PresheafedSpace.{_, _, v} C)
+lemma colimitPresheafObjIsoComponentwiseLimit_hom_π (F : J ⥤ PresheafedSpace.{_, _, v} C)
     (U : Opens (Limits.colimit F).carrier) (j : J) :
     (colimitPresheafObjIsoComponentwiseLimit F U).hom ≫ limit.π _ (op j) =
       (colimit.ι F j).c.app (op U) :=

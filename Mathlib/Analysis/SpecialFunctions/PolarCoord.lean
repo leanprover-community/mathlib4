@@ -96,7 +96,7 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact Complex.equivRealProdClm.symm.continuous.continuousOn
 #align polar_coord polarCoord
 
-theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
+lemma hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
       (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
         !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])) p := by

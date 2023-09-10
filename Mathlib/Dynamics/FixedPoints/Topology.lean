@@ -38,6 +38,6 @@ lemma isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => f^[n] x) a
 #align is_fixed_pt_of_tendsto_iterate isFixedPt_of_tendsto_iterate
 
 /-- The set of fixed points of a continuous map is a closed set. -/
-theorem isClosed_fixedPoints (hf : Continuous f) : IsClosed (fixedPoints f) :=
+lemma isClosed_fixedPoints (hf : Continuous f) : IsClosed (fixedPoints f) :=
   isClosed_eq hf continuous_id
 #align is_closed_fixed_points isClosed_fixedPoints

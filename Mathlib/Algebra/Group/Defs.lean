@@ -181,18 +181,18 @@ lemma mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 #align add_left_cancel_iff add_left_cancel_iff
 
 @[to_additive]
-theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ ↦ mul_left_cancel
+lemma mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ ↦ mul_left_cancel
 #align mul_right_injective mul_right_injective
 #align add_right_injective add_right_injective
 
 @[to_additive (attr := simp)]
-theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
+lemma mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
   (mul_right_injective a).eq_iff
 #align mul_right_inj mul_right_inj
 #align add_right_inj add_right_inj
 
 @[to_additive]
-theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
+lemma mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
   (mul_right_injective a).ne_iff
 #align mul_ne_mul_right mul_ne_mul_right
 #align add_ne_add_right add_ne_add_right
@@ -216,18 +216,18 @@ lemma mul_right_cancel_iff : b * a = c * a ↔ b = c :=
 #align add_right_cancel_iff add_right_cancel_iff
 
 @[to_additive]
-theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
+lemma mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
 #align mul_left_injective mul_left_injective
 #align add_left_injective add_left_injective
 
 @[to_additive (attr := simp)]
-theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
+lemma mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
   (mul_left_injective a).eq_iff
 #align mul_left_inj mul_left_inj
 #align add_left_inj add_left_inj
 
 @[to_additive]
-theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
+lemma mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
   (mul_left_injective a).ne_iff
 #align mul_ne_mul_left mul_ne_mul_left
 #align add_ne_add_left add_ne_add_left
@@ -629,20 +629,20 @@ section
 variable {M : Type*} [Monoid M]
 
 @[to_additive (attr := simp) nsmul_eq_smul]
-theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
+lemma npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 #align npow_eq_pow npow_eq_pow
 #align nsmul_eq_smul nsmul_eq_smul
 
 -- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
 @[to_additive zero_nsmul, simp]
-theorem pow_zero (a : M) : a ^ 0 = 1 :=
+lemma pow_zero (a : M) : a ^ 0 = 1 :=
   Monoid.npow_zero _
 #align pow_zero pow_zero
 #align zero_nsmul zero_nsmul
 
 @[to_additive succ_nsmul]
-theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
+lemma pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
   Monoid.npow_succ n a
 #align pow_succ pow_succ
 #align succ_nsmul succ_nsmul
@@ -797,7 +797,7 @@ class InvolutiveInv (G : Type*) extends Inv G where
 variable [InvolutiveInv G]
 
 @[to_additive (attr := simp)]
-theorem inv_inv (a : G) : a⁻¹⁻¹ = a :=
+lemma inv_inv (a : G) : a⁻¹⁻¹ = a :=
   InvolutiveInv.inv_inv _
 #align inv_inv inv_inv
 #align neg_neg neg_neg
@@ -933,19 +933,19 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
-@[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
+@[to_additive (attr := simp) zsmul_eq_smul] lemma zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
   rfl
 #align zsmul_eq_smul zsmul_eq_smul
 #align zpow_eq_pow zpow_eq_pow
 
-@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[to_additive (attr := simp) zero_zsmul] lemma zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
 #align zpow_zero zpow_zero
 #align zero_zsmul zero_zsmul
 
 @[to_additive (attr := norm_cast) ofNat_zsmul]
-theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+lemma zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
@@ -955,7 +955,7 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align zpow_of_nat zpow_ofNat
 #align of_nat_zsmul ofNat_zsmul
 
-theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
+lemma zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
@@ -974,7 +974,7 @@ This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unf
 -/
 @[to_additive "Subtracting an element is the same as adding by its negative.
 This is a duplicate of `SubNegMonoid.sub_eq_mul_neg` ensuring that the types unfold better."]
-theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
+lemma div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 #align div_eq_mul_inv div_eq_mul_inv
 #align sub_eq_add_neg sub_eq_add_neg
@@ -1047,7 +1047,7 @@ section DivisionMonoid
 variable [DivisionMonoid G] {a b : G}
 
 @[to_additive (attr := simp) neg_add_rev]
-theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
+lemma mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
   DivisionMonoid.mul_inv_rev _ _
 #align mul_inv_rev mul_inv_rev
 #align neg_add_rev neg_add_rev
@@ -1059,13 +1059,13 @@ lemma inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
 
 @[to_additive]
-theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
+lemma inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
   by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
 #align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
 #align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
 
 @[to_additive]
-theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
+lemma eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
   (inv_eq_of_mul_eq_one_left h).symm
 #align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
 #align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
@@ -1122,47 +1122,47 @@ lemma mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
 #align add_left_neg add_left_neg
 
 @[to_additive]
-theorem inv_mul_self (a : G) : a⁻¹ * a = 1 :=
+lemma inv_mul_self (a : G) : a⁻¹ * a = 1 :=
   mul_left_inv a
 #align inv_mul_self inv_mul_self
 #align neg_add_self neg_add_self
 
 @[to_additive]
-private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
+private lemma inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_self a) h
 
 @[to_additive (attr := simp)]
-theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
+lemma mul_right_inv (a : G) : a * a⁻¹ = 1 :=
   by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
 #align mul_right_inv mul_right_inv
 #align add_right_neg add_right_neg
 
 @[to_additive]
-theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
+lemma mul_inv_self (a : G) : a * a⁻¹ = 1 :=
   mul_right_inv a
 #align mul_inv_self mul_inv_self
 #align add_neg_self add_neg_self
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
+lemma inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
   by rw [← mul_assoc, mul_left_inv, one_mul]
 #align inv_mul_cancel_left inv_mul_cancel_left
 #align neg_add_cancel_left neg_add_cancel_left
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
+lemma mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
   by rw [← mul_assoc, mul_right_inv, one_mul]
 #align mul_inv_cancel_left mul_inv_cancel_left
 #align add_neg_cancel_left add_neg_cancel_left
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
+lemma mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
   by rw [mul_assoc, mul_right_inv, mul_one]
 #align mul_inv_cancel_right mul_inv_cancel_right
 #align add_neg_cancel_right add_neg_cancel_right
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
+lemma inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
   by rw [mul_assoc, mul_left_inv, mul_one]
 #align inv_mul_cancel_right inv_mul_cancel_right
 #align neg_add_cancel_right neg_add_cancel_right

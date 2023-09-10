@@ -43,11 +43,11 @@ lemma isOpenMap_barycentric_coord [Nontrivial ι] (b : AffineBasis ι 𝕜 P) (i
 variable [FiniteDimensional 𝕜 E] (b : AffineBasis ι 𝕜 P)
 
 @[continuity]
-theorem continuous_barycentric_coord (i : ι) : Continuous (b.coord i) :=
+lemma continuous_barycentric_coord (i : ι) : Continuous (b.coord i) :=
   (b.coord i).continuous_of_finiteDimensional
 #align continuous_barycentric_coord continuous_barycentric_coord
 
-theorem smooth_barycentric_coord (b : AffineBasis ι 𝕜 E) (i : ι) : ContDiff 𝕜 ⊤ (b.coord i) :=
+lemma smooth_barycentric_coord (b : AffineBasis ι 𝕜 E) (i : ι) : ContDiff 𝕜 ⊤ (b.coord i) :=
   (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →A[𝕜] 𝕜).contDiff
 #align smooth_barycentric_coord smooth_barycentric_coord
 

@@ -42,7 +42,7 @@ lemma nodup_cons {a : α} {s : Multiset α} : Nodup (a ::ₘ s) ↔ a ∉ s ∧ 
   Quot.induction_on s fun _ => List.nodup_cons
 #align multiset.nodup_cons Multiset.nodup_cons
 
-theorem Nodup.cons (m : a ∉ s) (n : Nodup s) : Nodup (a ::ₘ s) :=
+lemma Nodup.cons (m : a ∉ s) (n : Nodup s) : Nodup (a ::ₘ s) :=
   nodup_cons.2 ⟨m, n⟩
 #align multiset.nodup.cons Multiset.Nodup.cons
 
@@ -51,11 +51,11 @@ lemma nodup_singleton : ∀ a : α, Nodup ({a} : Multiset α) :=
   List.nodup_singleton
 #align multiset.nodup_singleton Multiset.nodup_singleton
 
-theorem Nodup.of_cons (h : Nodup (a ::ₘ s)) : Nodup s :=
+lemma Nodup.of_cons (h : Nodup (a ::ₘ s)) : Nodup s :=
   (nodup_cons.1 h).2
 #align multiset.nodup.of_cons Multiset.Nodup.of_cons
 
-theorem Nodup.not_mem (h : Nodup (a ::ₘ s)) : a ∉ s :=
+lemma Nodup.not_mem (h : Nodup (a ::ₘ s)) : a ∉ s :=
   (nodup_cons.1 h).1
 #align multiset.nodup.not_mem Multiset.Nodup.not_mem
 
@@ -106,7 +106,7 @@ protected lemma Nodup.pairwise : (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) �
   Quotient.inductionOn s fun l h hl => ⟨l, rfl, hl.imp_of_mem fun {a b} ha hb => h a ha b hb⟩
 #align multiset.nodup.pairwise Multiset.Nodup.pairwise
 
-theorem Pairwise.forall (H : Symmetric r) (hs : Pairwise r s) :
+lemma Pairwise.forall (H : Symmetric r) (hs : Pairwise r s) :
     ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ≠ b → r a b :=
   let ⟨_, hl₁, hl₂⟩ := hs
   hl₁.symm ▸ hl₂.forall H
@@ -120,11 +120,11 @@ lemma disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s
   (nodup_add.1 d).2.2
 #align multiset.disjoint_of_nodup_add Multiset.disjoint_of_nodup_add
 
-theorem Nodup.add_iff (d₁ : Nodup s) (d₂ : Nodup t) : Nodup (s + t) ↔ Disjoint s t := by
+lemma Nodup.add_iff (d₁ : Nodup s) (d₂ : Nodup t) : Nodup (s + t) ↔ Disjoint s t := by
   simp [nodup_add, d₁, d₂]
 #align multiset.nodup.add_iff Multiset.Nodup.add_iff
 
-theorem Nodup.of_map (f : α → β) : Nodup (map f s) → Nodup s :=
+lemma Nodup.of_map (f : α → β) : Nodup (map f s) → Nodup s :=
   Quot.induction_on s fun _ => List.Nodup.of_map f
 #align multiset.nodup.of_map Multiset.Nodup.of_map
 
@@ -147,7 +147,7 @@ lemma nodup_map_iff_inj_on {f : α → β} {s : Multiset α} (d : Nodup s) :
   ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
 #align multiset.nodup_map_iff_inj_on Multiset.nodup_map_iff_inj_on
 
-theorem Nodup.filter (p : α → Prop) [DecidablePred p] {s} : Nodup s → Nodup (filter p s) :=
+lemma Nodup.filter (p : α → Prop) [DecidablePred p] {s} : Nodup s → Nodup (filter p s) :=
   Quot.induction_on s fun _ => List.Nodup.filter (p ·)
 #align multiset.nodup.filter Multiset.Nodup.filter
 
@@ -195,12 +195,12 @@ protected lemma Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     simpa [←funext hf] using List.Nodup.sigma
 #align multiset.nodup.sigma Multiset.Nodup.sigma
 
-protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
+protected lemma Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup s → Nodup (filterMap f s) :=
   Quot.induction_on s fun _ => List.Nodup.filterMap H
 #align multiset.nodup.filter_map Multiset.Nodup.filterMap
 
-theorem nodup_range (n : ℕ) : Nodup (range n) :=
+lemma nodup_range (n : ℕ) : Nodup (range n) :=
   List.nodup_range _
 #align multiset.nodup_range Multiset.nodup_range
 
@@ -252,7 +252,7 @@ lemma mem_sub_of_nodup [DecidableEq α] {a : α} {s t : Multiset α} (d : Nodup 
     fun ⟨h₁, h₂⟩ => Or.resolve_right (mem_add.1 <| mem_of_le le_tsub_add h₁) h₂⟩
 #align multiset.mem_sub_of_nodup Multiset.mem_sub_of_nodup
 
-theorem map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset α} {t : Multiset β}
+lemma map_eq_map_of_bij_of_nodup (f : α → γ) (g : β → γ) {s : Multiset α} {t : Multiset β}
     (hs : s.Nodup) (ht : t.Nodup) (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     (h : ∀ a ha, f a = g (i a ha)) (i_inj : ∀ a₁ a₂ ha₁ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, b = i a ha) : s.map f = t.map g :=

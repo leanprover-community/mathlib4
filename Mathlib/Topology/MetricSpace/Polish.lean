@@ -85,7 +85,7 @@ def polishSpaceMetric (α : Type*) [TopologicalSpace α] [h : PolishSpace α] : 
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
 #align polish_space_metric polishSpaceMetric
 
-theorem complete_polishSpaceMetric (α : Type*) [ht : TopologicalSpace α] [h : PolishSpace α] :
+lemma complete_polishSpaceMetric (α : Type*) [ht : TopologicalSpace α] [h : PolishSpace α] :
     @CompleteSpace α (polishSpaceMetric α).toUniformSpace := by
   convert h.complete.choose_spec.2
   exact MetricSpace.replaceTopology_eq _ _
@@ -135,7 +135,7 @@ instance sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [Polis
 #align polish_space.sum PolishSpace.sum
 
 /-- Any nonempty Polish space is the continuous image of the fundamental space `ℕ → ℕ`. -/
-theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] [PolishSpace α]
+lemma exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] [PolishSpace α]
     [Nonempty α] : ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f :=
   letI := upgradePolishSpace α
   exists_nat_nat_continuous_surjective_of_completeSpace α
@@ -275,12 +275,12 @@ instance instDist : Dist (CompleteCopy s) where
   dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
 #align polish_space.has_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.instDistₓ
 
-theorem dist_eq (x y : CompleteCopy s) :
+lemma dist_eq (x y : CompleteCopy s) :
     dist x y = dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ) :=
   rfl
 #align polish_space.dist_complete_copy_eq TopologicalSpace.Opens.CompleteCopy.dist_eqₓ
 
-theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
+lemma dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   (le_add_iff_nonneg_right _).2 (abs_nonneg _)
 #align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 

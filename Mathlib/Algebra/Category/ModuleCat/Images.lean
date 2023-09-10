@@ -77,7 +77,7 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I where
     rfl
 #align Module.image.lift ModuleCat.image.lift
 
-theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
+lemma image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]

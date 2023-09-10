@@ -139,7 +139,7 @@ lemma coe_set_eq : (p : Set B) = q ↔ p = q :=
   coe_injective.eq_iff
 #align set_like.coe_set_eq SetLike.coe_set_eq
 
-theorem ext' (h : (p : Set B) = q) : p = q :=
+lemma ext' (h : (p : Set B) = q) : p = q :=
   coe_injective h
 #align set_like.ext' SetLike.ext'
 
@@ -148,7 +148,7 @@ lemma ext'_iff : p = q ↔ (p : Set B) = q :=
 #align set_like.ext'_iff SetLike.ext'_iff
 
 /-- Note: implementers of `SetLike` must copy this lemma in order to tag it with `@[ext]`. -/
-theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
+lemma ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   coe_injective <| Set.ext h
 #align set_like.ext SetLike.ext
 
@@ -170,12 +170,12 @@ lemma coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 #noalign set_like.coe_mk
 
 @[simp]
-theorem coe_mem (x : p) : (x : B) ∈ p :=
+lemma coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 #align set_like.coe_mem SetLike.coe_mem
 
 -- porting note: removed `@[simp]` because `simpNF` linter complained
-protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
+protected lemma eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 #align set_like.eta SetLike.eta
 
 instance (priority := 100) instPartialOrder : PartialOrder A :=

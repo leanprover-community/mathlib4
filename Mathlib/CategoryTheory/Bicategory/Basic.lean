@@ -193,7 +193,7 @@ attribute [simp]
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 @[reassoc (attr := simp)]
-theorem hom_inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
+lemma hom_inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
     f ◁ η.hom ≫ f ◁ η.inv = 𝟙 (f ≫ g) := by rw [← whiskerLeft_comp, hom_inv_id, whiskerLeft_id]
 #align category_theory.bicategory.hom_inv_whisker_left CategoryTheory.Bicategory.hom_inv_whiskerLeft
 
@@ -203,7 +203,7 @@ lemma hom_inv_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
 #align category_theory.bicategory.hom_inv_whisker_right CategoryTheory.Bicategory.hom_inv_whiskerRight
 
 @[reassoc (attr := simp)]
-theorem inv_hom_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
+lemma inv_hom_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
     f ◁ η.inv ≫ f ◁ η.hom = 𝟙 (f ≫ h) := by rw [← whiskerLeft_comp, inv_hom_id, whiskerLeft_id]
 #align category_theory.bicategory.inv_hom_whisker_left CategoryTheory.Bicategory.inv_hom_whiskerLeft
 
@@ -225,7 +225,7 @@ instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso �
 #align category_theory.bicategory.whisker_left_is_iso CategoryTheory.Bicategory.whiskerLeft_isIso
 
 @[simp]
-theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
+lemma inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
   inv (f ◁ η) = f ◁ inv η := by
   aesop_cat_nonterminal
   simp only [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
@@ -251,14 +251,14 @@ lemma inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
 #align category_theory.bicategory.inv_whisker_right CategoryTheory.Bicategory.inv_whiskerRight
 
 @[reassoc (attr := simp)]
-theorem pentagon_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     f ◁ (α_ g h i).inv ≫ (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i =
       (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.pentagon_inv CategoryTheory.Bicategory.pentagon_inv
 
 @[reassoc (attr := simp)]
-theorem pentagon_inv_inv_hom_hom_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_inv_inv_hom_hom_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i ≫ (α_ (f ≫ g) h i).hom =
     f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv := by
   rw [← cancel_epi (f ◁ (α_ g h i).inv), ← cancel_mono (α_ (f ≫ g) h i).inv]
@@ -266,28 +266,28 @@ theorem pentagon_inv_inv_hom_hom_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (
 #align category_theory.bicategory.pentagon_inv_inv_hom_hom_inv CategoryTheory.Bicategory.pentagon_inv_inv_hom_hom_inv
 
 @[reassoc (attr := simp)]
-theorem pentagon_inv_hom_hom_hom_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_inv_hom_hom_hom_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ (f ≫ g) h i).inv ≫ (α_ f g h).hom ▷ i ≫ (α_ f (g ≫ h) i).hom =
       (α_ f g (h ≫ i)).hom ≫ f ◁ (α_ g h i).inv :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.pentagon_inv_hom_hom_hom_inv CategoryTheory.Bicategory.pentagon_inv_hom_hom_hom_inv
 
 @[reassoc (attr := simp)]
-theorem pentagon_hom_inv_inv_inv_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_hom_inv_inv_inv_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv =
       (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i :=
   by simp [← cancel_epi (f ◁ (α_ g h i).inv)]
 #align category_theory.bicategory.pentagon_hom_inv_inv_inv_inv CategoryTheory.Bicategory.pentagon_hom_inv_inv_inv_inv
 
 @[reassoc (attr := simp)]
-theorem pentagon_hom_hom_inv_hom_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_hom_hom_inv_hom_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ (f ≫ g) h i).hom ≫ (α_ f g (h ≫ i)).hom ≫ f ◁ (α_ g h i).inv =
       (α_ f g h).hom ▷ i ≫ (α_ f (g ≫ h) i).hom :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.pentagon_hom_hom_inv_hom_hom CategoryTheory.Bicategory.pentagon_hom_hom_inv_hom_hom
 
 @[reassoc (attr := simp)]
-theorem pentagon_hom_inv_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_hom_inv_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f g (h ≫ i)).hom ≫ f ◁ (α_ g h i).inv ≫ (α_ f (g ≫ h) i).inv =
     (α_ (f ≫ g) h i).inv ≫ (α_ f g h).hom ▷ i := by
   rw [← cancel_epi (α_ f g (h ≫ i)).inv, ← cancel_mono ((α_ f g h).inv ▷ i)]
@@ -295,44 +295,44 @@ theorem pentagon_hom_inv_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (
 #align category_theory.bicategory.pentagon_hom_inv_inv_inv_hom CategoryTheory.Bicategory.pentagon_hom_inv_inv_inv_hom
 
 @[reassoc (attr := simp)]
-theorem pentagon_hom_hom_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_hom_hom_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f (g ≫ h) i).hom ≫ f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv =
       (α_ f g h).inv ▷ i ≫ (α_ (f ≫ g) h i).hom :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.pentagon_hom_hom_inv_inv_hom CategoryTheory.Bicategory.pentagon_hom_hom_inv_inv_hom
 
 @[reassoc (attr := simp)]
-theorem pentagon_inv_hom_hom_hom_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_inv_hom_hom_hom_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f g h).inv ▷ i ≫ (α_ (f ≫ g) h i).hom ≫ (α_ f g (h ≫ i)).hom =
       (α_ f (g ≫ h) i).hom ≫ f ◁ (α_ g h i).hom :=
   by simp [← cancel_epi ((α_ f g h).hom ▷ i)]
 #align category_theory.bicategory.pentagon_inv_hom_hom_hom_hom CategoryTheory.Bicategory.pentagon_inv_hom_hom_hom_hom
 
 @[reassoc (attr := simp)]
-theorem pentagon_inv_inv_hom_inv_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+lemma pentagon_inv_inv_hom_inv_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv ≫ (α_ f g h).hom ▷ i =
       f ◁ (α_ g h i).inv ≫ (α_ f (g ≫ h) i).inv :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.pentagon_inv_inv_hom_inv_inv CategoryTheory.Bicategory.pentagon_inv_inv_hom_inv_inv
 
-theorem triangle_assoc_comp_left (f : a ⟶ b) (g : b ⟶ c) :
+lemma triangle_assoc_comp_left (f : a ⟶ b) (g : b ⟶ c) :
     (α_ f (𝟙 b) g).hom ≫ f ◁ (λ_ g).hom = (ρ_ f).hom ▷ g :=
   triangle f g
 #align category_theory.bicategory.triangle_assoc_comp_left CategoryTheory.Bicategory.triangle_assoc_comp_left
 
 @[reassoc (attr := simp)]
-theorem triangle_assoc_comp_right (f : a ⟶ b) (g : b ⟶ c) :
+lemma triangle_assoc_comp_right (f : a ⟶ b) (g : b ⟶ c) :
     (α_ f (𝟙 b) g).inv ≫ (ρ_ f).hom ▷ g = f ◁ (λ_ g).hom := by rw [← triangle, inv_hom_id_assoc]
 #align category_theory.bicategory.triangle_assoc_comp_right CategoryTheory.Bicategory.triangle_assoc_comp_right
 
 @[reassoc (attr := simp)]
-theorem triangle_assoc_comp_right_inv (f : a ⟶ b) (g : b ⟶ c) :
+lemma triangle_assoc_comp_right_inv (f : a ⟶ b) (g : b ⟶ c) :
     (ρ_ f).inv ▷ g ≫ (α_ f (𝟙 b) g).hom = f ◁ (λ_ g).inv := by
   simp [← cancel_mono (f ◁ (λ_ g).hom)]
 #align category_theory.bicategory.triangle_assoc_comp_right_inv CategoryTheory.Bicategory.triangle_assoc_comp_right_inv
 
 @[reassoc (attr := simp)]
-theorem triangle_assoc_comp_left_inv (f : a ⟶ b) (g : b ⟶ c) :
+lemma triangle_assoc_comp_left_inv (f : a ⟶ b) (g : b ⟶ c) :
     f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g := by
   simp [← cancel_mono ((ρ_ f).hom ▷ g)]
 #align category_theory.bicategory.triangle_assoc_comp_left_inv CategoryTheory.Bicategory.triangle_assoc_comp_left_inv
@@ -353,32 +353,32 @@ lemma whiskerRight_comp_symm {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c) (h :
 #align category_theory.bicategory.whisker_right_comp_symm CategoryTheory.Bicategory.whiskerRight_comp_symm
 
 @[reassoc]
-theorem associator_naturality_middle (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d) :
+lemma associator_naturality_middle (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d) :
     (f ◁ η) ▷ h ≫ (α_ f g' h).hom = (α_ f g h).hom ≫ f ◁ η ▷ h := by simp
 #align category_theory.bicategory.associator_naturality_middle CategoryTheory.Bicategory.associator_naturality_middle
 
 @[reassoc]
-theorem associator_inv_naturality_middle (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d) :
+lemma associator_inv_naturality_middle (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d) :
     f ◁ η ▷ h ≫ (α_ f g' h).inv = (α_ f g h).inv ≫ (f ◁ η) ▷ h := by simp
 #align category_theory.bicategory.associator_inv_naturality_middle CategoryTheory.Bicategory.associator_inv_naturality_middle
 
 @[reassoc]
-theorem whisker_assoc_symm (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d) :
+lemma whisker_assoc_symm (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d) :
     f ◁ η ▷ h = (α_ f g h).inv ≫ (f ◁ η) ▷ h ≫ (α_ f g' h).hom := by simp
 #align category_theory.bicategory.whisker_assoc_symm CategoryTheory.Bicategory.whisker_assoc_symm
 
 @[reassoc]
-theorem associator_naturality_right (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h') :
+lemma associator_naturality_right (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h') :
     (f ≫ g) ◁ η ≫ (α_ f g h').hom = (α_ f g h).hom ≫ f ◁ g ◁ η := by simp
 #align category_theory.bicategory.associator_naturality_right CategoryTheory.Bicategory.associator_naturality_right
 
 @[reassoc]
-theorem associator_inv_naturality_right (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h') :
+lemma associator_inv_naturality_right (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h') :
     f ◁ g ◁ η ≫ (α_ f g h').inv = (α_ f g h).inv ≫ (f ≫ g) ◁ η := by simp
 #align category_theory.bicategory.associator_inv_naturality_right CategoryTheory.Bicategory.associator_inv_naturality_right
 
 @[reassoc]
-theorem comp_whiskerLeft_symm (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h') :
+lemma comp_whiskerLeft_symm (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h') :
     f ◁ g ◁ η = (α_ f g h).inv ≫ (f ≫ g) ◁ η ≫ (α_ f g h').hom := by simp
 #align category_theory.bicategory.comp_whisker_left_symm CategoryTheory.Bicategory.comp_whiskerLeft_symm
 
@@ -421,7 +421,7 @@ lemma whiskerRight_iff {f g : a ⟶ b} (η θ : f ⟶ g) : η ▷ 𝟙 b = θ �
 `id_whiskerRight f g : 𝟙 f ▷ g = 𝟙 (f ≫ g)`.
 -/
 @[reassoc, simp]
-theorem leftUnitor_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
+lemma leftUnitor_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
     (λ_ f).hom ▷ g = (α_ (𝟙 a) f g).hom ≫ (λ_ (f ≫ g)).hom := by
   rw [← whiskerLeft_iff, whiskerLeft_comp, ← cancel_epi (α_ _ _ _).hom, ←
       cancel_epi ((α_ _ _ _).hom ▷ _), pentagon_assoc, triangle, ← associator_naturality_middle, ←
@@ -429,13 +429,13 @@ theorem leftUnitor_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
 #align category_theory.bicategory.left_unitor_whisker_right CategoryTheory.Bicategory.leftUnitor_whiskerRight
 
 @[reassoc, simp]
-theorem leftUnitor_inv_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
+lemma leftUnitor_inv_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
     (λ_ f).inv ▷ g = (λ_ (f ≫ g)).inv ≫ (α_ (𝟙 a) f g).inv :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.left_unitor_inv_whisker_right CategoryTheory.Bicategory.leftUnitor_inv_whiskerRight
 
 @[reassoc, simp]
-theorem whiskerLeft_rightUnitor (f : a ⟶ b) (g : b ⟶ c) :
+lemma whiskerLeft_rightUnitor (f : a ⟶ b) (g : b ⟶ c) :
     f ◁ (ρ_ g).hom = (α_ f g (𝟙 c)).inv ≫ (ρ_ (f ≫ g)).hom := by
   rw [← whiskerRight_iff, comp_whiskerRight, ← cancel_epi (α_ _ _ _).inv, ←
       cancel_epi (f ◁ (α_ _ _ _).inv), pentagon_inv_assoc, triangle_assoc_comp_right, ←
@@ -444,7 +444,7 @@ theorem whiskerLeft_rightUnitor (f : a ⟶ b) (g : b ⟶ c) :
 #align category_theory.bicategory.whisker_left_right_unitor CategoryTheory.Bicategory.whiskerLeft_rightUnitor
 
 @[reassoc, simp]
-theorem whiskerLeft_rightUnitor_inv (f : a ⟶ b) (g : b ⟶ c) :
+lemma whiskerLeft_rightUnitor_inv (f : a ⟶ b) (g : b ⟶ c) :
     f ◁ (ρ_ g).inv = (ρ_ (f ≫ g)).inv ≫ (α_ f g (𝟙 c)).hom :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.whisker_left_right_unitor_inv CategoryTheory.Bicategory.whiskerLeft_rightUnitor_inv
@@ -458,22 +458,22 @@ lemma. Our choice is the former. One reason is that the latter yields the follow
 [rightUnitor_comp] : (ρ_ (𝟙 a ≫ f)).hom ==> (α_ (𝟙 a) f (𝟙 b)).hom ≫ 𝟙 a ◁ (ρ_ f).hom
 -/
 @[reassoc]
-theorem leftUnitor_comp (f : a ⟶ b) (g : b ⟶ c) :
+lemma leftUnitor_comp (f : a ⟶ b) (g : b ⟶ c) :
     (λ_ (f ≫ g)).hom = (α_ (𝟙 a) f g).inv ≫ (λ_ f).hom ▷ g := by simp
 #align category_theory.bicategory.left_unitor_comp CategoryTheory.Bicategory.leftUnitor_comp
 
 @[reassoc]
-theorem leftUnitor_comp_inv (f : a ⟶ b) (g : b ⟶ c) :
+lemma leftUnitor_comp_inv (f : a ⟶ b) (g : b ⟶ c) :
     (λ_ (f ≫ g)).inv = (λ_ f).inv ▷ g ≫ (α_ (𝟙 a) f g).hom := by simp
 #align category_theory.bicategory.left_unitor_comp_inv CategoryTheory.Bicategory.leftUnitor_comp_inv
 
 @[reassoc]
-theorem rightUnitor_comp (f : a ⟶ b) (g : b ⟶ c) :
+lemma rightUnitor_comp (f : a ⟶ b) (g : b ⟶ c) :
     (ρ_ (f ≫ g)).hom = (α_ f g (𝟙 c)).hom ≫ f ◁ (ρ_ g).hom := by simp
 #align category_theory.bicategory.right_unitor_comp CategoryTheory.Bicategory.rightUnitor_comp
 
 @[reassoc]
-theorem rightUnitor_comp_inv (f : a ⟶ b) (g : b ⟶ c) :
+lemma rightUnitor_comp_inv (f : a ⟶ b) (g : b ⟶ c) :
     (ρ_ (f ≫ g)).inv = f ◁ (ρ_ g).inv ≫ (α_ f g (𝟙 c)).inv := by simp
 #align category_theory.bicategory.right_unitor_comp_inv CategoryTheory.Bicategory.rightUnitor_comp_inv
 

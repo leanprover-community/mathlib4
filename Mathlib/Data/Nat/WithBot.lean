@@ -61,7 +61,7 @@ lemma coe_nonneg {n : ℕ} : 0 ≤ (n : WithBot ℕ) := by
 #align nat.with_bot.coe_nonneg Nat.WithBot.coe_nonneg
 
 @[simp]
-theorem lt_zero_iff (n : WithBot ℕ) : n < 0 ↔ n = ⊥ := by
+lemma lt_zero_iff (n : WithBot ℕ) : n < 0 ↔ n = ⊥ := by
  refine' Option.casesOn n _ _
  exact of_eq_true (eq_true_of_decide (Eq.refl true))
  intro n

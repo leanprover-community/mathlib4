@@ -97,7 +97,7 @@ protected lemma dvd_one {n : ℕ} : n ∣ 1 ↔ n = 1 :=
 
 set_option linter.deprecated false in
 @[simp]
-protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
+protected lemma not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right two_dvd_bit0, Nat.dvd_one]
   -- Porting note: was `cc`
   decide
@@ -161,15 +161,15 @@ lemma succ_div_of_not_dvd {a b : ℕ} (hba : ¬b ∣ a + 1) : (a + 1) / b = a / 
   rw [succ_div, if_neg hba, add_zero]
 #align nat.succ_div_of_not_dvd Nat.succ_div_of_not_dvd
 
-theorem dvd_iff_div_mul_eq (n d : ℕ) : d ∣ n ↔ n / d * d = n :=
+lemma dvd_iff_div_mul_eq (n d : ℕ) : d ∣ n ↔ n / d * d = n :=
   ⟨fun h => Nat.div_mul_cancel h, fun h => Dvd.intro_left (n / d) h⟩
 #align nat.dvd_iff_div_mul_eq Nat.dvd_iff_div_mul_eq
 
-theorem dvd_iff_le_div_mul (n d : ℕ) : d ∣ n ↔ n ≤ n / d * d :=
+lemma dvd_iff_le_div_mul (n d : ℕ) : d ∣ n ↔ n ≤ n / d * d :=
   ((dvd_iff_div_mul_eq _ _).trans le_antisymm_iff).trans (and_iff_right (div_mul_le_self n d))
 #align nat.dvd_iff_le_div_mul Nat.dvd_iff_le_div_mul
 
-theorem dvd_iff_dvd_dvd (n d : ℕ) : d ∣ n ↔ ∀ k : ℕ, k ∣ d → k ∣ n :=
+lemma dvd_iff_dvd_dvd (n d : ℕ) : d ∣ n ↔ ∀ k : ℕ, k ∣ d → k ∣ n :=
   ⟨fun h _ hkd => dvd_trans hkd h, fun h => h _ dvd_rfl⟩
 #align nat.dvd_iff_dvd_dvd Nat.dvd_iff_dvd_dvd
 
@@ -212,7 +212,7 @@ lemma eq_zero_of_dvd_of_lt {a b : ℕ} (w : a ∣ b) (h : b < a) : b = 0 :=
     ((Nat.div_eq_zero_iff (lt_of_le_of_lt (zero_le b) h)).mpr h)
 #align nat.eq_zero_of_dvd_of_lt Nat.eq_zero_of_dvd_of_lt
 
-theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
+lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   -- porting note: Needed to give an explicit argument to `mul_add_one`
   rw [← mul_add_one n] at h
@@ -220,14 +220,14 @@ theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b :=
 #align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
 @[simp]
-theorem mod_div_self (m n : ℕ) : m % n / n = 0 := by
+lemma mod_div_self (m n : ℕ) : m % n / n = 0 := by
   cases n
   · exact (m % 0).div_zero
   · case succ n => exact Nat.div_eq_zero (m.mod_lt n.succ_pos)
 #align nat.mod_div_self Nat.mod_div_self
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
-theorem not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
+lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
     (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) ↔ ¬a ∣ n := by
   refine'
     ⟨fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>

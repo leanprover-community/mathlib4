@@ -80,7 +80,7 @@ protected lemma fderiv : fderiv 𝕜 iso x = iso :=
   iso.hasFDerivAt.fderiv
 #align continuous_linear_equiv.fderiv ContinuousLinearEquiv.fderiv
 
-protected theorem fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 iso s x = iso :=
+protected lemma fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 iso s x = iso :=
   iso.toContinuousLinearMap.fderivWithin hxs
 #align continuous_linear_equiv.fderiv_within ContinuousLinearEquiv.fderivWithin
 
@@ -283,7 +283,7 @@ protected lemma fderiv : fderiv 𝕜 iso x = iso :=
   iso.hasFDerivAt.fderiv
 #align linear_isometry_equiv.fderiv LinearIsometryEquiv.fderiv
 
-protected theorem fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 iso s x = iso :=
+protected lemma fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 iso s x = iso :=
   (iso : E ≃L[𝕜] F).fderivWithin hxs
 #align linear_isometry_equiv.fderiv_within LinearIsometryEquiv.fderivWithin
 
@@ -410,7 +410,7 @@ the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasStrictFDerivAt_symm (f : LocalHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
+lemma LocalHomeomorph.hasStrictFDerivAt_symm (f : LocalHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
     (ha : a ∈ f.target) (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
     HasStrictFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
@@ -421,13 +421,13 @@ invertible derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'�
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasFDerivAt_symm (f : LocalHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
+lemma LocalHomeomorph.hasFDerivAt_symm (f : LocalHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
     (ha : a ∈ f.target) (htff' : HasFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
     HasFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 #align local_homeomorph.has_fderiv_at_symm LocalHomeomorph.hasFDerivAt_symm
 
-theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
+lemma HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ f x := by
   rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
   have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
@@ -436,7 +436,7 @@ theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
   simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
 #align has_fderiv_within_at.eventually_ne HasFDerivWithinAt.eventually_ne
 
-theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
+lemma HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ f x := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
 #align has_fderiv_at.eventually_ne HasFDerivAt.eventually_ne
@@ -465,7 +465,7 @@ lemma has_fderiv_at_filter_real_equiv {L : Filter E} :
   simp [norm_smul]
 #align has_fderiv_at_filter_real_equiv has_fderiv_at_filter_real_equiv
 
-theorem HasFDerivAt.lim_real (hf : HasFDerivAt f f' x) (v : E) :
+lemma HasFDerivAt.lim_real (hf : HasFDerivAt f f' x) (v : E) :
     Tendsto (fun c : ℝ => c • (f (x + c⁻¹ • v) - f x)) atTop (𝓝 (f' v)) := by
   apply hf.lim v
   rw [tendsto_atTop_atTop]
@@ -515,19 +515,19 @@ lemma HasFDerivWithinAt.uniqueDiffWithinAt_of_continuousLinearEquiv {x : E} (e' 
   h.uniqueDiffWithinAt hs e'.surjective.denseRange
 #align has_fderiv_within_at.unique_diff_within_at_of_continuous_linear_equiv HasFDerivWithinAt.uniqueDiffWithinAt_of_continuousLinearEquiv
 
-theorem ContinuousLinearEquiv.uniqueDiffOn_image (e : E ≃L[𝕜] F) (h : UniqueDiffOn 𝕜 s) :
+lemma ContinuousLinearEquiv.uniqueDiffOn_image (e : E ≃L[𝕜] F) (h : UniqueDiffOn 𝕜 s) :
     UniqueDiffOn 𝕜 (e '' s) :=
   h.image (fun _ _ => e.hasFDerivWithinAt) fun _ _ => e.surjective.denseRange
 #align continuous_linear_equiv.unique_diff_on_image ContinuousLinearEquiv.uniqueDiffOn_image
 
 @[simp]
-theorem ContinuousLinearEquiv.uniqueDiffOn_image_iff (e : E ≃L[𝕜] F) :
+lemma ContinuousLinearEquiv.uniqueDiffOn_image_iff (e : E ≃L[𝕜] F) :
     UniqueDiffOn 𝕜 (e '' s) ↔ UniqueDiffOn 𝕜 s :=
   ⟨fun h => e.symm_image_image s ▸ e.symm.uniqueDiffOn_image h, e.uniqueDiffOn_image⟩
 #align continuous_linear_equiv.unique_diff_on_image_iff ContinuousLinearEquiv.uniqueDiffOn_image_iff
 
 @[simp]
-theorem ContinuousLinearEquiv.uniqueDiffOn_preimage_iff (e : F ≃L[𝕜] E) :
+lemma ContinuousLinearEquiv.uniqueDiffOn_preimage_iff (e : F ≃L[𝕜] E) :
     UniqueDiffOn 𝕜 (e ⁻¹' s) ↔ UniqueDiffOn 𝕜 s := by
   rw [← e.image_symm_eq_preimage, e.symm.uniqueDiffOn_image_iff]
 #align continuous_linear_equiv.unique_diff_on_preimage_iff ContinuousLinearEquiv.uniqueDiffOn_preimage_iff

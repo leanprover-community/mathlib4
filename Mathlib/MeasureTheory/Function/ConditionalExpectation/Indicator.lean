@@ -35,7 +35,7 @@ namespace MeasureTheory
 variable {α 𝕜 E : Type*} {m m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] {μ : Measure α} {f : α → E} {s : Set α}
 
-theorem condexp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict s] 0) :
+lemma condexp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict s] 0) :
     μ[f|m] =ᵐ[μ.restrict s] 0 := by
   by_cases hm : m ≤ m0
   swap; · simp_rw [condexp_of_not_le hm]; rfl
@@ -60,7 +60,7 @@ theorem condexp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
 #align measure_theory.condexp_ae_eq_restrict_zero MeasureTheory.condexp_ae_eq_restrict_zero
 
 /-- Auxiliary lemma for `condexp_indicator`. -/
-theorem condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict sᶜ] 0) :
+lemma condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict sᶜ] 0) :
     μ[s.indicator f|m] =ᵐ[μ] s.indicator (μ[f|m]) := by
   by_cases hm : m ≤ m0
   swap; · simp_rw [condexp_of_not_le hm, Set.indicator_zero']; rfl
@@ -72,7 +72,7 @@ theorem condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict
 
 /-- The conditional expectation of the indicator of a function over an `m`-measurable set with
 respect to the σ-algebra `m` is a.e. equal to the indicator of the conditional expectation. -/
-theorem condexp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
+lemma condexp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
     μ[s.indicator f|m] =ᵐ[μ] s.indicator (μ[f|m]) := by
   by_cases hm : m ≤ m0
   swap; · simp_rw [condexp_of_not_le hm, Set.indicator_zero']; rfl
@@ -112,7 +112,7 @@ theorem condexp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
       · rw [Set.indicator_indicator, Set.inter_self]
 #align measure_theory.condexp_indicator MeasureTheory.condexp_indicator
 
-theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
+lemma condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs_m : MeasurableSet[m] s) (hf_int : Integrable f μ) :
     (μ.restrict s)[f|m] =ᵐ[μ.restrict s] μ[f|m] := by
   have : SigmaFinite ((μ.restrict s).trim hm) := by rw [← restrict_trim hm _ hs_m]; infer_instance

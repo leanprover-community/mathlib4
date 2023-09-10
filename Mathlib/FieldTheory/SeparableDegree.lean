@@ -104,7 +104,7 @@ variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- Every irreducible polynomial can be contracted to a separable polynomial.
 https://stacks.math.columbia.edu/tag/09H0 -/
-theorem Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] (f : F[X])
+lemma Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] (f : F[X])
     (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF
   · exact ⟨f, irred.separable, ⟨0, by rw [pow_zero, expand_one]⟩⟩

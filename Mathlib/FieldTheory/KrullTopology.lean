@@ -85,7 +85,7 @@ def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgrou
 #align fixed_by_finite fixedByFinite
 
 /-- For a field extension `L/K`, the intermediate field `K` is finite-dimensional over `K` -/
-theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
+lemma IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
     FiniteDimensional K (⊥ : IntermediateField K L) :=
   finiteDimensional_of_rank_eq_one IntermediateField.rank_bot
 #align intermediate_field.finite_dimensional_bot IntermediateField.finiteDimensional_bot
@@ -145,7 +145,7 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
 
 /-- A subset of `L ≃ₐ[K] L` is a member of `galBasis K L` if and only if it is the underlying set
 of `Gal(L/E)` for some finite subextension `E/K`-/
-theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Set (L ≃ₐ[K] L)) :
+lemma mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Set (L ≃ₐ[K] L)) :
     U ∈ galBasis K L ↔ U ∈ (fun g => g.carrier) '' fixedByFinite K L :=
   Iff.rfl
 #align mem_gal_basis_iff mem_galBasis_iff

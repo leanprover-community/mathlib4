@@ -97,7 +97,7 @@ abbrev AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
   Submonoid.toAddSubmonoid.symm
 #align add_submonoid.to_submonoid' AddSubmonoid.toSubmonoid'
 
-theorem Submonoid.toAddSubmonoid_closure (S : Set M) :
+lemma Submonoid.toAddSubmonoid_closure (S : Set M) :
     Submonoid.toAddSubmonoid (Submonoid.closure S)
       = AddSubmonoid.closure (Additive.toMul ⁻¹' S) :=
   le_antisymm
@@ -106,7 +106,7 @@ theorem Submonoid.toAddSubmonoid_closure (S : Set M) :
     (AddSubmonoid.closure_le.2 <| Submonoid.subset_closure (M := M))
 #align submonoid.to_add_submonoid_closure Submonoid.toAddSubmonoid_closure
 
-theorem AddSubmonoid.toSubmonoid'_closure (S : Set (Additive M)) :
+lemma AddSubmonoid.toSubmonoid'_closure (S : Set (Additive M)) :
     AddSubmonoid.toSubmonoid' (AddSubmonoid.closure S)
       = Submonoid.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
@@ -145,7 +145,7 @@ abbrev Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoi
   AddSubmonoid.toSubmonoid.symm
 #align submonoid.to_add_submonoid' Submonoid.toAddSubmonoid'
 
-theorem AddSubmonoid.toSubmonoid_closure (S : Set A) :
+lemma AddSubmonoid.toSubmonoid_closure (S : Set A) :
     (AddSubmonoid.toSubmonoid) (AddSubmonoid.closure S)
       = Submonoid.closure (Multiplicative.toAdd ⁻¹' S) :=
   le_antisymm
@@ -154,7 +154,7 @@ theorem AddSubmonoid.toSubmonoid_closure (S : Set A) :
     (Submonoid.closure_le.2 <| AddSubmonoid.subset_closure (M := A))
 #align add_submonoid.to_submonoid_closure AddSubmonoid.toSubmonoid_closure
 
-theorem Submonoid.toAddSubmonoid'_closure (S : Set (Multiplicative A)) :
+lemma Submonoid.toAddSubmonoid'_closure (S : Set (Multiplicative A)) :
     Submonoid.toAddSubmonoid' (Submonoid.closure S)
       = AddSubmonoid.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
@@ -187,7 +187,7 @@ def comap (f : F) (S : Submonoid N) :
 #align add_submonoid.comap AddSubmonoid.comap
 
 @[to_additive (attr := simp)]
-theorem coe_comap (S : Submonoid N) (f : F) : (S.comap f : Set M) = f ⁻¹' S :=
+lemma coe_comap (S : Submonoid N) (f : F) : (S.comap f : Set M) = f ⁻¹' S :=
   rfl
 #align submonoid.coe_comap Submonoid.coe_comap
 #align add_submonoid.coe_comap AddSubmonoid.coe_comap
@@ -199,14 +199,14 @@ lemma mem_comap {S : Submonoid N} {f : F} {x : M} : x ∈ S.comap f ↔ f x ∈ 
 #align add_submonoid.mem_comap AddSubmonoid.mem_comap
 
 @[to_additive]
-theorem comap_comap (S : Submonoid P) (g : N →* P) (f : M →* N) :
+lemma comap_comap (S : Submonoid P) (g : N →* P) (f : M →* N) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   rfl
 #align submonoid.comap_comap Submonoid.comap_comap
 #align add_submonoid.comap_comap AddSubmonoid.comap_comap
 
 @[to_additive (attr := simp)]
-theorem comap_id (S : Submonoid P) : S.comap (MonoidHom.id P) = S :=
+lemma comap_id (S : Submonoid P) : S.comap (MonoidHom.id P) = S :=
   ext (by simp)
 #align submonoid.comap_id Submonoid.comap_id
 #align add_submonoid.comap_id AddSubmonoid.comap_id
@@ -225,7 +225,7 @@ def map (f : F) (S : Submonoid M) :
 #align add_submonoid.map AddSubmonoid.map
 
 @[to_additive (attr := simp)]
-theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
+lemma coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 #align submonoid.coe_map Submonoid.coe_map
 #align add_submonoid.coe_map AddSubmonoid.coe_map
@@ -238,19 +238,19 @@ lemma mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S,
 #align add_submonoid.mem_map AddSubmonoid.mem_map
 
 @[to_additive]
-theorem mem_map_of_mem (f : F) {S : Submonoid M} {x : M} (hx : x ∈ S) : f x ∈ S.map f :=
+lemma mem_map_of_mem (f : F) {S : Submonoid M} {x : M} (hx : x ∈ S) : f x ∈ S.map f :=
   mem_image_of_mem f hx
 #align submonoid.mem_map_of_mem Submonoid.mem_map_of_mem
 #align add_submonoid.mem_map_of_mem AddSubmonoid.mem_map_of_mem
 
 @[to_additive]
-theorem apply_coe_mem_map (f : F) (S : Submonoid M) (x : S) : f x ∈ S.map f :=
+lemma apply_coe_mem_map (f : F) (S : Submonoid M) (x : S) : f x ∈ S.map f :=
   mem_map_of_mem f x.2
 #align submonoid.apply_coe_mem_map Submonoid.apply_coe_mem_map
 #align add_submonoid.apply_coe_mem_map AddSubmonoid.apply_coe_mem_map
 
 @[to_additive]
-theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp f) :=
+lemma map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp f) :=
   SetLike.coe_injective <| image_image _ _ _
 #align submonoid.map_map Submonoid.map_map
 #align add_submonoid.map_map AddSubmonoid.map_map
@@ -273,7 +273,7 @@ lemma map_le_iff_le_comap {f : F} {S : Submonoid M} {T : Submonoid N} :
 #align add_submonoid.map_le_iff_le_comap AddSubmonoid.map_le_iff_le_comap
 
 @[to_additive]
-theorem gc_map_comap (f : F) : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
+lemma gc_map_comap (f : F) : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
 #align submonoid.gc_map_comap Submonoid.gc_map_comap
 #align add_submonoid.gc_map_comap AddSubmonoid.gc_map_comap
 
@@ -326,7 +326,7 @@ lemma comap_map_comap {S : Submonoid N} {f : F} : ((S.comap f).map f).comap f = 
 #align add_submonoid.comap_map_comap AddSubmonoid.comap_map_comap
 
 @[to_additive]
-theorem map_sup (S T : Submonoid M) (f : F) : (S ⊔ T).map f = S.map f ⊔ T.map f :=
+lemma map_sup (S T : Submonoid M) (f : F) : (S ⊔ T).map f = S.map f ⊔ T.map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_sup
 #align submonoid.map_sup Submonoid.map_sup
 #align add_submonoid.map_sup AddSubmonoid.map_sup
@@ -338,7 +338,7 @@ lemma map_iSup {ι : Sort*} (f : F) (s : ι → Submonoid M) : (iSup s).map f = 
 #align add_submonoid.map_supr AddSubmonoid.map_iSup
 
 @[to_additive]
-theorem comap_inf (S T : Submonoid N) (f : F) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
+lemma comap_inf (S T : Submonoid N) (f : F) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_inf
 #align submonoid.comap_inf Submonoid.comap_inf
 #align add_submonoid.comap_inf AddSubmonoid.comap_inf
@@ -351,19 +351,19 @@ lemma comap_iInf {ι : Sort*} (f : F) (s : ι → Submonoid N) :
 #align add_submonoid.comap_infi AddSubmonoid.comap_iInf
 
 @[to_additive (attr := simp)]
-theorem map_bot (f : F) : (⊥ : Submonoid M).map f = ⊥ :=
+lemma map_bot (f : F) : (⊥ : Submonoid M).map f = ⊥ :=
   (gc_map_comap f).l_bot
 #align submonoid.map_bot Submonoid.map_bot
 #align add_submonoid.map_bot AddSubmonoid.map_bot
 
 @[to_additive (attr := simp)]
-theorem comap_top (f : F) : (⊤ : Submonoid N).comap f = ⊤ :=
+lemma comap_top (f : F) : (⊤ : Submonoid N).comap f = ⊤ :=
   (gc_map_comap f).u_top
 #align submonoid.comap_top Submonoid.comap_top
 #align add_submonoid.comap_top AddSubmonoid.comap_top
 
 @[to_additive (attr := simp)]
-theorem map_id (S : Submonoid M) : S.map (MonoidHom.id M) = S :=
+lemma map_id (S : Submonoid M) : S.map (MonoidHom.id M) = S :=
   ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
 #align submonoid.map_id Submonoid.map_id
 #align add_submonoid.map_id AddSubmonoid.map_id
@@ -380,7 +380,7 @@ def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
 #align add_submonoid.gci_map_comap AddSubmonoid.gciMapComap
 
 @[to_additive]
-theorem comap_map_eq_of_injective (S : Submonoid M) : (S.map f).comap f = S :=
+lemma comap_map_eq_of_injective (S : Submonoid M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
 #align submonoid.comap_map_eq_of_injective Submonoid.comap_map_eq_of_injective
 #align add_submonoid.comap_map_eq_of_injective AddSubmonoid.comap_map_eq_of_injective
@@ -398,25 +398,25 @@ lemma map_injective_of_injective : Function.Injective (map f) :=
 #align add_submonoid.map_injective_of_injective AddSubmonoid.map_injective_of_injective
 
 @[to_additive]
-theorem comap_inf_map_of_injective (S T : Submonoid M) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
+lemma comap_inf_map_of_injective (S T : Submonoid M) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
   (gciMapComap hf).u_inf_l _ _
 #align submonoid.comap_inf_map_of_injective Submonoid.comap_inf_map_of_injective
 #align add_submonoid.comap_inf_map_of_injective AddSubmonoid.comap_inf_map_of_injective
 
 @[to_additive]
-theorem comap_iInf_map_of_injective (S : ι → Submonoid M) : (⨅ i, (S i).map f).comap f = iInf S :=
+lemma comap_iInf_map_of_injective (S : ι → Submonoid M) : (⨅ i, (S i).map f).comap f = iInf S :=
   (gciMapComap hf).u_iInf_l _
 #align submonoid.comap_infi_map_of_injective Submonoid.comap_iInf_map_of_injective
 #align add_submonoid.comap_infi_map_of_injective AddSubmonoid.comap_iInf_map_of_injective
 
 @[to_additive]
-theorem comap_sup_map_of_injective (S T : Submonoid M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
+lemma comap_sup_map_of_injective (S T : Submonoid M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 #align submonoid.comap_sup_map_of_injective Submonoid.comap_sup_map_of_injective
 #align add_submonoid.comap_sup_map_of_injective AddSubmonoid.comap_sup_map_of_injective
 
 @[to_additive]
-theorem comap_iSup_map_of_injective (S : ι → Submonoid M) : (⨆ i, (S i).map f).comap f = iSup S :=
+lemma comap_iSup_map_of_injective (S : ι → Submonoid M) : (⨆ i, (S i).map f).comap f = iSup S :=
   (gciMapComap hf).u_iSup_l _
 #align submonoid.comap_supr_map_of_injective Submonoid.comap_iSup_map_of_injective
 #align add_submonoid.comap_supr_map_of_injective AddSubmonoid.comap_iSup_map_of_injective
@@ -449,7 +449,7 @@ def giMapComap : GaloisInsertion (map f) (comap f) :=
 #align add_submonoid.gi_map_comap AddSubmonoid.giMapComap
 
 @[to_additive]
-theorem map_comap_eq_of_surjective (S : Submonoid N) : (S.comap f).map f = S :=
+lemma map_comap_eq_of_surjective (S : Submonoid N) : (S.comap f).map f = S :=
   (giMapComap hf).l_u_eq _
 #align submonoid.map_comap_eq_of_surjective Submonoid.map_comap_eq_of_surjective
 #align add_submonoid.map_comap_eq_of_surjective AddSubmonoid.map_comap_eq_of_surjective
@@ -467,25 +467,25 @@ lemma comap_injective_of_surjective : Function.Injective (comap f) :=
 #align add_submonoid.comap_injective_of_surjective AddSubmonoid.comap_injective_of_surjective
 
 @[to_additive]
-theorem map_inf_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊓ T.comap f).map f = S ⊓ T :=
+lemma map_inf_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊓ T.comap f).map f = S ⊓ T :=
   (giMapComap hf).l_inf_u _ _
 #align submonoid.map_inf_comap_of_surjective Submonoid.map_inf_comap_of_surjective
 #align add_submonoid.map_inf_comap_of_surjective AddSubmonoid.map_inf_comap_of_surjective
 
 @[to_additive]
-theorem map_iInf_comap_of_surjective (S : ι → Submonoid N) : (⨅ i, (S i).comap f).map f = iInf S :=
+lemma map_iInf_comap_of_surjective (S : ι → Submonoid N) : (⨅ i, (S i).comap f).map f = iInf S :=
   (giMapComap hf).l_iInf_u _
 #align submonoid.map_infi_comap_of_surjective Submonoid.map_iInf_comap_of_surjective
 #align add_submonoid.map_infi_comap_of_surjective AddSubmonoid.map_iInf_comap_of_surjective
 
 @[to_additive]
-theorem map_sup_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊔ T.comap f).map f = S ⊔ T :=
+lemma map_sup_comap_of_surjective (S T : Submonoid N) : (S.comap f ⊔ T.comap f).map f = S ⊔ T :=
   (giMapComap hf).l_sup_u _ _
 #align submonoid.map_sup_comap_of_surjective Submonoid.map_sup_comap_of_surjective
 #align add_submonoid.map_sup_comap_of_surjective AddSubmonoid.map_sup_comap_of_surjective
 
 @[to_additive]
-theorem map_iSup_comap_of_surjective (S : ι → Submonoid N) : (⨆ i, (S i).comap f).map f = iSup S :=
+lemma map_iSup_comap_of_surjective (S : ι → Submonoid N) : (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
 #align submonoid.map_supr_comap_of_surjective Submonoid.map_iSup_comap_of_surjective
 #align add_submonoid.map_supr_comap_of_surjective AddSubmonoid.map_iSup_comap_of_surjective
@@ -675,7 +675,7 @@ instance one : One S :=
 #align add_submonoid.has_zero AddSubmonoid.zero
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_mul (x y : S) : (↑(x * y) : M) = ↑x * ↑y :=
+lemma coe_mul (x y : S) : (↑(x * y) : M) = ↑x * ↑y :=
   rfl
 #align submonoid.coe_mul Submonoid.coe_mul
 #align add_submonoid.coe_add AddSubmonoid.coe_add
@@ -687,14 +687,14 @@ lemma coe_one : ((1 : S) : M) = 1 :=
 #align add_submonoid.coe_zero AddSubmonoid.coe_zero
 
 @[to_additive (attr := simp)]
-theorem mk_mul_mk (x y : M) (hx : x ∈ S) (hy : y ∈ S) :
+lemma mk_mul_mk (x y : M) (hx : x ∈ S) (hy : y ∈ S) :
     (⟨x, hx⟩ : S) * ⟨y, hy⟩ = ⟨x * y, S.mul_mem hx hy⟩ :=
   rfl
 #align submonoid.mk_mul_mk Submonoid.mk_mul_mk
 #align add_submonoid.mk_add_mk AddSubmonoid.mk_add_mk
 
 @[to_additive]
-theorem mul_def (x y : S) : x * y = ⟨x * y, S.mul_mem x.2 y.2⟩ :=
+lemma mul_def (x y : S) : x * y = ⟨x * y, S.mul_mem x.2 y.2⟩ :=
   rfl
 #align submonoid.mul_def Submonoid.mul_def
 #align add_submonoid.add_def AddSubmonoid.add_def
@@ -818,7 +818,7 @@ noncomputable def equivMapOfInjective (f : M →* N) (hf : Function.Injective f)
 #align add_submonoid.equiv_map_of_injective AddSubmonoid.equivMapOfInjective
 
 @[to_additive (attr := simp)]
-theorem coe_equivMapOfInjective_apply (f : M →* N) (hf : Function.Injective f) (x : S) :
+lemma coe_equivMapOfInjective_apply (f : M →* N) (hf : Function.Injective f) (x : S) :
     (equivMapOfInjective S f hf x : N) = f x :=
   rfl
 #align submonoid.coe_equiv_map_of_injective_apply Submonoid.coe_equivMapOfInjective_apply
@@ -848,7 +848,7 @@ def prod (s : Submonoid M) (t : Submonoid N) :
 #align add_submonoid.prod AddSubmonoid.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Submonoid M) (t : Submonoid N) :
+lemma coe_prod (s : Submonoid M) (t : Submonoid N) :
     (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align submonoid.coe_prod Submonoid.coe_prod
@@ -869,13 +869,13 @@ lemma prod_mono {s₁ s₂ : Submonoid M} {t₁ t₂ : Submonoid N} (hs : s₁ �
 #align add_submonoid.prod_mono AddSubmonoid.prod_mono
 
 @[to_additive prod_top]
-theorem prod_top (s : Submonoid M) : s.prod (⊤ : Submonoid N) = s.comap (MonoidHom.fst M N) :=
+lemma prod_top (s : Submonoid M) : s.prod (⊤ : Submonoid N) = s.comap (MonoidHom.fst M N) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
 #align submonoid.prod_top Submonoid.prod_top
 #align add_submonoid.prod_top AddSubmonoid.prod_top
 
 @[to_additive top_prod]
-theorem top_prod (s : Submonoid N) : (⊤ : Submonoid M).prod s = s.comap (MonoidHom.snd M N) :=
+lemma top_prod (s : Submonoid N) : (⊤ : Submonoid M).prod s = s.comap (MonoidHom.snd M N) :=
   ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
 #align submonoid.top_prod Submonoid.top_prod
 #align add_submonoid.top_prod AddSubmonoid.top_prod
@@ -905,7 +905,7 @@ def prodEquiv (s : Submonoid M) (t : Submonoid N) : s.prod t ≃* s × t :=
 open MonoidHom
 
 @[to_additive]
-theorem map_inl (s : Submonoid M) : s.map (inl M N) = s.prod ⊥ :=
+lemma map_inl (s : Submonoid M) : s.map (inl M N) = s.prod ⊥ :=
   ext fun p =>
     ⟨fun ⟨_, hx, hp⟩ => hp ▸ ⟨hx, Set.mem_singleton 1⟩, fun ⟨hps, hp1⟩ =>
       ⟨p.1, hps, Prod.ext rfl <| (Set.eq_of_mem_singleton hp1).symm⟩⟩
@@ -913,7 +913,7 @@ theorem map_inl (s : Submonoid M) : s.map (inl M N) = s.prod ⊥ :=
 #align add_submonoid.map_inl AddSubmonoid.map_inl
 
 @[to_additive]
-theorem map_inr (s : Submonoid N) : s.map (inr M N) = prod ⊥ s :=
+lemma map_inr (s : Submonoid N) : s.map (inr M N) = prod ⊥ s :=
   ext fun p =>
     ⟨fun ⟨_, hx, hp⟩ => hp ▸ ⟨Set.mem_singleton 1, hx⟩, fun ⟨hp1, hps⟩ =>
       ⟨p.2, hps, Prod.ext (Set.eq_of_mem_singleton hp1).symm rfl⟩⟩
@@ -921,7 +921,7 @@ theorem map_inr (s : Submonoid N) : s.map (inr M N) = prod ⊥ s :=
 #align add_submonoid.map_inr AddSubmonoid.map_inr
 
 @[to_additive (attr := simp) prod_bot_sup_bot_prod]
-theorem prod_bot_sup_bot_prod (s : Submonoid M) (t : Submonoid N) :
+lemma prod_bot_sup_bot_prod (s : Submonoid M) (t : Submonoid N) :
     (prod s ⊥) ⊔ (prod ⊥ t) = prod s t :=
   (le_antisymm (sup_le (prod_mono (le_refl s) bot_le) (prod_mono bot_le (le_refl t))))
     fun p hp => Prod.fst_mul_snd p ▸ mul_mem
@@ -938,21 +938,21 @@ lemma mem_map_equiv {f : M ≃* N} {K : Submonoid M} {x : N} :
 #align add_submonoid.mem_map_equiv AddSubmonoid.mem_map_equiv
 
 @[to_additive]
-theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
+lemma map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
     K.map f.toMonoidHom = K.comap f.symm.toMonoidHom :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
 #align submonoid.map_equiv_eq_comap_symm Submonoid.map_equiv_eq_comap_symm
 #align add_submonoid.map_equiv_eq_comap_symm AddSubmonoid.map_equiv_eq_comap_symm
 
 @[to_additive]
-theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
+lemma comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
     K.comap f.toMonoidHom = K.map f.symm.toMonoidHom :=
   (map_equiv_eq_comap_symm f.symm K).symm
 #align submonoid.comap_equiv_eq_map_symm Submonoid.comap_equiv_eq_map_symm
 #align add_submonoid.comap_equiv_eq_map_symm AddSubmonoid.comap_equiv_eq_map_symm
 
 @[to_additive (attr := simp)]
-theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f.toMonoidHom = ⊤ :=
+lemma map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f.toMonoidHom = ⊤ :=
   SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 #align submonoid.map_equiv_top Submonoid.map_equiv_top
 #align add_submonoid.map_equiv_top AddSubmonoid.map_equiv_top
@@ -1042,7 +1042,7 @@ def mrange (f : F) : Submonoid N :=
 #align add_monoid_hom.mrange AddMonoidHom.mrange
 
 @[to_additive (attr := simp)]
-theorem coe_mrange (f : F) : (mrange f : Set N) = Set.range f :=
+lemma coe_mrange (f : F) : (mrange f : Set N) = Set.range f :=
   rfl
 #align monoid_hom.coe_mrange MonoidHom.coe_mrange
 #align add_monoid_hom.coe_mrange AddMonoidHom.coe_mrange
@@ -1054,13 +1054,13 @@ lemma mem_mrange {f : F} {y : N} : y ∈ mrange f ↔ ∃ x, f x = y :=
 #align add_monoid_hom.mem_mrange AddMonoidHom.mem_mrange
 
 @[to_additive]
-theorem mrange_eq_map (f : F) : mrange f = (⊤ : Submonoid M).map f :=
+lemma mrange_eq_map (f : F) : mrange f = (⊤ : Submonoid M).map f :=
   Submonoid.copy_eq _
 #align monoid_hom.mrange_eq_map MonoidHom.mrange_eq_map
 #align add_monoid_hom.mrange_eq_map AddMonoidHom.mrange_eq_map
 
 @[to_additive]
-theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp g f) := by
+lemma map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp g f) := by
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
 #align monoid_hom.map_mrange MonoidHom.map_mrange
 #align add_monoid_hom.map_mrange AddMonoidHom.map_mrange
@@ -1074,14 +1074,14 @@ lemma mrange_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ Fun
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
-theorem mrange_top_of_surjective (f : F) (hf : Function.Surjective f) :
+lemma mrange_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
   mrange_top_iff_surjective.2 hf
 #align monoid_hom.mrange_top_of_surjective MonoidHom.mrange_top_of_surjective
 #align add_monoid_hom.mrange_top_of_surjective AddMonoidHom.mrange_top_of_surjective
 
 @[to_additive]
-theorem mclosure_preimage_le (f : F) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
+lemma mclosure_preimage_le (f : F) (s : Set N) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
 #align monoid_hom.mclosure_preimage_le MonoidHom.mclosure_preimage_le
 #align add_monoid_hom.mclosure_preimage_le AddMonoidHom.mclosure_preimage_le
@@ -1091,7 +1091,7 @@ theorem mclosure_preimage_le (f : F) (s : Set N) : closure (f ⁻¹' s) ≤ (clo
 @[to_additive
       "The image under an `AddMonoid` hom of the `AddSubmonoid` generated by a set equals
       the `AddSubmonoid` generated by the image of the set."]
-theorem map_mclosure (f : F) (s : Set M) : (closure s).map f = closure (f '' s) :=
+lemma map_mclosure (f : F) (s : Set M) : (closure s).map f = closure (f '' s) :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       le_trans (closure_mono <| Set.subset_preimage_image _ _) (mclosure_preimage_le _ _))
@@ -1115,7 +1115,7 @@ lemma restrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidClass
 #align add_monoid_hom.restrict_apply AddMonoidHom.restrict_apply
 
 @[to_additive (attr := simp)]
-theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
+lemma restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
   simp [SetLike.ext_iff]
 #align monoid_hom.restrict_mrange MonoidHom.restrict_mrange
 #align add_monoid_hom.restrict_mrange AddMonoidHom.restrict_mrange
@@ -1147,7 +1147,7 @@ lemma coe_mrangeRestrict {N} [MulOneClass N] (f : M →* N) (x : M) :
 #align add_monoid_hom.coe_mrange_restrict AddMonoidHom.coe_mrangeRestrict
 
 @[to_additive]
-theorem mrangeRestrict_surjective (f : M →* N) : Function.Surjective f.mrangeRestrict :=
+lemma mrangeRestrict_surjective (f : M →* N) : Function.Surjective f.mrangeRestrict :=
   fun ⟨_, ⟨x, rfl⟩⟩ => ⟨x, rfl⟩
 #align monoid_hom.mrange_restrict_surjective MonoidHom.mrangeRestrict_surjective
 #align add_monoid_hom.mrange_restrict_surjective AddMonoidHom.mrangeRestrict_surjective
@@ -1163,13 +1163,13 @@ def mker (f : F) : Submonoid M :=
 #align add_monoid_hom.mker AddMonoidHom.mker
 
 @[to_additive]
-theorem mem_mker (f : F) {x : M} : x ∈ mker f ↔ f x = 1 :=
+lemma mem_mker (f : F) {x : M} : x ∈ mker f ↔ f x = 1 :=
   Iff.rfl
 #align monoid_hom.mem_mker MonoidHom.mem_mker
 #align add_monoid_hom.mem_mker AddMonoidHom.mem_mker
 
 @[to_additive]
-theorem coe_mker (f : F) : (mker f : Set M) = (f : M → N) ⁻¹' {1} :=
+lemma coe_mker (f : F) : (mker f : Set M) = (f : M → N) ⁻¹' {1} :=
   rfl
 #align monoid_hom.coe_mker MonoidHom.coe_mker
 #align add_monoid_hom.coe_mker AddMonoidHom.coe_mker
@@ -1181,25 +1181,25 @@ instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f
 #align add_monoid_hom.decidable_mem_mker AddMonoidHom.decidableMemMker
 
 @[to_additive]
-theorem comap_mker (g : N →* P) (f : M →* N) : g.mker.comap f = mker (comp g f) :=
+lemma comap_mker (g : N →* P) (f : M →* N) : g.mker.comap f = mker (comp g f) :=
   rfl
 #align monoid_hom.comap_mker MonoidHom.comap_mker
 #align add_monoid_hom.comap_mker AddMonoidHom.comap_mker
 
 @[to_additive (attr := simp)]
-theorem comap_bot' (f : F) : (⊥ : Submonoid N).comap f = mker f :=
+lemma comap_bot' (f : F) : (⊥ : Submonoid N).comap f = mker f :=
   rfl
 #align monoid_hom.comap_bot' MonoidHom.comap_bot'
 #align add_monoid_hom.comap_bot' AddMonoidHom.comap_bot'
 
 @[to_additive (attr := simp)]
-theorem restrict_mker (f : M →* N) : mker (f.restrict S) = f.mker.comap S.subtype :=
+lemma restrict_mker (f : M →* N) : mker (f.restrict S) = f.mker.comap S.subtype :=
   rfl
 #align monoid_hom.restrict_mker MonoidHom.restrict_mker
 #align add_monoid_hom.restrict_mker AddMonoidHom.restrict_mker
 
 @[to_additive]
-theorem mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
+lemma mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
   ext x
   change (⟨f x, _⟩ : mrange f) = ⟨1, _⟩ ↔ f x = 1
   simp
@@ -1278,7 +1278,7 @@ def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
 #align add_monoid_hom.submonoid_map_apply_coe AddMonoidHom.addSubmonoidMap_apply_coe
 
 @[to_additive]
-theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
+lemma submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
     Function.Surjective (f.submonoidMap M') := by
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
@@ -1355,7 +1355,7 @@ def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
 #align add_submonoid.inclusion AddSubmonoid.inclusion
 
 @[to_additive (attr := simp)]
-theorem range_subtype (s : Submonoid M) : mrange s.subtype = s :=
+lemma range_subtype (s : Submonoid M) : mrange s.subtype = s :=
   SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
 #align submonoid.range_subtype Submonoid.range_subtype
 #align add_submonoid.range_subtype AddSubmonoid.range_subtype
@@ -1373,7 +1373,7 @@ lemma eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
 #align add_submonoid.eq_bot_iff_forall AddSubmonoid.eq_bot_iff_forall
 
 @[to_additive]
-theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
+lemma nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
     _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
@@ -1383,7 +1383,7 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
 
 /-- A submonoid is either the trivial submonoid or nontrivial. -/
 @[to_additive "An additive submonoid is either the trivial additive submonoid or nontrivial."]
-theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
+lemma bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
   simp only [eq_bot_iff_forall, nontrivial_iff_exists_ne_one, ← not_forall, ← not_imp, Classical.em]
 #align submonoid.bot_or_nontrivial Submonoid.bot_or_nontrivial
 #align add_submonoid.bot_or_nontrivial AddSubmonoid.bot_or_nontrivial
@@ -1392,7 +1392,7 @@ theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
 @[to_additive
       "An additive submonoid is either the trivial additive submonoid or contains a nonzero
       element."]
-theorem bot_or_exists_ne_one (S : Submonoid M) : S = ⊥ ∨ ∃ x ∈ S, x ≠ (1 : M) :=
+lemma bot_or_exists_ne_one (S : Submonoid M) : S = ⊥ ∨ ∃ x ∈ S, x ≠ (1 : M) :=
   S.bot_or_nontrivial.imp_right S.nontrivial_iff_exists_ne_one.mp
 #align submonoid.bot_or_exists_ne_one Submonoid.bot_or_exists_ne_one
 #align add_submonoid.bot_or_exists_ne_zero AddSubmonoid.bot_or_exists_ne_zero
@@ -1451,14 +1451,14 @@ def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e.toMonoidHom :
 #align add_equiv.add_submonoid_map AddEquiv.addSubmonoidMap
 
 @[to_additive (attr := simp)]
-theorem coe_submonoidMap_apply (e : M ≃* N) (S : Submonoid M) (g : S) :
+lemma coe_submonoidMap_apply (e : M ≃* N) (S : Submonoid M) (g : S) :
     ((submonoidMap e S g : S.map (e : M →* N)) : N) = e g :=
   rfl
 #align mul_equiv.coe_submonoid_map_apply MulEquiv.coe_submonoidMap_apply
 #align add_equiv.coe_add_submonoid_map_apply AddEquiv.coe_addSubmonoidMap_apply
 
 @[to_additive (attr := simp) AddEquiv.add_submonoid_map_symm_apply]
-theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e : M →* N)) :
+lemma submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e : M →* N)) :
     (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
   rfl
 #align mul_equiv.submonoid_map_symm_apply MulEquiv.submonoidMap_symm_apply
@@ -1467,7 +1467,7 @@ theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e :
 end MulEquiv
 
 @[to_additive (attr := simp)]
-theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
+lemma Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
     S.equivMapOfInjective (e : M →* N) (EquivLike.injective e) = e.submonoidMap S := by
   ext
   rfl

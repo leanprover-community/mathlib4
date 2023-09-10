@@ -49,12 +49,12 @@ basic API, just in case -/
 notation3 (prettyPrint := false) "Πₗ "(...)", "r:(scoped p => Lex (∀ i, p i)) => r
 
 @[simp]
-theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i :=
+lemma toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i :=
   rfl
 #align pi.to_lex_apply Pi.toLex_apply
 
 @[simp]
-theorem ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i :=
+lemma ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i :=
   rfl
 #align pi.of_lex_apply Pi.ofLex_apply
 

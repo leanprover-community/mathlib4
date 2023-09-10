@@ -362,7 +362,7 @@ lemma circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumradiu
 #align affine.simplex.circumradius_pos Affine.Simplex.circumradius_pos
 
 /-- The circumcenter of a 0-simplex equals its unique point. -/
-theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter = s.points i := by
+lemma circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter = s.points i := by
   have h := s.circumcenter_mem_affineSpan
   have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp only [Fin.eq_zero]⟩
   simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton] at h
@@ -372,7 +372,7 @@ theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter
 #align affine.simplex.circumcenter_eq_point Affine.Simplex.circumcenter_eq_point
 
 /-- The circumcenter of a 1-simplex equals its centroid. -/
-theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
+lemma circumcenter_eq_centroid (s : Simplex ℝ P 1) :
     s.circumcenter = Finset.univ.centroid ℝ s.points := by
   have hr :
     Set.Pairwise Set.univ fun i j : Fin 2 =>
@@ -647,7 +647,7 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
 
 /-- `circumcenterWeightsWithCircumcenter` sums to 1. -/
 @[simp]
-theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
+lemma sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     ∑ i, circumcenterWeightsWithCircumcenter n i = 1 := by
   convert sum_ite_eq' univ circumcenter_index (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [circumcenterWeightsWithCircumcenter]

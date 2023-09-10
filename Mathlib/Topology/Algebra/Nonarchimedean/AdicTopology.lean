@@ -52,7 +52,7 @@ open Topology Pointwise
 
 namespace Ideal
 
-theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
+lemma adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
   { inter := by
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
         simpa only [smul_eq_mul, mul_top, Algebra.id.map_eq_id, map_id, le_inf_iff] using this
@@ -85,12 +85,12 @@ def adicTopology (I : Ideal R) : TopologicalSpace R :=
   (adic_basis I).topology
 #align ideal.adic_topology Ideal.adicTopology
 
-theorem nonarchimedean (I : Ideal R) : @NonarchimedeanRing R _ I.adicTopology :=
+lemma nonarchimedean (I : Ideal R) : @NonarchimedeanRing R _ I.adicTopology :=
   I.adic_basis.toRing_subgroups_basis.nonarchimedean
 #align ideal.nonarchimedean Ideal.nonarchimedean
 
 /-- For the `I`-adic topology, the neighborhoods of zero has basis given by the powers of `I`. -/
-theorem hasBasis_nhds_zero_adic (I : Ideal R) :
+lemma hasBasis_nhds_zero_adic (I : Ideal R) :
     HasBasis (@nhds R I.adicTopology (0 : R)) (fun _n : ℕ => True) fun n =>
       ((I ^ n : Ideal R) : Set R) :=
   ⟨by
@@ -104,7 +104,7 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
       exact ⟨(I ^ i : Ideal R), ⟨i, by simp⟩, h⟩⟩
 #align ideal.has_basis_nhds_zero_adic Ideal.hasBasis_nhds_zero_adic
 
-theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
+lemma hasBasis_nhds_adic (I : Ideal R) (x : R) :
     HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
       (fun y => x + y) '' (I ^ n : Ideal R) := by
   letI := I.adicTopology

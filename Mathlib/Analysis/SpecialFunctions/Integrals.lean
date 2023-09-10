@@ -189,13 +189,13 @@ lemma intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
   continuous_const.intervalIntegrable a b
 #align interval_integral.interval_integrable_const intervalIntegral.intervalIntegrable_const
 
-theorem intervalIntegrable_one_div (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0)
+lemma intervalIntegrable_one_div (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0)
     (hf : ContinuousOn f [[a, b]]) : IntervalIntegrable (fun x => 1 / f x) μ a b :=
   (continuousOn_const.div hf h).intervalIntegrable
 #align interval_integral.interval_integrable_one_div intervalIntegral.intervalIntegrable_one_div
 
 @[simp]
-theorem intervalIntegrable_inv (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0)
+lemma intervalIntegrable_inv (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0)
     (hf : ContinuousOn f [[a, b]]) : IntervalIntegrable (fun x => (f x)⁻¹) μ a b := by
   simpa only [one_div] using intervalIntegrable_one_div h hf
 #align interval_integral.interval_integrable_inv intervalIntegral.intervalIntegrable_inv
@@ -206,14 +206,14 @@ lemma intervalIntegrable_exp : IntervalIntegrable exp μ a b :=
 #align interval_integral.interval_integrable_exp intervalIntegral.intervalIntegrable_exp
 
 @[simp]
-theorem _root_.IntervalIntegrable.log (hf : ContinuousOn f [[a, b]])
+lemma _root_.IntervalIntegrable.log (hf : ContinuousOn f [[a, b]])
     (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0) :
     IntervalIntegrable (fun x => log (f x)) μ a b :=
   (ContinuousOn.log hf h).intervalIntegrable
 #align interval_integrable.log IntervalIntegrable.log
 
 @[simp]
-theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
+lemma intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
   IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
 #align interval_integral.interval_integrable_log intervalIntegral.intervalIntegrable_log
 
@@ -420,7 +420,7 @@ lemma integral_const_on_unit_interval : ∫ _ in a..a + 1, b = b := by simp
 #align integral_const_on_unit_interval integral_const_on_unit_interval
 
 @[simp]
-theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log (b / a) := by
+lemma integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log (b / a) := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
   rw [integral_deriv_eq_sub' _ deriv_log' (fun x hx => differentiableAt_log (h' x hx))
       (continuousOn_inv₀.mono <| subset_compl_singleton_iff.mpr h),
@@ -428,24 +428,24 @@ theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log 
 #align integral_inv integral_inv
 
 @[simp]
-theorem integral_inv_of_pos (ha : 0 < a) (hb : 0 < b) : ∫ x in a..b, x⁻¹ = log (b / a) :=
+lemma integral_inv_of_pos (ha : 0 < a) (hb : 0 < b) : ∫ x in a..b, x⁻¹ = log (b / a) :=
   integral_inv <| not_mem_uIcc_of_lt ha hb
 #align integral_inv_of_pos integral_inv_of_pos
 
 @[simp]
-theorem integral_inv_of_neg (ha : a < 0) (hb : b < 0) : ∫ x in a..b, x⁻¹ = log (b / a) :=
+lemma integral_inv_of_neg (ha : a < 0) (hb : b < 0) : ∫ x in a..b, x⁻¹ = log (b / a) :=
   integral_inv <| not_mem_uIcc_of_gt ha hb
 #align integral_inv_of_neg integral_inv_of_neg
 
-theorem integral_one_div (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x : ℝ in a..b, 1 / x = log (b / a) := by
+lemma integral_one_div (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x : ℝ in a..b, 1 / x = log (b / a) := by
   simp only [one_div, integral_inv h]
 #align integral_one_div integral_one_div
 
-theorem integral_one_div_of_pos (ha : 0 < a) (hb : 0 < b) :
+lemma integral_one_div_of_pos (ha : 0 < a) (hb : 0 < b) :
     ∫ x : ℝ in a..b, 1 / x = log (b / a) := by simp only [one_div, integral_inv_of_pos ha hb]
 #align integral_one_div_of_pos integral_one_div_of_pos
 
-theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
+lemma integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
     ∫ x : ℝ in a..b, 1 / x = log (b / a) := by simp only [one_div, integral_inv_of_neg ha hb]
 #align integral_one_div_of_neg integral_one_div_of_neg
 
@@ -471,7 +471,7 @@ lemma integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
 #align integral_exp_mul_complex integral_exp_mul_complex
 
 @[simp]
-theorem integral_log (h : (0 : ℝ) ∉ [[a, b]]) :
+lemma integral_log (h : (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, log x = b * log b - a * log a - b + a := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
   have heq := fun x hx => mul_inv_cancel (h' x hx)
@@ -483,13 +483,13 @@ theorem integral_log (h : (0 : ℝ) ∉ [[a, b]]) :
 #align integral_log integral_log
 
 @[simp]
-theorem integral_log_of_pos (ha : 0 < a) (hb : 0 < b) :
+lemma integral_log_of_pos (ha : 0 < a) (hb : 0 < b) :
     ∫ x in a..b, log x = b * log b - a * log a - b + a :=
   integral_log <| not_mem_uIcc_of_lt ha hb
 #align integral_log_of_pos integral_log_of_pos
 
 @[simp]
-theorem integral_log_of_neg (ha : a < 0) (hb : b < 0) :
+lemma integral_log_of_neg (ha : a < 0) (hb : b < 0) :
     ∫ x in a..b, log x = b * log b - a * log a - b + a :=
   integral_log <| not_mem_uIcc_of_gt ha hb
 #align integral_log_of_neg integral_log_of_neg
@@ -745,7 +745,7 @@ lemma integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * sin 
 
 
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `n` is odd. -/
-theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
+lemma integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) = ∫ u in sin a..sin b, u^m * (↑1 - u ^ 2) ^ n :=
   have hc : Continuous fun u : ℝ => u ^ m * (↑1 - u ^ 2) ^ n := -- Porting note: was `by continuity`
     (continuous_pow m).mul ((continuous_const.sub (continuous_pow 2)).pow n)
@@ -781,7 +781,7 @@ lemma integral_cos_pow_three :
 #align integral_cos_pow_three integral_cos_pow_three
 
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` is odd. -/
-theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
+lemma integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m + 1) * cos x ^ n) = ∫ u in cos b..cos a, u^n * (↑1 - u ^ 2) ^ m :=
   have hc : Continuous fun u : ℝ => u ^ n * (↑1 - u ^ 2) ^ m := -- Porting note: was `by continuity`
     (continuous_pow n).mul ((continuous_const.sub (continuous_pow 2)).pow m)
@@ -820,7 +820,7 @@ lemma integral_sin_pow_three :
 #align integral_sin_pow_three integral_sin_pow_three
 
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` and `n` are both even. -/
-theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
+lemma integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m) * cos x ^ (2 * n)) =
       ∫ x in a..b, ((1 - cos (2 * x)) / 2) ^ m * ((1 + cos (2 * x)) / 2) ^ n :=
   by field_simp [pow_mul, sin_sq, cos_sq, ← sub_sub, (by ring : (2 : ℝ) - 1 = 1)]

@@ -45,7 +45,7 @@ instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
 
 variable {𝕜}
 
-theorem trivialization.coordChangeL (b : B) :
+lemma trivialization.coordChangeL (b : B) :
     (trivialization B F).coordChangeL 𝕜 (trivialization B F) b =
       ContinuousLinearEquiv.refl 𝕜 F := by
   ext v

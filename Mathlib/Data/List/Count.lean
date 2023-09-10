@@ -55,7 +55,7 @@ lemma countP_join : ∀ l : List (List α), countP p l.join = (l.map (countP p))
 
 #align list.countp_eq_length List.countP_eq_length
 
-theorem length_filter_lt_length_iff_exists (l) :
+lemma length_filter_lt_length_iff_exists (l) :
     length (filter p l) < length l ↔ ∃ x ∈ l, ¬p x := by
   simpa [length_eq_countP_add_countP p l, countP_eq_length_filter] using
   countP_pos (fun x => ¬p x) (l := l)
@@ -85,7 +85,7 @@ variable [DecidableEq α]
 
 #align list.count_nil List.count_nil
 
-@[deprecated] theorem count_cons' (a b : α) (l : List α) :
+@[deprecated] lemma count_cons' (a b : α) (l : List α) :
     count a (b :: l) = count a l + if a = b then 1 else 0 := by conv =>
   simp [count, countP_cons]
   lhs
@@ -112,7 +112,7 @@ variable [DecidableEq α]
 
 #align list.count_append List.count_append
 
-theorem count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (count a)).sum :=
+lemma count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (count a)).sum :=
   countP_join _ _
 #align list.count_join List.count_join
 

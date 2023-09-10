@@ -36,7 +36,7 @@ lemma le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
 #align measure_theory.measure.le_dirac_apply MeasureTheory.Measure.le_dirac_apply
 
 @[simp]
-theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
+lemma dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
   toMeasure_apply _ _ hs
 #align measure_theory.measure.dirac_apply' MeasureTheory.Measure.dirac_apply'
 
@@ -64,7 +64,7 @@ lemma map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f =
 #align measure_theory.measure.map_dirac MeasureTheory.Measure.map_dirac
 
 @[simp]
-theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a} • dirac a := by
+lemma restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a} • dirac a := by
   ext1 s hs
   by_cases ha : a ∈ s
   · have : s ∩ {a} = {a} := by simpa
@@ -133,7 +133,7 @@ instance Measure.dirac.isProbabilityMeasure [MeasurableSpace α] {x : α} :
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 #align measure_theory.measure.dirac.is_probability_measure MeasureTheory.Measure.dirac.isProbabilityMeasure
 
-theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
+lemma restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
   split_ifs with has
   · apply restrict_eq_self_of_ae_mem

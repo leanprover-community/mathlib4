@@ -187,6 +187,6 @@ def HomogeneousIdeal.radical (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal 𝒜
 #align homogeneous_ideal.radical HomogeneousIdeal.radical
 
 @[simp]
-theorem HomogeneousIdeal.coe_radical (I : HomogeneousIdeal 𝒜) :
+lemma HomogeneousIdeal.coe_radical (I : HomogeneousIdeal 𝒜) :
     I.radical.toIdeal = I.toIdeal.radical := rfl
 #align homogeneous_ideal.coe_radical HomogeneousIdeal.coe_radical

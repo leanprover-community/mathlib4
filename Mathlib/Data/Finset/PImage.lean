@@ -46,7 +46,7 @@ lemma toFinset_some {a : α} [Decidable (some a).Dom] : (some a).toFinset = {a} 
 #align part.to_finset_some Part.toFinset_some
 
 @[simp]
-theorem coe_toFinset (o : Part α) [Decidable o.Dom] : (o.toFinset : Set α) = { x | x ∈ o } :=
+lemma coe_toFinset (o : Part α) [Decidable o.Dom] : (o.toFinset : Set α) = { x | x ∈ o } :=
   Set.ext fun _ => mem_toFinset
 #align part.coe_to_finset Part.coe_toFinset
 
@@ -73,13 +73,13 @@ lemma coe_pimage : (s.pimage f : Set β) = f.image s :=
 #align finset.coe_pimage Finset.coe_pimage
 
 @[simp]
-theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
+lemma pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
     (s.pimage fun x => Part.some (f x)) = s.image f := by
   ext
   simp [eq_comm]
 #align finset.pimage_some Finset.pimage_some
 
-theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f = t.pimage g := by
+lemma pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f = t.pimage g := by
   subst s
   ext y
   -- Porting note: `←exists_prop` required because `∃ x ∈ s, p x` is defined differently
@@ -113,7 +113,7 @@ lemma pimage_subset {t : Finset β} : s.pimage f ⊆ t ↔ ∀ x ∈ s, ∀ y �
 #align finset.pimage_subset Finset.pimage_subset
 
 @[mono]
-theorem pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
+lemma pimage_mono (h : s ⊆ t) : s.pimage f ⊆ t.pimage f :=
   pimage_subset.2 fun x hx _ hy => mem_pimage.2 ⟨x, h hx, hy⟩
 #align finset.pimage_mono Finset.pimage_mono
 

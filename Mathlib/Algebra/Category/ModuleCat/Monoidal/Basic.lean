@@ -71,7 +71,7 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
   f.rTensor N
 
-theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
+lemma tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   -- Porting note: even with high priority ext fails to find this
   apply TensorProduct.ext
   rfl
@@ -113,7 +113,7 @@ private lemma associator_naturality_aux {X₁ X₂ X₃ : Type*} [AddCommMonoid 
 
 variable (R)
 
-private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid X]
+private lemma pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid X]
     [AddCommMonoid Y] [AddCommMonoid Z] [Module R W] [Module R X] [Module R Y] [Module R Z] :
     ((map (1 : W →ₗ[R] W) (assoc R X Y Z).toLinearMap).comp
             (assoc R W (X ⊗[R] Y) Z).toLinearMap).comp
@@ -136,7 +136,7 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f₁ 
 
 -- Porting note: very slow!
 set_option maxHeartbeats 1200000 in
-theorem pentagon (W X Y Z : ModuleCat R) :
+lemma pentagon (W X Y Z : ModuleCat R) :
     tensorHom (associator W X Y).hom (𝟙 Z) ≫
         (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
       (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
@@ -181,7 +181,7 @@ lemma rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
   rfl
 #align Module.monoidal_category.right_unitor_naturality ModuleCat.MonoidalCategory.rightUnitor_naturality
 
-theorem triangle (M N : ModuleCat.{u} R) :
+lemma triangle (M N : ModuleCat.{u} R) :
     (associator M (ModuleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
       tensorHom (rightUnitor M).hom (𝟙 N) := by
   apply TensorProduct.ext_threefold

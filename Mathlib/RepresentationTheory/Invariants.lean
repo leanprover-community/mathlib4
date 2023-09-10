@@ -42,7 +42,7 @@ noncomputable def average : MonoidAlgebra k G :=
 /-- `average k G` is invariant under left multiplication by elements of `G`.
 -/
 @[simp]
-theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
+lemma mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     Finset.sum_congr, MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
@@ -53,7 +53,7 @@ theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = avera
 /-- `average k G` is invariant under right multiplication by elements of `G`.
 -/
 @[simp]
-theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
+lemma mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     Finset.sum_congr, MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
@@ -83,7 +83,7 @@ def invariants : Submodule k V where
 #align representation.invariants Representation.invariants
 
 @[simp]
-theorem mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v := by rfl
+lemma mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v := by rfl
 #align representation.mem_invariants Representation.mem_invariants
 
 lemma invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixedPoints (ρ g) := by
@@ -101,14 +101,14 @@ noncomputable def averageMap : V →ₗ[k] V :=
 
 /-- The `averageMap` sends elements of `V` to the subspace of invariants.
 -/
-theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
+lemma averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
   rw [averageMap, ← asAlgebraHom_single_one, ← LinearMap.mul_apply, ← map_mul (asAlgebraHom ρ),
     mul_average_left]
 #align representation.average_map_invariant Representation.averageMap_invariant
 
 /-- The `averageMap` acts as the identity on the subspace of invariants.
 -/
-theorem averageMap_id (v : V) (hv : v ∈ invariants ρ) : averageMap ρ v = v := by
+lemma averageMap_id (v : V) (hv : v ∈ invariants ρ) : averageMap ρ v = v := by
   rw [mem_invariants] at hv
   simp [average, map_sum, hv, Finset.card_univ, nsmul_eq_smul_cast k _ v, smul_smul]
 #align representation.average_map_id Representation.averageMap_id

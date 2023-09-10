@@ -65,7 +65,7 @@ lemma toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
 #align tensor_power.to_tensor_algebra_ghas_mul TensorPower.toTensorAlgebra_gMul
 
 @[simp]
-theorem toTensorAlgebra_galgebra_toFun (r : R) :
+lemma toTensorAlgebra_galgebra_toFun (r : R) :
     TensorPower.toTensorAlgebra (DirectSum.GAlgebra.toFun (R := R) (A := fun n => (⨂[R]^n) M) r) =
       algebraMap _ _ r := by
   rw [TensorPower.galgebra_toFun_def, TensorPower.algebraMap₀_eq_smul_one, LinearMap.map_smul,
@@ -98,7 +98,7 @@ def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, (⨂[R]^n) M :=
 #align tensor_algebra.to_direct_sum TensorAlgebra.toDirectSum
 
 @[simp]
-theorem toDirectSum_ι (x : M) :
+lemma toDirectSum_ι (x : M) :
     toDirectSum (ι R x) =
       DirectSum.of (fun n => (⨂[R]^n) M) _ (PiTensorProduct.tprod R fun _ : Fin 1 => x) :=
   TensorAlgebra.lift_ι_apply _ _
@@ -111,7 +111,7 @@ lemma ofDirectSum_comp_toDirectSum :
 #align tensor_algebra.of_direct_sum_comp_to_direct_sum TensorAlgebra.ofDirectSum_comp_toDirectSum
 
 @[simp]
-theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
+lemma ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
     ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 #align tensor_algebra.of_direct_sum_to_direct_sum TensorAlgebra.ofDirectSum_toDirectSum
@@ -133,7 +133,7 @@ lemma mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
 
 /-- The product of tensor products made of a single vector is the same as a single product of
 all the vectors. -/
-theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :
+lemma _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :
     ((List.finRange n).map fun a =>
           (GradedMonoid.mk _ (PiTensorProduct.tprod R fun _ : Fin 1 => x a) :
             GradedMonoid fun n => (⨂[R]^n) M)).prod =
@@ -169,7 +169,7 @@ lemma toDirectSum_comp_ofDirectSum :
 #align tensor_algebra.to_direct_sum_comp_of_direct_sum TensorAlgebra.toDirectSum_comp_ofDirectSum
 
 @[simp]
-theorem toDirectSum_ofDirectSum (x : ⨁ n, (⨂[R]^n) M) :
+lemma toDirectSum_ofDirectSum (x : ⨁ n, (⨂[R]^n) M) :
     TensorAlgebra.toDirectSum (ofDirectSum x) = x :=
   AlgHom.congr_fun toDirectSum_comp_ofDirectSum x
 #align tensor_algebra.to_direct_sum_of_direct_sum TensorAlgebra.toDirectSum_ofDirectSum

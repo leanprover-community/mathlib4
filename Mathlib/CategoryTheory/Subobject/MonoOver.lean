@@ -173,7 +173,7 @@ def liftId : (lift (𝟭 (Over X)) fun f => f.2) ≅ 𝟭 _ :=
 #align category_theory.mono_over.lift_id CategoryTheory.MonoOver.liftId
 
 @[simp]
-theorem lift_comm (F : Over Y ⥤ Over X)
+lemma lift_comm (F : Over Y ⥤ Over X)
     (h : ∀ f : MonoOver Y, Mono (F.obj ((MonoOver.forget Y).obj f)).hom) :
     lift F h ⋙ MonoOver.forget X = MonoOver.forget Y ⋙ F :=
   rfl
@@ -228,13 +228,13 @@ def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
 #align category_theory.mono_over.pullback_id CategoryTheory.MonoOver.pullbackId
 
 @[simp]
-theorem pullback_obj_left (f : X ⟶ Y) (g : MonoOver Y) :
+lemma pullback_obj_left (f : X ⟶ Y) (g : MonoOver Y) :
     ((pullback f).obj g : C) = Limits.pullback g.arrow f :=
   rfl
 #align category_theory.mono_over.pullback_obj_left CategoryTheory.MonoOver.pullback_obj_left
 
 @[simp]
-theorem pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
+lemma pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
     ((pullback f).obj g).arrow = pullback.snd :=
   rfl
 #align category_theory.mono_over.pullback_obj_arrow CategoryTheory.MonoOver.pullback_obj_arrow
@@ -263,12 +263,12 @@ def mapId : map (𝟙 X) ≅ 𝟭 _ :=
 #align category_theory.mono_over.map_id CategoryTheory.MonoOver.mapId
 
 @[simp]
-theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : C) = g.obj.left :=
+lemma map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : C) = g.obj.left :=
   rfl
 #align category_theory.mono_over.map_obj_left CategoryTheory.MonoOver.map_obj_left
 
 @[simp]
-theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
+lemma map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
   rfl
 #align category_theory.mono_over.map_obj_arrow CategoryTheory.MonoOver.map_obj_arrow
 
@@ -345,7 +345,7 @@ def imageMonoOver (f : X ⟶ Y) [HasImage f] : MonoOver Y :=
 #align category_theory.mono_over.image_mono_over CategoryTheory.MonoOver.imageMonoOver
 
 @[simp]
-theorem imageMonoOver_arrow (f : X ⟶ Y) [HasImage f] : (imageMonoOver f).arrow = image.ι f :=
+lemma imageMonoOver_arrow (f : X ⟶ Y) [HasImage f] : (imageMonoOver f).arrow = image.ι f :=
   rfl
 #align category_theory.mono_over.image_mono_over_arrow CategoryTheory.MonoOver.imageMonoOver_arrow
 

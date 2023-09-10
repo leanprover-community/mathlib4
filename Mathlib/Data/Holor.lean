@@ -56,7 +56,7 @@ def drop : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds
   | ds, is => ⟨List.drop (length ds) is.1, forall₂_drop_append is.1 ds ds₂ is.2⟩
 #align holor_index.drop HolorIndex.drop
 
-theorem cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) is ds₁) :
+lemma cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) is ds₁) :
     (cast (congr_arg HolorIndex eq) ⟨is, h⟩).val = is := by subst eq; rfl
 #align holor_index.cast_type HolorIndex.cast_type
 
@@ -178,7 +178,7 @@ def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ 
 
 local infixl:70 " ⊗ " => mul
 
-theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
+lemma cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
     cast (congr_arg (Holor α) eq) a = fun t => a (cast (congr_arg HolorIndex eq.symm) t) := by
   subst eq; rfl
 #align holor.cast_type Holor.cast_type
@@ -239,7 +239,7 @@ def unitVec [Monoid α] [AddMonoid α] (d : ℕ) (j : ℕ) : Holor α [d] := fun
   if ti.1 = [j] then 1 else 0
 #align holor.unit_vec Holor.unitVec
 
-theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
+lemma holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
     ∀ t : HolorIndex (d :: ds),
       (∀ i is, ∀ h : t.1 = i :: is, p ⟨i :: is, by rw [← h]; exact t.2⟩) → p t
   | ⟨[], hforall₂⟩, _ => absurd (forall₂_nil_left_iff.1 hforall₂) (cons_ne_nil d ds)
@@ -247,7 +247,7 @@ theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
 #align holor.holor_index_cons_decomp Holor.holor_index_cons_decomp
 
 /-- Two holors are equal if all their slices are equal. -/
-theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x = slice y) : x = y :=
+lemma slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x = slice y) : x = y :=
   funext fun t : HolorIndex (d :: ds) =>
     holor_index_cons_decomp (fun t => x t = y t) t fun i is hiis =>
       have hiisdds : Forall₂ (· < ·) (i :: is) (d :: ds) := by rw [← hiis]; exact t.2

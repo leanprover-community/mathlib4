@@ -39,31 +39,31 @@ class IsOpenPosMeasure : Prop where
 
 variable [IsOpenPosMeasure μ] {s U F : Set X} {x : X}
 
-theorem _root_.IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U ≠ 0 :=
+lemma _root_.IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U ≠ 0 :=
   IsOpenPosMeasure.open_pos U hU hne
 #align is_open.measure_ne_zero IsOpen.measure_ne_zero
 
-theorem _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
+lemma _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   (hU.measure_ne_zero μ hne).bot_lt
 #align is_open.measure_pos IsOpen.measure_pos
 
 instance (priority := 100) [Nonempty X] : NeZero μ :=
   ⟨measure_univ_pos.mp <| isOpen_univ.measure_pos μ univ_nonempty⟩
 
-theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
+lemma _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 #align is_open.measure_pos_iff IsOpen.measure_pos_iff
 
-theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
+lemma _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
   simpa only [not_lt, nonpos_iff_eq_zero, not_nonempty_iff_eq_empty] using
     not_congr (hU.measure_pos_iff μ)
 #align is_open.measure_eq_zero_iff IsOpen.measure_eq_zero_iff
 
-theorem measure_pos_of_nonempty_interior (h : (interior s).Nonempty) : 0 < μ s :=
+lemma measure_pos_of_nonempty_interior (h : (interior s).Nonempty) : 0 < μ s :=
   (isOpen_interior.measure_pos μ h).trans_le (measure_mono interior_subset)
 #align measure_theory.measure.measure_pos_of_nonempty_interior MeasureTheory.Measure.measure_pos_of_nonempty_interior
 
-theorem measure_pos_of_mem_nhds (h : s ∈ 𝓝 x) : 0 < μ s :=
+lemma measure_pos_of_mem_nhds (h : s ∈ 𝓝 x) : 0 < μ s :=
   measure_pos_of_nonempty_interior _ ⟨x, mem_interior_iff_mem_nhds.2 h⟩
 #align measure_theory.measure.measure_pos_of_mem_nhds MeasureTheory.Measure.measure_pos_of_mem_nhds
 
@@ -73,27 +73,27 @@ lemma isOpenPosMeasure_smul {c : ℝ≥0∞} (h : c ≠ 0) : IsOpenPosMeasure (c
 
 variable {μ ν}
 
-protected theorem AbsolutelyContinuous.isOpenPosMeasure (h : μ ≪ ν) : IsOpenPosMeasure ν :=
+protected lemma AbsolutelyContinuous.isOpenPosMeasure (h : μ ≪ ν) : IsOpenPosMeasure ν :=
   ⟨fun _U ho hne h₀ => ho.measure_ne_zero μ hne (h h₀)⟩
 #align measure_theory.measure.absolutely_continuous.is_open_pos_measure MeasureTheory.Measure.AbsolutelyContinuous.isOpenPosMeasure
 
-theorem _root_.LE.le.isOpenPosMeasure (h : μ ≤ ν) : IsOpenPosMeasure ν :=
+lemma _root_.LE.le.isOpenPosMeasure (h : μ ≤ ν) : IsOpenPosMeasure ν :=
   h.absolutelyContinuous.isOpenPosMeasure
 #align has_le.le.is_open_pos_measure LE.le.isOpenPosMeasure
 
-theorem _root_.IsOpen.measure_zero_iff_eq_empty (hU : IsOpen U) :
+lemma _root_.IsOpen.measure_zero_iff_eq_empty (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ :=
   ⟨fun h ↦ (hU.measure_eq_zero_iff μ).mp h, fun h ↦ by simp [h]⟩
 
-theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
+lemma _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
     U =ᵐ[μ] (∅ : Set X) ↔ U = ∅ := by
   rw [ae_eq_empty, hU.measure_zero_iff_eq_empty]
 
-theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
+lemma _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 #align is_open.eq_empty_of_measure_zero IsOpen.eq_empty_of_measure_zero
 
-theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
+lemma _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
     F =ᵐ[μ] univ ↔ F = univ := by
   refine' ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
   rwa [ae_eq_univ, hF.isOpen_compl.measure_eq_zero_iff μ, compl_empty_iff] at h
@@ -108,7 +108,7 @@ lemma _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsPro
     μ F = 1 ↔ F = univ := by
   rw [← measure_univ (μ := μ), hF.measure_eq_univ_iff_eq]
 
-theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
+lemma interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
   isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
 #align measure_theory.measure.interior_eq_empty_of_null MeasureTheory.Measure.interior_eq_empty_of_null
 
@@ -219,12 +219,12 @@ namespace Metric
 variable {X : Type*} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
-theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
+lemma measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ (nonempty_ball.2 hr)
 #align metric.measure_ball_pos Metric.measure_ball_pos
 
 /-- See also `Metric.measure_closedBall_pos_iff`. -/
-theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBall x r) :=
+lemma measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBall x r) :=
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align metric.measure_closed_ball_pos Metric.measure_closedBall_pos
 
@@ -242,11 +242,11 @@ namespace EMetric
 variable {X : Type*} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
-theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
+lemma measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ ⟨x, mem_ball_self hr.bot_lt⟩
 #align emetric.measure_ball_pos EMetric.measure_ball_pos
 
-theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedBall x r) :=
+lemma measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedBall x r) :=
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align emetric.measure_closed_ball_pos EMetric.measure_closedBall_pos
 

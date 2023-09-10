@@ -63,7 +63,7 @@ variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R
   [TopologicalSemiring R]
 
 @[simp]
-theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
+lemma aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     ((Polynomial.aeval f) g) x = g.eval (f x) := by
   refine' Polynomial.induction_on' g _ _
   · intro p q hp hq
@@ -140,7 +140,7 @@ def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
 #align polynomial_functions polynomialFunctions
 
 @[simp]
-theorem polynomialFunctions_coe (X : Set R) :
+lemma polynomialFunctions_coe (X : Set R) :
     (polynomialFunctions X : Set C(X, R)) = Set.range (Polynomial.toContinuousMapOnAlgHom X) := by
   ext
   simp [polynomialFunctions]
@@ -150,7 +150,7 @@ theorem polynomialFunctions_coe (X : Set R) :
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
 -- induces a normed algebra isomorphism between `polynomialFunctions X` and
 -- `polynomialFunctions (f ⁻¹' X)`, intertwining the pullback along `f` of `C(R, R)` to itself.
-theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
+lemma polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
   fun x y h => by
   -- We use `Polynomial.X`, then clean up.
   refine' ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, _⟩⟩
@@ -164,7 +164,7 @@ open ContinuousMap
 
 /-- The preimage of polynomials on `[0,1]` under the pullback map by `x ↦ (b-a) * x + a`
 is the polynomials on `[a,b]`. -/
-theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a < b) :
+lemma polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a < b) :
     (polynomialFunctions I).comap (compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm.toContinuousMap) =
       polynomialFunctions (Set.Icc a b) := by
   ext f
@@ -206,7 +206,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
 set_option linter.uppercaseLean3 false in
 #align polynomial_functions.comap_comp_right_alg_hom_Icc_homeo_I polynomialFunctions.comap_compRightAlgHom_iccHomeoI
 
-theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
+lemma polynomialFunctions.eq_adjoin_X (s : Set R) :
     polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by
   refine le_antisymm ?_
     (Algebra.adjoin_le fun _ h => ⟨X, trivial, (Set.mem_singleton_iff.1 h).symm⟩)

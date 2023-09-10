@@ -81,13 +81,13 @@ noncomputable def IsTensorProduct.equiv (h : IsTensorProduct f) : M₁ ⊗[R] M�
 #align is_tensor_product.equiv IsTensorProduct.equiv
 
 @[simp]
-theorem IsTensorProduct.equiv_toLinearMap (h : IsTensorProduct f) :
+lemma IsTensorProduct.equiv_toLinearMap (h : IsTensorProduct f) :
     h.equiv.toLinearMap = TensorProduct.lift f :=
   rfl
 #align is_tensor_product.equiv_to_linear_map IsTensorProduct.equiv_toLinearMap
 
 @[simp]
-theorem IsTensorProduct.equiv_symm_apply (h : IsTensorProduct f) (x₁ : M₁) (x₂ : M₂) :
+lemma IsTensorProduct.equiv_symm_apply (h : IsTensorProduct f) (x₁ : M₁) (x₂ : M₂) :
     h.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := by
   apply h.equiv.injective
   refine' (h.equiv.apply_symm_apply _).trans _
@@ -101,7 +101,7 @@ noncomputable def IsTensorProduct.lift (h : IsTensorProduct f) (f' : M₁ →ₗ
   (TensorProduct.lift f').comp h.equiv.symm.toLinearMap
 #align is_tensor_product.lift IsTensorProduct.lift
 
-theorem IsTensorProduct.lift_eq (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') (x₁ : M₁)
+lemma IsTensorProduct.lift_eq (h : IsTensorProduct f) (f' : M₁ →ₗ[R] M₂ →ₗ[R] M') (x₁ : M₁)
     (x₂ : M₂) : h.lift f' (f x₁ x₂) = f' x₁ x₂ := by
   delta IsTensorProduct.lift
   simp
@@ -113,13 +113,13 @@ noncomputable def IsTensorProduct.map (hf : IsTensorProduct f) (hg : IsTensorPro
   hg.equiv.toLinearMap.comp ((TensorProduct.map i₁ i₂).comp hf.equiv.symm.toLinearMap)
 #align is_tensor_product.map IsTensorProduct.map
 
-theorem IsTensorProduct.map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁)
+lemma IsTensorProduct.map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g) (i₁ : M₁ →ₗ[R] N₁)
     (i₂ : M₂ →ₗ[R] N₂) (x₁ : M₁) (x₂ : M₂) : hf.map hg i₁ i₂ (f x₁ x₂) = g (i₁ x₁) (i₂ x₂) := by
   delta IsTensorProduct.map
   simp
 #align is_tensor_product.map_eq IsTensorProduct.map_eq
 
-theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m : M) (h0 : C 0)
+lemma IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m : M) (h0 : C 0)
     (htmul : ∀ x y, C (f x y)) (hadd : ∀ x y, C x → C y → C (x + y)) : C m := by
   rw [← h.equiv.right_inv m]
   generalize h.equiv.invFun m = y
@@ -186,24 +186,24 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
         rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
 #align is_base_change.lift IsBaseChange.lift
 
-nonrec theorem IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
+nonrec lemma IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
   have hF : ∀ (s : S) (m : M), h.lift g (s • f m) = s • g m := h.lift_eq _
   convert hF 1 x <;> rw [one_smul]
 #align is_base_change.lift_eq IsBaseChange.lift_eq
 
-theorem IsBaseChange.lift_comp (g : M →ₗ[R] Q) : ((h.lift g).restrictScalars R).comp f = g :=
+lemma IsBaseChange.lift_comp (g : M →ₗ[R] Q) : ((h.lift g).restrictScalars R).comp f = g :=
   LinearMap.ext (h.lift_eq g)
 #align is_base_change.lift_comp IsBaseChange.lift_comp
 
 end
 
 @[elab_as_elim]
-nonrec theorem IsBaseChange.inductionOn (x : N) (P : N → Prop) (h₁ : P 0) (h₂ : ∀ m : M, P (f m))
+nonrec lemma IsBaseChange.inductionOn (x : N) (P : N → Prop) (h₁ : P 0) (h₂ : ∀ m : M, P (f m))
     (h₃ : ∀ (s : S) (n), P n → P (s • n)) (h₄ : ∀ n₁ n₂, P n₁ → P n₂ → P (n₁ + n₂)) : P x :=
   h.inductionOn x h₁ (fun _ _ => h₃ _ _ (h₂ _)) h₄
 #align is_base_change.induction_on IsBaseChange.inductionOn
 
-theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
+lemma IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
   refine h.inductionOn x ?_ ?_ ?_ ?_
   · rw [map_zero, map_zero]
@@ -250,11 +250,11 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 #align is_base_change.equiv IsBaseChange.equiv
 
-theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f m :=
+lemma IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f m :=
   TensorProduct.lift.tmul s m
 #align is_base_change.equiv_tmul IsBaseChange.equiv_tmul
 
-theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
+lemma IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
 #align is_base_change.equiv_symm_apply IsBaseChange.equiv_symm_apply
 
@@ -309,7 +309,7 @@ lemma IsBaseChange.iff_lift_unique :
     IsBaseChange.of_lift_unique f⟩
 #align is_base_change.iff_lift_unique IsBaseChange.iff_lift_unique
 
-theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap := by
+lemma IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap := by
   apply IsBaseChange.of_lift_unique
   intro Q I₁ I₂ I₃ I₄ g
   have : I₂ = I₃ := by
@@ -383,7 +383,7 @@ class Algebra.IsPushout : Prop where
 variable {R S R' S'}
 
 @[symm]
-theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
+lemma Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
   let _ := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
   let e : R' ⊗[R] S ≃ₗ[R'] S' := by
     refine' { (_root_.TensorProduct.comm R R' S).trans <|

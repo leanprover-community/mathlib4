@@ -214,7 +214,7 @@ open GeneralizedContinuedFraction (of_terminatedAt_n_iff_succ_nth_intFractPair_s
 
 /-- The convergent of `GeneralizedContinuedFraction.of v` at step `n - 1` is exactly `v` if the
 `IntFractPair.stream` of the corresponding continued fraction terminated at step `n`. -/
-theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.stream v n = none) :
+lemma of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.stream v n = none) :
     v = (of v).convergents (n - 1) := by
   induction n with
   | zero => contradiction
@@ -243,7 +243,7 @@ theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.
 /-- If `GeneralizedContinuedFraction.of v` terminated at step `n`, then the `n`th convergent is
 exactly `v`.
 -/
-theorem of_correctness_of_terminatedAt (terminated_at_n : (of v).TerminatedAt n) :
+lemma of_correctness_of_terminatedAt (terminated_at_n : (of v).TerminatedAt n) :
     v = (of v).convergents n :=
   have : IntFractPair.stream v (n + 1) = none :=
     of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none.1 terminated_at_n
@@ -253,7 +253,7 @@ theorem of_correctness_of_terminatedAt (terminated_at_n : (of v).TerminatedAt n)
 /-- If `GeneralizedContinuedFraction.of v` terminates, then there is `n : ℕ` such that the `n`th
 convergent is exactly `v`.
 -/
-theorem of_correctness_of_terminates (terminates : (of v).Terminates) :
+lemma of_correctness_of_terminates (terminates : (of v).Terminates) :
     ∃ n : ℕ, v = (of v).convergents n :=
   Exists.elim terminates fun n terminated_at_n =>
     Exists.intro n (of_correctness_of_terminatedAt terminated_at_n)
@@ -264,7 +264,7 @@ open Filter
 /-- If `GeneralizedContinuedFraction.of v` terminates, then its convergents will eventually always
 be `v`.
 -/
-theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
+lemma of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
     ∀ᶠ n in atTop, v = (of v).convergents n := by
   rw [eventually_atTop]
   obtain ⟨n, terminated_at_n⟩ : ∃ n, (of v).TerminatedAt n

@@ -65,9 +65,9 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 #align option.elim Option.elim'
 
 @[simp]
-theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
+lemma elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
 @[simp]
-theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
+lemma elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
 -- porting note: this lemma was introduced because it is necessary
 -- in `CategoryTheory.Category.PartialFun`

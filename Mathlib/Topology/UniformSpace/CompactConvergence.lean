@@ -99,7 +99,7 @@ def compactConvNhd : Set C(α, β) :=
 
 variable {K V}
 
-theorem self_mem_compactConvNhd (hV : V ∈ 𝓤 β) : f ∈ compactConvNhd K V f := fun _x _hx =>
+lemma self_mem_compactConvNhd (hV : V ∈ 𝓤 β) : f ∈ compactConvNhd K V f := fun _x _hx =>
   refl_mem_uniformity hV
 #align continuous_map.self_mem_compact_conv_nhd ContinuousMap.self_mem_compactConvNhd
 
@@ -115,7 +115,7 @@ lemma compactConvNhd_mem_comp {g₁ g₂ : C(α, β)} {V' : Set (β × β)}
 
 /-- A key property of `ContinuousMap.compactConvNhd`. It allows us to apply
 `TopologicalSpace.nhds_mkOfNhds_filterBasis` below. -/
-theorem compactConvNhd_nhd_basis (hV : V ∈ 𝓤 β) :
+lemma compactConvNhd_nhd_basis (hV : V ∈ 𝓤 β) :
     ∃ V' ∈ 𝓤 β,
       V' ⊆ V ∧ ∀ g ∈ compactConvNhd K V' f, compactConvNhd K V' g ⊆ compactConvNhd K V f := by
   obtain ⟨V', h₁, h₂⟩ := comp_mem_uniformity_sets hV
@@ -124,7 +124,7 @@ theorem compactConvNhd_nhd_basis (hV : V ∈ 𝓤 β) :
       compactConvNhd_mono f h₂ (compactConvNhd_mem_comp f hg hg')⟩
 #align continuous_map.compact_conv_nhd_nhd_basis ContinuousMap.compactConvNhd_nhd_basis
 
-theorem compactConvNhd_subset_inter (K₁ K₂ : Set α) (V₁ V₂ : Set (β × β)) :
+lemma compactConvNhd_subset_inter (K₁ K₂ : Set α) (V₁ V₂ : Set (β × β)) :
     compactConvNhd (K₁ ∪ K₂) (V₁ ∩ V₂) f ⊆ compactConvNhd K₁ V₁ f ∩ compactConvNhd K₂ V₂ f :=
   fun _g hg =>
   ⟨fun x hx => mem_of_mem_inter_left (hg x (mem_union_left K₂ hx)), fun x hx =>
@@ -152,7 +152,7 @@ def compactConvergenceFilterBasis (f : C(α, β)) : FilterBasis C(α, β) :=
   (compactConvNhd_filter_isBasis f).filterBasis
 #align continuous_map.compact_convergence_filter_basis ContinuousMap.compactConvergenceFilterBasis
 
-theorem mem_compactConvergence_nhd_filter (Y : Set C(α, β)) :
+lemma mem_compactConvergence_nhd_filter (Y : Set C(α, β)) :
     Y ∈ (compactConvergenceFilterBasis f).filter ↔
     ∃ (K : Set α) (V : Set (β × β)) (_hK : IsCompact K) (_hV : V ∈ 𝓤 β),
       compactConvNhd K V f ⊆ Y := by
@@ -205,7 +205,7 @@ lemma tendsto_iff_forall_compact_tendstoUniformlyOn' {ι : Type u₃} {p : Filte
 compact convergence.
 
 The topology of compact convergence is thus at least as fine as the compact-open topology. -/
-theorem compactConvNhd_subset_compactOpen (hK : IsCompact K) {U : Set β} (hU : IsOpen U)
+lemma compactConvNhd_subset_compactOpen (hK : IsCompact K) {U : Set β} (hU : IsOpen U)
     (hf : f ∈ CompactOpen.gen K U) :
     ∃ V ∈ 𝓤 β, IsOpen V ∧ compactConvNhd K V f ⊆ CompactOpen.gen K U := by
   obtain ⟨V, hV₁, hV₂, hV₃⟩ := lebesgue_number_of_compact_open (hK.image f.continuous) hU hf
@@ -219,7 +219,7 @@ compact-open topology.
 
 Since `ContinuousMap.compactConvNhd K V f` are a neighbourhood basis at `f` for each `f`, it follows
 that the compact-open topology is at least as fine as the topology of compact convergence. -/
-theorem iInter_compactOpen_gen_subset_compactConvNhd (hK : IsCompact K) (hV : V ∈ 𝓤 β) :
+lemma iInter_compactOpen_gen_subset_compactConvNhd (hK : IsCompact K) (hV : V ∈ 𝓤 β) :
     ∃ (ι : Sort (u₁ + 1)) (_ : Fintype ι) (C : ι → Set α) (_hC : ∀ i, IsCompact (C i))
       (U : ι → Set β) (_hU : ∀ i, IsOpen (U i)),
       (f ∈ ⋂ i, CompactOpen.gen (C i) (U i)) ∧
@@ -306,7 +306,7 @@ lemma hasBasis_compactConvergenceUniformity_aux :
 
 /-- An intermediate lemma. Usually `ContinuousMap.mem_compactConvergence_entourage_iff` is more
 useful. -/
-theorem mem_compactConvergenceUniformity (X : Set (C(α, β) × C(α, β))) :
+lemma mem_compactConvergenceUniformity (X : Set (C(α, β) × C(α, β))) :
     X ∈ @compactConvergenceUniformity α β _ _ ↔
       ∃ (K : Set α) (V : Set (β × β)) (_hK : IsCompact K) (_hV : V ∈ 𝓤 β),
         { fg : C(α, β) × C(α, β) | ∀ x ∈ K, (fg.1 x, fg.2 x) ∈ V } ⊆ X := by
@@ -353,7 +353,7 @@ instance compactConvergenceUniformSpace : UniformSpace C(α, β)
     exact hY hg₁
 #align continuous_map.compact_convergence_uniform_space ContinuousMap.compactConvergenceUniformSpace
 
-theorem mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) :
+lemma mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) :
     X ∈ 𝓤 C(α, β) ↔
       ∃ (K : Set α) (V : Set (β × β)) (_hK : IsCompact K) (_hV : V ∈ 𝓤 β),
         { fg : C(α, β) × C(α, β) | ∀ x ∈ K, (fg.1 x, fg.2 x) ∈ V } ⊆ X :=
@@ -386,7 +386,7 @@ lemma tendsto_iff_forall_compact_tendstoUniformlyOn :
 #align continuous_map.tendsto_iff_forall_compact_tendsto_uniformly_on ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn
 
 /-- Locally uniform convergence implies convergence in the compact-open topology. -/
-theorem tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a => F i a) f p) :
+lemma tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a => F i a) f p) :
     Tendsto F p (𝓝 f) := by
   rw [tendsto_iff_forall_compact_tendstoUniformlyOn]
   intro K hK

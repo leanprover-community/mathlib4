@@ -258,7 +258,7 @@ set_option linter.uppercaseLean3 false in
 #align is_O_zero_zeta_kernel₂ isBigO_zero_zetaKernel₂
 
 /-- Weaker but more usable bound for `zetaKernel₂` for `t → 0`. -/
-theorem isBigO_zero_zetaKernel₂_rpow (a : ℝ) : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => t ^ a := by
+lemma isBigO_zero_zetaKernel₂_rpow (a : ℝ) : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => t ^ a := by
   have aux1 : IsBigO atTop (fun t => exp (-π * t)) fun t => t ^ (-a - 1 / 2) :=
     (isLittleO_exp_neg_mul_rpow_atTop pi_pos _).isBigO
   have aux2 : IsBigO atTop (fun t => exp (-π * t) * sqrt t) fun t => t ^ (-a) := by
@@ -406,7 +406,7 @@ lemma differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableAt 
 #align differentiable_at_riemann_zeta differentiableAt_riemannZeta
 
 /-- The trivial zeroes of the zeta function. -/
-theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 := by
+lemma riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 := by
   have : (-2 : ℂ) * (n + 1) ≠ 0 :=
     mul_ne_zero (neg_ne_zero.mpr two_ne_zero) (Nat.cast_add_one_ne_zero n)
   rw [riemannZeta, Function.update_noteq this,
@@ -641,7 +641,7 @@ lemma riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
 
 /-- Riemann zeta functional equation, formulated for `Λ₀`: for any complex `s` we have
 `Λ₀(1 - s) = Λ₀ s`. -/
-theorem riemannCompletedZeta₀_one_sub (s : ℂ) :
+lemma riemannCompletedZeta₀_one_sub (s : ℂ) :
     riemannCompletedZeta₀ (1 - s) = riemannCompletedZeta₀ s := by
   have := mellin_comp_rpow zetaKernel₂ (s / 2 - 1 / 2) neg_one_lt_zero.ne
   simp_rw [rpow_neg_one, ← one_div, abs_neg, abs_one, div_one, one_smul, ofReal_neg, ofReal_one,
@@ -657,7 +657,7 @@ theorem riemannCompletedZeta₀_one_sub (s : ℂ) :
 
 /-- Riemann zeta functional equation, formulated for `Λ`: for any complex `s` we have
 `Λ (1 - s) = Λ s`. -/
-theorem riemannCompletedZeta_one_sub (s : ℂ) :
+lemma riemannCompletedZeta_one_sub (s : ℂ) :
     riemannCompletedZeta (1 - s) = riemannCompletedZeta s := by
   simp_rw [riemannCompletedZeta, riemannCompletedZeta₀_one_sub, sub_add, (by abel : 1 - s - 1 = -s),
     (by abel : 1 - s = -(s - 1)), div_neg, neg_sub_neg]
@@ -726,7 +726,7 @@ lemma riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 1)
   ring
 #align riemann_zeta_one_sub riemannZeta_one_sub
 
-theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
+lemma riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
     riemannZeta (-k) = (-1 : ℂ) ^ k * bernoulli (k + 1) / (k + 1) := by
   rcases Nat.even_or_odd' k with ⟨m, rfl | rfl⟩
   · cases' m with m m

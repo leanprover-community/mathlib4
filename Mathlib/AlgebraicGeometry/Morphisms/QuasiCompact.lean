@@ -125,7 +125,7 @@ lemma quasiCompact_eq_affineProperty :
   exact quasiCompact_iff_affineProperty _
 #align algebraic_geometry.quasi_compact_eq_affine_property AlgebraicGeometry.quasiCompact_eq_affineProperty
 
-theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (U : Set X.carrier))
+lemma isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (U : Set X.carrier))
     (f : X.presheaf.obj (op U)) : IsCompact (X.basicOpen f : Set X.carrier) := by
   classical
   refine' ((isCompact_open_iff_eq_finset_affine_union _).mpr _).1
@@ -220,7 +220,7 @@ lemma quasiCompact_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
   quasiCompact_eq_affineProperty.symm ▸ QuasiCompact.affineProperty_isLocal.affine_target_iff f
 #align algebraic_geometry.quasi_compact_over_affine_iff AlgebraicGeometry.quasiCompact_over_affine_iff
 
-theorem compactSpace_iff_quasiCompact (X : Scheme) :
+lemma compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X.carrier ↔ QuasiCompact (terminal.from X) :=
   (quasiCompact_over_affine_iff _).symm
 #align algebraic_geometry.compact_space_iff_quasi_compact AlgebraicGeometry.compactSpace_iff_quasiCompact
@@ -293,7 +293,7 @@ lemma compact_open_induction_on {P : Opens X.carrier → Prop} (S : Opens X.carr
     exact iSup_insert
 #align algebraic_geometry.compact_open_induction_on AlgebraicGeometry.compact_open_induction_on
 
-theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
+lemma exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
     {U : Opens X} (hU : IsAffineOpen U) (x f : X.presheaf.obj (op U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op)] at H
@@ -303,7 +303,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
 
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
 `f ^ n * x = 0` for some `n`. -/
-theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
+lemma exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
     {U : Opens X.carrier} (hU : IsCompact U.1) (x f : X.presheaf.obj (op U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompact_open_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩

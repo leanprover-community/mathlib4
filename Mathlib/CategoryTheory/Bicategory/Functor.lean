@@ -472,7 +472,7 @@ lemma to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
 #noalign category_theory.pseudofunctor.to_oplax_map₂
 
 @[simp]
-theorem to_oplax_mapId (a : B) : (F : OplaxFunctor B C).mapId a = (F.mapId a).hom :=
+lemma to_oplax_mapId (a : B) : (F : OplaxFunctor B C).mapId a = (F.mapId a).hom :=
   rfl
 #align category_theory.pseudofunctor.to_oplax_map_id CategoryTheory.Pseudofunctor.to_oplax_mapId
 

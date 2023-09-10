@@ -43,7 +43,7 @@ def of (α : Type*) [DistribLattice α] : DistLatCat :=
 #align DistLat.of DistLatCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [DistribLattice α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [DistribLattice α] : ↥(of α) = α :=
   rfl
 #align DistLat.coe_of DistLatCat.coe_of
 

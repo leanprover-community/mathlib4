@@ -129,7 +129,7 @@ protected def extend (f : α → β) : hatα → β :=
 
 variable {f : α → β}
 
-theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.denseInducing.extend f :=
+lemma extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.denseInducing.extend f :=
   if_pos hf
 #align abstract_completion.extend_def AbstractCompletion.extend_def
 
@@ -155,7 +155,7 @@ lemma continuous_extend : Continuous (pkg.extend f) :=
 
 variable [SeparatedSpace β]
 
-theorem extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : UniformContinuous g)
+lemma extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : UniformContinuous g)
     (h : ∀ a : α, f a = g (ι a)) : pkg.extend f = g := by
   apply pkg.funext pkg.continuous_extend hg.continuous
   simpa only [pkg.extend_coe hf] using h
@@ -199,7 +199,7 @@ lemma continuous_map : Continuous (map f) :=
 variable {f}
 
 @[simp]
-theorem map_coe (hf : UniformContinuous f) (a : α) : map f (ι a) = ι' (f a) :=
+lemma map_coe (hf : UniformContinuous f) (a : α) : map f (ι a) = ι' (f a) :=
   pkg.extend_coe (pkg'.uniformContinuous_coe.comp hf) a
 #align abstract_completion.map_coe AbstractCompletion.map_coe
 
@@ -251,7 +251,7 @@ lemma uniformContinuous_compare : UniformContinuous (pkg.compare pkg') :=
   pkg.uniformContinuous_extend
 #align abstract_completion.uniform_continuous_compare AbstractCompletion.uniformContinuous_compare
 
-theorem compare_coe (a : α) : pkg.compare pkg' (pkg.coe a) = pkg'.coe a :=
+lemma compare_coe (a : α) : pkg.compare pkg' (pkg.coe a) = pkg'.coe a :=
   pkg.extend_coe pkg'.uniformContinuous_coe a
 #align abstract_completion.compare_coe AbstractCompletion.compare_coe
 
@@ -328,7 +328,7 @@ section SeparatedSpace
 
 variable [SeparatedSpace γ] {f : α → β → γ}
 
-theorem extension₂_coe_coe (hf : UniformContinuous <| uncurry f) (a : α) (b : β) :
+lemma extension₂_coe_coe (hf : UniformContinuous <| uncurry f) (a : α) (b : β) :
     pkg.extend₂ pkg' f (ι a) (ι' b) = f a b :=
   show (pkg.prod pkg').extend (uncurry f) ((pkg.prod pkg').coe (a, b)) = uncurry f (a, b) from
     (pkg.prod pkg').extend_coe hf _
@@ -368,7 +368,7 @@ protected def map₂ (f : α → β → γ) : hatα → hatβ → hatγ :=
   pkg.extend₂ pkg' (pkg''.coe ∘₂ f)
 #align abstract_completion.map₂ AbstractCompletion.map₂
 
-theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (pkg.map₂ pkg' pkg'' f) :=
+lemma uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (pkg.map₂ pkg' pkg'' f) :=
   AbstractCompletion.uniformContinuous_extension₂ pkg pkg' _
 #align abstract_completion.uniform_continuous_map₂ AbstractCompletion.uniformContinuous_map₂
 
@@ -378,7 +378,7 @@ lemma continuous_map₂ {δ} [TopologicalSpace δ] {f : α → β → γ} {a : �
   ((pkg.uniformContinuous_map₂ pkg' pkg'' f).continuous.comp (Continuous.prod_mk ha hb) : _)
 #align abstract_completion.continuous_map₂ AbstractCompletion.continuous_map₂
 
-theorem map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformContinuous₂ f) :
+lemma map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformContinuous₂ f) :
     pkg.map₂ pkg' pkg'' f (ι a) (ι' b) = ι'' (f a b) :=
   pkg.extension₂_coe_coe (f := pkg''.coe ∘₂ f) pkg' (pkg''.uniformContinuous_coe.comp hf) a b
 #align abstract_completion.map₂_coe_coe AbstractCompletion.map₂_coe_coe

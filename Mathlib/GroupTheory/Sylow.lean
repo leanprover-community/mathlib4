@@ -108,7 +108,7 @@ def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) : Sylow
 #align sylow.comap_of_ker_is_p_group Sylow.comapOfKerIsPGroup
 
 @[simp]
-theorem coe_comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) :
+lemma coe_comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : ↑P ≤ ϕ.range) :
     (P.comapOfKerIsPGroup ϕ hϕ h : Subgroup K) = Subgroup.comap ϕ ↑P :=
   rfl
 #align sylow.coe_comap_of_ker_is_p_group Sylow.coe_comapOfKerIsPGroup
@@ -119,7 +119,7 @@ def comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ ϕ.range) : Syl
 #align sylow.comap_of_injective Sylow.comapOfInjective
 
 @[simp]
-theorem coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ ϕ.range) :
+lemma coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : ↑P ≤ ϕ.range) :
     ↑(P.comapOfInjective ϕ hϕ h) = Subgroup.comap ϕ ↑P :=
   rfl
 #align sylow.coe_comap_of_injective Sylow.coe_comapOfInjective
@@ -130,7 +130,7 @@ protected def subtype (h : ↑P ≤ N) : Sylow p N :=
 #align sylow.subtype Sylow.subtype
 
 @[simp]
-theorem coe_subtype (h : ↑P ≤ N) : ↑(P.subtype h) = subgroupOf (↑P) N :=
+lemma coe_subtype (h : ↑P ≤ N) : ↑(P.subtype h) = subgroupOf (↑P) N :=
   rfl
 #align sylow.coe_subtype Sylow.coe_subtype
 
@@ -271,7 +271,7 @@ lemma Sylow.smul_eq_of_normal {g : G} {P : Sylow p G} [h : (P : Subgroup G).Norm
   by simp only [Sylow.smul_eq_iff_mem_normalizer, normalizer_eq_top.mpr h, mem_top]
 #align sylow.smul_eq_of_normal Sylow.smul_eq_of_normal
 
-theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
+lemma Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
     P ∈ fixedPoints H (Sylow p G) ↔ H ≤ (P : Subgroup G).normalizer := by
   simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
 #align subgroup.sylow_mem_fixed_points_iff Subgroup.sylow_mem_fixedPoints_iff
@@ -364,7 +364,7 @@ lemma Sylow.orbit_eq_top [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) : o
   top_le_iff.mp fun Q _ => exists_smul_eq G P Q
 #align sylow.orbit_eq_top Sylow.orbit_eq_top
 
-theorem Sylow.stabilizer_eq_normalizer (P : Sylow p G) :
+lemma Sylow.stabilizer_eq_normalizer (P : Sylow p G) :
     stabilizer G P = (P : Subgroup G).normalizer := by
   ext; simp [Sylow.smul_eq_iff_mem_normalizer]
 #align sylow.stabilizer_eq_normalizer Sylow.stabilizer_eq_normalizer
@@ -768,7 +768,7 @@ lemma normal_of_all_max_subgroups_normal [Finite G]
         rw [← sup_of_le_right hNK, P.normalizer_sup_eq_top' hPK])
 #align sylow.normal_of_all_max_subgroups_normal Sylow.normal_of_all_max_subgroups_normal
 
-theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [Fact p.Prime]
+lemma normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [Fact p.Prime]
     [Finite (Sylow p G)] (P : Sylow p G) : (↑P : Subgroup G).Normal :=
   normalizer_eq_top.mp <|
     normalizerCondition_iff_only_full_group_self_normalizing.mp hnc _ <| normalizer_normalizer _

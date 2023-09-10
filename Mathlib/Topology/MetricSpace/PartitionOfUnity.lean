@@ -38,7 +38,7 @@ variable [EMetricSpace X] {K : ι → Set X} {U : ι → Set X}
 `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then for any point
 `x : X`, for sufficiently small `r : ℝ≥0∞` and for `y` sufficiently close to `x`, for all `i`, if
 `y ∈ K i`, then `EMetric.closedBall y r ⊆ U i`. -/
-theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+lemma eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
     ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ˢ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i := by
   suffices ∀ i, x ∈ K i → ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ˢ 𝓝 x, closedBall p.2 p.1 ⊆ U i by
@@ -60,7 +60,7 @@ theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i
     _ = R := add_tsub_cancel_of_le (lt_trans (by exact hp.1) hrR).le
 #align emetric.eventually_nhds_zero_forall_closed_ball_subset EMetric.eventually_nhds_zero_forall_closedBall_subset
 
-theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i))
+lemma exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i))
     (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
     ∃ r : ℝ, ∀ᶠ y in 𝓝 x,
       r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedBall y r ⊆ U i } := by
@@ -71,7 +71,7 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
   rwa [mem_preimage, mem_iInter₂]
 #align emetric.exists_forall_closed_ball_subset_aux₁ EMetric.exists_forall_closedBall_subset_aux₁
 
-theorem exists_forall_closedBall_subset_aux₂ (y : X) :
+lemma exists_forall_closedBall_subset_aux₂ (y : X) :
     Convex ℝ
       (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
   (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
@@ -83,7 +83,7 @@ theorem exists_forall_closedBall_subset_aux₂ (y : X) :
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
 exists a positive continuous function `δ : C(X, ℝ)` such that for any `i` and `x ∈ K i`,
 we have `EMetric.closedBall x (ENNReal.ofReal (δ x)) ⊆ U i`. -/
-theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+lemma exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧
       ∀ (i), ∀ x ∈ K i, closedBall x (ENNReal.ofReal <| δ x) ⊆ U i := by
@@ -96,7 +96,7 @@ theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
 exists a positive continuous function `δ : C(X, ℝ≥0)` such that for any `i` and `x ∈ K i`,
 we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
-theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+lemma exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases exists_continuous_real_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ₀, hδ⟩
@@ -109,7 +109,7 @@ theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed 
 sets, let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there
 exists a positive continuous function `δ : C(X, ℝ≥0∞)` such that for any `i` and `x ∈ K i`,
 we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
-theorem exists_continuous_eNNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+lemma exists_continuous_eNNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0∞), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
   let ⟨δ, hδ₀, hδ⟩ := exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin
@@ -126,7 +126,7 @@ variable [MetricSpace X] {K : ι → Set X} {U : ι → Set X}
 `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
 positive continuous function `δ : C(X, ℝ≥0)` such that for any `i` and `x ∈ K i`, we have
 `Metric.closedBall x (δ x) ⊆ U i`. -/
-theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+lemma exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases EMetric.exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
@@ -139,7 +139,7 @@ theorem exists_continuous_nNReal_forall_closedBall_subset (hK : ∀ i, IsClosed 
 `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
 positive continuous function `δ : C(X, ℝ)` such that for any `i` and `x ∈ K i`, we have
 `Metric.closedBall x (δ x) ⊆ U i`. -/
-theorem exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
+lemma exists_continuous_real_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) :
     ∃ δ : C(X, ℝ), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i :=
   let ⟨δ, hδ₀, hδ⟩ := exists_continuous_nNReal_forall_closedBall_subset hK hU hKU hfin

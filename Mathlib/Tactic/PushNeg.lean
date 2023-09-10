@@ -25,15 +25,15 @@ lemma not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or
 lemma not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 lemma not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
 lemma not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext not_imp
-theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
+lemma not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
 lemma not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
 variable {β : Type u} [LinearOrder β]
-theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
-theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
-theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
-theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
+lemma not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
+lemma not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
+lemma not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
+lemma not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=

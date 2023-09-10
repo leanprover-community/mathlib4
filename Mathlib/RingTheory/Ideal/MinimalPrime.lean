@@ -193,7 +193,7 @@ lemma Ideal.minimalPrimes_eq_comap :
     ← RingHom.ker_eq_comap_bot, Ideal.mk_ker]
 #align ideal.minimal_primes_eq_comap Ideal.minimalPrimes_eq_comap
 
-theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
+lemma Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
   constructor
   · exact fun H =>

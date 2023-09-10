@@ -65,7 +65,7 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
 -- porting note: moved because Lean 4 doesn't see the `FunLike` instance on `characterSpace 𝕜 A`
 -- until the `ContinuousLinearMapClass` instance is declared
 @[simp, norm_cast]
-protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
+protected lemma coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
   rfl
 #align weak_dual.character_space.coe_coe WeakDual.CharacterSpace.coe_coe
 
@@ -80,7 +80,7 @@ def toClm (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
 #align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toClm
 
 @[simp]
-theorem coe_toClm (φ : characterSpace 𝕜 A) : ⇑(toClm φ) = φ :=
+lemma coe_toClm (φ : characterSpace 𝕜 A) : ⇑(toClm φ) = φ :=
   rfl
 #align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toClm
 
@@ -101,7 +101,7 @@ def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 wher
 #align weak_dual.character_space.to_non_unital_alg_hom WeakDual.CharacterSpace.toNonUnitalAlgHom
 
 @[simp]
-theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
+lemma coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
   rfl
 #align weak_dual.character_space.coe_to_non_unital_alg_hom WeakDual.CharacterSpace.coe_toNonUnitalAlgHom
 

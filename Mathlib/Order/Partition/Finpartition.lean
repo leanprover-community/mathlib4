@@ -181,7 +181,7 @@ lemma parts_nonempty_iff : P.parts.Nonempty ↔ a ≠ ⊥ := by
   rw [nonempty_iff_ne_empty, not_iff_not, parts_eq_empty_iff]
 #align finpartition.parts_nonempty_iff Finpartition.parts_nonempty_iff
 
-theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
+lemma parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
   parts_nonempty_iff.2 ha
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
 
@@ -250,7 +250,7 @@ instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
       simpa [h, P.ne_bot hx] using P.le hx
     · exact fun b hb ↦ ⟨a, mem_singleton_self _, P.le hb⟩
 
-theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a).parts ⊆ {a} := by
+lemma parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a).parts ⊆ {a} := by
   intro b hb
   have hb : b ∈ Finpartition.parts (dite _ _ _) := hb
   split_ifs at hb
@@ -258,7 +258,7 @@ theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a)
   · exact hb
 #align finpartition.parts_top_subset Finpartition.parts_top_subset
 
-theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
+lemma parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
     ((⊤ : Finpartition a).parts : Set α).Subsingleton :=
   Set.subsingleton_of_subset_singleton fun _ hb ↦ mem_singleton.1 <| parts_top_subset _ hb
 #align finpartition.parts_top_subsingleton Finpartition.parts_top_subsingleton
@@ -296,7 +296,7 @@ instance : Inf (Finpartition a) :=
         · rw [P.supParts, Q.supParts, inf_idem])⟩
 
 @[simp]
-theorem parts_inf (P Q : Finpartition a) :
+lemma parts_inf (P Q : Finpartition a) :
     (P ⊓ Q).parts = ((P.parts ×ˢ Q.parts).image fun bc : α × α ↦ bc.1 ⊓ bc.2).erase ⊥ :=
   rfl
 #align finpartition.parts_inf Finpartition.parts_inf
@@ -391,7 +391,7 @@ lemma mem_bind : b ∈ (P.bind Q).parts ↔ ∃ A hA, b ∈ (Q A hA).parts := by
     exact ⟨⟨A, hA⟩, mem_attach _ ⟨A, hA⟩, h⟩
 #align finpartition.mem_bind Finpartition.mem_bind
 
-theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
+lemma card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
     (P.bind Q).parts.card = ∑ A in P.parts.attach, (Q _ A.2).parts.card := by
   apply card_biUnion
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
@@ -418,7 +418,7 @@ def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a �
   not_bot_mem h := (mem_insert.1 h).elim hb.symm P.not_bot_mem
 #align finpartition.extend Finpartition.extend
 
-theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disjoint a b}
+lemma card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disjoint a b}
     {hc : a ⊔ b = c} : (P.extend hb hab hc).parts.card = P.parts.card + 1 :=
   card_insert_of_not_mem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
 #align finpartition.card_extend Finpartition.card_extend
@@ -489,12 +489,12 @@ instance (s : Finset α) : Bot (Finpartition s) :=
       not_bot_mem := by simp }⟩
 
 @[simp]
-theorem parts_bot (s : Finset α) :
+lemma parts_bot (s : Finset α) :
     (⊥ : Finpartition s).parts = s.map ⟨singleton, singleton_injective⟩ :=
   rfl
 #align finpartition.parts_bot Finpartition.parts_bot
 
-theorem card_bot (s : Finset α) : (⊥ : Finpartition s).parts.card = s.card :=
+lemma card_bot (s : Finset α) : (⊥ : Finpartition s).parts.card = s.card :=
   Finset.card_map _
 #align finpartition.card_bot Finpartition.card_bot
 
@@ -510,7 +510,7 @@ instance (s : Finset α) : OrderBot (Finpartition s) :=
       obtain ⟨t, ht, hat⟩ := P.exists_mem ha
       exact ⟨t, ht, singleton_subset_iff.2 hat⟩ }
 
-theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
+lemma card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
   rw [← card_bot s]
   exact card_mono bot_le
 #align finpartition.card_parts_le_card Finpartition.card_parts_le_card
@@ -563,7 +563,7 @@ lemma mem_atomise :
     mem_singleton, and_comm, mem_powerset, exists_prop]
 #align finpartition.mem_atomise Finpartition.mem_atomise
 
-theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
+lemma atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
   simp only [atomise, powerset_empty, image_singleton, not_mem_empty, IsEmpty.forall_iff,
     imp_true_iff, filter_True]
   exact erase_eq_of_not_mem (not_mem_singleton.2 hs.ne_empty.symm)
@@ -573,7 +573,7 @@ lemma card_atomise_le : (atomise s F).parts.card ≤ 2 ^ F.card :=
   (card_le_of_subset <| erase_subset _ _).trans <| Finset.card_image_le.trans (card_powerset _).le
 #align finpartition.card_atomise_le Finpartition.card_atomise_le
 
-theorem biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
+lemma biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty).biUnion id = t := by
   ext a
   refine' mem_biUnion.trans ⟨fun ⟨u, hu, ha⟩ ↦ (mem_filter.1 hu).2.1 ha, fun ha ↦ _⟩
@@ -584,7 +584,7 @@ theorem biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
   rwa [← hb.2 _ ht, hau.2 _ ht]
 #align finpartition.bUnion_filter_atomise Finpartition.biUnion_filter_atomise
 
-theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
+lemma card_filter_atomise_le_two_pow (ht : t ∈ F) :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty).card ≤ 2 ^ (F.card - 1) := by
   suffices h :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty) ⊆

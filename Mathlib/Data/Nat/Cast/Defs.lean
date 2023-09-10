@@ -111,16 +111,16 @@ lemma cast_zero : ((0 : ℕ) : R) = 0 :=
 -- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
 @[simp 500, norm_cast 500]
-theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
+lemma cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
 #align nat.cast_succ Nat.cast_succ
 
-theorem cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
+lemma cast_add_one (n : ℕ) : ((n + 1 : ℕ) : R) = n + 1 :=
   cast_succ _
 #align nat.cast_add_one Nat.cast_add_one
 
 @[simp, norm_cast]
-theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
+lemma cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
     ((ite P m n : ℕ) : R) = ite P (m : R) (n : R) := by
   split_ifs <;> rfl
 #align nat.cast_ite Nat.cast_ite

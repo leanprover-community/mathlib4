@@ -91,7 +91,7 @@ def of (M : Type u) [Mul M] : MagmaCat :=
 add_decl_doc AddMagmaCat.of
 
 @[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
   rfl
 #align Magma.coe_of MagmaCat.coe_of
 #align AddMagma.coe_of AddMagmaCat.coe_of
@@ -176,7 +176,7 @@ def of (M : Type u) [Semigroup M] : SemigroupCat :=
 add_decl_doc AddSemigroupCat.of
 
 @[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
   rfl
 #align Semigroup.coe_of SemigroupCat.coe_of
 #align AddSemigroup.coe_of AddSemigroupCat.coe_of

@@ -80,7 +80,7 @@ def aChoice (b : ℕ) : ℕ :=
   4 * (2 + b) ^ 4
 #align imo1969_q1.a_choice Imo1969Q1.aChoice
 
-theorem aChoice_good (b : ℕ) : aChoice b ∈ goodNats :=
+lemma aChoice_good (b : ℕ) : aChoice b ∈ goodNats :=
   polynomial_not_prime (show 1 < 2 + b by linarith)
 #align imo1969_q1.a_choice_good Imo1969Q1.aChoice_good
 

@@ -72,11 +72,11 @@ lemma iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
   iUnionLift_mk x _
 #align set.Union_lift_inclusion Set.iUnionLift_inclusion
 
-theorem iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
+lemma iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
     iUnionLift S f hf T hT x = f i ⟨x, hx⟩ := by cases' x with x hx; exact hf _ _ _ _ _
 #align set.Union_lift_of_mem Set.iUnionLift_of_mem
 
-theorem preimage_iUnionLift (t : Set β) :
+lemma preimage_iUnionLift (t : Set β) :
     iUnionLift S f hf T hT ⁻¹' t =
       inclusion hT ⁻¹' (⋃ i, inclusion (subset_iUnion S i) '' (f i ⁻¹' t)) := by
   ext x
@@ -93,7 +93,7 @@ theorem preimage_iUnionLift (t : Set β) :
   of algebraic structures when defined on the Union of algebraic subobjects.
   For example, it could be used to prove that the lift of a collection
   of group homomorphisms on a union of subgroups preserves `1`. -/
-theorem iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c) (cβ : β)
+lemma iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c) (cβ : β)
     (h : ∀ i, f i (ci i) = cβ) : iUnionLift S f hf T hT c = cβ := by
   let ⟨i, hi⟩ := Set.mem_iUnion.1 (hT c.prop)
   have : ci i = ⟨c, hi⟩ := Subtype.ext (hci i)
@@ -104,7 +104,7 @@ theorem iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c
   of algebraic structures when defined on the Union of algebraic subobjects.
   For example, it could be used to prove that the lift of a collection
   of linear_maps on a union of submodules preserves scalar multiplication. -/
-theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
+lemma iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
     (hui :
       ∀ (i) (x : S i),
         u (Set.inclusion (show S i ⊆ T from hT'.symm ▸ Set.subset_iUnion S i) x) =
@@ -124,7 +124,7 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
   of algebraic structures when defined on the Union of algebraic subobjects.
   For example, it could be used to prove that the lift of a collection
   of group homomorphisms on a union of subgroups preserves `*`. -/
-theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (opi : ∀ i, S i → S i → S i)
+lemma iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (opi : ∀ i, S i → S i → S i)
     (hopi :
       ∀ i x y,
         Set.inclusion (show S i ⊆ T from hT'.symm ▸ Set.subset_iUnion S i) (opi i x y) =
@@ -173,7 +173,7 @@ lemma liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
   iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
 #align set.lift_cover_of_mem Set.liftCover_of_mem
 
-theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
+lemma preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
   rw [preimage_comp, preimage_iUnionLift]
   ext; simp

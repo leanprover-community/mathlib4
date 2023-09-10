@@ -65,7 +65,7 @@ open Finpartition Finpartition.IsEquipartition
 variable {hP G ε}
 
 /-- The increment partition has a prescribed (very big) size in terms of the original partition. -/
-theorem card_increment (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPG : ¬P.IsUniform G ε) :
+lemma card_increment (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPG : ¬P.IsUniform G ε) :
     (increment hP G ε).parts.card = stepBound P.parts.card := by
   have hPα' : stepBound P.parts.card ≤ card α :=
     (mul_le_mul_left' (pow_le_pow_of_le_left' (by norm_num) _) _).trans hPα
@@ -80,7 +80,7 @@ theorem card_increment (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hP
   rw [filter_card_add_filter_neg_card_eq_card, card_attach]
 #align szemeredi_regularity.card_increment SzemerediRegularity.card_increment
 
-theorem increment_isEquipartition (hP : P.IsEquipartition) (G : SimpleGraph α) (ε : ℝ) :
+lemma increment_isEquipartition (hP : P.IsEquipartition) (G : SimpleGraph α) (ε : ℝ) :
     (increment hP G ε).IsEquipartition := by
   simp_rw [IsEquipartition, Set.equitableOn_iff_exists_eq_eq_add_one]
   refine' ⟨m, fun A hA => _⟩

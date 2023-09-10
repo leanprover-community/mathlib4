@@ -47,7 +47,7 @@ def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • ((circleMap z R θ - w) ^ 2)⁻¹ • f (circleMap z R θ)
 #align complex.circle_transform_deriv Complex.circleTransformDeriv
 
-theorem circleTransformDeriv_periodic (f : ℂ → E) :
+lemma circleTransformDeriv_periodic (f : ℂ → E) :
     Periodic (circleTransformDeriv R z w f) (2 * π) := by
   have := periodic_circleMap
   simp_rw [Periodic] at *
@@ -57,7 +57,7 @@ theorem circleTransformDeriv_periodic (f : ℂ → E) :
   simp [this]
 #align complex.circle_transform_deriv_periodic Complex.circleTransformDeriv_periodic
 
-theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
+lemma circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
     fun θ => (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
   ext
   simp_rw [circleTransformDeriv, circleTransform, ← mul_smul, ← mul_assoc]
@@ -67,7 +67,7 @@ theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
   ring
 #align complex.circle_transform_deriv_eq Complex.circleTransformDeriv_eq
 
-theorem integral_circleTransform (f : ℂ → E) :
+lemma integral_circleTransform (f : ℂ → E) :
     (∫ θ : ℝ in (0)..2 * π, circleTransform R z w f θ) =
       (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z := by
   simp_rw [circleTransform, circleIntegral, deriv_circleMap, circleMap]

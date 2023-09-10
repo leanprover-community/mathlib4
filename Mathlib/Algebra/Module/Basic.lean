@@ -83,7 +83,7 @@ instance AddCommMonoid.natModule : Module ℕ M where
   add_smul r s x := add_nsmul x r s
 #align add_comm_monoid.nat_module AddCommMonoid.natModule
 
-theorem AddMonoid.End.nat_cast_def (n : ℕ) :
+lemma AddMonoid.End.nat_cast_def (n : ℕ) :
     (↑n : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℕ M n :=
   rfl
 #align add_monoid.End.nat_cast_def AddMonoid.End.nat_cast_def
@@ -191,11 +191,11 @@ def smulAddHom : R →+ M →+ M :=
 variable {R M}
 
 @[simp]
-theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
+lemma smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
   rfl
 #align smul_add_hom_apply smulAddHom_apply
 
-theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
+lemma Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
   rw [← one_smul R x, ← zero_eq_one, zero_smul]
 #align module.eq_zero_of_zero_eq_one Module.eq_zero_of_zero_eq_one
 
@@ -220,7 +220,7 @@ instance AddCommGroup.intModule : Module ℤ M where
   add_smul r s x := add_zsmul x r s
 #align add_comm_group.int_module AddCommGroup.intModule
 
-theorem AddMonoid.End.int_cast_def (z : ℤ) :
+lemma AddMonoid.End.int_cast_def (z : ℤ) :
     (↑z : AddMonoid.End M) = DistribMulAction.toAddMonoidEnd ℤ M z :=
   rfl
 #align add_monoid.End.int_cast_def AddMonoid.End.int_cast_def
@@ -286,18 +286,18 @@ lemma neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 #align neg_smul_neg neg_smul_neg
 
 @[simp]
-theorem Units.neg_smul (u : Rˣ) (x : M) : -u • x = -(u • x) := by
+lemma Units.neg_smul (u : Rˣ) (x : M) : -u • x = -(u • x) := by
   rw [Units.smul_def, Units.val_neg, _root_.neg_smul, Units.smul_def]
 #align units.neg_smul Units.neg_smul
 
 variable (R)
 
-theorem neg_one_smul (x : M) : (-1 : R) • x = -x := by simp
+lemma neg_one_smul (x : M) : (-1 : R) • x = -x := by simp
 #align neg_one_smul neg_one_smul
 
 variable {R}
 
-theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
+lemma sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
   simp [add_smul, sub_eq_add_neg]
 #align sub_smul sub_smul
 
@@ -326,13 +326,13 @@ variable {R}
 
 /-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
 as an instance because Lean has no way to guess `R`. -/
-protected theorem Module.subsingleton (R M : Type*) [Semiring R] [Subsingleton R] [AddCommMonoid M]
+protected lemma Module.subsingleton (R M : Type*) [Semiring R] [Subsingleton R] [AddCommMonoid M]
     [Module R M] : Subsingleton M :=
   MulActionWithZero.subsingleton R M
 #align module.subsingleton Module.subsingleton
 
 /-- A semiring is `Nontrivial` provided that there exists a nontrivial module over this semiring. -/
-protected theorem Module.nontrivial (R M : Type*) [Semiring R] [Nontrivial M] [AddCommMonoid M]
+protected lemma Module.nontrivial (R M : Type*) [Semiring R] [Nontrivial M] [AddCommMonoid M]
     [Module R M] : Nontrivial R :=
   MulActionWithZero.nontrivial R M
 #align module.nontrivial Module.nontrivial
@@ -388,7 +388,7 @@ section
 variable (R)
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
-theorem nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := by
+lemma nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := by
   induction' n with n ih
   · rw [Nat.zero_eq, Nat.cast_zero, zero_smul, zero_smul]
   · rw [Nat.succ_eq_add_one, Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
@@ -399,7 +399,7 @@ end
 /-- Convert back any exotic `ℕ`-smul to the canonical instance. This should not be needed since in
 mathlib all `AddCommMonoid`s should normally have exactly one `ℕ`-module structure by design.
 -/
-theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) :
+lemma nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) :
     @SMul.smul ℕ M h.toSMul n x = n • x := by rw [nsmul_eq_smul_cast ℕ n x, Nat.cast_id]; rfl
 #align nat_smul_eq_nsmul nat_smul_eq_nsmul
 
@@ -427,7 +427,7 @@ section
 variable (R)
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
+lemma zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
     apply AddMonoidHom.ext_int
     simp
@@ -438,7 +438,7 @@ end
 
 /-- Convert back any exotic `ℤ`-smul to the canonical instance. This should not be needed since in
 mathlib all `AddCommGroup`s should normally have exactly one `ℤ`-module structure by design. -/
-theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) :
+lemma int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) :
     @SMul.smul ℤ M h.toSMul n x = n • x := by rw [zsmul_eq_smul_cast ℤ n x, Int.cast_id]; rfl
 #align int_smul_eq_zsmul int_smul_eq_zsmul
 
@@ -653,7 +653,7 @@ variable (R M)
 
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
 zero as well. Usually `M` is an `R`-algebra. -/
-theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
+lemma CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
   refine' ⟨fun m n h => @Nat.cast_injective M _ _ _ _ _⟩
   rw [← nsmul_one, ← nsmul_one, nsmul_eq_smul_cast R m (1 : M), nsmul_eq_smul_cast R n (1 : M), h]
 #align char_zero.of_module CharZero.of_module

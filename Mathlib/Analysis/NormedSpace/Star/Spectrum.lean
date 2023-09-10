@@ -28,7 +28,7 @@ section UnitarySpectrum
 variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CstarRing E]
   [NormedAlgebra 𝕜 E] [CompleteSpace E]
 
-theorem unitary.spectrum_subset_circle (u : unitary E) :
+lemma unitary.spectrum_subset_circle (u : unitary E) :
     spectrum 𝕜 (u : E) ⊆ Metric.sphere 0 1 := by
   nontriviality E
   refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
@@ -69,7 +69,7 @@ lemma IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
   simp
 #align is_self_adjoint.spectral_radius_eq_nnnorm IsSelfAdjoint.spectralRadius_eq_nnnorm
 
-theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
+lemma IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
   refine' (ENNReal.pow_strictMono two_ne_zero).injective _
   have heq :
@@ -129,7 +129,7 @@ variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] 
   [hF : StarAlgHomClass F ℂ A B] (φ : F)
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
-theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
+lemma nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
   suffices ∀ s : A, IsSelfAdjoint s → ‖φ s‖₊ ≤ ‖s‖₊ by
     exact nonneg_le_nonneg_of_sq_le_sq zero_le' <| by
       simpa only [nnnorm_star_mul_self, map_star, map_mul]
@@ -142,7 +142,7 @@ theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
 #align star_alg_hom.nnnorm_apply_le StarAlgHom.nnnorm_apply_le
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
-theorem norm_apply_le (a : A) : ‖(φ a : B)‖ ≤ ‖a‖ :=
+lemma norm_apply_le (a : A) : ‖(φ a : B)‖ ≤ ‖a‖ :=
   nnnorm_apply_le φ a
 #align star_alg_hom.norm_apply_le StarAlgHom.norm_apply_le
 

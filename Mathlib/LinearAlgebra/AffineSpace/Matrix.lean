@@ -107,7 +107,7 @@ lemma affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (p 
 
 See also `AffineBasis.toMatrix_inv_vecMul_toMatrix`. -/
 @[simp]
-theorem toMatrix_vecMul_coords (x : P) : (b.toMatrix b₂).vecMul (b₂.coords x) = b.coords x := by
+lemma toMatrix_vecMul_coords (x : P) : (b.toMatrix b₂).vecMul (b₂.coords x) = b.coords x := by
   ext j
   change _ = b.coord j x
   conv_rhs => rw [← b₂.affineCombination_coord_eq_self x]
@@ -154,7 +154,7 @@ variable (b b₂ : AffineBasis ι k P)
 
 See also `AffineBasis.toMatrix_vecMul_coords`. -/
 @[simp]
-theorem toMatrix_inv_vecMul_toMatrix (x : P) :
+lemma toMatrix_inv_vecMul_toMatrix (x : P) :
     (b.toMatrix b₂)⁻¹.vecMul (b.coords x) = b₂.coords x := by
   have hu := b.isUnit_toMatrix b₂
   rw [Matrix.isUnit_iff_isUnit_det] at hu
@@ -164,7 +164,7 @@ theorem toMatrix_inv_vecMul_toMatrix (x : P) :
 
 /-- If we fix a background affine basis `b`, then for any other basis `b₂`, we can characterise
 the barycentric coordinates provided by `b₂` in terms of determinants relative to `b`. -/
-theorem det_smul_coords_eq_cramer_coords (x : P) :
+lemma det_smul_coords_eq_cramer_coords (x : P) :
     (b.toMatrix b₂).det • b₂.coords x = (b.toMatrix b₂)ᵀ.cramer (b.coords x) := by
   have hu := b.isUnit_toMatrix b₂
   rw [Matrix.isUnit_iff_isUnit_det] at hu

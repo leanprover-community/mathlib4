@@ -54,30 +54,30 @@ lemma iterate_zero : f^[0] = id :=
   rfl
 #align function.iterate_zero Function.iterate_zero
 
-theorem iterate_zero_apply (x : α) : f^[0] x = x :=
+lemma iterate_zero_apply (x : α) : f^[0] x = x :=
   rfl
 #align function.iterate_zero_apply Function.iterate_zero_apply
 
 @[simp]
-theorem iterate_succ (n : ℕ) : f^[n.succ] = f^[n] ∘ f :=
+lemma iterate_succ (n : ℕ) : f^[n.succ] = f^[n] ∘ f :=
   rfl
 #align function.iterate_succ Function.iterate_succ
 
-theorem iterate_succ_apply (n : ℕ) (x : α) : f^[n.succ] x = f^[n] (f x) :=
+lemma iterate_succ_apply (n : ℕ) (x : α) : f^[n.succ] x = f^[n] (f x) :=
   rfl
 #align function.iterate_succ_apply Function.iterate_succ_apply
 
 @[simp]
-theorem iterate_id (n : ℕ) : (id : α → α)^[n] = id :=
+lemma iterate_id (n : ℕ) : (id : α → α)^[n] = id :=
   Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, comp.left_id]
 #align function.iterate_id Function.iterate_id
 
-theorem iterate_add (m : ℕ) : ∀ n : ℕ, f^[m + n] = f^[m] ∘ f^[n]
+lemma iterate_add (m : ℕ) : ∀ n : ℕ, f^[m + n] = f^[m] ∘ f^[n]
   | 0 => rfl
   | Nat.succ n => by rw [Nat.add_succ, iterate_succ, iterate_succ, iterate_add m n]; rfl
 #align function.iterate_add Function.iterate_add
 
-theorem iterate_add_apply (m n : ℕ) (x : α) : f^[m + n] x = f^[m] (f^[n] x) := by
+lemma iterate_add_apply (m n : ℕ) (x : α) : f^[m + n] x = f^[m] (f^[n] x) := by
   rw [iterate_add f m n]
   rfl
 #align function.iterate_add_apply Function.iterate_add_apply
@@ -87,7 +87,7 @@ lemma iterate_one : f^[1] = f :=
   funext fun _ ↦ rfl
 #align function.iterate_one Function.iterate_one
 
-theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
+lemma iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
   | 0 => by simp only [Nat.mul_zero, iterate_zero]
   | n + 1 => by simp only [Nat.mul_succ, Nat.mul_one, iterate_one, iterate_add, iterate_mul m n]
 #align function.iterate_mul Function.iterate_mul
@@ -98,15 +98,15 @@ lemma iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x :=
   Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ_apply, h, ihn]
 #align function.iterate_fixed Function.iterate_fixed
 
-theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n] :=
+lemma Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n] :=
   Nat.recOn n injective_id fun _ ihn ↦ ihn.comp Hinj
 #align function.injective.iterate Function.Injective.iterate
 
-theorem Surjective.iterate (Hsurj : Surjective f) (n : ℕ) : Surjective f^[n] :=
+lemma Surjective.iterate (Hsurj : Surjective f) (n : ℕ) : Surjective f^[n] :=
   Nat.recOn n surjective_id fun _ ihn ↦ ihn.comp Hsurj
 #align function.surjective.iterate Function.Surjective.iterate
 
-theorem Bijective.iterate (Hbij : Bijective f) (n : ℕ) : Bijective f^[n] :=
+lemma Bijective.iterate (Hbij : Bijective f) (n : ℕ) : Bijective f^[n] :=
   ⟨Hbij.1.iterate n, Hbij.2.iterate n⟩
 #align function.bijective.iterate Function.Bijective.iterate
 
@@ -134,25 +134,25 @@ namespace Commute
 
 variable {g : α → α}
 
-theorem iterate_right (h : Commute f g) (n : ℕ) : Commute f g^[n] :=
+lemma iterate_right (h : Commute f g) (n : ℕ) : Commute f g^[n] :=
   Semiconj.iterate_right h n
 #align function.commute.iterate_right Function.Commute.iterate_right
 
-theorem iterate_left (h : Commute f g) (n : ℕ) : Commute f^[n] g :=
+lemma iterate_left (h : Commute f g) (n : ℕ) : Commute f^[n] g :=
   (h.symm.iterate_right n).symm
 #align function.commute.iterate_left Function.Commute.iterate_left
 
-theorem iterate_iterate (h : Commute f g) (m n : ℕ) : Commute f^[m] g^[n] :=
+lemma iterate_iterate (h : Commute f g) (m n : ℕ) : Commute f^[m] g^[n] :=
   (h.iterate_left m).iterate_right n
 #align function.commute.iterate_iterate Function.Commute.iterate_iterate
 
-theorem iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
+lemma iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
     f^[n] x = g^[n] x :=
   Nat.recOn n rfl fun n ihn ↦ by
     simp only [iterate_succ_apply, hx, (h.iterate_left n).eq, ihn, ((refl g).iterate_right n).eq]
 #align function.commute.iterate_eq_of_map_eq Function.Commute.iterate_eq_of_map_eq
 
-theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
+lemma comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
   induction n with
   | zero => rfl
   | succ n ihn =>
@@ -162,15 +162,15 @@ theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[
 
 variable (f)
 
-theorem iterate_self (n : ℕ) : Commute f^[n] f :=
+lemma iterate_self (n : ℕ) : Commute f^[n] f :=
   (refl f).iterate_left n
 #align function.commute.iterate_self Function.Commute.iterate_self
 
-theorem self_iterate (n : ℕ) : Commute f f^[n] :=
+lemma self_iterate (n : ℕ) : Commute f f^[n] :=
   (refl f).iterate_right n
 #align function.commute.self_iterate Function.Commute.self_iterate
 
-theorem iterate_iterate_self (m n : ℕ) : Commute f^[m] f^[n] :=
+lemma iterate_iterate_self (m n : ℕ) : Commute f^[m] f^[n] :=
   (refl f).iterate_iterate m n
 #align function.commute.iterate_iterate_self Function.Commute.iterate_iterate_self
 
@@ -183,11 +183,11 @@ lemma Semiconj₂.iterate {f : α → α} {op : α → α → α} (hf : Semiconj
 
 variable (f)
 
-theorem iterate_succ' (n : ℕ) : f^[n.succ] = f ∘ f^[n] := by
+lemma iterate_succ' (n : ℕ) : f^[n.succ] = f ∘ f^[n] := by
   rw [iterate_succ, (Commute.self_iterate f n).comp_eq]
 #align function.iterate_succ' Function.iterate_succ'
 
-theorem iterate_succ_apply' (n : ℕ) (x : α) : f^[n.succ] x = f (f^[n] x) := by
+lemma iterate_succ_apply' (n : ℕ) (x : α) : f^[n.succ] x = f (f^[n] x) := by
   rw [iterate_succ']
   rfl
 #align function.iterate_succ_apply' Function.iterate_succ_apply'
@@ -208,7 +208,7 @@ def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) 
   | m+1 => Iterate.rec p h (h _ ha) m
 #align function.iterate.rec Function.Iterate.rec
 
-theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
+lemma Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
     Iterate.rec p h ha 0 = ha :=
   rfl
 #align function.iterate.rec_zero Function.Iterate.rec_zero
@@ -227,11 +227,11 @@ lemma RightInverse.iterate {g : α → α} (hg : RightInverse g f) (n : ℕ) :
   LeftInverse.iterate hg n
 #align function.right_inverse.iterate Function.RightInverse.iterate
 
-theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
+lemma iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
   (iterate_mul _ _ _).symm.trans (Eq.trans (by rw [Nat.mul_comm]) (iterate_mul _ _ _))
 #align function.iterate_comm Function.iterate_comm
 
-theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
+lemma iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
   fun f ↦ iterate_comm f m n
 #align function.iterate_commute Function.iterate_commute
 
@@ -258,14 +258,14 @@ namespace List
 
 open Function
 
-theorem foldl_const (f : α → α) (a : α) (l : List β) :
+lemma foldl_const (f : α → α) (a : α) (l : List β) :
     l.foldl (fun b _ ↦ f b) a = f^[l.length] a := by
   induction l generalizing a with
   | nil => rfl
   | cons b l H => rw [length_cons, foldl, iterate_succ_apply, H]
 #align list.foldl_const List.foldl_const
 
-theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ ↦ f) b = f^[l.length] b
+lemma foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ ↦ f) b = f^[l.length] b
   | [] => rfl
   | a :: l => by rw [length_cons, foldr, foldr_const f b l, iterate_succ_apply']
 #align list.foldr_const List.foldr_const

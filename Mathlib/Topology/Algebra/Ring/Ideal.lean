@@ -31,7 +31,7 @@ protected def Ideal.closure (I : Ideal R) : Ideal R :=
 #align ideal.closure Ideal.closure
 
 @[simp]
-theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
+lemma Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
   rfl
 #align ideal.coe_closure Ideal.coe_closure
 
@@ -39,7 +39,7 @@ theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
 -- it causes timeouts as `simp` tries and fails to generated an `IsClosed` instance.
 -- we also `alignₓ` because of the change in argument type
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.20heartbeats.20of.20the.20linter
-theorem Ideal.closure_eq_of_isClosed (I : Ideal R) (hI : IsClosed (I : Set R)) : I.closure = I :=
+lemma Ideal.closure_eq_of_isClosed (I : Ideal R) (hI : IsClosed (I : Set R)) : I.closure = I :=
   SetLike.ext' hI.closure_eq
 #align ideal.closure_eq_of_is_closed Ideal.closure_eq_of_isClosedₓ
 

@@ -88,12 +88,12 @@ lemma of_withLowerTopology_symm_eq : (@ofLower α).symm = toLower :=
 #align with_lower_topology.of_with_lower_topology_symm_eq WithLowerTopology.of_withLowerTopology_symm_eq
 
 @[simp]
-theorem toLower_ofLower (a : WithLowerTopology α) : toLower (ofLower a) = a :=
+lemma toLower_ofLower (a : WithLowerTopology α) : toLower (ofLower a) = a :=
   rfl
 #align with_lower_topology.to_lower_of_lower WithLowerTopology.toLower_ofLower
 
 @[simp]
-theorem ofLower_toLower (a : α) : ofLower (toLower a) = a :=
+lemma ofLower_toLower (a : α) : ofLower (toLower a) = a :=
   rfl
 #align with_lower_topology.of_lower_to_lower WithLowerTopology.ofLower_toLower
 
@@ -126,13 +126,13 @@ instance : Preorder (WithLowerTopology α) :=
 instance : TopologicalSpace (WithLowerTopology α) :=
   generateFrom { s | ∃ a, (Ici a)ᶜ = s }
 
-theorem isOpen_preimage_ofLower (S : Set α) :
+lemma isOpen_preimage_ofLower (S : Set α) :
     IsOpen (WithLowerTopology.ofLower ⁻¹' S) ↔
       (generateFrom { s : Set α | ∃ a : α, (Ici a)ᶜ = s }).IsOpen S :=
   Iff.rfl
 #align with_lower_topology.is_open_preimage_of_lower WithLowerTopology.isOpen_preimage_ofLower
 
-theorem isOpen_def (T : Set (WithLowerTopology α)) :
+lemma isOpen_def (T : Set (WithLowerTopology α)) :
     IsOpen T ↔ (generateFrom { s : Set α | ∃ a : α, (Ici a)ᶜ = s }).IsOpen
     (WithLowerTopology.toLower ⁻¹' T) :=
   Iff.rfl
@@ -170,11 +170,11 @@ lemma of_withUpperTopology_symm_eq : (@ofUpper α).symm = toUpper :=
   rfl
 
 @[simp]
-theorem toUpper_ofUpper (a : WithUpperTopology α) : toUpper (ofUpper a) = a :=
+lemma toUpper_ofUpper (a : WithUpperTopology α) : toUpper (ofUpper a) = a :=
   rfl
 
 @[simp]
-theorem ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a :=
+lemma ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a :=
   rfl
 
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b :=
@@ -201,12 +201,12 @@ instance : Preorder (WithUpperTopology α) :=
 instance : TopologicalSpace (WithUpperTopology α) :=
   generateFrom { s | ∃ a, (Iic a)ᶜ = s }
 
-theorem isOpen_preimage_ofUpper (S : Set α) :
+lemma isOpen_preimage_ofUpper (S : Set α) :
     IsOpen (WithUpperTopology.ofUpper ⁻¹' S) ↔
       (generateFrom { s : Set α | ∃ a : α, (Iic a)ᶜ = s }).IsOpen S :=
   Iff.rfl
 
-theorem isOpen_def (T : Set (WithUpperTopology α)) :
+lemma isOpen_def (T : Set (WithUpperTopology α)) :
     IsOpen T ↔ (generateFrom { s : Set α | ∃ a : α, (Iic a)ᶜ = s }).IsOpen
     (WithUpperTopology.toUpper ⁻¹' T) :=
   Iff.rfl
@@ -284,13 +284,13 @@ instance : ClosedIciTopology α :=
 #align lower_topology.is_closed_Ici isClosed_Ici
 
 /-- The upper closure of a finite set is closed in the lower topology. -/
-theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
+lemma isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
   exact h.isClosed_biUnion fun _ _ => isClosed_Ici
 #align lower_topology.is_closed_upper_closure LowerTopology.isClosed_upperClosure
 
 /-- Every set open in the lower topology is a lower set. -/
-theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
+lemma isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   -- porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
   induction h
@@ -300,7 +300,7 @@ theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   case sUnion _ _ ih => exact isLowerSet_sUnion ih
 #align lower_topology.is_lower_set_of_is_open LowerTopology.isLowerSet_of_isOpen
 
-theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
+lemma isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
   isLowerSet_compl.1 <| isLowerSet_of_isOpen h.isOpen_compl
 #align lower_topology.is_upper_set_of_is_closed LowerTopology.isUpperSet_of_isClosed
 
@@ -309,7 +309,7 @@ The closure of a singleton `{a}` in the lower topology is the left-closed right-
 [a, ∞).
 -/
 @[simp]
-theorem closure_singleton (a : α) : closure {a} = Ici a :=
+lemma closure_singleton (a : α) : closure {a} = Ici a :=
   Subset.antisymm ((closure_minimal fun _ h => h.ge) <| isClosed_Ici) <|
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 #align lower_topology.closure_singleton LowerTopology.closure_singleton
@@ -390,14 +390,14 @@ instance : ClosedIicTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 /-- The lower closure of a finite set is closed in the upper topology. -/
-theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) :=
+lemma isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) :=
   LowerTopology.isClosed_upperClosure (α := αᵒᵈ) h
 
 /-- Every set open in the upper topology is a upper set. -/
-theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
+lemma isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
   LowerTopology.isLowerSet_of_isOpen (α := αᵒᵈ) h
 
-theorem isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
+lemma isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
   isUpperSet_compl.1 <| isUpperSet_of_isOpen h.isOpen_compl
 
 /--
@@ -405,7 +405,7 @@ The closure of a singleton `{a}` in the upper topology is the left-infinite righ
 (-∞,a].
 -/
 @[simp]
-theorem closure_singleton (a : α) : closure {a} = Iic a :=
+lemma closure_singleton (a : α) : closure {a} = Iic a :=
   LowerTopology.closure_singleton (α := αᵒᵈ) _
 
 protected lemma isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
@@ -464,7 +464,7 @@ section CompleteLattice_LowerTopology
 variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [LowerTopology α]
   [TopologicalSpace β] [LowerTopology β]
 
-protected theorem sInfHom.continuous (f : sInfHom α β) : Continuous f := by
+protected lemma sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine LowerTopology.continuous_of_Ici fun b => ?_
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
   refine' Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
@@ -485,7 +485,7 @@ section CompleteLattice_UpperTopology
 variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [UpperTopology α]
   [TopologicalSpace β] [UpperTopology β]
 
-protected theorem sSupHom.continuous (f : sSupHom α β) : Continuous f :=
+protected lemma sSupHom.continuous (f : sSupHom α β) : Continuous f :=
   sInfHom.continuous (α := αᵒᵈ) (β := βᵒᵈ) (sSupHom.dual.toFun f)
 
 -- see Note [lower instance priority]

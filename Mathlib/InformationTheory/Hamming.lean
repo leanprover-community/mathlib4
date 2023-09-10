@@ -43,7 +43,7 @@ def hammingDist (x y : ∀ i, β i) : ℕ :=
 
 /-- Corresponds to `dist_self`. -/
 @[simp]
-theorem hammingDist_self (x : ∀ i, β i) : hammingDist x x = 0 := by
+lemma hammingDist_self (x : ∀ i, β i) : hammingDist x x = 0 := by
   rw [hammingDist, card_eq_zero, filter_eq_empty_iff]
   exact fun _ _ H => H rfl
 #align hamming_dist_self hammingDist_self
@@ -54,12 +54,12 @@ lemma hammingDist_nonneg {x y : ∀ i, β i} : 0 ≤ hammingDist x y :=
 #align hamming_dist_nonneg hammingDist_nonneg
 
 /-- Corresponds to `dist_comm`. -/
-theorem hammingDist_comm (x y : ∀ i, β i) : hammingDist x y = hammingDist y x := by
+lemma hammingDist_comm (x y : ∀ i, β i) : hammingDist x y = hammingDist y x := by
   simp_rw [hammingDist, ne_comm]
 #align hamming_dist_comm hammingDist_comm
 
 /-- Corresponds to `dist_triangle`. -/
-theorem hammingDist_triangle (x y z : ∀ i, β i) :
+lemma hammingDist_triangle (x y z : ∀ i, β i) :
     hammingDist x z ≤ hammingDist x y + hammingDist y z := by
   classical
     unfold hammingDist
@@ -69,14 +69,14 @@ theorem hammingDist_triangle (x y z : ∀ i, β i) :
 #align hamming_dist_triangle hammingDist_triangle
 
 /-- Corresponds to `dist_triangle_left`. -/
-theorem hammingDist_triangle_left (x y z : ∀ i, β i) :
+lemma hammingDist_triangle_left (x y z : ∀ i, β i) :
     hammingDist x y ≤ hammingDist z x + hammingDist z y := by
   rw [hammingDist_comm z]
   exact hammingDist_triangle _ _ _
 #align hamming_dist_triangle_left hammingDist_triangle_left
 
 /-- Corresponds to `dist_triangle_right`. -/
-theorem hammingDist_triangle_right (x y z : ∀ i, β i) :
+lemma hammingDist_triangle_right (x y z : ∀ i, β i) :
     hammingDist x y ≤ hammingDist x z + hammingDist y z := by
   rw [hammingDist_comm y]
   exact hammingDist_triangle _ _ _
@@ -128,12 +128,12 @@ lemma hammingDist_le_card_fintype {x y : ∀ i, β i} : hammingDist x y ≤ Fint
   card_le_univ _
 #align hamming_dist_le_card_fintype hammingDist_le_card_fintype
 
-theorem hammingDist_comp_le_hammingDist (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} :
+lemma hammingDist_comp_le_hammingDist (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} :
     (hammingDist (fun i => f i (x i)) fun i => f i (y i)) ≤ hammingDist x y :=
   card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| congr_arg (f i) H2)
 #align hamming_dist_comp_le_hamming_dist hammingDist_comp_le_hammingDist
 
-theorem hammingDist_comp (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} (hf : ∀ i, Injective (f i)) :
+lemma hammingDist_comp (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} (hf : ∀ i, Injective (f i)) :
     (hammingDist (fun i => f i (x i)) fun i => f i (y i)) = hammingDist x y :=
   le_antisymm (hammingDist_comp_le_hammingDist _) <|
     card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| hf i H2)
@@ -161,7 +161,7 @@ def hammingNorm (x : ∀ i, β i) : ℕ :=
 
 /-- Corresponds to `dist_zero_right`. -/
 @[simp]
-theorem hammingDist_zero_right (x : ∀ i, β i) : hammingDist x 0 = hammingNorm x :=
+lemma hammingDist_zero_right (x : ∀ i, β i) : hammingDist x 0 = hammingNorm x :=
   rfl
 #align hamming_dist_zero_right hammingDist_zero_right
 
@@ -209,12 +209,12 @@ lemma hammingNorm_le_card_fintype {x : ∀ i, β i} : hammingNorm x ≤ Fintype.
   hammingDist_le_card_fintype
 #align hamming_norm_le_card_fintype hammingNorm_le_card_fintype
 
-theorem hammingNorm_comp_le_hammingNorm (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf : ∀ i, f i 0 = 0) :
+lemma hammingNorm_comp_le_hammingNorm (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf : ∀ i, f i 0 = 0) :
     (hammingNorm fun i => f i (x i)) ≤ hammingNorm x := by
   simpa only [← hammingDist_zero_right, hf] using hammingDist_comp_le_hammingDist f (y := fun _ ↦ 0)
 #align hamming_norm_comp_le_hamming_norm hammingNorm_comp_le_hammingNorm
 
-theorem hammingNorm_comp (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf₁ : ∀ i, Injective (f i))
+lemma hammingNorm_comp (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf₁ : ∀ i, Injective (f i))
     (hf₂ : ∀ i, f i 0 = 0) : (hammingNorm fun i => f i (x i)) = hammingNorm x := by
   simpa only [← hammingDist_zero_right, hf₂] using hammingDist_comp f hf₁ (y := fun _ ↦ 0)
 #align hamming_norm_comp hammingNorm_comp
@@ -323,12 +323,12 @@ lemma ofHamming_symm_eq : (@ofHamming _ β).symm = toHamming :=
 #align hamming.of_hamming_symm_eq Hamming.ofHamming_symm_eq
 
 @[simp]
-theorem toHamming_ofHamming (x : Hamming β) : toHamming (ofHamming x) = x :=
+lemma toHamming_ofHamming (x : Hamming β) : toHamming (ofHamming x) = x :=
   rfl
 #align hamming.to_hamming_of_hamming Hamming.toHamming_ofHamming
 
 @[simp]
-theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
+lemma ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
   rfl
 #align hamming.of_hamming_to_hamming Hamming.ofHamming_toHamming
 
@@ -408,7 +408,7 @@ instance : Dist (Hamming β) :=
   ⟨fun x y => hammingDist (ofHamming x) (ofHamming y)⟩
 
 @[simp, push_cast]
-theorem dist_eq_hammingDist (x y : Hamming β) :
+lemma dist_eq_hammingDist (x y : Hamming β) :
     dist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
 #align hamming.dist_eq_hamming_dist Hamming.dist_eq_hammingDist
@@ -445,7 +445,7 @@ instance : PseudoMetricSpace (Hamming β) where
     exact_mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]
-theorem nndist_eq_hammingDist (x y : Hamming β) :
+lemma nndist_eq_hammingDist (x y : Hamming β) :
     nndist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist

@@ -83,7 +83,7 @@ instance : Algebra R (⨁ i, A i) where
     rw [DirectSum.of_mul_of, ← of_smul]
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.smul_def r ⟨i, xi⟩)
 
-theorem algebraMap_apply (r : R) :
+lemma algebraMap_apply (r : R) :
     algebraMap R (⨁ i, A i) r = DirectSum.of A 0 (GAlgebra.toFun r) :=
   rfl
 #align direct_sum.algebra_map_apply DirectSum.algebraMap_apply

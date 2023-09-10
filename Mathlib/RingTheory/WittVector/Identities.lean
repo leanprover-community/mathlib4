@@ -39,7 +39,7 @@ noncomputable section
 
 -- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
-theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
+lemma frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
   simp only []
   have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
     IsPoly.comp (hg := frobenius_isPoly p) (hf := verschiebung_isPoly)
@@ -49,7 +49,7 @@ theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p
 #align witt_vector.frobenius_verschiebung WittVector.frobenius_verschiebung
 
 /-- Verschiebung is the same as multiplication by `p` on the ring of Witt vectors of `ZMod p`. -/
-theorem verschiebung_zmod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
+lemma verschiebung_zmod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
   rw [← frobenius_verschiebung, frobenius_zmodp]
 #align witt_vector.verschiebung_zmod WittVector.verschiebung_zmod
 
@@ -104,7 +104,7 @@ variable {p R}
 
 -- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
 /-- The “projection formula” for Frobenius and Verschiebung. -/
-theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
+lemma verschiebung_mul_frobenius (x y : 𝕎 R) :
     verschiebung (x * frobenius y) = verschiebung x * y := by
   simp only []
   have : IsPoly₂ p fun {R} [Rcr : CommRing R] x y ↦ verschiebung (x * frobenius y) :=
@@ -144,7 +144,7 @@ lemma verschiebung_frobenius_comm [CharP R p] :
 
 open Function
 
-theorem iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
+lemma iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
     (verschiebung^[n] x).coeff (k + n) = x.coeff k := by
   induction' n with k ih
   · simp
@@ -152,7 +152,7 @@ theorem iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
     exact ih
 #align witt_vector.iterate_verschiebung_coeff WittVector.iterate_verschiebung_coeff
 
-theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
+lemma iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
     verschiebung^[i] x * y = verschiebung^[i] (x * frobenius^[i] y) := by
   induction' i with i ih generalizing y
   · simp
@@ -163,7 +163,7 @@ section CharP
 
 variable [CharP R p]
 
-theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
+lemma iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
     verschiebung^[i] x * verschiebung^[j] y =
       verschiebung^[i + j] (frobenius^[j] x * frobenius^[i] y) := by
   calc
@@ -182,7 +182,7 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
 #align witt_vector.iterate_verschiebung_mul WittVector.iterate_verschiebung_mul
 
 -- Porting note: `ring_nf` doesn't handle powers yet; needed to add `Nat.pow_succ` rewrite
-theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
+lemma iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
     (frobenius^[i] x).coeff k = x.coeff k ^ p ^ i := by
   induction' i with i ih
   · simp
@@ -191,7 +191,7 @@ theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
 #align witt_vector.iterate_frobenius_coeff WittVector.iterate_frobenius_coeff
 
 /-- This is a slightly specialized form of [Hazewinkel, *Witt Vectors*][Haze09] 6.2 equation 5. -/
-theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
+lemma iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
     (verschiebung^[i] x * verschiebung^[j] y).coeff (i + j) =
       x.coeff 0 ^ p ^ j * y.coeff 0 ^ p ^ i := by
   calc

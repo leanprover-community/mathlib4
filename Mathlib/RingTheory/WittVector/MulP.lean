@@ -47,7 +47,7 @@ noncomputable def wittMulN : ℕ → ℕ → MvPolynomial ℕ ℤ
 
 variable {p}
 
-theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
+lemma mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
     (x * n).coeff k = aeval x.coeff (wittMulN p n k) := by
   induction' n with n ih generalizing k
   · simp only [Nat.zero_eq, Nat.cast_zero, mul_zero, zero_coeff, wittMulN,
@@ -65,12 +65,12 @@ variable (p)
 
 /-- Multiplication by `n` is a polynomial function. -/
 @[is_poly]
-theorem mulN_isPoly (n : ℕ) : IsPoly p fun R _Rcr x => x * n :=
+lemma mulN_isPoly (n : ℕ) : IsPoly p fun R _Rcr x => x * n :=
   ⟨⟨wittMulN p n, fun R _Rcr x => by funext k; exact mulN_coeff n x k⟩⟩
 #align witt_vector.mul_n_is_poly WittVector.mulN_isPoly
 
 @[simp]
-theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
+lemma bind₁_wittMulN_wittPolynomial (n k : ℕ) :
     bind₁ (wittMulN p n) (wittPolynomial p ℤ k) = n * wittPolynomial p ℤ k := by
   induction' n with n ih
   · simp [wittMulN, Nat.cast_zero, zero_mul, bind₁_zero_wittPolynomial]

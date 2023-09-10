@@ -60,21 +60,21 @@ lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← Set.compl_setOf, isCompl_compl]
 #align int.is_compl_even_odd Int.isCompl_even_odd
 
-theorem even_or_odd (n : ℤ) : Even n ∨ Odd n :=
+lemma even_or_odd (n : ℤ) : Even n ∨ Odd n :=
   Or.imp_right odd_iff_not_even.2 <| em <| Even n
 #align int.even_or_odd Int.even_or_odd
 
-theorem even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
+lemma even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 #align int.even_or_odd' Int.even_or_odd'
 
-theorem even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
+lemma even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
   cases even_or_odd n with
   | inl h => exact Or.inl ⟨h, even_iff_not_odd.mp h⟩
   | inr h => exact Or.inr ⟨h, odd_iff_not_even.mp h⟩
 #align int.even_xor_odd Int.even_xor'_odd
 
-theorem even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
+lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;> use k
   · simpa only [← two_mul, Xor', true_and_iff, eq_self_iff_true, not_true, or_false_iff,
       and_false_iff] using (succ_ne_self (2 * k)).symm
@@ -111,10 +111,10 @@ lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
 set_option linter.deprecated false in
 
 @[simp, deprecated]
-theorem not_even_bit1 (n : ℤ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
+lemma not_even_bit1 (n : ℤ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
 #align int.not_even_bit1 Int.not_even_bit1
 
-theorem two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by
+lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by
   simp [add_emod]
 #align int.two_not_dvd_two_mul_add_one Int.two_not_dvd_two_mul_add_one
 
@@ -142,11 +142,11 @@ lemma even_mul : Even (m * n) ↔ Even m ∨ Even n := by
 lemma odd_mul : Odd (m * n) ↔ Odd m ∧ Odd n := by simp [not_or, parity_simps]
 #align int.odd_mul Int.odd_mul
 
-theorem Odd.of_mul_left (h : Odd (m * n)) : Odd m :=
+lemma Odd.of_mul_left (h : Odd (m * n)) : Odd m :=
   (odd_mul.mp h).1
 #align int.odd.of_mul_left Int.Odd.of_mul_left
 
-theorem Odd.of_mul_right (h : Odd (m * n)) : Odd n :=
+lemma Odd.of_mul_right (h : Odd (m * n)) : Odd n :=
   (odd_mul.mp h).2
 #align int.odd.of_mul_right Int.Odd.of_mul_right
 
@@ -176,7 +176,7 @@ lemma odd_add' : Odd (m + n) ↔ (Odd n ↔ Even m) := by
   rw [add_comm, odd_add]
 #align int.odd_add' Int.odd_add'
 
-theorem ne_of_odd_add (h : Odd (m + n)) : m ≠ n :=
+lemma ne_of_odd_add (h : Odd (m + n)) : m ≠ n :=
   fun hnot => by simp [hnot, parity_simps] at h
 #align int.ne_of_odd_add Int.ne_of_odd_add
 
@@ -189,18 +189,18 @@ lemma odd_sub' : Odd (m - n) ↔ (Odd n ↔ Even m) := by
   rw [odd_iff_not_even, even_sub, not_iff, not_iff_comm, odd_iff_not_even]
 #align int.odd_sub' Int.odd_sub'
 
-theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
+lemma even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
   simpa [even_mul, parity_simps] using n.even_or_odd
 #align int.even_mul_succ_self Int.even_mul_succ_self
 
 @[simp, norm_cast]
-theorem even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
+lemma even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
   rw_mod_cast [even_iff, Nat.even_iff]
 #align int.even_coe_nat Int.even_coe_nat
 
 -- Porting note: was simp. simp can prove this.
 @[norm_cast]
-theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
+lemma odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
   rw [odd_iff_not_even, Nat.odd_iff_not_even, even_coe_nat]
 #align int.odd_coe_nat Int.odd_coe_nat
 
@@ -273,7 +273,7 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
   simp [Int.add_emod]
 #align int.add_one_div_two_mul_two_of_odd Int.add_one_ediv_two_mul_two_of_odd
 
-theorem two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
+lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 #align int.two_mul_div_two_of_odd Int.two_mul_ediv_two_of_odd
 

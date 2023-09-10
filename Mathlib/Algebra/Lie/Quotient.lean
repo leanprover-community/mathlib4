@@ -79,7 +79,7 @@ abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 #align lie_submodule.quotient.mk LieSubmodule.Quotient.mk
 
-theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
+lemma is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
   rfl
 #align lie_submodule.quotient.is_quotient_mk LieSubmodule.Quotient.is_quotient_mk
 
@@ -131,7 +131,7 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
 #align lie_submodule.quotient.lie_quotient_has_bracket LieSubmodule.Quotient.lieQuotientHasBracket
 
 @[simp]
-theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L ⧸ I)⁆ :=
+lemma mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L ⧸ I)⁆ :=
   rfl
 #align lie_submodule.quotient.mk_bracket LieSubmodule.Quotient.mk_bracket
 

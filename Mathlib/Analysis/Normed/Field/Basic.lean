@@ -143,7 +143,7 @@ lemma nnnorm_one [SeminormedAddCommGroup α] [One α] [NormOneClass α] : ‖(1 
   NNReal.eq norm_one
 #align nnnorm_one nnnorm_one
 
-theorem NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+lemma NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     Nontrivial α :=
   nontrivial_of_ne 0 1 <| ne_of_apply_ne norm <| by simp
 #align norm_one_class.nontrivial NormOneClass.nontrivial
@@ -189,21 +189,21 @@ section NonUnitalSeminormedRing
 
 variable [NonUnitalSeminormedRing α]
 
-theorem norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
+lemma norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
   NonUnitalSeminormedRing.norm_mul _ _
 #align norm_mul_le norm_mul_le
 
-theorem nnnorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ := by
+lemma nnnorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ := by
   simpa only [← norm_toNNReal, ← Real.toNNReal_mul (norm_nonneg _)] using
     Real.toNNReal_mono (norm_mul_le _ _)
 #align nnnorm_mul_le nnnorm_mul_le
 
-theorem one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖ :=
+lemma one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖ :=
   (le_mul_iff_one_le_left <| norm_pos_iff.mpr (one_ne_zero : (1 : β) ≠ 0)).mp
     (by simpa only [mul_one] using norm_mul_le (1 : β) 1)
 #align one_le_norm_one one_le_norm_one
 
-theorem one_le_nnnorm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖₊ :=
+lemma one_le_nnnorm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖₊ :=
   one_le_norm_one β
 #align one_le_nnnorm_one one_le_nnnorm_one
 
@@ -221,12 +221,12 @@ lemma Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι
 #align filter.is_bounded_under_le.mul_tendsto_zero Filter.isBoundedUnder_le_mul_tendsto_zero
 
 /-- In a seminormed ring, the left-multiplication `AddMonoidHom` is bounded. -/
-theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ ‖x‖ * ‖y‖ :=
+lemma mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ ‖x‖ * ‖y‖ :=
   norm_mul_le x
 #align mul_left_bound mulLeft_bound
 
 /-- In a seminormed ring, the right-multiplication `AddMonoidHom` is bounded. -/
-theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
+lemma mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
   rw [mul_comm]
   exact norm_mul_le y x
 #align mul_right_bound mulRight_bound
@@ -355,7 +355,7 @@ lemma Finset.nnnorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (
 
 /-- If `α` is a seminormed ring, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n` for `n > 0`.
 See also `nnnorm_pow_le`. -/
-theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n
+lemma nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n
   | 1, _ => by simp only [pow_one, le_rfl]
   | n + 2, _ => by
     simpa only [pow_succ _ (n + 1)] using
@@ -370,7 +370,7 @@ lemma nnnorm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖₊ ≤ �
 #align nnnorm_pow_le nnnorm_pow_le
 
 /-- If `α` is a seminormed ring, then `‖a ^ n‖ ≤ ‖a‖ ^ n` for `n > 0`. See also `norm_pow_le`. -/
-theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ n := by
+lemma norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ n := by
   simpa only [NNReal.coe_pow, coe_nnnorm] using NNReal.coe_mono (nnnorm_pow_le' a h)
 #align norm_pow_le' norm_pow_le'
 
@@ -380,7 +380,7 @@ lemma norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a‖
     fun n _hn => norm_pow_le' a n.succ_pos
 #align norm_pow_le norm_pow_le
 
-theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
+lemma eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
   eventually_atTop.mpr ⟨1, fun _b h => norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
 #align eventually_norm_pow_le eventually_norm_pow_le
 
@@ -501,7 +501,7 @@ section NormedDivisionRing
 variable [NormedDivisionRing α]
 
 @[simp]
-theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
+lemma norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
   NormedDivisionRing.norm_mul' a b
 #align norm_mul norm_mul
 
@@ -518,7 +518,7 @@ instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
 #align is_absolute_value_norm isAbsoluteValue_norm
 
 @[simp]
-theorem nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ :=
+lemma nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ :=
   NNReal.eq <| norm_mul a b
 #align nnnorm_mul nnnorm_mul
 
@@ -541,40 +541,40 @@ def nnnormHom : α →*₀ ℝ≥0 where
 #align nnnorm_hom nnnormHom
 
 @[simp]
-theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
+lemma norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
   (normHom.toMonoidHom : α →* ℝ).map_pow a
 #align norm_pow norm_pow
 
 @[simp]
-theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
+lemma nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   (nnnormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
 #align nnnorm_pow nnnorm_pow
 
-protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
+protected lemma List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
   (normHom.toMonoidHom : α →* ℝ).map_list_prod _
 #align list.norm_prod List.norm_prod
 
-protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
+protected lemma List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
   (nnnormHom.toMonoidHom : α →* ℝ≥0).map_list_prod _
 #align list.nnnorm_prod List.nnnorm_prod
 
 @[simp]
-theorem norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
+lemma norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
   map_div₀ (normHom : α →*₀ ℝ) a b
 #align norm_div norm_div
 
 @[simp]
-theorem nnnorm_div (a b : α) : ‖a / b‖₊ = ‖a‖₊ / ‖b‖₊ :=
+lemma nnnorm_div (a b : α) : ‖a / b‖₊ = ‖a‖₊ / ‖b‖₊ :=
   map_div₀ (nnnormHom : α →*₀ ℝ≥0) a b
 #align nnnorm_div nnnorm_div
 
 @[simp]
-theorem norm_inv (a : α) : ‖a⁻¹‖ = ‖a‖⁻¹ :=
+lemma norm_inv (a : α) : ‖a⁻¹‖ = ‖a‖⁻¹ :=
   map_inv₀ (normHom : α →*₀ ℝ) a
 #align norm_inv norm_inv
 
 @[simp]
-theorem nnnorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
+lemma nnnorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
   NNReal.eq <| by simp
 #align nnnorm_inv nnnorm_inv
 
@@ -702,12 +702,12 @@ instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
 #align normed_field.to_normed_comm_ring NormedField.toNormedCommRing
 
 @[simp]
-theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖ = ∏ b in s, ‖f b‖ :=
+lemma norm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖ = ∏ b in s, ‖f b‖ :=
   (normHom.toMonoidHom : α →* ℝ).map_prod f s
 #align norm_prod norm_prod
 
 @[simp]
-theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖₊ = ∏ b in s, ‖f b‖₊ :=
+lemma nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖₊ = ∏ b in s, ‖f b‖₊ :=
   (nnnormHom.toMonoidHom : α →* ℝ≥0).map_prod f s
 #align nnnorm_prod nnnorm_prod
 
@@ -723,7 +723,7 @@ lemma exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
   ‹NontriviallyNormedField α›.non_trivial
 #align normed_field.exists_one_lt_norm NormedField.exists_one_lt_norm
 
-theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
+lemma exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
   let ⟨w, hw⟩ := exists_one_lt_norm α
   let ⟨n, hn⟩ := pow_unbounded_of_one_lt r hw
   ⟨w ^ n, by rwa [norm_pow]⟩
@@ -741,7 +741,7 @@ lemma exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
 variable {α}
 
 @[instance]
-theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
+lemma punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
@@ -812,7 +812,7 @@ lemma toNNReal_mul_nnnorm {x : ℝ} (y : ℝ) (hx : 0 ≤ x) : x.toNNReal * ‖y
     coe_mk]
 #align real.to_nnreal_mul_nnnorm Real.toNNReal_mul_nnnorm
 
-theorem nnnorm_mul_toNNReal (x : ℝ) {y : ℝ} (hy : 0 ≤ y) : ‖x‖₊ * y.toNNReal = ‖x * y‖₊ := by
+lemma nnnorm_mul_toNNReal (x : ℝ) {y : ℝ} (hy : 0 ≤ y) : ‖x‖₊ * y.toNNReal = ‖x * y‖₊ := by
   rw [mul_comm, mul_comm x, toNNReal_mul_nnnorm x hy]
 #align real.nnnorm_mul_to_nnreal Real.nnnorm_mul_toNNReal
 
@@ -823,11 +823,11 @@ namespace NNReal
 open NNReal
 
 -- porting note: removed `@[simp]` because `simp` can prove this
-theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
+lemma norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 #align nnreal.norm_eq NNReal.norm_eq
 
 @[simp]
-theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
+lemma nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
   NNReal.eq <| Real.norm_of_nonneg x.2
 #align nnreal.nnnorm_eq NNReal.nnnorm_eq
 

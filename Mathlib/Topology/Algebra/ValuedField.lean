@@ -274,7 +274,7 @@ lemma continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := 
 #align valued.continuous_extension Valued.continuous_extension
 
 @[simp, norm_cast]
-theorem extension_extends (x : K) : extension (x : hat K) = v x := by
+lemma extension_extends (x : K) : extension (x : hat K) = v x := by
   refine' Completion.denseInducing_coe.extend_eq_of_tendsto _
   rw [← Completion.denseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
@@ -360,7 +360,7 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
-theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
+lemma valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
 #align valued.valued_completion_apply Valued.valuedCompletion_apply
 

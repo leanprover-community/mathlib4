@@ -31,7 +31,7 @@ namespace GaussianInt
 
 open PrincipalIdealRing
 
-theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
+lemma mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     (hpi : Prime (p : ℤ[i])) : p % 4 = 3 :=
   hp.1.eq_two_or_odd.elim
     (fun hp2 =>
@@ -84,7 +84,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
       tauto
 #align gaussian_int.mod_four_eq_three_of_nat_prime_of_prime GaussianInt.mod_four_eq_three_of_nat_prime_of_prime
 
-theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (hp3 : p % 4 = 3) :
+lemma prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (hp3 : p % 4 = 3) :
     Prime (p : ℤ[i]) :=
   irreducible_iff_prime.1 <|
     by_contradiction fun hpi =>
@@ -95,7 +95,7 @@ theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (h
 #align gaussian_int.prime_of_nat_prime_of_mod_four_eq_three GaussianInt.prime_of_nat_prime_of_mod_four_eq_three
 
 /-- A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4` -/
-theorem prime_iff_mod_four_eq_three_of_nat_prime (p : ℕ) [Fact p.Prime] :
+lemma prime_iff_mod_four_eq_three_of_nat_prime (p : ℕ) [Fact p.Prime] :
     Prime (p : ℤ[i]) ↔ p % 4 = 3 :=
   ⟨mod_four_eq_three_of_nat_prime_of_prime p, prime_of_nat_prime_of_mod_four_eq_three p⟩
 #align gaussian_int.prime_iff_mod_four_eq_three_of_nat_prime GaussianInt.prime_iff_mod_four_eq_three_of_nat_prime

@@ -76,22 +76,22 @@ instance : Group (DihedralGroup n) where
     exact congr_arg r (sub_self a)
 
 @[simp]
-theorem r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
+lemma r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
   rfl
 #align dihedral_group.r_mul_r DihedralGroup.r_mul_r
 
 @[simp]
-theorem r_mul_sr (i j : ZMod n) : r i * sr j = sr (j - i) :=
+lemma r_mul_sr (i j : ZMod n) : r i * sr j = sr (j - i) :=
   rfl
 #align dihedral_group.r_mul_sr DihedralGroup.r_mul_sr
 
 @[simp]
-theorem sr_mul_r (i j : ZMod n) : sr i * r j = sr (i + j) :=
+lemma sr_mul_r (i j : ZMod n) : sr i * r j = sr (i + j) :=
   rfl
 #align dihedral_group.sr_mul_r DihedralGroup.sr_mul_r
 
 @[simp]
-theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
+lemma sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
   rfl
 #align dihedral_group.sr_mul_sr DihedralGroup.sr_mul_sr
 
@@ -132,7 +132,7 @@ lemma nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   · rw [Nat.card_eq_fintype_card, card]
 
 @[simp]
-theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
+lemma r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
   induction' k with k IH
   · rw [Nat.cast_zero]
     rfl
@@ -150,13 +150,13 @@ lemma r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
 #align dihedral_group.r_one_pow_n DihedralGroup.r_one_pow_n
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `sr_mul_self` is no longer useful.
-theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
+lemma sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
 #align dihedral_group.sr_mul_self DihedralGroup.sr_mul_self
 
 /-- If `0 < n`, then `sr i` has order 2.
 -/
 @[simp]
-theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
+lemma orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   apply orderOf_eq_prime
   · rw [sq, sr_mul_self]
   · -- Porting note: Previous proof was `decide`

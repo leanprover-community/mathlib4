@@ -47,7 +47,7 @@ variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 
 
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 
-theorem strongTopology.locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
+lemma strongTopology.locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
     (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
     @LocallyConvexSpace R (E →SL[σ] F) _ _ _ (strongTopology σ F 𝔖) := by
   letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖

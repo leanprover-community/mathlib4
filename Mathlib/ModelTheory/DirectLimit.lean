@@ -60,7 +60,7 @@ def natLERec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
 #align first_order.language.directed_system.nat_le_rec FirstOrder.Language.DirectedSystem.natLERec
 
 @[simp]
-theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
+lemma coe_natLERec (m n : ℕ) (h : m ≤ n) :
     (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
@@ -323,7 +323,7 @@ lemma of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = 
 
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
-theorem exists_of (z : DirectLimit G f) : ∃ i x, of L ι G f i x = z :=
+lemma exists_of (z : DirectLimit G f) : ∃ i x, of L ι G f i x = z :=
   ⟨z.out.1, z.out.2, by simp⟩
 #align first_order.language.direct_limit.exists_of FirstOrder.Language.DirectLimit.exists_of
 
@@ -381,7 +381,7 @@ lemma lift_quotient_mk'_sigma_mk' {i} (x : G i) : lift L ι G f g Hg ⟦.mk f i 
 lemma lift_of {i} (x : G i) : lift L ι G f g Hg (of L ι G f i x) = g i x := by simp
 #align first_order.language.direct_limit.lift_of FirstOrder.Language.DirectLimit.lift_of
 
-theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
+lemma lift_unique (F : DirectLimit G f ↪[L] P) (x) :
     F x =
       lift L ι G f (fun i => F.comp <| of L ι G f i)
         (fun i j hij x => by rw [F.comp_apply, F.comp_apply, of_f]) x :=

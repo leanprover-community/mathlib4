@@ -99,7 +99,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddGroupCat.of
 
 @[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Group R] : ↑(GroupCat.of R) = R :=
+lemma coe_of (R : Type u) [Group R] : ↑(GroupCat.of R) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Group.coe_of GroupCat.coe_of
@@ -126,7 +126,7 @@ instance : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).
 instance (G H : GroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
 @[to_additive (attr := simp)]
-theorem one_apply (G H : GroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
+lemma one_apply (G H : GroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Group.one_apply GroupCat.one_apply
@@ -258,7 +258,7 @@ instance : Inhabited CommGroupCat :=
 -- bundled or unbundled lemmas.
 -- (This change seems dangerous!)
 @[to_additive]
-theorem coe_of (R : Type u) [CommGroup R] : (CommGroupCat.of R : Type u) = R :=
+lemma coe_of (R : Type u) [CommGroup R] : (CommGroupCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.coe_of CommGroupCat.coe_of
@@ -300,7 +300,7 @@ instance : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroup
 instance (G H : CommGroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
 @[to_additive (attr := simp)]
-theorem one_apply (G H : CommGroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
+lemma one_apply (G H : CommGroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.one_apply CommGroupCat.one_apply

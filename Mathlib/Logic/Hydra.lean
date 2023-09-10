@@ -106,7 +106,7 @@ lemma not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
 
 /-- For any relation `r` on `α`, multiset addition `Multiset α × Multiset α → Multiset α` is a
   fibration between the game sum of `CutExpand r` with itself and `CutExpand r` itself. -/
-theorem cutExpand_fibration (r : α → α → Prop) :
+lemma cutExpand_fibration (r : α → α → Prop) :
     Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s ↦ s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
   classical
@@ -150,7 +150,7 @@ lemma _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutE
 #align acc.cut_expand Acc.cutExpand
 
 /-- `CutExpand r` is well-founded when `r` is. -/
-theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
+lemma _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
   ⟨have := hr.isIrrefl; fun _ ↦ acc_of_singleton fun a _ ↦ (hr.apply a).cutExpand⟩
 #align well_founded.cut_expand WellFounded.cutExpand
 

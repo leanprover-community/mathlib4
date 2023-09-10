@@ -44,7 +44,7 @@ instance : SetLike (Closeds α) α where
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
-theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
+lemma closed (s : Closeds α) : IsClosed (s : Set α) :=
   s.closed'
 #align topological_space.closeds.closed TopologicalSpace.Closeds.closed
 
@@ -59,7 +59,7 @@ protected lemma ext {s t : Closeds α} (h : (s : Set α) = t) : s = t :=
 #align topological_space.closeds.ext TopologicalSpace.Closeds.ext
 
 @[simp]
-theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
+lemma coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.closeds.coe_mk TopologicalSpace.Closeds.coe_mk
 
@@ -105,12 +105,12 @@ instance : Inhabited (Closeds α) :=
   ⟨⊥⟩
 
 @[simp, norm_cast]
-theorem coe_sup (s t : Closeds α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
+lemma coe_sup (s t : Closeds α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
 #align topological_space.closeds.coe_sup TopologicalSpace.Closeds.coe_sup
 
 @[simp, norm_cast]
-theorem coe_inf (s t : Closeds α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
+lemma coe_inf (s t : Closeds α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 #align topological_space.closeds.coe_inf TopologicalSpace.Closeds.coe_inf
 
@@ -141,13 +141,13 @@ lemma coe_sInf {S : Set (Closeds α)} : (↑(sInf S) : Set α) = ⋂ i ∈ S, �
 #align topological_space.closeds.coe_Inf TopologicalSpace.Closeds.coe_sInf
 
 @[simp, norm_cast]
-theorem coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :
+lemma coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.sup f) : Set α) = s.sup ((↑) ∘ f) :=
   map_finset_sup (⟨⟨(↑), coe_sup⟩, coe_bot⟩ : SupBotHom (Closeds α) (Set α)) _ _
 #align topological_space.closeds.coe_finset_sup TopologicalSpace.Closeds.coe_finset_sup
 
 @[simp, norm_cast]
-theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
+lemma coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Closeds α) (Set α)) _ _
 #align topological_space.closeds.coe_finset_inf TopologicalSpace.Closeds.coe_finset_inf
@@ -203,11 +203,11 @@ def Opens.compl (s : Opens α) : Closeds α :=
   ⟨sᶜ, s.2.isClosed_compl⟩
 #align topological_space.opens.compl TopologicalSpace.Opens.compl
 
-nonrec theorem Closeds.compl_compl (s : Closeds α) : s.compl.compl = s :=
+nonrec lemma Closeds.compl_compl (s : Closeds α) : s.compl.compl = s :=
   Closeds.ext (compl_compl (s : Set α))
 #align topological_space.closeds.compl_compl TopologicalSpace.Closeds.compl_compl
 
-nonrec theorem Opens.compl_compl (s : Opens α) : s.compl.compl = s :=
+nonrec lemma Opens.compl_compl (s : Opens α) : s.compl.compl = s :=
   Opens.ext (compl_compl (s : Set α))
 #align topological_space.opens.compl_compl TopologicalSpace.Opens.compl_compl
 
@@ -284,7 +284,7 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-theorem clopen (s : Clopens α) : IsClopen (s : Set α) :=
+lemma clopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.clopen'
 #align topological_space.clopens.clopen TopologicalSpace.Clopens.clopen
 
@@ -305,7 +305,7 @@ protected lemma ext {s t : Clopens α} (h : (s : Set α) = t) : s = t :=
 #align topological_space.clopens.ext TopologicalSpace.Clopens.ext
 
 @[simp]
-theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
+lemma coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.clopens.coe_mk TopologicalSpace.Clopens.coe_mk
 
@@ -320,10 +320,10 @@ instance : BooleanAlgebra (Clopens α) :=
   SetLike.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
     fun _ _ => rfl
 
-@[simp] theorem coe_sup (s t : Clopens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t := rfl
+@[simp] lemma coe_sup (s t : Clopens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t := rfl
 #align topological_space.clopens.coe_sup TopologicalSpace.Clopens.coe_sup
 
-@[simp] theorem coe_inf (s t : Clopens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := rfl
+@[simp] lemma coe_inf (s t : Clopens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t := rfl
 #align topological_space.clopens.coe_inf TopologicalSpace.Clopens.coe_inf
 
 @[simp] lemma coe_top : (↑(⊤ : Clopens α) : Set α) = univ := rfl
@@ -332,10 +332,10 @@ instance : BooleanAlgebra (Clopens α) :=
 @[simp] lemma coe_bot : (↑(⊥ : Clopens α) : Set α) = ∅ := rfl
 #align topological_space.clopens.coe_bot TopologicalSpace.Clopens.coe_bot
 
-@[simp] theorem coe_sdiff (s t : Clopens α) : (↑(s \ t) : Set α) = ↑s \ ↑t := rfl
+@[simp] lemma coe_sdiff (s t : Clopens α) : (↑(s \ t) : Set α) = ↑s \ ↑t := rfl
 #align topological_space.clopens.coe_sdiff TopologicalSpace.Clopens.coe_sdiff
 
-@[simp] theorem coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
+@[simp] lemma coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩

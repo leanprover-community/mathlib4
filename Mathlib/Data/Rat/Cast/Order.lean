@@ -98,49 +98,49 @@ lemma cast_abs {q : ℚ} : ((|q| : ℚ) : K) = |(q : K)| := by simp [abs_eq_max_
 open Set
 
 @[simp]
-theorem preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b := by
+lemma preimage_cast_Icc (a b : ℚ) : (↑) ⁻¹' Icc (a : K) b = Icc a b := by
   ext x
   simp
 #align rat.preimage_cast_Icc Rat.preimage_cast_Icc
 
 @[simp]
-theorem preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b := by
+lemma preimage_cast_Ico (a b : ℚ) : (↑) ⁻¹' Ico (a : K) b = Ico a b := by
   ext x
   simp
 #align rat.preimage_cast_Ico Rat.preimage_cast_Ico
 
 @[simp]
-theorem preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b := by
+lemma preimage_cast_Ioc (a b : ℚ) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b := by
   ext x
   simp
 #align rat.preimage_cast_Ioc Rat.preimage_cast_Ioc
 
 @[simp]
-theorem preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b := by
+lemma preimage_cast_Ioo (a b : ℚ) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b := by
   ext x
   simp
 #align rat.preimage_cast_Ioo Rat.preimage_cast_Ioo
 
 @[simp]
-theorem preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a := by
+lemma preimage_cast_Ici (a : ℚ) : (↑) ⁻¹' Ici (a : K) = Ici a := by
   ext x
   simp
 #align rat.preimage_cast_Ici Rat.preimage_cast_Ici
 
 @[simp]
-theorem preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a := by
+lemma preimage_cast_Iic (a : ℚ) : (↑) ⁻¹' Iic (a : K) = Iic a := by
   ext x
   simp
 #align rat.preimage_cast_Iic Rat.preimage_cast_Iic
 
 @[simp]
-theorem preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a := by
+lemma preimage_cast_Ioi (a : ℚ) : (↑) ⁻¹' Ioi (a : K) = Ioi a := by
   ext x
   simp
 #align rat.preimage_cast_Ioi Rat.preimage_cast_Ioi
 
 @[simp]
-theorem preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a := by
+lemma preimage_cast_Iio (a : ℚ) : (↑) ⁻¹' Iio (a : K) = Iio a := by
   ext x
   simp
 #align rat.preimage_cast_Iio Rat.preimage_cast_Iio

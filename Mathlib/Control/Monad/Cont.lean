@@ -67,14 +67,14 @@ def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
 #align cont_t.map ContT.map
 
-theorem run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
+lemma run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
   rfl
 #align cont_t.run_cont_t_map_cont_t ContT.run_contT_map_contT
 
 def withContT (f : (β → m r) → α → m r) (x : ContT r m α) : ContT r m β := fun g => x <| f g
 #align cont_t.with_cont_t ContT.withContT
 
-theorem run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
+lemma run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
     run (withContT f x) = run x ∘ f :=
   rfl
 #align cont_t.run_with_cont_t ContT.run_withContT

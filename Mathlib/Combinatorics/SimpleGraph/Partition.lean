@@ -85,12 +85,12 @@ variable {G} (P : G.Partition)
 def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
 #align simple_graph.partition.part_of_vertex SimpleGraph.Partition.partOfVertex
 
-theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
+lemma partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
   obtain ⟨h, -⟩ := (P.isPartition.2 v).choose_spec.1
   exact h
 #align simple_graph.partition.part_of_vertex_mem SimpleGraph.Partition.partOfVertex_mem
 
-theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
+lemma mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
   obtain ⟨⟨h1, h2⟩, _h3⟩ := (P.isPartition.2 v).choose_spec
   exact h2.1
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex

@@ -100,7 +100,7 @@ section
 
 variable [HasKernels V] [HasImages V]
 
-theorem boundaries_le_cycles (C : HomologicalComplex V c) (i : ι) : C.boundaries i ≤ C.cycles i :=
+lemma boundaries_le_cycles (C : HomologicalComplex V c) (i : ι) : C.boundaries i ≤ C.cycles i :=
   image_le_kernel _ _ (C.dTo_comp_dFrom i)
 #align homological_complex.boundaries_le_cycles HomologicalComplex.boundaries_le_cycles
 
@@ -112,7 +112,7 @@ abbrev boundariesToCycles (C : HomologicalComplex V c) (i : ι) :
 
 /-- Prefer `boundariesToCycles`. -/
 @[simp 1100]
-theorem imageToKernel_as_boundariesToCycles (C : HomologicalComplex V c) (i : ι) (h) :
+lemma imageToKernel_as_boundariesToCycles (C : HomologicalComplex V c) (i : ι) (h) :
     (C.boundaries i).ofLE (C.cycles i) h = C.boundariesToCycles i := rfl
 #align homological_complex.image_to_kernel_as_boundaries_to_cycles HomologicalComplex.imageToKernel_as_boundariesToCycles
 
@@ -203,7 +203,7 @@ abbrev cyclesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles i : V) ⟶ (C₂.cy
 
 -- Porting note: Originally `@[simp, reassoc.1, elementwise]`
 @[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
-theorem cyclesMap_arrow (f : C₁ ⟶ C₂) (i : ι) :
+lemma cyclesMap_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cyclesMap f i ≫ (C₂.cycles i).arrow = (C₁.cycles i).arrow ≫ f.f i := by simp
 #align cycles_map_arrow cyclesMap_arrow
 
@@ -211,13 +211,13 @@ attribute [simp 1100] cyclesMap_arrow_assoc
 attribute [simp] cyclesMap_arrow_apply
 
 @[simp]
-theorem cyclesMap_id (i : ι) : cyclesMap (𝟙 C₁) i = 𝟙 _ := by
+lemma cyclesMap_id (i : ι) : cyclesMap (𝟙 C₁) i = 𝟙 _ := by
   dsimp only [cyclesMap]
   simp
 #align cycles_map_id cyclesMap_id
 
 @[simp]
-theorem cyclesMap_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
+lemma cyclesMap_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     cyclesMap (f ≫ g) i = cyclesMap f i ≫ cyclesMap g i := by
   dsimp only [cyclesMap]
   simp [Subobject.factorThru_right]
@@ -270,7 +270,7 @@ variable {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
 -- Porting note: Originally `@[simp, reassoc.1]`
 @[reassoc (attr := simp)]
-theorem boundariesToCycles_naturality (i : ι) :
+lemma boundariesToCycles_naturality (i : ι) :
     boundariesMap f i ≫ C₂.boundariesToCycles i = C₁.boundariesToCycles i ≫ cyclesMap f i := by
   ext
   simp

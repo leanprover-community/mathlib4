@@ -121,7 +121,7 @@ noncomputable instance forgetCreatesLimits : CreatesLimitsOfSize (forget T) wher
 #align category_theory.monad.forget_creates_limits CategoryTheory.Monad.forgetCreatesLimits
 
 /-- `D ⋙ forget T` has a limit, then `D` has a limit. -/
-theorem hasLimit_of_comp_forget_hasLimit (D : J ⥤ Algebra T) [HasLimit (D ⋙ forget T)] :
+lemma hasLimit_of_comp_forget_hasLimit (D : J ⥤ Algebra T) [HasLimit (D ⋙ forget T)] :
     HasLimit D :=
   hasLimit_of_created D (forget T)
 #align category_theory.monad.has_limit_of_comp_forget_has_limit CategoryTheory.Monad.hasLimit_of_comp_forget_hasLimit
@@ -171,7 +171,7 @@ def lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
 #align category_theory.monad.forget_creates_colimits.lambda CategoryTheory.Monad.ForgetCreatesColimits.lambda
 
 /-- (Impl) The key property defining the map `λ : TL ⟶ L`. -/
-theorem commuting (j : J) : (T : C ⥤ C).map (c.ι.app j) ≫ lambda c t = (D.obj j).a ≫ c.ι.app j :=
+lemma commuting (j : J) : (T : C ⥤ C).map (c.ι.app j) ≫ lambda c t = (D.obj j).a ≫ c.ι.app j :=
   (isColimitOfPreserves _ t).fac (newCocone c) j
 #align category_theory.monad.forget_creates_colimits.commuting CategoryTheory.Monad.ForgetCreatesColimits.commuting
 
@@ -350,7 +350,7 @@ noncomputable def monadicCreatesColimitsOfPreservesColimits (R : D ⥤ C) [Monad
 
 section
 
-theorem hasLimit_of_reflective (F : J ⥤ D) (R : D ⥤ C) [HasLimit (F ⋙ R)] [Reflective R] :
+lemma hasLimit_of_reflective (F : J ⥤ D) (R : D ⥤ C) [HasLimit (F ⋙ R)] [Reflective R] :
     HasLimit F :=
   haveI := monadicCreatesLimits.{v, u} R
   hasLimit_of_created F R
@@ -363,13 +363,13 @@ lemma hasLimitsOfShape_of_reflective [HasLimitsOfShape J C] (R : D ⥤ C) [Refle
 #align category_theory.has_limits_of_shape_of_reflective CategoryTheory.hasLimitsOfShape_of_reflective
 
 /-- If `C` has limits then any reflective subcategory has limits. -/
-theorem hasLimits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflective R] :
+lemma hasLimits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflective R] :
     HasLimitsOfSize.{v, u} D :=
   ⟨fun _ => hasLimitsOfShape_of_reflective R⟩
 #align category_theory.has_limits_of_reflective CategoryTheory.hasLimits_of_reflective
 
 /-- If `C` has colimits of shape `J` then any reflective subcategory has colimits of shape `J`. -/
-theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
+lemma hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
     HasColimitsOfShape J D where
   has_colimit := fun F => by
       let c := (leftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
@@ -382,7 +382,7 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
 #align category_theory.has_colimits_of_shape_of_reflective CategoryTheory.hasColimitsOfShape_of_reflective
 
 /-- If `C` has colimits then any reflective subcategory has colimits. -/
-theorem hasColimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSize.{v, u} C] :
+lemma hasColimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSize.{v, u} C] :
     HasColimitsOfSize.{v, u} D :=
   ⟨fun _ => hasColimitsOfShape_of_reflective R⟩
 #align category_theory.has_colimits_of_reflective CategoryTheory.hasColimits_of_reflective

@@ -59,13 +59,13 @@ private def polyBinomAux1 (x y : R) (e : ℕ) (a : R) :
   congr
   apply (powAddExpansion _ _ _).property
 
-private theorem poly_binom_aux2 (f : R[X]) (x y : R) :
+private lemma poly_binom_aux2 (f : R[X]) (x y : R) :
     f.eval (x + y) =
       f.sum fun e a => a * (x ^ e + e * x ^ (e - 1) * y + (polyBinomAux1 x y e a).val * y ^ 2) := by
   unfold eval; rw [eval₂_eq_sum]; congr with (n z)
   apply (polyBinomAux1 x y _ _).property
 
-private theorem poly_binom_aux3 (f : R[X]) (x y : R) :
+private lemma poly_binom_aux3 (f : R[X]) (x y : R) :
     f.eval (x + y) =
       ((f.sum fun e a => a * x ^ e) + f.sum fun e a => a * e * x ^ (e - 1) * y) +
         f.sum fun e a => a * (polyBinomAux1 x y e a).val * y ^ 2 := by

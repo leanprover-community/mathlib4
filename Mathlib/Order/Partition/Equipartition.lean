@@ -40,23 +40,23 @@ lemma isEquipartition_iff_card_parts_eq_average :
 
 variable {P}
 
-theorem Set.Subsingleton.isEquipartition (h : (P.parts : Set (Finset α)).Subsingleton) :
+lemma Set.Subsingleton.isEquipartition (h : (P.parts : Set (Finset α)).Subsingleton) :
     P.IsEquipartition :=
   Set.Subsingleton.equitableOn h _
 #align finpartition.set.subsingleton.is_equipartition Finpartition.Set.Subsingleton.isEquipartition
 
-theorem IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
+lemma IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     t.card = s.card / P.parts.card ∨ t.card = s.card / P.parts.card + 1 :=
   P.isEquipartition_iff_card_parts_eq_average.1 hP _ ht
 #align finpartition.is_equipartition.card_parts_eq_average Finpartition.IsEquipartition.card_parts_eq_average
 
-theorem IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
+lemma IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     s.card / P.parts.card ≤ t.card := by
   rw [← P.sum_card_parts]
   exact Finset.EquitableOn.le hP ht
 #align finpartition.is_equipartition.average_le_card_part Finpartition.IsEquipartition.average_le_card_part
 
-theorem IsEquipartition.card_part_le_average_add_one (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
+lemma IsEquipartition.card_part_le_average_add_one (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     t.card ≤ s.card / P.parts.card + 1 := by
   rw [← P.sum_card_parts]
   exact Finset.EquitableOn.le_add_one hP ht

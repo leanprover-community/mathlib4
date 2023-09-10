@@ -45,7 +45,7 @@ instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 namespace ModEq
 
 @[refl]
-protected theorem refl (a : ℕ) : a ≡ a [MOD n] := rfl
+protected lemma refl (a : ℕ) : a ≡ a [MOD n] := rfl
 #align nat.modeq.refl Nat.ModEq.refl
 
 protected lemma rfl : a ≡ a [MOD n] :=
@@ -77,11 +77,11 @@ end ModEq
 lemma modEq_zero_iff_dvd : a ≡ 0 [MOD n] ↔ n ∣ a := by rw [ModEq, zero_mod, dvd_iff_mod_eq_zero]
 #align nat.modeq_zero_iff_dvd Nat.modEq_zero_iff_dvd
 
-theorem _root_.Dvd.dvd.modEq_zero_nat (h : n ∣ a) : a ≡ 0 [MOD n] :=
+lemma _root_.Dvd.dvd.modEq_zero_nat (h : n ∣ a) : a ≡ 0 [MOD n] :=
   modEq_zero_iff_dvd.2 h
 #align has_dvd.dvd.modeq_zero_nat Dvd.dvd.modEq_zero_nat
 
-theorem _root_.Dvd.dvd.zero_modEq_nat (h : n ∣ a) : 0 ≡ a [MOD n] :=
+lemma _root_.Dvd.dvd.zero_modEq_nat (h : n ∣ a) : 0 ≡ a [MOD n] :=
   h.modEq_zero_nat.symm
 #align has_dvd.dvd.zero_modeq_nat Dvd.dvd.zero_modEq_nat
 
@@ -95,11 +95,11 @@ alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 #align nat.modeq_of_dvd Nat.modEq_of_dvd
 
 /-- A variant of `modEq_iff_dvd` with `Nat` divisibility -/
-theorem modEq_iff_dvd' (h : a ≤ b) : a ≡ b [MOD n] ↔ n ∣ b - a := by
+lemma modEq_iff_dvd' (h : a ≤ b) : a ≡ b [MOD n] ↔ n ∣ b - a := by
   rw [modEq_iff_dvd, ← Int.coe_nat_dvd, Int.ofNat_sub h]
 #align nat.modeq_iff_dvd' Nat.modEq_iff_dvd'
 
-theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
+lemma mod_modEq (a n) : a % n ≡ a [MOD n] :=
   mod_mod _ _
 #align nat.mod_modeq Nat.mod_modEq
 
@@ -108,31 +108,31 @@ namespace ModEq
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] := modEq_of_dvd $ d.natCast.trans h.dvd
 #align nat.modeq.of_dvd Nat.ModEq.of_dvd
 
-protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by
+protected lemma mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by
   unfold ModEq at *; rw [mul_mod_mul_left, mul_mod_mul_left, h]
 #align nat.modeq.mul_left' Nat.ModEq.mul_left'
 
 @[gcongr]
-protected theorem mul_left (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD n] :=
+protected lemma mul_left (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD n] :=
   (h.mul_left' _).of_dvd (dvd_mul_left _ _)
 #align nat.modeq.mul_left Nat.ModEq.mul_left
 
-protected theorem mul_right' (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n * c] := by
+protected lemma mul_right' (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n * c] := by
   rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left' c
 #align nat.modeq.mul_right' Nat.ModEq.mul_right'
 
 @[gcongr]
-protected theorem mul_right (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n] := by
+protected lemma mul_right (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n] := by
   rw [mul_comm a, mul_comm b]; exact h.mul_left c
 #align nat.modeq.mul_right Nat.ModEq.mul_right
 
 @[gcongr]
-protected theorem mul (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a * c ≡ b * d [MOD n] :=
+protected lemma mul (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a * c ≡ b * d [MOD n] :=
   (h₂.mul_left _).trans (h₁.mul_right _)
 #align nat.modeq.mul Nat.ModEq.mul
 
 @[gcongr]
-protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] := by
+protected lemma pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] := by
   induction m with
   | zero => rfl
   | succ d hd =>
@@ -141,22 +141,22 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
 #align nat.modeq.pow Nat.ModEq.pow
 
 @[gcongr]
-protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] := by
+protected lemma add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] := by
   rw [modEq_iff_dvd, Int.ofNat_add, Int.ofNat_add, add_sub_add_comm]
   exact dvd_add h₁.dvd h₂.dvd
 #align nat.modeq.add Nat.ModEq.add
 
 @[gcongr]
-protected theorem add_left (c : ℕ) (h : a ≡ b [MOD n]) : c + a ≡ c + b [MOD n] :=
+protected lemma add_left (c : ℕ) (h : a ≡ b [MOD n]) : c + a ≡ c + b [MOD n] :=
   ModEq.rfl.add h
 #align nat.modeq.add_left Nat.ModEq.add_left
 
 @[gcongr]
-protected theorem add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [MOD n] :=
+protected lemma add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [MOD n] :=
   h.add ModEq.rfl
 #align nat.modeq.add_right Nat.ModEq.add_right
 
-protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
+protected lemma add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
     c ≡ d [MOD n] := by
   simp only [modEq_iff_dvd, Int.ofNat_add] at *
   rw [add_sub_add_comm] at h₂
@@ -164,17 +164,17 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
   rw [add_sub_cancel']
 #align nat.modeq.add_left_cancel Nat.ModEq.add_left_cancel
 
-protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
+protected lemma add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_left_cancel h
 #align nat.modeq.add_left_cancel' Nat.ModEq.add_left_cancel'
 
-protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
+protected lemma add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
     a ≡ b [MOD n] := by
   rw [add_comm a, add_comm b] at h₂
   exact h₁.add_left_cancel h₂
 #align nat.modeq.add_right_cancel Nat.ModEq.add_right_cancel
 
-protected theorem add_right_cancel' (c : ℕ) (h : a + c ≡ b + c [MOD n]) : a ≡ b [MOD n] :=
+protected lemma add_right_cancel' (c : ℕ) (h : a + c ≡ b + c [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_right_cancel h
 #align nat.modeq.add_right_cancel' Nat.ModEq.add_right_cancel'
 
@@ -218,7 +218,7 @@ For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.m
 lemma of_mul_right (m : ℕ) : a ≡ b [MOD n * m] → a ≡ b [MOD n] := mul_comm m n ▸ of_mul_left _
 #align nat.modeq.of_mul_right Nat.ModEq.of_mul_right
 
-theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
+lemma of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
     a ≡ b [MOD m] := by convert h.mul_left' c <;> rwa [Nat.mul_div_cancel']
 #align nat.modeq.of_div Nat.ModEq.of_div
 
@@ -241,23 +241,23 @@ lemma modEq_one : a ≡ b [MOD 1] := modEq_of_dvd $ one_dvd _
 
 namespace ModEq
 
-theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
+lemma le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
   (le_total a b).elim id fun h3 =>
     Nat.le_of_sub_eq_zero
       (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) ((tsub_lt_iff_left h3).mpr h2))
 #align nat.modeq.le_of_lt_add Nat.ModEq.le_of_lt_add
 
-theorem add_le_of_lt (h1 : a ≡ b [MOD m]) (h2 : a < b) : a + m ≤ b :=
+lemma add_le_of_lt (h1 : a ≡ b [MOD m]) (h2 : a < b) : a + m ≤ b :=
   le_of_lt_add (add_modEq_right.trans h1) (add_lt_add_right h2 m)
 #align nat.modeq.add_le_of_lt Nat.ModEq.add_le_of_lt
 
-theorem dvd_iff (h : a ≡ b [MOD m]) (hdm : d ∣ m) : d ∣ a ↔ d ∣ b := by
+lemma dvd_iff (h : a ≡ b [MOD m]) (hdm : d ∣ m) : d ∣ a ↔ d ∣ b := by
   simp only [← modEq_zero_iff_dvd]
   replace h := h.of_dvd hdm
   exact ⟨h.symm.trans, h.trans⟩
 #align nat.modeq.dvd_iff Nat.ModEq.dvd_iff
 
-theorem gcd_eq (h : a ≡ b [MOD m]) : gcd a m = gcd b m := by
+lemma gcd_eq (h : a ≡ b [MOD m]) : gcd a m = gcd b m := by
   have h1 := gcd_dvd_right a m
   have h2 := gcd_dvd_right b m
   exact
@@ -369,7 +369,7 @@ def chineseRemainder (co : n.coprime m) (a b : ℕ) : { k // k ≡ a [MOD n] ∧
   chineseRemainder' (by convert @modEq_one a b)
 #align nat.chinese_remainder Nat.chineseRemainder
 
-theorem chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm : m ≠ 0) :
+lemma chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm : m ≠ 0) :
     ↑(chineseRemainder' h) < lcm n m := by
   dsimp only [chineseRemainder']
   rw [dif_neg hn, dif_neg hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_coe_nat (lcm n m)]
@@ -377,7 +377,7 @@ theorem chineseRemainder'_lt_lcm (h : a ≡ b [MOD gcd n m]) (hn : n ≠ 0) (hm 
   exact (Int.toNat_lt_toNat lcm_pos).mpr (Int.emod_lt_of_pos _ lcm_pos)
 #align nat.chinese_remainder'_lt_lcm Nat.chineseRemainder'_lt_lcm
 
-theorem chineseRemainder_lt_mul (co : n.coprime m) (a b : ℕ) (hn : n ≠ 0) (hm : m ≠ 0) :
+lemma chineseRemainder_lt_mul (co : n.coprime m) (a b : ℕ) (hn : n ≠ 0) (hm : m ≠ 0) :
     ↑(chineseRemainder co a b) < n * m :=
   lt_of_lt_of_le (chineseRemainder'_lt_lcm _ hn hm) (le_of_eq co.lcm_eq_mul)
 #align nat.chinese_remainder_lt_mul Nat.chineseRemainder_lt_mul
@@ -392,7 +392,7 @@ lemma modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.coprime n) :
     ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align nat.modeq_and_modeq_iff_modeq_mul Nat.modEq_and_modEq_iff_modEq_mul
 
-theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n]) : a.coprime n := by
+lemma coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n]) : a.coprime n := by
   obtain ⟨g, hh⟩ := Nat.gcd_dvd_right a n
   rw [Nat.coprime_iff_gcd_eq_one, ← Nat.dvd_one, ← Nat.modEq_zero_iff_dvd]
   calc
@@ -402,16 +402,16 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
 #align nat.coprime_of_mul_modeq_one Nat.coprime_of_mul_modEq_one
 
 @[simp 1100]
-theorem mod_mul_right_mod (a b c : ℕ) : a % (b * c) % b = a % b :=
+lemma mod_mul_right_mod (a b c : ℕ) : a % (b * c) % b = a % b :=
   (mod_modEq _ _).of_mul_right _
 #align nat.mod_mul_right_mod Nat.mod_mul_right_mod
 
 @[simp 1100]
-theorem mod_mul_left_mod (a b c : ℕ) : a % (b * c) % c = a % c :=
+lemma mod_mul_left_mod (a b c : ℕ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 #align nat.mod_mul_left_mod Nat.mod_mul_left_mod
 
-theorem div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
+lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
   if hb0 : b = 0 then by simp [hb0]
   else by
     rw [← @add_right_cancel_iff _ _ _ (c * (a / b / c)), mod_add_div, Nat.div_div_eq_div_mul, ←
@@ -420,7 +420,7 @@ theorem div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
       mod_add_div, ← mul_assoc, mod_add_div, mod_mul_right_mod]
 #align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
 
-theorem add_mod_add_ite (a b c : ℕ) :
+lemma add_mod_add_ite (a b c : ℕ) :
     ((a + b) % c + if c ≤ a % c + b % c then c else 0) = a % c + b % c :=
   have : (a + b) % c = (a % c + b % c) % c := ((mod_modEq _ _).add <| mod_modEq _ _).symm
   if hc0 : c = 0 then by simp [hc0, Nat.mod_zero]
@@ -485,7 +485,7 @@ lemma add_div_eq_of_le_mod_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) (hc0
     (a + b) / c = a / c + b / c + 1 := by rw [add_div hc0, if_pos hc]
 #align nat.add_div_eq_of_le_mod_add_mod Nat.add_div_eq_of_le_mod_add_mod
 
-theorem add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=
+lemma add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=
   if hc0 : c = 0 then by simp [hc0]
   else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0)]; exact Nat.le_add_right _ _
 #align nat.add_div_le_add_div Nat.add_div_le_add_div

@@ -196,7 +196,7 @@ instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
       (LinearEquiv.smulOfNeZero _ _ _ (zpow_ne_zero m (WittVector.FractionRing.p_nonzero p k)))
 
 @[simp]
-theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
+lemma StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
     Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := by
   -- Porting note: was just `rfl`
   erw [smul_eq_mul]
@@ -208,7 +208,7 @@ end PerfectRing
 
 /-- A one-dimensional isocrystal over an algebraically closed field
 admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensional isocrystals. -/
-theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
+lemma isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
   haveI : Nontrivial V := FiniteDimensional.nontrivial_of_finrank_eq_succ h_dim

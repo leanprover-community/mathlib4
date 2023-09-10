@@ -52,7 +52,7 @@ def of (α : Type*) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
 #align SemilatSup.of SemilatSupCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
   rfl
 #align SemilatSup.coe_of SemilatSupCat.coe_of
 
@@ -87,7 +87,7 @@ instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrdCat where
 #align SemilatSup.has_forget_to_PartOrd SemilatSupCat.hasForgetToPartOrd
 
 @[simp]
-theorem coe_forget_to_partOrdCat (X : SemilatSupCat) :
+lemma coe_forget_to_partOrdCat (X : SemilatSupCat) :
     ↥((forget₂ SemilatSupCat PartOrdCat).obj X) = ↥X :=
   rfl
 #align SemilatSup.coe_forget_to_PartOrd SemilatSupCat.coe_forget_to_partOrdCat
@@ -107,7 +107,7 @@ def of (α : Type*) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
 #align SemilatInf.of SemilatInfCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
   rfl
 #align SemilatInf.coe_of SemilatInfCat.coe_of
 
@@ -140,7 +140,7 @@ instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrdCat where
 #align SemilatInf.has_forget_to_PartOrd SemilatInfCat.hasForgetToPartOrd
 
 @[simp]
-theorem coe_forget_to_partOrdCat (X : SemilatInfCat) :
+lemma coe_forget_to_partOrdCat (X : SemilatInfCat) :
     ↥((forget₂ SemilatInfCat PartOrdCat).obj X) = ↥X :=
   rfl
 #align SemilatInf.coe_forget_to_PartOrd SemilatInfCat.coe_forget_to_partOrdCat

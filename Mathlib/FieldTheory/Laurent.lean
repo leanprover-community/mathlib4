@@ -36,7 +36,7 @@ open scoped Classical nonZeroDivisors Polynomial
 
 variable {R : Type u} [CommRing R] [hdomain : IsDomain R] (r s : R) (p q : R[X]) (f : RatFunc R)
 
-theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
+lemma taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
   rw [mem_nonZeroDivisors_iff]
   intro x hx
   have : x = taylor (r - r) x := by simp
@@ -57,7 +57,7 @@ def laurentAux : RatFunc R →+* RatFunc R :=
     (taylor_mem_nonZeroDivisors _)
 #align ratfunc.laurent_aux RatFunc.laurentAux
 
-theorem laurentAux_ofFractionRing_mk (q : R[X]⁰) :
+lemma laurentAux_ofFractionRing_mk (q : R[X]⁰) :
     laurentAux r (ofFractionRing (Localization.mk p q)) =
       ofFractionRing (.mk (taylor r p) ⟨taylor r q, taylor_mem_nonZeroDivisors r q q.prop⟩) :=
   map_apply_ofFractionRing_mk _ _ _ _
@@ -100,7 +100,7 @@ set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_X RatFunc.laurent_X
 
 @[simp]
-theorem laurent_C (x : R) : laurent r (C x) = C x := by
+lemma laurent_C (x : R) : laurent r (C x) = C x := by
   rw [← algebraMap_C, laurent_algebraMap, taylor_C]
 set_option linter.uppercaseLean3 false in
 #align ratfunc.laurent_C RatFunc.laurent_C

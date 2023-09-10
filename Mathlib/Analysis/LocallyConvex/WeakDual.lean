@@ -70,7 +70,7 @@ lemma toSeminorm_ball_zero {f : E →ₗ[𝕜] 𝕜} {r : ℝ} :
   simp only [Seminorm.ball_zero_eq, toSeminorm_apply]
 #align linear_map.to_seminorm_ball_zero LinearMap.toSeminorm_ball_zero
 
-theorem toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
+lemma toSeminorm_comp (f : F →ₗ[𝕜] 𝕜) (g : E →ₗ[𝕜] F) :
     f.toSeminorm.comp g = (f.comp g).toSeminorm := by
   ext
   simp only [Seminorm.comp_apply, toSeminorm_apply, coe_comp, Function.comp_apply]
@@ -98,7 +98,7 @@ variable [Nonempty ι]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 
-theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
+lemma LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets _root_.id := by
   let p := B.toSeminormFamily
   rw [nhds_induced, nhds_pi]
@@ -137,7 +137,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   exact hx y hy
 #align linear_map.has_basis_weak_bilin LinearMap.hasBasis_weakBilin
 
-theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
+lemma LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WithSeminorms (LinearMap.toSeminormFamily B : F → Seminorm 𝕜 (WeakBilin B)) :=
   SeminormFamily.withSeminorms_of_hasBasis _ B.hasBasis_weakBilin
 #align linear_map.weak_bilin_with_seminorms LinearMap.weakBilin_withSeminorms

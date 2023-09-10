@@ -30,7 +30,7 @@ lemma abs_two : |(2 : α)| = 2 :=
   abs_of_pos zero_lt_two
 #align abs_two abs_two
 
-theorem abs_mul (a b : α) : |a * b| = |a| * |b| := by
+lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   cases' le_total a 0 with ha ha <;> cases' le_total b 0 with hb hb <;>
     simp only [abs_of_nonpos, abs_of_nonneg, true_or_iff, or_true_iff, eq_self_iff_true, neg_mul,
@@ -46,12 +46,12 @@ def absHom : α →*₀ α :=
 #align abs_hom absHom
 
 @[simp]
-theorem abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
+lemma abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
   abs_by_cases (fun x => x * x = a * a) rfl (neg_mul_neg a a)
 #align abs_mul_abs_self abs_mul_abs_self
 
 @[simp]
-theorem abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]
+lemma abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]
 #align abs_mul_self abs_mul_self
 
 @[simp]
@@ -65,7 +65,7 @@ lemma abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by simp [abs_eq_max_neg]
 /-- For an element `a` of a linear ordered ring, either `abs a = a` and `0 ≤ a`,
     or `abs a = -a` and `a < 0`.
     Use cases on this lemma to automate linarith in inequalities -/
-theorem abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
+lemma abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
   by_cases h : 0 ≤ a
   · left
     exact ⟨abs_eq_self.mpr h, h⟩
@@ -75,7 +75,7 @@ theorem abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
 #align abs_cases abs_cases
 
 @[simp]
-theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = |a| := by
+lemma max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = |a| := by
   symm
   rcases le_total 0 a with (ha | ha) <;> simp [ha]
 #align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self
@@ -105,7 +105,7 @@ section LinearOrderedCommRing
 
 variable [LinearOrderedCommRing α] {a b c d : α}
 
-theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
+lemma abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
   simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
     neg_add_rev, neg_neg, add_assoc]
@@ -118,24 +118,24 @@ section
 variable [Ring α] [LinearOrder α] {a b : α}
 
 @[simp]
-theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
+lemma abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
   cases' abs_choice a with h h <;> simp only [h, neg_dvd]
 #align abs_dvd abs_dvd
 
-theorem abs_dvd_self (a : α) : |a| ∣ a :=
+lemma abs_dvd_self (a : α) : |a| ∣ a :=
   (abs_dvd a a).mpr (dvd_refl a)
 #align abs_dvd_self abs_dvd_self
 
 @[simp]
-theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
+lemma dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
   cases' abs_choice b with h h <;> simp only [h, dvd_neg]
 #align dvd_abs dvd_abs
 
-theorem self_dvd_abs (a : α) : a ∣ |a| :=
+lemma self_dvd_abs (a : α) : a ∣ |a| :=
   (dvd_abs a a).mpr (dvd_refl a)
 #align self_dvd_abs self_dvd_abs
 
-theorem abs_dvd_abs (a b : α) : |a| ∣ |b| ↔ a ∣ b :=
+lemma abs_dvd_abs (a b : α) : |a| ∣ |b| ↔ a ∣ b :=
   (abs_dvd _ _).trans (dvd_abs _ _)
 #align abs_dvd_abs abs_dvd_abs
 

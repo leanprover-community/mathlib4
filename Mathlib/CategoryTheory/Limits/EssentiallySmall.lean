@@ -38,12 +38,12 @@ lemma hasColimitsOfShape_of_essentiallySmall [EssentiallySmall.{w₁} J]
   hasColimitsOfShape_of_equivalence <| Equivalence.symm <| equivSmallModel.{w₁} J
 #align category_theory.limits.has_colimits_of_shape_of_essentially_small CategoryTheory.Limits.hasColimitsOfShape_of_essentiallySmall
 
-theorem hasProductsOfShape_of_small (β : Type w₂) [Small.{w₁} β] [HasProducts.{w₁} C] :
+lemma hasProductsOfShape_of_small (β : Type w₂) [Small.{w₁} β] [HasProducts.{w₁} C] :
     HasProductsOfShape β C :=
   hasLimitsOfShape_of_equivalence <| Discrete.equivalence <| Equiv.symm <| equivShrink β
 #align category_theory.limits.has_products_of_shape_of_small CategoryTheory.Limits.hasProductsOfShape_of_small
 
-theorem hasCoproductsOfShape_of_small (β : Type w₂) [Small.{w₁} β] [HasCoproducts.{w₁} C] :
+lemma hasCoproductsOfShape_of_small (β : Type w₂) [Small.{w₁} β] [HasCoproducts.{w₁} C] :
     HasCoproductsOfShape β C :=
   hasColimitsOfShape_of_equivalence <| Discrete.equivalence <| Equiv.symm <| equivShrink β
 #align category_theory.limits.has_coproducts_of_shape_of_small CategoryTheory.Limits.hasCoproductsOfShape_of_small

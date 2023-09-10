@@ -170,11 +170,11 @@ def ofLists (L R : List PGame.{u}) : PGame.{u} :=
     R.nthLe j.down j.down.prop
 #align pgame.of_lists SetTheory.PGame.ofLists
 
-theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
+lemma leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
   rfl
 #align pgame.left_moves_of_lists SetTheory.PGame.leftMoves_ofLists
 
-theorem rightMoves_ofLists (L R : List PGame) : (ofLists L R).RightMoves = ULift (Fin R.length) :=
+lemma rightMoves_ofLists (L R : List PGame) : (ofLists L R).RightMoves = ULift (Fin R.length) :=
   rfl
 #align pgame.right_moves_of_lists SetTheory.PGame.rightMoves_ofLists
 
@@ -306,23 +306,23 @@ macro "pgame_wf_tac" : tactic =>
 -- This is different from mk_right from the POV of the simplifier,
 -- because the unifier can't solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
 @[simp]
-theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightMoves (mk xl xr xL xR)) :
+lemma Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightMoves (mk xl xr xL xR)) :
     Subsequent (xR j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_left (xL : xl → PGame) (j) :
+@[simp] lemma Subsequent.moveRight_mk_left (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_right (xR : xr → PGame) (j) :
+@[simp] lemma Subsequent.moveRight_mk_right (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_left (xL : xl → PGame) (j) :
+@[simp] lemma Subsequent.moveLeft_mk_left (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_right (xR : xr → PGame) (j) :
+@[simp] lemma Subsequent.moveLeft_mk_right (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
@@ -368,7 +368,7 @@ lemma one_leftMoves : LeftMoves 1 = PUnit :=
 #align pgame.one_left_moves SetTheory.PGame.one_leftMoves
 
 @[simp]
-theorem one_moveLeft (x) : moveLeft 1 x = 0 :=
+lemma one_moveLeft (x) : moveLeft 1 x = 0 :=
   rfl
 #align pgame.one_move_left SetTheory.PGame.one_moveLeft
 
@@ -465,7 +465,7 @@ lemma mk_lf_mk {xl xr xL xR yl yr yL yR} :
   lf_iff_exists_le
 #align pgame.mk_lf_mk SetTheory.PGame.mk_lf_mk
 
-theorem le_or_gf (x y : PGame) : x ≤ y ∨ y ⧏ x := by
+lemma le_or_gf (x y : PGame) : x ≤ y ∨ y ⧏ x := by
   rw [← PGame.not_le]
   apply em
 #align pgame.le_or_gf SetTheory.PGame.le_or_gf
@@ -553,7 +553,7 @@ lemma lf_of_lt {x y : PGame} (h : x < y) : x ⧏ y :=
 alias _root_.LT.lt.lf := lf_of_lt
 #align has_lt.lt.lf LT.lt.lf
 
-theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
+lemma lf_irrefl (x : PGame) : ¬x ⧏ x :=
   le_rfl.not_gf
 #align pgame.lf_irrefl SetTheory.PGame.lf_irrefl
 
@@ -694,12 +694,12 @@ lemma lf_zero {x : PGame} : x ⧏ 0 ↔ ∃ j, ∀ i, (x.moveRight j).moveLeft i
 #align pgame.lf_zero SetTheory.PGame.lf_zero
 
 @[simp]
-theorem zero_le_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves] : 0 ≤ x :=
+lemma zero_le_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves] : 0 ≤ x :=
   zero_le.2 isEmptyElim
 #align pgame.zero_le_of_is_empty_right_moves SetTheory.PGame.zero_le_of_isEmpty_rightMoves
 
 @[simp]
-theorem le_zero_of_isEmpty_leftMoves (x : PGame) [IsEmpty x.LeftMoves] : x ≤ 0 :=
+lemma le_zero_of_isEmpty_leftMoves (x : PGame) [IsEmpty x.LeftMoves] : x ≤ 0 :=
   le_zero.2 isEmptyElim
 #align pgame.le_zero_of_is_empty_left_moves SetTheory.PGame.le_zero_of_isEmpty_leftMoves
 
@@ -766,7 +766,7 @@ lemma equiv_rfl {x : PGame} : x ≈ x :=
   refl x
 #align pgame.equiv_rfl SetTheory.PGame.equiv_rfl
 
-theorem equiv_refl (x : PGame) : x ≈ x :=
+lemma equiv_refl (x : PGame) : x ≈ x :=
   refl x
 #align pgame.equiv_refl SetTheory.PGame.equiv_refl
 
@@ -896,7 +896,7 @@ lemma lt_or_equiv_of_le {x y : PGame} (h : x ≤ y) : x < y ∨ (x ≈ y) :=
   and_or_left.mp ⟨h, (em <| y ≤ x).symm.imp_left PGame.not_le.1⟩
 #align pgame.lt_or_equiv_of_le SetTheory.PGame.lt_or_equiv_of_le
 
-theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := by
+lemma lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := by
   by_cases h : x ⧏ y
   · exact Or.inl h
   · right
@@ -945,7 +945,7 @@ lemma Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
   ⟨Fuzzy.swap, Fuzzy.swap⟩
 #align pgame.fuzzy.swap_iff SetTheory.PGame.Fuzzy.swap_iff
 
-theorem fuzzy_irrefl (x : PGame) : ¬x ‖ x := fun h => lf_irrefl x h.1
+lemma fuzzy_irrefl (x : PGame) : ¬x ‖ x := fun h => lf_irrefl x h.1
 #align pgame.fuzzy_irrefl SetTheory.PGame.fuzzy_irrefl
 
 instance : IsIrrefl _ (· ‖ ·) :=
@@ -1014,7 +1014,7 @@ lemma fuzzy_of_equiv_of_fuzzy {x y z : PGame} (h₁ : x ≈ y) (h₂ : y ‖ z) 
 #align pgame.fuzzy_of_equiv_of_fuzzy SetTheory.PGame.fuzzy_of_equiv_of_fuzzy
 
 /-- Exactly one of the following is true (although we don't prove this here). -/
-theorem lt_or_equiv_or_gt_or_fuzzy (x y : PGame) : x < y ∨ (x ≈ y) ∨ y < x ∨ x ‖ y := by
+lemma lt_or_equiv_or_gt_or_fuzzy (x y : PGame) : x < y ∨ (x ≈ y) ∨ y < x ∨ x ‖ y := by
   cases' le_or_gf x y with h₁ h₁ <;> cases' le_or_gf y x with h₂ h₂
   · right
     left
@@ -1031,7 +1031,7 @@ theorem lt_or_equiv_or_gt_or_fuzzy (x y : PGame) : x < y ∨ (x ≈ y) ∨ y < x
     exact ⟨h₂, h₁⟩
 #align pgame.lt_or_equiv_or_gt_or_fuzzy SetTheory.PGame.lt_or_equiv_or_gt_or_fuzzy
 
-theorem lt_or_equiv_or_gf (x y : PGame) : x < y ∨ (x ≈ y) ∨ y ⧏ x := by
+lemma lt_or_equiv_or_gf (x y : PGame) : x < y ∨ (x ≈ y) ∨ y ⧏ x := by
   rw [lf_iff_lt_or_fuzzy, Fuzzy.swap_iff]
   exact lt_or_equiv_or_gt_or_fuzzy x y
 #align pgame.lt_or_equiv_or_gf SetTheory.PGame.lt_or_equiv_or_gf
@@ -1148,7 +1148,7 @@ lemma ge {x y : PGame} (r : x ≡r y) : y ≤ x :=
 #align pgame.relabelling.ge SetTheory.PGame.Relabelling.ge
 
 /-- A relabelling lets us prove equivalence of games. -/
-theorem equiv (r : x ≡r y) : x ≈ y :=
+lemma equiv (r : x ≡r y) : x ≈ y :=
   ⟨r.le, r.ge⟩
 #align pgame.relabelling.equiv SetTheory.PGame.Relabelling.equiv
 
@@ -1166,7 +1166,7 @@ def isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≡r 0 
 
 end Relabelling
 
-theorem Equiv.isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≈ 0 :=
+lemma Equiv.isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : x ≈ 0 :=
   (Relabelling.isEmpty x).equiv
 #align pgame.equiv.is_empty SetTheory.PGame.Equiv.isEmpty
 
@@ -1234,7 +1234,7 @@ instance : NegZeroClass PGame :=
       congr <;> funext i <;> cases i }
 
 @[simp]
-theorem neg_ofLists (L R : List PGame) :
+lemma neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
   set_option linter.deprecated false in
   simp only [ofLists, neg_def, List.length_map, List.nthLe_map', eq_self_iff_true, true_and,
@@ -1460,7 +1460,7 @@ instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
 
 @[simp]
-protected theorem nat_succ (n : ℕ) : ((n + 1 : ℕ) : PGame) = n + 1 :=
+protected lemma nat_succ (n : ℕ) : ((n + 1 : ℕ) : PGame) = n + 1 :=
   rfl
 #align pgame.nat_succ SetTheory.PGame.nat_succ
 
@@ -1489,7 +1489,7 @@ termination_by _ x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
 
 /-- `x + 0` is equivalent to `x`. -/
-theorem add_zero_equiv (x : PGame.{u}) : x + 0 ≈ x :=
+lemma add_zero_equiv (x : PGame.{u}) : x + 0 ≈ x :=
   (addZeroRelabelling x).equiv
 #align pgame.add_zero_equiv SetTheory.PGame.add_zero_equiv
 
@@ -1501,7 +1501,7 @@ def zeroAddRelabelling : ∀ x : PGame.{u}, 0 + x ≡r x
 #align pgame.zero_add_relabelling SetTheory.PGame.zeroAddRelabelling
 
 /-- `0 + x` is equivalent to `x`. -/
-theorem zero_add_equiv (x : PGame.{u}) : 0 + x ≈ x :=
+lemma zero_add_equiv (x : PGame.{u}) : 0 + x ≈ x :=
   (zeroAddRelabelling x).equiv
 #align pgame.zero_add_equiv SetTheory.PGame.zero_add_equiv
 
@@ -1567,7 +1567,7 @@ lemma mk_add_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i} :
 #align pgame.mk_add_move_left_inr SetTheory.PGame.mk_add_moveLeft_inr
 
 @[simp]
-theorem add_moveLeft_inr (x : PGame) {y : PGame} (i) :
+lemma add_moveLeft_inr (x : PGame) {y : PGame} (i) :
     (x + y).moveLeft (toLeftMovesAdd (Sum.inr i)) = x + y.moveLeft i := by
   cases x
   cases y
@@ -1582,7 +1582,7 @@ lemma mk_add_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i} :
 #align pgame.mk_add_move_right_inr SetTheory.PGame.mk_add_moveRight_inr
 
 @[simp]
-theorem add_moveRight_inr (x : PGame) {y : PGame} (i) :
+lemma add_moveRight_inr (x : PGame) {y : PGame} (i) :
     (x + y).moveRight (toRightMovesAdd (Sum.inr i)) = x + y.moveRight i := by
   cases x
   cases y
@@ -1634,7 +1634,7 @@ instance : Sub PGame :=
   ⟨fun x y => x + -y⟩
 
 @[simp]
-theorem sub_zero (x : PGame) : x - 0 = x + 0 :=
+lemma sub_zero (x : PGame) : x - 0 = x + 0 :=
   show x + -0 = x + 0 by rw [neg_zero]
 #align pgame.sub_zero SetTheory.PGame.sub_zero
 
@@ -1710,24 +1710,24 @@ lemma add_left_neg_le_zero : ∀ x : PGame, -x + x ≤ 0
         apply add_moveRight_inl
 #align pgame.add_left_neg_le_zero SetTheory.PGame.add_left_neg_le_zero
 
-theorem zero_le_add_left_neg (x : PGame) : 0 ≤ -x + x := by
+lemma zero_le_add_left_neg (x : PGame) : 0 ≤ -x + x := by
   rw [← neg_le_neg_iff, neg_zero]
   exact neg_add_le.trans (add_left_neg_le_zero _)
 #align pgame.zero_le_add_left_neg SetTheory.PGame.zero_le_add_left_neg
 
-theorem add_left_neg_equiv (x : PGame) : -x + x ≈ 0 :=
+lemma add_left_neg_equiv (x : PGame) : -x + x ≈ 0 :=
   ⟨add_left_neg_le_zero x, zero_le_add_left_neg x⟩
 #align pgame.add_left_neg_equiv SetTheory.PGame.add_left_neg_equiv
 
-theorem add_right_neg_le_zero (x : PGame) : x + -x ≤ 0 :=
+lemma add_right_neg_le_zero (x : PGame) : x + -x ≤ 0 :=
   add_comm_le.trans (add_left_neg_le_zero x)
 #align pgame.add_right_neg_le_zero SetTheory.PGame.add_right_neg_le_zero
 
-theorem zero_le_add_right_neg (x : PGame) : 0 ≤ x + -x :=
+lemma zero_le_add_right_neg (x : PGame) : 0 ≤ x + -x :=
   (zero_le_add_left_neg x).trans add_comm_le
 #align pgame.zero_le_add_right_neg SetTheory.PGame.zero_le_add_right_neg
 
-theorem add_right_neg_equiv (x : PGame) : x + -x ≈ 0 :=
+lemma add_right_neg_equiv (x : PGame) : x + -x ≈ 0 :=
   ⟨add_right_neg_le_zero x, zero_le_add_right_neg x⟩
 #align pgame.add_right_neg_equiv SetTheory.PGame.add_right_neg_equiv
 
@@ -1878,12 +1878,12 @@ lemma star_rightMoves : star.RightMoves = PUnit :=
 #align pgame.star_right_moves SetTheory.PGame.star_rightMoves
 
 @[simp]
-theorem star_moveLeft (x) : star.moveLeft x = 0 :=
+lemma star_moveLeft (x) : star.moveLeft x = 0 :=
   rfl
 #align pgame.star_move_left SetTheory.PGame.star_moveLeft
 
 @[simp]
-theorem star_moveRight (x) : star.moveRight x = 0 :=
+lemma star_moveRight (x) : star.moveRight x = 0 :=
   rfl
 #align pgame.star_move_right SetTheory.PGame.star_moveRight
 

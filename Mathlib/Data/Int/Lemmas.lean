@@ -24,7 +24,7 @@ open Nat
 
 namespace Int
 
-theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
+lemma le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
   by_cases h : m ≥ n
   · exact le_of_eq (Int.ofNat_sub h).symm
   · simp [le_of_not_ge h, ofNat_le]
@@ -34,7 +34,7 @@ theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
 
 
 -- Porting note: simp can prove this @[simp]
-theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
+lemma succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 #align int.succ_coe_nat_pos Int.succ_coe_nat_pos
 
@@ -119,7 +119,7 @@ This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from
 attribute [local simp] Int.zero_div
 
 @[simp]
-theorem div2_bit (b n) : div2 (bit b n) = n := by
+lemma div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
   cases b
   · simp

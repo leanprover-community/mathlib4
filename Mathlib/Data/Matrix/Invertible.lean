@@ -38,22 +38,22 @@ variable [Semiring α]
 #align matrix.mul_inv_of_self mul_invOf_self
 
 /-- A copy of `invOf_mul_self_assoc` for rectangular matrices. -/
-protected theorem invOf_mul_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
+protected lemma invOf_mul_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     ⅟ A * (A * B) = B := by rw [← Matrix.mul_assoc, invOf_mul_self, Matrix.one_mul]
 #align matrix.inv_of_mul_self_assoc Matrix.invOf_mul_self_assoc
 
 /-- A copy of `mul_invOf_self_assoc` for rectangular matrices. -/
-protected theorem mul_invOf_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
+protected lemma mul_invOf_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     A * (⅟ A * B) = B := by rw [← Matrix.mul_assoc, mul_invOf_self, Matrix.one_mul]
 #align matrix.mul_inv_of_self_assoc Matrix.mul_invOf_self_assoc
 
 /-- A copy of `mul_invOf_mul_self_cancel` for rectangular matrices. -/
-protected theorem mul_invOf_mul_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
+protected lemma mul_invOf_mul_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * ⅟ B * B = A := by rw [Matrix.mul_assoc, invOf_mul_self, Matrix.mul_one]
 #align matrix.mul_inv_of_mul_self_cancel Matrix.mul_invOf_mul_self_cancel
 
 /-- A copy of `mul_mul_invOf_self_cancel` for rectangular matrices. -/
-protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
+protected lemma mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * B * ⅟ B = A := by rw [Matrix.mul_assoc, mul_invOf_self, Matrix.mul_one]
 #align matrix.mul_mul_inv_of_self_cancel Matrix.mul_mul_invOf_self_cancel
 

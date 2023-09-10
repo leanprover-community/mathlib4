@@ -132,19 +132,19 @@ lemma card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
         Int.coe_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
 #align int.card_uIcc Int.card_uIcc
 
-theorem card_Icc_of_le (h : a ≤ b + 1) : ((Icc a b).card : ℤ) = b + 1 - a := by
+lemma card_Icc_of_le (h : a ≤ b + 1) : ((Icc a b).card : ℤ) = b + 1 - a := by
   rw [card_Icc, toNat_sub_of_le h]
 #align int.card_Icc_of_le Int.card_Icc_of_le
 
-theorem card_Ico_of_le (h : a ≤ b) : ((Ico a b).card : ℤ) = b - a := by
+lemma card_Ico_of_le (h : a ≤ b) : ((Ico a b).card : ℤ) = b - a := by
   rw [card_Ico, toNat_sub_of_le h]
 #align int.card_Ico_of_le Int.card_Ico_of_le
 
-theorem card_Ioc_of_le (h : a ≤ b) : ((Ioc a b).card : ℤ) = b - a := by
+lemma card_Ioc_of_le (h : a ≤ b) : ((Ioc a b).card : ℤ) = b - a := by
   rw [card_Ioc, toNat_sub_of_le h]
 #align int.card_Ioc_of_le Int.card_Ioc_of_le
 
-theorem card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
+lemma card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 #align int.card_Ioo_of_lt Int.card_Ioo_of_lt
 
@@ -172,23 +172,23 @@ lemma card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
   rw [← card_uIcc, Fintype.card_ofFinset]
 #align int.card_fintype_uIcc Int.card_fintype_uIcc
 
-theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
+lemma card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   rw [card_fintype_Icc, toNat_sub_of_le h]
 #align int.card_fintype_Icc_of_le Int.card_fintype_Icc_of_le
 
-theorem card_fintype_Ico_of_le (h : a ≤ b) : (Fintype.card (Set.Ico a b) : ℤ) = b - a := by
+lemma card_fintype_Ico_of_le (h : a ≤ b) : (Fintype.card (Set.Ico a b) : ℤ) = b - a := by
   rw [card_fintype_Ico, toNat_sub_of_le h]
 #align int.card_fintype_Ico_of_le Int.card_fintype_Ico_of_le
 
-theorem card_fintype_Ioc_of_le (h : a ≤ b) : (Fintype.card (Set.Ioc a b) : ℤ) = b - a := by
+lemma card_fintype_Ioc_of_le (h : a ≤ b) : (Fintype.card (Set.Ioc a b) : ℤ) = b - a := by
   rw [card_fintype_Ioc, toNat_sub_of_le h]
 #align int.card_fintype_Ioc_of_le Int.card_fintype_Ioc_of_le
 
-theorem card_fintype_Ioo_of_lt (h : a < b) : (Fintype.card (Set.Ioo a b) : ℤ) = b - a - 1 := by
+lemma card_fintype_Ioo_of_lt (h : a < b) : (Fintype.card (Set.Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_fintype_Ioo, sub_sub, toNat_sub_of_le h]
 #align int.card_fintype_Ioo_of_lt Int.card_fintype_Ioo_of_lt
 
-theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a) = Ico 0 a := by
+lemma image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a) = Ico 0 a := by
   obtain rfl | ha := eq_or_lt_of_le h
   · simp
   ext i

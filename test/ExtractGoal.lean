@@ -5,7 +5,7 @@ set_option pp.unicode.fun true
 set_option autoImplicit true
 
 -- the example in the documentation for the tactic.
-/-- info: theorem extracted_1 (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry -/
+/-- info: lemma extracted_1 (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry -/
 #guard_msgs (info) in
 example (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
   extract_goal
@@ -23,7 +23,7 @@ example {α : Type u} {β : Type v} [Add α] [h : Sub β] (f : α → β) ⦃_g 
 
 -- an example with a hygienic variable
 /--
-info: theorem extracted_1 (n : ℕ) : Nat.succ n = Nat.succ n := sorry
+info: lemma extracted_1 (n : ℕ) : Nat.succ n = Nat.succ n := sorry
 -/
 #guard_msgs in
 example (n : ℕ) : n = n := by

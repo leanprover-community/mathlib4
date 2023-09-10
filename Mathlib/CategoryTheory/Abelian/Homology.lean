@@ -201,7 +201,7 @@ section
 variable {X' Y' Z' : A} (f' : X' ⟶ Y') (g' : Y' ⟶ Z') (w' : f' ≫ g' = 0)
 
 @[reassoc (attr := simp)]
-theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
+lemma π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
     kernel.map _ _ α.right β.right (by simp [h, β.w.symm]) ≫ π' _ _ _ := by
   apply_fun fun e => (kernelSubobjectIso _).hom ≫ e
   swap
@@ -233,7 +233,7 @@ theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
 #align homology.π'_map homology.π'_map
 
 -- Porting note: need to fill in f,g,f',g' in the next few results or time out
-theorem map_eq_desc'_lift_left (α β h) :
+lemma map_eq_desc'_lift_left (α β h) :
     map w w' α β h =
       homology.desc' f g _ (homology.lift f' g' _ (kernel.ι _ ≫ β.left ≫ cokernel.π _)
       (by simp)) (by
@@ -250,7 +250,7 @@ theorem map_eq_desc'_lift_left (α β h) :
   simp [h]
 #align homology.map_eq_desc'_lift_left homology.map_eq_desc'_lift_left
 
-theorem map_eq_lift_desc'_left (α β h) :
+lemma map_eq_lift_desc'_left (α β h) :
     map w w' α β h =
       homology.lift f' g' _
         (homology.desc' f g _ (kernel.ι _ ≫ β.left ≫ cokernel.π _)
@@ -269,7 +269,7 @@ theorem map_eq_lift_desc'_left (α β h) :
   simp
 #align homology.map_eq_lift_desc'_left homology.map_eq_lift_desc'_left
 
-theorem map_eq_desc'_lift_right (α β h) :
+lemma map_eq_desc'_lift_right (α β h) :
     map w w' α β h =
       homology.desc' f g _ (homology.lift f' g' _ (kernel.ι _ ≫ α.right ≫ cokernel.π _)
         (by simp [h]))
@@ -283,7 +283,7 @@ theorem map_eq_desc'_lift_right (α β h) :
   simp [h]
 #align homology.map_eq_desc'_lift_right homology.map_eq_desc'_lift_right
 
-theorem map_eq_lift_desc'_right (α β h) :
+lemma map_eq_lift_desc'_right (α β h) :
     map w w' α β h =
       homology.lift f' g' _
         (homology.desc' f g _ (kernel.ι _ ≫ α.right ≫ cokernel.π _)
@@ -303,7 +303,7 @@ theorem map_eq_lift_desc'_right (α β h) :
 #align homology.map_eq_lift_desc'_right homology.map_eq_lift_desc'_right
 
 @[reassoc (attr := simp)]
-theorem map_ι (α β h) :
+lemma map_ι (α β h) :
     map w w' α β h ≫ ι f' g' w' =
       ι f g w ≫ cokernel.map f f' α.left β.left (by simp [h, β.w.symm]) := by
   rw [map_eq_lift_desc'_left, lift_ι]

@@ -157,17 +157,17 @@ section
 variable {R : Type*} [DivisionRing R] [CharZero R]
 
 @[simp]
-theorem half_add_self (a : R) : (a + a) / 2 = a := by rw [← mul_two, mul_div_cancel a two_ne_zero]
+lemma half_add_self (a : R) : (a + a) / 2 = a := by rw [← mul_two, mul_div_cancel a two_ne_zero]
 #align half_add_self half_add_self
 
 @[simp]
-theorem add_halves' (a : R) : a / 2 + a / 2 = a := by rw [← add_div, half_add_self]
+lemma add_halves' (a : R) : a / 2 + a / 2 = a := by rw [← add_div, half_add_self]
 #align add_halves' add_halves'
 
-theorem sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves']
+lemma sub_half (a : R) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves']
 #align sub_half sub_half
 
-theorem half_sub (a : R) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]
+lemma half_sub (a : R) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]
 #align half_sub half_sub
 
 end
@@ -194,7 +194,7 @@ section RingHom
 
 variable {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem RingHom.charZero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
+lemma RingHom.charZero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
   ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩
 #align ring_hom.char_zero RingHom.charZero
 
@@ -204,7 +204,7 @@ lemma RingHom.charZero_iff {ϕ : R →+* S} (hϕ : Function.Injective ϕ) : Char
     fun hS => ϕ.charZero⟩
 #align ring_hom.char_zero_iff RingHom.charZero_iff
 
-theorem RingHom.injective_nat (f : ℕ →+* R) [CharZero R] : Function.Injective f :=
+lemma RingHom.injective_nat (f : ℕ →+* R) [CharZero R] : Function.Injective f :=
   Subsingleton.elim (Nat.castRingHom _) f ▸ Nat.cast_injective
 #align ring_hom.injective_nat RingHom.injective_nat
 

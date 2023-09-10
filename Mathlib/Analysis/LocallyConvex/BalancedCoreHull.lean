@@ -70,7 +70,7 @@ def balancedHull (s : Set E) :=
 
 variable {𝕜}
 
-theorem balancedCore_subset (s : Set E) : balancedCore 𝕜 s ⊆ s :=
+lemma balancedCore_subset (s : Set E) : balancedCore 𝕜 s ⊆ s :=
   sUnion_subset fun _ ht => ht.2
 #align balanced_core_subset balancedCore_subset
 
@@ -82,7 +82,7 @@ lemma mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 
   simp_rw [balancedCore, mem_sUnion, mem_setOf_eq, and_assoc]
 #align mem_balanced_core_iff mem_balancedCore_iff
 
-theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
+lemma smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
     a • balancedCore 𝕜 s ⊆ balancedCore 𝕜 s := by
   rintro x ⟨y, hy, rfl⟩
   rw [mem_balancedCore_iff] at hy
@@ -90,13 +90,13 @@ theorem smul_balancedCore_subset (s : Set E) {a : 𝕜} (ha : ‖a‖ ≤ 1) :
   exact ⟨t, ⟨ht1, ht2⟩, ht1 a ha (smul_mem_smul_set hy)⟩
 #align smul_balanced_core_subset smul_balancedCore_subset
 
-theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) := fun _ =>
+lemma balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) := fun _ =>
   smul_balancedCore_subset s
 #align balanced_core_balanced balancedCore_balanced
 
 /-- The balanced core of `t` is maximal in the sense that it contains any balanced subset
 `s` of `t`.-/
-theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆ t) :
+lemma Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆ t) :
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩
 #align balanced.subset_core_of_subset Balanced.subset_balancedCore_of_subset
@@ -111,7 +111,7 @@ lemma mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ (r : 𝕜) (_ : �
 
 /-- The balanced hull of `s` is minimal in the sense that it is contained in any balanced superset
 `t` of `s`. -/
-theorem Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆ t) :
+lemma Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆ t) :
     balancedHull 𝕜 s ⊆ t := by
   intros x hx
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 hx
@@ -124,7 +124,7 @@ section Module
 
 variable [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-theorem balancedCore_zero_mem (hs : (0 : E) ∈ s) : (0 : E) ∈ balancedCore 𝕜 s :=
+lemma balancedCore_zero_mem (hs : (0 : E) ∈ s) : (0 : E) ∈ balancedCore 𝕜 s :=
   mem_balancedCore_iff.2 ⟨0, balanced_zero, zero_subset.2 hs, Set.zero_mem_zero⟩
 #align balanced_core_zero_mem balancedCore_zero_mem
 
@@ -143,7 +143,7 @@ lemma subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull �
 
 variable {𝕜}
 
-theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) := by
+lemma balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) := by
   intro a ha
   simp_rw [balancedHull, smul_set_iUnion₂, subset_def, mem_iUnion₂]
   rintro x ⟨r, hr, hx⟩
@@ -165,11 +165,11 @@ lemma balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
   exact fun _ => ⟨1, norm_one.ge, not_mem_empty _⟩
 #align balanced_core_aux_empty balancedCoreAux_empty
 
-theorem balancedCoreAux_subset (s : Set E) : balancedCoreAux 𝕜 s ⊆ s := fun x hx => by
+lemma balancedCoreAux_subset (s : Set E) : balancedCoreAux 𝕜 s ⊆ s := fun x hx => by
   simpa only [one_smul] using mem_balancedCoreAux_iff.1 hx 1 norm_one.ge
 #align balanced_core_aux_subset balancedCoreAux_subset
 
-theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
+lemma balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
     Balanced 𝕜 (balancedCoreAux 𝕜 s) := by
   rintro a ha x ⟨y, hy, rfl⟩
   obtain rfl | h := eq_or_ne a 0
@@ -183,7 +183,7 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
   rwa [smul_assoc, mem_inv_smul_set_iff₀ h] at h'
 #align balanced_core_aux_balanced balancedCoreAux_balanced
 
-theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s := by
+lemma balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ balancedCoreAux 𝕜 s := by
   refine' fun x hx => mem_balancedCoreAux_iff.2 fun r hr => _
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.mp <| zero_lt_one.trans_le hr)]
   refine' h (ht.smul_mem _ hx)
@@ -195,14 +195,14 @@ lemma balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCore
   balancedCoreAux_maximal (balancedCore_subset s) (balancedCore_balanced s)
 #align balanced_core_subset_balanced_core_aux balancedCore_subset_balancedCoreAux
 
-theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
+lemma balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
     balancedCore 𝕜 s = ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s := by
   refine' balancedCore_subset_balancedCoreAux.antisymm _
   refine' (balancedCoreAux_balanced _).subset_balancedCore_of_subset (balancedCoreAux_subset s)
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
 #align balanced_core_eq_Inter balancedCore_eq_iInter
 
-theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ (a : 𝕜) (_ : ‖a‖ ≤ 1), a • s ⊆ t) :
+lemma subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ (a : 𝕜) (_ : ‖a‖ ≤ 1), a • s ⊆ t) :
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
   refine' subset_iInter₂ fun a ha => _
@@ -224,7 +224,7 @@ section Topology
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [ContinuousSMul 𝕜 E] {U : Set E}
 
-protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by
+protected lemma IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCore 𝕜 U) := by
   by_cases h : (0 : E) ∈ U
   · rw [balancedCore_eq_iInter h]
     refine' isClosed_iInter fun a => _
@@ -239,7 +239,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     exact isClosed_empty
 #align is_closed.balanced_core IsClosed.balancedCore
 
-theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
+lemma balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
   -- Getting neighborhoods of the origin for `0 : 𝕜` and `0 : E`
   obtain ⟨r, V, hr, hV, hrVU⟩ : ∃ (r : ℝ) (V : Set E),
       0 < r ∧ V ∈ 𝓝 (0 : E) ∧ ∀ (c : 𝕜) (y : E), ‖c‖ < r → y ∈ V → c • y ∈ U := by

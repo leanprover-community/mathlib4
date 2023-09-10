@@ -87,27 +87,27 @@ lemma Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf : T
 variable [TopologicalSpace β] {f : β → M} {g : β → α} {b : β} {s : Set β}
 
 @[to_additive]
-nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
+nonrec lemma ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
     ContinuousWithinAt (fun x => c • g x) s b :=
   hg.const_smul c
 #align continuous_within_at.const_smul ContinuousWithinAt.const_smul
 #align continuous_within_at.const_vadd ContinuousWithinAt.const_vadd
 
 @[to_additive]
-nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
+nonrec lemma ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
     ContinuousAt (fun x => c • g x) b :=
   hg.const_smul c
 #align continuous_at.const_smul ContinuousAt.const_smul
 #align continuous_at.const_vadd ContinuousAt.const_vadd
 
 @[to_additive]
-theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
+lemma ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
     ContinuousOn (fun x => c • g x) s := fun x hx => (hg x hx).const_smul c
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
 @[to_additive (attr := continuity)]
-theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
+lemma Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
 #align continuous.const_vadd Continuous.const_vadd
@@ -168,13 +168,13 @@ instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α
 #align add_units.has_continuous_const_vadd AddUnits.continuousConstVAdd
 
 @[to_additive]
-theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
+lemma smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
   ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
 #align smul_closure_subset smul_closure_subset
 #align vadd_closure_subset vadd_closure_subset
 
 @[to_additive]
-theorem smul_closure_orbit_subset (c : M) (x : α) :
+lemma smul_closure_orbit_subset (c : M) (x : α) :
     c • closure (MulAction.orbit M x) ⊆ closure (MulAction.orbit M x) :=
   (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
 #align smul_closure_orbit_subset smul_closure_orbit_subset
@@ -204,28 +204,28 @@ lemma tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
 variable [TopologicalSpace β] {f : β → α} {b : β} {s : Set β}
 
 @[to_additive]
-theorem continuousWithinAt_const_smul_iff (c : G) :
+lemma continuousWithinAt_const_smul_iff (c : G) :
     ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
   tendsto_const_smul_iff c
 #align continuous_within_at_const_smul_iff continuousWithinAt_const_smul_iff
 #align continuous_within_at_const_vadd_iff continuousWithinAt_const_vadd_iff
 
 @[to_additive]
-theorem continuousOn_const_smul_iff (c : G) :
+lemma continuousOn_const_smul_iff (c : G) :
     ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
   forall₂_congr fun _ _ => continuousWithinAt_const_smul_iff c
 #align continuous_on_const_smul_iff continuousOn_const_smul_iff
 #align continuous_on_const_vadd_iff continuousOn_const_vadd_iff
 
 @[to_additive]
-theorem continuousAt_const_smul_iff (c : G) :
+lemma continuousAt_const_smul_iff (c : G) :
     ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
   tendsto_const_smul_iff c
 #align continuous_at_const_smul_iff continuousAt_const_smul_iff
 #align continuous_at_const_vadd_iff continuousAt_const_vadd_iff
 
 @[to_additive]
-theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ Continuous f := by
+lemma continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ Continuous f := by
   simp only [continuous_iff_continuousAt, continuousAt_const_smul_iff]
 #align continuous_const_smul_iff continuous_const_smul_iff
 #align continuous_const_vadd_iff continuous_const_vadd_iff
@@ -245,7 +245,7 @@ def Homeomorph.smul (γ : G) : α ≃ₜ α where
 add_decl_doc Homeomorph.vadd
 
 @[to_additive]
-theorem isOpenMap_smul (c : G) : IsOpenMap fun x : α => c • x :=
+lemma isOpenMap_smul (c : G) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smul c).isOpenMap
 #align is_open_map_smul isOpenMap_smul
 #align is_open_map_vadd isOpenMap_vadd
@@ -257,7 +257,7 @@ lemma IsOpen.smul {s : Set α} (hs : IsOpen s) (c : G) : IsOpen (c • s) :=
 #align is_open.vadd IsOpen.vadd
 
 @[to_additive]
-theorem isClosedMap_smul (c : G) : IsClosedMap fun x : α => c • x :=
+lemma isClosedMap_smul (c : G) : IsClosedMap fun x : α => c • x :=
   (Homeomorph.smul c).isClosedMap
 #align is_closed_map_smul isClosedMap_smul
 #align is_closed_map_vadd isClosedMap_vadd
@@ -269,19 +269,19 @@ lemma IsClosed.smul {s : Set α} (hs : IsClosed s) (c : G) : IsClosed (c • s) 
 #align is_closed.vadd IsClosed.vadd
 
 @[to_additive]
-theorem closure_smul (c : G) (s : Set α) : closure (c • s) = c • closure s :=
+lemma closure_smul (c : G) (s : Set α) : closure (c • s) = c • closure s :=
   ((Homeomorph.smul c).image_closure s).symm
 #align closure_smul closure_smul
 #align closure_vadd closure_vadd
 
 @[to_additive]
-theorem Dense.smul (c : G) {s : Set α} (hs : Dense s) : Dense (c • s) := by
+lemma Dense.smul (c : G) {s : Set α} (hs : Dense s) : Dense (c • s) := by
   rw [dense_iff_closure_eq] at hs ⊢; rw [closure_smul, hs, smul_set_univ]
 #align dense.smul Dense.smul
 #align dense.vadd Dense.vadd
 
 @[to_additive]
-theorem interior_smul (c : G) (s : Set α) : interior (c • s) = c • interior s :=
+lemma interior_smul (c : G) (s : Set α) : interior (c • s) = c • interior s :=
   ((Homeomorph.smul c).image_interior s).symm
 #align interior_smul interior_smul
 #align interior_vadd interior_vadd
@@ -300,22 +300,22 @@ lemma tendsto_const_smul_iff₀ {f : β → α} {l : Filter β} {a : α} {c : G�
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {c : G₀} {s : Set β}
 
-theorem continuousWithinAt_const_smul_iff₀ (hc : c ≠ 0) :
+lemma continuousWithinAt_const_smul_iff₀ (hc : c ≠ 0) :
     ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
   tendsto_const_smul_iff (Units.mk0 c hc)
 #align continuous_within_at_const_smul_iff₀ continuousWithinAt_const_smul_iff₀
 
-theorem continuousOn_const_smul_iff₀ (hc : c ≠ 0) :
+lemma continuousOn_const_smul_iff₀ (hc : c ≠ 0) :
     ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
   continuousOn_const_smul_iff (Units.mk0 c hc)
 #align continuous_on_const_smul_iff₀ continuousOn_const_smul_iff₀
 
-theorem continuousAt_const_smul_iff₀ (hc : c ≠ 0) :
+lemma continuousAt_const_smul_iff₀ (hc : c ≠ 0) :
     ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
   continuousAt_const_smul_iff (Units.mk0 c hc)
 #align continuous_at_const_smul_iff₀ continuousAt_const_smul_iff₀
 
-theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c • f x) ↔ Continuous f :=
+lemma continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c • f x) ↔ Continuous f :=
   continuous_const_smul_iff (Units.mk0 c hc)
 #align continuous_const_smul_iff₀ continuous_const_smul_iff₀
 
@@ -411,36 +411,36 @@ nonrec lemma tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c 
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {c : M} {s : Set β}
 
-nonrec theorem continuousWithinAt_const_smul_iff (hc : IsUnit c) :
+nonrec lemma continuousWithinAt_const_smul_iff (hc : IsUnit c) :
     ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuousWithinAt_const_smul_iff u
 #align is_unit.continuous_within_at_const_smul_iff IsUnit.continuousWithinAt_const_smul_iff
 
-nonrec theorem continuousOn_const_smul_iff (hc : IsUnit c) :
+nonrec lemma continuousOn_const_smul_iff (hc : IsUnit c) :
     ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuousOn_const_smul_iff u
 #align is_unit.continuous_on_const_smul_iff IsUnit.continuousOn_const_smul_iff
 
-nonrec theorem continuousAt_const_smul_iff (hc : IsUnit c) :
+nonrec lemma continuousAt_const_smul_iff (hc : IsUnit c) :
     ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuousAt_const_smul_iff u
 #align is_unit.continuous_at_const_smul_iff IsUnit.continuousAt_const_smul_iff
 
-nonrec theorem continuous_const_smul_iff (hc : IsUnit c) :
+nonrec lemma continuous_const_smul_iff (hc : IsUnit c) :
     (Continuous fun x => c • f x) ↔ Continuous f :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuous_const_smul_iff u
 #align is_unit.continuous_const_smul_iff IsUnit.continuous_const_smul_iff
 
-nonrec theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
+nonrec lemma isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
   let ⟨u, hu⟩ := hc
   hu ▸ isOpenMap_smul u
 #align is_unit.is_open_map_smul IsUnit.isOpenMap_smul
 
-nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c • x :=
+nonrec lemma isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c • x :=
   let ⟨u, hu⟩ := hc
   hu ▸ isClosedMap_smul u
 #align is_unit.is_closed_map_smul IsUnit.isClosedMap_smul

@@ -55,18 +55,18 @@ def SupPrime (a : α) : Prop :=
   ¬IsMin a ∧ ∀ ⦃b c⦄, a ≤ b ⊔ c → a ≤ b ∨ a ≤ c
 #align sup_prime SupPrime
 
-theorem SupIrred.not_isMin (ha : SupIrred a) : ¬IsMin a :=
+lemma SupIrred.not_isMin (ha : SupIrred a) : ¬IsMin a :=
   ha.1
 #align sup_irred.not_is_min SupIrred.not_isMin
 
-theorem SupPrime.not_isMin (ha : SupPrime a) : ¬IsMin a :=
+lemma SupPrime.not_isMin (ha : SupPrime a) : ¬IsMin a :=
   ha.1
 #align sup_prime.not_is_min SupPrime.not_isMin
 
-theorem IsMin.not_supIrred (ha : IsMin a) : ¬SupIrred a := fun h => h.1 ha
+lemma IsMin.not_supIrred (ha : IsMin a) : ¬SupIrred a := fun h => h.1 ha
 #align is_min.not_sup_irred IsMin.not_supIrred
 
-theorem IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
+lemma IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
 #align is_min.not_sup_prime IsMin.not_supPrime
 
 @[simp]
@@ -86,7 +86,7 @@ protected lemma SupPrime.supIrred : SupPrime a → SupIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.ge
 #align sup_prime.sup_irred SupPrime.supIrred
 
-theorem SupPrime.le_sup (ha : SupPrime a) : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c :=
+lemma SupPrime.le_sup (ha : SupPrime a) : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c :=
   ⟨fun h => ha.2 h, fun h => h.elim le_sup_of_le_left le_sup_of_le_right⟩
 #align sup_prime.le_sup SupPrime.le_sup
 
@@ -102,13 +102,13 @@ lemma not_supPrime_bot : ¬SupPrime (⊥ : α) :=
   isMin_bot.not_supPrime
 #align not_sup_prime_bot not_supPrime_bot
 
-theorem SupIrred.ne_bot (ha : SupIrred a) : a ≠ ⊥ := by rintro rfl; exact not_supIrred_bot ha
+lemma SupIrred.ne_bot (ha : SupIrred a) : a ≠ ⊥ := by rintro rfl; exact not_supIrred_bot ha
 #align sup_irred.ne_bot SupIrred.ne_bot
 
-theorem SupPrime.ne_bot (ha : SupPrime a) : a ≠ ⊥ := by rintro rfl; exact not_supPrime_bot ha
+lemma SupPrime.ne_bot (ha : SupPrime a) : a ≠ ⊥ := by rintro rfl; exact not_supPrime_bot ha
 #align sup_prime.ne_bot SupPrime.ne_bot
 
-theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s, f i = a := by
+lemma SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s, f i = a := by
   classical
   induction' s using Finset.induction with i s _ ih
   · simpa [ha.ne_bot] using h.symm
@@ -117,7 +117,7 @@ theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s
   exact (ha.2 h).imp_right ih
 #align sup_irred.finset_sup_eq SupIrred.finset_sup_eq
 
-theorem SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s, a ≤ f i := by
+lemma SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s, a ≤ f i := by
   classical
   induction' s using Finset.induction with i s _ ih
   · simp [ha.ne_bot]
@@ -128,7 +128,7 @@ variable [WellFoundedLT α]
 
 /-- In a well-founded lattice, any element is the supremum of finitely many sup-irreducible
 elements. This is the order-theoretic analogue of prime factorisation. -/
-theorem exists_supIrred_decomposition (a : α) :
+lemma exists_supIrred_decomposition (a : α) :
     ∃ s : Finset α, s.sup id = a ∧ ∀ ⦃b⦄, b ∈ s → SupIrred b := by
   classical
   apply WellFoundedLT.induction a _
@@ -162,11 +162,11 @@ def InfPrime (a : α) : Prop :=
 #align inf_prime InfPrime
 
 @[simp]
-theorem IsMax.not_infIrred (ha : IsMax a) : ¬InfIrred a := fun h => h.1 ha
+lemma IsMax.not_infIrred (ha : IsMax a) : ¬InfIrred a := fun h => h.1 ha
 #align is_max.not_inf_irred IsMax.not_infIrred
 
 @[simp]
-theorem IsMax.not_infPrime (ha : IsMax a) : ¬InfPrime a := fun h => h.1 ha
+lemma IsMax.not_infPrime (ha : IsMax a) : ¬InfPrime a := fun h => h.1 ha
 #align is_max.not_inf_prime IsMax.not_infPrime
 
 @[simp]
@@ -183,7 +183,7 @@ protected lemma InfPrime.infIrred : InfPrime a → InfIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.le
 #align inf_prime.inf_irred InfPrime.infIrred
 
-theorem InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
+lemma InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
   ⟨fun h => ha.2 h, fun h => h.elim inf_le_of_left_le inf_le_of_right_le⟩
 #align inf_prime.inf_le InfPrime.inf_le
 
@@ -199,17 +199,17 @@ lemma not_infPrime_top : ¬InfPrime (⊤ : α) :=
   isMax_top.not_infPrime
 #align not_inf_prime_top not_infPrime_top
 
-theorem InfIrred.ne_top (ha : InfIrred a) : a ≠ ⊤ := by rintro rfl; exact not_infIrred_top ha
+lemma InfIrred.ne_top (ha : InfIrred a) : a ≠ ⊤ := by rintro rfl; exact not_infIrred_top ha
 #align inf_irred.ne_top InfIrred.ne_top
 
-theorem InfPrime.ne_top (ha : InfPrime a) : a ≠ ⊤ := by rintro rfl; exact not_infPrime_top ha
+lemma InfPrime.ne_top (ha : InfPrime a) : a ≠ ⊤ := by rintro rfl; exact not_infPrime_top ha
 #align inf_prime.ne_top InfPrime.ne_top
 
 lemma InfIrred.finset_inf_eq : InfIrred a → s.inf f = a → ∃ i ∈ s, f i = a :=
   @SupIrred.finset_sup_eq _ αᵒᵈ _ _ _ _ _
 #align inf_irred.finset_inf_eq InfIrred.finset_inf_eq
 
-theorem InfPrime.finset_inf_le (ha : InfPrime a) : s.inf f ≤ a ↔ ∃ i ∈ s, f i ≤ a :=
+lemma InfPrime.finset_inf_le (ha : InfPrime a) : s.inf f ≤ a ↔ ∃ i ∈ s, f i ≤ a :=
   @SupPrime.le_finset_sup _ αᵒᵈ _ _ _ _ _ ha
 #align inf_prime.finset_inf_le InfPrime.finset_inf_le
 
@@ -217,7 +217,7 @@ variable [WellFoundedGT α]
 
 /-- In a cowell-founded lattice, any element is the infimum of finitely many inf-irreducible
 elements. This is the order-theoretic analogue of prime factorisation. -/
-theorem exists_infIrred_decomposition (a : α) :
+lemma exists_infIrred_decomposition (a : α) :
     ∃ s : Finset α, s.inf id = a ∧ ∀ ⦃b⦄, b ∈ s → InfIrred b :=
   @exists_supIrred_decomposition αᵒᵈ _ _ _ _
 #align exists_inf_irred_decomposition exists_infIrred_decomposition

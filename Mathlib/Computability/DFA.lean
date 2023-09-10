@@ -51,17 +51,17 @@ def evalFrom (start : σ) : List α → σ :=
 #align DFA.eval_from DFA.evalFrom
 
 @[simp]
-theorem evalFrom_nil (s : σ) : M.evalFrom s [] = s :=
+lemma evalFrom_nil (s : σ) : M.evalFrom s [] = s :=
   rfl
 #align DFA.eval_from_nil DFA.evalFrom_nil
 
 @[simp]
-theorem evalFrom_singleton (s : σ) (a : α) : M.evalFrom s [a] = M.step s a :=
+lemma evalFrom_singleton (s : σ) (a : α) : M.evalFrom s [a] = M.step s a :=
   rfl
 #align DFA.eval_from_singleton DFA.evalFrom_singleton
 
 @[simp]
-theorem evalFrom_append_singleton (s : σ) (x : List α) (a : α) :
+lemma evalFrom_append_singleton (s : σ) (x : List α) (a : α) :
     M.evalFrom s (x ++ [a]) = M.step (M.evalFrom s x) a := by
   simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
 #align DFA.eval_from_append_singleton DFA.evalFrom_append_singleton
@@ -77,16 +77,16 @@ lemma eval_nil : M.eval [] = M.start :=
 #align DFA.eval_nil DFA.eval_nil
 
 @[simp]
-theorem eval_singleton (a : α) : M.eval [a] = M.step M.start a :=
+lemma eval_singleton (a : α) : M.eval [a] = M.step M.start a :=
   rfl
 #align DFA.eval_singleton DFA.eval_singleton
 
 @[simp]
-theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.step (M.eval x) a :=
+lemma eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.step (M.eval x) a :=
   evalFrom_append_singleton _ _ _ _
 #align DFA.eval_append_singleton DFA.eval_append_singleton
 
-theorem evalFrom_of_append (start : σ) (x y : List α) :
+lemma evalFrom_of_append (start : σ) (x y : List α) :
     M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
   x.foldl_append _ _ y
 #align DFA.eval_from_of_append DFA.evalFrom_of_append
@@ -95,7 +95,7 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 def accepts : Language α := {x | M.eval x ∈ M.accept}
 #align DFA.accepts DFA.accepts
 
-theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
+lemma mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
 #align DFA.mem_accepts DFA.mem_accepts
 
 lemma evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)

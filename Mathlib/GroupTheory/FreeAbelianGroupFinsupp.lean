@@ -46,7 +46,7 @@ def Finsupp.toFreeAbelianGroup : (X →₀ ℤ) →+ FreeAbelianGroup X :=
 open Finsupp FreeAbelianGroup
 
 @[simp]
-theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
+lemma Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
     Finsupp.toFreeAbelianGroup.comp (Finsupp.singleAddHom x) =
       (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) := by
   ext
@@ -83,12 +83,12 @@ namespace FreeAbelianGroup
 open Finsupp
 
 @[simp]
-theorem toFinsupp_of (x : X) : toFinsupp (of x) = Finsupp.single x 1 := by
+lemma toFinsupp_of (x : X) : toFinsupp (of x) = Finsupp.single x 1 := by
   simp only [toFinsupp, lift.of]
 #align free_abelian_group.to_finsupp_of FreeAbelianGroup.toFinsupp_of
 
 @[simp]
-theorem toFinsupp_toFreeAbelianGroup (f : X →₀ ℤ) :
+lemma toFinsupp_toFreeAbelianGroup (f : X →₀ ℤ) :
     FreeAbelianGroup.toFinsupp (Finsupp.toFreeAbelianGroup f) = f := by
   rw [← AddMonoidHom.comp_apply, toFinsupp_comp_toFreeAbelianGroup, AddMonoidHom.id_apply]
 #align free_abelian_group.to_finsupp_to_free_abelian_group FreeAbelianGroup.toFinsupp_toFreeAbelianGroup
@@ -150,12 +150,12 @@ def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 #align free_abelian_group.support FreeAbelianGroup.support
 
-theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
+lemma mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
   rw [support, Finsupp.mem_support_iff]
   exact Iff.rfl
 #align free_abelian_group.mem_support_iff FreeAbelianGroup.mem_support_iff
 
-theorem not_mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support ↔ coeff x a = 0 := by
+lemma not_mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support ↔ coeff x a = 0 := by
   rw [support, Finsupp.not_mem_support_iff]
   exact Iff.rfl
 #align free_abelian_group.not_mem_support_iff FreeAbelianGroup.not_mem_support_iff
@@ -166,17 +166,17 @@ lemma support_zero : support (0 : FreeAbelianGroup X) = ∅ := by
 #align free_abelian_group.support_zero FreeAbelianGroup.support_zero
 
 @[simp]
-theorem support_of (x : X) : support (of x) = {x} := by
+lemma support_of (x : X) : support (of x) = {x} := by
   rw [support, toFinsupp_of, Finsupp.support_single_ne_zero _ one_ne_zero]
 #align free_abelian_group.support_of FreeAbelianGroup.support_of
 
 @[simp]
-theorem support_neg (a : FreeAbelianGroup X) : support (-a) = support a := by
+lemma support_neg (a : FreeAbelianGroup X) : support (-a) = support a := by
   simp only [support, AddMonoidHom.map_neg, Finsupp.support_neg]
 #align free_abelian_group.support_neg FreeAbelianGroup.support_neg
 
 @[simp]
-theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
+lemma support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
   simp only [mem_support_iff, AddMonoidHom.map_zsmul]
@@ -184,7 +184,7 @@ theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
 #align free_abelian_group.support_zsmul FreeAbelianGroup.support_zsmul
 
 @[simp]
-theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
+lemma support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   apply support_zsmul k _ a
   exact_mod_cast h
@@ -192,7 +192,7 @@ theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
 
 open Classical
 
-theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
+lemma support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
   simp only [support, AddMonoidHom.map_add]
   apply Finsupp.support_add
 #align free_abelian_group.support_add FreeAbelianGroup.support_add

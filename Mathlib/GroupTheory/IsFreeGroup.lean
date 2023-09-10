@@ -103,12 +103,12 @@ lemma lift'_eq_freeGroup_lift {A : Type u} : @lift (FreeGroup A) _ _ H _ = FreeG
 #align is_free_group.lift'_eq_free_group_lift IsFreeGroup.lift'_eq_freeGroup_lift
 
 @[simp]
-theorem lift_of (f : Generators G → H) (a : Generators G) : lift f (of a) = f a :=
+lemma lift_of (f : Generators G → H) (a : Generators G) : lift f (of a) = f a :=
   congr_fun (lift.symm_apply_apply f) a
 #align is_free_group.lift_of IsFreeGroup.lift_of
 
 @[simp]
-theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f (of a) :=
+lemma lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f (of a) :=
   rfl
 #align is_free_group.lift_symm_apply IsFreeGroup.lift_symm_apply
 
@@ -123,7 +123,7 @@ group extends in a unique way to a homomorphism from `G`.
 
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
 expresses the universal property.  -/
-theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
+lemma unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
   simpa only [Function.funext_iff] using lift.symm.bijective.existsUnique f
 #align is_free_group.unique_lift IsFreeGroup.unique_lift
 

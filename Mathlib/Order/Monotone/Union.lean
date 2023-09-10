@@ -53,7 +53,7 @@ protected lemma StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoOn 
 
 /-- If `f` is strictly monotone both on `(-∞, a]` and `[a, ∞)`, then it is strictly monotone on the
 whole line. -/
-protected theorem StrictMonoOn.Iic_union_Ici (h₁ : StrictMonoOn f (Iic a))
+protected lemma StrictMonoOn.Iic_union_Ici (h₁ : StrictMonoOn f (Iic a))
     (h₂ : StrictMonoOn f (Ici a)) : StrictMono f := by
   rw [← strictMonoOn_univ, ← @Iic_union_Ici _ _ a]
   exact StrictMonoOn.union h₁ h₂ isGreatest_Iic isLeast_Ici
@@ -68,7 +68,7 @@ protected lemma StrictAntiOn.union {s t : Set α} {c : α} (h₁ : StrictAntiOn 
 
 /-- If `f` is strictly antitone both on `(-∞, a]` and `[a, ∞)`, then it is strictly antitone on the
 whole line. -/
-protected theorem StrictAntiOn.Iic_union_Ici (h₁ : StrictAntiOn f (Iic a))
+protected lemma StrictAntiOn.Iic_union_Ici (h₁ : StrictAntiOn f (Iic a))
     (h₂ : StrictAntiOn f (Ici a)) : StrictAnti f :=
   (h₁.dual_right.Iic_union_Ici h₂.dual_right).dual_right
 #align strict_anti_on.Iic_union_Ici StrictAntiOn.Iic_union_Ici
@@ -104,7 +104,7 @@ protected lemma MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : MonotoneO
 #align monotone_on.union_right MonotoneOn.union_right
 
 /-- If `f` is monotone both on `(-∞, a]` and `[a, ∞)`, then it is monotone on the whole line. -/
-protected theorem MonotoneOn.Iic_union_Ici (h₁ : MonotoneOn f (Iic a)) (h₂ : MonotoneOn f (Ici a)) :
+protected lemma MonotoneOn.Iic_union_Ici (h₁ : MonotoneOn f (Iic a)) (h₂ : MonotoneOn f (Ici a)) :
     Monotone f := by
   rw [← monotoneOn_univ, ← @Iic_union_Ici _ _ a]
   exact MonotoneOn.union_right h₁ h₂ isGreatest_Iic isLeast_Ici
@@ -118,7 +118,7 @@ protected lemma AntitoneOn.union_right {s t : Set α} {c : α} (h₁ : AntitoneO
 #align antitone_on.union_right AntitoneOn.union_right
 
 /-- If `f` is antitone both on `(-∞, a]` and `[a, ∞)`, then it is antitone on the whole line. -/
-protected theorem AntitoneOn.Iic_union_Ici (h₁ : AntitoneOn f (Iic a)) (h₂ : AntitoneOn f (Ici a)) :
+protected lemma AntitoneOn.Iic_union_Ici (h₁ : AntitoneOn f (Iic a)) (h₂ : AntitoneOn f (Ici a)) :
     Antitone f :=
   (h₁.dual_right.Iic_union_Ici h₂.dual_right).dual_right
 #align antitone_on.Iic_union_Ici AntitoneOn.Iic_union_Ici

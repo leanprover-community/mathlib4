@@ -71,7 +71,7 @@ lemma exists_partition {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : 
 
 /-- Any large enough family of vectors in `R^n` has a pair of elements
 whose remainders are close together, pointwise. -/
-theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
+lemma exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (_hε : 0 < ε) {b : R} (_hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
       ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   haveI := Classical.decEq R

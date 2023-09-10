@@ -58,16 +58,16 @@ def polar (s : Set E) : Set F :=
   { y : F | ∀ x ∈ s, ‖B x y‖ ≤ 1 }
 #align linear_map.polar LinearMap.polar
 
-theorem polar_mem_iff (s : Set E) (y : F) : y ∈ B.polar s ↔ ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
+lemma polar_mem_iff (s : Set E) (y : F) : y ∈ B.polar s ↔ ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
   Iff.rfl
 #align linear_map.polar_mem_iff LinearMap.polar_mem_iff
 
-theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
+lemma polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
   hy
 #align linear_map.polar_mem LinearMap.polar_mem
 
 @[simp]
-theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
+lemma zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
 #align linear_map.zero_mem_polar LinearMap.zero_mem_polar
 
@@ -110,18 +110,18 @@ lemma polar_zero : B.polar ({0} : Set E) = Set.univ := by
   exact zero_le_one
 #align linear_map.polar_zero LinearMap.polar_zero
 
-theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
+lemma subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
   rw [B.flip_apply]
   exact hy x hx
 #align linear_map.subset_bipolar LinearMap.subset_bipolar
 
 @[simp]
-theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s :=
+lemma tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s :=
   (B.polar_antitone (B.subset_bipolar s)).antisymm (subset_bipolar B.flip (B.polar s))
 #align linear_map.tripolar_eq_polar LinearMap.tripolar_eq_polar
 
 /-- The polar set is closed in the weak topology induced by `B.flip`. -/
-theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
+lemma polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
     (B.polar s) := by
   rw [polar_eq_iInter]
   refine' isClosed_iInter fun x => isClosed_iInter fun _ => _
@@ -139,7 +139,7 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
+lemma polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
   refine' ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => _⟩
   refine' norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => _)

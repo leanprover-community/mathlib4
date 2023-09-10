@@ -48,7 +48,7 @@ alias congr_arg := congrArg
 
 lemma not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
 
-theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
+lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
 attribute [symm] Eq.symm
 
@@ -125,11 +125,11 @@ alias ⟨not_of_not_not_not, _⟩ := not_not_not
 -- FIXME
 -- attribute [congr] not_congr
 
-@[deprecated and_comm] theorem and_comm' (a b) : a ∧ b ↔ b ∧ a := and_comm
+@[deprecated and_comm] lemma and_comm' (a b) : a ∧ b ↔ b ∧ a := and_comm
 #align and.comm and_comm
 #align and_comm and_comm'
 
-@[deprecated and_assoc] theorem and_assoc' (a b) : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) := and_assoc
+@[deprecated and_assoc] lemma and_assoc' (a b) : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) := and_assoc
 #align and_assoc and_assoc'
 #align and.assoc and_assoc
 
@@ -164,11 +164,11 @@ lemma and_self_iff : p ∧ p ↔ p := iff_of_eq (and_self _)
 #align eq_true_intro eq_true
 #align eq_false_intro eq_false
 
-@[deprecated or_comm] theorem or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm
+@[deprecated or_comm] lemma or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm
 #align or.comm or_comm
 #align or_comm or_comm'
 
-@[deprecated or_assoc] theorem or_assoc' (a b) : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) := or_assoc
+@[deprecated or_assoc] lemma or_assoc' (a b) : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) := or_assoc
 #align or.assoc or_assoc
 #align or_assoc or_assoc'
 
@@ -202,7 +202,7 @@ lemma iff_false_iff : (a ↔ False) ↔ ¬a := iff_of_eq (iff_false _)
 lemma false_iff_iff : (False ↔ a) ↔ ¬a := iff_of_eq (false_iff _)
 #align false_iff false_iff_iff
 
-theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
+lemma iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
 #align iff_self iff_self_iff
 
 #align iff_congr iff_congrₓ -- reorder implicits
@@ -271,10 +271,10 @@ lemma exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a
 
 #align decidable.to_bool Decidable.decide
 
-theorem decide_True' (h : Decidable True) : decide True = true := by simp
+lemma decide_True' (h : Decidable True) : decide True = true := by simp
 #align to_bool_true_eq_tt decide_True'
 
-theorem decide_False' (h : Decidable False) : decide False = false := by simp
+lemma decide_False' (h : Decidable False) : decide False = false := by simp
 #align to_bool_false_eq_ff decide_False'
 
 namespace Decidable
@@ -293,7 +293,7 @@ alias by_cases := byCases
 alias by_contradiction := byContradiction
 alias not_not_iff := not_not
 
-@[deprecated not_or] theorem not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
+@[deprecated not_or] lemma not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
     ¬(p ∨ q) ↔ ¬p ∧ ¬q := not_or
 
 end Decidable
@@ -352,7 +352,7 @@ lemma rec_subsingleton {p : Prop} [h : Decidable p] {h₁ : p → Sort u} {h₂ 
   | isFalse h => h₄ h
 
 @[deprecated ite_self]
-theorem if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t := ite_self _
+lemma if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t := ite_self _
 
 lemma imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t :=
   by have := if_pos hc ▸ h; exact this
@@ -494,10 +494,10 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 @[nolint unusedArguments]
 def EmptyRelation := λ _ _ : α => False
 
-theorem InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
+lemma InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-theorem InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (InvImage r f) :=
+lemma InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 
 end Relation

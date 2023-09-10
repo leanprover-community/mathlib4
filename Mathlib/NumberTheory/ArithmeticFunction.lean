@@ -88,11 +88,11 @@ instance : FunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
 
 @[simp]
-theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
+lemma toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
 #align nat.arithmetic_function.to_fun_eq Nat.ArithmeticFunction.toFun_eq
 
 @[simp]
-theorem coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
+lemma coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
   (ZeroHom.mk f hf) = f := rfl
 
 @[simp]
@@ -155,7 +155,7 @@ instance natCoe [AddMonoidWithOne R] : Coe (ArithmeticFunction ℕ) (ArithmeticF
 #align nat.arithmetic_function.nat_coe Nat.ArithmeticFunction.natCoe
 
 @[simp]
-theorem natCoe_nat (f : ArithmeticFunction ℕ) : natToArithmeticFunction f = f :=
+lemma natCoe_nat (f : ArithmeticFunction ℕ) : natToArithmeticFunction f = f :=
   ext fun _ => cast_id _
 #align nat.arithmetic_function.nat_coe_nat Nat.ArithmeticFunction.natCoe_nat
 
@@ -177,7 +177,7 @@ instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFu
 #align nat.arithmetic_function.int_coe Nat.ArithmeticFunction.intCoe
 
 @[simp]
-theorem intCoe_int (f : ArithmeticFunction ℤ) : ofInt f = f :=
+lemma intCoe_int (f : ArithmeticFunction ℤ) : ofInt f = f :=
   ext fun _ => Int.cast_id
 #align nat.arithmetic_function.int_coe_int Nat.ArithmeticFunction.intCoe_int
 
@@ -298,7 +298,7 @@ section Module
 
 variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
-theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
+lemma mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
     (f * g) • h = f • g • h := by
   ext n
   simp only [mul_apply, smul_apply, sum_smul, mul_smul, smul_sum, Finset.sum_sigma']
@@ -333,7 +333,7 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
       rw [H.2.1]
 #align nat.arithmetic_function.mul_smul' Nat.ArithmeticFunction.mul_smul'
 
-theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
+lemma one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
   ext x
   rw [smul_apply]
   by_cases x0 : x = 0
@@ -519,13 +519,13 @@ section NonAssocSemiring
 variable [NonAssocSemiring R]
 
 @[simp]
-theorem pmul_zeta (f : ArithmeticFunction R) : f.pmul ↑ζ = f := by
+lemma pmul_zeta (f : ArithmeticFunction R) : f.pmul ↑ζ = f := by
   ext x
   cases x <;> simp [Nat.succ_ne_zero]
 #align nat.arithmetic_function.pmul_zeta Nat.ArithmeticFunction.pmul_zeta
 
 @[simp]
-theorem zeta_pmul (f : ArithmeticFunction R) : (ζ : ArithmeticFunction R).pmul f = f := by
+lemma zeta_pmul (f : ArithmeticFunction R) : (ζ : ArithmeticFunction R).pmul f = f := by
   ext x
   cases x <;> simp [Nat.succ_ne_zero]
 #align nat.arithmetic_function.zeta_pmul Nat.ArithmeticFunction.zeta_pmul
@@ -803,10 +803,10 @@ lemma sigma_apply {k n : ℕ} : σ k n = ∑ d in divisors n, d ^ k :=
   rfl
 #align nat.arithmetic_function.sigma_apply Nat.ArithmeticFunction.sigma_apply
 
-theorem sigma_one_apply (n : ℕ) : σ 1 n = ∑ d in divisors n, d := by simp [sigma_apply]
+lemma sigma_one_apply (n : ℕ) : σ 1 n = ∑ d in divisors n, d := by simp [sigma_apply]
 #align nat.arithmetic_function.sigma_one_apply Nat.ArithmeticFunction.sigma_one_apply
 
-theorem sigma_zero_apply (n : ℕ) : σ 0 n = (divisors n).card := by simp [sigma_apply]
+lemma sigma_zero_apply (n : ℕ) : σ 0 n = (divisors n).card := by simp [sigma_apply]
 #align nat.arithmetic_function.sigma_zero_apply Nat.ArithmeticFunction.sigma_zero_apply
 
 lemma sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by

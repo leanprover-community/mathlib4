@@ -138,7 +138,7 @@ protected def prod (f : R →ₙ+* S) (g : R →ₙ+* T) : R →ₙ+* S × T :=
 #align non_unital_ring_hom.prod NonUnitalRingHom.prod
 
 @[simp]
-theorem prod_apply (x) : f.prod g x = (f x, g x) :=
+lemma prod_apply (x) : f.prod g x = (f x, g x) :=
   rfl
 #align non_unital_ring_hom.prod_apply NonUnitalRingHom.prod_apply
 
@@ -152,7 +152,7 @@ lemma snd_comp_prod : (snd S T).comp (f.prod g) = g :=
   ext fun _ => rfl
 #align non_unital_ring_hom.snd_comp_prod NonUnitalRingHom.snd_comp_prod
 
-theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
+lemma prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align non_unital_ring_hom.prod_unique NonUnitalRingHom.prod_unique
 
@@ -178,7 +178,7 @@ lemma coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
 #align non_unital_ring_hom.coe_prod_map NonUnitalRingHom.coe_prodMap
 
-theorem prod_comp_prodMap (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+* R') (g' : S →ₙ+* S') :
+lemma prod_comp_prodMap (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+* R') (g' : S →ₙ+* S') :
     (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
 #align non_unital_ring_hom.prod_comp_prod_map NonUnitalRingHom.prod_comp_prodMap
@@ -225,7 +225,7 @@ protected def prod (f : R →+* S) (g : R →+* T) : R →+* S × T :=
 #align ring_hom.prod RingHom.prod
 
 @[simp]
-theorem prod_apply (x) : f.prod g x = (f x, g x) :=
+lemma prod_apply (x) : f.prod g x = (f x, g x) :=
   rfl
 #align ring_hom.prod_apply RingHom.prod_apply
 
@@ -239,7 +239,7 @@ lemma snd_comp_prod : (snd S T).comp (f.prod g) = g :=
   ext fun _ => rfl
 #align ring_hom.snd_comp_prod RingHom.snd_comp_prod
 
-theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
+lemma prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align ring_hom.prod_unique RingHom.prod_unique
 
@@ -265,7 +265,7 @@ lemma coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
 #align ring_hom.coe_prod_map RingHom.coe_prodMap
 
-theorem prod_comp_prodMap (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' : S →+* S') :
+lemma prod_comp_prodMap (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' : S →+* S') :
     (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
 #align ring_hom.prod_comp_prod_map RingHom.prod_comp_prodMap
@@ -373,7 +373,7 @@ def zeroRingProd : R ≃+* S × R where
 end RingEquiv
 
 /-- The product of two nontrivial rings is not a domain -/
-theorem false_of_nontrivial_of_product_domain (R S : Type*) [Ring R] [Ring S] [IsDomain (R × S)]
+lemma false_of_nontrivial_of_product_domain (R S : Type*) [Ring R] [Ring S] [IsDomain (R × S)]
     [Nontrivial R] [Nontrivial S] : False := by
   have :=
     NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero (show ((0 : R), (1 : S)) * (1, 0) = 0 by simp)

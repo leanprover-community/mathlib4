@@ -51,18 +51,18 @@ scoped[Count] attribute [instance] Nat.CountSet.fintype
 
 open Count
 
-theorem count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).card := by
+lemma count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).card := by
   rw [count, List.countP_eq_length_filter]
   rfl
 #align nat.count_eq_card_filter_range Nat.count_eq_card_filter_range
 
 /-- `count p n` can be expressed as the cardinality of `{k // k < n ∧ p k}`. -/
-theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
+lemma count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
   rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
   rfl
 #align nat.count_eq_card_fintype Nat.count_eq_card_fintype
 
-theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
+lemma count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
   split_ifs with h <;> simp [count, List.range_succ, h]
 #align nat.count_succ Nat.count_succ
 
@@ -71,7 +71,7 @@ lemma count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ fun n ↦ by by_cases h : p n <;> simp [count_succ, h]
 #align nat.count_monotone Nat.count_monotone
 
-theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
+lemma count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
   have : Disjoint ((range a).filter p) (((range b).map <| addLeftEmbedding a).filter p) := by
     apply disjoint_filter_filter
     rw [Finset.disjoint_left]
@@ -83,7 +83,7 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
   rfl
 #align nat.count_add Nat.count_add
 
-theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
+lemma count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
   rw [add_comm, count_add, add_comm]
   simp_rw [add_comm b]
 #align nat.count_add' Nat.count_add'
@@ -91,7 +91,7 @@ theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a
 lemma count_one : count p 1 = if p 0 then 1 else 0 := by simp [count_succ]
 #align nat.count_one Nat.count_one
 
-theorem count_succ' (n : ℕ) :
+lemma count_succ' (n : ℕ) :
     count p (n + 1) = count (fun k ↦ p (k + 1)) n + if p 0 then 1 else 0 := by
   rw [count_add', count_one]
 #align nat.count_succ' Nat.count_succ'
@@ -117,7 +117,7 @@ alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
 alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
 #align nat.count_succ_eq_count Nat.count_succ_eq_count
 
-theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by
+lemma count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by
   rw [count_eq_card_fintype, ← Cardinal.mk_fintype]
   exact Cardinal.mk_subtype_mono fun x hx ↦ hx.2
 #align nat.count_le_cardinal Nat.count_le_cardinal
@@ -137,7 +137,7 @@ lemma count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count
   · simpa [heq] using count_strict_mono hm hmn
 #align nat.count_injective Nat.count_injective
 
-theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ hp.toFinset.card := by
+lemma count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ hp.toFinset.card := by
   rw [count_eq_card_filter_range]
   exact Finset.card_mono fun x hx ↦ hp.mem_toFinset.2 (mem_filter.1 hx).2
 #align nat.count_le_card Nat.count_le_card

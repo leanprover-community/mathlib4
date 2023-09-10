@@ -92,12 +92,12 @@ def normalizeObj : F C → NormalMonoidalObject C → N C
 #align category_theory.free_monoidal_category.normalize_obj CategoryTheory.FreeMonoidalCategory.normalizeObj
 
 @[simp]
-theorem normalizeObj_unitor (n : NormalMonoidalObject C) : normalizeObj (𝟙_ (F C)) n = ⟨n⟩ :=
+lemma normalizeObj_unitor (n : NormalMonoidalObject C) : normalizeObj (𝟙_ (F C)) n = ⟨n⟩ :=
   rfl
 #align category_theory.free_monoidal_category.normalize_obj_unitor CategoryTheory.FreeMonoidalCategory.normalizeObj_unitor
 
 @[simp]
-theorem normalizeObj_tensor (X Y : F C) (n : NormalMonoidalObject C) :
+lemma normalizeObj_tensor (X Y : F C) (n : NormalMonoidalObject C) :
     normalizeObj (X ⊗ Y) n = normalizeObj Y (normalizeObj X n).as :=
   rfl
 #align category_theory.free_monoidal_category.normalize_obj_tensor CategoryTheory.FreeMonoidalCategory.normalizeObj_tensor
@@ -170,7 +170,7 @@ lemma tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).
   rfl
 #align category_theory.free_monoidal_category.tensor_func_map_app CategoryTheory.FreeMonoidalCategory.tensorFunc_map_app
 
-theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
+lemma tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
     ((tensorFunc C).obj Z).map f = inclusion.map f ⊗ 𝟙 Z := by
   cases n
   cases n'
@@ -193,14 +193,14 @@ def normalizeIsoApp :
 #align category_theory.free_monoidal_category.normalize_iso_app CategoryTheory.FreeMonoidalCategory.normalizeIsoApp
 
 @[simp]
-theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
+lemma normalizeIsoApp_tensor (X Y : F C) (n : N C) :
     normalizeIsoApp C (X ⊗ Y) n =
       (α_ _ _ _).symm ≪≫ tensorIso (normalizeIsoApp C X n) (Iso.refl _) ≪≫ normalizeIsoApp _ _ _ :=
   rfl
 #align category_theory.free_monoidal_category.normalize_iso_app_tensor CategoryTheory.FreeMonoidalCategory.normalizeIsoApp_tensor
 
 @[simp]
-theorem normalizeIsoApp_unitor (n : N C) : normalizeIsoApp C (𝟙_ (F C)) n = ρ_ _ :=
+lemma normalizeIsoApp_unitor (n : N C) : normalizeIsoApp C (𝟙_ (F C)) n = ρ_ _ :=
   rfl
 #align category_theory.free_monoidal_category.normalize_iso_app_unitor CategoryTheory.FreeMonoidalCategory.normalizeIsoApp_unitor
 
@@ -228,7 +228,7 @@ lemma discrete_functor_obj_eq_as : (Discrete.functor f).obj X = f X.as :=
 
 -- TODO: move to discrete_category.lean, decide whether this should be a global simp lemma
 @[simp 1100]
-theorem discrete_functor_map_eq_id (g : X ⟶ X) : (Discrete.functor f).map g = 𝟙 _ := rfl
+lemma discrete_functor_map_eq_id (g : X ⟶ X) : (Discrete.functor f).map g = 𝟙 _ := rfl
 #align category_theory.free_monoidal_category.discrete_functor_map_eq_id CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id
 
 end

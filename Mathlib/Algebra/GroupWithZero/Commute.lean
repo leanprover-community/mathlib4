@@ -65,7 +65,7 @@ lemma inv_left_iff₀ : Commute a⁻¹ b ↔ Commute a b :=
   SemiconjBy.inv_symm_left_iff₀
 #align commute.inv_left_iff₀ Commute.inv_left_iff₀
 
-theorem inv_left₀ (h : Commute a b) : Commute a⁻¹ b :=
+lemma inv_left₀ (h : Commute a b) : Commute a⁻¹ b :=
   inv_left_iff₀.2 h
 #align commute.inv_left₀ Commute.inv_left₀
 
@@ -74,17 +74,17 @@ lemma inv_right_iff₀ : Commute a b⁻¹ ↔ Commute a b :=
   SemiconjBy.inv_right_iff₀
 #align commute.inv_right_iff₀ Commute.inv_right_iff₀
 
-theorem inv_right₀ (h : Commute a b) : Commute a b⁻¹ :=
+lemma inv_right₀ (h : Commute a b) : Commute a b⁻¹ :=
   inv_right_iff₀.2 h
 #align commute.inv_right₀ Commute.inv_right₀
 
 @[simp]
-theorem div_right (hab : Commute a b) (hac : Commute a c) : Commute a (b / c) :=
+lemma div_right (hab : Commute a b) (hac : Commute a c) : Commute a (b / c) :=
   SemiconjBy.div_right hab hac
 #align commute.div_right Commute.div_right
 
 @[simp]
-theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := by
+lemma div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := by
   rw [div_eq_mul_inv]
   exact hac.mul_left hbc.inv_left₀
 #align commute.div_left Commute.div_left

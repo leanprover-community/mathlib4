@@ -61,19 +61,19 @@ instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Pr
   decidable_of_decidable_of_iff lex_iff.symm
 #align sigma.lex.decidable Sigma.Lex.decidable
 
-theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, α i}
+lemma Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, α i}
     (h : Lex r₁ s₁ a b) : Lex r₂ s₂ a b := by
   obtain ⟨a, b, hij⟩ | ⟨a, b, hab⟩ := h
   · exact Lex.left _ _ (hr _ _ hij)
   · exact Lex.right _ _ (hs _ _ _ hab)
 #align sigma.lex.mono Sigma.Lex.mono
 
-theorem Lex.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) {a b : Σ i, α i} (h : Lex r₁ s a b) :
+lemma Lex.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) {a b : Σ i, α i} (h : Lex r₁ s a b) :
     Lex r₂ s a b :=
   h.mono hr $ fun _ _ _ => id
 #align sigma.lex.mono_left Sigma.Lex.mono_left
 
-theorem Lex.mono_right (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, α i} (h : Lex r s₁ a b) :
+lemma Lex.mono_right (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, α i} (h : Lex r s₁ a b) :
     Lex r s₂ a b :=
   h.mono (fun _ _ => id) hs
 #align sigma.lex.mono_right Sigma.Lex.mono_right

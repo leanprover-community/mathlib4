@@ -540,7 +540,7 @@ lemma Antiperiodic.div [Add α] [DivisionMonoid β] [HasDistribNeg β] (hf : Ant
 
 end Function
 
-theorem Int.fract_periodic (α) [LinearOrderedRing α] [FloorRing α] :
+lemma Int.fract_periodic (α) [LinearOrderedRing α] [FloorRing α] :
     Function.Periodic Int.fract (1 : α) := fun a => by
   exact_mod_cast Int.fract_add_int a 1
 #align int.fract_periodic Int.fract_periodic

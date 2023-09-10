@@ -96,14 +96,14 @@ irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).2 else 0
 #align measure_theory.measure.rn_deriv MeasureTheory.Measure.rnDeriv
 
-theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDecomposition μ ν] :
+lemma haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDecomposition μ ν] :
     Measurable (μ.rnDeriv ν) ∧
       μ.singularPart ν ⟂ₘ ν ∧ μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) := by
   rw [singularPart, rnDeriv, dif_pos h, dif_pos h]
   exact Classical.choose_spec h.lebesgue_decomposition
 #align measure_theory.measure.have_lebesgue_decomposition_spec MeasureTheory.Measure.haveLebesgueDecomposition_spec
 
-theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
+lemma haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
   (haveLebesgueDecomposition_spec μ ν).2.2
 #align measure_theory.measure.have_lebesgue_decomposition_add MeasureTheory.Measure.haveLebesgueDecomposition_add
@@ -121,21 +121,21 @@ instance haveLebesgueDecomposition_smul (μ ν : Measure α) [HaveLebesgueDecomp
 #align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecomposition_smul
 
 @[measurability]
-theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
+lemma measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
   by_cases h : HaveLebesgueDecomposition μ ν
   · exact (haveLebesgueDecomposition_spec μ ν).1
   · rw [rnDeriv, dif_neg h]
     exact measurable_zero
 #align measure_theory.measure.measurable_rn_deriv MeasureTheory.Measure.measurable_rnDeriv
 
-theorem mutuallySingular_singularPart (μ ν : Measure α) : μ.singularPart ν ⟂ₘ ν := by
+lemma mutuallySingular_singularPart (μ ν : Measure α) : μ.singularPart ν ⟂ₘ ν := by
   by_cases h : HaveLebesgueDecomposition μ ν
   · exact (haveLebesgueDecomposition_spec μ ν).2.1
   · rw [singularPart, dif_neg h]
     exact MutuallySingular.zero_left
 #align measure_theory.measure.mutually_singular_singular_part MeasureTheory.Measure.mutuallySingular_singularPart
 
-theorem singularPart_le (μ ν : Measure α) : μ.singularPart ν ≤ μ := by
+lemma singularPart_le (μ ν : Measure α) : μ.singularPart ν ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · cases' (haveLebesgueDecomposition_spec μ ν).2 with _ h
     conv_rhs => rw [h]
@@ -144,7 +144,7 @@ theorem singularPart_le (μ ν : Measure α) : μ.singularPart ν ≤ μ := by
     exact Measure.zero_le μ
 #align measure_theory.measure.singular_part_le MeasureTheory.Measure.singularPart_le
 
-theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv ν) ≤ μ := by
+lemma withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv ν) ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · cases' (haveLebesgueDecomposition_spec μ ν).2 with _ h
     conv_rhs => rw [h]
@@ -201,7 +201,7 @@ lemma lintegral_rnDeriv_lt_top_of_measure_ne_top {μ : Measure α} (ν : Measure
     exact WithTop.zero_lt_top
 #align measure_theory.measure.lintegral_rn_deriv_lt_top_of_measure_ne_top MeasureTheory.Measure.lintegral_rnDeriv_lt_top_of_measure_ne_top
 
-theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
+lemma lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
     (∫⁻ x, μ.rnDeriv ν x ∂ν) < ∞ := by
   rw [← set_lintegral_univ]
   exact lintegral_rnDeriv_lt_top_of_measure_ne_top _ (measure_lt_top _ _).ne
@@ -209,7 +209,7 @@ theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
 
 /-- The Radon-Nikodym derivative of a sigma-finite measure `μ` with respect to another
 measure `ν` is `ν`-almost everywhere finite. -/
-theorem rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, μ.rnDeriv ν x < ∞ := by
+lemma rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, μ.rnDeriv ν x < ∞ := by
   suffices ∀ n, ∀ᵐ x ∂ν, x ∈ spanningSets μ n → μ.rnDeriv ν x < ∞ by
     filter_upwards [ae_all_iff.2 this] with _ hx using hx _ (mem_spanningSetsIndex _ _)
   intro n
@@ -260,12 +260,12 @@ lemma eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurable 
   rw [heq' A hA, heq, restrict_apply hA, ← diff_eq, AEDisjoint.measure_diff_left hμinter]
 #align measure_theory.measure.eq_singular_part MeasureTheory.Measure.eq_singularPart
 
-theorem singularPart_zero (ν : Measure α) : (0 : Measure α).singularPart ν = 0 := by
+lemma singularPart_zero (ν : Measure α) : (0 : Measure α).singularPart ν = 0 := by
   refine' (eq_singularPart measurable_zero MutuallySingular.zero_left _).symm
   rw [zero_add, withDensity_zero]
 #align measure_theory.measure.singular_part_zero MeasureTheory.Measure.singularPart_zero
 
-theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
+lemma singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
     (r • μ).singularPart ν = r • μ.singularPart ν := by
   by_cases hr : r = 0
   · rw [hr, zero_smul, zero_smul, singularPart_zero]
@@ -282,7 +282,7 @@ theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
     exact @Measure.haveLebesgueDecomposition_smul _ _ _ _ hl' _
 #align measure_theory.measure.singular_part_smul MeasureTheory.Measure.singularPart_smul
 
-theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecomposition μ₁ ν]
+lemma singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecomposition μ₁ ν]
     [HaveLebesgueDecomposition μ₂ ν] :
     (μ₁ + μ₂).singularPart ν = μ₁.singularPart ν + μ₂.singularPart ν := by
   refine'
@@ -296,7 +296,7 @@ theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecompositio
     ← haveLebesgueDecomposition_add μ₂ ν]
 #align measure_theory.measure.singular_part_add MeasureTheory.Measure.singularPart_add
 
-theorem singularPart_withDensity (ν : Measure α) {f : α → ℝ≥0∞} (hf : Measurable f) :
+lemma singularPart_withDensity (ν : Measure α) {f : α → ℝ≥0∞} (hf : Measurable f) :
     (ν.withDensity f).singularPart ν = 0 :=
   haveI : ν.withDensity f = 0 + ν.withDensity f := by rw [zero_add]
   (eq_singularPart hf MutuallySingular.zero_left this).symm
@@ -366,7 +366,7 @@ lemma eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf :
 #align measure_theory.measure.eq_rn_deriv MeasureTheory.Measure.eq_rnDeriv
 
 /-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
-theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
+lemma rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
     (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
   haveI : ν.withDensity f = 0 + ν.withDensity f := by rw [zero_add]
   (eq_rnDeriv hf MutuallySingular.zero_left this).symm
@@ -374,7 +374,7 @@ theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ�
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
 indicator function of this set. -/
-theorem rnDeriv_restrict (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : MeasurableSet s) :
+lemma rnDeriv_restrict (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : MeasurableSet s) :
     (ν.restrict s).rnDeriv ν =ᵐ[ν] s.indicator 1 := by
   rw [← withDensity_indicator_one hs]
   exact rnDeriv_withDensity _ (measurable_one.indicator hs)
@@ -386,7 +386,7 @@ open VectorMeasure SignedMeasure
 a measurable set `E`, such that `ν(E) > 0` and `E` is positive with respect to `μ - εν`.
 
 This lemma is useful for the Lebesgue decomposition theorem. -/
-theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMeasure μ]
+lemma exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (h : ¬μ ⟂ₘ ν) :
     ∃ ε : ℝ≥0, 0 < ε ∧
       ∃ E : Set α,
@@ -495,7 +495,7 @@ lemma iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α) :
       rfl
 #align measure_theory.measure.lebesgue_decomposition.supr_succ_eq_sup MeasureTheory.Measure.LebesgueDecomposition.iSup_succ_eq_sup
 
-theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
+lemma iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
     (fun x => ⨆ (k) (_ : k ≤ n), f k x) ∈ measurableLE μ ν := by
   induction' n with m hm
   · refine' ⟨_, _⟩
@@ -509,7 +509,7 @@ theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n �
     rw [this]; exact (sup_mem_measurableLE (hf m.succ) hm).2 A hA
 #align measure_theory.measure.lebesgue_decomposition.supr_mem_measurable_le MeasureTheory.Measure.LebesgueDecomposition.iSup_mem_measurableLE
 
-theorem iSup_mem_measurableLE' (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
+lemma iSup_mem_measurableLE' (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
     (⨆ (k) (_ : k ≤ n), f k) ∈ measurableLE μ ν := by
   convert iSup_mem_measurableLE f hf n
   refine Option.ext fun x => ?_; simp
@@ -783,7 +783,7 @@ attribute [instance] HaveLebesgueDecomposition.posPart
 
 attribute [instance] HaveLebesgueDecomposition.negPart
 
-theorem not_haveLebesgueDecomposition_iff (s : SignedMeasure α) (μ : Measure α) :
+lemma not_haveLebesgueDecomposition_iff (s : SignedMeasure α) (μ : Measure α) :
     ¬s.HaveLebesgueDecomposition μ ↔
       ¬s.toJordanDecomposition.posPart.HaveLebesgueDecomposition μ ∨
         ¬s.toJordanDecomposition.negPart.HaveLebesgueDecomposition μ :=
@@ -843,7 +843,7 @@ def singularPart (s : SignedMeasure α) (μ : Measure α) : SignedMeasure α :=
 
 section
 
-theorem singularPart_mutuallySingular (s : SignedMeasure α) (μ : Measure α) :
+lemma singularPart_mutuallySingular (s : SignedMeasure α) (μ : Measure α) :
     s.toJordanDecomposition.posPart.singularPart μ ⟂ₘ
       s.toJordanDecomposition.negPart.singularPart μ := by
   by_cases hl : s.HaveLebesgueDecomposition μ
@@ -861,7 +861,7 @@ theorem singularPart_mutuallySingular (s : SignedMeasure α) (μ : Measure α) :
       exact MutuallySingular.zero_right
 #align measure_theory.signed_measure.singular_part_mutually_singular MeasureTheory.SignedMeasure.singularPart_mutuallySingular
 
-theorem singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :
+lemma singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :
     (s.singularPart μ).totalVariation =
       s.toJordanDecomposition.posPart.singularPart μ +
         s.toJordanDecomposition.negPart.singularPart μ := by
@@ -875,7 +875,7 @@ theorem singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :
   · rw [totalVariation, this]
 #align measure_theory.signed_measure.singular_part_total_variation MeasureTheory.SignedMeasure.singularPart_totalVariation
 
-nonrec theorem mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measure α) :
+nonrec lemma mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measure α) :
     singularPart s μ ⟂ᵥ μ.toENNRealVectorMeasure := by
   rw [mutuallySingular_ennreal_iff, singularPart_totalVariation]
   change _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ)
@@ -898,7 +898,7 @@ def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
 
 -- Porting note: The generated equation theorem is the form of `rnDeriv s μ x`.
 
-theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fun x =>
+lemma rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fun x =>
     (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
       (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal :=
   rfl
@@ -908,12 +908,12 @@ attribute [eqns rnDeriv_def] rnDeriv
 variable {s t : SignedMeasure α}
 
 @[measurability]
-theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
+lemma measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
   rw [rnDeriv]
   measurability
 #align measure_theory.signed_measure.measurable_rn_deriv MeasureTheory.SignedMeasure.measurable_rnDeriv
 
-theorem integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable (rnDeriv s μ) μ := by
+lemma integrable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Integrable (rnDeriv s μ) μ := by
   refine' Integrable.sub _ _ <;>
     · constructor
       · apply Measurable.aestronglyMeasurable; measurability
@@ -994,7 +994,7 @@ lemma toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Meas
     exact (measure_lt_top _ _).ne
 #align measure_theory.signed_measure.to_jordan_decomposition_eq_of_eq_add_with_density MeasureTheory.SignedMeasure.toJordanDecomposition_eq_of_eq_add_withDensity
 
-private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
+private lemma haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     s.HaveLebesgueDecomposition μ := by
   have htμ' := htμ
@@ -1011,7 +1011,7 @@ private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ}
         refine' ⟨hf.neg.ennreal_ofReal, htμ.2, _⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd] }
 
-theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
+lemma haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     s.HaveLebesgueDecomposition μ := by
   by_cases hfi : Integrable f μ
@@ -1021,7 +1021,7 @@ theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Me
     rwa [withDensityᵥ_zero, add_zero]
 #align measure_theory.signed_measure.have_lebesgue_decomposition_mk MeasureTheory.SignedMeasure.haveLebesgueDecomposition_mk
 
-private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : Measurable f)
+private lemma eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     t = s.singularPart μ := by
   have htμ' := htμ
@@ -1044,7 +1044,7 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
 mutually singular with respect to `μ` and `s = t + μ.withDensityᵥ f`, we have
 `t = singularPart s μ`, i.e. `t` is the singular part of the Lebesgue decomposition between
 `s` and `μ`. -/
-theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure)
+lemma eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure)
     (hadd : s = t + μ.withDensityᵥ f) : t = s.singularPart μ := by
   by_cases hfi : Integrable f μ
   · refine' eq_singularPart' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ _
@@ -1055,12 +1055,12 @@ theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ
     rwa [withDensityᵥ_zero, add_zero]
 #align measure_theory.signed_measure.eq_singular_part MeasureTheory.SignedMeasure.eq_singularPart
 
-theorem singularPart_zero (μ : Measure α) : (0 : SignedMeasure α).singularPart μ = 0 := by
+lemma singularPart_zero (μ : Measure α) : (0 : SignedMeasure α).singularPart μ = 0 := by
   refine' (eq_singularPart 0 0 VectorMeasure.MutuallySingular.zero_left _).symm
   rw [zero_add, withDensityᵥ_zero]
 #align measure_theory.signed_measure.singular_part_zero MeasureTheory.SignedMeasure.singularPart_zero
 
-theorem singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
+lemma singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
     (-s).singularPart μ = -s.singularPart μ := by
   have h₁ :
     ((-s).toJordanDecomposition.posPart.singularPart μ).toSignedMeasure =
@@ -1075,7 +1075,7 @@ theorem singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
   rw [singularPart, singularPart, neg_sub, h₁, h₂]
 #align measure_theory.signed_measure.singular_part_neg MeasureTheory.SignedMeasure.singularPart_neg
 
-theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
+lemma singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   rw [singularPart, singularPart, smul_sub, ← toSignedMeasure_smul, ← toSignedMeasure_smul]
   conv_lhs =>
@@ -1086,7 +1086,7 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 #align measure_theory.signed_measure.singular_part_smul_nnreal MeasureTheory.SignedMeasure.singularPart_smul_nnreal
 
-nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
+nonrec lemma singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   by_cases hr : 0 ≤ r
   · lift r to ℝ≥0 using hr
@@ -1105,7 +1105,7 @@ nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : �
     rw [← neg_smul, Real.coe_toNNReal _ (le_of_lt (neg_pos.mpr (not_le.1 hr))), neg_neg]
 #align measure_theory.signed_measure.singular_part_smul MeasureTheory.SignedMeasure.singularPart_smul
 
-theorem singularPart_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
+lemma singularPart_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] :
     (s + t).singularPart μ = s.singularPart μ + t.singularPart μ := by
   refine'
@@ -1118,7 +1118,7 @@ theorem singularPart_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebes
     singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.singular_part_add MeasureTheory.SignedMeasure.singularPart_add
 
-theorem singularPart_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
+lemma singularPart_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] :
     (s - t).singularPart μ = s.singularPart μ - t.singularPart μ := by
   rw [sub_eq_add_neg, sub_eq_add_neg, singularPart_add, singularPart_neg]
@@ -1127,7 +1127,7 @@ theorem singularPart_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebes
 /-- Given a measure `μ`, signed measures `s` and `t`, and a function `f` such that `t` is
 mutually singular with respect to `μ` and `s = t + μ.withDensityᵥ f`, we have
 `f = rnDeriv s μ`, i.e. `f` is the Radon-Nikodym derivative of `s` and `μ`. -/
-theorem eq_rnDeriv (t : SignedMeasure α) (f : α → ℝ) (hfi : Integrable f μ)
+lemma eq_rnDeriv (t : SignedMeasure α) (f : α → ℝ) (hfi : Integrable f μ)
     (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     f =ᵐ[μ] s.rnDeriv μ := by
   set f' := hfi.1.mk f
@@ -1140,7 +1140,7 @@ theorem eq_rnDeriv (t : SignedMeasure α) (f : α → ℝ) (hfi : Integrable f �
     singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.eq_rn_deriv MeasureTheory.SignedMeasure.eq_rnDeriv
 
-theorem rnDeriv_neg (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ] :
+lemma rnDeriv_neg (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ] :
     (-s).rnDeriv μ =ᵐ[μ] -s.rnDeriv μ := by
   refine'
     Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _) (integrable_rnDeriv _ _).neg _
@@ -1149,7 +1149,7 @@ theorem rnDeriv_neg (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDeco
     singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.rn_deriv_neg MeasureTheory.SignedMeasure.rnDeriv_neg
 
-theorem rnDeriv_smul (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ] (r : ℝ) :
+lemma rnDeriv_smul (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ] (r : ℝ) :
     (r • s).rnDeriv μ =ᵐ[μ] r • s.rnDeriv μ := by
   refine'
     Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _)
@@ -1161,7 +1161,7 @@ theorem rnDeriv_smul (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDec
   rw [← smul_add, singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.rn_deriv_smul MeasureTheory.SignedMeasure.rnDeriv_smul
 
-theorem rnDeriv_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
+lemma rnDeriv_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] [(s + t).HaveLebesgueDecomposition μ] :
     (s + t).rnDeriv μ =ᵐ[μ] s.rnDeriv μ + t.rnDeriv μ := by
   refine'
@@ -1174,7 +1174,7 @@ theorem rnDeriv_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDe
     singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.rn_deriv_add MeasureTheory.SignedMeasure.rnDeriv_add
 
-theorem rnDeriv_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
+lemma rnDeriv_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] [hst : (s - t).HaveLebesgueDecomposition μ] :
     (s - t).rnDeriv μ =ᵐ[μ] s.rnDeriv μ - t.rnDeriv μ := by
   rw [sub_eq_add_neg] at hst
@@ -1213,7 +1213,7 @@ def rnDeriv (c : ComplexMeasure α) (μ : Measure α) : α → ℂ := fun x =>
 
 variable {c : ComplexMeasure α}
 
-theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrable (c.rnDeriv μ) μ := by
+lemma integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrable (c.rnDeriv μ) μ := by
   rw [← memℒp_one_iff_integrable, ← memℒp_re_im_iff]
   exact
     ⟨memℒp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),

@@ -198,38 +198,38 @@ def act' (x : R) : R ≃ R where
 #align rack.act Rack.act'
 
 @[simp]
-theorem act'_apply (x y : R) : act' x y = x ◃ y :=
+lemma act'_apply (x y : R) : act' x y = x ◃ y :=
   rfl
 #align rack.act_apply Rack.act'_apply
 
 @[simp]
-theorem act'_symm_apply (x y : R) : (act' x).symm y = x ◃⁻¹ y :=
+lemma act'_symm_apply (x y : R) : (act' x).symm y = x ◃⁻¹ y :=
   rfl
 #align rack.act_symm_apply Rack.act'_symm_apply
 
 @[simp]
-theorem invAct_apply (x y : R) : (act' x)⁻¹ y = x ◃⁻¹ y :=
+lemma invAct_apply (x y : R) : (act' x)⁻¹ y = x ◃⁻¹ y :=
   rfl
 #align rack.inv_act_apply Rack.invAct_apply
 
 @[simp]
-theorem invAct_act_eq (x y : R) : x ◃⁻¹ x ◃ y = y :=
+lemma invAct_act_eq (x y : R) : x ◃⁻¹ x ◃ y = y :=
   left_inv x y
 #align rack.inv_act_act_eq Rack.invAct_act_eq
 
 @[simp]
-theorem act_invAct_eq (x y : R) : x ◃ x ◃⁻¹ y = y :=
+lemma act_invAct_eq (x y : R) : x ◃ x ◃⁻¹ y = y :=
   right_inv x y
 #align rack.act_inv_act_eq Rack.act_invAct_eq
 
-theorem left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' := by
+lemma left_cancel (x : R) {y y' : R} : x ◃ y = x ◃ y' ↔ y = y' := by
   constructor
   apply (act' x).injective
   rintro rfl
   rfl
 #align rack.left_cancel Rack.left_cancel
 
-theorem left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' := by
+lemma left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y = y' := by
   constructor
   apply (act' x).symm.injective
   rintro rfl
@@ -362,11 +362,11 @@ instance : FunLike (S₁ →◃ S₂) S₁ fun _ => S₂ where
   coe := toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-@[simp] theorem toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f := rfl
+@[simp] lemma toFun_eq_coe (f : S₁ →◃ S₂) : f.toFun = f := rfl
 #align shelf_hom.to_fun_eq_coe ShelfHom.toFun_eq_coe
 
 @[simp]
-theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y :=
+lemma map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y :=
   map_act' f
 #align shelf_hom.map_act ShelfHom.map_act
 
@@ -388,7 +388,7 @@ def comp (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) : S₁ →◃ S₃
 #align shelf_hom.comp ShelfHom.comp
 
 @[simp]
-theorem comp_apply (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) (x : S₁) : (g.comp f) x = g (f x) :=
+lemma comp_apply (g : S₂ →◃ S₃) (f : S₁ →◃ S₂) (x : S₁) : (g.comp f) x = g (f x) :=
   rfl
 #align shelf_hom.comp_apply ShelfHom.comp_apply
 
@@ -483,7 +483,7 @@ because it is an involution (see `dihedralAct.inv`).
 def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
 #align quandle.dihedral_act Quandle.dihedralAct
 
-theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
+lemma dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
   intro b
   dsimp only [dihedralAct]
   simp
@@ -774,7 +774,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.
 -/
-theorem toEnvelGroup.univ (R : Type*) [Rack R] (G : Type*) [Group G] (f : R →◃ Quandle.Conj G) :
+lemma toEnvelGroup.univ (R : Type*) [Rack R] (G : Type*) [Group G] (f : R →◃ Quandle.Conj G) :
     (Quandle.Conj.map (toEnvelGroup.map f)).comp (toEnvelGroup R) = f :=
   toEnvelGroup.map.symm_apply_apply f
 #align rack.to_envel_group.univ Rack.toEnvelGroup.univ
@@ -782,7 +782,7 @@ theorem toEnvelGroup.univ (R : Type*) [Rack R] (G : Type*) [Group G] (f : R →�
 /-- The homomorphism `toEnvelGroup.map f` is the unique map that fits into the commutative
 triangle in `toEnvelGroup.univ`.
 -/
-theorem toEnvelGroup.univ_uniq (R : Type*) [Rack R] (G : Type*) [Group G]
+lemma toEnvelGroup.univ_uniq (R : Type*) [Rack R] (G : Type*) [Group G]
     (f : R →◃ Quandle.Conj G) (g : EnvelGroup R →* G)
     (h : f = (Quandle.Conj.map g).comp (toEnvelGroup R)) : g = toEnvelGroup.map f :=
   h.symm ▸ (toEnvelGroup.map.apply_symm_apply g).symm

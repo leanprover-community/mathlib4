@@ -94,60 +94,60 @@ def mk (z : ℂ) (h : 0 < z.im) : ℍ :=
 #align upper_half_plane.mk UpperHalfPlane.mk
 
 @[simp]
-theorem coe_im (z : ℍ) : (z : ℂ).im = z.im :=
+lemma coe_im (z : ℍ) : (z : ℂ).im = z.im :=
   rfl
 #align upper_half_plane.coe_im UpperHalfPlane.coe_im
 
 @[simp]
-theorem coe_re (z : ℍ) : (z : ℂ).re = z.re :=
+lemma coe_re (z : ℍ) : (z : ℂ).re = z.re :=
   rfl
 #align upper_half_plane.coe_re UpperHalfPlane.coe_re
 
 @[simp]
-theorem mk_re (z : ℂ) (h : 0 < z.im) : (mk z h).re = z.re :=
+lemma mk_re (z : ℂ) (h : 0 < z.im) : (mk z h).re = z.re :=
   rfl
 #align upper_half_plane.mk_re UpperHalfPlane.mk_re
 
 @[simp]
-theorem mk_im (z : ℂ) (h : 0 < z.im) : (mk z h).im = z.im :=
+lemma mk_im (z : ℂ) (h : 0 < z.im) : (mk z h).im = z.im :=
   rfl
 #align upper_half_plane.mk_im UpperHalfPlane.mk_im
 
 @[simp]
-theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
+lemma coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
 #align upper_half_plane.coe_mk UpperHalfPlane.coe_mk
 
 @[simp]
-theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
+lemma mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
 #align upper_half_plane.mk_coe UpperHalfPlane.mk_coe
 
-theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
+lemma re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
   Complex.re_add_im z
 #align upper_half_plane.re_add_im UpperHalfPlane.re_add_im
 
-theorem im_pos (z : ℍ) : 0 < z.im :=
+lemma im_pos (z : ℍ) : 0 < z.im :=
   z.2
 #align upper_half_plane.im_pos UpperHalfPlane.im_pos
 
-theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
+lemma im_ne_zero (z : ℍ) : z.im ≠ 0 :=
   z.im_pos.ne'
 #align upper_half_plane.im_ne_zero UpperHalfPlane.im_ne_zero
 
-theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
+lemma ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
-theorem normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by
+lemma normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by
   rw [Complex.normSq_pos]; exact z.ne_zero
 #align upper_half_plane.norm_sq_pos UpperHalfPlane.normSq_pos
 
-theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
+lemma normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
   (normSq_pos z).ne'
 #align upper_half_plane.norm_sq_ne_zero UpperHalfPlane.normSq_ne_zero
 
-theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
+lemma im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
   simpa using div_pos z.property (normSq_pos z)
 #align upper_half_plane.im_inv_neg_coe_pos UpperHalfPlane.im_inv_neg_coe_pos
 
@@ -163,7 +163,7 @@ def denom (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   (↑ₘg 1 0 : ℝ) * z + (↑ₘg 1 1 : ℝ)
 #align upper_half_plane.denom UpperHalfPlane.denom
 
-theorem linear_ne_zero (cd : Fin 2 → ℝ) (z : ℍ) (h : cd ≠ 0) : (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
+lemma linear_ne_zero (cd : Fin 2 → ℝ) (z : ℍ) (h : cd ≠ 0) : (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
   contrapose! h
   have : cd 0 = 0 := by
     -- we will need this twice
@@ -176,7 +176,7 @@ theorem linear_ne_zero (cd : Fin 2 → ℝ) (z : ℍ) (h : cd ≠ 0) : (cd 0 : �
   fin_cases i <;> assumption
 #align upper_half_plane.linear_ne_zero UpperHalfPlane.linear_ne_zero
 
-theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
+lemma denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   intro H
   have DET := (mem_glpos _).1 g.prop
   have hz := z.prop
@@ -191,11 +191,11 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
     linarith
 #align upper_half_plane.denom_ne_zero UpperHalfPlane.denom_ne_zero
 
-theorem normSq_denom_pos (g : GL(2, ℝ)⁺) (z : ℍ) : 0 < Complex.normSq (denom g z) :=
+lemma normSq_denom_pos (g : GL(2, ℝ)⁺) (z : ℍ) : 0 < Complex.normSq (denom g z) :=
   Complex.normSq_pos.mpr (denom_ne_zero g z)
 #align upper_half_plane.norm_sq_denom_pos UpperHalfPlane.normSq_denom_pos
 
-theorem normSq_denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : Complex.normSq (denom g z) ≠ 0 :=
+lemma normSq_denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : Complex.normSq (denom g z) ≠ 0 :=
   ne_of_gt (normSq_denom_pos g z)
 #align upper_half_plane.norm_sq_denom_ne_zero UpperHalfPlane.normSq_denom_ne_zero
 
@@ -204,7 +204,7 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 #align upper_half_plane.smul_aux' UpperHalfPlane.smulAux'
 
-theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
+lemma smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
   field_simp [smulAux', num, denom]
@@ -223,7 +223,7 @@ def smulAux (g : GL(2, ℝ)⁺) (z : ℍ) : ℍ :=
     ring
 #align upper_half_plane.smul_aux UpperHalfPlane.smulAux
 
-theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
+lemma denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero]
@@ -233,7 +233,7 @@ theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
   ring
 #align upper_half_plane.denom_cocycle UpperHalfPlane.denom_cocycle
 
-theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux x (smulAux y z) := by
+lemma mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux x (smulAux y z) := by
   ext1
   -- Porting note: was `change _ / _ = (_ * (_ / _) + _) * _`
   change _ / _ = (_ * (_ / _) + _) / _
@@ -282,7 +282,7 @@ instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
 
-theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
+lemma SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.SLOnGLPos_smul_apply
@@ -298,7 +298,7 @@ instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_GL_pos UpperHalfPlane.subgroupGLPos
 
-theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
+lemma subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
@@ -314,7 +314,7 @@ instance subgroupSL : SMul Γ SL(2, ℤ) :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_SL UpperHalfPlane.subgroupSL
 
-theorem subgroup_on_SL_apply (s : Γ) (g : SL(2, ℤ)) (z : ℍ) :
+lemma subgroup_on_SL_apply (s : Γ) (g : SL(2, ℤ)) (z : ℍ) :
     (s • g) • z = ((s : SL(2, ℤ)) * g) • z :=
   rfl
 #align upper_half_plane.subgroup_on_SL_apply UpperHalfPlane.subgroup_on_SL_apply
@@ -339,20 +339,20 @@ lemma specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(
 #align upper_half_plane.special_linear_group_apply UpperHalfPlane.specialLinearGroup_apply
 
 @[simp]
-theorem coe_smul (g : GL(2, ℝ)⁺) (z : ℍ) : ↑(g • z) = num g z / denom g z :=
+lemma coe_smul (g : GL(2, ℝ)⁺) (z : ℍ) : ↑(g • z) = num g z / denom g z :=
   rfl
 #align upper_half_plane.coe_smul UpperHalfPlane.coe_smul
 
 @[simp]
-theorem re_smul (g : GL(2, ℝ)⁺) (z : ℍ) : (g • z).re = (num g z / denom g z).re :=
+lemma re_smul (g : GL(2, ℝ)⁺) (z : ℍ) : (g • z).re = (num g z / denom g z).re :=
   rfl
 #align upper_half_plane.re_smul UpperHalfPlane.re_smul
 
-theorem im_smul (g : GL(2, ℝ)⁺) (z : ℍ) : (g • z).im = (num g z / denom g z).im :=
+lemma im_smul (g : GL(2, ℝ)⁺) (z : ℍ) : (g • z).im = (num g z / denom g z).im :=
   rfl
 #align upper_half_plane.im_smul UpperHalfPlane.im_smul
 
-theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
+lemma im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
     (g • z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) :=
   smulAux'_im g z
 #align upper_half_plane.im_smul_eq_div_norm_sq UpperHalfPlane.im_smul_eq_div_normSq
@@ -361,7 +361,7 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
 instance : Fact (Even (Fintype.card (Fin 2))) := ⟨Nat.even_iff.mpr rfl⟩
 
 @[simp]
-theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
+lemma neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
   ext1
   change _ / _ = _ / _
   field_simp [denom_ne_zero]
@@ -374,25 +374,25 @@ section SLModularAction
 variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
 @[simp]
-theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
+lemma sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
 #align upper_half_plane.sl_moeb UpperHalfPlane.sl_moeb
 
-theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
+lemma subgroup_moeb (A : Γ) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
 #align upper_half_plane.subgroup_moeb UpperHalfPlane.subgroup_moeb
 
 @[simp]
-theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • z :=
+lemma subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • z :=
   rfl
 #align upper_half_plane.subgroup_to_sl_moeb UpperHalfPlane.subgroup_to_sl_moeb
 
 @[simp high]
-theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
+lemma SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
   simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul, coe']
 #align upper_half_plane.SL_neg_smul UpperHalfPlane.SL_neg_smul
 
-theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
+lemma c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
     ((↑ₘg 1 0 : ℝ) * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
   let c := (↑ₘg 1 0 : ℝ)
   let d := (↑ₘg 1 1 : ℝ)
@@ -408,7 +408,7 @@ nonrec lemma SpecialLinearGroup.im_smul_eq_div_normSq :
     Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul, coe']
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
 
-theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
+lemma denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
   simp [denom, coe']
 #align upper_half_plane.denom_apply UpperHalfPlane.denom_apply
@@ -470,11 +470,11 @@ end RealAddAction
 
 /- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
 instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
-theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
+lemma modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
   rw [specialLinearGroup_apply]; simp [ModularGroup.S, neg_div, inv_neg, coeToGL]
 #align upper_half_plane.modular_S_smul UpperHalfPlane.modular_S_smul
 
-theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
+lemma modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
   rw [← ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
   -- Porting note: added `coeToGL` and merged `rw` and `simp`
   simp [coeToGL, ModularGroup.coe_T_zpow,
@@ -482,11 +482,11 @@ theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n 
     head_cons, algebraMap.coe_zero, zero_mul, zero_add, div_one]
 #align upper_half_plane.modular_T_zpow_smul UpperHalfPlane.modular_T_zpow_smul
 
-theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
+lemma modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [Int.cast_one] using modular_T_zpow_smul z 1
 #align upper_half_plane.modular_T_smul UpperHalfPlane.modular_T_smul
 
-theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 = 0) :
+lemma exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ),
       ((· • ·) g : ℍ → ℍ) = (fun z => v +ᵥ z) ∘ fun z => u • z := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
@@ -498,7 +498,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑�
   ring
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero
 
-theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 ≠ 0) :
+lemma exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
       ((· • ·) g : ℍ → ℍ) =
         ((· +ᵥ ·) w : ℍ → ℍ) ∘

@@ -49,7 +49,7 @@ section RieszMonotone
 
 /-- For any compact subset `K ⊆ X`, there exist some bounded continuous nonnegative
 functions f on X such that `f ≥ 1` on K. -/
-theorem rieszContentAux_image_nonempty (K : Compacts X) :
+lemma rieszContentAux_image_nonempty (K : Compacts X) :
     (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
   rw [nonempty_image_iff]
   use (1 : X →ᵇ ℝ≥0)
@@ -79,7 +79,7 @@ lemma rieszContentAux_le {K : Compacts X} {f : X →ᵇ ℝ≥0} (h : ∀ x ∈ 
 /-- The Riesz content can be approximated arbitrarily well by evaluating the positive linear
 functional on test functions: for any `ε > 0`, there exists a bounded continuous nonnegative
 function f on X such that `f ≥ 1` on K and such that `λ(K) ≤ Λ f < λ(K) + ε`. -/
-theorem exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ≥0} (εpos : 0 < ε) :
+lemma exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ≥0} (εpos : 0 < ε) :
     ∃ f : X →ᵇ ℝ≥0, (∀ x ∈ K, (1 : ℝ≥0) ≤ f x) ∧ Λ f < rieszContentAux Λ K + ε := by
   --choose a test function `f` s.t. `Λf = α < λ(K) + ε`
   obtain ⟨α, ⟨⟨f, f_hyp⟩, α_hyp⟩⟩ :=
@@ -92,7 +92,7 @@ theorem exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ≥0} (εpos
 
 /-- The Riesz content λ associated to a given positive linear functional Λ is
 finitely subadditive: `λ(K₁ ∪ K₂) ≤ λ(K₁) + λ(K₂)` for any compact subsets `K₁, K₂ ⊆ X`. -/
-theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
+lemma rieszContentAux_sup_le (K1 K2 : Compacts X) :
     rieszContentAux Λ (K1 ⊔ K2) ≤ rieszContentAux Λ K1 + rieszContentAux Λ K2 := by
   apply NNReal.le_of_forall_pos_le_add
   intro ε εpos

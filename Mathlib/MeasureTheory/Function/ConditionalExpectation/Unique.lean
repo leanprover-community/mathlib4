@@ -46,7 +46,7 @@ section UniquenessOfConditionalExpectation
 
 /-! ## Uniqueness of the conditional expectation -/
 
-theorem lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero (hm : m ≤ m0) (f : lpMeas E' 𝕜 m p μ)
+lemma lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero (hm : m ≤ m0) (f : lpMeas E' 𝕜 m p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     -- Porting note: needed to add explicit casts in the next two hypotheses
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn (f : Lp E' p μ) s μ)
@@ -69,7 +69,7 @@ theorem lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero (hm : m ≤ m0) (f : lp
 
 variable (𝕜)
 
-theorem Lp.ae_eq_zero_of_forall_set_integral_eq_zero' (hm : m ≤ m0) (f : Lp E' p μ)
+lemma Lp.ae_eq_zero_of_forall_set_integral_eq_zero' (hm : m ≤ m0) (f : Lp E' p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
@@ -90,7 +90,7 @@ theorem Lp.ae_eq_zero_of_forall_set_integral_eq_zero' (hm : m ≤ m0) (f : Lp E'
 #align measure_theory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero' MeasureTheory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero'
 
 /-- **Uniqueness of the conditional expectation** -/
-theorem Lp.ae_eq_of_forall_set_integral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
+lemma Lp.ae_eq_of_forall_set_integral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
@@ -116,7 +116,7 @@ theorem Lp.ae_eq_of_forall_set_integral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (
 
 variable {𝕜}
 
-theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
+lemma ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     {f g : α → F'} (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
@@ -167,7 +167,7 @@ variable {s : Set α}
 /-- Let `m` be a sub-σ-algebra of `m0`, `f` an `m0`-measurable function and `g` an `m`-measurable
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
 Then `∫ x in s, ‖g x‖ ∂μ ≤ ∫ x in s, ‖f x‖ ∂μ` on all `m`-measurable sets with finite measure. -/
-theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
+lemma integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
     (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)
@@ -200,7 +200,7 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
 Then `∫⁻ x in s, ‖g x‖₊ ∂μ ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ` on all `m`-measurable sets with finite
 measure. -/
-theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
+lemma lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
     (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)

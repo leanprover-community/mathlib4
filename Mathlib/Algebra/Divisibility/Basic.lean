@@ -44,14 +44,14 @@ instance (priority := 100) semigroupDvd : Dvd α :=
 
 -- TODO: this used to not have `c` explicit, but that seems to be important
 --       for use with tactics, similar to `Exists.intro`
-theorem Dvd.intro (c : α) (h : a * c = b) : a ∣ b :=
+lemma Dvd.intro (c : α) (h : a * c = b) : a ∣ b :=
   Exists.intro c h.symm
 #align dvd.intro Dvd.intro
 
 alias dvd_of_mul_right_eq := Dvd.intro
 #align dvd_of_mul_right_eq dvd_of_mul_right_eq
 
-theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
+lemma exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
   h
 #align exists_eq_mul_right_of_dvd exists_eq_mul_right_of_dvd
 
@@ -78,17 +78,17 @@ instance : IsTrans α Dvd.dvd :=
   ⟨fun _ _ _ => dvd_trans⟩
 
 @[simp]
-theorem dvd_mul_right (a b : α) : a ∣ a * b :=
+lemma dvd_mul_right (a b : α) : a ∣ a * b :=
   Dvd.intro b rfl
 #align dvd_mul_right dvd_mul_right
 
-theorem dvd_mul_of_dvd_left (h : a ∣ b) (c : α) : a ∣ b * c :=
+lemma dvd_mul_of_dvd_left (h : a ∣ b) (c : α) : a ∣ b * c :=
   h.trans (dvd_mul_right b c)
 #align dvd_mul_of_dvd_left dvd_mul_of_dvd_left
 
 alias Dvd.dvd.mul_right := dvd_mul_of_dvd_left
 
-theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
+lemma dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
   (dvd_mul_right a b).trans h
 #align dvd_of_mul_right_dvd dvd_of_mul_right_dvd
 
@@ -100,11 +100,11 @@ lemma map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a �
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 
-theorem MulHom.map_dvd (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
+lemma MulHom.map_dvd (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align mul_hom.map_dvd MulHom.map_dvd
 
-theorem MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
+lemma MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 
@@ -117,7 +117,7 @@ section Monoid
 variable [Monoid α] {a b : α}
 
 @[refl, simp]
-theorem dvd_refl (a : α) : a ∣ a :=
+lemma dvd_refl (a : α) : a ∣ a :=
   Dvd.intro 1 (mul_one a)
 #align dvd_refl dvd_refl
 
@@ -127,11 +127,11 @@ lemma dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 instance : IsRefl α (· ∣ ·) :=
   ⟨dvd_refl⟩
 
-theorem one_dvd (a : α) : 1 ∣ a :=
+lemma one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)
 #align one_dvd one_dvd
 
-theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
+lemma dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 #align dvd_of_eq dvd_of_eq
 
 alias Eq.dvd := dvd_of_eq
@@ -143,14 +143,14 @@ section CommSemigroup
 
 variable [CommSemigroup α] {a b c : α}
 
-theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
+lemma Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
   Dvd.intro _ (by rw [mul_comm] at h; apply h)
 #align dvd.intro_left Dvd.intro_left
 
 alias dvd_of_mul_left_eq := Dvd.intro_left
 #align dvd_of_mul_left_eq dvd_of_mul_left_eq
 
-theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
+lemma exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
   Dvd.elim h fun c => fun H1 : b = a * c => Exists.intro c (Eq.trans H1 (mul_comm a c))
 #align exists_eq_mul_left_of_dvd exists_eq_mul_left_of_dvd
 
@@ -165,11 +165,11 @@ lemma Dvd.elim_left {P : Prop} (h₁ : a ∣ b) (h₂ : ∀ c, b = c * a → P) 
 #align dvd.elim_left Dvd.elim_left
 
 @[simp]
-theorem dvd_mul_left (a b : α) : a ∣ b * a :=
+lemma dvd_mul_left (a b : α) : a ∣ b * a :=
   Dvd.intro b (mul_comm a b)
 #align dvd_mul_left dvd_mul_left
 
-theorem dvd_mul_of_dvd_right (h : a ∣ b) (c : α) : a ∣ c * b := by
+lemma dvd_mul_of_dvd_right (h : a ∣ b) (c : α) : a ∣ c * b := by
   rw [mul_comm]; exact h.mul_right _
 #align dvd_mul_of_dvd_right dvd_mul_of_dvd_right
 
@@ -181,7 +181,7 @@ lemma mul_dvd_mul : ∀ {a b c d : α}, a ∣ b → c ∣ d → a * c ∣ b * d
   | a, _, c, _, ⟨e, rfl⟩, ⟨f, rfl⟩ => ⟨e * f, by simp⟩
 #align mul_dvd_mul mul_dvd_mul
 
-theorem dvd_of_mul_left_dvd (h : a * b ∣ c) : b ∣ c :=
+lemma dvd_of_mul_left_dvd (h : a * b ∣ c) : b ∣ c :=
   Dvd.elim h fun d ceq => Dvd.intro (a * d) (by simp [ceq])
 #align dvd_of_mul_left_dvd dvd_of_mul_left_dvd
 
@@ -191,11 +191,11 @@ section CommMonoid
 
 variable [CommMonoid α] {a b : α}
 
-theorem mul_dvd_mul_left (a : α) {b c : α} (h : b ∣ c) : a * b ∣ a * c :=
+lemma mul_dvd_mul_left (a : α) {b c : α} (h : b ∣ c) : a * b ∣ a * c :=
   mul_dvd_mul (dvd_refl a) h
 #align mul_dvd_mul_left mul_dvd_mul_left
 
-theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c :=
+lemma mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c :=
   mul_dvd_mul h (dvd_refl c)
 #align mul_dvd_mul_right mul_dvd_mul_right
 

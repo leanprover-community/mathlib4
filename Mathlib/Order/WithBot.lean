@@ -78,7 +78,7 @@ lemma none_eq_bot : (none : WithBot α) = (⊥ : WithBot α) :=
   rfl
 #align with_bot.none_eq_bot WithBot.none_eq_bot
 
-theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
+lemma some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
   rfl
 #align with_bot.some_eq_coe WithBot.some_eq_coe
 
@@ -149,12 +149,12 @@ def map (f : α → β) : WithBot α → WithBot β :=
 #align with_bot.map WithBot.map
 
 @[simp]
-theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
+lemma map_bot (f : α → β) : map f ⊥ = ⊥ :=
   rfl
 #align with_bot.map_bot WithBot.map_bot
 
 @[simp]
-theorem map_coe (f : α → β) (a : α) : map f a = f a :=
+lemma map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 #align with_bot.map_coe WithBot.map_coe
 
@@ -175,14 +175,14 @@ def unbot : ∀ x : WithBot α, x ≠ ⊥ → α
 #align with_bot.unbot WithBot.unbot
 
 @[simp]
-theorem coe_unbot (x : WithBot α) (h : x ≠ ⊥) : (x.unbot h : WithBot α) = x := by
+lemma coe_unbot (x : WithBot α) (h : x ≠ ⊥) : (x.unbot h : WithBot α) = x := by
   cases x
   exact (h rfl).elim
   rfl
 #align with_bot.coe_unbot WithBot.coe_unbot
 
 @[simp]
-theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
+lemma unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
   rfl
 #align with_bot.unbot_coe WithBot.unbot_coe
 
@@ -222,7 +222,7 @@ instance orderTop [OrderTop α] : OrderTop (WithBot α) where
 instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderBot, WithBot.orderTop with }
 
-theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
+lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
   let ⟨_, hb, _⟩ := h _ rfl
   Option.not_mem_none _ hb
 #align with_bot.not_coe_le_bot WithBot.not_coe_le_bot
@@ -241,7 +241,7 @@ lemma le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a : α, x = ↑a → a 
   | none => by simp [none_eq_bot]
 #align with_bot.le_coe_iff WithBot.le_coe_iff
 
-protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
+protected lemma _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
   | none, _ => bot_le
   | Option.some _, hb => some_le_some.2 <| h <| some_le_some.1 hb
 #align is_max.with_bot IsMax.withBot
@@ -276,16 +276,16 @@ lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b :=
 #align with_bot.coe_lt_coe WithBot.coe_lt_coe
 
 @[simp]
-theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) :=
+lemma none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) :=
   ⟨a, rfl, fun _ hb => (Option.not_mem_none _ hb).elim⟩
 #align with_bot.none_lt_some WithBot.none_lt_some
 
-theorem bot_lt_coe (a : α) : (⊥ : WithBot α) < a :=
+lemma bot_lt_coe (a : α) : (⊥ : WithBot α) < a :=
   none_lt_some a
 #align with_bot.bot_lt_coe WithBot.bot_lt_coe
 
 @[simp]
-theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none :=
+lemma not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none :=
   fun ⟨_, h, _⟩ => Option.not_mem_none _ h
 #align with_bot.not_lt_none WithBot.not_lt_none
 
@@ -598,7 +598,7 @@ lemma none_eq_top : (none : WithTop α) = (⊤ : WithTop α) :=
   rfl
 #align with_top.none_eq_top WithTop.none_eq_top
 
-theorem some_eq_coe (a : α) : (Option.some a : WithTop α) = (↑a : WithTop α) :=
+lemma some_eq_coe (a : α) : (Option.some a : WithTop α) = (↑a : WithTop α) :=
   rfl
 #align with_top.some_eq_coe WithTop.some_eq_coe
 
@@ -660,12 +660,12 @@ protected def _root_.WithBot.ofDual : WithBot αᵒᵈ ≃ WithTop α :=
 #align with_bot.of_dual WithBot.ofDual
 
 @[simp]
-theorem toDual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = WithBot.ofDual a :=
+lemma toDual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = WithBot.ofDual a :=
   rfl
 #align with_top.to_dual_symm_apply WithTop.toDual_symm_apply
 
 @[simp]
-theorem ofDual_symm_apply (a : WithBot α) : WithTop.ofDual.symm a = WithBot.toDual a :=
+lemma ofDual_symm_apply (a : WithBot α) : WithTop.ofDual.symm a = WithBot.toDual a :=
   rfl
 #align with_top.of_dual_symm_apply WithTop.ofDual_symm_apply
 
@@ -682,12 +682,12 @@ lemma ofDual_apply_top : WithTop.ofDual (⊤ : WithTop α) = ⊥ :=
 open OrderDual
 
 @[simp]
-theorem toDual_apply_coe (a : α) : WithTop.toDual (a : WithTop α) = toDual a :=
+lemma toDual_apply_coe (a : α) : WithTop.toDual (a : WithTop α) = toDual a :=
   rfl
 #align with_top.to_dual_apply_coe WithTop.toDual_apply_coe
 
 @[simp]
-theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) = ofDual a :=
+lemma ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) = ofDual a :=
   rfl
 #align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
@@ -731,12 +731,12 @@ def map (f : α → β) : WithTop α → WithTop β :=
 #align with_top.map WithTop.map
 
 @[simp]
-theorem map_top (f : α → β) : map f ⊤ = ⊤ :=
+lemma map_top (f : α → β) : map f ⊤ = ⊤ :=
   rfl
 #align with_top.map_top WithTop.map_top
 
 @[simp]
-theorem map_coe (f : α → β) (a : α) : map f a = f a :=
+lemma map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 #align with_top.map_coe WithTop.map_coe
 
@@ -745,21 +745,21 @@ lemma map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : 
   Option.map_comm h _
 #align with_top.map_comm WithTop.map_comm
 
-theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
+lemma map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
     map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
   rfl
 #align with_top.map_to_dual WithTop.map_toDual
 
-theorem map_ofDual (f : α → β) (a : WithBot αᵒᵈ) : map f (WithBot.ofDual a) = a.map (ofDual ∘ f) :=
+lemma map_ofDual (f : α → β) (a : WithBot αᵒᵈ) : map f (WithBot.ofDual a) = a.map (ofDual ∘ f) :=
   rfl
 #align with_top.map_of_dual WithTop.map_ofDual
 
-theorem toDual_map (f : α → β) (a : WithTop α) :
+lemma toDual_map (f : α → β) (a : WithTop α) :
     WithTop.toDual (map f a) = WithBot.map (toDual ∘ f ∘ ofDual) (WithTop.toDual a) :=
   rfl
 #align with_top.to_dual_map WithTop.toDual_map
 
-theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
+lemma ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
     WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) (WithTop.ofDual a) :=
   rfl
 #align with_top.of_dual_map WithTop.ofDual_map
@@ -774,12 +774,12 @@ def untop : ∀ x : WithTop α, x ≠ ⊤ → α :=
 #align with_top.untop WithTop.untop
 
 @[simp]
-theorem coe_untop (x : WithTop α) (h : x ≠ ⊤) : (x.untop h : WithTop α) = x :=
+lemma coe_untop (x : WithTop α) (h : x ≠ ⊤) : (x.untop h : WithTop α) = x :=
   WithBot.coe_unbot x h
 #align with_top.coe_untop WithTop.coe_untop
 
 @[simp]
-theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
+lemma untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
   rfl
 #align with_top.untop_coe WithTop.untop_coe
 
@@ -850,7 +850,7 @@ instance orderBot [OrderBot α] : OrderBot (WithTop α) where
 instance boundedOrder [OrderBot α] : BoundedOrder (WithTop α) :=
   { WithTop.orderTop, WithTop.orderBot with }
 
-theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
+lemma not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
   WithBot.not_coe_le_bot (toDual a)
 #align with_top.not_top_le_coe WithTop.not_top_le_coe
 
@@ -866,7 +866,7 @@ lemma coe_le_iff {x : WithTop α} : ↑a ≤ x ↔ ∀ b : α, x = ↑b → a �
   @WithBot.le_coe_iff (αᵒᵈ) _ _ (toDual x)
 #align with_top.coe_le_iff WithTop.coe_le_iff
 
-protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) := by
+protected lemma _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) := by
   -- defeq to is_max_to_dual_iff.mp (is_max.with_bot _), but that breaks API boundary
   intro _ hb
   rw [← toDual_le_toDual_iff] at hb
@@ -929,12 +929,12 @@ namespace WithBot
 open OrderDual
 
 @[simp]
-theorem toDual_symm_apply (a : WithTop αᵒᵈ) : WithBot.toDual.symm a = WithTop.ofDual a :=
+lemma toDual_symm_apply (a : WithTop αᵒᵈ) : WithBot.toDual.symm a = WithTop.ofDual a :=
   rfl
 #align with_bot.to_dual_symm_apply WithBot.toDual_symm_apply
 
 @[simp]
-theorem ofDual_symm_apply (a : WithTop α) : WithBot.ofDual.symm a = WithTop.toDual a :=
+lemma ofDual_symm_apply (a : WithTop α) : WithBot.ofDual.symm a = WithTop.toDual a :=
   rfl
 #align with_bot.of_dual_symm_apply WithBot.ofDual_symm_apply
 
@@ -949,31 +949,31 @@ lemma ofDual_apply_bot : WithBot.ofDual (⊥ : WithBot α) = ⊤ :=
 #align with_bot.of_dual_apply_bot WithBot.ofDual_apply_bot
 
 @[simp]
-theorem toDual_apply_coe (a : α) : WithBot.toDual (a : WithBot α) = toDual a :=
+lemma toDual_apply_coe (a : α) : WithBot.toDual (a : WithBot α) = toDual a :=
   rfl
 #align with_bot.to_dual_apply_coe WithBot.toDual_apply_coe
 
 @[simp]
-theorem ofDual_apply_coe (a : αᵒᵈ) : WithBot.ofDual (a : WithBot αᵒᵈ) = ofDual a :=
+lemma ofDual_apply_coe (a : αᵒᵈ) : WithBot.ofDual (a : WithBot αᵒᵈ) = ofDual a :=
   rfl
 #align with_bot.of_dual_apply_coe WithBot.ofDual_apply_coe
 
-theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithTop α) :
+lemma map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithTop α) :
     WithBot.map f (WithTop.toDual a) = a.map (toDual ∘ f) :=
   rfl
 #align with_bot.map_to_dual WithBot.map_toDual
 
-theorem map_ofDual (f : α → β) (a : WithTop αᵒᵈ) :
+lemma map_ofDual (f : α → β) (a : WithTop αᵒᵈ) :
     WithBot.map f (WithTop.ofDual a) = a.map (ofDual ∘ f) :=
   rfl
 #align with_bot.map_of_dual WithBot.map_ofDual
 
-theorem toDual_map (f : α → β) (a : WithBot α) :
+lemma toDual_map (f : α → β) (a : WithBot α) :
     WithBot.toDual (WithBot.map f a) = map (toDual ∘ f ∘ ofDual) (WithBot.toDual a) :=
   rfl
 #align with_bot.to_dual_map WithBot.toDual_map
 
-theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
+lemma ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
     WithBot.ofDual (WithBot.map f a) = map (ofDual ∘ f ∘ toDual) (WithBot.ofDual a) :=
   rfl
 #align with_bot.of_dual_map WithBot.ofDual_map
@@ -1070,17 +1070,17 @@ lemma some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔ a
   coe_lt_coe
 #align with_top.some_lt_some WithTop.some_lt_some
 
-theorem coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by
+lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by
   simp [← toDual_lt_toDual_iff, WithBot.bot_lt_coe]
 #align with_top.coe_lt_top WithTop.coe_lt_top
 
 @[simp]
-theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none :=
+lemma some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none :=
   coe_lt_top a
 #align with_top.some_lt_none WithTop.some_lt_none
 
 @[simp]
-theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := by
+lemma not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := by
   rw [← toDual_lt_toDual_iff]
   exact WithBot.not_lt_none _
 #align with_top.not_none_lt WithTop.not_none_lt

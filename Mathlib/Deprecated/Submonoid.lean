@@ -157,7 +157,7 @@ lemma powers.mul_mem {x y z : M} : y ∈ powers x → z ∈ powers x → y * z �
 @[to_additive
       "The set of natural number multiples of an element of an `AddMonoid` `M` is
       an `AddSubmonoid` of `M`."]
-theorem powers.isSubmonoid (x : M) : IsSubmonoid (powers x) :=
+lemma powers.isSubmonoid (x : M) : IsSubmonoid (powers x) :=
   { one_mem := powers.one_mem
     mul_mem := powers.mul_mem }
 #align powers.is_submonoid powers.isSubmonoid
@@ -230,7 +230,7 @@ namespace IsSubmonoid
 /-- The product of a list of elements of a submonoid is an element of the submonoid. -/
 @[to_additive
       "The sum of a list of elements of an `AddSubmonoid` is an element of the `AddSubmonoid`."]
-theorem list_prod_mem (hs : IsSubmonoid s) : ∀ {l : List M}, (∀ x ∈ l, x ∈ s) → l.prod ∈ s
+lemma list_prod_mem (hs : IsSubmonoid s) : ∀ {l : List M}, (∀ x ∈ l, x ∈ s) → l.prod ∈ s
   | [], _ => hs.one_mem
   | a :: l, h =>
     suffices a * l.prod ∈ s by simpa
@@ -297,7 +297,7 @@ def Closure (s : Set M) : Set M :=
 #align add_monoid.closure AddMonoid.Closure
 
 @[to_additive]
-theorem closure.isSubmonoid (s : Set M) : IsSubmonoid (Closure s) :=
+lemma closure.isSubmonoid (s : Set M) : IsSubmonoid (Closure s) :=
   { one_mem := InClosure.one
     mul_mem := InClosure.mul }
 #align monoid.closure.is_submonoid Monoid.closure.isSubmonoid
@@ -424,7 +424,7 @@ def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
 #align add_submonoid.of AddSubmonoid.of
 
 @[to_additive]
-theorem Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
+lemma Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
   refine' ⟨S.2, S.1.2⟩
 #align submonoid.is_submonoid Submonoid.isSubmonoid
 #align add_submonoid.is_add_submonoid AddSubmonoid.isAddSubmonoid

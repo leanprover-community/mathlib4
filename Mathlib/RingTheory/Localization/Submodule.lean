@@ -36,7 +36,7 @@ def coeSubmodule (I : Ideal R) : Submodule R S :=
   Submodule.map (Algebra.linearMap R S) I
 #align is_localization.coe_submodule IsLocalization.coeSubmodule
 
-theorem mem_coeSubmodule (I : Ideal R) {x : S} :
+lemma mem_coeSubmodule (I : Ideal R) {x : S} :
     x ∈ coeSubmodule S I ↔ ∃ y : R, y ∈ I ∧ algebraMap R S y = x :=
   Iff.rfl
 #align is_localization.mem_coe_submodule IsLocalization.mem_coeSubmodule
@@ -56,31 +56,31 @@ lemma coeSubmodule_top : coeSubmodule S (⊤ : Ideal R) = 1 := by
 #align is_localization.coe_submodule_top IsLocalization.coeSubmodule_top
 
 @[simp]
-theorem coeSubmodule_sup (I J : Ideal R) :
+lemma coeSubmodule_sup (I J : Ideal R) :
     coeSubmodule S (I ⊔ J) = coeSubmodule S I ⊔ coeSubmodule S J :=
   Submodule.map_sup _ _ _
 #align is_localization.coe_submodule_sup IsLocalization.coeSubmodule_sup
 
 @[simp]
-theorem coeSubmodule_mul (I J : Ideal R) :
+lemma coeSubmodule_mul (I J : Ideal R) :
     coeSubmodule S (I * J) = coeSubmodule S I * coeSubmodule S J :=
   Submodule.map_mul _ _ (Algebra.ofId R S)
 #align is_localization.coe_submodule_mul IsLocalization.coeSubmodule_mul
 
-theorem coeSubmodule_fg (hS : Function.Injective (algebraMap R S)) (I : Ideal R) :
+lemma coeSubmodule_fg (hS : Function.Injective (algebraMap R S)) (I : Ideal R) :
     Submodule.FG (coeSubmodule S I) ↔ Submodule.FG I :=
   ⟨Submodule.fg_of_fg_map _ (LinearMap.ker_eq_bot.mpr hS), Submodule.FG.map _⟩
 #align is_localization.coe_submodule_fg IsLocalization.coeSubmodule_fg
 
 @[simp]
-theorem coeSubmodule_span (s : Set R) :
+lemma coeSubmodule_span (s : Set R) :
     coeSubmodule S (Ideal.span s) = Submodule.span R (algebraMap R S '' s) := by
   rw [IsLocalization.coeSubmodule, Ideal.span, Submodule.map_span]
   rfl
 #align is_localization.coe_submodule_span IsLocalization.coeSubmodule_span
 
 -- @[simp] -- Porting note: simp can prove this
-theorem coeSubmodule_span_singleton (x : R) :
+lemma coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]
 #align is_localization.coe_submodule_span_singleton IsLocalization.coeSubmodule_span_singleton
@@ -95,7 +95,7 @@ variable [IsLocalization M S]
 
 section
 
-theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
+lemma isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
 #align is_localization.is_noetherian_ring IsLocalization.isNoetherianRing
@@ -105,21 +105,21 @@ end
 variable {S M}
 
 @[mono]
-theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
+lemma coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
   Submodule.map_le_map_iff_of_injective (IsLocalization.injective _ h) _ _
 #align is_localization.coe_submodule_le_coe_submodule IsLocalization.coeSubmodule_le_coeSubmodule
 
 
 @[mono]
-theorem coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :
+lemma coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :
     StrictMono (coeSubmodule S : Ideal R → Submodule R S) :=
   strictMono_of_le_iff_le fun _ _ => (coeSubmodule_le_coeSubmodule h).symm
 #align is_localization.coe_submodule_strict_mono IsLocalization.coeSubmodule_strictMono
 
 variable (S)
 
-theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
+lemma coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
     Function.Injective (coeSubmodule S : Ideal R → Submodule R S) :=
   injective_of_le_imp_le _ fun hl => (coeSubmodule_le_coeSubmodule h).mp hl
 #align is_localization.coe_submodule_injective IsLocalization.coeSubmodule_injective

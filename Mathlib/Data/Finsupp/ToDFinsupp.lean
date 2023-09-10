@@ -85,7 +85,7 @@ section
 variable [DecidableEq ι] [Zero M]
 
 @[simp]
-theorem Finsupp.toDFinsupp_single (i : ι) (m : M) :
+lemma Finsupp.toDFinsupp_single (i : ι) (m : M) :
     (Finsupp.single i m).toDFinsupp = DFinsupp.single i m := by
   ext
   simp [Finsupp.single_apply, DFinsupp.single_apply]
@@ -94,7 +94,7 @@ theorem Finsupp.toDFinsupp_single (i : ι) (m : M) :
 variable [∀ m : M, Decidable (m ≠ 0)]
 
 @[simp]
-theorem toDFinsupp_support (f : ι →₀ M) : f.toDFinsupp.support = f.support := by
+lemma toDFinsupp_support (f : ι →₀ M) : f.toDFinsupp.support = f.support := by
   ext
   simp
 #align to_dfinsupp_support toDFinsupp_support
@@ -109,30 +109,30 @@ def DFinsupp.toFinsupp (f : Π₀ _ : ι, M) : ι →₀ M :=
 #align dfinsupp.to_finsupp DFinsupp.toFinsupp
 
 @[simp]
-theorem DFinsupp.toFinsupp_coe (f : Π₀ _ : ι, M) : ⇑f.toFinsupp = f :=
+lemma DFinsupp.toFinsupp_coe (f : Π₀ _ : ι, M) : ⇑f.toFinsupp = f :=
   rfl
 #align dfinsupp.to_finsupp_coe DFinsupp.toFinsupp_coe
 
 @[simp]
-theorem DFinsupp.toFinsupp_support (f : Π₀ _ : ι, M) : f.toFinsupp.support = f.support := by
+lemma DFinsupp.toFinsupp_support (f : Π₀ _ : ι, M) : f.toFinsupp.support = f.support := by
   ext
   simp
 #align dfinsupp.to_finsupp_support DFinsupp.toFinsupp_support
 
 @[simp]
-theorem DFinsupp.toFinsupp_single (i : ι) (m : M) :
+lemma DFinsupp.toFinsupp_single (i : ι) (m : M) :
     (DFinsupp.single i m : Π₀ _ : ι, M).toFinsupp = Finsupp.single i m := by
   ext
   simp [Finsupp.single_apply, DFinsupp.single_apply]
 #align dfinsupp.to_finsupp_single DFinsupp.toFinsupp_single
 
 @[simp]
-theorem Finsupp.toDFinsupp_toFinsupp (f : ι →₀ M) : f.toDFinsupp.toFinsupp = f :=
+lemma Finsupp.toDFinsupp_toFinsupp (f : ι →₀ M) : f.toDFinsupp.toFinsupp = f :=
   FunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_to_finsupp Finsupp.toDFinsupp_toFinsupp
 
 @[simp]
-theorem DFinsupp.toFinsupp_toDFinsupp (f : Π₀ _ : ι, M) : f.toFinsupp.toDFinsupp = f :=
+lemma DFinsupp.toFinsupp_toDFinsupp (f : Π₀ _ : ι, M) : f.toFinsupp.toDFinsupp = f :=
   FunLike.coe_injective rfl
 #align dfinsupp.to_finsupp_to_dfinsupp DFinsupp.toFinsupp_toDFinsupp
 

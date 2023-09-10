@@ -103,7 +103,7 @@ lemma coe_reindex : ⇑(b.reindex e) = b ∘ e.symm :=
 #align affine_basis.coe_reindex AffineBasis.coe_reindex
 
 @[simp]
-theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
+lemma reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
   rfl
 #align affine_basis.reindex_apply AffineBasis.reindex_apply
 
@@ -131,12 +131,12 @@ noncomputable def basisOf (i : ι) : Basis { j : ι // j ≠ i } k V :=
 #align affine_basis.basis_of AffineBasis.basisOf
 
 @[simp]
-theorem basisOf_apply (i : ι) (j : { j : ι // j ≠ i }) : b.basisOf i j = b ↑j -ᵥ b i := by
+lemma basisOf_apply (i : ι) (j : { j : ι // j ≠ i }) : b.basisOf i j = b ↑j -ᵥ b i := by
   simp [basisOf]
 #align affine_basis.basis_of_apply AffineBasis.basisOf_apply
 
 @[simp]
-theorem basisOf_reindex (i : ι') :
+lemma basisOf_reindex (i : ι') :
     (b.reindex e).basisOf i =
       (b.basisOf <| e.symm i).reindex (e.subtypeEquiv fun _ => e.eq_symm_apply.not) := by
   ext j
@@ -154,24 +154,24 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
 #align affine_basis.coord AffineBasis.coord
 
 @[simp]
-theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
+lemma linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
   rfl
 #align affine_basis.linear_eq_sum_coords AffineBasis.linear_eq_sumCoords
 
 @[simp]
-theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
+lemma coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
   ext
   classical simp [AffineBasis.coord]
 #align affine_basis.coord_reindex AffineBasis.coord_reindex
 
 @[simp]
-theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
+lemma coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
   simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, LinearEquiv.coe_coe, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 #align affine_basis.coord_apply_eq AffineBasis.coord_apply_eq
 
 @[simp]
-theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
+lemma coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
   -- Porting note:
   -- in mathlib3 we didn't need to given the `fun j => j ≠ i` argument to `Subtype.coe_mk`,
   -- but I don't think we can complain: this proof was over-golfed.
@@ -184,7 +184,7 @@ lemma coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
 @[simp]
-theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
+lemma coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_true,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
@@ -192,7 +192,7 @@ theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum
 #align affine_basis.coord_apply_combination_of_mem AffineBasis.coord_apply_combination_of_mem
 
 @[simp]
-theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
+lemma coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
@@ -290,7 +290,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]
-theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
+lemma coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 #align affine_basis.coords_apply AffineBasis.coords_apply
 

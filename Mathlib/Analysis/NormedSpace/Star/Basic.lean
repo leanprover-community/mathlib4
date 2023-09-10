@@ -54,7 +54,7 @@ section NormedStarGroup
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
 
 @[simp]
-theorem nnnorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
+lemma nnnorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_star _
 #align nnnorm_star nnnorm_star
 
@@ -132,21 +132,21 @@ lemma nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊
 #align cstar_ring.nnnorm_star_mul_self CstarRing.nnnorm_star_mul_self
 
 @[simp]
-theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
+lemma star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
   rw [← norm_eq_zero, norm_star_mul_self]
   exact mul_self_eq_zero.trans norm_eq_zero
 #align cstar_ring.star_mul_self_eq_zero_iff CstarRing.star_mul_self_eq_zero_iff
 
-theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
+lemma star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne.def, star_mul_self_eq_zero_iff]
 #align cstar_ring.star_mul_self_ne_zero_iff CstarRing.star_mul_self_ne_zero_iff
 
 @[simp]
-theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
+lemma mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
   simpa only [star_eq_zero, star_star] using @star_mul_self_eq_zero_iff _ _ _ _ (star x)
 #align cstar_ring.mul_star_self_eq_zero_iff CstarRing.mul_star_self_eq_zero_iff
 
-theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
+lemma mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne.def, mul_star_self_eq_zero_iff]
 #align cstar_ring.mul_star_self_ne_zero_iff CstarRing.mul_star_self_ne_zero_iff
 
@@ -223,7 +223,7 @@ lemma norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U�
 #align cstar_ring.norm_of_mem_unitary CstarRing.norm_of_mem_unitary
 
 @[simp]
-theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
+lemma norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
   nontriviality E
   refine' le_antisymm _ _
   · calc
@@ -238,7 +238,7 @@ theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A�
 #align cstar_ring.norm_coe_unitary_mul CstarRing.norm_coe_unitary_mul
 
 @[simp]
-theorem norm_unitary_smul (U : unitary E) (A : E) : ‖U • A‖ = ‖A‖ :=
+lemma norm_unitary_smul (U : unitary E) (A : E) : ‖U • A‖ = ‖A‖ :=
   norm_coe_unitary_mul U A
 #align cstar_ring.norm_unitary_smul CstarRing.norm_unitary_smul
 
@@ -247,7 +247,7 @@ lemma norm_mem_unitary_mul {U : E} (A : E) (hU : U ∈ unitary E) : ‖U * A‖ 
 #align cstar_ring.norm_mem_unitary_mul CstarRing.norm_mem_unitary_mul
 
 @[simp]
-theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
+lemma norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
   calc
     _ = ‖((U : E)⋆ * A⋆)⋆‖ := by simp only [star_star, star_mul]
     _ = ‖(U : E)⋆ * A⋆‖ := by rw [norm_star]
@@ -255,7 +255,7 @@ theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
     _ = ‖A‖ := norm_star _
 #align cstar_ring.norm_mul_coe_unitary CstarRing.norm_mul_coe_unitary
 
-theorem norm_mul_mem_unitary (A : E) {U : E} (hU : U ∈ unitary E) : ‖A * U‖ = ‖A‖ :=
+lemma norm_mul_mem_unitary (A : E) {U : E} (hU : U ∈ unitary E) : ‖A * U‖ = ‖A‖ :=
   norm_mul_coe_unitary A ⟨U, hU⟩
 #align cstar_ring.norm_mul_mem_unitary CstarRing.norm_mul_mem_unitary
 

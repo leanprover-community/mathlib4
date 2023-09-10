@@ -79,10 +79,10 @@ def realize (v : α → M) : ∀ _t : L.Term α, M
 prepare new simp lemmas for `realize`. -/
 
 @[simp]
-theorem realize_var (v : α → M) (k) : realize v (var k : L.Term α) = v k := rfl
+lemma realize_var (v : α → M) (k) : realize v (var k : L.Term α) = v k := rfl
 
 @[simp]
-theorem realize_func (v : α → M) {n} (f : L.Functions n) (ts) :
+lemma realize_func (v : α → M) {n} (f : L.Functions n) (ts) :
     realize v (func f ts : L.Term α) = funMap f fun i => (ts i).realize v := rfl
 
 @[simp]
@@ -217,7 +217,7 @@ set_option linter.uppercaseLean3 false in
 end LHom
 
 @[simp]
-theorem Hom.realize_term (g : M →[L] N) {t : L.Term α} {v : α → M} :
+lemma Hom.realize_term (g : M →[L] N) {t : L.Term α} {v : α → M} :
     t.realize (g ∘ v) = g (t.realize v) := by
   induction t
   · rfl
@@ -270,7 +270,7 @@ lemma realize_not : φ.not.Realize v xs ↔ ¬φ.Realize v xs :=
 #align first_order.language.bounded_formula.realize_not FirstOrder.Language.BoundedFormula.realize_not
 
 @[simp]
-theorem realize_bdEqual (t₁ t₂ : L.Term (Sum α (Fin l))) :
+lemma realize_bdEqual (t₁ t₂ : L.Term (Sum α (Fin l))) :
     (t₁.bdEqual t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) = t₂.realize (Sum.elim v xs) :=
   Iff.rfl
 #align first_order.language.bounded_formula.realize_bd_equal FirstOrder.Language.BoundedFormula.realize_bdEqual
@@ -285,7 +285,7 @@ lemma realize_inf : (φ ⊓ ψ).Realize v xs ↔ φ.Realize v xs ∧ ψ.Realize 
 #align first_order.language.bounded_formula.realize_inf FirstOrder.Language.BoundedFormula.realize_inf
 
 @[simp]
-theorem realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
+lemma realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
     (l.foldr (· ⊓ ·) ⊤).Realize v xs ↔ ∀ φ ∈ l, BoundedFormula.Realize φ v xs := by
   induction' l with φ l ih
   · simp
@@ -328,7 +328,7 @@ lemma realize_sup : (φ ⊔ ψ).Realize v xs ↔ φ.Realize v xs ∨ ψ.Realize 
 #align first_order.language.bounded_formula.realize_sup FirstOrder.Language.BoundedFormula.realize_sup
 
 @[simp]
-theorem realize_foldr_sup (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
+lemma realize_foldr_sup (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
     (l.foldr (· ⊔ ·) ⊥).Realize v xs ↔ ∃ φ ∈ l, BoundedFormula.Realize φ v xs := by
   induction' l with φ l ih
   · simp
@@ -552,7 +552,7 @@ lemma realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (h
 #align first_order.language.bounded_formula.realize_to_prenex_imp FirstOrder.Language.BoundedFormula.realize_toPrenexImp
 
 @[simp]
-theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
+lemma realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
     ∀ {xs : Fin n → M}, φ.toPrenex.Realize v xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ f1 f2 h1 h2 _ _ h
   · exact Iff.rfl
@@ -675,7 +675,7 @@ lemma realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
   exact congr rfl (funext finZeroElim)
 #align first_order.language.formula.realize_relabel FirstOrder.Language.Formula.realize_relabel
 
-theorem realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
+lemma realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
     (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
     cast_refl, Function.comp.right_id,
@@ -748,7 +748,7 @@ lemma realize_equivSentence [L[[α]].Structure M] [(L.lhomWithConstants α).IsEx
   rw [← realize_equivSentence_symm_con M (equivSentence φ), _root_.Equiv.symm_apply_apply]
 #align first_order.language.formula.realize_equiv_sentence FirstOrder.Language.Formula.realize_equivSentence
 
-theorem realize_equivSentence_symm (φ : L[[α]].Sentence) (v : α → M) :
+lemma realize_equivSentence_symm (φ : L[[α]].Sentence) (v : α → M) :
     (equivSentence.symm φ).Realize v ↔
       @Sentence.Realize _ M (@Language.withConstantsStructure L M _ α (constantsOn.structure v))
         φ :=
@@ -962,7 +962,7 @@ lemma realize_iExs [Finite γ] {f : α → β ⊕ γ}
   rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp
 
 @[simp]
-theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
+lemma realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 a8 a9 a0
   · rfl
@@ -991,14 +991,14 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M
 #align first_order.language.bounded_formula.realize_to_formula FirstOrder.Language.BoundedFormula.realize_toFormula
 
 @[simp]
-theorem realize_iSup (s : Finset β) (f : β → L.BoundedFormula α n)
+lemma realize_iSup (s : Finset β) (f : β → L.BoundedFormula α n)
     (v : α → M) (v' : Fin n → M) :
     (iSup s f).Realize v v' ↔ ∃ b ∈ s, (f b).Realize v v' := by
   simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList,
     exists_exists_and_eq_and]
 
 @[simp]
-theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
+lemma realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
     (v : α → M) (v' : Fin n → M) :
     (iInf s f).Realize v v' ↔ ∀ b ∈ s, (f b).Realize v v' := by
   simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList,
@@ -1009,7 +1009,7 @@ end BoundedFormula
 namespace Equiv
 
 @[simp]
-theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v : α → M}
+lemma realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v : α → M}
     {xs : Fin n → M} : φ.Realize (g ∘ v) (g ∘ xs) ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
@@ -1030,22 +1030,22 @@ theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v 
 #align first_order.language.equiv.realize_bounded_formula FirstOrder.Language.Equiv.realize_boundedFormula
 
 @[simp]
-theorem realize_formula (g : M ≃[L] N) (φ : L.Formula α) {v : α → M} :
+lemma realize_formula (g : M ≃[L] N) (φ : L.Formula α) {v : α → M} :
     φ.Realize (g ∘ v) ↔ φ.Realize v := by
   rw [Formula.Realize, Formula.Realize, ← g.realize_boundedFormula φ, iff_eq_eq,
     Unique.eq_default (g ∘ default)]
 #align first_order.language.equiv.realize_formula FirstOrder.Language.Equiv.realize_formula
 
-theorem realize_sentence (g : M ≃[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
+lemma realize_sentence (g : M ≃[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
   rw [Sentence.Realize, Sentence.Realize, ← g.realize_formula, Unique.eq_default (g ∘ default)]
 #align first_order.language.equiv.realize_sentence FirstOrder.Language.Equiv.realize_sentence
 
-theorem theory_model (g : M ≃[L] N) [M ⊨ T] : N ⊨ T :=
+lemma theory_model (g : M ≃[L] N) [M ⊨ T] : N ⊨ T :=
   ⟨fun φ hφ => (g.realize_sentence φ).1 (Theory.realize_sentence_of_mem T hφ)⟩
 set_option linter.uppercaseLean3 false in
 #align first_order.language.equiv.Theory_model FirstOrder.Language.Equiv.theory_model
 
-theorem elementarilyEquivalent (g : M ≃[L] N) : M ≅[L] N :=
+lemma elementarilyEquivalent (g : M ≃[L] N) : M ≅[L] N :=
   elementarilyEquivalent_iff.2 g.realize_sentence
 #align first_order.language.equiv.elementarily_equivalent FirstOrder.Language.Equiv.elementarilyEquivalent
 
@@ -1098,7 +1098,7 @@ section Cardinality
 
 variable (L)
 @[simp]
-theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M := by
+lemma Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M := by
   rw [← lift_mk_fin, ← lift_le.{0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
     BoundedFormula.realize_exs]
   simp_rw [BoundedFormula.realize_foldr_inf]
@@ -1150,7 +1150,7 @@ lemma model_distinctConstantsTheory {M : Type w} [L[[α]].Structure M] (s : Set 
     exact fun contra => ab (h as bs contra)
 #align first_order.language.model_distinct_constants_theory FirstOrder.Language.model_distinctConstantsTheory
 
-theorem card_le_of_model_distinctConstantsTheory (s : Set α) (M : Type w) [L[[α]].Structure M]
+lemma card_le_of_model_distinctConstantsTheory (s : Set α) (M : Type w) [L[[α]].Structure M]
     [h : M ⊨ L.distinctConstantsTheory s] : Cardinal.lift.{w} #s ≤ Cardinal.lift.{u'} #M :=
   lift_mk_le'.2 ⟨⟨_, Set.injOn_iff_injective.1 ((L.model_distinctConstantsTheory s).1 h)⟩⟩
 #align first_order.language.card_le_of_model_distinct_constants_theory FirstOrder.Language.card_le_of_model_distinctConstantsTheory
@@ -1160,24 +1160,24 @@ end Cardinality
 namespace ElementarilyEquivalent
 
 @[symm]
-nonrec theorem symm (h : M ≅[L] N) : N ≅[L] M :=
+nonrec lemma symm (h : M ≅[L] N) : N ≅[L] M :=
   h.symm
 #align first_order.language.elementarily_equivalent.symm FirstOrder.Language.ElementarilyEquivalent.symm
 
 @[trans]
-nonrec theorem trans (MN : M ≅[L] N) (NP : N ≅[L] P) : M ≅[L] P :=
+nonrec lemma trans (MN : M ≅[L] N) (NP : N ≅[L] P) : M ≅[L] P :=
   MN.trans NP
 #align first_order.language.elementarily_equivalent.trans FirstOrder.Language.ElementarilyEquivalent.trans
 
-theorem completeTheory_eq (h : M ≅[L] N) : L.completeTheory M = L.completeTheory N :=
+lemma completeTheory_eq (h : M ≅[L] N) : L.completeTheory M = L.completeTheory N :=
   h
 #align first_order.language.elementarily_equivalent.complete_theory_eq FirstOrder.Language.ElementarilyEquivalent.completeTheory_eq
 
-theorem realize_sentence (h : M ≅[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ :=
+lemma realize_sentence (h : M ≅[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ :=
   (elementarilyEquivalent_iff.1 h) φ
 #align first_order.language.elementarily_equivalent.realize_sentence FirstOrder.Language.ElementarilyEquivalent.realize_sentence
 
-theorem theory_model_iff (h : M ≅[L] N) : M ⊨ T ↔ N ⊨ T := by
+lemma theory_model_iff (h : M ≅[L] N) : M ⊨ T ↔ N ⊨ T := by
   rw [Theory.model_iff_subset_completeTheory, Theory.model_iff_subset_completeTheory,
     h.completeTheory_eq]
 set_option linter.uppercaseLean3 false in
@@ -1188,7 +1188,7 @@ lemma theory_model [MT : M ⊨ T] (h : M ≅[L] N) : N ⊨ T :=
 set_option linter.uppercaseLean3 false in
 #align first_order.language.elementarily_equivalent.Theory_model FirstOrder.Language.ElementarilyEquivalent.theory_model
 
-theorem nonempty_iff (h : M ≅[L] N) : Nonempty M ↔ Nonempty N :=
+lemma nonempty_iff (h : M ≅[L] N) : Nonempty M ↔ Nonempty N :=
   (model_nonemptyTheory_iff L).symm.trans (h.theory_model_iff.trans (model_nonemptyTheory_iff L))
 #align first_order.language.elementarily_equivalent.nonempty_iff FirstOrder.Language.ElementarilyEquivalent.nonempty_iff
 
@@ -1196,7 +1196,7 @@ lemma nonempty [Mn : Nonempty M] (h : M ≅[L] N) : Nonempty N :=
   h.nonempty_iff.1 Mn
 #align first_order.language.elementarily_equivalent.nonempty FirstOrder.Language.ElementarilyEquivalent.nonempty
 
-theorem infinite_iff (h : M ≅[L] N) : Infinite M ↔ Infinite N :=
+lemma infinite_iff (h : M ≅[L] N) : Infinite M ↔ Infinite N :=
   (model_infiniteTheory_iff L).symm.trans (h.theory_model_iff.trans (model_infiniteTheory_iff L))
 #align first_order.language.elementarily_equivalent.infinite_iff FirstOrder.Language.ElementarilyEquivalent.infinite_iff
 

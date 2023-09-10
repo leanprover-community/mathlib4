@@ -83,7 +83,7 @@ variable {ι' : Type*} [Fintype ι'] [Fintype ι] [DecidableEq ι']
 section Basic
 
 @[simp]
-theorem discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
+lemma discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
   classical rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
 #align algebra.discr_reindex Algebra.discr_reindex
 
@@ -108,7 +108,7 @@ variable {A}
 
 /-- Relation between `Algebra.discr A ι b` and
 `Algebra.discr A ((P.map (algebraMap A B)).vecMul b)`. -/
-theorem discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
+lemma discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
     discr A ((P.map (algebraMap A B)).vecMul b) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_vecMul, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
@@ -116,7 +116,7 @@ theorem discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
 
 /-- Relation between `Algebra.discr A ι b` and
 `Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`. -/
-theorem discr_of_matrix_mulVec (b : ι → B) (P : Matrix ι ι A) :
+lemma discr_of_matrix_mulVec (b : ι → B) (P : Matrix ι ι A) :
     discr A ((P.map (algebraMap A B)).mulVec b) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_mulVec, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
@@ -168,7 +168,7 @@ lemma discr_eq_det_embeddingsMatrixReindex_pow_two [IsSeparable K L] (e : ι ≃
 #align algebra.discr_eq_det_embeddings_matrix_reindex_pow_two Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two
 
 /-- The discriminant of a power basis. -/
-theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparable K L] :
+lemma discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparable K L] :
     algebraMap K E (discr K pb.basis) =
       ∏ i : Fin pb.dim, ∏ j in Ioi i, (e j pb.gen - e i pb.gen) ^ 2 := by
   rw [discr_eq_det_embeddingsMatrixReindex_pow_two K E pb.basis e,

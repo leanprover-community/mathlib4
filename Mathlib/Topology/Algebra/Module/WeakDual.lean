@@ -118,7 +118,7 @@ lemma coeFn_continuous : Continuous fun (x : WeakBilin B) y => B x y :=
   continuous_induced_dom
 #align weak_bilin.coe_fn_continuous WeakBilin.coeFn_continuous
 
-theorem eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
+lemma eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
   (continuous_pi_iff.mp (coeFn_continuous B)) y
 #align weak_bilin.eval_continuous WeakBilin.eval_continuous
 
@@ -204,7 +204,7 @@ variable [ContinuousConstSMul 𝕜 𝕜]
 
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
-theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing 𝕜 E v x = v x :=
+lemma topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
 #align dual_pairing_apply topDualPairing_apply
 
@@ -277,7 +277,7 @@ lemma coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
   continuous_induced_dom
 #align weak_dual.coe_fn_continuous WeakDual.coeFn_continuous
 
-theorem eval_continuous (y : E) : Continuous fun x : WeakDual 𝕜 E => x y :=
+lemma eval_continuous (y : E) : Continuous fun x : WeakDual 𝕜 E => x y :=
   continuous_pi_iff.mp coeFn_continuous y
 #align weak_dual.eval_continuous WeakDual.eval_continuous
 
@@ -325,12 +325,12 @@ def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
       WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
 #align weak_space.map WeakSpace.map
 
-theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
+lemma map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
   rfl
 #align weak_space.map_apply WeakSpace.map_apply
 
 @[simp]
-theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
+lemma coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
 #align weak_space.coe_map WeakSpace.coe_map
 

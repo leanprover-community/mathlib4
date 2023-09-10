@@ -21,7 +21,7 @@ set_option autoImplicit true
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 @[simp]
-theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) :=
+lemma Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) :=
   rfl
 #align prod_map Prod_map
 
@@ -50,33 +50,33 @@ lemma exists' {p : α → β → Prop} : (∃ x : α × β, p x.1 x.2) ↔ ∃ a
 #align prod.exists' Prod.exists'
 
 @[simp]
-theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :=
+lemma snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :=
   rfl
 #align prod.snd_comp_mk Prod.snd_comp_mk
 
 @[simp]
-theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
+lemma fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
   rfl
 #align prod.fst_comp_mk Prod.fst_comp_mk
 
 @[simp, mfld_simps]
-theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
+lemma map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
   rfl
 #align prod.map_mk Prod.map_mk
 
-theorem map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f p.1 :=
+lemma map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f p.1 :=
   rfl
 #align prod.map_fst Prod.map_fst
 
-theorem map_snd (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).2 = g p.2 :=
+lemma map_snd (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).2 = g p.2 :=
   rfl
 #align prod.map_snd Prod.map_snd
 
-theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ Prod.fst :=
+lemma map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ Prod.fst :=
   funext <| map_fst f g
 #align prod.map_fst' Prod.map_fst'
 
-theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
+lemma map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
   funext <| map_snd f g
 #align prod.map_snd' Prod.map_snd'
 
@@ -228,7 +228,7 @@ lemma snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
-theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
+lemma lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
     Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
   ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
     match p, q, h with
@@ -245,7 +245,7 @@ instance Lex.decidable [DecidableEq α]
   fun _ _ ↦ decidable_of_decidable_of_iff (lex_def r s).symm
 
 @[refl]
-theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
+lemma Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.left _ _ (refl _)
 #align prod.lex.refl_left Prod.Lex.refl_left
 
@@ -253,7 +253,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRef
   ⟨Lex.refl_left _ _⟩
 
 @[refl]
-theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
+lemma Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.right _ (refl _)
 #align prod.lex.refl_right Prod.Lex.refl_right
 
@@ -315,22 +315,22 @@ namespace Function
 
 variable {f : α → γ} {g : β → δ} {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α} {g₂ : δ → γ}
 
-theorem Injective.Prod_map (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
+lemma Injective.Prod_map (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
   fun _ _ h ↦ ext (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
 #align function.injective.prod_map Function.Injective.Prod_map
 
-theorem Surjective.Prod_map (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
+lemma Surjective.Prod_map (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
   fun p ↦
   let ⟨x, hx⟩ := hf p.1
   let ⟨y, hy⟩ := hg p.2
   ⟨(x, y), Prod.ext hx hy⟩
 #align function.surjective.prod_map Function.Surjective.Prod_map
 
-theorem Bijective.Prod_map (hf : Bijective f) (hg : Bijective g) : Bijective (map f g) :=
+lemma Bijective.Prod_map (hf : Bijective f) (hg : Bijective g) : Bijective (map f g) :=
   ⟨hf.1.Prod_map hg.1, hf.2.Prod_map hg.2⟩
 #align function.bijective.prod_map Function.Bijective.Prod_map
 
-theorem LeftInverse.Prod_map (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
+lemma LeftInverse.Prod_map (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
     LeftInverse (map f₁ g₁) (map f₂ g₂) :=
   fun a ↦ by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, map_id, id]
 #align function.left_inverse.prod_map Function.LeftInverse.Prod_map

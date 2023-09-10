@@ -126,7 +126,7 @@ lemma exists_aeval_eq_zero [IsSepClosed K] [Algebra k K] (p : k[X])
     (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x : K, aeval x p = 0 :=
   exists_eval₂_eq_zero (algebraMap k K) p hp hsep
 
-theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
+lemma of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
   refine ⟨fun p hsep ↦ Or.inr ?_⟩
   intro q hq hdvd

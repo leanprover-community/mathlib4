@@ -52,7 +52,7 @@ lemma reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   simp [toList, (·++·), Vector.append, Append.append]
   rfl
 
-theorem replicate_succ_to_snoc (val : α) :
+lemma replicate_succ_to_snoc (val : α) :
     replicate (n+1) val = (replicate n val).snoc val := by
   clear xs
   induction n
@@ -154,7 +154,7 @@ lemma mapAccumr₂_nil : mapAccumr₂ f Vector.nil Vector.nil s = (s, Vector.nil
   rfl
 
 @[simp]
-theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) :
+lemma mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) :
     mapAccumr₂ f (xs.snoc x) (ys.snoc y) c
     = let q := f x y c
       let r := mapAccumr₂ f xs ys q.1

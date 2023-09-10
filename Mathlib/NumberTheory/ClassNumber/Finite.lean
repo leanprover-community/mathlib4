@@ -85,7 +85,7 @@ lemma normBound_pos : 0 < normBound abv bS := by
 
 /-- If the `R`-integral element `a : S` has coordinates `≤ y` with respect to some basis `b`,
 its norm is less than `normBound abv b * y ^ dim S`. -/
-theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
+lemma norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
     abv (Algebra.norm R a) ≤ normBound abv bS * y ^ Fintype.card ι := by
   conv_lhs => rw [← bS.sum_repr a]
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
@@ -137,7 +137,7 @@ lemma norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
 
 /-- A nonzero ideal has an element of minimal norm. -/
 -- porting note: port of Int.exists_least_of_bdd requires DecidablePred, so we use classical
-theorem exists_min (I : (Ideal S)⁰) :
+lemma exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
       (0 : S) := by
@@ -216,7 +216,7 @@ open Real
 attribute [-instance] Real.decidableEq
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
-theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
+lemma exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     ∃ q : S,
       ∃ r ∈ finsetApprox bS adm, abv (Algebra.norm R (r • a - b • q)) <
       abv (Algebra.norm R (algebraMap R S b)) := by
@@ -270,7 +270,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
 #align class_group.exists_mem_finset_approx ClassGroup.exists_mem_finsetApprox
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
-theorem exists_mem_finset_approx' (h : Algebra.IsAlgebraic R L) (a : S) {b : S} (hb : b ≠ 0) :
+lemma exists_mem_finset_approx' (h : Algebra.IsAlgebraic R L) (a : S) {b : S} (hb : b ≠ 0) :
     ∃ q : S,
       ∃ r ∈ finsetApprox bS adm, abv (Algebra.norm R (r • a - q * b)) < abv (Algebra.norm R b) := by
   have inj : Function.Injective (algebraMap R L) := by
@@ -299,7 +299,7 @@ lemma prod_finsetApprox_ne_zero : algebraMap R S (∏ m in finsetApprox bS adm, 
   exact finsetApprox.zero_not_mem bS adm hx
 #align class_group.prod_finset_approx_ne_zero ClassGroup.prod_finsetApprox_ne_zero
 
-theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
+lemma ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
   (Submodule.ne_bot_iff _).mpr ⟨_, h, prod_finsetApprox_ne_zero _ _⟩
 #align class_group.ne_bot_of_prod_finset_approx_mem ClassGroup.ne_bot_of_prod_finsetApprox_mem

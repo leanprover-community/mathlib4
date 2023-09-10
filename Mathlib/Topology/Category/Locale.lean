@@ -39,7 +39,7 @@ def of (α : Type*) [Frame α] : Locale :=
 #align Locale.of Locale.of
 
 @[simp]
-theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
   rfl
 #align Locale.coe_of Locale.coe_of
 

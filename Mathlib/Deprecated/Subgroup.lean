@@ -80,7 +80,7 @@ lemma Multiplicative.isSubgroup_iff {s : Set A} :
 #align multiplicative.is_subgroup_iff Multiplicative.isSubgroup_iff
 
 @[to_additive of_add_neg]
-theorem IsSubgroup.of_div (s : Set G) (one_mem : (1 : G) ∈ s)
+lemma IsSubgroup.of_div (s : Set G) (one_mem : (1 : G) ∈ s)
     (div_mem : ∀ {a b : G}, a ∈ s → b ∈ s → a * b⁻¹ ∈ s) : IsSubgroup s :=
   have inv_mem : ∀ a, a ∈ s → a⁻¹ ∈ s := fun a ha => by
     have : 1 * a⁻¹ ∈ s := div_mem one_mem ha
@@ -95,7 +95,7 @@ theorem IsSubgroup.of_div (s : Set G) (one_mem : (1 : G) ∈ s)
 #align is_subgroup.of_div IsSubgroup.of_div
 #align is_add_subgroup.of_add_neg IsAddSubgroup.of_add_neg
 
-theorem IsAddSubgroup.of_sub (s : Set A) (zero_mem : (0 : A) ∈ s)
+lemma IsAddSubgroup.of_sub (s : Set A) (zero_mem : (0 : A) ∈ s)
     (sub_mem : ∀ {a b : A}, a ∈ s → b ∈ s → a - b ∈ s) : IsAddSubgroup s :=
   IsAddSubgroup.of_add_neg s zero_mem fun {x y} hx hy => by
     simpa only [sub_eq_add_neg] using sub_mem hx hy
@@ -144,13 +144,13 @@ lemma inv_mem_iff : a⁻¹ ∈ s ↔ a ∈ s :=
 #align is_add_subgroup.neg_mem_iff IsAddSubgroup.neg_mem_iff
 
 @[to_additive]
-theorem mul_mem_cancel_right (h : a ∈ s) : b * a ∈ s ↔ b ∈ s :=
+lemma mul_mem_cancel_right (h : a ∈ s) : b * a ∈ s ↔ b ∈ s :=
   ⟨fun hba => by simpa using hs.mul_mem hba (hs.inv_mem h), fun hb => hs.mul_mem hb h⟩
 #align is_subgroup.mul_mem_cancel_right IsSubgroup.mul_mem_cancel_right
 #align is_add_subgroup.add_mem_cancel_right IsAddSubgroup.add_mem_cancel_right
 
 @[to_additive]
-theorem mul_mem_cancel_left (h : a ∈ s) : a * b ∈ s ↔ b ∈ s :=
+lemma mul_mem_cancel_left (h : a ∈ s) : a * b ∈ s ↔ b ∈ s :=
   ⟨fun hab => by simpa using hs.mul_mem (hs.inv_mem h) hab, hs.mul_mem h⟩
 #align is_subgroup.mul_mem_cancel_left IsSubgroup.mul_mem_cancel_left
 #align is_add_subgroup.add_mem_cancel_left IsAddSubgroup.add_mem_cancel_left
@@ -300,7 +300,7 @@ def normalizer (s : Set G) : Set G :=
 #align is_add_subgroup.add_normalizer IsAddSubgroup.addNormalizer
 
 @[to_additive]
-theorem normalizer_isSubgroup (s : Set G) : IsSubgroup (normalizer s) :=
+lemma normalizer_isSubgroup (s : Set G) : IsSubgroup (normalizer s) :=
   { one_mem := by simp [normalizer]
     mul_mem := fun {a b}
       (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) (hb : ∀ n, n ∈ s ↔ b * n * b⁻¹ ∈ s) n =>
@@ -530,7 +530,7 @@ lemma mem_closure {a : G} : a ∈ s → a ∈ closure s :=
 #align add_group.mem_closure AddGroup.mem_closure
 
 @[to_additive]
-theorem closure.isSubgroup (s : Set G) : IsSubgroup (closure s) :=
+lemma closure.isSubgroup (s : Set G) : IsSubgroup (closure s) :=
   { one_mem := InClosure.one
     mul_mem := InClosure.mul
     inv_mem := InClosure.inv }
@@ -706,7 +706,7 @@ lemma subset_normalClosure : s ⊆ normalClosure s :=
 #align group.subset_normal_closure Group.subset_normalClosure
 
 /-- The normal closure of a set is a subgroup. -/
-theorem normalClosure.isSubgroup (s : Set G) : IsSubgroup (normalClosure s) :=
+lemma normalClosure.isSubgroup (s : Set G) : IsSubgroup (normalClosure s) :=
   closure.isSubgroup (conjugatesOfSet s)
 #align group.normal_closure.is_subgroup Group.normalClosure.isSubgroup
 

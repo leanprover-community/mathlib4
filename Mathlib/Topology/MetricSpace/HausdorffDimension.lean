@@ -107,7 +107,7 @@ variable [MeasurableSpace X] [BorelSpace X]
 
 /-- Unfold the definition of `dimH` using `[MeasurableSpace X] [BorelSpace X]` from the
 environment. -/
-theorem dimH_def (s : Set X) : dimH s = ⨆ (d : ℝ≥0) (_ : μH[d] s = ∞), (d : ℝ≥0∞) := by
+lemma dimH_def (s : Set X) : dimH s = ⨆ (d : ℝ≥0) (_ : μH[d] s = ∞), (d : ℝ≥0∞) := by
   borelize X; rw [dimH]
 set_option linter.uppercaseLean3 false in
 #align dimH_def dimH_def
@@ -190,7 +190,7 @@ set_option linter.uppercaseLean3 false in
 #align dimH_empty dimH_empty
 
 @[simp]
-theorem dimH_singleton (x : X) : dimH ({x} : Set X) = 0 :=
+lemma dimH_singleton (x : X) : dimH ({x} : Set X) = 0 :=
   subsingleton_singleton.dimH_zero
 set_option linter.uppercaseLean3 false in
 #align dimH_singleton dimH_singleton
@@ -222,7 +222,7 @@ set_option linter.uppercaseLean3 false in
 #align dimH_sUnion dimH_sUnion
 
 @[simp]
-theorem dimH_union (s t : Set X) : dimH (s ∪ t) = max (dimH s) (dimH t) := by
+lemma dimH_union (s t : Set X) : dimH (s ∪ t) = max (dimH s) (dimH t) := by
   rw [union_eq_iUnion, dimH_iUnion, iSup_bool_eq, cond, cond, ENNReal.sup_eq_max]
 set_option linter.uppercaseLean3 false in
 #align dimH_union dimH_union
@@ -246,7 +246,7 @@ set_option linter.uppercaseLean3 false in
 #align set.finite.dimH_zero Set.Finite.dimH_zero
 
 @[simp]
-theorem dimH_coe_finset (s : Finset X) : dimH (s : Set X) = 0 :=
+lemma dimH_coe_finset (s : Finset X) : dimH (s : Set X) = 0 :=
   s.finite_toSet.dimH_zero
 set_option linter.uppercaseLean3 false in
 #align dimH_coe_finset dimH_coe_finset
@@ -281,7 +281,7 @@ set_option linter.uppercaseLean3 false in
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over `x ∈ s` of the limit superiors of `dimH t` along
 `(𝓝[s] x).smallSets`. -/
-theorem bsupr_limsup_dimH (s : Set X) : ⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets = dimH s := by
+lemma bsupr_limsup_dimH (s : Set X) : ⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets = dimH s := by
   refine le_antisymm (iSup₂_le fun x _ => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
@@ -296,7 +296,7 @@ set_option linter.uppercaseLean3 false in
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over all `x` of the limit superiors of `dimH t` along
 `(𝓝[s] x).smallSets`. -/
-theorem iSup_limsup_dimH (s : Set X) : ⨆ x, limsup dimH (𝓝[s] x).smallSets = dimH s := by
+lemma iSup_limsup_dimH (s : Set X) : ⨆ x, limsup dimH (𝓝[s] x).smallSets = dimH s := by
   refine le_antisymm (iSup_le fun x => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
@@ -314,7 +314,7 @@ end
 variable {C K r : ℝ≥0} {f : X → Y} {s t : Set X}
 
 /-- If `f` is a Hölder continuous map with exponent `r > 0`, then `dimH (f '' s) ≤ dimH s / r`. -/
-theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
+lemma HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
     dimH (f '' s) ≤ dimH s / r := by
   borelize X Y
   refine dimH_le fun d hd => ?_
@@ -333,7 +333,7 @@ namespace HolderWith
 
 /-- If `f : X → Y` is Hölder continuous with a positive exponent `r`, then the Hausdorff dimension
 of the image of a set `s` is at most `dimH s / r`. -/
-theorem dimH_image_le (h : HolderWith C r f) (hr : 0 < r) (s : Set X) :
+lemma dimH_image_le (h : HolderWith C r f) (hr : 0 < r) (s : Set X) :
     dimH (f '' s) ≤ dimH s / r :=
   (h.holderOnWith s).dimH_image_le hr
 set_option linter.uppercaseLean3 false in
@@ -341,7 +341,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If `f` is a Hölder continuous map with exponent `r > 0`, then the Hausdorff dimension of its
 range is at most the Hausdorff dimension of its domain divided by `r`. -/
-theorem dimH_range_le (h : HolderWith C r f) (hr : 0 < r) :
+lemma dimH_range_le (h : HolderWith C r f) (hr : 0 < r) :
     dimH (range f) ≤ dimH (univ : Set X) / r :=
   @image_univ _ _ f ▸ h.dimH_image_le hr univ
 set_option linter.uppercaseLean3 false in
@@ -382,7 +382,7 @@ set_option linter.uppercaseLean3 false in
 
 
 /-- If `f : X → Y` is Lipschitz continuous on `s`, then `dimH (f '' s) ≤ dimH s`. -/
-theorem LipschitzOnWith.dimH_image_le (h : LipschitzOnWith K f s) : dimH (f '' s) ≤ dimH s := by
+lemma LipschitzOnWith.dimH_image_le (h : LipschitzOnWith K f s) : dimH (f '' s) ≤ dimH s := by
   simpa using h.holderOnWith.dimH_image_le zero_lt_one
 set_option linter.uppercaseLean3 false in
 #align lipschitz_on_with.dimH_image_le LipschitzOnWith.dimH_image_le
@@ -390,14 +390,14 @@ set_option linter.uppercaseLean3 false in
 namespace LipschitzWith
 
 /-- If `f` is a Lipschitz continuous map, then `dimH (f '' s) ≤ dimH s`. -/
-theorem dimH_image_le (h : LipschitzWith K f) (s : Set X) : dimH (f '' s) ≤ dimH s :=
+lemma dimH_image_le (h : LipschitzWith K f) (s : Set X) : dimH (f '' s) ≤ dimH s :=
   (h.lipschitzOnWith s).dimH_image_le
 set_option linter.uppercaseLean3 false in
 #align lipschitz_with.dimH_image_le LipschitzWith.dimH_image_le
 
 /-- If `f` is a Lipschitz continuous map, then the Hausdorff dimension of its range is at most the
 Hausdorff dimension of its domain. -/
-theorem dimH_range_le (h : LipschitzWith K f) : dimH (range f) ≤ dimH (univ : Set X) :=
+lemma dimH_range_le (h : LipschitzWith K f) : dimH (range f) ≤ dimH (univ : Set X) :=
   @image_univ _ _ f ▸ h.dimH_image_le univ
 set_option linter.uppercaseLean3 false in
 #align lipschitz_with.dimH_range_le LipschitzWith.dimH_range_le
@@ -428,7 +428,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace AntilipschitzWith
 
-theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻¹' s) ≤ dimH s := by
+lemma dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻¹' s) ≤ dimH s := by
   borelize X Y
   refine dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top ?_
   have := hf.hausdorffMeasure_preimage_le d.coe_nonneg s
@@ -438,7 +438,7 @@ theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻�
 set_option linter.uppercaseLean3 false in
 #align antilipschitz_with.dimH_preimage_le AntilipschitzWith.dimH_preimage_le
 
-theorem le_dimH_image (hf : AntilipschitzWith K f) (s : Set X) : dimH s ≤ dimH (f '' s) :=
+lemma le_dimH_image (hf : AntilipschitzWith K f) (s : Set X) : dimH s ≤ dimH (f '' s) :=
   calc
     dimH s ≤ dimH (f ⁻¹' (f '' s)) := dimH_mono (subset_preimage_image _ _)
     _ ≤ dimH (f '' s) := hf.dimH_preimage_le _
@@ -452,7 +452,7 @@ end AntilipschitzWith
 -/
 
 
-theorem Isometry.dimH_image (hf : Isometry f) (s : Set X) : dimH (f '' s) = dimH s :=
+lemma Isometry.dimH_image (hf : Isometry f) (s : Set X) : dimH (f '' s) = dimH s :=
   le_antisymm (hf.lipschitz.dimH_image_le _) (hf.antilipschitz.le_dimH_image _)
 set_option linter.uppercaseLean3 false in
 #align isometry.dimH_image Isometry.dimH_image
@@ -460,18 +460,18 @@ set_option linter.uppercaseLean3 false in
 namespace IsometryEquiv
 
 @[simp]
-theorem dimH_image (e : X ≃ᵢ Y) (s : Set X) : dimH (e '' s) = dimH s :=
+lemma dimH_image (e : X ≃ᵢ Y) (s : Set X) : dimH (e '' s) = dimH s :=
   e.isometry.dimH_image s
 set_option linter.uppercaseLean3 false in
 #align isometry_equiv.dimH_image IsometryEquiv.dimH_image
 
 @[simp]
-theorem dimH_preimage (e : X ≃ᵢ Y) (s : Set Y) : dimH (e ⁻¹' s) = dimH s := by
+lemma dimH_preimage (e : X ≃ᵢ Y) (s : Set Y) : dimH (e ⁻¹' s) = dimH s := by
   rw [← e.image_symm, e.symm.dimH_image]
 set_option linter.uppercaseLean3 false in
 #align isometry_equiv.dimH_preimage IsometryEquiv.dimH_preimage
 
-theorem dimH_univ (e : X ≃ᵢ Y) : dimH (univ : Set X) = dimH (univ : Set Y) := by
+lemma dimH_univ (e : X ≃ᵢ Y) : dimH (univ : Set X) = dimH (univ : Set Y) := by
   rw [← e.dimH_preimage univ, preimage_univ]
 set_option linter.uppercaseLean3 false in
 #align isometry_equiv.dimH_univ IsometryEquiv.dimH_univ
@@ -484,19 +484,19 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[simp]
-theorem dimH_image (e : E ≃L[𝕜] F) (s : Set E) : dimH (e '' s) = dimH s :=
+lemma dimH_image (e : E ≃L[𝕜] F) (s : Set E) : dimH (e '' s) = dimH s :=
   le_antisymm (e.lipschitz.dimH_image_le s) <| by
     simpa only [e.symm_image_image] using e.symm.lipschitz.dimH_image_le (e '' s)
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.dimH_image ContinuousLinearEquiv.dimH_image
 
 @[simp]
-theorem dimH_preimage (e : E ≃L[𝕜] F) (s : Set F) : dimH (e ⁻¹' s) = dimH s := by
+lemma dimH_preimage (e : E ≃L[𝕜] F) (s : Set F) : dimH (e ⁻¹' s) = dimH s := by
   rw [← e.image_symm_eq_preimage, e.symm.dimH_image]
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.dimH_preimage ContinuousLinearEquiv.dimH_preimage
 
-theorem dimH_univ (e : E ≃L[𝕜] F) : dimH (univ : Set E) = dimH (univ : Set F) := by
+lemma dimH_univ (e : E ≃L[𝕜] F) : dimH (univ : Set E) = dimH (univ : Set F) := by
   rw [← e.dimH_preimage, preimage_univ]
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.dimH_univ ContinuousLinearEquiv.dimH_univ
@@ -512,7 +512,7 @@ namespace Real
 
 variable {E : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
-theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
+lemma dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = Fintype.card ι := by
   cases isEmpty_or_nonempty ι
   · rwa [dimH_subsingleton, eq_comm, Nat.cast_eq_zero, Fintype.card_eq_zero_iff]
@@ -531,13 +531,13 @@ lemma dimH_ball_pi_fin {n : ℕ} (x : Fin n → ℝ) {r : ℝ} (hr : 0 < r) :
 set_option linter.uppercaseLean3 false in
 #align real.dimH_ball_pi_fin Real.dimH_ball_pi_fin
 
-theorem dimH_univ_pi (ι : Type*) [Fintype ι] : dimH (univ : Set (ι → ℝ)) = Fintype.card ι := by
+lemma dimH_univ_pi (ι : Type*) [Fintype ι] : dimH (univ : Set (ι → ℝ)) = Fintype.card ι := by
   simp only [← Metric.iUnion_ball_nat_succ (0 : ι → ℝ), dimH_iUnion,
     dimH_ball_pi _ (Nat.cast_add_one_pos _), iSup_const]
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ_pi Real.dimH_univ_pi
 
-theorem dimH_univ_pi_fin (n : ℕ) : dimH (univ : Set (Fin n → ℝ)) = n := by
+lemma dimH_univ_pi_fin (n : ℕ) : dimH (univ : Set (Fin n → ℝ)) = n := by
   rw [dimH_univ_pi, Fintype.card_fin]
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ_pi_fin Real.dimH_univ_pi_fin

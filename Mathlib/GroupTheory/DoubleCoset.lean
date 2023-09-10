@@ -43,7 +43,7 @@ lemma mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, �
     ⟨x * a, y, ⟨x, a, hx, rfl, rfl⟩, hy, h.symm⟩⟩
 #align doset.mem_doset Doset.mem_doset
 
-theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
+lemma mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
   mem_doset.mpr ⟨1, H.one_mem, 1, K.one_mem, (one_mul a).symm.trans (mul_one (1 * a)).symm⟩
 #align doset.mem_doset_self Doset.mem_doset_self
 
@@ -88,7 +88,7 @@ lemma rel_iff {H K : Subgroup G} {x y : G} :
     mem_doset
 #align doset.rel_iff Doset.rel_iff
 
-theorem bot_rel_eq_leftRel (H : Subgroup G) :
+lemma bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
   ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
@@ -100,7 +100,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
     exact ⟨1, rfl, a⁻¹ * b, h, by rw [one_mul, mul_inv_cancel_left]⟩
 #align doset.bot_rel_eq_left_rel Doset.bot_rel_eq_leftRel
 
-theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
+lemma rel_bot_eq_right_group_rel (H : Subgroup G) :
     (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
   ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
@@ -125,17 +125,17 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
-theorem eq (H K : Subgroup G) (a b : G) :
+lemma eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [Quotient.eq'']
   apply rel_iff
 #align doset.eq Doset.eq
 
-theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
+lemma out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
   Quotient.out_eq' q
 #align doset.out_eq' Doset.out_eq'
 
-theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
+lemma mk_out'_eq_mul (H K : Subgroup G) (g : G) :
     ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out' = h * g * k := by
   have := eq H K (mk H K g : Quotient ↑H ↑K).out' g
   rw [out_eq'] at this
@@ -157,7 +157,7 @@ lemma disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
 #align doset.disjoint_out' Doset.disjoint_out'
 
-theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
+lemma union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
     iff_true_iff]
@@ -167,7 +167,7 @@ theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.un
   simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, mul_left_inv, mul_inv_cancel_right]
 #align doset.union_quot_to_doset Doset.union_quotToDoset
 
-theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
+lemma doset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, rightCoset (↑H) (a * k) = doset a H K := by
   ext x
   simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_iUnion, mem_doset,
@@ -181,7 +181,7 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right, Subgroup.coe_mk]
 #align doset.doset_union_right_coset Doset.doset_union_rightCoset
 
-theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
+lemma doset_union_leftCoset (H K : Subgroup G) (a : G) :
     ⋃ h : H, leftCoset (h * a : G) K = doset a H K := by
   ext x
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset]
@@ -194,7 +194,7 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]
 #align doset.doset_union_left_coset Doset.doset_union_leftCoset
 
-theorem left_bot_eq_left_quot (H : Subgroup G) :
+lemma left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
@@ -203,7 +203,7 @@ theorem left_bot_eq_left_quot (H : Subgroup G) :
   rfl
 #align doset.left_bot_eq_left_quot Doset.left_bot_eq_left_quot
 
-theorem right_bot_eq_right_quot (H : Subgroup G) :
+lemma right_bot_eq_right_quot (H : Subgroup G) :
     Quotient (H.1 : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
   unfold Quotient
   congr

@@ -27,7 +27,7 @@ description is perfectly accurate in finite dimension, but only heuristic in inf
 there might be no genuine eigenvector. In particular, when `f` is a polynomial `∑ cᵢ Xⁱ`, then
 `f a` is `∑ cᵢ aⁱ`. Also, `id a = a`.
 
-This file also includes a proof of the **spectral permanence** theorem for (unital) C⋆-algebras
+This file also includes a proof of the **spectral permanence** lemma for (unital) C⋆-algebras
 (see `StarSubalgebra.spectrum_eq`)
 
 ## Main definitions
@@ -103,7 +103,7 @@ variable {a}
 established in `StarSubalgebra.spectrum_eq`. This lemma is superseded by
 `StarSubalgebra.coe_isUnit`, which does not require an `IsStarNormal` hypothesis and holds for
 any closed star subalgebra. -/
-theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
+lemma elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
     IsUnit (⟨a, self_mem ℂ a⟩ : elementalStarAlgebra ℂ a) := by
   /- Sketch of proof: Because `a` is normal, it suffices to prove that `star a * a` is invertible
     in `elementalStarAlgebra ℂ a`. For this it suffices to prove that it is sufficiently close to a
@@ -232,7 +232,7 @@ noncomputable def elementalStarAlgebra.characterSpaceToSpectrum (x : A)
       AlgHom.apply_mem_spectrum φ ⟨x, self_mem ℂ x⟩
 #align elemental_star_algebra.character_space_to_spectrum elementalStarAlgebra.characterSpaceToSpectrum
 
-theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
+lemma elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
     Continuous (elementalStarAlgebra.characterSpaceToSpectrum x) :=
   continuous_induced_rng.2
     (map_continuous <| gelfandTransform ℂ (elementalStarAlgebra ℂ x) ⟨x, self_mem ℂ x⟩)

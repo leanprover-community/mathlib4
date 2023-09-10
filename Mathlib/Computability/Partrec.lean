@@ -115,7 +115,7 @@ lemma rfind_min' {p : ℕ → Bool} {m : ℕ} (pm : p m) : ∃ n ∈ rfind p, n 
   ⟨n, hn, not_lt.1 fun h => by injection mem_unique this (rfind_min hn h)⟩
 #align nat.rfind_min' Nat.rfind_min'
 
-theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = Part.none :=
+lemma rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = Part.none :=
   eq_none_iff.2 fun _ h =>
     let ⟨_, _, h₂⟩ := rfind_dom'.1 h.fst
     (p0 ▸ h₂ (zero_le _) : (@Part.none Bool).Dom)
@@ -280,7 +280,7 @@ lemma of_eq {f g : α → σ} (hf : Computable f) (H : ∀ n, f n = g n) : Compu
   (funext H : f = g) ▸ hf
 #align computable.of_eq Computable.of_eq
 
-theorem const (s : σ) : Computable fun _ : α => s :=
+lemma const (s : σ) : Computable fun _ : α => s :=
   (Primrec.const _).to_comp
 #align computable.const Computable.const
 
@@ -404,7 +404,7 @@ protected lemma decode : Computable (decode (α := α)) :=
   Primrec.decode.to_comp
 #align computable.decode Computable.decode
 
-protected theorem ofNat (α) [Denumerable α] : Computable (ofNat α) :=
+protected lemma ofNat (α) [Denumerable α] : Computable (ofNat α) :=
   (Primrec.ofNat _).to_comp
 #align computable.of_nat Computable.ofNat
 
@@ -442,11 +442,11 @@ protected lemma some : Partrec (@Part.some α) :=
   Computable.id
 #align partrec.some Partrec.some
 
-theorem _root_.Decidable.Partrec.const' (s : Part σ) [Decidable s.Dom] : Partrec fun _ : α => s :=
+lemma _root_.Decidable.Partrec.const' (s : Part σ) [Decidable s.Dom] : Partrec fun _ : α => s :=
   (Computable.ofOption (const (toOption s))).of_eq fun _ => of_toOption s
 #align decidable.partrec.const' Decidable.Partrec.const'
 
-theorem const' (s : Part σ) : Partrec fun _ : α => s :=
+lemma const' (s : Part σ) : Partrec fun _ : α => s :=
   haveI := Classical.dec s.Dom
   Decidable.Partrec.const' s
 #align partrec.const' Partrec.const'
@@ -720,7 +720,7 @@ lemma sum_casesOn {f : α → Sum β γ} {g : α → β → σ} {h : α → γ �
         cases' f a with b c <;> simp [Nat.div2_val]
 #align computable.sum_cases Computable.sum_casesOn
 
-theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Computable₂ g)
+lemma nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Computable₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = Option.some (f a n)) : Computable₂ f :=
   suffices Computable₂ fun a n => (List.range n).map (f a) from
     option_some_iff.1 <|

@@ -97,22 +97,22 @@ open Additive (ofMul toMul)
 open Multiplicative (ofAdd toAdd)
 
 @[simp]
-theorem toAdd_ofAdd (x : α) : toAdd (ofAdd x) = x :=
+lemma toAdd_ofAdd (x : α) : toAdd (ofAdd x) = x :=
   rfl
 #align to_add_of_add toAdd_ofAdd
 
 @[simp]
-theorem ofAdd_toAdd (x : Multiplicative α) : ofAdd (toAdd x) = x :=
+lemma ofAdd_toAdd (x : Multiplicative α) : ofAdd (toAdd x) = x :=
   rfl
 #align of_add_to_add ofAdd_toAdd
 
 @[simp]
-theorem toMul_ofMul (x : α) : toMul (ofMul x) = x :=
+lemma toMul_ofMul (x : α) : toMul (ofMul x) = x :=
   rfl
 #align to_mul_of_mul toMul_ofMul
 
 @[simp]
-theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
+lemma ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
   rfl
 #align of_mul_to_mul ofMul_toMul
 

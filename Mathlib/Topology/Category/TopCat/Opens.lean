@@ -88,13 +88,13 @@ noncomputable def leTop (U : Opens X) : U ⟶ ⊤ :=
 
 -- We do not mark this as a simp lemma because it breaks open `x`.
 -- Nevertheless, it is useful in `SheafOfFunctions`.
-theorem infLELeft_apply (U V : Opens X) (x) :
+lemma infLELeft_apply (U V : Opens X) (x) :
     (infLELeft U V) x = ⟨x.1, (@inf_le_left _ _ U V : _ ≤ _) x.2⟩ :=
   rfl
 #align topological_space.opens.inf_le_left_apply TopologicalSpace.Opens.infLELeft_apply
 
 @[simp]
-theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
+lemma infLELeft_apply_mk (U V : Opens X) (x) (m) :
     (infLELeft U V) ⟨x, m⟩ = ⟨x, (@inf_le_left _ _ U V : _ ≤ _) m⟩ :=
   rfl
 #align topological_space.opens.inf_le_left_apply_mk TopologicalSpace.Opens.infLELeft_apply_mk
@@ -117,7 +117,7 @@ set_option linter.uppercaseLean3 false in
 #align topological_space.opens.to_Top TopologicalSpace.Opens.toTopCat
 
 @[simp]
-theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
+lemma toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
     ((toTopCat X).map f) ⟨x, h⟩ = ⟨x, f.le h⟩ :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -149,34 +149,34 @@ def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   map i := ⟨⟨fun x h => i.le h⟩⟩
 #align topological_space.opens.map TopologicalSpace.Opens.map
 
-theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
+lemma map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
   rfl
 #align topological_space.opens.map_coe TopologicalSpace.Opens.map_coe
 
 @[simp]
-theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.continuous⟩ :=
+lemma map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.continuous⟩ :=
   rfl
 #align topological_space.opens.map_obj TopologicalSpace.Opens.map_obj
 
 @[simp]
-theorem map_id_obj (U : Opens X) : (map (𝟙 X)).obj U = U :=
+lemma map_id_obj (U : Opens X) : (map (𝟙 X)).obj U = U :=
   let ⟨_, _⟩ := U
   rfl
 #align topological_space.opens.map_id_obj TopologicalSpace.Opens.map_id_obj
 
 @[simp 1100]
-theorem map_id_obj' (U) (p) : (map (𝟙 X)).obj ⟨U, p⟩ = ⟨U, p⟩ :=
+lemma map_id_obj' (U) (p) : (map (𝟙 X)).obj ⟨U, p⟩ = ⟨U, p⟩ :=
   rfl
 #align topological_space.opens.map_id_obj' TopologicalSpace.Opens.map_id_obj'
 
 @[simp 1100]
-theorem map_id_obj_unop (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).obj (unop U) = unop U :=
+lemma map_id_obj_unop (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).obj (unop U) = unop U :=
   let ⟨_, _⟩ := U.unop
   rfl
 #align topological_space.opens.map_id_obj_unop TopologicalSpace.Opens.map_id_obj_unop
 
 @[simp 1100]
-theorem op_map_id_obj (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).op.obj U = U := by simp
+lemma op_map_id_obj (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).op.obj U = U := by simp
 #align topological_space.opens.op_map_id_obj TopologicalSpace.Opens.op_map_id_obj
 
 /-- The inclusion `U ⟶ (map f).obj ⊤` as a morphism in the category of open sets.
@@ -186,36 +186,36 @@ noncomputable def leMapTop (f : X ⟶ Y) (U : Opens X) : U ⟶ (map f).obj ⊤ :
 #align topological_space.opens.le_map_top TopologicalSpace.Opens.leMapTop
 
 @[simp]
-theorem map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).obj U = (map f).obj ((map g).obj U) :=
   rfl
 #align topological_space.opens.map_comp_obj TopologicalSpace.Opens.map_comp_obj
 
 @[simp]
-theorem map_comp_obj' (f : X ⟶ Y) (g : Y ⟶ Z) (U) (p) :
+lemma map_comp_obj' (f : X ⟶ Y) (g : Y ⟶ Z) (U) (p) :
     (map (f ≫ g)).obj ⟨U, p⟩ = (map f).obj ((map g).obj ⟨U, p⟩) :=
   rfl
 #align topological_space.opens.map_comp_obj' TopologicalSpace.Opens.map_comp_obj'
 
 @[simp]
-theorem map_comp_map (f : X ⟶ Y) (g : Y ⟶ Z) {U V} (i : U ⟶ V) :
+lemma map_comp_map (f : X ⟶ Y) (g : Y ⟶ Z) {U V} (i : U ⟶ V) :
     (map (f ≫ g)).map i = (map f).map ((map g).map i) :=
   rfl
 #align topological_space.opens.map_comp_map TopologicalSpace.Opens.map_comp_map
 
 @[simp]
-theorem map_comp_obj_unop (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma map_comp_obj_unop (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).obj (unop U) = (map f).obj ((map g).obj (unop U)) :=
   rfl
 #align topological_space.opens.map_comp_obj_unop TopologicalSpace.Opens.map_comp_obj_unop
 
 @[simp]
-theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (map (f ≫ g)).op.obj U = (map f).op.obj ((map g).op.obj U) :=
   rfl
 #align topological_space.opens.op_map_comp_obj TopologicalSpace.Opens.op_map_comp_obj
 
-theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
+lemma map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
   ext1; rw [iSup_def, iSup_def, map_obj]
   dsimp; rw [Set.preimage_iUnion]; rfl
@@ -249,7 +249,7 @@ def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f wher
   inv := { app := fun U => eqToHom (map_comp_obj f g U).symm }
 #align topological_space.opens.map_comp TopologicalSpace.Opens.mapComp
 
-theorem map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map f :=
+lemma map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map f :=
   rfl
 #align topological_space.opens.map_comp_eq TopologicalSpace.Opens.map_comp_eq
 
@@ -262,24 +262,24 @@ def mapIso (f g : X ⟶ Y) (h : f = g) : map f ≅ map g :=
   NatIso.ofComponents fun U => eqToIso (by rw [congr_arg map h])
 #align topological_space.opens.map_iso TopologicalSpace.Opens.mapIso
 
-theorem map_eq (f g : X ⟶ Y) (h : f = g) : map f = map g := by
+lemma map_eq (f g : X ⟶ Y) (h : f = g) : map f = map g := by
   subst h
   rfl
 #align topological_space.opens.map_eq TopologicalSpace.Opens.map_eq
 
 @[simp]
-theorem mapIso_refl (f : X ⟶ Y) (h) : mapIso f f h = Iso.refl (map _) :=
+lemma mapIso_refl (f : X ⟶ Y) (h) : mapIso f f h = Iso.refl (map _) :=
   rfl
 #align topological_space.opens.map_iso_refl TopologicalSpace.Opens.mapIso_refl
 
 @[simp]
-theorem mapIso_hom_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
+lemma mapIso_hom_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
     (mapIso f g h).hom.app U = eqToHom (by rw [h]) :=
   rfl
 #align topological_space.opens.map_iso_hom_app TopologicalSpace.Opens.mapIso_hom_app
 
 @[simp]
-theorem mapIso_inv_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
+lemma mapIso_inv_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
     (mapIso f g h).inv.app U = eqToHom (by rw [h]) :=
   rfl
 #align topological_space.opens.map_iso_inv_app TopologicalSpace.Opens.mapIso_inv_app
@@ -349,7 +349,7 @@ lemma adjunction_counit_app_self {X : TopCat} (U : Opens X) :
     U.openEmbedding.isOpenMap.adjunction.counit.app U = eqToHom (by simp) := Subsingleton.elim _ _
 #align topological_space.opens.adjunction_counit_app_self TopologicalSpace.Opens.adjunction_counit_app_self
 
-theorem inclusion_top_functor (X : TopCat) :
+lemma inclusion_top_functor (X : TopCat) :
     (@Opens.openEmbedding X ⊤).isOpenMap.functor = map (inclusionTopIso X).inv := by
   refine' CategoryTheory.Functor.ext _ _
   · intro U

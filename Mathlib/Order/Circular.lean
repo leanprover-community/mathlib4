@@ -260,7 +260,7 @@ lemma sbtw_irrefl_left {a b : α} : ¬sbtw a a b := fun h => sbtw_irrefl_left_ri
 lemma sbtw_irrefl_right {a b : α} : ¬sbtw a b b := fun h => sbtw_irrefl_left_right h.cyclic_right
 #align sbtw_irrefl_right sbtw_irrefl_right
 
-theorem sbtw_irrefl (a : α) : ¬sbtw a a a :=
+lemma sbtw_irrefl (a : α) : ¬sbtw a a a :=
   sbtw_irrefl_left_right
 #align sbtw_irrefl sbtw_irrefl
 
@@ -288,7 +288,7 @@ section CircularOrder
 
 variable {α : Type*} [CircularOrder α]
 
-theorem btw_refl_left_right (a b : α) : btw a b a :=
+lemma btw_refl_left_right (a b : α) : btw a b a :=
   (or_self_iff _).1 (btw_total a b a)
 #align btw_refl_left_right btw_refl_left_right
 
@@ -296,7 +296,7 @@ lemma btw_rfl_left_right {a b : α} : btw a b a :=
   btw_refl_left_right _ _
 #align btw_rfl_left_right btw_rfl_left_right
 
-theorem btw_refl_left (a b : α) : btw a a b :=
+lemma btw_refl_left (a b : α) : btw a a b :=
   btw_rfl_left_right.cyclic_right
 #align btw_refl_left btw_refl_left
 
@@ -304,7 +304,7 @@ lemma btw_rfl_left {a b : α} : btw a a b :=
   btw_refl_left _ _
 #align btw_rfl_left btw_rfl_left
 
-theorem btw_refl_right (a b : α) : btw a b b :=
+lemma btw_refl_right (a b : α) : btw a b b :=
   btw_rfl_left_right.cyclic_left
 #align btw_refl_right btw_refl_right
 
@@ -358,11 +358,11 @@ section CircularOrder
 
 variable {α : Type*} [CircularOrder α]
 
-theorem left_mem_cIcc (a b : α) : a ∈ cIcc a b :=
+lemma left_mem_cIcc (a b : α) : a ∈ cIcc a b :=
   btw_rfl_left
 #align set.left_mem_cIcc Set.left_mem_cIcc
 
-theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
+lemma right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
   btw_rfl_right
 #align set.right_mem_cIcc Set.right_mem_cIcc
 

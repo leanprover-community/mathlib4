@@ -32,7 +32,7 @@ open Qq
 
 /-! # Constructors and constants -/
 
-theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
+lemma isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
 
 /-- The `norm_num` extension which identifies the expression `Zero.zero`, returning `0`. -/
@@ -41,7 +41,7 @@ theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 
   match e with
   | ~q(Zero.zero) => return .isNat sα (mkRawNatLit 0) q(isNat_zero $α)
 
-theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) := ⟨Nat.cast_one.symm⟩
+lemma isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) := ⟨Nat.cast_one.symm⟩
 
 /-- The `norm_num` extension which identifies the expression `One.one`, returning `1`. -/
 @[norm_num One.one] def evalOne : NormNumExt where eval {u α} e := do
@@ -49,7 +49,7 @@ theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) 
   match e with
   | ~q(One.one) => return .isNat sα (mkRawNatLit 1) q(isNat_one $α)
 
-theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
+lemma isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
     (h : n = a) : IsNat a n := ⟨h.symm⟩
 
 /-- The `norm_num` extension which identifies an expression `OfNat.ofNat n`, returning `n`. -/
@@ -509,9 +509,9 @@ lemma isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
   | _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩ => by congr; apply Subsingleton.elim
 
 lemma eq_of_true {a b : Prop} (ha : a) (hb : b) : a = b := propext (iff_of_true ha hb)
-theorem ne_of_false_of_true (ha : ¬a) (hb : b) : a ≠ b := mt (· ▸ hb) ha
-theorem ne_of_true_of_false (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
-theorem eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
+lemma ne_of_false_of_true (ha : ¬a) (hb : b) : a ≠ b := mt (· ▸ hb) ha
+lemma ne_of_true_of_false (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
+lemma eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
 /-! # Nat operations -/
 

@@ -44,7 +44,7 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 
 /-- Common factors on the left can be turned into common factors on the right, a weak form of
 cancellability. -/
-theorem ore_left_cancel (r₁ r₂ : R) (s : S) (h : ↑s * r₁ = s * r₂) : ∃ s' : S, r₁ * s' = r₂ * s' :=
+lemma ore_left_cancel (r₁ r₂ : R) (s : S) (h : ↑s * r₁ = s * r₂) : ∃ s' : S, r₁ * s' = r₂ * s' :=
   OreSet.ore_left_cancel r₁ r₂ s h
 #align ore_localization.ore_left_cancel OreLocalization.ore_left_cancel
 
@@ -59,7 +59,7 @@ def oreDenom (r : R) (s : S) : S :=
 #align ore_localization.ore_denom OreLocalization.oreDenom
 
 /-- The Ore condition of a fraction, expressed in terms of `oreNum` and `oreDenom`. -/
-theorem ore_eq (r : R) (s : S) : r * oreDenom r s = s * oreNum r s :=
+lemma ore_eq (r : R) (s : S) : r * oreDenom r s = s * oreNum r s :=
   OreSet.ore_eq r s
 #align ore_localization.ore_eq OreLocalization.ore_eq
 

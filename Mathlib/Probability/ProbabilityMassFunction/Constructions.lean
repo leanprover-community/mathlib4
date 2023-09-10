@@ -65,19 +65,19 @@ lemma map_id : map id p = p :=
   bind_pure _
 #align pmf.map_id Pmf.map_id
 
-theorem map_comp (g : β → γ) : (p.map f).map g = p.map (g ∘ f) := by simp [map, Function.comp]
+lemma map_comp (g : β → γ) : (p.map f).map g = p.map (g ∘ f) := by simp [map, Function.comp]
 #align pmf.map_comp Pmf.map_comp
 
-theorem pure_map (a : α) : (pure a).map f = pure (f a) :=
+lemma pure_map (a : α) : (pure a).map f = pure (f a) :=
   pure_bind _ _
 #align pmf.pure_map Pmf.pure_map
 
-theorem map_bind (q : α → Pmf β) (f : β → γ) : (p.bind q).map f = p.bind fun a => (q a).map f :=
+lemma map_bind (q : α → Pmf β) (f : β → γ) : (p.bind q).map f = p.bind fun a => (q a).map f :=
   bind_bind _ _ _
 #align pmf.map_bind Pmf.map_bind
 
 @[simp]
-theorem bind_map (p : Pmf α) (f : α → β) (q : β → Pmf γ) : (p.map f).bind q = p.bind (q ∘ f) :=
+lemma bind_map (p : Pmf α) (f : α → β) (q : β → Pmf γ) : (p.map f).bind q = p.bind (q ∘ f) :=
   (bind_bind _ _ _).trans (congr_arg _ (funext fun _ => pure_bind _ _))
 #align pmf.bind_map Pmf.bind_map
 
@@ -159,7 +159,7 @@ def ofFinset (f : α → ℝ≥0∞) (s : Finset α) (h : ∑ a in s, f a = 1)
 variable {f : α → ℝ≥0∞} {s : Finset α} (h : ∑ a in s, f a = 1) (h' : ∀ (a) (_ : a ∉ s), f a = 0)
 
 @[simp]
-theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
+lemma ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
 #align pmf.of_finset_apply Pmf.ofFinset_apply
 
 @[simp]
@@ -167,7 +167,7 @@ lemma support_ofFinset : (ofFinset f s h h').support = ↑s ∩ Function.support
   Set.ext fun a => by simpa [mem_support_iff] using mt (h' a)
 #align pmf.support_of_finset Pmf.support_ofFinset
 
-theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support ↔ a ∈ s ∧ f a ≠ 0 := by
+lemma mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support ↔ a ∈ s ∧ f a ≠ 0 := by
   simp
 #align pmf.mem_support_of_finset_iff Pmf.mem_support_ofFinset_iff
 
@@ -205,14 +205,14 @@ def ofFintype [Fintype α] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) : Pmf α
 variable [Fintype α] {f : α → ℝ≥0∞} (h : ∑ a, f a = 1)
 
 @[simp]
-theorem ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
+lemma ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
 #align pmf.of_fintype_apply Pmf.ofFintype_apply
 
 @[simp]
 lemma support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 #align pmf.support_of_fintype Pmf.support_ofFintype
 
-theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
+lemma mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
 #align pmf.mem_support_of_fintype_iff Pmf.mem_support_ofFintype_iff
 
 section Measure
@@ -246,7 +246,7 @@ def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞)
 variable {f : α → ℝ≥0∞} (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞)
 
 @[simp]
-theorem normalize_apply (a : α) : (normalize f hf0 hf) a = f a * (∑' x, f x)⁻¹ := rfl
+lemma normalize_apply (a : α) : (normalize f hf0 hf) a = f a * (∑' x, f x)⁻¹ := rfl
 #align pmf.normalize_apply Pmf.normalize_apply
 
 @[simp]
@@ -254,7 +254,7 @@ lemma support_normalize : (normalize f hf0 hf).support = Function.support f :=
   Set.ext fun a => by simp [hf, mem_support_iff]
 #align pmf.support_normalize Pmf.support_normalize
 
-theorem mem_support_normalize_iff (a : α) : a ∈ (normalize f hf0 hf).support ↔ f a ≠ 0 := by simp
+lemma mem_support_normalize_iff (a : α) : a ∈ (normalize f hf0 hf).support ↔ f a ≠ 0 := by simp
 #align pmf.mem_support_normalize_iff Pmf.mem_support_normalize_iff
 
 end normalize
@@ -269,7 +269,7 @@ def filter (p : Pmf α) (s : Set α) (h : ∃ a ∈ s, a ∈ p.support) : Pmf α
 variable {p : Pmf α} {s : Set α} (h : ∃ a ∈ s, a ∈ p.support)
 
 @[simp]
-theorem filter_apply (a : α) :
+lemma filter_apply (a : α) :
     (p.filter s h) a = s.indicator p a * (∑' a', (s.indicator p) a')⁻¹ := by
   rw [filter, normalize_apply]
 #align pmf.filter_apply Pmf.filter_apply
@@ -287,11 +287,11 @@ lemma support_filter : (p.filter s h).support = s ∩ p.support :=
   Set.ext fun _ => mem_support_filter_iff _
 #align pmf.support_filter Pmf.support_filter
 
-theorem filter_apply_eq_zero_iff (a : α) : (p.filter s h) a = 0 ↔ a ∉ s ∨ a ∉ p.support := by
+lemma filter_apply_eq_zero_iff (a : α) : (p.filter s h) a = 0 ↔ a ∉ s ∨ a ∉ p.support := by
   erw [apply_eq_zero_iff, support_filter, Set.mem_inter_iff, not_and_or]
 #align pmf.filter_apply_eq_zero_iff Pmf.filter_apply_eq_zero_iff
 
-theorem filter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s ∧ a ∈ p.support := by
+lemma filter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s ∧ a ∈ p.support := by
   rw [Ne.def, filter_apply_eq_zero_iff, not_or, Classical.not_not, Classical.not_not]
 #align pmf.filter_apply_ne_zero_iff Pmf.filter_apply_ne_zero_iff
 

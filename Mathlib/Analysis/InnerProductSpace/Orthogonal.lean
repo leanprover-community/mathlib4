@@ -50,13 +50,13 @@ def orthogonal : Submodule 𝕜 E where
 notation:1200 K "ᗮ" => orthogonal K
 
 /-- When a vector is in `Kᗮ`. -/
-theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 :=
+lemma mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 :=
   Iff.rfl
 #align submodule.mem_orthogonal Submodule.mem_orthogonal
 
 /-- When a vector is in `Kᗮ`, with the inner product the
 other way round. -/
-theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
+lemma mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 #align submodule.mem_orthogonal' Submodule.mem_orthogonal'
 
@@ -169,7 +169,7 @@ lemma le_orthogonal_orthogonal : K ≤ Kᗮᗮ :=
 
 /-- The inf of two orthogonal subspaces equals the subspace orthogonal
 to the sup. -/
-theorem inf_orthogonal (K₁ K₂ : Submodule 𝕜 E) : K₁ᗮ ⊓ K₂ᗮ = (K₁ ⊔ K₂)ᗮ :=
+lemma inf_orthogonal (K₁ K₂ : Submodule 𝕜 E) : K₁ᗮ ⊓ K₂ᗮ = (K₁ ⊔ K₂)ᗮ :=
   (orthogonal_gc 𝕜 E).l_sup.symm
 #align submodule.inf_orthogonal Submodule.inf_orthogonal
 
@@ -180,7 +180,7 @@ lemma iInf_orthogonal {ι : Type*} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)�
 #align submodule.infi_orthogonal Submodule.iInf_orthogonal
 
 /-- The inf of a set of orthogonal subspaces equals the subspace orthogonal to the sup. -/
-theorem sInf_orthogonal (s : Set <| Submodule 𝕜 E) : ⨅ K ∈ s, Kᗮ = (sSup s)ᗮ :=
+lemma sInf_orthogonal (s : Set <| Submodule 𝕜 E) : ⨅ K ∈ s, Kᗮ = (sSup s)ᗮ :=
   (orthogonal_gc 𝕜 E).l_sSup.symm
 #align submodule.Inf_orthogonal Submodule.sInf_orthogonal
 
@@ -304,12 +304,12 @@ lemma isOrtho_self {U : Submodule 𝕜 E} : U ⟂ U ↔ U = ⊥ :=
 #align submodule.is_ortho_self Submodule.isOrtho_self
 
 @[simp]
-theorem isOrtho_orthogonal_right (U : Submodule 𝕜 E) : U ⟂ Uᗮ :=
+lemma isOrtho_orthogonal_right (U : Submodule 𝕜 E) : U ⟂ Uᗮ :=
   le_orthogonal_orthogonal _
 #align submodule.is_ortho_orthogonal_right Submodule.isOrtho_orthogonal_right
 
 @[simp]
-theorem isOrtho_orthogonal_left (U : Submodule 𝕜 E) : Uᗮ ⟂ U :=
+lemma isOrtho_orthogonal_left (U : Submodule 𝕜 E) : Uᗮ ⟂ U :=
   (isOrtho_orthogonal_right U).symm
 #align submodule.is_ortho_orthogonal_left Submodule.isOrtho_orthogonal_left
 
@@ -379,14 +379,14 @@ lemma isOrtho_span {s t : Set E} :
     mem_orthogonal_singleton_iff_inner_left, Set.mem_singleton_iff, forall_eq]
 #align submodule.is_ortho_span Submodule.isOrtho_span
 
-theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) : U.map f ⟂ V.map f := by
+lemma IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) : U.map f ⟂ V.map f := by
   rw [isOrtho_iff_inner_eq] at *
   simp_rw [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     LinearIsometry.inner_map_map]
   exact h
 #align submodule.is_ortho.map Submodule.IsOrtho.map
 
-theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U ⟂ V) :
+lemma IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U ⟂ V) :
     U.comap f ⟂ V.comap f := by
   rw [isOrtho_iff_inner_eq] at *
   simp_rw [mem_comap, ← f.inner_map_map]
@@ -395,7 +395,7 @@ theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U 
 #align submodule.is_ortho.comap Submodule.IsOrtho.comap
 
 @[simp]
-theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.map f ⟂ V.map f ↔ U ⟂ V :=
+lemma IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.map f ⟂ V.map f ↔ U ⟂ V :=
   ⟨fun h => by
     have hf : ∀ p : Submodule 𝕜 E, (p.map f).comap f.toLinearIsometry = p :=
       comap_map_eq_of_injective f.injective
@@ -403,7 +403,7 @@ theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.m
 #align submodule.is_ortho.map_iff Submodule.IsOrtho.map_iff
 
 @[simp]
-theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U.comap f ⟂ V.comap f ↔ U ⟂ V :=
+lemma IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U.comap f ⟂ V.comap f ↔ U ⟂ V :=
   ⟨fun h => by
     have hf : ∀ p : Submodule 𝕜 F, (p.comap f).map f.toLinearIsometry = p :=
       map_comap_eq_of_surjective f.surjective

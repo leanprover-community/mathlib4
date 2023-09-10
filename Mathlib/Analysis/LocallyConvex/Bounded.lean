@@ -74,7 +74,7 @@ lemma isVonNBounded_empty : IsVonNBounded 𝕜 (∅ : Set E) := fun _ _ => absor
 
 variable {𝕜 E}
 
-theorem isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 (0 : E), Absorbs 𝕜 V s :=
+lemma isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 (0 : E), Absorbs 𝕜 V s :=
   Iff.rfl
 #align bornology.is_vonN_bounded_iff Bornology.isVonNBounded_iff
 
@@ -199,7 +199,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Singletons are bounded. -/
-theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fun _ hV =>
+lemma isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fun _ hV =>
   (absorbent_nhds_zero hV).absorbs
 #align bornology.is_vonN_bounded_singleton Bornology.isVonNBounded_singleton
 
@@ -271,17 +271,17 @@ variable (𝕜 E) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup E] [Nor
 
 namespace NormedSpace
 
-theorem isVonNBounded_ball (r : ℝ) : Bornology.IsVonNBounded 𝕜 (Metric.ball (0 : E) r) := by
+lemma isVonNBounded_ball (r : ℝ) : Bornology.IsVonNBounded 𝕜 (Metric.ball (0 : E) r) := by
   rw [Metric.nhds_basis_ball.isVonNBounded_basis_iff, ← ball_normSeminorm 𝕜 E]
   exact fun ε hε => (normSeminorm 𝕜 E).ball_zero_absorbs_ball_zero hε
 #align normed_space.is_vonN_bounded_ball NormedSpace.isVonNBounded_ball
 
-theorem isVonNBounded_closedBall (r : ℝ) :
+lemma isVonNBounded_closedBall (r : ℝ) :
     Bornology.IsVonNBounded 𝕜 (Metric.closedBall (0 : E) r) :=
   (isVonNBounded_ball 𝕜 E (r + 1)).subset (Metric.closedBall_subset_ball <| by linarith)
 #align normed_space.is_vonN_bounded_closed_ball NormedSpace.isVonNBounded_closedBall
 
-theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
+lemma isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
   rw [← Metric.bounded_iff_isBounded, Metric.bounded_iff_subset_ball (0 : E)]
   constructor
   · intro h
@@ -294,12 +294,12 @@ theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Borno
   · exact fun ⟨C, hC⟩ => (isVonNBounded_closedBall 𝕜 E C).subset hC
 #align normed_space.is_vonN_bounded_iff NormedSpace.isVonNBounded_iff
 
-theorem isVonNBounded_iff' (s : Set E) :
+lemma isVonNBounded_iff' (s : Set E) :
     Bornology.IsVonNBounded 𝕜 s ↔ ∃ r : ℝ, ∀ (x : E) (_ : x ∈ s), ‖x‖ ≤ r := by
   rw [NormedSpace.isVonNBounded_iff, ← Metric.bounded_iff_isBounded, bounded_iff_forall_norm_le]
 #align normed_space.is_vonN_bounded_iff' NormedSpace.isVonNBounded_iff'
 
-theorem image_isVonNBounded_iff (f : E' → E) (s : Set E') :
+lemma image_isVonNBounded_iff (f : E' → E) (s : Set E') :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∃ r : ℝ, ∀ (x : E') (_ : x ∈ s), ‖f x‖ ≤ r := by
   simp_rw [isVonNBounded_iff', Set.ball_image_iff]
 #align normed_space.image_is_vonN_bounded_iff NormedSpace.image_isVonNBounded_iff

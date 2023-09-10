@@ -66,7 +66,7 @@ lemma dedup_subset : ∀ l : List α, dedup l ⊆ l :=
   pwFilter_subset
 #align list.dedup_subset List.dedup_subset
 
-theorem subset_dedup (l : List α) : l ⊆ dedup l := fun _ => mem_dedup.2
+lemma subset_dedup (l : List α) : l ⊆ dedup l := fun _ => mem_dedup.2
 #align list.subset_dedup List.subset_dedup
 
 lemma nodup_dedup : ∀ l : List α, Nodup (dedup l) :=
@@ -91,7 +91,7 @@ lemma dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
   pwFilter_eq_self
 #align list.dedup_eq_self List.dedup_eq_self
 
-theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
+lemma dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
   refine' ⟨fun h => _, fun h => _⟩
   · refine' ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => _, by rw [h, tail_cons]⟩
@@ -105,7 +105,7 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
 #align list.dedup_eq_cons List.dedup_eq_cons
 
 @[simp]
-theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
+lemma dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
   induction' l with a l hl
   · exact Iff.rfl
   · by_cases h : a ∈ l
@@ -122,7 +122,7 @@ lemma dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
   pwFilter_idempotent
 #align list.dedup_idempotent List.dedup_idempotent
 
-theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
+lemma dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl
   simp only [cons_union] at *
   rw [← IH, cons_append]
@@ -139,12 +139,12 @@ lemma replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x
       replicate_dedup n.succ_ne_zero]
 #align list.replicate_dedup List.replicate_dedup
 
-theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
+lemma count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
 #align list.count_dedup List.count_dedup
 
 /-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
-theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
+lemma sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
     ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
   induction' l with a as h
   · simp
@@ -168,7 +168,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         · exact ha'.2.symm
 #align list.sum_map_count_dedup_filter_eq_countp List.sum_map_count_dedup_filter_eq_countP
 
-theorem sum_map_count_dedup_eq_length (l : List α) :
+lemma sum_map_count_dedup_eq_length (l : List α) :
     (l.dedup.map fun x => l.count x).sum = l.length := by
   simpa using sum_map_count_dedup_filter_eq_countP (fun _ => True) l
 #align list.sum_map_count_dedup_eq_length List.sum_map_count_dedup_eq_length

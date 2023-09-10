@@ -82,7 +82,7 @@ lemma definable_iff_empty_definable_with_params :
   empty_definable_iff.symm
 #align set.definable_iff_empty_definable_with_params Set.definable_iff_empty_definable_with_params
 
-theorem Definable.mono (hAs : A.Definable L s) (hAB : A ⊆ B) : B.Definable L s := by
+lemma Definable.mono (hAs : A.Definable L s) (hAB : A ⊆ B) : B.Definable L s := by
   rw [definable_iff_empty_definable_with_params] at *
   exact hAs.map_expansion (L.lhomWithConstantsMap (Set.inclusion hAB))
 #align set.definable.mono Set.Definable.mono
@@ -163,7 +163,7 @@ lemma Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.Defi
   hs.inter ht.compl
 #align set.definable.sdiff Set.Definable.sdiff
 
-theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Definable L s) :
+lemma Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Definable L s) :
     A.Definable L ((fun g : β → M => g ∘ f) ⁻¹' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine' ⟨φ.relabel f, _⟩
@@ -184,7 +184,7 @@ lemma Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f :
 #align set.definable.image_comp_equiv Set.Definable.image_comp_equiv
 
 /-- This lemma is only intended as a helper for `Definable.image_comp`. -/
-theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
+lemma Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
   refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
@@ -362,25 +362,25 @@ lemma coe_bot : ((⊥ : L.DefinableSet A α) : Set (α → M)) = ∅ :=
 #align first_order.language.definable_set.coe_bot FirstOrder.Language.DefinableSet.coe_bot
 
 @[simp, norm_cast]
-theorem coe_sup (s t : L.DefinableSet A α) :
+lemma coe_sup (s t : L.DefinableSet A α) :
     ((s ⊔ t : L.DefinableSet A α) : Set (α → M)) = (s : Set (α → M)) ∪ (t : Set (α → M)) :=
   rfl
 #align first_order.language.definable_set.coe_sup FirstOrder.Language.DefinableSet.coe_sup
 
 @[simp, norm_cast]
-theorem coe_inf (s t : L.DefinableSet A α) :
+lemma coe_inf (s t : L.DefinableSet A α) :
     ((s ⊓ t : L.DefinableSet A α) : Set (α → M)) = (s : Set (α → M)) ∩ (t : Set (α → M)) :=
   rfl
 #align first_order.language.definable_set.coe_inf FirstOrder.Language.DefinableSet.coe_inf
 
 @[simp, norm_cast]
-theorem coe_compl (s : L.DefinableSet A α) :
+lemma coe_compl (s : L.DefinableSet A α) :
     ((sᶜ : L.DefinableSet A α) : Set (α → M)) = (s : Set (α → M))ᶜ :=
   rfl
 #align first_order.language.definable_set.coe_compl FirstOrder.Language.DefinableSet.coe_compl
 
 @[simp, norm_cast]
-theorem coe_sdiff (s t : L.DefinableSet A α) :
+lemma coe_sdiff (s t : L.DefinableSet A α) :
     ((s \ t : L.DefinableSet A α) : Set (α → M)) = (s : Set (α → M)) \ (t : Set (α → M)) :=
   rfl
 #align first_order.language.definable_set.coe_sdiff FirstOrder.Language.DefinableSet.coe_sdiff

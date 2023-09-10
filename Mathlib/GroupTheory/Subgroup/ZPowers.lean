@@ -29,20 +29,20 @@ def zpowers (g : G) : Subgroup G :=
   Subgroup.copy (zpowersHom G g).range (Set.range ((· ^ ·) g : ℤ → G)) rfl
 #align subgroup.zpowers Subgroup.zpowers
 
-theorem mem_zpowers (g : G) : g ∈ zpowers g :=
+lemma mem_zpowers (g : G) : g ∈ zpowers g :=
   ⟨1, zpow_one _⟩
 #align subgroup.mem_zpowers Subgroup.mem_zpowers
 
-theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
+lemma coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
   rfl
 #align subgroup.coe_zpowers Subgroup.coe_zpowers
 
-theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
+lemma zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
   ext
   exact mem_closure_singleton.symm
 #align subgroup.zpowers_eq_closure Subgroup.zpowers_eq_closure
 
-theorem range_zpowersHom (g : G) : (zpowersHom G g).range = zpowers g :=
+lemma range_zpowersHom (g : G) : (zpowersHom G g).range = zpowers g :=
   rfl
 #align subgroup.range_zpowers_hom Subgroup.range_zpowersHom
 
@@ -50,11 +50,11 @@ lemma mem_zpowers_iff {g h : G} : h ∈ zpowers g ↔ ∃ k : ℤ, g ^ k = h :=
   Iff.rfl
 #align subgroup.mem_zpowers_iff Subgroup.mem_zpowers_iff
 
-theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
+lemma zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
   mem_zpowers_iff.mpr ⟨k, rfl⟩
 #align subgroup.zpow_mem_zpowers Subgroup.zpow_mem_zpowers
 
-theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
+lemma npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
   zpow_ofNat g k ▸ zpow_mem_zpowers g k
 #align subgroup.npow_mem_zpowers Subgroup.npow_mem_zpowers
 
@@ -87,7 +87,7 @@ def zmultiples (a : A) : AddSubgroup A :=
 #align add_subgroup.zmultiples AddSubgroup.zmultiples
 
 @[simp]
-theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :=
+lemma range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :=
   rfl
 #align add_subgroup.range_zmultiples_hom AddSubgroup.range_zmultiplesHom
 
@@ -154,7 +154,7 @@ end AddSubgroup
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
 
 @[to_additive (attr := simp) map_zmultiples]
-theorem MonoidHom.map_zpowers (f : G →* N) (x : G) :
+lemma MonoidHom.map_zpowers (f : G →* N) (x : G) :
     (Subgroup.zpowers x).map f = Subgroup.zpowers (f x) := by
   rw [Subgroup.zpowers_eq_closure, Subgroup.zpowers_eq_closure, f.map_closure, Set.image_singleton]
 #align monoid_hom.map_zpowers MonoidHom.map_zpowers
@@ -229,7 +229,7 @@ lemma zpowers_one_eq_bot : Subgroup.zpowers (1 : G) = ⊥ :=
 #align add_subgroup.zmultiples_zero_eq_bot AddSubgroup.zmultiples_zero_eq_bot
 
 @[to_additive]
-theorem centralizer_closure (S : Set G) :
+lemma centralizer_closure (S : Set G) :
     centralizer (closure S : Set G) = ⨅ g ∈ S, centralizer (zpowers g : Set G) :=
   le_antisymm
       (le_iInf fun _ => le_iInf fun hg => centralizer_le <| zpowers_le.2 <| subset_closure hg) <|
@@ -240,14 +240,14 @@ theorem centralizer_closure (S : Set G) :
 #align add_subgroup.centralizer_closure AddSubgroup.centralizer_closure
 
 @[to_additive]
-theorem center_eq_iInf (S : Set G) (hS : closure S = ⊤) :
+lemma center_eq_iInf (S : Set G) (hS : closure S = ⊤) :
     center G = ⨅ g ∈ S, centralizer (zpowers g) := by
   rw [← centralizer_univ, ← coe_top, ← hS, centralizer_closure]
 #align subgroup.center_eq_infi Subgroup.center_eq_iInf
 #align add_subgroup.center_eq_infi AddSubgroup.center_eq_iInf
 
 @[to_additive]
-theorem center_eq_infi' (S : Set G) (hS : closure S = ⊤) :
+lemma center_eq_infi' (S : Set G) (hS : closure S = ⊤) :
     center G = ⨅ g : S, centralizer (zpowers (g : G)) :=
   by rw [center_eq_iInf S hS, ← iInf_subtype'']
 #align subgroup.center_eq_infi' Subgroup.center_eq_infi'

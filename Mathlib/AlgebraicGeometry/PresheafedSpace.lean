@@ -68,14 +68,14 @@ instance : CoeSort (PresheafedSpace C) (Type*) where coe := fun X => X.carrier
 
 -- porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
-theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
+lemma as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
   rfl-/
 set_option linter.uppercaseLean3 false in
 #noalign algebraic_geometry.PresheafedSpace.as_coe
 
 -- porting note: removed @[simp] as the `simpVarHead` linter complains
 -- @[simp]
-theorem mk_coe (carrier) (presheaf) :
+lemma mk_coe (carrier) (presheaf) :
     (({ carrier
         presheaf } : PresheafedSpace C) : TopCat) = carrier :=
   rfl
@@ -199,20 +199,20 @@ variable {C}
 attribute [local simp] eqToHom_map
 
 @[simp]
-theorem id_base (X : PresheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
+lemma id_base (X : PresheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.id_base AlgebraicGeometry.PresheafedSpace.id_base
 
 -- porting note: `eqToHom` is no longer needed in the statements of `id_c` and `id_c_app`
-theorem id_c (X : PresheafedSpace C) :
+lemma id_c (X : PresheafedSpace C) :
     (𝟙 X : X ⟶ X).c = 𝟙 X.presheaf :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.id_c AlgebraicGeometry.PresheafedSpace.id_c
 
 @[simp]
-theorem id_c_app (X : PresheafedSpace C) (U) :
+lemma id_c_app (X : PresheafedSpace C) (U) :
     (𝟙 X : X ⟶ X).c.app U = X.presheaf.map (𝟙 U) := by
   rw [id_c, map_id]
   rfl
@@ -344,7 +344,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.c_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.c_isIso_of_iso
 
 /-- This could be used in conjunction with `CategoryTheory.NatIso.isIso_of_isIso_app`. -/
-theorem isIso_of_components (f : X ⟶ Y) [IsIso f.base] [IsIso f.c] : IsIso f :=
+lemma isIso_of_components (f : X ⟶ Y) [IsIso f.base] [IsIso f.c] : IsIso f :=
   IsIso.of_iso (isoOfComponents (asIso f.base) (asIso f.c).symm)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.is_iso_of_components AlgebraicGeometry.PresheafedSpace.isIso_of_components
@@ -411,7 +411,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.of_restrict_mono AlgebraicGeometry.PresheafedSpace.ofRestrict_mono
 
-theorem restrict_top_presheaf (X : PresheafedSpace C) :
+lemma restrict_top_presheaf (X : PresheafedSpace C) :
     (X.restrict (Opens.openEmbedding ⊤)).presheaf =
       (Opens.inclusionTopIso X.carrier).inv _* X.presheaf := by
   dsimp
@@ -420,7 +420,7 @@ theorem restrict_top_presheaf (X : PresheafedSpace C) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_top_presheaf AlgebraicGeometry.PresheafedSpace.restrict_top_presheaf
 
-theorem ofRestrict_top_c (X : PresheafedSpace C) :
+lemma ofRestrict_top_c (X : PresheafedSpace C) :
     (X.ofRestrict (Opens.openEmbedding ⊤)).c =
       eqToHom
         (by
@@ -481,7 +481,7 @@ def Γ : (PresheafedSpace C)ᵒᵖ ⥤ C where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.Γ AlgebraicGeometry.PresheafedSpace.Γ
 
-theorem Γ_obj_op (X : PresheafedSpace C) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
+lemma Γ_obj_op (X : PresheafedSpace C) : Γ.obj (op X) = X.presheaf.obj (op ⊤) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.Γ_obj_op AlgebraicGeometry.PresheafedSpace.Γ_obj_op
@@ -528,26 +528,26 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
 #align category_theory.functor.map_presheaf CategoryTheory.Functor.mapPresheaf
 
 @[simp]
-theorem mapPresheaf_obj_X (F : C ⥤ D) (X : PresheafedSpace C) :
+lemma mapPresheaf_obj_X (F : C ⥤ D) (X : PresheafedSpace C) :
     (F.mapPresheaf.obj X : TopCat) = (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_presheaf_obj_X CategoryTheory.Functor.mapPresheaf_obj_X
 
 @[simp]
-theorem mapPresheaf_obj_presheaf (F : C ⥤ D) (X : PresheafedSpace C) :
+lemma mapPresheaf_obj_presheaf (F : C ⥤ D) (X : PresheafedSpace C) :
     (F.mapPresheaf.obj X).presheaf = X.presheaf ⋙ F :=
   rfl
 #align category_theory.functor.map_presheaf_obj_presheaf CategoryTheory.Functor.mapPresheaf_obj_presheaf
 
 @[simp]
-theorem mapPresheaf_map_f (F : C ⥤ D) {X Y : PresheafedSpace C} (f : X ⟶ Y) :
+lemma mapPresheaf_map_f (F : C ⥤ D) {X Y : PresheafedSpace C} (f : X ⟶ Y) :
     (F.mapPresheaf.map f).base = f.base :=
   rfl
 #align category_theory.functor.map_presheaf_map_f CategoryTheory.Functor.mapPresheaf_map_f
 
 @[simp]
-theorem mapPresheaf_map_c (F : C ⥤ D) {X Y : PresheafedSpace C} (f : X ⟶ Y) :
+lemma mapPresheaf_map_c (F : C ⥤ D) {X Y : PresheafedSpace C} (f : X ⟶ Y) :
     (F.mapPresheaf.map f).c = whiskerRight f.c F :=
   rfl
 #align category_theory.functor.map_presheaf_map_c CategoryTheory.Functor.mapPresheaf_map_c

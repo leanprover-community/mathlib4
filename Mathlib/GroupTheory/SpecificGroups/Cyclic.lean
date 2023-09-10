@@ -289,7 +289,7 @@ section
 variable [DecidableEq α] [Fintype α]
 
 @[to_additive]
-theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
+lemma IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
     Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
   simp_rw [← SetLike.mem_coe] at ha
   simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
@@ -297,7 +297,7 @@ theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
 #align is_add_cyclic.image_range_order_of IsAddCyclic.image_range_addOrderOf
 
 @[to_additive]
-theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
+lemma IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
     Finset.image (fun i => a ^ i) (range (Fintype.card α)) = univ := by
   rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
 #align is_cyclic.image_range_card IsCyclic.image_range_card
@@ -310,7 +310,7 @@ section Totient
 variable [DecidableEq α] [Fintype α]
   (hn : ∀ n : ℕ, 0 < n → (univ.filter fun a : α => a ^ n = 1).card ≤ n)
 
-private theorem card_pow_eq_one_eq_orderOf_aux (a : α) :
+private lemma card_pow_eq_one_eq_orderOf_aux (a : α) :
     (Finset.univ.filter fun b : α => b ^ orderOf a = 1).card = orderOf a :=
   le_antisymm (hn _ (orderOf_pos a))
     (calc

@@ -138,11 +138,11 @@ class BoundedSMul : Prop where
 variable {α β}
 variable [BoundedSMul α β]
 
-theorem dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂ :=
+lemma dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂ :=
   BoundedSMul.dist_smul_pair' x y₁ y₂
 #align dist_smul_pair dist_smul_pair
 
-theorem dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
+lemma dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
   BoundedSMul.dist_pair_smul' x₁ x₂ y
 #align dist_pair_smul dist_pair_smul
 

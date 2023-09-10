@@ -59,16 +59,16 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
         exact mem_closure_image (continuousAt_inv₀ h) hx }
 #align subfield.topological_closure Subfield.topologicalClosure
 
-theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
+lemma Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
   _root_.subset_closure
 #align subfield.le_topological_closure Subfield.le_topologicalClosure
 
-theorem Subfield.isClosed_topologicalClosure (s : Subfield α) :
+lemma Subfield.isClosed_topologicalClosure (s : Subfield α) :
     IsClosed (s.topologicalClosure : Set α) :=
   isClosed_closure
 #align subfield.is_closed_topological_closure Subfield.isClosed_topologicalClosure
 
-theorem Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} (h : s ≤ t)
+lemma Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} (h : s ≤ t)
     (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 #align subfield.topological_closure_minimal Subfield.topologicalClosure_minimal

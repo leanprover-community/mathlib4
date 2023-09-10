@@ -21,7 +21,7 @@ namespace Prime
 
 variable {p a b k : ℕ}
 
-theorem dvd_choose_add (hp : Prime p) (hap : a < p) (hbp : b < p) (h : p ≤ a + b) :
+lemma dvd_choose_add (hp : Prime p) (hap : a < p) (hbp : b < p) (h : p ≤ a + b) :
     p ∣ choose (a + b) a := by
   have h₁ : p ∣ (a + b)! := hp.dvd_factorial.2 h
   rw [← add_choose_mul_factorial_mul_factorial, ← choose_symm_add, hp.dvd_mul, hp.dvd_mul,

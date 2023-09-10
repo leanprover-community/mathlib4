@@ -115,13 +115,13 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
 
 @[simp]
-theorem whiskerLeft_id (F : C ⥤ D) {G : D ⥤ E} :
+lemma whiskerLeft_id (F : C ⥤ D) {G : D ⥤ E} :
     whiskerLeft F (NatTrans.id G) = NatTrans.id (F.comp G) :=
   rfl
 #align category_theory.whisker_left_id CategoryTheory.whiskerLeft_id
 
 @[simp]
-theorem whiskerLeft_id' (F : C ⥤ D) {G : D ⥤ E} : whiskerLeft F (𝟙 G) = 𝟙 (F.comp G) :=
+lemma whiskerLeft_id' (F : C ⥤ D) {G : D ⥤ E} : whiskerLeft F (𝟙 G) = 𝟙 (F.comp G) :=
   rfl
 #align category_theory.whisker_left_id' CategoryTheory.whiskerLeft_id'
 
@@ -137,7 +137,7 @@ lemma whiskerRight_id' {G : C ⥤ D} (F : D ⥤ E) : whiskerRight (𝟙 G) F = �
 #align category_theory.whisker_right_id' CategoryTheory.whiskerRight_id'
 
 @[simp]
-theorem whiskerLeft_comp (F : C ⥤ D) {G H K : D ⥤ E} (α : G ⟶ H) (β : H ⟶ K) :
+lemma whiskerLeft_comp (F : C ⥤ D) {G H K : D ⥤ E} (α : G ⟶ H) (β : H ⟶ K) :
     whiskerLeft F (α ≫ β) = whiskerLeft F α ≫ whiskerLeft F β :=
   rfl
 #align category_theory.whisker_left_comp CategoryTheory.whiskerLeft_comp
@@ -156,13 +156,13 @@ def isoWhiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) : F ⋙ G ≅ F 
 #align category_theory.iso_whisker_left CategoryTheory.isoWhiskerLeft
 
 @[simp]
-theorem isoWhiskerLeft_hom (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
+lemma isoWhiskerLeft_hom (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
     (isoWhiskerLeft F α).hom = whiskerLeft F α.hom :=
   rfl
 #align category_theory.iso_whisker_left_hom CategoryTheory.isoWhiskerLeft_hom
 
 @[simp]
-theorem isoWhiskerLeft_inv (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
+lemma isoWhiskerLeft_inv (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
     (isoWhiskerLeft F α).inv = whiskerLeft F α.inv :=
   rfl
 #align category_theory.iso_whisker_left_inv CategoryTheory.isoWhiskerLeft_inv
@@ -203,7 +203,7 @@ variable {B : Type u₄} [Category.{v₄} B]
 attribute [elab_without_expected_type] whiskerLeft whiskerRight
 
 @[simp]
-theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
+lemma whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) = whiskerLeft (F ⋙ G) α :=
   rfl
 #align category_theory.whisker_left_twice CategoryTheory.whiskerLeft_twice
@@ -214,7 +214,7 @@ lemma whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶
   rfl
 #align category_theory.whisker_right_twice CategoryTheory.whiskerRight_twice
 
-theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
+lemma whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
     whiskerRight (whiskerLeft F α) K = whiskerLeft F (whiskerRight α K) :=
   rfl
 #align category_theory.whisker_right_left CategoryTheory.whiskerRight_left
@@ -269,11 +269,11 @@ def associator (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
 #align category_theory.functor.associator_inv_app CategoryTheory.Functor.associator_inv_app
 #align category_theory.functor.associator_hom_app CategoryTheory.Functor.associator_hom_app
 
-protected theorem assoc (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
+protected lemma assoc (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
   rfl
 #align category_theory.functor.assoc CategoryTheory.Functor.assoc
 
-theorem triangle (F : A ⥤ B) (G : B ⥤ C) :
+lemma triangle (F : A ⥤ B) (G : B ⥤ C) :
     (associator F (𝟭 B) G).hom ≫ whiskerLeft F (leftUnitor G).hom =
       whiskerRight (rightUnitor F).hom G := by aesop_cat
 #align category_theory.functor.triangle CategoryTheory.Functor.triangle

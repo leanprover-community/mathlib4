@@ -36,7 +36,7 @@ section
 
 variable [CompleteSpace 𝕜]
 
-theorem ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
+lemma ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
     [FiniteDimensional 𝕜 (range f)] : (ker f).ClosedComplemented := by
   set f' : E →L[𝕜] range f := f.codRestrict _ (LinearMap.mem_range_self (f : E →ₗ[𝕜] F))
   rcases f'.exists_right_inverse_of_surjective (f : E →ₗ[𝕜] F).range_rangeRestrict with ⟨g, hg⟩
@@ -99,30 +99,30 @@ def linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
 variable {p q}
 
 @[simp]
-theorem coe_prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
+lemma coe_prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.prodEquivOfClosedCompl q h hp hq) = p.prodEquivOfIsCompl q h := rfl
 #align subspace.coe_prod_equiv_of_closed_compl Subspace.coe_prodEquivOfClosedCompl
 
 @[simp]
-theorem coe_prodEquivOfClosedCompl_symm (h : IsCompl p q) (hp : IsClosed (p : Set E))
+lemma coe_prodEquivOfClosedCompl_symm (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.prodEquivOfClosedCompl q h hp hq).symm = (p.prodEquivOfIsCompl q h).symm := rfl
 #align subspace.coe_prod_equiv_of_closed_compl_symm Subspace.coe_prodEquivOfClosedCompl_symm
 
 @[simp]
-theorem coe_continuous_linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
+lemma coe_continuous_linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     (p.linearProjOfClosedCompl q h hp hq : E →ₗ[𝕜] p) = p.linearProjOfIsCompl q h := rfl
 #align subspace.coe_continuous_linear_proj_of_closed_compl Subspace.coe_continuous_linearProjOfClosedCompl
 
 @[simp]
-theorem coe_continuous_linearProjOfClosedCompl' (h : IsCompl p q) (hp : IsClosed (p : Set E))
+lemma coe_continuous_linearProjOfClosedCompl' (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ⇑(p.linearProjOfClosedCompl q h hp hq) = p.linearProjOfIsCompl q h := rfl
 #align subspace.coe_continuous_linear_proj_of_closed_compl' Subspace.coe_continuous_linearProjOfClosedCompl'
 
-theorem closedComplemented_of_closed_compl (h : IsCompl p q) (hp : IsClosed (p : Set E))
+lemma closedComplemented_of_closed_compl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : p.ClosedComplemented :=
   ⟨p.linearProjOfClosedCompl q h hp hq, Submodule.linearProjOfIsCompl_apply_left h⟩
 #align subspace.closed_complemented_of_closed_compl Subspace.closedComplemented_of_closed_compl

@@ -66,20 +66,20 @@ lemma absorbs_empty {s : Set E} : Absorbs 𝕜 s (∅ : Set E) :=
   ⟨1, one_pos, fun _a _ha => Set.empty_subset _⟩
 #align absorbs_empty absorbs_empty
 
-theorem Absorbs.mono (hs : Absorbs 𝕜 s u) (hst : s ⊆ t) (hvu : v ⊆ u) : Absorbs 𝕜 t v :=
+lemma Absorbs.mono (hs : Absorbs 𝕜 s u) (hst : s ⊆ t) (hvu : v ⊆ u) : Absorbs 𝕜 t v :=
   let ⟨r, hr, h⟩ := hs
   ⟨r, hr, fun _a ha => hvu.trans <| (h _ ha).trans <| smul_set_mono hst⟩
 #align absorbs.mono Absorbs.mono
 
-theorem Absorbs.mono_left (hs : Absorbs 𝕜 s u) (h : s ⊆ t) : Absorbs 𝕜 t u :=
+lemma Absorbs.mono_left (hs : Absorbs 𝕜 s u) (h : s ⊆ t) : Absorbs 𝕜 t u :=
   hs.mono h Subset.rfl
 #align absorbs.mono_left Absorbs.mono_left
 
-theorem Absorbs.mono_right (hs : Absorbs 𝕜 s u) (h : v ⊆ u) : Absorbs 𝕜 s v :=
+lemma Absorbs.mono_right (hs : Absorbs 𝕜 s u) (h : v ⊆ u) : Absorbs 𝕜 s v :=
   hs.mono Subset.rfl h
 #align absorbs.mono_right Absorbs.mono_right
 
-theorem Absorbs.union (hu : Absorbs 𝕜 s u) (hv : Absorbs 𝕜 s v) : Absorbs 𝕜 s (u ∪ v) := by
+lemma Absorbs.union (hu : Absorbs 𝕜 s u) (hv : Absorbs 𝕜 s v) : Absorbs 𝕜 s (u ∪ v) := by
   obtain ⟨a, ha, hu⟩ := hu
   obtain ⟨b, _hb, hv⟩ := hv
   exact
@@ -124,7 +124,7 @@ def Absorbent (A : Set E) :=
 
 variable {𝕜}
 
-theorem Absorbent.subset (hA : Absorbent 𝕜 A) (hAB : A ⊆ B) : Absorbent 𝕜 B := by
+lemma Absorbent.subset (hA : Absorbent 𝕜 A) (hAB : A ⊆ B) : Absorbent 𝕜 B := by
   refine' forall_imp (fun x => _) hA
   exact Exists.imp fun r => And.imp_right <| forall₂_imp fun a _ha hx => Set.smul_set_mono hAB hx
 #align absorbent.subset Absorbent.subset
@@ -133,7 +133,7 @@ lemma absorbent_iff_forall_absorbs_singleton : Absorbent 𝕜 A ↔ ∀ x, Absor
   simp_rw [Absorbs, Absorbent, singleton_subset_iff]
 #align absorbent_iff_forall_absorbs_singleton absorbent_iff_forall_absorbs_singleton
 
-theorem Absorbent.absorbs (hs : Absorbent 𝕜 s) {x : E} : Absorbs 𝕜 s {x} :=
+lemma Absorbent.absorbs (hs : Absorbent 𝕜 s) {x : E} : Absorbs 𝕜 s {x} :=
   absorbent_iff_forall_absorbs_singleton.1 hs _
 #align absorbent.absorbs Absorbent.absorbs
 
@@ -175,11 +175,11 @@ lemma balanced_empty : Balanced 𝕜 (∅ : Set E) := fun _ _ => by rw [smul_set
 lemma balanced_univ : Balanced 𝕜 (univ : Set E) := fun _a _ha => subset_univ _
 #align balanced_univ balanced_univ
 
-theorem Balanced.union (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∪ B) := fun _a ha =>
+lemma Balanced.union (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∪ B) := fun _a ha =>
   smul_set_union.subset.trans <| union_subset_union (hA _ ha) <| hB _ ha
 #align balanced.union Balanced.union
 
-theorem Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∩ B) := fun _a ha =>
+lemma Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∩ B) := fun _a ha =>
   smul_set_inter_subset.trans <| inter_subset_inter (hA _ ha) <| hB _ ha
 #align balanced.inter Balanced.inter
 
@@ -203,7 +203,7 @@ lemma balanced_iInter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜
 
 variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 
-theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb =>
+lemma Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb =>
   (smul_comm _ _ _).subset.trans <| smul_set_mono <| hs _ hb
 #align balanced.smul Balanced.smul
 
@@ -229,17 +229,17 @@ lemma Absorbs.add : Absorbs 𝕜 s₁ t₁ → Absorbs 𝕜 s₂ t₂ → Absorb
       (smul_add _ _ _).superset⟩
 #align absorbs.add Absorbs.add
 
-theorem Balanced.add (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s + t) := fun _a ha =>
+lemma Balanced.add (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s + t) := fun _a ha =>
   (smul_add _ _ _).subset.trans <| add_subset_add (hs _ ha) <| ht _ ha
 #align balanced.add Balanced.add
 
-theorem Absorbs.sub (h₁ : Absorbs 𝕜 s₁ t₁) (h₂ : Absorbs 𝕜 s₂ t₂) :
+lemma Absorbs.sub (h₁ : Absorbs 𝕜 s₁ t₁) (h₂ : Absorbs 𝕜 s₂ t₂) :
     Absorbs 𝕜 (s₁ - s₂) (t₁ - t₂) := by
   simp_rw [sub_eq_add_neg]
   exact h₁.add h₂.neg
 #align absorbs.sub Absorbs.sub
 
-theorem Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s - t) := by
+lemma Balanced.sub (hs : Balanced 𝕜 s) (ht : Balanced 𝕜 t) : Balanced 𝕜 (s - t) := by
   simp_rw [sub_eq_add_neg]
   exact hs.add ht.neg
 #align balanced.sub Balanced.sub
@@ -257,7 +257,7 @@ variable [NormedField 𝕜] [NormedRing 𝕝] [NormedSpace 𝕜 𝕝] [AddCommGr
   [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {s t u v A B : Set E} {x : E} {a b : 𝕜}
 
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/
-theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
+lemma Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [norm_zero] at h
     rw [norm_eq_zero.1 (h.antisymm <| norm_nonneg _)]
@@ -273,7 +273,7 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
 #align balanced.smul_mono Balanced.smul_mono
 
 /-- A balanced set absorbs itself. -/
-theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A := by
+lemma Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A := by
   refine' ⟨1, zero_lt_one, fun a ha x hx => _⟩
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.1 <| zero_lt_one.trans_le ha)]
   refine' hA a⁻¹ _ (smul_mem_smul_set hx)
@@ -281,7 +281,7 @@ theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A := by
   exact inv_le_one ha
 #align balanced.absorbs_self Balanced.absorbs_self
 
-theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by
+lemma Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by
   refine' (subset_set_smul_iff₀ _).2 (hA a⁻¹ _)
   · rintro rfl
     rw [norm_zero] at ha
@@ -290,11 +290,11 @@ theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆
     exact inv_le_one ha
 #align balanced.subset_smul Balanced.subset_smul
 
-theorem Balanced.smul_eq (hA : Balanced 𝕜 A) (ha : ‖a‖ = 1) : a • A = A :=
+lemma Balanced.smul_eq (hA : Balanced 𝕜 A) (ha : ‖a‖ = 1) : a • A = A :=
   (hA _ ha.le).antisymm <| hA.subset_smul ha.ge
 #align balanced.smul_eq Balanced.smul_eq
 
-theorem Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s := by
+lemma Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [norm_zero, norm_eq_zero] at h
     rw [h]
@@ -306,12 +306,12 @@ theorem Balanced.mem_smul_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a
       simp [← h, ha]
 #align balanced.mem_smul_iff Balanced.mem_smul_iff
 
-theorem Balanced.neg_mem_iff (hs : Balanced 𝕜 s) : -x ∈ s ↔ x ∈ s := by
+lemma Balanced.neg_mem_iff (hs : Balanced 𝕜 s) : -x ∈ s ↔ x ∈ s := by
   convert hs.mem_smul_iff (x := x) (norm_neg 1) using 0;
   simp only [neg_smul, one_smul 𝕜 x]
 #align balanced.neg_mem_iff Balanced.neg_mem_iff
 
-theorem Absorbs.inter (hs : Absorbs 𝕜 s u) (ht : Absorbs 𝕜 t u) : Absorbs 𝕜 (s ∩ t) u := by
+lemma Absorbs.inter (hs : Absorbs 𝕜 s u) (ht : Absorbs 𝕜 t u) : Absorbs 𝕜 (s ∩ t) u := by
   obtain ⟨a, ha, hs⟩ := hs
   obtain ⟨b, _hb, ht⟩ := ht
   have h : 0 < max a b := lt_max_of_lt_left ha
@@ -335,7 +335,7 @@ lemma absorbent_univ : Absorbent 𝕜 (univ : Set E) := by
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Every neighbourhood of the origin is absorbent. -/
-theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A := by
+lemma absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A := by
   intro x
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := mem_nhds_iff.mp hA
   have hc : Continuous fun t : 𝕜 => t • x := continuous_id.smul continuous_const
@@ -352,7 +352,7 @@ theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A := by
 #align absorbent_nhds_zero absorbent_nhds_zero
 
 /-- The union of `{0}` with the interior of a balanced set is balanced. -/
-theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) :
+lemma balanced_zero_union_interior (hA : Balanced 𝕜 A) :
     Balanced 𝕜 ((0 : Set E) ∪ interior A) := by
   intro a ha
   obtain rfl | h := eq_or_ne a 0
@@ -368,13 +368,13 @@ theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) :
 #align balanced_zero_union_interior balanced_zero_union_interior
 
 /-- The interior of a balanced set is balanced if it contains the origin. -/
-theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ interior A) :
+lemma Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ interior A) :
     Balanced 𝕜 (interior A) := by
   rw [← union_eq_self_of_subset_left (singleton_subset_iff.2 h)]
   exact balanced_zero_union_interior hA
 #align balanced.interior Balanced.interior
 
-theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
+lemma Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
   (image_closure_subset_closure_image <| continuous_id.const_smul _).trans <|
     closure_mono <| hA _ ha
 #align balanced.closure Balanced.closure
@@ -394,13 +394,13 @@ lemma absorbs_zero_iff : Absorbs 𝕜 s 0 ↔ (0 : E) ∈ s := by
   exact norm_ne_zero_iff.1 (hr.trans ha).ne'
 #align absorbs_zero_iff absorbs_zero_iff
 
-theorem Absorbent.zero_mem (hs : Absorbent 𝕜 s) : (0 : E) ∈ s :=
+lemma Absorbent.zero_mem (hs : Absorbent 𝕜 s) : (0 : E) ∈ s :=
   absorbs_zero_iff.1 <| absorbent_iff_forall_absorbs_singleton.1 hs _
 #align absorbent.zero_mem Absorbent.zero_mem
 
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
-theorem balanced_convexHull_of_balanced (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
+lemma balanced_convexHull_of_balanced (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
     rw [balanced_iff_smul_mem] at hs ⊢
     refine' fun a ha x hx => convexHull_min _ this hx a ha
@@ -416,7 +416,7 @@ section Real
 
 variable [AddCommGroup E] [Module ℝ E] {s : Set E}
 
-theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s := by
+lemma balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s := by
   refine' ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => _⟩
   rw [Real.norm_eq_abs, abs_le] at ha
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]

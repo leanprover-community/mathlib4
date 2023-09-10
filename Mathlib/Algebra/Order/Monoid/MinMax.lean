@@ -46,13 +46,13 @@ section Left
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive]
-theorem min_mul_mul_left (a b c : α) : min (a * b) (a * c) = a * min b c :=
+lemma min_mul_mul_left (a b c : α) : min (a * b) (a * c) = a * min b c :=
   (monotone_id.const_mul' a).map_min.symm
 #align min_mul_mul_left min_mul_mul_left
 #align min_add_add_left min_add_add_left
 
 @[to_additive]
-theorem max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
+lemma max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
   (monotone_id.const_mul' a).map_max.symm
 #align max_mul_mul_left max_mul_mul_left
 #align max_add_add_left max_add_add_left
@@ -64,13 +64,13 @@ section Right
 variable [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
-theorem min_mul_mul_right (a b c : α) : min (a * c) (b * c) = min a b * c :=
+lemma min_mul_mul_right (a b c : α) : min (a * c) (b * c) = min a b * c :=
   (monotone_id.mul_const' c).map_min.symm
 #align min_mul_mul_right min_mul_mul_right
 #align min_add_add_right min_add_add_right
 
 @[to_additive]
-theorem max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
+lemma max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
   (monotone_id.mul_const' c).map_max.symm
 #align max_mul_mul_right max_mul_mul_right
 #align max_add_add_right max_add_add_right

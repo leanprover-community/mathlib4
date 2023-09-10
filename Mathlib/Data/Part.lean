@@ -94,7 +94,7 @@ protected def Mem (a : α) (o : Part α) : Prop :=
 instance : Membership α (Part α) :=
   ⟨Part.Mem⟩
 
-theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
+lemma mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
   rfl
 #align part.mem_eq Part.mem_eq
 
@@ -127,7 +127,7 @@ instance : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
-theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
+lemma not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
 #align part.not_mem_none Part.not_mem_none
 
 /-- The `some a` value in `Part` has a `True` domain and the
@@ -137,7 +137,7 @@ def some (a : α) : Part α :=
 #align part.some Part.some
 
 @[simp]
-theorem some_dom (a : α) : (some a).Dom :=
+lemma some_dom (a : α) : (some a).Dom :=
   trivial
 #align part.some_dom Part.some_dom
 
@@ -153,7 +153,7 @@ lemma get_eq_of_mem {o : Part α} {a} (h : a ∈ o) (h') : get o h' = a :=
   mem_unique ⟨_, rfl⟩ h
 #align part.get_eq_of_mem Part.get_eq_of_mem
 
-protected theorem subsingleton (o : Part α) : Set.Subsingleton { a | a ∈ o } := fun _ ha _ hb =>
+protected lemma subsingleton (o : Part α) : Set.Subsingleton { a | a ∈ o } := fun _ ha _ hb =>
   mem_unique ha hb
 #align part.subsingleton Part.subsingleton
 
@@ -162,7 +162,7 @@ lemma get_some {a : α} (ha : (some a).Dom) : get (some a) ha = a :=
   rfl
 #align part.get_some Part.get_some
 
-theorem mem_some (a : α) : a ∈ some a :=
+lemma mem_some (a : α) : a ∈ some a :=
   ⟨trivial, rfl⟩
 #align part.mem_some Part.mem_some
 
@@ -189,13 +189,13 @@ lemma not_none_dom : ¬(none : Part α).Dom :=
 #align part.not_none_dom Part.not_none_dom
 
 @[simp]
-theorem some_ne_none (x : α) : some x ≠ none := by
+lemma some_ne_none (x : α) : some x ≠ none := by
   intro h
   exact true_ne_false (congr_arg Dom h)
 #align part.some_ne_none Part.some_ne_none
 
 @[simp]
-theorem none_ne_some (x : α) : none ≠ some x :=
+lemma none_ne_some (x : α) : none ≠ some x :=
   (some_ne_none x).symm
 #align part.none_ne_some Part.none_ne_some
 
@@ -207,7 +207,7 @@ lemma ne_none_iff {o : Part α} : o ≠ none ↔ ∃ x, o = some x := by
     apply some_ne_none
 #align part.ne_none_iff Part.ne_none_iff
 
-theorem eq_none_or_eq_some (o : Part α) : o = none ∨ ∃ x, o = some x :=
+lemma eq_none_or_eq_some (o : Part α) : o = none ∨ ∃ x, o = some x :=
   or_iff_not_imp_left.2 ne_none_iff.1
 #align part.eq_none_or_eq_some Part.eq_none_or_eq_some
 
@@ -229,7 +229,7 @@ lemma get_eq_iff_eq_some {a : Part α} {ha : a.Dom} {b : α} : a.get ha = b ↔ 
   ⟨fun h => by simp [h.symm], fun h => by simp [h]⟩
 #align part.get_eq_iff_eq_some Part.get_eq_iff_eq_some
 
-theorem get_eq_get_of_eq (a : Part α) (ha : a.Dom) {b : Part α} (h : a = b) :
+lemma get_eq_get_of_eq (a : Part α) (ha : a.Dom) {b : Part α} (h : a = b) :
     a.get ha = b.get (h ▸ ha) := by
   congr
 #align part.get_eq_get_of_eq Part.get_eq_get_of_eq
@@ -248,7 +248,7 @@ lemma none_toOption [Decidable (@none α).Dom] : (none : Part α).toOption = Opt
 #align part.none_to_option Part.none_toOption
 
 @[simp]
-theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
+lemma some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Option.some a :=
   dif_pos trivial
 #align part.some_to_option Part.some_toOption
 
@@ -266,23 +266,23 @@ def getOrElse (a : Part α) [Decidable a.Dom] (d : α) :=
   if ha : a.Dom then a.get ha else d
 #align part.get_or_else Part.getOrElse
 
-theorem getOrElse_of_dom (a : Part α) (h : a.Dom) [Decidable a.Dom] (d : α) :
+lemma getOrElse_of_dom (a : Part α) (h : a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = a.get h :=
   dif_pos h
 #align part.get_or_else_of_dom Part.getOrElse_of_dom
 
-theorem getOrElse_of_not_dom (a : Part α) (h : ¬a.Dom) [Decidable a.Dom] (d : α) :
+lemma getOrElse_of_not_dom (a : Part α) (h : ¬a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = d :=
   dif_neg h
 #align part.get_or_else_of_not_dom Part.getOrElse_of_not_dom
 
 @[simp]
-theorem getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse none d = d :=
+lemma getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse none d = d :=
   none.getOrElse_of_not_dom not_none_dom d
 #align part.get_or_else_none Part.getOrElse_none
 
 @[simp]
-theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (some a) d = a :=
+lemma getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (some a) d = a :=
   (some a).getOrElse_of_dom (some_dom a) d
 #align part.get_or_else_some Part.getOrElse_some
 
@@ -358,7 +358,7 @@ lemma coe_none : (@Option.none α : Part α) = none :=
 #align part.coe_none Part.coe_none
 
 @[simp]
-theorem coe_some (a : α) : (Option.some a : Part α) = some a :=
+lemma coe_some (a : α) : (Option.some a : Part α) = some a :=
   rfl
 #align part.coe_some Part.coe_some
 
@@ -375,11 +375,11 @@ instance ofOptionDecidable : ∀ o : Option α, Decidable (ofOption o).Dom
 #align part.of_option_decidable Part.ofOptionDecidable
 
 @[simp]
-theorem to_ofOption (o : Option α) : toOption (ofOption o) = o := by cases o <;> rfl
+lemma to_ofOption (o : Option α) : toOption (ofOption o) = o := by cases o <;> rfl
 #align part.to_of_option Part.to_ofOption
 
 @[simp]
-theorem of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o :=
+lemma of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o :=
   ext fun _ => mem_ofOption.trans mem_toOption
 #align part.of_to_option Part.of_toOption
 
@@ -437,24 +437,24 @@ def map (f : α → β) (o : Part α) : Part β :=
 #align part.map_dom Part.map_Dom
 #align part.map_get Part.map_get
 
-theorem mem_map (f : α → β) {o : Part α} : ∀ {a}, a ∈ o → f a ∈ map f o
+lemma mem_map (f : α → β) {o : Part α} : ∀ {a}, a ∈ o → f a ∈ map f o
   | _, ⟨_, rfl⟩ => ⟨_, rfl⟩
 #align part.mem_map Part.mem_map
 
 @[simp]
-theorem mem_map_iff (f : α → β) {o : Part α} {b} : b ∈ map f o ↔ ∃ a ∈ o, f a = b :=
+lemma mem_map_iff (f : α → β) {o : Part α} {b} : b ∈ map f o ↔ ∃ a ∈ o, f a = b :=
   ⟨fun hb => match b, hb with
     | _, ⟨_, rfl⟩ => ⟨_, ⟨_, rfl⟩, rfl⟩,
     fun ⟨_, h₁, h₂⟩ => h₂ ▸ mem_map f h₁⟩
 #align part.mem_map_iff Part.mem_map_iff
 
 @[simp]
-theorem map_none (f : α → β) : map f none = none :=
+lemma map_none (f : α → β) : map f none = none :=
   eq_none_iff.2 fun a => by simp
 #align part.map_none Part.map_none
 
 @[simp]
-theorem map_some (f : α → β) (a : α) : map f (some a) = some (f a) :=
+lemma map_some (f : α → β) (a : α) : map f (some a) = some (f a) :=
   eq_some_iff.2 <| mem_map f <| mem_some _
 #align part.map_some Part.map_some
 
@@ -510,12 +510,12 @@ lemma Dom.of_bind {f : α → Part β} {a : Part α} (h : (a.bind f).Dom) : a.Do
 #align part.dom.of_bind Part.Dom.of_bind
 
 @[simp]
-theorem bind_none (f : α → Part β) : none.bind f = none :=
+lemma bind_none (f : α → Part β) : none.bind f = none :=
   eq_none_iff.2 fun a => by simp
 #align part.bind_none Part.bind_none
 
 @[simp]
-theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
+lemma bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
   ext <| by simp
 #align part.bind_some Part.bind_some
 
@@ -523,11 +523,11 @@ lemma bind_of_mem {o : Part α} {a : α} (h : a ∈ o) (f : α → Part β) : o.
   rw [eq_some_iff.2 h, bind_some]
 #align part.bind_of_mem Part.bind_of_mem
 
-theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = map f x :=
+lemma bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = map f x :=
   ext <| by simp [eq_comm]
 #align part.bind_some_eq_map Part.bind_some_eq_map
 
-theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
+lemma bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
     [Decidable (o.bind f).Dom] :
     (o.bind f).toOption = o.toOption.elim Option.none fun a => (f a).toOption := by
   by_cases h : o.Dom
@@ -556,7 +556,7 @@ lemma map_bind {γ} (f : α → Part β) (x : Part α) (g : β → γ) :
   rw [← bind_some_eq_map, bind_assoc]; simp [bind_some_eq_map]
 #align part.map_bind Part.map_bind
 
-theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
+lemma map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
   erw [← bind_some_eq_map, bind_map, bind_some_eq_map]
 #align part.map_map Part.map_map
 
@@ -591,17 +591,17 @@ lemma map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
 #align part.map_id' Part.map_id'
 
 @[simp]
-theorem bind_some_right (x : Part α) : x.bind some = x := by
+lemma bind_some_right (x : Part α) : x.bind some = x := by
   erw [bind_some_eq_map]; simp [map_id']
 #align part.bind_some_right Part.bind_some_right
 
 @[simp]
-theorem pure_eq_some (a : α) : pure a = some a :=
+lemma pure_eq_some (a : α) : pure a = some a :=
   rfl
 #align part.pure_eq_some Part.pure_eq_some
 
 @[simp]
-theorem ret_eq_some (a : α) : (return a : Part α) = some a :=
+lemma ret_eq_some (a : α) : (return a : Part α) = some a :=
   rfl
 #align part.ret_eq_some Part.ret_eq_some
 
@@ -639,7 +639,7 @@ def restrict (p : Prop) (o : Part α) (H : p → o.Dom) : Part α :=
 #align part.restrict Part.restrict
 
 @[simp]
-theorem mem_restrict (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
+lemma mem_restrict (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
     a ∈ restrict p o h ↔ p ∧ a ∈ o := by
   dsimp [restrict, mem_eq]; constructor
   · rintro ⟨h₀, h₁⟩

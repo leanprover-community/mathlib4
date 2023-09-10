@@ -95,11 +95,11 @@ noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
 #align is_R_or_C.algebra_map_coe IsROrC.algebraMapCoe
 
-theorem ofReal_alg (x : ℝ) : (x : K) = x • (1 : K) :=
+lemma ofReal_alg (x : ℝ) : (x : K) = x • (1 : K) :=
   Algebra.algebraMap_eq_smul_one x
 #align is_R_or_C.of_real_alg IsROrC.ofReal_alg
 
-theorem real_smul_eq_coe_mul (r : ℝ) (z : K) : r • z = (r : K) * z :=
+lemma real_smul_eq_coe_mul (r : ℝ) (z : K) : r • z = (r : K) * z :=
   Algebra.smul_def r z
 #align is_R_or_C.real_smul_eq_coe_mul IsROrC.real_smul_eq_coe_mul
 
@@ -112,7 +112,7 @@ lemma algebraMap_eq_ofReal : ⇑(algebraMap ℝ K) = ofReal :=
 #align is_R_or_C.algebra_map_eq_of_real IsROrC.algebraMap_eq_ofReal
 
 @[simp, isROrC_simps]
-theorem re_add_im (z : K) : (re z : K) + im z * I = z :=
+lemma re_add_im (z : K) : (re z : K) + im z * I = z :=
   IsROrC.re_add_im_ax z
 #align is_R_or_C.re_add_im IsROrC.re_add_im
 
@@ -178,24 +178,24 @@ lemma ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
 
 set_option linter.deprecated false in
 @[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
-theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) :=
+lemma bit0_re (z : K) : re (bit0 z) = bit0 (re z) :=
   map_bit0 _ _
 #align is_R_or_C.bit0_re IsROrC.bit0_re
 
 set_option linter.deprecated false in
 @[deprecated, simp, isROrC_simps]
-theorem bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_add, bit0_re, one_re]
+lemma bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_add, bit0_re, one_re]
 #align is_R_or_C.bit1_re IsROrC.bit1_re
 
 set_option linter.deprecated false in
 @[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
-theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) :=
+lemma bit0_im (z : K) : im (bit0 z) = bit0 (im z) :=
   map_bit0 _ _
 #align is_R_or_C.bit0_im IsROrC.bit0_im
 
 set_option linter.deprecated false in
 @[deprecated, simp, isROrC_simps]
-theorem bit1_im (z : K) : im (bit1 z) = bit0 (im z) := by
+lemma bit1_im (z : K) : im (bit1 z) = bit0 (im z) := by
   simp only [bit1, map_add, bit0_im, one_im, add_zero]
 #align is_R_or_C.bit1_im IsROrC.bit1_im
 
@@ -208,29 +208,29 @@ lemma ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
 #align is_R_or_C.of_real_ne_zero IsROrC.ofReal_ne_zero
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
+lemma ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
   algebraMap.coe_add _ _
 #align is_R_or_C.of_real_add IsROrC.ofReal_add
 
 set_option linter.deprecated false in
 @[deprecated, simp, isROrC_simps, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : K) = bit0 (r : K) :=
+lemma ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : K) = bit0 (r : K) :=
   ofReal_add _ _
 #align is_R_or_C.of_real_bit0 IsROrC.ofReal_bit0
 
 set_option linter.deprecated false in
 @[deprecated, simp, isROrC_simps, norm_cast]
-theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : K) = bit1 (r : K) :=
+lemma ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : K) = bit1 (r : K) :=
   map_bit1 (algebraMap ℝ K) r
 #align is_R_or_C.of_real_bit1 IsROrC.ofReal_bit1
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
+lemma ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
   algebraMap.coe_neg r
 #align is_R_or_C.of_real_neg IsROrC.ofReal_neg
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
+lemma ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
   map_sub (algebraMap ℝ K) r s
 #align is_R_or_C.of_real_sub IsROrC.ofReal_sub
 
@@ -247,12 +247,12 @@ lemma ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M
 #align is_R_or_C.of_real_finsupp_sum IsROrC.ofReal_finsupp_sum
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
+lemma ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
   algebraMap.coe_mul _ _
 #align is_R_or_C.of_real_mul IsROrC.ofReal_mul
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
+lemma ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_pow (algebraMap ℝ K) r n
 #align is_R_or_C.of_real_pow IsROrC.ofReal_pow
 
@@ -269,32 +269,32 @@ lemma ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → 
 #align is_R_or_C.of_real_finsupp_prod IsROrC.ofReal_finsupp_prod
 
 @[simp, norm_cast, isROrC_simps]
-theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
+lemma real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
   real_smul_eq_coe_mul _ _
 #align is_R_or_C.real_smul_of_real IsROrC.real_smul_ofReal
 
 @[isROrC_simps]
-theorem ofReal_mul_re (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
+lemma ofReal_mul_re (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
   simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
 #align is_R_or_C.of_real_mul_re IsROrC.ofReal_mul_re
 
 @[isROrC_simps]
-theorem ofReal_mul_im (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
+lemma ofReal_mul_im (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
   simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
 #align is_R_or_C.of_real_mul_im IsROrC.ofReal_mul_im
 
 @[isROrC_simps]
-theorem smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by
+lemma smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by
   rw [real_smul_eq_coe_mul, ofReal_mul_re]
 #align is_R_or_C.smul_re IsROrC.smul_re
 
 @[isROrC_simps]
-theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
+lemma smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
   rw [real_smul_eq_coe_mul, ofReal_mul_im]
 #align is_R_or_C.smul_im IsROrC.smul_im
 
 @[simp, norm_cast, isROrC_simps]
-theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
+lemma norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
 #align is_R_or_C.norm_of_real IsROrC.norm_ofReal
 
@@ -317,18 +317,18 @@ set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_re IsROrC.I_re
 
 @[simp, isROrC_simps]
-theorem I_im (z : K) : im z * im (I : K) = im z :=
+lemma I_im (z : K) : im z * im (I : K) = im z :=
   mul_im_I_ax z
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_im IsROrC.I_im
 
 @[simp, isROrC_simps]
-theorem I_im' (z : K) : im (I : K) * im z = im z := by rw [mul_comm, I_im]
+lemma I_im' (z : K) : im (I : K) * im z = im z := by rw [mul_comm, I_im]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_im' IsROrC.I_im'
 
 @[isROrC_simps] -- porting note: was `simp`
-theorem I_mul_re (z : K) : re (I * z) = -im z := by
+lemma I_mul_re (z : K) : re (I * z) = -im z := by
   simp only [I_re, zero_sub, I_im', zero_mul, mul_re]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_mul_re IsROrC.I_mul_re
@@ -339,12 +339,12 @@ set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_mul_I IsROrC.I_mul_I
 
 @[simp, isROrC_simps]
-theorem conj_re (z : K) : re (conj z) = re z :=
+lemma conj_re (z : K) : re (conj z) = re z :=
   IsROrC.conj_re_ax z
 #align is_R_or_C.conj_re IsROrC.conj_re
 
 @[simp, isROrC_simps]
-theorem conj_im (z : K) : im (conj z) = -im z :=
+lemma conj_im (z : K) : im (conj z) = -im z :=
   IsROrC.conj_im_ax z
 #align is_R_or_C.conj_im IsROrC.conj_im
 
@@ -355,20 +355,20 @@ set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_I IsROrC.conj_I
 
 @[simp, isROrC_simps]
-theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
+lemma conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
   simp only [ofReal_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
 #align is_R_or_C.conj_of_real IsROrC.conj_ofReal
 
 set_option linter.deprecated false in
 @[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
-theorem conj_bit0 (z : K) : conj (bit0 z) = bit0 (conj z) :=
+lemma conj_bit0 (z : K) : conj (bit0 z) = bit0 (conj z) :=
   map_bit0 _ _
 #align is_R_or_C.conj_bit0 IsROrC.conj_bit0
 
 set_option linter.deprecated false in
 @[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
-theorem conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
+lemma conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
   map_bit1 _ _
 #align is_R_or_C.conj_bit1 IsROrC.conj_bit1
 
@@ -377,41 +377,41 @@ lemma conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_neg_I IsROrC.conj_neg_I
 
-theorem conj_eq_re_sub_im (z : K) : conj z = re z - im z * I :=
+lemma conj_eq_re_sub_im (z : K) : conj z = re z - im z * I :=
   (congr_arg conj (re_add_im z).symm).trans <| by
     rw [map_add, map_mul, conj_I, conj_ofReal, conj_ofReal, mul_neg, sub_eq_add_neg]
 #align is_R_or_C.conj_eq_re_sub_im IsROrC.conj_eq_re_sub_im
 
-theorem sub_conj (z : K) : z - conj z = 2 * im z * I :=
+lemma sub_conj (z : K) : z - conj z = 2 * im z * I :=
   calc
     z - conj z = re z + im z * I - (re z - im z * I) := by rw [re_add_im, ← conj_eq_re_sub_im]
     _ = 2 * im z * I := by rw [add_sub_sub_cancel, ← two_mul, mul_assoc]
 #align is_R_or_C.sub_conj IsROrC.sub_conj
 
 @[isROrC_simps]
-theorem conj_smul (r : ℝ) (z : K) : conj (r • z) = r • conj z := by
+lemma conj_smul (r : ℝ) (z : K) : conj (r • z) = r • conj z := by
   rw [conj_eq_re_sub_im, conj_eq_re_sub_im, smul_re, smul_im, ofReal_mul, ofReal_mul,
     real_smul_eq_coe_mul r (_ - _), mul_sub, mul_assoc]
 #align is_R_or_C.conj_smul IsROrC.conj_smul
 
-theorem add_conj (z : K) : z + conj z = 2 * re z :=
+lemma add_conj (z : K) : z + conj z = 2 * re z :=
   calc
     z + conj z = re z + im z * I + (re z - im z * I) := by rw [re_add_im, conj_eq_re_sub_im]
     _ = 2 * re z := by rw [add_add_sub_cancel, two_mul]
 #align is_R_or_C.add_conj IsROrC.add_conj
 
-theorem re_eq_add_conj (z : K) : ↑(re z) = (z + conj z) / 2 := by
+lemma re_eq_add_conj (z : K) : ↑(re z) = (z + conj z) / 2 := by
   rw [add_conj, mul_div_cancel_left (re z : K) two_ne_zero]
 #align is_R_or_C.re_eq_add_conj IsROrC.re_eq_add_conj
 
-theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
+lemma im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
   rw [← neg_inj, ← ofReal_neg, ← I_mul_re, re_eq_add_conj, map_mul, conj_I, ← neg_div, ← mul_neg,
     neg_sub, mul_sub, neg_mul, sub_eq_add_neg]
 #align is_R_or_C.im_eq_conj_sub IsROrC.im_eq_conj_sub
 
 open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
-theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
+lemma is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
   tfae_have 1 → 4
   · intro h
     rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
@@ -461,7 +461,7 @@ def normSq : K →*₀ ℝ where
     ring
 #align is_R_or_C.norm_sq IsROrC.normSq
 
-theorem normSq_apply (z : K) : normSq z = re z * re z + im z * im z :=
+lemma normSq_apply (z : K) : normSq z = re z * re z + im z * im z :=
   rfl
 #align is_R_or_C.norm_sq_apply IsROrC.normSq_apply
 
@@ -469,7 +469,7 @@ lemma norm_sq_eq_def {z : K} : ‖z‖ ^ 2 = re z * re z + im z * im z :=
   norm_sq_eq_def_ax z
 #align is_R_or_C.norm_sq_eq_def IsROrC.norm_sq_eq_def
 
-theorem normSq_eq_def' (z : K) : normSq z = ‖z‖ ^ 2 :=
+lemma normSq_eq_def' (z : K) : normSq z = ‖z‖ ^ 2 :=
   norm_sq_eq_def.symm
 #align is_R_or_C.norm_sq_eq_def' IsROrC.normSq_eq_def'
 
@@ -483,7 +483,7 @@ lemma normSq_one : normSq (1 : K) = 1 :=
   normSq.map_one
 #align is_R_or_C.norm_sq_one IsROrC.normSq_one
 
-theorem normSq_nonneg (z : K) : 0 ≤ normSq z :=
+lemma normSq_nonneg (z : K) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 #align is_R_or_C.norm_sq_nonneg IsROrC.normSq_nonneg
 
@@ -498,40 +498,40 @@ lemma normSq_pos {z : K} : 0 < normSq z ↔ z ≠ 0 := by
 #align is_R_or_C.norm_sq_pos IsROrC.normSq_pos
 
 @[simp, isROrC_simps]
-theorem normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_def', norm_neg]
+lemma normSq_neg (z : K) : normSq (-z) = normSq z := by simp only [normSq_eq_def', norm_neg]
 #align is_R_or_C.norm_sq_neg IsROrC.normSq_neg
 
 @[simp, isROrC_simps]
-theorem normSq_conj (z : K) : normSq (conj z) = normSq z := by
+lemma normSq_conj (z : K) : normSq (conj z) = normSq z := by
   simp only [normSq_apply, neg_mul, mul_neg, neg_neg, isROrC_simps]
 #align is_R_or_C.norm_sq_conj IsROrC.normSq_conj
 
 @[isROrC_simps] -- porting note: was `simp`
-theorem normSq_mul (z w : K) : normSq (z * w) = normSq z * normSq w :=
+lemma normSq_mul (z w : K) : normSq (z * w) = normSq z * normSq w :=
   map_mul _ z w
 #align is_R_or_C.norm_sq_mul IsROrC.normSq_mul
 
-theorem normSq_add (z w : K) : normSq (z + w) = normSq z + normSq w + 2 * re (z * conj w) := by
+lemma normSq_add (z w : K) : normSq (z + w) = normSq z + normSq w + 2 * re (z * conj w) := by
   simp only [normSq_apply, map_add, isROrC_simps]
   ring
 #align is_R_or_C.norm_sq_add IsROrC.normSq_add
 
-theorem re_sq_le_normSq (z : K) : re z * re z ≤ normSq z :=
+lemma re_sq_le_normSq (z : K) : re z * re z ≤ normSq z :=
   le_add_of_nonneg_right (mul_self_nonneg _)
 #align is_R_or_C.re_sq_le_norm_sq IsROrC.re_sq_le_normSq
 
-theorem im_sq_le_normSq (z : K) : im z * im z ≤ normSq z :=
+lemma im_sq_le_normSq (z : K) : im z * im z ≤ normSq z :=
   le_add_of_nonneg_left (mul_self_nonneg _)
 #align is_R_or_C.im_sq_le_norm_sq IsROrC.im_sq_le_normSq
 
-theorem mul_conj (z : K) : z * conj z = (normSq z : K) := by
+lemma mul_conj (z : K) : z * conj z = (normSq z : K) := by
   apply ext <;> simp only [normSq_apply, isROrC_simps, map_add, mul_zero] <;> ring
 #align is_R_or_C.mul_conj IsROrC.mul_conj
 
-theorem conj_mul (x : K) : conj x * x = (normSq x : K) := by rw [mul_comm, mul_conj]
+lemma conj_mul (x : K) : conj x * x = (normSq x : K) := by rw [mul_comm, mul_conj]
 #align is_R_or_C.conj_mul IsROrC.conj_mul
 
-theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z * conj w) := by
+lemma normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z * conj w) := by
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
 #align is_R_or_C.norm_sq_sub IsROrC.normSq_sub
 
@@ -542,11 +542,11 @@ lemma sqrt_normSq_eq_norm {z : K} : Real.sqrt (normSq z) = ‖z‖ := by
 /-! ### Inversion -/
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : K) = (r : K)⁻¹ :=
+lemma ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : K) = (r : K)⁻¹ :=
   map_inv₀ _ r
 #align is_R_or_C.of_real_inv IsROrC.ofReal_inv
 
-theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
+lemma inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | h₀)
   · simp
   · apply inv_eq_of_mul_eq_one_right
@@ -555,32 +555,32 @@ theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
 #align is_R_or_C.inv_def IsROrC.inv_def
 
 @[simp, isROrC_simps]
-theorem inv_re (z : K) : re z⁻¹ = re z / normSq z := by
+lemma inv_re (z : K) : re z⁻¹ = re z / normSq z := by
   rw [inv_def, normSq_eq_def', mul_comm, ofReal_mul_re, conj_re, div_eq_inv_mul]
 #align is_R_or_C.inv_re IsROrC.inv_re
 
 @[simp, isROrC_simps]
-theorem inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
+lemma inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
   rw [inv_def, normSq_eq_def', mul_comm, ofReal_mul_im, conj_im, div_eq_inv_mul]
 #align is_R_or_C.inv_im IsROrC.inv_im
 
-theorem div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
+lemma div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
   simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg, map_neg,
     isROrC_simps]
 #align is_R_or_C.div_re IsROrC.div_re
 
-theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / normSq w := by
+lemma div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / normSq w := by
   simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg, map_neg,
     isROrC_simps]
 #align is_R_or_C.div_im IsROrC.div_im
 
 @[isROrC_simps] -- porting note: was `simp`
-theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
+lemma conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align is_R_or_C.conj_inv IsROrC.conj_inv
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : K) = r / s :=
+lemma ofReal_div (r s : ℝ) : ((r / s : ℝ) : K) = r / s :=
   map_div₀ (algebraMap ℝ K) r s
 #align is_R_or_C.of_real_div IsROrC.ofReal_div
 
@@ -589,7 +589,7 @@ lemma div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
 #align is_R_or_C.div_re_of_real IsROrC.div_re_ofReal
 
 @[simp, norm_cast, isROrC_simps]
-theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
+lemma ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_zpow₀ (algebraMap ℝ K) r n
 #align is_R_or_C.of_real_zpow IsROrC.ofReal_zpow
 
@@ -607,17 +607,17 @@ set_option linter.uppercaseLean3 false in
 #align is_R_or_C.inv_I IsROrC.inv_I
 
 @[simp, isROrC_simps]
-theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
+lemma div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.div_I IsROrC.div_I
 
 @[isROrC_simps] -- porting note: was `simp`
-theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
+lemma normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align is_R_or_C.norm_sq_inv IsROrC.normSq_inv
 
 @[isROrC_simps] -- porting note: was `simp`
-theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
+lemma normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align is_R_or_C.norm_sq_div IsROrC.normSq_div
 
@@ -631,63 +631,63 @@ instance (priority := 100) : CstarRing K where
 /-! ### Cast lemmas -/
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
+lemma ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 #align is_R_or_C.of_real_nat_cast IsROrC.ofReal_natCast
 
 @[simp, isROrC_simps] -- porting note: removed `norm_cast`
-theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
+lemma natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 #align is_R_or_C.nat_cast_re IsROrC.natCast_re
 
 @[simp, isROrC_simps, norm_cast]
-theorem natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofReal_im]
+lemma natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofReal_im]
 #align is_R_or_C.nat_cast_im IsROrC.natCast_im
 
 @[simp, isROrC_simps]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (no_index (OfNat.ofNat n) : K) = OfNat.ofNat n :=
+lemma ofNat_re (n : ℕ) [n.AtLeastTwo] : re (no_index (OfNat.ofNat n) : K) = OfNat.ofNat n :=
   natCast_re n
 
 @[simp, isROrC_simps]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 0 :=
+lemma ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 0 :=
   natCast_im n
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ) : K) = OfNat.ofNat n :=
   ofReal_natCast n
 
-theorem ofNat_mul_re (n : ℕ) [n.AtLeastTwo] (z : K) :
+lemma ofNat_mul_re (n : ℕ) [n.AtLeastTwo] (z : K) :
     re (OfNat.ofNat n * z) = OfNat.ofNat n * re z := by
   rw [← ofReal_ofNat, ofReal_mul_re]
 
-theorem ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
+lemma ofNat_mul_im (n : ℕ) [n.AtLeastTwo] (z : K) :
     im (OfNat.ofNat n * z) = OfNat.ofNat n * im z := by
   rw [← ofReal_ofNat, ofReal_mul_im]
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=
+lemma ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=
   map_intCast _ n
 #align is_R_or_C.of_real_int_cast IsROrC.ofReal_intCast
 
 @[simp, isROrC_simps] -- porting note: removed `norm_cast`
-theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofReal_re]
+lemma intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofReal_re]
 #align is_R_or_C.int_cast_re IsROrC.intCast_re
 
 @[simp, isROrC_simps, norm_cast]
-theorem intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
+lemma intCast_im (n : ℤ) : im (n : K) = 0 := by rw [← ofReal_intCast, ofReal_im]
 #align is_R_or_C.int_cast_im IsROrC.intCast_im
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
+lemma ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 #align is_R_or_C.of_real_rat_cast IsROrC.ofReal_ratCast
 
 @[simp, isROrC_simps] -- porting note: removed `norm_cast`
-theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofReal_re]
+lemma ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofReal_re]
 #align is_R_or_C.rat_cast_re IsROrC.ratCast_re
 
 @[simp, isROrC_simps, norm_cast]
-theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofReal_im]
+lemma ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofReal_im]
 #align is_R_or_C.rat_cast_im IsROrC.ratCast_im
 
 /-! ### Norm -/
@@ -697,16 +697,16 @@ lemma norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
 #align is_R_or_C.norm_of_nonneg IsROrC.norm_of_nonneg
 
 @[simp, isROrC_simps, norm_cast]
-theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
+lemma norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 #align is_R_or_C.norm_nat_cast IsROrC.norm_natCast
 
 @[simp, isROrC_simps]
-theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
+lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
-theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
+lemma mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 #align is_R_or_C.mul_self_norm IsROrC.mul_self_norm
 
 attribute [isROrC_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
@@ -715,29 +715,29 @@ attribute [isROrC_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_
 lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
 #align is_R_or_C.norm_two IsROrC.norm_two
 
-theorem abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
+lemma abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]
   apply re_sq_le_normSq
 #align is_R_or_C.abs_re_le_norm IsROrC.abs_re_le_norm
 
-theorem abs_im_le_norm (z : K) : |im z| ≤ ‖z‖ := by
+lemma abs_im_le_norm (z : K) : |im z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]
   apply im_sq_le_normSq
 #align is_R_or_C.abs_im_le_norm IsROrC.abs_im_le_norm
 
-theorem norm_re_le_norm (z : K) : ‖re z‖ ≤ ‖z‖ :=
+lemma norm_re_le_norm (z : K) : ‖re z‖ ≤ ‖z‖ :=
   abs_re_le_norm z
 #align is_R_or_C.norm_re_le_norm IsROrC.norm_re_le_norm
 
-theorem norm_im_le_norm (z : K) : ‖im z‖ ≤ ‖z‖ :=
+lemma norm_im_le_norm (z : K) : ‖im z‖ ≤ ‖z‖ :=
   abs_im_le_norm z
 #align is_R_or_C.norm_im_le_norm IsROrC.norm_im_le_norm
 
-theorem re_le_norm (z : K) : re z ≤ ‖z‖ :=
+lemma re_le_norm (z : K) : re z ≤ ‖z‖ :=
   (abs_le.1 (abs_re_le_norm z)).2
 #align is_R_or_C.re_le_norm IsROrC.re_le_norm
 
-theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
+lemma im_le_norm (z : K) : im z ≤ ‖z‖ :=
   (abs_le.1 (abs_im_le_norm _)).2
 #align is_R_or_C.im_le_norm IsROrC.im_le_norm
 
@@ -752,42 +752,42 @@ lemma re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
 
 open IsAbsoluteValue
 
-theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
+lemma abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
   exact div_le_one_of_le (abs_re_le_norm _) (norm_nonneg _)
 #align is_R_or_C.abs_re_div_norm_le_one IsROrC.abs_re_div_norm_le_one
 
-theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
+lemma abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
   exact div_le_one_of_le (abs_im_le_norm _) (norm_nonneg _)
 #align is_R_or_C.abs_im_div_norm_le_one IsROrC.abs_im_div_norm_le_one
 
-theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
+lemma norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
     I_mul_I_of_nonzero hI, norm_neg, norm_one]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.norm_I_of_ne_zero IsROrC.norm_I_of_ne_zero
 
-theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
+lemma re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
   rw [mul_conj, ofReal_re, norm_ofReal, abs_of_nonneg (normSq_nonneg _)]
 #align is_R_or_C.re_eq_norm_of_mul_conj IsROrC.re_eq_norm_of_mul_conj
 
-theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2 := by
+lemma norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2 := by
   rw [add_conj, ← ofReal_ofNat, ← ofReal_mul, norm_ofReal, sq_abs, ofReal_re]
 #align is_R_or_C.norm_sq_re_add_conj IsROrC.norm_sq_re_add_conj
 
-theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
+lemma norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
   rw [add_comm, norm_sq_re_add_conj]
 #align is_R_or_C.norm_sq_re_conj_add IsROrC.norm_sq_re_conj_add
 
 /-! ### Cauchy sequences -/
 
-theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun ε ε0 =>
+lemma isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun ε ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa only [map_sub] using abs_re_le_norm (f j - f i)) (H _ ij)
 #align is_R_or_C.is_cau_seq_re IsROrC.isCauSeq_re
 
-theorem isCauSeq_im (f : CauSeq K norm) : IsCauSeq abs fun n => im (f n) := fun ε ε0 =>
+lemma isCauSeq_im (f : CauSeq K norm) : IsCauSeq abs fun n => im (f n) := fun ε ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa only [map_sub] using abs_im_le_norm (f j - f i)) (H _ ij)
 #align is_R_or_C.is_cau_seq_im IsROrC.isCauSeq_im

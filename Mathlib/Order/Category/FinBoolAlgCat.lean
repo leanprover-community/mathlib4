@@ -52,7 +52,7 @@ attribute [instance] FinBoolAlgCat.isFintype
 
 -- Porting note: linter says this is a syntactic tautology now
 -- @[simp]
--- theorem coe_toBoolAlgCat (X : FinBoolAlgCat) : ↥X.toBoolAlgCat = ↥X :=
+-- lemma coe_toBoolAlgCat (X : FinBoolAlgCat) : ↥X.toBoolAlgCat = ↥X :=
 --   rfl
 -- #align FinBoolAlg.coe_to_BoolAlg FinBoolAlgCat.coe_toBoolAlgCat
 #noalign FinBoolAlg.coe_to_BoolAlg
@@ -63,7 +63,7 @@ def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlgCat :=
 #align FinBoolAlg.of FinBoolAlgCat.of
 
 @[simp]
-theorem coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
+lemma coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
   rfl
 #align FinBoolAlg.coe_of FinBoolAlgCat.coe_of
 

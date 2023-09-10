@@ -51,7 +51,7 @@ protected lemma eq {a b : S} (h : Commute a b) : a * b = b * a :=
 
 /-- Any element commutes with itself. -/
 @[to_additive (attr := refl, simp) "Any element commutes with itself."]
-protected theorem refl (a : S) : Commute a a :=
+protected lemma refl (a : S) : Commute a a :=
   Eq.refl (a * a)
 #align commute.refl Commute.refl
 #align add_commute.refl AddCommute.refl
@@ -95,7 +95,7 @@ variable {S : Type*} [Semigroup S] {a b c : S}
 /-- If `a` commutes with both `b` and `c`, then it commutes with their product. -/
 @[to_additive (attr := simp)
 "If `a` commutes with both `b` and `c`, then it commutes with their sum."]
-theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
+lemma mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
   SemiconjBy.mul_right hab hac
 #align commute.mul_right Commute.mul_rightₓ
 #align add_commute.add_right AddCommute.add_rightₓ
@@ -104,28 +104,28 @@ theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
 /-- If both `a` and `b` commute with `c`, then their product commutes with `c`. -/
 @[to_additive (attr := simp)
 "If both `a` and `b` commute with `c`, then their product commutes with `c`."]
-theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
+lemma mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
   SemiconjBy.mul_left hac hbc
 #align commute.mul_left Commute.mul_leftₓ
 #align add_commute.add_left AddCommute.add_leftₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
-protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :=
+protected lemma right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :=
   by simp only [mul_assoc, h.eq]
 #align commute.right_comm Commute.right_commₓ
 #align add_commute.right_comm AddCommute.right_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
-protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
+protected lemma left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
   by simp only [← mul_assoc, h.eq]
 #align commute.left_comm Commute.left_commₓ
 #align add_commute.left_comm AddCommute.left_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
-protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
+protected lemma mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
     a * b * (c * d) = a * c * (b * d) := by simp only [hbc.left_comm, mul_assoc]
 #align commute.mul_mul_mul_comm Commute.mul_mul_mul_comm
 #align add_commute.add_add_add_comm AddCommute.add_add_add_comm
@@ -144,14 +144,14 @@ section MulOneClass
 variable {M : Type*} [MulOneClass M]
 
 @[to_additive (attr := simp)]
-theorem one_right (a : M) : Commute a 1 :=
+lemma one_right (a : M) : Commute a 1 :=
   SemiconjBy.one_right a
 #align commute.one_right Commute.one_rightₓ
 #align add_commute.zero_right AddCommute.zero_rightₓ
 -- I think `ₓ` is necessary because `One.toOfNat1` appears in the Lean 4 version
 
 @[to_additive (attr := simp)]
-theorem one_left (a : M) : Commute 1 a :=
+lemma one_left (a : M) : Commute 1 a :=
   SemiconjBy.one_left a
 #align commute.one_left Commute.one_leftₓ
 #align add_commute.zero_left AddCommute.zero_leftₓ
@@ -164,14 +164,14 @@ section Monoid
 variable {M : Type*} [Monoid M] {a b : M} {u u₁ u₂ : Mˣ}
 
 @[to_additive (attr := simp)]
-theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
+lemma pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
   SemiconjBy.pow_right h n
 #align commute.pow_right Commute.pow_rightₓ
 #align add_commute.nsmul_right AddCommute.nsmul_rightₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 @[to_additive (attr := simp)]
-theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
+lemma pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
   (h.symm.pow_right n).symm
 #align commute.pow_left Commute.pow_leftₓ
 #align add_commute.nsmul_left AddCommute.nsmul_leftₓ
@@ -179,7 +179,7 @@ theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
 
 -- todo: should nat power be called `nsmul` here?
 @[to_additive (attr := simp)]
-theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
+lemma pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
   (h.pow_left m).pow_right n
 #align commute.pow_pow Commute.pow_powₓ
 #align add_commute.nsmul_nsmul AddCommute.nsmul_nsmulₓ
@@ -187,7 +187,7 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
-theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
+lemma self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
 #align commute.self_pow Commute.self_powₓ
 #align add_commute.self_nsmul AddCommute.self_nsmulₓ
@@ -195,7 +195,7 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
-theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
+lemma pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
 #align add_commute.nsmul_self AddCommute.nsmul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
@@ -203,14 +203,14 @@ theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
-theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
+lemma pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
 #align commute.pow_pow_self Commute.pow_pow_selfₓ
 #align add_commute.nsmul_nsmul_self AddCommute.nsmul_nsmul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 @[to_additive succ_nsmul']
-theorem _root_.pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
+lemma _root_.pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   (pow_succ a n).trans (self_pow _ _)
 #align pow_succ' pow_succ'
 #align succ_nsmul' succ_nsmul'
@@ -279,7 +279,7 @@ def _root_.Units.rightOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a
 #align add_units.right_of_add AddUnits.rightOfAdd
 
 @[to_additive]
-theorem isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUnit b :=
+lemma isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUnit b :=
   ⟨fun ⟨u, hu⟩ => ⟨(u.leftOfMul a b hu.symm h).isUnit, (u.rightOfMul a b hu.symm h).isUnit⟩,
   fun H => H.1.mul H.2⟩
 #align commute.is_unit_mul_iff Commute.isUnit_mul_iff
@@ -311,31 +311,31 @@ lemma inv_inv_iff : Commute a⁻¹ b⁻¹ ↔ Commute a b :=
 #align add_commute.neg_neg_iff AddCommute.neg_neg_iff
 
 @[to_additive]
-protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
+protected lemma mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
 #align commute.mul_inv Commute.mul_inv
 #align add_commute.add_neg AddCommute.add_neg
 
 @[to_additive]
-protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
+protected lemma inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
 #align commute.inv Commute.inv
 #align add_commute.neg AddCommute.neg
 
 @[to_additive]
-protected theorem div_mul_div_comm (hbd : Commute b d) (hbc : Commute b⁻¹ c) :
+protected lemma div_mul_div_comm (hbd : Commute b d) (hbc : Commute b⁻¹ c) :
     a / b * (c / d) = a * c / (b * d) := by
   simp_rw [div_eq_mul_inv, mul_inv_rev, hbd.inv_inv.symm.eq, hbc.mul_mul_mul_comm]
 #align commute.div_mul_div_comm Commute.div_mul_div_comm
 #align add_commute.sub_add_sub_comm AddCommute.sub_add_sub_comm
 
 @[to_additive]
-protected theorem mul_div_mul_comm (hcd : Commute c d) (hbc : Commute b c⁻¹) :
+protected lemma mul_div_mul_comm (hcd : Commute c d) (hbc : Commute b c⁻¹) :
     a * b / (c * d) = a / c * (b / d) :=
   (hcd.div_mul_div_comm hbc.symm).symm
 #align commute.mul_div_mul_comm Commute.mul_div_mul_comm
 #align add_commute.add_sub_add_comm AddCommute.add_sub_add_comm
 
 @[to_additive]
-protected theorem div_div_div_comm (hbc : Commute b c) (hbd : Commute b⁻¹ d) (hcd : Commute c⁻¹ d) :
+protected lemma div_div_div_comm (hbc : Commute b c) (hbd : Commute b⁻¹ d) (hcd : Commute c⁻¹ d) :
     a / b / (c / d) = a / c / (b / d) := by
   simp_rw [div_eq_mul_inv, mul_inv_rev, inv_inv, hbd.symm.eq, hcd.symm.eq,
     hbc.inv_inv.mul_mul_mul_comm]
@@ -373,25 +373,25 @@ lemma inv_left_iff : Commute a⁻¹ b ↔ Commute a b :=
 #align add_commute.neg_left_iff AddCommute.neg_left_iff
 
 @[to_additive]
-protected theorem inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by
+protected lemma inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by
   rw [h.inv_left.eq, inv_mul_cancel_right]
 #align commute.inv_mul_cancel Commute.inv_mul_cancel
 #align add_commute.neg_add_cancel AddCommute.neg_add_cancel
 
 @[to_additive]
-theorem inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
+lemma inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
   rw [← mul_assoc, h.inv_mul_cancel]
 #align commute.inv_mul_cancel_assoc Commute.inv_mul_cancel_assoc
 #align add_commute.neg_add_cancel_assoc AddCommute.neg_add_cancel_assoc
 
 @[to_additive]
-protected theorem mul_inv_cancel (h : Commute a b) : a * b * a⁻¹ = b := by
+protected lemma mul_inv_cancel (h : Commute a b) : a * b * a⁻¹ = b := by
   rw [h.eq, mul_inv_cancel_right]
 #align commute.mul_inv_cancel Commute.mul_inv_cancel
 #align add_commute.add_neg_cancel AddCommute.add_neg_cancel
 
 @[to_additive]
-theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
+lemma mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
   rw [← mul_assoc, h.mul_inv_cancel]
 #align commute.mul_inv_cancel_assoc Commute.mul_inv_cancel_assoc
 #align add_commute.add_neg_cancel_assoc AddCommute.add_neg_cancel_assoc

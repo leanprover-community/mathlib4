@@ -39,7 +39,7 @@ lemma arg_expMapCircle {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (expMa
 #align arg_exp_map_circle arg_expMapCircle
 
 @[simp]
-theorem expMapCircle_arg (z : circle) : expMapCircle (arg z) = z :=
+lemma expMapCircle_arg (z : circle) : expMapCircle (arg z) = z :=
   circle.injective_arg <| arg_expMapCircle (neg_pi_lt_arg _) (arg_le_pi _)
 #align exp_map_circle_arg expMapCircle_arg
 
@@ -99,11 +99,11 @@ lemma expMapCircle_two_pi : expMapCircle (2 * π) = 1 :=
   periodic_expMapCircle.eq.trans expMapCircle_zero
 #align exp_map_circle_two_pi expMapCircle_two_pi
 
-theorem expMapCircle_sub_two_pi (x : ℝ) : expMapCircle (x - 2 * π) = expMapCircle x :=
+lemma expMapCircle_sub_two_pi (x : ℝ) : expMapCircle (x - 2 * π) = expMapCircle x :=
   periodic_expMapCircle.sub_eq x
 #align exp_map_circle_sub_two_pi expMapCircle_sub_two_pi
 
-theorem expMapCircle_add_two_pi (x : ℝ) : expMapCircle (x + 2 * π) = expMapCircle x :=
+lemma expMapCircle_add_two_pi (x : ℝ) : expMapCircle (x + 2 * π) = expMapCircle x :=
   periodic_expMapCircle x
 #align exp_map_circle_add_two_pi expMapCircle_add_two_pi
 
@@ -113,11 +113,11 @@ noncomputable def Real.Angle.expMapCircle (θ : Real.Angle) : circle :=
 #align real.angle.exp_map_circle Real.Angle.expMapCircle
 
 @[simp]
-theorem Real.Angle.expMapCircle_coe (x : ℝ) : Real.Angle.expMapCircle x = _root_.expMapCircle x :=
+lemma Real.Angle.expMapCircle_coe (x : ℝ) : Real.Angle.expMapCircle x = _root_.expMapCircle x :=
   rfl
 #align real.angle.exp_map_circle_coe Real.Angle.expMapCircle_coe
 
-theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) :
+lemma Real.Angle.coe_expMapCircle (θ : Real.Angle) :
     (θ.expMapCircle : ℂ) = θ.cos + θ.sin * I := by
   induction θ using Real.Angle.induction_on
   simp [Complex.exp_mul_I]
@@ -129,14 +129,14 @@ lemma Real.Angle.expMapCircle_zero : Real.Angle.expMapCircle 0 = 1 := by
 #align real.angle.exp_map_circle_zero Real.Angle.expMapCircle_zero
 
 @[simp]
-theorem Real.Angle.expMapCircle_neg (θ : Real.Angle) :
+lemma Real.Angle.expMapCircle_neg (θ : Real.Angle) :
     Real.Angle.expMapCircle (-θ) = (Real.Angle.expMapCircle θ)⁻¹ := by
   induction θ using Real.Angle.induction_on
   simp_rw [← Real.Angle.coe_neg, Real.Angle.expMapCircle_coe, _root_.expMapCircle_neg]
 #align real.angle.exp_map_circle_neg Real.Angle.expMapCircle_neg
 
 @[simp]
-theorem Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) : Real.Angle.expMapCircle (θ₁ + θ₂) =
+lemma Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) : Real.Angle.expMapCircle (θ₁ + θ₂) =
     Real.Angle.expMapCircle θ₁ * Real.Angle.expMapCircle θ₂ := by
   induction θ₁ using Real.Angle.induction_on
   induction θ₂ using Real.Angle.induction_on
@@ -144,7 +144,7 @@ theorem Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) : Real.Angle.expM
 #align real.angle.exp_map_circle_add Real.Angle.expMapCircle_add
 
 @[simp]
-theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
+lemma Real.Angle.arg_expMapCircle (θ : Real.Angle) :
     (arg (Real.Angle.expMapCircle θ) : Real.Angle) = θ := by
   induction θ using Real.Angle.induction_on
   rw [Real.Angle.expMapCircle_coe, expMapCircle_apply, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←

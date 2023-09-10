@@ -47,7 +47,7 @@ def Sized (r : ℕ) (A : Set (Finset α)) : Prop :=
   ∀ ⦃x⦄, x ∈ A → card x = r
 #align set.sized Set.Sized
 
-theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB <| h hx
+lemma Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB <| h hx
 #align set.sized.mono Set.Sized.mono
 
 lemma sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
@@ -71,11 +71,11 @@ lemma sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
  by simp only [Set.sized_iUnion]
 #align set.sized_Union₂ Set.sized_iUnion₂
 
-protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
+protected lemma Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
   fun _s hs _t ht h hst => h <| Finset.eq_of_subset_of_card_le hst ((hA ht).trans (hA hs).symm).le
 #align set.sized.is_antichain Set.Sized.isAntichain
 
-protected theorem Sized.subsingleton (hA : A.Sized 0) : A.Subsingleton :=
+protected lemma Sized.subsingleton (hA : A.Sized 0) : A.Subsingleton :=
   subsingleton_of_forall_eq ∅ fun _s hs => card_eq_zero.1 <| hA hs
 #align set.sized.subsingleton Set.Sized.subsingleton
 
@@ -83,7 +83,7 @@ lemma Sized.subsingleton' [Fintype α] (hA : A.Sized (Fintype.card α)) : A.Subs
   subsingleton_of_forall_eq Finset.univ fun s hs => s.card_eq_iff_eq_univ.1 <| hA hs
 #align set.sized.subsingleton' Set.Sized.subsingleton'
 
-theorem Sized.empty_mem_iff (hA : A.Sized r) : ∅ ∈ A ↔ A = {∅} :=
+lemma Sized.empty_mem_iff (hA : A.Sized r) : ∅ ∈ A ↔ A = {∅} :=
   hA.isAntichain.bot_mem_iff
 #align set.sized.empty_mem_iff Set.Sized.empty_mem_iff
 
@@ -91,7 +91,7 @@ lemma Sized.univ_mem_iff [Fintype α] (hA : A.Sized r) : Finset.univ ∈ A ↔ A
   hA.isAntichain.top_mem_iff
 #align set.sized.univ_mem_iff Set.Sized.univ_mem_iff
 
-theorem sized_powersetLen (s : Finset α) (r : ℕ) : (powersetLen r s : Set (Finset α)).Sized r :=
+lemma sized_powersetLen (s : Finset α) (r : ℕ) : (powersetLen r s : Set (Finset α)).Sized r :=
   fun _t ht => (mem_powersetLen.1 ht).2
 #align set.sized_powerset_len Set.sized_powersetLen
 
@@ -110,7 +110,7 @@ lemma subset_powersetLen_univ_iff : 𝒜 ⊆ powersetLen r univ ↔ (𝒜 : Set 
 alias ⟨_, _root_.Set.Sized.subset_powersetLen_univ⟩ := subset_powersetLen_univ_iff
 #align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetLen_univ
 
-theorem Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+lemma Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
   rw [Fintype.card, ← card_powersetLen]
   exact card_le_of_subset (subset_powersetLen_univ_iff.mpr h𝒜)
@@ -149,12 +149,12 @@ lemma slice_subset : 𝒜 # r ⊆ 𝒜 :=
 lemma sized_slice : (𝒜 # r : Set (Finset α)).Sized r := fun _ => And.right ∘ mem_slice.mp
 #align finset.sized_slice Finset.sized_slice
 
-theorem eq_of_mem_slice (h₁ : A ∈ 𝒜 # r₁) (h₂ : A ∈ 𝒜 # r₂) : r₁ = r₂ :=
+lemma eq_of_mem_slice (h₁ : A ∈ 𝒜 # r₁) (h₂ : A ∈ 𝒜 # r₂) : r₁ = r₂ :=
   (sized_slice h₁).symm.trans <| sized_slice h₂
 #align finset.eq_of_mem_slice Finset.eq_of_mem_slice
 
 /-- Elements in distinct slices must be distinct. -/
-theorem ne_of_mem_slice (h₁ : A₁ ∈ 𝒜 # r₁) (h₂ : A₂ ∈ 𝒜 # r₂) : r₁ ≠ r₂ → A₁ ≠ A₂ :=
+lemma ne_of_mem_slice (h₁ : A₁ ∈ 𝒜 # r₁) (h₂ : A₂ ∈ 𝒜 # r₂) : r₁ ≠ r₂ → A₁ ≠ A₂ :=
   mt fun h => (sized_slice h₁).symm.trans ((congr_arg card h).trans (sized_slice h₂))
 #align finset.ne_of_mem_slice Finset.ne_of_mem_slice
 

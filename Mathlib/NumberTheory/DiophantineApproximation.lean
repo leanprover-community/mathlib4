@@ -92,7 +92,7 @@ For any real number `ξ` and positive natural `n`, there are integers `j` and `k
 with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`.
 
 See also `Real.exists_nat_abs_mul_sub_round_le`. -/
-theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
+lemma exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ j k : ℤ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - j| ≤ 1 / (n + 1) := by
   let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
   have hn : 0 < (n : ℝ) + 1 := by exact_mod_cast Nat.succ_pos _
@@ -139,7 +139,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 For any real number `ξ` and positive natural `n`, there is a natural number `k`,
 with `0 < k ≤ n` such that `|k*ξ - round(k*ξ)| ≤ 1/(n+1)`.
 -/
-theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
+lemma exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ k : ℕ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - round (↑k * ξ)| ≤ 1 / (n + 1) := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk := toNat_of_nonneg hk₀.le
@@ -152,7 +152,7 @@ For any real number `ξ` and positive natural `n`, there is a fraction `q`
 such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
 
 See also `AddCircle.exists_norm_nsmul_le`. -/
-theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
+lemma exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ q : ℚ, |ξ - q| ≤ 1 / ((n + 1) * q.den) ∧ q.den ≤ n := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk₀' : (0 : ℝ) < k := Int.cast_pos.mpr hk₀
@@ -262,7 +262,7 @@ lemma den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
 #align rat.denom_le_and_le_num_le_of_sub_lt_one_div_denom_sq Rat.den_le_and_le_num_le_of_sub_lt_one_div_den_sq
 
 /-- A rational number has only finitely many good rational approximations. -/
-theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
+lemma finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}.Finite := by
   let f : ℚ → ℤ × ℕ := fun q => (q.num, q.den)
   set s := {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}
@@ -287,7 +287,7 @@ end Rat
 
 /-- The set of good rational approximations to a real number `ξ` is infinite if and only if
 `ξ` is irrational. -/
-theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
+lemma Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite ↔ Irrational ξ := by
   refine'
     ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b H => Set.not_infinite.mpr _ h,
@@ -341,13 +341,13 @@ noncomputable def convergent : ℝ → ℕ → ℚ
 
 /-- The zeroth convergent of `ξ` is `⌊ξ⌋`. -/
 @[simp]
-theorem convergent_zero (ξ : ℝ) : ξ.convergent 0 = ⌊ξ⌋ :=
+lemma convergent_zero (ξ : ℝ) : ξ.convergent 0 = ⌊ξ⌋ :=
   rfl
 #align real.convergent_zero Real.convergent_zero
 
 /-- The `(n+1)`th convergent of `ξ` is the `n`th convergent of `1/(fract ξ)`. -/
 @[simp]
-theorem convergent_succ (ξ : ℝ) (n : ℕ) :
+lemma convergent_succ (ξ : ℝ) (n : ℕ) :
     ξ.convergent (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convergent n)⁻¹ :=
   -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): was
   -- by simp only [convergent]
@@ -356,7 +356,7 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 
 /-- All convergents of `0` are zero. -/
 @[simp]
-theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
+lemma convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction' n with n ih
   · simp only [Nat.zero_eq, convergent_zero, floor_zero, cast_zero]
   · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
@@ -380,7 +380,7 @@ open GeneralizedContinuedFraction
 
 /-- The `n`th convergent of the `GeneralizedContinuedFraction.of ξ`
 agrees with `ξ.convergent n`. -/
-theorem continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
+lemma continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GeneralizedContinuedFraction.of ξ).convergents n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
   · simp only [Nat.zero_eq, zeroth_convergent_eq_h, of_h_eq_floor, convergent_zero,

@@ -74,7 +74,7 @@ lemma small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) :
   Small.mk' (e.trans f)
 #align small_map small_map
 
-theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
+lemma small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   let ⟨⟨_, ⟨f⟩⟩⟩ := hα
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 #align small_lift small_lift

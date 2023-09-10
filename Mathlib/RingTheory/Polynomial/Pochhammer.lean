@@ -58,11 +58,11 @@ lemma pochhammer_zero : pochhammer S 0 = 1 :=
 lemma pochhammer_one : pochhammer S 1 = X := by simp [pochhammer]
 #align pochhammer_one pochhammer_one
 
-theorem pochhammer_succ_left (n : ℕ) : pochhammer S (n + 1) = X * (pochhammer S n).comp (X + 1) :=
+lemma pochhammer_succ_left (n : ℕ) : pochhammer S (n + 1) = X * (pochhammer S n).comp (X + 1) :=
   by rw [pochhammer]
 #align pochhammer_succ_left pochhammer_succ_left
 
-theorem monic_pochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
+lemma monic_pochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
     Monic <| pochhammer S n := by
   induction' n with n hn
   · simp
@@ -75,7 +75,7 @@ section
 variable {S} {T : Type v} [Semiring T]
 
 @[simp]
-theorem pochhammer_map (f : S →+* T) (n : ℕ) : (pochhammer S n).map f = pochhammer T n := by
+lemma pochhammer_map (f : S →+* T) (n : ℕ) : (pochhammer S n).map f = pochhammer T n := by
   induction' n with n ih
   · simp
   · simp [ih, pochhammer_succ_left, map_comp]
@@ -84,7 +84,7 @@ theorem pochhammer_map (f : S →+* T) (n : ℕ) : (pochhammer S n).map f = poch
 end
 
 @[simp, norm_cast]
-theorem pochhammer_eval_cast (n k : ℕ) :
+lemma pochhammer_eval_cast (n k : ℕ) :
     (((pochhammer ℕ n).eval k : ℕ) : S) = ((pochhammer S n).eval k : S) := by
   rw [← pochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S), eval₂_at_nat_cast,
     Nat.cast_id, eq_natCast]
@@ -104,7 +104,7 @@ lemma pochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (pochhammer S n).ev
   simp [pochhammer_eval_zero, h]
 #align pochhammer_ne_zero_eval_zero pochhammer_ne_zero_eval_zero
 
-theorem pochhammer_succ_right (n : ℕ) :
+lemma pochhammer_succ_right (n : ℕ) :
     pochhammer S (n + 1) = pochhammer S n * (X + (n : S[X])) := by
   suffices h : pochhammer ℕ (n + 1) = pochhammer ℕ n * (X + (n : ℕ[X]))
   · apply_fun Polynomial.map (algebraMap ℕ S) at h
@@ -123,7 +123,7 @@ lemma pochhammer_succ_eval {S : Type*} [Semiring S] (n : ℕ) (k : S) :
     eval_C_mul, Nat.cast_comm, ← mul_add]
 #align pochhammer_succ_eval pochhammer_succ_eval
 
-theorem pochhammer_succ_comp_X_add_one (n : ℕ) :
+lemma pochhammer_succ_comp_X_add_one (n : ℕ) :
     (pochhammer S (n + 1)).comp (X + 1) =
       pochhammer S (n + 1) + (n + 1) • (pochhammer S n).comp (X + 1) := by
   suffices (pochhammer ℕ (n + 1)).comp (X + 1) =
@@ -142,7 +142,7 @@ lemma Polynomial.mul_X_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
 set_option linter.uppercaseLean3 false in
 #align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_X_add_nat_cast_comp
 
-theorem pochhammer_mul (n m : ℕ) :
+lemma pochhammer_mul (n m : ℕ) :
     pochhammer S n * (pochhammer S m).comp (X + (n : S[X])) = pochhammer S (n + m) := by
   induction' m with m ih
   · simp
@@ -150,7 +150,7 @@ theorem pochhammer_mul (n m : ℕ) :
       Nat.succ_eq_add_one, ← add_assoc, pochhammer_succ_right, Nat.cast_add, add_assoc]
 #align pochhammer_mul pochhammer_mul
 
-theorem pochhammer_nat_eq_ascFactorial (n : ℕ) :
+lemma pochhammer_nat_eq_ascFactorial (n : ℕ) :
     ∀ k, (pochhammer ℕ k).eval (n + 1) = n.ascFactorial k
   | 0 => by rw [pochhammer_zero, eval_one, Nat.ascFactorial_zero]
   | t + 1 => by
@@ -159,7 +159,7 @@ theorem pochhammer_nat_eq_ascFactorial (n : ℕ) :
     rw [Nat.ascFactorial_succ, add_right_comm, mul_comm]
 #align pochhammer_nat_eq_asc_factorial pochhammer_nat_eq_ascFactorial
 
-theorem pochhammer_nat_eq_descFactorial (a b : ℕ) :
+lemma pochhammer_nat_eq_descFactorial (a b : ℕ) :
     (pochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
   cases' b with b
   · rw [Nat.descFactorial_zero, pochhammer_zero, Polynomial.eval_one]
@@ -172,7 +172,7 @@ theorem pochhammer_nat_eq_descFactorial (a b : ℕ) :
 #align pochhammer_nat_eq_desc_factorial pochhammer_nat_eq_descFactorial
 
 @[simp]
-theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
+lemma pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
     (pochhammer S n).natDegree = n := by
   induction' n with n hn
   · simp
@@ -189,7 +189,7 @@ section StrictOrderedSemiring
 
 variable {S : Type*} [StrictOrderedSemiring S]
 
-theorem pochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (pochhammer S n).eval s := by
+lemma pochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (pochhammer S n).eval s := by
   induction' n with n ih
   · simp only [Nat.zero_eq, pochhammer_zero, eval_one]
     exact zero_lt_one
@@ -207,17 +207,17 @@ open Nat
 variable (S : Type*) [Semiring S] (r n : ℕ)
 
 @[simp]
-theorem pochhammer_eval_one (S : Type*) [Semiring S] (n : ℕ) :
+lemma pochhammer_eval_one (S : Type*) [Semiring S] (n : ℕ) :
     (pochhammer S n).eval (1 : S) = (n ! : S) := by
   rw_mod_cast [pochhammer_nat_eq_ascFactorial, Nat.zero_ascFactorial]
 #align pochhammer_eval_one pochhammer_eval_one
 
-theorem factorial_mul_pochhammer (S : Type*) [Semiring S] (r n : ℕ) :
+lemma factorial_mul_pochhammer (S : Type*) [Semiring S] (r n : ℕ) :
     (r ! : S) * (pochhammer S n).eval (r + 1 : S) = (r + n)! := by
   rw_mod_cast [pochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 #align factorial_mul_pochhammer factorial_mul_pochhammer
 
-theorem pochhammer_nat_eval_succ (r : ℕ) :
+lemma pochhammer_nat_eval_succ (r : ℕ) :
     ∀ n : ℕ, n * (pochhammer ℕ r).eval (n + 1) = (n + r) * (pochhammer ℕ r).eval n
   | 0 => by
     by_cases h : r = 0
@@ -226,7 +226,7 @@ theorem pochhammer_nat_eval_succ (r : ℕ) :
   | k + 1 => by simp only [pochhammer_nat_eq_ascFactorial, Nat.succ_ascFactorial, add_right_comm]
 #align pochhammer_nat_eval_succ pochhammer_nat_eval_succ
 
-theorem pochhammer_eval_succ (r n : ℕ) :
+lemma pochhammer_eval_succ (r n : ℕ) :
     (n : S) * (pochhammer S r).eval (n + 1 : S) = (n + r) * (pochhammer S r).eval (n : S) := by
   exact_mod_cast congr_arg Nat.cast (pochhammer_nat_eval_succ r n)
 #align pochhammer_eval_succ pochhammer_eval_succ

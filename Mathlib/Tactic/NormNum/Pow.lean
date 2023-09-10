@@ -37,7 +37,7 @@ theorem IsNatPowT.run
 
 /-- This is the key to making the proof proceed as a balanced tree of applications instead of
 a linear sequence. It is just modus ponens after unwrapping the definitions. -/
-theorem IsNatPowT.trans (h1 : IsNatPowT p a b c) (h2 : IsNatPowT (Nat.pow a b = c) a b' c') :
+lemma IsNatPowT.trans (h1 : IsNatPowT p a b c) (h2 : IsNatPowT (Nat.pow a b = c) a b' c') :
     IsNatPowT p a b' c' := ⟨h2.run' ∘ h1.run'⟩
 
 lemma IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
@@ -99,16 +99,16 @@ where
       let ⟨c2, p2⟩ := go d a hi c1 b q(Nat.pow $a $hi = $c1) ⟨⟩
       ⟨c2, q(($p1).trans $p2)⟩
 
-theorem intPow_ofNat (h1 : Nat.pow a b = c) :
+lemma intPow_ofNat (h1 : Nat.pow a b = c) :
     Int.pow (Int.ofNat a) b = Int.ofNat c := by simp [← h1]
 
-theorem intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
+lemma intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
     Int.pow (Int.negOfNat a) b = Int.ofNat c := by
   rw [← hb, Int.negOfNat_eq, pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc, ← h1]
   simp
 
-theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
+lemma intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
   rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,

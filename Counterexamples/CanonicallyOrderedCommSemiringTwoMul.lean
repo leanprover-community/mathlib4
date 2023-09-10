@@ -59,13 +59,13 @@ instance : Preorder K where
 
 end FromBhavik
 
-theorem mem_zmod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
+lemma mem_zmod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
   rcases a with ⟨_ | _, _ | _ | _ | _⟩
   · exact Or.inl rfl
   · exact Or.inr rfl
 #align counterexample.mem_zmod_2 Counterexample.mem_zmod_2
 
-theorem add_self_zmod_2 (a : ZMod 2) : a + a = 0 := by rcases mem_zmod_2 a with (rfl | rfl) <;> rfl
+lemma add_self_zmod_2 (a : ZMod 2) : a + a = 0 := by rcases mem_zmod_2 a with (rfl | rfl) <;> rfl
 #align counterexample.add_self_zmod_2 Counterexample.add_self_zmod_2
 
 namespace Nxzmod2

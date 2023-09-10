@@ -42,7 +42,7 @@ lemma degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x p
     _ = degree p := degree_mul_leadingCoeff_inv p pnz
 #align minpoly.degree_le_of_ne_zero minpoly.degree_le_of_ne_zero
 
-theorem ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
+lemma ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
   minpoly.ne_zero <| isIntegral_of_finite _ _
 #align minpoly.ne_zero_of_finite_field_extension minpoly.ne_zero_of_finite
 
@@ -80,14 +80,14 @@ lemma dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   exact degree_modByMonic_lt _ (monic hx)
 #align minpoly.dvd minpoly.dvd
 
-theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
+lemma dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine' minpoly.dvd K x _
   rw [aeval_map_algebraMap, minpoly.aeval]
 #align minpoly.dvd_map_of_is_scalar_tower minpoly.dvd_map_of_isScalarTower
 
-theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
+lemma dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
     [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
@@ -97,7 +97,7 @@ theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRin
 #align minpoly.dvd_map_of_is_scalar_tower' minpoly.dvd_map_of_isScalarTower'
 
 /-- If `y` is a conjugate of `x` over a field `K`, then it is a conjugate over a subring `R`. -/
-theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K] [CommRing T]
+lemma aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K] [CommRing T]
     [Algebra R K] [Algebra K T] [Algebra R T] [IsScalarTower R K T] [CommSemiring U] [Algebra K U]
     [Algebra R U] [IsScalarTower R K U] (x : T) (y : U)
     (hy : Polynomial.aeval y (minpoly K x) = 0) : Polynomial.aeval y (minpoly R x) = 0 :=
@@ -205,12 +205,12 @@ variable (B) [Nontrivial B]
 
 /-- If `B/K` is a nontrivial algebra over a field, and `x` is an element of `K`,
 then the minimal polynomial of `algebraMap K B x` is `X - C x`. -/
-theorem eq_X_sub_C (a : A) : minpoly A (algebraMap A B a) = X - C a :=
+lemma eq_X_sub_C (a : A) : minpoly A (algebraMap A B a) = X - C a :=
   eq_X_sub_C_of_algebraMap_inj a (algebraMap A B).injective
 set_option linter.uppercaseLean3 false in
 #align minpoly.eq_X_sub_C minpoly.eq_X_sub_C
 
-theorem eq_X_sub_C' (a : A) : minpoly A a = X - C a :=
+lemma eq_X_sub_C' (a : A) : minpoly A a = X - C a :=
   eq_X_sub_C A a
 set_option linter.uppercaseLean3 false in
 #align minpoly.eq_X_sub_C' minpoly.eq_X_sub_C'
@@ -238,7 +238,7 @@ variable [Ring B] [IsDomain B] [Algebra A B]
 variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/
-theorem prime (hx : IsIntegral A x) : Prime (minpoly A x) := by
+lemma prime (hx : IsIntegral A x) : Prime (minpoly A x) := by
   refine' ⟨minpoly.ne_zero hx, not_isUnit A x, _⟩
   rintro p q ⟨d, h⟩
   have : Polynomial.aeval x (p * q) = 0 := by simp [h, aeval A x]
@@ -259,7 +259,7 @@ lemma root {x : B} (hx : IsIntegral A x) {y : A} (h : IsRoot (minpoly A x) y) :
 
 /-- The constant coefficient of the minimal polynomial of `x` is `0` if and only if `x = 0`. -/
 @[simp]
-theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔ x = 0 := by
+lemma coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔ x = 0 := by
   constructor
   · intro h
     have zero_root := zero_isRoot_of_coeff_zero_eq_zero h
@@ -270,7 +270,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
 #align minpoly.coeff_zero_eq_zero minpoly.coeff_zero_eq_zero
 
 /-- The minimal polynomial of a nonzero element has nonzero constant coefficient. -/
-theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
+lemma coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
   contrapose! h
   simpa only [hx, coeff_zero_eq_zero] using h
 #align minpoly.coeff_zero_ne_zero minpoly.coeff_zero_ne_zero

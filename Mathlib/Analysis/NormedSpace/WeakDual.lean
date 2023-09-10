@@ -119,12 +119,12 @@ def toWeakDual : Dual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
 #align normed_space.dual.to_weak_dual NormedSpace.Dual.toWeakDual
 
 @[simp]
-theorem coe_toWeakDual (x' : Dual 𝕜 E) : toWeakDual x' = x' :=
+lemma coe_toWeakDual (x' : Dual 𝕜 E) : toWeakDual x' = x' :=
   rfl
 #align normed_space.dual.coe_to_weak_dual NormedSpace.Dual.coe_toWeakDual
 
 @[simp]
-theorem toWeakDual_eq_iff (x' y' : Dual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
+lemma toWeakDual_eq_iff (x' y' : Dual 𝕜 E) : toWeakDual x' = toWeakDual y' ↔ x' = y' :=
   Function.Injective.eq_iff <| LinearEquiv.injective toWeakDual
 #align normed_space.dual.to_weak_dual_eq_iff NormedSpace.Dual.toWeakDual_eq_iff
 
@@ -162,21 +162,21 @@ def toNormedDual : WeakDual 𝕜 E ≃ₗ[𝕜] Dual 𝕜 E :=
   NormedSpace.Dual.toWeakDual.symm
 #align weak_dual.to_normed_dual WeakDual.toNormedDual
 
-theorem toNormedDual_apply (x : WeakDual 𝕜 E) (y : E) : (toNormedDual x) y = x y :=
+lemma toNormedDual_apply (x : WeakDual 𝕜 E) (y : E) : (toNormedDual x) y = x y :=
   rfl
 #align weak_dual.to_normed_dual_apply WeakDual.toNormedDual_apply
 
 @[simp]
-theorem coe_toNormedDual (x' : WeakDual 𝕜 E) : toNormedDual x' = x' :=
+lemma coe_toNormedDual (x' : WeakDual 𝕜 E) : toNormedDual x' = x' :=
   rfl
 #align weak_dual.coe_to_normed_dual WeakDual.coe_toNormedDual
 
 @[simp]
-theorem toNormedDual_eq_iff (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNormedDual y' ↔ x' = y' :=
+lemma toNormedDual_eq_iff (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNormedDual y' ↔ x' = y' :=
   Function.Injective.eq_iff <| LinearEquiv.injective toNormedDual
 #align weak_dual.to_normed_dual_eq_iff WeakDual.toNormedDual_eq_iff
 
-theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
+lemma isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
 #align weak_dual.is_closed_closed_ball WeakDual.isClosed_closedBall
 
@@ -193,13 +193,13 @@ def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
   toNormedDual ⁻¹' (NormedSpace.polar 𝕜) s
 #align weak_dual.polar WeakDual.polar
 
-theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
+lemma polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈ s, ‖f x‖ ≤ 1 } :=
   rfl
 #align weak_dual.polar_def WeakDual.polar_def
 
 /-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
 is used. -/
-theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
+lemma isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 #align weak_dual.is_closed_polar WeakDual.isClosed_polar

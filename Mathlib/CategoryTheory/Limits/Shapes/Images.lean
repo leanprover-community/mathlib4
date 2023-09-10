@@ -345,17 +345,17 @@ def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
 #align category_theory.limits.image.lift CategoryTheory.Limits.image.lift
 
 @[reassoc (attr := simp)]
-theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f :=
+lemma image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f :=
   (Image.isImage f).lift_fac F'
 #align category_theory.limits.image.lift_fac CategoryTheory.Limits.image.lift_fac
 
 @[reassoc (attr := simp)]
-theorem image.fac_lift (F' : MonoFactorisation f) : factorThruImage f ≫ image.lift F' = F'.e :=
+lemma image.fac_lift (F' : MonoFactorisation f) : factorThruImage f ≫ image.lift F' = F'.e :=
   (Image.isImage f).fac_lift F'
 #align category_theory.limits.image.fac_lift CategoryTheory.Limits.image.fac_lift
 
 @[simp]
-theorem image.isImage_lift (F : MonoFactorisation f) : (Image.isImage f).lift F = image.lift F :=
+lemma image.isImage_lift (F : MonoFactorisation f) : (Image.isImage f).lift F = image.lift F :=
   rfl
 #align category_theory.limits.image.is_image_lift CategoryTheory.Limits.image.isImage_lift
 
@@ -375,7 +375,7 @@ instance image.lift_mono (F' : MonoFactorisation f) : Mono (image.lift F') := by
   simpa using MonoFactorisation.m_mono _
 #align category_theory.limits.image.lift_mono CategoryTheory.Limits.image.lift_mono
 
-theorem HasImage.uniq (F' : MonoFactorisation f) (l : image f ⟶ F'.I) (w : l ≫ F'.m = image.ι f) :
+lemma HasImage.uniq (F' : MonoFactorisation f) (l : image f ⟶ F'.I) (w : l ≫ F'.m = image.ι f) :
     l = image.lift F' :=
   (cancel_mono F'.m).1 (by simp [w])
 #align category_theory.limits.has_image.uniq CategoryTheory.Limits.HasImage.uniq
@@ -1042,7 +1042,7 @@ open CategoryTheory.Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
-theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
+lemma hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=
   ⟨fun {X} {Y} f => by
     let em : StrongEpiMonoFactorisation (F.inv.map f) :=

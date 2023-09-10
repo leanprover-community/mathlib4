@@ -107,7 +107,7 @@ lemma lcm_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ∣ g b) : s.lcm f ∣ 
   lcm_dvd fun b hb ↦ (h b hb).trans (dvd_lcm hb)
 #align finset.lcm_mono_fun Finset.lcm_mono_fun
 
-theorem lcm_mono (h : s₁ ⊆ s₂) : s₁.lcm f ∣ s₂.lcm f :=
+lemma lcm_mono (h : s₁ ⊆ s₂) : s₁.lcm f ∣ s₂.lcm f :=
   lcm_dvd fun _ hb ↦ dvd_lcm (h hb)
 #align finset.lcm_mono Finset.lcm_mono
 
@@ -195,7 +195,7 @@ lemma gcd_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ∣ g b) : s.gcd f ∣ 
   dvd_gcd fun b hb ↦ (gcd_dvd hb).trans (h b hb)
 #align finset.gcd_mono_fun Finset.gcd_mono_fun
 
-theorem gcd_mono (h : s₁ ⊆ s₂) : s₂.gcd f ∣ s₁.gcd f :=
+lemma gcd_mono (h : s₁ ⊆ s₂) : s₂.gcd f ∣ s₁.gcd f :=
   dvd_gcd fun _ hb ↦ gcd_dvd (h hb)
 #align finset.gcd_mono Finset.gcd_mono
 
@@ -257,7 +257,7 @@ nonrec lemma gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * norm
       apply ((normalize_associated a).mul_left _).gcd_eq_right
 #align finset.gcd_mul_right Finset.gcd_mul_right
 
-theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
+lemma extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
     (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 :=
   ((@mul_right_eq_self₀ _ _ (s.gcd f) _).1 <| by
         conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
@@ -265,7 +265,7 @@ theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
     exact gcd_eq_zero_iff.1 hs
 #align finset.extract_gcd' Finset.extract_gcd'
 
-theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
+lemma extract_gcd (f : β → α) (hs : s.Nonempty) :
     ∃ g : β → α, (∀ b ∈ s, f b = s.gcd f * g b) ∧ s.gcd g = 1 := by
   classical
     by_cases h : ∀ x ∈ s, f x = (0 : α)

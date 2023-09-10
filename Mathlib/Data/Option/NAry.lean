@@ -50,28 +50,28 @@ lemma map₂_def {α β γ : Type _} (f : α → β → γ) (a : Option α) (b :
 #align option.map₂_def Option.map₂_def
 
 -- porting note: In Lean3, was `@[simp]` but now `simp` can prove it
-theorem map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
+lemma map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
 #align option.map₂_some_some Option.map₂_some_some
 
-theorem map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
+lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
 #align option.map₂_coe_coe Option.map₂_coe_coe
 
 @[simp]
-theorem map₂_none_left (f : α → β → γ) (b : Option β) : map₂ f none b = none := rfl
+lemma map₂_none_left (f : α → β → γ) (b : Option β) : map₂ f none b = none := rfl
 #align option.map₂_none_left Option.map₂_none_left
 
 @[simp]
-theorem map₂_none_right (f : α → β → γ) (a : Option α) : map₂ f a none = none := by cases a <;> rfl
+lemma map₂_none_right (f : α → β → γ) (a : Option α) : map₂ f a none = none := by cases a <;> rfl
 #align option.map₂_none_right Option.map₂_none_right
 
 @[simp]
-theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b => f a b :=
+lemma map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b => f a b :=
   rfl
 #align option.map₂_coe_left Option.map₂_coe_left
 
 -- porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
-theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) : map₂ f a b = a.map fun a => f a b :=
+lemma map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) : map₂ f a b = a.map fun a => f a b :=
   by cases a <;> rfl
 #align option.map₂_coe_right Option.map₂_coe_right
 
@@ -85,29 +85,29 @@ lemma map₂_eq_none_iff : map₂ f a b = none ↔ a = none ∨ b = none :=
   by cases a <;> cases b <;> simp
 #align option.map₂_eq_none_iff Option.map₂_eq_none_iff
 
-theorem map₂_swap (f : α → β → γ) (a : Option α) (b : Option β) :
+lemma map₂_swap (f : α → β → γ) (a : Option α) (b : Option β) :
     map₂ f a b = map₂ (fun a b => f b a) b a := by cases a <;> cases b <;> rfl
 #align option.map₂_swap Option.map₂_swap
 
-theorem map_map₂ (f : α → β → γ) (g : γ → δ) :
+lemma map_map₂ (f : α → β → γ) (g : γ → δ) :
     (map₂ f a b).map g = map₂ (fun a b => g (f a b)) a b := by cases a <;> cases b <;> rfl
 #align option.map_map₂ Option.map_map₂
 
-theorem map₂_map_left (f : γ → β → δ) (g : α → γ) :
+lemma map₂_map_left (f : γ → β → δ) (g : α → γ) :
     map₂ f (a.map g) b = map₂ (fun a b => f (g a) b) a b := by cases a <;> rfl
 #align option.map₂_map_left Option.map₂_map_left
 
-theorem map₂_map_right (f : α → γ → δ) (g : β → γ) :
+lemma map₂_map_right (f : α → γ → δ) (g : β → γ) :
     map₂ f a (b.map g) = map₂ (fun a b => f a (g b)) a b := by cases b <;> rfl
 #align option.map₂_map_right Option.map₂_map_right
 
 @[simp]
-theorem map₂_curry (f : α × β → γ) (a : Option α) (b : Option β) :
+lemma map₂_curry (f : α × β → γ) (a : Option α) (b : Option β) :
     map₂ (curry f) a b = Option.map f (map₂ Prod.mk a b) := (map_map₂ _ _).symm
 #align option.map₂_curry Option.map₂_curry
 
 @[simp]
-theorem map_uncurry (f : α → β → γ) (x : Option (α × β)) :
+lemma map_uncurry (f : α → β → γ) (x : Option (α × β)) :
     x.map (uncurry f) = map₂ f (x.map Prod.fst) (x.map Prod.snd) := by cases x <;> rfl
 #align option.map_uncurry Option.map_uncurry
 

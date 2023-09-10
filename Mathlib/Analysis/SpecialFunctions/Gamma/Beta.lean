@@ -93,7 +93,7 @@ lemma betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   · norm_num
 #align complex.beta_integral_convergent Complex.betaIntegral_convergent
 
-theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
+lemma betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
   rw [betaIntegral, betaIntegral]
   have := intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
     (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
@@ -112,7 +112,7 @@ lemma betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1 =
   · rwa [sub_re, one_re, ← sub_pos, sub_neg_eq_add, sub_add_cancel]
 #align complex.beta_integral_eval_one_right Complex.betaIntegral_eval_one_right
 
-theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
+lemma betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
     ∫ x in (0)..a, (x : ℂ) ^ (s - 1) * ((a : ℂ) - x) ^ (t - 1) =
     (a : ℂ) ^ (s + t - 1) * betaIntegral s t := by
   have ha' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha.ne'
@@ -250,7 +250,7 @@ lemma GammaSeq_eq_betaIntegral_of_re_pos {s : ℂ} (hs : 0 < re s) (n : ℕ) :
   rw [GammaSeq, betaIntegral_eval_nat_add_one_right hs n, ← mul_div_assoc]
 #align complex.Gamma_seq_eq_beta_integral_of_re_pos Complex.GammaSeq_eq_betaIntegral_of_re_pos
 
-theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
+lemma GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
     GammaSeq (s + 1) n / s = n / (n + 1 + s) * GammaSeq s n := by
   conv_lhs => rw [GammaSeq, Finset.prod_range_succ, div_div]
   conv_rhs =>
@@ -351,7 +351,7 @@ lemma approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
 #align complex.approx_Gamma_integral_tendsto_Gamma_integral Complex.approx_Gamma_integral_tendsto_Gamma_integral
 
 /-- Euler's limit formula for the complex Gamma function. -/
-theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
+lemma GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
   suffices ∀ m : ℕ, -↑m < re s → Tendsto (GammaSeq s) atTop (𝓝 <| GammaAux m s) by
     rw [Gamma]
     apply this
@@ -394,7 +394,7 @@ section GammaReflection
 
 namespace Complex
 
-theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
+lemma GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     GammaSeq z n * GammaSeq (1 - z) n =
       n / (n + ↑1 - z) * (↑1 / (z * ∏ j in Finset.range n, (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2))) := by
   -- also true for n = 0 but we don't need it
@@ -419,7 +419,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
 #align complex.Gamma_seq_mul Complex.GammaSeq_mul
 
 /-- Euler's reflection formula for the complex Gamma function. -/
-theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (π * z) := by
+lemma Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (π * z) := by
   have pi_ne : (π : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr pi_ne_zero
   by_cases hs : sin (↑π * z) = 0
   · -- first deal with silly case z = integer
@@ -468,7 +468,7 @@ lemma Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := by
     exact A.1
 #align complex.Gamma_ne_zero Complex.Gamma_ne_zero
 
-theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
+lemma Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
   constructor
   · contrapose!; exact Gamma_ne_zero
   · rintro ⟨m, rfl⟩; exact Gamma_neg_nat_eq_zero m
@@ -492,7 +492,7 @@ noncomputable def GammaSeq (s : ℝ) (n : ℕ) :=
 #align real.Gamma_seq Real.GammaSeq
 
 /-- Euler's limit formula for the real Gamma function. -/
-theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
+lemma GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
   suffices : Tendsto ((↑) ∘ GammaSeq s : ℕ → ℂ) atTop (𝓝 <| Complex.Gamma s)
   exact (Complex.continuous_re.tendsto (Complex.Gamma ↑s)).comp this
   convert Complex.GammaSeq_tendsto_Gamma s
@@ -503,7 +503,7 @@ theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
 #align real.Gamma_seq_tendsto_Gamma Real.GammaSeq_tendsto_Gamma
 
 /-- Euler's reflection formula for the real Gamma function. -/
-theorem Gamma_mul_Gamma_one_sub (s : ℝ) : Gamma s * Gamma (1 - s) = π / sin (π * s) := by
+lemma Gamma_mul_Gamma_one_sub (s : ℝ) : Gamma s * Gamma (1 - s) = π / sin (π * s) := by
   simp_rw [← Complex.ofReal_inj, Complex.ofReal_div, Complex.ofReal_sin, Complex.ofReal_mul, ←
     Complex.Gamma_ofReal, Complex.ofReal_sub, Complex.ofReal_one]
   exact Complex.Gamma_mul_Gamma_one_sub s
@@ -527,7 +527,7 @@ answer! (These results are useful in the theory of zeta and L-functions.) -/
 
 
 /-- A reformulation of the Gamma recurrence relation which is true for `s = 0` as well. -/
-theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
+lemma one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
     (Gamma s)⁻¹ = s * (Gamma (s + 1))⁻¹ := by
   rcases ne_or_eq s 0 with (h | rfl)
   · rw [Gamma_add_one s h, mul_inv, mul_inv_cancel_left₀ h]
@@ -573,7 +573,7 @@ do not have to do any special-case handling for the poles of `Γ`.)
 
 namespace Complex
 
-theorem Gamma_mul_Gamma_add_half (s : ℂ) :
+lemma Gamma_mul_Gamma_add_half (s : ℂ) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℂ) ^ (1 - 2 * s) * ↑(Real.sqrt π) := by
   suffices (fun z => (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) = fun z =>
       (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(Real.sqrt π) by
@@ -612,7 +612,7 @@ namespace Real
 
 open Complex
 
-theorem Gamma_mul_Gamma_add_half (s : ℝ) :
+lemma Gamma_mul_Gamma_add_half (s : ℝ) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * sqrt π := by
   rw [← ofReal_inj]
   simpa only [← Gamma_ofReal, ofReal_cpow zero_le_two, ofReal_mul, ofReal_add, ofReal_div,

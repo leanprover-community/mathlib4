@@ -29,7 +29,7 @@ lemma nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=
   ⟨⟨x, y, ne_of_lt h⟩⟩
 #align nontrivial_of_lt nontrivial_of_lt
 
-theorem exists_pair_lt (α : Type*) [Nontrivial α] [LinearOrder α] : ∃ x y : α, x < y := by
+lemma exists_pair_lt (α : Type*) [Nontrivial α] [LinearOrder α] : ∃ x y : α, x < y := by
   rcases exists_pair_ne α with ⟨x, y, hxy⟩
   cases lt_or_gt_of_ne hxy <;> exact ⟨_, _, ‹_›⟩
 #align exists_pair_lt exists_pair_lt
@@ -38,7 +38,7 @@ lemma nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x < y
   ⟨fun h ↦ @exists_pair_lt α h _, fun ⟨x, y, h⟩ ↦ nontrivial_of_lt x y h⟩
 #align nontrivial_iff_lt nontrivial_iff_lt
 
-theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
+lemma Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
   simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne.def, Subtype.ext_iff]
 #align subtype.nontrivial_iff_exists_ne Subtype.nontrivial_iff_exists_ne
@@ -87,7 +87,7 @@ namespace Pi
 variable {I : Type*} {f : I → Type*}
 
 /-- A pi type is nontrivial if it's nonempty everywhere and nontrivial somewhere. -/
-theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
+lemma nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
     Nontrivial (∀ i : I, f i) := by
   letI := Classical.decEq (∀ i : I, f i)
   exact (Function.update_injective (fun i ↦ Classical.choice (inst i)) i').nontrivial

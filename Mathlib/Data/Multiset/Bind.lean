@@ -49,17 +49,17 @@ lemma join_zero : @join α 0 = 0 :=
 #align multiset.join_zero Multiset.join_zero
 
 @[simp]
-theorem join_cons (s S) : @join α (s ::ₘ S) = s + join S :=
+lemma join_cons (s S) : @join α (s ::ₘ S) = s + join S :=
   sum_cons _ _
 #align multiset.join_cons Multiset.join_cons
 
 @[simp]
-theorem join_add (S T) : @join α (S + T) = join S + join T :=
+lemma join_add (S T) : @join α (S + T) = join S + join T :=
   sum_add _ _
 #align multiset.join_add Multiset.join_add
 
 @[simp]
-theorem singleton_join (a) : join ({a} : Multiset (Multiset α)) = a :=
+lemma singleton_join (a) : join ({a} : Multiset (Multiset α)) = a :=
   sum_singleton _
 #align multiset.singleton_join Multiset.singleton_join
 
@@ -70,7 +70,7 @@ lemma mem_join {a S} : a ∈ @join α S ↔ ∃ s ∈ S, a ∈ s :=
 #align multiset.mem_join Multiset.mem_join
 
 @[simp]
-theorem card_join (S) : card (@join α S) = sum (map card S) :=
+lemma card_join (S) : card (@join α S) = sum (map card S) :=
   Multiset.induction_on S (by simp) (by simp)
 #align multiset.card_join Multiset.card_join
 
@@ -94,7 +94,7 @@ def bind (s : Multiset α) (f : α → Multiset β) : Multiset β :=
 #align multiset.bind Multiset.bind
 
 @[simp]
-theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.bind f := by
+lemma coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.bind f := by
   rw [List.bind, ← coe_join, List.map_map]
   rfl
 #align multiset.coe_bind Multiset.coe_bind
@@ -125,14 +125,14 @@ lemma bind_add : (s.bind fun a => f a + g a) = s.bind f + s.bind g := by simp [b
 #align multiset.bind_add Multiset.bind_add
 
 @[simp]
-theorem bind_cons (f : α → β) (g : α → Multiset β) :
+lemma bind_cons (f : α → β) (g : α → Multiset β) :
     (s.bind fun a => f a ::ₘ g a) = map f s + s.bind g :=
   Multiset.induction_on s (by simp)
     (by simp (config := { contextual := true }) [add_comm, add_left_comm, add_assoc])
 #align multiset.bind_cons Multiset.bind_cons
 
 @[simp]
-theorem bind_singleton (f : α → β) : (s.bind fun x => ({f x} : Multiset β)) = map f s :=
+lemma bind_singleton (f : α → β) : (s.bind fun x => ({f x} : Multiset β)) = map f s :=
   Multiset.induction_on s (by rw [zero_bind, map_zero]) (by simp [singleton_add])
 #align multiset.bind_singleton Multiset.bind_singleton
 
@@ -156,12 +156,12 @@ lemma bind_hcongr {β' : Type _} {m : Multiset α} {f : α → Multiset β} {f' 
   simp [bind_congr hf]
 #align multiset.bind_hcongr Multiset.bind_hcongr
 
-theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
+lemma map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
     map f (bind m n) = bind m fun a => map f (n a) :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
 #align multiset.map_bind Multiset.map_bind
 
-theorem bind_map (m : Multiset α) (n : β → Multiset γ) (f : α → β) :
+lemma bind_map (m : Multiset α) (n : β → Multiset γ) (f : α → β) :
     bind (map f m) n = bind m fun a => n (f a) :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
 #align multiset.bind_map Multiset.bind_map
@@ -171,12 +171,12 @@ lemma bind_assoc {s : Multiset α} {f : α → Multiset β} {g : β → Multiset
   Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
 #align multiset.bind_assoc Multiset.bind_assoc
 
-theorem bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multiset γ} :
+lemma bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multiset γ} :
     ((bind m) fun a => (bind n) fun b => f a b) = (bind n) fun b => (bind m) fun a => f a b :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
 #align multiset.bind_bind Multiset.bind_bind
 
-theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
+lemma bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
     ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
 #align multiset.bind_map_comm Multiset.bind_map_comm
@@ -218,7 +218,7 @@ lemma le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : α
 #align multiset.le_bind Multiset.le_bind
 
 -- Porting note: @[simp] removed because not in normal form
-theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
+lemma attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
 #align multiset.attach_bind_coe Multiset.attach_bind_coe
@@ -242,7 +242,7 @@ instance instSProd : SProd (Multiset α) (Multiset β) (Multiset (α × β)) whe
   sprod := Multiset.product
 
 @[simp]
-theorem coe_product (l₁ : List α) (l₂ : List β) :
+lemma coe_product (l₁ : List α) (l₂ : List β) :
     (l₁ : Multiset α) ×ˢ (l₂ : Multiset β) = (l₁ ×ˢ l₂) := by
   dsimp only [SProd.sprod]
   rw [product, List.product, ← coe_bind]
@@ -273,12 +273,12 @@ lemma product_singleton : ({a} : Multiset α) ×ˢ ({b} : Multiset β) = {(a, b)
 #align multiset.product_singleton Multiset.product_singleton
 
 @[simp]
-theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s ×ˢ u + t ×ˢ u := by
+lemma add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s ×ˢ u + t ×ˢ u := by
   simp [SProd.sprod, product]
 #align multiset.add_product Multiset.add_product
 
 @[simp]
-theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
+lemma product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
   Multiset.induction_on s (fun t u => rfl) fun a s IH t u => by
     rw [cons_product, IH]
     simp [add_comm, add_left_comm, add_assoc]
@@ -309,7 +309,7 @@ protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (�
 #align multiset.sigma Multiset.sigma
 
 @[simp]
-theorem coe_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+lemma coe_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     (@Multiset.sigma α σ l₁ fun a => l₂ a) = l₁.sigma l₂ := by
   rw [Multiset.sigma, List.sigma, ← coe_bind]
   simp
@@ -326,13 +326,13 @@ lemma cons_sigma : (a ::ₘ s).sigma t = (t a).map (Sigma.mk a) + s.sigma t := b
 #align multiset.cons_sigma Multiset.cons_sigma
 
 @[simp]
-theorem sigma_singleton (b : α → β) :
+lemma sigma_singleton (b : α → β) :
     (({a} : Multiset α).sigma fun a => ({b a} : Multiset β)) = {⟨a, b a⟩} :=
   rfl
 #align multiset.sigma_singleton Multiset.sigma_singleton
 
 @[simp]
-theorem add_sigma (s t : Multiset α) (u : ∀ a, Multiset (σ a)) :
+lemma add_sigma (s t : Multiset α) (u : ∀ a, Multiset (σ a)) :
     (s + t).sigma u = s.sigma u + t.sigma u := by simp [Multiset.sigma]
 #align multiset.add_sigma Multiset.add_sigma
 

@@ -45,12 +45,12 @@ lemma totient_zero : φ 0 = 0 :=
 lemma totient_one : φ 1 = 1 := by simp [totient]
 #align nat.totient_one Nat.totient_one
 
-theorem totient_eq_card_coprime (n : ℕ) : φ n = ((range n).filter n.coprime).card :=
+lemma totient_eq_card_coprime (n : ℕ) : φ n = ((range n).filter n.coprime).card :=
   rfl
 #align nat.totient_eq_card_coprime Nat.totient_eq_card_coprime
 
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
-theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.coprime m } := by
+lemma totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.coprime m } := by
   let e : { m | m < n ∧ n.coprime m } ≃ Finset.filter n.coprime (Finset.range n) :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
@@ -59,11 +59,11 @@ theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n �
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 #align nat.totient_eq_card_lt_and_coprime Nat.totient_eq_card_lt_and_coprime
 
-theorem totient_le (n : ℕ) : φ n ≤ n :=
+lemma totient_le (n : ℕ) : φ n ≤ n :=
   ((range n).card_filter_le _).trans_eq (card_range n)
 #align nat.totient_le Nat.totient_le
 
-theorem totient_lt (n : ℕ) (hn : 1 < n) : φ n < n :=
+lemma totient_lt (n : ℕ) (hn : 1 < n) : φ n < n :=
   (card_lt_card (filter_ssubset.2 ⟨0, by simp [hn.ne', pos_of_gt hn]⟩)).trans_eq (card_range n)
 #align nat.totient_lt Nat.totient_lt
 
@@ -73,7 +73,7 @@ lemma totient_pos : ∀ {n : ℕ}, 0 < n → 0 < φ n
   | n + 2 => fun _ => card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by simp), coprime_one_right _⟩⟩
 #align nat.totient_pos Nat.totient_pos
 
-theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
+lemma filter_coprime_Ico_eq_totient (a n : ℕ) :
     ((Ico n (n + a)).filter (coprime a)).card = totient a := by
   rw [totient, filter_Ico_card_eq_of_periodic, count_eq_card_filter_range]
   exact periodic_coprime a
@@ -112,7 +112,7 @@ open ZMod
 /-- Note this takes an explicit `Fintype ((ZMod n)ˣ)` argument to avoid trouble with instance
 diamonds. -/
 @[simp]
-theorem _root_.ZMod.card_units_eq_totient (n : ℕ) [NeZero n] [Fintype (ZMod n)ˣ] :
+lemma _root_.ZMod.card_units_eq_totient (n : ℕ) [NeZero n] [Fintype (ZMod n)ˣ] :
     Fintype.card (ZMod n)ˣ = φ n :=
   calc
     Fintype.card (ZMod n)ˣ = Fintype.card { x : ZMod n // x.val.coprime n } :=
@@ -167,7 +167,7 @@ lemma totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
     rwa [gcd_mul_left, mul_right_eq_self_iff hd0] at hb2
 #align nat.totient_div_of_dvd Nat.totient_div_of_dvd
 
-theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
+lemma sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   rw [← sum_div_divisors n φ]
@@ -179,7 +179,7 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   exact sum_congr rfl fun x hx => totient_div_of_dvd (dvd_of_mem_divisors hx)
 #align nat.sum_totient Nat.sum_totient
 
-theorem sum_totient' (n : ℕ) : (∑ m in (range n.succ).filter (· ∣ n), φ m) = n := by
+lemma sum_totient' (n : ℕ) : (∑ m in (range n.succ).filter (· ∣ n), φ m) = n := by
   convert sum_totient _ using 1
   simp only [Nat.divisors, sum_filter, range_eq_Ico]
   rw [sum_eq_sum_Ico_succ_bot] <;> simp
@@ -248,7 +248,7 @@ lemma card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
   exact Nat.le_pred_of_lt (Nat.totient_lt p hp)
 #align nat.card_units_zmod_lt_sub_one Nat.card_units_zmod_lt_sub_one
 
-theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
+lemma prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
   cases' eq_zero_or_neZero p with hp hp
   · subst hp
@@ -290,7 +290,7 @@ lemma totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
 #align nat.totient_eq_prod_factorization Nat.totient_eq_prod_factorization
 
 /-- Euler's product formula for the totient function. -/
-theorem totient_mul_prod_factors (n : ℕ) :
+lemma totient_mul_prod_factors (n : ℕ) :
     (φ n * ∏ p in n.factors.toFinset, p) = n * ∏ p in n.factors.toFinset, (p - 1) := by
   by_cases hn : n = 0; · simp [hn]
   rw [totient_eq_prod_factorization hn]
@@ -302,7 +302,7 @@ theorem totient_mul_prod_factors (n : ℕ) :
 #align nat.totient_mul_prod_factors Nat.totient_mul_prod_factors
 
 /-- Euler's product formula for the totient function. -/
-theorem totient_eq_div_factors_mul (n : ℕ) :
+lemma totient_eq_div_factors_mul (n : ℕ) :
     φ n = (n / ∏ p in n.factors.toFinset, p) * ∏ p in n.factors.toFinset, (p - 1) := by
   rw [← mul_div_left n.totient, totient_mul_prod_factors, mul_comm,
     Nat.mul_div_assoc _ (prod_prime_factors_dvd n), mul_comm]
@@ -311,7 +311,7 @@ theorem totient_eq_div_factors_mul (n : ℕ) :
 #align nat.totient_eq_div_factors_mul Nat.totient_eq_div_factors_mul
 
 /-- Euler's product formula for the totient function. -/
-theorem totient_eq_mul_prod_factors (n : ℕ) :
+lemma totient_eq_mul_prod_factors (n : ℕ) :
     (φ n : ℚ) = n * ∏ p in n.factors.toFinset, (1 - (p : ℚ)⁻¹) := by
   by_cases hn : n = 0
   · simp [hn]
@@ -327,7 +327,7 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   rw [sub_mul, one_mul, mul_comm, mul_inv_cancel hp', cast_pred hp]
 #align nat.totient_eq_mul_prod_factors Nat.totient_eq_mul_prod_factors
 
-theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ a * φ b * a.gcd b := by
+lemma totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ a * φ b * a.gcd b := by
   have shuffle :
     ∀ a1 a2 b1 b2 c1 c2 : ℕ,
       b1 ∣ a1 → b2 ∣ a2 → a1 / b1 * c1 * (a2 / b2 * c2) = a1 * a2 / (b1 * b2) * (c1 * c2) := by
@@ -346,7 +346,7 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
     exact mul_dvd_mul (prod_prime_factors_dvd a) (prod_prime_factors_dvd b)
 #align nat.totient_gcd_mul_totient_mul Nat.totient_gcd_mul_totient_mul
 
-theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by
+lemma totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by
   let d := a.gcd b
   rcases(zero_le a).eq_or_lt with (rfl | ha0)
   · simp

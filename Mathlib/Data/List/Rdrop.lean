@@ -60,7 +60,7 @@ lemma rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) := 
 #align list.rdrop_eq_reverse_drop_reverse List.rdrop_eq_reverse_drop_reverse
 
 @[simp]
-theorem rdrop_concat_succ (x : α) : rdrop (l ++ [x]) (n + 1) = rdrop l n := by
+lemma rdrop_concat_succ (x : α) : rdrop (l ++ [x]) (n + 1) = rdrop l n := by
   simp [rdrop_eq_reverse_drop_reverse]
 #align list.rdrop_concat_succ List.rdrop_concat_succ
 
@@ -87,7 +87,7 @@ lemma rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := 
 #align list.rtake_eq_reverse_take_reverse List.rtake_eq_reverse_take_reverse
 
 @[simp]
-theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x] := by
+lemma rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x] := by
   simp [rtake_eq_reverse_take_reverse]
 #align list.rtake_concat_succ List.rtake_concat_succ
 
@@ -101,27 +101,27 @@ def rdropWhile : List α :=
 lemma rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile, dropWhile]
 #align list.rdrop_while_nil List.rdropWhile_nil
 
-theorem rdropWhile_concat (x : α) :
+lemma rdropWhile_concat (x : α) :
     rdropWhile p (l ++ [x]) = if p x then rdropWhile p l else l ++ [x] := by
   simp only [rdropWhile, dropWhile, reverse_append, reverse_singleton, singleton_append]
   split_ifs with h <;> simp [h]
 #align list.rdrop_while_concat List.rdropWhile_concat
 
 @[simp]
-theorem rdropWhile_concat_pos (x : α) (h : p x) : rdropWhile p (l ++ [x]) = rdropWhile p l := by
+lemma rdropWhile_concat_pos (x : α) (h : p x) : rdropWhile p (l ++ [x]) = rdropWhile p l := by
   rw [rdropWhile_concat, if_pos h]
 #align list.rdrop_while_concat_pos List.rdropWhile_concat_pos
 
 @[simp]
-theorem rdropWhile_concat_neg (x : α) (h : ¬p x) : rdropWhile p (l ++ [x]) = l ++ [x] := by
+lemma rdropWhile_concat_neg (x : α) (h : ¬p x) : rdropWhile p (l ++ [x]) = l ++ [x] := by
   rw [rdropWhile_concat, if_neg h]
 #align list.rdrop_while_concat_neg List.rdropWhile_concat_neg
 
-theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [x] := by
+lemma rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [x] := by
   rw [← nil_append [x], rdropWhile_concat, rdropWhile_nil]
 #align list.rdrop_while_singleton List.rdropWhile_singleton
 
-theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
+lemma rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l).getLast hl) := by
   simp_rw [rdropWhile]
   rw [getLast_reverse]
   exact dropWhile_nthLe_zero_not _ _ _
@@ -194,19 +194,19 @@ def rtakeWhile : List α :=
 lemma rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile, takeWhile]
 #align list.rtake_while_nil List.rtakeWhile_nil
 
-theorem rtakeWhile_concat (x : α) :
+lemma rtakeWhile_concat (x : α) :
     rtakeWhile p (l ++ [x]) = if p x then rtakeWhile p l ++ [x] else [] := by
   simp only [rtakeWhile, takeWhile, reverse_append, reverse_singleton, singleton_append]
   split_ifs with h <;> simp [h]
 #align list.rtake_while_concat List.rtakeWhile_concat
 
 @[simp]
-theorem rtakeWhile_concat_pos (x : α) (h : p x) :
+lemma rtakeWhile_concat_pos (x : α) (h : p x) :
     rtakeWhile p (l ++ [x]) = rtakeWhile p l ++ [x] := by rw [rtakeWhile_concat, if_pos h]
 #align list.rtake_while_concat_pos List.rtakeWhile_concat_pos
 
 @[simp]
-theorem rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [] := by
+lemma rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [] := by
   rw [rtakeWhile_concat, if_neg h]
 #align list.rtake_while_concat_neg List.rtakeWhile_concat_neg
 

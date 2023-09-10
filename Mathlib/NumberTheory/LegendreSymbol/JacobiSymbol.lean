@@ -96,24 +96,24 @@ namespace jacobiSym
 
 /-- The symbol `J(a | 0)` has the value `1`. -/
 @[simp]
-theorem zero_right (a : ℤ) : J(a | 0) = 1 := by
+lemma zero_right (a : ℤ) : J(a | 0) = 1 := by
   simp only [jacobiSym, factors_zero, List.prod_nil, List.pmap]
 #align jacobi_sym.zero_right jacobiSym.zero_right
 
 /-- The symbol `J(a | 1)` has the value `1`. -/
 @[simp]
-theorem one_right (a : ℤ) : J(a | 1) = 1 := by
+lemma one_right (a : ℤ) : J(a | 1) = 1 := by
   simp only [jacobiSym, factors_one, List.prod_nil, List.pmap]
 #align jacobi_sym.one_right jacobiSym.one_right
 
 /-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
-theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) :=
+lemma legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) :=
   by simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
 #align legendre_sym.to_jacobi_sym jacobiSym.legendreSym.to_jacobiSym
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
-theorem mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+lemma mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
     J(a | b₁ * b₂) = J(a | b₁) * J(a | b₂) := by
   rw [jacobiSym, ((perm_factors_mul hb₁ hb₂).pmap _).prod_eq, List.pmap_append, List.prod_append]
   case h => exact fun p hp => (List.mem_append.mp hp).elim prime_of_mem_factors prime_of_mem_factors
@@ -121,13 +121,13 @@ theorem mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b�
 #align jacobi_sym.mul_right' jacobiSym.mul_right'
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
-theorem mul_right (a : ℤ) (b₁ b₂ : ℕ) [NeZero b₁] [NeZero b₂] :
+lemma mul_right (a : ℤ) (b₁ b₂ : ℕ) [NeZero b₁] [NeZero b₂] :
     J(a | b₁ * b₂) = J(a | b₁) * J(a | b₂) :=
   mul_right' a (NeZero.ne b₁) (NeZero.ne b₂)
 #align jacobi_sym.mul_right jacobiSym.mul_right
 
 /-- The Jacobi symbol takes only the values `0`, `1` and `-1`. -/
-theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a | b) = -1 :=
+lemma trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a | b) = -1 :=
   ((@SignType.castHom ℤ _ _).toMonoidHom.mrange.copy {0, 1, -1} <| by
     rw [Set.pair_comm];
     exact (SignType.range_eq SignType.castHom).symm).list_prod_mem
@@ -140,7 +140,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
 
 /-- The symbol `J(1 | b)` has the value `1`. -/
 @[simp]
-theorem one_left (b : ℕ) : J(1 | b) = 1 :=
+lemma one_left (b : ℕ) : J(1 | b) = 1 :=
   List.prod_eq_one fun z hz => by
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
     -- porting note: The line 150 was added because Lean does not synthesize the instance
@@ -150,7 +150,7 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 #align jacobi_sym.one_left jacobiSym.one_left
 
 /-- The Jacobi symbol is multiplicative in its first argument. -/
-theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
+lemma mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
   simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _];
   exact List.prod_map_mul (α := ℤ) (l := (factors b).attach)
     (f := fun x ↦ @legendreSym x {out := prime_of_mem_factors x.2} a₁)
@@ -198,13 +198,13 @@ lemma eq_one_or_neg_one {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) = 1 ∨
 #align jacobi_sym.eq_one_or_neg_one jacobiSym.eq_one_or_neg_one
 
 /-- We have that `J(a^e | b) = J(a | b)^e`. -/
-theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
+lemma pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
   Nat.recOn e (by rw [_root_.pow_zero, _root_.pow_zero, one_left]) fun _ ih => by
     rw [_root_.pow_succ, _root_.pow_succ, mul_left, ih]
 #align jacobi_sym.pow_left jacobiSym.pow_left
 
 /-- We have that `J(a | b^e) = J(a | b)^e`. -/
-theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
+lemma pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction' e with e ih
   · rw [Nat.pow_zero, _root_.pow_zero, one_right]
   · cases' eq_zero_or_neZero b with hb
@@ -222,7 +222,7 @@ lemma sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by rw 
 #align jacobi_sym.sq_one' jacobiSym.sq_one'
 
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
-theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
+lemma mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
   congr_arg List.prod <|
     List.pmap_congr _
       (by
@@ -322,7 +322,7 @@ namespace jacobiSym
 
 /-- If `χ` is a multiplicative function such that `J(a | p) = χ p` for all odd primes `p`,
 then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
-theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
+lemma value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
     (hp : ∀ (p : ℕ) (pp : p.Prime) (_ : p ≠ 2), @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
     J(a | b) = χ b := by
   conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, χ.map_list_prod]
@@ -339,7 +339,7 @@ lemma at_neg_one {b : ℕ} (hb : Odd b) : J(-1 | b) = χ₄ b :=
 #align jacobi_sym.at_neg_one jacobiSym.at_neg_one
 
 /-- If `b` is odd, then `J(-a | b) = χ₄ b * J(a | b)`. -/
-protected theorem neg (a : ℤ) {b : ℕ} (hb : Odd b) : J(-a | b) = χ₄ b * J(a | b) := by
+protected lemma neg (a : ℤ) {b : ℕ} (hb : Odd b) : J(-a | b) = χ₄ b * J(a | b) := by
   rw [neg_eq_neg_one_mul, mul_left, at_neg_one hb]
 #align jacobi_sym.neg jacobiSym.neg
 
@@ -382,12 +382,12 @@ lemma sq_eq_one {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n ^ 2 = 1 := by
 #align qr_sign.sq_eq_one qrSign.sq_eq_one
 
 /-- `qrSign` is multiplicative in the first argument. -/
-theorem mul_left (m₁ m₂ n : ℕ) : qrSign (m₁ * m₂) n = qrSign m₁ n * qrSign m₂ n := by
+lemma mul_left (m₁ m₂ n : ℕ) : qrSign (m₁ * m₂) n = qrSign m₁ n * qrSign m₂ n := by
   simp_rw [qrSign, Nat.cast_mul, map_mul, jacobiSym.mul_left]
 #align qr_sign.mul_left qrSign.mul_left
 
 /-- `qrSign` is multiplicative in the second argument. -/
-theorem mul_right (m n₁ n₂ : ℕ) [NeZero n₁] [NeZero n₂] :
+lemma mul_right (m n₁ n₂ : ℕ) [NeZero n₁] [NeZero n₂] :
     qrSign m (n₁ * n₂) = qrSign m n₁ * qrSign m n₂ :=
   jacobiSym.mul_right (χ₄ m) n₁ n₂
 #align qr_sign.mul_right qrSign.mul_right
@@ -465,7 +465,7 @@ lemma quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : b 
 #align jacobi_sym.quadratic_reciprocity_three_mod_four jacobiSym.quadratic_reciprocity_three_mod_four
 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a` (version for `a : ℕ`). -/
-theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) := by
+lemma mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) := by
   rcases eq_or_ne a 0 with (rfl | ha₀)
   · rw [mul_zero, mod_zero]
   have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by norm_num) _)
@@ -490,7 +490,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
 #align jacobi_sym.mod_right' jacobiSym.mod_right'
 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a`. -/
-theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) := by
+lemma mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) := by
   cases' Int.natAbs_eq a with ha ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
   · exact mod_right' a.natAbs hb
   · have hb' : Odd (b % (4 * a.natAbs)) := hb.mod_even (Even.mul_right (by norm_num) _)

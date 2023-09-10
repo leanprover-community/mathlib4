@@ -200,7 +200,7 @@ def logGammaSeq (x : ℝ) (n : ℕ) : ℝ :=
 
 variable {f : ℝ → ℝ} {x : ℝ} {n : ℕ}
 
-theorem f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : n ≠ 0) :
+lemma f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : n ≠ 0) :
     f n = f 1 + log (n - 1)! := by
   refine' Nat.le_induction (by simp) (fun m hm IH => _) n (Nat.one_le_iff_ne_zero.2 hn)
   have A : 0 < (m : ℝ) := Nat.cast_pos.2 hm
@@ -212,7 +212,7 @@ theorem f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn
   exact (Nat.succ_pred_eq_of_pos hm).symm
 #align real.bohr_mollerup.f_nat_eq Real.BohrMollerup.f_nat_eq
 
-theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (n : ℕ) :
+lemma f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (n : ℕ) :
     f (x + n) = f x + ∑ m : ℕ in Finset.range n, log (x + m) := by
   induction' n with n hn
   · simp
@@ -224,7 +224,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
 #align real.bohr_mollerup.f_add_nat_eq Real.BohrMollerup.f_add_nat_eq
 
 /-- Linear upper bound for `f (x + n)` on unit interval -/
-theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
+lemma f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : n ≠ 0) (hx : 0 < x) (hx' : x ≤ 1) :
     f (n + x) ≤ f n + x * log n := by
   have hn' : 0 < (n : ℝ) := Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)
@@ -235,7 +235,7 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
 #align real.bohr_mollerup.f_add_nat_le Real.BohrMollerup.f_add_nat_le
 
 /-- Linear lower bound for `f (x + n)` on unit interval -/
-theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
+lemma f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : 2 ≤ n) (hx : 0 < x) :
     f n + x * log (n - 1) ≤ f (n + x) := by
   have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; linarith
@@ -251,7 +251,7 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
   rwa [this, le_div_iff hx, sub_sub_cancel, le_sub_iff_add_le, mul_comm _ x, add_comm] at c
 #align real.bohr_mollerup.f_add_nat_ge Real.BohrMollerup.f_add_nat_ge
 
-theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
+lemma logGammaSeq_add_one (x : ℝ) (n : ℕ) :
     logGammaSeq (x + 1) n = logGammaSeq x (n + 1) + log x - (x + 1) * (log (n + 1) - log n) := by
   dsimp only [Nat.factorial_succ, logGammaSeq]
   conv_rhs => rw [Finset.sum_range_succ', Nat.cast_zero, add_zero]
@@ -269,7 +269,7 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
   ring
 #align real.bohr_mollerup.log_gamma_seq_add_one Real.BohrMollerup.logGammaSeq_add_one
 
-theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
+lemma le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) (n : ℕ) :
     f x ≤ f 1 + x * log (n + 1) - x * log n + logGammaSeq x n := by
   rw [logGammaSeq, ← add_sub_assoc, le_sub_iff_add_le, ← f_add_nat_eq (@hf_feq) hx, add_comm x]
@@ -278,7 +278,7 @@ theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   ring
 #align real.bohr_mollerup.le_log_gamma_seq Real.BohrMollerup.le_logGammaSeq
 
-theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
+lemma ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hn : n ≠ 0) :
     f 1 + logGammaSeq x n ≤ f x := by
   dsimp [logGammaSeq]
@@ -291,7 +291,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     linarith [Nat.pos_of_ne_zero hn]
 #align real.bohr_mollerup.ge_log_gamma_seq Real.BohrMollerup.ge_logGammaSeq
 
-theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
+lemma tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
   refine' tendsto_of_tendsto_of_tendsto_of_le_of_le' _ tendsto_const_nhds _ _
@@ -312,7 +312,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     exact Tendsto.sub tendsto_const_nhds (tendsto_log_nat_add_one_sub_log.const_mul _)
 #align real.bohr_mollerup.tendsto_log_gamma_seq_of_le_one Real.BohrMollerup.tendsto_logGammaSeq_of_le_one
 
-theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
+lemma tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) :
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
   suffices ∀ m : ℕ, ↑m < x → x ≤ m + 1 → Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) by
@@ -450,7 +450,7 @@ def doublingGamma (s : ℝ) : ℝ :=
   Gamma (s / 2) * Gamma (s / 2 + 1 / 2) * 2 ^ (s - 1) / sqrt π
 #align real.doubling_Gamma Real.doublingGamma
 
-theorem doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) :
+lemma doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) :
     doublingGamma (s + 1) = s * doublingGamma s := by
   rw [doublingGamma, doublingGamma, (by abel : s + 1 - 1 = s - 1 + 1), add_div, add_assoc,
     add_halves (1 : ℝ), Gamma_add_one (div_ne_zero hs two_ne_zero), rpow_add two_pos, rpow_one]

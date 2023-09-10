@@ -82,7 +82,7 @@ instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
+lemma map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
   classical
     rw [← BoundedFormula.realize_restrictFreeVar Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
@@ -102,26 +102,26 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
 #align first_order.language.elementary_embedding.map_bounded_formula FirstOrder.Language.ElementaryEmbedding.map_boundedFormula
 
 @[simp]
-theorem map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :
+lemma map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :
     φ.Realize (f ∘ x) ↔ φ.Realize x := by
   rw [Formula.Realize, Formula.Realize, ← f.map_boundedFormula, Unique.eq_default (f ∘ default)]
 #align first_order.language.elementary_embedding.map_formula FirstOrder.Language.ElementaryEmbedding.map_formula
 
-theorem map_sentence (f : M ↪ₑ[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
+lemma map_sentence (f : M ↪ₑ[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
   rw [Sentence.Realize, Sentence.Realize, ← f.map_formula, Unique.eq_default (f ∘ default)]
 #align first_order.language.elementary_embedding.map_sentence FirstOrder.Language.ElementaryEmbedding.map_sentence
 
-theorem theory_model_iff (f : M ↪ₑ[L] N) (T : L.Theory) : M ⊨ T ↔ N ⊨ T := by
+lemma theory_model_iff (f : M ↪ₑ[L] N) (T : L.Theory) : M ⊨ T ↔ N ⊨ T := by
   simp only [Theory.model_iff, f.map_sentence]
 set_option linter.uppercaseLean3 false in
 #align first_order.language.elementary_embedding.Theory_model_iff FirstOrder.Language.ElementaryEmbedding.theory_model_iff
 
-theorem elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
+lemma elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
   elementarilyEquivalent_iff.2 f.map_sentence
 #align first_order.language.elementary_embedding.elementarily_equivalent FirstOrder.Language.ElementaryEmbedding.elementarilyEquivalent
 
 @[simp]
-theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
+lemma injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   intro x y
   have h :=
     φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i => if i = 0 then x else y
@@ -136,7 +136,7 @@ instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
 #align first_order.language.elementary_embedding.embedding_like FirstOrder.Language.ElementaryEmbedding.embeddingLike
 
 @[simp]
-theorem map_fun (φ : M ↪ₑ[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
+lemma map_fun (φ : M ↪ₑ[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     φ (funMap f x) = funMap f (φ ∘ x) := by
   have h := φ.map_formula (Formula.graph f) (Fin.cons (funMap f x) x)
   rw [Formula.realize_graph, Fin.comp_cons, Formula.realize_graph] at h
@@ -144,7 +144,7 @@ theorem map_fun (φ : M ↪ₑ[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n �
 #align first_order.language.elementary_embedding.map_fun FirstOrder.Language.ElementaryEmbedding.map_fun
 
 @[simp]
-theorem map_rel (φ : M ↪ₑ[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
+lemma map_rel (φ : M ↪ₑ[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
     RelMap r (φ ∘ x) ↔ RelMap r x :=
   haveI h := φ.map_formula (r.formula var) x
   h
@@ -156,7 +156,7 @@ instance strongHomClass : StrongHomClass L (M ↪ₑ[L] N) M N where
 #align first_order.language.elementary_embedding.strong_hom_class FirstOrder.Language.ElementaryEmbedding.strongHomClass
 
 @[simp]
-theorem map_constants (φ : M ↪ₑ[L] N) (c : L.Constants) : φ c = c :=
+lemma map_constants (φ : M ↪ₑ[L] N) (c : L.Constants) : φ c = c :=
   HomClass.map_constants φ c
 #align first_order.language.elementary_embedding.map_constants FirstOrder.Language.ElementaryEmbedding.map_constants
 
@@ -176,7 +176,7 @@ def toHom (f : M ↪ₑ[L] N) : M →[L] N where
 #align first_order.language.elementary_embedding.to_hom FirstOrder.Language.ElementaryEmbedding.toHom
 
 @[simp]
-theorem toEmbedding_toHom (f : M ↪ₑ[L] N) : f.toEmbedding.toHom = f.toHom :=
+lemma toEmbedding_toHom (f : M ↪ₑ[L] N) : f.toEmbedding.toHom = f.toHom :=
   rfl
 #align first_order.language.elementary_embedding.to_embedding_to_hom FirstOrder.Language.ElementaryEmbedding.toEmbedding_toHom
 
@@ -186,7 +186,7 @@ lemma coe_toHom {f : M ↪ₑ[L] N} : (f.toHom : M → N) = (f : M → N) :=
 #align first_order.language.elementary_embedding.coe_to_hom FirstOrder.Language.ElementaryEmbedding.coe_toHom
 
 @[simp]
-theorem coe_toEmbedding (f : M ↪ₑ[L] N) : (f.toEmbedding : M → N) = (f : M → N) :=
+lemma coe_toEmbedding (f : M ↪ₑ[L] N) : (f.toEmbedding : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.elementary_embedding.coe_to_embedding FirstOrder.Language.ElementaryEmbedding.coe_toEmbedding
 
@@ -216,7 +216,7 @@ instance : Inhabited (M ↪ₑ[L] M) :=
   ⟨refl L M⟩
 
 @[simp]
-theorem refl_apply (x : M) : refl L M x = x :=
+lemma refl_apply (x : M) : refl L M x = x :=
   rfl
 #align first_order.language.elementary_embedding.refl_apply FirstOrder.Language.ElementaryEmbedding.refl_apply
 
@@ -231,12 +231,12 @@ def comp (hnp : N ↪ₑ[L] P) (hmn : M ↪ₑ[L] N) : M ↪ₑ[L] P where
 #align first_order.language.elementary_embedding.comp FirstOrder.Language.ElementaryEmbedding.comp
 
 @[simp]
-theorem comp_apply (g : N ↪ₑ[L] P) (f : M ↪ₑ[L] N) (x : M) : g.comp f x = g (f x) :=
+lemma comp_apply (g : N ↪ₑ[L] P) (f : M ↪ₑ[L] N) (x : M) : g.comp f x = g (f x) :=
   rfl
 #align first_order.language.elementary_embedding.comp_apply FirstOrder.Language.ElementaryEmbedding.comp_apply
 
 /-- Composition of elementary embeddings is associative. -/
-theorem comp_assoc (f : M ↪ₑ[L] N) (g : N ↪ₑ[L] P) (h : P ↪ₑ[L] Q) :
+lemma comp_assoc (f : M ↪ₑ[L] N) (g : N ↪ₑ[L] P) (h : P ↪ₑ[L] Q) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align first_order.language.elementary_embedding.comp_assoc FirstOrder.Language.ElementaryEmbedding.comp_assoc
@@ -276,7 +276,7 @@ variable {L M}
 namespace Embedding
 
 /-- The Tarski-Vaught test for elementarity of an embedding. -/
-theorem isElementary_of_exists (f : M ↪[L] N)
+lemma isElementary_of_exists (f : M ↪[L] N)
     (htv :
       ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → M) (a : N),
         φ.Realize default (Fin.snoc (f ∘ x) a : _ → N) →
@@ -332,13 +332,13 @@ def toElementaryEmbedding (f : M ≃[L] N) : M ↪ₑ[L] N where
 #align first_order.language.equiv.to_elementary_embedding FirstOrder.Language.Equiv.toElementaryEmbedding
 
 @[simp]
-theorem toElementaryEmbedding_toEmbedding (f : M ≃[L] N) :
+lemma toElementaryEmbedding_toEmbedding (f : M ≃[L] N) :
     f.toElementaryEmbedding.toEmbedding = f.toEmbedding :=
   rfl
 #align first_order.language.equiv.to_elementary_embedding_to_embedding FirstOrder.Language.Equiv.toElementaryEmbedding_toEmbedding
 
 @[simp]
-theorem coe_toElementaryEmbedding (f : M ≃[L] N) :
+lemma coe_toElementaryEmbedding (f : M ≃[L] N) :
     (f.toElementaryEmbedding : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.equiv.coe_to_elementary_embedding FirstOrder.Language.Equiv.coe_toElementaryEmbedding
@@ -408,7 +408,7 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.elementary_substructure.induced_Structure FirstOrder.Language.ElementarySubstructure.inducedStructure
 
 @[simp]
-theorem isElementary (S : L.ElementarySubstructure M) : (S : L.Substructure M).IsElementary :=
+lemma isElementary (S : L.ElementarySubstructure M) : (S : L.Substructure M).IsElementary :=
   S.isElementary'
 #align first_order.language.elementary_substructure.is_elementary FirstOrder.Language.ElementarySubstructure.isElementary
 
@@ -433,7 +433,7 @@ instance instInhabited : Inhabited (L.ElementarySubstructure M) :=
 #align first_order.language.elementary_substructure.inhabited FirstOrder.Language.ElementarySubstructure.instInhabited
 
 @[simp]
-theorem mem_top (x : M) : x ∈ (⊤ : L.ElementarySubstructure M) :=
+lemma mem_top (x : M) : x ∈ (⊤ : L.ElementarySubstructure M) :=
   Set.mem_univ x
 #align first_order.language.elementary_substructure.mem_top FirstOrder.Language.ElementarySubstructure.mem_top
 
@@ -443,12 +443,12 @@ lemma coe_top : ((⊤ : L.ElementarySubstructure M) : Set M) = Set.univ :=
 #align first_order.language.elementary_substructure.coe_top FirstOrder.Language.ElementarySubstructure.coe_top
 
 @[simp]
-theorem realize_sentence (S : L.ElementarySubstructure M) (φ : L.Sentence) : S ⊨ φ ↔ M ⊨ φ :=
+lemma realize_sentence (S : L.ElementarySubstructure M) (φ : L.Sentence) : S ⊨ φ ↔ M ⊨ φ :=
   S.subtype.map_sentence φ
 #align first_order.language.elementary_substructure.realize_sentence FirstOrder.Language.ElementarySubstructure.realize_sentence
 
 @[simp]
-theorem theory_model_iff (S : L.ElementarySubstructure M) (T : L.Theory) : S ⊨ T ↔ M ⊨ T := by
+lemma theory_model_iff (S : L.ElementarySubstructure M) (T : L.Theory) : S ⊨ T ↔ M ⊨ T := by
   simp only [Theory.model_iff, realize_sentence]
 set_option linter.uppercaseLean3 false in
 #align first_order.language.elementary_substructure.Theory_model_iff FirstOrder.Language.ElementarySubstructure.theory_model_iff
@@ -462,7 +462,7 @@ instance instNonempty [Nonempty M] {S : L.ElementarySubstructure M} : Nonempty S
   (model_nonemptyTheory_iff L).1 inferInstance
 #align first_order.language.elementary_substructure.nonempty FirstOrder.Language.ElementarySubstructure.instNonempty
 
-theorem elementarilyEquivalent (S : L.ElementarySubstructure M) : S ≅[L] M :=
+lemma elementarilyEquivalent (S : L.ElementarySubstructure M) : S ≅[L] M :=
   S.subtype.elementarilyEquivalent
 #align first_order.language.elementary_substructure.elementarily_equivalent FirstOrder.Language.ElementarySubstructure.elementarilyEquivalent
 
@@ -471,7 +471,7 @@ end ElementarySubstructure
 namespace Substructure
 
 /-- The Tarski-Vaught test for elementarity of a substructure. -/
-theorem isElementary_of_exists (S : L.Substructure M)
+lemma isElementary_of_exists (S : L.Substructure M)
     (htv :
       ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → S) (a : M),
         φ.Realize default (Fin.snoc ((↑) ∘ x) a : _ → M) →

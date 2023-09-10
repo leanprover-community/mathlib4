@@ -67,7 +67,7 @@ lemma boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ 
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
 
-theorem boxProd_neighborSet (x : α × β) :
+lemma boxProd_neighborSet (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
@@ -168,7 +168,7 @@ end Walk
 
 variable {G H}
 
-protected theorem Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnected) :
+protected lemma Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnected) :
     (G □ H).Preconnected := by
   rintro x y
   obtain ⟨w₁⟩ := hG x.1 y.1
@@ -192,19 +192,19 @@ protected lemma Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preconn
   exact ⟨w.ofBoxProdRight⟩
 #align simple_graph.preconnected.of_box_prod_right SimpleGraph.Preconnected.ofBoxProdRight
 
-protected theorem Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected := by
+protected lemma Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected := by
   haveI := hG.nonempty
   haveI := hH.nonempty
   exact ⟨hG.preconnected.boxProd hH.preconnected⟩
 #align simple_graph.connected.box_prod SimpleGraph.Connected.boxProd
 
-protected theorem Connected.ofBoxProdLeft (h : (G □ H).Connected) : G.Connected := by
+protected lemma Connected.ofBoxProdLeft (h : (G □ H).Connected) : G.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
   haveI := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.ofBoxProdLeft⟩
 #align simple_graph.connected.of_box_prod_left SimpleGraph.Connected.ofBoxProdLeft
 
-protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connected := by
+protected lemma Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
   haveI := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.ofBoxProdRight⟩
@@ -227,7 +227,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
       simp only [eq_comm, and_comm])
 #align simple_graph.box_prod_fintype_neighbor_set SimpleGraph.boxProdFintypeNeighborSet
 
-theorem boxProd_neighborFinset (x : α × β)
+lemma boxProd_neighborFinset (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
       (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
@@ -238,7 +238,7 @@ theorem boxProd_neighborFinset (x : α × β)
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 #align simple_graph.box_prod_neighbor_finset SimpleGraph.boxProd_neighborFinset
 
-theorem boxProd_degree (x : α × β)
+lemma boxProd_degree (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
