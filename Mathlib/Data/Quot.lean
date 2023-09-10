@@ -342,6 +342,11 @@ theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
+/-- `Quotient.mk` is a surjective function. -/
+theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
+    Function.Surjective (Quotient.mk s) :=
+  Quot.exists_rep
+
 /-- `Quotient.mk'` is a surjective function. -/
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
@@ -788,6 +793,10 @@ protected theorem eq' [s₁ : Setoid α] {a b : α} :
 protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ @Setoid.r _ s₁ a b :=
   Quotient.eq
 #align quotient.eq' Quotient.eq''
+
+@[simp]
+protected theorem eq''' {a b : α} : Quotient.mk s₁ a = Quotient.mk s₁ b ↔ @Setoid.r _ s₁ a b :=
+  Quotient.eq
 
 /-- A version of `Quotient.out` taking `{s₁ : Setoid α}` as an implicit argument instead of an
 instance argument. -/

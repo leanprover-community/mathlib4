@@ -593,13 +593,13 @@ def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
 #align add_circle.equiv_Icc_quot AddCircle.equivIccQuot
 
 theorem equivIccQuot_comp_mk_eq_toIcoMod :
-    equivIccQuot p a ∘ Quotient.mk'' = fun x =>
+    equivIccQuot p a ∘ (Quotient.mk _) = fun x =>
       Quot.mk _ ⟨toIcoMod hp.out a x, Ico_subset_Icc_self <| toIcoMod_mem_Ico _ _ x⟩ :=
   rfl
 #align add_circle.equiv_Icc_quot_comp_mk_eq_to_Ico_mod AddCircle.equivIccQuot_comp_mk_eq_toIcoMod
 
 theorem equivIccQuot_comp_mk_eq_toIocMod :
-    equivIccQuot p a ∘ Quotient.mk'' = fun x =>
+    equivIccQuot p a ∘ (Quotient.mk _) = fun x =>
       Quot.mk _ ⟨toIocMod hp.out a x, Ioc_subset_Icc_self <| toIocMod_mem_Ioc _ _ x⟩ := by
   rw [equivIccQuot_comp_mk_eq_toIcoMod]
   funext x

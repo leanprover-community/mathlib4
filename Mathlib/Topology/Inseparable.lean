@@ -414,7 +414,7 @@ variable {t : Set (SeparationQuotient X)}
 namespace SeparationQuotient
 
 /-- The natural map from a topological space to its separation quotient. -/
-def mk : X → SeparationQuotient X := Quotient.mk''
+def mk : X → SeparationQuotient X := Quotient.mk _
 #align separation_quotient.mk SeparationQuotient.mk
 
 theorem quotientMap_mk : QuotientMap (mk : X → SeparationQuotient X) :=
