@@ -4,10 +4,10 @@
  [{"git":
    {"url": "https://github.com/EdAyers/ProofWidgets4",
     "subDir?": null,
-    "rev": "44e6673a20fc0449d003983d1e1f472df40f7107",
+    "rev": "a0c2cd0ac3245a0dade4f925bcfa97e06dd84229",
     "opts": {},
     "name": "proofwidgets",
-    "inputRev?": "v0.0.15",
+    "inputRev?": "v0.0.13",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
