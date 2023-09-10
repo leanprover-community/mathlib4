@@ -91,7 +91,9 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex.old (p : G.Walk v v) (
     rw [this]
     exact Nat.one_pos
 
-lemma tail_of_support_eq_support_of_tail : sorry := sorry
+lemma SimpleGraph.Walk.support_of_tail_eq_tail_of_support (p : G.Walk v v) (hnil : ¬p.Nil) : (p.tail hnil).support = p.support.tail := by
+  rw [←SimpleGraph.Walk.cons_support_tail p hnil]
+  rw [@List.tail_cons]
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
     (w : V) : w ∈ p.support := by
@@ -101,12 +103,12 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp :
         apply hp.ne_nil
       · let hamiltonian_path := p.tail hnil
         have supports : w ∈ hamiltonian_path.support → w ∈ p.support.tail
-        · sorry
+        · rw [support_of_tail_eq_tail_of_support]
+          simp
         · apply supports
           apply SimpleGraph.Walk.IsHamiltonian.contains_vertex hamiltonian_path _ w
           apply hp.path_hamiltonian
     · exact List.mem_of_mem_tail this
-
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.length = Fintype.card V := by
