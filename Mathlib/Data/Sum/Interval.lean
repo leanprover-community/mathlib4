@@ -323,8 +323,6 @@ namespace Lex
 variable [Preorder α] [Preorder β] [OrderTop α] [OrderBot β] [LocallyFiniteOrder α]
   [LocallyFiniteOrder β]
 
-#check ToLex
-
 /-- Throwaway tactic. -/
 local elab "simp_lex" : tactic => do
   Lean.Elab.Tactic.evalTactic <| ← `(tactic|
