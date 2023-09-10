@@ -494,7 +494,7 @@ theorem prime_divisors_eq_to_filter_divisors_prime (n : ℕ) :
 #align nat.prime_divisors_eq_to_filter_divisors_prime Nat.prime_divisors_eq_to_filter_divisors_prime
 
 lemma prime_divisors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
-    n.factors.toFinset.filter fun p => p ∣ m = m.factors.toFinset := by
+    n.factors.toFinset.filter (· ∣ m) = m.factors.toFinset := by
   simp_rw [prime_divisors_eq_to_filter_divisors_prime, filter_comm,
     divisors_filter_dvd_of_dvd hn hmn]
 
