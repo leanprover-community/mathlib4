@@ -33,11 +33,12 @@ and hence we check if the background task completed the proof at some stage.
 open Lean Meta Elab Term Tactic Core Parser Tactic
 open Std.Tactic
 
+universe u
 
 /--
 Helper for running to `IO` from `EIO`.
 -/
-def EIO.runToIO (eio: EIO Exception α) : IO α  := do
+def EIO.runToIO {α : Type}(eio: EIO Exception α) : IO α  := do
   match ←  eio.toIO' with
   | Except.ok x =>
       pure x
