@@ -31,9 +31,9 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
 * `T3Space`: A T₃ space, is one where given any closed `C` and `x ∉ C`,
   there is disjoint open sets containing `x` and `C` respectively. In `mathlib`, T₃ implies T₂.₅.
-* `NormalSpace`: A T₄ space (sometimes referred to as normal, but authors vary on
-  whether this includes T₂; `mathlib` does), is one where given two disjoint closed sets,
-  we can find two open sets that separate them. In `mathlib`, T₄ implies T₃.
+* `NormalSpace`: A normal space, is one where given two disjoint closed sets,
+  we can find two open sets that separate them.
+* `T4Space`: A T₄ space is a normal T₁ space. T₄ implies T₃.
 * `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*
 
 ## Main results
@@ -1820,7 +1820,7 @@ end NormalSpace
 
 section Normality
 
-/-- A T₄ space is a T₁ normal space. -/
+/-- A T₄ space is a normal T₁ space. -/
 class T4Space (α : Type u) [TopologicalSpace α] extends T1Space α, NormalSpace α : Prop
 #align normal_space NormalSpace
 
