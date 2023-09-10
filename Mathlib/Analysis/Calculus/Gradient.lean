@@ -67,12 +67,12 @@ def gradn (f : E → ℝ) (x : E) : E := grad (fderiv ℝ f x)
     is defined to be the dual of `fderiv` of `f` at `x` -/
 def grad_one (f : ℝ → ℝ) (x : ℝ) : ℝ := (toDual ℝ ℝ).symm (fderiv ℝ f x)
 
-/-- The gradient of a function `f` from Hilbert Space E to ℝ at a point `x` is `grad` 
+/-- The gradient of a function `f` from Hilbert Space E to ℝ at a point `x` is `grad`
     defined to be `f` Has `FDeriv` at `x` with the dual ContinuousLinearMap `⟨ gead , ⬝ ⟩`,
     which means `f y - f x = ⟨ gradf , y - x ⟩ + o (y - x)` -/
 def HasGradnAt (f : E → ℝ) (grad : E) (x : E) := HasFDerivAt f (∇* grad) x
 
-/-- The gradient of a function `f` from ℝ to ℝ at a point `x` is `grad` 
+/-- The gradient of a function `f` from ℝ to ℝ at a point `x` is `grad`
     defined to be `f` Has `FDeriv` at `x` with the dual ContinuousLinearMap `⟨ gead , ⬝ ⟩`,
     which means `f y - f x = ⟨ gradf , y - x ⟩ + o (y - x)` -/
 def HasGradoneAt (f : ℝ → ℝ) (grad : ℝ) (x : ℝ) := HasFDerivAt f (∇* grad) x
