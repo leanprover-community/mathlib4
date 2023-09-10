@@ -211,7 +211,8 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (have := FiniteDimensional.of_fintype_basis (b.map e)
     -- Porting note: Lean cannot infer the instance above
     @LinearMap.isOpenMap_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this _
-      e.surjective) := PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
+      e.surjective) :=
+  PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
 variable [MeasurableSpace E] [BorelSpace E]
