@@ -4,12 +4,12 @@ import Std.Tactic.GuardMsgs
 def transpose {m n} (A : m → n → Nat) : n → m → Nat
   | i, j => A j i
 
-lemma transpose_apply {m n} (A : m → n → Nat) (i j) :
+theorem transpose_apply {m n} (A : m → n → Nat) (i j) :
   transpose A i j = A j i := rfl
 
 attribute [eqns transpose_apply] transpose
 
-lemma transpose_const {m n} (c : Nat) :
+theorem transpose_const {m n} (c : Nat) :
     transpose (fun (_i : m) (_j : n) => c) = fun _j _i => c := by
   fail_if_success {rw [transpose]}
   fail_if_success {simp [transpose]}
@@ -18,9 +18,9 @@ lemma transpose_const {m n} (c : Nat) :
 
 def t : Nat := 0 + 1
 
-lemma t_def : t = 1 := rfl
+theorem t_def : t = 1 := rfl
 -- this rw causes lean to generate equations itself for t before the user can register them
-lemma t_def' : t = 1 := by rw [t]
+theorem t_def' : t = 1 := by rw [t]
 
 /--
 error: There already exist stored eqns for 't' registering new equations
