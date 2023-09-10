@@ -24,6 +24,15 @@ lemma mem_subCategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) 
     X ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj X) :=
   Functor.mem_homologicalKernel_iff _ X
 
+lemma mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ) :
+    (quotient _ _).obj K ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), K.ExactAt n := by
+  rw [mem_subCategoryAcyclic_iff]
+  have H : ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj ((quotient _ _).obj K)) ↔
+      K.ExactAt n := fun n => by
+    simp only [← HomologicalComplex.isZero_homology_iff]
+    exact ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app K).isZero_iff
+  simp only [H]
+
 def qis : MorphismProperty (HomotopyCategory C (ComplexShape.up ℤ)) := (subcategoryAcyclic C).W
 
 lemma mem_qis_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
