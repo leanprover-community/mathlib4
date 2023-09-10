@@ -912,8 +912,8 @@ theorem funext [Infinite R] {p q : R[X]} (ext : ∀ r : R, p.eval r = q.eval r) 
 
 variable [CommRing T]
 
-/-- `aroots p A` gives the multiset of the roots of `p` in an algebra `A`,
-including their multiplicities. -/
+/-- Given a polynomial `p` with coefficients in a ring `T` and a `T`-algebra `S`, `aroots p S` is
+the multiset of roots of `p` regarded as a polynomial over `S`. -/
 noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
   (p.map (algebraMap T S)).roots
 
@@ -933,9 +933,10 @@ theorem mem_aroots [CommRing S] [IsDomain S] [Algebra T S]
 theorem aroots_mul [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {p q : T[X]} (hpq : p * q ≠ 0) :
     (p * q).aroots S = p.aroots S + q.aroots S := by
-  rw [aroots_def, Polynomial.map_mul, roots_mul]
-  rwa [← Polynomial.map_mul, Polynomial.map_ne_zero_iff]
-  exact NoZeroSMulDivisors.algebraMap_injective T S
+  suffices : map (algebraMap T S) p * map (algebraMap T S) q ≠ 0
+  · rw [aroots_def, Polynomial.map_mul, roots_mul this]
+  rwa [← Polynomial.map_mul, Polynomial.map_ne_zero_iff
+    (NoZeroSMulDivisors.algebraMap_injective T S)]
 
 @[simp]
 theorem aroots_X_sub_C [CommRing S] [IsDomain S] [Algebra T S]
@@ -1057,8 +1058,7 @@ theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T
 
 theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
-  rw [mem_rootSet', Polynomial.map_ne_zero_iff]
-  exact NoZeroSMulDivisors.algebraMap_injective T S
+  rw [mem_rootSet', Polynomial.map_ne_zero_iff (NoZeroSMulDivisors.algebraMap_injective T S)]
 #align polynomial.mem_root_set Polynomial.mem_rootSet
 
 theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
