@@ -21,7 +21,7 @@ section Functor
 
 variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
 @[functor_norm]
-lemma Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
+theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
   (comp_map _ _ _).symm
 #align functor.map_map Functor.map_mapₓ
 -- order of implicits
@@ -51,12 +51,12 @@ def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
 variable [LawfulApplicative F]
 
 @[simp]
-lemma pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
+theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
   pure_id_seq x
 #align pure_id'_seq pure_id'_seq
 
 @[functor_norm]
-lemma seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
+theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
   simp [← pure_seq]
   simp [seq_assoc, ← comp_map, (· ∘ ·)]
@@ -64,7 +64,7 @@ lemma seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
 #align seq_map_assoc seq_map_assoc
 
 @[functor_norm]
-lemma map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
+theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
     f <$> (x <*> y) = (f ∘ ·) <$> x <*> y := by
   simp only [← pure_seq]; simp [seq_assoc]
 #align map_seq map_seq
@@ -87,12 +87,12 @@ def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool
     (Prod.map id (cons x) <$> List.partitionM p xs)
 #align list.mpartition List.partitionM
 
-lemma map_bind (x : m α) {g : α → m β} {f : β → γ} :
+theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
     f <$> (x >>= g) = x >>= fun a => f <$> g a := by
   rw [← bind_pure_comp, bind_assoc]; simp [bind_pure_comp]
 #align map_bind map_bind
 
-lemma seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
+theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
   show bind (f <$> x) g = bind x (g ∘ f)
   by rw [← bind_pure_comp, bind_assoc]; simp [pure_bind, (· ∘ ·)]
@@ -102,16 +102,16 @@ lemma seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 -- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]
-lemma fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
 #align fish_pure fish_pure
 
 @[functor_norm]
-lemma fish_pipe {α β} (f : α → m β) : pure >=> f = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by simp only [(· >=> ·), functor_norm]
 #align fish_pipe fish_pipe
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
-lemma fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
+theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
   simp only [(· >=> ·), functor_norm]
 #align fish_assoc fish_assoc
@@ -146,22 +146,22 @@ section
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
-lemma joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
+theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
   joinM (Functor.map f <$> a) = f <$> joinM a := by
   simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 
-lemma joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
+theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
   simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
 #align mjoin_map_mjoin joinM_map_joinM
 
 @[simp]
-lemma joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
+theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
   simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
 #align mjoin_map_pure joinM_map_pure
 
 @[simp]
-lemma joinM_pure {α : Type u} (a : m α) : joinM (pure a) = a :=
+theorem joinM_pure {α : Type u} (a : m α) : joinM (pure a) = a :=
   LawfulMonad.pure_bind a id
 #align mjoin_pure joinM_pure
 
@@ -187,11 +187,11 @@ def try? {α} (x : F α) : F (Option α) :=
   some <$> x <|> pure none
 
 @[simp]
-lemma guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
+theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
 #align guard_true guard_true
 
 @[simp]
-lemma guard_false {h : Decidable False} : @guard F _ False h = failure :=
+theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
   by simp [guard, if_neg not_false]
 #align guard_false guard_false
 
@@ -253,7 +253,7 @@ open Functor
 
 variable {m}
 
-lemma CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative m]
+theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative m]
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc

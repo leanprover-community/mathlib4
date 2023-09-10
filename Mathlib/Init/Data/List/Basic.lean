@@ -33,7 +33,7 @@ def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
 
 set_option linter.deprecated false in
 @[deprecated]
-lemma nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
+theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
@@ -41,8 +41,8 @@ def headI [Inhabited α] : List α → α
   | (a :: _) => a
 #align list.head List.headI
 
-@[simp] lemma headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
-@[simp] lemma headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
+@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
 
 #align list.map₂ List.zipWith
 
@@ -78,7 +78,7 @@ def getLastI [Inhabited α] : List α → α
 #align list.ret List.ret
 
 /-- `≤` implies not `>` for lists. -/
-lemma le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
+theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
 
 end List

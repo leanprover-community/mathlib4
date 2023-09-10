@@ -55,33 +55,33 @@ attribute [local simp] Function.comp
 
 attribute [local simp] ofList toList empty singleton cons push append
 
-lemma toList_ofList (l : List α) : DList.toList (DList.ofList l) = l := by
+theorem toList_ofList (l : List α) : DList.toList (DList.ofList l) = l := by
   cases l; rfl; simp only [DList.toList, DList.ofList, List.cons_append, List.append_nil]
 #align dlist.to_list_of_list Std.DList.toList_ofList
 
-lemma ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l := by
+theorem ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l := by
    cases' l with app inv
    simp only [ofList, toList, mk.injEq]
    funext x
    rw [(inv x)]
 #align dlist.of_list_to_list Std.DList.ofList_toList
 
-lemma toList_empty : toList (@empty α) = [] := by simp
+theorem toList_empty : toList (@empty α) = [] := by simp
 #align dlist.to_list_empty Std.DList.toList_empty
 
-lemma toList_singleton (x : α) : toList (singleton x) = [x] := by simp
+theorem toList_singleton (x : α) : toList (singleton x) = [x] := by simp
 #align dlist.to_list_singleton Std.DList.toList_singleton
 
-lemma toList_append (l₁ l₂ : DList α) : toList (l₁ ++ l₂) = toList l₁ ++ toList l₂ :=
+theorem toList_append (l₁ l₂ : DList α) : toList (l₁ ++ l₂) = toList l₁ ++ toList l₂ :=
   show toList (DList.append l₁ l₂) = toList l₁ ++ toList l₂ by
     cases' l₁ with _ l₁_invariant; cases' l₂; simp; rw [l₁_invariant]
 #align dlist.to_list_append Std.DList.toList_append
 
-lemma toList_cons (x : α) (l : DList α) : toList (cons x l) = x :: toList l := by
+theorem toList_cons (x : α) (l : DList α) : toList (cons x l) = x :: toList l := by
   cases l; simp
 #align dlist.to_list_cons Std.DList.toList_cons
 
-lemma toList_push (x : α) (l : DList α) : toList (push l x) = toList l ++ [x] := by
+theorem toList_push (x : α) (l : DList α) : toList (push l x) = toList l ++ [x] := by
   cases' l with _ l_invariant; simp; rw [l_invariant]
 #align dlist.to_list_concat Std.DList.toList_push
 
