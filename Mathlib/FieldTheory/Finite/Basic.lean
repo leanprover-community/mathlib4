@@ -269,10 +269,6 @@ theorem sum_subgroup_units
   · simp only [G_bot, ite_false]
     exact sum_subgroup_units_zero_of_ne_bot K G_bot
 
-theorem Fintype.exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
-    (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
-  sorry
-
 theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     [DecidableEq F] {G : Subgroup Fˣ} [Fintype G] {k : ℕ} (k_pos : 0 < k)
     (k_lt_card_G : k < Fintype.card G) : ∑ x : G, ((x : Fˣ) : F) ^ k = 0 := by
