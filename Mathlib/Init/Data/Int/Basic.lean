@@ -20,7 +20,7 @@ notation "ℤ" => Int
 
 namespace Int
 
-protected lemma coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
+protected theorem coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
   rfl
 #align int.coe_nat_eq Int.coe_nat_eq
 
@@ -49,13 +49,13 @@ protected lemma coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
 #align int.coe_nat_one Int.ofNat_one
 #align int.coe_nat_succ Int.ofNat_succ
 
-protected lemma ofNat_add_out (m n : ℕ) : ↑m + ↑n = (↑(m + n) : ℤ) := rfl
+protected theorem ofNat_add_out (m n : ℕ) : ↑m + ↑n = (↑(m + n) : ℤ) := rfl
 #align int.coe_nat_add_out Int.ofNat_add_out
 
-protected lemma ofNat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
+protected theorem ofNat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
 #align int.coe_nat_mul_out Int.ofNat_mul_out
 
-protected lemma ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := rfl
+protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := rfl
 #align int.coe_nat_add_one_out Int.ofNat_add_one_out
 
 #align int.of_nat_add_of_nat Int.ofNat_add_ofNat
@@ -74,7 +74,7 @@ protected lemma ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := 
 #align int.neg_succ_of_nat_inj_iff Int.negSucc_inj
 #align int.neg_succ_of_nat_eq Int.negSucc_eq
 
-protected lemma neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
+protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 #align int.neg_inj Int.neg_eq_neg
 
 #align int.sub_nat_nat_elim Int.subNatNat_elim
@@ -88,11 +88,11 @@ protected lemma neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 #align int.nat_abs Int.natAbs
 
 @[deprecated natAbs_eq_zero]
-lemma eq_zero_of_natAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0 := natAbs_eq_zero.1
+theorem eq_zero_of_natAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0 := natAbs_eq_zero.1
 #align int.eq_zero_of_nat_abs_eq_zero Int.eq_zero_of_natAbs_eq_zero
 
 @[deprecated natAbs_pos]
-lemma natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_pos.2 h
+theorem natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_pos.2 h
 #align int.nat_abs_pos_of_ne_zero Int.natAbs_pos_of_ne_zero
 
 #align int.nat_abs_zero Int.natAbs_zero

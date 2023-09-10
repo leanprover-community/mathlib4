@@ -18,7 +18,7 @@ namespace Thunk
 
 -- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
 @[ext]
-lemma ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
+theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
   have ⟨_⟩ := a
   have ⟨_⟩ := b
   congr
@@ -33,7 +33,7 @@ instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
 /-- The product of two thunks. -/
 def prod (a : Thunk α) (b : Thunk β) : Thunk (α × β) := Thunk.mk fun _ => (a.get, b.get)
 
-@[simp] lemma prod_get_fst : (prod a b).get.1 = a.get := rfl
-@[simp] lemma prod_get_snd : (prod a b).get.2 = b.get := rfl
+@[simp] theorem prod_get_fst : (prod a b).get.1 = a.get := rfl
+@[simp] theorem prod_get_snd : (prod a b).get.2 = b.get := rfl
 
 end Thunk
