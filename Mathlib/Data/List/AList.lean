@@ -180,7 +180,7 @@ lemma perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entri
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome
 
-theorem keys_subset_keys_of_entries_subset_entries
+lemma keys_subset_keys_of_entries_subset_entries
     {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
   intro k hk
   letI : DecidableEq α := Classical.decEq α

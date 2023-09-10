@@ -1392,7 +1392,7 @@ lemma cycleFactorsFinset_mem_commute : (cycleFactorsFinset f : Set (Perm α)).Pa
 #align equiv.perm.cycle_factors_finset_mem_commute Equiv.Perm.cycleFactorsFinset_mem_commute
 
 /-- The product of cycle factors is equal to the original `f : perm α`. -/
-theorem cycleFactorsFinset_noncommProd
+lemma cycleFactorsFinset_noncommProd
     (comm : (cycleFactorsFinset f : Set (Perm α)).Pairwise Commute :=
       cycleFactorsFinset_mem_commute f) :
     f.cycleFactorsFinset.noncommProd id comm = f :=
@@ -1697,7 +1697,7 @@ variable [Fintype α] {σ τ : Perm α}
 
 noncomputable section
 
-theorem isConj_of_support_equiv
+lemma isConj_of_support_equiv
     (f : { x // x ∈ (σ.support : Set α) } ≃ { x // x ∈ (τ.support : Set α) })
     (hf :
       ∀ (x : α) (hx : x ∈ (σ.support : Set α)),

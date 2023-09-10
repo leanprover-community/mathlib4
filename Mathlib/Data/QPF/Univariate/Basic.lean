@@ -83,7 +83,7 @@ lemma comp_map {α β γ : Type _} (f : α → β) (g : β → γ) (x : F α) :
   rfl
 #align qpf.comp_map Qpf.comp_map
 
-theorem lawfulFunctor
+lemma lawfulFunctor
     (h : ∀ α β : Type u, @Functor.mapConst F _ α _ = Functor.map ∘ Function.const β) :
     LawfulFunctor F :=
   { map_const := @h

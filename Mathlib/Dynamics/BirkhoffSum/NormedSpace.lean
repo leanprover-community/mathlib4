@@ -29,7 +29,7 @@ tend to `g x` as `N → ∞`. In fact, they are equal to `g x` for all `N ≠ 0`
 see `Function.IsFixedPt.birkhoffAverage_eq`.
 
 TODO: add a version for a periodic orbit. -/
-theorem Function.IsFixedPt.tendsto_birkhoffAverage
+lemma Function.IsFixedPt.tendsto_birkhoffAverage
     (R : Type*) [DivisionSemiring R] [CharZero R]
     [AddCommMonoid E] [TopologicalSpace E] [Module R E]
     {f : α → α} {x : α} (h : f.IsFixedPt x) (g : α → E) :
@@ -126,7 +126,7 @@ lemma uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Unifo
 then the set of points `x`
 such that the Birkhoff average of `g` along the orbit of `x` tends to `l x`
 is a closed set. -/
-theorem isClosed_setOf_tendsto_birkhoffAverage
+lemma isClosed_setOf_tendsto_birkhoffAverage
     (hf : LipschitzWith 1 f) (hg : UniformContinuous g) (hl : Continuous l) :
     IsClosed {x | Tendsto (birkhoffAverage 𝕜 f g · x) atTop (𝓝 (l x))} :=
   (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOf_tendsto hl

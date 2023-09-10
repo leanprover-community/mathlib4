@@ -454,7 +454,7 @@ variable {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[�
 
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `HasFDerivWithinAt`. -/
-theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
+lemma norm_image_sub_le_of_norm_hasFDerivWithin_le
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x‖ ≤ C) (hs : Convex ℝ s)
     (xs : x ∈ s) (ys : y ∈ s) : ‖f y - f x‖ ≤ C * ‖y - x‖ := by
   letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
@@ -552,7 +552,7 @@ lemma lipschitzOnWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Diffe
 
 /-- The mean value theorem: if the derivative of a function is bounded by `C`, then the function is
 `C`-Lipschitz. Version with `fderiv` and `LipschitzWith`. -/
-theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
+lemma _root_.lipschitzWith_of_nnnorm_fderiv_le
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
     {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖fderiv 𝕜 f x‖₊ ≤ C) : LipschitzWith C f := by
@@ -563,7 +563,7 @@ theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
 /-- Variant of the mean value inequality on a convex set, using a bound on the difference between
 the derivative and a fixed linear map, rather than a bound on the derivative itself. Version with
 `HasFDerivWithinAt`. -/
-theorem norm_image_sub_le_of_norm_hasFDerivWithin_le'
+lemma norm_image_sub_le_of_norm_hasFDerivWithin_le'
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x - φ‖ ≤ C)
     (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) : ‖f y - f x - φ (y - x)‖ ≤ C * ‖y - x‖ := by
   /- We subtract `φ` to define a new function `g` for which `g' = 0`, for which the previous theorem
@@ -605,7 +605,7 @@ lemma is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : DifferentiableO
     hs.norm_image_sub_le_of_norm_fderivWithin_le hf bound hx hy
 #align convex.is_const_of_fderiv_within_eq_zero Convex.is_const_of_fderivWithin_eq_zero
 
-theorem _root_.is_const_of_fderiv_eq_zero
+lemma _root_.is_const_of_fderiv_eq_zero
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
     (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
     (x y : E) : f x = f y := by
@@ -625,7 +625,7 @@ lemma eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f 
   rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
 #align convex.eq_on_of_fderiv_within_eq Convex.eqOn_of_fderivWithin_eq
 
-theorem _root_.eq_of_fderiv_eq
+lemma _root_.eq_of_fderiv_eq
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
     (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
@@ -1342,7 +1342,7 @@ variable {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G] [Normed
 
 /-- Over the reals or the complexes, a continuously differentiable function is strictly
 differentiable. -/
-theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
+lemma hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
     (hder : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hcont : ContinuousAt f' x) :
     HasStrictFDerivAt f (f' x) x := by
   -- turn little-o definition of strict_fderiv into an epsilon-delta statement

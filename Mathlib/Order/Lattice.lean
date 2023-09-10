@@ -622,7 +622,7 @@ instance OrderDual.lattice (α) [Lattice α] : Lattice αᵒᵈ :=
 /-- The partial orders from `SemilatticeSup_mk'` and `SemilatticeInf_mk'` agree
 if `sup` and `inf` satisfy the lattice absorption laws `sup_inf_self` (`a ⊔ a ⊓ b = a`)
 and `inf_sup_self` (`a ⊓ (a ⊔ b) = a`). -/
-theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
+lemma semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
     {α : Type*} [Sup α] [Inf α]
     (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a) (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c))
     (sup_idem : ∀ a : α, a ⊔ a = a) (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)

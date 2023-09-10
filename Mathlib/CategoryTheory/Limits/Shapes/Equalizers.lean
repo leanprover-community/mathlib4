@@ -94,11 +94,11 @@ def WalkingParallelPairHom.comp :
 #align category_theory.limits.walking_parallel_pair_hom.comp CategoryTheory.Limits.WalkingParallelPairHom.comp
 
 -- Porting note: adding these since they are simple and aesop couldn't directly prove them
-theorem WalkingParallelPairHom.id_comp
+lemma WalkingParallelPairHom.id_comp
     {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y) : comp (id X) g = g :=
   rfl
 
-theorem WalkingParallelPairHom.comp_id
+lemma WalkingParallelPairHom.comp_id
     {X Y : WalkingParallelPair} (f : WalkingParallelPairHom X Y) : comp f (id Y) = f := by
   cases f <;> rfl
 
@@ -1171,13 +1171,13 @@ abbrev HasCoequalizers :=
 #align category_theory.limits.has_coequalizers CategoryTheory.Limits.HasCoequalizers
 
 /-- If `C` has all limits of diagrams `parallelPair f g`, then it has all equalizers -/
-theorem hasEqualizers_of_hasLimit_parallelPair
+lemma hasEqualizers_of_hasLimit_parallelPair
     [∀ {X Y : C} {f g : X ⟶ Y}, HasLimit (parallelPair f g)] : HasEqualizers C :=
   { has_limit := fun F => hasLimitOfIso (diagramIsoParallelPair F).symm }
 #align category_theory.limits.has_equalizers_of_has_limit_parallel_pair CategoryTheory.Limits.hasEqualizers_of_hasLimit_parallelPair
 
 /-- If `C` has all colimits of diagrams `parallelPair f g`, then it has all coequalizers -/
-theorem hasCoequalizers_of_hasColimit_parallelPair
+lemma hasCoequalizers_of_hasColimit_parallelPair
     [∀ {X Y : C} {f g : X ⟶ Y}, HasColimit (parallelPair f g)] : HasCoequalizers C :=
   { has_colimit := fun F => hasColimitOfIso (diagramIsoParallelPair F) }
 #align category_theory.limits.has_coequalizers_of_has_colimit_parallel_pair CategoryTheory.Limits.hasCoequalizers_of_hasColimit_parallelPair

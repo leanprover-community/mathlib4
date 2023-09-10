@@ -51,7 +51,7 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] [ne : Nonempty ι] (e f : Or
 
 /-- The change-of-basis matrix between two orthonormal bases with the same orientation has
 determinant 1. -/
-theorem det_to_matrix_orthonormalBasis_of_same_orientation
+lemma det_to_matrix_orthonormalBasis_of_same_orientation
     (h : e.toBasis.orientation = f.toBasis.orientation) : e.toBasis.det f = 1 := by
   apply (e.det_to_matrix_orthonormalBasis_real f).resolve_right
   have : 0 < e.toBasis.det f := by
@@ -62,7 +62,7 @@ theorem det_to_matrix_orthonormalBasis_of_same_orientation
 
 /-- The change-of-basis matrix between two orthonormal bases with the opposite orientations has
 determinant -1. -/
-theorem det_to_matrix_orthonormalBasis_of_opposite_orientation
+lemma det_to_matrix_orthonormalBasis_of_opposite_orientation
     (h : e.toBasis.orientation ≠ f.toBasis.orientation) : e.toBasis.det f = -1 := by
   contrapose! h
   simp [e.toBasis.orientation_eq_iff_det_pos,

@@ -761,7 +761,7 @@ def toOrderHom : α →o β where
 
 end RelHom
 
-theorem RelEmbedding.toOrderHom_injective
+lemma RelEmbedding.toOrderHom_injective
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) :
     Function.Injective (f : ((· < ·) : α → α → Prop) →r ((· < ·) : β → β → Prop)).toOrderHom :=
   fun _ _ h => f.injective h

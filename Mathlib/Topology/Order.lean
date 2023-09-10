@@ -363,7 +363,7 @@ lemma discreteTopology_iff_nhds_ne [TopologicalSpace α] :
 then so does the domain.
 
 See also `Embedding.discreteTopology` for an important special case. -/
-theorem DiscreteTopology.of_continuous_injective
+lemma DiscreteTopology.of_continuous_injective
     {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β] {f : α → β}
     (hc : Continuous f) (hinj : Injective f) : DiscreteTopology α :=
   forall_open_iff_discrete.1 fun s ↦ hinj.preimage_image s ▸ (isOpen_discrete _).preimage hc

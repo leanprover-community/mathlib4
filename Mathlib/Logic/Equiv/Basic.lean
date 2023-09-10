@@ -1442,7 +1442,7 @@ lemma subtypeEquivCodomain_symm_apply_eq (f : { x' // x' ≠ x } → Y) (y : Y) 
   dif_neg (not_not.mpr rfl)
 #align equiv.subtype_equiv_codomain_symm_apply_eq Equiv.subtypeEquivCodomain_symm_apply_eq
 
-theorem subtypeEquivCodomain_symm_apply_ne
+lemma subtypeEquivCodomain_symm_apply_ne
     (f : { x' // x' ≠ x } → Y) (y : Y) (x' : X) (h : x' ≠ x) :
     ((subtypeEquivCodomain f).symm y : X → Y) x' = f ⟨x', h⟩ :=
   dif_pos h
@@ -1945,7 +1945,7 @@ end BinaryOp
 
 end Equiv
 
-theorem Function.Injective.swap_apply
+lemma Function.Injective.swap_apply
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y z : α) :
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) := by
   by_cases hx:z = x
@@ -1957,7 +1957,7 @@ theorem Function.Injective.swap_apply
   rw [Equiv.swap_apply_of_ne_of_ne hx hy, Equiv.swap_apply_of_ne_of_ne (hf.ne hx) (hf.ne hy)]
 #align function.injective.swap_apply Function.Injective.swap_apply
 
-theorem Function.Injective.swap_comp
+lemma Function.Injective.swap_comp
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y : α) :
     Equiv.swap (f x) (f y) ∘ f = f ∘ Equiv.swap x y :=
   funext fun _ => hf.swap_apply _ _ _

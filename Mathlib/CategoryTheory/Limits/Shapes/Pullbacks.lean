@@ -2666,13 +2666,13 @@ abbrev HasPushouts :=
 #align category_theory.limits.has_pushouts CategoryTheory.Limits.HasPushouts
 
 /-- If `C` has all limits of diagrams `cospan f g`, then it has all pullbacks -/
-theorem hasPullbacks_of_hasLimit_cospan
+lemma hasPullbacks_of_hasLimit_cospan
     [∀ {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}, HasLimit (cospan f g)] : HasPullbacks C :=
   { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
 #align category_theory.limits.has_pullbacks_of_has_limit_cospan CategoryTheory.Limits.hasPullbacks_of_hasLimit_cospan
 
 /-- If `C` has all colimits of diagrams `span f g`, then it has all pushouts -/
-theorem hasPushouts_of_hasColimit_span
+lemma hasPushouts_of_hasColimit_span
     [∀ {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}, HasColimit (span f g)] : HasPushouts C :=
   { has_colimit := fun F => hasColimitOfIso (diagramIsoSpan F) }
 #align category_theory.limits.has_pushouts_of_has_colimit_span CategoryTheory.Limits.hasPushouts_of_hasColimit_span

@@ -250,7 +250,7 @@ lemma IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).Is
       rw [← Category.assoc, map_comp_apply, h₃, map_comp_apply]
 #align category_theory.functor.is_mittag_leffler.to_preimages CategoryTheory.Functor.IsMittagLeffler.toPreimages
 
-theorem isMittagLeffler_of_exists_finite_range
+lemma isMittagLeffler_of_exists_finite_range
     (h : ∀ j : J, ∃ (i : _) (f : i ⟶ j), (range <| F.map f).Finite) : F.IsMittagLeffler := by
   intro j
   obtain ⟨i, hi, hf⟩ := h j

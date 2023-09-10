@@ -328,7 +328,7 @@ lemma locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → E}
 
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
-theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
+lemma LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
     [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X]
     (hf : LocallyIntegrable f μ) {g : X → ℝ} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ g x • f x) μ := by
@@ -347,7 +347,7 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
 
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `f • g` is integrable. -/
-theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
+lemma LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
     [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → ℝ} (hf : LocallyIntegrable f μ)
     {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ f x • g x) μ := by

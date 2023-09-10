@@ -218,7 +218,7 @@ def lift₂ :
 #align sym2.lift₂ Sym2.lift₂
 
 @[simp]
-theorem lift₂_mk''
+lemma lift₂_mk''
   (f :
     { f : α → α → β → β → γ //
       ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ })

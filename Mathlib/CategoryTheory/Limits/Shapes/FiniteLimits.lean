@@ -64,7 +64,7 @@ instance (priority := 100) hasFiniteLimits_of_hasLimits [HasLimits C] : HasFinit
 
 /-- We can always derive `HasFiniteLimits C` by providing limits at an
 arbitrary universe. -/
-theorem hasFiniteLimits_of_hasFiniteLimits_of_size
+lemma hasFiniteLimits_of_hasFiniteLimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasLimitsOfShape J C) :
     HasFiniteLimits C where
   out := fun J hJ hhJ => by
@@ -109,7 +109,7 @@ instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOf
 
 /-- We can always derive `HasFiniteColimits C` by providing colimits at an
 arbitrary universe. -/
-theorem hasFiniteColimits_of_hasFiniteColimits_of_size
+lemma hasFiniteColimits_of_hasFiniteColimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasColimitsOfShape J C) :
     HasFiniteColimits C where
   out := fun J hJ hhJ => by

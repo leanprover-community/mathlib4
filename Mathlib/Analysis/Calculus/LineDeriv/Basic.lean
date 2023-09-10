@@ -135,7 +135,7 @@ lemma LineDifferentiableAt.hasLineDerivAt (h : LineDifferentiableAt 𝕜 f x v) 
     HasLineDerivWithinAt 𝕜 f f' univ x v ↔ HasLineDerivAt 𝕜 f f' x v := by
   simp only [HasLineDerivWithinAt, HasLineDerivAt, preimage_univ, hasDerivWithinAt_univ]
 
-theorem lineDerivWithin_zero_of_not_lineDifferentiableWithinAt
+lemma lineDerivWithin_zero_of_not_lineDifferentiableWithinAt
     (h : ¬LineDifferentiableWithinAt 𝕜 f s x v) :
     lineDerivWithin 𝕜 f s x v = 0 :=
   derivWithin_zero_of_not_differentiableWithinAt h
@@ -232,14 +232,14 @@ Results that need a normed space structure on `E`
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f f₀ f₁ : E → F} {f' : F} {s t : Set E} {x v : E} {L : E →L[𝕜] F}
 
-theorem HasLineDerivWithinAt.mono_of_mem
+lemma HasLineDerivWithinAt.mono_of_mem
     (h : HasLineDerivWithinAt 𝕜 f f' t x v) (hst : t ∈ 𝓝[s] x) :
     HasLineDerivWithinAt 𝕜 f f' s x v := by
   apply HasDerivWithinAt.mono_of_mem h
   apply ContinuousWithinAt.preimage_mem_nhdsWithin'' _ hst (by simp)
   apply Continuous.continuousWithinAt; continuity
 
-theorem HasLineDerivWithinAt.hasLineDerivAt
+lemma HasLineDerivWithinAt.hasLineDerivAt
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : s ∈ 𝓝 x) :
     HasLineDerivAt 𝕜 f f' x v := by
   rw [← hasLineDerivWithinAt_univ]
@@ -329,13 +329,13 @@ lemma Filter.EventuallyEq.hasLineDerivWithinAt_iff_of_mem (h : f₀ =ᶠ[𝓝[s]
     HasLineDerivWithinAt 𝕜 f₀ f' s x v ↔ HasLineDerivWithinAt 𝕜 f₁ f' s x v :=
   h.hasLineDerivWithinAt_iff (h.eq_of_nhdsWithin hx)
 
-theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff
+lemma Filter.EventuallyEq.lineDifferentiableWithinAt_iff
     (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : f₀ x = f₁ x) :
     LineDifferentiableWithinAt 𝕜 f₀ s x v ↔ LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   ⟨fun h' ↦ ((h.hasLineDerivWithinAt_iff hx).1 h'.hasLineDerivWithinAt).lineDifferentiableWithinAt,
   fun h' ↦ ((h.hasLineDerivWithinAt_iff hx).2 h'.hasLineDerivWithinAt).lineDifferentiableWithinAt⟩
 
-theorem Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem
+lemma Filter.EventuallyEq.lineDifferentiableWithinAt_iff_of_mem
     (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : x ∈ s) :
     LineDifferentiableWithinAt 𝕜 f₀ s x v ↔ LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   h.lineDifferentiableWithinAt_iff (h.eq_of_nhdsWithin hx)
@@ -357,7 +357,7 @@ lemma LineDifferentiableWithinAt.congr_of_eventuallyEq (h : LineDifferentiableWi
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : LineDifferentiableWithinAt 𝕜 f₁ s x v :=
   (h.hasLineDerivWithinAt.congr_of_eventuallyEq h₁ hx).differentiableWithinAt
 
-theorem LineDifferentiableAt.congr_of_eventuallyEq
+lemma LineDifferentiableAt.congr_of_eventuallyEq
     (h : LineDifferentiableAt 𝕜 f x v) (hL : f₁ =ᶠ[𝓝 x] f) :
     LineDifferentiableAt 𝕜 f₁ x v := by
   apply DifferentiableAt.congr_of_eventuallyEq h
@@ -397,7 +397,7 @@ lemma HasLineDerivAt.le_of_lip' {f : E → F} {f' : F} {x₀ : E} (hf : HasLineD
 on a neighborhood of `x₀` then its line derivative at `x₀` in the direction `v` has norm
 bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
 neighborhood of `x`. -/
-theorem HasLineDerivAt.le_of_lipschitzOn
+lemma HasLineDerivAt.le_of_lipschitzOn
     {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) :
     ‖f'‖ ≤ C * ‖v‖ := by
@@ -406,7 +406,7 @@ theorem HasLineDerivAt.le_of_lipschitzOn
 
 /-- Converse to the mean value inequality: if `f` is line differentiable at `x₀` and `C`-lipschitz
 then its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v‖`. -/
-theorem HasLineDerivAt.le_of_lipschitz
+lemma HasLineDerivAt.le_of_lipschitz
     {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C * ‖v‖ :=
   hf.le_of_lipschitzOn univ_mem (lipschitzOn_univ.2 hlip)

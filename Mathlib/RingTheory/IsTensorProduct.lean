@@ -260,7 +260,7 @@ lemma IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m :=
 
 variable (f)
 
-theorem IsBaseChange.of_lift_unique
+lemma IsBaseChange.of_lift_unique
     (h : ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
       ∀ [Module R Q] [Module S Q], ∀ [IsScalarTower R S Q],
         ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g) :

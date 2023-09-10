@@ -34,7 +34,7 @@ open MemRightTransversals
 
 variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
-theorem closure_mul_image_mul_eq_top
+lemma closure_mul_image_mul_eq_top
     (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (1 : G) ∈ R) (hS : closure S = ⊤) :
     (closure ((R * S).image fun g => g * (toFun hR g : G)⁻¹)) * R = ⊤ := by
   let f : G → R := fun g => toFun hR g

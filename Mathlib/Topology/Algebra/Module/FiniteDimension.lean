@@ -409,7 +409,7 @@ variable [FiniteDimensional 𝕜 F]
 
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if they have the same (finite) dimension. -/
-theorem FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
+lemma FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
     (cond : finrank 𝕜 E = finrank 𝕜 F) : Nonempty (E ≃L[𝕜] F) :=
   (nonempty_linearEquiv_of_finrank_eq cond).map LinearEquiv.toContinuousLinearEquiv
 #align finite_dimensional.nonempty_continuous_linear_equiv_of_finrank_eq FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq

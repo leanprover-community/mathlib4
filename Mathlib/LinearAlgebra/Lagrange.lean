@@ -71,7 +71,7 @@ lemma eq_of_degrees_lt_of_eval_finset_eq (degree_f_lt : f.degree < s.card)
 Two polynomials, with the same degree and leading coefficient, which have the same evaluation
 on a set of distinct values with cardinality equal to the degree, are equal.
 -/
-theorem eq_of_degree_le_of_eval_finset_eq
+lemma eq_of_degree_le_of_eval_finset_eq
     (h_deg_le : f.degree ≤ s.card)
     (h_deg_eq : f.degree = g.degree)
     (hlc : f.leadingCoeff = g.leadingCoeff)

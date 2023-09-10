@@ -908,7 +908,7 @@ attribute [inherit_doc HasStrongEpiMonoFactorisations] HasStrongEpiMonoFactorisa
 
 variable {C}
 
-theorem HasStrongEpiMonoFactorisations.mk
+lemma HasStrongEpiMonoFactorisations.mk
     (d : ∀ {X Y : C} (f : X ⟶ Y), StrongEpiMonoFactorisation f) :
     HasStrongEpiMonoFactorisations C :=
   ⟨fun f => Nonempty.intro <| d f⟩

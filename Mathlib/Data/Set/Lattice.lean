@@ -308,12 +308,12 @@ lemma nonempty_of_union_eq_top_of_nonempty {ι : Type*} (t : Set ι) (s : ι →
   exact ⟨x, m⟩
 #align set.nonempty_of_union_eq_top_of_nonempty Set.nonempty_of_union_eq_top_of_nonempty
 
-theorem nonempty_of_nonempty_iUnion
+lemma nonempty_of_nonempty_iUnion
     {s : ι → Set α} (h_Union : (⋃ i, s i).Nonempty) : Nonempty ι := by
   obtain ⟨x, hx⟩ := h_Union
   exact ⟨Classical.choose $ mem_iUnion.mp hx⟩
 
-theorem nonempty_of_nonempty_iUnion_eq_univ
+lemma nonempty_of_nonempty_iUnion_eq_univ
     {s : ι → Set α} [Nonempty α] (h_Union : ⋃ i, s i = univ) : Nonempty ι :=
   nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 

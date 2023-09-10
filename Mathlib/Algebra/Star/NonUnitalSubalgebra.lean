@@ -388,7 +388,7 @@ lemma toNonUnitalStarSubalgebra_toNonUnitalSubalgebra (s : NonUnitalSubalgebra R
   SetLike.coe_injective rfl
 
 @[simp]
-theorem _root_.NonUnitalStarSubalgebra.toNonUnitalSubalgebra_toNonUnitalStarSubalgebra
+lemma _root_.NonUnitalStarSubalgebra.toNonUnitalSubalgebra_toNonUnitalStarSubalgebra
     (S : NonUnitalStarSubalgebra R A) :
     (S.toNonUnitalSubalgebra.toNonUnitalStarSubalgebra fun _ => star_mem (s := S)) = S :=
   SetLike.coe_injective rfl

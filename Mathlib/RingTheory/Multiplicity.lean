@@ -371,7 +371,7 @@ variable [CommMonoidWithZero α]
 
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
-theorem multiplicity_mk_eq_multiplicity
+lemma multiplicity_mk_eq_multiplicity
     [DecidableRel ((· ∣ ·) : Associates α → Associates α → Prop)] {a b : α} :
     multiplicity (Associates.mk a) (Associates.mk b) = multiplicity a b := by
   by_cases h : Finite a b

@@ -1297,7 +1297,7 @@ lemma extChartAt_preimage_inter_eq :
   by mfld_set_tac
 #align ext_chart_at_preimage_inter_eq extChartAt_preimage_inter_eq
 
-theorem ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range
+lemma ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range
     {f : M → M'} {x : M} (hc : ContinuousWithinAt f s x) :
     𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x x) =
       𝓝[(extChartAt I x).target ∩

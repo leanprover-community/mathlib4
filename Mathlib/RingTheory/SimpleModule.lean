@@ -89,7 +89,7 @@ lemma isAtom : IsAtom m :=
 
 end IsSimpleModule
 
-theorem is_semisimple_of_sSup_simples_eq_top
+lemma is_semisimple_of_sSup_simples_eq_top
     (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
   complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
 #align is_semisimple_of_Sup_simples_eq_top is_semisimple_of_sSup_simples_eq_top

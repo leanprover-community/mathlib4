@@ -154,7 +154,7 @@ lemma tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : X}
 
 /-- An alternative construction for `FrechetUrysohnSpace`: if sequential convergence implies
 convergence, then the space is a Fréchet-Urysohn space. -/
-theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
+lemma FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
     (h : ∀ (f : X → Prop) (a : X),
       (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
     FrechetUrysohnSpace X := by

@@ -230,7 +230,7 @@ lemma targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : P.
 #align algebraic_geometry.target_affine_locally_of_open_cover AlgebraicGeometry.targetAffineLocallyOfOpenCover
 
 open List in
-theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
+lemma AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) {X Y : Scheme.{u}} (f : X ⟶ Y) :
     TFAE
       [targetAffineLocally P f,
@@ -345,7 +345,7 @@ structure PropertyIsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
       (∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) → P f
 #align algebraic_geometry.property_is_local_at_target AlgebraicGeometry.PropertyIsLocalAtTarget
 
-theorem AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal
+lemma AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) :
     PropertyIsLocalAtTarget (targetAffineLocally P) := by
   constructor
@@ -442,7 +442,7 @@ def StableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
     P g → P (pullback.fst : pullback f g ⟶ X)
 #align algebraic_geometry.affine_target_morphism_property.stable_under_base_change AlgebraicGeometry.AffineTargetMorphismProperty.StableUnderBaseChange
 
-theorem IsLocal.targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange
+lemma IsLocal.targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) (hP' : P.StableUnderBaseChange)
     {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffine S] (H : P g) :
     targetAffineLocally P (pullback.fst : pullback f g ⟶ X) := by
@@ -535,7 +535,7 @@ lemma diagonalTargetAffineLocallyOfOpenCover (P : AffineTargetMorphismProperty) 
     pullback.lift_snd_assoc]
 #align algebraic_geometry.diagonal_target_affine_locally_of_open_cover AlgebraicGeometry.diagonalTargetAffineLocallyOfOpenCover
 
-theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
+lemma AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
     (P : AffineTargetMorphismProperty) (hP : P.IsLocal) {X Y U : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y)
     [IsAffine U] [IsOpenImmersion g] (H : (targetAffineLocally P).diagonal f) :
     P.diagonal (pullback.snd : pullback f g ⟶ _) := by
@@ -560,7 +560,7 @@ theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
 #align algebraic_geometry.affine_target_morphism_property.diagonal_of_target_affine_locally AlgebraicGeometry.AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
 
 open List in
-theorem AffineTargetMorphismProperty.IsLocal.diagonal_affine_openCover_TFAE
+lemma AffineTargetMorphismProperty.IsLocal.diagonal_affine_openCover_TFAE
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) {X Y : Scheme.{u}} (f : X ⟶ Y) :
     TFAE
       [(targetAffineLocally P).diagonal f,

@@ -909,7 +909,7 @@ lemma realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 #align first_order.language.bounded_formula.realize_exs FirstOrder.Language.BoundedFormula.realize_exs
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_iAlls
+lemma _root_.FirstOrder.Language.Formula.realize_iAlls
     [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} : (φ.iAlls f).Realize v ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
@@ -935,7 +935,7 @@ lemma realize_iAlls [Finite γ] {f : α → β ⊕ γ}
   rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_iExs
+lemma _root_.FirstOrder.Language.Formula.realize_iExs
     [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} : (φ.iExs f).Realize v ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by

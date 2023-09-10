@@ -121,7 +121,7 @@ lemma factorization_centralBinom_eq_zero_of_two_mul_lt (h : 2 * n < p) :
 #align nat.factorization_central_binom_eq_zero_of_two_mul_lt Nat.factorization_centralBinom_eq_zero_of_two_mul_lt
 
 /-- Contrapositive form of `Nat.factorization_centralBinom_eq_zero_of_two_mul_lt` -/
-theorem le_two_mul_of_factorization_centralBinom_pos
+lemma le_two_mul_of_factorization_centralBinom_pos
     (h_pos : 0 < (centralBinom n).factorization p) : p ≤ 2 * n :=
   le_of_not_lt (pos_iff_ne_zero.mp h_pos ∘ factorization_centralBinom_eq_zero_of_two_mul_lt)
 #align nat.le_two_mul_of_factorization_central_binom_pos Nat.le_two_mul_of_factorization_centralBinom_pos

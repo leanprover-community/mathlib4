@@ -115,7 +115,7 @@ end EffectiveEpiFamily
 section JointlySurjective
 
 /-- One direction of `effectiveEpiFamily_tfae`. -/
-theorem effectiveEpiFamily_of_jointly_surjective
+lemma effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Fintype α] {B : Stonean}
     (X : α → Stonean) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
@@ -171,7 +171,7 @@ section Coherent
 
 open CompHaus Functor
 
-theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
+lemma _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
     {α : Type} [Fintype α] {B : Stonean.{u}}
     {X : α → Stonean.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
     EffectiveEpiFamily (toCompHaus.obj <| X ·) (toCompHaus.map <| π ·) := by

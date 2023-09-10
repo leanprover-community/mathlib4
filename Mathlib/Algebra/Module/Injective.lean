@@ -68,7 +68,7 @@ lemma Module.injective_object_of_injective_module [Module.Injective.{u, v} R Q] 
       exact ⟨h, LinearMap.ext eq1⟩ }
 #align module.injective_object_of_injective_module Module.injective_object_of_injective_module
 
-theorem Module.injective_module_of_injective_object
+lemma Module.injective_module_of_injective_object
     [CategoryTheory.Injective.{max u v} (⟨Q⟩ : ModuleCat.{max u v} R)] :
     Module.Injective.{u, v} R Q :=
   { out := fun X Y ins1 ins2 ins3 ins4 f hf g => by

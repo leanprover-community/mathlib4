@@ -65,7 +65,7 @@ def skyscraperPresheaf : Presheaf C X where
     · dsimp; rw [dif_neg hW]; apply ((if_neg hW).symm.ndrec terminalIsTerminal).hom_ext
 #align skyscraper_presheaf skyscraperPresheaf
 
-theorem skyscraperPresheaf_eq_pushforward
+lemma skyscraperPresheaf_eq_pushforward
     [hd : ∀ U : Opens (TopCat.of PUnit.{u + 1}), Decidable (PUnit.unit ∈ U)] :
     skyscraperPresheaf p₀ A =
       ContinuousMap.const (TopCat.of PUnit) p₀ _*

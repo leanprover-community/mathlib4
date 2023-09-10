@@ -518,7 +518,7 @@ lemma listTransvecCol_mul_mul_listTransvecRow_last_row (hM : M (inr unit) (inr u
 
 /-- Multiplying by all the matrices either in `listTransvecCol M` and `listTransvecRow M` turns
 the matrix in block-diagonal form. -/
-theorem isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
+lemma isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
     (hM : M (inr unit) (inr unit) ≠ 0) :
     IsTwoBlockDiagonal ((listTransvecCol M).prod * M * (listTransvecRow M).prod) := by
   constructor
@@ -550,7 +550,7 @@ lemma exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0) 
 
 /-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
 on the right makes a matrix block-diagonal. -/
-theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
+lemma exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
     (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
     ∃ L L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜),
       IsTwoBlockDiagonal ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) := by
@@ -592,7 +592,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
 
 /-- Inductive step for the reduction: if one knows that any size `r` matrix can be reduced to
 diagonal form by elementary operations, then one deduces it for matrices over `Fin r ⊕ Unit`. -/
-theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
+lemma exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
     (IH :
       ∀ M : Matrix (Fin r) (Fin r) 𝕜,
         ∃ (L₀ L₀' : List (TransvectionStruct (Fin r) 𝕜)) (D₀ : Fin r → 𝕜),

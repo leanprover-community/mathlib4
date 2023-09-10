@@ -340,7 +340,7 @@ def _root_.ContinuousLinearEquiv.compContinuousAlternatingMap (e : N ≃L[R] N')
   right_inv f := by ext; simp [(· ∘ ·)]
 
 @[simp]
-theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
+lemma _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
     (e : N ≃L[R] N') (f : M [Λ^ι]→L[R] N) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
   rfl
 

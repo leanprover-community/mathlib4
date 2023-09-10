@@ -109,26 +109,26 @@ lemma ae_lt_of_lt_essInf (hx : x < essInf f μ)
 
 variable [TopologicalSpace β] [FirstCountableTopology β] [OrderTopology β]
 
-theorem ae_le_essSup
+lemma ae_le_essSup
     (hf : IsBoundedUnder (· ≤ ·) μ.ae f := by isBoundedDefault) :
     ∀ᵐ y ∂μ, f y ≤ essSup f μ :=
   eventually_le_limsup hf
 #align ae_le_ess_sup ae_le_essSup
 
-theorem ae_essInf_le
+lemma ae_essInf_le
     (hf : IsBoundedUnder (· ≥ ·) μ.ae f := by isBoundedDefault) :
     ∀ᵐ y ∂μ, essInf f μ ≤ f y :=
   eventually_liminf_le hf
 #align ae_ess_inf_le ae_essInf_le
 
-theorem meas_essSup_lt
+lemma meas_essSup_lt
     (hf : IsBoundedUnder (· ≤ ·) μ.ae f := by isBoundedDefault) :
     μ { y | essSup f μ < f y } = 0 := by
   simp_rw [← not_le]
   exact ae_le_essSup hf
 #align meas_ess_sup_lt meas_essSup_lt
 
-theorem meas_lt_essInf
+lemma meas_lt_essInf
     (hf : IsBoundedUnder (· ≥ ·) μ.ae f := by isBoundedDefault) :
     μ { y | f y < essInf f μ } = 0 := by
   simp_rw [← not_le]

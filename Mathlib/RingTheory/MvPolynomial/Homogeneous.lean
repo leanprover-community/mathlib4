@@ -287,7 +287,7 @@ lemma homogeneousComponent_C_mul (n : ℕ) (r : R) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.homogeneous_component_C_mul MvPolynomial.homogeneousComponent_C_mul
 
-theorem homogeneousComponent_eq_zero'
+lemma homogeneousComponent_eq_zero'
     (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → ∑ i in d.support, d i ≠ n) :
     homogeneousComponent n φ = 0 := by
   rw [homogeneousComponent_apply, sum_eq_zero]

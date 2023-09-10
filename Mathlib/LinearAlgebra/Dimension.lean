@@ -953,7 +953,7 @@ open Module.Free
 open Cardinal
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
-theorem nonempty_linearEquiv_of_lift_rank_eq
+lemma nonempty_linearEquiv_of_lift_rank_eq
     (cnd : Cardinal.lift.{v'} (Module.rank K V) = Cardinal.lift.{v} (Module.rank K V')) :
     Nonempty (V ≃ₗ[K] V') := by
   obtain ⟨⟨_, B⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
@@ -1144,7 +1144,7 @@ lemma exists_linearIndependent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
 
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
 independent of the first one. -/
-theorem exists_linearIndependent_pair_of_one_lt_rank
+lemma exists_linearIndependent_pair_of_one_lt_rank
     (h : 1 < Module.rank K V) {x : V} (hx : x ≠ 0) :
     ∃ y, LinearIndependent K ![x, y] := by
   obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h

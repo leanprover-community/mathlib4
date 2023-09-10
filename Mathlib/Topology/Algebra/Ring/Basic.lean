@@ -207,7 +207,7 @@ lemma TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
       simpa only [ContinuousAt, mul_zero, zero_mul, nhds_prod_eq, AddMonoidHom.mul_apply]
 #align topological_ring.of_add_group_of_nhds_zero TopologicalRing.of_addGroup_of_nhds_zero
 
-theorem TopologicalRing.of_nhds_zero
+lemma TopologicalRing.of_nhds_zero
     (hadd : Tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hneg : Tendsto (fun x => -x : R → R) (𝓝 0) (𝓝 0))
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)

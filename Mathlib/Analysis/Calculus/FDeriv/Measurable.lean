@@ -931,7 +931,7 @@ end FDerivMeasurableAux
 
 open FDerivMeasurableAux
 
-theorem measurableSet_of_differentiableAt_of_isComplete_with_param
+lemma measurableSet_of_differentiableAt_of_isComplete_with_param
     (hf : Continuous f.uncurry) {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
     MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2 ∧ fderiv 𝕜 (f p.1) p.2 ∈ K} := by
   have : {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2 ∧ fderiv 𝕜 (f p.1) p.2 ∈ K}

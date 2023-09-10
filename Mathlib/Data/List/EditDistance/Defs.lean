@@ -202,7 +202,7 @@ lemma suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
   match x, y with
   | ⟨hx :: tx, _⟩, ⟨hy :: ty, _⟩ => simp_all
 
-theorem suffixLevenshtein_cons₁
+lemma suffixLevenshtein_cons₁
     (x : α) (xs ys) :
     suffixLevenshtein C (x :: xs) ys =
       ⟨levenshtein C (x :: xs) ys ::
@@ -223,7 +223,7 @@ lemma suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
         (suffixLevenshtein C xs ys).1 := by
   simp [suffixLevenshtein_cons₁]
 
-theorem suffixLevenshtein_cons_cons_fst_get_zero
+lemma suffixLevenshtein_cons_cons_fst_get_zero
     (x : α) (xs y ys) (w) :
     (suffixLevenshtein C (x :: xs) (y :: ys)).1[0] =
       let ⟨dx, _⟩ := suffixLevenshtein C xs (y :: ys)
@@ -273,7 +273,7 @@ lemma levenshtein_cons_nil (x : α) (xs : List α) :
   rfl
 
 @[simp]
-theorem levenshtein_cons_cons
+lemma levenshtein_cons_cons
     (x : α) (xs : List α) (y : β) (ys : List β) :
     levenshtein C (x :: xs) (y :: ys) =
       min (C.delete x + levenshtein C xs (y :: ys))

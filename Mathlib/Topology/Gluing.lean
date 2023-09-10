@@ -156,7 +156,7 @@ set_option linter.uppercaseLean3 false in
 
 open CategoryTheory.Limits.WalkingParallelPair
 
-theorem eqvGen_of_π_eq
+lemma eqvGen_of_π_eq
     -- Porting note: was `{x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y)`
     {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
     (h : 𝖣.π x = 𝖣.π y) :

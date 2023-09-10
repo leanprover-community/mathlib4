@@ -1736,7 +1736,7 @@ lemma PreconnectedSpace.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTopol
 #align preconnected_space.constant PreconnectedSpace.constant
 
 /-- A `PreconnectedSpace` version of `isPreconnected_of_forall_constant` -/
-theorem preconnectedSpace_of_forall_constant
+lemma preconnectedSpace_of_forall_constant
     (hs : ∀ f : α → Bool, Continuous f → ∀ x y, f x = f y) : PreconnectedSpace α :=
   ⟨isPreconnected_of_forall_constant fun f hf x _ y _ =>
       hs f (continuous_iff_continuousOn_univ.mpr hf) x y⟩

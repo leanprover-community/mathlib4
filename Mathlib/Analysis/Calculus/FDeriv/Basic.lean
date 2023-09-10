@@ -342,7 +342,7 @@ lemma HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf 
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
-theorem HasFDerivAt.le_of_lipschitzOn
+lemma HasFDerivAt.le_of_lipschitzOn
     {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
   refine' hf.le_of_lip' C.coe_nonneg _
@@ -643,7 +643,7 @@ lemma Differentiable.differentiableOn (h : Differentiable 𝕜 f) : Differentiab
   (differentiableOn_univ.2 h).mono (subset_univ _)
 #align differentiable.differentiable_on Differentiable.differentiableOn
 
-theorem differentiableOn_of_locally_differentiableOn
+lemma differentiableOn_of_locally_differentiableOn
     (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ DifferentiableOn 𝕜 f (s ∩ u)) :
     DifferentiableOn 𝕜 f s := by
   intro x xs

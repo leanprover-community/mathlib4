@@ -468,7 +468,7 @@ lemma orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspa
 /-- The square of the distance from a point in `s` to `p2` equals the
 sum of the squares of the distances of the two points to the
 `orthogonalProjection`. -/
-theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
+lemma dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     {s : AffineSubspace ℝ P} [Nonempty s] [HasOrthogonalProjection s.direction] {p1 : P} (p2 : P)
     (hp1 : p1 ∈ s) :
     dist p1 p2 * dist p1 p2 =

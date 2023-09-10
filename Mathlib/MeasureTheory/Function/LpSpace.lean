@@ -681,7 +681,7 @@ lemma memℒp_indicator_iff_restrict (hs : MeasurableSet s) :
 
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
-theorem Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top
+lemma Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top
     {p q : ℝ≥0∞} {f : α → E} (hfq : Memℒp f q μ) {s : Set α} (hf : ∀ x, x ∉ s → f x = 0)
     (hs : μ s ≠ ∞) (hpq : p ≤ q) : Memℒp f p μ := by
   have : (toMeasurable μ s).indicator f = f := by

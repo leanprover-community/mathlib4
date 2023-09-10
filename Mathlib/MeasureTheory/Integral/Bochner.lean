@@ -1488,7 +1488,7 @@ lemma integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G} {
     exact integral_add_measure hf.1 (integrable_finset_sum_measure.2 hf.2)
 #align measure_theory.integral_finset_sum_measure MeasureTheory.integral_finset_sum_measure
 
-theorem nndist_integral_add_measure_le_lintegral
+lemma nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
     (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖₊ ∂ν := by
   rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel']

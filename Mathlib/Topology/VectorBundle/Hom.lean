@@ -299,7 +299,7 @@ lemma Trivialization.baseSet_continuousLinearMap :
   rfl
 #align trivialization.base_set_continuous_linear_map Trivialization.baseSet_continuousLinearMap
 
-theorem Trivialization.continuousLinearMap_apply
+lemma Trivialization.continuousLinearMap_apply
     (p : TotalSpace (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) :
     e₁.continuousLinearMap σ e₂ p =
       ⟨p.1, (e₂.continuousLinearMapAt 𝕜₂ p.1 : _ →L[𝕜₂] _).comp

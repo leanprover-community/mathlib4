@@ -687,7 +687,7 @@ lemma IsOpen.exists_msmooth_support_eq (hs : IsOpen s) :
 /-- Given an open set `s` containing a closed set `t` in a finite-dimensional real manifold, there
 exists a smooth function with support equal to `s`, taking values in `[0,1]`, and equal to `1`
 exactly on `t`. -/
-theorem exists_msmooth_support_eq_eq_one_iff
+lemma exists_msmooth_support_eq_eq_one_iff
     {s t : Set M} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
     ∃ f : M → ℝ, Smooth I 𝓘(ℝ) f ∧ range f ⊆ Icc 0 1 ∧ support f = s
       ∧ (∀ x, x ∈ t ↔ f x = 1) := by

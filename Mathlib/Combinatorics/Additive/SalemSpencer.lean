@@ -401,7 +401,7 @@ lemma le_mulRothNumber_product (s : Finset α) (t : Finset β) :
 #align le_add_roth_number_product le_addRothNumber_product
 
 @[to_additive]
-theorem mulRothNumber_lt_of_forall_not_mulSalemSpencer
+lemma mulRothNumber_lt_of_forall_not_mulSalemSpencer
     (h : ∀ t ∈ powersetLen n s, ¬MulSalemSpencer ((t : Finset α) : Set α)) :
     mulRothNumber s < n := by
   obtain ⟨t, hts, hcard, ht⟩ := mulRothNumber_spec s

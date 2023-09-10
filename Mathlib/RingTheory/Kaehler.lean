@@ -645,7 +645,7 @@ set_option linter.uppercaseLean3 false in
 
 open IsScalarTower (toAlgHom)
 
-theorem KaehlerDifferential.map_surjective_of_surjective
+lemma KaehlerDifferential.map_surjective_of_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.map R S A B) := by
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top B A,

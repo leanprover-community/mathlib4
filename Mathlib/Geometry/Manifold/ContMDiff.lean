@@ -905,7 +905,7 @@ lemma contMDiffOn_congr (h₁ : ∀ y ∈ s, f₁ y = f y) :
 
 
 /-- Being `C^n` is a local property. -/
-theorem contMDiffOn_of_locally_contMDiffOn
+lemma contMDiffOn_of_locally_contMDiffOn
     (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ ContMDiffOn I I' n f (s ∩ u)) : ContMDiffOn I I' n f s :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropOn_of_locally_liftPropOn h
 #align cont_mdiff_on_of_locally_cont_mdiff_on contMDiffOn_of_locally_contMDiffOn

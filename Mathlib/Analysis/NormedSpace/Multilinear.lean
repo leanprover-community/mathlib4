@@ -1286,7 +1286,7 @@ We also register continuous linear equiv versions of these correspondences, in
 
 open Fin Function
 
-theorem ContinuousLinearMap.norm_map_tail_le
+lemma ContinuousLinearMap.norm_map_tail_le
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (m : ∀ i, Ei i) :
     ‖f (m 0) (tail m)‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
   calc
@@ -1299,7 +1299,7 @@ theorem ContinuousLinearMap.norm_map_tail_le
       rfl
 #align continuous_linear_map.norm_map_tail_le ContinuousLinearMap.norm_map_tail_le
 
-theorem ContinuousMultilinearMap.norm_map_init_le
+lemma ContinuousMultilinearMap.norm_map_init_le
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G))
     (m : ∀ i, Ei i) : ‖f (init m) (m (last n))‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
   calc
@@ -1346,7 +1346,7 @@ def ContinuousLinearMap.uncurryLeft
 #align continuous_linear_map.uncurry_left ContinuousLinearMap.uncurryLeft
 
 @[simp]
-theorem ContinuousLinearMap.uncurryLeft_apply
+lemma ContinuousLinearMap.uncurryLeft_apply
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (m : ∀ i, Ei i) :
     f.uncurryLeft m = f (m 0) (tail m) :=
   rfl
@@ -1381,7 +1381,7 @@ lemma ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap �
 #align continuous_multilinear_map.curry_left_apply ContinuousMultilinearMap.curryLeft_apply
 
 @[simp]
-theorem ContinuousLinearMap.curry_uncurryLeft
+lemma ContinuousLinearMap.curry_uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     f.uncurryLeft.curryLeft = f := by
   ext m x
@@ -1429,7 +1429,7 @@ def continuousMultilinearCurryLeftEquiv :
 variable {𝕜 Ei G}
 
 @[simp]
-theorem continuousMultilinearCurryLeftEquiv_apply
+lemma continuousMultilinearCurryLeftEquiv_apply
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (v : ∀ i, Ei i) :
     continuousMultilinearCurryLeftEquiv 𝕜 Ei G f v = f (v 0) (tail v) :=
   rfl
@@ -1449,7 +1449,7 @@ lemma ContinuousMultilinearMap.curryLeft_norm (f : ContinuousMultilinearMap 𝕜
 #align continuous_multilinear_map.curry_left_norm ContinuousMultilinearMap.curryLeft_norm
 
 @[simp]
-theorem ContinuousLinearMap.uncurryLeft_norm
+lemma ContinuousLinearMap.uncurryLeft_norm
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     ‖f.uncurryLeft‖ = ‖f‖ :=
   (continuousMultilinearCurryLeftEquiv 𝕜 Ei G).norm_map f
@@ -1473,7 +1473,7 @@ def ContinuousMultilinearMap.uncurryRight
 #align continuous_multilinear_map.uncurry_right ContinuousMultilinearMap.uncurryRight
 
 @[simp]
-theorem ContinuousMultilinearMap.uncurryRight_apply
+lemma ContinuousMultilinearMap.uncurryRight_apply
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G))
     (m : ∀ i, Ei i) : f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
@@ -1507,7 +1507,7 @@ lemma ContinuousMultilinearMap.curryRight_apply (f : ContinuousMultilinearMap �
 #align continuous_multilinear_map.curry_right_apply ContinuousMultilinearMap.curryRight_apply
 
 @[simp]
-theorem ContinuousMultilinearMap.curry_uncurryRight
+lemma ContinuousMultilinearMap.curry_uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     f.uncurryRight.curryRight = f := by
   ext m x
@@ -1573,7 +1573,7 @@ def continuousMultilinearCurryRightEquiv' : (G[×n]→L[𝕜] G →L[𝕜] G') �
 variable {n 𝕜 G Ei G'}
 
 @[simp]
-theorem continuousMultilinearCurryRightEquiv_apply
+lemma continuousMultilinearCurryRightEquiv_apply
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G))
     (v : ∀ i, Ei i) : (continuousMultilinearCurryRightEquiv 𝕜 Ei G) f v = f (init v) (v (last n)) :=
   rfl
@@ -1607,7 +1607,7 @@ lemma ContinuousMultilinearMap.curryRight_norm (f : ContinuousMultilinearMap �
 #align continuous_multilinear_map.curry_right_norm ContinuousMultilinearMap.curryRight_norm
 
 @[simp]
-theorem ContinuousMultilinearMap.uncurryRight_norm
+lemma ContinuousMultilinearMap.uncurryRight_norm
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     ‖f.uncurryRight‖ = ‖f‖ :=
   (continuousMultilinearCurryRightEquiv 𝕜 Ei G).norm_map f

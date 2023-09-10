@@ -362,7 +362,7 @@ lemma weightedHomogeneousComponent_C_mul (n : M) (r : R) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.weighted_homogeneous_component_C_mul MvPolynomial.weightedHomogeneousComponent_C_mul
 
-theorem weightedHomogeneousComponent_eq_zero'
+lemma weightedHomogeneousComponent_eq_zero'
     (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → weightedDegree' w d ≠ n) :
     weightedHomogeneousComponent w n φ = 0 := by
   classical

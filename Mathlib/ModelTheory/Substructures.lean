@@ -333,7 +333,7 @@ lemma lift_card_closure_le :
 
 variable (L)
 
-theorem _root_.Set.Countable.substructure_closure
+lemma _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
   haveI : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]

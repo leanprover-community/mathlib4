@@ -347,7 +347,7 @@ section Preorder
 
 variable [Preorder α]
 
-theorem Monotone.comp_le_comp_left
+lemma Monotone.comp_le_comp_left
     [Preorder β] {f : β → α} {g h : γ → β} (hf : Monotone f) (le_gh : g ≤ h) :
     LE.le.{max w u} (f ∘ g) (f ∘ h) :=
   fun x ↦ hf (le_gh x)

@@ -412,7 +412,7 @@ lemma prod_union [DecidableEq α] (h : Disjoint s₁ s₂) :
 #align finset.sum_union Finset.sum_union
 
 @[to_additive]
-theorem prod_filter_mul_prod_filter_not
+lemma prod_filter_mul_prod_filter_not
     (s : Finset α) (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] (f : α → β) :
     (∏ x in s.filter p, f x) * ∏ x in s.filter fun x => ¬p x, f x = ∏ x in s, f x := by
   have := Classical.decEq α

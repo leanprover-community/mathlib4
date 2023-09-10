@@ -312,7 +312,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
   {f g : M → G}
 
-theorem ContMDiffWithinAt.div₀
+lemma ContMDiffWithinAt.div₀
     (hf : ContMDiffWithinAt I' I n f s a) (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) :
     ContMDiffWithinAt I' I n (f / g) s a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)

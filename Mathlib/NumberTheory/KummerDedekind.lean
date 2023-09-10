@@ -126,7 +126,7 @@ lemma prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
 #align prod_mem_ideal_map_of_mem_conductor prod_mem_ideal_map_of_mem_conductor
 
 /-- A technical result telling us that `(I * S) ∩ R<x> = I * R<x>` for any ideal `I` of `R`. -/
-theorem comap_map_eq_map_adjoin_of_coprime_conductor
+lemma comap_map_eq_map_adjoin_of_coprime_conductor
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) :
     (I.map (algebraMap R S)).comap (algebraMap R<x> S) = I.map (algebraMap R R<x>) := by

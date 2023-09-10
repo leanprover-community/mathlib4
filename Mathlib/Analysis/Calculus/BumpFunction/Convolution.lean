@@ -109,7 +109,7 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 /-- If a function `g` is locally integrable, then the convolution `φ i * g` converges almost
 everywhere to `g` if `φ i` is a sequence of bump functions with support tending to `0`, provided
 that the ratio between the inner and outer radii of `φ i` remains bounded. -/
-theorem ae_convolution_tendsto_right_of_locally_integrable
+lemma ae_convolution_tendsto_right_of_locally_integrable
     {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι} {K : ℝ}
     (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0))
     (h'φ : ∀ᶠ i in l, (φ i).rOut ≤ K * (φ i).rIn) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,

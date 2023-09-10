@@ -77,7 +77,7 @@ the reciprocals of the primes greater than `k` is less than 1/2.
 More precisely, for any `x : ℕ`, the sum of the reciprocals of the primes between `k` and `x + 1`
 is less than 1/2.
 -/
-theorem sum_lt_half_of_not_tendsto
+lemma sum_lt_half_of_not_tendsto
     (h : ¬Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop) :
     ∃ k, ∀ x, ∑ p in P x k, 1 / (p : ℝ) < 1 / 2 := by

@@ -162,7 +162,7 @@ lemma le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : 
     exact_mod_cast h
 #align formal_multilinear_series.le_radius_of_summable FormalMultilinearSeries.le_radius_of_summable
 
-theorem radius_eq_top_of_forall_nnreal_isBigO
+lemma radius_eq_top_of_forall_nnreal_isBigO
     (h : ∀ r : ℝ≥0, (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) : p.radius = ∞ :=
   ENNReal.eq_top_of_forall_nnreal_le fun r => p.le_radius_of_isBigO (h r)
 set_option linter.uppercaseLean3 false in
@@ -500,13 +500,13 @@ lemma HasFPowerSeriesAt.eventually_hasSum_sub (hf : HasFPowerSeriesAt f p x) :
   hr.eventually_hasSum_sub
 #align has_fpower_series_at.eventually_has_sum_sub HasFPowerSeriesAt.eventually_hasSum_sub
 
-theorem HasFPowerSeriesOnBall.eventually_eq_zero
+lemma HasFPowerSeriesOnBall.eventually_eq_zero
     (hf : HasFPowerSeriesOnBall f (0 : FormalMultilinearSeries 𝕜 E F) x r) :
     ∀ᶠ z in 𝓝 x, f z = 0 := by
   filter_upwards [hf.eventually_hasSum_sub] with z hz using hz.unique hasSum_zero
 #align has_fpower_series_on_ball.eventually_eq_zero HasFPowerSeriesOnBall.eventually_eq_zero
 
-theorem HasFPowerSeriesAt.eventually_eq_zero
+lemma HasFPowerSeriesAt.eventually_eq_zero
     (hf : HasFPowerSeriesAt f (0 : FormalMultilinearSeries 𝕜 E F) x) : ∀ᶠ z in 𝓝 x, f z = 0 :=
   let ⟨_, hr⟩ := hf
   hr.eventually_eq_zero
@@ -710,7 +710,7 @@ set_option linter.uppercaseLean3 false in
 ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above by
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property using `IsBigO` and
 `Filter.principal` on `E × E`. -/
-theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
+lemma HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓟 (EMetric.ball (x, x) r')]
       fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
@@ -1014,7 +1014,7 @@ lemma HasFPowerSeriesAt.eq_formalMultilinearSeries {p₁ p₂ : FormalMultilinea
   sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (by simpa only [sub_self] using h₁.sub h₂))
 #align has_fpower_series_at.eq_formal_multilinear_series HasFPowerSeriesAt.eq_formalMultilinearSeries
 
-theorem HasFPowerSeriesAt.eq_formalMultilinearSeries_of_eventually
+lemma HasFPowerSeriesAt.eq_formalMultilinearSeries_of_eventually
     {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {x : 𝕜} (hp : HasFPowerSeriesAt f p x)
     (hq : HasFPowerSeriesAt g q x) (heq : ∀ᶠ z in 𝓝 x, f z = g z) : p = q :=
   (hp.congr heq).eq_formalMultilinearSeries hq

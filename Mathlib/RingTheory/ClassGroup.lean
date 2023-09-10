@@ -334,7 +334,7 @@ noncomputable def ClassGroup.integralRep
       rw [← Algebra.smul_def c]
       exact Submodule.smul_mem _ c hb }
 
-theorem ClassGroup.integralRep_mem_nonZeroDivisors
+lemma ClassGroup.integralRep_mem_nonZeroDivisors
     {I} (hI : I ≠ 0) :
     ClassGroup.integralRep I ∈ (Ideal R)⁰ := by
   let a := I.2.choose

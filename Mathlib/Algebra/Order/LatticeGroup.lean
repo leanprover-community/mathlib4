@@ -102,7 +102,7 @@ lemma inf_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
 -- Special case of Bourbaki A.VI.9 (2)
 -- -(a ⊔ b)=(-a) ⊓ (-b)
 @[to_additive]
-theorem inv_sup_eq_inv_inf_inv
+lemma inv_sup_eq_inv_inf_inv
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
     (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ :=
   (OrderIso.inv α).map_sup _ _
@@ -111,7 +111,7 @@ theorem inv_sup_eq_inv_inf_inv
 
 -- -(a ⊓ b) = -a ⊔ -b
 @[to_additive]
-theorem inv_inf_eq_sup_inv
+lemma inv_inf_eq_sup_inv
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
     (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ :=
   (OrderIso.inv α).map_inf _ _
@@ -171,7 +171,7 @@ lemma neg_one : (1 : α)⁻ = 1 := by rw [m_neg_part_def, inv_one, sup_idem]
 
 -- a⁻ = -(a ⊓ 0)
 @[to_additive]
-theorem neg_eq_inv_inf_one
+lemma neg_eq_inv_inf_one
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     a⁻ = (a ⊓ 1)⁻¹ := by
   rw [m_neg_part_def, ← inv_inj, inv_sup_eq_inv_inf_inv, inv_inv, inv_inv, inv_one]
@@ -378,7 +378,7 @@ lemma pow_two_semiclosed
   exact mul_right_eq_self.mp e1
 
 @[to_additive abs_nonneg]
-theorem one_le_abs
+lemma one_le_abs
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     1 ≤ |a| := by
   apply pow_two_semiclosed _ _
@@ -388,7 +388,7 @@ theorem one_le_abs
 -- The proof from Bourbaki A.VI.12 Prop 9 d)
 -- |a| = a⁺ - a⁻
 @[to_additive]
-theorem pos_mul_neg
+lemma pos_mul_neg
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     |a| = a⁺ * a⁻ := by
   rw [m_pos_part_def, sup_mul, one_mul, m_neg_part_def, mul_sup, mul_one, mul_inv_self, sup_assoc,
@@ -418,7 +418,7 @@ lemma m_neg_abs [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α 
 
 -- a ⊔ b - (a ⊓ b) = |b - a|
 @[to_additive]
-theorem sup_div_inf_eq_abs_div
+lemma sup_div_inf_eq_abs_div
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
     (a ⊔ b) / (a ⊓ b) = |b / a| :=
 calc
@@ -448,7 +448,7 @@ lemma mabs_mabs [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α 
 -- Bourbaki A.VI.12 Prop 9 a)
 -- a⁺ ⊓ a⁻ = 0 (`a⁺` and `a⁻` are co-prime, and, since they are positive, disjoint)
 @[to_additive]
-theorem pos_inf_neg_eq_one
+lemma pos_inf_neg_eq_one
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     a⁺ ⊓ a⁻ = 1 := by
   rw [← mul_left_inj (a⁻)⁻¹, inf_mul, one_mul, mul_right_inv, ← div_eq_mul_inv,

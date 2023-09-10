@@ -1687,7 +1687,7 @@ lemma ae_bdd_liminf_atTop_of_snorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : ℕ 
 end Liminf
 
 /-- A continuous function with compact support belongs to `L^∞`. -/
-theorem _root_.Continuous.memℒp_top_of_hasCompactSupport
+lemma _root_.Continuous.memℒp_top_of_hasCompactSupport
     {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
     {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) (μ : Measure X) : Memℒp f ⊤ μ := by
   borelize E

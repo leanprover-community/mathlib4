@@ -97,7 +97,7 @@ lemma StrictConvexSpace.of_strictConvex_closed_unit_ball [LinearMap.CompatibleSM
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to
 check this for points of norm one and some `a`, `b` such that `a + b = 1`. -/
-theorem StrictConvexSpace.of_norm_combo_lt_one
+lemma StrictConvexSpace.of_norm_combo_lt_one
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, a + b = 1 ∧ ‖a • x + b • y‖ < 1) :
     StrictConvexSpace ℝ E := by
   refine'
@@ -111,7 +111,7 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
     sub_eq_iff_eq_add.2 hab.symm]
 #align strict_convex_space.of_norm_combo_lt_one StrictConvexSpace.of_norm_combo_lt_one
 
-theorem StrictConvexSpace.of_norm_combo_ne_one
+lemma StrictConvexSpace.of_norm_combo_ne_one
     (h :
       ∀ x y : E,
         ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ ‖a • x + b • y‖ ≠ 1) :
@@ -125,7 +125,7 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
   exact ⟨_, ⟨a, b, ha, hb, hab, rfl⟩, mt mem_sphere_zero_iff_norm.1 hne'⟩
 #align strict_convex_space.of_norm_combo_ne_one StrictConvexSpace.of_norm_combo_ne_one
 
-theorem StrictConvexSpace.of_norm_add_ne_two
+lemma StrictConvexSpace.of_norm_add_ne_two
     (h : ∀ ⦃x y : E⦄, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E := by
   refine'
     StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
@@ -135,7 +135,7 @@ theorem StrictConvexSpace.of_norm_add_ne_two
   exact h hx hy hne
 #align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two
 
-theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
+lemma StrictConvexSpace.of_pairwise_sphere_norm_ne_two
     (h : (sphere (0 : E) 1).Pairwise fun x y => ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E :=
   StrictConvexSpace.of_norm_add_ne_two fun _ _ hx hy =>
     h (mem_sphere_zero_iff_norm.2 hx) (mem_sphere_zero_iff_norm.2 hy)
@@ -143,7 +143,7 @@ theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
 
 /-- If `‖x + y‖ = ‖x‖ + ‖y‖` implies that `x y : E` are in the same ray, then `E` is a strictly
 convex space. See also a more -/
-theorem StrictConvexSpace.of_norm_add
+lemma StrictConvexSpace.of_norm_add
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E := by
   refine' StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => _
   rw [mem_sphere_zero_iff_norm] at hx hy

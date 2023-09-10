@@ -788,7 +788,7 @@ abbrev HasWideCoequalizers :=
 #align category_theory.limits.has_wide_coequalizers CategoryTheory.Limits.HasWideCoequalizers
 
 /-- If `C` has all limits of diagrams `parallelFamily f`, then it has all wide equalizers -/
-theorem hasWideEqualizers_of_hasLimit_parallelFamily
+lemma hasWideEqualizers_of_hasLimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasLimit (parallelFamily f)] :
     HasWideEqualizers.{w} C := fun _ =>
   { has_limit := fun F => hasLimitOfIso (diagramIsoParallelFamily F).symm }
@@ -797,7 +797,7 @@ theorem hasWideEqualizers_of_hasLimit_parallelFamily
   CategoryTheory.Limits.hasWideEqualizers_of_hasLimit_parallelFamily
 
 /-- If `C` has all colimits of diagrams `parallelFamily f`, then it has all wide coequalizers -/
-theorem hasWideCoequalizers_of_hasColimit_parallelFamily
+lemma hasWideCoequalizers_of_hasColimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasColimit (parallelFamily f)] :
     HasWideCoequalizers.{w} C := fun _ =>
   { has_colimit := fun F => hasColimitOfIso (diagramIsoParallelFamily F) }

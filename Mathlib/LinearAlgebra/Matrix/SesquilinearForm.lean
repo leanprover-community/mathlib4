@@ -677,7 +677,7 @@ variable [CommRing R₁] [AddCommMonoid M₁] [Module R₁ M₁]
 
 variable [DecidableEq ι] [Fintype ι]
 
-theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂
+lemma _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂
     {M : Matrix ι ι R₁} (b : Basis ι R₁ M₁) :
     M.toLinearMap₂'.SeparatingLeft ↔ (Matrix.toLinearMap₂ b b M).SeparatingLeft :=
   (separatingLeft_congr_iff b.equivFun.symm b.equivFun.symm).symm

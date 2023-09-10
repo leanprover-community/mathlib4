@@ -1704,7 +1704,7 @@ lemma exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK : 
 that is a neighborhood of `1`. -/
 @[to_additive "A compact neighborhood of `0` in a topological additive group
 admits a closed compact subset that is a neighborhood of `0`."]
-theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
+lemma exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
   rcases exists_open_nhds_one_mul_subset L1 with ⟨V, hVo, hV₁, hVL⟩

@@ -953,7 +953,7 @@ lemma sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.length
 /-- Rewriting equality in the dependent type
 `Σ (c : composition n), Π (i : fin c.length), composition (c.blocks_fun i)` in
 non-dependent terms with lists, requiring that the lists of blocks coincide. -/
-theorem sigma_pi_composition_eq_iff
+lemma sigma_pi_composition_eq_iff
     (u v : Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i)) :
     u = v ↔ (ofFn fun i => (u.2 i).blocks) = ofFn fun i => (v.2 i).blocks := by
   refine' ⟨fun H => by rw [H], fun H => _⟩

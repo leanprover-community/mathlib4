@@ -256,7 +256,7 @@ variable [Semigroup G] [MeasurableMul G] {μ : Measure G}
 the action preserves multiplication. -/
 @[to_additive "The image of a left invariant measure under a left additive action is left invariant,
 assuming that the action preserves addition."]
-theorem isMulLeftInvariant_map_smul
+lemma isMulLeftInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
     IsMulLeftInvariant (map (a • · : G → G) μ) :=
@@ -267,7 +267,7 @@ theorem isMulLeftInvariant_map_smul
 the action preserves multiplication. -/
 @[to_additive "The image of a right invariant measure under a left additive action is right
  invariant, assuming that the action preserves addition."]
-theorem isMulRightInvariant_map_smul
+lemma isMulRightInvariant_map_smul
     {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
     [IsMulRightInvariant μ] (a : α) :
     IsMulRightInvariant (map (a • · : G → G) μ) :=
@@ -835,7 +835,7 @@ nonrec lemma _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup 
 #align add_equiv.is_add_haar_measure_map AddEquiv.isAddHaarMeasure_map
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
-theorem _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
+lemma _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     {E F R S : Type*} [Semiring R] [Semiring S]
     [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]
     [TopologicalSpace E] [TopologicalAddGroup E] [TopologicalSpace F] [T2Space F]

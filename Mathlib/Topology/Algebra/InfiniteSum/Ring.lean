@@ -202,7 +202,7 @@ lemma summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
 
 variable [T3Space α] [TopologicalSemiring α]
 
-theorem summable_sum_mul_antidiagonal_of_summable_mul
+lemma summable_sum_mul_antidiagonal_of_summable_mul
     (h : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
     Summable fun n => ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 := by
   rw [summable_mul_prod_iff_summable_mul_sigma_antidiagonal] at h

@@ -35,7 +35,7 @@ is weakly locally compact. -/
 @[to_additive
   "Every separated topological additive group
   in which there exists a compact set with nonempty interior is weakly locally compact."]
-theorem TopologicalSpace.PositiveCompacts.weaklyLocallyCompactSpace_of_group
+lemma TopologicalSpace.PositiveCompacts.weaklyLocallyCompactSpace_of_group
     (K : PositiveCompacts G) : WeaklyLocallyCompactSpace G where
   exists_compact_mem_nhds x := by
     obtain ⟨y, hy⟩ := K.interior_nonempty

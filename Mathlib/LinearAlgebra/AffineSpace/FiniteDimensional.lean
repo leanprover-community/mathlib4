@@ -212,7 +212,7 @@ variable {k}
 /-- If the `vectorSpan` of a finite subset of an affinely independent
 family lies in a submodule with dimension one less than its
 cardinality, it equals that submodule. -/
-theorem AffineIndependent.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
+lemma AffineIndependent.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
     [DecidableEq P] {p : ι → P}
     (hi : AffineIndependent k p) {s : Finset ι} {sm : Submodule k V} [FiniteDimensional k sm]
     (hle : vectorSpan k (s.image p : Set P) ≤ sm) (hc : Finset.card s = finrank k sm + 1) :
@@ -233,7 +233,7 @@ lemma AffineIndependent.vectorSpan_eq_of_le_of_card_eq_finrank_add_one [Fintype 
 /-- If the `affineSpan` of a finite subset of an affinely independent
 family lies in an affine subspace whose direction has dimension one
 less than its cardinality, it equals that subspace. -/
-theorem AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
+lemma AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
     [DecidableEq P] {p : ι → P}
     (hi : AffineIndependent k p) {s : Finset ι} {sp : AffineSubspace k P}
     [FiniteDimensional k sp.direction] (hle : affineSpan k (s.image p : Set P) ≤ sp)

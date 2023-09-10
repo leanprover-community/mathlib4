@@ -125,7 +125,7 @@ termination_by Estimator.improveUntilAux_spec p I e r => (⟨_, mem_range_self e
 If `Estimator.improveUntil a p e` returns `some e'`, then `bound a e'` satisfies `p`.
 Otherwise, that value `a` must not satisfy `p`.
 -/
-theorem Estimator.improveUntil_spec
+lemma Estimator.improveUntil_spec
     (a : Thunk α) (p : α → Bool) [Estimator a ε] [WellFoundedGT (range (bound a : ε → α))] (e : ε) :
     match Estimator.improveUntil a p e with
     | .error _ => ¬ p a.get

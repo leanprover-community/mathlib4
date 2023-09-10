@@ -605,7 +605,7 @@ lemma oangle_midpoint_rev_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint �
 
 /-- Replacing the first point by one on the same line but the opposite ray adds π to the oriented
 angle. -/
-theorem _root_.Sbtw.oangle_eq_add_pi_left
+lemma _root_.Sbtw.oangle_eq_add_pi_left
     {p₁ p₁' p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₁') (hp₃p₂ : p₃ ≠ p₂) :
     ∡ p₁ p₂ p₃ = ∡ p₁' p₂ p₃ + π := by
   rw [← h.oangle₁₂₃_eq_pi, oangle_add_swap h.left_ne h.right_ne hp₃p₂]
@@ -613,7 +613,7 @@ theorem _root_.Sbtw.oangle_eq_add_pi_left
 
 /-- Replacing the third point by one on the same line but the opposite ray adds π to the oriented
 angle. -/
-theorem _root_.Sbtw.oangle_eq_add_pi_right
+lemma _root_.Sbtw.oangle_eq_add_pi_right
     {p₁ p₂ p₃ p₃' : P} (h : Sbtw ℝ p₃ p₂ p₃') (hp₁p₂ : p₁ ≠ p₂) :
     ∡ p₁ p₂ p₃ = ∡ p₁ p₂ p₃' + π := by
   rw [← h.oangle₃₂₁_eq_pi, oangle_add hp₁p₂ h.right_ne h.left_ne]

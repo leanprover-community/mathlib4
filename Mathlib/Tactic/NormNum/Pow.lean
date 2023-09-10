@@ -32,7 +32,7 @@ structure IsNatPowT (p : Prop) (a b c : Nat) : Prop where
   /-- Unfolds the assertion. -/
   run' : p → Nat.pow a b = c
 
-theorem IsNatPowT.run
+lemma IsNatPowT.run
   (p : IsNatPowT (Nat.pow a (nat_lit 1) = a) a b c) : Nat.pow a b = c := p.run' (Nat.pow_one _)
 
 /-- This is the key to making the proof proceed as a balanced tree of applications instead of

@@ -184,7 +184,7 @@ lemma subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom
   exact ⟨fun h' => cL (h h'), rfl⟩
 #align simple_graph.component_compl.subset_hom SimpleGraph.ComponentCompl.subset_hom
 
-theorem _root_.SimpleGraph.componentComplMk_mem_hom
+lemma _root_.SimpleGraph.componentComplMk_mem_hom
     (G : SimpleGraph V) {v : V} (vK : v ∉ K) (h : L ⊆ K) :
     v ∈ (G.componentComplMk vK).hom h :=
   subset_hom (G.componentComplMk vK) h (G.componentComplMk_mem vK)

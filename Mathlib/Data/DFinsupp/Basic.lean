@@ -1950,7 +1950,7 @@ lemma _root_.dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid 
 /-- The supremum of a family of commutative additive submonoids is equal to the range of
 `DFinsupp.sumAddHom`; that is, every element in the `iSup` can be produced from taking a finite
 number of non-zero elements of `S i`, coercing them to `γ`, and summing them. -/
-theorem _root_.AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom
+lemma _root_.AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
     iSup S = AddMonoidHom.mrange (DFinsupp.sumAddHom fun i => (S i).subtype) := by
   apply le_antisymm

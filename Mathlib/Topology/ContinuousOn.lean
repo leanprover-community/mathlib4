@@ -955,7 +955,7 @@ lemma ContinuousWithinAt.preimage_mem_nhdsWithin' {f : α → β} {x : α} {s : 
   h.tendsto_nhdsWithin (mapsTo_image _ _) ht
 #align continuous_within_at.preimage_mem_nhds_within' ContinuousWithinAt.preimage_mem_nhdsWithin'
 
-theorem ContinuousWithinAt.preimage_mem_nhdsWithin''
+lemma ContinuousWithinAt.preimage_mem_nhdsWithin''
     {f : α → β} {x : α} {y : β} {s t : Set β}
     (h : ContinuousWithinAt f (f ⁻¹' s) x) (ht : t ∈ 𝓝[s] y) (hxy : y = f x) :
     f ⁻¹' t ∈ 𝓝[f ⁻¹' s] x := by

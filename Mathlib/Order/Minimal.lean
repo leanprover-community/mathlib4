@@ -312,7 +312,7 @@ lemma minimals_image_of_rel_iff_rel (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x �
   rintro ⟨a,⟨⟨ha,h⟩,rfl⟩⟩
   exact ⟨⟨_, ha, rfl⟩, fun y hy hya ↦ (hf ha hy).mp (h hy ((hf hy ha).mpr hya))⟩
 
-theorem maximals_image_of_rel_iff_rel_on
+lemma maximals_image_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) :
     maximals s (f '' x) = f '' (maximals r x) :=
   minimals_image_of_rel_iff_rel (fun _ _ a_1 a_2 ↦ hf a_2 a_1)
@@ -325,7 +325,7 @@ lemma RelEmbedding.maximals_image_eq (f : r ↪r s) (x : Set α) :
     maximals s (f '' x) = f '' (maximals r x) :=
   (f.swap).minimals_image_eq x
 
-theorem inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
+lemma inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
     x ∩ f ⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) := by
   ext a
@@ -336,7 +336,7 @@ theorem inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
         fun ⟨⟨hax,hay⟩,h⟩ ↦ ⟨hax, ⟨⟨_, hax, rfl⟩, hay⟩, fun a' ha' ha'y hsa' ↦
           (hf hax ha').mp (h ha' ha'y ((hf ha' hax).mpr hsa'))⟩⟩
 
-theorem inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset
+lemma inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
     x ∩ f ⁻¹' (minimals s y) = minimals r (x ∩ f ⁻¹' y) := by
   rw [←inter_eq_self_of_subset_right hy, inter_minimals_preimage_inter_eq_of_rel_iff_rel_on hf,
@@ -354,13 +354,13 @@ lemma RelEmbedding.minimals_preimage_eq (f : r ↪r s) (y : Set β) :
   minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
   convert (f.inter_preimage_minimals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
 
-theorem inter_maximals_preimage_inter_eq_of_rel_iff_rel_on
+lemma inter_maximals_preimage_inter_eq_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
     x ∩ f ⁻¹' (maximals s ((f '' x) ∩ y)) = maximals r (x ∩ f ⁻¹' y) := by
   apply inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
   exact fun _ _ a b ↦ hf b a
 
-theorem inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset
+lemma inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
     x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
   apply inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ hy

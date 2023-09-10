@@ -690,7 +690,7 @@ lemma equivalence_join (hr : Reflexive r) (ht : Transitive r)
   ⟨reflexive_join hr, @symmetric_join _ _, @transitive_join _ _ ht h⟩
 #align relation.equivalence_join Relation.equivalence_join
 
-theorem equivalence_join_reflTransGen
+lemma equivalence_join_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
     Equivalence (Join (ReflTransGen r)) :=
   equivalence_join reflexive_reflTransGen transitive_reflTransGen fun _ _ _ ↦ church_rosser h

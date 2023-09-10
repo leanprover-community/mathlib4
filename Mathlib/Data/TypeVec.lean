@@ -799,7 +799,7 @@ lemma subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
 #align typevec.subtype_val_to_subtype TypeVec.subtypeVal_toSubtype
 
 @[simp]
-theorem toSubtype_of_subtype_assoc
+lemma toSubtype_of_subtype_assoc
     {α β : TypeVec n} (p : α ⟹ «repeat» n Prop) (f : β ⟹ Subtype_ p) :
     @toSubtype n _ p ⊚ ofSubtype _ ⊚ f = f :=
   by rw [← comp_assoc, toSubtype_of_subtype]; simp

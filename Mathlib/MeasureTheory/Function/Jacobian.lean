@@ -603,7 +603,7 @@ lemma addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Differe
 /-- A version of Sard lemma in fixed dimension: given a differentiable function from `E` to `E` and
 a set where the differential is not invertible, then the image of this set has zero measure.
 Here, we give an auxiliary statement towards this result. -/
-theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
+lemma addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (R : ℝ) (hs : s ⊆ closedBall 0 R) (ε : ℝ≥0)
     (εpos : 0 < ε) (h'f' : ∀ x ∈ s, (f' x).det = 0) : μ (f '' s) ≤ ε * μ (closedBall 0 R) := by
   rcases eq_empty_or_nonempty s with (rfl | h's); · simp only [measure_empty, zero_le, image_empty]
@@ -656,7 +656,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
 
 /-- A version of Sard lemma in fixed dimension: given a differentiable function from `E` to `E` and
 a set where the differential is not invertible, then the image of this set has zero measure. -/
-theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
+lemma addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (h'f' : ∀ x ∈ s, (f' x).det = 0) :
     μ (f '' s) = 0 := by
   suffices H : ∀ R, μ (f '' (s ∩ closedBall 0 R)) = 0

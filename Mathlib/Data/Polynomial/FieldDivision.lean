@@ -517,7 +517,7 @@ lemma X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Field K] (f : K[X]) 
 
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero
 because the original proof was timing out -/
-theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
+lemma divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
     {K : Type*} [Field K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a

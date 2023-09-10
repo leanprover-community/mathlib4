@@ -112,7 +112,7 @@ lemma ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
 
 /-- If two locally integrable functions on a finite-dimensional real manifold have the same integral
 when multiplied by any smooth compactly supported function, then they coincide almost everywhere. -/
-theorem ae_eq_of_integral_smooth_smul_eq
+lemma ae_eq_of_integral_smooth_smul_eq
     (hf : LocallyIntegrable f μ) (hf' : LocallyIntegrable f' μ) (h : ∀ (g : M → ℝ),
       Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
     ∀ᵐ x ∂μ, f x = f' x := by
@@ -144,7 +144,7 @@ lemma ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf : LocallyIntegrable f μ)
 /-- If two locally integrable functions on a finite-dimensional real vector space have the same
 integral when multiplied by any smooth compactly supported function, then they coincide almost
 everywhere. -/
-theorem ae_eq_of_integral_contDiff_smul_eq
+lemma ae_eq_of_integral_contDiff_smul_eq
     (hf : LocallyIntegrable f μ) (hf' : LocallyIntegrable f' μ) (h : ∀ (g : E → ℝ),
       ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
     ∀ᵐ x ∂μ, f x = f' x :=

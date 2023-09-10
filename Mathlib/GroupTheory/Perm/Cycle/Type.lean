@@ -226,7 +226,7 @@ lemma cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cycle
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
 #align equiv.perm.cycle_type_le_of_mem_cycle_factors_finset Equiv.Perm.cycleType_le_of_mem_cycleFactorsFinset
 
-theorem cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub
+lemma cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub
     {f g : Perm α} (hf : f ∈ g.cycleFactorsFinset) :
     (g * f⁻¹).cycleType = g.cycleType - f.cycleType :=
   add_right_cancel (b := f.cycleType) <| by

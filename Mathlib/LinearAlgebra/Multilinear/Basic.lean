@@ -1351,7 +1351,7 @@ def MultilinearMap.uncurryRight
 #align multilinear_map.uncurry_right MultilinearMap.uncurryRight
 
 @[simp]
-theorem MultilinearMap.uncurryRight_apply
+lemma MultilinearMap.uncurryRight_apply
     (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂))
     (m : ∀ i, M i) : f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
@@ -1385,7 +1385,7 @@ lemma MultilinearMap.curryRight_apply (f : MultilinearMap R M M₂)
 #align multilinear_map.curry_right_apply MultilinearMap.curryRight_apply
 
 @[simp]
-theorem MultilinearMap.curry_uncurryRight
+lemma MultilinearMap.curry_uncurryRight
     (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
     f.uncurryRight.curryRight = f := by
   ext m x
@@ -1477,7 +1477,7 @@ def uncurrySum (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _
 #align multilinear_map.uncurry_sum MultilinearMap.uncurrySum
 
 @[simp]
-theorem uncurrySum_aux_apply
+lemma uncurrySum_aux_apply
     (f : MultilinearMap R (fun _ : ι => M') (MultilinearMap R (fun _ : ι' => M') M₂))
     (u : Sum ι ι' → M') : f.uncurrySum u = f (u ∘ Sum.inl) (u ∘ Sum.inr) :=
   rfl

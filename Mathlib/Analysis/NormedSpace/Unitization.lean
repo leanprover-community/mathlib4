@@ -81,7 +81,7 @@ lemma splitMul_apply (x : Unitization 𝕜 A) :
 /-- this lemma establishes that if `ContinuousLinearMap.mul 𝕜 A` is injective, then so is
 `Unitization.splitMul 𝕜 A`. When `A` is a `RegularNormedAlgebra`, then
 `ContinuousLinearMap.mul 𝕜 A` is an isometry, and is therefore automatically injective. -/
-theorem splitMul_injective_of_clm_mul_injective
+lemma splitMul_injective_of_clm_mul_injective
     (h : Function.Injective (mul 𝕜 A)) :
     Function.Injective (splitMul 𝕜 A) := by
   rw [injective_iff_map_eq_zero]

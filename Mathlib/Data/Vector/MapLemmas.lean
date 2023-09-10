@@ -117,7 +117,7 @@ lemma mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ 
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_left_right
+lemma mapAccumr₂_mapAccumr₂_left_right
   (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd ys s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>

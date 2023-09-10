@@ -462,7 +462,7 @@ lemma LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E 
 /-- A useful form of the **closed graph theorem** : let `f` be a linear map between two Banach
 spaces. To show that `f` is continuous, it suffices to show that for any convergent sequence
 `uₙ ⟶ x`, if `f(uₙ) ⟶ y` then `y = f(x)`. -/
-theorem LinearMap.continuous_of_seq_closed_graph
+lemma LinearMap.continuous_of_seq_closed_graph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
     Continuous g := by
   refine' g.continuous_of_isClosed_graph (IsSeqClosed.isClosed _)
@@ -507,13 +507,13 @@ def ofSeqClosedGraph
 #align continuous_linear_map.of_seq_closed_graph ContinuousLinearMap.ofSeqClosedGraph
 
 @[simp]
-theorem coeFn_ofSeqClosedGraph
+lemma coeFn_ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
     ⇑(ContinuousLinearMap.ofSeqClosedGraph hg) = g :=
   rfl
 #align continuous_linear_map.coe_fn_of_seq_closed_graph ContinuousLinearMap.coeFn_ofSeqClosedGraph
 
-theorem coe_ofSeqClosedGraph
+lemma coe_ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
     ↑(ContinuousLinearMap.ofSeqClosedGraph hg) = g := by
   ext

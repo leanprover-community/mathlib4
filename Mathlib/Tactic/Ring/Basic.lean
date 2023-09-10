@@ -313,11 +313,11 @@ lemma add_pf_zero_add (b : R) : 0 + b = b := by simp
 
 lemma add_pf_add_zero (a : R) : a + 0 = a := by simp
 
-theorem add_pf_add_overlap
+lemma add_pf_add_overlap
     (_ : a₁ + b₁ = c₁) (_ : a₂ + b₂ = c₂) : (a₁ + a₂ : R) + (b₁ + b₂) = c₁ + c₂ := by
   subst_vars; simp [add_assoc, add_left_comm]
 
-theorem add_pf_add_overlap_zero
+lemma add_pf_add_overlap_zero
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
   subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
 

@@ -29,7 +29,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
-theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
+lemma Set.Countable.isPathConnected_compl_of_one_lt_rank
     (h : 1 < Module.rank ℝ E) {s : Set E} (hs : s.Countable) :
     IsPathConnected sᶜ := by
   have : Nontrivial E := (rank_pos_iff_nontrivial (R := ℝ)).1 (zero_lt_one.trans h)

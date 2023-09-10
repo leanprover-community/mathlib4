@@ -630,7 +630,7 @@ lemma closedBall_subset_ball' (h : ε₁ + dist x y < ε₂) :
     _ < ε₂ := h
 #align metric.closed_ball_subset_ball' Metric.closedBall_subset_ball'
 
-theorem dist_le_add_of_nonempty_closedBall_inter_closedBall
+lemma dist_le_add_of_nonempty_closedBall_inter_closedBall
     (h : (closedBall x ε₁ ∩ closedBall y ε₂).Nonempty) : dist x y ≤ ε₁ + ε₂ :=
   let ⟨z, hz⟩ := h
   calc
@@ -2334,7 +2334,7 @@ open TopologicalSpace
 
 /-- A pseudometric space is second countable if, for every `ε > 0`, there is a countable set which
 is `ε`-dense. -/
-theorem secondCountable_of_almost_dense_set
+lemma secondCountable_of_almost_dense_set
     (H : ∀ ε > (0 : ℝ), ∃ s : Set α, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε) :
     SecondCountableTopology α := by
   refine' EMetric.secondCountable_of_almost_dense_set fun ε ε0 => _
@@ -2536,7 +2536,7 @@ lemma bounded_range_of_tendsto (u : ℕ → α) {x : α} (hu : Tendsto u atTop (
 
 /-- If a function is continuous within a set `s` at every point of a compact set `k`, then it is
 bounded on some open neighborhood of `k` in `s`. -/
-theorem exists_isOpen_bounded_image_inter_of_isCompact_of_forall_continuousWithinAt
+lemma exists_isOpen_bounded_image_inter_of_isCompact_of_forall_continuousWithinAt
     [TopologicalSpace β] {k s : Set β} {f : β → α} (hk : IsCompact k)
     (hf : ∀ x ∈ k, ContinuousWithinAt f s x) : ∃ t, k ⊆ t ∧ IsOpen t ∧ Bounded (f '' (t ∩ s)) := by
   refine hk.induction_on ?_ ?_ ?_ ?_

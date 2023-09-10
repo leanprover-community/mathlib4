@@ -322,7 +322,7 @@ lemma IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set α} (hs 
 #align is_compact.elim_finite_subcover_image IsCompact.elim_finite_subcover_imageₓ
 
 /-- A set `s` is compact if for every open cover of `s`, there exists a finite subcover. -/
-theorem isCompact_of_finite_subcover
+lemma isCompact_of_finite_subcover
     (h : ∀ {ι : Type u} (U : ι → Set α), (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) →
       ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i) :
     IsCompact s := fun f hf hfs => by
@@ -340,7 +340,7 @@ theorem isCompact_of_finite_subcover
 -- porting note: todo: reformulate using `Disjoint`
 /-- A set `s` is compact if for every family of closed sets whose intersection avoids `s`,
 there exists a finite subfamily whose intersection avoids `s`. -/
-theorem isCompact_of_finite_subfamily_closed
+lemma isCompact_of_finite_subfamily_closed
     (h : ∀ {ι : Type u} (Z : ι → Set α), (∀ i, IsClosed (Z i)) → (s ∩ ⋂ i, Z i) = ∅ →
       ∃ t : Finset ι, (s ∩ ⋂ i ∈ t, Z i) = ∅) :
     IsCompact s :=
@@ -724,7 +724,7 @@ lemma CompactSpace.elim_nhds_subcover [CompactSpace α] (U : α → Set α) (hU 
   exact ⟨t, top_unique s⟩
 #align compact_space.elim_nhds_subcover CompactSpace.elim_nhds_subcover
 
-theorem compactSpace_of_finite_subfamily_closed
+lemma compactSpace_of_finite_subfamily_closed
     (h : ∀ {ι : Type u} (Z : ι → Set α), (∀ i, IsClosed (Z i)) → ⋂ i, Z i = ∅ →
       ∃ t : Finset ι, ⋂ i ∈ t, Z i = ∅) :
     CompactSpace α where

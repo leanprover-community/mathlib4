@@ -335,7 +335,7 @@ lemma hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
 #align has_ftaylor_series_up_to_on_succ_iff_left hasFTaylorSeriesUpToOn_succ_iff_left
 
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
-theorem HasFTaylorSeriesUpToOn.shift_of_succ
+lemma HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
     (HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
       (fun x => (p x).shift)) s := by
@@ -727,7 +727,7 @@ lemma ContDiffOn.differentiableOn (h : ContDiffOn 𝕜 n f s) (hn : 1 ≤ n) :
 #align cont_diff_on.differentiable_on ContDiffOn.differentiableOn
 
 /-- If a function is `C^n` around each point in a set, then it is `C^n` on the set. -/
-theorem contDiffOn_of_locally_contDiffOn
+lemma contDiffOn_of_locally_contDiffOn
     (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ ContDiffOn 𝕜 n f (s ∩ u)) : ContDiffOn 𝕜 n f s := by
   intro x xs
   rcases h x xs with ⟨u, u_open, xu, hu⟩
@@ -995,7 +995,7 @@ lemma contDiffWithinAt_zero (hx : x ∈ s) :
 
 /-- On a set with unique differentiability, any choice of iterated differential has to coincide
 with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
-theorem HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
+lemma HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
@@ -1054,7 +1054,7 @@ protected lemma ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs :
     exact ((Hp.mono ho).cont m le_rfl).congr fun y hy => (A y hy).symm
 #align cont_diff_on.ftaylor_series_within ContDiffOn.ftaylorSeriesWithin
 
-theorem contDiffOn_of_continuousOn_differentiableOn
+lemma contDiffOn_of_continuousOn_differentiableOn
     (Hcont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
     (Hdiff : ∀ m : ℕ, (m : ℕ∞) < n →
       DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s) :
@@ -1072,7 +1072,7 @@ theorem contDiffOn_of_continuousOn_differentiableOn
     exact Hcont k (le_trans hk hm)
 #align cont_diff_on_of_continuous_on_differentiable_on contDiffOn_of_continuousOn_differentiableOn
 
-theorem contDiffOn_of_differentiableOn
+lemma contDiffOn_of_differentiableOn
     (h : ∀ m : ℕ, (m : ℕ∞) ≤ n → DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
     ContDiffOn 𝕜 n f s :=
   contDiffOn_of_continuousOn_differentiableOn (fun m hm => (h m hm).continuousOn) fun m hm =>
@@ -1679,7 +1679,7 @@ lemma ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : (m : ℕ∞) < n) (
   (contDiff_iff_continuous_differentiable.mp hf).2 m hm
 #align cont_diff.differentiable_iterated_fderiv ContDiff.differentiable_iteratedFDeriv
 
-theorem contDiff_of_differentiable_iteratedFDeriv
+lemma contDiff_of_differentiable_iteratedFDeriv
     (h : ∀ m : ℕ, (m : ℕ∞) ≤ n → Differentiable 𝕜 (iteratedFDeriv 𝕜 m f)) : ContDiff 𝕜 n f :=
   contDiff_iff_continuous_differentiable.2
     ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩

@@ -856,7 +856,7 @@ lemma secondCountable_of_sigmaCompact [SigmaCompactSpace α] : SecondCountableTo
 
 variable {α}
 
-theorem secondCountable_of_almost_dense_set
+lemma secondCountable_of_almost_dense_set
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
     SecondCountableTopology α := by
   suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α

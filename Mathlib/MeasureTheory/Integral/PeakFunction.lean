@@ -82,7 +82,7 @@ variable [CompleteSpace E]
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀`, and
 `g` is integrable and continuous at `x₀`, then `∫ φᵢ • g` converges to `x₀`. Auxiliary lemma
 where one assumes additionally `g x₀ = 0`. -/
-theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
+lemma tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     (hs : MeasurableSet s) (hnφ : ∀ᶠ i in l, ∀ x ∈ s, 0 ≤ φ i x)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
     (hiφ : ∀ᶠ i in l, ∫ x in s, φ i x ∂μ = 1) (hmg : IntegrableOn g s μ) (h'g : g x₀ = 0)
@@ -192,7 +192,7 @@ Version assuming that `μ` gives positive mass to all neighborhoods of `x₀` wi
 For a less precise but more usable version, see
 `tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`.
  -/
-theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
+lemma tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
     [MetrizableSpace α] [IsLocallyFiniteMeasure μ] (hs : IsCompact s)
     (hμ : ∀ u, IsOpen u → x₀ ∈ u → 0 < μ (u ∩ s)) {c : α → ℝ} (hc : ContinuousOn c s)
     (h'c : ∀ y ∈ s, y ≠ x₀ → c y < c x₀) (hnc : ∀ x ∈ s, 0 ≤ c x) (hnc₀ : 0 < c x₀) (h₀ : x₀ ∈ s)
@@ -291,7 +291,7 @@ Version assuming that `μ` gives positive mass to all open sets.
 For a less precise but more usable version, see
 `tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`.
 -/
-theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn
+lemma tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn
     [MetrizableSpace α] [IsLocallyFiniteMeasure μ] [IsOpenPosMeasure μ] (hs : IsCompact s)
     {c : α → ℝ} (hc : ContinuousOn c s) (h'c : ∀ y ∈ s, y ≠ x₀ → c y < c x₀)
     (hnc : ∀ x ∈ s, 0 ≤ c x) (hnc₀ : 0 < c x₀) (h₀ : x₀ ∈ closure (interior s))
@@ -313,7 +313,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_integrab
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
 concentrating around `x₀`. Therefore, `∫ (c x) ^ n * g / ∫ (c x) ^ n` converges to `g x₀` if `g` is
 continuous on `s`. -/
-theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn
+lemma tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn
     [MetrizableSpace α] [IsLocallyFiniteMeasure μ] [IsOpenPosMeasure μ] (hs : IsCompact s)
     {c : α → ℝ} (hc : ContinuousOn c s) (h'c : ∀ y ∈ s, y ≠ x₀ → c y < c x₀)
     (hnc : ∀ x ∈ s, 0 ≤ c x) (hnc₀ : 0 < c x₀) (h₀ : x₀ ∈ closure (interior s))

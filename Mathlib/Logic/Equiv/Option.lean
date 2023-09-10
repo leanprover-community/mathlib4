@@ -212,7 +212,7 @@ def optionSubtype [DecidableEq β] (x : β) :
 #align equiv.option_subtype Equiv.optionSubtype
 
 @[simp]
-theorem optionSubtype_apply_apply
+lemma optionSubtype_apply_apply
     [DecidableEq β] (x : β)
     (e : { e : Option α ≃ β // e none = x })
     (a : α)
@@ -220,14 +220,14 @@ theorem optionSubtype_apply_apply
 #align equiv.option_subtype_apply_apply Equiv.optionSubtype_apply_apply
 
 @[simp]
-theorem coe_optionSubtype_apply_apply
+lemma coe_optionSubtype_apply_apply
     [DecidableEq β] (x : β)
     (e : { e : Option α ≃ β // e none = x })
     (a : α) : ↑(optionSubtype x e a) = (e : Option α ≃ β) a := rfl
 #align equiv.coe_option_subtype_apply_apply Equiv.coe_optionSubtype_apply_apply
 
 @[simp]
-theorem optionSubtype_apply_symm_apply
+lemma optionSubtype_apply_symm_apply
     [DecidableEq β] (x : β)
     (e : { e : Option α ≃ β // e none = x })
     (b : { y : β // y ≠ x }) : ↑((optionSubtype x e).symm b) = (e : Option α ≃ β).symm b := by
@@ -242,7 +242,7 @@ lemma optionSubtype_symm_apply_apply_coe [DecidableEq β] (x : β) (e : α ≃ {
 #align equiv.option_subtype_symm_apply_apply_coe Equiv.optionSubtype_symm_apply_apply_coe
 
 @[simp]
-theorem optionSubtype_symm_apply_apply_some
+lemma optionSubtype_symm_apply_apply_some
     [DecidableEq β]
     (x : β)
     (e : α ≃ { y : β // y ≠ x })
@@ -251,7 +251,7 @@ theorem optionSubtype_symm_apply_apply_some
 #align equiv.option_subtype_symm_apply_apply_some Equiv.optionSubtype_symm_apply_apply_some
 
 @[simp]
-theorem optionSubtype_symm_apply_apply_none
+lemma optionSubtype_symm_apply_apply_none
     [DecidableEq β]
     (x : β)
     (e : α ≃ { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β) none = x :=

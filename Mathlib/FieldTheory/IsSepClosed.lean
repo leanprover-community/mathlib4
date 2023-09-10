@@ -148,7 +148,7 @@ lemma degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
 
 variable {k}
 
-theorem algebraMap_surjective
+lemma algebraMap_surjective
     [IsSepClosed k] [Algebra k K] [IsSeparable k K] :
     Function.Surjective (algebraMap k K) := by
   refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩

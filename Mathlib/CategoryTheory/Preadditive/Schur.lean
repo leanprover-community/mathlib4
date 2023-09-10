@@ -41,7 +41,7 @@ lemma mono_of_nonzero_from_simple [HasKernels C] {X Y : C} [Simple X] {f : X ⟶
 /-- The part of **Schur's lemma** that holds in any preadditive category with kernels:
 that a nonzero morphism between simple objects is an isomorphism.
 -/
-theorem isIso_of_hom_simple
+lemma isIso_of_hom_simple
     [HasKernels C] {X Y : C} [Simple X] [Simple Y] {f : X ⟶ Y} (w : f ≠ 0) : IsIso f :=
   haveI := mono_of_nonzero_from_simple w
   isIso_of_mono_of_nonzero w

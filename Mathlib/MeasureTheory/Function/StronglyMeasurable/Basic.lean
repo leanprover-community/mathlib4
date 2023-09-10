@@ -675,7 +675,7 @@ lemma _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSpac
 #align continuous.strongly_measurable Continuous.stronglyMeasurable
 
 /-- A continuous function with compact support is strongly measurable. -/
-theorem _root_.Continuous.stronglyMeasurable_of_hasCompactSupport
+lemma _root_.Continuous.stronglyMeasurable_of_hasCompactSupport
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
     [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Zero β] {f : α → β}
     (hf : Continuous f) (h'f : HasCompactSupport f) : StronglyMeasurable f := by
@@ -1400,7 +1400,7 @@ lemma _root_.List.aestronglyMeasurable_prod' (l : List (α → M))
 #align list.ae_strongly_measurable_sum' List.aestronglyMeasurable_sum'
 
 @[to_additive (attr := measurability)]
-theorem _root_.List.aestronglyMeasurable_prod
+lemma _root_.List.aestronglyMeasurable_prod
     (l : List (α → M)) (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.list_prod_apply] using l.aestronglyMeasurable_prod' hl

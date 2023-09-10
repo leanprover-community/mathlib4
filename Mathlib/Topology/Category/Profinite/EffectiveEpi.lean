@@ -212,7 +212,7 @@ end EffectiveEpiFamily
 section JointlySurjective
 
 /-- One direction of `Profinite.effectiveEpiFamily_tfae` -/
-theorem effectiveEpiFamily_of_jointly_surjective
+lemma effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Fintype α] {B : Profinite}
     (X : α → Profinite) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :

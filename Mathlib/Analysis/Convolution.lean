@@ -202,7 +202,7 @@ section
 
 variable [MeasurableAdd G] [MeasurableNeg G]
 
-theorem MeasureTheory.AEStronglyMeasurable.convolution_integrand_snd'
+lemma MeasureTheory.AEStronglyMeasurable.convolution_integrand_snd'
     (hf : AEStronglyMeasurable f μ) {x : G}
     (hg : AEStronglyMeasurable g <| map (fun t => x - t) μ) :
     AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
@@ -265,7 +265,7 @@ lemma MeasureTheory.AEStronglyMeasurable.convolution_integrand_snd (hf : AEStron
     hg.mono' <| (quasiMeasurePreserving_sub_left_of_right_invariant μ x).absolutelyContinuous
 #align measure_theory.ae_strongly_measurable.convolution_integrand_snd MeasureTheory.AEStronglyMeasurable.convolution_integrand_snd
 
-theorem MeasureTheory.AEStronglyMeasurable.convolution_integrand_swap_snd
+lemma MeasureTheory.AEStronglyMeasurable.convolution_integrand_swap_snd
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x : G) :
     AEStronglyMeasurable (fun t => L (f (x - t)) (g t)) μ :=
   (hf.mono'
@@ -822,7 +822,7 @@ lemma HasCompactSupport.continuous_convolution_left [FirstCountableTopology G]
   exact hcf.continuous_convolution_right L.flip hg hf
 #align has_compact_support.continuous_convolution_left HasCompactSupport.continuous_convolution_left
 
-theorem BddAbove.continuous_convolution_left_of_integrable
+lemma BddAbove.continuous_convolution_left_of_integrable
     [FirstCountableTopology G] [SecondCountableTopologyEither G E]
     (hbf : BddAbove (range fun x => ‖f x‖)) (hf : Continuous f) (hg : Integrable g μ) :
     Continuous (f ⋆[L, μ] g) := by

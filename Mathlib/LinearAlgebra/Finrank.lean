@@ -96,7 +96,7 @@ lemma lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank K V) : ↑n < Module.rank
 lemma one_lt_rank_of_one_lt_finrank (h : 1 < finrank K V) : 1 < Module.rank K V := by
   simpa using lt_rank_of_lt_finrank h
 
-theorem finrank_le_finrank_of_rank_le_rank
+lemma finrank_le_finrank_of_rank_le_rank
     (h : lift.{v'} (Module.rank K V) ≤ Cardinal.lift.{v} (Module.rank K V₂))
     (h' : Module.rank K V₂ < ℵ₀) : finrank K V ≤ finrank K V₂ := by
   simpa only [toNat_lift] using toNat_le_of_le_of_lt_aleph0 (lift_lt_aleph0.mpr h') h
@@ -187,7 +187,7 @@ variable [Ring K] [StrongRankCondition K] [AddCommGroup V] [Module K V] [Module.
 
 open FiniteDimensional
 
-theorem finrank_eq_zero_of_basis_imp_not_finite
+lemma finrank_eq_zero_of_basis_imp_not_finite
     (h : ∀ s : Set V, Basis.{v} (s : Set V) K V → ¬s.Finite) : finrank K V = 0 := by
   obtain ⟨_, ⟨b⟩⟩ := (Module.free_iff_set K V).mp ‹_›
   exact dif_neg fun rank_lt => h _ b (b.finite_index_of_rank_lt_aleph0 rank_lt)
@@ -202,12 +202,12 @@ lemma finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset V, Basis.{v} (s : S
         simp)
 #align finrank_eq_zero_of_basis_imp_false finrank_eq_zero_of_basis_imp_false
 
-theorem finrank_eq_zero_of_not_exists_basis
+lemma finrank_eq_zero_of_not_exists_basis
     (h : ¬∃ s : Finset V, Nonempty (Basis (s : Set V) K V)) : finrank K V = 0 :=
   finrank_eq_zero_of_basis_imp_false fun s b => h ⟨s, ⟨b⟩⟩
 #align finrank_eq_zero_of_not_exists_basis finrank_eq_zero_of_not_exists_basis
 
-theorem finrank_eq_zero_of_not_exists_basis_finite
+lemma finrank_eq_zero_of_not_exists_basis_finite
     (h : ¬∃ (s : Set V) (_ : Basis.{v} (s : Set V) K V), s.Finite) : finrank K V = 0 :=
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs => h ⟨s, b, hs⟩
 #align finrank_eq_zero_of_not_exists_basis_finite finrank_eq_zero_of_not_exists_basis_finite
@@ -388,7 +388,7 @@ lemma exists_linearIndependent_cons_of_lt_finrank {n : ℕ} {v : Fin n → V}
 
 /-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
 vector linearly independent of the first one. -/
-theorem exists_linearIndependent_pair_of_one_lt_finrank
+lemma exists_linearIndependent_pair_of_one_lt_finrank
     (h : 1 < finrank K V) {x : V} (hx : x ≠ 0) :
     ∃ y, LinearIndependent K ![x, y] :=
   exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx

@@ -72,7 +72,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_curry ModuleCat.monoidalClosed_curry
 
 @[simp]
-theorem monoidalClosed_uncurry
+lemma monoidalClosed_uncurry
     {M N P : ModuleCat.{u} R} (f : N ⟶ M ⟶[ModuleCat.{u} R] P) (x : M) (y : N) :
     MonoidalClosed.uncurry f (x ⊗ₜ[R] y) =
       @FunLike.coe _ _ _ LinearMap.instFunLike (f y) x :=

@@ -191,7 +191,7 @@ lemma _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ)
   simpa using Real.list_prod_map_rpow' l f hs r
 
 /-- `rpow` version of `Finset.prod_pow`. -/
-theorem _root_.Real.finset_prod_rpow
+lemma _root_.Real.finset_prod_rpow
     {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
     (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
   Real.multiset_prod_map_rpow s.val f hs r

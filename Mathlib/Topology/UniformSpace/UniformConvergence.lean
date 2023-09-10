@@ -827,7 +827,7 @@ lemma continuousWithinAt_of_locally_uniform_approx_of_continuousWithinAt (hx : x
 
 /-- A function which can be locally uniformly approximated by functions which are continuous at
 a point is continuous at this point. -/
-theorem continuousAt_of_locally_uniform_approx_of_continuousAt
+lemma continuousAt_of_locally_uniform_approx_of_continuousAt
     (L : ∀ u ∈ 𝓤 β, ∃ t ∈ 𝓝 x, ∃ F, ContinuousAt F x ∧ ∀ y ∈ t, (f y, F y) ∈ u) :
     ContinuousAt f x := by
   rw [← continuousWithinAt_univ]
@@ -837,7 +837,7 @@ theorem continuousAt_of_locally_uniform_approx_of_continuousAt
 
 /-- A function which can be locally uniformly approximated by functions which are continuous
 on a set is continuous on this set. -/
-theorem continuousOn_of_locally_uniform_approx_of_continuousWithinAt
+lemma continuousOn_of_locally_uniform_approx_of_continuousWithinAt
     (L : ∀ x ∈ s, ∀ u ∈ 𝓤 β, ∃ t ∈ 𝓝[s] x, ∃ F,
       ContinuousWithinAt F s x ∧ ∀ y ∈ t, (f y, F y) ∈ u) :
     ContinuousOn f s := fun x hx =>
@@ -846,14 +846,14 @@ theorem continuousOn_of_locally_uniform_approx_of_continuousWithinAt
 
 /-- A function which can be uniformly approximated by functions which are continuous on a set
 is continuous on this set. -/
-theorem continuousOn_of_uniform_approx_of_continuousOn
+lemma continuousOn_of_uniform_approx_of_continuousOn
     (L : ∀ u ∈ 𝓤 β, ∃ F, ContinuousOn F s ∧ ∀ y ∈ s, (f y, F y) ∈ u) : ContinuousOn f s :=
   continuousOn_of_locally_uniform_approx_of_continuousWithinAt fun _x hx u hu =>
     ⟨s, self_mem_nhdsWithin, (L u hu).imp fun _F hF => ⟨hF.1.continuousWithinAt hx, hF.2⟩⟩
 #align continuous_on_of_uniform_approx_of_continuous_on continuousOn_of_uniform_approx_of_continuousOn
 
 /-- A function which can be locally uniformly approximated by continuous functions is continuous. -/
-theorem continuous_of_locally_uniform_approx_of_continuousAt
+lemma continuous_of_locally_uniform_approx_of_continuousAt
     (L : ∀ x : α, ∀ u ∈ 𝓤 β, ∃ t ∈ 𝓝 x, ∃ F, ContinuousAt F x ∧ ∀ y ∈ t, (f y, F y) ∈ u) :
     Continuous f :=
   continuous_iff_continuousAt.2 fun x =>
@@ -861,7 +861,7 @@ theorem continuous_of_locally_uniform_approx_of_continuousAt
 #align continuous_of_locally_uniform_approx_of_continuous_at continuous_of_locally_uniform_approx_of_continuousAt
 
 /-- A function which can be uniformly approximated by continuous functions is continuous. -/
-theorem continuous_of_uniform_approx_of_continuous
+lemma continuous_of_uniform_approx_of_continuous
     (L : ∀ u ∈ 𝓤 β, ∃ F, Continuous F ∧ ∀ y, (f y, F y) ∈ u) : Continuous f :=
   continuous_iff_continuousOn_univ.mpr <|
     continuousOn_of_uniform_approx_of_continuousOn <| by

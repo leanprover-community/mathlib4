@@ -267,7 +267,7 @@ the sum of integrals of `f` over the faces of `I` taken with appropriate signs.
 
 More precisely, we use a non-standard generalization of the Henstock-Kurzweil integral and
 we allow `f` to be non-differentiable (but still continuous) at a countable set of points. -/
-theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
+lemma hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
     (f : (Fin (n + 1) → ℝ) → Fin (n + 1) → E)
     (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] (Fin (n + 1) → E))
     (s : Set (Fin (n + 1) → ℝ)) (hs : s.Countable)

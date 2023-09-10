@@ -183,7 +183,7 @@ def struct : EffectiveEpiFamilyStruct X π where
 
 end EffectiveEpiFamily
 
-theorem effectiveEpiFamily_of_jointly_surjective
+lemma effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Fintype α] {B : CompHaus.{u}}
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
@@ -193,7 +193,7 @@ theorem effectiveEpiFamily_of_jointly_surjective
 open EffectiveEpiFamily
 
 open List in
-theorem effectiveEpiFamily_tfae
+lemma effectiveEpiFamily_tfae
     {α : Type} [Fintype α] {B : CompHaus.{u}}
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B)) :
     TFAE

@@ -1550,7 +1550,7 @@ lemma RegularSpace.ofBasis {ι : α → Sort*} {p : ∀ a, ι a → Prop} {s : �
   RegularSpace.ofLift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
 #align regular_space.of_basis RegularSpace.ofBasis
 
-theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
+lemma RegularSpace.ofExistsMemNhdsIsClosedSubset
     (h : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 a, IsClosed t ∧ t ⊆ s) : RegularSpace α :=
   Iff.mpr ((regularSpace_TFAE α).out 0 3) h
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset

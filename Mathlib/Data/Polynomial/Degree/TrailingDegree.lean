@@ -501,7 +501,7 @@ section Semiring
 
 variable [Semiring R] {p q : R[X]} {ι : Type*}
 
-theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
+lemma coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
     (h : trailingDegree p < trailingDegree q) : coeff q (natTrailingDegree p) = 0 :=
   coeff_eq_zero_of_trailingDegree_lt <| natTrailingDegree_le_trailingDegree.trans_lt h
 #align polynomial.coeff_nat_trailing_degree_eq_zero_of_trailing_degree_lt Polynomial.coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt

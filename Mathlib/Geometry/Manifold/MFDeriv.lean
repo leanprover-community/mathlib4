@@ -443,7 +443,7 @@ lemma mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'}
     hy
 #align mdifferentiable_within_at_iff_of_mem_source mdifferentiableWithinAt_iff_of_mem_source
 
-theorem mfderivWithin_zero_of_not_mdifferentiableWithinAt
+lemma mfderivWithin_zero_of_not_mdifferentiableWithinAt
     (h : ¬MDifferentiableWithinAt I I' f s x) : mfderivWithin I I' f s x = 0 := by
   simp only [mfderivWithin, h, if_neg, not_false_iff]
 #align mfderiv_within_zero_of_not_mdifferentiable_within_at mfderivWithin_zero_of_not_mdifferentiableWithinAt
@@ -618,7 +618,7 @@ lemma MDifferentiable.mdifferentiableOn (h : MDifferentiable I I' f) :
   (mdifferentiableOn_univ.2 h).mono (subset_univ _)
 #align mdifferentiable.mdifferentiable_on MDifferentiable.mdifferentiableOn
 
-theorem mdifferentiableOn_of_locally_mdifferentiableOn
+lemma mdifferentiableOn_of_locally_mdifferentiableOn
     (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ MDifferentiableOn I I' f (s ∩ u)) :
     MDifferentiableOn I I' f s := by
   intro x xs
