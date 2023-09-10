@@ -115,7 +115,7 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   { toFun := liftAux f
     map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
-  left_inv f := by rfl
+  left_inv f := rfl
   right_inv F := by ext; rfl
 #align free_magma.lift FreeMagma.lift
 
@@ -195,7 +195,7 @@ theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α
 #align free_magma.mul_seq FreeMagma.mul_seq
 
 @[to_additive]
-instance : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
   (pure_bind := fun f x ↦ rfl)
   (bind_assoc := fun x f g ↦ FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -266,7 +266,7 @@ theorem mul_map_seq (x y : FreeMagma α) :
 
 @[to_additive]
 instance : LawfulTraversable FreeMagma.{u} :=
-  { instLawfulMonadFreeMagmaInstMonadFreeMagma with
+  { instLawfulMonad with
     id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
@@ -619,7 +619,7 @@ theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
 @[to_additive]
-instance : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
   (pure_bind := fun _ _ ↦ rfl)
   (bind_assoc := fun x g f ↦
     recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -682,7 +682,7 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
 
 @[to_additive]
 instance : LawfulTraversable FreeSemigroup.{u} :=
-  { instLawfulMonadFreeSemigroupInstMonadFreeSemigroup with
+  { instLawfulMonad with
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]

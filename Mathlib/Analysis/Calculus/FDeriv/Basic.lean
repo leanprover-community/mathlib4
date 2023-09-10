@@ -87,7 +87,7 @@ characterized in terms of the `Tendsto` relation.
 We also introduce predicates `DifferentiableWithinAt 𝕜 f s x` (where `𝕜` is the base field,
 `f` the function to be differentiated, `x` the point at which the derivative is asserted to exist,
 and `s` the set along which the derivative is defined), as well as `DifferentiableAt 𝕜 f x`,
-`Differentiable_on 𝕜 f s` and `Differentiable 𝕜 f` to express the existence of a derivative.
+`DifferentiableOn 𝕜 f s` and `Differentiable 𝕜 f` to express the existence of a derivative.
 
 To be able to compute with derivatives, we write `fderivWithin 𝕜 f s x` and `fderiv 𝕜 f x`
 for some choice of a derivative if it exists, and the zero function otherwise. This choice only
@@ -116,6 +116,8 @@ derivative, differentiable, Fréchet, calculus
 
 -/
 
+set_option autoImplicit true
+
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
 open Topology Classical NNReal Filter Asymptotics ENNReal
@@ -124,15 +126,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-- A function `f` has the continuous linear map `f'` as derivative along the filter `L` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` converges along the filter `L`. This definition
@@ -234,7 +236,7 @@ i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` 
 and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. This lemma expresses
 this fact, for functions having a derivative within a set. Its specific formulation is useful for
 tangent cone related discussions. -/
-theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type _} (l : Filter α)
+theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l : Filter α)
     {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
     (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
     Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
@@ -340,11 +342,18 @@ theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (h
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
-theorem HasFDerivAt.le_of_lip {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
+theorem HasFDerivAt.le_of_lipschitzOn
+    {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
   refine' hf.le_of_lip' C.coe_nonneg _
-  filter_upwards [hs]with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
-#align has_fderiv_at.le_of_lip HasFDerivAt.le_of_lip
+  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
+#align has_fderiv_at.le_of_lip HasFDerivAt.le_of_lipschitzOn
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+then its derivative at `x₀` has norm bounded by `C`. -/
+theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C :=
+  hf.le_of_lipschitzOn univ_mem (lipschitzOn_univ.2 hlip)
 
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' x L₁ :=
@@ -355,6 +364,7 @@ theorem HasFDerivWithinAt.mono_of_mem (h : HasFDerivWithinAt f f' t x) (hst : t 
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
 #align has_fderiv_within_at.mono_of_mem HasFDerivWithinAt.mono_of_mem
+#align has_fderiv_within_at.nhds_within HasFDerivWithinAt.mono_of_mem
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -385,7 +395,7 @@ theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f
   rfl
 #align has_fderiv_within_at_univ hasFDerivWithinAt_univ
 
-alias hasFDerivWithinAt_univ ↔ HasFDerivWithinAt.hasFDerivAt_of_univ _
+alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
 #align has_fderiv_within_at.has_fderiv_at_of_univ HasFDerivWithinAt.hasFDerivAt_of_univ
 
 theorem hasFDerivWithinAt_insert {y : E} :
@@ -398,7 +408,7 @@ theorem hasFDerivWithinAt_insert {y : E} :
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 #align has_fderiv_within_at_insert hasFDerivWithinAt_insert
 
-alias hasFDerivWithinAt_insert ↔ HasFDerivWithinAt.of_insert HasFDerivWithinAt.insert'
+alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
 #align has_fderiv_within_at.of_insert HasFDerivWithinAt.of_insert
 #align has_fderiv_within_at.insert' HasFDerivWithinAt.insert'
 
@@ -455,7 +465,7 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x)
 #align has_strict_fderiv_at.exists_lipschitz_on_with HasStrictFDerivAt.exists_lipschitzOnWith
 
 /-- Directional derivative agrees with `HasFDeriv`. -/
-theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type _} {c : α → 𝕜} {l : Filter α}
+theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) :
     Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
   refine' (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc _
@@ -486,11 +496,6 @@ theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
   simp only [HasFDerivWithinAt, nhdsWithin_union]
   exact hs.sup ht
 #align has_fderiv_within_at.union HasFDerivWithinAt.union
-
-protected theorem HasFDerivWithinAt.nhdsWithin (h : HasFDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
-    HasFDerivWithinAt f f' t x :=
-  (hasFDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
-#align has_fderiv_within_at.nhds_within HasFDerivWithinAt.nhdsWithin
 
 theorem HasFDerivWithinAt.hasFDerivAt (h : HasFDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
     HasFDerivAt f f' x := by
@@ -542,14 +547,37 @@ theorem fderiv_eq {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x
   funext fun x => (h x).fderiv
 #align fderiv_eq fderiv_eq
 
-/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+variable (𝕜)
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
+only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
+theorem norm_fderiv_le_of_lip' {f : E → F} {x₀ : E}
+    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
+    ‖fderiv 𝕜 f x₀‖ ≤ C := by
+  by_cases hf : DifferentiableAt 𝕜 f x₀
+  · exact hf.hasFDerivAt.le_of_lip' hC₀ hlip
+  · rw [fderiv_zero_of_not_differentiableAt hf]
+    simp [hC₀]
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
 Version using `fderiv`. -/
 -- Porting note: renamed so that dot-notation makes sense
-theorem DifferentiableAt.le_of_lip {f : E → F} {x₀ : E} (hf : DifferentiableAt 𝕜 f x₀)
-    {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C :=
-  hf.hasFDerivAt.le_of_lip hs hlip
-#align fderiv_at.le_of_lip DifferentiableAt.le_of_lip
+theorem norm_fderiv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
+    {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C := by
+  refine' norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg _
+  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
+#align fderiv_at.le_of_lip norm_fderiv_le_of_lipschitzOn
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz then
+its derivative at `x₀` has norm bounded by `C`.
+Version using `fderiv`. -/
+theorem norm_fderiv_le_of_lipschitz {f : E → F} {x₀ : E}
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖fderiv 𝕜 f x₀‖ ≤ C :=
+  norm_fderiv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOn_univ.2 hlip)
+
+variable {𝕜}
 
 protected theorem HasFDerivWithinAt.fderivWithin (h : HasFDerivWithinAt f f' s x)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
@@ -1151,17 +1179,32 @@ end
 
 /-! ### Support of derivatives -/
 
-
 section Support
 
 open Function
 
-variable (𝕜 : Type _) {E F : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
+
+theorem HasStrictFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
+  rw [not_mem_tsupport_iff_eventuallyEq] at h
+  exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
+
+theorem HasFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasFDerivAt f (0 : E →L[𝕜] F) x :=
+  (HasStrictFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivAt
+
+theorem HasFDerivWithinAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
+  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivWithinAt
+
+theorem fderiv_of_not_mem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
+  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).fderiv
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
-  rw [← not_imp_not, not_mem_tsupport_iff_eventuallyEq, nmem_support]
-  exact fun hx => hx.fderiv_eq.trans <| fderiv_const_apply 0
+  rw [← not_imp_not, nmem_support]
+  exact fderiv_of_not_mem_tsupport _
 #align support_fderiv_subset support_fderiv_subset
 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=

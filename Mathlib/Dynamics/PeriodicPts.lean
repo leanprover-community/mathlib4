@@ -46,7 +46,9 @@ open Set
 
 namespace Function
 
-variable {α : Type _} {β : Type _} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
+open Function (Commute)
+
+variable {α : Type*} {β : Type*} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
 
 /-- A point `x` is a periodic point of `f : α → α` of period `n` if `f^[n] x = x`.
 Note that we do not require `0 < n` in this definition. Many theorems about periodic points
@@ -421,27 +423,27 @@ theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPer
     rwa [← isPeriodicPt_iff_minimalPeriod_dvd]
 #align function.minimal_period_eq_prime_pow Function.minimalPeriod_eq_prime_pow
 
-theorem Commute.minimalPeriod_of_comp_dvd_lcm {g : α → α} (h : Function.Commute f g) :
+theorem Commute.minimalPeriod_of_comp_dvd_lcm {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ Nat.lcm (minimalPeriod f x) (minimalPeriod g x) := by
   rw [← isPeriodicPt_iff_minimalPeriod_dvd]
   exact (isPeriodicPt_minimalPeriod f x).comp_lcm h (isPeriodicPt_minimalPeriod g x)
 #align function.commute.minimal_period_of_comp_dvd_lcm Function.Commute.minimalPeriod_of_comp_dvd_lcm
 
-theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Function.Commute f g) :
+theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ minimalPeriod f x * minimalPeriod g x :=
   dvd_trans h.minimalPeriod_of_comp_dvd_lcm (lcm_dvd_mul _ _)
 #align function.commute.minimal_period_of_comp_dvd_mul Function.Commute.minimalPeriod_of_comp_dvd_mul
 
-theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Function.Commute f g)
+theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Commute f g)
     (hco : coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices :
+  suffices
     ∀ {f g : α → α},
       Commute f g →
         coprime (minimalPeriod f x) (minimalPeriod g x) →
-          minimalPeriod f x ∣ minimalPeriod (f ∘ g) x
-  · exact hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
+          minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
+    hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
   intro f g h hco
   refine' hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h _ _).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
@@ -589,7 +591,7 @@ end Function
 
 namespace Function
 
-variable {α β : Type _} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 @[simp]
 theorem iterate_prod_map (f : α → α) (g : β → β) (n : ℕ) :
@@ -627,7 +629,7 @@ namespace MulAction
 
 open Function
 
-variable {α β : Type _} [Group α] [MulAction α β] {a : α} {b : β}
+variable {α β : Type*} [Group α] [MulAction α β] {a : α} {b : β}
 
 @[to_additive]
 theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :

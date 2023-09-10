@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.nat.cast.field from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
@@ -23,7 +24,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 
 namespace Nat
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp]
 theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :

@@ -35,8 +35,8 @@ open Finset Filter
 
 namespace FormalMultilinearSeries
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-! ### The left inverse of a formal multilinear series -/
 
@@ -434,7 +434,6 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
         MultilinearMap.map_sum_finset (MultilinearMap.mkPiAlgebra ℝ (Fin j) ℝ) fun _ (m : ℕ) =>
           r * (a ^ m * p m)]
       simp only [MultilinearMap.mkPiAlgebra_apply]
-      dsimp
       simp [prod_const, ← mul_sum, mul_pow]
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos_aux1 FormalMultilinearSeries.radius_right_inv_pos_of_radius_pos_aux1
 
@@ -568,7 +567,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
   apply le_radius_of_bound _ ((I + 1) * a) fun n => ?_
   by_cases hn : n = 0
   · have : ‖p.rightInv i n‖ = ‖p.rightInv i 0‖ := by congr <;> try rw [hn]
-    simp only [this, norm_zero, MulZeroClass.zero_mul, rightInv_coeff_zero]
+    simp only [this, norm_zero, zero_mul, rightInv_coeff_zero]
     apply_rules [mul_nonneg, add_nonneg, norm_nonneg, zero_le_one, apos.le]
   · have one_le_n : 1 ≤ n := bot_lt_iff_ne_bot.2 hn
     calc

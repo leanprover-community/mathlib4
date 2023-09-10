@@ -58,7 +58,7 @@ namespace CategoryTheory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] {D : Type _} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 
 variable [Abelian C] [HasInjectiveResolutions C] [Abelian D]
 

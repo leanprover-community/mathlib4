@@ -18,13 +18,13 @@ This file contains instances and definitions relating `MulSemiringAction` to `Po
 -/
 
 
-variable (M : Type _) [Monoid M]
+variable (M : Type*) [Monoid M]
 
 open Polynomial
 
 namespace Polynomial
 
-variable (R : Type _) [Semiring R]
+variable (R : Type*) [Semiring R]
 
 variable {M}
 
@@ -60,7 +60,7 @@ theorem smul_X (m : M) : (m • X : R[X]) = X :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.smul_X Polynomial.smul_X
 
-variable (S : Type _) [CommSemiring S] [MulSemiringAction M S]
+variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
 
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
   Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
@@ -69,7 +69,7 @@ theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m
       eval_pow, eval_X, smul_mul', smul_pow']
 #align polynomial.smul_eval_smul Polynomial.smul_eval_smul
 
-variable (G : Type _) [Group G]
+variable (G : Type*) [Group G]
 
 theorem eval_smul' [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     f.eval (g • x) = g • (g⁻¹ • f).eval x := by
@@ -86,9 +86,9 @@ end Polynomial
 section CommRing
 set_option linter.uppercaseLean3 false  -- porting note: `prod_X_*`
 
-variable (G : Type _) [Group G] [Fintype G]
+variable (G : Type*) [Group G] [Fintype G]
 
-variable (R : Type _) [CommRing R] [MulSemiringAction G R]
+variable (R : Type*) [CommRing R] [MulSemiringAction G R]
 
 open MulAction
 
@@ -126,9 +126,9 @@ namespace MulSemiringActionHom
 
 variable {M}
 
-variable {P : Type _} [CommSemiring P] [MulSemiringAction M P]
+variable {P : Type*} [CommSemiring P] [MulSemiringAction M P]
 
-variable {Q : Type _} [CommSemiring Q] [MulSemiringAction M Q]
+variable {Q : Type*} [CommSemiring Q] [MulSemiringAction M Q]
 
 open Polynomial
 

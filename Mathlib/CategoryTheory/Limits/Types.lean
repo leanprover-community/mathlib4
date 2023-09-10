@@ -6,7 +6,7 @@ Authors: Scott Morrison, Reid Barton
 import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Filtered
+import Mathlib.CategoryTheory.Filtered.Basic
 
 #align_import category_theory.limits.types from "leanprover-community/mathlib"@"4aa2a2e17940311e47007f087c9df229e7f12942"
 
@@ -21,6 +21,8 @@ We also give a characterisation of filtered colimits in `Type`, via
 Finally, we prove the category of types has categorical images,
 and that these agree with the range of a function.
 -/
+
+set_option autoImplicit true
 
 
 open CategoryTheory CategoryTheory.Limits
@@ -636,16 +638,5 @@ instance : HasImageMaps (Type u) where
         replace p := congr_fun p (Classical.choose x.2)
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
         erw [p, Classical.choose_spec x.2]⟩⟩) rfl
-
--- porting note: the following three instances have been added to ease
--- the automation in a definition in `AlgebraicTopology.SimplicialSet`
-noncomputable instance : Inhabited (⊤_ (Type u)) :=
-  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
-
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
-  congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
-    (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
-
-noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 
 end CategoryTheory.Limits.Types

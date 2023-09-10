@@ -6,7 +6,7 @@ Authors: Scott Morrison, Yaël Dillies
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
 
-#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
+#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
 /-!
 # Intervals as finsets
@@ -30,7 +30,7 @@ open Function OrderDual
 
 open BigOperators FinsetInterval
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finset
 
@@ -82,13 +82,13 @@ theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
 #align finset.Ioo_eq_empty_iff Finset.Ioo_eq_empty_iff
 
-alias Icc_eq_empty_iff ↔ _ Icc_eq_empty
+alias ⟨_, Icc_eq_empty⟩ := Icc_eq_empty_iff
 #align finset.Icc_eq_empty Finset.Icc_eq_empty
 
-alias Ico_eq_empty_iff ↔ _ Ico_eq_empty
+alias ⟨_, Ico_eq_empty⟩ := Ico_eq_empty_iff
 #align finset.Ico_eq_empty Finset.Ico_eq_empty
 
-alias Ioc_eq_empty_iff ↔ _ Ioc_eq_empty
+alias ⟨_, Ioc_eq_empty⟩ := Ioc_eq_empty_iff
 #align finset.Ioc_eq_empty Finset.Ioc_eq_empty
 
 @[simp]
@@ -345,17 +345,17 @@ theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred ((· ≤ ·) c)] (h
 
 theorem Icc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     (Icc a b).filter (· < c) = Icc a b :=
-  (Finset.filter_eq_self _).2 fun _ hx => lt_of_le_of_lt (mem_Icc.1 hx).2 h
+  filter_true_of_mem  fun _ hx => lt_of_le_of_lt (mem_Icc.1 hx).2 h
 #align finset.Icc_filter_lt_of_lt_right Finset.Icc_filter_lt_of_lt_right
 
 theorem Ioc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     (Ioc a b).filter (· < c) = Ioc a b :=
-  (Finset.filter_eq_self _).2 fun _ hx => lt_of_le_of_lt (mem_Ioc.1 hx).2 h
+  filter_true_of_mem  fun _ hx => lt_of_le_of_lt (mem_Ioc.1 hx).2 h
 #align finset.Ioc_filter_lt_of_lt_right Finset.Ioc_filter_lt_of_lt_right
 
 theorem Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] {a c : α}
     [DecidablePred (· < c)] (h : a < c) : (Iic a).filter (· < c) = Iic a :=
-  (Finset.filter_eq_self _).2 fun _ hx => lt_of_le_of_lt (mem_Iic.1 hx) h
+  filter_true_of_mem fun _ hx => lt_of_le_of_lt (mem_Iic.1 hx) h
 #align finset.Iic_filter_lt_of_lt_right Finset.Iic_filter_lt_of_lt_right
 
 variable (a b) [Fintype α]

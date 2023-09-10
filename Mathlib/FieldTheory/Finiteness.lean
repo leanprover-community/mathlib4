@@ -52,7 +52,7 @@ theorem rank_lt_aleph0 : ∀ [IsNoetherian K V], Module.rank K V < ℵ₀ :=
 variable {K V}
 
 /-- In a noetherian module over a division ring, all bases are indexed by a finite type. -/
-noncomputable def fintypeBasisIndex {ι : Type _} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=
+noncomputable def fintypeBasisIndex {ι : Type*} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=
   b.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K V)
 #align is_noetherian.fintype_basis_index IsNoetherian.fintypeBasisIndex
 
@@ -63,7 +63,7 @@ noncomputable instance [IsNoetherian K V] : Fintype (Basis.ofVectorSpaceIndex K 
 
 /-- In a noetherian module over a division ring,
 if a basis is indexed by a set, that set is finite. -/
-theorem finite_basis_index {ι : Type _} {s : Set ι} [IsNoetherian K V] (b : Basis s K V) :
+theorem finite_basis_index {ι : Type*} {s : Set ι} [IsNoetherian K V] (b : Basis s K V) :
     s.Finite :=
   b.finite_index_of_rank_lt_aleph0 (rank_lt_aleph0 K V)
 #align is_noetherian.finite_basis_index IsNoetherian.finite_basis_index
