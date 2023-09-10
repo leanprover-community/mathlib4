@@ -11,7 +11,7 @@ import Mathlib.Data.Int.Log
 /-!
 
 The nth Harmonic number is not an integer. We formalize the proof using
-2-adic valuations. This proof is due to Theisinger.
+2-adic valuations. This proof is due to K¨ursch´ak.
 
 Reference:
 https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
@@ -22,6 +22,28 @@ namespace Counterexample
 
 open Rat
 open BigOperators
+
+namespace padicValRat
+
+  lemma min_eq_padicValRat {p : ℕ} [hp : Fact (Nat.Prime p)] {q r : ℚ} {hqr : q + r ≠ 0} (hval : padicValRat p q ≠ padicValRat p r) : padicValRat p (q + r) = min (padicValRat p q) (padicValRat p r) := by {
+    have Hmin := @padicValRat.min_le_padicValRat_add p hp q r hqr
+    wlog h : padicValRat p q < padicValRat p r generalizing q r with H
+    {
+      sorry
+    }
+    {
+      rw [min_eq_left (le_of_lt h)] at Hmin ⊢
+      suffices Hreq : padicValRat p q ≥ padicValRat p (q + r) by linarith
+      calc padicValRat p q = padicValRat p (q + r - r) := by congr; simp
+      _ ≥ min (padicValRat p (q +r)) (padicValRat p r):= by _
+      _ = padicValRat p (q + r) := _
+    }
+
+  }
+
+end padicValRat
+
+
 
 def harmonic : ℕ  → ℚ
 | 0 => 0
@@ -36,7 +58,6 @@ lemma harmonic_harmonic' n : harmonic n = harmonic' n := by {
   dsimp [harmonic']
   rw [add_comm]
 }
-
 
 lemma harmonic_ne_zero : ∀ n, n ≠ 0 → harmonic n > 0 := by {
   intros n Hn
@@ -107,6 +128,7 @@ theorem harmonic_not_int : ∀ n, n ≥ 2 -> ¬ (harmonic n).isInt := by {
     simpa only [Left.neg_neg_iff, Nat.cast_pos, Nat.log_pos_iff, and_true]
     norm_cast
     sorry
+
   }
 
 }
