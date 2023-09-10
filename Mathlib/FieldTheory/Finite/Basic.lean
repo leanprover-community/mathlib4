@@ -286,17 +286,7 @@ theorem sum_subgroup_pow_eq_zero {F : Type} [Field F] [Fintype F]
     rw [as_comp, ← Multiset.map_map]
     congr
     rw [eq_comm]
-    apply Multiset.map_univ_eq_univ_of_bijection
-    -- simp only [Multiset.map_univ_eq_univ_iff_bijection]
-    exact Group.mulRight_bijective a
-    -- ext a_1
-    -- simp only [mem_val, mem_univ, not_true, Multiset.count_univ, Multiset.mem_map, true_and,
-    --   Subtype.exists, not_exists]
-    -- have ha_1 : a_1 = (· * a) (a_1 * a⁻¹) := by
-    --   simp only [inv_mul_cancel_right]
-    -- rw [ha_1, Multiset.count_map_eq_count' (fun x => x * a) _ _]
-    -- simp only [mem_val, mem_univ, not_true, Multiset.count_univ]
-    -- exact mul_left_injective a
+    exact Multiset.map_univ_eq_univ_of_bijection (fun x ↦ x * a) (Group.mulRight_bijective a)
   have h_multiset_map_sum :
     (Multiset.map (fun x : G => ((x : Fˣ) : F) ^ k) Finset.univ.val).sum =
       (Multiset.map (fun x : G => ((x : Fˣ) : F) ^ k * (a.val : F) ^ k) Finset.univ.val).sum
