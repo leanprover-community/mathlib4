@@ -32,6 +32,7 @@ lemma SimpleGraph.Walk.IsHamiltonian.length (p : G.Walk u v) (hp : p.IsHamiltoni
         · sorry
         . sorry
       · rw [this] at length_relation
+        sorry
         -- exact Iff.mp Nat.succ_inj' length_relation
 
 lemma Nil_iff_eq_nil {v : V} : ∀ p : G.Walk v v, p.Nil ↔ p = SimpleGraph.Walk.nil
@@ -63,6 +64,20 @@ lemma new_definition_implies_old (p : G.Walk v v) : p.IsHamiltonianCycle →
     · sorry
     · have tail_nodup := hp.support_nodup
       sorry
+    -- have v_ge_2 : 2 ≤ p.support.count v
+    -- · -- List.count_pos_iff_mem
+    --   -- count_concat
+    --   have : p.support = List.concat p.support.tail v
+    --   · simp
+    --     rw [@SimpleGraph.Walk.support_eq_cons]
+    --     simp
+    --     sorry
+    --   · sorry
+    --   -- have : p.support.count v = p.support.tail.count v + 1
+    --   -- · refine List.count_concat _ _
+    --   -- · sorry
+    -- · have tail_nodup := hp.support_nodup
+    --   sorry
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp : p.IsHamiltonianCycle)
     (w : V) : w ∈ p.support := by
@@ -78,13 +93,14 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex (p : G.Walk v v) (hp :
 
 lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHamiltonianCycle) :
   p.length = Fintype.card V := by
+  have hp' := hp
   replace hp := new_definition_implies_old p hp
   have length_relation : p.length + 1 = p.support.length
   · cases p
     case nil =>
       rfl
     case cons h' p' =>
-      simp -- what happened here?
+      simp
   · have : p.support.length = Fintype.card V + 1
     · have : ∑ u : V, p.support.count u = Fintype.card V + 1
       · rw [←Finset.add_sum_erase Finset.univ p.support.count (Finset.mem_univ v)]
@@ -120,7 +136,7 @@ lemma SimpleGraph.Walk.IsHamiltonianCycle.length (p : G.Walk v v) (hp : p.IsHami
           · exact fun a_1 ↦ Finset.mem_univ a
           · intro ha
             rw [List.mem_toFinset]
-            exact SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex p hp a -- this doesn't work
+            exact SimpleGraph.Walk.IsHamiltonianCycle.contains_vertex p hp' a
         · rw [←h₂]
           rw [h₁]
           rw [length_relation]
