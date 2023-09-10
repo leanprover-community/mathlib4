@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.CharZero.Defs
 
 #align_import algebra.order.monoid.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -351,6 +352,10 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
 
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
+  { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
+      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
+
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
@@ -489,6 +494,9 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
   WithTop.addMonoidWithOne
+
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
+  WithTop.charZero
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
   WithTop.addCommMonoidWithOne

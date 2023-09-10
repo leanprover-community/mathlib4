@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.FreeAlgebra
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
@@ -31,7 +32,8 @@ open BigOperators Polynomial
 
 section ModuleAndAlgebra
 
-variable (R) (A : Type u) (B M N : Type*)
+universe uR uS uA uB uM uN
+variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB) (M : Type uM) (N : Type uN)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
@@ -47,7 +49,7 @@ namespace Finite
 
 open Submodule Set
 
-variable {R M N}
+variable {R S M N}
 
 section Algebra
 
@@ -65,11 +67,10 @@ end Module
 
 namespace Algebra
 
-variable [CommRing R] [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
-
-variable [AddCommGroup M] [Module R M]
-
-variable [AddCommGroup N] [Module R N]
+variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Algebra R S] [Algebra R A] [Algebra R B]
+variable [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 
@@ -85,6 +86,13 @@ protected theorem polynomial : FiniteType R R[X] :=
 
 open Classical
 
+protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
+  cases nonempty_fintype ι
+  exact
+    ⟨⟨Finset.univ.image (FreeAlgebra.ι R), by
+        rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
+        exact FreeAlgebra.adjoin_range_ι R ι⟩⟩
+
 protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι
   exact
@@ -93,18 +101,18 @@ protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolyno
         exact MvPolynomial.adjoin_range_X⟩⟩
 #align algebra.finite_type.mv_polynomial Algebra.FiniteType.mvPolynomial
 
-theorem of_restrictScalars_finiteType [Algebra A B] [IsScalarTower R A B] [hB : FiniteType R B] :
-    FiniteType A B := by
-  obtain ⟨S, hS⟩ := hB.out
-  refine' ⟨⟨S, eq_top_iff.2 fun b => _⟩⟩
-  have le : adjoin R (S : Set B) ≤ Subalgebra.restrictScalars R (adjoin A S) := by
-    apply (Algebra.adjoin_le _ : adjoin R (S : Set B) ≤ Subalgebra.restrictScalars R (adjoin A ↑S))
+theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
+    FiniteType S A := by
+  obtain ⟨s, hS⟩ := hA.out
+  refine' ⟨⟨s, eq_top_iff.2 fun b => _⟩⟩
+  have le : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S s) := by
+    apply (Algebra.adjoin_le _ : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S ↑s))
     simp only [Subalgebra.coe_restrictScalars]
     exact Algebra.subset_adjoin
   exact le (eq_top_iff.1 hS b)
 #align algebra.finite_type.of_restrict_scalars_finite_type Algebra.FiniteType.of_restrictScalars_finiteType
 
-variable {R A B}
+variable {R S A B}
 
 theorem of_surjective (hRA : FiniteType R A) (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
   ⟨by
@@ -116,21 +124,37 @@ theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
   hRA.of_surjective e e.surjective
 #align algebra.finite_type.equiv Algebra.FiniteType.equiv
 
-theorem trans [Algebra A B] [IsScalarTower R A B] (hRA : FiniteType R A) (hAB : FiniteType A B) :
-    FiniteType R B :=
-  ⟨fg_trans' hRA.1 hAB.1⟩
+theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : FiniteType S A) :
+    FiniteType R A :=
+  ⟨fg_trans' hRS.1 hSA.1⟩
 #align algebra.finite_type.trans Algebra.FiniteType.trans
 
 /-- An algebra is finitely generated if and only if it is a quotient
+of a free algebra whose variables are indexed by a finset. -/
+theorem iff_quotient_freeAlgebra :
+    FiniteType R A ↔
+      ∃ (s : Finset A) (f : FreeAlgebra R s →ₐ[R] A), Surjective f := by
+  constructor
+  · rintro ⟨s, hs⟩
+    refine ⟨s, FreeAlgebra.lift _ (↑), ?_⟩
+    intro x
+    have hrw : (↑s : Set A) = fun x : A => x ∈ s.val := rfl
+    rw [← Set.mem_range, ← AlgHom.coe_range]
+    erw [← adjoin_eq_range_freeAlgebra_lift, ← hrw, hs]
+    exact Set.mem_univ x
+  · rintro ⟨s, ⟨f, hsur⟩⟩
+    exact FiniteType.of_surjective (FiniteType.freeAlgebra R s) f hsur
+
+/-- A commutative algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a finset. -/
 theorem iff_quotient_mvPolynomial :
-    FiniteType R A ↔
-      ∃ (s : Finset A) (f : MvPolynomial { x // x ∈ s } R →ₐ[R] A), Surjective f := by
+    FiniteType R S ↔
+      ∃ (s : Finset S) (f : MvPolynomial { x // x ∈ s } R →ₐ[R] S), Surjective f := by
   constructor
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    have hrw : (↑s : Set A) = fun x : A => x ∈ s.val := rfl
+    have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
     rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, ← hrw, hs]
     exact Set.mem_univ x
   · rintro ⟨s, ⟨f, hsur⟩⟩
@@ -139,21 +163,33 @@ theorem iff_quotient_mvPolynomial :
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a fintype. -/
-theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
-    ∃ (ι : Type u) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A), Surjective f := by
+theorem iff_quotient_freeAlgebra' : FiniteType R A ↔
+    ∃ (ι : Type uA) (_ : Fintype ι) (f : FreeAlgebra R ι →ₐ[R] A), Surjective f := by
+  constructor
+  · rw [iff_quotient_freeAlgebra]
+    rintro ⟨s, ⟨f, hsur⟩⟩
+    use { x : A // x ∈ s }, inferInstance, f
+  · rintro ⟨ι, ⟨hfintype, ⟨f, hsur⟩⟩⟩
+    letI : Fintype ι := hfintype
+    exact FiniteType.of_surjective (FiniteType.freeAlgebra R ι) f hsur
+
+/-- A commutative algebra is finitely generated if and only if it is a quotient
+of a polynomial ring whose variables are indexed by a fintype. -/
+theorem iff_quotient_mvPolynomial' : FiniteType R S ↔
+    ∃ (ι : Type uS) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] S), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
-    use { x : A // x ∈ s }, inferInstance, f
+    use { x : S // x ∈ s }, inferInstance, f
   · rintro ⟨ι, ⟨hfintype, ⟨f, hsur⟩⟩⟩
     letI : Fintype ι := hfintype
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R ι) f hsur
 #align algebra.finite_type.iff_quotient_mv_polynomial' Algebra.FiniteType.iff_quotient_mvPolynomial'
 
-/-- An algebra is finitely generated if and only if it is a quotient of a polynomial ring in `n`
-variables. -/
+/-- A commutative algebra is finitely generated if and only if it is a quotient of a polynomial ring
+in `n` variables. -/
 theorem iff_quotient_mvPolynomial'' :
-    FiniteType R A ↔ ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f := by
+    FiniteType R S ↔ ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] S), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial']
     rintro ⟨ι, hfintype, ⟨f, hsur⟩⟩
@@ -178,8 +214,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   rfl
 #align algebra.finite_type.is_noetherian_ring Algebra.FiniteType.isNoetherianRing
 
-theorem _root_.Subalgebra.fg_iff_finiteType {R A : Type*} [CommSemiring R]
-    [Semiring A] [Algebra R A] (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
+theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
   S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
 #align subalgebra.fg_iff_finite_type Subalgebra.fg_iff_finiteType
 
@@ -237,7 +272,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteT
   let _ : Algebra A B := f.toAlgebra
   let _ : Algebra A C := (g.comp f).toAlgebra
   let _ : Algebra B C := g.toAlgebra
-  exact @Algebra.FiniteType.trans A B C _ _ f.toAlgebra _ (g.comp f).toAlgebra g.toAlgebra
+  exact @Algebra.FiniteType.trans A B C _ _ _ f.toAlgebra (g.comp f).toAlgebra g.toAlgebra
     ⟨by
       intro a b c
       simp [Algebra.smul_def, RingHom.map_mul, mul_assoc]
@@ -372,7 +407,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommMonoid M]
+variable [CommRing R] [AddMonoid M]
 
 /-- If `AddMonoidAlgebra R M` is of finite type, then there is a `G : Finset M` such that its
 image generates, as algebra, `AddMonoidAlgebra R M`. -/
@@ -416,11 +451,9 @@ end Ring
 
 end Span
 
-variable [AddCommMonoid M]
-
 /-- If a set `S` generates an additive monoid `M`, then the image of `M` generates, as algebra,
 `AddMonoidAlgebra R M`. -/
-theorem mvPolynomial_aeval_of_surjective_of_closure [CommSemiring R] {S : Set M}
+theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemiring R] {S : Set M}
     (hS : closure S = ⊤) :
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of' R M ↑s : MvPolynomial S R → AddMonoidAlgebra R M) := by
@@ -442,6 +475,31 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommSemiring R] {S : Set M}
     exact ⟨r • P, AlgHom.map_smul _ _ _⟩
 #align add_monoid_algebra.mv_polynomial_aeval_of_surjective_of_closure AddMonoidAlgebra.mvPolynomial_aeval_of_surjective_of_closure
 
+variable [AddMonoid M]
+
+/-- If a set `S` generates an additive monoid `M`, then the image of `M` generates, as algebra,
+`AddMonoidAlgebra R M`. -/
+theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
+    (hS : closure S = ⊤) :
+    Function.Surjective
+      (FreeAlgebra.lift R fun s : S => of' R M ↑s : FreeAlgebra R S → AddMonoidAlgebra R M) := by
+  intro f
+  induction' f using induction_on with m f g ihf ihg r f ih
+  · have : m ∈ closure S := hS.symm ▸ mem_top _
+    refine' closure_induction this (fun m hm => _) _ _
+    · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
+    · exact ⟨1, AlgHom.map_one _⟩
+    · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
+      exact
+        ⟨P₁ * P₂, by
+          rw [AlgHom.map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
+            one_mul]; rfl⟩
+  · rcases ihf with ⟨P, rfl⟩
+    rcases ihg with ⟨Q, rfl⟩
+    exact ⟨P + Q, AlgHom.map_add _ _ _⟩
+  · rcases ih with ⟨P, rfl⟩
+    exact ⟨r • P, AlgHom.map_smul _ _ _⟩
+
 variable (R M)
 
 /-- If an additive monoid `M` is finitely generated then `AddMonoidAlgebra R M` is of finite
@@ -449,9 +507,9 @@ type. -/
 instance finiteType_of_fg [CommRing R] [h : AddMonoid.FG M] :
     FiniteType R (AddMonoidAlgebra R M) := by
   obtain ⟨S, hS⟩ := h.out
-  exact (FiniteType.mvPolynomial R (S : Set M)).of_surjective
-      (MvPolynomial.aeval fun s : (S : Set M) => of' R M ↑s)
-      (mvPolynomial_aeval_of_surjective_of_closure hS)
+  exact (FiniteType.freeAlgebra R (S : Set M)).of_surjective
+      (FreeAlgebra.lift R fun s : (S : Set M) => of' R M ↑s)
+      (freeAlgebra_lift_of_surjective_of_closure hS)
 #align add_monoid_algebra.finite_type_of_fg AddMonoidAlgebra.finiteType_of_fg
 
 variable {R M}
@@ -533,7 +591,7 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [CommMonoid M]
+variable [CommRing R] [Monoid M]
 
 /-- If `MonoidAlgebra R M` is of finite type, then there is a `G : Finset M` such that its image
 generates, as algebra, `MonoidAlgebra R M`. -/
@@ -572,11 +630,9 @@ end Ring
 
 end Span
 
-variable [CommMonoid M]
-
 /-- If a set `S` generates a monoid `M`, then the image of `M` generates, as algebra,
 `MonoidAlgebra R M`. -/
-theorem mvPolynomial_aeval_of_surjective_of_closure [CommSemiring R] {S : Set M}
+theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring R] {S : Set M}
     (hS : closure S = ⊤) :
     Function.Surjective
       (MvPolynomial.aeval fun s : S => of R M ↑s : MvPolynomial S R → MonoidAlgebra R M) := by
@@ -595,6 +651,31 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommSemiring R] {S : Set M}
   · rcases ih with ⟨P, rfl⟩
     exact ⟨r • P, AlgHom.map_smul _ _ _⟩
 #align monoid_algebra.mv_polynomial_aeval_of_surjective_of_closure MonoidAlgebra.mvPolynomial_aeval_of_surjective_of_closure
+
+
+variable [Monoid M]
+
+/-- If a set `S` generates an additive monoid `M`, then the image of `M` generates, as algebra,
+`AddMonoidAlgebra R M`. -/
+theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
+    (hS : closure S = ⊤) :
+    Function.Surjective
+      (FreeAlgebra.lift R fun s : S => of R M ↑s : FreeAlgebra R S → MonoidAlgebra R M) := by
+  intro f
+  induction' f using induction_on with m f g ihf ihg r f ih
+  · have : m ∈ closure S := hS.symm ▸ mem_top _
+    refine' closure_induction this (fun m hm => _) _ _
+    · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
+    · exact ⟨1, AlgHom.map_one _⟩
+    · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
+      exact
+        ⟨P₁ * P₂, by
+          rw [AlgHom.map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
+  · rcases ihf with ⟨P, rfl⟩
+    rcases ihg with ⟨Q, rfl⟩
+    exact ⟨P + Q, AlgHom.map_add _ _ _⟩
+  · rcases ih with ⟨P, rfl⟩
+    exact ⟨r • P, AlgHom.map_smul _ _ _⟩
 
 /-- If a monoid `M` is finitely generated then `MonoidAlgebra R M` is of finite type. -/
 instance finiteType_of_fg [CommRing R] [Monoid.FG M] : FiniteType R (MonoidAlgebra R M) :=
@@ -617,7 +698,7 @@ theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R (MonoidAl
 #align monoid_algebra.fg_of_finite_type MonoidAlgebra.fg_of_finiteType
 
 /-- A group `G` is finitely generated if and only if `AddMonoidAlgebra R G` is of finite type. -/
-theorem finiteType_iff_group_fg {G : Type*} [CommGroup G] [CommRing R] [Nontrivial R] :
+theorem finiteType_iff_group_fg {G : Type*} [Group G] [CommRing R] [Nontrivial R] :
     FiniteType R (MonoidAlgebra R G) ↔ Group.FG G := by
   simpa [Group.fg_iff_monoid_fg] using finiteType_iff_fg
 #align monoid_algebra.finite_type_iff_group_fg MonoidAlgebra.finiteType_iff_group_fg
