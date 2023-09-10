@@ -1736,7 +1736,7 @@ private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a
 @[positivity ⌊ _ ⌋]
 def evalFloor : PositivityExt where eval {_u _α} _zα _pα e := do
   let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
-    | throwError "expected application"
+    | throwError "failed to match on Int.floor application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
   let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
   match ← core zα' pα' a with
@@ -1752,7 +1752,7 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
  @[positivity ⌈ _ ⌉₊]
 def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα e := do
   let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
-    | throwError "expected application"
+    | throwError "failed to match on Nat.ceil application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
   let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
   match ← core zα' pα' a with
@@ -1766,7 +1766,7 @@ private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 
  @[positivity ⌈ _ ⌉]
 def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα e := do
   let (.app (.app (.app (.app _ (α' : Q(Type))) _) _) a) ← whnfR e
-    | throwError "expected application"
+    | throwError "failed to match on Int.ceil application"
   let zα' : Q(Zero $α') ← synthInstanceQ q(Zero $α')
   let pα' : Q(Zero $α') ← synthInstanceQ q(PartialOrder $α')
   match ← core zα' pα' a with
