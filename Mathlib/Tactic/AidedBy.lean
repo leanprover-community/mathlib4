@@ -117,6 +117,7 @@ structure ProofState where
   term?  : Option Term.State
   /-- Tactic script -/
   script : TSyntax ``tacticSeq
+  /-- messages captured from the proof search.-/
   messages : List Message
 
 /--
@@ -321,6 +322,7 @@ match stx with
     autoStartImplAux' stx auto? false
 | _ => throwUnsupportedSyntax
 where
+  /-- Search before the first tactic-/
   initialSearch (stx: Syntax)
     (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
     withMainContext do
@@ -342,6 +344,7 @@ where
           TryThis.addSuggestion stx script
     catch _ =>
       pure ()
+  /-- Auxiliary function for case with tactics -/
   autoStartImplAux (stx: Syntax)
   (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
   (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit :=
@@ -378,6 +381,7 @@ where
           return ()
       catch _ =>
         pure ()
+  /-- Auxiliary function for case without tactics -/
   autoStartImplAux' (stx: Syntax)
     (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
     withMainContext do
