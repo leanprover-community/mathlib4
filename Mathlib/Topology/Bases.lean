@@ -457,6 +457,25 @@ theorem isSeparable_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
   exact (h'c i).trans (closure_mono (subset_iUnion _ i))
 #align topological_space.is_separable_Union TopologicalSpace.isSeparable_iUnion
 
+lemma isSeparable_pi {ι : Type*} [Fintype ι] {α : ∀ (_ : ι), Type*} {s : ∀ i, Set (α i)}
+    [∀ i, TopologicalSpace (α i)] (h : ∀ i, IsSeparable (s i)) :
+    IsSeparable {f : ∀ i, α i | ∀ i, f i ∈ s i} := by
+  choose c c_count hc using h
+  refine ⟨{f | ∀ i, f i ∈ c i}, countable_pi c_count, ?_⟩
+  simp_rw [← mem_univ_pi]
+  dsimp
+  rw [closure_pi_set]
+  exact Set.pi_mono (fun i _ ↦ hc i)
+
+lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
+    {s : Set α} {t : Set β} (hs : IsSeparable s) (ht : IsSeparable t) :
+    IsSeparable (s ×ˢ t) := by
+  rcases hs with ⟨cs, cs_count, hcs⟩
+  rcases ht with ⟨ct, ct_count, hct⟩
+  refine ⟨cs ×ˢ ct, cs_count.prod ct_count, ?_⟩
+  rw [closure_prod_eq]
+  exact Set.prod_mono hcs hct
+
 theorem _root_.Set.Countable.isSeparable {s : Set α} (hs : s.Countable) : IsSeparable s :=
   ⟨s, hs, subset_closure⟩
 #align set.countable.is_separable Set.Countable.isSeparable

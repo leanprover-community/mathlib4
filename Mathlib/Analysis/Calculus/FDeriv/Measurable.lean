@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
@@ -985,12 +986,36 @@ theorem measurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 
     Measurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
 
+open TopologicalSpace
+open scoped BigOperators
+
 theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
-    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    [OpensMeasurableSpace 𝕜] [h : SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   borelize F
-  exact (measurable_deriv_with_param hf).stronglyMeasurable
+  rcases h.out with hα|hF
+  · have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
+    have : SecondCountableTopology (α × 𝕜) := by infer_instance
+    apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
+    have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)
+        ⊆ closure (Submodule.span 𝕜 (range f.uncurry)) := by
+      rintro - ⟨p, rfl⟩
+      dsimp
+      by_cases H : DifferentiableAt 𝕜 (f p.1) p.2
+      · apply mem_closure_of_tendsto (hasDerivAt_iff_tendsto_slope.1 H.hasDerivAt)
+        apply eventually_of_forall (fun t ↦ ?_)
+        simp only [slope, vsub_eq_sub, SetLike.mem_coe]
+        refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
+        · exact Submodule.subset_span (mem_range_self (p.1, t))
+        · exact Submodule.subset_span (mem_range_self (p.1, p.2))
+      · rw [deriv_zero_of_not_differentiableAt H]
+        exact subset_closure (zero_mem _)
+    apply IsSeparable.mono _ this
+    apply IsSeparable.span.closure
+    rw [← image_univ]
+    exact (isSeparable_of_separableSpace univ).image hf
+  · exact (measurable_deriv_with_param hf).stronglyMeasurable
 
 theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
     [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
@@ -999,7 +1024,7 @@ theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpac
   (measurable_deriv_with_param hf).aemeasurable
 
 theorem aestronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
-    [OpensMeasurableSpace 𝕜] [SecondCountableTopology F]
+    [OpensMeasurableSpace 𝕜] [SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) (μ : Measure (α × 𝕜)) :
     AEStronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) μ :=
   (stronglyMeasurable_deriv_with_param hf).aestronglyMeasurable

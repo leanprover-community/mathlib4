@@ -12,6 +12,7 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Finsupp
 
 #align_import topology.algebra.module.basic from "leanprover-community/mathlib"@"6285167a053ad0990fc88e56c48ccd9fae6550eb"
 
@@ -109,6 +110,21 @@ theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) := by
 #align has_continuous_smul_induced continuousSMul_induced
 
 end LatticeOps
+
+/-- The span of a separable subset with respect to a separable scalar ring is again separable. -/
+lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semiring R] [Module R M]
+    [TopologicalSpace M] [TopologicalSpace R] [SeparableSpace R]
+    [ContinuousAdd M] [ContinuousSMul R M] {s : Set M} (hs : IsSeparable s) :
+    IsSeparable (Submodule.span R s : Set M) := by
+  rw [span_eq_iUnion_nat]
+  apply isSeparable_iUnion (fun n ↦ ?_)
+  apply IsSeparable.image
+  · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
+      apply isSeparable_pi (fun i ↦ (isSeparable_of_separableSpace Set.univ).prod hs)
+    convert this
+    simp
+  · apply continuous_finset_sum _ (fun i _ ↦ ?_)
+    exact (continuous_fst.comp (continuous_apply i)).smul (continuous_snd.comp (continuous_apply i))
 
 namespace Submodule
 
