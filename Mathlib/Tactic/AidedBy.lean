@@ -84,6 +84,9 @@ def isSorry (tacticCode: TSyntax `tactic) : TermElabM Bool := do
   catch _ =>
     return false
 
+/--
+Delay before returning a sorry and continuing in the background.
+-/
 register_option aided_by.delay : Nat :=
   { defValue := 50
     group := "aided_by"
@@ -96,7 +99,9 @@ deriving instance BEq, Hashable, Repr for LocalDecl
 Key for the cache of proof states.
 -/
 structure GoalKey where
+  /-- The goal type -/
   goal : Expr
+  /-- The local context of the goal -/
   lctx : List <| Option LocalDecl
 deriving BEq, Hashable, Repr
 
@@ -104,9 +109,13 @@ deriving BEq, Hashable, Repr
 Proof state.
 -/
 structure ProofState where
+  /-- `Core` state -/
   core   : Core.State
+  /-- `Meta` state -/
   meta   : Meta.State
+  /-- `Elab.Term` state if applicable -/
   term?  : Option Term.State
+  /-- Tactic script -/
   script : TSyntax ``tacticSeq
   messages : List Message
 
@@ -263,19 +272,34 @@ def fetchProof  : TacticM ProofState :=
   | some s => do
     return s
 
-
+/--
+Run tactics in the background and offer suggestions if successful.
+-/
 syntax (name := autoTacs) "aided_by" ("from_by")? tacticSeq "do" (tacticSeq)? : tactic
 
+/--
+Run `aesop` in the background and offer suggestions if successful.
+-/
 macro "by#" tacs:tacticSeq : term =>
   `(by
   aided_by from_by aesop? do $tacs)
 
+/--
+Run `aesop` in the background for the initial state and
+offer suggestions if successful.
+-/
 macro "by#"  : term =>
   `(by
   aided_by from_by aesop? do)
 
+/--
+Run tactics in the background and offer suggestions if successful.
+-/
 macro "..." : tactic => `(tactic|aided_by aesop? do)
 
+/--
+Run tactics in the background and offer suggestions if successful.
+-/
 macro "..." tacs:tacticSeq : tactic =>
   `(tactic|aided_by aesop? do
   $tacs)
