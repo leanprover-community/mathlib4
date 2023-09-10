@@ -121,12 +121,12 @@ def fullSubcategoryInclusion : FullSubcategory Z ⥤ C :=
 #align category_theory.full_subcategory_inclusion CategoryTheory.fullSubcategoryInclusion
 
 @[simp]
-theorem fullSubcategoryInclusion.obj {X} : (fullSubcategoryInclusion Z).obj X = X.obj :=
+lemma fullSubcategoryInclusion.obj {X} : (fullSubcategoryInclusion Z).obj X = X.obj :=
   rfl
 #align category_theory.full_subcategory_inclusion.obj CategoryTheory.fullSubcategoryInclusion.obj
 
 @[simp]
-theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclusion Z).map f = f :=
+lemma fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclusion Z).map f = f :=
   rfl
 #align category_theory.full_subcategory_inclusion.map CategoryTheory.fullSubcategoryInclusion.map
 

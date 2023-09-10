@@ -49,14 +49,14 @@ instance types : LargeCategory (Type u)
   comp f g := g ∘ f
 #align category_theory.types CategoryTheory.types
 
-theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
+lemma types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 #align category_theory.types_hom CategoryTheory.types_hom
 
 -- porting note: this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
 -- because of its "if all else fails, apply all `ext` lemmas" policy,
 -- which apparently we want to move away from.
-@[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
+@[ext] lemma types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
   funext x
   exact h x
 
@@ -64,7 +64,7 @@ theorem types_id (X : Type u) : 𝟙 X = id :=
   rfl
 #align category_theory.types_id CategoryTheory.types_id
 
-theorem types_comp {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = g ∘ f :=
+lemma types_comp {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = g ∘ f :=
   rfl
 #align category_theory.types_comp CategoryTheory.types_comp
 
@@ -74,17 +74,17 @@ theorem types_id_apply (X : Type u) (x : X) : (𝟙 X : X → X) x = x :=
 #align category_theory.types_id_apply CategoryTheory.types_id_apply
 
 @[simp]
-theorem types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+lemma types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   rfl
 #align category_theory.types_comp_apply CategoryTheory.types_comp_apply
 
 @[simp]
-theorem hom_inv_id_apply {X Y : Type u} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
+lemma hom_inv_id_apply {X Y : Type u} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
   congr_fun f.hom_inv_id x
 #align category_theory.hom_inv_id_apply CategoryTheory.hom_inv_id_apply
 
 @[simp]
-theorem inv_hom_id_apply {X Y : Type u} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
+lemma inv_hom_id_apply {X Y : Type u} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 #align category_theory.inv_hom_id_apply CategoryTheory.inv_hom_id_apply
 
@@ -205,7 +205,7 @@ def uliftFunctor : Type u ⥤ Type max u v
 #align category_theory.ulift_functor CategoryTheory.uliftFunctor
 
 @[simp]
-theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
+lemma uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
     uliftFunctor.map f x = ULift.up (f x.down) :=
   rfl
 #align category_theory.ulift_functor_map CategoryTheory.uliftFunctor_map
@@ -231,7 +231,7 @@ def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
 def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 #align category_theory.hom_of_element CategoryTheory.homOfElement
 
-theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
+lemma homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
   ⟨fun H => congr_fun H PUnit.unit, by aesop⟩
 #align category_theory.hom_of_element_eq_iff CategoryTheory.homOfElement_eq_iff
 
@@ -239,7 +239,7 @@ theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfEleme
 
 See <https://stacks.math.columbia.edu/tag/003C>.
 -/
-theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
+lemma mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro H x x' h
     skip
@@ -248,7 +248,7 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩
 #align category_theory.mono_iff_injective CategoryTheory.mono_iff_injective
 
-theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
+lemma injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
   (mono_iff_injective f).1 hf
 #align category_theory.injective_of_mono CategoryTheory.injective_of_mono
 
@@ -256,7 +256,7 @@ theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.
 
 See <https://stacks.math.columbia.edu/tag/003C>.
 -/
-theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
+lemma epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
     refine' Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => _
@@ -267,7 +267,7 @@ theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Sur
   · exact fun H => ⟨fun g g' h => H.injective_comp_right h⟩
 #align category_theory.epi_iff_surjective CategoryTheory.epi_iff_surjective
 
-theorem surjective_of_epi {X Y : Type u} (f : X ⟶ Y) [hf : Epi f] : Function.Surjective f :=
+lemma surjective_of_epi {X Y : Type u} (f : X ⟶ Y) [hf : Epi f] : Function.Surjective f :=
   (epi_iff_surjective f).1 hf
 #align category_theory.surjective_of_epi CategoryTheory.surjective_of_epi
 
@@ -288,12 +288,12 @@ def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 
 @[simp]
-theorem ofTypeFunctor_obj : (ofTypeFunctor m).obj = m :=
+lemma ofTypeFunctor_obj : (ofTypeFunctor m).obj = m :=
   rfl
 #align category_theory.of_type_functor_obj CategoryTheory.ofTypeFunctor_obj
 
 @[simp]
-theorem ofTypeFunctor_map {α β} (f : α → β) :
+lemma ofTypeFunctor_map {α β} (f : α → β) :
     (ofTypeFunctor m).map f = (Functor.map f : m α → m β) :=
   rfl
 #align category_theory.of_type_functor_map CategoryTheory.ofTypeFunctor_map
@@ -320,12 +320,12 @@ def toIso (e : X ≃ Y) : X ≅ Y where
 #align equiv.to_iso Equiv.toIso
 
 @[simp]
-theorem toIso_hom {e : X ≃ Y} : e.toIso.hom = e :=
+lemma toIso_hom {e : X ≃ Y} : e.toIso.hom = e :=
   rfl
 #align equiv.to_iso_hom Equiv.toIso_hom
 
 @[simp]
-theorem toIso_inv {e : X ≃ Y} : e.toIso.inv = e.symm :=
+lemma toIso_inv {e : X ≃ Y} : e.toIso.inv = e.symm :=
   rfl
 #align equiv.to_iso_inv Equiv.toIso_inv
 
@@ -364,7 +364,7 @@ theorem toEquiv_id (X : Type u) : (Iso.refl X).toEquiv = Equiv.refl X :=
 #align category_theory.iso.to_equiv_id CategoryTheory.Iso.toEquiv_id
 
 @[simp]
-theorem toEquiv_comp {X Y Z : Type u} (f : X ≅ Y) (g : Y ≅ Z) :
+lemma toEquiv_comp {X Y Z : Type u} (f : X ≅ Y) (g : Y ≅ Z) :
     (f ≪≫ g).toEquiv = f.toEquiv.trans g.toEquiv :=
   rfl
 #align category_theory.iso.to_equiv_comp CategoryTheory.Iso.toEquiv_comp
@@ -374,7 +374,7 @@ end CategoryTheory.Iso
 namespace CategoryTheory
 
 /-- A morphism in `Type u` is an isomorphism if and only if it is bijective. -/
-theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f :=
+lemma isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f :=
   Iff.intro (fun _ => (asIso f : X ≅ Y).toEquiv.bijective) fun b =>
     IsIso.of_iso (Equiv.ofBijective f b).toIso
 #align category_theory.is_iso_iff_bijective CategoryTheory.isIso_iff_bijective
@@ -405,11 +405,11 @@ def equivEquivIso {X Y : Type u} : X ≃ Y ≃ (X ≅ Y) :=
 #align equiv_equiv_iso equivEquivIso
 
 @[simp]
-theorem equivEquivIso_hom {X Y : Type u} (e : X ≃ Y) : equivEquivIso e = e.toIso :=
+lemma equivEquivIso_hom {X Y : Type u} (e : X ≃ Y) : equivEquivIso e = e.toIso :=
   rfl
 #align equiv_equiv_iso_hom equivEquivIso_hom
 
 @[simp]
-theorem equivEquivIso_inv {X Y : Type u} (e : X ≅ Y) : equivEquivIso.symm e = e.toEquiv :=
+lemma equivEquivIso_inv {X Y : Type u} (e : X ≅ Y) : equivEquivIso.symm e = e.toEquiv :=
   rfl
 #align equiv_equiv_iso_inv equivEquivIso_inv

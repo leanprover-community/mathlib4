@@ -49,7 +49,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.op_ring_equiv_op_C Polynomial.opRingEquiv_op_C
 
 @[simp]
-theorem opRingEquiv_op_X : opRingEquiv R (op (X : R[X])) = X :=
+lemma opRingEquiv_op_X : opRingEquiv R (op (X : R[X])) = X :=
   opRingEquiv_op_monomial 1 1
 set_option linter.uppercaseLean3 false in
 #align polynomial.op_ring_equiv_op_X Polynomial.opRingEquiv_op_X
@@ -77,7 +77,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.op_ring_equiv_symm_C Polynomial.opRingEquiv_symm_C
 
 @[simp]
-theorem opRingEquiv_symm_X : (opRingEquiv R).symm (X : Rᵐᵒᵖ[X]) = op X :=
+lemma opRingEquiv_symm_X : (opRingEquiv R).symm (X : Rᵐᵒᵖ[X]) = op X :=
   opRingEquiv_symm_monomial 1 1
 set_option linter.uppercaseLean3 false in
 #align polynomial.op_ring_equiv_symm_X Polynomial.opRingEquiv_symm_X

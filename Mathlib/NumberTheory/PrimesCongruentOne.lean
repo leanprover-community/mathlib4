@@ -23,7 +23,7 @@ open scoped Nat
 
 /-- For any positive `k : ℕ` there exists an arbitrarily large prime `p` such that
 `p ≡ 1 [MOD k]`. -/
-theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
+lemma exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
     ∃ p : ℕ, Nat.Prime p ∧ n < p ∧ p ≡ 1 [MOD k] := by
   rcases (one_le_iff_ne_zero.2 hk0).eq_or_lt with (rfl | hk1)
   · rcases exists_infinite_primes (n + 1) with ⟨p, hnp, hp⟩
@@ -57,7 +57,7 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
     exact ((modEq_iff_dvd' hprime.1.pos).2 hdiv).symm
 #align nat.exists_prime_gt_modeq_one Nat.exists_prime_gt_modEq_one
 
-theorem frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
+lemma frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
     ∃ᶠ p in atTop, Nat.Prime p ∧ p ≡ 1 [MOD k] := by
   refine' frequently_atTop.2 fun n => _
   obtain ⟨p, hp⟩ := exists_prime_gt_modEq_one n hk0
@@ -65,7 +65,7 @@ theorem frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
 #align nat.frequently_at_top_modeq_one Nat.frequently_atTop_modEq_one
 
 /-- For any positive `k : ℕ` there are infinitely many primes `p` such that `p ≡ 1 [MOD k]`. -/
-theorem infinite_setOf_prime_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
+lemma infinite_setOf_prime_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
     Set.Infinite {p : ℕ | Nat.Prime p ∧ p ≡ 1 [MOD k]} :=
   frequently_atTop_iff_infinite.1 (frequently_atTop_modEq_one hk0)
 #align nat.infinite_set_of_prime_modeq_one Nat.infinite_setOf_prime_modEq_one

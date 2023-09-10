@@ -67,7 +67,7 @@ separably closed.
 
 See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
-theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
+lemma IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
     (p : k[X]) (h : p.Separable) : p.Splits f := by
   convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
 
@@ -76,17 +76,17 @@ separably closed.
 
 See also `IsSepClosed.splits_codomain` for the case where `k` is separably closed.
 -/
-theorem IsSepClosed.splits_domain [IsSepClosed k] {f : k →+* K}
+lemma IsSepClosed.splits_domain [IsSepClosed k] {f : k →+* K}
     (p : k[X]) (h : p.Separable) : p.Splits f :=
   Polynomial.splits_of_splits_id _ <| IsSepClosed.splits_of_separable _ h
 
 namespace IsSepClosed
 
-theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
+lemma exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
 
-theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
+lemma exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)] :
     ∃ z, z ^ n = x := by
   have hn' : 0 < n := Nat.pos_of_ne_zero <| fun h => by
     rw [h, Nat.cast_zero] at hn
@@ -100,11 +100,11 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     use z
     simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
 
-theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
+lemma exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
   rcases exists_pow_nat_eq x 2 with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
 
-theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
+lemma roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
   cases' le_or_lt (degree p) 0 with hd hd
@@ -113,7 +113,7 @@ theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
-theorem exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
+lemma exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
     (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective f.injective])
@@ -122,7 +122,7 @@ theorem exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
 
 variable (k)
 
-theorem exists_aeval_eq_zero [IsSepClosed K] [Algebra k K] (p : k[X])
+lemma exists_aeval_eq_zero [IsSepClosed K] [Algebra k K] (p : k[X])
     (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x : K, aeval x p = 0 :=
   exists_eval₂_eq_zero (algebraMap k K) p hp hsep
 
@@ -142,7 +142,7 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separabl
   obtain ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.ne_zero) hirr' hsep'
   exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root hirr' hx
 
-theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
+lemma degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsSepClosed.splits_codomain p hsep)
 
@@ -172,7 +172,7 @@ class IsSepClosure [Algebra k K] : Prop where
 
 variable {k} {K}
 
-theorem isSepClosure_iff [Algebra k K] :
+lemma isSepClosure_iff [Algebra k K] :
     IsSepClosure k K ↔ IsSepClosed K ∧ IsSeparable k K :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 

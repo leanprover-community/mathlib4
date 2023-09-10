@@ -40,7 +40,7 @@ namespace TruncatedWittVector
 
 variable (p) (n : ℕ) (R : Type*) [CommRing R]
 
-theorem eq_of_le_of_cast_pow_eq_zero [CharP R p] (i : ℕ) (hin : i ≤ n)
+lemma eq_of_le_of_cast_pow_eq_zero [CharP R p] (i : ℕ) (hin : i ≤ n)
     (hpi : (p : TruncatedWittVector p n R) ^ i = 0) : i = n := by
   contrapose! hpi
   replace hin := lt_of_le_of_ne hin hpi; clear hpi
@@ -57,11 +57,11 @@ section Iso
 
 variable {R}
 
-theorem card_zmod : Fintype.card (TruncatedWittVector p n (ZMod p)) = p ^ n := by
+lemma card_zmod : Fintype.card (TruncatedWittVector p n (ZMod p)) = p ^ n := by
   rw [card, ZMod.card]
 #align truncated_witt_vector.card_zmod TruncatedWittVector.card_zmod
 
-theorem charP_zmod : CharP (TruncatedWittVector p n (ZMod p)) (p ^ n) :=
+lemma charP_zmod : CharP (TruncatedWittVector p n (ZMod p)) (p ^ n) :=
   charP_of_prime_pow_injective _ _ _ (card_zmod _ _) (eq_of_le_of_cast_pow_eq_zero p n (ZMod p))
 #align truncated_witt_vector.char_p_zmod TruncatedWittVector.charP_zmod
 
@@ -76,7 +76,7 @@ def zmodEquivTrunc : ZMod (p ^ n) ≃+* TruncatedWittVector p n (ZMod p) :=
   ZMod.ringEquiv (TruncatedWittVector p n (ZMod p)) (card_zmod _ _)
 #align truncated_witt_vector.zmod_equiv_trunc TruncatedWittVector.zmodEquivTrunc
 
-theorem zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
+lemma zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
     zmodEquivTrunc p n x = ZMod.castHom (by rfl) (TruncatedWittVector p n (ZMod p)) x :=
   rfl
 #align truncated_witt_vector.zmod_equiv_trunc_apply TruncatedWittVector.zmodEquivTrunc_apply
@@ -93,18 +93,18 @@ Here the vertical arrows are `TruncatedWittVector.zmodEquivTrunc`,
 the horizontal arrow at the top is `ZMod.castHom`,
 and the horizontal arrow at the bottom is `TruncatedWittVector.truncate`.
 -/
-theorem commutes {m : ℕ} (hm : n ≤ m) :
+lemma commutes {m : ℕ} (hm : n ≤ m) :
     (truncate hm).comp (zmodEquivTrunc p m).toRingHom =
       (zmodEquivTrunc p n).toRingHom.comp (ZMod.castHom (pow_dvd_pow p hm) _) :=
   RingHom.ext_zmod _ _
 #align truncated_witt_vector.commutes TruncatedWittVector.commutes
 
-theorem commutes' {m : ℕ} (hm : n ≤ m) (x : ZMod (p ^ m)) :
+lemma commutes' {m : ℕ} (hm : n ≤ m) (x : ZMod (p ^ m)) :
     truncate hm (zmodEquivTrunc p m x) = zmodEquivTrunc p n (ZMod.castHom (pow_dvd_pow p hm) _ x) :=
   show (truncate hm).comp (zmodEquivTrunc p m).toRingHom x = _ by rw [commutes _ _ hm]; rfl
 #align truncated_witt_vector.commutes' TruncatedWittVector.commutes'
 
-theorem commutes_symm' {m : ℕ} (hm : n ≤ m) (x : TruncatedWittVector p m (ZMod p)) :
+lemma commutes_symm' {m : ℕ} (hm : n ≤ m) (x : TruncatedWittVector p m (ZMod p)) :
     (zmodEquivTrunc p n).symm (truncate hm x) =
       ZMod.castHom (pow_dvd_pow p hm) _ ((zmodEquivTrunc p m).symm x) := by
   apply (zmodEquivTrunc p n).injective
@@ -124,7 +124,7 @@ Here the vertical arrows are `(TruncatedWittVector.zmodEquivTrunc p _).symm`,
 the horizontal arrow at the top is `ZMod.castHom`,
 and the horizontal arrow at the bottom is `TruncatedWittVector.truncate`.
 -/
-theorem commutes_symm {m : ℕ} (hm : n ≤ m) :
+lemma commutes_symm {m : ℕ} (hm : n ≤ m) :
     (zmodEquivTrunc p n).symm.toRingHom.comp (truncate hm) =
       (ZMod.castHom (pow_dvd_pow p hm) _).comp (zmodEquivTrunc p m).symm.toRingHom :=
   by ext; apply commutes_symm'
@@ -180,7 +180,7 @@ def fromPadicInt : ℤ_[p] →+* 𝕎 (ZMod p) :=
     zmodEquivTrunc_compat _
 #align witt_vector.from_padic_int WittVector.fromPadicInt
 
-theorem toPadicInt_comp_fromPadicInt : (toPadicInt p).comp (fromPadicInt p) = RingHom.id ℤ_[p] := by
+lemma toPadicInt_comp_fromPadicInt : (toPadicInt p).comp (fromPadicInt p) = RingHom.id ℤ_[p] := by
   rw [← PadicInt.toZModPow_eq_iff_ext]
   intro n
   rw [← RingHom.comp_assoc, toPadicInt, PadicInt.lift_spec]
@@ -194,7 +194,7 @@ theorem toPadicInt_comp_fromPadicInt_ext (x) :
   rw [toPadicInt_comp_fromPadicInt]
 #align witt_vector.to_padic_int_comp_from_padic_int_ext WittVector.toPadicInt_comp_fromPadicInt_ext
 
-theorem fromPadicInt_comp_toPadicInt :
+lemma fromPadicInt_comp_toPadicInt :
     (fromPadicInt p).comp (toPadicInt p) = RingHom.id (𝕎 (ZMod p)) := by
   apply WittVector.hom_ext
   intro n

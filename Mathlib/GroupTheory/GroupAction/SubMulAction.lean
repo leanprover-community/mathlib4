@@ -107,7 +107,7 @@ theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
 #align set_like.vadd_def SetLike.vadd_def
 
 @[simp]
-theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
+lemma forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 #align set_like.forall_smul_mem_iff SetLike.forall_smul_mem_iff
@@ -132,12 +132,12 @@ instance : SetLike (SubMulAction R M) M :=
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
 @[simp]
-theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
+lemma mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 #align sub_mul_action.mem_carrier SubMulAction.mem_carrier
 
 @[ext]
-theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
+lemma ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align sub_mul_action.ext SubMulAction.ext
 
@@ -205,7 +205,7 @@ theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
 #align sub_mul_action.subtype_apply SubMulAction.subtype_apply
 
-theorem subtype_eq_val : (SubMulAction.subtype p : p → M) = Subtype.val :=
+lemma subtype_eq_val : (SubMulAction.subtype p : p → M) = Subtype.val :=
   rfl
 #align sub_mul_action.subtype_eq_val SubMulAction.subtype_eq_val
 
@@ -229,7 +229,7 @@ protected def subtype : S' →[R] M :=
 #align sub_mul_action.smul_mem_class.subtype SubMulAction.SMulMemClass.subtype
 
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+protected lemma coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 #align sub_mul_action.smul_mem_class.coe_subtype SubMulAction.SMulMemClass.coeSubtype
 
@@ -268,7 +268,7 @@ theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) 
 #align sub_mul_action.coe_smul_of_tower SubMulAction.val_smul_of_tower
 
 @[simp]
-theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
+lemma smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
     {x : M} : g • x ∈ p ↔ x ∈ p :=
   ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
 #align sub_mul_action.smul_mem_iff' SubMulAction.smul_mem_iff'
@@ -300,7 +300,7 @@ instance mulAction : MulAction R p :=
 end
 
 /-- Orbits in a `SubMulAction` coincide with orbits in the ambient space. -/
-theorem val_image_orbit {p : SubMulAction R M} (m : p) :
+lemma val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
 #align sub_mul_action.coe_image_orbit SubMulAction.val_image_orbit
@@ -310,7 +310,7 @@ lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
   (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
-theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
+lemma stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.Stabilizer.submonoid R m = MulAction.Stabilizer.submonoid R (m : M) := by
   ext
   simp only [MulAction.mem_stabilizer_submonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
@@ -323,7 +323,7 @@ section MulActionGroup
 variable [Group R] [MulAction R M]
 
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
-theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
+lemma stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_eq]
   exact stabilizer_of_subMul.submonoid m
@@ -367,7 +367,7 @@ theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
 #align sub_mul_action.neg_mem SubMulAction.neg_mem
 
 @[simp]
-theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
+lemma neg_mem_iff : -x ∈ p ↔ x ∈ p :=
   ⟨fun h => by
     rw [← neg_neg x]
     exact neg_mem _ h, neg_mem _⟩

@@ -66,7 +66,7 @@ theorem ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l := by
    rw [(inv x)]
 #align dlist.of_list_to_list Std.DList.ofList_toList
 
-theorem toList_empty : toList (@empty α) = [] := by simp
+lemma toList_empty : toList (@empty α) = [] := by simp
 #align dlist.to_list_empty Std.DList.toList_empty
 
 theorem toList_singleton (x : α) : toList (singleton x) = [x] := by simp

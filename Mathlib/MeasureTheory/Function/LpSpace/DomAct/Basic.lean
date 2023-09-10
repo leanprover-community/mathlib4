@@ -48,7 +48,7 @@ theorem mk_smul_toLp (c : M) {f : α → E} (hf : Memℒp f p μ) :
   rfl
 
 @[to_additive (attr := simp)]
-theorem smul_Lp_const [IsFiniteMeasure μ] (c : Mᵈᵐᵃ) (a : E) :
+lemma smul_Lp_const [IsFiniteMeasure μ] (c : Mᵈᵐᵃ) (a : E) :
     c • Lp.const p μ a = Lp.const p μ a :=
   rfl
 

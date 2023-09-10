@@ -19,7 +19,7 @@ universe u
 
 variable {α : Type u}
 
-theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
+lemma nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Invertible a] : a ≠ 0 :=
   fun ha =>
   zero_ne_one <|
     calc

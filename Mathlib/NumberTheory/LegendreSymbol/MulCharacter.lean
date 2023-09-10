@@ -125,7 +125,7 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
 #align mul_char.coe_mk MulChar.coe_mk
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
+lemma ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
   cases χ
   cases χ'
   congr
@@ -146,7 +146,7 @@ theorem map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
 /-- Extensionality. Since `MulChar`s always take the value zero on non-units, it is sufficient
 to compare the values on units. -/
 @[ext]
-theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' := by
+lemma ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' := by
   apply ext'
   intro a
   by_cases ha : IsUnit a
@@ -154,7 +154,7 @@ theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' :
   · rw [map_nonunit χ ha, map_nonunit χ' ha]
 #align mul_char.ext MulChar.ext
 
-theorem ext_iff {χ χ' : MulChar R R'} : χ = χ' ↔ ∀ a : Rˣ, χ a = χ' a :=
+lemma ext_iff {χ χ' : MulChar R R'} : χ = χ' ↔ ∀ a : Rˣ, χ a = χ' a :=
   ⟨by
     rintro rfl a
     rfl, ext⟩
@@ -249,12 +249,12 @@ protected theorem map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
 #align mul_char.map_one MulChar.map_one
 
 /-- If the domain has a zero (and is nontrivial), then `χ 0 = 0`. -/
-protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
+protected lemma map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 #align mul_char.map_zero MulChar.map_zero
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
-theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
+lemma map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 #align mul_char.map_ring_char MulChar.map_ringChar
 
@@ -319,13 +319,13 @@ theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse 
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
 Variant when the target is a field -/
-theorem inv_apply_eq_inv' {R' : Type v} [Field R'] (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ :=
+lemma inv_apply_eq_inv' {R' : Type v} [Field R'] (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ :=
   (inv_apply_eq_inv χ a).trans <| Ring.inverse_eq_inv (χ a)
 #align mul_char.inv_apply_eq_inv' MulChar.inv_apply_eq_inv'
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
+lemma inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
     χ⁻¹ a = χ (Ring.inverse a) := by
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
@@ -345,7 +345,7 @@ theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
+lemma inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 #align mul_char.inv_apply' MulChar.inv_apply'
 
@@ -433,7 +433,7 @@ def IsQuadratic (χ : MulChar R R') : Prop :=
 
 /-- If two values of quadratic characters with target `ℤ` agree after coercion into a ring
 of characteristic not `2`, then they agree in `ℤ`. -/
-theorem IsQuadratic.eq_of_eq_coe {χ : MulChar R ℤ} (hχ : IsQuadratic χ) {χ' : MulChar R' ℤ}
+lemma IsQuadratic.eq_of_eq_coe {χ : MulChar R ℤ} (hχ : IsQuadratic χ) {χ' : MulChar R' ℤ}
     (hχ' : IsQuadratic χ') [Nontrivial R''] (hR'' : ringChar R'' ≠ 2) {a : R} {a' : R'}
     (h : (χ a : R'') = χ' a') : χ a = χ' a' :=
   Int.cast_injOn_of_ringChar_ne_two hR'' (hχ a) (hχ' a') h
@@ -448,7 +448,7 @@ def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
 #align mul_char.ring_hom_comp MulChar.ringHomComp
 
 /-- Composition with an injective ring homomorphism preserves nontriviality. -/
-theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' →+* R''}
+lemma IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' →+* R''}
     (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial := by
   obtain ⟨a, ha⟩ := hχ
   use a
@@ -457,14 +457,14 @@ theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' �
 #align mul_char.is_nontrivial.comp MulChar.IsNontrivial.comp
 
 /-- Composition with a ring homomorphism preserves the property of being a quadratic character. -/
-theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :
+lemma IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :
     (χ.ringHomComp f).IsQuadratic := by
   intro a
   rcases hχ a with (ha | ha | ha) <;> simp [ha]
 #align mul_char.is_quadratic.comp MulChar.IsQuadratic.comp
 
 /-- The inverse of a quadratic character is itself. →  -/
-theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
+lemma IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
   ext x
   rw [inv_apply_eq_inv]
   rcases hχ x with (h₀ | h₁ | h₂)
@@ -477,13 +477,13 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
 #align mul_char.is_quadratic.inv MulChar.IsQuadratic.inv
 
 /-- The square of a quadratic character is the trivial character. -/
-theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
+lemma IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
   rw [← mul_left_inv χ, pow_two, hχ.inv]
 #align mul_char.is_quadratic.sq_eq_one MulChar.IsQuadratic.sq_eq_one
 
 /-- The `p`th power of a quadratic character is itself, when `p` is the (prime) characteristic
 of the target ring. -/
-theorem IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ) [hp : Fact p.Prime]
+lemma IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ) [hp : Fact p.Prime]
     [CharP R' p] : χ ^ p = χ := by
   ext x
   rw [pow_apply_coe]
@@ -494,14 +494,14 @@ theorem IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ
 #align mul_char.is_quadratic.pow_char MulChar.IsQuadratic.pow_char
 
 /-- The `n`th power of a quadratic character is the trivial character, when `n` is even. -/
-theorem IsQuadratic.pow_even {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ} (hn : Even n) :
+lemma IsQuadratic.pow_even {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ} (hn : Even n) :
     χ ^ n = 1 := by
   obtain ⟨n, rfl⟩ := even_iff_two_dvd.mp hn
   rw [pow_mul, hχ.sq_eq_one, one_pow]
 #align mul_char.is_quadratic.pow_even MulChar.IsQuadratic.pow_even
 
 /-- The `n`th power of a quadratic character is itself, when `n` is odd. -/
-theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ} (hn : Odd n) :
+lemma IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ} (hn : Odd n) :
     χ ^ n = χ := by
   obtain ⟨n, rfl⟩ := hn
   rw [pow_add, pow_one, hχ.pow_even (even_two_mul _), one_mul]
@@ -511,7 +511,7 @@ open BigOperators
 
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
-theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
+lemma IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
     (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
   rcases hχ with ⟨b, hb⟩
   refine' eq_zero_of_mul_eq_self_left hb _
@@ -522,7 +522,7 @@ theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/
-theorem sum_one_eq_card_units [Fintype R] [DecidableEq R] :
+lemma sum_one_eq_card_units [Fintype R] [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ := by
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=

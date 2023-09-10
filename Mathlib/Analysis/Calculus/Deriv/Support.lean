@@ -35,7 +35,7 @@ section Support
 
 open Function
 
-theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
+lemma support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   intro x
   rw [← not_imp_not]
   intro h2x

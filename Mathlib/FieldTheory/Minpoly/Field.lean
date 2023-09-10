@@ -34,7 +34,7 @@ variable [Ring B] [Algebra A B] (x : B)
 /-- If an element `x` is a root of a nonzero polynomial `p`, then the degree of `p` is at least the
 degree of the minimal polynomial of `x`. See also `minpoly.IsIntegrallyClosed.degree_le_of_ne_zero`
 which relaxes the assumptions on `A` in exchange for stronger assumptions on `B`. -/
-theorem degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x p = 0) :
+lemma degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p :=
   calc
     degree (minpoly A x) ≤ degree (p * C (leadingCoeff p)⁻¹) :=
@@ -50,7 +50,7 @@ theorem ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
 is equal to the minimal polynomial of `x`. See also `minpoly.IsIntegrallyClosed.Minpoly.unique`
 which relaxes the assumptions on `A` in exchange for stronger assumptions on `B`. -/
-theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
+lemma unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
     (pmin : ∀ q : A[X], q.Monic → Polynomial.aeval x q = 0 → degree p ≤ degree q) :
     p = minpoly A x := by
   have hx : IsIntegral A x := ⟨p, pmonic, hp⟩
@@ -66,7 +66,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
 /-- If an element `x` is a root of a polynomial `p`, then the minimal polynomial of `x` divides `p`.
 See also `minpoly.isIntegrallyClosed_dvd` which relaxes the assumptions on `A` in exchange for
 stronger assumptions on `B`. -/
-theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
+lemma dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
   · simp only [hp0, dvd_zero]
   have hx : IsIntegral A x := by
@@ -108,7 +108,7 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
 
 variable {A x}
 
-theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
+lemma eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
     (hp2 : Polynomial.aeval x p = 0) (hp3 : p.Monic) : p = minpoly A x :=
   let ⟨_, hq⟩ := dvd A x hp2
   eq_of_monic_of_associated hp3 (monic ⟨p, ⟨hp3, hp2⟩⟩) <|
@@ -116,7 +116,7 @@ theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible 
       (associated_one_iff_isUnit.2 <| (hp1.isUnit_or_isUnit hq).resolve_left <| not_isUnit A x)
 #align minpoly.eq_of_irreducible_of_monic minpoly.eq_of_irreducible_of_monic
 
-theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
+lemma eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
     (hp2 : Polynomial.aeval x p = 0) : p * C p.leadingCoeff⁻¹ = minpoly A x := by
   have : p.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hp1.ne_zero
   apply eq_of_irreducible_of_monic
@@ -131,7 +131,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
 We take `h : y = algebraMap L T x` as an argument because `rw h` typically fails
 since `IsIntegral R y` depends on y.
 -/
-theorem eq_of_algebraMap_eq {K S T : Type*} [Field K] [CommRing S] [CommRing T] [Algebra K S]
+lemma eq_of_algebraMap_eq {K S T : Type*} [Field K] [CommRing S] [CommRing T] [Algebra K S]
     [Algebra K T] [Algebra S T] [IsScalarTower K S T] (hST : Function.Injective (algebraMap S T))
     {x : S} {y : T} (hx : IsIntegral K x) (h : y = algebraMap S T x) : minpoly K x = minpoly K y :=
   minpoly.unique _ _ (minpoly.monic hx)
@@ -141,7 +141,7 @@ theorem eq_of_algebraMap_eq {K S T : Type*} [Field K] [CommRing S] [CommRing T] 
         (h ▸ root_q : Polynomial.aeval (algebraMap S T x) q = 0))
 #align minpoly.eq_of_algebra_map_eq minpoly.eq_of_algebraMap_eq
 
-theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+lemma add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   refine' (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) _ fun q qmo hq => _).symm
   · simp [aeval_comp]
@@ -155,7 +155,7 @@ theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIn
       natDegree_X_add_C, mul_one] at H
 #align minpoly.add_algebra_map minpoly.add_algebraMap
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+lemma sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap hx (-a)
 #align minpoly.sub_algebra_map minpoly.sub_algebraMap
@@ -182,7 +182,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
       ← aeval_def, aeval_algHom_apply, minpoly.aeval, map_zero]⟩
 #align minpoly.roots_of_min_poly_pi_type minpoly.rootsOfMinPolyPiType
 
-theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
+lemma aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
   suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
@@ -219,13 +219,13 @@ variable (A)
 
 /-- The minimal polynomial of `0` is `X`. -/
 @[simp]
-theorem zero : minpoly A (0 : B) = X := by
+lemma zero : minpoly A (0 : B) = X := by
   simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, RingHom.map_zero] using eq_X_sub_C B (0 : A)
 #align minpoly.zero minpoly.zero
 
 /-- The minimal polynomial of `1` is `X - 1`. -/
 @[simp]
-theorem one : minpoly A (1 : B) = X - 1 := by
+lemma one : minpoly A (1 : B) = X - 1 := by
   simpa only [RingHom.map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
 #align minpoly.one minpoly.one
 
@@ -248,7 +248,7 @@ theorem prime (hx : IsIntegral A x) : Prime (minpoly A x) := by
 
 /-- If `L/K` is a field extension and an element `y` of `K` is a root of the minimal polynomial
 of an element `x ∈ L`, then `y` maps to `x` under the field embedding. -/
-theorem root {x : B} (hx : IsIntegral A x) {y : A} (h : IsRoot (minpoly A x) y) :
+lemma root {x : B} (hx : IsIntegral A x) {y : A} (h : IsRoot (minpoly A x) y) :
     algebraMap A B y = x := by
   have key : minpoly A x = X - C y := eq_of_monic_of_associated (monic hx) (monic_X_sub_C y)
     (associated_of_dvd_dvd ((irreducible_X_sub_C y).dvd_symm (irreducible hx) (dvd_iff_isRoot.2 h))

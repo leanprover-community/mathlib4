@@ -49,7 +49,7 @@ attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSor
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : FunLike.coe f = f := rfl
 
-theorem hom_elementwise [Category C] [ConcreteCategory C]
+lemma hom_elementwise [Category C] [ConcreteCategory C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
 
 end theorems

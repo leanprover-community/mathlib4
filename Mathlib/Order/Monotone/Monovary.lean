@@ -64,20 +64,20 @@ protected theorem Antivary.antivaryOn (h : Antivary f g) (s : Set ι) : Antivary
 #align antivary.antivary_on Antivary.antivaryOn
 
 @[simp]
-theorem MonovaryOn.empty : MonovaryOn f g ∅ := fun _ => False.elim
+lemma MonovaryOn.empty : MonovaryOn f g ∅ := fun _ => False.elim
 #align monovary_on.empty MonovaryOn.empty
 
 @[simp]
-theorem AntivaryOn.empty : AntivaryOn f g ∅ := fun _ => False.elim
+lemma AntivaryOn.empty : AntivaryOn f g ∅ := fun _ => False.elim
 #align antivary_on.empty AntivaryOn.empty
 
 @[simp]
-theorem monovaryOn_univ : MonovaryOn f g univ ↔ Monovary f g :=
+lemma monovaryOn_univ : MonovaryOn f g univ ↔ Monovary f g :=
   ⟨fun h _ _ => h trivial trivial, fun h _ _ _ _ hij => h hij⟩
 #align monovary_on_univ monovaryOn_univ
 
 @[simp]
-theorem antivaryOn_univ : AntivaryOn f g univ ↔ Antivary f g :=
+lemma antivaryOn_univ : AntivaryOn f g univ ↔ Antivary f g :=
   ⟨fun h _ _ => h trivial trivial, fun h _ _ _ _ hij => h hij⟩
 #align antivary_on_univ antivaryOn_univ
 
@@ -109,19 +109,19 @@ theorem monovary_self (f : ι → α) : Monovary f f := fun _ _ => le_of_lt
 theorem monovaryOn_self (f : ι → α) (s : Set ι) : MonovaryOn f f s := fun _ _ _ _ => le_of_lt
 #align monovary_on_self monovaryOn_self
 
-protected theorem Subsingleton.monovary [Subsingleton ι] (f : ι → α) (g : ι → β) : Monovary f g :=
+protected lemma Subsingleton.monovary [Subsingleton ι] (f : ι → α) (g : ι → β) : Monovary f g :=
   fun _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 #align subsingleton.monovary Subsingleton.monovary
 
-protected theorem Subsingleton.antivary [Subsingleton ι] (f : ι → α) (g : ι → β) : Antivary f g :=
+protected lemma Subsingleton.antivary [Subsingleton ι] (f : ι → α) (g : ι → β) : Antivary f g :=
   fun _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 #align subsingleton.antivary Subsingleton.antivary
 
-protected theorem Subsingleton.monovaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
+protected lemma Subsingleton.monovaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
     MonovaryOn f g s := fun _ _ _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 #align subsingleton.monovary_on Subsingleton.monovaryOn
 
-protected theorem Subsingleton.antivaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
+protected lemma Subsingleton.antivaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
     AntivaryOn f g s := fun _ _ _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 #align subsingleton.antivary_on Subsingleton.antivaryOn
 
@@ -193,91 +193,91 @@ section OrderDual
 
 open OrderDual
 
-theorem Monovary.dual : Monovary f g → Monovary (toDual ∘ f) (toDual ∘ g) :=
+lemma Monovary.dual : Monovary f g → Monovary (toDual ∘ f) (toDual ∘ g) :=
   swap
 #align monovary.dual Monovary.dual
 
-theorem Antivary.dual : Antivary f g → Antivary (toDual ∘ f) (toDual ∘ g) :=
+lemma Antivary.dual : Antivary f g → Antivary (toDual ∘ f) (toDual ∘ g) :=
   swap
 #align antivary.dual Antivary.dual
 
-theorem Monovary.dual_left : Monovary f g → Antivary (toDual ∘ f) g :=
+lemma Monovary.dual_left : Monovary f g → Antivary (toDual ∘ f) g :=
   id
 #align monovary.dual_left Monovary.dual_left
 
-theorem Antivary.dual_left : Antivary f g → Monovary (toDual ∘ f) g :=
+lemma Antivary.dual_left : Antivary f g → Monovary (toDual ∘ f) g :=
   id
 #align antivary.dual_left Antivary.dual_left
 
-theorem Monovary.dual_right : Monovary f g → Antivary f (toDual ∘ g) :=
+lemma Monovary.dual_right : Monovary f g → Antivary f (toDual ∘ g) :=
   swap
 #align monovary.dual_right Monovary.dual_right
 
-theorem Antivary.dual_right : Antivary f g → Monovary f (toDual ∘ g) :=
+lemma Antivary.dual_right : Antivary f g → Monovary f (toDual ∘ g) :=
   swap
 #align antivary.dual_right Antivary.dual_right
 
-theorem MonovaryOn.dual : MonovaryOn f g s → MonovaryOn (toDual ∘ f) (toDual ∘ g) s :=
+lemma MonovaryOn.dual : MonovaryOn f g s → MonovaryOn (toDual ∘ f) (toDual ∘ g) s :=
   swap₂
 #align monovary_on.dual MonovaryOn.dual
 
-theorem AntivaryOn.dual : AntivaryOn f g s → AntivaryOn (toDual ∘ f) (toDual ∘ g) s :=
+lemma AntivaryOn.dual : AntivaryOn f g s → AntivaryOn (toDual ∘ f) (toDual ∘ g) s :=
   swap₂
 #align antivary_on.dual AntivaryOn.dual
 
-theorem MonovaryOn.dual_left : MonovaryOn f g s → AntivaryOn (toDual ∘ f) g s :=
+lemma MonovaryOn.dual_left : MonovaryOn f g s → AntivaryOn (toDual ∘ f) g s :=
   id
 #align monovary_on.dual_left MonovaryOn.dual_left
 
-theorem AntivaryOn.dual_left : AntivaryOn f g s → MonovaryOn (toDual ∘ f) g s :=
+lemma AntivaryOn.dual_left : AntivaryOn f g s → MonovaryOn (toDual ∘ f) g s :=
   id
 #align antivary_on.dual_left AntivaryOn.dual_left
 
-theorem MonovaryOn.dual_right : MonovaryOn f g s → AntivaryOn f (toDual ∘ g) s :=
+lemma MonovaryOn.dual_right : MonovaryOn f g s → AntivaryOn f (toDual ∘ g) s :=
   swap₂
 #align monovary_on.dual_right MonovaryOn.dual_right
 
-theorem AntivaryOn.dual_right : AntivaryOn f g s → MonovaryOn f (toDual ∘ g) s :=
+lemma AntivaryOn.dual_right : AntivaryOn f g s → MonovaryOn f (toDual ∘ g) s :=
   swap₂
 #align antivary_on.dual_right AntivaryOn.dual_right
 
 @[simp]
-theorem monovary_toDual_left : Monovary (toDual ∘ f) g ↔ Antivary f g :=
+lemma monovary_toDual_left : Monovary (toDual ∘ f) g ↔ Antivary f g :=
   Iff.rfl
 #align monovary_to_dual_left monovary_toDual_left
 
 @[simp]
-theorem monovary_toDual_right : Monovary f (toDual ∘ g) ↔ Antivary f g :=
+lemma monovary_toDual_right : Monovary f (toDual ∘ g) ↔ Antivary f g :=
   forall_swap
 #align monovary_to_dual_right monovary_toDual_right
 
 @[simp]
-theorem antivary_toDual_left : Antivary (toDual ∘ f) g ↔ Monovary f g :=
+lemma antivary_toDual_left : Antivary (toDual ∘ f) g ↔ Monovary f g :=
   Iff.rfl
 #align antivary_to_dual_left antivary_toDual_left
 
 @[simp]
-theorem antivary_toDual_right : Antivary f (toDual ∘ g) ↔ Monovary f g :=
+lemma antivary_toDual_right : Antivary f (toDual ∘ g) ↔ Monovary f g :=
   forall_swap
 #align antivary_to_dual_right antivary_toDual_right
 
 @[simp]
-theorem monovaryOn_toDual_left : MonovaryOn (toDual ∘ f) g s ↔ AntivaryOn f g s :=
+lemma monovaryOn_toDual_left : MonovaryOn (toDual ∘ f) g s ↔ AntivaryOn f g s :=
   Iff.rfl
 #align monovary_on_to_dual_left monovaryOn_toDual_left
 
 @[simp]
-theorem monovaryOn_toDual_right : MonovaryOn f (toDual ∘ g) s ↔ AntivaryOn f g s :=
+lemma monovaryOn_toDual_right : MonovaryOn f (toDual ∘ g) s ↔ AntivaryOn f g s :=
   forall₂_swap
 #align monovary_on_to_dual_right monovaryOn_toDual_right
 
 @[simp]
-theorem antivaryOn_toDual_left : AntivaryOn (toDual ∘ f) g s ↔ MonovaryOn f g s :=
+lemma antivaryOn_toDual_left : AntivaryOn (toDual ∘ f) g s ↔ MonovaryOn f g s :=
   Iff.rfl
 #align antivary_on_to_dual_left antivaryOn_toDual_left
 
 @[simp]
-theorem antivaryOn_toDual_right : AntivaryOn f (toDual ∘ g) s ↔ MonovaryOn f g s :=
+lemma antivaryOn_toDual_right : AntivaryOn f (toDual ∘ g) s ↔ MonovaryOn f g s :=
   forall₂_swap
 #align antivary_on_to_dual_right antivaryOn_toDual_right
 
@@ -288,22 +288,22 @@ section PartialOrder
 variable [PartialOrder ι]
 
 @[simp]
-theorem monovary_id_iff : Monovary f id ↔ Monotone f :=
+lemma monovary_id_iff : Monovary f id ↔ Monotone f :=
   monotone_iff_forall_lt.symm
 #align monovary_id_iff monovary_id_iff
 
 @[simp]
-theorem antivary_id_iff : Antivary f id ↔ Antitone f :=
+lemma antivary_id_iff : Antivary f id ↔ Antitone f :=
   antitone_iff_forall_lt.symm
 #align antivary_id_iff antivary_id_iff
 
 @[simp]
-theorem monovaryOn_id_iff : MonovaryOn f id s ↔ MonotoneOn f s :=
+lemma monovaryOn_id_iff : MonovaryOn f id s ↔ MonotoneOn f s :=
   monotoneOn_iff_forall_lt.symm
 #align monovary_on_id_iff monovaryOn_id_iff
 
 @[simp]
-theorem antivaryOn_id_iff : AntivaryOn f id s ↔ AntitoneOn f s :=
+lemma antivaryOn_id_iff : AntivaryOn f id s ↔ AntitoneOn f s :=
   antitoneOn_iff_forall_lt.symm
 #align antivary_on_id_iff antivaryOn_id_iff
 
@@ -402,19 +402,19 @@ section LinearOrder
 
 variable [LinearOrder α] [LinearOrder β] {f : ι → α} {g : ι → β} {s : Set ι}
 
-theorem monovary_comm : Monovary f g ↔ Monovary g f :=
+lemma monovary_comm : Monovary f g ↔ Monovary g f :=
   ⟨Monovary.symm, Monovary.symm⟩
 #align monovary_comm monovary_comm
 
-theorem antivary_comm : Antivary f g ↔ Antivary g f :=
+lemma antivary_comm : Antivary f g ↔ Antivary g f :=
   ⟨Antivary.symm, Antivary.symm⟩
 #align antivary_comm antivary_comm
 
-theorem monovaryOn_comm : MonovaryOn f g s ↔ MonovaryOn g f s :=
+lemma monovaryOn_comm : MonovaryOn f g s ↔ MonovaryOn g f s :=
   ⟨MonovaryOn.symm, MonovaryOn.symm⟩
 #align monovary_on_comm monovaryOn_comm
 
-theorem antivaryOn_comm : AntivaryOn f g s ↔ AntivaryOn g f s :=
+lemma antivaryOn_comm : AntivaryOn f g s ↔ AntivaryOn g f s :=
   ⟨AntivaryOn.symm, AntivaryOn.symm⟩
 #align antivary_on_comm antivaryOn_comm
 

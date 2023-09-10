@@ -34,7 +34,7 @@ variable (p : FormalMultilinearSeries 𝕜 E F)
 /-- The radius of a formal multilinear series is equal to
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses `ℝ≥0` and some
 coercions. -/
-theorem radius_eq_liminf :
+lemma radius_eq_liminf :
   p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
   -- porting note: added type ascription to make elaborated statement match Lean 3 version
   have :

@@ -56,7 +56,7 @@ instance mul : Mul (Completion α) :=
   ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
-theorem coe_one : ((1 : α) : Completion α) = 1 :=
+lemma coe_one : ((1 : α) : Completion α) = 1 :=
   rfl
 #align uniform_space.completion.coe_one UniformSpace.Completion.coe_one
 
@@ -72,7 +72,7 @@ theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
 
 variable [UniformAddGroup α]
 
-theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 := by
+lemma continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 := by
   let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
   have : Continuous fun p : α × α => m p.1 p.2 := by
     apply (continuous_coe α).comp _
@@ -82,7 +82,7 @@ theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.
   convert di.extend_Z_bilin di this
 #align uniform_space.completion.continuous_mul UniformSpace.Completion.continuous_mul
 
-theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
+lemma Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
   Continuous.comp continuous_mul (Continuous.prod_mk hf hg : _)
 #align uniform_space.completion.continuous.mul UniformSpace.Completion.Continuous.mul
@@ -143,7 +143,7 @@ def coeRingHom : α →+* Completion α where
   map_mul' := coe_mul
 #align uniform_space.completion.coe_ring_hom UniformSpace.Completion.coeRingHom
 
-theorem continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :=
+lemma continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :=
   continuous_coe α
 #align uniform_space.completion.continuous_coe_ring_hom UniformSpace.Completion.continuous_coeRingHom
 

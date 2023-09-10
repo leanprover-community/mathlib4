@@ -66,7 +66,7 @@ variable (r : ℝ≥0)
 
 /-- A disc of radius `r` can be represented as the region between the two curves
   `fun x => - sqrt (r ^ 2 - x ^ 2)` and `fun x => sqrt (r ^ 2 - x ^ 2)`. -/
-theorem disc_eq_regionBetween :
+lemma disc_eq_regionBetween :
     disc r =
       regionBetween
         (fun x => -sqrt (r ^ 2 - x ^ 2)) (fun x => sqrt (r ^ 2 - x ^ 2)) (Ioc (-r) r) := by
@@ -82,12 +82,12 @@ theorem disc_eq_regionBetween :
 #align theorems_100.disc_eq_region_between Theorems100.disc_eq_regionBetween
 
 /-- The disc is a `MeasurableSet`. -/
-theorem measurableSet_disc : MeasurableSet (disc r) := by
+lemma measurableSet_disc : MeasurableSet (disc r) := by
   apply measurableSet_lt <;> apply Continuous.measurable <;> continuity
 #align theorems_100.measurable_set_disc Theorems100.measurableSet_disc
 
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
-theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
+lemma area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   let f x := sqrt (r ^ 2 - x ^ 2)
   let F x := (r : ℝ) ^ 2 * arcsin (r⁻¹ * x) + x * sqrt (r ^ 2 - x ^ 2)
   have hf : Continuous f := by continuity

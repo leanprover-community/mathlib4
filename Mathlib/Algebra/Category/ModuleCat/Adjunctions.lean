@@ -85,7 +85,7 @@ def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (
   (finsuppTensorFinsupp' R α β).toModuleIso
 #align Module.free.μ ModuleCat.Free.μ
 
-theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
+lemma μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
   intros
   -- Porting note: broken ext
@@ -302,7 +302,7 @@ instance : Linear R (Free R C) where
     congr; ext h s
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_left_comm]
 
-theorem single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :
+lemma single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :
     (single f r ≫ single g s : Free.of R X ⟶ Free.of R Z) = single (f ≫ g) (r * s) := by
   dsimp [CategoryTheory.categoryFree]; simp
 #align category_theory.Free.single_comp_single CategoryTheory.Free.single_comp_single

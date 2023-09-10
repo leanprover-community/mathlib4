@@ -80,7 +80,7 @@ variable {C}
 instance LE : LE (Pretopology C) where
   le K₁ K₂ := (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂
 
-theorem le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂ :=
+lemma le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂ :=
   Iff.rfl
 #align category_theory.pretopology.le_def CategoryTheory.Pretopology.le_def
 
@@ -211,7 +211,7 @@ instance : OrderBot (Pretopology C) where
     exact K.has_isos f
 
 /-- The trivial pretopology induces the trivial grothendieck topology. -/
-theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
+lemma toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
   (gi C).gc.l_bot
 #align category_theory.pretopology.to_grothendieck_bot CategoryTheory.Pretopology.toGrothendieck_bot
 

@@ -60,37 +60,37 @@ noncomputable instance WithBot.instInfSet {α : Type*} [Preorder α] [InfSet α]
     InfSet (WithBot α) :=
   ⟨(@WithTop.instSupSet αᵒᵈ _).sSup⟩
 
-theorem WithTop.sSup_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
+lemma WithTop.sSup_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans $ if_pos hs'
 #align with_top.Sup_eq WithTop.sSup_eq
 
-theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
+lemma WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   if_neg hs
 #align with_top.Inf_eq WithTop.sInf_eq
 
-theorem WithBot.sInf_eq [Preorder α] [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
+lemma WithBot.sInf_eq [Preorder α] [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
     (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   (if_neg hs).trans $ if_pos hs'
 #align with_bot.Inf_eq WithBot.sInf_eq
 
-theorem WithBot.sSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
+lemma WithBot.sSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
     sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
   if_neg hs
 #align with_bot.Sup_eq WithBot.sSup_eq
 
 @[simp]
-theorem WithTop.sInf_empty {α : Type*} [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
+lemma WithTop.sInf_empty {α : Type*} [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
   if_pos <| Set.empty_subset _
 #align with_top.cInf_empty WithTop.sInf_empty
 
 @[simp]
-theorem WithTop.iInf_empty {α : Type*} [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
+lemma WithTop.iInf_empty {α : Type*} [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
     ⨅ i, f i = ⊤ := by rw [iInf, range_eq_empty, WithTop.sInf_empty]
 #align with_top.cinfi_empty WithTop.iInf_empty
 
-theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
+lemma WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
@@ -103,12 +103,12 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) :
 -- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
 -- does not need `rfl`.
 @[norm_cast]
-theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] (f : ι → α) :
+lemma WithTop.coe_iInf [Nonempty ι] [InfSet α] (f : ι → α) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
   rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f), ← range_comp]; rfl
 #align with_top.coe_infi WithTop.coe_iInf
 
-theorem WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove s) :
+lemma WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   change _ = ite _ _ _
   rw [if_neg, preimage_image_eq, if_pos hs]
@@ -119,42 +119,42 @@ theorem WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove 
 -- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
 -- does not need `rfl`.
 @[norm_cast]
-theorem WithTop.coe_iSup [Preorder α] [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
+lemma WithTop.coe_iSup [Preorder α] [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
     rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp]; rfl
 #align with_top.coe_supr WithTop.coe_iSup
 
 @[simp]
-theorem WithBot.csSup_empty {α : Type*} [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
+lemma WithBot.csSup_empty {α : Type*} [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
   if_pos <| Set.empty_subset _
 #align with_bot.cSup_empty WithBot.csSup_empty
 
 @[simp]
-theorem WithBot.ciSup_empty {α : Type*} [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
+lemma WithBot.ciSup_empty {α : Type*} [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
     ⨆ i, f i = ⊥ :=
   @WithTop.iInf_empty _ αᵒᵈ _ _ _
 #align with_bot.csupr_empty WithBot.ciSup_empty
 
 @[norm_cast]
-theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) :
+lemma WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
   @WithTop.coe_sInf' αᵒᵈ _ _ hs
 #align with_bot.coe_Sup' WithBot.coe_sSup'
 
 @[norm_cast]
-theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] (f : ι → α) :
+lemma WithBot.coe_iSup [Nonempty ι] [SupSet α] (f : ι → α) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
   @WithTop.coe_iInf αᵒᵈ _ _ _ _
 #align with_bot.coe_supr WithBot.coe_iSup
 
 @[norm_cast]
-theorem WithBot.coe_sInf' [Preorder α] [InfSet α] {s : Set α} (hs : BddBelow s) :
+lemma WithBot.coe_sInf' [Preorder α] [InfSet α] {s : Set α} (hs : BddBelow s) :
     ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
   @WithTop.coe_sSup' αᵒᵈ _ _ _ hs
 #align with_bot.coe_Inf' WithBot.coe_sInf'
 
 @[norm_cast]
-theorem WithBot.coe_iInf [Preorder α] [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
+lemma WithBot.coe_iInf [Preorder α] [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithBot α) :=
   @WithTop.coe_iSup αᵒᵈ _ _ _ _ h
 #align with_bot.coe_infi WithBot.coe_iInf
@@ -499,12 +499,12 @@ theorem isLUB_csSup (ne : s.Nonempty) (H : BddAbove s) : IsLUB s (sSup s) :=
   ⟨fun _ => le_csSup H, fun _ => csSup_le ne⟩
 #align is_lub_cSup isLUB_csSup
 
-theorem isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
+lemma isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
     IsLUB (range f) (⨆ i, f i) :=
   isLUB_csSup (range_nonempty f) H
 #align is_lub_csupr isLUB_ciSup
 
-theorem isLUB_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne : s.Nonempty) :
+lemma isLUB_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) (Hne : s.Nonempty) :
     IsLUB (f '' s) (⨆ i : s, f i) := by
   rw [← sSup_image']
   exact isLUB_csSup (Hne.image _) H
@@ -514,32 +514,32 @@ theorem isGLB_csInf (ne : s.Nonempty) (H : BddBelow s) : IsGLB s (sInf s) :=
   ⟨fun _ => csInf_le H, fun _ => le_csInf ne⟩
 #align is_glb_cInf isGLB_csInf
 
-theorem isGLB_ciInf [Nonempty ι] {f : ι → α} (H : BddBelow (range f)) :
+lemma isGLB_ciInf [Nonempty ι] {f : ι → α} (H : BddBelow (range f)) :
     IsGLB (range f) (⨅ i, f i) :=
   isGLB_csInf (range_nonempty f) H
 #align is_glb_cinfi isGLB_ciInf
 
-theorem isGLB_ciInf_set {f : β → α} {s : Set β} (H : BddBelow (f '' s)) (Hne : s.Nonempty) :
+lemma isGLB_ciInf_set {f : β → α} {s : Set β} (H : BddBelow (f '' s)) (Hne : s.Nonempty) :
     IsGLB (f '' s) (⨅ i : s, f i) :=
   @isLUB_ciSup_set αᵒᵈ _ _ _ _ H Hne
 #align is_glb_cinfi_set isGLB_ciInf_set
 
-theorem ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddAbove (range f)) :
+lemma ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddAbove (range f)) :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   (isLUB_le_iff <| isLUB_ciSup hf).trans forall_range_iff
 #align csupr_le_iff ciSup_le_iff
 
-theorem le_ciInf_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddBelow (range f)) :
+lemma le_ciInf_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddBelow (range f)) :
     a ≤ iInf f ↔ ∀ i, a ≤ f i :=
   (le_isGLB_iff <| isGLB_ciInf hf).trans forall_range_iff
 #align le_cinfi_iff le_ciInf_iff
 
-theorem ciSup_set_le_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
+lemma ciSup_set_le_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
     (hf : BddAbove (f '' s)) : ⨆ i : s, f i ≤ a ↔ ∀ i ∈ s, f i ≤ a :=
   (isLUB_le_iff <| isLUB_ciSup_set hf hs).trans ball_image_iff
 #align csupr_set_le_iff ciSup_set_le_iff
 
-theorem le_ciInf_set_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
+lemma le_ciInf_set_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
     (hf : BddBelow (f '' s)) : (a ≤ ⨅ i : s, f i) ↔ ∀ i ∈ s, a ≤ f i :=
   (le_isGLB_iff <| isGLB_ciInf_set hf hs).trans ball_image_iff
 #align le_cinfi_set_iff le_ciInf_set_iff
@@ -548,11 +548,11 @@ theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
   (isLUB_csSup ne ⟨a, H.1⟩).unique H
 #align is_lub.cSup_eq IsLUB.csSup_eq
 
-theorem IsLUB.ciSup_eq [Nonempty ι] {f : ι → α} (H : IsLUB (range f) a) : ⨆ i, f i = a :=
+lemma IsLUB.ciSup_eq [Nonempty ι] {f : ι → α} (H : IsLUB (range f) a) : ⨆ i, f i = a :=
   H.csSup_eq (range_nonempty f)
 #align is_lub.csupr_eq IsLUB.ciSup_eq
 
-theorem IsLUB.ciSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) (Hne : s.Nonempty) :
+lemma IsLUB.ciSup_set_eq {s : Set β} {f : β → α} (H : IsLUB (f '' s) a) (Hne : s.Nonempty) :
     ⨆ i : s, f i = a :=
   IsLUB.csSup_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
 #align is_lub.csupr_set_eq IsLUB.ciSup_set_eq
@@ -570,11 +570,11 @@ theorem IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
   (isGLB_csInf ne ⟨a, H.1⟩).unique H
 #align is_glb.cInf_eq IsGLB.csInf_eq
 
-theorem IsGLB.ciInf_eq [Nonempty ι] {f : ι → α} (H : IsGLB (range f) a) : ⨅ i, f i = a :=
+lemma IsGLB.ciInf_eq [Nonempty ι] {f : ι → α} (H : IsGLB (range f) a) : ⨅ i, f i = a :=
   H.csInf_eq (range_nonempty f)
 #align is_glb.cinfi_eq IsGLB.ciInf_eq
 
-theorem IsGLB.ciInf_set_eq {s : Set β} {f : β → α} (H : IsGLB (f '' s) a) (Hne : s.Nonempty) :
+lemma IsGLB.ciInf_set_eq {s : Set β} {f : β → α} (H : IsGLB (f '' s) a) (Hne : s.Nonempty) :
     ⨅ i : s, f i = a :=
   IsGLB.csInf_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
 #align is_glb.cinfi_set_eq IsGLB.ciInf_set_eq
@@ -600,21 +600,21 @@ theorem le_csInf_iff (hb : BddBelow s) (hs : s.Nonempty) : a ≤ sInf s ↔ ∀ 
   le_isGLB_iff (isGLB_csInf hs hb)
 #align le_cInf_iff le_csInf_iff
 
-theorem csSup_lower_bounds_eq_csInf {s : Set α} (h : BddBelow s) (hs : s.Nonempty) :
+lemma csSup_lower_bounds_eq_csInf {s : Set α} (h : BddBelow s) (hs : s.Nonempty) :
     sSup (lowerBounds s) = sInf s :=
   (isLUB_csSup h <| hs.mono fun _ hx _ hy => hy hx).unique (isGLB_csInf hs h).isLUB
 #align cSup_lower_bounds_eq_cInf csSup_lower_bounds_eq_csInf
 
-theorem csInf_upper_bounds_eq_csSup {s : Set α} (h : BddAbove s) (hs : s.Nonempty) :
+lemma csInf_upper_bounds_eq_csSup {s : Set α} (h : BddAbove s) (hs : s.Nonempty) :
     sInf (upperBounds s) = sSup s :=
   (isGLB_csInf h <| hs.mono fun _ hx _ hy => hy hx).unique (isLUB_csSup hs h).isGLB
 #align cInf_upper_bounds_eq_cSup csInf_upper_bounds_eq_csSup
 
-theorem not_mem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
+lemma not_mem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (csInf_le hs hx))
 #align not_mem_of_lt_cInf not_mem_of_lt_csInf
 
-theorem not_mem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove s) : x ∉ s :=
+lemma not_mem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove s) : x ∉ s :=
   @not_mem_of_lt_csInf αᵒᵈ _ x s h hs
 #align not_mem_of_cSup_lt not_mem_of_csSup_lt
 
@@ -631,7 +631,7 @@ theorem csSup_eq_of_forall_le_of_forall_lt_exists_gt (hs : s.Nonempty) (H : ∀ 
 /-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
 is smaller than all elements of `s`, and that this is not the case of any `w>b`.
 See `sInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/
-theorem csInf_eq_of_forall_ge_of_forall_gt_exists_lt :
+lemma csInf_eq_of_forall_ge_of_forall_gt_exists_lt :
     s.Nonempty → (∀ a ∈ s, b ≤ a) → (∀ w, b < w → ∃ a ∈ s, a < w) → sInf s = b :=
   @csSup_eq_of_forall_le_of_forall_lt_exists_gt αᵒᵈ _ _ _
 #align cInf_eq_of_forall_ge_of_forall_gt_exists_lt csInf_eq_of_forall_ge_of_forall_gt_exists_lt
@@ -650,7 +650,7 @@ This is essentially an iff, except that the assumptions for the two implications
 slightly different (one needs boundedness below for one direction, nonemptiness and linear
 order for the other one), so we formulate separately the two implications, contrary to
 the `CompleteLattice` case.-/
-theorem csInf_lt_of_lt : BddBelow s → a ∈ s → a < b → sInf s < b :=
+lemma csInf_lt_of_lt : BddBelow s → a ∈ s → a < b → sInf s < b :=
   @lt_csSup_of_lt αᵒᵈ _ _ _ _
 #align cInf_lt_of_lt csInf_lt_of_lt
 
@@ -712,7 +712,7 @@ theorem csSup_inter_le (hs : BddAbove s) (ht : BddAbove t) (hst : (s ∩ t).None
 
 /-- The infimum of an intersection of two sets is bounded below by the maximum of the
 infima of each set, if all sets are bounded below and nonempty.-/
-theorem le_csInf_inter :
+lemma le_csInf_inter :
     BddBelow s → BddBelow t → (s ∩ t).Nonempty → sInf s ⊔ sInf t ≤ sInf (s ∩ t) :=
   @csSup_inter_le αᵒᵈ _ _ _
 #align le_cInf_inter le_csInf_inter
@@ -735,7 +735,7 @@ theorem csInf_Icc (h : a ≤ b) : sInf (Icc a b) = a :=
 #align cInf_Icc csInf_Icc
 
 @[simp]
-theorem csInf_Ici : sInf (Ici a) = a :=
+lemma csInf_Ici : sInf (Ici a) = a :=
   isLeast_Ici.csInf_eq
 #align cInf_Ici csInf_Ici
 
@@ -745,18 +745,18 @@ theorem csInf_Ico (h : a < b) : sInf (Ico a b) = a :=
 #align cInf_Ico csInf_Ico
 
 @[simp]
-theorem csInf_Ioc [DenselyOrdered α] (h : a < b) : sInf (Ioc a b) = a :=
+lemma csInf_Ioc [DenselyOrdered α] (h : a < b) : sInf (Ioc a b) = a :=
   (isGLB_Ioc h).csInf_eq (nonempty_Ioc.2 h)
 #align cInf_Ioc csInf_Ioc
 
 @[simp]
-theorem csInf_Ioi [NoMaxOrder α] [DenselyOrdered α] : sInf (Ioi a) = a :=
+lemma csInf_Ioi [NoMaxOrder α] [DenselyOrdered α] : sInf (Ioi a) = a :=
   csInf_eq_of_forall_ge_of_forall_gt_exists_lt nonempty_Ioi (fun _ => le_of_lt) fun w hw => by
     simpa using exists_between hw
 #align cInf_Ioi csInf_Ioi
 
 @[simp]
-theorem csInf_Ioo [DenselyOrdered α] (h : a < b) : sInf (Ioo a b) = a :=
+lemma csInf_Ioo [DenselyOrdered α] (h : a < b) : sInf (Ioo a b) = a :=
   (isGLB_Ioo h).csInf_eq (nonempty_Ioo.2 h)
 #align cInf_Ioo csInf_Ioo
 
@@ -766,17 +766,17 @@ theorem csSup_Icc (h : a ≤ b) : sSup (Icc a b) = b :=
 #align cSup_Icc csSup_Icc
 
 @[simp]
-theorem csSup_Ico [DenselyOrdered α] (h : a < b) : sSup (Ico a b) = b :=
+lemma csSup_Ico [DenselyOrdered α] (h : a < b) : sSup (Ico a b) = b :=
   (isLUB_Ico h).csSup_eq (nonempty_Ico.2 h)
 #align cSup_Ico csSup_Ico
 
 @[simp]
-theorem csSup_Iic : sSup (Iic a) = a :=
+lemma csSup_Iic : sSup (Iic a) = a :=
   isGreatest_Iic.csSup_eq
 #align cSup_Iic csSup_Iic
 
 @[simp]
-theorem csSup_Iio [NoMinOrder α] [DenselyOrdered α] : sSup (Iio a) = a :=
+lemma csSup_Iio [NoMinOrder α] [DenselyOrdered α] : sSup (Iio a) = a :=
   csSup_eq_of_forall_le_of_forall_lt_exists_gt nonempty_Iio (fun _ => le_of_lt) fun w hw => by
     simpa [and_comm] using exists_between hw
 #align cSup_Iio csSup_Iio
@@ -787,97 +787,97 @@ theorem csSup_Ioc (h : a < b) : sSup (Ioc a b) = b :=
 #align cSup_Ioc csSup_Ioc
 
 @[simp]
-theorem csSup_Ioo [DenselyOrdered α] (h : a < b) : sSup (Ioo a b) = b :=
+lemma csSup_Ioo [DenselyOrdered α] (h : a < b) : sSup (Ioo a b) = b :=
   (isLUB_Ioo h).csSup_eq (nonempty_Ioo.2 h)
 #align cSup_Ioo csSup_Ioo
 
 /-- The indexed supremum of a function is bounded above by a uniform bound-/
-theorem ciSup_le [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, f x ≤ c) : iSup f ≤ c :=
+lemma ciSup_le [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, f x ≤ c) : iSup f ≤ c :=
   csSup_le (range_nonempty f) (by rwa [forall_range_iff])
 #align csupr_le ciSup_le
 
 /-- The indexed supremum of a function is bounded below by the value taken at one point-/
-theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSup f :=
+lemma le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSup f :=
   le_csSup H (mem_range_self _)
 #align le_csupr le_ciSup
 
-theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
+lemma le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (le_ciSup H c)
 #align le_csupr_of_le le_ciSup_of_le
 
 /-- The indexed supremum of two functions are comparable if the functions are pointwise comparable-/
-theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
+lemma ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
     iSup f ≤ iSup g := by
   cases isEmpty_or_nonempty ι
   · rw [iSup_of_empty', iSup_of_empty']
   · exact ciSup_le fun x => le_ciSup_of_le B x (H x)
 #align csupr_mono ciSup_mono
 
-theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : β} (hc : c ∈ s) :
+lemma le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : β} (hc : c ∈ s) :
     f c ≤ ⨆ i : s, f i :=
   (le_csSup H <| mem_image_of_mem f hc).trans_eq sSup_image'
 #align le_csupr_set le_ciSup_set
 
 /-- The indexed infimum of two functions are comparable if the functions are pointwise comparable-/
-theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x ≤ g x) : iInf f ≤ iInf g :=
+lemma ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x ≤ g x) : iInf f ≤ iInf g :=
   @ciSup_mono αᵒᵈ _ _ _ _ B H
 #align cinfi_mono ciInf_mono
 
 /-- The indexed minimum of a function is bounded below by a uniform lower bound-/
-theorem le_ciInf [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, c ≤ f x) : c ≤ iInf f :=
+lemma le_ciInf [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, c ≤ f x) : c ≤ iInf f :=
   @ciSup_le αᵒᵈ _ _ _ _ _ H
 #align le_cinfi le_ciInf
 
 /-- The indexed infimum of a function is bounded above by the value taken at one point-/
-theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ f c :=
+lemma ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ f c :=
   @le_ciSup αᵒᵈ _ _ _ H c
 #align cinfi_le ciInf_le
 
-theorem ciInf_le_of_le {f : ι → α} (H : BddBelow (range f)) (c : ι) (h : f c ≤ a) : iInf f ≤ a :=
+lemma ciInf_le_of_le {f : ι → α} (H : BddBelow (range f)) (c : ι) (h : f c ≤ a) : iInf f ≤ a :=
   @le_ciSup_of_le αᵒᵈ _ _ _ _ H c h
 #align cinfi_le_of_le ciInf_le_of_le
 
-theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : β} (hc : c ∈ s) :
+lemma ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : β} (hc : c ∈ s) :
     ⨅ i : s, f i ≤ f c :=
   @le_ciSup_set αᵒᵈ _ _ _ _ H _ hc
 #align cinfi_set_le ciInf_set_le
 
 @[simp]
-theorem ciSup_const [hι : Nonempty ι] {a : α} : ⨆ _ : ι, a = a := by
+lemma ciSup_const [hι : Nonempty ι] {a : α} : ⨆ _ : ι, a = a := by
   rw [iSup, range_const, csSup_singleton]
 #align csupr_const ciSup_const
 
 @[simp]
-theorem ciInf_const [Nonempty ι] {a : α} : ⨅ _ : ι, a = a :=
+lemma ciInf_const [Nonempty ι] {a : α} : ⨅ _ : ι, a = a :=
   @ciSup_const αᵒᵈ _ _ _ _
 #align cinfi_const ciInf_const
 
 @[simp]
-theorem ciSup_unique [Unique ι] {s : ι → α} : ⨆ i, s i = s default := by
+lemma ciSup_unique [Unique ι] {s : ι → α} : ⨆ i, s i = s default := by
   have : ∀ i, s i = s default := fun i => congr_arg s (Unique.eq_default i)
   simp only [this, ciSup_const]
 #align supr_unique ciSup_unique
 
 @[simp]
-theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
+lemma ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   @ciSup_unique αᵒᵈ _ _ _ _
 #align infi_unique ciInf_unique
 
 -- porting note: new lemma
-theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
+lemma ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
   @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
 -- porting note: new lemma
-theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
+lemma ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
 @[simp]
-theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
+lemma ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
   ciSup_subsingleton hp f
 #align csupr_pos ciSup_pos
 
 @[simp]
-theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
+lemma ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
   @ciSup_pos αᵒᵈ _ _ _ hp
 #align cinfi_pos ciInf_pos
 
@@ -899,7 +899,7 @@ lemma ciInf_eq_ite {p : Prop} [Decidable p] {f : p → α} :
     (⨅ h : p, f h) = if h : p then f h else sInf (∅ : Set α) :=
   ciSup_eq_ite (α := αᵒᵈ)
 
-theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
+lemma cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
     ⨆ (i) (h : p i), f ⟨i, h⟩ = iSup f := by
   simp only [hp, ciSup_unique]
   simp only [iSup]
@@ -910,14 +910,14 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   · rintro - ⟨i, rfl⟩
     simp
 
-theorem cbiInf_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
+lemma cbiInf_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
     ⨅ (i) (h : p i), f ⟨i, h⟩ = iInf f :=
   cbiSup_eq_of_forall (α := αᵒᵈ) hp
 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
-theorem ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, f i ≤ b)
+lemma ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, f i ≤ b)
     (h₂ : ∀ w, w < b → ∃ i, w < f i) : ⨆ i : ι, f i = b :=
   csSup_eq_of_forall_le_of_forall_lt_exists_gt (range_nonempty f) (forall_range_iff.mpr h₁)
     fun w hw => exists_range_iff.mpr <| h₂ w hw
@@ -927,14 +927,14 @@ theorem ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → �
 /-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
 is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
 See `iInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/
-theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, b ≤ f i)
+lemma ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, b ≤ f i)
     (h₂ : ∀ w, b < w → ∃ i, f i < w) : ⨅ i : ι, f i = b := by
   exact @ciSup_eq_of_forall_le_of_forall_lt_exists_gt αᵒᵈ _ _ _ _ ‹_› ‹_› ‹_›
 #align cinfi_eq_of_forall_ge_of_forall_gt_exists_lt ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
 
 /-- Nested intervals lemma: if `f` is a monotone sequence, `g` is an antitone sequence, and
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
-theorem Monotone.ciSup_mem_Inter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
+lemma Monotone.ciSup_mem_Inter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) : (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) := by
   refine' mem_iInter.2 fun n => _
   haveI : Nonempty β := ⟨n⟩
@@ -944,7 +944,7 @@ theorem Monotone.ciSup_mem_Inter_Icc_of_antitone [SemilatticeSup β] {f g : β �
 
 /-- Nested intervals lemma: if `[f n, g n]` is an antitone sequence of nonempty
 closed intervals, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
-theorem ciSup_mem_Inter_Icc_of_antitone_Icc [SemilatticeSup β] {f g : β → α}
+lemma ciSup_mem_Inter_Icc_of_antitone_Icc [SemilatticeSup β] {f g : β → α}
     (h : Antitone fun n => Icc (f n) (g n)) (h' : ∀ n, f n ≤ g n) :
     (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) :=
   Monotone.ciSup_mem_Inter_Icc_of_antitone
@@ -1004,7 +1004,7 @@ theorem exists_lt_of_lt_csSup (hs : s.Nonempty) (hb : b < sSup s) : ∃ a ∈ s,
 /-- Indexed version of the above lemma `exists_lt_of_lt_csSup`.
 When `b < iSup f`, there is an element `i` such that `b < f i`.
 -/
-theorem exists_lt_of_lt_ciSup [Nonempty ι] {f : ι → α} (h : b < iSup f) : ∃ i, b < f i :=
+lemma exists_lt_of_lt_ciSup [Nonempty ι] {f : ι → α} (h : b < iSup f) : ∃ i, b < f i :=
   let ⟨_, ⟨i, rfl⟩, h⟩ := exists_lt_of_lt_csSup (range_nonempty f) h
   ⟨i, h⟩
 #align exists_lt_of_lt_csupr exists_lt_of_lt_ciSup
@@ -1018,27 +1018,27 @@ theorem exists_lt_of_csInf_lt (hs : s.Nonempty) (hb : sInf s < b) : ∃ a ∈ s,
 /-- Indexed version of the above lemma `exists_lt_of_csInf_lt`
 When `iInf f < a`, there is an element `i` such that `f i < a`.
 -/
-theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : ∃ i, f i < a :=
+lemma exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : ∃ i, f i < a :=
   @exists_lt_of_lt_ciSup αᵒᵈ _ _ _ _ _ h
 #align exists_lt_of_cinfi_lt exists_lt_of_ciInf_lt
 
-theorem csSup_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup ∅ :=
+lemma csSup_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup ∅ :=
   ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove s hs
 
-theorem csSup_eq_univ_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup univ := by
+lemma csSup_eq_univ_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup univ := by
   rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (s := univ)]
   contrapose! hs
   exact hs.mono (subset_univ _)
 
-theorem csInf_of_not_bddBelow {s : Set α} (hs : ¬BddBelow s) : sInf s = sInf ∅ :=
+lemma csInf_of_not_bddBelow {s : Set α} (hs : ¬BddBelow s) : sInf s = sInf ∅ :=
   ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow s hs
 
-theorem csInf_eq_univ_of_not_bddBelow {s : Set α} (hs : ¬BddBelow s) : sInf s = sInf univ :=
+lemma csInf_eq_univ_of_not_bddBelow {s : Set α} (hs : ¬BddBelow s) : sInf s = sInf univ :=
   csSup_eq_univ_of_not_bddAbove (α := αᵒᵈ) hs
 
 /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
 `s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
-theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
+lemma csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup s = sSup t := by
   rcases eq_empty_or_nonempty s with rfl|s_ne
@@ -1071,7 +1071,7 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
 
 /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
 `s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
-theorem csInf_eq_csInf_of_forall_exists_le {s t : Set α}
+lemma csInf_eq_csInf_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) (ht : ∀ y ∈ t, ∃ x ∈ s, x ≤ y) :
     sInf s = sInf t :=
   @csSup_eq_csSup_of_forall_exists_le αᵒᵈ _ s t hs ht
@@ -1086,7 +1086,7 @@ lemma sSup_iUnion_Iic (f : ι → α) : sSup (⋃ (i : ι), Iic (f i)) = ⨆ i, 
 lemma sInf_iUnion_Ici (f : ι → α) : sInf (⋃ (i : ι), Ici (f i)) = ⨅ i, f i :=
   sSup_iUnion_Iic (α := αᵒᵈ) f
 
-theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : ¬ (∀ i, p i)) :
+lemma cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : ¬ (∀ i, p i)) :
     ⨆ (i) (h : p i), f ⟨i, h⟩ = iSup f ⊔ sSup ∅ := by
   classical
   rcases not_forall.1 hp with ⟨i₀, hi₀⟩
@@ -1127,7 +1127,7 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
     convert mem_range_self i.1
     simp [i.2]
 
-theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : ¬ (∀ i, p i)) :
+lemma cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : ¬ (∀ i, p i)) :
     ⨅ (i) (h : p i), f ⟨i, h⟩ = iInf f ⊓ sInf ∅ :=
   cbiSup_eq_of_not_forall (α := αᵒᵈ) hp
 
@@ -1153,16 +1153,16 @@ theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
 #align Inf_mem csInf_mem
 
-theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
+lemma ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
   csInf_mem (range_nonempty f)
 #align infi_mem ciInf_mem
 
-theorem MonotoneOn.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
+lemma MonotoneOn.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : MonotoneOn f s) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   (hf.map_isLeast (isLeast_csInf hs)).csInf_eq.symm
 #align monotone_on.map_Inf MonotoneOn.map_csInf
 
-theorem Monotone.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
+lemma Monotone.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : Monotone f) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   (hf.map_isLeast (isLeast_csInf hs)).csInf_eq.symm
 #align monotone.map_Inf Monotone.map_csInf
@@ -1181,12 +1181,12 @@ section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α]
 
 @[simp]
-theorem csSup_empty : (sSup ∅ : α) = ⊥ :=
+lemma csSup_empty : (sSup ∅ : α) = ⊥ :=
   ConditionallyCompleteLinearOrderBot.csSup_empty
 #align cSup_empty csSup_empty
 
 @[simp]
-theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
+lemma ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
   rw [iSup_of_empty', csSup_empty]
 #align csupr_of_empty ciSup_of_empty
 
@@ -1195,43 +1195,43 @@ theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
 #align csupr_false ciSup_false
 
 @[simp]
-theorem csInf_univ : sInf (univ : Set α) = ⊥ :=
+lemma csInf_univ : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 #align cInf_univ csInf_univ
 
-theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
+lemma isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp only [csSup_empty, isLUB_empty]
   · exact isLUB_csSup hne hs
 #align is_lub_cSup' isLUB_csSup'
 
-theorem csSup_le_iff' {s : Set α} (hs : BddAbove s) {a : α} : sSup s ≤ a ↔ ∀ x ∈ s, x ≤ a :=
+lemma csSup_le_iff' {s : Set α} (hs : BddAbove s) {a : α} : sSup s ≤ a ↔ ∀ x ∈ s, x ≤ a :=
   isLUB_le_iff (isLUB_csSup' hs)
 #align cSup_le_iff' csSup_le_iff'
 
-theorem csSup_le' {s : Set α} {a : α} (h : a ∈ upperBounds s) : sSup s ≤ a :=
+lemma csSup_le' {s : Set α} {a : α} (h : a ∈ upperBounds s) : sSup s ≤ a :=
   (csSup_le_iff' ⟨a, h⟩).2 h
 #align cSup_le' csSup_le'
 
-theorem le_csSup_iff' {s : Set α} {a : α} (h : BddAbove s) :
+lemma le_csSup_iff' {s : Set α} {a : α} (h : BddAbove s) :
     a ≤ sSup s ↔ ∀ b, b ∈ upperBounds s → a ≤ b :=
   ⟨fun h _ hb => le_trans h (csSup_le' hb), fun hb => hb _ fun _ => le_csSup h⟩
 #align le_cSup_iff' le_csSup_iff'
 
-theorem le_ciSup_iff' {s : ι → α} {a : α} (h : BddAbove (range s)) :
+lemma le_ciSup_iff' {s : ι → α} {a : α} (h : BddAbove (range s)) :
     a ≤ iSup s ↔ ∀ b, (∀ i, s i ≤ b) → a ≤ b := by simp [iSup, h, le_csSup_iff', upperBounds]
 #align le_csupr_iff' le_ciSup_iff'
 
-theorem le_csInf_iff'' {s : Set α} {a : α} (ne : s.Nonempty) :
+lemma le_csInf_iff'' {s : Set α} {a : α} (ne : s.Nonempty) :
     a ≤ sInf s ↔ ∀ b : α, b ∈ s → a ≤ b :=
   le_csInf_iff ⟨⊥, fun _ _ => bot_le⟩ ne
 #align le_cInf_iff'' le_csInf_iff''
 
-theorem le_ciInf_iff' [Nonempty ι] {f : ι → α} {a : α} : a ≤ iInf f ↔ ∀ i, a ≤ f i :=
+lemma le_ciInf_iff' [Nonempty ι] {f : ι → α} {a : α} : a ≤ iInf f ↔ ∀ i, a ≤ f i :=
   le_ciInf_iff ⟨⊥, fun _ _ => bot_le⟩
 #align le_cinfi_iff' le_ciInf_iff'
 
-theorem csInf_le' {s : Set α} {a : α} (h : a ∈ s) : sInf s ≤ a :=
+lemma csInf_le' {s : Set α} {a : α} (h : a ∈ s) : sInf s ≤ a :=
   csInf_le ⟨⊥, fun _ _ => bot_le⟩ h
 #align cInf_le' csInf_le'
 
@@ -1239,31 +1239,31 @@ theorem ciInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
   ciInf_le ⟨⊥, fun _ _ => bot_le⟩ _
 #align cinfi_le' ciInf_le'
 
-theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b ∈ s, a < b := by
+lemma exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b ∈ s, a < b := by
   contrapose! h
   exact csSup_le' h
 #align exists_lt_of_lt_cSup' exists_lt_of_lt_csSup'
 
-theorem ciSup_le_iff' {f : ι → α} (h : BddAbove (range f)) {a : α} :
+lemma ciSup_le_iff' {f : ι → α} (h : BddAbove (range f)) {a : α} :
     ⨆ i, f i ≤ a ↔ ∀ i, f i ≤ a :=
   (csSup_le_iff' h).trans forall_range_iff
 #align csupr_le_iff' ciSup_le_iff'
 
-theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
+lemma ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
   csSup_le' <| forall_range_iff.2 h
 #align csupr_le' ciSup_le'
 
-theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
+lemma exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
   contrapose! h
   exact ciSup_le' h
 #align exists_lt_of_lt_csupr' exists_lt_of_lt_ciSup'
 
-theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range g))
+lemma ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range g))
     (h : ∀ i, ∃ i', f i ≤ g i') : iSup f ≤ iSup g :=
   ciSup_le' fun i => Exists.elim (h i) (le_ciSup_of_le hg)
 #align csupr_mono' ciSup_mono'
 
-theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
+lemma csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
   csInf_le_csInf (OrderBot.bddBelow s) h₁ h₂
 #align cInf_le_cInf' csInf_le_csInf'
 
@@ -1277,7 +1277,7 @@ variable [ConditionallyCompleteLinearOrderBot α]
 
 /-- The `sSup` of a non-empty set is its least upper bound for a conditionally
 complete lattice with a top. -/
-theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
+lemma isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
   constructor
   · show ite _ _ _ ∈ _
@@ -1331,7 +1331,7 @@ theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
 
 /-- The `sInf` of a bounded-below set is its greatest lower bound for a conditionally
 complete lattice with a top. -/
-theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
+lemma isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : BddBelow s) : IsGLB s (sInf s) := by
   constructor
   · show ite _ _ _ ∈ _
@@ -1391,13 +1391,13 @@ noncomputable instance : CompleteLinearOrder (WithTop α) :=
 
 /-- A version of `WithTop.coe_sSup'` with a more convenient but less general statement. -/
 @[norm_cast]
-theorem coe_sSup {s : Set α} (hb : BddAbove s) : ↑(sSup s) = (⨆ a ∈ s, ↑a : WithTop α) := by
+lemma coe_sSup {s : Set α} (hb : BddAbove s) : ↑(sSup s) = (⨆ a ∈ s, ↑a : WithTop α) := by
   rw [coe_sSup' hb, sSup_image]
 #align with_top.coe_Sup WithTop.coe_sSup
 
 /-- A version of `WithTop.coe_sInf'` with a more convenient but less general statement. -/
 @[norm_cast]
-theorem coe_sInf {s : Set α} (hs : s.Nonempty) : ↑(sInf s) = (⨅ a ∈ s, ↑a : WithTop α) := by
+lemma coe_sInf {s : Set α} (hs : s.Nonempty) : ↑(sInf s) = (⨅ a ∈ s, ↑a : WithTop α) := by
   rw [coe_sInf' hs, sInf_image]
 #align with_top.coe_Inf WithTop.coe_sInf
 
@@ -1411,18 +1411,18 @@ variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono
 `sSup` and `sInf`. -/
 
 
-theorem le_csSup_image {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddAbove s) :
+lemma le_csSup_image {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddAbove s) :
     f c ≤ sSup (f '' s) :=
   le_csSup (map_bddAbove h_mono h_bdd) (mem_image_of_mem f hcs)
 #align monotone.le_cSup_image Monotone.le_csSup_image
 
-theorem csSup_image_le {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ upperBounds s) :
+lemma csSup_image_le {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ upperBounds s) :
     sSup (f '' s) ≤ f B :=
   csSup_le (Nonempty.image f hs) (h_mono.mem_upperBounds_image hB)
 #align monotone.cSup_image_le Monotone.csSup_image_le
 
 -- Porting note: in mathlib3 `f'` is not needed
-theorem csInf_image_le {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddBelow s) :
+lemma csInf_image_le {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddBelow s) :
     sInf (f '' s) ≤ f c := by
   let f' : αᵒᵈ → βᵒᵈ := f
   exact @le_csSup_image αᵒᵈ βᵒᵈ _ _ _
@@ -1430,7 +1430,7 @@ theorem csInf_image_le {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddBelow s
 #align monotone.cInf_image_le Monotone.csInf_image_le
 
 -- Porting note: in mathlib3 `f'` is not needed
-theorem le_csInf_image {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ lowerBounds s) :
+lemma le_csInf_image {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ lowerBounds s) :
     f B ≤ sInf (f '' s) := by
   let f' : αᵒᵈ → βᵒᵈ := f
   exact @csSup_image_le αᵒᵈ βᵒᵈ _ _ _

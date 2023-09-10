@@ -271,7 +271,7 @@ noncomputable instance forgetCreatesColimits [PreservesColimitsOfSize.{v, u} (T 
 /-- For `D : J ⥤ Algebra T`, `D ⋙ forget T` has a colimit, then `D` has a colimit provided colimits
 of shape `J` are preserved by `T`.
 -/
-theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (T : C ⥤ C)]
+lemma forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (T : C ⥤ C)]
     (D : J ⥤ Algebra T) [HasColimit (D ⋙ forget T)] : HasColimit D :=
   hasColimit_of_created D (forget T)
 #align category_theory.monad.forget_creates_colimits_of_monad_preserves CategoryTheory.Monad.forget_creates_colimits_of_monad_preserves
@@ -357,7 +357,7 @@ theorem hasLimit_of_reflective (F : J ⥤ D) (R : D ⥤ C) [HasLimit (F ⋙ R)] 
 #align category_theory.has_limit_of_reflective CategoryTheory.hasLimit_of_reflective
 
 /-- If `C` has limits of shape `J` then any reflective subcategory has limits of shape `J`. -/
-theorem hasLimitsOfShape_of_reflective [HasLimitsOfShape J C] (R : D ⥤ C) [Reflective R] :
+lemma hasLimitsOfShape_of_reflective [HasLimitsOfShape J C] (R : D ⥤ C) [Reflective R] :
     HasLimitsOfShape J D :=
   ⟨fun F => hasLimit_of_reflective F R⟩
 #align category_theory.has_limits_of_shape_of_reflective CategoryTheory.hasLimitsOfShape_of_reflective

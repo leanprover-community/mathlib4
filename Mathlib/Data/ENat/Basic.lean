@@ -57,17 +57,17 @@ variable {m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
-@[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
+@[simp] lemma some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
 
 --Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
-theorem coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
+lemma coe_zero : ((0 : ℕ) : ℕ∞) = 0 :=
   rfl
 #align enat.coe_zero ENat.coe_zero
 
 --Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]
-theorem coe_one : ((1 : ℕ) : ℕ∞) = 1 :=
+lemma coe_one : ((1 : ℕ) : ℕ∞) = 1 :=
   rfl
 #align enat.coe_one ENat.coe_one
 
@@ -111,7 +111,7 @@ theorem toNat_coe (n : ℕ) : toNat n = n :=
 #align enat.to_nat_coe ENat.toNat_coe
 
 @[simp]
-theorem toNat_top : toNat ⊤ = 0 :=
+lemma toNat_top : toNat ⊤ = 0 :=
   rfl
 #align enat.to_nat_top ENat.toNat_top
 
@@ -124,13 +124,13 @@ def recTopCoe {C : ℕ∞ → Sort*} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : 
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
+lemma recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
     @recTopCoe C d f ⊤ = d :=
   rfl
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
+lemma recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
   rfl
 
@@ -154,7 +154,7 @@ theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
 @[simp]
-theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
+lemma coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
@@ -165,20 +165,20 @@ theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
 #align enat.coe_to_nat_le_self ENat.coe_toNat_le_self
 
-theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + n) = toNat m + toNat n := by
+lemma toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + n) = toNat m + toNat n := by
   lift m to ℕ using hm
   lift n to ℕ using hn
   rfl
 #align enat.to_nat_add ENat.toNat_add
 
-theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
+lemma toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
   induction m using ENat.recTopCoe
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 #align enat.to_nat_sub ENat.toNat_sub
 
-theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
+lemma toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m using ENat.recTopCoe <;> simp [hn.symm]
 #align enat.to_nat_eq_iff ENat.toNat_eq_iff
 
@@ -194,11 +194,11 @@ theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   m.succ_def ▸ (Order.succ_le_iff_of_not_isMax <| by rwa [isMax_iff_eq_top])
 #align enat.add_one_le_iff ENat.add_one_le_iff
 
-theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
+lemma one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
   add_one_le_iff WithTop.zero_ne_top
 #align enat.one_le_iff_pos ENat.one_le_iff_pos
 
-theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
+lemma one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 #align enat.one_le_iff_ne_zero ENat.one_le_iff_ne_zero
 
@@ -206,11 +206,11 @@ theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 #align enat.le_of_lt_add_one ENat.le_of_lt_add_one
 
-theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
+lemma le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
 @[elab_as_elim]
-theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
+lemma nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
   have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
   cases a

@@ -76,7 +76,7 @@ lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
   cases a <;> rfl
 
 
-theorem mem_some_iff {α : Type*} {a b : α} : a ∈ some b ↔ b = a := by simp
+lemma mem_some_iff {α : Type*} {a b : α} : a ∈ some b ↔ b = a := by simp
 #align option.mem_some_iff Option.mem_some_iff
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
@@ -107,12 +107,12 @@ def iget [Inhabited α] : Option α → α
   | none => default
 #align option.iget Option.iget
 
-theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
+lemma iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 #align option.iget_some Option.iget_some
 
 @[simp]
-theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
+lemma mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
 #align option.mem_to_list Option.mem_toList
 

@@ -118,11 +118,11 @@ instance initial_isIso_to {A : C} (f : A ⟶ ⊥_ C) : IsIso f :=
 #align category_theory.limits.initial_is_iso_to CategoryTheory.Limits.initial_isIso_to
 
 @[ext]
-theorem initial.hom_ext {A : C} (f g : A ⟶ ⊥_ C) : f = g :=
+lemma initial.hom_ext {A : C} (f g : A ⟶ ⊥_ C) : f = g :=
   initialIsInitial.strict_hom_ext _ _
 #align category_theory.limits.initial.hom_ext CategoryTheory.Limits.initial.hom_ext
 
-theorem initial.subsingleton_to {A : C} : Subsingleton (A ⟶ ⊥_ C) :=
+lemma initial.subsingleton_to {A : C} : Subsingleton (A ⟶ ⊥_ C) :=
   initialIsInitial.subsingleton_to
 #align category_theory.limits.initial.subsingleton_to CategoryTheory.Limits.initial.subsingleton_to
 
@@ -158,7 +158,7 @@ end
 
 /-- If `C` has an initial object such that every morphism *to* it is an isomorphism, then `C`
 has strict initial objects. -/
-theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
+lemma hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
     (h : ∀ (A) (f : A ⟶ ⊥_ C), IsIso f) : HasStrictInitialObjects C :=
   { out := fun {I A} f hI =>
       haveI := h A (f ≫ hI.to _)
@@ -244,11 +244,11 @@ instance terminal_isIso_from {A : C} (f : ⊤_ C ⟶ A) : IsIso f :=
 #align category_theory.limits.terminal_is_iso_from CategoryTheory.Limits.terminal_isIso_from
 
 @[ext]
-theorem terminal.hom_ext {A : C} (f g : ⊤_ C ⟶ A) : f = g :=
+lemma terminal.hom_ext {A : C} (f g : ⊤_ C ⟶ A) : f = g :=
   terminalIsTerminal.strict_hom_ext _ _
 #align category_theory.limits.terminal.hom_ext CategoryTheory.Limits.terminal.hom_ext
 
-theorem terminal.subsingleton_to {A : C} : Subsingleton (⊤_ C ⟶ A) :=
+lemma terminal.subsingleton_to {A : C} : Subsingleton (⊤_ C ⟶ A) :=
   terminalIsTerminal.subsingleton_to
 #align category_theory.limits.terminal.subsingleton_to CategoryTheory.Limits.terminal.subsingleton_to
 

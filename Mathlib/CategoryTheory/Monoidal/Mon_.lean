@@ -70,16 +70,16 @@ variable {C}
 variable {M : Mon_ C}
 
 @[simp]
-theorem one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f := by
+lemma one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f := by
   rw [← id_tensor_comp_tensor_id, Category.assoc, M.one_mul, leftUnitor_naturality]
 #align Mon_.one_mul_hom Mon_.one_mul_hom
 
 @[simp]
-theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f := by
+lemma mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f := by
   rw [← tensor_id_comp_id_tensor, Category.assoc, M.mul_one, rightUnitor_naturality]
 #align Mon_.mul_one_hom Mon_.mul_one_hom
 
-theorem assoc_flip :
+lemma assoc_flip :
     (𝟙 M.X ⊗ M.mul) ≫ M.mul = (α_ M.X M.X M.X).inv ≫ (M.mul ⊗ 𝟙 M.X) ≫ M.mul := by simp
 #align Mon_.assoc_flip Mon_.assoc_flip
 
@@ -125,7 +125,7 @@ theorem id_hom' (M : Mon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
 #align Mon_.id_hom' Mon_.id_hom'
 
 @[simp]
-theorem comp_hom' {M N K : Mon_ C} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_hom' {M N K : Mon_ C} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 #align Mon_.comp_hom' Mon_.comp_hom'
@@ -377,7 +377,7 @@ which have also been proved in `Mathlib.CategoryTheory.Monoidal.Braided`.
 variable {C}
 
 -- The proofs that associators and unitors preserve monoid units don't require braiding.
-theorem one_associator {M N P : Mon_ C} :
+lemma one_associator {M N P : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) ⊗ P.one)) ≫ (α_ M.X N.X P.X).hom =
       (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ (λ_ (𝟙_ C)).inv ≫ (N.one ⊗ P.one)) := by
   simp
@@ -390,13 +390,13 @@ theorem one_associator {M N P : Mon_ C} :
   simp only [Category.assoc]
 #align Mon_.one_associator Mon_.one_associator
 
-theorem one_leftUnitor {M : Mon_ C} :
+lemma one_leftUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ M.one)) ≫ (λ_ M.X).hom = M.one := by
   slice_lhs 2 3 => rw [leftUnitor_naturality]
   simp
 #align Mon_.one_left_unitor Mon_.one_leftUnitor
 
-theorem one_rightUnitor {M : Mon_ C} :
+lemma one_rightUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ 𝟙 (𝟙_ C))) ≫ (ρ_ M.X).hom = M.one := by
   slice_lhs 2 3 => rw [rightUnitor_naturality, ← unitors_equal]
   simp
@@ -442,7 +442,7 @@ theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
   simp only [Category.assoc]
 #align Mon_.Mon_tensor_mul_assoc Mon_.Mon_tensor_mul_assoc
 
-theorem mul_associator {M N P : Mon_ C} :
+lemma mul_associator {M N P : Mon_ C} :
     (tensor_μ C (M.X ⊗ N.X, P.X) (M.X ⊗ N.X, P.X) ≫
           (tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) ⊗ P.mul)) ≫
         (α_ M.X N.X P.X).hom =
@@ -457,7 +457,7 @@ theorem mul_associator {M N P : Mon_ C} :
   simp only [Category.assoc]
 #align Mon_.mul_associator Mon_.mul_associator
 
-theorem mul_leftUnitor {M : Mon_ C} :
+lemma mul_leftUnitor {M : Mon_ C} :
     (tensor_μ C (𝟙_ C, M.X) (𝟙_ C, M.X) ≫ ((λ_ (𝟙_ C)).hom ⊗ M.mul)) ≫ (λ_ M.X).hom =
       ((λ_ M.X).hom ⊗ (λ_ M.X).hom) ≫ M.mul := by
   rw [← Category.comp_id (λ_ (𝟙_ C)).hom, ← Category.id_comp M.mul, tensor_comp]
@@ -466,7 +466,7 @@ theorem mul_leftUnitor {M : Mon_ C} :
   simp only [Category.assoc, Category.id_comp]
 #align Mon_.mul_left_unitor Mon_.mul_leftUnitor
 
-theorem mul_rightUnitor {M : Mon_ C} :
+lemma mul_rightUnitor {M : Mon_ C} :
     (tensor_μ C (M.X, 𝟙_ C) (M.X, 𝟙_ C) ≫ (M.mul ⊗ (λ_ (𝟙_ C)).hom)) ≫ (ρ_ M.X).hom =
       ((ρ_ M.X).hom ⊗ (ρ_ M.X).hom) ≫ M.mul := by
   rw [← Category.id_comp M.mul, ← Category.comp_id (λ_ (𝟙_ C)).hom, tensor_comp]

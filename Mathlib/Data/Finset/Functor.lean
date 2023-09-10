@@ -44,7 +44,7 @@ instance lawfulFunctor : LawfulFunctor Finset where
   map_const {α} {β} := by simp only [Functor.mapConst, Functor.map]
 
 @[simp]
-theorem fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
+lemma fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
 #align finset.fmap_def Finset.fmap_def
 
 end Functor
@@ -56,7 +56,7 @@ protected instance pure : Pure Finset :=
   ⟨fun x => {x}⟩
 
 @[simp]
-theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
+lemma pure_def {α} : (pure : α → Finset α) = singleton := rfl
 #align finset.pure_def Finset.pure_def
 
 /-! ### Applicative functor -/
@@ -89,7 +89,7 @@ theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then 
 
 /-- `Finset.image₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem image₂_def {α β γ : Type _} (f : α → β → γ) (s : Finset α) (t : Finset β) :
+lemma image₂_def {α β γ : Type _} (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = f <$> s <*> t := by
   ext
   simp [mem_sup]
@@ -156,7 +156,7 @@ instance : Monad Finset :=
   { Finset.applicative with bind := sup }
 
 @[simp]
-theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
+lemma bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
   rfl
 #align finset.bind_def Finset.bind_def
 
@@ -197,7 +197,7 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
 #align finset.traverse Finset.traverse
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
+lemma id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_toFinset
 #align finset.id_traverse Finset.id_traverse

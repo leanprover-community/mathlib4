@@ -93,7 +93,7 @@ theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
 #align free_lie_algebra.rel.add_left FreeLieAlgebra.Rel.addLeft
 
-theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
+lemma Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
 #align free_lie_algebra.rel.neg FreeLieAlgebra.Rel.neg
 
@@ -101,11 +101,11 @@ theorem Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a
   simpa only [sub_eq_add_neg] using h.neg.addLeft a
 #align free_lie_algebra.rel.sub_left FreeLieAlgebra.Rel.subLeft
 
-theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
+lemma Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
   simpa only [sub_eq_add_neg] using h.add_right (-c)
 #align free_lie_algebra.rel.sub_right FreeLieAlgebra.Rel.subRight
 
-theorem Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
+lemma Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
@@ -264,7 +264,7 @@ theorem lift_comp_of (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : lift R (F ∘ of
 #align free_lie_algebra.lift_comp_of FreeLieAlgebra.lift_comp_of
 
 @[ext]
-theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F₁ (of R x) = F₂ (of R x)) :
+lemma hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F₁ (of R x) = F₂ (of R x)) :
     F₁ = F₂ :=
   have h' : (lift R).symm F₁ = (lift R).symm F₂ := by ext; simp [h]
   (lift R).symm.injective h'

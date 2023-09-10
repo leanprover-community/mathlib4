@@ -29,7 +29,7 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
-theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
+lemma measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
   rw [IndepSet_iff] at h_indep
   specialize h_indep t t (measurableSet_generateFrom (Set.mem_singleton t))
@@ -42,7 +42,7 @@ theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   exact Or.inr (Or.inl h_indep.symm)
 #align probability_theory.measure_eq_zero_or_one_or_top_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_or_top_of_indepSet_self
 
-theorem measure_eq_zero_or_one_of_indepSetCat_self [IsFiniteMeasure μ] {t : Set Ω}
+lemma measure_eq_zero_or_one_of_indepSetCat_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   have h_0_1_top := measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
   simpa [measure_ne_top μ] using h_0_1_top

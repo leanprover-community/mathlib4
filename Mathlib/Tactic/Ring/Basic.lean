@@ -453,7 +453,7 @@ theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
 theorem natCast_mul (a₂) (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₃ : ℕ) : R) = b₃) :
     ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by subst_vars; simp
 
-theorem natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
+lemma natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
 
 theorem natCast_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
     ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
@@ -526,10 +526,10 @@ def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : AtomM (Result (ExSum sα)
     let ⟨_, vc, pc⟩ := evalMul sα va' vb
     pure ⟨_, vc, (q(smul_eq_cast $pa' $pc) : Expr)⟩
 
-theorem neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
+lemma neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
     -a = b := by subst_vars; simp [Int.negOfNat]
 
-theorem neg_mul {R} [Ring R] (a₁ : R) (a₂) {a₃ b : R}
+lemma neg_mul {R} [Ring R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
 
 /-- Negates a monomial `va` to get another monomial.
@@ -553,9 +553,9 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let ⟨_, vb, pb⟩ := evalNegProd rα va₃
     ⟨_, .mul va₁ va₂ vb, (q(neg_mul $a₁ $a₂ $pb) : Expr)⟩
 
-theorem neg_zero {R} [Ring R] : -(0 : R) = 0 := by simp
+lemma neg_zero {R} [Ring R] : -(0 : R) = 0 := by simp
 
-theorem neg_add {R} [Ring R] {a₁ a₂ b₁ b₂ : R}
+lemma neg_add {R} [Ring R] {a₁ a₂ b₁ b₂ : R}
     (_ : -a₁ = b₁) (_ : -a₂ = b₂) : -(a₁ + a₂) = b₁ + b₂ := by subst_vars; simp [add_comm]
 
 /-- Negates a polynomial `va` to get another polynomial.
@@ -571,7 +571,7 @@ def evalNeg (rα : Q(Ring $α)) (va : ExSum sα a) : Result (ExSum sα) q(-$a) :
     let ⟨_, vb₂, pb₂⟩ := evalNeg rα va₂
     ⟨_, .add vb₁ vb₂, (q(neg_add $pb₁ $pb₂) : Expr)⟩
 
-theorem sub_pf {R} [Ring R] {a b c d : R}
+lemma sub_pf {R} [Ring R] {a b c d : R}
     (_ : -b = c) (_ : a + c = d) : a - b = d := by subst_vars; simp [sub_eq_add_neg]
 
 /-- Subtracts two polynomials `va, vb` to get a normalized result polynomial.
@@ -835,16 +835,16 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
     dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
-theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
+lemma cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
+lemma cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_neg {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+lemma cast_neg {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast n d + 0
+lemma cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
 /-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
@@ -887,14 +887,14 @@ def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   | none => (q(atom_pf $e) : Expr)
   | some (p : Q($e = $e')) => (q(atom_pf' $p) : Expr)⟩
 
-theorem inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
+lemma inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
     (_ : b₃ * (b₁ ^ a₂ * (nat_lit 1).rawCast) = c) :
     (a₁ ^ a₂ * a₃ : R)⁻¹ = c := by subst_vars; simp
 
-nonrec theorem inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
+nonrec lemma inv_zero {R} [DivisionRing R] : (0 : R)⁻¹ = 0 := inv_zero
 
-theorem inv_single {R} [DivisionRing R] {a b : R}
+lemma inv_single {R} [DivisionRing R] {a b : R}
     (_ : (a : R)⁻¹ = b) : (a + 0)⁻¹ = b + 0 := by simp [*]
 
 theorem inv_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
@@ -952,7 +952,7 @@ def ExSum.evalInv (czα : Option Q(CharZero $α)) (va : ExSum sα a) :
 
 end
 
-theorem div_pf {R} [DivisionRing R] {a b c d : R}
+lemma div_pf {R} [DivisionRing R] {a b c d : R}
     (_ : b⁻¹ = c) (_ : a * c = d) : a / b = d := by subst_vars; simp [div_eq_mul_inv]
 
 /-- Divides two polynomials `va, vb` to get a normalized result polynomial.
@@ -977,16 +977,16 @@ theorem nsmul_congr (_ : (a : ℕ) = a') (_ : b = b')
 theorem pow_congr (_ : a = a') (_ : b = b')
     (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
 
-theorem neg_congr {R} [Ring R] {a a' b : R} (_ : a = a')
+lemma neg_congr {R} [Ring R] {a a' b : R} (_ : a = a')
     (_ : -a' = b) : (-a : R) = b := by subst_vars; rfl
 
-theorem sub_congr {R} [Ring R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
+lemma sub_congr {R} [Ring R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' - b' = c) : (a - b : R) = c := by subst_vars; rfl
 
-theorem inv_congr {R} [DivisionRing R] {a a' b : R} (_ : a = a')
+lemma inv_congr {R} [DivisionRing R] {a a' b : R} (_ : a = a')
     (_ : a'⁻¹ = b) : (a⁻¹ : R) = b := by subst_vars; rfl
 
-theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
+lemma div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
 /-- A precomputed `Cache` for `ℕ`. -/

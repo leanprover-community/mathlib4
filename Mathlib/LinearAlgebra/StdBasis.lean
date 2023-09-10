@@ -105,7 +105,7 @@ theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
   exact h.le_bot ⟨hi, hj⟩
 #align linear_map.supr_range_std_basis_le_infi_ker_proj LinearMap.iSup_range_stdBasis_le_iInf_ker_proj
 
-theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
+lemma iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
     ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (stdBasis R φ i) :=
   SetLike.le_def.2
     (by
@@ -122,7 +122,7 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
       exact sum_mem_biSup fun i _ => mem_range_self (stdBasis R φ i) (b i))
 #align linear_map.infi_ker_proj_le_supr_range_std_basis LinearMap.iInf_ker_proj_le_iSup_range_stdBasis
 
-theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
+lemma iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
     ⨆ i ∈ I, range (stdBasis R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' le_antisymm (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ hd) _
@@ -131,7 +131,7 @@ theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
   rw [Set.Finite.mem_toFinset]
 #align linear_map.supr_range_std_basis_eq_infi_ker_proj LinearMap.iSup_range_stdBasis_eq_iInf_ker_proj
 
-theorem iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ := by
+lemma iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ := by
   cases nonempty_fintype ι
   convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_stdBasis R φ _)
   · rename_i i
@@ -155,7 +155,7 @@ theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
     · exact hI i hiI
 #align linear_map.disjoint_std_basis_std_basis LinearMap.disjoint_stdBasis_stdBasis
 
-theorem stdBasis_eq_single {a : R} :
+lemma stdBasis_eq_single {a : R} :
     (fun i : ι => (stdBasis R (fun _ : ι => R) i) a) = fun i : ι => ↑(Finsupp.single i a) :=
   funext fun i => (Finsupp.single_eq_pi_single i a).symm
 #align linear_map.std_basis_eq_single LinearMap.stdBasis_eq_single
@@ -174,7 +174,7 @@ section Module
 
 variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 
-theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
+lemma linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
     LinearIndependent R fun ji : Σj, ιs j => stdBasis R Ms ji.1 (v ji.1 ji.2) := by
   have hs' : ∀ j : η, LinearIndependent R fun i : ιs j => stdBasis R Ms j (v j i) := by
@@ -230,7 +230,7 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
 #align pi.basis Pi.basis
 
 @[simp]
-theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
+lemma basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
     (Pi.basis s).repr (stdBasis R _ j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by
   ext ⟨j', i'⟩
   by_cases hj : j = j'
@@ -254,7 +254,7 @@ theorem basis_repr_stdBasis [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j))
 #align pi.basis_repr_std_basis Pi.basis_repr_stdBasis
 
 @[simp]
-theorem basis_apply [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (ji) :
+lemma basis_apply [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (ji) :
     Pi.basis s ji = stdBasis R _ ji.1 (s ji.1 ji.2) :=
   Basis.apply_eq_iff.mpr (by simp)
 #align pi.basis_apply Pi.basis_apply
@@ -277,7 +277,7 @@ noncomputable def basisFun : Basis η R (∀ _ : η, R) :=
 #align pi.basis_fun Pi.basisFun
 
 @[simp]
-theorem basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun _ : η => R) i 1 := by
+lemma basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun _ : η => R) i 1 := by
   simp only [basisFun, Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
     stdBasis_apply]
 #align pi.basis_fun_apply Pi.basisFun_apply
@@ -287,7 +287,7 @@ theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x 
 #align pi.basis_fun_repr Pi.basisFun_repr
 
 @[simp]
-theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :=
+lemma basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :=
   Basis.equivFun_ofEquivFun _
 #align pi.basis_fun_equiv_fun Pi.basisFun_equivFun
 

@@ -77,7 +77,7 @@ variable [CompleteSpace E]
 local notation "i" => fun (w : V) => HDiv.hDiv (1 : ℝ) (HMul.hMul (2 : ℝ) (HPow.hPow ‖w‖ 2)) • w
 
 /-- Shifting `f` by `(1 / (2 * ‖w‖ ^ 2)) • w` negates the integral in the Riemann-Lebesgue lemma. -/
-theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
+lemma fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
     (∫ v : V, e[-⟪v, w⟫] • f (v + i w)) = -∫ v : V, e[-⟪v, w⟫] • f v := by
   have hiw : ⟪i w, w⟫ = 1 / 2 := by
     rw [inner_smul_left, inner_self_eq_norm_sq_to_K, IsROrC.ofReal_real_eq_id, id.def,
@@ -104,7 +104,7 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
 #align fourier_integral_half_period_translate fourier_integral_half_period_translate
 
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
-theorem fourier_integral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
+lemma fourier_integral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
     (hf : Integrable f) :
     ∫ v : V, e[-⟪v, w⟫] • f v = (1 / (2 : ℂ)) • ∫ v : V, e[-⟪v, w⟫] • (f v - f (v + i w)) := by
   simp_rw [smul_sub]
@@ -216,7 +216,7 @@ variable (f)
 
 /-- Riemann-Lebesgue lemma for functions on a real inner-product space: the integral
 `∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 as `w → ∞`. -/
-theorem tendsto_integral_exp_inner_smul_cocompact :
+lemma tendsto_integral_exp_inner_smul_cocompact :
     Tendsto (fun w : V => ∫ v, e[-⟪v, w⟫] • f v) (cocompact V) (𝓝 0) := by
   by_cases hfi : Integrable f; swap
   · convert tendsto_const_nhds (a := (0 : E)) with w

@@ -45,7 +45,7 @@ def OrderIso.inv : α ≃o αᵒᵈ where
 end
 
 @[to_additive neg_le]
-theorem inv_le' : a⁻¹ ≤ b ↔ b⁻¹ ≤ a :=
+lemma inv_le' : a⁻¹ ≤ b ↔ b⁻¹ ≤ a :=
   (OrderIso.inv α).symm_apply_le
 #align inv_le' inv_le'
 #align neg_le neg_le
@@ -57,7 +57,7 @@ attribute [to_additive neg_le_of_neg_le] inv_le_of_inv_le'
 #align neg_le_of_neg_le neg_le_of_neg_le
 
 @[to_additive le_neg]
-theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
+lemma le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
   (OrderIso.inv α).le_symm_apply
 #align le_inv' le_inv'
 #align le_neg le_neg

@@ -89,7 +89,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid K] [HasDistribNeg K] {a b : K}
 
-theorem one_div_neg_one_eq_neg_one : (1 : K) / -1 = -1 :=
+lemma one_div_neg_one_eq_neg_one : (1 : K) / -1 = -1 :=
   have : -1 * -1 = (1 : K) := by rw [neg_mul_neg, one_mul]
   Eq.symm (eq_one_div_of_mul_eq_one_right this)
 #align one_div_neg_one_eq_neg_one one_div_neg_one_eq_neg_one
@@ -121,16 +121,16 @@ theorem neg_div' (a b : K) : -(b / a) = -b / a := by simp [neg_div]
 theorem neg_div_neg_eq (a b : K) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
 #align neg_div_neg_eq neg_div_neg_eq
 
-theorem neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
+lemma neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
 #align neg_inv neg_inv
 
 theorem div_neg (a : K) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
 #align div_neg div_neg
 
-theorem inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
+lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
 #align inv_neg inv_neg
 
-theorem inv_neg_one : (-1 : K)⁻¹ = -1 := by rw [← neg_inv, inv_one]
+lemma inv_neg_one : (-1 : K)⁻¹ = -1 := by rw [← neg_inv, inv_one]
 
 end DivisionMonoid
 
@@ -139,30 +139,30 @@ section DivisionRing
 variable [DivisionRing K] {a b c d : K}
 
 @[simp]
-theorem div_neg_self {a : K} (h : a ≠ 0) : a / -a = -1 := by rw [div_neg_eq_neg_div, div_self h]
+lemma div_neg_self {a : K} (h : a ≠ 0) : a / -a = -1 := by rw [div_neg_eq_neg_div, div_self h]
 #align div_neg_self div_neg_self
 
 @[simp]
-theorem neg_div_self {a : K} (h : a ≠ 0) : -a / a = -1 := by rw [neg_div, div_self h]
+lemma neg_div_self {a : K} (h : a ≠ 0) : -a / a = -1 := by rw [neg_div, div_self h]
 #align neg_div_self neg_div_self
 
 theorem div_sub_div_same (a b c : K) : a / c - b / c = (a - b) / c := by
   rw [sub_eq_add_neg, ← neg_div, div_add_div_same, sub_eq_add_neg]
 #align div_sub_div_same div_sub_div_same
 
-theorem same_sub_div {a b : K} (h : b ≠ 0) : (b - a) / b = 1 - a / b := by
+lemma same_sub_div {a b : K} (h : b ≠ 0) : (b - a) / b = 1 - a / b := by
   simpa only [← @div_self _ _ b h] using (div_sub_div_same b a b).symm
 #align same_sub_div same_sub_div
 
-theorem one_sub_div {a b : K} (h : b ≠ 0) : 1 - a / b = (b - a) / b :=
+lemma one_sub_div {a b : K} (h : b ≠ 0) : 1 - a / b = (b - a) / b :=
   (same_sub_div h).symm
 #align one_sub_div one_sub_div
 
-theorem div_sub_same {a b : K} (h : b ≠ 0) : (a - b) / b = a / b - 1 := by
+lemma div_sub_same {a b : K} (h : b ≠ 0) : (a - b) / b = a / b - 1 := by
   simpa only [← @div_self _ _ b h] using (div_sub_div_same a b b).symm
 #align div_sub_same div_sub_same
 
-theorem div_sub_one {a b : K} (h : b ≠ 0) : a / b - 1 = (a - b) / b :=
+lemma div_sub_one {a b : K} (h : b ≠ 0) : a / b - 1 = (a - b) / b :=
   (div_sub_same h).symm
 #align div_sub_one div_sub_one
 
@@ -171,7 +171,7 @@ theorem sub_div (a b c : K) : (a - b) / c = a / c - b / c :=
 #align sub_div sub_div
 
 /-- See `inv_sub_inv` for the more convenient version when `K` is commutative. -/
-theorem inv_sub_inv' {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = a⁻¹ * (b - a) * b⁻¹ := by
+lemma inv_sub_inv' {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = a⁻¹ * (b - a) * b⁻¹ := by
   rw [mul_sub, sub_mul, mul_inv_cancel_right₀ hb, inv_mul_cancel ha, one_mul]
 #align inv_sub_inv' inv_sub_inv'
 
@@ -229,7 +229,7 @@ theorem div_sub_div (a : K) {b : K} (c : K) {d : K} (hb : b ≠ 0) (hd : d ≠ 0
   (Commute.all b _).div_sub_div (Commute.all _ _) hb hd
 #align div_sub_div div_sub_div
 
-theorem inv_sub_inv {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
+lemma inv_sub_inv {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
   rw [inv_eq_one_div, inv_eq_one_div, div_sub_div _ _ ha hb, one_mul, mul_one]
 #align inv_sub_inv inv_sub_inv
 
@@ -252,7 +252,7 @@ end Field
 
 namespace RingHom
 
-protected theorem injective [DivisionRing α] [Semiring β] [Nontrivial β] (f : α →+* β) :
+protected lemma injective [DivisionRing α] [Semiring β] [Nontrivial β] (f : α →+* β) :
     Injective f :=
   (injective_iff_map_eq_zero f).2 fun _ ↦ (map_eq_zero f).1
 #align ring_hom.injective RingHom.injective
@@ -375,12 +375,12 @@ instance [h : Field α] : Field αᵒᵈ :=
   h
 
 @[simp]
-theorem toDual_rat_cast [RatCast α] (n : ℚ) : toDual (n : α) = n :=
+lemma toDual_rat_cast [RatCast α] (n : ℚ) : toDual (n : α) = n :=
   rfl
 #align to_dual_rat_cast toDual_rat_cast
 
 @[simp]
-theorem ofDual_rat_cast [RatCast α] (n : ℚ) : (ofDual n : α) = n :=
+lemma ofDual_rat_cast [RatCast α] (n : ℚ) : (ofDual n : α) = n :=
   rfl
 #align of_dual_rat_cast ofDual_rat_cast
 
@@ -402,11 +402,11 @@ instance [h : Field α] : Field (Lex α) :=
   h
 
 @[simp]
-theorem toLex_rat_cast [RatCast α] (n : ℚ) : toLex (n : α) = n :=
+lemma toLex_rat_cast [RatCast α] (n : ℚ) : toLex (n : α) = n :=
   rfl
 #align to_lex_rat_cast toLex_rat_cast
 
 @[simp]
-theorem ofLex_rat_cast [RatCast α] (n : ℚ) : (ofLex n : α) = n :=
+lemma ofLex_rat_cast [RatCast α] (n : ℚ) : (ofLex n : α) = n :=
   rfl
 #align of_lex_rat_cast ofLex_rat_cast

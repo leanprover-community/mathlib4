@@ -32,7 +32,7 @@ def iciSupHom : SupHom α (UpperSet α) :=
 #align upper_set.Ici_sup_hom UpperSet.iciSupHom
 
 @[simp]
-theorem coe_iciSupHom : (iciSupHom : α → UpperSet α) = Ici :=
+lemma coe_iciSupHom : (iciSupHom : α → UpperSet α) = Ici :=
   rfl
 #align upper_set.coe_Ici_sup_hom UpperSet.coe_iciSupHom
 
@@ -52,7 +52,7 @@ def icisSupHom : sSupHom α (UpperSet α) :=
 #align upper_set.Ici_Sup_hom UpperSet.icisSupHomₓ
 
 @[simp]
-theorem coe_icisSupHom : (icisSupHom : α → UpperSet α) = Ici :=
+lemma coe_icisSupHom : (icisSupHom : α → UpperSet α) = Ici :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
 #align upper_set.coe_Ici_Sup_hom UpperSet.coe_icisSupHomₓ
@@ -77,7 +77,7 @@ def iicInfHom : InfHom α (LowerSet α) :=
 #align lower_set.Iic_inf_hom LowerSet.iicInfHom
 
 @[simp]
-theorem coe_iicInfHom : (iicInfHom : α → LowerSet α) = Iic :=
+lemma coe_iicInfHom : (iicInfHom : α → LowerSet α) = Iic :=
   rfl
 #align lower_set.coe_Iic_inf_hom LowerSet.coe_iicInfHom
 
@@ -97,7 +97,7 @@ def iicsInfHom : sInfHom α (LowerSet α) :=
 #align lower_set.Iic_Inf_hom LowerSet.iicsInfHomₓ
 
 @[simp]
-theorem coe_iicsInfHom : (iicsInfHom : α → LowerSet α) = Iic :=
+lemma coe_iicsInfHom : (iicsInfHom : α → LowerSet α) = Iic :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
 #align lower_set.coe_Iic_Inf_hom LowerSet.coe_iicsInfHomₓ

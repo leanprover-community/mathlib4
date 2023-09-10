@@ -29,7 +29,7 @@ variable (R : Type*) [Semiring R]
 variable {M}
 
 -- porting note: changed `(· • ·) m` to `HSMul.hSMul m`
-theorem smul_eq_map [MulSemiringAction M R] (m : M) :
+lemma smul_eq_map [MulSemiringAction M R] (m : M) :
     HSMul.hSMul m = map (MulSemiringAction.toRingHom M R m) := by
   suffices DistribMulAction.toAddMonoidHom R[X] m =
       (mapRingHom (MulSemiringAction.toRingHom M R m)).toAddMonoidHom by
@@ -71,12 +71,12 @@ theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m
 
 variable (G : Type*) [Group G]
 
-theorem eval_smul' [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
+lemma eval_smul' [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     f.eval (g • x) = g • (g⁻¹ • f).eval x := by
   rw [← smul_eval_smul, smul_inv_smul]
 #align polynomial.eval_smul' Polynomial.eval_smul'
 
-theorem smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
+lemma smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     (g • f).eval x = g • f.eval (g⁻¹ • x) := by
   rw [← smul_eval_smul, smul_inv_smul]
 #align polynomial.smul_eval Polynomial.smul_eval

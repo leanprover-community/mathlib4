@@ -81,7 +81,7 @@ def obvInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨
   simp only [zagierSet, Set.mem_setOf_eq] at h ⊢
   linarith [h]⟩
 
-theorem obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
+lemma obvInvo_sq : obvInvo k ^ 2 = 1 := rfl
 
 /-- If `obvInvo k` has a fixed point, a representation of `4 * k + 1` as a sum of two squares
 can be extracted from it. -/
@@ -110,7 +110,7 @@ def complexInvo : Function.End (zagierSet k) := fun ⟨⟨x, y, z⟩, h⟩ =>
     push_neg at less more; zify [less, more] at h ⊢; linarith [h]⟩
 
 /-- `complexInvo k` is indeed an involution. -/
-theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
+lemma complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id
   funext ⟨⟨x, y, z⟩, h⟩
   rw [comp_apply]
@@ -136,7 +136,7 @@ theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
       ← two_mul, add_comm, Nat.add_sub_cancel]
 
 /-- Any fixed point of `complexInvo k` must be `(1, 1, k)`. -/
-theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
+lemma eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
     t.val = (1, 1, k) := by
   obtain ⟨⟨x, y, z⟩, h⟩ := t
   obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
@@ -165,7 +165,7 @@ def singletonFixedPoint : Finset (zagierSet k) :=
   {⟨(1, 1, k), (by simp only [zagierSet, Set.mem_setOf_eq]; linarith)⟩}
 
 /-- `complexInvo k` has exactly one fixed point. -/
-theorem card_fixedPoints_eq_one : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
+lemma card_fixedPoints_eq_one : Fintype.card (fixedPoints (complexInvo k)) = 1 := by
   rw [show 1 = Finset.card (singletonFixedPoint k) by rfl, ← Set.toFinset_card]
   congr
   rw [singletonFixedPoint, Finset.eq_singleton_iff_unique_mem]
@@ -184,7 +184,7 @@ open Zagier
 
 /-- **Fermat's theorem on sums of two squares** (Wiedijk #20).
 Every prime congruent to 1 mod 4 is the sum of two squares, proved using Zagier's involutions. -/
-theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
+lemma Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   rw [← div_add_mod p 4, hp] at h ⊢
   let k := p / 4

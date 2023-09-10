@@ -107,12 +107,12 @@ theorem iterate_comp_le_of_le (hf : Monotone f) (H : f ∘ h ≤ h ∘ g) (n : �
 #align monotone.iterate_comp_le_of_le Monotone.iterate_comp_le_of_le
 
 /-- If `f ≤ g` and `f` is monotone, then `f^[n] ≤ g^[n]`. -/
-theorem iterate_le_of_le {g : α → α} (hf : Monotone f) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
+lemma iterate_le_of_le {g : α → α} (hf : Monotone f) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
   hf.iterate_comp_le_of_le h n
 #align monotone.iterate_le_of_le Monotone.iterate_le_of_le
 
 /-- If `f ≤ g` and `g` is monotone, then `f^[n] ≤ g^[n]`. -/
-theorem le_iterate_of_le {g : α → α} (hg : Monotone g) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
+lemma le_iterate_of_le {g : α → α} (hg : Monotone g) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
   hg.dual.iterate_le_of_le h n
 #align monotone.le_iterate_of_le Monotone.le_iterate_of_le
 

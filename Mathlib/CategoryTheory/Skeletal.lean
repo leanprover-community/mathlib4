@@ -58,7 +58,7 @@ attribute [local instance] isIsomorphicSetoid
 variable {C D}
 
 /-- If `C` is thin and skeletal, then any naturally isomorphic functors to `C` are equal. -/
-theorem Functor.eq_of_iso {F₁ F₂ : D ⥤ C} [Quiver.IsThin C] (hC : Skeletal C) (hF : F₁ ≅ F₂) :
+lemma Functor.eq_of_iso {F₁ F₂ : D ⥤ C} [Quiver.IsThin C] (hC : Skeletal C) (hF : F₁ ≅ F₂) :
     F₁ = F₂ :=
   Functor.ext (fun X => hC ⟨hF.app X⟩) fun _ _ _ => Subsingleton.elim _ _
 #align category_theory.functor.eq_of_iso CategoryTheory.Functor.eq_of_iso
@@ -66,7 +66,7 @@ theorem Functor.eq_of_iso {F₁ F₂ : D ⥤ C} [Quiver.IsThin C] (hC : Skeletal
 /-- If `C` is thin and skeletal, `D ⥤ C` is skeletal.
 `CategoryTheory.functor_thin` shows it is thin also.
 -/
-theorem functor_skeletal [Quiver.IsThin C] (hC : Skeletal C) : Skeletal (D ⥤ C) := fun _ _ h =>
+lemma functor_skeletal [Quiver.IsThin C] (hC : Skeletal C) : Skeletal (D ⥤ C) := fun _ _ h =>
   h.elim (Functor.eq_of_iso hC)
 #align category_theory.functor_skeletal CategoryTheory.functor_skeletal
 
@@ -108,7 +108,7 @@ noncomputable def skeletonEquivalence : Skeleton C ≌ C :=
   (fromSkeleton C).asEquivalence
 #align category_theory.skeleton_equivalence CategoryTheory.skeletonEquivalence
 
-theorem skeleton_skeletal : Skeletal (Skeleton C) := by
+lemma skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
   have : X.out ≈ Y.out := ⟨(fromSkeleton C).mapIso h⟩
   simpa using Quotient.sound this
@@ -282,7 +282,7 @@ noncomputable def equivalence : ThinSkeleton C ≌ C :=
 
 variable {C}
 
-theorem equiv_of_both_ways {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) : X ≈ Y :=
+lemma equiv_of_both_ways {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) : X ≈ Y :=
   ⟨iso_of_both_ways f g⟩
 #align category_theory.thin_skeleton.equiv_of_both_ways CategoryTheory.ThinSkeleton.equiv_of_both_ways
 
@@ -295,7 +295,7 @@ instance thinSkeletonPartialOrder : PartialOrder (ThinSkeleton C) :=
           apply Quotient.sound (equiv_of_both_ways f g)) }
 #align category_theory.thin_skeleton.thin_skeleton_partial_order CategoryTheory.ThinSkeleton.thinSkeletonPartialOrder
 
-theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
+lemma skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
   Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i => i.1.le.antisymm i.2.le
 #align category_theory.thin_skeleton.skeletal CategoryTheory.ThinSkeleton.skeletal
 
@@ -304,12 +304,12 @@ theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map 
     NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _
 #align category_theory.thin_skeleton.map_comp_eq CategoryTheory.ThinSkeleton.map_comp_eq
 
-theorem map_id_eq : map (𝟭 C) = 𝟭 (ThinSkeleton C) :=
+lemma map_id_eq : map (𝟭 C) = 𝟭 (ThinSkeleton C) :=
   Functor.eq_of_iso skeletal <|
     NatIso.ofComponents fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _
 #align category_theory.thin_skeleton.map_id_eq CategoryTheory.ThinSkeleton.map_id_eq
 
-theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F₂ :=
+lemma map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F₂ :=
   Functor.eq_of_iso skeletal
     { hom := mapNatTrans h.hom
       inv := mapNatTrans h.inv }

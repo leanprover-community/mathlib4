@@ -42,7 +42,7 @@ theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : 
   exact terminated_stable (Nat.le_add_right _ _) terminated_at_n
 #align generalized_continued_fraction.continuants_aux_stable_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_of_terminated
 
-theorem convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
+lemma convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
     (terminated_at_n : s.TerminatedAt n) : convergents'Aux s (n + 1) = convergents'Aux s n := by
   change s.get? n = none at terminated_at_n
   induction' n with n IH generalizing s
@@ -58,7 +58,7 @@ theorem convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
       simp [this, Nat.add_eq, add_zero, convergents'Aux, s_head_eq]
 #align generalized_continued_fraction.convergents'_aux_stable_step_of_terminated GeneralizedContinuedFraction.convergents'Aux_stable_step_of_terminated
 
-theorem convergents'Aux_stable_of_terminated {s : Stream'.Seq <| Pair K} (n_le_m : n ≤ m)
+lemma convergents'Aux_stable_of_terminated {s : Stream'.Seq <| Pair K} (n_le_m : n ≤ m)
     (terminated_at_n : s.TerminatedAt n) : convergents'Aux s m = convergents'Aux s n := by
   induction' n_le_m with m n_le_m IH
   · rfl

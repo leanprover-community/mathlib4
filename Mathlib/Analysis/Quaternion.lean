@@ -138,12 +138,12 @@ theorem coeComplex_mul (z w : ℂ) : ↑(z * w) = (z * w : ℍ) := by ext <;> si
 #align quaternion.coe_complex_mul Quaternion.coeComplex_mul
 
 @[simp, norm_cast]
-theorem coeComplex_zero : ((0 : ℂ) : ℍ) = 0 :=
+lemma coeComplex_zero : ((0 : ℂ) : ℍ) = 0 :=
   rfl
 #align quaternion.coe_complex_zero Quaternion.coeComplex_zero
 
 @[simp, norm_cast]
-theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
+lemma coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
   rfl
 #align quaternion.coe_complex_one Quaternion.coeComplex_one
 
@@ -167,7 +167,7 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 #align quaternion.of_complex Quaternion.ofComplex
 
 @[simp]
-theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
+lemma coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 #align quaternion.coe_of_complex Quaternion.coe_ofComplex
 
 /-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
@@ -191,38 +191,38 @@ noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace �
 #align quaternion.linear_isometry_equiv_tuple Quaternion.linearIsometryEquivTuple
 
 @[continuity]
-theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
+lemma continuous_coe : Continuous (coe : ℝ → ℍ) :=
   continuous_algebraMap ℝ ℍ
 #align quaternion.continuous_coe Quaternion.continuous_coe
 
 @[continuity]
-theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
+lemma continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
   simpa [← normSq_eq_norm_mul_self] using
     (continuous_norm.mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
 #align quaternion.continuous_norm_sq Quaternion.continuous_normSq
 
 @[continuity]
-theorem continuous_re : Continuous fun q : ℍ => q.re :=
+lemma continuous_re : Continuous fun q : ℍ => q.re :=
   (continuous_apply 0).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_re Quaternion.continuous_re
 
 @[continuity]
-theorem continuous_imI : Continuous fun q : ℍ => q.imI :=
+lemma continuous_imI : Continuous fun q : ℍ => q.imI :=
   (continuous_apply 1).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_im_i Quaternion.continuous_imI
 
 @[continuity]
-theorem continuous_imJ : Continuous fun q : ℍ => q.imJ :=
+lemma continuous_imJ : Continuous fun q : ℍ => q.imJ :=
   (continuous_apply 2).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_im_j Quaternion.continuous_imJ
 
 @[continuity]
-theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
+lemma continuous_imK : Continuous fun q : ℍ => q.imK :=
   (continuous_apply 3).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_im_k Quaternion.continuous_imK
 
 @[continuity]
-theorem continuous_im : Continuous fun q : ℍ => q.im := by
+lemma continuous_im : Continuous fun q : ℍ => q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 #align quaternion.continuous_im Quaternion.continuous_im
 
@@ -236,13 +236,13 @@ section infinite_sum
 variable {α : Type*}
 
 @[simp, norm_cast]
-theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
+lemma hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
   ⟨fun h => by simpa only using h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _) continuous_re,
     fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 #align quaternion.has_sum_coe Quaternion.hasSum_coe
 
 @[simp, norm_cast]
-theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summable f := by
+lemma summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summable f := by
   simpa only using
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _)
       (continuous_algebraMap _ _) continuous_re coe_re

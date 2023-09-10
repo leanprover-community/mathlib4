@@ -97,12 +97,12 @@ def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x
 variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
 
 @[simp]
-theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
+lemma coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
 #align list.sorted.coe_nth_le_iso_apply List.Sorted.coe_getIso_apply
 
 @[simp]
-theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
+lemma coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
   rfl
 #align list.sorted.coe_nth_le_iso_symm_apply List.Sorted.coe_getIso_symm_apply
 
@@ -114,7 +114,7 @@ section Sublist
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`,
 then `Sublist l l'`.
 -/
-theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
+lemma sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     (hf : ∀ ix : ℕ, l.get? ix = l'.get? (f ix)) : l <+ l' := by
   induction' l with hd tl IH generalizing l' f
   · simp
@@ -142,7 +142,7 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 -/
-theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
+lemma sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
     l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
   constructor
   · intro H
@@ -166,7 +166,7 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 -/
-theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
+lemma sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     l <+ l' ↔
       ∃ f : Fin l.length ↪o Fin l'.length,
         ∀ ix : Fin l.length, l.get ix = l'.get (f ix) := by
@@ -209,7 +209,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/
-theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
+lemma duplicate_iff_exists_distinct_get {l : List α} {x : α} :
     l.Duplicate x ↔
       ∃ (n m : Fin l.length) (_ : n < m),
         x = l.get n ∧ x = l.get m := by
@@ -238,7 +238,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/
 @[deprecated duplicate_iff_exists_distinct_get]
-theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
+lemma duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
     l.Duplicate x ↔
       ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),
         x = l.nthLe n hn ∧ x = l.nthLe m hm :=

@@ -65,17 +65,17 @@ theorem fact_irreducible_factor (f : K[X]) : Fact (Irreducible (factor f)) :=
 
 attribute [local instance] fact_irreducible_factor
 
-theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f := by
+lemma factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f := by
   by_cases hf2 : f = 0; · rw [hf2]; exact dvd_zero _
   rw [factor, dif_pos (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
   exact (Classical.choose_spec <| WfDvdMonoid.exists_irreducible_factor hf1 hf2).2
 #align polynomial.factor_dvd_of_not_is_unit Polynomial.factor_dvd_of_not_isUnit
 
-theorem factor_dvd_of_degree_ne_zero {f : K[X]} (hf : f.degree ≠ 0) : factor f ∣ f :=
+lemma factor_dvd_of_degree_ne_zero {f : K[X]} (hf : f.degree ≠ 0) : factor f ∣ f :=
   factor_dvd_of_not_isUnit (mt degree_eq_zero_of_isUnit hf)
 #align polynomial.factor_dvd_of_degree_ne_zero Polynomial.factor_dvd_of_degree_ne_zero
 
-theorem factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : factor f ∣ f :=
+lemma factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : factor f ∣ f :=
   factor_dvd_of_degree_ne_zero (mt natDegree_eq_of_degree_eq_some hf)
 #align polynomial.factor_dvd_of_nat_degree_ne_zero Polynomial.factor_dvd_of_natDegree_ne_zero
 
@@ -99,7 +99,7 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
     natDegree_map, natDegree_X_sub_C]
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
 
-theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
+lemma natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
   f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
 #align polynomial.nat_degree_remove_factor' Polynomial.natDegree_removeFactor'
 
@@ -322,7 +322,7 @@ instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 #align polynomial.is_splitting_field.splitting_field Polynomial.IsSplittingField.splittingField
 
-protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
+protected lemma splits : Splits (algebraMap K (SplittingField f)) f :=
   IsSplittingField.splits f.SplittingField f
 #align polynomial.splitting_field.splits Polynomial.SplittingField.splits
 
@@ -333,7 +333,7 @@ def lift : SplittingField f →ₐ[K] L :=
   IsSplittingField.lift f.SplittingField f hb
 #align polynomial.splitting_field.lift Polynomial.SplittingField.lift
 
-theorem adjoin_rootSet : Algebra.adjoin K (f.rootSet (SplittingField f)) = ⊤ :=
+lemma adjoin_rootSet : Algebra.adjoin K (f.rootSet (SplittingField f)) = ⊤ :=
   Polynomial.IsSplittingField.adjoin_rootSet _ f
 #align polynomial.splitting_field.adjoin_root_set Polynomial.SplittingField.adjoin_rootSet
 

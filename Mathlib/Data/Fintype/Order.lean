@@ -200,23 +200,23 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 
 variable {α : Type*}
 
-theorem Directed.fintype_le {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
+lemma Directed.fintype_le {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
     [Fintype β] (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finset_le (Finset.image g Finset.univ)
     exact ⟨z, fun i => hz (g i) (Finset.mem_image_of_mem g (Finset.mem_univ i))⟩
 #align directed.fintype_le Directed.fintype_le
 
-theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*} [Fintype β]
+lemma Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*} [Fintype β]
     (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.fintype_le _
 #align fintype.exists_le Fintype.exists_le
 
-theorem Fintype.exists_ge [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*} [Fintype β]
+lemma Fintype.exists_ge [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*} [Fintype β]
     (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
   directed_id.fintype_le (r := (· ≥ ·)) _
 
-theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*}
+lemma Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type*}
     [Fintype β] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_le f
   refine' ⟨M, fun a ha => _⟩
@@ -224,7 +224,7 @@ theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· �
   exact hM b
 #align fintype.bdd_above_range Fintype.bddAbove_range
 
-theorem Fintype.bddBelow_range [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*}
+lemma Fintype.bddBelow_range [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type*}
     [Fintype β] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_ge f
   refine' ⟨M, fun a ha => _⟩

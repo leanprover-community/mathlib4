@@ -117,12 +117,12 @@ theorem smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m 
 
 instance : Algebra (FixedPoints.subfield M F) F := by infer_instance
 
-theorem coe_algebraMap :
+lemma coe_algebraMap :
     algebraMap (FixedPoints.subfield M F) F = Subfield.subtype (FixedPoints.subfield M F) :=
   rfl
 #align fixed_points.coe_algebra_map FixedPoints.coe_algebraMap
 
-theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
+lemma linearIndependent_smul_of_linearIndependent {s : Finset F} :
     (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
       LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
   haveI : IsEmpty ((∅ : Finset F) : Set F) := by simp
@@ -180,24 +180,24 @@ def minpoly : Polynomial (FixedPoints.subfield G F) :=
 
 namespace minpoly
 
-theorem monic : (minpoly G F x).Monic := by
+lemma monic : (minpoly G F x).Monic := by
   simp only [minpoly, Polynomial.monic_toSubring];
   exact prodXSubSmul.monic G F x
 #align fixed_points.minpoly.monic FixedPoints.minpoly.monic
 
-theorem eval₂ :
+lemma eval₂ :
     Polynomial.eval₂ (Subring.subtype <| (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
       0 := by
   rw [← prodXSubSmul.eval G F x, Polynomial.eval₂_eq_eval_map]
   simp only [minpoly, Polynomial.map_toSubring]
 #align fixed_points.minpoly.eval₂ FixedPoints.minpoly.eval₂
 
-theorem eval₂' :
+lemma eval₂' :
     Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x (minpoly G F x) = 0 :=
   eval₂ G F x
 #align fixed_points.minpoly.eval₂' FixedPoints.minpoly.eval₂'
 
-theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := fun H =>
+lemma ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := fun H =>
   have := eval₂ G F x
   (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this
 #align fixed_points.minpoly.ne_one FixedPoints.minpoly.ne_one
@@ -244,7 +244,7 @@ theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Mo
     rwa [← one_mul (minpoly G F x), hg3, mul_left_inj' (monic G F x).ne_zero] at hfg
 #align fixed_points.minpoly.irreducible_aux FixedPoints.minpoly.irreducible_aux
 
-theorem irreducible : Irreducible (minpoly G F x) :=
+lemma irreducible : Irreducible (minpoly G F x) :=
   (Polynomial.irreducible_of_monic (monic G F x) (ne_one G F x)).2 (irreducible_aux G F x)
 #align fixed_points.minpoly.irreducible FixedPoints.minpoly.irreducible
 
@@ -252,7 +252,7 @@ end minpoly
 
 end Fintype
 
-theorem isIntegral [Finite G] (x : F) : IsIntegral (FixedPoints.subfield G F) x := by
+lemma isIntegral [Finite G] (x : F) : IsIntegral (FixedPoints.subfield G F) x := by
   cases nonempty_fintype G; exact ⟨minpoly G F x, minpoly.monic G F x, minpoly.eval₂ G F x⟩
 #align fixed_points.is_integral FixedPoints.isIntegral
 
@@ -260,12 +260,12 @@ section Fintype
 
 variable [Fintype G] (x : F)
 
-theorem minpoly_eq_minpoly : minpoly G F x = _root_.minpoly (FixedPoints.subfield G F) x :=
+lemma minpoly_eq_minpoly : minpoly G F x = _root_.minpoly (FixedPoints.subfield G F) x :=
   minpoly.eq_of_irreducible_of_monic (minpoly.irreducible G F x) (minpoly.eval₂ G F x)
     (minpoly.monic G F x)
 #align fixed_points.minpoly_eq_minpoly FixedPoints.minpoly_eq_minpoly
 
-theorem rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card G :=
+lemma rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card G :=
   rank_le fun s hs => by
     simpa only [rank_fun', Cardinal.mk_coe_finset, Finset.coe_sort_coe, Cardinal.lift_natCast,
       Cardinal.natCast_le] using
@@ -304,7 +304,7 @@ instance : FiniteDimensional (subfield G F) F := by
 
 end Finite
 
-theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G := by
+lemma finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G := by
   rw [← Cardinal.natCast_le, finrank_eq_rank]
   apply rank_le_card
 #align fixed_points.finrank_le_card FixedPoints.finrank_le_card

@@ -47,12 +47,12 @@ def ofList : List α ≃ FreeMonoid α := Equiv.refl _
 #align free_add_monoid.of_list FreeAddMonoid.ofList
 
 @[to_additive (attr := simp)]
-theorem toList_symm : (@toList α).symm = ofList := rfl
+lemma toList_symm : (@toList α).symm = ofList := rfl
 #align free_monoid.to_list_symm FreeMonoid.toList_symm
 #align free_add_monoid.to_list_symm FreeAddMonoid.toList_symm
 
 @[to_additive (attr := simp)]
-theorem ofList_symm : (@ofList α).symm = toList := rfl
+lemma ofList_symm : (@ofList α).symm = toList := rfl
 #align free_monoid.of_list_symm FreeMonoid.ofList_symm
 #align free_add_monoid.of_list_symm FreeAddMonoid.ofList_symm
 
@@ -67,12 +67,12 @@ theorem ofList_toList (xs : FreeMonoid α) : ofList (toList xs) = xs := rfl
 #align free_add_monoid.of_list_to_list FreeAddMonoid.ofList_toList
 
 @[to_additive (attr := simp)]
-theorem toList_comp_ofList : @toList α ∘ ofList = id := rfl
+lemma toList_comp_ofList : @toList α ∘ ofList = id := rfl
 #align free_monoid.to_list_comp_of_list FreeMonoid.toList_comp_ofList
 #align free_add_monoid.to_list_comp_of_list FreeAddMonoid.toList_comp_ofList
 
 @[to_additive (attr := simp)]
-theorem ofList_comp_toList : @ofList α ∘ toList = id := rfl
+lemma ofList_comp_toList : @ofList α ∘ toList = id := rfl
 #align free_monoid.of_list_comp_to_list FreeMonoid.ofList_comp_toList
 #align free_add_monoid.of_list_comp_to_list FreeAddMonoid.ofList_comp_toList
 
@@ -91,12 +91,12 @@ instance : CancelMonoid (FreeMonoid α)
 instance : Inhabited (FreeMonoid α) := ⟨1⟩
 
 @[to_additive (attr := simp)]
-theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
+lemma toList_one : toList (1 : FreeMonoid α) = [] := rfl
 #align free_monoid.to_list_one FreeMonoid.toList_one
 #align free_add_monoid.to_list_zero FreeAddMonoid.toList_zero
 
 @[to_additive (attr := simp)]
-theorem ofList_nil : ofList ([] : List α) = 1 := rfl
+lemma ofList_nil : ofList ([] : List α) = 1 := rfl
 #align free_monoid.of_list_nil FreeMonoid.ofList_nil
 #align free_add_monoid.of_list_nil FreeAddMonoid.ofList_nil
 
@@ -149,7 +149,7 @@ theorem toList_of_mul (x : α) (xs : FreeMonoid α) : toList (of x * xs) = x :: 
 #align free_add_monoid.to_list_of_add FreeAddMonoid.toList_of_add
 
 @[to_additive]
-theorem of_injective : Function.Injective (@of α) := List.singleton_injective
+lemma of_injective : Function.Injective (@of α) := List.singleton_injective
 #align free_monoid.of_injective FreeMonoid.of_injective
 #align free_add_monoid.of_injective FreeAddMonoid.of_injective
 
@@ -163,13 +163,13 @@ def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
 #align free_add_monoid.rec_on FreeAddMonoid.recOn
 
 @[to_additive (attr := simp)]
-theorem recOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C xs → C (of x * xs)) :
+lemma recOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C xs → C (of x * xs)) :
     @recOn α C 1 h0 ih = h0 := rfl
 #align free_monoid.rec_on_one FreeMonoid.recOn_one
 #align free_add_monoid.rec_on_zero FreeAddMonoid.recOn_zero
 
 @[to_additive (attr := simp)]
-theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
+lemma recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : @recOn α C (of x * xs) h0 ih = ih x xs (recOn xs h0 ih) :=
   rfl
 #align free_monoid.rec_on_of_mul FreeMonoid.recOn_of_mul
@@ -185,13 +185,13 @@ def casesOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
 #align free_add_monoid.cases_on FreeAddMonoid.casesOn
 
 @[to_additive (attr := simp)]
-theorem casesOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :
+lemma casesOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :
     @casesOn α C 1 h0 ih = h0 := rfl
 #align free_monoid.cases_on_one FreeMonoid.casesOn_one
 #align free_add_monoid.cases_on_zero FreeAddMonoid.casesOn_zero
 
 @[to_additive (attr := simp)]
-theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
+lemma casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : @casesOn α C (of x * xs) h0 ih = ih x xs := rfl
 #align free_monoid.cases_on_of_mul FreeMonoid.casesOn_of_mul
 #align free_add_monoid.cases_on_of_add FreeAddMonoid.casesOn_of_add
@@ -346,7 +346,7 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 #align free_add_monoid.map_comp FreeAddMonoid.map_comp
 
 @[to_additive (attr := simp)]
-theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
+lemma map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 #align free_monoid.map_id FreeMonoid.map_id
 #align free_add_monoid.map_id FreeAddMonoid.map_id
 

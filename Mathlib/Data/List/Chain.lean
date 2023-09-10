@@ -37,12 +37,12 @@ mk_iff_of_inductive_prop List.Chain List.chain_iff
 #align list.chain.imp' List.Chain.imp'
 #align list.chain.imp List.Chain.imp
 
-theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : α} {l : List α} :
+lemma Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : α} {l : List α} :
     Chain R a l ↔ Chain S a l :=
   ⟨Chain.imp fun a b => (H a b).1, Chain.imp fun a b => (H a b).2⟩
 #align list.chain.iff List.Chain.iff
 
-theorem Chain.iff_mem {a : α} {l : List α} :
+lemma Chain.iff_mem {a : α} {l : List α} :
     Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
   ⟨fun p => by
     induction' p with _ a b l r _ IH <;> constructor <;>
@@ -51,23 +51,23 @@ theorem Chain.iff_mem {a : α} {l : List α} :
     Chain.imp fun a b h => h.2.2⟩
 #align list.chain.iff_mem List.Chain.iff_mem
 
-theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
+lemma chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
   simp only [chain_cons, Chain.nil, and_true_iff]
 #align list.chain_singleton List.chain_singleton
 
-theorem chain_split {a b : α} {l₁ l₂ : List α} :
+lemma chain_split {a b : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ Chain R b l₂ := by
   induction' l₁ with x l₁ IH generalizing a <;>
     simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true_iff, and_assoc]
 #align list.chain_split List.chain_split
 
 @[simp]
-theorem chain_append_cons_cons {a b c : α} {l₁ l₂ : List α} :
+lemma chain_append_cons_cons {a b c : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: c :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ R b c ∧ Chain R c l₂ := by
   rw [chain_split, chain_cons]
 #align list.chain_append_cons_cons List.chain_append_cons_cons
 
-theorem chain_iff_forall₂ :
+lemma chain_iff_forall₂ :
     ∀ {a : α} {l : List α}, Chain R a l ↔ l = [] ∨ Forall₂ R (a :: dropLast l) l
   | a, [] => by simp
   | a, b :: l => by
@@ -75,7 +75,7 @@ theorem chain_iff_forall₂ :
     simp [@chain_iff_forall₂ b l, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
-theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
+lemma chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
   by simp [chain_iff_forall₂]
 #align list.chain_append_singleton_iff_forall₂ List.chain_append_singleton_iff_forall₂
 
@@ -84,17 +84,17 @@ theorem chain_map (f : β → α) {b : β} {l : List β} :
   induction l generalizing b <;> simp only [map, Chain.nil, chain_cons, *]
 #align list.chain_map List.chain_map
 
-theorem chain_of_chain_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
+lemma chain_of_chain_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
     {a : α} {l : List α} (p : Chain S (f a) (map f l)) : Chain R a l :=
   ((chain_map f).1 p).imp H
 #align list.chain_of_chain_map List.chain_of_chain_map
 
-theorem chain_map_of_chain {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b))
+lemma chain_map_of_chain {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b))
     {a : α} {l : List α} (p : Chain R a l) : Chain S (f a) (map f l) :=
   (chain_map f).2 <| p.imp H
 #align list.chain_map_of_chain List.chain_map_of_chain
 
-theorem chain_pmap_of_chain {S : β → β → Prop} {p : α → Prop} {f : ∀ a, p a → β}
+lemma chain_pmap_of_chain {S : β → β → Prop} {p : α → Prop} {f : ∀ a, p a → β}
     (H : ∀ a b ha hb, R a b → S (f a ha) (f b hb)) {a : α} {l : List α} (hl₁ : Chain R a l)
     (ha : p a) (hl₂ : ∀ a ∈ l, p a) : Chain S (f a ha) (List.pmap f l hl₂) := by
   induction' l with lh lt l_ih generalizing a
@@ -102,7 +102,7 @@ theorem chain_pmap_of_chain {S : β → β → Prop} {p : α → Prop} {f : ∀ 
   · simp [H _ _ _ _ (rel_of_chain_cons hl₁), l_ih (chain_of_chain_cons hl₁)]
 #align list.chain_pmap_of_chain List.chain_pmap_of_chain
 
-theorem chain_of_chain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ a, p a → β) {l : List α}
+lemma chain_of_chain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ a, p a → β) {l : List α}
     (hl₁ : ∀ a ∈ l, p a) {a : α} (ha : p a) (hl₂ : Chain S (f a ha) (List.pmap f l hl₁))
     (H : ∀ a b ha hb, S (f a ha) (f b hb) → R a b) : Chain R a l := by
   induction' l with lh lt l_ih generalizing a
@@ -112,7 +112,7 @@ theorem chain_of_chain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ 
 
 #align list.pairwise.chain List.Pairwise.chain
 
-protected theorem Chain.pairwise [IsTrans α R] :
+protected lemma Chain.pairwise [IsTrans α R] :
     ∀ {a : α} {l : List α}, Chain R a l → Pairwise R (a :: l)
   | a, [], Chain.nil => pairwise_singleton _ _
   | a, _, @Chain.cons _ _ _ b l h hb =>
@@ -122,22 +122,22 @@ protected theorem Chain.pairwise [IsTrans α R] :
         exact fun c hc => _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
 #align list.chain.pairwise List.Chain.pairwise
 
-theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=
+lemma chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=
   ⟨Chain.pairwise, Pairwise.chain⟩
 #align list.chain_iff_pairwise List.chain_iff_pairwise
 
-protected theorem Chain.sublist [IsTrans α R] (hl : l₂.Chain R a) (h : l₁ <+ l₂) :
+protected lemma Chain.sublist [IsTrans α R] (hl : l₂.Chain R a) (h : l₁ <+ l₂) :
     l₁.Chain R a := by
   rw [chain_iff_pairwise] at hl ⊢
   exact hl.sublist (h.cons_cons a)
 #align list.chain.sublist List.Chain.sublist
 
-protected theorem Chain.rel [IsTrans α R] (hl : l.Chain R a) (hb : b ∈ l) : R a b := by
+protected lemma Chain.rel [IsTrans α R] (hl : l.Chain R a) (hb : b ∈ l) : R a b := by
   rw [chain_iff_pairwise] at hl
   exact rel_of_pairwise_cons hl hb
 #align list.chain.rel List.Chain.rel
 
-theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
+lemma chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
       ∀ (i : ℕ) (h : i < l.length - 1),
         R (get l ⟨i, lt_of_lt_pred h⟩) (get l ⟨i+1, lt_pred_iff.mp h⟩)
@@ -163,23 +163,23 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
 
 set_option linter.deprecated false in
 @[deprecated chain_iff_get]
-theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
+lemma chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
         (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
           ∀ (i) (h : i < length l - 1),
             R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
   by rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
-theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
+lemma Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
 #align list.chain'.imp List.Chain'.imp
 
-theorem Chain'.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l : List α} :
+lemma Chain'.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l : List α} :
     Chain' R l ↔ Chain' S l :=
   ⟨Chain'.imp fun a b => (H a b).1, Chain'.imp fun a b => (H a b).2⟩
 #align list.chain'.iff List.Chain'.iff
 
-theorem Chain'.iff_mem : ∀ {l : List α}, Chain' R l ↔ Chain' (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l
+lemma Chain'.iff_mem : ∀ {l : List α}, Chain' R l ↔ Chain' (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l
   | [] => Iff.rfl
   | _ :: _ =>
     ⟨fun h => (Chain.iff_mem.1 h).imp fun _ _ ⟨h₁, h₂, h₃⟩ => ⟨h₁, mem_cons.2 (Or.inr h₂), h₃⟩,
@@ -187,7 +187,7 @@ theorem Chain'.iff_mem : ∀ {l : List α}, Chain' R l ↔ Chain' (fun x y => x 
 #align list.chain'.iff_mem List.Chain'.iff_mem
 
 @[simp]
-theorem chain'_nil : Chain' R [] :=
+lemma chain'_nil : Chain' R [] :=
   trivial
 #align list.chain'_nil List.chain'_nil
 
@@ -197,11 +197,11 @@ theorem chain'_singleton (a : α) : Chain' R [a] :=
 #align list.chain'_singleton List.chain'_singleton
 
 @[simp]
-theorem chain'_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :: l) :=
+lemma chain'_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :: l) :=
   chain_cons
 #align list.chain'_cons List.chain'_cons
 
-theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
+lemma chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
   | [] => chain'_nil
   | [a] => chain'_singleton _
   | a :: b :: l =>
@@ -209,14 +209,14 @@ theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
       ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun x y h => h.trans ⟨[a], [], by simp⟩⟩
 #align list.chain'_is_infix List.chain'_isInfix
 
-theorem chain'_split {a : α} :
+lemma chain'_split {a : α} :
     ∀ {l₁ l₂ : List α}, Chain' R (l₁ ++ a :: l₂) ↔ Chain' R (l₁ ++ [a]) ∧ Chain' R (a :: l₂)
   | [], _ => (and_iff_right (chain'_singleton a)).symm
   | _ :: _, _ => chain_split
 #align list.chain'_split List.chain'_split
 
 @[simp]
-theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
+lemma chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
     Chain' R (l₁ ++ b :: c :: l₂) ↔ Chain' R (l₁ ++ [b]) ∧ R b c ∧ Chain' R (c :: l₂) := by
   rw [chain'_split, chain'_cons]
 #align list.chain'_append_cons_cons List.chain'_append_cons_cons
@@ -226,60 +226,60 @@ theorem chain'_map (f : β → α) {l : List β} :
   cases l <;> [rfl; exact chain_map _]
 #align list.chain'_map List.chain'_map
 
-theorem chain'_of_chain'_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
+lemma chain'_of_chain'_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
     {l : List α} (p : Chain' S (map f l)) : Chain' R l :=
   ((chain'_map f).1 p).imp H
 #align list.chain'_of_chain'_map List.chain'_of_chain'_map
 
-theorem chain'_map_of_chain' {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b))
+lemma chain'_map_of_chain' {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b))
     {l : List α} (p : Chain' R l) : Chain' S (map f l) :=
   (chain'_map f).2 <| p.imp H
 #align list.chain'_map_of_chain' List.chain'_map_of_chain'
 
-theorem Pairwise.chain' : ∀ {l : List α}, Pairwise R l → Chain' R l
+lemma Pairwise.chain' : ∀ {l : List α}, Pairwise R l → Chain' R l
   | [], _ => trivial
   | _ :: _, h => Pairwise.chain h
 #align list.pairwise.chain' List.Pairwise.chain'
 
-theorem chain'_iff_pairwise [IsTrans α R] : ∀ {l : List α}, Chain' R l ↔ Pairwise R l
+lemma chain'_iff_pairwise [IsTrans α R] : ∀ {l : List α}, Chain' R l ↔ Pairwise R l
   | [] => (iff_true_intro Pairwise.nil).symm
   | _ :: _ => chain_iff_pairwise
 #align list.chain'_iff_pairwise List.chain'_iff_pairwise
 
-protected theorem Chain'.sublist [IsTrans α R] (hl : l₂.Chain' R) (h : l₁ <+ l₂) : l₁.Chain' R := by
+protected lemma Chain'.sublist [IsTrans α R] (hl : l₂.Chain' R) (h : l₁ <+ l₂) : l₁.Chain' R := by
   rw [chain'_iff_pairwise] at hl ⊢
   exact hl.sublist h
 #align list.chain'.sublist List.Chain'.sublist
 
-theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R (x :: y :: l) :=
+lemma Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R (x :: y :: l) :=
   chain'_cons.2 ⟨h₁, h₂⟩
 #align list.chain'.cons List.Chain'.cons
 
-theorem Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
+lemma Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
   | _ :: _ :: _, h => (chain'_cons.mp h).right
 #align list.chain'.tail List.Chain'.tail
 
-theorem Chain'.rel_head {x y l} (h : Chain' R (x :: y :: l)) : R x y :=
+lemma Chain'.rel_head {x y l} (h : Chain' R (x :: y :: l)) : R x y :=
   rel_of_chain_cons h
 #align list.chain'.rel_head List.Chain'.rel_head
 
-theorem Chain'.rel_head? {x l} (h : Chain' R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
+lemma Chain'.rel_head? {x l} (h : Chain' R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
   rw [← cons_head?_tail hy] at h
   exact h.rel_head
 #align list.chain'.rel_head' List.Chain'.rel_head?
 
-theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?, R x y) → Chain' R (x :: l)
+lemma Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?, R x y) → Chain' R (x :: l)
   | [], _, _ => chain'_singleton x
   | _ :: _, hl, H => hl.cons <| H _ rfl
 #align list.chain'.cons' List.Chain'.cons'
 
-theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
+lemma chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 #align list.chain'_cons' List.chain'_cons'
 
-theorem chain'_append :
+lemma chain'_append :
     ∀ {l₁ l₂ : List α},
       Chain' R (l₁ ++ l₂) ↔ Chain' R l₁ ∧ Chain' R l₂ ∧ ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y
   | [], l => by simp
@@ -328,16 +328,16 @@ theorem Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
   h.prefix (take_prefix _ _)
 #align list.chain'.take List.Chain'.take
 
-theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
+lemma chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
   simp only [chain'_singleton, chain'_cons, and_true_iff]
 #align list.chain'_pair List.chain'_pair
 
-theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
+lemma Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
     Chain' R (y :: l) :=
   hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
 #align list.chain'.imp_head List.Chain'.imp_head
 
-theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
+lemma chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
   | [] => Iff.rfl
   | [a] => by simp only [chain'_singleton, reverse_singleton]
   | a :: b :: l => by
@@ -345,7 +345,7 @@ theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
       chain'_split, ← reverse_cons, @chain'_reverse (b :: l), and_comm, chain'_pair, flip]
 #align list.chain'_reverse List.chain'_reverse
 
-theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
+lemma chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     ∀ (i : ℕ) (h : i < length l - 1),
       R (get l ⟨i, lt_of_lt_pred h⟩) (get l ⟨i + 1, lt_pred_iff.mp h⟩)
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
@@ -359,7 +359,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
 
 set_option linter.deprecated false in
 @[deprecated chain'_iff_get]
-theorem chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
+lemma chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
     ∀ (i) (h : i < length l - 1),
       R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
   chain'_iff_get.trans <| by simp [nthLe]
@@ -367,7 +367,7 @@ theorem chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
   `Chain' R`, then so does `l₁ ++ l₂ ++ l₃` provided `l₂ ≠ []` -/
-theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ ++ l₂))
+lemma Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ ++ l₂))
     (h₂ : Chain' R (l₂ ++ l₃)) (hn : l₂ ≠ []) : Chain' R (l₁ ++ l₂ ++ l₃) :=
   h₁.append h₂.right_of_append <| by
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
@@ -457,7 +457,7 @@ variable {r}
 
 /-- If an `r`-decreasing chain `l` is empty or its head is accessible by `r`, then
   `l` is accessible by the lexicographic order `List.Lex r`. -/
-theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
+lemma Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
     Acc (List.lex_chains r) l := by
   obtain ⟨_ | ⟨a, l⟩, hl⟩ := l
   · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩

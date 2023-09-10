@@ -114,22 +114,22 @@ lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right
   CommaMorphism.ext _ _ h₁ h₂
 
 @[simp]
-theorem id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=
+lemma id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=
   rfl
 #align category_theory.comma.id_left CategoryTheory.Comma.id_left
 
 @[simp]
-theorem id_right : (𝟙 X : CommaMorphism X X).right = 𝟙 X.right :=
+lemma id_right : (𝟙 X : CommaMorphism X X).right = 𝟙 X.right :=
   rfl
 #align category_theory.comma.id_right CategoryTheory.Comma.id_right
 
 @[simp]
-theorem comp_left : (f ≫ g).left = f.left ≫ g.left :=
+lemma comp_left : (f ≫ g).left = f.left ≫ g.left :=
   rfl
 #align category_theory.comma.comp_left CategoryTheory.Comma.comp_left
 
 @[simp]
-theorem comp_right : (f ≫ g).right = f.right ≫ g.right :=
+lemma comp_right : (f ≫ g).right = f.right ≫ g.right :=
   rfl
 #align category_theory.comma.comp_right CategoryTheory.Comma.comp_right
 

@@ -42,7 +42,7 @@ variable (F K L)
 
 namespace normalClosure
 
-theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
+lemma restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
   classical
   have hi : ∀ x : K, IsIntegral F x :=

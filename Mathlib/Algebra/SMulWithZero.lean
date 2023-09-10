@@ -209,7 +209,7 @@ section GroupWithZero
 
 variable {α β : Type*} [GroupWithZero α] [GroupWithZero β] [MulActionWithZero α β]
 
-theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
+lemma smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
     (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp only [inv_zero, zero_smul]

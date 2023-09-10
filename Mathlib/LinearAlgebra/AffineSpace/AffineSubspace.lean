@@ -68,7 +68,7 @@ theorem vectorSpan_def (s : Set P) : vectorSpan k s = Submodule.span k (s -ᵥ s
 #align vector_span_def vectorSpan_def
 
 /-- `vectorSpan` is monotone. -/
-theorem vectorSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : vectorSpan k s₁ ≤ vectorSpan k s₂ :=
+lemma vectorSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : vectorSpan k s₁ ≤ vectorSpan k s₂ :=
   Submodule.span_mono (vsub_self_mono h)
 #align vector_span_mono vectorSpan_mono
 
@@ -76,7 +76,7 @@ variable (P)
 
 /-- The `vectorSpan` of the empty set is `⊥`. -/
 @[simp]
-theorem vectorSpan_empty : vectorSpan k (∅ : Set P) = (⊥ : Submodule k V) := by
+lemma vectorSpan_empty : vectorSpan k (∅ : Set P) = (⊥ : Submodule k V) := by
   rw [vectorSpan_def, vsub_empty, Submodule.span_empty]
 #align vector_span_empty vectorSpan_empty
 
@@ -93,7 +93,7 @@ theorem vsub_set_subset_vectorSpan (s : Set P) : s -ᵥ s ⊆ ↑(vectorSpan k s
 #align vsub_set_subset_vector_span vsub_set_subset_vectorSpan
 
 /-- Each pairwise difference is in the `vectorSpan`. -/
-theorem vsub_mem_vectorSpan {s : Set P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
+lemma vsub_mem_vectorSpan {s : Set P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
     p1 -ᵥ p2 ∈ vectorSpan k s :=
   vsub_set_subset_vectorSpan k s (vsub_mem_vsub hp1 hp2)
 #align vsub_mem_vector_span vsub_mem_vectorSpan
@@ -126,7 +126,7 @@ theorem spanPoints_nonempty (s : Set P) : (spanPoints k s).Nonempty ↔ s.Nonemp
 
 /-- Adding a point in the affine span and a vector in the spanning submodule produces a point in the
 affine span. -/
-theorem vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan {s : Set P} {p : P} {v : V}
+lemma vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan {s : Set P} {p : P} {v : V}
     (hp : p ∈ spanPoints k s) (hv : v ∈ vectorSpan k s) : v +ᵥ p ∈ spanPoints k s := by
   rcases hp with ⟨p2, ⟨hp2, ⟨v2, ⟨hv2, hv2p⟩⟩⟩⟩
   rw [hv2p, vadd_vadd]
@@ -134,7 +134,7 @@ theorem vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan {s : Set P} {p :
 #align vadd_mem_span_points_of_mem_span_points_of_mem_vector_span vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan
 
 /-- Subtracting two points in the affine span produces a vector in the spanning submodule. -/
-theorem vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints {s : Set P} {p1 p2 : P}
+lemma vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints {s : Set P} {p1 p2 : P}
     (hp1 : p1 ∈ spanPoints k s) (hp2 : p2 ∈ spanPoints k s) : p1 -ᵥ p2 ∈ vectorSpan k s := by
   rcases hp1 with ⟨p1a, ⟨hp1a, ⟨v1, ⟨hv1, hv1p⟩⟩⟩⟩
   rcases hp2 with ⟨p2a, ⟨hp2a, ⟨v2, ⟨hv2, hv2p⟩⟩⟩⟩
@@ -229,7 +229,7 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
 #align affine_subspace.direction_of_nonempty AffineSubspace.directionOfNonempty
 
 /-- `direction_of_nonempty` gives the same submodule as `direction`. -/
-theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
+lemma directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     directionOfNonempty h = s.direction := by
   refine le_antisymm ?_ (Submodule.span_le.2 Set.Subset.rfl)
   rw [← SetLike.coe_subset_coe, directionOfNonempty, direction, Submodule.coe_set_mk,
@@ -238,14 +238,14 @@ theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set 
 #align affine_subspace.direction_of_nonempty_eq_direction AffineSubspace.directionOfNonempty_eq_direction
 
 /-- The set of vectors in the direction of a nonempty affine subspace is given by `vsub_set`. -/
-theorem coe_direction_eq_vsub_set {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
+lemma coe_direction_eq_vsub_set {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     (s.direction : Set V) = (s : Set P) -ᵥ s :=
   directionOfNonempty_eq_direction h ▸ rfl
 #align affine_subspace.coe_direction_eq_vsub_set AffineSubspace.coe_direction_eq_vsub_set
 
 /-- A vector is in the direction of a nonempty affine subspace if and only if it is the subtraction
 of two vectors in the subspace. -/
-theorem mem_direction_iff_eq_vsub {s : AffineSubspace k P} (h : (s : Set P).Nonempty) (v : V) :
+lemma mem_direction_iff_eq_vsub {s : AffineSubspace k P} (h : (s : Set P).Nonempty) (v : V) :
     v ∈ s.direction ↔ ∃ p1 ∈ s, ∃ p2 ∈ s, v = p1 -ᵥ p2 := by
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set h]
   exact
@@ -255,7 +255,7 @@ theorem mem_direction_iff_eq_vsub {s : AffineSubspace k P} (h : (s : Set P).None
 
 /-- Adding a vector in the direction to a point in the subspace produces a point in the
 subspace. -/
-theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction) {p : P}
+lemma vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction) {p : P}
     (hp : p ∈ s) : v +ᵥ p ∈ s := by
   rw [mem_direction_iff_eq_vsub ⟨p, hp⟩] at hv
   rcases hv with ⟨p1, hp1, p2, hp2, hv⟩
@@ -266,21 +266,21 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
 #align affine_subspace.vadd_mem_of_mem_direction AffineSubspace.vadd_mem_of_mem_direction
 
 /-- Subtracting two points in the subspace produces a vector in the direction. -/
-theorem vsub_mem_direction {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
+lemma vsub_mem_direction {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
     p1 -ᵥ p2 ∈ s.direction :=
   vsub_mem_vectorSpan k hp1 hp2
 #align affine_subspace.vsub_mem_direction AffineSubspace.vsub_mem_direction
 
 /-- Adding a vector to a point in a subspace produces a point in the subspace if and only if the
 vector is in the direction. -/
-theorem vadd_mem_iff_mem_direction {s : AffineSubspace k P} (v : V) {p : P} (hp : p ∈ s) :
+lemma vadd_mem_iff_mem_direction {s : AffineSubspace k P} (v : V) {p : P} (hp : p ∈ s) :
     v +ᵥ p ∈ s ↔ v ∈ s.direction :=
   ⟨fun h => by simpa using vsub_mem_direction h hp, fun h => vadd_mem_of_mem_direction h hp⟩
 #align affine_subspace.vadd_mem_iff_mem_direction AffineSubspace.vadd_mem_iff_mem_direction
 
 /-- Adding a vector in the direction to a point produces a point in the subspace if and only if
 the original point is in the subspace. -/
-theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction)
+lemma vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction)
     {p : P} : v +ᵥ p ∈ s ↔ p ∈ s := by
   refine' ⟨fun h => _, fun h => vadd_mem_of_mem_direction hv h⟩
   convert vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
@@ -289,7 +289,7 @@ theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv :
 
 /-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
 vectors subtracting that point on the right. -/
-theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
+lemma coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
     (s.direction : Set V) = (· -ᵥ p) '' s := by
   rw [coe_direction_eq_vsub_set ⟨p, hp⟩]
   refine' le_antisymm _ _
@@ -301,7 +301,7 @@ theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p
 
 /-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
 vectors subtracting that point on the left. -/
-theorem coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
+lemma coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
     (s.direction : Set V) = (· -ᵥ ·) p '' s := by
   ext v
   rw [SetLike.mem_coe, ← Submodule.neg_mem_iff, ← SetLike.mem_coe,
@@ -314,7 +314,7 @@ theorem coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p 
 
 /-- Given a point in an affine subspace, a vector is in its direction if and only if it results from
 subtracting that point on the right. -/
-theorem mem_direction_iff_eq_vsub_right {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (v : V) :
+lemma mem_direction_iff_eq_vsub_right {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (v : V) :
     v ∈ s.direction ↔ ∃ p2 ∈ s, v = p2 -ᵥ p := by
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set_right hp]
   exact ⟨fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩, fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩⟩
@@ -322,7 +322,7 @@ theorem mem_direction_iff_eq_vsub_right {s : AffineSubspace k P} {p : P} (hp : p
 
 /-- Given a point in an affine subspace, a vector is in its direction if and only if it results from
 subtracting that point on the left. -/
-theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (v : V) :
+lemma mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (v : V) :
     v ∈ s.direction ↔ ∃ p2 ∈ s, v = p -ᵥ p2 := by
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set_left hp]
   exact ⟨fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩, fun ⟨p2, hp2, hv⟩ => ⟨p2, hp2, hv.symm⟩⟩
@@ -330,7 +330,7 @@ theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p 
 
 /-- Given a point in an affine subspace, a result of subtracting that point on the right is in the
 direction if and only if the other point is in the subspace. -/
-theorem vsub_right_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (p2 : P) :
+lemma vsub_right_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (p2 : P) :
     p2 -ᵥ p ∈ s.direction ↔ p2 ∈ s := by
   rw [mem_direction_iff_eq_vsub_right hp]
   simp
@@ -338,19 +338,19 @@ theorem vsub_right_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : 
 
 /-- Given a point in an affine subspace, a result of subtracting that point on the left is in the
 direction if and only if the other point is in the subspace. -/
-theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (p2 : P) :
+lemma vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (p2 : P) :
     p -ᵥ p2 ∈ s.direction ↔ p2 ∈ s := by
   rw [mem_direction_iff_eq_vsub_left hp]
   simp
 #align affine_subspace.vsub_left_mem_direction_iff_mem AffineSubspace.vsub_left_mem_direction_iff_mem
 
 /-- Two affine subspaces are equal if they have the same points. -/
-theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
+lemma coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
   SetLike.coe_injective
 #align affine_subspace.coe_injective AffineSubspace.coe_injective
 
 @[ext]
-theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
+lemma ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 #align affine_subspace.ext AffineSubspace.ext
 
@@ -360,7 +360,7 @@ theorem ext_iff (s₁ s₂ : AffineSubspace k P) : (s₁ : Set P) = s₂ ↔ s�
 #align affine_subspace.ext_iff AffineSubspace.ext_iff
 
 /-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
-theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2.direction)
+lemma ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2.direction)
     (hn : ((s1 : Set P) ∩ s2).Nonempty) : s1 = s2 := by
   ext p
   have hq1 := Set.mem_of_mem_inter_left hn.some_mem
@@ -439,7 +439,7 @@ theorem injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injec
 
 /-- Two affine subspaces with nonempty intersection are equal if and only if their directions are
 equal. -/
-theorem eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p ∈ s₁)
+lemma eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p ∈ s₁)
     (h₂ : p ∈ s₂) : s₁ = s₂ ↔ s₁.direction = s₂.direction :=
   ⟨fun h => h ▸ rfl, fun h => ext_of_direction_eq h ⟨p, h₁, h₂⟩⟩
 #align affine_subspace.eq_iff_direction_eq_of_mem AffineSubspace.eq_iff_direction_eq_of_mem
@@ -462,7 +462,7 @@ theorem self_mem_mk' (p : P) (direction : Submodule k V) : p ∈ mk' p direction
 
 /-- An affine subspace constructed from a point and a direction contains the result of adding a
 vector in that direction to that point. -/
-theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ direction) :
+lemma vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ direction) :
     v +ᵥ p ∈ mk' p direction :=
   ⟨v, hv, rfl⟩
 #align affine_subspace.vadd_mem_mk' AffineSubspace.vadd_mem_mk'
@@ -487,7 +487,7 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
 
 /-- A point lies in an affine subspace constructed from another point and a direction if and only
 if their difference is in that direction. -/
-theorem mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
+lemma mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
     p₂ ∈ mk' p₁ direction ↔ p₂ -ᵥ p₁ ∈ direction := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← direction_mk' p₁ direction]
@@ -499,12 +499,12 @@ theorem mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
 /-- Constructing an affine subspace from a point in a subspace and that subspace's direction
 yields the original subspace. -/
 @[simp]
-theorem mk'_eq {s : AffineSubspace k P} {p : P} (hp : p ∈ s) : mk' p s.direction = s :=
+lemma mk'_eq {s : AffineSubspace k P} {p : P} (hp : p ∈ s) : mk' p s.direction = s :=
   ext_of_direction_eq (direction_mk' p s.direction) ⟨p, Set.mem_inter (self_mem_mk' _ _) hp⟩
 #align affine_subspace.mk'_eq AffineSubspace.mk'_eq
 
 /-- If an affine subspace contains a set of points, it contains the `spanPoints` of that set. -/
-theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s1 : AffineSubspace k P} (h : s ⊆ s1) :
+lemma spanPoints_subset_coe_of_subset_coe {s : Set P} {s1 : AffineSubspace k P} (h : s ⊆ s1) :
     spanPoints k s ⊆ s1 := by
   rintro p ⟨p1, hp1, v, hv, hp⟩
   rw [hp]
@@ -523,7 +523,7 @@ namespace Submodule
 variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 @[simp]
-theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
+lemma mem_toAffineSubspace {p : Submodule k V} {x : V} :
     x ∈ p.toAffineSubspace ↔ x ∈ p :=
   Iff.rfl
 
@@ -533,7 +533,7 @@ theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.dire
 
 end Submodule
 
-theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+lemma AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
   rw [AffineMap.lineMap_apply]
@@ -579,7 +579,7 @@ theorem direction_affineSpan (s : Set P) : (affineSpan k s).direction = vectorSp
 #align direction_affine_span direction_affineSpan
 
 /-- A point in a set is in its affine span. -/
-theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s :=
+lemma mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s :=
   mem_spanPoints k p s hp
 #align mem_affine_span mem_affineSpan
 
@@ -655,7 +655,7 @@ theorem not_le_iff_exists (s1 s2 : AffineSubspace k P) : ¬s1 ≤ s2 ↔ ∃ p �
 #align affine_subspace.not_le_iff_exists AffineSubspace.not_le_iff_exists
 
 /-- If a subspace is less than another, there is a point only in the second. -/
-theorem exists_of_lt {s1 s2 : AffineSubspace k P} (h : s1 < s2) : ∃ p ∈ s2, p ∉ s1 :=
+lemma exists_of_lt {s1 s2 : AffineSubspace k P} (h : s1 < s2) : ∃ p ∈ s2, p ∉ s1 :=
   Set.exists_of_ssubset h
 #align affine_subspace.exists_of_lt AffineSubspace.exists_of_lt
 
@@ -667,7 +667,7 @@ theorem lt_iff_le_and_exists (s1 s2 : AffineSubspace k P) : s1 < s2 ↔ s1 ≤ s
 
 /-- If an affine subspace is nonempty and contained in another with the same direction, they are
 equal. -/
-theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
+lemma eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
     (hd : s₁.direction = s₂.direction) (hn : (s₁ : Set P).Nonempty) (hle : s₁ ≤ s₂) : s₁ = s₂ :=
   let ⟨p, hp⟩ := hn
   ext_of_direction_eq hd ⟨p, hp, hle hp⟩
@@ -695,19 +695,19 @@ protected def gi : GaloisInsertion (affineSpan k) ((↑) : AffineSubspace k P �
 
 /-- The span of the empty set is `⊥`. -/
 @[simp]
-theorem span_empty : affineSpan k (∅ : Set P) = ⊥ :=
+lemma span_empty : affineSpan k (∅ : Set P) = ⊥ :=
   (AffineSubspace.gi k V P).gc.l_bot
 #align affine_subspace.span_empty AffineSubspace.span_empty
 
 /-- The span of `univ` is `⊤`. -/
 @[simp]
-theorem span_univ : affineSpan k (Set.univ : Set P) = ⊤ :=
+lemma span_univ : affineSpan k (Set.univ : Set P) = ⊤ :=
   eq_top_iff.2 <| subset_spanPoints k _
 #align affine_subspace.span_univ AffineSubspace.span_univ
 
 variable {k V P}
 
-theorem _root_.affineSpan_le {s : Set P} {Q : AffineSubspace k P} :
+lemma _root_.affineSpan_le {s : Set P} {Q : AffineSubspace k P} :
     affineSpan k s ≤ Q ↔ s ⊆ (Q : Set P) :=
   (AffineSubspace.gi k V P).gc _ _
 #align affine_span_le affineSpan_le
@@ -725,7 +725,7 @@ theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) 
 
 /-- A point is in the affine span of a single point if and only if they are equal. -/
 @[simp]
-theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
+lemma mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
   simp [← mem_coe]
 #align affine_subspace.mem_affine_span_singleton AffineSubspace.mem_affineSpan_singleton
 
@@ -741,7 +741,7 @@ theorem span_union (s t : Set P) : affineSpan k (s ∪ t) = affineSpan k s ⊔ a
 #align affine_subspace.span_union AffineSubspace.span_union
 
 /-- The span of a union of an indexed family of sets is the sup of their spans. -/
-theorem span_iUnion {ι : Type*} (s : ι → Set P) :
+lemma span_iUnion {ι : Type*} (s : ι → Set P) :
     affineSpan k (⋃ i, s i) = ⨆ i, affineSpan k (s i) :=
   (AffineSubspace.gi k V P).gc.l_iSup
 #align affine_subspace.span_Union AffineSubspace.span_iUnion
@@ -750,7 +750,7 @@ variable (P)
 
 /-- `⊤`, coerced to a set, is the whole set of points. -/
 @[simp]
-theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
+lemma top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
   rfl
 #align affine_subspace.top_coe AffineSubspace.top_coe
 
@@ -766,7 +766,7 @@ variable (P)
 
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
-theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
+lemma direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
   cases' S.Nonempty with p
   ext v
   refine' ⟨imp_intro Submodule.mem_top, fun _hv => _⟩
@@ -777,11 +777,11 @@ theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
 
 /-- `⊥`, coerced to a set, is the empty set. -/
 @[simp]
-theorem bot_coe : ((⊥ : AffineSubspace k P) : Set P) = ∅ :=
+lemma bot_coe : ((⊥ : AffineSubspace k P) : Set P) = ∅ :=
   rfl
 #align affine_subspace.bot_coe AffineSubspace.bot_coe
 
-theorem bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
+lemma bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
   intro contra
   rw [← ext_iff, bot_coe, top_coe] at contra
   exact Set.empty_ne_univ contra
@@ -790,7 +790,7 @@ theorem bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
 instance : Nontrivial (AffineSubspace k P) :=
   ⟨⟨⊥, ⊤, bot_ne_top k V P⟩⟩
 
-theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
+lemma nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
   rw [Set.nonempty_iff_ne_empty]
   rintro rfl
   rw [AffineSubspace.span_empty] at h
@@ -798,12 +798,12 @@ theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s
 #align affine_subspace.nonempty_of_affine_span_eq_top AffineSubspace.nonempty_of_affineSpan_eq_top
 
 /-- If the affine span of a set is `⊤`, then the vector span of the same set is the `⊤`. -/
-theorem vectorSpan_eq_top_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) :
+lemma vectorSpan_eq_top_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) :
     vectorSpan k s = ⊤ := by rw [← direction_affineSpan, h, direction_top]
 #align affine_subspace.vector_span_eq_top_of_affine_span_eq_top AffineSubspace.vectorSpan_eq_top_of_affineSpan_eq_top
 
 /-- For a nonempty set, the affine span is `⊤` iff its vector span is `⊤`. -/
-theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty {s : Set P} (hs : s.Nonempty) :
+lemma affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty {s : Set P} (hs : s.Nonempty) :
     affineSpan k s = ⊤ ↔ vectorSpan k s = ⊤ := by
   refine' ⟨vectorSpan_eq_top_of_affineSpan_eq_top k V P, _⟩
   intro h
@@ -815,14 +815,14 @@ theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty {s : Set P} (hs : s.
 #align affine_subspace.affine_span_eq_top_iff_vector_span_eq_top_of_nonempty AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty
 
 /-- For a non-trivial space, the affine span of a set is `⊤` iff its vector span is `⊤`. -/
-theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial {s : Set P} [Nontrivial P] :
+lemma affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial {s : Set P} [Nontrivial P] :
     affineSpan k s = ⊤ ↔ vectorSpan k s = ⊤ := by
   cases' s.eq_empty_or_nonempty with hs hs
   · simp [hs, subsingleton_iff_bot_eq_top, AddTorsor.subsingleton_iff V P, not_subsingleton]
   · rw [affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P hs]
 #align affine_subspace.affine_span_eq_top_iff_vector_span_eq_top_of_nontrivial AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial
 
-theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
+lemma card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
     (h : affineSpan k (range p) = ⊤) : 0 < Fintype.card ι := by
   obtain ⟨-, ⟨i, -⟩⟩ := nonempty_of_affineSpan_eq_top k V P h
   exact Fintype.card_pos_iff.mpr ⟨i⟩
@@ -839,7 +839,7 @@ variable (P)
 
 /-- The direction of `⊥` is the submodule `⊥`. -/
 @[simp]
-theorem direction_bot : (⊥ : AffineSubspace k P).direction = ⊥ := by
+lemma direction_bot : (⊥ : AffineSubspace k P).direction = ⊥ := by
   rw [direction_eq_vectorSpan, bot_coe, vectorSpan_def, vsub_empty, Submodule.span_empty]
 #align affine_subspace.direction_bot AffineSubspace.direction_bot
 
@@ -865,7 +865,7 @@ theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).No
   apply eq_or_ne
 #align affine_subspace.eq_bot_or_nonempty AffineSubspace.eq_bot_or_nonempty
 
-theorem subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
+lemma subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
     (h₂ : affineSpan k s = ⊤) : Subsingleton P := by
   obtain ⟨p, hp⟩ := AffineSubspace.nonempty_of_affineSpan_eq_top k V P h₂
   have : s = {p} := Subset.antisymm (fun q hq => h₁ hq hp) (by simp [hp])
@@ -874,7 +874,7 @@ theorem subsingleton_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingle
   exact subsingleton_of_univ_subsingleton h₂
 #align affine_subspace.subsingleton_of_subsingleton_span_eq_top AffineSubspace.subsingleton_of_subsingleton_span_eq_top
 
-theorem eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
+lemma eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
     (h₂ : affineSpan k s = ⊤) : s = (univ : Set P) := by
   obtain ⟨p, hp⟩ := AffineSubspace.nonempty_of_affineSpan_eq_top k V P h₂
   have : s = {p} := Subset.antisymm (fun q hq => h₁ hq hp) (by simp [hp])
@@ -884,7 +884,7 @@ theorem eq_univ_of_subsingleton_span_eq_top {s : Set P} (h₁ : s.Subsingleton)
 
 /-- A nonempty affine subspace is `⊤` if and only if its direction is `⊤`. -/
 @[simp]
-theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
+lemma direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     s.direction = ⊤ ↔ s = ⊤ := by
   constructor
   · intro hd
@@ -919,7 +919,7 @@ theorem direction_inf (s1 s2 : AffineSubspace k P) :
 
 /-- If two affine subspaces have a point in common, the direction of their inf equals the inf of
 their directions. -/
-theorem direction_inf_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p ∈ s₁) (h₂ : p ∈ s₂) :
+lemma direction_inf_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p ∈ s₁) (h₂ : p ∈ s₂) :
     (s₁ ⊓ s₂).direction = s₁.direction ⊓ s₂.direction := by
   ext v
   rw [Submodule.mem_inf, ← vadd_mem_iff_mem_direction v h₁, ← vadd_mem_iff_mem_direction v h₂, ←
@@ -928,20 +928,20 @@ theorem direction_inf_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p 
 
 /-- If two affine subspaces have a point in their inf, the direction of their inf equals the inf of
 their directions. -/
-theorem direction_inf_of_mem_inf {s₁ s₂ : AffineSubspace k P} {p : P} (h : p ∈ s₁ ⊓ s₂) :
+lemma direction_inf_of_mem_inf {s₁ s₂ : AffineSubspace k P} {p : P} (h : p ∈ s₁ ⊓ s₂) :
     (s₁ ⊓ s₂).direction = s₁.direction ⊓ s₂.direction :=
   direction_inf_of_mem ((mem_inf_iff p s₁ s₂).1 h).1 ((mem_inf_iff p s₁ s₂).1 h).2
 #align affine_subspace.direction_inf_of_mem_inf AffineSubspace.direction_inf_of_mem_inf
 
 /-- If one affine subspace is less than or equal to another, the same applies to their
 directions. -/
-theorem direction_le {s1 s2 : AffineSubspace k P} (h : s1 ≤ s2) : s1.direction ≤ s2.direction := by
+lemma direction_le {s1 s2 : AffineSubspace k P} (h : s1 ≤ s2) : s1.direction ≤ s2.direction := by
   simp only [direction_eq_vectorSpan, vectorSpan_def]
   exact vectorSpan_mono k h
 #align affine_subspace.direction_le AffineSubspace.direction_le
 
 /-- If one nonempty affine subspace is less than another, the same applies to their directions -/
-theorem direction_lt_of_nonempty {s1 s2 : AffineSubspace k P} (h : s1 < s2)
+lemma direction_lt_of_nonempty {s1 s2 : AffineSubspace k P} (h : s1 < s2)
     (hn : (s1 : Set P).Nonempty) : s1.direction < s2.direction := by
   cases' hn with p hp
   rw [lt_iff_le_and_exists] at h
@@ -966,7 +966,7 @@ theorem sup_direction_le (s1 s2 : AffineSubspace k P) :
 
 /-- The sup of the directions of two nonempty affine subspaces with empty intersection is less than
 the direction of their sup. -/
-theorem sup_direction_lt_of_nonempty_of_inter_empty {s1 s2 : AffineSubspace k P}
+lemma sup_direction_lt_of_nonempty_of_inter_empty {s1 s2 : AffineSubspace k P}
     (h1 : (s1 : Set P).Nonempty) (h2 : (s2 : Set P).Nonempty) (he : (s1 ∩ s2 : Set P) = ∅) :
     s1.direction ⊔ s2.direction < (s1 ⊔ s2).direction := by
   cases' h1 with p1 hp1
@@ -988,7 +988,7 @@ theorem sup_direction_lt_of_nonempty_of_inter_empty {s1 s2 : AffineSubspace k P}
 
 /-- If the directions of two nonempty affine subspaces span the whole module, they have nonempty
 intersection. -/
-theorem inter_nonempty_of_nonempty_of_sup_direction_eq_top {s1 s2 : AffineSubspace k P}
+lemma inter_nonempty_of_nonempty_of_sup_direction_eq_top {s1 s2 : AffineSubspace k P}
     (h1 : (s1 : Set P).Nonempty) (h2 : (s2 : Set P).Nonempty)
     (hd : s1.direction ⊔ s2.direction = ⊤) : ((s1 : Set P) ∩ s2).Nonempty := by
   by_contra h
@@ -1000,7 +1000,7 @@ theorem inter_nonempty_of_nonempty_of_sup_direction_eq_top {s1 s2 : AffineSubspa
 
 /-- If the directions of two nonempty affine subspaces are complements of each other, they intersect
 in exactly one point. -/
-theorem inter_eq_singleton_of_nonempty_of_isCompl {s1 s2 : AffineSubspace k P}
+lemma inter_eq_singleton_of_nonempty_of_isCompl {s1 s2 : AffineSubspace k P}
     (h1 : (s1 : Set P).Nonempty) (h2 : (s2 : Set P).Nonempty)
     (hd : IsCompl s1.direction s2.direction) : ∃ p, (s1 : Set P) ∩ s2 = {p} := by
   cases' inter_nonempty_of_nonempty_of_sup_direction_eq_top h1 h2 hd.sup_eq_top with p hp
@@ -1035,7 +1035,7 @@ variable {ι : Type*}
 open AffineSubspace Set
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the left. -/
-theorem vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
+lemma vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ ·) p '' s) := by
   rw [vectorSpan_def]
   refine' le_antisymm _ (Submodule.span_mono _)
@@ -1049,7 +1049,7 @@ theorem vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
 #align vector_span_eq_span_vsub_set_left vectorSpan_eq_span_vsub_set_left
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right. -/
-theorem vectorSpan_eq_span_vsub_set_right {s : Set P} {p : P} (hp : p ∈ s) :
+lemma vectorSpan_eq_span_vsub_set_right {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ p) '' s) := by
   rw [vectorSpan_def]
   refine' le_antisymm _ (Submodule.span_mono _)
@@ -1064,7 +1064,7 @@ theorem vectorSpan_eq_span_vsub_set_right {s : Set P} {p : P} (hp : p ∈ s) :
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the left,
 excluding the subtraction of that point from itself. -/
-theorem vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
+lemma vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ ·) p '' (s \ {p})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k hp, ← Set.insert_eq_of_mem hp, ←
@@ -1074,7 +1074,7 @@ theorem vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
 excluding the subtraction of that point from itself. -/
-theorem vectorSpan_eq_span_vsub_set_right_ne {s : Set P} {p : P} (hp : p ∈ s) :
+lemma vectorSpan_eq_span_vsub_set_right_ne {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ p) '' (s \ {p})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k hp, ← Set.insert_eq_of_mem hp, ←
@@ -1084,7 +1084,7 @@ theorem vectorSpan_eq_span_vsub_set_right_ne {s : Set P} {p : P} (hp : p ∈ s) 
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the right,
 excluding the subtraction of that point from itself. -/
-theorem vectorSpan_eq_span_vsub_finset_right_ne [DecidableEq P] [DecidableEq V] {s : Finset P}
+lemma vectorSpan_eq_span_vsub_finset_right_ne [DecidableEq P] [DecidableEq V] {s : Finset P}
     {p : P} (hp : p ∈ s) :
     vectorSpan k (s : Set P) = Submodule.span k ((s.erase p).image (· -ᵥ p)) := by
   simp [vectorSpan_eq_span_vsub_set_right_ne _ (Finset.mem_coe.mpr hp)]
@@ -1161,7 +1161,7 @@ section
 variable {s : Set P}
 
 /-- The affine span of a set is nonempty if and only if that set is. -/
-theorem affineSpan_nonempty : (affineSpan k s : Set P).Nonempty ↔ s.Nonempty :=
+lemma affineSpan_nonempty : (affineSpan k s : Set P).Nonempty ↔ s.Nonempty :=
   spanPoints_nonempty k s
 #align affine_span_nonempty affineSpan_nonempty
 
@@ -1174,13 +1174,13 @@ instance [Nonempty s] : Nonempty (affineSpan k s) :=
 
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]
-theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
+lemma affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
   rw [← not_iff_not, ← Ne.def, ← Ne.def, ← nonempty_iff_ne_bot, affineSpan_nonempty,
     nonempty_iff_ne_empty]
 #align affine_span_eq_bot affineSpan_eq_bot
 
 @[simp]
-theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
+lemma bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
   rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
   exact (affineSpan_eq_bot _).not
 #align bot_lt_affine_span bot_lt_affineSpan
@@ -1191,14 +1191,14 @@ variable {k}
 
 /-- An induction principle for span membership. If `p` holds for all elements of `s` and is
 preserved under certain affine combinations, then `p` holds for all elements of the span of `s`. -/
-theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
+lemma affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (Hs : ∀ x : P, x ∈ s → p x)
     (Hc : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
   (@affineSpan_le _ _ _ _ _ _ _ _ ⟨p, Hc⟩).mpr Hs h
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/
-theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → Prop}
+lemma affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → Prop}
     (Hs : ∀ (y) (hys : y ∈ s), p y (subset_affineSpan k _ hys))
     (Hc :
       ∀ (c : k) (u hu v hv w hw),
@@ -1237,7 +1237,7 @@ end WithLocalInstance
 
 /-- Suppose a set of vectors spans `V`.  Then a point `p`, together with those vectors added to `p`,
 spans `P`. -/
-theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
+lemma affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :
     affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
   convert ext_of_direction_eq _
@@ -1290,14 +1290,14 @@ theorem smul_vsub_rev_mem_vectorSpan_pair (r : k) (p₁ p₂ : P) :
 
 /-- A vector lies in the `vectorSpan` of two points if and only if it is a multiple of their
 difference. -/
-theorem mem_vectorSpan_pair {p₁ p₂ : P} {v : V} :
+lemma mem_vectorSpan_pair {p₁ p₂ : P} {v : V} :
     v ∈ vectorSpan k ({p₁, p₂} : Set P) ↔ ∃ r : k, r • (p₁ -ᵥ p₂) = v := by
   rw [vectorSpan_pair, Submodule.mem_span_singleton]
 #align mem_vector_span_pair mem_vectorSpan_pair
 
 /-- A vector lies in the `vectorSpan` of two points if and only if it is a multiple of their
 difference (reversed). -/
-theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
+lemma mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
     v ∈ vectorSpan k ({p₁, p₂} : Set P) ↔ ∃ r : k, r • (p₂ -ᵥ p₁) = v := by
   rw [vectorSpan_pair_rev, Submodule.mem_span_singleton]
 #align mem_vector_span_pair_rev mem_vectorSpan_pair_rev
@@ -1348,7 +1348,7 @@ theorem smul_vsub_rev_vadd_mem_affineSpan_pair (r : k) (p₁ p₂ : P) :
 
 /-- A vector added to the first point lies in the affine span of two points if and only if it is
 a multiple of their difference. -/
-theorem vadd_left_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
+lemma vadd_left_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
     v +ᵥ p₁ ∈ line[k, p₁, p₂] ↔ ∃ r : k, r • (p₂ -ᵥ p₁) = v := by
   rw [vadd_mem_iff_mem_direction _ (left_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair_rev]
@@ -1356,14 +1356,14 @@ theorem vadd_left_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
 
 /-- A vector added to the second point lies in the affine span of two points if and only if it is
 a multiple of their difference. -/
-theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
+lemma vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
     v +ᵥ p₂ ∈ line[k, p₁, p₂] ↔ ∃ r : k, r • (p₁ -ᵥ p₂) = v := by
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
 #align vadd_right_mem_affine_span_pair vadd_right_mem_affineSpan_pair
 
 /-- The span of two points that lie in an affine subspace is contained in that subspace. -/
-theorem affineSpan_pair_le_of_mem_of_mem {p₁ p₂ : P} {s : AffineSubspace k P} (hp₁ : p₁ ∈ s)
+lemma affineSpan_pair_le_of_mem_of_mem {p₁ p₂ : P} {s : AffineSubspace k P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : line[k, p₁, p₂] ≤ s := by
   rw [affineSpan_le, Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨hp₁, hp₂⟩
@@ -1371,14 +1371,14 @@ theorem affineSpan_pair_le_of_mem_of_mem {p₁ p₂ : P} {s : AffineSubspace k P
 
 /-- One line is contained in another differing in the first point if the first point of the first
 line is contained in the second line. -/
-theorem affineSpan_pair_le_of_left_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[k, p₂, p₃]) :
+lemma affineSpan_pair_le_of_left_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[k, p₂, p₃]) :
     line[k, p₁, p₃] ≤ line[k, p₂, p₃] :=
   affineSpan_pair_le_of_mem_of_mem h (right_mem_affineSpan_pair _ _ _)
 #align affine_span_pair_le_of_left_mem affineSpan_pair_le_of_left_mem
 
 /-- One line is contained in another differing in the second point if the second point of the
 first line is contained in the second line. -/
-theorem affineSpan_pair_le_of_right_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[k, p₂, p₃]) :
+lemma affineSpan_pair_le_of_right_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[k, p₂, p₃]) :
     line[k, p₂, p₁] ≤ line[k, p₂, p₃] :=
   affineSpan_pair_le_of_mem_of_mem (left_mem_affineSpan_pair _ _ _) h
 #align affine_span_pair_le_of_right_mem affineSpan_pair_le_of_right_mem
@@ -1387,7 +1387,7 @@ variable (k)
 
 /-- `affineSpan` is monotone. -/
 @[mono]
-theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
+lemma affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
   spanPoints_subset_coe_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
 #align affine_span_mono affineSpan_mono
 
@@ -1400,7 +1400,7 @@ theorem affineSpan_insert_affineSpan (p : P) (ps : Set P) :
 
 /-- If a point is in the affine span of a set, adding it to that set does not change the affine
 span. -/
-theorem affineSpan_insert_eq_affineSpan {p : P} {ps : Set P} (h : p ∈ affineSpan k ps) :
+lemma affineSpan_insert_eq_affineSpan {p : P} {ps : Set P} (h : p ∈ affineSpan k ps) :
     affineSpan k (insert p ps) = affineSpan k ps := by
   rw [← mem_coe] at h
   rw [← affineSpan_insert_affineSpan, Set.insert_eq_of_mem h, affineSpan_coe]
@@ -1410,7 +1410,7 @@ variable {k}
 
 /-- If a point is in the affine span of a set, adding it to that set does not change the vector
 span. -/
-theorem vectorSpan_insert_eq_vectorSpan {p : P} {ps : Set P} (h : p ∈ affineSpan k ps) :
+lemma vectorSpan_insert_eq_vectorSpan {p : P} {ps : Set P} (h : p ∈ affineSpan k ps) :
     vectorSpan k (insert p ps) = vectorSpan k ps := by
   simp_rw [← direction_affineSpan, affineSpan_insert_eq_affineSpan _ h]
 #align vector_span_insert_eq_vector_span vectorSpan_insert_eq_vectorSpan
@@ -1424,7 +1424,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
 of any one difference between points in the two subspaces. -/
-theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1) (hp2 : p2 ∈ s2) :
+lemma direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1) (hp2 : p2 ∈ s2) :
     (s1 ⊔ s2).direction = s1.direction ⊔ s2.direction ⊔ k ∙ p2 -ᵥ p1 := by
   refine' le_antisymm _ _
   · change (affineSpan k ((s1 : Set P) ∪ s2)).direction ≤ _
@@ -1456,7 +1456,7 @@ theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1)
 /-- The direction of the span of the result of adding a point to a nonempty affine subspace is the
 sup of the direction of that subspace and of any one difference between that point and a point in
 the subspace. -/
-theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) :
+lemma direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) :
     (affineSpan k (insert p2 (s : Set P))).direction =
     Submodule.span k {p2 -ᵥ p1} ⊔ s.direction := by
   rw [sup_comm, ← Set.union_singleton, ← coe_affineSpan_singleton k V p2]
@@ -1467,7 +1467,7 @@ theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : 
 
 /-- Given a point `p1` in an affine subspace `s`, and a point `p2`, a point `p` is in the span of
 `s` with `p2` added if and only if it is a multiple of `p2 -ᵥ p1` added to a point in `s`. -/
-theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 ∈ s) (p2 p : P) :
+lemma mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 ∈ s) (p2 p : P) :
     p ∈ affineSpan k (insert p2 (s : Set P)) ↔
       ∃ (r : k) (p0 : P) (_hp0 : p0 ∈ s), p = r • (p2 -ᵥ p1 : V) +ᵥ p0 := by
   rw [← mem_coe] at hp1
@@ -1504,7 +1504,7 @@ section
 variable (f : P₁ →ᵃ[k] P₂)
 
 @[simp]
-theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
+lemma AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   rw [vectorSpan_def, vectorSpan_def, f.image_vsub_image, Submodule.span_image]
   -- porting note: Lean unfolds things too far with `simp` here.
@@ -1530,12 +1530,12 @@ theorem coe_map (s : AffineSubspace k P₁) : (s.map f : Set P₂) = f '' s :=
 #align affine_subspace.coe_map AffineSubspace.coe_map
 
 @[simp]
-theorem mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁} :
+lemma mem_map {f : P₁ →ᵃ[k] P₂} {x : P₂} {s : AffineSubspace k P₁} :
     x ∈ s.map f ↔ ∃ y ∈ s, f y = x := by
   simpa only [bex_def] using mem_image_iff_bex
 #align affine_subspace.mem_map AffineSubspace.mem_map
 
-theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=
+lemma mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f x ∈ s.map f :=
   Set.mem_image_of_mem _ h
 #align affine_subspace.mem_map_of_mem AffineSubspace.mem_map_of_mem
 
@@ -1543,18 +1543,18 @@ theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f 
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
-theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
+lemma mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image
 #align affine_subspace.mem_map_iff_mem_of_injective AffineSubspace.mem_map_iff_mem_of_injective
 
 @[simp]
-theorem map_bot : (⊥ : AffineSubspace k P₁).map f = ⊥ :=
+lemma map_bot : (⊥ : AffineSubspace k P₁).map f = ⊥ :=
   coe_injective <| image_empty f
 #align affine_subspace.map_bot AffineSubspace.map_bot
 
 @[simp]
-theorem map_eq_bot_iff {s : AffineSubspace k P₁} : s.map f = ⊥ ↔ s = ⊥ := by
+lemma map_eq_bot_iff {s : AffineSubspace k P₁} : s.map f = ⊥ ↔ s = ⊥ := by
   refine' ⟨fun h => _, fun h => _⟩
   · rwa [← coe_eq_bot_iff, coe_map, image_eq_empty, coe_eq_bot_iff] at h
   · rw [h, map_bot]
@@ -1598,7 +1598,7 @@ theorem map_top_of_surjective (hf : Function.Surjective f) : AffineSubspace.map 
   exact image_univ_of_surjective hf
 #align affine_map.map_top_of_surjective AffineMap.map_top_of_surjective
 
-theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
+lemma span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
     (h : affineSpan k s = ⊤) : affineSpan k (f '' s) = ⊤ := by
   rw [← AffineSubspace.map_span, h, map_top_of_surjective f hf]
 #align affine_map.span_eq_top_of_surjective AffineMap.span_eq_top_of_surjective
@@ -1607,7 +1607,7 @@ end AffineMap
 
 namespace AffineEquiv
 
-theorem span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
+lemma span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
     affineSpan k s = ⊤ ↔ affineSpan k (e '' s) = ⊤ := by
   refine' ⟨(e : P₁ →ᵃ[k] P₂).span_eq_top_of_surjective e.surjective, _⟩
   intro h
@@ -1637,16 +1637,16 @@ theorem coe_comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : (s.com
 #align affine_subspace.coe_comap AffineSubspace.coe_comap
 
 @[simp]
-theorem mem_comap {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₂} : x ∈ s.comap f ↔ f x ∈ s :=
+lemma mem_comap {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₂} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 #align affine_subspace.mem_comap AffineSubspace.mem_comap
 
-theorem comap_mono {f : P₁ →ᵃ[k] P₂} {s t : AffineSubspace k P₂} : s ≤ t → s.comap f ≤ t.comap f :=
+lemma comap_mono {f : P₁ →ᵃ[k] P₂} {s t : AffineSubspace k P₂} : s ≤ t → s.comap f ≤ t.comap f :=
   preimage_mono
 #align affine_subspace.comap_mono AffineSubspace.comap_mono
 
 @[simp]
-theorem comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).comap f = ⊤ := by
+lemma comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).comap f = ⊤ := by
   rw [← ext_iff]
   exact preimage_univ (f := f)
 #align affine_subspace.comap_top AffineSubspace.comap_top
@@ -1664,7 +1664,7 @@ theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P
 #align affine_subspace.comap_comap AffineSubspace.comap_comap
 
 -- lemmas about map and comap derived from the galois connection
-theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
+lemma map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   image_subset_iff
 #align affine_subspace.map_le_iff_le_comap AffineSubspace.map_le_iff_le_comap
@@ -1685,7 +1685,7 @@ theorem map_sup (s t : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) : (s ⊔
   (gc_map_comap f).l_sup
 #align affine_subspace.map_sup AffineSubspace.map_sup
 
-theorem map_iSup {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
+lemma map_iSup {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align affine_subspace.map_supr AffineSubspace.map_iSup
@@ -1695,7 +1695,7 @@ theorem comap_inf (s t : AffineSubspace k P₂) (f : P₁ →ᵃ[k] P₂) :
   (gc_map_comap f).u_inf
 #align affine_subspace.comap_inf AffineSubspace.comap_inf
 
-theorem comap_supr {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
+lemma comap_supr {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align affine_subspace.comap_supr AffineSubspace.comap_supr
@@ -1738,14 +1738,14 @@ def Parallel (s₁ s₂ : AffineSubspace k P) : Prop :=
 scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 
 @[symm]
-theorem Parallel.symm {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) : s₂ ∥ s₁ := by
+lemma Parallel.symm {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) : s₂ ∥ s₁ := by
   rcases h with ⟨v, rfl⟩
   refine' ⟨-v, _⟩
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add, neg_add_self, constVAdd_zero,
     coe_refl_to_affineMap, map_id]
 #align affine_subspace.parallel.symm AffineSubspace.Parallel.symm
 
-theorem parallel_comm {s₁ s₂ : AffineSubspace k P} : s₁ ∥ s₂ ↔ s₂ ∥ s₁ :=
+lemma parallel_comm {s₁ s₂ : AffineSubspace k P} : s₁ ∥ s₂ ↔ s₂ ∥ s₁ :=
   ⟨Parallel.symm, Parallel.symm⟩
 #align affine_subspace.parallel_comm AffineSubspace.parallel_comm
 
@@ -1755,7 +1755,7 @@ theorem Parallel.refl (s : AffineSubspace k P) : s ∥ s :=
 #align affine_subspace.parallel.refl AffineSubspace.Parallel.refl
 
 @[trans]
-theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥ s₂) (h₂₃ : s₂ ∥ s₃) :
+lemma Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥ s₂) (h₂₃ : s₂ ∥ s₃) :
     s₁ ∥ s₃ := by
   rcases h₁₂ with ⟨v₁₂, rfl⟩
   rcases h₂₃ with ⟨v₂₃, rfl⟩
@@ -1763,25 +1763,25 @@ theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add]
 #align affine_subspace.parallel.trans AffineSubspace.Parallel.trans
 
-theorem Parallel.direction_eq {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) :
+lemma Parallel.direction_eq {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) :
     s₁.direction = s₂.direction := by
   rcases h with ⟨v, rfl⟩
   simp
 #align affine_subspace.parallel.direction_eq AffineSubspace.Parallel.direction_eq
 
 @[simp]
-theorem parallel_bot_iff_eq_bot {s : AffineSubspace k P} : s ∥ ⊥ ↔ s = ⊥ := by
+lemma parallel_bot_iff_eq_bot {s : AffineSubspace k P} : s ∥ ⊥ ↔ s = ⊥ := by
   refine' ⟨fun h => _, fun h => h ▸ Parallel.refl _⟩
   rcases h with ⟨v, h⟩
   rwa [eq_comm, map_eq_bot_iff] at h
 #align affine_subspace.parallel_bot_iff_eq_bot AffineSubspace.parallel_bot_iff_eq_bot
 
 @[simp]
-theorem bot_parallel_iff_eq_bot {s : AffineSubspace k P} : ⊥ ∥ s ↔ s = ⊥ := by
+lemma bot_parallel_iff_eq_bot {s : AffineSubspace k P} : ⊥ ∥ s ↔ s = ⊥ := by
   rw [parallel_comm, parallel_bot_iff_eq_bot]
 #align affine_subspace.bot_parallel_iff_eq_bot AffineSubspace.bot_parallel_iff_eq_bot
 
-theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubspace k P} :
+lemma parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubspace k P} :
     s₁ ∥ s₂ ↔ s₁.direction = s₂.direction ∧ (s₁ = ⊥ ↔ s₂ = ⊥) := by
   refine' ⟨fun h => ⟨h.direction_eq, _, _⟩, fun h => _⟩
   · rintro rfl
@@ -1802,20 +1802,20 @@ theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubsp
       · simpa using hd.symm
 #align affine_subspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot AffineSubspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot
 
-theorem Parallel.vectorSpan_eq {s₁ s₂ : Set P} (h : affineSpan k s₁ ∥ affineSpan k s₂) :
+lemma Parallel.vectorSpan_eq {s₁ s₂ : Set P} (h : affineSpan k s₁ ∥ affineSpan k s₂) :
     vectorSpan k s₁ = vectorSpan k s₂ := by
   simp_rw [← direction_affineSpan]
   exact h.direction_eq
 #align affine_subspace.parallel.vector_span_eq AffineSubspace.Parallel.vectorSpan_eq
 
-theorem affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty {s₁ s₂ : Set P} :
+lemma affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty {s₁ s₂ : Set P} :
     affineSpan k s₁ ∥ affineSpan k s₂ ↔ vectorSpan k s₁ = vectorSpan k s₂ ∧ (s₁ = ∅ ↔ s₂ = ∅) := by
   repeat rw [← direction_affineSpan, ← affineSpan_eq_bot k]
   -- porting note: more issues with `simp`
   exact parallel_iff_direction_eq_and_eq_bot_iff_eq_bot
 #align affine_subspace.affine_span_parallel_iff_vector_span_eq_and_eq_empty_iff_eq_empty AffineSubspace.affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty
 
-theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
+lemma affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
     line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔
       vectorSpan k ({p₁, p₂} : Set P) = vectorSpan k ({p₃, p₄} : Set P) := by
   simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←

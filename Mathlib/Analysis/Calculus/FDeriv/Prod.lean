@@ -132,7 +132,7 @@ section Fst
 
 variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
 
-theorem hasStrictFDerivAt_fst : HasStrictFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
+lemma hasStrictFDerivAt_fst : HasStrictFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
   (fst 𝕜 E F).hasStrictFDerivAt
 #align has_strict_fderiv_at_fst hasStrictFDerivAt_fst
 
@@ -141,7 +141,7 @@ protected theorem HasStrictFDerivAt.fst (h : HasStrictFDerivAt f₂ f₂' x) :
   hasStrictFDerivAt_fst.comp x h
 #align has_strict_fderiv_at.fst HasStrictFDerivAt.fst
 
-theorem hasFDerivAtFilter_fst {L : Filter (E × F)} :
+lemma hasFDerivAtFilter_fst {L : Filter (E × F)} :
     HasFDerivAtFilter (@Prod.fst E F) (fst 𝕜 E F) p L :=
   (fst 𝕜 E F).hasFDerivAtFilter
 #align has_fderiv_at_filter_fst hasFDerivAtFilter_fst
@@ -151,7 +151,7 @@ protected theorem HasFDerivAtFilter.fst (h : HasFDerivAtFilter f₂ f₂' x L) :
   hasFDerivAtFilter_fst.comp x h tendsto_map
 #align has_fderiv_at_filter.fst HasFDerivAtFilter.fst
 
-theorem hasFDerivAt_fst : HasFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
+lemma hasFDerivAt_fst : HasFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
   hasFDerivAtFilter_fst
 #align has_fderiv_at_fst hasFDerivAt_fst
 
@@ -160,7 +160,7 @@ protected nonrec theorem HasFDerivAt.fst (h : HasFDerivAt f₂ f₂' x) :
   h.fst
 #align has_fderiv_at.fst HasFDerivAt.fst
 
-theorem hasFDerivWithinAt_fst {s : Set (E × F)} :
+lemma hasFDerivWithinAt_fst {s : Set (E × F)} :
     HasFDerivWithinAt (@Prod.fst E F) (fst 𝕜 E F) s p :=
   hasFDerivAtFilter_fst
 #align has_fderiv_within_at_fst hasFDerivWithinAt_fst
@@ -170,7 +170,7 @@ protected nonrec theorem HasFDerivWithinAt.fst (h : HasFDerivWithinAt f₂ f₂'
   h.fst
 #align has_fderiv_within_at.fst HasFDerivWithinAt.fst
 
-theorem differentiableAt_fst : DifferentiableAt 𝕜 Prod.fst p :=
+lemma differentiableAt_fst : DifferentiableAt 𝕜 Prod.fst p :=
   hasFDerivAt_fst.differentiableAt
 #align differentiable_at_fst differentiableAt_fst
 
@@ -180,7 +180,7 @@ protected theorem DifferentiableAt.fst (h : DifferentiableAt 𝕜 f₂ x) :
   differentiableAt_fst.comp x h
 #align differentiable_at.fst DifferentiableAt.fst
 
-theorem differentiable_fst : Differentiable 𝕜 (Prod.fst : E × F → E) := fun _ =>
+lemma differentiable_fst : Differentiable 𝕜 (Prod.fst : E × F → E) := fun _ =>
   differentiableAt_fst
 #align differentiable_fst differentiable_fst
 
@@ -190,7 +190,7 @@ protected theorem Differentiable.fst (h : Differentiable 𝕜 f₂) :
   differentiable_fst.comp h
 #align differentiable.fst Differentiable.fst
 
-theorem differentiableWithinAt_fst {s : Set (E × F)} : DifferentiableWithinAt 𝕜 Prod.fst s p :=
+lemma differentiableWithinAt_fst {s : Set (E × F)} : DifferentiableWithinAt 𝕜 Prod.fst s p :=
   differentiableAt_fst.differentiableWithinAt
 #align differentiable_within_at_fst differentiableWithinAt_fst
 
@@ -199,7 +199,7 @@ protected theorem DifferentiableWithinAt.fst (h : DifferentiableWithinAt 𝕜 f�
   differentiableAt_fst.comp_differentiableWithinAt x h
 #align differentiable_within_at.fst DifferentiableWithinAt.fst
 
-theorem differentiableOn_fst {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.fst s :=
+lemma differentiableOn_fst {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.fst s :=
   differentiable_fst.differentiableOn
 #align differentiable_on_fst differentiableOn_fst
 
@@ -208,7 +208,7 @@ protected theorem DifferentiableOn.fst (h : DifferentiableOn 𝕜 f₂ s) :
   differentiable_fst.comp_differentiableOn h
 #align differentiable_on.fst DifferentiableOn.fst
 
-theorem fderiv_fst : fderiv 𝕜 Prod.fst p = fst 𝕜 E F :=
+lemma fderiv_fst : fderiv 𝕜 Prod.fst p = fst 𝕜 E F :=
   hasFDerivAt_fst.fderiv
 #align fderiv_fst fderiv_fst
 
@@ -217,7 +217,7 @@ theorem fderiv.fst (h : DifferentiableAt 𝕜 f₂ x) :
   h.hasFDerivAt.fst.fderiv
 #align fderiv.fst fderiv.fst
 
-theorem fderivWithin_fst {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
+lemma fderivWithin_fst {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
     fderivWithin 𝕜 Prod.fst s p = fst 𝕜 E F :=
   hasFDerivWithinAt_fst.fderivWithin hs
 #align fderiv_within_fst fderivWithin_fst
@@ -233,7 +233,7 @@ section Snd
 
 variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
 
-theorem hasStrictFDerivAt_snd : HasStrictFDerivAt (@Prod.snd E F) (snd 𝕜 E F) p :=
+lemma hasStrictFDerivAt_snd : HasStrictFDerivAt (@Prod.snd E F) (snd 𝕜 E F) p :=
   (snd 𝕜 E F).hasStrictFDerivAt
 #align has_strict_fderiv_at_snd hasStrictFDerivAt_snd
 
@@ -242,7 +242,7 @@ protected theorem HasStrictFDerivAt.snd (h : HasStrictFDerivAt f₂ f₂' x) :
   hasStrictFDerivAt_snd.comp x h
 #align has_strict_fderiv_at.snd HasStrictFDerivAt.snd
 
-theorem hasFDerivAtFilter_snd {L : Filter (E × F)} :
+lemma hasFDerivAtFilter_snd {L : Filter (E × F)} :
     HasFDerivAtFilter (@Prod.snd E F) (snd 𝕜 E F) p L :=
   (snd 𝕜 E F).hasFDerivAtFilter
 #align has_fderiv_at_filter_snd hasFDerivAtFilter_snd
@@ -252,7 +252,7 @@ protected theorem HasFDerivAtFilter.snd (h : HasFDerivAtFilter f₂ f₂' x L) :
   hasFDerivAtFilter_snd.comp x h tendsto_map
 #align has_fderiv_at_filter.snd HasFDerivAtFilter.snd
 
-theorem hasFDerivAt_snd : HasFDerivAt (@Prod.snd E F) (snd 𝕜 E F) p :=
+lemma hasFDerivAt_snd : HasFDerivAt (@Prod.snd E F) (snd 𝕜 E F) p :=
   hasFDerivAtFilter_snd
 #align has_fderiv_at_snd hasFDerivAt_snd
 
@@ -261,7 +261,7 @@ protected nonrec theorem HasFDerivAt.snd (h : HasFDerivAt f₂ f₂' x) :
   h.snd
 #align has_fderiv_at.snd HasFDerivAt.snd
 
-theorem hasFDerivWithinAt_snd {s : Set (E × F)} :
+lemma hasFDerivWithinAt_snd {s : Set (E × F)} :
     HasFDerivWithinAt (@Prod.snd E F) (snd 𝕜 E F) s p :=
   hasFDerivAtFilter_snd
 #align has_fderiv_within_at_snd hasFDerivWithinAt_snd
@@ -271,7 +271,7 @@ protected nonrec theorem HasFDerivWithinAt.snd (h : HasFDerivWithinAt f₂ f₂'
   h.snd
 #align has_fderiv_within_at.snd HasFDerivWithinAt.snd
 
-theorem differentiableAt_snd : DifferentiableAt 𝕜 Prod.snd p :=
+lemma differentiableAt_snd : DifferentiableAt 𝕜 Prod.snd p :=
   hasFDerivAt_snd.differentiableAt
 #align differentiable_at_snd differentiableAt_snd
 
@@ -281,7 +281,7 @@ protected theorem DifferentiableAt.snd (h : DifferentiableAt 𝕜 f₂ x) :
   differentiableAt_snd.comp x h
 #align differentiable_at.snd DifferentiableAt.snd
 
-theorem differentiable_snd : Differentiable 𝕜 (Prod.snd : E × F → F) := fun _ =>
+lemma differentiable_snd : Differentiable 𝕜 (Prod.snd : E × F → F) := fun _ =>
   differentiableAt_snd
 #align differentiable_snd differentiable_snd
 
@@ -291,7 +291,7 @@ protected theorem Differentiable.snd (h : Differentiable 𝕜 f₂) :
   differentiable_snd.comp h
 #align differentiable.snd Differentiable.snd
 
-theorem differentiableWithinAt_snd {s : Set (E × F)} : DifferentiableWithinAt 𝕜 Prod.snd s p :=
+lemma differentiableWithinAt_snd {s : Set (E × F)} : DifferentiableWithinAt 𝕜 Prod.snd s p :=
   differentiableAt_snd.differentiableWithinAt
 #align differentiable_within_at_snd differentiableWithinAt_snd
 
@@ -300,7 +300,7 @@ protected theorem DifferentiableWithinAt.snd (h : DifferentiableWithinAt 𝕜 f�
   differentiableAt_snd.comp_differentiableWithinAt x h
 #align differentiable_within_at.snd DifferentiableWithinAt.snd
 
-theorem differentiableOn_snd {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.snd s :=
+lemma differentiableOn_snd {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.snd s :=
   differentiable_snd.differentiableOn
 #align differentiable_on_snd differentiableOn_snd
 
@@ -309,7 +309,7 @@ protected theorem DifferentiableOn.snd (h : DifferentiableOn 𝕜 f₂ s) :
   differentiable_snd.comp_differentiableOn h
 #align differentiable_on.snd DifferentiableOn.snd
 
-theorem fderiv_snd : fderiv 𝕜 Prod.snd p = snd 𝕜 E F :=
+lemma fderiv_snd : fderiv 𝕜 Prod.snd p = snd 𝕜 E F :=
   hasFDerivAt_snd.fderiv
 #align fderiv_snd fderiv_snd
 
@@ -318,7 +318,7 @@ theorem fderiv.snd (h : DifferentiableAt 𝕜 f₂ x) :
   h.hasFDerivAt.snd.fderiv
 #align fderiv.snd fderiv.snd
 
-theorem fderivWithin_snd {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
+lemma fderivWithin_snd {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
     fderivWithin 𝕜 Prod.snd s p = snd 𝕜 E F :=
   hasFDerivWithinAt_snd.fderivWithin hs
 #align fderiv_within_snd fderivWithin_snd
@@ -374,76 +374,76 @@ variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGrou
   {Φ' : E →L[𝕜] ∀ i, F' i}
 
 @[simp]
-theorem hasStrictFDerivAt_pi' :
+lemma hasStrictFDerivAt_pi' :
     HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x := by
   simp only [HasStrictFDerivAt, ContinuousLinearMap.coe_pi]
   exact isLittleO_pi
 #align has_strict_fderiv_at_pi' hasStrictFDerivAt_pi'
 
 @[simp 1100] -- porting note: increased priority to make lint happy
-theorem hasStrictFDerivAt_pi :
+lemma hasStrictFDerivAt_pi :
     HasStrictFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasStrictFDerivAt (φ i) (φ' i) x :=
   hasStrictFDerivAt_pi'
 #align has_strict_fderiv_at_pi hasStrictFDerivAt_pi
 
 @[simp]
-theorem hasFDerivAtFilter_pi' :
+lemma hasFDerivAtFilter_pi' :
     HasFDerivAtFilter Φ Φ' x L ↔
       ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L := by
   simp only [HasFDerivAtFilter, ContinuousLinearMap.coe_pi]
   exact isLittleO_pi
 #align has_fderiv_at_filter_pi' hasFDerivAtFilter_pi'
 
-theorem hasFDerivAtFilter_pi :
+lemma hasFDerivAtFilter_pi :
     HasFDerivAtFilter (fun x i => φ i x) (ContinuousLinearMap.pi φ') x L ↔
       ∀ i, HasFDerivAtFilter (φ i) (φ' i) x L :=
   hasFDerivAtFilter_pi'
 #align has_fderiv_at_filter_pi hasFDerivAtFilter_pi
 
 @[simp]
-theorem hasFDerivAt_pi' :
+lemma hasFDerivAt_pi' :
     HasFDerivAt Φ Φ' x ↔ ∀ i, HasFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x :=
   hasFDerivAtFilter_pi'
 #align has_fderiv_at_pi' hasFDerivAt_pi'
 
-theorem hasFDerivAt_pi :
+lemma hasFDerivAt_pi :
     HasFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasFDerivAt (φ i) (φ' i) x :=
   hasFDerivAtFilter_pi
 #align has_fderiv_at_pi hasFDerivAt_pi
 
 @[simp]
-theorem hasFDerivWithinAt_pi' :
+lemma hasFDerivWithinAt_pi' :
     HasFDerivWithinAt Φ Φ' s x ↔ ∀ i, HasFDerivWithinAt (fun x => Φ x i) ((proj i).comp Φ') s x :=
   hasFDerivAtFilter_pi'
 #align has_fderiv_within_at_pi' hasFDerivWithinAt_pi'
 
-theorem hasFDerivWithinAt_pi :
+lemma hasFDerivWithinAt_pi :
     HasFDerivWithinAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') s x ↔
       ∀ i, HasFDerivWithinAt (φ i) (φ' i) s x :=
   hasFDerivAtFilter_pi
 #align has_fderiv_within_at_pi hasFDerivWithinAt_pi
 
 @[simp]
-theorem differentiableWithinAt_pi :
+lemma differentiableWithinAt_pi :
     DifferentiableWithinAt 𝕜 Φ s x ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => Φ x i) s x :=
   ⟨fun h i => (hasFDerivWithinAt_pi'.1 h.hasFDerivWithinAt i).differentiableWithinAt, fun h =>
     (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).differentiableWithinAt⟩
 #align differentiable_within_at_pi differentiableWithinAt_pi
 
 @[simp]
-theorem differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x :=
+lemma differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x :=
   ⟨fun h i => (hasFDerivAt_pi'.1 h.hasFDerivAt i).differentiableAt, fun h =>
     (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).differentiableAt⟩
 #align differentiable_at_pi differentiableAt_pi
 
-theorem differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s :=
+lemma differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, DifferentiableOn 𝕜 (fun x => Φ x i) s :=
   ⟨fun h i x hx => differentiableWithinAt_pi.1 (h x hx) i, fun h x hx =>
     differentiableWithinAt_pi.2 fun i => h i x hx⟩
 #align differentiable_on_pi differentiableOn_pi
 
-theorem differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable 𝕜 fun x => Φ x i :=
+lemma differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable 𝕜 fun x => Φ x i :=
   ⟨fun h i x => differentiableAt_pi.1 (h x) i, fun h x => differentiableAt_pi.2 fun i => h i x⟩
 #align differentiable_pi differentiable_pi
 

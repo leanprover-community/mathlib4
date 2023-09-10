@@ -20,7 +20,7 @@ namespace Test
 @[to_additive bar0]
 def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
-theorem bar0_works : bar0 3 4 = 7 := by decide
+lemma bar0_works : bar0 3 4 = 7 := by decide
 
 class my_has_pow (α : Type u) (β : Type v) :=
   (pow : α → β → α)
@@ -37,8 +37,8 @@ attribute [to_additive (reorder := 1 2, 4 5)] my_has_pow.pow
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
 
-theorem foo1_works : foo1 3 4 = Nat.pow 3 4 := by decide
-theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
+lemma foo1_works : foo1 3 4 = Nat.pow 3 4 := by decide
+lemma bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
@@ -47,14 +47,14 @@ instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
-theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
-theorem bar2_works : bar2 2 3 (PLift.up 2) = 2 * 5 := by decide
+lemma foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
+lemma bar2_works : bar2 2 3 (PLift.up 2) = 2 * 5 := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
 
-theorem foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
-theorem bar3_works : bar3 2 3 = 2 * 3 := by decide
+lemma foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
+lemma bar3_works : bar3 2 3 = 2 * 3 := by decide
 
 @[to_additive bar4]
 def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
@@ -72,30 +72,30 @@ def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ 
 -- @[to_additive bar7]
 -- def foo7 := @my_has_pow.pow
 
--- theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
--- theorem bar7_works : bar7 2 3 = 2 * 3 := by decide
+-- lemma foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
+-- lemma bar7_works : bar7 2 3 = 2 * 3 := by decide
 
 /-- Check that we don't additivize `Nat` expressions. -/
 @[to_additive bar8]
 def foo8 (a b : ℕ) := a * b
 
-theorem bar8_works : bar8 2 3 = 6 := by decide
+lemma bar8_works : bar8 2 3 = 6 := by decide
 
 /-- Check that we don't additivize `Nat` numerals. -/
 @[to_additive bar9]
 def foo9 := 1
 
-theorem bar9_works : bar9 = 1 := by decide
+lemma bar9_works : bar9 = 1 := by decide
 
 @[to_additive bar10]
 def foo10 (n m : ℕ) := HPow.hPow n m + n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar10_works : bar10 = foo10 := rfl
+lemma bar10_works : bar10 = foo10 := rfl
 
 @[to_additive bar11]
 def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar11_works : bar11 = foo11 := rfl
+lemma bar11_works : bar11 = foo11 := rfl
 
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
@@ -263,7 +263,7 @@ noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
 @[to_additive Bar.bar']
 def Foo.foo' : ℕ := 2
 
-theorem Bar.bar'_works : Bar.bar' = 2 := by decide
+lemma Bar.bar'_works : Bar.bar' = 2 := by decide
 
 run_cmd (do
   if !isNoncomputable (← getEnv) `Test.Bar.bar then throwError "bar shouldn't be computable"
@@ -299,7 +299,7 @@ lemma optiontest (x : Option α) : x.elim .none Option.some = x :=
 def IsUnit [Mul M] (a : M) : Prop := a ≠ a
 
 @[to_additive]
-theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
+lemma isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
 /-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
@@ -308,10 +308,10 @@ original declaration name as prefix.-/
 def IsUnit' [Monoid M] (a : M) : Prop := ∃ b : M, a * b = 1
 
 @[to_additive]
-theorem isUnit'_iff_exists_inv [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, a * b = 1 := Iff.rfl
+lemma isUnit'_iff_exists_inv [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, a * b = 1 := Iff.rfl
 
 @[to_additive]
-theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b * a = 1 := by
+lemma isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b * a = 1 := by
   simp [isUnit'_iff_exists_inv, mul_comm]
 
 /-! Test a permutation with a cycle of length > 2. -/

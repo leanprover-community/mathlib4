@@ -32,7 +32,7 @@ theorem dist_comm (n m : ℕ) : dist n m = dist m n := by simp [dist.def, add_co
 theorem dist_self (n : ℕ) : dist n n = 0 := by simp [dist.def, tsub_self]
 #align nat.dist_self Nat.dist_self
 
-theorem eq_of_dist_eq_zero {n m : ℕ} (h : dist n m = 0) : n = m :=
+lemma eq_of_dist_eq_zero {n m : ℕ} (h : dist n m = 0) : n = m :=
   have : n - m = 0 := Nat.eq_zero_of_add_eq_zero_right h
   have : n ≤ m := tsub_eq_zero_iff_le.mp this
   have : m - n = 0 := Nat.eq_zero_of_add_eq_zero_left h
@@ -40,14 +40,14 @@ theorem eq_of_dist_eq_zero {n m : ℕ} (h : dist n m = 0) : n = m :=
   le_antisymm ‹n ≤ m› ‹m ≤ n›
 #align nat.eq_of_dist_eq_zero Nat.eq_of_dist_eq_zero
 
-theorem dist_eq_zero {n m : ℕ} (h : n = m) : dist n m = 0 := by rw [h, dist_self]
+lemma dist_eq_zero {n m : ℕ} (h : n = m) : dist n m = 0 := by rw [h, dist_self]
 #align nat.dist_eq_zero Nat.dist_eq_zero
 
-theorem dist_eq_sub_of_le {n m : ℕ} (h : n ≤ m) : dist n m = m - n := by
+lemma dist_eq_sub_of_le {n m : ℕ} (h : n ≤ m) : dist n m = m - n := by
   rw [dist.def, tsub_eq_zero_iff_le.mpr h, zero_add]
 #align nat.dist_eq_sub_of_le Nat.dist_eq_sub_of_le
 
-theorem dist_eq_sub_of_le_right {n m : ℕ} (h : m ≤ n) : dist n m = n - m :=
+lemma dist_eq_sub_of_le_right {n m : ℕ} (h : m ≤ n) : dist n m = n - m :=
   by rw [dist_comm]; apply dist_eq_sub_of_le h
 #align nat.dist_eq_sub_of_le_right Nat.dist_eq_sub_of_le_right
 
@@ -83,7 +83,7 @@ theorem dist_add_add_left (k n m : ℕ) : dist (k + n) (k + m) = dist n m := by
   rw [add_comm k n, add_comm k m]; apply dist_add_add_right
 #align nat.dist_add_add_left Nat.dist_add_add_left
 
-theorem dist_eq_intro {n m k l : ℕ} (h : n + m = k + l) : dist n k = dist l m :=
+lemma dist_eq_intro {n m k l : ℕ} (h : n + m = k + l) : dist n k = dist l m :=
   calc
     dist n k = dist (n + m) (k + m) := by rw [dist_add_add_right]
     _ = dist (k + l) (k + m) := by rw [h]
@@ -105,16 +105,16 @@ theorem dist_mul_left (k n m : ℕ) : dist (k * n) (k * m) = k * dist n m := by
   rw [mul_comm k n, mul_comm k m, dist_mul_right, mul_comm]
 #align nat.dist_mul_left Nat.dist_mul_left
 
-theorem dist_eq_max_sub_min {i j : ℕ} : dist i j = (max i j) - min i j :=
+lemma dist_eq_max_sub_min {i j : ℕ} : dist i j = (max i j) - min i j :=
   Or.elim (lt_or_ge i j)
   (by intro h; rw [max_eq_right_of_lt h, min_eq_left_of_lt h, dist_eq_sub_of_le (Nat.le_of_lt h)])
   (by intro h; rw [max_eq_left h, min_eq_right h, dist_eq_sub_of_le_right h])
 
-theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
+lemma dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
   simp [dist.def, succ_sub_succ]
 #align nat.dist_succ_succ Nat.dist_succ_succ
 
-theorem dist_pos_of_ne {i j : Nat} : i ≠ j → 0 < dist i j := fun hne =>
+lemma dist_pos_of_ne {i j : Nat} : i ≠ j → 0 < dist i j := fun hne =>
   Nat.ltByCases
     (fun h : i < j => by rw [dist_eq_sub_of_le (le_of_lt h)]; apply tsub_pos_of_lt h)
     (fun h : i = j => by contradiction) fun h : i > j => by

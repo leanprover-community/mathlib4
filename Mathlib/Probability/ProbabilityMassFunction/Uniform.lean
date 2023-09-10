@@ -61,7 +61,7 @@ theorem uniformOfFinset_apply_of_not_mem (ha : a ∉ s) : uniformOfFinset s hs a
 #align pmf.uniform_of_finset_apply_of_not_mem Pmf.uniformOfFinset_apply_of_not_mem
 
 @[simp]
-theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
+lemma support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
     (by
       let ⟨a, ha⟩ := hs
@@ -77,7 +77,7 @@ section Measure
 variable (t : Set α)
 
 @[simp]
-theorem toOuterMeasure_uniformOfFinset_apply :
+lemma toOuterMeasure_uniformOfFinset_apply :
     (uniformOfFinset s hs).toOuterMeasure t = (s.filter (· ∈ t)).card / s.card :=
   calc
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
@@ -96,7 +96,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
 #align pmf.to_outer_measure_uniform_of_finset_apply Pmf.toOuterMeasure_uniformOfFinset_apply
 
 @[simp]
-theorem toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
+lemma toMeasure_uniformOfFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (uniformOfFinset s hs).toMeasure t = (s.filter (· ∈ t)).card / s.card :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_uniformOfFinset_apply hs t)
 #align pmf.to_measure_uniform_of_finset_apply Pmf.toMeasure_uniformOfFinset_apply
@@ -133,13 +133,13 @@ section Measure
 
 variable (s : Set α)
 
-theorem toOuterMeasure_uniformOfFintype_apply :
+lemma toOuterMeasure_uniformOfFintype_apply :
     (uniformOfFintype α).toOuterMeasure s = Fintype.card s / Fintype.card α := by
   rw [uniformOfFintype, toOuterMeasure_uniformOfFinset_apply,Fintype.card_ofFinset]
   rfl
 #align pmf.to_outer_measure_uniform_of_fintype_apply Pmf.toOuterMeasure_uniformOfFintype_apply
 
-theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
+lemma toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
     (uniformOfFintype α).toMeasure s = Fintype.card s / Fintype.card α := by
   simp [uniformOfFintype, hs]
   rfl
@@ -179,7 +179,7 @@ theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.ca
 #align pmf.of_multiset_apply Pmf.ofMultiset_apply
 
 @[simp]
-theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
+lemma support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
   Set.ext (by simp [mem_support_iff, hs])
 #align pmf.support_of_multiset Pmf.support_ofMultiset
 
@@ -187,7 +187,7 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
   simp
 #align pmf.mem_support_of_multiset_iff Pmf.mem_support_ofMultiset_iff
 
-theorem ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
+lemma ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
     ENNReal.nat_ne_top, or_false_iff] using ha
 #align pmf.of_multiset_apply_of_not_mem Pmf.ofMultiset_apply_of_not_mem
@@ -197,7 +197,7 @@ section Measure
 variable (t : Set α)
 
 @[simp]
-theorem toOuterMeasure_ofMultiset_apply :
+lemma toOuterMeasure_ofMultiset_apply :
     (ofMultiset s hs).toOuterMeasure t =
       (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) := by
   simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
@@ -206,7 +206,7 @@ theorem toOuterMeasure_ofMultiset_apply :
 #align pmf.to_outer_measure_of_multiset_apply Pmf.toOuterMeasure_ofMultiset_apply
 
 @[simp]
-theorem toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
+lemma toMeasure_ofMultiset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (ofMultiset s hs).toMeasure t = (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofMultiset_apply hs t)
 #align pmf.to_measure_of_multiset_apply Pmf.toMeasure_ofMultiset_apply

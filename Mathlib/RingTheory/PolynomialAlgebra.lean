@@ -139,7 +139,7 @@ def invFun (p : A[X]) : A ⊗[R] R[X] :=
 #align poly_equiv_tensor.inv_fun PolyEquivTensor.invFun
 
 @[simp]
-theorem invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := by
+lemma invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := by
   simp only [invFun, eval₂_add]
 #align poly_equiv_tensor.inv_fun_add PolyEquivTensor.invFun_add
 

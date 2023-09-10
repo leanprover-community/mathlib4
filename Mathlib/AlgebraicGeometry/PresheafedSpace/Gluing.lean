@@ -124,7 +124,7 @@ abbrev toTopGlueData : TopCat.GlueData :=
     toGlueData := 𝖣.mapGlueData (forget C) }
 #align algebraic_geometry.PresheafedSpace.glue_data.to_Top_glue_data AlgebraicGeometry.PresheafedSpace.GlueData.toTopGlueData
 
-theorem ι_openEmbedding [HasLimits C] (i : D.J) : OpenEmbedding (𝖣.ι i).base := by
+lemma ι_openEmbedding [HasLimits C] (i : D.J) : OpenEmbedding (𝖣.ι i).base := by
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) _]
   -- Porting note : added this erewrite
   erw [coe_comp]
@@ -410,7 +410,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvApp
 
 /-- `ιInvApp` is the left inverse of `D.ι i` on `U`. -/
-theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
+lemma ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom eq) := by
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`

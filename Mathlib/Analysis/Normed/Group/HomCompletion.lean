@@ -97,7 +97,7 @@ def normedAddGroupHomCompletionHom :
 #align normed_add_group_hom_completion_hom_apply normedAddGroupHomCompletionHom_apply
 
 @[simp]
-theorem NormedAddGroupHom.completion_id :
+lemma NormedAddGroupHom.completion_id :
     (NormedAddGroupHom.id G).completion = NormedAddGroupHom.id (Completion G) := by
   ext x
   rw [NormedAddGroupHom.completion_def, NormedAddGroupHom.coe_id, Completion.map_id]
@@ -129,7 +129,7 @@ theorem NormedAddGroupHom.completion_sub (f g : NormedAddGroupHom G H) :
 #align normed_add_group_hom.completion_sub NormedAddGroupHom.completion_sub
 
 @[simp]
-theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completion = 0 :=
+lemma NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completion = 0 :=
   normedAddGroupHomCompletionHom.map_zero
 #align normed_add_group_hom.zero_completion NormedAddGroupHom.zero_completion
 
@@ -147,7 +147,7 @@ theorem NormedAddCommGroup.norm_toCompl (x : G) : ‖toCompl x‖ = ‖x‖ :=
   Completion.norm_coe x
 #align normed_add_comm_group.norm_to_compl NormedAddCommGroup.norm_toCompl
 
-theorem NormedAddCommGroup.denseRange_toCompl : DenseRange (toCompl : G → Completion G) :=
+lemma NormedAddCommGroup.denseRange_toCompl : DenseRange (toCompl : G → Completion G) :=
   Completion.denseInducing_coe.dense
 #align normed_add_comm_group.dense_range_to_compl NormedAddCommGroup.denseRange_toCompl
 
@@ -168,7 +168,7 @@ theorem NormedAddGroupHom.ker_le_ker_completion (f : NormedAddGroupHom G H) :
   simp [h₀, mem_ker, Completion.coe_zero]
 #align normed_add_group_hom.ker_le_ker_completion NormedAddGroupHom.ker_le_ker_completion
 
-theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
+lemma NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
     (h : f.SurjectiveOnWith f.range C) :
     (f.completion.ker : Set <| Completion G) = closure (toCompl.comp <| incl f.ker).range := by
   refine le_antisymm ?_ (closure_minimal f.ker_le_ker_completion f.completion.isClosed_ker)

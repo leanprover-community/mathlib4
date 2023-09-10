@@ -57,11 +57,11 @@ scoped notation "π" => Nat.primeCounting
 
 scoped notation "π'" => Nat.primeCounting'
 
-theorem monotone_primeCounting' : Monotone primeCounting' :=
+lemma monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime
 #align nat.monotone_prime_counting' Nat.monotone_primeCounting'
 
-theorem monotone_primeCounting : Monotone primeCounting :=
+lemma monotone_primeCounting : Monotone primeCounting :=
   monotone_primeCounting'.comp (monotone_id.add_const _)
 #align nat.monotone_prime_counting Nat.monotone_primeCounting
 
@@ -76,7 +76,7 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
 #align nat.prime_nth_prime Nat.prime_nth_prime
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
-theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
+lemma primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
     π' (k + n) ≤ ((range k).filter Prime).card + ((Ico k (k + n)).filter Prime).card := by

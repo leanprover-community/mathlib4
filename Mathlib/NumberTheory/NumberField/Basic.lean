@@ -44,7 +44,7 @@ open Function Module
 open scoped Classical BigOperators nonZeroDivisors
 
 /-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
+lemma Int.not_isField : ¬IsField ℤ := fun h =>
   Int.not_even_one <|
     (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
 #align int.not_is_field Int.not_isField
@@ -56,7 +56,7 @@ variable (K L : Type*) [Field K] [Field L] [nf : NumberField K]
 -- See note [lower instance priority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
-protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
+protected lemma isAlgebraic : Algebra.IsAlgebraic ℚ K :=
   Algebra.isAlgebraic_of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
 
@@ -72,7 +72,7 @@ theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 K ↔ IsIntegral ℤ x :=
   Iff.rfl
 #align number_field.mem_ring_of_integers NumberField.mem_ringOfIntegers
 
-theorem isIntegral_of_mem_ringOfIntegers {K : Type*} [Field K] {x : K} (hx : x ∈ 𝓞 K) :
+lemma isIntegral_of_mem_ringOfIntegers {K : Type*} [Field K] {x : K} (hx : x ∈ 𝓞 K) :
     IsIntegral ℤ (⟨x, hx⟩ : 𝓞 K) := by
   obtain ⟨P, hPm, hP⟩ := hx
   refine' ⟨P, hPm, _⟩
@@ -112,7 +112,7 @@ theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
   x.2
 #align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
 
-theorem map_mem {F L : Type*} [Field L] [CharZero K] [CharZero L] [AlgHomClass F ℚ K L] (f : F)
+lemma map_mem {F L : Type*} [Field L] [CharZero K] [CharZero L] [AlgHomClass F ℚ K L] (f : F)
     (x : 𝓞 K) : f x ∈ 𝓞 L :=
   (mem_ringOfIntegers _ _).2 <| map_isIntegral_int f <| RingOfIntegers.isIntegral_coe x
 #align number_field.ring_of_integers.map_mem NumberField.RingOfIntegers.map_mem
@@ -132,7 +132,7 @@ instance : IsNoetherian ℤ (𝓞 K) :=
   IsIntegralClosure.isNoetherian _ ℚ K _
 
 /-- The ring of integers of a number field is not a field. -/
-theorem not_isField : ¬IsField (𝓞 K) := by
+lemma not_isField : ¬IsField (𝓞 K) := by
   have h_inj : Function.Injective (algebraMap ℤ (𝓞 K)) := RingHom.injective_int (algebraMap ℤ (𝓞 K))
   intro hf
   exact Int.not_isField
@@ -166,12 +166,12 @@ theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
   Basis.localizationLocalization_apply ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K) i
 #align number_field.integral_basis_apply NumberField.integralBasis_apply
 
-theorem mem_span_integralBasis {x : K} :
+lemma mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ 𝓞 K := by
   rw [integralBasis, Basis.localizationLocalization_span, Subalgebra.range_isScalarTower_toAlgHom,
     Subalgebra.mem_toSubmodule]
 
-theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
+lemma RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
 #align number_field.ring_of_integers.rank NumberField.RingOfIntegers.rank
 

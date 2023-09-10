@@ -56,15 +56,15 @@ for example, all three of the following lemmas are tagged `@[gcongr]` and are us
 situations according to whether the goal compares constant-left-multiplications,
 constant-right-multiplications, or fully varying multiplications:
 ```
-theorem mul_le_mul_of_nonneg_left [Mul α] [Zero α] [Preorder α] [PosMulMono α]
+lemma mul_le_mul_of_nonneg_left [Mul α] [Zero α] [Preorder α] [PosMulMono α]
     {a b c : α} (h : b ≤ c) (a0 : 0 ≤ a) :
     a * b ≤ a * c
 
-theorem mul_le_mul_of_nonneg_right [Mul α] [Zero α] [Preorder α] [MulPosMono α]
+lemma mul_le_mul_of_nonneg_right [Mul α] [Zero α] [Preorder α] [MulPosMono α]
     {a b c : α} (h : b ≤ c) (a0 : 0 ≤ a) :
     b * a ≤ c * a
 
-theorem mul_le_mul [MulZeroClass α] [Preorder α] [PosMulMono α] [MulPosMono α]
+lemma mul_le_mul [MulZeroClass α] [Preorder α] [PosMulMono α] [MulPosMono α]
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) :
     a * c ≤ b * d
 ```
@@ -77,7 +77,7 @@ functions which have different theories when different typeclass assumptions app
 the following lemma is stored with the same `@[gcongr]` data as `mul_le_mul` above, and the two
 lemmas are simply tried in succession to determine which has the typeclasses relevant to the goal:
 ```
-theorem mul_le_mul' [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+lemma mul_le_mul' [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d
 ```
@@ -100,7 +100,7 @@ reflexivity, and this can be extended by writing tactic extensions tagged with t
 Some natural generalized congruence lemmas have "main" hypotheses which are universally quantified
 or have the structure of an implication, for example
 ```
-theorem GCongr.Finset.sum_le_sum [OrderedAddCommMonoid N] {f g : ι → N} {s : Finset ι}
+lemma GCongr.Finset.sum_le_sum [OrderedAddCommMonoid N] {f g : ι → N} {s : Finset ι}
     (h : ∀ (i : ι), i ∈ s → f i ≤ g i) :
     s.sum f ≤ s.sum g
 ```

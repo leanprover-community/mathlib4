@@ -108,7 +108,7 @@ end Imo2021Q1
 
 open Imo2021Q1
 
-theorem imo2021_q1 :
+lemma imo2021_q1 :
     ∀ n : ℕ, 100 ≤ n → ∀ (A) (_ : A ⊆ Finset.Icc n (2 * n)),
     (∃ (a : _) (_ : a ∈ A) (b : _) (_ : b ∈ A), a ≠ b ∧ ∃ k : ℕ, a + b = k ^ 2) ∨
     ∃ (a : _) (_ : a ∈ Finset.Icc n (2 * n) \ A) (b : _) (_ : b ∈ Finset.Icc n (2 * n) \ A),

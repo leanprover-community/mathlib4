@@ -59,7 +59,7 @@ theorem reindexLinearEquiv_symm (eₘ : m ≃ m') (eₙ : n ≃ n') :
 #align matrix.reindex_linear_equiv_symm Matrix.reindexLinearEquiv_symm
 
 @[simp]
-theorem reindexLinearEquiv_refl_refl :
+lemma reindexLinearEquiv_refl_refl :
     reindexLinearEquiv R A (Equiv.refl m) (Equiv.refl n) = LinearEquiv.refl R _ :=
   LinearEquiv.ext fun _ => rfl
 #align matrix.reindex_linear_equiv_refl_refl Matrix.reindexLinearEquiv_refl_refl
@@ -85,7 +85,7 @@ theorem reindexLinearEquiv_comp_apply (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁'
   submatrix_submatrix _ _ _ _ _
 #align matrix.reindex_linear_equiv_comp_apply Matrix.reindexLinearEquiv_comp_apply
 
-theorem reindexLinearEquiv_one [DecidableEq m] [DecidableEq m'] [One A] (e : m ≃ m') :
+lemma reindexLinearEquiv_one [DecidableEq m] [DecidableEq m'] [One A] (e : m ≃ m') :
     reindexLinearEquiv R A e e (1 : Matrix m m A) = 1 :=
   submatrix_one_equiv e.symm
 #align matrix.reindex_linear_equiv_one Matrix.reindexLinearEquiv_one
@@ -96,14 +96,14 @@ section Semiring
 
 variable [Semiring R] [Semiring A] [Module R A]
 
-theorem reindexLinearEquiv_mul [Fintype n] [Fintype n'] (eₘ : m ≃ m') (eₙ : n ≃ n') (eₒ : o ≃ o')
+lemma reindexLinearEquiv_mul [Fintype n] [Fintype n'] (eₘ : m ≃ m') (eₙ : n ≃ n') (eₒ : o ≃ o')
     (M : Matrix m n A) (N : Matrix n o A) :
     reindexLinearEquiv R A eₘ eₙ M * reindexLinearEquiv R A eₙ eₒ N =
       reindexLinearEquiv R A eₘ eₒ (M * N) :=
   submatrix_mul_equiv M N _ _ _
 #align matrix.reindex_linear_equiv_mul Matrix.reindexLinearEquiv_mul
 
-theorem mul_reindexLinearEquiv_one [Fintype n] [DecidableEq o] (e₁ : o ≃ n) (e₂ : o ≃ n')
+lemma mul_reindexLinearEquiv_one [Fintype n] [DecidableEq o] (e₁ : o ≃ n) (e₂ : o ≃ n')
     (M : Matrix m n A) :
     M * (reindexLinearEquiv R A e₁ e₂ 1) =
       reindexLinearEquiv R A (Equiv.refl m) (e₁.symm.trans e₂) M :=
@@ -140,7 +140,7 @@ theorem reindexAlgEquiv_symm (e : m ≃ n) : (reindexAlgEquiv R e).symm = reinde
 #align matrix.reindex_alg_equiv_symm Matrix.reindexAlgEquiv_symm
 
 @[simp]
-theorem reindexAlgEquiv_refl : reindexAlgEquiv R (Equiv.refl m) = AlgEquiv.refl :=
+lemma reindexAlgEquiv_refl : reindexAlgEquiv R (Equiv.refl m) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => rfl
 #align matrix.reindex_alg_equiv_refl Matrix.reindexAlgEquiv_refl
 
@@ -155,7 +155,7 @@ end Algebra
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/
-theorem det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fintype n]
+lemma det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fintype n]
     [DecidableEq n] (e : m ≃ n) (M : Matrix m m R) : det (reindexLinearEquiv R R e e M) = det M :=
   det_reindex_self e M
 #align matrix.det_reindex_linear_equiv_self Matrix.det_reindexLinearEquiv_self
@@ -164,7 +164,7 @@ theorem det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fi
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/
-theorem det_reindexAlgEquiv [CommRing R] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+lemma det_reindexAlgEquiv [CommRing R] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
     (e : m ≃ n) (A : Matrix m m R) : det (reindexAlgEquiv R e A) = det A :=
   det_reindex_self e A
 #align matrix.det_reindex_alg_equiv Matrix.det_reindexAlgEquiv

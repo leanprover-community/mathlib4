@@ -21,12 +21,12 @@ section LinearOrderedRing
 variable [LinearOrderedRing α] {a b c : α}
 
 @[simp]
-theorem abs_one : |(1 : α)| = 1 :=
+lemma abs_one : |(1 : α)| = 1 :=
   abs_of_pos zero_lt_one
 #align abs_one abs_one
 
 @[simp]
-theorem abs_two : |(2 : α)| = 2 :=
+lemma abs_two : |(2 : α)| = 2 :=
   abs_of_pos zero_lt_two
 #align abs_two abs_two
 
@@ -55,11 +55,11 @@ theorem abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_s
 #align abs_mul_self abs_mul_self
 
 @[simp]
-theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by simp [abs_eq_max_neg]
+lemma abs_eq_self : |a| = a ↔ 0 ≤ a := by simp [abs_eq_max_neg]
 #align abs_eq_self abs_eq_self
 
 @[simp]
-theorem abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by simp [abs_eq_max_neg]
+lemma abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by simp [abs_eq_max_neg]
 #align abs_eq_neg_self abs_eq_neg_self
 
 /-- For an element `a` of a linear ordered ring, either `abs a = a` and `0 ≤ a`,
@@ -80,22 +80,22 @@ theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = 
   rcases le_total 0 a with (ha | ha) <;> simp [ha]
 #align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self
 
-theorem abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by
+lemma abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by
   rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
   exact (mul_self_inj (abs_nonneg a) (abs_nonneg b)).symm
 #align abs_eq_iff_mul_self_eq abs_eq_iff_mul_self_eq
 
-theorem abs_lt_iff_mul_self_lt : |a| < |b| ↔ a * a < b * b := by
+lemma abs_lt_iff_mul_self_lt : |a| < |b| ↔ a * a < b * b := by
   rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
   exact mul_self_lt_mul_self_iff (abs_nonneg a) (abs_nonneg b)
 #align abs_lt_iff_mul_self_lt abs_lt_iff_mul_self_lt
 
-theorem abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
+lemma abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
   rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
   exact mul_self_le_mul_self_iff (abs_nonneg a) (abs_nonneg b)
 #align abs_le_iff_mul_self_le abs_le_iff_mul_self_le
 
-theorem abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
+lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
   simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le α _ a 1
 #align abs_le_one_iff_mul_self_le_one abs_le_one_iff_mul_self_le_one
 

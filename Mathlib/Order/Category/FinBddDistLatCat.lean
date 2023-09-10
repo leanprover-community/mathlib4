@@ -108,7 +108,7 @@ def dualEquiv : FinBddDistLatCat ≌ FinBddDistLatCat where
 
 end FinBddDistLatCat
 
-theorem finBddDistLatCat_dual_comp_forget_to_bddDistLatCat :
+lemma finBddDistLatCat_dual_comp_forget_to_bddDistLatCat :
     FinBddDistLatCat.dual ⋙ forget₂ FinBddDistLatCat BddDistLatCat =
       forget₂ FinBddDistLatCat BddDistLatCat ⋙ BddDistLatCat.dual :=
   rfl

@@ -84,7 +84,7 @@ instance : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
 
 @[simp]
-theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
+lemma coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
   rfl
 #align complex.coe_algebra_map Complex.coe_algebraMap
 
@@ -131,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 #align complex.coe_basis_one_I_repr Complex.coe_basisOneI_repr
 
 @[simp]
-theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
+lemma coe_basisOneI : ⇑basisOneI = ![1, I] :=
   funext fun i =>
     Basis.apply_eq_iff.mpr <|
       Finsupp.ext fun j => by
@@ -147,21 +147,21 @@ instance : FiniteDimensional ℝ ℂ :=
   of_fintype_basis basisOneI
 
 @[simp]
-theorem finrank_real_complex : FiniteDimensional.finrank ℝ ℂ = 2 := by
+lemma finrank_real_complex : FiniteDimensional.finrank ℝ ℂ = 2 := by
   rw [finrank_eq_card_basis basisOneI, Fintype.card_fin]
 #align complex.finrank_real_complex Complex.finrank_real_complex
 
 @[simp]
-theorem rank_real_complex : Module.rank ℝ ℂ = 2 := by simp [← finrank_eq_rank, finrank_real_complex]
+lemma rank_real_complex : Module.rank ℝ ℂ = 2 := by simp [← finrank_eq_rank, finrank_real_complex]
 #align complex.rank_real_complex Complex.rank_real_complex
 
-theorem rank_real_complex'.{u} : Cardinal.lift.{u} (Module.rank ℝ ℂ) = 2 := by
+lemma rank_real_complex'.{u} : Cardinal.lift.{u} (Module.rank ℝ ℂ) = 2 := by
   rw [← finrank_eq_rank, finrank_real_complex, Cardinal.lift_natCast, Nat.cast_ofNat]
 #align complex.rank_real_complex' Complex.rank_real_complex'
 
 /-- `Fact` version of the dimension of `ℂ` over `ℝ`, locally useful in the definition of the
 circle. -/
-theorem finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
+lemma finrank_real_complex_fact : Fact (finrank ℝ ℂ = 2) :=
   ⟨finrank_real_complex⟩
 #align complex.finrank_real_complex_fact Complex.finrank_real_complex_fact
 
@@ -180,7 +180,7 @@ instance Module.real_complex_tower (E : Type*) [AddCommGroup E] [Module ℂ E] :
 #align module.real_complex_tower Module.real_complex_tower
 
 @[simp, norm_cast]
-theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
+lemma Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
     (x : ℂ) • y = x • y :=
   rfl
 #align complex.coe_smul Complex.coe_smul
@@ -226,7 +226,7 @@ def reLm : ℂ →ₗ[ℝ] ℝ where
 #align complex.re_lm Complex.reLm
 
 @[simp]
-theorem reLm_coe : ⇑reLm = re :=
+lemma reLm_coe : ⇑reLm = re :=
   rfl
 #align complex.re_lm_coe Complex.reLm_coe
 
@@ -238,7 +238,7 @@ def imLm : ℂ →ₗ[ℝ] ℝ where
 #align complex.im_lm Complex.imLm
 
 @[simp]
-theorem imLm_coe : ⇑imLm = im :=
+lemma imLm_coe : ⇑imLm = im :=
   rfl
 #align complex.im_lm_coe Complex.imLm_coe
 
@@ -248,7 +248,7 @@ def ofRealAm : ℝ →ₐ[ℝ] ℂ :=
 #align complex.of_real_am Complex.ofRealAm
 
 @[simp]
-theorem ofRealAm_coe : ⇑ofRealAm = ((↑) : ℝ → ℂ) :=
+lemma ofRealAm_coe : ⇑ofRealAm = ((↑) : ℝ → ℂ) :=
   rfl
 #align complex.of_real_am_coe Complex.ofRealAm_coe
 
@@ -262,13 +262,13 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
 #align complex.conj_ae Complex.conjAe
 
 @[simp]
-theorem conjAe_coe : ⇑conjAe = conj :=
+lemma conjAe_coe : ⇑conjAe = conj :=
   rfl
 #align complex.conj_ae_coe Complex.conjAe_coe
 
 /-- The matrix representation of `conjAe`. -/
 @[simp]
-theorem toMatrix_conjAe :
+lemma toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
   ext i j
   -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
@@ -347,14 +347,14 @@ def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
 
 -- When applied to `Complex.I` itself, `lift` is the identity.
 @[simp]
-theorem liftAux_I : liftAux I I_mul_I = AlgHom.id ℝ ℂ :=
+lemma liftAux_I : liftAux I I_mul_I = AlgHom.id ℝ ℂ :=
   algHom_ext <| liftAux_apply_I _ _
 set_option linter.uppercaseLean3 false in
 #align complex.lift_aux_I Complex.liftAux_I
 
 -- When applied to `-Complex.I`, `lift` is conjugation, `conj`.
 @[simp]
-theorem liftAux_neg_I : liftAux (-I) ((neg_mul_neg _ _).trans I_mul_I) = conjAe :=
+lemma liftAux_neg_I : liftAux (-I) ((neg_mul_neg _ _).trans I_mul_I) = conjAe :=
   algHom_ext <| (liftAux_apply_I _ _).trans conj_I.symm
 set_option linter.uppercaseLean3 false in
 #align complex.lift_aux_neg_I Complex.liftAux_neg_I
@@ -570,7 +570,7 @@ lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
 
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
 as additive groups. -/
-theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
+lemma Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
   LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
 
 end Rational

@@ -30,7 +30,7 @@ set_option linter.uppercaseLean3 false in
 namespace MonoidalCategory
 
 @[simp]
-theorem braiding_naturality {X₁ X₂ Y₁ Y₂ : ModuleCat.{u} R} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+lemma braiding_naturality {X₁ X₂ Y₁ Y₂ : ModuleCat.{u} R} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     (f ⊗ g) ≫ (Y₁.braiding Y₂).hom = (X₁.braiding X₂).hom ≫ (g ⊗ f) := by
   apply TensorProduct.ext'
   intro x y
@@ -76,14 +76,14 @@ set_option linter.uppercaseLean3 false in
 #align Module.monoidal_category.symmetric_category ModuleCat.MonoidalCategory.symmetricCategory
 
 @[simp]
-theorem braiding_hom_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
+lemma braiding_hom_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
     ((β_ M N).hom : M ⊗ N ⟶ N ⊗ M) (m ⊗ₜ n) = n ⊗ₜ m :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_category.braiding_hom_apply ModuleCat.MonoidalCategory.braiding_hom_apply
 
 @[simp]
-theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
+lemma braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
     ((β_ M N).inv : N ⊗ M ⟶ M ⊗ N) (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 set_option linter.uppercaseLean3 false in

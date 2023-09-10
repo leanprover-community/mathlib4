@@ -58,23 +58,23 @@ attribute [coe] ENorm.toFun
 instance : CoeFun (ENorm 𝕜 V) fun _ => V → ℝ≥0∞ :=
   ⟨ENorm.toFun⟩
 
-theorem coeFn_injective : Function.Injective ((↑) : ENorm 𝕜 V → V → ℝ≥0∞) := fun e₁ e₂ h => by
+lemma coeFn_injective : Function.Injective ((↑) : ENorm 𝕜 V → V → ℝ≥0∞) := fun e₁ e₂ h => by
   cases e₁
   cases e₂
   congr
 #align enorm.coe_fn_injective ENorm.coeFn_injective
 
 @[ext]
-theorem ext {e₁ e₂ : ENorm 𝕜 V} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ :=
+lemma ext {e₁ e₂ : ENorm 𝕜 V} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ :=
   coeFn_injective <| funext h
 #align enorm.ext ENorm.ext
 
-theorem ext_iff {e₁ e₂ : ENorm 𝕜 V} : e₁ = e₂ ↔ ∀ x, e₁ x = e₂ x :=
+lemma ext_iff {e₁ e₂ : ENorm 𝕜 V} : e₁ = e₂ ↔ ∀ x, e₁ x = e₂ x :=
   ⟨fun h _ => h ▸ rfl, ext⟩
 #align enorm.ext_iff ENorm.ext_iff
 
 @[simp, norm_cast]
-theorem coe_inj {e₁ e₂ : ENorm 𝕜 V} : (e₁ : V → ℝ≥0∞) = e₂ ↔ e₁ = e₂ :=
+lemma coe_inj {e₁ e₂ : ENorm 𝕜 V} : (e₁ : V → ℝ≥0∞) = e₂ ↔ e₁ = e₂ :=
   coeFn_injective.eq_iff
 #align enorm.coe_inj ENorm.coe_inj
 
@@ -93,13 +93,13 @@ theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
 #align enorm.map_smul ENorm.map_smul
 
 @[simp]
-theorem map_zero : e 0 = 0 := by
+lemma map_zero : e 0 = 0 := by
   rw [← zero_smul 𝕜 (0 : V), e.map_smul]
   norm_num
 #align enorm.map_zero ENorm.map_zero
 
 @[simp]
-theorem eq_zero_iff {x : V} : e x = 0 ↔ x = 0 :=
+lemma eq_zero_iff {x : V} : e x = 0 ↔ x = 0 :=
   ⟨e.eq_zero' x, fun h => h.symm ▸ e.map_zero⟩
 #align enorm.eq_zero_iff ENorm.eq_zero_iff
 
@@ -150,7 +150,7 @@ noncomputable instance : Top (ENorm 𝕜 V) :=
 noncomputable instance : Inhabited (ENorm 𝕜 V) :=
   ⟨⊤⟩
 
-theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENorm 𝕜 V) x = ⊤ :=
+lemma top_map {x : V} (hx : x ≠ 0) : (⊤ : ENorm 𝕜 V) x = ⊤ :=
   if_neg hx
 #align enorm.top_map ENorm.top_map
 

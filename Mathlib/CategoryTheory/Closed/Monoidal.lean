@@ -104,23 +104,23 @@ def coev : 𝟭 C ⟶ tensorLeft A ⋙ ihom A :=
 #align category_theory.ihom.coev CategoryTheory.ihom.coev
 
 @[simp]
-theorem ihom_adjunction_counit : (ihom.adjunction A).counit = ev A :=
+lemma ihom_adjunction_counit : (ihom.adjunction A).counit = ev A :=
   rfl
 #align category_theory.ihom.ihom_adjunction_counit CategoryTheory.ihom.ihom_adjunction_counit
 
 @[simp]
-theorem ihom_adjunction_unit : (ihom.adjunction A).unit = coev A :=
+lemma ihom_adjunction_unit : (ihom.adjunction A).unit = coev A :=
   rfl
 #align category_theory.ihom.ihom_adjunction_unit CategoryTheory.ihom.ihom_adjunction_unit
 
 @[reassoc (attr := simp)]
-theorem ev_naturality {X Y : C} (f : X ⟶ Y) :
+lemma ev_naturality {X Y : C} (f : X ⟶ Y) :
     (𝟙 A ⊗ (ihom A).map f) ≫ (ev A).app Y = (ev A).app X ≫ f :=
   (ev A).naturality f
 #align category_theory.ihom.ev_naturality CategoryTheory.ihom.ev_naturality
 
 @[reassoc (attr := simp)]
-theorem coev_naturality {X Y : C} (f : X ⟶ Y) :
+lemma coev_naturality {X Y : C} (f : X ⟶ Y) :
     f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (𝟙 A ⊗ f) :=
   (coev A).naturality f
 #align category_theory.ihom.coev_naturality CategoryTheory.ihom.coev_naturality
@@ -130,12 +130,12 @@ set_option quotPrecheck false in
 notation A " ⟶[" C "] " B:10 => (@ihom C _ _ A _).obj B
 
 @[reassoc (attr := simp)]
-theorem ev_coev : (𝟙 A ⊗ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
+lemma ev_coev : (𝟙 A ⊗ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
   Adjunction.left_triangle_components (ihom.adjunction A)
 #align category_theory.ihom.ev_coev CategoryTheory.ihom.ev_coev
 
 @[reassoc (attr := simp)]
-theorem coev_ev : (coev A).app (A ⟶[C] B) ≫ (ihom A).map ((ev A).app B) = 𝟙 (A ⟶[C] B) :=
+lemma coev_ev : (coev A).app (A ⟶[C] B) ≫ (ihom A).map ((ev A).app B) = 𝟙 (A ⟶[C] B) :=
   Adjunction.right_triangle_components (ihom.adjunction A)
 #align category_theory.ihom.coev_ev CategoryTheory.ihom.coev_ev
 
@@ -222,21 +222,21 @@ theorem curry_eq (g : A ⊗ Y ⟶ X) : curry g = (ihom.coev A).app Y ≫ (ihom A
   Adjunction.homEquiv_unit _
 #align category_theory.monoidal_closed.curry_eq CategoryTheory.MonoidalClosed.curry_eq
 
-theorem curry_injective : Function.Injective (curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X)) :=
+lemma curry_injective : Function.Injective (curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X)) :=
   (Closed.isAdj.adj.homEquiv _ _).injective
 #align category_theory.monoidal_closed.curry_injective CategoryTheory.MonoidalClosed.curry_injective
 
-theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X)) :=
+lemma uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X)) :=
   (Closed.isAdj.adj.homEquiv _ _).symm.injective
 #align category_theory.monoidal_closed.uncurry_injective CategoryTheory.MonoidalClosed.uncurry_injective
 
 variable (A X)
 
-theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
+lemma uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
   rw [uncurry_eq, tensor_id, id_comp]
 #align category_theory.monoidal_closed.uncurry_id_eq_ev CategoryTheory.MonoidalClosed.uncurry_id_eq_ev
 
-theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
+lemma curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 #align category_theory.monoidal_closed.curry_id_eq_coev CategoryTheory.MonoidalClosed.curry_id_eq_coev
@@ -276,12 +276,12 @@ theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
 #align category_theory.monoidal_closed.pre_id CategoryTheory.MonoidalClosed.pre_id
 
 @[simp]
-theorem pre_map {A₁ A₂ A₃ : C} [Closed A₁] [Closed A₂] [Closed A₃] (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+lemma pre_map {A₁ A₂ A₃ : C} [Closed A₁] [Closed A₂] [Closed A₃] (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
     pre (f ≫ g) = pre g ≫ pre f := by
   rw [pre, pre, pre, transferNatTransSelf_comp, (tensoringLeft C).map_comp]
 #align category_theory.monoidal_closed.pre_map CategoryTheory.MonoidalClosed.pre_map
 
-theorem pre_comm_ihom_map {W X Y Z : C} [Closed W] [Closed X] (f : W ⟶ X) (g : Y ⟶ Z) :
+lemma pre_comm_ihom_map {W X Y Z : C} [Closed W] [Closed X] (f : W ⟶ X) (g : Y ⟶ Z) :
     (pre f).app Y ≫ (ihom W).map g = (ihom X).map g ≫ (pre f).app Z := by simp
 #align category_theory.monoidal_closed.pre_comm_ihom_map CategoryTheory.MonoidalClosed.pre_comm_ihom_map
 

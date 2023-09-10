@@ -78,7 +78,7 @@ protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M
   map_zero' := AddMonoidHom.ext <| zero_smul _
   map_add' _ _ := AddMonoidHom.ext <| add_smul _ _
 
-@[simp] theorem coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
+@[simp] lemma coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
     ⇑(.smul : R →+ M →+ M) = AddMonoidHom.smulLeft := rfl
 
 instance module [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=

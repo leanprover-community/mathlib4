@@ -144,7 +144,7 @@ instance : UniformGroup (α →ᵤ G) :=
     UniformFun.uniformEquivProdArrow.symm.uniformContinuous⟩
 
 @[to_additive]
-protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
+protected lemma UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, f x ∈ b i } := by
   have := h.comap fun p : G × G => p.2 / p.1
@@ -156,7 +156,7 @@ protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : �
 #align uniform_fun.has_basis_nhds_zero_of_basis UniformFun.hasBasis_nhds_zero_of_basis
 
 @[to_additive]
-protected theorem UniformFun.hasBasis_nhds_one :
+protected lemma UniformFun.hasBasis_nhds_one :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis (fun V : Set G => V ∈ (𝓝 1 : Filter G)) fun V =>
       { f : α → G | ∀ x, f x ∈ V } :=
   UniformFun.hasBasis_nhds_one_of_basis (basis_sets _)

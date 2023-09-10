@@ -205,7 +205,7 @@ v         v         v         v         v
 A' --f'-> B' --g'-> C' --h'-> D' --i'-> E'
 ```
 -/
-theorem isIso_of_epi_of_isIso_of_isIso_of_mono : IsIso γ :=
+lemma isIso_of_epi_of_isIso_of_isIso_of_mono : IsIso γ :=
   have : Mono γ := by
     apply mono_of_epi_of_mono_of_mono comm₁ comm₂ comm₃ hfg hgh hf'g' <;> infer_instance
   have : Epi γ := by

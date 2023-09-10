@@ -144,7 +144,7 @@ instance {A B : NonemptyFinLinOrdCat.{u}} : OrderHomClass (A ⟶ B) A B where
     exact congr_fun h x
   map_rel f _ _ h := f.monotone h
 
-theorem mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
+lemma mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
   refine' ⟨_, ConcreteCategory.mono_of_injective f⟩
   intro
@@ -165,7 +165,7 @@ set_option linter.uppercaseLean3 false in
 lemma forget_map_apply {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) (a : A) :
   (forget NonemptyFinLinOrdCat).map f a = (f : OrderHom A B).toFun a := rfl
 
-theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
+lemma epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
     Epi f ↔ Function.Surjective f := by
   constructor
   · intro
@@ -247,7 +247,7 @@ instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrdCat.{u} :=
 
 end NonemptyFinLinOrdCat
 
-theorem nonemptyFinLinOrdCat_dual_comp_forget_to_linOrdCat :
+lemma nonemptyFinLinOrdCat_dual_comp_forget_to_linOrdCat :
     NonemptyFinLinOrdCat.dual ⋙ forget₂ NonemptyFinLinOrdCat LinOrdCat =
       forget₂ NonemptyFinLinOrdCat LinOrdCat ⋙ LinOrdCat.dual :=
   rfl

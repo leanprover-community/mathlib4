@@ -62,11 +62,11 @@ instance : Add (Language α) :=
 instance : Mul (Language α) :=
   ⟨image2 (· ++ ·)⟩
 
-theorem zero_def : (0 : Language α) = (∅ : Set _) :=
+lemma zero_def : (0 : Language α) = (∅ : Set _) :=
   rfl
 #align language.zero_def Language.zero_def
 
-theorem one_def : (1 : Language α) = ({[]} : Set (List α)) :=
+lemma one_def : (1 : Language α) = ({[]} : Set (List α)) :=
   rfl
 #align language.one_def Language.one_def
 
@@ -89,7 +89,7 @@ lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.jo
 -- Porting note: `reducible` attribute cannot be local,
 --               so this new theorem is required in place of `Set.ext`.
 @[ext]
-theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l = m :=
+lemma ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l = m :=
   Set.ext h
 
 @[simp]
@@ -101,7 +101,7 @@ theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
 #align language.mem_one Language.mem_one
 
-theorem nil_mem_one : [] ∈ (1 : Language α) :=
+lemma nil_mem_one : [] ∈ (1 : Language α) :=
   Set.mem_singleton _
 #align language.nil_mem_one Language.nil_mem_one
 
@@ -109,19 +109,19 @@ theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ 
   Iff.rfl
 #align language.mem_add Language.mem_add
 
-theorem mem_mul : x ∈ l * m ↔ ∃ a b, a ∈ l ∧ b ∈ m ∧ a ++ b = x :=
+lemma mem_mul : x ∈ l * m ↔ ∃ a b, a ∈ l ∧ b ∈ m ∧ a ++ b = x :=
   mem_image2
 #align language.mem_mul Language.mem_mul
 
-theorem append_mem_mul : a ∈ l → b ∈ m → a ++ b ∈ l * m :=
+lemma append_mem_mul : a ∈ l → b ∈ m → a ++ b ∈ l * m :=
   mem_image2_of_mem
 #align language.append_mem_mul Language.append_mem_mul
 
-theorem mem_kstar : x ∈ l∗ ↔ ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l :=
+lemma mem_kstar : x ∈ l∗ ↔ ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l :=
   Iff.rfl
 #align language.mem_kstar Language.mem_kstar
 
-theorem join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.join ∈ l∗ :=
+lemma join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.join ∈ l∗ :=
   ⟨L, rfl, h⟩
 #align language.join_mem_kstar Language.join_mem_kstar
 
@@ -191,41 +191,41 @@ theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
 #align language.le_iff Language.le_iff
 
-theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
+lemma le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
   simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
   tauto
 #align language.le_mul_congr Language.le_mul_congr
 
-theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
+lemma le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
   sup_le_sup
 #align language.le_add_congr Language.le_add_congr
 
-theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
+lemma mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_iUnion
 #align language.mem_supr Language.mem_iSup
 
-theorem iSup_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
+lemma iSup_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) * m = ⨆ i, l i * m :=
   image2_iUnion_left _ _ _
 #align language.supr_mul Language.iSup_mul
 
-theorem mul_iSup {ι : Sort v} (l : ι → Language α) (m : Language α) :
+lemma mul_iSup {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (m * ⨆ i, l i) = ⨆ i, m * l i :=
   image2_iUnion_right _ _ _
 #align language.mul_supr Language.mul_iSup
 
-theorem iSup_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+lemma iSup_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) + m = ⨆ i, l i + m :=
   iSup_sup
 #align language.supr_add Language.iSup_add
 
-theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+lemma add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_iSup
 #align language.add_supr Language.add_iSup
 
-theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
+lemma mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.join ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction' n with n ihn generalizing x
   · simp only [mem_one, pow_zero, length_eq_zero]

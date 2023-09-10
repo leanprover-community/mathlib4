@@ -81,14 +81,14 @@ We estimate the density between parts of `chunk`.
 -/
 
 
-theorem biUnion_star_subset_nonuniformWitness :
+lemma biUnion_star_subset_nonuniformWitness :
     (star hP G ε hU V).biUnion id ⊆ G.nonuniformWitness ε U V :=
   biUnion_subset_iff_forall_subset.2 fun _ hA => (mem_filter.1 hA).2
 #align szemeredi_regularity.bUnion_star_subset_nonuniform_witness SzemerediRegularity.biUnion_star_subset_nonuniformWitness
 
 variable {hP G ε hU V} {𝒜 : Finset (Finset α)} {s : Finset α}
 
-theorem star_subset_chunk : star hP G ε hU V ⊆ (chunk hP G ε hU).parts :=
+lemma star_subset_chunk : star hP G ε hU V ⊆ (chunk hP G ε hU).parts :=
   filter_subset _ _
 #align szemeredi_regularity.star_subset_chunk SzemerediRegularity.star_subset_chunk
 
@@ -202,7 +202,7 @@ theorem card_le_m_add_one_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).part
   (card_eq_of_mem_parts_chunk hs).elim (fun i => by simp [i]) fun i => i.le
 #align szemeredi_regularity.card_le_m_add_one_of_mem_chunk_parts SzemerediRegularity.card_le_m_add_one_of_mem_chunk_parts
 
-theorem card_biUnion_star_le_m_add_one_card_star_mul :
+lemma card_biUnion_star_le_m_add_one_card_star_mul :
     (((star hP G ε hU V).biUnion id).card : ℝ) ≤ (star hP G ε hU V).card * (m + 1) := by
   exact_mod_cast card_biUnion_le_card_mul _ _ _ fun s hs =>
     card_le_m_add_one_of_mem_chunk_parts <| star_subset_chunk hs
@@ -226,7 +226,7 @@ private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
     apply card_le_m_add_one_of_mem_chunk_parts (h𝒜 hx)
   · exact_mod_cast m_le_card_of_mem_chunk_parts (h𝒜 hs)
 
-private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
+private lemma one_sub_le_m_div_m_add_one_sq [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) :
     ↑1 - ε ^ 5 / ↑50 ≤ (m / (m + 1 : ℝ)) ^ 2 := by
   have : (m : ℝ) / (m + 1) = 1 - 1 / (m + 1) := by
@@ -240,7 +240,7 @@ private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
   apply hundred_div_ε_pow_five_le_m hPα hPε
   sz_positivity
 
-private theorem m_add_one_div_m_le_one_add [Nonempty α]
+private lemma m_add_one_div_m_le_one_add [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) : ((m + 1 : ℝ) / m) ^ 2 ≤ ↑1 + ε ^ 5 / 49 := by
   rw [same_add_div]
@@ -256,7 +256,7 @@ private theorem m_add_one_div_m_le_one_add [Nonempty α]
   refine' mul_le_mul_of_nonneg_left _ (by sz_positivity)
   exact (pow_le_one 5 (by sz_positivity) hε₁).trans (by norm_num)
 
-private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
+private lemma density_sub_eps_le_sum_density_div_card [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     {hU : U ∈ P.parts} {hV : V ∈ P.parts} {A B : Finset (Finset α)}
     (hA : A ⊆ (chunk hP G ε hU).parts) (hB : B ⊆ (chunk hP G ε hV).parts) :
@@ -294,7 +294,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
   refine' mul_pos (mul_pos _ _) (mul_pos _ _) <;> rw [cast_pos, Finset.card_pos]
   exacts [⟨_, hx⟩, nonempty_of_mem_parts _ (hA hx), ⟨_, hy⟩, nonempty_of_mem_parts _ (hB hy)]
 
-private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
+private lemma sum_density_div_card_le_density_add_eps [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} {A B : Finset (Finset α)}
     (hA : A ⊆ (chunk hP G ε hU).parts) (hB : B ⊆ (chunk hP G ε hV).parts) :
@@ -332,7 +332,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
   refine' mul_pos (mul_pos _ _) (mul_pos _ _) <;> rw [cast_pos, Finset.card_pos]
   exacts [⟨_, hx⟩, nonempty_of_mem_parts _ (hA hx), ⟨_, hy⟩, nonempty_of_mem_parts _ (hB hy)]
 
-private theorem average_density_near_total_density [Nonempty α]
+private lemma average_density_near_total_density [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} {A B : Finset (Finset α)}
     (hA : A ⊆ (chunk hP G ε hU).parts) (hB : B ⊆ (chunk hP G ε hV).parts) :
@@ -349,7 +349,7 @@ private theorem average_density_near_total_density [Nonempty α]
   rw [sub_le_iff_le_add, ← sub_le_iff_le_add']
   apply density_sub_eps_le_sum_density_div_card hPα hPε hA hB
 
-private theorem edgeDensity_chunk_aux [Nonempty α]
+private lemma edgeDensity_chunk_aux [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hU : U ∈ P.parts) (hV : V ∈ P.parts) :
     (G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25 ≤
@@ -389,7 +389,7 @@ private theorem abs_density_star_sub_density_le_eps (hPε : ↑100 ≤ ↑4 ^ P.
       hPε hε₁) using 1
   linarith
 
-private theorem eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
+private lemma eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) (hε₁ : ε ≤ 1) (hU : U ∈ P.parts) (hV : V ∈ P.parts)
     (hUV : U ≠ V) (hunif : ¬G.IsUniform ε U V) :
     ↑4 / ↑5 * ε ≤ (star hP G ε hU V).card / ↑4 ^ P.parts.card := by
@@ -431,7 +431,7 @@ Those inequalities are the end result of all this hard work.
 
 
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.star`. -/
-private theorem edgeDensity_star_not_uniform [Nonempty α]
+private lemma edgeDensity_star_not_uniform [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} (hUVne : U ≠ V) (hUV : ¬G.IsUniform ε U V) :
     ↑3 / ↑4 * ε ≤
@@ -473,7 +473,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
 set_option maxHeartbeats 300000 in
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
-theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
+lemma edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts}
     (hUVne : U ≠ V) (hUV : ¬G.IsUniform ε U V) :
     (G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25 + ε ^ 4 / ↑3 ≤
@@ -521,7 +521,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
 
 /-- Lower bound on the edge densities between parts of `SzemerediRegularity.increment`. This is the
 blanket lower bound used the uniform parts. -/
-theorem edgeDensity_chunk_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
+lemma edgeDensity_chunk_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) (hU : U ∈ P.parts) (hV : V ∈ P.parts) :
     (G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25 ≤
     (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,

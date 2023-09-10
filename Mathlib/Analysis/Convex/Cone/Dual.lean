@@ -56,19 +56,19 @@ theorem mem_innerDualCone (y : H) (s : Set H) : y ∈ s.innerDualCone ↔ ∀ x 
 #align mem_inner_dual_cone mem_innerDualCone
 
 @[simp]
-theorem innerDualCone_empty : (∅ : Set H).innerDualCone = ⊤ :=
+lemma innerDualCone_empty : (∅ : Set H).innerDualCone = ⊤ :=
   eq_top_iff.mpr fun _ _ _ => False.elim
 #align inner_dual_cone_empty innerDualCone_empty
 
 /-- Dual cone of the convex cone {0} is the total space. -/
 @[simp]
-theorem innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
+lemma innerDualCone_zero : (0 : Set H).innerDualCone = ⊤ :=
   eq_top_iff.mpr fun _ _ y (hy : y = 0) => hy.symm ▸ (inner_zero_left _).ge
 #align inner_dual_cone_zero innerDualCone_zero
 
 /-- Dual cone of the total space is the convex cone {0}. -/
 @[simp]
-theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
+lemma innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
   suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0 by
     apply SetLike.coe_injective
     exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
@@ -79,7 +79,7 @@ theorem innerDualCone_le_innerDualCone (h : t ⊆ s) : s.innerDualCone ≤ t.inn
   fun _ hy x hx => hy x (h hx)
 #align inner_dual_cone_le_inner_dual_cone innerDualCone_le_innerDualCone
 
-theorem pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner_zero_right]
+lemma pointed_innerDualCone : s.innerDualCone.Pointed := fun x _ => by rw [inner_zero_right]
 #align pointed_inner_dual_cone pointed_innerDualCone
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
@@ -100,7 +100,7 @@ theorem innerDualCone_insert (x : H) (s : Set H) :
   rw [insert_eq, innerDualCone_union]
 #align inner_dual_cone_insert innerDualCone_insert
 
-theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
+lemma innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
   refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) _
   intro x hx y hy
@@ -115,12 +115,12 @@ theorem innerDualCone_sUnion (S : Set (Set H)) :
 #align inner_dual_cone_sUnion innerDualCone_sUnion
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
-theorem innerDualCone_eq_iInter_innerDualCone_singleton :
+lemma innerDualCone_eq_iInter_innerDualCone_singleton :
     (s.innerDualCone : Set H) = ⋂ i : s, (({↑i} : Set H).innerDualCone : Set H) := by
   rw [← ConvexCone.coe_iInf, ← innerDualCone_iUnion, iUnion_of_singleton_coe]
 #align inner_dual_cone_eq_Inter_inner_dual_cone_singleton innerDualCone_eq_iInter_innerDualCone_singleton
 
-theorem isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
+lemma isClosed_innerDualCone : IsClosed (s.innerDualCone : Set H) := by
   -- reduce the problem to showing that dual cone of a singleton `{x}` is closed
   rw [innerDualCone_eq_iInter_innerDualCone_singleton]
   apply isClosed_iInter

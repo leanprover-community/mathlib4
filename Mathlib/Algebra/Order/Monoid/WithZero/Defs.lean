@@ -46,25 +46,25 @@ instance partialOrder [PartialOrder α] : PartialOrder (WithZero α) :=
 instance orderBot [Preorder α] : OrderBot (WithZero α) :=
   WithBot.orderBot
 
-theorem zero_le [Preorder α] (a : WithZero α) : 0 ≤ a :=
+lemma zero_le [Preorder α] (a : WithZero α) : 0 ≤ a :=
   bot_le
 #align with_zero.zero_le WithZero.zero_le
 
-theorem zero_lt_coe [Preorder α] (a : α) : (0 : WithZero α) < a :=
+lemma zero_lt_coe [Preorder α] (a : α) : (0 : WithZero α) < a :=
   WithBot.bot_lt_coe a
 #align with_zero.zero_lt_coe WithZero.zero_lt_coe
 
-theorem zero_eq_bot [Preorder α] : (0 : WithZero α) = ⊥ :=
+lemma zero_eq_bot [Preorder α] : (0 : WithZero α) = ⊥ :=
   rfl
 #align with_zero.zero_eq_bot WithZero.zero_eq_bot
 
 @[simp, norm_cast]
-theorem coe_lt_coe [Preorder α] {a b : α} : (a : WithZero α) < b ↔ a < b :=
+lemma coe_lt_coe [Preorder α] {a b : α} : (a : WithZero α) < b ↔ a < b :=
   WithBot.coe_lt_coe
 #align with_zero.coe_lt_coe WithZero.coe_lt_coe
 
 @[simp, norm_cast]
-theorem coe_le_coe [Preorder α] {a b : α} : (a : WithZero α) ≤ b ↔ a ≤ b :=
+lemma coe_le_coe [Preorder α] {a b : α} : (a : WithZero α) ≤ b ↔ a ≤ b :=
   WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
@@ -90,13 +90,13 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
 -- Porting note: @[simp] can prove this
-nonrec theorem le_max_iff [LinearOrder α] {a b c : α} :
+nonrec lemma le_max_iff [LinearOrder α] {a b c : α} :
     (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
 #align with_zero.le_max_iff WithZero.le_max_iff
 
 -- Porting note: @[simp] can prove this
-nonrec theorem min_le_iff [LinearOrder α] {a b c : α} :
+nonrec lemma min_le_iff [LinearOrder α] {a b c : α} :
     min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
 #align with_zero.min_le_iff WithZero.min_le_iff
@@ -108,7 +108,7 @@ instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero 
 -- FIXME: `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 
 -- Porting note: same issue as `covariantClass_mul_le`
-protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
+protected lemma covariantClass_add_le [AddZeroClass α] [Preorder α]
     [CovariantClass α α (· + ·) (· ≤ ·)] (h : ∀ a : α, 0 ≤ a) :
     CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩

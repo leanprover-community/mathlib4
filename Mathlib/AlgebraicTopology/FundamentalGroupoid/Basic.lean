@@ -43,7 +43,7 @@ def reflTransSymmAux (x : I × I) : ℝ :=
 #align path.homotopy.refl_trans_symm_aux Path.Homotopy.reflTransSymmAux
 
 @[continuity]
-theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
+lemma continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _
   · continuity
   · continuity
@@ -127,7 +127,7 @@ def transReflReparamAux (t : I) : ℝ :=
 #align path.homotopy.trans_refl_reparam_aux Path.Homotopy.transReflReparamAux
 
 @[continuity]
-theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
+lemma continuous_transReflReparamAux : Continuous transReflReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
     [continuity; continuity; continuity; continuity; skip]
   intro x hx
@@ -140,11 +140,11 @@ theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
 set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_refl_reparam_aux_mem_I Path.Homotopy.transReflReparamAux_mem_I
 
-theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
+lemma transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
   norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_zero Path.Homotopy.transReflReparamAux_zero
 
-theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
+lemma transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_one Path.Homotopy.transReflReparamAux_one
 
@@ -185,7 +185,7 @@ def transAssocReparamAux (t : I) : ℝ :=
 #align path.homotopy.trans_assoc_reparam_aux Path.Homotopy.transAssocReparamAux
 
 @[continuity]
-theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
+lemma continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _)
       (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _).continuousOn
       _ <;>
@@ -201,15 +201,15 @@ theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
 set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_assoc_reparam_aux_mem_I Path.Homotopy.transAssocReparamAux_mem_I
 
-theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
+lemma transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
   norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_zero Path.Homotopy.transAssocReparamAux_zero
 
-theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
+lemma transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
   norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_one Path.Homotopy.transAssocReparamAux_one
 
-theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
+lemma trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     (p.trans q).trans r =
       (p.trans (q.trans r)).reparam
         (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by continuity)
@@ -347,7 +347,7 @@ scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
-theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
+lemma map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ f).map p = p.mapFn f := rfl
 #align fundamental_groupoid.map_eq FundamentalGroupoid.map_eq
 

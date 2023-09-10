@@ -61,7 +61,7 @@ class Module.Injective : Prop where
 #align module.injective Module.Injective
 
 -- Porting note: egregious max u v abuse
-theorem Module.injective_object_of_injective_module [Module.Injective.{u, v} R Q] :
+lemma Module.injective_object_of_injective_module [Module.Injective.{u, v} R Q] :
     CategoryTheory.Injective.{max u v} (⟨Q⟩ : ModuleCat.{max u v} R) :=
   { factors := fun g f mn => by
       rcases Module.Injective.out _ _ f ((ModuleCat.mono_iff_injective f).mp mn) g with ⟨h, eq1⟩
@@ -79,7 +79,7 @@ theorem Module.injective_module_of_injective_object
       exact ⟨h, fun x => rfl⟩ }
 #align module.injective_module_of_injective_object Module.injective_module_of_injective_object
 
-theorem Module.injective_iff_injective_object :
+lemma Module.injective_iff_injective_object :
     Module.Injective.{u, v} R Q ↔
       CategoryTheory.Injective.{max u v} (⟨Q⟩ : ModuleCat.{max u v} R) :=
   ⟨fun h => @Module.injective_object_of_injective_module R _ Q _ _ h, fun h =>
@@ -113,7 +113,7 @@ section Ext
 variable {i f}
 
 @[ext]
-theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
+lemma ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
     (to_fun_eq :
       ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :
     a = b := by
@@ -124,7 +124,7 @@ theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.ext Module.Baer.ExtensionOf.ext
 
-theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
+lemma ExtensionOf.ext_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
   ⟨fun r => r ▸ ⟨rfl, fun x y h => congr_arg a.toFun <| by exact_mod_cast h⟩, fun ⟨h1, h2⟩ =>
@@ -164,7 +164,7 @@ instance : SemilatticeInf (ExtensionOf i f) :=
 
 variable {i f}
 
-theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
+lemma chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
     (hchain : IsChain (· ≤ ·) c) :
     IsChain (· ≤ ·) <| (fun x : ExtensionOf i f => x.toLinearPMap) '' c := by
   rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ neq
@@ -197,7 +197,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.max Module.Baer.ExtensionOf.max
 
-theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
+lemma ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) (a : ExtensionOf i f) (ha : a ∈ c) :
     a ≤ ExtensionOf.max hchain hnonempty :=
   LinearPMap.le_sSup (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) <|
@@ -240,7 +240,7 @@ def extensionOfMax : ExtensionOf i f :=
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max Module.Baer.extensionOfMax
 
-theorem extensionOfMax_is_max :
+lemma extensionOfMax_is_max :
     ∀ a : ExtensionOf i f, extensionOfMax i f ≤ a → a = extensionOfMax i f :=
   (@zorn_nonempty_partialOrder (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
       ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec
@@ -255,7 +255,7 @@ def supExtensionOfMaxSingleton (y : N) : Submodule R N :=
 
 variable {f}
 
-private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSingleton i f y) :
+private lemma extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSingleton i f y) :
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
   rw [Submodule.coe_sup] at mem1
@@ -280,7 +280,7 @@ def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R 
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_adjoin.snd Module.Baer.ExtensionOfMaxAdjoin.snd
 
-theorem ExtensionOfMaxAdjoin.eqn {y : N} (x : supExtensionOfMaxSingleton i f y) :
+lemma ExtensionOfMaxAdjoin.eqn {y : N} (x : supExtensionOfMaxSingleton i f y) :
     ↑x = ↑(ExtensionOfMaxAdjoin.fst i x) + ExtensionOfMaxAdjoin.snd i x • y :=
   (extensionOfMax_adjoin.aux1 i x).choose_spec.choose_spec
 set_option linter.uppercaseLean3 false in

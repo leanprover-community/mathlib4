@@ -21,7 +21,7 @@ open Complex Set
 open ComplexConjugate
 
 /-- The only closed subfields of `ℂ` are `ℝ` and `ℂ`. -/
-theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set ℂ)) :
+lemma Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set ℂ)) :
     K = ofReal.fieldRange ∨ K = ⊤ := by
   suffices range (ofReal' : ℝ → ℂ) ⊆ K by
     rw [range_subset_iff, ← coe_algebraMap] at this

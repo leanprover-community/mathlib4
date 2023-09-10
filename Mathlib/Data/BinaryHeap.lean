@@ -95,7 +95,7 @@ def insert {lt} (self : BinaryHeap α lt) (x : α) : BinaryHeap α lt where
   arr := let n := self.size;
     heapifyUp lt (self.1.push x) ⟨n, by rw [Array.size_push]; apply Nat.lt_succ_self⟩
 
-@[simp] theorem size_insert {lt} (self : BinaryHeap α lt) (x : α) :
+@[simp] lemma size_insert {lt} (self : BinaryHeap α lt) (x : α) :
   (self.insert x).size = self.size + 1 := by
   simp [insert, size, size_heapifyUp]
 
@@ -120,14 +120,14 @@ def popMaxAux {lt} (self : BinaryHeap α lt) : {a' : BinaryHeap α lt // a'.size
 Call `max` first to actually retrieve the maximum element. -/
 def popMax {lt} (self : BinaryHeap α lt) : BinaryHeap α lt := self.popMaxAux
 
-@[simp] theorem size_popMax {lt} (self : BinaryHeap α lt) :
+@[simp] lemma size_popMax {lt} (self : BinaryHeap α lt) :
   self.popMax.size = self.size - 1 := self.popMaxAux.2
 
 /-- `O(log n)`. Return and remove the maximum element from a `BinaryHeap`. -/
 def extractMax {lt} (self : BinaryHeap α lt) : Option α × BinaryHeap α lt :=
   (self.max, self.popMax)
 
-theorem size_pos_of_max {lt} {self : BinaryHeap α lt} (e : self.max = some x) : 0 < self.size :=
+lemma size_pos_of_max {lt} {self : BinaryHeap α lt} (e : self.max = some x) : 0 < self.size :=
   Decidable.of_not_not fun h: ¬ 0 < self.1.size ↦ by simp [BinaryHeap.max, Array.get?, h] at e
 
 /-- `O(log n)`. Equivalent to `extractMax (self.insert x)`, except that extraction cannot fail. -/

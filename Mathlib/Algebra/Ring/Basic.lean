@@ -66,7 +66,7 @@ def mulLeft [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
 #align add_monoid_hom.mul_left AddMonoidHom.mulLeft
 
 @[simp]
-theorem coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
+lemma coe_mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
     (mulLeft r : R → R) = HMul.hMul r :=
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mulLeft
@@ -79,12 +79,12 @@ def mulRight [NonUnitalNonAssocSemiring R] (r : R) : R →+ R where
 #align add_monoid_hom.mul_right AddMonoidHom.mulRight
 
 @[simp]
-theorem coe_mulRight [NonUnitalNonAssocSemiring R] (r : R) :
+lemma coe_mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     (mulRight r) = (· * r) :=
   rfl
 #align add_monoid_hom.coe_mul_right AddMonoidHom.coe_mulRight
 
-theorem mulRight_apply [NonUnitalNonAssocSemiring R] (a r : R) :
+lemma mulRight_apply [NonUnitalNonAssocSemiring R] (a r : R) :
     mulRight r a = a * r :=
   rfl
 #align add_monoid_hom.mul_right_apply AddMonoidHom.mulRight_apply
@@ -129,7 +129,7 @@ attribute [local simp] add_assoc add_comm add_left_comm mul_comm
   its roots. This particular version states that if we have a root `x` of a monic quadratic
   polynomial, then there is another root `y` such that `x + y` is negative the `a_1` coefficient
   and `x * y` is the `a_0` coefficient. -/
-theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
+lemma vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
     ∃ y : α, y * y - b * y + c = 0 ∧ x + y = b ∧ x * y = c := by
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
   refine' ⟨b - x, _, by simp, by rw [this]⟩
@@ -139,11 +139,11 @@ set_option linter.uppercaseLean3 false in
 
 end NonUnitalCommRing
 
-theorem succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
+lemma succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
   one_ne_zero ((add_right_inj a).mp (by simp [h]))
 #align succ_ne_self succ_ne_self
 
-theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
+lemma pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
   one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [←sub_eq_add_neg, h])))
 #align pred_ne_self pred_ne_self
 

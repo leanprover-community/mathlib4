@@ -83,7 +83,7 @@ abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ 
 #align continuous_map.homotopy.hcast ContinuousMap.Homotopy.hcast
 
 @[simp]
-theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) : hcast hx₀ = eqToHom hx₀ :=
+lemma hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) : hcast hx₀ = eqToHom hx₀ :=
   rfl
 #align continuous_map.homotopy.hcast_def ContinuousMap.Homotopy.hcast_def
 
@@ -92,15 +92,15 @@ variable {X₁ X₂ Y : TopCat.{u}} {f : C(X₁, Y)} {g : C(X₂, Y)} {x₀ x₁
 
 /-- If `f(p(t) = g(q(t))` for two paths `p` and `q`, then the induced path homotopy classes
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
-theorem heq_path_of_eq_image : HEq ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) := by
+lemma heq_path_of_eq_image : HEq ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) := by
   simp only [map_eq, ← Path.Homotopic.map_lift]; apply Path.Homotopic.hpath_hext; exact hfg
 #align continuous_map.homotopy.heq_path_of_eq_image ContinuousMap.Homotopy.heq_path_of_eq_image
 
-private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
+private lemma start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
-private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
+private lemma end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
-theorem eq_path_of_eq_image :
+lemma eq_path_of_eq_image :
     (πₘ f).map ⟦p⟧ = hcast (start_path hfg) ≫ (πₘ g).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by
   rw [Functor.conj_eqToHom_iff_heq
     ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) (start_path hfg) (end_path hfg)]
@@ -166,7 +166,7 @@ def diagonalPath' : fromTop (f x₀) ⟶ fromTop (g x₁) :=
 #align continuous_map.homotopy.diagonal_path' ContinuousMap.Homotopy.diagonalPath'
 
 /-- Proof that `f(p) = H(0 ⟶ 0, p)`, with the appropriate casts -/
-theorem apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
+lemma apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
     (πₘ H.uliftMap).map (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 0))) p) ≫
     hcast (H.apply_zero x₁) :=
   Quotient.inductionOn p fun p' => by
@@ -175,7 +175,7 @@ theorem apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
 #align continuous_map.homotopy.apply_zero_path ContinuousMap.Homotopy.apply_zero_path
 
 /-- Proof that `g(p) = H(1 ⟶ 1, p)`, with the appropriate casts -/
-theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
+lemma apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
     (πₘ H.uliftMap).map (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 1))) p) ≫
     hcast (H.apply_one x₁) :=
   Quotient.inductionOn p fun p' => by
@@ -194,7 +194,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
 #align continuous_map.homotopy.eval_at_eq ContinuousMap.Homotopy.evalAt_eq
 
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
-theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
+lemma eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
     (⟦H.evalAt x₀⟧ ≫ (πₘ g).map p : fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
   rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq]
   erw [H.evalAt_eq] -- Porting note: `rw` didn't work, so using `erw`

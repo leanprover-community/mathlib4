@@ -118,7 +118,7 @@ instance : Category.{v₁} (Mat_ C) where
 -- porting note: added because `DMatrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
-theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
+lemma hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
 
 theorem id_def (M : Mat_ C) :
@@ -144,14 +144,14 @@ theorem id_apply_of_ne (M : Mat_ C) (i j : M.ι) (h : i ≠ j) : (𝟙 M : Hom M
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.id_apply_of_ne CategoryTheory.Mat_.id_apply_of_ne
 
-theorem comp_def {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_def {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N.ι, f i j ≫ g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.comp_def CategoryTheory.Mat_.comp_def
 
 @[simp]
-theorem comp_apply {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) (i k) :
+lemma comp_apply {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) (i k) :
     (f ≫ g) i k = ∑ j : N.ι, f i j ≫ g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -169,7 +169,7 @@ instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
   infer_instance
 
 @[simp]
-theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
+lemma add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.add_apply CategoryTheory.Mat_.add_apply
@@ -521,7 +521,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.equivalence_self_of_has_finite_biproducts CategoryTheory.Mat_.equivalenceSelfOfHasFiniteBiproducts
 
 @[simp]
-theorem equivalenceSelfOfHasFiniteBiproducts_functor {C : Type (u₁ + 1)} [LargeCategory C]
+lemma equivalenceSelfOfHasFiniteBiproducts_functor {C : Type (u₁ + 1)} [LargeCategory C]
     [Preadditive C] [HasFiniteBiproducts C] :
     (equivalenceSelfOfHasFiniteBiproducts C).functor = lift (𝟭 C) :=
   rfl
@@ -529,7 +529,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.equivalence_self_of_has_finite_biproducts_functor CategoryTheory.Mat_.equivalenceSelfOfHasFiniteBiproducts_functor
 
 @[simp]
-theorem equivalenceSelfOfHasFiniteBiproducts_inverse {C : Type (u₁ + 1)} [LargeCategory C]
+lemma equivalenceSelfOfHasFiniteBiproducts_inverse {C : Type (u₁ + 1)} [LargeCategory C]
     [Preadditive C] [HasFiniteBiproducts C] :
     (equivalenceSelfOfHasFiniteBiproducts C).inverse = embedding C :=
   rfl
@@ -572,7 +572,7 @@ variable {R : Type u} [Semiring R]
 -- porting note: added because `Matrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
-theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
+lemma hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
   Matrix.ext_iff.mp h
 
 variable (R)
@@ -598,14 +598,14 @@ theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.id_apply_of_ne CategoryTheory.Mat.id_apply_of_ne
 
-theorem comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N, f i j * g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.comp_def CategoryTheory.Mat.comp_def
 
 @[simp]
-theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
+lemma comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
     (f ≫ g) i k = ∑ j : N, f i j * g j k :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -668,7 +668,7 @@ variable {R}
 
 -- porting note: added to ease automation
 @[simp]
-theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
+lemma add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl
 
 attribute [local simp] add_mul mul_add Finset.sum_add_distrib

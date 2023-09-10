@@ -67,7 +67,7 @@ theorem measure_pos_of_mem_nhds (h : s ∈ 𝓝 x) : 0 < μ s :=
   measure_pos_of_nonempty_interior _ ⟨x, mem_interior_iff_mem_nhds.2 h⟩
 #align measure_theory.measure.measure_pos_of_mem_nhds MeasureTheory.Measure.measure_pos_of_mem_nhds
 
-theorem isOpenPosMeasure_smul {c : ℝ≥0∞} (h : c ≠ 0) : IsOpenPosMeasure (c • μ) :=
+lemma isOpenPosMeasure_smul {c : ℝ≥0∞} (h : c ≠ 0) : IsOpenPosMeasure (c • μ) :=
   ⟨fun _U Uo Une => mul_ne_zero h (Uo.measure_ne_zero μ Une)⟩
 #align measure_theory.measure.is_open_pos_measure_smul MeasureTheory.Measure.isOpenPosMeasure_smul
 
@@ -98,12 +98,12 @@ theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
   refine' ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
   rwa [ae_eq_univ, hF.isOpen_compl.measure_eq_zero_iff μ, compl_empty_iff] at h
 
-theorem _root_.IsClosed.measure_eq_univ_iff_eq [OpensMeasurableSpace X] [IsFiniteMeasure μ]
+lemma _root_.IsClosed.measure_eq_univ_iff_eq [OpensMeasurableSpace X] [IsFiniteMeasure μ]
     (hF : IsClosed F) :
     μ F = μ univ ↔ F = univ := by
   rw [← ae_eq_univ_iff_measure_eq hF.measurableSet.nullMeasurableSet, hF.ae_eq_univ_iff_eq]
 
-theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsProbabilityMeasure μ]
+lemma _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsProbabilityMeasure μ]
     (hF : IsClosed F) :
     μ F = 1 ↔ F = univ := by
   rw [← measure_univ (μ := μ), hF.measure_eq_univ_iff_eq]
@@ -114,7 +114,7 @@ theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
 
 /-- If two functions are a.e. equal on an open set and are continuous on this set, then they are
 equal on this set. -/
-theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
+lemma eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
     (hf : ContinuousOn f U) (hg : ContinuousOn g U) : EqOn f g U := by
   replace h := ae_imp_of_ae_restrict h
   simp only [EventuallyEq, ae_iff, not_imp] at h
@@ -129,12 +129,12 @@ theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : I
 #align measure_theory.measure.eq_on_open_of_ae_eq MeasureTheory.Measure.eqOn_open_of_ae_eq
 
 /-- If two continuous functions are a.e. equal, then they are equal. -/
-theorem eq_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ] g) (hf : Continuous f) (hg : Continuous g) : f = g :=
+lemma eq_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ] g) (hf : Continuous f) (hg : Continuous g) : f = g :=
   suffices EqOn f g univ from funext fun _ => this trivial
   eqOn_open_of_ae_eq (ae_restrict_of_ae h) isOpen_univ hf.continuousOn hg.continuousOn
 #align measure_theory.measure.eq_of_ae_eq MeasureTheory.Measure.eq_of_ae_eq
 
-theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : ContinuousOn f s)
+lemma eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : ContinuousOn f s)
     (hg : ContinuousOn g s) (hU : s ⊆ closure (interior s)) : EqOn f g s :=
   have : interior s ⊆ s := interior_subset
   (eqOn_open_of_ae_eq (ae_restrict_of_ae_restrict_of_subset this h) isOpen_interior (hf.mono this)
@@ -144,14 +144,14 @@ theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : Contin
 
 variable (μ)
 
-theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
+lemma _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
     f =ᵐ[μ] g ↔ f = g :=
   ⟨fun h => eq_of_ae_eq h hf hg, fun h => h ▸ EventuallyEq.rfl⟩
 #align continuous.ae_eq_iff_eq Continuous.ae_eq_iff_eq
 
 variable {μ}
 
-theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
+lemma _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
     {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
     {f : X → Z} (hf : Continuous f) (hf_surj : Function.Surjective f) :
     (Measure.map f μ).IsOpenPosMeasure := by
@@ -167,40 +167,40 @@ section LinearOrder
 variable {X Y : Type*} [TopologicalSpace X] [LinearOrder X] [OrderTopology X]
   {m : MeasurableSpace X} [TopologicalSpace Y] [T2Space Y] (μ : Measure X) [IsOpenPosMeasure μ]
 
-theorem measure_Ioi_pos [NoMaxOrder X] (a : X) : 0 < μ (Ioi a) :=
+lemma measure_Ioi_pos [NoMaxOrder X] (a : X) : 0 < μ (Ioi a) :=
   isOpen_Ioi.measure_pos μ nonempty_Ioi
 #align measure_theory.measure.measure_Ioi_pos MeasureTheory.Measure.measure_Ioi_pos
 
-theorem measure_Iio_pos [NoMinOrder X] (a : X) : 0 < μ (Iio a) :=
+lemma measure_Iio_pos [NoMinOrder X] (a : X) : 0 < μ (Iio a) :=
   isOpen_Iio.measure_pos μ nonempty_Iio
 #align measure_theory.measure.measure_Iio_pos MeasureTheory.Measure.measure_Iio_pos
 
-theorem measure_Ioo_pos [DenselyOrdered X] {a b : X} : 0 < μ (Ioo a b) ↔ a < b :=
+lemma measure_Ioo_pos [DenselyOrdered X] {a b : X} : 0 < μ (Ioo a b) ↔ a < b :=
   (isOpen_Ioo.measure_pos_iff μ).trans nonempty_Ioo
 #align measure_theory.measure.measure_Ioo_pos MeasureTheory.Measure.measure_Ioo_pos
 
-theorem measure_Ioo_eq_zero [DenselyOrdered X] {a b : X} : μ (Ioo a b) = 0 ↔ b ≤ a :=
+lemma measure_Ioo_eq_zero [DenselyOrdered X] {a b : X} : μ (Ioo a b) = 0 ↔ b ≤ a :=
   (isOpen_Ioo.measure_eq_zero_iff μ).trans (Ioo_eq_empty_iff.trans not_lt)
 #align measure_theory.measure.measure_Ioo_eq_zero MeasureTheory.Measure.measure_Ioo_eq_zero
 
-theorem eqOn_Ioo_of_ae_eq {a b : X} {f g : X → Y} (hfg : f =ᵐ[μ.restrict (Ioo a b)] g)
+lemma eqOn_Ioo_of_ae_eq {a b : X} {f g : X → Y} (hfg : f =ᵐ[μ.restrict (Ioo a b)] g)
     (hf : ContinuousOn f (Ioo a b)) (hg : ContinuousOn g (Ioo a b)) : EqOn f g (Ioo a b) :=
   eqOn_of_ae_eq hfg hf hg Ioo_subset_closure_interior
 #align measure_theory.measure.eq_on_Ioo_of_ae_eq MeasureTheory.Measure.eqOn_Ioo_of_ae_eq
 
-theorem eqOn_Ioc_of_ae_eq [DenselyOrdered X] {a b : X} {f g : X → Y}
+lemma eqOn_Ioc_of_ae_eq [DenselyOrdered X] {a b : X} {f g : X → Y}
     (hfg : f =ᵐ[μ.restrict (Ioc a b)] g) (hf : ContinuousOn f (Ioc a b))
     (hg : ContinuousOn g (Ioc a b)) : EqOn f g (Ioc a b) :=
   eqOn_of_ae_eq hfg hf hg (Ioc_subset_closure_interior _ _)
 #align measure_theory.measure.eq_on_Ioc_of_ae_eq MeasureTheory.Measure.eqOn_Ioc_of_ae_eq
 
-theorem eqOn_Ico_of_ae_eq [DenselyOrdered X] {a b : X} {f g : X → Y}
+lemma eqOn_Ico_of_ae_eq [DenselyOrdered X] {a b : X} {f g : X → Y}
     (hfg : f =ᵐ[μ.restrict (Ico a b)] g) (hf : ContinuousOn f (Ico a b))
     (hg : ContinuousOn g (Ico a b)) : EqOn f g (Ico a b) :=
   eqOn_of_ae_eq hfg hf hg (Ico_subset_closure_interior _ _)
 #align measure_theory.measure.eq_on_Ico_of_ae_eq MeasureTheory.Measure.eqOn_Ico_of_ae_eq
 
-theorem eqOn_Icc_of_ae_eq [DenselyOrdered X] {a b : X} (hne : a ≠ b) {f g : X → Y}
+lemma eqOn_Icc_of_ae_eq [DenselyOrdered X] {a b : X} (hne : a ≠ b) {f g : X → Y}
     (hfg : f =ᵐ[μ.restrict (Icc a b)] g) (hf : ContinuousOn f (Icc a b))
     (hg : ContinuousOn g (Icc a b)) : EqOn f g (Icc a b) :=
   eqOn_of_ae_eq hfg hf hg (closure_interior_Icc hne).symm.subset

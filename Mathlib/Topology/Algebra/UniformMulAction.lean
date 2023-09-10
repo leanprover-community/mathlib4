@@ -59,7 +59,7 @@ instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X
 /-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
 `UniformContinuousConstSMul.to_continuousConstSMul` -/
-theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGroup M]
+lemma uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGroup M]
     [DistribMulAction R M] [UniformSpace M] [UniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
   ⟨fun r =>
@@ -93,7 +93,7 @@ instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
 variable {M X Y}
 
 @[to_additive]
-theorem UniformContinuous.const_smul [UniformContinuousConstSMul M X] {f : Y → X}
+lemma UniformContinuous.const_smul [UniformContinuousConstSMul M X] {f : Y → X}
     (hf : UniformContinuous f) (c : M) : UniformContinuous (c • f) :=
   (uniformContinuous_const_smul c).comp hf
 #align uniform_continuous.const_smul UniformContinuous.const_smul

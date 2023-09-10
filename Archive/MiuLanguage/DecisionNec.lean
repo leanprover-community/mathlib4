@@ -55,7 +55,7 @@ example : CountEquivOrEquivTwoMulMod3 "IUIM" "MI" :=
 
 /-- If `a` is 1 or 2 mod 3 and if `b` is `a` or twice `a` mod 3, then `b` is 1 or 2 mod 3.
 -/
-theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
+lemma mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
     (h2 : b % 3 = a % 3 ∨ b % 3 = 2 * a % 3) : b % 3 = 1 ∨ b % 3 = 2 := by
   cases' h2 with h2 h2
   · rw [h2]; exact h1
@@ -87,7 +87,7 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
 Once we have proved that `Derivable` is an instance of `DecidablePred`, this will follow
 immediately from `dec_trivial`.
 -/
-theorem not_derivable_mu : ¬Derivable "MU" := by
+lemma not_derivable_mu : ¬Derivable "MU" := by
   intro h
   cases count_equiv_one_or_two_mod3_of_derivable _ h <;> contradiction
 #align miu.not_derivable_mu Miu.not_derivable_mu
@@ -110,7 +110,7 @@ instance : DecidablePred Goodm := by unfold Goodm; infer_instance
 
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
 -/
-theorem goodmi : Goodm [M, I] := by
+lemma goodmi : Goodm [M, I] := by
   constructor
   · rfl
   · rw [tail, mem_singleton]; trivial
@@ -215,7 +215,7 @@ instance : DecidablePred Decstr := by unfold Decstr; infer_instance
 
 /-- Suppose `en : Miustr`. If `en` is `Derivable`, then the condition `Decstr en` holds.
 -/
-theorem decstr_of_der {en : Miustr} : Derivable en → Decstr en := by
+lemma decstr_of_der {en : Miustr} : Derivable en → Decstr en := by
   intro h
   constructor
   · exact goodm_of_derivable en h

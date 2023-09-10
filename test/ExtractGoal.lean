@@ -34,7 +34,7 @@ example (n : ℕ) : n = n := by
 
 -- an example with auto-implicit `Sort` and variable
 /--
-info: theorem extracted_1.{u_1} {α : Sort u_1} {n : α} : n = n := sorry
+info: lemma extracted_1.{u_1} {α : Sort u_1} {n : α} : n = n := sorry
 -/
 #guard_msgs in
 example : n = n := by
@@ -42,7 +42,7 @@ example : n = n := by
   rfl
 
 /--
-info: theorem extracted_1 {z : Int} :
+info: lemma extracted_1 {z : Int} :
   @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
 ---
 warning: declaration uses 'sorry'

@@ -20,14 +20,14 @@ namespace Meta.NormNum
 open Qq
 
 -- see note [norm_num lemma function equality]
-theorem isRat_ofScientific_of_true [DivisionRing α] (σα : OfScientific α) :
+lemma isRat_ofScientific_of_true [DivisionRing α] (σα : OfScientific α) :
     {m e : ℕ} → {n : ℤ} → {d : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsRat (mkRat m (10 ^ e) : α) n d → IsRat (@OfScientific.ofScientific α σα m true e) n d
   | _, _, _, _, σh, ⟨_, eq⟩ => ⟨_, by simp only [σh, Rat.ofScientific_true_def]; exact eq⟩
 
 -- see note [norm_num lemma function equality]
-theorem isNat_ofScientific_of_false [DivisionRing α] (σα : OfScientific α) : {m e nm ne n : ℕ} →
+lemma isNat_ofScientific_of_false [DivisionRing α] (σα : OfScientific α) : {m e nm ne n : ℕ} →
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
     IsNat (@OfScientific.ofScientific α σα m false e : α) n

@@ -103,7 +103,7 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
     simp [pow_le_pow]
 #align ack_three ack_three
 
-theorem ack_pos : ∀ m n, 0 < ack m n
+lemma ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp
   | m + 1, 0 => by
     rw [ack_succ_zero]
@@ -113,7 +113,7 @@ theorem ack_pos : ∀ m n, 0 < ack m n
     apply ack_pos
 #align ack_pos ack_pos
 
-theorem one_lt_ack_succ_left : ∀ m n, 1 < ack (m + 1) n
+lemma one_lt_ack_succ_left : ∀ m n, 1 < ack (m + 1) n
   | 0, n => by simp
   | m + 1, 0 => by
     rw [ack_succ_zero]
@@ -123,7 +123,7 @@ theorem one_lt_ack_succ_left : ∀ m n, 1 < ack (m + 1) n
     apply one_lt_ack_succ_left
 #align one_lt_ack_succ_left one_lt_ack_succ_left
 
-theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
+lemma one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
   | m + 1, n => by
     rw [ack_succ_succ]
@@ -132,7 +132,7 @@ theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
     apply one_lt_ack_succ_right
 #align one_lt_ack_succ_right one_lt_ack_succ_right
 
-theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
+lemma ack_strictMono_right : ∀ m, StrictMono (ack m)
   | 0, n₁, n₂, h => by simpa using h
   | m + 1, 0, n + 1, _h => by
     rw [ack_succ_zero, ack_succ_succ]
@@ -153,17 +153,17 @@ theorem ack_injective_right (m : ℕ) : Function.Injective (ack m) :=
 #align ack_injective_right ack_injective_right
 
 @[simp]
-theorem ack_lt_iff_right {m n₁ n₂ : ℕ} : ack m n₁ < ack m n₂ ↔ n₁ < n₂ :=
+lemma ack_lt_iff_right {m n₁ n₂ : ℕ} : ack m n₁ < ack m n₂ ↔ n₁ < n₂ :=
   (ack_strictMono_right m).lt_iff_lt
 #align ack_lt_iff_right ack_lt_iff_right
 
 @[simp]
-theorem ack_le_iff_right {m n₁ n₂ : ℕ} : ack m n₁ ≤ ack m n₂ ↔ n₁ ≤ n₂ :=
+lemma ack_le_iff_right {m n₁ n₂ : ℕ} : ack m n₁ ≤ ack m n₂ ↔ n₁ ≤ n₂ :=
   (ack_strictMono_right m).le_iff_le
 #align ack_le_iff_right ack_le_iff_right
 
 @[simp]
-theorem ack_inj_right {m n₁ n₂ : ℕ} : ack m n₁ = ack m n₂ ↔ n₁ = n₂ :=
+lemma ack_inj_right {m n₁ n₂ : ℕ} : ack m n₁ = ack m n₂ ↔ n₁ = n₂ :=
   (ack_injective_right m).eq_iff
 #align ack_inj_right ack_inj_right
 
@@ -171,7 +171,7 @@ theorem max_ack_right (m n₁ n₂ : ℕ) : ack m (max n₁ n₂) = max (ack m n
   (ack_mono_right m).map_max
 #align max_ack_right max_ack_right
 
-theorem add_lt_ack : ∀ m n, m + n < ack m n
+lemma add_lt_ack : ∀ m n, m + n < ack m n
   | 0, n => by simp
   | m + 1, 0 => by simpa using add_lt_ack m 1
   | m + 1, n + 1 =>
@@ -198,7 +198,7 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 #align lt_ack_right lt_ack_right
 
 -- we reorder the arguments to appease the equation compiler
-private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
+private lemma ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
   | m, 0, n => fun h => (not_lt_zero m h).elim
   | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
   | 0, m + 1, n + 1 => fun h => by
@@ -227,17 +227,17 @@ theorem ack_injective_left (n : ℕ) : Function.Injective fun m => ack m n :=
 #align ack_injective_left ack_injective_left
 
 @[simp]
-theorem ack_lt_iff_left {m₁ m₂ n : ℕ} : ack m₁ n < ack m₂ n ↔ m₁ < m₂ :=
+lemma ack_lt_iff_left {m₁ m₂ n : ℕ} : ack m₁ n < ack m₂ n ↔ m₁ < m₂ :=
   (ack_strictMono_left n).lt_iff_lt
 #align ack_lt_iff_left ack_lt_iff_left
 
 @[simp]
-theorem ack_le_iff_left {m₁ m₂ n : ℕ} : ack m₁ n ≤ ack m₂ n ↔ m₁ ≤ m₂ :=
+lemma ack_le_iff_left {m₁ m₂ n : ℕ} : ack m₁ n ≤ ack m₂ n ↔ m₁ ≤ m₂ :=
   (ack_strictMono_left n).le_iff_le
 #align ack_le_iff_left ack_le_iff_left
 
 @[simp]
-theorem ack_inj_left {m₁ m₂ n : ℕ} : ack m₁ n = ack m₂ n ↔ m₁ = m₂ :=
+lemma ack_inj_left {m₁ m₂ n : ℕ} : ack m₁ n = ack m₂ n ↔ m₁ = m₂ :=
   (ack_injective_left n).eq_iff
 #align ack_inj_left ack_inj_left
 
@@ -245,7 +245,7 @@ theorem max_ack_left (m₁ m₂ n : ℕ) : ack (max m₁ m₂) n = max (ack m₁
   (ack_mono_left n).map_max
 #align max_ack_left max_ack_left
 
-theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ ≤ n₂) : ack m₁ n₁ ≤ ack m₂ n₂ :=
+lemma ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ ≤ n₂) : ack m₁ n₁ ≤ ack m₂ n₂ :=
   (ack_mono_left n₁ hm).trans <| ack_mono_right m₂ hn
 #align ack_le_ack ack_le_ack
 
@@ -273,7 +273,7 @@ private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n +
       · rw [Nat.pow_succ, Nat.pow_succ]
         linarith [one_le_pow k 2 zero_lt_two]
 
-theorem ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m + 3) n
+lemma ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m + 3) n
   | 0, n => by simpa using sq_le_two_pow_add_one_minus_three (n + 2)
   | m + 1, 0 => by
     rw [ack_succ_zero, ack_succ_zero]
@@ -309,7 +309,7 @@ theorem ack_pair_lt (m n k : ℕ) : ack m (pair n k) < ack (m + 4) (max n k) :=
 #align ack_mkpair_lt ack_pair_lt
 
 /-- If `f` is primitive recursive, there exists `m` such that `f n < ack m n` for all `n`. -/
-theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
+lemma exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     ∃ m, ∀ n, f n < ack m n := by
   induction' hf with f g hf hg IHf IHg f g hf hg IHf IHg f g hf hg IHf IHg
   -- Zero function:
@@ -377,17 +377,17 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     exact ⟨max a b + 9, fun n => this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
 #align exists_lt_ack_of_nat_primrec exists_lt_ack_of_nat_primrec
 
-theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h => by
+lemma not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h => by
   cases' exists_lt_ack_of_nat_primrec h with m hm
   exact (hm m).false
 #align not_nat_primrec_ack_self not_nat_primrec_ack_self
 
-theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
+lemma not_primrec_ack_self : ¬Primrec fun n => ack n n := by
   rw [Primrec.nat_iff]
   exact not_nat_primrec_ack_self
 #align not_primrec_ack_self not_primrec_ack_self
 
 /-- The Ackermann function is not primitive recursive. -/
-theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
+lemma not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
   not_primrec_ack_self <| h.comp Primrec.id Primrec.id
 #align not_primrec₂_ack not_primrec₂_ack

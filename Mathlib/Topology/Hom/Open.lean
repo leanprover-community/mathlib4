@@ -71,7 +71,7 @@ instance : ContinuousOpenMapClass (α →CO β) α β where
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
 
-theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
+lemma toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_open_map.to_fun_eq_coe ContinuousOpenMap.toFun_eq_coe
 
@@ -79,7 +79,7 @@ theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
 theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
 
 @[ext]
-theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align continuous_open_map.ext ContinuousOpenMap.ext
 
@@ -109,7 +109,7 @@ instance : Inhabited (α →CO α) :=
   ⟨ContinuousOpenMap.id _⟩
 
 @[simp]
-theorem coe_id : ⇑(ContinuousOpenMap.id α) = id :=
+lemma coe_id : ⇑(ContinuousOpenMap.id α) = id :=
   rfl
 #align continuous_open_map.coe_id ContinuousOpenMap.coe_id
 
@@ -152,13 +152,13 @@ theorem id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
 #align continuous_open_map.id_comp ContinuousOpenMap.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_open_map.cancel_right ContinuousOpenMap.cancel_right
 
 @[simp]
-theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
+lemma cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_open_map.cancel_left ContinuousOpenMap.cancel_left

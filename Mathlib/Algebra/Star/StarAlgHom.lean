@@ -134,17 +134,17 @@ initialize_simps_projections NonUnitalStarAlgHom
   (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [NonUnitalStarAlgHomClass F R A B] (f : F) :
+protected lemma coe_coe {F : Type*} [NonUnitalStarAlgHomClass F R A B] (f : F) :
   ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
 #align non_unital_star_alg_hom.coe_coe NonUnitalStarAlgHom.coe_coe
 
 @[simp]
-theorem coe_toNonUnitalAlgHom {f : A →⋆ₙₐ[R] B} : (f.toNonUnitalAlgHom : A → B) = f :=
+lemma coe_toNonUnitalAlgHom {f : A →⋆ₙₐ[R] B} : (f.toNonUnitalAlgHom : A → B) = f :=
   rfl
 #align non_unital_star_alg_hom.coe_to_non_unital_alg_hom NonUnitalStarAlgHom.coe_toNonUnitalAlgHom
 
 @[ext]
-theorem ext {f g : A →⋆ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : A →⋆ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align non_unital_star_alg_hom.ext NonUnitalStarAlgHom.ext
 
@@ -200,7 +200,7 @@ protected def id : A →⋆ₙₐ[R] A :=
 #align non_unital_star_alg_hom.id NonUnitalStarAlgHom.id
 
 @[simp]
-theorem coe_id : ⇑(NonUnitalStarAlgHom.id R A) = id :=
+lemma coe_id : ⇑(NonUnitalStarAlgHom.id R A) = id :=
   rfl
 #align non_unital_star_alg_hom.coe_id NonUnitalStarAlgHom.coe_id
 
@@ -249,7 +249,7 @@ instance : Monoid (A →⋆ₙₐ[R] A) where
   mul_one := comp_id
 
 @[simp]
-theorem coe_one : ((1 : A →⋆ₙₐ[R] A) : A → A) = id :=
+lemma coe_one : ((1 : A →⋆ₙₐ[R] A) : A → A) = id :=
   rfl
 #align non_unital_star_alg_hom.coe_one NonUnitalStarAlgHom.coe_one
 
@@ -281,7 +281,7 @@ instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
     mul_zero := fun f => ext fun _ => map_zero f }
 
 @[simp]
-theorem coe_zero : ((0 : A →⋆ₙₐ[R] B) : A → B) = 0 :=
+lemma coe_zero : ((0 : A →⋆ₙₐ[R] B) : A → B) = 0 :=
   rfl
 #align non_unital_star_alg_hom.coe_zero NonUnitalStarAlgHom.coe_zero
 
@@ -373,7 +373,7 @@ instance : StarAlgHomClass (A →⋆ₐ[R] B) R A B
   map_star f := f.map_star'
 
 @[simp]
-protected theorem coe_coe {F : Type*} [StarAlgHomClass F R A B] (f : F) : ⇑(f : A →⋆ₐ[R] B) = f :=
+protected lemma coe_coe {F : Type*} [StarAlgHomClass F R A B] (f : F) : ⇑(f : A →⋆ₐ[R] B) = f :=
   rfl
 #align star_alg_hom.coe_coe StarAlgHom.coe_coe
 
@@ -384,12 +384,12 @@ def Simps.apply (f : A →⋆ₐ[R] B) : A → B := f
 initialize_simps_projections StarAlgHom (toFun → apply)
 
 @[simp]
-theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B) = f :=
+lemma coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B) = f :=
   rfl
 #align star_alg_hom.coe_to_alg_hom StarAlgHom.coe_toAlgHom
 
 @[ext]
-theorem ext {f g : A →⋆ₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : A →⋆ₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align star_alg_hom.ext StarAlgHom.ext
 
@@ -446,7 +446,7 @@ protected def id : A →⋆ₐ[R] A :=
 #align star_alg_hom.id StarAlgHom.id
 
 @[simp]
-theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
+lemma coe_id : ⇑(StarAlgHom.id R A) = id :=
   rfl
 #align star_alg_hom.coe_id StarAlgHom.coe_id
 
@@ -559,7 +559,7 @@ theorem snd_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : (snd R B 
 #align non_unital_star_alg_hom.snd_prod NonUnitalStarAlgHom.snd_prod
 
 @[simp]
-theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
+lemma prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
   FunLike.coe_injective Pi.prod_fst_snd
 #align non_unital_star_alg_hom.prod_fst_snd NonUnitalStarAlgHom.prod_fst_snd
 
@@ -595,7 +595,7 @@ def inr : B →⋆ₙₐ[R] A × B :=
 variable {R A B}
 
 @[simp]
-theorem coe_inl : (inl R A B : A → A × B) = fun x => (x, 0) :=
+lemma coe_inl : (inl R A B : A → A × B) = fun x => (x, 0) :=
   rfl
 #align non_unital_star_alg_hom.coe_inl NonUnitalStarAlgHom.coe_inl
 
@@ -604,7 +604,7 @@ theorem inl_apply (x : A) : inl R A B x = (x, 0) :=
 #align non_unital_star_alg_hom.inl_apply NonUnitalStarAlgHom.inl_apply
 
 @[simp]
-theorem coe_inr : (inr R A B : B → A × B) = Prod.mk 0 :=
+lemma coe_inr : (inr R A B : B → A × B) = Prod.mk 0 :=
   rfl
 #align non_unital_star_alg_hom.coe_inr NonUnitalStarAlgHom.coe_inr
 
@@ -656,7 +656,7 @@ theorem snd_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : (snd R B C).com
 #align star_alg_hom.snd_prod StarAlgHom.snd_prod
 
 @[simp]
-theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
+lemma prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
   FunLike.coe_injective Pi.prod_fst_snd
 #align star_alg_hom.prod_fst_snd StarAlgHom.prod_fst_snd
 
@@ -806,11 +806,11 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
 --  ⟨StarAlgEquiv.toFun⟩
 
 @[ext]
-theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align star_alg_equiv.ext StarAlgEquiv.ext
 
-theorem ext_iff {f g : A ≃⋆ₐ[R] B} : f = g ↔ ∀ a, f a = g a :=
+lemma ext_iff {f g : A ≃⋆ₐ[R] B} : f = g ↔ ∀ a, f a = g a :=
   FunLike.ext_iff
 #align star_alg_equiv.ext_iff StarAlgEquiv.ext_iff
 
@@ -826,7 +826,7 @@ instance : Inhabited (A ≃⋆ₐ[R] A) :=
   ⟨refl⟩
 
 @[simp]
-theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
+lemma coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
   rfl
 #align star_alg_equiv.coe_refl StarAlgEquiv.coe_refl
 
@@ -856,7 +856,7 @@ initialize_simps_projections StarAlgEquiv (toFun → apply, invFun → symm_appl
 
 -- Porting note: use `EquivLike.inv` instead of `invFun`
 @[simp]
-theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
+lemma invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
   rfl
 #align star_alg_equiv.inv_fun_eq_symm StarAlgEquiv.invFun_eq_symm
 
@@ -866,7 +866,7 @@ theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := by
   rfl
 #align star_alg_equiv.symm_symm StarAlgEquiv.symm_symm
 
-theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
+lemma symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
   Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
 #align star_alg_equiv.symm_bijective StarAlgEquiv.symm_bijective
 
@@ -888,7 +888,7 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
 #align star_alg_equiv.symm_mk StarAlgEquiv.symm_mkₓ
 
 @[simp]
-theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.refl :=
+lemma refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.refl :=
   rfl
 #align star_alg_equiv.refl_symm StarAlgEquiv.refl_symm
 
@@ -987,12 +987,12 @@ noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[
 #align star_alg_equiv.of_bijective StarAlgEquiv.ofBijective
 
 @[simp]
-theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
+lemma coe_ofBijective {f : F} (hf : Function.Bijective f) :
     (StarAlgEquiv.ofBijective f hf : A → B) = f :=
   rfl
 #align star_alg_equiv.coe_of_bijective StarAlgEquiv.coe_ofBijective
 
-theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
+lemma ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
     (StarAlgEquiv.ofBijective f hf) a = f a :=
   rfl
 #align star_alg_equiv.of_bijective_apply StarAlgEquiv.ofBijective_apply

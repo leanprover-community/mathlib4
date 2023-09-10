@@ -43,14 +43,14 @@ def rdrop : List α :=
 #align list.rdrop List.rdrop
 
 @[simp]
-theorem rdrop_nil : rdrop ([] : List α) n = [] := by simp [rdrop]
+lemma rdrop_nil : rdrop ([] : List α) n = [] := by simp [rdrop]
 #align list.rdrop_nil List.rdrop_nil
 
 @[simp]
-theorem rdrop_zero : rdrop l 0 = l := by simp [rdrop]
+lemma rdrop_zero : rdrop l 0 = l := by simp [rdrop]
 #align list.rdrop_zero List.rdrop_zero
 
-theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) := by
+lemma rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) := by
   rw [rdrop]
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
@@ -70,14 +70,14 @@ def rtake : List α :=
 #align list.rtake List.rtake
 
 @[simp]
-theorem rtake_nil : rtake ([] : List α) n = [] := by simp [rtake]
+lemma rtake_nil : rtake ([] : List α) n = [] := by simp [rtake]
 #align list.rtake_nil List.rtake_nil
 
 @[simp]
-theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
+lemma rtake_zero : rtake l 0 = [] := by simp [rtake]
 #align list.rtake_zero List.rtake_zero
 
-theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := by
+lemma rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := by
   rw [rtake]
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
@@ -98,7 +98,7 @@ def rdropWhile : List α :=
 #align list.rdrop_while List.rdropWhile
 
 @[simp]
-theorem rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile, dropWhile]
+lemma rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile, dropWhile]
 #align list.rdrop_while_nil List.rdropWhile_nil
 
 theorem rdropWhile_concat (x : α) :
@@ -127,7 +127,7 @@ theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l)
   exact dropWhile_nthLe_zero_not _ _ _
 #align list.rdrop_while_last_not List.rdropWhile_last_not
 
-theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
+lemma rdropWhile_prefix : l.rdropWhile p <+: l := by
   rw [← reverse_suffix, rdropWhile, reverse_reverse]
   exact dropWhile_suffix _
 #align list.rdrop_while_prefix List.rdropWhile_prefix
@@ -135,12 +135,12 @@ theorem rdropWhile_prefix : l.rdropWhile p <+: l := by
 variable {p} {l}
 
 @[simp]
-theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by simp [rdropWhile]
+lemma rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by simp [rdropWhile]
 #align list.rdrop_while_eq_nil_iff List.rdropWhile_eq_nil_iff
 
 -- it is in this file because it requires `List.Infix`
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
+lemma dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   cases' l with hd tl
   · simp only [dropWhile, true_iff]
     intro h
@@ -162,7 +162,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
 /- porting note: This proof is longer than it used to be because `simp` refuses to rewrite
  the `l ≠ []` condition if `hl` is not `intro`'d yet -/
 @[simp]
-theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
+lemma rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_get]
   refine' ⟨fun h hl => _, fun h hl => _⟩
   · rw [← length_pos, ← length_reverse] at hl
@@ -175,12 +175,12 @@ theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (
 
 variable (p) (l)
 
-theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
+lemma dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
   exact fun h => dropWhile_nthLe_zero_not p l h
 #align list.drop_while_idempotent List.dropWhile_idempotent
 
-theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
+lemma rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
 #align list.rdrop_while_idempotent List.rdropWhile_idempotent
 
@@ -191,7 +191,7 @@ def rtakeWhile : List α :=
 #align list.rtake_while List.rtakeWhile
 
 @[simp]
-theorem rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile, takeWhile]
+lemma rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile, takeWhile]
 #align list.rtake_while_nil List.rtakeWhile_nil
 
 theorem rtakeWhile_concat (x : α) :
@@ -210,7 +210,7 @@ theorem rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [
   rw [rtakeWhile_concat, if_neg h]
 #align list.rtake_while_concat_neg List.rtakeWhile_concat_neg
 
-theorem rtakeWhile_suffix : l.rtakeWhile p <:+ l := by
+lemma rtakeWhile_suffix : l.rtakeWhile p <:+ l := by
   rw [← reverse_prefix, rtakeWhile, reverse_reverse]
   exact takeWhile_prefix _
 #align list.rtake_while_suffix List.rtakeWhile_suffix
@@ -218,13 +218,13 @@ theorem rtakeWhile_suffix : l.rtakeWhile p <:+ l := by
 variable {p} {l}
 
 @[simp]
-theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
+lemma rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
   simp [rtakeWhile, reverse_eq_iff]
 #align list.rtake_while_eq_self_iff List.rtakeWhile_eq_self_iff
 
 -- Porting note: This needed a lot of rewriting.
 @[simp]
-theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
+lemma rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   induction' l using List.reverseRecOn with l a
   · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
@@ -235,14 +235,14 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
     · simp only [h]
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff
 
-theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
+lemma mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx
   exact mem_takeWhile_imp hx
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
 
 variable (p) (l)
 
-theorem rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
+lemma rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :=
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 #align list.rtake_while_idempotent List.rtakeWhile_idempotent
 

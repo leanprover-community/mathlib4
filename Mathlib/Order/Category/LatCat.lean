@@ -103,7 +103,7 @@ def dualEquiv : LatCat ≌ LatCat where
 
 end LatCat
 
-theorem latCat_dual_comp_forget_to_partOrdCat :
+lemma latCat_dual_comp_forget_to_partOrdCat :
     LatCat.dual ⋙ forget₂ LatCat PartOrdCat = forget₂ LatCat PartOrdCat ⋙ PartOrdCat.dual :=
   rfl
 #align Lat_dual_comp_forget_to_PartOrd latCat_dual_comp_forget_to_partOrdCat

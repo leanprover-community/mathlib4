@@ -62,7 +62,7 @@ def esymm (s : Multiset R) (n : ℕ) : R :=
   ((s.powersetLen n).map Multiset.prod).sum
 #align multiset.esymm Multiset.esymm
 
-theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
+lemma _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
     (s.val.map f).esymm n = (s.powersetLen n).sum fun t => t.prod f := by
   simp only [esymm, powersetLen_map, ← Finset.map_val_val_powersetLen, map_map]
   rfl
@@ -95,7 +95,7 @@ def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R) wher
 variable {σ R}
 
 @[simp]
-theorem mem_symmetricSubalgebra [CommSemiring R] (p : MvPolynomial σ R) :
+lemma mem_symmetricSubalgebra [CommSemiring R] (p : MvPolynomial σ R) :
     p ∈ symmetricSubalgebra σ R ↔ p.IsSymmetric :=
   Iff.rfl
 #align mv_polynomial.mem_symmetric_subalgebra MvPolynomial.mem_symmetricSubalgebra
@@ -113,12 +113,12 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.is_symmetric.C MvPolynomial.IsSymmetric.C
 
 @[simp]
-theorem zero : IsSymmetric (0 : MvPolynomial σ R) :=
+lemma zero : IsSymmetric (0 : MvPolynomial σ R) :=
   (symmetricSubalgebra σ R).zero_mem
 #align mv_polynomial.is_symmetric.zero MvPolynomial.IsSymmetric.zero
 
 @[simp]
-theorem one : IsSymmetric (1 : MvPolynomial σ R) :=
+lemma one : IsSymmetric (1 : MvPolynomial σ R) :=
   (symmetricSubalgebra σ R).one_mem
 #align mv_polynomial.is_symmetric.one MvPolynomial.IsSymmetric.one
 
@@ -170,11 +170,11 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
-theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
+lemma esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
   refine' funext fun n => (Finset.esymm_map_val X _ n).symm
 #align mv_polynomial.esymm_eq_multiset_esymm MvPolynomial.esymm_eq_multiset_esymm
 
-theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
+lemma aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
     aeval f (esymm σ R n) = (Finset.univ.val.map f).esymm n := by
   simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, Finset.esymm_map_val]
 #align mv_polynomial.aeval_esymm_eq_multiset_esymm MvPolynomial.aeval_esymm_eq_multiset_esymm
@@ -193,7 +193,7 @@ theorem esymm_eq_sum_monomial (n : ℕ) :
 #align mv_polynomial.esymm_eq_sum_monomial MvPolynomial.esymm_eq_sum_monomial
 
 @[simp]
-theorem esymm_zero : esymm σ R 0 = 1 := by
+lemma esymm_zero : esymm σ R 0 = 1 := by
   simp only [esymm, powersetLen_zero, sum_singleton, prod_empty]
 #align mv_polynomial.esymm_zero MvPolynomial.esymm_zero
 
@@ -259,7 +259,7 @@ theorem support_esymm (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   exact biUnion_singleton
 #align mv_polynomial.support_esymm MvPolynomial.support_esymm
 
-theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
+lemma degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
     (esymm σ R n).degrees = (univ : Finset σ).val := by
   classical
     have :
@@ -293,12 +293,12 @@ def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
 @[simp]
-theorem psum_zero : psum σ R 0 = Fintype.card σ := by
+lemma psum_zero : psum σ R 0 = Fintype.card σ := by
   simp only [psum, _root_.pow_zero, ← cast_card]
   exact rfl
 
 @[simp]
-theorem psum_one : psum σ R 1 = ∑ i, X i := by
+lemma psum_one : psum σ R 1 = ∑ i, X i := by
   simp only [psum, _root_.pow_one]
 
 @[simp]

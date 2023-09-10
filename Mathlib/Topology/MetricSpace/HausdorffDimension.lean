@@ -112,7 +112,7 @@ theorem dimH_def (s : Set X) : dimH s = ⨆ (d : ℝ≥0) (_ : μH[d] s = ∞), 
 set_option linter.uppercaseLean3 false in
 #align dimH_def dimH_def
 
-theorem hausdorffMeasure_of_lt_dimH {s : Set X} {d : ℝ≥0} (h : ↑d < dimH s) : μH[d] s = ∞ := by
+lemma hausdorffMeasure_of_lt_dimH {s : Set X} {d : ℝ≥0} (h : ↑d < dimH s) : μH[d] s = ∞ := by
   simp only [dimH_def, lt_iSup_iff] at h
   rcases h with ⟨d', hsd', hdd'⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hdd'
@@ -120,23 +120,23 @@ theorem hausdorffMeasure_of_lt_dimH {s : Set X} {d : ℝ≥0} (h : ↑d < dimH s
 set_option linter.uppercaseLean3 false in
 #align hausdorff_measure_of_lt_dimH hausdorffMeasure_of_lt_dimH
 
-theorem dimH_le {s : Set X} {d : ℝ≥0∞} (H : ∀ d' : ℝ≥0, μH[d'] s = ∞ → ↑d' ≤ d) : dimH s ≤ d :=
+lemma dimH_le {s : Set X} {d : ℝ≥0∞} (H : ∀ d' : ℝ≥0, μH[d'] s = ∞ → ↑d' ≤ d) : dimH s ≤ d :=
   (dimH_def s).trans_le <| iSup₂_le H
 set_option linter.uppercaseLean3 false in
 #align dimH_le dimH_le
 
-theorem dimH_le_of_hausdorffMeasure_ne_top {s : Set X} {d : ℝ≥0} (h : μH[d] s ≠ ∞) : dimH s ≤ d :=
+lemma dimH_le_of_hausdorffMeasure_ne_top {s : Set X} {d : ℝ≥0} (h : μH[d] s ≠ ∞) : dimH s ≤ d :=
   le_of_not_lt <| mt hausdorffMeasure_of_lt_dimH h
 set_option linter.uppercaseLean3 false in
 #align dimH_le_of_hausdorff_measure_ne_top dimH_le_of_hausdorffMeasure_ne_top
 
-theorem le_dimH_of_hausdorffMeasure_eq_top {s : Set X} {d : ℝ≥0} (h : μH[d] s = ∞) :
+lemma le_dimH_of_hausdorffMeasure_eq_top {s : Set X} {d : ℝ≥0} (h : μH[d] s = ∞) :
     ↑d ≤ dimH s := by
   rw [dimH_def]; exact le_iSup₂ (α := ℝ≥0∞) d h
 set_option linter.uppercaseLean3 false in
 #align le_dimH_of_hausdorff_measure_eq_top le_dimH_of_hausdorffMeasure_eq_top
 
-theorem hausdorffMeasure_of_dimH_lt {s : Set X} {d : ℝ≥0} (h : dimH s < d) : μH[d] s = 0 := by
+lemma hausdorffMeasure_of_dimH_lt {s : Set X} {d : ℝ≥0} (h : dimH s < d) : μH[d] s = 0 := by
   rw [dimH_def] at h
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hsd', hd'd⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hd'd
@@ -145,18 +145,18 @@ theorem hausdorffMeasure_of_dimH_lt {s : Set X} {d : ℝ≥0} (h : dimH s < d) :
 set_option linter.uppercaseLean3 false in
 #align hausdorff_measure_of_dimH_lt hausdorffMeasure_of_dimH_lt
 
-theorem measure_zero_of_dimH_lt {μ : Measure X} {d : ℝ≥0} (h : μ ≪ μH[d]) {s : Set X}
+lemma measure_zero_of_dimH_lt {μ : Measure X} {d : ℝ≥0} (h : μ ≪ μH[d]) {s : Set X}
     (hd : dimH s < d) : μ s = 0 :=
   h <| hausdorffMeasure_of_dimH_lt hd
 set_option linter.uppercaseLean3 false in
 #align measure_zero_of_dimH_lt measure_zero_of_dimH_lt
 
-theorem le_dimH_of_hausdorffMeasure_ne_zero {s : Set X} {d : ℝ≥0} (h : μH[d] s ≠ 0) : ↑d ≤ dimH s :=
+lemma le_dimH_of_hausdorffMeasure_ne_zero {s : Set X} {d : ℝ≥0} (h : μH[d] s ≠ 0) : ↑d ≤ dimH s :=
   le_of_not_lt <| mt hausdorffMeasure_of_dimH_lt h
 set_option linter.uppercaseLean3 false in
 #align le_dimH_of_hausdorff_measure_ne_zero le_dimH_of_hausdorffMeasure_ne_zero
 
-theorem dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : μH[d] s ≠ 0)
+lemma dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : μH[d] s ≠ 0)
     (h' : μH[d] s ≠ ∞) : dimH s = d :=
   le_antisymm (dimH_le_of_hausdorffMeasure_ne_top h') (le_dimH_of_hausdorffMeasure_ne_zero h)
 set_option linter.uppercaseLean3 false in
@@ -165,13 +165,13 @@ set_option linter.uppercaseLean3 false in
 end Measurable
 
 @[mono]
-theorem dimH_mono {s t : Set X} (h : s ⊆ t) : dimH s ≤ dimH t := by
+lemma dimH_mono {s t : Set X} (h : s ⊆ t) : dimH s ≤ dimH t := by
   borelize X
   exact dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top <| top_unique <| hd ▸ measure_mono h
 set_option linter.uppercaseLean3 false in
 #align dimH_mono dimH_mono
 
-theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
+lemma dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
   borelize X
   apply le_antisymm _ (zero_le _)
   refine dimH_le_of_hausdorffMeasure_ne_top ?_
@@ -184,7 +184,7 @@ set_option linter.uppercaseLean3 false in
 #align set.subsingleton.dimH_zero Set.Subsingleton.dimH_zero
 
 @[simp]
-theorem dimH_empty : dimH (∅ : Set X) = 0 :=
+lemma dimH_empty : dimH (∅ : Set X) = 0 :=
   subsingleton_empty.dimH_zero
 set_option linter.uppercaseLean3 false in
 #align dimH_empty dimH_empty
@@ -196,7 +196,7 @@ set_option linter.uppercaseLean3 false in
 #align dimH_singleton dimH_singleton
 
 @[simp]
-theorem dimH_iUnion [Encodable ι] (s : ι → Set X) : dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
+lemma dimH_iUnion [Encodable ι] (s : ι → Set X) : dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
   borelize X
   refine le_antisymm (dimH_le fun d hd => ?_) (iSup_le fun i => dimH_mono <| subset_iUnion _ _)
   contrapose! hd
@@ -208,7 +208,7 @@ set_option linter.uppercaseLean3 false in
 #align dimH_Union dimH_iUnion
 
 @[simp]
-theorem dimH_bUnion {s : Set ι} (hs : s.Countable) (t : ι → Set X) :
+lemma dimH_bUnion {s : Set ι} (hs : s.Countable) (t : ι → Set X) :
     dimH (⋃ i ∈ s, t i) = ⨆ i ∈ s, dimH (t i) := by
   haveI := hs.toEncodable
   rw [biUnion_eq_iUnion, dimH_iUnion, ← iSup_subtype'']
@@ -216,7 +216,7 @@ set_option linter.uppercaseLean3 false in
 #align dimH_bUnion dimH_bUnion
 
 @[simp]
-theorem dimH_sUnion {S : Set (Set X)} (hS : S.Countable) : dimH (⋃₀ S) = ⨆ s ∈ S, dimH s := by
+lemma dimH_sUnion {S : Set (Set X)} (hS : S.Countable) : dimH (⋃₀ S) = ⨆ s ∈ S, dimH s := by
   rw [sUnion_eq_biUnion, dimH_bUnion hS]
 set_option linter.uppercaseLean3 false in
 #align dimH_sUnion dimH_sUnion
@@ -227,7 +227,7 @@ theorem dimH_union (s t : Set X) : dimH (s ∪ t) = max (dimH s) (dimH t) := by
 set_option linter.uppercaseLean3 false in
 #align dimH_union dimH_union
 
-theorem dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
+lemma dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
   biUnion_of_singleton s ▸ by simp only [dimH_bUnion hs, dimH_singleton, ENNReal.iSup_zero_eq_zero]
 set_option linter.uppercaseLean3 false in
 #align dimH_countable dimH_countable
@@ -236,7 +236,7 @@ alias Set.Countable.dimH_zero := dimH_countable
 set_option linter.uppercaseLean3 false in
 #align set.countable.dimH_zero Set.Countable.dimH_zero
 
-theorem dimH_finite {s : Set X} (hs : s.Finite) : dimH s = 0 :=
+lemma dimH_finite {s : Set X} (hs : s.Finite) : dimH s = 0 :=
   hs.countable.dimH_zero
 set_option linter.uppercaseLean3 false in
 #align dimH_finite dimH_finite
@@ -267,7 +267,7 @@ variable [SecondCountableTopology X]
 /-- If `r` is less than the Hausdorff dimension of a set `s` in an (extended) metric space with
 second countable topology, then there exists a point `x ∈ s` such that every neighborhood
 `t` of `x` within `s` has Hausdorff dimension greater than `r`. -/
-theorem exists_mem_nhdsWithin_lt_dimH_of_lt_dimH {s : Set X} {r : ℝ≥0∞} (h : r < dimH s) :
+lemma exists_mem_nhdsWithin_lt_dimH_of_lt_dimH {s : Set X} {r : ℝ≥0∞} (h : r < dimH s) :
     ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, r < dimH t := by
   contrapose! h; choose! t htx htr using h
   rcases countable_cover_nhdsWithin htx with ⟨S, hSs, hSc, hSU⟩
@@ -353,7 +353,7 @@ end HolderWith
 continuous in a neighborhood within `s` of every point `x ∈ s` with the same positive exponent `r`
 but possibly different coefficients, then the Hausdorff dimension of the image `f '' s` is at most
 the Hausdorff dimension of `s` divided by `r`. -/
-theorem dimH_image_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ≥0} {f : X → Y}
+lemma dimH_image_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ≥0} {f : X → Y}
     (hr : 0 < r) {s : Set X} (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HolderOnWith C r f t) :
     dimH (f '' s) ≤ dimH s / r := by
   choose! C t htn hC using hf
@@ -367,7 +367,7 @@ set_option linter.uppercaseLean3 false in
 /-- If `f : X → Y` is Hölder continuous in a neighborhood of every point `x : X` with the same
 positive exponent `r` but possibly different coefficients, then the Hausdorff dimension of the range
 of `f` is at most the Hausdorff dimension of `X` divided by `r`. -/
-theorem dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ≥0} {f : X → Y}
+lemma dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ≥0} {f : X → Y}
     (hr : 0 < r) (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, HolderOnWith C r f s) :
     dimH (range f) ≤ dimH (univ : Set X) / r := by
   rw [← image_univ]
@@ -407,7 +407,7 @@ end LipschitzWith
 /-- If `s` is a set in an extended metric space `X` with second countable topology and `f : X → Y`
 is Lipschitz in a neighborhood within `s` of every point `x ∈ s`, then the Hausdorff dimension of
 the image `f '' s` is at most the Hausdorff dimension of `s`. -/
-theorem dimH_image_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X → Y} {s : Set X}
+lemma dimH_image_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X → Y} {s : Set X}
     (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith C f t) : dimH (f '' s) ≤ dimH s := by
   have : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HolderOnWith C 1 f t := by
     simpa only [holderOnWith_one] using hf
@@ -417,7 +417,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If `f : X → Y` is Lipschitz in a neighborhood of each point `x : X`, then the Hausdorff
 dimension of `range f` is at most the Hausdorff dimension of `X`. -/
-theorem dimH_range_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X → Y}
+lemma dimH_range_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X → Y}
     (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, LipschitzOnWith C f s) :
     dimH (range f) ≤ dimH (univ : Set X) := by
   rw [← image_univ]
@@ -526,7 +526,7 @@ theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
 set_option linter.uppercaseLean3 false in
 #align real.dimH_ball_pi Real.dimH_ball_pi
 
-theorem dimH_ball_pi_fin {n : ℕ} (x : Fin n → ℝ) {r : ℝ} (hr : 0 < r) :
+lemma dimH_ball_pi_fin {n : ℕ} (x : Fin n → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = n := by rw [dimH_ball_pi x hr, Fintype.card_fin]
 set_option linter.uppercaseLean3 false in
 #align real.dimH_ball_pi_fin Real.dimH_ball_pi_fin
@@ -542,7 +542,7 @@ theorem dimH_univ_pi_fin (n : ℕ) : dimH (univ : Set (Fin n → ℝ)) = n := by
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ_pi_fin Real.dimH_univ_pi_fin
 
-theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finrank ℝ E := by
+lemma dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finrank ℝ E := by
   have e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
     ContinuousLinearEquiv.ofFinrankEq (FiniteDimensional.finrank_fin_fun ℝ).symm
   rw [← e.dimH_image]
@@ -554,7 +554,7 @@ theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finra
 set_option linter.uppercaseLean3 false in
 #align real.dimH_of_mem_nhds Real.dimH_of_mem_nhds
 
-theorem dimH_of_nonempty_interior {s : Set E} (h : (interior s).Nonempty) : dimH s = finrank ℝ E :=
+lemma dimH_of_nonempty_interior {s : Set E} (h : (interior s).Nonempty) : dimH s = finrank ℝ E :=
   let ⟨_, hx⟩ := h
   dimH_of_mem_nhds (mem_interior_iff_mem_nhds.1 hx)
 set_option linter.uppercaseLean3 false in
@@ -562,12 +562,12 @@ set_option linter.uppercaseLean3 false in
 
 variable (E)
 
-theorem dimH_univ_eq_finrank : dimH (univ : Set E) = finrank ℝ E :=
+lemma dimH_univ_eq_finrank : dimH (univ : Set E) = finrank ℝ E :=
   dimH_of_mem_nhds (@univ_mem _ (𝓝 0))
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ_eq_finrank Real.dimH_univ_eq_finrank
 
-theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
+lemma dimH_univ : dimH (univ : Set ℝ) = 1 := by
   rw [dimH_univ_eq_finrank ℝ, FiniteDimensional.finrank_self, Nat.cast_one]
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ Real.dimH_univ
@@ -577,7 +577,7 @@ end Real
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
+lemma dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_le ?_
   rw [← diff_eq, diff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
@@ -598,7 +598,7 @@ on a convex set `s`, then the Hausdorff dimension of `f '' s` is less than or eq
 dimension of `s`.
 
 TODO: do we actually need `Convex ℝ s`? -/
-theorem ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
+lemma ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
     (hc : Convex ℝ s) (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
   dimH_image_le_of_locally_lipschitzOn fun x hx =>
     let ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
@@ -608,7 +608,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The Hausdorff dimension of the range of a `C¹`-smooth function defined on a finite dimensional
 real normed space is at most the dimension of its domain as a vector space over `ℝ`. -/
-theorem ContDiff.dimH_range_le {f : E → F} (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
+lemma ContDiff.dimH_range_le {f : E → F} (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
   calc
     dimH (range f) = dimH (f '' univ) := by rw [image_univ]
     _ ≤ dimH (univ : Set E) := (h.contDiffOn.dimH_image_le convex_univ Subset.rfl)
@@ -619,7 +619,7 @@ set_option linter.uppercaseLean3 false in
 /-- A particular case of Sard's Theorem. Let `f : E → F` be a map between finite dimensional real
 vector spaces. Suppose that `f` is `C¹` smooth on a convex set `s` of Hausdorff dimension strictly
 less than the dimension of `F`. Then the complement of the image `f '' s` is dense in `F`. -/
-theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
+lemma ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
     {s t : Set E} (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
@@ -629,7 +629,7 @@ set_option linter.uppercaseLean3 false in
 /-- A particular case of Sard's Theorem. If `f` is a `C¹` smooth map from a real vector space to a
 real vector space `F` of strictly larger dimension, then the complement of the range of `f` is dense
 in `F`. -/
-theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
+lemma ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
 #align cont_diff.dense_compl_range_of_finrank_lt_finrank ContDiff.dense_compl_range_of_finrank_lt_finrank

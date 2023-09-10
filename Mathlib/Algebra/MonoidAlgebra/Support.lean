@@ -20,7 +20,7 @@ open Finset Finsupp
 
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
-theorem support_single_mul_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
+lemma support_single_mul_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
     (single a r * f : MonoidAlgebra k G).support ⊆ Finset.image ((· * ·) a) f.support := by
   intro x hx
   contrapose hx
@@ -36,7 +36,7 @@ theorem support_single_mul_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G
           ite_eq_right_iff, eq_self_iff_true, imp_true_iff])
 #align monoid_algebra.support_single_mul_subset MonoidAlgebra.support_single_mul_subset
 
-theorem support_mul_single_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
+lemma support_mul_single_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
     (f * single a r).support ⊆ Finset.image (· * a) f.support := by
   intro x hx
   contrapose hx
@@ -52,7 +52,7 @@ theorem support_mul_single_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G
           eq_self_iff_true, imp_true_iff, zero_mul])
 #align monoid_algebra.support_mul_single_subset MonoidAlgebra.support_mul_single_subset
 
-theorem support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
+lemma support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
     (single x r * f : MonoidAlgebra k G).support = Finset.image ((· * ·) x) f.support := by
   refine' subset_antisymm (support_single_mul_subset f _ _) fun y hy => _
@@ -62,7 +62,7 @@ theorem support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k
     Finsupp.sum_ite_eq', Ne.def, not_false_iff, if_true, zero_mul, ite_self, sum_zero, lx.eq_iff]
 #align monoid_algebra.support_single_mul_eq_image MonoidAlgebra.support_single_mul_eq_image
 
-theorem support_mul_single_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
+lemma support_mul_single_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
     (hr : ∀ y, y * r = 0 ↔ y = 0) {x : G} (rx : IsRightRegular x) :
     (f * single x r).support = Finset.image (· * x) f.support := by
   refine' subset_antisymm (support_mul_single_subset f _ _) fun y hy => _
@@ -72,14 +72,14 @@ theorem support_mul_single_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k
     Finsupp.sum_ite_eq', Ne.def, not_false_iff, if_true, mul_zero, ite_self, sum_zero, rx.eq_iff]
 #align monoid_algebra.support_mul_single_eq_image MonoidAlgebra.support_mul_single_eq_image
 
-theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
+lemma support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
     (a * b).support ⊆ a.support.biUnion fun a₁ => b.support.biUnion fun a₂ => {a₁ * a₂} :=
   Subset.trans support_sum <|
     biUnion_mono fun _ _ =>
       Subset.trans support_sum <| biUnion_mono fun _a₂ _ => support_single_subset
 #align monoid_algebra.support_mul MonoidAlgebra.support_mul
 
-theorem support_mul_single [RightCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
+lemma support_mul_single [RightCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
   classical
@@ -88,7 +88,7 @@ theorem support_mul_single [RightCancelSemigroup G] (f : MonoidAlgebra k G) (r :
       mem_image, mem_map, mulRightEmbedding_apply]
 #align monoid_algebra.support_mul_single MonoidAlgebra.support_mul_single
 
-theorem support_single_mul [LeftCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
+lemma support_single_mul [LeftCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, r * y = 0 ↔ y = 0) (x : G) :
     (single x r * f : MonoidAlgebra k G).support = f.support.map (mulLeftEmbedding x) := by
   classical
@@ -117,18 +117,18 @@ open Finset Finsupp MulOpposite
 
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
-theorem support_mul [DecidableEq G] [Add G] (a b : AddMonoidAlgebra k G) :
+lemma support_mul [DecidableEq G] [Add G] (a b : AddMonoidAlgebra k G) :
     (a * b).support ⊆ a.support.biUnion fun a₁ => b.support.biUnion fun a₂ => {a₁ + a₂} :=
   @MonoidAlgebra.support_mul k (Multiplicative G) _ _ _ _ _
 #align add_monoid_algebra.support_mul AddMonoidAlgebra.support_mul
 
-theorem support_mul_single [AddRightCancelSemigroup G] (f : AddMonoidAlgebra k G) (r : k)
+lemma support_mul_single [AddRightCancelSemigroup G] (f : AddMonoidAlgebra k G) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :
     (f * single x r : AddMonoidAlgebra k G).support = f.support.map (addRightEmbedding x) :=
   @MonoidAlgebra.support_mul_single k (Multiplicative G) _ _ _ _ hr _
 #align add_monoid_algebra.support_mul_single AddMonoidAlgebra.support_mul_single
 
-theorem support_single_mul [AddLeftCancelSemigroup G] (f : AddMonoidAlgebra k G) (r : k)
+lemma support_single_mul [AddLeftCancelSemigroup G] (f : AddMonoidAlgebra k G) (r : k)
     (hr : ∀ y, r * y = 0 ↔ y = 0) (x : G) :
     (single x r * f : AddMonoidAlgebra k G).support = f.support.map (addLeftEmbedding x) :=
   @MonoidAlgebra.support_single_mul k (Multiplicative G) _ _ _ _ hr _
@@ -137,7 +137,7 @@ theorem support_single_mul [AddLeftCancelSemigroup G] (f : AddMonoidAlgebra k G)
 section Span
 
 /-- An element of `AddMonoidAlgebra k G` is in the submodule generated by its support. -/
-theorem mem_span_support [AddZeroClass G] (f : AddMonoidAlgebra k G) :
+lemma mem_span_support [AddZeroClass G] (f : AddMonoidAlgebra k G) :
     f ∈ Submodule.span k (of k G '' (f.support : Set G)) := by
   erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported]
 #align add_monoid_algebra.mem_span_support AddMonoidAlgebra.mem_span_support

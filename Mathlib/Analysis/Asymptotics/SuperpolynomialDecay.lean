@@ -81,22 +81,22 @@ theorem superpolynomialDecay_zero (l : Filter α) (k : α → β) : Superpolynom
   fun z => by simpa only [Pi.zero_apply, mul_zero] using tendsto_const_nhds
 #align asymptotics.superpolynomial_decay_zero Asymptotics.superpolynomialDecay_zero
 
-theorem SuperpolynomialDecay.add [ContinuousAdd β] (hf : SuperpolynomialDecay l k f)
+lemma SuperpolynomialDecay.add [ContinuousAdd β] (hf : SuperpolynomialDecay l k f)
     (hg : SuperpolynomialDecay l k g) : SuperpolynomialDecay l k (f + g) := fun z => by
   simpa only [mul_add, add_zero, Pi.add_apply] using (hf z).add (hg z)
 #align asymptotics.superpolynomial_decay.add Asymptotics.SuperpolynomialDecay.add
 
-theorem SuperpolynomialDecay.mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f)
+lemma SuperpolynomialDecay.mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f)
     (hg : SuperpolynomialDecay l k g) : SuperpolynomialDecay l k (f * g) := fun z => by
   simpa only [mul_assoc, one_mul, mul_zero, pow_zero] using (hf z).mul (hg 0)
 #align asymptotics.superpolynomial_decay.mul Asymptotics.SuperpolynomialDecay.mul
 
-theorem SuperpolynomialDecay.mul_const [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
+lemma SuperpolynomialDecay.mul_const [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
     SuperpolynomialDecay l k fun n => f n * c := fun z => by
   simpa only [← mul_assoc, zero_mul] using Tendsto.mul_const c (hf z)
 #align asymptotics.superpolynomial_decay.mul_const Asymptotics.SuperpolynomialDecay.mul_const
 
-theorem SuperpolynomialDecay.const_mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
+lemma SuperpolynomialDecay.const_mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
     SuperpolynomialDecay l k fun n => c * f n :=
   (hf.mul_const c).congr fun _ => mul_comm _ _
 #align asymptotics.superpolynomial_decay.const_mul Asymptotics.SuperpolynomialDecay.const_mul
@@ -125,14 +125,14 @@ theorem SuperpolynomialDecay.mul_param_pow (hf : SuperpolynomialDecay l k f) (n 
   (hf.param_pow_mul n).congr fun _ => mul_comm _ _
 #align asymptotics.superpolynomial_decay.mul_param_pow Asymptotics.SuperpolynomialDecay.mul_param_pow
 
-theorem SuperpolynomialDecay.polynomial_mul [ContinuousAdd β] [ContinuousMul β]
+lemma SuperpolynomialDecay.polynomial_mul [ContinuousAdd β] [ContinuousMul β]
     (hf : SuperpolynomialDecay l k f) (p : β[X]) :
     SuperpolynomialDecay l k fun x => (p.eval <| k x) * f x :=
   Polynomial.induction_on' p (fun p q hp hq => by simpa [add_mul] using hp.add hq) fun n c => by
     simpa [mul_assoc] using (hf.param_pow_mul n).const_mul c
 #align asymptotics.superpolynomial_decay.polynomial_mul Asymptotics.SuperpolynomialDecay.polynomial_mul
 
-theorem SuperpolynomialDecay.mul_polynomial [ContinuousAdd β] [ContinuousMul β]
+lemma SuperpolynomialDecay.mul_polynomial [ContinuousAdd β] [ContinuousMul β]
     (hf : SuperpolynomialDecay l k f) (p : β[X]) :
     SuperpolynomialDecay l k fun x => f x * (p.eval <| k x) :=
   (hf.polynomial_mul p).congr fun _ => mul_comm _ _
@@ -160,13 +160,13 @@ variable [TopologicalSpace β] [LinearOrderedCommRing β] [OrderTopology β]
 
 variable (l k f)
 
-theorem superpolynomialDecay_iff_abs_tendsto_zero :
+lemma superpolynomialDecay_iff_abs_tendsto_zero :
     SuperpolynomialDecay l k f ↔ ∀ n : ℕ, Tendsto (fun a : α => |k a ^ n * f a|) l (𝓝 0) :=
   ⟨fun h z => (tendsto_zero_iff_abs_tendsto_zero _).1 (h z), fun h z =>
     (tendsto_zero_iff_abs_tendsto_zero _).2 (h z)⟩
 #align asymptotics.superpolynomial_decay_iff_abs_tendsto_zero Asymptotics.superpolynomialDecay_iff_abs_tendsto_zero
 
-theorem superpolynomialDecay_iff_superpolynomialDecay_abs :
+lemma superpolynomialDecay_iff_superpolynomialDecay_abs :
     SuperpolynomialDecay l k f ↔ SuperpolynomialDecay l (fun a => |k a|) fun a => |f a| :=
   (superpolynomialDecay_iff_abs_tendsto_zero l k f).trans
     (by simp_rw [SuperpolynomialDecay, abs_mul, abs_pow])
@@ -197,13 +197,13 @@ section Field
 
 variable [TopologicalSpace β] [Field β] (l k f)
 
-theorem superpolynomialDecay_mul_const_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
+lemma superpolynomialDecay_mul_const_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => f n * c) ↔ SuperpolynomialDecay l k f :=
   ⟨fun h => (h.mul_const c⁻¹).congr fun x => by simp [mul_assoc, mul_inv_cancel hc0], fun h =>
     h.mul_const c⟩
 #align asymptotics.superpolynomial_decay_mul_const_iff Asymptotics.superpolynomialDecay_mul_const_iff
 
-theorem superpolynomialDecay_const_mul_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
+lemma superpolynomialDecay_const_mul_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => c * f n) ↔ SuperpolynomialDecay l k f :=
   ⟨fun h => (h.const_mul c⁻¹).congr fun x => by simp [← mul_assoc, inv_mul_cancel hc0], fun h =>
     h.const_mul c⟩
@@ -314,13 +314,13 @@ variable [NormedLinearOrderedField β]
 
 variable (l k f)
 
-theorem superpolynomialDecay_iff_norm_tendsto_zero :
+lemma superpolynomialDecay_iff_norm_tendsto_zero :
     SuperpolynomialDecay l k f ↔ ∀ n : ℕ, Tendsto (fun a : α => ‖k a ^ n * f a‖) l (𝓝 0) :=
   ⟨fun h z => tendsto_zero_iff_norm_tendsto_zero.1 (h z), fun h z =>
     tendsto_zero_iff_norm_tendsto_zero.2 (h z)⟩
 #align asymptotics.superpolynomial_decay_iff_norm_tendsto_zero Asymptotics.superpolynomialDecay_iff_norm_tendsto_zero
 
-theorem superpolynomialDecay_iff_superpolynomialDecay_norm :
+lemma superpolynomialDecay_iff_superpolynomialDecay_norm :
     SuperpolynomialDecay l k f ↔ SuperpolynomialDecay l (fun a => ‖k a‖) fun a => ‖f a‖ :=
   (superpolynomialDecay_iff_norm_tendsto_zero l k f).trans (by simp [SuperpolynomialDecay])
 #align asymptotics.superpolynomial_decay_iff_superpolynomial_decay_norm Asymptotics.superpolynomialDecay_iff_superpolynomialDecay_norm

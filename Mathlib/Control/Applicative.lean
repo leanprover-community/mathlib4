@@ -38,7 +38,7 @@ theorem Applicative.pure_seq_eq_map' (f : α → β) : (· <*> ·) (pure f : F (
   by ext; simp [functor_norm]
 #align applicative.pure_seq_eq_map' Applicative.pure_seq_eq_map'
 
-theorem Applicative.ext {F} :
+lemma Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],
       (∀ {α : Type u} (x : α), @Pure.pure _ A1.toPure _ x = @Pure.pure _ A2.toPure _ x) →
       (∀ {α β : Type u} (f : F (α → β)) (x : F α),
@@ -118,13 +118,13 @@ instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where
 
 -- Porting note: mathport wasn't aware of the new implicit parameter omission in these `fun` binders
 
-theorem applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
+lemma applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
     @instApplicativeComp Id F _ _ = AF :=
   @Applicative.ext F _ _ (@instLawfulApplicativeComp Id F _ _ _ _) _
     (fun _ => rfl) (fun _ _ => rfl)
 #align functor.comp.applicative_id_comp Functor.Comp.applicative_id_comp
 
-theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
+lemma applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
     @Comp.instApplicativeComp F Id _ _ = AF :=
   @Applicative.ext F _ _ (@Comp.instLawfulApplicativeComp F Id _ _ _ _) _
     (fun _ => rfl) (fun f x => show id <$> f <*> x = f <*> x by rw [id_map])
@@ -151,7 +151,7 @@ end Functor
 open Functor
 
 @[functor_norm]
-theorem Comp.seq_mk {α β : Type w} {f : Type u → Type v} {g : Type w → Type u} [Applicative f]
+lemma Comp.seq_mk {α β : Type w} {f : Type u → Type v} {g : Type w → Type u} [Applicative f]
     [Applicative g] (h : f (g (α → β))) (x : f (g α)) :
     Comp.mk h <*> Comp.mk x = Comp.mk ((· <*> ·) <$> h <*> x) :=
   rfl

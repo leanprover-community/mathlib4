@@ -62,7 +62,7 @@ protected abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
-theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+lemma associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     associated (R₁ := A) (Q₁.tmul Q₂)
       = (associated (R₁ := A) Q₁).tmul (associated (R₁ := R) Q₂) := by
   rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
@@ -80,7 +80,7 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
   tensorDistrib_tmul _ _ _ _
 
 
-theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
+lemma associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
     associated (R₁ := A) (Q.baseChange A) = (associated (R₁ := R) Q).baseChange A := by
   dsimp only [QuadraticForm.baseChange, BilinForm.baseChange]
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]

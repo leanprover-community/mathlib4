@@ -84,7 +84,7 @@ theorem le_of_forall_one_lt_lt_mul' (h : ∀ ε : α, 1 < ε → a < b * ε) : a
 #align le_of_forall_pos_lt_add' le_of_forall_pos_lt_add'
 
 @[to_additive]
-theorem le_iff_forall_one_lt_lt_mul' : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
+lemma le_iff_forall_one_lt_lt_mul' : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
   ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul'⟩
 #align le_iff_forall_one_lt_lt_mul' le_iff_forall_one_lt_lt_mul'
 #align le_iff_forall_pos_lt_add' le_iff_forall_pos_lt_add'
@@ -152,13 +152,13 @@ section CanonicallyOrderedMonoid
 variable [CanonicallyOrderedMonoid α] {a b c d : α}
 
 @[to_additive]
-theorem le_self_mul : a ≤ a * c :=
+lemma le_self_mul : a ≤ a * c :=
   CanonicallyOrderedMonoid.le_self_mul _ _
 #align le_self_mul le_self_mul
 #align le_self_add le_self_add
 
 @[to_additive]
-theorem le_mul_self : a ≤ b * a := by
+lemma le_mul_self : a ≤ b * a := by
   rw [mul_comm]
   exact le_self_mul
 #align le_mul_self le_mul_self
@@ -177,31 +177,31 @@ theorem self_le_mul_left (a b : α) : a ≤ b * a :=
 #align self_le_add_left self_le_add_left
 
 @[to_additive]
-theorem le_of_mul_le_left : a * b ≤ c → a ≤ c :=
+lemma le_of_mul_le_left : a * b ≤ c → a ≤ c :=
   le_self_mul.trans
 #align le_of_mul_le_left le_of_mul_le_left
 #align le_of_add_le_left le_of_add_le_left
 
 @[to_additive]
-theorem le_of_mul_le_right : a * b ≤ c → b ≤ c :=
+lemma le_of_mul_le_right : a * b ≤ c → b ≤ c :=
   le_mul_self.trans
 #align le_of_mul_le_right le_of_mul_le_right
 #align le_of_add_le_right le_of_add_le_right
 
 @[to_additive]
-theorem le_mul_of_le_left : a ≤ b → a ≤ b * c :=
+lemma le_mul_of_le_left : a ≤ b → a ≤ b * c :=
   le_self_mul.trans'
 #align le_mul_of_le_left le_mul_of_le_left
 #align le_add_of_le_left le_add_of_le_left
 
 @[to_additive]
-theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
+lemma le_mul_of_le_right : a ≤ c → a ≤ b * c :=
   le_mul_self.trans'
 #align le_mul_of_le_right le_mul_of_le_right
 #align le_add_of_le_right le_add_of_le_right
 
 @[to_additive]
-theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
+lemma le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
   ⟨exists_mul_of_le, by
     rintro ⟨c, rfl⟩
     exact le_self_mul⟩
@@ -209,7 +209,7 @@ theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
 #align le_iff_exists_add le_iff_exists_add
 
 @[to_additive]
-theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
+lemma le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
 #align le_iff_exists_mul' le_iff_exists_mul'
 #align le_iff_exists_add' le_iff_exists_add'
@@ -221,7 +221,7 @@ theorem one_le (a : α) : 1 ≤ a :=
 #align zero_le zero_le
 
 @[to_additive]
-theorem bot_eq_one : (⊥ : α) = 1 :=
+lemma bot_eq_one : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 #align bot_eq_one bot_eq_one
 #align bot_eq_zero bot_eq_zero
@@ -229,31 +229,31 @@ theorem bot_eq_one : (⊥ : α) = 1 :=
 --TODO: This is a special case of `mul_eq_one`. We need the instance
 -- `CanonicallyOrderedMonoid α → Unique αˣ`
 @[to_additive (attr := simp)]
-theorem mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+lemma mul_eq_one_iff : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   mul_eq_one_iff' (one_le _) (one_le _)
 #align mul_eq_one_iff mul_eq_one_iff
 #align add_eq_zero_iff add_eq_zero_iff
 
 @[to_additive (attr := simp)]
-theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
+lemma le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
   (one_le a).le_iff_eq
 #align le_one_iff_eq_one le_one_iff_eq_one
 #align nonpos_iff_eq_zero nonpos_iff_eq_zero
 
 @[to_additive]
-theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
+lemma one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
   (one_le a).lt_iff_ne.trans ne_comm
 #align one_lt_iff_ne_one one_lt_iff_ne_one
 #align pos_iff_ne_zero pos_iff_ne_zero
 
 @[to_additive]
-theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
+lemma eq_one_or_one_lt : a = 1 ∨ 1 < a :=
   (one_le a).eq_or_lt.imp_left Eq.symm
 #align eq_one_or_one_lt eq_one_or_one_lt
 #align eq_zero_or_pos eq_zero_or_pos
 
 @[to_additive (attr := simp) add_pos_iff]
-theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
+lemma one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
 #align one_lt_mul_iff one_lt_mul_iff
 #align add_pos_iff add_pos_iff
@@ -284,7 +284,7 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 #align le_add_right le_add_right
 
 @[to_additive]
-theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
+lemma lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
   apply exists_congr
   intro c
@@ -302,17 +302,17 @@ theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔
 
 end CanonicallyOrderedMonoid
 
-theorem pos_of_gt {M : Type*} [CanonicallyOrderedAddMonoid M] {n m : M} (h : n < m) : 0 < m :=
+lemma pos_of_gt {M : Type*} [CanonicallyOrderedAddMonoid M] {n m : M} (h : n < m) : 0 < m :=
   lt_of_le_of_lt (zero_le _) h
 #align pos_of_gt pos_of_gt
 
 namespace NeZero
 
-theorem pos {M} (a : M) [CanonicallyOrderedAddMonoid M] [NeZero a] : 0 < a :=
+lemma pos {M} (a : M) [CanonicallyOrderedAddMonoid M] [NeZero a] : 0 < a :=
   (zero_le a).lt_of_ne <| NeZero.out.symm
 #align ne_zero.pos NeZero.pos
 
-theorem of_gt {M} [CanonicallyOrderedAddMonoid M] {x y : M} (h : x < y) : NeZero y :=
+lemma of_gt {M} [CanonicallyOrderedAddMonoid M] {x y : M} (h : x < y) : NeZero y :=
   of_pos <| pos_of_gt h
 #align ne_zero.of_gt NeZero.of_gt
 
@@ -387,7 +387,7 @@ theorem min_one (a : α) : min a 1 = 1 :=
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
   "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
-theorem bot_eq_one' : (⊥ : α) = 1 :=
+lemma bot_eq_one' : (⊥ : α) = 1 :=
   bot_eq_one
 #align bot_eq_one' bot_eq_one'
 #align bot_eq_zero' bot_eq_zero'

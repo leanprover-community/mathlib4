@@ -34,12 +34,12 @@ protected def Lex (r : α → α → Prop) (s : N → N → Prop) (x y : α →�
 #align finsupp.lex Finsupp.Lex
 
 -- Porting note: Added `_root_` to better align with Lean 3.
-theorem _root_.Pi.lex_eq_finsupp_lex {r : α → α → Prop} {s : N → N → Prop} (a b : α →₀ N) :
+lemma _root_.Pi.lex_eq_finsupp_lex {r : α → α → Prop} {s : N → N → Prop} (a b : α →₀ N) :
     Pi.Lex r s a b = Finsupp.Lex r s a b :=
   rfl
 #align pi.lex_eq_finsupp_lex Pi.lex_eq_finsupp_lex
 
-theorem lex_def {r : α → α → Prop} {s : N → N → Prop} {a b : α →₀ N} :
+lemma lex_def {r : α → α → Prop} {s : N → N → Prop} {a b : α →₀ N} :
     Finsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s (a j) (b j) :=
   Iff.rfl
 #align finsupp.lex_def Finsupp.lex_def
@@ -52,12 +52,12 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
 instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
-theorem lex_lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
+lemma lex_lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
     ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   DFinsupp.lex_lt_of_lt_of_preorder r (id hlt : x.toDFinsupp < y.toDFinsupp)
 #align finsupp.lex_lt_of_lt_of_preorder Finsupp.lex_lt_of_lt_of_preorder
 
-theorem lex_lt_of_lt [PartialOrder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
+lemma lex_lt_of_lt [PartialOrder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
     Pi.Lex r (· < ·) x y :=
   DFinsupp.lex_lt_of_lt r (id hlt : x.toDFinsupp < y.toDFinsupp)
 #align finsupp.lex_lt_of_lt Finsupp.lex_lt_of_lt
@@ -85,7 +85,7 @@ instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) :=
 
 variable [PartialOrder N]
 
-theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
+lemma toLex_monotone : Monotone (@toLex (α →₀ N)) :=
   fun a b h ↦ DFinsupp.toLex_monotone (id h : ∀ i, ofLex (toDFinsupp a) i ≤ ofLex (toDFinsupp b) i)
 #align finsupp.to_lex_monotone Finsupp.toLex_monotone
 

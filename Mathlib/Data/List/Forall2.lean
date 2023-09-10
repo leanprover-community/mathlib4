@@ -31,7 +31,7 @@ mk_iff_of_inductive_prop List.Forall₂ List.forall₂_iff
 #align list.forall₂.cons List.Forall₂.cons
 
 @[simp]
-theorem forall₂_cons {a b l₁ l₂} : Forall₂ R (a :: l₁) (b :: l₂) ↔ R a b ∧ Forall₂ R l₁ l₂ :=
+lemma forall₂_cons {a b l₁ l₂} : Forall₂ R (a :: l₁) (b :: l₂) ↔ R a b ∧ Forall₂ R l₁ l₂ :=
   ⟨fun h => by cases' h with h₁ h₂; constructor <;> assumption, fun ⟨h₁, h₂⟩ =>
     Forall₂.cons h₁ h₂⟩
 #align list.forall₂_cons List.forall₂_cons
@@ -40,30 +40,30 @@ theorem Forall₂.imp (H : ∀ a b, R a b → S a b) {l₁ l₂} (h : Forall₂ 
   induction h <;> constructor <;> solve_by_elim
 #align list.forall₂.imp List.Forall₂.imp
 
-theorem Forall₂.mp {Q : α → β → Prop} (h : ∀ a b, Q a b → R a b → S a b) :
+lemma Forall₂.mp {Q : α → β → Prop} (h : ∀ a b, Q a b → R a b → S a b) :
     ∀ {l₁ l₂}, Forall₂ Q l₁ l₂ → Forall₂ R l₁ l₂ → Forall₂ S l₁ l₂
   | [], [], Forall₂.nil, Forall₂.nil => Forall₂.nil
   | a :: _, b :: _, Forall₂.cons hr hrs, Forall₂.cons hq hqs =>
     Forall₂.cons (h a b hr hq) (Forall₂.mp h hrs hqs)
 #align list.forall₂.mp List.Forall₂.mp
 
-theorem Forall₂.flip : ∀ {a b}, Forall₂ (flip R) b a → Forall₂ R a b
+lemma Forall₂.flip : ∀ {a b}, Forall₂ (flip R) b a → Forall₂ R a b
   | _, _, Forall₂.nil => Forall₂.nil
   | _ :: _, _ :: _, Forall₂.cons h₁ h₂ => Forall₂.cons h₁ h₂.flip
 #align list.forall₂.flip List.Forall₂.flip
 
 @[simp]
-theorem forall₂_same : ∀ {l : List α}, Forall₂ Rₐ l l ↔ ∀ x ∈ l, Rₐ x x
+lemma forall₂_same : ∀ {l : List α}, Forall₂ Rₐ l l ↔ ∀ x ∈ l, Rₐ x x
   | [] => by simp
   | a :: l => by simp [@forall₂_same l]
 #align list.forall₂_same List.forall₂_same
 
-theorem forall₂_refl [IsRefl α Rₐ] (l : List α) : Forall₂ Rₐ l l :=
+lemma forall₂_refl [IsRefl α Rₐ] (l : List α) : Forall₂ Rₐ l l :=
   forall₂_same.2 fun _ _ => refl _
 #align list.forall₂_refl List.forall₂_refl
 
 @[simp]
-theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq := by
+lemma forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq := by
   funext a b; apply propext
   constructor
   · intro h
@@ -75,16 +75,16 @@ theorem forall₂_eq_eq_eq : Forall₂ ((· = ·) : α → α → Prop) = Eq := 
 #align list.forall₂_eq_eq_eq List.forall₂_eq_eq_eq
 
 @[simp]
-theorem forall₂_nil_left_iff {l} : Forall₂ R nil l ↔ l = nil :=
+lemma forall₂_nil_left_iff {l} : Forall₂ R nil l ↔ l = nil :=
   ⟨fun H => by cases H; rfl, by rintro rfl; exact Forall₂.nil⟩
 #align list.forall₂_nil_left_iff List.forall₂_nil_left_iff
 
 @[simp]
-theorem forall₂_nil_right_iff {l} : Forall₂ R l nil ↔ l = nil :=
+lemma forall₂_nil_right_iff {l} : Forall₂ R l nil ↔ l = nil :=
   ⟨fun H => by cases H; rfl, by rintro rfl; exact Forall₂.nil⟩
 #align list.forall₂_nil_right_iff List.forall₂_nil_right_iff
 
-theorem forall₂_cons_left_iff {a l u} :
+lemma forall₂_cons_left_iff {a l u} :
     Forall₂ R (a :: l) u ↔ ∃ b u', R a b ∧ Forall₂ R l u' ∧ u = b :: u' :=
   Iff.intro
     (fun h =>
@@ -95,7 +95,7 @@ theorem forall₂_cons_left_iff {a l u} :
     | _, ⟨_, _, h₁, h₂, rfl⟩ => Forall₂.cons h₁ h₂
 #align list.forall₂_cons_left_iff List.forall₂_cons_left_iff
 
-theorem forall₂_cons_right_iff {b l u} :
+lemma forall₂_cons_right_iff {b l u} :
     Forall₂ R u (b :: l) ↔ ∃ a u', R a b ∧ Forall₂ R u' l ∧ u = a :: u' :=
   Iff.intro
     (fun h =>
@@ -106,7 +106,7 @@ theorem forall₂_cons_right_iff {b l u} :
     | _, ⟨_, _, h₁, h₂, rfl⟩ => Forall₂.cons h₁ h₂
 #align list.forall₂_cons_right_iff List.forall₂_cons_right_iff
 
-theorem forall₂_and_left {p : α → Prop} :
+lemma forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
     simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff,
@@ -118,14 +118,14 @@ theorem forall₂_and_left {p : α → Prop} :
 #align list.forall₂_and_left List.forall₂_and_left
 
 @[simp]
-theorem forall₂_map_left_iff {f : γ → α} :
+lemma forall₂_map_left_iff {f : γ → α} :
     ∀ {l u}, Forall₂ R (map f l) u ↔ Forall₂ (fun c b => R (f c) b) l u
   | [], _ => by simp only [map, forall₂_nil_left_iff]
   | a :: l, _ => by simp only [map, forall₂_cons_left_iff, forall₂_map_left_iff]
 #align list.forall₂_map_left_iff List.forall₂_map_left_iff
 
 @[simp]
-theorem forall₂_map_right_iff {f : γ → β} :
+lemma forall₂_map_right_iff {f : γ → β} :
     ∀ {l u}, Forall₂ R l (map f u) ↔ Forall₂ (fun a c => R a (f c)) l u
   | _, [] => by simp only [map, forall₂_nil_right_iff]
   | _, b :: u => by simp only [map, forall₂_cons_right_iff, forall₂_map_right_iff]
@@ -156,19 +156,19 @@ theorem _root_.Relator.BiUnique.forall₂ (hr : BiUnique R) : BiUnique (Forall�
   ⟨hr.left.forall₂, hr.right.forall₂⟩
 #align relator.bi_unique.forall₂ Relator.BiUnique.forall₂
 
-theorem Forall₂.length_eq : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → length l₁ = length l₂
+lemma Forall₂.length_eq : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → length l₁ = length l₂
   | _, _, Forall₂.nil => rfl
   | _, _, Forall₂.cons _ h₂ => congr_arg succ (Forall₂.length_eq h₂)
 #align list.forall₂.length_eq List.Forall₂.length_eq
 
-theorem Forall₂.nthLe :
+lemma Forall₂.nthLe :
     ∀ {x : List α} {y : List β} (_ : Forall₂ R x y) ⦃i : ℕ⦄ (hx : i < x.length) (hy : i < y.length),
       R (x.nthLe i hx) (y.nthLe i hy)
   | _, _, Forall₂.cons ha _, 0, _, _ => ha
   | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.nthLe _ _
 #align list.forall₂.nth_le List.Forall₂.nthLe
 
-theorem forall₂_of_length_eq_of_nthLe :
+lemma forall₂_of_length_eq_of_nthLe :
     ∀ {x : List α} {y : List β},
       x.length = y.length → (∀ i h₁ h₂, R (x.nthLe i h₁) (y.nthLe i h₂)) → Forall₂ R x y
   | [], [], _, _ => Forall₂.nil
@@ -178,12 +178,12 @@ theorem forall₂_of_length_eq_of_nthLe :
         h i.succ (succ_lt_succ h₁) (succ_lt_succ h₂))
 #align list.forall₂_of_length_eq_of_nth_le List.forall₂_of_length_eq_of_nthLe
 
-theorem forall₂_iff_nthLe {l₁ : List α} {l₂ : List β} :
+lemma forall₂_iff_nthLe {l₁ : List α} {l₂ : List β} :
     Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.nthLe i h₁) (l₂.nthLe i h₂) :=
   ⟨fun h => ⟨h.length_eq, h.nthLe⟩, fun h => forall₂_of_length_eq_of_nthLe h.1 h.2⟩
 #align list.forall₂_iff_nth_le List.forall₂_iff_nthLe
 
-theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b
+lemma forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b
   | _, _, Forall₂.cons h₁ h₂, x, y, hx => by
     rw [zip, zipWith, mem_cons] at hx
     match hx with
@@ -191,7 +191,7 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
     | Or.inr h₃ => exact forall₂_zip h₂ h₃
 #align list.forall₂_zip List.forall₂_zip
 
-theorem forall₂_iff_zip {l₁ l₂} :
+lemma forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     cases' h with h₁ h₂
@@ -207,13 +207,13 @@ theorem forall₂_iff_zip {l₁ l₂} :
             simpa [zip] using h)⟩
 #align list.forall₂_iff_zip List.forall₂_iff_zip
 
-theorem forall₂_take : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (take n l₁) (take n l₂)
+lemma forall₂_take : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (take n l₁) (take n l₂)
   | 0, _, _, _ => by simp only [Forall₂.nil, take]
   | _ + 1, _, _, Forall₂.nil => by simp only [Forall₂.nil, take]
   | n + 1, _, _, Forall₂.cons h₁ h₂ => by simp [And.intro h₁ h₂, forall₂_take n]
 #align list.forall₂_take List.forall₂_take
 
-theorem forall₂_drop : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (drop n l₁) (drop n l₂)
+lemma forall₂_drop : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (drop n l₁) (drop n l₂)
   | 0, _, _, h => by simp only [drop, h]
   | _ + 1, _, _, Forall₂.nil => by simp only [Forall₂.nil, drop]
   | n + 1, _, _, Forall₂.cons h₁ h₂ => by simp [And.intro h₁ h₂, forall₂_drop n]
@@ -240,17 +240,17 @@ theorem rel_mem (hr : BiUnique R) : (R ⇒ Forall₂ R ⇒ Iff) (· ∈ ·) (· 
     exact rel_or (rel_eq hr h h₁) (rel_mem hr h h₂)
 #align list.rel_mem List.rel_mem
 
-theorem rel_map : ((R ⇒ P) ⇒ Forall₂ R ⇒ Forall₂ P) map map
+lemma rel_map : ((R ⇒ P) ⇒ Forall₂ R ⇒ Forall₂ P) map map
   | _, _, _, [], [], Forall₂.nil => Forall₂.nil
   | _, _, h, _ :: _, _ :: _, Forall₂.cons h₁ h₂ => Forall₂.cons (h h₁) (rel_map (@h) h₂)
 #align list.rel_map List.rel_map
 
-theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (· ++ ·) (· ++ ·)
+lemma rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (· ++ ·) (· ++ ·)
   | [], [], _, _, _, hl => hl
   | _, _, Forall₂.cons h₁ h₂, _, _, hl => Forall₂.cons h₁ (rel_append h₂ hl)
 #align list.rel_append List.rel_append
 
-theorem rel_reverse : (Forall₂ R ⇒ Forall₂ R) reverse reverse
+lemma rel_reverse : (Forall₂ R ⇒ Forall₂ R) reverse reverse
   | [], [], Forall₂.nil => Forall₂.nil
   | _, _, Forall₂.cons h₁ h₂ => by
     simp only [reverse_cons]
@@ -258,7 +258,7 @@ theorem rel_reverse : (Forall₂ R ⇒ Forall₂ R) reverse reverse
 #align list.rel_reverse List.rel_reverse
 
 @[simp]
-theorem forall₂_reverse_iff {l₁ l₂} : Forall₂ R (reverse l₁) (reverse l₂) ↔ Forall₂ R l₁ l₂ :=
+lemma forall₂_reverse_iff {l₁ l₂} : Forall₂ R (reverse l₁) (reverse l₂) ↔ Forall₂ R l₁ l₂ :=
   Iff.intro
     (fun h => by
       rw [← reverse_reverse l₁, ← reverse_reverse l₂]
@@ -266,26 +266,26 @@ theorem forall₂_reverse_iff {l₁ l₂} : Forall₂ R (reverse l₁) (reverse 
     fun h => rel_reverse h
 #align list.forall₂_reverse_iff List.forall₂_reverse_iff
 
-theorem rel_join : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) join join
+lemma rel_join : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) join join
   | [], [], Forall₂.nil => Forall₂.nil
   | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_join h₂)
 #align list.rel_join List.rel_join
 
-theorem rel_bind : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.bind List.bind :=
+lemma rel_bind : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.bind List.bind :=
   fun _ _ h₁ _ _ h₂ => rel_join (rel_map (@h₂) h₁)
 #align list.rel_bind List.rel_bind
 
-theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
+lemma rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
   | _, _, _, _, _, h, _, _, Forall₂.nil => h
   | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => rel_foldl (@hfg) (hfg hxy hab) hs
 #align list.rel_foldl List.rel_foldl
 
-theorem rel_foldr : ((R ⇒ P ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldr foldr
+lemma rel_foldr : ((R ⇒ P ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldr foldr
   | _, _, _, _, _, h, _, _, Forall₂.nil => h
   | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => hfg hab (rel_foldr (@hfg) hxy hs)
 #align list.rel_foldr List.rel_foldr
 
-theorem rel_filter {p : α → Bool} {q : β → Bool}
+lemma rel_filter {p : α → Bool} {q : β → Bool}
     (hpq : (R ⇒ (· ↔ ·)) (fun x => p x) (fun x => q x)) :
     (Forall₂ R ⇒ Forall₂ R) (filter p) (filter q)
   | _, _, Forall₂.nil => Forall₂.nil
@@ -299,7 +299,7 @@ theorem rel_filter {p : α → Bool} {q : β → Bool}
       simp only [filter_cons_of_neg _ h, filter_cons_of_neg _ this, rel_filter hpq h₂]
 #align list.rel_filter List.rel_filter
 
-theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) filterMap filterMap
+lemma rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) filterMap filterMap
   | _, _, _, _, _, Forall₂.nil => Forall₂.nil
   | f, g, hfg, a :: as, b :: bs, Forall₂.cons h₁ h₂ => by
     rw [filterMap_cons, filterMap_cons]
@@ -310,7 +310,7 @@ theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) f
 #align list.rel_filter_map List.rel_filterMap
 
 @[to_additive]
-theorem rel_prod [Monoid α] [Monoid β] (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
+lemma rel_prod [Monoid α] [Monoid β] (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
     (Forall₂ R ⇒ R) prod prod :=
   rel_foldl hf h
 #align list.rel_prod List.rel_prod
@@ -327,7 +327,7 @@ inductive SublistForall₂ (R : α → β → Prop) : List α → List β → Pr
 #align list.sublist_forall₂.cons List.SublistForall₂.cons
 #align list.sublist_forall₂.cons_right List.SublistForall₂.cons_right
 
-theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
+lemma sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
     SublistForall₂ R l₁ l₂ ↔ ∃ l, Forall₂ R l₁ l ∧ l <+ l₂ := by
   constructor <;> intro h
   · induction' h with _ a b l1 l2 rab _ ih b l1 l2 _ ih
@@ -368,12 +368,12 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
       · exact SublistForall₂.cons_right (ih _ _ h1 btc)⟩
 #align list.sublist_forall₂.is_trans List.SublistForall₂.is_trans
 
-theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [IsRefl α Rₐ] :
+lemma Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [IsRefl α Rₐ] :
     SublistForall₂ Rₐ l₁ l₂ :=
   sublistForall₂_iff.2 ⟨l₁, forall₂_refl l₁, h⟩
 #align list.sublist.sublist_forall₂ List.Sublist.sublistForall₂
 
-theorem tail_sublistForall₂_self [IsRefl α Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
+lemma tail_sublistForall₂_self [IsRefl α Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
   l.tail_sublist.sublistForall₂
 #align list.tail_sublist_forall₂_self List.tail_sublistForall₂_self
 

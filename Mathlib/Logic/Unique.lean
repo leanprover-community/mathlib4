@@ -68,7 +68,7 @@ theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 #align unique_iff_exists_unique unique_iff_exists_unique
 
-theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
+lemma unique_subtype_iff_exists_unique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
@@ -97,7 +97,7 @@ instance PUnit.unique : Unique PUnit.{u} where
 -- but it is currently failing due to a problem in the linter discussed at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
 @[simp, nolint simpNF]
-theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
+lemma PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 #align punit.default_eq_star PUnit.default_eq_unit
 
@@ -110,7 +110,7 @@ def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
 instance : Unique True :=
   uniqueProp trivial
 
-theorem Fin.eq_zero : ∀ n : Fin 1, n = 0
+lemma Fin.eq_zero : ∀ n : Fin 1, n = 0
   | ⟨_, hn⟩ => Fin.eq_of_veq (Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ hn))
 #align fin.eq_zero Fin.eq_zero
 
@@ -152,18 +152,18 @@ theorem default_eq (a : α) : default = a :=
 instance (priority := 100) instSubsingleton : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
 
-theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=
+lemma forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=
   ⟨fun h ↦ h _, fun h x ↦ by rwa [Unique.eq_default x]⟩
 #align unique.forall_iff Unique.forall_iff
 
-theorem exists_iff {p : α → Prop} : Exists p ↔ p default :=
+lemma exists_iff {p : α → Prop} : Exists p ↔ p default :=
   ⟨fun ⟨a, ha⟩ ↦ eq_default a ▸ ha, Exists.intro default⟩
 #align unique.exists_iff Unique.exists_iff
 
 end
 
 @[ext]
-protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
+protected lemma subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
   | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr; rw [h x, h y]
 #align unique.subsingleton_unique' Unique.subsingleton_unique'
 
@@ -186,12 +186,12 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
 #align unique_iff_subsingleton_and_nonempty unique_iff_subsingleton_and_nonempty
 
 @[simp]
-theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
+lemma Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
   rfl
 #align pi.default_def Pi.default_def
 
-theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α) :
+lemma Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α) :
     @default (∀ a, β a) _ a = default :=
   rfl
 #align pi.default_apply Pi.default_apply
@@ -204,13 +204,13 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
+lemma eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
   ext x
   rw [Subsingleton.elim x default]
   rfl
 #align eq_const_of_unique eq_const_of_unique
 
-theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
+lemma heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
     HEq f (Function.const α (f default)) :=
   (Function.hfunext rfl) fun i _ _ ↦ by rw [Subsingleton.elim i default]; rfl
 #align heq_const_of_unique heq_const_of_unique
@@ -227,7 +227,7 @@ protected theorem Injective.subsingleton (hf : Injective f) [Subsingleton β] : 
 
 /-- If the domain of a surjective function is a subsingleton, then the codomain is a subsingleton as
 well. -/
-protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) : Subsingleton β :=
+protected lemma Surjective.subsingleton [Subsingleton α] (hf : Surjective f) : Subsingleton β :=
   ⟨hf.forall₂.2 fun x y ↦ congr_arg f <| Subsingleton.elim x y⟩
 #align function.surjective.subsingleton Function.Surjective.subsingleton
 
@@ -252,7 +252,7 @@ end Function
 
 -- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
 attribute [simp] eq_iff_true_of_subsingleton in
-theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
+lemma Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
   refine' ⟨default, _, _⟩ <;> intro x <;> simp
 #align unique.bijective Unique.bijective
@@ -260,7 +260,7 @@ theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bi
 namespace Option
 
 /-- `Option α` is a `Subsingleton` if and only if `α` is empty. -/
-theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
+lemma subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
    fun h ↦ ⟨fun x y ↦
      Option.casesOn x (Option.casesOn y rfl fun x ↦ h.elim x) fun x ↦ h.elim x⟩⟩

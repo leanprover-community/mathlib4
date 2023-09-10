@@ -31,7 +31,7 @@ set of rational solutions to the equation, and that `W` is infinite.
 
 namespace Imo2008Q2
 
-theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
+lemma subst_abc {x y z : ℝ} (h : x * y * z = 1) :
     ∃ a b c : ℝ, a ≠ 0 ∧ b ≠ 0 ∧ c ≠ 0 ∧ x = a / b ∧ y = b / c ∧ z = c / a := by
   use x, 1, 1 / y
   obtain ⟨⟨hx, hy⟩, _⟩ : (x ≠ 0 ∧ y ≠ 0) ∧ z ≠ 0 := by
@@ -59,7 +59,7 @@ def rationalSolutions :=
     x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1}
 #align imo2008_q2.rational_solutions Imo2008Q2.rationalSolutions
 
-theorem imo2008_q2b : Set.Infinite rationalSolutions := by
+lemma imo2008_q2b : Set.Infinite rationalSolutions := by
   let W := {s : ℚ × ℚ × ℚ | ∃ x y z : ℚ, s = (x, y, z) ∧
     ∃ t : ℚ, t > 0 ∧ x = -(t + 1) / t ^ 2 ∧ y = t / (t + 1) ^ 2 ∧ z = -t * (t + 1)}
   have hW_sub_S : W ⊆ rationalSolutions := by

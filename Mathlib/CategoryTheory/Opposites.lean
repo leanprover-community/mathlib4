@@ -34,23 +34,23 @@ section Quiver
 
 variable [Quiver.{v₁} C]
 
-theorem Quiver.Hom.op_inj {X Y : C} :
+lemma Quiver.Hom.op_inj {X Y : C} :
     Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H =>
   congr_arg Quiver.Hom.unop H
 #align quiver.hom.op_inj Quiver.Hom.op_inj
 
-theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
+lemma Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
     Function.Injective (Quiver.Hom.unop : (X ⟶ Y) → (Opposite.unop Y ⟶ Opposite.unop X)) :=
   fun _ _ H => congr_arg Quiver.Hom.op H
 #align quiver.hom.unop_inj Quiver.Hom.unop_inj
 
 @[simp]
-theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
+lemma Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
   rfl
 #align quiver.hom.unop_op Quiver.Hom.unop_op
 
 @[simp]
-theorem Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
+lemma Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
   rfl
 #align quiver.hom.op_unop Quiver.Hom.op_unop
 
@@ -70,32 +70,32 @@ instance Category.opposite : Category.{v₁} Cᵒᵖ where
 #align category_theory.category.opposite CategoryTheory.Category.opposite
 
 @[simp]
-theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op ≫ f.op :=
+lemma op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op ≫ f.op :=
   rfl
 #align category_theory.op_comp CategoryTheory.op_comp
 
 @[simp]
-theorem op_id {X : C} : (𝟙 X).op = 𝟙 (op X) :=
+lemma op_id {X : C} : (𝟙 X).op = 𝟙 (op X) :=
   rfl
 #align category_theory.op_id CategoryTheory.op_id
 
 @[simp]
-theorem unop_comp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).unop = g.unop ≫ f.unop :=
+lemma unop_comp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).unop = g.unop ≫ f.unop :=
   rfl
 #align category_theory.unop_comp CategoryTheory.unop_comp
 
 @[simp]
-theorem unop_id {X : Cᵒᵖ} : (𝟙 X).unop = 𝟙 (unop X) :=
+lemma unop_id {X : Cᵒᵖ} : (𝟙 X).unop = 𝟙 (unop X) :=
   rfl
 #align category_theory.unop_id CategoryTheory.unop_id
 
 @[simp]
-theorem unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
+lemma unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
   rfl
 #align category_theory.unop_id_op CategoryTheory.unop_id_op
 
 @[simp]
-theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
+lemma op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
   rfl
 #align category_theory.op_id_unop CategoryTheory.op_id_unop
 
@@ -136,15 +136,15 @@ instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
 /-- If `f.op` is an isomorphism `f` must be too.
 (This cannot be an instance as it would immediately loop!)
 -/
-theorem isIso_of_op {X Y : C} (f : X ⟶ Y) [IsIso f.op] : IsIso f :=
+lemma isIso_of_op {X Y : C} (f : X ⟶ Y) [IsIso f.op] : IsIso f :=
   ⟨⟨(inv f.op).unop, ⟨Quiver.Hom.op_inj (by simp), Quiver.Hom.op_inj (by simp)⟩⟩⟩
 #align category_theory.is_iso_of_op CategoryTheory.isIso_of_op
 
-theorem isIso_op_iff {X Y : C} (f : X ⟶ Y) : IsIso f.op ↔ IsIso f :=
+lemma isIso_op_iff {X Y : C} (f : X ⟶ Y) : IsIso f.op ↔ IsIso f :=
   ⟨fun _ => isIso_of_op _, fun _ => inferInstance⟩
 #align category_theory.is_iso_op_iff CategoryTheory.isIso_op_iff
 
-theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f := by
+lemma isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f := by
   rw [← isIso_op_iff f.unop, Quiver.Hom.op_unop]
 #align category_theory.is_iso_unop_iff CategoryTheory.isIso_unop_iff
 
@@ -153,13 +153,13 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 #align category_theory.is_iso_unop CategoryTheory.isIso_unop
 
 @[simp]
-theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
+lemma op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
   aesop_cat_nonterminal
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
-theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
+lemma unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
   aesop_cat_nonterminal
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
 #align category_theory.unop_inv CategoryTheory.unop_inv
@@ -359,7 +359,7 @@ protected def leftOp (α : F ⟶ G) : G.leftOp ⟶ F.leftOp where
 #align category_theory.nat_trans.left_op CategoryTheory.NatTrans.leftOp
 
 @[simp]
-theorem leftOp_id : NatTrans.leftOp (𝟙 F : F ⟶ F) = 𝟙 F.leftOp :=
+lemma leftOp_id : NatTrans.leftOp (𝟙 F : F ⟶ F) = 𝟙 F.leftOp :=
   rfl
 #align category_theory.nat_trans.left_op_id CategoryTheory.NatTrans.leftOp_id
 
@@ -380,7 +380,7 @@ protected def removeLeftOp (α : F.leftOp ⟶ G.leftOp) : G ⟶ F where
 #align category_theory.nat_trans.remove_left_op CategoryTheory.NatTrans.removeLeftOp
 
 @[simp]
-theorem removeLeftOp_id : NatTrans.removeLeftOp (𝟙 F.leftOp) = 𝟙 F :=
+lemma removeLeftOp_id : NatTrans.removeLeftOp (𝟙 F.leftOp) = 𝟙 F :=
   rfl
 #align category_theory.nat_trans.remove_left_op_id CategoryTheory.NatTrans.removeLeftOp_id
 
@@ -400,7 +400,7 @@ protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
 #align category_theory.nat_trans.right_op CategoryTheory.NatTrans.rightOp
 
 @[simp]
-theorem rightOp_id : NatTrans.rightOp (𝟙 F : F ⟶ F) = 𝟙 F.rightOp :=
+lemma rightOp_id : NatTrans.rightOp (𝟙 F : F ⟶ F) = 𝟙 F.rightOp :=
   rfl
 #align category_theory.nat_trans.right_op_id CategoryTheory.NatTrans.rightOp_id
 
@@ -421,7 +421,7 @@ protected def removeRightOp (α : F.rightOp ⟶ G.rightOp) : G ⟶ F where
 #align category_theory.nat_trans.remove_right_op CategoryTheory.NatTrans.removeRightOp
 
 @[simp]
-theorem removeRightOp_id : NatTrans.removeRightOp (𝟙 F.rightOp) = 𝟙 F :=
+lemma removeRightOp_id : NatTrans.removeRightOp (𝟙 F.rightOp) = 𝟙 F :=
   rfl
 #align category_theory.nat_trans.remove_right_op_id CategoryTheory.NatTrans.removeRightOp_id
 
@@ -453,11 +453,11 @@ def unop {X Y : Cᵒᵖ} (f : X ≅ Y) : Y.unop ≅ X.unop where
 #align category_theory.iso.unop CategoryTheory.Iso.unop
 
 @[simp]
-theorem unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by (ext; rfl)
+lemma unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by (ext; rfl)
 #align category_theory.iso.unop_op CategoryTheory.Iso.unop_op
 
 @[simp]
-theorem op_unop {X Y : C} (f : X ≅ Y) : f.op.unop = f := by (ext; rfl)
+lemma op_unop {X Y : C} (f : X ≅ Y) : f.op.unop = f := by (ext; rfl)
 #align category_theory.iso.op_unop CategoryTheory.Iso.op_unop
 
 end Iso

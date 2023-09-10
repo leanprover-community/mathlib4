@@ -45,7 +45,7 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
 attribute [local instance] subsetSupSet
 
 @[simp]
-theorem subset_sSup_def [Inhabited s] :
+lemma subset_sSup_def [Inhabited s] :
     @sSup s _ = fun t =>
       if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
       then ⟨sSup ((↑) '' t : Set α), ht.2.2⟩
@@ -53,16 +53,16 @@ theorem subset_sSup_def [Inhabited s] :
   rfl
 #align subset_Sup_def subset_sSup_def
 
-theorem subset_sSup_of_within [Inhabited s] {t : Set s}
+lemma subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t)  (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
 #align subset_Sup_of_within subset_sSup_of_within
 
-theorem subset_sSup_emptyset [Inhabited s] :
+lemma subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
   simp [sSup]
 
-theorem subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
+lemma subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
     sSup t = default := by
   simp [sSup, ht]
 
@@ -85,7 +85,7 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
 attribute [local instance] subsetInfSet
 
 @[simp]
-theorem subset_sInf_def [Inhabited s] :
+lemma subset_sInf_def [Inhabited s] :
     @sInf s _ = fun t =>
       if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
       then ⟨sInf ((↑) '' t : Set α), ht.2.2⟩ else
@@ -93,16 +93,16 @@ theorem subset_sInf_def [Inhabited s] :
   rfl
 #align subset_Inf_def subset_sInf_def
 
-theorem subset_sInf_of_within [Inhabited s] {t : Set s}
+lemma subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
     sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [dif_pos, h, h', h'']
 #align subset_Inf_of_within subset_sInf_of_within
 
-theorem subset_sInf_emptyset [Inhabited s] :
+lemma subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
   simp [sInf]
 
-theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
+lemma subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
     sInf t = default := by
   simp [sInf, ht]
 
@@ -148,7 +148,7 @@ section OrdConnected
 
 /-- The `sSup` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-above subsets of `s`. -/
-theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
+lemma sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
     (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
@@ -159,7 +159,7 @@ theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
 
 /-- The `sInf` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-below subsets of `s`. -/
-theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
+lemma sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
     (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd

@@ -26,13 +26,13 @@ instance ratCast [RatCast α] : RatCast αᵐᵒᵖ :=
 variable {α}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem op_ratCast [RatCast α] (q : ℚ) : op (q : α) = q :=
+lemma op_ratCast [RatCast α] (q : ℚ) : op (q : α) = q :=
   rfl
 #align mul_opposite.op_rat_cast MulOpposite.op_ratCast
 #align add_opposite.op_rat_cast AddOpposite.op_ratCast
 
 @[to_additive (attr := simp, norm_cast)]
-theorem unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q :=
+lemma unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q :=
   rfl
 #align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
 #align add_opposite.unop_rat_cast AddOpposite.unop_ratCast

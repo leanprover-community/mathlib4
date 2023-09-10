@@ -89,7 +89,7 @@ set_option linter.uppercaseLean3 false in
 /-- If the unit of an adjunction is an isomorphism, then its inverse on the image of L is given
 by L whiskered with the counit. -/
 @[simp]
-theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
+lemma inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
   IsIso.inv_eq_of_hom_inv_id h.left_triangle_components
 #align category_theory.inv_map_unit CategoryTheory.inv_map_unit
@@ -104,7 +104,7 @@ set_option linter.uppercaseLean3 false in
 /-- If the counit of an adjunction is an isomorphism, then its inverse on the image of R is given
 by R whiskered with the unit. -/
 @[simp]
-theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
+lemma inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
   IsIso.inv_eq_of_inv_hom_id h.right_triangle_components
 #align category_theory.inv_counit_map CategoryTheory.inv_counit_map
@@ -123,7 +123,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.L_full_of_unit_is_iso CategoryTheory.lFullOfUnitIsIso
 
 /-- If the unit is an isomorphism, then the left adjoint is faithful-/
-theorem L_faithful_of_unit_isIso [IsIso h.unit] : Faithful L :=
+lemma L_faithful_of_unit_isIso [IsIso h.unit] : Faithful L :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv X (L.obj Y)).apply_eq_iff_eq] at H
     simpa using H =≫ inv (h.unit.app Y)⟩
@@ -137,7 +137,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.R_full_of_counit_is_iso CategoryTheory.rFullOfCounitIsIso
 
 /-- If the counit is an isomorphism, then the right adjoint is faithful-/
-theorem R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
+lemma R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
     simpa using inv (h.counit.app X) ≫= H⟩

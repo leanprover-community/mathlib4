@@ -81,7 +81,7 @@ def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : 
 #align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
 @[simp]
-theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
+lemma factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec
 #align category_theory.projective.factor_thru_comp CategoryTheory.Projective.factorThru_comp
@@ -96,13 +96,13 @@ instance zero_projective [HasZeroObject C] [HasZeroMorphisms C] : Projective (0 
 
 end
 
-theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Projective P) : Projective Q where
+lemma of_iso {P Q : C} (i : P ≅ Q) (hP : Projective P) : Projective Q where
   factors f e e_epi :=
     let ⟨f', hf'⟩ := Projective.factors (i.hom ≫ f) e
     ⟨i.inv ≫ f', by simp [hf']⟩
 #align category_theory.projective.of_iso CategoryTheory.Projective.of_iso
 
-theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
+lemma iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
   ⟨of_iso i, of_iso i.symm⟩
 #align category_theory.projective.iso_iff CategoryTheory.Projective.iso_iff
 
@@ -277,7 +277,7 @@ def Exact.lift {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R �
 #align category_theory.exact.lift CategoryTheory.Exact.lift
 
 @[simp]
-theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
+lemma Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
     (hfg : Exact f g) (w : h ≫ g = 0) : Exact.lift h f g hfg w ≫ f = h := by
   simp only [Exact.lift]
   conv_lhs =>

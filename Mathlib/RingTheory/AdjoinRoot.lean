@@ -81,7 +81,7 @@ instance : Inhabited (AdjoinRoot f) :=
 instance : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
 
-protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
+protected lemma nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
   Ideal.Quotient.nontrivial
     (by
       simp_rw [Ne.def, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
@@ -95,7 +95,7 @@ def mk : R[X] →+* AdjoinRoot f :=
 #align adjoin_root.mk AdjoinRoot.mk
 
 @[elab_as_elim]
-theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p : R[X], C (mk f p)) :
+lemma induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p : R[X], C (mk f p)) :
     C x :=
   Quotient.inductionOn' x ih
 #align adjoin_root.induction_on AdjoinRoot.induction_on
@@ -112,12 +112,12 @@ instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) 
   Submodule.Quotient.distribSMul' _
 
 @[simp]
-theorem smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
+lemma smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
     a • mk f x = mk f (a • x) :=
   rfl
 #align adjoin_root.smul_mk AdjoinRoot.smul_mk
 
-theorem smul_of [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R) :
+lemma smul_of [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R) :
     a • of f x = of f (a • x) := by rw [of, RingHom.comp_apply, RingHom.comp_apply, smul_mk, smul_C]
 #align adjoin_root.smul_of AdjoinRoot.smul_of
 
@@ -144,24 +144,24 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
 @[simp]
-theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
+lemma algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
   rfl
 #align adjoin_root.algebra_map_eq AdjoinRoot.algebraMap_eq
 
 variable (S)
 
-theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
+lemma algebraMap_eq' [CommSemiring S] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
 #align adjoin_root.algebra_map_eq' AdjoinRoot.algebraMap_eq'
 
 variable {S}
 
-theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
+lemma finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
   (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
 #align adjoin_root.finite_type AdjoinRoot.finiteType
 
-theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
+lemma finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
   (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
 #align adjoin_root.finite_presentation AdjoinRoot.finitePresentation
 
@@ -179,23 +179,23 @@ instance hasCoeT : CoeTC R (AdjoinRoot f) :=
 /-- Two `R`-`AlgHom` from `AdjoinRoot f` to the same `R`-algebra are the same iff
     they agree on `root f`. -/
 @[ext]
-theorem algHom_ext [Semiring S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
+lemma algHom_ext [Semiring S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
     (h : g₁ (root f) = g₂ (root f)) : g₁ = g₂ :=
   Ideal.Quotient.algHom_ext R <| Polynomial.algHom_ext h
 #align adjoin_root.alg_hom_ext AdjoinRoot.algHom_ext
 
 @[simp]
-theorem mk_eq_mk {g h : R[X]} : mk f g = mk f h ↔ f ∣ g - h :=
+lemma mk_eq_mk {g h : R[X]} : mk f g = mk f h ↔ f ∣ g - h :=
   Ideal.Quotient.eq.trans Ideal.mem_span_singleton
 #align adjoin_root.mk_eq_mk AdjoinRoot.mk_eq_mk
 
 @[simp]
-theorem mk_eq_zero {g : R[X]} : mk f g = 0 ↔ f ∣ g :=
+lemma mk_eq_zero {g : R[X]} : mk f g = 0 ↔ f ∣ g :=
   mk_eq_mk.trans <| by rw [sub_zero]
 #align adjoin_root.mk_eq_zero AdjoinRoot.mk_eq_zero
 
 @[simp]
-theorem mk_self : mk f f = 0 :=
+lemma mk_self : mk f f = 0 :=
   Quotient.sound' <| QuotientAddGroup.leftRel_apply.mpr (mem_span_singleton.2 <| by simp)
 #align adjoin_root.mk_self AdjoinRoot.mk_self
 
@@ -206,7 +206,7 @@ set_option linter.uppercaseLean3 false in
 #align adjoin_root.mk_C AdjoinRoot.mk_C
 
 @[simp]
-theorem mk_X : mk f X = root f :=
+lemma mk_X : mk f X = root f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.mk_X AdjoinRoot.mk_X
@@ -234,7 +234,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 #align adjoin_root.aeval_eq AdjoinRoot.aeval_eq
 
 -- porting note: the following proof was partly in term-mode, but I was not able to fix it.
-theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
+lemma adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
   induction x using AdjoinRoot.induction_on with
     | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
@@ -253,7 +253,7 @@ theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R (root f) :=
   ⟨f, hf, eval₂_root f⟩
 #align adjoin_root.is_algebraic_root AdjoinRoot.isAlgebraic_root
 
-theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
+lemma of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
     Function.Injective (AdjoinRoot.of f) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
@@ -284,15 +284,15 @@ theorem lift_mk (g : R[X]) : lift i a h (mk f g) = g.eval₂ i a :=
 #align adjoin_root.lift_mk AdjoinRoot.lift_mk
 
 @[simp]
-theorem lift_root : lift i a h (root f) = a := by rw [root, lift_mk, eval₂_X]
+lemma lift_root : lift i a h (root f) = a := by rw [root, lift_mk, eval₂_X]
 #align adjoin_root.lift_root AdjoinRoot.lift_root
 
 @[simp]
-theorem lift_of {x : R} : lift i a h x = i x := by rw [← mk_C x, lift_mk, eval₂_C]
+lemma lift_of {x : R} : lift i a h x = i x := by rw [← mk_C x, lift_mk, eval₂_C]
 #align adjoin_root.lift_of AdjoinRoot.lift_of
 
 @[simp]
-theorem lift_comp_of : (lift i a h).comp (of f) = i :=
+lemma lift_comp_of : (lift i a h).comp (of f) = i :=
   RingHom.ext fun _ => @lift_of _ _ _ _ _ _ _ h _
 #align adjoin_root.lift_comp_of AdjoinRoot.lift_comp_of
 
@@ -330,17 +330,17 @@ theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
 variable (hfx : aeval a f = 0)
 
 @[simp]
-theorem liftHom_mk {g : R[X]} : liftHom f a hfx (mk f g) = aeval a g :=
+lemma liftHom_mk {g : R[X]} : liftHom f a hfx (mk f g) = aeval a g :=
   lift_mk hfx g
 #align adjoin_root.lift_hom_mk AdjoinRoot.liftHom_mk
 
 @[simp]
-theorem liftHom_root : liftHom f a hfx (root f) = a :=
+lemma liftHom_root : liftHom f a hfx (root f) = a :=
   lift_root hfx
 #align adjoin_root.lift_hom_root AdjoinRoot.liftHom_root
 
 @[simp]
-theorem liftHom_of {x : R} : liftHom f a hfx (of f x) = algebraMap _ _ x :=
+lemma liftHom_of {x : R} : liftHom f a hfx (of f x) = algebraMap _ _ x :=
   lift_of hfx
 #align adjoin_root.lift_hom_of AdjoinRoot.liftHom_of
 
@@ -352,7 +352,7 @@ theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 #align adjoin_root.root_is_inv AdjoinRoot.root_isInv
 
-theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
+lemma algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
@@ -372,7 +372,7 @@ theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 #align adjoin_root.is_domain_of_prime AdjoinRoot.isDomain_of_prime
 
-theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
+lemma noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
     (hf' : f.degree ≠ 0) : NoZeroSMulDivisors R (AdjoinRoot f) :=
   haveI := isDomain_of_prime hf
   NoZeroSMulDivisors.iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
@@ -414,13 +414,13 @@ theorem coe_injective (h : degree f ≠ 0) : Function.Injective ((↑) : K → A
   (of f).injective
 #align adjoin_root.coe_injective AdjoinRoot.coe_injective
 
-theorem coe_injective' [Fact (Irreducible f)] : Function.Injective ((↑) : K → AdjoinRoot f) :=
+lemma coe_injective' [Fact (Irreducible f)] : Function.Injective ((↑) : K → AdjoinRoot f) :=
   (of f).injective
 #align adjoin_root.coe_injective' AdjoinRoot.coe_injective'
 
 variable (f)
 
-theorem mul_div_root_cancel [Fact (Irreducible f)] :
+lemma mul_div_root_cancel [Fact (Irreducible f)] :
     (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
   mul_div_eq_iff_isRoot.2 <| isRoot_root _
 #align adjoin_root.mul_div_root_cancel AdjoinRoot.mul_div_root_cancel
@@ -628,7 +628,7 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
   rfl
 #align adjoin_root.minpoly.to_adjoin_apply' AdjoinRoot.Minpoly.toAdjoin_apply'
 
-theorem Minpoly.toAdjoin.apply_X :
+lemma Minpoly.toAdjoin.apply_X :
     Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by
     simp [toAdjoin]
 set_option linter.uppercaseLean3 false in
@@ -636,7 +636,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (R x)
 
-theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x) := by
+lemma Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x) := by
   rw [← range_top_iff_surjective, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
   refine' adjoin_le _
   simp only [AlgHom.coe_range, Set.mem_range]

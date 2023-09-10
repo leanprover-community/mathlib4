@@ -85,11 +85,11 @@ theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res
   exact this n
 #align cantor_scheme.map_mem CantorScheme.map_mem
 
-protected theorem ClosureAntitone.antitone [TopologicalSpace α] (hA : ClosureAntitone A) :
+protected lemma ClosureAntitone.antitone [TopologicalSpace α] (hA : ClosureAntitone A) :
     CantorScheme.Antitone A := fun l a => subset_closure.trans (hA l a)
 #align cantor_scheme.closure_antitone.antitone CantorScheme.ClosureAntitone.antitone
 
-protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorScheme.Antitone A)
+protected lemma Antitone.closureAntitone [TopologicalSpace α] (hanti : CantorScheme.Antitone A)
     (hclosed : ∀ l, IsClosed (A l)) : ClosureAntitone A := fun _ _ =>
   (hclosed _).closure_eq.subset.trans (hanti _ _)
 #align cantor_scheme.antitone.closure_antitone CantorScheme.Antitone.closureAntitone
@@ -144,7 +144,7 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
 #align cantor_scheme.vanishing_diam.dist_lt CantorScheme.VanishingDiam.dist_lt
 
 /-- A scheme with vanishing diameter along each branch induces a continuous map. -/
-theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
+lemma VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
     (hA : VanishingDiam A) : Continuous (inducedMap A).2 := by
   rw [Metric.continuous_iff']
   rintro ⟨x, hx⟩ ε ε_pos
@@ -164,7 +164,7 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
 /-- A scheme on a complete space with vanishing diameter
 such that each set contains the closure of its children
 induces a total map. -/
-theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : VanishingDiam A)
+lemma ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : VanishingDiam A)
     (hanti : ClosureAntitone A) (hnonempty : ∀ l, (A l).Nonempty) : (inducedMap A).1 = univ := by
   rw [eq_univ_iff_forall]
   intro x

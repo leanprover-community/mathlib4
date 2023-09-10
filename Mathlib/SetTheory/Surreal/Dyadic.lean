@@ -43,14 +43,14 @@ def powHalf : ℕ → PGame
 #align pgame.pow_half SetTheory.PGame.powHalf
 
 @[simp]
-theorem powHalf_zero : powHalf 0 = 1 :=
+lemma powHalf_zero : powHalf 0 = 1 :=
   rfl
 #align pgame.pow_half_zero SetTheory.PGame.powHalf_zero
 
 theorem powHalf_leftMoves (n) : (powHalf n).LeftMoves = PUnit := by cases n <;> rfl
 #align pgame.pow_half_left_moves SetTheory.PGame.powHalf_leftMoves
 
-theorem powHalf_zero_rightMoves : (powHalf 0).RightMoves = PEmpty :=
+lemma powHalf_zero_rightMoves : (powHalf 0).RightMoves = PEmpty :=
   rfl
 #align pgame.pow_half_zero_right_moves SetTheory.PGame.powHalf_zero_rightMoves
 
@@ -80,7 +80,7 @@ instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :
 #align pgame.unique_pow_half_succ_right_moves SetTheory.PGame.uniquePowHalfSuccRightMoves
 
 @[simp]
-theorem birthday_half : birthday (powHalf 1) = 2 := by
+lemma birthday_half : birthday (powHalf 1) = 2 := by
   rw [birthday_def]; dsimp; simpa using Order.le_succ (1 : Ordinal)
 #align pgame.birthday_half SetTheory.PGame.birthday_half
 
@@ -153,7 +153,7 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
           _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
 #align pgame.add_pow_half_succ_self_eq_pow_half SetTheory.PGame.add_powHalf_succ_self_eq_powHalf
 
-theorem half_add_half_equiv_one : powHalf 1 + powHalf 1 ≈ 1 :=
+lemma half_add_half_equiv_one : powHalf 1 + powHalf 1 ≈ 1 :=
   add_powHalf_succ_self_eq_powHalf 0
 #align pgame.half_add_half_equiv_one SetTheory.PGame.half_add_half_equiv_one
 
@@ -171,7 +171,7 @@ def powHalf (n : ℕ) : Surreal :=
 #align surreal.pow_half Surreal.powHalf
 
 @[simp]
-theorem powHalf_zero : powHalf 0 = 1 :=
+lemma powHalf_zero : powHalf 0 = 1 :=
   rfl
 #align surreal.pow_half_zero Surreal.powHalf_zero
 
@@ -206,7 +206,7 @@ theorem zsmul_pow_two_powHalf (m : ℤ) (n k : ℕ) :
   exact nsmul_pow_two_powHalf' n k
 #align surreal.zsmul_pow_two_pow_half Surreal.zsmul_pow_two_powHalf
 
-theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ = m₂ * 2 ^ y₂) :
+lemma dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ = m₂ * 2 ^ y₂) :
     m₁ • powHalf y₂ = m₂ • powHalf y₁ := by
   revert m₁ m₂
   wlog h : y₁ ≤ y₂

@@ -60,7 +60,7 @@ theorem disjointed_succ (f : ℕ → α) (n : ℕ) : disjointed f (n + 1) = f (n
   rfl
 #align disjointed_succ disjointed_succ
 
-theorem disjointed_le_id : disjointed ≤ (id : (ℕ → α) → ℕ → α) := by
+lemma disjointed_le_id : disjointed ≤ (id : (ℕ → α) → ℕ → α) := by
   rintro f n
   cases n
   · rfl
@@ -96,13 +96,13 @@ def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p 
 #align disjointed_rec disjointedRec
 
 @[simp]
-theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
+lemma disjointedRec_zero {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
     (h₀ : p (f 0)) : disjointedRec hdiff h₀ = h₀ :=
   rfl
 #align disjointed_rec_zero disjointedRec_zero
 
 -- TODO: Find a useful statement of `disjointedRec_succ`.
-theorem Monotone.disjointed_eq {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
+lemma Monotone.disjointed_eq {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
     disjointed f (n + 1) = f (n + 1) \ f n := by rw [disjointed_succ, hf.partialSups_eq]
 #align monotone.disjointed_eq Monotone.disjointed_eq
 
@@ -116,7 +116,7 @@ theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = p
 
 /-- `disjointed f` is the unique sequence that is pairwise disjoint and has the same partial sups
 as `f`. -/
-theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
+lemma disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f := by
   ext n
   cases' n with n
@@ -162,7 +162,7 @@ theorem disjointed_subset (f : ℕ → Set α) (n : ℕ) : disjointed f n ⊆ f 
   disjointed_le f n
 #align disjointed_subset disjointed_subset
 
-theorem iUnion_disjointed {f : ℕ → Set α} : ⋃ n, disjointed f n = ⋃ n, f n :=
+lemma iUnion_disjointed {f : ℕ → Set α} : ⋃ n, disjointed f n = ⋃ n, f n :=
   iSup_disjointed f
 #align Union_disjointed iUnion_disjointed
 

@@ -41,7 +41,7 @@ def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
 #align pos_num.min_fac_aux PosNum.minFacAux
 
 set_option linter.deprecated false in
-theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
+lemma minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
     (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
   induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
   · rw [Nat.zero_add, Nat.sqrt_lt] at h
@@ -116,7 +116,7 @@ def minFac : Num → PosNum
 #align num.min_fac Num.minFac
 
 @[simp]
-theorem minFac_to_nat : ∀ n : Num, (minFac n : ℕ) = Nat.minFac n
+lemma minFac_to_nat : ∀ n : Num, (minFac n : ℕ) = Nat.minFac n
   | 0 => rfl
   | pos _ => PosNum.minFac_to_nat _
 #align num.min_fac_to_nat Num.minFac_to_nat

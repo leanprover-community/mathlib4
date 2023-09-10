@@ -97,7 +97,7 @@ set_option linter.uppercaseLean3 false in
 
 end LinOrdCat
 
-theorem linOrdCat_dual_comp_forget_to_latCat :
+lemma linOrdCat_dual_comp_forget_to_latCat :
     LinOrdCat.dual ⋙ forget₂ LinOrdCat LatCat = forget₂ LinOrdCat LatCat ⋙ LatCat.dual :=
   rfl
 set_option linter.uppercaseLean3 false in

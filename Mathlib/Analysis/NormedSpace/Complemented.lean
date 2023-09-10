@@ -57,20 +57,20 @@ nonrec def equivProdOfSurjectiveOfIsCompl (f : E →L[𝕜] F) (g : E →L[𝕜]
 #align continuous_linear_map.equiv_prod_of_surjective_of_is_compl ContinuousLinearMap.equivProdOfSurjectiveOfIsCompl
 
 @[simp]
-theorem coe_equivProdOfSurjectiveOfIsCompl {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : range f = ⊤)
+lemma coe_equivProdOfSurjectiveOfIsCompl {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : range f = ⊤)
     (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) :
     (equivProdOfSurjectiveOfIsCompl f g hf hg hfg : E →ₗ[𝕜] F × G) = f.prod g := rfl
 #align continuous_linear_map.coe_equiv_prod_of_surjective_of_is_compl ContinuousLinearMap.coe_equivProdOfSurjectiveOfIsCompl
 
 @[simp]
-theorem equivProdOfSurjectiveOfIsCompl_toLinearEquiv {f : E →L[𝕜] F} {g : E →L[𝕜] G}
+lemma equivProdOfSurjectiveOfIsCompl_toLinearEquiv {f : E →L[𝕜] F} {g : E →L[𝕜] G}
     (hf : range f = ⊤) (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) :
     (equivProdOfSurjectiveOfIsCompl f g hf hg hfg).toLinearEquiv =
       LinearMap.equivProdOfSurjectiveOfIsCompl f g hf hg hfg := rfl
 #align continuous_linear_map.equiv_prod_of_surjective_of_is_compl_to_linear_equiv ContinuousLinearMap.equivProdOfSurjectiveOfIsCompl_toLinearEquiv
 
 @[simp]
-theorem equivProdOfSurjectiveOfIsCompl_apply {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : range f = ⊤)
+lemma equivProdOfSurjectiveOfIsCompl_apply {f : E →L[𝕜] F} {g : E →L[𝕜] G} (hf : range f = ⊤)
     (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) (x : E) :
     equivProdOfSurjectiveOfIsCompl f g hf hg hfg x = (f x, g x) := rfl
 #align continuous_linear_map.equiv_prod_of_surjective_of_is_compl_apply ContinuousLinearMap.equivProdOfSurjectiveOfIsCompl_apply
@@ -127,14 +127,14 @@ theorem closedComplemented_of_closed_compl (h : IsCompl p q) (hp : IsClosed (p :
   ⟨p.linearProjOfClosedCompl q h hp hq, Submodule.linearProjOfIsCompl_apply_left h⟩
 #align subspace.closed_complemented_of_closed_compl Subspace.closedComplemented_of_closed_compl
 
-theorem closedComplemented_iff_has_closed_compl :
+lemma closedComplemented_iff_has_closed_compl :
     p.ClosedComplemented ↔
       IsClosed (p : Set E) ∧ ∃ (q : Subspace 𝕜 E) (_ : IsClosed (q : Set E)), IsCompl p q :=
   ⟨fun h => ⟨h.isClosed, h.has_closed_complement⟩,
     fun ⟨hp, ⟨_, hq, hpq⟩⟩ => closedComplemented_of_closed_compl hpq hp hq⟩
 #align subspace.closed_complemented_iff_has_closed_compl Subspace.closedComplemented_iff_has_closed_compl
 
-theorem closedComplemented_of_quotient_finiteDimensional [CompleteSpace 𝕜]
+lemma closedComplemented_of_quotient_finiteDimensional [CompleteSpace 𝕜]
     [FiniteDimensional 𝕜 (E ⧸ p)] (hp : IsClosed (p : Set E)) : p.ClosedComplemented := by
   obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
   haveI : FiniteDimensional 𝕜 q := (p.quotientEquivOfIsCompl q hq).finiteDimensional

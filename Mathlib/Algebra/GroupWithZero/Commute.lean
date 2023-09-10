@@ -23,7 +23,7 @@ namespace Ring
 
 open Classical
 
-theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
+lemma mul_inverse_rev' {a b : M₀} (h : Commute a b) :
     inverse (a * b) = inverse b * inverse a := by
   by_cases hab : IsUnit (a * b)
   · obtain ⟨⟨a, rfl⟩, b, rfl⟩ := h.isUnit_mul_iff.mp hab
@@ -33,14 +33,14 @@ theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
   · rw [inverse_non_unit _ hab, inverse_non_unit _ hb, zero_mul]
 #align ring.mul_inverse_rev' Ring.mul_inverse_rev'
 
-theorem mul_inverse_rev {M₀} [CommMonoidWithZero M₀] (a b : M₀) :
+lemma mul_inverse_rev {M₀} [CommMonoidWithZero M₀] (a b : M₀) :
     Ring.inverse (a * b) = inverse b * inverse a :=
   mul_inverse_rev' (Commute.all _ _)
 #align ring.mul_inverse_rev Ring.mul_inverse_rev
 
 end Ring
 
-theorem Commute.ring_inverse_ring_inverse {a b : M₀} (h : Commute a b) :
+lemma Commute.ring_inverse_ring_inverse {a b : M₀} (h : Commute a b) :
     Commute (Ring.inverse a) (Ring.inverse b) :=
   (Ring.mul_inverse_rev' h.symm).symm.trans <| (congr_arg _ h.symm.eq).trans <|
     Ring.mul_inverse_rev' h
@@ -49,19 +49,19 @@ theorem Commute.ring_inverse_ring_inverse {a b : M₀} (h : Commute a b) :
 namespace Commute
 
 @[simp]
-theorem zero_right [MulZeroClass G₀] (a : G₀) : Commute a 0 :=
+lemma zero_right [MulZeroClass G₀] (a : G₀) : Commute a 0 :=
   SemiconjBy.zero_right a
 #align commute.zero_right Commute.zero_right
 
 @[simp]
-theorem zero_left [MulZeroClass G₀] (a : G₀) : Commute 0 a :=
+lemma zero_left [MulZeroClass G₀] (a : G₀) : Commute 0 a :=
   SemiconjBy.zero_left a a
 #align commute.zero_left Commute.zero_left
 
 variable [GroupWithZero G₀] {a b c : G₀}
 
 @[simp]
-theorem inv_left_iff₀ : Commute a⁻¹ b ↔ Commute a b :=
+lemma inv_left_iff₀ : Commute a⁻¹ b ↔ Commute a b :=
   SemiconjBy.inv_symm_left_iff₀
 #align commute.inv_left_iff₀ Commute.inv_left_iff₀
 
@@ -70,7 +70,7 @@ theorem inv_left₀ (h : Commute a b) : Commute a⁻¹ b :=
 #align commute.inv_left₀ Commute.inv_left₀
 
 @[simp]
-theorem inv_right_iff₀ : Commute a b⁻¹ ↔ Commute a b :=
+lemma inv_right_iff₀ : Commute a b⁻¹ ↔ Commute a b :=
   SemiconjBy.inv_right_iff₀
 #align commute.inv_right_iff₀ Commute.inv_right_iff₀
 

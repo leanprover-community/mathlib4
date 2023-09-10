@@ -29,14 +29,14 @@ variable (K : Type*) [Field K] [NumberField K]
 /-- The absolute discriminant of a number field. -/
 noncomputable abbrev discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
 
-theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=
+lemma coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=
   (Algebra.discr_localizationLocalization ℤ _ K (RingOfIntegers.basis K)).symm
 
-theorem discr_ne_zero : discr K ≠ 0 := by
+lemma discr_ne_zero : discr K ≠ 0 := by
   rw [← (Int.cast_injective (α := ℚ)).ne_iff, coe_discr]
   exact Algebra.discr_not_zero_of_basis ℚ (integralBasis K)
 
-theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
+lemma discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
     Algebra.discr ℤ b = discr K := by
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
@@ -49,7 +49,7 @@ open NumberField
 
 /-- The absolute discriminant of the number field `ℚ` is 1. -/
 @[simp]
-theorem numberField_discr : discr ℚ = 1 := by
+lemma numberField_discr : discr ℚ = 1 := by
   let b : Basis (Fin 1) ℤ (𝓞 ℚ) :=
     Basis.map (Basis.singleton (Fin 1) ℤ) ringOfIntegersEquiv.toAddEquiv.toIntLinearEquiv.symm
   calc NumberField.discr ℚ

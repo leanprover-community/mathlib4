@@ -101,13 +101,13 @@ a better `ext` lemma than `TensorProduct.AlgebraTensorModule.ext` below.
 
 See note [partially-applied ext lemmas]. -/
 @[ext high]
-nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
+nonrec lemma curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
   LinearMap.restrictScalars_injective R <|
     curry_injective <| (congr_arg (LinearMap.restrictScalars R) h : _)
 #align tensor_product.algebra_tensor_module.curry_injective TensorProduct.AlgebraTensorModule.curry_injective
 
-theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
+lemma ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
 #align tensor_product.algebra_tensor_module.ext TensorProduct.AlgebraTensorModule.ext
 
@@ -203,7 +203,7 @@ def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] 
   rfl
 
 @[simp]
-theorem map_id : map (id : M →ₗ[A] M) (id : N →ₗ[R] N) = .id :=
+lemma map_id : map (id : M →ₗ[A] M) (id : N →ₗ[R] N) = .id :=
   ext fun _ _ => rfl
 
 theorem map_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) (g₂ : Q →ₗ[R] Q') (g₁ : N →ₗ[R] Q) :
@@ -211,7 +211,7 @@ theorem map_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) (g₂ : Q →ₗ
   ext fun _ _ => rfl
 
 @[simp]
-protected theorem map_one : map (1 : M →ₗ[A] M) (1 : N →ₗ[R] N) = 1 := map_id
+protected lemma map_one : map (1 : M →ₗ[A] M) (1 : N →ₗ[R] N) = 1 := map_id
 
 protected theorem map_mul (f₁ f₂ : M →ₗ[A] M) (g₁ g₂ : N →ₗ[R] N) :
   map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ := map_comp _ _ _ _
@@ -270,7 +270,7 @@ def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P �
     (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
 
 @[simp]
-theorem congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=
+lemma congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=
   LinearEquiv.toLinearMap_injective <| map_id
 
 theorem congr_trans (f₁ : M ≃ₗ[A] P) (f₂ : P ≃ₗ[A] P') (g₁ : N ≃ₗ[R] Q) (g₂ : Q ≃ₗ[R] Q') :
@@ -280,7 +280,7 @@ theorem congr_trans (f₁ : M ≃ₗ[A] P) (f₂ : P ≃ₗ[A] P') (g₁ : N ≃
 theorem congr_symm (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : congr f.symm g.symm = (congr f g).symm := rfl
 
 @[simp]
-theorem congr_one : congr (1 : M ≃ₗ[A] M) (1 : N ≃ₗ[R] N) = 1 := congr_refl
+lemma congr_one : congr (1 : M ≃ₗ[A] M) (1 : N ≃ₗ[R] N) = 1 := congr_refl
 
 theorem congr_mul (f₁ f₂ : M ≃ₗ[A] M) (g₁ g₂ : N ≃ₗ[R] N) :
     congr (f₁ * f₂) (g₁ * g₂) = congr f₁ g₁ * congr f₂ g₂ := congr_trans _ _ _ _

@@ -93,7 +93,7 @@ instance : Quiver (Center C) where
   Hom := Hom
 
 @[ext]
-theorem ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by
+lemma ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by
   cases f; cases g; congr
 #align category_theory.center.ext CategoryTheory.Center.ext
 
@@ -107,7 +107,7 @@ theorem id_f (X : Center C) : Hom.f (𝟙 X) = 𝟙 X.1 :=
 #align category_theory.center.id_f CategoryTheory.Center.id_f
 
 @[simp]
-theorem comp_f {X Y Z : Center C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).f = f.f ≫ g.f :=
+lemma comp_f {X Y Z : Center C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.center.comp_f CategoryTheory.Center.comp_f
 
@@ -249,7 +249,7 @@ theorem tensor_β (X Y : Center C) (U : C) :
 #align category_theory.center.tensor_β CategoryTheory.Center.tensor_β
 
 @[simp]
-theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
+lemma tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
   rfl
 #align category_theory.center.tensor_f CategoryTheory.Center.tensor_f
 

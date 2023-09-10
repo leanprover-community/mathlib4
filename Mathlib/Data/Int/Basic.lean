@@ -78,7 +78,7 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 @[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
+lemma _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
   zpow_ofNat ..
 #align coe_nat_zsmul coe_nat_zsmul
 
@@ -112,10 +112,10 @@ instance : Distrib ℤ          := by infer_instance
 #align int.coe_nat_le Int.ofNat_le
 #align int.coe_nat_lt Int.ofNat_lt
 
-theorem coe_nat_inj' {m n : ℕ} : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
+lemma coe_nat_inj' {m n : ℕ} : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
 #align int.coe_nat_inj' Int.coe_nat_inj'
 
-theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
+lemma coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
 
 theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
@@ -175,11 +175,11 @@ theorem neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
 theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 #align int.succ_neg_nat_succ Int.succ_neg_nat_succ
 
-@[norm_cast] theorem coe_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
+@[norm_cast] lemma coe_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
   cases n; cases h; simp
 #align int.coe_pred_of_pos Int.coe_pred_of_pos
 
-@[elab_as_elim] protected theorem induction_on {p : ℤ → Prop} (i : ℤ)
+@[elab_as_elim] protected lemma induction_on {p : ℤ → Prop} (i : ℤ)
     (hz : p 0) (hp : ∀ i : ℕ, p i → p (i + 1)) (hn : ∀ i : ℕ, p (-i) → p (-i - 1)) : p i := by
   induction i with
   | ofNat i =>
@@ -195,7 +195,7 @@ theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 
 /-! ### nat abs -/
 
-theorem natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
+lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 #align int.nat_abs_surjective Int.natAbs_surjective
 
 #align int.nat_abs_add_le Int.natAbs_add_le
@@ -207,7 +207,7 @@ theorem natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n�
 #align int.neg_succ_of_nat_eq' Int.negSucc_eq'
 
 @[deprecated natAbs_ne_zero]
-theorem natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := natAbs_ne_zero.2
+lemma natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := natAbs_ne_zero.2
 #align int.nat_abs_ne_zero_of_ne_zero Int.natAbs_ne_zero_of_ne_zero
 
 #align int.nat_abs_eq_zero Int.natAbs_eq_zero
@@ -235,7 +235,7 @@ theorem coe_nat_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = ediv m n := rfl
 
 #align int.div_neg Int.div_negₓ -- int div alignment
 
-theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-a - 1) / b + 1) :=
+lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-a - 1) / b + 1) :=
   match a, b, eq_negSucc_of_lt_zero Ha, eq_succ_of_zero_lt Hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     rw [show (- -[m+1] : ℤ) = (m + 1 : ℤ) by rfl]; rw [add_sub_cancel]; rfl
@@ -276,7 +276,7 @@ theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -(
 #align int.nat_abs_sign Int.natAbs_sign
 #align int.nat_abs_sign_of_nonzero Int.natAbs_sign_of_nonzero
 
-theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_ofNat_of_nonzero hn
+lemma sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_ofNat_of_nonzero hn
 #align int.sign_coe_nat_of_nonzero Int.sign_coe_nat_of_nonzero
 
 #align int.div_sign Int.div_sign -- int div alignment
@@ -293,7 +293,7 @@ theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sig
 @[simp] theorem toNat_coe_nat (n : ℕ) : toNat ↑n = n := rfl
 #align int.to_nat_coe_nat Int.toNat_coe_nat
 
-@[simp] theorem toNat_coe_nat_add_one {n : ℕ} : ((n : ℤ) + 1).toNat = n + 1 := rfl
+@[simp] lemma toNat_coe_nat_add_one {n : ℕ} : ((n : ℤ) + 1).toNat = n + 1 := rfl
 #align int.to_nat_coe_nat_add_one Int.toNat_coe_nat_add_one
 
 #align int.le_to_nat Int.self_le_toNat

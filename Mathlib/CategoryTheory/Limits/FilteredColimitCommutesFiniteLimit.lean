@@ -60,7 +60,7 @@ variable [Finite J]
 /-- This follows this proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/
-theorem colimitLimitToLimitColimit_injective :
+lemma colimitLimitToLimitColimit_injective :
     Function.Injective (colimitLimitToLimitColimit F) := by
   classical
     cases nonempty_fintype J
@@ -142,7 +142,7 @@ variable [FinCategory J]
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 although with different names.
 -/
-theorem colimitLimitToLimitColimit_surjective :
+lemma colimitLimitToLimitColimit_surjective :
     Function.Surjective (colimitLimitToLimitColimit F) := by
   classical
     -- We begin with some element `x` in the limit (over J) over the colimits (over K),

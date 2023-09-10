@@ -47,21 +47,21 @@ theorem inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
   rfl
 #align coheyting.inf_hnot_self Coheyting.inf_hnot_self
 
-theorem boundary_le : ∂ a ≤ a :=
+lemma boundary_le : ∂ a ≤ a :=
   inf_le_left
 #align coheyting.boundary_le Coheyting.boundary_le
 
-theorem boundary_le_hnot : ∂ a ≤ ￢a :=
+lemma boundary_le_hnot : ∂ a ≤ ￢a :=
   inf_le_right
 #align coheyting.boundary_le_hnot Coheyting.boundary_le_hnot
 
 @[simp]
-theorem boundary_bot : ∂ (⊥ : α) = ⊥ :=
+lemma boundary_bot : ∂ (⊥ : α) = ⊥ :=
   bot_inf_eq
 #align coheyting.boundary_bot Coheyting.boundary_bot
 
 @[simp]
-theorem boundary_top : ∂ (⊤ : α) = ⊥ := by rw [boundary, hnot_top, inf_bot_eq]
+lemma boundary_top : ∂ (⊤ : α) = ⊥ := by rw [boundary, hnot_top, inf_bot_eq]
 #align coheyting.boundary_top Coheyting.boundary_top
 
 theorem boundary_hnot_le (a : α) : ∂ (￢a) ≤ ∂ a :=
@@ -83,11 +83,11 @@ theorem boundary_inf (a b : α) : ∂ (a ⊓ b) = ∂ a ⊓ b ⊔ a ⊓ ∂ b :=
   rw [hnot_inf_distrib, inf_sup_left, inf_right_comm, ← inf_assoc]
 #align coheyting.boundary_inf Coheyting.boundary_inf
 
-theorem boundary_inf_le : ∂ (a ⊓ b) ≤ ∂ a ⊔ ∂ b :=
+lemma boundary_inf_le : ∂ (a ⊓ b) ≤ ∂ a ⊔ ∂ b :=
   (boundary_inf _ _).trans_le <| sup_le_sup inf_le_left inf_le_right
 #align coheyting.boundary_inf_le Coheyting.boundary_inf_le
 
-theorem boundary_sup_le : ∂ (a ⊔ b) ≤ ∂ a ⊔ ∂ b := by
+lemma boundary_sup_le : ∂ (a ⊔ b) ≤ ∂ a ⊔ ∂ b := by
   rw [boundary, inf_sup_right]
   exact
     sup_le_sup (inf_le_inf_left _ <| hnot_anti le_sup_left)
@@ -103,7 +103,7 @@ example (a b : Prop) : (a ∧ b ∨ ¬(a ∧ b)) ∧ ((a ∨ b) ∨ ¬(a ∨ b))
   · exact Or.inr fun ha => hnab ⟨ha, hb⟩
   · exact Or.inr fun ha => hnab <| Or.inl ha
 
-theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
+lemma boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
   -- Porting note: the following simp generates the same term as mathlib3 if you remove
   -- sup_inf_right from both. With sup_inf_right included, mathlib4 and mathlib3 generate
   -- different terms
@@ -118,7 +118,7 @@ theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b)
     exact codisjoint_hnot_right.mono_right (hnot_anti inf_le_left)
 #align coheyting.boundary_le_boundary_sup_sup_boundary_inf_left Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left
 
-theorem boundary_le_boundary_sup_sup_boundary_inf_right : ∂ b ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
+lemma boundary_le_boundary_sup_sup_boundary_inf_right : ∂ b ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
   rw [@sup_comm _ _ a, inf_comm]
   exact boundary_le_boundary_sup_sup_boundary_inf_left
 #align coheyting.boundary_le_boundary_sup_sup_boundary_inf_right Coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
@@ -138,7 +138,7 @@ theorem hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
   exact hnot_hnot_le
 #align coheyting.hnot_hnot_sup_boundary Coheyting.hnot_hnot_sup_boundary
 
-theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
+lemma hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
   ⟨fun h => ⟨a, by rw [boundary, h, inf_top_eq]⟩, by
     rintro ⟨b, rfl⟩
     exact hnot_boundary _⟩

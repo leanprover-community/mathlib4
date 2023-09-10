@@ -86,14 +86,14 @@ def transvection (c : R) : Matrix n n R :=
 #align matrix.transvection Matrix.transvection
 
 @[simp]
-theorem transvection_zero : transvection i j (0 : R) = 1 := by simp [transvection]
+lemma transvection_zero : transvection i j (0 : R) = 1 := by simp [transvection]
 #align matrix.transvection_zero Matrix.transvection_zero
 
 section
 
 /-- A transvection matrix is obtained from the identity by adding `c` times the `j`-th row to
 the `i`-th row. -/
-theorem updateRow_eq_transvection [Finite n] (c : R) :
+lemma updateRow_eq_transvection [Finite n] (c : R) :
     updateRow (1 : Matrix n n R) i ((1 : Matrix n n R) i + c • (1 : Matrix n n R) j) =
       transvection i j c := by
   cases nonempty_fintype n
@@ -177,12 +177,12 @@ theorem toMatrix_mk (i j : n) (hij : i ≠ j) (c : R) :
 #align matrix.transvection_struct.to_matrix_mk Matrix.TransvectionStruct.toMatrix_mk
 
 @[simp]
-protected theorem det [Fintype n] (t : TransvectionStruct n R) : det t.toMatrix = 1 :=
+protected lemma det [Fintype n] (t : TransvectionStruct n R) : det t.toMatrix = 1 :=
   det_transvection_of_ne _ _ t.hij _
 #align matrix.transvection_struct.det Matrix.TransvectionStruct.det
 
 @[simp]
-theorem det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n 𝕜)) :
+lemma det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n 𝕜)) :
     det (L.map toMatrix).prod = 1 := by
   induction' L with t L IH
   · simp
@@ -261,7 +261,7 @@ theorem toMatrix_sumInl (t : TransvectionStruct n R) :
 #align matrix.transvection_struct.to_matrix_sum_inl Matrix.TransvectionStruct.toMatrix_sumInl
 
 @[simp]
-theorem sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
+lemma sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
     (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
     (L.map (toMatrix ∘ sumInl p)).prod * fromBlocks M 0 0 N =
       fromBlocks ((L.map toMatrix).prod * M) 0 0 N := by
@@ -271,7 +271,7 @@ theorem sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
 #align matrix.transvection_struct.sum_inl_to_matrix_prod_mul Matrix.TransvectionStruct.sumInl_toMatrix_prod_mul
 
 @[simp]
-theorem mul_sumInl_toMatrix_prod [Fintype n] [Fintype p] (M : Matrix n n R)
+lemma mul_sumInl_toMatrix_prod [Fintype n] [Fintype p] (M : Matrix n n R)
     (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
     fromBlocks M 0 0 N * (L.map (toMatrix ∘ sumInl p)).prod =
       fromBlocks (M * (L.map toMatrix).prod) 0 0 N := by

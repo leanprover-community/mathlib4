@@ -15,7 +15,7 @@ protected theorem bit0_succ_eq (n : ℕ) : bit0 (succ n) = succ (succ (bit0 n)) 
   show succ (succ n + n) = succ (succ (n + n)) from congrArg succ (succ_add n n)
 #align nat.bit0_succ_eq Nat.bit0_succ_eq
 
-protected theorem zero_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 0 < bit0 n
+protected lemma zero_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 0 < bit0 n
   | 0, h => absurd rfl h
   | succ n, _ =>
     calc
@@ -27,7 +27,7 @@ protected theorem zero_lt_bit1 (n : Nat) : 0 < bit1 n :=
   zero_lt_succ _
 #align nat.zero_lt_bit1 Nat.zero_lt_bit1
 
-protected theorem bit0_ne_zero : ∀ {n : ℕ}, n ≠ 0 → bit0 n ≠ 0
+protected lemma bit0_ne_zero : ∀ {n : ℕ}, n ≠ 0 → bit0 n ≠ 0
   | 0, h => absurd rfl h
   | n + 1, _ =>
     suffices n + 1 + (n + 1) ≠ 0 from this

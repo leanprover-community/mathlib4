@@ -60,7 +60,7 @@ instance sum : Category.{v₁} (Sum C D) where
 
 /- Porting note: seems similar to Mathlib4#1036 issue so marked as nolint  -/
 @[simp, nolint simpComm]
-theorem sum_comp_inl {P Q R : C} (f : (inl P : Sum C D) ⟶ inl Q) (g : (inl Q : Sum C D) ⟶ inl R) :
+lemma sum_comp_inl {P Q R : C} (f : (inl P : Sum C D) ⟶ inl Q) (g : (inl Q : Sum C D) ⟶ inl R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inl P) (inl Q) (inl R) (f : P ⟶ Q) (g : Q ⟶ R) :=
   rfl
@@ -68,7 +68,7 @@ theorem sum_comp_inl {P Q R : C} (f : (inl P : Sum C D) ⟶ inl Q) (g : (inl Q :
 
 /- Porting note: seems similar to Mathlib4#1036 issue so marked as nolint  -/
 @[simp, nolint simpComm]
-theorem sum_comp_inr {P Q R : D} (f : (inr P : Sum C D) ⟶ inr Q) (g : (inr Q : Sum C D) ⟶ inr R) :
+lemma sum_comp_inr {P Q R : D} (f : (inr P : Sum C D) ⟶ inr Q) (g : (inr Q : Sum C D) ⟶ inr R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inr P) (inr Q) (inr R) (f : P ⟶ Q) (g : Q ⟶ R) :=
   rfl
@@ -125,12 +125,12 @@ theorem swap_obj_inr (X : D) : (swap C D).obj (inr X) = inl X :=
 #align category_theory.sum.swap_obj_inr CategoryTheory.Sum.swap_obj_inr
 
 @[simp]
-theorem swap_map_inl {X Y : C} {f : inl X ⟶ inl Y} : (swap C D).map f = f :=
+lemma swap_map_inl {X Y : C} {f : inl X ⟶ inl Y} : (swap C D).map f = f :=
   rfl
 #align category_theory.sum.swap_map_inl CategoryTheory.Sum.swap_map_inl
 
 @[simp]
-theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
+lemma swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
   rfl
 #align category_theory.sum.swap_map_inr CategoryTheory.Sum.swap_map_inr
 
@@ -229,13 +229,13 @@ def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H 
 #align category_theory.nat_trans.sum CategoryTheory.NatTrans.sum
 
 @[simp]
-theorem sum_app_inl {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) (a : A) :
+lemma sum_app_inl {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) (a : A) :
     (sum α β).app (inl a) = α.app a :=
   rfl
 #align category_theory.nat_trans.sum_app_inl CategoryTheory.NatTrans.sum_app_inl
 
 @[simp]
-theorem sum_app_inr {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) (c : C) :
+lemma sum_app_inr {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) (c : C) :
     (sum α β).app (inr c) = β.app c :=
   rfl
 #align category_theory.nat_trans.sum_app_inr CategoryTheory.NatTrans.sum_app_inr

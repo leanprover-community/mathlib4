@@ -35,7 +35,7 @@ def antidiagonal (n : ℕ) : List (ℕ × ℕ) :=
 
 /-- A pair (i, j) is contained in the antidiagonal of `n` if and only if `i + j = n`. -/
 @[simp]
-theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
+lemma mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_map]; constructor
   · rintro ⟨i, hi, rfl⟩
     rw [mem_range, lt_succ_iff] at hi
@@ -55,7 +55,7 @@ theorem length_antidiagonal (n : ℕ) : (antidiagonal n).length = n + 1 := by
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 @[simp]
-theorem antidiagonal_zero : antidiagonal 0 = [(0, 0)] :=
+lemma antidiagonal_zero : antidiagonal 0 = [(0, 0)] :=
   rfl
 #align list.nat.antidiagonal_zero List.Nat.antidiagonal_zero
 
@@ -65,7 +65,7 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 #align list.nat.nodup_antidiagonal List.Nat.nodup_antidiagonal
 
 @[simp]
-theorem antidiagonal_succ {n : ℕ} :
+lemma antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) :: (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, range_succ_eq_map, map_cons, true_and_iff, Nat.add_succ_sub_one,
     add_zero, id.def, eq_self_iff_true, tsub_zero, map_map, Prod.map_mk]
@@ -73,7 +73,7 @@ theorem antidiagonal_succ {n : ℕ} :
   ext; simp
 #align list.nat.antidiagonal_succ List.Nat.antidiagonal_succ
 
-theorem antidiagonal_succ' {n : ℕ} :
+lemma antidiagonal_succ' {n : ℕ} :
     antidiagonal (n + 1) = (antidiagonal n).map (Prod.map id Nat.succ) ++ [(n + 1, 0)] := by
   simp only [antidiagonal, range_succ, add_tsub_cancel_left, map_append, append_assoc, tsub_self,
     singleton_append, map_map, map]
@@ -82,7 +82,7 @@ theorem antidiagonal_succ' {n : ℕ} :
   simp (config := { contextual := true }) [le_of_lt, Nat.succ_eq_add_one, Nat.sub_add_comm]
 #align list.nat.antidiagonal_succ' List.Nat.antidiagonal_succ'
 
-theorem antidiagonal_succ_succ' {n : ℕ} :
+lemma antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ']
@@ -91,7 +91,7 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
   simp
 #align list.nat.antidiagonal_succ_succ' List.Nat.antidiagonal_succ_succ'
 
-theorem map_swap_antidiagonal {n : ℕ} :
+lemma map_swap_antidiagonal {n : ℕ} :
     (antidiagonal n).map Prod.swap = (antidiagonal n).reverse := by
   rw [antidiagonal, map_map, ← List.map_reverse, range_eq_range', reverse_range', ←
     range_eq_range', map_map]

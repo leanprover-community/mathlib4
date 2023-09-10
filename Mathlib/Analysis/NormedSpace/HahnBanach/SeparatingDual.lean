@@ -51,17 +51,17 @@ lemma exists_ne_zero {x : V} (hx : x ≠ 0) :
     ∃ f : V →L[R] R, f x ≠ 0 :=
   exists_ne_zero' x hx
 
-theorem exists_separating_of_ne {x y : V} (h : x ≠ y) :
+lemma exists_separating_of_ne {x y : V} (h : x ≠ y) :
     ∃ f : V →L[R] R, f x ≠ f y := by
   rcases exists_ne_zero (R := R) (sub_ne_zero_of_ne h) with ⟨f, hf⟩
   exact ⟨f, by simpa [sub_ne_zero] using hf⟩
 
-protected theorem t1Space [T1Space R] : T1Space V := by
+protected lemma t1Space [T1Space R] : T1Space V := by
   apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact ⟨f ⁻¹' {f y}ᶜ, isOpen_compl_singleton.preimage f.continuous, hf, by simp⟩
 
-protected theorem t2Space [T2Space R] : T2Space V := by
+protected lemma t2Space [T2Space R] : T2Space V := by
   apply (t2Space_iff _).2 (fun {x} {y} hxy ↦ ?_)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact separated_by_continuous f.continuous hf
@@ -78,7 +78,7 @@ lemma exists_eq_one {x : V} (hx : x ≠ 0) :
   rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
   exact ⟨(f x)⁻¹ • f, inv_mul_cancel hf⟩
 
-theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ f : V →L[R] R, f x = 1 ∧ f y ≠ 0 := by
   obtain ⟨u, ux⟩ : ∃ u : V →L[R] R, u x = 1 := exists_eq_one hx
   rcases ne_or_eq (u y) 0 with uy|uy
@@ -91,7 +91,7 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there
 exists `A : V ≃L[R] V` mapping `x` to `y`. -/
-theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
+lemma exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ A : V ≃L[R] V, A x = y := by
   obtain ⟨G, Gx, Gy⟩ : ∃ G : V →L[R] R, G x = 1 ∧ G y ≠ 0 :=

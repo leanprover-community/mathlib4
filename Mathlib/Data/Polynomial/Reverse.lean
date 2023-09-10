@@ -37,7 +37,7 @@ def revAtFun (N i : ℕ) : ℕ :=
   ite (i ≤ N) (N - i) i
 #align polynomial.rev_at_fun Polynomial.revAtFun
 
-theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
+lemma revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   unfold revAtFun
   split_ifs with h j
   · exact tsub_tsub_cancel_of_le h
@@ -47,7 +47,7 @@ theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   · rfl
 #align polynomial.rev_at_fun_invol Polynomial.revAtFun_invol
 
-theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
+lemma revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
   intro a b hab
   rw [← @revAtFun_invol N a, hab, revAtFun_invol]
 #align polynomial.rev_at_fun_inj Polynomial.revAtFun_inj
@@ -69,18 +69,18 @@ theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
 #align polynomial.rev_at_fun_eq Polynomial.revAtFun_eq
 
 @[simp]
-theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
+lemma revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
   revAtFun_invol
 #align polynomial.rev_at_invol Polynomial.revAt_invol
 
 @[simp]
-theorem revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
+lemma revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
   if_pos H
 #align polynomial.rev_at_le Polynomial.revAt_le
 
 lemma revAt_eq_self_of_lt {N i : ℕ} (h : N < i) : revAt N i = i := by simp [revAt, Nat.not_le.mpr h]
 
-theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
+lemma revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
     revAt (N + O) (n + o) = revAt N n + revAt O o := by
   rcases Nat.le.dest hn with ⟨n', rfl⟩
   rcases Nat.le.dest ho with ⟨o', rfl⟩
@@ -121,12 +121,12 @@ theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f
 #align polynomial.coeff_reflect Polynomial.coeff_reflect
 
 @[simp]
-theorem reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
+lemma reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
   rfl
 #align polynomial.reflect_zero Polynomial.reflect_zero
 
 @[simp]
-theorem reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by
+lemma reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by
   rw [ofFinsupp_eq_zero, reflect, embDomain_eq_zero, ofFinsupp_eq_zero]
 #align polynomial.reflect_eq_zero_iff Polynomial.reflect_eq_zero_iff
 
@@ -262,12 +262,12 @@ theorem coeff_zero_reverse (f : R[X]) : coeff (reverse f) 0 = leadingCoeff f := 
 #align polynomial.coeff_zero_reverse Polynomial.coeff_zero_reverse
 
 @[simp]
-theorem reverse_zero : reverse (0 : R[X]) = 0 :=
+lemma reverse_zero : reverse (0 : R[X]) = 0 :=
   rfl
 #align polynomial.reverse_zero Polynomial.reverse_zero
 
 @[simp]
-theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
+lemma reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 #align polynomial.reverse_eq_zero Polynomial.reverse_eq_zero
 
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
@@ -315,14 +315,14 @@ theorem reverse_trailingCoeff (f : R[X]) : f.reverse.trailingCoeff = f.leadingCo
   rw [trailingCoeff, reverse_natTrailingDegree, coeff_zero_reverse]
 #align polynomial.reverse_trailing_coeff Polynomial.reverse_trailingCoeff
 
-theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
+lemma reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
     reverse (f * g) = reverse f * reverse g := by
   unfold reverse
   rw [natDegree_mul' fg, reflect_mul f g rfl.le rfl.le]
 #align polynomial.reverse_mul Polynomial.reverse_mul
 
 @[simp]
-theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
+lemma reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
     reverse (f * g) = reverse f * reverse g := by
   by_cases f0 : f = 0
   · simp only [f0, zero_mul, reverse_zero]
@@ -331,7 +331,7 @@ theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X
   simp [reverse_mul, *]
 #align polynomial.reverse_mul_of_domain Polynomial.reverse_mul_of_domain
 
-theorem trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
+lemma trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
     (p * q).trailingCoeff = p.trailingCoeff * q.trailingCoeff := by
   rw [← reverse_leadingCoeff, reverse_mul_of_domain, leadingCoeff_mul, reverse_leadingCoeff,
     reverse_leadingCoeff]

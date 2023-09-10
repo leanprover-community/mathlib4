@@ -52,7 +52,7 @@ theorem comap_id_apply (x : σ → R) : comap (AlgHom.id R (MvPolynomial σ R)) 
 
 variable (σ R)
 
-theorem comap_id : comap (AlgHom.id R (MvPolynomial σ R)) = id := by
+lemma comap_id : comap (AlgHom.id R (MvPolynomial σ R)) = id := by
   funext x
   exact comap_id_apply x
 #align mv_polynomial.comap_id MvPolynomial.comap_id

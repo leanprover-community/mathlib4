@@ -52,7 +52,7 @@ variable [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 instance : Coe (P →A[R] Q) (P →ᵃ[R] Q) :=
   ⟨toAffineMap⟩
 
-theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g : P →ᵃ[R] Q)) :
+lemma to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g : P →ᵃ[R] Q)) :
     f = g := by
   cases f
   cases g
@@ -72,20 +72,20 @@ instance : CoeFun (P →A[R] Q) fun _ ↦ P → Q :=
 theorem toFun_eq_coe (f : P →A[R] Q) : f.toFun = ⇑f := rfl
 #align continuous_affine_map.to_fun_eq_coe ContinuousAffineMap.toFun_eq_coe
 
-theorem coe_injective : @Function.Injective (P →A[R] Q) (P → Q) (⇑) :=
+lemma coe_injective : @Function.Injective (P →A[R] Q) (P → Q) (⇑) :=
   FunLike.coe_injective
 #align continuous_affine_map.coe_injective ContinuousAffineMap.coe_injective
 
 @[ext]
-theorem ext {f g : P →A[R] Q} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : P →A[R] Q} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align continuous_affine_map.ext ContinuousAffineMap.ext
 
-theorem ext_iff {f g : P →A[R] Q} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : P →A[R] Q} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align continuous_affine_map.ext_iff ContinuousAffineMap.ext_iff
 
-theorem congr_fun {f g : P →A[R] Q} (h : f = g) (x : P) : f x = g x :=
+lemma congr_fun {f g : P →A[R] Q} (h : f = g) (x : P) : f x = g x :=
   FunLike.congr_fun h _
 #align continuous_affine_map.congr_fun ContinuousAffineMap.congr_fun
 
@@ -110,7 +110,7 @@ theorem coe_to_affineMap (f : P →A[R] Q) : ((f : P →ᵃ[R] Q) : P → Q) = f
 theorem coe_to_continuousMap (f : P →A[R] Q) : ((f : C(P, Q)) : P → Q) = f := rfl
 #align continuous_affine_map.coe_to_continuous_map ContinuousAffineMap.coe_to_continuousMap
 
-theorem to_continuousMap_injective {f g : P →A[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
+lemma to_continuousMap_injective {f g : P →A[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
   exact ContinuousMap.congr_fun h a
@@ -181,7 +181,7 @@ instance : Zero (P →A[R] W) :=
   ⟨ContinuousAffineMap.const R P 0⟩
 
 @[norm_cast, simp]
-theorem coe_zero : ((0 : P →A[R] W) : P → W) = 0 := rfl
+lemma coe_zero : ((0 : P →A[R] W) : P → W) = 0 := rfl
 #align continuous_affine_map.coe_zero ContinuousAffineMap.coe_zero
 
 theorem zero_apply (x : P) : (0 : P →A[R] W) x = 0 := rfl

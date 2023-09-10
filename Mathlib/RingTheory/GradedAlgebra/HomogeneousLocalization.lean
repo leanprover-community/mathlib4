@@ -104,7 +104,7 @@ open SetLike.GradedMonoid Submodule
 variable {𝒜}
 
 @[ext]
-theorem ext {c1 c2 : NumDenSameDeg 𝒜 x} (hdeg : c1.deg = c2.deg) (hnum : (c1.num : A) = c2.num)
+lemma ext {c1 c2 : NumDenSameDeg 𝒜 x} (hdeg : c1.deg = c2.deg) (hnum : (c1.num : A) = c2.num)
     (hden : (c1.den : A) = c2.den) : c1 = c2 := by
   rcases c1 with ⟨i1, ⟨n1, hn1⟩, ⟨d1, hd1⟩, h1⟩
   rcases c2 with ⟨i2, ⟨n2, hn2⟩, ⟨d2, hd2⟩, h2⟩
@@ -122,17 +122,17 @@ instance : One (NumDenSameDeg 𝒜 x) where
       den_mem := Submonoid.one_mem _ }
 
 @[simp]
-theorem deg_one : (1 : NumDenSameDeg 𝒜 x).deg = 0 :=
+lemma deg_one : (1 : NumDenSameDeg 𝒜 x).deg = 0 :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.deg_one HomogeneousLocalization.NumDenSameDeg.deg_one
 
 @[simp]
-theorem num_one : ((1 : NumDenSameDeg 𝒜 x).num : A) = 1 :=
+lemma num_one : ((1 : NumDenSameDeg 𝒜 x).num : A) = 1 :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.num_one HomogeneousLocalization.NumDenSameDeg.num_one
 
 @[simp]
-theorem den_one : ((1 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
+lemma den_one : ((1 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.denom_one HomogeneousLocalization.NumDenSameDeg.den_one
 
@@ -140,17 +140,17 @@ instance : Zero (NumDenSameDeg 𝒜 x) where
   zero := ⟨0, 0, ⟨1, GradedOne.one_mem⟩, Submonoid.one_mem _⟩
 
 @[simp]
-theorem deg_zero : (0 : NumDenSameDeg 𝒜 x).deg = 0 :=
+lemma deg_zero : (0 : NumDenSameDeg 𝒜 x).deg = 0 :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.deg_zero HomogeneousLocalization.NumDenSameDeg.deg_zero
 
 @[simp]
-theorem num_zero : (0 : NumDenSameDeg 𝒜 x).num = 0 :=
+lemma num_zero : (0 : NumDenSameDeg 𝒜 x).num = 0 :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.num_zero HomogeneousLocalization.NumDenSameDeg.num_zero
 
 @[simp]
-theorem den_zero : ((0 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
+lemma den_zero : ((0 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 #align homogeneous_localization.num_denom_same_deg.denom_zero HomogeneousLocalization.NumDenSameDeg.den_zero
 
@@ -318,7 +318,7 @@ theorem val_mk'' (i : NumDenSameDeg 𝒜 x) :
 
 variable (x)
 
-theorem val_injective : Function.Injective (HomogeneousLocalization.val (𝒜 := 𝒜) (x := x)) :=
+lemma val_injective : Function.Injective (HomogeneousLocalization.val (𝒜 := 𝒜) (x := x)) :=
   fun a b => Quotient.recOnSubsingleton₂' a b fun _ _ h => Quotient.sound' h
 #align homogeneous_localization.val_injective HomogeneousLocalization.val_injective
 
@@ -385,21 +385,21 @@ instance : One (HomogeneousLocalization 𝒜 x) where one := Quotient.mk'' 1
 
 instance : Zero (HomogeneousLocalization 𝒜 x) where zero := Quotient.mk'' 0
 
-theorem zero_eq : (0 : HomogeneousLocalization 𝒜 x) = Quotient.mk'' 0 :=
+lemma zero_eq : (0 : HomogeneousLocalization 𝒜 x) = Quotient.mk'' 0 :=
   rfl
 #align homogeneous_localization.zero_eq HomogeneousLocalization.zero_eq
 
-theorem one_eq : (1 : HomogeneousLocalization 𝒜 x) = Quotient.mk'' 1 :=
+lemma one_eq : (1 : HomogeneousLocalization 𝒜 x) = Quotient.mk'' 1 :=
   rfl
 #align homogeneous_localization.one_eq HomogeneousLocalization.one_eq
 
 variable {x}
 
-theorem zero_val : (0 : HomogeneousLocalization 𝒜 x).val = 0 :=
+lemma zero_val : (0 : HomogeneousLocalization 𝒜 x).val = 0 :=
   Localization.mk_zero _
 #align homogeneous_localization.zero_val HomogeneousLocalization.zero_val
 
-theorem one_val : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
+lemma one_val : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
   Localization.mk_one
 #align homogeneous_localization.one_val HomogeneousLocalization.one_val
 

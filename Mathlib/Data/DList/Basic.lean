@@ -32,12 +32,12 @@ def DList.join {α : Type*} : List (DList α) → DList α
 #align dlist.join Std.DList.join
 
 @[simp]
-theorem DList_singleton {α : Type*} {a : α} : DList.singleton a = DList.lazy_ofList [a] :=
+lemma DList_singleton {α : Type*} {a : α} : DList.singleton a = DList.lazy_ofList [a] :=
   rfl
 #align dlist_singleton Std.DList_singleton
 
 @[simp]
-theorem DList_lazy {α : Type*} {l : List α} : DList.lazy_ofList l = Std.DList.ofList l :=
+lemma DList_lazy {α : Type*} {l : List α} : DList.lazy_ofList l = Std.DList.ofList l :=
   rfl
 #align dlist_lazy Std.DList_lazy
 

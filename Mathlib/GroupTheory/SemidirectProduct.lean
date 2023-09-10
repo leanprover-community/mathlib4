@@ -80,11 +80,11 @@ theorem mul_right (a b : N ⋊[φ] G) : (a * b).right = a.right * b.right := rfl
 instance : One (SemidirectProduct N G φ) where one := ⟨1, 1⟩
 
 @[simp]
-theorem one_left : (1 : N ⋊[φ] G).left = 1 := rfl
+lemma one_left : (1 : N ⋊[φ] G).left = 1 := rfl
 #align semidirect_product.one_left SemidirectProduct.one_left
 
 @[simp]
-theorem one_right : (1 : N ⋊[φ] G).right = 1 := rfl
+lemma one_right : (1 : N ⋊[φ] G).right = 1 := rfl
 #align semidirect_product.one_right SemidirectProduct.one_right
 
 instance : Inv (SemidirectProduct N G φ) where
@@ -122,12 +122,12 @@ theorem left_inl (n : N) : (inl n : N ⋊[φ] G).left = n := rfl
 theorem right_inl (n : N) : (inl n : N ⋊[φ] G).right = 1 := rfl
 #align semidirect_product.right_inl SemidirectProduct.right_inl
 
-theorem inl_injective : Function.Injective (inl : N → N ⋊[φ] G) :=
+lemma inl_injective : Function.Injective (inl : N → N ⋊[φ] G) :=
   Function.injective_iff_hasLeftInverse.2 ⟨left, left_inl⟩
 #align semidirect_product.inl_injective SemidirectProduct.inl_injective
 
 @[simp]
-theorem inl_inj {n₁ n₂ : N} : (inl n₁ : N ⋊[φ] G) = inl n₂ ↔ n₁ = n₂ :=
+lemma inl_inj {n₁ n₂ : N} : (inl n₁ : N ⋊[φ] G) = inl n₂ ↔ n₁ = n₂ :=
   inl_injective.eq_iff
 #align semidirect_product.inl_inj SemidirectProduct.inl_inj
 
@@ -146,12 +146,12 @@ theorem left_inr (g : G) : (inr g : N ⋊[φ] G).left = 1 := rfl
 theorem right_inr (g : G) : (inr g : N ⋊[φ] G).right = g := rfl
 #align semidirect_product.right_inr SemidirectProduct.right_inr
 
-theorem inr_injective : Function.Injective (inr : G → N ⋊[φ] G) :=
+lemma inr_injective : Function.Injective (inr : G → N ⋊[φ] G) :=
   Function.injective_iff_hasLeftInverse.2 ⟨right, right_inr⟩
 #align semidirect_product.inr_injective SemidirectProduct.inr_injective
 
 @[simp]
-theorem inr_inj {g₁ g₂ : G} : (inr g₁ : N ⋊[φ] G) = inr g₂ ↔ g₁ = g₂ :=
+lemma inr_inj {g₁ g₂ : G} : (inr g₁ : N ⋊[φ] G) = inr g₂ ↔ g₁ = g₂ :=
   inr_injective.eq_iff
 #align semidirect_product.inr_inj SemidirectProduct.inr_inj
 
@@ -179,15 +179,15 @@ def rightHom : N ⋊[φ] G →* G where
 #align semidirect_product.right_hom SemidirectProduct.rightHom
 
 @[simp]
-theorem rightHom_eq_right : (rightHom : N ⋊[φ] G → G) = right := rfl
+lemma rightHom_eq_right : (rightHom : N ⋊[φ] G → G) = right := rfl
 #align semidirect_product.right_hom_eq_right SemidirectProduct.rightHom_eq_right
 
 @[simp]
-theorem rightHom_comp_inl : (rightHom : N ⋊[φ] G →* G).comp inl = 1 := by ext; simp [rightHom]
+lemma rightHom_comp_inl : (rightHom : N ⋊[φ] G →* G).comp inl = 1 := by ext; simp [rightHom]
 #align semidirect_product.right_hom_comp_inl SemidirectProduct.rightHom_comp_inl
 
 @[simp]
-theorem rightHom_comp_inr : (rightHom : N ⋊[φ] G →* G).comp inr = MonoidHom.id _ := by
+lemma rightHom_comp_inr : (rightHom : N ⋊[φ] G →* G).comp inr = MonoidHom.id _ := by
   ext; simp [rightHom]
 #align semidirect_product.right_hom_comp_inr SemidirectProduct.rightHom_comp_inr
 
@@ -199,11 +199,11 @@ theorem rightHom_inl (n : N) : rightHom (inl n : N ⋊[φ] G) = 1 := by simp [ri
 theorem rightHom_inr (g : G) : rightHom (inr g : N ⋊[φ] G) = g := by simp [rightHom]
 #align semidirect_product.right_hom_inr SemidirectProduct.rightHom_inr
 
-theorem rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G) :=
+lemma rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G) :=
   Function.surjective_iff_hasRightInverse.2 ⟨inr, rightHom_inr⟩
 #align semidirect_product.right_hom_surjective SemidirectProduct.rightHom_surjective
 
-theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.ker :=
+lemma range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.ker :=
   le_antisymm (fun _ ↦ by simp (config := { contextual := true }) [MonoidHom.mem_ker, eq_comm])
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
 #align semidirect_product.range_inl_eq_ker_right_hom SemidirectProduct.range_inl_eq_ker_rightHom
@@ -230,7 +230,7 @@ theorem lift_inl (n : N) : lift f₁ f₂ h (inl n) = f₁ n := by simp [lift]
 #align semidirect_product.lift_inl SemidirectProduct.lift_inl
 
 @[simp]
-theorem lift_comp_inl : (lift f₁ f₂ h).comp inl = f₁ := by ext; simp
+lemma lift_comp_inl : (lift f₁ f₂ h).comp inl = f₁ := by ext; simp
 #align semidirect_product.lift_comp_inl SemidirectProduct.lift_comp_inl
 
 @[simp]
@@ -238,7 +238,7 @@ theorem lift_inr (g : G) : lift f₁ f₂ h (inr g) = f₂ g := by simp [lift]
 #align semidirect_product.lift_inr SemidirectProduct.lift_inr
 
 @[simp]
-theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext; simp
+lemma lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext; simp
 #align semidirect_product.lift_comp_inr SemidirectProduct.lift_comp_inr
 
 theorem lift_unique (F : N ⋊[φ] G →* H) :
@@ -250,7 +250,7 @@ theorem lift_unique (F : N ⋊[φ] G →* H) :
 
 /-- Two maps out of the semidirect product are equal if they're equal after composition
   with both `inl` and `inr` -/
-theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
+lemma hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
     (hr : f.comp inr = g.comp inr) : f = g := by
   rw [lift_unique f, lift_unique g]
   simp only [*]
@@ -286,7 +286,7 @@ theorem map_right (g : N ⋊[φ] G) : (map f₁ f₂ h g).right = f₂ g.right :
 #align semidirect_product.map_right SemidirectProduct.map_right
 
 @[simp]
-theorem rightHom_comp_map : rightHom.comp (map f₁ f₂ h) = f₂.comp rightHom := rfl
+lemma rightHom_comp_map : rightHom.comp (map f₁ f₂ h) = f₂.comp rightHom := rfl
 #align semidirect_product.right_hom_comp_map SemidirectProduct.rightHom_comp_map
 
 @[simp]
@@ -294,7 +294,7 @@ theorem map_inl (n : N) : map f₁ f₂ h (inl n) = inl (f₁ n) := by simp [map
 #align semidirect_product.map_inl SemidirectProduct.map_inl
 
 @[simp]
-theorem map_comp_inl : (map f₁ f₂ h).comp inl = inl.comp f₁ := by ext <;> simp
+lemma map_comp_inl : (map f₁ f₂ h).comp inl = inl.comp f₁ := by ext <;> simp
 #align semidirect_product.map_comp_inl SemidirectProduct.map_comp_inl
 
 @[simp]
@@ -302,7 +302,7 @@ theorem map_inr (g : G) : map f₁ f₂ h (inr g) = inr (f₂ g) := by simp [map
 #align semidirect_product.map_inr SemidirectProduct.map_inr
 
 @[simp]
-theorem map_comp_inr : (map f₁ f₂ h).comp inr = inr.comp f₂ := by ext <;> simp [map]
+lemma map_comp_inr : (map f₁ f₂ h).comp inr = inr.comp f₂ := by ext <;> simp [map]
 #align semidirect_product.map_comp_inr SemidirectProduct.map_comp_inr
 
 end Map

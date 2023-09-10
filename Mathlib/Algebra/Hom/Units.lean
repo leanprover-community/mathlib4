@@ -32,7 +32,7 @@ open Function
 universe u v w
 
 @[to_additive]
-theorem Group.isUnit {G} [Group G] (g : G) : IsUnit g :=
+lemma Group.isUnit {G} [Group G] (g : G) : IsUnit g :=
   ⟨⟨g, g⁻¹, mul_inv_self g, inv_mul_self g⟩, rfl⟩
 #align group.is_unit Group.isUnit
 #align add_group.is_add_unit AddGroup.isAddUnit
@@ -44,7 +44,7 @@ equal at `x⁻¹`. -/
 @[to_additive
   "If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
   additive unit `x`, then they are equal at `-x`."]
-theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F G N]
+lemma IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F G N]
   {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
 left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
   (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
@@ -55,7 +55,7 @@ left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
 @[to_additive
     "If two homomorphism from an additive group to an additive monoid are equal at `x`,
     then they are equal at `-x`."]
-theorem eq_on_inv {F G M} [Group G] [Monoid M] [MonoidHomClass F G M]
+lemma eq_on_inv {F G M} [Group G] [Monoid M] [MonoidHomClass F G M]
   (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
 #align eq_on_inv eq_on_inv
@@ -96,7 +96,7 @@ theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (
 variable (M)
 
 @[to_additive (attr := simp)]
-theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
+lemma map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
 #align units.map_id Units.map_id
 #align add_units.map_id AddUnits.map_id
 
@@ -125,13 +125,13 @@ section DivisionMonoid
 variable [DivisionMonoid α]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
+lemma val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
   (Units.coeHom α).map_div
 #align units.coe_div Units.val_div_eq_div_val
 #align add_units.coe_sub AddUnits.val_neg_eq_neg_val
 
 @[to_additive (attr := simp, norm_cast)]
-theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
+lemma val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
 #align units.coe_zpow Units.val_zpow_eq_zpow_val
 #align add_units.coe_zsmul AddUnits.val_zsmul_eq_zsmul_val
@@ -142,7 +142,7 @@ theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u :=
 #align divp_eq_div divp_eq_div
 
 @[to_additive (attr := simp)]
-theorem _root_.map_units_inv {F : Type*} [MonoidHomClass F M α] (f : F) (u : Units M) :
+lemma _root_.map_units_inv {F : Type*} [MonoidHomClass F M α] (f : F) (u : Units M) :
   f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
 #align map_units_inv map_units_inv
 #align map_add_units_neg map_addUnits_neg
@@ -162,20 +162,20 @@ def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →
 #align add_units.lift_right AddUnits.liftRight
 
 @[to_additive (attr := simp)]
-theorem coe_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
+lemma coe_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   (liftRight f g h x : N) = f x := h x
 #align units.coe_lift_right Units.coe_liftRight
 #align add_units.coe_lift_right AddUnits.coe_liftRight
 
 @[to_additive (attr := simp)]
-theorem mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
+lemma mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   f x * ↑(liftRight f g h x)⁻¹ = 1 :=
   by rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
 #align units.mul_lift_right_inv Units.mul_liftRight_inv
 #align add_units.add_lift_right_neg AddUnits.add_liftRight_neg
 
 @[to_additive (attr := simp)]
-theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
+lemma liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   ↑(liftRight f g h x)⁻¹ * f x = 1 :=
   by rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
 #align units.lift_right_inv_mul Units.liftRight_inv_mul
@@ -200,7 +200,7 @@ def toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
 #align add_monoid_hom.to_hom_add_units AddMonoidHom.toHomAddUnits
 
 @[to_additive (attr := simp)]
-theorem coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
+lemma coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
   (f.toHomUnits g : M) = f g := rfl
 #align monoid_hom.coe_to_hom_units MonoidHom.coe_toHomUnits
 #align add_monoid_hom.coe_to_hom_add_units AddMonoidHom.coe_toHomAddUnits
@@ -216,20 +216,20 @@ section Monoid
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
+lemma map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
   rcases h with ⟨y, rfl⟩; exact (Units.map (f : M →* N) y).isUnit
 #align is_unit.map IsUnit.map
 #align is_add_unit.map IsAddUnit.map
 
 @[to_additive]
-theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
+lemma of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
   (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x :=
   by simpa only [hfg x] using h.map g
 #align is_unit.of_left_inverse IsUnit.of_leftInverse
 #align is_add_unit.of_left_inverse IsAddUnit.of_leftInverse
 
 @[to_additive]
-theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
+lemma _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
   {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
   IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
 #align is_unit_map_of_left_inverse isUnit_map_of_leftInverse

@@ -15,12 +15,12 @@ variable {α : Type*}
 
 namespace Multiset
 
-theorem dvd_prod [CommMonoid α] {s : Multiset α} {a : α} : a ∈ s → a ∣ s.prod :=
+lemma dvd_prod [CommMonoid α] {s : Multiset α} {a : α} : a ∈ s → a ∣ s.prod :=
   Quotient.inductionOn s (fun l a h => by simpa using List.dvd_prod h) a
 #align multiset.dvd_prod Multiset.dvd_prod
 
 @[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
+lemma prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
     m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff l
 #align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff

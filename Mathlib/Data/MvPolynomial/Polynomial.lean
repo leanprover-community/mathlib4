@@ -16,7 +16,7 @@ set_option autoImplicit true
 
 namespace MvPolynomial
 
-theorem polynomial_eval_eval₂ [CommSemiring R] [CommSemiring S]
+lemma polynomial_eval_eval₂ [CommSemiring R] [CommSemiring S]
     (f : R →+* Polynomial S) (g : σ → Polynomial S) (p : MvPolynomial σ R) :
     Polynomial.eval x (eval₂ f g p) =
       eval₂ ((Polynomial.evalRingHom x).comp f) (fun s => Polynomial.eval x (g s)) p := by

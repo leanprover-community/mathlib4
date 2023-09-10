@@ -58,13 +58,13 @@ theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :
   simp only [Function.comp]
 #align mv_polynomial.aeval_algebra_map_apply MvPolynomial.aeval_algebraMap_apply
 
-theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : σ → A)
+lemma aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : σ → A)
     (p : MvPolynomial σ R) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 := by
   rw [aeval_algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_eq_zero,
     iff_false_intro (one_ne_zero' B), or_false_iff]
 #align mv_polynomial.aeval_algebra_map_eq_zero_iff MvPolynomial.aeval_algebraMap_eq_zero_iff
 
-theorem aeval_algebraMap_eq_zero_iff_of_injective {x : σ → A} {p : MvPolynomial σ R}
+lemma aeval_algebraMap_eq_zero_iff_of_injective {x : σ → A} {p : MvPolynomial σ R}
     (h : Function.Injective (algebraMap A B)) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 :=
   by rw [aeval_algebraMap_apply, ← (algebraMap A B).map_zero, h.eq_iff]
 #align mv_polynomial.aeval_algebra_map_eq_zero_iff_of_injective MvPolynomial.aeval_algebraMap_eq_zero_iff_of_injective

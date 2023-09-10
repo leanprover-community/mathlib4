@@ -39,7 +39,7 @@ variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
 
 variable [NoZeroSMulDivisors R L] (halg : Algebra.IsAlgebraic R L)
 
-theorem cardinal_mk_le_sigma_polynomial :
+lemma cardinal_mk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
   @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
@@ -62,7 +62,7 @@ theorem cardinal_mk_le_sigma_polynomial :
 
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
 of the base ring or `ℵ₀` -/
-theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
+lemma cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
   calc
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
       cardinal_mk_le_sigma_polynomial R L halg
@@ -99,7 +99,7 @@ variable {κ : Type*} (w : κ → L)
 
 variable (hv : AlgebraicIndependent R v)
 
-theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
+lemma isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
     IsAlgClosure (Algebra.adjoin R (Set.range v)) K :=
   letI := RingHom.domain_nontrivial (algebraMap R K)
   { alg_closed := by infer_instance
@@ -152,7 +152,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
 
 /-- If `K` is an uncountable algebraically closed field, then its
 cardinality is the same as that of a transcendence basis. -/
-theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
+lemma cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) : #K = #ι :=
   have : ℵ₀ ≤ #ι := le_of_not_lt fun h => not_le_of_gt hK <|
     calc
@@ -174,7 +174,7 @@ variable {K L : Type} [Field K] [Field L] [IsAlgClosed K] [IsAlgClosed L]
 
 /-- Two uncountable algebraically closed fields of characteristic zero are isomorphic
 if they have the same cardinality. -/
-theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
+lemma ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
     (hKL : #K = #L) : Nonempty (K ≃+* L) := by
   cases' exists_isTranscendenceBasis ℤ
     (show Function.Injective (algebraMap ℤ K) from Int.cast_injective) with s hs

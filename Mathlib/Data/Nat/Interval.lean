@@ -61,61 +61,61 @@ variable (a b c : ℕ)
 
 namespace Nat
 
-theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
+lemma Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
   rfl
 #align nat.Icc_eq_range' Nat.Icc_eq_range'
 
-theorem Ico_eq_range' : Ico a b = ⟨List.range' a (b - a), List.nodup_range' _ _⟩ :=
+lemma Ico_eq_range' : Ico a b = ⟨List.range' a (b - a), List.nodup_range' _ _⟩ :=
   rfl
 #align nat.Ico_eq_range' Nat.Ico_eq_range'
 
-theorem Ioc_eq_range' : Ioc a b = ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩ :=
+lemma Ioc_eq_range' : Ioc a b = ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩ :=
   rfl
 #align nat.Ioc_eq_range' Nat.Ioc_eq_range'
 
-theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup_range' _ _⟩ :=
+lemma Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup_range' _ _⟩ :=
   rfl
 #align nat.Ioo_eq_range' Nat.Ioo_eq_range'
 
-theorem uIcc_eq_range' :
+lemma uIcc_eq_range' :
     uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range' _ _⟩ := rfl
 #align nat.uIcc_eq_range' Nat.uIcc_eq_range'
 
-theorem Iio_eq_range : Iio = range := by
+lemma Iio_eq_range : Iio = range := by
   ext b x
   rw [mem_Iio, mem_range]
 #align nat.Iio_eq_range Nat.Iio_eq_range
 
 @[simp]
-theorem Ico_zero_eq_range : Ico 0 = range := by rw [← bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
+lemma Ico_zero_eq_range : Ico 0 = range := by rw [← bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
 #align nat.Ico_zero_eq_range Nat.Ico_zero_eq_range
 
-theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
+lemma _root_.Finset.range_eq_Ico : range = Ico 0 :=
   Ico_zero_eq_range.symm
 #align finset.range_eq_Ico Finset.range_eq_Ico
 
 @[simp]
-theorem card_Icc : (Icc a b).card = b + 1 - a :=
+lemma card_Icc : (Icc a b).card = b + 1 - a :=
   List.length_range' _ _ _
 #align nat.card_Icc Nat.card_Icc
 
 @[simp]
-theorem card_Ico : (Ico a b).card = b - a :=
+lemma card_Ico : (Ico a b).card = b - a :=
   List.length_range' _ _ _
 #align nat.card_Ico Nat.card_Ico
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = b - a :=
+lemma card_Ioc : (Ioc a b).card = b - a :=
   List.length_range' _ _ _
 #align nat.card_Ioc Nat.card_Ioc
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = b - a - 1 :=
+lemma card_Ioo : (Ioo a b).card = b - a - 1 :=
   List.length_range' _ _ _
 #align nat.card_Ioo Nat.card_Ioo
 
 @[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
+lemma card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
   refine' (card_Icc _ _).trans (Int.ofNat.inj _)
   change ((↑) : ℕ → ℤ) _ = _
   rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
@@ -129,85 +129,85 @@ theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
 #align nat.card_uIcc Nat.card_uIcc
 
 @[simp]
-theorem card_Iic : (Iic b).card = b + 1 := by rw [Iic_eq_Icc, card_Icc, bot_eq_zero, tsub_zero]
+lemma card_Iic : (Iic b).card = b + 1 := by rw [Iic_eq_Icc, card_Icc, bot_eq_zero, tsub_zero]
 #align nat.card_Iic Nat.card_Iic
 
 @[simp]
-theorem card_Iio : (Iio b).card = b := by rw [Iio_eq_Ico, card_Ico, bot_eq_zero, tsub_zero]
+lemma card_Iio : (Iio b).card = b := by rw [Iio_eq_Ico, card_Ico, bot_eq_zero, tsub_zero]
 #align nat.card_Iio Nat.card_Iio
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
+lemma card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [Fintype.card_ofFinset, card_Icc]
 #align nat.card_fintype_Icc Nat.card_fintypeIcc
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
+lemma card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ico]
 #align nat.card_fintype_Ico Nat.card_fintypeIco
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
+lemma card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ioc]
 #align nat.card_fintype_Ioc Nat.card_fintypeIoc
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
+lemma card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [Fintype.card_ofFinset, card_Ioo]
 #align nat.card_fintype_Ioo Nat.card_fintypeIoo
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
+lemma card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
   rw [Fintype.card_ofFinset, card_Iic]
 #align nat.card_fintype_Iic Nat.card_fintypeIic
 
 -- Porting note: simp can prove this
 -- @[simp]
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
+lemma card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 #align nat.card_fintype_Iio Nat.card_fintypeIio
 
 -- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
-theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
+lemma Icc_succ_left : Icc a.succ b = Ioc a b := by
   ext x
   rw [mem_Icc, mem_Ioc, succ_le_iff]
 #align nat.Icc_succ_left Nat.Icc_succ_left
 
-theorem Ico_succ_right : Ico a b.succ = Icc a b := by
+lemma Ico_succ_right : Ico a b.succ = Icc a b := by
   ext x
   rw [mem_Ico, mem_Icc, lt_succ_iff]
 #align nat.Ico_succ_right Nat.Ico_succ_right
 
-theorem Ico_succ_left : Ico a.succ b = Ioo a b := by
+lemma Ico_succ_left : Ico a.succ b = Ioo a b := by
   ext x
   rw [mem_Ico, mem_Ioo, succ_le_iff]
 #align nat.Ico_succ_left Nat.Ico_succ_left
 
-theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
+lemma Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
   ext x
   rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
 #align nat.Icc_pred_right Nat.Icc_pred_right
 
-theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
+lemma Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
   ext x
   rw [mem_Ico, mem_Ioc, succ_le_iff, lt_succ_iff]
 #align nat.Ico_succ_succ Nat.Ico_succ_succ
 
 @[simp]
-theorem Ico_succ_singleton : Ico a (a + 1) = {a} := by rw [Ico_succ_right, Icc_self]
+lemma Ico_succ_singleton : Ico a (a + 1) = {a} := by rw [Ico_succ_right, Icc_self]
 #align nat.Ico_succ_singleton Nat.Ico_succ_singleton
 
 @[simp]
-theorem Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
+lemma Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
   rw [← Icc_pred_right _ h, Icc_self]
 #align nat.Ico_pred_singleton Nat.Ico_pred_singleton
 
 @[simp]
-theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_left, Icc_self]
+lemma Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_left, Icc_self]
 #align nat.Ioc_succ_singleton Nat.Ioc_succ_singleton
 
 variable {a b c}
@@ -262,7 +262,7 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
           (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
 #align nat.Ico_image_const_sub_eq_Ico Nat.Ico_image_const_sub_eq_Ico
 
-theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
+lemma Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   ext x
   rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm, @and_comm (a ≠ x),
     lt_iff_le_and_ne]
@@ -348,7 +348,7 @@ theorem range_image_pred_top_sub (n : ℕ) :
 #align finset.range_image_pred_top_sub Finset.range_image_pred_top_sub
 
 -- Porting note: had to use `@` and specify `(a + b)` explicitly. mathlib3 managed without.
-theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
+lemma range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
   rw [Finset.range_eq_Ico, map_eq_image]
   convert (@Ico_union_Ico_eq_Ico _ _ _ _ _ (a + b) a.zero_le le_self_add).symm
   exact image_add_left_Ico _ _ _

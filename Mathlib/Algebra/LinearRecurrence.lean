@@ -97,7 +97,7 @@ theorem mkSol_eq_init (init : Fin E.order → α) : ∀ n : Fin E.order, E.mkSol
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `∀ n, u n = E.mkSol init n`. -/
-theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} (h : E.IsSolution u)
+lemma eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} (h : E.IsSolution u)
     (heq : ∀ n : Fin E.order, u n = init n) : ∀ n, u n = E.mkSol init n := by
   intro n
   rw [mkSol]
@@ -118,7 +118,7 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `u = E.mkSol init`. This proves that `E.mkSol init` is the only solution
   of `E` whose first `E.order` values are given by `init`. -/
-theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → α} {init : Fin E.order → α} (h : E.IsSolution u)
+lemma eq_mk_of_is_sol_of_eq_init' {u : ℕ → α} {init : Fin E.order → α} (h : E.IsSolution u)
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 #align linear_recurrence.eq_mk_of_is_sol_of_eq_init' LinearRecurrence.eq_mk_of_is_sol_of_eq_init'
@@ -195,7 +195,7 @@ section StrongRankCondition
 variable {α : Type*} [CommRing α] [StrongRankCondition α] (E : LinearRecurrence α)
 
 /-- The dimension of `E.solSpace` is `E.order`. -/
-theorem solSpace_rank : Module.rank α E.solSpace = E.order :=
+lemma solSpace_rank : Module.rank α E.solSpace = E.order :=
   letI := nontrivial_of_invariantBasisNumber α
   @rank_fin_fun α _ _ E.order ▸ E.toInit.rank_eq
 #align linear_recurrence.sol_space_rank LinearRecurrence.solSpace_rank

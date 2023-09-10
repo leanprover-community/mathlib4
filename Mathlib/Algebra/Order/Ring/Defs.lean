@@ -119,7 +119,7 @@ variable {α : Type u} {β : Type*}
 `zero_le_one` field. -/
 
 
-theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·) (· ≤ ·)] {a : α}
+lemma add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·) (· ≤ ·)] {a : α}
     (a1 : 1 ≤ a) : a + 1 ≤ 2 * a :=
   calc
     a + 1 ≤ a + a := add_le_add_left a1 a
@@ -234,7 +234,7 @@ instance (priority := 200) OrderedSemiring.toMulPosMono : MulPosMono α :=
 #align ordered_semiring.to_mul_pos_mono OrderedSemiring.toMulPosMono
 
 set_option linter.deprecated false in
-theorem bit1_mono : Monotone (bit1 : α → α) := fun _ _ h => add_le_add_right (bit0_mono h) _
+lemma bit1_mono : Monotone (bit1 : α → α) := fun _ _ h => add_le_add_right (bit0_mono h) _
 #align bit1_mono bit1_mono
 
 @[simp]
@@ -296,7 +296,7 @@ end Monotone
 section
 set_option linter.deprecated false
 
-theorem bit1_pos [Nontrivial α] (h : 0 ≤ a) : 0 < bit1 a :=
+lemma bit1_pos [Nontrivial α] (h : 0 ≤ a) : 0 < bit1 a :=
   zero_lt_one.trans_le <| bit1_zero.symm.trans_le <| bit1_mono h
 #align bit1_pos bit1_pos
 
@@ -411,11 +411,11 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
+lemma antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 #align antitone_mul_left antitone_mul_left
 
-theorem antitone_mul_right {a : α} (ha : a ≤ 0) : Antitone fun x => x * a := fun _ _ b_le_c =>
+lemma antitone_mul_right {a : α} (ha : a ≤ 0) : Antitone fun x => x * a := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_right b_le_c ha
 #align antitone_mul_right antitone_mul_right
 
@@ -542,18 +542,18 @@ theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
 -- As this lemma is not used outside this file,
 -- and the import for `Set.Ici` is not otherwise needed until later,
 -- we choose not to use it here.
-theorem strictMonoOn_mul_self : StrictMonoOn (fun x : α => x * x) { x | 0 ≤ x } :=
+lemma strictMonoOn_mul_self : StrictMonoOn (fun x : α => x * x) { x | 0 ≤ x } :=
   fun _ hx _ _ hxy => mul_self_lt_mul_self hx hxy
 #align strict_mono_on_mul_self strictMonoOn_mul_self
 
 -- See Note [decidable namespace]
-protected theorem Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a < c) (h2 : b < d)
+protected lemma Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a < c) (h2 : b < d)
     (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 => mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 => by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
 #align decidable.mul_lt_mul'' Decidable.mul_lt_mul''
 
-theorem mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d := by classical
+lemma mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d := by classical
   exact Decidable.mul_lt_mul''
 #align mul_lt_mul'' mul_lt_mul''
 
@@ -692,7 +692,7 @@ theorem mul_lt_mul_of_neg_right (h : b < a) (hc : c < 0) : a * c < b * c := by
   simpa only [mul_neg, neg_lt_neg_iff] using mul_lt_mul_of_pos_right h (neg_pos_of_neg hc)
 #align mul_lt_mul_of_neg_right mul_lt_mul_of_neg_right
 
-theorem mul_pos_of_neg_of_neg {a b : α} (ha : a < 0) (hb : b < 0) : 0 < a * b := by
+lemma mul_pos_of_neg_of_neg {a b : α} (ha : a < 0) (hb : b < 0) : 0 < a * b := by
   simpa only [zero_mul] using mul_lt_mul_of_neg_right ha hb
 #align mul_pos_of_neg_of_neg mul_pos_of_neg_of_neg
 
@@ -720,11 +720,11 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
+lemma strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_left b_lt_c ha
 #align strict_anti_mul_left strictAnti_mul_left
 
-theorem strictAnti_mul_right {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
+lemma strictAnti_mul_right {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_right b_lt_c ha
 #align strict_anti_mul_right strictAnti_mul_right
 
@@ -883,42 +883,42 @@ set_option linter.deprecated false in
 section
 
 @[simp]
-theorem bit0_le_bit0 : bit0 a ≤ bit0 b ↔ a ≤ b := by
+lemma bit0_le_bit0 : bit0 a ≤ bit0 b ↔ a ≤ b := by
   rw [bit0, bit0, ← two_mul, ← two_mul, mul_le_mul_left (zero_lt_two : 0 < (2 : α))]
 #align bit0_le_bit0 bit0_le_bit0
 
 @[simp]
-theorem bit0_lt_bit0 : bit0 a < bit0 b ↔ a < b := by
+lemma bit0_lt_bit0 : bit0 a < bit0 b ↔ a < b := by
   rw [bit0, bit0, ← two_mul, ← two_mul, mul_lt_mul_left (zero_lt_two : 0 < (2 : α))]
 #align bit0_lt_bit0 bit0_lt_bit0
 
 @[simp]
-theorem bit1_le_bit1 : bit1 a ≤ bit1 b ↔ a ≤ b :=
+lemma bit1_le_bit1 : bit1 a ≤ bit1 b ↔ a ≤ b :=
   (add_le_add_iff_right 1).trans bit0_le_bit0
 #align bit1_le_bit1 bit1_le_bit1
 
 @[simp]
-theorem bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
+lemma bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
   (add_lt_add_iff_right 1).trans bit0_lt_bit0
 #align bit1_lt_bit1 bit1_lt_bit1
 
 @[simp]
-theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
+lemma one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
   rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
 #align one_le_bit1 one_le_bit1
 
 @[simp]
-theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
+lemma one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
   rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
 #align one_lt_bit1 one_lt_bit1
 
 @[simp]
-theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
+lemma zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
   rw [bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
 #align zero_le_bit0 zero_le_bit0
 
 @[simp]
-theorem zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
+lemma zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
   rw [bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
 #align zero_lt_bit0 zero_lt_bit0
 
@@ -941,14 +941,14 @@ theorem nonpos_of_mul_nonneg_right (h : 0 ≤ a * b) (ha : a < 0) : b ≤ 0 :=
 #align nonpos_of_mul_nonneg_right nonpos_of_mul_nonneg_right
 
 @[simp]
-theorem Units.inv_pos {u : αˣ} : (0 : α) < ↑u⁻¹ ↔ (0 : α) < u :=
+lemma Units.inv_pos {u : αˣ} : (0 : α) < ↑u⁻¹ ↔ (0 : α) < u :=
   have : ∀ {u : αˣ}, (0 : α) < u → (0 : α) < ↑u⁻¹ := @fun u h =>
     (zero_lt_mul_left h).mp <| u.mul_inv.symm ▸ zero_lt_one
   ⟨this, this⟩
 #align units.inv_pos Units.inv_pos
 
 @[simp]
-theorem Units.inv_neg {u : αˣ} : ↑u⁻¹ < (0 : α) ↔ ↑u < (0 : α) :=
+lemma Units.inv_neg {u : αˣ} : ↑u⁻¹ < (0 : α) ↔ ↑u < (0 : α) :=
   have : ∀ {u : αˣ}, ↑u < (0 : α) → ↑u⁻¹ < (0 : α) := @fun u h =>
     neg_of_mul_pos_right (u.mul_inv.symm ▸ zero_lt_one) h.le
   ⟨this, this⟩
@@ -978,23 +978,23 @@ theorem min_mul_of_nonneg (a b : α) (hc : 0 ≤ c) : min a b * c = min (a * c) 
   (monotone_mul_right_of_nonneg hc).map_min
 #align min_mul_of_nonneg min_mul_of_nonneg
 
-theorem le_of_mul_le_of_one_le {a b c : α} (h : a * c ≤ b) (hb : 0 ≤ b) (hc : 1 ≤ c) : a ≤ b :=
+lemma le_of_mul_le_of_one_le {a b c : α} (h : a * c ≤ b) (hb : 0 ≤ b) (hc : 1 ≤ c) : a ≤ b :=
   le_of_mul_le_mul_right (h.trans <| le_mul_of_one_le_right hb hc) <| zero_lt_one.trans_le hc
 #align le_of_mul_le_of_one_le le_of_mul_le_of_one_le
 
-theorem nonneg_le_nonneg_of_sq_le_sq {a b : α} (hb : 0 ≤ b) (h : a * a ≤ b * b) : a ≤ b :=
+lemma nonneg_le_nonneg_of_sq_le_sq {a b : α} (hb : 0 ≤ b) (h : a * a ≤ b * b) : a ≤ b :=
   le_of_not_gt fun hab => (mul_self_lt_mul_self hb hab).not_le h
 #align nonneg_le_nonneg_of_sq_le_sq nonneg_le_nonneg_of_sq_le_sq
 
-theorem mul_self_le_mul_self_iff {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a ≤ b ↔ a * a ≤ b * b :=
+lemma mul_self_le_mul_self_iff {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a ≤ b ↔ a * a ≤ b * b :=
   ⟨mul_self_le_mul_self h1, nonneg_le_nonneg_of_sq_le_sq h2⟩
 #align mul_self_le_mul_self_iff mul_self_le_mul_self_iff
 
-theorem mul_self_lt_mul_self_iff {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a < b ↔ a * a < b * b :=
+lemma mul_self_lt_mul_self_iff {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a < b ↔ a * a < b * b :=
   ((@strictMonoOn_mul_self α _).lt_iff_lt h1 h2).symm
 #align mul_self_lt_mul_self_iff mul_self_lt_mul_self_iff
 
-theorem mul_self_inj {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b ↔ a = b :=
+lemma mul_self_inj {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   (@strictMonoOn_mul_self α _).eq_iff_eq h1 h2
 #align mul_self_inj mul_self_inj
 
@@ -1046,16 +1046,16 @@ instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α :=
       exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
 #align linear_ordered_ring.is_domain LinearOrderedRing.isDomain
 
-theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
+lemma mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 :=
   ⟨pos_and_pos_or_neg_and_neg_of_mul_pos, fun h =>
     h.elim (and_imp.2 mul_pos) (and_imp.2 mul_pos_of_neg_of_neg)⟩
 #align mul_pos_iff mul_pos_iff
 
-theorem mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
+lemma mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
   rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff, neg_pos, neg_lt_zero]
 #align mul_neg_iff mul_neg_iff
 
-theorem mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
+lemma mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
   ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
 #align mul_nonneg_iff mul_nonneg_iff
@@ -1086,7 +1086,7 @@ theorem mul_nonneg_of_three (a b c : α) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤
               (fun (h6 : a ≤ 0) => Or.inl (Or.inr ⟨h6, h4⟩))))
 #align mul_nonneg_of_three mul_nonneg_of_three
 
-theorem mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
+lemma mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
   rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
 #align mul_nonpos_iff mul_nonpos_iff
 
@@ -1095,17 +1095,17 @@ theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
 #align mul_self_nonneg mul_self_nonneg
 
 @[simp]
-theorem neg_le_self_iff : -a ≤ a ↔ 0 ≤ a := by
+lemma neg_le_self_iff : -a ≤ a ↔ 0 ≤ a := by
   simp [neg_le_iff_add_nonneg, ← two_mul, mul_nonneg_iff, zero_le_one, (zero_lt_two' α).not_le]
 #align neg_le_self_iff neg_le_self_iff
 
 @[simp]
-theorem neg_lt_self_iff : -a < a ↔ 0 < a := by
+lemma neg_lt_self_iff : -a < a ↔ 0 < a := by
   simp [neg_lt_iff_pos_add, ← two_mul, mul_pos_iff, zero_lt_one, (zero_lt_two' α).not_lt]
 #align neg_lt_self_iff neg_lt_self_iff
 
 @[simp]
-theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
+lemma le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
   calc
     a ≤ -a ↔ - -a ≤ -a := by rw [neg_neg]
     _ ↔ 0 ≤ -a := neg_le_self_iff
@@ -1113,34 +1113,34 @@ theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
 #align le_neg_self_iff le_neg_self_iff
 
 @[simp]
-theorem lt_neg_self_iff : a < -a ↔ a < 0 :=
+lemma lt_neg_self_iff : a < -a ↔ a < 0 :=
   calc
     a < -a ↔ - -a < -a := by rw [neg_neg]
     _ ↔ 0 < -a := neg_lt_self_iff
     _ ↔ a < 0 := neg_pos
 #align lt_neg_self_iff lt_neg_self_iff
 
-theorem neg_one_lt_zero : -1 < (0 : α) :=
+lemma neg_one_lt_zero : -1 < (0 : α) :=
   neg_lt_zero.2 zero_lt_one
 #align neg_one_lt_zero neg_one_lt_zero
 
 @[simp]
-theorem mul_le_mul_left_of_neg {a b c : α} (h : c < 0) : c * a ≤ c * b ↔ b ≤ a :=
+lemma mul_le_mul_left_of_neg {a b c : α} (h : c < 0) : c * a ≤ c * b ↔ b ≤ a :=
   (strictAnti_mul_left h).le_iff_le
 #align mul_le_mul_left_of_neg mul_le_mul_left_of_neg
 
 @[simp]
-theorem mul_le_mul_right_of_neg {a b c : α} (h : c < 0) : a * c ≤ b * c ↔ b ≤ a :=
+lemma mul_le_mul_right_of_neg {a b c : α} (h : c < 0) : a * c ≤ b * c ↔ b ≤ a :=
   (strictAnti_mul_right h).le_iff_le
 #align mul_le_mul_right_of_neg mul_le_mul_right_of_neg
 
 @[simp]
-theorem mul_lt_mul_left_of_neg {a b c : α} (h : c < 0) : c * a < c * b ↔ b < a :=
+lemma mul_lt_mul_left_of_neg {a b c : α} (h : c < 0) : c * a < c * b ↔ b < a :=
   (strictAnti_mul_left h).lt_iff_lt
 #align mul_lt_mul_left_of_neg mul_lt_mul_left_of_neg
 
 @[simp]
-theorem mul_lt_mul_right_of_neg {a b c : α} (h : c < 0) : a * c < b * c ↔ b < a :=
+lemma mul_lt_mul_right_of_neg {a b c : α} (h : c < 0) : a * c < b * c ↔ b < a :=
   (strictAnti_mul_right h).lt_iff_lt
 #align mul_lt_mul_right_of_neg mul_lt_mul_right_of_neg
 
@@ -1152,11 +1152,11 @@ theorem lt_of_mul_lt_mul_of_nonpos_right (h : a * c < b * c) (hc : c ≤ 0) : b 
   lt_of_mul_lt_mul_right (by rwa [mul_neg, mul_neg, neg_lt_neg_iff]) <| neg_nonneg.2 hc
 #align lt_of_mul_lt_mul_of_nonpos_right lt_of_mul_lt_mul_of_nonpos_right
 
-theorem cmp_mul_neg_left {a : α} (ha : a < 0) (b c : α) : cmp (a * b) (a * c) = cmp c b :=
+lemma cmp_mul_neg_left {a : α} (ha : a < 0) (b c : α) : cmp (a * b) (a * c) = cmp c b :=
   (strictAnti_mul_left ha).cmp_map_eq b c
 #align cmp_mul_neg_left cmp_mul_neg_left
 
-theorem cmp_mul_neg_right {a : α} (ha : a < 0) (b c : α) : cmp (b * a) (c * a) = cmp c b :=
+lemma cmp_mul_neg_right {a : α} (ha : a < 0) (b c : α) : cmp (b * a) (c * a) = cmp c b :=
   (strictAnti_mul_right ha).cmp_map_eq b c
 #align cmp_mul_neg_right cmp_mul_neg_right
 
@@ -1165,7 +1165,7 @@ theorem sub_one_lt (a : α) : a - 1 < a :=
 #align sub_one_lt sub_one_lt
 
 @[simp]
-theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
+lemma mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
   constructor
   · rintro h rfl
     rw [mul_zero] at h
@@ -1175,25 +1175,25 @@ theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 #align mul_self_pos mul_self_pos
 
-theorem mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=
+lemma mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=
   (le_total 0 x).elim (fun h => mul_le_mul h₁ h₁ h (h.trans h₁)) fun h =>
     le_of_eq_of_le (neg_mul_neg x x).symm
       (mul_le_mul h₂ h₂ (neg_nonneg.mpr h) ((neg_nonneg.mpr h).trans h₂))
 #align mul_self_le_mul_self_of_le_of_neg_le mul_self_le_mul_self_of_le_of_neg_le
 
-theorem nonneg_of_mul_nonpos_left {a b : α} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
+lemma nonneg_of_mul_nonpos_left {a b : α} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
   le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
 #align nonneg_of_mul_nonpos_left nonneg_of_mul_nonpos_left
 
-theorem nonneg_of_mul_nonpos_right {a b : α} (h : a * b ≤ 0) (ha : a < 0) : 0 ≤ b :=
+lemma nonneg_of_mul_nonpos_right {a b : α} (h : a * b ≤ 0) (ha : a < 0) : 0 ≤ b :=
   le_of_not_gt fun hb => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
 #align nonneg_of_mul_nonpos_right nonneg_of_mul_nonpos_right
 
-theorem pos_of_mul_neg_left {a b : α} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
+lemma pos_of_mul_neg_left {a b : α} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
   lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
 #align pos_of_mul_neg_left pos_of_mul_neg_left
 
-theorem pos_of_mul_neg_right {a b : α} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
+lemma pos_of_mul_neg_right {a b : α} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
   lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
 #align pos_of_mul_neg_right pos_of_mul_neg_right
 
@@ -1206,7 +1206,7 @@ theorem pos_iff_neg_of_mul_neg (hab : a * b < 0) : 0 < a ↔ b < 0 :=
 #align pos_iff_neg_of_mul_neg pos_iff_neg_of_mul_neg
 
 /-- The sum of two squares is zero iff both elements are zero. -/
-theorem mul_self_add_mul_self_eq_zero {x y : α} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 := by
+lemma mul_self_add_mul_self_eq_zero {x y : α} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 := by
   rw [add_eq_zero_iff', mul_self_eq_zero, mul_self_eq_zero] <;> apply mul_self_nonneg
 #align mul_self_add_mul_self_eq_zero mul_self_add_mul_self_eq_zero
 

@@ -35,7 +35,7 @@ def count (n : ℕ) : ℕ :=
 #align nat.count Nat.count
 
 @[simp]
-theorem count_zero : count p 0 = 0 := by
+lemma count_zero : count p 0 = 0 := by
   rw [count, List.range_zero, List.countP, List.countP.go]
 #align nat.count_zero Nat.count_zero
 
@@ -67,7 +67,7 @@ theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 
 #align nat.count_succ Nat.count_succ
 
 @[mono]
-theorem count_monotone : Monotone (count p) :=
+lemma count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ fun n ↦ by by_cases h : p n <;> simp [count_succ, h]
 #align nat.count_monotone Nat.count_monotone
 
@@ -88,7 +88,7 @@ theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a
   simp_rw [add_comm b]
 #align nat.count_add' Nat.count_add'
 
-theorem count_one : count p 1 = if p 0 then 1 else 0 := by simp [count_succ]
+lemma count_one : count p 1 = if p 0 then 1 else 0 := by simp [count_succ]
 #align nat.count_one Nat.count_one
 
 theorem count_succ' (n : ℕ) :
@@ -99,15 +99,15 @@ theorem count_succ' (n : ℕ) :
 variable {p}
 
 @[simp]
-theorem count_lt_count_succ_iff {n : ℕ} : count p n < count p (n + 1) ↔ p n := by
+lemma count_lt_count_succ_iff {n : ℕ} : count p n < count p (n + 1) ↔ p n := by
   by_cases h : p n <;> simp [count_succ, h]
 #align nat.count_lt_count_succ_iff Nat.count_lt_count_succ_iff
 
-theorem count_succ_eq_succ_count_iff {n : ℕ} : count p (n + 1) = count p n + 1 ↔ p n := by
+lemma count_succ_eq_succ_count_iff {n : ℕ} : count p (n + 1) = count p n + 1 ↔ p n := by
   by_cases h : p n <;> simp [h, count_succ]
 #align nat.count_succ_eq_succ_count_iff Nat.count_succ_eq_succ_count_iff
 
-theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p n := by
+lemma count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p n := by
   by_cases h : p n <;> simp [h, count_succ]
 #align nat.count_succ_eq_count_iff Nat.count_succ_eq_count_iff
 
@@ -122,15 +122,15 @@ theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k
   exact Cardinal.mk_subtype_mono fun x hx ↦ hx.2
 #align nat.count_le_cardinal Nat.count_le_cardinal
 
-theorem lt_of_count_lt_count {a b : ℕ} (h : count p a < count p b) : a < b :=
+lemma lt_of_count_lt_count {a b : ℕ} (h : count p a < count p b) : a < b :=
   (count_monotone p).reflect_lt h
 #align nat.lt_of_count_lt_count Nat.lt_of_count_lt_count
 
-theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < count p n :=
+lemma count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < count p n :=
   (count_lt_count_succ_iff.2 hm).trans_le <| count_monotone _ (Nat.succ_le_iff.2 hmn)
 #align nat.count_strict_mono Nat.count_strict_mono
 
-theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
+lemma count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
   by_contra' h : m ≠ n
   wlog hmn : m < n
   · exact this hn hm heq.symm h.symm (h.lt_or_lt.resolve_left hmn)
@@ -142,7 +142,7 @@ theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ hp.toFin
   exact Finset.card_mono fun x hx ↦ hp.mem_toFinset.2 (mem_filter.1 hx).2
 #align nat.count_le_card Nat.count_le_card
 
-theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < hp.toFinset.card :=
+lemma count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < hp.toFinset.card :=
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 #align nat.count_lt_card Nat.count_lt_card
 
@@ -150,7 +150,7 @@ variable {q : ℕ → Prop}
 
 variable [DecidablePred q]
 
-theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by
+lemma count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by
   simp only [count_eq_card_filter_range]
   exact card_le_of_subset ((range n).monotone_filter_right hpq)
 #align nat.count_mono_left Nat.count_mono_left

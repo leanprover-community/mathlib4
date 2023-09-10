@@ -123,7 +123,7 @@ theorem numLeaves_pos (x : Tree α) : 0 < x.numLeaves := by
   exact x.numNodes.zero_lt_succ
 #align tree.num_leaves_pos Tree.numLeaves_pos
 
-theorem height_le_numNodes : ∀ x : Tree α, x.height ≤ x.numNodes
+lemma height_le_numNodes : ∀ x : Tree α, x.height ≤ x.numNodes
   | nil => le_rfl
   | node _ a b =>
     Nat.succ_le_succ
@@ -159,7 +159,7 @@ def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     t.recOn base fun _u => ind
 #align tree.unit_rec_on Tree.unitRecOn
 
-theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
+lemma left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
   | node a l r, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
 #align tree.left_node_right_eq_self Tree.left_node_right_eq_self

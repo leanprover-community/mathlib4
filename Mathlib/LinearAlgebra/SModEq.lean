@@ -35,23 +35,23 @@ notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
-protected theorem SModEq.def :
+protected lemma SModEq.def :
     x ≡ y [SMOD U] ↔ (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y :=
   Iff.rfl
 #align smodeq.def SModEq.def
 
 namespace SModEq
 
-theorem sub_mem : x ≡ y [SMOD U] ↔ x - y ∈ U := by rw [SModEq.def, Submodule.Quotient.eq]
+lemma sub_mem : x ≡ y [SMOD U] ↔ x - y ∈ U := by rw [SModEq.def, Submodule.Quotient.eq]
 #align smodeq.sub_mem SModEq.sub_mem
 
 @[simp]
-theorem top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
+lemma top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
   (Submodule.Quotient.eq ⊤).2 mem_top
 #align smodeq.top SModEq.top
 
 @[simp]
-theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
+lemma bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
   rw [SModEq.def, Submodule.Quotient.eq, mem_bot, sub_eq_zero]
 #align smodeq.bot SModEq.bot
 
@@ -65,7 +65,7 @@ protected theorem refl (x : M) : x ≡ x [SMOD U] :=
   @rfl _ _
 #align smodeq.refl SModEq.refl
 
-protected theorem rfl : x ≡ x [SMOD U] :=
+protected lemma rfl : x ≡ x [SMOD U] :=
   SModEq.refl _
 #align smodeq.rfl SModEq.rfl
 
@@ -92,19 +92,19 @@ theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := 
   simp_rw [Quotient.mk_smul, hxy]
 #align smodeq.smul SModEq.smul
 
-theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
+lemma zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 #align smodeq.zero SModEq.zero
 
 theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
   (Submodule.Quotient.eq _).2 <| f.map_sub x y ▸ mem_map_of_mem <| (Submodule.Quotient.eq _).1 hxy
 #align smodeq.map SModEq.map
 
-theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V.comap f] :=
+lemma comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V.comap f] :=
   (Submodule.Quotient.eq _).2 <|
     show f (x - y) ∈ V from (f.map_sub x y).symm ▸ (Submodule.Quotient.eq _).1 hxy
 #align smodeq.comap SModEq.comap
 
-theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
+lemma eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
   rw [SModEq.def] at h ⊢
   show Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)

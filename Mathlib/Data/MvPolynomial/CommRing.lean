@@ -59,13 +59,13 @@ instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
 variable (σ a a')
 
 -- @[simp] -- Porting note: simp can prove this
-theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
+lemma C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
   RingHom.map_sub _ _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_sub MvPolynomial.C_sub
 
 -- @[simp] -- Porting note: simp can prove this
-theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
+lemma C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   RingHom.map_neg _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_neg MvPolynomial.C_neg
@@ -81,11 +81,11 @@ theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q
 #align mv_polynomial.coeff_sub MvPolynomial.coeff_sub
 
 @[simp]
-theorem support_neg : (-p).support = p.support :=
+lemma support_neg : (-p).support = p.support :=
   Finsupp.support_neg p
 #align mv_polynomial.support_neg MvPolynomial.support_neg
 
-theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+lemma support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p - q).support ⊆ p.support ∪ q.support :=
   Finsupp.support_sub
 #align mv_polynomial.support_sub MvPolynomial.support_sub
@@ -98,7 +98,7 @@ theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 #align mv_polynomial.degrees_neg MvPolynomial.degrees_neg
 
-theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
+lemma degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
   simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
 #align mv_polynomial.degrees_sub MvPolynomial.degrees_sub
@@ -108,15 +108,15 @@ end Degrees
 section Vars
 
 @[simp]
-theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
+lemma vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 #align mv_polynomial.vars_neg MvPolynomial.vars_neg
 
-theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
+lemma vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
   convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 #align mv_polynomial.vars_sub_subset MvPolynomial.vars_sub_subset
 
 @[simp]
-theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
+lemma vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
     (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
   convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
@@ -131,7 +131,7 @@ variable [CommRing S]
 variable (f : R →+* S) (g : σ → S)
 
 @[simp]
-theorem eval₂_sub : (p - q).eval₂ f g = p.eval₂ f g - q.eval₂ f g :=
+lemma eval₂_sub : (p - q).eval₂ f g = p.eval₂ f g - q.eval₂ f g :=
   (eval₂Hom f g).map_sub _ _
 #align mv_polynomial.eval₂_sub MvPolynomial.eval₂_sub
 
@@ -139,7 +139,7 @@ theorem eval_sub (f : σ → R) : eval f (p - q) = eval f p - eval f q :=
   eval₂_sub _ _ _
 
 @[simp]
-theorem eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g :=
+lemma eval₂_neg : (-p).eval₂ f g = -p.eval₂ f g :=
   (eval₂Hom f g).map_neg _
 #align mv_polynomial.eval₂_neg MvPolynomial.eval₂_neg
 
@@ -154,7 +154,7 @@ set_option linter.uppercaseLean3 false in
 /-- A ring homomorphism f : Z[X_1, X_2, ...] → R
 is determined by the evaluations f(X_1), f(X_2), ... -/
 @[simp]
-theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
+lemma eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
     eval₂ c (f ∘ X) x = f x := by
   apply MvPolynomial.induction_on x
     (fun n => by
@@ -182,7 +182,7 @@ end Eval
 
 section DegreeOf
 
-theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
+lemma degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by

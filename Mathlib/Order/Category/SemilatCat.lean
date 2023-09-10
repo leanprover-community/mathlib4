@@ -198,13 +198,13 @@ def SemilatSupCatEquivSemilatInfCat : SemilatSupCat ≌ SemilatInfCat where
   counitIso := NatIso.ofComponents fun X => SemilatInfCat.Iso.mk <| OrderIso.dualDual X
 #align SemilatSup_equiv_SemilatInf SemilatSupCatEquivSemilatInfCat
 
-theorem SemilatSupCat_dual_comp_forget_to_partOrdCat :
+lemma SemilatSupCat_dual_comp_forget_to_partOrdCat :
     SemilatSupCat.dual ⋙ forget₂ SemilatInfCat PartOrdCat =
       forget₂ SemilatSupCat PartOrdCat ⋙ PartOrdCat.dual :=
   rfl
 #align SemilatSup_dual_comp_forget_to_PartOrd SemilatSupCat_dual_comp_forget_to_partOrdCat
 
-theorem SemilatInfCat_dual_comp_forget_to_partOrdCat :
+lemma SemilatInfCat_dual_comp_forget_to_partOrdCat :
     SemilatInfCat.dual ⋙ forget₂ SemilatSupCat PartOrdCat =
       forget₂ SemilatInfCat PartOrdCat ⋙ PartOrdCat.dual :=
   rfl

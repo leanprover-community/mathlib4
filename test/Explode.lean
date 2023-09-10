@@ -27,7 +27,7 @@ info: true_iff : ∀ (p : Prop), (True ↔ p) = p
 -- On command line, tests format functions with => rather than ↦ without this.
 set_option pp.unicode.fun true
 
-theorem lambda : True → True :=
+lemma lambda : True → True :=
   λ a => a
 
 /--
@@ -38,7 +38,7 @@ info: lambda : True → True
 -/
 #guard_msgs in #explode lambda
 
-theorem application : True ∧ True :=
+lemma application : True ∧ True :=
   And.intro True.intro True.intro
 
 /--
@@ -49,7 +49,7 @@ info: application : True ∧ True
 -/
 #guard_msgs in #explode application
 
-theorem theorem_1 : ∀ (p : Prop), p → p :=
+lemma theorem_1 : ∀ (p : Prop), p → p :=
   λ (p : Prop) => (λ hP : p => hP)
 /--
 info: theorem_1 : ∀ (p : Prop), p → p
@@ -60,7 +60,7 @@ info: theorem_1 : ∀ (p : Prop), p → p
 -/
 #guard_msgs in #explode theorem_1
 
-theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
+lemma theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
   λ p => λ q => λ hP => λ hQ => And.intro hP hQ
 
 /--
@@ -96,7 +96,7 @@ info: theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 #guard_msgs in #explode theorem_3
 
 
-theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
+lemma theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
   λ U => λ W => λ hPQ => λ hNQ => λ hP => False.elim (hNQ (hPQ hP))
 
 /--

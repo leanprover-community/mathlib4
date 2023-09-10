@@ -105,7 +105,7 @@ class RootableBy where
 #align rootable_by RootableBy
 
 @[to_additive smul_right_surj_of_divisibleBy]
-theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
+lemma pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
     Function.Surjective (fun a => a ^ n : A → A) := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
 #align pow_left_surj_of_rootable_by pow_left_surj_of_rootableBy
@@ -167,7 +167,7 @@ namespace AddCommGroup
 
 variable (A : Type*) [AddCommGroup A]
 
-theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n ≠ 0) :
+lemma smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n ≠ 0) :
     n • (⊤ : AddSubgroup A) = ⊤ :=
   AddSubgroup.map_top_of_surjective _ fun a => ⟨DivisibleBy.div a n, DivisibleBy.div_cancel _ hn⟩
 #align add_comm_group.smul_top_eq_top_of_divisible_by_int AddCommGroup.smul_top_eq_top_of_divisibleBy_int

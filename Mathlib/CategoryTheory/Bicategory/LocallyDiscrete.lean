@@ -64,7 +64,7 @@ instance subsingleton2Hom {X Y : LocallyDiscrete C} (f g : X ⟶ Y) : Subsinglet
   show Subsingleton (f' ⟶ g') from inferInstance
 
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
-theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
+lemma eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
   Discrete.ext _ _ η.1.1
 #align category_theory.locally_discrete.eq_of_hom CategoryTheory.LocallyDiscrete.eq_of_hom
 

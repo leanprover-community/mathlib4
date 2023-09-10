@@ -58,11 +58,11 @@ protected theorem derivWithin.star (hxs : UniqueDiffWithinAt 𝕜 s x) :
   FunLike.congr_fun (fderivWithin_star hxs) _
 #align deriv_within.star derivWithin.star
 
-protected theorem deriv.star : deriv (fun y => star (f y)) x = star (deriv f x) :=
+protected lemma deriv.star : deriv (fun y => star (f y)) x = star (deriv f x) :=
   FunLike.congr_fun fderiv_star _
 #align deriv.star deriv.star
 
 @[simp]
-protected theorem deriv.star' : (deriv fun y => star (f y)) = fun x => star (deriv f x) :=
+protected lemma deriv.star' : (deriv fun y => star (f y)) = fun x => star (deriv f x) :=
   funext fun _ => deriv.star
 #align deriv.star' deriv.star'

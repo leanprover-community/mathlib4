@@ -39,7 +39,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 
 variable [TopologicalSpace R] [TopologicalSpace A] [TopologicalSemiring A]
 
-theorem continuous_algebraMap_iff_smul :
+lemma continuous_algebraMap_iff_smul :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
   refine' ⟨fun h => _, fun h => _⟩
   · simp only [Algebra.smul_def]
@@ -49,7 +49,7 @@ theorem continuous_algebraMap_iff_smul :
 #align continuous_algebra_map_iff_smul continuous_algebraMap_iff_smul
 
 @[continuity]
-theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) :=
+lemma continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) :=
   (continuous_algebraMap_iff_smul R A).2 continuous_smul
 #align continuous_algebra_map continuous_algebraMap
 
@@ -67,11 +67,11 @@ def algebraMapClm : R →L[R] A :=
     cont := continuous_algebraMap R A }
 #align algebra_map_clm algebraMapClm
 
-theorem algebraMapClm_coe : ⇑(algebraMapClm R A) = algebraMap R A :=
+lemma algebraMapClm_coe : ⇑(algebraMapClm R A) = algebraMap R A :=
   rfl
 #align algebra_map_clm_coe algebraMapClm_coe
 
-theorem algebraMapClm_toLinearMap : (algebraMapClm R A).toLinearMap = Algebra.linearMap R A :=
+lemma algebraMapClm_toLinearMap : (algebraMapClm R A).toLinearMap = Algebra.linearMap R A :=
   rfl
 #align algebra_map_clm_to_linear_map algebraMapClm_toLinearMap
 

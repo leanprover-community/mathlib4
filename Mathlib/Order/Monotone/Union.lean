@@ -23,7 +23,7 @@ variable {α β : Type*} [LinearOrder α] [Preorder β] {a : α} {f : α → β}
 
 /-- If `f` is strictly monotone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is strictly monotone on `s ∪ t` -/
-protected theorem StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoOn f s)
+protected lemma StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoOn f s)
     (h₂ : StrictMonoOn f t) (hs : IsGreatest s c) (ht : IsLeast t c) : StrictMonoOn f (s ∪ t) := by
   have A : ∀ x, x ∈ s ∪ t → x ≤ c → x ∈ s := by
     intro x hx hxc
@@ -61,7 +61,7 @@ protected theorem StrictMonoOn.Iic_union_Ici (h₁ : StrictMonoOn f (Iic a))
 
 /-- If `f` is strictly antitone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is strictly antitone on `s ∪ t` -/
-protected theorem StrictAntiOn.union {s t : Set α} {c : α} (h₁ : StrictAntiOn f s)
+protected lemma StrictAntiOn.union {s t : Set α} {c : α} (h₁ : StrictAntiOn f s)
     (h₂ : StrictAntiOn f t) (hs : IsGreatest s c) (ht : IsLeast t c) : StrictAntiOn f (s ∪ t) :=
   (h₁.dual_right.union h₂.dual_right hs ht).dual_right
 #align strict_anti_on.union StrictAntiOn.union
@@ -75,7 +75,7 @@ protected theorem StrictAntiOn.Iic_union_Ici (h₁ : StrictAntiOn f (Iic a))
 
 /-- If `f` is monotone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is monotone on `s ∪ t` -/
-protected theorem MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : MonotoneOn f s)
+protected lemma MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : MonotoneOn f s)
     (h₂ : MonotoneOn f t) (hs : IsGreatest s c) (ht : IsLeast t c) : MonotoneOn f (s ∪ t) := by
   have A : ∀ x, x ∈ s ∪ t → x ≤ c → x ∈ s := by
     intro x hx hxc
@@ -112,7 +112,7 @@ protected theorem MonotoneOn.Iic_union_Ici (h₁ : MonotoneOn f (Iic a)) (h₂ :
 
 /-- If `f` is antitone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is antitone on `s ∪ t` -/
-protected theorem AntitoneOn.union_right {s t : Set α} {c : α} (h₁ : AntitoneOn f s)
+protected lemma AntitoneOn.union_right {s t : Set α} {c : α} (h₁ : AntitoneOn f s)
     (h₂ : AntitoneOn f t) (hs : IsGreatest s c) (ht : IsLeast t c) : AntitoneOn f (s ∪ t) :=
   (h₁.dual_right.union_right h₂.dual_right hs ht).dual_right
 #align antitone_on.union_right AntitoneOn.union_right

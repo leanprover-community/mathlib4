@@ -56,7 +56,7 @@ namespace Directed
 -- todo after the port: move this to logic.encodable.basic near sequence_mono
 variable [Encodable α] [Inhabited α] [Preorder β] {f : α → β} (hf : Directed (· ≥ ·) f)
 
-theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
+lemma sequence_anti : Antitone (f ∘ hf.sequence f) :=
   antitone_nat_of_succ_le <| hf.sequence_mono_nat
 #align directed.sequence_anti Directed.sequence_anti
 
@@ -67,28 +67,28 @@ theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f 
 end Directed
 
 -- todo: move to data/set/lattice next to prod_Union or prod_sInter
-theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
+lemma prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
     (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
   ext x
   simp only [mem_prod, mem_iInter]
   exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
 #align prod_Inter prod_iInter
 
-theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+lemma Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
   ext1 x
   simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
   obtain ⟨r, hr⟩ := exists_rat_gt x
   exact ⟨r, hr.le⟩
 #align real.Union_Iic_rat Real.iUnion_Iic_rat
 
-theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+lemma Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
   ext1 x
   simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
   exact exists_rat_lt x
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
+lemma atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
     [OrderTopology α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   cases subsingleton_or_nontrivial α
   · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
@@ -103,13 +103,13 @@ theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [O
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
 -- todo after the port: move to order/filter/at_top_bot
-theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
+lemma atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
     [OrderTopology α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
   @atBot_le_nhds_bot αᵒᵈ _ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
 -- todo: move to topology/algebra/order/monotone_convergence
-theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+lemma tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
@@ -132,7 +132,7 @@ theorem ENNReal.ofReal_cinfi (f : α → ℝ) [Nonempty α] :
 
 -- todo: move to measure_theory/measurable_space
 /-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
-theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
+lemma lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
     {f : β → α → ℝ≥0∞} {μ : Measure α} (hμ : μ ≠ 0) (hf : ∀ b, Measurable (f b))
     (hf_int : ∀ b, ∫⁻ a, f b a ∂μ ≠ ∞) (h_directed : Directed (· ≥ ·) f) :
     ∫⁻ a, ⨅ b, f b a ∂μ = ⨅ b, ∫⁻ a, f b a ∂μ := by
@@ -191,7 +191,7 @@ theorem IicSnd_univ (r : ℝ) : ρ.IicSnd r univ = ρ (univ ×ˢ Iic r) :=
   IicSnd_apply ρ r MeasurableSet.univ
 #align measure_theory.measure.Iic_snd_univ MeasureTheory.Measure.IicSnd_univ
 
-theorem IicSnd_mono {r r' : ℝ} (h_le : r ≤ r') : ρ.IicSnd r ≤ ρ.IicSnd r' := by
+lemma IicSnd_mono {r r' : ℝ} (h_le : r ≤ r') : ρ.IicSnd r ≤ ρ.IicSnd r' := by
   intro s hs
   simp_rw [IicSnd_apply ρ _ hs]
   refine' measure_mono (prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr _⟩))
@@ -208,7 +208,7 @@ theorem IicSnd_ac_fst (r : ℝ) : ρ.IicSnd r ≪ ρ.fst :=
   Measure.absolutelyContinuous_of_le (IicSnd_le_fst ρ r)
 #align measure_theory.measure.Iic_snd_ac_fst MeasureTheory.Measure.IicSnd_ac_fst
 
-theorem IsFiniteMeasure.IicSnd {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ] (r : ℝ) :
+lemma IsFiniteMeasure.IicSnd {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ] (r : ℝ) :
     IsFiniteMeasure (ρ.IicSnd r) :=
   isFiniteMeasure_of_le _ (IicSnd_le_fst ρ _)
 #align measure_theory.measure.is_finite_measure.Iic_snd MeasureTheory.Measure.IsFiniteMeasure.IicSnd
@@ -231,7 +231,7 @@ theorem iInf_IicSnd_gt (t : ℚ) {s : Set α} (hs : MeasurableSet s) [IsFiniteMe
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 #align measure_theory.measure.infi_Iic_snd_gt MeasureTheory.Measure.iInf_IicSnd_gt
 
-theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
+lemma tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ => ρ.IicSnd r s) atTop (𝓝 (ρ.fst s)) := by
   simp_rw [ρ.IicSnd_apply _ hs, fst_apply hs, ← prod_univ]
   rw [← Real.iUnion_Iic_rat, prod_iUnion]
@@ -241,7 +241,7 @@ theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
   exact_mod_cast hr_le_q
 #align measure_theory.measure.tendsto_Iic_snd_at_top MeasureTheory.Measure.tendsto_IicSnd_atTop
 
-theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableSet s) :
+lemma tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ => ρ.IicSnd r s) atBot (𝓝 0) := by
   simp_rw [ρ.IicSnd_apply _ hs]
   have h_empty : ρ (s ×ˢ ∅) = 0 := by simp only [prod_empty, measure_empty]
@@ -295,7 +295,7 @@ noncomputable def preCdf (ρ : Measure (α × ℝ)) (r : ℚ) : α → ℝ≥0�
   Measure.rnDeriv (ρ.IicSnd r) ρ.fst
 #align probability_theory.pre_cdf ProbabilityTheory.preCdf
 
-theorem measurable_preCdf {ρ : Measure (α × ℝ)} {r : ℚ} : Measurable (preCdf ρ r) :=
+lemma measurable_preCdf {ρ : Measure (α × ℝ)} {r : ℚ} : Measurable (preCdf ρ r) :=
   Measure.measurable_rnDeriv _ _
 #align probability_theory.measurable_pre_cdf ProbabilityTheory.measurable_preCdf
 
@@ -546,7 +546,7 @@ theorem measurableSet_condCdfSet (ρ : Measure (α × ℝ)) : MeasurableSet (con
   (measurableSet_toMeasurable _ _).compl
 #align probability_theory.measurable_set_cond_cdf_set ProbabilityTheory.measurableSet_condCdfSet
 
-theorem hasCondCdf_of_mem_condCdfSet {ρ : Measure (α × ℝ)} {a : α} (h : a ∈ condCdfSet ρ) :
+lemma hasCondCdf_of_mem_condCdfSet {ρ : Measure (α × ℝ)} {a : α} (h : a ∈ condCdfSet ρ) :
     HasCondCdf ρ a := by
   rw [condCdfSet, mem_compl_iff] at h
   have h_ss := subset_toMeasurable ρ.fst {b | ¬HasCondCdf ρ b}
@@ -708,7 +708,7 @@ noncomputable irreducible_def condCdf' (ρ : Measure (α × ℝ)) : α → ℝ �
   ⨅ r : { r' : ℚ // t < r' }, condCdfRat ρ a r
 #align probability_theory.cond_cdf' ProbabilityTheory.condCdf'
 
-theorem condCdf'_def' {ρ : Measure (α × ℝ)} {a : α} {x : ℝ} :
+lemma condCdf'_def' {ρ : Measure (α × ℝ)} {a : α} {x : ℝ} :
     condCdf' ρ a x = ⨅ r : { r : ℚ // x < r }, condCdfRat ρ a r := by rw [condCdf']
 #align probability_theory.cond_cdf'_def ProbabilityTheory.condCdf'_def'
 

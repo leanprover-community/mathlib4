@@ -35,7 +35,7 @@ variable {R : Type u} [CommRing R] (S : Submonoid R) {L : Type u} [CommRing L] [
   [IsLocalization S L]
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
-theorem card_le : #L ≤ #R := by
+lemma card_le : #L ≤ #R := by
   classical
     cases fintypeOrInfinite R
     · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)

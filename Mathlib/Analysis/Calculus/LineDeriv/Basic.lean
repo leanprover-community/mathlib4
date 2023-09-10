@@ -144,7 +144,7 @@ theorem lineDeriv_zero_of_not_lineDifferentiableAt (h : ¬LineDifferentiableAt �
     lineDeriv 𝕜 f x v = 0 :=
   deriv_zero_of_not_differentiableAt h
 
-theorem hasLineDerivAt_iff_isLittleO_nhds_zero :
+lemma hasLineDerivAt_iff_isLittleO_nhds_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
       (fun t : 𝕜 => f (x + t • v) - f x - t • f') =o[𝓝 0] fun t => t := by
   simp only [HasLineDerivAt, hasDerivAt_iff_isLittleO_nhds_zero, zero_add, zero_smul, add_zero]
@@ -157,7 +157,7 @@ protected theorem HasLineDerivAt.lineDeriv (h : HasLineDerivAt 𝕜 f f' x v) :
     lineDeriv 𝕜 f x v = f' := by
   rw [h.unique h.lineDifferentiableAt.hasLineDerivAt]
 
-theorem lineDifferentiableWithinAt_univ :
+lemma lineDifferentiableWithinAt_univ :
     LineDifferentiableWithinAt 𝕜 f univ x v ↔ LineDifferentiableAt 𝕜 f x v := by
   simp only [LineDifferentiableWithinAt, LineDifferentiableAt, preimage_univ,
     differentiableWithinAt_univ]
@@ -167,7 +167,7 @@ theorem LineDifferentiableAt.lineDifferentiableWithinAt (h : LineDifferentiableA
   (differentiableWithinAt_univ.2 h).mono (subset_univ _)
 
 @[simp]
-theorem lineDerivWithin_univ : lineDerivWithin 𝕜 f univ x v = lineDeriv 𝕜 f x v := by
+lemma lineDerivWithin_univ : lineDerivWithin 𝕜 f univ x v = lineDeriv 𝕜 f x v := by
   simp [lineDerivWithin, lineDeriv]
 
 theorem LineDifferentiableWithinAt.mono (h : LineDifferentiableWithinAt 𝕜 f t x v) (st : s ⊆ t) :
@@ -205,7 +205,7 @@ theorem lineDerivWithin_congr' (hs : EqOn f₁ f s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v :=
   lineDerivWithin_congr hs (hs hx)
 
-theorem hasLineDerivAt_iff_tendsto_slope_zero :
+lemma hasLineDerivAt_iff_tendsto_slope_zero :
     HasLineDerivAt 𝕜 f f' x v ↔
       Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[≠] 0) (𝓝 f') := by
   simp only [HasLineDerivAt, hasDerivAt_iff_tendsto_slope_zero, zero_add,
@@ -213,11 +213,11 @@ theorem hasLineDerivAt_iff_tendsto_slope_zero :
 
 alias ⟨HasLineDerivAt.tendsto_slope_zero, _⟩ := hasLineDerivAt_iff_tendsto_slope_zero
 
-theorem HasLineDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+lemma HasLineDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[>] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
 
-theorem HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
+lemma HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineDerivAt 𝕜 f f' x v) :
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
@@ -383,7 +383,7 @@ theorem Filter.EventuallyEq.lineDeriv_eq (h : f₁ =ᶠ[𝓝 x] f) :
 on a neighborhood of `x₀` then its line derivative at `x₀` in the direction `v` has norm
 bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
 neighborhood of `x`. -/
-theorem HasLineDerivAt.le_of_lip' {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
+lemma HasLineDerivAt.le_of_lip' {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
     {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
     ‖f'‖ ≤ C * ‖v‖ := by
   apply HasDerivAt.le_of_lip' hf (by positivity)
@@ -418,7 +418,7 @@ on a neighborhood of `x₀` then its line derivative at `x₀` in the direction 
 bounded by `C * ‖v‖`. This version only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a
 neighborhood of `x`.
 Version using `lineDeriv`. -/
-theorem norm_lineDeriv_le_of_lip' {f : E → F} {x₀ : E}
+lemma norm_lineDeriv_le_of_lip' {f : E → F} {x₀ : E}
     {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
     ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ := by
   apply norm_deriv_le_of_lip' (by positivity)
@@ -431,7 +431,7 @@ theorem norm_lineDeriv_le_of_lip' {f : E → F} {x₀ : E}
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz on a neighborhood of `x₀`
 then its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v‖`.
 Version using `lineDeriv`. -/
-theorem norm_lineDeriv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
+lemma norm_lineDeriv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
     {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ := by
   refine' norm_lineDeriv_le_of_lip' 𝕜 C.coe_nonneg _
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
@@ -439,7 +439,7 @@ theorem norm_lineDeriv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (h
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz then
 its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v‖`.
 Version using `lineDeriv`. -/
-theorem norm_lineDeriv_le_of_lipschitz {f : E → F} {x₀ : E}
+lemma norm_lineDeriv_le_of_lipschitz {f : E → F} {x₀ : E}
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ :=
   norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOn_univ.2 hlip)
 
@@ -451,19 +451,19 @@ section Zero
 
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] {f : E → F} {s : Set E} {x : E}
 
-theorem hasLineDerivWithinAt_zero : HasLineDerivWithinAt 𝕜 f 0 s x 0 := by
+lemma hasLineDerivWithinAt_zero : HasLineDerivWithinAt 𝕜 f 0 s x 0 := by
   simp [HasLineDerivWithinAt, hasDerivWithinAt_const]
 
-theorem hasLineDerivAt_zero : HasLineDerivAt 𝕜 f 0 x 0 := by
+lemma hasLineDerivAt_zero : HasLineDerivAt 𝕜 f 0 x 0 := by
   simp [HasLineDerivAt, hasDerivAt_const]
 
-theorem lineDifferentiableWithinAt_zero : LineDifferentiableWithinAt 𝕜 f s x 0 :=
+lemma lineDifferentiableWithinAt_zero : LineDifferentiableWithinAt 𝕜 f s x 0 :=
   hasLineDerivWithinAt_zero.lineDifferentiableWithinAt
 
-theorem lineDifferentiableAt_zero : LineDifferentiableAt 𝕜 f x 0 :=
+lemma lineDifferentiableAt_zero : LineDifferentiableAt 𝕜 f x 0 :=
   hasLineDerivAt_zero.lineDifferentiableAt
 
-theorem lineDeriv_zero : lineDeriv 𝕜 f x 0 = 0 :=
+lemma lineDeriv_zero : lineDeriv 𝕜 f x 0 = 0 :=
   hasLineDerivAt_zero.lineDeriv
 
 end Zero
@@ -474,11 +474,11 @@ variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
   {E' : Type*} [AddCommGroup E'] [Module 𝕜 E']
   {f : E → F} {f' : F} {x v : E'} {L : E' →ₗ[𝕜] E}
 
-theorem HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
+lemma HasLineDerivAt.of_comp {v : E'} (hf : HasLineDerivAt 𝕜 (f ∘ L) f' x v) :
     HasLineDerivAt 𝕜 f f' (L x) (L v) := by
   simpa [HasLineDerivAt] using hf
 
-theorem LineDifferentiableAt.of_comp {v : E'} (hf : LineDifferentiableAt 𝕜 (f ∘ L) x v) :
+lemma LineDifferentiableAt.of_comp {v : E'} (hf : LineDifferentiableAt 𝕜 (f ∘ L) x v) :
     LineDifferentiableAt 𝕜 f (L x) (L v) :=
   hf.hasLineDerivAt.of_comp.lineDifferentiableAt
 
@@ -501,7 +501,7 @@ theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c 
   ext t
   simp [← smul_smul]
 
-theorem hasLineDerivWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma hasLineDerivWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivWithinAt 𝕜 f (c • f') s x (c • v) ↔ HasLineDerivWithinAt 𝕜 f f' s x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
@@ -510,7 +510,7 @@ theorem HasLineDerivAt.smul (h : HasLineDerivAt 𝕜 f f' x v) (c : 𝕜) :
   simp only [← hasLineDerivWithinAt_univ] at h ⊢
   exact HasLineDerivWithinAt.smul h c
 
-theorem hasLineDerivAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma hasLineDerivAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     HasLineDerivAt 𝕜 f (c • f') x (c • v) ↔ HasLineDerivAt 𝕜 f f' x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
@@ -518,7 +518,7 @@ theorem LineDifferentiableWithinAt.smul (h : LineDifferentiableWithinAt 𝕜 f s
     LineDifferentiableWithinAt 𝕜 f s x (c • v) :=
   (h.hasLineDerivWithinAt.smul c).lineDifferentiableWithinAt
 
-theorem lineDifferentiableWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma lineDifferentiableWithinAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableWithinAt 𝕜 f s x (c • v) ↔ LineDifferentiableWithinAt 𝕜 f s x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
@@ -526,11 +526,11 @@ theorem LineDifferentiableAt.smul (h : LineDifferentiableAt 𝕜 f x v) (c : �
     LineDifferentiableAt 𝕜 f x (c • v) :=
   (h.hasLineDerivAt.smul c).lineDifferentiableAt
 
-theorem lineDifferentiableAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
+lemma lineDifferentiableAt_smul_iff {c : 𝕜} (hc : c ≠ 0) :
     LineDifferentiableAt 𝕜 f x (c • v) ↔ LineDifferentiableAt 𝕜 f x v :=
   ⟨fun h ↦ by simpa [smul_smul, inv_mul_cancel hc] using h.smul (c ⁻¹), fun h ↦ h.smul c⟩
 
-theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDeriv 𝕜 f x v := by
+lemma lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDeriv 𝕜 f x v := by
   rcases eq_or_ne c 0 with rfl|hc
   · simp [lineDeriv_zero]
   by_cases H : LineDifferentiableAt 𝕜 f x v
@@ -539,7 +539,7 @@ theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDer
       by simpa [lineDifferentiableAt_smul_iff hc] using H
     simp [lineDeriv_zero_of_not_lineDifferentiableAt, H, H']
 
-theorem lineDeriv_neg : lineDeriv 𝕜 f x (-v) = - lineDeriv 𝕜 f x v := by
+lemma lineDeriv_neg : lineDeriv 𝕜 f x (-v) = - lineDeriv 𝕜 f x v := by
   rw [← neg_one_smul (R := 𝕜) v, lineDeriv_smul, neg_one_smul]
 
 end SMul

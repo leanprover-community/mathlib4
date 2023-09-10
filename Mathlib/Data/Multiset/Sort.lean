@@ -47,16 +47,16 @@ theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
 #align multiset.sort_eq Multiset.sort_eq
 
 @[simp]
-theorem mem_sort {s : Multiset α} {a : α} : a ∈ sort r s ↔ a ∈ s := by rw [← mem_coe, sort_eq]
+lemma mem_sort {s : Multiset α} {a : α} : a ∈ sort r s ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 #align multiset.mem_sort Multiset.mem_sort
 
 @[simp]
-theorem length_sort {s : Multiset α} : (sort r s).length = card s :=
+lemma length_sort {s : Multiset α} : (sort r s).length = card s :=
   Quot.inductionOn s <| length_mergeSort _
 #align multiset.length_sort Multiset.length_sort
 
 @[simp]
-theorem sort_zero : sort r 0 = [] :=
+lemma sort_zero : sort r 0 = [] :=
   List.mergeSort_nil r
 #align multiset.sort_zero Multiset.sort_zero
 

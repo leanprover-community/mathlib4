@@ -140,7 +140,7 @@ theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
 #align category_theory.nat_trans.right_derived_id CategoryTheory.NatTrans.rightDerived_id
 
 @[simp, nolint simpNF]
-theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
+lemma NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
     (α : F ⟶ G) (β : G ⟶ H) (n : ℕ) :
     NatTrans.rightDerived (α ≫ β) n = NatTrans.rightDerived α n ≫ NatTrans.rightDerived β n := by
   simp [NatTrans.rightDerived]
@@ -149,7 +149,7 @@ theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [
 /-- A component of the natural transformation between right-derived functors can be computed
 using a chosen injective resolution.
 -/
-theorem NatTrans.rightDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) {X : C}
+lemma NatTrans.rightDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) {X : C}
     (P : InjectiveResolution X) :
     (NatTrans.rightDerived α n).app X =
       (F.rightDerivedObjIso n P).hom ≫
@@ -189,7 +189,7 @@ variable [Abelian C] [Abelian D] [Additive F]
 
 /-- If `PreservesFiniteLimits F` and `Mono f`, then `Exact (F.map f) (F.map g)` if
 `Exact f g`. -/
-theorem preserves_exact_of_preservesFiniteLimits_of_mono [PreservesFiniteLimits F] [Mono f]
+lemma preserves_exact_of_preservesFiniteLimits_of_mono [PreservesFiniteLimits F] [Mono f]
     (ex : Exact f g) : Exact (F.map f) (F.map g) :=
   Abelian.exact_of_is_kernel _ _ (by simp [← Functor.map_comp, ex.w]) <|
     Limits.isLimitForkMapOfIsLimit' _ ex.w (Abelian.isLimitOfExactOfMono _ _ ex)
@@ -237,7 +237,7 @@ def rightDerivedZeroToSelfAppInv [EnoughInjectives C] {X : C} (P : InjectiveReso
     (rightDerivedObjIso F 0 P).inv
 #align category_theory.abelian.functor.right_derived_zero_to_self_app_inv CategoryTheory.Abelian.Functor.rightDerivedZeroToSelfAppInv
 
-theorem rightDerivedZeroToSelfApp_comp_inv [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
+lemma rightDerivedZeroToSelfApp_comp_inv [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
     (P : InjectiveResolution X) :
     rightDerivedZeroToSelfApp F P ≫ rightDerivedZeroToSelfAppInv F P = 𝟙 _ := by
   dsimp [rightDerivedZeroToSelfApp, rightDerivedZeroToSelfAppInv]
@@ -261,7 +261,7 @@ theorem rightDerivedZeroToSelfApp_comp_inv [EnoughInjectives C] [PreservesFinite
   -- created an Exact goal which was no longer automatically discharged
 #align category_theory.abelian.functor.right_derived_zero_to_self_app_comp_inv CategoryTheory.Abelian.Functor.rightDerivedZeroToSelfApp_comp_inv
 
-theorem rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
+lemma rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteLimits F] {X : C}
     (P : InjectiveResolution X) :
     rightDerivedZeroToSelfAppInv F P ≫ rightDerivedZeroToSelfApp F P = 𝟙 _ := by
   dsimp [rightDerivedZeroToSelfApp, rightDerivedZeroToSelfAppInv]
@@ -293,7 +293,7 @@ def rightDerivedZeroToSelfAppIso [EnoughInjectives C] [PreservesFiniteLimits F] 
 
 /-- Given `P : InjectiveResolution X` and `Q : InjectiveResolution Y` and a morphism `f : X ⟶ Y`,
 naturality of the square given by `rightDerivedZeroToSelf_natural`. -/
-theorem rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f : X ⟶ Y)
+lemma rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y) :
     F.map f ≫ rightDerivedZeroToSelfAppInv F Q =
       rightDerivedZeroToSelfAppInv F P ≫ (F.rightDerived 0).map f := by

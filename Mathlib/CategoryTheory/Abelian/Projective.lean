@@ -32,7 +32,7 @@ open CategoryTheory.Projective
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- When `C` is abelian, `Projective.d f` and `f` are exact. -/
-theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f :=
+lemma exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f :=
   (Abelian.exact_iff _ _).2 <|
     ⟨by simp, zero_of_epi_comp (π _) <| by rw [← Category.assoc, cokernel.condition]⟩
 #align category_theory.exact_d_f CategoryTheory.exact_d_f

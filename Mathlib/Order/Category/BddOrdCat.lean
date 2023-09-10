@@ -113,13 +113,13 @@ def dualEquiv : BddOrdCat ≌ BddOrdCat where
 
 end BddOrdCat
 
-theorem bddOrd_dual_comp_forget_to_partOrdCat :
+lemma bddOrd_dual_comp_forget_to_partOrdCat :
     BddOrdCat.dual ⋙ forget₂ BddOrdCat PartOrdCat =
     forget₂ BddOrdCat PartOrdCat ⋙ PartOrdCat.dual :=
   rfl
 #align BddOrd_dual_comp_forget_to_PartOrd bddOrd_dual_comp_forget_to_partOrdCat
 
-theorem bddOrd_dual_comp_forget_to_bipointed :
+lemma bddOrd_dual_comp_forget_to_bipointed :
     BddOrdCat.dual ⋙ forget₂ BddOrdCat Bipointed =
     forget₂ BddOrdCat Bipointed ⋙ Bipointed.swap :=
   rfl

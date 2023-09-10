@@ -39,7 +39,7 @@ section Basic
 set_option maxHeartbeats 250000 in
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
-theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
+lemma charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
     (toMatrix b b f).charpoly = f.charpoly := by
   let A := toMatrix b b f
   let b' := chooseBasis R M

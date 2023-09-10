@@ -52,18 +52,18 @@ class QuasiSeparatedSpace (α : Type*) [TopologicalSpace α] : Prop where
     ∀ U V : Set α, IsOpen U → IsCompact U → IsOpen V → IsCompact V → IsCompact (U ∩ V)
 #align quasi_separated_space QuasiSeparatedSpace
 
-theorem isQuasiSeparated_univ_iff {α : Type*} [TopologicalSpace α] :
+lemma isQuasiSeparated_univ_iff {α : Type*} [TopologicalSpace α] :
     IsQuasiSeparated (Set.univ : Set α) ↔ QuasiSeparatedSpace α := by
   rw [QuasiSeparatedSpace_iff]
   simp [IsQuasiSeparated]
 #align is_quasi_separated_univ_iff isQuasiSeparated_univ_iff
 
-theorem isQuasiSeparated_univ {α : Type*} [TopologicalSpace α] [QuasiSeparatedSpace α] :
+lemma isQuasiSeparated_univ {α : Type*} [TopologicalSpace α] [QuasiSeparatedSpace α] :
     IsQuasiSeparated (Set.univ : Set α) :=
   isQuasiSeparated_univ_iff.mpr inferInstance
 #align is_quasi_separated_univ isQuasiSeparated_univ
 
-theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s) (h : Embedding f) :
+lemma IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s) (h : Embedding f) :
     IsQuasiSeparated (f '' s) := by
   intro U V hU hU' hU'' hV hV' hV''
   convert
@@ -105,7 +105,7 @@ theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
   simp
 #align is_quasi_separated_iff_quasi_separated_space isQuasiSeparated_iff_quasiSeparatedSpace
 
-theorem IsQuasiSeparated.of_subset {s t : Set α} (ht : IsQuasiSeparated t) (h : s ⊆ t) :
+lemma IsQuasiSeparated.of_subset {s t : Set α} (ht : IsQuasiSeparated t) (h : s ⊆ t) :
     IsQuasiSeparated s := by
   intro U V hU hU' hU'' hV hV' hV''
   exact ht U V (hU.trans h) hU' hU'' (hV.trans h) hV' hV''

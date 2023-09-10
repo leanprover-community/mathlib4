@@ -46,7 +46,7 @@ variable (hv : LinearIndependent R v) {M : ModuleCat R}
   (hw : LinearIndependent R (g ∘ u ∘ Sum.inr))
   (hm : Mono f) (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
 
-theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
+lemma disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine' Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) _
@@ -64,7 +64,7 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
 `Sum.inr`. If `u` is injective and `v` and `w` are linearly independent, then `u` is linearly
 independent. -/
-theorem linearIndependent_leftExact : LinearIndependent R u :=
+lemma linearIndependent_leftExact : LinearIndependent R u :=
   linearIndependent_sum.mpr
   ⟨(congr_arg (fun f ↦ LinearIndependent R f) huv).mpr
     ((LinearMap.linearIndependent_iff (f : N →ₗ[R] M)
@@ -73,7 +73,7 @@ theorem linearIndependent_leftExact : LinearIndependent R u :=
 
 /-- Given a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0` of `R`-modules and linearly independent
     families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
-theorem linearIndependent_shortExact {w : ι' → P}
+lemma linearIndependent_shortExact {w : ι' → P}
     (hw : LinearIndependent R w) (hse : ShortExact f g) :
     LinearIndependent R (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w)) := by
   refine' linearIndependent_leftExact hv _ hse.mono hse.exact _
@@ -134,7 +134,7 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
 
 /-- Given an exact sequence `N ⟶ M ⟶ P ⟶ 0` of `R`-modules and spanning
     families `v : ι → N` and `w : ι' → P`, we get a spanning family `ι ⊕ ι' → M` -/
-theorem span_rightExact {w : ι' → P} (hv : ⊤ ≤ span R (range v))
+lemma span_rightExact {w : ι' → P} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi g) (he : Exact f g) :
     ⊤ ≤ span R (range (Sum.elim (f ∘ v) (g.toFun.invFun ∘ w))) := by
   refine' span_exact he _ hv _
@@ -156,13 +156,13 @@ def Basis.ofShortExact {M : ModuleCat R} {f : N ⟶ M} {g : M ⟶ P} (h : ShortE
     (span_rightExact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) h.epi h.exact)
 
 /-- In a short exact sequence `0 ⟶ N ⟶ M ⟶ P ⟶ 0`, if `N` and `P` are free, then `M` is free.-/
-theorem free_shortExact {M : ModuleCat R} {f : N ⟶ M}
+lemma free_shortExact {M : ModuleCat R} {f : N ⟶ M}
     {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Free R P] :
     Module.Free R M :=
   Module.Free.of_basis (Basis.ofShortExact h (Module.Free.chooseBasis R N)
     (Module.Free.chooseBasis R P))
 
-theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
+lemma free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
     {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Free R P] [StrongRankCondition R] :
     Module.rank R M = Module.rank R N + Module.rank R P := by
   haveI := free_shortExact h
@@ -171,7 +171,7 @@ theorem free_shortExact_rank_add {M : ModuleCat R} {f : N ⟶ M}
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R M) (Basis.ofShortExact h
     (Module.Free.chooseBasis R N) (Module.Free.chooseBasis R P))⟩
 
-theorem free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
+lemma free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
     {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Finite R N]
     [Module.Free R P] [Module.Finite R P]
     (hN : FiniteDimensional.finrank R N = n)

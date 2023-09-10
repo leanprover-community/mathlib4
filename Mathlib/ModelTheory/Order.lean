@@ -98,13 +98,13 @@ instance : IsOrdered Language.order :=
   ⟨Unit.unit⟩
 
 @[simp]
-theorem orderLHom_leSymb [L.IsOrdered] :
+lemma orderLHom_leSymb [L.IsOrdered] :
     (orderLHom L).onRelation leSymb = (leSymb : L.Relations 2) :=
   rfl
 #align first_order.language.order_Lhom_le_symb FirstOrder.Language.orderLHom_leSymb
 
 @[simp]
-theorem orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
+lemma orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
   LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)
 #align first_order.language.order_Lhom_order FirstOrder.Language.orderLHom_order
 
@@ -166,7 +166,7 @@ abbrev OrderedStructure [IsOrdered L] [LE M] [L.Structure M] : Prop :=
 variable {L M}
 
 @[simp]
-theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
+lemma orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
     L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLHom L) M :=
   Iff.rfl
 #align first_order.language.ordered_structure_iff FirstOrder.Language.orderedStructure_iff
@@ -202,21 +202,21 @@ section OrderedStructure
 variable [IsOrdered L] [L.Structure M]
 
 @[simp]
-theorem relMap_leSymb [LE M] [L.OrderedStructure M] {a b : M} :
+lemma relMap_leSymb [LE M] [L.OrderedStructure M] {a b : M} :
     RelMap (leSymb : L.Relations 2) ![a, b] ↔ a ≤ b := by
   rw [← orderLHom_leSymb, LHom.map_onRelation]
   rfl
 #align first_order.language.rel_map_le_symb FirstOrder.Language.relMap_leSymb
 
 @[simp]
-theorem Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))} {v : α → M}
+lemma Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))} {v : α → M}
     {xs : Fin n → M} :
     (t₁.le t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) ≤ t₂.realize (Sum.elim v xs) := by
   simp [Term.le]
 #align first_order.language.term.realize_le FirstOrder.Language.Term.realize_le
 
 @[simp]
-theorem Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))}
+lemma Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))}
     {v : α → M} {xs : Fin n → M} :
     (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
   simp [Term.lt, lt_iff_le_not_le]
@@ -228,7 +228,7 @@ section LE
 
 variable [LE M]
 
-theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoTopOrder M := by
+lemma realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoTopOrder M := by
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
@@ -238,11 +238,11 @@ theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoT
 #align first_order.language.realize_no_top_order_iff FirstOrder.Language.realize_noTopOrder_iff
 
 @[simp]
-theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ Language.order.noTopOrderSentence :=
+lemma realize_noTopOrder [h : NoTopOrder M] : M ⊨ Language.order.noTopOrderSentence :=
   realize_noTopOrder_iff.2 h
 #align first_order.language.realize_no_top_order FirstOrder.Language.realize_noTopOrder
 
-theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoBotOrder M := by
+lemma realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoBotOrder M := by
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
@@ -252,13 +252,13 @@ theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoB
 #align first_order.language.realize_no_bot_order_iff FirstOrder.Language.realize_noBotOrder_iff
 
 @[simp]
-theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ Language.order.noBotOrderSentence :=
+lemma realize_noBotOrder [h : NoBotOrder M] : M ⊨ Language.order.noBotOrderSentence :=
   realize_noBotOrder_iff.2 h
 #align first_order.language.realize_no_bot_order FirstOrder.Language.realize_noBotOrder
 
 end LE
 
-theorem realize_denselyOrdered_iff [Preorder M] :
+lemma realize_denselyOrdered_iff [Preorder M] :
     M ⊨ Language.order.denselyOrderedSentence ↔ DenselyOrdered M := by
   simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
     BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
@@ -269,7 +269,7 @@ theorem realize_denselyOrdered_iff [Preorder M] :
 #align first_order.language.realize_densely_ordered_iff FirstOrder.Language.realize_denselyOrdered_iff
 
 @[simp]
-theorem realize_denselyOrdered [Preorder M] [h : DenselyOrdered M] :
+lemma realize_denselyOrdered [Preorder M] [h : DenselyOrdered M] :
     M ⊨ Language.order.denselyOrderedSentence :=
   realize_denselyOrdered_iff.2 h
 #align first_order.language.realize_densely_ordered FirstOrder.Language.realize_denselyOrdered

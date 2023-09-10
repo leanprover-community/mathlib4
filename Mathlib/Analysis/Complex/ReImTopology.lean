@@ -41,28 +41,28 @@ noncomputable section
 namespace Complex
 
 /-- `Complex.re` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/
-theorem isHomeomorphicTrivialFiberBundle_re : IsHomeomorphicTrivialFiberBundle ℝ re :=
+lemma isHomeomorphicTrivialFiberBundle_re : IsHomeomorphicTrivialFiberBundle ℝ re :=
   ⟨equivRealProdClm.toHomeomorph, fun _ => rfl⟩
 #align complex.is_homeomorphic_trivial_fiber_bundle_re Complex.isHomeomorphicTrivialFiberBundle_re
 
 /-- `Complex.im` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/
-theorem isHomeomorphicTrivialFiberBundle_im : IsHomeomorphicTrivialFiberBundle ℝ im :=
+lemma isHomeomorphicTrivialFiberBundle_im : IsHomeomorphicTrivialFiberBundle ℝ im :=
   ⟨equivRealProdClm.toHomeomorph.trans (Homeomorph.prodComm ℝ ℝ), fun _ => rfl⟩
 #align complex.is_homeomorphic_trivial_fiber_bundle_im Complex.isHomeomorphicTrivialFiberBundle_im
 
-theorem isOpenMap_re : IsOpenMap re :=
+lemma isOpenMap_re : IsOpenMap re :=
   isHomeomorphicTrivialFiberBundle_re.isOpenMap_proj
 #align complex.is_open_map_re Complex.isOpenMap_re
 
-theorem isOpenMap_im : IsOpenMap im :=
+lemma isOpenMap_im : IsOpenMap im :=
   isHomeomorphicTrivialFiberBundle_im.isOpenMap_proj
 #align complex.is_open_map_im Complex.isOpenMap_im
 
-theorem quotientMap_re : QuotientMap re :=
+lemma quotientMap_re : QuotientMap re :=
   isHomeomorphicTrivialFiberBundle_re.quotientMap_proj
 #align complex.quotient_map_re Complex.quotientMap_re
 
-theorem quotientMap_im : QuotientMap im :=
+lemma quotientMap_im : QuotientMap im :=
   isHomeomorphicTrivialFiberBundle_im.quotientMap_proj
 #align complex.quotient_map_im Complex.quotientMap_im
 

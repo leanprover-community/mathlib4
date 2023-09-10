@@ -51,7 +51,7 @@ namespace Bertrand
 /-- A reified version of the `Bertrand.main_inequality` below.
 This is not best possible: it actually holds for 464 ≤ x.
 -/
-theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
+lemma real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     x * (2 * x) ^ sqrt (2 * x) * 4 ^ (2 * x / 3) ≤ 4 ^ x := by
   let f : ℝ → ℝ := fun x => log x + sqrt (2 * x) * log (2 * x) - log 4 / 3 * x
   have hf' : ∀ x, 0 < x → 0 < x * (2 * x) ^ sqrt (2 * x) / 4 ^ (x / 3) := fun x h =>
@@ -122,7 +122,7 @@ open Nat
 
 /-- The inequality which contradicts Bertrand's postulate, for large enough `n`.
 -/
-theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
+lemma bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
   simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
@@ -219,7 +219,7 @@ theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) 
 descending list of primes, each no more than twice the next, such that the list contains a witness
 for each number ≤ n.
 -/
-theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
+lemma exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
     (covering : p ≤ 2 * q) (H : n < q → ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) (hn : n < p) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
   by_cases p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩

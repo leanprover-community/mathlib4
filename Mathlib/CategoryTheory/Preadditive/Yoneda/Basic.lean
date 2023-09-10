@@ -111,7 +111,7 @@ instance additive_coyonedaObj' (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyo
 Yoneda embedding.
 -/
 @[simp]
-theorem whiskering_preadditiveYoneda :
+lemma whiskering_preadditiveYoneda :
     preadditiveYoneda ⋙
         (whiskeringRight Cᵒᵖ AddCommGroupCat (Type v)).obj (forget AddCommGroupCat) =
       yoneda :=
@@ -122,7 +122,7 @@ theorem whiskering_preadditiveYoneda :
 Yoneda embedding.
 -/
 @[simp]
-theorem whiskering_preadditiveCoyoneda :
+lemma whiskering_preadditiveCoyoneda :
     preadditiveCoyoneda ⋙
         (whiskeringRight C AddCommGroupCat (Type v)).obj (forget AddCommGroupCat) =
       coyoneda :=

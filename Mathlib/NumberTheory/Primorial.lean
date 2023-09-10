@@ -43,7 +43,7 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
   prod_pos fun _p hp ↦ (mem_filter.1 hp).2.pos
 #align primorial_pos primorial_pos
 
-theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
+lemma primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
   rw [range_succ, filter_insert, if_neg fun h ↦ odd_iff_not_even.mp hn _]
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
@@ -56,7 +56,7 @@ theorem primorial_add (m n : ℕ) :
     disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
 #align primorial_add primorial_add
 
-theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
+lemma primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
   calc
     (m + n)# = m# * ∏ p in filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := primorial_add _ _
     _ ∣ m# * choose (m + n) m :=
@@ -67,7 +67,7 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
               (Nat.lt_succ_iff.1 hp.1.2)
 #align primorial_add_dvd primorial_add_dvd
 
-theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m + n) m :=
+lemma primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m + n) m :=
   le_of_dvd (mul_pos (primorial_pos _) (choose_pos <| Nat.le_add_right _ _)) (primorial_add_dvd h)
 #align primorial_add_le primorial_add_le
 

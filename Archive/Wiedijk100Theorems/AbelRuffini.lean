@@ -49,21 +49,21 @@ noncomputable def Φ : R[X] :=
 variable {R}
 
 @[simp]
-theorem map_Phi {S : Type _} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
+lemma map_Phi {S : Type _} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
 #align abel_ruffini.map_Phi AbelRuffini.map_Phi
 
 @[simp]
-theorem coeff_zero_Phi : (Φ R a b).coeff 0 = (b : R) := by simp [Φ, coeff_X_pow]
+lemma coeff_zero_Phi : (Φ R a b).coeff 0 = (b : R) := by simp [Φ, coeff_X_pow]
 #align abel_ruffini.coeff_zero_Phi AbelRuffini.coeff_zero_Phi
 
 @[simp]
-theorem coeff_five_Phi : (Φ R a b).coeff 5 = 1 := by
+lemma coeff_five_Phi : (Φ R a b).coeff 5 = 1 := by
   simp [Φ, coeff_X, coeff_C, -map_natCast]
 #align abel_ruffini.coeff_five_Phi AbelRuffini.coeff_five_Phi
 
 variable [Nontrivial R]
 
-theorem degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
+lemma degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
   suffices degree (X ^ 5 - C (a : R) * X) = ((5 : ℕ) : WithBot ℕ) by
     rwa [Φ, degree_add_eq_left_of_degree_lt]
     convert (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by norm_num))
@@ -71,15 +71,15 @@ theorem degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
   exact (degree_C_mul_X_le (a : R)).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by norm_num))
 #align abel_ruffini.degree_Phi AbelRuffini.degree_Phi
 
-theorem natDegree_Phi : (Φ R a b).natDegree = 5 :=
+lemma natDegree_Phi : (Φ R a b).natDegree = 5 :=
   natDegree_eq_of_degree_eq_some (degree_Phi a b)
 #align abel_ruffini.nat_degree_Phi AbelRuffini.natDegree_Phi
 
-theorem leadingCoeff_Phi : (Φ R a b).leadingCoeff = 1 := by
+lemma leadingCoeff_Phi : (Φ R a b).leadingCoeff = 1 := by
   rw [Polynomial.leadingCoeff, natDegree_Phi, coeff_five_Phi]
 #align abel_ruffini.leading_coeff_Phi AbelRuffini.leadingCoeff_Phi
 
-theorem monic_Phi : (Φ R a b).Monic :=
+lemma monic_Phi : (Φ R a b).Monic :=
   leadingCoeff_Phi a b
 #align abel_ruffini.monic_Phi AbelRuffini.monic_Phi
 
@@ -103,7 +103,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   all_goals exact Monic.isPrimitive (monic_Phi a b)
 #align abel_ruffini.irreducible_Phi AbelRuffini.irreducible_Phi
 
-theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
+lemma real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
     (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
@@ -185,7 +185,7 @@ theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : ¬IsSol
 #align abel_ruffini.not_solvable_by_rad' AbelRuffini.not_solvable_by_rad'
 
 /-- **Abel-Ruffini Theorem** -/
-theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
+lemma exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
   obtain ⟨x, hx⟩ := exists_root_of_splits (algebraMap ℚ ℂ) (IsAlgClosed.splits_codomain (Φ ℚ 4 2))
     (ne_of_eq_of_ne (degree_Phi 4 2) (mt WithBot.coe_eq_coe.mp (show 5 ≠ 0 by norm_num)))
   exact ⟨x, ⟨Φ ℚ 4 2, (monic_Phi 4 2).ne_zero, hx⟩, not_solvable_by_rad' x hx⟩

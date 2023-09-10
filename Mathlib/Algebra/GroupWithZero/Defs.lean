@@ -226,7 +226,7 @@ section MulZeroClass
 
 variable [MulZeroClass M₀]
 
-theorem mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 := h.symm ▸ zero_mul b
+lemma mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 := h.symm ▸ zero_mul b
 #align mul_eq_zero_of_left mul_eq_zero_of_left
 
 theorem mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 := h.symm ▸ mul_zero a
@@ -237,7 +237,7 @@ variable [NoZeroDivisors M₀] {a b : M₀}
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
 equals zero. -/
 @[simp]
-theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
+lemma mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
   ⟨eq_zero_or_eq_zero_of_mul_eq_zero,
     fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
 #align mul_eq_zero mul_eq_zero
@@ -245,35 +245,35 @@ theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
 equals zero. -/
 @[simp]
-theorem zero_eq_mul : 0 = a * b ↔ a = 0 ∨ b = 0 := by rw [eq_comm, mul_eq_zero]
+lemma zero_eq_mul : 0 = a * b ↔ a = 0 ∨ b = 0 := by rw [eq_comm, mul_eq_zero]
 #align zero_eq_mul zero_eq_mul
 
 /-- If `α` has no zero divisors, then the product of two elements is nonzero iff both of them
 are nonzero. -/
-theorem mul_ne_zero_iff : a * b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := mul_eq_zero.not.trans not_or
+lemma mul_ne_zero_iff : a * b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := mul_eq_zero.not.trans not_or
 #align mul_ne_zero_iff mul_ne_zero_iff
 
 /-- If `α` has no zero divisors, then for elements `a, b : α`, `a * b` equals zero iff so is
 `b * a`. -/
-theorem mul_eq_zero_comm : a * b = 0 ↔ b * a = 0 :=
+lemma mul_eq_zero_comm : a * b = 0 ↔ b * a = 0 :=
   mul_eq_zero.trans <| or_comm.trans mul_eq_zero.symm
 #align mul_eq_zero_comm mul_eq_zero_comm
 
 /-- If `α` has no zero divisors, then for elements `a, b : α`, `a * b` is nonzero iff so is
 `b * a`. -/
-theorem mul_ne_zero_comm : a * b ≠ 0 ↔ b * a ≠ 0 := mul_eq_zero_comm.not
+lemma mul_ne_zero_comm : a * b ≠ 0 ↔ b * a ≠ 0 := mul_eq_zero_comm.not
 #align mul_ne_zero_comm mul_ne_zero_comm
 
-theorem mul_self_eq_zero : a * a = 0 ↔ a = 0 := by simp
+lemma mul_self_eq_zero : a * a = 0 ↔ a = 0 := by simp
 #align mul_self_eq_zero mul_self_eq_zero
 
-theorem zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp
+lemma zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp
 #align zero_eq_mul_self zero_eq_mul_self
 
-theorem mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 := mul_self_eq_zero.not
+lemma mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 := mul_self_eq_zero.not
 #align mul_self_ne_zero mul_self_ne_zero
 
-theorem zero_ne_mul_self : 0 ≠ a * a ↔ a ≠ 0 := zero_eq_mul_self.not
+lemma zero_ne_mul_self : 0 ≠ a * a ↔ a ≠ 0 := zero_eq_mul_self.not
 #align zero_ne_mul_self zero_ne_mul_self
 
 end MulZeroClass

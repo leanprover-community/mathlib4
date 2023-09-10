@@ -55,12 +55,12 @@ theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
   (hasDerivAt_log hx).differentiableAt
 #align real.differentiable_at_log Real.differentiableAt_log
 
-theorem differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
+lemma differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
   (differentiableAt_log hx).differentiableWithinAt
 #align real.differentiable_on_log Real.differentiableOn_log
 
 @[simp]
-theorem differentiableAt_log_iff : DifferentiableAt ℝ log x ↔ x ≠ 0 :=
+lemma differentiableAt_log_iff : DifferentiableAt ℝ log x ↔ x ≠ 0 :=
   ⟨fun h => continuousAt_log_iff.1 h.continuousAt, differentiableAt_log⟩
 #align real.differentiable_at_log_iff Real.differentiableAt_log_iff
 
@@ -71,17 +71,17 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 #align real.deriv_log Real.deriv_log
 
 @[simp]
-theorem deriv_log' : deriv log = Inv.inv :=
+lemma deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 #align real.deriv_log' Real.deriv_log'
 
-theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
+lemma contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   suffices : ContDiffOn ℝ ⊤ log {0}ᶜ; exact this.of_le le_top
   refine' (contDiffOn_top_iff_deriv_of_open isOpen_compl_singleton).2 _
   simp [differentiableOn_log, contDiffOn_inv]
 #align real.cont_diff_on_log Real.contDiffOn_log
 
-theorem contDiffAt_log {n : ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
+lemma contDiffAt_log {n : ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
   ⟨fun h => continuousAt_log_iff.1 h.continuousAt, fun hx =>
     (contDiffOn_log x hx).contDiffAt <| IsOpen.mem_nhds isOpen_compl_singleton hx⟩
 #align real.cont_diff_at_log Real.contDiffAt_log
@@ -159,21 +159,21 @@ theorem DifferentiableAt.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
   (hf.hasFDerivAt.log hx).differentiableAt
 #align differentiable_at.log DifferentiableAt.log
 
-theorem ContDiffAt.log {n} (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
+lemma ContDiffAt.log {n} (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
     ContDiffAt ℝ n (fun x => log (f x)) x :=
   (contDiffAt_log.2 hx).comp x hf
 #align cont_diff_at.log ContDiffAt.log
 
-theorem ContDiffWithinAt.log {n} (hf : ContDiffWithinAt ℝ n f s x) (hx : f x ≠ 0) :
+lemma ContDiffWithinAt.log {n} (hf : ContDiffWithinAt ℝ n f s x) (hx : f x ≠ 0) :
     ContDiffWithinAt ℝ n (fun x => log (f x)) s x :=
   (contDiffAt_log.2 hx).comp_contDiffWithinAt x hf
 #align cont_diff_within_at.log ContDiffWithinAt.log
 
-theorem ContDiffOn.log {n} (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0) :
+lemma ContDiffOn.log {n} (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn ℝ n (fun x => log (f x)) s := fun x hx => (hf x hx).log (hs x hx)
 #align cont_diff_on.log ContDiffOn.log
 
-theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
+lemma ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
     ContDiff ℝ n fun x => log (f x) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)
 #align cont_diff.log ContDiff.log
@@ -224,7 +224,7 @@ expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
 Porting note: TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/
-theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
+lemma abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     |(∑ i in range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by
   /- For the proof, we show that the derivative of the function to be estimated is small,
     and then apply the mean value inequality. -/
@@ -266,7 +266,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
 #align real.abs_log_sub_add_sum_range_le Real.abs_log_sub_add_sum_range_le
 
 /-- Power series expansion of the logarithm around `1`. -/
-theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
+lemma hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
     HasSum (fun n : ℕ => x ^ (n + 1) / (n + 1)) (-log (1 - x)) := by
   rw [Summable.hasSum_iff_tendsto_nat]
   show Tendsto (fun n : ℕ => ∑ i : ℕ in range n, x ^ (i + 1) / (i + 1)) atTop (𝓝 (-log (1 - x)))
@@ -292,7 +292,7 @@ theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
 #align real.has_sum_pow_div_log_of_abs_lt_1 Real.hasSum_pow_div_log_of_abs_lt_1
 
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
-theorem hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
+lemma hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * x ^ (2 * k + 1))
       (log (1 + x) - log (1 - x)) := by
   set term := fun n : ℕ => -1 * ((-x) ^ (n + 1) / ((n : ℝ) + 1)) + x ^ (n + 1) / (n + 1)
@@ -314,7 +314,7 @@ theorem hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
 #align real.has_sum_log_sub_log_of_abs_lt_1 Real.hasSum_log_sub_log_of_abs_lt_1
 
 /-- Expansion of `log (1 + a⁻¹)` as a series in powers of `1 / (2 * a + 1)`. -/
-theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
+lemma hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (1 / (2 * a + 1)) ^ (2 * k + 1))
       (log (1 + a⁻¹)) := by
   have h₁ : |1 / (2 * a + 1)| < 1 := by

@@ -45,7 +45,7 @@ def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
     ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i
 #align coevaluation coevaluation
 
-theorem coevaluation_apply_one :
+lemma coevaluation_apply_one :
     (coevaluation K V) (1 : K) =
       let bV := Basis.ofVectorSpace K V
       ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i := by
@@ -59,7 +59,7 @@ open TensorProduct
 
 /-- This lemma corresponds to one of the coherence laws for duals in rigid categories, see
   `CategoryTheory.Monoidal.Rigid`. -/
-theorem contractLeft_assoc_coevaluation :
+lemma contractLeft_assoc_coevaluation :
     (contractLeft K V).rTensor _ ∘ₗ
         (TensorProduct.assoc K _ _ _).symm.toLinearMap ∘ₗ
           (coevaluation K V).lTensor (Module.Dual K V) =
@@ -79,7 +79,7 @@ theorem contractLeft_assoc_coevaluation :
 
 /-- This lemma corresponds to one of the coherence laws for duals in rigid categories, see
   `CategoryTheory.Monoidal.Rigid`. -/
-theorem contractLeft_assoc_coevaluation' :
+lemma contractLeft_assoc_coevaluation' :
     (contractLeft K V).lTensor _ ∘ₗ
         (TensorProduct.assoc K _ _ _).toLinearMap ∘ₗ (coevaluation K V).rTensor V =
       (TensorProduct.rid K _).symm.toLinearMap ∘ₗ (TensorProduct.lid K _).toLinearMap := by

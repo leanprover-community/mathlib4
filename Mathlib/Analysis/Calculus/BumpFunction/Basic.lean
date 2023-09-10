@@ -108,12 +108,12 @@ def someContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 namespace ContDiffBump
 
-theorem rOut_pos {c : E} (f : ContDiffBump c) : 0 < f.rOut :=
+lemma rOut_pos {c : E} (f : ContDiffBump c) : 0 < f.rOut :=
   f.rIn_pos.trans f.rIn_lt_rOut
 set_option linter.uppercaseLean3 false in
 #align cont_diff_bump.R_pos ContDiffBump.rOut_pos
 
-theorem one_lt_rOut_div_rIn {c : E} (f : ContDiffBump c) : 1 < f.rOut / f.rIn := by
+lemma one_lt_rOut_div_rIn {c : E} (f : ContDiffBump c) : 1 < f.rOut / f.rIn := by
   rw [one_lt_div f.rIn_pos]
   exact f.rIn_lt_rOut
 set_option linter.uppercaseLean3 false in
@@ -155,7 +155,7 @@ theorem one_of_mem_closedBall (hx : x ∈ closedBall c f.rIn) : f x = 1 := by
     div_le_one f.rIn_pos] using mem_closedBall_iff_norm.1 hx
 #align cont_diff_bump.one_of_mem_closed_ball ContDiffBump.one_of_mem_closedBall
 
-theorem nonneg : 0 ≤ f x :=
+lemma nonneg : 0 ≤ f x :=
   (ContDiffBumpBase.mem_Icc (someContDiffBumpBase E) _ _).1
 #align cont_diff_bump.nonneg ContDiffBump.nonneg
 
@@ -163,18 +163,18 @@ theorem nonneg : 0 ≤ f x :=
 theorem nonneg' (x : E) : 0 ≤ f x := f.nonneg
 #align cont_diff_bump.nonneg' ContDiffBump.nonneg'
 
-theorem le_one : f x ≤ 1 :=
+lemma le_one : f x ≤ 1 :=
   (ContDiffBumpBase.mem_Icc (someContDiffBumpBase E) _ _).2
 #align cont_diff_bump.le_one ContDiffBump.le_one
 
-theorem support_eq : Function.support f = Metric.ball c f.rOut := by
+lemma support_eq : Function.support f = Metric.ball c f.rOut := by
   simp only [toFun, support_comp_eq_preimage, ContDiffBumpBase.support _ _ f.one_lt_rOut_div_rIn]
   ext x
   simp only [mem_ball_iff_norm, sub_zero, norm_smul, mem_preimage, Real.norm_eq_abs, abs_inv,
     abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_right f.rIn_pos]
 #align cont_diff_bump.support_eq ContDiffBump.support_eq
 
-theorem tsupport_eq : tsupport f = closedBall c f.rOut := by
+lemma tsupport_eq : tsupport f = closedBall c f.rOut := by
   simp_rw [tsupport, f.support_eq, closure_ball _ f.rOut_pos.ne']
 #align cont_diff_bump.tsupport_eq ContDiffBump.tsupport_eq
 
@@ -186,7 +186,7 @@ theorem zero_of_le_dist (hx : f.rOut ≤ dist x c) : f x = 0 := by
   rwa [← nmem_support, support_eq, mem_ball, not_lt]
 #align cont_diff_bump.zero_of_le_dist ContDiffBump.zero_of_le_dist
 
-protected theorem hasCompactSupport [FiniteDimensional ℝ E] : HasCompactSupport f := by
+protected lemma hasCompactSupport [FiniteDimensional ℝ E] : HasCompactSupport f := by
   simp_rw [HasCompactSupport, f.tsupport_eq, isCompact_closedBall]
 #align cont_diff_bump.has_compact_support ContDiffBump.hasCompactSupport
 
@@ -194,13 +194,13 @@ theorem eventuallyEq_one_of_mem_ball (h : x ∈ ball c f.rIn) : f =ᶠ[𝓝 x] 1
   mem_of_superset (closedBall_mem_nhds_of_mem h) fun _ ↦ f.one_of_mem_closedBall
 #align cont_diff_bump.eventually_eq_one_of_mem_ball ContDiffBump.eventuallyEq_one_of_mem_ball
 
-theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
+lemma eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
   f.eventuallyEq_one_of_mem_ball (mem_ball_self f.rIn_pos)
 #align cont_diff_bump.eventually_eq_one ContDiffBump.eventuallyEq_one
 
 -- porting note: new lemma
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
-protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
+protected lemma _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
     {f : ∀ x, ContDiffBump (c x)} {x : X} (hc : ContDiffWithinAt ℝ n c s x)
     (hr : ContDiffWithinAt ℝ n (fun x => (f x).rIn) s x)
     (hR : ContDiffWithinAt ℝ n (fun x => (f x).rOut) s x)
@@ -213,14 +213,14 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
   · exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
-protected nonrec theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
+protected nonrec lemma _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
     {x : X} (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x => (f x).rIn) x)
     (hR : ContDiffAt ℝ n (fun x => (f x).rOut) x) (hg : ContDiffAt ℝ n g x) :
     ContDiffAt ℝ n (fun x => f x (g x)) x :=
   hc.contDiffBump hr hR hg
 #align cont_diff_at.cont_diff_bump ContDiffAt.contDiffBump
 
-theorem _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
+lemma _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
     (hc : ContDiff ℝ n c) (hr : ContDiff ℝ n fun x => (f x).rIn)
     (hR : ContDiff ℝ n fun x => (f x).rOut) (hg : ContDiff ℝ n g) :
     ContDiff ℝ n fun x => f x (g x) := by
@@ -228,19 +228,19 @@ theorem _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c
   exact fun x => (hc x).contDiffBump (hr x) (hR x) (hg x)
 #align cont_diff.cont_diff_bump ContDiff.contDiffBump
 
-protected theorem contDiff : ContDiff ℝ n f :=
+protected lemma contDiff : ContDiff ℝ n f :=
   contDiff_const.contDiffBump contDiff_const contDiff_const contDiff_id
 #align cont_diff_bump.cont_diff ContDiffBump.contDiff
 
-protected theorem contDiffAt : ContDiffAt ℝ n f x :=
+protected lemma contDiffAt : ContDiffAt ℝ n f x :=
   f.contDiff.contDiffAt
 #align cont_diff_bump.cont_diff_at ContDiffBump.contDiffAt
 
-protected theorem contDiffWithinAt {s : Set E} : ContDiffWithinAt ℝ n f s x :=
+protected lemma contDiffWithinAt {s : Set E} : ContDiffWithinAt ℝ n f s x :=
   f.contDiffAt.contDiffWithinAt
 #align cont_diff_bump.cont_diff_within_at ContDiffBump.contDiffWithinAt
 
-protected theorem continuous : Continuous f :=
+protected lemma continuous : Continuous f :=
   contDiff_zero.mp f.contDiff
 #align cont_diff_bump.continuous ContDiffBump.continuous
 

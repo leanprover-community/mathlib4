@@ -44,7 +44,7 @@ theorem min_le_right (a b : α) : min a b ≤ b := by
   else simp [min_def, if_neg h, le_refl]
 #align min_le_right min_le_right
 
-theorem le_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
+lemma le_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
   -- porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [min_def, if_pos h]; exact h₁
@@ -65,14 +65,14 @@ theorem le_max_right (a b : α) : b ≤ max a b := by
   else simp [max_def, if_neg h]; exact le_of_not_le h
 #align le_max_right le_max_right
 
-theorem max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
+lemma max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
   -- porting note: no `min_tac` tactic
   if h : a ≤ b
   then simp [max_def, if_pos h]; exact h₂
   else simp [max_def, if_neg h]; exact h₁
 #align max_le max_le
 
-theorem eq_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) :
+lemma eq_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) :
     c = min a b :=
   le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
 #align eq_min eq_min
@@ -89,7 +89,7 @@ theorem min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
     apply le_trans h₂; apply min_le_right
 #align min_assoc min_assoc
 
-theorem min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
+lemma min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
   left_comm (@min α _) (@min_comm α _) (@min_assoc α _)
 #align min_left_comm min_left_comm
 
@@ -97,15 +97,15 @@ theorem min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
 theorem min_self (a : α) : min a a = a := by simp [min_def]
 #align min_self min_self
 
-theorem min_eq_left {a b : α} (h : a ≤ b) : min a b = a := by
+lemma min_eq_left {a b : α} (h : a ≤ b) : min a b = a := by
   apply Eq.symm; apply eq_min (le_refl _) h; intros; assumption
 #align min_eq_left min_eq_left
 
-theorem min_eq_right {a b : α} (h : b ≤ a) : min a b = b :=
+lemma min_eq_right {a b : α} (h : b ≤ a) : min a b = b :=
   min_comm b a ▸ min_eq_left h
 #align min_eq_right min_eq_right
 
-theorem eq_max {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀ {d}, a ≤ d → b ≤ d → c ≤ d) :
+lemma eq_max {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀ {d}, a ≤ d → b ≤ d → c ≤ d) :
     c = max a b :=
   le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
 #align eq_max eq_max
@@ -122,7 +122,7 @@ theorem max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
     apply le_trans (le_max_right _ _) h₂
 #align max_assoc max_assoc
 
-theorem max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
+lemma max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
   left_comm (@max α _) (@max_comm α _) (@max_assoc α _)
 #align max_left_comm max_left_comm
 
@@ -130,40 +130,40 @@ theorem max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
 theorem max_self (a : α) : max a a = a := by simp [max_def]
 #align max_self max_self
 
-theorem max_eq_left {a b : α} (h : b ≤ a) : max a b = a := by
+lemma max_eq_left {a b : α} (h : b ≤ a) : max a b = a := by
   apply Eq.symm; apply eq_max (le_refl _) h; intros; assumption
 #align max_eq_left max_eq_left
 
-theorem max_eq_right {a b : α} (h : a ≤ b) : max a b = b :=
+lemma max_eq_right {a b : α} (h : a ≤ b) : max a b = b :=
   max_comm b a ▸ max_eq_left h
 #align max_eq_right max_eq_right
 
 -- these rely on lt_of_lt
-theorem min_eq_left_of_lt {a b : α} (h : a < b) : min a b = a :=
+lemma min_eq_left_of_lt {a b : α} (h : a < b) : min a b = a :=
   min_eq_left (le_of_lt h)
 #align min_eq_left_of_lt min_eq_left_of_lt
 
-theorem min_eq_right_of_lt {a b : α} (h : b < a) : min a b = b :=
+lemma min_eq_right_of_lt {a b : α} (h : b < a) : min a b = b :=
   min_eq_right (le_of_lt h)
 #align min_eq_right_of_lt min_eq_right_of_lt
 
-theorem max_eq_left_of_lt {a b : α} (h : b < a) : max a b = a :=
+lemma max_eq_left_of_lt {a b : α} (h : b < a) : max a b = a :=
   max_eq_left (le_of_lt h)
 #align max_eq_left_of_lt max_eq_left_of_lt
 
-theorem max_eq_right_of_lt {a b : α} (h : a < b) : max a b = b :=
+lemma max_eq_right_of_lt {a b : α} (h : a < b) : max a b = b :=
   max_eq_right (le_of_lt h)
 #align max_eq_right_of_lt max_eq_right_of_lt
 
 -- these use the fact that it is a linear ordering
-theorem lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
+lemma lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
   -- porting note: no `min_tac` tactic
   Or.elim (le_or_gt b c)
     (λ h : b ≤ c => by rwa [min_eq_left h])
     (λ h : b > c => by rwa [min_eq_right_of_lt h])
 #align lt_min lt_min
 
-theorem max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
+lemma max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
   -- porting note: no `min_tac` tactic
   Or.elim (le_or_gt a b)
     (λ h : a ≤ b => by rwa [max_eq_right h])

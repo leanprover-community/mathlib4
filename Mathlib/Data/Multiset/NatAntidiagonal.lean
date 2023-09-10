@@ -33,7 +33,7 @@ def antidiagonal (n : ℕ) : Multiset (ℕ × ℕ) :=
 
 /-- A pair (i, j) is contained in the antidiagonal of `n` if and only if `i + j = n`. -/
 @[simp]
-theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
+lemma mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_coe, List.Nat.mem_antidiagonal]
 #align multiset.nat.mem_antidiagonal Multiset.Nat.mem_antidiagonal
 
@@ -45,7 +45,7 @@ theorem card_antidiagonal (n : ℕ) : card (antidiagonal n) = n + 1 := by
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 @[simp]
-theorem antidiagonal_zero : antidiagonal 0 = {(0, 0)} :=
+lemma antidiagonal_zero : antidiagonal 0 = {(0, 0)} :=
   rfl
 #align multiset.nat.antidiagonal_zero Multiset.Nat.antidiagonal_zero
 
@@ -56,25 +56,25 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 #align multiset.nat.nodup_antidiagonal Multiset.Nat.nodup_antidiagonal
 
 @[simp]
-theorem antidiagonal_succ {n : ℕ} :
+lemma antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) ::ₘ (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, List.Nat.antidiagonal_succ, coe_map, cons_coe]
 #align multiset.nat.antidiagonal_succ Multiset.Nat.antidiagonal_succ
 
-theorem antidiagonal_succ' {n : ℕ} :
+lemma antidiagonal_succ' {n : ℕ} :
     antidiagonal (n + 1) = (n + 1, 0) ::ₘ (antidiagonal n).map (Prod.map id Nat.succ) := by
   rw [antidiagonal, List.Nat.antidiagonal_succ', ← coe_add, add_comm, antidiagonal, coe_map,
     coe_add, List.singleton_append, cons_coe]
 #align multiset.nat.antidiagonal_succ' Multiset.Nat.antidiagonal_succ'
 
-theorem antidiagonal_succ_succ' {n : ℕ} :
+lemma antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) ::ₘ (n + 2, 0) ::ₘ (antidiagonal n).map (Prod.map Nat.succ Nat.succ) := by
   rw [antidiagonal_succ, antidiagonal_succ', map_cons, map_map, Prod_map]
   rfl
 #align multiset.nat.antidiagonal_succ_succ' Multiset.Nat.antidiagonal_succ_succ'
 
-theorem map_swap_antidiagonal {n : ℕ} : (antidiagonal n).map Prod.swap = antidiagonal n := by
+lemma map_swap_antidiagonal {n : ℕ} : (antidiagonal n).map Prod.swap = antidiagonal n := by
   rw [antidiagonal, coe_map, List.Nat.map_swap_antidiagonal, coe_reverse]
 #align multiset.nat.map_swap_antidiagonal Multiset.Nat.map_swap_antidiagonal
 

@@ -29,7 +29,7 @@ open scoped unitInterval
 /-- The special case of the Weierstrass approximation theorem for the interval `[0,1]`.
 This is just a matter of unravelling definitions and using the Bernstein approximations.
 -/
-theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
+lemma polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
   apply eq_top_iff.mpr
   rintro f -
   refine' Filter.Frequently.mem_closure _

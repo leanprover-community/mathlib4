@@ -44,12 +44,12 @@ theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
   (zpow_zero _).symm.trans_le <| zpow_le_of_le ha hn
 #align one_le_zpow_of_nonneg one_le_zpow_of_nonneg
 
-protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n := by
+protected lemma Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n := by
   apply zpow_pos_of_pos
   exact_mod_cast h
 #align nat.zpow_pos_of_pos Nat.zpow_pos_of_pos
 
-theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
+lemma Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
   (Nat.zpow_pos_of_pos h n).ne'
 #align nat.zpow_ne_zero_of_pos Nat.zpow_ne_zero_of_pos
 
@@ -100,13 +100,13 @@ theorem zpow_inj (h₀ : 0 < a) (h₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
   (zpow_injective h₀ h₁).eq_iff
 #align zpow_inj zpow_inj
 
-theorem zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b ≤ c) :
+lemma zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b ≤ c) :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) :=
   have : Antitone fun n : ℤ => x ^ (-n) := fun _ _ h => zpow_le_of_le hx (neg_le_neg h)
   (this h).trans_eq this.map_min
 #align zpow_le_max_of_min_le zpow_le_max_of_min_le
 
-theorem zpow_le_max_iff_min_le {x : α} (hx : 1 < x) {a b c : ℤ} :
+lemma zpow_le_max_iff_min_le {x : α} (hx : 1 < x) {a b c : ℤ} :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) ↔ min a b ≤ c := by
   simp_rw [le_max_iff, min_le_iff, zpow_le_iff_le hx, neg_le_neg_iff]
 #align zpow_le_max_iff_min_le zpow_le_max_iff_min_le
@@ -153,23 +153,23 @@ theorem zpow_bit0_pos_iff (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
 #align zpow_bit0_pos_iff zpow_bit0_pos_iff
 
 @[simp]
-theorem zpow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 :=
+lemma zpow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 :=
   ⟨fun h => not_le.1 fun h' => not_le.2 h <| zpow_nonneg h' _, fun h => by
     rw [bit1, zpow_add_one₀ h.ne]; exact mul_neg_of_pos_of_neg (zpow_bit0_pos h.ne _) h⟩
 #align zpow_bit1_neg_iff zpow_bit1_neg_iff
 
 @[simp]
-theorem zpow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a :=
+lemma zpow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a :=
   le_iff_le_iff_lt_iff_lt.2 zpow_bit1_neg_iff
 #align zpow_bit1_nonneg_iff zpow_bit1_nonneg_iff
 
 @[simp]
-theorem zpow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := by
+lemma zpow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, zpow_bit1_neg_iff, zpow_eq_zero_iff (Int.bit1_ne_zero n)]
 #align zpow_bit1_nonpos_iff zpow_bit1_nonpos_iff
 
 @[simp]
-theorem zpow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a :=
+lemma zpow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a :=
   lt_iff_lt_of_le_iff_le zpow_bit1_nonpos_iff
 #align zpow_bit1_pos_iff zpow_bit1_pos_iff
 
@@ -208,7 +208,7 @@ alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 #align odd.zpow_nonpos Odd.zpow_nonpos
 
-theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
+lemma Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
 #align even.zpow_abs Even.zpow_abs
 

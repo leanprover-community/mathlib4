@@ -73,7 +73,7 @@ variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [Ad
 
 /-- If `𝕜` is a nontrivially normed field, any T2 topology on `𝕜` which makes it a topological
 vector space over itself (with the norm topology) is *equal* to the norm topology. -/
-theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAddGroup 𝕜 t _)
+lemma unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAddGroup 𝕜 t _)
     (h₂ : @ContinuousSMul 𝕜 𝕜 _ hnorm.toUniformSpace.toTopologicalSpace t) (h₃ : @T2Space 𝕜 t) :
     t = hnorm.toUniformSpace.toTopologicalSpace := by
   -- Let `𝓣₀` denote the topology on `𝕜` induced by the norm, and `𝓣` be any T2 vector
@@ -196,7 +196,7 @@ variable [CompleteSpace 𝕜]
 
 /-- This version imposes `ι` and `E` to live in the same universe, so you should instead use
 `continuous_equivFun_basis` which gives the same result without universe restrictions. -/
-private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
+private lemma continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
@@ -243,7 +243,7 @@ private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [F
     exact H₂ (ξ.coord i)
 
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
-theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
+lemma LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
     (f : E →ₗ[𝕜] F') : Continuous f := by
   -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
   -- argue that all linear maps there are continuous.
@@ -271,7 +271,7 @@ instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [Fini
 This is the key fact which makes all linear maps from a T2 finite dimensional TVS over such a field
 continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn implies that all
 norms are equivalent in finite dimensions. -/
-theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Fintype ι] (ξ : Basis ι 𝕜 E) :
+lemma continuous_equivFun_basis [T2Space E] {ι : Type*} [Fintype ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
   haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
@@ -303,7 +303,7 @@ theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 #align linear_map.coe_to_continuous_linear_map LinearMap.coe_toContinuousLinearMap
 
 @[simp]
-theorem coe_toContinuousLinearMap_symm :
+lemma coe_toContinuousLinearMap_symm :
     ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm =
       ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
   rfl
@@ -416,7 +416,7 @@ theorem FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
 
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if and only if they have the same (finite) dimension. -/
-theorem FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
+lemma FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
     Nonempty (E ≃L[𝕜] F) ↔ finrank 𝕜 E = finrank 𝕜 F :=
   ⟨fun ⟨h⟩ => h.toLinearEquiv.finrank_eq, fun h =>
     FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq h⟩
@@ -513,7 +513,7 @@ variable (𝕜 E : Type _) [NontriviallyNormedField 𝕜]
   [CompleteSpace 𝕜] [AddCommGroup E] [UniformSpace E] [T2Space E] [UniformAddGroup E]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
 
-theorem FiniteDimensional.complete : CompleteSpace E := by
+lemma FiniteDimensional.complete : CompleteSpace E := by
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
   have : UniformEmbedding e.toLinearEquiv.toEquiv.symm := e.symm.uniformEmbedding
   exact (completeSpace_congr this).1 (by infer_instance)
@@ -546,7 +546,7 @@ theorem Submodule.closed_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDime
 #align submodule.closed_of_finite_dimensional Submodule.closed_of_finiteDimensional
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearMap.closedEmbedding_of_injective [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
+lemma LinearMap.closedEmbedding_of_injective [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
     (hf : LinearMap.ker f = ⊥) : ClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
@@ -555,7 +555,7 @@ theorem LinearMap.closedEmbedding_of_injective [FiniteDimensional 𝕜 E] {f : E
       simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
 #align linear_equiv.closed_embedding_of_injective LinearMap.closedEmbedding_of_injective
 
-theorem closedEmbedding_smul_left {c : E} (hc : c ≠ 0) : ClosedEmbedding fun x : 𝕜 => x • c :=
+lemma closedEmbedding_smul_left {c : E} (hc : c ≠ 0) : ClosedEmbedding fun x : 𝕜 => x • c :=
   LinearMap.closedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
 #align closed_embedding_smul_left closedEmbedding_smul_left
 
@@ -567,7 +567,7 @@ theorem isClosedMap_smul_left (c : E) : IsClosedMap fun x : 𝕜 => x • c := b
   · exact (closedEmbedding_smul_left hc).isClosedMap
 #align is_closed_map_smul_left isClosedMap_smul_left
 
-theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
+lemma ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
     (f : E →L[𝕜] F) (hf : LinearMap.range f = ⊤) :
     ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf

@@ -48,7 +48,7 @@ open GeneralizedContinuedFraction (of)
 
 open GeneralizedContinuedFraction
 
-theorem GeneralizedContinuedFraction.of_isSimpleContinuedFraction :
+lemma GeneralizedContinuedFraction.of_isSimpleContinuedFraction :
     (of v).IsSimpleContinuedFraction := fun _ _ nth_part_num_eq =>
   of_part_num_eq_one nth_part_num_eq
 #align generalized_continued_fraction.of_is_simple_continued_fraction GeneralizedContinuedFraction.of_isSimpleContinuedFraction
@@ -58,7 +58,7 @@ nonrec def SimpleContinuedFraction.of : SimpleContinuedFraction K :=
   ⟨of v, GeneralizedContinuedFraction.of_isSimpleContinuedFraction v⟩
 #align simple_continued_fraction.of SimpleContinuedFraction.of
 
-theorem SimpleContinuedFraction.of_isContinuedFraction :
+lemma SimpleContinuedFraction.of_isContinuedFraction :
     (SimpleContinuedFraction.of v).IsContinuedFraction := fun _ _ nth_part_denom_eq =>
   lt_of_lt_of_le zero_lt_one (of_one_le_get?_part_denom nth_part_denom_eq)
 #align simple_continued_fraction.of_is_continued_fraction SimpleContinuedFraction.of_isContinuedFraction
@@ -70,7 +70,7 @@ def ContinuedFraction.of : ContinuedFraction K :=
 
 namespace GeneralizedContinuedFraction
 
-theorem of_convergents_eq_convergents' : (of v).convergents = (of v).convergents' :=
+lemma of_convergents_eq_convergents' : (of v).convergents = (of v).convergents' :=
   @ContinuedFraction.convergents_eq_convergents' _ _ (ContinuedFraction.of v)
 #align generalized_continued_fraction.of_convergents_eq_convergents' GeneralizedContinuedFraction.of_convergents_eq_convergents'
 
@@ -95,7 +95,7 @@ variable [Archimedean K]
 
 open Nat
 
-theorem of_convergence_epsilon :
+lemma of_convergence_epsilon :
     ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v - (of v).convergents n| < ε := by
   intro ε ε_pos
   -- use the archimedean property to obtian a suitable N
@@ -156,7 +156,7 @@ theorem of_convergence_epsilon :
 
 attribute [local instance] Preorder.topology
 
-theorem of_convergence [OrderTopology K] :
+lemma of_convergence [OrderTopology K] :
     Filter.Tendsto (of v).convergents Filter.atTop <| nhds v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
 #align generalized_continued_fraction.of_convergence GeneralizedContinuedFraction.of_convergence

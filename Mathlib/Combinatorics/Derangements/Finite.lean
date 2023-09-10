@@ -38,7 +38,7 @@ instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFi
 -- porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
-theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
+lemma card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
 #align card_derangements_invariant card_derangements_invariant
@@ -71,12 +71,12 @@ def numDerangements : ℕ → ℕ
 #align num_derangements numDerangements
 
 @[simp]
-theorem numDerangements_zero : numDerangements 0 = 1 :=
+lemma numDerangements_zero : numDerangements 0 = 1 :=
   rfl
 #align num_derangements_zero numDerangements_zero
 
 @[simp]
-theorem numDerangements_one : numDerangements 1 = 0 :=
+lemma numDerangements_one : numDerangements 1 = 0 :=
   rfl
 #align num_derangements_one numDerangements_one
 
@@ -93,7 +93,7 @@ theorem numDerangements_succ (n : ℕ) :
     ring
 #align num_derangements_succ numDerangements_succ
 
-theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
+lemma card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
   rcases n with _ | _ | n

@@ -44,7 +44,7 @@ namespace Bool
 #align bool.cond_ff Bool.cond_false
 
 @[simp]
-theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
+lemma cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
 #align cond_a_a Bool.cond_self
 
 @[simp]
@@ -65,10 +65,10 @@ theorem true_xor (b : Bool) : xor true b = not b := by cases b <;> simp
 theorem false_xor (b : Bool) : xor false b = b := by cases b <;> simp
 #align ff_bxor Bool.false_xor
 
-theorem true_eq_false_eq_False : ¬true = false := by decide
+lemma true_eq_false_eq_False : ¬true = false := by decide
 #align tt_eq_ff_eq_false Bool.true_eq_false_eq_False
 
-theorem false_eq_true_eq_False : ¬false = true := by decide
+lemma false_eq_true_eq_False : ¬false = true := by decide
 #align ff_eq_tt_eq_false Bool.false_eq_true_eq_False
 
 theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by simp
@@ -77,11 +77,11 @@ theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by si
 theorem eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by simp
 #align eq_tt_eq_not_eq_ft Bool.eq_true_eq_not_eq_false
 
-theorem eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
+lemma eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
   Eq.mp (eq_false_eq_not_eq_true b)
 #align eq_ff_of_not_eq_tt Bool.eq_false_of_not_eq_true
 
-theorem eq_true_of_not_eq_false {b : Bool} : ¬b = false → b = true :=
+lemma eq_true_of_not_eq_false {b : Bool} : ¬b = false → b = true :=
   Eq.mp (eq_true_eq_not_eq_false b)
 #align eq_tt_of_not_eq_ff Bool.eq_true_of_not_eq_false
 
@@ -111,34 +111,34 @@ theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
 theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
 #align bnot_eq_ff_eq_eq_tt Bool.not_eq_false_eq_eq_true
 
-theorem coe_false : ↑false = False := by simp
+lemma coe_false : ↑false = False := by simp
 #align coe_ff Bool.coe_false
 
-theorem coe_true : ↑true = True := by simp
+lemma coe_true : ↑true = True := by simp
 #align coe_tt Bool.coe_true
 
-theorem coe_sort_false : (↥false : Prop) = False := by simp
+lemma coe_sort_false : (↥false : Prop) = False := by simp
 #align coe_sort_ff Bool.coe_sort_false
 
-theorem coe_sort_true : (↥true : Prop) = True := by simp
+lemma coe_sort_true : (↥true : Prop) = True := by simp
 #align coe_sort_tt Bool.coe_sort_true
 
 theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
 #align to_bool_iff Bool.decide_iff
 
-theorem decide_true {p : Prop} [Decidable p] : p → decide p :=
+lemma decide_true {p : Prop} [Decidable p] : p → decide p :=
   (decide_iff p).2
 #align to_bool_true Bool.decide_true
 #align to_bool_tt Bool.decide_true
 
-theorem of_decide_true {p : Prop} [Decidable p] : decide p → p :=
+lemma of_decide_true {p : Prop} [Decidable p] : decide p → p :=
   (decide_iff p).1
 #align of_to_bool_true Bool.of_decide_true
 
-theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> exact by decide
+lemma bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> exact by decide
 #align bool_iff_false Bool.bool_iff_false
 
-theorem bool_eq_false {b : Bool} : ¬b → b = false :=
+lemma bool_eq_false {b : Bool} : ¬b → b = false :=
   bool_iff_false.1
 #align bool_eq_false Bool.bool_eq_false
 
@@ -146,15 +146,15 @@ theorem decide_false_iff (p : Prop) [Decidable p] : decide p = false ↔ ¬p :=
   bool_iff_false.symm.trans (not_congr (decide_iff _))
 #align to_bool_ff_iff Bool.decide_false_iff
 
-theorem decide_false {p : Prop} [Decidable p] : ¬p → decide p = false :=
+lemma decide_false {p : Prop} [Decidable p] : ¬p → decide p = false :=
   (decide_false_iff p).2
 #align to_bool_ff Bool.decide_false
 
-theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
+lemma of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
   (decide_false_iff p).1
 #align of_to_bool_ff Bool.of_decide_false
 
-theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
+lemma decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
     decide p = decide q := by
   cases h' : decide q with
   | false => exact decide_false (mt h.1 <| of_decide_false h')

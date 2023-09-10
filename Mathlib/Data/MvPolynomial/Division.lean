@@ -103,7 +103,7 @@ noncomputable def modMonomial (x : MvPolynomial σ R) (s : σ →₀ ℕ) : MvPo
 local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
-theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : ¬s ≤ s') :
+lemma coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : ¬s ≤ s') :
     coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = coeff s' x :=
   x.modOf_apply_of_not_exists_add s s'
     (by
@@ -112,7 +112,7 @@ theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ 
 #align mv_polynomial.coeff_mod_monomial_of_not_le MvPolynomial.coeff_modMonomial_of_not_le
 
 @[simp]
-theorem coeff_modMonomial_of_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : s ≤ s') :
+lemma coeff_modMonomial_of_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : s ≤ s') :
     coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = 0 :=
   x.modOf_apply_of_exists_add _ _ <| exists_add_of_le h
 #align mv_polynomial.coeff_mod_monomial_of_le MvPolynomial.coeff_modMonomial_of_le
@@ -144,7 +144,7 @@ theorem modMonomial_add_divMonomial (x : MvPolynomial σ R) (s : σ →₀ ℕ) 
   AddMonoidAlgebra.modOf_add_divOf x s
 #align mv_polynomial.mod_monomial_add_div_monomial MvPolynomial.modMonomial_add_divMonomial
 
-theorem monomial_one_dvd_iff_modMonomial_eq_zero {i : σ →₀ ℕ} {x : MvPolynomial σ R} :
+lemma monomial_one_dvd_iff_modMonomial_eq_zero {i : σ →₀ ℕ} {x : MvPolynomial σ R} :
     monomial i (1 : R) ∣ x ↔ x %ᵐᵒⁿᵒᵐⁱᵃˡ i = 0 :=
   AddMonoidAlgebra.of'_dvd_iff_modOf_eq_zero
 #align mv_polynomial.monomial_one_dvd_iff_mod_monomial_eq_zero MvPolynomial.monomial_one_dvd_iff_modMonomial_eq_zero
@@ -207,7 +207,7 @@ theorem modMonomial_add_divMonomial_single (x : MvPolynomial σ R) (i : σ) :
   modMonomial_add_divMonomial _ _
 #align mv_polynomial.mod_monomial_add_div_monomial_single MvPolynomial.modMonomial_add_divMonomial_single
 
-theorem X_dvd_iff_modMonomial_eq_zero {i : σ} {x : MvPolynomial σ R} :
+lemma X_dvd_iff_modMonomial_eq_zero {i : σ} {x : MvPolynomial σ R} :
     X i ∣ x ↔ x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 = 0 :=
   monomial_one_dvd_iff_modMonomial_eq_zero
 set_option linter.uppercaseLean3 false in
@@ -218,7 +218,7 @@ end XLemmas
 /-! ### Some results about dvd (`∣`) on `monomial` and `X` -/
 
 
-theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
+lemma monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     monomial i r ∣ monomial j s ↔ (s = 0 ∨ i ≤ j) ∧ r ∣ s := by
   constructor
   · rintro ⟨x, hx⟩
@@ -241,14 +241,14 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
 #align mv_polynomial.monomial_dvd_monomial MvPolynomial.monomial_dvd_monomial
 
 @[simp]
-theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
+lemma monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
     monomial i (1 : R) ∣ monomial j 1 ↔ i ≤ j := by
   rw [monomial_dvd_monomial]
   simp_rw [one_ne_zero, false_or_iff, dvd_rfl, and_true_iff]
 #align mv_polynomial.monomial_one_dvd_monomial_one MvPolynomial.monomial_one_dvd_monomial_one
 
 @[simp]
-theorem X_dvd_X [Nontrivial R] {i j : σ} :
+lemma X_dvd_X [Nontrivial R] {i j : σ} :
     (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
   refine' monomial_one_dvd_monomial_one.trans _
   simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero,
@@ -257,7 +257,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_X MvPolynomial.X_dvd_X
 
 @[simp]
-theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
+lemma X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
     (X i : MvPolynomial σ R) ∣ monomial j r ↔ r = 0 ∨ j i ≠ 0 := by
   refine' monomial_dvd_monomial.trans _
   simp_rw [one_dvd, and_true_iff, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]

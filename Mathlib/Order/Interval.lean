@@ -46,7 +46,7 @@ section LE
 
 variable [LE α] {s t : NonemptyInterval α}
 
-theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) := fun s t h =>
+lemma toProd_injective : Injective (toProd : NonemptyInterval α → α × α) := fun s t h =>
   by cases s; cases t; congr
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
 
@@ -71,7 +71,7 @@ theorem toDualProd_apply (s : NonemptyInterval α) : s.toDualProd = (toDual s.fs
   rfl
 #align nonempty_interval.to_dual_prod_apply NonemptyInterval.toDualProd_apply
 
-theorem toDualProd_injective : Injective (toDualProd : NonemptyInterval α → αᵒᵈ × α) :=
+lemma toDualProd_injective : Injective (toDualProd : NonemptyInterval α → αᵒᵈ × α) :=
   toProd_injective
 #align nonempty_interval.to_dual_prod_injective NonemptyInterval.toDualProd_injective
 
@@ -84,7 +84,7 @@ instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
 instance le : LE (NonemptyInterval α) :=
   ⟨fun s t => t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
 
-theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
+lemma le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
   Iff.rfl
 #align nonempty_interval.le_def NonemptyInterval.le_def
 
@@ -131,11 +131,11 @@ instance (priority := 100) : Membership α (NonemptyInterval α) :=
   ⟨fun a s => a ∈ (s : Set α)⟩
 
 @[simp]
-theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
+lemma mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
   Iff.rfl
 #align nonempty_interval.mem_mk NonemptyInterval.mem_mk
 
-theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
+lemma mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 #align nonempty_interval.mem_def NonemptyInterval.mem_def
 
@@ -154,7 +154,7 @@ theorem mem_pure_self (a : α) : a ∈ pure a :=
   ⟨le_rfl, le_rfl⟩
 #align nonempty_interval.mem_pure_self NonemptyInterval.mem_pure_self
 
-theorem pure_injective : Injective (pure : α → NonemptyInterval α) := fun _ _ =>
+lemma pure_injective : Injective (pure : α → NonemptyInterval α) := fun _ _ =>
   congr_arg <| Prod.fst ∘ toProd
 #align nonempty_interval.pure_injective NonemptyInterval.pure_injective
 
@@ -223,7 +223,7 @@ instance : OrderTop (NonemptyInterval α) where
   le_top _ := ⟨bot_le, le_top⟩
 
 @[simp]
-theorem dual_top : dual (⊤ : NonemptyInterval α) = ⊤ :=
+lemma dual_top : dual (⊤ : NonemptyInterval α) = ⊤ :=
   rfl
 #align nonempty_interval.dual_top NonemptyInterval.dual_top
 
@@ -246,17 +246,17 @@ instance setLike : SetLike (NonemptyInterval α) α where
   coe_injective' := coeHom.injective
 
 @[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
-theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
+lemma coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
 #align nonempty_interval.coe_subset_coe NonemptyInterval.coe_subset_coe
 
 @[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
-theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
+lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
 
 @[simp]
-theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = ((↑) : NonemptyInterval α → Set α) :=
+lemma coe_coeHom : (coeHom : NonemptyInterval α → Set α) = ((↑) : NonemptyInterval α → Set α) :=
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
@@ -266,12 +266,12 @@ theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
 #align nonempty_interval.coe_pure NonemptyInterval.coe_pure
 
 @[simp]
-theorem mem_pure : b ∈ pure a ↔ b = a := by
+lemma mem_pure : b ∈ pure a ↔ b = a := by
   rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
 #align nonempty_interval.mem_pure NonemptyInterval.mem_pure
 
 @[simp, norm_cast]
-theorem coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = univ :=
+lemma coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = univ :=
   Icc_bot_top
 #align nonempty_interval.coe_top NonemptyInterval.coe_top
 
@@ -338,22 +338,22 @@ instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r 
   WithBot.canLift
 #align interval.can_lift Interval.canLift
 
-theorem coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) :=
+lemma coe_injective : Injective ((↑) : NonemptyInterval α → Interval α) :=
   WithBot.coe_injective
 #align interval.coe_injective Interval.coe_injective
 
 @[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
-theorem coe_inj {s t : NonemptyInterval α} : (s : Interval α) = t ↔ s = t :=
+lemma coe_inj {s t : NonemptyInterval α} : (s : Interval α) = t ↔ s = t :=
   WithBot.coe_inj
 #align interval.coe_inj Interval.coe_inj
 
 protected
-theorem «forall» {p : Interval α → Prop} : (∀ s, p s) ↔ p ⊥ ∧ ∀ s : NonemptyInterval α, p s :=
+lemma «forall» {p : Interval α → Prop} : (∀ s, p s) ↔ p ⊥ ∧ ∀ s : NonemptyInterval α, p s :=
   Option.forall
 #align interval.forall Interval.forall
 
 protected
-theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s : NonemptyInterval α, p s :=
+lemma «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s : NonemptyInterval α, p s :=
   Option.exists
 #align interval.exists Interval.exists
 
@@ -379,7 +379,7 @@ def pure (a : α) : Interval α :=
   NonemptyInterval.pure a
 #align interval.pure Interval.pure
 
-theorem pure_injective : Injective (pure : α → Interval α) :=
+lemma pure_injective : Injective (pure : α → Interval α) :=
   coe_injective.comp NonemptyInterval.pure_injective
 #align interval.pure_injective Interval.pure_injective
 
@@ -389,17 +389,17 @@ theorem dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
 #align interval.dual_pure Interval.dual_pure
 
 @[simp]
-theorem dual_bot : dual (⊥ : Interval α) = ⊥ :=
+lemma dual_bot : dual (⊥ : Interval α) = ⊥ :=
   rfl
 #align interval.dual_bot Interval.dual_bot
 
 @[simp]
-theorem pure_ne_bot {a : α} : pure a ≠ ⊥ :=
+lemma pure_ne_bot {a : α} : pure a ≠ ⊥ :=
   WithBot.coe_ne_bot
 #align interval.pure_ne_bot Interval.pure_ne_bot
 
 @[simp]
-theorem bot_ne_pure {a : α} : ⊥ ≠ pure a :=
+lemma bot_ne_pure {a : α} : ⊥ ≠ pure a :=
   WithBot.bot_ne_coe
 #align interval.bot_ne_pure Interval.bot_ne_pure
 
@@ -434,7 +434,7 @@ instance boundedOrder : BoundedOrder (Interval α) :=
   WithBot.instBoundedOrder
 
 @[simp]
-theorem dual_top : dual (⊤ : Interval α) = ⊤ :=
+lemma dual_top : dual (⊤ : Interval α) = ⊤ :=
   rfl
 #align interval.dual_top Interval.dual_top
 
@@ -467,12 +467,12 @@ instance setLike : SetLike (Interval α) α where
   coe_injective' := coeHom.injective
 
 @[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
-theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
+lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=
   (@coeHom α _).le_iff_le
 #align interval.coe_subset_coe Interval.coe_subset_coe
 
 @[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
-theorem coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
+lemma coe_sSubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align interval.coe_ssubset_coe Interval.coe_sSubset_coe
 
@@ -487,12 +487,12 @@ theorem coe_coe (s : NonemptyInterval α) : ((s : Interval α) : Set α) = s :=
 #align interval.coe_coe Interval.coe_coe
 
 @[simp, norm_cast]
-theorem coe_bot : ((⊥ : Interval α) : Set α) = ∅ :=
+lemma coe_bot : ((⊥ : Interval α) : Set α) = ∅ :=
   rfl
 #align interval.coe_bot Interval.coe_bot
 
 @[simp, norm_cast]
-theorem coe_top [BoundedOrder α] : ((⊤ : Interval α) : Set α) = univ :=
+lemma coe_top [BoundedOrder α] : ((⊤ : Interval α) : Set α) = univ :=
   Icc_bot_top
 #align interval.coe_top Interval.coe_top
 
@@ -509,7 +509,7 @@ theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map 
 #align interval.subset_coe_map Interval.subset_coe_map
 
 @[simp]
-theorem mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
+lemma mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
 #align interval.mem_pure Interval.mem_pure
 
 theorem mem_pure_self (a : α) : a ∈ pure a :=
@@ -633,25 +633,25 @@ theorem coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=
 #align nonempty_interval.coe_pure_interval NonemptyInterval.coe_pure_interval
 
 @[simp, norm_cast]
-theorem coe_eq_pure : (s : Interval α) = Interval.pure a ↔ s = pure a := by
+lemma coe_eq_pure : (s : Interval α) = Interval.pure a ↔ s = pure a := by
   rw [← Interval.coe_inj, coe_pure_interval]
 #align nonempty_interval.coe_eq_pure NonemptyInterval.coe_eq_pure
 
 @[simp, norm_cast]
-theorem coe_top_interval [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Interval α) = ⊤ :=
+lemma coe_top_interval [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Interval α) = ⊤ :=
   rfl
 #align nonempty_interval.coe_top_interval NonemptyInterval.coe_top_interval
 
 end Preorder
 
 @[simp, norm_cast]
-theorem mem_coe_interval [PartialOrder α] {s : NonemptyInterval α} {x : α} :
+lemma mem_coe_interval [PartialOrder α] {s : NonemptyInterval α} {x : α} :
     x ∈ (s : Interval α) ↔ x ∈ s :=
   Iff.rfl
 #align nonempty_interval.mem_coe_interval NonemptyInterval.mem_coe_interval
 
 @[simp, norm_cast]
-theorem coe_sup_interval [Lattice α] (s t : NonemptyInterval α) :
+lemma coe_sup_interval [Lattice α] (s t : NonemptyInterval α) :
     (↑(s ⊔ t) : Interval α) = ↑s ⊔ ↑t :=
   rfl
 #align nonempty_interval.coe_sup_interval NonemptyInterval.coe_sup_interval
@@ -749,7 +749,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
   }
 
 @[simp, norm_cast]
-theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
+lemma coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
   classical -- Porting note: added
   -- Porting note: this `change` was
@@ -769,13 +769,13 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
 #align interval.coe_Inf Interval.coe_sInf
 
 @[simp, norm_cast]
-theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
+lemma coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 #align interval.coe_infi Interval.coe_iInf
 
 -- @[simp] -- Porting note: not in simpNF
 @[norm_cast]
-theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
+lemma coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 #align interval.coe_infi₂ Interval.coe_iInf₂
 

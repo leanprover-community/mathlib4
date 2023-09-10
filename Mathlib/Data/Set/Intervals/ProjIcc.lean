@@ -87,19 +87,19 @@ theorem projIic_self (b : α) : projIic b b = ⟨b, le_rfl⟩ := projIic_of_le l
 #align set.proj_Iic_self Set.projIic_self
 
 @[simp]
-theorem projIcc_left : projIcc a b h a = ⟨a, left_mem_Icc.2 h⟩ :=
+lemma projIcc_left : projIcc a b h a = ⟨a, left_mem_Icc.2 h⟩ :=
   projIcc_of_le_left h le_rfl
 #align set.proj_Icc_left Set.projIcc_left
 
 @[simp]
-theorem projIcc_right : projIcc a b h b = ⟨b, right_mem_Icc.2 h⟩ :=
+lemma projIcc_right : projIcc a b h b = ⟨b, right_mem_Icc.2 h⟩ :=
   projIcc_of_right_le h le_rfl
 #align set.proj_Icc_right Set.projIcc_right
 
-theorem projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [projIci, Subtype.ext_iff]
+lemma projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [projIci, Subtype.ext_iff]
 #align set.proj_Ici_eq_self Set.projIci_eq_self
 
-theorem projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [projIic, Subtype.ext_iff]
+lemma projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [projIic, Subtype.ext_iff]
 #align set.proj_Iic_eq_self Set.projIic_eq_self
 
 theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
@@ -134,57 +134,57 @@ theorem projIcc_val (x : Icc a b) : projIcc a b h x = x := by
   apply projIcc_of_mem
 #align set.proj_Icc_coe Set.projIcc_val
 
-theorem projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ => ⟨x, x.2, projIci_coe x⟩
+lemma projIci_surjOn : SurjOn (projIci a) (Ici a) univ := fun x _ => ⟨x, x.2, projIci_coe x⟩
 #align set.proj_Ici_surj_on Set.projIci_surjOn
 
-theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ => ⟨x, x.2, projIic_coe x⟩
+lemma projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ => ⟨x, x.2, projIic_coe x⟩
 #align set.proj_Iic_surj_on Set.projIic_surjOn
 
-theorem projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ =>
+lemma projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ =>
   ⟨x, x.2, projIcc_val h x⟩
 #align set.proj_Icc_surj_on Set.projIcc_surjOn
 
-theorem projIci_surjective : Surjective (projIci a) := fun x => ⟨x, projIci_coe x⟩
+lemma projIci_surjective : Surjective (projIci a) := fun x => ⟨x, projIci_coe x⟩
 #align set.proj_Ici_surjective Set.projIci_surjective
 
-theorem projIic_surjective : Surjective (projIic b) := fun x => ⟨x, projIic_coe x⟩
+lemma projIic_surjective : Surjective (projIic b) := fun x => ⟨x, projIic_coe x⟩
 #align set.proj_Iic_surjective Set.projIic_surjective
 
-theorem projIcc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, projIcc_val h x⟩
+lemma projIcc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, projIcc_val h x⟩
 #align set.proj_Icc_surjective Set.projIcc_surjective
 
 @[simp]
-theorem range_projIci : range (projIci a) = univ := projIci_surjective.range_eq
+lemma range_projIci : range (projIci a) = univ := projIci_surjective.range_eq
 #align set.range_proj_Ici Set.range_projIci
 
 @[simp]
-theorem range_projIic : range (projIic a) = univ := projIic_surjective.range_eq
+lemma range_projIic : range (projIic a) = univ := projIic_surjective.range_eq
 #align set.range_proj_Iic Set.range_projIic
 
 @[simp]
-theorem range_projIcc : range (projIcc a b h) = univ :=
+lemma range_projIcc : range (projIcc a b h) = univ :=
   (projIcc_surjective h).range_eq
 #align set.range_proj_Icc Set.range_projIcc
 
-theorem monotone_projIci : Monotone (projIci a) := fun _ _ => max_le_max le_rfl
+lemma monotone_projIci : Monotone (projIci a) := fun _ _ => max_le_max le_rfl
 #align set.monotone_proj_Ici Set.monotone_projIci
 
-theorem monotone_projIic : Monotone (projIic a) := fun _ _ => min_le_min le_rfl
+lemma monotone_projIic : Monotone (projIic a) := fun _ _ => min_le_min le_rfl
 #align set.monotone_proj_Iic Set.monotone_projIic
 
-theorem monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy =>
+lemma monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy =>
   max_le_max le_rfl <| min_le_min le_rfl hxy
 #align set.monotone_proj_Icc Set.monotone_projIcc
 
-theorem strictMonoOn_projIci : StrictMonoOn (projIci a) (Ici a) := fun x hx y hy hxy => by
+lemma strictMonoOn_projIci : StrictMonoOn (projIci a) (Ici a) := fun x hx y hy hxy => by
   simpa only [projIci_of_mem, hx, hy]
 #align set.strict_mono_on_proj_Ici Set.strictMonoOn_projIci
 
-theorem strictMonoOn_projIic : StrictMonoOn (projIic b) (Iic b) := fun x hx y hy hxy => by
+lemma strictMonoOn_projIic : StrictMonoOn (projIic b) (Iic b) := fun x hx y hy hxy => by
   simpa only [projIic_of_mem, hx, hy]
 #align set.strict_mono_on_proj_Iic Set.strictMonoOn_projIic
 
-theorem strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x hx y hy hxy => by
+lemma strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x hx y hy hxy => by
   simpa only [projIcc_of_mem, hx, hy]
 #align set.strict_mono_on_proj_Icc Set.strictMonoOn_projIcc
 
@@ -314,11 +314,11 @@ open Set
 
 variable [Preorder β] {s t : Set α} {a b : α} (h : a ≤ b) {f : Icc a b → β}
 
-protected theorem Monotone.IciExtend {f : Ici a → β} (hf : Monotone f) : Monotone (IciExtend f) :=
+protected lemma Monotone.IciExtend {f : Ici a → β} (hf : Monotone f) : Monotone (IciExtend f) :=
   hf.comp monotone_projIci
 #align monotone.Ici_extend Monotone.IciExtend
 
-protected theorem Monotone.IicExtend {f : Iic b → β} (hf : Monotone f) : Monotone (IicExtend f) :=
+protected lemma Monotone.IicExtend {f : Iic b → β} (hf : Monotone f) : Monotone (IicExtend f) :=
   hf.comp monotone_projIic
 #align monotone.Iic_extend Monotone.IicExtend
 
@@ -326,12 +326,12 @@ protected theorem Monotone.IccExtend (hf : Monotone f) : Monotone (IccExtend h f
   hf.comp <| monotone_projIcc h
 #align monotone.Icc_extend Monotone.IccExtend
 
-theorem StrictMono.strictMonoOn_IciExtend {f : Ici a → β} (hf : StrictMono f) :
+lemma StrictMono.strictMonoOn_IciExtend {f : Ici a → β} (hf : StrictMono f) :
     StrictMonoOn (IciExtend f) (Ici a) :=
   hf.comp_strictMonoOn strictMonoOn_projIci
 #align strict_mono.strict_mono_on_Ici_extend StrictMono.strictMonoOn_IciExtend
 
-theorem StrictMono.strictMonoOn_IicExtend {f : Iic b → β} (hf : StrictMono f) :
+lemma StrictMono.strictMonoOn_IicExtend {f : Iic b → β} (hf : StrictMono f) :
     StrictMonoOn (IicExtend f) (Iic b) :=
   hf.comp_strictMonoOn strictMonoOn_projIic
 #align strict_mono.strict_mono_on_Iic_extend StrictMono.strictMonoOn_IicExtend
@@ -341,12 +341,12 @@ theorem StrictMono.strictMonoOn_IccExtend (hf : StrictMono f) :
   hf.comp_strictMonoOn (strictMonoOn_projIcc h)
 #align strict_mono.strict_mono_on_Icc_extend StrictMono.strictMonoOn_IccExtend
 
-protected theorem Set.OrdConnected.IciExtend {s : Set (Ici a)} (hs : s.OrdConnected) :
+protected lemma Set.OrdConnected.IciExtend {s : Set (Ici a)} (hs : s.OrdConnected) :
     {x | IciExtend (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨max_le_max le_rfl hz.1, max_le_max le_rfl hz.2⟩⟩
 #align set.ord_connected.Ici_extend Set.OrdConnected.IciExtend
 
-protected theorem Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnected) :
+protected lemma Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnected) :
     {x | IicExtend (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
 #align set.ord_connected.Iic_extend Set.OrdConnected.IicExtend

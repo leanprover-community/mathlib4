@@ -56,7 +56,7 @@ theorem coe_pointwise_vadd (v : V) (s : AffineSubspace k P) :
   rfl
 #align affine_subspace.coe_pointwise_vadd AffineSubspace.coe_pointwise_vadd
 
-theorem vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
+lemma vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
     v +ᵥ p ∈ v +ᵥ s ↔ p ∈ s :=
   vadd_mem_vadd_set_iff
 #align affine_subspace.vadd_mem_pointwise_vadd_iff AffineSubspace.vadd_mem_pointwise_vadd_iff

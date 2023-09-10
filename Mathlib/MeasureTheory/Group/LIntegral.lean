@@ -31,7 +31,7 @@ with respect to a left-invariant measure. -/
 @[to_additive
       "Translating a function by left-addition does not change its Lebesgue integral with
       respect to a left-invariant measure."]
-theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞) (g : G) :
+lemma lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (g * x) ∂μ) = ∫⁻ x, f x ∂μ := by
   convert (lintegral_map_equiv f <| MeasurableEquiv.mulLeft g).symm
   simp [map_mul_left_eq_self μ g]
@@ -43,7 +43,7 @@ with respect to a right-invariant measure. -/
 @[to_additive
       "Translating a function by right-addition does not change its Lebesgue integral with
       respect to a right-invariant measure."]
-theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
+lemma lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by
   convert (lintegral_map_equiv f <| MeasurableEquiv.mulRight g).symm using 1
   simp [map_mul_right_eq_self μ g]
@@ -51,7 +51,7 @@ theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
 #align measure_theory.lintegral_add_right_eq_self MeasureTheory.lintegral_add_right_eq_self
 
 @[to_additive] -- Porting note: was `@[simp]`
-theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
+lemma lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x / g) ∂μ) = ∫⁻ x, f x ∂μ := by
   simp_rw [div_eq_mul_inv, lintegral_mul_right_eq_self f g⁻¹]
 #align measure_theory.lintegral_div_right_eq_self MeasureTheory.lintegral_div_right_eq_self
@@ -68,7 +68,7 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [BorelSpace G] [IsM
 @[to_additive
       "For nonzero regular left invariant measures, the integral of a continuous nonnegative
       function `f` is 0 iff `f` is 0."]
-theorem lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {f : G → ℝ≥0∞}
+lemma lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {f : G → ℝ≥0∞}
     (hf : Continuous f) : ∫⁻ x, f x ∂μ = 0 ↔ f = 0 := by
   haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular hμ
   rw [lintegral_eq_zero_iff hf.measurable, hf.ae_eq_iff_eq μ continuous_zero]

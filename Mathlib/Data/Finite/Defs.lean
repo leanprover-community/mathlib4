@@ -59,7 +59,7 @@ class inductive Finite (α : Sort*) : Prop
   | intro {n : ℕ} : α ≃ Fin n → Finite _
 #align finite Finite
 
-theorem finite_iff_exists_equiv_fin {α : Sort*} : Finite α ↔ ∃ n, Nonempty (α ≃ Fin n) :=
+lemma finite_iff_exists_equiv_fin {α : Sort*} : Finite α ↔ ∃ n, Nonempty (α ≃ Fin n) :=
   ⟨fun ⟨e⟩ => ⟨_, ⟨e⟩⟩, fun ⟨_, ⟨e⟩⟩ => ⟨e⟩⟩
 #align finite_iff_exists_equiv_fin finite_iff_exists_equiv_fin
 
@@ -76,11 +76,11 @@ theorem Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=
   ⟨fun _ => Finite.of_equiv _ f, fun _ => Finite.of_equiv _ f.symm⟩
 #align equiv.finite_iff Equiv.finite_iff
 
-theorem Function.Bijective.finite_iff {f : α → β} (h : Bijective f) : Finite α ↔ Finite β :=
+lemma Function.Bijective.finite_iff {f : α → β} (h : Bijective f) : Finite α ↔ Finite β :=
   (Equiv.ofBijective f h).finite_iff
 #align function.bijective.finite_iff Function.Bijective.finite_iff
 
-theorem Finite.ofBijective [Finite α] {f : α → β} (h : Bijective f) : Finite β :=
+lemma Finite.ofBijective [Finite α] {f : α → β} (h : Bijective f) : Finite β :=
   h.finite_iff.mp ‹_›
 #align finite.of_bijective Finite.ofBijective
 
@@ -98,12 +98,12 @@ class Infinite (α : Sort*) : Prop where
 #align infinite Infinite
 
 @[simp]
-theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
+lemma not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
   ⟨Infinite.mk, fun h => h.1⟩
 #align not_finite_iff_infinite not_finite_iff_infinite
 
 @[simp]
-theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
+lemma not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
   not_finite_iff_infinite.not_right.symm
 #align not_infinite_iff_finite not_infinite_iff_finite
 
@@ -126,11 +126,11 @@ theorem not_finite (α : Sort*) [Infinite α] [Finite α] : False :=
   @Infinite.not_finite α ‹_› ‹_›
 #align not_finite not_finite
 
-protected theorem Finite.false [Infinite α] (_ : Finite α) : False :=
+protected lemma Finite.false [Infinite α] (_ : Finite α) : False :=
   not_finite α
 #align finite.false Finite.false
 
-protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
+protected lemma Infinite.false [Finite α] (_ : Infinite α) : False :=
   @Infinite.not_finite α ‹_› ‹_›
 #align infinite.false Infinite.false
 

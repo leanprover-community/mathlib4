@@ -50,12 +50,12 @@ theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
 
 
 @[simp, norm_cast]
-theorem cast_zero : ((0 : ℚ) : α) = 0 :=
+lemma cast_zero : ((0 : ℚ) : α) = 0 :=
   (cast_coe_int _).trans Int.cast_zero
 #align rat.cast_zero Rat.cast_zero
 
 @[simp, norm_cast]
-theorem cast_one : ((1 : ℚ) : α) = 1 :=
+lemma cast_one : ((1 : ℚ) : α) = 1 :=
   (cast_coe_int _).trans Int.cast_one
 #align rat.cast_one Rat.cast_one
 
@@ -95,7 +95,7 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
 #align rat.cast_mk_of_ne_zero Rat.cast_mk_of_ne_zero
 
 @[norm_cast]
-theorem cast_add_of_ne_zero :
+lemma cast_add_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m + n : ℚ) : α) = m + n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
@@ -113,7 +113,7 @@ theorem cast_add_of_ne_zero :
 #align rat.cast_add_of_ne_zero Rat.cast_add_of_ne_zero
 
 @[simp, norm_cast]
-theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
+lemma cast_neg : ∀ n, ((-n : ℚ) : α) = -n
   | ⟨n, d, h, c⟩ => by
     simpa only [cast_def] using
       show (↑(-n) / d : α) = -(n / d) by
@@ -121,14 +121,14 @@ theorem cast_neg : ∀ n, ((-n : ℚ) : α) = -n
 #align rat.cast_neg Rat.cast_neg
 
 @[norm_cast]
-theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
+lemma cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den : α) ≠ 0) :
     ((m - n : ℚ) : α) = m - n := by
   have : ((-n).den : α) ≠ 0 := by cases n; exact n0
   simp [sub_eq_add_neg, cast_add_of_ne_zero m0 this]
 #align rat.cast_sub_of_ne_zero Rat.cast_sub_of_ne_zero
 
 @[norm_cast]
-theorem cast_mul_of_ne_zero :
+lemma cast_mul_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m * n : ℚ) : α) = m * n
   | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
@@ -161,7 +161,7 @@ theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 #align rat.cast_inv_int Rat.cast_inv_int
 
 @[norm_cast]
-theorem cast_inv_of_ne_zero :
+lemma cast_inv_of_ne_zero :
   ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
   | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) => by
     have _ : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0; exact n0 Int.cast_zero
@@ -172,7 +172,7 @@ theorem cast_inv_of_ne_zero :
 #align rat.cast_inv_of_ne_zero Rat.cast_inv_of_ne_zero
 
 @[norm_cast]
-theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num : α) ≠ 0)
+lemma cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num : α) ≠ 0)
     (nd : (n.den : α) ≠ 0) : ((m / n : ℚ) : α) = m / n := by
   have : (n⁻¹.den : ℤ) ∣ n.num := by
     conv in n⁻¹.den => rw [← @num_den n, inv_def']
@@ -191,7 +191,7 @@ theorem cast_id (n : ℚ) : Rat.cast n = n := rfl
 #align rat.cast_id Rat.cast_id
 
 @[simp]
-theorem cast_eq_id : ((↑) : ℚ → ℚ) = id :=
+lemma cast_eq_id : ((↑) : ℚ → ℚ) = id :=
   funext fun _ => rfl
 #align rat.cast_eq_id Rat.cast_eq_id
 
@@ -200,12 +200,12 @@ end Rat
 open Rat
 
 @[simp]
-theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
+lemma map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
     f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
 #align map_rat_cast map_ratCast
 
 @[simp]
-theorem eq_ratCast {k} [DivisionRing k] [RingHomClass F ℚ k] (f : F) (r : ℚ) : f r = r := by
+lemma eq_ratCast {k} [DivisionRing k] [RingHomClass F ℚ k] (f : F) (r : ℚ) : f r = r := by
   rw [← map_ratCast f, Rat.cast_id]
 #align eq_rat_cast eq_ratCast
 
@@ -226,7 +226,7 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
 
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
-theorem ext_rat {f g : ℚ →*₀ M₀}
+lemma ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=
   ext_rat' <| FunLike.congr_fun h
 #align monoid_with_zero_hom.ext_rat MonoidWithZeroHom.ext_rat
@@ -246,7 +246,7 @@ end MonoidWithZeroHom
 
 /-- Any two ring homomorphisms from `ℚ` to a semiring are equal. If the codomain is a division ring,
 then this lemma follows from `eq_ratCast`. -/
-theorem RingHom.ext_rat {R : Type*} [Semiring R] [RingHomClass F ℚ R] (f g : F) : f = g :=
+lemma RingHom.ext_rat {R : Type*} [Semiring R] [RingHomClass F ℚ R] (f g : F) : f = g :=
   MonoidWithZeroHom.ext_rat' <|
     RingHom.congr_fun <|
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))

@@ -157,7 +157,7 @@ Another useful example is the forgetful functor `TopCommRing ⥤ Top`.
 See <https://stacks.math.columbia.edu/tag/0073>.
 In fact we prove a stronger version with arbitrary complete target category.
 -/
-theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) := by
+lemma isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) := by
   rw [Presheaf.isSheaf_iff_isSheafEqualizerProducts,
     Presheaf.isSheaf_iff_isSheafEqualizerProducts]
   constructor

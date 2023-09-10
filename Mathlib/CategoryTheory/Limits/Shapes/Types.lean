@@ -54,7 +54,7 @@ instance : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
-theorem pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : Type u}
+lemma pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : Type u}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
   congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
@@ -62,7 +62,7 @@ theorem pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : 
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`,
 with specialized universes. -/
-theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
+lemma pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
   by simp
@@ -70,7 +70,7 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
 @[simp 1001]
-theorem pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
+lemma pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
   Limit.map_π_apply.{v, u} _ _ _
@@ -78,7 +78,7 @@ theorem pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
-theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
+lemma pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
    by simp
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
@@ -299,7 +299,7 @@ theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
 
 open Function (Injective)
 
-theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
+lemma binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
       Injective c.inl ∧ Injective c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
   classical
@@ -379,19 +379,19 @@ noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ F ≅
 -- Porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma
 -- It should produce the lemma below.
 @[simp]
-theorem productIso_hom_comp_eval {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
+lemma productIso_hom_comp_eval {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => f j) = Pi.π F j :=
   rfl
 #align category_theory.limits.types.product_iso_hom_comp_eval CategoryTheory.Limits.Types.productIso_hom_comp_eval
 
 @[simp]
-theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → TypeMax.{v, u}) (j : J) (x) :
+lemma productIso_hom_comp_eval_apply {J : Type v} (F : J → TypeMax.{v, u}) (j : J) (x) :
     ((productIso.{v, u} F).hom x) j = Pi.π F j x :=
   rfl
 #align category_theory.limits.types.product_iso_hom_comp_eval_apply CategoryTheory.Limits.Types.productIso_hom_comp_eval_apply
 
 @[elementwise (attr := simp)]
-theorem productIso_inv_comp_π {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
+lemma productIso_inv_comp_π {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => f j :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 #align category_theory.limits.types.product_iso_inv_comp_π CategoryTheory.Limits.Types.productIso_inv_comp_π
@@ -418,19 +418,19 @@ noncomputable def productIso {J : Type v} (F : J → Type u) [UnivLE.{v, u}] :
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 @[simp]
-theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
+lemma productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => (equivShrink _).symm f j) = Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
 
 -- Porting note:
 -- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
 @[simp]
-theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
+lemma productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
    (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
   congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]
-theorem productIso_inv_comp_π {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
+lemma productIso_inv_comp_π {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => ((equivShrink _).symm f) j :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 
@@ -456,14 +456,14 @@ noncomputable def coproductIso {J : Type u} (F : J → Type u) : ∐ F ≅ Σj, 
 #align category_theory.limits.types.coproduct_iso CategoryTheory.Limits.Types.coproductIso
 
 @[elementwise (attr := simp)]
-theorem coproductIso_ι_comp_hom {J : Type u} (F : J → Type u) (j : J) :
+lemma coproductIso_ι_comp_hom {J : Type u} (F : J → Type u) (j : J) :
     Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
 -- porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
-theorem coproductIso_mk_comp_inv {J : Type u} (F : J → Type u) (j : J) :
+lemma coproductIso_mk_comp_inv {J : Type u} (F : J → Type u) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 #align category_theory.limits.types.coproduct_iso_mk_comp_inv CategoryTheory.Limits.Types.coproductIso_mk_comp_inv
@@ -504,7 +504,7 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
   apply hx'.trans (congr_fun (Fork.IsLimit.lift' t _ hy').2 ⟨⟩).symm
 #align category_theory.limits.types.unique_of_type_equalizer CategoryTheory.Limits.Types.unique_of_type_equalizer
 
-theorem type_equalizer_iff_unique :
+lemma type_equalizer_iff_unique :
     Nonempty (IsLimit (Fork.ofι _ w)) ↔ ∀ y : Y, g y = h y → ∃! x : X, f x = y :=
   ⟨fun i => unique_of_type_equalizer _ _ (Classical.choice i), fun k =>
     ⟨typeEqualizerOfUnique f w k⟩⟩
@@ -528,12 +528,12 @@ noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
 
 -- porting note: was @[elementwise], but it produces a trivial lemma
 @[simp]
-theorem equalizerIso_hom_comp_subtype : (equalizerIso g h).hom ≫ Subtype.val = equalizer.ι g h := by
+lemma equalizerIso_hom_comp_subtype : (equalizerIso g h).hom ≫ Subtype.val = equalizer.ι g h := by
   rfl
 #align category_theory.limits.types.equalizer_iso_hom_comp_subtype CategoryTheory.Limits.Types.equalizerIso_hom_comp_subtype
 
 @[elementwise (attr := simp)]
-theorem equalizerIso_inv_comp_ι : (equalizerIso g h).inv ≫ equalizer.ι g h = Subtype.val :=
+lemma equalizerIso_inv_comp_ι : (equalizerIso g h).inv ≫ equalizer.ι g h = Subtype.val :=
   limit.isoLimitCone_inv_π equalizerLimit WalkingParallelPair.zero
 #align category_theory.limits.types.equalizer_iso_inv_comp_ι CategoryTheory.Limits.Types.equalizerIso_inv_comp_ι
 
@@ -600,14 +600,14 @@ noncomputable def coequalizerIso : coequalizer f g ≅ _root_.Quot (CoequalizerR
 #align category_theory.limits.types.coequalizer_iso CategoryTheory.Limits.Types.coequalizerIso
 
 @[elementwise (attr := simp)]
-theorem coequalizerIso_π_comp_hom :
+lemma coequalizerIso_π_comp_hom :
     coequalizer.π f g ≫ (coequalizerIso f g).hom = Quot.mk (CoequalizerRel f g) :=
   colimit.isoColimitCocone_ι_hom (coequalizerColimit f g) WalkingParallelPair.one
 #align category_theory.limits.types.coequalizer_iso_π_comp_hom CategoryTheory.Limits.Types.coequalizerIso_π_comp_hom
 
 -- porting note: was @[elementwise], but it produces a trivial lemma
 @[simp]
-theorem coequalizerIso_quot_comp_inv :
+lemma coequalizerIso_quot_comp_inv :
     ↾Quot.mk (CoequalizerRel f g) ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
   rfl
 #align category_theory.limits.types.coequalizer_iso_quot_comp_inv CategoryTheory.Limits.Types.coequalizerIso_quot_comp_inv
@@ -693,13 +693,13 @@ theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
 #align category_theory.limits.types.pullback_iso_pullback_hom_snd CategoryTheory.Limits.Types.pullbackIsoPullback_hom_snd
 
 @[simp]
-theorem pullbackIsoPullback_inv_fst :
+lemma pullbackIsoPullback_inv_fst :
     (pullbackIsoPullback f g).inv ≫ pullback.fst = fun p => (p.1 : X × Y).fst :=
   (pullbackConeIsoPullback f g).inv.w left
 #align category_theory.limits.types.pullback_iso_pullback_inv_fst CategoryTheory.Limits.Types.pullbackIsoPullback_inv_fst
 
 @[simp]
-theorem pullbackIsoPullback_inv_snd :
+lemma pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd = fun p => (p.1 : X × Y).snd :=
   (pullbackConeIsoPullback f g).inv.w right
 #align category_theory.limits.types.pullback_iso_pullback_inv_snd CategoryTheory.Limits.Types.pullbackIsoPullback_inv_snd

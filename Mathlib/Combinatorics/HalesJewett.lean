@@ -170,53 +170,53 @@ def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι') 
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.prod Combinatorics.Line.prod
 
-theorem apply {α ι} (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x :=
+lemma apply {α ι} (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x :=
   rfl
 #align combinatorics.line.apply Combinatorics.Line.apply
 
-theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
+lemma apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
   simp only [Option.getD_none, h, l.apply]
 #align combinatorics.line.apply_none Combinatorics.Line.apply_none
 
-theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i ≠ none) :
+lemma apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i ≠ none) :
     some (l x i) = l.idxFun i := by rw [l.apply, Option.getD_of_ne_none h]
 #align combinatorics.line.apply_of_ne_none Combinatorics.Line.apply_of_ne_none
 
 @[simp]
-theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
+lemma map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply, Line.map, Option.getD_map]
   rfl
 #align combinatorics.line.map_apply Combinatorics.Line.map_apply
 
 @[simp]
-theorem vertical_apply {α ι ι'} (v : ι → α) (l : Line α ι') (x : α) :
+lemma vertical_apply {α ι ι'} (v : ι → α) (l : Line α ι') (x : α) :
     l.vertical v x = Sum.elim v (l x) := by
   funext i
   cases i <;> rfl
 #align combinatorics.line.vertical_apply Combinatorics.Line.vertical_apply
 
 @[simp]
-theorem horizontal_apply {α ι ι'} (l : Line α ι) (v : ι' → α) (x : α) :
+lemma horizontal_apply {α ι ι'} (l : Line α ι) (v : ι' → α) (x : α) :
     l.horizontal v x = Sum.elim (l x) v := by
   funext i
   cases i <;> rfl
 #align combinatorics.line.horizontal_apply Combinatorics.Line.horizontal_apply
 
 @[simp]
-theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
+lemma prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
     l.prod l' x = Sum.elim (l x) (l' x) := by
   funext i
   cases i <;> rfl
 #align combinatorics.line.prod_apply Combinatorics.Line.prod_apply
 
 @[simp]
-theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
+lemma diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
   simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
 /-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
 for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic version. -/
-private theorem exists_mono_in_high_dimension' :
+private lemma exists_mono_in_high_dimension' :
     ∀ (α : Type u) [Finite α] (κ : Type max v u) [Finite κ],
       ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
 -- The proof proceeds by induction on `α`.
@@ -338,7 +338,7 @@ end Line
 
 /-- A generalization of Van der Waerden's theorem: if `M` is a finitely colored commutative
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
-theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
+lemma exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i

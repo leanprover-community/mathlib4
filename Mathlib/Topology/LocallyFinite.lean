@@ -28,7 +28,7 @@ def LocallyFinite (f : ι → Set X) :=
   ∀ x : X, ∃ t ∈ 𝓝 x, { i | (f i ∩ t).Nonempty }.Finite
 #align locally_finite LocallyFinite
 
-theorem locallyFinite_of_finite [Finite ι] (f : ι → Set X) : LocallyFinite f := fun _ =>
+lemma locallyFinite_of_finite [Finite ι] (f : ι → Set X) : LocallyFinite f := fun _ =>
   ⟨univ, univ_mem, toFinite _⟩
 #align locally_finite_of_finite locallyFinite_of_finite
 
@@ -44,19 +44,19 @@ protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : Loca
   ⟨t, ht₁, ht₂.subset fun i hi => hi.mono <| inter_subset_inter (hg i) Subset.rfl⟩
 #align locally_finite.subset LocallyFinite.subset
 
-theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (f (g i)).Nonempty }) :
+lemma comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (f (g i)).Nonempty }) :
     LocallyFinite (f ∘ g) := fun x => by
   let ⟨t, htx, htf⟩ := hf x
   refine ⟨t, htx, htf.preimage <| ?_⟩
   exact hg.mono fun i (hi : Set.Nonempty _) => hi.left
 #align locally_finite.comp_inj_on LocallyFinite.comp_injOn
 
-theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
+lemma comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
     LocallyFinite (f ∘ g) :=
   hf.comp_injOn (hg.injOn _)
 #align locally_finite.comp_injective LocallyFinite.comp_injective
 
-theorem _root_.locallyFinite_iff_smallSets :
+lemma _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
     eventually_smallSets' fun _s _t hst ht =>
@@ -68,7 +68,7 @@ protected theorem eventually_smallSets (hf : LocallyFinite f) (x : X) :
   locallyFinite_iff_smallSets.mp hf x
 #align locally_finite.eventually_small_sets LocallyFinite.eventually_smallSets
 
-theorem exists_mem_basis {ι' : Sort*} (hf : LocallyFinite f) {p : ι' → Prop} {s : ι' → Set X}
+lemma exists_mem_basis {ι' : Sort*} (hf : LocallyFinite f) {p : ι' → Prop} {s : ι' → Set X}
     {x : X} (hb : (𝓝 x).HasBasis p s) : ∃ i, p i ∧ { j | (f j ∩ s i).Nonempty }.Finite :=
   let ⟨i, hpi, hi⟩ := hb.smallSets.eventually_iff.mp (hf.eventually_smallSets x)
   ⟨i, hpi, hi Subset.rfl⟩
@@ -88,7 +88,7 @@ protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ <| inter_subset_left _ _
 #align locally_finite.nhds_within_Union LocallyFinite.nhdsWithin_iUnion
 
-theorem continuousOn_iUnion' {g : X → Y} (hf : LocallyFinite f)
+lemma continuousOn_iUnion' {g : X → Y} (hf : LocallyFinite f)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     ContinuousOn g (⋃ i, f i) := by
   rintro x -
@@ -101,18 +101,18 @@ theorem continuousOn_iUnion' {g : X → Y} (hf : LocallyFinite f)
     exact tendsto_bot
 #align locally_finite.continuous_on_Union' LocallyFinite.continuousOn_iUnion'
 
-theorem continuousOn_iUnion {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, IsClosed (f i))
+lemma continuousOn_iUnion {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, IsClosed (f i))
     (h_cont : ∀ i, ContinuousOn g (f i)) : ContinuousOn g (⋃ i, f i) :=
   hf.continuousOn_iUnion' fun i x hx ↦ h_cont i x <| (h_cl i).closure_subset hx
 #align locally_finite.continuous_on_Union LocallyFinite.continuousOn_iUnion
 
-protected theorem continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
+protected lemma continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     Continuous g :=
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion' hc
 #align locally_finite.continuous' LocallyFinite.continuous'
 
-protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
+protected lemma continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (h_cl : ∀ i, IsClosed (f i)) (h_cont : ∀ i, ContinuousOn g (f i)) :
     Continuous g :=
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
@@ -152,7 +152,7 @@ function `F : Π a, β a` such that for any `x`, we have `f n x = F x` on the pr
 interval `[N, +∞)` and a neighbourhood of `x`.
 
 We formulate the conclusion in terms of the product of filter `Filter.atTop` and `𝓝 x`. -/
-theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
+lemma exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ˢ 𝓝 x, f p.1 p.2 = F p.2 := by
   choose U hUx hU using hf
@@ -174,7 +174,7 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
 that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. Then there exists a
 function `F : Π a, β a` such that for any `x`, for sufficiently large values of `n`, we have
 `f n y = F y` in a neighbourhood of `x`. -/
-theorem exists_forall_eventually_atTop_eventually_eq' {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
+lemma exists_forall_eventually_atTop_eventually_eq' {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ n : ℕ in atTop, ∀ᶠ y : X in 𝓝 x, f n y = F y :=
   hf.exists_forall_eventually_eq_prod.imp fun _F hF x => (hF x).curry
@@ -184,13 +184,13 @@ theorem exists_forall_eventually_atTop_eventually_eq' {π : X → Sort*} {f : �
 that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. Then there exists a
 function `F :  α → β` such that for any `x`, for sufficiently large values of `n`, we have
 `f n =ᶠ[𝓝 x] F`. -/
-theorem exists_forall_eventually_atTop_eventuallyEq {f : ℕ → X → α}
+lemma exists_forall_eventually_atTop_eventuallyEq {f : ℕ → X → α}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : X → α, ∀ x, ∀ᶠ n : ℕ in atTop, f n =ᶠ[𝓝 x] F :=
   hf.exists_forall_eventually_atTop_eventually_eq'
 #align locally_finite.exists_forall_eventually_at_top_eventually_eq LocallyFinite.exists_forall_eventually_atTop_eventuallyEq
 
-theorem preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuous g) :
+lemma preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuous g) :
     LocallyFinite (g ⁻¹' f ·) := fun x =>
   let ⟨s, hsx, hs⟩ := hf (g x)
   ⟨g ⁻¹' s, hg.continuousAt hsx, hs.subset fun _ ⟨y, hy⟩ => ⟨g y, hy⟩⟩
@@ -199,7 +199,7 @@ theorem preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuou
 theorem prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hf.preimage_continuous continuous_fst).subset fun _ ↦ prod_subset_preimage_fst _ _
 
-theorem prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set X) :
+lemma prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set X) :
     LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hg.preimage_continuous continuous_snd).subset fun _ ↦ prod_subset_preimage_snd _ _
 
@@ -211,18 +211,18 @@ theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) 
     fun h => h.comp_injective e.injective⟩
 #align equiv.locally_finite_comp_iff Equiv.locallyFinite_comp_iff
 
-theorem locallyFinite_sum {f : Sum ι ι' → Set X} :
+lemma locallyFinite_sum {f : Sum ι ι' → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ Sum.inl) ∧ LocallyFinite (f ∘ Sum.inr) := by
   simp only [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
     preimage_setOf_eq, (· ∘ ·), eventually_and]
 #align locally_finite_sum locallyFinite_sum
 
-theorem LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
+lemma LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
 #align locally_finite.sum_elim LocallyFinite.sum_elim
 
-theorem locallyFinite_option {f : Option ι → Set X} :
+lemma locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by
   rw [← (Equiv.optionEquivSumPUnit.{_, 0} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
   simp only [locallyFinite_of_finite, and_true]

@@ -42,7 +42,7 @@ def hasse : SimpleGraph α where
 variable {α β} {a b : α}
 
 @[simp]
-theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
+lemma hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
   Iff.rfl
 #align simple_graph.hasse_adj SimpleGraph.hasse_adj
 
@@ -68,7 +68,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β]
 
 @[simp]
-theorem hasse_prod : hasse (α × β) = hasse α □ hasse β := by
+lemma hasse_prod : hasse (α × β) = hasse α □ hasse β := by
   ext x y
   simp_rw [boxProd_adj, hasse_adj, Prod.covby_iff, or_and_right, @eq_comm _ y.1, @eq_comm _ y.2,
     or_or_or_comm]
@@ -80,7 +80,7 @@ section LinearOrder
 
 variable [LinearOrder α]
 
-theorem hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hasse α).Preconnected :=
+lemma hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen]
   exact
@@ -88,7 +88,7 @@ theorem hasse_preconnected_of_succ [SuccOrder α] [IsSuccArchimedean α] : (hass
       fun c hc => Or.inr <| covby_succ_of_not_isMax hc.2.not_isMax
 #align simple_graph.hasse_preconnected_of_succ SimpleGraph.hasse_preconnected_of_succ
 
-theorem hasse_preconnected_of_pred [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
+lemma hasse_preconnected_of_pred [PredOrder α] [IsPredArchimedean α] : (hasse α).Preconnected :=
   fun a b => by
   rw [reachable_iff_reflTransGen, ← reflTransGen_swap]
   exact

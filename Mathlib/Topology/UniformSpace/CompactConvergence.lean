@@ -104,11 +104,11 @@ theorem self_mem_compactConvNhd (hV : V ∈ 𝓤 β) : f ∈ compactConvNhd K V 
 #align continuous_map.self_mem_compact_conv_nhd ContinuousMap.self_mem_compactConvNhd
 
 @[mono]
-theorem compactConvNhd_mono {V' : Set (β × β)} (hV' : V' ⊆ V) :
+lemma compactConvNhd_mono {V' : Set (β × β)} (hV' : V' ⊆ V) :
     compactConvNhd K V' f ⊆ compactConvNhd K V f := fun _x hx a ha => hV' (hx a ha)
 #align continuous_map.compact_conv_nhd_mono ContinuousMap.compactConvNhd_mono
 
-theorem compactConvNhd_mem_comp {g₁ g₂ : C(α, β)} {V' : Set (β × β)}
+lemma compactConvNhd_mem_comp {g₁ g₂ : C(α, β)} {V' : Set (β × β)}
     (hg₁ : g₁ ∈ compactConvNhd K V f) (hg₂ : g₂ ∈ compactConvNhd K V' g₁) :
     g₂ ∈ compactConvNhd K (V ○ V') f := fun x hx => ⟨g₁ x, hg₁ x hx, hg₂ x hx⟩
 #align continuous_map.compact_conv_nhd_mem_comp ContinuousMap.compactConvNhd_mem_comp
@@ -131,12 +131,12 @@ theorem compactConvNhd_subset_inter (K₁ K₂ : Set α) (V₁ V₂ : Set (β ×
     mem_of_mem_inter_right (hg x (mem_union_right K₁ hx))⟩
 #align continuous_map.compact_conv_nhd_subset_inter ContinuousMap.compactConvNhd_subset_inter
 
-theorem compactConvNhd_compact_entourage_nonempty :
+lemma compactConvNhd_compact_entourage_nonempty :
     { KV : Set α × Set (β × β) | IsCompact KV.1 ∧ KV.2 ∈ 𝓤 β }.Nonempty :=
   ⟨⟨∅, univ⟩, isCompact_empty, Filter.univ_mem⟩
 #align continuous_map.compact_conv_nhd_compact_entourage_nonempty ContinuousMap.compactConvNhd_compact_entourage_nonempty
 
-theorem compactConvNhd_filter_isBasis :
+lemma compactConvNhd_filter_isBasis :
     Filter.IsBasis (fun KV : Set α × Set (β × β) => IsCompact KV.1 ∧ KV.2 ∈ 𝓤 β) fun KV =>
       compactConvNhd KV.1 KV.2 f :=
   { nonempty := compactConvNhd_compact_entourage_nonempty
@@ -170,7 +170,7 @@ def compactConvergenceTopology : TopologicalSpace C(α, β) :=
   TopologicalSpace.mkOfNhds fun f => (compactConvergenceFilterBasis f).filter
 #align continuous_map.compact_convergence_topology ContinuousMap.compactConvergenceTopology
 
-theorem nhds_compactConvergence :
+lemma nhds_compactConvergence :
     @nhds _ compactConvergenceTopology f = (compactConvergenceFilterBasis f).filter := by
   rw [TopologicalSpace.nhds_mkOfNhds_filterBasis] <;> rintro g - ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩
   · exact self_mem_compactConvNhd g hV
@@ -180,7 +180,7 @@ theorem nhds_compactConvergence :
         ⟨compactConvNhd K V' g', ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, h₂ g' hg'⟩⟩
 #align continuous_map.nhds_compact_convergence ContinuousMap.nhds_compactConvergence
 
-theorem hasBasis_nhds_compactConvergence :
+lemma hasBasis_nhds_compactConvergence :
     HasBasis (@nhds _ compactConvergenceTopology f)
       (fun p : Set α × Set (β × β) => IsCompact p.1 ∧ p.2 ∈ 𝓤 β) fun p =>
       compactConvNhd p.1 p.2 f :=
@@ -190,7 +190,7 @@ theorem hasBasis_nhds_compactConvergence :
 /-- This is an auxiliary lemma and is unlikely to be of direct use outside of this file. See
 `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn` below for the useful version where the
 topology is picked up via typeclass inference. -/
-theorem tendsto_iff_forall_compact_tendstoUniformlyOn' {ι : Type u₃} {p : Filter ι}
+lemma tendsto_iff_forall_compact_tendstoUniformlyOn' {ι : Type u₃} {p : Filter ι}
     {F : ι → C(α, β)} :
     Filter.Tendsto F p (@nhds _ compactConvergenceTopology f) ↔
       ∀ K, IsCompact K → TendstoUniformlyOn (fun i a => F i a) f p K := by
@@ -265,7 +265,7 @@ theorem iInter_compactOpen_gen_subset_compactConvNhd (hK : IsCompact K) (hV : V 
 #align continuous_map.Inter_compact_open_gen_subset_compact_conv_nhd ContinuousMap.iInter_compactOpen_gen_subset_compactConvNhd
 
 /-- The compact-open topology is equal to the compact-convergence topology. -/
-theorem compactOpen_eq_compactConvergence :
+lemma compactOpen_eq_compactConvergence :
     ContinuousMap.compactOpen = (compactConvergenceTopology : TopologicalSpace C(α, β)) := by
   rw [compactConvergenceTopology, ContinuousMap.compactOpen]
   refine' le_antisymm _ _
@@ -292,7 +292,7 @@ def compactConvergenceUniformity : Filter (C(α, β) × C(α, β)) :=
     𝓟 { fg : C(α, β) × C(α, β) | ∀ x : α, x ∈ KV.1 → (fg.1 x, fg.2 x) ∈ KV.2 }
 #align continuous_map.compact_convergence_uniformity ContinuousMap.compactConvergenceUniformity
 
-theorem hasBasis_compactConvergenceUniformity_aux :
+lemma hasBasis_compactConvergenceUniformity_aux :
     HasBasis (@compactConvergenceUniformity α β _ _)
       (fun p : Set α × Set (β × β) => IsCompact p.1 ∧ p.2 ∈ 𝓤 β) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ p.2 } := by
@@ -360,13 +360,13 @@ theorem mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) 
   mem_compactConvergenceUniformity X
 #align continuous_map.mem_compact_convergence_entourage_iff ContinuousMap.mem_compactConvergence_entourage_iff
 
-theorem hasBasis_compactConvergenceUniformity :
+lemma hasBasis_compactConvergenceUniformity :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × Set (β × β) => IsCompact p.1 ∧ p.2 ∈ 𝓤 β) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ p.2 } :=
   hasBasis_compactConvergenceUniformity_aux
 #align continuous_map.has_basis_compact_convergence_uniformity ContinuousMap.hasBasis_compactConvergenceUniformity
 
-theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : ι → Prop}
+lemma _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : ι → Prop}
     {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis pi s) :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × ι => IsCompact p.1 ∧ pi p.2) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by
@@ -380,7 +380,7 @@ theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : �
 
 variable {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f}
 
-theorem tendsto_iff_forall_compact_tendstoUniformlyOn :
+lemma tendsto_iff_forall_compact_tendstoUniformlyOn :
     Tendsto F p (𝓝 f) ↔ ∀ K, IsCompact K → TendstoUniformlyOn (fun i a => F i a) f p K := by
   rw [compactOpen_eq_compactConvergence, tendsto_iff_forall_compact_tendstoUniformlyOn']
 #align continuous_map.tendsto_iff_forall_compact_tendsto_uniformly_on ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn
@@ -399,7 +399,7 @@ convergence in the compact-open topology is the same as locally uniform converge
 
 The right-to-left implication holds in any topological space,
 see `ContinuousMap.tendsto_of_tendstoLocallyUniformly`. -/
-theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
+lemma tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
     Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p := by
   refine ⟨fun h V hV x ↦ ?_, tendsto_of_tendstoLocallyUniformly⟩
   rw [tendsto_iff_forall_compact_tendstoUniformlyOn] at h
@@ -408,7 +408,7 @@ theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
 #align continuous_map.tendsto_iff_tendsto_locally_uniformly ContinuousMap.tendsto_iff_tendstoLocallyUniformly
 
 @[deprecated tendsto_iff_tendstoLocallyUniformly]
-theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
+lemma tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
     TendstoLocallyUniformly (fun i a => F i a) f p :=
   tendsto_iff_tendstoLocallyUniformly.1 h
 #align continuous_map.tendsto_locally_uniformly_of_tendsto ContinuousMap.tendstoLocallyUniformly_of_tendsto
@@ -417,7 +417,7 @@ section CompactDomain
 
 variable [CompactSpace α]
 
-theorem hasBasis_compactConvergenceUniformity_of_compact :
+lemma hasBasis_compactConvergenceUniformity_of_compact :
     HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) => V ∈ 𝓤 β) fun V =>
       { fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V } :=
   hasBasis_compactConvergenceUniformity.to_hasBasis
@@ -427,7 +427,7 @@ theorem hasBasis_compactConvergenceUniformity_of_compact :
 
 /-- Convergence in the compact-open topology is the same as uniform convergence for sequences of
 continuous functions on a compact space. -/
-theorem tendsto_iff_tendstoUniformly :
+lemma tendsto_iff_tendstoUniformly :
     Tendsto F p (𝓝 f) ↔ TendstoUniformly (fun i a => F i a) f p := by
   rw [tendsto_iff_forall_compact_tendstoUniformlyOn, ← tendstoUniformlyOn_univ]
   exact ⟨fun h => h univ isCompact_univ, fun h K _hK => h.mono (subset_univ K)⟩

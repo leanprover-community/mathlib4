@@ -110,7 +110,7 @@ def dualEquiv : BoolAlgCat ≌ BoolAlgCat where
 
 end BoolAlgCat
 
-theorem boolAlgCat_dual_comp_forget_to_bddDistLatCat :
+lemma boolAlgCat_dual_comp_forget_to_bddDistLatCat :
     BoolAlgCat.dual ⋙ forget₂ BoolAlgCat BddDistLatCat =
     forget₂ BoolAlgCat BddDistLatCat ⋙ BddDistLatCat.dual :=
   rfl

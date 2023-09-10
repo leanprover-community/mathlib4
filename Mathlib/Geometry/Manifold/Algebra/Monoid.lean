@@ -74,7 +74,7 @@ section
 variable (I)
 
 @[to_additive]
-theorem smooth_mul : Smooth (I.prod I) I fun p : G × G => p.1 * p.2 :=
+lemma smooth_mul : Smooth (I.prod I) I fun p : G × G => p.1 * p.2 :=
   SmoothMul.smooth_mul
 #align smooth_mul smooth_mul
 #align smooth_add smooth_add
@@ -83,7 +83,7 @@ theorem smooth_mul : Smooth (I.prod I) I fun p : G × G => p.1 * p.2 :=
 reasons, see note [Design choices about smooth algebraic structures]. -/
 @[to_additive "If the addition is smooth, then it is continuous. This is not an instance for
 technical reasons, see note [Design choices about smooth algebraic structures]."]
-theorem continuousMul_of_smooth : ContinuousMul G :=
+lemma continuousMul_of_smooth : ContinuousMul G :=
   ⟨(smooth_mul I).continuous⟩
 #align has_continuous_mul_of_smooth continuousMul_of_smooth
 #align has_continuous_add_of_smooth continuousAdd_of_smooth
@@ -148,13 +148,13 @@ nonrec theorem Smooth.mul (hf : Smooth I' I f) (hg : Smooth I' I g) : Smooth I' 
 #align smooth.add Smooth.add
 
 @[to_additive]
-theorem smooth_mul_left {a : G} : Smooth I I fun b : G => a * b :=
+lemma smooth_mul_left {a : G} : Smooth I I fun b : G => a * b :=
   smooth_const.mul smooth_id
 #align smooth_mul_left smooth_mul_left
 #align smooth_add_left smooth_add_left
 
 @[to_additive]
-theorem smooth_mul_right {a : G} : Smooth I I fun b : G => b * a :=
+lemma smooth_mul_right {a : G} : Smooth I I fun b : G => b * a :=
   smooth_id.mul smooth_const
 #align smooth_mul_right smooth_mul_right
 #align smooth_add_right smooth_add_right
@@ -186,19 +186,19 @@ scoped[LieGroup] notation "𝑹" => smoothRightMul
 open scoped LieGroup
 
 @[simp]
-theorem L_apply : (𝑳 I g) h = g * h :=
+lemma L_apply : (𝑳 I g) h = g * h :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align L_apply L_apply
 
 @[simp]
-theorem R_apply : (𝑹 I g) h = h * g :=
+lemma R_apply : (𝑹 I g) h = h * g :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align R_apply R_apply
 
 @[simp]
-theorem L_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
+lemma L_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
     (g h : G) : 𝑳 I (g * h) = (𝑳 I g).comp (𝑳 I h) := by
   ext
   simp only [ContMDiffMap.comp_apply, L_apply, mul_assoc]
@@ -206,7 +206,7 @@ set_option linter.uppercaseLean3 false in
 #align L_mul L_mul
 
 @[simp]
-theorem R_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
+lemma R_mul {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
     (g h : G) : 𝑹 I (g * h) = (𝑹 I h).comp (𝑹 I g) := by
   ext
   simp only [ContMDiffMap.comp_apply, R_apply, mul_assoc]
@@ -218,11 +218,11 @@ section
 variable {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H G'] [SmoothMul I G']
   (g' : G')
 
-theorem smoothLeftMul_one : (𝑳 I g') 1 = g' :=
+lemma smoothLeftMul_one : (𝑳 I g') 1 = g' :=
   mul_one g'
 #align smooth_left_mul_one smoothLeftMul_one
 
-theorem smoothRightMul_one : (𝑹 I g') 1 = g' :=
+lemma smoothRightMul_one : (𝑹 I g') 1 = g' :=
   one_mul g'
 #align smooth_right_mul_one smoothRightMul_one
 
@@ -254,7 +254,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G'] [SmoothMul I' G']
 
 @[to_additive]
-theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
+lemma smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
   | 0 => by simp only [pow_zero]; exact smooth_const
   | k + 1 => by simpa [pow_succ] using smooth_id.mul (smooth_pow _)
 #align smooth_pow smooth_pow

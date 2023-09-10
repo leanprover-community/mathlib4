@@ -99,7 +99,7 @@ theorem Matrix.reindexLieEquiv_apply (M : Matrix n n R) :
 #align matrix.reindex_lie_equiv_apply Matrix.reindexLieEquiv_apply
 
 @[simp]
-theorem Matrix.reindexLieEquiv_symm :
+lemma Matrix.reindexLieEquiv_symm :
     (Matrix.reindexLieEquiv e : _ ≃ₗ⁅R⁆ _).symm = Matrix.reindexLieEquiv e.symm :=
   rfl
 #align matrix.reindex_lie_equiv_symm Matrix.reindexLieEquiv_symm

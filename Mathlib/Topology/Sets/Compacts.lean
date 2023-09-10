@@ -59,7 +59,7 @@ instance (K : Compacts α) : CompactSpace K :=
 instance : CanLift (Set α) (Compacts α) (↑) IsCompact where prf K hK := ⟨⟨K, hK⟩, rfl⟩
 
 @[ext]
-protected theorem ext {s t : Compacts α} (h : (s : Set α) = t) : s = t :=
+protected lemma ext {s t : Compacts α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
 #align topological_space.compacts.ext TopologicalSpace.Compacts.ext
 
@@ -106,22 +106,22 @@ theorem coe_sup (s t : Compacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
 #align topological_space.compacts.coe_sup TopologicalSpace.Compacts.coe_sup
 
 @[simp]
-theorem coe_inf [T2Space α] (s t : Compacts α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
+lemma coe_inf [T2Space α] (s t : Compacts α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 #align topological_space.compacts.coe_inf TopologicalSpace.Compacts.coe_inf
 
 @[simp]
-theorem coe_top [CompactSpace α] : (↑(⊤ : Compacts α) : Set α) = univ :=
+lemma coe_top [CompactSpace α] : (↑(⊤ : Compacts α) : Set α) = univ :=
   rfl
 #align topological_space.compacts.coe_top TopologicalSpace.Compacts.coe_top
 
 @[simp]
-theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
+lemma coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
   rfl
 #align topological_space.compacts.coe_bot TopologicalSpace.Compacts.coe_bot
 
 @[simp]
-theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
+lemma coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
     (↑(s.sup f) : Set α) = s.sup fun i => ↑(f i) := by
   refine Finset.cons_induction_on s rfl fun a s _ h => ?_
   simp_rw [Finset.sup_cons, coe_sup, sup_eq_union]
@@ -134,7 +134,7 @@ protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compac
 #align topological_space.compacts.map TopologicalSpace.Compacts.map
 
 @[simp, norm_cast]
-theorem coe_map {f : α → β} (hf : Continuous f) (s : Compacts α) : (s.map f hf : Set β) = f '' s :=
+lemma coe_map {f : α → β} (hf : Continuous f) (s : Compacts α) : (s.map f hf : Set β) = f '' s :=
   rfl
 #align topological_space.compacts.coe_map TopologicalSpace.Compacts.coe_map
 
@@ -162,7 +162,7 @@ protected def equiv (f : α ≃ₜ β) : Compacts α ≃ Compacts β where
 #align topological_space.compacts.equiv TopologicalSpace.Compacts.equiv
 
 @[simp]
-theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
+lemma equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
   Equiv.ext map_id
 #align topological_space.compacts.equiv_refl TopologicalSpace.Compacts.equiv_refl
 
@@ -236,7 +236,7 @@ def toCloseds [T2Space α] (s : NonemptyCompacts α) : Closeds α :=
 #align topological_space.nonempty_compacts.to_closeds TopologicalSpace.NonemptyCompacts.toCloseds
 
 @[ext]
-protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t :=
+protected lemma ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
 #align topological_space.nonempty_compacts.ext TopologicalSpace.NonemptyCompacts.ext
 
@@ -271,7 +271,7 @@ theorem coe_sup (s t : NonemptyCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪
 #align topological_space.nonempty_compacts.coe_sup TopologicalSpace.NonemptyCompacts.coe_sup
 
 @[simp]
-theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α) : Set α) = univ :=
+lemma coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α) : Set α) = univ :=
   rfl
 #align topological_space.nonempty_compacts.coe_top TopologicalSpace.NonemptyCompacts.coe_top
 
@@ -344,7 +344,7 @@ def toNonemptyCompacts (s : PositiveCompacts α) : NonemptyCompacts α :=
 #align topological_space.positive_compacts.to_nonempty_compacts TopologicalSpace.PositiveCompacts.toNonemptyCompacts
 
 @[ext]
-protected theorem ext {s t : PositiveCompacts α} (h : (s : Set α) = t) : s = t :=
+protected lemma ext {s t : PositiveCompacts α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
 #align topological_space.positive_compacts.ext TopologicalSpace.PositiveCompacts.ext
 
@@ -382,7 +382,7 @@ theorem coe_sup (s t : PositiveCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪
 #align topological_space.positive_compacts.coe_sup TopologicalSpace.PositiveCompacts.coe_sup
 
 @[simp]
-theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : PositiveCompacts α) : Set α) = univ :=
+lemma coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : PositiveCompacts α) : Set α) = univ :=
   rfl
 #align topological_space.positive_compacts.coe_top TopologicalSpace.PositiveCompacts.coe_top
 
@@ -395,7 +395,7 @@ protected def map (f : α → β) (hf : Continuous f) (hf' : IsOpenMap f) (K : P
 #align topological_space.positive_compacts.map TopologicalSpace.PositiveCompacts.map
 
 @[simp, norm_cast]
-theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : PositiveCompacts α) :
+lemma coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : PositiveCompacts α) :
     (s.map f hf hf' : Set β) = f '' s :=
   rfl
 #align topological_space.positive_compacts.coe_map TopologicalSpace.PositiveCompacts.coe_map
@@ -411,7 +411,7 @@ theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Conti
   PositiveCompacts.ext <| Set.image_comp _ _ _
 #align topological_space.positive_compacts.map_comp TopologicalSpace.PositiveCompacts.map_comp
 
-theorem _root_.exists_positiveCompacts_subset [LocallyCompactSpace α] {U : Set α} (ho : IsOpen U)
+lemma _root_.exists_positiveCompacts_subset [LocallyCompactSpace α] {U : Set α} (ho : IsOpen U)
     (hn : U.Nonempty) : ∃ K : PositiveCompacts α, ↑K ⊆ U :=
   let ⟨x, hx⟩ := hn
   let ⟨K, hKc, hxK, hKU⟩ := exists_compact_subset ho hx
@@ -488,7 +488,7 @@ def toClopens [T2Space α] (s : CompactOpens α) : Clopens α :=
 #align topological_space.compact_opens.to_clopens TopologicalSpace.CompactOpens.toClopens
 
 @[ext]
-protected theorem ext {s t : CompactOpens α} (h : (s : Set α) = t) : s = t :=
+protected lemma ext {s t : CompactOpens α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
 #align topological_space.compact_opens.ext TopologicalSpace.CompactOpens.ext
 
@@ -544,27 +544,27 @@ theorem coe_sup (s t : CompactOpens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑
 #align topological_space.compact_opens.coe_sup TopologicalSpace.CompactOpens.coe_sup
 
 @[simp]
-theorem coe_inf [T2Space α] (s t : CompactOpens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
+lemma coe_inf [T2Space α] (s t : CompactOpens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 #align topological_space.compact_opens.coe_inf TopologicalSpace.CompactOpens.coe_inf
 
 @[simp]
-theorem coe_top [CompactSpace α] : (↑(⊤ : CompactOpens α) : Set α) = univ :=
+lemma coe_top [CompactSpace α] : (↑(⊤ : CompactOpens α) : Set α) = univ :=
   rfl
 #align topological_space.compact_opens.coe_top TopologicalSpace.CompactOpens.coe_top
 
 @[simp]
-theorem coe_bot : (↑(⊥ : CompactOpens α) : Set α) = ∅ :=
+lemma coe_bot : (↑(⊥ : CompactOpens α) : Set α) = ∅ :=
   rfl
 #align topological_space.compact_opens.coe_bot TopologicalSpace.CompactOpens.coe_bot
 
 @[simp]
-theorem coe_sdiff [T2Space α] (s t : CompactOpens α) : (↑(s \ t) : Set α) = ↑s \ ↑t :=
+lemma coe_sdiff [T2Space α] (s t : CompactOpens α) : (↑(s \ t) : Set α) = ↑s \ ↑t :=
   rfl
 #align topological_space.compact_opens.coe_sdiff TopologicalSpace.CompactOpens.coe_sdiff
 
 @[simp]
-theorem coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑sᶜ : Set α) = (↑s)ᶜ :=
+lemma coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑sᶜ : Set α) = (↑s)ᶜ :=
   rfl
 #align topological_space.compact_opens.coe_compl TopologicalSpace.CompactOpens.coe_compl
 
@@ -578,7 +578,7 @@ def map (f : α → β) (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpen
 #align topological_space.compact_opens.map TopologicalSpace.CompactOpens.map
 
 @[simp, norm_cast]
-theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) :
+lemma coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) :
     (s.map f hf hf' : Set β) = f '' s :=
   rfl
 #align topological_space.compact_opens.coe_map TopologicalSpace.CompactOpens.coe_map

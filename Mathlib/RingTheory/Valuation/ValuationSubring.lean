@@ -59,10 +59,10 @@ theorem mem_toSubring (x : K) : x ∈ A.toSubring ↔ x ∈ A := Iff.refl _
 theorem ext (A B : ValuationSubring K) (h : ∀ x, x ∈ A ↔ x ∈ B) : A = B := SetLike.ext h
 #align valuation_subring.ext ValuationSubring.ext
 
-theorem zero_mem : (0 : K) ∈ A := A.toSubring.zero_mem
+lemma zero_mem : (0 : K) ∈ A := A.toSubring.zero_mem
 #align valuation_subring.zero_mem ValuationSubring.zero_mem
 
-theorem one_mem : (1 : K) ∈ A := A.toSubring.one_mem
+lemma one_mem : (1 : K) ∈ A := A.toSubring.one_mem
 #align valuation_subring.one_mem ValuationSubring.one_mem
 
 theorem add_mem (x y : K) : x ∈ A → y ∈ A → x + y ∈ A := A.toSubring.add_mem
@@ -84,7 +84,7 @@ instance : SubringClass (ValuationSubring K) K where
   mul_mem {_} a b := mul_mem _ a b
   neg_mem {_} x := neg_mem _ x
 
-theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
+lemma toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 #align valuation_subring.to_subring_injective ValuationSubring.toSubring_injective
 
@@ -101,7 +101,7 @@ theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
   trivial
 #align valuation_subring.mem_top ValuationSubring.mem_top
 
-theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
+lemma le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 #align valuation_subring.le_top ValuationSubring.le_top
 
 instance : OrderTop (ValuationSubring K) where
@@ -198,7 +198,7 @@ theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a :
   Iff.rfl
 #align valuation_subring.valuation_le_iff ValuationSubring.valuation_le_iff
 
-theorem valuation_surjective : Function.Surjective A.valuation := surjective_quot_mk _
+lemma valuation_surjective : Function.Surjective A.valuation := surjective_quot_mk _
 #align valuation_subring.valuation_surjective ValuationSubring.valuation_surjective
 
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
@@ -437,7 +437,7 @@ def valuationSubring : ValuationSubring K :=
 theorem mem_valuationSubring_iff (x : K) : x ∈ v.valuationSubring ↔ v x ≤ 1 := Iff.refl _
 #align valuation.mem_valuation_subring_iff Valuation.mem_valuationSubring_iff
 
-theorem isEquiv_iff_valuationSubring :
+lemma isEquiv_iff_valuationSubring :
     v₁.IsEquiv v₂ ↔ v₁.valuationSubring = v₂.valuationSubring := by
   constructor
   · intro h; ext x; specialize h x 1; simpa using h
@@ -447,7 +447,7 @@ theorem isEquiv_iff_valuationSubring :
     simpa using this
 #align valuation.is_equiv_iff_valuation_subring Valuation.isEquiv_iff_valuationSubring
 
-theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuation := by
+lemma isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuation := by
   rw [isEquiv_iff_val_le_one]
   intro x
   rw [ValuationSubring.valuation_le_one_iff]
@@ -462,7 +462,7 @@ variable {K}
 variable (A : ValuationSubring K)
 
 @[simp]
-theorem valuationSubring_valuation : A.valuation.valuationSubring = A := by
+lemma valuationSubring_valuation : A.valuation.valuationSubring = A := by
   ext; rw [← A.valuation_le_one_iff]; rfl
 #align valuation_subring.valuation_subring_valuation ValuationSubring.valuationSubring_valuation
 
@@ -502,7 +502,7 @@ theorem coe_unitGroupMulEquiv_symm_apply (a : Aˣ) : ((A.unitGroupMulEquiv.symm 
   rfl
 #align valuation_subring.coe_unit_group_mul_equiv_symm_apply ValuationSubring.coe_unitGroupMulEquiv_symm_apply
 
-theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.unitGroup ↔ A ≤ B := by
+lemma unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.unitGroup ↔ A ≤ B := by
   constructor
   · intro h x hx
     rw [← A.valuation_le_one_iff x, le_iff_lt_or_eq] at hx
@@ -521,11 +521,11 @@ theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.un
     simpa using hx
 #align valuation_subring.unit_group_le_unit_group ValuationSubring.unitGroup_le_unitGroup
 
-theorem unitGroup_injective : Function.Injective (unitGroup : ValuationSubring K → Subgroup _) :=
+lemma unitGroup_injective : Function.Injective (unitGroup : ValuationSubring K → Subgroup _) :=
   fun A B h => by simpa only [le_antisymm_iff, unitGroup_le_unitGroup] using h
 #align valuation_subring.unit_group_injective ValuationSubring.unitGroup_injective
 
-theorem eq_iff_unitGroup {A B : ValuationSubring K} : A = B ↔ A.unitGroup = B.unitGroup :=
+lemma eq_iff_unitGroup {A B : ValuationSubring K} : A = B ↔ A.unitGroup = B.unitGroup :=
   unitGroup_injective.eq_iff.symm
 #align valuation_subring.eq_iff_unit_group ValuationSubring.eq_iff_unitGroup
 
@@ -536,7 +536,7 @@ def unitGroupOrderEmbedding : ValuationSubring K ↪o Subgroup Kˣ where
   map_rel_iff' {_A _B} := unitGroup_le_unitGroup
 #align valuation_subring.unit_group_order_embedding ValuationSubring.unitGroupOrderEmbedding
 
-theorem unitGroup_strictMono : StrictMono (unitGroup : ValuationSubring K → Subgroup _) :=
+lemma unitGroup_strictMono : StrictMono (unitGroup : ValuationSubring K → Subgroup _) :=
   unitGroupOrderEmbedding.strictMono
 #align valuation_subring.unit_group_strict_mono ValuationSubring.unitGroup_strictMono
 
@@ -551,11 +551,11 @@ def nonunits : Subsemigroup K where
   mul_mem' ha hb := (mul_lt_mul₀ (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)).trans_eq <| mul_one _
 #align valuation_subring.nonunits ValuationSubring.nonunits
 
-theorem mem_nonunits_iff {x : K} : x ∈ A.nonunits ↔ A.valuation x < 1 :=
+lemma mem_nonunits_iff {x : K} : x ∈ A.nonunits ↔ A.valuation x < 1 :=
   Iff.rfl
 #align valuation_subring.mem_nonunits_iff ValuationSubring.mem_nonunits_iff
 
-theorem nonunits_le_nonunits {A B : ValuationSubring K} : B.nonunits ≤ A.nonunits ↔ A ≤ B := by
+lemma nonunits_le_nonunits {A B : ValuationSubring K} : B.nonunits ≤ A.nonunits ↔ A ≤ B := by
   constructor
   · intro h x hx
     by_cases h_1 : x = 0; · simp only [h_1, zero_mem]
@@ -565,11 +565,11 @@ theorem nonunits_le_nonunits {A B : ValuationSubring K} : B.nonunits ≤ A.nonun
     by_contra h_1; exact not_lt.2 (monotone_mapOfLE _ _ h (not_lt.1 h_1)) hx
 #align valuation_subring.nonunits_le_nonunits ValuationSubring.nonunits_le_nonunits
 
-theorem nonunits_injective : Function.Injective (nonunits : ValuationSubring K → Subsemigroup _) :=
+lemma nonunits_injective : Function.Injective (nonunits : ValuationSubring K → Subsemigroup _) :=
   fun A B h => by simpa only [le_antisymm_iff, nonunits_le_nonunits] using h.symm
 #align valuation_subring.nonunits_injective ValuationSubring.nonunits_injective
 
-theorem nonunits_inj {A B : ValuationSubring K} : A.nonunits = B.nonunits ↔ A = B :=
+lemma nonunits_inj {A B : ValuationSubring K} : A.nonunits = B.nonunits ↔ A = B :=
   nonunits_injective.eq_iff
 #align valuation_subring.nonunits_inj ValuationSubring.nonunits_inj
 
@@ -587,15 +587,15 @@ variable {A}
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
 at the expense of a more complicated right hand side.
  -/
-theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ LocalRing.maximalIdeal A :=
+lemma coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ LocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
 #align valuation_subring.coe_mem_nonunits_iff ValuationSubring.coe_mem_nonunits_iff
 
-theorem nonunits_le : A.nonunits ≤ A.toSubring.toSubmonoid.toSubsemigroup := fun _a ha =>
+lemma nonunits_le : A.nonunits ≤ A.toSubring.toSubmonoid.toSubsemigroup := fun _a ha =>
   (A.valuation_le_one_iff _).mp (A.mem_nonunits_iff.mp ha).le
 #align valuation_subring.nonunits_le ValuationSubring.nonunits_le
 
-theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
+lemma nonunits_subset : (A.nonunits : Set K) ⊆ A :=
   nonunits_le
 #align valuation_subring.nonunits_subset ValuationSubring.nonunits_subset
 
@@ -604,14 +604,14 @@ theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
 See also `coe_mem_nonunits_iff`, which has a simpler right hand side but requires the element
 to be in `A` already.
  -/
-theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
+lemma mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
     a ∈ A.nonunits ↔ ∃ ha, (⟨a, ha⟩ : A) ∈ LocalRing.maximalIdeal A :=
   ⟨fun h => ⟨nonunits_subset h, coe_mem_nonunits_iff.mp h⟩, fun ⟨_, h⟩ =>
     coe_mem_nonunits_iff.mpr h⟩
 #align valuation_subring.mem_nonunits_iff_exists_mem_maximal_ideal ValuationSubring.mem_nonunits_iff_exists_mem_maximalIdeal
 
 /-- `A.nonunits` agrees with the maximal ideal of `A`, after taking its image in `K`. -/
-theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.nonunits := by
+lemma image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.nonunits := by
   ext a
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
   erw [Subtype.exists]
@@ -647,7 +647,7 @@ def principalUnitGroup : Subgroup Kˣ where
       Valuation.map_neg]
 #align valuation_subring.principal_unit_group ValuationSubring.principalUnitGroup
 
-theorem principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
+lemma principal_units_le_units : A.principalUnitGroup ≤ A.unitGroup := fun a h => by
   simpa only [add_sub_cancel'_right] using A.valuation.map_one_add_of_lt h
 #align valuation_subring.principal_units_le_units ValuationSubring.principal_units_le_units
 
@@ -656,7 +656,7 @@ theorem mem_principalUnitGroup_iff (x : Kˣ) :
   Iff.rfl
 #align valuation_subring.mem_principal_unit_group_iff ValuationSubring.mem_principalUnitGroup_iff
 
-theorem principalUnitGroup_le_principalUnitGroup {A B : ValuationSubring K} :
+lemma principalUnitGroup_le_principalUnitGroup {A B : ValuationSubring K} :
     B.principalUnitGroup ≤ A.principalUnitGroup ↔ A ≤ B := by
   constructor
   · intro h x hx
@@ -671,12 +671,12 @@ theorem principalUnitGroup_le_principalUnitGroup {A B : ValuationSubring K} :
     by_contra h_1; exact not_lt.2 (monotone_mapOfLE _ _ h (not_lt.1 h_1)) hx
 #align valuation_subring.principal_unit_group_le_principal_unit_group ValuationSubring.principalUnitGroup_le_principalUnitGroup
 
-theorem principalUnitGroup_injective :
+lemma principalUnitGroup_injective :
     Function.Injective (principalUnitGroup : ValuationSubring K → Subgroup _) := fun A B h => by
   simpa [le_antisymm_iff, principalUnitGroup_le_principalUnitGroup] using h.symm
 #align valuation_subring.principal_unit_group_injective ValuationSubring.principalUnitGroup_injective
 
-theorem eq_iff_principalUnitGroup {A B : ValuationSubring K} :
+lemma eq_iff_principalUnitGroup {A B : ValuationSubring K} :
     A = B ↔ A.principalUnitGroup = B.principalUnitGroup :=
   principalUnitGroup_injective.eq_iff.symm
 #align valuation_subring.eq_iff_principal_unit_group ValuationSubring.eq_iff_principalUnitGroup
@@ -688,7 +688,7 @@ def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒ
   map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 #align valuation_subring.principal_unit_group_order_embedding ValuationSubring.principalUnitGroupOrderEmbedding
 
-theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
+lemma coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
     (x : Kˣ) ∈ A.principalUnitGroup ↔
       A.unitGroupMulEquiv x ∈ (Units.map (LocalRing.residue A).toMonoidHom).ker := by
   rw [MonoidHom.mem_ker, Units.ext_iff]
@@ -736,7 +736,7 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
   rfl
 #align valuation_subring.coe_unit_group_to_residue_field_units_apply ValuationSubring.coe_unitGroupToResidueFieldUnits_apply
 
-theorem ker_unitGroupToResidueFieldUnits :
+lemma ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext
   -- Porting note: simp fails but rw works
@@ -747,7 +747,7 @@ theorem ker_unitGroupToResidueFieldUnits :
   -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
 #align valuation_subring.ker_unit_group_to_residue_field_units ValuationSubring.ker_unitGroupToResidueFieldUnits
 
-theorem surjective_unitGroupToResidueFieldUnits :
+lemma surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
   (LocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
         LocalRing.isLocalRingHom_residue).comp
@@ -767,7 +767,7 @@ local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
   Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 -- @[simp] -- Porting note: not in simpNF
-theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
+lemma unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     A.unitsModPrincipalUnitsEquivResidueFieldUnits.toMonoidHom.comp (QuotientGroup.mk' _) =
       A.unitGroupToResidueFieldUnits := rfl
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units_comp_quotient_group_mk ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk
@@ -851,28 +851,28 @@ instance pointwise_central_scalar [MulSemiringAction Gᵐᵒᵖ K] [IsCentralSca
 #align valuation_subring.pointwise_central_scalar ValuationSubring.pointwise_central_scalar
 
 @[simp]
-theorem smul_mem_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
+lemma smul_mem_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
     g • x ∈ g • S ↔ x ∈ S := Set.smul_mem_smul_set_iff
 #align valuation_subring.smul_mem_pointwise_smul_iff ValuationSubring.smul_mem_pointwise_smul_iff
 
-theorem mem_pointwise_smul_iff_inv_smul_mem {g : G} {S : ValuationSubring K} {x : K} :
+lemma mem_pointwise_smul_iff_inv_smul_mem {g : G} {S : ValuationSubring K} {x : K} :
     x ∈ g • S ↔ g⁻¹ • x ∈ S := Set.mem_smul_set_iff_inv_smul_mem
 #align valuation_subring.mem_pointwise_smul_iff_inv_smul_mem ValuationSubring.mem_pointwise_smul_iff_inv_smul_mem
 
-theorem mem_inv_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
+lemma mem_inv_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
     x ∈ g⁻¹ • S ↔ g • x ∈ S := Set.mem_inv_smul_set_iff
 #align valuation_subring.mem_inv_pointwise_smul_iff ValuationSubring.mem_inv_pointwise_smul_iff
 
 @[simp]
-theorem pointwise_smul_le_pointwise_smul_iff {g : G} {S T : ValuationSubring K} :
+lemma pointwise_smul_le_pointwise_smul_iff {g : G} {S T : ValuationSubring K} :
     g • S ≤ g • T ↔ S ≤ T := Set.set_smul_subset_set_smul_iff
 #align valuation_subring.pointwise_smul_le_pointwise_smul_iff ValuationSubring.pointwise_smul_le_pointwise_smul_iff
 
-theorem pointwise_smul_subset_iff {g : G} {S T : ValuationSubring K} : g • S ≤ T ↔ S ≤ g⁻¹ • T :=
+lemma pointwise_smul_subset_iff {g : G} {S T : ValuationSubring K} : g • S ≤ T ↔ S ≤ g⁻¹ • T :=
   Set.set_smul_subset_iff
 #align valuation_subring.pointwise_smul_subset_iff ValuationSubring.pointwise_smul_subset_iff
 
-theorem subset_pointwise_smul_iff {g : G} {S T : ValuationSubring K} : S ≤ g • T ↔ g⁻¹ • S ≤ T :=
+lemma subset_pointwise_smul_iff {g : G} {S T : ValuationSubring K} : S ≤ g • T ↔ g⁻¹ • S ≤ T :=
   Set.subset_set_smul_iff
 #align valuation_subring.subset_pointwise_smul_iff ValuationSubring.subset_pointwise_smul_iff
 
@@ -892,7 +892,7 @@ theorem coe_comap (A : ValuationSubring L) (f : K →+* L) : (A.comap f : Set K)
 #align valuation_subring.coe_comap ValuationSubring.coe_comap
 
 @[simp]
-theorem mem_comap {A : ValuationSubring L} {f : K →+* L} {x : K} : x ∈ A.comap f ↔ f x ∈ A :=
+lemma mem_comap {A : ValuationSubring L} {f : K →+* L} {x : K} : x ∈ A.comap f ↔ f x ∈ A :=
   Iff.rfl
 #align valuation_subring.mem_comap ValuationSubring.mem_comap
 
@@ -909,7 +909,7 @@ namespace Valuation
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
 -- @[simp] -- Porting note: not in simpNF
-theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
+lemma mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
   (Valuation.isEquiv_iff_val_eq_one _ _).mp (Valuation.isEquiv_valuation_valuationSubring _).symm
 #align valuation.mem_unit_group_iff Valuation.mem_unitGroup_iff
 

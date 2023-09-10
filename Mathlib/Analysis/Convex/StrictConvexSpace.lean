@@ -78,7 +78,7 @@ variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCo
   [NormedSpace 𝕜 E]
 
 /-- A closed ball in a strictly convex space is strictly convex. -/
-theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
+lemma strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
   cases' le_or_lt r 0 with hr hr
   · exact (subsingleton_closedBall x hr).strictConvex
@@ -89,7 +89,7 @@ theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
 variable [NormedSpace ℝ E]
 
 /-- A real normed vector space is strictly convex provided that the unit ball is strictly convex. -/
-theorem StrictConvexSpace.of_strictConvex_closed_unit_ball [LinearMap.CompatibleSMul E E 𝕜 ℝ]
+lemma StrictConvexSpace.of_strictConvex_closed_unit_ball [LinearMap.CompatibleSMul E E 𝕜 ℝ]
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
   ⟨fun r hr => by simpa only [smul_closedUnitBall_of_nonneg hr.le] using h.smul r⟩
 #align strict_convex_space.of_strict_convex_closed_unit_ball StrictConvexSpace.of_strictConvex_closed_unit_ball
@@ -207,7 +207,7 @@ theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y
 
 /-- In a strictly convex space, two vectors `x`, `y` are in the same ray if and only if the triangle
 inequality for `x` and `y` becomes an equality. -/
-theorem sameRay_iff_norm_add : SameRay ℝ x y ↔ ‖x + y‖ = ‖x‖ + ‖y‖ :=
+lemma sameRay_iff_norm_add : SameRay ℝ x y ↔ ‖x + y‖ = ‖x‖ + ‖y‖ :=
   ⟨SameRay.norm_add, fun h => Classical.not_not.1 fun h' => (norm_add_lt_of_not_sameRay h').ne h⟩
 #align same_ray_iff_norm_add sameRay_iff_norm_add
 
@@ -219,22 +219,22 @@ theorem eq_of_norm_eq_of_norm_add_eq (h₁ : ‖x‖ = ‖y‖) (h₂ : ‖x + y
 
 /-- In a strictly convex space, two vectors `x`, `y` are not in the same ray if and only if the
 triangle inequality for `x` and `y` is strict. -/
-theorem not_sameRay_iff_norm_add_lt : ¬SameRay ℝ x y ↔ ‖x + y‖ < ‖x‖ + ‖y‖ :=
+lemma not_sameRay_iff_norm_add_lt : ¬SameRay ℝ x y ↔ ‖x + y‖ < ‖x‖ + ‖y‖ :=
   sameRay_iff_norm_add.not.trans (norm_add_le _ _).lt_iff_ne.symm
 #align not_same_ray_iff_norm_add_lt not_sameRay_iff_norm_add_lt
 
-theorem sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
+lemma sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
   ⟨SameRay.norm_sub, fun h =>
     Classical.not_not.1 fun h' => (abs_lt_norm_sub_of_not_sameRay h').ne' h⟩
 #align same_ray_iff_norm_sub sameRay_iff_norm_sub
 
-theorem not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y‖| < ‖x - y‖ :=
+lemma not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y‖| < ‖x - y‖ :=
   sameRay_iff_norm_sub.not.trans <| ne_comm.trans (abs_norm_sub_norm_le _ _).lt_iff_ne.symm
 #align not_same_ray_iff_abs_lt_norm_sub not_sameRay_iff_abs_lt_norm_sub
 
 /-- In a strictly convex space, the triangle inequality turns into an equality if and only if the
 middle point belongs to the segment joining two other points. -/
-theorem dist_add_dist_eq_iff : dist x y + dist y z = dist x z ↔ y ∈ [x -[ℝ] z] := by
+lemma dist_add_dist_eq_iff : dist x y + dist y z = dist x z ↔ y ∈ [x -[ℝ] z] := by
   simp only [mem_segment_iff_sameRay, sameRay_iff_norm_add, dist_eq_norm', sub_add_sub_cancel',
     eq_comm]
 #align dist_add_dist_eq_iff dist_add_dist_eq_iff
@@ -251,7 +251,7 @@ variable {PF : Type u} {PE : Type*} [MetricSpace PF] [MetricSpace PE]
 
 variable [NormedAddTorsor F PF] [NormedAddTorsor E PE]
 
-theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = r * dist x z)
+lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = r * dist x z)
     (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
   have : y -ᵥ x ∈ [(0 : E) -[ℝ] z -ᵥ x] := by
     rw [← dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right, ← dist_eq_norm_vsub', ←
@@ -268,7 +268,7 @@ theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = 
     rw [AffineMap.lineMap_apply, ← H', H, vsub_vadd]
 #align eq_line_map_of_dist_eq_mul_of_dist_eq_mul eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
 
-theorem eq_midpoint_of_dist_eq_half {x y z : PE} (hx : dist x y = dist x z / 2)
+lemma eq_midpoint_of_dist_eq_half {x y z : PE} (hx : dist x y = dist x z / 2)
     (hy : dist y z = dist x z / 2) : y = midpoint ℝ x z := by
   apply eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
   · rwa [invOf_eq_inv, ← div_eq_inv_mul]
@@ -294,13 +294,13 @@ noncomputable def affineIsometryOfStrictConvexSpace {f : PF → PE} (hi : Isomet
 #align isometry.affine_isometry_of_strict_convex_space Isometry.affineIsometryOfStrictConvexSpace
 
 @[simp]
-theorem coe_affineIsometryOfStrictConvexSpace {f : PF → PE} (hi : Isometry f) :
+lemma coe_affineIsometryOfStrictConvexSpace {f : PF → PE} (hi : Isometry f) :
     ⇑hi.affineIsometryOfStrictConvexSpace = f :=
   rfl
 #align isometry.coe_affine_isometry_of_strict_convex_space Isometry.coe_affineIsometryOfStrictConvexSpace
 
 @[simp]
-theorem affineIsometryOfStrictConvexSpace_apply {f : PF → PE} (hi : Isometry f) (p : PF) :
+lemma affineIsometryOfStrictConvexSpace_apply {f : PF → PE} (hi : Isometry f) (p : PF) :
     hi.affineIsometryOfStrictConvexSpace p = f p :=
   rfl
 #align isometry.affine_isometry_of_strict_convex_space_apply Isometry.affineIsometryOfStrictConvexSpace_apply

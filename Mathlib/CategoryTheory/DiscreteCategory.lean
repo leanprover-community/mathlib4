@@ -52,7 +52,7 @@ structure Discrete (α : Type u₁) where
 #align category_theory.discrete CategoryTheory.Discrete
 
 @[simp]
-theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
+lemma Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
   ext
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
@@ -129,7 +129,7 @@ instance [Unique α] : Unique (Discrete α) :=
   Unique.mk' (Discrete α)
 
 /-- Extract the equation from a morphism in a discrete category. -/
-theorem eq_of_hom {X Y : Discrete α} (i : X ⟶ Y) : X.as = Y.as :=
+lemma eq_of_hom {X Y : Discrete α} (i : X ⟶ Y) : X.as = Y.as :=
   i.down.down
 #align category_theory.discrete.eq_of_hom CategoryTheory.Discrete.eq_of_hom
 
@@ -178,12 +178,12 @@ def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
 #align category_theory.discrete.functor CategoryTheory.Discrete.functor
 
 @[simp]
-theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
+lemma functor_obj {I : Type u₁} (F : I → C) (i : I) :
     (Discrete.functor F).obj (Discrete.mk i) = F i :=
   rfl
 #align category_theory.discrete.functor_obj CategoryTheory.Discrete.functor_obj
 
-theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
+lemma functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
 #align category_theory.discrete.functor_map CategoryTheory.Discrete.functor_map
 
@@ -226,7 +226,7 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
 #align category_theory.discrete.nat_iso CategoryTheory.Discrete.natIso
 
 @[simp]
-theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
+lemma natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
     (i : Discrete I) : (Discrete.natIso f).app i = f i := by aesop_cat
 #align category_theory.discrete.nat_iso_app CategoryTheory.Discrete.natIso_app
 

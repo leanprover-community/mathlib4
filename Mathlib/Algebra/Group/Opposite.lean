@@ -181,48 +181,48 @@ instance commGroup [CommGroup α] : CommGroup αᵐᵒᵖ :=
 
 variable {α}
 @[to_additive (attr := simp, norm_cast)]
-theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
+lemma op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
   rfl
 #align mul_opposite.op_nat_cast MulOpposite.op_natCast
 #align add_opposite.op_nat_cast AddOpposite.op_natCast
 
 @[to_additive (attr := simp, norm_cast)]
-theorem op_intCast [IntCast α] (n : ℤ) : op (n : α) = n :=
+lemma op_intCast [IntCast α] (n : ℤ) : op (n : α) = n :=
   rfl
 #align mul_opposite.op_int_cast MulOpposite.op_intCast
 #align add_opposite.op_int_cast AddOpposite.op_intCast
 
 @[to_additive (attr := simp, norm_cast)]
-theorem unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
+lemma unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
   rfl
 #align mul_opposite.unop_nat_cast MulOpposite.unop_natCast
 #align add_opposite.unop_nat_cast AddOpposite.unop_natCast
 
 @[to_additive (attr := simp, norm_cast)]
-theorem unop_intCast [IntCast α] (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
+lemma unop_intCast [IntCast α] (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
   rfl
 #align mul_opposite.unop_int_cast MulOpposite.unop_intCast
 #align add_opposite.unop_int_cast AddOpposite.unop_intCast
 
 @[to_additive (attr := simp)]
-theorem unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x :=
+lemma unop_div [DivInvMonoid α] (x y : αᵐᵒᵖ) : unop (x / y) = (unop y)⁻¹ * unop x :=
   rfl
 #align mul_opposite.unop_div MulOpposite.unop_div
 #align add_opposite.unop_sub AddOpposite.unop_sub
 
 @[to_additive (attr := simp)]
-theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x := by simp [div_eq_mul_inv]
+lemma op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x := by simp [div_eq_mul_inv]
 #align mul_opposite.op_div MulOpposite.op_div
 #align add_opposite.op_sub AddOpposite.op_sub
 
 @[to_additive (attr := simp)]
-theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
+lemma semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
   by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
 #align add_opposite.semiconj_by_op AddOpposite.semiconjBy_op
 
 @[to_additive (attr := simp, nolint simpComm)]
-theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
+lemma semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
     SemiconjBy (unop a) (unop y) (unop x) ↔ SemiconjBy a x y := by
   conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconjBy_op]
 #align mul_opposite.semiconj_by_unop MulOpposite.semiconjBy_unop
@@ -231,39 +231,39 @@ theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
 attribute [nolint simpComm] AddOpposite.semiconjBy_unop
 
 @[to_additive]
-theorem _root_.SemiconjBy.op [Mul α] {a x y : α} (h : SemiconjBy a x y) :
+lemma _root_.SemiconjBy.op [Mul α] {a x y : α} (h : SemiconjBy a x y) :
     SemiconjBy (op a) (op y) (op x) :=
   semiconjBy_op.2 h
 #align semiconj_by.op SemiconjBy.op
 #align add_semiconj_by.op AddSemiconjBy.op
 
 @[to_additive]
-theorem _root_.SemiconjBy.unop [Mul α] {a x y : αᵐᵒᵖ} (h : SemiconjBy a x y) :
+lemma _root_.SemiconjBy.unop [Mul α] {a x y : αᵐᵒᵖ} (h : SemiconjBy a x y) :
     SemiconjBy (unop a) (unop y) (unop x) :=
   semiconjBy_unop.2 h
 #align semiconj_by.unop SemiconjBy.unop
 #align add_semiconj_by.unop AddSemiconjBy.unop
 
 @[to_additive]
-theorem _root_.Commute.op [Mul α] {x y : α} (h : Commute x y) : Commute (op x) (op y) :=
+lemma _root_.Commute.op [Mul α] {x y : α} (h : Commute x y) : Commute (op x) (op y) :=
   SemiconjBy.op h
 #align commute.op Commute.op
 #align add_commute.op AddCommute.op
 
 @[to_additive]
-theorem Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) : Commute (unop x) (unop y) :=
+lemma Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) : Commute (unop x) (unop y) :=
   h.unop
 #align mul_opposite.commute.unop MulOpposite.Commute.unop
 #align add_opposite.commute.unop AddOpposite.Commute.unop
 
 @[to_additive (attr := simp)]
-theorem commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=
+lemma commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=
   semiconjBy_op
 #align mul_opposite.commute_op MulOpposite.commute_op
 #align add_opposite.commute_op AddOpposite.commute_op
 
 @[to_additive (attr := simp, nolint simpComm)]
-theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) ↔ Commute x y :=
+lemma commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) ↔ Commute x y :=
   semiconjBy_unop
 #align mul_opposite.commute_unop MulOpposite.commute_unop
 #align add_opposite.commute_unop AddOpposite.commute_unop
@@ -279,7 +279,7 @@ def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
 #align mul_opposite.op_add_equiv_symm_apply MulOpposite.opAddEquiv_symm_apply
 
 @[simp]
-theorem opAddEquiv_toEquiv [Add α] : ((opAddEquiv : α ≃+ αᵐᵒᵖ) : α ≃ αᵐᵒᵖ) = opEquiv := rfl
+lemma opAddEquiv_toEquiv [Add α] : ((opAddEquiv : α ≃+ αᵐᵒᵖ) : α ≃ αᵐᵒᵖ) = opEquiv := rfl
 #align mul_opposite.op_add_equiv_to_equiv MulOpposite.opAddEquiv_toEquiv
 
 end MulOpposite
@@ -309,12 +309,12 @@ instance mulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
 instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
 
 @[simp]
-theorem op_pow {β} [Pow α β] (a : α) (b : β) : op (a ^ b) = op a ^ b :=
+lemma op_pow {β} [Pow α β] (a : α) (b : β) : op (a ^ b) = op a ^ b :=
   rfl
 #align add_opposite.op_pow AddOpposite.op_pow
 
 @[simp]
-theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = unop a ^ b :=
+lemma unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = unop a ^ b :=
   rfl
 #align add_opposite.unop_pow AddOpposite.unop_pow
 
@@ -357,7 +357,7 @@ def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ :=
 #align add_opposite.op_mul_equiv_symm_apply AddOpposite.opMulEquiv_symm_apply
 
 @[simp]
-theorem opMulEquiv_toEquiv [Mul α] : ((opMulEquiv : α ≃* αᵃᵒᵖ) : α ≃ αᵃᵒᵖ) = opEquiv :=
+lemma opMulEquiv_toEquiv [Mul α] : ((opMulEquiv : α ≃* αᵃᵒᵖ) : α ≃ αᵃᵒᵖ) = opEquiv :=
   rfl
 #align add_opposite.op_mul_equiv_to_equiv AddOpposite.opMulEquiv_toEquiv
 
@@ -449,41 +449,41 @@ def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
 #align add_units.op_equiv AddUnits.opEquiv
 
 @[to_additive (attr := simp)]
-theorem Units.coe_unop_opEquiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :
+lemma Units.coe_unop_opEquiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :
     ((Units.opEquiv u).unop : M) = unop (u : Mᵐᵒᵖ) :=
   rfl
 #align units.coe_unop_op_equiv Units.coe_unop_opEquiv
 #align add_units.coe_unop_op_equiv AddUnits.coe_unop_opEquiv
 
 @[to_additive (attr := simp)]
-theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
+lemma Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
     (Units.opEquiv.symm u : Mᵐᵒᵖ) = op (u.unop : M) :=
   rfl
 #align units.coe_op_equiv_symm Units.coe_opEquiv_symm
 #align add_units.coe_op_equiv_symm AddUnits.coe_opEquiv_symm
 
 @[to_additive]
-nonrec theorem IsUnit.op {M} [Monoid M] {m : M} (h : IsUnit m) : IsUnit (op m) :=
+nonrec lemma IsUnit.op {M} [Monoid M] {m : M} (h : IsUnit m) : IsUnit (op m) :=
   let ⟨u, hu⟩ := h
   hu ▸ ⟨Units.opEquiv.symm (op u), rfl⟩
 #align is_unit.op IsUnit.op
 #align is_add_unit.op IsAddUnit.op
 
 @[to_additive]
-nonrec theorem IsUnit.unop {M} [Monoid M] {m : Mᵐᵒᵖ} (h : IsUnit m) : IsUnit (unop m) :=
+nonrec lemma IsUnit.unop {M} [Monoid M] {m : Mᵐᵒᵖ} (h : IsUnit m) : IsUnit (unop m) :=
   let ⟨u, hu⟩ := h
   hu ▸ ⟨unop (Units.opEquiv u), rfl⟩
 #align is_unit.unop IsUnit.unop
 #align is_add_unit.unop IsAddUnit.unop
 
 @[to_additive (attr := simp)]
-theorem isUnit_op {M} [Monoid M] {m : M} : IsUnit (op m) ↔ IsUnit m :=
+lemma isUnit_op {M} [Monoid M] {m : M} : IsUnit (op m) ↔ IsUnit m :=
   ⟨IsUnit.unop, IsUnit.op⟩
 #align is_unit_op isUnit_op
 #align is_add_unit_op isAddUnit_op
 
 @[to_additive (attr := simp)]
-theorem isUnit_unop {M} [Monoid M] {m : Mᵐᵒᵖ} : IsUnit (unop m) ↔ IsUnit m :=
+lemma isUnit_unop {M} [Monoid M] {m : Mᵐᵒᵖ} : IsUnit (unop m) ↔ IsUnit m :=
   ⟨IsUnit.op, IsUnit.unop⟩
 #align is_unit_unop isUnit_unop
 #align is_add_unit_unop isAddUnit_unop
@@ -665,7 +665,7 @@ section Ext
 This is useful because there are often ext lemmas for specific `α`s that will apply
 to an equality of `α →+ β` such as `Finsupp.addHom_ext'`. -/
 @[ext]
-theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g : αᵐᵒᵖ →+ β)
+lemma AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g : αᵐᵒᵖ →+ β)
     (h :
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :

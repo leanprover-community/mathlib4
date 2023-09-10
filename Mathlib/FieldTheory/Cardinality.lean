@@ -37,7 +37,7 @@ open scoped Cardinal nonZeroDivisors
 universe u
 
 /-- A finite field has prime power cardinality. -/
-theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
+lemma Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
   -- TODO: `Algebra` version of `CharP.exists`, of type `∀ p, Algebra (ZMod p) α`
   cases' CharP.exists α with p _
   haveI hp := Fact.mk (CharP.char_is_prime α p)
@@ -50,21 +50,21 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
 #align fintype.is_prime_pow_card_of_field Fintype.isPrimePow_card_of_field
 
 /-- A `Fintype` can be given a field structure iff its cardinality is a prime power. -/
-theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
+lemma Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
   refine' ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, _⟩
   rintro ⟨p, n, hp, hn, hα⟩
   haveI := Fact.mk hp.nat_prime
   exact ⟨(Fintype.equivOfCardEq ((GaloisField.card p n hn.ne').trans hα)).symm.field⟩
 #align fintype.nonempty_field_iff Fintype.nonempty_field_iff
 
-theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
+lemma Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
     ¬IsPrimePow ‖α‖ → ¬IsField α :=
   mt fun h => Fintype.nonempty_field_iff.mp ⟨h.toField⟩
 #align fintype.not_is_field_of_card_not_prime_pow Fintype.not_isField_of_card_not_prime_pow
 
 set_option synthInstance.maxHeartbeats 50000 in
 /-- Any infinite type can be endowed a field structure. -/
-theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
+lemma Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   letI K := FractionRing (MvPolynomial α <| ULift.{u} ℚ)
   suffices #α = #K by
     obtain ⟨e⟩ := Cardinal.eq.1 this
@@ -78,7 +78,7 @@ theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α
 #align infinite.nonempty_field Infinite.nonempty_field
 
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
-theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by
+lemma Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by
   rw [Cardinal.isPrimePow_iff]
   cases' fintypeOrInfinite α with h h
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',

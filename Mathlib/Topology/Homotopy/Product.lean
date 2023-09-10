@@ -203,7 +203,7 @@ def prod (q₁ : Path.Homotopic.Quotient a₁ a₂) (q₂ : Path.Homotopic.Quoti
 
 variable (p₁ p₁' p₂ p₂')
 
-theorem prod_lift : prod ⟦p₁⟧ ⟦p₂⟧ = ⟦p₁.prod p₂⟧ :=
+lemma prod_lift : prod ⟦p₁⟧ ⟦p₂⟧ = ⟦p₁.prod p₂⟧ :=
   rfl
 #align path.homotopic.prod_lift Path.Homotopic.prod_lift
 
@@ -211,7 +211,7 @@ variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quoti
 
 /-- Products commute with path composition.
     This is `trans_prod_eq_prod_trans` descended to the quotient.-/
-theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
+lemma comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
   intro a b
   apply Quotient.inductionOn₂ (motive := _) r₁ r₂
@@ -235,7 +235,7 @@ def projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient 
 
 /-- Lemmas showing projection is the inverse of product. -/
 @[simp]
-theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
+lemma projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
   intro p₁ p₂
   unfold projLeft
@@ -244,7 +244,7 @@ theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
 #align path.homotopic.proj_left_prod Path.Homotopic.projLeft_prod
 
 @[simp]
-theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
+lemma projRight_prod : projRight (prod q₁ q₂) = q₂ := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
   intro p₁ p₂
   unfold projRight

@@ -259,7 +259,7 @@ theorem coe_chartAt_symm_fst (p : H × E) (q : TM) :
 #align tangent_bundle.coe_chart_at_symm_fst TangentBundle.coe_chartAt_symm_fst
 
 @[simp, mfld_simps]
-theorem trivializationAt_continuousLinearMapAt {b₀ b : M}
+lemma trivializationAt_continuousLinearMapAt {b₀ b : M}
     (hb : b ∈ (trivializationAt E (TangentSpace I) b₀).baseSet) :
     (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b :=
@@ -267,7 +267,7 @@ theorem trivializationAt_continuousLinearMapAt {b₀ b : M}
 #align tangent_bundle.trivialization_at_continuous_linear_map_at TangentBundle.trivializationAt_continuousLinearMapAt
 
 @[simp, mfld_simps]
-theorem trivializationAt_symmL {b₀ b : M}
+lemma trivializationAt_symmL {b₀ b : M}
     (hb : b ∈ (trivializationAt E (TangentSpace I) b₀).baseSet) :
     (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b :=
@@ -380,14 +380,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
 #align tangent_bundle_model_space_homeomorph tangentBundleModelSpaceHomeomorph
 
 @[simp, mfld_simps]
-theorem tangentBundleModelSpaceHomeomorph_coe :
+lemma tangentBundleModelSpaceHomeomorph_coe :
     (tangentBundleModelSpaceHomeomorph H I : TangentBundle I H → ModelProd H E) =
       TotalSpace.toProd H E :=
   rfl
 #align tangent_bundle_model_space_homeomorph_coe tangentBundleModelSpaceHomeomorph_coe
 
 @[simp, mfld_simps]
-theorem tangentBundleModelSpaceHomeomorph_coe_symm :
+lemma tangentBundleModelSpaceHomeomorph_coe_symm :
     ((tangentBundleModelSpaceHomeomorph H I).symm : ModelProd H E → TangentBundle I H) =
       (TotalSpace.toProd H E).symm :=
   rfl

@@ -46,11 +46,11 @@ def circle : Submonoid ℂ :=
 #align circle circle
 
 @[simp]
-theorem mem_circle_iff_abs {z : ℂ} : z ∈ circle ↔ abs z = 1 :=
+lemma mem_circle_iff_abs {z : ℂ} : z ∈ circle ↔ abs z = 1 :=
   mem_sphere_zero_iff_norm
 #align mem_circle_iff_abs mem_circle_iff_abs
 
-theorem circle_def : ↑circle = { z : ℂ | abs z = 1 } :=
+lemma circle_def : ↑circle = { z : ℂ | abs z = 1 } :=
   Set.ext fun _ => mem_circle_iff_abs
 #align circle_def circle_def
 
@@ -59,7 +59,7 @@ theorem abs_coe_circle (z : circle) : abs z = 1 :=
   mem_circle_iff_abs.mp z.2
 #align abs_coe_circle abs_coe_circle
 
-theorem mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by simp [Complex.abs]
+lemma mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by simp [Complex.abs]
 #align mem_circle_iff_norm_sq mem_circle_iff_normSq
 
 @[simp]
@@ -123,7 +123,7 @@ theorem expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Co
 #align exp_map_circle_apply expMapCircle_apply
 
 @[simp]
-theorem expMapCircle_zero : expMapCircle 0 = 1 :=
+lemma expMapCircle_zero : expMapCircle 0 = 1 :=
   Subtype.ext <| by
     rw [expMapCircle_apply, ofReal_zero, zero_mul, exp_zero, Submonoid.coe_one]
 #align exp_map_circle_zero expMapCircle_zero

@@ -56,7 +56,7 @@ theorem generate_discretePresieve_mem (α : Type u) :
 
 open Presieve
 
-theorem isSheaf_yoneda' {α : Type u} : IsSheaf typesGrothendieckTopology (yoneda.obj α) :=
+lemma isSheaf_yoneda' {α : Type u} : IsSheaf typesGrothendieckTopology (yoneda.obj α) :=
   fun β S hs x hx =>
   ⟨fun y => x _ (hs y) PUnit.unit, fun γ f h =>
     funext fun z => by
@@ -72,7 +72,7 @@ def yoneda' : Type u ⥤ SheafOfTypes typesGrothendieckTopology where
 #align category_theory.yoneda' CategoryTheory.yoneda'
 
 @[simp]
-theorem yoneda'_comp : yoneda'.{u} ⋙ sheafOfTypesToPresheaf _ = yoneda :=
+lemma yoneda'_comp : yoneda'.{u} ⋙ sheafOfTypesToPresheaf _ = yoneda :=
   rfl
 #align category_theory.yoneda'_comp CategoryTheory.yoneda'_comp
 
@@ -99,13 +99,13 @@ noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u) (hs : IsSheaf typesGro
       rfl
 #align category_theory.types_glue CategoryTheory.typesGlue
 
-theorem eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f := by
+lemma eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f := by
   funext x
   apply (IsSheafFor.valid_glue _ _ _ <| ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩).trans
   convert FunctorToTypes.map_id_apply S _
 #align category_theory.eval_types_glue CategoryTheory.eval_typesGlue
 
-theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by
+lemma typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by
   apply (hs.isSheafFor _ _ (generate_discretePresieve_mem α)).isSeparatedFor.ext
   intro β f hf
   apply (IsSheafFor.valid_glue _ _ _ hf).trans
@@ -175,11 +175,11 @@ noncomputable def typeEquiv : Type u ≌ SheafOfTypes typesGrothendieckTopology 
             funext fun α => funext fun s => funext fun x => eval_app S₁ S₂ f (unop α) s x)
 #align category_theory.type_equiv CategoryTheory.typeEquiv
 
-theorem subcanonical_typesGrothendieckTopology : Sheaf.Subcanonical typesGrothendieckTopology.{u} :=
+lemma subcanonical_typesGrothendieckTopology : Sheaf.Subcanonical typesGrothendieckTopology.{u} :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ fun _ => isSheaf_yoneda'
 #align category_theory.subcanonical_types_grothendieck_topology CategoryTheory.subcanonical_typesGrothendieckTopology
 
-theorem typesGrothendieckTopology_eq_canonical :
+lemma typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by
   refine' le_antisymm subcanonical_typesGrothendieckTopology (sInf_le _)
   refine' ⟨yoneda.obj (ULift Bool), ⟨_, rfl⟩, GrothendieckTopology.ext _⟩

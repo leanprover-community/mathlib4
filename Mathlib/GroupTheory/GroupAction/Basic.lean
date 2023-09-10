@@ -49,7 +49,7 @@ def orbit (a : α) :=
 variable {M}
 
 @[to_additive]
-theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x • a₁ = a₂ :=
+lemma mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x • a₁ = a₂ :=
   Iff.rfl
 #align mul_action.mem_orbit_iff MulAction.mem_orbit_iff
 #align add_action.mem_orbit_iff AddAction.mem_orbit_iff
@@ -97,7 +97,7 @@ instance {a : α} : MulAction M (orbit M a) where
   mul_smul m m' a' := Subtype.ext (mul_smul m m' (a' : α))
 
 @[to_additive (attr := simp)]
-theorem orbit.coe_smul {a : α} {m : M} {a' : orbit M a} : ↑(m • a') = m • (a' : α) :=
+lemma orbit.coe_smul {a : α} {m : M} {a' : orbit M a} : ↑(m • a') = m • (a' : α) :=
   rfl
 #align mul_action.orbit.coe_smul MulAction.orbit.coe_smul
 #align add_action.orbit.coe_vadd AddAction.orbit.coe_vadd
@@ -119,7 +119,7 @@ def fixedBy (m : M) : Set α :=
 #align add_action.fixed_by AddAction.fixedBy
 
 @[to_additive]
-theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy M α m :=
+lemma fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy M α m :=
   Set.ext fun _ =>
     ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m : _)⟩
 #align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_iInter_fixedBy
@@ -128,19 +128,19 @@ theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy M α m :
 variable {M}
 
 @[to_additive (attr := simp)]
-theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
+lemma mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 #align mul_action.mem_fixed_points MulAction.mem_fixedPoints
 #align add_action.mem_fixed_points AddAction.mem_fixedPoints
 
 @[to_additive (attr := simp)]
-theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy M α m ↔ m • a = a :=
+lemma mem_fixedBy {m : M} {a : α} : a ∈ fixedBy M α m ↔ m • a = a :=
   Iff.rfl
 #align mul_action.mem_fixed_by MulAction.mem_fixedBy
 #align add_action.mem_fixed_by AddAction.mem_fixedBy
 
 @[to_additive]
-theorem mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ orbit M a → a' = a :=
+lemma mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ orbit M a → a' = a :=
   ⟨fun h _ h₁ =>
     let ⟨m, hm⟩ := mem_orbit_iff.1 h₁
     hm ▸ h m,
@@ -161,13 +161,13 @@ def Stabilizer.submonoid (a : α) : Submonoid M where
 #align add_action.stabilizer.add_submonoid AddAction.Stabilizer.addSubmonoid
 
 @[to_additive (attr := simp)]
-theorem mem_stabilizer_submonoid_iff {a : α} {m : M} : m ∈ Stabilizer.submonoid M a ↔ m • a = a :=
+lemma mem_stabilizer_submonoid_iff {a : α} {m : M} : m ∈ Stabilizer.submonoid M a ↔ m • a = a :=
   Iff.rfl
 #align mul_action.mem_stabilizer_submonoid_iff MulAction.mem_stabilizer_submonoid_iff
 #align add_action.mem_stabilizer_add_submonoid_iff AddAction.mem_stabilizer_addSubmonoid_iff
 
 @[to_additive]
-theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
+lemma orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
   (surjective_smul M a).range_eq
 #align mul_action.orbit_eq_univ MulAction.orbit_eq_univ
 #align add_action.orbit_eq_univ AddAction.orbit_eq_univ
@@ -175,7 +175,7 @@ theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
 variable {M}
 
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
-theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
+lemma mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   rw [Fintype.card_eq_one_iff, mem_fixedPoints]
   constructor
@@ -208,7 +208,7 @@ def stabilizer (a : α) : Subgroup G :=
 variable {G}
 
 @[to_additive (attr := simp)]
-theorem mem_stabilizer_iff {g : G} {a : α} : g ∈ stabilizer G a ↔ g • a = a :=
+lemma mem_stabilizer_iff {g : G} {a : α} : g ∈ stabilizer G a ↔ g • a = a :=
   Iff.rfl
 #align mul_action.mem_stabilizer_iff MulAction.mem_stabilizer_iff
 #align add_action.mem_stabilizer_iff AddAction.mem_stabilizer_iff
@@ -241,7 +241,7 @@ instance (a : α) : IsPretransitive G (orbit G a) :=
     simp [mul_smul]⟩
 
 @[to_additive]
-theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
+lemma orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
   ⟨fun h => h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
 #align mul_action.orbit_eq_iff MulAction.orbit_eq_iff
 #align add_action.orbit_eq_iff AddAction.orbit_eq_iff
@@ -275,7 +275,7 @@ def orbitRel : Setoid α where
 variable {G α}
 
 @[to_additive]
-theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b :=
+lemma orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b :=
   Iff.rfl
 #align mul_action.orbit_rel_apply MulAction.orbitRel_apply
 #align add_action.orbit_rel_apply AddAction.orbitRel_apply
@@ -308,7 +308,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
 #align add_action.quotient_preimage_image_eq_union_add AddAction.quotient_preimage_image_eq_union_add
 
 @[to_additive]
-theorem disjoint_image_image_iff {U V : Set α} :
+lemma disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   letI := orbitRel G α
@@ -360,7 +360,7 @@ theorem orbitRel.Quotient.orbit_mk (a : α) :
 #align add_action.orbit_rel.quotient.orbit_mk AddAction.orbitRel.Quotient.orbit_mk
 
 @[to_additive]
-theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
+lemma orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
     a ∈ x.orbit ↔ Quotient.mk'' a = x := by
   induction x using Quotient.inductionOn'
   rw [Quotient.eq'']
@@ -462,7 +462,7 @@ end AddAction
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
+lemma smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
     [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]

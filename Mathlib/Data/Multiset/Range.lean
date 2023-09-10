@@ -27,7 +27,7 @@ theorem coe_range (n : ℕ) : ↑(List.range n) = range n :=
 #align multiset.coe_range Multiset.coe_range
 
 @[simp]
-theorem range_zero : range 0 = 0 :=
+lemma range_zero : range 0 = 0 :=
   rfl
 #align multiset.range_zero Multiset.range_zero
 
@@ -41,17 +41,17 @@ theorem card_range (n : ℕ) : card (range n) = n :=
   length_range _
 #align multiset.card_range Multiset.card_range
 
-theorem range_subset {m n : ℕ} : range m ⊆ range n ↔ m ≤ n :=
+lemma range_subset {m n : ℕ} : range m ⊆ range n ↔ m ≤ n :=
   List.range_subset
 #align multiset.range_subset Multiset.range_subset
 
 @[simp]
-theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
+lemma mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
   List.mem_range
 #align multiset.mem_range Multiset.mem_range
 
 --Porting note: removing @[simp], `simp` can prove it
-theorem not_mem_range_self {n : ℕ} : n ∉ range n :=
+lemma not_mem_range_self {n : ℕ} : n ∉ range n :=
   List.not_mem_range_self
 #align multiset.not_mem_range_self Multiset.not_mem_range_self
 

@@ -154,13 +154,13 @@ protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
   rw [FiberBundle.extChartAt, LocalEquiv.trans_target, Trivialization.target_eq, inter_prod]
   rfl
 
-theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y}
+lemma FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y}
     (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
     writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) x
       (trivializationAt F E x.proj) y = y :=
   writtenInExtChartAt_chartAt_comp _ _ hy
 
-theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F E} {y}
+lemma FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F E} {y}
     (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
     writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) (trivializationAt F E x.proj x)
       (trivializationAt F E x.proj).toLocalHomeomorph.symm y = y :=
@@ -215,39 +215,39 @@ theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
 
 variable (E)
 
-theorem contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun x ↦ by
+lemma contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun x ↦ by
   have : ContMDiffAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n id x := contMDiffAt_id
   rw [contMDiffAt_totalSpace] at this
   exact this.1
 #align bundle.cont_mdiff_proj Bundle.contMDiff_proj
 
-theorem smooth_proj : Smooth (IB.prod 𝓘(𝕜, F)) IB (π F E) :=
+lemma smooth_proj : Smooth (IB.prod 𝓘(𝕜, F)) IB (π F E) :=
   contMDiff_proj E
 #align bundle.smooth_proj Bundle.smooth_proj
 
-theorem contMDiffOn_proj {s : Set (TotalSpace F E)} :
+lemma contMDiffOn_proj {s : Set (TotalSpace F E)} :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) IB n (π F E) s :=
   (Bundle.contMDiff_proj E).contMDiffOn
 #align bundle.cont_mdiff_on_proj Bundle.contMDiffOn_proj
 
-theorem smoothOn_proj {s : Set (TotalSpace F E)} : SmoothOn (IB.prod 𝓘(𝕜, F)) IB (π F E) s :=
+lemma smoothOn_proj {s : Set (TotalSpace F E)} : SmoothOn (IB.prod 𝓘(𝕜, F)) IB (π F E) s :=
   contMDiffOn_proj E
 #align bundle.smooth_on_proj Bundle.smoothOn_proj
 
-theorem contMDiffAt_proj {p : TotalSpace F E} : ContMDiffAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) p :=
+lemma contMDiffAt_proj {p : TotalSpace F E} : ContMDiffAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) p :=
   (Bundle.contMDiff_proj E).contMDiffAt
 #align bundle.cont_mdiff_at_proj Bundle.contMDiffAt_proj
 
-theorem smoothAt_proj {p : TotalSpace F E} : SmoothAt (IB.prod 𝓘(𝕜, F)) IB (π F E) p :=
+lemma smoothAt_proj {p : TotalSpace F E} : SmoothAt (IB.prod 𝓘(𝕜, F)) IB (π F E) p :=
   Bundle.contMDiffAt_proj E
 #align bundle.smooth_at_proj Bundle.smoothAt_proj
 
-theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
+lemma contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     ContMDiffWithinAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) s p :=
   (Bundle.contMDiffAt_proj E).contMDiffWithinAt
 #align bundle.cont_mdiff_within_at_proj Bundle.contMDiffWithinAt_proj
 
-theorem smoothWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
+lemma smoothWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     SmoothWithinAt (IB.prod 𝓘(𝕜, F)) IB (π F E) s p :=
   Bundle.contMDiffWithinAt_proj E
 #align bundle.smooth_within_at_proj Bundle.smoothWithinAt_proj
@@ -255,7 +255,7 @@ theorem smoothWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
-theorem smooth_zeroSection : Smooth IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) := fun x ↦ by
+lemma smooth_zeroSection : Smooth IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) := fun x ↦ by
   unfold zeroSection
   rw [Bundle.contMDiffAt_section]
   apply (contMDiffAt_const (c := 0)).congr_of_eventuallyEq
@@ -303,24 +303,24 @@ section SmoothCoordChange
 variable {F E}
 variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
 
-theorem smoothOn_coordChangeL :
+lemma smoothOn_coordChangeL :
     SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
   SmoothVectorBundle.smoothOn_coordChangeL e e'
 
-theorem smoothOn_symm_coordChangeL :
+lemma smoothOn_symm_coordChangeL :
     SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) := by
   rw [inter_comm]
   refine (SmoothVectorBundle.smoothOn_coordChangeL e' e).congr fun b hb ↦ ?_
   rw [e.symm_coordChangeL e' hb]
 
-theorem contMDiffOn_coordChangeL :
+lemma contMDiffOn_coordChangeL :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
   (smoothOn_coordChangeL IB e e').of_le le_top
 
-theorem contMDiffOn_symm_coordChangeL :
+lemma contMDiffOn_symm_coordChangeL :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
   (smoothOn_symm_coordChangeL IB e e').of_le le_top
@@ -338,47 +338,47 @@ theorem smoothAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
 
 variable {IB}
 
-protected theorem ContMDiffWithinAt.coordChangeL {f : M → B}
+protected lemma ContMDiffWithinAt.coordChangeL {f : M → B}
     (hf : ContMDiffWithinAt IM IB n f s x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffWithinAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   (contMDiffAt_coordChangeL IB he he').comp_contMDiffWithinAt _ hf
 
-protected nonrec theorem ContMDiffAt.coordChangeL {f : M → B}
+protected nonrec lemma ContMDiffAt.coordChangeL {f : M → B}
     (hf : ContMDiffAt IM IB n f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   hf.coordChangeL he he'
 
-protected theorem ContMDiffOn.coordChangeL {f : M → B}
+protected lemma ContMDiffOn.coordChangeL {f : M → B}
     (hf : ContMDiffOn IM IB n f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     ContMDiffOn IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
   fun x hx ↦ (hf x hx).coordChangeL (he hx) (he' hx)
 
-protected theorem ContMDiff.coordChangeL {f : M → B}
+protected lemma ContMDiff.coordChangeL {f : M → B}
     (hf : ContMDiff IM IB n f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) := fun x ↦
   (hf x).coordChangeL (he x) (he' x)
 
-protected nonrec theorem SmoothWithinAt.coordChangeL {f : M → B}
+protected nonrec lemma SmoothWithinAt.coordChangeL {f : M → B}
     (hf : SmoothWithinAt IM IB f s x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothWithinAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   hf.coordChangeL he he'
 
-protected nonrec theorem SmoothAt.coordChangeL {f : M → B}
+protected nonrec lemma SmoothAt.coordChangeL {f : M → B}
     (hf : SmoothAt IM IB f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   hf.coordChangeL he he'
 
-protected nonrec theorem SmoothOn.coordChangeL {f : M → B}
+protected nonrec lemma SmoothOn.coordChangeL {f : M → B}
     (hf : SmoothOn IM IB f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     SmoothOn IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
   hf.coordChangeL he he'
 
-protected nonrec theorem Smooth.coordChangeL {f : M → B}
+protected nonrec lemma Smooth.coordChangeL {f : M → B}
     (hf : Smooth IM IB f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     Smooth IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) :=
   hf.coordChangeL he he'
 
-protected theorem ContMDiffWithinAt.coordChange {f : M → B} {g : M → F}
+protected lemma ContMDiffWithinAt.coordChange {f : M → B} {g : M → F}
     (hf : ContMDiffWithinAt IM IB n f s x) (hg : ContMDiffWithinAt IM 𝓘(𝕜, F) n g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s x := by
@@ -389,46 +389,46 @@ protected theorem ContMDiffWithinAt.coordChange {f : M → B} {g : M → F}
     exact (Trivialization.coordChangeL_apply' e e' hy (g y)).symm
   · exact (Trivialization.coordChangeL_apply' e e' ⟨he, he'⟩ (g x)).symm
 
-protected nonrec theorem ContMDiffAt.coordChange {f : M → B} {g : M → F}
+protected nonrec lemma ContMDiffAt.coordChange {f : M → B} {g : M → F}
     (hf : ContMDiffAt IM IB n f x) (hg : ContMDiffAt IM 𝓘(𝕜, F) n g x) (he : f x ∈ e.baseSet)
     (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) x :=
   hf.coordChange hg he he'
 
-protected theorem ContMDiffOn.coordChange {f : M → B} {g : M → F} (hf : ContMDiffOn IM IB n f s)
+protected lemma ContMDiffOn.coordChange {f : M → B} {g : M → F} (hf : ContMDiffOn IM IB n f s)
     (hg : ContMDiffOn IM 𝓘(𝕜, F) n g s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     ContMDiffOn IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s := fun x hx ↦
   (hf x hx).coordChange (hg x hx) (he hx) (he' hx)
 
-protected theorem ContMDiff.coordChange {f : M → B} {g : M → F} (hf : ContMDiff IM IB n f)
+protected lemma ContMDiff.coordChange {f : M → B} {g : M → F} (hf : ContMDiff IM IB n f)
     (hg : ContMDiff IM 𝓘(𝕜, F) n g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
 
-protected nonrec theorem SmoothWithinAt.coordChange {f : M → B} {g : M → F}
+protected nonrec lemma SmoothWithinAt.coordChange {f : M → B} {g : M → F}
     (hf : SmoothWithinAt IM IB f s x) (hg : SmoothWithinAt IM 𝓘(𝕜, F) g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothWithinAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s x :=
   hf.coordChange hg he he'
 
-protected nonrec theorem SmoothAt.coordChange {f : M → B} {g : M → F} (hf : SmoothAt IM IB f x)
+protected nonrec lemma SmoothAt.coordChange {f : M → B} {g : M → F} (hf : SmoothAt IM IB f x)
     (hg : SmoothAt IM 𝓘(𝕜, F) g x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) x :=
   hf.coordChange hg he he'
 
-protected nonrec theorem SmoothOn.coordChange {f : M → B} {g : M → F} (hf : SmoothOn IM IB f s)
+protected nonrec lemma SmoothOn.coordChange {f : M → B} {g : M → F} (hf : SmoothOn IM IB f s)
     (hg : SmoothOn IM 𝓘(𝕜, F) g s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     SmoothOn IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s :=
   hf.coordChange hg he he'
 
-protected theorem Smooth.coordChange {f : M → B} {g : M → F} (hf : Smooth IM IB f)
+protected lemma Smooth.coordChange {f : M → B} {g : M → F} (hf : Smooth IM IB f)
     (hg : Smooth IM 𝓘(𝕜, F) g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     Smooth IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
 
 variable (IB e e')
 
-theorem Trivialization.contMDiffOn_symm_trans :
+lemma Trivialization.contMDiffOn_symm_trans :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n
       (e.toLocalHomeomorph.symm ≫ₕ e'.toLocalHomeomorph) (e.target ∩ e'.target) := by
   have Hmaps : MapsTo Prod.fst (e.target ∩ e'.target) (e.baseSet ∩ e'.baseSet) := fun x hx ↦
@@ -445,7 +445,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
 
 variable {IB e e'}
 
-theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F E}
+lemma ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F E}
     (hp : ContMDiffWithinAt IM IB n (π F E ∘ f) s x)
     (hf : ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e (f y)).2) s x)
     (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
@@ -456,7 +456,7 @@ theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F 
     rw [Function.comp_apply, e.coordChange_apply_snd _ hy]
   · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
 
-theorem Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F E}
+lemma Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F E}
     (hp : ContMDiffWithinAt IM IB n (π F E ∘ f) s x)
     (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e (f y)).2) s x ↔
@@ -507,7 +507,7 @@ section
 variable {F E}
 variable {e e' : Trivialization F (π F E)} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
 
-theorem Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
+lemma Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
@@ -515,13 +515,13 @@ theorem Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set
   (contMDiffWithinAt_totalSpace _).trans <| and_congr_right fun h ↦
     Trivialization.contMDiffWithinAt_snd_comp_iff₂ h FiberBundle.mem_trivializationAt_proj_source he
 
-theorem Trivialization.contMDiffAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
+lemma Trivialization.contMDiffAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x => (f x).proj) x₀ ∧
       ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) x₀ :=
   e.contMDiffWithinAt_iff _ he
 
-theorem Trivialization.contMDiffOn_iff {f : M → TotalSpace F E} {s : Set M}
+lemma Trivialization.contMDiffOn_iff {f : M → TotalSpace F E} {s : Set M}
     (he : MapsTo f s e.source) :
     ContMDiffOn IM (IB.prod 𝓘(𝕜, F)) n f s ↔
       ContMDiffOn IM IB n (fun x => (f x).proj) s ∧
@@ -529,31 +529,31 @@ theorem Trivialization.contMDiffOn_iff {f : M → TotalSpace F E} {s : Set M}
   simp only [ContMDiffOn, ← forall_and]
   exact forall₂_congr fun x hx ↦ e.contMDiffWithinAt_iff IB (he hx)
 
-theorem Trivialization.contMDiff_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
+lemma Trivialization.contMDiff_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F)) n f ↔
       ContMDiff IM IB n (fun x => (f x).proj) ∧
       ContMDiff IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) :=
   (forall_congr' fun x ↦ e.contMDiffAt_iff IB (he x)).trans forall_and
 
-theorem Trivialization.smoothWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
+lemma Trivialization.smoothWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
     SmoothWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
       SmoothWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
       SmoothWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) s x₀ :=
   e.contMDiffWithinAt_iff IB he
 
-theorem Trivialization.smoothAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
+lemma Trivialization.smoothAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
     SmoothAt IM (IB.prod 𝓘(𝕜, F)) f x₀ ↔
       SmoothAt IM IB (fun x => (f x).proj) x₀ ∧ SmoothAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) x₀ :=
   e.contMDiffAt_iff IB he
 
-theorem Trivialization.smoothOn_iff {f : M → TotalSpace F E} {s : Set M}
+lemma Trivialization.smoothOn_iff {f : M → TotalSpace F E} {s : Set M}
     (he : MapsTo f s e.source) :
     SmoothOn IM (IB.prod 𝓘(𝕜, F)) f s ↔
       SmoothOn IM IB (fun x => (f x).proj) s ∧ SmoothOn IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) s :=
   e.contMDiffOn_iff IB he
 
-theorem Trivialization.smooth_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
+lemma Trivialization.smooth_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
     Smooth IM (IB.prod 𝓘(𝕜, F)) f ↔
       Smooth IM IB (fun x => (f x).proj) ∧ Smooth IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) :=
   e.contMDiff_iff IB he
@@ -702,7 +702,7 @@ theorem mk_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
 
 variable (IB)
 /-- Make a `SmoothVectorBundle` from a `SmoothVectorPrebundle`. -/
-theorem smoothVectorBundle : @SmoothVectorBundle
+lemma smoothVectorBundle : @SmoothVectorBundle
     _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { smoothOn_coordChangeL := by

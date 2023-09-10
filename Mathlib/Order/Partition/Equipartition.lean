@@ -31,7 +31,7 @@ def IsEquipartition : Prop :=
   (P.parts : Set (Finset α)).EquitableOn card
 #align finpartition.is_equipartition Finpartition.IsEquipartition
 
-theorem isEquipartition_iff_card_parts_eq_average :
+lemma isEquipartition_iff_card_parts_eq_average :
     P.IsEquipartition ↔
       ∀ a : Finset α,
         a ∈ P.parts → a.card = s.card / P.parts.card ∨ a.card = s.card / P.parts.card + 1 :=
@@ -67,15 +67,15 @@ theorem IsEquipartition.card_part_le_average_add_one (hP : P.IsEquipartition) (h
 
 variable (s) -- [Decidable (a = ⊥)]
 
-theorem bot_isEquipartition : (⊥ : Finpartition s).IsEquipartition :=
+lemma bot_isEquipartition : (⊥ : Finpartition s).IsEquipartition :=
   Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨1, by simp⟩
 #align finpartition.bot_is_equipartition Finpartition.bot_isEquipartition
 
-theorem top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEquipartition :=
+lemma top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEquipartition :=
   Set.Subsingleton.isEquipartition (parts_top_subsingleton _)
 #align finpartition.top_is_equipartition Finpartition.top_isEquipartition
 
-theorem indiscrete_isEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by
+lemma indiscrete_isEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by
   rw [IsEquipartition, indiscrete_parts, coe_singleton]
   exact Set.equitableOn_singleton s _
 #align finpartition.indiscrete_is_equipartition Finpartition.indiscrete_isEquipartition

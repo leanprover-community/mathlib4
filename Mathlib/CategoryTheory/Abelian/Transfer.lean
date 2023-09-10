@@ -54,7 +54,7 @@ variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
 variable (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F)
 
 /-- No point making this an instance, as it requires `i`. -/
-theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
+lemma hasKernels [PreservesFiniteLimits G] : HasKernels C :=
   { has_limit := fun f => by
       have := NatIso.naturality_1 i f
       simp at this
@@ -64,7 +64,7 @@ theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
 #align category_theory.abelian_of_adjunction.has_kernels CategoryTheory.AbelianOfAdjunction.hasKernels
 
 /-- No point making this an instance, as it requires `i` and `adj`. -/
-theorem hasCokernels : HasCokernels C :=
+lemma hasCokernels : HasCokernels C :=
   { has_colimit := fun f => by
       have : PreservesColimits G := adj.leftAdjointPreservesColimits
       have := NatIso.naturality_1 i f
@@ -143,7 +143,7 @@ def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.imag
 
 -- The account of this proof in the Stacks project omits this calculation.
 @[nolint unusedHavesSuffices]
-theorem coimageIsoImage_hom {X Y : C} (f : X ⟶ Y) :
+lemma coimageIsoImage_hom {X Y : C} (f : X ⟶ Y) :
     (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f := by
   -- porting note: the next `have` have been added, otherwise some instance were not found
   have : ∀ (X' Y' : C) (f' : X' ⟶ Y'), HasCokernel f' := inferInstance

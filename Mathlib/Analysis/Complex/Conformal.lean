@@ -37,7 +37,7 @@ noncomputable section
 
 open Complex ContinuousLinearMap ComplexConjugate
 
-theorem isConformalMap_conj : IsConformalMap (conjLie : ℂ →L[ℝ] ℂ) :=
+lemma isConformalMap_conj : IsConformalMap (conjLie : ℂ →L[ℝ] ℂ) :=
   conjLie.toLinearIsometry.isConformalMap
 #align is_conformal_map_conj isConformalMap_conj
 
@@ -46,7 +46,7 @@ section ConformalIntoComplexNormed
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E] {z : ℂ}
   {g : ℂ →L[ℝ] E} {f : ℂ → E}
 
-theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
+lemma isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
   have minor₁ : ‖map 1‖ ≠ 0 := by simpa only [ext_ring_iff, Ne.def, norm_eq_zero] using nonzero
   refine' ⟨‖map 1‖, minor₁, ⟨‖map 1‖⁻¹ • ((map : ℂ →ₗ[ℂ] E) : ℂ →ₗ[ℝ] E), _⟩, _⟩
@@ -64,7 +64,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
       coe_coe, smul_inv_smul₀ minor₁]
 #align is_conformal_map_complex_linear isConformalMap_complex_linear
 
-theorem isConformalMap_complex_linear_conj {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
+lemma isConformalMap_complex_linear_conj {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap ((map.restrictScalars ℝ).comp (conjCle : ℂ →L[ℝ] ℂ)) :=
   (isConformalMap_complex_linear nonzero).comp isConformalMap_conj
 #align is_conformal_map_complex_linear_conj isConformalMap_complex_linear_conj
@@ -102,7 +102,7 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
 
 /-- A real continuous linear map on the complex plane is conformal if and only if the map or its
     conjugate is complex linear, and the map is nonvanishing. -/
-theorem isConformalMap_iff_is_complex_or_conj_linear :
+lemma isConformalMap_iff_is_complex_or_conj_linear :
     IsConformalMap g ↔
       ((∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
           ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCle) ∧

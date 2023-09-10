@@ -88,12 +88,12 @@ theorem exp_blockDiagonal' (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
   simp_rw [exp_eq_tsum, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
 #align matrix.exp_block_diagonal' Matrix.exp_blockDiagonal'
 
-theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
+lemma exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
     exp 𝕂 Aᴴ = (exp 𝕂 A)ᴴ :=
   (star_exp A).symm
 #align matrix.exp_conj_transpose Matrix.exp_conjTranspose
 
-theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m 𝔸} (h : A.IsHermitian) :
+lemma IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m 𝔸} (h : A.IsHermitian) :
     (exp 𝕂 A).IsHermitian :=
   (exp_conjTranspose _ _).symm.trans <| congr_arg _ h
 #align matrix.is_hermitian.exp Matrix.IsHermitian.exp
@@ -109,7 +109,7 @@ theorem exp_transpose (A : Matrix m m 𝔸) : exp 𝕂 Aᵀ = (exp 𝕂 A)ᵀ :=
   simp_rw [exp_eq_tsum, transpose_tsum, transpose_smul, transpose_pow]
 #align matrix.exp_transpose Matrix.exp_transpose
 
-theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp 𝕂 A).IsSymm :=
+lemma IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp 𝕂 A).IsSymm :=
   (exp_transpose _ _).symm.trans <| congr_arg _ h
 #align matrix.is_symm.exp Matrix.IsSymm.exp
 
@@ -130,7 +130,7 @@ nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
   exact exp_add_of_commute h
 #align matrix.exp_add_of_commute Matrix.exp_add_of_commute
 
-nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
+nonrec lemma exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
     exp 𝕂 (∑ i in s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by

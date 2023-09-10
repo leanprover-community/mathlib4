@@ -59,7 +59,7 @@ def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
   lsum fun i => monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
 #align polynomial.hasse_deriv Polynomial.hasseDeriv
 
-theorem hasseDeriv_apply :
+lemma hasseDeriv_apply :
     hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
   dsimp [hasseDeriv]
   congr; ext; congr
@@ -82,13 +82,13 @@ theorem hasseDeriv_coeff (n : ℕ) :
     simp only [not_mem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 #align polynomial.hasse_deriv_coeff Polynomial.hasseDeriv_coeff
 
-theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
+lemma hasseDeriv_zero' : hasseDeriv 0 f = f := by
   simp only [hasseDeriv_apply, tsub_zero, Nat.choose_zero_right, Nat.cast_one, one_mul,
     sum_monomial_eq]
 #align polynomial.hasse_deriv_zero' Polynomial.hasseDeriv_zero'
 
 @[simp]
-theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
+lemma hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
   LinearMap.ext <| hasseDeriv_zero'
 #align polynomial.hasse_deriv_zero Polynomial.hasseDeriv_zero
 
@@ -99,13 +99,13 @@ theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree
   simp [Nat.choose_eq_zero_of_lt ((le_natDegree_of_mem_supp _ hx).trans_lt h)]
 #align polynomial.hasse_deriv_eq_zero_of_lt_nat_degree Polynomial.hasseDeriv_eq_zero_of_lt_natDegree
 
-theorem hasseDeriv_one' : hasseDeriv 1 f = derivative f := by
+lemma hasseDeriv_one' : hasseDeriv 1 f = derivative f := by
   simp only [hasseDeriv_apply, derivative_apply, ← C_mul_X_pow_eq_monomial, Nat.choose_one_right,
     (Nat.cast_commute _ _).eq]
 #align polynomial.hasse_deriv_one' Polynomial.hasseDeriv_one'
 
 @[simp]
-theorem hasseDeriv_one : @hasseDeriv R _ 1 = derivative :=
+lemma hasseDeriv_one : @hasseDeriv R _ 1 = derivative :=
   LinearMap.ext <| hasseDeriv_one'
 #align polynomial.hasse_deriv_one Polynomial.hasseDeriv_one
 
@@ -142,7 +142,7 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.hasse_deriv_X Polynomial.hasseDeriv_X
 
-theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
+lemma factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction' k with k ih
   · rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
   ext f n : 2
@@ -209,7 +209,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     · simp
 #align polynomial.nat_degree_hasse_deriv_le Polynomial.natDegree_hasseDeriv_le
 
-theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
+lemma natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
   cases' lt_or_le p.natDegree n with hn hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm

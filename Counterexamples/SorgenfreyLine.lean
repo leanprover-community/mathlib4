@@ -121,15 +121,15 @@ theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
       (Nat.mono_cast $ Subtype.coe_le_coe.2 hkl)) _⟩
 #align counterexample.sorgenfrey_line.nhds_antitone_basis_Ico_inv_pnat Counterexample.SorgenfreyLine.nhds_antitone_basis_Ico_inv_pnat
 
-theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
+lemma isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
   isOpen_iff_mem_nhds.trans <| forall₂_congr fun x _ => (nhds_basis_Ico x).mem_iff
 #align counterexample.sorgenfrey_line.is_open_iff Counterexample.SorgenfreyLine.isOpen_iff
 
-theorem isClosed_iff {s : Set ℝₗ} : IsClosed s ↔ ∀ x, x ∉ s → ∃ y > x, Disjoint (Ico x y) s := by
+lemma isClosed_iff {s : Set ℝₗ} : IsClosed s ↔ ∀ x, x ∉ s → ∃ y > x, Disjoint (Ico x y) s := by
   simp only [← isOpen_compl_iff, isOpen_iff, mem_compl_iff, subset_compl_iff_disjoint_right]
 #align counterexample.sorgenfrey_line.is_closed_iff Counterexample.SorgenfreyLine.isClosed_iff
 
-theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed s) (ha : a ∉ s) :
+lemma exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed s) (ha : a ∉ s) :
     ∃ b > a, Disjoint (Ico a b) s :=
   isClosed_iff.1 hs a ha
 #align counterexample.sorgenfrey_line.exists_Ico_disjoint_closed Counterexample.SorgenfreyLine.exists_Ico_disjoint_closed
@@ -149,7 +149,7 @@ theorem nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)
 #align counterexample.sorgenfrey_line.nhds_eq_comap Counterexample.SorgenfreyLine.nhds_eq_comap
 
 @[continuity]
-theorem continuous_toReal : Continuous toReal :=
+lemma continuous_toReal : Continuous toReal :=
   continuous_iff_continuousAt.2 fun x => by
     rw [ContinuousAt, Tendsto, map_toReal_nhds]
     exact inf_le_left
@@ -214,7 +214,7 @@ instance : T5Space ℝₗ := by
       _ ≤ x := (not_lt.1 fun hxy => (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
       _ ≤ max x y := le_max_left _ _
 
-theorem denseRange_coe_rat : DenseRange ((↑) : ℚ → ℝₗ) := by
+lemma denseRange_coe_rat : DenseRange ((↑) : ℚ → ℝₗ) := by
   refine' dense_iff_inter_open.2 _
   rintro U Uo ⟨x, hx⟩
   rcases isOpen_iff.1 Uo _ hx with ⟨y, hxy, hU⟩
@@ -240,7 +240,7 @@ theorem cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 
     fun ⟨x, hx⟩ ↦ by ext <;> simp [← hx.out], fun x ↦ rfl⟩
 
 /-- Any subset of an antidiagonal `{(x, y) : ℝₗ × ℝₗ| x + y = c}` is a closed set. -/
-theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ} (hs : ∀ x ∈ s, x.1 + x.2 = c) :
+lemma isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ} (hs : ∀ x ∈ s, x.1 + x.2 = c) :
     IsClosed s := by
   rw [← closure_subset_iff_isClosed]
   rintro ⟨x, y⟩ H
@@ -263,7 +263,7 @@ instance (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} 
       preimage_image_eq _ val_injective⟩
 
 /-- The Sorgenfrey plane `ℝₗ × ℝₗ` is not a normal space. -/
-theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
+lemma not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
   (isClosed_antidiagonal 0).not_normal_of_continuum_le_mk (cardinal_antidiagonal _).ge
 #align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_normalSpace_prod
 
@@ -285,7 +285,7 @@ theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
 
 /-- The sets of rational and irrational points of the antidiagonal `{(x, y) | x + y = 0}` cannot be
 separated by open neighborhoods. This implies that `ℝₗ × ℝₗ` is not a normal space. -/
-theorem not_separatedNhds_rat_irrational_antidiag :
+lemma not_separatedNhds_rat_irrational_antidiag :
   ¬SeparatedNhds {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ ∃ r : ℚ, ↑r = x.1}
     {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ Irrational (toReal x.1)} := by
   have h₀ : ∀ {n : ℕ+}, 0 < (n : ℝ)⁻¹ := inv_pos.2 (Nat.cast_pos.2 (PNat.pos _))
@@ -339,14 +339,14 @@ theorem not_separatedNhds_rat_irrational_antidiag :
     exact hxn.2
 
 /-- Topology on the Sorgenfrey line is not metrizable. -/
-theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
+lemma not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
   intro
   letI := metrizableSpaceMetric ℝₗ
   exact not_normalSpace_prod inferInstance
 #align counterexample.sorgenfrey_line.not_metrizable_space Counterexample.SorgenfreyLine.not_metrizableSpace
 
 /-- Topology on the Sorgenfrey line is not second countable. -/
-theorem not_secondCountableTopology : ¬SecondCountableTopology ℝₗ :=
+lemma not_secondCountableTopology : ¬SecondCountableTopology ℝₗ :=
   fun _ ↦ not_metrizableSpace (metrizableSpace_of_t3_second_countable _)
 #align counterexample.sorgenfrey_line.not_second_countable_topology Counterexample.SorgenfreyLine.not_secondCountableTopology
 

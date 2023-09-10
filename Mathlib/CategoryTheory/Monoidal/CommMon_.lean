@@ -54,7 +54,7 @@ set_option linter.uppercaseLean3 false in
 #align CommMon_.id_hom CommMon_.id_hom
 
 @[simp]
-theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
+lemma comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -102,7 +102,7 @@ set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_obj_mul CommMon_.forget₂_Mon_obj_mul
 
 @[simp]
-theorem forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+lemma forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_map_hom CommMon_.forget₂_Mon_map_hom

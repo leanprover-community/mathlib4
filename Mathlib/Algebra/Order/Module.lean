@@ -113,7 +113,7 @@ theorem strict_anti_smul_left (hc : c < 0) : StrictAnti (SMul.smul c : M → M) 
 #align strict_anti_smul_left strict_anti_smul_left
 
 /-- Binary **rearrangement inequality**. -/
-theorem smul_add_smul_le_smul_add_smul [ContravariantClass M M (· + ·) (· ≤ ·)] {a b : k} {c d : M}
+lemma smul_add_smul_le_smul_add_smul [ContravariantClass M M (· + ·) (· ≤ ·)] {a b : k} {c d : M}
     (hab : a ≤ b) (hcd : c ≤ d) : a • d + b • c ≤ a • c + b • d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
@@ -123,14 +123,14 @@ theorem smul_add_smul_le_smul_add_smul [ContravariantClass M M (· + ·) (· ≤
 #align smul_add_smul_le_smul_add_smul smul_add_smul_le_smul_add_smul
 
 /-- Binary **rearrangement inequality**. -/
-theorem smul_add_smul_le_smul_add_smul' [ContravariantClass M M (· + ·) (· ≤ ·)] {a b : k} {c d : M}
+lemma smul_add_smul_le_smul_add_smul' [ContravariantClass M M (· + ·) (· ≤ ·)] {a b : k} {c d : M}
     (hba : b ≤ a) (hdc : d ≤ c) : a • d + b • c ≤ a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]
   exact smul_add_smul_le_smul_add_smul hba hdc
 #align smul_add_smul_le_smul_add_smul' smul_add_smul_le_smul_add_smul'
 
 /-- Binary strict **rearrangement inequality**. -/
-theorem smul_add_smul_lt_smul_add_smul [CovariantClass M M (· + ·) (· < ·)]
+lemma smul_add_smul_lt_smul_add_smul [CovariantClass M M (· + ·) (· < ·)]
     [ContravariantClass M M (· + ·) (· < ·)] {a b : k} {c d : M} (hab : a < b) (hcd : c < d) :
     a • d + b • c < a • c + b • d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
@@ -141,7 +141,7 @@ theorem smul_add_smul_lt_smul_add_smul [CovariantClass M M (· + ·) (· < ·)]
 #align smul_add_smul_lt_smul_add_smul smul_add_smul_lt_smul_add_smul
 
 /-- Binary strict **rearrangement inequality**. -/
-theorem smul_add_smul_lt_smul_add_smul' [CovariantClass M M (· + ·) (· < ·)]
+lemma smul_add_smul_lt_smul_add_smul' [CovariantClass M M (· + ·) (· < ·)]
     [ContravariantClass M M (· + ·) (· < ·)] {a b : k} {c d : M} (hba : b < a) (hdc : d < c) :
     a • d + b • c < a • c + b • d := by
   rw [add_comm (a • d), add_comm (a • c)]

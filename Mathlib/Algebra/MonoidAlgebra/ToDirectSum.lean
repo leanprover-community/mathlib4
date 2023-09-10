@@ -118,18 +118,18 @@ section Lemmas
 namespace AddMonoidAlgebra
 
 @[simp]
-theorem toDirectSum_zero [Semiring M] : (0 : AddMonoidAlgebra M ι).toDirectSum = 0 :=
+lemma toDirectSum_zero [Semiring M] : (0 : AddMonoidAlgebra M ι).toDirectSum = 0 :=
   Finsupp.toDFinsupp_zero
 #align add_monoid_algebra.to_direct_sum_zero AddMonoidAlgebra.toDirectSum_zero
 
 @[simp]
-theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
+lemma toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
     (f + g).toDirectSum = f.toDirectSum + g.toDirectSum :=
   Finsupp.toDFinsupp_add _ _
 #align add_monoid_algebra.to_direct_sum_add AddMonoidAlgebra.toDirectSum_add
 
 @[simp]
-theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
+lemma toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
     (f * g).toDirectSum = f.toDirectSum * g.toDirectSum := by
   let to_hom : AddMonoidAlgebra M ι →+ ⨁ _ : ι, M :=
   { toFun := toDirectSum
@@ -160,19 +160,19 @@ namespace DirectSum
 variable [DecidableEq ι]
 
 @[simp]
-theorem toAddMonoidAlgebra_zero [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
+lemma toAddMonoidAlgebra_zero [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     toAddMonoidAlgebra 0 = (0 : AddMonoidAlgebra M ι) :=
   DFinsupp.toFinsupp_zero
 #align direct_sum.to_add_monoid_algebra_zero DirectSum.toAddMonoidAlgebra_zero
 
 @[simp]
-theorem toAddMonoidAlgebra_add [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
+lemma toAddMonoidAlgebra_add [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
     (f + g).toAddMonoidAlgebra = toAddMonoidAlgebra f + toAddMonoidAlgebra g :=
   DFinsupp.toFinsupp_add _ _
 #align direct_sum.to_add_monoid_algebra_add DirectSum.toAddMonoidAlgebra_add
 
 @[simp]
-theorem toAddMonoidAlgebra_mul [AddMonoid ι] [Semiring M]
+lemma toAddMonoidAlgebra_mul [AddMonoid ι] [Semiring M]
   [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
       (f * g).toAddMonoidAlgebra = toAddMonoidAlgebra f * toAddMonoidAlgebra g := by
   apply_fun AddMonoidAlgebra.toDirectSum

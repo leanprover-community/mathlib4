@@ -79,7 +79,7 @@ theorem add_pow' (h : Commute x y) (n : ℕ) :
 end Commute
 
 /-- The **binomial theorem** -/
-theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
+lemma add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m in range (n + 1), x ^ m * y ^ (n - m) * choose n m :=
   (Commute.all x y).add_pow n
 #align add_pow add_pow
@@ -133,7 +133,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 
 end Nat
 
-theorem Int.alternating_sum_range_choose {n : ℕ} :
+lemma Int.alternating_sum_range_choose {n : ℕ} :
     (∑ m in range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = if n = 0 then 1 else 0 := by
   cases n; · simp
   case succ n =>
@@ -142,14 +142,14 @@ theorem Int.alternating_sum_range_choose {n : ℕ} :
     rw [← h, zero_pow (Nat.succ_pos n), if_neg (Nat.succ_ne_zero n)]
 #align int.alternating_sum_range_choose Int.alternating_sum_range_choose
 
-theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
+lemma Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m in range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = 0 := by
   rw [Int.alternating_sum_range_choose, if_neg h0]
 #align int.alternating_sum_range_choose_of_ne Int.alternating_sum_range_choose_of_ne
 
 namespace Finset
 
-theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
+lemma sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
     ∑ m in x.powerset, f m.card = ∑ m in range (x.card + 1), x.card.choose m • f m := by
   trans ∑ m in range (x.card + 1), ∑ j in x.powerset.filter fun z ↦ z.card = m, f j.card
   · refine' (sum_fiberwise_of_maps_to _ _).symm
@@ -163,13 +163,13 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     rw [(mem_powersetLen.1 hz).2]
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
-theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :
+lemma sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :
     (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = if x = ∅ then 1 else 0 := by
   rw [sum_powerset_apply_card]
   simp only [nsmul_eq_mul', ← card_eq_zero, Int.alternating_sum_range_choose]
 #align finset.sum_powerset_neg_one_pow_card Finset.sum_powerset_neg_one_pow_card
 
-theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
+lemma sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
     (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
   classical
     rw [sum_powerset_neg_one_pow_card, if_neg]
@@ -181,7 +181,7 @@ variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
 -- porting note: new lemma
 @[to_additive sum_choose_succ_nsmul]
-theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
+lemma prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ i in range (n + 2), f i (n + 1 - i) ^ (n + 1).choose i) =
       (∏ i in range (n + 1), f i (n + 1 - i) ^ n.choose i) *
         ∏ i in range (n + 1), f (i + 1) (n - i) ^ n.choose i := by
@@ -194,7 +194,7 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
 
 -- porting note: new lemma
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
-theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
+lemma prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ ij in Nat.antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
       (∏ ij in Nat.antidiagonal n, f ij.1 (ij.2 + 1) ^ n.choose ij.1) *
         ∏ ij in Nat.antidiagonal n, f (ij.1 + 1) ij.2 ^ n.choose ij.2 := by

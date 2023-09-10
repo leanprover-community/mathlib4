@@ -37,7 +37,7 @@ variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsF
 
 open Finsupp IsFractionRing IsLocalization Polynomial
 
-theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
+lemma scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by
   convert scaleRoots_eval₂_eq_zero (algebraMap A S) hr
   -- Porting note: added
@@ -47,7 +47,7 @@ theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
 
 variable [IsDomain A]
 
-theorem num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
+lemma num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
     (hr : aeval x p = 0) : IsRoot (scaleRoots p (den A x)) (num A x) := by
   apply isRoot_of_eval₂_map_eq_zero (IsFractionRing.injective A K)
   refine' scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero _
@@ -68,7 +68,7 @@ open IsFractionRing IsLocalization Polynomial UniqueFactorizationMonoid
 /-- Rational root theorem part 1:
 if `r : f.codomain` is a root of a polynomial over the ufd `A`,
 then the numerator of `r` divides the constant coefficient -/
-theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣ p.coeff 0 := by
+lemma num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣ p.coeff 0 := by
   suffices num A r ∣ (scaleRoots p (den A r)).coeff 0 by
     simp only [coeff_scaleRoots, tsub_zero] at this
     haveI inst := Classical.propDecidable
@@ -91,7 +91,7 @@ theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣
 /-- Rational root theorem part 2:
 if `r : f.codomain` is a root of a polynomial over the ufd `A`,
 then the denominator of `r` divides the leading coefficient -/
-theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
+lemma den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
     (den A r : A) ∣ p.leadingCoeff := by
   suffices (den A r : A) ∣ p.leadingCoeff * num A r ^ p.natDegree by
     refine'
@@ -118,14 +118,14 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
 /-- Integral root theorem:
 if `r : f.codomain` is a root of a monic polynomial over the ufd `A`,
 then `r` is an integer -/
-theorem isInteger_of_is_root_of_monic {p : A[X]} (hp : Monic p) {r : K} (hr : aeval r p = 0) :
+lemma isInteger_of_is_root_of_monic {p : A[X]} (hp : Monic p) {r : K} (hr : aeval r p = 0) :
     IsInteger A r :=
   isInteger_of_isUnit_den (isUnit_of_dvd_one (hp ▸ den_dvd_of_is_root hr))
 #align is_integer_of_is_root_of_monic isInteger_of_is_root_of_monic
 
 namespace UniqueFactorizationMonoid
 
-theorem integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun ⟨_, hp, hx⟩ =>
+lemma integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun ⟨_, hp, hx⟩ =>
   isInteger_of_is_root_of_monic hp hx
 #align unique_factorization_monoid.integer_of_integral UniqueFactorizationMonoid.integer_of_integral
 

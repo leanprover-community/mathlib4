@@ -48,7 +48,7 @@ theorem zero_scaleRoots (s : R) : scaleRoots 0 s = 0 := by
   simp
 #align polynomial.zero_scale_roots Polynomial.zero_scaleRoots
 
-theorem scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s ≠ 0 := by
+lemma scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s ≠ 0 := by
   intro h
   have : p.coeff p.natDegree ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   have : (scaleRoots p s).coeff p.natDegree = 0 :=
@@ -89,7 +89,7 @@ theorem natDegree_scaleRoots (p : R[X]) (s : R) : natDegree (scaleRoots p s) = n
   simp only [natDegree, degree_scaleRoots]
 #align polynomial.nat_degree_scale_roots Polynomial.natDegree_scaleRoots
 
-theorem monic_scaleRoots_iff {p : R[X]} (s : R) : Monic (scaleRoots p s) ↔ Monic p := by
+lemma monic_scaleRoots_iff {p : R[X]} (s : R) : Monic (scaleRoots p s) ↔ Monic p := by
   simp only [Monic, leadingCoeff, natDegree_scaleRoots, coeff_scaleRoots_natDegree]
 #align polynomial.monic_scale_roots_iff Polynomial.monic_scaleRoots_iff
 
@@ -105,7 +105,7 @@ section CommSemiring
 
 variable [Semiring S] [CommSemiring R] [CommSemiring A] [Field K]
 
-theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
+lemma scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
     eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=
   calc
     _ = (scaleRoots p s).support.sum fun i =>
@@ -127,16 +127,16 @@ theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
 
 #align polynomial.scale_roots_eval₂_mul Polynomial.scaleRoots_eval₂_mul
 
-theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (hr : eval₂ f r p = 0) :
+lemma scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (hr : eval₂ f r p = 0) :
     eval₂ f (f s * r) (scaleRoots p s) = 0 := by rw [scaleRoots_eval₂_mul, hr, mul_zero]
 #align polynomial.scale_roots_eval₂_eq_zero Polynomial.scaleRoots_eval₂_eq_zero
 
-theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
+lemma scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
     aeval (algebraMap R A r * a) (scaleRoots p r) = 0 :=
   scaleRoots_eval₂_eq_zero (algebraMap R A) ha
 #align polynomial.scale_roots_aeval_eq_zero Polynomial.scaleRoots_aeval_eq_zero
 
-theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
+lemma scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
   nontriviality S using Subsingleton.eq_zero
@@ -145,7 +145,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 #align polynomial.scale_roots_eval₂_eq_zero_of_eval₂_div_eq_zero Polynomial.scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero
 
-theorem scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [Algebra R K]
+lemma scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [Algebra R K]
     (inj : Function.Injective (algebraMap R K)) {p : R[X]} {r s : R}
     (hr : aeval (algebraMap R K r / algebraMap R K s) p = 0) (hs : s ∈ nonZeroDivisors R) :
     aeval (algebraMap R K r) (scaleRoots p s) = 0 :=

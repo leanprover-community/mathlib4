@@ -36,7 +36,7 @@ def derangements (α : Type*) : Set (Perm α) :=
 
 variable {α β : Type*}
 
-theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
+lemma mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
     f ∈ derangements α ↔ fixedPoints f = ∅ :=
   Set.eq_empty_iff_forall_not_mem.symm
 #align mem_derangements_iff_fixed_points_eq_empty mem_derangements_iff_fixedPoints_eq_empty
@@ -126,7 +126,7 @@ theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
   by simp [RemoveNone.fiber, derangements]
 #align derangements.equiv.remove_none.mem_fiber derangements.Equiv.RemoveNone.mem_fiber
 
-theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
+lemma RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
   rw [Set.eq_empty_iff_forall_not_mem]
   intro f hyp
   rw [RemoveNone.mem_fiber] at hyp

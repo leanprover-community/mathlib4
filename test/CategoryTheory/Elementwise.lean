@@ -13,7 +13,7 @@ attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
 @[elementwise]
-theorem ex1 [Category C] [ConcreteCategory C] (X : C) (f g h : X ⟶ X) (h' : g ≫ h = h ≫ g) :
+lemma ex1 [Category C] [ConcreteCategory C] (X : C) (f g h : X ⟶ X) (h' : g ≫ h = h ≫ g) :
     f ≫ g ≫ h = f ≫ h ≫ g := by rw [h']
 
 -- If there is already a `ConcreteCategory` instance, do not add a new argument.
@@ -21,7 +21,7 @@ example : ∀ C [Category C] [ConcreteCategory C] (X : C) (f g h : X ⟶ X) (_ :
     (x : X), h (g (f x)) = g (h (f x)) := @ex1_apply
 
 @[elementwise]
-theorem ex2 [Category C] (X : C) (f g h : X ⟶ X) (h' : g ≫ h = h ≫ g) :
+lemma ex2 [Category C] (X : C) (f g h : X ⟶ X) (h' : g ≫ h = h ≫ g) :
     f ≫ g ≫ h = f ≫ h ≫ g := by rw [h']
 
 -- If there is not already a `ConcreteCategory` instance, insert a new argument.
@@ -30,7 +30,7 @@ example : ∀ C [Category C] (X : C) (f g h : X ⟶ X) (_ : g ≫ h = h ≫ g) [
 
 -- Need nosimp on the following `elementwise` since the lemma can be proved by simp anyway.
 @[elementwise nosimp]
-theorem ex3 [Category C] {X Y : C} (f : X ≅ Y) : f.hom ≫ f.inv = 𝟙 X :=
+lemma ex3 [Category C] {X Y : C} (f : X ≅ Y) : f.hom ≫ f.inv = 𝟙 X :=
   Iso.hom_inv_id _
 
 example : ∀ C [Category C] (X Y : C) (f : X ≅ Y) [ConcreteCategory C] (x : X),

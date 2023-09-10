@@ -104,7 +104,7 @@ def cut {ι : Type _} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
         ext i hi; simpa [dif_pos hi] using congr_fun h i⟩)
 #align theorems_100.cut Theorems100.cut
 
-theorem mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
+lemma mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
     f ∈ cut s n ↔ s.sum f = n ∧ ∀ i, i ∉ s → f i = 0 := by
   rw [cut, mem_filter, and_comm, and_congr_right]
   intro h
@@ -136,7 +136,7 @@ theorem cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
 
 /-- There is only one `cut` of 0. -/
 @[simp]
-theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
+lemma cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
   -- In general it's nice to prove things using `mem_cut` but in this case it's easier to just
   -- use the definition.
   rw [cut, range_one, pi_const_singleton, map_singleton, Function.Embedding.coeFn_mk,
@@ -148,14 +148,14 @@ theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
 #align theorems_100.cut_zero Theorems100.cut_zero
 
 @[simp]
-theorem cut_empty_succ {ι : Type _} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
+lemma cut_empty_succ {ι : Type _} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
   apply eq_empty_of_forall_not_mem
   intro x hx
   rw [mem_cut, sum_empty] at hx
   cases hx.1
 #align theorems_100.cut_empty_succ Theorems100.cut_empty_succ
 
-theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
+lemma cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     cut (insert a s) n =
       (Nat.antidiagonal n).biUnion fun p : ℕ × ℕ =>
         (cut s p.snd).map
@@ -192,7 +192,7 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
       simp [if_neg h₁, hg₂ _ h₂]
 #align theorems_100.cut_insert Theorems100.cut_insert
 
-theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι → PowerSeries α)
+lemma coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι → PowerSeries α)
     (n : ℕ) : coeff α n (∏ j in s, f j) = ∑ l in cut s n, ∏ i in s, coeff α (l i) (f i) := by
   revert n
   induction s using Finset.induction_on with
@@ -259,7 +259,7 @@ theorem two_series (i : ℕ) [Semiring α] :
   · simp [Nat.succ_ne_zero d]
 #align theorems_100.two_series Theorems100.two_series
 
-theorem num_series' [Field α] (i : ℕ) :
+lemma num_series' [Field α] (i : ℕ) :
     (1 - (X : PowerSeries α) ^ (i + 1))⁻¹ = indicatorSeries α {k | i + 1 ∣ k} := by
   rw [PowerSeries.inv_eq_iff_mul_eq_one]
   · ext n
@@ -377,7 +377,7 @@ theorem partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ
       · rw [zero_smul, hf₂ i h]
 #align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
-theorem partialOddGF_prop [Field α] (n m : ℕ) :
+lemma partialOddGF_prop [Field α] (n m : ℕ) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>
             ∀ j ∈ p.parts, j ∈ (range m).map mkOdd) :
@@ -409,7 +409,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
 #align theorems_100.partial_odd_gf_prop Theorems100.partialOddGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
-theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
+lemma oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGF m) := by
   rw [← partialOddGF_prop, Nat.Partition.odds]
   congr with p
@@ -431,7 +431,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     apply Nat.two_not_dvd_two_mul_add_one
 #align theorems_100.odd_gf_prop Theorems100.oddGF_prop
 
-theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
+lemma partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>
             p.parts.Nodup ∧ ∀ j ∈ p.parts, j ∈ (range m).map ⟨Nat.succ, Nat.succ_injective⟩) :
@@ -459,7 +459,7 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
 
 /-- If m is big enough, the partial product's coefficient counts the number of distinct partitions
 -/
-theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
+lemma distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
     ((Nat.Partition.distincts n).card : α) = coeff α n (partialDistinctGF m) := by
   erw [← partialDistinctGF_prop, Nat.Partition.distincts]
   congr with p
@@ -477,7 +477,7 @@ theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
 sequences are ultimately the same (since the factor converges to 0 as m tends to infinity).
 It's enough to not take the limit though, and just consider large enough `m`.
 -/
-theorem same_gf [Field α] (m : ℕ) :
+lemma same_gf [Field α] (m : ℕ) :
     (partialOddGF m * (range m).prod fun i => 1 - (X : PowerSeries α) ^ (m + i + 1)) =
       partialDistinctGF m := by
   rw [partialOddGF, partialDistinctGF]
@@ -516,7 +516,7 @@ theorem same_gf [Field α] (m : ℕ) :
     _ = _ := by rw [prod_range_succ]
 #align theorems_100.same_gf Theorems100.same_gf
 
-theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
+lemma same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
     coeff α n (partialOddGF m) = coeff α n (partialDistinctGF m) := by
   rw [← same_gf, coeff_mul_prod_one_sub_of_lt_order]
   rintro i -
@@ -524,7 +524,7 @@ theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
   exact_mod_cast Nat.lt_succ_of_le (le_add_right h)
 #align theorems_100.same_coeffs Theorems100.same_coeffs
 
-theorem partition_theorem (n : ℕ) :
+theorem partition_lemma (n : ℕ) :
     (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
   -- We need the counts to live in some field (which contains ℕ), so let's just use ℚ
   suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card by

@@ -74,11 +74,11 @@ def coeNatMonoidHom : PrimeMultiset →+ Multiset ℕ :=
 #align prime_multiset.coe_nat_monoid_hom PrimeMultiset.coeNatMonoidHom
 
 @[simp]
-theorem coe_coeNatMonoidHom : (coeNatMonoidHom : PrimeMultiset → Multiset ℕ) = Coe.coe :=
+lemma coe_coeNatMonoidHom : (coeNatMonoidHom : PrimeMultiset → Multiset ℕ) = Coe.coe :=
   rfl
 #align prime_multiset.coe_coe_nat_monoid_hom PrimeMultiset.coe_coeNatMonoidHom
 
-theorem coeNat_injective : Function.Injective (Coe.coe : PrimeMultiset → Multiset ℕ) :=
+lemma coeNat_injective : Function.Injective (Coe.coe : PrimeMultiset → Multiset ℕ) :=
   Multiset.map_injective Nat.Primes.coe_nat_injective
 #align prime_multiset.coe_nat_injective PrimeMultiset.coeNat_injective
 
@@ -106,11 +106,11 @@ def coePNatMonoidHom : PrimeMultiset →+ Multiset ℕ+ :=
 #align prime_multiset.coe_pnat_monoid_hom PrimeMultiset.coePNatMonoidHom
 
 @[simp]
-theorem coe_coePNatMonoidHom : (coePNatMonoidHom : PrimeMultiset → Multiset ℕ+) = Coe.coe :=
+lemma coe_coePNatMonoidHom : (coePNatMonoidHom : PrimeMultiset → Multiset ℕ+) = Coe.coe :=
   rfl
 #align prime_multiset.coe_coe_pnat_monoid_hom PrimeMultiset.coe_coePNatMonoidHom
 
-theorem coePNat_injective : Function.Injective (Coe.coe : PrimeMultiset → Multiset ℕ+) :=
+lemma coePNat_injective : Function.Injective (Coe.coe : PrimeMultiset → Multiset ℕ+) :=
   Multiset.map_injective Nat.Primes.coe_pnat_injective
 #align prime_multiset.coe_pnat_injective PrimeMultiset.coePNat_injective
 
@@ -212,7 +212,7 @@ theorem prod_ofPNatList (l : List ℕ+) (h) : (ofPNatList l h).prod = l.prod := 
 
 /-- The product map gives a homomorphism from the additive monoid
 of multisets to the multiplicative monoid ℕ+. -/
-theorem prod_zero : (0 : PrimeMultiset).prod = 1 := by
+lemma prod_zero : (0 : PrimeMultiset).prod = 1 := by
   exact Multiset.prod_zero
 #align prime_multiset.prod_zero PrimeMultiset.prod_zero
 
@@ -288,7 +288,7 @@ def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset
 
 /-- Factoring gives a homomorphism from the multiplicative
  monoid ℕ+ to the additive monoid of multisets. -/
-theorem factorMultiset_one : factorMultiset 1 = 0 := by
+lemma factorMultiset_one : factorMultiset 1 = 0 := by
   simp [factorMultiset, PrimeMultiset.ofNatList, PrimeMultiset.ofNatMultiset]
 #align pnat.factor_multiset_one PNat.factorMultiset_one
 
@@ -321,7 +321,7 @@ theorem factorMultiset_ofPrime (p : Nat.Primes) :
 /-- We now have four different results that all encode the
  idea that inequality of multisets corresponds to divisibility
  of positive integers. -/
-theorem factorMultiset_le_iff {m n : ℕ+} : factorMultiset m ≤ factorMultiset n ↔ m ∣ n := by
+lemma factorMultiset_le_iff {m n : ℕ+} : factorMultiset m ≤ factorMultiset n ↔ m ∣ n := by
   constructor
   · intro h
     rw [← prod_factorMultiset m, ← prod_factorMultiset m]
@@ -333,7 +333,7 @@ theorem factorMultiset_le_iff {m n : ℕ+} : factorMultiset m ≤ factorMultiset
     exact le_self_add
 #align pnat.factor_multiset_le_iff PNat.factorMultiset_le_iff
 
-theorem factorMultiset_le_iff' {m : ℕ+} {v : PrimeMultiset} :
+lemma factorMultiset_le_iff' {m : ℕ+} {v : PrimeMultiset} :
     factorMultiset m ≤ v ↔ m ∣ v.prod := by
   let h := @factorMultiset_le_iff m v.prod
   rw [v.factorMultiset_prod] at h
@@ -344,13 +344,13 @@ end PNat
 
 namespace PrimeMultiset
 
-theorem prod_dvd_iff {u v : PrimeMultiset} : u.prod ∣ v.prod ↔ u ≤ v := by
+lemma prod_dvd_iff {u v : PrimeMultiset} : u.prod ∣ v.prod ↔ u ≤ v := by
   let h := @PNat.factorMultiset_le_iff' u.prod v
   rw [u.factorMultiset_prod] at h
   exact h.symm
 #align prime_multiset.prod_dvd_iff PrimeMultiset.prod_dvd_iff
 
-theorem prod_dvd_iff' {u : PrimeMultiset} {n : ℕ+} : u.prod ∣ n ↔ u ≤ n.factorMultiset := by
+lemma prod_dvd_iff' {u : PrimeMultiset} {n : ℕ+} : u.prod ∣ n ↔ u ≤ n.factorMultiset := by
   let h := @prod_dvd_iff u n.factorMultiset
   rw [n.prod_factorMultiset] at h
   exact h

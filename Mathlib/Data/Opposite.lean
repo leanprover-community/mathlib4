@@ -53,10 +53,10 @@ variable {α}
 def op (x : α) : αᵒᵖ := ⟨x⟩
 #align opposite.op Opposite.op
 
-theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => congr_arg Opposite.unop
+lemma op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => congr_arg Opposite.unop
 #align opposite.op_injective Opposite.op_injective
 
-theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
+lemma unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
 #align opposite.unop_injective Opposite.unop_injective
 
 @[simp]
@@ -90,20 +90,20 @@ def equivToOpposite : α ≃ αᵒᵖ where
 #align opposite.equiv_to_opposite Opposite.equivToOpposite
 
 @[simp]
-theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
+lemma equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
   rfl
 #align opposite.equiv_to_opposite_coe Opposite.equivToOpposite_coe
 
 @[simp]
-theorem equivToOpposite_symm_coe : (equivToOpposite.symm : αᵒᵖ → α) = unop :=
+lemma equivToOpposite_symm_coe : (equivToOpposite.symm : αᵒᵖ → α) = unop :=
   rfl
 #align opposite.equiv_to_opposite_symm_coe Opposite.equivToOpposite_symm_coe
 
-theorem op_eq_iff_eq_unop {x : α} {y} : op x = y ↔ x = unop y :=
+lemma op_eq_iff_eq_unop {x : α} {y} : op x = y ↔ x = unop y :=
   equivToOpposite.apply_eq_iff_eq_symm_apply
 #align opposite.op_eq_iff_eq_unop Opposite.op_eq_iff_eq_unop
 
-theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
+lemma unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
   equivToOpposite.symm.apply_eq_iff_eq_symm_apply
 #align opposite.unop_eq_iff_eq_op Opposite.unop_eq_iff_eq_op
 

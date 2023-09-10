@@ -56,11 +56,11 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
 #align linear_ordered_add_comm_group.topological_add_group LinearOrderedAddCommGroup.topologicalAddGroup
 
 @[continuity]
-theorem continuous_abs : Continuous (abs : G → G) :=
+lemma continuous_abs : Continuous (abs : G → G) :=
   continuous_id.max continuous_neg
 #align continuous_abs continuous_abs
 
-protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
+protected lemma Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun x => |f x|) l (𝓝 |a|) :=
   (continuous_abs.tendsto _).comp h
 #align filter.tendsto.abs Filter.Tendsto.abs
@@ -93,7 +93,7 @@ protected theorem ContinuousOn.abs (h : ContinuousOn f s) : ContinuousOn (fun x 
   fun x hx => (h x hx).abs
 #align continuous_on.abs ContinuousOn.abs
 
-theorem tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0) :=
+lemma tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0) :=
   (continuous_abs.tendsto' (0 : G) 0 abs_zero).inf <|
     tendsto_principal_principal.2 fun _x => abs_pos.2
 #align tendsto_abs_nhds_within_zero tendsto_abs_nhdsWithin_zero

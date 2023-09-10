@@ -63,7 +63,7 @@ def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
 #align perfect_closure.lift_on PerfectClosure.liftOn
 
 @[simp]
-theorem liftOn_mk {L : Sort _} (f : ℕ × K → L) (hf : ∀ x y, R K p x y → f x = f y) (x : ℕ × K) :
+lemma liftOn_mk {L : Sort _} (f : ℕ × K → L) (hf : ∀ x y, R K p x y → f x = f y) (x : ℕ × K) :
     (mk K p x).liftOn f hf = f x :=
   rfl
 #align perfect_closure.lift_on_mk PerfectClosure.liftOn_mk
@@ -136,7 +136,7 @@ instance : CommMonoid (PerfectClosure K p) :=
         Quot.inductionOn f fun ⟨n, y⟩ =>
           congr_arg (Quot.mk _) <| by simp only [add_comm, mul_comm] }
 
-theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
+lemma one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
   rfl
 #align perfect_closure.one_def PerfectClosure.one_def
 
@@ -192,12 +192,12 @@ theorem neg_mk (x : ℕ × K) : -mk K p x = mk K p (x.1, -x.2) :=
 instance : Zero (PerfectClosure K p) :=
   ⟨mk K p (0, 0)⟩
 
-theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
+lemma zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
   rfl
 #align perfect_closure.zero_def PerfectClosure.zero_def
 
 @[simp]
-theorem mk_zero_zero : mk K p (0, 0) = 0 :=
+lemma mk_zero_zero : mk K p (0, 0) = 0 :=
   rfl
 #align perfect_closure.mk_zero_zero PerfectClosure.mk_zero_zero
 
@@ -368,7 +368,7 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
 
 end Ring
 
-theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
+lemma eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
     Quot.mk (R K p) x = Quot.mk (R K p) y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
   (eq_iff' K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,

@@ -58,7 +58,7 @@ is zero.
 
 Observe that such an element `a` *cannot* be invertible.  In particular, this lemma never applies
 if `A` is a group. -/
-theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
+lemma zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
     ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine' ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, _, _⟩
@@ -67,7 +67,7 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
       sub_eq_zero, add_zero, ← succ_nsmul, Nat.sub_add_cancel (one_le_two.trans n2), na]
 #align counterexample.zero_divisors_of_periodic Counterexample.zero_divisors_of_periodic
 
-theorem single_zero_one {R A} [Semiring R] [Zero A] :
+lemma single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : AddMonoidAlgebra R A) :=
   rfl
 #align counterexample.single_zero_one Counterexample.single_zero_one
@@ -80,7 +80,7 @@ whose product is zero.
 
 In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero
 torsion element. -/
-theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
+lemma zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
     (o2 : 2 ≤ addOrderOf a) : ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine'
     ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, _, _,
@@ -177,7 +177,7 @@ instance : LinearOrder F :=
   LinearOrder.lift' val (by boom)
 
 @[simp]
-theorem z01 : (0 : F) < 1 := by decide
+lemma z01 : (0 : F) < 1 := by decide
 #align counterexample.F.z01 Counterexample.F.z01
 
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
@@ -208,26 +208,26 @@ example : ¬CovariantClass F F (· + ·) (· < ·) := fun h =>
 
 /-- A few `simp`-lemmas to take care of trivialities in the proof of the example below. -/
 @[simp]
-theorem f1 : ∀ a : F, 1 + a = 1 := by boom
+lemma f1 : ∀ a : F, 1 + a = 1 := by boom
 #align counterexample.F.f1 Counterexample.F.f1
 
 @[simp]
-theorem f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
+lemma f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
   single_apply_eq_zero.mpr fun h => h
 #align counterexample.F.f011 Counterexample.F.f011
 
 @[simp]
-theorem f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
+lemma f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
   single_eq_same
 #align counterexample.F.f010 Counterexample.F.f010
 
 @[simp]
-theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
+lemma f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
   single_eq_same
 #align counterexample.F.f111 Counterexample.F.f111
 
 @[simp]
-theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
+lemma f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
 #align counterexample.F.f110 Counterexample.F.f110
 

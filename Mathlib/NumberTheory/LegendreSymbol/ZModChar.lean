@@ -45,7 +45,7 @@ def χ₄ : MulChar (ZMod 4) ℤ where
 #align zmod.χ₄ ZMod.χ₄
 
 /-- `χ₄` takes values in `{0, 1, -1}` -/
-theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
+lemma isQuadratic_χ₄ : χ₄.IsQuadratic := by
   intro a
   -- Porting note: was `decide!`
   fin_cases a
@@ -77,7 +77,7 @@ theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
 #align zmod.χ₄_nat_eq_if_mod_four ZMod.χ₄_nat_eq_if_mod_four
 
 /-- Alternative description of `χ₄ n` for odd `n : ℕ` in terms of powers of `-1` -/
-theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 2) := by
+lemma χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 2) := by
   rw [χ₄_nat_eq_if_mod_four]
   simp only [hn, Nat.one_ne_zero, if_false]
   conv_rhs => -- Porting note: was `nth_rw`
@@ -92,37 +92,37 @@ theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 
 #align zmod.χ₄_eq_neg_one_pow ZMod.χ₄_eq_neg_one_pow
 
 /-- If `n % 4 = 1`, then `χ₄ n = 1`. -/
-theorem χ₄_nat_one_mod_four {n : ℕ} (hn : n % 4 = 1) : χ₄ n = 1 := by
+lemma χ₄_nat_one_mod_four {n : ℕ} (hn : n % 4 = 1) : χ₄ n = 1 := by
   rw [χ₄_nat_mod_four, hn]
   rfl
 #align zmod.χ₄_nat_one_mod_four ZMod.χ₄_nat_one_mod_four
 
 /-- If `n % 4 = 3`, then `χ₄ n = -1`. -/
-theorem χ₄_nat_three_mod_four {n : ℕ} (hn : n % 4 = 3) : χ₄ n = -1 := by
+lemma χ₄_nat_three_mod_four {n : ℕ} (hn : n % 4 = 3) : χ₄ n = -1 := by
   rw [χ₄_nat_mod_four, hn]
   rfl
 #align zmod.χ₄_nat_three_mod_four ZMod.χ₄_nat_three_mod_four
 
 /-- If `n % 4 = 1`, then `χ₄ n = 1`. -/
-theorem χ₄_int_one_mod_four {n : ℤ} (hn : n % 4 = 1) : χ₄ n = 1 := by
+lemma χ₄_int_one_mod_four {n : ℤ} (hn : n % 4 = 1) : χ₄ n = 1 := by
   rw [χ₄_int_mod_four, hn]
   rfl
 #align zmod.χ₄_int_one_mod_four ZMod.χ₄_int_one_mod_four
 
 /-- If `n % 4 = 3`, then `χ₄ n = -1`. -/
-theorem χ₄_int_three_mod_four {n : ℤ} (hn : n % 4 = 3) : χ₄ n = -1 := by
+lemma χ₄_int_three_mod_four {n : ℤ} (hn : n % 4 = 3) : χ₄ n = -1 := by
   rw [χ₄_int_mod_four, hn]
   rfl
 #align zmod.χ₄_int_three_mod_four ZMod.χ₄_int_three_mod_four
 
 /-- If `n % 4 = 1`, then `(-1)^(n/2) = 1`. -/
-theorem neg_one_pow_div_two_of_one_mod_four {n : ℕ} (hn : n % 4 = 1) : (-1 : ℤ) ^ (n / 2) = 1 := by
+lemma neg_one_pow_div_two_of_one_mod_four {n : ℕ} (hn : n % 4 = 1) : (-1 : ℤ) ^ (n / 2) = 1 := by
   rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_one hn), ← nat_cast_mod, hn]
   rfl
 #align zmod.neg_one_pow_div_two_of_one_mod_four ZMod.neg_one_pow_div_two_of_one_mod_four
 
 /-- If `n % 4 = 3`, then `(-1)^(n/2) = -1`. -/
-theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
+lemma neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
     (-1 : ℤ) ^ (n / 2) = -1 := by
   rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_three hn), ← nat_cast_mod, hn]
   rfl
@@ -140,7 +140,7 @@ def χ₈ : MulChar (ZMod 8) ℤ where
 #align zmod.χ₈ ZMod.χ₈
 
 /-- `χ₈` takes values in `{0, 1, -1}` -/
-theorem isQuadratic_χ₈ : χ₈.IsQuadratic := by
+lemma isQuadratic_χ₈ : χ₈.IsQuadratic := by
   intro a
   --porting note: was `decide!`
   fin_cases a
@@ -184,7 +184,7 @@ def χ₈' : MulChar (ZMod 8) ℤ where
 #align zmod.χ₈' ZMod.χ₈'
 
 /-- `χ₈'` takes values in `{0, 1, -1}` -/
-theorem isQuadratic_χ₈' : χ₈'.IsQuadratic := by
+lemma isQuadratic_χ₈' : χ₈'.IsQuadratic := by
   intro a
   --porting note: was `decide!`
   fin_cases a

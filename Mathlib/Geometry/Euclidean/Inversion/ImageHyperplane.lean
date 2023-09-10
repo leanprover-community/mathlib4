@@ -76,11 +76,11 @@ theorem image_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
     preimage_inversion_sphere_dist_center hR hy]
 
 /-- Inversion sends an affine subspace passing through the center to itself. -/
-theorem mapsTo_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hp : c ∈ p) :
+lemma mapsTo_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hp : c ∈ p) :
     MapsTo (inversion c R) p p := fun _ ↦ AffineMap.lineMap_mem _ hp
 
 /-- Inversion sends an affine subspace passing through the center to itself. -/
-theorem image_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hR : R ≠ 0) (hp : c ∈ p) :
+lemma image_inversion_affineSubspace_of_mem {p : AffineSubspace ℝ P} (hR : R ≠ 0) (hp : c ∈ p) :
     inversion c R '' p = p :=
   (mapsTo_inversion_affineSubspace_of_mem hp).image_subset.antisymm <| fun x hx ↦
     ⟨inversion c R x, mapsTo_inversion_affineSubspace_of_mem hp hx, inversion_inversion _ hR _⟩

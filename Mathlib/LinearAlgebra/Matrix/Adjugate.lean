@@ -80,7 +80,7 @@ theorem cramerMap_is_linear (i : n) : IsLinearMap α fun b => cramerMap A b i :=
     map_smul := det_updateColumn_smul _ _ }
 #align matrix.cramer_map_is_linear Matrix.cramerMap_is_linear
 
-theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
+lemma cramer_is_linear : IsLinearMap α (cramerMap A) := by
   constructor <;> intros <;> ext i
   · apply (cramerMap_is_linear A i).1
   · apply (cramerMap_is_linear A i).2
@@ -124,7 +124,7 @@ theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.singl
 #align matrix.cramer_row_self Matrix.cramer_row_self
 
 @[simp]
-theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
+lemma cramer_one : cramer (1 : Matrix n n α) = 1 := by
   -- Porting note: was `ext i j`
   refine LinearMap.pi_ext' (fun (i : n) => LinearMap.ext_ring (funext (fun (j : n) => ?_)))
   convert congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
@@ -139,11 +139,11 @@ theorem cramer_smul (r : α) (A : Matrix n n α) :
 #align matrix.cramer_smul Matrix.cramer_smul
 
 @[simp]
-theorem cramer_subsingleton_apply [Subsingleton n] (A : Matrix n n α) (b : n → α) (i : n) :
+lemma cramer_subsingleton_apply [Subsingleton n] (A : Matrix n n α) (b : n → α) (i : n) :
     cramer A b i = b i := by rw [cramer_apply, det_eq_elem_of_subsingleton _ i, updateColumn_self]
 #align matrix.cramer_subsingleton_apply Matrix.cramer_subsingleton_apply
 
-theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
+lemma cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
@@ -152,13 +152,13 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
 #align matrix.cramer_zero Matrix.cramer_zero
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
-theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
+lemma sum_cramer {β} (s : Finset β) (f : β → n → α) :
     (∑ x in s, cramer A (f x)) = cramer A (∑ x in s, f x) :=
   (LinearMap.map_sum (cramer A)).symm
 #align matrix.sum_cramer Matrix.sum_cramer
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
-theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
+lemma sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
     (∑ x in s, cramer A (fun j => f j x) i) = cramer A (fun j : n => ∑ x in s, f j x) i :=
   calc
     (∑ x in s, cramer A (fun j => f j x) i) = (∑ x in s, cramer A fun j => f j x) i :=
@@ -313,19 +313,19 @@ theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A.mulVec (cramer A b)
   rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec_assoc, one_mulVec]
 #align matrix.mul_vec_cramer Matrix.mulVec_cramer
 
-theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
+lemma adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
   simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i]
 #align matrix.adjugate_subsingleton Matrix.adjugate_subsingleton
 
-theorem adjugate_eq_one_of_card_eq_one {A : Matrix n n α} (h : Fintype.card n = 1) :
+lemma adjugate_eq_one_of_card_eq_one {A : Matrix n n α} (h : Fintype.card n = 1) :
     adjugate A = 1 :=
   haveI : Subsingleton n := Fintype.card_le_one_iff_subsingleton.mp h.le
   adjugate_subsingleton _
 #align matrix.adjugate_eq_one_of_card_eq_one Matrix.adjugate_eq_one_of_card_eq_one
 
 @[simp]
-theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
+lemma adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
@@ -334,7 +334,7 @@ theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
 #align matrix.adjugate_zero Matrix.adjugate_zero
 
 @[simp]
-theorem adjugate_one : adjugate (1 : Matrix n n α) = 1 := by
+lemma adjugate_one : adjugate (1 : Matrix n n α) = 1 := by
   ext
   simp [adjugate_def, Matrix.one_apply, Pi.single_apply, eq_comm]
 #align matrix.adjugate_one Matrix.adjugate_one
@@ -354,7 +354,7 @@ theorem adjugate_diagonal (v : n → α) :
     · rw [updateColumn_ne hjk, diagonal_apply_ne' _ hjk]
 #align matrix.adjugate_diagonal Matrix.adjugate_diagonal
 
-theorem _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+lemma _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
     (M : Matrix n n R) : f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) := by
   ext i k
   have : Pi.single i (1 : S) = f ∘ Pi.single i 1 := by
@@ -364,7 +364,7 @@ theorem _root_.RingHom.map_adjugate {R S : Type*} [CommRing R] [CommRing S] (f :
     map_updateRow, ← RingHom.mapMatrix_apply, ← RingHom.map_det, ← adjugate_apply]
 #align ring_hom.map_adjugate RingHom.map_adjugate
 
-theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A] [CommRing B]
+lemma _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) (M : Matrix n n A) :
     f.mapMatrix M.adjugate = Matrix.adjugate (f.mapMatrix M) :=
   f.toRingHom.map_adjugate _
@@ -418,7 +418,7 @@ theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b;
   adjugate_fin_two _
 #align matrix.adjugate_fin_two_of Matrix.adjugate_fin_two_of
 
-theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
+lemma adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
     adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
   simp_rw [adjugate_apply, det_succ_row _ j, updateRow_self, submatrix_updateRow_succAbove]
   rw [Fintype.sum_eq_single i fun h hjk => ?_, Pi.single_eq_same, mul_one]
@@ -444,13 +444,13 @@ theorem det_eq_sum_mul_adjugate_col (A : Matrix n n α) (j : n) :
   simpa only [det_transpose, ← adjugate_transpose] using det_eq_sum_mul_adjugate_row Aᵀ j
 #align matrix.det_eq_sum_mul_adjugate_col Matrix.det_eq_sum_mul_adjugate_col
 
-theorem adjugate_conjTranspose [StarRing α] (A : Matrix n n α) : A.adjugateᴴ = adjugate Aᴴ := by
+lemma adjugate_conjTranspose [StarRing α] (A : Matrix n n α) : A.adjugateᴴ = adjugate Aᴴ := by
   dsimp only [conjTranspose]
   have : Aᵀ.adjugate.map star = adjugate (Aᵀ.map star) := (starRingEnd α).map_adjugate Aᵀ
   rw [A.adjugate_transpose, this]
 #align matrix.adjugate_conj_transpose Matrix.adjugate_conjTranspose
 
-theorem isRegular_of_isLeftRegular_det {A : Matrix n n α} (hA : IsLeftRegular A.det) :
+lemma isRegular_of_isLeftRegular_det {A : Matrix n n α} (hA : IsLeftRegular A.det) :
     IsRegular A := by
   constructor
   · intro B C h

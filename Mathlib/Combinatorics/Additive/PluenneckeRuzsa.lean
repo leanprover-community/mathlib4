@@ -179,7 +179,7 @@ theorem card_div_mul_le_card_div_mul_card_mul (A B C : Finset α) :
   exact card_mul_mul_le_card_div_mul_card_div _ _ _
 #align finset.card_div_mul_le_card_div_mul_card_mul Finset.card_div_mul_le_card_div_mul_card_mul
 
-theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B : Finset α}
+lemma card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B : Finset α}
     (hAB : ∀ (A') (_ : A' ⊆ A), (A + B).card * A'.card ≤ (A' + B).card * A.card) (n : ℕ) :
     (A + n • B).card ≤ ((A + B).card / A.card : ℚ≥0) ^ n * A.card := by
   obtain rfl | hA := A.eq_empty_or_nonempty

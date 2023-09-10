@@ -150,7 +150,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open AlgebraicGeometry.RingedSpace.basicOpen
 
 @[simp]
-theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : U) :
+lemma mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : U) :
     ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) := by
   constructor
   · rintro ⟨x, hx, a⟩; cases Subtype.eq a; exact hx
@@ -165,13 +165,13 @@ theorem mem_top_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.mem_top_basic_open AlgebraicGeometry.RingedSpace.mem_top_basicOpen
 
-theorem basicOpen_le {U : Opens X} (f : X.presheaf.obj (op U)) : X.basicOpen f ≤ U := by
+lemma basicOpen_le {U : Opens X} (f : X.presheaf.obj (op U)) : X.basicOpen f ≤ U := by
   rintro _ ⟨x, _, rfl⟩; exact x.2
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_le AlgebraicGeometry.RingedSpace.basicOpen_le
 
 /-- The restriction of a section `f` to the basic open of `f` is a unit. -/
-theorem isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :
+lemma isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :
     IsUnit (X.presheaf.map (@homOfLE (Opens X) _ _ _ (X.basicOpen_le f)).op f) := by
   apply isUnit_of_isUnit_germ
   rintro ⟨_, ⟨x, (hx : IsUnit _), rfl⟩⟩
@@ -181,7 +181,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.is_unit_res_basic_open AlgebraicGeometry.RingedSpace.isUnit_res_basicOpen
 
 @[simp]
-theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj U) :
+lemma basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj U) :
     @basicOpen X (unop V) (X.presheaf.map i f) = unop V ⊓ @basicOpen X (unop U) f := by
   induction U using Opposite.rec'
   induction V using Opposite.rec'
@@ -202,7 +202,7 @@ set_option linter.uppercaseLean3 false in
 -- it is specifically said "This should fire before `basic_open_res`", this lemma is marked with
 -- high priority
 @[simp (high)]
-theorem basicOpen_res_eq {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) [IsIso i] (f : X.presheaf.obj U) :
+lemma basicOpen_res_eq {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) [IsIso i] (f : X.presheaf.obj U) :
     @basicOpen X (unop V) (X.presheaf.map i f) = @RingedSpace.basicOpen X (unop U) f := by
   apply le_antisymm
   · rw [X.basicOpen_res i f]; exact inf_le_right
@@ -214,7 +214,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_res_eq AlgebraicGeometry.RingedSpace.basicOpen_res_eq
 
 @[simp]
-theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
+lemma basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
     X.basicOpen (f * g) = X.basicOpen f ⊓ X.basicOpen g := by
   ext1
   dsimp [RingedSpace.basicOpen]
@@ -225,7 +225,7 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_mul AlgebraicGeometry.RingedSpace.basicOpen_mul
 
-theorem basicOpen_of_isUnit {U : Opens X} {f : X.presheaf.obj (op U)} (hf : IsUnit f) :
+lemma basicOpen_of_isUnit {U : Opens X} {f : X.presheaf.obj (op U)} (hf : IsUnit f) :
     X.basicOpen f = U := by
   apply le_antisymm
   · exact X.basicOpen_le f

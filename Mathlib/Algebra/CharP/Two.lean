@@ -25,7 +25,7 @@ section Semiring
 
 variable [Semiring R] [CharP R 2]
 
-theorem two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero]
+lemma two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero]
 #align char_two.two_eq_zero CharTwo.two_eq_zero
 
 @[simp]
@@ -34,7 +34,7 @@ theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit0_eq_zero : (bit0 : R → R) = 0 := by
+lemma bit0_eq_zero : (bit0 : R → R) = 0 := by
   funext
   exact add_self_eq_zero _
 #align char_two.bit0_eq_zero CharTwo.bit0_eq_zero
@@ -45,7 +45,7 @@ theorem bit0_apply_eq_zero (x : R) : (bit0 x : R) = 0 := by simp
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit1_eq_one : (bit1 : R → R) = 1 := by
+lemma bit1_eq_one : (bit1 : R → R) = 1 := by
   funext
   simp [bit1]
 #align char_two.bit1_eq_one CharTwo.bit1_eq_one
@@ -65,7 +65,7 @@ theorem neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, ← two_smul R x, two_eq_zero, zero_smul]
 #align char_two.neg_eq CharTwo.neg_eq
 
-theorem neg_eq' : Neg.neg = (id : R → R) :=
+lemma neg_eq' : Neg.neg = (id : R → R) :=
   funext neg_eq
 #align char_two.neg_eq' CharTwo.neg_eq'
 
@@ -73,7 +73,7 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 #align char_two.sub_eq_add CharTwo.sub_eq_add
 
-theorem sub_eq_add' : Sub.sub = ((· + ·) : R → R → R) :=
+lemma sub_eq_add' : Sub.sub = ((· + ·) : R → R → R) :=
   funext fun x => funext fun y => sub_eq_add x y
 #align char_two.sub_eq_add' CharTwo.sub_eq_add'
 
@@ -125,14 +125,14 @@ section ringChar
 
 variable [Ring R]
 
-theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
+lemma neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
   refine' ⟨fun h => _, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 #align neg_one_eq_one_iff neg_one_eq_one_iff
 
 @[simp]
-theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
+lemma orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
   split_ifs with h
   · rw [neg_one_eq_one_iff.2 h, orderOf_one]
   apply orderOf_eq_prime

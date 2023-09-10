@@ -62,7 +62,7 @@ def catalan : ℕ → ℕ
 #align catalan catalan
 
 @[simp]
-theorem catalan_zero : catalan 0 = 1 := by rw [catalan]
+lemma catalan_zero : catalan 0 = 1 := by rw [catalan]
 #align catalan_zero catalan_zero
 
 theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i * catalan (n - i) := by
@@ -76,7 +76,7 @@ theorem catalan_succ' (n : ℕ) :
 #align catalan_succ' catalan_succ'
 
 @[simp]
-theorem catalan_one : catalan 1 = 1 := by simp [catalan_succ]
+lemma catalan_one : catalan 1 = 1 := by simp [catalan_succ]
 #align catalan_one catalan_one
 
 /-- A helper sequence that can be used to prove the equality of the recursive and the explicit
@@ -84,7 +84,7 @@ definition using a telescoping sum argument. -/
 private def gosperCatalan (n j : ℕ) : ℚ :=
   Nat.centralBinom j * Nat.centralBinom (n - j) * (2 * j - n) / (2 * n * (n + 1))
 
-private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
+private lemma gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
   have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
@@ -140,11 +140,11 @@ theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.cen
   (Nat.eq_mul_of_div_eq_right n.succ_dvd_centralBinom (catalan_eq_centralBinom_div n).symm).symm
 #align succ_mul_catalan_eq_central_binom succ_mul_catalan_eq_centralBinom
 
-theorem catalan_two : catalan 2 = 2 := by
+lemma catalan_two : catalan 2 = 2 := by
   norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_two catalan_two
 
-theorem catalan_three : catalan 3 = 5 := by
+lemma catalan_three : catalan 3 = 5 := by
   norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_three catalan_three
 
@@ -176,7 +176,7 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]
-theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
+lemma treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
 #align tree.trees_of_nodes_eq_zero Tree.treesOfNumNodesEq_zero
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
@@ -189,7 +189,7 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
 #align tree.trees_of_nodes_eq_succ Tree.treesOfNumNodesEq_succ
 
 @[simp]
-theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
+lemma mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]

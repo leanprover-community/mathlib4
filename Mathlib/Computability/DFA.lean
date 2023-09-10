@@ -72,7 +72,7 @@ def eval : List α → σ :=
 #align DFA.eval DFA.eval
 
 @[simp]
-theorem eval_nil : M.eval [] = M.start :=
+lemma eval_nil : M.eval [] = M.start :=
   rfl
 #align DFA.eval_nil DFA.eval_nil
 
@@ -98,7 +98,7 @@ def accepts : Language α := {x | M.eval x ∈ M.accept}
 theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
 #align DFA.mem_accepts DFA.mem_accepts
 
-theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)
+lemma evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)
     (hx : M.evalFrom s x = t) :
     ∃ q a b c,
       x = a ++ b ++ c ∧
@@ -134,7 +134,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
     List.take_append_drop, List.take_append_drop]
 #align DFA.eval_from_split DFA.evalFrom_split
 
-theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
+lemma evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
   rcases hy with ⟨S, rfl, hS⟩
@@ -148,7 +148,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     exact hS z (List.mem_cons_of_mem a hz)
 #align DFA.eval_from_of_pow DFA.evalFrom_of_pow
 
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+lemma pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card σ ≤ List.length x) :
     ∃ a b c,
       x = a ++ b ++ c ∧

@@ -52,7 +52,7 @@ namespace RingSubgroupsBasis
 
 variable {A ι : Type*} [Ring A]
 
-theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
+lemma of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
     (inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j) (mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i)
     (leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => x * y) ⁻¹' B i) :
     RingSubgroupsBasis B :=
@@ -128,7 +128,7 @@ def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgrou
 
 variable [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B)
 
-theorem mem_addGroupFilterBasis_iff {V : Set A} :
+lemma mem_addGroupFilterBasis_iff {V : Set A} :
     V ∈ hB.toRingFilterBasis.toAddGroupFilterBasis ↔ ∃ i, V = B i :=
   Iff.rfl
 #align ring_subgroups_basis.mem_add_group_filter_basis_iff RingSubgroupsBasis.mem_addGroupFilterBasis_iff
@@ -143,7 +143,7 @@ def topology : TopologicalSpace A :=
   hB.toRingFilterBasis.toAddGroupFilterBasis.topology
 #align ring_subgroups_basis.topology RingSubgroupsBasis.topology
 
-theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
+lemma hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
   ⟨by
     intro s
     rw [hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff]
@@ -195,7 +195,7 @@ def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
 #align ring_subgroups_basis.open_add_subgroup RingSubgroupsBasis.openAddSubgroup
 
 -- see Note [nonarchimedean non instances]
-theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
+lemma nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
   letI := hB.topology
   constructor
   intro U hU
@@ -369,7 +369,7 @@ view definitionaly gives the same topology on `A`.
 variable [TopologicalSpace R] {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
   (hsmul : ∀ (m : A) (i : ι), ∀ᶠ a : R in 𝓝 0, a • m ∈ B i)
 
-theorem SubmodulesRingBasis.toSubmodulesBasis : SubmodulesBasis B :=
+lemma SubmodulesRingBasis.toSubmodulesBasis : SubmodulesBasis B :=
   { inter := hB.inter
     smul := hsmul }
 #align submodules_ring_basis.to_submodules_basis SubmodulesRingBasis.toSubmodulesBasis

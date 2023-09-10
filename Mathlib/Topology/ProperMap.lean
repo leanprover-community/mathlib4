@@ -202,7 +202,7 @@ lemma IsProperMap.isCompact_preimage (h : IsProperMap f) {K : Set Y} (hK : IsCom
   exact ⟨x, hyK, hx⟩
 
 /-- A map is proper if and only if it is closed and its fibers are compact. -/
-theorem isProperMap_iff_isClosedMap_and_compact_fibers :
+lemma isProperMap_iff_isClosedMap_and_compact_fibers :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap f ∧ ∀ y, IsCompact (f ⁻¹' {y}) := by
   constructor <;> intro H
   -- Note: In Bourbaki, the direct implication is proved by going through universally closed maps.
@@ -241,12 +241,12 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
     (compl_le_compl_iff_le.mp hKy)
 
 /-- A continuous map from a compact space to a T₂ space is a proper map. -/
-theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
+lemma Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
 /-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
 such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
+lemma isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) := by
   constructor <;> intro H
   -- The direct implication follows from the previous results
@@ -288,7 +288,7 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
 `(Prod.map f id : X × Filter X → Y × Filter X)` is closed. This is stronger than
 `isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
 properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [TopologicalSpace X]
+lemma isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap
       (Prod.map f id : X × Filter X → Y × Filter X) := by
@@ -332,7 +332,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
 `(Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X)` is closed. This is stronger than
 `isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
 properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type u} {Y : Type v} [TopologicalSpace X]
+lemma isProperMap_iff_isClosedMap_ultrafilter {X : Type u} {Y : Type v} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap
       (Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X) := by
@@ -360,7 +360,7 @@ have this restriction.
 
 This is taken as the definition of properness in
 [N. Bourbaki, *General Topology*][bourbaki1966]. -/
-theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type v} [TopologicalSpace X]
+lemma isProperMap_iff_universally_closed {X : Type u} {Y : Type v} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ ∀ (Z : Type u) [TopologicalSpace Z],
       IsClosedMap (Prod.map f id : X × Z → Y × Z) := by

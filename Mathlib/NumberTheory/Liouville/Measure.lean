@@ -33,7 +33,7 @@ open Filter Set Metric MeasureTheory Real
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-theorem setOf_liouvilleWith_subset_aux :
+lemma setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆
       ⋃ m : ℤ, (· + (m : ℝ)) ⁻¹' ⋃ n > (0 : ℕ),
         { x : ℝ | ∃ᶠ b : ℕ in atTop, ∃ a ∈ Finset.Icc (0 : ℤ) b,
@@ -76,7 +76,7 @@ theorem setOf_liouvilleWith_subset_aux :
 /-- The set of numbers satisfying the Liouville condition with some exponent `p > 2` has Lebesgue
 measure zero. -/
 @[simp]
-theorem volume_iUnion_setOf_liouvilleWith :
+lemma volume_iUnion_setOf_liouvilleWith :
     volume (⋃ (p : ℝ) (_hp : 2 < p), { x : ℝ | LiouvilleWith p x }) = 0 := by
   simp only [← setOf_exists, exists_prop]
   refine' measure_mono_null setOf_liouvilleWith_subset_aux _
@@ -108,23 +108,23 @@ theorem volume_iUnion_setOf_liouvilleWith :
   refine' (Summable.add _ _).mul_left _ <;> simp only [NNReal.summable_rpow] <;> linarith
 #align volume_Union_set_of_liouville_with volume_iUnion_setOf_liouvilleWith
 
-theorem ae_not_liouvilleWith : ∀ᵐ x, ∀ p > (2 : ℝ), ¬LiouvilleWith p x := by
+lemma ae_not_liouvilleWith : ∀ᵐ x, ∀ p > (2 : ℝ), ¬LiouvilleWith p x := by
   simpa only [ae_iff, not_forall, Classical.not_not, setOf_exists] using
     volume_iUnion_setOf_liouvilleWith
 #align ae_not_liouville_with ae_not_liouvilleWith
 
-theorem ae_not_liouville : ∀ᵐ x, ¬Liouville x :=
+lemma ae_not_liouville : ∀ᵐ x, ¬Liouville x :=
   ae_not_liouvilleWith.mono fun x h₁ h₂ => h₁ 3 (by norm_num) (h₂.liouvilleWith 3)
 #align ae_not_liouville ae_not_liouville
 
 /-- The set of Liouville numbers has Lebesgue measure zero. -/
 @[simp]
-theorem volume_setOf_liouville : volume { x : ℝ | Liouville x } = 0 := by
+lemma volume_setOf_liouville : volume { x : ℝ | Liouville x } = 0 := by
   simpa only [ae_iff, Classical.not_not] using ae_not_liouville
 #align volume_set_of_liouville volume_setOf_liouville
 
 /-- The filters `residual ℝ` and `volume.ae` are disjoint. This means that there exists a residual
 set of Lebesgue measure zero (e.g., the set of Liouville numbers). -/
-theorem Real.disjoint_residual_ae : Disjoint (residual ℝ) volume.ae :=
+lemma Real.disjoint_residual_ae : Disjoint (residual ℝ) volume.ae :=
   disjoint_of_disjoint_of_mem disjoint_compl_right eventually_residual_liouville ae_not_liouville
 #align real.disjoint_residual_ae Real.disjoint_residual_ae

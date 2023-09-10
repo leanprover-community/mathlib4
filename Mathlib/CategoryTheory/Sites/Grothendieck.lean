@@ -101,7 +101,7 @@ We prove this explicitly rather than deriving it so that it is in terms of the c
 the projection `.sieves`.
 -/
 @[ext]
-theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) :
+lemma ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) :
     J₁ = J₂ := by
   cases J₁
   cases J₂
@@ -111,7 +111,7 @@ theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Si
 /-
 Porting note: This is now a syntactic tautology.
 @[simp]
-theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
+lemma mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
 #align category_theory.grothendieck_topology.mem_sieves_iff_coe CategoryTheory.GrothendieckTopology.mem_sieves_iff_coe
 -/
@@ -133,7 +133,7 @@ theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ 
   J.transitive' hS R h
 #align category_theory.grothendieck_topology.transitive CategoryTheory.GrothendieckTopology.transitive
 
-theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_mem X
+lemma covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_mem X
 #align category_theory.grothendieck_topology.covering_of_eq_top CategoryTheory.GrothendieckTopology.covering_of_eq_top
 
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
@@ -162,12 +162,12 @@ theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J 
 #align category_theory.grothendieck_topology.intersection_covering CategoryTheory.GrothendieckTopology.intersection_covering
 
 @[simp]
-theorem intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X :=
+lemma intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X :=
   ⟨fun h => ⟨J.superset_covering inf_le_left h, J.superset_covering inf_le_right h⟩, fun t =>
     intersection_covering _ t.1 t.2⟩
 #align category_theory.grothendieck_topology.intersection_covering_iff CategoryTheory.GrothendieckTopology.intersection_covering_iff
 
-theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)
+lemma bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)
     (hR : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (H : S f), R H ∈ J Y) : Sieve.bind S R ∈ J X :=
   J.transitive hS _ fun _ f hf => superset_covering J (Sieve.le_pullback_bind S R f hf) (hR hf)
 #align category_theory.grothendieck_topology.bind_covering CategoryTheory.GrothendieckTopology.bind_covering
@@ -248,7 +248,7 @@ def discrete : GrothendieckTopology C
 
 variable {C}
 
-theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
+lemma trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
   Set.mem_singleton_iff
 #align category_theory.grothendieck_topology.trivial_covering CategoryTheory.GrothendieckTopology.trivial_covering
 
@@ -256,7 +256,7 @@ theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
 instance instLEGrothendieckTopology : LE (GrothendieckTopology C)
     where le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
-theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=
+lemma le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=
   Iff.rfl
 #align category_theory.grothendieck_topology.le_def CategoryTheory.GrothendieckTopology.le_def
 
@@ -313,22 +313,22 @@ instance : Inhabited (GrothendieckTopology C) :=
   ⟨⊤⟩
 
 @[simp]
-theorem trivial_eq_bot : trivial C = ⊥ :=
+lemma trivial_eq_bot : trivial C = ⊥ :=
   rfl
 #align category_theory.grothendieck_topology.trivial_eq_bot CategoryTheory.GrothendieckTopology.trivial_eq_bot
 
 @[simp]
-theorem discrete_eq_top : discrete C = ⊤ :=
+lemma discrete_eq_top : discrete C = ⊤ :=
   rfl
 #align category_theory.grothendieck_topology.discrete_eq_top CategoryTheory.GrothendieckTopology.discrete_eq_top
 
 @[simp]
-theorem bot_covering : S ∈ (⊥ : GrothendieckTopology C) X ↔ S = ⊤ :=
+lemma bot_covering : S ∈ (⊥ : GrothendieckTopology C) X ↔ S = ⊤ :=
   trivial_covering
 #align category_theory.grothendieck_topology.bot_covering CategoryTheory.GrothendieckTopology.bot_covering
 
 @[simp]
-theorem top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
+lemma top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
   ⟨⟩
 #align category_theory.grothendieck_topology.top_covering CategoryTheory.GrothendieckTopology.top_covering
 
@@ -360,7 +360,7 @@ def dense : GrothendieckTopology C
     exact ⟨W, h ≫ g, by simpa using H₄⟩
 #align category_theory.grothendieck_topology.dense CategoryTheory.GrothendieckTopology.dense
 
-theorem dense_covering : S ∈ dense X ↔ ∀ {Y} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f) :=
+lemma dense_covering : S ∈ dense X ↔ ∀ {Y} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f) :=
   Iff.rfl
 #align category_theory.grothendieck_topology.dense_covering CategoryTheory.GrothendieckTopology.dense_covering
 
@@ -373,7 +373,7 @@ def RightOreCondition (C : Type u) [Category.{v} C] : Prop :=
   ∀ {X Y Z : C} (yx : Y ⟶ X) (zx : Z ⟶ X), ∃ (W : _) (wy : W ⟶ Y) (wz : W ⟶ Z), wy ≫ yx = wz ≫ zx
 #align category_theory.grothendieck_topology.right_ore_condition CategoryTheory.GrothendieckTopology.RightOreCondition
 
-theorem right_ore_of_pullbacks [Limits.HasPullbacks C] : RightOreCondition C := fun _ _ =>
+lemma right_ore_of_pullbacks [Limits.HasPullbacks C] : RightOreCondition C := fun _ _ =>
   ⟨_, _, _, Limits.pullback.condition⟩
 #align category_theory.grothendieck_topology.right_ore_of_pullbacks CategoryTheory.GrothendieckTopology.right_ore_of_pullbacks
 
@@ -543,13 +543,13 @@ def Relation.snd {S : J.Cover X} (I : S.Relation) : S.Arrow :=
 #align category_theory.grothendieck_topology.cover.relation.snd CategoryTheory.GrothendieckTopology.Cover.Relation.snd
 
 @[simp]
-theorem Relation.map_fst {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) :
+lemma Relation.map_fst {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) :
     I.fst.map f = (I.map f).fst :=
   rfl
 #align category_theory.grothendieck_topology.cover.relation.map_fst CategoryTheory.GrothendieckTopology.Cover.Relation.map_fst
 
 @[simp]
-theorem Relation.map_snd {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) :
+lemma Relation.map_snd {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) :
     I.snd.map f = (I.map f).snd :=
   rfl
 #align category_theory.grothendieck_topology.cover.relation.map_snd CategoryTheory.GrothendieckTopology.Cover.Relation.map_snd
@@ -572,19 +572,19 @@ def Relation.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) : 
 #align category_theory.grothendieck_topology.cover.relation.base CategoryTheory.GrothendieckTopology.Cover.Relation.base
 
 @[simp]
-theorem Relation.base_fst {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) :
+lemma Relation.base_fst {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) :
     I.fst.base = I.base.fst :=
   rfl
 #align category_theory.grothendieck_topology.cover.relation.base_fst CategoryTheory.GrothendieckTopology.Cover.Relation.base_fst
 
 @[simp]
-theorem Relation.base_snd {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) :
+lemma Relation.base_snd {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Relation) :
     I.snd.base = I.base.snd :=
   rfl
 #align category_theory.grothendieck_topology.cover.relation.base_snd CategoryTheory.GrothendieckTopology.Cover.Relation.base_snd
 
 @[simp]
-theorem coe_pullback {Z : C} (f : Y ⟶ X) (g : Z ⟶ Y) (S : J.Cover X) :
+lemma coe_pullback {Z : C} (f : Y ⟶ X) (g : Z ⟶ Y) (S : J.Cover X) :
     (S.pullback f) g ↔ S (g ≫ f) :=
   Iff.rfl
 #align category_theory.grothendieck_topology.cover.coe_pullback CategoryTheory.GrothendieckTopology.Cover.coe_pullback
@@ -636,7 +636,7 @@ noncomputable def Arrow.fromMiddleHom {X : C} {S : J.Cover X} {T : ∀ I : S.Arr
   I.hf.choose_spec.choose_spec.choose
 #align category_theory.grothendieck_topology.cover.arrow.from_middle_hom CategoryTheory.GrothendieckTopology.Cover.Arrow.fromMiddleHom
 
-theorem Arrow.from_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
+lemma Arrow.from_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : S I.fromMiddleHom :=
   I.hf.choose_spec.choose_spec.choose_spec.choose
 #align category_theory.grothendieck_topology.cover.arrow.from_middle_condition CategoryTheory.GrothendieckTopology.Cover.Arrow.from_middle_condition
@@ -648,7 +648,7 @@ noncomputable def Arrow.fromMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow,
   ⟨_, I.fromMiddleHom, I.from_middle_condition⟩
 #align category_theory.grothendieck_topology.cover.arrow.from_middle CategoryTheory.GrothendieckTopology.Cover.Arrow.fromMiddle
 
-theorem Arrow.to_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
+lemma Arrow.to_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : (T I.fromMiddle) I.toMiddleHom :=
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.1
 #align category_theory.grothendieck_topology.cover.arrow.to_middle_condition CategoryTheory.GrothendieckTopology.Cover.Arrow.to_middle_condition
@@ -660,7 +660,7 @@ noncomputable def Arrow.toMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J
   ⟨_, I.toMiddleHom, I.to_middle_condition⟩
 #align category_theory.grothendieck_topology.cover.arrow.to_middle CategoryTheory.GrothendieckTopology.Cover.Arrow.toMiddle
 
-theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
+lemma Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : I.toMiddleHom ≫ I.fromMiddleHom = I.f :=
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.2
 #align category_theory.grothendieck_topology.cover.arrow.middle_spec CategoryTheory.GrothendieckTopology.Cover.Arrow.middle_spec

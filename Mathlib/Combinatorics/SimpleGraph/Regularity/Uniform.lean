@@ -60,19 +60,19 @@ def IsUniform (s t : Finset α) : Prop :=
 
 variable {G ε}
 
-theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
+lemma IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
   refine' (hε hs' ht' (le_trans _ hs) (le_trans _ ht)).trans_le h <;> gcongr
 #align simple_graph.is_uniform.mono SimpleGraph.IsUniform.mono
 
-theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
+lemma IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
   rw [edgeDensity_comm _ t', edgeDensity_comm _ t]
   exact h hs' ht' hs ht
 #align simple_graph.is_uniform.symm SimpleGraph.IsUniform.symm
 
 variable (G)
 
-theorem isUniform_comm : IsUniform G ε s t ↔ IsUniform G ε t s :=
+lemma isUniform_comm : IsUniform G ε s t ↔ IsUniform G ε t s :=
   ⟨fun h => h.symm, fun h => h.symm⟩
 #align simple_graph.is_uniform_comm SimpleGraph.isUniform_comm
 
@@ -88,11 +88,11 @@ theorem isUniform_singleton (hε : 0 < ε) : G.IsUniform ε {a} {b} := by
   · rwa [sub_self, abs_zero]
 #align simple_graph.is_uniform_singleton SimpleGraph.isUniform_singleton
 
-theorem not_isUniform_zero : ¬G.IsUniform (0 : 𝕜) s t := fun h =>
+lemma not_isUniform_zero : ¬G.IsUniform (0 : 𝕜) s t := fun h =>
   (abs_nonneg _).not_lt <| h (empty_subset _) (empty_subset _) (by simp) (by simp)
 #align simple_graph.not_is_uniform_zero SimpleGraph.not_isUniform_zero
 
-theorem isUniform_one : G.IsUniform (1 : 𝕜) s t := by
+lemma isUniform_one : G.IsUniform (1 : 𝕜) s t := by
   intro s' hs' t' ht' hs ht
   rw [mul_one] at hs ht
   rw [eq_of_subset_of_card_le hs' (Nat.cast_le.1 hs),
@@ -102,7 +102,7 @@ theorem isUniform_one : G.IsUniform (1 : 𝕜) s t := by
 
 variable {G}
 
-theorem not_isUniform_iff :
+lemma not_isUniform_iff :
     ¬G.IsUniform ε s t ↔ ∃ s', s' ⊆ s ∧ ∃ t', t' ⊆ t ∧ ↑s.card * ε ≤ s'.card ∧
       ↑t.card * ε ≤ t'.card ∧ ε ≤ |G.edgeDensity s' t' - G.edgeDensity s t| := by
   unfold IsUniform
@@ -210,7 +210,7 @@ theorem mk_mem_nonUniforms_iff (u v : Finset α) (ε : 𝕜) :
   rw [nonUniforms, mem_filter, mem_offDiag, and_assoc, and_assoc]
 #align finpartition.mk_mem_non_uniforms_iff Finpartition.mk_mem_nonUniforms_iff
 
-theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' ⊆ P.nonUniforms G ε :=
+lemma nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' ⊆ P.nonUniforms G ε :=
   monotone_filter_right _ fun _ => mt <| SimpleGraph.IsUniform.mono h
 #align finpartition.non_uniforms_mono Finpartition.nonUniforms_mono
 
@@ -236,7 +236,7 @@ theorem botIsUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := b
   exact mul_nonneg (Nat.cast_nonneg _) hε.le
 #align finpartition.bot_is_uniform Finpartition.botIsUniform
 
-theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
+lemma isUniformOne : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
   refine' (card_filter_le _
     (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans _
@@ -245,7 +245,7 @@ theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
 
 variable {P G}
 
-theorem IsUniform.mono {ε ε' : 𝕜} (hP : P.IsUniform G ε) (h : ε ≤ ε') : P.IsUniform G ε' :=
+lemma IsUniform.mono {ε ε' : 𝕜} (hP : P.IsUniform G ε) (h : ε ≤ ε') : P.IsUniform G ε' :=
   ((Nat.cast_le.2 <| card_le_of_subset <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
 #align finpartition.is_uniform.mono Finpartition.IsUniform.mono
 

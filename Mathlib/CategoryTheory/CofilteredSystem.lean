@@ -63,7 +63,7 @@ section FiniteKonig
 /-- This bootstraps `nonempty_sections_of_finite_inverse_system`. In this version,
 the `F` functor is between categories of the same universe, and it is an easy
 corollary to `TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system`. -/
-theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCategory J]
+lemma nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCategory J]
     [IsCofilteredOrEmpty J] (F : J ⥤ Type u) [hf : ∀ j, Finite (F.obj j)]
     [hne : ∀ j, Nonempty (F.obj j)] : F.sections.Nonempty := by
   let F' : J ⥤ TopCat := F ⋙ TopCat.discrete
@@ -77,7 +77,7 @@ theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCa
 /-- The cofiltered limit of nonempty finite types is nonempty.
 
 See `nonempty_sections_of_finite_inverse_system` for a specialization to inverse limits. -/
-theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w} J]
+lemma nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w} J]
     [IsCofilteredOrEmpty J] (F : J ⥤ Type v) [∀ j : J, Finite (F.obj j)]
     [∀ j : J, Nonempty (F.obj j)] : F.sections.Nonempty := by
   -- Step 1: lift everything to the `max u v w` universe.
@@ -109,7 +109,7 @@ This may be regarded as a generalization of Kőnig's lemma.
 To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ` and
 `F j` to be length-`j` paths that start from an arbitrary fixed vertex.
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
-theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirected J (· ≤ ·)]
+lemma nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirected J (· ≤ ·)]
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
     F.sections.Nonempty := by
   cases isEmpty_or_nonempty J
@@ -132,7 +132,7 @@ def eventualRange (j : J) :=
   ⋂ (i) (f : i ⟶ j), range (F.map f)
 #align category_theory.functor.eventual_range CategoryTheory.Functor.eventualRange
 
-theorem mem_eventualRange_iff {x : F.obj j} :
+lemma mem_eventualRange_iff {x : F.obj j} :
     x ∈ F.eventualRange j ↔ ∀ ⦃i⦄ (f : i ⟶ j), x ∈ range (F.map f) :=
   mem_iInter₂
 #align category_theory.functor.mem_eventual_range_iff CategoryTheory.Functor.mem_eventualRange_iff
@@ -146,7 +146,7 @@ def IsMittagLeffler : Prop :=
   ∀ j : J, ∃ (i : _) (f : i ⟶ j), ∀ ⦃k⦄ (g : k ⟶ j), range (F.map f) ⊆ range (F.map g)
 #align category_theory.functor.is_mittag_leffler CategoryTheory.Functor.IsMittagLeffler
 
-theorem isMittagLeffler_iff_eventualRange :
+lemma isMittagLeffler_iff_eventualRange :
     F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j), F.eventualRange j = range (F.map f) :=
   forall_congr' fun _ =>
     exists₂_congr fun _ _ =>
@@ -213,7 +213,7 @@ theorem IsMittagLeffler.eq_image_eventualRange (h : F.IsMittagLeffler) (f : j �
   (h.subset_image_eventualRange F f).antisymm <| mapsTo'.1 (F.eventualRange_mapsTo f)
 #align category_theory.functor.is_mittag_leffler.eq_image_eventual_range CategoryTheory.Functor.IsMittagLeffler.eq_image_eventualRange
 
-theorem eventualRange_eq_iff {f : i ⟶ j} :
+lemma eventualRange_eq_iff {f : i ⟶ j} :
     F.eventualRange j = range (F.map f) ↔
       ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) := by
   rw [subset_antisymm_iff, eventualRange, and_iff_right (iInter₂_subset _ _), subset_iInter₂_iff]
@@ -224,7 +224,7 @@ theorem eventualRange_eq_iff {f : i ⟶ j} :
   apply range_comp_subset_range
 #align category_theory.functor.eventual_range_eq_iff CategoryTheory.Functor.eventualRange_eq_iff
 
-theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔
+lemma isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔
     ∀ j : J, ∃ (i : _) (f : i ⟶ j), ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) :=
   by simp_rw [isMittagLeffler_iff_eventualRange, eventualRange_eq_iff]
 #align category_theory.functor.is_mittag_leffler_iff_subset_range_comp CategoryTheory.Functor.isMittagLeffler_iff_subset_range_comp
@@ -320,7 +320,7 @@ theorem thin_diagram_of_surjective (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.m
   (Fsur φ).injective_comp_right <| by simp_rw [← types_comp, ← F.map_comp, hφ]
 #align category_theory.functor.thin_diagram_of_surjective CategoryTheory.Functor.thin_diagram_of_surjective
 
-theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
+lemma toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
     (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) (hs : s.Nonempty) (j) :
     Nonempty ((F.toPreimages s).obj j) := by
   simp only [toPreimages_obj, nonempty_coe_sort, nonempty_iInter, mem_preimage]
@@ -331,7 +331,7 @@ theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
     exact ⟨x, fun ji' => (F.thin_diagram_of_surjective Fsur ji' ji).symm ▸ ys⟩
 #align category_theory.functor.to_preimages_nonempty_of_surjective CategoryTheory.Functor.toPreimages_nonempty_of_surjective
 
-theorem eval_section_injective_of_eventually_injective {j}
+lemma eval_section_injective_of_eventually_injective {j}
     (Finj : ∀ (i) (f : i ⟶ j), (F.map f).Injective) (i) (f : i ⟶ j) :
     (fun s : F.sections => s.val j).Injective := by
   refine' fun s₀ s₁ h => Subtype.ext <| funext fun k => _
@@ -359,7 +359,7 @@ theorem eval_section_surjective_of_surjective (i : J) :
     rwa [map_id_apply] at this
 #align category_theory.functor.eval_section_surjective_of_surjective CategoryTheory.Functor.eval_section_surjective_of_surjective
 
-theorem eventually_injective [Nonempty J] [Finite F.sections] :
+lemma eventually_injective [Nonempty J] [Finite F.sections] :
     ∃ j, ∀ (i) (f : i ⟶ j), (F.map f).Injective := by
   haveI : ∀ j, Fintype (F.obj j) := fun j => Fintype.ofFinite (F.obj j)
   haveI : Fintype F.sections := Fintype.ofFinite F.sections

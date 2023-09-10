@@ -44,14 +44,14 @@ def stepBound (n : ℕ) : ℕ :=
   n * 4 ^ n
 #align szemeredi_regularity.step_bound SzemerediRegularity.stepBound
 
-theorem le_stepBound : id ≤ stepBound := fun n => Nat.le_mul_of_pos_right <| pow_pos (by norm_num) n
+lemma le_stepBound : id ≤ stepBound := fun n => Nat.le_mul_of_pos_right <| pow_pos (by norm_num) n
 #align szemeredi_regularity.le_step_bound SzemerediRegularity.le_stepBound
 
-theorem stepBound_mono : Monotone stepBound := fun a b h =>
+lemma stepBound_mono : Monotone stepBound := fun a b h =>
   Nat.mul_le_mul h <| Nat.pow_le_pow_of_le_right (by norm_num) h
 #align szemeredi_regularity.step_bound_mono SzemerediRegularity.stepBound_mono
 
-theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
+lemma stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
   zero_lt_mul_right <| by positivity
 #align szemeredi_regularity.step_bound_pos_iff SzemerediRegularity.stepBound_pos_iff
 
@@ -73,11 +73,11 @@ local notation3 (prettyPrint := false)
 
 namespace SzemerediRegularity.Positivity
 
-private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
+private lemma eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by norm_num)).mp
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
 
-private theorem m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m :=
+private lemma m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m :=
   Nat.div_pos ((Nat.mul_le_mul_left _ <| Nat.pow_le_pow_of_le_left (by norm_num) _).trans hPα) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
 
@@ -110,14 +110,14 @@ namespace SzemerediRegularity
 
 open scoped SzemerediRegularity.Positivity
 
-theorem m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m := by
+lemma m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m := by
   sz_positivity
 #align szemeredi_regularity.m_pos SzemerediRegularity.m_pos
 
-theorem coe_m_add_one_pos : 0 < (m : ℝ) + 1 := by positivity
+lemma coe_m_add_one_pos : 0 < (m : ℝ) + 1 := by positivity
 #align szemeredi_regularity.coe_m_add_one_pos SzemerediRegularity.coe_m_add_one_pos
 
-theorem one_le_m_coe [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : (1 : ℝ) ≤ m :=
+lemma one_le_m_coe [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : (1 : ℝ) ≤ m :=
   Nat.one_le_cast.2 <| m_pos hPα
 #align szemeredi_regularity.one_le_m_coe SzemerediRegularity.one_le_m_coe
 
@@ -129,7 +129,7 @@ theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by norm_num)).mp (eps_pow_five_pos hPε)
 #align szemeredi_regularity.eps_pos SzemerediRegularity.eps_pos
 
-theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
+lemma hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
   (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans
     (by
@@ -138,14 +138,14 @@ theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P
         univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow])
 #align szemeredi_regularity.hundred_div_ε_pow_five_le_m SzemerediRegularity.hundred_div_ε_pow_five_le_m
 
-theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
+lemma hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m := by
   exact_mod_cast
     (hundred_div_ε_pow_five_le_m hPα hPε).trans'
       (le_div_self (by norm_num) (by sz_positivity) <| pow_le_one _ (by sz_positivity) hε)
 #align szemeredi_regularity.hundred_le_m SzemerediRegularity.hundred_le_m
 
-theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
+lemma a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
   have h : 1 ≤ 4 ^ P.parts.card := one_le_pow_of_one_le (by norm_num) _
   rw [stepBound, ← Nat.div_div_eq_div_mul]
   conv_rhs => rw [← Nat.sub_add_cancel h]
@@ -186,19 +186,19 @@ noncomputable def initialBound : ℕ :=
   max 7 <| max l <| ⌊log (100 / ε ^ 5) / log 4⌋₊ + 1
 #align szemeredi_regularity.initial_bound SzemerediRegularity.initialBound
 
-theorem le_initialBound : l ≤ initialBound ε l :=
+lemma le_initialBound : l ≤ initialBound ε l :=
   (le_max_left _ _).trans <| le_max_right _ _
 #align szemeredi_regularity.le_initial_bound SzemerediRegularity.le_initialBound
 
-theorem seven_le_initialBound : 7 ≤ initialBound ε l :=
+lemma seven_le_initialBound : 7 ≤ initialBound ε l :=
   le_max_left _ _
 #align szemeredi_regularity.seven_le_initial_bound SzemerediRegularity.seven_le_initialBound
 
-theorem initialBound_pos : 0 < initialBound ε l :=
+lemma initialBound_pos : 0 < initialBound ε l :=
   Nat.succ_pos'.trans_le <| seven_le_initialBound _ _
 #align szemeredi_regularity.initial_bound_pos SzemerediRegularity.initialBound_pos
 
-theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
+lemma hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
     100 < ↑4 ^ initialBound ε l * ε ^ 5 := by
   rw [← rpow_nat_cast 4, ← div_lt_iff (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
     div_lt_iff, initialBound, Nat.cast_max, Nat.cast_max]
@@ -215,15 +215,15 @@ noncomputable def bound : ℕ :=
     16 ^ (stepBound^[⌊4 / ε ^ 5⌋₊] <| initialBound ε l)
 #align szemeredi_regularity.bound SzemerediRegularity.bound
 
-theorem initialBound_le_bound : initialBound ε l ≤ bound ε l :=
+lemma initialBound_le_bound : initialBound ε l ≤ bound ε l :=
   (id_le_iterate_of_id_le le_stepBound _ _).trans <| Nat.le_mul_of_pos_right <| by positivity
 #align szemeredi_regularity.initial_bound_le_bound SzemerediRegularity.initialBound_le_bound
 
-theorem le_bound : l ≤ bound ε l :=
+lemma le_bound : l ≤ bound ε l :=
   (le_initialBound ε l).trans <| initialBound_le_bound ε l
 #align szemeredi_regularity.le_bound SzemerediRegularity.le_bound
 
-theorem bound_pos : 0 < bound ε l :=
+lemma bound_pos : 0 < bound ε l :=
   (initialBound_pos ε l).trans_le <| initialBound_le_bound ε l
 #align szemeredi_regularity.bound_pos SzemerediRegularity.bound_pos
 

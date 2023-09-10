@@ -49,26 +49,26 @@ section Monoid
 
 variable [Monoid R] [StarMul R]
 
-theorem mem_iff {U : R} : U ∈ unitary R ↔ star U * U = 1 ∧ U * star U = 1 :=
+lemma mem_iff {U : R} : U ∈ unitary R ↔ star U * U = 1 ∧ U * star U = 1 :=
   Iff.rfl
 #align unitary.mem_iff unitary.mem_iff
 
 @[simp]
-theorem star_mul_self_of_mem {U : R} (hU : U ∈ unitary R) : star U * U = 1 :=
+lemma star_mul_self_of_mem {U : R} (hU : U ∈ unitary R) : star U * U = 1 :=
   hU.1
 #align unitary.star_mul_self_of_mem unitary.star_mul_self_of_mem
 
 @[simp]
-theorem mul_star_self_of_mem {U : R} (hU : U ∈ unitary R) : U * star U = 1 :=
+lemma mul_star_self_of_mem {U : R} (hU : U ∈ unitary R) : U * star U = 1 :=
   hU.2
 #align unitary.mul_star_self_of_mem unitary.mul_star_self_of_mem
 
-theorem star_mem {U : R} (hU : U ∈ unitary R) : star U ∈ unitary R :=
+lemma star_mem {U : R} (hU : U ∈ unitary R) : star U ∈ unitary R :=
   ⟨by rw [star_star, mul_star_self_of_mem hU], by rw [star_star, star_mul_self_of_mem hU]⟩
 #align unitary.star_mem unitary.star_mem
 
 @[simp]
-theorem star_mem_iff {U : R} : star U ∈ unitary R ↔ U ∈ unitary R :=
+lemma star_mem_iff {U : R} : star U ∈ unitary R ↔ U ∈ unitary R :=
   ⟨fun h => star_star U ▸ star_mem h, star_mem⟩
 #align unitary.star_mem_iff unitary.star_mem_iff
 
@@ -76,7 +76,7 @@ instance : Star (unitary R) :=
   ⟨fun U => ⟨star U, star_mem U.prop⟩⟩
 
 @[simp, norm_cast]
-theorem coe_star {U : unitary R} : ↑(star U) = (star U : R) :=
+lemma coe_star {U : unitary R} : ↑(star U) = (star U : R) :=
   rfl
 #align unitary.coe_star unitary.coe_star
 
@@ -122,7 +122,7 @@ theorem star_eq_inv (U : unitary R) : star U = U⁻¹ :=
   rfl
 #align unitary.star_eq_inv unitary.star_eq_inv
 
-theorem star_eq_inv' : (star : unitary R → unitary R) = Inv.inv :=
+lemma star_eq_inv' : (star : unitary R → unitary R) = Inv.inv :=
   rfl
 #align unitary.star_eq_inv' unitary.star_eq_inv'
 
@@ -135,7 +135,7 @@ def toUnits : unitary R →* Rˣ
   map_mul' _ _ := Units.ext rfl
 #align unitary.to_units unitary.toUnits
 
-theorem to_units_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
+lemma to_units_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
   Subtype.ext <| Units.ext_iff.mp h
 #align unitary.to_units_injective unitary.to_units_injective
 
@@ -148,11 +148,11 @@ variable [CommMonoid R] [StarMul R]
 instance : CommGroup (unitary R) :=
   { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
 
-theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
+lemma mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
   mem_iff.trans <| and_iff_left_of_imp fun h => mul_comm (star U) U ▸ h
 #align unitary.mem_iff_star_mul_self unitary.mem_iff_star_mul_self
 
-theorem mem_iff_self_mul_star {U : R} : U ∈ unitary R ↔ U * star U = 1 :=
+lemma mem_iff_self_mul_star {U : R} : U ∈ unitary R ↔ U * star U = 1 :=
   mem_iff.trans <| and_iff_right_of_imp fun h => mul_comm U (star U) ▸ h
 #align unitary.mem_iff_self_mul_star unitary.mem_iff_self_mul_star
 

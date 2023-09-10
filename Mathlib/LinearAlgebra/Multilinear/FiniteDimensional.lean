@@ -55,7 +55,7 @@ variable [∀ i, AddCommGroup (M₁ i)] [∀ i, Module R (M₁ i)]
 variable [∀ i, Module.Finite R (M₁ i)] [∀ i, Module.Free R (M₁ i)]
 
 -- the induction requires us to show both at once
-private theorem free_and_finite :
+private lemma free_and_finite :
     Module.Free R (MultilinearMap R M₁ M₂) ∧ Module.Finite R (MultilinearMap R M₁ M₂) := by
   cases nonempty_fintype ι
   have := @free_and_finite_fin R M₂ _ _ _ _ _ (Fintype.card ι)

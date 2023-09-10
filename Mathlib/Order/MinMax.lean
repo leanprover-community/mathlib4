@@ -30,47 +30,47 @@ variable [LinearOrder α] [LinearOrder β] {f : α → β} {s : Set α} {a b c d
 
 -- translate from lattices to linear orders (sup → max, inf → min)
 @[simp]
-theorem le_min_iff : c ≤ min a b ↔ c ≤ a ∧ c ≤ b :=
+lemma le_min_iff : c ≤ min a b ↔ c ≤ a ∧ c ≤ b :=
   le_inf_iff
 #align le_min_iff le_min_iff
 
 @[simp]
-theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c :=
+lemma le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c :=
   le_sup_iff
 #align le_max_iff le_max_iff
 
 @[simp]
-theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
+lemma min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
   inf_le_iff
 #align min_le_iff min_le_iff
 
 @[simp]
-theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c :=
+lemma max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   sup_le_iff
 #align max_le_iff max_le_iff
 
 @[simp]
-theorem lt_min_iff : a < min b c ↔ a < b ∧ a < c :=
+lemma lt_min_iff : a < min b c ↔ a < b ∧ a < c :=
   lt_inf_iff
 #align lt_min_iff lt_min_iff
 
 @[simp]
-theorem lt_max_iff : a < max b c ↔ a < b ∨ a < c :=
+lemma lt_max_iff : a < max b c ↔ a < b ∨ a < c :=
   lt_sup_iff
 #align lt_max_iff lt_max_iff
 
 @[simp]
-theorem min_lt_iff : min a b < c ↔ a < c ∨ b < c :=
+lemma min_lt_iff : min a b < c ↔ a < c ∨ b < c :=
   inf_lt_iff
 #align min_lt_iff min_lt_iff
 
 @[simp]
-theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c :=
+lemma max_lt_iff : max a b < c ↔ a < c ∧ b < c :=
   sup_lt_iff
 #align max_lt_iff max_lt_iff
 
 @[gcongr]
-theorem max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
+lemma max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
   sup_le_sup
 #align max_le_max max_le_max
 
@@ -79,7 +79,7 @@ theorem max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
 @[gcongr] theorem max_le_max_right (c) (h : a ≤ b) : max a c ≤ max b c := sup_le_sup_right h c
 
 @[gcongr]
-theorem min_le_min : a ≤ c → b ≤ d → min a b ≤ min c d :=
+lemma min_le_min : a ≤ c → b ≤ d → min a b ≤ min c d :=
   inf_le_inf
 #align min_le_min min_le_min
 
@@ -87,11 +87,11 @@ theorem min_le_min : a ≤ c → b ≤ d → min a b ≤ min c d :=
 
 @[gcongr] theorem min_le_min_right (c) (h : a ≤ b) : min a c ≤ min b c := inf_le_inf_right c h
 
-theorem le_max_of_le_left : a ≤ b → a ≤ max b c :=
+lemma le_max_of_le_left : a ≤ b → a ≤ max b c :=
   le_sup_of_le_left
 #align le_max_of_le_left le_max_of_le_left
 
-theorem le_max_of_le_right : a ≤ c → a ≤ max b c :=
+lemma le_max_of_le_right : a ≤ c → a ≤ max b c :=
   le_sup_of_le_right
 #align le_max_of_le_right le_max_of_le_right
 
@@ -103,11 +103,11 @@ theorem lt_max_of_lt_right (h : a < c) : a < max b c :=
   h.trans_le (le_max_right b c)
 #align lt_max_of_lt_right lt_max_of_lt_right
 
-theorem min_le_of_left_le : a ≤ c → min a b ≤ c :=
+lemma min_le_of_left_le : a ≤ c → min a b ≤ c :=
   inf_le_of_left_le
 #align min_le_of_left_le min_le_of_left_le
 
-theorem min_le_of_right_le : b ≤ c → min a b ≤ c :=
+lemma min_le_of_right_le : b ≤ c → min a b ≤ c :=
   inf_le_of_right_le
 #align min_le_of_right_le min_le_of_right_le
 
@@ -119,43 +119,43 @@ theorem min_lt_of_right_lt (h : b < c) : min a b < c :=
   (min_le_right a b).trans_lt h
 #align min_lt_of_right_lt min_lt_of_right_lt
 
-theorem max_min_distrib_left : max a (min b c) = min (max a b) (max a c) :=
+lemma max_min_distrib_left : max a (min b c) = min (max a b) (max a c) :=
   sup_inf_left
 #align max_min_distrib_left max_min_distrib_left
 
-theorem max_min_distrib_right : max (min a b) c = min (max a c) (max b c) :=
+lemma max_min_distrib_right : max (min a b) c = min (max a c) (max b c) :=
   sup_inf_right
 #align max_min_distrib_right max_min_distrib_right
 
-theorem min_max_distrib_left : min a (max b c) = max (min a b) (min a c) :=
+lemma min_max_distrib_left : min a (max b c) = max (min a b) (min a c) :=
   inf_sup_left
 #align min_max_distrib_left min_max_distrib_left
 
-theorem min_max_distrib_right : min (max a b) c = max (min a c) (min b c) :=
+lemma min_max_distrib_right : min (max a b) c = max (min a c) (min b c) :=
   inf_sup_right
 #align min_max_distrib_right min_max_distrib_right
 
-theorem min_le_max : min a b ≤ max a b :=
+lemma min_le_max : min a b ≤ max a b :=
   le_trans (min_le_left a b) (le_max_left a b)
 #align min_le_max min_le_max
 
 @[simp]
-theorem min_eq_left_iff : min a b = a ↔ a ≤ b :=
+lemma min_eq_left_iff : min a b = a ↔ a ≤ b :=
   inf_eq_left
 #align min_eq_left_iff min_eq_left_iff
 
 @[simp]
-theorem min_eq_right_iff : min a b = b ↔ b ≤ a :=
+lemma min_eq_right_iff : min a b = b ↔ b ≤ a :=
   inf_eq_right
 #align min_eq_right_iff min_eq_right_iff
 
 @[simp]
-theorem max_eq_left_iff : max a b = a ↔ b ≤ a :=
+lemma max_eq_left_iff : max a b = a ↔ b ≤ a :=
   sup_eq_left
 #align max_eq_left_iff max_eq_left_iff
 
 @[simp]
-theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
+lemma max_eq_right_iff : max a b = b ↔ a ≤ b :=
   sup_eq_right
 #align max_eq_right_iff max_eq_right_iff
 
@@ -177,31 +177,31 @@ theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b
   @min_cases αᵒᵈ _ a b
 #align max_cases max_cases
 
-theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
+lemma min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
   constructor
   · intro h
     refine' Or.imp (fun h' => _) (fun h' => _) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
   · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
 #align min_eq_iff min_eq_iff
 
-theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
+lemma max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
   @min_eq_iff αᵒᵈ _ a b c
 #align max_eq_iff max_eq_iff
 
-theorem min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
+lemma min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
   simp_rw [lt_min_iff, min_lt_iff, or_iff_left (lt_irrefl _)]
   exact and_congr_left fun h => or_iff_left_of_imp h.trans
 #align min_lt_min_left_iff min_lt_min_left_iff
 
-theorem min_lt_min_right_iff : min a b < min a c ↔ b < c ∧ b < a := by
+lemma min_lt_min_right_iff : min a b < min a c ↔ b < c ∧ b < a := by
   simp_rw [min_comm a, min_lt_min_left_iff]
 #align min_lt_min_right_iff min_lt_min_right_iff
 
-theorem max_lt_max_left_iff : max a c < max b c ↔ a < b ∧ c < b :=
+lemma max_lt_max_left_iff : max a c < max b c ↔ a < b ∧ c < b :=
   @min_lt_min_left_iff αᵒᵈ _ _ _ _
 #align max_lt_max_left_iff max_lt_max_left_iff
 
-theorem max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
+lemma max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
   @min_lt_min_right_iff αᵒᵈ _ _ _ _
 #align max_lt_max_right_iff max_lt_max_right_iff
 
@@ -217,7 +217,7 @@ instance min_idem : IsIdempotent α min where
 #align min_idem min_idem
 
 -- short-circuit type class inference
-theorem min_lt_max : min a b < max a b ↔ a ≠ b :=
+lemma min_lt_max : min a b < max a b ↔ a ≠ b :=
   inf_lt_sup
 #align min_lt_max min_lt_max
 
@@ -283,19 +283,19 @@ theorem max_choice (a b : α) : max a b = a ∨ max a b = b :=
   @min_choice αᵒᵈ _ a b
 #align max_choice max_choice
 
-theorem le_of_max_le_left {a b c : α} (h : max a b ≤ c) : a ≤ c :=
+lemma le_of_max_le_left {a b c : α} (h : max a b ≤ c) : a ≤ c :=
   le_trans (le_max_left _ _) h
 #align le_of_max_le_left le_of_max_le_left
 
-theorem le_of_max_le_right {a b c : α} (h : max a b ≤ c) : b ≤ c :=
+lemma le_of_max_le_right {a b c : α} (h : max a b ≤ c) : b ≤ c :=
   le_trans (le_max_right _ _) h
 #align le_of_max_le_right le_of_max_le_right
 
-theorem max_commutative : Commutative (max : α → α → α) :=
+lemma max_commutative : Commutative (max : α → α → α) :=
   max_comm
 #align max_commutative max_commutative
 
-theorem max_associative : Associative (max : α → α → α) :=
+lemma max_associative : Associative (max : α → α → α) :=
   max_assoc
 #align max_associative max_associative
 
@@ -305,15 +305,15 @@ instance : IsCommutative α max where
 instance : IsAssociative α max where
   assoc := max_assoc
 
-theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
+lemma max_left_commutative : LeftCommutative (max : α → α → α) :=
   max_left_comm
 #align max_left_commutative max_left_commutative
 
-theorem min_commutative : Commutative (min : α → α → α) :=
+lemma min_commutative : Commutative (min : α → α → α) :=
   min_comm
 #align min_commutative min_commutative
 
-theorem min_associative : Associative (min : α → α → α) :=
+lemma min_associative : Associative (min : α → α → α) :=
   min_assoc
 #align min_associative min_associative
 
@@ -323,7 +323,7 @@ instance : IsCommutative α min where
 instance : IsAssociative α min where
   assoc := min_assoc
 
-theorem min_left_commutative : LeftCommutative (min : α → α → α) :=
+lemma min_left_commutative : LeftCommutative (min : α → α → α) :=
   min_left_comm
 #align min_left_commutative min_left_commutative
 

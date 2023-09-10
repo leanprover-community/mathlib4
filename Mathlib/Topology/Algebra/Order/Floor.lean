@@ -30,20 +30,20 @@ open Filter Function Int Set Topology
 
 variable {α β γ : Type*} [LinearOrderedRing α] [FloorRing α]
 
-theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
+lemma tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>
     ⟨(b + 1 : ℤ), by rw [floor_intCast]; exact (lt_add_one _).le⟩
 #align tendsto_floor_at_top tendsto_floor_atTop
 
-theorem tendsto_floor_atBot : Tendsto (floor : α → ℤ) atBot atBot :=
+lemma tendsto_floor_atBot : Tendsto (floor : α → ℤ) atBot atBot :=
   floor_mono.tendsto_atBot_atBot fun b => ⟨b, (floor_intCast _).le⟩
 #align tendsto_floor_at_bot tendsto_floor_atBot
 
-theorem tendsto_ceil_atTop : Tendsto (ceil : α → ℤ) atTop atTop :=
+lemma tendsto_ceil_atTop : Tendsto (ceil : α → ℤ) atTop atTop :=
   ceil_mono.tendsto_atTop_atTop fun b => ⟨b, (ceil_intCast _).ge⟩
 #align tendsto_ceil_at_top tendsto_ceil_atTop
 
-theorem tendsto_ceil_atBot : Tendsto (ceil : α → ℤ) atBot atBot :=
+lemma tendsto_ceil_atBot : Tendsto (ceil : α → ℤ) atBot atBot :=
   ceil_mono.tendsto_atBot_atBot fun b =>
     ⟨(b - 1 : ℤ), by rw [ceil_intCast]; exact (sub_one_lt _).le⟩
 #align tendsto_ceil_at_bot tendsto_ceil_atBot
@@ -151,35 +151,35 @@ theorem tendsto_ceil_right' (n : ℤ) :
 
 end OrderClosedTopology
 
-theorem continuousOn_fract [TopologicalAddGroup α] (n : ℤ) :
+lemma continuousOn_fract [TopologicalAddGroup α] (n : ℤ) :
     ContinuousOn (fract : α → α) (Ico n (n + 1) : Set α) :=
   continuousOn_id.sub (continuousOn_floor n)
 #align continuous_on_fract continuousOn_fract
 
-theorem continuousAt_fract [OrderClosedTopology α] [TopologicalAddGroup α]
+lemma continuousAt_fract [OrderClosedTopology α] [TopologicalAddGroup α]
     {x : α} (h : x ≠ ⌊x⌋) : ContinuousAt fract x :=
   (continuousOn_fract ⌊x⌋).continuousAt <|
     Ico_mem_nhds ((floor_le _).lt_of_ne h.symm) (lt_floor_add_one _)
 
-theorem tendsto_fract_left' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+lemma tendsto_fract_left' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝 1) := by
   rw [← sub_sub_cancel (n : α) 1]
   refine (tendsto_id.mono_left nhdsWithin_le_nhds).sub ?_
   exact tendsto_floor_left' n
 #align tendsto_fract_left' tendsto_fract_left'
 
-theorem tendsto_fract_left [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+lemma tendsto_fract_left [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝[<] 1) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_left' _)
     (eventually_of_forall fract_lt_one)
 #align tendsto_fract_left tendsto_fract_left
 
-theorem tendsto_fract_right' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+lemma tendsto_fract_right' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝 0) :=
   sub_self (n : α) ▸ (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).sub (tendsto_floor_right' n)
 #align tendsto_fract_right' tendsto_fract_right'
 
-theorem tendsto_fract_right [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+lemma tendsto_fract_right [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝[≥] 0) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_right' _)
     (eventually_of_forall fract_nonneg)
@@ -190,7 +190,7 @@ local notation "I" => (Icc 0 1 : Set α)
 variable [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- Do not use this, use `ContinuousOn.comp_fract` instead. -/
-theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncurry f) <| univ ×ˢ I)
+lemma ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncurry f) <| univ ×ˢ I)
     (hf : ∀ s, f s 0 = f s 1) : Continuous fun st : β × α => f st.1 (fract st.2) := by
   change Continuous (uncurry f ∘ Prod.map id fract)
   rw [continuous_iff_continuousAt]
@@ -211,14 +211,14 @@ theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncur
     exact prod_mem_nhds univ_mem (Icc_mem_nhds (fract_pos.2 ht) (fract_lt_one _))
 #align continuous_on.comp_fract' ContinuousOn.comp_fract'
 
-theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}
+lemma ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}
     (h : ContinuousOn (uncurry f) <| univ ×ˢ Icc 0 1) (hs : Continuous s)
     (hf : ∀ s, f s 0 = f s 1) : Continuous fun x : β => f x <| Int.fract (s x) :=
   (h.comp_fract' hf).comp (continuous_id.prod_mk hs)
 #align continuous_on.comp_fract ContinuousOn.comp_fract
 
 /-- A special case of `ContinuousOn.comp_fract`. -/
-theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f 0 = f 1) :
+lemma ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f 0 = f 1) :
     Continuous (f ∘ fract) :=
   ContinuousOn.comp_fract (h.comp continuousOn_snd fun _x hx => (mem_prod.mp hx).2) continuous_id
     fun _ => hf

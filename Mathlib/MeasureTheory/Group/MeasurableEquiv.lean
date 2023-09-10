@@ -72,17 +72,17 @@ def smul₀ (c : G₀) (hc : c ≠ 0) : α ≃ᵐ α :=
 #align measurable_equiv.smul₀ MeasurableEquiv.smul₀
 
 @[simp]
-theorem coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (· • ·) c :=
+lemma coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (· • ·) c :=
   rfl
 #align measurable_equiv.coe_smul₀ MeasurableEquiv.coe_smul₀
 
 @[simp]
-theorem symm_smul₀ {c : G₀} (hc : c ≠ 0) :
+lemma symm_smul₀ {c : G₀} (hc : c ≠ 0) :
     (smul₀ c hc : α ≃ᵐ α).symm = smul₀ c⁻¹ (inv_ne_zero hc) :=
   ext rfl
 #align measurable_equiv.symm_smul₀ MeasurableEquiv.symm_smul₀
 
-theorem _root_.measurableEmbedding_const_smul₀ {c : G₀} (hc : c ≠ 0) :
+lemma _root_.measurableEmbedding_const_smul₀ {c : G₀} (hc : c ≠ 0) :
     MeasurableEmbedding ((· • ·) c : α → α) :=
   (smul₀ c hc).measurableEmbedding
 #align measurable_embedding_const_smul₀ measurableEmbedding_const_smul₀
@@ -167,24 +167,24 @@ def mulLeft₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ :=
   smul₀ g hg
 #align measurable_equiv.mul_left₀ MeasurableEquiv.mulLeft₀
 
-theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
+lemma _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
     MeasurableEmbedding ((· * ·) g) :=
   (mulLeft₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_left₀ measurableEmbedding_mulLeft₀
 
 @[simp]
-theorem coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (· * ·) g :=
+lemma coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (· * ·) g :=
   rfl
 #align measurable_equiv.coe_mul_left₀ MeasurableEquiv.coe_mulLeft₀
 
 @[simp]
-theorem symm_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
+lemma symm_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
     (mulLeft₀ g hg).symm = mulLeft₀ g⁻¹ (inv_ne_zero hg) :=
   ext rfl
 #align measurable_equiv.symm_mul_left₀ MeasurableEquiv.symm_mulLeft₀
 
 @[simp]
-theorem toEquiv_mulLeft₀ {g : G₀} (hg : g ≠ 0) : (mulLeft₀ g hg).toEquiv = Equiv.mulLeft₀ g hg :=
+lemma toEquiv_mulLeft₀ {g : G₀} (hg : g ≠ 0) : (mulLeft₀ g hg).toEquiv = Equiv.mulLeft₀ g hg :=
   rfl
 #align measurable_equiv.to_equiv_mul_left₀ MeasurableEquiv.toEquiv_mulLeft₀
 
@@ -196,24 +196,24 @@ def mulRight₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ where
   measurable_invFun := measurable_mul_const g⁻¹
 #align measurable_equiv.mul_right₀ MeasurableEquiv.mulRight₀
 
-theorem _root_.measurableEmbedding_mulRight₀ {g : G₀} (hg : g ≠ 0) :
+lemma _root_.measurableEmbedding_mulRight₀ {g : G₀} (hg : g ≠ 0) :
     MeasurableEmbedding fun x => x * g :=
   (mulRight₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_right₀ measurableEmbedding_mulRight₀
 
 @[simp]
-theorem coe_mulRight₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulRight₀ g hg) = fun x => x * g :=
+lemma coe_mulRight₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulRight₀ g hg) = fun x => x * g :=
   rfl
 #align measurable_equiv.coe_mul_right₀ MeasurableEquiv.coe_mulRight₀
 
 @[simp]
-theorem symm_mulRight₀ {g : G₀} (hg : g ≠ 0) :
+lemma symm_mulRight₀ {g : G₀} (hg : g ≠ 0) :
     (mulRight₀ g hg).symm = mulRight₀ g⁻¹ (inv_ne_zero hg) :=
   ext rfl
 #align measurable_equiv.symm_mul_right₀ MeasurableEquiv.symm_mulRight₀
 
 @[simp]
-theorem toEquiv_mulRight₀ {g : G₀} (hg : g ≠ 0) : (mulRight₀ g hg).toEquiv = Equiv.mulRight₀ g hg :=
+lemma toEquiv_mulRight₀ {g : G₀} (hg : g ≠ 0) : (mulRight₀ g hg).toEquiv = Equiv.mulRight₀ g hg :=
   rfl
 #align measurable_equiv.to_equiv_mul_right₀ MeasurableEquiv.toEquiv_mulRight₀
 
@@ -230,7 +230,7 @@ def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G
 #align measurable_equiv.neg MeasurableEquiv.neg
 
 @[to_additive (attr := simp)]
-theorem symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :
+lemma symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :
     (inv G).symm = inv G :=
   rfl
 #align measurable_equiv.symm_inv MeasurableEquiv.symm_inv

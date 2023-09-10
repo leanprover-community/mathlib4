@@ -108,16 +108,16 @@ section CoeLemmas
 variable (A B : GL n R)
 
 @[simp]
-theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
+lemma coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
   rfl
 #align matrix.general_linear_group.coe_mul Matrix.GeneralLinearGroup.coe_mul
 
 @[simp]
-theorem coe_one : ↑(1 : GL n R) = (1 : Matrix n n R) :=
+lemma coe_one : ↑(1 : GL n R) = (1 : Matrix n n R) :=
   rfl
 #align matrix.general_linear_group.coe_one Matrix.GeneralLinearGroup.coe_one
 
-theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
+lemma coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   letI := A.invertible
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
 #align matrix.general_linear_group.coe_inv Matrix.GeneralLinearGroup.coe_inv
@@ -133,7 +133,7 @@ def toLinear : GeneralLinearGroup n R ≃* LinearMap.GeneralLinearGroup R (n →
 -- These `λ a b, _inst a b` terms also appear in the type of `A`, but simp doesn't get confused by
 -- them so for now we do not care.
 @[simp]
-theorem coe_toLinear : (@toLinear n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
+lemma coe_toLinear : (@toLinear n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
 #align matrix.general_linear_group.coe_to_linear Matrix.GeneralLinearGroup.coe_toLinear
 
@@ -258,7 +258,7 @@ instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
 
 #noalign matrix.special_linear_group.coe_eq_to_GL_pos
 
-theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R → GLPos n R) :=
+lemma toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R → GLPos n R) :=
   -- Porting note: had to rewrite this to hint the correct types to Lean
   -- (It can't find the coercion GLPos n R → Matrix n n R)
   Function.Injective.of_comp

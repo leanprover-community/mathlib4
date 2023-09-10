@@ -229,7 +229,7 @@ protected theorem hasSum_linearIsometry (f : lp G 2) :
 #align orthogonal_family.has_sum_linear_isometry OrthogonalFamily.hasSum_linearIsometry
 
 @[simp]
-protected theorem linearIsometry_apply_single {i : ι} (x : G i) :
+protected lemma linearIsometry_apply_single {i : ι} (x : G i) :
     hV.linearIsometry (lp.single 2 i x) = V i x := by
   rw [hV.linearIsometry_apply, ← tsum_ite_eq i (V i x)]
   congr
@@ -252,7 +252,7 @@ protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι,
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of
 `E` into E, has range the closure of the span of the subspaces. -/
-protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
+protected lemma range_linearIsometry [∀ i, CompleteSpace (G i)] :
     LinearMap.range hV.linearIsometry.toLinearMap =
       (⨆ i, LinearMap.range (V i).toLinearMap).topologicalClosure := by
     -- porting note: dot notation broken
@@ -299,7 +299,7 @@ variable {𝕜 G V}
 
 /-- If `V : Π i, G i →ₗᵢ[𝕜] E` is an orthogonal family such that the supremum of the ranges of
 `V i` is dense, then `(E, V)` is a Hilbert sum of `G`. -/
-theorem IsHilbertSum.mk [∀ i, CompleteSpace <| G i] (hVortho : OrthogonalFamily 𝕜 G V)
+lemma IsHilbertSum.mk [∀ i, CompleteSpace <| G i] (hVortho : OrthogonalFamily 𝕜 G V)
     (hVtotal : ⊤ ≤ (⨆ i, LinearMap.range (V i).toLinearMap).topologicalClosure) :
     IsHilbertSum 𝕜 G V :=
   { OrthogonalFamily := hVortho
@@ -310,7 +310,7 @@ theorem IsHilbertSum.mk [∀ i, CompleteSpace <| G i] (hVortho : OrthogonalFamil
 #align is_hilbert_sum.mk IsHilbertSum.mk
 
 /-- This is `Orthonormal.isHilbertSum` in the case of actual inclusions from subspaces. -/
-theorem IsHilbertSum.mkInternal [∀ i, CompleteSpace <| F i]
+lemma IsHilbertSum.mkInternal [∀ i, CompleteSpace <| F i]
     (hFortho : OrthogonalFamily 𝕜 (fun i => F i) fun i => (F i).subtypeₗᵢ)
     (hFtotal : ⊤ ≤ (⨆ i, F i).topologicalClosure) :
     IsHilbertSum 𝕜 (fun i => F i) fun i => (F i).subtypeₗᵢ :=
@@ -375,7 +375,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`
 relative to the family of linear isometries `fun i k => k • v i`. -/
-theorem Orthonormal.isHilbertSum {v : ι → E} (hv : Orthonormal 𝕜 v)
+lemma Orthonormal.isHilbertSum {v : ι → E} (hv : Orthonormal 𝕜 v)
     (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) :
     IsHilbertSum 𝕜 (fun _ : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
   IsHilbertSum.mk hv.orthogonalFamily (by
@@ -516,12 +516,12 @@ protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : Ort
 #align hilbert_basis.to_orthonormal_basis HilbertBasis.toOrthonormalBasis
 
 @[simp]
-theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
+lemma coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
     (b.toOrthonormalBasis : ι → E) = b :=
   OrthonormalBasis.coe_mk _ _
 #align hilbert_basis.coe_to_orthonormal_basis HilbertBasis.coe_toOrthonormalBasis
 
-protected theorem hasSum_orthogonalProjection {U : Submodule 𝕜 E} [CompleteSpace U]
+protected lemma hasSum_orthogonalProjection {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
     HasSum (fun i => ⟪(b i : E), x⟫ • b i) (orthogonalProjection U x) := by
   simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
@@ -580,13 +580,13 @@ protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : Orthonorm
 #align orthonormal_basis.to_hilbert_basis OrthonormalBasis.toHilbertBasis
 
 @[simp]
-theorem _root_.OrthonormalBasis.coe_toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
+lemma _root_.OrthonormalBasis.coe_toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     (b.toHilbertBasis : ι → E) = b :=
   HilbertBasis.coe_mk _ _
 #align orthonormal_basis.coe_to_hilbert_basis OrthonormalBasis.coe_toHilbertBasis
 
 /-- A Hilbert space admits a Hilbert basis extending a given orthonormal subset. -/
-theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
+lemma _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
     (hs : Orthonormal 𝕜 ((↑) : s → E)) :
     ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), s ⊆ w ∧ ⇑b = ((↑) : w → E) :=
   let ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs
@@ -598,7 +598,7 @@ theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
 variable (𝕜 E)
 
 /-- A Hilbert space admits a Hilbert basis. -/
-theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
+lemma _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩
 #align exists_hilbert_basis exists_hilbertBasis

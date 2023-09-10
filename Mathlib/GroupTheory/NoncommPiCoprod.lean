@@ -54,7 +54,7 @@ variable {G : Type*} [Group G]
 generalizes (one direction of) `Subgroup.disjoint_iff_mul_eq_one`. -/
 @[to_additive "`Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
 This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. "]
-theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type*} (s : Finset ι) (f : ι → G) (comm)
+lemma eq_one_of_noncommProd_eq_one_of_independent {ι : Type*} (s : Finset ι) (f : ι → G) (comm)
     (K : ι → Subgroup G) (hind : CompleteLattice.Independent K) (hmem : ∀ x ∈ s, f x ∈ K x)
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
   classical
@@ -159,7 +159,7 @@ def noncommPiCoprodEquiv :
 #align add_monoid_hom.noncomm_pi_coprod_equiv AddMonoidHom.noncommPiCoprodEquiv
 
 @[to_additive]
-theorem noncommPiCoprod_mrange :
+lemma noncommPiCoprod_mrange :
     MonoidHom.mrange (noncommPiCoprod ϕ hcomm) = ⨆ i : ι, MonoidHom.mrange (ϕ i) := by
   classical
     apply le_antisymm
@@ -197,7 +197,7 @@ namespace MonoidHom
 
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
 @[to_additive]
-theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
+lemma noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
   classical
     apply le_antisymm
     · rintro x ⟨f, rfl⟩
@@ -232,7 +232,7 @@ theorem injective_noncommPiCoprod_of_independent
 variable (hcomm)
 
 @[to_additive]
-theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
+lemma independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     (hcoprime : ∀ i j, i ≠ j → Nat.coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     CompleteLattice.Independent fun i => (ϕ i).range := by
   cases nonempty_fintype ι
@@ -314,7 +314,7 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : H i) :
 #align add_subgroup.noncomm_pi_coprod_single AddSubgroup.noncommPiCoprod_single
 
 @[to_additive]
-theorem noncommPiCoprod_range : (noncommPiCoprod hcomm).range = ⨆ i : ι, H i := by
+lemma noncommPiCoprod_range : (noncommPiCoprod hcomm).range = ⨆ i : ι, H i := by
   simp [noncommPiCoprod, MonoidHom.noncommPiCoprod_range]
 #align subgroup.noncomm_pi_coprod_range Subgroup.noncommPiCoprod_range
 #align add_subgroup.noncomm_pi_coprod_range AddSubgroup.noncommPiCoprod_range
@@ -332,7 +332,7 @@ theorem injective_noncommPiCoprod_of_independent (hind : CompleteLattice.Indepen
 variable (hcomm)
 
 @[to_additive]
-theorem independent_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
+lemma independent_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     (hcoprime : ∀ i j, i ≠ j → Nat.coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     CompleteLattice.Independent H := by
   simpa using

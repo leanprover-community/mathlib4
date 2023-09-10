@@ -47,7 +47,7 @@ section Preorder
 
 variable [Preorder α] [PriestleySpace α] {x y : α}
 
-theorem exists_clopen_upper_of_not_le :
+lemma exists_clopen_upper_of_not_le :
     ¬x ≤ y → ∃ U : Set α, IsClopen U ∧ IsUpperSet U ∧ x ∈ U ∧ y ∉ U :=
   PriestleySpace.priestley
 #align exists_clopen_upper_of_not_le exists_clopen_upper_of_not_le

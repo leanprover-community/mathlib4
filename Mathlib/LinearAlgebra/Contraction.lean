@@ -131,7 +131,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
-theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
+lemma toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
     toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
   ext i' j'
@@ -180,7 +180,7 @@ theorem dualTensorHomEquivOfBasis_apply (x : Module.Dual R M ⊗[R] N) :
   ext; rfl
 
 @[simp]
-theorem dualTensorHomEquivOfBasis_toLinearMap :
+lemma dualTensorHomEquivOfBasis_toLinearMap :
     (dualTensorHomEquivOfBasis b : Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N).toLinearMap =
       dualTensorHom R M N :=
   rfl
@@ -251,7 +251,7 @@ noncomputable def rTensorHomEquivHomRTensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R]
 #align rtensor_hom_equiv_hom_rtensor rTensorHomEquivHomRTensor
 
 @[simp]
-theorem lTensorHomEquivHomLTensor_toLinearMap :
+lemma lTensorHomEquivHomLTensor_toLinearMap :
     (lTensorHomEquivHomLTensor R M P Q).toLinearMap = lTensorHomToHomLTensor R M P Q := by
   classical -- Porting note: missing decidable for choosing basis
   let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
@@ -266,7 +266,7 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
 #align ltensor_hom_equiv_hom_ltensor_to_linear_map lTensorHomEquivHomLTensor_toLinearMap
 
 @[simp]
-theorem rTensorHomEquivHomRTensor_toLinearMap :
+lemma rTensorHomEquivHomRTensor_toLinearMap :
     (rTensorHomEquivHomRTensor R M P Q).toLinearMap = rTensorHomToHomRTensor R M P Q := by
   classical -- Porting note: missing decidable for choosing basis
   let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
@@ -307,7 +307,7 @@ noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃
 #align hom_tensor_hom_equiv homTensorHomEquiv
 
 @[simp]
-theorem homTensorHomEquiv_toLinearMap :
+lemma homTensorHomEquiv_toLinearMap :
     (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap R M N P Q := by
   ext m n
   simp only [homTensorHomEquiv, compr₂_apply, mk_apply, LinearEquiv.coe_toLinearMap,

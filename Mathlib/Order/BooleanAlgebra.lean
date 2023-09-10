@@ -119,7 +119,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toOrderBot : OrderBot α :=
       exact inf_le_left }
 #align generalized_boolean_algebra.to_order_bot GeneralizedBooleanAlgebra.toOrderBot
 
-theorem disjoint_inf_sdiff : Disjoint (x ⊓ y) (x \ y) :=
+lemma disjoint_inf_sdiff : Disjoint (x ⊓ y) (x \ y) :=
   disjoint_iff_inf_le.mpr (inf_inf_sdiff x y).le
 #align disjoint_inf_sdiff disjoint_inf_sdiff
 
@@ -133,20 +133,20 @@ theorem sdiff_unique (s : x ⊓ y ⊔ z = x) (i : x ⊓ y ⊓ z = ⊥) : x \ y =
 #align sdiff_unique sdiff_unique
 
 -- Use `sdiff_le`
-private theorem sdiff_le' : x \ y ≤ x :=
+private lemma sdiff_le' : x \ y ≤ x :=
   calc
     x \ y ≤ x ⊓ y ⊔ x \ y := le_sup_right
     _ = x := sup_inf_sdiff x y
 
 -- Use `sdiff_sup_self`
-private theorem sdiff_sup_self' : y \ x ⊔ x = y ⊔ x :=
+private lemma sdiff_sup_self' : y \ x ⊔ x = y ⊔ x :=
   calc
     y \ x ⊔ x = y \ x ⊔ (x ⊔ x ⊓ y) := by rw [sup_inf_self]
     _ = y ⊓ x ⊔ y \ x ⊔ x := by ac_rfl
     _ = y ⊔ x := by rw [sup_inf_sdiff]
 
 @[simp]
-theorem sdiff_inf_sdiff : x \ y ⊓ y \ x = ⊥ :=
+lemma sdiff_inf_sdiff : x \ y ⊓ y \ x = ⊥ :=
   Eq.symm <|
     calc
       ⊥ = x ⊓ y ⊓ x \ y := by rw [inf_inf_sdiff]
@@ -160,12 +160,12 @@ theorem sdiff_inf_sdiff : x \ y ⊓ y \ x = ⊥ :=
       _ = x \ y ⊓ y \ x := by rw [inf_of_le_right sdiff_le']
 #align sdiff_inf_sdiff sdiff_inf_sdiff
 
-theorem disjoint_sdiff_sdiff : Disjoint (x \ y) (y \ x) :=
+lemma disjoint_sdiff_sdiff : Disjoint (x \ y) (y \ x) :=
   disjoint_iff_inf_le.mpr sdiff_inf_sdiff.le
 #align disjoint_sdiff_sdiff disjoint_sdiff_sdiff
 
 @[simp]
-theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
+lemma inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
   calc
     x ⊓ y \ x = (x ⊓ y ⊔ x \ y) ⊓ y \ x := by rw [sup_inf_sdiff]
     _ = x ⊓ y ⊓ y \ x ⊔ x \ y ⊓ y \ x := by rw [inf_sup_right]
@@ -173,7 +173,7 @@ theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
 #align inf_sdiff_self_right inf_sdiff_self_right
 
 @[simp]
-theorem inf_sdiff_self_left : y \ x ⊓ x = ⊥ := by rw [inf_comm, inf_sdiff_self_right]
+lemma inf_sdiff_self_left : y \ x ⊓ x = ⊥ := by rw [inf_comm, inf_sdiff_self_right]
 #align inf_sdiff_self_left inf_sdiff_self_left
 
 -- see Note [lower instance priority]
@@ -206,11 +206,11 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
             _ ≤ z ⊔ x := by rw [sup_assoc, sup_comm, sup_assoc, sup_idem])⟩ }
 #align generalized_boolean_algebra.to_generalized_coheyting_algebra GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra
 
-theorem disjoint_sdiff_self_left : Disjoint (y \ x) x :=
+lemma disjoint_sdiff_self_left : Disjoint (y \ x) x :=
   disjoint_iff_inf_le.mpr inf_sdiff_self_left.le
 #align disjoint_sdiff_self_left disjoint_sdiff_self_left
 
-theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
+lemma disjoint_sdiff_self_right : Disjoint x (y \ x) :=
   disjoint_iff_inf_le.mpr inf_sdiff_self_right.le
 #align disjoint_sdiff_self_right disjoint_sdiff_self_right
 
@@ -280,7 +280,7 @@ theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z �
 #align le_iff_eq_sup_sdiff le_iff_eq_sup_sdiff
 
 -- cf. `IsCompl.sup_inf`
-theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
+lemma sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
   sdiff_unique
     (calc
       y ⊓ (x ⊔ z) ⊔ y \ x ⊓ y \ z = (y ⊓ (x ⊔ z) ⊔ y \ x) ⊓ (y ⊓ (x ⊔ z) ⊔ y \ z) :=
@@ -298,20 +298,20 @@ theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
                       inf_inf_sdiff, inf_bot_eq])
 #align sdiff_sup sdiff_sup
 
-theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
+lemma sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
   ⟨fun h => eq_of_inf_eq_sup_eq (by rw [inf_inf_sdiff, h, inf_inf_sdiff])
     (by rw [sup_inf_sdiff, h, sup_inf_sdiff]),
     fun h => by rw [← sdiff_inf_self_right, ← sdiff_inf_self_right z y, inf_comm, h, inf_comm]⟩
 #align sdiff_eq_sdiff_iff_inf_eq_inf sdiff_eq_sdiff_iff_inf_eq_inf
 
-theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x :=
+lemma sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x :=
   calc
     x \ y = x ↔ x \ y = x \ ⊥ := by rw [sdiff_bot]
     _ ↔ x ⊓ y = x ⊓ ⊥ := sdiff_eq_sdiff_iff_inf_eq_inf
     _ ↔ Disjoint y x := by rw [inf_bot_eq, inf_comm, disjoint_iff]
 #align sdiff_eq_self_iff_disjoint sdiff_eq_self_iff_disjoint
 
-theorem sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := by
+lemma sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := by
   rw [sdiff_eq_self_iff_disjoint, disjoint_comm]
 #align sdiff_eq_self_iff_disjoint' sdiff_eq_self_iff_disjoint'
 
@@ -322,7 +322,7 @@ theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
 #align sdiff_lt sdiff_lt
 
 @[simp]
-theorem le_sdiff_iff : x ≤ y \ x ↔ x = ⊥ :=
+lemma le_sdiff_iff : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
 #align le_sdiff_iff le_sdiff_iff
 
@@ -331,14 +331,14 @@ theorem sdiff_lt_sdiff_right (h : x < y) (hz : z ≤ x) : x \ z < y \ z :=
     fun h' => h.not_le <| le_sdiff_sup.trans <| sup_le_of_le_sdiff_right h' hz
 #align sdiff_lt_sdiff_right sdiff_lt_sdiff_right
 
-theorem sup_inf_inf_sdiff : x ⊓ y ⊓ z ⊔ y \ z = x ⊓ y ⊔ y \ z :=
+lemma sup_inf_inf_sdiff : x ⊓ y ⊓ z ⊔ y \ z = x ⊓ y ⊔ y \ z :=
   calc
     x ⊓ y ⊓ z ⊔ y \ z = x ⊓ (y ⊓ z) ⊔ y \ z := by rw [inf_assoc]
     _ = (x ⊔ y \ z) ⊓ y := by rw [sup_inf_right, sup_inf_sdiff]
     _ = x ⊓ y ⊔ y \ z := by rw [inf_sup_right, inf_sdiff_left]
 #align sup_inf_inf_sdiff sup_inf_inf_sdiff
 
-theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
+lemma sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
   rw [sup_comm, inf_comm, ← inf_assoc, sup_inf_inf_sdiff]
   apply sdiff_unique
   · calc
@@ -362,7 +362,7 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
       _ = ⊥ := by rw [inf_sdiff_self_right, inf_bot_eq, inf_bot_eq]
 #align sdiff_sdiff_right sdiff_sdiff_right
 
-theorem sdiff_sdiff_right' : x \ (y \ z) = x \ y ⊔ x ⊓ z :=
+lemma sdiff_sdiff_right' : x \ (y \ z) = x \ y ⊔ x ⊓ z :=
   calc
     x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := sdiff_sdiff_right
     _ = z ⊓ x ⊓ y ⊔ x \ y := by ac_rfl
@@ -374,7 +374,7 @@ theorem sdiff_sdiff_eq_sdiff_sup (h : z ≤ x) : x \ (y \ z) = x \ y ⊔ z := by
 #align sdiff_sdiff_eq_sdiff_sup sdiff_sdiff_eq_sdiff_sup
 
 @[simp]
-theorem sdiff_sdiff_right_self : x \ (x \ y) = x ⊓ y := by
+lemma sdiff_sdiff_right_self : x \ (x \ y) = x ⊓ y := by
   rw [sdiff_sdiff_right, inf_idem, sdiff_self, bot_sup_eq]
 #align sdiff_sdiff_right_self sdiff_sdiff_right_self
 
@@ -394,10 +394,10 @@ theorem eq_of_sdiff_eq_sdiff (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y)
   rw [← sdiff_sdiff_eq_self hxz, h, sdiff_sdiff_eq_self hyz]
 #align eq_of_sdiff_eq_sdiff eq_of_sdiff_eq_sdiff
 
-theorem sdiff_sdiff_left' : (x \ y) \ z = x \ y ⊓ x \ z := by rw [sdiff_sdiff_left, sdiff_sup]
+lemma sdiff_sdiff_left' : (x \ y) \ z = x \ y ⊓ x \ z := by rw [sdiff_sdiff_left, sdiff_sup]
 #align sdiff_sdiff_left' sdiff_sdiff_left'
 
-theorem sdiff_sdiff_sup_sdiff : z \ (x \ y ⊔ y \ x) = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) :=
+lemma sdiff_sdiff_sup_sdiff : z \ (x \ y ⊔ y \ x) = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) :=
   calc
     z \ (x \ y ⊔ y \ x) = (z \ x ⊔ z ⊓ x ⊓ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) :=
         by rw [sdiff_sup, sdiff_sdiff_right, sdiff_sdiff_right]
@@ -408,7 +408,7 @@ theorem sdiff_sdiff_sup_sdiff : z \ (x \ y ⊔ y \ x) = z ⊓ (z \ x ⊔ y) ⊓ 
     _ = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by rw [inf_idem]
 #align sdiff_sdiff_sup_sdiff sdiff_sdiff_sup_sdiff
 
-theorem sdiff_sdiff_sup_sdiff' : z \ (x \ y ⊔ y \ x) = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y :=
+lemma sdiff_sdiff_sup_sdiff' : z \ (x \ y ⊔ y \ x) = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y :=
   calc
     z \ (x \ y ⊔ y \ x) = z \ (x \ y) ⊓ z \ (y \ x) := sdiff_sup
     _ = (z \ x ⊔ z ⊓ x ⊓ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by rw [sdiff_sdiff_right, sdiff_sdiff_right]
@@ -417,7 +417,7 @@ theorem sdiff_sdiff_sup_sdiff' : z \ (x \ y ⊔ y \ x) = z ⊓ x ⊓ y ⊔ z \ x
     _ = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y := by ac_rfl
 #align sdiff_sdiff_sup_sdiff' sdiff_sdiff_sup_sdiff'
 
-theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
+lemma inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
   sdiff_unique
     (calc
       x ⊓ y ⊓ z ⊔ x \ z ⊓ y \ z = (x ⊓ y ⊓ z ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by rw [sup_inf_left]
@@ -432,7 +432,7 @@ theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
       _ = ⊥ := by rw [inf_sdiff_self_right, inf_bot_eq, bot_inf_eq])
 #align inf_sdiff inf_sdiff
 
-theorem inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
+lemma inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
   sdiff_unique
     (calc
       x ⊓ y ⊓ z ⊔ x ⊓ y \ z = x ⊓ (y ⊓ z) ⊔ x ⊓ y \ z := by rw [inf_assoc]
@@ -443,7 +443,7 @@ theorem inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
       _ = ⊥ := by rw [inf_inf_sdiff, inf_bot_eq])
 #align inf_sdiff_assoc inf_sdiff_assoc
 
-theorem inf_sdiff_right_comm : x \ z ⊓ y = (x ⊓ y) \ z := by
+lemma inf_sdiff_right_comm : x \ z ⊓ y = (x ⊓ y) \ z := by
   rw [@inf_comm _ _ x, inf_comm, inf_sdiff_assoc]
 #align inf_sdiff_right_comm inf_sdiff_right_comm
 
@@ -455,11 +455,11 @@ theorem inf_sdiff_distrib_right (a b c : α) : a \ b ⊓ c = (a ⊓ c) \ (b ⊓ 
   simp_rw [@inf_comm _ _ _ c, inf_sdiff_distrib_left]
 #align inf_sdiff_distrib_right inf_sdiff_distrib_right
 
-theorem disjoint_sdiff_comm : Disjoint (x \ z) y ↔ Disjoint x (y \ z) := by
+lemma disjoint_sdiff_comm : Disjoint (x \ z) y ↔ Disjoint x (y \ z) := by
   simp_rw [disjoint_iff, inf_sdiff_right_comm, inf_sdiff_assoc]
 #align disjoint_sdiff_comm disjoint_sdiff_comm
 
-theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :=
+lemma sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :=
   Eq.symm <|
     calc
       x \ y ⊔ y \ x ⊔ x ⊓ y = (x \ y ⊔ y \ x ⊔ x) ⊓ (x \ y ⊔ y \ x ⊔ y) := by rw [sup_inf_left]
@@ -552,29 +552,29 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α]
 
-theorem inf_compl_eq_bot' : x ⊓ xᶜ = ⊥ :=
+lemma inf_compl_eq_bot' : x ⊓ xᶜ = ⊥ :=
   bot_unique <| BooleanAlgebra.inf_compl_le_bot x
 #align inf_compl_eq_bot' inf_compl_eq_bot'
 
 @[simp]
-theorem sup_compl_eq_top : x ⊔ xᶜ = ⊤ :=
+lemma sup_compl_eq_top : x ⊔ xᶜ = ⊤ :=
   top_unique <| BooleanAlgebra.top_le_sup_compl x
 #align sup_compl_eq_top sup_compl_eq_top
 
 @[simp]
-theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
+lemma compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
   sup_comm.trans sup_compl_eq_top
 #align compl_sup_eq_top compl_sup_eq_top
 
-theorem isCompl_compl : IsCompl x xᶜ :=
+lemma isCompl_compl : IsCompl x xᶜ :=
   IsCompl.of_eq inf_compl_eq_bot' sup_compl_eq_top
 #align is_compl_compl isCompl_compl
 
-theorem sdiff_eq : x \ y = x ⊓ yᶜ :=
+lemma sdiff_eq : x \ y = x ⊓ yᶜ :=
   BooleanAlgebra.sdiff_eq x y
 #align sdiff_eq sdiff_eq
 
-theorem himp_eq : x ⇨ y = y ⊔ xᶜ :=
+lemma himp_eq : x ⇨ y = y ⊔ xᶜ :=
   BooleanAlgebra.himp_eq x y
 #align himp_eq himp_eq
 
@@ -601,32 +601,32 @@ instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra 
 #align boolean_algebra.to_biheyting_algebra BooleanAlgebra.toBiheytingAlgebra
 
 @[simp]
-theorem hnot_eq_compl : ￢x = xᶜ :=
+lemma hnot_eq_compl : ￢x = xᶜ :=
   rfl
 #align hnot_eq_compl hnot_eq_compl
 
 /- NOTE: Is this theorem needed at all or can we use `top_sdiff'`. -/
-theorem top_sdiff : ⊤ \ x = xᶜ :=
+lemma top_sdiff : ⊤ \ x = xᶜ :=
   top_sdiff' x
 #align top_sdiff top_sdiff
 
-theorem eq_compl_iff_isCompl : x = yᶜ ↔ IsCompl x y :=
+lemma eq_compl_iff_isCompl : x = yᶜ ↔ IsCompl x y :=
   ⟨fun h => by
     rw [h]
     exact isCompl_compl.symm, IsCompl.eq_compl⟩
 #align eq_compl_iff_is_compl eq_compl_iff_isCompl
 
-theorem compl_eq_iff_isCompl : xᶜ = y ↔ IsCompl x y :=
+lemma compl_eq_iff_isCompl : xᶜ = y ↔ IsCompl x y :=
   ⟨fun h => by
     rw [← h]
     exact isCompl_compl, IsCompl.compl_eq⟩
 #align compl_eq_iff_is_compl compl_eq_iff_isCompl
 
-theorem compl_eq_comm : xᶜ = y ↔ yᶜ = x := by
+lemma compl_eq_comm : xᶜ = y ↔ yᶜ = x := by
   rw [eq_comm, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 #align compl_eq_comm compl_eq_comm
 
-theorem eq_compl_comm : x = yᶜ ↔ y = xᶜ := by
+lemma eq_compl_comm : x = yᶜ ↔ y = xᶜ := by
   rw [eq_comm, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 #align eq_compl_comm eq_compl_comm
 
@@ -635,29 +635,29 @@ theorem compl_compl (x : α) : xᶜᶜ = x :=
   (@isCompl_compl _ x _).symm.compl_eq
 #align compl_compl compl_compl
 
-theorem compl_comp_compl : compl ∘ compl = @id α :=
+lemma compl_comp_compl : compl ∘ compl = @id α :=
   funext compl_compl
 #align compl_comp_compl compl_comp_compl
 
 @[simp]
-theorem compl_involutive : Function.Involutive (compl : α → α) :=
+lemma compl_involutive : Function.Involutive (compl : α → α) :=
   compl_compl
 #align compl_involutive compl_involutive
 
-theorem compl_bijective : Function.Bijective (compl : α → α) :=
+lemma compl_bijective : Function.Bijective (compl : α → α) :=
   compl_involutive.bijective
 #align compl_bijective compl_bijective
 
-theorem compl_surjective : Function.Surjective (compl : α → α) :=
+lemma compl_surjective : Function.Surjective (compl : α → α) :=
   compl_involutive.surjective
 #align compl_surjective compl_surjective
 
-theorem compl_injective : Function.Injective (compl : α → α) :=
+lemma compl_injective : Function.Injective (compl : α → α) :=
   compl_involutive.injective
 #align compl_injective compl_injective
 
 @[simp]
-theorem compl_inj_iff : xᶜ = yᶜ ↔ x = y :=
+lemma compl_inj_iff : xᶜ = yᶜ ↔ x = y :=
   compl_injective.eq_iff
 #align compl_inj_iff compl_inj_iff
 
@@ -666,22 +666,22 @@ theorem IsCompl.compl_eq_iff (h : IsCompl x y) : zᶜ = y ↔ z = x :=
 #align is_compl.compl_eq_iff IsCompl.compl_eq_iff
 
 @[simp]
-theorem compl_eq_top : xᶜ = ⊤ ↔ x = ⊥ :=
+lemma compl_eq_top : xᶜ = ⊤ ↔ x = ⊥ :=
   isCompl_bot_top.compl_eq_iff
 #align compl_eq_top compl_eq_top
 
 @[simp]
-theorem compl_eq_bot : xᶜ = ⊥ ↔ x = ⊤ :=
+lemma compl_eq_bot : xᶜ = ⊥ ↔ x = ⊤ :=
   isCompl_top_bot.compl_eq_iff
 #align compl_eq_bot compl_eq_bot
 
 @[simp]
-theorem compl_inf : (x ⊓ y)ᶜ = xᶜ ⊔ yᶜ :=
+lemma compl_inf : (x ⊓ y)ᶜ = xᶜ ⊔ yᶜ :=
   hnot_inf_distrib _ _
 #align compl_inf compl_inf
 
 @[simp]
-theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
+lemma compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
   ⟨fun h => by have h := compl_le_compl h; simp at h; assumption, compl_le_compl⟩
 #align compl_le_compl_iff_le compl_le_compl_iff_le
 
@@ -689,17 +689,17 @@ theorem compl_le_of_compl_le (h : yᶜ ≤ x) : xᶜ ≤ y := by
   simpa only [compl_compl] using compl_le_compl h
 #align compl_le_of_compl_le compl_le_of_compl_le
 
-theorem compl_le_iff_compl_le : xᶜ ≤ y ↔ yᶜ ≤ x :=
+lemma compl_le_iff_compl_le : xᶜ ≤ y ↔ yᶜ ≤ x :=
   ⟨compl_le_of_compl_le, compl_le_of_compl_le⟩
 #align compl_le_iff_compl_le compl_le_iff_compl_le
 
-@[simp] theorem compl_le_self : xᶜ ≤ x ↔ x = ⊤ := by simpa using le_compl_self (a := xᶜ)
+@[simp] lemma compl_le_self : xᶜ ≤ x ↔ x = ⊤ := by simpa using le_compl_self (a := xᶜ)
 
-@[simp] theorem compl_lt_self [Nontrivial α] : xᶜ < x ↔ x = ⊤ := by
+@[simp] lemma compl_lt_self [Nontrivial α] : xᶜ < x ↔ x = ⊤ := by
   simpa using lt_compl_self (a := xᶜ)
 
 @[simp]
-theorem sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
+lemma sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
 #align sdiff_compl sdiff_compl
 
 instance OrderDual.booleanAlgebra (α) [BooleanAlgebra α] : BooleanAlgebra αᵒᵈ :=
@@ -713,44 +713,44 @@ instance OrderDual.booleanAlgebra (α) [BooleanAlgebra α] : BooleanAlgebra α�
     himp_eq := fun _ _ => @sdiff_eq α _ _ _, }
 
 @[simp]
-theorem sup_inf_inf_compl : x ⊓ y ⊔ x ⊓ yᶜ = x := by rw [← sdiff_eq, sup_inf_sdiff _ _]
+lemma sup_inf_inf_compl : x ⊓ y ⊔ x ⊓ yᶜ = x := by rw [← sdiff_eq, sup_inf_sdiff _ _]
 #align sup_inf_inf_compl sup_inf_inf_compl
 
 @[simp]
-theorem compl_sdiff : (x \ y)ᶜ = x ⇨ y := by
+lemma compl_sdiff : (x \ y)ᶜ = x ⇨ y := by
   rw [sdiff_eq, himp_eq, compl_inf, compl_compl, sup_comm]
 #align compl_sdiff compl_sdiff
 
 @[simp]
-theorem compl_himp : (x ⇨ y)ᶜ = x \ y :=
+lemma compl_himp : (x ⇨ y)ᶜ = x \ y :=
   @compl_sdiff αᵒᵈ _ _ _
 #align compl_himp compl_himp
 
-theorem compl_sdiff_compl : xᶜ \ yᶜ = y \ x := by rw [sdiff_compl, sdiff_eq, inf_comm]
+lemma compl_sdiff_compl : xᶜ \ yᶜ = y \ x := by rw [sdiff_compl, sdiff_eq, inf_comm]
 #align compl_sdiff_compl compl_sdiff_compl
 
 @[simp]
-theorem compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x :=
+lemma compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x :=
   @compl_sdiff_compl αᵒᵈ _ _ _
 #align compl_himp_compl compl_himp_compl
 
-theorem disjoint_compl_left_iff : Disjoint xᶜ y ↔ y ≤ x := by
+lemma disjoint_compl_left_iff : Disjoint xᶜ y ↔ y ≤ x := by
   rw [← le_compl_iff_disjoint_left, compl_compl]
 #align disjoint_compl_left_iff disjoint_compl_left_iff
 
-theorem disjoint_compl_right_iff : Disjoint x yᶜ ↔ x ≤ y := by
+lemma disjoint_compl_right_iff : Disjoint x yᶜ ↔ x ≤ y := by
   rw [← le_compl_iff_disjoint_right, compl_compl]
 #align disjoint_compl_right_iff disjoint_compl_right_iff
 
-theorem codisjoint_himp_self_left : Codisjoint (x ⇨ y) x :=
+lemma codisjoint_himp_self_left : Codisjoint (x ⇨ y) x :=
   @disjoint_sdiff_self_left αᵒᵈ _ _ _
 #align codisjoint_himp_self_left codisjoint_himp_self_left
 
-theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
+lemma codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
   @disjoint_sdiff_self_right αᵒᵈ _ _ _
 #align codisjoint_himp_self_right codisjoint_himp_self_right
 
-theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
+lemma himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
   (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' $ @Codisjoint_comm _ (_) _ _ _
 #align himp_le himp_le
 
@@ -798,17 +798,17 @@ instance : BooleanAlgebra Bool :=
     top_le_sup_compl := fun a => a.or_not_self.ge }
 
 @[simp]
-theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=
+lemma Bool.sup_eq_bor : (· ⊔ ·) = or :=
   rfl
 #align bool.sup_eq_bor Bool.sup_eq_bor
 
 @[simp]
-theorem Bool.inf_eq_band : (· ⊓ ·) = and :=
+lemma Bool.inf_eq_band : (· ⊓ ·) = and :=
   rfl
 #align bool.inf_eq_band Bool.inf_eq_band
 
 @[simp]
-theorem Bool.compl_eq_bnot : HasCompl.compl = not :=
+lemma Bool.compl_eq_bnot : HasCompl.compl = not :=
   rfl
 #align bool.compl_eq_bnot Bool.compl_eq_bnot
 

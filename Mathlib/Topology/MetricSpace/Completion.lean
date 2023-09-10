@@ -37,13 +37,13 @@ instance : Dist (Completion α) :=
   ⟨Completion.extension₂ dist⟩
 
 /-- The new distance is uniformly continuous. -/
-protected theorem uniformContinuous_dist :
+protected lemma uniformContinuous_dist :
     UniformContinuous fun p : Completion α × Completion α ↦ dist p.1 p.2 :=
   uniformContinuous_extension₂ dist
 #align uniform_space.completion.uniform_continuous_dist UniformSpace.Completion.uniformContinuous_dist
 
 /-- The new distance is continuous. -/
-protected theorem continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
+protected lemma continuous_dist [TopologicalSpace β] {f g : β → Completion α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x ↦ dist (f x) (g x) :=
   Completion.uniformContinuous_dist.continuous.comp (hf.prod_mk hg : _)
 #align uniform_space.completion.continuous_dist UniformSpace.Completion.continuous_dist
@@ -152,7 +152,7 @@ protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : 
 
 /-- Reformulate `Completion.mem_uniformity_dist` in terms that are suitable for the definition
 of the metric space structure. -/
-protected theorem uniformity_dist' :
+protected lemma uniformity_dist' :
     𝓤 (Completion α) = ⨅ ε : { ε : ℝ // 0 < ε }, 𝓟 { p | dist p.1 p.2 < ε.val } := by
   ext s; rw [mem_iInf_of_directed]
   · simp [Completion.mem_uniformity_dist, subset_def]
@@ -161,7 +161,7 @@ protected theorem uniformity_dist' :
     simp (config := { contextual := true }) [lt_min_iff]
 #align uniform_space.completion.uniformity_dist' UniformSpace.Completion.uniformity_dist'
 
-protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
+protected lemma uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
 #align uniform_space.completion.uniformity_dist UniformSpace.Completion.uniformity_dist
 
@@ -178,7 +178,7 @@ instance instMetricSpace : MetricSpace (Completion α) where
 #align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
 
 /-- The embedding of a metric space in its completion is an isometry. -/
-theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
+lemma coe_isometry : Isometry ((↑) : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq
 #align uniform_space.completion.coe_isometry UniformSpace.Completion.coe_isometry
 
@@ -191,22 +191,22 @@ end UniformSpace.Completion
 
 open UniformSpace Completion NNReal
 
-theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
+lemma LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
   LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
     (isClosed_le (by continuity) (by continuity)) <| by
       simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
 
-theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
+lemma LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
     (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
   one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
 
-theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
+lemma Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
     (isClosed_eq (by continuity) (by continuity)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 
-theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
+lemma Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=
   (coe_isometry.comp h).completion_extension

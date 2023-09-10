@@ -77,7 +77,7 @@ def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
 namespace Q
 
 @[ext]
-theorem ext {n} {f g : Q n} (h : ∀ x, f x = g x) : f = g := funext h
+lemma ext {n} {f g : Q n} (h : ∀ x, f x = g x) : f = g := funext h
 
 /-! `n` will always denote a natural number. -/
 
@@ -88,7 +88,7 @@ instance : Unique (Q 0) :=
   ⟨⟨fun _ => true⟩, by intro; ext x; fin_cases x⟩
 
 /-- `Q n` has 2^n elements. -/
-theorem card : card (Q n) = 2 ^ n := by simp [Q]
+lemma card : card (Q n) = 2 ^ n := by simp [Q]
 #align sensitivity.Q.card Sensitivity.Q.card
 
 /-! Until the end of this namespace, `n` will be an implicit argument (still
@@ -118,7 +118,7 @@ theorem not_adjacent_zero (p q : Q 0) : q ∉ p.adjacent := by rintro ⟨v, _⟩
 
 /-- If `p` and `q` in `Q n.succ` have different values at zero then they are adjacent
 iff their projections to `Q n` are equal. -/
-theorem adj_iff_proj_eq {p q : Q n.succ} (h₀ : p 0 ≠ q 0) : q ∈ p.adjacent ↔ π p = π q := by
+lemma adj_iff_proj_eq {p q : Q n.succ} (h₀ : p 0 ≠ q 0) : q ∈ p.adjacent ↔ π p = π q := by
   constructor
   · rintro ⟨i, _, h_uni⟩
     ext x; by_contra hx
@@ -134,7 +134,7 @@ theorem adj_iff_proj_eq {p q : Q n.succ} (h₀ : p 0 ≠ q 0) : q ∈ p.adjacent
 
 /-- If `p` and `q` in `Q n.succ` have the same value at zero then they are adjacent
 iff their projections to `Q n` are adjacent. -/
-theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
+lemma adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     q ∈ p.adjacent ↔ π q ∈ (π p).adjacent := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
@@ -158,7 +158,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
 #align sensitivity.Q.adj_iff_proj_adj Sensitivity.Q.adj_iff_proj_adj
 
 @[symm]
-theorem adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
+lemma adjacent.symm {p q : Q n} : q ∈ p.adjacent ↔ p ∈ q.adjacent := by
   simp only [adjacent, ne_comm, Set.mem_setOf_eq]
 #align sensitivity.Q.adjacent.symm Sensitivity.Q.adjacent.symm
 
@@ -176,7 +176,7 @@ def V : ℕ → Type
 namespace V
 
 @[ext]
-theorem ext {n : ℕ} {p q : V n.succ} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q := Prod.ext h₁ h₂
+lemma ext {n : ℕ} {p q : V n.succ} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q := Prod.ext h₁ h₂
 
 variable (n : ℕ)
 
@@ -226,7 +226,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 #align sensitivity.duality Sensitivity.duality
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
-theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
+lemma epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction' n with n ih
   · dsimp [ε] at h; exact h fun _ => true
   · cases' v with v₁ v₂
@@ -254,7 +254,7 @@ theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
 since this cardinal is finite, as a natural number in `finrank_V` -/
 
 
-theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
+lemma dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
     rw [rank_eq_card_basis (dualBases_e_ε _).basis, Q.card]
   assumption_mod_cast
@@ -263,7 +263,7 @@ theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
 instance : FiniteDimensional ℝ (V n) :=
   FiniteDimensional.of_fintype_basis (dualBases_e_ε _).basis
 
-theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
+lemma finrank_V : finrank ℝ (V n) = 2 ^ n := by
   have := @dim_V n
   rw [← finrank_eq_rank] at this; assumption_mod_cast
 #align sensitivity.finrank_V Sensitivity.finrank_V
@@ -285,7 +285,7 @@ The next two lemmas unbury them. -/
 
 
 @[simp]
-theorem f_zero : f 0 = 0 :=
+lemma f_zero : f 0 = 0 :=
   rfl
 #align sensitivity.f_zero Sensitivity.f_zero
 
@@ -301,7 +301,7 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
-theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
+lemma f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
   induction' n with n IH _ <;> intro v
   · simp only [Nat.zero_eq, Nat.cast_zero, zero_smul]; rfl
   · cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
@@ -311,7 +311,7 @@ theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
 `q` the column index). -/
 
 
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
+lemma f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction' n with n IH
   · intro p q
     dsimp [f]
@@ -339,11 +339,11 @@ variable {m : ℕ}
 /-! Again we unpack what are the values of `g`. -/
 
 
-theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
+lemma g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
   delta g; intro v; erw [LinearMap.prod_apply]; simp
 #align sensitivity.g_apply Sensitivity.g_apply
 
-theorem g_injective : Injective (g m) := by
+lemma g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
   simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
@@ -427,7 +427,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
 #align sensitivity.exists_eigenvalue Sensitivity.exists_eigenvalue
 
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
-theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
+theorem huang_degree_lemma (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by

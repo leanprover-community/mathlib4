@@ -41,7 +41,7 @@ variable {C D E : Type*} [Category C] [Category D] [Category E]
 
 /-- A natural transformation between functors `Karoubi C ⥤ D` is determined
 by its value on objects coming from `C`. -/
-theorem natTrans_eq {F G : Karoubi C ⥤ D} (φ : F ⟶ G) (P : Karoubi C) :
+lemma natTrans_eq {F G : Karoubi C ⥤ D} (φ : F ⟶ G) (P : Karoubi C) :
     φ.app P = F.map (decompId_i P) ≫ φ.app P.X ≫ G.map (decompId_p P) := by
   rw [← φ.naturality, ← assoc, ← F.map_comp]
   conv =>
@@ -110,7 +110,7 @@ def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
     simp only [assoc]
 #align category_theory.idempotents.functor_extension₁ CategoryTheory.Idempotents.functorExtension₁
 
-theorem functorExtension₁_comp_whiskeringLeft_toKaroubi :
+lemma functorExtension₁_comp_whiskeringLeft_toKaroubi :
     functorExtension₁ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) =
       𝟭 _ := by
   refine' Functor.ext _ _
@@ -204,7 +204,7 @@ def functorExtension₂ : (C ⥤ D) ⥤ Karoubi C ⥤ Karoubi D :=
   (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙ functorExtension₁ C D
 #align category_theory.idempotents.functor_extension₂ CategoryTheory.Idempotents.functorExtension₂
 
-theorem functorExtension₂_comp_whiskeringLeft_toKaroubi :
+lemma functorExtension₂_comp_whiskeringLeft_toKaroubi :
     functorExtension₂ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) =
       (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) := by
   simp only [functorExtension₂, Functor.assoc, functorExtension₁_comp_whiskeringLeft_toKaroubi,
@@ -234,7 +234,7 @@ noncomputable def karoubiUniversal₂ : C ⥤ D ≌ Karoubi C ⥤ Karoubi D :=
   (Equivalence.congrRight (toKaroubi D).asEquivalence).trans (karoubiUniversal₁ C D)
 #align category_theory.idempotents.karoubi_universal₂ CategoryTheory.Idempotents.karoubiUniversal₂
 
-theorem karoubiUniversal₂_functor_eq : (karoubiUniversal₂ C D).functor = functorExtension₂ C D :=
+lemma karoubiUniversal₂_functor_eq : (karoubiUniversal₂ C D).functor = functorExtension₂ C D :=
   rfl
 #align category_theory.idempotents.karoubi_universal₂_functor_eq CategoryTheory.Idempotents.karoubiUniversal₂_functor_eq
 
@@ -256,7 +256,7 @@ noncomputable def karoubiUniversal : C ⥤ D ≌ Karoubi C ⥤ D :=
   (karoubiUniversal₂ C D).trans (Equivalence.congrRight (toKaroubi D).asEquivalence.symm)
 #align category_theory.idempotents.karoubi_universal CategoryTheory.Idempotents.karoubiUniversal
 
-theorem karoubiUniversal_functor_eq : (karoubiUniversal C D).functor = functorExtension C D :=
+lemma karoubiUniversal_functor_eq : (karoubiUniversal C D).functor = functorExtension C D :=
   rfl
 #align category_theory.idempotents.karoubi_universal_functor_eq CategoryTheory.Idempotents.karoubiUniversal_functor_eq
 
@@ -283,7 +283,7 @@ noncomputable instance : IsEquivalence ((whiskeringLeft C (Karoubi C) D).obj (to
 
 variable {C D}
 
-theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
+lemma whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
     (τ : toKaroubi _ ⋙ F ⟶ toKaroubi _ ⋙ G) (P : Karoubi C) :
     (((whiskeringLeft _ _ _).obj (toKaroubi _)).preimage τ).app P =
       F.map P.decompId_i ≫ τ.app P.X ≫ G.map P.decompId_p := by

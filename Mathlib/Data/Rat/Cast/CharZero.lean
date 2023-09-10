@@ -26,7 +26,7 @@ section WithDivRing
 variable [DivisionRing α]
 
 @[simp, norm_cast]
-theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
+lemma cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by
     refine' ⟨fun h => _, congr_arg _⟩
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
@@ -38,30 +38,30 @@ theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
       Int.cast_mul, ← Int.cast_ofNat d₂, ← Int.cast_mul, Int.cast_inj, ← mkRat_eq_iff d₁0 d₂0] at h
 #align rat.cast_inj Rat.cast_inj
 
-theorem cast_injective [CharZero α] : Function.Injective ((↑) : ℚ → α)
+lemma cast_injective [CharZero α] : Function.Injective ((↑) : ℚ → α)
   | _, _ => cast_inj.1
 #align rat.cast_injective Rat.cast_injective
 
 @[simp]
-theorem cast_eq_zero [CharZero α] {n : ℚ} : (n : α) = 0 ↔ n = 0 := by rw [← cast_zero, cast_inj]
+lemma cast_eq_zero [CharZero α] {n : ℚ} : (n : α) = 0 ↔ n = 0 := by rw [← cast_zero, cast_inj]
 #align rat.cast_eq_zero Rat.cast_eq_zero
 
-theorem cast_ne_zero [CharZero α] {n : ℚ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
+lemma cast_ne_zero [CharZero α] {n : ℚ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
   not_congr cast_eq_zero
 #align rat.cast_ne_zero Rat.cast_ne_zero
 
 @[simp, norm_cast]
-theorem cast_add [CharZero α] (m n) : ((m + n : ℚ) : α) = m + n :=
+lemma cast_add [CharZero α] (m n) : ((m + n : ℚ) : α) = m + n :=
   cast_add_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_add Rat.cast_add
 
 @[simp, norm_cast]
-theorem cast_sub [CharZero α] (m n) : ((m - n : ℚ) : α) = m - n :=
+lemma cast_sub [CharZero α] (m n) : ((m - n : ℚ) : α) = m - n :=
   cast_sub_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_sub Rat.cast_sub
 
 @[simp, norm_cast]
-theorem cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
+lemma cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
   cast_mul_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_mul Rat.cast_mul
 
@@ -70,12 +70,12 @@ section
 set_option linter.deprecated false
 
 @[simp, norm_cast]
-theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α) :=
+lemma cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α) :=
   cast_add _ _
 #align rat.cast_bit0 Rat.cast_bit0
 
 @[simp, norm_cast]
-theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
+lemma cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
   rw [bit1, cast_add, cast_one, cast_bit0]; rfl
 #align rat.cast_bit1 Rat.cast_bit1
 
@@ -96,7 +96,7 @@ def castHom : ℚ →+* α where
 variable {α}
 
 @[simp]
-theorem coe_cast_hom : ⇑(castHom α) = ((↑) : ℚ → α) :=
+lemma coe_cast_hom : ⇑(castHom α) = ((↑) : ℚ → α) :=
   rfl
 #align rat.coe_cast_hom Rat.coe_cast_hom
 

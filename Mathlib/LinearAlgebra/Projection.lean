@@ -38,18 +38,18 @@ variable {p}
 
 open Submodule
 
-theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
+lemma ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
     ker (id - p.subtype.comp f) = p := by
   ext x
   simp only [comp_apply, mem_ker, subtype_apply, sub_apply, id_apply, sub_eq_zero]
   exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by erw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
 #align linear_map.ker_id_sub_eq_of_proj LinearMap.ker_id_sub_eq_of_proj
 
-theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
+lemma range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
   range_eq_top.2 fun x => ⟨x, hf x⟩
 #align linear_map.range_eq_of_proj LinearMap.range_eq_of_proj
 
-theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl p (ker f) := by
+lemma isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl p (ker f) := by
   constructor
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
@@ -263,7 +263,7 @@ theorem ofIsCompl_add (h : IsCompl p q) {φ₁ φ₂ : p →ₗ[R] F} {ψ₁ ψ�
 #align linear_map.of_is_compl_add LinearMap.ofIsCompl_add
 
 @[simp]
-theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E]
+lemma ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E]
     {F : Type*} [AddCommGroup F] [Module R F] {p q : Submodule R E} (h : IsCompl p q)
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
@@ -282,7 +282,7 @@ def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
 #align linear_map.of_is_compl_prod LinearMap.ofIsComplProd
 
 @[simp]
-theorem ofIsComplProd_apply {p q : Submodule R₁ E} (h : IsCompl p q)
+lemma ofIsComplProd_apply {p q : Submodule R₁ E} (h : IsCompl p q)
     (φ : (p →ₗ[R₁] F) × (q →ₗ[R₁] F)) : ofIsComplProd h φ = ofIsCompl h φ.1 φ.2 :=
   rfl
 #align linear_map.of_is_compl_prod_apply LinearMap.ofIsComplProd_apply
@@ -325,13 +325,13 @@ def equivProdOfSurjectiveOfIsCompl (f : E →ₗ[R] F) (g : E →ₗ[R] G) (hf :
 #align linear_map.equiv_prod_of_surjective_of_is_compl LinearMap.equivProdOfSurjectiveOfIsCompl
 
 @[simp]
-theorem coe_equivProdOfSurjectiveOfIsCompl {f : E →ₗ[R] F} {g : E →ₗ[R] G} (hf : range f = ⊤)
+lemma coe_equivProdOfSurjectiveOfIsCompl {f : E →ₗ[R] F} {g : E →ₗ[R] G} (hf : range f = ⊤)
     (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) :
     (equivProdOfSurjectiveOfIsCompl f g hf hg hfg : E →ₗ[R] F × G) = f.prod g := rfl
 #align linear_map.coe_equiv_prod_of_surjective_of_is_compl LinearMap.coe_equivProdOfSurjectiveOfIsCompl
 
 @[simp]
-theorem equivProdOfSurjectiveOfIsCompl_apply {f : E →ₗ[R] F} {g : E →ₗ[R] G} (hf : range f = ⊤)
+lemma equivProdOfSurjectiveOfIsCompl_apply {f : E →ₗ[R] F} {g : E →ₗ[R] G} (hf : range f = ⊤)
     (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) (x : E) :
     equivProdOfSurjectiveOfIsCompl f g hf hg hfg x = (f x, g x) := rfl
 #align linear_map.equiv_prod_of_surjective_of_is_compl_apply LinearMap.equivProdOfSurjectiveOfIsCompl_apply
@@ -407,27 +407,27 @@ def codRestrict {f : M →ₗ[S] M} (h : IsProj m f) : M →ₗ[S] m :=
 #align linear_map.is_proj.cod_restrict LinearMap.IsProj.codRestrict
 
 @[simp]
-theorem codRestrict_apply {f : M →ₗ[S] M} (h : IsProj m f) (x : M) : ↑(h.codRestrict x) = f x :=
+lemma codRestrict_apply {f : M →ₗ[S] M} (h : IsProj m f) (x : M) : ↑(h.codRestrict x) = f x :=
   f.codRestrict_apply m x
 #align linear_map.is_proj.cod_restrict_apply LinearMap.IsProj.codRestrict_apply
 
 @[simp]
-theorem codRestrict_apply_cod {f : M →ₗ[S] M} (h : IsProj m f) (x : m) : h.codRestrict x = x := by
+lemma codRestrict_apply_cod {f : M →ₗ[S] M} (h : IsProj m f) (x : m) : h.codRestrict x = x := by
   ext
   rw [codRestrict_apply]
   exact h.map_id x x.2
 #align linear_map.is_proj.cod_restrict_apply_cod LinearMap.IsProj.codRestrict_apply_cod
 
-theorem codRestrict_ker {f : M →ₗ[S] M} (h : IsProj m f) : ker h.codRestrict = ker f :=
+lemma codRestrict_ker {f : M →ₗ[S] M} (h : IsProj m f) : ker h.codRestrict = ker f :=
   f.ker_codRestrict m _
 #align linear_map.is_proj.cod_restrict_ker LinearMap.IsProj.codRestrict_ker
 
-theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p (ker f) := by
+lemma isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p (ker f) := by
   rw [← codRestrict_ker]
   exact isCompl_of_proj h.codRestrict_apply_cod
 #align linear_map.is_proj.is_compl LinearMap.IsProj.isCompl
 
-theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
+lemma eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
     f = (p.prodEquivOfIsCompl (ker f) h.isCompl).toLinearMap ∘ₗ
         prodMap id 0 ∘ₗ (p.prodEquivOfIsCompl (ker f) h.isCompl).symm.toLinearMap := by
   rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
@@ -450,7 +450,7 @@ namespace LinearMap
 
 variable {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E] {p : Submodule R E}
 
-theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
+lemma IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
     f = (p.prodEquivOfIsCompl (ker f) h.isCompl).conj (prodMap id 0) := by
   rw [LinearEquiv.conj_apply]
   exact h.eq_conj_prod_map'

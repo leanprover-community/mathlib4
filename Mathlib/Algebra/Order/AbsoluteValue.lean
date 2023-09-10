@@ -90,7 +90,7 @@ instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
+lemma coe_toMulHom : ⇑abv.toMulHom = abv :=
   rfl
 #align absolute_value.coe_to_mul_hom AbsoluteValue.coe_toMulHom
 
@@ -99,7 +99,7 @@ protected theorem nonneg (x : R) : 0 ≤ abv x :=
 #align absolute_value.nonneg AbsoluteValue.nonneg
 
 @[simp]
-protected theorem eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
+protected lemma eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
   abv.eq_zero' x
 #align absolute_value.eq_zero AbsoluteValue.eq_zero
 
@@ -112,20 +112,20 @@ protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
 #align absolute_value.map_mul AbsoluteValue.map_mul
 
-protected theorem ne_zero_iff {x : R} : abv x ≠ 0 ↔ x ≠ 0 :=
+protected lemma ne_zero_iff {x : R} : abv x ≠ 0 ↔ x ≠ 0 :=
   abv.eq_zero.not
 #align absolute_value.ne_zero_iff AbsoluteValue.ne_zero_iff
 
-protected theorem pos {x : R} (hx : x ≠ 0) : 0 < abv x :=
+protected lemma pos {x : R} (hx : x ≠ 0) : 0 < abv x :=
   lt_of_le_of_ne (abv.nonneg x) (Ne.symm <| mt abv.eq_zero.mp hx)
 #align absolute_value.pos AbsoluteValue.pos
 
 @[simp]
-protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
+protected lemma pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
   ⟨fun h₁ => mt abv.eq_zero.mpr h₁.ne', abv.pos⟩
 #align absolute_value.pos_iff AbsoluteValue.pos_iff
 
-protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
+protected lemma ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
   (abv.pos hx).ne'
 #align absolute_value.ne_zero AbsoluteValue.ne_zero
 
@@ -134,7 +134,7 @@ theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
 #align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
 -- porting note: was `@[simp]` but `simp` can prove it
-protected theorem map_zero : abv 0 = 0 :=
+protected lemma map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
 #align absolute_value.map_zero AbsoluteValue.map_zero
 
@@ -170,7 +170,7 @@ variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
 -- porting note: was `@[simp]` but `simp` can prove it
-protected theorem map_one : abv 1 = 1 :=
+protected lemma map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
 
@@ -185,7 +185,7 @@ def toMonoidWithZeroHom : R →*₀ S :=
 #align absolute_value.to_monoid_with_zero_hom AbsoluteValue.toMonoidWithZeroHom
 
 @[simp]
-theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
+lemma coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_with_zero_hom AbsoluteValue.coe_toMonoidWithZeroHom
 
@@ -195,7 +195,7 @@ def toMonoidHom : R →* S :=
 #align absolute_value.to_monoid_hom AbsoluteValue.toMonoidHom
 
 @[simp]
-theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
+lemma coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
@@ -346,11 +346,11 @@ def toAbsoluteValue : AbsoluteValue R S where
 #align is_absolute_value.to_absolute_value_apply IsAbsoluteValue.toAbsoluteValue_apply
 #align is_absolute_value.to_absolute_value_to_mul_hom_apply IsAbsoluteValue.toAbsoluteValue_apply
 
-theorem abv_zero : abv 0 = 0 :=
+lemma abv_zero : abv 0 = 0 :=
   (toAbsoluteValue abv).map_zero
 #align is_absolute_value.abv_zero IsAbsoluteValue.abv_zero
 
-theorem abv_pos {a : R} : 0 < abv a ↔ a ≠ 0 :=
+lemma abv_pos {a : R} : 0 < abv a ↔ a ≠ 0 :=
   (toAbsoluteValue abv).pos_iff
 #align is_absolute_value.abv_pos IsAbsoluteValue.abv_pos
 
@@ -376,7 +376,7 @@ variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 variable [IsDomain S]
 
-theorem abv_one [Nontrivial R] : abv 1 = 1 :=
+lemma abv_one [Nontrivial R] : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one
 #align is_absolute_value.abv_one IsAbsoluteValue.abv_one
 
@@ -385,7 +385,7 @@ def abvHom [Nontrivial R] : R →*₀ S :=
   (toAbsoluteValue abv).toMonoidWithZeroHom
 #align is_absolute_value.abv_hom IsAbsoluteValue.abvHom
 
-theorem abv_pow [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv] (a : R) (n : ℕ) :
+lemma abv_pow [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv] (a : R) (n : ℕ) :
     abv (a ^ n) = abv a ^ n :=
   (toAbsoluteValue abv).map_pow a n
 #align is_absolute_value.abv_pow IsAbsoluteValue.abv_pow
@@ -454,7 +454,7 @@ section Semiring
 
 variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv]
 
-theorem abv_one' : abv 1 = 1 :=
+lemma abv_one' : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one_of_isLeftRegular <|
     (isRegular_of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 #align is_absolute_value.abv_one' IsAbsoluteValue.abv_one'

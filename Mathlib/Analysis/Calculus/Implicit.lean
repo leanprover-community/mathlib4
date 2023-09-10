@@ -128,7 +128,7 @@ theorem prodFun_apply (x : E) : φ.prodFun x = (φ.leftFun x, φ.rightFun x) :=
   rfl
 #align implicit_function_data.prod_fun_apply ImplicitFunctionData.prodFun_apply
 
-protected theorem hasStrictFDerivAt :
+protected lemma hasStrictFDerivAt :
     HasStrictFDerivAt φ.prodFun
       (φ.leftDeriv.equivProdOfSurjectiveOfIsCompl φ.rightDeriv φ.left_range φ.right_range
           φ.isCompl_ker :
@@ -154,7 +154,7 @@ def implicitFunction : F → G → E :=
 #align implicit_function_data.implicit_function ImplicitFunctionData.implicitFunction
 
 @[simp]
-theorem toLocalHomeomorph_coe : ⇑φ.toLocalHomeomorph = φ.prodFun :=
+lemma toLocalHomeomorph_coe : ⇑φ.toLocalHomeomorph = φ.prodFun :=
   rfl
 #align implicit_function_data.to_local_homeomorph_coe ImplicitFunctionData.toLocalHomeomorph_coe
 
@@ -162,36 +162,36 @@ theorem toLocalHomeomorph_apply (x : E) : φ.toLocalHomeomorph x = (φ.leftFun x
   rfl
 #align implicit_function_data.to_local_homeomorph_apply ImplicitFunctionData.toLocalHomeomorph_apply
 
-theorem pt_mem_toLocalHomeomorph_source : φ.pt ∈ φ.toLocalHomeomorph.source :=
+lemma pt_mem_toLocalHomeomorph_source : φ.pt ∈ φ.toLocalHomeomorph.source :=
   φ.hasStrictFDerivAt.mem_toLocalHomeomorph_source
 #align implicit_function_data.pt_mem_to_local_homeomorph_source ImplicitFunctionData.pt_mem_toLocalHomeomorph_source
 
-theorem map_pt_mem_toLocalHomeomorph_target :
+lemma map_pt_mem_toLocalHomeomorph_target :
     (φ.leftFun φ.pt, φ.rightFun φ.pt) ∈ φ.toLocalHomeomorph.target :=
   φ.toLocalHomeomorph.map_source <| φ.pt_mem_toLocalHomeomorph_source
 #align implicit_function_data.map_pt_mem_to_local_homeomorph_target ImplicitFunctionData.map_pt_mem_toLocalHomeomorph_target
 
-theorem prod_map_implicitFunction :
+lemma prod_map_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
   φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
 #align implicit_function_data.prod_map_implicit_function ImplicitFunctionData.prod_map_implicitFunction
 
-theorem left_map_implicitFunction :
+lemma left_map_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction p.1 p.2) = p.1 :=
   φ.prod_map_implicitFunction.mono fun _ => congr_arg Prod.fst
 #align implicit_function_data.left_map_implicit_function ImplicitFunctionData.left_map_implicitFunction
 
-theorem right_map_implicitFunction :
+lemma right_map_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction p.1 p.2) = p.2 :=
   φ.prod_map_implicitFunction.mono fun _ => congr_arg Prod.snd
 #align implicit_function_data.right_map_implicit_function ImplicitFunctionData.right_map_implicitFunction
 
-theorem implicitFunction_apply_image :
+lemma implicitFunction_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
   φ.hasStrictFDerivAt.eventually_left_inverse
 #align implicit_function_data.implicit_function_apply_image ImplicitFunctionData.implicitFunction_apply_image
 
-theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
+lemma map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
   show map (Prod.fst ∘ φ.prodFun) (𝓝 φ.pt) = 𝓝 (φ.prodFun φ.pt).1 by
     rw [← map_map, φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, map_fst_nhds]
 #align implicit_function_data.map_nhds_eq ImplicitFunctionData.map_nhds_eq

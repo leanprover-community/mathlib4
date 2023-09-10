@@ -122,7 +122,7 @@ lemma comp_app (f : P ⟶ Q) (g : Q ⟶ T) (X : Cᵒᵖ) :
     (f ≫ g).app X = (g.app X).comp (f.app X) := rfl
 
 @[ext]
-theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
+lemma ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   cases f; cases g;
   congr
   ext X x

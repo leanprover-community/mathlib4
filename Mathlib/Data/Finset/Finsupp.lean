@@ -44,7 +44,7 @@ protected def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀
   (s.pi t).map ⟨indicator s, indicator_injective s⟩
 #align finset.finsupp Finset.finsupp
 
-theorem mem_finsupp_iff {t : ι → Finset α} :
+lemma mem_finsupp_iff {t : ι → Finset α} :
     f ∈ s.finsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
@@ -58,7 +58,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} :
 
 /-- When `t` is supported on `s`, `f ∈ s.finsupp t` precisely means that `f` is pointwise in `t`. -/
 @[simp]
-theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.support ⊆ s) :
+lemma mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.support ⊆ s) :
     f ∈ s.finsupp t ↔ ∀ i, f i ∈ t i := by
   refine'
     mem_finsupp_iff.trans
@@ -92,7 +92,7 @@ def pi (f : ι →₀ Finset α) : Finset (ι →₀ α) :=
 #align finsupp.pi Finsupp.pi
 
 @[simp]
-theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀ i, g i ∈ f i :=
+lemma mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀ i, g i ∈ f i :=
   mem_finsupp_iff_of_support_subset <| Subset.refl _
 #align finsupp.mem_pi Finsupp.mem_pi
 

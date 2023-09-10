@@ -63,7 +63,7 @@ def LinearMap.mkContinuousOfExistsBound (h : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖
     AddMonoidHomClass.continuous_of_bound f C hC⟩
 #align linear_map.mk_continuous_of_exists_bound LinearMap.mkContinuousOfExistsBound
 
-theorem continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x + y) = f x + f y)
+lemma continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = σ c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     Continuous f :=
   let φ : E →ₛₗ[σ] F :=
@@ -73,7 +73,7 @@ theorem continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x
   AddMonoidHomClass.continuous_of_bound φ C h_bound
 #align continuous_of_linear_of_boundₛₗ continuous_of_linear_of_boundₛₗ
 
-theorem continuous_of_linear_of_bound {f : E → G} (h_add : ∀ x y, f (x + y) = f x + f y)
+lemma continuous_of_linear_of_bound {f : E → G} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     Continuous f :=
   let φ : E →ₗ[𝕜] G :=
@@ -170,7 +170,7 @@ variable [Ring 𝕜] [Ring 𝕜₂]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [Module 𝕜 E] [Module 𝕜₂ F]
 variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 
-theorem ContinuousLinearMap.uniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
+lemma ContinuousLinearMap.uniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
     UniformEmbedding f :=
   (AddMonoidHomClass.antilipschitz_of_bound f hf).uniformEmbedding f.uniformContinuous
 #align continuous_linear_map.uniform_embedding_of_bound ContinuousLinearMap.uniformEmbedding_of_bound
@@ -267,19 +267,19 @@ noncomputable def coord (x : E) (h : x ≠ 0) : (𝕜 ∙ x) →L[𝕜] 𝕜 :=
 #align continuous_linear_equiv.coord ContinuousLinearEquiv.coord
 
 @[simp]
-theorem coe_toSpanNonzeroSingleton_symm {x : E} (h : x ≠ 0) :
+lemma coe_toSpanNonzeroSingleton_symm {x : E} (h : x ≠ 0) :
     ⇑(toSpanNonzeroSingleton 𝕜 x h).symm = coord 𝕜 x h :=
   rfl
 #align continuous_linear_equiv.coe_to_span_nonzero_singleton_symm ContinuousLinearEquiv.coe_toSpanNonzeroSingleton_symm
 
 @[simp]
-theorem coord_toSpanNonzeroSingleton {x : E} (h : x ≠ 0) (c : 𝕜) :
+lemma coord_toSpanNonzeroSingleton {x : E} (h : x ≠ 0) (c : 𝕜) :
     coord 𝕜 x h (toSpanNonzeroSingleton 𝕜 x h c) = c :=
   (toSpanNonzeroSingleton 𝕜 x h).symm_apply_apply c
 #align continuous_linear_equiv.coord_to_span_nonzero_singleton ContinuousLinearEquiv.coord_toSpanNonzeroSingleton
 
 @[simp]
-theorem toSpanNonzeroSingleton_coord {x : E} (h : x ≠ 0) (y : 𝕜 ∙ x) :
+lemma toSpanNonzeroSingleton_coord {x : E} (h : x ≠ 0) (y : 𝕜 ∙ x) :
     toSpanNonzeroSingleton 𝕜 x h (coord 𝕜 x h y) = y :=
   (toSpanNonzeroSingleton 𝕜 x h).apply_symm_apply y
 #align continuous_linear_equiv.to_span_nonzero_singleton_coord ContinuousLinearEquiv.toSpanNonzeroSingleton_coord

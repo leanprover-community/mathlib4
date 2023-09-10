@@ -190,7 +190,7 @@ theorem modOf_add_divOf (x : AddMonoidAlgebra k G) (g : G) : x %ᵒᶠ g + of' k
   by rw [add_comm, divOf_add_modOf]
 #align add_monoid_algebra.mod_of_add_div_of AddMonoidAlgebra.modOf_add_divOf
 
-theorem of'_dvd_iff_modOf_eq_zero {x : AddMonoidAlgebra k G} {g : G} :
+lemma of'_dvd_iff_modOf_eq_zero {x : AddMonoidAlgebra k G} {g : G} :
     of' k G g ∣ x ↔ x %ᵒᶠ g = 0 := by
   constructor
   · rintro ⟨x, rfl⟩

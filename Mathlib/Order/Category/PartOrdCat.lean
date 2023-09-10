@@ -96,7 +96,7 @@ set_option linter.uppercaseLean3 false in
 
 end PartOrdCat
 
-theorem partOrdCat_dual_comp_forget_to_preordCat :
+lemma partOrdCat_dual_comp_forget_to_preordCat :
     PartOrdCat.dual ⋙ forget₂ PartOrdCat PreordCat =
       forget₂ PartOrdCat PreordCat ⋙ PreordCat.dual :=
   rfl

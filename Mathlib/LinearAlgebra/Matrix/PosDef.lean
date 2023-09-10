@@ -39,11 +39,11 @@ def PosDef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < dotProduct (star x) (M.mulVec x)
 #align matrix.pos_def Matrix.PosDef
 
-theorem PosDef.isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
+lemma PosDef.isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
   hM.1
 #align matrix.pos_def.is_hermitian Matrix.PosDef.isHermitian
 
-theorem PosDef.re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
+lemma PosDef.re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
     0 < IsROrC.re (dotProduct (star x) (M.mulVec x)) :=
   IsROrC.pos_iff.mp (hM.2 _ hx) |>.1
 
@@ -53,11 +53,11 @@ def PosSemidef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M.mulVec x)
 #align matrix.pos_semidef Matrix.PosSemidef
 
-theorem PosSemidef.re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n → 𝕜) :
+lemma PosSemidef.re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n → 𝕜) :
     0 ≤ IsROrC.re (dotProduct (star x) (M.mulVec x)) :=
   IsROrC.nonneg_iff.mp (hM.2 _) |>.1
 
-theorem PosDef.posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
+lemma PosDef.posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine' ⟨hM.1, _⟩
   intro x
   by_cases hx : x = 0
@@ -66,7 +66,7 @@ theorem PosDef.posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := b
   · exact le_of_lt (hM.2 x hx)
 #align matrix.pos_def.pos_semidef Matrix.PosDef.posSemidef
 
-theorem PosSemidef.submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m ≃ n) :
+lemma PosSemidef.submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m ≃ n) :
     (M.submatrix e e).PosSemidef := by
   refine' ⟨hM.1.submatrix e, fun x => _⟩
   have : (M.submatrix (⇑e) e).mulVec x = (M.mulVec fun i : n => x (e.symm i)) ∘ e := by
@@ -83,18 +83,18 @@ theorem PosSemidef.submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m ≃ n
 #align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
 @[simp]
-theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
+lemma posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 #align matrix.pos_semidef_submatrix_equiv Matrix.posSemidef_submatrix_equiv
 
-theorem PosDef.transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
+lemma PosDef.transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
-theorem posDef_of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
+lemma posDef_of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
   refine' ⟨hM, fun x hx => _⟩
   simp only [toQuadraticForm', QuadraticForm.PosDef, BilinForm.toQuadraticForm_apply,
@@ -102,7 +102,7 @@ theorem posDef_of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.
   apply hMq x hx
 #align matrix.pos_def_of_to_quadratic_form' Matrix.posDef_of_toQuadraticForm'
 
-theorem posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
+lemma posDef_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
     M.toQuadraticForm'.PosDef := by
   intro x hx
   simp only [toQuadraticForm', BilinForm.toQuadraticForm_apply, Matrix.toBilin'_apply']
@@ -134,7 +134,7 @@ namespace PosDef
 
 variable {M : Matrix n n ℝ} (hM : M.PosDef)
 
-theorem det_pos [DecidableEq n] : 0 < det M := by
+lemma det_pos [DecidableEq n] : 0 < det M := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
   apply Finset.prod_pos
   intro i _
@@ -154,13 +154,13 @@ namespace QuadraticForm
 
 variable {n : Type*} [Fintype n]
 
-theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
+lemma posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
   rw [← toQuadraticForm_associated ℝ Q, ← BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)]
   apply Matrix.posDef_toQuadraticForm' hQ
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
-theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
+lemma posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
   rw [← toQuadraticForm_associated ℝ Q, ←
     BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)] at hQ

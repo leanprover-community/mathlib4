@@ -170,7 +170,7 @@ def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [Ad
 #align Module.of_hom ModuleCat.ofHom
 
 @[simp 1100]
-theorem ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
+lemma ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
     [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Module.of_hom_apply ModuleCat.ofHom_apply

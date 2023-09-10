@@ -33,7 +33,7 @@ variable {C : Type*} [Category C]
 variable [Preadditive C]
 
 -- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
-theorem mono_of_nonzero_from_simple [HasKernels C] {X Y : C} [Simple X] {f : X ⟶ Y} (w : f ≠ 0) :
+lemma mono_of_nonzero_from_simple [HasKernels C] {X Y : C} [Simple X] {f : X ⟶ Y} (w : f ≠ 0) :
     Mono f :=
   Preadditive.mono_of_kernel_zero (kernel_zero_of_nonzero_from_simple w)
 #align category_theory.mono_of_nonzero_from_simple CategoryTheory.mono_of_nonzero_from_simple
@@ -50,7 +50,7 @@ theorem isIso_of_hom_simple
 /-- As a corollary of Schur's lemma for preadditive categories,
 any morphism between simple objects is (exclusively) either an isomorphism or zero.
 -/
-theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X ⟶ Y) :
+lemma isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X ⟶ Y) :
     IsIso f ↔ f ≠ 0 :=
   ⟨fun I => by
     intro h
@@ -87,7 +87,7 @@ variable (𝕜 : Type*) [DivisionRing 𝕜]
 /-- Part of **Schur's lemma** for `𝕜`-linear categories:
 the hom space between two non-isomorphic simple objects is 0-dimensional.
 -/
-theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜 C] {X Y : C}
+lemma finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜 C] {X Y : C}
     [Simple X] [Simple Y] (h : (X ≅ Y) → False) : finrank 𝕜 (X ⟶ Y) = 0 :=
   haveI :=
     subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
@@ -117,7 +117,7 @@ variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 If `X ⟶ X` is finite dimensional, and every nonzero endomorphism is invertible,
 then `X ⟶ X` is 1-dimensional.
 -/
-theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
+lemma finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
     [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
   refine' finrank_eq_one (𝟙 X) id_nonzero _
@@ -140,7 +140,7 @@ theorem finrank_endomorphism_simple_eq_one (X : C) [Simple X] [FiniteDimensional
   finrank_endomorphism_eq_one 𝕜 isIso_iff_nonzero
 #align category_theory.finrank_endomorphism_simple_eq_one CategoryTheory.finrank_endomorphism_simple_eq_one
 
-theorem endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional 𝕜 (X ⟶ X)]
+lemma endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional 𝕜 (X ⟶ X)]
     (f : X ⟶ X) : ∃ c : 𝕜, c • 𝟙 X = f :=
   (finrank_eq_one_iff_of_nonzero' (𝟙 X) (id_nonzero X)).mp (finrank_endomorphism_simple_eq_one 𝕜 X)
     f

@@ -87,22 +87,22 @@ theorem toDFinsupp_toMultiset (s : Multiset α) : DFinsupp.toMultiset (Multiset.
   equivDFinsupp.symm_apply_apply s
 #align multiset.to_dfinsupp_to_multiset Multiset.toDFinsupp_toMultiset
 
-theorem toDFinsupp_injective : Injective (toDFinsupp : Multiset α → Π₀ _a, ℕ) :=
+lemma toDFinsupp_injective : Injective (toDFinsupp : Multiset α → Π₀ _a, ℕ) :=
   equivDFinsupp.injective
 #align multiset.to_dfinsupp_injective Multiset.toDFinsupp_injective
 
 @[simp]
-theorem toDFinsupp_inj : toDFinsupp s = toDFinsupp t ↔ s = t :=
+lemma toDFinsupp_inj : toDFinsupp s = toDFinsupp t ↔ s = t :=
   toDFinsupp_injective.eq_iff
 #align multiset.to_dfinsupp_inj Multiset.toDFinsupp_inj
 
 @[simp]
-theorem toDFinsupp_le_toDFinsupp : toDFinsupp s ≤ toDFinsupp t ↔ s ≤ t := by
+lemma toDFinsupp_le_toDFinsupp : toDFinsupp s ≤ toDFinsupp t ↔ s ≤ t := by
   simp [Multiset.le_iff_count, DFinsupp.le_def]
 #align multiset.to_dfinsupp_le_to_dfinsupp Multiset.toDFinsupp_le_toDFinsupp
 
 @[simp]
-theorem toDFinsupp_lt_toDFinsupp : toDFinsupp s < toDFinsupp t ↔ s < t :=
+lemma toDFinsupp_lt_toDFinsupp : toDFinsupp s < toDFinsupp t ↔ s < t :=
   lt_iff_lt_of_le_iff_le' toDFinsupp_le_toDFinsupp toDFinsupp_le_toDFinsupp
 #align multiset.to_dfinsupp_lt_to_dfinsupp Multiset.toDFinsupp_lt_toDFinsupp
 
@@ -124,39 +124,39 @@ namespace DFinsupp
 variable [DecidableEq α] {f g : Π₀ _a : α, ℕ}
 
 @[simp]
-theorem toMultiset_toDFinsupp [DecidableEq α] (f : Π₀ _ : α, ℕ) :
+lemma toMultiset_toDFinsupp [DecidableEq α] (f : Π₀ _ : α, ℕ) :
     Multiset.toDFinsupp (DFinsupp.toMultiset f) = f :=
   Multiset.equivDFinsupp.apply_symm_apply f
 #align dfinsupp.to_multiset_to_dfinsupp DFinsupp.toMultiset_toDFinsupp
 
-theorem toMultiset_injective : Injective (toMultiset : (Π₀ _a, ℕ) → Multiset α) :=
+lemma toMultiset_injective : Injective (toMultiset : (Π₀ _a, ℕ) → Multiset α) :=
   Multiset.equivDFinsupp.symm.injective
 #align dfinsupp.to_multiset_injective DFinsupp.toMultiset_injective
 
 @[simp]
-theorem toMultiset_inj : toMultiset f = toMultiset g ↔ f = g :=
+lemma toMultiset_inj : toMultiset f = toMultiset g ↔ f = g :=
   toMultiset_injective.eq_iff
 #align dfinsupp.to_multiset_inj DFinsupp.toMultiset_inj
 
 @[simp]
-theorem toMultiset_le_toMultiset : toMultiset f ≤ toMultiset g ↔ f ≤ g := by
+lemma toMultiset_le_toMultiset : toMultiset f ≤ toMultiset g ↔ f ≤ g := by
   simp_rw [← Multiset.toDFinsupp_le_toDFinsupp, toMultiset_toDFinsupp]
 #align dfinsupp.to_multiset_le_to_multiset DFinsupp.toMultiset_le_toMultiset
 
 @[simp]
-theorem toMultiset_lt_toMultiset : toMultiset f < toMultiset g ↔ f < g := by
+lemma toMultiset_lt_toMultiset : toMultiset f < toMultiset g ↔ f < g := by
   simp_rw [← Multiset.toDFinsupp_lt_toDFinsupp, toMultiset_toDFinsupp]
 #align dfinsupp.to_multiset_lt_to_multiset DFinsupp.toMultiset_lt_toMultiset
 
 variable (f g)
 
 @[simp]
-theorem toMultiset_inf : toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g :=
+lemma toMultiset_inf : toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 #align dfinsupp.to_multiset_inf DFinsupp.toMultiset_inf
 
 @[simp]
-theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f∪ toMultiset g :=
+lemma toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f∪ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 #align dfinsupp.to_multiset_sup DFinsupp.toMultiset_sup
 

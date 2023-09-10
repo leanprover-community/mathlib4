@@ -92,7 +92,7 @@ instance : Inhabited (ClosureOperator α) :=
 variable {α} [PartialOrder α] (c : ClosureOperator α)
 
 @[ext]
-theorem ext : ∀ c₁ c₂ : ClosureOperator α, (c₁ : α → α) = (c₂ : α → α) → c₁ = c₂
+lemma ext : ∀ c₁ c₂ : ClosureOperator α, (c₁ : α → α) = (c₂ : α → α) → c₁ = c₂
   | ⟨⟨c₁, _⟩, _, _⟩, ⟨⟨c₂, _⟩, _, _⟩, h => by
     congr
 #align closure_operator.ext ClosureOperator.ext
@@ -132,21 +132,21 @@ def mk₃ (f : α → α) (p : α → Prop) (hf : ∀ x, x ≤ f x) (hfp : ∀ x
 
 /-- This lemma shows that the image of `x` of a closure operator built from the `mk₃` constructor
 respects `p`, the property that was fed into it. -/
-theorem closure_mem_mk₃ {f : α → α} {p : α → Prop} {hf : ∀ x, x ≤ f x} {hfp : ∀ x, p (f x)}
+lemma closure_mem_mk₃ {f : α → α} {p : α → Prop} {hf : ∀ x, x ≤ f x} {hfp : ∀ x, p (f x)}
     {hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y} (x : α) : p (mk₃ f p hf hfp hmin x) :=
   hfp x
 #align closure_operator.closure_mem_mk₃ ClosureOperator.closure_mem_mk₃
 
 /-- Analogue of `closure_le_closed_iff_le` but with the `p` that was fed into the `mk₃` constructor.
 -/
-theorem closure_le_mk₃_iff {f : α → α} {p : α → Prop} {hf : ∀ x, x ≤ f x} {hfp : ∀ x, p (f x)}
+lemma closure_le_mk₃_iff {f : α → α} {p : α → Prop} {hf : ∀ x, x ≤ f x} {hfp : ∀ x, p (f x)}
     {hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y} {x y : α} (hxy : x ≤ y) (hy : p y) :
     mk₃ f p hf hfp hmin x ≤ y :=
   hmin hxy hy
 #align closure_operator.closure_le_mk₃_iff ClosureOperator.closure_le_mk₃_iff
 
 @[mono]
-theorem monotone : Monotone c :=
+lemma monotone : Monotone c :=
   c.monotone'
 #align closure_operator.monotone ClosureOperator.monotone
 
@@ -177,7 +177,7 @@ theorem mem_closed_iff_closure_le (x : α) : x ∈ c.closed ↔ c x ≤ x :=
   ⟨le_of_eq, fun h => h.antisymm (c.le_closure x)⟩
 #align closure_operator.mem_closed_iff_closure_le ClosureOperator.mem_closed_iff_closure_le
 
-theorem closure_eq_self_of_mem_closed {x : α} (h : x ∈ c.closed) : c x = x :=
+lemma closure_eq_self_of_mem_closed {x : α} (h : x ∈ c.closed) : c x = x :=
   h
 #align closure_operator.closure_eq_self_of_mem_closed ClosureOperator.closure_eq_self_of_mem_closed
 
@@ -187,7 +187,7 @@ theorem closure_is_closed (x : α) : c x ∈ c.closed :=
 #align closure_operator.closure_is_closed ClosureOperator.closure_is_closed
 
 /-- The set of closed elements for `c` is exactly its range. -/
-theorem closed_eq_range_close : c.closed = Set.range c :=
+lemma closed_eq_range_close : c.closed = Set.range c :=
   Set.ext fun x =>
     ⟨fun h => ⟨x, h⟩, by
       rintro ⟨y, rfl⟩
@@ -215,7 +215,7 @@ theorem eq_mk₃_closed (c : ClosureOperator α) :
 #align closure_operator.eq_mk₃_closed ClosureOperator.eq_mk₃_closed
 
 /-- The property `p` fed into the `mk₃` constructor exactly corresponds to being closed. -/
-@[simp] theorem mem_mk₃_closed {f : α → α} {p : α → Prop} {hf hfp hmin} {x : α} :
+@[simp] lemma mem_mk₃_closed {f : α → α} {p : α → Prop} {hf hfp hmin} {x : α} :
   x ∈ (mk₃ f p hf hfp hmin).closed ↔ p x := by
   refine' ⟨λ hx ↦ _, λ hx ↦ (hmin le_rfl hx).antisymm (hf _)⟩
   rw [←closure_eq_self_of_mem_closed _ hx]
@@ -231,17 +231,17 @@ section OrderTop
 variable [PartialOrder α] [OrderTop α] (c : ClosureOperator α)
 
 @[simp]
-theorem closure_top : c ⊤ = ⊤ :=
+lemma closure_top : c ⊤ = ⊤ :=
   le_top.antisymm (c.le_closure _)
 #align closure_operator.closure_top ClosureOperator.closure_top
 
-theorem top_mem_closed : ⊤ ∈ c.closed :=
+lemma top_mem_closed : ⊤ ∈ c.closed :=
   c.closure_top
 #align closure_operator.top_mem_closed ClosureOperator.top_mem_closed
 
 end OrderTop
 
-theorem closure_inf_le [SemilatticeInf α] (c : ClosureOperator α) (x y : α) :
+lemma closure_inf_le [SemilatticeInf α] (c : ClosureOperator α) (x y : α) :
     c (x ⊓ y) ≤ c x ⊓ c y :=
   c.monotone.map_inf_le _ _
 #align closure_operator.closure_inf_le ClosureOperator.closure_inf_le
@@ -329,18 +329,18 @@ variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
 
-theorem gc : GaloisConnection l u :=
+lemma gc : GaloisConnection l u :=
   l.gc'
 #align lower_adjoint.gc LowerAdjoint.gc
 
 @[ext]
-theorem ext : ∀ l₁ l₂ : LowerAdjoint u, (l₁ : α → β) = (l₂ : α → β) → l₁ = l₂
+lemma ext : ∀ l₁ l₂ : LowerAdjoint u, (l₁ : α → β) = (l₂ : α → β) → l₁ = l₂
   | ⟨l₁, _⟩, ⟨l₂, _⟩, h => by
     congr
 #align lower_adjoint.ext LowerAdjoint.ext
 
 @[mono]
-theorem monotone : Monotone (u ∘ l) :=
+lemma monotone : Monotone (u ∘ l) :=
   l.gc.monotone_u.comp l.gc.monotone_l
 #align lower_adjoint.monotone LowerAdjoint.monotone
 
@@ -389,7 +389,7 @@ theorem mem_closed_iff (x : α) : x ∈ l.closed ↔ u (l x) = x :=
   Iff.rfl
 #align lower_adjoint.mem_closed_iff LowerAdjoint.mem_closed_iff
 
-theorem closure_eq_self_of_mem_closed {x : α} (h : x ∈ l.closed) : u (l x) = x :=
+lemma closure_eq_self_of_mem_closed {x : α} (h : x ∈ l.closed) : u (l x) = x :=
   h
 #align lower_adjoint.closure_eq_self_of_mem_closed LowerAdjoint.closure_eq_self_of_mem_closed
 
@@ -409,7 +409,7 @@ theorem closure_is_closed (x : α) : u (l x) ∈ l.closed :=
 #align lower_adjoint.closure_is_closed LowerAdjoint.closure_is_closed
 
 /-- The set of closed elements for `l` is the range of `u ∘ l`. -/
-theorem closed_eq_range_close : l.closed = Set.range (u ∘ l) :=
+lemma closed_eq_range_close : l.closed = Set.range (u ∘ l) :=
   l.closureOperator.closed_eq_range_close
 #align lower_adjoint.closed_eq_range_close LowerAdjoint.closed_eq_range_close
 
@@ -425,12 +425,12 @@ theorem closure_le_closed_iff_le (x : α) {y : α} (hy : l.closed y) : u (l x) �
 
 end PartialOrder
 
-theorem closure_top [PartialOrder α] [OrderTop α] [Preorder β] {u : β → α} (l : LowerAdjoint u) :
+lemma closure_top [PartialOrder α] [OrderTop α] [Preorder β] {u : β → α} (l : LowerAdjoint u) :
     u (l ⊤) = ⊤ :=
   l.closureOperator.closure_top
 #align lower_adjoint.closure_top LowerAdjoint.closure_top
 
-theorem closure_inf_le [SemilatticeInf α] [Preorder β] {u : β → α} (l : LowerAdjoint u) (x y : α) :
+lemma closure_inf_le [SemilatticeInf α] [Preorder β] {u : β → α} (l : LowerAdjoint u) (x y : α) :
     u (l (x ⊓ y)) ≤ u (l x) ⊓ u (l y) :=
   l.closureOperator.closure_inf_le x y
 #align lower_adjoint.closure_inf_le LowerAdjoint.closure_inf_le
@@ -481,7 +481,7 @@ theorem subset_closure (s : Set β) : s ⊆ l s :=
   l.le_closure s
 #align lower_adjoint.subset_closure LowerAdjoint.subset_closure
 
-theorem not_mem_of_not_mem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
+lemma not_mem_of_not_mem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
   hP (subset_closure _ s h)
 #align lower_adjoint.not_mem_of_not_mem_closure LowerAdjoint.not_mem_of_not_mem_closure
 
@@ -494,7 +494,7 @@ theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x 
   exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
 #align lower_adjoint.mem_iff LowerAdjoint.mem_iff
 
-theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
+lemma eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
   ((l.le_iff_subset _ _).2 h₁).antisymm h₂
 #align lower_adjoint.eq_of_le LowerAdjoint.eq_of_le
 
@@ -567,7 +567,7 @@ def _root_.ClosureOperator.gi [PartialOrder α] (c : ClosureOperator α) :
 operator.
 Note that the inverse in the opposite direction does not hold in general. -/
 @[simp]
-theorem closureOperator_gi_self [PartialOrder α] (c : ClosureOperator α) :
+lemma closureOperator_gi_self [PartialOrder α] (c : ClosureOperator α) :
     c.gi.gc.closureOperator = c := by
   ext x
   rfl

@@ -152,12 +152,12 @@ def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
 #align direct_sum.lie_algebra_component DirectSum.lieAlgebraComponent
 
 @[ext]
-theorem lieAlgebra_ext {x y : ⨁ i, L i}
+lemma lieAlgebra_ext {x y : ⨁ i, L i}
     (h : ∀ i, lieAlgebraComponent R ι L i x = lieAlgebraComponent R ι L i y) : x = y :=
   DFinsupp.ext h
 #align direct_sum.lie_algebra_ext DirectSum.lieAlgebra_ext
 
-theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : L j) :
+lemma lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = 0 := by
   apply lieAlgebra_ext R ι L; intro k
   rw [LieHom.map_lie]
@@ -168,7 +168,7 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : 
   · simp only [dif_neg, not_false_iff, zero_lie, hik]
 #align direct_sum.lie_of_of_ne DirectSum.lie_of_of_ne
 
-theorem lie_of_of_eq [DecidableEq ι] {i j : ι} (hij : j = i) (x : L i) (y : L j) :
+lemma lie_of_of_eq [DecidableEq ι] {i j : ι} (hij : j = i) (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = of L i ⁅x, hij.recOn y⁆ := by
   have : of L j y = of L i (hij.recOn y) := Eq.rec (Eq.refl _) hij
   rw [this, ← lieAlgebraOf_apply R ι L i ⁅x, hij.recOn y⁆, LieHom.map_lie, lieAlgebraOf_apply,
@@ -176,7 +176,7 @@ theorem lie_of_of_eq [DecidableEq ι] {i j : ι} (hij : j = i) (x : L i) (y : L 
 #align direct_sum.lie_of_of_eq DirectSum.lie_of_of_eq
 
 @[simp]
-theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
+lemma lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = if hij : j = i then lieAlgebraOf R ι L i ⁅x, hij.recOn y⁆ else 0 := by
   by_cases hij : j = i
   · simp only [lie_of_of_eq R ι L hij x y, hij, dif_pos, not_false_iff, lieAlgebraOf_apply]

@@ -100,31 +100,31 @@ theorem bernoulli'_spec' (n : ℕ) :
 section Examples
 
 @[simp]
-theorem bernoulli'_zero : bernoulli' 0 = 1 := by
+lemma bernoulli'_zero : bernoulli' 0 = 1 := by
   rw [bernoulli'_def]
   norm_num
 #align bernoulli'_zero bernoulli'_zero
 
 @[simp]
-theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
+lemma bernoulli'_one : bernoulli' 1 = 1 / 2 := by
   rw [bernoulli'_def]
   norm_num
 #align bernoulli'_one bernoulli'_one
 
 @[simp]
-theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
+lemma bernoulli'_two : bernoulli' 2 = 1 / 6 := by
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_two bernoulli'_two
 
 @[simp]
-theorem bernoulli'_three : bernoulli' 3 = 0 := by
+lemma bernoulli'_three : bernoulli' 3 = 0 := by
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 #align bernoulli'_three bernoulli'_three
 
 @[simp]
-theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
+lemma bernoulli'_four : bernoulli' 4 = -1 / 30 := by
   have : Nat.choose 4 2 = 6 := by norm_num -- shrug
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
@@ -154,7 +154,7 @@ def bernoulli'PowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli' n / n !)
 #align bernoulli'_power_series bernoulli'PowerSeries
 
-theorem bernoulli'PowerSeries_mul_exp_sub_one :
+lemma bernoulli'PowerSeries_mul_exp_sub_one :
   bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
   ext n
   -- constant coefficient is a special case
@@ -177,7 +177,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
 #align bernoulli'_power_series_mul_exp_sub_one bernoulli'PowerSeries_mul_exp_sub_one
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
-theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
+lemma bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
   let B := mk fun n => bernoulli' n / (n ! : ℚ)
   suffices (B - evalNegHom B) * (exp ℚ - 1) = X * (exp ℚ - 1) by
     cases' mul_eq_mul_right_iff.mp this with h h <;>
@@ -205,14 +205,14 @@ theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli 
 #align bernoulli'_eq_bernoulli bernoulli'_eq_bernoulli
 
 @[simp]
-theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
+lemma bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align bernoulli_zero bernoulli_zero
 
 @[simp]
-theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
+lemma bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 #align bernoulli_one bernoulli_one
 
-theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
+lemma bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
   by_cases h0 : n = 0; · simp [h0]
   rw [bernoulli, neg_one_pow_eq_pow_mod_two]
   cases' mod_two_eq_zero_or_one n with h h
@@ -272,7 +272,7 @@ def bernoulliPowerSeries :=
   mk fun n => algebraMap ℚ A (bernoulli n / n !)
 #align bernoulli_power_series bernoulliPowerSeries
 
-theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
+lemma bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
   -- constant coefficient is a special case
   cases' n with n n;

@@ -62,7 +62,7 @@ theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + sqrt (1 + x ^ 2) := by
 #align real.exp_arsinh Real.exp_arsinh
 
 @[simp]
-theorem arsinh_zero : arsinh 0 = 0 := by simp [arsinh]
+lemma arsinh_zero : arsinh 0 = 0 := by simp [arsinh]
 #align real.arsinh_zero Real.arsinh_zero
 
 @[simp]
@@ -85,12 +85,12 @@ theorem cosh_arsinh (x : ℝ) : cosh (arsinh x) = sqrt (1 + x ^ 2) := by
 #align real.cosh_arsinh Real.cosh_arsinh
 
 /-- `sinh` is surjective, `∀ b, ∃ a, sinh a = b`. In this case, we use `a = arsinh b`. -/
-theorem sinh_surjective : Surjective sinh :=
+lemma sinh_surjective : Surjective sinh :=
   LeftInverse.surjective sinh_arsinh
 #align real.sinh_surjective Real.sinh_surjective
 
 /-- `sinh` is bijective, both injective and surjective. -/
-theorem sinh_bijective : Bijective sinh :=
+lemma sinh_bijective : Bijective sinh :=
   ⟨sinh_injective, sinh_surjective⟩
 #align real.sinh_bijective Real.sinh_bijective
 
@@ -122,57 +122,57 @@ def sinhHomeomorph : ℝ ≃ₜ ℝ :=
   sinhOrderIso.toHomeomorph
 #align real.sinh_homeomorph Real.sinhHomeomorph
 
-theorem arsinh_bijective : Bijective arsinh :=
+lemma arsinh_bijective : Bijective arsinh :=
   sinhEquiv.symm.bijective
 #align real.arsinh_bijective Real.arsinh_bijective
 
-theorem arsinh_injective : Injective arsinh :=
+lemma arsinh_injective : Injective arsinh :=
   sinhEquiv.symm.injective
 #align real.arsinh_injective Real.arsinh_injective
 
-theorem arsinh_surjective : Surjective arsinh :=
+lemma arsinh_surjective : Surjective arsinh :=
   sinhEquiv.symm.surjective
 #align real.arsinh_surjective Real.arsinh_surjective
 
-theorem arsinh_strictMono : StrictMono arsinh :=
+lemma arsinh_strictMono : StrictMono arsinh :=
   sinhOrderIso.symm.strictMono
 #align real.arsinh_strict_mono Real.arsinh_strictMono
 
 @[simp]
-theorem arsinh_inj : arsinh x = arsinh y ↔ x = y :=
+lemma arsinh_inj : arsinh x = arsinh y ↔ x = y :=
   arsinh_injective.eq_iff
 #align real.arsinh_inj Real.arsinh_inj
 
 @[simp]
-theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
+lemma arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
 #align real.arsinh_le_arsinh Real.arsinh_le_arsinh
 
 @[simp]
-theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
+lemma arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
   sinhOrderIso.symm.lt_iff_lt
 #align real.arsinh_lt_arsinh Real.arsinh_lt_arsinh
 
 @[simp]
-theorem arsinh_eq_zero_iff : arsinh x = 0 ↔ x = 0 :=
+lemma arsinh_eq_zero_iff : arsinh x = 0 ↔ x = 0 :=
   arsinh_injective.eq_iff' arsinh_zero
 #align real.arsinh_eq_zero_iff Real.arsinh_eq_zero_iff
 
 @[simp]
-theorem arsinh_nonneg_iff : 0 ≤ arsinh x ↔ 0 ≤ x := by rw [← sinh_le_sinh, sinh_zero, sinh_arsinh]
+lemma arsinh_nonneg_iff : 0 ≤ arsinh x ↔ 0 ≤ x := by rw [← sinh_le_sinh, sinh_zero, sinh_arsinh]
 #align real.arsinh_nonneg_iff Real.arsinh_nonneg_iff
 
 @[simp]
-theorem arsinh_nonpos_iff : arsinh x ≤ 0 ↔ x ≤ 0 := by rw [← sinh_le_sinh, sinh_zero, sinh_arsinh]
+lemma arsinh_nonpos_iff : arsinh x ≤ 0 ↔ x ≤ 0 := by rw [← sinh_le_sinh, sinh_zero, sinh_arsinh]
 #align real.arsinh_nonpos_iff Real.arsinh_nonpos_iff
 
 @[simp]
-theorem arsinh_pos_iff : 0 < arsinh x ↔ 0 < x :=
+lemma arsinh_pos_iff : 0 < arsinh x ↔ 0 < x :=
   lt_iff_lt_of_le_iff_le arsinh_nonpos_iff
 #align real.arsinh_pos_iff Real.arsinh_pos_iff
 
 @[simp]
-theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
+lemma arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
   lt_iff_lt_of_le_iff_le arsinh_nonneg_iff
 #align real.arsinh_neg_iff Real.arsinh_neg_iff
 
@@ -186,16 +186,16 @@ theorem hasDerivAt_arsinh (x : ℝ) : HasDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ 
   (hasStrictDerivAt_arsinh x).hasDerivAt
 #align real.has_deriv_at_arsinh Real.hasDerivAt_arsinh
 
-theorem differentiable_arsinh : Differentiable ℝ arsinh := fun x =>
+lemma differentiable_arsinh : Differentiable ℝ arsinh := fun x =>
   (hasDerivAt_arsinh x).differentiableAt
 #align real.differentiable_arsinh Real.differentiable_arsinh
 
-theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
+lemma contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
   sinhHomeomorph.contDiff_symm_deriv (fun x => (cosh_pos x).ne') hasDerivAt_sinh contDiff_sinh
 #align real.cont_diff_arsinh Real.contDiff_arsinh
 
 @[continuity]
-theorem continuous_arsinh : Continuous arsinh :=
+lemma continuous_arsinh : Continuous arsinh :=
   sinhHomeomorph.symm.continuous
 #align real.continuous_arsinh Real.continuous_arsinh
 
@@ -203,7 +203,7 @@ end Real
 
 open Real
 
-theorem Filter.Tendsto.arsinh {α : Type*} {l : Filter α} {f : α → ℝ} {a : ℝ}
+lemma Filter.Tendsto.arsinh {α : Type*} {l : Filter α} {f : α → ℝ} {a : ℝ}
     (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => arsinh (f x)) l (𝓝 (arsinh a)) :=
   (continuous_arsinh.tendsto _).comp h
 #align filter.tendsto.arsinh Filter.Tendsto.arsinh

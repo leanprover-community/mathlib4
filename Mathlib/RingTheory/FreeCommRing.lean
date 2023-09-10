@@ -81,7 +81,7 @@ def of (x : α) : FreeCommRing α :=
   FreeAbelianGroup.of <| Multiplicative.ofAdd ({x} : Multiset α)
 #align free_comm_ring.of FreeCommRing.of
 
-theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
+lemma of_injective : Function.Injective (of : α → FreeCommRing α) :=
   FreeAbelianGroup.of_injective.comp fun _ _ =>
     (Multiset.coe_eq_coe.trans List.singleton_perm_singleton).mp
 #align free_comm_ring.of_injective FreeCommRing.of_injective
@@ -96,7 +96,7 @@ lemma of_cons (a : α) (m : Multiset α) :
     of, FreeAbelianGroup.of_mul_of]
 
 @[elab_as_elim]
-protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing α) (hn1 : C (-1))
+protected lemma induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=
   have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
@@ -199,15 +199,15 @@ theorem isSupported_mul (hxs : IsSupported x s) (hys : IsSupported y s) : IsSupp
   Subring.mul_mem _ hxs hys
 #align free_comm_ring.is_supported_mul FreeCommRing.isSupported_mul
 
-theorem isSupported_zero : IsSupported 0 s :=
+lemma isSupported_zero : IsSupported 0 s :=
   Subring.zero_mem _
 #align free_comm_ring.is_supported_zero FreeCommRing.isSupported_zero
 
-theorem isSupported_one : IsSupported 1 s :=
+lemma isSupported_one : IsSupported 1 s :=
   Subring.one_mem _
 #align free_comm_ring.is_supported_one FreeCommRing.isSupported_one
 
-theorem isSupported_int {i : ℤ} {s : Set α} : IsSupported (↑i) s :=
+lemma isSupported_int {i : ℤ} {s : Set α} : IsSupported (↑i) s :=
   Int.induction_on i isSupported_zero
     (fun i hi => by rw [Int.cast_add, Int.cast_one]; exact isSupported_add hi isSupported_one)
     fun i hi => by rw [Int.cast_sub, Int.cast_one]; exact isSupported_sub hi isSupported_one
@@ -232,7 +232,7 @@ theorem restriction_of (p) : restriction s (of p) = if H : p ∈ s then of ⟨p,
 
 end Restriction
 
-theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
+lemma isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   suffices IsSupported (of p) s → p ∈ s from ⟨this, fun hps => Subring.subset_closure ⟨p, hps, rfl⟩⟩
   fun hps : IsSupported (of p) s => by
   haveI := Classical.decPred s
@@ -266,7 +266,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
 #align free_comm_ring.is_supported_of FreeCommRing.isSupported_of
 
 -- Porting note: Changed `(Subtype.val : s → α)` to `(↑)` in the type
-theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
+lemma map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
   refine' Subring.InClosure.recOn hxs _ _ _ _
   · rw [RingHom.map_one]
@@ -323,11 +323,11 @@ def coeRingHom : FreeRing α →+* FreeCommRing α :=
 #align free_ring.coe_ring_hom FreeRing.coeRingHom
 
 @[simp, norm_cast]
-protected theorem coe_zero : ↑(0 : FreeRing α) = (0 : FreeCommRing α) := rfl
+protected lemma coe_zero : ↑(0 : FreeRing α) = (0 : FreeCommRing α) := rfl
 #align free_ring.coe_zero FreeRing.coe_zero
 
 @[simp, norm_cast]
-protected theorem coe_one : ↑(1 : FreeRing α) = (1 : FreeCommRing α) := rfl
+protected lemma coe_one : ↑(1 : FreeRing α) = (1 : FreeCommRing α) := rfl
 #align free_ring.coe_one FreeRing.coe_one
 
 variable {α}
@@ -359,7 +359,7 @@ protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing �
 
 variable (α)
 
-protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
+protected lemma coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
   induction x using FreeCommRing.induction_on with
   | hn1 =>
     use -1
@@ -374,7 +374,7 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
     exact ⟨x * y, (FreeRing.lift _).map_mul _ _⟩
 #align free_ring.coe_surjective FreeRing.coe_surjective
 
-theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
+lemma coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
       @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
   erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,

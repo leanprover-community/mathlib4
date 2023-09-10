@@ -55,11 +55,11 @@ def edgeDensity (s : Finset α) (t : Finset β) : ℚ :=
 
 variable {r}
 
-theorem mem_interedges_iff {x : α × β} : x ∈ interedges r s t ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ r x.1 x.2 := by
+lemma mem_interedges_iff {x : α × β} : x ∈ interedges r s t ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ r x.1 x.2 := by
   rw [interedges, mem_filter, Finset.mem_product, and_assoc]
 #align rel.mem_interedges_iff Rel.mem_interedges_iff
 
-theorem mk_mem_interedges_iff : (a, b) ∈ interedges r s t ↔ a ∈ s ∧ b ∈ t ∧ r a b :=
+lemma mk_mem_interedges_iff : (a, b) ∈ interedges r s t ↔ a ∈ s ∧ b ∈ t ∧ r a b :=
   mem_interedges_iff
 #align rel.mk_mem_interedges_iff Rel.mk_mem_interedges_iff
 
@@ -83,7 +83,7 @@ theorem card_interedges_add_card_interedges_compl (s : Finset α) (t : Finset β
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 #align rel.card_interedges_add_card_interedges_compl Rel.card_interedges_add_card_interedges_compl
 
-theorem interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Finset β) :
+lemma interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Finset β) :
     Disjoint (interedges r s t) (interedges r s' t) := by
   rw [Finset.disjoint_left] at hs ⊢
   intro _ hx hy
@@ -157,7 +157,7 @@ theorem edgeDensity_empty_right (s : Finset α) : edgeDensity r s ∅ = 0 := by
   rw [edgeDensity, Finset.card_empty, Nat.cast_zero, mul_zero, div_zero]
 #align rel.edge_density_empty_right Rel.edgeDensity_empty_right
 
-theorem card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) (t : Finset β) :
+lemma card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) (t : Finset β) :
     (interedges r s t).card = ∑ a in P.parts, (interedges r a t).card := by
   classical
   simp_rw [← P.biUnion_parts, interedges_biUnion_left, id.def]
@@ -165,7 +165,7 @@ theorem card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) 
   exact fun x hx y hy h ↦ interedges_disjoint_left r (P.disjoint hx hy h) _
 #align rel.card_interedges_finpartition_left Rel.card_interedges_finpartition_left
 
-theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P : Finpartition t) :
+lemma card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P : Finpartition t) :
     (interedges r s t).card = ∑ b in P.parts, (interedges r s b).card := by
   classical
   simp_rw [← P.biUnion_parts, interedges_biUnion_right, id]
@@ -173,7 +173,7 @@ theorem card_interedges_finpartition_right [DecidableEq β] (s : Finset α) (P :
   exact fun x hx y hy h ↦ interedges_disjoint_right r _ (P.disjoint hx hy h)
 #align rel.card_interedges_finpartition_right Rel.card_interedges_finpartition_right
 
-theorem card_interedges_finpartition [DecidableEq α] [DecidableEq β] (P : Finpartition s)
+lemma card_interedges_finpartition [DecidableEq α] [DecidableEq β] (P : Finpartition s)
     (Q : Finpartition t) :
     (interedges r s t).card = ∑ ab in P.parts ×ˢ Q.parts, (interedges r ab.1 ab.2).card := by
   rw [card_interedges_finpartition_left _ P, sum_product]
@@ -267,12 +267,12 @@ variable (r : α → α → Prop) [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Fi
 variable {r} (hr : Symmetric r)
 
 @[simp]
-theorem swap_mem_interedges_iff {x : α × α} : x.swap ∈ interedges r s t ↔ x ∈ interedges r t s := by
+lemma swap_mem_interedges_iff {x : α × α} : x.swap ∈ interedges r s t ↔ x ∈ interedges r t s := by
   rw [mem_interedges_iff, mem_interedges_iff, hr.iff]
   exact and_left_comm
 #align rel.swap_mem_interedges_iff Rel.swap_mem_interedges_iff
 
-theorem mk_mem_interedges_comm : (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
+lemma mk_mem_interedges_comm : (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
   @swap_mem_interedges_iff _ _ _ _ _ hr (b, a)
 #align rel.mk_mem_interedges_comm Rel.mk_mem_interedges_comm
 
@@ -325,11 +325,11 @@ theorem card_interedges_div_card (s t : Finset α) :
   rfl
 #align simple_graph.card_interedges_div_card SimpleGraph.card_interedges_div_card
 
-theorem mem_interedges_iff {x : α × α} : x ∈ G.interedges s t ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ G.Adj x.1 x.2 :=
+lemma mem_interedges_iff {x : α × α} : x ∈ G.interedges s t ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ G.Adj x.1 x.2 :=
   Rel.mem_interedges_iff
 #align simple_graph.mem_interedges_iff SimpleGraph.mem_interedges_iff
 
-theorem mk_mem_interedges_iff : (a, b) ∈ G.interedges s t ↔ a ∈ s ∧ b ∈ t ∧ G.Adj a b :=
+lemma mk_mem_interedges_iff : (a, b) ∈ G.interedges s t ↔ a ∈ s ∧ b ∈ t ∧ G.Adj a b :=
   Rel.mk_mem_interedges_iff
 #align simple_graph.mk_mem_interedges_iff SimpleGraph.mk_mem_interedges_iff
 
@@ -338,7 +338,7 @@ theorem interedges_empty_left (t : Finset α) : G.interedges ∅ t = ∅ :=
   Rel.interedges_empty_left _
 #align simple_graph.interedges_empty_left SimpleGraph.interedges_empty_left
 
-theorem interedges_mono : s₂ ⊆ s₁ → t₂ ⊆ t₁ → G.interedges s₂ t₂ ⊆ G.interedges s₁ t₁ :=
+lemma interedges_mono : s₂ ⊆ s₁ → t₂ ⊆ t₁ → G.interedges s₂ t₂ ⊆ G.interedges s₁ t₁ :=
   Rel.interedges_mono
 #align simple_graph.interedges_mono SimpleGraph.interedges_mono
 
@@ -416,11 +416,11 @@ theorem edgeDensity_empty_right (s : Finset α) : G.edgeDensity s ∅ = 0 :=
 #align simple_graph.edge_density_empty_right SimpleGraph.edgeDensity_empty_right
 
 @[simp]
-theorem swap_mem_interedges_iff {x : α × α} : x.swap ∈ G.interedges s t ↔ x ∈ G.interedges t s :=
+lemma swap_mem_interedges_iff {x : α × α} : x.swap ∈ G.interedges s t ↔ x ∈ G.interedges t s :=
   Rel.swap_mem_interedges_iff G.symm
 #align simple_graph.swap_mem_interedges_iff SimpleGraph.swap_mem_interedges_iff
 
-theorem mk_mem_interedges_comm : (a, b) ∈ G.interedges s t ↔ (b, a) ∈ G.interedges t s :=
+lemma mk_mem_interedges_comm : (a, b) ∈ G.interedges s t ↔ (b, a) ∈ G.interedges t s :=
   Rel.mk_mem_interedges_comm G.symm
 #align simple_graph.mk_mem_interedges_comm SimpleGraph.mk_mem_interedges_comm
 

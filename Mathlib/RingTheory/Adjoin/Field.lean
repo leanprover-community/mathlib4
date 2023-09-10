@@ -60,7 +60,7 @@ set_option maxHeartbeats 400000 in
 set_option synthInstance.maxHeartbeats 80000 in
 /-- If `K` and `L` are field extensions of `F` and we have `s : Finset K` such that
 the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s` embeds in `L`. -/
-theorem lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+lemma lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
     (s : Finset K) : (∀ x ∈ s, IsIntegral F x ∧ Polynomial.Splits (algebraMap F L) (minpoly F x)) →
       Nonempty (Algebra.adjoin F (↑s : Set K) →ₐ[F] L) := by
   classical

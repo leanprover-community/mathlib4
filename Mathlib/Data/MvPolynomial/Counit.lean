@@ -58,7 +58,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (A)
 
-theorem ACounit_surjective : Surjective (ACounit A B) := fun b => ⟨X b, ACounit_X A b⟩
+lemma ACounit_surjective : Surjective (ACounit A B) := fun b => ⟨X b, ACounit_X A b⟩
 #align mv_polynomial.acounit_surjective MvPolynomial.ACounit_surjective
 
 /-- `MvPolynomial.counit R` is the natural surjective ring homomorphism
@@ -79,11 +79,11 @@ noncomputable def counitNat : MvPolynomial A ℕ →+* A :=
   ACounit ℕ A
 #align mv_polynomial.counit_nat MvPolynomial.counitNat
 
-theorem counit_surjective : Surjective (counit R) :=
+lemma counit_surjective : Surjective (counit R) :=
   ACounit_surjective ℤ R
 #align mv_polynomial.counit_surjective MvPolynomial.counit_surjective
 
-theorem counitNat_surjective : Surjective (counitNat A) :=
+lemma counitNat_surjective : Surjective (counitNat A) :=
   ACounit_surjective ℕ A
 #align mv_polynomial.counit_nat_surjective MvPolynomial.counitNat_surjective
 

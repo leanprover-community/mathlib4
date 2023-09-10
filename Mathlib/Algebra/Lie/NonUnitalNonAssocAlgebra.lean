@@ -95,7 +95,7 @@ def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R]
     map_mul' := f.map_lie }
 #align lie_hom.to_non_unital_alg_hom LieHom.toNonUnitalAlgHom
 
-theorem toNonUnitalAlgHom_injective :
+lemma toNonUnitalAlgHom_injective :
     Function.Injective (toNonUnitalAlgHom : _ → CommutatorRing L →ₙₐ[R] CommutatorRing L₂) :=
   fun _ _ h => ext <| NonUnitalAlgHom.congr_fun h
 #align lie_hom.to_non_unital_alg_hom_injective LieHom.toNonUnitalAlgHom_injective

@@ -76,18 +76,18 @@ attribute [simp] IsRegular.left IsRegular.right
 attribute [to_additive] IsRegular
 
 @[to_additive]
-protected theorem MulLECancellable.isLeftRegular [PartialOrder R] {a : R}
+protected lemma MulLECancellable.isLeftRegular [PartialOrder R] {a : R}
     (ha : MulLECancellable a) : IsLeftRegular a :=
   ha.Injective
 #align mul_le_cancellable.is_left_regular MulLECancellable.isLeftRegular
 #align add_le_cancellable.is_add_left_regular AddLECancellable.isAddLeftRegular
 
-theorem IsLeftRegular.right_of_commute {a : R}
+lemma IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
 #align is_left_regular.right_of_commute IsLeftRegular.right_of_commute
 
-theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
+lemma Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
   ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩
 #align commute.is_regular_iff Commute.isRegular_iff
 
@@ -158,7 +158,7 @@ theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
 are regular. -/
 @[to_additive "Two elements `a` and `b` are add-regular if and only if both sums `a + b` and
 `b + a` are add-regular."]
-theorem isRegular_mul_and_mul_iff :
+lemma isRegular_mul_and_mul_iff :
     IsRegular (a * b) ∧ IsRegular (b * a) ↔ IsRegular a ∧ IsRegular b := by
   refine' ⟨_, _⟩
   · rintro ⟨ab, ba⟩
@@ -205,37 +205,37 @@ theorem IsRegular.subsingleton (h : IsRegular (0 : R)) : Subsingleton R :=
 #align is_regular.subsingleton IsRegular.subsingleton
 
 /-- The element `0` is left-regular if and only if `R` is trivial. -/
-theorem isLeftRegular_zero_iff_subsingleton : IsLeftRegular (0 : R) ↔ Subsingleton R :=
+lemma isLeftRegular_zero_iff_subsingleton : IsLeftRegular (0 : R) ↔ Subsingleton R :=
   ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 #align is_left_regular_zero_iff_subsingleton isLeftRegular_zero_iff_subsingleton
 
 /-- In a non-trivial `MulZeroClass`, the `0` element is not left-regular. -/
-theorem not_isLeftRegular_zero_iff : ¬IsLeftRegular (0 : R) ↔ Nontrivial R := by
+lemma not_isLeftRegular_zero_iff : ¬IsLeftRegular (0 : R) ↔ Nontrivial R := by
   rw [nontrivial_iff, not_iff_comm, isLeftRegular_zero_iff_subsingleton, subsingleton_iff]
   push_neg
   exact Iff.rfl
 #align not_is_left_regular_zero_iff not_isLeftRegular_zero_iff
 
 /-- The element `0` is right-regular if and only if `R` is trivial. -/
-theorem isRightRegular_zero_iff_subsingleton : IsRightRegular (0 : R) ↔ Subsingleton R :=
+lemma isRightRegular_zero_iff_subsingleton : IsRightRegular (0 : R) ↔ Subsingleton R :=
   ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 #align is_right_regular_zero_iff_subsingleton isRightRegular_zero_iff_subsingleton
 
 /-- In a non-trivial `MulZeroClass`, the `0` element is not right-regular. -/
-theorem not_isRightRegular_zero_iff : ¬IsRightRegular (0 : R) ↔ Nontrivial R := by
+lemma not_isRightRegular_zero_iff : ¬IsRightRegular (0 : R) ↔ Nontrivial R := by
   rw [nontrivial_iff, not_iff_comm, isRightRegular_zero_iff_subsingleton, subsingleton_iff]
   push_neg
   exact Iff.rfl
 #align not_is_right_regular_zero_iff not_isRightRegular_zero_iff
 
 /-- The element `0` is regular if and only if `R` is trivial. -/
-theorem isRegular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
+lemma isRegular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
   ⟨fun h => h.left.subsingleton, fun h =>
     ⟨isLeftRegular_zero_iff_subsingleton.mpr h, isRightRegular_zero_iff_subsingleton.mpr h⟩⟩
 #align is_regular_iff_subsingleton isRegular_iff_subsingleton
 
 /-- A left-regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
-theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 := by
+lemma IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 := by
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
   refine' xy (la (_ : 0 * x = 0 * y)) -- Porting note: lean4 seems to need the type signature
@@ -243,7 +243,7 @@ theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 :=
 #align is_left_regular.ne_zero IsLeftRegular.ne_zero
 
 /-- A right-regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
-theorem IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 := by
+lemma IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 := by
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
   refine' xy (ra (_ : x * 0 = y * 0))
@@ -251,22 +251,22 @@ theorem IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 
 #align is_right_regular.ne_zero IsRightRegular.ne_zero
 
 /-- A regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
-theorem IsRegular.ne_zero [Nontrivial R] (la : IsRegular a) : a ≠ 0 :=
+lemma IsRegular.ne_zero [Nontrivial R] (la : IsRegular a) : a ≠ 0 :=
   la.left.ne_zero
 #align is_regular.ne_zero IsRegular.ne_zero
 
 /-- In a non-trivial ring, the element `0` is not left-regular -- with typeclasses. -/
-theorem not_isLeftRegular_zero [nR : Nontrivial R] : ¬IsLeftRegular (0 : R) :=
+lemma not_isLeftRegular_zero [nR : Nontrivial R] : ¬IsLeftRegular (0 : R) :=
   not_isLeftRegular_zero_iff.mpr nR
 #align not_is_left_regular_zero not_isLeftRegular_zero
 
 /-- In a non-trivial ring, the element `0` is not right-regular -- with typeclasses. -/
-theorem not_isRightRegular_zero [nR : Nontrivial R] : ¬IsRightRegular (0 : R) :=
+lemma not_isRightRegular_zero [nR : Nontrivial R] : ¬IsRightRegular (0 : R) :=
   not_isRightRegular_zero_iff.mpr nR
 #align not_is_right_regular_zero not_isRightRegular_zero
 
 /-- In a non-trivial ring, the element `0` is not regular -- with typeclasses. -/
-theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRegular.ne_zero h rfl
+lemma not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRegular.ne_zero h rfl
 #align not_is_regular_zero not_isRegular_zero
 
 @[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
@@ -285,7 +285,7 @@ variable [MulOneClass R]
 
 /-- If multiplying by `1` on either side is the identity, `1` is regular. -/
 @[to_additive "If adding `0` on either side is the identity, `0` is regular."]
-theorem isRegular_one : IsRegular (1 : R) :=
+lemma isRegular_one : IsRegular (1 : R) :=
   ⟨fun a b ab => (one_mul a).symm.trans (Eq.trans ab (one_mul b)), fun a b ab =>
     (mul_one a).symm.trans (Eq.trans ab (mul_one b))⟩
 #align is_regular_one isRegular_one
@@ -299,7 +299,7 @@ variable [CommSemigroup R] {a b : R}
 
 /-- A product is regular if and only if the factors are. -/
 @[to_additive "A sum is add-regular if and only if the summands are."]
-theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
+lemma isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
   refine' Iff.trans _ isRegular_mul_and_mul_iff
   refine' ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
 #align is_regular_mul_iff isRegular_mul_iff
@@ -344,7 +344,7 @@ end Monoid
 
 /-- Elements of a left cancel semigroup are left regular. -/
 @[to_additive "Elements of an add left cancel semigroup are add-left-regular."]
-theorem isLeftRegular_of_leftCancelSemigroup [LeftCancelSemigroup R]
+lemma isLeftRegular_of_leftCancelSemigroup [LeftCancelSemigroup R]
     (g : R) : IsLeftRegular g :=
   mul_right_injective g
 #align is_left_regular_of_left_cancel_semigroup isLeftRegular_of_leftCancelSemigroup
@@ -352,7 +352,7 @@ theorem isLeftRegular_of_leftCancelSemigroup [LeftCancelSemigroup R]
 
 /-- Elements of a right cancel semigroup are right regular. -/
 @[to_additive "Elements of an add right cancel semigroup are add-right-regular"]
-theorem isRightRegular_of_rightCancelSemigroup [RightCancelSemigroup R]
+lemma isRightRegular_of_rightCancelSemigroup [RightCancelSemigroup R]
     (g : R) : IsRightRegular g :=
   mul_left_injective g
 #align is_right_regular_of_right_cancel_semigroup isRightRegular_of_rightCancelSemigroup
@@ -382,7 +382,7 @@ theorem isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
 #align is_regular_of_ne_zero isRegular_of_ne_zero
 
 /-- In a non-trivial integral domain, an element is regular iff it is non-zero. -/
-theorem isRegular_iff_ne_zero [Nontrivial R] : IsRegular a ↔ a ≠ 0 :=
+lemma isRegular_iff_ne_zero [Nontrivial R] : IsRegular a ↔ a ≠ 0 :=
   ⟨IsRegular.ne_zero, isRegular_of_ne_zero⟩
 #align is_regular_iff_ne_zero isRegular_iff_ne_zero
 

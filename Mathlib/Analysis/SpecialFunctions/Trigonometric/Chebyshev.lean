@@ -49,13 +49,13 @@ theorem algebraMap_eval_U (x : R) (n : ℕ) :
 
 -- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
-theorem complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
+lemma complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
   @algebraMap_eval_T ℝ ℂ _ _ _
 #align polynomial.chebyshev.complex_of_real_eval_T Polynomial.Chebyshev.complex_ofReal_eval_T
 
 -- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
-theorem complex_ofReal_eval_U : ∀ (x : ℝ) n, (((U ℝ n).eval x : ℝ) : ℂ) = (U ℂ n).eval (x : ℂ) :=
+lemma complex_ofReal_eval_U : ∀ (x : ℝ) n, (((U ℝ n).eval x : ℝ) : ℂ) = (U ℂ n).eval (x : ℂ) :=
   @algebraMap_eval_U ℝ ℂ _ _ _
 #align polynomial.chebyshev.complex_of_real_eval_U Polynomial.Chebyshev.complex_ofReal_eval_U
 
@@ -71,7 +71,7 @@ variable (θ : ℂ)
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cos θ` to the
 value `cos (n * θ)`. -/
 @[simp]
-theorem T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
+lemma T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
   | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, zero_mul, cos_zero]
   | 1 => by simp only [eval_X, one_mul, T_one, Nat.cast_one]
   | n + 2 => by
@@ -113,13 +113,13 @@ variable (θ : ℝ) (n : ℕ)
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cos θ` to the
 value `cos (n * θ)`. -/
 @[simp]
-theorem T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := by exact_mod_cast T_complex_cos θ n
+lemma T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := by exact_mod_cast T_complex_cos θ n
 #align polynomial.chebyshev.T_real_cos Polynomial.Chebyshev.T_real_cos
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
-theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
+lemma U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
   exact_mod_cast U_complex_cos θ n
 #align polynomial.chebyshev.U_real_cos Polynomial.Chebyshev.U_real_cos
 

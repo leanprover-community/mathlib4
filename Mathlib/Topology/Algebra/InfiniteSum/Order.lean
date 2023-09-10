@@ -57,7 +57,7 @@ theorem le_hasSum_of_le_sum (hf : HasSum f a) (h : ∀ s, a₂ ≤ ∑ i in s, f
   ge_of_tendsto' hf h
 #align le_has_sum_of_le_sum le_hasSum_of_le_sum
 
-theorem hasSum_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
+lemma hasSum_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     (hs : ∀ c, c ∉ Set.range e → 0 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : HasSum f a₁)
     (hg : HasSum g a₂) : a₁ ≤ a₂ := by
   rw [← hasSum_extend_zero he] at hf
@@ -69,7 +69,7 @@ theorem hasSum_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     exact hs _ h
 #align has_sum_le_inj hasSum_le_inj
 
-theorem tsum_le_tsum_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
+lemma tsum_le_tsum_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     (hs : ∀ c, c ∉ Set.range e → 0 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : Summable f)
     (hg : Summable g) : tsum f ≤ tsum g :=
   hasSum_le_inj _ he hs h hf.hasSum hg.hasSum
@@ -92,7 +92,7 @@ theorem le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j)
     _ ≤ a := sum_le_hasSum _ (by simpa) hf
 #align le_has_sum le_hasSum
 
-theorem sum_le_tsum {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 0 ≤ f i) (hf : Summable f) :
+lemma sum_le_tsum {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 0 ≤ f i) (hf : Summable f) :
     ∑ i in s, f i ≤ ∑' i, f i :=
   sum_le_hasSum s hs hf.hasSum
 #align sum_le_tsum sum_le_tsum
@@ -203,7 +203,7 @@ theorem le_tsum' (hf : Summable f) (i : ι) : f i ≤ ∑' i, f i :=
   le_tsum hf i fun _ _ => zero_le _
 #align le_tsum' le_tsum'
 
-theorem hasSum_zero_iff : HasSum f 0 ↔ ∀ x, f x = 0 :=
+lemma hasSum_zero_iff : HasSum f 0 ↔ ∀ x, f x = 0 :=
   (hasSum_zero_iff_of_nonneg fun _ => zero_le _).trans funext_iff
 #align has_sum_zero_iff hasSum_zero_iff
 
@@ -232,18 +232,18 @@ conditionally complete linear order, such as `ℝ`, `ℝ≥0`, `ℝ≥0∞`, bec
 the existence of a least upper bound.
 -/
 
-theorem hasSum_of_isLUB_of_nonneg [LinearOrderedAddCommMonoid α] [TopologicalSpace α]
+lemma hasSum_of_isLUB_of_nonneg [LinearOrderedAddCommMonoid α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h : ∀ i, 0 ≤ f i)
     (hf : IsLUB (Set.range fun s => ∑ i in s, f i) i) : HasSum f i :=
   tendsto_atTop_isLUB (Finset.sum_mono_set_of_nonneg h) hf
 #align has_sum_of_is_lub_of_nonneg hasSum_of_isLUB_of_nonneg
 
-theorem hasSum_of_isLUB [CanonicallyLinearOrderedAddMonoid α] [TopologicalSpace α] [OrderTopology α]
+lemma hasSum_of_isLUB [CanonicallyLinearOrderedAddMonoid α] [TopologicalSpace α] [OrderTopology α]
     {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s => ∑ i in s, f i) b) : HasSum f b :=
   tendsto_atTop_isLUB (Finset.sum_mono_set f) hf
 #align has_sum_of_is_lub hasSum_of_isLUB
 
-theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [UniformAddGroup α]
+lemma summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [UniformAddGroup α]
     [CompleteSpace α] {f : ι → α} : (Summable fun x => |f x|) ↔ Summable f :=
   let s := { x | 0 ≤ f x }
   have h1 : ∀ x : s, |f x| = f x := fun x => abs_of_nonneg x.2
@@ -259,7 +259,7 @@ alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 #align summable.of_abs Summable.of_abs
 #align summable.abs Summable.abs
 
-theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
+lemma Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι => b) :
     Finite ι := by
   have H : ∀ s : Finset ι, s.card • b ≤ ∑' _ : ι, b := fun s => by
@@ -270,7 +270,7 @@ theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
 
-theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α]
+lemma Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α]
     [Archimedean α] [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι => b) :
     (Set.univ : Set ι).Finite :=
   finite_univ_iff.2 <| .of_summable_const hb hf
@@ -278,7 +278,7 @@ theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [Topological
 
 end LinearOrder
 
-theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
+lemma Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
   inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|

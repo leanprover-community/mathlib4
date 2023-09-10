@@ -64,19 +64,19 @@ instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
     add_le_add_left := fun _ _ => add_le_add_left }
 #align measure_theory.Lp.ordered_add_comm_group MeasureTheory.Lp.instOrderedAddCommGroup
 
-theorem _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
+lemma _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊔ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.sup hg.1)
     (Filter.eventually_of_forall fun x => norm_sup_le_add (f x) (g x))
 #align measure_theory.mem_ℒp.sup MeasureTheory.Memℒp.sup
 
-theorem _root_.MeasureTheory.Memℒp.inf {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
+lemma _root_.MeasureTheory.Memℒp.inf {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊓ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
     (Filter.eventually_of_forall fun x => norm_inf_le_add (f x) (g x))
 #align measure_theory.mem_ℒp.inf MeasureTheory.Memℒp.inf
 
-theorem _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : Memℒp |f| p μ :=
+lemma _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : Memℒp |f| p μ :=
   hf.sup hf.neg
 #align measure_theory.mem_ℒp.abs MeasureTheory.Memℒp.abs
 

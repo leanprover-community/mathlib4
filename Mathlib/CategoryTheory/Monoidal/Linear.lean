@@ -57,7 +57,7 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
-theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
+lemma monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
     [MonoidalCategory D] [MonoidalPreadditive D] (F : MonoidalFunctor D C) [Faithful F.toFunctor]
     [F.toFunctor.Additive] [F.toFunctor.Linear R] : MonoidalLinear R D :=
   { tensor_smul := by

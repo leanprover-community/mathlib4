@@ -62,7 +62,7 @@ universe u v
 
 open BigOperators Polynomial LocalRing Polynomial Function List
 
-theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
+lemma isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalRingHom (Ideal.Quotient.mk I) := by
   constructor
   intro a h

@@ -16,11 +16,11 @@ import Mathlib.Algebra.GroupPower.Order
 
 namespace Int
 
-theorem isUnit_iff_abs_eq {x : ℤ} : IsUnit x ↔ abs x = 1 := by
+lemma isUnit_iff_abs_eq {x : ℤ} : IsUnit x ↔ abs x = 1 := by
   rw [isUnit_iff_natAbs_eq, abs_eq_natAbs, ← Int.ofNat_one, coe_nat_inj']
 #align int.is_unit_iff_abs_eq Int.isUnit_iff_abs_eq
 
-theorem isUnit_sq {a : ℤ} (ha : IsUnit a) : a ^ 2 = 1 := by rw [sq, isUnit_mul_self ha]
+lemma isUnit_sq {a : ℤ} (ha : IsUnit a) : a ^ 2 = 1 := by rw [sq, isUnit_mul_self ha]
 #align int.is_unit_sq Int.isUnit_sq
 
 @[simp]
@@ -46,18 +46,18 @@ theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by
 #align int.units_coe_mul_self Int.units_coe_mul_self
 
 @[simp]
-theorem neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 :=
+lemma neg_one_pow_ne_zero {n : ℕ} : (-1 : ℤ) ^ n ≠ 0 :=
   pow_ne_zero _ (abs_pos.mp (by simp))
 #align int.neg_one_pow_ne_zero Int.neg_one_pow_ne_zero
 
-theorem sq_eq_one_of_sq_lt_four {x : ℤ} (h1 : x ^ 2 < 4) (h2 : x ≠ 0) : x ^ 2 = 1 :=
+lemma sq_eq_one_of_sq_lt_four {x : ℤ} (h1 : x ^ 2 < 4) (h2 : x ≠ 0) : x ^ 2 = 1 :=
   sq_eq_one_iff.mpr
     ((abs_eq (zero_le_one' ℤ)).mp
       (le_antisymm (lt_add_one_iff.mp (abs_lt_of_sq_lt_sq h1 zero_le_two))
         (sub_one_lt_iff.mp (abs_pos.mpr h2))))
 #align int.sq_eq_one_of_sq_lt_four Int.sq_eq_one_of_sq_lt_four
 
-theorem sq_eq_one_of_sq_le_three {x : ℤ} (h1 : x ^ 2 ≤ 3) (h2 : x ≠ 0) : x ^ 2 = 1 :=
+lemma sq_eq_one_of_sq_le_three {x : ℤ} (h1 : x ^ 2 ≤ 3) (h2 : x ≠ 0) : x ^ 2 = 1 :=
   sq_eq_one_of_sq_lt_four (lt_of_le_of_lt h1 (lt_add_one (3 : ℤ))) h2
 #align int.sq_eq_one_of_sq_le_three Int.sq_eq_one_of_sq_le_three
 

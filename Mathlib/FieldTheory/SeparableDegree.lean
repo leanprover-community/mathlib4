@@ -70,25 +70,25 @@ def HasSeparableContraction.degree : ℕ :=
 #align polynomial.has_separable_contraction.degree Polynomial.HasSeparableContraction.degree
 
 /-- The separable degree divides the degree, in function of the exponential characteristic of F. -/
-theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
+lemma IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
     ∃ m : ℕ, g.natDegree * q ^ m = f.natDegree := by
   obtain ⟨m, rfl⟩ := hf.2
   use m
   rw [natDegree_expand]
 #align polynomial.is_separable_contraction.dvd_degree' Polynomial.IsSeparableContraction.dvd_degree'
 
-theorem HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f.natDegree :=
+lemma HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f.natDegree :=
   (Classical.choose_spec hf).dvd_degree' hf
 #align polynomial.has_separable_contraction.dvd_degree' Polynomial.HasSeparableContraction.dvd_degree'
 
 /-- The separable degree divides the degree. -/
-theorem HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=
+lemma HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=
   let ⟨a, ha⟩ := hf.dvd_degree'
   Dvd.intro (q ^ a) ha
 #align polynomial.has_separable_contraction.dvd_degree Polynomial.HasSeparableContraction.dvd_degree
 
 /-- In exponential characteristic one, the separable degree equals the degree. -/
-theorem HasSeparableContraction.eq_degree {f : F[X]} (hf : HasSeparableContraction 1 f) :
+lemma HasSeparableContraction.eq_degree {f : F[X]} (hf : HasSeparableContraction 1 f) :
     hf.degree = f.natDegree := by
   let ⟨a, ha⟩ := hf.dvd_degree'
   rw [← ha, one_pow a, mul_one]
@@ -114,7 +114,7 @@ theorem Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] (f : F[
 
 /-- If two expansions (along the positive characteristic) of two separable polynomials `g` and `g'`
 agree, then they have the same degree. -/
-theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X]) (m m' : ℕ)
+lemma contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X]) (m m' : ℕ)
     (h_expand : expand F (q ^ m) g = expand F (q ^ m') g') (hg : g.Separable) (hg' : g'.Separable) :
     g.natDegree = g'.natDegree := by
   wlog hm : m ≤ m'
@@ -128,7 +128,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
 #align polynomial.contraction_degree_eq_or_insep Polynomial.contraction_degree_eq_or_insep
 
 /-- The separable degree equals the degree of any separable contraction, i.e., it is unique. -/
-theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
+lemma IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     (hg : IsSeparableContraction q f g) : g.natDegree = hf.degree := by
   cases hF
   · rcases hg with ⟨_, m, hm⟩

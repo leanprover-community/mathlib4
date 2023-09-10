@@ -97,7 +97,7 @@ theorem stereoToFun_apply (x : E) :
   rfl
 #align stereo_to_fun_apply stereoToFun_apply
 
-theorem contDiffOn_stereoToFun :
+lemma contDiffOn_stereoToFun :
     ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
   refine' ContDiffOn.smul _ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine' contDiff_const.contDiffOn.div _ _
@@ -106,7 +106,7 @@ theorem contDiffOn_stereoToFun :
     exact h (sub_eq_zero.mp h').symm
 #align cont_diff_on_stereo_to_fun contDiffOn_stereoToFun
 
-theorem continuousOn_stereoToFun :
+lemma continuousOn_stereoToFun :
     ContinuousOn (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} :=
   contDiffOn_stereoToFun.continuousOn
 #align continuous_on_stereo_to_fun continuousOn_stereoToFun
@@ -169,7 +169,7 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
   convert this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 #align has_fderiv_at_stereo_inv_fun_aux_comp_coe hasFDerivAt_stereoInvFunAux_comp_coe
 
-theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
+lemma contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
   have h₀ : ContDiff ℝ ⊤ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
   have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
     refine' (h₀.add contDiff_const).inv _
@@ -373,12 +373,12 @@ def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 
 #align stereographic' stereographic'
 
 @[simp]
-theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+lemma stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).source = {v}ᶜ := by simp [stereographic']
 #align stereographic'_source stereographic'_source
 
 @[simp]
-theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+lemma stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).target = Set.univ := by simp [stereographic']
 #align stereographic'_target stereographic'_target
 
@@ -399,7 +399,7 @@ theorem sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ
   simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_one]
 #align sphere_ext_iff sphere_ext_iff
 
-theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
+lemma stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
     (x : EuclideanSpace ℝ (Fin n)) :
     ((stereographic' n v).symm x : E) =
       let U : (ℝ ∙ (v : E))ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n) :=
@@ -444,7 +444,7 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
       rfl)
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/
-theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+lemma contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance
   have := smoothMfldWithCorners (E := E) (n := n)
@@ -469,7 +469,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWith
 
 /-- If a `ContMDiff` function `f : M → E`, where `M` is some manifold, takes values in the
 sphere, then it restricts to a `ContMDiff` function from `M` to the sphere. -/
-theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m : ℕ∞} {f : M → E}
+lemma ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m : ℕ∞} {f : M → E}
     (hf : ContMDiff I 𝓘(ℝ, E) m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
     ContMDiff I (𝓡 n) m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
   rw [contMDiff_iff_target]
@@ -494,7 +494,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
 #align cont_mdiff.cod_restrict_sphere ContMDiff.codRestrict_sphere
 
 /-- The antipodal map is smooth. -/
-theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+lemma contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) (𝓡 n) ∞ fun x : sphere (0 : E) 1 => -x := by
   -- this doesn't elaborate well in term mode
   apply ContMDiff.codRestrict_sphere
@@ -509,7 +509,7 @@ of `v` in `E`.
 Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E`).
 In general this defeq is not canonical, but in this case (the tangent space of a vector space) it is
 canonical. -/
-theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+lemma range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v :
     TangentSpace (𝓡 n) v →L[ℝ] E) = (ℝ ∙ (v : E))ᗮ := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
@@ -553,7 +553,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
-theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+lemma mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   simp only [chartAt, stereographic', stereographic_neg_apply, fderivWithin_univ,
@@ -585,7 +585,7 @@ section circle
 open Complex
 
 -- Porting note: 1+1 = 2 except when synthing instances
-theorem finrank_real_complex_fact' : Fact (finrank ℝ ℂ = 1 + 1) :=
+lemma finrank_real_complex_fact' : Fact (finrank ℝ ℂ = 1 + 1) :=
   finrank_real_complex_fact
 
 attribute [local instance] finrank_real_complex_fact'
@@ -617,7 +617,7 @@ instance : LieGroup (𝓡 1) circle where
     exact Complex.conjCle.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
-theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=
+lemma contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 #align cont_mdiff_exp_map_circle contMDiff_expMapCircle
 

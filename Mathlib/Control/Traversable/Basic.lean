@@ -127,7 +127,7 @@ theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) 
   exact funext (h α)
 #align applicative_transformation.ext ApplicativeTransformation.ext
 
-theorem ext_iff {η η' : ApplicativeTransformation F G} :
+lemma ext_iff {η η' : ApplicativeTransformation F G} :
     η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
   ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
 #align applicative_transformation.ext_iff ApplicativeTransformation.ext_iff
@@ -137,21 +137,21 @@ section Preserves
 variable (η : ApplicativeTransformation F G)
 
 @[functor_norm]
-theorem preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
+lemma preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
   η.preserves_pure'
 #align applicative_transformation.preserves_pure ApplicativeTransformation.preserves_pure
 
 @[functor_norm]
-theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
+lemma preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
   η.preserves_seq'
 #align applicative_transformation.preserves_seq ApplicativeTransformation.preserves_seq
 
 @[functor_norm]
-theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
+lemma preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
   rw [← pure_seq, η.preserves_seq, preserves_pure, pure_seq]
 #align applicative_transformation.preserves_map ApplicativeTransformation.preserves_map
 
-theorem preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
+lemma preserves_map' {α β} (x : α → β) : @η _ ∘ Functor.map x = Functor.map x ∘ @η _ := by
   ext y
   exact preserves_map η x y
 #align applicative_transformation.preserves_map' ApplicativeTransformation.preserves_map'
@@ -190,7 +190,7 @@ theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransf
 
 -- porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
 -- this was assumed
-theorem comp_assoc {I : Type u → Type t} [Applicative I]
+lemma comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
     (η : ApplicativeTransformation F G) : (η''.comp η').comp η = η''.comp (η'.comp η) :=
   rfl

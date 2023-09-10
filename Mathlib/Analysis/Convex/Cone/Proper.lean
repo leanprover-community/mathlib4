@@ -57,13 +57,13 @@ theorem coe_closure (K : ConvexCone 𝕜 E) : (K.closure : Set E) = closure K :=
 #align convex_cone.coe_closure ConvexCone.coe_closure
 
 @[simp]
-protected theorem mem_closure {K : ConvexCone 𝕜 E} {a : E} :
+protected lemma mem_closure {K : ConvexCone 𝕜 E} {a : E} :
     a ∈ K.closure ↔ a ∈ closure (K : Set E) :=
   Iff.rfl
 #align convex_cone.mem_closure ConvexCone.mem_closure
 
 @[simp]
-theorem closure_eq {K L : ConvexCone 𝕜 E} : K.closure = L ↔ closure (K : Set E) = L :=
+lemma closure_eq {K L : ConvexCone 𝕜 E} : K.closure = L ↔ closure (K : Set E) = L :=
   SetLike.ext'_iff
 #align convex_cone.closure_eq ConvexCone.closure_eq
 
@@ -95,7 +95,7 @@ instance : Coe (ProperCone 𝕜 E) (ConvexCone 𝕜 E) :=
 --   rfl
 -- #align proper_cone.to_convex_cone_eq_coe ProperCone.toConvexCone_eq_coe
 
-theorem ext' : Function.Injective ((↑) : ProperCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
+lemma ext' : Function.Injective ((↑) : ProperCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
   cases S; cases T; congr
 #align proper_cone.ext' ProperCone.ext'
 
@@ -105,12 +105,12 @@ instance : SetLike (ProperCone 𝕜 E) E where
   coe_injective' _ _ h := ProperCone.ext' (SetLike.coe_injective h)
 
 @[ext]
-theorem ext {S T : ProperCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
+lemma ext {S T : ProperCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align proper_cone.ext ProperCone.ext
 
 @[simp]
-theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : ConvexCone 𝕜 E) ↔ x ∈ K :=
+lemma mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : ConvexCone 𝕜 E) ↔ x ∈ K :=
   Iff.rfl
 #align proper_cone.mem_coe ProperCone.mem_coe
 
@@ -138,11 +138,11 @@ def positive : ProperCone 𝕜 E where
   is_closed' := isClosed_Ici
 
 @[simp]
-theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
+lemma mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
   Iff.rfl
 
 @[simp]
-theorem coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
+lemma coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
   rfl
 
 end PositiveCone
@@ -167,11 +167,11 @@ theorem mem_zero (x : E) : x ∈ (0 : ProperCone 𝕜 E) ↔ x = 0 :=
 #align proper_cone.mem_zero ProperCone.mem_zero
 
 @[simp] -- Porting note: removed `norm_cast` (new-style structures)
-theorem coe_zero : ↑(0 : ProperCone 𝕜 E) = (0 : ConvexCone 𝕜 E) :=
+lemma coe_zero : ↑(0 : ProperCone 𝕜 E) = (0 : ConvexCone 𝕜 E) :=
   rfl
 #align proper_cone.coe_zero ProperCone.coe_zero
 
-theorem pointed_zero : (0 : ProperCone 𝕜 E).Pointed := by simp [ConvexCone.pointed_zero]
+lemma pointed_zero : (0 : ProperCone 𝕜 E).Pointed := by simp [ConvexCone.pointed_zero]
 #align proper_cone.pointed_zero ProperCone.pointed_zero
 
 end Module
@@ -204,7 +204,7 @@ theorem coe_map (f : E →L[ℝ] F) (K : ProperCone ℝ E) :
 #align proper_cone.coe_map ProperCone.coe_map
 
 @[simp]
-theorem mem_map {f : E →L[ℝ] F} {K : ProperCone ℝ E} {y : F} :
+lemma mem_map {f : E →L[ℝ] F} {K : ProperCone ℝ E} {y : F} :
     y ∈ K.map f ↔ y ∈ (ConvexCone.map (f : E →ₗ[ℝ] F) ↑K).closure :=
   Iff.rfl
 #align proper_cone.mem_map ProperCone.mem_map
@@ -227,7 +227,7 @@ theorem coe_dual (K : ProperCone ℝ E) : ↑(dual K) = (K : Set E).innerDualCon
 #align proper_cone.coe_dual ProperCone.coe_dual
 
 @[simp]
-theorem mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ := by
+lemma mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ := by
   rw [← mem_coe, coe_dual, mem_innerDualCone _ _]; rfl
 #align proper_cone.mem_dual ProperCone.mem_dual
 
@@ -260,7 +260,7 @@ theorem comap_comap (g : F →L[ℝ] G) (f : E →L[ℝ] F) (S : ProperCone ℝ 
 #align proper_cone.comap_comap ProperCone.comap_comap
 
 @[simp]
-theorem mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.comap f ↔ f x ∈ S :=
+lemma mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.comap f ↔ f x ∈ S :=
   Iff.rfl
 #align proper_cone.mem_comap ProperCone.mem_comap
 

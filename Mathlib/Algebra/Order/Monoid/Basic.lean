@@ -79,7 +79,7 @@ def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
 #align order_embedding.add_right_apply OrderEmbedding.addRight_apply
 
 @[to_additive]
-theorem eq_and_eq_of_le_of_le_of_mul_le [Mul α] [LinearOrder α]
+lemma eq_and_eq_of_le_of_le_of_mul_le [Mul α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap (· * ·)) (· < ·)]
     [ContravariantClass α α (· * ·) (· ≤ ·)] {a b a0 b0 : α} (ha : a0 ≤ a) (hb : b0 ≤ b)
     (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 := by

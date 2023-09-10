@@ -198,7 +198,7 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 variable (F : MonoidalFunctor.{v₁, v₂} C D)
 
-theorem map_tensor {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+lemma map_tensor {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     F.map (f ⊗ g) = inv (F.μ X X') ≫ (F.map f ⊗ F.map g) ≫ F.μ Y Y' := by simp
 #align category_theory.monoidal_functor.map_tensor CategoryTheory.MonoidalFunctor.map_tensor
 
@@ -249,18 +249,18 @@ theorem μ_hom_inv_id (X Y : C) : F.μ X Y ≫ (F.μIso X Y).inv = 𝟙 _ :=
 #align category_theory.monoidal_functor.μ_hom_inv_id CategoryTheory.MonoidalFunctor.μ_hom_inv_id
 
 @[simp]
-theorem εIso_hom : F.εIso.hom = F.ε :=
+lemma εIso_hom : F.εIso.hom = F.ε :=
   rfl
 #align category_theory.monoidal_functor.ε_iso_hom CategoryTheory.MonoidalFunctor.εIso_hom
 
 --Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
-theorem ε_inv_hom_id : F.εIso.inv ≫ F.ε = 𝟙 _ :=
+lemma ε_inv_hom_id : F.εIso.inv ≫ F.ε = 𝟙 _ :=
   F.εIso.inv_hom_id
 #align category_theory.monoidal_functor.ε_inv_hom_id CategoryTheory.MonoidalFunctor.ε_inv_hom_id
 
 @[simp]
-theorem ε_hom_inv_id : F.ε ≫ F.εIso.inv = 𝟙 _ :=
+lemma ε_hom_inv_id : F.ε ≫ F.εIso.inv = 𝟙 _ :=
   F.εIso.hom_inv_id
 #align category_theory.monoidal_functor.ε_hom_inv_id CategoryTheory.MonoidalFunctor.ε_hom_inv_id
 
@@ -398,12 +398,12 @@ def prod' : LaxMonoidalFunctor C (D × E) :=
 #align category_theory.lax_monoidal_functor.prod' CategoryTheory.LaxMonoidalFunctor.prod'
 
 @[simp]
-theorem prod'_toFunctor : (F.prod' G).toFunctor = F.toFunctor.prod' G.toFunctor :=
+lemma prod'_toFunctor : (F.prod' G).toFunctor = F.toFunctor.prod' G.toFunctor :=
   rfl
 #align category_theory.lax_monoidal_functor.prod'_to_functor CategoryTheory.LaxMonoidalFunctor.prod'_toFunctor
 
 @[simp]
-theorem prod'_ε : (F.prod' G).ε = (F.ε, G.ε) := by
+lemma prod'_ε : (F.prod' G).ε = (F.ε, G.ε) := by
   dsimp [prod']
   simp
 #align category_theory.lax_monoidal_functor.prod'_ε CategoryTheory.LaxMonoidalFunctor.prod'_ε
@@ -472,7 +472,7 @@ def prod' : MonoidalFunctor C (D × E) :=
 #align category_theory.monoidal_functor.prod' CategoryTheory.MonoidalFunctor.prod'
 
 @[simp]
-theorem prod'_toLaxMonoidalFunctor :
+lemma prod'_toLaxMonoidalFunctor :
     (F.prod' G).toLaxMonoidalFunctor = F.toLaxMonoidalFunctor.prod' G.toLaxMonoidalFunctor :=
   rfl
 #align category_theory.monoidal_functor.prod'_to_lax_monoidal_functor CategoryTheory.MonoidalFunctor.prod'_toLaxMonoidalFunctor

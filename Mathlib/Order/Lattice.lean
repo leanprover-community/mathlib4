@@ -66,7 +66,7 @@ section
 -- TODO: this seems crazy, but it also seems to work reasonably well
 -- Porting note: no ematch attribute
 --@[ematch]
-theorem le_antisymm' [PartialOrder α] : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
+lemma le_antisymm' [PartialOrder α] : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
   @le_antisymm _ _
 #align le_antisymm' le_antisymm'
 
@@ -127,24 +127,24 @@ section SemilatticeSup
 variable [SemilatticeSup α] {a b c d : α}
 
 @[simp]
-theorem le_sup_left : a ≤ a ⊔ b :=
+lemma le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 #align le_sup_left le_sup_left
 
 -- Porting note: no ematch attribute
 --@[ematch]
-theorem le_sup_left' : a ≤ a ⊔ b :=
+lemma le_sup_left' : a ≤ a ⊔ b :=
   le_sup_left
 #align le_sup_left' le_sup_left'
 
 @[simp]
-theorem le_sup_right : b ≤ a ⊔ b :=
+lemma le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
 #align le_sup_right le_sup_right
 
 -- Porting note: no ematch attribute
 --@[ematch]
-theorem le_sup_right' : b ≤ a ⊔ b :=
+lemma le_sup_right' : b ≤ a ⊔ b :=
   le_sup_right
 #align le_sup_right' le_sup_right'
 
@@ -164,33 +164,33 @@ theorem lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
   h.trans_le le_sup_right
 #align lt_sup_of_lt_right lt_sup_of_lt_right
 
-theorem sup_le : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
+lemma sup_le : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
   SemilatticeSup.sup_le a b c
 #align sup_le sup_le
 
 @[simp]
-theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
+lemma sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   ⟨fun h : a ⊔ b ≤ c => ⟨le_trans le_sup_left h, le_trans le_sup_right h⟩,
    fun ⟨h₁, h₂⟩ => sup_le h₁ h₂⟩
 #align sup_le_iff sup_le_iff
 
 @[simp]
-theorem sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
+lemma sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
   le_antisymm_iff.trans $ by simp [le_rfl]
 #align sup_eq_left sup_eq_left
 
 @[simp]
-theorem sup_eq_right : a ⊔ b = b ↔ a ≤ b :=
+lemma sup_eq_right : a ⊔ b = b ↔ a ≤ b :=
   le_antisymm_iff.trans $ by simp [le_rfl]
 #align sup_eq_right sup_eq_right
 
 @[simp]
-theorem left_eq_sup : a = a ⊔ b ↔ b ≤ a :=
+lemma left_eq_sup : a = a ⊔ b ↔ b ≤ a :=
   eq_comm.trans sup_eq_left
 #align left_eq_sup left_eq_sup
 
 @[simp]
-theorem right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
+lemma right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
   eq_comm.trans sup_eq_right
 #align right_eq_sup right_eq_sup
 
@@ -204,12 +204,12 @@ alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 attribute [simp] sup_of_le_left sup_of_le_right
 
 @[simp]
-theorem left_lt_sup : a < a ⊔ b ↔ ¬b ≤ a :=
+lemma left_lt_sup : a < a ⊔ b ↔ ¬b ≤ a :=
   le_sup_left.lt_iff_ne.trans $ not_congr left_eq_sup
 #align left_lt_sup left_lt_sup
 
 @[simp]
-theorem right_lt_sup : b < a ⊔ b ↔ ¬a ≤ b :=
+lemma right_lt_sup : b < a ⊔ b ↔ ¬a ≤ b :=
   le_sup_right.lt_iff_ne.trans $ not_congr right_eq_sup
 #align right_lt_sup right_lt_sup
 
@@ -217,7 +217,7 @@ theorem left_or_right_lt_sup (h : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
   h.not_le_or_not_le.symm.imp left_lt_sup.2 right_lt_sup.2
 #align left_or_right_lt_sup left_or_right_lt_sup
 
-theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
+lemma le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
   constructor
   · intro h
     exact ⟨b, (sup_eq_right.mpr h).symm⟩
@@ -241,19 +241,19 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
 #align sup_le_sup_right sup_le_sup_right
 
 -- Porting note: was @[simp], but now proved by simp so not needed.
-theorem sup_idem : a ⊔ a = a := by simp
+lemma sup_idem : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
 instance : IsIdempotent α (· ⊔ ·) :=
   ⟨@sup_idem _ _⟩
 
-theorem sup_comm : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
+lemma sup_comm : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 #align sup_comm sup_comm
 
 instance : IsCommutative α (· ⊔ ·) :=
   ⟨@sup_comm _ _⟩
 
-theorem sup_assoc : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
+lemma sup_assoc : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff $ fun x => by simp only [sup_le_iff]; rw [and_assoc]
 #align sup_assoc sup_assoc
 
@@ -265,11 +265,11 @@ theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
 #align sup_left_right_swap sup_left_right_swap
 
 -- Porting note: was @[simp], but now proved by simp so not needed.
-theorem sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by simp
+lemma sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 #align sup_left_idem sup_left_idem
 
 -- Porting note: was @[simp], but now proved by simp so not needed.
-theorem sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by simp
+lemma sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by simp
 #align sup_right_idem sup_right_idem
 
 theorem sup_left_comm (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (a ⊔ c) := by
@@ -300,11 +300,11 @@ theorem sup_congr_right (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a ⊔ c = b 
   (sup_le ha le_sup_right).antisymm $ sup_le hb le_sup_right
 #align sup_congr_right sup_congr_right
 
-theorem sup_eq_sup_iff_left : a ⊔ b = a ⊔ c ↔ b ≤ a ⊔ c ∧ c ≤ a ⊔ b :=
+lemma sup_eq_sup_iff_left : a ⊔ b = a ⊔ c ↔ b ≤ a ⊔ c ∧ c ≤ a ⊔ b :=
   ⟨fun h => ⟨h ▸ le_sup_right, h.symm ▸ le_sup_right⟩, fun h => sup_congr_left h.1 h.2⟩
 #align sup_eq_sup_iff_left sup_eq_sup_iff_left
 
-theorem sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c :=
+lemma sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c :=
   ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
 #align sup_eq_sup_iff_right sup_eq_sup_iff_right
 
@@ -313,7 +313,7 @@ theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
 #align ne.lt_sup_or_lt_sup Ne.lt_sup_or_lt_sup
 
 /-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
-theorem Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → β} (hf : Monotone f)
+lemma Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → β} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) (m n : α) : f m ≤ g n :=
   calc
     f m ≤ f (m ⊔ n) := hf le_sup_left
@@ -321,14 +321,14 @@ theorem Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → 
     _ ≤ g n := hg le_sup_right
 #align monotone.forall_le_of_antitone Monotone.forall_le_of_antitone
 
-theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
+lemma SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
     (haveI := A; x ⊔ y) = x ⊔ y :=
   eq_of_forall_ge_iff $ fun c => by simp only [sup_le_iff]; rw [← H, @sup_le_iff α A, H, H]
 #align semilattice_sup.ext_sup SemilatticeSup.ext_sup
 
-theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
+lemma SemilatticeSup.ext {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
   have ss : A.toSup = B.toSup := by ext; apply SemilatticeSup.ext_sup H
@@ -385,28 +385,28 @@ section SemilatticeInf
 variable [SemilatticeInf α] {a b c d : α}
 
 @[simp]
-theorem inf_le_left : a ⊓ b ≤ a :=
+lemma inf_le_left : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left inf_le_left
 
 -- Porting note: no ematch attribute
 --@[ematch]
-theorem inf_le_left' : a ⊓ b ≤ a :=
+lemma inf_le_left' : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left' inf_le_left'
 
 @[simp]
-theorem inf_le_right : a ⊓ b ≤ b :=
+lemma inf_le_right : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right inf_le_right
 
 -- Porting note: no ematch attribute
 --@[ematch]
-theorem inf_le_right' : a ⊓ b ≤ b :=
+lemma inf_le_right' : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right' inf_le_right'
 
-theorem le_inf : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
+lemma le_inf : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
   SemilatticeInf.le_inf a b c
 #align le_inf le_inf
 
@@ -427,27 +427,27 @@ theorem inf_lt_of_right_lt (h : b < c) : a ⊓ b < c :=
 #align inf_lt_of_right_lt inf_lt_of_right_lt
 
 @[simp]
-theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
+lemma le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
   @sup_le_iff αᵒᵈ _ _ _ _
 #align le_inf_iff le_inf_iff
 
 @[simp]
-theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
+lemma inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
   le_antisymm_iff.trans $ by simp [le_rfl]
 #align inf_eq_left inf_eq_left
 
 @[simp]
-theorem inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
+lemma inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
   le_antisymm_iff.trans $ by simp [le_rfl]
 #align inf_eq_right inf_eq_right
 
 @[simp]
-theorem left_eq_inf : a = a ⊓ b ↔ a ≤ b :=
+lemma left_eq_inf : a = a ⊓ b ↔ a ≤ b :=
   eq_comm.trans inf_eq_left
 #align left_eq_inf left_eq_inf
 
 @[simp]
-theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
+lemma right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
   eq_comm.trans inf_eq_right
 #align right_eq_inf right_eq_inf
 
@@ -461,12 +461,12 @@ alias ⟨_, inf_of_le_right⟩ := inf_eq_right
 attribute [simp] inf_of_le_left inf_of_le_right
 
 @[simp]
-theorem inf_lt_left : a ⊓ b < a ↔ ¬a ≤ b :=
+lemma inf_lt_left : a ⊓ b < a ↔ ¬a ≤ b :=
   @left_lt_sup αᵒᵈ _ _ _
 #align inf_lt_left inf_lt_left
 
 @[simp]
-theorem inf_lt_right : a ⊓ b < b ↔ ¬b ≤ a :=
+lemma inf_lt_right : a ⊓ b < b ↔ ¬b ≤ a :=
   @right_lt_sup αᵒᵈ _ _ _
 #align inf_lt_right inf_lt_right
 
@@ -490,21 +490,21 @@ theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c 
 #align inf_le_inf_left inf_le_inf_left
 
 -- Porting note: was @[simp]
-theorem inf_idem : a ⊓ a = a :=
+lemma inf_idem : a ⊓ a = a :=
   @sup_idem αᵒᵈ _ _
 #align inf_idem inf_idem
 
 instance : IsIdempotent α (· ⊓ ·) :=
   ⟨@inf_idem _ _⟩
 
-theorem inf_comm : a ⊓ b = b ⊓ a :=
+lemma inf_comm : a ⊓ b = b ⊓ a :=
   @sup_comm αᵒᵈ _ _ _
 #align inf_comm inf_comm
 
 instance : IsCommutative α (· ⊓ ·) :=
   ⟨@inf_comm _ _⟩
 
-theorem inf_assoc : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) :=
+lemma inf_assoc : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) :=
   @sup_assoc αᵒᵈ _ a b c
 #align inf_assoc inf_assoc
 
@@ -516,12 +516,12 @@ theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
 #align inf_left_right_swap inf_left_right_swap
 
 -- Porting note: was @[simp]
-theorem inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b :=
+lemma inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b :=
   @sup_left_idem αᵒᵈ _ a b
 #align inf_left_idem inf_left_idem
 
 -- Porting note: was @[simp]
-theorem inf_right_idem : a ⊓ b ⊓ b = a ⊓ b :=
+lemma inf_right_idem : a ⊓ b ⊓ b = a ⊓ b :=
   @sup_right_idem αᵒᵈ _ a b
 #align inf_right_idem inf_right_idem
 
@@ -553,26 +553,26 @@ theorem inf_congr_right (h1 : b ⊓ c ≤ a) (h2 : a ⊓ c ≤ b) : a ⊓ c = b 
   @sup_congr_right αᵒᵈ _ _ _ _ h1 h2
 #align inf_congr_right inf_congr_right
 
-theorem inf_eq_inf_iff_left : a ⊓ b = a ⊓ c ↔ a ⊓ c ≤ b ∧ a ⊓ b ≤ c :=
+lemma inf_eq_inf_iff_left : a ⊓ b = a ⊓ c ↔ a ⊓ c ≤ b ∧ a ⊓ b ≤ c :=
   @sup_eq_sup_iff_left αᵒᵈ _ _ _ _
 #align inf_eq_inf_iff_left inf_eq_inf_iff_left
 
-theorem inf_eq_inf_iff_right : a ⊓ c = b ⊓ c ↔ b ⊓ c ≤ a ∧ a ⊓ c ≤ b :=
+lemma inf_eq_inf_iff_right : a ⊓ c = b ⊓ c ↔ b ⊓ c ≤ a ∧ a ⊓ c ≤ b :=
   @sup_eq_sup_iff_right αᵒᵈ _ _ _ _
 #align inf_eq_inf_iff_right inf_eq_inf_iff_right
 
-theorem Ne.inf_lt_or_inf_lt : a ≠ b → a ⊓ b < a ∨ a ⊓ b < b :=
+lemma Ne.inf_lt_or_inf_lt : a ≠ b → a ⊓ b < a ∨ a ⊓ b < b :=
   @Ne.lt_sup_or_lt_sup αᵒᵈ _ _ _
 #align ne.inf_lt_or_inf_lt Ne.inf_lt_or_inf_lt
 
-theorem SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
+lemma SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
     (haveI := A; x ⊓ y) = x ⊓ y :=
   eq_of_forall_le_iff $ fun c => by simp only [le_inf_iff]; rw [← H, @le_inf_iff α A, H, H]
 #align semilattice_inf.ext_inf SemilatticeInf.ext_inf
 
-theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
+lemma SemilatticeInf.ext {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
   have ss : A.toInf = B.toInf := by ext; apply SemilatticeInf.ext_inf H
@@ -676,12 +676,12 @@ section Lattice
 
 variable [Lattice α] {a b c d : α}
 
-theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
+lemma inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left
 #align inf_le_sup inf_le_sup
 
 -- Porting note: was @[simp]
-theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
+lemma sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
 
 @[simp] lemma inf_eq_sup : a ⊓ b = a ⊔ b ↔ a = b := by rw [←inf_le_sup.ge_iff_eq, sup_le_inf]
@@ -705,24 +705,24 @@ lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c :=
 
 
 -- TODO: better names?
-theorem sup_inf_le : a ⊔ b ⊓ c ≤ (a ⊔ b) ⊓ (a ⊔ c) :=
+lemma sup_inf_le : a ⊔ b ⊓ c ≤ (a ⊔ b) ⊓ (a ⊔ c) :=
   le_inf (sup_le_sup_left inf_le_left _) (sup_le_sup_left inf_le_right _)
 #align sup_inf_le sup_inf_le
 
-theorem le_inf_sup : a ⊓ b ⊔ a ⊓ c ≤ a ⊓ (b ⊔ c) :=
+lemma le_inf_sup : a ⊓ b ⊔ a ⊓ c ≤ a ⊓ (b ⊔ c) :=
   sup_le (inf_le_inf_left _ le_sup_left) (inf_le_inf_left _ le_sup_right)
 #align le_inf_sup le_inf_sup
 
-theorem inf_sup_self : a ⊓ (a ⊔ b) = a := by simp
+lemma inf_sup_self : a ⊓ (a ⊔ b) = a := by simp
 #align inf_sup_self inf_sup_self
 
-theorem sup_inf_self : a ⊔ a ⊓ b = a := by simp
+lemma sup_inf_self : a ⊔ a ⊓ b = a := by simp
 #align sup_inf_self sup_inf_self
 
-theorem sup_eq_iff_inf_eq : a ⊔ b = b ↔ a ⊓ b = a := by rw [sup_eq_right, ← inf_eq_left]
+lemma sup_eq_iff_inf_eq : a ⊔ b = b ↔ a ⊓ b = a := by rw [sup_eq_right, ← inf_eq_left]
 #align sup_eq_iff_inf_eq sup_eq_iff_inf_eq
 
-theorem Lattice.ext {α} {A B : Lattice α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
+lemma Lattice.ext {α} {A B : Lattice α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
   cases A
   cases B
@@ -758,19 +758,19 @@ section DistribLattice
 
 variable [DistribLattice α] {x y z : α}
 
-theorem le_sup_inf : ∀ {x y z : α}, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z :=
+lemma le_sup_inf : ∀ {x y z : α}, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z :=
   fun {x y z} => DistribLattice.le_sup_inf x y z
 #align le_sup_inf le_sup_inf
 
-theorem sup_inf_left : x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z) :=
+lemma sup_inf_left : x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z) :=
   le_antisymm sup_inf_le le_sup_inf
 #align sup_inf_left sup_inf_left
 
-theorem sup_inf_right : y ⊓ z ⊔ x = (y ⊔ x) ⊓ (z ⊔ x) := by
+lemma sup_inf_right : y ⊓ z ⊔ x = (y ⊔ x) ⊓ (z ⊔ x) := by
   simp only [sup_inf_left, fun y : α => @sup_comm α _ y x, eq_self_iff_true]
 #align sup_inf_right sup_inf_right
 
-theorem inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z :=
+lemma inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z :=
   calc
     x ⊓ (y ⊔ z) = x ⊓ (x ⊔ z) ⊓ (y ⊔ z) := by rw [inf_sup_self]
     _ = x ⊓ (x ⊓ y ⊔ z) := by simp only [inf_assoc, sup_inf_right, eq_self_iff_true]
@@ -783,7 +783,7 @@ instance OrderDual.distribLattice (α : Type*) [DistribLattice α] : DistribLatt
   __ := inferInstanceAs (Lattice αᵒᵈ)
   le_sup_inf := fun _ _ _ => le_of_eq (@inf_sup_left α).symm
 
-theorem inf_sup_right : (y ⊔ z) ⊓ x = y ⊓ x ⊔ z ⊓ x := by
+lemma inf_sup_right : (y ⊔ z) ⊓ x = y ⊓ x ⊔ z ⊓ x := by
   simp only [inf_sup_left, fun y : α => @inf_comm α _ y x, eq_self_iff_true]
 #align inf_sup_right inf_sup_right
 
@@ -797,7 +797,7 @@ theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y �
     _ ≤ _ := sup_le (le_refl y) inf_le_left
 #align le_of_inf_le_sup_le le_of_inf_le_sup_le
 
-theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁ : b ⊓ a = c ⊓ a)
+lemma eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁ : b ⊓ a = c ⊓ a)
   (h₂ : b ⊔ a = c ⊔ a) :
     b = c :=
   le_antisymm (le_of_inf_le_sup_le (le_of_eq h₁) (le_of_eq h₂))
@@ -832,11 +832,11 @@ section LinearOrder
 
 variable [LinearOrder α] {a b c d : α}
 
-theorem sup_eq_max : a ⊔ b = max a b :=
+lemma sup_eq_max : a ⊔ b = max a b :=
   rfl
 #align sup_eq_max sup_eq_max
 
-theorem inf_eq_min : a ⊓ b = min a b :=
+lemma inf_eq_min : a ⊓ b = min a b :=
   rfl
 #align inf_eq_min inf_eq_min
 
@@ -846,7 +846,7 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
 #align sup_ind sup_ind
 
 @[simp]
-theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
+lemma le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
   exact ⟨fun h =>
     (le_total c b).imp
       (fun bc => by rwa [sup_eq_left.2 bc] at h)
@@ -855,7 +855,7 @@ theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
 #align le_sup_iff le_sup_iff
 
 @[simp]
-theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
+lemma lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
   exact ⟨fun h =>
     (le_total c b).imp
       (fun bc => by rwa [sup_eq_left.2 bc] at h)
@@ -865,7 +865,7 @@ theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
 
 -- Porting note: why does sup_ind need an explicit motive?
 @[simp]
-theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
+lemma sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
   ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
    fun h => @sup_ind α _ b c (fun x => x < a) h.1 h.2⟩
 #align sup_lt_iff sup_lt_iff
@@ -875,33 +875,33 @@ theorem inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=
 #align inf_ind inf_ind
 
 @[simp]
-theorem inf_le_iff : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
+lemma inf_le_iff : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
   @le_sup_iff αᵒᵈ _ _ _ _
 #align inf_le_iff inf_le_iff
 
 @[simp]
-theorem inf_lt_iff : b ⊓ c < a ↔ b < a ∨ c < a :=
+lemma inf_lt_iff : b ⊓ c < a ↔ b < a ∨ c < a :=
   @lt_sup_iff αᵒᵈ _ _ _ _
 #align inf_lt_iff inf_lt_iff
 
 @[simp]
-theorem lt_inf_iff : a < b ⊓ c ↔ a < b ∧ a < c :=
+lemma lt_inf_iff : a < b ⊓ c ↔ a < b ∧ a < c :=
   @sup_lt_iff αᵒᵈ _ _ _ _
 #align lt_inf_iff lt_inf_iff
 
 variable (a b c d)
 
-theorem max_max_max_comm : max (max a b) (max c d) = max (max a c) (max b d) :=
+lemma max_max_max_comm : max (max a b) (max c d) = max (max a c) (max b d) :=
   sup_sup_sup_comm _ _ _ _
 #align max_max_max_comm max_max_max_comm
 
-theorem min_min_min_comm : min (min a b) (min c d) = min (min a c) (min b d) :=
+lemma min_min_min_comm : min (min a b) (min c d) = min (min a c) (min b d) :=
   inf_inf_inf_comm _ _ _ _
 #align min_min_min_comm min_min_min_comm
 
 end LinearOrder
 
-theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
+lemma sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
   ext x y
@@ -910,7 +910,7 @@ theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α �
   exacts [sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
 #align sup_eq_max_default sup_eq_maxDefault
 
-theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
+lemma inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
   ext x y
@@ -954,22 +954,22 @@ instance : DistribLattice ℕ := inferInstance
 open OrderDual
 
 @[simp]
-theorem ofDual_inf [Sup α] (a b : αᵒᵈ) : ofDual (a ⊓ b) = ofDual a ⊔ ofDual b :=
+lemma ofDual_inf [Sup α] (a b : αᵒᵈ) : ofDual (a ⊓ b) = ofDual a ⊔ ofDual b :=
   rfl
 #align of_dual_inf ofDual_inf
 
 @[simp]
-theorem ofDual_sup [Inf α] (a b : αᵒᵈ) : ofDual (a ⊔ b) = ofDual a ⊓ ofDual b :=
+lemma ofDual_sup [Inf α] (a b : αᵒᵈ) : ofDual (a ⊔ b) = ofDual a ⊓ ofDual b :=
   rfl
 #align of_dual_sup ofDual_sup
 
 @[simp]
-theorem toDual_inf [Inf α] (a b : α) : toDual (a ⊓ b) = toDual a ⊔ toDual b :=
+lemma toDual_inf [Inf α] (a b : α) : toDual (a ⊓ b) = toDual a ⊔ toDual b :=
   rfl
 #align to_dual_inf toDual_inf
 
 @[simp]
-theorem toDual_sup [Sup α] (a b : α) : toDual (a ⊔ b) = toDual a ⊓ toDual b :=
+lemma toDual_sup [Sup α] (a b : α) : toDual (a ⊔ b) = toDual a ⊓ toDual b :=
   rfl
 #align to_dual_sup toDual_sup
 
@@ -1010,11 +1010,11 @@ instance [∀ i, Sup (α' i)] : Sup (∀ i, α' i) :=
   ⟨fun f g i => f i ⊔ g i⟩
 
 @[simp]
-theorem sup_apply [∀ i, Sup (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
+lemma sup_apply [∀ i, Sup (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
   rfl
 #align pi.sup_apply Pi.sup_apply
 
-theorem sup_def [∀ i, Sup (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f i ⊔ g i :=
+lemma sup_def [∀ i, Sup (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f i ⊔ g i :=
   rfl
 #align pi.sup_def Pi.sup_def
 
@@ -1022,11 +1022,11 @@ instance [∀ i, Inf (α' i)] : Inf (∀ i, α' i) :=
   ⟨fun f g i => f i ⊓ g i⟩
 
 @[simp]
-theorem inf_apply [∀ i, Inf (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
+lemma inf_apply [∀ i, Inf (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
   rfl
 #align pi.inf_apply Pi.inf_apply
 
-theorem inf_def [∀ i, Inf (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i => f i ⊓ g i :=
+lemma inf_def [∀ i, Inf (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i => f i ⊓ g i :=
   rfl
 #align pi.inf_def Pi.inf_def
 
@@ -1054,12 +1054,12 @@ namespace Function
 variable {ι : Type*} {π : ι → Type*} [DecidableEq ι]
 
 -- porting note: Dot notation on `Function.update` broke
-theorem update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
+lemma update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊔ b) = update f i a ⊔ update f i b :=
   funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
 #align function.update_sup Function.update_sup
 
-theorem update_inf [∀ i, SemilatticeInf (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
+lemma update_inf [∀ i, SemilatticeInf (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊓ b) = update f i a ⊓ update f i b :=
   funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
 #align function.update_inf Function.update_inf
@@ -1074,60 +1074,60 @@ end Function
 namespace Monotone
 
 /-- Pointwise supremum of two monotone functions is a monotone function. -/
-protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} (hf : Monotone f)
+protected lemma sup [Preorder α] [SemilatticeSup β] {f g : α → β} (hf : Monotone f)
     (hg : Monotone g) :
     Monotone (f ⊔ g) := fun _ _ h => sup_le_sup (hf h) (hg h)
 #align monotone.sup Monotone.sup
 
 /-- Pointwise infimum of two monotone functions is a monotone function. -/
-protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : Monotone f)
+protected lemma inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : Monotone f)
     (hg : Monotone g) :
     Monotone (f ⊓ g) := fun _ _ h => inf_le_inf (hf h) (hg h)
 #align monotone.inf Monotone.inf
 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
-protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} (hf : Monotone f)
+protected lemma max [Preorder α] [LinearOrder β] {f g : α → β} (hf : Monotone f)
     (hg : Monotone g) :
     Monotone fun x => max (f x) (g x) :=
   hf.sup hg
 #align monotone.max Monotone.max
 
 /-- Pointwise minimum of two monotone functions is a monotone function. -/
-protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} (hf : Monotone f)
+protected lemma min [Preorder α] [LinearOrder β] {f g : α → β} (hf : Monotone f)
     (hg : Monotone g) :
     Monotone fun x => min (f x) (g x) :=
   hf.inf hg
 #align monotone.min Monotone.min
 
-theorem le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β} (h : Monotone f) (x y : α) :
+lemma le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β} (h : Monotone f) (x y : α) :
     f x ⊔ f y ≤ f (x ⊔ y) :=
   sup_le (h le_sup_left) (h le_sup_right)
 #align monotone.le_map_sup Monotone.le_map_sup
 
-theorem map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β} (h : Monotone f) (x y : α) :
+lemma map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β} (h : Monotone f) (x y : α) :
     f (x ⊓ y) ≤ f x ⊓ f y :=
   le_inf (h inf_le_left) (h inf_le_right)
 #align monotone.map_inf_le Monotone.map_inf_le
 
-theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
+lemma of_map_inf [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
     (h : ∀ x y, f (x ⊓ y) = f x ⊓ f y) : Monotone f :=
   fun x y hxy => inf_eq_left.1 $ by rw [← h, inf_eq_left.2 hxy]
 #align monotone.of_map_inf Monotone.of_map_inf
 
-theorem of_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
+lemma of_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
     (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) : Monotone f :=
   (@of_map_inf (OrderDual α) (OrderDual β) _ _ _ h).dual
 #align monotone.of_map_sup Monotone.of_map_sup
 
 variable [LinearOrder α]
 
-theorem map_sup [SemilatticeSup β] {f : α → β} (hf : Monotone f) (x y : α) :
+lemma map_sup [SemilatticeSup β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊔ y) = f x ⊔ f y :=
   (IsTotal.total x y).elim (fun h : x ≤ y => by simp only [h, hf h, sup_of_le_right]) fun h => by
     simp only [h, hf h, sup_of_le_left]
 #align monotone.map_sup Monotone.map_sup
 
-theorem map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α) :
+lemma map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y :=
   hf.dual.map_sup _ _
 #align monotone.map_inf Monotone.map_inf
@@ -1137,25 +1137,25 @@ end Monotone
 namespace MonotoneOn
 
 /-- Pointwise supremum of two monotone functions is a monotone function. -/
-protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
+protected lemma sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
     (hf : MonotoneOn f s) (hg : MonotoneOn g s) : MonotoneOn (f ⊔ g) s :=
   fun _ hx _ hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
 #align monotone_on.sup MonotoneOn.sup
 
 /-- Pointwise infimum of two monotone functions is a monotone function. -/
-protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
+protected lemma inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
     (hf : MonotoneOn f s) (hg : MonotoneOn g s) : MonotoneOn (f ⊓ g) s :=
   (hf.dual.sup hg.dual).dual
 #align monotone_on.inf MonotoneOn.inf
 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
-protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
+protected lemma max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
     (hg : MonotoneOn g s) : MonotoneOn (fun x => max (f x) (g x)) s :=
   hf.sup hg
 #align monotone_on.max MonotoneOn.max
 
 /-- Pointwise minimum of two monotone functions is a monotone function. -/
-protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
+protected lemma min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
     (hg : MonotoneOn g s) : MonotoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg
 #align monotone_on.min MonotoneOn.min
@@ -1165,49 +1165,49 @@ end MonotoneOn
 namespace Antitone
 
 /-- Pointwise supremum of two monotone functions is a monotone function. -/
-protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} (hf : Antitone f)
+protected lemma sup [Preorder α] [SemilatticeSup β] {f g : α → β} (hf : Antitone f)
     (hg : Antitone g) :
     Antitone (f ⊔ g) := fun _ _ h => sup_le_sup (hf h) (hg h)
 #align antitone.sup Antitone.sup
 
 /-- Pointwise infimum of two monotone functions is a monotone function. -/
-protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : Antitone f)
+protected lemma inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : Antitone f)
     (hg : Antitone g) :
     Antitone (f ⊓ g) := fun _ _ h => inf_le_inf (hf h) (hg h)
 #align antitone.inf Antitone.inf
 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
-protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} (hf : Antitone f)
+protected lemma max [Preorder α] [LinearOrder β] {f g : α → β} (hf : Antitone f)
     (hg : Antitone g) :
     Antitone fun x => max (f x) (g x) :=
   hf.sup hg
 #align antitone.max Antitone.max
 
 /-- Pointwise minimum of two monotone functions is a monotone function. -/
-protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} (hf : Antitone f)
+protected lemma min [Preorder α] [LinearOrder β] {f g : α → β} (hf : Antitone f)
     (hg : Antitone g) :
     Antitone fun x => min (f x) (g x) :=
   hf.inf hg
 #align antitone.min Antitone.min
 
-theorem map_sup_le [SemilatticeSup α] [SemilatticeInf β] {f : α → β} (h : Antitone f) (x y : α) :
+lemma map_sup_le [SemilatticeSup α] [SemilatticeInf β] {f : α → β} (h : Antitone f) (x y : α) :
     f (x ⊔ y) ≤ f x ⊓ f y :=
   h.dual_right.le_map_sup x y
 #align antitone.map_sup_le Antitone.map_sup_le
 
-theorem le_map_inf [SemilatticeInf α] [SemilatticeSup β] {f : α → β} (h : Antitone f) (x y : α) :
+lemma le_map_inf [SemilatticeInf α] [SemilatticeSup β] {f : α → β} (h : Antitone f) (x y : α) :
     f x ⊔ f y ≤ f (x ⊓ y) :=
   h.dual_right.map_inf_le x y
 #align antitone.le_map_inf Antitone.le_map_inf
 
 variable [LinearOrder α]
 
-theorem map_sup [SemilatticeInf β] {f : α → β} (hf : Antitone f) (x y : α) :
+lemma map_sup [SemilatticeInf β] {f : α → β} (hf : Antitone f) (x y : α) :
     f (x ⊔ y) = f x ⊓ f y :=
   hf.dual_right.map_sup x y
 #align antitone.map_sup Antitone.map_sup
 
-theorem map_inf [SemilatticeSup β] {f : α → β} (hf : Antitone f) (x y : α) :
+lemma map_inf [SemilatticeSup β] {f : α → β} (hf : Antitone f) (x y : α) :
     f (x ⊓ y) = f x ⊔ f y :=
   hf.dual_right.map_inf x y
 #align antitone.map_inf Antitone.map_inf
@@ -1217,25 +1217,25 @@ end Antitone
 namespace AntitoneOn
 
 /-- Pointwise supremum of two antitone functions is an antitone function. -/
-protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
+protected lemma sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊔ g) s :=
   fun _ hx _ hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
 #align antitone_on.sup AntitoneOn.sup
 
 /-- Pointwise infimum of two antitone functions is an antitone function. -/
-protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
+protected lemma inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊓ g) s :=
   (hf.dual.sup hg.dual).dual
 #align antitone_on.inf AntitoneOn.inf
 
 /-- Pointwise maximum of two antitone functions is an antitone function. -/
-protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
+protected lemma max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => max (f x) (g x)) s :=
   hf.sup hg
 #align antitone_on.max AntitoneOn.max
 
 /-- Pointwise minimum of two antitone functions is an antitone function. -/
-protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
+protected lemma min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg
 #align antitone_on.min AntitoneOn.min
@@ -1258,52 +1258,52 @@ instance [Inf α] [Inf β] : Inf (α × β) :=
   ⟨fun p q => ⟨p.1 ⊓ q.1, p.2 ⊓ q.2⟩⟩
 
 @[simp]
-theorem mk_sup_mk [Sup α] [Sup β] (a₁ a₂ : α) (b₁ b₂ : β) :
+lemma mk_sup_mk [Sup α] [Sup β] (a₁ a₂ : α) (b₁ b₂ : β) :
     (a₁, b₁) ⊔ (a₂, b₂) = (a₁ ⊔ a₂, b₁ ⊔ b₂) :=
   rfl
 #align prod.mk_sup_mk Prod.mk_sup_mk
 
 @[simp]
-theorem mk_inf_mk [Inf α] [Inf β] (a₁ a₂ : α) (b₁ b₂ : β) :
+lemma mk_inf_mk [Inf α] [Inf β] (a₁ a₂ : α) (b₁ b₂ : β) :
     (a₁, b₁) ⊓ (a₂, b₂) = (a₁ ⊓ a₂, b₁ ⊓ b₂) :=
   rfl
 #align prod.mk_inf_mk Prod.mk_inf_mk
 
 @[simp]
-theorem fst_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).fst = p.fst ⊔ q.fst :=
+lemma fst_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).fst = p.fst ⊔ q.fst :=
   rfl
 #align prod.fst_sup Prod.fst_sup
 
 @[simp]
-theorem fst_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).fst = p.fst ⊓ q.fst :=
+lemma fst_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).fst = p.fst ⊓ q.fst :=
   rfl
 #align prod.fst_inf Prod.fst_inf
 
 @[simp]
-theorem snd_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).snd = p.snd ⊔ q.snd :=
+lemma snd_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).snd = p.snd ⊔ q.snd :=
   rfl
 #align prod.snd_sup Prod.snd_sup
 
 @[simp]
-theorem snd_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).snd = p.snd ⊓ q.snd :=
+lemma snd_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).snd = p.snd ⊓ q.snd :=
   rfl
 #align prod.snd_inf Prod.snd_inf
 
 @[simp]
-theorem swap_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).swap = p.swap ⊔ q.swap :=
+lemma swap_sup [Sup α] [Sup β] (p q : α × β) : (p ⊔ q).swap = p.swap ⊔ q.swap :=
   rfl
 #align prod.swap_sup Prod.swap_sup
 
 @[simp]
-theorem swap_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).swap = p.swap ⊓ q.swap :=
+lemma swap_inf [Inf α] [Inf β] (p q : α × β) : (p ⊓ q).swap = p.swap ⊓ q.swap :=
   rfl
 #align prod.swap_inf Prod.swap_inf
 
-theorem sup_def [Sup α] [Sup β] (p q : α × β) : p ⊔ q = (p.fst ⊔ q.fst, p.snd ⊔ q.snd) :=
+lemma sup_def [Sup α] [Sup β] (p q : α × β) : p ⊔ q = (p.fst ⊔ q.fst, p.snd ⊔ q.snd) :=
   rfl
 #align prod.sup_def Prod.sup_def
 
-theorem inf_def [Inf α] [Inf β] (p q : α × β) : p ⊓ q = (p.fst ⊓ q.fst, p.snd ⊓ q.snd) :=
+lemma inf_def [Inf α] [Inf β] (p q : α × β) : p ⊓ q = (p.fst ⊓ q.fst, p.snd ⊓ q.snd) :=
   rfl
 #align prod.inf_def Prod.inf_def
 
@@ -1373,21 +1373,21 @@ protected def lattice [Lattice α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x 
 #align subtype.lattice Subtype.lattice
 
 @[simp, norm_cast]
-theorem coe_sup [SemilatticeSup α] {P : α → Prop}
+lemma coe_sup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (x y : Subtype P) :
     (haveI := Subtype.semilatticeSup Psup; (x ⊔ y : Subtype P) : α) = (x ⊔ y : α) :=
   rfl
 #align subtype.coe_sup Subtype.coe_sup
 
 @[simp, norm_cast]
-theorem coe_inf [SemilatticeInf α] {P : α → Prop}
+lemma coe_inf [SemilatticeInf α] {P : α → Prop}
     (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) (x y : Subtype P) :
     (haveI := Subtype.semilatticeInf Pinf; (x ⊓ y : Subtype P) : α) = (x ⊓ y : α) :=
   rfl
 #align subtype.coe_inf Subtype.coe_inf
 
 @[simp]
-theorem mk_sup_mk [SemilatticeSup α] {P : α → Prop}
+lemma mk_sup_mk [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) {x y : α} (hx : P x) (hy : P y) :
     (haveI := Subtype.semilatticeSup Psup; (⟨x, hx⟩ ⊔ ⟨y, hy⟩ : Subtype P)) =
       ⟨x ⊔ y, Psup hx hy⟩ :=
@@ -1395,7 +1395,7 @@ theorem mk_sup_mk [SemilatticeSup α] {P : α → Prop}
 #align subtype.mk_sup_mk Subtype.mk_sup_mk
 
 @[simp]
-theorem mk_inf_mk [SemilatticeInf α] {P : α → Prop}
+lemma mk_inf_mk [SemilatticeInf α] {P : α → Prop}
     (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) {x y : α} (hx : P x) (hy : P y) :
     (haveI := Subtype.semilatticeInf Pinf; (⟨x, hx⟩ ⊓ ⟨y, hy⟩ : Subtype P)) =
       ⟨x ⊓ y, Pinf hx hy⟩ :=

@@ -26,11 +26,11 @@ namespace Nat
 
 variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
-theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
+lemma prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
   Finset.prod_pos fun i _ => factorial_pos (f i)
 #align nat.prod_factorial_pos Nat.prod_factorial_pos
 
-theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
+lemma prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
   classical
     induction' s using Finset.induction with a' s' has ih
     · simp only [Finset.sum_empty, Finset.prod_empty, factorial]

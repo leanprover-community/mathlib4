@@ -38,13 +38,13 @@ def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : P
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves nonnegative
 distances. -/
-theorem isometry_iff_nndist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
+lemma isometry_iff_nndist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, nndist (f x) (f y) = nndist x y := by
   simp only [Isometry, edist_nndist, ENNReal.coe_eq_coe]
 #align isometry_iff_nndist_eq isometry_iff_nndist_eq
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves distances. -/
-theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
+lemma isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, dist (f x) (f y) = dist x y := by
   simp only [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_eq]
 #align isometry_iff_dist_eq isometry_iff_dist_eq
@@ -88,27 +88,27 @@ theorem antilipschitz (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
 
 /-- Any map on a subsingleton is an isometry -/
 @[nontriviality]
-theorem _root_.isometry_subsingleton [Subsingleton α] : Isometry f := fun x y => by
+lemma _root_.isometry_subsingleton [Subsingleton α] : Isometry f := fun x y => by
   rw [Subsingleton.elim x y]; simp
 #align isometry_subsingleton isometry_subsingleton
 
 /-- The identity is an isometry -/
-theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
+lemma _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 #align isometry_id isometry_id
 
-theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
+lemma prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
   simp only [Prod.edist_eq, hf.edist_eq, hg.edist_eq, Prod_map]
 #align isometry.prod_map Isometry.prod_map
 
-theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
+lemma _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
     Isometry (fun g : (i : ι) → α i => fun i => f i (g i)) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq]
 #align isometry_dcomp isometry_dcomp
 
 /-- The composition of isometries is an isometry. -/
-theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
+lemma comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
   fun _ _ => (hg _ _).trans (hf _ _)
 #align isometry.comp Isometry.comp
 
@@ -122,7 +122,7 @@ protected theorem uniformInducing (hf : Isometry f) : UniformInducing f :=
   hf.antilipschitz.uniformInducing hf.uniformContinuous
 #align isometry.uniform_inducing Isometry.uniformInducing
 
-theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
+lemma tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
   hf.uniformInducing.inducing.tendsto_nhds_iff
 #align isometry.tendsto_nhds_iff Isometry.tendsto_nhds_iff
@@ -133,7 +133,7 @@ protected theorem continuous (hf : Isometry f) : Continuous f :=
 #align isometry.continuous Isometry.continuous
 
 /-- The right inverse of an isometry is an isometry. -/
-theorem right_inv {f : α → β} {g : β → α} (h : Isometry f) (hg : RightInverse g f) : Isometry g :=
+lemma right_inv {f : α → β} {g : β → α} (h : Isometry f) (hg : RightInverse g f) : Isometry g :=
   fun x y => by rw [← h, hg _, hg _]
 #align isometry.right_inv Isometry.right_inv
 
@@ -170,15 +170,15 @@ theorem mapsTo_emetric_closedBall (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
 #align isometry.maps_to_emetric_closed_ball Isometry.mapsTo_emetric_closedBall
 
 /-- The injection from a subtype is an isometry -/
-theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
+lemma _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
 #align isometry_subtype_coe isometry_subtype_coe
 
-theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
+lemma comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=
   hf.uniformInducing.inducing.continuousOn_iff.symm
 #align isometry.comp_continuous_on_iff Isometry.comp_continuousOn_iff
 
-theorem comp_continuous_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} :
+lemma comp_continuous_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} :
     Continuous (f ∘ g) ↔ Continuous g :=
   hf.uniformInducing.inducing.continuous_iff.symm
 #align isometry.comp_continuous_iff Isometry.comp_continuous_iff
@@ -206,7 +206,7 @@ protected theorem embedding (hf : Isometry f) : Embedding f :=
 #align isometry.embedding Isometry.embedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
-theorem closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
+lemma closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
     ClosedEmbedding f :=
   hf.antilipschitz.closedEmbedding hf.lipschitz.uniformContinuous
 #align isometry.closed_embedding Isometry.closedEmbedding
@@ -272,7 +272,7 @@ end Isometry
 -- namespace
 /-- A uniform embedding from a uniform space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem UniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
+lemma UniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
     (h : UniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
@@ -280,7 +280,7 @@ theorem UniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] 
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
+lemma Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
     (h : Embedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
@@ -305,11 +305,11 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
 -- Porting note: TODO: add `IsometryEquivClass`
 
-theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
+lemma toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 #align isometry_equiv.to_equiv_inj IsometryEquiv.toEquiv_injective
 
-@[simp] theorem toEquiv_inj {e₁ e₂ : α ≃ᵢ β} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
+@[simp] lemma toEquiv_inj {e₁ e₂ : α ≃ᵢ β} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
   toEquiv_injective.eq_iff
 
 instance : EquivLike (α ≃ᵢ β) α β where
@@ -347,12 +347,12 @@ protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : edist (h x) (h y) = e
   h.isometry.edist_eq x y
 #align isometry_equiv.edist_eq IsometryEquiv.edist_eq
 
-protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
+protected lemma dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=
   h.isometry.dist_eq x y
 #align isometry_equiv.dist_eq IsometryEquiv.dist_eq
 
-protected theorem nndist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
+protected lemma nndist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : nndist (h x) (h y) = nndist x y :=
   h.isometry.nndist_eq x y
 #align isometry_equiv.nndist_eq IsometryEquiv.nndist_eq
@@ -516,19 +516,19 @@ theorem coe_toHomeomorph_symm (h : α ≃ᵢ β) : ⇑h.toHomeomorph.symm = h.sy
 #align isometry_equiv.coe_to_homeomorph_symm IsometryEquiv.coe_toHomeomorph_symm
 
 @[simp]
-theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : γ → α} {s : Set γ} :
+lemma comp_continuousOn_iff {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : γ → α} {s : Set γ} :
     ContinuousOn (h ∘ f) s ↔ ContinuousOn f s :=
   h.toHomeomorph.comp_continuousOn_iff _ _
 #align isometry_equiv.comp_continuous_on_iff IsometryEquiv.comp_continuousOn_iff
 
 @[simp]
-theorem comp_continuous_iff {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : γ → α} :
+lemma comp_continuous_iff {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : γ → α} :
     Continuous (h ∘ f) ↔ Continuous f :=
   h.toHomeomorph.comp_continuous_iff
 #align isometry_equiv.comp_continuous_iff IsometryEquiv.comp_continuous_iff
 
 @[simp]
-theorem comp_continuous_iff' {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : β → γ} :
+lemma comp_continuous_iff' {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : β → γ} :
     Continuous (f ∘ h) ↔ Continuous f :=
   h.toHomeomorph.comp_continuous_iff'
 #align isometry_equiv.comp_continuous_iff' IsometryEquiv.comp_continuous_iff'
@@ -543,7 +543,7 @@ instance : Group (α ≃ᵢ α) where
   mul_one e := ext fun _ => rfl
   mul_left_inv e := ext e.symm_apply_apply
 
-@[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl
+@[simp] lemma coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl
 #align isometry_equiv.coe_one IsometryEquiv.coe_one
 
 @[simp] theorem coe_mul (e₁ e₂ : α ≃ᵢ α) : ⇑(e₁ * e₂) = e₁ ∘ e₂ := rfl
@@ -563,7 +563,7 @@ theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpac
     isComplete_image_iff e.isometry.uniformInducing]
 #align isometry_equiv.complete_space_iff IsometryEquiv.completeSpace_iff
 
-protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
+protected lemma completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
 #align isometry_equiv.complete_space IsometryEquiv.completeSpace
 
@@ -599,7 +599,7 @@ theorem diam_preimage (s : Set β) : Metric.diam (h ⁻¹' s) = Metric.diam s :=
   rw [← image_symm, diam_image]
 #align isometry_equiv.diam_preimage IsometryEquiv.diam_preimage
 
-theorem diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
+lemma diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
   congr_arg ENNReal.toReal h.ediam_univ
 #align isometry_equiv.diam_univ IsometryEquiv.diam_univ
 

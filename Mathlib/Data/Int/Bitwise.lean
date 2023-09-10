@@ -24,16 +24,16 @@ namespace Int
 /-! ### bitwise ops -/
 
 @[simp]
-theorem bodd_zero : bodd 0 = false :=
+lemma bodd_zero : bodd 0 = false :=
   rfl
 #align int.bodd_zero Int.bodd_zero
 
 @[simp]
-theorem bodd_one : bodd 1 = true :=
+lemma bodd_one : bodd 1 = true :=
   rfl
 #align int.bodd_one Int.bodd_one
 
-theorem bodd_two : bodd 2 = false :=
+lemma bodd_two : bodd 2 = false :=
   rfl
 #align int.bodd_two Int.bodd_two
 
@@ -94,7 +94,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
 -- `simp [← int.mul_def, int.mul, -of_nat_eq_coe, bool.bxor_comm]`
 #align int.bodd_mul Int.bodd_mul
 
-theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
+lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | (n : ℕ) => by
     rw [show (cond (bodd n) 1 0 : ℤ) = (cond (bodd n) 1 0 : ℕ) by cases bodd n <;> rfl]
     exact congr_arg ofNat n.bodd_add_div2
@@ -107,7 +107,7 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
       rfl
 #align int.bodd_add_div2 Int.bodd_add_div2
 
-theorem div2_val : ∀ n, div2 n = n / 2
+lemma div2_val : ∀ n, div2 n = n / 2
   | (n : ℕ) => congr_arg ofNat n.div2_val
   | -[n+1] => congr_arg negSucc n.div2_val
 #align int.div2_val Int.div2_val
@@ -144,7 +144,7 @@ def bitCasesOn.{u} {C : ℤ → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := 
 #align int.bit_cases_on Int.bitCasesOn
 
 @[simp]
-theorem bit_zero : bit false 0 = 0 :=
+lemma bit_zero : bit false 0 = 0 :=
   rfl
 #align int.bit_zero Int.bit_zero
 
@@ -217,7 +217,7 @@ theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
 -- #align int.bitwise_tac int.bitwise_tac
 
 --Porting note : Was `bitwise_tac` in mathlib
-theorem bitwise_or : bitwise or = lor := by
+lemma bitwise_or : bitwise or = lor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff',
@@ -236,7 +236,7 @@ theorem bitwise_or : bitwise or = lor := by
 #align int.bitwise_or Int.bitwise_or
 
 --Porting note : Was `bitwise_tac` in mathlib
-theorem bitwise_and : bitwise and = land := by
+lemma bitwise_and : bitwise and = land := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
@@ -253,7 +253,7 @@ theorem bitwise_and : bitwise and = land := by
 #align int.bitwise_and Int.bitwise_and
 
 --Porting note : Was `bitwise_tac` in mathlib
-theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff' := by
+lemma bitwise_diff : (bitwise fun a b => a && not b) = ldiff' := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
@@ -273,7 +273,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff' := by
 #align int.bitwise_diff Int.bitwise_diff
 
 --Porting note : Was `bitwise_tac` in mathlib
-theorem bitwise_xor : bitwise xor = lxor' := by
+lemma bitwise_xor : bitwise xor = lxor' := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
@@ -359,7 +359,7 @@ theorem testBit_lxor (m n k) : testBit (lxor' m n) k = xor (testBit m k) (testBi
 #align int.test_bit_lxor Int.testBit_lxor
 
 @[simp]
-theorem testBit_lnot : ∀ n k, testBit (lnot n) k = not (testBit n k)
+lemma testBit_lnot : ∀ n k, testBit (lnot n) k = not (testBit n k)
   | (n : ℕ), k => by simp [lnot, testBit]
   | -[n+1], k => by simp [lnot, testBit]
 #align int.test_bit_lnot Int.testBit_lnot
@@ -393,7 +393,7 @@ theorem shiftl_negSucc (m n : ℕ) : shiftl -[m+1] n = -[Nat.shiftLeft' true m n
 theorem shiftr_negSucc (m n : ℕ) : shiftr -[m+1] n = -[m >>> n+1] := by cases n <;> rfl
 #align int.shiftr_neg_succ Int.shiftr_negSucc
 
-theorem shiftr_add : ∀ (m : ℤ) (n k : ℕ), shiftr m (n + k) = shiftr (shiftr m n) k
+lemma shiftr_add : ∀ (m : ℤ) (n k : ℕ), shiftr m (n + k) = shiftr (shiftr m n) k
   | (m : ℕ), n, k => by
     rw [shiftr_coe_nat, shiftr_coe_nat, ← Int.ofNat_add, shiftr_coe_nat, Nat.shiftRight_add]
   | -[m+1], n, k => by
@@ -404,7 +404,7 @@ theorem shiftr_add : ∀ (m : ℤ) (n k : ℕ), shiftr m (n + k) = shiftr (shift
 
 attribute [local simp] Int.zero_div
 
-theorem shiftl_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), shiftl m (n + k) = shiftl (shiftl m n) k
+lemma shiftl_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), shiftl m (n + k) = shiftl (shiftl m n) k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.pow_add, mul_assoc])
   | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
@@ -430,12 +430,12 @@ theorem shiftl_sub (m : ℤ) (n : ℕ) (k : ℤ) : shiftl m (n - k) = shiftr (sh
   shiftl_add _ _ _
 #align int.shiftl_sub Int.shiftl_sub
 
-theorem shiftl_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), shiftl m n = m * ↑(2 ^ n)
+lemma shiftl_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), shiftl m n = m * ↑(2 ^ n)
   | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp)
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftl_eq_mul_pow
 
-theorem shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / ↑(2 ^ n)
+lemma shiftr_eq_div_pow : ∀ (m : ℤ) (n : ℕ), shiftr m n = m / ↑(2 ^ n)
   | (m : ℕ), n => by rw [shiftr_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
   | -[m+1], n => by
     rw [shiftr_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]; rfl
@@ -447,7 +447,7 @@ theorem one_shiftl (n : ℕ) : shiftl 1 n = (2 ^ n : ℕ) :=
 #align int.one_shiftl Int.one_shiftl
 
 @[simp]
-theorem zero_shiftl : ∀ n : ℤ, shiftl 0 n = 0
+lemma zero_shiftl : ∀ n : ℤ, shiftl 0 n = 0
   | (n : ℕ) => congr_arg ((↑) : ℕ → ℤ) (by simp)
   | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (by simp)
 #align int.zero_shiftl Int.zero_shiftl

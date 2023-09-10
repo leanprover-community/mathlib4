@@ -12,7 +12,7 @@ Defines a command wrapper that prints the number of heartbeats used in the enclo
 For example
 ```
 count_heartbeats in
-theorem foo : 42 = 6 * 7 := rfl
+lemma foo : 42 = 6 * 7 := rfl
 ```
 will produce an info message containing a number around 51.
 If this number is above the current `maxHeartbeats`, we also print a `Try this:` suggestion.

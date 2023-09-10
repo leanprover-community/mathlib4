@@ -122,7 +122,7 @@ attribute [instance 999] CoproductsDisjoint.CoproductDisjoint
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in
 general that `C` has strict initial objects, for instance consider the category of types and
 partial functions. -/
-theorem initialMonoClass_of_disjoint_coproducts [CoproductsDisjoint C] : InitialMonoClass C where
+lemma initialMonoClass_of_disjoint_coproducts [CoproductsDisjoint C] : InitialMonoClass C where
   isInitial_mono_from X hI :=
     CoproductDisjoint.mono_inl X (IsInitial.to hI X) (CategoryTheory.CategoryStruct.id X)
       { desc := fun s : BinaryCofan _ _ => s.inr

@@ -143,7 +143,7 @@ theorem mono_set (hst : s ⊆ t) (hf : ApproximatesLinearOn f f' t c) :
     ApproximatesLinearOn f f' s c := fun x hx y hy => hf x (hst hx) y (hst hy)
 #align approximates_linear_on.mono_set ApproximatesLinearOn.mono_set
 
-theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜] F} {s : Set E}
+lemma approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜] F} {s : Set E}
     {c : ℝ≥0} : ApproximatesLinearOn f f' s c ↔ LipschitzOnWith c (f - ⇑f') s := by
   have : ∀ x y, f x - f y - f' (x - y) = (f - f') x - (f - f') y := fun x y ↦ by
     simp only [map_sub, Pi.sub_apply]; abel
@@ -380,7 +380,7 @@ protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   injOn_iff_injective.2 <| hf.injective hc
 #align approximates_linear_on.inj_on ApproximatesLinearOn.injOn
 
-protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
+protected lemma surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Surjective f := by
   cases' hc with hE hc
   · haveI : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
@@ -485,7 +485,7 @@ def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
 
 /-- In a real vector space, a function `f` that approximates a linear equivalence on a subset `s`
 can be extended to a homeomorphism of the whole space. -/
-theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {s : Set E}
     {f : E → F} {f' : E ≃L[ℝ] F} {c : ℝ≥0} (hf : ApproximatesLinearOn f (f' : E →L[ℝ] F) s c)
     (hc : Subsingleton E ∨ lipschitzExtensionConstant F * c < ‖(f'.symm : F →L[ℝ] E)‖₊⁻¹) :
@@ -532,7 +532,7 @@ namespace HasStrictFDerivAt
 
 /-- If `f` has derivative `f'` at `a` in the strict sense and `c > 0`, then `f` approximates `f'`
 with constant `c` on some neighborhood of `a`. -/
-theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
+lemma approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f f' a) {c : ℝ≥0} (hc : Subsingleton E ∨ 0 < c) :
     ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c := by
   cases' hc with hE hc
@@ -544,7 +544,7 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
   exact ⟨s, has, fun x hx y hy => hs (mk_mem_prod hx hy)⟩
 #align has_strict_fderiv_at.approximates_deriv_on_nhds HasStrictFDerivAt.approximates_deriv_on_nhds
 
-theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
+lemma map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : LinearMap.range f' = ⊤) :
     map f (𝓝 a) = 𝓝 (f a) := by
   let f'symm := f'.nonlinearRightInverseOfSurjective h
@@ -674,7 +674,7 @@ theorem to_local_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a)
 end HasStrictFDerivAt
 
 /-- If a function has an invertible strict derivative at all points, then it is an open map. -/
-theorem open_map_of_strict_fderiv_equiv [CompleteSpace E] {f : E → F} {f' : E → E ≃L[𝕜] F}
+lemma open_map_of_strict_fderiv_equiv [CompleteSpace E] {f : E → F} {f' : E → E ≃L[𝕜] F}
     (hf : ∀ x, HasStrictFDerivAt f (f' x : E →L[𝕜] F) x) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => (hf x).map_nhds_eq_of_equiv.ge
 #align open_map_of_strict_fderiv_equiv open_map_of_strict_fderiv_equiv
@@ -702,15 +702,15 @@ def localInverse : 𝕜 → 𝕜 :=
 
 variable {f f' a}
 
-theorem map_nhds_eq : map f (𝓝 a) = 𝓝 (f a) :=
+lemma map_nhds_eq : map f (𝓝 a) = 𝓝 (f a) :=
   (hf.hasStrictFDerivAt_equiv hf').map_nhds_eq_of_equiv
 #align has_strict_deriv_at.map_nhds_eq HasStrictDerivAt.map_nhds_eq
 
-theorem to_localInverse : HasStrictDerivAt (hf.localInverse f f' a hf') f'⁻¹ (f a) :=
+lemma to_localInverse : HasStrictDerivAt (hf.localInverse f f' a hf') f'⁻¹ (f a) :=
   (hf.hasStrictFDerivAt_equiv hf').to_localInverse
 #align has_strict_deriv_at.to_local_inverse HasStrictDerivAt.to_localInverse
 
-theorem to_local_left_inverse {g : 𝕜 → 𝕜} (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) :
+lemma to_local_left_inverse {g : 𝕜 → 𝕜} (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) :
     HasStrictDerivAt g f'⁻¹ (f a) :=
   (hf.hasStrictFDerivAt_equiv hf').to_local_left_inverse hg
 #align has_strict_deriv_at.to_local_left_inverse HasStrictDerivAt.to_local_left_inverse
@@ -718,7 +718,7 @@ theorem to_local_left_inverse {g : 𝕜 → 𝕜} (hg : ∀ᶠ x in 𝓝 a, g (f
 end HasStrictDerivAt
 
 /-- If a function has a non-zero strict derivative at all points, then it is an open map. -/
-theorem open_map_of_strict_deriv [CompleteSpace 𝕜] {f f' : 𝕜 → 𝕜}
+lemma open_map_of_strict_deriv [CompleteSpace 𝕜] {f f' : 𝕜 → 𝕜}
     (hf : ∀ x, HasStrictDerivAt f (f' x) x) (h0 : ∀ x, f' x ≠ 0) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => ((hf x).map_nhds_eq (h0 x)).ge
 #align open_map_of_strict_deriv open_map_of_strict_deriv
@@ -749,19 +749,19 @@ def toLocalHomeomorph {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDeriv
 variable {f}
 
 @[simp]
-theorem toLocalHomeomorph_coe {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
+lemma toLocalHomeomorph_coe {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     (hf.toLocalHomeomorph f hf' hn : E' → F') = f :=
   rfl
 #align cont_diff_at.to_local_homeomorph_coe ContDiffAt.toLocalHomeomorph_coe
 
-theorem mem_toLocalHomeomorph_source {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
+lemma mem_toLocalHomeomorph_source {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     a ∈ (hf.toLocalHomeomorph f hf' hn).source :=
   (hf.hasStrictFDerivAt' hf' hn).mem_toLocalHomeomorph_source
 #align cont_diff_at.mem_to_local_homeomorph_source ContDiffAt.mem_toLocalHomeomorph_source
 
-theorem image_mem_toLocalHomeomorph_target {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
+lemma image_mem_toLocalHomeomorph_target {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     f a ∈ (hf.toLocalHomeomorph f hf' hn).target :=
   (hf.hasStrictFDerivAt' hf' hn).image_mem_toLocalHomeomorph_target
@@ -774,7 +774,7 @@ def localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f 
   (hf.hasStrictFDerivAt' hf' hn).localInverse f f' a
 #align cont_diff_at.local_inverse ContDiffAt.localInverse
 
-theorem localInverse_apply_image {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
+lemma localInverse_apply_image {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) : hf.localInverse hf' hn (f a) = a :=
   (hf.hasStrictFDerivAt' hf' hn).localInverse_apply_image
 #align cont_diff_at.local_inverse_apply_image ContDiffAt.localInverse_apply_image
@@ -782,7 +782,7 @@ theorem localInverse_apply_image {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, the inverse function (produced by `ContDiff.toLocalHomeomorph`) is
 also `ContDiff`. -/
-theorem to_localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
+lemma to_localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E' →L[𝕂] F') a) (hn : 1 ≤ n) :
     ContDiffAt 𝕂 n (hf.localInverse hf' hn) (f a) := by
   have := hf.localInverse_apply_image hf' hn

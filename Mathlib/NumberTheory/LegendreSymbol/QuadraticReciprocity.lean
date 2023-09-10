@@ -57,13 +57,13 @@ namespace legendreSym
 variable (hp : p ≠ 2)
 
 /-- `legendreSym p 2` is given by `χ₈ p`. -/
-theorem at_two : legendreSym p 2 = χ₈ p := by
+lemma at_two : legendreSym p 2 = χ₈ p := by
   have : (2 : ZMod p) = (2 : ℤ) := by norm_cast
   rw [legendreSym, ← this, quadraticChar_two ((ringChar_zmod_n p).substr hp), card p]
 #align legendre_sym.at_two legendreSym.at_two
 
 /-- `legendreSym p (-2)` is given by `χ₈' p`. -/
-theorem at_neg_two : legendreSym p (-2) = χ₈' p := by
+lemma at_neg_two : legendreSym p (-2) = χ₈' p := by
   have : (-2 : ZMod p) = (-2 : ℤ) := by norm_cast
   rw [legendreSym, ← this, quadraticChar_neg_two ((ringChar_zmod_n p).substr hp), card p]
 #align legendre_sym.at_neg_two legendreSym.at_neg_two
@@ -75,7 +75,7 @@ namespace ZMod
 variable (hp : p ≠ 2)
 
 /-- `2` is a square modulo an odd prime `p` iff `p` is congruent to `1` or `7` mod `8`. -/
-theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
+lemma exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
   rw [FiniteField.isSquare_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
   rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁
@@ -86,7 +86,7 @@ theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7
 #align zmod.exists_sq_eq_two_iff ZMod.exists_sq_eq_two_iff
 
 /-- `-2` is a square modulo an odd prime `p` iff `p` is congruent to `1` or `3` mod `8`. -/
-theorem exists_sq_eq_neg_two_iff : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
+lemma exists_sq_eq_neg_two_iff : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
   rw [FiniteField.isSquare_neg_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
   rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁

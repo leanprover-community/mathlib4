@@ -46,27 +46,27 @@ instance : LocallyFiniteOrder (Finset α)
     rw [mem_filter, mem_ssubsets]
     exact and_comm
 
-theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filter ((· ⊆ ·) s) :=
+lemma Icc_eq_filter_powerset : Icc s t = t.powerset.filter ((· ⊆ ·) s) :=
   rfl
 #align finset.Icc_eq_filter_powerset Finset.Icc_eq_filter_powerset
 
-theorem Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filter ((· ⊆ ·) s) :=
+lemma Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filter ((· ⊆ ·) s) :=
   rfl
 #align finset.Ico_eq_filter_ssubsets Finset.Ico_eq_filter_ssubsets
 
-theorem Ioc_eq_filter_powerset : Ioc s t = t.powerset.filter ((· ⊂ ·) s) :=
+lemma Ioc_eq_filter_powerset : Ioc s t = t.powerset.filter ((· ⊂ ·) s) :=
   rfl
 #align finset.Ioc_eq_filter_powerset Finset.Ioc_eq_filter_powerset
 
-theorem Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filter ((· ⊂ ·) s) :=
+lemma Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filter ((· ⊂ ·) s) :=
   rfl
 #align finset.Ioo_eq_filter_ssubsets Finset.Ioo_eq_filter_ssubsets
 
-theorem Iic_eq_powerset : Iic s = s.powerset :=
+lemma Iic_eq_powerset : Iic s = s.powerset :=
   filter_true_of_mem fun t _ => empty_subset t
 #align finset.Iic_eq_powerset Finset.Iic_eq_powerset
 
-theorem Iio_eq_ssubsets : Iio s = s.ssubsets :=
+lemma Iio_eq_ssubsets : Iio s = s.ssubsets :=
   filter_true_of_mem fun t _ => empty_subset t
 #align finset.Iio_eq_ssubsets Finset.Iio_eq_ssubsets
 
@@ -117,11 +117,11 @@ theorem card_Ioo_finset (h : s ⊆ t) : (Ioo s t).card = 2 ^ (t.card - s.card) -
 #align finset.card_Ioo_finset Finset.card_Ioo_finset
 
 /-- Cardinality of an `Iic` of finsets. -/
-theorem card_Iic_finset : (Iic s).card = 2 ^ s.card := by rw [Iic_eq_powerset, card_powerset]
+lemma card_Iic_finset : (Iic s).card = 2 ^ s.card := by rw [Iic_eq_powerset, card_powerset]
 #align finset.card_Iic_finset Finset.card_Iic_finset
 
 /-- Cardinality of an `Iio` of finsets. -/
-theorem card_Iio_finset : (Iio s).card = 2 ^ s.card - 1 := by
+lemma card_Iio_finset : (Iio s).card = 2 ^ s.card - 1 := by
   rw [Iio_eq_ssubsets, ssubsets, card_erase_of_mem (mem_powerset_self _), card_powerset]
 #align finset.card_Iio_finset Finset.card_Iio_finset
 

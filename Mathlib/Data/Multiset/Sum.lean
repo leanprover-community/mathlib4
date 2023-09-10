@@ -31,28 +31,28 @@ def disjSum : Multiset (Sum α β) :=
 #align multiset.disj_sum Multiset.disjSum
 
 @[simp]
-theorem zero_disjSum : (0 : Multiset α).disjSum t = t.map inr :=
+lemma zero_disjSum : (0 : Multiset α).disjSum t = t.map inr :=
   zero_add _
 #align multiset.zero_disj_sum Multiset.zero_disjSum
 
 @[simp]
-theorem disjSum_zero : s.disjSum (0 : Multiset β) = s.map inl :=
+lemma disjSum_zero : s.disjSum (0 : Multiset β) = s.map inl :=
   add_zero _
 #align multiset.disj_sum_zero Multiset.disjSum_zero
 
 @[simp]
-theorem card_disjSum : Multiset.card (s.disjSum t) = Multiset.card s + Multiset.card t := by
+lemma card_disjSum : Multiset.card (s.disjSum t) = Multiset.card s + Multiset.card t := by
   rw [disjSum, card_add, card_map, card_map]
 #align multiset.card_disj_sum Multiset.card_disjSum
 
 variable {s t} {s₁ s₂ : Multiset α} {t₁ t₂ : Multiset β} {a : α} {b : β} {x : Sum α β}
 
-theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x := by
+lemma mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x := by
   simp_rw [disjSum, mem_add, mem_map]
 #align multiset.mem_disj_sum Multiset.mem_disjSum
 
 @[simp]
-theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
+lemma inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
   rw [mem_disjSum, or_iff_left]
   -- Porting note: Previous code for L62 was: simp only [exists_eq_right]
   simp only [inl.injEq, exists_eq_right]
@@ -61,7 +61,7 @@ theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
 #align multiset.inl_mem_disj_sum Multiset.inl_mem_disjSum
 
 @[simp]
-theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
+lemma inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   rw [mem_disjSum, or_iff_right]
   -- Porting note: Previous code for L72 was: simp only [exists_eq_right]
   simp only [inr.injEq, exists_eq_right]

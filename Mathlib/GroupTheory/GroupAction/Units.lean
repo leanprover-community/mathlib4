@@ -32,18 +32,18 @@ namespace Units
 instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
 
 @[to_additive]
-theorem smul_def [Monoid M] [SMul M α] (m : Mˣ) (a : α) : m • a = (m : M) • a :=
+lemma smul_def [Monoid M] [SMul M α] (m : Mˣ) (a : α) : m • a = (m : M) • a :=
   rfl
 #align units.smul_def Units.smul_def
 #align add_units.vadd_def AddUnits.vadd_def
 
 @[simp]
-theorem smul_isUnit [Monoid M] [SMul M α] {m : M} (hm : IsUnit m) (a : α) :
+lemma smul_isUnit [Monoid M] [SMul M α] {m : M} (hm : IsUnit m) (a : α) :
     hm.unit • a = m • a :=
   rfl
 #align units.smul_is_unit Units.smul_isUnit
 
-theorem _root_.IsUnit.inv_smul [Monoid α] {a : α} (h : IsUnit a) : h.unit⁻¹ • a = 1 :=
+lemma _root_.IsUnit.inv_smul [Monoid α] {a : α} (h : IsUnit a) : h.unit⁻¹ • a = 1 :=
   h.val_inv_mul
 #align is_unit.inv_smul IsUnit.inv_smul
 
@@ -105,14 +105,14 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
 #align units.mul_action' Units.mulAction'
 
 @[simp]
-theorem val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
+lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : ↑(g • m) = g • (m : M) :=
   rfl
 #align units.coe_smul Units.val_smul
 
 /-- Note that this lemma exists more generally as the global `smul_inv` -/
 @[simp]
-theorem smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
+lemma smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : (g • m)⁻¹ = g⁻¹ • m⁻¹ :=
   ext rfl
 #align units.smul_inv Units.smul_inv
@@ -153,7 +153,7 @@ instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SM
 
 end Units
 
-theorem IsUnit.smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
+lemma IsUnit.smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     {m : M} (g : G) (h : IsUnit m) : IsUnit (g • m) :=
   let ⟨u, hu⟩ := h
   hu ▸ ⟨g • u, Units.val_smul _ _⟩

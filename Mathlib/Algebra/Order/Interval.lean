@@ -49,32 +49,32 @@ instance : One (Interval α) :=
 namespace NonemptyInterval
 
 @[to_additive (attr := simp) toProd_zero]
-theorem toProd_one : (1 : NonemptyInterval α).toProd = 1 :=
+lemma toProd_one : (1 : NonemptyInterval α).toProd = 1 :=
   rfl
 #align nonempty_interval.to_prod_one NonemptyInterval.toProd_one
 #align nonempty_interval.to_prod_zero NonemptyInterval.toProd_zero
 
 @[to_additive]
-theorem fst_one : (1 : NonemptyInterval α).fst = 1 :=
+lemma fst_one : (1 : NonemptyInterval α).fst = 1 :=
   rfl
 #align nonempty_interval.fst_one NonemptyInterval.fst_one
 #align nonempty_interval.fst_zero NonemptyInterval.fst_zero
 
 @[to_additive]
-theorem snd_one : (1 : NonemptyInterval α).snd = 1 :=
+lemma snd_one : (1 : NonemptyInterval α).snd = 1 :=
   rfl
 #align nonempty_interval.snd_one NonemptyInterval.snd_one
 #align nonempty_interval.snd_zero NonemptyInterval.snd_zero
 
 -- Porting note: Originally `@[simp, norm_cast, to_additive]`
 @[to_additive (attr := push_cast, simp)]
-theorem coe_one_interval : ((1 : NonemptyInterval α) : Interval α) = 1 :=
+lemma coe_one_interval : ((1 : NonemptyInterval α) : Interval α) = 1 :=
   rfl
 #align nonempty_interval.coe_one_interval NonemptyInterval.coe_one_interval
 #align nonempty_interval.coe_zero_interval NonemptyInterval.coe_zero_interval
 
 @[to_additive (attr := simp)]
-theorem pure_one : pure (1 : α) = 1 :=
+lemma pure_one : pure (1 : α) = 1 :=
   rfl
 #align nonempty_interval.pure_one NonemptyInterval.pure_one
 #align nonempty_interval.pure_zero NonemptyInterval.pure_zero
@@ -84,19 +84,19 @@ end NonemptyInterval
 namespace Interval
 
 @[to_additive (attr := simp)]
-theorem pure_one : pure (1 : α) = 1 :=
+lemma pure_one : pure (1 : α) = 1 :=
   rfl
 #align interval.pure_one Interval.pure_one
 #align interval.pure_zero Interval.pure_zero
 
 @[to_additive (attr := simp)]
-theorem one_ne_bot : (1 : Interval α) ≠ ⊥ :=
+lemma one_ne_bot : (1 : Interval α) ≠ ⊥ :=
   pure_ne_bot
 #align interval.one_ne_bot Interval.one_ne_bot
 #align interval.zero_ne_bot Interval.zero_ne_bot
 
 @[to_additive (attr := simp)]
-theorem bot_ne_one : (⊥ : Interval α) ≠ 1 :=
+lemma bot_ne_one : (⊥ : Interval α) ≠ 1 :=
   bot_ne_pure
 #align interval.bot_ne_one Interval.bot_ne_one
 #align interval.bot_ne_zero Interval.bot_ne_zero
@@ -112,13 +112,13 @@ variable [PartialOrder α] [One α]
 namespace NonemptyInterval
 
 @[to_additive (attr := simp)]
-theorem coe_one : ((1 : NonemptyInterval α) : Set α) = 1 :=
+lemma coe_one : ((1 : NonemptyInterval α) : Set α) = 1 :=
   coe_pure _
 #align nonempty_interval.coe_one NonemptyInterval.coe_one
 #align nonempty_interval.coe_zero NonemptyInterval.coe_zero
 
 @[to_additive]
-theorem one_mem_one : (1 : α) ∈ (1 : NonemptyInterval α) :=
+lemma one_mem_one : (1 : α) ∈ (1 : NonemptyInterval α) :=
   ⟨le_rfl, le_rfl⟩
 #align nonempty_interval.one_mem_one NonemptyInterval.one_mem_one
 #align nonempty_interval.zero_mem_zero NonemptyInterval.zero_mem_zero
@@ -128,13 +128,13 @@ end NonemptyInterval
 namespace Interval
 
 @[to_additive (attr := simp)]
-theorem coe_one : ((1 : Interval α) : Set α) = 1 :=
+lemma coe_one : ((1 : Interval α) : Set α) = 1 :=
   Icc_self _
 #align interval.coe_one Interval.coe_one
 #align interval.coe_zero Interval.coe_zero
 
 @[to_additive]
-theorem one_mem_one : (1 : α) ∈ (1 : Interval α) :=
+lemma one_mem_one : (1 : α) ∈ (1 : Interval α) :=
   ⟨le_rfl, le_rfl⟩
 #align interval.one_mem_one Interval.one_mem_one
 #align interval.zero_mem_zero Interval.zero_mem_zero
@@ -170,31 +170,31 @@ namespace NonemptyInterval
 variable (s t : NonemptyInterval α) (a b : α)
 
 @[to_additive (attr := simp) toProd_add]
-theorem toProd_mul : (s * t).toProd = s.toProd * t.toProd :=
+lemma toProd_mul : (s * t).toProd = s.toProd * t.toProd :=
   rfl
 #align nonempty_interval.to_prod_mul NonemptyInterval.toProd_mul
 #align nonempty_interval.to_prod_add NonemptyInterval.toProd_add
 
 @[to_additive]
-theorem fst_mul : (s * t).fst = s.fst * t.fst :=
+lemma fst_mul : (s * t).fst = s.fst * t.fst :=
   rfl
 #align nonempty_interval.fst_mul NonemptyInterval.fst_mul
 #align nonempty_interval.fst_add NonemptyInterval.fst_add
 
 @[to_additive]
-theorem snd_mul : (s * t).snd = s.snd * t.snd :=
+lemma snd_mul : (s * t).snd = s.snd * t.snd :=
   rfl
 #align nonempty_interval.snd_mul NonemptyInterval.snd_mul
 #align nonempty_interval.snd_add NonemptyInterval.snd_add
 
 @[to_additive (attr := simp)]
-theorem coe_mul_interval : (↑(s * t) : Interval α) = s * t :=
+lemma coe_mul_interval : (↑(s * t) : Interval α) = s * t :=
   rfl
 #align nonempty_interval.coe_mul_interval NonemptyInterval.coe_mul_interval
 #align nonempty_interval.coe_add_interval NonemptyInterval.coe_add_interval
 
 @[to_additive (attr := simp)]
-theorem pure_mul_pure : pure a * pure b = pure (a * b) :=
+lemma pure_mul_pure : pure a * pure b = pure (a * b) :=
   rfl
 #align nonempty_interval.pure_mul_pure NonemptyInterval.pure_mul_pure
 #align nonempty_interval.pure_add_pure NonemptyInterval.pure_add_pure
@@ -206,13 +206,13 @@ namespace Interval
 variable (s t : Interval α)
 
 @[to_additive (attr := simp)]
-theorem bot_mul : ⊥ * t = ⊥ :=
+lemma bot_mul : ⊥ * t = ⊥ :=
   rfl
 #align interval.bot_mul Interval.bot_mul
 #align interval.bot_add Interval.bot_add
 
 @[to_additive]
-theorem mul_bot : s * ⊥ = ⊥ :=
+lemma mul_bot : s * ⊥ = ⊥ :=
   Option.map₂_none_right _ _
 #align interval.mul_bot Interval.mul_bot
 #align interval.add_bot Interval.add_bot
@@ -248,25 +248,25 @@ namespace NonemptyInterval
 variable (s : NonemptyInterval α) (a : α) (n : ℕ)
 
 @[to_additive (attr := simp) toProd_nsmul]
-theorem toProd_pow : (s ^ n).toProd = s.toProd ^ n :=
+lemma toProd_pow : (s ^ n).toProd = s.toProd ^ n :=
   rfl
 #align nonempty_interval.to_prod_pow NonemptyInterval.toProd_pow
 #align nonempty_interval.to_prod_nsmul NonemptyInterval.toProd_nsmul
 
 @[to_additive]
-theorem fst_pow : (s ^ n).fst = s.fst ^ n :=
+lemma fst_pow : (s ^ n).fst = s.fst ^ n :=
   rfl
 #align nonempty_interval.fst_pow NonemptyInterval.fst_pow
 #align nonempty_interval.fst_nsmul NonemptyInterval.fst_nsmul
 
 @[to_additive]
-theorem snd_pow : (s ^ n).snd = s.snd ^ n :=
+lemma snd_pow : (s ^ n).snd = s.snd ^ n :=
   rfl
 #align nonempty_interval.snd_pow NonemptyInterval.snd_pow
 #align nonempty_interval.snd_nsmul NonemptyInterval.snd_nsmul
 
 @[to_additive (attr := simp)]
-theorem pure_pow : pure a ^ n = pure (a ^ n) :=
+lemma pure_pow : pure a ^ n = pure (a ^ n) :=
   rfl
 #align nonempty_interval.pure_pow NonemptyInterval.pure_pow
 #align nonempty_interval.pure_nsmul NonemptyInterval.pure_nsmul
@@ -303,7 +303,7 @@ instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :
 namespace NonemptyInterval
 
 @[to_additive]
-theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
+lemma coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
     (s ^ n : Interval α) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 #align nonempty_interval.coe_pow_interval NonemptyInterval.coe_pow_interval
@@ -319,7 +319,7 @@ namespace Interval
 variable [OrderedCommMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
-theorem bot_pow : ∀ {n : ℕ} (_ : n ≠ 0), (⊥ : Interval α) ^ n = ⊥
+lemma bot_pow : ∀ {n : ℕ} (_ : n ≠ 0), (⊥ : Interval α) ^ n = ⊥
   | 0, h => (h rfl).elim
   | Nat.succ n, _ => bot_mul (⊥ ^ n)
 #align interval.bot_pow Interval.bot_pow
@@ -351,17 +351,17 @@ namespace NonemptyInterval
 variable (s t : NonemptyInterval α) {a b : α}
 
 @[simp]
-theorem fst_sub : (s - t).fst = s.fst - t.snd :=
+lemma fst_sub : (s - t).fst = s.fst - t.snd :=
   rfl
 #align nonempty_interval.fst_sub NonemptyInterval.fst_sub
 
 @[simp]
-theorem snd_sub : (s - t).snd = s.snd - t.fst :=
+lemma snd_sub : (s - t).snd = s.snd - t.fst :=
   rfl
 #align nonempty_interval.snd_sub NonemptyInterval.snd_sub
 
 @[simp]
-theorem coe_sub_interval : (↑(s - t) : Interval α) = s - t :=
+lemma coe_sub_interval : (↑(s - t) : Interval α) = s - t :=
   rfl
 #align nonempty_interval.coe_sub_interval NonemptyInterval.coe_sub_interval
 
@@ -381,12 +381,12 @@ namespace Interval
 variable (s t : Interval α)
 
 @[simp]
-theorem bot_sub : ⊥ - t = ⊥ :=
+lemma bot_sub : ⊥ - t = ⊥ :=
   rfl
 #align interval.bot_sub Interval.bot_sub
 
 @[simp]
-theorem sub_bot : s - ⊥ = ⊥ :=
+lemma sub_bot : s - ⊥ = ⊥ :=
   Option.map₂_none_right _ _
 #align interval.sub_bot Interval.sub_bot
 
@@ -418,17 +418,17 @@ namespace NonemptyInterval
 variable (s t : NonemptyInterval α) (a b : α)
 
 @[to_additive existing (attr := simp)]
-theorem fst_div : (s / t).fst = s.fst / t.snd :=
+lemma fst_div : (s / t).fst = s.fst / t.snd :=
   rfl
 #align nonempty_interval.fst_div NonemptyInterval.fst_div
 
 @[to_additive existing (attr := simp)]
-theorem snd_div : (s / t).snd = s.snd / t.fst :=
+lemma snd_div : (s / t).snd = s.snd / t.fst :=
   rfl
 #align nonempty_interval.snd_div NonemptyInterval.snd_div
 
 @[to_additive existing (attr := simp)]
-theorem coe_div_interval : (↑(s / t) : Interval α) = s / t :=
+lemma coe_div_interval : (↑(s / t) : Interval α) = s / t :=
   rfl
 #align nonempty_interval.coe_div_interval NonemptyInterval.coe_div_interval
 
@@ -438,7 +438,7 @@ theorem div_mem_div (ha : a ∈ s) (hb : b ∈ t) : a / b ∈ s / t :=
 #align nonempty_interval.div_mem_div NonemptyInterval.div_mem_div
 
 @[to_additive existing (attr := simp)]
-theorem pure_div_pure : pure a / pure b = pure (a / b) :=
+lemma pure_div_pure : pure a / pure b = pure (a / b) :=
   rfl
 #align nonempty_interval.pure_div_pure NonemptyInterval.pure_div_pure
 
@@ -449,12 +449,12 @@ namespace Interval
 variable (s t : Interval α)
 
 @[to_additive existing (attr := simp)]
-theorem bot_div : ⊥ / t = ⊥ :=
+lemma bot_div : ⊥ / t = ⊥ :=
   rfl
 #align interval.bot_div Interval.bot_div
 
 @[to_additive existing (attr := simp)]
-theorem div_bot : s / ⊥ = ⊥ :=
+lemma div_bot : s / ⊥ = ⊥ :=
   Option.map₂_none_right _ _
 #align interval.div_bot Interval.div_bot
 
@@ -482,19 +482,19 @@ namespace NonemptyInterval
 variable (s t : NonemptyInterval α) (a : α)
 
 @[to_additive (attr := simp)]
-theorem fst_inv : s⁻¹.fst = s.snd⁻¹ :=
+lemma fst_inv : s⁻¹.fst = s.snd⁻¹ :=
   rfl
 #align nonempty_interval.fst_inv NonemptyInterval.fst_inv
 #align nonempty_interval.fst_neg NonemptyInterval.fst_neg
 
 @[to_additive (attr := simp)]
-theorem snd_inv : s⁻¹.snd = s.fst⁻¹ :=
+lemma snd_inv : s⁻¹.snd = s.fst⁻¹ :=
   rfl
 #align nonempty_interval.snd_inv NonemptyInterval.snd_inv
 #align nonempty_interval.snd_neg NonemptyInterval.snd_neg
 
 @[to_additive (attr := simp)]
-theorem coe_inv_interval : (↑(s⁻¹) : Interval α) = (↑s)⁻¹ :=
+lemma coe_inv_interval : (↑(s⁻¹) : Interval α) = (↑s)⁻¹ :=
   rfl
 #align nonempty_interval.coe_inv_interval NonemptyInterval.coe_inv_interval
 #align nonempty_interval.coe_neg_interval NonemptyInterval.coe_neg_interval
@@ -506,7 +506,7 @@ theorem inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
 #align nonempty_interval.neg_mem_neg NonemptyInterval.neg_mem_neg
 
 @[to_additive (attr := simp)]
-theorem inv_pure : (pure a)⁻¹ = pure a⁻¹ :=
+lemma inv_pure : (pure a)⁻¹ = pure a⁻¹ :=
   rfl
 #align nonempty_interval.inv_pure NonemptyInterval.inv_pure
 #align nonempty_interval.neg_pure NonemptyInterval.neg_pure
@@ -514,7 +514,7 @@ theorem inv_pure : (pure a)⁻¹ = pure a⁻¹ :=
 end NonemptyInterval
 
 @[to_additive (attr := simp)]
-theorem Interval.inv_bot : (⊥ : Interval α)⁻¹ = ⊥ :=
+lemma Interval.inv_bot : (⊥ : Interval α)⁻¹ = ⊥ :=
   rfl
 #align interval.inv_bot Interval.inv_bot
 #align interval.neg_bot Interval.neg_bot
@@ -526,7 +526,7 @@ namespace NonemptyInterval
 variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 
 @[to_additive]
-protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
+protected lemma mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   refine' ⟨fun h => _, _⟩
   · rw [ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
@@ -577,7 +577,7 @@ namespace Interval
 variable [OrderedCommGroup α] {s t : Interval α}
 
 @[to_additive]
-protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
+protected lemma mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   cases s
   · simp [WithBot.none_eq_bot]
   cases t
@@ -635,32 +635,32 @@ def length : α :=
 #align nonempty_interval.length NonemptyInterval.length
 
 @[simp]
-theorem length_nonneg : 0 ≤ s.length :=
+lemma length_nonneg : 0 ≤ s.length :=
   sub_nonneg_of_le s.fst_le_snd
 #align nonempty_interval.length_nonneg NonemptyInterval.length_nonneg
 
 @[simp]
-theorem length_pure : (pure a).length = 0 :=
+lemma length_pure : (pure a).length = 0 :=
   sub_self _
 #align nonempty_interval.length_pure NonemptyInterval.length_pure
 
 @[simp]
-theorem length_zero : (0 : NonemptyInterval α).length = 0 :=
+lemma length_zero : (0 : NonemptyInterval α).length = 0 :=
   length_pure _
 #align nonempty_interval.length_zero NonemptyInterval.length_zero
 
 @[simp]
-theorem length_neg : (-s).length = s.length :=
+lemma length_neg : (-s).length = s.length :=
   neg_sub_neg _ _
 #align nonempty_interval.length_neg NonemptyInterval.length_neg
 
 @[simp]
-theorem length_add : (s + t).length = s.length + t.length :=
+lemma length_add : (s + t).length = s.length + t.length :=
   add_sub_add_comm _ _ _ _
 #align nonempty_interval.length_add NonemptyInterval.length_add
 
 @[simp]
-theorem length_sub : (s - t).length = s.length + t.length := by simp [sub_eq_add_neg]
+lemma length_sub : (s - t).length = s.length + t.length := by simp [sub_eq_add_neg]
 #align nonempty_interval.length_sub NonemptyInterval.length_sub
 
 @[simp]
@@ -683,34 +683,34 @@ def length : Interval α → α
 #align interval.length Interval.length
 
 @[simp]
-theorem length_nonneg : ∀ s : Interval α, 0 ≤ s.length
+lemma length_nonneg : ∀ s : Interval α, 0 ≤ s.length
   | ⊥ => le_rfl
   | (s : NonemptyInterval α) => s.length_nonneg
 #align interval.length_nonneg Interval.length_nonneg
 
 @[simp]
-theorem length_pure : (pure a).length = 0 :=
+lemma length_pure : (pure a).length = 0 :=
   NonemptyInterval.length_pure _
 #align interval.length_pure Interval.length_pure
 
 @[simp]
-theorem length_zero : (0 : Interval α).length = 0 :=
+lemma length_zero : (0 : Interval α).length = 0 :=
   length_pure _
 #align interval.length_zero Interval.length_zero
 
 @[simp]
-theorem length_neg : ∀ s : Interval α, (-s).length = s.length
+lemma length_neg : ∀ s : Interval α, (-s).length = s.length
   | ⊥ => rfl
   | (s : NonemptyInterval α) => s.length_neg
 #align interval.length_neg Interval.length_neg
 
-theorem length_add_le : ∀ s t : Interval α, (s + t).length ≤ s.length + t.length
+lemma length_add_le : ∀ s t : Interval α, (s + t).length ≤ s.length + t.length
   | ⊥, _ => by simp
   | _, ⊥ => by simp
   | (s : NonemptyInterval α), (t : NonemptyInterval α) => (s.length_add t).le
 #align interval.length_add_le Interval.length_add_le
 
-theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
+lemma length_sub_le : (s - t).length ≤ s.length + t.length := by
   simpa [sub_eq_add_neg] using length_add_le s (-t)
 #align interval.length_sub_le Interval.length_sub_le
 

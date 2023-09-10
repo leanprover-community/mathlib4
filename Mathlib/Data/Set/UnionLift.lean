@@ -62,12 +62,12 @@ variable {S : ι → Set α} {f : ∀ (i) (_ : S i), β}
   {hT : T ⊆ iUnion S} (hT' : T = iUnion S)
 
 @[simp]
-theorem iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
+lemma iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
     iUnionLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
 #align set.Union_lift_mk Set.iUnionLift_mk
 
 @[simp]
-theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
+lemma iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
     iUnionLift S f hf T hT (Set.inclusion h x) = f i x :=
   iUnionLift_mk x _
 #align set.Union_lift_inclusion Set.iUnionLift_inclusion
@@ -164,11 +164,11 @@ noncomputable def liftCover (S : ι → Set α) (f : ∀ (i) (_ : S i), β)
 #align set.lift_cover Set.liftCover
 
 @[simp]
-theorem liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
+lemma liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
   iUnionLift_mk x _
 #align set.lift_cover_coe Set.liftCover_coe
 
-theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
+lemma liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
   iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
 #align set.lift_cover_of_mem Set.liftCover_of_mem

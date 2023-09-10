@@ -63,17 +63,17 @@ end
 variable {n : Type u} [DecidableEq n] [Fintype n]
 variable {α : Type v} [CommRing α] [StarRing α] {A : Matrix n n α}
 
-theorem mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
+lemma mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
   simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_unitary_group_iff Matrix.mem_unitaryGroup_iff
 
-theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 1 := by
+lemma mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 1 := by
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_unitary_group_iff' Matrix.mem_unitaryGroup_iff'
 
-theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
+lemma det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
     A.det ∈ unitary α := by
   constructor
   · simpa [star, det_transpose] using congr_arg det hA.1
@@ -115,31 +115,31 @@ section CoeLemmas
 
 variable (A B : unitaryGroup n α)
 
-@[simp] theorem inv_val : ↑A⁻¹ = (star A : Matrix n n α) := rfl
+@[simp] lemma inv_val : ↑A⁻¹ = (star A : Matrix n n α) := rfl
 #align matrix.unitary_group.inv_val Matrix.UnitaryGroup.inv_val
 
-@[simp] theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
+@[simp] lemma inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
 #align matrix.unitary_group.inv_apply Matrix.UnitaryGroup.inv_apply
 
-@[simp] theorem mul_val : ↑(A * B) = A.1 * B.1 := rfl
+@[simp] lemma mul_val : ↑(A * B) = A.1 * B.1 := rfl
 #align matrix.unitary_group.mul_val Matrix.UnitaryGroup.mul_val
 
-@[simp] theorem mul_apply : ⇑(A * B) = A.1 * B.1 := rfl
+@[simp] lemma mul_apply : ⇑(A * B) = A.1 * B.1 := rfl
 #align matrix.unitary_group.mul_apply Matrix.UnitaryGroup.mul_apply
 
-@[simp] theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
+@[simp] lemma one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 #align matrix.unitary_group.one_val Matrix.UnitaryGroup.one_val
 
-@[simp] theorem one_apply : ⇑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
+@[simp] lemma one_apply : ⇑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
 #align matrix.unitary_group.one_apply Matrix.UnitaryGroup.one_apply
 
 @[simp]
-theorem toLin'_mul : toLin' (A * B) = (toLin' A).comp (toLin' B) :=
+lemma toLin'_mul : toLin' (A * B) = (toLin' A).comp (toLin' B) :=
   Matrix.toLin'_mul A.1 B.1
 #align matrix.unitary_group.to_lin'_mul Matrix.UnitaryGroup.toLin'_mul
 
 @[simp]
-theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
+lemma toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
   Matrix.toLin'_one
 #align matrix.unitary_group.to_lin'_one Matrix.UnitaryGroup.toLin'_one
 
@@ -176,7 +176,7 @@ set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.coe_to_GL Matrix.UnitaryGroup.coe_toGL
 
 @[simp]
-theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := Units.ext <| by
+lemma toGL_one : toGL (1 : unitaryGroup n α) = 1 := Units.ext <| by
   simp only [coe_toGL, toLin'_one]
   rfl
 set_option linter.uppercaseLean3 false in
@@ -212,13 +212,13 @@ inverse. -/
 abbrev orthogonalGroup := unitaryGroup n β
 #align matrix.orthogonal_group Matrix.orthogonalGroup
 
-theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
+lemma mem_orthogonalGroup_iff {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
   simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_orthogonal_group_iff Matrix.mem_orthogonalGroup_iff
 
-theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
+lemma mem_orthogonalGroup_iff' {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 := by
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
   rwa [mul_eq_one_comm] at hA

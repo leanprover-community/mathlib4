@@ -53,15 +53,15 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.differential_object.X_eq_to_hom_refl CategoryTheory.DifferentialObject.objEqToHom_refl
 
 @[reassoc (attr := simp)]
-theorem objEqToHom_d {x y : β} (h : x = y) :
+lemma objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; dsimp; simp
 #align homological_complex.eq_to_hom_d CategoryTheory.DifferentialObject.objEqToHom_d
 
 @[reassoc (attr := simp)]
-theorem d_squared_apply : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
+lemma d_squared_apply : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
 
 @[reassoc (attr := simp)]
-theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
+lemma eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
     (h : x = y) : X.objEqToHom h ≫ f.f y = f.f x ≫ Y.objEqToHom h := by cases h; simp
 #align homological_complex.eq_to_hom_f' CategoryTheory.DifferentialObject.eqToHom_f'
 

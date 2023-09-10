@@ -37,13 +37,13 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
 #align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
-theorem range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x | x ∈ l } := by
+lemma range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x | x ∈ l } := by
   ext x
   rw [mem_setOf_eq, mem_iff_get]
   exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
 #align set.range_list_nth_le Set.range_list_nthLe
 
-theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
+lemma range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_nthLe, ← range_comp]
   refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset_iff.2 ⟨_, _⟩)
   exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
@@ -60,7 +60,7 @@ theorem range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | 
 #align set.range_list_nthd Set.range_list_getD
 
 @[simp]
-theorem range_list_getI [Inhabited α] (l : List α) : range l.getI = insert default { x | x ∈ l } :=
+lemma range_list_getI [Inhabited α] (l : List α) : range l.getI = insert default { x | x ∈ l } :=
   range_list_getD l default
 #align set.range_list_inth Set.range_list_getI
 

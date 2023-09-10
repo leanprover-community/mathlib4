@@ -31,7 +31,7 @@ variable {μ} {s t u v : Set α}
 
 /-- If `s : ι → Set α` is a countable family of pairwise a.e. disjoint sets, then there exists a
 family of measurable null sets `t i` such that `s i \ t i` are pairwise disjoint. -/
-theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
+lemma exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
     (hd : Pairwise (AEDisjoint μ on s)) : ∃ t : ι → Set α, (∀ i, MeasurableSet (t i)) ∧
     (∀ i, μ (t i) = 0) ∧ Pairwise (Disjoint on fun i => s i \ t i) := by
   refine' ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
@@ -55,10 +55,10 @@ protected theorem eq (h : AEDisjoint μ s t) : μ (s ∩ t) = 0 :=
 protected theorem symm (h : AEDisjoint μ s t) : AEDisjoint μ t s := by rwa [AEDisjoint, inter_comm]
 #align measure_theory.ae_disjoint.symm MeasureTheory.AEDisjoint.symm
 
-protected theorem symmetric : Symmetric (AEDisjoint μ) := fun _ _ => AEDisjoint.symm
+protected lemma symmetric : Symmetric (AEDisjoint μ) := fun _ _ => AEDisjoint.symm
 #align measure_theory.ae_disjoint.symmetric MeasureTheory.AEDisjoint.symmetric
 
-protected theorem comm : AEDisjoint μ s t ↔ AEDisjoint μ t s :=
+protected lemma comm : AEDisjoint μ s t ↔ AEDisjoint μ t s :=
   ⟨AEDisjoint.symm, AEDisjoint.symm⟩
 #align measure_theory.ae_disjoint.comm MeasureTheory.AEDisjoint.comm
 
@@ -66,12 +66,12 @@ protected theorem _root_.Disjoint.aedisjoint (h : Disjoint s t) : AEDisjoint μ 
   rw [AEDisjoint, disjoint_iff_inter_eq_empty.1 h, measure_empty]
 #align disjoint.ae_disjoint Disjoint.aedisjoint
 
-protected theorem _root_.Pairwise.aedisjoint {f : ι → Set α} (hf : Pairwise (Disjoint on f)) :
+protected lemma _root_.Pairwise.aedisjoint {f : ι → Set α} (hf : Pairwise (Disjoint on f)) :
     Pairwise (AEDisjoint μ on f) :=
   hf.mono fun _i _j h => h.aedisjoint
 #align pairwise.ae_disjoint Pairwise.aedisjoint
 
-protected theorem _root_.Set.PairwiseDisjoint.aedisjoint {f : ι → Set α} {s : Set ι}
+protected lemma _root_.Set.PairwiseDisjoint.aedisjoint {f : ι → Set α} {s : Set ι}
     (hf : s.PairwiseDisjoint f) : s.Pairwise (AEDisjoint μ on f) :=
   hf.mono' fun _i _j h => h.aedisjoint
 #align set.pairwise_disjoint.ae_disjoint Set.PairwiseDisjoint.aedisjoint
@@ -90,24 +90,24 @@ protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ
 #align measure_theory.ae_disjoint.congr MeasureTheory.AEDisjoint.congr
 
 @[simp]
-theorem iUnion_left_iff [Countable ι] {s : ι → Set α} :
+lemma iUnion_left_iff [Countable ι] {s : ι → Set α} :
     AEDisjoint μ (⋃ i, s i) t ↔ ∀ i, AEDisjoint μ (s i) t := by
   simp only [AEDisjoint, iUnion_inter, measure_iUnion_null_iff]
 #align measure_theory.ae_disjoint.Union_left_iff MeasureTheory.AEDisjoint.iUnion_left_iff
 
 @[simp]
-theorem iUnion_right_iff [Countable ι] {t : ι → Set α} :
+lemma iUnion_right_iff [Countable ι] {t : ι → Set α} :
     AEDisjoint μ s (⋃ i, t i) ↔ ∀ i, AEDisjoint μ s (t i) := by
   simp only [AEDisjoint, inter_iUnion, measure_iUnion_null_iff]
 #align measure_theory.ae_disjoint.Union_right_iff MeasureTheory.AEDisjoint.iUnion_right_iff
 
 @[simp]
-theorem union_left_iff : AEDisjoint μ (s ∪ t) u ↔ AEDisjoint μ s u ∧ AEDisjoint μ t u := by
+lemma union_left_iff : AEDisjoint μ (s ∪ t) u ↔ AEDisjoint μ s u ∧ AEDisjoint μ t u := by
   simp [union_eq_iUnion, and_comm]
 #align measure_theory.ae_disjoint.union_left_iff MeasureTheory.AEDisjoint.union_left_iff
 
 @[simp]
-theorem union_right_iff : AEDisjoint μ s (t ∪ u) ↔ AEDisjoint μ s t ∧ AEDisjoint μ s u := by
+lemma union_right_iff : AEDisjoint μ s (t ∪ u) ↔ AEDisjoint μ s t ∧ AEDisjoint μ s u := by
   simp [union_eq_iUnion, and_comm]
 #align measure_theory.ae_disjoint.union_right_iff MeasureTheory.AEDisjoint.union_right_iff
 
@@ -154,11 +154,11 @@ theorem of_null_left (h : μ s = 0) : AEDisjoint μ s t :=
 
 end AEDisjoint
 
-theorem aedisjoint_compl_left : AEDisjoint μ sᶜ s :=
+lemma aedisjoint_compl_left : AEDisjoint μ sᶜ s :=
   (@disjoint_compl_left _ _ s).aedisjoint
 #align measure_theory.ae_disjoint_compl_left MeasureTheory.aedisjoint_compl_left
 
-theorem aedisjoint_compl_right : AEDisjoint μ s sᶜ :=
+lemma aedisjoint_compl_right : AEDisjoint μ s sᶜ :=
   (@disjoint_compl_right _ _ s).aedisjoint
 #align measure_theory.ae_disjoint_compl_right MeasureTheory.aedisjoint_compl_right
 

@@ -35,7 +35,7 @@ def imageOfDf (f : R[X]) : Set (PrimeSpectrum R) :=
   { p : PrimeSpectrum R | ∃ i : ℕ, coeff f i ∉ p.asIdeal }
 #align algebraic_geometry.polynomial.image_of_Df AlgebraicGeometry.Polynomial.imageOfDf
 
-theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
+lemma isOpen_imageOfDf : IsOpen (imageOfDf f) := by
   rw [imageOfDf, setOf_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
   exact isOpen_iUnion fun i => isOpen_basicOpen
 #align algebraic_geometry.polynomial.is_open_image_of_Df AlgebraicGeometry.Polynomial.isOpen_imageOfDf
@@ -43,7 +43,7 @@ theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in
 `Spec R` is contained in the open set where at least one of the coefficients of `f` is non-zero.
 This lemma is a reformulation of `exists_C_coeff_not_mem`. -/
-theorem comap_C_mem_imageOfDf {I : PrimeSpectrum R[X]}
+lemma comap_C_mem_imageOfDf {I : PrimeSpectrum R[X]}
     (H : I ∈ (zeroLocus {f} : Set (PrimeSpectrum R[X]))ᶜ) :
     PrimeSpectrum.comap (Polynomial.C : R →+* R[X]) I ∈ imageOfDf f :=
   exists_C_coeff_not_mem (mem_compl_zeroLocus_iff_not_mem.mp H)
@@ -51,7 +51,7 @@ theorem comap_C_mem_imageOfDf {I : PrimeSpectrum R[X]}
 
 /-- The open set `imageOfDf f` coincides with the image of `basicOpen f` under the
 morphism `C⁺ : Spec R[x] → Spec R`. -/
-theorem imageOfDf_eq_comap_C_compl_zeroLocus :
+lemma imageOfDf_eq_comap_C_compl_zeroLocus :
     imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' (zeroLocus {f})ᶜ := by
   ext x
   refine' ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.IsPrime⟩, ⟨_, _⟩⟩, _⟩
@@ -71,7 +71,7 @@ Stacks Project "Lemma 00FB", first part.
 
 https://stacks.math.columbia.edu/tag/00FB
 -/
-theorem isOpenMap_comap_C : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) := by
+lemma isOpenMap_comap_C : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) := by
   rintro U ⟨s, z⟩
   rw [← compl_compl U, ← z, ← iUnion_of_singleton_coe s, zeroLocus_iUnion, compl_iInter,
     image_iUnion]

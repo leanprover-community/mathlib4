@@ -53,7 +53,7 @@ instance cocompact_inf_nhds_neBot : NeBot (cocompact ℚ ⊓ 𝓝 p) := by
   exact (dense_compl_compact hs).inter_open_nonempty _ ho ⟨p, hpo⟩
 #align rat.cocompact_inf_nhds_ne_bot Rat.cocompact_inf_nhds_neBot
 
-theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact ℚ) := by
+lemma not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact ℚ) := by
   intro H
   rcases exists_seq_tendsto (cocompact ℚ ⊓ 𝓝 0) with ⟨x, hx⟩
   rw [tendsto_inf] at hx; rcases hx with ⟨hxc, hx0⟩
@@ -62,19 +62,19 @@ theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact �
   exact hn (Or.inr ⟨n, rfl⟩)
 #align rat.not_countably_generated_cocompact Rat.not_countably_generated_cocompact
 
-theorem not_countably_generated_nhds_infty_opc : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) := by
+lemma not_countably_generated_nhds_infty_opc : ¬IsCountablyGenerated (𝓝 (∞ : ℚ∞)) := by
   intro
   have : IsCountablyGenerated (comap (OnePoint.some : ℚ → ℚ∞) (𝓝 ∞)) := by infer_instance
   rw [OnePoint.comap_coe_nhds_infty, coclosedCompact_eq_cocompact] at this
   exact not_countably_generated_cocompact this
 #align rat.not_countably_generated_nhds_infty_alexandroff Rat.not_countably_generated_nhds_infty_opc
 
-theorem not_firstCountableTopology_opc : ¬FirstCountableTopology ℚ∞ := by
+lemma not_firstCountableTopology_opc : ¬FirstCountableTopology ℚ∞ := by
   intro
   exact not_countably_generated_nhds_infty_opc inferInstance
 #align rat.not_first_countable_topology_alexandroff Rat.not_firstCountableTopology_opc
 
-theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
+lemma not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
   intro
   exact not_firstCountableTopology_opc inferInstance
 #align rat.not_second_countable_topology_alexandroff Rat.not_secondCountableTopology_opc

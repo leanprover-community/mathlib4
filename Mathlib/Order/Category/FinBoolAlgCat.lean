@@ -155,7 +155,7 @@ def dualEquiv : FinBoolAlgCat ≌ FinBoolAlgCat where
 
 end FinBoolAlgCat
 
-theorem finBoolAlgCat_dual_comp_forget_to_finBddDistLatCat :
+lemma finBoolAlgCat_dual_comp_forget_to_finBddDistLatCat :
     FinBoolAlgCat.dual ⋙ forget₂ FinBoolAlgCat FinBddDistLatCat =
       forget₂ FinBoolAlgCat FinBddDistLatCat ⋙ FinBddDistLatCat.dual :=
   rfl

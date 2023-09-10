@@ -54,12 +54,12 @@ theorem rank_finsupp_self (ι : Type w) : Module.rank R (ι →₀ R) = Cardinal
 #align rank_finsupp_self rank_finsupp_self
 
 /-- If `R` and `ι` lie in the same universe, the rank of `(ι →₀ R)` is `# ι`. -/
-theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := by simp
+lemma rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := by simp
 #align rank_finsupp_self' rank_finsupp_self'
 
 /-- The rank of the direct sum is the sum of the ranks. -/
 @[simp]
-theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
+lemma rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
     Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
   let B i := chooseBasis R (M i)
@@ -108,7 +108,7 @@ open Module.Free
 
 /-- The rank of `M ⊗[R] N` is `(Module.rank R M).lift * (Module.rank R N).lift`. -/
 @[simp]
-theorem rank_tensorProduct :
+lemma rank_tensorProduct :
     Module.rank R (M ⊗[R] N) =
       Cardinal.lift.{w, v} (Module.rank R M) * Cardinal.lift.{v, w} (Module.rank R N) := by
   obtain ⟨⟨_, bM⟩⟩ := Module.Free.exists_basis (R := R) (M := M)

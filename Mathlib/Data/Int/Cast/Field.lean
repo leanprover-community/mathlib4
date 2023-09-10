@@ -32,11 +32,11 @@ variable {α : Type*}
 `R = ℤ` and cause nontermination.)
 -/
 @[norm_cast]
-theorem cast_neg_natCast {R} [DivisionRing R] (n : ℕ) : ((-n : ℤ) : R) = -n := by simp
+lemma cast_neg_natCast {R} [DivisionRing R] (n : ℕ) : ((-n : ℤ) : R) = -n := by simp
 #align int.cast_neg_nat_cast Int.cast_neg_natCast
 
 @[simp]
-theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
+lemma cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
     ((m / n : ℤ) : α) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
   have : n ≠ 0 := by

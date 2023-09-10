@@ -33,7 +33,7 @@ set_option linter.uppercaseLean3 false
 
 namespace AddCommGroupCat
 
-theorem injective_of_injective_as_module [Injective (⟨A⟩ : ModuleCat ℤ)] :
+lemma injective_of_injective_as_module [Injective (⟨A⟩ : ModuleCat ℤ)] :
     CategoryTheory.Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
   { factors := fun {X} {Y} g f m => by
       let G : (⟨X⟩ : ModuleCat ℤ) ⟶ ⟨A⟩ :=
@@ -68,7 +68,7 @@ theorem injective_of_injective_as_module [Injective (⟨A⟩ : ModuleCat ℤ)] :
       convert FunLike.congr_fun (Injective.comp_factorThru G F) x}
 #align AddCommGroup.injective_of_injective_as_module AddCommGroupCat.injective_of_injective_as_module
 
-theorem injective_as_module_of_injective_as_Ab [Injective (⟨A,inferInstance⟩ : AddCommGroupCat)] :
+lemma injective_as_module_of_injective_as_Ab [Injective (⟨A,inferInstance⟩ : AddCommGroupCat)] :
     Injective (⟨A⟩ : ModuleCat ℤ) :=
   { factors := fun {X} {Y} g f m => by
       let G : (⟨X,inferInstance⟩ : AddCommGroupCat) ⟶ ⟨A,inferInstance⟩ :=

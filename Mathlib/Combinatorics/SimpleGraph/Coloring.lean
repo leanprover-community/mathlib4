@@ -68,7 +68,7 @@ abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
 
 variable {G} {α : Type v} (C : G.Coloring α)
 
-theorem Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
+lemma Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
   C.map_rel h
 #align simple_graph.coloring.valid SimpleGraph.Coloring.valid
 
@@ -96,19 +96,19 @@ def Coloring.colorClasses : Set (Set V) := (Setoid.ker C).classes
 theorem Coloring.mem_colorClass (v : V) : v ∈ C.colorClass (C v) := rfl
 #align simple_graph.coloring.mem_color_class SimpleGraph.Coloring.mem_colorClass
 
-theorem Coloring.colorClasses_isPartition : Setoid.IsPartition C.colorClasses :=
+lemma Coloring.colorClasses_isPartition : Setoid.IsPartition C.colorClasses :=
   Setoid.isPartition_classes (Setoid.ker C)
 #align simple_graph.coloring.color_classes_is_partition SimpleGraph.Coloring.colorClasses_isPartition
 
-theorem Coloring.mem_colorClasses {v : V} : C.colorClass (C v) ∈ C.colorClasses :=
+lemma Coloring.mem_colorClasses {v : V} : C.colorClass (C v) ∈ C.colorClasses :=
   ⟨v, rfl⟩
 #align simple_graph.coloring.mem_color_classes SimpleGraph.Coloring.mem_colorClasses
 
-theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
+lemma Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
   Setoid.finite_classes_ker _
 #align simple_graph.coloring.color_classes_finite SimpleGraph.Coloring.colorClasses_finite
 
-theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
+lemma Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
     Fintype.card C.colorClasses ≤ Fintype.card α := by
   simp [colorClasses]
   -- porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
@@ -116,7 +116,7 @@ theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
   convert Setoid.card_classes_ker_le C
 #align simple_graph.coloring.card_color_classes_le SimpleGraph.Coloring.card_colorClasses_le
 
-theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
+lemma Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
     (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h => C.valid h (Eq.trans hv (Eq.symm hw))
 #align simple_graph.coloring.not_adj_of_mem_color_class SimpleGraph.Coloring.not_adj_of_mem_colorClass
 
@@ -141,7 +141,7 @@ def coloringOfIsEmpty [IsEmpty V] : G.Coloring α :=
   Coloring.mk isEmptyElim fun {v} => isEmptyElim v
 #align simple_graph.coloring_of_is_empty SimpleGraph.coloringOfIsEmpty
 
-theorem colorable_of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n :=
+lemma colorable_of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n :=
   ⟨G.coloringOfIsEmpty⟩
 #align simple_graph.colorable_of_is_empty SimpleGraph.colorable_of_isEmpty
 
@@ -196,11 +196,11 @@ noncomputable def recolorOfCardLE {α β : Type*} [Fintype α] [Fintype β]
 
 variable {G}
 
-theorem Colorable.mono {n m : ℕ} (h : n ≤ m) (hc : G.Colorable n) : G.Colorable m :=
+lemma Colorable.mono {n m : ℕ} (h : n ≤ m) (hc : G.Colorable n) : G.Colorable m :=
   ⟨G.recolorOfCardLE (by simp [h]) hc.some⟩
 #align simple_graph.colorable.mono SimpleGraph.Colorable.mono
 
-theorem Coloring.to_colorable [Fintype α] (C : G.Coloring α) : G.Colorable (Fintype.card α) :=
+lemma Coloring.to_colorable [Fintype α] (C : G.Coloring α) : G.Colorable (Fintype.card α) :=
   ⟨G.recolorOfCardLE (by simp) C⟩
 #align simple_graph.coloring.to_colorable SimpleGraph.Coloring.to_colorable
 
@@ -215,7 +215,7 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
   exact G.recolorOfCardLE hn hc.some
 #align simple_graph.colorable.to_coloring SimpleGraph.Colorable.toColoring
 
-theorem Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G') {n : ℕ}
+lemma Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G') {n : ℕ}
     (h : G'.Colorable n) : G.Colorable n :=
   ⟨(h.toColoring (by simp)).comp f⟩
 #align simple_graph.colorable.of_embedding SimpleGraph.Colorable.of_embedding
@@ -238,28 +238,28 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
       exact C.valid hvw
 #align simple_graph.colorable_iff_exists_bdd_nat_coloring SimpleGraph.colorable_iff_exists_bdd_nat_coloring
 
-theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
+lemma colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
     { n : ℕ | G.Colorable n }.Nonempty :=
   ⟨n, hc⟩
 #align simple_graph.colorable_set_nonempty_of_colorable SimpleGraph.colorable_set_nonempty_of_colorable
 
-theorem chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
+lemma chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
   ⟨0, fun _ _ => zero_le _⟩
 #align simple_graph.chromatic_number_bdd_below SimpleGraph.chromaticNumber_bddBelow
 
-theorem chromaticNumber_le_of_colorable {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
+lemma chromaticNumber_le_of_colorable {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
   rw [chromaticNumber]
   apply csInf_le chromaticNumber_bddBelow
   constructor
   exact Classical.choice hc
 #align simple_graph.chromatic_number_le_of_colorable SimpleGraph.chromaticNumber_le_of_colorable
 
-theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
+lemma chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
     G.chromaticNumber ≤ Fintype.card α :=
   csInf_le chromaticNumber_bddBelow C.to_colorable
 #align simple_graph.chromatic_number_le_card SimpleGraph.chromaticNumber_le_card
 
-theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) : G.Colorable G.chromaticNumber := by
+lemma colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) : G.Colorable G.chromaticNumber := by
   classical
   dsimp only [chromaticNumber]
   rw [Nat.sInf_def]
@@ -298,7 +298,7 @@ theorem isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) [Finite V]
   exact G.isEmpty_of_colorable_zero h'
 #align simple_graph.is_empty_of_chromatic_number_eq_zero SimpleGraph.isEmpty_of_chromaticNumber_eq_zero
 
-theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
+lemma chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
   apply le_csInf (colorable_set_nonempty_of_colorable hc)
   intro m hm
   by_contra h'
@@ -314,12 +314,12 @@ theorem colorable_of_chromaticNumber_pos (h : 0 < G.chromaticNumber) :
   exact colorable_chromaticNumber hn
 #align simple_graph.colorable_of_chromatic_number_pos SimpleGraph.colorable_of_chromaticNumber_pos
 
-theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
+lemma Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
   ⟨hc.some.comp (Hom.mapSpanningSubgraphs h)⟩
 #align simple_graph.colorable.mono_left SimpleGraph.Colorable.mono_left
 
-theorem Colorable.chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'} {m : ℕ}
+lemma Colorable.chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'} {m : ℕ}
     (hc : G'.Colorable m) (h : ∀ n, G'.Colorable n → G.Colorable n) :
     G.chromaticNumber ≤ G'.chromaticNumber := by
   apply csInf_le chromaticNumber_bddBelow
@@ -332,12 +332,12 @@ theorem Colorable.chromaticNumber_mono (G' : SimpleGraph V) {m : ℕ} (hc : G'.C
   hc.chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
 #align simple_graph.colorable.chromatic_number_mono SimpleGraph.Colorable.chromaticNumber_mono
 
-theorem Colorable.chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'} {n : ℕ}
+lemma Colorable.chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'} {n : ℕ}
     (h : G'.Colorable n) (f : G ↪g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   h.chromaticNumber_le_of_forall_imp fun _ => Colorable.of_embedding f
 #align simple_graph.colorable.chromatic_number_mono_of_embedding SimpleGraph.Colorable.chromaticNumber_mono_of_embedding
 
-theorem chromaticNumber_eq_card_of_forall_surj [Fintype α] (C : G.Coloring α)
+lemma chromaticNumber_eq_card_of_forall_surj [Fintype α] (C : G.Coloring α)
     (h : ∀ C' : G.Coloring α, Function.Surjective C') : G.chromaticNumber = Fintype.card α := by
   apply le_antisymm
   · apply chromaticNumber_le_card C
@@ -354,7 +354,7 @@ theorem chromaticNumber_eq_card_of_forall_surj [Fintype α] (C : G.Coloring α)
     exact Nat.lt_le_antisymm hc h2
 #align simple_graph.chromatic_number_eq_card_of_forall_surj SimpleGraph.chromaticNumber_eq_card_of_forall_surj
 
-theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
+lemma chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
   let C : (⊥ : SimpleGraph V).Coloring (Fin 1) :=
       Coloring.mk (fun _ => 0) fun {v w} h => False.elim h
   apply le_antisymm
@@ -363,7 +363,7 @@ theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber
 #align simple_graph.chromatic_number_bot SimpleGraph.chromaticNumber_bot
 
 @[simp]
-theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = Fintype.card V := by
+lemma chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = Fintype.card V := by
   apply chromaticNumber_eq_card_of_forall_surj (selfColoring _)
   intro C
   rw [← Finite.injective_iff_surjective]
@@ -396,7 +396,7 @@ def CompleteBipartiteGraph.bicoloring (V W : Type*) : (completeBipartiteGraph V 
       cases v <;> cases w <;> simp)
 #align simple_graph.complete_bipartite_graph.bicoloring SimpleGraph.CompleteBipartiteGraph.bicoloring
 
-theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonempty W] :
+lemma CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonempty W] :
     (completeBipartiteGraph V W).chromaticNumber = 2 := by
   apply chromaticNumber_eq_card_of_forall_surj (CompleteBipartiteGraph.bicoloring V W)
   intro C b
@@ -418,7 +418,7 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
 /-! ### Cliques -/
 
 
-theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
+lemma IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
     (C : G.Coloring α) : s.card ≤ Fintype.card α := by
   rw [isClique_iff_induce_eq] at h
   have f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x => x ∈ ↑s) G
@@ -427,7 +427,7 @@ theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype 
   simp
 #align simple_graph.is_clique.card_le_of_coloring SimpleGraph.IsClique.card_le_of_coloring
 
-theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) {n : ℕ}
+lemma IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) {n : ℕ}
     (hc : G.Colorable n) : s.card ≤ n := by
   convert h.card_le_of_coloring hc.some
   simp
@@ -435,13 +435,13 @@ theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) {n : ℕ
 
 -- TODO eliminate `Finite V` constraint once chromatic numbers are refactored.
 -- This is just to ensure the chromatic number exists.
-theorem IsClique.card_le_chromaticNumber [Finite V] {s : Finset V} (h : G.IsClique s) :
+lemma IsClique.card_le_chromaticNumber [Finite V] {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber := by
   cases nonempty_fintype V
   exact h.card_le_of_colorable G.colorable_chromaticNumber_of_fintype
 #align simple_graph.is_clique.card_le_chromatic_number SimpleGraph.IsClique.card_le_chromaticNumber
 
-protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n < m) :
+protected lemma Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n < m) :
     G.CliqueFree m := by
   by_contra h
   simp only [CliqueFree, isNClique_iff, not_forall, Classical.not_not] at h
@@ -451,7 +451,7 @@ protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n 
 
 -- TODO eliminate `Finite V` constraint once chromatic numbers are refactored.
 -- This is just to ensure the chromatic number exists.
-theorem cliqueFree_of_chromaticNumber_lt [Finite V] {n : ℕ} (hc : G.chromaticNumber < n) :
+lemma cliqueFree_of_chromaticNumber_lt [Finite V] {n : ℕ} (hc : G.chromaticNumber < n) :
     G.CliqueFree n :=
   G.colorable_chromaticNumber_of_fintype.cliqueFree hc
 #align simple_graph.clique_free_of_chromatic_number_lt SimpleGraph.cliqueFree_of_chromaticNumber_lt

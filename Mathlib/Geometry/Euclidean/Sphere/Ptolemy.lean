@@ -51,7 +51,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
 /-- **Ptolemy’s Theorem**. -/
-theorem mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}
+lemma mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hapc : ∠ a p c = π) (hbpd : ∠ b p d = π) :
     dist a b * dist c d + dist b c * dist d a = dist a c * dist b d := by
   have h' : Cospherical ({a, c, b, d} : Set P) := by rwa [Set.insert_comm c b {d}]

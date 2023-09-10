@@ -131,33 +131,33 @@ def lift {W : A} (e : W ⟶ cokernel f) (he : e ≫ cokernel.desc f g w = 0) : W
 #align homology.lift homology.lift
 
 @[reassoc (attr := simp)]
-theorem π'_desc' {W : A} (e : kernel g ⟶ W) (he : kernel.lift g f w ≫ e = 0) :
+lemma π'_desc' {W : A} (e : kernel g ⟶ W) (he : kernel.lift g f w ≫ e = 0) :
     π' f g w ≫ desc' f g w e he = e := by
   dsimp [π', desc']
   simp
 #align homology.π'_desc' homology.π'_desc'
 
 @[reassoc (attr := simp)]
-theorem lift_ι {W : A} (e : W ⟶ cokernel f) (he : e ≫ cokernel.desc f g w = 0) :
+lemma lift_ι {W : A} (e : W ⟶ cokernel f) (he : e ≫ cokernel.desc f g w = 0) :
     lift f g w e he ≫ ι _ _ _ = e := by
   dsimp [ι, lift]
   simp
 #align homology.lift_ι homology.lift_ι
 
 @[reassoc (attr := simp)]
-theorem condition_π' : kernel.lift g f w ≫ π' f g w = 0 := by
+lemma condition_π' : kernel.lift g f w ≫ π' f g w = 0 := by
   dsimp [π']
   simp
 #align homology.condition_π' homology.condition_π'
 
 @[reassoc (attr := simp)]
-theorem condition_ι : ι f g w ≫ cokernel.desc f g w = 0 := by
+lemma condition_ι : ι f g w ≫ cokernel.desc f g w = 0 := by
   dsimp [ι]
   simp
 #align homology.condition_ι homology.condition_ι
 
 @[ext]
-theorem hom_from_ext {W : A} (a b : homology f g w ⟶ W)
+lemma hom_from_ext {W : A} (a b : homology f g w ⟶ W)
     (h : π' f g w ≫ a = π' f g w ≫ b) : a = b := by
   dsimp [π'] at h
   apply_fun fun e => (homologyIsoCokernelLift f g w).inv ≫ e
@@ -170,7 +170,7 @@ theorem hom_from_ext {W : A} (a b : homology f g w ⟶ W)
 #align homology.hom_from_ext homology.hom_from_ext
 
 @[ext]
-theorem hom_to_ext {W : A} (a b : W ⟶ homology f g w) (h : a ≫ ι f g w = b ≫ ι f g w) : a = b := by
+lemma hom_to_ext {W : A} (a b : W ⟶ homology f g w) (h : a ≫ ι f g w = b ≫ ι f g w) : a = b := by
   dsimp [ι] at h
   apply_fun fun e => e ≫ (homologyIsoKernelDesc f g w).hom
   swap
@@ -182,13 +182,13 @@ theorem hom_to_ext {W : A} (a b : W ⟶ homology f g w) (h : a ≫ ι f g w = b 
 #align homology.hom_to_ext homology.hom_to_ext
 
 @[reassoc (attr := simp)]
-theorem π'_ι : π' f g w ≫ ι f g w = kernel.ι _ ≫ cokernel.π _ := by
+lemma π'_ι : π' f g w ≫ ι f g w = kernel.ι _ ≫ cokernel.π _ := by
   dsimp [π', ι, homologyIsoKernelDesc]
   simp
 #align homology.π'_ι homology.π'_ι
 
 @[reassoc (attr := simp)]
-theorem π'_eq_π : (kernelSubobjectIso _).hom ≫ π' f g w = π _ _ _ := by
+lemma π'_eq_π : (kernelSubobjectIso _).hom ≫ π' f g w = π _ _ _ := by
   dsimp [π', homologyIsoCokernelLift]
   simp only [← Category.assoc]
   rw [Iso.comp_inv_eq]

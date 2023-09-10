@@ -76,7 +76,7 @@ structure Hom (X Y : Grothendieck F) where
 #align category_theory.grothendieck.hom CategoryTheory.Grothendieck.Hom
 
 @[ext]
-theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
+lemma ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
     (w_fiber : eqToHom (by rw [w_base]) ≫ f.fiber = g.fiber) : f = g := by
   cases f; cases g
   congr
@@ -130,7 +130,7 @@ theorem id_fiber' (X : Grothendieck F) :
   id_fiber X
 #align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'
 
-theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
+lemma congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
   dsimp

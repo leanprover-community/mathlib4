@@ -60,7 +60,7 @@ def FreeCoequalizer.π : (Monad.free T).obj X.A ⟶ X where
   h := X.assoc.symm
 #align category_theory.monad.free_coequalizer.π CategoryTheory.Monad.FreeCoequalizer.π
 
-theorem FreeCoequalizer.condition :
+lemma FreeCoequalizer.condition :
     FreeCoequalizer.topMap X ≫ FreeCoequalizer.π X =
       FreeCoequalizer.bottomMap X ≫ FreeCoequalizer.π X :=
   Algebra.Hom.ext _ _ X.assoc.symm
@@ -116,7 +116,7 @@ def beckCofork : Cofork (T.map X.a) (T.μ.app _) :=
 #align category_theory.monad.beck_cofork CategoryTheory.Monad.beckCofork
 
 @[simp]
-theorem beckCofork_π : (beckCofork X).π = X.a :=
+lemma beckCofork_π : (beckCofork X).π = X.a :=
   rfl
 #align category_theory.monad.beck_cofork_π CategoryTheory.Monad.beckCofork_π
 

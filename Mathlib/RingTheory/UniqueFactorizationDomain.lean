@@ -72,14 +72,14 @@ instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
     rw [mk_dvdNotUnit_mk_iff]⟩
 #align wf_dvd_monoid.wf_dvd_monoid_associates WfDvdMonoid.wfDvdMonoid_associates
 
-theorem wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
+lemma wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
   Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
 #align wf_dvd_monoid.well_founded_associates WfDvdMonoid.wellFounded_associates
 
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] WellFounded.fix
 
-theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
+lemma exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
     ∃ i, Irreducible i ∧ i ∣ a :=
   let ⟨b, hs, hr⟩ := wellFounded_dvdNotUnit.has_min { b | b ∣ a ∧ ¬IsUnit b } ⟨a, dvd_rfl, ha⟩
   ⟨b,
@@ -91,7 +91,7 @@ theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
 #align wf_dvd_monoid.exists_irreducible_factor WfDvdMonoid.exists_irreducible_factor
 
 @[elab_as_elim]
-theorem induction_on_irreducible {P : α → Prop} (a : α) (h0 : P 0) (hu : ∀ u : α, IsUnit u → P u)
+lemma induction_on_irreducible {P : α → Prop} (a : α) (h0 : P 0) (hu : ∀ u : α, IsUnit u → P u)
     (hi : ∀ a i : α, a ≠ 0 → Irreducible i → P a → P (i * a)) : P a :=
   haveI := Classical.dec
   wellFounded_dvdNotUnit.fix
@@ -134,7 +134,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
 
 end WfDvdMonoid
 
-theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
+lemma WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
     (h : WellFounded ((· < ·) : Associates α → Associates α → Prop)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates
     ⟨by
@@ -143,7 +143,7 @@ theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
       exact Associates.dvdNotUnit_iff_lt⟩
 #align wf_dvd_monoid.of_well_founded_associates WfDvdMonoid.of_wellFounded_associates
 
-theorem WfDvdMonoid.iff_wellFounded_associates [CancelCommMonoidWithZero α] :
+lemma WfDvdMonoid.iff_wellFounded_associates [CancelCommMonoidWithZero α] :
     WfDvdMonoid α ↔ WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
   ⟨by apply WfDvdMonoid.wellFounded_associates, WfDvdMonoid.of_wellFounded_associates⟩
 #align wf_dvd_monoid.iff_well_founded_associates WfDvdMonoid.iff_wellFounded_associates
@@ -178,7 +178,7 @@ class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] exten
 
 /-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
 @[reducible]
-theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α] [GCDMonoid α] :
+lemma ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α] [GCDMonoid α] :
     UniqueFactorizationMonoid α :=
   { ‹WfDvdMonoid α› with irreducible_iff_prime := GCDMonoid.irreducible_iff_prime }
 #align ufm_of_gcd_of_wf_dvd_monoid ufm_of_gcd_of_wfDvdMonoid
@@ -204,7 +204,7 @@ theorem exists_prime_factors (a : α) :
 #align unique_factorization_monoid.exists_prime_factors UniqueFactorizationMonoid.exists_prime_factors
 
 @[elab_as_elim]
-theorem induction_on_prime {P : α → Prop} (a : α) (h₁ : P 0) (h₂ : ∀ x : α, IsUnit x → P x)
+lemma induction_on_prime {P : α → Prop} (a : α) (h₁ : P 0) (h₂ : ∀ x : α, IsUnit x → P x)
     (h₃ : ∀ a p : α, a ≠ 0 → Prime p → P a → P (p * a)) : P a := by
   simp_rw [← UniqueFactorizationMonoid.irreducible_iff_prime] at h₃
   exact WfDvdMonoid.induction_on_irreducible a h₁ h₂ h₃
@@ -212,7 +212,7 @@ theorem induction_on_prime {P : α → Prop} (a : α) (h₁ : P 0) (h₂ : ∀ x
 
 end UniqueFactorizationMonoid
 
-theorem prime_factors_unique [CancelCommMonoidWithZero α] :
+lemma prime_factors_unique [CancelCommMonoidWithZero α] :
     ∀ {f g : Multiset α},
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
   classical
@@ -243,7 +243,7 @@ namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
-theorem factors_unique {f g : Multiset α} (hf : ∀ x ∈ f, Irreducible x)
+lemma factors_unique {f g : Multiset α} (hf : ∀ x ∈ f, Irreducible x)
     (hg : ∀ x ∈ g, Irreducible x) (h : f.prod ~ᵤ g.prod) : Multiset.Rel Associated f g :=
   prime_factors_unique (fun x hx => irreducible_iff_prime.mp (hf x hx))
     (fun x hx => irreducible_iff_prime.mp (hg x hx)) h
@@ -253,7 +253,7 @@ end UniqueFactorizationMonoid
 
 /-- If an irreducible has a prime factorization,
   then it is an associate of one of its prime factors. -/
-theorem prime_factors_irreducible [CancelCommMonoidWithZero α] {a : α} {f : Multiset α}
+lemma prime_factors_irreducible [CancelCommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
   haveI := Classical.decEq α
   refine @Multiset.induction_on _
@@ -281,7 +281,7 @@ variable [CancelCommMonoidWithZero α]
 
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
 
-theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
+lemma WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
   ⟨by
     classical
       refine'
@@ -324,7 +324,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
             apply (Classical.choose_spec (pf _ _)).2.symm; assumption⟩
 #align wf_dvd_monoid.of_exists_prime_factors WfDvdMonoid.of_exists_prime_factors
 
-theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
+lemma irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
   by_cases hp0 : p = 0
   · simp [hp0]
   refine' ⟨fun h => _, Prime.irreducible⟩
@@ -334,14 +334,14 @@ theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p �
   exact hf.1 q (Multiset.mem_singleton_self _)
 #align irreducible_iff_prime_of_exists_prime_factors irreducible_iff_prime_of_exists_prime_factors
 
-theorem UniqueFactorizationMonoid.of_exists_prime_factors : UniqueFactorizationMonoid α :=
+lemma UniqueFactorizationMonoid.of_exists_prime_factors : UniqueFactorizationMonoid α :=
   { WfDvdMonoid.of_exists_prime_factors pf with
     irreducible_iff_prime := irreducible_iff_prime_of_exists_prime_factors pf }
 #align unique_factorization_monoid.of_exists_prime_factors UniqueFactorizationMonoid.of_exists_prime_factors
 
 end ExistsPrimeFactors
 
-theorem UniqueFactorizationMonoid.iff_exists_prime_factors [CancelCommMonoidWithZero α] :
+lemma UniqueFactorizationMonoid.iff_exists_prime_factors [CancelCommMonoidWithZero α] :
     UniqueFactorizationMonoid α ↔
       ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a :=
   ⟨fun h => @UniqueFactorizationMonoid.exists_prime_factors _ _ h,
@@ -378,7 +378,7 @@ theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :
 
 end
 
-theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMonoidWithZero α]
+lemma irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMonoidWithZero α]
     (eif : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod ~ᵤ a)
     (uif :
       ∀ f g : Multiset α,
@@ -418,7 +418,7 @@ theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMo
     Prime.irreducible⟩
 #align irreducible_iff_prime_of_exists_unique_irreducible_factors irreducible_iff_prime_of_exists_unique_irreducible_factors
 
-theorem UniqueFactorizationMonoid.of_exists_unique_irreducible_factors [CancelCommMonoidWithZero α]
+lemma UniqueFactorizationMonoid.of_exists_unique_irreducible_factors [CancelCommMonoidWithZero α]
     (eif : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod ~ᵤ a)
     (uif :
       ∀ f g : Multiset α,
@@ -442,37 +442,37 @@ noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)
 #align unique_factorization_monoid.factors UniqueFactorizationMonoid.factors
 
-theorem factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a := by
+lemma factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a := by
   rw [factors, dif_neg ane0]
   exact (Classical.choose_spec (exists_prime_factors a ane0)).2
 #align unique_factorization_monoid.factors_prod UniqueFactorizationMonoid.factors_prod
 
-theorem ne_zero_of_mem_factors {p a : α} (h : p ∈ factors a) : a ≠ 0 := by
+lemma ne_zero_of_mem_factors {p a : α} (h : p ∈ factors a) : a ≠ 0 := by
   intro ha
   rw [factors, dif_pos ha] at h
   exact Multiset.not_mem_zero _ h
 #align unique_factorization_monoid.ne_zero_of_mem_factors UniqueFactorizationMonoid.ne_zero_of_mem_factors
 
-theorem dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
+lemma dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
   dvd_trans (Multiset.dvd_prod h) (Associated.dvd (factors_prod (ne_zero_of_mem_factors h)))
 #align unique_factorization_monoid.dvd_of_mem_factors UniqueFactorizationMonoid.dvd_of_mem_factors
 
-theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
+lemma prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
   have ane0 := ne_zero_of_mem_factors hx
   rw [factors, dif_neg ane0] at hx
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 x hx
 #align unique_factorization_monoid.prime_of_factor UniqueFactorizationMonoid.prime_of_factor
 
-theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
+lemma irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
   (prime_of_factor x h).irreducible
 #align unique_factorization_monoid.irreducible_of_factor UniqueFactorizationMonoid.irreducible_of_factor
 
 @[simp]
-theorem factors_zero : factors (0 : α) = 0 := by simp [factors]
+lemma factors_zero : factors (0 : α) = 0 := by simp [factors]
 #align unique_factorization_monoid.factors_zero UniqueFactorizationMonoid.factors_zero
 
 @[simp]
-theorem factors_one : factors (1 : α) = 0 := by
+lemma factors_one : factors (1 : α) = 0 := by
   nontriviality α using factors
   rw [← Multiset.rel_zero_right]
   refine' factors_unique irreducible_of_factor (fun x hx => (Multiset.not_mem_zero x hx).elim) _
@@ -480,7 +480,7 @@ theorem factors_one : factors (1 : α) = 0 := by
   exact factors_prod one_ne_zero
 #align unique_factorization_monoid.factors_one UniqueFactorizationMonoid.factors_one
 
-theorem exists_mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
+lemma exists_mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     p ∣ a → ∃ q ∈ factors a, p ~ᵤ q := fun ⟨b, hb⟩ =>
   have hb0 : b ≠ 0 := fun hb0 => by simp_all
   have : Multiset.Rel Associated (p ::ₘ factors b) (factors a) :=
@@ -497,13 +497,13 @@ theorem exists_mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p
   Multiset.exists_mem_of_rel_of_mem this (by simp)
 #align unique_factorization_monoid.exists_mem_factors_of_dvd UniqueFactorizationMonoid.exists_mem_factors_of_dvd
 
-theorem exists_mem_factors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) : ∃ p, p ∈ factors x := by
+lemma exists_mem_factors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) : ∃ p, p ∈ factors x := by
   obtain ⟨p', hp', hp'x⟩ := WfDvdMonoid.exists_irreducible_factor h hx
   obtain ⟨p, hp, _⟩ := exists_mem_factors_of_dvd hx hp' hp'x
   exact ⟨p, hp⟩
 #align unique_factorization_monoid.exists_mem_factors UniqueFactorizationMonoid.exists_mem_factors
 
-theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Multiset.Rel Associated (factors (x * y)) (factors x + factors y) := by
   refine'
     factors_unique irreducible_of_factor
@@ -514,7 +514,7 @@ theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
   exact (Associated.mul_mul (factors_prod hx) (factors_prod hy)).symm
 #align unique_factorization_monoid.factors_mul UniqueFactorizationMonoid.factors_mul
 
-theorem factors_pow {x : α} (n : ℕ) :
+lemma factors_pow {x : α} (n : ℕ) :
     Multiset.Rel Associated (factors (x ^ n)) (n • factors x) := by
   match n with
   | 0 => rw [zero_smul, pow_zero, factors_one, Multiset.rel_zero_right]
@@ -556,7 +556,7 @@ noncomputable def normalizedFactors (a : α) : Multiset α :=
 /-- An arbitrary choice of factors of `x : M` is exactly the (unique) normalized set of factors,
 if `M` has a trivial group of units. -/
 @[simp]
-theorem factors_eq_normalizedFactors {M : Type*} [CancelCommMonoidWithZero M] [DecidableEq M]
+lemma factors_eq_normalizedFactors {M : Type*} [CancelCommMonoidWithZero M] [DecidableEq M]
     [UniqueFactorizationMonoid M] [Unique Mˣ] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
   convert (Multiset.map_id (factors x)).symm
@@ -564,7 +564,7 @@ theorem factors_eq_normalizedFactors {M : Type*} [CancelCommMonoidWithZero M] [D
   exact normalize_eq p
 #align unique_factorization_monoid.factors_eq_normalized_factors UniqueFactorizationMonoid.factors_eq_normalizedFactors
 
-theorem normalizedFactors_prod {a : α} (ane0 : a ≠ 0) :
+lemma normalizedFactors_prod {a : α} (ane0 : a ≠ 0) :
     Associated (normalizedFactors a).prod a := by
   rw [normalizedFactors, factors, dif_neg ane0]
   refine' Associated.trans _ (Classical.choose_spec (exists_prime_factors a ane0)).2
@@ -575,7 +575,7 @@ theorem normalizedFactors_prod {a : α} (ane0 : a ≠ 0) :
   rw [Function.comp_apply, Associates.mk_normalize]
 #align unique_factorization_monoid.normalized_factors_prod UniqueFactorizationMonoid.normalizedFactors_prod
 
-theorem prime_of_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactors a → Prime x := by
+lemma prime_of_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactors a → Prime x := by
   rw [normalizedFactors, factors]
   split_ifs with ane0; · simp
   intro x hx; rcases Multiset.mem_map.1 hx with ⟨y, ⟨hy, rfl⟩⟩
@@ -583,12 +583,12 @@ theorem prime_of_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactor
   exact (Classical.choose_spec (UniqueFactorizationMonoid.exists_prime_factors a ane0)).1 y hy
 #align unique_factorization_monoid.prime_of_normalized_factor UniqueFactorizationMonoid.prime_of_normalized_factor
 
-theorem irreducible_of_normalized_factor {a : α} :
+lemma irreducible_of_normalized_factor {a : α} :
     ∀ x : α, x ∈ normalizedFactors a → Irreducible x := fun x h =>
   (prime_of_normalized_factor x h).irreducible
 #align unique_factorization_monoid.irreducible_of_normalized_factor UniqueFactorizationMonoid.irreducible_of_normalized_factor
 
-theorem normalize_normalized_factor {a : α} :
+lemma normalize_normalized_factor {a : α} :
     ∀ x : α, x ∈ normalizedFactors a → normalize x = x := by
   rw [normalizedFactors, factors]
   split_ifs with h; · simp
@@ -597,7 +597,7 @@ theorem normalize_normalized_factor {a : α} :
   apply normalize_idem
 #align unique_factorization_monoid.normalize_normalized_factor UniqueFactorizationMonoid.normalize_normalized_factor
 
-theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
+lemma normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
     normalizedFactors a = {normalize a} := by
   obtain ⟨p, a_assoc, hp⟩ :=
     prime_factors_irreducible ha ⟨prime_of_normalized_factor, normalizedFactors_prod ha.ne_zero⟩
@@ -617,7 +617,7 @@ theorem normalizedFactors_eq_of_dvd (a : α) :
     apply (normalize_normalized_factor _ ‹_›).symm
 #align unique_factorization_monoid.normalized_factors_eq_of_dvd UniqueFactorizationMonoid.normalizedFactors_eq_of_dvd
 
-theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
+lemma exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     p ∣ a → ∃ q ∈ normalizedFactors a, p ~ᵤ q := fun ⟨b, hb⟩ =>
   have hb0 : b ≠ 0 := fun hb0 => by simp_all
   have : Multiset.Rel Associated (p ::ₘ normalizedFactors b) (normalizedFactors a) :=
@@ -636,7 +636,7 @@ theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irr
   Multiset.exists_mem_of_rel_of_mem this (by simp)
 #align unique_factorization_monoid.exists_mem_normalized_factors_of_dvd UniqueFactorizationMonoid.exists_mem_normalizedFactors_of_dvd
 
-theorem exists_mem_normalizedFactors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) :
+lemma exists_mem_normalizedFactors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) :
     ∃ p, p ∈ normalizedFactors x := by
   obtain ⟨p', hp', hp'x⟩ := WfDvdMonoid.exists_irreducible_factor h hx
   obtain ⟨p, hp, _⟩ := exists_mem_normalizedFactors_of_dvd hx hp' hp'x
@@ -644,12 +644,12 @@ theorem exists_mem_normalizedFactors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) :
 #align unique_factorization_monoid.exists_mem_normalized_factors UniqueFactorizationMonoid.exists_mem_normalizedFactors
 
 @[simp]
-theorem normalizedFactors_zero : normalizedFactors (0 : α) = 0 := by
+lemma normalizedFactors_zero : normalizedFactors (0 : α) = 0 := by
   simp [normalizedFactors, factors]
 #align unique_factorization_monoid.normalized_factors_zero UniqueFactorizationMonoid.normalizedFactors_zero
 
 @[simp]
-theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
+lemma normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
   cases' subsingleton_or_nontrivial α with h h
   · dsimp [normalizedFactors, factors]
     simp [Subsingleton.elim (1:α) 0]
@@ -662,7 +662,7 @@ theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
 #align unique_factorization_monoid.normalized_factors_one UniqueFactorizationMonoid.normalizedFactors_one
 
 @[simp]
-theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     normalizedFactors (x * y) = normalizedFactors x + normalizedFactors y := by
   have h : (normalize : α → α) = Associates.out ∘ Associates.mk := by
     ext
@@ -685,7 +685,7 @@ theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 #align unique_factorization_monoid.normalized_factors_mul UniqueFactorizationMonoid.normalizedFactors_mul
 
 @[simp]
-theorem normalizedFactors_pow {x : α} (n : ℕ) :
+lemma normalizedFactors_pow {x : α} (n : ℕ) :
     normalizedFactors (x ^ n) = n • normalizedFactors x := by
   induction' n with n ih
   · simp
@@ -694,7 +694,7 @@ theorem normalizedFactors_pow {x : α} (n : ℕ) :
   rw [pow_succ, succ_nsmul, normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
 #align unique_factorization_monoid.normalized_factors_pow UniqueFactorizationMonoid.normalizedFactors_pow
 
-theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :
+lemma _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
   rw [UniqueFactorizationMonoid.normalizedFactors_pow, normalizedFactors_irreducible hp,
     Multiset.nsmul_singleton]
@@ -715,7 +715,7 @@ theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducib
       normalizedFactors_irreducible ia, ih ib, Multiset.singleton_add]
 #align unique_factorization_monoid.normalized_factors_prod_eq UniqueFactorizationMonoid.normalizedFactors_prod_eq
 
-theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     x ∣ y ↔ normalizedFactors x ≤ normalizedFactors y := by
   constructor
   · rintro ⟨c, rfl⟩
@@ -725,7 +725,7 @@ theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0)
     apply Multiset.prod_dvd_prod_of_le
 #align unique_factorization_monoid.dvd_iff_normalized_factors_le_normalized_factors UniqueFactorizationMonoid.dvd_iff_normalizedFactors_le_normalizedFactors
 
-theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     x ~ᵤ y ↔ normalizedFactors x = normalizedFactors y := by
   refine'
     ⟨fun h => _, fun h =>
@@ -734,7 +734,7 @@ theorem associated_iff_normalizedFactors_eq_normalizedFactors {x y : α} (hx : x
   all_goals simp [*, h.dvd, h.symm.dvd]
 #align unique_factorization_monoid.associated_iff_normalized_factors_eq_normalized_factors UniqueFactorizationMonoid.associated_iff_normalizedFactors_eq_normalizedFactors
 
-theorem normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : ℕ) :
+lemma normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
   rw [normalizedFactors_pow, normalizedFactors_irreducible hp, Multiset.nsmul_singleton]
 #align unique_factorization_monoid.normalized_factors_of_irreducible_pow UniqueFactorizationMonoid.normalizedFactors_of_irreducible_pow
@@ -743,28 +743,28 @@ theorem zero_not_mem_normalizedFactors (x : α) : (0 : α) ∉ normalizedFactors
   Prime.ne_zero (prime_of_normalized_factor _ h) rfl
 #align unique_factorization_monoid.zero_not_mem_normalized_factors UniqueFactorizationMonoid.zero_not_mem_normalizedFactors
 
-theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) : p ∣ a := by
+lemma dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) : p ∣ a := by
   by_cases hcases : a = 0
   · rw [hcases]
     exact dvd_zero p
   · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (normalizedFactors_prod hcases))
 #align unique_factorization_monoid.dvd_of_mem_normalized_factors UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors
 
-theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
+lemma exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
   use Multiset.card.toFun (normalizedFactors r)
   have := UniqueFactorizationMonoid.normalizedFactors_prod hr
   rwa [Multiset.eq_replicate_of_mem fun b => h, Multiset.prod_replicate] at this
 #align unique_factorization_monoid.exists_associated_prime_pow_of_unique_normalized_factor UniqueFactorizationMonoid.exists_associated_prime_pow_of_unique_normalized_factor
 
-theorem normalizedFactors_prod_of_prime [Nontrivial α] [Unique αˣ] {m : Multiset α}
+lemma normalizedFactors_prod_of_prime [Nontrivial α] [Unique αˣ] {m : Multiset α}
     (h : ∀ p ∈ m, Prime p) : normalizedFactors m.prod = m := by
   simpa only [← Multiset.rel_eq, ← associated_eq_eq] using
     prime_factors_unique prime_of_normalized_factor h
       (normalizedFactors_prod (m.prod_ne_zero_of_prime h))
 #align unique_factorization_monoid.normalized_factors_prod_of_prime UniqueFactorizationMonoid.normalizedFactors_prod_of_prime
 
-theorem mem_normalizedFactors_eq_of_associated {a b c : α} (ha : a ∈ normalizedFactors c)
+lemma mem_normalizedFactors_eq_of_associated {a b c : α} (ha : a ∈ normalizedFactors c)
     (hb : b ∈ normalizedFactors c) (h : Associated a b) : a = b := by
   rw [← normalize_normalized_factor a ha, ← normalize_normalized_factor b hb,
     normalize_eq_normalize_iff]
@@ -786,7 +786,7 @@ theorem normalizedFactors_pos (x : α) (hx : x ≠ 0) : 0 < normalizedFactors x 
         (mt Multiset.eq_zero_iff_forall_not_mem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
 #align unique_factorization_monoid.normalized_factors_pos UniqueFactorizationMonoid.normalizedFactors_pos
 
-theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     DvdNotUnit x y ↔ normalizedFactors x < normalizedFactors y := by
   constructor
   · rintro ⟨_, c, hc, rfl⟩
@@ -849,7 +849,7 @@ namespace UniqueFactorizationMonoid
 
 variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
-theorem no_factors_of_no_prime_factors {a b : R} (ha : a ≠ 0)
+lemma no_factors_of_no_prime_factors {a b : R} (ha : a ≠ 0)
     (h : ∀ {d}, d ∣ a → d ∣ b → ¬Prime d) : ∀ {d}, d ∣ a → d ∣ b → IsUnit d := fun {d} =>
   induction_on_prime d
     (by
@@ -862,7 +862,7 @@ theorem no_factors_of_no_prime_factors {a b : R} (ha : a ≠ 0)
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `c` have no common prime factors, `a ∣ b`.
 Compare `IsCoprime.dvd_of_dvd_mul_left`. -/
-theorem dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0) :
+lemma dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0) :
     (∀ {d}, d ∣ a → d ∣ c → ¬Prime d) → a ∣ b * c → a ∣ b := by
   refine' induction_on_prime c _ _ _
   · intro no_factors
@@ -882,14 +882,14 @@ theorem dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0) :
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `b` have no common prime factors, `a ∣ c`.
 Compare `IsCoprime.dvd_of_dvd_mul_right`. -/
-theorem dvd_of_dvd_mul_right_of_no_prime_factors {a b c : R} (ha : a ≠ 0)
+lemma dvd_of_dvd_mul_right_of_no_prime_factors {a b c : R} (ha : a ≠ 0)
     (no_factors : ∀ {d}, d ∣ a → d ∣ b → ¬Prime d) : a ∣ b * c → a ∣ c := by
   simpa [mul_comm b c] using dvd_of_dvd_mul_left_of_no_prime_factors ha @no_factors
 #align unique_factorization_monoid.dvd_of_dvd_mul_right_of_no_prime_factors UniqueFactorizationMonoid.dvd_of_dvd_mul_right_of_no_prime_factors
 
 /-- If `a ≠ 0, b` are elements of a unique factorization domain, then dividing
 out their common factor `c'` gives `a'` and `b'` with no factors in common. -/
-theorem exists_reduced_factors :
+lemma exists_reduced_factors :
     ∀ (a) (_ : a ≠ (0 : R)) (b),
       ∃ a' b' c', (∀ {d}, d ∣ a' → d ∣ b' → IsUnit d) ∧ c' * a' = a ∧ c' * b' = b := by
   haveI := Classical.propDecidable
@@ -925,7 +925,7 @@ theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
   ⟨a', b', c', fun hpb hpa => no_factor hpa hpb, ha, hb⟩
 #align unique_factorization_monoid.exists_reduced_factors' UniqueFactorizationMonoid.exists_reduced_factors'
 
-theorem pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
+lemma pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
     Function.Injective ((· ^ ·) a : ℕ → R) := by
   letI := Classical.decEq R
   intro i j hij
@@ -938,7 +938,7 @@ theorem pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
   exact mul_right_cancel₀ (Multiset.count_ne_zero.mpr mem) this
 #align unique_factorization_monoid.pow_right_injective UniqueFactorizationMonoid.pow_right_injective
 
-theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : a ^ i = a ^ j ↔ i = j :=
+lemma pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : a ^ i = a ^ j ↔ i = j :=
   (pow_right_injective ha0 ha1).eq_iff
 #align unique_factorization_monoid.pow_eq_pow_iff UniqueFactorizationMonoid.pow_eq_pow_iff
 
@@ -950,7 +950,7 @@ variable [dec_dvd : DecidableRel (Dvd.dvd : R → R → Prop)]
 
 open multiplicity Multiset
 
-theorem le_multiplicity_iff_replicate_le_normalizedFactors [DecidableEq R] {a b : R} {n : ℕ}
+lemma le_multiplicity_iff_replicate_le_normalizedFactors [DecidableEq R] {a b : R} {n : ℕ}
     (ha : Irreducible a) (hb : b ≠ 0) :
     ↑n ≤ multiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
   rw [← pow_dvd_iff_le_multiplicity]
@@ -975,7 +975,7 @@ the normalized factor occurs in the `normalizedFactors`.
 See also `count_normalizedFactors_eq` which expands the definition of `multiplicity`
 to produce a specification for `count (normalizedFactors _) _`..
 -/
-theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
+lemma multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
     (hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply PartENat.le_of_lt_add_one
@@ -991,7 +991,7 @@ the number of times it divides `x`.
 
 See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplicity p x`.
 -/
-theorem count_normalizedFactors_eq [DecidableEq R] {p x : R} (hp : Irreducible p)
+lemma count_normalizedFactors_eq [DecidableEq R] {p x : R} (hp : Irreducible p)
   (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
   (normalizedFactors x).count p = n := by
   letI : DecidableRel ((· ∣ ·) : R → R → Prop) := fun _ _ => Classical.propDecidable _
@@ -1009,7 +1009,7 @@ the number of times it divides `x`. This is a slightly more general version of
 
 See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplicity p x`.
 -/
-theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Irreducible p)
+lemma count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Irreducible p)
   (hnorm : normalize p = p) {n : ℕ} (hle : p ^ n ∣ x) (hlt : ¬p ^ (n + 1) ∣ x) :
   (normalizedFactors x).count p = n := by
   rcases hp with (rfl | hp)
@@ -1021,7 +1021,7 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
 #align unique_factorization_monoid.count_normalized_factors_eq' UniqueFactorizationMonoid.count_normalizedFactors_eq'
 
 
-theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
+lemma max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
     ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := by
   classical
     let n := (normalizedFactors a₀).count (normalize x)
@@ -1044,7 +1044,7 @@ variable {β : Type*} [CancelCommMonoidWithZero β]
 
 open BigOperators
 
-theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
+lemma prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)
     (is_coprime : ∀ (q) (_ : q ∈ insert p s) (q') (_ : q' ∈ insert p s), q ∣ q' → q = q') :
     ∀ q : α, q ∣ p ^ i p → (q ∣ ∏ p' in s, p' ^ i p') → IsUnit q := by
@@ -1066,7 +1066,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
 and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
 then `P` holds on a product of powers of distinct primes. -/
 -- @[elab_as_elim] Porting note: commented out
-theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → ℕ)
+lemma induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → ℕ)
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ (p) (_ : p ∈ s) (q) (_ : q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x}, IsUnit x → P x) (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
     (hcp : ∀ {x y}, (∀ p, p ∣ x → p ∣ y → IsUnit p) → P x → P y → P (x * y)) :
@@ -1086,7 +1086,7 @@ theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → �
 and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
 then `P` holds on all `a : α`. -/
 @[elab_as_elim]
-theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}, IsUnit x → P x)
+lemma induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}, IsUnit x → P x)
     (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
     (hcp : ∀ {x y}, (∀ p, p ∣ x → p ∣ y → IsUnit p) → P x → P y → P (x * y)) : P a := by
   letI := Classical.decEq α
@@ -1107,7 +1107,7 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
 /-- If `f` maps `p ^ i` to `(f p) ^ i` for primes `p`, and `f`
 is multiplicative on coprime elements, then `f` is multiplicative on all products of primes. -/
 -- @[elab_as_elim] Porting note: commented out
-theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α → ℕ)
+lemma multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α → ℕ)
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ (p) (_ : p ∈ s) (q) (_ : q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x y}, IsUnit y → f (x * y) = f x * f y)
     (hpr : ∀ {p} (i : ℕ), Prime p → f (p ^ i) = f p ^ i)
@@ -1205,11 +1205,11 @@ def FactorSet.{u} (α : Type u) [CancelCommMonoidWithZero α] : Type u :=
 
 attribute [local instance] Associated.setoid
 
-theorem FactorSet.coe_add {a b : Multiset { a : Associates α // Irreducible a }} :
+lemma FactorSet.coe_add {a b : Multiset { a : Associates α // Irreducible a }} :
     (↑(a + b) : FactorSet α) = a + b := by norm_cast
 #align associates.factor_set.coe_add Associates.FactorSet.coe_add
 
-theorem FactorSet.sup_add_inf_eq_add [DecidableEq (Associates α)] :
+lemma FactorSet.sup_add_inf_eq_add [DecidableEq (Associates α)] :
     ∀ a b : FactorSet α, a ⊔ b + a ⊓ b = a + b
   | none, b => show ⊤ ⊔ b + ⊤ ⊓ b = ⊤ + b by simp
   | a, none => show a ⊔ ⊤ + a ⊓ ⊤ = a + ⊤ by simp
@@ -1228,18 +1228,18 @@ def FactorSet.prod : FactorSet α → Associates α
 #align associates.factor_set.prod Associates.FactorSet.prod
 
 @[simp]
-theorem prod_top : (⊤ : FactorSet α).prod = 0 :=
+lemma prod_top : (⊤ : FactorSet α).prod = 0 :=
   rfl
 #align associates.prod_top Associates.prod_top
 
 @[simp]
-theorem prod_coe {s : Multiset { a : Associates α // Irreducible a }} :
+lemma prod_coe {s : Multiset { a : Associates α // Irreducible a }} :
     FactorSet.prod (s : FactorSet α) = (s.map (↑)).prod :=
   rfl
 #align associates.prod_coe Associates.prod_coe
 
 @[simp]
-theorem prod_add : ∀ a b : FactorSet α, (a + b).prod = a.prod * b.prod
+lemma prod_add : ∀ a b : FactorSet α, (a + b).prod = a.prod * b.prod
   | none, b => show (⊤ + b).prod = (⊤ : FactorSet α).prod * b.prod by simp
   | a, none => show (a + ⊤).prod = a.prod * (⊤ : FactorSet α).prod by simp
   | some a, some b =>
@@ -1248,7 +1248,7 @@ theorem prod_add : ∀ a b : FactorSet α, (a + b).prod = a.prod * b.prod
       rw [← FactorSet.coe_add, prod_coe, prod_coe, prod_coe, Multiset.map_add, Multiset.prod_add]
 #align associates.prod_add Associates.prod_add
 
-theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
+lemma prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
   | none, b, h => by
     have : b = ⊤ := top_unique h
     rw [this, prod_top]; exact le_rfl
@@ -1256,7 +1256,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
   | some a, some b, h => prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 <| h
 #align associates.prod_mono Associates.prod_mono
 
-theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
+lemma FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   induction p using WithTop.recTopCoe
   · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
@@ -1281,7 +1281,7 @@ def count [DecidableEq (Associates α)] (p : Associates α) : FactorSet α → �
 #align associates.count Associates.count
 
 @[simp]
-theorem count_some [DecidableEq (Associates α)] {p : Associates α} (hp : Irreducible p)
+lemma count_some [DecidableEq (Associates α)] {p : Associates α} (hp : Irreducible p)
     (s : Multiset _) : count p (some s) = s.count ⟨p, hp⟩ := by
   dsimp only [count]
   split_ifs
@@ -1289,14 +1289,14 @@ theorem count_some [DecidableEq (Associates α)] {p : Associates α} (hp : Irred
 #align associates.count_some Associates.count_some
 
 @[simp]
-theorem count_zero [DecidableEq (Associates α)] {p : Associates α} (hp : Irreducible p) :
+lemma count_zero [DecidableEq (Associates α)] {p : Associates α} (hp : Irreducible p) :
     count p (0 : FactorSet α) = 0 := by
   dsimp only [count]
   split_ifs
   rfl
 #align associates.count_zero Associates.count_zero
 
-theorem count_reducible [DecidableEq (Associates α)] {p : Associates α} (hp : ¬Irreducible p) :
+lemma count_reducible [DecidableEq (Associates α)] {p : Associates α} (hp : ¬Irreducible p) :
     count p = 0 :=
   dif_neg hp
 #align associates.count_reducible Associates.count_reducible
@@ -1323,24 +1323,24 @@ theorem factorSetMem_eq_mem (p : Associates α) (s : FactorSet α) : FactorSetMe
   rfl
 #align associates.factor_set_mem_eq_mem Associates.factorSetMem_eq_mem
 
-theorem mem_factorSet_top {p : Associates α} {hp : Irreducible p} : p ∈ (⊤ : FactorSet α) := by
+lemma mem_factorSet_top {p : Associates α} {hp : Irreducible p} : p ∈ (⊤ : FactorSet α) := by
   dsimp only [Membership.mem]; dsimp only [FactorSetMem]; split_ifs; exact trivial
 #align associates.mem_factor_set_top Associates.mem_factorSet_top
 
-theorem mem_factorSet_some {p : Associates α} {hp : Irreducible p}
+lemma mem_factorSet_some {p : Associates α} {hp : Irreducible p}
     {l : Multiset { a : Associates α // Irreducible a }} :
     p ∈ (l : FactorSet α) ↔ Subtype.mk p hp ∈ l := by
   dsimp only [Membership.mem]; dsimp only [FactorSetMem]; split_ifs; rfl
 #align associates.mem_factor_set_some Associates.mem_factorSet_some
 
-theorem reducible_not_mem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
+lemma reducible_not_mem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
     ¬p ∈ s := fun h : if hp : Irreducible p then BfactorSetMem ⟨p, hp⟩ s else False => by
   rwa [dif_neg hp] at h
 #align associates.reducible_not_mem_factor_set Associates.reducible_not_mem_factorSet
 
 variable [UniqueFactorizationMonoid α]
 
-theorem unique' {p q : Multiset (Associates α)} :
+lemma unique' {p q : Multiset (Associates α)} :
     (∀ a ∈ p, Irreducible a) → (∀ a ∈ q, Irreducible a) → p.prod = q.prod → p = q := by
   apply Multiset.induction_on_multiset_quot p
   apply Multiset.induction_on_multiset_quot q
@@ -1352,7 +1352,7 @@ theorem unique' {p q : Multiset (Associates α)} :
   rwa [eq', prod_mk, prod_mk, mk_eq_mk_iff_associated] at eq
 #align associates.unique' Associates.unique'
 
-theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.prod) : p = q := by
+lemma FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.prod) : p = q := by
   induction p using WithTop.recTopCoe <;> induction q using WithTop.recTopCoe
   · rfl
   · rw [eq_comm, ← FactorSet.prod_eq_zero_iff, ← h, Associates.prod_top]
@@ -1365,7 +1365,7 @@ theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.pr
         rwa [Subtype.coe_mk]
 #align associates.factor_set.unique Associates.FactorSet.unique
 
-theorem prod_le_prod_iff_le [Nontrivial α] {p q : Multiset (Associates α)}
+lemma prod_le_prod_iff_le [Nontrivial α] {p q : Multiset (Associates α)}
     (hp : ∀ a ∈ p, Irreducible a) (hq : ∀ a ∈ q, Irreducible a) : p.prod ≤ q.prod ↔ p ≤ q :=
   Iff.intro
     (by
@@ -1392,12 +1392,12 @@ noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducibl
 #align associates.factors' Associates.factors'
 
 @[simp]
-theorem map_subtype_coe_factors' {a : α} :
+lemma map_subtype_coe_factors' {a : α} :
     (factors' a).map (↑) = (factors a).map Associates.mk := by
   simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
 #align associates.map_subtype_coe_factors' Associates.map_subtype_coe_factors'
 
-theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
+lemma factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [associated_zero_iff_eq_zero] at h
     rw [h]
@@ -1425,7 +1425,7 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
 #align associates.factors Associates.factors
 
 @[simp]
-theorem factors_0 : (0 : Associates α).factors = ⊤ :=
+lemma factors_0 : (0 : Associates α).factors = ⊤ :=
   dif_pos rfl
 #align associates.factors_0 Associates.factors_0
 
@@ -1446,39 +1446,39 @@ theorem factors_prod (a : Associates α) : a.factors.prod = a :=
           mk_eq_mk_iff_associated.2 (UniqueFactorizationMonoid.factors_prod this)]
 #align associates.factors_prod Associates.factors_prod
 
-theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
+lemma prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
   FactorSet.unique <| factors_prod _
 #align associates.prod_factors Associates.prod_factors
 
 @[nontriviality]
-theorem factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors = Option.none := by
+lemma factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors = Option.none := by
   convert @factors_0 _ _ _ _ _
 #align associates.factors_subsingleton Associates.factors_subsingleton
 
-theorem factors_eq_none_iff_zero {a : Associates α} : a.factors = Option.none ↔ a = 0 := by
+lemma factors_eq_none_iff_zero {a : Associates α} : a.factors = Option.none ↔ a = 0 := by
   nontriviality α
   exact
     ⟨fun h => by rwa [← factors_prod a, FactorSet.prod_eq_zero_iff], fun h => h.symm ▸ factors_0⟩
 #align associates.factors_eq_none_iff_zero Associates.factors_eq_none_iff_zero
 
-theorem factors_eq_some_iff_ne_zero {a : Associates α} :
+lemma factors_eq_some_iff_ne_zero {a : Associates α} :
     (∃ s : Multiset { p : Associates α // Irreducible p }, a.factors = some s) ↔ a ≠ 0 := by
   rw [← Option.isSome_iff_exists, ← Option.ne_none_iff_isSome, Ne.def, Ne.def,
     factors_eq_none_iff_zero]
 #align associates.factors_eq_some_iff_ne_zero Associates.factors_eq_some_iff_ne_zero
 
-theorem eq_of_factors_eq_factors {a b : Associates α} (h : a.factors = b.factors) : a = b := by
+lemma eq_of_factors_eq_factors {a b : Associates α} (h : a.factors = b.factors) : a = b := by
   have : a.factors.prod = b.factors.prod := by rw [h]
   rwa [factors_prod, factors_prod] at this
 #align associates.eq_of_factors_eq_factors Associates.eq_of_factors_eq_factors
 
-theorem eq_of_prod_eq_prod [Nontrivial α] {a b : FactorSet α} (h : a.prod = b.prod) : a = b := by
+lemma eq_of_prod_eq_prod [Nontrivial α] {a b : FactorSet α} (h : a.prod = b.prod) : a = b := by
   classical
     have : a.prod.factors = b.prod.factors := by rw [h]
     rwa [prod_factors, prod_factors] at this
 #align associates.eq_of_prod_eq_prod Associates.eq_of_prod_eq_prod
 
-theorem eq_factors_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠ 0)
+lemma eq_factors_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : ∀ (p : Associates α) (_ : Irreducible p), p.count a.factors = p.count b.factors) :
     a.factors = b.factors := by
   obtain ⟨sa, h_sa⟩ := factors_eq_some_iff_ne_zero.mpr ha
@@ -1494,12 +1494,12 @@ theorem eq_factors_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠
   rw [Multiset.toFinsupp_apply, Multiset.toFinsupp_apply, h_count p hp]
 #align associates.eq_factors_of_eq_counts Associates.eq_factors_of_eq_counts
 
-theorem eq_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠ 0)
+lemma eq_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : ∀ p : Associates α, Irreducible p → p.count a.factors = p.count b.factors) : a = b :=
   eq_of_factors_eq_factors (eq_factors_of_eq_counts ha hb h)
 #align associates.eq_of_eq_counts Associates.eq_of_eq_counts
 
-theorem count_le_count_of_factors_le {a b p : Associates α} (hb : b ≠ 0) (hp : Irreducible p)
+lemma count_le_count_of_factors_le {a b p : Associates α} (hb : b ≠ 0) (hp : Irreducible p)
     (h : a.factors ≤ b.factors) : p.count a.factors ≤ p.count b.factors := by
   by_cases ha : a = 0
   · simp_all
@@ -1518,11 +1518,11 @@ theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.fact
   rw [prod_add, factors_prod, factors_prod, factors_prod]
 #align associates.factors_mul Associates.factors_mul
 
-theorem factors_mono : ∀ {a b : Associates α}, a ≤ b → a.factors ≤ b.factors
+lemma factors_mono : ∀ {a b : Associates α}, a ≤ b → a.factors ≤ b.factors
   | s, t, ⟨d, eq⟩ => by rw [eq, factors_mul]; exact le_add_of_nonneg_right bot_le
 #align associates.factors_mono Associates.factors_mono
 
-theorem factors_le {a b : Associates α} : a.factors ≤ b.factors ↔ a ≤ b :=
+lemma factors_le {a b : Associates α} : a.factors ≤ b.factors ↔ a ≤ b :=
   Iff.intro
     (fun h => by
       have : a.factors.prod ≤ b.factors.prod := prod_mono h
@@ -1530,12 +1530,12 @@ theorem factors_le {a b : Associates α} : a.factors ≤ b.factors ↔ a ≤ b :
     factors_mono
 #align associates.factors_le Associates.factors_le
 
-theorem count_le_count_of_le {a b p : Associates α} (hb : b ≠ 0) (hp : Irreducible p) (h : a ≤ b) :
+lemma count_le_count_of_le {a b p : Associates α} (hb : b ≠ 0) (hp : Irreducible p) (h : a ≤ b) :
     p.count a.factors ≤ p.count b.factors :=
   count_le_count_of_factors_le hb hp <| factors_mono h
 #align associates.count_le_count_of_le Associates.count_le_count_of_le
 
-theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a ≤ b := by
+lemma prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a ≤ b := by
   classical
     exact
       Iff.intro
@@ -1572,7 +1572,7 @@ theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
     rw [← prod_add, prod_factors, factors_mul, FactorSet.sup_add_inf_eq_add]
 #align associates.sup_mul_inf Associates.sup_mul_inf
 
-theorem dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p ∈ factors a) :
+lemma dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p ∈ factors a) :
     p ∣ a := by
   by_cases ha0 : a = 0
   · rw [ha0]
@@ -1585,7 +1585,7 @@ theorem dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p �
   exact ⟨⟨p, hp⟩, mem_factorSet_some.mp hm, rfl⟩
 #align associates.dvd_of_mem_factors Associates.dvd_of_mem_factors
 
-theorem dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p} {hz : a ≠ 0}
+lemma dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p} {hz : a ≠ 0}
     (h_mem : Subtype.mk p hp ∈ factors' a) : p ∣ Associates.mk a := by
   haveI := Classical.decEq (Associates α)
   apply dvd_of_mem_factors (hp := hp)
@@ -1594,14 +1594,14 @@ theorem dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p} {h
 #align associates.dvd_of_mem_factors' Associates.dvd_of_mem_factors'
 
 
-theorem mem_factors'_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) (hd : p ∣ a) :
+lemma mem_factors'_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) (hd : p ∣ a) :
     Subtype.mk (Associates.mk p) ((irreducible_mk _).2 hp) ∈ factors' a := by
   obtain ⟨q, hq, hpq⟩ := exists_mem_factors_of_dvd ha0 hp hd
   apply Multiset.mem_pmap.mpr; use q; use hq
   exact Subtype.eq (Eq.symm (mk_eq_mk_iff_associated.mpr hpq))
 #align associates.mem_factors'_of_dvd Associates.mem_factors'_of_dvd
 
-theorem mem_factors'_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
+lemma mem_factors'_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     Subtype.mk (Associates.mk p) ((irreducible_mk _).2 hp) ∈ factors' a ↔ p ∣ a := by
   constructor
   · rw [← mk_dvd_mk]
@@ -1610,13 +1610,13 @@ theorem mem_factors'_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
   · apply mem_factors'_of_dvd ha0 hp
 #align associates.mem_factors'_iff_dvd Associates.mem_factors'_iff_dvd
 
-theorem mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) (hd : p ∣ a) :
+lemma mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) (hd : p ∣ a) :
     Associates.mk p ∈ factors (Associates.mk a) := by
   rw [factors_mk _ ha0]
   exact mem_factorSet_some.mpr (mem_factors'_of_dvd ha0 hp hd)
 #align associates.mem_factors_of_dvd Associates.mem_factors_of_dvd
 
-theorem mem_factors_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
+lemma mem_factors_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     Associates.mk p ∈ factors (Associates.mk a) ↔ p ∣ a := by
   constructor
   · rw [← mk_dvd_mk]
@@ -1625,7 +1625,7 @@ theorem mem_factors_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
   · apply mem_factors_of_dvd ha0 hp
 #align associates.mem_factors_iff_dvd Associates.mem_factors_iff_dvd
 
-theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
+lemma exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : Associates.mk a ⊓ Associates.mk b ≠ 1) : ∃ p : α, Prime p ∧ p ∣ a ∧ p ∣ b := by
   have hz : factors (Associates.mk a) ⊓ factors (Associates.mk b) ≠ 0 := by
     contrapose! h with hf
@@ -1647,7 +1647,7 @@ theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
     apply hb
 #align associates.exists_prime_dvd_of_not_inf_one Associates.exists_prime_dvd_of_not_inf_one
 
-theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
+lemma coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     Associates.mk a ⊓ Associates.mk b = 1 ↔ ∀ {d : α}, d ∣ a → d ∣ b → ¬Prime d := by
   constructor
   · intro hg p ha hb hp
@@ -1660,13 +1660,13 @@ theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     exact hc hpa hpb hp
 #align associates.coprime_iff_inf_one Associates.coprime_iff_inf_one
 
-theorem factors_self [Nontrivial α] {p : Associates α} (hp : Irreducible p) :
+lemma factors_self [Nontrivial α] {p : Associates α} (hp : Irreducible p) :
     p.factors = some {⟨p, hp⟩} :=
   eq_of_prod_eq_prod
     (by rw [factors_prod, FactorSet.prod]; dsimp; rw [prod_singleton])
 #align associates.factors_self Associates.factors_self
 
-theorem factors_prime_pow [Nontrivial α] {p : Associates α} (hp : Irreducible p) (k : ℕ) :
+lemma factors_prime_pow [Nontrivial α] {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     factors (p ^ k) = some (Multiset.replicate k ⟨p, hp⟩) :=
   eq_of_prod_eq_prod
     (by
@@ -1674,7 +1674,7 @@ theorem factors_prime_pow [Nontrivial α] {p : Associates α} (hp : Irreducible 
       dsimp; rw [Multiset.map_replicate, Multiset.prod_replicate, Subtype.coe_mk])
 #align associates.factors_prime_pow Associates.factors_prime_pow
 
-theorem prime_pow_dvd_iff_le [Nontrivial α] {m p : Associates α} (h₁ : m ≠ 0) (h₂ : Irreducible p)
+lemma prime_pow_dvd_iff_le [Nontrivial α] {m p : Associates α} (h₁ : m ≠ 0) (h₂ : Irreducible p)
     {k : ℕ} : p ^ k ≤ m ↔ k ≤ count p m.factors := by
   obtain ⟨a, nz, rfl⟩ := Associates.exists_non_zero_rep h₁
   rw [factors_mk _ nz, ← WithTop.some_eq_coe, count_some, Multiset.le_count_iff_replicate_le, ←
@@ -1682,7 +1682,7 @@ theorem prime_pow_dvd_iff_le [Nontrivial α] {m p : Associates α} (h₁ : m ≠
   exact WithTop.coe_le_coe
 #align associates.prime_pow_dvd_iff_le Associates.prime_pow_dvd_iff_le
 
-theorem le_of_count_ne_zero {m p : Associates α} (h0 : m ≠ 0) (hp : Irreducible p) :
+lemma le_of_count_ne_zero {m p : Associates α} (h0 : m ≠ 0) (hp : Irreducible p) :
     count p m.factors ≠ 0 → p ≤ m := by
   nontriviality α
   rw [← pos_iff_ne_zero]
@@ -1692,7 +1692,7 @@ theorem le_of_count_ne_zero {m p : Associates α} (h0 : m ≠ 0) (hp : Irreducib
   simpa only
 #align associates.le_of_count_ne_zero Associates.le_of_count_ne_zero
 
-theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
+lemma count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     (Associates.mk p).count (Associates.mk a).factors ≠ 0 ↔ p ∣ a := by
   nontriviality α
   rw [← Associates.mk_le_mk_iff_dvd_iff]
@@ -1707,11 +1707,11 @@ theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
   exact (zero_lt_one.trans_le h).ne'
 #align associates.count_ne_zero_iff_dvd Associates.count_ne_zero_iff_dvd
 
-theorem count_self [Nontrivial α] {p : Associates α} (hp : Irreducible p) : p.count p.factors = 1 :=
+lemma count_self [Nontrivial α] {p : Associates α} (hp : Irreducible p) : p.count p.factors = 1 :=
   by simp [factors_self hp, Associates.count_some hp]
 #align associates.count_self Associates.count_self
 
-theorem count_eq_zero_of_ne {p q : Associates α} (hp : Irreducible p) (hq : Irreducible q)
+lemma count_eq_zero_of_ne {p q : Associates α} (hp : Irreducible p) (hq : Irreducible q)
     (h : p ≠ q) : p.count q.factors = 0 :=
   not_ne_iff.mp fun h' =>
     h <|
@@ -1721,7 +1721,7 @@ theorem count_eq_zero_of_ne {p q : Associates α} (hp : Irreducible p) (hq : Irr
           exact le_of_count_ne_zero hq.ne_zero hp h'
 #align associates.count_eq_zero_of_ne Associates.count_eq_zero_of_ne
 
-theorem count_mul {a : Associates α} (ha : a ≠ 0) {b : Associates α} (hb : b ≠ 0) {p : Associates α}
+lemma count_mul {a : Associates α} (ha : a ≠ 0) {b : Associates α} (hb : b ≠ 0) {p : Associates α}
     (hp : Irreducible p) : count p (factors (a * b)) = count p a.factors + count p b.factors := by
   obtain ⟨a0, nza, ha'⟩ := exists_non_zero_rep ha
   obtain ⟨b0, nzb, hb'⟩ := exists_non_zero_rep hb
@@ -1730,7 +1730,7 @@ theorem count_mul {a : Associates α} (ha : a ≠ 0) {b : Associates α} (hb : b
     Multiset.count_add, count_some hp, count_some hp]
 #align associates.count_mul Associates.count_mul
 
-theorem count_of_coprime {a : Associates α} (ha : a ≠ 0) {b : Associates α} (hb : b ≠ 0)
+lemma count_of_coprime {a : Associates α} (ha : a ≠ 0) {b : Associates α} (hb : b ≠ 0)
     (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {p : Associates α} (hp : Irreducible p) :
     count p a.factors = 0 ∨ count p b.factors = 0 := by
   rw [or_iff_not_imp_left, ← Ne.def]
@@ -1740,7 +1740,7 @@ theorem count_of_coprime {a : Associates α} (ha : a ≠ 0) {b : Associates α} 
     ⟨p, le_of_count_ne_zero ha hp hca, le_of_count_ne_zero hb hp hcb, irreducible_iff_prime.mp hp⟩
 #align associates.count_of_coprime Associates.count_of_coprime
 
-theorem count_mul_of_coprime {a : Associates α} {b : Associates α} (hb : b ≠ 0) {p : Associates α}
+lemma count_mul_of_coprime {a : Associates α} {b : Associates α} (hb : b ≠ 0) {p : Associates α}
     (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) :
     count p a.factors = 0 ∨ count p a.factors = count p (a * b).factors := by
   by_cases ha : a = 0
@@ -1750,7 +1750,7 @@ theorem count_mul_of_coprime {a : Associates α} {b : Associates α} (hb : b ≠
   rw [count_mul ha hb hp, hb0, add_zero]
 #align associates.count_mul_of_coprime Associates.count_mul_of_coprime
 
-theorem count_mul_of_coprime' {a b : Associates α} {p : Associates α} (hp : Irreducible p)
+lemma count_mul_of_coprime' {a b : Associates α} {p : Associates α} (hp : Irreducible p)
     (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) :
     count p (a * b).factors = count p a.factors ∨ count p (a * b).factors = count p b.factors := by
   by_cases ha : a = 0
@@ -1765,7 +1765,7 @@ theorem count_mul_of_coprime' {a b : Associates α} {p : Associates α} (hp : Ir
     rw [hb0, add_zero]
 #align associates.count_mul_of_coprime' Associates.count_mul_of_coprime'
 
-theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0) {p : Associates α}
+lemma dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0) {p : Associates α}
     (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {k : ℕ}
     (habk : k ∣ count p (a * b).factors) : k ∣ count p a.factors := by
   by_cases ha : a = 0
@@ -1778,14 +1778,14 @@ theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0) {p : Ass
 #align associates.dvd_count_of_dvd_count_mul Associates.dvd_count_of_dvd_count_mul
 
 @[simp]
-theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
+lemma factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
   apply eq_of_prod_eq_prod
   rw [Associates.factors_prod]
   exact Multiset.prod_zero
 #align associates.factors_one Associates.factors_one
 
 @[simp]
-theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
+lemma pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
     (a ^ k).factors = k • a.factors := by
   induction' k with n h
   · rw [zero_nsmul, pow_zero]
@@ -1793,7 +1793,7 @@ theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
   · rw [pow_succ, succ_nsmul, factors_mul, h]
 #align associates.pow_factors Associates.pow_factors
 
-theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {p : Associates α}
+lemma count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {p : Associates α}
     (hp : Irreducible p) (k : ℕ) : count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
   · rw [pow_zero, factors_one, Nat.zero_eq, zero_mul, count_zero hp]
@@ -1801,13 +1801,13 @@ theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {p : Associ
     ring
 #align associates.count_pow Associates.count_pow
 
-theorem dvd_count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {p : Associates α}
+lemma dvd_count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {p : Associates α}
     (hp : Irreducible p) (k : ℕ) : k ∣ count p (a ^ k).factors := by
   rw [count_pow ha hp]
   apply dvd_mul_right
 #align associates.dvd_count_pow Associates.dvd_count_pow
 
-theorem is_pow_of_dvd_count [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {k : ℕ}
+lemma is_pow_of_dvd_count [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {k : ℕ}
     (hk : ∀ (p : Associates α) (_ : Irreducible p), k ∣ count p a.factors) :
     ∃ b : Associates α, a = b ^ k := by
   obtain ⟨a0, hz, rfl⟩ := exists_non_zero_rep ha
@@ -1826,7 +1826,7 @@ theorem is_pow_of_dvd_count [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {
 
 /-- The only divisors of prime powers are prime powers. See `eq_pow_find_of_dvd_irreducible_pow`
 for an explicit expression as a p-power (without using `count`). -/
-theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α} (hp : Irreducible p) {n : ℕ}
+lemma eq_pow_count_factors_of_dvd_pow {p a : Associates α} (hp : Irreducible p) {n : ℕ}
     (h : a ∣ p ^ n) : a = p ^ p.count a.factors := by
   nontriviality α
   have hph := pow_ne_zero n hp.ne_zero
@@ -1844,7 +1844,7 @@ theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α} (hp : Irreducible 
   · rw [count_eq_zero_of_ne hq hp h, mul_zero, eq_zero_of_ne q hq h]
 #align associates.eq_pow_count_factors_of_dvd_pow Associates.eq_pow_count_factors_of_dvd_pow
 
-theorem count_factors_eq_find_of_dvd_pow {a p : Associates α} (hp : Irreducible p)
+lemma count_factors_eq_find_of_dvd_pow {a p : Associates α} (hp : Irreducible p)
     [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
     @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
   apply le_antisymm
@@ -1859,7 +1859,7 @@ theorem count_factors_eq_find_of_dvd_pow {a p : Associates α} (hp : Irreducible
     rw [count_pow hp.ne_zero hp, count_self hp, mul_one]
 #align associates.count_factors_eq_find_of_dvd_pow Associates.count_factors_eq_find_of_dvd_pow
 
-theorem eq_pow_of_mul_eq_pow [Nontrivial α] {a b c : Associates α} (ha : a ≠ 0) (hb : b ≠ 0)
+lemma eq_pow_of_mul_eq_pow [Nontrivial α] {a b c : Associates α} (ha : a ≠ 0) (hb : b ≠ 0)
     (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {k : ℕ} (h : a * b = c ^ k) :
     ∃ d : Associates α, a = d ^ k := by
   classical
@@ -1878,7 +1878,7 @@ theorem eq_pow_of_mul_eq_pow [Nontrivial α] {a b c : Associates α} (ha : a ≠
 #align associates.eq_pow_of_mul_eq_pow Associates.eq_pow_of_mul_eq_pow
 
 /-- The only divisors of prime powers are prime powers. -/
-theorem eq_pow_find_of_dvd_irreducible_pow {a p : Associates α} (hp : Irreducible p)
+lemma eq_pow_find_of_dvd_irreducible_pow {a p : Associates α} (hp : Irreducible p)
     [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
     a = p ^ @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ := by
   classical rw [count_factors_eq_find_of_dvd_pow hp, ← eq_pow_count_factors_of_dvd_pow hp h]
@@ -1891,7 +1891,7 @@ section
 
 open Associates UniqueFactorizationMonoid
 
-theorem Associates.quot_out {α : Type*} [CommMonoid α] (a : Associates α) :
+lemma Associates.quot_out {α : Type*} [CommMonoid α] (a : Associates α) :
     Associates.mk (Quot.out a) = a := by rw [← quot_mk_eq_mk, Quot.out_eq]
 #align associates.quot_out Associates.quot_out
 
@@ -2000,34 +2000,34 @@ noncomputable def factorization (n : α) : α →₀ ℕ :=
   Multiset.toFinsupp (normalizedFactors n)
 #align factorization factorization
 
-theorem factorization_eq_count {n p : α} :
+lemma factorization_eq_count {n p : α} :
     factorization n p = Multiset.count p (normalizedFactors n) := by simp [factorization]
 #align factorization_eq_count factorization_eq_count
 
 @[simp]
-theorem factorization_zero : factorization (0 : α) = 0 := by simp [factorization]
+lemma factorization_zero : factorization (0 : α) = 0 := by simp [factorization]
 #align factorization_zero factorization_zero
 
 @[simp]
-theorem factorization_one : factorization (1 : α) = 0 := by simp [factorization]
+lemma factorization_one : factorization (1 : α) = 0 := by simp [factorization]
 #align factorization_one factorization_one
 
 /-- The support of `factorization n` is exactly the Finset of normalized factors -/
 @[simp]
-theorem support_factorization {n : α} :
+lemma support_factorization {n : α} :
     (factorization n).support = (normalizedFactors n).toFinset := by
   simp [factorization, Multiset.toFinsupp_support]
 #align support_factorization support_factorization
 
 /-- For nonzero `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/
 @[simp]
-theorem factorization_mul {a b : α} (ha : a ≠ 0) (hb : b ≠ 0) :
+lemma factorization_mul {a b : α} (ha : a ≠ 0) (hb : b ≠ 0) :
     factorization (a * b) = factorization a + factorization b := by
   simp [factorization, normalizedFactors_mul ha hb]
 #align factorization_mul factorization_mul
 
 /-- For any `p`, the power of `p` in `x^n` is `n` times the power in `x` -/
-theorem factorization_pow {x : α} {n : ℕ} : factorization (x ^ n) = n • factorization x := by
+lemma factorization_pow {x : α} {n : ℕ} : factorization (x ^ n) = n • factorization x := by
   ext
   simp [factorization]
 #align factorization_pow factorization_pow

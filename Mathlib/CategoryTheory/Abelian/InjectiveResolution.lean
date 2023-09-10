@@ -70,7 +70,7 @@ def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveR
 #align category_theory.InjectiveResolution.desc_f_one CategoryTheory.InjectiveResolution.descFOne
 
 @[simp]
-theorem descFOne_zero_comm {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
+lemma descFOne_zero_comm {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
     (J : InjectiveResolution Z) :
     J.cocomplex.d 0 1 ≫ descFOne f I J = descFZero f I J ≫ I.cocomplex.d 0 1 := by
   simp [descFZero, descFOne]
@@ -97,7 +97,7 @@ def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResol
 
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
-theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
+lemma desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
     (J : InjectiveResolution Z) : J.ι ≫ desc f I J = (CochainComplex.single₀ C).map f ≫ I.ι := by
   ext
   simp [desc, descFOne, descFZero]
@@ -176,12 +176,12 @@ def homotopyEquiv {X : C} (I J : InjectiveResolution X) :
 #align category_theory.InjectiveResolution.homotopy_equiv CategoryTheory.InjectiveResolution.homotopyEquiv
 
 @[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
-theorem homotopyEquiv_hom_ι {X : C} (I J : InjectiveResolution X) :
+lemma homotopyEquiv_hom_ι {X : C} (I J : InjectiveResolution X) :
     I.ι ≫ (homotopyEquiv I J).hom = J.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_hom_ι CategoryTheory.InjectiveResolution.homotopyEquiv_hom_ι
 
 @[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
-theorem homotopyEquiv_inv_ι {X : C} (I J : InjectiveResolution X) :
+lemma homotopyEquiv_inv_ι {X : C} (I J : InjectiveResolution X) :
     J.ι ≫ (homotopyEquiv I J).inv = I.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_inv_ι CategoryTheory.InjectiveResolution.homotopyEquiv_inv_ι
 
@@ -238,7 +238,7 @@ section
 
 variable [Abelian C] [EnoughInjectives C]
 
-theorem exact_f_d {X Y : C} (f : X ⟶ Y) : Exact f (d f) :=
+lemma exact_f_d {X Y : C} (f : X ⟶ Y) : Exact f (d f) :=
   (Abelian.exact_iff _ _).2 <|
     ⟨by simp, zero_of_comp_mono (ι _) <| by rw [Category.assoc, kernel.condition]⟩
 #align category_theory.exact_f_d CategoryTheory.exact_f_d

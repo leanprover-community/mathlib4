@@ -340,7 +340,7 @@ theorem exists_lt_sum_fiber_of_nsmul_lt_sum (hb : card β • b < ∑ x, w x) :
 version: there is a pigeonhole with the total weight of pigeons in it greater than or equal to `b`
 provided that the total number of pigeonholes times `b` is less than or equal to the total weight of
 all pigeons. -/
-theorem exists_le_sum_fiber_of_nsmul_le_sum [Nonempty β] (hb : card β • b ≤ ∑ x, w x) :
+lemma exists_le_sum_fiber_of_nsmul_le_sum [Nonempty β] (hb : card β • b ≤ ∑ x, w x) :
     ∃ y, b ≤ ∑ x in univ.filter fun x => f x = y, w x :=
   let ⟨y, _, hy⟩ :=
     exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum (fun _ _ => mem_univ _) univ_nonempty hb
@@ -359,7 +359,7 @@ theorem exists_sum_fiber_lt_of_sum_lt_nsmul (hb : ∑ x, w x < card β • b) :
 version: there is a pigeonhole with the total weight of pigeons in it less than or equal to `b`
 provided that the total number of pigeonholes times `b` is greater than or equal to the total weight
 of all pigeons. -/
-theorem exists_sum_fiber_le_of_sum_le_nsmul [Nonempty β] (hb : ∑ x, w x ≤ card β • b) :
+lemma exists_sum_fiber_le_of_sum_le_nsmul [Nonempty β] (hb : ∑ x, w x ≤ card β • b) :
     ∃ y, ∑ x in univ.filter fun x => f x = y, w x ≤ b :=
   @exists_le_sum_fiber_of_nsmul_le_sum α β Mᵒᵈ _ _ _ _ _ _ _ _ hb
 #align fintype.exists_sum_fiber_le_of_sum_le_nsmul Fintype.exists_sum_fiber_le_of_sum_le_nsmul
@@ -416,7 +416,7 @@ theorem exists_card_fiber_lt_of_card_lt_mul (hn : card α < card β * n) :
 between finite types `α` and `β` and a number `b` such that `card β • b ≤ card α`, there exists an
 element `y : β` such that its preimage has at least `b` elements.
 See also `Fintype.exists_lt_card_fiber_of_nsmul_lt_card` for a stronger statement. -/
-theorem exists_le_card_fiber_of_nsmul_le_card [Nonempty β] (hb : card β • b ≤ card α) :
+lemma exists_le_card_fiber_of_nsmul_le_card [Nonempty β] (hb : card β • b ≤ card α) :
     ∃ y : β, b ≤ (univ.filter fun x => f x = y).card :=
   let ⟨y, _, h⟩ :=
     exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun _ _ => mem_univ _) univ_nonempty hb
@@ -427,7 +427,7 @@ theorem exists_le_card_fiber_of_nsmul_le_card [Nonempty β] (hb : card β • b 
 between finite types `α` and `β` and a number `n` such that `card β * n ≤ card α`, there exists an
 element `y : β` such that its preimage has at least `n` elements. See also
 `Fintype.exists_lt_card_fiber_of_mul_lt_card` for a stronger statement. -/
-theorem exists_le_card_fiber_of_mul_le_card [Nonempty β] (hn : card β * n ≤ card α) :
+lemma exists_le_card_fiber_of_mul_le_card [Nonempty β] (hn : card β * n ≤ card α) :
     ∃ y : β, n ≤ (univ.filter fun x => f x = y).card :=
   exists_le_card_fiber_of_nsmul_le_card _ hn
 #align fintype.exists_le_card_fiber_of_mul_le_card Fintype.exists_le_card_fiber_of_mul_le_card
@@ -436,7 +436,7 @@ theorem exists_le_card_fiber_of_mul_le_card [Nonempty β] (hn : card β * n ≤ 
 between finite types `α` and `β` and a number `b` such that `card α ≤ card β • b`, there exists an
 element `y : β` such that its preimage has at most `b` elements.
 See also `Fintype.exists_card_fiber_lt_of_card_lt_nsmul` for a stronger statement. -/
-theorem exists_card_fiber_le_of_card_le_nsmul [Nonempty β] (hb : ↑(card α) ≤ card β • b) :
+lemma exists_card_fiber_le_of_card_le_nsmul [Nonempty β] (hb : ↑(card α) ≤ card β • b) :
     ∃ y : β, ↑(univ.filter fun x => f x = y).card ≤ b :=
   let ⟨y, _, h⟩ := Finset.exists_card_fiber_le_of_card_le_nsmul univ_nonempty hb
   ⟨y, h⟩
@@ -446,7 +446,7 @@ theorem exists_card_fiber_le_of_card_le_nsmul [Nonempty β] (hb : ↑(card α) �
 between finite types `α` and `β` and a number `n` such that `card α ≤ card β * n`, there exists an
 element `y : β` such that its preimage has at most `n` elements. See also
 `Fintype.exists_card_fiber_lt_of_card_lt_mul` for a stronger statement. -/
-theorem exists_card_fiber_le_of_card_le_mul [Nonempty β] (hn : card α ≤ card β * n) :
+lemma exists_card_fiber_le_of_card_le_mul [Nonempty β] (hn : card α ≤ card β * n) :
     ∃ y : β, (univ.filter fun x => f x = y).card ≤ n :=
   exists_card_fiber_le_of_card_le_nsmul _ hn
 #align fintype.exists_card_fiber_le_of_card_le_mul Fintype.exists_card_fiber_le_of_card_le_mul
@@ -459,7 +459,7 @@ open Set
 
 /-- If `s` is an infinite set of natural numbers and `k > 0`, then `s` contains two elements `m < n`
 that are equal mod `k`. -/
-theorem exists_lt_modEq_of_infinite {s : Set ℕ} (hs : s.Infinite) {k : ℕ} (hk : 0 < k) :
+lemma exists_lt_modEq_of_infinite {s : Set ℕ} (hs : s.Infinite) {k : ℕ} (hk : 0 < k) :
     ∃ m ∈ s, ∃ n ∈ s, m < n ∧ m ≡ n [MOD k] :=
   (hs.exists_lt_map_eq_of_mapsTo $ fun n _ => show n % k ∈ Iio k from Nat.mod_lt n hk) <|
     finite_lt_nat k

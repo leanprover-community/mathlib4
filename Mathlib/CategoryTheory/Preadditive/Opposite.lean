@@ -33,32 +33,32 @@ instance moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) whe
 #align category_theory.module_End_left CategoryTheory.moduleEndLeft
 
 @[simp]
-theorem unop_add {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f + g).unop = f.unop + g.unop :=
+lemma unop_add {X Y : Cᵒᵖ} (f g : X ⟶ Y) : (f + g).unop = f.unop + g.unop :=
   rfl
 #align category_theory.unop_add CategoryTheory.unop_add
 
 @[simp]
-theorem unop_zsmul {X Y : Cᵒᵖ} (k : ℤ) (f : X ⟶ Y) : (k • f).unop = k • f.unop :=
+lemma unop_zsmul {X Y : Cᵒᵖ} (k : ℤ) (f : X ⟶ Y) : (k • f).unop = k • f.unop :=
   rfl
 #align category_theory.unop_zsmul CategoryTheory.unop_zsmul
 
 @[simp]
-theorem unop_neg {X Y : Cᵒᵖ} (f : X ⟶ Y) : (-f).unop = -f.unop :=
+lemma unop_neg {X Y : Cᵒᵖ} (f : X ⟶ Y) : (-f).unop = -f.unop :=
   rfl
 #align category_theory.unop_neg CategoryTheory.unop_neg
 
 @[simp]
-theorem op_add {X Y : C} (f g : X ⟶ Y) : (f + g).op = f.op + g.op :=
+lemma op_add {X Y : C} (f g : X ⟶ Y) : (f + g).op = f.op + g.op :=
   rfl
 #align category_theory.op_add CategoryTheory.op_add
 
 @[simp]
-theorem op_zsmul {X Y : C} (k : ℤ) (f : X ⟶ Y) : (k • f).op = k • f.op :=
+lemma op_zsmul {X Y : C} (k : ℤ) (f : X ⟶ Y) : (k • f).op = k • f.op :=
   rfl
 #align category_theory.op_zsmul CategoryTheory.op_zsmul
 
 @[simp]
-theorem op_neg {X Y : C} (f : X ⟶ Y) : (-f).op = -f.op :=
+lemma op_neg {X Y : C} (f : X ⟶ Y) : (-f).op = -f.op :=
   rfl
 #align category_theory.op_neg CategoryTheory.op_neg
 

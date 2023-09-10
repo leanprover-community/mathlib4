@@ -31,7 +31,7 @@ class Nontrivial (α : Type*) : Prop where
   exists_pair_ne : ∃ x y : α, x ≠ y
 #align nontrivial Nontrivial
 
-theorem nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
+lemma nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
   ⟨fun h ↦ h.exists_pair_ne, fun h ↦ ⟨h⟩⟩
 #align nontrivial_iff nontrivial_iff
 
@@ -40,7 +40,7 @@ theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
 #align exists_pair_ne exists_pair_ne
 
 -- See Note [decidable namespace]
-protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) : ∃ y, y ≠ x := by
+protected lemma Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) : ∃ y, y ≠ x := by
   rcases exists_pair_ne α with ⟨y, y', h⟩
   by_cases hx:x = y
   · rw [← hx] at h
@@ -48,7 +48,7 @@ protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) 
   · exact ⟨y, Ne.symm hx⟩
 #align decidable.exists_ne Decidable.exists_ne
 
-theorem exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := Decidable.exists_ne x
+lemma exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := Decidable.exists_ne x
 #align exists_ne exists_ne
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
@@ -72,13 +72,13 @@ instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α 
   let ⟨x, _⟩ := _root_.exists_pair_ne α
   ⟨x⟩
 
-theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
+lemma subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
   ⟨by
     intro h
     exact Subsingleton.elim, fun h ↦ ⟨h⟩⟩
 #align subsingleton_iff subsingleton_iff
 
-theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
+lemma not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
   simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, not_not]
 #align not_nontrivial_iff_subsingleton not_nontrivial_iff_subsingleton
 
@@ -101,7 +101,7 @@ theorem false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsin
 #align false_of_nontrivial_of_subsingleton false_of_nontrivial_of_subsingleton
 
 /-- Pullback a `Nontrivial` instance along a surjective function. -/
-protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
+protected lemma Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
     (hf : Function.Surjective f) : Nontrivial α := by
   rcases exists_pair_ne β with ⟨x, y, h⟩
   rcases hf x with ⟨x', hx'⟩

@@ -69,17 +69,17 @@ theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnW
   exact zero_le _
 #align holder_on_with_singleton holderOnWith_singleton
 
-theorem Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
+lemma Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
     HolderOnWith C r f s :=
   hs.induction_on (holderOnWith_empty C r f) (holderOnWith_singleton C r f)
 #align set.subsingleton.holder_on_with Set.Subsingleton.holderOnWith
 
-theorem holderOnWith_univ {C r : ℝ≥0} {f : X → Y} : HolderOnWith C r f univ ↔ HolderWith C r f := by
+lemma holderOnWith_univ {C r : ℝ≥0} {f : X → Y} : HolderOnWith C r f univ ↔ HolderWith C r f := by
   simp only [HolderOnWith, HolderWith, mem_univ, true_imp_iff]
 #align holder_on_with_univ holderOnWith_univ
 
 @[simp]
-theorem holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
+lemma holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
     HolderOnWith C 1 f s ↔ LipschitzOnWith C f s := by
   simp only [HolderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
 #align holder_on_with_one holderOnWith_one
@@ -88,18 +88,18 @@ alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
 #align lipschitz_on_with.holder_on_with LipschitzOnWith.holderOnWith
 
 @[simp]
-theorem holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ LipschitzWith C f :=
+lemma holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ LipschitzWith C f :=
   holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitzOn_univ
 #align holder_with_one holderWith_one
 
 alias ⟨_, LipschitzWith.holderWith⟩ := holderWith_one
 #align lipschitz_with.holder_with LipschitzWith.holderWith
 
-theorem holderWith_id : HolderWith 1 1 (id : X → X) :=
+lemma holderWith_id : HolderWith 1 1 (id : X → X) :=
   LipschitzWith.id.holderWith
 #align holder_with_id holderWith_id
 
-protected theorem HolderWith.holderOnWith {C r : ℝ≥0} {f : X → Y} (h : HolderWith C r f)
+protected lemma HolderWith.holderOnWith {C r : ℝ≥0} {f : X → Y} (h : HolderWith C r f)
     (s : Set X) : HolderOnWith C r f s := fun x _ y _ => h x y
 #align holder_with.holder_on_with HolderWith.holderOnWith
 
@@ -117,7 +117,7 @@ theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy :
   (h.edist_le hx hy).trans (mul_le_mul_left' (ENNReal.rpow_le_rpow hd r.coe_nonneg) _)
 #align holder_on_with.edist_le_of_le HolderOnWith.edist_le_of_le
 
-theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
+lemma comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
     {f : X → Y} (hf : HolderOnWith Cf rf f s) (hst : MapsTo f s t) :
     HolderOnWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) s := by
   intro x hx y hy
@@ -126,7 +126,7 @@ theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg r
   exact hg.edist_le_of_le (hst hx) (hst hy) (hf.edist_le hx hy)
 #align holder_on_with.comp HolderOnWith.comp
 
-theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
+lemma comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HolderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
     HolderWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) :=
   holderOnWith_univ.mp <| hg.comp (hf.holderOnWith univ) fun x _ => ht x
@@ -198,12 +198,12 @@ theorem edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : e
   (h.holderOnWith univ).edist_le_of_le trivial trivial hd
 #align holder_with.edist_le_of_le HolderWith.edist_le_of_le
 
-theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
+lemma comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
     (hf : HolderWith Cf rf f) : HolderWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) :=
   (hg.holderOnWith univ).comp_holderWith hf fun _ => trivial
 #align holder_with.comp HolderWith.comp
 
-theorem comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0}
+lemma comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0}
     {f : X → Y} {s : Set X} (hf : HolderOnWith Cf rf f s) :
     HolderOnWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) s :=
   (hg.holderOnWith univ).comp hf fun _ _ => trivial

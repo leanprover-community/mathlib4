@@ -37,38 +37,38 @@ namespace Option
 
 variable {α β γ δ : Type*}
 
-theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
+lemma coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
 #align option.coe_def Option.coe_def
 
-theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
+lemma mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
 #align option.mem_map Option.mem_map
 
 -- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
-theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
+lemma mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
     f a ∈ o.map f ↔ a ∈ o := by
   aesop
 
-theorem forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+lemma forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
     (∀ y ∈ o.map f, p y) ↔ ∀ x ∈ o, p (f x) := by simp
 #align option.forall_mem_map Option.forall_mem_map
 
-theorem exists_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+lemma exists_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
     (∃ y ∈ o.map f, p y) ↔ ∃ x ∈ o, p (f x) := by simp
 #align option.exists_mem_map Option.exists_mem_map
 
-theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
+lemma coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
   Option.some_get h
 #align option.coe_get Option.coe_get
 
-theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a ∈ o2) : o1 = o2 :=
+lemma eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a ∈ o2) : o1 = o2 :=
   h1.trans h2.symm
 #align option.eq_of_mem_of_mem Option.eq_of_mem_of_mem
 
-theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
+lemma Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
   fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
@@ -76,7 +76,7 @@ theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ �
 #align option.some_injective Option.some_injective
 
 /-- `Option.map f` is injective if `f` is injective. -/
-theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Injective (Option.map f)
+lemma map_injective {f : α → β} (Hf : Function.Injective f) : Function.Injective (Option.map f)
   | none, none, _ => rfl
   | some a₁, some a₂, H => by rw [Hf (Option.some.inj H)]
 #align option.map_injective Option.map_injective
@@ -96,51 +96,51 @@ theorem some_bind' (a : α) (f : α → Option β) : (some a).bind f = f a :=
   rfl
 #align option.some_bind' Option.some_bind'
 
-theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
+lemma bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
     x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b :=
   by cases x <;> simp
 #align option.bind_eq_some' Option.bind_eq_some'
 
-theorem bind_eq_none' {o : Option α} {f : α → Option β} :
+lemma bind_eq_none' {o : Option α} {f : α → Option β} :
     o.bind f = none ↔ ∀ b a, a ∈ o → b ∉ f a := by
   simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and]
 #align option.bind_eq_none' Option.bind_eq_none'
 
-theorem joinM_eq_join : joinM = @join α :=
+lemma joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+lemma bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
 #align option.bind_eq_bind Option.bind_eq_bind
 
-theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
+lemma map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
 #align option.map_coe Option.map_coe
 
 @[simp]
-theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f a) :=
+lemma map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f a) :=
   rfl
 #align option.map_coe' Option.map_coe'
 
 /-- `Option.map` as a function between functions is injective. -/
-theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h ↦
+lemma map_injective' : Function.Injective (@Option.map α β) := fun f g h ↦
   funext fun x ↦ some_injective _ <| by simp only [← map_some', h]
 #align option.map_injective' Option.map_injective'
 
 @[simp]
-theorem map_inj {f g : α → β} : Option.map f = Option.map g ↔ f = g :=
+lemma map_inj {f g : α → β} : Option.map f = Option.map g ↔ f = g :=
   map_injective'.eq_iff
 #align option.map_inj Option.map_inj
 
 attribute [simp] map_id
 
 @[simp]
-theorem map_eq_id {f : α → α} : Option.map f = id ↔ f = id :=
+lemma map_eq_id {f : α → α} : Option.map f = id ↔ f = id :=
   map_injective'.eq_iff' map_id
 #align option.map_eq_id Option.map_eq_id
 
-theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ} (h : g₁ ∘ f₁ = g₂ ∘ f₂)
+lemma map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ} (h : g₁ ∘ f₁ = g₂ ∘ f₂)
   (a : α) :
     (Option.map f₁ a).map g₁ = (Option.map f₂ a).map g₂ := by rw [map_map, h, ← map_map]
 #align option.map_comm Option.map_comm
@@ -155,7 +155,7 @@ theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ 
   cases x <;> simp only [pbind, none_bind', some_bind']
 #align option.pbind_eq_bind Option.pbind_eq_bind
 
-theorem map_bind {α β γ} (f : β → γ) (x : Option α) (g : α → Option β) :
+lemma map_bind {α β γ} (f : β → γ) (x : Option α) (g : α → Option β) :
     Option.map f (x >>= g) = x >>= fun a ↦ Option.map f (g a) := by
   simp only [← map_eq_map, ← bind_pure_comp, LawfulMonad.bind_assoc]
 #align option.map_bind Option.map_bind
@@ -184,7 +184,7 @@ theorem pmap_some (f : ∀ a : α, p a → β) {x : α} (h : p x) :
   rfl
 #align option.pmap_some Option.pmap_some
 
-theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
+lemma mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
   rw [mem_def] at ha ⊢
   subst ha
   rfl
@@ -207,20 +207,20 @@ theorem pmap_eq_map (p : α → Prop) (f : α → β) (x H) :
   cases x <;> simp only [map_none', map_some', pmap]
 #align option.pmap_eq_map Option.pmap_eq_map
 
-theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
+lemma pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
     pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun b h ↦ H _ (H' a _ h) := by
   cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind]
 #align option.pmap_bind Option.pmap_bind
 
-theorem bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
+lemma bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
     pmap f x H >>= g = x.pbind fun a h ↦ g (f a (H _ h)) := by
   cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind, pbind]
 #align option.bind_pmap Option.bind_pmap
 
 variable {f x}
 
-theorem pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
+lemma pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
     (h' : ∀ a (H : a ∈ x), f a H = none → x = none) : x.pbind f = none ↔ x = none := by
   cases x
   · simp
@@ -229,7 +229,7 @@ theorem pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
     cases h' _ rfl h
 #align option.pbind_eq_none Option.pbind_eq_none
 
-theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
+lemma pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     x.pbind f = some y ↔ ∃ (z : α) (H : z ∈ x), f z H = some y := by
   rcases x with (_|x)
   · simp only [pbind, false_iff, not_exists]
@@ -244,12 +244,12 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
 
 -- Porting note: Can't simp tag this anymore because `pmap` simplifies
 -- @[simp]
-theorem pmap_eq_none_iff {h} : pmap f x h = none ↔ x = none := by cases x <;> simp
+lemma pmap_eq_none_iff {h} : pmap f x h = none ↔ x = none := by cases x <;> simp
 #align option.pmap_eq_none_iff Option.pmap_eq_none_iff
 
 -- Porting note: Can't simp tag this anymore because `pmap` simplifies
 -- @[simp]
-theorem pmap_eq_some_iff {hf} {y : β} :
+lemma pmap_eq_some_iff {hf} {y : β} :
     pmap f x hf = some y ↔ ∃ (a : α) (H : x = some a), f a (hf a H) = y := by
   rcases x with (_|x)
   · simp only [not_mem_none, exists_false, pmap, not_false_iff, exists_prop_of_false]
@@ -264,7 +264,7 @@ theorem pmap_eq_some_iff {hf} {y : β} :
 
 -- Porting note: Can't simp tag this anymore because `join` and `pmap` simplify
 -- @[simp]
-theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
+lemma join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
   rcases x with (_ | _ | x) <;> simp
 #align option.join_pmap_eq_pmap_join Option.join_pmap_eq_pmap_join
@@ -272,7 +272,7 @@ theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} 
 end pmap
 
 @[simp]
-theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
+lemma seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
   rfl
 #align option.seq_some Option.seq_some
 
@@ -311,25 +311,25 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases
 
 #align option.ne_none_iff_is_some Option.ne_none_iff_isSome
 
-theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
+lemma iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
 #align option.iget_mem Option.iget_mem
 
-theorem iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o.iget = a
+lemma iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o.iget = a
   | _, rfl => rfl
 #align option.iget_of_mem Option.iget_of_mem
 
-theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
+lemma getD_default_eq_iget [Inhabited α] (o : Option α) :
     o.getD default = o.iget := by cases o <;> rfl
 #align option.get_or_else_default_eq_iget Option.getD_default_eq_iget
 
 @[simp]
-theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
+lemma guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
   cases u
   by_cases h : p <;> simp [_root_.guard, h]
 #align option.guard_eq_some' Option.guard_eq_some'
 
-theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :
+lemma liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :
     ∀ o₁ o₂, liftOrGet f o₁ o₂ = o₁ ∨ liftOrGet f o₁ o₂ = o₂
   | none, none => Or.inl rfl
   | some a, none => Or.inl rfl

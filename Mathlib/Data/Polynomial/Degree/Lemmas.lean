@@ -34,7 +34,7 @@ variable [Semiring R] {p q r : R[X]}
 
 section Degree
 
-theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :=
+lemma natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :=
   if h0 : p.comp q = 0 then by rw [h0, natDegree_zero]; exact Nat.zero_le _
   else
     WithBot.coe_le_coe.1 <|
@@ -60,7 +60,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
                     (Nat.zero_le _)
 #align polynomial.nat_degree_comp_le Polynomial.natDegree_comp_le
 
-theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degree p :=
+lemma degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degree p :=
   lt_of_not_ge fun hlt => by
     have := eq_C_of_degree_le_zero hlt
     rw [IsRoot, this, eval_C] at h
@@ -68,11 +68,11 @@ theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degr
     exact hp this
 #align polynomial.degree_pos_of_root Polynomial.degree_pos_of_root
 
-theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < N → p.coeff N = 0 := by
+lemma natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < N → p.coeff N = 0 := by
   simp_rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero, Nat.cast_lt]
 #align polynomial.nat_degree_le_iff_coeff_eq_zero Polynomial.natDegree_le_iff_coeff_eq_zero
 
-theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
+lemma natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
   refine' ⟨fun h => _, fun h => natDegree_add_le_of_degree_le h qn⟩
   refine' natDegree_le_iff_coeff_eq_zero.mpr fun m hm => _
@@ -80,7 +80,7 @@ theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
 #align polynomial.nat_degree_add_le_iff_left Polynomial.natDegree_add_le_iff_left
 
-theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ n) :
+lemma natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ n) :
     (p + q).natDegree ≤ n ↔ q.natDegree ≤ n := by
   rw [add_comm]
   exact natDegree_add_le_iff_left _ _ pn
@@ -107,7 +107,7 @@ theorem eq_natDegree_of_le_mem_support (pn : p.natDegree ≤ n) (ns : n ∈ p.su
   le_antisymm pn (le_natDegree_of_mem_supp _ ns)
 #align polynomial.eq_nat_degree_of_le_mem_support Polynomial.eq_natDegree_of_le_mem_support
 
-theorem natDegree_C_mul_eq_of_mul_eq_one {ai : R} (au : ai * a = 1) :
+lemma natDegree_C_mul_eq_of_mul_eq_one {ai : R} (au : ai * a = 1) :
     (C a * p).natDegree = p.natDegree :=
   le_antisymm (natDegree_C_mul_le a p)
     (calc
@@ -117,7 +117,7 @@ theorem natDegree_C_mul_eq_of_mul_eq_one {ai : R} (au : ai * a = 1) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.nat_degree_C_mul_eq_of_mul_eq_one Polynomial.natDegree_C_mul_eq_of_mul_eq_one
 
-theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
+lemma natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
     (p * C a).natDegree = p.natDegree :=
   le_antisymm (natDegree_mul_C_le p a)
     (calc
@@ -180,7 +180,7 @@ theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     exact mul_le_mul_of_nonneg_left pn m.zero_le
 #align polynomial.coeff_pow_of_nat_degree_le Polynomial.coeff_pow_of_natDegree_le
 
-theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
+lemma coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
     (pn : natDegree p ≤ n) (mno : m * n ≤ o) :
     coeff (p ^ m) o = if o = m * n then (coeff p n) ^ m else 0 := by
   rcases eq_or_ne o (m * n) with rfl | h
@@ -268,7 +268,7 @@ theorem natDegree_bit1 (a : R[X]) : (bit1 a).natDegree ≤ a.natDegree :=
 
 variable [Semiring S]
 
-theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
+lemma natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
     (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < natDegree p :=
   lt_of_not_ge fun hlt => by
     have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
@@ -277,13 +277,13 @@ theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) 
     exact hp A
 #align polynomial.nat_degree_pos_of_eval₂_root Polynomial.natDegree_pos_of_eval₂_root
 
-theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
+lemma degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
     (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < degree p :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos_of_eval₂_root hp f hz inj)
 #align polynomial.degree_pos_of_eval₂_root Polynomial.degree_pos_of_eval₂_root
 
 @[simp]
-theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p := by
+lemma coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p := by
   by_cases h : p = 0
   · simp [h]
   simp [degree_eq_natDegree h, Nat.cast_lt]
@@ -297,7 +297,7 @@ section Ring
 
 variable [Ring R] {p q : R[X]}
 
-theorem natDegree_sub : (p - q).natDegree = (q - p).natDegree := by rw [← natDegree_neg, neg_sub]
+lemma natDegree_sub : (p - q).natDegree = (q - p).natDegree := by rw [← natDegree_neg, neg_sub]
 #align polynomial.nat_degree_sub Polynomial.natDegree_sub
 
 theorem natDegree_sub_le_iff_left (qn : q.natDegree ≤ n) :
@@ -345,7 +345,7 @@ theorem natDegree_C_mul (a0 : a ≠ 0) : (C a * p).natDegree = p.natDegree := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.nat_degree_C_mul Polynomial.natDegree_C_mul
 
-theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
+lemma natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
   by_cases q0 : q.natDegree = 0
   · rw [degree_le_zero_iff.mp (natDegree_eq_zero_iff_degree_le_zero.mp q0), comp_C, natDegree_C,
       natDegree_C, mul_zero]

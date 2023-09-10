@@ -53,20 +53,20 @@ def essImage.getIso {Y : D} (h : Y ∈ F.essImage) : F.obj (essImage.witness h) 
 #align category_theory.functor.ess_image.get_iso CategoryTheory.Functor.essImage.getIso
 
 /-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
-theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : Y ∈ essImage F) : Y' ∈ essImage F :=
+lemma essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : Y ∈ essImage F) : Y' ∈ essImage F :=
   hY.imp fun _ => Nonempty.map (· ≪≫ h)
 #align category_theory.functor.ess_image.of_iso CategoryTheory.Functor.essImage.ofIso
 
 /-- If `Y` is in the essential image of `F` then it is in the essential image of `F'` as long as
 `F ≅ F'`.
 -/
-theorem essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : Y ∈ essImage F) :
+lemma essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : Y ∈ essImage F) :
     Y ∈ essImage F' :=
   hY.imp fun X => Nonempty.map fun t => h.symm.app X ≪≫ t
 #align category_theory.functor.ess_image.of_nat_iso CategoryTheory.Functor.essImage.ofNatIso
 
 /-- Isomorphic functors have equal essential images. -/
-theorem essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essImage F' :=
+lemma essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essImage F' :=
   funext fun _ => propext ⟨essImage.ofNatIso h, essImage.ofNatIso h.symm⟩
 #align category_theory.functor.ess_image_eq_of_nat_iso CategoryTheory.Functor.essImage_eq_of_natIso
 
@@ -167,7 +167,7 @@ instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
 instance instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
 
-theorem Iso.map_essSurj {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
+lemma Iso.map_essSurj {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
   mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
 
 end CategoryTheory

@@ -13,7 +13,7 @@ environment.
 
 ```
 whatsnew in
-theorem foo : 42 = 6 * 7 := rfl
+lemma foo : 42 = 6 * 7 := rfl
 ```
 -/
 

@@ -43,25 +43,25 @@ def map (f : α → β) (p : Pmf α) : Pmf β :=
 
 variable (f : α → β) (p : Pmf α) (b : β)
 
-theorem monad_map_eq_map {α β : Type _} (f : α → β) (p : Pmf α) : f <$> p = p.map f := rfl
+lemma monad_map_eq_map {α β : Type _} (f : α → β) (p : Pmf α) : f <$> p = p.map f := rfl
 #align pmf.monad_map_eq_map Pmf.monad_map_eq_map
 
 @[simp]
-theorem map_apply : (map f p) b = ∑' a, if b = f a then p a else 0 := by simp [map]
+lemma map_apply : (map f p) b = ∑' a, if b = f a then p a else 0 := by simp [map]
 #align pmf.map_apply Pmf.map_apply
 
 @[simp]
-theorem support_map : (map f p).support = f '' p.support :=
+lemma support_map : (map f p).support = f '' p.support :=
   Set.ext fun b => by simp [map, @eq_comm β b]
 #align pmf.support_map Pmf.support_map
 
-theorem mem_support_map_iff : b ∈ (map f p).support ↔ ∃ a ∈ p.support, f a = b := by simp
+lemma mem_support_map_iff : b ∈ (map f p).support ↔ ∃ a ∈ p.support, f a = b := by simp
 #align pmf.mem_support_map_iff Pmf.mem_support_map_iff
 
-theorem bind_pure_comp : bind p (pure ∘ f) = map f p := rfl
+lemma bind_pure_comp : bind p (pure ∘ f) = map f p := rfl
 #align pmf.bind_pure_comp Pmf.bind_pure_comp
 
-theorem map_id : map id p = p :=
+lemma map_id : map id p = p :=
   bind_pure _
 #align pmf.map_id Pmf.map_id
 
@@ -82,7 +82,7 @@ theorem bind_map (p : Pmf α) (f : α → β) (q : β → Pmf γ) : (p.map f).bi
 #align pmf.bind_map Pmf.bind_map
 
 @[simp]
-theorem map_const : p.map (Function.const α b) = pure b := by
+lemma map_const : p.map (Function.const α b) = pure b := by
   simp only [map, Function.comp, bind_const, Function.const]
 #align pmf.map_const Pmf.map_const
 
@@ -91,12 +91,12 @@ section Measure
 variable (s : Set β)
 
 @[simp]
-theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
+lemma toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
   simp [map, Set.indicator, toOuterMeasure_apply p (f ⁻¹' s)]
 #align pmf.to_outer_measure_map_apply Pmf.toOuterMeasure_map_apply
 
 @[simp]
-theorem toMeasure_map_apply [MeasurableSpace α] [MeasurableSpace β] (hf : Measurable f)
+lemma toMeasure_map_apply [MeasurableSpace α] [MeasurableSpace β] (hf : Measurable f)
     (hs : MeasurableSet s) : (p.map f).toMeasure s = p.toMeasure (f ⁻¹' s) := by
   rw [toMeasure_apply_eq_toOuterMeasure_apply _ s hs,
     toMeasure_apply_eq_toOuterMeasure_apply _ (f ⁻¹' s) (measurableSet_preimage hf hs)]
@@ -116,22 +116,22 @@ def seq (q : Pmf (α → β)) (p : Pmf α) : Pmf β :=
 
 variable (q : Pmf (α → β)) (p : Pmf α) (b : β)
 
-theorem monad_seq_eq_seq {α β : Type _} (q : Pmf (α → β)) (p : Pmf α) : q <*> p = q.seq p := rfl
+lemma monad_seq_eq_seq {α β : Type _} (q : Pmf (α → β)) (p : Pmf α) : q <*> p = q.seq p := rfl
 #align pmf.monad_seq_eq_seq Pmf.monad_seq_eq_seq
 
 @[simp]
-theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
+lemma seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
   refine' tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => _)
   simpa only [mul_zero] using mul_ite (b = f a) (q f) (p a) 0
 #align pmf.seq_apply Pmf.seq_apply
 
 @[simp]
-theorem support_seq : (seq q p).support = ⋃ f ∈ q.support, f '' p.support :=
+lemma support_seq : (seq q p).support = ⋃ f ∈ q.support, f '' p.support :=
   Set.ext fun b => by simp [-mem_support_iff, seq, @eq_comm β b]
 #align pmf.support_seq Pmf.support_seq
 
-theorem mem_support_seq_iff : b ∈ (seq q p).support ↔ ∃ f ∈ q.support, b ∈ f '' p.support := by simp
+lemma mem_support_seq_iff : b ∈ (seq q p).support ↔ ∃ f ∈ q.support, b ∈ f '' p.support := by simp
 #align pmf.mem_support_seq_iff Pmf.mem_support_seq_iff
 
 end Seq
@@ -163,7 +163,7 @@ theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
 #align pmf.of_finset_apply Pmf.ofFinset_apply
 
 @[simp]
-theorem support_ofFinset : (ofFinset f s h h').support = ↑s ∩ Function.support f :=
+lemma support_ofFinset : (ofFinset f s h h').support = ↑s ∩ Function.support f :=
   Set.ext fun a => by simpa [mem_support_iff] using mt (h' a)
 #align pmf.support_of_finset Pmf.support_ofFinset
 
@@ -171,7 +171,7 @@ theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support �
   simp
 #align pmf.mem_support_of_finset_iff Pmf.mem_support_ofFinset_iff
 
-theorem ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
+lemma ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
   h' a ha
 #align pmf.of_finset_apply_of_not_mem Pmf.ofFinset_apply_of_not_mem
 
@@ -180,13 +180,13 @@ section Measure
 variable (t : Set α)
 
 @[simp]
-theorem toOuterMeasure_ofFinset_apply :
+lemma toOuterMeasure_ofFinset_apply :
     (ofFinset f s h h').toOuterMeasure t = ∑' x, t.indicator f x :=
   toOuterMeasure_apply (ofFinset f s h h') t
 #align pmf.to_outer_measure_of_finset_apply Pmf.toOuterMeasure_ofFinset_apply
 
 @[simp]
-theorem toMeasure_ofFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
+lemma toMeasure_ofFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (ofFinset f s h h').toMeasure t = ∑' x, t.indicator f x :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofFinset_apply h h' t)
 #align pmf.to_measure_of_finset_apply Pmf.toMeasure_ofFinset_apply
@@ -209,7 +209,7 @@ theorem ofFintype_apply (a : α) : ofFintype f h a = f a := rfl
 #align pmf.of_fintype_apply Pmf.ofFintype_apply
 
 @[simp]
-theorem support_ofFintype : (ofFintype f h).support = Function.support f := rfl
+lemma support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 #align pmf.support_of_fintype Pmf.support_ofFintype
 
 theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
@@ -220,12 +220,12 @@ section Measure
 variable (s : Set α)
 
 @[simp high]
-theorem toOuterMeasure_ofFintype_apply : (ofFintype f h).toOuterMeasure s = ∑' x, s.indicator f x :=
+lemma toOuterMeasure_ofFintype_apply : (ofFintype f h).toOuterMeasure s = ∑' x, s.indicator f x :=
   toOuterMeasure_apply (ofFintype f h) s
 #align pmf.to_outer_measure_of_fintype_apply Pmf.toOuterMeasure_ofFintype_apply
 
 @[simp]
-theorem toMeasure_ofFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
+lemma toMeasure_ofFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
     (ofFintype f h).toMeasure s = ∑' x, s.indicator f x :=
   (toMeasure_apply_eq_toOuterMeasure_apply _ s hs).trans (toOuterMeasure_ofFintype_apply h s)
 #align pmf.to_measure_of_fintype_apply Pmf.toMeasure_ofFintype_apply
@@ -250,7 +250,7 @@ theorem normalize_apply (a : α) : (normalize f hf0 hf) a = f a * (∑' x, f x)�
 #align pmf.normalize_apply Pmf.normalize_apply
 
 @[simp]
-theorem support_normalize : (normalize f hf0 hf).support = Function.support f :=
+lemma support_normalize : (normalize f hf0 hf).support = Function.support f :=
   Set.ext fun a => by simp [hf, mem_support_iff]
 #align pmf.support_normalize Pmf.support_normalize
 
@@ -274,16 +274,16 @@ theorem filter_apply (a : α) :
   rw [filter, normalize_apply]
 #align pmf.filter_apply Pmf.filter_apply
 
-theorem filter_apply_eq_zero_of_not_mem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
+lemma filter_apply_eq_zero_of_not_mem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
   rw [filter_apply, Set.indicator_apply_eq_zero.mpr fun ha' => absurd ha' ha, zero_mul]
 #align pmf.filter_apply_eq_zero_of_not_mem Pmf.filter_apply_eq_zero_of_not_mem
 
-theorem mem_support_filter_iff {a : α} : a ∈ (p.filter s h).support ↔ a ∈ s ∧ a ∈ p.support :=
+lemma mem_support_filter_iff {a : α} : a ∈ (p.filter s h).support ↔ a ∈ s ∧ a ∈ p.support :=
   (mem_support_normalize_iff _ _ _).trans Set.indicator_apply_ne_zero
 #align pmf.mem_support_filter_iff Pmf.mem_support_filter_iff
 
 @[simp]
-theorem support_filter : (p.filter s h).support = s ∩ p.support :=
+lemma support_filter : (p.filter s h).support = s ∩ p.support :=
   Set.ext fun _ => mem_support_filter_iff _
 #align pmf.support_filter Pmf.support_filter
 
@@ -307,11 +307,11 @@ def bernoulli (p : ℝ≥0∞) (h : p ≤ 1) : Pmf Bool :=
 variable {p : ℝ≥0∞} (h : p ≤ 1) (b : Bool)
 
 @[simp]
-theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
+lemma bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
 #align pmf.bernoulli_apply Pmf.bernoulli_apply
 
 @[simp]
-theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
+lemma support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine' Set.ext fun b => _
   induction b
   · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne.def, tsub_eq_zero_iff_le, not_le]
@@ -319,7 +319,7 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
   · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq]
 #align pmf.support_bernoulli Pmf.support_bernoulli
 
-theorem mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
+lemma mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
 #align pmf.mem_support_bernoulli_iff Pmf.mem_support_bernoulli_iff
 
 end bernoulli

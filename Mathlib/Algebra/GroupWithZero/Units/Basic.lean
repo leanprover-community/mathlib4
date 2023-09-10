@@ -29,7 +29,7 @@ namespace Units
 /-- An element of the unit group of a nonzero monoid with zero represented as an element
     of the monoid is nonzero. -/
 @[simp]
-theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
+lemma ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
   left_ne_zero_of_mul_eq_one u.mul_inv
 #align units.ne_zero Units.ne_zero
 
@@ -49,17 +49,17 @@ end Units
 
 namespace IsUnit
 
-theorem ne_zero [Nontrivial M₀] {a : M₀} (ha : IsUnit a) : a ≠ 0 :=
+lemma ne_zero [Nontrivial M₀] {a : M₀} (ha : IsUnit a) : a ≠ 0 :=
   let ⟨u, hu⟩ := ha
   hu ▸ u.ne_zero
 #align is_unit.ne_zero IsUnit.ne_zero
 
-theorem mul_right_eq_zero {a b : M₀} (ha : IsUnit a) : a * b = 0 ↔ b = 0 :=
+lemma mul_right_eq_zero {a b : M₀} (ha : IsUnit a) : a * b = 0 ↔ b = 0 :=
   let ⟨u, hu⟩ := ha
   hu ▸ u.mul_right_eq_zero
 #align is_unit.mul_right_eq_zero IsUnit.mul_right_eq_zero
 
-theorem mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
+lemma mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
   let ⟨u, hu⟩ := hb
   hu ▸ u.mul_left_eq_zero
 #align is_unit.mul_left_eq_zero IsUnit.mul_left_eq_zero
@@ -67,13 +67,13 @@ theorem mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
 end IsUnit
 
 @[simp]
-theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
+lemma isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 #align is_unit_zero_iff isUnit_zero_iff
 
 -- porting note: removed `simp` tag because `simpNF` says it's redundant
-theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
+lemma not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 #align not_is_unit_zero not_isUnit_zero
 
@@ -141,12 +141,12 @@ theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * invers
 variable (M₀)
 
 @[simp]
-theorem inverse_one : inverse (1 : M₀) = 1 :=
+lemma inverse_one : inverse (1 : M₀) = 1 :=
   inverse_unit 1
 #align ring.inverse_one Ring.inverse_one
 
 @[simp]
-theorem inverse_zero : inverse (0 : M₀) = 0 := by
+lemma inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
 #align ring.inverse_zero Ring.inverse_zero
@@ -155,12 +155,12 @@ variable {M₀}
 
 end Ring
 
-theorem IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
+lemma IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
 #align is_unit.ring_inverse IsUnit.ring_inverse
 
 @[simp]
-theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
+lemma isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
@@ -192,7 +192,7 @@ theorem mk0_one (h := one_ne_zero) : mk0 (1 : G₀) h = 1 := by
 #align units.mk0_one Units.mk0_one
 
 @[simp]
-theorem val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
+lemma val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
   rfl
 #align units.coe_mk0 Units.val_mk0
 
@@ -212,26 +212,26 @@ theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
 #align units.inv_mul' Units.inv_mul'
 
 @[simp]
-theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
+lemma mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
   ⟨fun h => by injection h, fun h => Units.ext h⟩
 #align units.mk0_inj Units.mk0_inj
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/
-theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀) (hg : g ≠ 0), p (Units.mk0 g hg) :=
+lemma exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀) (hg : g ≠ 0), p (Units.mk0 g hg) :=
   ⟨fun ⟨g, pg⟩ => ⟨g, g.ne_zero, (g.mk0_val g.ne_zero).symm ▸ pg⟩,
   fun ⟨g, hg, pg⟩ => ⟨Units.mk0 g hg, pg⟩⟩
 #align units.exists0 Units.exists0
 
 /-- An alternative version of `Units.exists0`. This one is useful if Lean cannot
 figure out `p` when using `Units.exists0` from right to left. -/
-theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
+lemma exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
   -- porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
 
 @[simp]
-theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+lemma exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
 theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
@@ -252,7 +252,7 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
 #align is_unit.mk0 IsUnit.mk0
 
-theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
+lemma isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
   Units.exists_iff_ne_zero
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
@@ -286,10 +286,10 @@ theorem div_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a / b ≠ 0 := by
 #align div_ne_zero div_ne_zero
 
 @[simp]
-theorem div_eq_zero_iff : a / b = 0 ↔ a = 0 ∨ b = 0 := by simp [div_eq_mul_inv]
+lemma div_eq_zero_iff : a / b = 0 ↔ a = 0 ∨ b = 0 := by simp [div_eq_mul_inv]
 #align div_eq_zero_iff div_eq_zero_iff
 
-theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
+lemma div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
   div_eq_zero_iff.not.trans not_or
 #align div_ne_zero_iff div_ne_zero_iff
 
@@ -300,7 +300,7 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 #align ring.inverse_eq_inv Ring.inverse_eq_inv
 
 @[simp]
-theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
+lemma Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 #align ring.inverse_eq_inv' Ring.inverse_eq_inv'
 

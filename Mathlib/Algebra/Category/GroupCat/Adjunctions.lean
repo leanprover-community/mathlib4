@@ -56,12 +56,12 @@ def free : Type u ⥤ AddCommGroupCat where
 #align AddCommGroup.free AddCommGroupCat.free
 
 @[simp]
-theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
+lemma free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
   rfl
 #align AddCommGroup.free_obj_coe AddCommGroupCat.free_obj_coe
 
 @[simp]
-theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
+lemma free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl
 #align AddCommGroup.free_map_coe AddCommGroupCat.free_map_coe

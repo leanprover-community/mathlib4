@@ -104,7 +104,7 @@ theorem snd_mk (r : R) (m : M) : snd (r, m) = m :=
 #align triv_sq_zero_ext.snd_mk TrivSqZeroExt.snd_mk
 
 @[ext]
-theorem ext {x y : tsze R M} (h1 : x.fst = y.fst) (h2 : x.snd = y.snd) : x = y :=
+lemma ext {x y : tsze R M} (h1 : x.fst = y.fst) (h2 : x.snd = y.snd) : x = y :=
   Prod.ext h1 h2
 #align triv_sq_zero_ext.ext TrivSqZeroExt.ext
 
@@ -113,22 +113,22 @@ section
 variable (M)
 
 @[simp]
-theorem fst_inl [Zero M] (r : R) : (inl r : tsze R M).fst = r :=
+lemma fst_inl [Zero M] (r : R) : (inl r : tsze R M).fst = r :=
   rfl
 #align triv_sq_zero_ext.fst_inl TrivSqZeroExt.fst_inl
 
 @[simp]
-theorem snd_inl [Zero M] (r : R) : (inl r : tsze R M).snd = 0 :=
+lemma snd_inl [Zero M] (r : R) : (inl r : tsze R M).snd = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_inl TrivSqZeroExt.snd_inl
 
 @[simp]
-theorem fst_comp_inl [Zero M] : fst ∘ (inl : R → tsze R M) = id :=
+lemma fst_comp_inl [Zero M] : fst ∘ (inl : R → tsze R M) = id :=
   rfl
 #align triv_sq_zero_ext.fst_comp_inl TrivSqZeroExt.fst_comp_inl
 
 @[simp]
-theorem snd_comp_inl [Zero M] : snd ∘ (inl : R → tsze R M) = 0 :=
+lemma snd_comp_inl [Zero M] : snd ∘ (inl : R → tsze R M) = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_comp_inl TrivSqZeroExt.snd_comp_inl
 
@@ -139,32 +139,32 @@ section
 variable (R)
 
 @[simp]
-theorem fst_inr [Zero R] (m : M) : (inr m : tsze R M).fst = 0 :=
+lemma fst_inr [Zero R] (m : M) : (inr m : tsze R M).fst = 0 :=
   rfl
 #align triv_sq_zero_ext.fst_inr TrivSqZeroExt.fst_inr
 
 @[simp]
-theorem snd_inr [Zero R] (m : M) : (inr m : tsze R M).snd = m :=
+lemma snd_inr [Zero R] (m : M) : (inr m : tsze R M).snd = m :=
   rfl
 #align triv_sq_zero_ext.snd_inr TrivSqZeroExt.snd_inr
 
 @[simp]
-theorem fst_comp_inr [Zero R] : fst ∘ (inr : M → tsze R M) = 0 :=
+lemma fst_comp_inr [Zero R] : fst ∘ (inr : M → tsze R M) = 0 :=
   rfl
 #align triv_sq_zero_ext.fst_comp_inr TrivSqZeroExt.fst_comp_inr
 
 @[simp]
-theorem snd_comp_inr [Zero R] : snd ∘ (inr : M → tsze R M) = id :=
+lemma snd_comp_inr [Zero R] : snd ∘ (inr : M → tsze R M) = id :=
   rfl
 #align triv_sq_zero_ext.snd_comp_inr TrivSqZeroExt.snd_comp_inr
 
 end
 
-theorem inl_injective [Zero M] : Function.Injective (inl : R → tsze R M) :=
+lemma inl_injective [Zero M] : Function.Injective (inl : R → tsze R M) :=
   Function.LeftInverse.injective <| fst_inl _
 #align triv_sq_zero_ext.inl_injective TrivSqZeroExt.inl_injective
 
-theorem inr_injective [Zero R] : Function.Injective (inr : M → tsze R M) :=
+lemma inr_injective [Zero R] : Function.Injective (inr : M → tsze R M) :=
   Function.LeftInverse.injective <| snd_inr _
 #align triv_sq_zero_ext.inr_injective TrivSqZeroExt.inr_injective
 
@@ -242,61 +242,61 @@ instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [M
   Prod.instModule
 
 @[simp]
-theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
+lemma fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
   rfl
 #align triv_sq_zero_ext.fst_zero TrivSqZeroExt.fst_zero
 
 @[simp]
-theorem snd_zero [Zero R] [Zero M] : (0 : tsze R M).snd = 0 :=
+lemma snd_zero [Zero R] [Zero M] : (0 : tsze R M).snd = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_zero TrivSqZeroExt.snd_zero
 
 @[simp]
-theorem fst_add [Add R] [Add M] (x₁ x₂ : tsze R M) : (x₁ + x₂).fst = x₁.fst + x₂.fst :=
+lemma fst_add [Add R] [Add M] (x₁ x₂ : tsze R M) : (x₁ + x₂).fst = x₁.fst + x₂.fst :=
   rfl
 #align triv_sq_zero_ext.fst_add TrivSqZeroExt.fst_add
 
 @[simp]
-theorem snd_add [Add R] [Add M] (x₁ x₂ : tsze R M) : (x₁ + x₂).snd = x₁.snd + x₂.snd :=
+lemma snd_add [Add R] [Add M] (x₁ x₂ : tsze R M) : (x₁ + x₂).snd = x₁.snd + x₂.snd :=
   rfl
 #align triv_sq_zero_ext.snd_add TrivSqZeroExt.snd_add
 
 @[simp]
-theorem fst_neg [Neg R] [Neg M] (x : tsze R M) : (-x).fst = -x.fst :=
+lemma fst_neg [Neg R] [Neg M] (x : tsze R M) : (-x).fst = -x.fst :=
   rfl
 #align triv_sq_zero_ext.fst_neg TrivSqZeroExt.fst_neg
 
 @[simp]
-theorem snd_neg [Neg R] [Neg M] (x : tsze R M) : (-x).snd = -x.snd :=
+lemma snd_neg [Neg R] [Neg M] (x : tsze R M) : (-x).snd = -x.snd :=
   rfl
 #align triv_sq_zero_ext.snd_neg TrivSqZeroExt.snd_neg
 
 @[simp]
-theorem fst_sub [Sub R] [Sub M] (x₁ x₂ : tsze R M) : (x₁ - x₂).fst = x₁.fst - x₂.fst :=
+lemma fst_sub [Sub R] [Sub M] (x₁ x₂ : tsze R M) : (x₁ - x₂).fst = x₁.fst - x₂.fst :=
   rfl
 #align triv_sq_zero_ext.fst_sub TrivSqZeroExt.fst_sub
 
 @[simp]
-theorem snd_sub [Sub R] [Sub M] (x₁ x₂ : tsze R M) : (x₁ - x₂).snd = x₁.snd - x₂.snd :=
+lemma snd_sub [Sub R] [Sub M] (x₁ x₂ : tsze R M) : (x₁ - x₂).snd = x₁.snd - x₂.snd :=
   rfl
 #align triv_sq_zero_ext.snd_sub TrivSqZeroExt.snd_sub
 
 @[simp]
-theorem fst_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).fst = s • x.fst :=
+lemma fst_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).fst = s • x.fst :=
   rfl
 #align triv_sq_zero_ext.fst_smul TrivSqZeroExt.fst_smul
 
 @[simp]
-theorem snd_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).snd = s • x.snd :=
+lemma snd_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).snd = s • x.snd :=
   rfl
 #align triv_sq_zero_ext.snd_smul TrivSqZeroExt.snd_smul
 
-theorem fst_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
+lemma fst_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
     (∑ i in s, f i).fst = ∑ i in s, (f i).fst :=
   Prod.fst_sum
 #align triv_sq_zero_ext.fst_sum TrivSqZeroExt.fst_sum
 
-theorem snd_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
+lemma snd_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
     (∑ i in s, f i).snd = ∑ i in s, (f i).snd :=
   Prod.snd_sum
 #align triv_sq_zero_ext.snd_sum TrivSqZeroExt.snd_sum
@@ -306,34 +306,34 @@ section
 variable (M)
 
 @[simp]
-theorem inl_zero [Zero R] [Zero M] : (inl 0 : tsze R M) = 0 :=
+lemma inl_zero [Zero R] [Zero M] : (inl 0 : tsze R M) = 0 :=
   rfl
 #align triv_sq_zero_ext.inl_zero TrivSqZeroExt.inl_zero
 
 @[simp]
-theorem inl_add [Add R] [AddZeroClass M] (r₁ r₂ : R) :
+lemma inl_add [Add R] [AddZeroClass M] (r₁ r₂ : R) :
     (inl (r₁ + r₂) : tsze R M) = inl r₁ + inl r₂ :=
   ext rfl (add_zero 0).symm
 #align triv_sq_zero_ext.inl_add TrivSqZeroExt.inl_add
 
 @[simp]
-theorem inl_neg [Neg R] [SubNegZeroMonoid M] (r : R) : (inl (-r) : tsze R M) = -inl r :=
+lemma inl_neg [Neg R] [SubNegZeroMonoid M] (r : R) : (inl (-r) : tsze R M) = -inl r :=
   ext rfl neg_zero.symm
 #align triv_sq_zero_ext.inl_neg TrivSqZeroExt.inl_neg
 
 @[simp]
-theorem inl_sub [Sub R] [SubNegZeroMonoid M] (r₁ r₂ : R) :
+lemma inl_sub [Sub R] [SubNegZeroMonoid M] (r₁ r₂ : R) :
     (inl (r₁ - r₂) : tsze R M) = inl r₁ - inl r₂ :=
   ext rfl (sub_zero _).symm
 #align triv_sq_zero_ext.inl_sub TrivSqZeroExt.inl_sub
 
 @[simp]
-theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s : S) (r : R) :
+lemma inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s : S) (r : R) :
     (inl (s • r) : tsze R M) = s • inl r :=
   ext rfl (smul_zero s).symm
 #align triv_sq_zero_ext.inl_smul TrivSqZeroExt.inl_smul
 
-theorem inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
+lemma inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
     (inl (∑ i in s, f i) : tsze R M) = ∑ i in s, inl (f i) :=
   (LinearMap.inl ℕ _ _).map_sum
 #align triv_sq_zero_ext.inl_sum TrivSqZeroExt.inl_sum
@@ -345,41 +345,41 @@ section
 variable (R)
 
 @[simp]
-theorem inr_zero [Zero R] [Zero M] : (inr 0 : tsze R M) = 0 :=
+lemma inr_zero [Zero R] [Zero M] : (inr 0 : tsze R M) = 0 :=
   rfl
 #align triv_sq_zero_ext.inr_zero TrivSqZeroExt.inr_zero
 
 @[simp]
-theorem inr_add [AddZeroClass R] [AddZeroClass M] (m₁ m₂ : M) :
+lemma inr_add [AddZeroClass R] [AddZeroClass M] (m₁ m₂ : M) :
     (inr (m₁ + m₂) : tsze R M) = inr m₁ + inr m₂ :=
   ext (add_zero 0).symm rfl
 #align triv_sq_zero_ext.inr_add TrivSqZeroExt.inr_add
 
 @[simp]
-theorem inr_neg [SubNegZeroMonoid R] [Neg M] (m : M) : (inr (-m) : tsze R M) = -inr m :=
+lemma inr_neg [SubNegZeroMonoid R] [Neg M] (m : M) : (inr (-m) : tsze R M) = -inr m :=
   ext neg_zero.symm rfl
 #align triv_sq_zero_ext.inr_neg TrivSqZeroExt.inr_neg
 
 @[simp]
-theorem inr_sub [SubNegZeroMonoid R] [Sub M] (m₁ m₂ : M) :
+lemma inr_sub [SubNegZeroMonoid R] [Sub M] (m₁ m₂ : M) :
     (inr (m₁ - m₂) : tsze R M) = inr m₁ - inr m₂ :=
   ext (sub_zero _).symm rfl
 #align triv_sq_zero_ext.inr_sub TrivSqZeroExt.inr_sub
 
 @[simp]
-theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M) :
+lemma inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M) :
     (inr (r • m) : tsze R M) = r • inr m :=
   ext (smul_zero _).symm rfl
 #align triv_sq_zero_ext.inr_smul TrivSqZeroExt.inr_smul
 
-theorem inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
+lemma inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
     (inr (∑ i in s, f i) : tsze R M) = ∑ i in s, inr (f i) :=
   (LinearMap.inr ℕ _ _).map_sum
 #align triv_sq_zero_ext.inr_sum TrivSqZeroExt.inr_sum
 
 end
 
-theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass M] (x : tsze R M) :
+lemma inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass M] (x : tsze R M) :
     inl x.fst + inr x.snd = x :=
   ext (add_zero x.1) (zero_add x.2)
 #align triv_sq_zero_ext.inl_fst_add_inr_snd_eq TrivSqZeroExt.inl_fst_add_inr_snd_eq
@@ -388,14 +388,14 @@ theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass M] (x : tsze R M) 
 on terms of the form `inl r + inr m`.
 
 This can be used as `induction x using TrivSqZeroExt.ind`. -/
-theorem ind {R M} [AddZeroClass R] [AddZeroClass M] {P : TrivSqZeroExt R M → Prop}
+lemma ind {R M} [AddZeroClass R] [AddZeroClass M] {P : TrivSqZeroExt R M → Prop}
     (h : ∀ r m, P (inl r + inr m)) (x) : P x :=
   inl_fst_add_inr_snd_eq x ▸ h x.1 x.2
 #align triv_sq_zero_ext.ind TrivSqZeroExt.ind
 
 /-- This cannot be marked `@[ext]` as it ends up being used instead of `LinearMap.prod_ext` when
 working with `R × M`. -/
-theorem linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [AddCommMonoid N]
+lemma linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [AddCommMonoid N]
     [Module S R] [Module S M] [Module S N] ⦃f g : tsze R M →ₗ[S] N⦄
     (hl : ∀ r, f (inl r) = g (inl r)) (hr : ∀ m, f (inr m) = g (inr m)) : f = g :=
   LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
@@ -431,23 +431,23 @@ instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
   ⟨fun x y => (x.1 * y.1, x.1 • y.2 + op y.1 • x.2)⟩
 
 @[simp]
-theorem fst_one [One R] [Zero M] : (1 : tsze R M).fst = 1 :=
+lemma fst_one [One R] [Zero M] : (1 : tsze R M).fst = 1 :=
   rfl
 #align triv_sq_zero_ext.fst_one TrivSqZeroExt.fst_one
 
 @[simp]
-theorem snd_one [One R] [Zero M] : (1 : tsze R M).snd = 0 :=
+lemma snd_one [One R] [Zero M] : (1 : tsze R M).snd = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_one TrivSqZeroExt.snd_one
 
 @[simp]
-theorem fst_mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] (x₁ x₂ : tsze R M) :
+lemma fst_mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] (x₁ x₂ : tsze R M) :
     (x₁ * x₂).fst = x₁.fst * x₂.fst :=
   rfl
 #align triv_sq_zero_ext.fst_mul TrivSqZeroExt.fst_mul
 
 @[simp]
-theorem snd_mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] (x₁ x₂ : tsze R M) :
+lemma snd_mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] (x₁ x₂ : tsze R M) :
     (x₁ * x₂).snd = x₁.fst • x₂.snd + op x₂.fst • x₁.snd :=
   rfl
 #align triv_sq_zero_ext.snd_mul TrivSqZeroExt.snd_mul
@@ -457,17 +457,17 @@ section
 variable (M)
 
 @[simp]
-theorem inl_one [One R] [Zero M] : (inl 1 : tsze R M) = 1 :=
+lemma inl_one [One R] [Zero M] : (inl 1 : tsze R M) = 1 :=
   rfl
 #align triv_sq_zero_ext.inl_one TrivSqZeroExt.inl_one
 
 @[simp]
-theorem inl_mul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+lemma inl_mul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (r₁ r₂ : R) : (inl (r₁ * r₂) : tsze R M) = inl r₁ * inl r₂ :=
   ext rfl <| show (0 : M) = r₁ • (0 : M) + op r₂ • (0 : M) by rw [smul_zero, zero_add, smul_zero]
 #align triv_sq_zero_ext.inl_mul TrivSqZeroExt.inl_mul
 
-theorem inl_mul_inl [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+lemma inl_mul_inl [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (r₁ r₂ : R) : (inl r₁ * inl r₂ : tsze R M) = inl (r₁ * r₂) :=
   (inl_mul M r₁ r₂).symm
 #align triv_sq_zero_ext.inl_mul_inl TrivSqZeroExt.inl_mul_inl
@@ -479,7 +479,7 @@ section
 variable (R)
 
 @[simp]
-theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (m₁ m₂ : M) :
+lemma inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (m₁ m₂ : M) :
     (inr m₁ * inr m₂ : tsze R M) = 0 :=
   ext (mul_zero _) <|
     show (0 : R) • m₂ + (0 : Rᵐᵒᵖ) • m₁ = 0 by rw [zero_smul, zero_add, zero_smul]
@@ -487,13 +487,13 @@ theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
 
 end
 
-theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
+lemma inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
     (inl r * inr m : tsze R M) = inr (r • m) :=
   ext (mul_zero r) <|
     show r • m + (0 : Rᵐᵒᵖ) • (0 : M) = r • m by rw [smul_zero, add_zero]
 #align triv_sq_zero_ext.inl_mul_inr TrivSqZeroExt.inl_mul_inr
 
-theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
+lemma inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
     (inr m * inl r : tsze R M) = inr (op r • m) :=
   ext (zero_mul r) <|
     show (0 : R) • (0 : M) + op r • m = op r • m by rw [smul_zero, zero_add]
@@ -516,17 +516,17 @@ instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne 
     natCast_succ := fun _ => by ext <;> simp [Nat.cast] }
 
 @[simp]
-theorem fst_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
+lemma fst_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
   rfl
 #align triv_sq_zero_ext.fst_nat_cast TrivSqZeroExt.fst_nat_cast
 
 @[simp]
-theorem snd_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
+lemma snd_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_nat_cast TrivSqZeroExt.snd_nat_cast
 
 @[simp]
-theorem inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
+lemma inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
   rfl
 #align triv_sq_zero_ext.inl_nat_cast TrivSqZeroExt.inl_nat_cast
 
@@ -537,17 +537,17 @@ instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsz
     intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm }
 
 @[simp]
-theorem fst_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
+lemma fst_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
   rfl
 #align triv_sq_zero_ext.fst_int_cast TrivSqZeroExt.fst_int_cast
 
 @[simp]
-theorem snd_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
+lemma snd_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_int_cast TrivSqZeroExt.snd_int_cast
 
 @[simp]
-theorem inl_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
+lemma inl_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
   rfl
 #align triv_sq_zero_ext.inl_int_cast TrivSqZeroExt.inl_int_cast
 
@@ -592,18 +592,18 @@ instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐ�
     ⟨x.fst ^ n, ((List.range n).map fun i => x.fst ^ (n.pred - i) • op (x.fst ^ i) • x.snd).sum⟩⟩
 
 @[simp]
-theorem fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+lemma fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (x : tsze R M) (n : ℕ) : fst (x ^ n) = x.fst ^ n :=
   rfl
 #align triv_sq_zero_ext.fst_pow TrivSqZeroExt.fst_pow
 
-theorem snd_pow_eq_sum [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+lemma snd_pow_eq_sum [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (x : tsze R M) (n : ℕ) :
     snd (x ^ n) = ((List.range n).map fun i => x.fst ^ (n.pred - i) • op (x.fst ^ i) • x.snd).sum :=
   rfl
 #align triv_sq_zero_ext.snd_pow_eq_sum TrivSqZeroExt.snd_pow_eq_sum
 
-theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
+lemma snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (x : tsze R M) (n : ℕ)
     (h : op x.fst • x.snd = x.fst • x.snd) : snd (x ^ n) = n • x.fst ^ n.pred • x.snd := by
   have : ∀ n : ℕ, op (x.fst ^ n) • x.snd = x.fst ^ n • x.snd := by
@@ -626,13 +626,13 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
 #align triv_sq_zero_ext.snd_pow_of_smul_comm TrivSqZeroExt.snd_pow_of_smul_comm
 
 @[simp]
-theorem snd_pow [CommMonoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+lemma snd_pow [CommMonoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [IsCentralScalar R M] (x : tsze R M) (n : ℕ) : snd (x ^ n) = n • x.fst ^ n.pred • x.snd :=
   snd_pow_of_smul_comm _ _ (op_smul_eq_smul _ _)
 #align triv_sq_zero_ext.snd_pow TrivSqZeroExt.snd_pow
 
 @[simp]
-theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] (r : R)
+lemma inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] (r : R)
     (n : ℕ) : (inl r ^ n : tsze R M) = inl (r ^ n) :=
   ext rfl <| by simp [snd_pow_eq_sum]
 #align triv_sq_zero_ext.inl_pow TrivSqZeroExt.inl_pow
@@ -663,7 +663,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           refine' List.map_congr fun i hi => _
           rw [List.mem_range, Nat.lt_succ_iff] at hi
           rw [Nat.sub_add_comm hi]) }
-theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+lemma fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.prod.fst = (l.map fst).prod :=
   map_list_prod ({ toFun := fst, map_one' := fst_one, map_mul' := fst_mul } : tsze R M →* R) _
 #align triv_sq_zero_ext.fst_list_prod TrivSqZeroExt.fst_list_prod
@@ -674,7 +674,7 @@ instance semiring [Semiring R] [AddCommMonoid M]
 
 /-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
 $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
-theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+lemma snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
       (l.enum.map fun x : ℕ × tsze R M =>
@@ -756,11 +756,11 @@ instance algebra' : Algebra S (tsze R M) :=
 instance : Algebra R' (tsze R' M) :=
   TrivSqZeroExt.algebra' _ _ _
 
-theorem algebraMap_eq_inl : ⇑(algebraMap R' (tsze R' M)) = inl :=
+lemma algebraMap_eq_inl : ⇑(algebraMap R' (tsze R' M)) = inl :=
   rfl
 #align triv_sq_zero_ext.algebra_map_eq_inl TrivSqZeroExt.algebraMap_eq_inl
 
-theorem algebraMap_eq_inlHom : algebraMap R' (tsze R' M) = inlHom R' M :=
+lemma algebraMap_eq_inlHom : algebraMap R' (tsze R' M) = inlHom R' M :=
   rfl
 #align triv_sq_zero_ext.algebra_map_eq_inl_hom TrivSqZeroExt.algebraMap_eq_inlHom
 
@@ -781,14 +781,14 @@ def fstHom : tsze R M →ₐ[S] R where
 
 variable {R R' S M}
 
-theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
+lemma algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
     (h : ∀ m, f (inr m) = g (inr m)) : f = g :=
   AlgHom.toLinearMap_injective <|
     linearMap_ext (fun _r => (f.commutes _).trans (g.commutes _).symm) h
 #align triv_sq_zero_ext.alg_hom_ext TrivSqZeroExt.algHom_ext
 
 @[ext]
-theorem algHom_ext' {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
+lemma algHom_ext' {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
     (h : f.toLinearMap.comp (inrHom R' M) = g.toLinearMap.comp (inrHom R' M)) : f = g :=
   algHom_ext <| LinearMap.congr_fun h
 #align triv_sq_zero_ext.alg_hom_ext' TrivSqZeroExt.algHom_ext'
@@ -826,7 +826,7 @@ theorem liftAux_comp_inrHom (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) :
 
 -- When applied to `inr` itself, `lift_aux` is the identity.
 @[simp]
-theorem liftAux_inrHom : liftAux (inrHom R' M) (inr_mul_inr R') = AlgHom.id R' (tsze R' M) :=
+lemma liftAux_inrHom : liftAux (inrHom R' M) (inr_mul_inr R') = AlgHom.id R' (tsze R' M) :=
   algHom_ext' <| liftAux_comp_inrHom _ _
 #align triv_sq_zero_ext.lift_aux_inr_hom TrivSqZeroExt.liftAux_inrHom
 

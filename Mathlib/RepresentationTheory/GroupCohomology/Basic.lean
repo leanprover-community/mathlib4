@@ -84,7 +84,7 @@ abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k
     ((((linearYoneda k (Rep k G)).obj A).rightOp.mapHomologicalComplex _).obj (resolution k G))
 #align group_cohomology.linear_yoneda_obj_resolution GroupCohomology.linearYonedaObjResolution
 
-theorem linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
+lemma linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
     (linearYonedaObjResolution A).d i j x = (resolution k G).d j i ≫ x :=
   rfl
 #align group_cohomology.linear_yoneda_obj_resolution_d_apply GroupCohomology.linearYonedaObjResolution_d_apply
@@ -121,7 +121,7 @@ set_option maxHeartbeats 700000 in
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
 and the homogeneous `linearYonedaObjResolution`. -/
-@[nolint checkType] theorem d_eq :
+@[nolint checkType] lemma d_eq :
     d n A =
       (diagonalHomEquiv n A).toModuleIso.inv ≫
         (linearYonedaObjResolution A).d n (n + 1) ≫

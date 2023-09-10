@@ -61,7 +61,7 @@ def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
 #align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
 #align mul_semiring_action.to_ring_hom_apply MulSemiringAction.toRingHom_apply
 
-theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
+lemma toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
 #align to_ring_hom_injective toRingHom_injective
@@ -96,7 +96,7 @@ attribute [simp] smul_one smul_mul' smul_zero smul_add
 /-- Note that `smul_inv'` refers to the group case, and `smul_inv` has an additional inverse
 on `x`. -/
 @[simp]
-theorem smul_inv'' [MulSemiringAction M F] (x : M) (m : F) : x • m⁻¹ = (x • m)⁻¹ :=
+lemma smul_inv'' [MulSemiringAction M F] (x : M) (m : F) : x • m⁻¹ = (x • m)⁻¹ :=
   map_inv₀ (MulSemiringAction.toRingHom M F x) _
 #align smul_inv'' smul_inv''
 

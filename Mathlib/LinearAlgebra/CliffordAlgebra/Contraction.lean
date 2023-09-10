@@ -191,12 +191,12 @@ theorem contractRight_algebraMap (r : R) : algebraMap R (CliffordAlgebra Q) r⌊
 #align clifford_algebra.contract_right_algebra_map CliffordAlgebra.contractRight_algebraMap
 
 @[simp]
-theorem contractLeft_one : d⌋(1 : CliffordAlgebra Q) = 0 := by
+lemma contractLeft_one : d⌋(1 : CliffordAlgebra Q) = 0 := by
   simpa only [map_one] using contractLeft_algebraMap Q d 1
 #align clifford_algebra.contract_left_one CliffordAlgebra.contractLeft_one
 
 @[simp]
-theorem contractRight_one : (1 : CliffordAlgebra Q)⌊d = 0 := by
+lemma contractRight_one : (1 : CliffordAlgebra Q)⌊d = 0 := by
   simpa only [map_one] using contractRight_algebraMap Q d 1
 #align clifford_algebra.contract_right_one CliffordAlgebra.contractRight_one
 
@@ -275,21 +275,21 @@ def changeForm (h : B.toQuadraticForm = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cl
 #align clifford_algebra.change_form CliffordAlgebra.changeForm
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
-theorem changeForm.zero_proof : (0 : BilinForm R M).toQuadraticForm = Q - Q :=
+lemma changeForm.zero_proof : (0 : BilinForm R M).toQuadraticForm = Q - Q :=
   (sub_self _).symm
 #align clifford_algebra.change_form.zero_proof CliffordAlgebra.changeForm.zero_proof
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
-theorem changeForm.add_proof : (B + B').toQuadraticForm = Q'' - Q :=
+lemma changeForm.add_proof : (B + B').toQuadraticForm = Q'' - Q :=
   (congr_arg₂ (· + ·) h h').trans <| sub_add_sub_cancel' _ _ _
 #align clifford_algebra.change_form.add_proof CliffordAlgebra.changeForm.add_proof
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
-theorem changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
+lemma changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
   (congr_arg Neg.neg h).trans <| neg_sub _ _
 #align clifford_algebra.change_form.neg_proof CliffordAlgebra.changeForm.neg_proof
 
-theorem changeForm.associated_neg_proof [Invertible (2 : R)] :
+lemma changeForm.associated_neg_proof [Invertible (2 : R)] :
     (QuadraticForm.associated (R₁ := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
   simp [QuadraticForm.toQuadraticForm_associated]
 #align clifford_algebra.change_form.associated_neg_proof CliffordAlgebra.changeForm.associated_neg_proof
@@ -300,7 +300,7 @@ theorem changeForm_algebraMap (r : R) : changeForm h (algebraMap R _ r) = algebr
 #align clifford_algebra.change_form_algebra_map CliffordAlgebra.changeForm_algebraMap
 
 @[simp]
-theorem changeForm_one : changeForm h (1 : CliffordAlgebra Q) = 1 := by
+lemma changeForm_one : changeForm h (1 : CliffordAlgebra Q) = 1 := by
   simpa using changeForm_algebraMap h (1 : R)
 #align clifford_algebra.change_form_one CliffordAlgebra.changeForm_one
 
@@ -345,7 +345,7 @@ theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
 #align clifford_algebra.change_form_self_apply CliffordAlgebra.changeForm_self_apply
 
 @[simp]
-theorem changeForm_self :
+lemma changeForm_self :
     changeForm changeForm.zero_proof = (LinearMap.id : CliffordAlgebra Q →ₗ[R] _) :=
   LinearMap.ext <| changeForm_self_apply
 #align clifford_algebra.change_form_self CliffordAlgebra.changeForm_self
@@ -361,7 +361,7 @@ theorem changeForm_changeForm (x : CliffordAlgebra Q) :
       add_comm (_ : CliffordAlgebra Q'')]
 #align clifford_algebra.change_form_change_form CliffordAlgebra.changeForm_changeForm
 
-theorem changeForm_comp_changeForm :
+lemma changeForm_comp_changeForm :
     (changeForm h').comp (changeForm h) = changeForm (changeForm.add_proof h h') :=
   LinearMap.ext <| changeForm_changeForm _ h'
 #align clifford_algebra.change_form_comp_change_form CliffordAlgebra.changeForm_comp_changeForm
@@ -384,7 +384,7 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
 #align clifford_algebra.change_form_equiv CliffordAlgebra.changeFormEquiv
 
 @[simp]
-theorem changeFormEquiv_symm :
+lemma changeFormEquiv_symm :
     (changeFormEquiv h).symm = changeFormEquiv (changeForm.neg_proof h) :=
   LinearEquiv.ext fun _ => rfl
 #align clifford_algebra.change_form_equiv_symm CliffordAlgebra.changeFormEquiv_symm

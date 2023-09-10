@@ -45,7 +45,7 @@ def charpoly : R[X] :=
   (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly
 #align linear_map.charpoly LinearMap.charpoly
 
-theorem charpoly_def : f.charpoly = (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly :=
+lemma charpoly_def : f.charpoly = (toMatrix (chooseBasis R M) (chooseBasis R M) f).charpoly :=
   rfl
 #align linear_map.charpoly_def LinearMap.charpoly_def
 
@@ -53,7 +53,7 @@ end Basic
 
 section Coeff
 
-theorem charpoly_monic : f.charpoly.Monic :=
+lemma charpoly_monic : f.charpoly.Monic :=
   Matrix.charpoly_monic _
 #align linear_map.charpoly_monic LinearMap.charpoly_monic
 
@@ -65,18 +65,18 @@ section CayleyHamilton
 to the linear map itself, is zero.
 
 See `Matrix.aeval_self_charpoly` for the equivalent statement about matrices. -/
-theorem aeval_self_charpoly : aeval f f.charpoly = 0 := by
+lemma aeval_self_charpoly : aeval f f.charpoly = 0 := by
   apply (LinearEquiv.map_eq_zero_iff (algEquivMatrix (chooseBasis R M)).toLinearEquiv).1
   rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_algHom, ← Polynomial.aeval_algHom_apply _ _ _,
     charpoly_def]
   exact Matrix.aeval_self_charpoly _
 #align linear_map.aeval_self_charpoly LinearMap.aeval_self_charpoly
 
-theorem isIntegral : IsIntegral R f :=
+lemma isIntegral : IsIntegral R f :=
   ⟨f.charpoly, ⟨charpoly_monic f, aeval_self_charpoly f⟩⟩
 #align linear_map.is_integral LinearMap.isIntegral
 
-theorem minpoly_dvd_charpoly {K : Type u} {M : Type v} [Field K] [AddCommGroup M] [Module K M]
+lemma minpoly_dvd_charpoly {K : Type u} {M : Type v} [Field K] [AddCommGroup M] [Module K M]
     [FiniteDimensional K M] (f : M →ₗ[K] M) : minpoly K f ∣ f.charpoly :=
   minpoly.dvd _ _ (aeval_self_charpoly f)
 #align linear_map.minpoly_dvd_charpoly LinearMap.minpoly_dvd_charpoly

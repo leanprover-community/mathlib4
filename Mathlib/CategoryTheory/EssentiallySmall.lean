@@ -39,7 +39,7 @@ class EssentiallySmall (C : Type u) [Category.{v} C] : Prop where
 #align category_theory.essentially_small CategoryTheory.EssentiallySmall
 
 /-- Constructor for `EssentiallySmall C` from an explicit small category witness. -/
-theorem EssentiallySmall.mk' {C : Type u} [Category.{v} C] {S : Type w} [SmallCategory S]
+lemma EssentiallySmall.mk' {C : Type u} [Category.{v} C] {S : Type w} [SmallCategory S]
     (e : C ≌ S) : EssentiallySmall.{w} C :=
   ⟨⟨S, _, ⟨e⟩⟩⟩
 #align category_theory.essentially_small.mk' CategoryTheory.EssentiallySmall.mk'
@@ -65,7 +65,7 @@ noncomputable def equivSmallModel (C : Type u) [Category.{v} C] [EssentiallySmal
     (Classical.choose_spec (Classical.choose_spec (@EssentiallySmall.equiv_smallCategory C _ _)))
 #align category_theory.equiv_small_model CategoryTheory.equivSmallModel
 
-theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+lemma essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : EssentiallySmall.{w} C ↔ EssentiallySmall.{w} D := by
   fconstructor
   · rintro ⟨S, 𝒮, ⟨f⟩⟩
@@ -76,12 +76,12 @@ theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Cate
     exact EssentiallySmall.mk' (e.trans f)
 #align category_theory.essentially_small_congr CategoryTheory.essentiallySmall_congr
 
-theorem Discrete.essentiallySmallOfSmall {α : Type u} [Small.{w} α] :
+lemma Discrete.essentiallySmallOfSmall {α : Type u} [Small.{w} α] :
     EssentiallySmall.{w} (Discrete α) :=
   ⟨⟨Discrete (Shrink α), ⟨inferInstance, ⟨Discrete.equivalence (equivShrink _)⟩⟩⟩⟩
 #align category_theory.discrete.essentially_small_of_small CategoryTheory.Discrete.essentiallySmallOfSmall
 
-theorem essentiallySmallSelf : EssentiallySmall.{max w v u} C :=
+lemma essentiallySmallSelf : EssentiallySmall.{max w v u} C :=
   EssentiallySmall.mk' (AsSmall.equiv : C ≌ AsSmall.{w} C)
 #align category_theory.essentially_small_self CategoryTheory.essentiallySmallSelf
 
@@ -97,7 +97,7 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
 instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X ⟶ Y) :=
   LocallySmall.hom_small X Y
 
-theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+lemma locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D := by
   fconstructor
   · rintro ⟨L⟩
@@ -118,7 +118,7 @@ instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] : Loc
     where
 #align category_theory.locally_small_self CategoryTheory.locallySmall_self
 
-theorem locallySmall_max {C : Type u} [Category.{v} C] : LocallySmall.{max v w} C
+lemma locallySmall_max {C : Type u} [Category.{v} C] : LocallySmall.{max v w} C
     where
   hom_small _ _ := small_max.{w} _
 
@@ -226,7 +226,7 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
 #align category_theory.essentially_small_iff CategoryTheory.essentiallySmall_iff
 
-theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
+lemma essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
@@ -239,7 +239,7 @@ instance (priority := 100) locallySmall_of_thin {C : Type u} [Category.{v} C] [Q
 /--
 A thin category is essentially small if and only if the underlying type of its skeleton is small.
 -/
-theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThin C] :
+lemma essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThin C] :
     EssentiallySmall.{w} C ↔ Small.{w} (Skeleton C) := by
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 #align category_theory.essentially_small_iff_of_thin CategoryTheory.essentiallySmall_iff_of_thin

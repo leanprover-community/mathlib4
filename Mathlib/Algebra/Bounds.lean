@@ -29,13 +29,13 @@ variable {G : Type*} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· �
   [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
-theorem bddAbove_inv : BddAbove s⁻¹ ↔ BddBelow s :=
+lemma bddAbove_inv : BddAbove s⁻¹ ↔ BddBelow s :=
   (OrderIso.inv G).bddAbove_preimage
 #align bdd_above_inv bddAbove_inv
 #align bdd_above_neg bddAbove_neg
 
 @[to_additive (attr := simp)]
-theorem bddBelow_inv : BddBelow s⁻¹ ↔ BddAbove s :=
+lemma bddBelow_inv : BddBelow s⁻¹ ↔ BddAbove s :=
   (OrderIso.inv G).bddBelow_preimage
 #align bdd_below_inv bddBelow_inv
 #align bdd_below_neg bddBelow_neg
@@ -53,13 +53,13 @@ theorem BddBelow.inv (h : BddBelow s) : BddAbove s⁻¹ :=
 #align bdd_below.neg BddBelow.neg
 
 @[to_additive (attr := simp)]
-theorem isLUB_inv : IsLUB s⁻¹ a ↔ IsGLB s a⁻¹ :=
+lemma isLUB_inv : IsLUB s⁻¹ a ↔ IsGLB s a⁻¹ :=
   (OrderIso.inv G).isLUB_preimage
 #align is_lub_inv isLUB_inv
 #align is_lub_neg isLUB_neg
 
 @[to_additive]
-theorem isLUB_inv' : IsLUB s⁻¹ a⁻¹ ↔ IsGLB s a :=
+lemma isLUB_inv' : IsLUB s⁻¹ a⁻¹ ↔ IsGLB s a :=
   (OrderIso.inv G).isLUB_preimage'
 #align is_lub_inv' isLUB_inv'
 #align is_lub_neg' isLUB_neg'
@@ -71,13 +71,13 @@ theorem IsGLB.inv (h : IsGLB s a) : IsLUB s⁻¹ a⁻¹ :=
 #align is_glb.neg IsGLB.neg
 
 @[to_additive (attr := simp)]
-theorem isGLB_inv : IsGLB s⁻¹ a ↔ IsLUB s a⁻¹ :=
+lemma isGLB_inv : IsGLB s⁻¹ a ↔ IsLUB s a⁻¹ :=
   (OrderIso.inv G).isGLB_preimage
 #align is_glb_inv isGLB_inv
 #align is_glb_neg isGLB_neg
 
 @[to_additive]
-theorem isGLB_inv' : IsGLB s⁻¹ a⁻¹ ↔ IsLUB s a :=
+lemma isGLB_inv' : IsGLB s⁻¹ a⁻¹ ↔ IsLUB s a :=
   (OrderIso.inv G).isGLB_preimage'
 #align is_glb_inv' isGLB_inv'
 #align is_glb_neg' isGLB_neg'
@@ -96,7 +96,7 @@ variable {M : Type*} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ 
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
-theorem mul_mem_upperBounds_mul {s t : Set M} {a b : M} (ha : a ∈ upperBounds s)
+lemma mul_mem_upperBounds_mul {s t : Set M} {a b : M} (ha : a ∈ upperBounds s)
     (hb : b ∈ upperBounds t) : a * b ∈ upperBounds (s * t) :=
   forall_image2_iff.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
 #align mul_mem_upper_bounds_mul mul_mem_upperBounds_mul
@@ -110,7 +110,7 @@ theorem subset_upperBounds_mul (s t : Set M) :
 #align subset_upper_bounds_add subset_upperBounds_add
 
 @[to_additive]
-theorem mul_mem_lowerBounds_mul {s t : Set M} {a b : M} (ha : a ∈ lowerBounds s)
+lemma mul_mem_lowerBounds_mul {s t : Set M} {a b : M} (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : a * b ∈ lowerBounds (s * t) :=
   @mul_mem_upperBounds_mul Mᵒᵈ _ _ _ _ _ _ _ _ ha hb
 #align mul_mem_lower_bounds_mul mul_mem_lowerBounds_mul
@@ -124,13 +124,13 @@ theorem subset_lowerBounds_mul (s t : Set M) :
 #align subset_lower_bounds_add subset_lowerBounds_add
 
 @[to_additive]
-theorem BddAbove.mul {s t : Set M} (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
+lemma BddAbove.mul {s t : Set M} (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
   (Nonempty.mul hs ht).mono (subset_upperBounds_mul s t)
 #align bdd_above.mul BddAbove.mul
 #align bdd_above.add BddAbove.add
 
 @[to_additive]
-theorem BddBelow.mul {s t : Set M} (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
+lemma BddBelow.mul {s t : Set M} (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
   (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
 #align bdd_below.mul BddBelow.mul
 #align bdd_below.add BddBelow.add

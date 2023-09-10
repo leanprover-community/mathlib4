@@ -52,19 +52,19 @@ theorem indicator_of_not_mem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s 
 variable (s i)
 
 @[simp]
-theorem indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s then f i hi else 0 := by
+lemma indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s then f i hi else 0 := by
   simp only [indicator, ne_eq, coe_mk]
   congr
 #align finsupp.indicator_apply Finsupp.indicator_apply
 
-theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f := by
+lemma indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f := by
   intro a b h
   ext i hi
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
   exact FunLike.congr_fun h i
 #align finsupp.indicator_injective Finsupp.indicator_injective
 
-theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := by
+lemma support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := by
   intro i hi
   rw [mem_coe, mem_support_iff] at hi
   by_contra h

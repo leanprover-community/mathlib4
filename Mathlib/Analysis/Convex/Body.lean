@@ -70,7 +70,7 @@ protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
 #align convex_body.is_compact ConvexBody.isCompact
 
 -- porting note: new theorem
-protected theorem isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
+protected lemma isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
   K.isCompact.isClosed
 
 protected theorem nonempty (K : ConvexBody V) : (K : Set V).Nonempty :=
@@ -78,7 +78,7 @@ protected theorem nonempty (K : ConvexBody V) : (K : Set V).Nonempty :=
 #align convex_body.nonempty ConvexBody.nonempty
 
 @[ext]
-protected theorem ext {K L : ConvexBody V} (h : (K : Set V) = L) : K = L :=
+protected lemma ext {K L : ConvexBody V} (h : (K : Set V) = L) : K = L :=
   SetLike.ext' h
 #align convex_body.ext ConvexBody.ext
 
@@ -105,7 +105,7 @@ instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
 -- porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
-theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
+lemma coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) rfl (coe_nsmul n K)
 
@@ -118,7 +118,7 @@ theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
 #align convex_body.coe_add ConvexBody.coe_add
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
-theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
+lemma coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 #align convex_body.coe_zero ConvexBody.coe_zero
 
@@ -162,11 +162,11 @@ section SeminormedAddCommGroup
 
 variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
 
-protected theorem bounded : Metric.Bounded (K : Set V) :=
+protected lemma bounded : Metric.Bounded (K : Set V) :=
   K.isCompact.bounded
 #align convex_body.bounded ConvexBody.bounded
 
-theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K : Set V) L ≠ ⊤ := by
+lemma hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K : Set V) L ≠ ⊤ := by
   apply_rules [Metric.hausdorffEdist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.bounded]
 #align convex_body.Hausdorff_edist_ne_top ConvexBody.hausdorffEdist_ne_top
@@ -181,12 +181,12 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 
 @[simp, norm_cast]
-theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
+lemma hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
   rfl
 #align convex_body.Hausdorff_dist_coe ConvexBody.hausdorffDist_coe
 
 @[simp, norm_cast]
-theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
+lemma hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
   rw [edist_dist]
   exact (ENNReal.ofReal_toReal hausdorffEdist_ne_top).symm
 #align convex_body.Hausdorff_edist_coe ConvexBody.hausdorffEdist_coe

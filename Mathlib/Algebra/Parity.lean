@@ -66,13 +66,13 @@ theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
 end Mul
 
 @[to_additive (attr := simp)]
-theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
+lemma isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
   ⟨1, (mul_one _).symm⟩
 #align is_square_one isSquare_one
 #align even_zero even_zero
 
 @[to_additive]
-theorem IsSquare.map [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] {m : α} (f : F) :
+lemma IsSquare.map [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] {m : α} (f : F) :
     IsSquare m → IsSquare (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp⟩
@@ -111,7 +111,7 @@ simp can prove this:
   by simp only [even_two, Even.nsmul']
 -/
 @[to_additive Even.nsmul']
-theorem Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
+lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, pow_add _ _ _⟩
 #align even.is_square_pow Even.isSquare_pow
@@ -130,7 +130,7 @@ theorem IsSquare_sq (a : α) : IsSquare (a ^ 2) :=
 variable [HasDistribNeg α]
 
 @[simp]
-theorem Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
+lemma Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
   simp_rw [← two_mul, pow_mul, neg_sq]
 #align even.neg_pow Even.neg_pow
@@ -141,7 +141,7 @@ theorem Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, o
 end Monoid
 
 @[to_additive]
-theorem IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) := by
+lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   exact ⟨a * b, mul_mul_mul_comm _ _ _ _⟩
 #align is_square.mul IsSquare.mul
@@ -150,7 +150,7 @@ theorem IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b �
 variable (α)
 
 @[simp]
-theorem isSquare_zero [MulZeroClass α] : IsSquare (0 : α) :=
+lemma isSquare_zero [MulZeroClass α] : IsSquare (0 : α) :=
   ⟨0, (mul_zero _).symm⟩
 #align is_square_zero isSquare_zero
 
@@ -161,7 +161,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {a : α}
 
 @[to_additive (attr := simp)]
-theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
+lemma isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
     exact h.map (MulEquiv.inv' α)
@@ -184,7 +184,7 @@ theorem IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
 
 variable [HasDistribNeg α] {n : ℤ}
 
-theorem Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
+lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
   exact zpow_bit0_neg _ _
 #align even.neg_zpow Even.neg_zpow
@@ -194,7 +194,7 @@ theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow,
 
 end DivisionMonoid
 
-theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
+lemma even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]
@@ -203,7 +203,7 @@ theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔
 #align even_abs even_abs
 
 @[to_additive]
-theorem IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
+lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by
   rw [div_eq_mul_inv]
   exact ha.mul hb.inv
@@ -211,14 +211,14 @@ theorem IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : 
 #align even.sub Even.sub
 
 @[to_additive (attr := simp) Even.zsmul']
-theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
+lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, zpow_add _ _ _⟩
 #align even.is_square_zpow Even.isSquare_zpow
 #align even.zsmul' Even.zsmul'
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
+lemma Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
@@ -230,7 +230,7 @@ theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α
 #align even.tsub Even.tsub
 
 set_option linter.deprecated false in
-theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
+lemma even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
   Iff.rfl
 #align even_iff_exists_bit0 even_iff_exists_bit0
 
@@ -245,7 +245,7 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
   simp [even_iff_exists_two_nsmul]
 #align even_iff_exists_two_mul even_iff_exists_two_mul
 
-theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
+lemma even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
 alias ⟨Even.two_dvd, _⟩ := even_iff_two_dvd
@@ -271,7 +271,7 @@ set_option linter.deprecated false in
 #align even_bit0 even_bit0
 
 @[simp]
-theorem even_two : Even (2 : α) :=
+lemma even_two : Even (2 : α) :=
   ⟨1, by rw[one_add_one_eq_two]⟩
 #align even_two even_two
 
@@ -304,7 +304,7 @@ def Odd (a : α) : Prop :=
 #align odd Odd
 
 set_option linter.deprecated false in
-theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
+lemma odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
   exists_congr fun b => by
     rw [two_mul]
     rfl
@@ -325,12 +325,12 @@ theorem range_two_mul_add_one (α : Type*) [Semiring α] :
   simp [Odd, eq_comm]
 #align range_two_mul_add_one range_two_mul_add_one
 
-theorem Even.add_odd : Even m → Odd n → Odd (m + n) := by
+lemma Even.add_odd : Even m → Odd n → Odd (m + n) := by
   rintro ⟨m, rfl⟩ ⟨n, rfl⟩
   exact ⟨m + n, by rw [mul_add, ← two_mul, add_assoc]⟩
 #align even.add_odd Even.add_odd
 
-theorem Even.odd_add : Even m → Odd n → Odd (n + m) :=
+lemma Even.odd_add : Even m → Odd n → Odd (n + m) :=
   fun he ho ↦ by simp only [he.add_odd ho, add_comm n m]
 
 theorem Odd.add_even (hm : Odd m) (hn : Even n) : Odd (m + n) := by
@@ -338,7 +338,7 @@ theorem Odd.add_even (hm : Odd m) (hn : Even n) : Odd (m + n) := by
   exact hn.add_odd hm
 #align odd.add_even Odd.add_even
 
-theorem Odd.add_odd : Odd m → Odd n → Even (m + n) := by
+lemma Odd.add_odd : Odd m → Odd n → Even (m + n) := by
   rintro ⟨m, rfl⟩ ⟨n, rfl⟩
   refine' ⟨n + m + 1, _⟩
   rw [two_mul, two_mul]
@@ -346,7 +346,7 @@ theorem Odd.add_odd : Odd m → Odd n → Even (m + n) := by
 #align odd.add_odd Odd.add_odd
 
 @[simp]
-theorem odd_one : Odd (1 : α) :=
+lemma odd_one : Odd (1 : α) :=
   ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
 #align odd_one odd_one
 
@@ -366,13 +366,13 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 
 @[simp] lemma one_add_self_self : Odd (1 + m + m) := by simp [add_comm 1 m]
 
-theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
+lemma Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp [two_mul]⟩
 #align odd.map Odd.map
 
 @[simp]
-theorem Odd.mul : Odd m → Odd n → Odd (m * n) := by
+lemma Odd.mul : Odd m → Odd n → Odd (m * n) := by
   rintro ⟨m, rfl⟩ ⟨n, rfl⟩
   refine' ⟨2 * m * n + n + m, _⟩
   rw [mul_add, add_mul, mul_one, ← add_assoc, one_mul, mul_assoc, ← mul_add, ← mul_add, ← mul_assoc,
@@ -396,7 +396,7 @@ section Monoid
 
 variable [Monoid α] [HasDistribNeg α] {a : α} {n : ℕ}
 
-theorem Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
+lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   rintro ⟨c, rfl⟩ a
   simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
 #align odd.neg_pow Odd.neg_pow
@@ -413,7 +413,7 @@ variable [CanonicallyOrderedCommSemiring α]
 
 -- this holds more generally in a `CanonicallyOrderedAddMonoid` if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
-theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
+lemma Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
   obtain ⟨k, rfl⟩ := hn
   rw [pos_iff_ne_zero, Ne.def, add_eq_zero_iff, not_and']
   exact fun h => (one_ne_zero h).elim
@@ -430,7 +430,7 @@ simp can prove this:
   by simp only [even_neg, even_two]
 -/
 -- @[simp]
-theorem even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
+lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 #align even_neg_two even_neg_two
 
 theorem Odd.neg (hp : Odd a) : Odd (-a) := by
@@ -441,7 +441,7 @@ theorem Odd.neg (hp : Odd a) : Odd (-a) := by
 #align odd.neg Odd.neg
 
 @[simp]
-theorem odd_neg : Odd (-a) ↔ Odd a :=
+lemma odd_neg : Odd (-a) ↔ Odd a :=
   ⟨fun h => neg_neg a ▸ h.neg, Odd.neg⟩
 #align odd_neg odd_neg
 
@@ -450,7 +450,7 @@ simp can prove this:
   by simp only [odd_neg, odd_one]
 -/
 -- @[simp]
-theorem odd_neg_one : Odd (-1 : α) := by simp
+lemma odd_neg_one : Odd (-1 : α) := by simp
 #align odd_neg_one odd_neg_one
 
 theorem Odd.sub_even (ha : Odd a) (hb : Even b) : Odd (a - b) := by
@@ -468,7 +468,7 @@ theorem Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
   exact ha.add_odd hb.neg
 #align odd.sub_odd Odd.sub_odd
 
-theorem odd_abs [LinearOrder α] : Odd (abs a) ↔ Odd a := by
+lemma odd_abs [LinearOrder α] : Odd (abs a) ↔ Odd a := by
   cases' abs_choice a with h h <;> simp only [h, odd_neg]
 #align odd_abs odd_abs
 
@@ -518,7 +518,7 @@ theorem Even.pow_pos_iff (hn : Even n) (h₀ : 0 < n) : 0 < a ^ n ↔ a ≠ 0 :=
     exact lt_irrefl 0 h, hn.pow_pos⟩
 #align even.pow_pos_iff Even.pow_pos_iff
 
-theorem Even.pow_abs {p : ℕ} (hp : Even p) (a : R) : |a| ^ p = a ^ p := by
+lemma Even.pow_abs {p : ℕ} (hp : Even p) (a : R) : |a| ^ p = a ^ p := by
   rw [← abs_pow, abs_eq_self]
   exact hp.pow_nonneg _
 #align even.pow_abs Even.pow_abs

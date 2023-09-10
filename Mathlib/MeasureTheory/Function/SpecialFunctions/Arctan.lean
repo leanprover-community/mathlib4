@@ -17,7 +17,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 namespace Real
 
 @[measurability]
-theorem measurable_arctan : Measurable arctan :=
+lemma measurable_arctan : Measurable arctan :=
   continuous_arctan.measurable
 #align real.measurable_arctan Real.measurable_arctan
 
@@ -30,7 +30,7 @@ open Real
 variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
 
 @[measurability]
-theorem Measurable.arctan : Measurable fun x => arctan (f x) :=
+lemma Measurable.arctan : Measurable fun x => arctan (f x) :=
   measurable_arctan.comp hf
 #align measurable.arctan Measurable.arctan
 

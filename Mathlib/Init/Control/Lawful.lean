@@ -123,13 +123,13 @@ attribute [simp] run_bind
 #align except_t.run_map ExceptTₓ.run_map
 
 @[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+lemma run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : ExceptT ε m α).run = Except.ok <$> (monadLift x : m α) :=
   rfl
 #align except_t.run_monad_lift ExceptTₓ.run_monadLift
 
 @[simp]
-theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
+lemma run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
     (monadMap (@f) x : ExceptT ε m α).run = monadMap (@f) x.run :=
   rfl
 #align except_t.run_monad_map ExceptTₓ.run_monadMap
@@ -189,7 +189,7 @@ namespace OptionT
 
 variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 
-theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
+lemma ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
   h
 #align option_t.ext OptionTₓ.ext
 
@@ -224,13 +224,13 @@ theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <
 #align option_t.run_map OptionTₓ.run_map
 
 @[simp]
-theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+lemma run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
   rfl
 #align option_t.run_monad_lift OptionTₓ.run_monadLift
 
 @[simp]
-theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
+lemma run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
     (monadMap (@f) x : OptionT m α).run = monadMap (@f) x.run :=
   rfl
 #align option_t.run_monad_map OptionTₓ.run_monadMap

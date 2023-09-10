@@ -79,7 +79,7 @@ namespace Pretrivialization
 
 variable (e : Pretrivialization F (π F E)) {x : TotalSpace F E} {b : B} {y : E b}
 
-theorem linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
+lemma linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
     [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) :
     IsLinearMap R fun x : E b => (e ⟨b, x⟩).2 :=
   Pretrivialization.IsLinear.linear b hb
@@ -176,7 +176,7 @@ namespace Trivialization
 
 variable (e : Trivialization F (π F E)) {x : TotalSpace F E} {b : B} {y : E b}
 
-protected theorem linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+protected lemma linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
     [∀ x, Module R (E x)] [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) :
     IsLinearMap R fun y : E b => (e ⟨b, y⟩).2 :=
   Trivialization.IsLinear.linear b hb
@@ -380,12 +380,12 @@ def zeroSection [∀ x, Zero (E x)] : B → TotalSpace F E := (⟨·, 0⟩)
 #align bundle.zero_section Bundle.zeroSection
 
 @[simp, mfld_simps]
-theorem zeroSection_proj [∀ x, Zero (E x)] (x : B) : (zeroSection F E x).proj = x :=
+lemma zeroSection_proj [∀ x, Zero (E x)] (x : B) : (zeroSection F E x).proj = x :=
   rfl
 #align bundle.zero_section_proj Bundle.zeroSection_proj
 
 @[simp, mfld_simps]
-theorem zeroSection_snd [∀ x, Zero (E x)] (x : B) : (zeroSection F E x).2 = 0 :=
+lemma zeroSection_snd [∀ x, Zero (E x)] (x : B) : (zeroSection F E x).2 = 0 :=
   rfl
 #align bundle.zero_section_snd Bundle.zeroSection_snd
 
@@ -416,7 +416,7 @@ instance (priority := 100) trivialization_linear [VectorBundle R F E] (e : Trivi
   VectorBundle.trivialization_linear' e
 #align trivialization_linear trivialization_linear
 
-theorem continuousOn_coordChange [VectorBundle R F E] (e e' : Trivialization F (π F E))
+lemma continuousOn_coordChange [VectorBundle R F E] (e e' : Trivialization F (π F E))
     [MemTrivializationAtlas e] [MemTrivializationAtlas e'] :
     ContinuousOn (fun b => Trivialization.coordChangeL R e e' b : B → F →L[R] F)
       (e.baseSet ∩ e'.baseSet) :=
@@ -700,7 +700,7 @@ theorem mem_localTriv_source (p : Z.TotalSpace) : p ∈ (Z.localTriv i).source �
 #align vector_bundle_core.mem_local_triv_source VectorBundleCore.mem_localTriv_source
 
 @[simp, mfld_simps]
-theorem baseSet_at : Z.baseSet i = (Z.localTriv i).baseSet :=
+lemma baseSet_at : Z.baseSet i = (Z.localTriv i).baseSet :=
   rfl
 #align vector_bundle_core.base_set_at VectorBundleCore.baseSet_at
 
@@ -717,13 +717,13 @@ theorem localTriv_symm_fst (p : B × F) :
 #align vector_bundle_core.local_triv_symm_fst VectorBundleCore.localTriv_symm_fst
 
 @[simp, mfld_simps]
-theorem localTriv_symm_apply {b : B} (hb : b ∈ Z.baseSet i) (v : F) :
+lemma localTriv_symm_apply {b : B} (hb : b ∈ Z.baseSet i) (v : F) :
     (Z.localTriv i).symm b v = Z.coordChange i (Z.indexAt b) b v := by
   apply (Z.localTriv i).symm_apply hb v
 #align vector_bundle_core.local_triv_symm_apply VectorBundleCore.localTriv_symm_apply
 
 @[simp, mfld_simps]
-theorem localTriv_coordChange_eq {b : B} (hb : b ∈ Z.baseSet i ∩ Z.baseSet j) (v : F) :
+lemma localTriv_coordChange_eq {b : B} (hb : b ∈ Z.baseSet i ∩ Z.baseSet j) (v : F) :
     (Z.localTriv i).coordChangeL R (Z.localTriv j) b v = Z.coordChange i j b v := by
   rw [Trivialization.coordChangeL_apply', localTriv_symm_fst, localTriv_apply, coordChange_comp]
   exacts [⟨⟨hb.1, Z.mem_baseSet_at b⟩, hb.2⟩, hb]
@@ -736,12 +736,12 @@ def localTrivAt (b : B) : Trivialization F (π F Z.Fiber) :=
 #align vector_bundle_core.local_triv_at VectorBundleCore.localTrivAt
 
 @[simp, mfld_simps]
-theorem localTrivAt_def : Z.localTriv (Z.indexAt b) = Z.localTrivAt b :=
+lemma localTrivAt_def : Z.localTriv (Z.indexAt b) = Z.localTrivAt b :=
   rfl
 #align vector_bundle_core.local_triv_at_def VectorBundleCore.localTrivAt_def
 
 @[simp, mfld_simps]
-theorem mem_source_at : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
+lemma mem_source_at : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   rw [localTrivAt, mem_localTriv_source]
   exact Z.mem_baseSet_at b
 #align vector_bundle_core.mem_source_at VectorBundleCore.mem_source_at
@@ -757,7 +757,7 @@ theorem localTrivAt_apply_mk (b : B) (a : F) : Z.localTrivAt b ⟨b, a⟩ = ⟨b
 #align vector_bundle_core.local_triv_at_apply_mk VectorBundleCore.localTrivAt_apply_mk
 
 @[simp, mfld_simps]
-theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
+lemma mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
   Z.toFiberBundleCore.mem_localTrivAt_baseSet b
 #align vector_bundle_core.mem_local_triv_at_base_set VectorBundleCore.mem_localTrivAt_baseSet
 
@@ -778,19 +778,19 @@ instance vectorBundle : VectorBundle R F Z.Fiber where
 
 /-- The projection on the base of a vector bundle created from core is continuous -/
 @[continuity]
-theorem continuous_proj : Continuous Z.proj :=
+lemma continuous_proj : Continuous Z.proj :=
   Z.toFiberBundleCore.continuous_proj
 #align vector_bundle_core.continuous_proj VectorBundleCore.continuous_proj
 
 /-- The projection on the base of a vector bundle created from core is an open map -/
-theorem isOpenMap_proj : IsOpenMap Z.proj :=
+lemma isOpenMap_proj : IsOpenMap Z.proj :=
   Z.toFiberBundleCore.isOpenMap_proj
 #align vector_bundle_core.is_open_map_proj VectorBundleCore.isOpenMap_proj
 
 variable {i j}
 
 @[simp, mfld_simps]
-theorem localTriv_continuousLinearMapAt {b : B} (hb : b ∈ Z.baseSet i) :
+lemma localTriv_continuousLinearMapAt {b : B} (hb : b ∈ Z.baseSet i) :
     (Z.localTriv i).continuousLinearMapAt R b = Z.coordChange (Z.indexAt b) i b := by
   ext1 v
   rw [(Z.localTriv i).continuousLinearMapAt_apply R, (Z.localTriv i).coe_linearMapAt_of_mem]
@@ -798,7 +798,7 @@ theorem localTriv_continuousLinearMapAt {b : B} (hb : b ∈ Z.baseSet i) :
 #align vector_bundle_core.local_triv_continuous_linear_map_at VectorBundleCore.localTriv_continuousLinearMapAt
 
 @[simp, mfld_simps]
-theorem trivializationAt_continuousLinearMapAt {b₀ b : B}
+lemma trivializationAt_continuousLinearMapAt {b₀ b : B}
     (hb : b ∈ (trivializationAt F Z.Fiber b₀).baseSet) :
     (trivializationAt F Z.Fiber b₀).continuousLinearMapAt R b =
       Z.coordChange (Z.indexAt b) (Z.indexAt b₀) b :=
@@ -806,7 +806,7 @@ theorem trivializationAt_continuousLinearMapAt {b₀ b : B}
 #align vector_bundle_core.trivialization_at_continuous_linear_map_at VectorBundleCore.trivializationAt_continuousLinearMapAt
 
 @[simp, mfld_simps]
-theorem localTriv_symmL {b : B} (hb : b ∈ Z.baseSet i) :
+lemma localTriv_symmL {b : B} (hb : b ∈ Z.baseSet i) :
     (Z.localTriv i).symmL R b = Z.coordChange i (Z.indexAt b) b := by
   ext1 v
   rw [(Z.localTriv i).symmL_apply R, (Z.localTriv i).symm_apply]
@@ -815,14 +815,14 @@ set_option linter.uppercaseLean3 false in
 #align vector_bundle_core.local_triv_symmL VectorBundleCore.localTriv_symmL
 
 @[simp, mfld_simps]
-theorem trivializationAt_symmL {b₀ b : B} (hb : b ∈ (trivializationAt F Z.Fiber b₀).baseSet) :
+lemma trivializationAt_symmL {b₀ b : B} (hb : b ∈ (trivializationAt F Z.Fiber b₀).baseSet) :
     (trivializationAt F Z.Fiber b₀).symmL R b = Z.coordChange (Z.indexAt b₀) (Z.indexAt b) b :=
   Z.localTriv_symmL hb
 set_option linter.uppercaseLean3 false in
 #align vector_bundle_core.trivialization_at_symmL VectorBundleCore.trivializationAt_symmL
 
 @[simp, mfld_simps]
-theorem trivializationAt_coordChange_eq {b₀ b₁ b : B}
+lemma trivializationAt_coordChange_eq {b₀ b₁ b : B}
     (hb : b ∈ (trivializationAt F Z.Fiber b₀).baseSet ∩ (trivializationAt F Z.Fiber b₁).baseSet)
     (v : F) :
     (trivializationAt F Z.Fiber b₀).coordChangeL R (trivializationAt F Z.Fiber b₁) b v =
@@ -970,7 +970,7 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `VectorPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
-theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
+lemma toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle
   { trivialization_linear' := by
       rintro _ ⟨e, he, rfl⟩
@@ -1045,7 +1045,7 @@ theorem inCoordinates_eq (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y)
 #align continuous_linear_map.in_coordinates_eq ContinuousLinearMap.inCoordinates_eq
 
 /-- Rewrite `ContinuousLinearMap.inCoordinates` in a `VectorBundleCore`. -/
-protected theorem _root_.VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCore 𝕜₁ B F ι)
+protected lemma _root_.VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCore 𝕜₁ B F ι)
     (Z' : VectorBundleCore 𝕜₂ B' F' ι') {x₀ x : B} {y₀ y : B'} (ϕ : F →SL[σ] F')
     (hx : x ∈ Z.baseSet (Z.indexAt x₀)) (hy : y ∈ Z'.baseSet (Z'.indexAt y₀)) :
     inCoordinates F Z.Fiber F' Z'.Fiber x₀ x y₀ y ϕ =

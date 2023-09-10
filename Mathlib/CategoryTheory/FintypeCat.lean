@@ -77,7 +77,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.id_apply FintypeCat.id_apply
 
 @[simp]
-theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+lemma comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Fintype.comp_apply FintypeCat.comp_apply
@@ -147,7 +147,7 @@ instance : SmallCategory Skeleton.{u} where
   id _ := id
   comp f g := g ∘ f
 
-theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
+lemma is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
   ext _ _ <|
     Fin.equiv_iff_eq.mp <|
       Nonempty.intro <|

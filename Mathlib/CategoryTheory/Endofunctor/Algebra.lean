@@ -99,24 +99,24 @@ lemma ext {A B : Algebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f 
   Hom.ext _ _ w
 
 @[simp]
-theorem id_eq_id : Algebra.Hom.id A = 𝟙 A :=
+lemma id_eq_id : Algebra.Hom.id A = 𝟙 A :=
   rfl
 #align category_theory.endofunctor.algebra.id_eq_id CategoryTheory.Endofunctor.Algebra.id_eq_id
 
 @[simp]
-theorem id_f : (𝟙 _ : A ⟶ A).1 = 𝟙 A.1 :=
+lemma id_f : (𝟙 _ : A ⟶ A).1 = 𝟙 A.1 :=
   rfl
 #align category_theory.endofunctor.algebra.id_f CategoryTheory.Endofunctor.Algebra.id_f
 
 variable (f : A₀ ⟶ A₁) (g : A₁ ⟶ A₂)
 
 @[simp]
-theorem comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
+lemma comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.endofunctor.algebra.comp_eq_comp CategoryTheory.Endofunctor.Algebra.comp_eq_comp
 
 @[simp]
-theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
+lemma comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
   rfl
 #align category_theory.endofunctor.algebra.comp_f CategoryTheory.Endofunctor.Algebra.comp_f
 
@@ -159,12 +159,12 @@ instance forget_faithful : Faithful (forget F) := { }
 #align category_theory.endofunctor.algebra.forget_faithful CategoryTheory.Endofunctor.Algebra.forget_faithful
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/
-theorem epi_of_epi {X Y : Algebra F} (f : X ⟶ Y) [h : Epi f.1] : Epi f :=
+lemma epi_of_epi {X Y : Algebra F} (f : X ⟶ Y) [h : Epi f.1] : Epi f :=
   (forget F).epi_of_epi_map h
 #align category_theory.endofunctor.algebra.epi_of_epi CategoryTheory.Endofunctor.Algebra.epi_of_epi
 
 /-- An algebra morphism with an underlying monomorphism hom in `C` is an algebra monomorphism. -/
-theorem mono_of_mono {X Y : Algebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
+lemma mono_of_mono {X Y : Algebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
   (forget F).mono_of_mono_map h
 #align category_theory.endofunctor.algebra.mono_of_mono CategoryTheory.Endofunctor.Algebra.mono_of_mono
 
@@ -230,15 +230,15 @@ def strInv : A.1 ⟶ F.obj A.1 :=
 
 #align category_theory.endofunctor.algebra.initial.str_inv CategoryTheory.Endofunctor.Algebra.Initial.strInv
 
-theorem left_inv' : ⟨strInv h ≫ A.str, by rw [←Category.assoc, F.map_comp, strInv, ←Hom.h]⟩ = 𝟙 A :=
+lemma left_inv' : ⟨strInv h ≫ A.str, by rw [←Category.assoc, F.map_comp, strInv, ←Hom.h]⟩ = 𝟙 A :=
   Limits.IsInitial.hom_ext h _ (𝟙 A)
 #align category_theory.endofunctor.algebra.initial.left_inv' CategoryTheory.Endofunctor.Algebra.Initial.left_inv'
 
-theorem left_inv : strInv h ≫ A.str = 𝟙 _ :=
+lemma left_inv : strInv h ≫ A.str = 𝟙 _ :=
   congr_arg Hom.f (left_inv' h)
 #align category_theory.endofunctor.algebra.initial.left_inv CategoryTheory.Endofunctor.Algebra.Initial.left_inv
 
-theorem right_inv : A.str ≫ strInv h = 𝟙 _ := by
+lemma right_inv : A.str ≫ strInv h = 𝟙 _ := by
   rw [strInv, ← (h.to ⟨F.obj A.1, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
   congr
   exact left_inv h
@@ -321,24 +321,24 @@ lemma ext {A B : Coalgebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : 
   Hom.ext _ _ w
 
 @[simp]
-theorem id_eq_id : Coalgebra.Hom.id V = 𝟙 V :=
+lemma id_eq_id : Coalgebra.Hom.id V = 𝟙 V :=
   rfl
 #align category_theory.endofunctor.coalgebra.id_eq_id CategoryTheory.Endofunctor.Coalgebra.id_eq_id
 
 @[simp]
-theorem id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
+lemma id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
   rfl
 #align category_theory.endofunctor.coalgebra.id_f CategoryTheory.Endofunctor.Coalgebra.id_f
 
 variable (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
 
 @[simp]
-theorem comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=
+lemma comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.endofunctor.coalgebra.comp_eq_comp CategoryTheory.Endofunctor.Coalgebra.comp_eq_comp
 
 @[simp]
-theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
+lemma comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
   rfl
 #align category_theory.endofunctor.coalgebra.comp_f CategoryTheory.Endofunctor.Coalgebra.comp_f
 
@@ -381,12 +381,12 @@ instance forget_faithful : Faithful (forget F) := { }
 #align category_theory.endofunctor.coalgebra.forget_faithful CategoryTheory.Endofunctor.Coalgebra.forget_faithful
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/
-theorem epi_of_epi {X Y : Coalgebra F} (f : X ⟶ Y) [h : Epi f.1] : Epi f :=
+lemma epi_of_epi {X Y : Coalgebra F} (f : X ⟶ Y) [h : Epi f.1] : Epi f :=
   (forget F).epi_of_epi_map h
 #align category_theory.endofunctor.coalgebra.epi_of_epi CategoryTheory.Endofunctor.Coalgebra.epi_of_epi
 
 /-- An algebra morphism with an underlying monomorphism hom in `C` is an algebra monomorphism. -/
-theorem mono_of_mono {X Y : Coalgebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
+lemma mono_of_mono {X Y : Coalgebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
   (forget F).mono_of_mono_map h
 #align category_theory.endofunctor.coalgebra.mono_of_mono CategoryTheory.Endofunctor.Coalgebra.mono_of_mono
 

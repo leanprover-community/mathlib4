@@ -274,7 +274,7 @@ instance (priority := 100) UniformSpace.pseudoMetrizableSpace [UniformSpace X]
 
 /-- A T₀ uniform space with countably generated `𝓤 X` is metrizable. This is not an instance to
 avoid loops. -/
-theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (𝓤 X)] [T0Space X] :
+lemma UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (𝓤 X)] [T0Space X] :
     TopologicalSpace.MetrizableSpace X := by
   letI := UniformSpace.metricSpace X
   infer_instance

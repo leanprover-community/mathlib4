@@ -91,13 +91,13 @@ def equivTuple {R : Type*} (c₁ c₂ : R) : ℍ[R,c₁,c₂] ≃ (Fin 4 → R) 
 #align quaternion_algebra.equiv_tuple QuaternionAlgebra.equivTuple
 
 @[simp]
-theorem equivTuple_apply {R : Type*} (c₁ c₂ : R) (x : ℍ[R,c₁,c₂]) :
+lemma equivTuple_apply {R : Type*} (c₁ c₂ : R) (x : ℍ[R,c₁,c₂]) :
     equivTuple c₁ c₂ x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 #align quaternion_algebra.equiv_tuple_apply QuaternionAlgebra.equivTuple_apply
 
 @[simp]
-theorem mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a.4 = a := rfl
+lemma mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a.4 = a := rfl
 #align quaternion_algebra.mk.eta QuaternionAlgebra.mk.eta
 
 variable {S T R : Type*} [CommRing R] {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
@@ -108,27 +108,27 @@ def im (x : ℍ[R,c₁,c₂]) : ℍ[R,c₁,c₂] :=
 #align quaternion_algebra.im QuaternionAlgebra.im
 
 @[simp]
-theorem im_re : a.im.re = 0 :=
+lemma im_re : a.im.re = 0 :=
   rfl
 #align quaternion_algebra.im_re QuaternionAlgebra.im_re
 
 @[simp]
-theorem im_imI : a.im.imI = a.imI :=
+lemma im_imI : a.im.imI = a.imI :=
   rfl
 #align quaternion_algebra.im_im_i QuaternionAlgebra.im_imI
 
 @[simp]
-theorem im_imJ : a.im.imJ = a.imJ :=
+lemma im_imJ : a.im.imJ = a.imJ :=
   rfl
 #align quaternion_algebra.im_im_j QuaternionAlgebra.im_imJ
 
 @[simp]
-theorem im_imK : a.im.imK = a.imK :=
+lemma im_imK : a.im.imK = a.imK :=
   rfl
 #align quaternion_algebra.im_im_k QuaternionAlgebra.im_imK
 
 @[simp]
-theorem im_idem : a.im.im = a.im :=
+lemma im_idem : a.im.im = a.im :=
   rfl
 #align quaternion_algebra.im_idem QuaternionAlgebra.im_idem
 
@@ -138,48 +138,48 @@ theorem im_idem : a.im.im = a.im :=
 instance : CoeTC R ℍ[R,c₁,c₂] := ⟨coe⟩
 
 @[simp, norm_cast]
-theorem coe_re : (x : ℍ[R,c₁,c₂]).re = x := rfl
+lemma coe_re : (x : ℍ[R,c₁,c₂]).re = x := rfl
 #align quaternion_algebra.coe_re QuaternionAlgebra.coe_re
 
 @[simp, norm_cast]
-theorem coe_imI : (x : ℍ[R,c₁,c₂]).imI = 0 := rfl
+lemma coe_imI : (x : ℍ[R,c₁,c₂]).imI = 0 := rfl
 #align quaternion_algebra.coe_im_i QuaternionAlgebra.coe_imI
 
 @[simp, norm_cast]
-theorem coe_imJ : (x : ℍ[R,c₁,c₂]).imJ = 0 := rfl
+lemma coe_imJ : (x : ℍ[R,c₁,c₂]).imJ = 0 := rfl
 #align quaternion_algebra.coe_im_j QuaternionAlgebra.coe_imJ
 
 @[simp, norm_cast]
-theorem coe_imK : (x : ℍ[R,c₁,c₂]).imK = 0 := rfl
+lemma coe_imK : (x : ℍ[R,c₁,c₂]).imK = 0 := rfl
 #align quaternion_algebra.coe_im_k QuaternionAlgebra.coe_imK
 
-theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun _ _ h => congr_arg re h
+lemma coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun _ _ h => congr_arg re h
 #align quaternion_algebra.coe_injective QuaternionAlgebra.coe_injective
 
 @[simp]
-theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
+lemma coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
   coe_injective.eq_iff
 #align quaternion_algebra.coe_inj QuaternionAlgebra.coe_inj
 
 -- porting note: removed `simps`, added simp lemmas manually
 instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 
-@[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂]).re = 0 := rfl
+@[simp] lemma zero_re : (0 : ℍ[R,c₁,c₂]).re = 0 := rfl
 #align quaternion_algebra.has_zero_zero_re QuaternionAlgebra.zero_re
 
-@[simp] theorem zero_imI : (0 : ℍ[R,c₁,c₂]).imI = 0 := rfl
+@[simp] lemma zero_imI : (0 : ℍ[R,c₁,c₂]).imI = 0 := rfl
 #align quaternion_algebra.has_zero_zero_im_i QuaternionAlgebra.zero_imI
 
-@[simp] theorem zero_imJ : (0 : ℍ[R,c₁,c₂]).imJ = 0 := rfl
+@[simp] lemma zero_imJ : (0 : ℍ[R,c₁,c₂]).imJ = 0 := rfl
 #align quaternion_algebra.zero_zero_im_j QuaternionAlgebra.zero_imJ
 
-@[simp] theorem zero_imK : (0 : ℍ[R,c₁,c₂]).imK = 0 := rfl
+@[simp] lemma zero_imK : (0 : ℍ[R,c₁,c₂]).imK = 0 := rfl
 #align quaternion_algebra.zero_zero_im_k QuaternionAlgebra.zero_imK
 
-@[simp] theorem zero_im : (0 : ℍ[R,c₁,c₂]).im = 0 := rfl
+@[simp] lemma zero_im : (0 : ℍ[R,c₁,c₂]).im = 0 := rfl
 
 @[simp, norm_cast]
-theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂]) = 0 := rfl
+lemma coe_zero : ((0 : R) : ℍ[R,c₁,c₂]) = 0 := rfl
 #align quaternion_algebra.coe_zero QuaternionAlgebra.coe_zero
 
 instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
@@ -187,41 +187,41 @@ instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
 -- porting note: removed `simps`, added simp lemmas manually
 instance : One ℍ[R,c₁,c₂] := ⟨⟨1, 0, 0, 0⟩⟩
 
-@[simp] theorem one_re : (1 : ℍ[R,c₁,c₂]).re = 1 := rfl
+@[simp] lemma one_re : (1 : ℍ[R,c₁,c₂]).re = 1 := rfl
 #align quaternion_algebra.has_one_one_re QuaternionAlgebra.one_re
 
-@[simp] theorem one_imI : (1 : ℍ[R,c₁,c₂]).imI = 0 := rfl
+@[simp] lemma one_imI : (1 : ℍ[R,c₁,c₂]).imI = 0 := rfl
 #align quaternion_algebra.has_one_one_im_i QuaternionAlgebra.one_imI
 
-@[simp] theorem one_imJ : (1 : ℍ[R,c₁,c₂]).imJ = 0 := rfl
+@[simp] lemma one_imJ : (1 : ℍ[R,c₁,c₂]).imJ = 0 := rfl
 #align quaternion_algebra.one_one_im_j QuaternionAlgebra.one_imJ
 
-@[simp] theorem one_imK : (1 : ℍ[R,c₁,c₂]).imK = 0 := rfl
+@[simp] lemma one_imK : (1 : ℍ[R,c₁,c₂]).imK = 0 := rfl
 #align quaternion_algebra.one_one_im_k QuaternionAlgebra.one_imK
 
-@[simp] theorem one_im : (1 : ℍ[R,c₁,c₂]).im = 0 := rfl
+@[simp] lemma one_im : (1 : ℍ[R,c₁,c₂]).im = 0 := rfl
 
 @[simp, norm_cast]
-theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂]) = 1 := rfl
+lemma coe_one : ((1 : R) : ℍ[R,c₁,c₂]) = 1 := rfl
 #align quaternion_algebra.coe_one QuaternionAlgebra.coe_one
 
 -- porting note: removed `simps`, added simp lemmas manually
 instance : Add ℍ[R,c₁,c₂] :=
   ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
 
-@[simp] theorem add_re : (a + b).re = a.re + b.re := rfl
+@[simp] lemma add_re : (a + b).re = a.re + b.re := rfl
 #align quaternion_algebra.has_add_add_re QuaternionAlgebra.add_re
 
-@[simp] theorem add_imI : (a + b).imI = a.imI + b.imI := rfl
+@[simp] lemma add_imI : (a + b).imI = a.imI + b.imI := rfl
 #align quaternion_algebra.has_add_add_im_i QuaternionAlgebra.add_imI
 
-@[simp] theorem add_imJ : (a + b).imJ = a.imJ + b.imJ := rfl
+@[simp] lemma add_imJ : (a + b).imJ = a.imJ + b.imJ := rfl
 #align quaternion_algebra.has_add_add_im_j QuaternionAlgebra.add_imJ
 
-@[simp] theorem add_imK : (a + b).imK = a.imK + b.imK := rfl
+@[simp] lemma add_imK : (a + b).imK = a.imK + b.imK := rfl
 #align quaternion_algebra.has_add_add_im_k QuaternionAlgebra.add_imK
 
-@[simp] theorem add_im : (a + b).im = a.im + b.im :=
+@[simp] lemma add_im : (a + b).im = a.im + b.im :=
   QuaternionAlgebra.ext _ _ (zero_add _).symm rfl rfl rfl
 
 @[simp]
@@ -231,25 +231,25 @@ theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
 #align quaternion_algebra.mk_add_mk QuaternionAlgebra.mk_add_mk
 
 @[simp, norm_cast]
-theorem coe_add : ((x + y : R) : ℍ[R,c₁,c₂]) = x + y := by ext <;> simp
+lemma coe_add : ((x + y : R) : ℍ[R,c₁,c₂]) = x + y := by ext <;> simp
 #align quaternion_algebra.coe_add QuaternionAlgebra.coe_add
 
 -- porting note: removed `simps`, added simp lemmas manually
 instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
-@[simp] theorem neg_re : (-a).re = -a.re := rfl
+@[simp] lemma neg_re : (-a).re = -a.re := rfl
 #align quaternion_algebra.has_neg_neg_re QuaternionAlgebra.neg_re
 
-@[simp] theorem neg_imI : (-a).imI = -a.imI := rfl
+@[simp] lemma neg_imI : (-a).imI = -a.imI := rfl
 #align quaternion_algebra.has_neg_neg_im_i QuaternionAlgebra.neg_imI
 
-@[simp] theorem neg_imJ : (-a).imJ = -a.imJ := rfl
+@[simp] lemma neg_imJ : (-a).imJ = -a.imJ := rfl
 #align quaternion_algebra.has_neg_neg_im_j QuaternionAlgebra.neg_imJ
 
-@[simp] theorem neg_imK : (-a).imK = -a.imK := rfl
+@[simp] lemma neg_imK : (-a).imK = -a.imK := rfl
 #align quaternion_algebra.has_neg_neg_im_k QuaternionAlgebra.neg_imK
 
-@[simp] theorem neg_im : (-a).im = -a.im :=
+@[simp] lemma neg_im : (-a).im = -a.im :=
   QuaternionAlgebra.ext _ _ neg_zero.symm rfl rfl rfl
 
 @[simp]
@@ -258,25 +258,25 @@ theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁
 #align quaternion_algebra.neg_mk QuaternionAlgebra.neg_mk
 
 @[simp, norm_cast]
-theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂]) = -x := by ext <;> simp
+lemma coe_neg : ((-x : R) : ℍ[R,c₁,c₂]) = -x := by ext <;> simp
 #align quaternion_algebra.coe_neg QuaternionAlgebra.coe_neg
 
 instance : Sub ℍ[R,c₁,c₂] :=
   ⟨fun a b => ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩⟩
 
-@[simp] theorem sub_re : (a - b).re = a.re - b.re := rfl
+@[simp] lemma sub_re : (a - b).re = a.re - b.re := rfl
 #align quaternion_algebra.has_sub_sub_re QuaternionAlgebra.sub_re
 
-@[simp] theorem sub_imI : (a - b).imI = a.imI - b.imI := rfl
+@[simp] lemma sub_imI : (a - b).imI = a.imI - b.imI := rfl
 #align quaternion_algebra.has_sub_sub_im_i QuaternionAlgebra.sub_imI
 
-@[simp] theorem sub_imJ : (a - b).imJ = a.imJ - b.imJ := rfl
+@[simp] lemma sub_imJ : (a - b).imJ = a.imJ - b.imJ := rfl
 #align quaternion_algebra.has_sub_sub_im_j QuaternionAlgebra.sub_imJ
 
-@[simp] theorem sub_imK : (a - b).imK = a.imK - b.imK := rfl
+@[simp] lemma sub_imK : (a - b).imK = a.imK - b.imK := rfl
 #align quaternion_algebra.has_sub_sub_im_k QuaternionAlgebra.sub_imK
 
-@[simp] theorem sub_im : (a - b).im = a.im - b.im :=
+@[simp] lemma sub_im : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext _ _ (sub_zero _).symm rfl rfl rfl
 
 @[simp]
@@ -286,22 +286,22 @@ theorem mk_sub_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
 #align quaternion_algebra.mk_sub_mk QuaternionAlgebra.mk_sub_mk
 
 @[simp, norm_cast]
-theorem coe_im : (x : ℍ[R,c₁,c₂]).im = 0 :=
+lemma coe_im : (x : ℍ[R,c₁,c₂]).im = 0 :=
   rfl
 #align quaternion_algebra.coe_im QuaternionAlgebra.coe_im
 
 @[simp]
-theorem re_add_im : ↑a.re + a.im = a :=
+lemma re_add_im : ↑a.re + a.im = a :=
   QuaternionAlgebra.ext _ _ (add_zero _) (zero_add _) (zero_add _) (zero_add _)
 #align quaternion_algebra.re_add_im QuaternionAlgebra.re_add_im
 
 @[simp]
-theorem sub_self_im : a - a.im = a.re :=
+lemma sub_self_im : a - a.im = a.re :=
   QuaternionAlgebra.ext _ _ (sub_zero _) (sub_self _) (sub_self _) (sub_self _)
 #align quaternion_algebra.sub_self_im QuaternionAlgebra.sub_self_im
 
 @[simp]
-theorem sub_self_re : a - a.re = a.im :=
+lemma sub_self_re : a - a.re = a.im :=
   QuaternionAlgebra.ext _ _ (sub_self _) (sub_zero _) (sub_zero _) (sub_zero _)
 #align quaternion_algebra.sub_self_re QuaternionAlgebra.sub_self_re
 
@@ -322,19 +322,19 @@ instance : Mul ℍ[R,c₁,c₂] :=
       a.1 * b.4 + a.2 * b.3 - a.3 * b.2 + a.4 * b.1⟩⟩
 
 @[simp]
-theorem mul_re : (a * b).re = a.1 * b.1 + c₁ * a.2 * b.2 + c₂ * a.3 * b.3 - c₁ * c₂ * a.4 * b.4 :=
+lemma mul_re : (a * b).re = a.1 * b.1 + c₁ * a.2 * b.2 + c₂ * a.3 * b.3 - c₁ * c₂ * a.4 * b.4 :=
   rfl
 #align quaternion_algebra.has_mul_mul_re QuaternionAlgebra.mul_re
 
 @[simp]
-theorem mul_imI : (a * b).imI = a.1 * b.2 + a.2 * b.1 - c₂ * a.3 * b.4 + c₂ * a.4 * b.3 := rfl
+lemma mul_imI : (a * b).imI = a.1 * b.2 + a.2 * b.1 - c₂ * a.3 * b.4 + c₂ * a.4 * b.3 := rfl
 #align quaternion_algebra.has_mul_mul_im_i QuaternionAlgebra.mul_imI
 
 @[simp]
-theorem mul_imJ : (a * b).imJ = a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 - c₁ * a.4 * b.2 := rfl
+lemma mul_imJ : (a * b).imJ = a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 - c₁ * a.4 * b.2 := rfl
 #align quaternion_algebra.has_mul_mul_im_j QuaternionAlgebra.mul_imJ
 
-@[simp] theorem mul_imK : (a * b).imK = a.1 * b.4 + a.2 * b.3 - a.3 * b.2 + a.4 * b.1 := rfl
+@[simp] lemma mul_imK : (a * b).imK = a.1 * b.4 + a.2 * b.3 - a.3 * b.2 + a.4 * b.1 := rfl
 #align quaternion_algebra.has_mul_mul_im_k QuaternionAlgebra.mul_imK
 
 @[simp]
@@ -359,19 +359,19 @@ instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂]
 instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂]
     where smul_comm s t x := by ext <;> exact smul_comm _ _ _
 
-@[simp] theorem smul_re : (s • a).re = s • a.re := rfl
+@[simp] lemma smul_re : (s • a).re = s • a.re := rfl
 #align quaternion_algebra.smul_re QuaternionAlgebra.smul_re
 
-@[simp] theorem smul_imI : (s • a).imI = s • a.imI := rfl
+@[simp] lemma smul_imI : (s • a).imI = s • a.imI := rfl
 #align quaternion_algebra.smul_im_i QuaternionAlgebra.smul_imI
 
-@[simp] theorem smul_imJ : (s • a).imJ = s • a.imJ := rfl
+@[simp] lemma smul_imJ : (s • a).imJ = s • a.imJ := rfl
 #align quaternion_algebra.smul_im_j QuaternionAlgebra.smul_imJ
 
-@[simp] theorem smul_imK : (s • a).imK = s • a.imK := rfl
+@[simp] lemma smul_imK : (s • a).imK = s • a.imK := rfl
 #align quaternion_algebra.smul_im_k QuaternionAlgebra.smul_imK
 
-@[simp] theorem smul_im {S} [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
+@[simp] lemma smul_im {S} [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   QuaternionAlgebra.ext _ _ (smul_zero s).symm rfl rfl rfl
 
 @[simp]
@@ -383,7 +383,7 @@ theorem smul_mk (re im_i im_j im_k : R) :
 end
 
 @[simp, norm_cast]
-theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) :
+lemma coe_smul [SMulZeroClass S R] (s : S) (r : R) :
     (↑(s • r) : ℍ[R,c₁,c₂]) = s • (r : ℍ[R,c₁,c₂]) :=
   QuaternionAlgebra.ext _ _ rfl (smul_zero s).symm (smul_zero s).symm (smul_zero s).symm
 #align quaternion_algebra.coe_smul QuaternionAlgebra.coe_smul
@@ -473,7 +473,7 @@ instance instRing : Ring ℍ[R,c₁,c₂] where
   mul_one _ := by ext <;> simp
 
 @[norm_cast, simp]
-theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
+lemma coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 #align quaternion_algebra.coe_mul QuaternionAlgebra.coe_mul
 
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
@@ -539,12 +539,12 @@ def linearEquivTuple : ℍ[R,c₁,c₂] ≃ₗ[R] Fin 4 → R :=
 #align quaternion_algebra.linear_equiv_tuple QuaternionAlgebra.linearEquivTuple
 
 @[simp]
-theorem coe_linearEquivTuple : ⇑(linearEquivTuple c₁ c₂) = equivTuple c₁ c₂ :=
+lemma coe_linearEquivTuple : ⇑(linearEquivTuple c₁ c₂) = equivTuple c₁ c₂ :=
   rfl
 #align quaternion_algebra.coe_linear_equiv_tuple QuaternionAlgebra.coe_linearEquivTuple
 
 @[simp]
-theorem coe_linearEquivTuple_symm : ⇑(linearEquivTuple c₁ c₂).symm = (equivTuple c₁ c₂).symm :=
+lemma coe_linearEquivTuple_symm : ⇑(linearEquivTuple c₁ c₂).symm = (equivTuple c₁ c₂).symm :=
   rfl
 #align quaternion_algebra.coe_linear_equiv_tuple_symm QuaternionAlgebra.coe_linearEquivTuple_symm
 
@@ -563,19 +563,19 @@ instance : Module.Finite R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
 
 instance : Module.Free R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
 
-theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 4 := by
+lemma rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 4 := by
   rw [rank_eq_card_basis (basisOneIJK c₁ c₂), Fintype.card_fin]
   norm_num
 #align quaternion_algebra.rank_eq_four QuaternionAlgebra.rank_eq_four
 
-theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 := by
+lemma finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 := by
   rw [FiniteDimensional.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 #align quaternion_algebra.finrank_eq_four QuaternionAlgebra.finrank_eq_four
 
 end
 
 @[norm_cast, simp]
-theorem coe_sub : ((x - y : R) : ℍ[R,c₁,c₂]) = x - y :=
+lemma coe_sub : ((x - y : R) : ℍ[R,c₁,c₂]) = x - y :=
   (algebraMap R ℍ[R,c₁,c₂]).map_sub x y
 #align quaternion_algebra.coe_sub QuaternionAlgebra.coe_sub
 
@@ -584,52 +584,52 @@ theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R,c₁,c₂]) = (x : ℍ[R,c₁,c�
   (algebraMap R ℍ[R,c₁,c₂]).map_pow x n
 #align quaternion_algebra.coe_pow QuaternionAlgebra.coe_pow
 
-theorem coe_commutes : ↑r * a = a * r :=
+lemma coe_commutes : ↑r * a = a * r :=
   Algebra.commutes r a
 #align quaternion_algebra.coe_commutes QuaternionAlgebra.coe_commutes
 
-theorem coe_commute : Commute (↑r) a :=
+lemma coe_commute : Commute (↑r) a :=
   coe_commutes r a
 #align quaternion_algebra.coe_commute QuaternionAlgebra.coe_commute
 
-theorem coe_mul_eq_smul : ↑r * a = r • a :=
+lemma coe_mul_eq_smul : ↑r * a = r • a :=
   (Algebra.smul_def r a).symm
 #align quaternion_algebra.coe_mul_eq_smul QuaternionAlgebra.coe_mul_eq_smul
 
-theorem mul_coe_eq_smul : a * r = r • a := by rw [← coe_commutes, coe_mul_eq_smul]
+lemma mul_coe_eq_smul : a * r = r • a := by rw [← coe_commutes, coe_mul_eq_smul]
 #align quaternion_algebra.mul_coe_eq_smul QuaternionAlgebra.mul_coe_eq_smul
 
 @[norm_cast, simp]
-theorem coe_algebraMap : ⇑(algebraMap R ℍ[R,c₁,c₂]) = coe :=
+lemma coe_algebraMap : ⇑(algebraMap R ℍ[R,c₁,c₂]) = coe :=
   rfl
 #align quaternion_algebra.coe_algebra_map QuaternionAlgebra.coe_algebraMap
 
-theorem smul_coe : x • (y : ℍ[R,c₁,c₂]) = ↑(x * y) := by rw [coe_mul, coe_mul_eq_smul]
+lemma smul_coe : x • (y : ℍ[R,c₁,c₂]) = ↑(x * y) := by rw [coe_mul, coe_mul_eq_smul]
 #align quaternion_algebra.smul_coe QuaternionAlgebra.smul_coe
 
 /-- Quaternion conjugate. -/
 instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂] where star a := ⟨a.1, -a.2, -a.3, -a.4⟩
 
-@[simp] theorem re_star : (star a).re = a.re := rfl
+@[simp] lemma re_star : (star a).re = a.re := rfl
 #align quaternion_algebra.re_star QuaternionAlgebra.re_star
 
 @[simp]
-theorem imI_star : (star a).imI = -a.imI :=
+lemma imI_star : (star a).imI = -a.imI :=
   rfl
 #align quaternion_algebra.im_i_star QuaternionAlgebra.imI_star
 
 @[simp]
-theorem imJ_star : (star a).imJ = -a.imJ :=
+lemma imJ_star : (star a).imJ = -a.imJ :=
   rfl
 #align quaternion_algebra.im_j_star QuaternionAlgebra.imJ_star
 
 @[simp]
-theorem imK_star : (star a).imK = -a.imK :=
+lemma imK_star : (star a).imK = -a.imK :=
   rfl
 #align quaternion_algebra.im_k_star QuaternionAlgebra.imK_star
 
 @[simp]
-theorem im_star : (star a).im = -a.im :=
+lemma im_star : (star a).im = -a.im :=
   QuaternionAlgebra.ext _ _ neg_zero.symm rfl rfl rfl
 #align quaternion_algebra.im_star QuaternionAlgebra.im_star
 
@@ -643,19 +643,19 @@ instance instStarRing : StarRing ℍ[R,c₁,c₂] where
   star_add a b := by ext <;> simp [add_comm]
   star_mul a b := by ext <;> simp <;> ring
 
-theorem self_add_star' : a + star a = ↑(2 * a.re) := by ext <;> simp [two_mul]
+lemma self_add_star' : a + star a = ↑(2 * a.re) := by ext <;> simp [two_mul]
 #align quaternion_algebra.self_add_star' QuaternionAlgebra.self_add_star'
 
-theorem self_add_star : a + star a = 2 * a.re := by simp only [self_add_star', two_mul, coe_add]
+lemma self_add_star : a + star a = 2 * a.re := by simp only [self_add_star', two_mul, coe_add]
 #align quaternion_algebra.self_add_star QuaternionAlgebra.self_add_star
 
-theorem star_add_self' : star a + a = ↑(2 * a.re) := by rw [add_comm, self_add_star']
+lemma star_add_self' : star a + a = ↑(2 * a.re) := by rw [add_comm, self_add_star']
 #align quaternion_algebra.star_add_self' QuaternionAlgebra.star_add_self'
 
-theorem star_add_self : star a + a = 2 * a.re := by rw [add_comm, self_add_star]
+lemma star_add_self : star a + a = 2 * a.re := by rw [add_comm, self_add_star]
 #align quaternion_algebra.star_add_self QuaternionAlgebra.star_add_self
 
-theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
+lemma star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
   eq_sub_iff_add_eq.2 a.star_add_self'
 #align quaternion_algebra.star_eq_two_re_sub QuaternionAlgebra.star_eq_two_re_sub
 
@@ -665,22 +665,22 @@ instance : IsStarNormal a :=
     exact (coe_commute (2 * a.re) a).sub_left (Commute.refl a)⟩
 
 @[simp, norm_cast]
-theorem star_coe : star (x : ℍ[R,c₁,c₂]) = x := by ext <;> simp
+lemma star_coe : star (x : ℍ[R,c₁,c₂]) = x := by ext <;> simp
 #align quaternion_algebra.star_coe QuaternionAlgebra.star_coe
 
-@[simp] theorem star_im : star a.im = -a.im := im_star _
+@[simp] lemma star_im : star a.im = -a.im := im_star _
 #align quaternion_algebra.star_im QuaternionAlgebra.star_im
 
 @[simp]
-theorem star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R,c₁,c₂]) :
+lemma star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R,c₁,c₂]) :
     star (s • a) = s • star a :=
   QuaternionAlgebra.ext _ _ rfl (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
 #align quaternion_algebra.star_smul QuaternionAlgebra.star_smul
 
-theorem eq_re_of_eq_coe {a : ℍ[R,c₁,c₂]} {x : R} (h : a = x) : a = a.re := by rw [h, coe_re]
+lemma eq_re_of_eq_coe {a : ℍ[R,c₁,c₂]} {x : R} (h : a = x) : a = a.re := by rw [h, coe_re]
 #align quaternion_algebra.eq_re_of_eq_coe QuaternionAlgebra.eq_re_of_eq_coe
 
-theorem eq_re_iff_mem_range_coe {a : ℍ[R,c₁,c₂]} :
+lemma eq_re_iff_mem_range_coe {a : ℍ[R,c₁,c₂]} :
     a = a.re ↔ a ∈ Set.range (coe : R → ℍ[R,c₁,c₂]) :=
   ⟨fun h => ⟨a.re, h.symm⟩, fun ⟨_, h⟩ => eq_re_of_eq_coe h.symm⟩
 #align quaternion_algebra.eq_re_iff_mem_range_coe QuaternionAlgebra.eq_re_iff_mem_range_coe
@@ -690,21 +690,21 @@ section CharZero
 variable [NoZeroDivisors R] [CharZero R]
 
 @[simp]
-theorem star_eq_self {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} : star a = a ↔ a = a.re := by
+lemma star_eq_self {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} : star a = a ↔ a = a.re := by
   simp [QuaternionAlgebra.ext_iff, neg_eq_iff_add_eq_zero, add_self_eq_zero]
 #align quaternion_algebra.star_eq_self QuaternionAlgebra.star_eq_self
 
-theorem star_eq_neg {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} : star a = -a ↔ a.re = 0 := by
+lemma star_eq_neg {c₁ c₂ : R} {a : ℍ[R,c₁,c₂]} : star a = -a ↔ a.re = 0 := by
   simp [QuaternionAlgebra.ext_iff, eq_neg_iff_add_eq_zero]
 #align quaternion_algebra.star_eq_neg QuaternionAlgebra.star_eq_neg
 
 end CharZero
 
 -- Can't use `rw ← star_eq_self` in the proof without additional assumptions
-theorem star_mul_eq_coe : star a * a = (star a * a).re := by ext <;> simp <;> ring
+lemma star_mul_eq_coe : star a * a = (star a * a).re := by ext <;> simp <;> ring
 #align quaternion_algebra.star_mul_eq_coe QuaternionAlgebra.star_mul_eq_coe
 
-theorem mul_star_eq_coe : a * star a = (a * star a).re := by
+lemma mul_star_eq_coe : a * star a = (a * star a).re := by
   rw [← star_comm_self']
   exact a.star_mul_eq_coe
 #align quaternion_algebra.mul_star_eq_coe QuaternionAlgebra.mul_star_eq_coe
@@ -721,7 +721,7 @@ def starAe : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R,c₁,c₂]ᵐᵒᵖ :=
 #align quaternion_algebra.star_ae QuaternionAlgebra.starAe
 
 @[simp]
-theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂] ≃ₐ[R] _) = op ∘ star :=
+lemma coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂] ≃ₐ[R] _) = op ∘ star :=
   rfl
 #align quaternion_algebra.coe_star_ae QuaternionAlgebra.coe_starAe
 
@@ -786,11 +786,11 @@ instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,-1]) a
 
 @[ext]
-theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
+lemma ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
   QuaternionAlgebra.ext a b
 #align quaternion.ext Quaternion.ext
 
-theorem ext_iff {a b : ℍ[R]} :
+lemma ext_iff {a b : ℍ[R]} :
     a = b ↔ a.re = b.re ∧ a.imI = b.imI ∧ a.imJ = b.imJ ∧ a.imK = b.imK :=
   QuaternionAlgebra.ext_iff a b
 #align quaternion.ext_iff Quaternion.ext_iff
@@ -799,170 +799,170 @@ theorem ext_iff {a b : ℍ[R]} :
 nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 #align quaternion.im Quaternion.im
 
-@[simp] theorem im_re : a.im.re = 0 := rfl
+@[simp] lemma im_re : a.im.re = 0 := rfl
 #align quaternion.im_re Quaternion.im_re
 
-@[simp] theorem im_imI : a.im.imI = a.imI := rfl
+@[simp] lemma im_imI : a.im.imI = a.imI := rfl
 #align quaternion.im_im_i Quaternion.im_imI
 
-@[simp] theorem im_imJ : a.im.imJ = a.imJ := rfl
+@[simp] lemma im_imJ : a.im.imJ = a.imJ := rfl
 #align quaternion.im_im_j Quaternion.im_imJ
 
-@[simp] theorem im_imK : a.im.imK = a.imK := rfl
+@[simp] lemma im_imK : a.im.imK = a.imK := rfl
 #align quaternion.im_im_k Quaternion.im_imK
 
-@[simp] theorem im_idem : a.im.im = a.im := rfl
+@[simp] lemma im_idem : a.im.im = a.im := rfl
 #align quaternion.im_idem Quaternion.im_idem
 
-@[simp] nonrec theorem re_add_im : ↑a.re + a.im = a := a.re_add_im
+@[simp] nonrec lemma re_add_im : ↑a.re + a.im = a := a.re_add_im
 #align quaternion.re_add_im Quaternion.re_add_im
 
-@[simp] nonrec theorem sub_self_im : a - a.im = a.re := a.sub_self_im
+@[simp] nonrec lemma sub_self_im : a - a.im = a.re := a.sub_self_im
 #align quaternion.sub_self_im Quaternion.sub_self_im
 
-@[simp] nonrec theorem sub_self_re : a - ↑a.re = a.im := a.sub_self_re
+@[simp] nonrec lemma sub_self_re : a - ↑a.re = a.im := a.sub_self_re
 #align quaternion.sub_self_re Quaternion.sub_self_re
 
 @[simp, norm_cast]
-theorem coe_re : (x : ℍ[R]).re = x := rfl
+lemma coe_re : (x : ℍ[R]).re = x := rfl
 #align quaternion.coe_re Quaternion.coe_re
 
 @[simp, norm_cast]
-theorem coe_imI : (x : ℍ[R]).imI = 0 := rfl
+lemma coe_imI : (x : ℍ[R]).imI = 0 := rfl
 #align quaternion.coe_im_i Quaternion.coe_imI
 
 @[simp, norm_cast]
-theorem coe_imJ : (x : ℍ[R]).imJ = 0 := rfl
+lemma coe_imJ : (x : ℍ[R]).imJ = 0 := rfl
 #align quaternion.coe_im_j Quaternion.coe_imJ
 
 @[simp, norm_cast]
-theorem coe_imK : (x : ℍ[R]).imK = 0 := rfl
+lemma coe_imK : (x : ℍ[R]).imK = 0 := rfl
 #align quaternion.coe_im_k Quaternion.coe_imK
 
 @[simp, norm_cast]
-theorem coe_im : (x : ℍ[R]).im = 0 := rfl
+lemma coe_im : (x : ℍ[R]).im = 0 := rfl
 #align quaternion.coe_im Quaternion.coe_im
 
-@[simp] theorem zero_re : (0 : ℍ[R]).re = 0 := rfl
+@[simp] lemma zero_re : (0 : ℍ[R]).re = 0 := rfl
 #align quaternion.zero_re Quaternion.zero_re
 
-@[simp] theorem zero_imI : (0 : ℍ[R]).imI = 0 := rfl
+@[simp] lemma zero_imI : (0 : ℍ[R]).imI = 0 := rfl
 #align quaternion.zero_im_i Quaternion.zero_imI
 
-@[simp] theorem zero_imJ : (0 : ℍ[R]).imJ = 0 := rfl
+@[simp] lemma zero_imJ : (0 : ℍ[R]).imJ = 0 := rfl
 #align quaternion.zero_im_j Quaternion.zero_imJ
 
-@[simp] theorem zero_imK : (0 : ℍ[R]).imK = 0 := rfl
+@[simp] lemma zero_imK : (0 : ℍ[R]).imK = 0 := rfl
 #align quaternion.zero_im_k Quaternion.zero_imK
 
-@[simp] theorem zero_im : (0 : ℍ[R]).im = 0 := rfl
+@[simp] lemma zero_im : (0 : ℍ[R]).im = 0 := rfl
 #align quaternion.zero_im Quaternion.zero_im
 
 @[simp, norm_cast]
-theorem coe_zero : ((0 : R) : ℍ[R]) = 0 := rfl
+lemma coe_zero : ((0 : R) : ℍ[R]) = 0 := rfl
 #align quaternion.coe_zero Quaternion.coe_zero
 
-@[simp] theorem one_re : (1 : ℍ[R]).re = 1 := rfl
+@[simp] lemma one_re : (1 : ℍ[R]).re = 1 := rfl
 #align quaternion.one_re Quaternion.one_re
 
-@[simp] theorem one_imI : (1 : ℍ[R]).imI = 0 := rfl
+@[simp] lemma one_imI : (1 : ℍ[R]).imI = 0 := rfl
 #align quaternion.one_im_i Quaternion.one_imI
 
-@[simp] theorem one_imJ : (1 : ℍ[R]).imJ = 0 := rfl
+@[simp] lemma one_imJ : (1 : ℍ[R]).imJ = 0 := rfl
 #align quaternion.one_im_j Quaternion.one_imJ
 
-@[simp] theorem one_imK : (1 : ℍ[R]).imK = 0 := rfl
+@[simp] lemma one_imK : (1 : ℍ[R]).imK = 0 := rfl
 #align quaternion.one_im_k Quaternion.one_imK
 
-@[simp] theorem one_im : (1 : ℍ[R]).im = 0 := rfl
+@[simp] lemma one_im : (1 : ℍ[R]).im = 0 := rfl
 #align quaternion.one_im Quaternion.one_im
 
 @[simp, norm_cast]
-theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
+lemma coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
 #align quaternion.coe_one Quaternion.coe_one
 
-@[simp] theorem add_re : (a + b).re = a.re + b.re := rfl
+@[simp] lemma add_re : (a + b).re = a.re + b.re := rfl
 #align quaternion.add_re Quaternion.add_re
 
-@[simp] theorem add_imI : (a + b).imI = a.imI + b.imI := rfl
+@[simp] lemma add_imI : (a + b).imI = a.imI + b.imI := rfl
 #align quaternion.add_im_i Quaternion.add_imI
 
-@[simp] theorem add_imJ : (a + b).imJ = a.imJ + b.imJ := rfl
+@[simp] lemma add_imJ : (a + b).imJ = a.imJ + b.imJ := rfl
 #align quaternion.add_im_j Quaternion.add_imJ
 
-@[simp] theorem add_imK : (a + b).imK = a.imK + b.imK := rfl
+@[simp] lemma add_imK : (a + b).imK = a.imK + b.imK := rfl
 #align quaternion.add_im_k Quaternion.add_imK
 
-@[simp] nonrec theorem add_im : (a + b).im = a.im + b.im := a.add_im b
+@[simp] nonrec lemma add_im : (a + b).im = a.im + b.im := a.add_im b
 #align quaternion.add_im Quaternion.add_im
 
 @[simp, norm_cast]
-theorem coe_add : ((x + y : R) : ℍ[R]) = x + y :=
+lemma coe_add : ((x + y : R) : ℍ[R]) = x + y :=
   QuaternionAlgebra.coe_add x y
 #align quaternion.coe_add Quaternion.coe_add
 
-@[simp] theorem neg_re : (-a).re = -a.re := rfl
+@[simp] lemma neg_re : (-a).re = -a.re := rfl
 #align quaternion.neg_re Quaternion.neg_re
 
-@[simp] theorem neg_imI : (-a).imI = -a.imI := rfl
+@[simp] lemma neg_imI : (-a).imI = -a.imI := rfl
 #align quaternion.neg_im_i Quaternion.neg_imI
 
-@[simp] theorem neg_imJ : (-a).imJ = -a.imJ := rfl
+@[simp] lemma neg_imJ : (-a).imJ = -a.imJ := rfl
 #align quaternion.neg_im_j Quaternion.neg_imJ
 
-@[simp] theorem neg_imK : (-a).imK = -a.imK := rfl
+@[simp] lemma neg_imK : (-a).imK = -a.imK := rfl
 #align quaternion.neg_im_k Quaternion.neg_imK
 
-@[simp] nonrec theorem neg_im : (-a).im = -a.im := a.neg_im
+@[simp] nonrec lemma neg_im : (-a).im = -a.im := a.neg_im
 #align quaternion.neg_im Quaternion.neg_im
 
 @[simp, norm_cast]
-theorem coe_neg : ((-x : R) : ℍ[R]) = -x :=
+lemma coe_neg : ((-x : R) : ℍ[R]) = -x :=
   QuaternionAlgebra.coe_neg x
 #align quaternion.coe_neg Quaternion.coe_neg
 
-@[simp] theorem sub_re : (a - b).re = a.re - b.re := rfl
+@[simp] lemma sub_re : (a - b).re = a.re - b.re := rfl
 #align quaternion.sub_re Quaternion.sub_re
 
-@[simp] theorem sub_imI : (a - b).imI = a.imI - b.imI := rfl
+@[simp] lemma sub_imI : (a - b).imI = a.imI - b.imI := rfl
 #align quaternion.sub_im_i Quaternion.sub_imI
 
-@[simp] theorem sub_imJ : (a - b).imJ = a.imJ - b.imJ := rfl
+@[simp] lemma sub_imJ : (a - b).imJ = a.imJ - b.imJ := rfl
 #align quaternion.sub_im_j Quaternion.sub_imJ
 
-@[simp] theorem sub_imK : (a - b).imK = a.imK - b.imK := rfl
+@[simp] lemma sub_imK : (a - b).imK = a.imK - b.imK := rfl
 #align quaternion.sub_im_k Quaternion.sub_imK
 
-@[simp] nonrec theorem sub_im : (a - b).im = a.im - b.im := a.sub_im b
+@[simp] nonrec lemma sub_im : (a - b).im = a.im - b.im := a.sub_im b
 #align quaternion.sub_im Quaternion.sub_im
 
 @[simp, norm_cast]
-theorem coe_sub : ((x - y : R) : ℍ[R]) = x - y :=
+lemma coe_sub : ((x - y : R) : ℍ[R]) = x - y :=
   QuaternionAlgebra.coe_sub x y
 #align quaternion.coe_sub Quaternion.coe_sub
 
 @[simp]
-theorem mul_re : (a * b).re = a.re * b.re - a.imI * b.imI - a.imJ * b.imJ - a.imK * b.imK :=
+lemma mul_re : (a * b).re = a.re * b.re - a.imI * b.imI - a.imJ * b.imJ - a.imK * b.imK :=
   (QuaternionAlgebra.mul_re a b).trans <| by simp only [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
 #align quaternion.mul_re Quaternion.mul_re
 
 @[simp]
-theorem mul_imI : (a * b).imI = a.re * b.imI + a.imI * b.re + a.imJ * b.imK - a.imK * b.imJ :=
+lemma mul_imI : (a * b).imI = a.re * b.imI + a.imI * b.re + a.imJ * b.imK - a.imK * b.imJ :=
   (QuaternionAlgebra.mul_imI a b).trans <| by simp only [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
 #align quaternion.mul_im_i Quaternion.mul_imI
 
 @[simp]
-theorem mul_imJ : (a * b).imJ = a.re * b.imJ - a.imI * b.imK + a.imJ * b.re + a.imK * b.imI :=
+lemma mul_imJ : (a * b).imJ = a.re * b.imJ - a.imI * b.imK + a.imJ * b.re + a.imK * b.imI :=
   (QuaternionAlgebra.mul_imJ a b).trans <| by simp only [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
 #align quaternion.mul_im_j Quaternion.mul_imJ
 
 @[simp]
-theorem mul_imK : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a.imK * b.re :=
+lemma mul_imK : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a.imK * b.re :=
   (QuaternionAlgebra.mul_imK a b).trans <| by simp only [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
 #align quaternion.mul_im_k Quaternion.mul_imK
 
 @[simp, norm_cast]
-theorem coe_mul : ((x * y : R) : ℍ[R]) = x * y := QuaternionAlgebra.coe_mul x y
+lemma coe_mul : ((x * y : R) : ℍ[R]) = x * y := QuaternionAlgebra.coe_mul x y
 #align quaternion.coe_mul Quaternion.coe_mul
 
 @[norm_cast, simp]
@@ -1018,131 +1018,131 @@ theorem int_cast_im (z : ℤ) : (z : ℍ[R]).im = 0 := rfl
 theorem coe_int_cast (z : ℤ) : ↑(z : R) = (z : ℍ[R]) := rfl
 #align quaternion.coe_int_cast Quaternion.coe_int_cast
 
-theorem coe_injective : Function.Injective (coe : R → ℍ[R]) :=
+lemma coe_injective : Function.Injective (coe : R → ℍ[R]) :=
   QuaternionAlgebra.coe_injective
 #align quaternion.coe_injective Quaternion.coe_injective
 
 @[simp]
-theorem coe_inj {x y : R} : (x : ℍ[R]) = y ↔ x = y :=
+lemma coe_inj {x y : R} : (x : ℍ[R]) = y ↔ x = y :=
   coe_injective.eq_iff
 #align quaternion.coe_inj Quaternion.coe_inj
 
 @[simp]
-theorem smul_re [SMul S R] (s : S) : (s • a).re = s • a.re :=
+lemma smul_re [SMul S R] (s : S) : (s • a).re = s • a.re :=
   rfl
 #align quaternion.smul_re Quaternion.smul_re
 
-@[simp] theorem smul_imI [SMul S R] (s : S) : (s • a).imI = s • a.imI := rfl
+@[simp] lemma smul_imI [SMul S R] (s : S) : (s • a).imI = s • a.imI := rfl
 #align quaternion.smul_im_i Quaternion.smul_imI
 
-@[simp] theorem smul_imJ [SMul S R] (s : S) : (s • a).imJ = s • a.imJ := rfl
+@[simp] lemma smul_imJ [SMul S R] (s : S) : (s • a).imJ = s • a.imJ := rfl
 #align quaternion.smul_im_j Quaternion.smul_imJ
 
-@[simp] theorem smul_imK [SMul S R] (s : S) : (s • a).imK = s • a.imK := rfl
+@[simp] lemma smul_imK [SMul S R] (s : S) : (s • a).imK = s • a.imK := rfl
 #align quaternion.smul_im_k Quaternion.smul_imK
 
 @[simp]
-nonrec theorem smul_im [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
+nonrec lemma smul_im [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   a.smul_im s
 #align quaternion.smul_im Quaternion.smul_im
 
 @[simp, norm_cast]
-theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) : (↑(s • r) : ℍ[R]) = s • (r : ℍ[R]) :=
+lemma coe_smul [SMulZeroClass S R] (s : S) (r : R) : (↑(s • r) : ℍ[R]) = s • (r : ℍ[R]) :=
   QuaternionAlgebra.coe_smul _ _
 #align quaternion.coe_smul Quaternion.coe_smul
 
-theorem coe_commutes : ↑r * a = a * r :=
+lemma coe_commutes : ↑r * a = a * r :=
   QuaternionAlgebra.coe_commutes r a
 #align quaternion.coe_commutes Quaternion.coe_commutes
 
-theorem coe_commute : Commute (↑r) a :=
+lemma coe_commute : Commute (↑r) a :=
   QuaternionAlgebra.coe_commute r a
 #align quaternion.coe_commute Quaternion.coe_commute
 
-theorem coe_mul_eq_smul : ↑r * a = r • a :=
+lemma coe_mul_eq_smul : ↑r * a = r • a :=
   QuaternionAlgebra.coe_mul_eq_smul r a
 #align quaternion.coe_mul_eq_smul Quaternion.coe_mul_eq_smul
 
-theorem mul_coe_eq_smul : a * r = r • a :=
+lemma mul_coe_eq_smul : a * r = r • a :=
   QuaternionAlgebra.mul_coe_eq_smul r a
 #align quaternion.mul_coe_eq_smul Quaternion.mul_coe_eq_smul
 
 @[simp]
-theorem algebraMap_def : ⇑(algebraMap R ℍ[R]) = coe :=
+lemma algebraMap_def : ⇑(algebraMap R ℍ[R]) = coe :=
   rfl
 #align quaternion.algebra_map_def Quaternion.algebraMap_def
 
-theorem smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
+lemma smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
   QuaternionAlgebra.smul_coe x y
 #align quaternion.smul_coe Quaternion.smul_coe
 
 instance : Module.Finite R ℍ[R] := inferInstanceAs <| Module.Finite R ℍ[R,-1,-1]
 instance : Module.Free R ℍ[R] := inferInstanceAs <| Module.Free R ℍ[R,-1,-1]
 
-theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
+lemma rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
   QuaternionAlgebra.rank_eq_four _ _
 #align quaternion.rank_eq_four Quaternion.rank_eq_four
 
-theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R] = 4 :=
+lemma finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R] = 4 :=
   QuaternionAlgebra.finrank_eq_four _ _
 #align quaternion.finrank_eq_four Quaternion.finrank_eq_four
 
-@[simp] theorem star_re : (star a).re = a.re := rfl
+@[simp] lemma star_re : (star a).re = a.re := rfl
 #align quaternion.star_re Quaternion.star_re
 
-@[simp] theorem star_imI : (star a).imI = -a.imI := rfl
+@[simp] lemma star_imI : (star a).imI = -a.imI := rfl
 #align quaternion.star_im_i Quaternion.star_imI
 
-@[simp] theorem star_imJ : (star a).imJ = -a.imJ := rfl
+@[simp] lemma star_imJ : (star a).imJ = -a.imJ := rfl
 #align quaternion.star_im_j Quaternion.star_imJ
 
-@[simp] theorem star_imK : (star a).imK = -a.imK := rfl
+@[simp] lemma star_imK : (star a).imK = -a.imK := rfl
 #align quaternion.star_im_k Quaternion.star_imK
 
-@[simp] theorem star_im : (star a).im = -a.im := a.im_star
+@[simp] lemma star_im : (star a).im = -a.im := a.im_star
 #align quaternion.star_im Quaternion.star_im
 
-nonrec theorem self_add_star' : a + star a = ↑(2 * a.re) :=
+nonrec lemma self_add_star' : a + star a = ↑(2 * a.re) :=
   a.self_add_star'
 #align quaternion.self_add_star' Quaternion.self_add_star'
 
-nonrec theorem self_add_star : a + star a = 2 * a.re :=
+nonrec lemma self_add_star : a + star a = 2 * a.re :=
   a.self_add_star
 #align quaternion.self_add_star Quaternion.self_add_star
 
-nonrec theorem star_add_self' : star a + a = ↑(2 * a.re) :=
+nonrec lemma star_add_self' : star a + a = ↑(2 * a.re) :=
   a.star_add_self'
 #align quaternion.star_add_self' Quaternion.star_add_self'
 
-nonrec theorem star_add_self : star a + a = 2 * a.re :=
+nonrec lemma star_add_self : star a + a = 2 * a.re :=
   a.star_add_self
 #align quaternion.star_add_self Quaternion.star_add_self
 
-nonrec theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
+nonrec lemma star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
   a.star_eq_two_re_sub
 #align quaternion.star_eq_two_re_sub Quaternion.star_eq_two_re_sub
 
 @[simp, norm_cast]
-theorem star_coe : star (x : ℍ[R]) = x :=
+lemma star_coe : star (x : ℍ[R]) = x :=
   QuaternionAlgebra.star_coe x
 #align quaternion.star_coe Quaternion.star_coe
 
 @[simp]
-theorem im_star : star a.im = -a.im :=
+lemma im_star : star a.im = -a.im :=
   QuaternionAlgebra.im_star _
 #align quaternion.im_star Quaternion.im_star
 
 @[simp]
-theorem star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R]) :
+lemma star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R]) :
     star (s • a) = s • star a :=
   QuaternionAlgebra.star_smul _ _
 #align quaternion.star_smul Quaternion.star_smul
 
-theorem eq_re_of_eq_coe {a : ℍ[R]} {x : R} (h : a = x) : a = a.re :=
+lemma eq_re_of_eq_coe {a : ℍ[R]} {x : R} (h : a = x) : a = a.re :=
   QuaternionAlgebra.eq_re_of_eq_coe h
 #align quaternion.eq_re_of_eq_coe Quaternion.eq_re_of_eq_coe
 
-theorem eq_re_iff_mem_range_coe {a : ℍ[R]} : a = a.re ↔ a ∈ Set.range (coe : R → ℍ[R]) :=
+lemma eq_re_iff_mem_range_coe {a : ℍ[R]} : a = a.re ↔ a ∈ Set.range (coe : R → ℍ[R]) :=
   QuaternionAlgebra.eq_re_iff_mem_range_coe
 #align quaternion.eq_re_iff_mem_range_coe Quaternion.eq_re_iff_mem_range_coe
 
@@ -1151,22 +1151,22 @@ section CharZero
 variable [NoZeroDivisors R] [CharZero R]
 
 @[simp]
-theorem star_eq_self {a : ℍ[R]} : star a = a ↔ a = a.re :=
+lemma star_eq_self {a : ℍ[R]} : star a = a ↔ a = a.re :=
   QuaternionAlgebra.star_eq_self
 #align quaternion.star_eq_self Quaternion.star_eq_self
 
 @[simp]
-theorem star_eq_neg {a : ℍ[R]} : star a = -a ↔ a.re = 0 :=
+lemma star_eq_neg {a : ℍ[R]} : star a = -a ↔ a.re = 0 :=
   QuaternionAlgebra.star_eq_neg
 #align quaternion.star_eq_neg Quaternion.star_eq_neg
 
 end CharZero
 
-nonrec theorem star_mul_eq_coe : star a * a = (star a * a).re :=
+nonrec lemma star_mul_eq_coe : star a * a = (star a * a).re :=
   a.star_mul_eq_coe
 #align quaternion.star_mul_eq_coe Quaternion.star_mul_eq_coe
 
-nonrec theorem mul_star_eq_coe : a * star a = (a * star a).re :=
+nonrec lemma mul_star_eq_coe : a * star a = (a * star a).re :=
   a.mul_star_eq_coe
 #align quaternion.mul_star_eq_coe Quaternion.mul_star_eq_coe
 
@@ -1178,7 +1178,7 @@ def starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ :=
 #align quaternion.star_ae Quaternion.starAe
 
 @[simp]
-theorem coe_starAe : ⇑(starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ) = op ∘ star :=
+lemma coe_starAe : ⇑(starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ) = op ∘ star :=
   rfl
 #align quaternion.coe_star_ae Quaternion.coe_starAe
 
@@ -1192,20 +1192,20 @@ def normSq : ℍ[R] →*₀ R where
       coe_commutes, ← mul_assoc, x.mul_star_eq_coe, ← coe_mul]
 #align quaternion.norm_sq Quaternion.normSq
 
-theorem normSq_def : normSq a = (a * star a).re := rfl
+lemma normSq_def : normSq a = (a * star a).re := rfl
 #align quaternion.norm_sq_def Quaternion.normSq_def
 
-theorem normSq_def' : normSq a = a.1 ^ 2 + a.2 ^ 2 + a.3 ^ 2 + a.4 ^ 2 := by
+lemma normSq_def' : normSq a = a.1 ^ 2 + a.2 ^ 2 + a.3 ^ 2 + a.4 ^ 2 := by
   simp only [normSq_def, sq, mul_neg, sub_neg_eq_add, mul_re, star_re, star_imI, star_imJ,
     star_imK]
 #align quaternion.norm_sq_def' Quaternion.normSq_def'
 
-theorem normSq_coe : normSq (x : ℍ[R]) = x ^ 2 := by
+lemma normSq_coe : normSq (x : ℍ[R]) = x ^ 2 := by
   rw [normSq_def, star_coe, ← coe_mul, coe_re, sq]
 #align quaternion.norm_sq_coe Quaternion.normSq_coe
 
 @[simp]
-theorem normSq_star : normSq (star a) = normSq a := by simp [normSq_def']
+lemma normSq_star : normSq (star a) = normSq a := by simp [normSq_def']
 #align quaternion.norm_sq_star Quaternion.normSq_star
 
 @[norm_cast]
@@ -1219,20 +1219,20 @@ theorem normSq_int_cast (z : ℤ) : normSq (z : ℍ[R]) = (z : R) ^ 2 := by
 #align quaternion.norm_sq_int_cast Quaternion.normSq_int_cast
 
 @[simp]
-theorem normSq_neg : normSq (-a) = normSq a := by simp only [normSq_def, star_neg, neg_mul_neg]
+lemma normSq_neg : normSq (-a) = normSq a := by simp only [normSq_def, star_neg, neg_mul_neg]
 #align quaternion.norm_sq_neg Quaternion.normSq_neg
 
-theorem self_mul_star : a * star a = normSq a := by rw [mul_star_eq_coe, normSq_def]
+lemma self_mul_star : a * star a = normSq a := by rw [mul_star_eq_coe, normSq_def]
 #align quaternion.self_mul_star Quaternion.self_mul_star
 
-theorem star_mul_self : star a * a = normSq a := by rw [star_comm_self, self_mul_star]
+lemma star_mul_self : star a * a = normSq a := by rw [star_comm_self, self_mul_star]
 #align quaternion.star_mul_self Quaternion.star_mul_self
 
-theorem im_sq : a.im ^ 2 = -normSq a.im := by
+lemma im_sq : a.im ^ 2 = -normSq a.im := by
   simp_rw [sq, ← star_mul_self, im_star, neg_mul, neg_neg]
 #align quaternion.im_sq Quaternion.im_sq
 
-theorem coe_normSq_add : (normSq (a + b) : ℍ[R]) = normSq a + a * star b + b * star a + normSq b :=
+lemma coe_normSq_add : (normSq (a + b) : ℍ[R]) = normSq a + a * star b + b * star a + normSq b :=
   by simp only [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
 #align quaternion.coe_norm_sq_add Quaternion.coe_normSq_add
 
@@ -1260,24 +1260,24 @@ section LinearOrderedCommRing
 variable [LinearOrderedCommRing R] {a : ℍ[R]}
 
 @[simp]
-theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
+lemma normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ normSq.map_zero⟩
   rw [normSq_def', add_eq_zero_iff', add_eq_zero_iff', add_eq_zero_iff'] at h
   exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
   all_goals apply_rules [sq_nonneg, add_nonneg]
 #align quaternion.norm_sq_eq_zero Quaternion.normSq_eq_zero
 
-theorem normSq_ne_zero : normSq a ≠ 0 ↔ a ≠ 0 := normSq_eq_zero.not
+lemma normSq_ne_zero : normSq a ≠ 0 ↔ a ≠ 0 := normSq_eq_zero.not
 #align quaternion.norm_sq_ne_zero Quaternion.normSq_ne_zero
 
 @[simp]
-theorem normSq_nonneg : 0 ≤ normSq a := by
+lemma normSq_nonneg : 0 ≤ normSq a := by
   rw [normSq_def']
   apply_rules [sq_nonneg, add_nonneg]
 #align quaternion.norm_sq_nonneg Quaternion.normSq_nonneg
 
 @[simp]
-theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
+lemma normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.le_iff_eq.trans normSq_eq_zero
 #align quaternion.norm_sq_le_zero Quaternion.normSq_le_zero
 
@@ -1291,12 +1291,12 @@ instance : NoZeroDivisors ℍ[R] where
 
 instance : IsDomain ℍ[R] := NoZeroDivisors.to_isDomain _
 
-theorem sq_eq_normSq : a ^ 2 = normSq a ↔ a = a.re := by
+lemma sq_eq_normSq : a ^ 2 = normSq a ↔ a = a.re := by
   rw [← star_eq_self, ← star_mul_self, sq, mul_eq_mul_right_iff, eq_comm]
   exact or_iff_left_of_imp fun ha ↦ ha.symm ▸ star_zero _
 #align quaternion.sq_eq_norm_sq Quaternion.sq_eq_normSq
 
-theorem sq_eq_neg_normSq : a ^ 2 = -normSq a ↔ a.re = 0 := by
+lemma sq_eq_neg_normSq : a ^ 2 = -normSq a ↔ a.re = 0 := by
   simp_rw [← star_eq_neg]
   obtain rfl | hq0 := eq_or_ne a 0
   · simp
@@ -1385,12 +1385,12 @@ instance : DivisionRing ℍ[R] :=
       ext <;> exact DivisionRing.qsmul_eq_mul' _ _ }
 
 --@[simp] Porting note: `simp` can prove it
-theorem normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
+lemma normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
   map_inv₀ normSq _
 #align quaternion.norm_sq_inv Quaternion.normSq_inv
 
 --@[simp] Porting note: `simp` can prove it
-theorem normSq_div : normSq (a / b) = normSq a / normSq b :=
+lemma normSq_div : normSq (a / b) = normSq a / normSq b :=
   map_div₀ normSq a b
 #align quaternion.norm_sq_div Quaternion.normSq_div
 
@@ -1418,28 +1418,28 @@ section QuaternionAlgebra
 
 variable {R : Type*} (c₁ c₂ : R)
 
-private theorem pow_four [Infinite R] : #R ^ℕ 4 = #R :=
+private lemma pow_four [Infinite R] : #R ^ℕ 4 = #R :=
   power_nat_eq (aleph0_le_mk R) <| by simp
 
 /-- The cardinality of a quaternion algebra, as a type. -/
-theorem mk_quaternionAlgebra : #(ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
+lemma mk_quaternionAlgebra : #(ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
   rw [mk_congr (QuaternionAlgebra.equivProd c₁ c₂)]
   simp only [mk_prod, lift_id]
   ring
 #align cardinal.mk_quaternion_algebra Cardinal.mk_quaternionAlgebra
 
 @[simp]
-theorem mk_quaternionAlgebra_of_infinite [Infinite R] : #(ℍ[R,c₁,c₂]) = #R := by
+lemma mk_quaternionAlgebra_of_infinite [Infinite R] : #(ℍ[R,c₁,c₂]) = #R := by
   rw [mk_quaternionAlgebra, pow_four]
 #align cardinal.mk_quaternion_algebra_of_infinite Cardinal.mk_quaternionAlgebra_of_infinite
 
 /-- The cardinality of a quaternion algebra, as a set. -/
-theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
+lemma mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
   rw [mk_univ, mk_quaternionAlgebra]
 #align cardinal.mk_univ_quaternion_algebra Cardinal.mk_univ_quaternionAlgebra
 
 --@[simp] Porting note: `simp` can prove it
-theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
+lemma mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
     #(Set.univ : Set ℍ[R,c₁,c₂]) = #R := by rw [mk_univ_quaternionAlgebra, pow_four]
 #align cardinal.mk_univ_quaternion_algebra_of_infinite Cardinal.mk_univ_quaternionAlgebra_of_infinite
 
@@ -1451,23 +1451,23 @@ variable (R : Type*) [One R] [Neg R]
 
 /-- The cardinality of the quaternions, as a type. -/
 @[simp]
-theorem mk_quaternion : #(ℍ[R]) = #R ^ℕ 4 :=
+lemma mk_quaternion : #(ℍ[R]) = #R ^ℕ 4 :=
   mk_quaternionAlgebra _ _
 #align cardinal.mk_quaternion Cardinal.mk_quaternion
 
 --@[simp] Porting note: LHS can be simplified to `#R^4`
-theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
+lemma mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
   mk_quaternionAlgebra_of_infinite _ _
 #align cardinal.mk_quaternion_of_infinite Cardinal.mk_quaternion_of_infinite
 
 /-- The cardinality of the quaternions, as a set. -/
 --@[simp] Porting note: `simp` can prove it
-theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ℕ 4 :=
+lemma mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ℕ 4 :=
   mk_univ_quaternionAlgebra _ _
 #align cardinal.mk_univ_quaternion Cardinal.mk_univ_quaternion
 
 --@[simp] Porting note: LHS can be simplified to `#R^4`
-theorem mk_univ_quaternion_of_infinite [Infinite R] : #(Set.univ : Set ℍ[R]) = #R :=
+lemma mk_univ_quaternion_of_infinite [Infinite R] : #(Set.univ : Set ℍ[R]) = #R :=
   mk_univ_quaternionAlgebra_of_infinite _ _
 #align cardinal.mk_univ_quaternion_of_infinite Cardinal.mk_univ_quaternion_of_infinite
 

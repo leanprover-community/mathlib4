@@ -90,12 +90,12 @@ instance : CoeFun (CocompactMap α β) fun _ => α → β :=
   FunLike.hasCoeToFun-/
 
 @[simp]
-theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
+lemma coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
   rfl
 #align cocompact_map.coe_to_continuous_fun CocompactMap.coe_toContinuousMap
 
 @[ext]
-theorem ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align cocompact_map.ext CocompactMap.ext
 
@@ -136,7 +136,7 @@ protected def id : CocompactMap α α :=
 #align cocompact_map.id CocompactMap.id
 
 @[simp]
-theorem coe_id : ⇑(CocompactMap.id α) = id :=
+lemma coe_id : ⇑(CocompactMap.id α) = id :=
   rfl
 #align cocompact_map.coe_id CocompactMap.coe_id
 
@@ -176,7 +176,7 @@ theorem comp_id (f : CocompactMap α β) : f.comp (CocompactMap.id _) = f :=
   ext fun _ => rfl
 #align cocompact_map.comp_id CocompactMap.comp_id
 
-theorem tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → IsCompact (f ⁻¹' s)) :
+lemma tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → IsCompact (f ⁻¹' s)) :
     Tendsto f (cocompact α) (cocompact β) := fun s hs =>
   match mem_cocompact.mp hs with
   | ⟨t, ht, hts⟩ =>
@@ -185,7 +185,7 @@ theorem tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → I
 
 /-- If the codomain is Hausdorff, preimages of compact sets are compact under a cocompact
 continuous map. -/
-theorem isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β⦄ (hs : IsCompact s) :
+lemma isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β⦄ (hs : IsCompact s) :
     IsCompact (f ⁻¹' s) := by
   obtain ⟨t, ht, hts⟩ :=
     mem_cocompact'.mp

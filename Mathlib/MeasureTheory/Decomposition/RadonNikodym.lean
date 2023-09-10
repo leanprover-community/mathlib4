@@ -62,12 +62,12 @@ theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition �
 /-- **The Radon-Nikodym theorem**: Given two measures `μ` and `ν`, if
 `HaveLebesgueDecomposition μ ν`, then `μ` is absolutely continuous to `ν` if and only if
 `ν.withDensity (rnDeriv μ ν) = μ`. -/
-theorem absolutelyContinuous_iff_withDensity_rnDeriv_eq {μ ν : Measure α}
+lemma absolutelyContinuous_iff_withDensity_rnDeriv_eq {μ ν : Measure α}
     [HaveLebesgueDecomposition μ ν] : μ ≪ ν ↔ ν.withDensity (rnDeriv μ ν) = μ :=
   ⟨withDensity_rnDeriv_eq μ ν, fun h => h ▸ withDensity_absolutelyContinuous _ _⟩
 #align measure_theory.measure.absolutely_continuous_iff_with_density_rn_deriv_eq MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq
 
-theorem withDensity_rnDeriv_toReal_eq {μ ν : Measure α} [IsFiniteMeasure μ]
+lemma withDensity_rnDeriv_toReal_eq {μ ν : Measure α} [IsFiniteMeasure μ]
     [HaveLebesgueDecomposition μ ν] (h : μ ≪ ν) {i : Set α} (hi : MeasurableSet i) :
     (∫ x in i, (μ.rnDeriv ν x).toReal ∂ν) = (μ i).toReal := by
   rw [integral_toReal, ← withDensity_apply _ hi, withDensity_rnDeriv_eq μ ν h]

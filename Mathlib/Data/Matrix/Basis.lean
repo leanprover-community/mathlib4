@@ -58,7 +58,7 @@ theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
   split_ifs with h <;> simp [h]
 #align matrix.std_basis_matrix_add Matrix.stdBasisMatrix_add
 
-theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
+lemma matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j; symm
   iterate 2 rw [Finset.sum_apply]
@@ -91,7 +91,7 @@ theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
-protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → Prop} (M : Matrix m n α)
+protected lemma induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → Prop} (M : Matrix m n α)
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ (i : m) (j : n) (x : α), P (stdBasisMatrix i j x)) : P M := by
   rw [matrix_eq_sum_std_basis M, ← Finset.sum_product']
@@ -101,7 +101,7 @@ protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → P
 #align matrix.induction_on' Matrix.induction_on'
 
 @[elab_as_elim]
-protected theorem induction_on [Fintype m] [Fintype n] [Nonempty m] [Nonempty n]
+protected lemma induction_on [Fintype m] [Fintype n] [Nonempty m] [Nonempty n]
     {P : Matrix m n α → Prop} (M : Matrix m n α) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ i j x, P (stdBasisMatrix i j x)) : P M :=
   Matrix.induction_on' M
@@ -119,7 +119,7 @@ section
 variable (i : m) (j : n) (c : α) (i' : m) (j' : n)
 
 @[simp]
-theorem apply_same : stdBasisMatrix i j c i j = c :=
+lemma apply_same : stdBasisMatrix i j c i j = c :=
   if_pos (And.intro rfl rfl)
 #align matrix.std_basis_matrix.apply_same Matrix.StdBasisMatrix.apply_same
 
@@ -130,7 +130,7 @@ theorem apply_of_ne (h : ¬(i = i' ∧ j = j')) : stdBasisMatrix i j c i' j' = 0
 #align matrix.std_basis_matrix.apply_of_ne Matrix.StdBasisMatrix.apply_of_ne
 
 @[simp]
-theorem apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
+lemma apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
     stdBasisMatrix i j a i' j' = 0 := by simp [hi]
 #align matrix.std_basis_matrix.apply_of_row_ne Matrix.StdBasisMatrix.apply_of_row_ne
 
@@ -151,7 +151,7 @@ theorem diag_zero (h : j ≠ i) : diag (stdBasisMatrix i j c) = 0 :=
 #align matrix.std_basis_matrix.diag_zero Matrix.StdBasisMatrix.diag_zero
 
 @[simp]
-theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
+lemma diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
   ext j
   by_cases hij : i = j <;> (try rw [hij]) <;> simp [hij]
 #align matrix.std_basis_matrix.diag_same Matrix.StdBasisMatrix.diag_same
@@ -165,7 +165,7 @@ theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
 #align matrix.std_basis_matrix.trace_zero Matrix.StdBasisMatrix.trace_zero
 
 @[simp]
-theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
+lemma trace_eq : trace (stdBasisMatrix i i c) = c := by
   -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply]
 #align matrix.std_basis_matrix.trace_eq Matrix.StdBasisMatrix.trace_eq
@@ -199,7 +199,7 @@ theorem mul_same (k : n) (d : α) :
 #align matrix.std_basis_matrix.mul_same Matrix.StdBasisMatrix.mul_same
 
 @[simp]
-theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
+lemma mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
     stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]

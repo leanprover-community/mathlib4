@@ -47,7 +47,7 @@ def skolem₁ : Language :=
 
 variable {L}
 
-theorem card_functions_sum_skolem₁ :
+lemma card_functions_sum_skolem₁ :
     #(Σ n, (L.sum L.skolem₁).Functions n) = #(Σ n, L.BoundedFormula Empty (n + 1)) := by
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
@@ -62,7 +62,7 @@ theorem card_functions_sum_skolem₁ :
       (Sigma.mk.inj_iff.1 xy).1)
 #align first_order.language.card_functions_sum_skolem₁ FirstOrder.Language.card_functions_sum_skolem₁
 
-theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
+lemma card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
   rw [card_functions_sum_skolem₁]
   trans #(Σ n, L.BoundedFormula Empty n)
   · exact
@@ -118,7 +118,7 @@ instance Substructure.elementarySkolem₁Reduct.instSmall :
   infer_instance
 #align first_order.language.elementary_skolem₁_reduct.small FirstOrder.Language.Substructure.elementarySkolem₁Reduct.instSmall
 
-theorem exists_small_elementarySubstructure : ∃ S : L.ElementarySubstructure M, Small.{max u v} S :=
+lemma exists_small_elementarySubstructure : ∃ S : L.ElementarySubstructure M, Small.{max u v} S :=
   ⟨Substructure.elementarySkolem₁Reduct ⊥, inferInstance⟩
 #align first_order.language.exists_small_elementary_substructure FirstOrder.Language.exists_small_elementarySubstructure
 

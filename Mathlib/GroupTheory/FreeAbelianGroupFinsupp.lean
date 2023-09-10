@@ -55,7 +55,7 @@ theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
 #align finsupp.to_free_abelian_group_comp_single_add_hom Finsupp.toFreeAbelianGroup_comp_singleAddHom
 
 @[simp]
-theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
+lemma FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
     toFinsupp.comp toFreeAbelianGroup = AddMonoidHom.id (X →₀ ℤ) := by
   ext x y; simp only [AddMonoidHom.id_comp]
   rw [AddMonoidHom.comp_assoc, Finsupp.toFreeAbelianGroup_comp_singleAddHom]
@@ -64,7 +64,7 @@ theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
 #align free_abelian_group.to_finsupp_comp_to_free_abelian_group FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup
 
 @[simp]
-theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
+lemma Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
   ext
   rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift.of,
@@ -73,7 +73,7 @@ theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
 #align finsupp.to_free_abelian_group_comp_to_finsupp Finsupp.toFreeAbelianGroup_comp_toFinsupp
 
 @[simp]
-theorem Finsupp.toFreeAbelianGroup_toFinsupp {X} (x : FreeAbelianGroup X) :
+lemma Finsupp.toFreeAbelianGroup_toFinsupp {X} (x : FreeAbelianGroup X) :
     Finsupp.toFreeAbelianGroup (FreeAbelianGroup.toFinsupp x) = x := by
   rw [← AddMonoidHom.comp_apply, Finsupp.toFreeAbelianGroup_comp_toFinsupp, AddMonoidHom.id_apply]
 #align finsupp.to_free_abelian_group_to_finsupp Finsupp.toFreeAbelianGroup_toFinsupp
@@ -161,7 +161,7 @@ theorem not_mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support �
 #align free_abelian_group.not_mem_support_iff FreeAbelianGroup.not_mem_support_iff
 
 @[simp]
-theorem support_zero : support (0 : FreeAbelianGroup X) = ∅ := by
+lemma support_zero : support (0 : FreeAbelianGroup X) = ∅ := by
   simp only [support, Finsupp.support_zero, AddMonoidHom.map_zero]
 #align free_abelian_group.support_zero FreeAbelianGroup.support_zero
 

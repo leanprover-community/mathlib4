@@ -139,7 +139,7 @@ theorem foldl_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n :
 
 end Foldl
 
-theorem right_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
+lemma right_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
     (h_add : ∀ x y, P x → P y → P (x + y)) (h_ι_mul : ∀ m x, P x → P (x * ι Q m)) : ∀ x, P x := by
   /- It would be neat if we could prove this via `foldr` like how we prove
     `CliffordAlgebra.induction`, but going via the grading seems easier. -/
@@ -159,7 +159,7 @@ theorem right_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (alg
     exact h_add _ _ ihx ihy
 #align clifford_algebra.right_induction CliffordAlgebra.right_induction
 
-theorem left_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
+lemma left_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
     (h_add : ∀ x y, P x → P y → P (x + y)) (h_mul_ι : ∀ x m, P x → P (ι Q m * x)) : ∀ x, P x := by
   refine' reverse_involutive.surjective.forall.2 _
   intro x

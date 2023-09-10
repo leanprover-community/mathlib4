@@ -58,7 +58,7 @@ variable {G} {n k ℓ μ : ℕ}
 
 /-- Empty graphs are strongly regular. Note that `ℓ` can take any value
 for empty graphs, since there are no pairs of adjacent vertices. -/
-theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
+lemma bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
   regular := bot_degree
   of_adj := fun v w h => h.elim
@@ -70,7 +70,7 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
 
 /-- Complete graphs are strongly regular. Note that `μ` can take any value
 for complete graphs, since there are no distinct pairs of non-adjacent vertices. -/
-theorem IsSRGWith.top :
+lemma IsSRGWith.top :
     (⊤ : SimpleGraph V).IsSRGWith (Fintype.card V) (Fintype.card V - 1) (Fintype.card V - 2) μ where
   card := rfl
   regular := IsRegularOfDegree.top
@@ -81,7 +81,7 @@ theorem IsSRGWith.top :
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.top SimpleGraph.IsSRGWith.top
 
-theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
+lemma IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
     (G.neighborFinset v ∪ G.neighborFinset w).card =
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
@@ -99,7 +99,7 @@ set_option linter.uppercaseLean3 false in
 /-- Assuming `G` is strongly regular, `2*(k + 1) - m` in `G` is the number of vertices that are
 adjacent to either `v` or `w` when `¬G.Adj v w`. So it's the cardinality of
 `G.neighborSet v ∪ G.neighborSet w`. -/
-theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
+lemma IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
     (hne : v ≠ w) (ha : ¬G.Adj v w) :
     (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - μ := by
   rw [← h.of_not_adj v w hne ha]
@@ -107,14 +107,14 @@ theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWit
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_not_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_not_adj
 
-theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
+lemma IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
     (ha : G.Adj v w) : (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - ℓ := by
   rw [← h.of_adj v w ha]
   apply h.card_neighborFinset_union_eq
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_adj
 
-theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
+lemma compl_neighborFinset_sdiff_inter_eq {v w : V} :
     (G.neighborFinset v)ᶜ \ {v} ∩ ((G.neighborFinset w)ᶜ \ {w}) =
       ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) := by
   ext
@@ -122,7 +122,7 @@ theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
   simp [imp_iff_not_or, or_assoc, or_comm, or_left_comm]
 #align simple_graph.compl_neighbor_finset_sdiff_inter_eq SimpleGraph.compl_neighborFinset_sdiff_inter_eq
 
-theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
+lemma sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) =
       (G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ := by
   ext
@@ -214,7 +214,7 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
 and its complement respectively and `I` be the identity matrix,
 then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`
 more often found in the literature, where `J` is the all-ones matrix. -/
-theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
+lemma IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
     G.adjMatrix α ^ 2 = k • (1 : Matrix V V α) + ℓ • G.adjMatrix α + μ • Gᶜ.adjMatrix α := by
   ext v w
   simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,

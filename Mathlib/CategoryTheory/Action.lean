@@ -136,7 +136,7 @@ protected theorem id_val (x : ActionCategory M X) : Subtype.val (𝟙 x) = 1 :=
 #align category_theory.action_category.id_val CategoryTheory.ActionCategory.id_val
 
 @[simp]
-protected theorem comp_val {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶ z) :
+protected lemma comp_val {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶ z) :
     (f ≫ g).val = g.val * f.val :=
   rfl
 #align category_theory.action_category.comp_val CategoryTheory.ActionCategory.comp_val

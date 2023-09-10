@@ -53,7 +53,7 @@ noncomputable instance : Fintype (K →+* A) :=
 variable [IsAlgClosed A]
 
 /-- The number of embeddings of a number field is equal to its finrank. -/
-theorem card : Fintype.card (K →+* A) = finrank ℚ K := by
+lemma card : Fintype.card (K →+* A) = finrank ℚ K := by
   rw [Fintype.ofEquiv_card RingHom.equivRatAlgHom.symm, AlgHom.card]
 #align number_field.embeddings.card NumberField.Embeddings.card
 
@@ -72,7 +72,7 @@ variable (K A : Type*) [Field K] [NumberField K] [Field A] [Algebra ℚ A] [IsAl
 /-- Let `A` be an algebraically closed field and let `x ∈ K`, with `K` a number field.
 The images of `x` by the embeddings of `K` in `A` are exactly the roots in `A` of
 the minimal polynomial of `x` over `ℚ`. -/
-theorem range_eval_eq_rootSet_minpoly :
+lemma range_eval_eq_rootSet_minpoly :
     (range fun φ : K →+* A => φ x) = (minpoly ℚ x).rootSet A := by
   convert (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
   ext a
@@ -89,7 +89,7 @@ variable {K : Type*} [Field K] [NumberField K]
 
 variable {A : Type*} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
 
-theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
+lemma coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
     ‖(minpoly ℚ x).coeff i‖ ≤ max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2) := by
   have hx := IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
@@ -119,7 +119,7 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
 #align number_field.embeddings.finite_of_norm_le NumberField.Embeddings.finite_of_norm_le
 
 /-- An algebraic integer whose conjugates are all of norm one is a root of unity. -/
-theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
+lemma pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
     ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
     @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ ((· ^ ·) x : ℕ → K) Set.infinite_univ
@@ -179,10 +179,10 @@ theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := 
 def IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
 #align number_field.complex_embedding.is_real NumberField.ComplexEmbedding.IsReal
 
-theorem isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ := isSelfAdjoint_iff
+lemma isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ := isSelfAdjoint_iff
 #align number_field.complex_embedding.is_real_iff NumberField.ComplexEmbedding.isReal_iff
 
-theorem isReal_conjugate_iff {φ : K →+* ℂ} : IsReal (conjugate φ) ↔ IsReal φ :=
+lemma isReal_conjugate_iff {φ : K →+* ℂ} : IsReal (conjugate φ) ↔ IsReal φ :=
   IsSelfAdjoint.star_iff
 #align number_field.complex_embedding.is_real_conjugate_iff NumberField.ComplexEmbedding.isReal_conjugate_iff
 
@@ -198,7 +198,7 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
 #align number_field.complex_embedding.is_real.embedding NumberField.ComplexEmbedding.IsReal.embedding
 
 @[simp]
-theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
+lemma IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
     (hφ.embedding x : ℂ) = φ x := by
   ext
   · rfl
@@ -278,11 +278,11 @@ theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ �
   ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 #align number_field.infinite_place.le_iff_le NumberField.InfinitePlace.le_iff_le
 
-theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
+lemma pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 #align number_field.infinite_place.pos_iff NumberField.InfinitePlace.pos_iff
 
 @[simp]
-theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
+lemma mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
   constructor
   · -- We prove that the map ψ ∘ φ⁻¹ between φ(K) and ℂ is uniform continuous, thus it is either the
     -- inclusion or the complex conjugation using `Complex.uniformContinuous_ringHom_eq_id_or_conj`
@@ -329,20 +329,20 @@ theorem embedding_mk_eq (φ : K →+* ℂ) :
   rw [@eq_comm _ _ φ, @eq_comm _ _ (ComplexEmbedding.conjugate φ), ← mk_eq_iff, mk_embedding]
 
 @[simp]
-theorem embedding_mk_eq_of_isReal {φ : K →+* ℂ} (h : ComplexEmbedding.IsReal φ) :
+lemma embedding_mk_eq_of_isReal {φ : K →+* ℂ} (h : ComplexEmbedding.IsReal φ) :
     embedding (mk φ) = φ := by
   have := embedding_mk_eq φ
   rwa [ComplexEmbedding.isReal_iff.mp h, or_self] at this
 #align number_field.complex_embeddings.is_real.embedding_mk NumberField.InfinitePlace.embedding_mk_eq_of_isReal
 
-theorem isReal_iff {w : InfinitePlace K} :
+lemma isReal_iff {w : InfinitePlace K} :
     IsReal w ↔ ComplexEmbedding.IsReal (embedding w) := by
   refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
   rwa [embedding_mk_eq_of_isReal hφ]
 #align number_field.infinite_place.is_real_iff NumberField.InfinitePlace.isReal_iff
 
-theorem isComplex_iff {w : InfinitePlace K} :
+lemma isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
   refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
@@ -353,7 +353,7 @@ theorem isComplex_iff {w : InfinitePlace K} :
 #align number_field.infinite_place.is_complex_iff NumberField.InfinitePlace.isComplex_iff
 
 @[simp]
-theorem not_isReal_iff_isComplex {w : InfinitePlace K} : ¬IsReal w ↔ IsComplex w := by
+lemma not_isReal_iff_isComplex {w : InfinitePlace K} : ¬IsReal w ↔ IsComplex w := by
   rw [isComplex_iff, isReal_iff]
 #align number_field.infinite_place.not_is_real_iff_is_complex NumberField.InfinitePlace.not_isReal_iff_isComplex
 
@@ -367,19 +367,19 @@ noncomputable def embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) : K 
 #align number_field.infinite_place.is_real.embedding NumberField.InfinitePlace.embedding_of_isReal
 
 @[simp]
-theorem embedding_of_isReal_apply {w : InfinitePlace K} (hw : IsReal w) (x : K) :
+lemma embedding_of_isReal_apply {w : InfinitePlace K} (hw : IsReal w) (x : K) :
     ((embedding_of_isReal hw) x : ℂ) = (embedding w) x :=
   ComplexEmbedding.IsReal.coe_embedding_apply (isReal_iff.mp hw) x
 
 @[simp]
-theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
+lemma isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
   contrapose! h
   rw [not_isReal_iff_isComplex]
   exact ⟨φ, h, rfl⟩
 
 @[simp]
-theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
+lemma not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
     ¬ ComplexEmbedding.IsReal φ := by
   contrapose! h
   rw [← not_isReal_iff_isComplex.not, not_not]
@@ -389,7 +389,7 @@ theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
-theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
+lemma card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
     (Finset.univ.filter fun φ => mk φ = w).card = mult w := by
   conv_lhs =>
     congr; congr; ext
@@ -455,12 +455,12 @@ theorem prod_eq_abs_norm (x : K) :
 
 open Fintype FiniteDimensional
 
-theorem card_real_embeddings :
+lemma card_real_embeddings :
     card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }
       = card { w : InfinitePlace K // IsReal w } := Fintype.card_congr mkReal
 #align number_field.infinite_place.card_real_embeddings NumberField.InfinitePlace.card_real_embeddings
 
-theorem card_complex_embeddings :
+lemma card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } =
       2 * card { w : InfinitePlace K // IsComplex w } := by
   suffices ∀ w : { w : InfinitePlace K // IsComplex w }, (Finset.univ.filter
@@ -479,7 +479,7 @@ theorem card_complex_embeddings :
   · simp_rw [mult, not_isReal_iff_isComplex.mpr hw]
 #align number_field.infinite_place.card_complex_embeddings NumberField.InfinitePlace.card_complex_embeddings
 
-theorem card_add_two_mul_card_eq_rank :
+lemma card_add_two_mul_card_eq_rank :
     card { w : InfinitePlace K // IsReal w } + 2 * card { w : InfinitePlace K // IsComplex w } =
       finrank ℚ K := by
   rw [← card_real_embeddings, ← card_complex_embeddings]

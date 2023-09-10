@@ -136,7 +136,7 @@ theorem cons_val_succ (x : α) (u : Fin m → α) (i : Fin m) : vecCons x u i.su
 #align matrix.cons_val_succ Matrix.cons_val_succ
 
 @[simp]
-theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → α) :
+lemma cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → α) :
     vecCons x u ⟨i.succ, h⟩ = u ⟨i, Nat.lt_of_succ_lt_succ h⟩ := by
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 #align matrix.cons_val_succ' Matrix.cons_val_succ'
@@ -153,7 +153,7 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
 #align matrix.tail_cons Matrix.tail_cons
 
 @[simp]
-theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
+lemma empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 #align matrix.empty_val' Matrix.empty_val'
 
@@ -262,7 +262,7 @@ def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fi
   Fin.append u v ∘ Fin.castIso ho
 #align matrix.vec_append Matrix.vecAppend
 
-theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
+lemma vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho u v = fun i : Fin o =>
       if h : (i : ℕ) < m then u ⟨i, h⟩
       else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.2)⟩ := by
@@ -277,7 +277,7 @@ theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → 
 -- Could become one again with change to `Nat.ble`:
 -- https://github.com/leanprover-community/mathlib4/pull/1741/files/#r1083902351
 @[simp]
-theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
+lemma vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
   dif_pos _
 #align matrix.vec_append_apply_zero Matrix.vecAppend_apply_zero
@@ -527,12 +527,12 @@ section Zero
 variable [Zero α]
 
 @[simp]
-theorem zero_empty : (0 : Fin 0 → α) = ![] :=
+lemma zero_empty : (0 : Fin 0 → α) = ![] :=
   empty_eq _
 #align matrix.zero_empty Matrix.zero_empty
 
 @[simp]
-theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
+lemma cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
   ext i
   refine' Fin.cases _ _ i
   · rfl
@@ -540,17 +540,17 @@ theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
 #align matrix.cons_zero_zero Matrix.cons_zero_zero
 
 @[simp]
-theorem head_zero : vecHead (0 : Fin n.succ → α) = 0 :=
+lemma head_zero : vecHead (0 : Fin n.succ → α) = 0 :=
   rfl
 #align matrix.head_zero Matrix.head_zero
 
 @[simp]
-theorem tail_zero : vecTail (0 : Fin n.succ → α) = 0 :=
+lemma tail_zero : vecTail (0 : Fin n.succ → α) = 0 :=
   rfl
 #align matrix.tail_zero Matrix.tail_zero
 
 @[simp]
-theorem cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0 ∧ v = 0 :=
+lemma cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0 ∧ v = 0 :=
   ⟨fun h =>
     ⟨congr_fun h 0, by
       convert congr_arg vecTail h⟩,
@@ -559,7 +559,7 @@ theorem cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0
 
 open Classical
 
-theorem cons_nonzero_iff {v : Fin n → α} {x : α} : vecCons x v ≠ 0 ↔ x ≠ 0 ∨ v ≠ 0 :=
+lemma cons_nonzero_iff {v : Fin n → α} {x : α} : vecCons x v ≠ 0 ↔ x ≠ 0 ∨ v ≠ 0 :=
   ⟨fun h => not_and_or.mp (h ∘ cons_eq_zero_iff.mpr), fun h =>
     mt cons_eq_zero_iff.mp (not_and_or.mpr h)⟩
 #align matrix.cons_nonzero_iff Matrix.cons_nonzero_iff

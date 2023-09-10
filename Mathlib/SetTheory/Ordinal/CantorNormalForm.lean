@@ -52,7 +52,7 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec Ordinal.CNFRec
 
 @[simp]
-theorem CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
+lemma CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : @CNFRec b C H0 H 0 = H0 := by
   rw [CNFRec, dif_pos rfl]
   rfl
@@ -84,28 +84,28 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_zero Ordinal.CNF_zero
 
 /-- Recursive definition for the Cantor normal form. -/
-theorem CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
+lemma CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
     CNF b o = (log b o, o / b ^ log b o)::CNF b (o % b ^ log b o) :=
   CNFRec_pos b ho _ _
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_ne_zero Ordinal.CNF_ne_zero
 
-theorem zero_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [⟨0, o⟩] := by simp [CNF_ne_zero ho]
+lemma zero_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [⟨0, o⟩] := by simp [CNF_ne_zero ho]
 set_option linter.uppercaseLean3 false in
 #align ordinal.zero_CNF Ordinal.zero_CNF
 
-theorem one_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [⟨0, o⟩] := by simp [CNF_ne_zero ho]
+lemma one_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [⟨0, o⟩] := by simp [CNF_ne_zero ho]
 set_option linter.uppercaseLean3 false in
 #align ordinal.one_CNF Ordinal.one_CNF
 
-theorem CNF_of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [⟨0, o⟩] := by
+lemma CNF_of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [⟨0, o⟩] := by
   rcases le_one_iff.1 hb with (rfl | rfl)
   · exact zero_CNF ho
   · exact one_CNF ho
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_of_le_one Ordinal.CNF_of_le_one
 
-theorem CNF_of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [⟨0, o⟩] := by
+lemma CNF_of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [⟨0, o⟩] := by
   simp only [CNF_ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, CNF_zero]
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_of_lt Ordinal.CNF_of_lt
@@ -118,7 +118,7 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_foldr Ordinal.CNF_foldr
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
-theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
+lemma CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.1 ≤ log b o := by
   refine' CNFRec b _ (fun o ho H ↦ _) o
   · rw [CNF_zero]
@@ -131,13 +131,13 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_fst_le_log Ordinal.CNF_fst_le_log
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `o`. -/
-theorem CNF_fst_le {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) : x.1 ≤ o :=
+lemma CNF_fst_le {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) : x.1 ≤ o :=
   (CNF_fst_le_log h).trans <| log_le_self _ _
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_fst_le Ordinal.CNF_fst_le
 
 /-- Every coefficient in a Cantor normal form is positive. -/
-theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
+lemma CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
   refine' CNFRec b (by simp) (fun o ho IH ↦ _) o
   rw [CNF_ne_zero ho]
   rintro (h | ⟨_, h⟩)
@@ -147,7 +147,7 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_lt_snd Ordinal.CNF_lt_snd
 
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
-theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
+lemma CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.2 < b := by
   refine' CNFRec b _ (fun o ho IH ↦ _) o
   · simp only [CNF_zero, not_mem_nil, IsEmpty.forall_iff]

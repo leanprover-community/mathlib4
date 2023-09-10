@@ -28,11 +28,11 @@ theorem add_one_eq_one (x : WithZero Unit) : x + 1 = 1 :=
   WithZero.cases_on x (by rfl) fun h => by rfl
 #align counterexample.add_one_eq_one Counterexample.add_one_eq_one
 
-theorem withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
+lemma withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
   ⟨fun x => by cases x <;> simp⟩
 #align counterexample.with_zero_unit_char_p_zero Counterexample.withZero_unit_charP_zero
 
-theorem withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =>
+lemma withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =>
   h.ne (by simp : 1 + 1 ≠ 0 + 1) (by simp)
 #align counterexample.with_zero_unit_not_char_zero Counterexample.withZero_unit_not_charZero
 

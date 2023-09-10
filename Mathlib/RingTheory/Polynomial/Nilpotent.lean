@@ -146,7 +146,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
 nilpotent, except its constant term which is a unit.
 
 See also `Polynomial.isUnit_iff'`. -/
-theorem isUnit_iff_coeff_isUnit_isNilpotent :
+lemma isUnit_iff_coeff_isUnit_isNilpotent :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
   ⟨coeff_isUnit_isNilpotent_of_isUnit, fun H => isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩
 

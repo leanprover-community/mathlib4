@@ -134,14 +134,14 @@ theorem inversion_eq_center (hR : R ≠ 0) : inversion c R x = c ↔ x = c :=
   (inversion_injective c hR).eq_iff' <| inversion_self _ _
 
 @[simp]
-theorem inversion_eq_center' : inversion c R x = c ↔ x = c ∨ R = 0 := by
+lemma inversion_eq_center' : inversion c R x = c ↔ x = c ∨ R = 0 := by
   by_cases hR : R = 0 <;> simp [inversion_eq_center, hR]
 
 theorem center_eq_inversion (hR : R ≠ 0) : c = inversion c R x ↔ x = c :=
   eq_comm.trans (inversion_eq_center hR)
 
 @[simp]
-theorem center_eq_inversion' : c = inversion c R x ↔ x = c ∨ R = 0 :=
+lemma center_eq_inversion' : c = inversion c R x ↔ x = c ∨ R = 0 :=
   eq_comm.trans inversion_eq_center'
 
 /-!
@@ -206,7 +206,7 @@ open EuclideanGeometry
 ### Continuity of inversion
 -/
 
-protected theorem Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {fR : α → ℝ}
+protected lemma Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {fR : α → ℝ}
     (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R)) (hx : Tendsto fx l (𝓝 x))
     (hne : x ≠ c) :
     Tendsto (fun a ↦ inversion (fc a) (fR a) (fx a)) l (𝓝 (inversion c R x)) :=

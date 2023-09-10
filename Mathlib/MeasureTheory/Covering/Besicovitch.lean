@@ -258,7 +258,7 @@ def iUnionUpTo (i : Ordinal.{u}) : Set α :=
   ⋃ j : { j // j < i }, ball (p.c (p.index j)) (p.r (p.index j))
 #align besicovitch.tau_package.Union_up_to Besicovitch.TauPackage.iUnionUpTo
 
-theorem monotone_iUnionUpTo : Monotone p.iUnionUpTo := by
+lemma monotone_iUnionUpTo : Monotone p.iUnionUpTo := by
   intro i j hij
   simp only [iUnionUpTo]
   exact iUnion_mono' fun r => ⟨⟨r, r.2.trans_le hij⟩, Subset.rfl⟩
@@ -289,7 +289,7 @@ def lastStep : Ordinal.{u} :=
   sInf {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}
 #align besicovitch.tau_package.last_step Besicovitch.TauPackage.lastStep
 
-theorem lastStep_nonempty :
+lemma lastStep_nonempty :
     {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}.Nonempty := by
   by_contra h
   suffices H : Function.Injective p.index; exact not_injective_of_ordinal p.index H
@@ -343,7 +343,7 @@ theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := 
 
 /-- If there are no configurations of satellites with `N+1` points, one never uses more than `N`
 distinct families in the Besicovitch inductive construction. -/
-theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
+lemma color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     (hN : IsEmpty (SatelliteConfig α N p.τ)) : p.color i < N := by
   /- By contradiction, consider the first ordinal `i` for which one would have `p.color i = N`.
     Choose for each `k < N` a ball with color `k` that intersects the ball at color `i`
@@ -468,7 +468,7 @@ open TauPackage
 /-- The topological Besicovitch covering theorem: there exist finitely many families of disjoint
 balls covering all the centers in a package. More specifically, one can use `N` families if there
 are no satellite configurations with `N+1` points. -/
-theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
+lemma exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
     (hN : IsEmpty (SatelliteConfig α N τ)) (q : BallPackage β α) :
     ∃ s : Fin N → Set β,
       (∀ i : Fin N, (s i).PairwiseDisjoint fun j => closedBall (q.c j) (q.r j)) ∧

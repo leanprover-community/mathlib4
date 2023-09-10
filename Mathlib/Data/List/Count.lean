@@ -44,7 +44,7 @@ variable (p q : α → Bool)
 
 #align list.countp_append List.countP_append
 
-theorem countP_join : ∀ l : List (List α), countP p l.join = (l.map (countP p)).sum
+lemma countP_join : ∀ l : List (List α), countP p l.join = (l.map (countP p)).sum
   | [] => rfl
   | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join l]
 #align list.countp_join List.countP_join
@@ -144,12 +144,12 @@ theorem count_join (l : List (List α)) (a : α) : l.join.count a = (l.map (coun
 
 #align list.count_filter List.count_filter
 
-theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (x : β) :
+lemma count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.bind f) = sum (map (count x ∘ f) l) := by rw [List.bind, count_join, map_map]
 #align list.count_bind List.count_bind
 
 @[simp]
-theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
+lemma count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countP_map, (· ∘ ·), hf.beq_eq]
 #align list.count_map_of_injective List.count_map_of_injective
@@ -163,7 +163,7 @@ theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : Li
 #align list.count_erase_of_ne List.count_erase_of_ne
 
 @[to_additive]
-theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
+lemma prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
     (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
   induction' l with a' as h generalizing a
   · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
@@ -176,7 +176,7 @@ theorem prod_map_eq_pow_single [Monoid β] (a : α) (f : α → β)
 #align list.sum_map_eq_nsmul_single List.sum_map_eq_nsmul_single
 
 @[to_additive]
-theorem prod_eq_pow_single [Monoid α] (a : α)
+lemma prod_eq_pow_single [Monoid α] (a : α)
     (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) : l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 #align list.prod_eq_pow_single List.prod_eq_pow_single

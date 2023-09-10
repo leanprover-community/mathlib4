@@ -105,12 +105,12 @@ def evalOpt (f : α →. β) [D : DecidablePred (· ∈ Dom f)] (x : α) : Optio
 #align pfun.eval_opt PFun.evalOpt
 
 /-- Partial function extensionality -/
-theorem ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : ∀ a p q, f.fn a p = g.fn a q) :
+lemma ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : ∀ a p q, f.fn a p = g.fn a q) :
     f = g :=
   funext fun a => Part.ext' (H1 a) (H2 a)
 #align pfun.ext' PFun.ext'
 
-theorem ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
+lemma ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
   funext fun a => Part.ext (H a)
 #align pfun.ext PFun.ext
 
@@ -126,7 +126,7 @@ def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
     funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr ⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
-theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
+lemma asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
     f.asSubtype ⟨x, domx⟩ = y :=
   Part.mem_unique (Part.get_mem _) fxy
 #align pfun.as_subtype_eq_of_mem PFun.asSubtype_eq_of_mem
@@ -150,7 +150,7 @@ theorem dom_coe (f : α → β) : (f : α →. β).Dom = Set.univ :=
   rfl
 #align pfun.dom_coe PFun.dom_coe
 
-theorem lift_injective : Injective (PFun.lift : (α → β) → α →. β) := fun _ _ h =>
+lemma lift_injective : Injective (PFun.lift : (α → β) → α →. β) := fun _ _ h =>
   funext fun a => Part.some_injective <| congr_fun h a
 #align pfun.coe_injective PFun.lift_injective
 
@@ -177,7 +177,7 @@ def restrict (f : α →. β) {p : Set α} (H : p ⊆ f.Dom) : α →. β := fun
 #align pfun.restrict PFun.restrict
 
 @[simp]
-theorem mem_restrict {f : α →. β} {s : Set α} (h : s ⊆ f.Dom) (a : α) (b : β) :
+lemma mem_restrict {f : α →. β} {s : Set α} (h : s ⊆ f.Dom) (a : α) (b : β) :
     b ∈ f.restrict h a ↔ a ∈ s ∧ b ∈ f a := by simp [restrict]
 #align pfun.mem_restrict PFun.mem_restrict
 
@@ -198,7 +198,7 @@ theorem dom_iff_graph (f : α →. β) (x : α) : x ∈ f.Dom ↔ ∃ y, (x, y) 
   Part.dom_iff_mem
 #align pfun.dom_iff_graph PFun.dom_iff_graph
 
-theorem lift_graph {f : α → β} {a b} : (a, b) ∈ (f : α →. β).graph ↔ f a = b :=
+lemma lift_graph {f : α → β} {a b} : (a, b) ∈ (f : α →. β).graph ↔ f a = b :=
   show (∃ _ : True, f a = b) ↔ f a = b by simp
 #align pfun.lift_graph PFun.lift_graph
 
@@ -236,7 +236,7 @@ theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
   p.subset_univ
 #align pfun.pure_defined PFun.pure_defined
 
-theorem bind_defined {α β γ} (p : Set α) {f : α →. β} {g : β → α →. γ} (H1 : p ⊆ f.Dom)
+lemma bind_defined {α β γ} (p : Set α) {f : α →. β} {g : β → α →. γ} (H1 : p ⊆ f.Dom)
     (H2 : ∀ x, p ⊆ (g x).Dom) : p ⊆ (f >>= g).Dom := fun a ha =>
   (⟨H1 ha, H2 _ ha⟩ : (f >>= g).Dom a)
 #align pfun.bind_defined PFun.bind_defined
@@ -258,12 +258,12 @@ def fix (f : α →. Sum β α) : α →. β := fun a =>
       a h
 #align pfun.fix PFun.fix
 
-theorem dom_of_mem_fix {f : α →. Sum β α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
+lemma dom_of_mem_fix {f : α →. Sum β α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
   let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
   rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
 #align pfun.dom_of_mem_fix PFun.dom_of_mem_fix
 
-theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
+lemma mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
     b ∈ f.fix a ↔ Sum.inl b ∈ f a ∨ ∃ a', Sum.inr a' ∈ f a ∧ b ∈ f.fix a' :=
   ⟨fun h => by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
@@ -303,13 +303,13 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
 #align pfun.mem_fix_iff PFun.mem_fix_iff
 
 /-- If advancing one step from `a` leads to `b : β`, then `f.fix a = b` -/
-theorem fix_stop {f : α →. Sum β α} {b : β} {a : α} (hb : Sum.inl b ∈ f a) : b ∈ f.fix a := by
+lemma fix_stop {f : α →. Sum β α} {b : β} {a : α} (hb : Sum.inl b ∈ f a) : b ∈ f.fix a := by
   rw [PFun.mem_fix_iff]
   exact Or.inl hb
 #align pfun.fix_stop PFun.fix_stop
 
 /-- If advancing one step from `a` on `f` leads to `a' : α`, then `f.fix a = f.fix a'` -/
-theorem fix_fwd_eq {f : α →. Sum β α} {a a' : α} (ha' : Sum.inr a' ∈ f a) : f.fix a = f.fix a' := by
+lemma fix_fwd_eq {f : α →. Sum β α} {a a' : α} (ha' : Sum.inr a' ∈ f a) : f.fix a = f.fix a' := by
   ext b; constructor
   · intro h
     obtain h' | ⟨a, h', e'⟩ := mem_fix_iff.1 h <;> cases Part.mem_unique ha' h'
@@ -319,7 +319,7 @@ theorem fix_fwd_eq {f : α →. Sum β α} {a a' : α} (ha' : Sum.inr a' ∈ f a
     exact Or.inr ⟨a', ha', h⟩
 #align pfun.fix_fwd_eq PFun.fix_fwd_eq
 
-theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a) (ha' : Sum.inr a' ∈ f a) :
+lemma fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a) (ha' : Sum.inr a' ∈ f a) :
     b ∈ f.fix a' := by rwa [← fix_fwd_eq ha']
 #align pfun.fix_fwd PFun.fix_fwd
 
@@ -337,7 +337,7 @@ def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
 
-theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+lemma fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
@@ -362,7 +362,7 @@ def fixInduction' {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α}
   · exact hind _ _ (fix_fwd h e) e (ih _ e)
 #align pfun.fix_induction' PFun.fixInduction'
 
-theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+lemma fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (fa : Sum.inl b ∈ f a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) :
     @fixInduction' _ _ C _ _ _ h hbase hind = hbase a fa := by
@@ -376,7 +376,7 @@ theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {
   simp
 #align pfun.fix_induction'_stop PFun.fixInduction'_stop
 
-theorem fixInduction'_fwd {C : α → Sort*} {f : α →. Sum β α} {b : β} {a a' : α} (h : b ∈ f.fix a)
+lemma fixInduction'_fwd {C : α → Sort*} {f : α →. Sum β α} {b : β} {a a' : α} (h : b ∈ f.fix a)
     (h' : b ∈ f.fix a') (fa : Sum.inr a' ∈ f a)
     (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) :
@@ -406,7 +406,7 @@ theorem mem_image (y : β) (s : Set α) : y ∈ f.image s ↔ ∃ x ∈ s, y ∈
   Iff.rfl
 #align pfun.mem_image PFun.mem_image
 
-theorem image_mono {s t : Set α} (h : s ⊆ t) : f.image s ⊆ f.image t :=
+lemma image_mono {s t : Set α} (h : s ⊆ t) : f.image s ⊆ f.image t :=
   Rel.image_mono _ h
 #align pfun.image_mono PFun.image_mono
 
@@ -436,7 +436,7 @@ theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y,
   Part.dom_iff_mem.mpr ⟨y, fxy⟩
 #align pfun.preimage_subset_dom PFun.preimage_subset_dom
 
-theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
+lemma preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
   Rel.preimage_mono _ h
 #align pfun.preimage_mono PFun.preimage_mono
 
@@ -448,7 +448,7 @@ theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ 
   Rel.preimage_union _ s t
 #align pfun.preimage_union PFun.preimage_union
 
-theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
+lemma preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 #align pfun.preimage_univ PFun.preimage_univ
 
 theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
@@ -473,7 +473,7 @@ theorem compl_dom_subset_core (s : Set β) : f.Domᶜ ⊆ f.core s := fun x hx y
   absurd ((mem_dom f x).mpr ⟨y, fxy⟩) hx
 #align pfun.compl_dom_subset_core PFun.compl_dom_subset_core
 
-theorem core_mono {s t : Set β} (h : s ⊆ t) : f.core s ⊆ f.core t :=
+lemma core_mono {s t : Set β} (h : s ⊆ t) : f.core s ⊆ f.core t :=
   Rel.core_mono _ h
 #align pfun.core_mono PFun.core_mono
 
@@ -546,12 +546,12 @@ theorem toSubtype_apply (p : β → Prop) (f : α → β) (a : α) :
   rfl
 #align pfun.to_subtype_apply PFun.toSubtype_apply
 
-theorem dom_toSubtype_apply_iff {p : β → Prop} {f : α → β} {a : α} :
+lemma dom_toSubtype_apply_iff {p : β → Prop} {f : α → β} {a : α} :
     (toSubtype p f a).Dom ↔ p (f a) :=
   Iff.rfl
 #align pfun.dom_to_subtype_apply_iff PFun.dom_toSubtype_apply_iff
 
-theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtype p} :
+lemma mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtype p} :
     b ∈ toSubtype p f a ↔ ↑b = f a := by
   rw [toSubtype_apply, Part.mem_mk_iff, exists_subtype_mk_eq_iff, eq_comm]
 #align pfun.mem_to_subtype_iff PFun.mem_toSubtype_iff
@@ -648,7 +648,7 @@ theorem prodLift_apply (f : α →. β) (g : α →. γ) (x : α) :
   rfl
 #align pfun.prod_lift_apply PFun.prodLift_apply
 
-theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
+lemma mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
@@ -678,7 +678,7 @@ theorem prodMap_apply (f : α →. γ) (g : β →. δ) (x : α × β) :
   rfl
 #align pfun.prod_map_apply PFun.prodMap_apply
 
-theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × δ} :
+lemma mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × δ} :
     y ∈ f.prodMap g x ↔ y.1 ∈ f x.1 ∧ y.2 ∈ g x.2 := by
   trans ∃ hp hq, (f x.1).get hp = y.1 ∧ (g x.2).get hq = y.2
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
@@ -694,7 +694,7 @@ theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
 #align pfun.prod_lift_fst_comp_snd_comp PFun.prodLift_fst_comp_snd_comp
 
 @[simp]
-theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
+lemma prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
   ext fun _ _ => by simp [eq_comm]
 #align pfun.prod_map_id_id PFun.prodMap_id_id
 

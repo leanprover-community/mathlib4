@@ -102,7 +102,7 @@ theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
   simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU sᶜ
 #align is_closed_iff_coe_preimage_of_supr_eq_top isClosed_iff_coe_preimage_of_iSup_eq_top
 
-theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
+lemma isClosedMap_iff_isClosedMap_of_iSup_eq_top :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
   refine' ⟨fun h i => Set.restrictPreimage_isClosedMap _ h, _⟩
   rintro H s hs

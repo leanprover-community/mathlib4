@@ -74,7 +74,7 @@ def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : 
 #align units.coe_unit_of_nearby Units.val_ofNearby
 
 /-- The group of units of a complete normed ring is an open subset of the ring. -/
-protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
+protected lemma isOpen : IsOpen { x : R | IsUnit x } := by
   nontriviality R
   apply Metric.isOpen_iff.mpr
   rintro _ ⟨x, rfl⟩
@@ -93,12 +93,12 @@ namespace nonunits
 
 /-- The `nonunits` in a complete normed ring are contained in the complement of the ball of radius
 `1` centered at `1 : R`. -/
-theorem subset_compl_ball : nonunits R ⊆ (Metric.ball (1 : R) 1)ᶜ := fun x hx h₁ ↦ hx <|
+lemma subset_compl_ball : nonunits R ⊆ (Metric.ball (1 : R) 1)ᶜ := fun x hx h₁ ↦ hx <|
   sub_sub_self 1 x ▸ (Units.oneSub (1 - x) (by rwa [mem_ball_iff_norm'] at h₁)).isUnit
 #align nonunits.subset_compl_ball nonunits.subset_compl_ball
 
 -- The `nonunits` in a complete normed ring are a closed set
-protected theorem isClosed : IsClosed (nonunits R) :=
+protected lemma isClosed : IsClosed (nonunits R) :=
   Units.isOpen.isClosed_compl
 #align nonunits.is_closed nonunits.isClosed
 
@@ -156,7 +156,7 @@ theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
   rw [ht]
 #align normed_ring.inverse_add_nth_order NormedRing.inverse_add_nth_order
 
-theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
+lemma inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
   simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
@@ -229,7 +229,7 @@ open MulOpposite Filter NormedRing
 
 /-- In a normed ring, the coercion from `Rˣ` (equipped with the induced topology from the
 embedding in `R × R`) to `R` is an open embedding. -/
-theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
+lemma openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
   toEmbedding := embedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
   open_range := Units.isOpen
@@ -237,7 +237,7 @@ theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
 
 /-- In a normed ring, the coercion from `Rˣ` (equipped with the induced topology from the
 embedding in `R × R`) to `R` is an open map. -/
-theorem isOpenMap_val : IsOpenMap (val : Rˣ → R) :=
+lemma isOpenMap_val : IsOpenMap (val : Rˣ → R) :=
   openEmbedding_val.isOpenMap
 #align units.is_open_map_coe Units.isOpenMap_val
 
@@ -258,7 +258,7 @@ theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
 #align ideal.closure_ne_top Ideal.closure_ne_top
 
 /-- The `Ideal.closure` of a maximal ideal in a complete normed ring is the ideal itself. -/
-theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
+lemma IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
   (hI.eq_of_le (I.closure_ne_top hI.ne_top) subset_closure).symm
 #align ideal.is_maximal.closure_eq Ideal.IsMaximal.closure_eq
 

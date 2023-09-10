@@ -71,7 +71,7 @@ theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
 #align linear_map.zero_mem_polar LinearMap.zero_mem_polar
 
-theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
+lemma polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
   simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
 #align linear_map.polar_eq_Inter LinearMap.polar_eq_iInter
@@ -79,32 +79,32 @@ theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x 
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
 that `polar` is order-reversing. -/
-theorem polar_gc :
+lemma polar_gc :
     GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun _ _ =>
   ⟨fun h _ hx _ hy => h hy _ hx, fun h _ hx _ hy => h hy _ hx⟩
 #align linear_map.polar_gc LinearMap.polar_gc
 
 @[simp]
-theorem polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
+lemma polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
   B.polar_gc.l_iSup
 #align linear_map.polar_Union LinearMap.polar_iUnion
 
 @[simp]
-theorem polar_union {s t : Set E} : B.polar (s ∪ t) = B.polar s ∩ B.polar t :=
+lemma polar_union {s t : Set E} : B.polar (s ∪ t) = B.polar s ∩ B.polar t :=
   B.polar_gc.l_sup
 #align linear_map.polar_union LinearMap.polar_union
 
-theorem polar_antitone : Antitone (B.polar : Set E → Set F) :=
+lemma polar_antitone : Antitone (B.polar : Set E → Set F) :=
   B.polar_gc.monotone_l
 #align linear_map.polar_antitone LinearMap.polar_antitone
 
 @[simp]
-theorem polar_empty : B.polar ∅ = Set.univ :=
+lemma polar_empty : B.polar ∅ = Set.univ :=
   B.polar_gc.l_bot
 #align linear_map.polar_empty LinearMap.polar_empty
 
 @[simp]
-theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
+lemma polar_zero : B.polar ({0} : Set E) = Set.univ := by
   refine' Set.eq_univ_iff_forall.mpr fun y x hx => _
   rw [Set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
   exact zero_le_one

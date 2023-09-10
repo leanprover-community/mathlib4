@@ -42,7 +42,7 @@ variable {f : I → Type v}
 variable (x y : ∀ i, f i) (i j : I)
 
 @[to_additive]
-theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
+lemma Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
   Set.preimage_const 1 s
 #align set.preimage_one Set.preimage_one
@@ -244,7 +244,7 @@ end Pi
 namespace MulHom
 
 @[to_additive]
-theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
+lemma coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
   fun x => f x * g x := rfl
 #align mul_hom.coe_mul MulHom.coe_mul
 #align add_hom.coe_add AddHom.coe_add
@@ -267,7 +267,7 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 #align pi.add_hom_apply Pi.addHom_apply
 
 @[to_additive]
-theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
+lemma Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun x y h =>
   let ⟨i⟩ := ‹Nonempty I›
   hg i ((Function.funext_iff.mp h : _) i)
@@ -290,7 +290,7 @@ def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : 
 #align pi.add_monoid_hom_apply Pi.addMonoidHom_apply
 
 @[to_additive]
-theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
+lemma Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
     (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.monoidHom g) :=
   Pi.mulHom_injective (fun i => (g i).toMulHom) hg
@@ -441,7 +441,7 @@ def OneHom.single [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f i) where
 #align zero_hom.single ZeroHom.single
 
 @[to_additive (attr := simp)]
-theorem OneHom.single_apply [∀ i, One <| f i] (i : I) (x : f i) :
+lemma OneHom.single_apply [∀ i, One <| f i] (i : I) (x : f i) :
     OneHom.single f i x = mulSingle i x :=
   rfl
 #align one_hom.single_apply OneHom.single_apply
@@ -462,7 +462,7 @@ def MonoidHom.single [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :
 #align add_monoid_hom.single AddMonoidHom.single
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.single_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
+lemma MonoidHom.single_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
     MonoidHom.single f i x = mulSingle i x :=
   rfl
 #align monoid_hom.single_apply MonoidHom.single_apply
@@ -482,61 +482,61 @@ def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) : f i →ₙ* ∀ i, f i 
 variable {f}
 
 @[to_additive]
-theorem Pi.mulSingle_sup [∀ i, SemilatticeSup (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
+lemma Pi.mulSingle_sup [∀ i, SemilatticeSup (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
     Pi.mulSingle i (x ⊔ y) = Pi.mulSingle i x ⊔ Pi.mulSingle i y :=
   Function.update_sup _ _ _ _
 #align pi.mul_single_sup Pi.mulSingle_sup
 #align pi.single_sup Pi.single_sup
 
 @[to_additive]
-theorem Pi.mulSingle_inf [∀ i, SemilatticeInf (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
+lemma Pi.mulSingle_inf [∀ i, SemilatticeInf (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
     Pi.mulSingle i (x ⊓ y) = Pi.mulSingle i x ⊓ Pi.mulSingle i y :=
   Function.update_inf _ _ _ _
 #align pi.mul_single_inf Pi.mulSingle_inf
 #align pi.single_inf Pi.single_inf
 
 @[to_additive]
-theorem Pi.mulSingle_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :
+lemma Pi.mulSingle_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :
     mulSingle i (x * y) = mulSingle i x * mulSingle i y :=
   (MonoidHom.single f i).map_mul x y
 #align pi.mul_single_mul Pi.mulSingle_mul
 #align pi.single_add Pi.single_add
 
 @[to_additive]
-theorem Pi.mulSingle_inv [∀ i, Group <| f i] (i : I) (x : f i) :
+lemma Pi.mulSingle_inv [∀ i, Group <| f i] (i : I) (x : f i) :
     mulSingle i x⁻¹ = (mulSingle i x)⁻¹ :=
   (MonoidHom.single f i).map_inv x
 #align pi.mul_single_inv Pi.mulSingle_inv
 #align pi.single_neg Pi.single_neg
 
 @[to_additive]
-theorem Pi.single_div [∀ i, Group <| f i] (i : I) (x y : f i) :
+lemma Pi.single_div [∀ i, Group <| f i] (i : I) (x y : f i) :
     mulSingle i (x / y) = mulSingle i x / mulSingle i y :=
   (MonoidHom.single f i).map_div x y
 #align pi.single_div Pi.single_div
 #align pi.single_sub Pi.single_sub
 
-theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
+lemma Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
     single i (x * y) = single i x * single i y :=
   (MulHom.single f i).map_mul x y
 #align pi.single_mul Pi.single_mul
 
-theorem Pi.single_mul_left_apply [∀ i, MulZeroClass <| f i] (a : f i) :
+lemma Pi.single_mul_left_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (a * x i) j = Pi.single i a j * x j :=
   (Pi.apply_single (fun i => (· * x i)) (fun _ => zero_mul _) _ _ _).symm
 #align pi.single_mul_left_apply Pi.single_mul_left_apply
 
-theorem Pi.single_mul_right_apply [∀ i, MulZeroClass <| f i] (a : f i) :
+lemma Pi.single_mul_right_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (x i * a) j = x j * Pi.single i a j :=
   (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => mul_zero _) _ _ _).symm
 #align pi.single_mul_right_apply Pi.single_mul_right_apply
 
-theorem Pi.single_mul_left [∀ i, MulZeroClass <| f i] (a : f i) :
+lemma Pi.single_mul_left [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (a * x i) = Pi.single i a * x :=
   funext fun _ => Pi.single_mul_left_apply _ _ _ _
 #align pi.single_mul_left Pi.single_mul_left
 
-theorem Pi.single_mul_right [∀ i, MulZeroClass <| f i] (a : f i) :
+lemma Pi.single_mul_right [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (x i * a) = x * Pi.single i a :=
   funext fun _ => Pi.single_mul_right_apply _ _ _ _
 #align pi.single_mul_right Pi.single_mul_right
@@ -548,7 +548,7 @@ For injections of commuting elements at the same index, see `Commute.map` -/
       "The injection into an additive pi group at different indices commutes.
 
       For injections of commuting elements at the same index, see `AddCommute.map`"]
-theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
+lemma Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
   by_cases h1 : i = k;
@@ -563,7 +563,7 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]
-theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) (i j : I) :
+lemma Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) (i j : I) :
     Commute (mulSingle i (x i)) (mulSingle j (x j)) := by
   obtain rfl | hij := Decidable.eq_or_ne i j
   · rfl
@@ -572,7 +572,7 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
 #align pi.single_apply_commute Pi.single_apply_commute
 
 @[to_additive]
-theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
+lemma Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
     Function.update g i x = g / mulSingle i (g i) * mulSingle i x := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
@@ -582,7 +582,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
 #align pi.update_eq_sub_add_single Pi.update_eq_div_mul_mulSingle
 
 @[to_additive]
-theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
+lemma Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
@@ -621,27 +621,27 @@ end Single
 namespace Function
 
 @[to_additive (attr := simp)]
-theorem update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ i, f i) i 1 = 1 :=
+lemma update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ i, f i) i 1 = 1 :=
   update_eq_self i (1 : (a : I) → f a)
 #align function.update_one Function.update_one
 #align function.update_zero Function.update_zero
 
 @[to_additive]
-theorem update_mul [∀ i, Mul (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
+lemma update_mul [∀ i, Mul (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ * f₂) i (x₁ * x₂) = update f₁ i x₁ * update f₂ i x₂ :=
   funext fun j => (apply_update₂ (fun _ => (· * ·)) f₁ f₂ i x₁ x₂ j).symm
 #align function.update_mul Function.update_mul
 #align function.update_add Function.update_add
 
 @[to_additive]
-theorem update_inv [∀ i, Inv (f i)] [DecidableEq I] (f₁ : ∀ i, f i) (i : I) (x₁ : f i) :
+lemma update_inv [∀ i, Inv (f i)] [DecidableEq I] (f₁ : ∀ i, f i) (i : I) (x₁ : f i) :
     update f₁⁻¹ i x₁⁻¹ = (update f₁ i x₁)⁻¹ :=
   funext fun j => (apply_update (fun _ => Inv.inv) f₁ i x₁ j).symm
 #align function.update_inv Function.update_inv
 #align function.update_neg Function.update_neg
 
 @[to_additive]
-theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
+lemma update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ / f₂) i (x₁ / x₂) = update f₁ i x₁ / update f₂ i x₂ :=
   funext fun j => (apply_update₂ (fun _ => (· / ·)) f₁ f₂ i x₁ x₂ j).symm
 #align function.update_div Function.update_div
@@ -650,13 +650,13 @@ theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (
 variable [One α] [Nonempty ι] {a : α}
 
 @[to_additive (attr := simp)]
-theorem const_eq_one : const ι a = 1 ↔ a = 1 :=
+lemma const_eq_one : const ι a = 1 ↔ a = 1 :=
   @const_inj _ _ _ _ 1
 #align function.const_eq_one Function.const_eq_one
 #align function.const_eq_zero Function.const_eq_zero
 
 @[to_additive]
-theorem const_ne_one : const ι a ≠ 1 ↔ a ≠ 1 :=
+lemma const_ne_one : const ι a ≠ 1 ↔ a ≠ 1 :=
   Iff.not const_eq_one
 #align function.const_ne_one Function.const_ne_one
 #align function.const_ne_zero Function.const_ne_zero
@@ -666,7 +666,7 @@ end Function
 section Piecewise
 
 @[to_additive]
-theorem Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
+lemma Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ * f₂) (g₁ * g₂) = s.piecewise f₁ g₁ * s.piecewise f₂ g₂ :=
   s.piecewise_op₂ f₁ _ _ _ fun _ => (· * ·)
@@ -674,14 +674,14 @@ theorem Set.piecewise_mul [∀ i, Mul (f i)] (s : Set I) [∀ i, Decidable (i �
 #align set.piecewise_add Set.piecewise_add
 
 @[to_additive]
-theorem Set.piecewise_inv [∀ i, Inv (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)] (f₁ g₁ : ∀ i, f i) :
+lemma Set.piecewise_inv [∀ i, Inv (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)] (f₁ g₁ : ∀ i, f i) :
     s.piecewise f₁⁻¹ g₁⁻¹ = (s.piecewise f₁ g₁)⁻¹ :=
   s.piecewise_op f₁ g₁ fun _ x => x⁻¹
 #align set.piecewise_inv Set.piecewise_inv
 #align set.piecewise_neg Set.piecewise_neg
 
 @[to_additive]
-theorem Set.piecewise_div [∀ i, Div (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
+lemma Set.piecewise_div [∀ i, Div (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (f₁ f₂ g₁ g₂ : ∀ i, f i) :
     s.piecewise (f₁ / f₂) (g₁ / g₂) = s.piecewise f₁ g₁ / s.piecewise f₂ g₂ :=
   s.piecewise_op₂ f₁ _ _ _ fun _ => (· / ·)
@@ -713,13 +713,13 @@ namespace Pi
 variable [DecidableEq I] [∀ i, Preorder (f i)] [∀ i, One (f i)]
 
 @[to_additive]
-theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
+lemma mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_mono
 #align pi.mul_single_mono Pi.mulSingle_mono
 #align pi.single_mono Pi.single_mono
 
 @[to_additive]
-theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
+lemma mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_strictMono
 #align pi.mul_single_strict_mono Pi.mulSingle_strictMono
 #align pi.single_strict_mono Pi.single_strictMono

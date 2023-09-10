@@ -53,11 +53,11 @@ instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
   -- porting note: was `by tidy`, and `by aesop` alone didn't work
 #align continuous_map.partial_order ContinuousMap.partialOrder
 
-theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
+lemma le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
   Pi.le_def
 #align continuous_map.le_def ContinuousMap.le_def
 
-theorem lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a :=
+lemma lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a :=
   Pi.lt_def
 #align continuous_map.lt_def ContinuousMap.lt_def
 
@@ -66,13 +66,13 @@ instance sup [LinearOrder β] [OrderClosedTopology β] : Sup C(α, β)
 #align continuous_map.has_sup ContinuousMap.sup
 
 @[simp, norm_cast]
-theorem sup_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
+lemma sup_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
     ((f ⊔ g : C(α, β)) : α → β) = (f ⊔ g : α → β) :=
   rfl
 #align continuous_map.sup_coe ContinuousMap.sup_coe
 
 @[simp]
-theorem sup_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a : α) :
+lemma sup_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a : α) :
     (f ⊔ g) a = max (f a) (g a) :=
   rfl
 #align continuous_map.sup_apply ContinuousMap.sup_apply
@@ -89,13 +89,13 @@ instance inf [LinearOrder β] [OrderClosedTopology β] : Inf C(α, β)
 #align continuous_map.has_inf ContinuousMap.inf
 
 @[simp, norm_cast]
-theorem inf_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
+lemma inf_coe [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) :
     ((f ⊓ g : C(α, β)) : α → β) = (f ⊓ g : α → β) :=
   rfl
 #align continuous_map.inf_coe ContinuousMap.inf_coe
 
 @[simp]
-theorem inf_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a : α) :
+lemma inf_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a : α) :
     (f ⊓ g) a = min (f a) (g a) :=
   rfl
 #align continuous_map.inf_apply ContinuousMap.inf_apply
@@ -115,13 +115,13 @@ section Sup'
 
 variable [LinearOrder γ] [OrderClosedTopology γ]
 
-theorem sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
+lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
     s.sup' H f b = s.sup' H fun a => f a b :=
   Finset.comp_sup'_eq_sup'_comp H (fun f : C(β, γ) => f b) fun _ _ => rfl
 #align continuous_map.sup'_apply ContinuousMap.sup'_apply
 
 @[simp, norm_cast]
-theorem sup'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
+lemma sup'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
     ((s.sup' H f : C(β, γ)) : β → γ) = s.sup' H fun a => (f a : β → γ) := by
   ext
   simp [sup'_apply]
@@ -133,13 +133,13 @@ section Inf'
 
 variable [LinearOrder γ] [OrderClosedTopology γ]
 
-theorem inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
+lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
     s.inf' H f b = s.inf' H fun a => f a b :=
   @sup'_apply _ γᵒᵈ _ _ _ _ _ _ H f b
 #align continuous_map.inf'_apply ContinuousMap.inf'_apply
 
 @[simp, norm_cast]
-theorem inf'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
+lemma inf'_coe {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
     ((s.inf' H f : C(β, γ)) : β → γ) = s.inf' H fun a => (f a : β → γ) :=
   @sup'_coe _ γᵒᵈ _ _ _ _ _ _ H f
 #align continuous_map.inf'_coe ContinuousMap.inf'_coe

@@ -89,13 +89,13 @@ theorem openSegment_subset_segment (x y : E) : openSegment 𝕜 x y ⊆ [x -[�
   fun _ ⟨a, b, ha, hb, hab, hz⟩ => ⟨a, b, ha.le, hb.le, hab, hz⟩
 #align open_segment_subset_segment openSegment_subset_segment
 
-theorem segment_subset_iff :
+lemma segment_subset_iff :
     [x -[𝕜] y] ⊆ s ↔ ∀ a b : 𝕜, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s :=
   ⟨fun H a b ha hb hab => H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ =>
     hz ▸ H a b ha hb hab⟩
 #align segment_subset_iff segment_subset_iff
 
-theorem openSegment_subset_iff :
+lemma openSegment_subset_iff :
     openSegment 𝕜 x y ⊆ s ↔ ∀ a b : 𝕜, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s :=
   ⟨fun H a b ha hb hab => H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ =>
     hz ▸ H a b ha hb hab⟩
@@ -245,13 +245,13 @@ theorem image_openSegment (f : E →ᵃ[𝕜] F) (a b : E) :
 #align image_open_segment image_openSegment
 
 @[simp]
-theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
+lemma vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 #align vadd_segment vadd_segment
 
 @[simp]
-theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
+lemma vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 #align vadd_open_segment vadd_openSegment
@@ -305,7 +305,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_sub
 
 end OrderedRing
 
-theorem sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
+lemma sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
     (h : x ∈ [y -[𝕜] z]) : SameRay 𝕜 (x - y) (z - x) := by
   rw [segment_eq_image'] at h
   rcases h with ⟨θ, ⟨hθ₀, hθ₁⟩, rfl⟩
@@ -331,23 +331,23 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y : E}
 
-theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] := by
+lemma midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] := by
   rw [segment_eq_image_lineMap]
   exact ⟨⅟ 2, ⟨invOf_nonneg.mpr zero_le_two, invOf_le_one one_le_two⟩, rfl⟩
 #align midpoint_mem_segment midpoint_mem_segment
 
-theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
+lemma mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
   convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
   rw [midpoint_sub_add]
 #align mem_segment_sub_add mem_segment_sub_add
 
-theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
+lemma mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
   convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
   rw [midpoint_add_sub]
 #align mem_segment_add_sub mem_segment_add_sub
 
 @[simp]
-theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
+lemma left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
     x ∈ openSegment 𝕜 x y ↔ x = y := by
   constructor
   · rintro ⟨a, b, _, hb, hab, hx⟩
@@ -359,7 +359,7 @@ theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 
 #align left_mem_open_segment_iff left_mem_openSegment_iff
 
 @[simp]
-theorem right_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
+lemma right_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
     y ∈ openSegment 𝕜 x y ↔ x = y := by rw [openSegment_symm, left_mem_openSegment_iff, eq_comm]
 #align right_mem_open_segment_iff right_mem_openSegment_iff
 
@@ -369,7 +369,7 @@ section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
 
-theorem mem_segment_iff_div :
+lemma mem_segment_iff_div :
     x ∈ [y -[𝕜] z] ↔
       ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ 0 < a + b ∧ (a / (a + b)) • y + (b / (a + b)) • z = x := by
   constructor
@@ -381,7 +381,7 @@ theorem mem_segment_iff_div :
     rw [← add_div, div_self hab.ne']
 #align mem_segment_iff_div mem_segment_iff_div
 
-theorem mem_openSegment_iff_div : x ∈ openSegment 𝕜 y z ↔
+lemma mem_openSegment_iff_div : x ∈ openSegment 𝕜 y z ↔
     ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ (a / (a + b)) • y + (b / (a + b)) • z = x := by
   constructor
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
@@ -399,7 +399,7 @@ section LinearOrderedField
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
 
-theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (z - x) := by
+lemma mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (z - x) := by
   refine' ⟨sameRay_of_mem_segment, fun h => _⟩
   rcases h.exists_eq_smul_add with ⟨a, b, ha, hb, hab, hxy, hzx⟩
   rw [add_comm, sub_add_sub_cancel] at hxy hzx
@@ -514,7 +514,7 @@ section LinearOrderedField
 
 variable [LinearOrderedField 𝕜] {x y z : 𝕜}
 
-theorem Icc_subset_segment : Icc x y ⊆ [x -[𝕜] y] := by
+lemma Icc_subset_segment : Icc x y ⊆ [x -[𝕜] y] := by
   rintro z ⟨hxz, hyz⟩
   obtain rfl | h := (hxz.trans hyz).eq_or_lt
   · rw [segment_same]
@@ -532,7 +532,7 @@ theorem segment_eq_Icc (h : x ≤ y) : [x -[𝕜] y] = Icc x y :=
   (segment_subset_Icc h).antisymm Icc_subset_segment
 #align segment_eq_Icc segment_eq_Icc
 
-theorem Ioo_subset_openSegment : Ioo x y ⊆ openSegment 𝕜 x y := fun _ hz =>
+lemma Ioo_subset_openSegment : Ioo x y ⊆ openSegment 𝕜 x y := fun _ hz =>
   mem_openSegment_of_ne_left_right hz.1.ne hz.2.ne' <| Icc_subset_segment <| Ioo_subset_Icc_self hz
 #align Ioo_subset_open_segment Ioo_subset_openSegment
 

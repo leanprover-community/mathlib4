@@ -66,12 +66,12 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
 #align category_theory.cover_preserving CategoryTheory.CoverPreserving
 
 /-- The identity functor on a site is cover-preserving. -/
-theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
+lemma idCoverPreserving : CoverPreserving J J (𝟭 _) :=
   ⟨fun hS => by simpa using hS⟩
 #align category_theory.id_cover_preserving CategoryTheory.idCoverPreserving
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
-theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
+lemma CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
     CoverPreserving J L (F ⋙ G) :=
   ⟨fun hS => by
     rw [Sieve.functorPushforward_comp]
@@ -98,7 +98,7 @@ variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfT
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 
 /-- `CompatiblePreserving` functors indeed preserve compatible families. -/
-theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
+lemma Presieve.FamilyOfElements.Compatible.functorPushforward :
     (x.functorPushforward G).Compatible := by
   rintro Z₁ Z₂ W g₁ g₂ f₁' f₂' H₁ H₂ eq
   unfold FamilyOfElements.functorPushforward
@@ -111,7 +111,7 @@ theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
 #align category_theory.presieve.family_of_elements.compatible.functor_pushforward CategoryTheory.Presieve.FamilyOfElements.Compatible.functorPushforward
 
 @[simp]
-theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
+lemma CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
     x.functorPushforward G (G.map f) (image_mem_functorPushforward G T hf) = x f hf := by
   unfold FamilyOfElements.functorPushforward
   rcases e₁ : getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
@@ -121,7 +121,7 @@ theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
 
 open Limits.WalkingCospan
 
-theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₁} D]
+lemma compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₁} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ e
@@ -173,7 +173,7 @@ then `G.op ⋙ _` pulls sheaves back to sheaves.
 
 This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
 -/
-theorem pullback_isSheaf_of_coverPreserving {G : C ⥤ D} (hG₁ : CompatiblePreserving.{v₃} K G)
+lemma pullback_isSheaf_of_coverPreserving {G : C ⥤ D} (hG₁ : CompatiblePreserving.{v₃} K G)
     (hG₂ : CoverPreserving J K G) (ℱ : Sheaf K A) : Presheaf.IsSheaf J (G.op ⋙ ℱ.val) := by
   intro X U S hS x hx
   change FamilyOfElements (G.op ⋙ ℱ.val ⋙ coyoneda.obj (op X)) _ at x

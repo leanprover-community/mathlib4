@@ -76,7 +76,7 @@ theorem verschiebung_shift (x : 𝕎 R) (k : ℕ) (h : ∀ i < k + 1, x.coeff i 
     rw [Nat.add_succ, add_comm, Nat.add_succ, add_comm]
 #align witt_vector.verschiebung_shift WittVector.verschiebung_shift
 
-theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i = 0) :
+lemma eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i = 0) :
     x = verschiebung^[n] (x.shift n) := by
   induction' n with k ih
   · cases x; simp [shift]
@@ -85,7 +85,7 @@ theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i
     · exact h
 #align witt_vector.eq_iterate_verschiebung WittVector.eq_iterate_verschiebung
 
-theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
+lemma verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
     ∃ n : ℕ, ∃ x' : 𝕎 R, x'.coeff 0 ≠ 0 ∧ x = verschiebung^[n] x' := by
   have hex : ∃ k : ℕ, x.coeff k ≠ 0 := by
     by_contra' hall

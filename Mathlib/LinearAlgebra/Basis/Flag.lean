@@ -48,7 +48,7 @@ theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h :
   subset_span <| mem_image_of_mem _ h
 
 @[simp]
-theorem self_mem_flag_iff [Nontrivial R] (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} :
+lemma self_mem_flag_iff [Nontrivial R] (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} :
     b i ∈ b.flag k ↔ i.castSucc < k :=
   b.self_mem_span_image
 
@@ -60,7 +60,7 @@ theorem isChain_range_flag (b : Basis (Fin n) R M) : IsChain (· ≤ ·) (range 
   b.flag_mono.isChain_range
 
 @[mono]
-theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=
+lemma flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=
   Fin.strictMono_iff_lt_succ.2 fun _ ↦ by simp [flag_succ]
 
 end Semiring
@@ -70,7 +70,7 @@ section CommRing
 variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M] {n : ℕ}
 
 @[simp]
-theorem flag_le_ker_coord_iff [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n} :
+lemma flag_le_ker_coord_iff [Nontrivial R] (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n} :
     b.flag k ≤ LinearMap.ker (b.coord l) ↔ k ≤ l.castSucc := by
   simp [flag_le_iff, Finsupp.single_apply_eq_zero, imp_false, imp_not_comm]
 

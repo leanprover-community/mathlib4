@@ -135,7 +135,7 @@ instance [FreimanHomClass F A β n] : CoeTC F (A →*[n] β) :=
 
 
 @[to_additive]
-theorem map_prod_eq_map_prod [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
+lemma map_prod_eq_map_prod [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
     (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n)
     (h : s.prod = t.prod) : (s.map f).prod = (t.map f).prod :=
@@ -144,7 +144,7 @@ theorem map_prod_eq_map_prod [FreimanHomClass F A β n] (f : F) {s t : Multiset 
 #align map_sum_eq_map_sum map_sum_eq_map_sum
 
 @[to_additive]
-theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a ∈ A) (hb : b ∈ A)
+lemma map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a ∈ A) (hb : b ∈ A)
     (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) : f a * f b = f c * f d := by
   simp_rw [← prod_pair] at h ⊢
   refine' map_prod_eq_map_prod f _ _ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
@@ -252,21 +252,21 @@ theorem comp_assoc (f : A →*[n] β) (g : B →*[n] γ) (h : C →*[n] δ) {hf 
 #align add_freiman_hom.comp_assoc AddFreimanHom.comp_assoc
 
 @[to_additive (attr := simp)]
-theorem cancel_right {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : Function.Surjective f) {hg₁ hg₂} :
+lemma cancel_right {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : Function.Surjective f) {hg₁ hg₂} :
     g₁.comp f hg₁ = g₂.comp f hg₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => h ▸ rfl⟩
 #align freiman_hom.cancel_right FreimanHom.cancel_right
 #align add_freiman_hom.cancel_right AddFreimanHom.cancel_right
 
 @[to_additive]
-theorem cancel_right_on {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : A.SurjOn f B) {hf'} :
+lemma cancel_right_on {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : A.SurjOn f B) {hf'} :
     A.EqOn (g₁.comp f hf') (g₂.comp f hf') ↔ B.EqOn g₁ g₂ :=
   by simp [hf.cancel_right hf']
 #align freiman_hom.cancel_right_on FreimanHom.cancel_right_on
 #align add_freiman_hom.cancel_right_on AddFreimanHom.cancel_right_on
 
 @[to_additive]
-theorem cancel_left_on {g : B →*[n] γ} {f₁ f₂ : A →*[n] β} (hg : B.InjOn g) {hf₁ hf₂} :
+lemma cancel_left_on {g : B →*[n] γ} {f₁ f₂ : A →*[n] β} (hg : B.InjOn g) {hf₁ hf₂} :
     A.EqOn (g.comp f₁ hf₁) (g.comp f₂ hf₂) ↔ A.EqOn f₁ f₂ :=
   by simp [hg.cancel_left hf₁ hf₂]
 #align freiman_hom.cancel_left_on FreimanHom.cancel_left_on
@@ -475,7 +475,7 @@ theorem MonoidHom.toFreimanHom_coe (f : α →* β) : (f.toFreimanHom A n : α �
 #align add_monoid_hom.to_freiman_hom_coe AddMonoidHom.toAddFreimanHom_coe
 
 @[to_additive AddMonoidHom.toAddFreimanHom_injective]
-theorem MonoidHom.toFreimanHom_injective :
+lemma MonoidHom.toFreimanHom_injective :
     Function.Injective (MonoidHom.toFreimanHom A n : (α →* β) → A →*[n] β) := fun f g h =>
    by rwa [toFreimanHom, toFreimanHom, FreimanHom.mk.injEq, FunLike.coe_fn_eq] at h
 #align monoid_hom.to_freiman_hom_injective MonoidHom.toFreimanHom_injective
@@ -488,7 +488,7 @@ section CancelCommMonoid
 variable [CommMonoid α] [CancelCommMonoid β] {A : Set α} {m n : ℕ}
 
 @[to_additive]
-theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
+lemma map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
     (hsA : ∀ x ∈ s, x ∈ A) (htA : ∀ x ∈ t, x ∈ A)
     (hs : Multiset.card s = m) (ht : Multiset.card t = m)
     (hst : s.prod = t.prod) (h : m ≤ n) : (s.map f).prod = (t.map f).prod := by
@@ -535,7 +535,7 @@ def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β wher
 @[to_additive AddFreimanHom.addFreimanHomClass_of_le
       "An additive `n`-Freiman homomorphism is
       also an additive `m`-Freiman homomorphism for any `m ≤ n`."]
-theorem FreimanHom.FreimanHomClass_of_le [FreimanHomClass F A β n] (h : m ≤ n) :
+lemma FreimanHom.FreimanHomClass_of_le [FreimanHomClass F A β n] (h : m ≤ n) :
     FreimanHomClass F A β m where
   map_prod_eq_map_prod' f _ _ hsA htA hs ht hst :=
     map_prod_eq_map_prod_of_le f hsA htA hs ht hst h

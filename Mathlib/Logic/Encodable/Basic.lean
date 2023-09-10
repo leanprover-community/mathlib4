@@ -61,12 +61,12 @@ variable {α : Type*} {β : Type*}
 
 universe u
 
-theorem encode_injective [Encodable α] : Function.Injective (@encode α _)
+lemma encode_injective [Encodable α] : Function.Injective (@encode α _)
   | x, y, e => Option.some.inj <| by rw [← encodek, e, encodek]
 #align encodable.encode_injective Encodable.encode_injective
 
 @[simp]
-theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
+lemma encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
   encode_injective.eq_iff
 #align encodable.encode_inj Encodable.encode_inj
 
@@ -105,13 +105,13 @@ def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
 #align encodable.of_equiv Encodable.ofEquiv
 
 -- Porting note: removing @[simp], too powerful
-theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
+lemma encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
 #align encodable.encode_of_equiv Encodable.encode_ofEquiv
 
 -- Porting note: removing @[simp], too powerful
-theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
+lemma decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
     @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
   show Option.bind _ _ = Option.map _ _
   by rw [Option.map_eq_bind]
@@ -140,12 +140,12 @@ instance _root_.PUnit.encodable : Encodable PUnit :=
 #align punit.encodable PUnit.encodable
 
 @[simp]
-theorem encode_star : encode PUnit.unit = 0 :=
+lemma encode_star : encode PUnit.unit = 0 :=
   rfl
 #align encodable.encode_star Encodable.encode_star
 
 @[simp]
-theorem decode_unit_zero : decode 0 = some PUnit.unit :=
+lemma decode_unit_zero : decode 0 = some PUnit.unit :=
   rfl
 #align encodable.decode_unit_zero Encodable.decode_unit_zero
 
@@ -162,22 +162,22 @@ instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Op
 #align option.encodable Option.encodable
 
 @[simp]
-theorem encode_none [Encodable α] : encode (@none α) = 0 :=
+lemma encode_none [Encodable α] : encode (@none α) = 0 :=
   rfl
 #align encodable.encode_none Encodable.encode_none
 
 @[simp]
-theorem encode_some [Encodable α] (a : α) : encode (some a) = succ (encode a) :=
+lemma encode_some [Encodable α] (a : α) : encode (some a) = succ (encode a) :=
   rfl
 #align encodable.encode_some Encodable.encode_some
 
 @[simp]
-theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α))= some none :=
+lemma decode_option_zero [Encodable α] : (decode 0 : Option (Option α))= some none :=
   rfl
 #align encodable.decode_option_zero Encodable.decode_option_zero
 
 @[simp]
-theorem decode_option_succ [Encodable α] (n) :
+lemma decode_option_succ [Encodable α] (n) :
     (decode (succ n) : Option (Option α)) = (decode n).map some :=
   rfl
 #align encodable.decode_option_succ Encodable.decode_option_succ
@@ -189,41 +189,41 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
   (decode n).bind (Option.guard fun a => encode a = n)
 #align encodable.decode₂ Encodable.decode₂
 
-theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
+lemma mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
   simp [decode₂]; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
-theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
+lemma mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
   mem_decode₂'.trans (and_iff_right_of_imp fun e => e ▸ encodek _)
 #align encodable.mem_decode₂ Encodable.mem_decode₂
 
-theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = some a ↔ encode a = n :=
+lemma decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = some a ↔ encode a = n :=
   mem_decode₂
 #align encodable.decode₂_eq_some Encodable.decode₂_eq_some
 
 @[simp]
-theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
+lemma decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
   ext
   simp [mem_decode₂, eq_comm, decode₂_eq_some]
 #align encodable.decode₂_encode Encodable.decode₂_encode
 
-theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
+lemma decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by
   simp_rw [Set.range, Set.mem_setOf_eq, Ne.def, Option.eq_none_iff_forall_not_mem,
     Encodable.mem_decode₂, not_forall, not_not]
 #align encodable.decode₂_ne_none_iff Encodable.decode₂_ne_none_iff
 
-theorem decode₂_is_partial_inv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
+lemma decode₂_is_partial_inv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
   mem_decode₂
 #align encodable.decode₂_is_partial_inv Encodable.decode₂_is_partial_inv
 
-theorem decode₂_inj [Encodable α] {n : ℕ} {a₁ a₂ : α} (h₁ : a₁ ∈ decode₂ α n)
+lemma decode₂_inj [Encodable α] {n : ℕ} {a₁ a₂ : α} (h₁ : a₁ ∈ decode₂ α n)
     (h₂ : a₂ ∈ decode₂ α n) : a₁ = a₂ :=
   encode_injective <| (mem_decode₂.1 h₁).trans (mem_decode₂.1 h₂).symm
 #align encodable.decode₂_inj Encodable.decode₂_inj
 
-theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
+lemma encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
   mem_decode₂.2 rfl
 #align encodable.encodek₂ Encodable.encodek₂
 
@@ -304,22 +304,22 @@ instance _root_.Bool.encodable : Encodable Bool :=
 #align bool.encodable Bool.encodable
 
 @[simp]
-theorem encode_true : encode true = 1 :=
+lemma encode_true : encode true = 1 :=
   rfl
 #align encodable.encode_tt Encodable.encode_true
 
 @[simp]
-theorem encode_false : encode false = 0 :=
+lemma encode_false : encode false = 0 :=
   rfl
 #align encodable.encode_ff Encodable.encode_false
 
 @[simp]
-theorem decode_zero : (decode 0 : Option Bool) = some false :=
+lemma decode_zero : (decode 0 : Option Bool) = some false :=
   rfl
 #align encodable.decode_zero Encodable.decode_zero
 
 @[simp]
-theorem decode_one : (decode 1 : Option Bool) = some true :=
+lemma decode_one : (decode 1 : Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 
@@ -382,7 +382,7 @@ instance Prod.encodable : Encodable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 
 @[simp]
-theorem decode_prod_val [i : Encodable α] (n : ℕ) :
+lemma decode_prod_val [i : Encodable α] (n : ℕ) :
     (@decode (α × β) _ n : Option (α × β))
       = (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a := by
   simp only [decode_ofEquiv, Equiv.symm_symm, decode_sigma_val]
@@ -462,7 +462,7 @@ noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
 #align encodable.of_countable Encodable.ofCountable
 
 @[simp]
-theorem nonempty_encodable : Nonempty (Encodable α) ↔ Countable α :=
+lemma nonempty_encodable : Nonempty (Encodable α) ↔ Countable α :=
   ⟨fun ⟨h⟩ => @Encodable.countable α h, fun h => ⟨@ofCountable _ h⟩⟩
 #align encodable.nonempty_encodable Encodable.nonempty_encodable
 
@@ -518,27 +518,27 @@ def up (a : ULower α) : α :=
 #align ulower.up ULower.up
 
 @[simp]
-theorem down_up {a : ULower α} : down a.up = a :=
+lemma down_up {a : ULower α} : down a.up = a :=
   Equiv.right_inv _ _
 #align ulower.down_up ULower.down_up
 
 @[simp]
-theorem up_down {a : α} : (down a).up = a := by
+lemma up_down {a : α} : (down a).up = a := by
   simp [up, down,Equiv.left_inv _ _, Equiv.symm_apply_apply]
 #align ulower.up_down ULower.up_down
 
 @[simp]
-theorem up_eq_up {a b : ULower α} : a.up = b.up ↔ a = b :=
+lemma up_eq_up {a b : ULower α} : a.up = b.up ↔ a = b :=
   Equiv.apply_eq_iff_eq _
 #align ulower.up_eq_up ULower.up_eq_up
 
 @[simp]
-theorem down_eq_down {a b : α} : down a = down b ↔ a = b :=
+lemma down_eq_down {a b : α} : down a = down b ↔ a = b :=
   Equiv.apply_eq_iff_eq _
 #align ulower.down_eq_down ULower.down_eq_down
 
 @[ext]
-protected theorem ext {a b : ULower α} : a.up = b.up → a = b :=
+protected lemma ext {a b : ULower α} : a.up = b.up → a = b :=
   up_eq_up.1
 #align ulower.ext ULower.ext
 
@@ -592,13 +592,13 @@ theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
 end FindA
 
 /-- A constructive version of `Classical.axiom_of_choice` for `Encodable` types. -/
-theorem axiom_of_choice {α : Type*} {β : α → Type*} {R : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
+lemma axiom_of_choice {α : Type*} {β : α → Type*} {R : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
     [∀ x y, Decidable (R x y)] (H : ∀ x, ∃ y, R x y) : ∃ f : ∀ a, β a, ∀ x, R x (f x) :=
   ⟨fun x => choose (H x), fun x => choose_spec (H x)⟩
 #align encodable.axiom_of_choice Encodable.axiom_of_choice
 
 /-- A constructive version of `Classical.skolem` for `Encodable` types. -/
-theorem skolem {α : Type*} {β : α → Type*} {P : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
+lemma skolem {α : Type*} {β : α → Type*} {P : ∀ x, β x → Prop} [∀ a, Encodable (β a)]
     [∀ x y, Decidable (P x y)] : (∀ x, ∃ y, P x y) ↔ ∃ f : ∀ a, β a, ∀ x, P x (f x) :=
   ⟨axiom_of_choice, fun ⟨_, H⟩ x => ⟨_, H x⟩⟩
 #align encodable.skolem Encodable.skolem
@@ -640,7 +640,7 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
     | some a => Classical.choose (hf p a)
 #align directed.sequence Directed.sequence
 
-theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
+lemma sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize hf.sequence f n = p
@@ -649,7 +649,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
   · exact (Classical.choose_spec (hf p a)).1
 #align directed.sequence_mono_nat Directed.sequence_mono_nat
 
-theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
+lemma rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
   simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
   exact (Classical.choose_spec (hf _ a)).2
@@ -657,7 +657,7 @@ theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f
 
 variable [Preorder β] {f : α → β} (hf : Directed (· ≤ ·) f)
 
-theorem sequence_mono : Monotone (f ∘ hf.sequence f) :=
+lemma sequence_mono : Monotone (f ∘ hf.sequence f) :=
   monotone_nat_of_le_succ <| hf.sequence_mono_nat
 #align directed.sequence_mono Directed.sequence_mono
 

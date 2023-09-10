@@ -38,12 +38,12 @@ def enumerate : Set α → ℕ → Option α
     enumerate (s \ {a}) n
 #align set.enumerate Set.enumerate
 
-theorem enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enumerate sel s n = none
+lemma enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enumerate sel s n = none
   | 0 => by simp [h, enumerate]
   | n + 1 => by simp [h, enumerate]; rfl
 #align set.enumerate_eq_none_of_sel Set.enumerate_eq_none_of_sel
 
-theorem enumerate_eq_none :
+lemma enumerate_eq_none :
     ∀ {s n₁ n₂}, enumerate sel s n₁ = none → n₁ ≤ n₂ → enumerate sel s n₂ = none
   | s, 0, m => fun h _ ↦ enumerate_eq_none_of_sel sel h
   | s, n + 1, m => fun h hm ↦ by
@@ -71,7 +71,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
         this.left
 #align set.enumerate_mem Set.enumerate_mem
 
-theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
+lemma enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
   /- porting note : The `rcase, on_goal, all_goals` has been used instead of
      the not-yet-ported `wlog` -/

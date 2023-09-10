@@ -41,7 +41,7 @@ def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
 #align fin_vec.seq FinVec.seq
 
 @[simp]
-theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
+lemma seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
   | 0, f, v => Subsingleton.elim _ _
   | n + 1, f, v =>
     funext fun i => by
@@ -85,7 +85,7 @@ example (a : Fin 2 → α) : a = ![a 0, a 1] :=
 ```
 -/
 @[simp]
-theorem etaExpand_eq {m} (v : Fin m → α) : etaExpand v = v :=
+lemma etaExpand_eq {m} (v : Fin m → α) : etaExpand v = v :=
   map_eq id v
 #align fin_vec.eta_expand_eq FinVec.etaExpand_eq
 
@@ -105,7 +105,7 @@ example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀
 ```
 -/
 @[simp]
-theorem forall_iff : ∀ {m} (P : (Fin m → α) → Prop), Forall P ↔ ∀ x, P x
+lemma forall_iff : ∀ {m} (P : (Fin m → α) → Prop), Forall P ↔ ∀ x, P x
   | 0, P => by
     simp only [Forall, Fin.forall_fin_zero_pi]
     rfl
@@ -127,7 +127,7 @@ example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀
   (exists_iff _).symm
 ```
 -/
-theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, P x
+lemma exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, P x
   | 0, P => by
     simp only [Exists, Fin.exists_fin_zero_pi, Matrix.vecEmpty]
     rfl
@@ -154,7 +154,7 @@ example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
 ```
 -/
 @[simp]
-theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a i
+lemma sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a i
   | 0, a => rfl
   | 1, a => (Fintype.sum_unique a).symm
   | n + 2, a => by rw [Fin.sum_univ_castSucc, sum, sum_eq]

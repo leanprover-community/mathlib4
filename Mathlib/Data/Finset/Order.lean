@@ -16,7 +16,7 @@ universe u v w
 
 variable {α : Type u}
 
-theorem Directed.finset_le {r : α → α → Prop} [IsTrans α r] {ι} [hι : Nonempty ι] {f : ι → α}
+lemma Directed.finset_le {r : α → α → Prop} [IsTrans α r] {ι} [hι : Nonempty ι] {f : ι → α}
     (D : Directed r f) (s : Finset ι) : ∃ z, ∀ i ∈ s, r (f i) (f z) :=
   show ∃ z, ∀ i ∈ s.1, r (f i) (f z) from
     Multiset.induction_on s.1 (let ⟨z⟩ := hι; ⟨z, fun _ ↦ by simp⟩)
@@ -26,7 +26,7 @@ theorem Directed.finset_le {r : α → α → Prop} [IsTrans α r] {ι} [hι : N
         fun h ↦ _root_.trans (H _ h) h₂⟩
 #align directed.finset_le Directed.finset_le
 
-theorem Finset.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] (s : Finset α) :
+lemma Finset.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] (s : Finset α) :
     ∃ M, ∀ i ∈ s, i ≤ M :=
   directed_id.finset_le _
 #align finset.exists_le Finset.exists_le

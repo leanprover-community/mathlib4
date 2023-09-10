@@ -79,19 +79,19 @@ theorem norm_def (A : Matrix m n α) : ‖A‖ = ‖fun i j => A i j‖ := rfl
 -- porting note: new  (along with all the uses of this lemma below)
 theorem nnnorm_def (A : Matrix m n α) : ‖A‖₊ = ‖fun i j => A i j‖₊ := rfl
 
-theorem norm_le_iff {r : ℝ} (hr : 0 ≤ r) {A : Matrix m n α} : ‖A‖ ≤ r ↔ ∀ i j, ‖A i j‖ ≤ r := by
+lemma norm_le_iff {r : ℝ} (hr : 0 ≤ r) {A : Matrix m n α} : ‖A‖ ≤ r ↔ ∀ i j, ‖A i j‖ ≤ r := by
   simp_rw [norm_def, pi_norm_le_iff_of_nonneg hr]
 #align matrix.norm_le_iff Matrix.norm_le_iff
 
-theorem nnnorm_le_iff {r : ℝ≥0} {A : Matrix m n α} : ‖A‖₊ ≤ r ↔ ∀ i j, ‖A i j‖₊ ≤ r := by
+lemma nnnorm_le_iff {r : ℝ≥0} {A : Matrix m n α} : ‖A‖₊ ≤ r ↔ ∀ i j, ‖A i j‖₊ ≤ r := by
   simp_rw [nnnorm_def, pi_nnnorm_le_iff]
 #align matrix.nnnorm_le_iff Matrix.nnnorm_le_iff
 
-theorem norm_lt_iff {r : ℝ} (hr : 0 < r) {A : Matrix m n α} : ‖A‖ < r ↔ ∀ i j, ‖A i j‖ < r := by
+lemma norm_lt_iff {r : ℝ} (hr : 0 < r) {A : Matrix m n α} : ‖A‖ < r ↔ ∀ i j, ‖A i j‖ < r := by
   simp_rw [norm_def, pi_norm_lt_iff hr]
 #align matrix.norm_lt_iff Matrix.norm_lt_iff
 
-theorem nnnorm_lt_iff {r : ℝ≥0} (hr : 0 < r) {A : Matrix m n α} :
+lemma nnnorm_lt_iff {r : ℝ≥0} (hr : 0 < r) {A : Matrix m n α} :
     ‖A‖₊ < r ↔ ∀ i j, ‖A i j‖₊ < r := by
   simp_rw [nnnorm_def, pi_nnnorm_lt_iff hr]
 #align matrix.nnnorm_lt_iff Matrix.nnnorm_lt_iff
@@ -126,13 +126,13 @@ theorem norm_transpose (A : Matrix m n α) : ‖Aᵀ‖ = ‖A‖ :=
 #align matrix.norm_transpose Matrix.norm_transpose
 
 @[simp]
-theorem nnnorm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) :
+lemma nnnorm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) :
     ‖Aᴴ‖₊ = ‖A‖₊ :=
   (nnnorm_map_eq _ _ nnnorm_star).trans A.nnnorm_transpose
 #align matrix.nnnorm_conj_transpose Matrix.nnnorm_conjTranspose
 
 @[simp]
-theorem norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) : ‖Aᴴ‖ = ‖A‖ :=
+lemma norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) : ‖Aᴴ‖ = ‖A‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_conjTranspose A
 #align matrix.norm_conj_transpose Matrix.norm_conjTranspose
 
@@ -160,7 +160,7 @@ theorem norm_row (v : n → α) : ‖row v‖ = ‖v‖ :=
 #align matrix.norm_row Matrix.norm_row
 
 @[simp]
-theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
+lemma nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   simp_rw [nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
   refine' le_antisymm (Finset.sup_le fun j hj => _) _
@@ -173,7 +173,7 @@ theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = �
 #align matrix.nnnorm_diagonal Matrix.nnnorm_diagonal
 
 @[simp]
-theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v‖ :=
+lemma norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_diagonal v
 #align matrix.norm_diagonal Matrix.norm_diagonal
 
@@ -283,7 +283,7 @@ theorem linfty_op_norm_row (v : n → α) : ‖row v‖ = ∑ i, ‖v i‖ :=
 #align matrix.linfty_op_norm_row Matrix.linfty_op_norm_row
 
 @[simp]
-theorem linfty_op_nnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
+lemma linfty_op_nnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   rw [linfty_op_nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
   refine' (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j _hj hij => _).trans _
@@ -292,7 +292,7 @@ theorem linfty_op_nnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v
 #align matrix.linfty_op_nnnorm_diagonal Matrix.linfty_op_nnnorm_diagonal
 
 @[simp]
-theorem linfty_op_norm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖ = ‖v‖ :=
+lemma linfty_op_norm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_op_nnnorm_diagonal v
 #align matrix.linfty_op_norm_diagonal Matrix.linfty_op_norm_diagonal
 
@@ -468,13 +468,13 @@ theorem frobenius_norm_transpose (A : Matrix m n α) : ‖Aᵀ‖ = ‖A‖ :=
 #align matrix.frobenius_norm_transpose Matrix.frobenius_norm_transpose
 
 @[simp]
-theorem frobenius_nnnorm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) :
+lemma frobenius_nnnorm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) :
     ‖Aᴴ‖₊ = ‖A‖₊ :=
   (frobenius_nnnorm_map_eq _ _ nnnorm_star).trans A.frobenius_nnnorm_transpose
 #align matrix.frobenius_nnnorm_conj_transpose Matrix.frobenius_nnnorm_conjTranspose
 
 @[simp]
-theorem frobenius_norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) :
+lemma frobenius_norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m n α) :
     ‖Aᴴ‖ = ‖A‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_conjTranspose A
 #align matrix.frobenius_norm_conj_transpose Matrix.frobenius_norm_conjTranspose
@@ -507,7 +507,7 @@ theorem frobenius_nnnorm_col (v : n → α) : ‖col v‖₊ = ‖(WithLp.equiv 
 #align matrix.frobenius_nnnorm_col Matrix.frobenius_nnnorm_col
 
 @[simp]
-theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
+lemma frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
     ‖diagonal v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
     PiLp.nnnorm_eq_of_L2]
@@ -522,14 +522,14 @@ theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
 #align matrix.frobenius_nnnorm_diagonal Matrix.frobenius_nnnorm_diagonal
 
 @[simp]
-theorem frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
+lemma frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
     ‖diagonal v‖ = ‖(WithLp.equiv 2 _).symm v‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_diagonal v : _).trans rfl
 #align matrix.frobenius_norm_diagonal Matrix.frobenius_norm_diagonal
 
 end SeminormedAddCommGroup
 
-theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
+lemma frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
     ‖(1 : Matrix n n α)‖₊ = NNReal.sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
   refine' (frobenius_nnnorm_diagonal _).trans _
   -- porting note: change to erw, since `fun x => 1` no longer matches `Function.const`

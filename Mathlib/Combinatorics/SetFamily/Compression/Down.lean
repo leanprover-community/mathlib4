@@ -53,12 +53,12 @@ def memberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 #align finset.member_subfamily Finset.memberSubfamily
 
 @[simp]
-theorem mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 ∧ a ∉ s := by
+lemma mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 ∧ a ∉ s := by
   simp [nonMemberSubfamily]
 #align finset.mem_non_member_subfamily Finset.mem_nonMemberSubfamily
 
 @[simp]
-theorem mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ 𝒜 ∧ a ∉ s := by
+lemma mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ 𝒜 ∧ a ∉ s := by
   simp_rw [memberSubfamily, mem_image, mem_filter]
   refine' ⟨_, fun h => ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
   rintro ⟨s, ⟨hs1, hs2⟩, rfl⟩
@@ -111,26 +111,26 @@ theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset
 #align finset.member_subfamily_union_non_member_subfamily Finset.memberSubfamily_union_nonMemberSubfamily
 
 @[simp]
-theorem memberSubfamily_memberSubfamily : (𝒜.memberSubfamily a).memberSubfamily a = ∅ := by
+lemma memberSubfamily_memberSubfamily : (𝒜.memberSubfamily a).memberSubfamily a = ∅ := by
   ext
   simp
 #align finset.member_subfamily_member_subfamily Finset.memberSubfamily_memberSubfamily
 
 @[simp]
-theorem memberSubfamily_nonMemberSubfamily : (𝒜.nonMemberSubfamily a).memberSubfamily a = ∅ := by
+lemma memberSubfamily_nonMemberSubfamily : (𝒜.nonMemberSubfamily a).memberSubfamily a = ∅ := by
   ext
   simp
 #align finset.member_subfamily_non_member_subfamily Finset.memberSubfamily_nonMemberSubfamily
 
 @[simp]
-theorem nonMemberSubfamily_memberSubfamily :
+lemma nonMemberSubfamily_memberSubfamily :
     (𝒜.memberSubfamily a).nonMemberSubfamily a = 𝒜.memberSubfamily a := by
   ext
   simp
 #align finset.non_member_subfamily_member_subfamily Finset.nonMemberSubfamily_memberSubfamily
 
 @[simp]
-theorem nonMemberSubfamily_nonMemberSubfamily :
+lemma nonMemberSubfamily_nonMemberSubfamily :
     (𝒜.nonMemberSubfamily a).nonMemberSubfamily a = 𝒜.nonMemberSubfamily a := by
   ext
   simp
@@ -161,7 +161,7 @@ open FinsetFamily
 
 /-- `a` is in the down-compressed family iff it's in the original and its compression is in the
 original, or it's not in the original but it's the compression of something in the original. -/
-theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ 𝒜 ∨ s ∉ 𝒜 ∧ insert a s ∈ 𝒜 := by
+lemma mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ 𝒜 ∨ s ∉ 𝒜 ∧ insert a s ∈ 𝒜 := by
   simp_rw [compression, mem_disjUnion, mem_filter, mem_image, and_comm (a := (¬ s ∈ 𝒜))]
   refine'
     or_congr_right
@@ -178,7 +178,7 @@ theorem erase_mem_compression (hs : s ∈ 𝒜) : s.erase a ∈ 𝓓 a 𝒜 := b
 #align down.erase_mem_compression Down.erase_mem_compression
 
 -- This is a special case of `erase_mem_compression` once we have `compression_idem`.
-theorem erase_mem_compression_of_mem_compression : s ∈ 𝓓 a 𝒜 → s.erase a ∈ 𝓓 a 𝒜 := by
+lemma erase_mem_compression_of_mem_compression : s ∈ 𝓓 a 𝒜 → s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem]
   refine' Or.imp (fun h => ⟨h.2, h.2⟩) fun h => _
   rwa [erase_eq_of_not_mem (insert_ne_self.1 <| ne_of_mem_of_not_mem h.2 h.1)]

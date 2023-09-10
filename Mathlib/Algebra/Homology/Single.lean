@@ -177,12 +177,12 @@ set_option linter.uppercaseLean3 false in
 #align chain_complex.single₀_obj_X_d_from ChainComplex.single₀_obj_x_dFrom
 
 @[simp]
-theorem single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
+lemma single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
   rfl
 #align chain_complex.single₀_map_f_0 ChainComplex.single₀_map_f_0
 
 @[simp]
-theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
+lemma single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
   rfl
 #align chain_complex.single₀_map_f_succ ChainComplex.single₀_map_f_succ
 
@@ -251,7 +251,7 @@ def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
 #align chain_complex.to_single₀_equiv ChainComplex.toSingle₀Equiv
 
 @[ext]
-theorem to_single₀_ext {C : ChainComplex V ℕ} {X : V} (f g : C ⟶ (single₀ V).obj X)
+lemma to_single₀_ext {C : ChainComplex V ℕ} {X : V} (f g : C ⟶ (single₀ V).obj X)
     (h : f.f 0 = g.f 0) : f = g :=
   (toSingle₀Equiv C X).injective
     (by
@@ -374,12 +374,12 @@ set_option linter.uppercaseLean3 false in
 #align cochain_complex.single₀_obj_X_d_to CochainComplex.single₀_obj_x_dTo
 
 @[simp]
-theorem single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
+lemma single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
   rfl
 #align cochain_complex.single₀_map_f_0 CochainComplex.single₀_map_f_0
 
 @[simp]
-theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
+lemma single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
   rfl
 #align cochain_complex.single₀_map_f_succ CochainComplex.single₀_map_f_succ
 
@@ -450,7 +450,7 @@ def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
 
 -- porting note: added to ease the following definition
 @[ext]
-theorem from_single₀_ext {C : CochainComplex V ℕ} {X : V} (f g : (single₀ V).obj X ⟶ C)
+lemma from_single₀_ext {C : CochainComplex V ℕ} {X : V} (f g : (single₀ V).obj X ⟶ C)
     (h : f.f 0 = g.f 0) : f = g :=
   (fromSingle₀Equiv C X).injective
     (by

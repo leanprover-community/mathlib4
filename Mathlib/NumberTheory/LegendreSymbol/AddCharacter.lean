@@ -166,7 +166,7 @@ theorem inv_apply (ψ : AddChar R R') (x : R) : ψ⁻¹ x = ψ (-x) :=
 
 /-- An additive character maps multiples by integers to powers. -/
 @[simp]
-theorem map_zsmul_zpow {R' : Type v} [CommGroup R'] (ψ : AddChar R R') (n : ℤ) (x : R) :
+lemma map_zsmul_zpow {R' : Type v} [CommGroup R'] (ψ : AddChar R R') (n : ℤ) (x : R) :
     ψ (n • x) = ψ x ^ n := by rw [coe_to_fun_apply, coe_to_fun_apply _ x, ofAdd_zsmul, map_zpow]
 #align add_char.map_zsmul_zpow AddChar.map_zsmul_zpow
 
@@ -206,7 +206,7 @@ def mulShift (ψ : AddChar R R') (a : R) : AddChar R R' :=
 #align add_char.mul_shift AddChar.mulShift
 
 @[simp]
-theorem mulShift_apply {ψ : AddChar R R'} {a : R} {x : R} : mulShift ψ a x = ψ (a * x) :=
+lemma mulShift_apply {ψ : AddChar R R'} {a : R} {x : R} : mulShift ψ a x = ψ (a * x) :=
   rfl
 #align add_char.mul_shift_apply AddChar.mulShift_apply
 
@@ -249,7 +249,7 @@ def IsPrimitive (ψ : AddChar R R') : Prop :=
 
 /-- The map associating to `a : R` the multiplicative shift of `ψ` by `a`
 is injective when `ψ` is primitive. -/
-theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
+lemma to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
     Function.Injective ψ.mulShift := by
   intro a b h
   apply_fun fun x => x * mulShift ψ (-b) at h
@@ -264,7 +264,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
 -- This could be used to show that the map above is a bijection.
 -- We leave this for a later occasion.
 /-- When `R` is a field `F`, then a nontrivial additive character is primitive -/
-theorem IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : IsNontrivial ψ) :
+lemma IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : IsNontrivial ψ) :
     IsPrimitive ψ := by
   intro a ha
   cases' hψ with x h
@@ -296,7 +296,7 @@ noncomputable def PrimitiveAddChar.char {R : Type u} [CommRing R] {R' : Type v} 
 #align add_char.primitive_add_char.char AddChar.PrimitiveAddChar.char
 
 /-- The third projection from `PrimitiveAddChar`, showing that `χ.2` is primitive. -/
-theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
+lemma PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
     ∀ χ : PrimitiveAddChar R R', IsPrimitive χ.char := fun χ => χ.2.2
 #align add_char.primitive_add_char.prim AddChar.PrimitiveAddChar.prim
 
@@ -322,12 +322,12 @@ def zmodChar (n : ℕ+) {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C
 #align add_char.zmod_char AddChar.zmodChar
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
-theorem zmodChar_apply {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod n) :
+lemma zmodChar_apply {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod n) :
     zmodChar n hζ a = ζ ^ a.val :=
   rfl
 #align add_char.zmod_char_apply AddChar.zmodChar_apply
 
-theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
+lemma zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
   rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_nat_cast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
@@ -423,7 +423,7 @@ variable [Fintype R]
 
 /-- The sum over the values of a nontrivial additive character vanishes if the target ring
 is a domain. -/
-theorem sum_eq_zero_of_isNontrivial [IsDomain R'] {ψ : AddChar R R'} (hψ : IsNontrivial ψ) :
+lemma sum_eq_zero_of_isNontrivial [IsDomain R'] {ψ : AddChar R R'} (hψ : IsNontrivial ψ) :
     ∑ a, ψ a = 0 := by
   rcases hψ with ⟨b, hb⟩
   have h₁ : ∑ a : R, ψ (b + a) = ∑ a : R, ψ a :=
@@ -435,7 +435,7 @@ theorem sum_eq_zero_of_isNontrivial [IsDomain R'] {ψ : AddChar R R'} (hψ : IsN
 #align add_char.sum_eq_zero_of_is_nontrivial AddChar.sum_eq_zero_of_isNontrivial
 
 /-- The sum over the values of the trivial additive character is the cardinality of the source. -/
-theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) :
+lemma sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) :
     ∑ a, ψ a = Fintype.card R := by
   simp only [IsNontrivial] at hψ
   push_neg at hψ
@@ -445,7 +445,7 @@ theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) 
 
 /-- The sum over the values of `mulShift ψ b` for `ψ` primitive is zero when `b ≠ 0`
 and `#R` otherwise. -/
-theorem sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
+lemma sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`

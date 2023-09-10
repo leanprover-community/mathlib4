@@ -53,17 +53,17 @@ and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 infixl:70 " □ " => boxProd
 
 @[simp]
-theorem boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
+lemma boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
   Iff.rfl
 #align simple_graph.box_prod_adj SimpleGraph.boxProd_adj
 
 --@[simp] porting note: `simp` can prove
-theorem boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
+lemma boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
 #align simple_graph.box_prod_adj_left SimpleGraph.boxProd_adj_left
 
 --@[simp] porting note: `simp` can prove
-theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
+lemma boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
 
@@ -144,7 +144,7 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
 #align simple_graph.walk.of_box_prod_right SimpleGraph.Walk.ofBoxProdRight
 
 @[simp]
-theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} :
+lemma ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
@@ -154,7 +154,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
 #align simple_graph.walk.of_box_prod_left_box_prod_left SimpleGraph.Walk.ofBoxProdLeft_boxProdLeft
 
 @[simp]
-theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b₂ : α} :
+lemma ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
@@ -176,7 +176,7 @@ protected theorem Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnecte
   exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 #align simple_graph.preconnected.box_prod SimpleGraph.Preconnected.boxProd
 
-protected theorem Preconnected.ofBoxProdLeft [Nonempty β] (h : (G □ H).Preconnected) :
+protected lemma Preconnected.ofBoxProdLeft [Nonempty β] (h : (G □ H).Preconnected) :
     G.Preconnected := by
   classical
   rintro a₁ a₂
@@ -184,7 +184,7 @@ protected theorem Preconnected.ofBoxProdLeft [Nonempty β] (h : (G □ H).Precon
   exact ⟨w.ofBoxProdLeft⟩
 #align simple_graph.preconnected.of_box_prod_left SimpleGraph.Preconnected.ofBoxProdLeft
 
-protected theorem Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preconnected) :
+protected lemma Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preconnected) :
     H.Preconnected := by
   classical
   rintro b₁ b₂
@@ -211,7 +211,7 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
 #align simple_graph.connected.of_box_prod_right SimpleGraph.Connected.ofBoxProdRight
 
 @[simp]
-theorem boxProd_connected : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
+lemma boxProd_connected : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 #align simple_graph.box_prod_connected SimpleGraph.boxProd_connected
 

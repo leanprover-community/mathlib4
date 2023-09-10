@@ -41,7 +41,7 @@ def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
 #align is_dedekind_domain.height_one_spectrum.max_pow_dividing IsDedekindDomain.HeightOneSpectrum.maxPowDividing
 
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
-theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
+lemma Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
   rw [← Set.finite_coe_iff, Set.coe_setOf]
   haveI h_fin := fintypeSubtypeDvd I hI
@@ -54,7 +54,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
   multiplicity of `v` in the factorization of `I`, denoted `val_v(I)`, is nonzero. -/
-theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
+lemma Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite,
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) = 0 := by
   have h_supp : {v : HeightOneSpectrum R | ¬((Associates.mk v.asIdeal).count
@@ -70,7 +70,7 @@ namespace Ideal
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
   `v^(val_v(I))` is not the unit ideal. -/
-theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
+lemma finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => v.maxPowDividing I).Finite :=
   haveI h_subset : {v : HeightOneSpectrum R | v.maxPowDividing I ≠ 1} ⊆
       {v : HeightOneSpectrum R |
@@ -85,7 +85,7 @@ theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
-theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
+lemma finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)).Finite := by
   rw [mulSupport]
@@ -95,7 +95,7 @@ theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
-theorem finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
+lemma finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
       (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ))).Finite := by
   rw [mulSupport]

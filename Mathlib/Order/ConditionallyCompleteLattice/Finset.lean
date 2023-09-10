@@ -22,13 +22,13 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
-theorem Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f : β → α) :
+lemma Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f : β → α) :
     s.sup' hs f = sSup (f '' s) :=
   eq_of_forall_ge_iff fun a => by
     simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (hs.to_set.image f)]
 #align finset.nonempty.sup'_eq_cSup_image Finset.Nonempty.sup'_eq_cSup_image
 
-theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.sup' hs id = sSup s :=
+lemma Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.sup' hs id = sSup s :=
   by rw [hs.sup'_eq_cSup_image, Set.image_id]
 #align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
 
@@ -38,20 +38,20 @@ section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
 
-theorem Finset.Nonempty.cSup_eq_max' {s : Finset α} (h : s.Nonempty) : sSup ↑s = s.max' h :=
+lemma Finset.Nonempty.cSup_eq_max' {s : Finset α} (h : s.Nonempty) : sSup ↑s = s.max' h :=
   eq_of_forall_ge_iff fun _ => (csSup_le_iff s.bddAbove h.to_set).trans (s.max'_le_iff h).symm
 #align finset.nonempty.cSup_eq_max' Finset.Nonempty.cSup_eq_max'
 
-theorem Finset.Nonempty.cInf_eq_min' {s : Finset α} (h : s.Nonempty) : sInf ↑s = s.min' h :=
+lemma Finset.Nonempty.cInf_eq_min' {s : Finset α} (h : s.Nonempty) : sInf ↑s = s.min' h :=
   @Finset.Nonempty.cSup_eq_max' αᵒᵈ _ s h
 #align finset.nonempty.cInf_eq_min' Finset.Nonempty.cInf_eq_min'
 
-theorem Finset.Nonempty.cSup_mem {s : Finset α} (h : s.Nonempty) : sSup (s : Set α) ∈ s := by
+lemma Finset.Nonempty.cSup_mem {s : Finset α} (h : s.Nonempty) : sSup (s : Set α) ∈ s := by
   rw [h.cSup_eq_max']
   exact s.max'_mem _
 #align finset.nonempty.cSup_mem Finset.Nonempty.cSup_mem
 
-theorem Finset.Nonempty.cInf_mem {s : Finset α} (h : s.Nonempty) : sInf (s : Set α) ∈ s :=
+lemma Finset.Nonempty.cInf_mem {s : Finset α} (h : s.Nonempty) : sInf (s : Set α) ∈ s :=
   @Finset.Nonempty.cSup_mem αᵒᵈ _ _ h
 #align finset.nonempty.cInf_mem Finset.Nonempty.cInf_mem
 
@@ -84,7 +84,7 @@ non-empty. As a result, we can translate between the two.
 
 namespace Finset
 
-theorem sup'_eq_csSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
+lemma sup'_eq_csSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
     s.sup' H f = sSup (f '' s) := by
   apply le_antisymm
   · refine' Finset.sup'_le _ _ fun a ha => _
@@ -96,16 +96,16 @@ theorem sup'_eq_csSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H
     exact Finset.le_sup' _ ha
 #align finset.sup'_eq_cSup_image Finset.sup'_eq_csSup_image
 
-theorem inf'_eq_csInf_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
+lemma inf'_eq_csInf_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
     s.inf' H f = sInf (f '' s) :=
   @sup'_eq_csSup_image _ βᵒᵈ _ _ H _
 #align finset.inf'_eq_cInf_image Finset.inf'_eq_csInf_image
 
-theorem sup'_id_eq_csSup [ConditionallyCompleteLattice α] (s : Finset α) (H) :
+lemma sup'_id_eq_csSup [ConditionallyCompleteLattice α] (s : Finset α) (H) :
     s.sup' H id = sSup s := by rw [sup'_eq_csSup_image s H, Set.image_id]
 #align finset.sup'_id_eq_cSup Finset.sup'_id_eq_csSup
 
-theorem inf'_id_eq_csInf [ConditionallyCompleteLattice α] (s : Finset α) (H) :
+lemma inf'_id_eq_csInf [ConditionallyCompleteLattice α] (s : Finset α) (H) :
     s.inf' H id = sInf s :=
   @sup'_id_eq_csSup αᵒᵈ _ _ H
 #align finset.inf'_id_eq_cInf Finset.inf'_id_eq_csInf

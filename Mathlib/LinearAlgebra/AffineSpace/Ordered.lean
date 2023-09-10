@@ -135,7 +135,7 @@ theorem left_le_lineMap_iff_le (h : 0 < r) : a ≤ lineMap a b r ↔ a ≤ b :=
 #align left_le_line_map_iff_le left_le_lineMap_iff_le
 
 @[simp]
-theorem left_le_midpoint : a ≤ midpoint k a b ↔ a ≤ b :=
+lemma left_le_midpoint : a ≤ midpoint k a b ↔ a ≤ b :=
   left_le_lineMap_iff_le <| inv_pos.2 zero_lt_two
 #align left_le_midpoint left_le_midpoint
 
@@ -144,7 +144,7 @@ theorem lineMap_le_left_iff_le (h : 0 < r) : lineMap a b r ≤ a ↔ b ≤ a :=
 #align line_map_le_left_iff_le lineMap_le_left_iff_le
 
 @[simp]
-theorem midpoint_le_left : midpoint k a b ≤ a ↔ b ≤ a :=
+lemma midpoint_le_left : midpoint k a b ≤ a ↔ b ≤ a :=
   lineMap_le_left_iff_le <| inv_pos.2 zero_lt_two
 #align midpoint_le_left midpoint_le_left
 
@@ -153,7 +153,7 @@ theorem lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
 #align line_map_le_right_iff_le lineMap_le_right_iff_le
 
 @[simp]
-theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
+lemma midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
   lineMap_le_right_iff_le <| inv_lt_one one_lt_two
 #align midpoint_le_right midpoint_le_right
 
@@ -162,7 +162,7 @@ theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
 #align right_le_line_map_iff_le right_le_lineMap_iff_le
 
 @[simp]
-theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a :=
+lemma right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a :=
   right_le_lineMap_iff_le <| inv_lt_one one_lt_two
 #align right_le_midpoint right_le_midpoint
 

@@ -65,16 +65,16 @@ noncomputable def dickson : ℕ → R[X]
 #align polynomial.dickson Polynomial.dickson
 
 @[simp]
-theorem dickson_zero : dickson k a 0 = 3 - k :=
+lemma dickson_zero : dickson k a 0 = 3 - k :=
   rfl
 #align polynomial.dickson_zero Polynomial.dickson_zero
 
 @[simp]
-theorem dickson_one : dickson k a 1 = X :=
+lemma dickson_one : dickson k a 1 = X :=
   rfl
 #align polynomial.dickson_one Polynomial.dickson_one
 
-theorem dickson_two : dickson k a 2 = X ^ 2 - C a * (3 - k : R[X]) := by
+lemma dickson_two : dickson k a 2 = X ^ 2 - C a * (3 - k : R[X]) := by
   simp only [dickson, sq]
 #align polynomial.dickson_two Polynomial.dickson_two
 
@@ -83,7 +83,7 @@ theorem dickson_add_two (n : ℕ) :
     dickson k a (n + 2) = X * dickson k a (n + 1) - C a * dickson k a n := by rw [dickson]
 #align polynomial.dickson_add_two Polynomial.dickson_add_two
 
-theorem dickson_of_two_le {n : ℕ} (h : 2 ≤ n) :
+lemma dickson_of_two_le {n : ℕ} (h : 2 ≤ n) :
     dickson k a n = X * dickson k a (n - 1) - C a * dickson k a (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm]
@@ -102,7 +102,7 @@ theorem map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dicks
 #align polynomial.map_dickson Polynomial.map_dickson
 
 @[simp]
-theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
+lemma dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
   | 0 => by
     simp only [dickson_zero, pow_zero]
     norm_num
@@ -144,13 +144,13 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
 variable (R)
 
 -- Porting note: Added 2 new theorems for convenience
-private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟ 2 : R) = 1 := by
+private lemma two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟ 2 : R) = 1 := by
   rw [two_mul, ← C_add, invOf_two_add_invOf_two, C_1]
 
-private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟ 2 : R) * 2 = 1 := by
+private lemma C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟ 2 : R) * 2 = 1 := by
   rw [mul_comm, two_mul_C_half_eq_one]
 
-theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] :
+lemma dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] :
     ∀ n, dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟ 2) * X)
   | 0 => by
     simp only [Chebyshev.T_zero, mul_one, one_comp, dickson_zero]
@@ -165,7 +165,7 @@ theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] :
 set_option linter.uppercaseLean3 false in
 #align polynomial.dickson_one_one_eq_chebyshev_T Polynomial.dickson_one_one_eq_chebyshev_T
 
-theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
+lemma chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
     Chebyshev.T R n = C (⅟ 2) * (dickson 1 1 n).comp (2 * X) := by
   rw [dickson_one_one_eq_chebyshev_T, mul_comp, ofNat_comp, comp_assoc, mul_comp, C_comp, X_comp]
   simp_rw [← mul_assoc, Nat.cast_ofNat, C_half_mul_two_eq_one, one_mul, comp_X]

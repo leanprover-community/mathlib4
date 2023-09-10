@@ -122,7 +122,7 @@ variable {K}
 /-- An induction principle for `Projectivization`.
 Use as `induction v using Projectivization.ind`. -/
 @[elab_as_elim]
-theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
+lemma ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
   Quotient.ind' <| Subtype.rec <| h
 #align projectivization.ind Projectivization.ind
 
@@ -145,7 +145,7 @@ instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
   change FiniteDimensional K (K ∙ v.rep)
   infer_instance
 
-theorem submodule_injective :
+lemma submodule_injective :
     Function.Injective (Projectivization.submodule : ℙ K V → Submodule K V) := fun u v h ↦ by
   induction' u using ind with u hu
   induction' v using ind with v hv
@@ -199,13 +199,13 @@ def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : �
       erw [← f.map_smulₛₗ, ha])
 #align projectivization.map Projectivization.map
 
-theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
+lemma map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
     map f hf (mk K v hv) = mk L (f v) (map_zero f ▸ hf.ne hv) :=
   rfl
 
 /-- Mapping with respect to a semilinear map over an isomorphism of fields yields
 an injective map on projective spaces. -/
-theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (f : V →ₛₗ[σ] W)
+lemma map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (f : V →ₛₗ[σ] W)
     (hf : Function.Injective f) : Function.Injective (map f hf) := fun u v h ↦ by
   induction' u using ind with u hu; induction' v using ind with v hv
   simp only [map_mk, mk_eq_mk_iff'] at h ⊢
@@ -215,13 +215,13 @@ theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (
 #align projectivization.map_injective Projectivization.map_injective
 
 @[simp]
-theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injective = id := by
+lemma map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injective = id := by
   ext ⟨v⟩
   rfl
 #align projectivization.map_id Projectivization.map_id
 
 -- porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
-theorem map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
+lemma map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
     {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
     (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :
     map (g.comp f) (hg.comp hf) = map g hg ∘ map f hf := by

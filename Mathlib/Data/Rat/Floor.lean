@@ -36,7 +36,7 @@ protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   · next h => simp [h]
   · next => rfl
 
-protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
+protected lemma le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
     simp [Rat.floor_def']
     rw [num_den']
@@ -50,10 +50,10 @@ protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z :
 instance : FloorRing ℚ :=
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor.symm
 
-protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q
+protected lemma floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q
 #align rat.floor_def Rat.floor_def
 
-theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d : ℚ)⌋ = n / (↑d : ℤ) := by
+lemma floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d : ℚ)⌋ = n / (↑d : ℤ) := by
   rw [Rat.floor_def]
   obtain rfl | hd := @eq_zero_or_pos _ _ d
   · simp
@@ -91,11 +91,11 @@ theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
 
 end Rat
 
-theorem Int.mod_nat_eq_sub_mul_floor_rat_div {n : ℤ} {d : ℕ} : n % d = n - d * ⌊(n : ℚ) / d⌋ := by
+lemma Int.mod_nat_eq_sub_mul_floor_rat_div {n : ℤ} {d : ℕ} : n % d = n - d * ⌊(n : ℚ) / d⌋ := by
   rw [eq_sub_of_add_eq <| Int.emod_add_ediv n d, Rat.floor_int_div_nat_eq_div]
 #align int.mod_nat_eq_sub_mul_floor_rat_div Int.mod_nat_eq_sub_mul_floor_rat_div
 
-theorem Nat.coprime_sub_mul_floor_rat_div_of_coprime {n d : ℕ} (n_coprime_d : n.coprime d) :
+lemma Nat.coprime_sub_mul_floor_rat_div_of_coprime {n d : ℕ} (n_coprime_d : n.coprime d) :
     ((n : ℤ) - d * ⌊(n : ℚ) / d⌋).natAbs.coprime d := by
   have : (n : ℤ) % d = n - d * ⌊(n : ℚ) / d⌋ := Int.mod_nat_eq_sub_mul_floor_rat_div
   rw [← this]
@@ -127,7 +127,7 @@ theorem num_lt_succ_floor_mul_den (q : ℚ) : q.num < (⌊q⌋ + 1) * q.den := b
   exact mul_pos this (by exact_mod_cast q.pos)
 #align rat.num_lt_succ_floor_mul_denom Rat.num_lt_succ_floor_mul_den
 
-theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).num < q.num := by
+lemma fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).num < q.num := by
   -- we know that the numerator must be positive
   have q_num_pos : 0 < q.num := Rat.num_pos_iff_pos.mpr q_pos
   -- we will work with the absolute value of the numerator, which is equal to the numerator

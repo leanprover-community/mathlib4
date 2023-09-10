@@ -35,7 +35,7 @@ namespace Nat
 variable {p n k : ℕ}
 
 /-- A logarithmic upper bound on the multiplicity of a prime in a binomial coefficient. -/
-theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n := by
+lemma factorization_choose_le_log : (choose n k).factorization p ≤ log p n := by
   by_cases h : (choose n k).factorization p = 0
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h

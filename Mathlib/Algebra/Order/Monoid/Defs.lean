@@ -84,7 +84,7 @@ theorem Mul.to_covariantClass_right (M : Type*) [Mul M] [PartialOrder M]
 end OrderedInstances
 
 set_option linter.deprecated false in
-@[deprecated] theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
+@[deprecated] lemma bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
   add_pos' h h
 #align bit0_pos bit0_pos
 

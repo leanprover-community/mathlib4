@@ -47,16 +47,16 @@ noncomputable def predictablePart {m0 : MeasurableSpace Ω} (f : ℕ → Ω → 
 #align measure_theory.predictable_part MeasureTheory.predictablePart
 
 @[simp]
-theorem predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
+lemma predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
   simp_rw [predictablePart, Finset.range_zero, Finset.sum_empty]
 #align measure_theory.predictable_part_zero MeasureTheory.predictablePart_zero
 
-theorem adapted_predictablePart : Adapted ℱ fun n => predictablePart f ℱ μ (n + 1) := fun _ =>
+lemma adapted_predictablePart : Adapted ℱ fun n => predictablePart f ℱ μ (n + 1) := fun _ =>
   Finset.stronglyMeasurable_sum' _ fun _ hin =>
     stronglyMeasurable_condexp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
 #align measure_theory.adapted_predictable_part MeasureTheory.adapted_predictablePart
 
-theorem adapted_predictablePart' : Adapted ℱ fun n => predictablePart f ℱ μ n := fun _ =>
+lemma adapted_predictablePart' : Adapted ℱ fun n => predictablePart f ℱ μ n := fun _ =>
   Finset.stronglyMeasurable_sum' _ fun _ hin =>
     stronglyMeasurable_condexp.mono (ℱ.mono (Finset.mem_range_le hin))
 #align measure_theory.adapted_predictable_part' MeasureTheory.adapted_predictablePart'
@@ -72,7 +72,7 @@ theorem martingalePart_add_predictablePart (ℱ : Filtration ℕ m0) (μ : Measu
   sub_add_cancel _ _
 #align measure_theory.martingale_part_add_predictable_part MeasureTheory.martingalePart_add_predictablePart
 
-theorem martingalePart_eq_sum : martingalePart f ℱ μ = fun n =>
+lemma martingalePart_eq_sum : martingalePart f ℱ μ = fun n =>
     f 0 + ∑ i in Finset.range n, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]) := by
   unfold martingalePart predictablePart
   ext1 n
@@ -132,7 +132,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
 #align measure_theory.martingale_martingale_part MeasureTheory.martingale_martingalePart
 
 -- The following two lemmas demonstrate the essential uniqueness of the decomposition
-theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → Ω → E}
+lemma martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → Ω → E}
     (hf : Martingale f ℱ μ) (hg : Adapted ℱ fun n => g (n + 1)) (hg0 : g 0 = 0)
     (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) : martingalePart (f + g) ℱ μ n =ᵐ[μ] f n := by
   set h := f - martingalePart (f + g) ℱ μ with hhdef
@@ -152,7 +152,7 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
   simp [hg0]
 #align measure_theory.martingale_part_add_ae_eq MeasureTheory.martingalePart_add_ae_eq
 
-theorem predictablePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → Ω → E}
+lemma predictablePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → Ω → E}
     (hf : Martingale f ℱ μ) (hg : Adapted ℱ fun n => g (n + 1)) (hg0 : g 0 = 0)
     (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) : predictablePart (f + g) ℱ μ n =ᵐ[μ] g n := by
   filter_upwards [martingalePart_add_ae_eq hf hg hg0 hgint n] with ω hω
@@ -163,14 +163,14 @@ theorem predictablePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → 
 
 section Difference
 
-theorem predictablePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
+lemma predictablePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ∀ i, |predictablePart f ℱ μ (i + 1) ω - predictablePart f ℱ μ i ω| ≤ R := by
   simp_rw [predictablePart, Finset.sum_apply, Finset.sum_range_succ_sub_sum]
   exact ae_all_iff.2 fun i => ae_bdd_condexp_of_ae_bdd <| ae_all_iff.1 hbdd i
 #align measure_theory.predictable_part_bdd_difference MeasureTheory.predictablePart_bdd_difference
 
-theorem martingalePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
+lemma martingalePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ∀ i, |martingalePart f ℱ μ (i + 1) ω - martingalePart f ℱ μ i ω| ≤ ↑(2 * R) := by
   filter_upwards [hbdd, predictablePart_bdd_difference ℱ hbdd] with ω hω₁ hω₂ i

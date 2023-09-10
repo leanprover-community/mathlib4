@@ -39,7 +39,7 @@ def argAux (a : Option α) (b : α) : Option α :=
 #align list.arg_aux List.argAux
 
 @[simp]
-theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
+lemma foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
     simp [argAux]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
 #align list.foldl_arg_aux_eq_none List.foldl_argAux_eq_none
@@ -117,21 +117,21 @@ theorem argmin_nil (f : α → β) : argmin f [] = none :=
 #align list.argmin_nil List.argmin_nil
 
 @[simp]
-theorem argmax_singleton {f : α → β} {a : α} : argmax f [a] = a :=
+lemma argmax_singleton {f : α → β} {a : α} : argmax f [a] = a :=
   rfl
 #align list.argmax_singleton List.argmax_singleton
 
 @[simp]
-theorem argmin_singleton {f : α → β} {a : α} : argmin f [a] = a :=
+lemma argmin_singleton {f : α → β} {a : α} : argmin f [a] = a :=
   rfl
 #align list.argmin_singleton List.argmin_singleton
 
-theorem not_lt_of_mem_argmax : a ∈ l → m ∈ argmax f l → ¬f m < f a :=
+lemma not_lt_of_mem_argmax : a ∈ l → m ∈ argmax f l → ¬f m < f a :=
   not_of_mem_foldl_argAux _ (fun x h => lt_irrefl (f x) h)
     (fun _ _ z hxy hyz => lt_trans (a := f z) hyz hxy)
 #align list.not_lt_of_mem_argmax List.not_lt_of_mem_argmax
 
-theorem not_lt_of_mem_argmin : a ∈ l → m ∈ argmin f l → ¬f a < f m :=
+lemma not_lt_of_mem_argmin : a ∈ l → m ∈ argmin f l → ¬f a < f m :=
   not_of_mem_foldl_argAux _ (fun x h => lt_irrefl (f x) h)
     (fun x _ _ hxy hyz => lt_trans (a := f x) hxy hyz)
 #align list.not_lt_of_mem_argmin List.not_lt_of_mem_argmin
@@ -148,21 +148,21 @@ theorem argmin_concat (f : α → β) (a : α) (l : List α) :
   @argmax_concat _ βᵒᵈ _ _ _ _ _
 #align list.argmin_concat List.argmin_concat
 
-theorem argmax_mem : ∀ {l : List α} {m : α}, m ∈ argmax f l → m ∈ l
+lemma argmax_mem : ∀ {l : List α} {m : α}, m ∈ argmax f l → m ∈ l
   | [], m => by simp
   | hd :: tl, m => by simpa [argmax, argAux] using foldl_argAux_mem _ tl hd m
 #align list.argmax_mem List.argmax_mem
 
-theorem argmin_mem : ∀ {l : List α} {m : α}, m ∈ argmin f l → m ∈ l :=
+lemma argmin_mem : ∀ {l : List α} {m : α}, m ∈ argmin f l → m ∈ l :=
   @argmax_mem _ βᵒᵈ _ _ _
 #align list.argmin_mem List.argmin_mem
 
 @[simp]
-theorem argmax_eq_none : l.argmax f = none ↔ l = [] := by simp [argmax]
+lemma argmax_eq_none : l.argmax f = none ↔ l = [] := by simp [argmax]
 #align list.argmax_eq_none List.argmax_eq_none
 
 @[simp]
-theorem argmin_eq_none : l.argmin f = none ↔ l = [] :=
+lemma argmin_eq_none : l.argmin f = none ↔ l = [] :=
   @argmax_eq_none _ βᵒᵈ _ _ _ _
 #align list.argmin_eq_none List.argmin_eq_none
 
@@ -172,11 +172,11 @@ section LinearOrder
 
 variable [LinearOrder β] {f : α → β} {l : List α} {o : Option α} {a m : α}
 
-theorem le_of_mem_argmax : a ∈ l → m ∈ argmax f l → f a ≤ f m := fun ha hm =>
+lemma le_of_mem_argmax : a ∈ l → m ∈ argmax f l → f a ≤ f m := fun ha hm =>
   le_of_not_lt <| not_lt_of_mem_argmax ha hm
 #align list.le_of_mem_argmax List.le_of_mem_argmax
 
-theorem le_of_mem_argmin : a ∈ l → m ∈ argmin f l → f m ≤ f a :=
+lemma le_of_mem_argmin : a ∈ l → m ∈ argmin f l → f m ≤ f a :=
   @le_of_mem_argmax _ βᵒᵈ _ _ _ _ _
 #align list.le_of_mem_argmin List.le_of_mem_argmin
 
@@ -203,7 +203,7 @@ theorem argmin_cons (f : α → β) (a : α) (l : List α) :
 
 variable [DecidableEq α]
 
-theorem index_of_argmax :
+lemma index_of_argmax :
     ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
   | [], m, _, _, _, _ => by simp
   | hd :: tl, m, hm, a, ha, ham => by
@@ -224,12 +224,12 @@ theorem index_of_argmax :
       exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
 
-theorem index_of_argmin :
+lemma index_of_argmin :
     ∀ {l : List α} {m : α}, m ∈ argmin f l → ∀ {a}, a ∈ l → f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
   @index_of_argmax _ βᵒᵈ _ _ _
 #align list.index_of_argmin List.index_of_argmin
 
-theorem mem_argmax_iff :
+lemma mem_argmax_iff :
     m ∈ argmax f l ↔
       m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
   ⟨fun hm => ⟨argmax_mem hm, fun a ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
@@ -243,19 +243,19 @@ theorem mem_argmax_iff :
         rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
 #align list.mem_argmax_iff List.mem_argmax_iff
 
-theorem argmax_eq_some_iff :
+lemma argmax_eq_some_iff :
     argmax f l = some m ↔
       m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
   mem_argmax_iff
 #align list.argmax_eq_some_iff List.argmax_eq_some_iff
 
-theorem mem_argmin_iff :
+lemma mem_argmin_iff :
     m ∈ argmin f l ↔
       m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
   @mem_argmax_iff _ βᵒᵈ _ _ _ _ _
 #align list.mem_argmin_iff List.mem_argmin_iff
 
-theorem argmin_eq_some_iff :
+lemma argmin_eq_some_iff :
     argmin f l = some m ↔
       m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
   mem_argmin_iff
@@ -282,12 +282,12 @@ def minimum (l : List α) : WithTop α :=
 #align list.minimum List.minimum
 
 @[simp]
-theorem maximum_nil : maximum ([] : List α) = ⊥ :=
+lemma maximum_nil : maximum ([] : List α) = ⊥ :=
   rfl
 #align list.maximum_nil List.maximum_nil
 
 @[simp]
-theorem minimum_nil : minimum ([] : List α) = ⊤ :=
+lemma minimum_nil : minimum ([] : List α) = ⊤ :=
   rfl
 #align list.minimum_nil List.minimum_nil
 
@@ -301,29 +301,29 @@ theorem minimum_singleton (a : α) : minimum [a] = a :=
   rfl
 #align list.minimum_singleton List.minimum_singleton
 
-theorem maximum_mem {l : List α} {m : α} : (maximum l : WithTop α) = m → m ∈ l :=
+lemma maximum_mem {l : List α} {m : α} : (maximum l : WithTop α) = m → m ∈ l :=
   argmax_mem
 #align list.maximum_mem List.maximum_mem
 
-theorem minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m ∈ l :=
+lemma minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m ∈ l :=
   argmin_mem
 #align list.minimum_mem List.minimum_mem
 
 @[simp]
-theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] :=
+lemma maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] :=
   argmax_eq_none
 #align list.maximum_eq_none List.maximum_eq_none
 
 @[simp]
-theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] :=
+lemma minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] :=
   argmin_eq_none
 #align list.minimum_eq_none List.minimum_eq_none
 
-theorem not_lt_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
+lemma not_lt_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
   not_lt_of_mem_argmax
 #align list.not_lt_maximum_of_mem List.not_lt_maximum_of_mem
 
-theorem minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
+lemma minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
   not_lt_of_mem_argmin
 #align list.minimum_not_lt_of_mem List.minimum_not_lt_of_mem
 
@@ -350,11 +350,11 @@ theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximu
   · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
 #align list.maximum_concat List.maximum_concat
 
-theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
+lemma le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
   le_of_mem_argmax
 #align list.le_maximum_of_mem List.le_maximum_of_mem
 
-theorem minimum_le_of_mem : a ∈ l → (minimum l : WithTop α) = m → m ≤ a :=
+lemma minimum_le_of_mem : a ∈ l → (minimum l : WithTop α) = m → m ≤ a :=
   le_of_mem_argmin
 #align list.minimum_le_of_mem List.minimum_le_of_mem
 
@@ -379,34 +379,34 @@ theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min ↑a (minim
   @maximum_cons αᵒᵈ _ _ _
 #align list.minimum_cons List.minimum_cons
 
-theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.maximum ≤ b := by
+lemma maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.maximum ≤ b := by
   induction l with
   | nil => simp
   | cons a l ih =>
     simp only [maximum_cons, ge_iff_le, max_le_iff, WithBot.coe_le_coe]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
-theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
+lemma le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
   maximum_le_of_forall_le (α:= αᵒᵈ) h
 
-theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
+lemma maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
   intro _ h a hal hma
   rw [_root_.le_antisymm hma (h a hal)]
 #align list.maximum_eq_coe_iff List.maximum_eq_coe_iff
 
-theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
+lemma minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 #align list.minimum_eq_coe_iff List.minimum_eq_coe_iff
 
-theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
+lemma coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
   induction l with
   | nil => simp
   | cons h t ih =>
     simp [maximum_cons, ih]
 
-theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
+lemma minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
   coe_le_maximum_iff (α := αᵒᵈ)
 
 theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
@@ -495,7 +495,7 @@ theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : 
   · simpa [h y (mem_cons_self _ _)] using IH fun x hx => h x <| mem_cons_of_mem _ hx
 #align list.max_le_of_forall_le List.max_le_of_forall_le
 
-theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
+lemma le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
   induction' l with y l IH
   · exact absurd hx (not_mem_nil _)
   · obtain hl | hl := hx

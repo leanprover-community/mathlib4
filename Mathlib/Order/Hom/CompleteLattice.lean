@@ -125,19 +125,19 @@ export sInfHomClass (map_sInf)
 
 attribute [simp] map_sSup map_sInf
 
-theorem map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
+lemma map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by simp [iSup, ← Set.range_comp, Function.comp]
 #align map_supr map_iSup
 
-theorem map_iSup₂ [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
+lemma map_iSup₂ [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
     f (⨆ (i) (j), g i j) = ⨆ (i) (j), f (g i j) := by simp_rw [map_iSup]
 #align map_supr₂ map_iSup₂
 
-theorem map_iInf [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ι → α) :
+lemma map_iInf [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ι → α) :
     f (⨅ i, g i) = ⨅ i, f (g i) := by simp [iInf, ← Set.range_comp, Function.comp]
 #align map_infi map_iInf
 
-theorem map_iInf₂ [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
+lemma map_iInf₂ [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ∀ i, κ i → α) :
     f (⨅ (i) (j), g i j) = ⨅ (i) (j), f (g i j) := by simp_rw [map_iInf]
 #align map_infi₂ map_iInf
 
@@ -256,12 +256,12 @@ instance : sSupHomClass (sSupHom α β) α β
 
 -- Porting note: times out
 @[simp]
-theorem toFun_eq_coe {f : sSupHom α β} : f.toFun = ⇑f  :=
+lemma toFun_eq_coe {f : sSupHom α β} : f.toFun = ⇑f  :=
   rfl
 #align Sup_hom.to_fun_eq_coe sSupHom.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : sSupHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : sSupHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align Sup_hom.ext sSupHom.ext
 
@@ -293,7 +293,7 @@ instance : Inhabited (sSupHom α α) :=
   ⟨sSupHom.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(sSupHom.id α) = id :=
+lemma coe_id : ⇑(sSupHom.id α) = id :=
   rfl
 #align Sup_hom.coe_id sSupHom.coe_id
 
@@ -338,13 +338,13 @@ theorem id_comp (f : sSupHom α β) : (sSupHom.id β).comp f = f :=
 #align Sup_hom.id_comp sSupHom.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : sSupHom β γ} {f : sSupHom α β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : sSupHom β γ} {f : sSupHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Sup_hom.cancel_right sSupHom.cancel_right
 
 @[simp]
-theorem cancel_left {g : sSupHom β γ} {f₁ f₂ : sSupHom α β} (hg : Injective g) :
+lemma cancel_left {g : sSupHom β γ} {f₁ f₂ : sSupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align Sup_hom.cancel_left sSupHom.cancel_left
@@ -367,7 +367,7 @@ instance : OrderBot (sSupHom α β) where
   bot_le := fun _ _ ↦ CompleteLattice.bot_le _
 
 @[simp]
-theorem coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=
+lemma coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=
   rfl
 #align Sup_hom.coe_bot sSupHom.coe_bot
 
@@ -402,12 +402,12 @@ instance : sInfHomClass (sInfHom α β) α β
 --   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe {f : sInfHom α β} : f.toFun = ⇑f :=
+lemma toFun_eq_coe {f : sInfHom α β} : f.toFun = ⇑f :=
   rfl
 #align Inf_hom.to_fun_eq_coe sInfHom.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : sInfHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : sInfHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align Inf_hom.ext sInfHom.ext
 
@@ -439,7 +439,7 @@ instance : Inhabited (sInfHom α α) :=
   ⟨sInfHom.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(sInfHom.id α) = id :=
+lemma coe_id : ⇑(sInfHom.id α) = id :=
   rfl
 #align Inf_hom.coe_id sInfHom.coe_id
 
@@ -484,13 +484,13 @@ theorem id_comp (f : sInfHom α β) : (sInfHom.id β).comp f = f :=
 #align Inf_hom.id_comp sInfHom.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : sInfHom β γ} {f : sInfHom α β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : sInfHom β γ} {f : sInfHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Inf_hom.cancel_right sInfHom.cancel_right
 
 @[simp]
-theorem cancel_left {g : sInfHom β γ} {f₁ f₂ : sInfHom α β} (hg : Injective g) :
+lemma cancel_left {g : sInfHom β γ} {f₁ f₂ : sInfHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align Inf_hom.cancel_left sInfHom.cancel_left
@@ -513,7 +513,7 @@ instance : OrderTop (sInfHom α β) where
   le_top := fun _ _ => CompleteLattice.le_top _
 
 @[simp]
-theorem coe_top : ⇑(⊤ : sInfHom α β) = ⊤ :=
+lemma coe_top : ⇑(⊤ : sInfHom α β) = ⊤ :=
   rfl
 #align Inf_hom.coe_top sInfHom.coe_top
 
@@ -556,16 +556,16 @@ def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
 /- Porting note: SimpNF linter complains that lhs can be simplified,
 added _aux version with [simp] attribute -/
 -- @[simp]
-theorem toFun_eq_coe {f : FrameHom α β} : f.toFun = ⇑f :=
+lemma toFun_eq_coe {f : FrameHom α β} : f.toFun = ⇑f :=
   rfl
 #align frame_hom.to_fun_eq_coe FrameHom.toFun_eq_coe
 
 @[simp]
-theorem toFun_eq_coe_aux {f : FrameHom α β} : ↑f.toInfTopHom = ⇑f :=
+lemma toFun_eq_coe_aux {f : FrameHom α β} : ↑f.toInfTopHom = ⇑f :=
   rfl
 
 @[ext]
-theorem ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align frame_hom.ext FrameHom.ext
 
@@ -595,7 +595,7 @@ instance : Inhabited (FrameHom α α) :=
   ⟨FrameHom.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(FrameHom.id α) = id :=
+lemma coe_id : ⇑(FrameHom.id α) = id :=
   rfl
 #align frame_hom.coe_id FrameHom.coe_id
 
@@ -639,13 +639,13 @@ theorem id_comp (f : FrameHom α β) : (FrameHom.id β).comp f = f :=
 #align frame_hom.id_comp FrameHom.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align frame_hom.cancel_right FrameHom.cancel_right
 
 @[simp]
-theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
+lemma cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align frame_hom.cancel_left FrameHom.cancel_left
@@ -688,16 +688,16 @@ def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β
 /- Porting note: SimpNF linter complains that lhs can be simplified,
 added _aux version with [simp] attribute -/
 -- @[simp]
-theorem toFun_eq_coe {f : CompleteLatticeHom α β} : f.toFun = ⇑f :=
+lemma toFun_eq_coe {f : CompleteLatticeHom α β} : f.toFun = ⇑f :=
   rfl
 #align complete_lattice_hom.to_fun_eq_coe CompleteLatticeHom.toFun_eq_coe
 
 @[simp]
-theorem toFun_eq_coe_aux {f : CompleteLatticeHom α β} : ↑f.tosInfHom = ⇑f :=
+lemma toFun_eq_coe_aux {f : CompleteLatticeHom α β} : ↑f.tosInfHom = ⇑f :=
   rfl
 
 @[ext]
-theorem ext {f g : CompleteLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : CompleteLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align complete_lattice_hom.ext CompleteLatticeHom.ext
 
@@ -728,7 +728,7 @@ instance : Inhabited (CompleteLatticeHom α α) :=
   ⟨CompleteLatticeHom.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(CompleteLatticeHom.id α) = id :=
+lemma coe_id : ⇑(CompleteLatticeHom.id α) = id :=
   rfl
 #align complete_lattice_hom.coe_id CompleteLatticeHom.coe_id
 
@@ -771,13 +771,13 @@ theorem id_comp (f : CompleteLatticeHom α β) : (CompleteLatticeHom.id β).comp
 #align complete_lattice_hom.id_comp CompleteLatticeHom.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLatticeHom α β}
+lemma cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLatticeHom α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align complete_lattice_hom.cancel_right CompleteLatticeHom.cancel_right
 
 @[simp]
-theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeHom α β}
+lemma cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeHom α β}
     (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align complete_lattice_hom.cancel_left CompleteLatticeHom.cancel_left
@@ -802,7 +802,7 @@ protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ
 #align Sup_hom.dual sSupHom.dual
 
 @[simp]
-theorem dual_id : sSupHom.dual (sSupHom.id α) = sInfHom.id _ :=
+lemma dual_id : sSupHom.dual (sSupHom.id α) = sInfHom.id _ :=
   rfl
 #align Sup_hom.dual_id sSupHom.dual_id
 
@@ -813,7 +813,7 @@ theorem dual_comp (g : sSupHom β γ) (f : sSupHom α β) :
 #align Sup_hom.dual_comp sSupHom.dual_comp
 
 @[simp]
-theorem symm_dual_id : sSupHom.dual.symm (sInfHom.id _) = sSupHom.id α :=
+lemma symm_dual_id : sSupHom.dual.symm (sInfHom.id _) = sSupHom.id α :=
   rfl
 #align Sup_hom.symm_dual_id sSupHom.symm_dual_id
 
@@ -844,7 +844,7 @@ protected def dual : sInfHom α β ≃ sSupHom αᵒᵈ βᵒᵈ
 #align Inf_hom.dual sInfHom.dual
 
 @[simp]
-theorem dual_id : sInfHom.dual (sInfHom.id α) = sSupHom.id _ :=
+lemma dual_id : sInfHom.dual (sInfHom.id α) = sSupHom.id _ :=
   rfl
 #align Inf_hom.dual_id sInfHom.dual_id
 
@@ -855,7 +855,7 @@ theorem dual_comp (g : sInfHom β γ) (f : sInfHom α β) :
 #align Inf_hom.dual_comp sInfHom.dual_comp
 
 @[simp]
-theorem symm_dual_id : sInfHom.dual.symm (sSupHom.id _) = sInfHom.id α :=
+lemma symm_dual_id : sInfHom.dual.symm (sSupHom.id _) = sInfHom.id α :=
   rfl
 #align Inf_hom.symm_dual_id sInfHom.symm_dual_id
 
@@ -883,7 +883,7 @@ protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ β
 #align complete_lattice_hom.dual CompleteLatticeHom.dual
 
 @[simp]
-theorem dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ :=
+lemma dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ :=
   rfl
 #align complete_lattice_hom.dual_id CompleteLatticeHom.dual_id
 
@@ -895,7 +895,7 @@ theorem dual_comp (g : CompleteLatticeHom β γ) (f : CompleteLatticeHom α β) 
 #align complete_lattice_hom.dual_comp CompleteLatticeHom.dual_comp
 
 @[simp]
-theorem symm_dual_id :
+lemma symm_dual_id :
     CompleteLatticeHom.dual.symm (CompleteLatticeHom.id _) = CompleteLatticeHom.id α :=
   rfl
 #align complete_lattice_hom.symm_dual_id CompleteLatticeHom.symm_dual_id
@@ -935,7 +935,7 @@ theorem setPreimage_apply (f : α → β) (s : Set β) : setPreimage f s = s.pre
 #align complete_lattice_hom.set_preimage_apply CompleteLatticeHom.setPreimage_apply
 
 @[simp]
-theorem setPreimage_id : setPreimage (id : α → α) = CompleteLatticeHom.id _ :=
+lemma setPreimage_id : setPreimage (id : α → α) = CompleteLatticeHom.id _ :=
   rfl
 #align complete_lattice_hom.set_preimage_id CompleteLatticeHom.setPreimage_id
 
@@ -947,7 +947,7 @@ theorem setPreimage_comp (g : β → γ) (f : α → β) :
 
 end CompleteLatticeHom
 
-theorem Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) := by
+lemma Set.image_sSup {f : α → β} (s : Set (Set α)) : f '' sSup s = sSup (image f '' s) := by
   ext b
   simp only [sSup_eq_sUnion, mem_image, mem_sUnion, exists_prop, sUnion_image, mem_iUnion]
   constructor
@@ -995,11 +995,11 @@ def infsInfHom : sInfHom (α × α) α where
 #align inf_Inf_hom infsInfHom
 
 @[simp, norm_cast]
-theorem supsSupHom_apply : supsSupHom x = x.1 ⊔ x.2 :=
+lemma supsSupHom_apply : supsSupHom x = x.1 ⊔ x.2 :=
   rfl
 #align sup_Sup_hom_apply supsSupHom_apply
 
 @[simp, norm_cast]
-theorem infsInfHom_apply : infsInfHom x = x.1 ⊓ x.2 :=
+lemma infsInfHom_apply : infsInfHom x = x.1 ⊓ x.2 :=
   rfl
 #align inf_Inf_hom_apply infsInfHom_apply

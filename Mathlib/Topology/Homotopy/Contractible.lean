@@ -30,14 +30,14 @@ theorem nullhomotopic_of_constant (y : Y) : Nullhomotopic (ContinuousMap.const X
   ⟨y, by rfl⟩
 #align continuous_map.nullhomotopic_of_constant ContinuousMap.nullhomotopic_of_constant
 
-theorem Nullhomotopic.comp_right {f : C(X, Y)} (hf : f.Nullhomotopic) (g : C(Y, Z)) :
+lemma Nullhomotopic.comp_right {f : C(X, Y)} (hf : f.Nullhomotopic) (g : C(Y, Z)) :
     (g.comp f).Nullhomotopic := by
   cases' hf with y hy
   use g y
   exact Homotopic.hcomp hy (Homotopic.refl g)
 #align continuous_map.nullhomotopic.comp_right ContinuousMap.Nullhomotopic.comp_right
 
-theorem Nullhomotopic.comp_left {f : C(Y, Z)} (hf : f.Nullhomotopic) (g : C(X, Y)) :
+lemma Nullhomotopic.comp_left {f : C(Y, Z)} (hf : f.Nullhomotopic) (g : C(X, Y)) :
     (f.comp g).Nullhomotopic := by
   cases' hf with y hy
   use y
@@ -84,7 +84,7 @@ theorem contractible_iff_id_nullhomotopic (Y : Type*) [TopologicalSpace Y] :
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-protected theorem ContinuousMap.HomotopyEquiv.contractibleSpace [ContractibleSpace Y] (e : X ≃ₕ Y) :
+protected lemma ContinuousMap.HomotopyEquiv.contractibleSpace [ContractibleSpace Y] (e : X ≃ₕ Y) :
     ContractibleSpace X :=
   ⟨(ContractibleSpace.hequiv_unit Y).map e.trans⟩
 #align continuous_map.homotopy_equiv.contractible_space ContinuousMap.HomotopyEquiv.contractibleSpace
@@ -94,7 +94,7 @@ protected theorem ContinuousMap.HomotopyEquiv.contractibleSpace_iff (e : X ≃�
   ⟨fun _ => e.symm.contractibleSpace, fun _ => e.contractibleSpace⟩
 #align continuous_map.homotopy_equiv.contractible_space_iff ContinuousMap.HomotopyEquiv.contractibleSpace_iff
 
-protected theorem Homeomorph.contractibleSpace [ContractibleSpace Y] (e : X ≃ₜ Y) :
+protected lemma Homeomorph.contractibleSpace [ContractibleSpace Y] (e : X ≃ₜ Y) :
     ContractibleSpace X :=
   e.toHomotopyEquiv.contractibleSpace
 #align homeomorph.contractible_space Homeomorph.contractibleSpace

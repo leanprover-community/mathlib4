@@ -57,14 +57,14 @@ def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
 #align algebraic_geometry.Scheme.empty_to AlgebraicGeometry.Scheme.emptyTo
 
 @[ext]
-theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
+lemma Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
   -- Porting note : `ext` regression
   -- see https://github.com/leanprover-community/mathlib4/issues/5229
   LocallyRingedSpace.Hom.ext _ _ <| PresheafedSpace.ext _ _ (by ext a; exact PEmpty.elim a) <|
     NatTrans.ext _ _ <| funext fun a => by aesop_cat
 #align algebraic_geometry.Scheme.empty_ext AlgebraicGeometry.Scheme.empty_ext
 
-theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo X :=
+lemma Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo X :=
   Scheme.empty_ext f (Scheme.emptyTo X)
 #align algebraic_geometry.Scheme.eq_empty_to AlgebraicGeometry.Scheme.eq_emptyTo
 
@@ -77,7 +77,7 @@ def emptyIsInitial : IsInitial (∅ : Scheme.{u}) :=
 #align algebraic_geometry.empty_is_initial AlgebraicGeometry.emptyIsInitial
 
 @[simp]
-theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
+lemma emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
   rfl
 #align algebraic_geometry.empty_is_initial_to AlgebraicGeometry.emptyIsInitial_to
 

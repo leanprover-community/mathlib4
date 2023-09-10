@@ -72,57 +72,57 @@ def fib (n : ℕ) : ℕ :=
 #align nat.fib Nat.fib
 
 @[simp]
-theorem fib_zero : fib 0 = 0 :=
+lemma fib_zero : fib 0 = 0 :=
   rfl
 #align nat.fib_zero Nat.fib_zero
 
 @[simp]
-theorem fib_one : fib 1 = 1 :=
+lemma fib_one : fib 1 = 1 :=
   rfl
 #align nat.fib_one Nat.fib_one
 
 @[simp]
-theorem fib_two : fib 2 = 1 :=
+lemma fib_two : fib 2 = 1 :=
   rfl
 #align nat.fib_two Nat.fib_two
 
 /-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.` -/
-theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
+lemma fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
   simp [fib, Function.iterate_succ_apply']
 #align nat.fib_add_two Nat.fib_add_two
 
-theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
+lemma fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
 
 @[mono]
-theorem fib_mono : Monotone fib :=
+lemma fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 #align nat.fib_mono Nat.fib_mono
 
-theorem fib_pos {n : ℕ} (n_pos : 0 < n) : 0 < fib n :=
+lemma fib_pos {n : ℕ} (n_pos : 0 < n) : 0 < fib n :=
   calc
     0 < fib 1 := by decide
     _ ≤ fib n := fib_mono n_pos
 #align nat.fib_pos Nat.fib_pos
 
-theorem fib_add_two_sub_fib_add_one {n : ℕ} : fib (n + 2) - fib (n + 1) = fib n := by
+lemma fib_add_two_sub_fib_add_one {n : ℕ} : fib (n + 2) - fib (n + 1) = fib n := by
   rw [fib_add_two, add_tsub_cancel_right]
 #align nat.fib_add_two_sub_fib_add_one Nat.fib_add_two_sub_fib_add_one
 
-theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
+lemma fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   rcases exists_add_of_le hn with ⟨n, rfl⟩
   rw [← tsub_pos_iff_lt, add_comm 2, fib_add_two_sub_fib_add_one]
   apply fib_pos (succ_pos n)
 #align nat.fib_lt_fib_succ Nat.fib_lt_fib_succ
 
 /-- `fib (n + 2)` is strictly monotone. -/
-theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
+lemma fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
   refine' strictMono_nat_of_lt_succ fun n => _
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
 
-theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
+lemma le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
   induction' five_le_n with n five_le_n IH
   ·-- 5 ≤ fib 5
     rfl
@@ -286,7 +286,7 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
   rwa [gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mp]
 #align nat.fib_dvd Nat.fib_dvd
 
-theorem fib_succ_eq_sum_choose :
+lemma fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p in Finset.Nat.antidiagonal n, choose p.1 p.2 :=
   twoStepInduction rfl rfl fun n h1 h2 => by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']

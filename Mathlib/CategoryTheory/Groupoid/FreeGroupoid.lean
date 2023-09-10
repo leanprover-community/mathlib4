@@ -78,7 +78,7 @@ def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
 instance {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := by
   inhabit V; exact ⟨⟨@default V _⟩⟩
 
-theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
+lemma congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quotient.CompClosure redStep p q → Quotient.CompClosure redStep p.reverse q.reverse := by
   rintro ⟨XW, pp, qq, WY, _, Z, f⟩
   have : Quotient.CompClosure redStep (WY.reverse ≫ 𝟙 _ ≫ XW.reverse)
@@ -90,7 +90,7 @@ theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quiver.Path.comp_assoc] using this
 #align category_theory.groupoid.free.congr_reverse CategoryTheory.Groupoid.Free.congr_reverse
 
-theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
+lemma congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 X) := by
   apply Quot.EqvGen_sound
@@ -117,7 +117,7 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     · exact ih
 #align category_theory.groupoid.free.congr_comp_reverse CategoryTheory.Groupoid.Free.congr_comp_reverse
 
-theorem congr_reverse_comp {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
+lemma congr_reverse_comp {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p.reverse ≫ p) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 Y) := by
   nth_rw 2 [← Quiver.Path.reverse_reverse p]
@@ -145,7 +145,7 @@ def of (V) [Quiver V] : V ⥤q FreeGroupoid V where
   map f := Quot.mk _ f.toPosPath
 #align category_theory.groupoid.free.of CategoryTheory.Groupoid.Free.of
 
-theorem of_eq :
+lemma of_eq :
     of V = (Quiver.Symmetrify.of ⋙q Paths.of).comp
       (Quotient.functor <| @redStep V _).toPrefunctor := rfl
 #align category_theory.groupoid.free.of_eq CategoryTheory.Groupoid.Free.of_eq
@@ -197,7 +197,7 @@ def _root_.CategoryTheory.freeGroupoidFunctor (φ : V ⥤q V') : FreeGroupoid V 
   lift (φ ⋙q of V')
 #align category_theory.free_groupoid_functor CategoryTheory.freeGroupoidFunctor
 
-theorem freeGroupoidFunctor_id :
+lemma freeGroupoidFunctor_id :
     freeGroupoidFunctor (Prefunctor.id V) = Functor.id (FreeGroupoid V) := by
   dsimp only [freeGroupoidFunctor]; symm
   apply lift_unique; rfl

@@ -123,7 +123,7 @@ theorem AntivaryOn.card_mul_sum_le_sum_mul_sum (hfg : AntivaryOn f g s) :
 
 /-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square
 of the sum is less than the size of the set times the sum of the squares. -/
-theorem sq_sum_le_card_mul_sum_sq : (∑ i in s, f i) ^ 2 ≤ s.card * ∑ i in s, f i ^ 2 := by
+lemma sq_sum_le_card_mul_sum_sq : (∑ i in s, f i) ^ 2 ≤ s.card * ∑ i in s, f i ^ 2 := by
   simp_rw [sq]
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
 #align sq_sum_le_card_mul_sum_sq sq_sum_le_card_mul_sum_sq
@@ -150,7 +150,7 @@ end Mul
 
 variable [LinearOrderedField α] {s : Finset ι} {f : ι → α}
 
-theorem sum_div_card_sq_le_sum_sq_div_card :
+lemma sum_div_card_sq_le_sum_sq_div_card :
     ((∑ i in s, f i) / s.card) ^ 2 ≤ (∑ i in s, f i ^ 2) / s.card := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp

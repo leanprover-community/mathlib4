@@ -53,7 +53,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 (forall_iff _).symm
 ```
 -/
-theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
+lemma forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
   | 0, n, P => Iff.symm Fin.forall_fin_zero_pi
   | m + 1, n, P => by
     simp only [Forall, FinVec.forall_iff, forall_iff]
@@ -77,7 +77,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 (exists_iff _).symm
 ```
 -/
-theorem exists_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Exists P ↔ ∃ x, P x
+lemma exists_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Exists P ↔ ∃ x, P x
   | 0, n, P => Iff.symm Fin.exists_fin_zero_pi
   | m + 1, n, P => by
     simp only [Exists, FinVec.exists_iff, exists_iff]
@@ -101,7 +101,7 @@ example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] := (transpose
 ```
 -/
 @[simp]
-theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transposeᵣ A = transpose A
+lemma transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transposeᵣ A = transpose A
   | _, 0, A => Subsingleton.elim _ _
   | m, n + 1, A =>
     Matrix.ext fun i j => by
@@ -129,7 +129,7 @@ example (a b c d : α) [Mul α] [AddCommMonoid α] :
 ```
 -/
 @[simp]
-theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
+lemma dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
     dotProductᵣ a b = dotProduct a b := by
   simp_rw [dotProductᵣ, dotProduct, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq,
       Function.comp_apply]
@@ -156,7 +156,7 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 ```
 -/
 @[simp]
-theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
+lemma mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
     (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A * B := by
   simp [mulᵣ, Function.comp, Matrix.transpose]
   rfl
@@ -182,7 +182,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 ```
 -/
 @[simp]
-theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
+lemma mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
     mulVecᵣ A v = A.mulVec v := by
   simp [mulVecᵣ, Function.comp]
   rfl
@@ -206,7 +206,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 ```
 -/
 @[simp]
-theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
+lemma vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
     vecMulᵣ v A = vecMul v A := by
   simp [vecMulᵣ, Function.comp]
   rfl
@@ -229,7 +229,7 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 (etaExpand_eq _).symm
 ```
 -/
-theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
+lemma etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of, Equiv.refl_apply]
 #align matrix.eta_expand_eq Matrix.etaExpand_eq
 

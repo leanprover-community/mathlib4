@@ -128,7 +128,7 @@ theorem toWeakDual_eq_iff (x' y' : Dual 𝕜 E) : toWeakDual x' = toWeakDual y' 
   Function.Injective.eq_iff <| LinearEquiv.injective toWeakDual
 #align normed_space.dual.to_weak_dual_eq_iff NormedSpace.Dual.toWeakDual_eq_iff
 
-theorem toWeakDual_continuous : Continuous fun x' : Dual 𝕜 E => toWeakDual x' :=
+lemma toWeakDual_continuous : Continuous fun x' : Dual 𝕜 E => toWeakDual x' :=
   WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
 #align normed_space.dual.to_weak_dual_continuous NormedSpace.Dual.toWeakDual_continuous
 
@@ -140,7 +140,7 @@ def continuousLinearMapToWeakDual : Dual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
 #align normed_space.dual.continuous_linear_map_to_weak_dual NormedSpace.Dual.continuousLinearMapToWeakDual
 
 /-- The weak-star topology is coarser than the dual-norm topology. -/
-theorem dual_norm_topology_le_weak_dual_topology :
+lemma dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (Dual 𝕜 E)) ≤
       (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
   convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
@@ -208,13 +208,13 @@ variable {𝕜}
 
 /-- While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
 closed sets to closed sets. -/
-theorem isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
+lemma isClosed_image_coe_of_bounded_of_closed {s : Set (WeakDual 𝕜 E)}
     (hb : Bounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' s) :=
   ContinuousLinearMap.isClosed_image_coe_of_bounded_of_weak_closed hb (isClosed_induced_iff'.1 hc)
 #align weak_dual.is_closed_image_coe_of_bounded_of_closed WeakDual.isClosed_image_coe_of_bounded_of_closed
 
-theorem isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
+lemma isCompact_of_bounded_of_closed [ProperSpace 𝕜] {s : Set (WeakDual 𝕜 E)}
     (hb : Bounded (Dual.toWeakDual ⁻¹' s)) (hc : IsClosed s) : IsCompact s :=
   (Embedding.isCompact_iff_isCompact_image FunLike.coe_injective.embedding_induced).mpr <|
     ContinuousLinearMap.isCompact_image_coe_of_bounded_of_closed_image hb <|
@@ -225,7 +225,7 @@ variable (𝕜)
 
 /-- The image under `↑ : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
-theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
+lemma isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' polar 𝕜 s) :=
   isClosed_image_coe_of_bounded_of_closed (bounded_polar_of_mem_nhds_zero 𝕜 s_nhd)
     (isClosed_polar _ _)
@@ -233,7 +233,7 @@ theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
 
 /-- The image under `↑ : NormedSpace.Dual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
-theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
+lemma _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
   (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsClosed (((↑) : Dual 𝕜 E → E → 𝕜) '' NormedSpace.polar 𝕜 s) :=
   WeakDual.isClosed_image_polar_of_mem_nhds 𝕜 s_nhd
@@ -241,14 +241,14 @@ theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
 
 /-- The **Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in a
 normed space `E` is a compact subset of `WeakDual 𝕜 E`. -/
-theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
+lemma isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
     IsCompact (polar 𝕜 s) :=
   isCompact_of_bounded_of_closed (bounded_polar_of_mem_nhds_zero 𝕜 s_nhd) (isClosed_polar _ _)
 #align weak_dual.is_compact_polar WeakDual.isCompact_polar
 
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/
-theorem isCompact_closedBall [ProperSpace 𝕜] (x' : Dual 𝕜 E) (r : ℝ) :
+lemma isCompact_closedBall [ProperSpace 𝕜] (x' : Dual 𝕜 E) (r : ℝ) :
     IsCompact (toNormedDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed bounded_closedBall (isClosed_closedBall x' r)
 #align weak_dual.is_compact_closed_ball WeakDual.isCompact_closedBall

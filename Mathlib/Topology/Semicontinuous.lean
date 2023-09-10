@@ -133,7 +133,7 @@ theorem LowerSemicontinuousWithinAt.mono (h : LowerSemicontinuousWithinAt f s x)
   Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 #align lower_semicontinuous_within_at.mono LowerSemicontinuousWithinAt.mono
 
-theorem lowerSemicontinuousWithinAt_univ_iff :
+lemma lowerSemicontinuousWithinAt_univ_iff :
     LowerSemicontinuousWithinAt f univ x ↔ LowerSemicontinuousAt f x := by
   simp [LowerSemicontinuousWithinAt, LowerSemicontinuousAt, nhdsWithin_univ]
 #align lower_semicontinuous_within_at_univ_iff lowerSemicontinuousWithinAt_univ_iff
@@ -152,7 +152,7 @@ theorem LowerSemicontinuousOn.mono (h : LowerSemicontinuousOn f s) (hst : t ⊆ 
     LowerSemicontinuousOn f t := fun x hx => (h x (hst hx)).mono hst
 #align lower_semicontinuous_on.mono LowerSemicontinuousOn.mono
 
-theorem lowerSemicontinuousOn_univ_iff : LowerSemicontinuousOn f univ ↔ LowerSemicontinuous f := by
+lemma lowerSemicontinuousOn_univ_iff : LowerSemicontinuousOn f univ ↔ LowerSemicontinuous f := by
   simp [LowerSemicontinuousOn, LowerSemicontinuous, lowerSemicontinuousWithinAt_univ_iff]
 #align lower_semicontinuous_on_univ_iff lowerSemicontinuousOn_univ_iff
 
@@ -173,19 +173,19 @@ theorem LowerSemicontinuous.lowerSemicontinuousOn (h : LowerSemicontinuous f) (s
 /-! #### Constants -/
 
 
-theorem lowerSemicontinuousWithinAt_const : LowerSemicontinuousWithinAt (fun _x => z) s x :=
+lemma lowerSemicontinuousWithinAt_const : LowerSemicontinuousWithinAt (fun _x => z) s x :=
   fun _y hy => Filter.eventually_of_forall fun _x => hy
 #align lower_semicontinuous_within_at_const lowerSemicontinuousWithinAt_const
 
-theorem lowerSemicontinuousAt_const : LowerSemicontinuousAt (fun _x => z) x := fun _y hy =>
+lemma lowerSemicontinuousAt_const : LowerSemicontinuousAt (fun _x => z) x := fun _y hy =>
   Filter.eventually_of_forall fun _x => hy
 #align lower_semicontinuous_at_const lowerSemicontinuousAt_const
 
-theorem lowerSemicontinuousOn_const : LowerSemicontinuousOn (fun _x => z) s := fun _x _hx =>
+lemma lowerSemicontinuousOn_const : LowerSemicontinuousOn (fun _x => z) s := fun _x _hx =>
   lowerSemicontinuousWithinAt_const
 #align lower_semicontinuous_on_const lowerSemicontinuousOn_const
 
-theorem lowerSemicontinuous_const : LowerSemicontinuous fun _x : α => z := fun _x =>
+lemma lowerSemicontinuous_const : LowerSemicontinuous fun _x : α => z := fun _x =>
   lowerSemicontinuousAt_const
 #align lower_semicontinuous_const lowerSemicontinuous_const
 
@@ -251,7 +251,7 @@ end
 /-! #### Relationship with continuity -/
 
 
-theorem lowerSemicontinuous_iff_isOpen_preimage :
+lemma lowerSemicontinuous_iff_isOpen_preimage :
     LowerSemicontinuous f ↔ ∀ y, IsOpen (f ⁻¹' Ioi y) :=
   ⟨fun H y => isOpen_iff_mem_nhds.2 fun x hx => H x y hx, fun H _x y y_lt =>
     IsOpen.mem_nhds (H y) y_lt⟩
@@ -266,32 +266,32 @@ section
 
 variable {γ : Type*} [LinearOrder γ]
 
-theorem lowerSemicontinuous_iff_isClosed_preimage {f : α → γ} :
+lemma lowerSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     LowerSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Iic y) := by
   rw [lowerSemicontinuous_iff_isOpen_preimage]
   simp only [← isOpen_compl_iff, ← preimage_compl, compl_Iic]
 #align lower_semicontinuous_iff_is_closed_preimage lowerSemicontinuous_iff_isClosed_preimage
 
-theorem LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicontinuous f) (y : γ) :
+lemma LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicontinuous f) (y : γ) :
     IsClosed (f ⁻¹' Iic y) :=
   lowerSemicontinuous_iff_isClosed_preimage.1 hf y
 #align lower_semicontinuous.is_closed_preimage LowerSemicontinuous.isClosed_preimage
 
 variable [TopologicalSpace γ] [OrderTopology γ]
 
-theorem ContinuousWithinAt.lowerSemicontinuousWithinAt {f : α → γ} (h : ContinuousWithinAt f s x) :
+lemma ContinuousWithinAt.lowerSemicontinuousWithinAt {f : α → γ} (h : ContinuousWithinAt f s x) :
     LowerSemicontinuousWithinAt f s x := fun _y hy => h (Ioi_mem_nhds hy)
 #align continuous_within_at.lower_semicontinuous_within_at ContinuousWithinAt.lowerSemicontinuousWithinAt
 
-theorem ContinuousAt.lowerSemicontinuousAt {f : α → γ} (h : ContinuousAt f x) :
+lemma ContinuousAt.lowerSemicontinuousAt {f : α → γ} (h : ContinuousAt f x) :
     LowerSemicontinuousAt f x := fun _y hy => h (Ioi_mem_nhds hy)
 #align continuous_at.lower_semicontinuous_at ContinuousAt.lowerSemicontinuousAt
 
-theorem ContinuousOn.lowerSemicontinuousOn {f : α → γ} (h : ContinuousOn f s) :
+lemma ContinuousOn.lowerSemicontinuousOn {f : α → γ} (h : ContinuousOn f s) :
     LowerSemicontinuousOn f s := fun x hx => (h x hx).lowerSemicontinuousWithinAt
 #align continuous_on.lower_semicontinuous_on ContinuousOn.lowerSemicontinuousOn
 
-theorem Continuous.lowerSemicontinuous {f : α → γ} (h : Continuous f) : LowerSemicontinuous f :=
+lemma Continuous.lowerSemicontinuous {f : α → γ} (h : Continuous f) : LowerSemicontinuous f :=
   fun _x => h.continuousAt.lowerSemicontinuousAt
 #align continuous.lower_semicontinuous Continuous.lowerSemicontinuous
 
@@ -306,7 +306,7 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
 
-theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
+lemma ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
     LowerSemicontinuousWithinAt (g ∘ f) s x := by
   intro y hy
@@ -322,40 +322,40 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
     exact Filter.eventually_of_forall fun a => hy.trans_le (gmon (h (f a)))
 #align continuous_at.comp_lower_semicontinuous_within_at ContinuousAt.comp_lowerSemicontinuousWithinAt
 
-theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
+lemma ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : LowerSemicontinuousAt f x) (gmon : Monotone g) : LowerSemicontinuousAt (g ∘ f) x := by
   simp only [← lowerSemicontinuousWithinAt_univ_iff] at hf ⊢
   exact hg.comp_lowerSemicontinuousWithinAt hf gmon
 #align continuous_at.comp_lower_semicontinuous_at ContinuousAt.comp_lowerSemicontinuousAt
 
-theorem Continuous.comp_lowerSemicontinuousOn {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_lowerSemicontinuousOn {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : LowerSemicontinuousOn f s) (gmon : Monotone g) : LowerSemicontinuousOn (g ∘ f) s :=
   fun x hx => hg.continuousAt.comp_lowerSemicontinuousWithinAt (hf x hx) gmon
 #align continuous.comp_lower_semicontinuous_on Continuous.comp_lowerSemicontinuousOn
 
-theorem Continuous.comp_lowerSemicontinuous {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_lowerSemicontinuous {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : LowerSemicontinuous f) (gmon : Monotone g) : LowerSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_lowerSemicontinuousAt (hf x) gmon
 #align continuous.comp_lower_semicontinuous Continuous.comp_lowerSemicontinuous
 
-theorem ContinuousAt.comp_lowerSemicontinuousWithinAt_antitone {g : γ → δ} {f : α → γ}
+lemma ContinuousAt.comp_lowerSemicontinuousWithinAt_antitone {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Antitone g) :
     UpperSemicontinuousWithinAt (g ∘ f) s x :=
   @ContinuousAt.comp_lowerSemicontinuousWithinAt α _ x s γ _ _ _ δᵒᵈ _ _ _ g f hg hf gmon
 #align continuous_at.comp_lower_semicontinuous_within_at_antitone ContinuousAt.comp_lowerSemicontinuousWithinAt_antitone
 
-theorem ContinuousAt.comp_lowerSemicontinuousAt_antitone {g : γ → δ} {f : α → γ}
+lemma ContinuousAt.comp_lowerSemicontinuousAt_antitone {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousAt f x) (gmon : Antitone g) :
     UpperSemicontinuousAt (g ∘ f) x :=
   @ContinuousAt.comp_lowerSemicontinuousAt α _ x γ _ _ _ δᵒᵈ _ _ _ g f hg hf gmon
 #align continuous_at.comp_lower_semicontinuous_at_antitone ContinuousAt.comp_lowerSemicontinuousAt_antitone
 
-theorem Continuous.comp_lowerSemicontinuousOn_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_lowerSemicontinuousOn_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : LowerSemicontinuousOn f s) (gmon : Antitone g) : UpperSemicontinuousOn (g ∘ f) s :=
   fun x hx => hg.continuousAt.comp_lowerSemicontinuousWithinAt_antitone (hf x hx) gmon
 #align continuous.comp_lower_semicontinuous_on_antitone Continuous.comp_lowerSemicontinuousOn_antitone
 
-theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : LowerSemicontinuous f) (gmon : Antitone g) : UpperSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_lowerSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_lower_semicontinuous_antitone Continuous.comp_lowerSemicontinuous_antitone
@@ -373,7 +373,7 @@ variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalS
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontinuousWithinAt f s x)
+lemma LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontinuousWithinAt f s x)
     (hg : LowerSemicontinuousWithinAt g s x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     LowerSemicontinuousWithinAt (fun z => f z + g z) s x := by
@@ -446,7 +446,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem LowerSemicontinuousAt.add' {f g : α → γ} (hf : LowerSemicontinuousAt f x)
+lemma LowerSemicontinuousAt.add' {f g : α → γ} (hf : LowerSemicontinuousAt f x)
     (hg : LowerSemicontinuousAt g x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     LowerSemicontinuousAt (fun z => f z + g z) x := by
@@ -457,7 +457,7 @@ theorem LowerSemicontinuousAt.add' {f g : α → γ} (hf : LowerSemicontinuousAt
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem LowerSemicontinuousOn.add' {f g : α → γ} (hf : LowerSemicontinuousOn f s)
+lemma LowerSemicontinuousOn.add' {f g : α → γ} (hf : LowerSemicontinuousOn f s)
     (hg : LowerSemicontinuousOn g s)
     (hcont : ∀ x ∈ s, ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     LowerSemicontinuousOn (fun z => f z + g z) s := fun x hx =>
@@ -467,7 +467,7 @@ theorem LowerSemicontinuousOn.add' {f g : α → γ} (hf : LowerSemicontinuousOn
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem LowerSemicontinuous.add' {f g : α → γ} (hf : LowerSemicontinuous f)
+lemma LowerSemicontinuous.add' {f g : α → γ} (hf : LowerSemicontinuous f)
     (hg : LowerSemicontinuous g)
     (hcont : ∀ x, ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     LowerSemicontinuous fun z => f z + g z := fun x => (hf x).add' (hg x) (hcont x)
@@ -478,7 +478,7 @@ variable [ContinuousAdd γ]
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem LowerSemicontinuousWithinAt.add {f g : α → γ} (hf : LowerSemicontinuousWithinAt f s x)
+lemma LowerSemicontinuousWithinAt.add {f g : α → γ} (hf : LowerSemicontinuousWithinAt f s x)
     (hg : LowerSemicontinuousWithinAt g s x) :
     LowerSemicontinuousWithinAt (fun z => f z + g z) s x :=
   hf.add' hg continuous_add.continuousAt
@@ -487,7 +487,7 @@ theorem LowerSemicontinuousWithinAt.add {f g : α → γ} (hf : LowerSemicontinu
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem LowerSemicontinuousAt.add {f g : α → γ} (hf : LowerSemicontinuousAt f x)
+lemma LowerSemicontinuousAt.add {f g : α → γ} (hf : LowerSemicontinuousAt f x)
     (hg : LowerSemicontinuousAt g x) : LowerSemicontinuousAt (fun z => f z + g z) x :=
   hf.add' hg continuous_add.continuousAt
 #align lower_semicontinuous_at.add LowerSemicontinuousAt.add
@@ -495,7 +495,7 @@ theorem LowerSemicontinuousAt.add {f g : α → γ} (hf : LowerSemicontinuousAt 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem LowerSemicontinuousOn.add {f g : α → γ} (hf : LowerSemicontinuousOn f s)
+lemma LowerSemicontinuousOn.add {f g : α → γ} (hf : LowerSemicontinuousOn f s)
     (hg : LowerSemicontinuousOn g s) : LowerSemicontinuousOn (fun z => f z + g z) s :=
   hf.add' hg fun _x _hx => continuous_add.continuousAt
 #align lower_semicontinuous_on.add LowerSemicontinuousOn.add
@@ -503,12 +503,12 @@ theorem LowerSemicontinuousOn.add {f g : α → γ} (hf : LowerSemicontinuousOn 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem LowerSemicontinuous.add {f g : α → γ} (hf : LowerSemicontinuous f)
+lemma LowerSemicontinuous.add {f g : α → γ} (hf : LowerSemicontinuous f)
     (hg : LowerSemicontinuous g) : LowerSemicontinuous fun z => f z + g z :=
   hf.add' hg fun _x => continuous_add.continuousAt
 #align lower_semicontinuous.add LowerSemicontinuous.add
 
-theorem lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
+lemma lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun z => ∑ i in a, f i z) s x := by
   classical
@@ -520,20 +520,20 @@ theorem lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
           (IH fun j ja => ha j (Finset.mem_insert_of_mem ja))
 #align lower_semicontinuous_within_at_sum lowerSemicontinuousWithinAt_sum
 
-theorem lowerSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
+lemma lowerSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuousAt (f i) x) :
     LowerSemicontinuousAt (fun z => ∑ i in a, f i z) x := by
   simp_rw [← lowerSemicontinuousWithinAt_univ_iff] at *
   exact lowerSemicontinuousWithinAt_sum ha
 #align lower_semicontinuous_at_sum lowerSemicontinuousAt_sum
 
-theorem lowerSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
+lemma lowerSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuousOn (f i) s) :
     LowerSemicontinuousOn (fun z => ∑ i in a, f i z) s := fun x hx =>
   lowerSemicontinuousWithinAt_sum fun i hi => ha i hi x hx
 #align lower_semicontinuous_on_sum lowerSemicontinuousOn_sum
 
-theorem lowerSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
+lemma lowerSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuous (f i)) : LowerSemicontinuous fun z => ∑ i in a, f i z :=
   fun x => lowerSemicontinuousAt_sum fun i hi => ha i hi x
 #align lower_semicontinuous_sum lowerSemicontinuous_sum
@@ -547,7 +547,7 @@ section
 
 variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
 
-theorem lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
+lemma lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddAbove (range fun i => f i y))
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ⨆ i, f i x') s x := by
@@ -558,19 +558,19 @@ theorem lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
     filter_upwards [h i y hi, bdd]with y hy hy' using hy.trans_le (le_ciSup hy' i)
 #align lower_semicontinuous_within_at_csupr lowerSemicontinuousWithinAt_ciSup
 
-theorem lowerSemicontinuousWithinAt_iSup {f : ι → α → δ}
+lemma lowerSemicontinuousWithinAt_iSup {f : ι → α → δ}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ⨆ i, f i x') s x :=
   lowerSemicontinuousWithinAt_ciSup (by simp) h
 #align lower_semicontinuous_within_at_supr lowerSemicontinuousWithinAt_iSup
 
-theorem lowerSemicontinuousWithinAt_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma lowerSemicontinuousWithinAt_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousWithinAt (f i hi) s x) :
     LowerSemicontinuousWithinAt (fun x' => ⨆ (i) (hi), f i hi x') s x :=
   lowerSemicontinuousWithinAt_iSup fun i => lowerSemicontinuousWithinAt_iSup fun hi => h i hi
 #align lower_semicontinuous_within_at_bsupr lowerSemicontinuousWithinAt_biSup
 
-theorem lowerSemicontinuousAt_ciSup {f : ι → α → δ'}
+lemma lowerSemicontinuousAt_ciSup {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝 x, BddAbove (range fun i => f i y)) (h : ∀ i, LowerSemicontinuousAt (f i) x) :
     LowerSemicontinuousAt (fun x' => ⨆ i, f i x') x := by
   simp_rw [← lowerSemicontinuousWithinAt_univ_iff] at *
@@ -578,45 +578,45 @@ theorem lowerSemicontinuousAt_ciSup {f : ι → α → δ'}
   exact lowerSemicontinuousWithinAt_ciSup bdd h
 #align lower_semicontinuous_at_csupr lowerSemicontinuousAt_ciSup
 
-theorem lowerSemicontinuousAt_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousAt (f i) x) :
+lemma lowerSemicontinuousAt_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousAt (f i) x) :
     LowerSemicontinuousAt (fun x' => ⨆ i, f i x') x :=
   lowerSemicontinuousAt_ciSup (by simp) h
 #align lower_semicontinuous_at_supr lowerSemicontinuousAt_iSup
 
-theorem lowerSemicontinuousAt_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma lowerSemicontinuousAt_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousAt (f i hi) x) :
     LowerSemicontinuousAt (fun x' => ⨆ (i) (hi), f i hi x') x :=
   lowerSemicontinuousAt_iSup fun i => lowerSemicontinuousAt_iSup fun hi => h i hi
 #align lower_semicontinuous_at_bsupr lowerSemicontinuousAt_biSup
 
-theorem lowerSemicontinuousOn_ciSup {f : ι → α → δ'}
+lemma lowerSemicontinuousOn_ciSup {f : ι → α → δ'}
     (bdd : ∀ x ∈ s, BddAbove (range fun i => f i x)) (h : ∀ i, LowerSemicontinuousOn (f i) s) :
     LowerSemicontinuousOn (fun x' => ⨆ i, f i x') s := fun x hx =>
   lowerSemicontinuousWithinAt_ciSup (eventually_nhdsWithin_of_forall bdd) fun i => h i x hx
 #align lower_semicontinuous_on_csupr lowerSemicontinuousOn_ciSup
 
-theorem lowerSemicontinuousOn_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousOn (f i) s) :
+lemma lowerSemicontinuousOn_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousOn (f i) s) :
     LowerSemicontinuousOn (fun x' => ⨆ i, f i x') s :=
   lowerSemicontinuousOn_ciSup (by simp) h
 #align lower_semicontinuous_on_supr lowerSemicontinuousOn_iSup
 
-theorem lowerSemicontinuousOn_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma lowerSemicontinuousOn_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousOn (f i hi) s) :
     LowerSemicontinuousOn (fun x' => ⨆ (i) (hi), f i hi x') s :=
   lowerSemicontinuousOn_iSup fun i => lowerSemicontinuousOn_iSup fun hi => h i hi
 #align lower_semicontinuous_on_bsupr lowerSemicontinuousOn_biSup
 
-theorem lowerSemicontinuous_ciSup {f : ι → α → δ'} (bdd : ∀ x, BddAbove (range fun i => f i x))
+lemma lowerSemicontinuous_ciSup {f : ι → α → δ'} (bdd : ∀ x, BddAbove (range fun i => f i x))
     (h : ∀ i, LowerSemicontinuous (f i)) : LowerSemicontinuous fun x' => ⨆ i, f i x' := fun x =>
   lowerSemicontinuousAt_ciSup (eventually_of_forall bdd) fun i => h i x
 #align lower_semicontinuous_csupr lowerSemicontinuous_ciSup
 
-theorem lowerSemicontinuous_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuous (f i)) :
+lemma lowerSemicontinuous_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuous (f i)) :
     LowerSemicontinuous fun x' => ⨆ i, f i x' :=
   lowerSemicontinuous_ciSup (by simp) h
 #align lower_semicontinuous_supr lowerSemicontinuous_iSup
 
-theorem lowerSemicontinuous_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma lowerSemicontinuous_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuous (f i hi)) :
     LowerSemicontinuous fun x' => ⨆ (i) (hi), f i hi x' :=
   lowerSemicontinuous_iSup fun i => lowerSemicontinuous_iSup fun hi => h i hi
@@ -631,7 +631,7 @@ section
 
 variable {ι : Type*}
 
-theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
+lemma lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ∑' i, f i x') s x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
@@ -639,18 +639,18 @@ theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
   exact lowerSemicontinuousWithinAt_sum fun i _hi => h i
 #align lower_semicontinuous_within_at_tsum lowerSemicontinuousWithinAt_tsum
 
-theorem lowerSemicontinuousAt_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuousAt (f i) x) :
+lemma lowerSemicontinuousAt_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuousAt (f i) x) :
     LowerSemicontinuousAt (fun x' => ∑' i, f i x') x := by
   simp_rw [← lowerSemicontinuousWithinAt_univ_iff] at *
   exact lowerSemicontinuousWithinAt_tsum h
 #align lower_semicontinuous_at_tsum lowerSemicontinuousAt_tsum
 
-theorem lowerSemicontinuousOn_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuousOn (f i) s) :
+lemma lowerSemicontinuousOn_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuousOn (f i) s) :
     LowerSemicontinuousOn (fun x' => ∑' i, f i x') s := fun x hx =>
   lowerSemicontinuousWithinAt_tsum fun i => h i x hx
 #align lower_semicontinuous_on_tsum lowerSemicontinuousOn_tsum
 
-theorem lowerSemicontinuous_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuous (f i)) :
+lemma lowerSemicontinuous_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuous (f i)) :
     LowerSemicontinuous fun x' => ∑' i, f i x' := fun x => lowerSemicontinuousAt_tsum fun i => h i x
 #align lower_semicontinuous_tsum lowerSemicontinuous_tsum
 
@@ -669,7 +669,7 @@ theorem UpperSemicontinuousWithinAt.mono (h : UpperSemicontinuousWithinAt f s x)
   Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 #align upper_semicontinuous_within_at.mono UpperSemicontinuousWithinAt.mono
 
-theorem upperSemicontinuousWithinAt_univ_iff :
+lemma upperSemicontinuousWithinAt_univ_iff :
     UpperSemicontinuousWithinAt f univ x ↔ UpperSemicontinuousAt f x := by
   simp [UpperSemicontinuousWithinAt, UpperSemicontinuousAt, nhdsWithin_univ]
 #align upper_semicontinuous_within_at_univ_iff upperSemicontinuousWithinAt_univ_iff
@@ -688,7 +688,7 @@ theorem UpperSemicontinuousOn.mono (h : UpperSemicontinuousOn f s) (hst : t ⊆ 
     UpperSemicontinuousOn f t := fun x hx => (h x (hst hx)).mono hst
 #align upper_semicontinuous_on.mono UpperSemicontinuousOn.mono
 
-theorem upperSemicontinuousOn_univ_iff : UpperSemicontinuousOn f univ ↔ UpperSemicontinuous f := by
+lemma upperSemicontinuousOn_univ_iff : UpperSemicontinuousOn f univ ↔ UpperSemicontinuous f := by
   simp [UpperSemicontinuousOn, UpperSemicontinuous, upperSemicontinuousWithinAt_univ_iff]
 #align upper_semicontinuous_on_univ_iff upperSemicontinuousOn_univ_iff
 
@@ -709,19 +709,19 @@ theorem UpperSemicontinuous.upperSemicontinuousOn (h : UpperSemicontinuous f) (s
 /-! #### Constants -/
 
 
-theorem upperSemicontinuousWithinAt_const : UpperSemicontinuousWithinAt (fun _x => z) s x :=
+lemma upperSemicontinuousWithinAt_const : UpperSemicontinuousWithinAt (fun _x => z) s x :=
   fun _y hy => Filter.eventually_of_forall fun _x => hy
 #align upper_semicontinuous_within_at_const upperSemicontinuousWithinAt_const
 
-theorem upperSemicontinuousAt_const : UpperSemicontinuousAt (fun _x => z) x := fun _y hy =>
+lemma upperSemicontinuousAt_const : UpperSemicontinuousAt (fun _x => z) x := fun _y hy =>
   Filter.eventually_of_forall fun _x => hy
 #align upper_semicontinuous_at_const upperSemicontinuousAt_const
 
-theorem upperSemicontinuousOn_const : UpperSemicontinuousOn (fun _x => z) s := fun _x _hx =>
+lemma upperSemicontinuousOn_const : UpperSemicontinuousOn (fun _x => z) s := fun _x _hx =>
   upperSemicontinuousWithinAt_const
 #align upper_semicontinuous_on_const upperSemicontinuousOn_const
 
-theorem upperSemicontinuous_const : UpperSemicontinuous fun _x : α => z := fun _x =>
+lemma upperSemicontinuous_const : UpperSemicontinuous fun _x : α => z := fun _x =>
   upperSemicontinuousAt_const
 #align upper_semicontinuous_const upperSemicontinuous_const
 
@@ -777,7 +777,7 @@ end
 /-! #### Relationship with continuity -/
 
 
-theorem upperSemicontinuous_iff_isOpen_preimage :
+lemma upperSemicontinuous_iff_isOpen_preimage :
     UpperSemicontinuous f ↔ ∀ y, IsOpen (f ⁻¹' Iio y) :=
   ⟨fun H y => isOpen_iff_mem_nhds.2 fun x hx => H x y hx, fun H _x y y_lt =>
     IsOpen.mem_nhds (H y) y_lt⟩
@@ -792,32 +792,32 @@ section
 
 variable {γ : Type*} [LinearOrder γ]
 
-theorem upperSemicontinuous_iff_isClosed_preimage {f : α → γ} :
+lemma upperSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     UpperSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Ici y) := by
   rw [upperSemicontinuous_iff_isOpen_preimage]
   simp only [← isOpen_compl_iff, ← preimage_compl, compl_Ici]
 #align upper_semicontinuous_iff_is_closed_preimage upperSemicontinuous_iff_isClosed_preimage
 
-theorem UpperSemicontinuous.isClosed_preimage {f : α → γ} (hf : UpperSemicontinuous f) (y : γ) :
+lemma UpperSemicontinuous.isClosed_preimage {f : α → γ} (hf : UpperSemicontinuous f) (y : γ) :
     IsClosed (f ⁻¹' Ici y) :=
   upperSemicontinuous_iff_isClosed_preimage.1 hf y
 #align upper_semicontinuous.is_closed_preimage UpperSemicontinuous.isClosed_preimage
 
 variable [TopologicalSpace γ] [OrderTopology γ]
 
-theorem ContinuousWithinAt.upperSemicontinuousWithinAt {f : α → γ} (h : ContinuousWithinAt f s x) :
+lemma ContinuousWithinAt.upperSemicontinuousWithinAt {f : α → γ} (h : ContinuousWithinAt f s x) :
     UpperSemicontinuousWithinAt f s x := fun _y hy => h (Iio_mem_nhds hy)
 #align continuous_within_at.upper_semicontinuous_within_at ContinuousWithinAt.upperSemicontinuousWithinAt
 
-theorem ContinuousAt.upperSemicontinuousAt {f : α → γ} (h : ContinuousAt f x) :
+lemma ContinuousAt.upperSemicontinuousAt {f : α → γ} (h : ContinuousAt f x) :
     UpperSemicontinuousAt f x := fun _y hy => h (Iio_mem_nhds hy)
 #align continuous_at.upper_semicontinuous_at ContinuousAt.upperSemicontinuousAt
 
-theorem ContinuousOn.upperSemicontinuousOn {f : α → γ} (h : ContinuousOn f s) :
+lemma ContinuousOn.upperSemicontinuousOn {f : α → γ} (h : ContinuousOn f s) :
     UpperSemicontinuousOn f s := fun x hx => (h x hx).upperSemicontinuousWithinAt
 #align continuous_on.upper_semicontinuous_on ContinuousOn.upperSemicontinuousOn
 
-theorem Continuous.upperSemicontinuous {f : α → γ} (h : Continuous f) : UpperSemicontinuous f :=
+lemma Continuous.upperSemicontinuous {f : α → γ} (h : Continuous f) : UpperSemicontinuous f :=
   fun _x => h.continuousAt.upperSemicontinuousAt
 #align continuous.upper_semicontinuous Continuous.upperSemicontinuous
 
@@ -832,45 +832,45 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
 
-theorem ContinuousAt.comp_upperSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
+lemma ContinuousAt.comp_upperSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : UpperSemicontinuousWithinAt f s x) (gmon : Monotone g) :
     UpperSemicontinuousWithinAt (g ∘ f) s x :=
   @ContinuousAt.comp_lowerSemicontinuousWithinAt α _ x s γᵒᵈ _ _ _ δᵒᵈ _ _ _ g f hg hf gmon.dual
 #align continuous_at.comp_upper_semicontinuous_within_at ContinuousAt.comp_upperSemicontinuousWithinAt
 
-theorem ContinuousAt.comp_upperSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
+lemma ContinuousAt.comp_upperSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : UpperSemicontinuousAt f x) (gmon : Monotone g) : UpperSemicontinuousAt (g ∘ f) x :=
   @ContinuousAt.comp_lowerSemicontinuousAt α _ x γᵒᵈ _ _ _ δᵒᵈ _ _ _ g f hg hf gmon.dual
 #align continuous_at.comp_upper_semicontinuous_at ContinuousAt.comp_upperSemicontinuousAt
 
-theorem Continuous.comp_upperSemicontinuousOn {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_upperSemicontinuousOn {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : UpperSemicontinuousOn f s) (gmon : Monotone g) : UpperSemicontinuousOn (g ∘ f) s :=
   fun x hx => hg.continuousAt.comp_upperSemicontinuousWithinAt (hf x hx) gmon
 #align continuous.comp_upper_semicontinuous_on Continuous.comp_upperSemicontinuousOn
 
-theorem Continuous.comp_upperSemicontinuous {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_upperSemicontinuous {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : UpperSemicontinuous f) (gmon : Monotone g) : UpperSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_upperSemicontinuousAt (hf x) gmon
 #align continuous.comp_upper_semicontinuous Continuous.comp_upperSemicontinuous
 
-theorem ContinuousAt.comp_upperSemicontinuousWithinAt_antitone {g : γ → δ} {f : α → γ}
+lemma ContinuousAt.comp_upperSemicontinuousWithinAt_antitone {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : UpperSemicontinuousWithinAt f s x) (gmon : Antitone g) :
     LowerSemicontinuousWithinAt (g ∘ f) s x :=
   @ContinuousAt.comp_upperSemicontinuousWithinAt α _ x s γ _ _ _ δᵒᵈ _ _ _ g f hg hf gmon
 #align continuous_at.comp_upper_semicontinuous_within_at_antitone ContinuousAt.comp_upperSemicontinuousWithinAt_antitone
 
-theorem ContinuousAt.comp_upperSemicontinuousAt_antitone {g : γ → δ} {f : α → γ}
+lemma ContinuousAt.comp_upperSemicontinuousAt_antitone {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : UpperSemicontinuousAt f x) (gmon : Antitone g) :
     LowerSemicontinuousAt (g ∘ f) x :=
   @ContinuousAt.comp_upperSemicontinuousAt α _ x γ _ _ _ δᵒᵈ _ _ _ g f hg hf gmon
 #align continuous_at.comp_upper_semicontinuous_at_antitone ContinuousAt.comp_upperSemicontinuousAt_antitone
 
-theorem Continuous.comp_upperSemicontinuousOn_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_upperSemicontinuousOn_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : UpperSemicontinuousOn f s) (gmon : Antitone g) : LowerSemicontinuousOn (g ∘ f) s :=
   fun x hx => hg.continuousAt.comp_upperSemicontinuousWithinAt_antitone (hf x hx) gmon
 #align continuous.comp_upper_semicontinuous_on_antitone Continuous.comp_upperSemicontinuousOn_antitone
 
-theorem Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
+lemma Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α → γ} (hg : Continuous g)
     (hf : UpperSemicontinuous f) (gmon : Antitone g) : LowerSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_upperSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_upper_semicontinuous_antitone Continuous.comp_upperSemicontinuous_antitone
@@ -888,7 +888,7 @@ variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalS
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontinuousWithinAt f s x)
+lemma UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontinuousWithinAt f s x)
     (hg : UpperSemicontinuousWithinAt g s x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
@@ -898,7 +898,7 @@ theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontin
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem UpperSemicontinuousAt.add' {f g : α → γ} (hf : UpperSemicontinuousAt f x)
+lemma UpperSemicontinuousAt.add' {f g : α → γ} (hf : UpperSemicontinuousAt f x)
     (hg : UpperSemicontinuousAt g x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuousAt (fun z => f z + g z) x := by
@@ -909,7 +909,7 @@ theorem UpperSemicontinuousAt.add' {f g : α → γ} (hf : UpperSemicontinuousAt
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem UpperSemicontinuousOn.add' {f g : α → γ} (hf : UpperSemicontinuousOn f s)
+lemma UpperSemicontinuousOn.add' {f g : α → γ} (hf : UpperSemicontinuousOn f s)
     (hg : UpperSemicontinuousOn g s)
     (hcont : ∀ x ∈ s, ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuousOn (fun z => f z + g z) s := fun x hx =>
@@ -919,7 +919,7 @@ theorem UpperSemicontinuousOn.add' {f g : α → γ} (hf : UpperSemicontinuousOn
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
-theorem UpperSemicontinuous.add' {f g : α → γ} (hf : UpperSemicontinuous f)
+lemma UpperSemicontinuous.add' {f g : α → γ} (hf : UpperSemicontinuous f)
     (hg : UpperSemicontinuous g)
     (hcont : ∀ x, ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuous fun z => f z + g z := fun x => (hf x).add' (hg x) (hcont x)
@@ -930,7 +930,7 @@ variable [ContinuousAdd γ]
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem UpperSemicontinuousWithinAt.add {f g : α → γ} (hf : UpperSemicontinuousWithinAt f s x)
+lemma UpperSemicontinuousWithinAt.add {f g : α → γ} (hf : UpperSemicontinuousWithinAt f s x)
     (hg : UpperSemicontinuousWithinAt g s x) :
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
   hf.add' hg continuous_add.continuousAt
@@ -939,7 +939,7 @@ theorem UpperSemicontinuousWithinAt.add {f g : α → γ} (hf : UpperSemicontinu
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem UpperSemicontinuousAt.add {f g : α → γ} (hf : UpperSemicontinuousAt f x)
+lemma UpperSemicontinuousAt.add {f g : α → γ} (hf : UpperSemicontinuousAt f x)
     (hg : UpperSemicontinuousAt g x) : UpperSemicontinuousAt (fun z => f z + g z) x :=
   hf.add' hg continuous_add.continuousAt
 #align upper_semicontinuous_at.add UpperSemicontinuousAt.add
@@ -947,7 +947,7 @@ theorem UpperSemicontinuousAt.add {f g : α → γ} (hf : UpperSemicontinuousAt 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem UpperSemicontinuousOn.add {f g : α → γ} (hf : UpperSemicontinuousOn f s)
+lemma UpperSemicontinuousOn.add {f g : α → γ} (hf : UpperSemicontinuousOn f s)
     (hg : UpperSemicontinuousOn g s) : UpperSemicontinuousOn (fun z => f z + g z) s :=
   hf.add' hg fun _x _hx => continuous_add.continuousAt
 #align upper_semicontinuous_on.add UpperSemicontinuousOn.add
@@ -955,31 +955,31 @@ theorem UpperSemicontinuousOn.add {f g : α → γ} (hf : UpperSemicontinuousOn 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
-theorem UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
+lemma UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
     (hg : UpperSemicontinuous g) : UpperSemicontinuous fun z => f z + g z :=
   hf.add' hg fun _x => continuous_add.continuousAt
 #align upper_semicontinuous.add UpperSemicontinuous.add
 
-theorem upperSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
+lemma upperSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun z => ∑ i in a, f i z) s x :=
   @lowerSemicontinuousWithinAt_sum α _ x s ι γᵒᵈ _ _ _ _ f a ha
 #align upper_semicontinuous_within_at_sum upperSemicontinuousWithinAt_sum
 
-theorem upperSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
+lemma upperSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousAt (f i) x) :
     UpperSemicontinuousAt (fun z => ∑ i in a, f i z) x := by
   simp_rw [← upperSemicontinuousWithinAt_univ_iff] at *
   exact upperSemicontinuousWithinAt_sum ha
 #align upper_semicontinuous_at_sum upperSemicontinuousAt_sum
 
-theorem upperSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
+lemma upperSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousOn (f i) s) :
     UpperSemicontinuousOn (fun z => ∑ i in a, f i z) s := fun x hx =>
   upperSemicontinuousWithinAt_sum fun i hi => ha i hi x hx
 #align upper_semicontinuous_on_sum upperSemicontinuousOn_sum
 
-theorem upperSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
+lemma upperSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuous (f i)) : UpperSemicontinuous fun z => ∑ i in a, f i z :=
   fun x => upperSemicontinuousAt_sum fun i hi => ha i hi x
 #align upper_semicontinuous_sum upperSemicontinuous_sum
@@ -993,69 +993,69 @@ section
 
 variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
 
-theorem upperSemicontinuousWithinAt_ciInf {f : ι → α → δ'}
+lemma upperSemicontinuousWithinAt_ciInf {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddBelow (range fun i => f i y))
     (h : ∀ i, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun x' => ⨅ i, f i x') s x :=
   @lowerSemicontinuousWithinAt_ciSup α _ x s ι δ'ᵒᵈ _ f bdd h
 #align upper_semicontinuous_within_at_cinfi upperSemicontinuousWithinAt_ciInf
 
-theorem upperSemicontinuousWithinAt_iInf {f : ι → α → δ}
+lemma upperSemicontinuousWithinAt_iInf {f : ι → α → δ}
     (h : ∀ i, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun x' => ⨅ i, f i x') s x :=
   @lowerSemicontinuousWithinAt_iSup α _ x s ι δᵒᵈ _ f h
 #align upper_semicontinuous_within_at_infi upperSemicontinuousWithinAt_iInf
 
-theorem upperSemicontinuousWithinAt_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma upperSemicontinuousWithinAt_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousWithinAt (f i hi) s x) :
     UpperSemicontinuousWithinAt (fun x' => ⨅ (i) (hi), f i hi x') s x :=
   upperSemicontinuousWithinAt_iInf fun i => upperSemicontinuousWithinAt_iInf fun hi => h i hi
 #align upper_semicontinuous_within_at_binfi upperSemicontinuousWithinAt_biInf
 
-theorem upperSemicontinuousAt_ciInf {f : ι → α → δ'}
+lemma upperSemicontinuousAt_ciInf {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝 x, BddBelow (range fun i => f i y)) (h : ∀ i, UpperSemicontinuousAt (f i) x) :
     UpperSemicontinuousAt (fun x' => ⨅ i, f i x') x :=
   @lowerSemicontinuousAt_ciSup α _ x ι δ'ᵒᵈ _ f bdd h
 #align upper_semicontinuous_at_cinfi upperSemicontinuousAt_ciInf
 
-theorem upperSemicontinuousAt_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousAt (f i) x) :
+lemma upperSemicontinuousAt_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousAt (f i) x) :
     UpperSemicontinuousAt (fun x' => ⨅ i, f i x') x :=
   @lowerSemicontinuousAt_iSup α _ x ι δᵒᵈ _ f h
 #align upper_semicontinuous_at_infi upperSemicontinuousAt_iInf
 
-theorem upperSemicontinuousAt_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma upperSemicontinuousAt_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousAt (f i hi) x) :
     UpperSemicontinuousAt (fun x' => ⨅ (i) (hi), f i hi x') x :=
   upperSemicontinuousAt_iInf fun i => upperSemicontinuousAt_iInf fun hi => h i hi
 #align upper_semicontinuous_at_binfi upperSemicontinuousAt_biInf
 
-theorem upperSemicontinuousOn_ciInf {f : ι → α → δ'}
+lemma upperSemicontinuousOn_ciInf {f : ι → α → δ'}
     (bdd : ∀ x ∈ s, BddBelow (range fun i => f i x)) (h : ∀ i, UpperSemicontinuousOn (f i) s) :
     UpperSemicontinuousOn (fun x' => ⨅ i, f i x') s := fun x hx =>
   upperSemicontinuousWithinAt_ciInf (eventually_nhdsWithin_of_forall bdd) fun i => h i x hx
 #align upper_semicontinuous_on_cinfi upperSemicontinuousOn_ciInf
 
-theorem upperSemicontinuousOn_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousOn (f i) s) :
+lemma upperSemicontinuousOn_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousOn (f i) s) :
     UpperSemicontinuousOn (fun x' => ⨅ i, f i x') s := fun x hx =>
   upperSemicontinuousWithinAt_iInf fun i => h i x hx
 #align upper_semicontinuous_on_infi upperSemicontinuousOn_iInf
 
-theorem upperSemicontinuousOn_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma upperSemicontinuousOn_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousOn (f i hi) s) :
     UpperSemicontinuousOn (fun x' => ⨅ (i) (hi), f i hi x') s :=
   upperSemicontinuousOn_iInf fun i => upperSemicontinuousOn_iInf fun hi => h i hi
 #align upper_semicontinuous_on_binfi upperSemicontinuousOn_biInf
 
-theorem upperSemicontinuous_ciInf {f : ι → α → δ'} (bdd : ∀ x, BddBelow (range fun i => f i x))
+lemma upperSemicontinuous_ciInf {f : ι → α → δ'} (bdd : ∀ x, BddBelow (range fun i => f i x))
     (h : ∀ i, UpperSemicontinuous (f i)) : UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x =>
   upperSemicontinuousAt_ciInf (eventually_of_forall bdd) fun i => h i x
 #align upper_semicontinuous_cinfi upperSemicontinuous_ciInf
 
-theorem upperSemicontinuous_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuous (f i)) :
+lemma upperSemicontinuous_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuous (f i)) :
     UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x => upperSemicontinuousAt_iInf fun i => h i x
 #align upper_semicontinuous_infi upperSemicontinuous_iInf
 
-theorem upperSemicontinuous_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+lemma upperSemicontinuous_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuous (f i hi)) :
     UpperSemicontinuous fun x' => ⨅ (i) (hi), f i hi x' :=
   upperSemicontinuous_iInf fun i => upperSemicontinuous_iInf fun hi => h i hi
@@ -1067,7 +1067,7 @@ section
 
 variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
-theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ} :
+lemma continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ} :
     ContinuousWithinAt f s x ↔
       LowerSemicontinuousWithinAt f s x ∧ UpperSemicontinuousWithinAt f s x := by
   refine' ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, _⟩
@@ -1098,20 +1098,20 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
       exact mem_of_mem_nhds hv
 #align continuous_within_at_iff_lower_upper_semicontinuous_within_at continuousWithinAt_iff_lower_upperSemicontinuousWithinAt
 
-theorem continuousAt_iff_lower_upperSemicontinuousAt {f : α → γ} :
+lemma continuousAt_iff_lower_upperSemicontinuousAt {f : α → γ} :
     ContinuousAt f x ↔ LowerSemicontinuousAt f x ∧ UpperSemicontinuousAt f x := by
   simp_rw [← continuousWithinAt_univ, ← lowerSemicontinuousWithinAt_univ_iff, ←
     upperSemicontinuousWithinAt_univ_iff, continuousWithinAt_iff_lower_upperSemicontinuousWithinAt]
 #align continuous_at_iff_lower_upper_semicontinuous_at continuousAt_iff_lower_upperSemicontinuousAt
 
-theorem continuousOn_iff_lower_upperSemicontinuousOn {f : α → γ} :
+lemma continuousOn_iff_lower_upperSemicontinuousOn {f : α → γ} :
     ContinuousOn f s ↔ LowerSemicontinuousOn f s ∧ UpperSemicontinuousOn f s := by
   simp only [ContinuousOn, continuousWithinAt_iff_lower_upperSemicontinuousWithinAt]
   exact
     ⟨fun H => ⟨fun x hx => (H x hx).1, fun x hx => (H x hx).2⟩, fun H x hx => ⟨H.1 x hx, H.2 x hx⟩⟩
 #align continuous_on_iff_lower_upper_semicontinuous_on continuousOn_iff_lower_upperSemicontinuousOn
 
-theorem continuous_iff_lower_upperSemicontinuous {f : α → γ} :
+lemma continuous_iff_lower_upperSemicontinuous {f : α → γ} :
     Continuous f ↔ LowerSemicontinuous f ∧ UpperSemicontinuous f := by
   simp_rw [continuous_iff_continuousOn_univ, continuousOn_iff_lower_upperSemicontinuousOn,
     lowerSemicontinuousOn_univ_iff, upperSemicontinuousOn_univ_iff]

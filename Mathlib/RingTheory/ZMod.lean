@@ -21,7 +21,7 @@ We collect a few facts about `ZMod n` that need some ring theory to be proved/st
 
 
 @[simp]
-theorem isReduced_zmod {n : ℕ} : IsReduced (ZMod n) ↔ Squarefree n ∨ n = 0 := by
+lemma isReduced_zmod {n : ℕ} : IsReduced (ZMod n) ↔ Squarefree n ∨ n = 0 := by
   rw [← RingHom.ker_isRadical_iff_reduced_of_surjective
       (ZMod.ringHom_surjective <| Int.castRingHom <| ZMod n),
       ZMod.ker_int_castRingHom, ← isRadical_iff_span_singleton, isRadical_iff_squarefree_or_zero,

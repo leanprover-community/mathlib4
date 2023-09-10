@@ -40,6 +40,6 @@ theorem Algebra.norm_complex_apply (z : ℂ) : Algebra.norm ℝ z = Complex.norm
   simp
 #align algebra.norm_complex_apply Algebra.norm_complex_apply
 
-theorem Algebra.norm_complex_eq : Algebra.norm ℝ = normSq.toMonoidHom :=
+lemma Algebra.norm_complex_eq : Algebra.norm ℝ = normSq.toMonoidHom :=
   MonoidHom.ext Algebra.norm_complex_apply
 #align algebra.norm_complex_eq Algebra.norm_complex_eq

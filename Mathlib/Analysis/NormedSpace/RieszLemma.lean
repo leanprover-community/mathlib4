@@ -40,7 +40,7 @@ arbitrarily close to 1. The statement here is in terms of multiples of
 norms, since in general the existence of an element of norm exactly 1
 is not guaranteed. For a variant giving an element with norm in `[1, R]`, see
 `riesz_lemma_of_norm_lt`. -/
-theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) {r : ℝ}
+lemma riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) {r : ℝ}
     (hr : r < 1) : ∃ x₀ : E, x₀ ∉ F ∧ ∀ y ∈ F, r * ‖x₀‖ ≤ ‖x₀ - y‖ := by
   classical
     obtain ⟨x, hx⟩ : ∃ x : E, x ∉ F := hF
@@ -82,7 +82,7 @@ Since we are considering a general nontrivially normed field, there may be a gap
 (for instance no element of norm in `(1,2)`). Hence, we can not allow `R` arbitrarily close to `1`,
 and require `R > ‖c‖` for some `c : 𝕜` with norm `> 1`.
 -/
-theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R) {F : Subspace 𝕜 E}
+lemma riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R) {F : Subspace 𝕜 E}
     (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) :
     ∃ x₀ : E, ‖x₀‖ ≤ R ∧ ∀ y ∈ F, 1 ≤ ‖x₀ - y‖ := by
   have Rpos : 0 < R := (norm_nonneg _).trans_lt hR
@@ -107,7 +107,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     _ = ‖d • x - y‖ := by rw [yy', ←smul_sub, norm_smul]
 #align riesz_lemma_of_norm_lt riesz_lemma_of_norm_lt
 
-theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
+lemma Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
     closedBall x (infDist x sᶜ) ⊆ closure s := by
   cases' eq_or_ne (infDist x sᶜ) 0 with h₀ h₀
   · rw [h₀, closedBall_zero']

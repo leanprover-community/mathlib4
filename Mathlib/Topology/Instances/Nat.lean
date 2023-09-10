@@ -32,15 +32,15 @@ theorem dist_coe_int (x y : ℕ) : dist (x : ℤ) (y : ℤ) = dist x y := rfl
 theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
 #align nat.dist_cast_real Nat.dist_cast_real
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun m n hne =>
+lemma pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun m n hne =>
   Int.pairwise_one_le_dist <| by exact_mod_cast hne
 #align nat.pairwise_one_le_dist Nat.pairwise_one_le_dist
 
-theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℕ → ℝ) :=
+lemma uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℕ → ℝ) :=
   uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 #align nat.uniform_embedding_coe_real Nat.uniformEmbedding_coe_real
 
-theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
+lemma closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
   closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 #align nat.closed_embedding_coe_real Nat.closedEmbedding_coe_real
 

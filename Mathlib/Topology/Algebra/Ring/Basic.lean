@@ -59,7 +59,7 @@ variable {α}
 
 /-- If `R` is a ring with a continuous multiplication, then negation is continuous as well since it
 is just multiplication with `-1`. -/
-theorem TopologicalSemiring.continuousNeg_of_mul [TopologicalSpace α] [NonAssocRing α]
+lemma TopologicalSemiring.continuousNeg_of_mul [TopologicalSpace α] [NonAssocRing α]
     [ContinuousMul α] : ContinuousNeg α where
   continuous_neg := by
     simpa using (continuous_const.mul continuous_id : Continuous fun x : α => -1 * x)
@@ -68,7 +68,7 @@ theorem TopologicalSemiring.continuousNeg_of_mul [TopologicalSpace α] [NonAssoc
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
 proving `continuous_neg`. -/
-theorem TopologicalSemiring.toTopologicalRing [TopologicalSpace α] [NonAssocRing α]
+lemma TopologicalSemiring.toTopologicalRing [TopologicalSpace α] [NonAssocRing α]
     (_ : TopologicalSemiring α) : TopologicalRing α where
   toContinuousNeg := TopologicalSemiring.continuousNeg_of_mul
 #align topological_semiring.to_topological_ring TopologicalSemiring.toTopologicalRing
@@ -198,7 +198,7 @@ section
 
 variable {R : Type*} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 
-theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
+lemma TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R where
@@ -300,12 +300,12 @@ instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
       continuous_neg := continuous_top }⟩
 #align ring_topology.inhabited RingTopology.inhabited
 
-theorem toTopologicalSpace_injective :
+lemma toTopologicalSpace_injective :
     Injective (toTopologicalSpace : RingTopology α → TopologicalSpace α) := by
   intro f g _; cases f; cases g; congr
 
 @[ext]
-theorem ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
+lemma ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
   toTopologicalSpace_injective <| TopologicalSpace.ext h
 #align ring_topology.ext' RingTopology.ext
 
@@ -345,7 +345,7 @@ def coinduced {α β : Type*} [t : TopologicalSpace α] [Ring β] (f : α → β
   sInf { b : RingTopology β | t.coinduced f ≤ b.toTopologicalSpace }
 #align ring_topology.coinduced RingTopology.coinduced
 
-theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Ring β] (f : α → β) :
+lemma coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Ring β] (f : α → β) :
     Continuous[t, (coinduced f).toTopologicalSpace] f :=
   continuous_sInf_rng.2 <| ball_image_iff.2 fun _ => continuous_iff_coinduced_le.2
 #align ring_topology.coinduced_continuous RingTopology.coinduced_continuous

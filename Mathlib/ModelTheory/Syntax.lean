@@ -114,7 +114,7 @@ theorem relabel_id (t : L.Term α) : t.relabel id = t := by
 #align first_order.language.term.relabel_id FirstOrder.Language.Term.relabel_id
 
 @[simp]
-theorem relabel_id_eq_id : (Term.relabel id : L.Term α → L.Term α) = id :=
+lemma relabel_id_eq_id : (Term.relabel id : L.Term α → L.Term α) = id :=
   funext relabel_id
 #align first_order.language.term.relabel_id_eq_id FirstOrder.Language.Term.relabel_id_eq_id
 
@@ -274,7 +274,7 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.LHom.on_term FirstOrder.Language.LHom.onTerm
 
 @[simp]
-theorem id_onTerm : ((LHom.id L).onTerm : L.Term α → L.Term α) = id := by
+lemma id_onTerm : ((LHom.id L).onTerm : L.Term α → L.Term α) = id := by
   ext t
   induction' t with _ _ _ _ ih
   · rfl
@@ -284,7 +284,7 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.LHom.id_on_term FirstOrder.Language.LHom.id_onTerm
 
 @[simp]
-theorem comp_onTerm {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →ᴸ L') :
+lemma comp_onTerm {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →ᴸ L') :
     ((φ.comp ψ).onTerm : L.Term α → L''.Term α) = φ.onTerm ∘ ψ.onTerm := by
   ext t
   induction' t with _ _ _ _ ih
@@ -444,7 +444,7 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
 #align first_order.language.bounded_formula.cast_le FirstOrder.Language.BoundedFormula.castLE
 
 @[simp]
-theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
+lemma castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
   · simp [Fin.castLE_of_eq]
@@ -454,7 +454,7 @@ theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h 
 #align first_order.language.bounded_formula.cast_le_rfl FirstOrder.Language.BoundedFormula.castLE_rfl
 
 @[simp]
-theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
+lemma castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
     (φ.castLE km).castLE mn = φ.castLE (km.trans mn) := by
   revert m n
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 <;> intro m n km mn
@@ -468,7 +468,7 @@ theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormu
 #align first_order.language.bounded_formula.cast_le_cast_le FirstOrder.Language.BoundedFormula.castLE_castLE
 
 @[simp]
-theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
+lemma castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
     (BoundedFormula.castLE mn ∘ BoundedFormula.castLE km :
         L.BoundedFormula α k → L.BoundedFormula α n) =
       BoundedFormula.castLE (km.trans mn) :=
@@ -527,7 +527,7 @@ def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFor
 #align first_order.language.bounded_formula.lift_at FirstOrder.Language.BoundedFormula.liftAt
 
 @[simp]
-theorem mapTermRel_mapTermRel {L'' : Language}
+lemma mapTermRel_mapTermRel {L'' : Language}
     (ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Term (Sum β (Fin n)))
     (fr : ∀ n, L.Relations n → L'.Relations n)
     (ft' : ∀ n, L'.Term (Sum β (Fin n)) → L''.Term (Sum γ (Fin n)))
@@ -543,7 +543,7 @@ theorem mapTermRel_mapTermRel {L'' : Language}
 #align first_order.language.bounded_formula.map_term_rel_map_term_rel FirstOrder.Language.BoundedFormula.mapTermRel_mapTermRel
 
 @[simp]
-theorem mapTermRel_id_id_id {n} (φ : L.BoundedFormula α n) :
+lemma mapTermRel_id_id_id {n} (φ : L.BoundedFormula α n) :
     (φ.mapTermRel (fun _ => id) (fun _ => id) fun _ => id) = φ := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
@@ -569,7 +569,7 @@ def relabelAux (g : α → Sum β (Fin n)) (k : ℕ) : Sum α (Fin k) → Sum β
 #align first_order.language.bounded_formula.relabel_aux FirstOrder.Language.BoundedFormula.relabelAux
 
 @[simp]
-theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → Sum β (Fin n)} {v : β → M}
+lemma sum_elim_comp_relabelAux {m : ℕ} {g : α → Sum β (Fin n)} {v : β → M}
     {xs : Fin (n + m) → M} : Sum.elim v xs ∘ relabelAux g m =
     Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) := by
   ext x
@@ -696,16 +696,16 @@ theorem not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic 
 theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con => by cases con
 #align first_order.language.bounded_formula.not_ex_is_atomic FirstOrder.Language.BoundedFormula.not_ex_isAtomic
 
-theorem IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
+lemma IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
     (f : α → Sum β (Fin n)) : (φ.relabel f).IsAtomic :=
   IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 #align first_order.language.bounded_formula.is_atomic.relabel FirstOrder.Language.BoundedFormula.IsAtomic.relabel
 
-theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic :=
+lemma IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic :=
   IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 #align first_order.language.bounded_formula.is_atomic.lift_at FirstOrder.Language.BoundedFormula.IsAtomic.liftAt
 
-theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
+lemma IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 #align first_order.language.bounded_formula.is_atomic.cast_le FirstOrder.Language.BoundedFormula.IsAtomic.castLE
 
@@ -717,28 +717,28 @@ inductive IsQF : L.BoundedFormula α n → Prop
   | imp {φ₁ φ₂} (h₁ : IsQF φ₁) (h₂ : IsQF φ₂) : IsQF (φ₁.imp φ₂)
 #align first_order.language.bounded_formula.is_qf FirstOrder.Language.BoundedFormula.IsQF
 
-theorem IsAtomic.isQF {φ : L.BoundedFormula α n} : IsAtomic φ → IsQF φ :=
+lemma IsAtomic.isQF {φ : L.BoundedFormula α n} : IsAtomic φ → IsQF φ :=
   IsQF.of_isAtomic
 #align first_order.language.bounded_formula.is_atomic.is_qf FirstOrder.Language.BoundedFormula.IsAtomic.isQF
 
-theorem isQF_bot : IsQF (⊥ : L.BoundedFormula α n) :=
+lemma isQF_bot : IsQF (⊥ : L.BoundedFormula α n) :=
   IsQF.falsum
 #align first_order.language.bounded_formula.is_qf_bot FirstOrder.Language.BoundedFormula.isQF_bot
 
-theorem IsQF.not {φ : L.BoundedFormula α n} (h : IsQF φ) : IsQF φ.not :=
+lemma IsQF.not {φ : L.BoundedFormula α n} (h : IsQF φ) : IsQF φ.not :=
   h.imp isQF_bot
 #align first_order.language.bounded_formula.is_qf.not FirstOrder.Language.BoundedFormula.IsQF.not
 
-theorem IsQF.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → Sum β (Fin n)) :
+lemma IsQF.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → Sum β (Fin n)) :
     (φ.relabel f).IsQF :=
   IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
 #align first_order.language.bounded_formula.is_qf.relabel FirstOrder.Language.BoundedFormula.IsQF.relabel
 
-theorem IsQF.liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
+lemma IsQF.liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
   IsQF.recOn h isQF_bot (fun ih => ih.liftAt.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 #align first_order.language.bounded_formula.is_qf.lift_at FirstOrder.Language.BoundedFormula.IsQF.liftAt
 
-theorem IsQF.castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
+lemma IsQF.castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 #align first_order.language.bounded_formula.is_qf.cast_le FirstOrder.Language.BoundedFormula.IsQF.castLE
 
@@ -761,15 +761,15 @@ inductive IsPrenex : ∀ {n}, L.BoundedFormula α n → Prop
   | ex {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.ex
 #align first_order.language.bounded_formula.is_prenex FirstOrder.Language.BoundedFormula.IsPrenex
 
-theorem IsQF.isPrenex {φ : L.BoundedFormula α n} : IsQF φ → IsPrenex φ :=
+lemma IsQF.isPrenex {φ : L.BoundedFormula α n} : IsQF φ → IsPrenex φ :=
   IsPrenex.of_isQF
 #align first_order.language.bounded_formula.is_qf.is_prenex FirstOrder.Language.BoundedFormula.IsQF.isPrenex
 
-theorem IsAtomic.isPrenex {φ : L.BoundedFormula α n} (h : IsAtomic φ) : IsPrenex φ :=
+lemma IsAtomic.isPrenex {φ : L.BoundedFormula α n} (h : IsAtomic φ) : IsPrenex φ :=
   h.isQF.isPrenex
 #align first_order.language.bounded_formula.is_atomic.is_prenex FirstOrder.Language.BoundedFormula.IsAtomic.isPrenex
 
-theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Prop}
+lemma IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Prop}
     {φ : L.BoundedFormula α n} (h : IsPrenex φ)
     (hq : ∀ {m} {ψ : L.BoundedFormula α m}, ψ.IsQF → P ψ)
     (ha : ∀ {m} {ψ : L.BoundedFormula α (m + 1)}, P ψ → P ψ.all)
@@ -777,7 +777,7 @@ theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Pr
   IsPrenex.recOn h hq (fun _ => ha) fun _ ih => hn (ha (hn ih))
 #align first_order.language.bounded_formula.is_prenex.induction_on_all_not FirstOrder.Language.BoundedFormula.IsPrenex.induction_on_all_not
 
-theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
+lemma IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → Sum β (Fin n)) : (φ.relabel f).IsPrenex :=
   IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
     fun _ h => by simp [h.ex]
@@ -790,7 +790,7 @@ theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE 
     (@fun _ _ _ ih _ _ => (ih _ _).ex) _ _
 #align first_order.language.bounded_formula.is_prenex.cast_le FirstOrder.Language.BoundedFormula.IsPrenex.castLE
 
-theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex :=
+lemma IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex :=
   IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
     fun _ ih => ih.castLE.ex
 #align first_order.language.bounded_formula.is_prenex.lift_at FirstOrder.Language.BoundedFormula.IsPrenex.liftAt
@@ -805,7 +805,7 @@ def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n 
   | _n, φ, ψ => φ.imp ψ
 #align first_order.language.bounded_formula.to_prenex_imp_right FirstOrder.Language.BoundedFormula.toPrenexImpRight
 
-theorem IsQF.toPrenexImpRight {φ : L.BoundedFormula α n} :
+lemma IsQF.toPrenexImpRight {φ : L.BoundedFormula α n} :
     ∀ {ψ : L.BoundedFormula α n}, IsQF ψ → φ.toPrenexImpRight ψ = φ.imp ψ
   | _, IsQF.falsum => rfl
   | _, IsQF.of_isAtomic (IsAtomic.equal _ _) => rfl
@@ -816,7 +816,7 @@ theorem IsQF.toPrenexImpRight {φ : L.BoundedFormula α n} :
   | _, IsQF.imp (IsQF.imp _ _) _ => rfl
 #align first_order.language.bounded_formula.is_qf.to_prenex_imp_right FirstOrder.Language.BoundedFormula.IsQF.toPrenexImpRight
 
-theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ) :
+lemma isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ) :
     IsPrenex (φ.toPrenexImpRight ψ) := by
   induction' hψ with _ _ hψ _ _ _ ih1 _ _ _ ih2
   · rw [hψ.toPrenexImpRight]
@@ -835,7 +835,7 @@ def toPrenexImp : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L
   | _, φ, ψ => φ.toPrenexImpRight ψ
 #align first_order.language.bounded_formula.to_prenex_imp FirstOrder.Language.BoundedFormula.toPrenexImp
 
-theorem IsQF.toPrenexImp :
+lemma IsQF.toPrenexImp :
     ∀ {φ ψ : L.BoundedFormula α n}, φ.IsQF → φ.toPrenexImp ψ = φ.toPrenexImpRight ψ
   | _, _, IsQF.falsum => rfl
   | _, _, IsQF.of_isAtomic (IsAtomic.equal _ _) => rfl
@@ -846,7 +846,7 @@ theorem IsQF.toPrenexImp :
   | _, _, IsQF.imp (IsQF.imp _ _) _ => rfl
 #align first_order.language.bounded_formula.is_qf.to_prenex_imp FirstOrder.Language.BoundedFormula.IsQF.toPrenexImp
 
-theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ) :
+lemma isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ) :
     IsPrenex (φ.toPrenexImp ψ) := by
   induction' hφ with _ _ hφ _ _ _ ih1 _ _ _ ih2
   · rw [hφ.toPrenexImp]
@@ -891,7 +891,7 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.on_bounded_formula FirstOrder.Language.LHom.onBoundedFormula
 
 @[simp]
-theorem id_onBoundedFormula :
+lemma id_onBoundedFormula :
     ((LHom.id L).onBoundedFormula : L.BoundedFormula α n → L.BoundedFormula α n) = id := by
   ext f
   induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
@@ -905,7 +905,7 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.id_on_bounded_formula FirstOrder.Language.LHom.id_onBoundedFormula
 
 @[simp]
-theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →ᴸ L') :
+lemma comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →ᴸ L') :
     ((φ.comp ψ).onBoundedFormula : L.BoundedFormula α n → L''.BoundedFormula α n) =
       φ.onBoundedFormula ∘ ψ.onBoundedFormula := by
   ext f
@@ -938,7 +938,7 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.on_Theory FirstOrder.Language.LHom.onTheory
 
 @[simp]
-theorem mem_onTheory {g : L →ᴸ L'} {T : L.Theory} {φ : L'.Sentence} :
+lemma mem_onTheory {g : L →ᴸ L'} {T : L.Theory} {φ : L'.Sentence} :
     φ ∈ g.onTheory T ↔ ∃ φ₀, φ₀ ∈ T ∧ g.onSentence φ₀ = φ :=
   Set.mem_image _ _ _
 set_option linter.uppercaseLean3 false in
@@ -1145,12 +1145,12 @@ variable {L}
 
 open Set
 
-theorem monotone_distinctConstantsTheory :
+lemma monotone_distinctConstantsTheory :
     Monotone (L.distinctConstantsTheory : Set α → L[[α]].Theory) := fun _s _t st =>
   image_subset _ (inter_subset_inter_left _ (prod_mono st st))
 #align first_order.language.monotone_distinct_constants_theory FirstOrder.Language.monotone_distinctConstantsTheory
 
-theorem directed_distinctConstantsTheory :
+lemma directed_distinctConstantsTheory :
     Directed (· ⊆ ·) (L.distinctConstantsTheory : Set α → L[[α]].Theory) :=
   Monotone.directed_le monotone_distinctConstantsTheory
 #align first_order.language.directed_distinct_constants_theory FirstOrder.Language.directed_distinctConstantsTheory

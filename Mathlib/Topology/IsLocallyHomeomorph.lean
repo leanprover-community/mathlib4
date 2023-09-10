@@ -87,7 +87,7 @@ def IsLocallyHomeomorph :=
 
 variable {f}
 
-theorem isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ :
+lemma isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ :
     IsLocallyHomeomorph f ↔ IsLocallyHomeomorphOn f Set.univ := by
   simp only [IsLocallyHomeomorph, IsLocallyHomeomorphOn, Set.mem_univ, forall_true_left]
 #align is_locally_homeomorph_iff_is_locally_homeomorph_on_univ isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ

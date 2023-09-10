@@ -77,7 +77,7 @@ private theorem glueDist_self (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : ∀ x, 
   | .inl _ => dist_self _
   | .inr _ => dist_self _
 
-theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (p : Z) :
+lemma glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (p : Z) :
     glueDist Φ Ψ ε (.inl (Φ p)) (.inr (Ψ p)) = ε := by
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
     have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
@@ -223,7 +223,7 @@ protected def Sum.dist : Sum X Y → Sum X Y → ℝ
   | .inr b, .inl a => dist b (Nonempty.some ⟨b⟩) + 1 + dist (Nonempty.some ⟨a⟩) a
 #align metric.sum.dist Metric.Sum.dist
 
-theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
+lemma Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
     Sum.dist p q =
       glueDist (fun _ : Unit => Nonempty.some ⟨x⟩) (fun _ : Unit => Nonempty.some ⟨y⟩) 1 p q := by
   cases p <;> cases q <;> first |rfl|simp [Sum.dist, glueDist, dist_comm, add_comm,
@@ -233,12 +233,12 @@ theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
 private theorem Sum.dist_comm (x y : X ⊕ Y) : Sum.dist x y = Sum.dist y x := by
   cases x <;> cases y <;> simp [Sum.dist, _root_.dist_comm, add_comm, add_left_comm, add_assoc]
 
-theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) :=
+lemma Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) :=
   le_trans (le_add_of_nonneg_right dist_nonneg) <|
     add_le_add_right (le_add_of_nonneg_left dist_nonneg) _
 #align metric.sum.one_dist_le Metric.Sum.one_le_dist_inl_inr
 
-theorem Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
+lemma Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
   rw [Sum.dist_comm]; exact Sum.one_le_dist_inl_inr
 #align metric.sum.one_dist_le' Metric.Sum.one_le_dist_inr_inl
 
@@ -290,16 +290,16 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
 
 attribute [local instance] metricSpaceSum
 
-theorem Sum.dist_eq {x y : Sum X Y} : dist x y = Sum.dist x y := rfl
+lemma Sum.dist_eq {x y : Sum X Y} : dist x y = Sum.dist x y := rfl
 #align metric.sum.dist_eq Metric.Sum.dist_eq
 
 /-- The left injection of a space in a disjoint union is an isometry -/
-theorem isometry_inl : Isometry (Sum.inl : X → Sum X Y) :=
+lemma isometry_inl : Isometry (Sum.inl : X → Sum X Y) :=
   Isometry.of_dist_eq fun _ _ => rfl
 #align metric.isometry_inl Metric.isometry_inl
 
 /-- The right injection of a space in a disjoint union is an isometry -/
-theorem isometry_inr : Isometry (Sum.inr : Y → Sum X Y) :=
+lemma isometry_inr : Isometry (Sum.inr : Y → Sum X Y) :=
   Isometry.of_dist_eq fun _ _ => rfl
 #align metric.isometry_inr Metric.isometry_inr
 
@@ -346,12 +346,12 @@ theorem dist_same (i : ι) (x y : E i) : dist (Sigma.mk i x) ⟨i, y⟩ = dist x
 #align metric.sigma.dist_same Metric.Sigma.dist_same
 
 @[simp]
-theorem dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
+lemma dist_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ = dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨y⟩) y :=
   dif_neg h
 #align metric.sigma.dist_ne Metric.Sigma.dist_ne
 
-theorem one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
+lemma one_le_dist_of_ne {i j : ι} (h : i ≠ j) (x : E i) (y : E j) :
     1 ≤ dist (⟨i, x⟩ : Σk, E k) ⟨j, y⟩ := by
   rw [Sigma.dist_ne h x y]
   linarith [@dist_nonneg _ _ x (Nonempty.some ⟨x⟩), @dist_nonneg _ _ (Nonempty.some ⟨y⟩) y]
@@ -455,7 +455,7 @@ theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σk, E k) :=
 #align metric.sigma.isometry_mk Metric.Sigma.isometry_mk
 
 /-- A disjoint union of complete metric spaces is complete. -/
-protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σi, E i) := by
+protected lemma completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σi, E i) := by
   set s : ι → Set (Σi, E i) := fun i => Sigma.fst ⁻¹' {i}
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by

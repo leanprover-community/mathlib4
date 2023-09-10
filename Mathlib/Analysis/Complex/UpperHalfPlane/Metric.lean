@@ -92,12 +92,12 @@ protected theorem dist_comm (z w : ℍ) : dist z w = dist w z := by
   simp only [dist_eq, dist_comm (z : ℂ), mul_comm]
 #align upper_half_plane.dist_comm UpperHalfPlane.dist_comm
 
-theorem dist_le_iff_le_sinh :
+lemma dist_le_iff_le_sinh :
     dist z w ≤ r ↔ dist (z : ℂ) w / (2 * sqrt (z.im * w.im)) ≤ sinh (r / 2) := by
   rw [← div_le_div_right (zero_lt_two' ℝ), ← sinh_le_sinh, sinh_half_dist]
 #align upper_half_plane.dist_le_iff_le_sinh UpperHalfPlane.dist_le_iff_le_sinh
 
-theorem dist_eq_iff_eq_sinh :
+lemma dist_eq_iff_eq_sinh :
     dist z w = r ↔ dist (z : ℂ) w / (2 * sqrt (z.im * w.im)) = sinh (r / 2) := by
   rw [← div_left_inj' (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
 #align upper_half_plane.dist_eq_iff_eq_sinh UpperHalfPlane.dist_eq_iff_eq_sinh
@@ -194,7 +194,7 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 #align upper_half_plane.cmp_dist_eq_cmp_dist_coe_center UpperHalfPlane.cmp_dist_eq_cmp_dist_coe_center
 
-theorem dist_eq_iff_dist_coe_center_eq :
+lemma dist_eq_iff_dist_coe_center_eq :
     dist z w = r ↔ dist (z : ℂ) (w.center r) = w.im * Real.sinh r :=
   eq_iff_eq_of_cmp_eq_cmp (cmp_dist_eq_cmp_dist_coe_center z w r)
 #align upper_half_plane.dist_eq_iff_dist_coe_center_eq UpperHalfPlane.dist_eq_iff_dist_coe_center_eq
@@ -212,22 +212,22 @@ theorem dist_center_dist (z w : ℍ) :
   dist_eq_iff_dist_coe_center_eq.1 rfl
 #align upper_half_plane.dist_center_dist UpperHalfPlane.dist_center_dist
 
-theorem dist_lt_iff_dist_coe_center_lt :
+lemma dist_lt_iff_dist_coe_center_lt :
     dist z w < r ↔ dist (z : ℂ) (w.center r) < w.im * Real.sinh r :=
   lt_iff_lt_of_cmp_eq_cmp (cmp_dist_eq_cmp_dist_coe_center z w r)
 #align upper_half_plane.dist_lt_iff_dist_coe_center_lt UpperHalfPlane.dist_lt_iff_dist_coe_center_lt
 
-theorem lt_dist_iff_lt_dist_coe_center :
+lemma lt_dist_iff_lt_dist_coe_center :
     r < dist z w ↔ w.im * Real.sinh r < dist (z : ℂ) (w.center r) :=
   lt_iff_lt_of_cmp_eq_cmp (cmp_eq_cmp_symm.1 <| cmp_dist_eq_cmp_dist_coe_center z w r)
 #align upper_half_plane.lt_dist_iff_lt_dist_coe_center UpperHalfPlane.lt_dist_iff_lt_dist_coe_center
 
-theorem dist_le_iff_dist_coe_center_le :
+lemma dist_le_iff_dist_coe_center_le :
     dist z w ≤ r ↔ dist (z : ℂ) (w.center r) ≤ w.im * Real.sinh r :=
   le_iff_le_of_cmp_eq_cmp (cmp_dist_eq_cmp_dist_coe_center z w r)
 #align upper_half_plane.dist_le_iff_dist_coe_center_le UpperHalfPlane.dist_le_iff_dist_coe_center_le
 
-theorem le_dist_iff_le_dist_coe_center :
+lemma le_dist_iff_le_dist_coe_center :
     r < dist z w ↔ w.im * Real.sinh r < dist (z : ℂ) (w.center r) :=
   lt_iff_lt_of_cmp_eq_cmp (cmp_eq_cmp_symm.1 <| cmp_dist_eq_cmp_dist_coe_center z w r)
 #align upper_half_plane.le_dist_iff_le_dist_coe_center UpperHalfPlane.le_dist_iff_le_dist_coe_center
@@ -308,7 +308,7 @@ instance : MetricSpace ℍ :=
       refine' fun w hw => (dist_coe_le w z).trans_lt _
       rwa [← lt_div_iff' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
 
-theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
+lemma im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     (h : dist w (center z r) ≤ z.im * Real.sinh r) : 0 < w.im :=
   calc
     0 < z.im * (Real.cosh r - Real.sinh r) := mul_pos z.im_pos (sub_pos.2 <| sinh_lt_cosh _)

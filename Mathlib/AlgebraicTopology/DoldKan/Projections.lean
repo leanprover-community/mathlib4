@@ -84,7 +84,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_add_Q_f AlgebraicTopology.DoldKan.P_add_Q_f
 
 @[simp]
-theorem Q_zero : (Q 0 : K[X] ⟶ _) = 0 :=
+lemma Q_zero : (Q 0 : K[X] ⟶ _) = 0 :=
   sub_self _
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Q_eq_zero AlgebraicTopology.DoldKan.Q_zero
@@ -106,7 +106,7 @@ namespace HigherFacesVanish
 
 /-- This lemma expresses the vanishing of
 `(P q).f (n+1) ≫ X.δ k : X _[n+1] ⟶ X _[n]` when `k≠0` and `k≥n-q+2` -/
-theorem of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1])
+lemma of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1])
   | 0 => fun n j hj₁ => by
     exfalso
     have hj₂ := Fin.is_lt j
@@ -118,7 +118,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.higher_faces_vanish.of_P AlgebraicTopology.DoldKan.HigherFacesVanish.of_P
 
 @[reassoc]
-theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
+lemma comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
     φ ≫ (P q).f (n + 1) = φ := by
   induction' q with q hq
   · simp only [P_zero]
@@ -140,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 
 end HigherFacesVanish
 
-theorem comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} :
+lemma comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} :
     φ ≫ (P q).f (n + 1) = φ ↔ HigherFacesVanish q φ := by
   constructor
   · intro hφ
@@ -217,7 +217,7 @@ def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.nat_trans_Q AlgebraicTopology.DoldKan.natTransQ
 
-theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+lemma map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((P q : K[X] ⟶ _).f n) = (P q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   induction' q with q hq
@@ -228,7 +228,7 @@ theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.map_P AlgebraicTopology.DoldKan.map_P
 
-theorem map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+lemma map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((Q q : K[X] ⟶ _).f n) = (Q q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   rw [← add_right_inj (G.map ((P q : K[X] ⟶ _).f n)), ← G.map_add, map_P G X q n, P_add_Q_f,

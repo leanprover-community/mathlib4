@@ -64,16 +64,16 @@ inductive CompClosure (r : HomRel C) ⦃s t : C⦄ : (s ⟶ t) → (s ⟶ t) →
     CompClosure r (f ≫ m₁ ≫ g) (f ≫ m₂ ≫ g)
 #align category_theory.quotient.comp_closure CategoryTheory.Quotient.CompClosure
 
-theorem CompClosure.of {a b : C} (m₁ m₂ : a ⟶ b) (h : r m₁ m₂) : CompClosure r m₁ m₂ := by
+lemma CompClosure.of {a b : C} (m₁ m₂ : a ⟶ b) (h : r m₁ m₂) : CompClosure r m₁ m₂ := by
   simpa using CompClosure.intro (𝟙 _) m₁ m₂ (𝟙 _) h
 #align category_theory.quotient.comp_closure.of CategoryTheory.Quotient.CompClosure.of
 
-theorem comp_left {a b c : C} (f : a ⟶ b) :
+lemma comp_left {a b c : C} (f : a ⟶ b) :
     ∀ (g₁ g₂ : b ⟶ c) (_ : CompClosure r g₁ g₂), CompClosure r (f ≫ g₁) (f ≫ g₂)
   | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro (f ≫ x) m₁ m₂ y h
 #align category_theory.quotient.comp_left CategoryTheory.Quotient.comp_left
 
-theorem comp_right {a b c : C} (g : b ⟶ c) :
+lemma comp_right {a b c : C} (g : b ⟶ c) :
     ∀ (f₁ f₂ : a ⟶ b) (_ : CompClosure r f₁ f₂), CompClosure r (f₁ ≫ g) (f₂ ≫ g)
   | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro x m₁ m₂ (y ≫ g) h
 #align category_theory.quotient.comp_right CategoryTheory.Quotient.comp_right
@@ -96,7 +96,7 @@ def comp ⦃a b c : Quotient r⦄ : Hom r a b → Hom r b c → Hom r a c := fun
 #align category_theory.quotient.comp CategoryTheory.Quotient.comp
 
 @[simp]
-theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
+lemma comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
     comp r (Quot.mk _ f) (Quot.mk _ g) = Quot.mk _ (f ≫ g) :=
   rfl
 #align category_theory.quotient.comp_mk CategoryTheory.Quotient.comp_mk
@@ -126,19 +126,19 @@ instance : EssSurj (functor r)
             ext
             rfl)⟩⟩
 
-protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
+protected lemma induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
     (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
     ∀ {a b : Quotient r} (f : a ⟶ b), P f := by
   rintro ⟨x⟩ ⟨y⟩ ⟨f⟩
   exact h f
 #align category_theory.quotient.induction CategoryTheory.Quotient.induction
 
-protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
+protected lemma sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
     (functor r).map f₁ = (functor r).map f₂ := by
   simpa using Quot.sound (CompClosure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
-theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
+lemma functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' := by
   constructor
   · erw [Quot.eq]
@@ -175,7 +175,7 @@ def lift : Quotient r ⥤ D where
     exact F.map_comp f g
 #align category_theory.quotient.lift CategoryTheory.Quotient.lift
 
-theorem lift_spec : functor r ⋙ lift r F H = F := by
+lemma lift_spec : functor r ⋙ lift r F H = F := by
   apply Functor.ext; rotate_left
   · rintro X
     rfl
@@ -211,7 +211,7 @@ theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X)
   rfl
 #align category_theory.quotient.lift.is_lift_inv CategoryTheory.Quotient.lift.isLift_inv
 
-theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
+lemma lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
     (lift r F H).map ((functor r).map f) = F.map f := by
   rw [← NatIso.naturality_1 (lift.isLift r F H)]
   dsimp

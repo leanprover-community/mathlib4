@@ -60,16 +60,16 @@ def curry (f : Filter α) (g : Filter β) : Filter (α × β) where
     (hx.and hy).mono fun a ha => (ha.1.and ha.2).mono fun b hb => hb
 #align filter.curry Filter.curry
 
-theorem eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → Prop} :
+lemma eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → Prop} :
     (∀ᶠ x : α × β in f.curry g, p x) ↔ ∀ᶠ x : α in f, ∀ᶠ y : β in g, p (x, y) :=
   Iff.rfl
 #align filter.eventually_curry_iff Filter.eventually_curry_iff
 
-theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.prod g :=
+lemma curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.prod g :=
   fun _ => Eventually.curry
 #align filter.curry_le_prod Filter.curry_le_prod
 
-theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ}
+lemma Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ}
     (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto (↿f) (la.curry lb) lc :=
   fun _s hs => h.mono fun _a ha => ha hs
 #align filter.tendsto.curry Filter.Tendsto.curry

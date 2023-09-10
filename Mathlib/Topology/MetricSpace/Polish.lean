@@ -142,7 +142,7 @@ theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] 
 #align polish_space.exists_nat_nat_continuous_surjective PolishSpace.exists_nat_nat_continuous_surjective
 
 /-- Given a closed embedding into a Polish space, the source space is also Polish. -/
-theorem _root_.ClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β] [PolishSpace β]
+lemma _root_.ClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β] [PolishSpace β]
     {f : α → β} (hf : ClosedEmbedding f) : PolishSpace α := by
   letI := upgradePolishSpace β
   letI : MetricSpace α := hf.toEmbedding.comapMetricSpace f
@@ -164,14 +164,14 @@ instance (priority := 50) polish_of_countable [TopologicalSpace α]
 #align polish_of_countable PolishSpace.polish_of_countable
 
 /-- Pulling back a Polish topology under an equiv gives again a Polish topology. -/
-theorem _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace β] (f : α ≃ β) :
+lemma _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace β] (f : α ≃ β) :
     @PolishSpace α (t.induced f) :=
   letI : TopologicalSpace α := t.induced f
   (f.toHomeomorphOfInducing ⟨rfl⟩).closedEmbedding.polishSpace
 #align equiv.polish_space_induced Equiv.polishSpace_induced
 
 /-- A closed subset of a Polish space is also Polish. -/
-theorem _root_.IsClosed.polishSpace [TopologicalSpace α] [PolishSpace α] {s : Set α}
+lemma _root_.IsClosed.polishSpace [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsClosed s) : PolishSpace s :=
   (IsClosed.closedEmbedding_subtype_val hs).polishSpace
 #align is_closed.polish_space IsClosed.polishSpace
@@ -191,7 +191,7 @@ def AuxCopy (α : Type*) {ι : Type*} (_i : ι) : Type _ := α
 topology which is finer than all of them.
 
 Porting note: TODO: the topology `t'` is `t ⊓ ⨅ i, m i`. -/
-theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : TopologicalSpace α]
+lemma exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : TopologicalSpace α]
     [p : PolishSpace α] (m : ι → TopologicalSpace α) (hm : ∀ n, m n ≤ t)
     (h'm : ∀ n, @PolishSpace α (m n)) :
     ∃ t' : TopologicalSpace α, (∀ n, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' := by
@@ -357,7 +357,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
 #align polish_space.complete_space_complete_copy TopologicalSpace.Opens.CompleteCopy.instCompleteSpaceₓ
 
 /-- An open subset of a Polish space is also Polish. -/
-theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
+lemma _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
@@ -382,7 +382,7 @@ def IsClopenable [t : TopologicalSpace α] (s : Set α) : Prop :=
 
 /-- Given a closed set `s` in a Polish space, one can construct a finer Polish topology for
 which `s` is both open and closed. -/
-theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
+lemma _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsClosed s) : IsClopenable s := by
   /- Both sets `s` and `sᶜ` admit a Polish topology. So does their disjoint union `s ⊕ sᶜ`.
     Pulling back this topology by the canonical bijection with `α` gives the desired Polish
@@ -403,19 +403,19 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
       <;> ext ⟨x, hx⟩ <;> simpa using hx
 #align is_closed.is_clopenable IsClosed.isClopenable
 
-theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
+lemma IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by
   rcases hs with ⟨t, t_le, t_polish, h, h'⟩
   exact ⟨t, t_le, t_polish, @IsOpen.isClosed_compl α t s h', @IsClosed.isOpen_compl α t s h⟩
 #align polish_space.is_clopenable.compl PolishSpace.IsClopenable.compl
 
-theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
+lemma _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsOpen s) : IsClopenable s := by
   simpa using hs.isClosed_compl.isClopenable.compl
 #align is_open.is_clopenable IsOpen.isClopenable
 
 -- porting note: TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
-theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
+lemma IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs
   obtain ⟨t', t'm, -, t'_polish⟩ :

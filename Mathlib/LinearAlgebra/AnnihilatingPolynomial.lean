@@ -58,7 +58,7 @@ variable {R}
 
 /-- It is useful to refer to ideal membership sometimes
  and the annihilation condition other times. -/
-theorem mem_annIdeal_iff_aeval_eq_zero {a : A} {p : R[X]} : p ∈ annIdeal R a ↔ aeval a p = 0 :=
+lemma mem_annIdeal_iff_aeval_eq_zero {a : A} {p : R[X]} : p ∈ annIdeal R a ↔ aeval a p = 0 :=
   Iff.rfl
 #align polynomial.mem_ann_ideal_iff_aeval_eq_zero Polynomial.mem_annIdeal_iff_aeval_eq_zero
 
@@ -88,7 +88,7 @@ section
 variable {𝕜}
 
 @[simp]
-theorem annIdealGenerator_eq_zero_iff {a : A} : annIdealGenerator 𝕜 a = 0 ↔ annIdeal 𝕜 a = ⊥ := by
+lemma annIdealGenerator_eq_zero_iff {a : A} : annIdealGenerator 𝕜 a = 0 ↔ annIdeal 𝕜 a = ⊥ := by
   simp only [annIdealGenerator, mul_eq_zero, IsPrincipal.eq_bot_iff_generator_eq_zero,
     Polynomial.C_eq_zero, inv_eq_zero, Polynomial.leadingCoeff_eq_zero, or_self_iff]
 #align polynomial.ann_ideal_generator_eq_zero_iff Polynomial.annIdealGenerator_eq_zero_iff
@@ -114,7 +114,7 @@ theorem annIdealGenerator_mem (a : A) : annIdealGenerator 𝕜 a ∈ annIdeal �
   Ideal.mul_mem_right _ _ (Submodule.IsPrincipal.generator_mem _)
 #align polynomial.ann_ideal_generator_mem Polynomial.annIdealGenerator_mem
 
-theorem mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
+lemma mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
     p ∈ annIdeal 𝕜 a ↔ ∃ s : 𝕜[X], p = s • annIdealGenerator 𝕜 a := by
   simp_rw [@eq_comm _ p, ← mem_span_singleton, ← span_singleton_annIdealGenerator 𝕜 a, Ideal.span]
 #align polynomial.mem_iff_eq_smul_ann_ideal_generator Polynomial.mem_iff_eq_smul_annIdealGenerator
@@ -138,7 +138,7 @@ theorem annIdealGenerator_aeval_eq_zero (a : A) : aeval a (annIdealGenerator �
 
 variable {𝕜}
 
-theorem mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
+lemma mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
     p ∈ annIdeal 𝕜 a ↔ annIdealGenerator 𝕜 a ∣ p := by
   rw [← Ideal.mem_span_singleton, span_singleton_annIdealGenerator]
 #align polynomial.mem_iff_ann_ideal_generator_dvd Polynomial.mem_iff_annIdealGenerator_dvd

@@ -409,7 +409,7 @@ def IsLimit.mk (lift : ∀ E : Multifork I, E.pt ⟶ K.pt)
 variable [HasProduct I.left] [HasProduct I.right]
 
 @[reassoc (attr := simp)]
-theorem pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap := by
+lemma pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap := by
   ext
   simp
 #align category_theory.limits.multifork.pi_condition CategoryTheory.Limits.Multifork.pi_condition
@@ -431,12 +431,12 @@ noncomputable def toPiFork (K : Multifork I) : Fork I.fstPiMap I.sndPiMap where
 #align category_theory.limits.multifork.to_pi_fork CategoryTheory.Limits.Multifork.toPiFork
 
 @[simp]
-theorem toPiFork_π_app_zero : K.toPiFork.ι = Pi.lift K.ι :=
+lemma toPiFork_π_app_zero : K.toPiFork.ι = Pi.lift K.ι :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_zero CategoryTheory.Limits.Multifork.toPiFork_π_app_zero
 
 @[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
-theorem toPiFork_π_app_one : K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.ι ≫ I.fstPiMap :=
+lemma toPiFork_π_app_one : K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.ι ≫ I.fstPiMap :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_one CategoryTheory.Limits.Multifork.toPiFork_π_app_one
 
@@ -601,7 +601,7 @@ def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
 variable [HasCoproduct I.left] [HasCoproduct I.right]
 
 @[reassoc (attr := simp)]
-theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
+lemma sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
   ext
   simp
 #align category_theory.limits.multicofork.sigma_condition CategoryTheory.Limits.Multicofork.sigma_condition
@@ -622,7 +622,7 @@ noncomputable def toSigmaCofork (K : Multicofork I) : Cofork I.fstSigmaMap I.snd
 #align category_theory.limits.multicofork.to_sigma_cofork CategoryTheory.Limits.Multicofork.toSigmaCofork
 
 @[simp]
-theorem toSigmaCofork_π : K.toSigmaCofork.π = Sigma.desc K.π :=
+lemma toSigmaCofork_π : K.toSigmaCofork.π = Sigma.desc K.π :=
   rfl
 #align category_theory.limits.multicofork.to_sigma_cofork_π CategoryTheory.Limits.Multicofork.toSigmaCofork_π
 
@@ -796,7 +796,7 @@ theorem lift_ι (W : C) (k : ∀ a, W ⟶ I.left a)
 #align category_theory.limits.multiequalizer.lift_ι CategoryTheory.Limits.Multiequalizer.lift_ι
 
 @[ext]
-theorem hom_ext {W : C} (i j : W ⟶ multiequalizer I)
+lemma hom_ext {W : C} (i j : W ⟶ multiequalizer I)
     (h : ∀ a, i ≫ Multiequalizer.ι I a = j ≫ Multiequalizer.ι I a) : i = j :=
   limit.hom_ext
     (by
@@ -881,7 +881,7 @@ theorem π_desc (W : C) (k : ∀ b, I.right b ⟶ W)
 #align category_theory.limits.multicoequalizer.π_desc CategoryTheory.Limits.Multicoequalizer.π_desc
 
 @[ext]
-theorem hom_ext {W : C} (i j : multicoequalizer I ⟶ W)
+lemma hom_ext {W : C} (i j : multicoequalizer I ⟶ W)
     (h : ∀ b, Multicoequalizer.π I b ≫ i = Multicoequalizer.π I b ≫ j) : i = j :=
   colimit.hom_ext
     (by

@@ -77,7 +77,7 @@ def ofComposition (n : ℕ) (c : Composition n) : Partition n
   parts_sum := by rw [Multiset.coe_sum, c.blocks_sum]
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
-theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
+lemma ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
   rcases Quotient.exists_rep b with ⟨b, rfl⟩
   refine' ⟨⟨b, fun {i} hi => hb₁ hi, _⟩, Partition.ext _ _ rfl⟩
@@ -120,12 +120,12 @@ as the number of times it appears in the multiset `l`.
 (For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_not_mem` gives that
 this is `0` instead.)
 -/
-theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i : ℕ} (hi : i ≠ 0) :
+lemma count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i : ℕ} (hi : i ≠ 0) :
     (ofSums n l hl).parts.count i = l.count i :=
   count_filter_of_pos hi
 #align nat.partition.count_of_sums_of_ne_zero Nat.Partition.count_ofSums_of_ne_zero
 
-theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
+lemma count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
     (ofSums n l hl).parts.count 0 = 0 :=
   count_filter_of_neg fun h => h rfl
 #align nat.partition.count_of_sums_zero Nat.Partition.count_ofSums_zero

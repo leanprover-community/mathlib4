@@ -122,7 +122,7 @@ theorem lift_inr (left : M →* P) (right : N →* P) (n : N) :
     lift left right (inr n) = right n := rfl
 
 @[elab_as_elim]
-theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
+lemma induction_on {C : M ∗ N → Prop} (m : M ∗ N)
     (h_inl : ∀ (m : M), C (inl m))
     (h_inr : ∀ (n : N), C (inr n))
     (h_mul : ∀ x y, C x → C y → C (x * y)) : C m := by
@@ -138,18 +138,18 @@ theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
   · rfl
   · rfl
 
-theorem inl_leftInverse :
+lemma inl_leftInverse :
     Function.LeftInverse (lift (MonoidHom.id _) 1) (inl : M →* M ∗ N) := fun x => by
   simp only [lift_inl, MonoidHom.id_apply]
 
-theorem inr_leftInverse :
+lemma inr_leftInverse :
     Function.LeftInverse (lift 1 (MonoidHom.id _)) (inr : N →* M ∗ N) := fun x => by
   simp only [lift_inr, MonoidHom.id_apply]
 
-theorem inl_injective : Function.Injective (inl : M →* M ∗ N) :=
+lemma inl_injective : Function.Injective (inl : M →* M ∗ N) :=
   inl_leftInverse.injective
 
-theorem inr_injective : Function.Injective (inr : N →* M ∗ N) :=
+lemma inr_injective : Function.Injective (inr : N →* M ∗ N) :=
   inr_leftInverse.injective
 
 theorem lift_mrange_le (left : M →* P) (right : N →* P) {s : Submonoid P}
@@ -210,14 +210,14 @@ instance : Group (G ∗ H) :=
 
 variable {G H}
 
-theorem lift_range_le {N} [Group N]
+lemma lift_range_le {N} [Group N]
     (left : G →* N) (right : H →* N) {s : Subgroup N}
     (hleft : left.range ≤ s) (hright : right.range ≤ s) :
     (lift left right).range ≤ s := by
   rw [← Subgroup.toSubmonoid_le]
   exact lift_mrange_le left right hleft hright
 
-theorem range_eq_sup {N} [Group N] (left : G →* N) (right : H →* N) :
+lemma range_eq_sup {N} [Group N] (left : G →* N) (right : H →* N) :
     (lift left right).range = left.range ⊔ right.range := by
   refine le_antisymm (lift_range_le left right le_sup_left le_sup_right) ?_
   refine sup_le ?_ ?_

@@ -62,7 +62,7 @@ def natPred (i : ℕ+) : ℕ :=
 #align pnat.nat_pred PNat.natPred
 
 @[simp]
-theorem natPred_eq_pred {n : ℕ} (h : 0 < n) : natPred (⟨n, h⟩ : ℕ+) = n.pred :=
+lemma natPred_eq_pred {n : ℕ} (h : 0 < n) : natPred (⟨n, h⟩ : ℕ+) = n.pred :=
   rfl
 #align pnat.nat_pred_eq_pred PNat.natPred_eq_pred
 
@@ -103,7 +103,7 @@ def toPNat' (n : ℕ) : ℕ+ :=
 #align nat.to_pnat' Nat.toPNat'
 
 @[simp]
-theorem toPNat'_coe : ∀ n : ℕ, (toPNat' n : ℕ) = ite (0 < n) n 1
+lemma toPNat'_coe : ∀ n : ℕ, (toPNat' n : ℕ) = ite (0 < n) n 1
   | 0 => rfl
   | m + 1 => by
     rw [if_pos (succ_pos m)]
@@ -146,11 +146,11 @@ theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
   n.2
 #align pnat.pos PNat.pos
 
-theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
+lemma eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.eq
 #align pnat.eq PNat.eq
 
-theorem coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
+lemma coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
   Subtype.coe_injective
 #align pnat.coe_injective PNat.coe_injective
 
@@ -163,7 +163,7 @@ instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
   ⟨a.ne_zero⟩
 #align ne_zero.pnat NeZero.pnat
 
-theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
+lemma toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
   succ_pred_eq_of_pos
 #align pnat.to_pnat'_coe PNat.toPNat'_coe
 
@@ -187,17 +187,17 @@ instance : Inhabited ℕ+ :=
 
 -- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp]
-theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
+lemma mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 #align pnat.mk_one PNat.mk_one
 
 @[simp, norm_cast]
-theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
+lemma one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 #align pnat.one_coe PNat.one_coe
 
 @[simp, norm_cast]
-theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
+lemma coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
   Subtype.coe_injective.eq_iff' one_coe
 #align pnat.coe_eq_one_iff PNat.coe_eq_one_iff
 

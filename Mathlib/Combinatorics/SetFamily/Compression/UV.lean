@@ -54,7 +54,7 @@ open Finset
 variable {α : Type*}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
-theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
+lemma sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
     { x | Disjoint u x ∧ v ≤ x }.InjOn fun x => (x ⊔ u) \ v := by
   rintro a ha b hb hab
   have h : ((a ⊔ u) \ v) \ u ⊔ v = ((b ⊔ u) \ v) \ u ⊔ v := by
@@ -113,7 +113,7 @@ theorem compress_of_disjoint_of_le' (hva : Disjoint v a) (hua : u ≤ a) :
 
 /-- `a` is in the UV-compressed family iff it's in the original and its compression is in the
 original, or it's not in the original but it's the compression of something in the original. -/
-theorem mem_compression :
+lemma mem_compression :
     a ∈ 𝓒 u v s ↔
       a ∈ s ∧ compress u v a ∈ s ∨ a ∉ s ∧ ∃ b ∈ s, compress u v b = a := by
   simp [compression, mem_union, mem_filter, mem_image, and_comm]

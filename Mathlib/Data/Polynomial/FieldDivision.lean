@@ -31,7 +31,7 @@ section IsDomain
 
 variable [CommRing R] [IsDomain R]
 
-theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
+lemma derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp
@@ -57,7 +57,7 @@ theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt
   rw [h, eval_zero]
 #align polynomial.derivative_root_multiplicity_of_root Polynomial.derivative_rootMultiplicity_of_root
 
-theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
+lemma rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
   by_cases p.IsRoot t
   · exact (derivative_rootMultiplicity_of_root h).symm.le
@@ -90,7 +90,7 @@ instance instNormalizationMonoid : NormalizationMonoid R[X] where
         rfl)
 
 @[simp]
-theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
+lemma coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
   simp [normUnit]
 #align polynomial.coe_norm_unit Polynomial.coe_normUnit
 
@@ -98,12 +98,12 @@ theorem leadingCoeff_normalize (p : R[X]) :
     leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp
 #align polynomial.leading_coeff_normalize Polynomial.leadingCoeff_normalize
 
-theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
+lemma Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 #align polynomial.monic.normalize_eq_self Polynomial.Monic.normalize_eq_self
 
-theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
+lemma roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 #align polynomial.roots_normalize Polynomial.roots_normalize
 
@@ -133,35 +133,35 @@ theorem degree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
 #align polynomial.degree_mul_leading_coeff_inv Polynomial.degree_mul_leadingCoeff_inv
 
 @[simp]
-theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
+lemma map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
   simp only [Polynomial.ext_iff]
   congr!
   simp [map_eq_zero, coeff_map, coeff_zero]
 #align polynomial.map_eq_zero Polynomial.map_eq_zero
 
-theorem map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) : p.map f ≠ 0 :=
+lemma map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) : p.map f ≠ 0 :=
   mt (map_eq_zero f).1 hp
 #align polynomial.map_ne_zero Polynomial.map_ne_zero
 
 @[simp]
-theorem degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) :
+lemma degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) :
     degree (p.map f) = degree p :=
   p.degree_map_eq_of_injective f.injective
 #align polynomial.degree_map Polynomial.degree_map
 
 @[simp]
-theorem natDegree_map [Semiring S] [Nontrivial S] (f : R →+* S) :
+lemma natDegree_map [Semiring S] [Nontrivial S] (f : R →+* S) :
     natDegree (p.map f) = natDegree p :=
   natDegree_eq_of_degree_eq (degree_map _ f)
 #align polynomial.nat_degree_map Polynomial.natDegree_map
 
 @[simp]
-theorem leadingCoeff_map [Semiring S] [Nontrivial S] (f : R →+* S) :
+lemma leadingCoeff_map [Semiring S] [Nontrivial S] (f : R →+* S) :
     leadingCoeff (p.map f) = f (leadingCoeff p) := by
   simp only [← coeff_natDegree, coeff_map f, natDegree_map]
 #align polynomial.leading_coeff_map Polynomial.leadingCoeff_map
 
-theorem monic_map_iff [Semiring S] [Nontrivial S] {f : R →+* S} {p : R[X]} :
+lemma monic_map_iff [Semiring S] [Nontrivial S] {f : R →+* S} {p : R[X]} :
     (p.map f).Monic ↔ p.Monic := by
   rw [Monic, leadingCoeff_map, ← f.map_one, Function.Injective.eq_iff f.injective, Monic]
 #align polynomial.monic_map_iff Polynomial.monic_map_iff
@@ -172,7 +172,7 @@ section Field
 
 variable [Field R] {p q : R[X]}
 
-theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
+lemma isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
   ⟨degree_eq_zero_of_isUnit, fun h =>
     have : degree p ≤ 0 := by simp [*, le_refl]
     have hc : coeff p 0 ≠ 0 := fun hc => by
@@ -211,11 +211,11 @@ instance : Div R[X] :=
 instance : Mod R[X] :=
   ⟨mod⟩
 
-theorem div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) :=
+lemma div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) :=
   rfl
 #align polynomial.div_def Polynomial.div_def
 
-theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
+lemma mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 #align polynomial.mod_def Polynomial.mod_def
 
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
@@ -232,7 +232,7 @@ theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) 
 set_option linter.uppercaseLean3 false in
 #align polynomial.mod_X_sub_C_eq_C_eval Polynomial.mod_X_sub_C_eq_C_eval
 
-theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :=
+lemma mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :=
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
 #align polynomial.mul_div_eq_iff_is_root Polynomial.mul_div_eq_iff_isRoot
 
@@ -295,18 +295,18 @@ theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degr
         (by rw [degree_mul_leadingCoeff_inv _ hq0]; exact hq)
 #align polynomial.degree_div_lt Polynomial.degree_div_lt
 
-theorem isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := by
+lemma isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := by
   simp_rw [isUnit_iff_degree_eq_zero, degree_map]
 #align polynomial.is_unit_map Polynomial.isUnit_map
 
-theorem map_div [Field k] (f : R →+* k) : (p / q).map f = p.map f / q.map f := by
+lemma map_div [Field k] (f : R →+* k) : (p / q).map f = p.map f / q.map f := by
   if hq0 : q = 0 then simp [hq0]
   else
     rw [div_def, div_def, Polynomial.map_mul, map_divByMonic f (monic_mul_leadingCoeff_inv hq0),
       Polynomial.map_mul, map_C, leadingCoeff_map, map_inv₀]
 #align polynomial.map_div Polynomial.map_div
 
-theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f := by
+lemma map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f := by
   by_cases hq0 : q = 0
   · simp [hq0]
   · rw [mod_def, mod_def, leadingCoeff_map f, ← map_inv₀ f, ← map_C f, ← Polynomial.map_mul f,
@@ -317,7 +317,7 @@ section
 
 open EuclideanDomain
 
-theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
+lemma gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
     gcd (p.map f) (q.map f) = (gcd p q).map f :=
   GCD.induction p q (fun x => by simp_rw [Polynomial.map_zero, EuclideanDomain.gcd_zero_left])
     fun x y _ ih => by rw [gcd_val, ← map_mod, ih, ← gcd_val]
@@ -325,72 +325,72 @@ theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
 
 end
 
-theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
+lemma eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)
     (hg : g.eval₂ ϕ α = 0) : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 := by
   rw [EuclideanDomain.gcd_eq_gcd_ab f g, Polynomial.eval₂_add, Polynomial.eval₂_mul,
     Polynomial.eval₂_mul, hf, hg, zero_mul, zero_mul, zero_add]
 #align polynomial.eval₂_gcd_eq_zero Polynomial.eval₂_gcd_eq_zero
 
-theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
+lemma eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
   (hf : f.eval α = 0) (hg : g.eval α = 0) : (EuclideanDomain.gcd f g).eval α = 0 :=
   eval₂_gcd_eq_zero hf hg
 #align polynomial.eval_gcd_eq_zero Polynomial.eval_gcd_eq_zero
 
-theorem root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
+lemma root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : f.eval₂ ϕ α = 0 := by
   cases' EuclideanDomain.gcd_dvd_left f g with p hp
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 #align polynomial.root_left_of_root_gcd Polynomial.root_left_of_root_gcd
 
-theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
+lemma root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : g.eval₂ ϕ α = 0 := by
   cases' EuclideanDomain.gcd_dvd_right f g with p hp
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 #align polynomial.root_right_of_root_gcd Polynomial.root_right_of_root_gcd
 
-theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
+lemma root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} :
     (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 ↔ f.eval₂ ϕ α = 0 ∧ g.eval₂ ϕ α = 0 :=
   ⟨fun h => ⟨root_left_of_root_gcd h, root_right_of_root_gcd h⟩, fun h => eval₂_gcd_eq_zero h.1 h.2⟩
 #align polynomial.root_gcd_iff_root_left_right Polynomial.root_gcd_iff_root_left_right
 
-theorem isRoot_gcd_iff_isRoot_left_right [DecidableEq R] {f g : R[X]} {α : R} :
+lemma isRoot_gcd_iff_isRoot_left_right [DecidableEq R] {f g : R[X]} {α : R} :
     (EuclideanDomain.gcd f g).IsRoot α ↔ f.IsRoot α ∧ g.IsRoot α :=
   root_gcd_iff_root_left_right
 #align polynomial.is_root_gcd_iff_is_root_left_right Polynomial.isRoot_gcd_iff_isRoot_left_right
 
-theorem isCoprime_map [Field k] (f : R →+* k) : IsCoprime (p.map f) (q.map f) ↔ IsCoprime p q := by
+lemma isCoprime_map [Field k] (f : R →+* k) : IsCoprime (p.map f) (q.map f) ↔ IsCoprime p q := by
   classical
   rw [← EuclideanDomain.gcd_isUnit_iff, ← EuclideanDomain.gcd_isUnit_iff, gcd_map, isUnit_map]
 #align polynomial.is_coprime_map Polynomial.isCoprime_map
 
-theorem mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p ≠ 0) :
+lemma mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p ≠ 0) :
     x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
   rw [mem_roots (map_ne_zero hp), IsRoot, Polynomial.eval_map]
 #align polynomial.mem_roots_map Polynomial.mem_roots_map
 
-theorem rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
+lemma rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : (monomial n a).rootSet S = {0} := by
   classical
   rw [rootSet, aroots_monomial ha,
     Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton, Finset.coe_singleton]
 #align polynomial.root_set_monomial Polynomial.rootSet_monomial
 
-theorem rootSet_C_mul_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
+lemma rootSet_C_mul_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : rootSet (C a * X ^ n) S = {0} := by
   rw [C_mul_X_pow_eq_monomial, rootSet_monomial hn ha]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_C_mul_X_pow Polynomial.rootSet_C_mul_X_pow
 
-theorem rootSet_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) :
+lemma rootSet_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) :
     (X ^ n : R[X]).rootSet S = {0} := by
   rw [← one_mul (X ^ n : R[X]), ← C_1, rootSet_C_mul_X_pow hn]
   exact one_ne_zero
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_X_pow Polynomial.rootSet_X_pow
 
-theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
+lemma rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   classical
   simp only [rootSet, aroots, ← Finset.mem_coe]
@@ -418,7 +418,7 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
   · simp
 #align polynomial.coeff_inv_units Polynomial.coeff_inv_units
 
-theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
+lemma monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
   rw [Ne.def, ← leadingCoeff_eq_zero, ← Ne.def, ← isUnit_iff_ne_zero] at hp0
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
@@ -434,7 +434,7 @@ theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
   rwa [degree_mul_leadingCoeff_inv q hq]
 #align polynomial.leading_coeff_div Polynomial.leadingCoeff_div
 
-theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
+lemma div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   by_cases ha : a = 0
   · simp [ha]
   simp only [div_def, leadingCoeff_mul, mul_inv, leadingCoeff_C, C.map_mul, mul_assoc]
@@ -460,16 +460,16 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.dvd_C_mul Polynomial.dvd_C_mul
 
-theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
+lemma coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
   (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 #align polynomial.coe_norm_unit_of_ne_zero Polynomial.coe_normUnit_of_ne_zero
 
-theorem normalize_monic [DecidableEq R] (h : Monic p) : normalize p = p := by simp [h]
+lemma normalize_monic [DecidableEq R] (h : Monic p) : normalize p = p := by simp [h]
 #align polynomial.normalize_monic Polynomial.normalize_monic
 
-theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
+lemma map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
   · rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, map_eq_zero]
   · classical
@@ -479,7 +479,7 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
       map_dvd_map _ f.injective (monic_mul_leadingCoeff_inv H)]
 #align polynomial.map_dvd_map' Polynomial.map_dvd_map'
 
-theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by simp
+lemma degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by simp
 #align polynomial.degree_normalize Polynomial.degree_normalize
 
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
@@ -510,7 +510,7 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
 
 /- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero
 into multiple decls because the original proof was timing out -/
-theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Field K] (f : K[X]) (a : K) :
+lemma X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Field K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
@@ -529,7 +529,7 @@ theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
 
 /- Porting note: factored out another have statement from
 isCoprime_of_is_root_of_eval_derivative_ne_zero because the original proof was timing out -/
-theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
+lemma X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
   have key := divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative f a
   have ⟨u,hu⟩ := hf
@@ -539,7 +539,7 @@ theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (
 /-- If `f` is a polynomial over a field, and `a : K` satisfies `f' a ≠ 0`,
 then `f / (X - a)` is coprime with `X - a`.
 Note that we do not assume `f a = 0`, because `f / (X - a) = (f - f a) / (X - a)`. -/
-theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f : K[X]) (a : K)
+lemma isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f : K[X]) (a : K)
     (hf' : f.derivative.eval a ≠ 0) : IsCoprime (X - C a : K[X]) (f /ₘ (X - C a)) := by
   classical
   refine Or.resolve_left

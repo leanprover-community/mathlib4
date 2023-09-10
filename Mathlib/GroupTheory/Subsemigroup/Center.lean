@@ -38,7 +38,7 @@ def center [Mul M] : Set M :=
 
 -- porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
-theorem mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
+lemma mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
   Iff.rfl
 #align set.mem_center_iff Set.mem_center_iff
 #align set.mem_add_center Set.mem_addCenter_iff
@@ -48,47 +48,47 @@ instance decidableMemCenter [Mul M] [∀ a : M, Decidable <| ∀ b : M, b * a = 
 #align set.decidable_mem_center Set.decidableMemCenter
 
 @[to_additive (attr := simp) zero_mem_addCenter]
-theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M := by simp [mem_center_iff]
+lemma one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M := by simp [mem_center_iff]
 #align set.one_mem_center Set.one_mem_center
 #align set.zero_mem_add_center Set.zero_mem_addCenter
 
 @[simp]
-theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [mem_center_iff]
+lemma zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [mem_center_iff]
 #align set.zero_mem_center Set.zero_mem_center
 
 variable {M}
 
 @[to_additive (attr := simp) add_mem_addCenter]
-theorem mul_mem_center [Semigroup M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
+lemma mul_mem_center [Semigroup M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a * b ∈ Set.center M := fun g => by rw [mul_assoc, ← hb g, ← mul_assoc, ha g, mul_assoc]
 #align set.mul_mem_center Set.mul_mem_center
 #align set.add_mem_add_center Set.add_mem_addCenter
 
 @[to_additive (attr := simp) neg_mem_addCenter]
-theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) :
+lemma inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) :
     a⁻¹ ∈ Set.center M := fun g => by
   rw [← inv_inj, mul_inv_rev, inv_inv, ← ha, mul_inv_rev, inv_inv]
 #align set.inv_mem_center Set.inv_mem_center
 #align set.neg_mem_add_center Set.neg_mem_addCenter
 
 @[simp]
-theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
+lemma add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a + b ∈ Set.center M := fun c => by rw [add_mul, mul_add, ha c, hb c]
 #align set.add_mem_center Set.add_mem_center
 
 @[simp]
-theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
+lemma neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
     -a ∈ Set.center M := fun c => by
   rw [← neg_mul_comm, ha (-c), neg_mul_comm]
 #align set.neg_mem_center Set.neg_mem_centerₓ
 
 @[to_additive subset_addCenter_add_units]
-theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
+lemma subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
   fun _ ha _ => Units.ext <| ha _
 #align set.subset_center_units Set.subset_center_units
 #align set.subset_add_center_add_units Set.subset_addCenter_add_units
 
-theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ → M) ⁻¹' center M :=
+lemma center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ → M) ⁻¹' center M :=
   fun a ha b => by
   obtain rfl | hb := eq_or_ne b 0
   · rw [zero_mul, mul_zero]
@@ -96,12 +96,12 @@ theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ 
 #align set.center_units_subset Set.center_units_subset
 
 /-- In a group with zero, the center of the units is the preimage of the center. -/
-theorem center_units_eq [GroupWithZero M] : Set.center Mˣ = ((↑) : Mˣ → M) ⁻¹' center M :=
+lemma center_units_eq [GroupWithZero M] : Set.center Mˣ = ((↑) : Mˣ → M) ⁻¹' center M :=
   Subset.antisymm center_units_subset subset_center_units
 #align set.center_units_eq Set.center_units_eq
 
 @[simp]
-theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
+lemma inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
   obtain rfl | ha0 := eq_or_ne a 0
   · rw [inv_zero]
     exact zero_mem_center M
@@ -111,7 +111,7 @@ theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : 
 #align set.inv_mem_center₀ Set.inv_mem_center₀
 
 @[to_additive (attr := simp) sub_mem_addCenter]
-theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
+lemma div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
   exact mul_mem_center ha (inv_mem_center hb)
@@ -119,7 +119,7 @@ theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈
 #align set.sub_mem_add_center Set.sub_mem_addCenter
 
 @[simp]
-theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
+lemma div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
     (hb : b ∈ Set.center M) : a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
   exact mul_mem_center ha (inv_mem_center₀ hb)
@@ -128,7 +128,7 @@ theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
 variable (M)
 
 @[to_additive (attr := simp) addCenter_eq_univ]
-theorem center_eq_univ [CommSemigroup M] : center M = Set.univ :=
+lemma center_eq_univ [CommSemigroup M] : center M = Set.univ :=
   (Subset.antisymm (subset_univ _)) fun x _ y => mul_comm y x
 #align set.center_eq_univ Set.center_eq_univ
 #align set.add_center_eq_univ Set.addCenter_eq_univ
@@ -157,7 +157,7 @@ def center : Subsemigroup M where
 variable {M}
 
 @[to_additive]
-theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
+lemma mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
   Iff.rfl
 #align subsemigroup.mem_center_iff Subsemigroup.mem_center_iff
 #align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
@@ -182,7 +182,7 @@ section
 variable (M) [CommSemigroup M]
 
 @[to_additive (attr := simp)]
-theorem center_eq_top : center M = ⊤ :=
+lemma center_eq_top : center M = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ M)
 #align subsemigroup.center_eq_top Subsemigroup.center_eq_top
 #align add_subsemigroup.center_eq_top AddSubsemigroup.center_eq_top

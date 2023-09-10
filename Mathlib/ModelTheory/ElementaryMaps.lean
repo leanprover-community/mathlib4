@@ -181,7 +181,7 @@ theorem toEmbedding_toHom (f : M ↪ₑ[L] N) : f.toEmbedding.toHom = f.toHom :=
 #align first_order.language.elementary_embedding.to_embedding_to_hom FirstOrder.Language.ElementaryEmbedding.toEmbedding_toHom
 
 @[simp]
-theorem coe_toHom {f : M ↪ₑ[L] N} : (f.toHom : M → N) = (f : M → N) :=
+lemma coe_toHom {f : M ↪ₑ[L] N} : (f.toHom : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.elementary_embedding.coe_to_hom FirstOrder.Language.ElementaryEmbedding.coe_toHom
 
@@ -190,7 +190,7 @@ theorem coe_toEmbedding (f : M ↪ₑ[L] N) : (f.toEmbedding : M → N) = (f : M
   rfl
 #align first_order.language.elementary_embedding.coe_to_embedding FirstOrder.Language.ElementaryEmbedding.coe_toEmbedding
 
-theorem coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
+lemma coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
   FunLike.coe_injective
 #align first_order.language.elementary_embedding.coe_injective FirstOrder.Language.ElementaryEmbedding.coe_injective
 
@@ -199,7 +199,7 @@ theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align first_order.language.elementary_embedding.ext FirstOrder.Language.ElementaryEmbedding.ext
 
-theorem ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align first_order.language.elementary_embedding.ext_iff FirstOrder.Language.ElementaryEmbedding.ext_iff
 
@@ -346,7 +346,7 @@ theorem coe_toElementaryEmbedding (f : M ≃[L] N) :
 end Equiv
 
 @[simp]
-theorem realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α → S) (t : L.Term α) :
+lemma realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α → S) (t : L.Term α) :
     t.realize ((↑) ∘ v) = (↑(t.realize v) : M) :=
   S.subtype.realize_term t
 #align first_order.language.realize_term_substructure FirstOrder.Language.realize_term_substructure
@@ -354,7 +354,7 @@ theorem realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α �
 namespace Substructure
 
 @[simp]
-theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
+lemma realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
     {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
     φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
   rw [← Substructure.topEquiv.realize_boundedFormula φ]
@@ -362,7 +362,7 @@ theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula
 #align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
 
 @[simp]
-theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
+lemma realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
     φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
   rw [← Substructure.topEquiv.realize_formula φ]
   simp
@@ -419,7 +419,7 @@ def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
 #align first_order.language.elementary_substructure.subtype FirstOrder.Language.ElementarySubstructure.subtype
 
 @[simp]
-theorem coeSubtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S → M) :=
+lemma coeSubtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 #align first_order.language.elementary_substructure.coe_subtype FirstOrder.Language.ElementarySubstructure.coeSubtype
 
@@ -438,7 +438,7 @@ theorem mem_top (x : M) : x ∈ (⊤ : L.ElementarySubstructure M) :=
 #align first_order.language.elementary_substructure.mem_top FirstOrder.Language.ElementarySubstructure.mem_top
 
 @[simp]
-theorem coe_top : ((⊤ : L.ElementarySubstructure M) : Set M) = Set.univ :=
+lemma coe_top : ((⊤ : L.ElementarySubstructure M) : Set M) = Set.univ :=
   rfl
 #align first_order.language.elementary_substructure.coe_top FirstOrder.Language.ElementarySubstructure.coe_top
 

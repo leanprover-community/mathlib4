@@ -103,22 +103,22 @@ macro "map_fun_tac" : tactic => `(tactic| (
 
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
-theorem zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
+lemma zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
 #align witt_vector.map_fun.zero WittVector.mapFun.zero
 
-theorem one : mapFun f (1 : 𝕎 R) = 1 := by map_fun_tac
+lemma one : mapFun f (1 : 𝕎 R) = 1 := by map_fun_tac
 #align witt_vector.map_fun.one WittVector.mapFun.one
 
-theorem add : mapFun f (x + y) = mapFun f x + mapFun f y := by map_fun_tac
+lemma add : mapFun f (x + y) = mapFun f x + mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.add WittVector.mapFun.add
 
-theorem sub : mapFun f (x - y) = mapFun f x - mapFun f y := by map_fun_tac
+lemma sub : mapFun f (x - y) = mapFun f x - mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.sub WittVector.mapFun.sub
 
-theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
+lemma mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.mul WittVector.mapFun.mul
 
-theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
+lemma neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
 theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
@@ -178,18 +178,18 @@ variable (x y : WittVector p R)
 -- The following lemmas are not `@[simp]` because they will be bundled in `ghostMap` later on.
 
 @[local simp]
-theorem matrix_vecEmpty_coeff {R} (i j) :
+lemma matrix_vecEmpty_coeff {R} (i j) :
     @coeff p R (Matrix.vecEmpty i) j = (Matrix.vecEmpty i : ℕ → R) j := by
   rcases i with ⟨_ | _ | _ | _ | i_val, ⟨⟩⟩
 #align witt_vector.matrix_vec_empty_coeff WittVector.matrix_vecEmpty_coeff
 
-private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
+private lemma ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
   ghost_fun_tac 0, ![]
 
-private theorem ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
+private lemma ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
   ghost_fun_tac 1, ![]
 
-private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
+private lemma ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
   ghost_fun_tac X 0 + X 1, ![x.coeff, y.coeff]
 
 private theorem ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
@@ -197,13 +197,13 @@ private theorem ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
     induction i <;>
       simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.coe_nat]
 
-private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
+private lemma ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
 
-private theorem ghostFun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
+private lemma ghostFun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
   ghost_fun_tac X 0 * X 1, ![x.coeff, y.coeff]
 
-private theorem ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -X 0, ![x.coeff]
+private lemma ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -X 0, ![x.coeff]
 
 private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
@@ -327,11 +327,11 @@ def ghostEquiv : 𝕎 R ≃+* (ℕ → R) :=
 #align witt_vector.ghost_equiv WittVector.ghostEquiv
 
 @[simp]
-theorem ghostEquiv_coe : (ghostEquiv p R : 𝕎 R →+* ℕ → R) = ghostMap :=
+lemma ghostEquiv_coe : (ghostEquiv p R : 𝕎 R →+* ℕ → R) = ghostMap :=
   rfl
 #align witt_vector.ghost_equiv_coe WittVector.ghostEquiv_coe
 
-theorem ghostMap.bijective_of_invertible : Function.Bijective (ghostMap : 𝕎 R → ℕ → R) :=
+lemma ghostMap.bijective_of_invertible : Function.Bijective (ghostMap : 𝕎 R → ℕ → R) :=
   (ghostEquiv p R).bijective
 #align witt_vector.ghost_map.bijective_of_invertible WittVector.ghostMap.bijective_of_invertible
 

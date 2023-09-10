@@ -182,7 +182,7 @@ open Set
 
 /-- Given any rational approximation `q` to the irrational real number `ξ`, there is
 a good rational approximation `q'` such that `|ξ - q'| < |ξ - q|`. -/
-theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational ξ) (q : ℚ) :
+lemma exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational ξ) (q : ℚ) :
     ∃ q' : ℚ, |ξ - q'| < 1 / (q'.den : ℝ) ^ 2 ∧ |ξ - q'| < |ξ - q| := by
   have h := abs_pos.mpr (sub_ne_zero.mpr <| Irrational.ne_rat hξ q)
   obtain ⟨m, hm⟩ := exists_nat_gt (1 / |ξ - q|)
@@ -204,7 +204,7 @@ theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational 
 
 /-- If `ξ` is an irrational real number, then there are infinitely many good
 rational approximations to `ξ`. -/
-theorem infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational {ξ : ℝ} (hξ : Irrational ξ) :
+lemma infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational {ξ : ℝ} (hξ : Irrational ξ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite := by
   refine' Or.resolve_left (Set.finite_or_infinite _) fun h => _
   obtain ⟨q, _, hq⟩ :=
@@ -232,7 +232,7 @@ open Set
 
 /-- If `ξ` is rational, then the good rational approximations to `ξ` have bounded
 numerator and denominator. -/
-theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
+lemma den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     (h : |ξ - q| < 1 / (q.den : ℚ) ^ 2) :
     q.den ≤ ξ.den ∧ ⌈ξ * q.den⌉ - 1 ≤ q.num ∧ q.num ≤ ⌊ξ * q.den⌋ + 1 := by
   have hq₀ : (0 : ℚ) < q.den := Nat.cast_pos.mpr q.pos
@@ -364,7 +364,7 @@ theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
-theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
+lemma convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   cases n
   · simp only [Nat.zero_eq, convergent_zero, floor_intCast]
   · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
@@ -411,14 +411,14 @@ def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
 
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
-private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
+private lemma aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
   ⟨cast_pos.mpr hv, by norm_cast; linarith⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
 variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
 
 -- The fractional part of `ξ` is positive.
-private theorem aux₁ : 0 < fract ξ := by
+private lemma aux₁ : 0 < fract ξ := by
   have hv₀ : (0 : ℝ) < v := cast_pos.mpr (zero_lt_two.trans_le hv)
   obtain ⟨hv₁, hv₂⟩ := aux₀ (zero_lt_two.trans_le hv)
   obtain ⟨hcop, _, h⟩ := h
@@ -437,7 +437,7 @@ private theorem aux₁ : 0 < fract ξ := by
   linarith only [hv, H]
 
 -- An auxiliary lemma for the inductive step.
-private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
+private lemma aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
   obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
   have hv₁ : 0 < 2 * v - 1 := by linarith only [hv]
@@ -474,7 +474,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
       cases' huv_cop with huv_cop huv_cop <;> linarith only [hv, huv_cop]
 
 -- The key step: the relevant inequality persists in the inductive step.
-private theorem aux₃ :
+private lemma aux₃ :
     |(fract ξ)⁻¹ - v / (u - ⌊ξ⌋ * v)| < (((u : ℝ) - ⌊ξ⌋ * v) * (2 * (u - ⌊ξ⌋ * v) - 1))⁻¹ := by
   obtain ⟨hu₀, huv⟩ := aux₂ hv h
   have hξ₀ := aux₁ hv h
@@ -513,7 +513,7 @@ private theorem aux₃ :
         mul_le_mul_left Hu]
 
 -- The conditions `ass ξ u v` persist in the inductive step.
-private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
+private lemma invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
   refine' ⟨_, fun huv => _, by exact_mod_cast aux₃ hv h⟩
   · rw [sub_eq_add_neg, ← neg_mul, isCoprime_comm, IsCoprime.add_mul_right_left_iff]
     exact h.1
@@ -533,7 +533,7 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
 
 
 /-- The technical version of *Legendre's Theorem*. -/
-theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
+lemma exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
   -- Porting note: `induction` got in trouble because of the irrelevant hypothesis `h`
   clear h; have h := h'; clear h'
@@ -583,7 +583,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This version uses `Real.convergent`. -/
-theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
+lemma exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
     ∃ n, q = ξ.convergent n := by
   refine' q.num_div_den ▸ exists_rat_eq_convergent' ⟨_, fun hd => _, _⟩
   · exact coprime_iff_nat_coprime.mpr (natAbs_ofNat q.den ▸ q.reduced)
@@ -601,7 +601,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `generalized_contined_fraction.convergents`. -/
-theorem exists_continued_fraction_convergent_eq_rat {q : ℚ}
+lemma exists_continued_fraction_convergent_eq_rat {q : ℚ}
     (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
     ∃ n, (GeneralizedContinuedFraction.of ξ).convergents n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h

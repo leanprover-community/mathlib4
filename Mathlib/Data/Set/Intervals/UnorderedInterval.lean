@@ -183,7 +183,7 @@ section LinearOrder
 
 variable [LinearOrder α] [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c x : α}
 
-theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
+lemma Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 #align set.Icc_min_max Set.Icc_min_max
 

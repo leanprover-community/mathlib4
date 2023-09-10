@@ -51,7 +51,7 @@ theorem Sphere.secondInter_dist (s : Sphere P) (p : P) (v : V) :
 
 /-- The point given by `secondInter` lies on the sphere. -/
 @[simp]
-theorem Sphere.secondInter_mem {s : Sphere P} {p : P} (v : V) : s.secondInter p v ∈ s ↔ p ∈ s := by
+lemma Sphere.secondInter_mem {s : Sphere P} {p : P} (v : V) : s.secondInter p v ∈ s ↔ p ∈ s := by
   simp_rw [mem_sphere, Sphere.secondInter_dist]
 #align euclidean_geometry.sphere.second_inter_mem EuclideanGeometry.Sphere.secondInter_mem
 
@@ -67,7 +67,7 @@ variable {V}
 
 /-- The point given by `secondInter` equals the original point if and only if the line is
 orthogonal to the radius vector. -/
-theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
+lemma Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
     s.secondInter p v = p ↔ ⟪v, p -ᵥ s.center⟫ = 0 := by
   refine' ⟨fun hp => _, fun hp => _⟩
   · by_cases hv : v = 0
@@ -79,7 +79,7 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
 #align euclidean_geometry.sphere.second_inter_eq_self_iff EuclideanGeometry.Sphere.secondInter_eq_self_iff
 
 /-- A point on a line through a point on a sphere equals that point or `secondInter`. -/
-theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Sphere P} {p : P}
+lemma Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Sphere P} {p : P}
     (hp : p ∈ s) {v : V} {p' : P} (hp' : p' ∈ AffineSubspace.mk' p (ℝ ∙ v)) :
     p' = p ∨ p' = s.secondInter p v ↔ p' ∈ s := by
   refine' ⟨fun h => _, fun h => _⟩
@@ -157,7 +157,7 @@ theorem Sphere.secondInter_collinear (s : Sphere P) (p p' : P) :
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, and the second point is not outside the sphere, the second point is weakly
 between the first point and the result of `secondInter`. -/
-theorem Sphere.wbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
+lemma Sphere.wbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
     (hp' : dist p' s.center ≤ s.radius) : Wbtw ℝ p p' (s.secondInter p (p' -ᵥ p)) := by
   by_cases h : p' = p; · simp [h]
   refine'
@@ -172,7 +172,7 @@ theorem Sphere.wbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, and the second point is inside the sphere, the second point is strictly between
 the first point and the result of `secondInter`. -/
-theorem Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
+lemma Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
     (hp' : dist p' s.center < s.radius) : Sbtw ℝ p p' (s.secondInter p (p' -ᵥ p)) := by
   refine' ⟨Sphere.wbtw_secondInter hp hp'.le, _, _⟩
   · rintro rfl

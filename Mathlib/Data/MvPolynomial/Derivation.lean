@@ -71,24 +71,24 @@ theorem derivation_C_mul (D : Derivation R (MvPolynomial σ R) A) (a : R) (f : M
 
 /-- If two derivations agree on `X i`, `i ∈ s`, then they agree on all polynomials from
 `MvPolynomial.supported R s`. -/
-theorem derivation_eqOn_supported {D₁ D₂ : Derivation R (MvPolynomial σ R) A} {s : Set σ}
+lemma derivation_eqOn_supported {D₁ D₂ : Derivation R (MvPolynomial σ R) A} {s : Set σ}
     (h : Set.EqOn (D₁ ∘ X) (D₂ ∘ X) s) {f : MvPolynomial σ R} (hf : f ∈ supported R s) :
     D₁ f = D₂ f :=
   Derivation.eqOn_adjoin (Set.ball_image_iff.2 h) hf
 #align mv_polynomial.derivation_eq_on_supported MvPolynomial.derivation_eqOn_supported
 
-theorem derivation_eq_of_forall_mem_vars {D₁ D₂ : Derivation R (MvPolynomial σ R) A}
+lemma derivation_eq_of_forall_mem_vars {D₁ D₂ : Derivation R (MvPolynomial σ R) A}
     {f : MvPolynomial σ R} (h : ∀ i ∈ f.vars, D₁ (X i) = D₂ (X i)) : D₁ f = D₂ f :=
   derivation_eqOn_supported h f.mem_supported_vars
 #align mv_polynomial.derivation_eq_of_forall_mem_vars MvPolynomial.derivation_eq_of_forall_mem_vars
 
-theorem derivation_eq_zero_of_forall_mem_vars {D : Derivation R (MvPolynomial σ R) A}
+lemma derivation_eq_zero_of_forall_mem_vars {D : Derivation R (MvPolynomial σ R) A}
     {f : MvPolynomial σ R} (h : ∀ i ∈ f.vars, D (X i) = 0) : D f = 0 :=
   show D f = (0 : Derivation R (MvPolynomial σ R) A) f from derivation_eq_of_forall_mem_vars h
 #align mv_polynomial.derivation_eq_zero_of_forall_mem_vars MvPolynomial.derivation_eq_zero_of_forall_mem_vars
 
 @[ext]
-theorem derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀ i, D₁ (X i) = D₂ (X i)) :
+lemma derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀ i, D₁ (X i) = D₂ (X i)) :
     D₁ = D₂ :=
   Derivation.ext fun _ => derivation_eq_of_forall_mem_vars fun i _ => h i
 #align mv_polynomial.derivation_ext MvPolynomial.derivation_ext

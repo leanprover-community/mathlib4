@@ -27,13 +27,13 @@ variable {X Y : Type*} [TopologicalSpace X]
 instance [One Y] : One (LocallyConstant X Y) where one := const X 1
 
 @[to_additive (attr := simp)]
-theorem coe_one [One Y] : ⇑(1 : LocallyConstant X Y) = (1 : X → Y) :=
+lemma coe_one [One Y] : ⇑(1 : LocallyConstant X Y) = (1 : X → Y) :=
   rfl
 #align locally_constant.coe_one LocallyConstant.coe_one
 #align locally_constant.coe_zero LocallyConstant.coe_zero
 
 @[to_additive]
-theorem one_apply [One Y] (x : X) : (1 : LocallyConstant X Y) x = 1 :=
+lemma one_apply [One Y] (x : X) : (1 : LocallyConstant X Y) x = 1 :=
   rfl
 #align locally_constant.one_apply LocallyConstant.one_apply
 #align locally_constant.zero_apply LocallyConstant.zero_apply
@@ -42,13 +42,13 @@ theorem one_apply [One Y] (x : X) : (1 : LocallyConstant X Y) x = 1 :=
 instance [Inv Y] : Inv (LocallyConstant X Y) where inv f := ⟨f⁻¹, f.isLocallyConstant.inv⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inv [Inv Y] (f : LocallyConstant X Y) : ⇑(f⁻¹ : LocallyConstant X Y) = (f : X → Y)⁻¹ :=
+lemma coe_inv [Inv Y] (f : LocallyConstant X Y) : ⇑(f⁻¹ : LocallyConstant X Y) = (f : X → Y)⁻¹ :=
   rfl
 #align locally_constant.coe_inv LocallyConstant.coe_inv
 #align locally_constant.coe_neg LocallyConstant.coe_neg
 
 @[to_additive]
-theorem inv_apply [Inv Y] (f : LocallyConstant X Y) (x : X) : f⁻¹ x = (f x)⁻¹ :=
+lemma inv_apply [Inv Y] (f : LocallyConstant X Y) (x : X) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 #align locally_constant.inv_apply LocallyConstant.inv_apply
 #align locally_constant.neg_apply LocallyConstant.neg_apply
@@ -58,13 +58,13 @@ instance [Mul Y] : Mul (LocallyConstant X Y) where
   mul f g := ⟨f * g, f.isLocallyConstant.mul g.isLocallyConstant⟩
 
 @[to_additive (attr := simp)]
-theorem coe_mul [Mul Y] (f g : LocallyConstant X Y) : ⇑(f * g) = f * g :=
+lemma coe_mul [Mul Y] (f g : LocallyConstant X Y) : ⇑(f * g) = f * g :=
   rfl
 #align locally_constant.coe_mul LocallyConstant.coe_mul
 #align locally_constant.coe_add LocallyConstant.coe_add
 
 @[to_additive]
-theorem mul_apply [Mul Y] (f g : LocallyConstant X Y) (x : X) : (f * g) x = f x * g x :=
+lemma mul_apply [Mul Y] (f g : LocallyConstant X Y) (x : X) : (f * g) x = f x * g x :=
   rfl
 #align locally_constant.mul_apply LocallyConstant.mul_apply
 #align locally_constant.add_apply LocallyConstant.add_apply
@@ -111,15 +111,15 @@ theorem coe_charFn (hU : IsClopen U) : (charFn Y hU : X → Y) = Set.indicator U
   rfl
 #align locally_constant.coe_char_fn LocallyConstant.coe_charFn
 
-theorem charFn_eq_one [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x = (1 : Y) ↔ x ∈ U :=
+lemma charFn_eq_one [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x = (1 : Y) ↔ x ∈ U :=
   Set.indicator_eq_one_iff_mem _
 #align locally_constant.char_fn_eq_one LocallyConstant.charFn_eq_one
 
-theorem charFn_eq_zero [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x = (0 : Y) ↔ x ∉ U :=
+lemma charFn_eq_zero [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x = (0 : Y) ↔ x ∉ U :=
   Set.indicator_eq_zero_iff_not_mem _
 #align locally_constant.char_fn_eq_zero LocallyConstant.charFn_eq_zero
 
-theorem charFn_inj [Nontrivial Y] (hU : IsClopen U) (hV : IsClopen V)
+lemma charFn_inj [Nontrivial Y] (hU : IsClopen U) (hV : IsClopen V)
     (h : charFn Y hU = charFn Y hV) : U = V :=
   Set.indicator_one_inj Y <| coe_inj.mpr h
 #align locally_constant.char_fn_inj LocallyConstant.charFn_inj
@@ -131,13 +131,13 @@ instance [Div Y] : Div (LocallyConstant X Y) where
   div f g := ⟨f / g, f.isLocallyConstant.div g.isLocallyConstant⟩
 
 @[to_additive]
-theorem coe_div [Div Y] (f g : LocallyConstant X Y) : ⇑(f / g) = f / g :=
+lemma coe_div [Div Y] (f g : LocallyConstant X Y) : ⇑(f / g) = f / g :=
   rfl
 #align locally_constant.coe_div LocallyConstant.coe_div
 #align locally_constant.coe_sub LocallyConstant.coe_sub
 
 @[to_additive]
-theorem div_apply [Div Y] (f g : LocallyConstant X Y) (x : X) : (f / g) x = f x / g x :=
+lemma div_apply [Div Y] (f g : LocallyConstant X Y) (x : X) : (f / g) x = f x / g x :=
   rfl
 #align locally_constant.div_apply LocallyConstant.div_apply
 #align locally_constant.sub_apply LocallyConstant.sub_apply
@@ -158,12 +158,12 @@ instance smul [SMul α Y] : SMul α (LocallyConstant X Y) where
   smul n f := f.map (n • ·)
 
 @[to_additive (attr := simp)]
-theorem coe_smul [SMul R Y] (r : R) (f : LocallyConstant X Y) : ⇑(r • f) = r • (f : X → Y) :=
+lemma coe_smul [SMul R Y] (r : R) (f : LocallyConstant X Y) : ⇑(r • f) = r • (f : X → Y) :=
   rfl
 #align locally_constant.coe_smul LocallyConstant.coe_smul
 
 @[to_additive]
-theorem smul_apply [SMul R Y] (r : R) (f : LocallyConstant X Y) (x : X) : (r • f) x = r • f x :=
+lemma smul_apply [SMul R Y] (r : R) (f : LocallyConstant X Y) (x : X) : (r • f) x = r • f x :=
   rfl
 #align locally_constant.smul_apply LocallyConstant.smul_apply
 

@@ -39,7 +39,7 @@ variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 /-- If a set `s` is a neighborhood of `x`, then there exists a smooth function `f` taking
 values in `[0, 1]`, supported in `s` and with `f x = 1`. -/
-theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
+lemma exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
     ∃ f : E → ℝ,
       tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ f x = 1 := by
   obtain ⟨d : ℝ, d_pos : 0 < d, hd : Euclidean.closedBall x d ⊆ s⟩ :=
@@ -75,7 +75,7 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
 
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`. -/
-theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
+lemma IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   /- For any given point `x` in `s`, one can construct a smooth function with support in `s` and
     nonzero at `x`. By second-countability, it follows that we may cover `s` with the supports of
@@ -212,7 +212,7 @@ section HelperDefinitions
 
 variable (E)
 
-theorem u_exists :
+lemma u_exists :
     ∃ u : E → ℝ,
       ContDiff ℝ ⊤ u ∧ (∀ x, u x ∈ Icc (0 : ℝ) 1) ∧ support u = ball 0 1 ∧ ∀ x, u (-x) = u x := by
   have A : IsOpen (ball (0 : E) 1) := isOpen_ball
@@ -252,19 +252,19 @@ def u (x : E) : ℝ :=
 
 variable (E)
 
-theorem u_smooth : ContDiff ℝ ⊤ (u : E → ℝ) :=
+lemma u_smooth : ContDiff ℝ ⊤ (u : E → ℝ) :=
   (Classical.choose_spec (u_exists E)).1
 #align exists_cont_diff_bump_base.u_smooth ExistsContDiffBumpBase.u_smooth
 
-theorem u_continuous : Continuous (u : E → ℝ) :=
+lemma u_continuous : Continuous (u : E → ℝ) :=
   (u_smooth E).continuous
 #align exists_cont_diff_bump_base.u_continuous ExistsContDiffBumpBase.u_continuous
 
-theorem u_support : support (u : E → ℝ) = ball 0 1 :=
+lemma u_support : support (u : E → ℝ) = ball 0 1 :=
   (Classical.choose_spec (u_exists E)).2.2.1
 #align exists_cont_diff_bump_base.u_support ExistsContDiffBumpBase.u_support
 
-theorem u_compact_support : HasCompactSupport (u : E → ℝ) := by
+lemma u_compact_support : HasCompactSupport (u : E → ℝ) := by
   rw [hasCompactSupport_def, u_support, closure_ball (0 : E) one_ne_zero]
   exact isCompact_closedBall _ _
 #align exists_cont_diff_bump_base.u_compact_support ExistsContDiffBumpBase.u_compact_support
@@ -289,7 +289,7 @@ local notation "μ" => MeasureTheory.Measure.addHaar
 
 variable (E)
 
-theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
+lemma u_int_pos : 0 < ∫ x : E, u x ∂μ := by
   refine' (integral_pos_iff_support_of_nonneg u_nonneg _).mpr _
   · exact (u_continuous E).integrable_of_hasCompactSupport (u_compact_support E)
   · rw [u_support]; exact measure_ball_pos _ _ zero_lt_one
@@ -324,13 +324,13 @@ theorem w_mul_φ_nonneg (D : ℝ) (x y : E) : 0 ≤ w D y * φ (x - y) :=
 
 variable (E)
 
-theorem w_integral {D : ℝ} (Dpos : 0 < D) : ∫ x : E, w D x ∂μ = 1 := by
+lemma w_integral {D : ℝ} (Dpos : 0 < D) : ∫ x : E, w D x ∂μ = 1 := by
   simp_rw [w, integral_smul]
   rw [integral_comp_inv_smul_of_nonneg μ (u : E → ℝ) Dpos.le, abs_of_nonneg Dpos.le, mul_comm]
   field_simp [(u_int_pos E).ne']
 #align exists_cont_diff_bump_base.W_integral ExistsContDiffBumpBase.w_integral
 
-theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 D := by
+lemma w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 D := by
   have B : D • ball (0 : E) 1 = ball 0 D := by
     rw [smul_unitBall Dpos.ne', Real.norm_of_nonneg Dpos.le]
   have C : D ^ finrank ℝ E ≠ 0 := by
@@ -341,7 +341,7 @@ theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 
     abs_of_nonneg Dpos.le]
 #align exists_cont_diff_bump_base.W_support ExistsContDiffBumpBase.w_support
 
-theorem w_compact_support {D : ℝ} (Dpos : 0 < D) : HasCompactSupport (w D : E → ℝ) := by
+lemma w_compact_support {D : ℝ} (Dpos : 0 < D) : HasCompactSupport (w D : E → ℝ) := by
   rw [hasCompactSupport_def, w_support E Dpos, closure_ball (0 : E) Dpos.ne']
   exact isCompact_closedBall _ _
 #align exists_cont_diff_bump_base.W_compact_support ExistsContDiffBumpBase.w_compact_support
@@ -364,7 +364,7 @@ theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
     simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg, forall_const]
 #align exists_cont_diff_bump_base.Y_neg ExistsContDiffBumpBase.y_neg
 
-theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
+lemma y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
     (hx : x ∈ closedBall (0 : E) (1 - D)) : y D x = 1 := by
   change (w D ⋆[lsmul ℝ ℝ, μ] φ) x = 1
   have B : ∀ y : E, y ∈ ball x D → φ y = 1 := by
@@ -383,7 +383,7 @@ theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
     one_mul]
 #align exists_cont_diff_bump_base.Y_eq_one_of_mem_closed_ball ExistsContDiffBumpBase.y_eq_one_of_mem_closedBall
 
-theorem y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ball (0 : E) (1 + D)) :
+lemma y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ball (0 : E) (1 + D)) :
     y D x = 0 := by
   change (w D ⋆[lsmul ℝ ℝ, μ] φ) x = 0
   have B : ∀ y, y ∈ ball x D → φ y = 0 := by
@@ -405,7 +405,7 @@ theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
   integral_nonneg (w_mul_φ_nonneg D x)
 #align exists_cont_diff_bump_base.Y_nonneg ExistsContDiffBumpBase.y_nonneg
 
-theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
+lemma y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
   have A : (w D ⋆[lsmul ℝ ℝ, μ] φ) x ≤ (w D ⋆[lsmul ℝ ℝ, μ] 1) x := by
     apply
       convolution_mono_right_of_nonneg _ (w_nonneg D) (indicator_le_self' fun x _ => zero_le_one)
@@ -420,7 +420,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
   exact A.trans (le_of_eq B)
 #align exists_cont_diff_bump_base.Y_le_one ExistsContDiffBumpBase.y_le_one
 
-theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
+lemma y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
     (hx : x ∈ ball (0 : E) (1 + D)) : 0 < y D x := by
   simp only [mem_ball_zero_iff] at hx
   refine' (integral_pos_iff_support_of_nonneg (w_mul_φ_nonneg D x) _).2 _
@@ -465,7 +465,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
 
 variable (E)
 
-theorem y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : Set E)) := by
+lemma y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : Set E)) := by
   have hs : IsOpen (Ioo (0 : ℝ) (1 : ℝ)) := isOpen_Ioo
   have hk : IsCompact (closedBall (0 : E) 1) := ProperSpace.isCompact_closedBall _ _
   refine' contDiffOn_convolution_left_with_param (lsmul ℝ ℝ) hs hk _ _ _
@@ -493,7 +493,7 @@ theorem y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
       exact ContDiffOn.smul (contDiffOn_fst.inv fun x hx => ne_of_gt hx.1.1) contDiffOn_snd
 #align exists_cont_diff_bump_base.Y_smooth ExistsContDiffBumpBase.y_smooth
 
-theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
+lemma y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     support (y D : E → ℝ) = ball (0 : E) (1 + D) :=
   support_eq_iff.2
     ⟨fun _ hx => (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx =>

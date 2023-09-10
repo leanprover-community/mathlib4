@@ -34,12 +34,12 @@ def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ�
   ∀ x y, edist x y ≤ K * edist (f x) (f y)
 #align antilipschitz_with AntilipschitzWith
 
-theorem AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
+lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y < ⊤ :=
   (h x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_ne_top (edist_ne_top _ _)
 #align antilipschitz_with.edist_lt_top AntilipschitzWith.edist_lt_top
 
-theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
+lemma AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y ≠ ⊤ :=
   (h.edist_lt_top x y).ne
 #align antilipschitz_with.edist_ne_top AntilipschitzWith.edist_ne_top
@@ -48,7 +48,7 @@ section Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
 
-theorem antilipschitzWith_iff_le_mul_nndist :
+lemma antilipschitzWith_iff_le_mul_nndist :
     AntilipschitzWith K f ↔ ∀ x y, nndist x y ≤ K * nndist (f x) (f y) := by
   simp only [AntilipschitzWith, edist_nndist]
   norm_cast
@@ -59,7 +59,7 @@ alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ 
 #align antilipschitz_with.le_mul_nndist AntilipschitzWith.le_mul_nndist
 #align antilipschitz_with.of_le_mul_nndist AntilipschitzWith.of_le_mul_nndist
 
-theorem antilipschitzWith_iff_le_mul_dist :
+lemma antilipschitzWith_iff_le_mul_dist :
     AntilipschitzWith K f ↔ ∀ x y, dist x y ≤ K * dist (f x) (f y) := by
   simp only [antilipschitzWith_iff_le_mul_nndist, dist_nndist]
   norm_cast
@@ -101,7 +101,7 @@ protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 set_option linter.uppercaseLean3 false in
 #align antilipschitz_with.K AntilipschitzWith.k
 
-protected theorem injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
+protected lemma injective {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) : Function.Injective f := fun x y h => by
   simpa only [h, edist_self, mul_zero, edist_le_zero] using hf x y
 #align antilipschitz_with.injective AntilipschitzWith.injective
@@ -121,11 +121,11 @@ theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s �
   (diam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))
 #align antilipschitz_with.le_mul_ediam_image AntilipschitzWith.le_mul_ediam_image
 
-protected theorem id : AntilipschitzWith 1 (id : α → α) := fun x y => by
+protected lemma id : AntilipschitzWith 1 (id : α → α) := fun x y => by
   simp only [ENNReal.coe_one, one_mul, id, le_refl]
 #align antilipschitz_with.id AntilipschitzWith.id
 
-theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : ℝ≥0} {f : α → β}
+lemma comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
   calc
     edist x y ≤ Kf * edist (f x) (f y) := hf x y
@@ -141,7 +141,7 @@ theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x �
     AntilipschitzWith K (s.codRestrict f hs) := fun x y => hf x y
 #align antilipschitz_with.cod_restrict AntilipschitzWith.codRestrict
 
-theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
+lemma to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
     {t : Set β} (g_maps : MapsTo g t s) (g_inv : RightInvOn g f t) :
     LipschitzWith K (t.restrict g) := fun x y => by
   simpa only [restrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_eq, Subtype.coe_mk] using
@@ -174,24 +174,24 @@ protected theorem uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformCon
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 #align antilipschitz_with.uniform_inducing AntilipschitzWith.uniformInducing
 
-protected theorem uniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
+protected lemma uniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     UniformEmbedding f :=
   ⟨hf.uniformInducing hfc, hf.injective⟩
 #align antilipschitz_with.uniform_embedding AntilipschitzWith.uniformEmbedding
 
-theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
+lemma isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
   (hf.uniformInducing hfc).isComplete_range
 #align antilipschitz_with.is_complete_range AntilipschitzWith.isComplete_range
 
-theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
+lemma isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
     {f : α → β} {K : ℝ≥0} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     IsClosed (range f) :=
   (hf.isComplete_range hfc).isClosed
 #align antilipschitz_with.is_closed_range AntilipschitzWith.isClosed_range
 
-theorem closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
+lemma closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     ClosedEmbedding f :=
   { (hf.uniformEmbedding hfc).embedding with closed_range := hf.isClosed_range hfc }
@@ -202,12 +202,12 @@ theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
 #align antilipschitz_with.subtype_coe AntilipschitzWith.subtype_coe
 
 @[nontriviality] -- porting note: added `nontriviality`
-theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
+lemma of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 #align antilipschitz_with.of_subsingleton AntilipschitzWith.of_subsingleton
 
 /-- If `f : α → β` is `0`-antilipschitz, then `α` is a `subsingleton`. -/
-protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
+protected lemma subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : AntilipschitzWith 0 f) : Subsingleton α :=
   ⟨fun x y => edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
 #align antilipschitz_with.subsingleton AntilipschitzWith.subsingleton
@@ -234,7 +234,7 @@ theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α
 #align antilipschitz_with.tendsto_cobounded AntilipschitzWith.tendsto_cobounded
 
 /-- The image of a proper space under an expanding onto map is proper. -/
-protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
+protected lemma properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
     (hK : AntilipschitzWith K f) (f_cont : Continuous f) (hf : Function.Surjective f) :
     ProperSpace β := by
   refine ⟨fun x₀ r => ?_⟩
@@ -248,13 +248,13 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
 
 end AntilipschitzWith
 
-theorem LipschitzWith.to_rightInverse [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
+lemma LipschitzWith.to_rightInverse [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
     {f : α → β} (hf : LipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     AntilipschitzWith K g := fun x y => by simpa only [hg _] using hf (g x) (g y)
 #align lipschitz_with.to_right_inverse LipschitzWith.to_rightInverse
 
 /-- The preimage of a proper space under a Lipschitz homeomorphism is proper. -/
-protected theorem LipschitzWith.properSpace [PseudoMetricSpace α] [MetricSpace β] [ProperSpace β]
+protected lemma LipschitzWith.properSpace [PseudoMetricSpace α] [MetricSpace β] [ProperSpace β]
     {K : ℝ≥0} {f : α ≃ₜ β} (hK : LipschitzWith K f) : ProperSpace α :=
   (hK.to_rightInverse f.right_inv).properSpace f.symm.continuous f.symm.surjective
 #align lipschitz_with.proper_space LipschitzWith.properSpace

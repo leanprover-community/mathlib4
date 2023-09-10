@@ -35,16 +35,16 @@ theorem dist_cast_real (x y : ℤ) : dist (x : ℝ) y = dist x y :=
   rfl
 #align int.dist_cast_real Int.dist_cast_real
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
+lemma pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
   intro m n hne
   rw [dist_eq]; norm_cast; rwa [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
 #align int.pairwise_one_le_dist Int.pairwise_one_le_dist
 
-theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℤ → ℝ) :=
+lemma uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℤ → ℝ) :=
   uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 #align int.uniform_embedding_coe_real Int.uniformEmbedding_coe_real
 
-theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℤ → ℝ) :=
+lemma closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℤ → ℝ) :=
   closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 #align int.closed_embedding_coe_real Int.closedEmbedding_coe_real
 
@@ -70,13 +70,13 @@ instance : ProperSpace ℤ :=
     exact (Set.finite_Icc _ _).isCompact⟩
 
 @[simp]
-theorem cocompact_eq : cocompact ℤ = atBot ⊔ atTop := by
+lemma cocompact_eq : cocompact ℤ = atBot ⊔ atTop := by
   simp_rw [← comap_dist_right_atTop_eq_cocompact (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
 #align int.cocompact_eq Int.cocompact_eq
 
 @[simp]
-theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by
+lemma cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by
   rw [← cocompact_eq_cofinite, cocompact_eq]
 #align int.cofinite_eq Int.cofinite_eq
 

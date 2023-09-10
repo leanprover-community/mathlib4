@@ -31,21 +31,21 @@ protected def unop (s : Set αᵒᵖ) : Set α :=
 #align set.unop Set.unop
 
 @[simp]
-theorem mem_op {s : Set α} {a : αᵒᵖ} : a ∈ s.op ↔ unop a ∈ s :=
+lemma mem_op {s : Set α} {a : αᵒᵖ} : a ∈ s.op ↔ unop a ∈ s :=
   Iff.rfl
 #align set.mem_op Set.mem_op
 
 @[simp 1100]
-theorem op_mem_op {s : Set α} {a : α} : op a ∈ s.op ↔ a ∈ s := by rfl
+lemma op_mem_op {s : Set α} {a : α} : op a ∈ s.op ↔ a ∈ s := by rfl
 #align set.op_mem_op Set.op_mem_op
 
 @[simp]
-theorem mem_unop {s : Set αᵒᵖ} {a : α} : a ∈ s.unop ↔ op a ∈ s :=
+lemma mem_unop {s : Set αᵒᵖ} {a : α} : a ∈ s.unop ↔ op a ∈ s :=
   Iff.rfl
 #align set.mem_unop Set.mem_unop
 
 @[simp 1100]
-theorem unop_mem_unop {s : Set αᵒᵖ} {a : αᵒᵖ} : unop a ∈ s.unop ↔ a ∈ s := by rfl
+lemma unop_mem_unop {s : Set αᵒᵖ} {a : αᵒᵖ} : unop a ∈ s.unop ↔ a ∈ s := by rfl
 #align set.unop_mem_unop Set.unop_mem_unop
 
 @[simp]

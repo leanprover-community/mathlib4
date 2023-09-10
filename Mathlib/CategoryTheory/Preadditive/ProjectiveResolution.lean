@@ -110,21 +110,21 @@ end
 namespace ProjectiveResolution
 
 @[simp]
-theorem π_f_succ {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : P.π.f (n + 1) = 0 := by
+lemma π_f_succ {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : P.π.f (n + 1) = 0 := by
   apply zero_of_target_iso_zero
   dsimp; rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.π_f_succ CategoryTheory.ProjectiveResolution.π_f_succ
 
 @[simp]
-theorem complex_d_comp_π_f_zero {Z : C} (P : ProjectiveResolution Z) :
+lemma complex_d_comp_π_f_zero {Z : C} (P : ProjectiveResolution Z) :
     P.complex.d 1 0 ≫ P.π.f 0 = 0 :=
   P.exact₀.w
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.complex_d_comp_π_f_zero CategoryTheory.ProjectiveResolution.complex_d_comp_π_f_zero
 
 @[simp 1100]
-theorem complex_d_succ_comp {Z : C} (P : ProjectiveResolution Z) (n : ℕ) :
+lemma complex_d_succ_comp {Z : C} (P : ProjectiveResolution Z) (n : ℕ) :
     P.complex.d (n + 2) (n + 1) ≫ P.complex.d (n + 1) n = 0 :=
   (P.exact _).w
 set_option linter.uppercaseLean3 false in
@@ -172,7 +172,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Auxiliary lemma for `lift`. -/
 @[simp]
-theorem liftOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
+lemma liftOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) :
     liftOne f P Q ≫ Q.complex.d 1 0 = P.complex.d 1 0 ≫ liftZero f P Q := by
   dsimp [liftZero, liftOne]
@@ -201,7 +201,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The resolution maps intertwine the lift of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
-theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
+lemma lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) : lift f P Q ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f := by
   ext; simp [lift, liftZero]
 set_option linter.uppercaseLean3 false in
@@ -292,13 +292,13 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.homotopy_equiv CategoryTheory.ProjectiveResolution.homotopyEquiv
 
 @[reassoc (attr := simp)]
-theorem homotopyEquiv_hom_π {X : C} (P Q : ProjectiveResolution X) :
+lemma homotopyEquiv_hom_π {X : C} (P Q : ProjectiveResolution X) :
     (homotopyEquiv P Q).hom ≫ Q.π = P.π := by simp [homotopyEquiv]
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.homotopy_equiv_hom_π CategoryTheory.ProjectiveResolution.homotopyEquiv_hom_π
 
 @[reassoc (attr := simp)]
-theorem homotopyEquiv_inv_π {X : C} (P Q : ProjectiveResolution X) :
+lemma homotopyEquiv_inv_π {X : C} (P Q : ProjectiveResolution X) :
     (homotopyEquiv P Q).inv ≫ P.π = Q.π := by simp [homotopyEquiv]
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.homotopy_equiv_inv_π CategoryTheory.ProjectiveResolution.homotopyEquiv_inv_π

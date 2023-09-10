@@ -67,7 +67,7 @@ theorem char_tensor' (V W : FdRep k G) :
   simp [← char_tensor]
 
 /-- The character of isomorphic representations is the same. -/
-theorem char_iso {V W : FdRep k G} (i : V ≅ W) : V.character = W.character := by
+lemma char_iso {V W : FdRep k G} (i : V ≅ W) : V.character = W.character := by
   ext g; simp only [character, FdRep.Iso.conj_ρ i]; exact (trace_conj' (V.ρ g) _).symm
 #align fdRep.char_iso FdRep.char_iso
 

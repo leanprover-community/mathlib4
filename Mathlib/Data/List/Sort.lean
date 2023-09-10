@@ -42,42 +42,42 @@ instance decidableSorted [DecidableRel r] (l : List α) : Decidable (Sorted r l)
   List.instDecidablePairwise _
 #align list.decidable_sorted List.decidableSorted
 
-protected theorem Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· < ·)) :
+protected lemma Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· < ·)) :
     l.Sorted (· ≤ ·) :=
   h.imp le_of_lt
 
-protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
+protected lemma Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
   h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
 @[simp]
-theorem sorted_nil : Sorted r [] :=
+lemma sorted_nil : Sorted r [] :=
   Pairwise.nil
 #align list.sorted_nil List.sorted_nil
 
-theorem Sorted.of_cons : Sorted r (a :: l) → Sorted r l :=
+lemma Sorted.of_cons : Sorted r (a :: l) → Sorted r l :=
   Pairwise.of_cons
 #align list.sorted.of_cons List.Sorted.of_cons
 
-theorem Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : Sorted r l.tail :=
+lemma Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : Sorted r l.tail :=
   Pairwise.tail h
 #align list.sorted.tail List.Sorted.tail
 
-theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
+lemma rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
   rel_of_pairwise_cons
 #align list.rel_of_sorted_cons List.rel_of_sorted_cons
 
 @[simp]
-theorem sorted_cons {a : α} {l : List α} : Sorted r (a :: l) ↔ (∀ b ∈ l, r a b) ∧ Sorted r l :=
+lemma sorted_cons {a : α} {l : List α} : Sorted r (a :: l) ↔ (∀ b ∈ l, r a b) ∧ Sorted r l :=
   pairwise_cons
 #align list.sorted_cons List.sorted_cons
 
-protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : List α} (h : Sorted r l) :
+protected lemma Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : List α} (h : Sorted r l) :
     Nodup l :=
   Pairwise.nodup h
 #align list.sorted.nodup List.Sorted.nodup
 
-theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~ l₂) (s₁ : Sorted r l₁)
+lemma eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~ l₂) (s₁ : Sorted r l₁)
     (s₂ : Sorted r l₂) : l₁ = l₂ := by
   induction' s₁ with a l₁ h₁ s₁ IH generalizing l₂
   · exact p.nil_eq
@@ -96,7 +96,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~
       simp [iff_true_intro this, or_comm]
 #align list.eq_of_perm_of_sorted List.eq_of_perm_of_sorted
 
-theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ <+~ l₂)
+lemma sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ <+~ l₂)
     (s₁ : l₁.Sorted r) (s₂ : l₂.Sorted r) : l₁ <+ l₂ := by
   let ⟨_, h, h'⟩ := p
   rwa [← eq_of_perm_of_sorted h (s₂.sublist h') s₁]
@@ -107,26 +107,26 @@ theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
 #align list.sorted_singleton List.sorted_singleton
 
-theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
+lemma Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=
   List.pairwise_iff_get.1 h _ _ hab
 
-theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
+lemma Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
     (hb : b < l.length) (hab : a < b) : r (l.nthLe a ha) (l.nthLe b hb) :=
   List.pairwise_iff_get.1 h ⟨a, ha⟩ ⟨b, hb⟩ hab
 #align list.sorted.rel_nth_le_of_lt List.Sorted.rel_nthLe_of_lt
 
-theorem Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : Fin l.length}
+lemma Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     (hab : a ≤ b) : r (l.get a) (l.get b) := by
   rcases hab.eq_or_lt with (rfl | hlt)
   exacts [refl _, h.rel_get_of_lt hlt]
 
-theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
+lemma Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
     (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) :=
   h.rel_get_of_le hab
 #align list.sorted.rel_nth_le_of_le List.Sorted.rel_nthLe_of_le
 
-theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
+lemma Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
   obtain ⟨⟨iy, hiy⟩, rfl⟩ := get_of_mem hy
   obtain ⟨⟨ix, hix⟩, rfl⟩ := get_of_mem hx
@@ -141,21 +141,21 @@ section Monotone
 
 variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
-theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
+lemma sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
   exact Iff.symm (Fin.castIso _).surjective.forall₂
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
-@[simp] theorem sorted_lt_ofFn_iff : (ofFn f).Sorted (· < ·) ↔ StrictMono f := sorted_ofFn_iff
+@[simp] lemma sorted_lt_ofFn_iff : (ofFn f).Sorted (· < ·) ↔ StrictMono f := sorted_ofFn_iff
 
 /-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
-@[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
+@[simp] lemma sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
 @[deprecated sorted_le_ofFn_iff]
-theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
+lemma monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
@@ -195,7 +195,7 @@ theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
   rfl
 #align list.ordered_insert_nil List.orderedInsert_nil
 
-theorem orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).length = L.length + 1
+lemma orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).length = L.length + 1
   | [], a => rfl
   | hd :: tl, a => by
     dsimp [orderedInsert]
@@ -231,12 +231,12 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
     · simpa [orderedInsert, h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 #align list.perm_ordered_insert List.perm_orderedInsert
 
-theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
+lemma orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
     count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
 #align list.ordered_insert_count List.orderedInsert_count
 
-theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
+lemma perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
   | [] => Perm.nil
   | b :: l => by
     simpa [insertionSort] using (perm_orderedInsert _ _ _).trans ((perm_insertionSort l).cons b)
@@ -246,7 +246,7 @@ variable {r}
 
 /-- If `l` is already `List.Sorted` with respect to `r`, then `insertionSort` does not change
 it. -/
-theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionSort r l = l
+lemma Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionSort r l = l
   | [], _ => rfl
   | [a], _ => rfl
   | a :: b :: l, h => by
@@ -278,7 +278,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
 variable (r)
 
 /-- The list `List.insertionSort r l` is `List.Sorted` with respect to `r`. -/
-theorem sorted_insertionSort : ∀ l, Sorted r (insertionSort r l)
+lemma sorted_insertionSort : ∀ l, Sorted r (insertionSort r l)
   | [] => sorted_nil
   | a :: l => (sorted_insertionSort l).orderedInsert a _
 #align list.sorted_insertion_sort List.sorted_insertionSort
@@ -311,7 +311,7 @@ theorem split_cons_of_eq (a : α) {l l₁ l₂ : List α} (h : split l = (l₁, 
     split (a :: l) = (a :: l₂, l₁) := by rw [split, h]
 #align list.split_cons_of_eq List.split_cons_of_eq
 
-theorem length_split_le :
+lemma length_split_le :
     ∀ {l l₁ l₂ : List α}, split l = (l₁, l₂) → length l₁ ≤ length l ∧ length l₂ ≤ length l
   | [], _, _, rfl => ⟨Nat.le_refl 0, Nat.le_refl 0⟩
   | a :: l, l₁', l₂', h => by
@@ -321,7 +321,7 @@ theorem length_split_le :
     exact ⟨Nat.succ_le_succ h₂, Nat.le_succ_of_le h₁⟩
 #align list.length_split_le List.length_split_le
 
-theorem length_split_lt {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
+lemma length_split_lt {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     length l₁ < length (a :: b :: l) ∧ length l₂ < length (a :: b :: l) := by
   cases' e : split l with l₁' l₂'
   injection (split_cons_of_eq _ (split_cons_of_eq _ e)).symm.trans h; substs l₁ l₂
@@ -329,7 +329,7 @@ theorem length_split_lt {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) =
   exact ⟨Nat.succ_le_succ (Nat.succ_le_succ h₁), Nat.succ_le_succ (Nat.succ_le_succ h₂)⟩
 #align list.length_split_lt List.length_split_lt
 
-theorem perm_split : ∀ {l l₁ l₂ : List α}, split l = (l₁, l₂) → l ~ l₁ ++ l₂
+lemma perm_split : ∀ {l l₁ l₂ : List α}, split l = (l₁, l₂) → l ~ l₁ ++ l₂
   | [], _, _, rfl => Perm.refl _
   | a :: l, l₁', l₂', h => by
     cases' e : split l with l₁ l₂
@@ -363,14 +363,14 @@ def mergeSort : List α → List α
 #align list.merge_sort List.mergeSort
 
 @[nolint unusedHavesSuffices] --Porting note: false positive
-theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
+lemma mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     mergeSort r (a :: b :: l) = merge r (mergeSort r l₁) (mergeSort r l₂) := by
   simp only [mergeSort, h]
 #align list.merge_sort_cons_cons List.mergeSort_cons_cons
 
 section Correctness
 
-theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
+lemma perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
   | [], [] => by simp [merge]
   | [], b :: l' => by simp [merge]
   | a :: l, [] => by simp [merge]
@@ -382,7 +382,7 @@ theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
   termination_by perm_merge l₁ l₂ => length l₁ + length l₂
 #align list.perm_merge List.perm_merge
 
-theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
+lemma perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
   | [] => by simp [mergeSort]
   | [a] => by simp [mergeSort]
   | a :: b :: l => by
@@ -404,7 +404,7 @@ section TotalAndTransitive
 
 variable {r} [IsTotal α r] [IsTrans α r]
 
-theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge r l l')
+lemma Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge r l l')
   | [], [], _, _ => by simp [List.merge]
   | [], b :: l', _, h₂ => by simpa [List.merge] using h₂
   | a :: l, [], h₁, _ => by simpa [List.merge] using h₁
@@ -435,7 +435,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
 
 variable (r)
 
-theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
+lemma sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
   | [] => by simp [mergeSort]
   | [a] => by simp [mergeSort]
   | a :: b :: l => by
@@ -446,11 +446,11 @@ theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
   termination_by sorted_mergeSort l => length l
 #align list.sorted_merge_sort List.sorted_mergeSort
 
-theorem mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=
+lemma mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=
   eq_of_perm_of_sorted (perm_mergeSort _ _) (sorted_mergeSort _ _)
 #align list.merge_sort_eq_self List.mergeSort_eq_self
 
-theorem mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :
+lemma mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :
     mergeSort r l = insertionSort r l :=
   eq_of_perm_of_sorted ((perm_mergeSort r l).trans (perm_insertionSort r l).symm)
     (sorted_mergeSort r l) (sorted_insertionSort r l)
@@ -461,7 +461,7 @@ end TotalAndTransitive
 end Correctness
 
 @[simp]
-theorem mergeSort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
+lemma mergeSort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
 #align list.merge_sort_nil List.mergeSort_nil
 
 @[simp]

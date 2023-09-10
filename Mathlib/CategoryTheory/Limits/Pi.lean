@@ -112,7 +112,7 @@ variable [∀ i, HasLimit (F ⋙ Pi.eval C i)]
 and we have limits for each of the `F ⋙ Pi.eval C i`,
 then `F` has a limit.
 -/
-theorem hasLimit_of_hasLimit_comp_eval : HasLimit F :=
+lemma hasLimit_of_hasLimit_comp_eval : HasLimit F :=
   HasLimit.mk
     { cone := coneOfConeCompEval fun _ => limit.cone _
       isLimit := coneOfConeEvalIsLimit fun _ => limit.isLimit _ }
@@ -128,7 +128,7 @@ variable [∀ i, HasColimit (F ⋙ Pi.eval C i)]
 and colimits exist for each of the `F ⋙ Pi.eval C i`,
 there is a colimit for `F`.
 -/
-theorem hasColimit_of_hasColimit_comp_eval : HasColimit F :=
+lemma hasColimit_of_hasColimit_comp_eval : HasColimit F :=
   HasColimit.mk
     { cocone := coconeOfCoconeCompEval fun _ => colimit.cocone _
       isColimit := coconeOfCoconeEvalIsColimit fun _ => colimit.isColimit _ }

@@ -38,13 +38,13 @@ open Cardinal
 -- porting note: `W` is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
-theorem cardinal_mk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β a)) := by
+lemma cardinal_mk_eq_sum : #(WType β) = sum (fun a : α => #(WType β) ^ #(β a)) := by
   simp only [Cardinal.power_def, ← Cardinal.mk_sigma]
   exact mk_congr (equivSigma β)
 #align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
 
 /-- `#(WType β)` is the least cardinal `κ` such that `sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
-theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ #(β a)) ≤ κ) :
+lemma cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ #(β a)) ≤ κ) :
     #(WType β) ≤ κ := by
   induction' κ using Cardinal.inductionOn with γ
   simp only [Cardinal.power_def, ← Cardinal.mk_sigma, Cardinal.le_def] at hκ
@@ -54,7 +54,7 @@ theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ 
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
   is at most the maximum of the cardinality of `α` and `ℵ₀`  -/
-theorem cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : #(WType β) ≤ max #α ℵ₀ :=
+lemma cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : #(WType β) ≤ max #α ℵ₀ :=
   (isEmpty_or_nonempty α).elim
     (by
       intro h

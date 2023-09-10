@@ -72,7 +72,7 @@ theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := b
 #align equiv_functor.map_equiv_refl EquivFunctor.mapEquiv_refl
 
 @[simp]
-theorem mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
+lemma mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
   Equiv.ext $ mapEquiv_symm_apply f e
 #align equiv_functor.map_equiv_symm EquivFunctor.mapEquiv_symm
 
@@ -81,7 +81,7 @@ For plain `Functor`s, this lemma is named `map_map` when applied
 or `map_comp_map` when not applied.
 -/
 @[simp]
-theorem mapEquiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
+lemma mapEquiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
     (mapEquiv f ab).trans (mapEquiv f bc) = mapEquiv f (ab.trans bc) :=
   Equiv.ext $ fun x => by simp [mapEquiv, map_trans']
 #align equiv_functor.map_equiv_trans EquivFunctor.mapEquiv_trans

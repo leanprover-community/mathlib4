@@ -28,12 +28,12 @@ section MonoidWithZero
 
 variable [MonoidWithZero M]
 
-theorem zero_pow : ∀ {n : ℕ}, 0 < n → (0 : M) ^ n = 0
+lemma zero_pow : ∀ {n : ℕ}, 0 < n → (0 : M) ^ n = 0
   | n + 1, _ => by rw [pow_succ, zero_mul]
 #align zero_pow zero_pow
 
 @[simp]
-theorem zero_pow' : ∀ n : ℕ, n ≠ 0 → (0 : M) ^ n = 0
+lemma zero_pow' : ∀ n : ℕ, n ≠ 0 → (0 : M) ^ n = 0
   | 0, h => absurd rfl h
   | k + 1, _ => by
     rw [pow_succ]
@@ -46,11 +46,11 @@ theorem zero_pow_eq (n : ℕ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
   · rw [zero_pow (Nat.pos_of_ne_zero h)]
 #align zero_pow_eq zero_pow_eq
 
-theorem pow_eq_zero_of_le {x : M} {n m : ℕ} (hn : n ≤ m) (hx : x ^ n = 0) : x ^ m = 0 := by
+lemma pow_eq_zero_of_le {x : M} {n m : ℕ} (hn : n ≤ m) (hx : x ^ n = 0) : x ^ m = 0 := by
   rw [← tsub_add_cancel_of_le hn, pow_add, hx, mul_zero]
 #align pow_eq_zero_of_le pow_eq_zero_of_le
 
-theorem pow_eq_zero [NoZeroDivisors M] {x : M} {n : ℕ} (H : x ^ n = 0) : x = 0 := by
+lemma pow_eq_zero [NoZeroDivisors M] {x : M} {n : ℕ} (H : x ^ n = 0) : x = 0 := by
   induction' n with n ih
   · rw [pow_zero] at H
     rw [← mul_one x, H, mul_zero]
@@ -59,28 +59,28 @@ theorem pow_eq_zero [NoZeroDivisors M] {x : M} {n : ℕ} (H : x ^ n = 0) : x = 0
 #align pow_eq_zero pow_eq_zero
 
 @[simp]
-theorem pow_eq_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ n = 0 ↔ a = 0 := by
+lemma pow_eq_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ n = 0 ↔ a = 0 := by
   refine' ⟨pow_eq_zero, _⟩
   rintro rfl
   exact zero_pow hn
 #align pow_eq_zero_iff pow_eq_zero_iff
 
-theorem pow_eq_zero_iff' [NoZeroDivisors M] [Nontrivial M] {a : M} {n : ℕ} :
+lemma pow_eq_zero_iff' [NoZeroDivisors M] [Nontrivial M] {a : M} {n : ℕ} :
     a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by cases (zero_le n).eq_or_gt <;> simp [*, ne_of_gt]
 #align pow_eq_zero_iff' pow_eq_zero_iff'
 
-theorem pow_ne_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ n ≠ 0 ↔ a ≠ 0 :=
+lemma pow_ne_zero_iff [NoZeroDivisors M] {a : M} {n : ℕ} (hn : 0 < n) : a ^ n ≠ 0 ↔ a ≠ 0 :=
   (pow_eq_zero_iff hn).not
 #align pow_ne_zero_iff pow_ne_zero_iff
 
-theorem ne_zero_pow {a : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≠ 0 → a ≠ 0 := by
+lemma ne_zero_pow {a : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≠ 0 → a ≠ 0 := by
   contrapose!
   rintro rfl
   exact zero_pow' n hn
 #align ne_zero_pow ne_zero_pow
 
 @[field_simps]
-theorem pow_ne_zero [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 :=
+lemma pow_ne_zero [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 :=
   mt pow_eq_zero h
 #align pow_ne_zero pow_ne_zero
 
@@ -88,12 +88,12 @@ instance NeZero.pow [NoZeroDivisors M] {x : M} [NeZero x] {n : ℕ} : NeZero (x 
   ⟨pow_ne_zero n NeZero.out⟩
 #align ne_zero.pow NeZero.pow
 
-theorem sq_eq_zero_iff [NoZeroDivisors M] {a : M} : a ^ 2 = 0 ↔ a = 0 :=
+lemma sq_eq_zero_iff [NoZeroDivisors M] {a : M} : a ^ 2 = 0 ↔ a = 0 :=
   pow_eq_zero_iff two_pos
 #align sq_eq_zero_iff sq_eq_zero_iff
 
 @[simp]
-theorem zero_pow_eq_zero [Nontrivial M] {n : ℕ} : (0 : M) ^ n = 0 ↔ 0 < n := by
+lemma zero_pow_eq_zero [Nontrivial M] {n : ℕ} : (0 : M) ^ n = 0 ↔ 0 < n := by
   constructor <;> intro h
   · rw [pos_iff_ne_zero]
     rintro rfl
@@ -120,7 +120,7 @@ def powMonoidWithZeroHom : M →*₀ M :=
 #align pow_monoid_with_zero_hom powMonoidWithZeroHom
 
 @[simp]
-theorem coe_powMonoidWithZeroHom : (powMonoidWithZeroHom hn : M → M) = fun x ↦ (x^n : M) := rfl
+lemma coe_powMonoidWithZeroHom : (powMonoidWithZeroHom hn : M → M) = fun x ↦ (x^n : M) := rfl
 #align coe_pow_monoid_with_zero_hom coe_powMonoidWithZeroHom
 
 @[simp]
@@ -130,7 +130,7 @@ theorem powMonoidWithZeroHom_apply (a : M) : powMonoidWithZeroHom hn a = a ^ n :
 
 end CommMonoidWithZero
 
-theorem pow_dvd_pow_iff [CancelCommMonoidWithZero R] {x : R} {n m : ℕ} (h0 : x ≠ 0)
+lemma pow_dvd_pow_iff [CancelCommMonoidWithZero R] {x : R} {n m : ℕ} (h0 : x ≠ 0)
     (h1 : ¬IsUnit x) : x ^ n ∣ x ^ m ↔ n ≤ m := by
   constructor
   · intro h
@@ -153,7 +153,7 @@ protected theorem RingHom.map_pow (f : R →+* S) (a) : ∀ n : ℕ, f (a ^ n) =
   map_pow f a
 #align ring_hom.map_pow RingHom.map_pow
 
-theorem min_pow_dvd_add {n m : ℕ} {a b c : R} (ha : c ^ n ∣ a) (hb : c ^ m ∣ b) :
+lemma min_pow_dvd_add {n m : ℕ} {a b c : R} (ha : c ^ n ∣ a) (hb : c ^ m ∣ b) :
     c ^ min n m ∣ a + b := by
   replace ha := (pow_dvd_pow c (min_le_left n m)).trans ha
   replace hb := (pow_dvd_pow c (min_le_right n m)).trans hb
@@ -185,7 +185,7 @@ variable [Monoid R] [HasDistribNeg R]
 
 variable (R)
 
-theorem neg_one_pow_eq_or : ∀ n : ℕ, (-1 : R) ^ n = 1 ∨ (-1 : R) ^ n = -1
+lemma neg_one_pow_eq_or : ∀ n : ℕ, (-1 : R) ^ n = 1 ∨ (-1 : R) ^ n = -1
   | 0 => Or.inl (pow_zero _)
   | n + 1 => (neg_one_pow_eq_or n).symm.imp
     (fun h ↦ by rw [pow_succ, h, neg_one_mul, neg_neg])
@@ -216,7 +216,7 @@ theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 #align neg_sq neg_sq
 
 -- Porting note: removed the simp attribute to please the simpNF linter
-theorem neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
+lemma neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
 #align neg_one_sq neg_one_sq
 
 alias neg_pow_two := neg_sq
@@ -236,12 +236,12 @@ protected theorem Commute.sq_sub_sq (h : Commute a b) : a ^ 2 - b ^ 2 = (a + b) 
 #align commute.sq_sub_sq Commute.sq_sub_sq
 
 @[simp]
-theorem neg_one_pow_mul_eq_zero_iff {n : ℕ} {r : R} : (-1) ^ n * r = 0 ↔ r = 0 := by
+lemma neg_one_pow_mul_eq_zero_iff {n : ℕ} {r : R} : (-1) ^ n * r = 0 ↔ r = 0 := by
   rcases neg_one_pow_eq_or R n with h | h <;> simp [h]
 #align neg_one_pow_mul_eq_zero_iff neg_one_pow_mul_eq_zero_iff
 
 @[simp]
-theorem mul_neg_one_pow_eq_zero_iff {n : ℕ} {r : R} : r * (-1) ^ n = 0 ↔ r = 0 := by
+lemma mul_neg_one_pow_eq_zero_iff {n : ℕ} {r : R} : r * (-1) ^ n = 0 ↔ r = 0 := by
   rcases neg_one_pow_eq_or R n with h | h <;> simp [h]
 #align mul_neg_one_pow_eq_zero_iff mul_neg_one_pow_eq_zero_iff
 
@@ -253,11 +253,11 @@ protected theorem Commute.sq_eq_sq_iff_eq_or_eq_neg (h : Commute a b) :
 #align commute.sq_eq_sq_iff_eq_or_eq_neg Commute.sq_eq_sq_iff_eq_or_eq_neg
 
 @[simp]
-theorem sq_eq_one_iff : a ^ 2 = 1 ↔ a = 1 ∨ a = -1 := by
+lemma sq_eq_one_iff : a ^ 2 = 1 ↔ a = 1 ∨ a = -1 := by
   rw [← (Commute.one_right a).sq_eq_sq_iff_eq_or_eq_neg, one_pow]
 #align sq_eq_one_iff sq_eq_one_iff
 
-theorem sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 :=
+lemma sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 :=
   sq_eq_one_iff.not.trans not_or
 #align sq_ne_one_iff sq_ne_one_iff
 
@@ -287,7 +287,7 @@ theorem sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by
 
 variable [NoZeroDivisors R] {a b : R}
 
-theorem sq_eq_sq_iff_eq_or_eq_neg : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b :=
+lemma sq_eq_sq_iff_eq_or_eq_neg : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b :=
   (Commute.all a b).sq_eq_sq_iff_eq_or_eq_neg
 #align sq_eq_sq_iff_eq_or_eq_neg sq_eq_sq_iff_eq_or_eq_neg
 
@@ -298,7 +298,7 @@ theorem eq_or_eq_neg_of_sq_eq_sq (a b : R) : a ^ 2 = b ^ 2 → a = b ∨ a = -b 
 -- Copies of the above CommRing lemmas for `Units R`.
 namespace Units
 
-protected theorem sq_eq_sq_iff_eq_or_eq_neg {a b : Rˣ} : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b := by
+protected lemma sq_eq_sq_iff_eq_or_eq_neg {a b : Rˣ} : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b := by
   simp_rw [ext_iff, val_pow_eq_pow_val, sq_eq_sq_iff_eq_or_eq_neg, Units.val_neg]
 #align units.sq_eq_sq_iff_eq_or_eq_neg Units.sq_eq_sq_iff_eq_or_eq_neg
 

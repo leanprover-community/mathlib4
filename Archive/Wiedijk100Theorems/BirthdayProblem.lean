@@ -27,7 +27,7 @@ local notation "|" x "|" => Finset.card x
 local notation "‖" x "‖" => Fintype.card x
 
 /-- **Birthday Problem**: set cardinality interpretation. -/
-theorem birthday :
+lemma birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
   simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
 #align theorems_100.birthday Theorems100.birthday
@@ -60,13 +60,13 @@ noncomputable instance : MeasureSpace (Fin n → Fin m) :=
 instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
   condCount_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
 
-theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
+lemma FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
   erw [condCount_univ, Measure.count_apply_finite]
 #align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
-theorem birthday_measure :
+lemma birthday_measure :
     ℙ ({f | (Function.Injective f)} : Set ((Fin 23) → (Fin 365))) < 1 / 2 := by
   rw [FinFin.measure_apply]
   generalize_proofs hfin

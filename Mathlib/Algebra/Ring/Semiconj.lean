@@ -30,13 +30,13 @@ open Function
 namespace SemiconjBy
 
 @[simp]
-theorem add_right [Distrib R] {a x y x' y' : R} (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
+lemma add_right [Distrib R] {a x y x' y' : R} (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x + x') (y + y') := by
   simp only [SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
 #align semiconj_by.add_right SemiconjBy.add_right
 
 @[simp]
-theorem add_left [Distrib R] {a b x y : R} (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) :
+lemma add_left [Distrib R] {a b x y : R} (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) :
     SemiconjBy (a + b) x y := by
   simp only [SemiconjBy, left_distrib, right_distrib, ha.eq, hb.eq]
 #align semiconj_by.add_left SemiconjBy.add_left
@@ -50,7 +50,7 @@ theorem neg_right (h : SemiconjBy a x y) : SemiconjBy a (-x) (-y) := by
 #align semiconj_by.neg_right SemiconjBy.neg_right
 
 @[simp]
-theorem neg_right_iff : SemiconjBy a (-x) (-y) ↔ SemiconjBy a x y :=
+lemma neg_right_iff : SemiconjBy a (-x) (-y) ↔ SemiconjBy a x y :=
   ⟨fun h => neg_neg x ▸ neg_neg y ▸ h.neg_right, SemiconjBy.neg_right⟩
 #align semiconj_by.neg_right_iff SemiconjBy.neg_right_iff
 
@@ -59,7 +59,7 @@ theorem neg_left (h : SemiconjBy a x y) : SemiconjBy (-a) x y := by
 #align semiconj_by.neg_left SemiconjBy.neg_left
 
 @[simp]
-theorem neg_left_iff : SemiconjBy (-a) x y ↔ SemiconjBy a x y :=
+lemma neg_left_iff : SemiconjBy (-a) x y ↔ SemiconjBy a x y :=
   ⟨fun h => neg_neg a ▸ h.neg_left, SemiconjBy.neg_left⟩
 #align semiconj_by.neg_left_iff SemiconjBy.neg_left_iff
 

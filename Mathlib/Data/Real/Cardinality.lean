@@ -197,7 +197,7 @@ theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
 #align cardinal.cantor_function_injective Cardinal.cantorFunction_injective
 
 /-- The cardinality of the reals, as a type. -/
-theorem mk_real : #ℝ = 𝔠 := by
+lemma mk_real : #ℝ = 𝔠 := by
   apply le_antisymm
   · rw [Real.equivCauchy.cardinal_eq]
     apply mk_quotient_le.trans
@@ -211,11 +211,11 @@ theorem mk_real : #ℝ = 𝔠 := by
 #align cardinal.mk_real Cardinal.mk_real
 
 /-- The cardinality of the reals, as a set. -/
-theorem mk_univ_real : #(Set.univ : Set ℝ) = 𝔠 := by rw [mk_univ, mk_real]
+lemma mk_univ_real : #(Set.univ : Set ℝ) = 𝔠 := by rw [mk_univ, mk_real]
 #align cardinal.mk_univ_real Cardinal.mk_univ_real
 
 /-- **Non-Denumerability of the Continuum**: The reals are not countable. -/
-theorem not_countable_real : ¬(Set.univ : Set ℝ).Countable := by
+lemma not_countable_real : ¬(Set.univ : Set ℝ).Countable := by
   rw [← le_aleph0_iff_set_countable, not_le, mk_univ_real]
   apply cantor
 #align cardinal.not_countable_real Cardinal.not_countable_real
@@ -261,7 +261,7 @@ theorem mk_Iic_real (a : ℝ) : #(Iic a) = 𝔠 :=
 #align cardinal.mk_Iic_real Cardinal.mk_Iic_real
 
 /-- The cardinality of the interval (a, b). -/
-theorem mk_Ioo_real {a b : ℝ} (h : a < b) : #(Ioo a b) = 𝔠 := by
+lemma mk_Ioo_real {a b : ℝ} (h : a < b) : #(Ioo a b) = 𝔠 := by
   refine' le_antisymm (mk_real ▸ mk_set_le _) _
   have h1 : #((fun x => x - a) '' Ioo a b) ≤ #(Ioo a b) := mk_image_le
   refine' le_trans _ h1
@@ -273,17 +273,17 @@ theorem mk_Ioo_real {a b : ℝ} (h : a < b) : #(Ioo a b) = 𝔠 := by
 #align cardinal.mk_Ioo_real Cardinal.mk_Ioo_real
 
 /-- The cardinality of the interval [a, b). -/
-theorem mk_Ico_real {a b : ℝ} (h : a < b) : #(Ico a b) = 𝔠 :=
+lemma mk_Ico_real {a b : ℝ} (h : a < b) : #(Ico a b) = 𝔠 :=
   le_antisymm (mk_real ▸ mk_set_le _) (mk_Ioo_real h ▸ mk_le_mk_of_subset Ioo_subset_Ico_self)
 #align cardinal.mk_Ico_real Cardinal.mk_Ico_real
 
 /-- The cardinality of the interval [a, b]. -/
-theorem mk_Icc_real {a b : ℝ} (h : a < b) : #(Icc a b) = 𝔠 :=
+lemma mk_Icc_real {a b : ℝ} (h : a < b) : #(Icc a b) = 𝔠 :=
   le_antisymm (mk_real ▸ mk_set_le _) (mk_Ioo_real h ▸ mk_le_mk_of_subset Ioo_subset_Icc_self)
 #align cardinal.mk_Icc_real Cardinal.mk_Icc_real
 
 /-- The cardinality of the interval (a, b]. -/
-theorem mk_Ioc_real {a b : ℝ} (h : a < b) : #(Ioc a b) = 𝔠 :=
+lemma mk_Ioc_real {a b : ℝ} (h : a < b) : #(Ioc a b) = 𝔠 :=
   le_antisymm (mk_real ▸ mk_set_le _) (mk_Ioo_real h ▸ mk_le_mk_of_subset Ioo_subset_Ioc_self)
 #align cardinal.mk_Ioc_real Cardinal.mk_Ioc_real
 

@@ -22,13 +22,13 @@ namespace Fin
 
 variable {α β : Type*} {n : ℕ}
 
-theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
+lemma map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
   ext
   simp [orderIsoSubtype.symm.surjective.exists, OrderIso.symm]
 #align fin.map_subtype_embedding_univ Fin.map_valEmbedding_univ
 
 @[simp]
-theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
+lemma Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
   ext i
   simp only [mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
   constructor
@@ -42,7 +42,7 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
 
 @[simp]
-theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding := by
+lemma Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding := by
   apply Finset.map_injective Fin.valEmbedding
   rw [Finset.map_map, Fin.map_valEmbedding_Iio, Fin.val_last]
   exact map_valEmbedding_univ.symm
@@ -82,7 +82,7 @@ theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
   (card_filter_univ_succ' p).trans (by split_ifs <;> simp [add_comm 1])
 #align fin.card_filter_univ_succ Fin.card_filter_univ_succ
 
-theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : Vector α n) :
+lemma card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : Vector α n) :
     (univ.filter fun i => a = v.get i).card = v.toList.count a := by
   induction' v using Vector.inductionOn with n x xs hxs
   · simp

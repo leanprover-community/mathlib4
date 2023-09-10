@@ -56,7 +56,7 @@ theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x 
   simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm, smul_eq_mul]
 #align diam_smul₀ diam_smul₀
 
-theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
+lemma infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     EMetric.infEdist (c • x) (c • s) = ‖c‖₊ • EMetric.infEdist x s := by
   simp_rw [EMetric.infEdist]
   have : Function.Surjective ((c • ·) : E → E) :=
@@ -68,7 +68,7 @@ theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     simp_rw [ENNReal.smul_def, smul_eq_mul, ENNReal.mul_iInf_of_ne this ENNReal.coe_ne_top]
 #align inf_edist_smul₀ infEdist_smul₀
 
-theorem infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
+lemma infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     Metric.infDist (c • x) (c • s) = ‖c‖ * Metric.infDist x s := by
   simp_rw [Metric.infDist, infEdist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm,
     smul_eq_mul]
@@ -83,18 +83,18 @@ section SeminormedAddCommGroup
 
 variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-theorem smul_ball {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) : c • ball x r = ball (c • x) (‖c‖ * r) := by
+lemma smul_ball {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) : c • ball x r = ball (c • x) (‖c‖ * r) := by
   ext y
   rw [mem_smul_set_iff_inv_smul_mem₀ hc]
   conv_lhs => rw [← inv_smul_smul₀ hc x]
   simp [← div_eq_inv_mul, div_lt_iff (norm_pos_iff.2 hc), mul_comm _ r, dist_smul₀]
 #align smul_ball smul_ball
 
-theorem smul_unitBall {c : 𝕜} (hc : c ≠ 0) : c • ball (0 : E) (1 : ℝ) = ball (0 : E) ‖c‖ := by
+lemma smul_unitBall {c : 𝕜} (hc : c ≠ 0) : c • ball (0 : E) (1 : ℝ) = ball (0 : E) ‖c‖ := by
   rw [_root_.smul_ball hc, smul_zero, mul_one]
 #align smul_unit_ball smul_unitBall
 
-theorem smul_sphere' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
+lemma smul_sphere' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
     c • sphere x r = sphere (c • x) (‖c‖ * r) := by
   ext y
   rw [mem_smul_set_iff_inv_smul_mem₀ hc]
@@ -103,20 +103,20 @@ theorem smul_sphere' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
     mul_comm r]
 #align smul_sphere' smul_sphere'
 
-theorem smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
+lemma smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
     c • closedBall x r = closedBall (c • x) (‖c‖ * r) := by
   simp only [← ball_union_sphere, Set.smul_set_union, _root_.smul_ball hc, smul_sphere' hc]
 #align smul_closed_ball' smul_closedBall'
 
 /-- Image of a bounded set in a normed space under scalar multiplication by a constant is
 bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
-theorem Metric.Bounded.smul₀ {s : Set E} (hs : Bounded s) (c : 𝕜) : Bounded (c • s) :=
+lemma Metric.Bounded.smul₀ {s : Set E} (hs : Bounded s) (c : 𝕜) : Bounded (c • s) :=
   (lipschitzWith_smul c).bounded_image hs
 #align metric.bounded.smul Metric.Bounded.smul₀
 
 /-- If `s` is a bounded set, then for small enough `r`, the set `{x} + r • s` is contained in any
 fixed neighborhood of `x`. -/
-theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bounded s) {u : Set E}
+lemma eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bounded s) {u : Set E}
     (hu : u ∈ 𝓝 x) : ∀ᶠ r in 𝓝 (0 : 𝕜), {x} + r • s ⊆ u := by
   obtain ⟨ε, εpos, hε⟩ : ∃ ε : ℝ, 0 < ε ∧ closedBall x ε ⊆ u := nhds_basis_closedBall.mem_iff.1 hu
   obtain ⟨R, Rpos, hR⟩ : ∃ R : ℝ, 0 < R ∧ s ⊆ closedBall 0 R := hs.subset_ball_lt 0 0
@@ -141,7 +141,7 @@ variable [NormedSpace ℝ E] {x y z : E} {δ ε : ℝ}
 
 /-- In a real normed space, the image of the unit ball under scalar multiplication by a positive
 constant `r` is the ball of radius `r`. -/
-theorem smul_unitBall_of_pos {r : ℝ} (hr : 0 < r) : r • ball (0 : E) 1 = ball (0 : E) r := by
+lemma smul_unitBall_of_pos {r : ℝ} (hr : 0 < r) : r • ball (0 : E) 1 = ball (0 : E) r := by
   rw [smul_unitBall hr.ne', Real.norm_of_nonneg hr.le]
 #align smul_unit_ball_of_pos smul_unitBall_of_pos
 
@@ -368,13 +368,13 @@ theorem closedBall_sub_ball (hε : 0 ≤ ε) (hδ : 0 < δ) (a b : E) :
   simp_rw [sub_eq_add_neg, neg_ball, closedBall_add_ball hε hδ]
 #align closed_ball_sub_ball closedBall_sub_ball
 
-theorem closedBall_add_closedBall [ProperSpace E] (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (a b : E) :
+lemma closedBall_add_closedBall [ProperSpace E] (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (a b : E) :
     closedBall a ε + closedBall b δ = closedBall (a + b) (ε + δ) := by
   rw [(isCompact_closedBall _ _).add_closedBall hδ b, cthickening_closedBall hδ hε a,
     Metric.vadd_closedBall, vadd_eq_add, add_comm, add_comm δ]
 #align closed_ball_add_closed_ball closedBall_add_closedBall
 
-theorem closedBall_sub_closedBall [ProperSpace E] (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (a b : E) :
+lemma closedBall_sub_closedBall [ProperSpace E] (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (a b : E) :
     closedBall a ε - closedBall b δ = closedBall (a - b) (ε + δ) := by
   rw [sub_eq_add_neg, neg_closedBall, closedBall_add_closedBall hε hδ, sub_eq_add_neg]
 #align closed_ball_sub_closed_ball closedBall_sub_closedBall
@@ -400,7 +400,7 @@ variable [NormedSpace ℝ E]
 
 /-- In a real normed space, the image of the unit closed ball under multiplication by a nonnegative
 number `r` is the closed ball of radius `r` with center at the origin. -/
-theorem smul_closedUnitBall_of_nonneg {r : ℝ} (hr : 0 ≤ r) :
+lemma smul_closedUnitBall_of_nonneg {r : ℝ} (hr : 0 ≤ r) :
     r • closedBall (0 : E) 1 = closedBall (0 : E) r := by
   rw [smul_closedUnitBall, Real.norm_of_nonneg hr]
 #align smul_closed_unit_ball_of_nonneg smul_closedUnitBall_of_nonneg
@@ -408,7 +408,7 @@ theorem smul_closedUnitBall_of_nonneg {r : ℝ} (hr : 0 ≤ r) :
 /-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is
 nonnegative. -/
 @[simp]
-theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
+lemma NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
     (sphere x r).Nonempty ↔ 0 ≤ r := by
   obtain ⟨y, hy⟩ := exists_ne x
   refine' ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
@@ -418,7 +418,7 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   rw [inv_mul_cancel this, mul_one, abs_eq_self.mpr hr]
 #align normed_space.sphere_nonempty NormedSpace.sphere_nonempty
 
-theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
+lemma smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     c • sphere x r = sphere (c • x) (‖c‖ * r) := by
   rcases eq_or_ne c 0 with (rfl | hc)
   · simp [zero_smul_set, Set.singleton_zero, hr]
@@ -426,13 +426,13 @@ theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
 #align smul_sphere smul_sphere
 
 /-- Any ball `Metric.ball x r`, `0 < r` is the image of the unit ball under `fun y ↦ x + r • y`. -/
-theorem affinity_unitBall {r : ℝ} (hr : 0 < r) (x : E) : x +ᵥ r • ball (0 : E) 1 = ball x r := by
+lemma affinity_unitBall {r : ℝ} (hr : 0 < r) (x : E) : x +ᵥ r • ball (0 : E) 1 = ball x r := by
   rw [smul_unitBall_of_pos hr, vadd_ball_zero]
 #align affinity_unit_ball affinity_unitBall
 
 /-- Any closed ball `Metric.closedBall x r`, `0 ≤ r` is the image of the unit closed ball under
 `fun y ↦ x + r • y`. -/
-theorem affinity_unitClosedBall {r : ℝ} (hr : 0 ≤ r) (x : E) :
+lemma affinity_unitClosedBall {r : ℝ} (hr : 0 ≤ r) (x : E) :
     x +ᵥ r • closedBall (0 : E) 1 = closedBall x r := by
   rw [smul_closedUnitBall, Real.norm_of_nonneg hr, vadd_closedBall_zero]
 #align affinity_unit_closed_ball affinity_unitClosedBall

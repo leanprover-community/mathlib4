@@ -48,7 +48,7 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 #align imo1987_q1.fixed_points_equiv Imo1987Q1.fixedPointsEquiv
 
-theorem card_fixed_points :
+lemma card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
   simp [card_congr (fixedPointsEquiv α), card_perm, Finset.filter_not, Finset.card_sdiff,
     Finset.filter_eq', Finset.card_univ]
@@ -63,7 +63,7 @@ def fiber (k : ℕ) : Set (Perm α) :=
 instance : Fintype (fiber α k) := by unfold fiber; infer_instance
 
 @[simp]
-theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=
+lemma mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=
   Iff.rfl
 #align imo1987_q1.mem_fiber Imo1987Q1.mem_fiber
 
@@ -92,7 +92,7 @@ def fixedPointsEquiv' :
 #align imo1987_q1.fixed_points_equiv' Imo1987Q1.fixedPointsEquiv'
 
 /-- Main statement for any `(α : Type _) [Fintype α]`. -/
-theorem main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card α - 1)! := by
+lemma main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card α - 1)! := by
   have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.2
   simpa [A, ← Fin.sum_univ_eq_sum_range, -card_ofFinset, Finset.card_univ, card_fixed_points,
     mul_comm] using card_congr (fixedPointsEquiv' α)
@@ -104,7 +104,7 @@ theorem main₀ (n : ℕ) : ∑ k in range (n + 1), k * p (Fin n) k = n * (n - 1
 #align imo1987_q1.main₀ Imo1987Q1.main₀
 
 /-- Main statement for permutations of `Fin n`. -/
-theorem main {n : ℕ} (hn : 1 ≤ n) : ∑ k in range (n + 1), k * p (Fin n) k = n ! := by
+lemma main {n : ℕ} (hn : 1 ≤ n) : ∑ k in range (n + 1), k * p (Fin n) k = n ! := by
   rw [main₀, Nat.mul_factorial_pred (zero_lt_one.trans_le hn)]
 #align imo1987_q1.main Imo1987Q1.main
 

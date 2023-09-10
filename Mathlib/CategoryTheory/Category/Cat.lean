@@ -88,19 +88,19 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.category CategoryTheory.Cat.category
 
 @[simp]
-theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
+lemma id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
   Functor.id_map f
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.id_map CategoryTheory.Cat.id_map
 
 @[simp]
-theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
+lemma comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
   Functor.comp_obj F G X
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.comp_obj CategoryTheory.Cat.comp_obj
 
 @[simp]
-theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
+lemma comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
     (F ≫ G).map f = G.map (F.map f) :=
   Functor.comp_map F G f
 set_option linter.uppercaseLean3 false in

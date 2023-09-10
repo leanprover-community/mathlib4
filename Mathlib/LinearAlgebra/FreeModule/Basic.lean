@@ -47,7 +47,7 @@ universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
 `Module.Free.of_basis`. -/
-theorem Module.free_def [Small.{w,v} M] :
+lemma Module.free_def [Small.{w,v} M] :
     Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
   -- Porting note: this is required or Lean cannot solve universe constraints
   -- The same error presents if inferInstance is called to solve `small`
@@ -58,14 +58,14 @@ theorem Module.free_def [Small.{w,v} M] :
     fun h => ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
 #align module.free_def Module.free_def
 
-theorem Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
+lemma Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
   ⟨fun h => ⟨Set.range h.exists_basis.some.2, ⟨Basis.reindexRange h.exists_basis.some.2⟩⟩,
     fun ⟨S, hS⟩ => ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
 #align module.free_iff_set Module.free_iff_set
 
 variable {R M}
 
-theorem Module.Free.of_basis {ι : Type w} (b : Basis ι R M) : Module.Free R M :=
+lemma Module.Free.of_basis {ι : Type w} (b : Basis ι R M) : Module.Free R M :=
   (Module.free_def R M).2 ⟨Set.range b, ⟨b.reindexRange⟩⟩
 #align module.free.of_basis Module.Free.of_basis
 
@@ -129,7 +129,7 @@ theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
 
 /-- A variation of `of_equiv`: the assumption `Module.Free R P` here is explicit rather than an
 instance. -/
-theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R P)
+lemma of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R P)
     (e : P ≃ₗ[R] N) : Module.Free R N :=
   of_equiv e
 #align module.free.of_equiv' Module.Free.of_equiv'

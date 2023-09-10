@@ -70,7 +70,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 
 See also `Finset.induction_on_pi_max` and `Finset.induction_on_pi_min` for specialized versions
 that require `∀ i, LinearOrder (α i)`.  -/
-theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
+lemma induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i) (_ : x ∉ g i),
         p g → p (update g i (insert x (g i)))) :
@@ -88,7 +88,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
 version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
-theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
+lemma induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),
@@ -105,7 +105,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
 version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
-theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
+lemma induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),

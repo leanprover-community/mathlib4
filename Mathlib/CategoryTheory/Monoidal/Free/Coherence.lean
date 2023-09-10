@@ -166,7 +166,7 @@ def tensorFunc : F C ⥤ N C ⥤ F C where
   map f := Discrete.natTrans (fun n => 𝟙 _ ⊗ f)
 #align category_theory.free_monoidal_category.tensor_func CategoryTheory.FreeMonoidalCategory.tensorFunc
 
-theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = 𝟙 _ ⊗ f :=
+lemma tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = 𝟙 _ ⊗ f :=
   rfl
 #align category_theory.free_monoidal_category.tensor_func_map_app CategoryTheory.FreeMonoidalCategory.tensorFunc_map_app
 
@@ -222,7 +222,7 @@ variable {D : Type u} [Category.{u} D] {I : Type u} (f : I → D) (X : Discrete 
 
 -- TODO: move to discrete_category.lean, decide whether this should be a global simp lemma
 @[simp]
-theorem discrete_functor_obj_eq_as : (Discrete.functor f).obj X = f X.as :=
+lemma discrete_functor_obj_eq_as : (Discrete.functor f).obj X = f X.as :=
   rfl
 #align category_theory.free_monoidal_category.discrete_functor_obj_eq_as CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as
 

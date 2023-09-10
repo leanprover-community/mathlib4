@@ -100,7 +100,7 @@ variable (𝕜 A)
 
 /- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective. We will use this
 to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
-theorem splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
+lemma splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
   splitMul_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
 
 variable {𝕜 A}
@@ -146,7 +146,7 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
   NNReal.eq <| norm_eq_sup x
 
 
-theorem lipschitzWith_addEquiv :
+lemma lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
@@ -164,7 +164,7 @@ theorem lipschitzWith_addEquiv :
           norm_le_add_norm_add (mul 𝕜 A x.snd) (algebraMap 𝕜 _ x.fst)
       _ ≤ _ := add_le_add le_sup_right le_sup_left
 
-theorem antilipschitzWith_addEquiv :
+lemma antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (addEquiv 𝕜 A) := by
   refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
   rw [norm_eq_sup, Prod.norm_def, NNReal.coe_two]
@@ -182,14 +182,14 @@ theorem antilipschitzWith_addEquiv :
 open Bornology Filter
 open scoped Uniformity Topology
 
-theorem uniformity_eq_aux :
+lemma uniformity_eq_aux :
     𝓤[instUniformSpaceProd.comap <| addEquiv 𝕜 A] = 𝓤 (Unitization 𝕜 A) := by
   have key : UniformInducing (addEquiv 𝕜 A) :=
     antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
   rfl
 
-theorem cobounded_eq_aux :
+lemma cobounded_eq_aux :
     @cobounded _ (Bornology.induced <| addEquiv 𝕜 A) = cobounded (Unitization 𝕜 A) :=
   le_antisymm lipschitzWith_addEquiv.comap_cobounded_le
     antilipschitzWith_addEquiv.tendsto_cobounded.le_comap
@@ -204,7 +204,7 @@ instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
 
-theorem uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
+lemma uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
   inj := (addEquiv 𝕜 A).injective
 

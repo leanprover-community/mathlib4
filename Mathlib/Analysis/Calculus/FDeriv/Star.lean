@@ -59,7 +59,7 @@ theorem DifferentiableWithinAt.star (h : DifferentiableWithinAt 𝕜 f s x) :
 #align differentiable_within_at.star DifferentiableWithinAt.star
 
 @[simp]
-theorem differentiableWithinAt_star_iff :
+lemma differentiableWithinAt_star_iff :
     DifferentiableWithinAt 𝕜 (fun y => star (f y)) s x ↔ DifferentiableWithinAt 𝕜 f s x :=
   (starL' 𝕜 : F ≃L[𝕜] F).comp_differentiableWithinAt_iff
 #align differentiable_within_at_star_iff differentiableWithinAt_star_iff
@@ -70,7 +70,7 @@ theorem DifferentiableAt.star (h : DifferentiableAt 𝕜 f x) :
 #align differentiable_at.star DifferentiableAt.star
 
 @[simp]
-theorem differentiableAt_star_iff :
+lemma differentiableAt_star_iff :
     DifferentiableAt 𝕜 (fun y => star (f y)) x ↔ DifferentiableAt 𝕜 f x :=
   (starL' 𝕜 : F ≃L[𝕜] F).comp_differentiableAt_iff
 #align differentiable_at_star_iff differentiableAt_star_iff
@@ -80,7 +80,7 @@ theorem DifferentiableOn.star (h : DifferentiableOn 𝕜 f s) :
 #align differentiable_on.star DifferentiableOn.star
 
 @[simp]
-theorem differentiableOn_star_iff :
+lemma differentiableOn_star_iff :
     DifferentiableOn 𝕜 (fun y => star (f y)) s ↔ DifferentiableOn 𝕜 f s :=
   (starL' 𝕜 : F ≃L[𝕜] F).comp_differentiableOn_iff
 #align differentiable_on_star_iff differentiableOn_star_iff
@@ -90,7 +90,7 @@ theorem Differentiable.star (h : Differentiable 𝕜 f) : Differentiable 𝕜 fu
 #align differentiable.star Differentiable.star
 
 @[simp]
-theorem differentiable_star_iff : (Differentiable 𝕜 fun y => star (f y)) ↔ Differentiable 𝕜 f :=
+lemma differentiable_star_iff : (Differentiable 𝕜 fun y => star (f y)) ↔ Differentiable 𝕜 f :=
   (starL' 𝕜 : F ≃L[𝕜] F).comp_differentiable_iff
 #align differentiable_star_iff differentiable_star_iff
 
@@ -101,7 +101,7 @@ theorem fderivWithin_star (hxs : UniqueDiffWithinAt 𝕜 s x) :
 #align fderiv_within_star fderivWithin_star
 
 @[simp]
-theorem fderiv_star :
+lemma fderiv_star :
     fderiv 𝕜 (fun y => star (f y)) x = ((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L fderiv 𝕜 f x :=
   (starL' 𝕜 : F ≃L[𝕜] F).comp_fderiv
 #align fderiv_star fderiv_star

@@ -133,11 +133,11 @@ theorem div_mul_div_cancel (a : G₀) (hc : c ≠ 0) : a / c * (c / b) = a / b :
   rw [← mul_div_assoc, div_mul_cancel _ hc]
 #align div_mul_div_cancel div_mul_div_cancel
 
-theorem div_mul_cancel_of_imp {a b : G₀} (h : b = 0 → a = 0) : a / b * b = a :=
+lemma div_mul_cancel_of_imp {a b : G₀} (h : b = 0 → a = 0) : a / b * b = a :=
   Classical.by_cases (fun hb : b = 0 => by simp [*]) (div_mul_cancel a)
 #align div_mul_cancel_of_imp div_mul_cancel_of_imp
 
-theorem mul_div_cancel_of_imp {a b : G₀} (h : b = 0 → a = 0) : a * b / b = a :=
+lemma mul_div_cancel_of_imp {a b : G₀} (h : b = 0 → a = 0) : a * b / b = a :=
   Classical.by_cases (fun hb : b = 0 => by simp [*]) (mul_div_cancel a)
 #align mul_div_cancel_of_imp mul_div_cancel_of_imp
 
@@ -157,7 +157,7 @@ theorem div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b :=
   IsUnit.div_mul_right ha.isUnit _
 #align div_mul_right div_mul_right
 
-theorem mul_div_cancel_left_of_imp {a b : G₀} (h : a = 0 → b = 0) : a * b / a = b := by
+lemma mul_div_cancel_left_of_imp {a b : G₀} (h : a = 0 → b = 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_of_imp h]
 #align mul_div_cancel_left_of_imp mul_div_cancel_left_of_imp
 
@@ -165,7 +165,7 @@ theorem mul_div_cancel_left (b : G₀) (ha : a ≠ 0) : a * b / a = b :=
   IsUnit.mul_div_cancel_left ha.isUnit _
 #align mul_div_cancel_left mul_div_cancel_left
 
-theorem mul_div_cancel_of_imp' {a b : G₀} (h : b = 0 → a = 0) : b * (a / b) = a := by
+lemma mul_div_cancel_of_imp' {a b : G₀} (h : b = 0 → a = 0) : b * (a / b) = a := by
   rw [mul_comm, div_mul_cancel_of_imp h]
 #align mul_div_cancel_of_imp' mul_div_cancel_of_imp'
 
@@ -210,12 +210,12 @@ variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [MonoidWi
   [MonoidWithZeroHomClass F' G₀ M₀'] (f : F) {a : G₀}
 
 
-theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
+lemma map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
   ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, fun ha => ((IsUnit.mk0 a ha).map f).ne_zero⟩
 #align map_ne_zero map_ne_zero
 
 @[simp]
-theorem map_eq_zero : f a = 0 ↔ a = 0 :=
+lemma map_eq_zero : f a = 0 ↔ a = 0 :=
   not_iff_not.1 (map_ne_zero f)
 #align map_eq_zero map_eq_zero
 
@@ -234,7 +234,7 @@ variable [GroupWithZero G₀] [GroupWithZero G₀'] [MonoidWithZeroHomClass F G�
 
 /-- A monoid homomorphism between groups with zeros sending `0` to `0` sends `a⁻¹` to `(f a)⁻¹`. -/
 @[simp]
-theorem map_inv₀ : f a⁻¹ = (f a)⁻¹ := by
+lemma map_inv₀ : f a⁻¹ = (f a)⁻¹ := by
   by_cases h : a = 0
   · simp [h, map_zero f]
   · apply eq_inv_of_mul_eq_one_left
@@ -242,7 +242,7 @@ theorem map_inv₀ : f a⁻¹ = (f a)⁻¹ := by
 #align map_inv₀ map_inv₀
 
 @[simp]
-theorem map_div₀ : f (a / b) = f a / f b :=
+lemma map_div₀ : f (a / b) = f a / f b :=
   map_div' f (map_inv₀ f) a b
 #align map_div₀ map_div₀
 
@@ -259,13 +259,13 @@ noncomputable def MonoidWithZero.inverse {M : Type*} [CommMonoidWithZero M] :
 #align monoid_with_zero.inverse MonoidWithZero.inverse
 
 @[simp]
-theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
+lemma MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
     (MonoidWithZero.inverse : M → M) = Ring.inverse :=
   rfl
 #align monoid_with_zero.coe_inverse MonoidWithZero.coe_inverse
 
 @[simp]
-theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
+lemma MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
     MonoidWithZero.inverse a = Ring.inverse a :=
   rfl
 #align monoid_with_zero.inverse_apply MonoidWithZero.inverse_apply
@@ -282,7 +282,7 @@ variable [GroupWithZero G₀]
 variable {a b : G₀}
 
 @[simp]
-theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
+lemma smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=
   rfl
 #align units.smul_mk0 Units.smul_mk0
 

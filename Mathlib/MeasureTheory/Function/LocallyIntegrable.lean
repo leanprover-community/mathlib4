@@ -75,7 +75,7 @@ theorem LocallyIntegrableOn.integrableOn_compact_subset (hf : LocallyIntegrableO
 /-- If a function `f` is locally integrable on a set `s` in a second countable topological space,
 then there exist countably many open sets `u` covering `s` such that `f` is integrable on each
 set `u ∩ s`. -/
-theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopology X]
+lemma LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopology X]
     (hf : LocallyIntegrableOn f s μ) : ∃ T : Set (Set X), T.Countable ∧
     (∀ u ∈ T, IsOpen u) ∧ (s ⊆ ⋃ u ∈ T, u) ∧ (∀ u ∈ T, IntegrableOn f (u ∩ s) μ) := by
   have : ∀ x : s, ∃ u, IsOpen u ∧ x.1 ∈ u ∧ IntegrableOn f (u ∩ s) μ := by
@@ -97,7 +97,7 @@ theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopolo
 /-- If a function `f` is locally integrable on a set `s` in a second countable topological space,
 then there exists a sequence of open sets `u n` covering `s` such that `f` is integrable on each
 set `u n ∩ s`. -/
-theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
+lemma LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
     (hf : LocallyIntegrableOn f s μ) : ∃ u : ℕ → Set X,
     (∀ n, IsOpen (u n)) ∧ (s ⊆ ⋃ n, u n) ∧ (∀ n, IntegrableOn f (u n ∩ s) μ) := by
   rcases hf.exists_countable_integrableOn with ⟨T, T_count, T_open, sT, hT⟩
@@ -123,7 +123,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
     · simp only [h, empty_inter, integrableOn_empty]
     · exact hT _ h
 
-theorem LocallyIntegrableOn.aestronglyMeasurable [SecondCountableTopology X]
+lemma LocallyIntegrableOn.aestronglyMeasurable [SecondCountableTopology X]
     (hf : LocallyIntegrableOn f s μ) : AEStronglyMeasurable f (μ.restrict s) := by
   rcases hf.exists_nat_integrableOn with ⟨u, -, su, hu⟩
   have : s = ⋃ n, u n ∩ s := by rw [← iUnion_inter]; exact (inter_eq_right_iff_subset.mpr su).symm
@@ -133,7 +133,7 @@ theorem LocallyIntegrableOn.aestronglyMeasurable [SecondCountableTopology X]
 
 /-- If `s` is either open, or closed, then `f` is locally integrable on `s` iff it is integrable on
 every compact subset contained in `s`. -/
-theorem locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClosed s ∨ IsOpen s) :
+lemma locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClosed s ∨ IsOpen s) :
     LocallyIntegrableOn f s μ ↔ ∀ (k : Set X), k ⊆ s → (IsCompact k → IntegrableOn f k μ) := by
   -- The correct condition is that `s` be *locally closed*, i.e. for every `x ∈ s` there is some
   -- `U ∈ 𝓝 x` such that `U ∩ s` is closed. But mathlib doesn't have locally closed sets yet.
@@ -171,7 +171,7 @@ def LocallyIntegrable (f : X → E) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, IntegrableAtFilter f (𝓝 x) μ
 #align measure_theory.locally_integrable MeasureTheory.LocallyIntegrable
 
-theorem locallyIntegrableOn_univ : LocallyIntegrableOn f univ μ ↔ LocallyIntegrable f μ := by
+lemma locallyIntegrableOn_univ : LocallyIntegrableOn f univ μ ↔ LocallyIntegrable f μ := by
   simp only [LocallyIntegrableOn, nhdsWithin_univ, mem_univ, true_imp_iff]; rfl
 #align measure_theory.locally_integrable_on_univ MeasureTheory.locallyIntegrableOn_univ
 
@@ -186,7 +186,7 @@ theorem Integrable.locallyIntegrable (hf : Integrable f μ) : LocallyIntegrable 
 /-- If `f` is locally integrable with respect to `μ.restrict s`, it is locally integrable on `s`.
 (See `locallyIntegrableOn_iff_locallyIntegrable_restrict` for an iff statement when `s` is
 closed.) -/
-theorem locallyIntegrableOn_of_locallyIntegrable_restrict [OpensMeasurableSpace X]
+lemma locallyIntegrableOn_of_locallyIntegrable_restrict [OpensMeasurableSpace X]
     (hf : LocallyIntegrable f (μ.restrict s)) : LocallyIntegrableOn f s μ := by
   intro x _
   obtain ⟨t, ht_mem, ht_int⟩ := hf x
@@ -199,7 +199,7 @@ theorem locallyIntegrableOn_of_locallyIntegrable_restrict [OpensMeasurableSpace 
 /-- If `s` is closed, being locally integrable on `s` wrt `μ` is equivalent to being locally
 integrable with respect to `μ.restrict s`. For the one-way implication without assuming `s` closed,
 see `locallyIntegrableOn_of_locallyIntegrable_restrict`. -/
-theorem locallyIntegrableOn_iff_locallyIntegrable_restrict [OpensMeasurableSpace X]
+lemma locallyIntegrableOn_iff_locallyIntegrable_restrict [OpensMeasurableSpace X]
     (hs : IsClosed s) : LocallyIntegrableOn f s μ ↔ LocallyIntegrable f (μ.restrict s) := by
   refine' ⟨fun hf x => _, locallyIntegrableOn_of_locallyIntegrable_restrict⟩
   by_cases h : x ∈ s
@@ -215,7 +215,7 @@ theorem locallyIntegrableOn_iff_locallyIntegrable_restrict [OpensMeasurableSpace
 #align measure_theory.locally_integrable_on_iff_locally_integrable_restrict MeasureTheory.locallyIntegrableOn_iff_locallyIntegrable_restrict
 
 /-- If a function is locally integrable, then it is integrable on any compact set. -/
-theorem LocallyIntegrable.integrableOn_isCompact {k : Set X} (hf : LocallyIntegrable f μ)
+lemma LocallyIntegrable.integrableOn_isCompact {k : Set X} (hf : LocallyIntegrable f μ)
     (hk : IsCompact k) : IntegrableOn f k μ :=
   (hf.locallyIntegrableOn k).integrableOn_isCompact hk
 #align measure_theory.locally_integrable.integrable_on_is_compact MeasureTheory.LocallyIntegrable.integrableOn_isCompact
@@ -236,28 +236,28 @@ theorem LocallyIntegrable.integrableOn_nhds_isCompact (hf : LocallyIntegrable f 
     exact ⟨v, nhdsWithin_le_nhds (v_open.mem_nhds xv), v, v_open, Subset.rfl, hu.mono_set vu⟩
 #align measure_theory.locally_integrable.integrable_on_nhds_is_compact MeasureTheory.LocallyIntegrable.integrableOn_nhds_isCompact
 
-theorem locallyIntegrable_iff [LocallyCompactSpace X] :
+lemma locallyIntegrable_iff [LocallyCompactSpace X] :
     LocallyIntegrable f μ ↔ ∀ k : Set X, IsCompact k → IntegrableOn f k μ :=
   ⟨fun hf _k hk => hf.integrableOn_isCompact hk, fun hf x =>
     let ⟨K, hK, h2K⟩ := exists_compact_mem_nhds x
     ⟨K, h2K, hf K hK⟩⟩
 #align measure_theory.locally_integrable_iff MeasureTheory.locallyIntegrable_iff
 
-theorem LocallyIntegrable.aestronglyMeasurable [SecondCountableTopology X]
+lemma LocallyIntegrable.aestronglyMeasurable [SecondCountableTopology X]
     (hf : LocallyIntegrable f μ) : AEStronglyMeasurable f μ := by
   simpa only [restrict_univ] using (locallyIntegrableOn_univ.mpr hf).aestronglyMeasurable
 #align measure_theory.locally_integrable.ae_strongly_measurable MeasureTheory.LocallyIntegrable.aestronglyMeasurable
 
 /-- If a function is locally integrable in a second countable topological space,
 then there exists a sequence of open sets covering the space on which it is integrable. -/
-theorem LocallyIntegrable.exists_nat_integrableOn [SecondCountableTopology X]
+lemma LocallyIntegrable.exists_nat_integrableOn [SecondCountableTopology X]
     (hf : LocallyIntegrable f μ) : ∃ u : ℕ → Set X,
     (∀ n, IsOpen (u n)) ∧ ((⋃ n, u n) = univ) ∧ (∀ n, IntegrableOn f (u n) μ) := by
   rcases (hf.locallyIntegrableOn univ).exists_nat_integrableOn with ⟨u, u_open, u_union, hu⟩
   refine' ⟨u, u_open, eq_univ_of_univ_subset u_union, fun n ↦ _⟩
   simpa only [inter_univ] using hu n
 
-theorem Memℒp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p : ℝ≥0∞}
+lemma Memℒp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p : ℝ≥0∞}
     (hf : Memℒp f p μ) (hp : 1 ≤ p) : LocallyIntegrable f μ := by
   intro x
   rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
@@ -266,20 +266,20 @@ theorem Memℒp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p :
   rw [IntegrableOn, ← memℒp_one_iff_integrable]
   apply (hf.restrict U).memℒp_of_exponent_le hp
 
-theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
+lemma locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrable (fun _ => c) μ :=
   (memℒp_top_const c).locallyIntegrable le_top
 #align measure_theory.locally_integrable_const MeasureTheory.locallyIntegrable_const
 
-theorem locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
+lemma locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrableOn (fun _ => c) s μ :=
   (locallyIntegrable_const c).locallyIntegrableOn s
 #align measure_theory.locally_integrable_on_const MeasureTheory.locallyIntegrableOn_const
 
-theorem locallyIntegrable_zero : LocallyIntegrable (fun _ ↦ (0 : E)) μ :=
+lemma locallyIntegrable_zero : LocallyIntegrable (fun _ ↦ (0 : E)) μ :=
   (integrable_zero X E μ).locallyIntegrable
 
-theorem locallyIntegrableOn_zero : LocallyIntegrableOn (fun _ ↦ (0 : E)) s μ :=
+lemma locallyIntegrableOn_zero : LocallyIntegrableOn (fun _ ↦ (0 : E)) s μ :=
   locallyIntegrable_zero.locallyIntegrableOn s
 
 theorem LocallyIntegrable.indicator (hf : LocallyIntegrable f μ) {s : Set X}
@@ -289,7 +289,7 @@ theorem LocallyIntegrable.indicator (hf : LocallyIntegrable f μ) {s : Set X}
   exact ⟨U, hU, h'U.indicator hs⟩
 #align measure_theory.locally_integrable.indicator MeasureTheory.LocallyIntegrable.indicator
 
-theorem locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X ≃ₜ Y) {f : Y → E}
+lemma locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X ≃ₜ Y) {f : Y → E}
     {μ : Measure X} : LocallyIntegrable f (Measure.map e μ) ↔ LocallyIntegrable (f ∘ e) μ := by
   refine' ⟨fun h x => _, fun h x => _⟩
   · rcases h (e x) with ⟨U, hU, h'U⟩
@@ -313,16 +313,16 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
-protected theorem LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+protected lemma LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
     [BoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
-theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
+lemma locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i in s, f i) μ :=
   Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
     locallyIntegrable_zero hf
 
-theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → E}
+lemma locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → E}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i in s, f i a) μ := by
   simpa only [← Finset.sum_apply] using locallyIntegrable_finset_sum' s hf
 
@@ -375,14 +375,14 @@ variable [OpensMeasurableSpace X] [IsLocallyFiniteMeasure μ]
 variable {K : Set X} {a b : X}
 
 /-- A continuous function `f` is locally integrable with respect to any locally finite measure. -/
-theorem Continuous.locallyIntegrable [SecondCountableTopologyEither X E] (hf : Continuous f) :
+lemma Continuous.locallyIntegrable [SecondCountableTopologyEither X E] (hf : Continuous f) :
     LocallyIntegrable f μ :=
   hf.integrableAt_nhds
 #align continuous.locally_integrable Continuous.locallyIntegrable
 
 /-- A function `f` continuous on a set `K` is locally integrable on this set with respect
 to any locally finite measure. -/
-theorem ContinuousOn.locallyIntegrableOn [SecondCountableTopologyEither X E] (hf : ContinuousOn f K)
+lemma ContinuousOn.locallyIntegrableOn [SecondCountableTopologyEither X E] (hf : ContinuousOn f K)
     (hK : MeasurableSet K) : LocallyIntegrableOn f K μ := fun _x hx =>
   hf.integrableAt_nhdsWithin hK hx
 #align continuous_on.locally_integrable_on ContinuousOn.locallyIntegrableOn
@@ -398,32 +398,32 @@ theorem ContinuousOn.integrableOn_compact (hK : IsCompact K) (hf : ContinuousOn 
   exact hf.integrableAt_nhdsWithin_of_isSeparable hK.measurableSet hK.isSeparable hx
 #align continuous_on.integrable_on_compact ContinuousOn.integrableOn_compact
 
-theorem ContinuousOn.integrableOn_Icc [Preorder X] [CompactIccSpace X]
+lemma ContinuousOn.integrableOn_Icc [Preorder X] [CompactIccSpace X]
     (hf : ContinuousOn f (Icc a b)) : IntegrableOn f (Icc a b) μ :=
   hf.integrableOn_compact isCompact_Icc
 #align continuous_on.integrable_on_Icc ContinuousOn.integrableOn_Icc
 
-theorem Continuous.integrableOn_Icc [Preorder X] [CompactIccSpace X] (hf : Continuous f) :
+lemma Continuous.integrableOn_Icc [Preorder X] [CompactIccSpace X] (hf : Continuous f) :
     IntegrableOn f (Icc a b) μ :=
   hf.continuousOn.integrableOn_Icc
 #align continuous.integrable_on_Icc Continuous.integrableOn_Icc
 
-theorem Continuous.integrableOn_Ioc [Preorder X] [CompactIccSpace X] (hf : Continuous f) :
+lemma Continuous.integrableOn_Ioc [Preorder X] [CompactIccSpace X] (hf : Continuous f) :
     IntegrableOn f (Ioc a b) μ :=
   hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
 #align continuous.integrable_on_Ioc Continuous.integrableOn_Ioc
 
-theorem ContinuousOn.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X]
+lemma ContinuousOn.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X]
     (hf : ContinuousOn f [[a, b]]) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 #align continuous_on.integrable_on_uIcc ContinuousOn.integrableOn_uIcc
 
-theorem Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] (hf : Continuous f) :
+lemma Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] (hf : Continuous f) :
     IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 #align continuous.integrable_on_uIcc Continuous.integrableOn_uIcc
 
-theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] (hf : Continuous f) :
+lemma Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] (hf : Continuous f) :
     IntegrableOn f (Ι a b) μ :=
   hf.integrableOn_Ioc
 #align continuous.integrable_on_uIoc Continuous.integrableOn_uIoc
@@ -461,7 +461,7 @@ theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b 
       ((ae_restrict_iff' h's).mpr <| ae_of_all _ fun y hy => hC (f y) (mem_image_of_mem f hy))
 #align monotone_on.integrable_on_of_measure_ne_top MonotoneOn.integrableOn_of_measure_ne_top
 
-theorem MonotoneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
+lemma MonotoneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hmono : MonotoneOn f s) : IntegrableOn f s μ := by
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact integrableOn_empty
@@ -476,12 +476,12 @@ theorem AntitoneOn.integrableOn_of_measure_ne_top (hanti : AntitoneOn f s) {a b 
   hanti.dual_right.integrableOn_of_measure_ne_top ha hb hs h's
 #align antitone_on.integrable_on_of_measure_ne_top AntitoneOn.integrableOn_of_measure_ne_top
 
-theorem AntioneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
+lemma AntioneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hanti : AntitoneOn f s) : IntegrableOn f s μ :=
   hanti.dual_right.integrableOn_isCompact (E := Eᵒᵈ) hs
 #align antione_on.integrable_on_is_compact AntioneOn.integrableOn_isCompact
 
-theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone f) :
+lemma Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone f) :
     LocallyIntegrable f μ := by
   intro x
   rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
@@ -494,7 +494,7 @@ theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone
       ((measure_mono abU).trans_lt h'U).ne measurableSet_Icc
 #align monotone.locally_integrable Monotone.locallyIntegrable
 
-theorem Antitone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hanti : Antitone f) :
+lemma Antitone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hanti : Antitone f) :
     LocallyIntegrable f μ :=
   hanti.dual_right.locallyIntegrable
 #align antitone.locally_integrable Antitone.locallyIntegrable
@@ -523,7 +523,7 @@ theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' 
     Memℒp.of_le_mul hg (hg.aestronglyMeasurable.mul <| (hg'.mono hAK).aestronglyMeasurable hA) this
 #align measure_theory.integrable_on.mul_continuous_on_of_subset MeasureTheory.IntegrableOn.mul_continuousOn_of_subset
 
-theorem IntegrableOn.mul_continuousOn [T2Space X] (hg : IntegrableOn g K μ)
+lemma IntegrableOn.mul_continuousOn [T2Space X] (hg : IntegrableOn g K μ)
     (hg' : ContinuousOn g' K) (hK : IsCompact K) : IntegrableOn (fun x => g x * g' x) K μ :=
   hg.mul_continuousOn_of_subset hg' hK.measurableSet hK (Subset.refl _)
 #align measure_theory.integrable_on.mul_continuous_on MeasureTheory.IntegrableOn.mul_continuousOn
@@ -541,7 +541,7 @@ theorem IntegrableOn.continuousOn_mul_of_subset (hg : ContinuousOn g K) (hg' : I
     Memℒp.of_le_mul hg' (((hg.mono hAK).aestronglyMeasurable hA).mul hg'.aestronglyMeasurable) this
 #align measure_theory.integrable_on.continuous_on_mul_of_subset MeasureTheory.IntegrableOn.continuousOn_mul_of_subset
 
-theorem IntegrableOn.continuousOn_mul [T2Space X] (hg : ContinuousOn g K)
+lemma IntegrableOn.continuousOn_mul [T2Space X] (hg : ContinuousOn g K)
     (hg' : IntegrableOn g' K μ) (hK : IsCompact K) : IntegrableOn (fun x => g x * g' x) K μ :=
   hg'.continuousOn_mul_of_subset hg hK hK.measurableSet Subset.rfl
 #align measure_theory.integrable_on.continuous_on_mul MeasureTheory.IntegrableOn.continuousOn_mul
@@ -552,7 +552,7 @@ section SMul
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
+lemma IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
     (hg : IntegrableOn g K μ) {f : X → 𝕜} (hf : ContinuousOn f K) (hK : IsCompact K) :
     IntegrableOn (fun x => f x • g x) K μ := by
   rw [IntegrableOn, ← integrable_norm_iff]
@@ -562,7 +562,7 @@ theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEithe
   · exact (hf.aestronglyMeasurable hK.measurableSet).smul hg.1
 #align measure_theory.integrable_on.continuous_on_smul MeasureTheory.IntegrableOn.continuousOn_smul
 
-theorem IntegrableOn.smul_continuousOn [T2Space X] [SecondCountableTopologyEither X E] {f : X → 𝕜}
+lemma IntegrableOn.smul_continuousOn [T2Space X] [SecondCountableTopologyEither X E] {f : X → 𝕜}
     (hf : IntegrableOn f K μ) {g : X → E} (hg : ContinuousOn g K) (hK : IsCompact K) :
     IntegrableOn (fun x => f x • g x) K μ := by
   rw [IntegrableOn, ← integrable_norm_iff]
@@ -576,21 +576,21 @@ end SMul
 
 namespace LocallyIntegrableOn
 
-theorem continuousOn_mul [LocallyCompactSpace X] [T2Space X] [NormedRing R]
+lemma continuousOn_mul [LocallyCompactSpace X] [T2Space X] [NormedRing R]
     [SecondCountableTopologyEither X R] {f g : X → R} {s : Set X} (hf : LocallyIntegrableOn f s μ)
     (hg : ContinuousOn g s) (hs : IsOpen s) : LocallyIntegrableOn (fun x => g x * f x) s μ := by
   rw [MeasureTheory.locallyIntegrableOn_iff (Or.inr hs)] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).continuousOn_mul (hg.mono hk_sub) hk_c
 #align measure_theory.locally_integrable_on.continuous_on_mul MeasureTheory.LocallyIntegrableOn.continuousOn_mul
 
-theorem mul_continuousOn [LocallyCompactSpace X] [T2Space X] [NormedRing R]
+lemma mul_continuousOn [LocallyCompactSpace X] [T2Space X] [NormedRing R]
     [SecondCountableTopologyEither X R] {f g : X → R} {s : Set X} (hf : LocallyIntegrableOn f s μ)
     (hg : ContinuousOn g s) (hs : IsOpen s) : LocallyIntegrableOn (fun x => f x * g x) s μ := by
   rw [MeasureTheory.locallyIntegrableOn_iff (Or.inr hs)] at hf ⊢
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).mul_continuousOn (hg.mono hk_sub) hk_c
 #align measure_theory.locally_integrable_on.mul_continuous_on MeasureTheory.LocallyIntegrableOn.mul_continuousOn
 
-theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
+lemma continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
     [SecondCountableTopologyEither X 𝕜] [NormedSpace 𝕜 E] {f : X → E} {g : X → 𝕜} {s : Set X}
     (hs : IsOpen s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => g x • f x) s μ := by
@@ -598,7 +598,7 @@ theorem continuousOn_smul [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [No
   exact fun k hk_sub hk_c => (hf k hk_sub hk_c).continuousOn_smul (hg.mono hk_sub) hk_c
 #align measure_theory.locally_integrable_on.continuous_on_smul MeasureTheory.LocallyIntegrableOn.continuousOn_smul
 
-theorem smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
+lemma smul_continuousOn [LocallyCompactSpace X] [T2Space X] {𝕜 : Type*} [NormedField 𝕜]
     [SecondCountableTopologyEither X E] [NormedSpace 𝕜 E] {f : X → 𝕜} {g : X → E} {s : Set X}
     (hs : IsOpen s) (hf : LocallyIntegrableOn f s μ) (hg : ContinuousOn g s) :
     LocallyIntegrableOn (fun x => f x • g x) s μ := by

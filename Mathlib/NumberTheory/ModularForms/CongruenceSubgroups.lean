@@ -70,12 +70,12 @@ theorem Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
   SLMOD(N).normal_ker
 #align Gamma_normal Gamma_normal
 
-theorem Gamma_one_top : Gamma 1 = ⊤ := by
+lemma Gamma_one_top : Gamma 1 = ⊤ := by
   ext
   simp
 #align Gamma_one_top Gamma_one_top
 
-theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
+lemma Gamma_zero_bot : Gamma 0 = ⊥ := by
   ext
   simp only [Gamma_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply, Int.cast_id,
     Subgroup.mem_bot]

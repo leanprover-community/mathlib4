@@ -108,7 +108,7 @@ def dualEquiv : FinPartOrd ≌ FinPartOrd :=
 
 end FinPartOrd
 
-theorem FinPartOrd_dual_comp_forget_to_partOrdCat :
+lemma FinPartOrd_dual_comp_forget_to_partOrdCat :
     FinPartOrd.dual ⋙ forget₂ FinPartOrd PartOrdCat =
       forget₂ FinPartOrd PartOrdCat ⋙ PartOrdCat.dual := rfl
 #align FinPartOrd_dual_comp_forget_to_PartOrd FinPartOrd_dual_comp_forget_to_partOrdCat

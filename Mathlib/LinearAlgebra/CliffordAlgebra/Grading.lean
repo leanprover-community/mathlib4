@@ -33,12 +33,12 @@ def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
   ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ)
 #align clifford_algebra.even_odd CliffordAlgebra.evenOdd
 
-theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
+lemma one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
   refine' le_trans _ (le_iSup _ ⟨0, Nat.cast_zero⟩)
   exact (pow_zero _).ge
 #align clifford_algebra.one_le_even_odd_zero CliffordAlgebra.one_le_evenOdd_zero
 
-theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
+lemma range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
   refine' le_trans _ (le_iSup _ ⟨1, Nat.cast_one⟩)
   exact (pow_one _).ge
 #align clifford_algebra.range_ι_le_even_odd_one CliffordAlgebra.range_ι_le_evenOdd_one
@@ -138,7 +138,7 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     (by apply GradedAlgebra.lift_ι_eq Q)
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
-theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
+lemma iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
     -- porting note: needs extra annotations, no longer unifies against the goal in the face of
@@ -150,7 +150,7 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
       Function.Surjective.iSup_congr (fun i => i.2) (fun i => ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
 #align clifford_algebra.supr_ι_range_eq_top CliffordAlgebra.iSup_ι_range_eq_top
 
-theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
+lemma evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
   (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
     simpa using congr_arg ((↑) : Finset (ZMod 2) → Set (ZMod 2)) this
@@ -229,7 +229,7 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
 /-- To show a property is true on the even parts, it suffices to show it is true on the
 scalars, closed under addition, and under left-multiplication by a pair of vectors. -/
 @[elab_as_elim]
-theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
+lemma even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
     (hr : ∀ r : R, P (algebraMap _ _ r) (SetLike.algebraMap_mem_graded _ _))
     (hadd : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
     (hιι_mul :
@@ -246,7 +246,7 @@ theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
 /-- To show a property is true on the odd parts, it suffices to show it is true on the
 vectors, closed under addition, and under left-multiplication by a pair of vectors. -/
 @[elab_as_elim]
-theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
+lemma odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
     (hι : ∀ v, P (ι Q v) (ι_mem_evenOdd_one _ _))
     (hadd : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
     (hιι_mul :

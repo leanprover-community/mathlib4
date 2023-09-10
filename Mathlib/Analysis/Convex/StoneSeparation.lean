@@ -26,7 +26,7 @@ variable {𝕜 E ι : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 
 /-- In a tetrahedron with vertices `x`, `y`, `p`, `q`, any segment `[u, v]` joining the opposite
 edges `[x, p]` and `[y, q]` passes through any triangle of vertices `p`, `q`, `z` where
 `z ∈ [x, y]`. -/
-theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ segment 𝕜 x y)
+lemma not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ segment 𝕜 x y)
     (hu : u ∈ segment 𝕜 x p) (hv : v ∈ segment 𝕜 y q) :
     ¬Disjoint (segment 𝕜 u v) (convexHull 𝕜 {p, q, z}) := by
   rw [not_disjoint_iff]

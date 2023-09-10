@@ -62,11 +62,11 @@ local notation "F" => FreeGroup.lift f
 -- Porting note: `F` has been expanded, because `F r = 1` produces a sorry.
 variable (h : ∀ r ∈ rels, FreeGroup.lift f r = 1)
 
-theorem closure_rels_subset_ker : Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
+lemma closure_rels_subset_ker : Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
   Subgroup.normalClosure_le_normal fun x w ↦ (MonoidHom.mem_ker _).2 (h x w)
 #align presented_group.closure_rels_subset_ker PresentedGroup.closure_rels_subset_ker
 
-theorem to_group_eq_one_of_mem_closure : ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
+lemma to_group_eq_one_of_mem_closure : ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
   fun _ w ↦ (MonoidHom.mem_ker _).1 <| closure_rels_subset_ker h w
 #align presented_group.to_group_eq_one_of_mem_closure PresentedGroup.to_group_eq_one_of_mem_closure
 
@@ -77,7 +77,7 @@ def toGroup : PresentedGroup rels →* G :=
 #align presented_group.to_group PresentedGroup.toGroup
 
 @[simp]
-theorem toGroup.of {x : α} : toGroup h (of x) = f x :=
+lemma toGroup.of {x : α} : toGroup h (of x) = f x :=
   FreeGroup.lift.of
 #align presented_group.to_group.of PresentedGroup.toGroup.of
 

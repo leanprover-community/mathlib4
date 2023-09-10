@@ -78,7 +78,7 @@ theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
 
 /-- Prepending the head of a vector to its tail gives the vector. -/
 @[simp]
-theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
+lemma cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
   | ⟨a :: v, h⟩ => rfl
 #align vector.cons_head_tail Vector.cons_head_tail
@@ -230,7 +230,7 @@ end Shift
 
 /-! ### Basic Theorems -/
 /-- Vector is determined by the underlying list. -/
-protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
+protected lemma eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 #align vector.eq Vector.eq
 
@@ -248,7 +248,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 
 /-- A nil vector maps to a nil list. -/
 @[simp, nolint simpNF] -- Porting note: simp can prove this in the future
-theorem toList_nil : toList nil = @List.nil α :=
+lemma toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.toList_nil
 
@@ -267,7 +267,7 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
-theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
+lemma toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
    toList (append v w) = toList v ++ toList w := by
   cases v
   cases w
@@ -276,14 +276,14 @@ theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
 
 /-- `drop` of vectors corresponds under `toList` to `drop` of lists. -/
 @[simp]
-theorem toList_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
+lemma toList_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
   cases v
   rfl
 #align vector.to_list_drop Vector.toList_drop
 
 /-- `take` of vectors corresponds under `toList` to `take` of lists. -/
 @[simp]
-theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
+lemma toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
   cases v
   rfl
 #align vector.to_list_take Vector.toList_take

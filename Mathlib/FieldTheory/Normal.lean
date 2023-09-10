@@ -54,12 +54,12 @@ theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpol
   Normal.splits' x
 #align normal.splits Normal.splits
 
-theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+lemma normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
     ⟨fun x => (h x).1.isAlgebraic F, fun x => (h x).2⟩⟩
 #align normal_iff normal_iff
 
-theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+lemma Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   normal_iff.1
 #align normal.out Normal.out
 
@@ -74,7 +74,7 @@ variable {K}
 
 variable (K)
 
-theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
+lemma Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
     ∃ p : F[X], IsSplittingField F K p := by
   let s := Basis.ofVectorSpace F K
   refine'
@@ -96,7 +96,7 @@ section NormalTower
 
 variable (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
-theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
+lemma Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
     cases' h.out x with hx hhx
     rw [algebraMap_eq F K E] at hhx
@@ -108,7 +108,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
           (minpoly.dvd_map_of_isScalarTower F K x)⟩
 #align normal.tower_top_of_normal Normal.tower_top_of_normal
 
-theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
+lemma AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
   ⟨ϕ.toRingHom.injective, fun x => by
     letI : Algebra E K := ϕ.toRingHom.toAlgebra
     obtain ⟨h1, h2⟩ := h.out (algebraMap K E x)
@@ -130,7 +130,7 @@ theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function
 -- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
 variable {F} {E} {E' : Type*} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
 
-theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :=
+lemma Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :=
   normal_iff.2 fun x => by
     cases' h.out (f.symm x) with hx hhx
     have H := map_isIntegral f.toAlgHom hx
@@ -273,7 +273,7 @@ variable {F K} {L : Type*} [Field F] [Field K] [Field L] [Algebra F L] [Algebra 
   [Algebra F K] [IsScalarTower F K L]
 
 @[simp]
-theorem restrictScalars_normal {E : IntermediateField K L} :
+lemma restrictScalars_normal {E : IntermediateField K L} :
     Normal F (E.restrictScalars F) ↔ Normal F E :=
   Iff.rfl
 #align intermediate_field.restrict_scalars_normal IntermediateField.restrictScalars_normal
@@ -325,21 +325,21 @@ def AlgHom.restrictNormal' [Normal F E] : E ≃ₐ[F] E :=
 #align alg_hom.restrict_normal' AlgHom.restrictNormal'
 
 @[simp]
-theorem AlgHom.restrictNormal_commutes [Normal F E] (x : E) :
+lemma AlgHom.restrictNormal_commutes [Normal F E] (x : E) :
     algebraMap E K₂ (ϕ.restrictNormal E x) = ϕ (algebraMap E K₁ x) :=
   Subtype.ext_iff.mp
     (AlgEquiv.apply_symm_apply (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K₂))
       (ϕ.restrictNormalAux E ⟨IsScalarTower.toAlgHom F E K₁ x, x, rfl⟩))
 #align alg_hom.restrict_normal_commutes AlgHom.restrictNormal_commutes
 
-theorem AlgHom.restrictNormal_comp [Normal F E] :
+lemma AlgHom.restrictNormal_comp [Normal F E] :
     (ψ.restrictNormal E).comp (ϕ.restrictNormal E) = (ψ.comp ϕ).restrictNormal E :=
   AlgHom.ext fun _ =>
     (algebraMap E K₃).injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
 #align alg_hom.restrict_normal_comp AlgHom.restrictNormal_comp
 
 -- Porting note `[Algebra F K]` added by hand.
-theorem AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [Normal F E]
+lemma AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [Normal F E]
     (f : E →ₐ[F] K) : f.fieldRange = E := by
 -- Porting note: this was `IsScalarTower F E E := by infer_instance`.
   letI : Algebra E E := Algebra.id E
@@ -355,12 +355,12 @@ def AlgEquiv.restrictNormal [Normal F E] : E ≃ₐ[F] E :=
 #align alg_equiv.restrict_normal AlgEquiv.restrictNormal
 
 @[simp]
-theorem AlgEquiv.restrictNormal_commutes [Normal F E] (x : E) :
+lemma AlgEquiv.restrictNormal_commutes [Normal F E] (x : E) :
     algebraMap E K₂ (χ.restrictNormal E x) = χ (algebraMap E K₁ x) :=
   χ.toAlgHom.restrictNormal_commutes E x
 #align alg_equiv.restrict_normal_commutes AlgEquiv.restrictNormal_commutes
 
-theorem AlgEquiv.restrictNormal_trans [Normal F E] :
+lemma AlgEquiv.restrictNormal_trans [Normal F E] :
     (χ.trans ω).restrictNormal E = (χ.restrictNormal E).trans (ω.restrictNormal E) :=
   AlgEquiv.ext fun _ =>
     (algebraMap E K₃).injective
@@ -416,7 +416,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
 #align alg_hom.lift_normal AlgHom.liftNormal
 
 @[simp]
-theorem AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
+lemma AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
     ϕ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (ϕ x) :=
   -- Porting note: This seems to have been some sort of typeclass override trickery using `by apply`
   -- Now we explicitly specify which typeclass to override, using `(_)` instead of `_`
@@ -438,7 +438,7 @@ noncomputable def AlgEquiv.liftNormal [Normal F E] : E ≃ₐ[F] E :=
 #align alg_equiv.lift_normal AlgEquiv.liftNormal
 
 @[simp]
-theorem AlgEquiv.liftNormal_commutes [Normal F E] (x : K₁) :
+lemma AlgEquiv.liftNormal_commutes [Normal F E] (x : K₁) :
     χ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (χ x) :=
   χ.toAlgHom.liftNormal_commutes E x
 #align alg_equiv.lift_normal_commutes AlgEquiv.liftNormal_commutes
@@ -451,14 +451,14 @@ theorem AlgEquiv.restrict_liftNormal (χ : K₁ ≃ₐ[F] K₁) [Normal F K₁] 
       (Eq.trans (AlgEquiv.restrictNormal_commutes _ K₁ x) (χ.liftNormal_commutes E x))
 #align alg_equiv.restrict_lift_normal AlgEquiv.restrict_liftNormal
 
-theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
+lemma AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
     Function.Surjective (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → K₁ ≃ₐ[F] K₁) := fun χ =>
   ⟨χ.liftNormal E, χ.restrict_liftNormal E⟩
 #align alg_equiv.restrict_normal_hom_surjective AlgEquiv.restrictNormalHom_surjective
 
 variable (F) (K₁)
 
-theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃ₐ[F] K₁)]
+lemma isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃ₐ[F] K₁)]
     [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable (E ≃ₐ[F] E) := by
   let f : (E ≃ₐ[K₁] E) →* E ≃ₐ[F] E :=
     { toFun := fun ϕ =>

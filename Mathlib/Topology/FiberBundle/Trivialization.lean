@@ -109,7 +109,7 @@ lemma toLocalEquiv_injective [Nonempty F] :
     using congr_arg (Prod.fst '' LocalEquiv.target ·) h
 
 @[simp, mfld_simps]
-theorem coe_coe : ⇑e.toLocalEquiv = e :=
+lemma coe_coe : ⇑e.toLocalEquiv = e :=
   rfl
 #align pretrivialization.coe_coe Pretrivialization.coe_coe
 
@@ -118,14 +118,14 @@ theorem coe_fst (ex : x ∈ e.source) : (e x).1 = proj x :=
   e.proj_toFun x ex
 #align pretrivialization.coe_fst Pretrivialization.coe_fst
 
-theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
+lemma mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
 #align pretrivialization.mem_source Pretrivialization.mem_source
 
 theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
   e.coe_fst (e.mem_source.2 ex)
 #align pretrivialization.coe_fst' Pretrivialization.coe_fst'
 
-protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx => e.coe_fst hx
+protected lemma eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx => e.coe_fst hx
 #align pretrivialization.eq_on Pretrivialization.eqOn
 
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
@@ -141,47 +141,47 @@ def setSymm : e.target → Z :=
   e.target.restrict e.toLocalEquiv.symm
 #align pretrivialization.set_symm Pretrivialization.setSymm
 
-theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
+lemma mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
 #align pretrivialization.mem_target Pretrivialization.mem_target
 
-theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toLocalEquiv.symm x) = x.1 := by
+lemma proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toLocalEquiv.symm x) = x.1 := by
   have := (e.coe_fst (e.map_target hx)).symm
   rwa [← e.coe_coe, e.right_inv hx] at this
 #align pretrivialization.proj_symm_apply Pretrivialization.proj_symm_apply
 
-theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
+lemma proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     proj (e.toLocalEquiv.symm (b, x)) = b :=
   e.proj_symm_apply (e.mem_target.2 hx)
 #align pretrivialization.proj_symm_apply' Pretrivialization.proj_symm_apply'
 
-theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet := fun b hb =>
+lemma proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet := fun b hb =>
   let ⟨y⟩ := ‹Nonempty F›
   ⟨e.toLocalEquiv.symm (b, y), e.toLocalEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
 #align pretrivialization.proj_surj_on_base_set Pretrivialization.proj_surjOn_baseSet
 
-theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toLocalEquiv.symm x) = x :=
+lemma apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toLocalEquiv.symm x) = x :=
   e.toLocalEquiv.right_inv hx
 #align pretrivialization.apply_symm_apply Pretrivialization.apply_symm_apply
 
-theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
+lemma apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toLocalEquiv.symm (b, x)) = (b, x) :=
   e.apply_symm_apply (e.mem_target.2 hx)
 #align pretrivialization.apply_symm_apply' Pretrivialization.apply_symm_apply'
 
-theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toLocalEquiv.symm (e x) = x :=
+lemma symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toLocalEquiv.symm (e x) = x :=
   e.toLocalEquiv.left_inv hx
 #align pretrivialization.symm_apply_apply Pretrivialization.symm_apply_apply
 
 @[simp, mfld_simps]
-theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
+lemma symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toLocalEquiv.symm (proj x, (e x).2) = x := by
   rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
 #align pretrivialization.symm_apply_mk_proj Pretrivialization.symm_apply_mk_proj
 
 @[simp, mfld_simps]
-theorem preimage_symm_proj_baseSet :
+lemma preimage_symm_proj_baseSet :
     e.toLocalEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
   refine' inter_eq_right_iff_subset.mpr fun x hx => _
   simp only [mem_preimage, LocalEquiv.invFun_as_coe, e.proj_symm_apply hx]
@@ -227,7 +227,7 @@ theorem symm_trans_target_eq (e e' : Pretrivialization F proj) :
 variable (e' : Pretrivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
 
 @[simp]
-theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
+lemma coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align pretrivialization.coe_mem_source Pretrivialization.coe_mem_source
 
@@ -236,11 +236,11 @@ theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
   e'.coe_fst (e'.mem_source.2 hb)
 #align pretrivialization.coe_coe_fst Pretrivialization.coe_coe_fst
 
-theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
+lemma mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
 #align pretrivialization.mk_mem_target Pretrivialization.mk_mem_target
 
-theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
+lemma symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
     (e'.toLocalEquiv.symm (x, y)).1 = x :=
   e'.proj_symm_apply' h
 #align pretrivialization.symm_coe_proj Pretrivialization.symm_coe_proj
@@ -338,7 +338,7 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
 
-theorem toPretrivialization_injective :
+lemma toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
   ext1
   exacts [LocalHomeomorph.toLocalEquiv_injective (congr_arg Pretrivialization.toLocalEquiv h),
@@ -346,7 +346,7 @@ theorem toPretrivialization_injective :
 #align trivialization.to_pretrivialization_injective Trivialization.toPretrivialization_injective
 
 @[simp, mfld_simps]
-theorem coe_coe : ⇑e.toLocalHomeomorph = e :=
+lemma coe_coe : ⇑e.toLocalHomeomorph = e :=
   rfl
 #align trivialization.coe_coe Trivialization.coe_coe
 
@@ -355,10 +355,10 @@ theorem coe_fst (ex : x ∈ e.source) : (e x).1 = proj x :=
   e.proj_toFun x ex
 #align trivialization.coe_fst Trivialization.coe_fst
 
-protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx => e.coe_fst hx
+protected lemma eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx => e.coe_fst hx
 #align trivialization.eq_on Trivialization.eqOn
 
-theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
+lemma mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
 #align trivialization.mem_source Trivialization.mem_source
 
 theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
@@ -384,32 +384,32 @@ theorem coe_mk (e : LocalHomeomorph Z (B × F)) (i j k l m) (x : Z) :
   rfl
 #align trivialization.coe_mk Trivialization.coe_mk
 
-theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet :=
+lemma mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet :=
   e.toPretrivialization.mem_target
 #align trivialization.mem_target Trivialization.mem_target
 
-theorem map_target {x : B × F} (hx : x ∈ e.target) : e.toLocalHomeomorph.symm x ∈ e.source :=
+lemma map_target {x : B × F} (hx : x ∈ e.target) : e.toLocalHomeomorph.symm x ∈ e.source :=
   e.toLocalHomeomorph.map_target hx
 #align trivialization.map_target Trivialization.map_target
 
-theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toLocalHomeomorph.symm x) = x.1 :=
+lemma proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toLocalHomeomorph.symm x) = x.1 :=
   e.toPretrivialization.proj_symm_apply hx
 #align trivialization.proj_symm_apply Trivialization.proj_symm_apply
 
-theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
+lemma proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     proj (e.toLocalHomeomorph.symm (b, x)) = b :=
   e.toPretrivialization.proj_symm_apply' hx
 #align trivialization.proj_symm_apply' Trivialization.proj_symm_apply'
 
-theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
+lemma proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   e.toPretrivialization.proj_surjOn_baseSet
 #align trivialization.proj_surj_on_base_set Trivialization.proj_surjOn_baseSet
 
-theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toLocalHomeomorph.symm x) = x :=
+lemma apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toLocalHomeomorph.symm x) = x :=
   e.toLocalHomeomorph.right_inv hx
 #align trivialization.apply_symm_apply Trivialization.apply_symm_apply
 
-theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
+lemma apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toLocalHomeomorph.symm (b, x)) = (b, x) :=
   e.toPretrivialization.apply_symm_apply' hx
 #align trivialization.apply_symm_apply' Trivialization.apply_symm_apply'
@@ -442,11 +442,11 @@ theorem map_proj_nhds (ex : x ∈ e.source) : map proj (𝓝 x) = 𝓝 (proj x) 
     e.map_nhds_eq ex, map_fst_nhds]
 #align trivialization.map_proj_nhds Trivialization.map_proj_nhds
 
-theorem preimage_subset_source {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' s ⊆ e.source :=
+lemma preimage_subset_source {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' s ⊆ e.source :=
   fun _p hp => e.mem_source.mpr (hb hp)
 #align trivialization.preimage_subset_source Trivialization.preimage_subset_source
 
-theorem image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
+lemma image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
     e '' (proj ⁻¹' s) = s ×ˢ univ :=
   Subset.antisymm
     (image_subset_iff.mpr fun p hp =>
@@ -456,7 +456,7 @@ theorem image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
     ⟨e.invFun p, mem_preimage.mpr ((e.proj_symm_apply hp').symm ▸ hp.1), e.apply_symm_apply hp'⟩
 #align trivialization.image_preimage_eq_prod_univ Trivialization.image_preimage_eq_prod_univ
 
-theorem tendsto_nhds_iff {l : Filter α} {f : α → Z} {z : Z} (hz : z ∈ e.source) :
+lemma tendsto_nhds_iff {l : Filter α} {f : α → Z} {z : Z} (hz : z ∈ e.source) :
     Tendsto f l (𝓝 z) ↔
       Tendsto (proj ∘ f) l (𝓝 (proj z)) ∧ Tendsto (fun x ↦ (e (f x)).2) l (𝓝 (e z).2) := by
   rw [e.nhds_eq_comap_inf_principal hz, tendsto_inf, tendsto_comap_iff, Prod.tendsto_iff, coe_coe,
@@ -469,7 +469,7 @@ theorem tendsto_nhds_iff {l : Filter α} {f : α → Z} {z : Z} (hz : z ∈ e.so
     rw [e.source_eq] at hl hz
     exact fun h _ ↦ hl <| h <| e.open_baseSet.mem_nhds hz
 
-theorem nhds_eq_inf_comap {z : Z} (hz : z ∈ e.source) :
+lemma nhds_eq_inf_comap {z : Z} (hz : z ∈ e.source) :
     𝓝 z = comap proj (𝓝 (proj z)) ⊓ comap (Prod.snd ∘ e) (𝓝 (e z).2) := by
   refine eq_of_forall_le_iff fun l ↦ ?_
   rw [le_inf_iff, ← tendsto_iff_comap, ← tendsto_iff_comap]
@@ -483,13 +483,13 @@ def preimageHomeomorph {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' s ≃ₜ
 #align trivialization.preimage_homeomorph Trivialization.preimageHomeomorph
 
 @[simp]
-theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj ⁻¹' s) :
+lemma preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj ⁻¹' s) :
     e.preimageHomeomorph hb p = (⟨proj p, p.2⟩, (e p).2) :=
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 #align trivialization.preimage_homeomorph_apply Trivialization.preimageHomeomorph_apply
 
 @[simp]
-theorem preimageHomeomorph_symm_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : s × F) :
+lemma preimageHomeomorph_symm_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : s × F) :
     (e.preimageHomeomorph hb).symm p = ⟨e.symm (p.1, p.2), ((e.preimageHomeomorph hb).symm p).2⟩ :=
   rfl
 #align trivialization.preimage_homeomorph_symm_apply Trivialization.preimageHomeomorph_symm_apply
@@ -520,13 +520,13 @@ def preimageSingletonHomeomorph {b : B} (hb : b ∈ e.baseSet) : proj ⁻¹' {b}
 #align trivialization.preimage_singleton_homeomorph Trivialization.preimageSingletonHomeomorph
 
 @[simp]
-theorem preimageSingletonHomeomorph_apply {b : B} (hb : b ∈ e.baseSet) (p : proj ⁻¹' {b}) :
+lemma preimageSingletonHomeomorph_apply {b : B} (hb : b ∈ e.baseSet) (p : proj ⁻¹' {b}) :
     e.preimageSingletonHomeomorph hb p = (e p).2 :=
   rfl
 #align trivialization.preimage_singleton_homeomorph_apply Trivialization.preimageSingletonHomeomorph_apply
 
 @[simp]
-theorem preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p : F) :
+lemma preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p : F) :
     (e.preimageSingletonHomeomorph hb).symm p =
       ⟨e.symm (b, p), by rw [mem_preimage, e.proj_symm_apply' hb, mem_singleton_iff]⟩ :=
   rfl
@@ -552,7 +552,7 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
 
 /-- Read off the continuity of a function `f : Z → X` at `z : Z` by transferring via a
 trivialization of `Z` containing `z`. -/
-theorem continuousAt_of_comp_right {X : Type*} [TopologicalSpace X] {f : Z → X} {z : Z}
+lemma continuousAt_of_comp_right {X : Type*} [TopologicalSpace X] {f : Z → X} {z : Z}
     (e : Trivialization F proj) (he : proj z ∈ e.baseSet)
     (hf : ContinuousAt (f ∘ e.toLocalEquiv.symm) (e z)) : ContinuousAt f z := by
   have hez : z ∈ e.toLocalEquiv.symm.target := by
@@ -564,7 +564,7 @@ theorem continuousAt_of_comp_right {X : Type*} [TopologicalSpace X] {f : Z → X
 
 /-- Read off the continuity of a function `f : X → Z` at `x : X` by transferring via a
 trivialization of `Z` containing `f x`. -/
-theorem continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z} {x : X}
+lemma continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z} {x : X}
     (e : Trivialization F proj) (hf_proj : ContinuousAt (proj ∘ f) x) (he : proj (f x) ∈ e.baseSet)
     (hf : ContinuousAt (e ∘ f) x) : ContinuousAt f x := by
   rw [e.continuousAt_iff_continuousAt_comp_left]
@@ -575,16 +575,16 @@ theorem continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z}
 
 variable (e' : Trivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
 
-protected theorem continuousOn : ContinuousOn e' e'.source :=
+protected lemma continuousOn : ContinuousOn e' e'.source :=
   e'.continuous_toFun
 #align trivialization.continuous_on Trivialization.continuousOn
 
-theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
+lemma coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align trivialization.coe_mem_source Trivialization.coe_mem_source
 
 @[deprecated LocalHomeomorph.open_target]
-theorem open_target' : IsOpen e'.target := e'.open_target
+lemma open_target' : IsOpen e'.target := e'.open_target
 #align trivialization.open_target Trivialization.open_target'
 
 @[simp, mfld_simps]
@@ -592,17 +592,17 @@ theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
   e'.coe_fst (e'.mem_source.2 hb)
 #align trivialization.coe_coe_fst Trivialization.coe_coe_fst
 
-theorem mk_mem_target {y : F} : (b, y) ∈ e'.target ↔ b ∈ e'.baseSet :=
+lemma mk_mem_target {y : F} : (b, y) ∈ e'.target ↔ b ∈ e'.baseSet :=
   e'.toPretrivialization.mem_target
 #align trivialization.mk_mem_target Trivialization.mk_mem_target
 
-theorem symm_apply_apply {x : TotalSpace F E} (hx : x ∈ e'.source) :
+lemma symm_apply_apply {x : TotalSpace F E} (hx : x ∈ e'.source) :
     e'.toLocalHomeomorph.symm (e' x) = x :=
   e'.toLocalEquiv.left_inv hx
 #align trivialization.symm_apply_apply Trivialization.symm_apply_apply
 
 @[simp, mfld_simps]
-theorem symm_coe_proj {x : B} {y : F} (e : Trivialization F (π F E)) (h : x ∈ e.baseSet) :
+lemma symm_coe_proj {x : B} {y : F} (e : Trivialization F (π F E)) (h : x ∈ e.baseSet) :
     (e.toLocalHomeomorph.symm (x, y)).1 = x :=
   e.proj_symm_apply' h
 #align trivialization.symm_coe_proj Trivialization.symm_coe_proj
@@ -674,7 +674,7 @@ def transFiberHomeomorph {F' : Type*} [TopologicalSpace F'] (e : Trivialization 
 #align trivialization.trans_fiber_homeomorph Trivialization.transFiberHomeomorph
 
 @[simp]
-theorem transFiberHomeomorph_apply {F' : Type*} [TopologicalSpace F'] (e : Trivialization F proj)
+lemma transFiberHomeomorph_apply {F' : Type*} [TopologicalSpace F'] (e : Trivialization F proj)
     (h : F ≃ₜ F') (x : Z) : e.transFiberHomeomorph h x = ((e x).1, h (e x).2) :=
   rfl
 #align trivialization.trans_fiber_homeomorph_apply Trivialization.transFiberHomeomorph_apply

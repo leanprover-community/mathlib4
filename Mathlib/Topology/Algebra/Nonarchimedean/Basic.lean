@@ -83,7 +83,7 @@ contains the cartesian product of an open neighborhood in each group. -/
 @[to_additive NonarchimedeanAddGroup.prod_subset "An open neighborhood of the identity in
 the cartesian product of two nonarchimedean groups contains the cartesian product of
 an open neighborhood in each group."]
-theorem prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
+lemma prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
     ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
@@ -101,7 +101,7 @@ contains the cartesian square of an open neighborhood in the group. -/
 @[to_additive NonarchimedeanAddGroup.prod_self_subset "An open neighborhood of the identity in
 the cartesian square of a nonarchimedean group contains the cartesian square of
 an open neighborhood in the group."]
-theorem prod_self_subset {U} (hU : U ∈ nhds (1 : G × G)) :
+lemma prod_self_subset {U} (hU : U ∈ nhds (1 : G × G)) :
     ∃ V : OpenSubgroup G, (V : Set G) ×ˢ (V : Set G) ⊆ U :=
   let ⟨V, W, h⟩ := prod_subset hU
   ⟨V ⊓ W, by refine' Set.Subset.trans (Set.prod_mono _ _) ‹_› <;> simp⟩

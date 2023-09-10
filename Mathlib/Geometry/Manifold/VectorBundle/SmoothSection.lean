@@ -101,7 +101,7 @@ theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s =
   FunLike.ext' h
 #align cont_mdiff_section.coe_inj ContMDiffSection.coe_inj
 
-theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :=
+lemma coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :=
   coe_inj
 #align cont_mdiff_section.coe_injective ContMDiffSection.coe_injective
 
@@ -154,7 +154,7 @@ instance inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
 #align cont_mdiff_section.inhabited ContMDiffSection.inhabited
 
 @[simp]
-theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
+lemma coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
   rfl
 #align cont_mdiff_section.coe_zero ContMDiffSection.coe_zero
 

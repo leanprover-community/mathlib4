@@ -79,7 +79,7 @@ theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M)
     split_ifs <;> simp [h]
 #align mat_poly_equiv_charmatrix matPolyEquiv_charmatrix
 
-theorem charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m) (M : Matrix n n R) :
+lemma charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m) (M : Matrix n n R) :
     charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
   ext i j x
   by_cases h : i = j
@@ -92,7 +92,7 @@ def Matrix.charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 #align matrix.charpoly Matrix.charpoly
 
-theorem Matrix.charpoly_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m)
+lemma Matrix.charpoly_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]

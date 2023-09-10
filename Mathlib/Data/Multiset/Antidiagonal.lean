@@ -43,7 +43,7 @@ in what used to be `simp [antidiagonal_coe]`. -/
 /-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s`
     if and only if `t₁ + t₂ = s`. -/
 @[simp]
-theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
+lemma mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     x ∈ antidiagonal s ↔ x.1 + x.2 = s :=
   Quotient.inductionOn s <| fun l ↦ by
     dsimp only [quot_mk_to_coe, antidiagonal_coe]
@@ -66,7 +66,7 @@ theorem antidiagonal_map_snd (s : Multiset α) : (antidiagonal s).map Prod.snd =
 #align multiset.antidiagonal_map_snd Multiset.antidiagonal_map_snd
 
 @[simp]
-theorem antidiagonal_zero : @antidiagonal α 0 = {(0, 0)} :=
+lemma antidiagonal_zero : @antidiagonal α 0 = {(0, 0)} :=
   rfl
 #align multiset.antidiagonal_zero Multiset.antidiagonal_zero
 
@@ -82,7 +82,7 @@ theorem antidiagonal_cons (a : α) (s) :
     · simp
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 
-theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
+lemma antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by
   induction' s using Multiset.induction_on with a s hs
   · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
@@ -100,7 +100,7 @@ theorem card_antidiagonal (s : Multiset α) : card (antidiagonal s) = 2 ^ card s
   rwa [← antidiagonal_map_fst, card_map] at this
 #align multiset.card_antidiagonal Multiset.card_antidiagonal
 
-theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
+lemma prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
     prod (s.map fun a ↦ f a + g a) =
       sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) := by
   refine' s.induction_on _ _

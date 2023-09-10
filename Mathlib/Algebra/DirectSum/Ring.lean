@@ -143,7 +143,7 @@ class GCommRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GRing A, 
 
 end Defs
 
-theorem of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
+lemma of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
     {b : A j} (h : GradedMonoid.mk i a = GradedMonoid.mk j b) :
     DirectSum.of A i a = DirectSum.of A j b :=
   DFinsupp.single_eq_of_sigma_eq h
@@ -203,14 +203,14 @@ variable {A}
 
 theorem mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
 
-theorem mulHom_of_of {i j} (a : A i) (b : A j) :
+lemma mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of A i a) (of A j b) = of A (i + j) (GradedMonoid.GMul.mul a b) := by
   unfold mulHom
   simp only [toAddMonoid_of, flip_apply, coe_comp, Function.comp_apply]
   rfl
 #align direct_sum.mul_hom_of_of DirectSum.mulHom_of_of
 
-theorem of_mul_of {i j} (a : A i) (b : A j) :
+lemma of_mul_of {i j} (a : A i) (b : A j) :
     of A i a * of A j b = of _ (i + j) (GradedMonoid.GMul.mul a b) :=
   mulHom_of_of a b
 #align direct_sum.of_mul_of DirectSum.of_mul_of
@@ -277,7 +277,7 @@ instance semiring : Semiring (⨁ i, A i) :=
       rfl }
 #align direct_sum.semiring DirectSum.semiring
 
-theorem ofPow {i} (a : A i) (n : ℕ) :
+lemma ofPow {i} (a : A i) (n : ℕ) :
     of _ i a ^ n = of _ (n • i) (GradedMonoid.GMonoid.gnpow _ a) := by
   induction' n with n n_ih
   · exact of_eq_of_gradedMonoid_eq (pow_zero <| GradedMonoid.mk _ a).symm
@@ -285,7 +285,7 @@ theorem ofPow {i} (a : A i) (n : ℕ) :
     exact of_eq_of_gradedMonoid_eq (pow_succ (GradedMonoid.mk _ a) n).symm
 #align direct_sum.of_pow DirectSum.ofPow
 
-theorem ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
+lemma ofList_dProd {α} (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
     of A _ (l.dProd fι fA) = (l.map fun a => of A (fι a) (fA a)).prod := by
   induction' l with head tail
   · simp only [List.map_nil, List.prod_nil, List.dProd_nil]
@@ -303,7 +303,7 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
 
 open BigOperators
 
-theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
+lemma mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun i ai => a'.sum fun j aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
   change mulHom _ a a' = _
@@ -321,7 +321,7 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
 #align direct_sum.mul_eq_dfinsupp_sum DirectSum.mul_eq_dfinsupp_sum
 
 /-- A heavily unfolded version of the definition of multiplication -/
-theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
+lemma mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a' =
       ∑ ij in DFinsupp.support a ×ˢ DFinsupp.support a',
         DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) :=
@@ -418,7 +418,7 @@ section One
 variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddCommMonoid (A i)]
 
 @[simp]
-theorem of_zero_one : of _ 0 (1 : A 0) = 1 :=
+lemma of_zero_one : of _ 0 (1 : A 0) = 1 :=
   rfl
 #align direct_sum.of_zero_one DirectSum.of_zero_one
 
@@ -429,7 +429,7 @@ section Mul
 variable [AddZeroClass ι] [∀ i, AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A]
 
 @[simp]
-theorem of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of _ _ b :=
+lemma of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of _ _ b :=
   (of_eq_of_gradedMonoid_eq (GradedMonoid.mk_zero_smul a b)).trans (of_mul_of _ _).symm
 #align direct_sum.of_zero_smul DirectSum.of_zero_smul
 

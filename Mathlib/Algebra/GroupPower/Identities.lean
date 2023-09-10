@@ -21,14 +21,14 @@ variable {R : Type*} [CommRing R] {a b x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈ y
 
 This sign choice here corresponds to the signs obtained by multiplying two complex numbers.
 -/
-theorem sq_add_sq_mul_sq_add_sq :
+lemma sq_add_sq_mul_sq_add_sq :
     (x₁ ^ 2 + x₂ ^ 2) * (y₁ ^ 2 + y₂ ^ 2) = (x₁ * y₁ - x₂ * y₂) ^ 2 + (x₁ * y₂ + x₂ * y₁) ^ 2 := by
   ring
 #align sq_add_sq_mul_sq_add_sq sq_add_sq_mul_sq_add_sq
 
 /-- Brahmagupta's identity, see <https://en.wikipedia.org/wiki/Brahmagupta%27s_identity>
 -/
-theorem sq_add_mul_sq_mul_sq_add_mul_sq :
+lemma sq_add_mul_sq_mul_sq_add_mul_sq :
     (x₁ ^ 2 + n * x₂ ^ 2) * (y₁ ^ 2 + n * y₂ ^ 2) =
     (x₁ * y₁ - n * x₂ * y₂) ^ 2 + n * (x₁ * y₂ + x₂ * y₁) ^ 2 := by
   ring
@@ -36,14 +36,14 @@ theorem sq_add_mul_sq_mul_sq_add_mul_sq :
 
 /-- Sophie Germain's identity, see <https://www.cut-the-knot.org/blue/SophieGermainIdentity.shtml>.
 -/
-theorem pow_four_add_four_mul_pow_four :
+lemma pow_four_add_four_mul_pow_four :
     a ^ 4 + 4 * b ^ 4 = ((a - b) ^ 2 + b ^ 2) * ((a + b) ^ 2 + b ^ 2) := by
   ring
 #align pow_four_add_four_mul_pow_four pow_four_add_four_mul_pow_four
 
 /-- Sophie Germain's identity, see <https://www.cut-the-knot.org/blue/SophieGermainIdentity.shtml>.
 -/
-theorem pow_four_add_four_mul_pow_four' :
+lemma pow_four_add_four_mul_pow_four' :
     a ^ 4 + 4 * b ^ 4 = (a ^ 2 - 2 * a * b + 2 * b ^ 2) * (a ^ 2 + 2 * a * b + 2 * b ^ 2) := by
   ring
 #align pow_four_add_four_mul_pow_four' pow_four_add_four_mul_pow_four'
@@ -52,7 +52,7 @@ theorem pow_four_add_four_mul_pow_four' :
 
 This sign choice here corresponds to the signs obtained by multiplying two quaternions.
 -/
-theorem sum_four_sq_mul_sum_four_sq :
+lemma sum_four_sq_mul_sum_four_sq :
     (x₁ ^ 2 + x₂ ^ 2 + x₃ ^ 2 + x₄ ^ 2) * (y₁ ^ 2 + y₂ ^ 2 + y₃ ^ 2 + y₄ ^ 2) =
       (x₁ * y₁ - x₂ * y₂ - x₃ * y₃ - x₄ * y₄) ^ 2 + (x₁ * y₂ + x₂ * y₁ + x₃ * y₄ - x₄ * y₃) ^ 2 +
           (x₁ * y₃ - x₂ * y₄ + x₃ * y₁ + x₄ * y₂) ^ 2 +
@@ -64,7 +64,7 @@ theorem sum_four_sq_mul_sum_four_sq :
 
 This sign choice here corresponds to the signs obtained by multiplying two octonions.
 -/
-theorem sum_eight_sq_mul_sum_eight_sq :
+lemma sum_eight_sq_mul_sum_eight_sq :
     (x₁ ^ 2 + x₂ ^ 2 + x₃ ^ 2 + x₄ ^ 2 + x₅ ^ 2 + x₆ ^ 2 + x₇ ^ 2 + x₈ ^ 2) *
       (y₁ ^ 2 + y₂ ^ 2 + y₃ ^ 2 + y₄ ^ 2 + y₅ ^ 2 + y₆ ^ 2 + y₇ ^ 2 + y₈ ^ 2) =
     (x₁ * y₁ - x₂ * y₂ - x₃ * y₃ - x₄ * y₄ - x₅ * y₅ - x₆ * y₆ - x₇ * y₇ - x₈ * y₈) ^ 2 +

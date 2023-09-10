@@ -30,7 +30,7 @@ instance [MulAction G α] (S : Subgroup G) : MulAction S α :=
   inferInstanceAs (MulAction S.toSubmonoid α)
 
 @[to_additive]
-theorem smul_def [MulAction G α] {S : Subgroup G} (g : S) (m : α) : g • m = (g : G) • m :=
+lemma smul_def [MulAction G α] {S : Subgroup G} (g : S) (m : α) : g • m = (g : G) • m :=
   rfl
 #align subgroup.smul_def Subgroup.smul_def
 #align add_subgroup.vadd_def AddSubgroup.vadd_def

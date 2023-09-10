@@ -38,7 +38,7 @@ instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
 instance instCoe : Coe UnitDisc ℂ := ⟨Subtype.val⟩
 
-theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
+lemma coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
   Subtype.coe_injective
 #align complex.unit_disc.coe_injective Complex.UnitDisc.coe_injective
 
@@ -102,12 +102,12 @@ instance : SemigroupWithZero 𝔻 :=
     mul_zero := fun _ => coe_injective <| mul_zero _ }
 
 @[simp]
-theorem coe_zero : ((0 : 𝔻) : ℂ) = 0 :=
+lemma coe_zero : ((0 : 𝔻) : ℂ) = 0 :=
   rfl
 #align complex.unit_disc.coe_zero Complex.UnitDisc.coe_zero
 
 @[simp]
-theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
+lemma coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
   coe_injective.eq_iff' coe_zero
 #align complex.unit_disc.coe_eq_zero Complex.UnitDisc.coe_eq_zero
 
@@ -216,7 +216,7 @@ theorem coe_conj (z : 𝔻) : (z.conj : ℂ) = conj' ↑z :=
 #align complex.unit_disc.coe_conj Complex.UnitDisc.coe_conj
 
 @[simp]
-theorem conj_zero : conj 0 = 0 :=
+lemma conj_zero : conj 0 = 0 :=
   coe_injective (map_zero conj')
 #align complex.unit_disc.conj_zero Complex.UnitDisc.conj_zero
 

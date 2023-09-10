@@ -278,7 +278,7 @@ section Mul
 variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}
 
-theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
+lemma HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
     (hb : HasStrictFDerivAt b b' x) :
     HasStrictFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x :=
   ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasStrictFDerivAt (a x, b x)).comp x
@@ -523,16 +523,16 @@ theorem hasFDerivAt_ring_inverse (x : Rˣ) :
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 #align has_fderiv_at_ring_inverse hasFDerivAt_ring_inverse
 
-theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
+lemma differentiableAt_inverse {x : R} (hx : IsUnit x) :
     DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
   let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).differentiableAt
 
-theorem differentiableWithinAt_inverse {x : R} (hx : IsUnit x) (s : Set R) :
+lemma differentiableWithinAt_inverse {x : R} (hx : IsUnit x) (s : Set R) :
     DifferentiableWithinAt 𝕜 (@Ring.inverse R _) s x :=
   (differentiableAt_inverse hx).differentiableWithinAt
 #align differentiable_within_at_inverse differentiableWithinAt_inverse
 
-theorem differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x | IsUnit x} :=
+lemma differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x | IsUnit x} :=
   fun _x hx => differentiableWithinAt_inverse hx _
 #align differentiable_on_inverse differentiableOn_inverse
 
@@ -578,30 +578,30 @@ open NormedRing ContinuousLinearMap Ring
 
 /-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
 inversion operation is the linear map `λ t, - x⁻¹ * t * x⁻¹`. -/
-theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) : HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x :=
+lemma hasFDerivAt_inv' {x : R} (hx : x ≠ 0) : HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x :=
   by simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
 #align has_fderiv_at_inv' hasFDerivAt_inv'
 
-theorem differentiableAt_inv' {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
+lemma differentiableAt_inv' {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
   (hasFDerivAt_inv' hx).differentiableAt
 #align differentiable_at_inv' differentiableAt_inv'
 
-theorem differentiableWithinAt_inv' {x : R} (hx : x ≠ 0) (s : Set R) :
+lemma differentiableWithinAt_inv' {x : R} (hx : x ≠ 0) (s : Set R) :
     DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
   (differentiableAt_inv' hx).differentiableWithinAt
 #align differentiable_within_at_inv' differentiableWithinAt_inv'
 
-theorem differentiableOn_inv' : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
+lemma differentiableOn_inv' : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
   differentiableWithinAt_inv' hx _
 #align differentiable_on_inv' differentiableOn_inv'
 
 /-- Non-commutative version of `fderiv_inv` -/
-theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ :=
+lemma fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ :=
   (hasFDerivAt_inv' hx).fderiv
 #align fderiv_inv' fderiv_inv'
 
 /-- Non-commutative version of `fderivWithin_inv` -/
-theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+lemma fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]
   exact fderiv_inv' hx

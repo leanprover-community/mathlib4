@@ -58,7 +58,7 @@ variable [Countable Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)]
 @[to_additive "The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and
   right-invariant measure on an additive topological group `G` to a fundamental domain `𝓕` is a
   `G`-invariant measure on `G ⧸ Γ`."]
-theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeftInvariant]
+lemma MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeftInvariant]
     [μ.IsMulRightInvariant] :
     SMulInvariantMeasure G (G ⧸ Γ) (Measure.map QuotientGroup.mk (μ.restrict 𝓕)) where
   measure_preimage_smul g A hA := by
@@ -97,7 +97,7 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
 @[to_additive "Assuming `Γ` is a normal subgroup of an additive topological group `G`, the
   pushforward to the quotient group `G ⧸ Γ` of the restriction of a both left- and right-invariant
   measure on `G` to a fundamental domain `𝓕` is a left-invariant measure on `G ⧸ Γ`."]
-theorem MeasureTheory.IsFundamentalDomain.isMulLeftInvariant_map [Subgroup.Normal Γ]
+lemma MeasureTheory.IsFundamentalDomain.isMulLeftInvariant_map [Subgroup.Normal Γ]
     [μ.IsMulLeftInvariant] [μ.IsMulRightInvariant] :
     (Measure.map (QuotientGroup.mk' Γ) (μ.restrict 𝓕)).IsMulLeftInvariant where
   map_mul_left_eq_self x := by
@@ -122,7 +122,7 @@ variable [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] (K : Positive
   `μ`, which is also right-invariant, and a finite volume fundamental domain `𝓕`, the pushforward
   to the quotient group `G ⧸ Γ` of the restriction of `μ` to `𝓕` is a multiple of Haar measure on
   `G ⧸ Γ`."]
-theorem MeasureTheory.IsFundamentalDomain.map_restrict_quotient [Subgroup.Normal Γ]
+lemma MeasureTheory.IsFundamentalDomain.map_restrict_quotient [Subgroup.Normal Γ]
     [MeasureTheory.Measure.IsHaarMeasure μ] [μ.IsMulRightInvariant] (h𝓕_finite : μ 𝓕 < ⊤) :
     Measure.map (QuotientGroup.mk' Γ) (μ.restrict 𝓕) =
       μ (𝓕 ∩ QuotientGroup.mk' Γ ⁻¹' K) • MeasureTheory.Measure.haarMeasure K := by
@@ -147,7 +147,7 @@ theorem MeasureTheory.IsFundamentalDomain.map_restrict_quotient [Subgroup.Normal
   topological group `G` with Haar measure `μ`, which is also right-invariant, and a finite volume
   fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is measure-preserving between appropriate
   multiples of Haar measure on `G` and `G ⧸ Γ`."]
-theorem MeasurePreservingQuotientGroup.mk' [Subgroup.Normal Γ]
+lemma MeasurePreservingQuotientGroup.mk' [Subgroup.Normal Γ]
     [MeasureTheory.Measure.IsHaarMeasure μ] [μ.IsMulRightInvariant] (h𝓕_finite : μ 𝓕 < ⊤) (c : ℝ≥0)
     (h : μ (𝓕 ∩ QuotientGroup.mk' Γ ⁻¹' K) = c) :
     MeasurePreserving (QuotientGroup.mk' Γ) (μ.restrict 𝓕)

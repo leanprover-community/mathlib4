@@ -54,7 +54,7 @@ theorem mapEquiv_symm_apply (h : α ≃ β) (y : f β) :
 #align functor.map_equiv_symm_apply Functor.mapEquiv_symm_apply
 
 @[simp]
-theorem mapEquiv_refl : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
+lemma mapEquiv_refl : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
   ext x
   simp only [mapEquiv_apply, refl_apply]
   exact LawfulFunctor.id_map x
@@ -87,7 +87,7 @@ theorem mapEquiv_symm_apply (h : α ≃ β) (h' : α' ≃ β') (y : F β β') :
 #align bifunctor.map_equiv_symm_apply Bifunctor.mapEquiv_symm_apply
 
 @[simp]
-theorem mapEquiv_refl_refl : mapEquiv F (Equiv.refl α) (Equiv.refl α') = Equiv.refl (F α α') := by
+lemma mapEquiv_refl_refl : mapEquiv F (Equiv.refl α) (Equiv.refl α') = Equiv.refl (F α α') := by
   ext x
   simp [id_bimap]
 #align bifunctor.map_equiv_refl_refl Bifunctor.mapEquiv_refl_refl

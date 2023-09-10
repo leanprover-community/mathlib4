@@ -35,12 +35,12 @@ open Set Filter Metric
 
 open Filter Topology
 
-theorem isGδ_irrational : IsGδ { x | Irrational x } :=
+lemma isGδ_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 set_option linter.uppercaseLean3 false in
 #align is_Gδ_irrational isGδ_irrational
 
-theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
+lemma dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
   simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_iUnion, mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
@@ -49,7 +49,7 @@ theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   exact exists_irrational_btwn (Rat.cast_lt.2 hlt)
 #align dense_irrational dense_irrational
 
-theorem eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
+lemma eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
   eventually_residual.2 ⟨_, isGδ_irrational, dense_irrational, fun _ => id⟩
 #align eventually_residual_irrational eventually_residual_irrational
 

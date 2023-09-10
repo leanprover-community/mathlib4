@@ -42,7 +42,7 @@ variable {i : D ⥤ C}
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 /-- For a reflective functor `i` (with left adjoint `L`), with unit `η`, we have `η_iL = iL η`.
 -/
-theorem unit_obj_eq_map_unit [Reflective i] (X : C) :
+lemma unit_obj_eq_map_unit [Reflective i] (X : C) :
     (ofRightAdjoint i).unit.app (i.obj ((leftAdjoint i).obj X)) =
       i.map ((leftAdjoint i).map ((ofRightAdjoint i).unit.app X)) := by
   rw [← cancel_mono (i.map ((ofRightAdjoint i).counit.app ((leftAdjoint i).obj X))), ←
@@ -70,7 +70,7 @@ reflection of `A`, with the isomorphism as `η_A`.
 
 (For any `B` in the reflective subcategory, we automatically have that `ε_B` is an iso.)
 -/
-theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage) :
+lemma Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage) :
     IsIso ((ofRightAdjoint i).unit.app A) := by
   suffices (ofRightAdjoint i).unit.app A = h.getIso.inv ≫
       (ofRightAdjoint i).unit.app (i.obj (Functor.essImage.witness h)) ≫
@@ -82,13 +82,13 @@ theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage
 #align category_theory.functor.ess_image.unit_is_iso CategoryTheory.Functor.essImage.unit_isIso
 
 /-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
-theorem mem_essImage_of_unit_isIso [IsRightAdjoint i] (A : C)
+lemma mem_essImage_of_unit_isIso [IsRightAdjoint i] (A : C)
     [IsIso ((ofRightAdjoint i).unit.app A)] : A ∈ i.essImage :=
   ⟨(leftAdjoint i).obj A, ⟨(asIso ((ofRightAdjoint i).unit.app A)).symm⟩⟩
 #align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.mem_essImage_of_unit_isIso
 
 /-- If `η_A` is a split monomorphism, then `A` is in the reflective subcategory. -/
-theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
+lemma mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     [IsSplitMono ((ofRightAdjoint i).unit.app A)] : A ∈ i.essImage := by
   let η : 𝟭 C ⟶ leftAdjoint i ⋙ i := (ofRightAdjoint i).unit
   haveI : IsIso (η.app (i.obj ((leftAdjoint i).obj A))) :=
@@ -114,7 +114,7 @@ def unitCompPartialBijectiveAux [Reflective i] (A : C) (B : D) :
 #align category_theory.unit_comp_partial_bijective_aux CategoryTheory.unitCompPartialBijectiveAux
 
 /-- The description of the inverse of the bijection `unitCompPartialBijectiveAux`. -/
-theorem unitCompPartialBijectiveAux_symm_apply [Reflective i] {A : C} {B : D}
+lemma unitCompPartialBijectiveAux_symm_apply [Reflective i] {A : C} {B : D}
     (f : i.obj ((leftAdjoint i).obj A) ⟶ i.obj B) :
     (unitCompPartialBijectiveAux _ _).symm f = (ofRightAdjoint i).unit.app A ≫ f := by
   simp [unitCompPartialBijectiveAux]
@@ -141,18 +141,18 @@ def unitCompPartialBijective [Reflective i] (A : C) {B : C} (hB : B ∈ i.essIma
 #align category_theory.unit_comp_partial_bijective CategoryTheory.unitCompPartialBijective
 
 @[simp]
-theorem unitCompPartialBijective_symm_apply [Reflective i] (A : C) {B : C} (hB : B ∈ i.essImage)
+lemma unitCompPartialBijective_symm_apply [Reflective i] (A : C) {B : C} (hB : B ∈ i.essImage)
     (f) : (unitCompPartialBijective A hB).symm f = (ofRightAdjoint i).unit.app A ≫ f := by
   simp [unitCompPartialBijective, unitCompPartialBijectiveAux_symm_apply]
 #align category_theory.unit_comp_partial_bijective_symm_apply CategoryTheory.unitCompPartialBijective_symm_apply
 
-theorem unitCompPartialBijective_symm_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
+lemma unitCompPartialBijective_symm_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
     (hB : B ∈ i.essImage) (hB' : B' ∈ i.essImage) (f : i.obj ((leftAdjoint i).obj A) ⟶ B) :
     (unitCompPartialBijective A hB').symm (f ≫ h) = (unitCompPartialBijective A hB).symm f ≫ h := by
   simp
 #align category_theory.unit_comp_partial_bijective_symm_natural CategoryTheory.unitCompPartialBijective_symm_natural
 
-theorem unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
+lemma unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
     (hB : B ∈ i.essImage) (hB' : B' ∈ i.essImage) (f : A ⟶ B) :
     (unitCompPartialBijective A hB') (f ≫ h) = unitCompPartialBijective A hB f ≫ h := by
   rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h, Equiv.symm_apply_apply]

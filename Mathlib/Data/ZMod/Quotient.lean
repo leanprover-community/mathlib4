@@ -148,7 +148,7 @@ theorem orbitZpowersEquiv_symm_apply' (k : ℤ) :
   exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
 #align mul_action.orbit_zpowers_equiv_symm_apply' MulAction.orbitZpowersEquiv_symm_apply'
 
-theorem _root_.AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
+lemma _root_.AddAction.orbitZmultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
     [AddAction α β] (b : β) (k : ℤ) :
     (AddAction.orbitZmultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
@@ -161,7 +161,7 @@ attribute [to_additive existing AddAction.orbitZmultiplesEquiv_symm_apply']
   orbitZpowersEquiv_symm_apply'
 
 @[to_additive]
-theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
+lemma minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
     minimalPeriod ((· • ·) a) b = Fintype.card (orbit (zpowers a) b) := by
   -- porting note: added `(_)` to find `Fintype` by unification
   rw [← Fintype.ofEquiv_card (orbitZpowersEquiv a b), @ZMod.card _ (_)]
@@ -189,7 +189,7 @@ variable {α : Type*} [Group α] (a : α)
 
 /-- See also `orderOf_eq_card_zpowers`. -/
 @[to_additive add_order_eq_card_zmultiples' "See also `add_order_eq_card_zmultiples`."]
-theorem order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) := by
+lemma order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) := by
   have := Nat.card_congr (MulAction.orbitZpowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self, eq_comm] at this
 #align order_eq_card_zpowers' order_eq_card_zpowers'

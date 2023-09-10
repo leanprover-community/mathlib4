@@ -34,7 +34,7 @@ instance : FunLike (MyHom A B) A (λ _, B) :=
 `FunLike.coe` directly. -/
 instance : CoeFun (MyHom A B) (λ _, A → B) := ⟨MyHom.toFun⟩
 
-@[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
+@[ext] lemma ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
 /-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -154,23 +154,23 @@ instance (priority := 100) hasCoeToFun : CoeFun F fun _ ↦ ∀ a : α, β a whe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 -- @[simp] -- porting note: this loops in lean 4
-theorem coe_eq_coe_fn : (FunLike.coe (F := F)) = (fun f => ↑f) := rfl
+lemma coe_eq_coe_fn : (FunLike.coe (F := F)) = (fun f => ↑f) := rfl
 #align fun_like.coe_eq_coe_fn FunLike.coe_eq_coe_fn
 
-theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
+lemma coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
   FunLike.coe_injective'
 #align fun_like.coe_injective FunLike.coe_injective
 
 @[simp]
-theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
+lemma coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
   ⟨fun h ↦ FunLike.coe_injective' h, fun h ↦ by cases h; rfl⟩
 #align fun_like.coe_fn_eq FunLike.coe_fn_eq
 
-theorem ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
+lemma ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
   FunLike.coe_injective' h
 #align fun_like.ext' FunLike.ext'
 
-theorem ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α, β a) :=
+lemma ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α, β a) :=
   coe_fn_eq.symm
 #align fun_like.ext'_iff FunLike.ext'_iff
 
@@ -178,19 +178,19 @@ theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
   FunLike.coe_injective' (funext h)
 #align fun_like.ext FunLike.ext
 
-theorem ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
   coe_fn_eq.symm.trans Function.funext_iff
 #align fun_like.ext_iff FunLike.ext_iff
 
-protected theorem congr_fun {f g : F} (h₁ : f = g) (x : α) : f x = g x :=
+protected lemma congr_fun {f g : F} (h₁ : f = g) (x : α) : f x = g x :=
   congr_fun (congr_arg _ h₁) x
 #align fun_like.congr_fun FunLike.congr_fun
 
-theorem ne_iff {f g : F} : f ≠ g ↔ ∃ a, f a ≠ g a :=
+lemma ne_iff {f g : F} : f ≠ g ↔ ∃ a, f a ≠ g a :=
   ext_iff.not.trans not_forall
 #align fun_like.ne_iff FunLike.ne_iff
 
-theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
+lemma exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
   ne_iff.mp h
 #align fun_like.exists_ne FunLike.exists_ne
 
@@ -211,7 +211,7 @@ variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 
-protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
+protected lemma congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
   congr (congr_arg _ h₁) h₂
 #align fun_like.congr FunLike.congr
 

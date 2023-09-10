@@ -223,7 +223,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
 
 /- Porting note: `simp only [mem_iUnion]` fails in the next definition. This aux lemma is a
 workaround. -/
-private theorem mem_aux {e : LocalHomeomorph (B × F) (B × F)} :
+private lemma mem_aux {e : LocalHomeomorph (B × F) (B × F)} :
     (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
       (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
       (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),

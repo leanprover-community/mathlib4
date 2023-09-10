@@ -57,7 +57,7 @@ open Set Function Filter CauSeq UniformSpace
 
 /-- The metric space uniform structure on ℚ (which presupposes the existence
 of real numbers) agrees with the one coming directly from (abs : ℚ → ℚ). -/
-theorem Rat.uniformSpace_eq :
+lemma Rat.uniformSpace_eq :
     (AbsoluteValue.abs : AbsoluteValue ℚ ℚ).uniformSpace = PseudoMetricSpace.toUniformSpace := by
   ext s
   rw [(AbsoluteValue.hasBasis_uniformity _).mem_iff, Metric.uniformity_basis_dist_rat.mem_iff]
@@ -114,11 +114,11 @@ noncomputable def compareEquiv : Bourbakiℝ ≃ᵤ ℝ :=
   bourbakiPkg.compareEquiv rationalCauSeqPkg
 #align compare_reals.compare_equiv CompareReals.compareEquiv
 
-theorem compare_uc : UniformContinuous compareEquiv :=
+lemma compare_uc : UniformContinuous compareEquiv :=
   bourbakiPkg.uniformContinuous_compareEquiv rationalCauSeqPkg
 #align compare_reals.compare_uc CompareReals.compare_uc
 
-theorem compare_uc_symm : UniformContinuous compareEquiv.symm :=
+lemma compare_uc_symm : UniformContinuous compareEquiv.symm :=
   bourbakiPkg.uniformContinuous_compareEquiv_symm rationalCauSeqPkg
 #align compare_reals.compare_uc_symm CompareReals.compare_uc_symm
 

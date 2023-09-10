@@ -119,7 +119,7 @@ notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit
 @[elab_as_elim]
-protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
+protected lemma induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
@@ -187,7 +187,7 @@ instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTow
 #align tensor_product.compatible_smul.is_scalar_tower TensorProduct.CompatibleSMul.isScalarTower
 
 /-- `smul` can be moved from one side of the product to the other .-/
-theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m : M) (n : N) :
+lemma smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m : M) (n : N) :
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
@@ -199,7 +199,7 @@ def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M �
 #align tensor_product.smul.aux TensorProduct.SMul.aux
 attribute [-instance] addMonoid
 
-theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
+lemma SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
     SMul.aux r (.of (m, n)) = (r • m) ⊗ₜ[R] n :=
   rfl
 #align tensor_product.smul.aux_of TensorProduct.SMul.aux_of
@@ -299,7 +299,7 @@ theorem smul_tmul' (r : R') (m : M) (n : N) : r • m ⊗ₜ[R] n = (r • m) �
 #align tensor_product.smul_tmul' TensorProduct.smul_tmul'
 
 @[simp]
-theorem tmul_smul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (x : M) (y : N) :
+lemma tmul_smul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (x : M) (y : N) :
     x ⊗ₜ (r • y) = r • x ⊗ₜ[R] y :=
   (smul_tmul _ _ _).symm
 #align tensor_product.tmul_smul TensorProduct.tmul_smul
@@ -395,7 +395,7 @@ section
 
 open BigOperators
 
-theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
+lemma sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a in s, m a) ⊗ₜ[R] n = ∑ a in s, m a ⊗ₜ[R] n := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -416,7 +416,7 @@ end
 variable (R M N)
 
 /-- The simple (aka pure) elements span the tensor product. -/
-theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤ := by
+lemma span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤ := by
   ext t; simp only [Submodule.mem_top, iff_true_iff]
   refine t.induction_on ?_ ?_ ?_
   · exact Submodule.zero_mem _
@@ -428,7 +428,7 @@ theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ
 #align tensor_product.span_tmul_eq_top TensorProduct.span_tmul_eq_top
 
 @[simp]
-theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := by
+lemma map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := by
   rw [← top_le_iff, ← span_tmul_eq_top, Submodule.map₂_eq_span_image2]
   exact Submodule.span_mono fun _ ⟨m, n, h⟩ => ⟨m, n, trivial, trivial, h⟩
 #align tensor_product.map₂_mk_top_top_eq_top TensorProduct.map₂_mk_top_top_eq_top
@@ -508,17 +508,17 @@ theorem lift.tmul' (x y) : (lift f).1 (x ⊗ₜ y) = f x y :=
   rfl
 #align tensor_product.lift.tmul' TensorProduct.lift.tmul'
 
-theorem ext' {g h : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
+lemma ext' {g h : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   LinearMap.ext fun z =>
     TensorProduct.induction_on z (by simp_rw [LinearMap.map_zero]) H fun x y ihx ihy => by
       rw [g.map_add, h.map_add, ihx, ihy]
 #align tensor_product.ext' TensorProduct.ext'
 
-theorem lift.unique {g : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = f x y) : g = lift f :=
+lemma lift.unique {g : M ⊗[R] N →ₗ[R] P} (H : ∀ x y, g (x ⊗ₜ y) = f x y) : g = lift f :=
   ext' fun m n => by rw [H, lift.tmul]
 #align tensor_product.lift.unique TensorProduct.lift.unique
 
-theorem lift_mk : lift (mk R M N) = LinearMap.id :=
+lemma lift_mk : lift (mk R M N) = LinearMap.id :=
   Eq.symm <| lift.unique fun _ _ => rfl
 #align tensor_product.lift_mk TensorProduct.lift_mk
 
@@ -536,7 +536,7 @@ attribute is now added locally where it is needed. Using this as the `@[ext]` le
 `TensorProduct.ext'` allows `ext` to apply lemmas specific to `M →ₗ _` and `N →ₗ _`.
 
 See note [partially-applied ext lemmas]. -/
-theorem ext {g h : M ⊗ N →ₗ[R] P} (H : (mk R M N).compr₂ g = (mk R M N).compr₂ h) : g = h := by
+lemma ext {g h : M ⊗ N →ₗ[R] P} (H : (mk R M N).compr₂ g = (mk R M N).compr₂ h) : g = h := by
   rw [← lift_mk_compr₂ g, H, lift_mk_compr₂]
 #align tensor_product.ext TensorProduct.ext
 
@@ -608,18 +608,18 @@ theorem curry_apply (f : M ⊗ N →ₗ[R] P) (m : M) (n : N) : curry f m n = f 
   rfl
 #align tensor_product.curry_apply TensorProduct.curry_apply
 
-theorem curry_injective : Function.Injective (curry : (M ⊗[R] N →ₗ[R] P) → M →ₗ[R] N →ₗ[R] P) :=
+lemma curry_injective : Function.Injective (curry : (M ⊗[R] N →ₗ[R] P) → M →ₗ[R] N →ₗ[R] P) :=
   fun _ _ H => ext H
 #align tensor_product.curry_injective TensorProduct.curry_injective
 
-theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
+lemma ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
     (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext x y z
   exact H x y z
 #align tensor_product.ext_threefold TensorProduct.ext_threefold
 
 -- We'll need this one for checking the pentagon identity!
-theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
+lemma ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext w x y z
   exact H w x y z
@@ -627,7 +627,7 @@ theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
 
 /-- Two linear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
 form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
-theorem ext_fourfold' {φ ψ : (M ⊗[R] N) ⊗[R] P ⊗[R] Q →ₗ[R] S}
+lemma ext_fourfold' {φ ψ : (M ⊗[R] N) ⊗[R] P ⊗[R] Q →ₗ[R] S}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
   ext m n p q
   exact H m n p q
@@ -787,13 +787,13 @@ theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : 
 attribute [local ext high] ext
 
 @[simp]
-theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
+lemma map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   ext
   simp only [mk_apply, id_coe, compr₂_apply, id.def, map_tmul]
 #align tensor_product.map_id TensorProduct.map_id
 
 @[simp]
-theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
+lemma map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
   map_id
 #align tensor_product.map_one TensorProduct.map_one
 
@@ -954,7 +954,7 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
 
 -- porting note: the proof here was `rfl` but that caused a timeout.
 @[simp]
-theorem tensorTensorTensorComm_symm :
+lemma tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
   by ext; rfl
 #align tensor_product.tensor_tensor_tensor_comm_symm TensorProduct.tensorTensorTensorComm_symm
@@ -1046,12 +1046,12 @@ def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
 #align linear_map.rtensor_hom LinearMap.rTensorHom
 
 @[simp]
-theorem coe_lTensorHom : (lTensorHom M : (N →ₗ[R] P) → M ⊗[R] N →ₗ[R] M ⊗[R] P) = lTensor M :=
+lemma coe_lTensorHom : (lTensorHom M : (N →ₗ[R] P) → M ⊗[R] N →ₗ[R] M ⊗[R] P) = lTensor M :=
   rfl
 #align linear_map.coe_ltensor_hom LinearMap.coe_lTensorHom
 
 @[simp]
-theorem coe_rTensorHom : (rTensorHom M : (N →ₗ[R] P) → N ⊗[R] M →ₗ[R] P ⊗[R] M) = rTensor M :=
+lemma coe_rTensorHom : (rTensorHom M : (N →ₗ[R] P) → N ⊗[R] M →ₗ[R] P ⊗[R] M) = rTensor M :=
   rfl
 #align linear_map.coe_rtensor_hom LinearMap.coe_rTensorHom
 
@@ -1066,12 +1066,12 @@ theorem rTensor_add (f g : N →ₗ[R] P) : (f + g).rTensor M = f.rTensor M + g.
 #align linear_map.rtensor_add LinearMap.rTensor_add
 
 @[simp]
-theorem lTensor_zero : lTensor M (0 : N →ₗ[R] P) = 0 :=
+lemma lTensor_zero : lTensor M (0 : N →ₗ[R] P) = 0 :=
   (lTensorHom M).map_zero
 #align linear_map.ltensor_zero LinearMap.lTensor_zero
 
 @[simp]
-theorem rTensor_zero : rTensor M (0 : N →ₗ[R] P) = 0 :=
+lemma rTensor_zero : rTensor M (0 : N →ₗ[R] P) = 0 :=
   (rTensorHom M).map_zero
 #align linear_map.rtensor_zero LinearMap.rTensor_zero
 
@@ -1085,7 +1085,7 @@ theorem rTensor_smul (r : R) (f : N →ₗ[R] P) : (r • f).rTensor M = r • f
   (rTensorHom M).map_smul r f
 #align linear_map.rtensor_smul LinearMap.rTensor_smul
 
-theorem lTensor_comp : (g.comp f).lTensor M = (g.lTensor M).comp (f.lTensor M) := by
+lemma lTensor_comp : (g.comp f).lTensor M = (g.lTensor M).comp (f.lTensor M) := by
   ext m n
   simp only [compr₂_apply, mk_apply, comp_apply, lTensor_tmul]
 #align linear_map.ltensor_comp LinearMap.lTensor_comp
@@ -1094,7 +1094,7 @@ theorem lTensor_comp_apply (x : M ⊗[R] N) :
     (g.comp f).lTensor M x = (g.lTensor M) ((f.lTensor M) x) := by rw [lTensor_comp, coe_comp]; rfl
 #align linear_map.ltensor_comp_apply LinearMap.lTensor_comp_apply
 
-theorem rTensor_comp : (g.comp f).rTensor M = (g.rTensor M).comp (f.rTensor M) := by
+lemma rTensor_comp : (g.comp f).rTensor M = (g.rTensor M).comp (f.rTensor M) := by
   ext m n
   simp only [compr₂_apply, mk_apply, comp_apply, rTensor_tmul]
 #align linear_map.rtensor_comp LinearMap.rTensor_comp
@@ -1114,7 +1114,7 @@ theorem rTensor_mul (f g : Module.End R N) : (f * g).rTensor M = f.rTensor M * g
 variable (N)
 
 @[simp]
-theorem lTensor_id : (id : N →ₗ[R] N).lTensor M = id :=
+lemma lTensor_id : (id : N →ₗ[R] N).lTensor M = id :=
   map_id
 #align linear_map.ltensor_id LinearMap.lTensor_id
 
@@ -1124,7 +1124,7 @@ theorem lTensor_id_apply (x : M ⊗[R] N) : (LinearMap.id : N →ₗ[R] N).lTens
 #align linear_map.ltensor_id_apply LinearMap.lTensor_id_apply
 
 @[simp]
-theorem rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
+lemma rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
   map_id
 #align linear_map.rtensor_id LinearMap.rTensor_id
 

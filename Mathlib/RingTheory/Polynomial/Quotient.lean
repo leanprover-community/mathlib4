@@ -80,14 +80,14 @@ open Polynomial
 
 variable {R : Type*} [CommRing R]
 
-theorem quotient_map_C_eq_zero {I : Ideal R} :
+lemma quotient_map_C_eq_zero {I : Ideal R} :
     ∀ a ∈ I, ((Quotient.mk (map (C : R →+* R[X]) I : Ideal R[X])).comp C) a = 0 := by
   intro a ha
   rw [RingHom.comp_apply, Quotient.eq_zero_iff_mem]
   exact mem_map_of_mem _ ha
 #align ideal.quotient_map_C_eq_zero Ideal.quotient_map_C_eq_zero
 
-theorem eval₂_C_mk_eq_zero {I : Ideal R} :
+lemma eval₂_C_mk_eq_zero {I : Ideal R} :
     ∀ f ∈ (map (C : R →+* R[X]) I : Ideal R[X]), eval₂RingHom (C.comp (Quotient.mk I)) X f = 0 := by
   intro a ha
   rw [← sum_monomial_eq a]
@@ -159,7 +159,7 @@ theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]
 #align ideal.polynomial_quotient_equiv_quotient_polynomial_map_mk Ideal.polynomialQuotientEquivQuotientPolynomial_map_mk
 
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
-theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
+lemma isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
   MulEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
 #align ideal.is_domain_map_C_quotient Ideal.isDomain_map_C_quotient
@@ -198,14 +198,14 @@ namespace MvPolynomial
 
 variable {R : Type*} {σ : Type*} [CommRing R] {r : R}
 
-theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
+lemma quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
     (Ideal.Quotient.mk (Ideal.map (C : R →+* MvPolynomial σ R) I :
       Ideal (MvPolynomial σ R))).comp C i = 0 := by
   simp only [Function.comp_apply, RingHom.coe_comp, Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.mem_map_of_mem _ hi
 #align mv_polynomial.quotient_map_C_eq_zero MvPolynomial.quotient_map_C_eq_zero
 
-theorem eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
+lemma eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
     (ha : a ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R))) :
     eval₂Hom (C.comp (Ideal.Quotient.mk I)) X a = 0 := by
   rw [as_sum a]

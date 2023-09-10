@@ -55,12 +55,12 @@ def projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T}
 #align category_theory.structured_arrow.project_subobject CategoryTheory.StructuredArrow.projectSubobject
 
 @[simp]
-theorem projectSubobject_mk [HasLimits C] [PreservesLimits T] {A P : StructuredArrow S T}
+lemma projectSubobject_mk [HasLimits C] [PreservesLimits T] {A P : StructuredArrow S T}
     (f : P ⟶ A) [Mono f] : projectSubobject (Subobject.mk f) = Subobject.mk f.right :=
   rfl
 #align category_theory.structured_arrow.project_subobject_mk CategoryTheory.StructuredArrow.projectSubobject_mk
 
-theorem projectSubobject_factors [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
+lemma projectSubobject_factors [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
     ∀ P : Subobject A, ∃ q, q ≫ T.map (projectSubobject P).arrow = A.hom :=
   Subobject.ind _ fun P f hf =>
     ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by
@@ -79,7 +79,7 @@ def liftSubobject {A : StructuredArrow S T} (P : Subobject A.right) {q}
 
 /-- Projecting and then lifting a subobject recovers the original subobject, because there is at
     most one morphism making the projected subobject into a structured arrow. -/
-theorem lift_projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
+lemma lift_projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
     ∀ (P : Subobject A) {q} (hq : q ≫ T.map (projectSubobject P).arrow = A.hom),
       liftSubobject (projectSubobject P) hq = P :=
   Subobject.ind _
@@ -139,13 +139,13 @@ def projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow
 #align category_theory.costructured_arrow.project_quotient CategoryTheory.CostructuredArrow.projectQuotient
 
 @[simp]
-theorem projectQuotient_mk [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T}
+lemma projectQuotient_mk [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T}
     {P : (CostructuredArrow S T)ᵒᵖ} (f : P ⟶ op A) [Mono f] :
     projectQuotient (Subobject.mk f) = Subobject.mk f.unop.left.op :=
   rfl
 #align category_theory.costructured_arrow.project_quotient_mk CategoryTheory.CostructuredArrow.projectQuotient_mk
 
-theorem projectQuotient_factors [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
+lemma projectQuotient_factors [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     ∀ P : Subobject (op A), ∃ q, S.map (projectQuotient P).arrow.unop ≫ q = A.hom :=
   Subobject.ind _ fun P f hf =>
     ⟨S.map (Subobject.underlyingIso _).unop.inv ≫ P.unop.hom, by
@@ -165,7 +165,7 @@ def liftQuotient {A : CostructuredArrow S T} (P : Subobject (op A.left)) {q}
 
 /-- Technical lemma for `lift_projectQuotient`. -/
 @[simp]
-theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
+lemma unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
     {P : (CostructuredArrow S T)ᵒᵖ} (f : P ⟶ op A) [Mono f.unop.left.op] :
     f.unop.left ≫ (Subobject.underlyingIso f.unop.left.op).hom.unop =
       (Subobject.mk f.unop.left.op).arrow.unop := by
@@ -177,7 +177,7 @@ theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
 
 /-- Projecting and then lifting a quotient recovers the original quotient, because there is at most
     one morphism making the projected quotient into a costructured arrow. -/
-theorem lift_projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
+lemma lift_projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     ∀ (P : Subobject (op A)) {q} (hq : S.map (projectQuotient P).arrow.unop ≫ q = A.hom),
       liftQuotient (projectQuotient P) hq = P :=
   Subobject.ind _
@@ -192,7 +192,7 @@ theorem lift_projectQuotient [HasColimits C] [PreservesColimits S] {A : Costruct
 #align category_theory.costructured_arrow.lift_project_quotient CategoryTheory.CostructuredArrow.lift_projectQuotient
 
 /-- Technical lemma for `quotientEquiv`. -/
-theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (CostructuredArrow S T)ᵒᵖ}
+lemma unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (CostructuredArrow S T)ᵒᵖ}
     {f : P ⟶ op A} {g : Q ⟶ op A} [Mono f.unop.left.op] [Mono g.unop.left.op]
     (h : Subobject.mk f.unop.left.op ≤ Subobject.mk g.unop.left.op) :
     g.unop.left ≫ (Subobject.ofMkLEMk f.unop.left.op g.unop.left.op h).unop = f.unop.left := by

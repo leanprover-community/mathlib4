@@ -41,26 +41,26 @@ def minimals : Set α :=
   { a ∈ s | ∀ ⦃b⦄, b ∈ s → r b a → r a b }
 #align minimals minimals
 
-theorem maximals_subset : maximals r s ⊆ s :=
+lemma maximals_subset : maximals r s ⊆ s :=
   sep_subset _ _
 #align maximals_subset maximals_subset
 
-theorem minimals_subset : minimals r s ⊆ s :=
+lemma minimals_subset : minimals r s ⊆ s :=
   sep_subset _ _
 #align minimals_subset minimals_subset
 
 @[simp]
-theorem maximals_empty : maximals r ∅ = ∅ :=
+lemma maximals_empty : maximals r ∅ = ∅ :=
   sep_empty _
 #align maximals_empty maximals_empty
 
 @[simp]
-theorem minimals_empty : minimals r ∅ = ∅ :=
+lemma minimals_empty : minimals r ∅ = ∅ :=
   sep_empty _
 #align minimals_empty minimals_empty
 
 @[simp]
-theorem maximals_singleton : maximals r {a} = {a} :=
+lemma maximals_singleton : maximals r {a} = {a} :=
   (maximals_subset _ _).antisymm <|
     singleton_subset_iff.2 <|
       ⟨rfl, by
@@ -69,15 +69,15 @@ theorem maximals_singleton : maximals r {a} = {a} :=
 #align maximals_singleton maximals_singleton
 
 @[simp]
-theorem minimals_singleton : minimals r {a} = {a} :=
+lemma minimals_singleton : minimals r {a} = {a} :=
   maximals_singleton _ _
 #align minimals_singleton minimals_singleton
 
-theorem maximals_swap : maximals (swap r) s = minimals r s :=
+lemma maximals_swap : maximals (swap r) s = minimals r s :=
   rfl
 #align maximals_swap maximals_swap
 
-theorem minimals_swap : minimals (swap r) s = maximals r s :=
+lemma minimals_swap : minimals (swap r) s = maximals r s :=
   rfl
 #align minimals_swap minimals_swap
 
@@ -93,18 +93,18 @@ theorem eq_of_mem_minimals (ha : a ∈ minimals r s) (hb : b ∈ s) (h : r b a) 
   antisymm (ha.2 hb h) h
 #align eq_of_mem_minimals eq_of_mem_minimals
 
-theorem mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
+lemma mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
   simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
   refine' fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ _⟩
   convert hxy <;> rw [h hys hxy]
 
-theorem mem_maximals_setOf_iff : x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
+lemma mem_maximals_setOf_iff : x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
   mem_maximals_iff
 
-theorem mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y :=
+lemma mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y :=
   @mem_maximals_iff _ _ _ (IsAntisymm.swap r) _
 
-theorem mem_minimals_setOf_iff : x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
+lemma mem_minimals_setOf_iff : x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
   mem_minimals_iff
 
 /-- This theorem can't be used to rewrite without specifying `rlt`, since `rlt` would have to be
@@ -118,7 +118,7 @@ theorem mem_maximals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsNonstr
     x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
   simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
 
-theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
+lemma minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, r y x) : minimals r s = minimals r t := by
   refine Set.ext fun a ↦ ⟨fun ⟨has, hmin⟩ ↦ ⟨?_,fun b hbt ↦ hmin (hts hbt)⟩,
     fun ⟨hat, hmin⟩ ↦ ⟨hts hat, fun b hbs hba ↦ ?_⟩⟩
@@ -127,17 +127,17 @@ theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
   obtain ⟨b', hb't, hb'b⟩ := h b hbs
   rwa [antisymm (hmin hb't (Trans.trans hb'b hba)) (Trans.trans hb'b hba)]
 
-theorem maximals_eq_maximals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
+lemma maximals_eq_maximals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, r x y) : maximals r s = maximals r t :=
   @minimals_eq_minimals_of_subset_of_forall _ _ _ _ (IsAntisymm.swap r) (IsTrans.swap r) hts h
 
 variable (r s)
 
-theorem maximals_antichain : IsAntichain r (maximals r s) := fun _a ha _b hb hab h =>
+lemma maximals_antichain : IsAntichain r (maximals r s) := fun _a ha _b hb hab h =>
   hab <| eq_of_mem_maximals ha hb.1 h
 #align maximals_antichain maximals_antichain
 
-theorem minimals_antichain : IsAntichain r (minimals r s) :=
+lemma minimals_antichain : IsAntichain r (minimals r s) :=
   haveI := IsAntisymm.swap r
   (maximals_antichain _ _).swap
 #align minimals_antichain minimals_antichain
@@ -148,27 +148,27 @@ theorem mem_minimals_iff_forall_ssubset_not_mem (s : Set (Set α)) :
     x ∈ minimals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ⊂ x → y ∉ s :=
   mem_minimals_iff_forall_lt_not_mem' (· ⊂ ·)
 
-theorem mem_minimals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
+lemma mem_minimals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
     x ∈ minimals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y < x → y ∉ s :=
   mem_minimals_iff_forall_lt_not_mem' (· < ·)
 
-theorem mem_maximals_iff_forall_ssubset_not_mem {s : Set (Set α)} :
+lemma mem_maximals_iff_forall_ssubset_not_mem {s : Set (Set α)} :
     x ∈ maximals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x ⊂ y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· ⊂ ·)
 
-theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
+lemma mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
     x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
 -- porting note: new theorem
-theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
+lemma maximals_of_symm [IsSymm α r] : maximals r s = s :=
   sep_eq_self_iff_mem_true.2 <| fun _ _ _ _ => symm
 
 -- porting note: new theorem
-theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
+lemma minimals_of_symm [IsSymm α r] : minimals r s = s :=
   sep_eq_self_iff_mem_true.2 <| fun _ _ _ _ => symm
 
-theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
+lemma maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
   rw [minimals_of_symm, maximals_of_symm]
 #align maximals_eq_minimals maximals_eq_minimals
 
@@ -184,7 +184,7 @@ theorem Set.Subsingleton.minimals_eq (h : s.Subsingleton) : minimals r s = s :=
   h.maximals_eq
 #align set.subsingleton.minimals_eq Set.Subsingleton.minimals_eq
 
-theorem maximals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) :
+lemma maximals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) :
     maximals r₂ s ⊆ maximals r₁ s := fun a ha =>
   ⟨ha.1, fun b hb hab => by
     have := eq_of_mem_maximals ha hb (h _ _ hab)
@@ -192,7 +192,7 @@ theorem maximals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) 
     exact hab⟩
 #align maximals_mono maximals_mono
 
-theorem minimals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) :
+lemma minimals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) :
     minimals r₂ s ⊆ minimals r₁ s := fun a ha =>
   ⟨ha.1, fun b hb hab => by
     have := eq_of_mem_minimals ha hb (h _ _ hab)
@@ -200,30 +200,30 @@ theorem minimals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) 
     exact hab⟩
 #align minimals_mono minimals_mono
 
-theorem maximals_union : maximals r (s ∪ t) ⊆ maximals r s ∪ maximals r t := by
+lemma maximals_union : maximals r (s ∪ t) ⊆ maximals r s ∪ maximals r t := by
   intro a ha
   obtain h | h := ha.1
   · exact Or.inl ⟨h, fun b hb => ha.2 <| Or.inl hb⟩
   · exact Or.inr ⟨h, fun b hb => ha.2 <| Or.inr hb⟩
 #align maximals_union maximals_union
 
-theorem minimals_union : minimals r (s ∪ t) ⊆ minimals r s ∪ minimals r t :=
+lemma minimals_union : minimals r (s ∪ t) ⊆ minimals r s ∪ minimals r t :=
   maximals_union
 #align minimals_union minimals_union
 
-theorem maximals_inter_subset : maximals r s ∩ t ⊆ maximals r (s ∩ t) := fun _a ha =>
+lemma maximals_inter_subset : maximals r s ∩ t ⊆ maximals r (s ∩ t) := fun _a ha =>
   ⟨⟨ha.1.1, ha.2⟩, fun _b hb => ha.1.2 hb.1⟩
 #align maximals_inter_subset maximals_inter_subset
 
-theorem minimals_inter_subset : minimals r s ∩ t ⊆ minimals r (s ∩ t) :=
+lemma minimals_inter_subset : minimals r s ∩ t ⊆ minimals r (s ∩ t) :=
   maximals_inter_subset
 #align minimals_inter_subset minimals_inter_subset
 
-theorem inter_maximals_subset : s ∩ maximals r t ⊆ maximals r (s ∩ t) := fun _a ha =>
+lemma inter_maximals_subset : s ∩ maximals r t ⊆ maximals r (s ∩ t) := fun _a ha =>
   ⟨⟨ha.1, ha.2.1⟩, fun _b hb => ha.2.2 hb.2⟩
 #align inter_maximals_subset inter_maximals_subset
 
-theorem inter_minimals_subset : s ∩ minimals r t ⊆ minimals r (s ∩ t) :=
+lemma inter_minimals_subset : s ∩ minimals r t ⊆ minimals r (s ∩ t) :=
   inter_maximals_subset
 #align inter_minimals_subset inter_minimals_subset
 
@@ -239,12 +239,12 @@ theorem IsAntichain.minimals_eq (h : IsAntichain r s) : minimals r s = s :=
 #align is_antichain.minimals_eq IsAntichain.minimals_eq
 
 @[simp]
-theorem maximals_idem : maximals r (maximals r s) = maximals r s :=
+lemma maximals_idem : maximals r (maximals r s) = maximals r s :=
   (maximals_subset _ _).antisymm fun _a ha => ⟨ha, fun _b hb => ha.2 hb.1⟩
 #align maximals_idem maximals_idem
 
 @[simp]
-theorem minimals_idem : minimals r (minimals r s) = minimals r s :=
+lemma minimals_idem : minimals r (minimals r s) = minimals r s :=
   maximals_idem
 #align minimals_idem minimals_idem
 

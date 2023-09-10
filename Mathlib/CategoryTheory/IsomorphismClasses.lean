@@ -60,7 +60,7 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
       rfl
 #align category_theory.isomorphism_classes CategoryTheory.isomorphismClasses
 
-theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
+lemma Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
     IsIsomorphic X Y ↔ Nonempty (X ⟶ Y) :=
   (Groupoid.isoEquivHom X Y).nonempty_congr
 #align category_theory.groupoid.is_isomorphic_iff_nonempty_hom CategoryTheory.Groupoid.isIsomorphic_iff_nonempty_hom

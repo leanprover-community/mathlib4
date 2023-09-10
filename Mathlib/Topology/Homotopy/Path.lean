@@ -56,7 +56,7 @@ section
 
 variable {p₀ p₁ : Path x₀ x₁}
 
-theorem coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) (⇑) :=
+lemma coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) (⇑) :=
   FunLike.coe_injective
 #align path.homotopy.coe_fn_injective Path.Homotopy.coeFn_injective
 
@@ -276,16 +276,16 @@ theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁)
   h₀.map2 Homotopy.trans h₁
 #align path.homotopic.trans Path.Homotopic.trans
 
-theorem equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
+lemma equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
   ⟨refl, (symm ·), (trans · ·)⟩
 #align path.homotopic.equivalence Path.Homotopic.equivalence
 
-nonrec theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
+nonrec lemma map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
     Homotopic (p.map f.continuous) (q.map f.continuous) :=
   h.map fun F => F.map f
 #align path.homotopic.map Path.Homotopic.map
 
-theorem hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p₀.Homotopic p₁)
+lemma hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p₀.Homotopic p₁)
     (hq : q₀.Homotopic q₁) : (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
   hp.map2 Homotopy.hcomp hq
 #align path.homotopic.hcomp Path.Homotopic.hcomp
@@ -331,7 +331,7 @@ theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuou
 #align path.homotopic.map_lift Path.Homotopic.map_lift
 
 -- Porting note: Type was originally `HEq ⟦p₁⟧ ⟦p₂⟧`
-theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
+lemma hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     @HEq (Path.Homotopic.Quotient _ _) ⟦p₁⟧ (Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
   obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
   obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
@@ -354,7 +354,7 @@ end Path
 /-- Two constant continuous maps with nonempty domain are homotopic if and only if their values are
 joined by a path in the codomain. -/
 @[simp]
-theorem ContinuousMap.homotopic_const_iff [Nonempty Y] :
+lemma ContinuousMap.homotopic_const_iff [Nonempty Y] :
     (ContinuousMap.const Y x₀).Homotopic (ContinuousMap.const Y x₁) ↔ Joined x₀ x₁ := by
   inhabit Y
   refine ⟨fun ⟨H⟩ ↦ ⟨⟨(H.toContinuousMap.comp .prodSwap).curry default, ?_, ?_⟩⟩,

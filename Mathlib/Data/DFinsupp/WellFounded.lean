@@ -65,7 +65,7 @@ variable [∀ i, Zero (α i)] (r : ι → ι → Prop) (s : ∀ i, α i → α i
   `DFinsupp.Lex`. This is used to show that a function `x` is accessible if
   `DFinsupp.single i (x i)` is accessible for each `i` in the (finite) support of `x`
   (`DFinsupp.Lex.acc_of_single`). -/
-theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
+lemma lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
     Fibration (InvImage (GameAdd (DFinsupp.Lex r s) (DFinsupp.Lex r s)) snd) (DFinsupp.Lex r s)
       fun x => piecewise x.2.1 x.2.2 x.1 := by
   rintro ⟨p, x₁, x₂⟩ x ⟨i, hr, hs⟩
@@ -99,7 +99,7 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
 
 variable {r s}
 
-theorem Lex.acc_of_single_erase [DecidableEq ι] {x : Π₀ i, α i} (i : ι)
+lemma Lex.acc_of_single_erase [DecidableEq ι] {x : Π₀ i, α i} (i : ι)
     (hs : Acc (DFinsupp.Lex r s) <| single i (x i)) (hu : Acc (DFinsupp.Lex r s) <| x.erase i) :
     Acc (DFinsupp.Lex r s) x := by
   classical
@@ -110,11 +110,11 @@ theorem Lex.acc_of_single_erase [DecidableEq ι] {x : Π₀ i, α i} (i : ι)
 
 variable (hbot : ∀ ⦃i a⦄, ¬s i a 0)
 
-theorem Lex.acc_zero : Acc (DFinsupp.Lex r s) 0 :=
+lemma Lex.acc_zero : Acc (DFinsupp.Lex r s) 0 :=
   Acc.intro 0 fun _ ⟨_, _, h⟩ => (hbot h).elim
 #align dfinsupp.lex.acc_zero DFinsupp.Lex.acc_zero
 
-theorem Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π₀ i, α i) :
+lemma Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π₀ i, α i) :
     (∀ i ∈ x.support, Acc (DFinsupp.Lex r s) <| single i (x i)) → Acc (DFinsupp.Lex r s) x := by
   generalize ht : x.support = t; revert x
   classical
@@ -130,7 +130,7 @@ theorem Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠
 
 variable (hs : ∀ i, WellFounded (s i))
 
-theorem Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)) i) :
+lemma Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)) i) :
     ∀ a, Acc (DFinsupp.Lex r s) (single i a) := by
   induction' hi with i _ ih
   refine fun a => WellFounded.induction (hs i)
@@ -152,7 +152,7 @@ theorem Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)
     · exact ih _ ⟨h, hij.symm⟩ _
 #align dfinsupp.lex.acc_single DFinsupp.Lex.acc_single
 
-theorem Lex.acc [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π₀ i, α i)
+lemma Lex.acc [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π₀ i, α i)
     (h : ∀ i ∈ x.support, Acc (rᶜ ⊓ (· ≠ ·)) i) : Acc (DFinsupp.Lex r s) x :=
   Lex.acc_of_single hbot x fun i hi => Lex.acc_single hbot hs (h i hi) _
 #align dfinsupp.lex.acc DFinsupp.Lex.acc
@@ -161,7 +161,7 @@ theorem Lex.wellFounded (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded
   ⟨fun x => by classical exact Lex.acc hbot hs x fun i _ => hr.apply i⟩
 #align dfinsupp.lex.well_founded DFinsupp.Lex.wellFounded
 
-theorem Lex.wellFounded' [IsTrichotomous ι r] (hr : WellFounded (Function.swap r)) :
+lemma Lex.wellFounded' [IsTrichotomous ι r] (hr : WellFounded (Function.swap r)) :
     WellFounded (DFinsupp.Lex r s) :=
   Lex.wellFounded hbot hs <| Subrelation.wf
    (fun {i j} h => ((@IsTrichotomous.trichotomous ι r _ i j).resolve_left h.1).resolve_left h.2) hr
@@ -181,7 +181,7 @@ open DFinsupp
 
 variable (r : ι → ι → Prop) {s : ∀ i, α i → α i → Prop}
 
-theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, WellFounded (s i)) :
+lemma Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, WellFounded (s i)) :
     WellFounded (Pi.Lex r (fun {i} ↦ s i)) := by
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert emptyWf.wf
@@ -201,7 +201,7 @@ instance Function.Lex.wellFoundedLT {α} [LinearOrder ι] [Finite ι] [LT α] [W
   Pi.Lex.wellFoundedLT
 #align function.lex.well_founded_lt Function.Lex.wellFoundedLT
 
-theorem DFinsupp.Lex.wellFounded_of_finite [IsStrictTotalOrder ι r] [Finite ι] [∀ i, Zero (α i)]
+lemma DFinsupp.Lex.wellFounded_of_finite [IsStrictTotalOrder ι r] [Finite ι] [∀ i, Zero (α i)]
     (hs : ∀ i, WellFounded (s i)) : WellFounded (DFinsupp.Lex r s) :=
   have := Fintype.ofFinite ι
   InvImage.wf equivFunOnFintype (Pi.Lex.wellFounded r hs)
@@ -212,7 +212,7 @@ instance DFinsupp.Lex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ 
   ⟨DFinsupp.Lex.wellFounded_of_finite (· < ·) fun i => (hwf i).1⟩
 #align dfinsupp.lex.well_founded_lt_of_finite DFinsupp.Lex.wellFoundedLT_of_finite
 
-protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (α i)]
+protected lemma DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (α i)]
     [∀ i, WellFoundedLT (α i)] (hbot : ∀ ⦃i⦄ ⦃a : α i⦄, ¬a < 0) : WellFoundedLT (Π₀ i, α i) :=
   ⟨by
     set β := fun i ↦ Antisymmetrization (α i) (· ≤ ·)

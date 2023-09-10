@@ -72,7 +72,7 @@ protected theorem IsExtreme.refl (A : Set E) : IsExtreme 𝕜 A A :=
 
 variable {𝕜} {A B C : Set E} {x : E}
 
-protected theorem IsExtreme.rfl : IsExtreme 𝕜 A A :=
+protected lemma IsExtreme.rfl : IsExtreme 𝕜 A A :=
   IsExtreme.refl 𝕜 A
 #align is_extreme.rfl IsExtreme.rfl
 
@@ -84,7 +84,7 @@ protected theorem IsExtreme.trans (hAB : IsExtreme 𝕜 A B) (hBC : IsExtreme �
   exact hBC.2 hx₁B hx₂B hxC hx
 #align is_extreme.trans IsExtreme.trans
 
-protected theorem IsExtreme.antisymm : AntiSymmetric (IsExtreme 𝕜 : Set E → Set E → Prop) :=
+protected lemma IsExtreme.antisymm : AntiSymmetric (IsExtreme 𝕜 : Set E → Set E → Prop) :=
   fun _ _ hAB hBA ↦ Subset.antisymm hBA.1 hAB.1
 #align is_extreme.antisymm IsExtreme.antisymm
 
@@ -107,7 +107,7 @@ protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB
   ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.2 (hBA hx₁B) (hBA hx₂B) hxC hx⟩
 #align is_extreme.mono IsExtreme.mono
 
-theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
+lemma isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
   refine' ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
@@ -116,13 +116,13 @@ theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
   exact ⟨fun i ↦ (h i).1, fun i ↦ (h i).2⟩
 #align is_extreme_Inter isExtreme_iInter
 
-theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
+lemma isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂ B ∈ F, B) := by
   haveI := hF.to_subtype
   simpa only [iInter_subtype] using isExtreme_iInter fun i : F ↦ hA _ i.2
 #align is_extreme_bInter isExtreme_biInter
 
-theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
+lemma isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂₀ F) := by
   obtain ⟨B, hB⟩ := hF
   refine' ⟨(sInter_subset_of_mem hB).trans (hAF B hB).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
@@ -131,13 +131,13 @@ theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F,
   exact ⟨fun B hB ↦ (h B hB).1, fun B hB ↦ (h B hB).2⟩
 #align is_extreme_sInter isExtreme_sInter
 
-theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
+lemma mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=
   Iff.rfl
 #align mem_extreme_points mem_extremePoints
 
 /-- x is an extreme point to A iff {x} is an extreme set of A. -/
-theorem mem_extremePoints_iff_extreme_singleton : x ∈ A.extremePoints 𝕜 ↔ IsExtreme 𝕜 A {x} := by
+lemma mem_extremePoints_iff_extreme_singleton : x ∈ A.extremePoints 𝕜 ↔ IsExtreme 𝕜 A {x} := by
   refine' ⟨_, fun hx ↦ ⟨singleton_subset_iff.1 hx.1, fun x₁ hx₁ x₂ hx₂ ↦ hx.2 hx₁ hx₂ rfl⟩⟩
   rintro ⟨hxA, hAx⟩
   use singleton_subset_iff.2 hxA
@@ -145,17 +145,17 @@ theorem mem_extremePoints_iff_extreme_singleton : x ∈ A.extremePoints 𝕜 ↔
   exact hAx hx₁A hx₂A
 #align mem_extreme_points_iff_extreme_singleton mem_extremePoints_iff_extreme_singleton
 
-theorem extremePoints_subset : A.extremePoints 𝕜 ⊆ A :=
+lemma extremePoints_subset : A.extremePoints 𝕜 ⊆ A :=
   fun _ hx ↦ hx.1
 #align extreme_points_subset extremePoints_subset
 
 @[simp]
-theorem extremePoints_empty : (∅ : Set E).extremePoints 𝕜 = ∅ :=
+lemma extremePoints_empty : (∅ : Set E).extremePoints 𝕜 = ∅ :=
   subset_empty_iff.1 extremePoints_subset
 #align extreme_points_empty extremePoints_empty
 
 @[simp]
-theorem extremePoints_singleton : ({x} : Set E).extremePoints 𝕜 = {x} :=
+lemma extremePoints_singleton : ({x} : Set E).extremePoints 𝕜 = {x} :=
   extremePoints_subset.antisymm <|
     singleton_subset_iff.2 ⟨mem_singleton x, fun _ hx₁ _ hx₂ _ ↦ ⟨hx₁, hx₂⟩⟩
 #align extreme_points_singleton extremePoints_singleton
@@ -244,7 +244,7 @@ variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/
-theorem mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
+lemma mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ (x₁) (_ : x₁ ∈ A) (x₂) (_ : x₂ ∈ A), x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x := by
   refine' and_congr_right fun hxA ↦ forall₄_congr fun x₁ h₁ x₂ h₂ ↦ _
   constructor
@@ -273,7 +273,7 @@ theorem Convex.mem_extremePoints_iff_mem_diff_convexHull_diff (hA : Convex 𝕜 
     mem_diff]
 #align convex.mem_extreme_points_iff_mem_diff_convex_hull_diff Convex.mem_extremePoints_iff_mem_diff_convexHull_diff
 
-theorem extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜 ⊆ A := by
+lemma extremePoints_convexHull_subset : (convexHull 𝕜 A).extremePoints 𝕜 ⊆ A := by
   rintro x hx
   rw [(convex_convexHull 𝕜 _).mem_extremePoints_iff_convex_diff] at hx
   by_contra h

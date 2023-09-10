@@ -59,7 +59,7 @@ theorem hyperoperation_recursion (n m k : ℕ) :
 
 -- Interesting hyperoperation lemmas
 @[simp]
-theorem hyperoperation_one : hyperoperation 1 = (· + ·) := by
+lemma hyperoperation_one : hyperoperation 1 = (· + ·) := by
   ext m k
   induction' k with bn bih
   · rw [Nat.add_zero m, hyperoperation]
@@ -68,7 +68,7 @@ theorem hyperoperation_one : hyperoperation 1 = (· + ·) := by
 #align hyperoperation_one hyperoperation_one
 
 @[simp]
-theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
+lemma hyperoperation_two : hyperoperation 2 = (· * ·) := by
   ext m k
   induction' k with bn bih
   · rw [hyperoperation]
@@ -81,7 +81,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
 #align hyperoperation_two hyperoperation_two
 
 @[simp]
-theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) := by
+lemma hyperoperation_three : hyperoperation 3 = (· ^ ·) := by
   ext m k
   induction' k with bn bih
   · rw [hyperoperation_ge_three_eq_one]

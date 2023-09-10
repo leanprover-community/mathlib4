@@ -31,7 +31,7 @@ open Function
 variable {M : Type*} {N : Type*} {G : Type*} {H : Type*}
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
-theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
+lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
   | 0 => by
     rw [pow_zero, h1]
@@ -40,7 +40,7 @@ theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
 #align hom_coe_pow hom_coe_pow
 
 @[to_additive (attr := simp)]
-theorem iterate_map_mul {M F : Type _} [MulOneClass M]
+lemma iterate_map_mul {M F : Type _} [MulOneClass M]
     (f : F) (n : ℕ) (x y : M) [MulHomClass F M M] :
     f^[n] (x * y) = f^[n] x * f^[n] y :=
   Function.Semiconj₂.iterate (map_mul f) n x y
@@ -81,13 +81,13 @@ theorem iterate_map_zpow (f : G →* G) (n : ℕ) (a) (m : ℤ) : f^[n] (a ^ m) 
   Commute.iterate_left (fun x => f.map_zpow x m) n a
 #align monoid_hom.iterate_map_zpow MonoidHom.iterate_map_zpow
 
-theorem coe_pow {M} [CommMonoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+lemma coe_pow {M} [CommMonoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ => rfl) _ _
 #align monoid_hom.coe_pow MonoidHom.coe_pow
 
 end MonoidHom
 
-theorem Monoid.End.coe_pow {M} [Monoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+lemma Monoid.End.coe_pow {M} [Monoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ => rfl) _ _
 #align monoid.End.coe_pow Monoid.End.coe_pow
 
@@ -111,7 +111,7 @@ attribute [to_additive existing (reorder := 5 6)] MonoidHom.iterate_map_zpow
 
 end AddMonoidHom
 
-theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+lemma AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ => rfl) _ _
 #align add_monoid.End.coe_pow AddMonoid.End.coe_pow
 
@@ -125,11 +125,11 @@ theorem coe_pow (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ => rfl) f n
 #align ring_hom.coe_pow RingHom.coe_pow
 
-theorem iterate_map_one : f^[n] 1 = 1 :=
+lemma iterate_map_one : f^[n] 1 = 1 :=
   f.toMonoidHom.iterate_map_one n
 #align ring_hom.iterate_map_one RingHom.iterate_map_one
 
-theorem iterate_map_zero : f^[n] 0 = 0 :=
+lemma iterate_map_zero : f^[n] 0 = 0 :=
   f.toAddMonoidHom.iterate_map_zero n
 #align ring_hom.iterate_map_zero RingHom.iterate_map_zero
 
@@ -145,11 +145,11 @@ end Semiring
 
 variable {R : Type*} [Ring R] (f : R →+* R) (n : ℕ) (x y : R)
 
-theorem iterate_map_sub : f^[n] (x - y) = f^[n] x - f^[n] y :=
+lemma iterate_map_sub : f^[n] (x - y) = f^[n] x - f^[n] y :=
   f.toAddMonoidHom.iterate_map_sub n x y
 #align ring_hom.iterate_map_sub RingHom.iterate_map_sub
 
-theorem iterate_map_neg : f^[n] (-x) = -f^[n] x :=
+lemma iterate_map_neg : f^[n] (-x) = -f^[n] x :=
   f.toAddMonoidHom.iterate_map_neg n x
 #align ring_hom.iterate_map_neg RingHom.iterate_map_neg
 
@@ -165,7 +165,7 @@ section Monoid
 variable [Monoid G] (a : G) (n : ℕ)
 
 @[to_additive (attr := simp)]
-theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
+lemma smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
     Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
     fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ, mul_smul]
@@ -173,19 +173,19 @@ theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·)
 #align vadd_iterate vadd_iterate
 
 @[to_additive (attr := simp)]
-theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
+lemma mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
   smul_iterate a n
 #align mul_left_iterate mul_left_iterate
 #align add_left_iterate add_left_iterate
 
 @[to_additive (attr := simp)]
-theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
+lemma mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
   smul_iterate (MulOpposite.op a) n
 #align mul_right_iterate mul_right_iterate
 #align add_right_iterate add_right_iterate
 
 @[to_additive]
-theorem mul_right_iterate_apply_one : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
+lemma mul_right_iterate_apply_one : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
 #align mul_right_iterate_apply_one mul_right_iterate_apply_one
 #align add_right_iterate_apply_zero add_right_iterate_apply_zero
 

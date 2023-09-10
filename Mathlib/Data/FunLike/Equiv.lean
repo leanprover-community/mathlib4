@@ -35,7 +35,7 @@ instance : EquivLike (MyIso A B) A (λ _, B) :=
 /-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
 instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
 
-@[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
+@[ext] lemma ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -149,7 +149,7 @@ namespace EquivLike
 
 variable {E F α β γ : Sort*} [iE : EquivLike E α β] [iF : EquivLike F β γ]
 
-theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
+lemma inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
 #align equiv_like.inv_injective EquivLike.inv_injective
 

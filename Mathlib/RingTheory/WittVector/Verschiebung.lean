@@ -80,7 +80,7 @@ def verschiebungPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 #align witt_vector.verschiebung_poly WittVector.verschiebungPoly
 
 @[simp]
-theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
+lemma verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
   rfl
 #align witt_vector.verschiebung_poly_zero WittVector.verschiebungPoly_zero
 
@@ -131,7 +131,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
 
 /-- `WittVector.verschiebung` is a polynomial function. -/
 @[is_poly]
-theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :=
+lemma verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :=
   verschiebungFun_isPoly p
 #align witt_vector.verschiebung_is_poly WittVector.verschiebung_isPoly
 

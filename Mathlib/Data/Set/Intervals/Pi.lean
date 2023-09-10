@@ -30,28 +30,28 @@ section PiPreorder
 variable [∀ i, Preorder (α i)] (x y : ∀ i, α i)
 
 @[simp]
-theorem pi_univ_Ici : (pi univ fun i ↦ Ici (x i)) = Ici x :=
+lemma pi_univ_Ici : (pi univ fun i ↦ Ici (x i)) = Ici x :=
   ext fun y ↦ by simp [Pi.le_def]
 #align set.pi_univ_Ici Set.pi_univ_Ici
 
 @[simp]
-theorem pi_univ_Iic : (pi univ fun i ↦ Iic (x i)) = Iic x :=
+lemma pi_univ_Iic : (pi univ fun i ↦ Iic (x i)) = Iic x :=
   ext fun y ↦ by simp [Pi.le_def]
 #align set.pi_univ_Iic Set.pi_univ_Iic
 
 @[simp]
-theorem pi_univ_Icc : (pi univ fun i ↦ Icc (x i) (y i)) = Icc x y :=
+lemma pi_univ_Icc : (pi univ fun i ↦ Icc (x i) (y i)) = Icc x y :=
   ext fun y ↦ by simp [Pi.le_def, forall_and]
 #align set.pi_univ_Icc Set.pi_univ_Icc
 
-theorem piecewise_mem_Icc {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
+lemma piecewise_mem_Icc {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
     (h₁ : ∀ i ∈ s, f₁ i ∈ Icc (g₁ i) (g₂ i)) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ∈ Icc (g₁ i) (g₂ i)) :
     s.piecewise f₁ f₂ ∈ Icc g₁ g₂ :=
   ⟨le_piecewise (fun i hi ↦ (h₁ i hi).1) fun i hi ↦ (h₂ i hi).1,
     piecewise_le (fun i hi ↦ (h₁ i hi).2) fun i hi ↦ (h₂ i hi).2⟩
 #align set.piecewise_mem_Icc Set.piecewise_mem_Icc
 
-theorem piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
+lemma piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
     (h₁ : f₁ ∈ Icc g₁ g₂) (h₂ : f₂ ∈ Icc g₁ g₂) : s.piecewise f₁ f₂ ∈ Icc g₁ g₂ :=
   piecewise_mem_Icc (fun _ _ ↦ ⟨h₁.1 _, h₁.2 _⟩) fun _ _ ↦ ⟨h₂.1 _, h₂.2 _⟩
 #align set.piecewise_mem_Icc' Set.piecewise_mem_Icc'
@@ -60,24 +60,24 @@ section Nonempty
 
 variable [Nonempty ι]
 
-theorem pi_univ_Ioi_subset : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
+lemma pi_univ_Ioi_subset : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
     (Nonempty.elim ‹Nonempty ι›) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
 #align set.pi_univ_Ioi_subset Set.pi_univ_Ioi_subset
 
-theorem pi_univ_Iio_subset : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
+lemma pi_univ_Iio_subset : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
   @pi_univ_Ioi_subset ι (fun i ↦ (α i)ᵒᵈ) _ x _
 #align set.pi_univ_Iio_subset Set.pi_univ_Iio_subset
 
-theorem pi_univ_Ioo_subset : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
+lemma pi_univ_Ioo_subset : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 #align set.pi_univ_Ioo_subset Set.pi_univ_Ioo_subset
 
-theorem pi_univ_Ioc_subset : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
+lemma pi_univ_Ioc_subset : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, fun i ↦ (hx i trivial).2⟩
 #align set.pi_univ_Ioc_subset Set.pi_univ_Ioc_subset
 
-theorem pi_univ_Ico_subset : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
+lemma pi_univ_Ico_subset : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
   ⟨fun i ↦ (hx i trivial).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 #align set.pi_univ_Ico_subset Set.pi_univ_Ico_subset
 
@@ -87,7 +87,7 @@ variable [DecidableEq ι]
 
 open Function (update)
 
-theorem pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : x i₀ ≤ m) :
+lemma pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : x i₀ ≤ m) :
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) =
       { z | m < z i₀ } ∩ pi univ fun i ↦ Ioc (x i) (y i) := by
   have : Ioc m (y i₀) = Ioi m ∩ Ioc (x i₀) (y i₀) := by
@@ -98,7 +98,7 @@ theorem pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (h
   rfl
 #align set.pi_univ_Ioc_update_left Set.pi_univ_Ioc_update_left
 
-theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : m ≤ y i₀) :
+lemma pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : m ≤ y i₀) :
     (pi univ fun i ↦ Ioc (x i) (update y i₀ m i)) =
       { z | z i₀ ≤ m } ∩ pi univ fun i ↦ Ioc (x i) (y i) := by
   have : Ioc (x i₀) m = Iic m ∩ Ioc (x i₀) (y i₀) := by
@@ -109,7 +109,7 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
   rfl
 #align set.pi_univ_Ioc_update_right Set.pi_univ_Ioc_update_right
 
-theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
+lemma disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]

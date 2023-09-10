@@ -84,7 +84,7 @@ an even number of `U`s and `z` is any `Miustr`.
 Any number of successive occurrences of `"UU"` can be removed from the end of a `Derivable` `Miustr`
 to produce another `Derivable` `Miustr`.
 -/
-theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
+lemma der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
     (h : Derivable (z ++ ↑(replicate (m * 2) U))) : Derivable z := by
   induction' m with k hk
   · revert h
@@ -174,7 +174,7 @@ theorem le_pow2_and_pow2_eq_mod3 (a : ℕ) (h : a % 3 = 1 ∨ a % 3 = 2) :
 
 end Arithmetic
 
-theorem replicate_pow_minus_append {m : ℕ} :
+lemma replicate_pow_minus_append {m : ℕ} :
     M :: replicate (2 ^ m - 1) I ++ [I] = M :: replicate (2 ^ m) I := by
   change M :: replicate (2 ^ m - 1) I ++ replicate 1 I = M :: replicate (2 ^ m) I
   rw [cons_append, ← replicate_add, tsub_add_cancel_of_le (one_le_pow' m 1)]
@@ -254,7 +254,7 @@ conditions under which `count I ys = length ys`.
 
 /-- If an `Miustr` has a zero `count U` and contains no `M`, then its `count I` is its length.
 -/
-theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
+lemma count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
     (hm : M ∉ ys) : count I ys = length ys := by
   induction' ys with x xs hxs
   · rfl
@@ -294,7 +294,7 @@ relate to `count U`.
 -/
 
 
-theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
+lemma mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction' xs with z zs hzs
   · exfalso; rw [count] at h; contradiction
   · rw [mem_cons]
@@ -303,7 +303,7 @@ theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k)
 set_option linter.uppercaseLean3 false in
 #align miu.mem_of_count_U_eq_succ Miu.mem_of_count_U_eq_succ
 
-theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
+lemma eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
   mem_split (mem_of_count_U_eq_succ h)
 set_option linter.uppercaseLean3 false in
@@ -339,7 +339,7 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
 
 /-- `der_of_decstr` states that `Derivable en` follows from `Decstr en`.
 -/
-theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
+lemma der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
   /- The next three lines have the effect of introducing `count U en` as a variable that can be used
    for induction -/
   have hu : ∃ n, count U en = n := exists_eq'

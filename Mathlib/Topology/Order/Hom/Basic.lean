@@ -110,11 +110,11 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
 -- porting note: new lemma
 @[simp] theorem coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
 
-theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl
+lemma toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl
 #align continuous_order_hom.to_fun_eq_coe ContinuousOrderHom.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : α →Co β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : α →Co β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align continuous_order_hom.ext ContinuousOrderHom.ext
 
@@ -144,7 +144,7 @@ instance : Inhabited (α →Co α) :=
   ⟨ContinuousOrderHom.id _⟩
 
 @[simp]
-theorem coe_id : ⇑(ContinuousOrderHom.id α) = id :=
+lemma coe_id : ⇑(ContinuousOrderHom.id α) = id :=
   rfl
 #align continuous_order_hom.coe_id ContinuousOrderHom.coe_id
 
@@ -187,13 +187,13 @@ theorem id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
 #align continuous_order_hom.id_comp ContinuousOrderHom.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_order_hom.cancel_right ContinuousOrderHom.cancel_right
 
 @[simp]
-theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
+lemma cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_order_hom.cancel_left ContinuousOrderHom.cancel_left

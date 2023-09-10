@@ -94,7 +94,7 @@ attribute [instance] quiverGenerators
 /-- Two functors from a free groupoid to a group are equal when they agree on the generating
 quiver. -/
 @[ext]
-theorem ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group X]
+lemma ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group X]
     (f g : G ⥤ CategoryTheory.SingleObj X) (h : ∀ (a b) (e : a ⟶ b), f.map (of e) = g.map (of e)) :
     f = g :=
   let ⟨_, _, u⟩ := @unique_lift G _ _ X _ fun (a b : Generators G) (e : a ⟶ b) => g.map (of e)
@@ -175,12 +175,12 @@ def treeHom (a : G) : root' T ⟶ a :=
 #align is_free_groupoid.spanning_tree.tree_hom IsFreeGroupoid.SpanningTree.treeHom
 
 /-- Any path to `a` gives `treeHom T a`, since paths in the tree are unique. -/
-theorem treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p := by
+lemma treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p := by
   rw [treeHom, Unique.default_eq]
 #align is_free_groupoid.spanning_tree.tree_hom_eq IsFreeGroupoid.SpanningTree.treeHom_eq
 
 @[simp]
-theorem treeHom_root : treeHom T (root' T) = 𝟙 _ :=
+lemma treeHom_root : treeHom T (root' T) = 𝟙 _ :=
   -- this should just be `treeHom_eq T Path.nil`, but Lean treats `homOfPath` with suspicion.
     _root_.trans
     (treeHom_eq T Path.nil) rfl
@@ -192,7 +192,7 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
 #align is_free_groupoid.spanning_tree.loop_of_hom IsFreeGroupoid.SpanningTree.loopOfHom
 
 /-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
-theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
+lemma loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
   cases' H with H H
@@ -272,7 +272,7 @@ private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
 
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag
 from `a` to `b` in the generating quiver. -/
-theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G} :
+lemma path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G} :
     Nonempty (a ⟶ b) → Nonempty (Path (symgen a) (symgen b)) := by
   rintro ⟨p⟩
   rw [← @WeaklyConnectedComponent.eq (Generators G), eq_comm, ← FreeGroup.of_injective.eq_iff, ←

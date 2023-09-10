@@ -219,12 +219,12 @@ theorem derivWithin.neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
   simp only [derivWithin, fderivWithin_neg hxs, ContinuousLinearMap.neg_apply]
 #align deriv_within.neg derivWithin.neg
 
-theorem deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
+lemma deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
   simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
 #align deriv.neg deriv.neg
 
 @[simp]
-theorem deriv.neg' : (deriv fun y => -f y) = fun x => -deriv f x :=
+lemma deriv.neg' : (deriv fun y => -f y) = fun x => -deriv f x :=
   funext fun _ => deriv.neg
 #align deriv.neg' deriv.neg'
 
@@ -236,37 +236,37 @@ section Neg2
 
 variable (s x L)
 
-theorem hasDerivAtFilter_neg : HasDerivAtFilter Neg.neg (-1) x L :=
+lemma hasDerivAtFilter_neg : HasDerivAtFilter Neg.neg (-1) x L :=
   HasDerivAtFilter.neg <| hasDerivAtFilter_id _ _
 #align has_deriv_at_filter_neg hasDerivAtFilter_neg
 
-theorem hasDerivWithinAt_neg : HasDerivWithinAt Neg.neg (-1) s x :=
+lemma hasDerivWithinAt_neg : HasDerivWithinAt Neg.neg (-1) s x :=
   hasDerivAtFilter_neg _ _
 #align has_deriv_within_at_neg hasDerivWithinAt_neg
 
-theorem hasDerivAt_neg : HasDerivAt Neg.neg (-1) x :=
+lemma hasDerivAt_neg : HasDerivAt Neg.neg (-1) x :=
   hasDerivAtFilter_neg _ _
 #align has_deriv_at_neg hasDerivAt_neg
 
-theorem hasDerivAt_neg' : HasDerivAt (fun x => -x) (-1) x :=
+lemma hasDerivAt_neg' : HasDerivAt (fun x => -x) (-1) x :=
   hasDerivAtFilter_neg _ _
 #align has_deriv_at_neg' hasDerivAt_neg'
 
-theorem hasStrictDerivAt_neg : HasStrictDerivAt Neg.neg (-1) x :=
+lemma hasStrictDerivAt_neg : HasStrictDerivAt Neg.neg (-1) x :=
   HasStrictDerivAt.neg <| hasStrictDerivAt_id _
 #align has_strict_deriv_at_neg hasStrictDerivAt_neg
 
-theorem deriv_neg : deriv Neg.neg x = -1 :=
+lemma deriv_neg : deriv Neg.neg x = -1 :=
   HasDerivAt.deriv (hasDerivAt_neg x)
 #align deriv_neg deriv_neg
 
 @[simp]
-theorem deriv_neg' : deriv (Neg.neg : 𝕜 → 𝕜) = fun _ => -1 :=
+lemma deriv_neg' : deriv (Neg.neg : 𝕜 → 𝕜) = fun _ => -1 :=
   funext deriv_neg
 #align deriv_neg' deriv_neg'
 
 @[simp]
-theorem deriv_neg'' : deriv (fun x : 𝕜 => -x) x = -1 :=
+lemma deriv_neg'' : deriv (fun x : 𝕜 => -x) x = -1 :=
   deriv_neg x
 #align deriv_neg'' deriv_neg''
 
@@ -274,11 +274,11 @@ theorem derivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin Neg.ne
   (hasDerivWithinAt_neg x s).derivWithin hxs
 #align deriv_within_neg derivWithin_neg
 
-theorem differentiable_neg : Differentiable 𝕜 (Neg.neg : 𝕜 → 𝕜) :=
+lemma differentiable_neg : Differentiable 𝕜 (Neg.neg : 𝕜 → 𝕜) :=
   Differentiable.neg differentiable_id
 #align differentiable_neg differentiable_neg
 
-theorem differentiableOn_neg : DifferentiableOn 𝕜 (Neg.neg : 𝕜 → 𝕜) s :=
+lemma differentiableOn_neg : DifferentiableOn 𝕜 (Neg.neg : 𝕜 → 𝕜) s :=
   DifferentiableOn.neg differentiableOn_id
 #align differentiable_on_neg differentiableOn_neg
 

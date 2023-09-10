@@ -63,7 +63,7 @@ def toNat : WType Natβ → ℕ
   | WType.mk Natα.succ f => (f ()).toNat.succ
 #align W_type.to_nat WType.toNat
 
-theorem leftInverse_nat : Function.LeftInverse ofNat toNat
+lemma leftInverse_nat : Function.LeftInverse ofNat toNat
   | WType.mk Natα.zero f => by
     rw [toNat, ofNat]
     congr
@@ -74,7 +74,7 @@ theorem leftInverse_nat : Function.LeftInverse ofNat toNat
     rfl
 #align W_type.left_inv_nat WType.leftInverse_nat
 
-theorem rightInverse_nat : Function.RightInverse ofNat toNat
+lemma rightInverse_nat : Function.RightInverse ofNat toNat
   | Nat.zero => rfl
   | Nat.succ n => by rw [ofNat, toNat, rightInverse_nat n]
 #align W_type.right_inv_nat WType.rightInverse_nat
@@ -160,7 +160,7 @@ def toList : WType (Listβ γ) → List γ
   | WType.mk (Listα.cons hd) f => hd :: (f PUnit.unit).toList
 #align W_type.to_list WType.toList
 
-theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
+lemma leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
   | WType.mk Listα.nil f => by
     simp only [toList, ofList, mk.injEq, heq_eq_eq, true_and]
     ext x
@@ -170,7 +170,7 @@ theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
     rfl
 #align W_type.left_inv_list WType.leftInverse_list
 
-theorem rightInverse_list : Function.RightInverse (ofList γ) (toList _)
+lemma rightInverse_list : Function.RightInverse (ofList γ) (toList _)
   | List.nil => rfl
   | List.cons hd tl => by simp only [toList, rightInverse_list tl]
 #align W_type.right_inv_list WType.rightInverse_list

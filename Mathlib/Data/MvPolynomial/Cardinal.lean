@@ -31,18 +31,18 @@ section TwoUniverses
 variable {σ : Type u} {R : Type v} [CommSemiring R]
 
 @[simp]
-theorem cardinal_mk_eq_max_lift [Nonempty σ] [Nontrivial R] :
+lemma cardinal_mk_eq_max_lift [Nonempty σ] [Nontrivial R] :
     #(MvPolynomial σ R) = max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ :=
   (mk_finsupp_lift_of_infinite _ R).trans <| by
     rw [mk_finsupp_nat, max_assoc, lift_max, lift_aleph0, max_comm]
 #align mv_polynomial.cardinal_mk_eq_max_lift MvPolynomial.cardinal_mk_eq_max_lift
 
 @[simp]
-theorem cardinal_mk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = Cardinal.lift.{u} #R :=
+lemma cardinal_mk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = Cardinal.lift.{u} #R :=
   ((isEmptyRingEquiv R σ).toEquiv.trans Equiv.ulift.{u}.symm).cardinal_eq
 #align mv_polynomial.cardinal_mk_eq_lift MvPolynomial.cardinal_mk_eq_lift
 
-theorem cardinal_lift_mk_le_max {σ : Type u} {R : Type v} [CommSemiring R] : #(MvPolynomial σ R) ≤
+lemma cardinal_lift_mk_le_max {σ : Type u} {R : Type v} [CommSemiring R] : #(MvPolynomial σ R) ≤
     max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ := by
   cases subsingleton_or_nontrivial R
   · exact (mk_eq_one _).trans_le (le_max_of_le_right one_le_aleph0)
@@ -55,13 +55,13 @@ end TwoUniverses
 
 variable {σ R : Type u} [CommSemiring R]
 
-theorem cardinal_mk_eq_max [Nonempty σ] [Nontrivial R] :
+lemma cardinal_mk_eq_max [Nonempty σ] [Nontrivial R] :
     #(MvPolynomial σ R) = max (max #R #σ) ℵ₀ := by simp
 #align mv_polynomial.cardinal_mk_eq_max MvPolynomial.cardinal_mk_eq_max
 
 /-- The cardinality of the multivariate polynomial ring, `MvPolynomial σ R` is at most the maximum
 of `#R`, `#σ` and `ℵ₀` -/
-theorem cardinal_mk_le_max : #(MvPolynomial σ R) ≤ max (max #R #σ) ℵ₀ :=
+lemma cardinal_mk_le_max : #(MvPolynomial σ R) ≤ max (max #R #σ) ℵ₀ :=
   cardinal_lift_mk_le_max.trans <| by rw [lift_id, lift_id]
 #align mv_polynomial.cardinal_mk_le_max MvPolynomial.cardinal_mk_le_max
 

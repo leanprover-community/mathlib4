@@ -46,7 +46,7 @@ theorem C_smul_derivation_apply (D : Derivation R R[X] A) (a : R) (f : R[X]) :
   rw [this, C_mul', D.map_smul]
 
 @[ext]
-theorem derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
+lemma derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) : D₁ = D₂ :=
   Derivation.ext fun f => Derivation.eqOn_adjoin (Set.eqOn_singleton.2 h) <| by
     simp only [adjoin_X, Algebra.coe_top, Set.mem_univ]
 

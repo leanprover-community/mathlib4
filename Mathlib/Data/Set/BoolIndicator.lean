@@ -34,11 +34,11 @@ theorem not_mem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = fal
   split_ifs with h <;> simp [h]
 #align set.not_mem_iff_bool_indicator Set.not_mem_iff_boolIndicator
 
-theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
+lemma preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
   ext fun x ↦ (s.mem_iff_boolIndicator x).symm
 #align set.preimage_bool_indicator_true Set.preimage_boolIndicator_true
 
-theorem preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
+lemma preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
   ext fun x ↦ (s.not_mem_iff_boolIndicator x).symm
 #align set.preimage_bool_indicator_false Set.preimage_boolIndicator_false
 

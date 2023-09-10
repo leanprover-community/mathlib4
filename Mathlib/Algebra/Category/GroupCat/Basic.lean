@@ -146,7 +146,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddGroupCat.ofHom
 
 @[to_additive (attr := simp)]
-theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
+lemma ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -320,7 +320,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
-theorem ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
+lemma ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -347,18 +347,18 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom AddCommGroupCat.asHom
 
 @[simp]
-theorem asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) : (asHom g) i = i • g :=
+lemma asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) : (asHom g) i = i • g :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom_apply AddCommGroupCat.asHom_apply
 
-theorem asHom_injective {G : AddCommGroupCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
+lemma asHom_injective {G : AddCommGroupCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
   convert congr_arg (fun k : AddCommGroupCat.of ℤ ⟶ G => (k : ℤ → G) (1 : ℤ)) w <;> simp
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom_injective AddCommGroupCat.asHom_injective
 
 @[ext]
-theorem int_hom_ext {G : AddCommGroupCat.{0}} (f g : AddCommGroupCat.of ℤ ⟶ G)
+lemma int_hom_ext {G : AddCommGroupCat.{0}} (f g : AddCommGroupCat.of ℤ ⟶ G)
     (w : f (1 : ℤ) = g (1 : ℤ)) : f = g :=
   @AddMonoidHom.ext_int G _ f g w
 set_option linter.uppercaseLean3 false in
@@ -366,7 +366,7 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO: this argument should be generalised to the situation where
 -- the forgetful functor is representable.
-theorem injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
+lemma injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
   have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0

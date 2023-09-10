@@ -86,7 +86,7 @@ def invariants : Submodule k V where
 theorem mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v := by rfl
 #align representation.mem_invariants Representation.mem_invariants
 
-theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixedPoints (ρ g) := by
+lemma invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixedPoints (ρ g) := by
   ext; simp [Function.IsFixedPt]
 #align representation.invariants_eq_inter Representation.invariants_eq_inter
 
@@ -113,7 +113,7 @@ theorem averageMap_id (v : V) (hv : v ∈ invariants ρ) : averageMap ρ v = v :
   simp [average, map_sum, hv, Finset.card_univ, nsmul_eq_smul_cast k _ v, smul_smul]
 #align representation.average_map_id Representation.averageMap_id
 
-theorem isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
+lemma isProj_averageMap : LinearMap.IsProj ρ.invariants ρ.averageMap :=
   ⟨ρ.averageMap_invariant, ρ.averageMap_id⟩
 #align representation.is_proj_average_map Representation.isProj_averageMap
 
@@ -129,7 +129,7 @@ section Rep
 
 variable {k : Type u} [CommRing k] {G : GroupCat.{u}}
 
-theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
+lemma mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
   erw [← ρAut_apply_inv]

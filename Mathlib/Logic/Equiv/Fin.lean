@@ -54,7 +54,7 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1
 #align pi_fin_two_equiv_apply piFinTwoEquiv_apply
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
+lemma Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
       Set.pi Set.univ (Fin.cons s <| Fin.cons t finZeroElim) := by
   ext f
@@ -62,7 +62,7 @@ theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t :
 #align fin.preimage_apply_01_prod Fin.preimage_apply_01_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
+lemma Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
     (fun f : Fin 2 → α => (f 0, f 1)) ⁻¹' s ×ˢ t = Set.pi Set.univ ![s, t] :=
   @Fin.preimage_apply_01_prod (fun _ => α) s t
 #align fin.preimage_apply_01_prod' Fin.preimage_apply_01_prod'
@@ -144,12 +144,12 @@ theorem finSuccEquiv'_succAbove (i : Fin (n + 1)) (j : Fin n) :
   @Fin.insertNth_apply_succAbove n (fun _ => Option (Fin n)) i _ _ _
 #align fin_succ_equiv'_succ_above finSuccEquiv'_succAbove
 
-theorem finSuccEquiv'_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
+lemma finSuccEquiv'_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i) (Fin.castSucc m) = m := by
   rw [← Fin.succAbove_below _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_below finSuccEquiv'_below
 
-theorem finSuccEquiv'_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
+lemma finSuccEquiv'_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
     (finSuccEquiv' i) m.succ = some m := by
   rw [← Fin.succAbove_above _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_above finSuccEquiv'_above
@@ -165,22 +165,22 @@ theorem finSuccEquiv'_symm_some (i : Fin (n + 1)) (j : Fin n) :
   rfl
 #align fin_succ_equiv'_symm_some finSuccEquiv'_symm_some
 
-theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
+lemma finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i).symm (some m) = Fin.castSucc m :=
   Fin.succAbove_below i m h
 #align fin_succ_equiv'_symm_some_below finSuccEquiv'_symm_some_below
 
-theorem finSuccEquiv'_symm_some_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
+lemma finSuccEquiv'_symm_some_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
     (finSuccEquiv' i).symm (some m) = m.succ :=
   Fin.succAbove_above i m h
 #align fin_succ_equiv'_symm_some_above finSuccEquiv'_symm_some_above
 
-theorem finSuccEquiv'_symm_coe_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
+lemma finSuccEquiv'_symm_coe_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i).symm m = Fin.castSucc m :=
   finSuccEquiv'_symm_some_below h
 #align fin_succ_equiv'_symm_coe_below finSuccEquiv'_symm_coe_below
 
-theorem finSuccEquiv'_symm_coe_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
+lemma finSuccEquiv'_symm_coe_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
     (finSuccEquiv' i).symm m = m.succ :=
   finSuccEquiv'_symm_some_above h
 #align fin_succ_equiv'_symm_coe_above finSuccEquiv'_symm_coe_above
@@ -193,7 +193,7 @@ def finSuccEquiv (n : ℕ) : Fin (n + 1) ≃ Option (Fin n) :=
 #align fin_succ_equiv finSuccEquiv
 
 @[simp]
-theorem finSuccEquiv_zero : (finSuccEquiv n) 0 = none :=
+lemma finSuccEquiv_zero : (finSuccEquiv n) 0 = none :=
   rfl
 #align fin_succ_equiv_zero finSuccEquiv_zero
 
@@ -203,7 +203,7 @@ theorem finSuccEquiv_succ (m : Fin n) : (finSuccEquiv n) m.succ = some m :=
 #align fin_succ_equiv_succ finSuccEquiv_succ
 
 @[simp]
-theorem finSuccEquiv_symm_none : (finSuccEquiv n).symm none = 0 :=
+lemma finSuccEquiv_symm_none : (finSuccEquiv n).symm none = 0 :=
   finSuccEquiv'_symm_none _
 #align fin_succ_equiv_symm_none finSuccEquiv_symm_none
 
@@ -214,7 +214,7 @@ theorem finSuccEquiv_symm_some (m : Fin n) : (finSuccEquiv n).symm (some m) = m.
 #align fin_succ_equiv_symm_coe finSuccEquiv_symm_some
 
 /-- The equiv version of `Fin.predAbove_zero`. -/
-theorem finSuccEquiv'_zero : finSuccEquiv' (0 : Fin (n + 1)) = finSuccEquiv n :=
+lemma finSuccEquiv'_zero : finSuccEquiv' (0 : Fin (n + 1)) = finSuccEquiv n :=
   rfl
 #align fin_succ_equiv'_zero finSuccEquiv'_zero
 
@@ -222,14 +222,14 @@ theorem finSuccEquiv'_last_apply_castSucc (i : Fin n) :
     finSuccEquiv' (Fin.last n) (Fin.castSucc i) = i := by
   rw [← Fin.succAbove_last, finSuccEquiv'_succAbove]
 
-theorem finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
+lemma finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
     finSuccEquiv' (Fin.last n) i = Fin.castLT i (Fin.val_lt_last h) := by
   rcases Fin.exists_castSucc_eq.2 h with ⟨i, rfl⟩
   rw [finSuccEquiv'_last_apply_castSucc]
   rfl
 #align fin_succ_equiv'_last_apply finSuccEquiv'_last_apply
 
-theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
+lemma finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
     finSuccEquiv' i j = (i.castLT (Fin.val_lt_last hi)).predAbove j := by
   rcases Fin.exists_succAbove_eq hj with ⟨j, rfl⟩
   rcases Fin.exists_castSucc_eq.2 hi with ⟨i, rfl⟩
@@ -253,7 +253,7 @@ theorem finSuccAboveEquiv_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.la
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_last_apply x.property
 #align fin_succ_above_equiv_symm_apply_last finSuccAboveEquiv_symm_apply_last
 
-theorem finSuccAboveEquiv_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
+lemma finSuccAboveEquiv_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :
     (finSuccAboveEquiv p).symm x = (p.castLT (Fin.val_lt_last h)).predAbove x := by
   rw [← Option.some_inj]
@@ -271,7 +271,7 @@ theorem finSuccEquivLast_castSucc (i : Fin n) : finSuccEquivLast (Fin.castSucc i
 #align fin_succ_equiv_last_cast_succ finSuccEquivLast_castSucc
 
 @[simp]
-theorem finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
+lemma finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
   simp [finSuccEquivLast]
 #align fin_succ_equiv_last_last finSuccEquivLast_last
 
@@ -282,7 +282,7 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 #align fin_succ_equiv_last_symm_some finSuccEquivLast_symm_some
 #align fin_succ_equiv_last_symm_coe finSuccEquivLast_symm_some
 
-@[simp] theorem finSuccEquivLast_symm_none : finSuccEquivLast.symm none = Fin.last n :=
+@[simp] lemma finSuccEquivLast_symm_none : finSuccEquivLast.symm none = Fin.last n :=
   finSuccEquiv'_symm_none _
 #align fin_succ_equiv_last_symm_none finSuccEquivLast_symm_none
 
@@ -348,7 +348,7 @@ theorem finSumFinEquiv_symm_apply_natAdd (x : Fin n) :
 #align fin_sum_fin_equiv_symm_apply_nat_add finSumFinEquiv_symm_apply_natAdd
 
 @[simp]
-theorem finSumFinEquiv_symm_last : finSumFinEquiv.symm (Fin.last n) = Sum.inr 0 :=
+lemma finSumFinEquiv_symm_last : finSumFinEquiv.symm (Fin.last n) = Sum.inr 0 :=
   finSumFinEquiv_symm_apply_natAdd 0
 #align fin_sum_fin_equiv_symm_last finSumFinEquiv_symm_last
 
@@ -368,14 +368,14 @@ theorem finAddFlip_apply_natAdd (k : Fin n) (m : ℕ) :
 #align fin_add_flip_apply_nat_add finAddFlip_apply_natAdd
 
 @[simp]
-theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right k m n h)
+lemma finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right k m n h)
     (hnk : n + k < n + m := add_lt_add_left h n) :
     finAddFlip (⟨k, hk⟩ : Fin (m + n)) = ⟨n + k, hnk⟩ := by
   convert finAddFlip_apply_castAdd ⟨k, h⟩ n
 #align fin_add_flip_apply_mk_left finAddFlip_apply_mk_left
 
 @[simp]
-theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
+lemma finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
     finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, tsub_le_self.trans_lt <| add_comm m n ▸ h₂⟩ := by
   convert @finAddFlip_apply_natAdd n ⟨k - m, (tsub_lt_iff_right h₁).2 ?_⟩ m
   · simp [add_tsub_cancel_of_le h₁]
@@ -393,24 +393,24 @@ def finRotate : ∀ n, Equiv.Perm (Fin n)
 
 lemma finRotate_succ (n : ℕ) : finRotate (n + 1) = finAddFlip.trans (finCongr (add_comm 1 n)) := rfl
 
-theorem finRotate_of_lt {k : ℕ} (h : k < n) :
+lemma finRotate_of_lt {k : ℕ} (h : k < n) :
     finRotate (n + 1) ⟨k, h.trans_le n.le_succ⟩ = ⟨k + 1, Nat.succ_lt_succ h⟩ := by
   ext
   dsimp [finRotate_succ]
   simp [finAddFlip_apply_mk_left h, add_comm]
 #align fin_rotate_of_lt finRotate_of_lt
 
-theorem finRotate_last' : finRotate (n + 1) ⟨n, lt_add_one _⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
+lemma finRotate_last' : finRotate (n + 1) ⟨n, lt_add_one _⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
   dsimp [finRotate_succ]
   rw [finAddFlip_apply_mk_right le_rfl]
   simp
 #align fin_rotate_last' finRotate_last'
 
-theorem finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
+lemma finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
   finRotate_last'
 #align fin_rotate_last finRotate_last
 
-theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
+lemma Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
     @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
   ext ⟨i, h⟩
   by_cases h' : i < n
@@ -425,7 +425,7 @@ theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
 #align fin.snoc_eq_cons_rotate Fin.snoc_eq_cons_rotate
 
 @[simp]
-theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
+lemma finRotate_one : finRotate 1 = Equiv.refl _ :=
   Subsingleton.elim _ _
 #align fin_rotate_one finRotate_one
 
@@ -440,11 +440,11 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
 #align fin_rotate_succ_apply finRotate_succ_apply
 
 -- porting note: was a @[simp]
-theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
+lemma finRotate_apply_zero : finRotate n.succ 0 = 1 := by
   rw [finRotate_succ_apply, zero_add]
 #align fin_rotate_apply_zero finRotate_apply_zero
 
-theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
+lemma coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
     (finRotate (n + 1) i : ℕ) = i + 1 := by
   rw [finRotate_succ_apply]
   have : (i : ℕ) < n := Fin.val_lt_last h

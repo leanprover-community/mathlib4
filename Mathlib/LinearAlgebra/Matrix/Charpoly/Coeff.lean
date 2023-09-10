@@ -48,7 +48,7 @@ open Finset
 
 variable {M : Matrix n n R}
 
-theorem charmatrix_apply_natDegree [Nontrivial R] (i j : n) :
+lemma charmatrix_apply_natDegree [Nontrivial R] (i j : n) :
     (charmatrix M i j).natDegree = ite (i = j) 1 0 := by
   by_cases i = j <;> simp [h, ← degree_eq_iff_natDegree_eq_of_pos (Nat.succ_pos 0)]
 #align charmatrix_apply_nat_degree charmatrix_apply_natDegree
@@ -62,7 +62,7 @@ namespace Matrix
 
 variable (M)
 
-theorem charpoly_sub_diagonal_degree_lt :
+lemma charpoly_sub_diagonal_degree_lt :
     (M.charpoly - ∏ i : n, (X - C (M i i))).degree < ↑(Fintype.card n - 1) := by
   rw [charpoly, det_apply', ← insert_erase (mem_univ (Equiv.refl n)),
     sum_insert (not_mem_erase (Equiv.refl n) univ), add_comm]
@@ -82,7 +82,7 @@ theorem charpoly_sub_diagonal_degree_lt :
   apply charmatrix_apply_natDegree_le
 #align matrix.charpoly_sub_diagonal_degree_lt Matrix.charpoly_sub_diagonal_degree_lt
 
-theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤ k) :
+lemma charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤ k) :
     M.charpoly.coeff k = (∏ i : n, (X - C (M i i))).coeff k := by
   apply eq_of_sub_eq_zero; rw [← coeff_sub]
   apply Polynomial.coeff_eq_zero_of_degree_lt
@@ -97,7 +97,7 @@ theorem det_of_card_zero (h : Fintype.card n = 0) (M : Matrix n n R) : M.det = 1
   exact h.elim i
 #align matrix.det_of_card_zero Matrix.det_of_card_zero
 
-theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
+lemma charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.degree = Fintype.card n := by
   by_cases h : Fintype.card n = 0
   · rw [h]
@@ -123,7 +123,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   apply h
 #align matrix.charpoly_degree_eq_dim Matrix.charpoly_degree_eq_dim
 
-@[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
+@[simp] lemma charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
   natDegree_eq_of_degree_eq_some (charpoly_degree_eq_dim M)
 #align matrix.charpoly_nat_degree_eq_dim Matrix.charpoly_natDegree_eq_dim
@@ -150,7 +150,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
 #align matrix.charpoly_monic Matrix.charpoly_monic
 
 /-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
-theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
+lemma trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
     trace M = -M.charpoly.coeff (Fintype.card n - 1) := by
   rw [charpoly_coeff_eq_prod_coeff_of_le _ le_rfl, Fintype.card,
     prod_X_sub_C_coeff_card_pred univ (fun i : n => M i i) Fintype.card_pos, neg_neg, trace]
@@ -200,7 +200,7 @@ end Matrix
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem matPolyEquiv_eq_x_pow_sub_c {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
+lemma matPolyEquiv_eq_x_pow_sub_c {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   -- porting note: `i` and `j` are used later on, but were not mentioned in mathlib3
@@ -240,7 +240,7 @@ end Matrix
 
 section Ideal
 
-theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
+lemma coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
     M.charpoly.coeff k ∈ I ^ (Fintype.card n - k) := by
   delta charpoly
   rw [Matrix.det_apply, finset_sum_coeff]

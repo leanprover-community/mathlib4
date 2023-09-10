@@ -100,7 +100,7 @@ theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k :=
   norm_cast
 #align real.wallis.le_W Real.Wallis.le_W
 
-theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
+lemma tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
   refine' tendsto_of_tendsto_of_tendsto_of_le_of_le _ tendsto_const_nhds le_W W_le
   have : 𝓝 (π / 2) = 𝓝 ((1 - 0) * (π / 2)) := by rw [sub_zero, one_mul]
   rw [this]
@@ -121,7 +121,7 @@ end Wallis
 end Real
 
 /-- Wallis' product formula for `π / 2`. -/
-theorem Real.tendsto_prod_pi_div_two :
+lemma Real.tendsto_prod_pi_div_two :
     Tendsto (fun k => ∏ i in range k, ((2 : ℝ) * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3)))
       atTop (𝓝 (π / 2)) :=
   Real.Wallis.tendsto_W_nhds_pi_div_two

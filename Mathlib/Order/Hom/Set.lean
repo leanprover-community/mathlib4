@@ -116,7 +116,7 @@ noncomputable def orderIsoOfSurjective : α ≃o β :=
 #align strict_mono.order_iso_of_surjective StrictMono.orderIsoOfSurjective
 
 @[simp]
-theorem coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
+lemma coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
   rfl
 #align strict_mono.coe_order_iso_of_surjective StrictMono.coe_orderIsoOfSurjective
 
@@ -149,11 +149,11 @@ def OrderIso.compl : α ≃o αᵒᵈ where
 #align order_iso.compl_symm_apply OrderIso.compl_symm_apply
 #align order_iso.compl_apply OrderIso.compl_apply
 
-theorem compl_strictAnti : StrictAnti (compl : α → α) :=
+lemma compl_strictAnti : StrictAnti (compl : α → α) :=
   (OrderIso.compl α).strictMono
 #align compl_strict_anti compl_strictAnti
 
-theorem compl_antitone : Antitone (compl : α → α) :=
+lemma compl_antitone : Antitone (compl : α → α) :=
   (OrderIso.compl α).monotone
 #align compl_antitone compl_antitone
 

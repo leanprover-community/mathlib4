@@ -171,7 +171,7 @@ theorem prod_mono_set_of_one_le' (hf : ∀ x, 1 ≤ f x) : Monotone fun s ↦ �
 #align finset.sum_mono_set_of_nonneg Finset.sum_mono_set_of_nonneg
 
 @[to_additive sum_le_univ_sum_of_nonneg]
-theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
+lemma prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
     ∏ x in s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
 #align finset.prod_le_univ_prod_of_one_le' Finset.prod_le_univ_prod_of_one_le'
@@ -179,7 +179,7 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
 
 -- Porting Note: TODO -- The two next lemmas give the same lemma in additive version
 @[to_additive sum_eq_zero_iff_of_nonneg]
-theorem prod_eq_one_iff_of_one_le' :
+lemma prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
     refine Finset.induction_on s
@@ -192,7 +192,7 @@ theorem prod_eq_one_iff_of_one_le' :
 #align finset.sum_eq_zero_iff_of_nonneg Finset.sum_eq_zero_iff_of_nonneg
 
 @[to_additive existing sum_eq_zero_iff_of_nonneg]
-theorem prod_eq_one_iff_of_le_one' :
+lemma prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _
 #align finset.prod_eq_one_iff_of_le_one' Finset.prod_eq_one_iff_of_le_one'
@@ -224,7 +224,7 @@ theorem pow_card_le_prod (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s
 #align finset.pow_card_le_prod Finset.pow_card_le_prod
 #align finset.card_nsmul_le_sum Finset.card_nsmul_le_sum
 
-theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
+lemma card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
     (h : ∀ a ∈ s, (f a).card ≤ n) : (s.biUnion f).card ≤ s.card * n :=
   card_biUnion_le.trans <| sum_le_card_nsmul _ _ _ h
 #align finset.card_bUnion_le_card_mul Finset.card_biUnion_le_card_mul
@@ -233,7 +233,7 @@ variable {ι' : Type*} [DecidableEq ι']
 
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
-theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
+lemma prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
     (h : ∀ (y) (_ : y ∉ t), (1 : N) ≤ ∏ x in s.filter fun x ↦ g x = y, f x) :
     (∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x) ≤ ∏ x in s, f x :=
   calc
@@ -247,7 +247,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
 
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_le_sum_fiberwise_of_sum_fiber_nonpos]
-theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
+lemma prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
     (h : ∀ (y) (_ : y ∉ t), ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
     ∏ x in s, f x ≤ ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
@@ -256,21 +256,21 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
 
 end OrderedCommMonoid
 
-theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
+lemma abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
     |∑ i in s, f i| ≤ ∑ i in s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
 #align finset.abs_sum_le_sum_abs Finset.abs_sum_le_sum_abs
 
-theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
+lemma abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
     (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i : ι in s, f i| = ∑ i : ι in s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg hf)]
 #align finset.abs_sum_of_nonneg Finset.abs_sum_of_nonneg
 
-theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
+lemma abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
     (hf : ∀ i, 0 ≤ f i) : |∑ i : ι in s, f i| = ∑ i : ι in s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 #align finset.abs_sum_of_nonneg' Finset.abs_sum_of_nonneg'
 
-theorem abs_prod {R : Type*} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
+lemma abs_prod {R : Type*} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
     |∏ x in s, f x| = ∏ x in s, |f x| :=
   (absHom.toMonoidHom : R →* R).map_prod _ _
 #align finset.abs_prod Finset.abs_prod
@@ -279,7 +279,7 @@ section Pigeonhole
 
 variable [DecidableEq β]
 
-theorem card_le_mul_card_image_of_maps_to {f : α → β} {s : Finset α} {t : Finset β}
+lemma card_le_mul_card_image_of_maps_to {f : α → β} {s : Finset α} {t : Finset β}
     (Hf : ∀ a ∈ s, f a ∈ t) (n : ℕ) (hn : ∀ a ∈ t, (s.filter fun x ↦ f x = a).card ≤ n) :
     s.card ≤ n * t.card :=
   calc
@@ -288,12 +288,12 @@ theorem card_le_mul_card_image_of_maps_to {f : α → β} {s : Finset α} {t : F
     _ = _ := by simp [mul_comm]
 #align finset.card_le_mul_card_image_of_maps_to Finset.card_le_mul_card_image_of_maps_to
 
-theorem card_le_mul_card_image {f : α → β} (s : Finset α) (n : ℕ)
+lemma card_le_mul_card_image {f : α → β} (s : Finset α) (n : ℕ)
     (hn : ∀ a ∈ s.image f, (s.filter fun x ↦ f x = a).card ≤ n) : s.card ≤ n * (s.image f).card :=
   card_le_mul_card_image_of_maps_to (fun _ ↦ mem_image_of_mem _) n hn
 #align finset.card_le_mul_card_image Finset.card_le_mul_card_image
 
-theorem mul_card_image_le_card_of_maps_to {f : α → β} {s : Finset α} {t : Finset β}
+lemma mul_card_image_le_card_of_maps_to {f : α → β} {s : Finset α} {t : Finset β}
     (Hf : ∀ a ∈ s, f a ∈ t) (n : ℕ) (hn : ∀ a ∈ t, n ≤ (s.filter fun x ↦ f x = a).card) :
     n * t.card ≤ s.card :=
   calc
@@ -302,7 +302,7 @@ theorem mul_card_image_le_card_of_maps_to {f : α → β} {s : Finset α} {t : F
     _ = s.card := by rw [← card_eq_sum_card_fiberwise Hf]
 #align finset.mul_card_image_le_card_of_maps_to Finset.mul_card_image_le_card_of_maps_to
 
-theorem mul_card_image_le_card {f : α → β} (s : Finset α) (n : ℕ)
+lemma mul_card_image_le_card {f : α → β} (s : Finset α) (n : ℕ)
     (hn : ∀ a ∈ s.image f, n ≤ (s.filter fun x ↦ f x = a).card) : n * (s.image f).card ≤ s.card :=
   mul_card_image_le_card_of_maps_to (fun _ ↦ mem_image_of_mem _) n hn
 #align finset.mul_card_image_le_card Finset.mul_card_image_le_card
@@ -324,7 +324,7 @@ theorem sum_card_inter_le (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card ≤
 
 /-- If every element belongs to at most `n` Finsets, then the sum of their sizes is at most `n`
 times how many they are. -/
-theorem sum_card_le [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card ≤ n) :
+lemma sum_card_le [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card ≤ n) :
     ∑ s in B, s.card ≤ Fintype.card α * n :=
   calc
     ∑ s in B, s.card = ∑ s in B, (univ ∩ s).card := by simp_rw [univ_inter]
@@ -342,7 +342,7 @@ theorem le_sum_card_inter (h : ∀ a ∈ s, n ≤ (B.filter <| (· ∈ ·) a).ca
 
 /-- If every element belongs to at least `n` Finsets, then the sum of their sizes is at least `n`
 times how many they are. -/
-theorem le_sum_card [Fintype α] (h : ∀ a, n ≤ (B.filter <| (· ∈ ·) a).card) :
+lemma le_sum_card [Fintype α] (h : ∀ a, n ≤ (B.filter <| (· ∈ ·) a).card) :
     Fintype.card α * n ≤ ∑ s in B, s.card :=
   calc
     Fintype.card α * n ≤ ∑ s in B, (univ ∩ s).card := le_sum_card_inter fun a _ ↦ h a
@@ -358,18 +358,18 @@ theorem sum_card_inter (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card = n) :
 
 /-- If every element belongs to exactly `n` Finsets, then the sum of their sizes is `n` times how
 many they are. -/
-theorem sum_card [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card = n) :
+lemma sum_card [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card = n) :
     ∑ s in B, s.card = Fintype.card α * n := by
   simp_rw [Fintype.card, ← sum_card_inter fun a _ ↦ h a, univ_inter]
 #align finset.sum_card Finset.sum_card
 
-theorem card_le_card_biUnion {s : Finset ι} {f : ι → Finset α} (hs : (s : Set ι).PairwiseDisjoint f)
+lemma card_le_card_biUnion {s : Finset ι} {f : ι → Finset α} (hs : (s : Set ι).PairwiseDisjoint f)
     (hf : ∀ i ∈ s, (f i).Nonempty) : s.card ≤ (s.biUnion f).card := by
   rw [card_biUnion hs, card_eq_sum_ones]
   exact sum_le_sum fun i hi ↦ (hf i hi).card_pos
 #align finset.card_le_card_bUnion Finset.card_le_card_biUnion
 
-theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset α}
+lemma card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset α}
     (hs : (s : Set ι).PairwiseDisjoint f) :
     s.card ≤ (s.biUnion f).card + (s.filter fun i ↦ f i = ∅).card := by
   rw [← Finset.filter_card_add_filter_neg_card_eq_card fun i ↦ f i = ∅, add_comm]
@@ -381,7 +381,7 @@ theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset �
       _
 #align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_biUnion_add_card_fiber
 
-theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
+lemma card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
     (hs : (s : Set ι).PairwiseDisjoint f) : s.card ≤ (s.biUnion f).card + 1 :=
   (card_le_card_biUnion_add_card_fiber hs).trans <|
     add_le_add_left
@@ -395,7 +395,7 @@ section CanonicallyOrderedMonoid
 variable [CanonicallyOrderedMonoid M] {f : ι → M} {s t : Finset ι}
 
 @[to_additive (attr := simp) sum_eq_zero_iff]
-theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
+lemma prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
 #align finset.prod_eq_one_iff' Finset.prod_eq_one_iff'
 #align finset.sum_eq_zero_iff Finset.sum_eq_zero_iff
@@ -491,7 +491,7 @@ theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i �
 #align finset.sum_lt_sum_of_subset Finset.sum_lt_sum_of_subset
 
 @[to_additive single_lt_sum]
-theorem single_lt_prod' {i j : ι} (hij : j ≠ i) (hi : i ∈ s) (hj : j ∈ s) (hlt : 1 < f j)
+lemma single_lt_prod' {i j : ι} (hij : j ≠ i) (hi : i ∈ s) (hj : j ∈ s) (hlt : 1 < f j)
     (hle : ∀ k ∈ s, k ≠ i → 1 ≤ f k) : f i < ∏ k in s, f k :=
   calc
     f i = ∏ k in {i}, f k := prod_singleton.symm
@@ -526,7 +526,7 @@ theorem prod_lt_one' (h : ∀ i ∈ s, f i ≤ 1) (hs : ∃ i ∈ s, f i < 1) : 
 #align finset.sum_neg' Finset.sum_neg'
 
 @[to_additive]
-theorem prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
+lemma prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
     ((∏ i in s, f i) = ∏ i in s, g i) ↔ ∀ i ∈ s, f i = g i := by
   classical
     revert h
@@ -620,7 +620,7 @@ theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) 
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
-theorem prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
+lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
     (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
     (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
   simp_rw [prod_eq_mul_prod_diff_singleton hi]
@@ -686,13 +686,13 @@ namespace Fintype
 variable [Fintype ι]
 
 @[to_additive (attr := mono) sum_mono]
-theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
+lemma prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod' fun x _ ↦ hfg x
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
 @[to_additive sum_strictMono]
-theorem prod_strictMono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
+lemma prod_strictMono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦
   let ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
   Finset.prod_lt_prod' (fun i _ ↦ hle i) ⟨i, Finset.mem_univ i, hlt⟩
@@ -706,26 +706,26 @@ namespace WithTop
 open Finset
 
 /-- A product of finite numbers is still finite -/
-theorem prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
+lemma prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
     {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i in s, f i < ⊤ :=
   prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top' h₁ h₂) (coe_lt_top 1)
     fun a ha ↦ WithTop.lt_top_iff_ne_top.2 (h a ha)
 #align with_top.prod_lt_top WithTop.prod_lt_top
 
 /-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
+lemma sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
     ∑ i in s, f i = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
   induction s using Finset.cons_induction <;> simp [*]
 #align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
 
 /-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
+lemma sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
     ∑ i in s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
   simp only [WithTop.lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
 #align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
 
 /-- A sum of finite numbers is still finite -/
-theorem sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
+lemma sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
     (h : ∀ i ∈ s, f i ≠ ⊤) : ∑ i in s, f i < ⊤ :=
   sum_lt_top_iff.2 fun i hi => WithTop.lt_top_iff_ne_top.2 (h i hi)
 #align with_top.sum_lt_top WithTop.sum_lt_top
@@ -736,23 +736,23 @@ section AbsoluteValue
 
 variable {S : Type*}
 
-theorem AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
     (s : Finset ι) (f : ι → R) : abv (∑ i in s, f i) ≤ ∑ i in s, abv (f i) :=
   Finset.le_sum_of_subadditive abv (map_zero _) abv.add_le _ _
 #align absolute_value.sum_le AbsoluteValue.sum_le
 
-theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
+lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i in s, f i) ≤ ∑ i in s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
-theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
   abv.toMonoidHom.map_prod f s
 #align absolute_value.map_prod AbsoluteValue.map_prod
 
-theorem IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : R → S) [IsAbsoluteValue abv] (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).map_prod _ _

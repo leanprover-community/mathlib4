@@ -63,7 +63,7 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex.obj_X AlgebraicTopology.NormalizedMooreComplex.objX
 
-theorem objX_zero : objX X 0 = ⊤ :=
+lemma objX_zero : objX X 0 = ⊤ :=
   rfl
 
 theorem objX_add_one (n) :

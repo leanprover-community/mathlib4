@@ -22,14 +22,14 @@ After setting up these definitions, we prove lemmas specifying their behaviour,
 particularly
 
 ```
-theorem suffixLevenshtein_eq_tails_map :
+lemma suffixLevenshtein_eq_tails_map :
   (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := ...
 ```
 
 and
 
 ```
-theorem levenshtein_cons_cons :
+lemma levenshtein_cons_cons :
   levenshtein C (x :: xs) (y :: ys) =
     min (C.delete x + levenshtein C xs (y :: ys))
       (min (C.insert y + levenshtein C (x :: xs) ys)
@@ -179,7 +179,7 @@ def levenshtein (xs : List α) (ys : List β) : δ :=
 
 variable {C}
 
-theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
+lemma suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
   rfl
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
@@ -197,7 +197,7 @@ theorem suffixLevenshtein_cons₂ (xs : List α) (y ys) :
     suffixLevenshtein C xs (y :: ys) = (impl C xs) y (suffixLevenshtein C xs ys) :=
   rfl
 
-theorem suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
+lemma suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
     (w₀ : x.1[0]'x.2 = y.1[0]'y.2) (w : x.1.tail = y.1.tail) : x = y := by
   match x, y with
   | ⟨hx :: tx, _⟩, ⟨hy :: ty, _⟩ => simp_all
@@ -250,7 +250,7 @@ theorem suffixLevenshtein_eq_tails_map (xs ys) :
     simp only [List.map, suffixLevenshtein_cons₁, ih]
 
 @[simp]
-theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
+lemma levenshtein_nil_nil : levenshtein C [] [] = 0 := by
   simp [levenshtein]
 
 @[simp]

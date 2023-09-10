@@ -40,7 +40,7 @@ protected theorem proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
 #align is_homeomorphic_trivial_fiber_bundle.proj_eq IsHomeomorphicTrivialFiberBundle.proj_eq
 
 /-- The projection from a trivial fiber bundle to its base is surjective. -/
-protected theorem surjective_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
+protected lemma surjective_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
     Function.Surjective proj := by
   obtain ⟨e, rfl⟩ := h.proj_eq
   exact Prod.fst_surjective.comp e.surjective
@@ -57,7 +57,7 @@ protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) :
 #align is_homeomorphic_trivial_fiber_bundle.is_open_map_proj IsHomeomorphicTrivialFiberBundle.isOpenMap_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/
-protected theorem quotientMap_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
+protected lemma quotientMap_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
     QuotientMap proj :=
   h.isOpenMap_proj.to_quotientMap h.continuous_proj h.surjective_proj
 #align is_homeomorphic_trivial_fiber_bundle.quotient_map_proj IsHomeomorphicTrivialFiberBundle.quotientMap_proj
@@ -65,13 +65,13 @@ protected theorem quotientMap_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberB
 end IsHomeomorphicTrivialFiberBundle
 
 /-- The first projection in a product is a trivial fiber bundle. -/
-theorem isHomeomorphicTrivialFiberBundle_fst :
+lemma isHomeomorphicTrivialFiberBundle_fst :
     IsHomeomorphicTrivialFiberBundle F (Prod.fst : B × F → B) :=
   ⟨Homeomorph.refl _, fun _x => rfl⟩
 #align is_homeomorphic_trivial_fiber_bundle_fst isHomeomorphicTrivialFiberBundle_fst
 
 /-- The second projection in a product is a trivial fiber bundle. -/
-theorem isHomeomorphicTrivialFiberBundle_snd :
+lemma isHomeomorphicTrivialFiberBundle_snd :
     IsHomeomorphicTrivialFiberBundle F (Prod.snd : F × B → B) :=
   ⟨Homeomorph.prodComm _ _, fun _x => rfl⟩
 #align is_homeomorphic_trivial_fiber_bundle_snd isHomeomorphicTrivialFiberBundle_snd

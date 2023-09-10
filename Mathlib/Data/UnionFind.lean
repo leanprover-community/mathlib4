@@ -71,7 +71,7 @@ inductive UFModel.Agrees (arr : Array α) (f : α → β) : ∀ {n}, (Fin n → 
 
 namespace UFModel.Agrees
 
-theorem mk' {arr : Array α} {f : α → β} {n} {g : Fin n → β}
+lemma mk' {arr : Array α} {f : α → β} {n} {g : Fin n → β}
   (e : n = arr.size)
   (H : ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = g ⟨i, h₂⟩) :
   Agrees arr f g := by
@@ -79,19 +79,19 @@ theorem mk' {arr : Array α} {f : α → β} {n} {g : Fin n → β}
     have : (fun i ↦ f (arr.get i)) = g := by funext ⟨i, h⟩; apply H
     cases this; constructor
 
-theorem size_eq {arr : Array α} {m : Fin n → β} (H : Agrees arr f m) :
+lemma size_eq {arr : Array α} {m : Fin n → β} (H : Agrees arr f m) :
   n = arr.size := by cases H; rfl
 
-theorem get_eq {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m) :
+lemma get_eq {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m) :
   ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = m ⟨i, h₂⟩ := by
   cases H; exact fun i h _ ↦ rfl
 
-theorem get_eq' {arr : Array α} {m : Fin arr.size → β} (H : Agrees arr f m)
+lemma get_eq' {arr : Array α} {m : Fin arr.size → β} (H : Agrees arr f m)
   (i) : f (arr.get i) = m i := H.get_eq ..
 
-theorem empty {f : α → β} {g : Fin 0 → β} : Agrees #[] f g := mk' rfl λ.
+lemma empty {f : α → β} {g : Fin 0 → β} : Agrees #[] f g := mk' rfl λ.
 
-theorem push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
+lemma push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
   (k) (hk : k = n + 1) (x) (m' : Fin k → β)
   (hm₁ : ∀ (i : Fin k) (h : i < n), m' i = m ⟨i, h⟩)
   (hm₂ : ∀ (h : n < k), f x = m' ⟨n, h⟩) : Agrees (arr.push x) f m' := by
@@ -103,7 +103,7 @@ theorem push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
   · cases show i = arr.size by apply le_antisymm <;> simp_all [Nat.lt_succ]
     rw [hm₂]
 
-theorem set {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
+lemma set {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
   {i : Fin arr.size} {x} {m' : Fin n → β}
   (hm₁ : ∀ (j : Fin n), j.1 ≠ i → m' j = m j)
   (hm₂ : ∀ (h : i < n), f x = m' ⟨i, h⟩) : Agrees (arr.set i x) f m' := by
@@ -122,22 +122,22 @@ def UFModel.Models (arr : Array (UFNode α)) {n} (m : UFModel n) :=
 
 namespace UFModel.Models
 
-theorem size_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) :
+lemma size_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) :
   n = arr.size := H.1.size_eq
 
-theorem parent_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
+lemma parent_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
   (i : Nat) (h₁ : i < arr.size) (h₂) : arr[i].parent = m.parent ⟨i, h₂⟩ := H.1.get_eq ..
 
-theorem parent_eq' {arr : Array (UFNode α)} {m : UFModel arr.size} (H : m.Models arr)
+lemma parent_eq' {arr : Array (UFNode α)} {m : UFModel arr.size} (H : m.Models arr)
   (i : Fin arr.size) : (arr[i.1]).parent = m.parent i := H.parent_eq ..
 
-theorem rank_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) (i : Nat)
+lemma rank_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) (i : Nat)
     (h : i < arr.size) : arr[i].rank = m.rank i :=
   H.2.get_eq _ _ (by rw [H.size_eq]; exact h)
 
-theorem empty : UFModel.empty.Models (α := α) #[] := ⟨Agrees.empty, Agrees.empty⟩
+lemma empty : UFModel.empty.Models (α := α) #[] := ⟨Agrees.empty, Agrees.empty⟩
 
-theorem push {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
+lemma push {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
   (k) (hk : k = n + 1) (x) :
   (m.push k (hk ▸ Nat.le_add_right ..)).Models (arr.push ⟨n, x, 0⟩) := by
   apply H.imp <;>
@@ -145,7 +145,7 @@ theorem push {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
     refine H.push _ hk _ _ (fun i h ↦ ?_) (fun h ↦ ?_) <;>
     simp [UFModel.push, h, lt_irrefl]
 
-theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models arr)
+lemma setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models arr)
   (i j H hi x) (hp : x.parent = j.1) (hrk : x.rank = arr[i].rank) :
   (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
   ⟨hm.1.set

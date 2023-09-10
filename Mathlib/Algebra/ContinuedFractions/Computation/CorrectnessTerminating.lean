@@ -74,7 +74,7 @@ protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
 variable [FloorRing K]
 
 /-- Just a computational lemma we need for the next main proof. -/
-protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} (b c : K)
+protected lemma compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} (b c : K)
     (fract_a_ne_zero : Int.fract a ≠ 0) :
     ((⌊a⌋ : K) * b + c) / Int.fract a + b = (b * a + c) / Int.fract a := by
   field_simp [fract_a_ne_zero]
@@ -100,7 +100,7 @@ Now `(GeneralizedContinuedFraction.of v).convergents' 1 = 3 + 1/2`, and our frac
 position `2` is `0.5`. We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`. This computation
 corresponds exactly to the one using the recurrence equation in `compExactValue`.
 -/
-theorem compExactValue_correctness_of_stream_eq_some :
+lemma compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →
       v = compExactValue ((of v).continuantsAux n) ((of v).continuantsAux <| n + 1) ifp_n.fr := by
   let g := of v

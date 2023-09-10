@@ -50,7 +50,7 @@ namespace Rel
 variable (r : Rel α β)
 
 -- Porting note: required for later theorems.
-@[ext] theorem ext {r s : Rel α β} : (∀ a, r a = s a) → r = s := funext
+@[ext] lemma ext {r s : Rel α β} : (∀ a, r a = s a) → r = s := funext
 
 /-- The inverse relation : `r.inv x y ↔ r y x`. Note that this is *not* a groupoid inverse. -/
 def inv : Rel β α :=
@@ -61,7 +61,7 @@ theorem inv_def (x : α) (y : β) : r.inv y x ↔ r x y :=
   Iff.rfl
 #align rel.inv_def Rel.inv_def
 
-theorem inv_inv : inv (inv r) = r := by
+lemma inv_inv : inv (inv r) = r := by
   ext x y
   rfl
 #align rel.inv_inv Rel.inv_inv
@@ -70,19 +70,19 @@ theorem inv_inv : inv (inv r) = r := by
 def dom := { x | ∃ y, r x y }
 #align rel.dom Rel.dom
 
-theorem dom_mono {r s : Rel α β} (h : r ≤ s) : dom r ⊆ dom s := fun a ⟨b, hx⟩ => ⟨b, h a b hx⟩
+lemma dom_mono {r s : Rel α β} (h : r ≤ s) : dom r ⊆ dom s := fun a ⟨b, hx⟩ => ⟨b, h a b hx⟩
 #align rel.dom_mono Rel.dom_mono
 
 /-- Codomain aka range of a relation -/
 def codom := { y | ∃ x, r x y }
 #align rel.codom Rel.codom
 
-theorem codom_inv : r.inv.codom = r.dom := by
+lemma codom_inv : r.inv.codom = r.dom := by
   ext x
   rfl
 #align rel.codom_inv Rel.codom_inv
 
-theorem dom_inv : r.inv.dom = r.codom := by
+lemma dom_inv : r.inv.dom = r.codom := by
   ext x
   rfl
 #align rel.dom_inv Rel.dom_inv
@@ -116,7 +116,7 @@ theorem comp_left_id (r : Rel α β) : @Eq α • r = r := by
   simp
 #align rel.comp_left_id Rel.comp_left_id
 
-theorem inv_id : inv (@Eq α) = @Eq α := by
+lemma inv_id : inv (@Eq α) = @Eq α := by
   ext x y
   constructor <;> apply Eq.symm
 #align rel.inv_id Rel.inv_id
@@ -134,11 +134,11 @@ theorem mem_image (y : β) (s : Set α) : y ∈ image r s ↔ ∃ x ∈ s, r x y
   Iff.rfl
 #align rel.mem_image Rel.mem_image
 
-theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _ _ h _ ⟨x, xs, rxy⟩ =>
+lemma image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _ _ h _ ⟨x, xs, rxy⟩ =>
   ⟨x, h xs, rxy⟩
 #align rel.image_subset Rel.image_subset
 
-theorem image_mono : Monotone r.image :=
+lemma image_mono : Monotone r.image :=
   r.image_subset
 #align rel.image_mono Rel.image_mono
 
@@ -165,7 +165,7 @@ theorem image_comp (s : Rel β γ) (t : Set α) : image (r • s) t = image s (i
   · rintro ⟨y, ⟨x, xt, rxy⟩, syz⟩; exact ⟨x, xt, y, rxy, syz⟩
 #align rel.image_comp Rel.image_comp
 
-theorem image_univ : r.image Set.univ = r.codom := by
+lemma image_univ : r.image Set.univ = r.codom := by
   ext y
   simp [mem_image, codom]
 #align rel.image_univ Rel.image_univ
@@ -183,7 +183,7 @@ theorem preimage_def (s : Set β) : preimage r s = { x | ∃ y ∈ s, r x y } :=
   Set.ext fun _ => mem_preimage _ _ _
 #align rel.preimage_def Rel.preimage_def
 
-theorem preimage_mono {s t : Set β} (h : s ⊆ t) : r.preimage s ⊆ r.preimage t :=
+lemma preimage_mono {s t : Set β} (h : s ⊆ t) : r.preimage s ⊆ r.preimage t :=
   image_mono _ h
 #align rel.preimage_mono Rel.preimage_mono
 
@@ -203,7 +203,7 @@ theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = prei
   by simp only [preimage, inv_comp, image_comp]
 #align rel.preimage_comp Rel.preimage_comp
 
-theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
+lemma preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
 #align rel.preimage_univ Rel.preimage_univ
 
 /-- Core of a set `s : Set β` w.r.t `r : Rel α β` is the set of `x : α` that are related *only*
@@ -215,10 +215,10 @@ theorem mem_core (x : α) (s : Set β) : x ∈ r.core s ↔ ∀ y, r x y → y �
   Iff.rfl
 #align rel.mem_core Rel.mem_core
 
-theorem core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun _s _t h _x h' y rxy => h (h' y rxy)
+lemma core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun _s _t h _x h' y rxy => h (h' y rxy)
 #align rel.core_subset Rel.core_subset
 
-theorem core_mono : Monotone r.core :=
+lemma core_mono : Monotone r.core :=
   r.core_subset
 #align rel.core_mono Rel.core_mono
 
@@ -231,7 +231,7 @@ theorem core_union (s t : Set β) : r.core s ∪ r.core t ⊆ r.core (s ∪ t) :
 #align rel.core_union Rel.core_union
 
 @[simp]
-theorem core_univ : r.core Set.univ = Set.univ :=
+lemma core_univ : r.core Set.univ = Set.univ :=
   Set.ext (by simp [mem_core])
 #align rel.core_univ Rel.core_univ
 
@@ -252,7 +252,7 @@ theorem image_subset_iff (s : Set α) (t : Set β) : image r s ⊆ t ↔ s ⊆ c
   Iff.intro (fun h x xs _y rxy => h ⟨x, xs, rxy⟩) fun h y ⟨_x, xs, rxy⟩ => h xs y rxy
 #align rel.image_subset_iff Rel.image_subset_iff
 
-theorem image_core_gc : GaloisConnection r.image r.core :=
+lemma image_core_gc : GaloisConnection r.image r.core :=
   image_subset_iff _
 #align rel.image_core_gc Rel.image_core_gc
 

@@ -128,7 +128,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_hom_ext TopCat.Presheaf.stalk_hom_ext
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : U) (f : F ⟶ G) :
+lemma stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : U) (f : F ⟶ G) :
     germ F x ≫ (stalkFunctor C x.1).map f = f.app (op U) ≫ germ G x :=
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x.1).op f) (op ⟨U, x.2⟩)
 set_option linter.uppercaseLean3 false in
@@ -200,7 +200,7 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
 
-theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
+lemma stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
     (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
   convert IsIso.of_iso
@@ -339,7 +339,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_stalk_specializes' TopCat.Presheaf.germ_stalkSpecializes'
 
 @[simp]
-theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
+lemma stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
   simp
@@ -347,7 +347,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_refl TopCat.Presheaf.stalkSpecializes_refl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
+lemma stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
@@ -356,7 +356,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_comp TopCat.Presheaf.stalkSpecializes_comp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x y : X} (h : x ⤳ y) :
+lemma stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x y : X} (h : x ⤳ y) :
     F.stalkSpecializes h ≫ (stalkFunctor C x).map f =
       (stalkFunctor C y).map f ≫ G.stalkSpecializes h := by
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
@@ -434,7 +434,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_eq TopCat.Presheaf.germ_eq
 
-theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F ⟶ G)
+lemma stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F ⟶ G)
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor C x).map f) := fun s t hst => by
   rcases germ_exist F x s with ⟨U₁, hxU₁, s, rfl⟩
@@ -475,7 +475,7 @@ Note that the analogous statement for surjectivity is false: Surjectivity on sta
 imply surjectivity of the components of a sheaf morphism. However it does imply that the morphism
 is an epi, but this fact is not yet formalized.
 -/
-theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.1 ⟶ G)
+lemma app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.1 ⟶ G)
     (U : Opens X) (h : ∀ x : U, Function.Injective ((stalkFunctor C x.val).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>
   section_ext F _ _ _ fun x =>
@@ -483,7 +483,7 @@ theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshea
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_injective_of_stalk_functor_map_injective TopCat.Presheaf.app_injective_of_stalkFunctor_map_injective
 
-theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X}
+lemma app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X}
     (f : F.1 ⟶ G) :
     (∀ x : X, Function.Injective ((stalkFunctor C x).map f)) ↔
       ∀ U : Opens X, Function.Injective (f.app (op U)) :=
@@ -506,13 +506,13 @@ instance stalkFunctor_preserves_mono (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_preserves_mono TopCat.Presheaf.stalkFunctor_preserves_mono
 
-theorem stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
+lemma stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
     ∀ x, Mono <| (stalkFunctor C x).map f.1 :=
   fun x => Functor.map_mono (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) f
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_mono_of_mono TopCat.Presheaf.stalk_mono_of_mono
 
-theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
+lemma mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
     Mono f :=
   (Sheaf.Hom.mono_iff_presheaf_mono _ _ _).mpr <|
     (NatTrans.mono_iff_mono_app _ _).mpr fun U =>
@@ -522,7 +522,7 @@ theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stal
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.mono_of_stalk_mono TopCat.Presheaf.mono_of_stalk_mono
 
-theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
+lemma mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
     Mono f ↔ ∀ x, Mono ((stalkFunctor C x).map f.1) :=
   ⟨fun _ => stalk_mono_of_mono _, fun _ => mono_of_stalk_mono _⟩
 set_option linter.uppercaseLean3 false in
@@ -532,7 +532,7 @@ set_option linter.uppercaseLean3 false in
 We claim that it suffices to find preimages *locally*. That is, for each `x : U` we construct
 a neighborhood `V ≤ U` and a section `s : F.obj (op V))` such that `f.app (op V) s` and `t`
 agree on `V`. -/
-theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
+lemma app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
     (U : Opens X) (hinj : ∀ x : U, Function.Injective ((stalkFunctor C x.1).map f.1))
     (hsurj : ∀ (t) (x : U), ∃ (V : Opens X) (_ : x.1 ∈ V) (iVU : V ⟶ U) (s : F.1.obj (op V)),
           f.1.app (op V) s = G.1.map iVU.op t) :
@@ -567,7 +567,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_surjective_of_injective_of_locally_surjective TopCat.Presheaf.app_surjective_of_injective_of_locally_surjective
 
-theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
+lemma app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
     Function.Surjective (f.1.app (op U)) := by
   refine' app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => _
@@ -587,7 +587,7 @@ theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F �
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_surjective_of_stalk_functor_map_bijective TopCat.Presheaf.app_surjective_of_stalkFunctor_map_bijective
 
-theorem app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
+lemma app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
     Function.Bijective (f.1.app (op U)) :=
   ⟨app_injective_of_stalkFunctor_map_injective f.1 U fun x => (h x).1,
@@ -595,7 +595,7 @@ theorem app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_bijective_of_stalk_functor_map_bijective TopCat.Presheaf.app_bijective_of_stalkFunctor_map_bijective
 
-theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
+lemma app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     [∀ x : U, IsIso ((stalkFunctor C x.val).map f.1)] : IsIso (f.1.app (op U)) := by
   -- Since the forgetful functor of `C` reflects isomorphisms, it suffices to see that the
   -- underlying map between types is an isomorphism, i.e. bijective.
@@ -614,7 +614,7 @@ set_option linter.uppercaseLean3 false in
 isomorphisms, preserves limits and filtered colimits. Then if the stalk maps of a morphism
 `f : F ⟶ G` are all isomorphisms, `f` must be an isomorphism.
 -/
-theorem isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G)
+lemma isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G)
     [∀ x : X, IsIso ((stalkFunctor C x).map f.1)] : IsIso f := by
   -- Since the inclusion functor from sheaves to presheaves is fully faithful, it suffices to
   -- show that `f`, as a morphism between _presheaves_, is an isomorphism.
@@ -631,7 +631,7 @@ set_option linter.uppercaseLean3 false in
 isomorphisms, preserves limits and filtered colimits. Then a morphism `f : F ⟶ G` is an
 isomorphism if and only if all of its stalk maps are isomorphisms.
 -/
-theorem isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
+lemma isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
     IsIso f ↔ ∀ x : X, IsIso ((stalkFunctor C x).map f.1) :=
   ⟨fun _ x =>
     @Functor.map_isIso _ _ _ _ _ _ (stalkFunctor C x) f.1 ((Sheaf.forget C X).map_isIso f),
@@ -646,7 +646,7 @@ instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U
   (F.germ x).toAlgebra
 
 @[simp]
-theorem stalk_open_algebraMap {X : TopCat} (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
+lemma stalk_open_algebraMap {X : TopCat} (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
     algebraMap (F.obj <| op U) (F.stalk x) = F.germ x :=
   rfl
 set_option linter.uppercaseLean3 false in

@@ -41,7 +41,7 @@ open scoped Classical BigOperators Topology Real
   We then (5) prove a bound for `f'`, again both generally as well as on each of the two
   subintervals. Finally, we (6) apply the Mean Value Theorem twice, obtaining bounds on `f 1 - f u`
   and `f u - f 0` from the bounds on `f'` (note that `f 0 = 0`). -/
-theorem tendsto_sum_pi_div_four :
+lemma tendsto_sum_pi_div_four :
     Tendsto (fun k => ∑ i in Finset.range k, (-(1 : ℝ)) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
   rw [tendsto_iff_norm_sub_tendsto_zero, ← tendsto_zero_iff_norm_tendsto_zero]
   -- (1) We introduce a useful sequence `u` of values in [0,1], then prove that another sequence

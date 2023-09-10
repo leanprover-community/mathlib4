@@ -179,12 +179,12 @@ instance : CommRing (ColimitType.{v} F) :=
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
 @[simp]
-theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
+lemma quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType F) :=
   rfl
 #align CommRing.colimits.quot_zero CommRingCat.Colimits.quot_zero
 
 @[simp]
-theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
+lemma quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
   rfl
 #align CommRing.colimits.quot_one CommRingCat.Colimits.quot_one
 
@@ -233,7 +233,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
 #align CommRing.colimits.cocone_morphism CommRingCat.Colimits.coconeMorphism
 
 @[simp]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
+lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound

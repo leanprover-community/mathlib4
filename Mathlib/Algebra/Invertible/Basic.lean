@@ -32,7 +32,7 @@ def unitOfInvertible [Monoid α] (a : α) [Invertible a] : αˣ where
 #align coe_unit_of_invertible val_unitOfInvertible
 #align coe_inv_unit_of_invertible val_inv_unitOfInvertible
 
-theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
+lemma isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
   ⟨unitOfInvertible a, rfl⟩
 #align is_unit_of_invertible isUnit_of_invertible
 
@@ -45,11 +45,11 @@ def Units.invertible [Monoid α] (u : αˣ) :
 #align units.invertible Units.invertible
 
 @[simp]
-theorem invOf_units [Monoid α] (u : αˣ) [Invertible (u : α)] : ⅟ (u : α) = ↑u⁻¹ :=
+lemma invOf_units [Monoid α] (u : αˣ) [Invertible (u : α)] : ⅟ (u : α) = ↑u⁻¹ :=
   invOf_eq_right_inv u.mul_inv
 #align inv_of_units invOf_units
 
-theorem IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempty (Invertible a) :=
+lemma IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempty (Invertible a) :=
   let ⟨x, hx⟩ := h
   ⟨x.invertible.copy _ hx.symm⟩
 #align is_unit.nonempty_invertible IsUnit.nonempty_invertible
@@ -62,7 +62,7 @@ noncomputable def IsUnit.invertible [Monoid α] {a : α} (h : IsUnit a) : Invert
 #align is_unit.invertible IsUnit.invertible
 
 @[simp]
-theorem nonempty_invertible_iff_isUnit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
+lemma nonempty_invertible_iff_isUnit [Monoid α] (a : α) : Nonempty (Invertible a) ↔ IsUnit a :=
   ⟨Nonempty.rec <| @isUnit_of_invertible _ _ _, IsUnit.nonempty_invertible⟩
 #align nonempty_invertible_iff_is_unit nonempty_invertible_iff_isUnit
 
@@ -72,23 +72,23 @@ def invertibleNeg [Mul α] [One α] [HasDistribNeg α] (a : α) [Invertible a] :
 #align invertible_neg invertibleNeg
 
 @[simp]
-theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invertible (-a)] :
+lemma invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invertible (-a)] :
     ⅟ (-a) = -⅟ a :=
   invOf_eq_right_inv (by simp)
 #align inv_of_neg invOf_neg
 
 @[simp]
-theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
+lemma one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
     rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel]
 #align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
-theorem invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
+lemma invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
     (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← two_mul, mul_invOf_self]
 #align inv_of_two_add_inv_of_two invOf_two_add_invOf_two
 
-theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
+lemma Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
     Commute a (⅟ b) :=
   calc
     a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
@@ -96,7 +96,7 @@ theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a
     _ = ⅟ b * a := by simp [mul_assoc]
 #align commute.inv_of_right Commute.invOf_right
 
-theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
+lemma Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
     Commute (⅟ b) a :=
   calc
     ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
@@ -104,13 +104,13 @@ theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b 
     _ = a * ⅟ b := by simp [mul_assoc]
 #align commute.inv_of_left Commute.invOf_left
 
-theorem commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
+lemma commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
   calc
     m * ⅟ m = 1 := mul_invOf_self m
     _ = ⅟ m * m := (invOf_mul_self m).symm
 #align commute_inv_of commute_invOf
 
-theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
+lemma pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
   Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)
 
 section Monoid
@@ -216,7 +216,7 @@ def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneCl
 
 /-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
 before applying this lemma. -/
-theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
+lemma map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] [ifr : Invertible (f r)] :
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _

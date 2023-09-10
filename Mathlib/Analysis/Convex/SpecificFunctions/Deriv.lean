@@ -37,7 +37,7 @@ open scoped BigOperators NNReal
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
-theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
+lemma strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
   rw [deriv_pow', interior_Ici]
   exact fun x (hx : 0 < x) y hy hxy =>
@@ -46,7 +46,7 @@ theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0)
 #align strict_convex_on_pow strictConvexOn_pow
 
 /-- `x^n`, `n : ℕ` is strictly convex on the whole real line whenever `n ≠ 0` is even. -/
-theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
+lemma Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
     StrictConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
   apply StrictMono.strictConvexOn_univ_of_deriv (continuous_pow n)
   rw [deriv_pow']
@@ -55,7 +55,7 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
     (Nat.cast_pos.2 h)
 #align even.strict_convex_on_pow Even.strictConvexOn_pow
 
-theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommRing β] {f : α → β}
+lemma Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommRing β] {f : α → β}
     [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
     0 ≤ ∏ x in s, f x :=
   calc
@@ -86,7 +86,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
   · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
 #align int_prod_range_nonneg int_prod_range_nonneg
 
-theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
+lemma int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
     0 < ∏ k in Finset.range n, (m - k) := by
   refine' (int_prod_range_nonneg m n hn).lt_of_ne fun h => hm _
   rw [eq_comm, Finset.prod_eq_zero_iff] at h
@@ -96,7 +96,7 @@ theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 
 #align int_prod_range_pos int_prod_range_pos
 
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m` except `0` and `1`. -/
-theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
+lemma strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
     StrictConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m := by
   apply strictConvexOn_of_deriv2_pos' (convex_Ioi 0)
   · exact (continuousOn_zpow₀ m).mono fun x hx => ne_of_gt hx
@@ -113,7 +113,7 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
 
 section SqrtMulLog
 
-theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
+lemma hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
     HasDerivAt (fun x => sqrt x * log x) ((2 + log x) / (2 * sqrt x)) x := by
   convert (hasDerivAt_sqrt hx).mul (hasDerivAt_log hx) using 1
   rw [add_div, div_mul_right (sqrt x) two_ne_zero, ← div_eq_mul_inv, sqrt_div_self', add_comm,
@@ -130,7 +130,7 @@ theorem deriv_sqrt_mul_log (x : ℝ) :
     rw [sqrt_eq_zero_of_nonpos hx, zero_mul]
 #align deriv_sqrt_mul_log deriv_sqrt_mul_log
 
-theorem deriv_sqrt_mul_log' :
+lemma deriv_sqrt_mul_log' :
     (deriv fun x => sqrt x * log x) = fun x => (2 + log x) / (2 * sqrt x) :=
   funext deriv_sqrt_mul_log
 #align deriv_sqrt_mul_log' deriv_sqrt_mul_log'
@@ -152,7 +152,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     ring
 #align deriv2_sqrt_mul_log deriv2_sqrt_mul_log
 
-theorem strictConcaveOn_sqrt_mul_log_Ioi :
+lemma strictConcaveOn_sqrt_mul_log_Ioi :
     StrictConcaveOn ℝ (Set.Ioi 1) fun x => sqrt x * log x := by
   apply strictConcaveOn_of_deriv2_neg' (convex_Ioi 1) _ fun x hx => ?_
   · exact continuous_sqrt.continuousOn.mul
@@ -166,13 +166,13 @@ end SqrtMulLog
 
 open scoped Real
 
-theorem strictConcaveOn_sin_Icc : StrictConcaveOn ℝ (Icc 0 π) sin := by
+lemma strictConcaveOn_sin_Icc : StrictConcaveOn ℝ (Icc 0 π) sin := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc _ _) continuousOn_sin fun x hx => ?_
   rw [interior_Icc] at hx
   simp [sin_pos_of_mem_Ioo hx]
 #align strict_concave_on_sin_Icc strictConcaveOn_sin_Icc
 
-theorem strictConcaveOn_cos_Icc : StrictConcaveOn ℝ (Icc (-(π / 2)) (π / 2)) cos := by
+lemma strictConcaveOn_cos_Icc : StrictConcaveOn ℝ (Icc (-(π / 2)) (π / 2)) cos := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc _ _) continuousOn_cos fun x hx => ?_
   rw [interior_Icc] at hx
   simp [cos_pos_of_mem_Ioo hx]

@@ -112,14 +112,14 @@ theorem squashSeq_eq_self_of_terminated (terminated_at_succ_n : s.TerminatedAt (
 
 /-- If the sequence has not terminated before position `n + 1`, the value at `n + 1` gets
 squashed into position `n`. -/
-theorem squashSeq_nth_of_not_terminated {gp_n gp_succ_n : Pair K} (s_nth_eq : s.get? n = some gp_n)
+lemma squashSeq_nth_of_not_terminated {gp_n gp_succ_n : Pair K} (s_nth_eq : s.get? n = some gp_n)
     (s_succ_nth_eq : s.get? (n + 1) = some gp_succ_n) :
     (squashSeq s n).get? n = some ⟨gp_n.a, gp_n.b + gp_succ_n.a / gp_succ_n.b⟩ := by
   simp [*, squashSeq]
 #align generalized_continued_fraction.squash_seq_nth_of_not_terminated GeneralizedContinuedFraction.squashSeq_nth_of_not_terminated
 
 /-- The values before the squashed position stay the same. -/
-theorem squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m = s.get? m := by
+lemma squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m = s.get? m := by
   cases s_succ_nth_eq : s.get? (n + 1)
   case none => rw [squashSeq_eq_self_of_terminated s_succ_nth_eq]
   case some =>
@@ -132,7 +132,7 @@ theorem squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m 
 
 /-- Squashing at position `n + 1` and taking the tail is the same as squashing the tail of the
 sequence at position `n`. -/
-theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
+lemma squashSeq_succ_n_tail_eq_squashSeq_tail_n :
     (squashSeq s (n + 1)).tail = squashSeq s.tail n := by
   cases' s_succ_succ_nth_eq : s.get? (n + 2) with gp_succ_succ_n
   case none =>
@@ -155,7 +155,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
 
 /-- The auxiliary function `convergents'Aux` returns the same value for a sequence and the
 corresponding squashed sequence at the squashed position. -/
-theorem succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squashSeq :
+lemma succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squashSeq :
     convergents'Aux s (n + 2) = convergents'Aux (squashSeq s n) (n + 1) := by
   cases' s_succ_nth_eq : s.get? <| n + 1 with gp_succ_n
   case none =>
@@ -217,14 +217,14 @@ theorem squashGCF_eq_self_of_terminated (terminated_at_n : TerminatedAt g n) :
 #align generalized_continued_fraction.squash_gcf_eq_self_of_terminated GeneralizedContinuedFraction.squashGCF_eq_self_of_terminated
 
 /-- The values before the squashed position stay the same. -/
-theorem squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
+lemma squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
     (squashGCF g (n + 1)).s.get? m = g.s.get? m := by
   simp only [squashGCF, squashSeq_nth_of_lt m_lt_n, Nat.add_eq, add_zero]
 #align generalized_continued_fraction.squash_gcf_nth_of_lt GeneralizedContinuedFraction.squashGCF_nth_of_lt
 
 /-- `convergents'` returns the same value for a gcf and the corresponding squashed gcf at the
 squashed position. -/
-theorem succ_nth_convergent'_eq_squashGCF_nth_convergent' :
+lemma succ_nth_convergent'_eq_squashGCF_nth_convergent' :
     g.convergents' (n + 1) = (squashGCF g n).convergents' n := by
   cases n
   case zero =>
@@ -236,7 +236,7 @@ theorem succ_nth_convergent'_eq_squashGCF_nth_convergent' :
 #align generalized_continued_fraction.succ_nth_convergent'_eq_squash_gcf_nth_convergent' GeneralizedContinuedFraction.succ_nth_convergent'_eq_squashGCF_nth_convergent'
 
 /-- The auxiliary continuants before the squashed position stay the same. -/
-theorem continuantsAux_eq_continuantsAux_squashGCF_of_le {m : ℕ} :
+lemma continuantsAux_eq_continuantsAux_squashGCF_of_le {m : ℕ} :
     m ≤ n → continuantsAux g m = (squashGCF g n).continuantsAux m :=
   Nat.strong_induction_on m
     (by
@@ -263,7 +263,7 @@ end WithDivisionRing
 
 /-- The convergents coincide in the expected way at the squashed position if the partial denominator
 at the squashed position is not zero. -/
-theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
+lemma succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
     (nth_part_denom_ne_zero : ∀ {b : K}, g.partialDenominators.get? n = some b → b ≠ 0) :
     g.convergents (n + 1) = (squashGCF g n).convergents n := by
   cases' Decidable.em (g.TerminatedAt n) with terminated_at_n not_terminated_at_n
@@ -341,7 +341,7 @@ In practice, one most commonly deals with (regular) continued fractions, which s
 positivity criterion required here. The analogous result for them
 (see `ContinuedFractions.convergents_eq_convergents`) hence follows directly from this theorem.
 -/
-theorem convergents_eq_convergents' [LinearOrderedField K]
+lemma convergents_eq_convergents' [LinearOrderedField K]
     (s_pos : ∀ {gp : Pair K} {m : ℕ}, m < n → g.s.get? m = some gp → 0 < gp.a ∧ 0 < gp.b) :
     g.convergents n = g.convergents' n := by
   induction' n with n IH generalizing g
@@ -401,7 +401,7 @@ namespace ContinuedFraction
 
 /-- Shows that the recurrence relation (`convergents`) and direct evaluation (`convergents'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convergents_eq_convergents' [LinearOrderedField K] {c : ContinuedFraction K} :
+nonrec lemma convergents_eq_convergents' [LinearOrderedField K] {c : ContinuedFraction K} :
     (↑c : GeneralizedContinuedFraction K).convergents =
     (↑c : GeneralizedContinuedFraction K).convergents' := by
   ext n

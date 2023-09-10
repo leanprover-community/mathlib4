@@ -75,12 +75,12 @@ def forget (X : C) : MonoOver X ⥤ Over X :=
 instance : CoeOut (MonoOver X) C where coe Y := Y.obj.left
 
 @[simp]
-theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
+lemma forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
   rfl
 #align category_theory.mono_over.forget_obj_left CategoryTheory.MonoOver.forget_obj_left
 
 @[simp]
-theorem mk'_coe' {X A : C} (f : A ⟶ X) [Mono f] : (mk' f : C) = A :=
+lemma mk'_coe' {X A : C} (f : A ⟶ X) [Mono f] : (mk' f : C) = A :=
   rfl
 #align category_theory.mono_over.mk'_coe' CategoryTheory.MonoOver.mk'_coe'
 
@@ -90,12 +90,12 @@ abbrev arrow (f : MonoOver X) : (f : C) ⟶ X :=
 #align category_theory.mono_over.arrow CategoryTheory.MonoOver.arrow
 
 @[simp]
-theorem mk'_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk' f).arrow = f :=
+lemma mk'_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk' f).arrow = f :=
   rfl
 #align category_theory.mono_over.mk'_arrow CategoryTheory.MonoOver.mk'_arrow
 
 @[simp]
-theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
+lemma forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
   rfl
 #align category_theory.mono_over.forget_obj_hom CategoryTheory.MonoOver.forget_obj_hom
 
@@ -119,7 +119,7 @@ instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
 #align category_theory.mono_over.is_thin CategoryTheory.MonoOver.isThin
 
 @[reassoc]
-theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
+lemma w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
   Over.w _
 #align category_theory.mono_over.w CategoryTheory.MonoOver.w
 
@@ -180,7 +180,7 @@ theorem lift_comm (F : Over Y ⥤ Over X)
 #align category_theory.mono_over.lift_comm CategoryTheory.MonoOver.lift_comm
 
 @[simp]
-theorem lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
+lemma lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
     (h : ∀ f : MonoOver Y, Mono (F.obj ((MonoOver.forget Y).obj f)).hom) (f : MonoOver Y) :
     ((lift F h).obj f).arrow = (F.obj ((forget Y).obj f)).hom :=
   rfl

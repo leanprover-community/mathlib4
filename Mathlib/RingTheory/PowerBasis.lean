@@ -78,15 +78,15 @@ theorem coe_basis (pb : PowerBasis R S) : ⇑pb.basis = fun i : Fin pb.dim => pb
 #align power_basis.coe_basis PowerBasis.coe_basis
 
 /-- Cannot be an instance because `PowerBasis` cannot be a class. -/
-theorem finiteDimensional [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional K S :=
+lemma finiteDimensional [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional K S :=
   FiniteDimensional.of_fintype_basis pb.basis
 #align power_basis.finite_dimensional PowerBasis.finiteDimensional
 
-theorem finrank [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional.finrank K S = pb.dim := by
+lemma finrank [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional.finrank K S = pb.dim := by
   rw [FiniteDimensional.finrank_eq_card_basis pb.basis, Fintype.card_fin]
 #align power_basis.finrank PowerBasis.finrank
 
-theorem mem_span_pow' {x y : S} {d : ℕ} :
+lemma mem_span_pow' {x y : S} {d : ℕ} :
     y ∈ Submodule.span R (Set.range fun i : Fin d => x ^ (i : ℕ)) ↔
       ∃ f : R[X], f.degree < d ∧ y = aeval x f := by
   have : (Set.range fun i : Fin d => x ^ (i : ℕ)) = (fun i : ℕ => x ^ i) '' ↑(Finset.range d) := by
@@ -102,7 +102,7 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
   exact Iff.rfl
 #align power_basis.mem_span_pow' PowerBasis.mem_span_pow'
 
-theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
+lemma mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     y ∈ Submodule.span R (Set.range fun i : Fin d => x ^ (i : ℕ)) ↔
       ∃ f : R[X], f.natDegree < d ∧ y = aeval x f := by
   rw [mem_span_pow']
@@ -116,15 +116,15 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
       · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
 #align power_basis.mem_span_pow PowerBasis.mem_span_pow
 
-theorem dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
+lemma dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
   not_nonempty_iff.mpr (h.symm ▸ Fin.isEmpty : IsEmpty (Fin pb.dim)) pb.basis.index_nonempty
 #align power_basis.dim_ne_zero PowerBasis.dim_ne_zero
 
-theorem dim_pos [Nontrivial S] (pb : PowerBasis R S) : 0 < pb.dim :=
+lemma dim_pos [Nontrivial S] (pb : PowerBasis R S) : 0 < pb.dim :=
   Nat.pos_of_ne_zero pb.dim_ne_zero
 #align power_basis.dim_pos PowerBasis.dim_pos
 
-theorem exists_eq_aeval [Nontrivial S] (pb : PowerBasis R S) (y : S) :
+lemma exists_eq_aeval [Nontrivial S] (pb : PowerBasis R S) (y : S) :
     ∃ f : R[X], f.natDegree < pb.dim ∧ y = aeval pb.gen f :=
   (mem_span_pow pb.dim_ne_zero).mp (by simpa using pb.basis.mem_span y)
 #align power_basis.exists_eq_aeval PowerBasis.exists_eq_aeval
@@ -135,7 +135,7 @@ theorem exists_eq_aeval' (pb : PowerBasis R S) (y : S) : ∃ f : R[X], y = aeval
   exact ⟨f, hf⟩
 #align power_basis.exists_eq_aeval' PowerBasis.exists_eq_aeval'
 
-theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R S)
+lemma algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R S)
     ⦃f g : S →ₐ[R] S'⦄ (h : f pb.gen = g pb.gen) : f = g := by
   ext x
   obtain ⟨f, rfl⟩ := pb.exists_eq_aeval' x
@@ -184,14 +184,14 @@ theorem dim_le_degree_of_root (h : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0
   exact WithBot.coe_le_coe.2 (h.dim_le_natDegree_of_root ne_zero root)
 #align power_basis.dim_le_degree_of_root PowerBasis.dim_le_degree_of_root
 
-theorem degree_minpolyGen [Nontrivial A] (pb : PowerBasis A S) :
+lemma degree_minpolyGen [Nontrivial A] (pb : PowerBasis A S) :
     degree (minpolyGen pb) = pb.dim := by
   unfold minpolyGen
   rw [degree_sub_eq_left_of_degree_lt] <;> rw [degree_X_pow]
   apply degree_sum_fin_lt
 #align power_basis.degree_minpoly_gen PowerBasis.degree_minpolyGen
 
-theorem natDegree_minpolyGen [Nontrivial A] (pb : PowerBasis A S) :
+lemma natDegree_minpolyGen [Nontrivial A] (pb : PowerBasis A S) :
     natDegree (minpolyGen pb) = pb.dim :=
   natDegree_eq_of_degree_eq_some pb.degree_minpolyGen
 #align power_basis.nat_degree_minpoly_gen PowerBasis.natDegree_minpolyGen
@@ -209,12 +209,12 @@ theorem isIntegral_gen (pb : PowerBasis A S) : IsIntegral A pb.gen :=
 #align power_basis.is_integral_gen PowerBasis.isIntegral_gen
 
 @[simp]
-theorem degree_minpoly [Nontrivial A] (pb : PowerBasis A S) : degree (minpoly A pb.gen) = pb.dim :=
+lemma degree_minpoly [Nontrivial A] (pb : PowerBasis A S) : degree (minpoly A pb.gen) = pb.dim :=
   by rw [← minpolyGen_eq, degree_minpolyGen]
 #align power_basis.degree_minpoly PowerBasis.degree_minpoly
 
 @[simp]
-theorem natDegree_minpoly [Nontrivial A] (pb : PowerBasis A S) :
+lemma natDegree_minpoly [Nontrivial A] (pb : PowerBasis A S) :
     (minpoly A pb.gen).natDegree = pb.dim := by rw [← minpolyGen_eq, natDegree_minpolyGen]
 #align power_basis.nat_degree_minpoly PowerBasis.natDegree_minpoly
 
@@ -424,7 +424,7 @@ open PowerBasis
 
 /-- Useful lemma to show `x` generates a power basis:
 the powers of `x` less than the degree of `x`'s minimal polynomial are linearly independent. -/
-theorem linearIndependent_pow [Algebra K S] (x : S) :
+lemma linearIndependent_pow [Algebra K S] (x : S) :
     LinearIndependent K fun i : Fin (minpoly K x).natDegree => x ^ (i : ℕ) := by
   by_cases IsIntegral K x; swap
   · rw [minpoly.eq_zero h, natDegree_zero]
@@ -440,7 +440,7 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
     exact (if_pos <| Finset.mem_univ _).symm.trans h0
 #align linear_independent_pow linearIndependent_pow
 
-theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
+lemma IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
     (hy : ∃ f : R[X], y = aeval x f) :
     y ∈ Submodule.span R (Set.range fun i : Fin (minpoly R x).natDegree => x ^ (i : ℕ)) := by
   obtain ⟨f, rfl⟩ := hy
@@ -505,7 +505,7 @@ theorem adjoin_gen_eq_top (B : PowerBasis R S) : adjoin R ({B.gen} : Set S) = �
   exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
 #align power_basis.adjoin_gen_eq_top PowerBasis.adjoin_gen_eq_top
 
-theorem adjoin_eq_top_of_gen_mem_adjoin {B : PowerBasis R S} {x : S}
+lemma adjoin_eq_top_of_gen_mem_adjoin {B : PowerBasis R S} {x : S}
     (hx : B.gen ∈ adjoin R ({x} : Set S)) : adjoin R ({x} : Set S) = ⊤ := by
   rw [_root_.eq_top_iff, ← B.adjoin_gen_eq_top]
   refine' adjoin_le _

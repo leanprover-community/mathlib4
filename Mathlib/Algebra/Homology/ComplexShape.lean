@@ -182,7 +182,7 @@ def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α w
 #align complex_shape.down' ComplexShape.down'
 #align complex_shape.down'_rel ComplexShape.down'_Rel
 
-theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
+lemma down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
   (down' a).Rel i j := h
 #align complex_shape.down'_mk ComplexShape.down'_mk
 
@@ -202,7 +202,7 @@ def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 #align complex_shape.down ComplexShape.down
 #align complex_shape.down_rel ComplexShape.down_Rel
 
-theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
+lemma down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
   (down α).Rel i j :=
   down'_mk (1 : α) i j h
 #align complex_shape.down_mk ComplexShape.down_mk

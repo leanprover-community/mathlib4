@@ -65,7 +65,7 @@ instance wellOrderExtension.isWellFounded_lt : IsWellFounded α hwf.wellOrderExt
 #align well_founded.well_order_extension.is_well_founded_lt WellFounded.wellOrderExtension.isWellFounded_lt
 
 /-- Any well-founded relation can be extended to a well-ordering on that type. -/
-theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
+lemma exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
   ⟨hwf.wellOrderExtension.lt, fun _ _ h => Prod.Lex.left _ _ (hwf.rank_lt_of_rel h), ⟨⟩⟩
 #align well_founded.exists_well_order_ge WellFounded.exists_well_order_ge
 
@@ -90,7 +90,7 @@ instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
   WellFounded.wellOrderExtension.isWellFounded_lt _
 #align well_order_extension.well_founded_lt WellOrderExtension.wellFoundedLT
 
-theorem toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
+lemma toWellOrderExtension_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (toWellOrderExtension : α → WellOrderExtension α) := fun _ _ h =>
   Prod.Lex.left _ _ <| WellFounded.rank_lt_of_rel _ h
 #align to_well_order_extension_strict_mono toWellOrderExtension_strictMono

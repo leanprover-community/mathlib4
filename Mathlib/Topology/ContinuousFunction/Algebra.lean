@@ -63,19 +63,19 @@ instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
 #align continuous_map.has_add ContinuousMap.instAdd
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
+lemma coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
   rfl
 #align continuous_map.coe_mul ContinuousMap.coe_mul
 #align continuous_map.coe_add ContinuousMap.coe_add
 
 @[to_additive (attr := simp)]
-theorem mul_apply [Mul β] [ContinuousMul β] (f g : C(α, β)) (x : α) : (f * g) x = f x * g x :=
+lemma mul_apply [Mul β] [ContinuousMul β] (f g : C(α, β)) (x : α) : (f * g) x = f x * g x :=
   rfl
 #align continuous_map.mul_apply ContinuousMap.mul_apply
 #align continuous_map.add_apply ContinuousMap.add_apply
 
 @[to_additive (attr := simp)]
-theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, β)) :
+lemma mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, β)) :
     (f₁ * f₂).comp g = f₁.comp g * f₂.comp g :=
   rfl
 #align continuous_map.mul_comp ContinuousMap.mul_comp
@@ -87,19 +87,19 @@ instance [One β] : One C(α, β) :=
   ⟨const α 1⟩
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_one [One β] : ⇑(1 : C(α, β)) = 1 :=
+lemma coe_one [One β] : ⇑(1 : C(α, β)) = 1 :=
   rfl
 #align continuous_map.coe_one ContinuousMap.coe_one
 #align continuous_map.coe_zero ContinuousMap.coe_zero
 
 @[to_additive (attr := simp)]
-theorem one_apply [One β] (x : α) : (1 : C(α, β)) x = 1 :=
+lemma one_apply [One β] (x : α) : (1 : C(α, β)) x = 1 :=
   rfl
 #align continuous_map.one_apply ContinuousMap.one_apply
 #align continuous_map.zero_apply ContinuousMap.zero_apply
 
 @[to_additive (attr := simp)]
-theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
+lemma one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
   rfl
 #align continuous_map.one_comp ContinuousMap.one_comp
 #align continuous_map.zero_comp ContinuousMap.zero_comp
@@ -109,12 +109,12 @@ instance [NatCast β] : NatCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
 @[simp, norm_cast]
-theorem coe_nat_cast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :=
+lemma coe_nat_cast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :=
   rfl
 #align continuous_map.coe_nat_cast ContinuousMap.coe_nat_cast
 
 @[simp]
-theorem nat_cast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :=
+lemma nat_cast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 #align continuous_map.nat_cast_apply ContinuousMap.nat_cast_apply
 
@@ -123,12 +123,12 @@ instance [IntCast β] : IntCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
 @[simp, norm_cast]
-theorem coe_int_cast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :=
+lemma coe_int_cast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :=
   rfl
 #align continuous_map.coe_int_cast ContinuousMap.coe_int_cast
 
 @[simp]
-theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
+lemma int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 #align continuous_map.int_cast_apply ContinuousMap.int_cast_apply
 
@@ -143,13 +143,13 @@ instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
 #align continuous_map.has_pow ContinuousMap.instPow
 
 @[to_additive (attr := norm_cast)]
-theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
+lemma coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 #align continuous_map.coe_pow ContinuousMap.coe_pow
 #align continuous_map.coe_nsmul ContinuousMap.coe_nsmul
 
 @[to_additive (attr := norm_cast)]
-theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : α) :
+lemma pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : α) :
     (f ^ n) x = f x ^ n :=
   rfl
 #align continuous_map.pow_apply ContinuousMap.pow_apply
@@ -160,7 +160,7 @@ theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : 
 attribute [simp] coe_pow pow_apply
 
 @[to_additive]
-theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C(α, β)) :
+lemma pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C(α, β)) :
     (f ^ n).comp g = f.comp g ^ n :=
   rfl
 #align continuous_map.pow_comp ContinuousMap.pow_comp
@@ -174,19 +174,19 @@ attribute [simp] pow_comp
 instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
+lemma coe_inv [Group β] [TopologicalGroup β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
   rfl
 #align continuous_map.coe_inv ContinuousMap.coe_inv
 #align continuous_map.coe_neg ContinuousMap.coe_neg
 
 @[to_additive (attr := simp)]
-theorem inv_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
+lemma inv_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 #align continuous_map.inv_apply ContinuousMap.inv_apply
 #align continuous_map.neg_apply ContinuousMap.neg_apply
 
 @[to_additive (attr := simp)]
-theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)) :
+lemma inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)) :
     f⁻¹.comp g = (f.comp g)⁻¹ :=
   rfl
 #align continuous_map.inv_comp ContinuousMap.inv_comp
@@ -198,19 +198,19 @@ instance [Div β] [ContinuousDiv β] : Div C(α, β) where
   div f g := ⟨f / g, f.continuous.div' g.continuous⟩
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_div [Div β] [ContinuousDiv β] (f g : C(α, β)) : ⇑(f / g) = f / g :=
+lemma coe_div [Div β] [ContinuousDiv β] (f g : C(α, β)) : ⇑(f / g) = f / g :=
   rfl
 #align continuous_map.coe_div ContinuousMap.coe_div
 #align continuous_map.coe_sub ContinuousMap.coe_sub
 
 @[to_additive (attr := simp)]
-theorem div_apply [Div β] [ContinuousDiv β] (f g : C(α, β)) (x : α) : (f / g) x = f x / g x :=
+lemma div_apply [Div β] [ContinuousDiv β] (f g : C(α, β)) (x : α) : (f / g) x = f x / g x :=
   rfl
 #align continuous_map.div_apply ContinuousMap.div_apply
 #align continuous_map.sub_apply ContinuousMap.sub_apply
 
 @[to_additive (attr := simp)]
-theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
+lemma div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
     (f / g).comp h = f.comp h / g.comp h :=
   rfl
 #align continuous_map.div_comp ContinuousMap.div_comp
@@ -227,13 +227,13 @@ instance instZPow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ where
 #align continuous_map.has_zpow ContinuousMap.instZPow
 
 @[to_additive (attr := norm_cast)]
-theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
+lemma coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
   rfl
 #align continuous_map.coe_zpow ContinuousMap.coe_zpow
 #align continuous_map.coe_zsmul ContinuousMap.coe_zsmul
 
 @[to_additive]
-theorem zpow_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) (x : α) :
+lemma zpow_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) (x : α) :
     (f ^ z) x = f x ^ z :=
   rfl
 #align continuous_map.zpow_apply ContinuousMap.zpow_apply
@@ -244,7 +244,7 @@ theorem zpow_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) (x
 attribute [simp] coe_zpow zpow_apply
 
 @[to_additive]
-theorem zpow_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (g : C(α, β)) :
+lemma zpow_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (g : C(α, β)) :
     (f ^ z).comp g = f.comp g ^ z :=
   rfl
 #align continuous_map.zpow_comp ContinuousMap.zpow_comp
@@ -375,14 +375,14 @@ def compMonoidHom' {γ : Type*} [TopologicalSpace γ] [MulOneClass γ] [Continuo
 open BigOperators
 
 @[to_additive (attr := simp)]
-theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
+lemma coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
     ⇑(∏ i in s, f i) = ∏ i in s, (f i : α → β) :=
   (coeFnMonoidHom : C(α, β) →* _).map_prod f s
 #align continuous_map.coe_prod ContinuousMap.coe_prod
 #align continuous_map.coe_sum ContinuousMap.coe_sum
 
 @[to_additive]
-theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β))
+lemma prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β))
     (a : α) : (∏ i in s, f i) a = ∏ i in s, f i a := by simp
 #align continuous_map.prod_apply ContinuousMap.prod_apply
 #align continuous_map.sum_apply ContinuousMap.sum_apply
@@ -422,19 +422,19 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
 /-- If `α` is locally compact, and an infinite sum of functions in `C(α, β)`
 converges to `g` (for the compact-open topology), then the pointwise sum converges to `g x` for
 all `x ∈ α`. -/
-theorem hasSum_apply {γ : Type*} [AddCommMonoid β] [ContinuousAdd β]
+lemma hasSum_apply {γ : Type*} [AddCommMonoid β] [ContinuousAdd β]
     {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) :
     HasSum (fun i : γ => f i x) (g x) := by
   let ev : C(α, β) →+ β := (Pi.evalAddMonoidHom _ x).comp coeFnAddMonoidHom
   exact hf.map ev (ContinuousMap.continuous_eval_const x)
 #align continuous_map.has_sum_apply ContinuousMap.hasSum_apply
 
-theorem summable_apply [AddCommMonoid β] [ContinuousAdd β] {γ : Type*} {f : γ → C(α, β)}
+lemma summable_apply [AddCommMonoid β] [ContinuousAdd β] {γ : Type*} {f : γ → C(α, β)}
     (hf : Summable f) (x : α) : Summable fun i : γ => f i x :=
   (hasSum_apply hf.hasSum x).summable
 #align continuous_map.summable_apply ContinuousMap.summable_apply
 
-theorem tsum_apply [T2Space β] [AddCommMonoid β] [ContinuousAdd β] {γ : Type*} {f : γ → C(α, β)}
+lemma tsum_apply [T2Space β] [AddCommMonoid β] [ContinuousAdd β] {γ : Type*} {f : γ → C(α, β)}
     (hf : Summable f) (x : α) :
     ∑' i : γ, f i x = (∑' i : γ, f i) x :=
   (hasSum_apply hf.hasSum x).tsum_eq
@@ -607,21 +607,21 @@ instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMu
     exact (continuous_fst.comp continuous_fst).smul h⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
+lemma coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align continuous_map.coe_smul ContinuousMap.coe_smul
 #align continuous_map.coe_vadd ContinuousMap.coe_vadd
 
 -- Porting note: adding `@[simp]` here, as `Pi.smul_apply` no longer fires.
 @[to_additive (attr := simp)]
-theorem smul_apply [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) (a : α) :
+lemma smul_apply [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) (a : α) :
     (c • f) a = c • f a :=
   rfl
 #align continuous_map.smul_apply ContinuousMap.smul_apply
 #align continuous_map.vadd_apply ContinuousMap.vadd_apply
 
 @[to_additive (attr := simp)]
-theorem smul_comp [SMul R M] [ContinuousConstSMul R M] (r : R) (f : C(β, M)) (g : C(α, β)) :
+lemma smul_comp [SMul R M] [ContinuousConstSMul R M] (r : R) (f : C(β, M)) (g : C(α, β)) :
     (r • f).comp g = r • f.comp g :=
   rfl
 #align continuous_map.smul_comp ContinuousMap.smul_comp
@@ -784,7 +784,7 @@ abbrev Subalgebra.SeparatesPoints (s : Subalgebra R C(α, A)) : Prop :=
   Set.SeparatesPoints ((fun f : C(α, A) => (f : α → A)) '' (s : Set C(α, A)))
 #align subalgebra.separates_points Subalgebra.SeparatesPoints
 
-theorem Subalgebra.separatesPoints_monotone :
+lemma Subalgebra.separatesPoints_monotone :
     Monotone fun s : Subalgebra R C(α, A) => s.SeparatesPoints := fun s s' r h x y n => by
   obtain ⟨f, m, w⟩ := h n
   rcases m with ⟨f, ⟨m, rfl⟩⟩
@@ -825,7 +825,7 @@ a subalgebra of functions that separates points also separates points strongly.
 By the hypothesis, we can find a function `f` so `f x ≠ f y`.
 By an affine transformation in the field we can arrange so that `f x = a` and `f x = b`.
 -/
-theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h : s.SeparatesPoints) :
+lemma Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h : s.SeparatesPoints) :
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
@@ -1010,7 +1010,7 @@ def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
 
 /-- `ContinuousMap.compStarAlgHom'` sends the identity continuous map to the identity
 `StarAlgHom` -/
-theorem compStarAlgHom'_id : compStarAlgHom' 𝕜 A (ContinuousMap.id X) = StarAlgHom.id 𝕜 C(X, A) :=
+lemma compStarAlgHom'_id : compStarAlgHom' 𝕜 A (ContinuousMap.id X) = StarAlgHom.id 𝕜 C(X, A) :=
   StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
 #align continuous_map.comp_star_alg_hom'_id ContinuousMap.compStarAlgHom'_id
 
@@ -1027,7 +1027,7 @@ section Periodicity
 /-- Summing the translates of `f` by `ℤ • p` gives a map which is periodic with period `p`.
 (This is true without any convergence conditions, since if the sum doesn't converge it is taken to
 be the zero map, which is periodic.) -/
-theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [AddCommMonoid Y]
+lemma periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [AddCommMonoid Y]
     [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
     Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p := by
   intro x

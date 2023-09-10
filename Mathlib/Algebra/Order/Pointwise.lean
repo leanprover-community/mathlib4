@@ -39,13 +39,13 @@ section One
 variable [One α]
 
 @[to_additive (attr := simp)]
-theorem sSup_one : sSup (1 : Set α) = 1 :=
+lemma sSup_one : sSup (1 : Set α) = 1 :=
   sSup_singleton
 #align Sup_zero sSup_zero
 #align Sup_one sSup_one
 
 @[to_additive (attr := simp)]
-theorem sInf_one : sInf (1 : Set α) = 1 :=
+lemma sInf_one : sInf (1 : Set α) = 1 :=
   sInf_singleton
 #align Inf_zero sInf_zero
 #align Inf_one sInf_one
@@ -72,26 +72,26 @@ theorem sInf_inv (s : Set α) : sInf s⁻¹ = (sSup s)⁻¹ := by
 #align Inf_neg sInf_neg
 
 @[to_additive]
-theorem sSup_mul : sSup (s * t) = sSup s * sSup t :=
+lemma sSup_mul : sSup (s * t) = sSup s * sSup t :=
   (sSup_image2_eq_sSup_sSup fun _ => (OrderIso.mulRight _).to_galoisConnection) fun _ =>
     (OrderIso.mulLeft _).to_galoisConnection
 #align Sup_mul sSup_mul
 #align Sup_add sSup_add
 
 @[to_additive]
-theorem sInf_mul : sInf (s * t) = sInf s * sInf t :=
+lemma sInf_mul : sInf (s * t) = sInf s * sInf t :=
   (sInf_image2_eq_sInf_sInf fun _ => (OrderIso.mulRight _).symm.to_galoisConnection) fun _ =>
     (OrderIso.mulLeft _).symm.to_galoisConnection
 #align Inf_mul sInf_mul
 #align Inf_add sInf_add
 
 @[to_additive]
-theorem sSup_div : sSup (s / t) = sSup s / sInf t := by simp_rw [div_eq_mul_inv, sSup_mul, sSup_inv]
+lemma sSup_div : sSup (s / t) = sSup s / sInf t := by simp_rw [div_eq_mul_inv, sSup_mul, sSup_inv]
 #align Sup_div sSup_div
 #align Sup_sub sSup_sub
 
 @[to_additive]
-theorem sInf_div : sInf (s / t) = sInf s / sSup t := by simp_rw [div_eq_mul_inv, sInf_mul, sInf_inv]
+lemma sInf_div : sInf (s / t) = sInf s / sSup t := by simp_rw [div_eq_mul_inv, sInf_mul, sInf_inv]
 #align Inf_div sInf_div
 #align Inf_sub sInf_sub
 
@@ -108,13 +108,13 @@ section One
 variable [One α]
 
 @[to_additive (attr := simp)]
-theorem csSup_one : sSup (1 : Set α) = 1 :=
+lemma csSup_one : sSup (1 : Set α) = 1 :=
   csSup_singleton _
 #align cSup_zero csSup_zero
 #align cSup_one csSup_one
 
 @[to_additive (attr := simp)]
-theorem csInf_one : sInf (1 : Set α) = 1 :=
+lemma csInf_one : sInf (1 : Set α) = 1 :=
   csInf_singleton _
 #align cInf_zero csInf_zero
 #align cInf_one csInf_one
@@ -182,7 +182,7 @@ open Set
 
 -- Porting note: Removing `include hr`
 
-theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
+lemma smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioo]
   constructor
@@ -196,7 +196,7 @@ theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
     rw [mul_div_cancel' _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ioo LinearOrderedField.smul_Ioo
 
-theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) := by
+lemma smul_Icc : r • Icc a b = Icc (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Icc]
   constructor
@@ -210,7 +210,7 @@ theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) := by
     rw [mul_div_cancel' _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Icc LinearOrderedField.smul_Icc
 
-theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) := by
+lemma smul_Ico : r • Ico a b = Ico (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ico]
   constructor
@@ -224,7 +224,7 @@ theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) := by
     rw [mul_div_cancel' _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ico LinearOrderedField.smul_Ico
 
-theorem smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) := by
+lemma smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioc]
   constructor
@@ -238,7 +238,7 @@ theorem smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) := by
     rw [mul_div_cancel' _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ioc LinearOrderedField.smul_Ioc
 
-theorem smul_Ioi : r • Ioi a = Ioi (r • a) := by
+lemma smul_Ioi : r • Ioi a = Ioi (r • a) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioi]
   constructor
@@ -251,7 +251,7 @@ theorem smul_Ioi : r • Ioi a = Ioi (r • a) := by
     exact mul_div_cancel' _ (ne_of_gt hr)
 #align linear_ordered_field.smul_Ioi LinearOrderedField.smul_Ioi
 
-theorem smul_Iio : r • Iio a = Iio (r • a) := by
+lemma smul_Iio : r • Iio a = Iio (r • a) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Iio]
   constructor
@@ -264,7 +264,7 @@ theorem smul_Iio : r • Iio a = Iio (r • a) := by
     exact mul_div_cancel' _ (ne_of_gt hr)
 #align linear_ordered_field.smul_Iio LinearOrderedField.smul_Iio
 
-theorem smul_Ici : r • Ici a = Ici (r • a) := by
+lemma smul_Ici : r • Ici a = Ici (r • a) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioi]
   constructor
@@ -277,7 +277,7 @@ theorem smul_Ici : r • Ici a = Ici (r • a) := by
     exact mul_div_cancel' _ (ne_of_gt hr)
 #align linear_ordered_field.smul_Ici LinearOrderedField.smul_Ici
 
-theorem smul_Iic : r • Iic a = Iic (r • a) := by
+lemma smul_Iic : r • Iic a = Iic (r • a) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Iio]
   constructor

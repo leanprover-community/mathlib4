@@ -79,15 +79,15 @@ theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as
 #align homotopy_category.quotient_obj_as HomotopyCategory.quotient_obj_as
 
 @[simp]
-theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient V c).map f.out = f :=
+lemma quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient V c).map f.out = f :=
   Quot.out_eq _
 #align homotopy_category.quotient_map_out HomotopyCategory.quotient_map_out
 
 -- porting note: added to ease the port
-theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
+lemma quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
   Quot.mk _ f = (quotient V c).map f := rfl
 
-theorem eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homotopy f g) :
+lemma eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homotopy f g) :
     (quotient V c).map f = (quotient V c).map g :=
   CategoryTheory.Quotient.sound _ ⟨h⟩
 #align homotopy_category.eq_of_homotopy HomotopyCategory.eq_of_homotopy
@@ -108,7 +108,7 @@ def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
 #align homotopy_category.homotopy_out_map HomotopyCategory.homotopyOutMap
 
 @[simp 1100]
-theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
+lemma quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
 #align homotopy_category.quotient_map_out_comp_out HomotopyCategory.quotient_map_out_comp_out
 

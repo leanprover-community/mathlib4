@@ -43,7 +43,7 @@ abbrev IsSemisimpleModule :=
 #align is_semisimple_module IsSemisimpleModule
 
 -- Making this an instance causes the linter to complain of "dangerous instances"
-theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
+lemma IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
   ⟨⟨0, by
       have h : (⊥ : Submodule R M) ≠ ⊤ := bot_ne_top
       contrapose! h
@@ -58,19 +58,19 @@ theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimple
   (Submodule.orderIsoMapComap l).isSimpleOrder
 #align is_simple_module.congr IsSimpleModule.congr
 
-theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
+lemma isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
   rw [← Set.isSimpleOrder_Iic_iff_isAtom]
   apply OrderIso.isSimpleOrder_iff
   exact Submodule.MapSubtype.relIso m
 #align is_simple_module_iff_is_atom isSimpleModule_iff_isAtom
 
-theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m := by
+lemma isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m := by
   rw [← Set.isSimpleOrder_Ici_iff_isCoatom]
   apply OrderIso.isSimpleOrder_iff
   exact Submodule.comapMkQRelIso m
 #align is_simple_module_iff_is_coatom isSimpleModule_iff_isCoatom
 
-theorem covby_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
+lemma covby_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
   set f : Submodule R B ≃o Set.Iic B := Submodule.MapSubtype.relIso B with hf
   rw [covby_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
@@ -83,7 +83,7 @@ namespace IsSimpleModule
 variable [hm : IsSimpleModule R m]
 
 @[simp]
-theorem isAtom : IsAtom m :=
+lemma isAtom : IsAtom m :=
   isSimpleModule_iff_isAtom.1 hm
 #align is_simple_module.is_atom IsSimpleModule.isAtom
 
@@ -98,7 +98,7 @@ namespace IsSemisimpleModule
 
 variable [IsSemisimpleModule R M]
 
-theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
+lemma sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
   simp_rw [isSimpleModule_iff_isAtom]
   exact sSup_atoms_eq_top
 #align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.sSup_simples_eq_top
@@ -110,7 +110,7 @@ instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
 
 end IsSemisimpleModule
 
-theorem is_semisimple_iff_top_eq_sSup_simples :
+lemma is_semisimple_iff_top_eq_sSup_simples :
     sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ ↔ IsSemisimpleModule R M :=
   ⟨is_semisimple_of_sSup_simples_eq_top, by
     intro
@@ -119,30 +119,30 @@ theorem is_semisimple_iff_top_eq_sSup_simples :
 
 namespace LinearMap
 
-theorem injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) :
+lemma injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) :
     Function.Injective f ∨ f = 0 := by
   rw [← ker_eq_bot, ← ker_eq_top]
   apply eq_bot_or_eq_top
 #align linear_map.injective_or_eq_zero LinearMap.injective_or_eq_zero
 
-theorem injective_of_ne_zero [IsSimpleModule R M] {f : M →ₗ[R] N} (h : f ≠ 0) :
+lemma injective_of_ne_zero [IsSimpleModule R M] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Injective f :=
   f.injective_or_eq_zero.resolve_right h
 #align linear_map.injective_of_ne_zero LinearMap.injective_of_ne_zero
 
-theorem surjective_or_eq_zero [IsSimpleModule R N] (f : M →ₗ[R] N) :
+lemma surjective_or_eq_zero [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Surjective f ∨ f = 0 := by
   rw [← range_eq_top, ← range_eq_bot, or_comm]
   apply eq_bot_or_eq_top
 #align linear_map.surjective_or_eq_zero LinearMap.surjective_or_eq_zero
 
-theorem surjective_of_ne_zero [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
+lemma surjective_of_ne_zero [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Surjective f :=
   f.surjective_or_eq_zero.resolve_right h
 #align linear_map.surjective_of_ne_zero LinearMap.surjective_of_ne_zero
 
 /-- **Schur's Lemma** for linear maps between (possibly distinct) simple modules -/
-theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M →ₗ[R] N) :
+lemma bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Bijective f ∨ f = 0 := by
   by_cases h : f = 0
   · right
@@ -150,12 +150,12 @@ theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M �
   exact Or.intro_left _ ⟨injective_of_ne_zero h, surjective_of_ne_zero h⟩
 #align linear_map.bijective_or_eq_zero LinearMap.bijective_or_eq_zero
 
-theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
+lemma bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Bijective f :=
   f.bijective_or_eq_zero.resolve_right h
 #align linear_map.bijective_of_ne_zero LinearMap.bijective_of_ne_zero
 
-theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
+lemma isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
     (hf : Function.Surjective f) : IsCoatom (LinearMap.ker f) := by
   rw [← isSimpleModule_iff_isCoatom]
   exact IsSimpleModule.congr (f.quotKerEquivOfSurjective hf)
@@ -204,14 +204,14 @@ namespace JordanHolderModule
 def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
   Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
 
-theorem iso_symm {X Y : Submodule R M × Submodule R M} : Iso X Y → Iso Y X :=
+lemma iso_symm {X Y : Submodule R M × Submodule R M} : Iso X Y → Iso Y X :=
   fun ⟨f⟩ => ⟨f.symm⟩
 
-theorem iso_trans {X Y Z : Submodule R M × Submodule R M} : Iso X Y → Iso Y Z → Iso X Z :=
+lemma iso_trans {X Y Z : Submodule R M × Submodule R M} : Iso X Y → Iso Y Z → Iso X Z :=
   fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
 
 @[nolint unusedArguments]
-theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
+lemma second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
     Iso (X,X ⊔ Y) (X ⊓ Y,Y) := by
   constructor
   rw [sup_comm, inf_comm]

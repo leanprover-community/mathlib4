@@ -37,7 +37,7 @@ theorem exp_neg_integrableOn_Ioi (a : ℝ) {b : ℝ} (h : 0 < b) :
 
 /-- If `f` is continuous on `[a, ∞)`, and is `O (exp (-b * x))` at `∞` for some `b > 0`, then
 `f` is integrable on `(a, ∞)`. -/
-theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
+lemma integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     (h1 : ContinuousOn f (Ici a)) (h2 : f =O[atTop] fun x => exp (-b * x)) :
     IntegrableOn f (Ioi a) := by
   cases' h2.isBigOWith with c h3

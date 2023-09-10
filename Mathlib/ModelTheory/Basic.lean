@@ -92,7 +92,7 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
 instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
 
 @[simp]
-theorem lift_mk {i : ℕ} :
+lemma lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
@@ -100,7 +100,7 @@ theorem lift_mk {i : ℕ} :
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
-theorem sum_card : Cardinal.sum (fun i => #(Sequence₂ a₀ a₁ a₂ i)) = #a₀ + #a₁ + #a₂ := by
+lemma sum_card : Cardinal.sum (fun i => #(Sequence₂ a₀ a₁ a₂ i)) = #a₀ + #a₁ + #a₂ := by
   rw [sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ]
   simp [add_assoc, Sequence₂]
 #align first_order.sequence₂.sum_card FirstOrder.Sequence₂.sum_card
@@ -170,7 +170,7 @@ class IsAlgebraic : Prop where
 
 variable {L} {L' : Language.{u', v'}}
 
-theorem card_eq_card_functions_add_card_relations :
+lemma card_eq_card_functions_add_card_relations :
     L.card =
       (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
         Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
@@ -236,7 +236,7 @@ instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v
 #align first_order.language.subsingleton_mk₂_relations FirstOrder.Language.subsingleton_mk₂_relations
 
 @[simp]
-theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
+lemma empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
 #align first_order.language.empty_card FirstOrder.Language.empty_card
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
@@ -263,7 +263,7 @@ theorem card_relations_sum (i : ℕ) :
 #align first_order.language.card_relations_sum FirstOrder.Language.card_relations_sum
 
 @[simp]
-theorem card_sum :
+lemma card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
@@ -372,13 +372,13 @@ def constantMap (c : L.Constants) : M := funMap c default
 instance : CoeTC L.Constants M :=
   ⟨constantMap⟩
 
-theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
+lemma funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
   congr rfl (funext finZeroElim)
 #align first_order.language.fun_map_eq_coe_constants FirstOrder.Language.funMap_eq_coe_constants
 
 /-- Given a language with a nonempty type of constants, any structure will be nonempty. This cannot
   be a global instance, because `L` becomes a metavariable. -/
-theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :=
+lemma nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :=
   h.map (↑)
 #align first_order.language.nonempty_of_nonempty_constants FirstOrder.Language.nonempty_of_nonempty_constants
 
@@ -477,13 +477,13 @@ instance (priority := 100) StrongHomClass.homClass [L.Structure M]
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
 
 /-- Not an instance to avoid a loop. -/
-theorem HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
+lemma HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
     [FunLike F M fun _ => N] [HomClass L F M N] : StrongHomClass L F M N where
   map_fun := HomClass.map_fun
   map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
 #align first_order.language.hom_class.strong_hom_class_of_is_algebraic FirstOrder.Language.HomClass.strongHomClassOfIsAlgebraic
 
-theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
+lemma HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
     [HomClass L F M N] (φ : F) (c : L.Constants) : φ c = c :=
   (HomClass.map_fun φ c default).trans (congr rfl (funext default))
 #align first_order.language.hom_class.map_constants FirstOrder.Language.HomClass.map_constants
@@ -516,7 +516,7 @@ instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
 #align first_order.language.hom.has_coe_to_fun FirstOrder.Language.Hom.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
+lemma toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
   rfl
 #align first_order.language.hom.to_fun_eq_coe FirstOrder.Language.Hom.toFun_eq_coe
 
@@ -525,7 +525,7 @@ theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align first_order.language.hom.ext FirstOrder.Language.Hom.ext
 
-theorem ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align first_order.language.hom.ext_iff FirstOrder.Language.Hom.ext_iff
 
@@ -638,11 +638,11 @@ def toHom : (M ↪[L] N) → M →[L] N :=
 #align first_order.language.embedding.to_hom FirstOrder.Language.Embedding.toHom
 
 @[simp]
-theorem coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
+lemma coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
   rfl
 #align first_order.language.embedding.coe_to_hom FirstOrder.Language.Embedding.coe_toHom
 
-theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
+lemma coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
   | f, g, h => by
     cases f
     cases g
@@ -656,7 +656,7 @@ theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.embedding.ext FirstOrder.Language.Embedding.ext
 
-theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.embedding.ext_iff FirstOrder.Language.Embedding.ext_iff
 
@@ -673,13 +673,13 @@ def ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) : M
 #align first_order.language.embedding.of_injective FirstOrder.Language.Embedding.ofInjective
 
 @[simp]
-theorem coeFn_ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
+lemma coeFn_ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
     (ofInjective hf : M → N) = f :=
   rfl
 #align first_order.language.embedding.coe_fn_of_injective FirstOrder.Language.Embedding.coeFn_ofInjective
 
 @[simp]
-theorem ofInjective_toHom [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
+lemma ofInjective_toHom [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
     (ofInjective hf).toHom = f := by
   ext; simp
 #align first_order.language.embedding.of_injective_to_hom FirstOrder.Language.Embedding.ofInjective_toHom
@@ -818,7 +818,7 @@ theorem toEmbedding_toHom (f : M ≃[L] N) : f.toEmbedding.toHom = f.toHom :=
 #align first_order.language.equiv.to_embedding_to_hom FirstOrder.Language.Equiv.toEmbedding_toHom
 
 @[simp]
-theorem coe_toHom {f : M ≃[L] N} : (f.toHom : M → N) = (f : M → N) :=
+lemma coe_toHom {f : M ≃[L] N} : (f.toHom : M → N) = (f : M → N) :=
   rfl
 #align first_order.language.equiv.coe_to_hom FirstOrder.Language.Equiv.coe_toHom
 
@@ -827,7 +827,7 @@ theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M �
   rfl
 #align first_order.language.equiv.coe_to_embedding FirstOrder.Language.Equiv.coe_toEmbedding
 
-theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
+lemma coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   FunLike.coe_injective
 #align first_order.language.equiv.coe_injective FirstOrder.Language.Equiv.coe_injective
 
@@ -836,7 +836,7 @@ theorem ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.equiv.ext FirstOrder.Language.Equiv.ext
 
-theorem ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.equiv.ext_iff FirstOrder.Language.Equiv.ext_iff
 
@@ -912,25 +912,25 @@ set_option linter.uppercaseLean3 false in
 variable {L₁ L₂ S}
 
 @[simp]
-theorem funMap_sum_inl {n : ℕ} (f : L₁.Functions n) :
+lemma funMap_sum_inl {n : ℕ} (f : L₁.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inl f) = funMap f :=
   rfl
 #align first_order.language.fun_map_sum_inl FirstOrder.Language.funMap_sum_inl
 
 @[simp]
-theorem funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
+lemma funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inr f) = funMap f :=
   rfl
 #align first_order.language.fun_map_sum_inr FirstOrder.Language.funMap_sum_inr
 
 @[simp]
-theorem relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
+lemma relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inl R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inl FirstOrder.Language.relMap_sum_inl
 
 @[simp]
-theorem relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
+lemma relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
 #align first_order.language.rel_map_sum_inr FirstOrder.Language.relMap_sum_inr
@@ -944,14 +944,14 @@ section
 variable [Language.empty.Structure M] [Language.empty.Structure N]
 
 @[simp]
-theorem empty.nonempty_embedding_iff :
+lemma empty.nonempty_embedding_iff :
     Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
   _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
     Cardinal.lift_mk_le'.symm
 #align first_order.language.empty.nonempty_embedding_iff FirstOrder.Language.empty.nonempty_embedding_iff
 
 @[simp]
-theorem empty.nonempty_equiv_iff :
+lemma empty.nonempty_equiv_iff :
     Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
   _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
     Cardinal.lift_mk_eq'.symm

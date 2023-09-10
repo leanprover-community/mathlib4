@@ -45,7 +45,7 @@ def cancelLeads : R[X] :=
 variable {p q}
 
 @[simp]
-theorem neg_cancelLeads : -p.cancelLeads q = q.cancelLeads p :=
+lemma neg_cancelLeads : -p.cancelLeads q = q.cancelLeads p :=
   neg_sub _ _
 #align polynomial.neg_cancel_leads Polynomial.neg_cancelLeads
 
@@ -77,7 +77,7 @@ section CommRing
 
 variable [CommRing R] {p q : R[X]}
 
-theorem dvd_cancelLeads_of_dvd_of_dvd {r : R[X]} (pq : p ∣ q) (pr : p ∣ r) : p ∣ q.cancelLeads r :=
+lemma dvd_cancelLeads_of_dvd_of_dvd {r : R[X]} (pq : p ∣ q) (pr : p ∣ r) : p ∣ q.cancelLeads r :=
   dvd_sub (pr.trans (Dvd.intro_left _ rfl)) (pq.trans (Dvd.intro_left _ rfl))
 #align polynomial.dvd_cancel_leads_of_dvd_of_dvd Polynomial.dvd_cancelLeads_of_dvd_of_dvd
 

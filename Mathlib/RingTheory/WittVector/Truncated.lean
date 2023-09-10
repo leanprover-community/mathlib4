@@ -83,11 +83,11 @@ def coeff (i : Fin n) (x : TruncatedWittVector p n R) : R :=
 #align truncated_witt_vector.coeff TruncatedWittVector.coeff
 
 @[ext]
-theorem ext {x y : TruncatedWittVector p n R} (h : ∀ i, x.coeff i = y.coeff i) : x = y :=
+lemma ext {x y : TruncatedWittVector p n R} (h : ∀ i, x.coeff i = y.coeff i) : x = y :=
   funext h
 #align truncated_witt_vector.ext TruncatedWittVector.ext
 
-theorem ext_iff {x y : TruncatedWittVector p n R} : x = y ↔ ∀ i, x.coeff i = y.coeff i :=
+lemma ext_iff {x y : TruncatedWittVector p n R} : x = y ↔ ∀ i, x.coeff i = y.coeff i :=
   ⟨fun h i => by rw [h], ext⟩
 #align truncated_witt_vector.ext_iff TruncatedWittVector.ext_iff
 
@@ -115,7 +115,7 @@ theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = 
   rw [out]; dsimp only; rw [dif_pos i.is_lt, Fin.eta]
 #align truncated_witt_vector.coeff_out TruncatedWittVector.coeff_out
 
-theorem out_injective : Injective (@out p n R _) := by
+lemma out_injective : Injective (@out p n R _) := by
   intro x y h
   ext i
   rw [WittVector.ext_iff] at h
@@ -236,16 +236,16 @@ variable (p n R)
 
 variable [CommRing R]
 
-theorem truncateFun_surjective : Surjective (@truncateFun p n R) :=
+lemma truncateFun_surjective : Surjective (@truncateFun p n R) :=
   Function.RightInverse.surjective TruncatedWittVector.truncateFun_out
 #align witt_vector.truncate_fun_surjective WittVector.truncateFun_surjective
 
 @[simp]
-theorem truncateFun_zero : truncateFun n (0 : 𝕎 R) = 0 := rfl
+lemma truncateFun_zero : truncateFun n (0 : 𝕎 R) = 0 := rfl
 #align witt_vector.truncate_fun_zero WittVector.truncateFun_zero
 
 @[simp]
-theorem truncateFun_one : truncateFun n (1 : 𝕎 R) = 1 := rfl
+lemma truncateFun_one : truncateFun n (1 : 𝕎 R) = 1 := rfl
 #align witt_vector.truncate_fun_one WittVector.truncateFun_one
 
 variable {p R}
@@ -327,7 +327,7 @@ noncomputable def truncate : 𝕎 R →+* TruncatedWittVector p n R where
 
 variable (p R)
 
-theorem truncate_surjective : Surjective (truncate n : 𝕎 R → TruncatedWittVector p n R) :=
+lemma truncate_surjective : Surjective (truncate n : 𝕎 R → TruncatedWittVector p n R) :=
   truncateFun_surjective p n R
 #align witt_vector.truncate_surjective WittVector.truncate_surjective
 
@@ -375,19 +375,19 @@ def truncate {m : ℕ} (hm : n ≤ m) : TruncatedWittVector p m R →+* Truncate
 #align truncated_witt_vector.truncate TruncatedWittVector.truncate
 
 @[simp]
-theorem truncate_comp_wittVector_truncate {m : ℕ} (hm : n ≤ m) :
+lemma truncate_comp_wittVector_truncate {m : ℕ} (hm : n ≤ m) :
     (@truncate p _ n R _ m hm).comp (WittVector.truncate m) = WittVector.truncate n :=
   RingHom.liftOfRightInverse_comp _ _ _ _
 #align truncated_witt_vector.truncate_comp_witt_vector_truncate TruncatedWittVector.truncate_comp_wittVector_truncate
 
 @[simp]
-theorem truncate_wittVector_truncate {m : ℕ} (hm : n ≤ m) (x : 𝕎 R) :
+lemma truncate_wittVector_truncate {m : ℕ} (hm : n ≤ m) (x : 𝕎 R) :
     truncate hm (WittVector.truncate m x) = WittVector.truncate n x :=
   RingHom.liftOfRightInverse_comp_apply _ _ _ _ _
 #align truncated_witt_vector.truncate_witt_vector_truncate TruncatedWittVector.truncate_wittVector_truncate
 
 @[simp]
-theorem truncate_truncate {n₁ n₂ n₃ : ℕ} (h1 : n₁ ≤ n₂) (h2 : n₂ ≤ n₃)
+lemma truncate_truncate {n₁ n₂ n₃ : ℕ} (h1 : n₁ ≤ n₂) (h2 : n₂ ≤ n₃)
     (x : TruncatedWittVector p n₃ R) :
     (truncate h1) (truncate h2 x) = truncate (h1.trans h2) x := by
   obtain ⟨x, rfl⟩ := @WittVector.truncate_surjective p _ n₃ R _ x
@@ -395,19 +395,19 @@ theorem truncate_truncate {n₁ n₂ n₃ : ℕ} (h1 : n₁ ≤ n₂) (h2 : n₂
 #align truncated_witt_vector.truncate_truncate TruncatedWittVector.truncate_truncate
 
 @[simp]
-theorem truncate_comp {n₁ n₂ n₃ : ℕ} (h1 : n₁ ≤ n₂) (h2 : n₂ ≤ n₃) :
+lemma truncate_comp {n₁ n₂ n₃ : ℕ} (h1 : n₁ ≤ n₂) (h2 : n₂ ≤ n₃) :
     (@truncate p _ _ R _ _ h1).comp (truncate h2) = truncate (h1.trans h2) := by
   ext1 x; simp only [truncate_truncate, Function.comp_apply, RingHom.coe_comp]
 #align truncated_witt_vector.truncate_comp TruncatedWittVector.truncate_comp
 
-theorem truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (@truncate p _ _ R _ _ hm) := by
+lemma truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (@truncate p _ _ R _ _ hm) := by
   intro x
   obtain ⟨x, rfl⟩ := @WittVector.truncate_surjective p _ _ R _ x
   exact ⟨WittVector.truncate _ x, truncate_wittVector_truncate _ _⟩
 #align truncated_witt_vector.truncate_surjective TruncatedWittVector.truncate_surjective
 
 @[simp]
-theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVector p m R) :
+lemma coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVector p m R) :
     (truncate hm x).coeff i = x.coeff (Fin.castLE hm i) := by
   obtain ⟨y, rfl⟩ := @WittVector.truncate_surjective p _ _ _ _ x
   simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.coe_castLE]
@@ -420,14 +420,14 @@ instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
 
 variable (p n R)
 
-theorem card {R : Type*} [Fintype R] :
+lemma card {R : Type*} [Fintype R] :
     Fintype.card (TruncatedWittVector p n R) = Fintype.card R ^ n := by
   simp only [TruncatedWittVector, Fintype.card_fin, Fintype.card_fun]
 #align truncated_witt_vector.card TruncatedWittVector.card
 
 end Fintype
 
-theorem iInf_ker_truncate : ⨅ i : ℕ, RingHom.ker (@WittVector.truncate p _ i R _) = ⊥ := by
+lemma iInf_ker_truncate : ⨅ i : ℕ, RingHom.ker (@WittVector.truncate p _ i R _) = ⊥ := by
   rw [Submodule.eq_bot_iff]
   intro x hx
   ext
@@ -499,7 +499,7 @@ theorem truncate_lift (s : S) : WittVector.truncate n (lift _ f_compat s) = f n 
 #align witt_vector.truncate_lift WittVector.truncate_lift
 
 @[simp]
-theorem truncate_comp_lift : (WittVector.truncate n).comp (lift _ f_compat) = f n := by
+lemma truncate_comp_lift : (WittVector.truncate n).comp (lift _ f_compat) = f n := by
   ext1; rw [RingHom.comp_apply, truncate_lift]
 #align witt_vector.truncate_comp_lift WittVector.truncate_comp_lift
 

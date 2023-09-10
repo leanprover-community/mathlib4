@@ -86,7 +86,7 @@ open HasEqualizersOfHasPullbacksAndBinaryProducts
 
 -- This is not an instance, as it is not always how one wants to construct equalizers!
 /-- Any category with pullbacks and binary products, has equalizers. -/
-theorem hasEqualizers_of_hasPullbacks_and_binary_products [HasBinaryProducts C] [HasPullbacks C] :
+lemma hasEqualizers_of_hasPullbacks_and_binary_products [HasBinaryProducts C] [HasPullbacks C] :
     HasEqualizers C :=
   { has_limit := fun F =>
       HasLimit.mk
@@ -187,7 +187,7 @@ open HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 
 -- This is not an instance, as it is not always how one wants to construct equalizers!
 /-- Any category with pullbacks and binary products, has equalizers. -/
-theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproducts C]
+lemma hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproducts C]
     [HasPushouts C] : HasCoequalizers C :=
   {
     has_colimit := fun F =>

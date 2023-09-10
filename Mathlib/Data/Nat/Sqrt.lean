@@ -81,19 +81,19 @@ theorem sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
   rw [← succ_mul]; exact le_of_lt_succ (lt_succ_sqrt n)
 #align nat.sqrt_le_add Nat.sqrt_le_add
 
-theorem le_sqrt {m n : ℕ} : m ≤ sqrt n ↔ m * m ≤ n :=
+lemma le_sqrt {m n : ℕ} : m ≤ sqrt n ↔ m * m ≤ n :=
   ⟨fun h => le_trans (mul_self_le_mul_self h) (sqrt_le n),
    fun h => le_of_lt_succ <| mul_self_lt_mul_self_iff.2 <| lt_of_le_of_lt h (lt_succ_sqrt n)⟩
 #align nat.le_sqrt Nat.le_sqrt
 
-theorem le_sqrt' {m n : ℕ} : m ≤ sqrt n ↔ m ^ 2 ≤ n := by simpa only [pow_two] using le_sqrt
+lemma le_sqrt' {m n : ℕ} : m ≤ sqrt n ↔ m ^ 2 ≤ n := by simpa only [pow_two] using le_sqrt
 #align nat.le_sqrt' Nat.le_sqrt'
 
-theorem sqrt_lt {m n : ℕ} : sqrt m < n ↔ m < n * n :=
+lemma sqrt_lt {m n : ℕ} : sqrt m < n ↔ m < n * n :=
   lt_iff_lt_of_le_iff_le le_sqrt
 #align nat.sqrt_lt Nat.sqrt_lt
 
-theorem sqrt_lt' {m n : ℕ} : sqrt m < n ↔ m < n ^ 2 :=
+lemma sqrt_lt' {m n : ℕ} : sqrt m < n ↔ m < n ^ 2 :=
   lt_iff_lt_of_le_iff_le le_sqrt'
 #align nat.sqrt_lt' Nat.sqrt_lt'
 
@@ -101,38 +101,38 @@ theorem sqrt_le_self (n : ℕ) : sqrt n ≤ n :=
   le_trans (le_mul_self _) (sqrt_le n)
 #align nat.sqrt_le_self Nat.sqrt_le_self
 
-theorem sqrt_le_sqrt {m n : ℕ} (h : m ≤ n) : sqrt m ≤ sqrt n :=
+lemma sqrt_le_sqrt {m n : ℕ} (h : m ≤ n) : sqrt m ≤ sqrt n :=
   le_sqrt.2 (le_trans (sqrt_le _) h)
 #align nat.sqrt_le_sqrt Nat.sqrt_le_sqrt
 
 @[simp]
-theorem sqrt_zero : sqrt 0 = 0 := rfl
+lemma sqrt_zero : sqrt 0 = 0 := rfl
 #align nat.sqrt_zero Nat.sqrt_zero
 
-theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
+lemma sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
   ⟨fun h =>
       Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; decide,
     by rintro rfl; simp⟩
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
-theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
+lemma eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
   ⟨fun e => e.symm ▸ sqrt_isSqrt n,
    fun ⟨h₁, h₂⟩ => le_antisymm (le_sqrt.2 h₁) (le_of_lt_succ <| sqrt_lt.2 h₂)⟩
 #align nat.eq_sqrt Nat.eq_sqrt
 
-theorem eq_sqrt' {n q} : q = sqrt n ↔ q ^ 2 ≤ n ∧ n < (q + 1) ^ 2 := by
+lemma eq_sqrt' {n q} : q = sqrt n ↔ q ^ 2 ≤ n ∧ n < (q + 1) ^ 2 := by
   simpa only [pow_two] using eq_sqrt
 #align nat.eq_sqrt' Nat.eq_sqrt'
 
-theorem le_three_of_sqrt_eq_one {n : ℕ} (h : sqrt n = 1) : n ≤ 3 :=
+lemma le_three_of_sqrt_eq_one {n : ℕ} (h : sqrt n = 1) : n ≤ 3 :=
   le_of_lt_succ <| (@sqrt_lt n 2).1 <| by rw [h]; decide
 #align nat.le_three_of_sqrt_eq_one Nat.le_three_of_sqrt_eq_one
 
-theorem sqrt_lt_self {n : ℕ} (h : 1 < n) : sqrt n < n :=
+lemma sqrt_lt_self {n : ℕ} (h : 1 < n) : sqrt n < n :=
   sqrt_lt.2 <| by have := Nat.mul_lt_mul_of_pos_left h (lt_of_succ_lt h); rwa [mul_one] at this
 #align nat.sqrt_lt_self Nat.sqrt_lt_self
 
-theorem sqrt_pos {n : ℕ} : 0 < sqrt n ↔ 0 < n :=
+lemma sqrt_pos {n : ℕ} : 0 < sqrt n ↔ 0 < n :=
   le_sqrt
 #align nat.sqrt_pos Nat.sqrt_pos
 
@@ -158,7 +158,7 @@ theorem sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n :=
 #align nat.sqrt_eq' Nat.sqrt_eq'
 
 @[simp]
-theorem sqrt_one : sqrt 1 = 1 :=
+lemma sqrt_one : sqrt 1 = 1 :=
   sqrt_eq 1
 #align nat.sqrt_one Nat.sqrt_one
 
@@ -193,7 +193,7 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 #align nat.succ_le_succ_sqrt' Nat.succ_le_succ_sqrt'
 
 /-- There are no perfect squares strictly between m² and (m+1)² -/
-theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) :
+lemma not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) :
     ¬∃ t, t * t = n := by
   rintro ⟨t, rfl⟩
   have h1 : m < t := Nat.mul_self_lt_mul_self_iff.mpr hl
@@ -201,7 +201,7 @@ theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) 
   exact (not_lt_of_ge <| le_of_lt_succ h2) h1
 #align nat.not_exists_sq Nat.not_exists_sq
 
-theorem not_exists_sq' {n m : ℕ} (hl : m ^ 2 < n) (hr : n < (m + 1) ^ 2) : ¬∃ t, t ^ 2 = n := by
+lemma not_exists_sq' {n m : ℕ} (hl : m ^ 2 < n) (hr : n < (m + 1) ^ 2) : ¬∃ t, t ^ 2 = n := by
   simpa only [pow_two] using
     not_exists_sq (by simpa only [pow_two] using hl) (by simpa only [pow_two] using hr)
 #align nat.not_exists_sq' Nat.not_exists_sq'

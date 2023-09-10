@@ -74,7 +74,7 @@ def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n →
     simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, mul_sum]
 #align matrix.to_bilin'_aux Matrix.toBilin'Aux
 
-theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
+lemma Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
     M.toBilin'Aux (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j := by
   rw [Matrix.toBilin'Aux]
@@ -115,7 +115,7 @@ theorem BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (
 
 variable [Fintype n] [Fintype o]
 
-theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R₂)) :
+lemma toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R₂)) :
     -- porting note: had to hint the base ring even though it should be clear from context...
     Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₂ := R₂)
       (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
@@ -187,13 +187,13 @@ theorem Matrix.toBilin'_stdBasis (M : Matrix n n R₂) (i j : n) :
 #align matrix.to_bilin'_std_basis Matrix.toBilin'_stdBasis
 
 @[simp]
-theorem BilinForm.toMatrix'_symm :
+lemma BilinForm.toMatrix'_symm :
     (BilinForm.toMatrix'.symm : Matrix n n R₂ ≃ₗ[R₂] _) = Matrix.toBilin' :=
   rfl
 #align bilin_form.to_matrix'_symm BilinForm.toMatrix'_symm
 
 @[simp]
-theorem Matrix.toBilin'_symm :
+lemma Matrix.toBilin'_symm :
     (Matrix.toBilin'.symm : _ ≃ₗ[R₂] Matrix n n R₂) = BilinForm.toMatrix' :=
   BilinForm.toMatrix'.symm_symm
 #align matrix.to_bilin'_symm Matrix.toBilin'_symm
@@ -320,21 +320,21 @@ theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₂ M₂) :
 #align bilinear_form.to_matrix_aux_eq BilinearForm.toMatrixAux_eq
 
 @[simp]
-theorem BilinForm.toMatrix_symm : (BilinForm.toMatrix b).symm = Matrix.toBilin b :=
+lemma BilinForm.toMatrix_symm : (BilinForm.toMatrix b).symm = Matrix.toBilin b :=
   rfl
 #align bilin_form.to_matrix_symm BilinForm.toMatrix_symm
 
 @[simp]
-theorem Matrix.toBilin_symm : (Matrix.toBilin b).symm = BilinForm.toMatrix b :=
+lemma Matrix.toBilin_symm : (Matrix.toBilin b).symm = BilinForm.toMatrix b :=
   (BilinForm.toMatrix b).symm_symm
 #align matrix.to_bilin_symm Matrix.toBilin_symm
 
-theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₂ n) = Matrix.toBilin' := by
+lemma Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₂ n) = Matrix.toBilin' := by
   ext M
   simp only [Matrix.toBilin_apply, Matrix.toBilin'_apply, Pi.basisFun_repr]
 #align matrix.to_bilin_basis_fun Matrix.toBilin_basisFun
 
-theorem BilinForm.toMatrix_basisFun :
+lemma BilinForm.toMatrix_basisFun :
     BilinForm.toMatrix (Pi.basisFun R₂ n) = BilinForm.toMatrix' := by
   ext B
   rw [BilinForm.toMatrix_apply, BilinForm.toMatrix'_apply, Pi.basisFun_apply, Pi.basisFun_apply]
@@ -435,7 +435,7 @@ variable (b : Basis n R₃ M₃)
 variable (J J₃ A A' : Matrix n n R₃)
 
 @[simp]
-theorem isAdjointPair_toBilin' [DecidableEq n] :
+lemma isAdjointPair_toBilin' [DecidableEq n] :
     BilinForm.IsAdjointPair (Matrix.toBilin' J) (Matrix.toBilin' J₃) (Matrix.toLin' A)
         (Matrix.toLin' A') ↔
       Matrix.IsAdjointPair J J₃ A A' := by
@@ -452,7 +452,7 @@ theorem isAdjointPair_toBilin' [DecidableEq n] :
 #align is_adjoint_pair_to_bilin' isAdjointPair_toBilin'
 
 @[simp]
-theorem isAdjointPair_toBilin [DecidableEq n] :
+lemma isAdjointPair_toBilin [DecidableEq n] :
     BilinForm.IsAdjointPair (Matrix.toBilin b J) (Matrix.toBilin b J₃) (Matrix.toLin b b A)
         (Matrix.toLin b b A') ↔
       Matrix.IsAdjointPair J J₃ A A' := by
@@ -467,7 +467,7 @@ theorem isAdjointPair_toBilin [DecidableEq n] :
   rfl
 #align is_adjoint_pair_to_bilin isAdjointPair_toBilin
 
-theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₃) (h : IsUnit P) :
+lemma Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₃) (h : IsUnit P) :
     (Pᵀ * J * P).IsAdjointPair (Pᵀ * J * P) A A' ↔
       J.IsAdjointPair J (P * A * P⁻¹) (P * A' * P⁻¹) := by
   have h' : IsUnit P.det := P.isUnit_iff_isUnit_det.mp h
@@ -501,7 +501,7 @@ def pairSelfAdjointMatricesSubmodule' : Submodule R₃ (Matrix n n R₃) :=
       ((n → R₃) →ₗ[R₃] n → R₃) →ₗ[R₃] Matrix n n R₃)
 #align pair_self_adjoint_matrices_submodule' pairSelfAdjointMatricesSubmodule'
 
-theorem mem_pairSelfAdjointMatricesSubmodule' :
+lemma mem_pairSelfAdjointMatricesSubmodule' :
     A ∈ pairSelfAdjointMatricesSubmodule J J₃ ↔ Matrix.IsAdjointPair J J₃ A A := by
   simp only [mem_pairSelfAdjointMatricesSubmodule]
 #align mem_pair_self_adjoint_matrices_submodule' mem_pairSelfAdjointMatricesSubmodule'
@@ -512,7 +512,7 @@ def selfAdjointMatricesSubmodule' : Submodule R₃ (Matrix n n R₃) :=
   pairSelfAdjointMatricesSubmodule J J
 #align self_adjoint_matrices_submodule' selfAdjointMatricesSubmodule'
 
-theorem mem_selfAdjointMatricesSubmodule' :
+lemma mem_selfAdjointMatricesSubmodule' :
     A ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A := by
   simp only [mem_selfAdjointMatricesSubmodule]
 #align mem_self_adjoint_matrices_submodule' mem_selfAdjointMatricesSubmodule'
@@ -523,7 +523,7 @@ def skewAdjointMatricesSubmodule' : Submodule R₃ (Matrix n n R₃) :=
   pairSelfAdjointMatricesSubmodule (-J) J
 #align skew_adjoint_matrices_submodule' skewAdjointMatricesSubmodule'
 
-theorem mem_skewAdjointMatricesSubmodule' :
+lemma mem_skewAdjointMatricesSubmodule' :
     A ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A := by
   simp only [mem_skewAdjointMatricesSubmodule]
 #align mem_skew_adjoint_matrices_submodule' mem_skewAdjointMatricesSubmodule'
@@ -540,59 +540,59 @@ variable {A : Type*} [CommRing A] [IsDomain A] [Module A M₃] (B₃ : BilinForm
 
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
-theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matrix ι ι R₂}
+lemma _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matrix ι ι R₂}
     (b : Basis ι R₂ M₂) : M.toBilin'.Nondegenerate ↔ (Matrix.toBilin b M).Nondegenerate :=
   (nondegenerate_congr_iff b.equivFun.symm).symm
 #align matrix.nondegenerate_to_bilin'_iff_nondegenerate_to_bilin Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin
 
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
-theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₃} (h : M.Nondegenerate) :
+lemma _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₃} (h : M.Nondegenerate) :
     M.toBilin'.Nondegenerate := fun x hx =>
   h.eq_zero_of_ortho fun y => by simpa only [toBilin'_apply'] using hx y
 #align matrix.nondegenerate.to_bilin' Matrix.Nondegenerate.toBilin'
 
 @[simp]
-theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₃} :
+lemma _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₃} :
     M.toBilin'.Nondegenerate ↔ M.Nondegenerate :=
   ⟨fun h v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w, Matrix.Nondegenerate.toBilin'⟩
 #align matrix.nondegenerate_to_bilin'_iff Matrix.nondegenerate_toBilin'_iff
 
-theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₃} (h : M.Nondegenerate)
+lemma _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₃} (h : M.Nondegenerate)
     (b : Basis ι R₃ M₃) : (toBilin b M).Nondegenerate :=
   (Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin b).mp h.toBilin'
 #align matrix.nondegenerate.to_bilin Matrix.Nondegenerate.toBilin
 
 @[simp]
-theorem _root_.Matrix.nondegenerate_toBilin_iff {M : Matrix ι ι R₃} (b : Basis ι R₃ M₃) :
+lemma _root_.Matrix.nondegenerate_toBilin_iff {M : Matrix ι ι R₃} (b : Basis ι R₃ M₃) :
     (toBilin b M).Nondegenerate ↔ M.Nondegenerate := by
   rw [← Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin, Matrix.nondegenerate_toBilin'_iff]
 #align matrix.nondegenerate_to_bilin_iff Matrix.nondegenerate_toBilin_iff
 
 -- Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
 @[simp]
-theorem nondegenerate_toMatrix'_iff {B : BilinForm R₃ (ι → R₃)} :
+lemma nondegenerate_toMatrix'_iff {B : BilinForm R₃ (ι → R₃)} :
     B.toMatrix'.Nondegenerate ↔ B.Nondegenerate :=
   Matrix.nondegenerate_toBilin'_iff.symm.trans <| (Matrix.toBilin'_toMatrix' B).symm ▸ Iff.rfl
 #align bilin_form.nondegenerate_to_matrix'_iff BilinForm.nondegenerate_toMatrix'_iff
 
-theorem Nondegenerate.toMatrix' {B : BilinForm R₃ (ι → R₃)} (h : B.Nondegenerate) :
+lemma Nondegenerate.toMatrix' {B : BilinForm R₃ (ι → R₃)} (h : B.Nondegenerate) :
     B.toMatrix'.Nondegenerate :=
   nondegenerate_toMatrix'_iff.mpr h
 #align bilin_form.nondegenerate.to_matrix' BilinForm.Nondegenerate.toMatrix'
 
 @[simp]
-theorem nondegenerate_toMatrix_iff {B : BilinForm R₃ M₃} (b : Basis ι R₃ M₃) :
+lemma nondegenerate_toMatrix_iff {B : BilinForm R₃ M₃} (b : Basis ι R₃ M₃) :
     (toMatrix b B).Nondegenerate ↔ B.Nondegenerate :=
   (Matrix.nondegenerate_toBilin_iff b).symm.trans <| (Matrix.toBilin_toMatrix b B).symm ▸ Iff.rfl
 #align bilin_form.nondegenerate_to_matrix_iff BilinForm.nondegenerate_toMatrix_iff
 
-theorem Nondegenerate.toMatrix {B : BilinForm R₃ M₃} (h : B.Nondegenerate) (b : Basis ι R₃ M₃) :
+lemma Nondegenerate.toMatrix {B : BilinForm R₃ M₃} (h : B.Nondegenerate) (b : Basis ι R₃ M₃) :
     (toMatrix b B).Nondegenerate :=
   (nondegenerate_toMatrix_iff b).mpr h
 #align bilin_form.nondegenerate.to_matrix BilinForm.Nondegenerate.toMatrix
 
 -- Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero`
-theorem nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
+lemma nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
     M.toBilin'.Nondegenerate ↔ M.det ≠ 0 := by
   rw [Matrix.nondegenerate_toBilin'_iff, Matrix.nondegenerate_iff_det_ne_zero]
 #align bilin_form.nondegenerate_to_bilin'_iff_det_ne_zero BilinForm.nondegenerate_toBilin'_iff_det_ne_zero
@@ -602,7 +602,7 @@ theorem nondegenerate_toBilin'_of_det_ne_zero' (M : Matrix ι ι A) (h : M.det �
   nondegenerate_toBilin'_iff_det_ne_zero.mpr h
 #align bilin_form.nondegenerate_to_bilin'_of_det_ne_zero' BilinForm.nondegenerate_toBilin'_of_det_ne_zero'
 
-theorem nondegenerate_iff_det_ne_zero {B : BilinForm A M₃} (b : Basis ι A M₃) :
+lemma nondegenerate_iff_det_ne_zero {B : BilinForm A M₃} (b : Basis ι A M₃) :
     B.Nondegenerate ↔ (toMatrix b B).det ≠ 0 := by
   rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix_iff]
 #align bilin_form.nondegenerate_iff_det_ne_zero BilinForm.nondegenerate_iff_det_ne_zero

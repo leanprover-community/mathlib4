@@ -102,7 +102,7 @@ theorem liftAlternating_algebraMap (f : ∀ i, AlternatingMap R M N (Fin i)) (r 
 #align exterior_algebra.lift_alternating_algebra_map ExteriorAlgebra.liftAlternating_algebraMap
 
 @[simp]
-theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N (Fin i))
+lemma liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N (Fin i))
     (v : Fin n → M) : liftAlternating (R := R) (M := M) (N := N) f (ιMulti R n v) = f n v := by
   rw [ιMulti_apply]
   -- porting note: `v` is generalized automatically so it was removed from the next line
@@ -118,7 +118,7 @@ theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N
 #align exterior_algebra.lift_alternating_apply_ι_multi ExteriorAlgebra.liftAlternating_apply_ιMulti
 
 @[simp]
-theorem liftAlternating_comp_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N (Fin i)) :
+lemma liftAlternating_comp_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N (Fin i)) :
     (liftAlternating (R := R) (M := M) (N := N) f).compAlternatingMap (ιMulti R n) = f n :=
   AlternatingMap.ext <| liftAlternating_apply_ιMulti f
 #align exterior_algebra.lift_alternating_comp_ι_multi ExteriorAlgebra.liftAlternating_comp_ιMulti
@@ -138,7 +138,7 @@ theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, AlternatingMap R M
 #align exterior_algebra.lift_alternating_comp ExteriorAlgebra.liftAlternating_comp
 
 @[simp]
-theorem liftAlternating_ιMulti :
+lemma liftAlternating_ιMulti :
     liftAlternating (R := R) (M := M) (N := ExteriorAlgebra R M) (ιMulti R) =
     (LinearMap.id : ExteriorAlgebra R M →ₗ[R] ExteriorAlgebra R M) := by
   ext v

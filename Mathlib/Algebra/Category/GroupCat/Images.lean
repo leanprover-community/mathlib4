@@ -53,7 +53,7 @@ def factorThruImage : G ⟶ image f :=
   f.rangeRestrict
 #align AddCommGroup.factor_thru_image AddCommGroupCat.factorThruImage
 
-theorem image.fac : factorThruImage f ≫ image.ι f = f := by
+lemma image.fac : factorThruImage f ≫ image.ι f = f := by
   ext
   rfl
 #align AddCommGroup.image.fac AddCommGroupCat.image.fac

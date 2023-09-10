@@ -57,7 +57,7 @@ instance (H : Subgroup G) [Countable H] : Countable (opposite H) :=
   Countable.of_equiv H H.oppositeEquiv
 
 @[to_additive]
-theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : opposite H) :
+lemma smul_opposite_mul {H : Subgroup G} (x g : G) (h : opposite H) :
     h • (g * x) = g * h • x :=
   mul_assoc _ _ _
 #align subgroup.smul_opposite_mul Subgroup.smul_opposite_mul

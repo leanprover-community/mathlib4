@@ -44,7 +44,7 @@ theorem count_true_add_count_false (l : List Bool) : count true l + count false 
   count_not_add_count l false
 #align list.count_tt_add_count_ff List.count_true_add_count_false
 
-theorem Chain.count_not :
+lemma Chain.count_not :
     ∀ {b : Bool} {l : List Bool}, Chain (· ≠ ·) b l → count (!b) l = count b l + length l % 2
   | b, [], _h => rfl
   | b, x :: l, h => by

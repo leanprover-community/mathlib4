@@ -23,7 +23,7 @@ open scoped Topology
 
 namespace Real
 
-theorem Icc_mem_vitaliFamily_at_right {x y : ℝ} (hxy : x < y) :
+lemma Icc_mem_vitaliFamily_at_right {x y : ℝ} (hxy : x < y) :
     Icc x y ∈ (vitaliFamily (volume : Measure ℝ) 1).setsAt x := by
   rw [Icc_eq_closedBall]
   refine' closedBall_mem_vitaliFamily_of_dist_le_mul _ _ (by linarith)
@@ -41,7 +41,7 @@ theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
     exact Icc_subset_Icc (by linarith) hy.2
 #align real.tendsto_Icc_vitali_family_right Real.tendsto_Icc_vitaliFamily_right
 
-theorem Icc_mem_vitaliFamily_at_left {x y : ℝ} (hxy : x < y) :
+lemma Icc_mem_vitaliFamily_at_left {x y : ℝ} (hxy : x < y) :
     Icc x y ∈ (vitaliFamily (volume : Measure ℝ) 1).setsAt y := by
   rw [Icc_eq_closedBall]
   refine' closedBall_mem_vitaliFamily_of_dist_le_mul _ _ (by linarith)

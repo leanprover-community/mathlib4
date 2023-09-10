@@ -111,40 +111,40 @@ instance : FunLike (α ≃ β) α (fun _ => β) :=
 #align equiv.coe_fn_mk Equiv.coe_fn_mk
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
-theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
+lemma coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
   FunLike.coe_injective'
 #align equiv.coe_fn_injective Equiv.coe_fn_injective
 
-protected theorem coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
+protected lemma coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
   @FunLike.coe_fn_eq _ _ _ _ e₁ e₂
 #align equiv.coe_inj Equiv.coe_inj
 
-@[ext] theorem ext {f g : Equiv α β} (H : ∀ x, f x = g x) : f = g := FunLike.ext f g H
+@[ext] lemma ext {f g : Equiv α β} (H : ∀ x, f x = g x) : f = g := FunLike.ext f g H
 #align equiv.ext Equiv.ext
 
-protected theorem congr_arg {f : Equiv α β} {x x' : α} : x = x' → f x = f x' :=
+protected lemma congr_arg {f : Equiv α β} {x x' : α} : x = x' → f x = f x' :=
   FunLike.congr_arg f
 #align equiv.congr_arg Equiv.congr_arg
 
-protected theorem congr_fun {f g : Equiv α β} (h : f = g) (x : α) : f x = g x :=
+protected lemma congr_fun {f g : Equiv α β} (h : f = g) (x : α) : f x = g x :=
   FunLike.congr_fun h x
 #align equiv.congr_fun Equiv.congr_fun
 
-theorem ext_iff {f g : Equiv α β} : f = g ↔ ∀ x, f x = g x := FunLike.ext_iff
+lemma ext_iff {f g : Equiv α β} : f = g ↔ ∀ x, f x = g x := FunLike.ext_iff
 #align equiv.ext_iff Equiv.ext_iff
 
-@[ext] theorem Perm.ext {σ τ : Equiv.Perm α} (H : ∀ x, σ x = τ x) : σ = τ := Equiv.ext H
+@[ext] lemma Perm.ext {σ τ : Equiv.Perm α} (H : ∀ x, σ x = τ x) : σ = τ := Equiv.ext H
 #align equiv.perm.ext Equiv.Perm.ext
 
-protected theorem Perm.congr_arg {f : Equiv.Perm α} {x x' : α} : x = x' → f x = f x' :=
+protected lemma Perm.congr_arg {f : Equiv.Perm α} {x x' : α} : x = x' → f x = f x' :=
   Equiv.congr_arg
 #align equiv.perm.congr_arg Equiv.Perm.congr_arg
 
-protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f x = g x :=
+protected lemma Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f x = g x :=
   Equiv.congr_fun h x
 #align equiv.perm.congr_fun Equiv.Perm.congr_fun
 
-theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x := Equiv.ext_iff
+lemma Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x := Equiv.ext_iff
 #align equiv.perm.ext_iff Equiv.Perm.ext_iff
 
 /-- Any type is equivalent to itself. -/
@@ -225,7 +225,7 @@ instance equiv_subsingleton_dom [Subsingleton α] : Subsingleton (α ≃ β) :=
 instance permUnique [Subsingleton α] : Unique (Perm α) :=
   uniqueOfSubsingleton (Equiv.refl α)
 
-theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
+lemma Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _
 #align equiv.perm.subsingleton_eq_refl Equiv.Perm.subsingleton_eq_refl
 
@@ -256,12 +256,12 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
 @[simp] theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β → α) = g := rfl
 #align equiv.coe_fn_symm_mk Equiv.coe_fn_symm_mk
 
-@[simp] theorem coe_refl : (Equiv.refl α : α → α) = id := rfl
+@[simp] lemma coe_refl : (Equiv.refl α : α → α) = id := rfl
 #align equiv.coe_refl Equiv.coe_refl
 
 /-- This cannot be a `simp` lemmas as it incorrectly matches against `e : α ≃ synonym α`, when
 `synonym α` is semireducible. This makes a mess of `Multiplicative.ofAdd` etc. -/
-theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
+lemma Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
   rw [Perm.subsingleton_eq_refl e, coe_refl]
 #align equiv.perm.coe_subsingleton Equiv.Perm.coe_subsingleton
 
@@ -307,29 +307,29 @@ theorem apply_eq_iff_eq_symm_apply (f : α ≃ β) : f x = y ↔ x = f.symm y :=
   rw [apply_eq_iff_eq]
 #align equiv.apply_eq_iff_eq_symm_apply Equiv.apply_eq_iff_eq_symm_apply
 
-@[simp] theorem cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x := rfl
+@[simp] lemma cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x := rfl
 #align equiv.cast_apply Equiv.cast_apply
 
-@[simp] theorem cast_symm {α β} (h : α = β) : (Equiv.cast h).symm = Equiv.cast h.symm := rfl
+@[simp] lemma cast_symm {α β} (h : α = β) : (Equiv.cast h).symm = Equiv.cast h.symm := rfl
 #align equiv.cast_symm Equiv.cast_symm
 
-@[simp] theorem cast_refl {α} (h : α = α := rfl) : Equiv.cast h = Equiv.refl α := rfl
+@[simp] lemma cast_refl {α} (h : α = α := rfl) : Equiv.cast h = Equiv.refl α := rfl
 #align equiv.cast_refl Equiv.cast_refl
 
-@[simp] theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
+@[simp] lemma cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
     (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
   ext fun x => by substs h h2; rfl
 #align equiv.cast_trans Equiv.cast_trans
 
-theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
+lemma cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
   subst h; simp [coe_refl]
 #align equiv.cast_eq_iff_heq Equiv.cast_eq_iff_heq
 
-theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
+lemma symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
   ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
 #align equiv.symm_apply_eq Equiv.symm_apply_eq
 
-theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :=
+lemma eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :=
   (eq_comm.trans e.symm_apply_eq).trans eq_comm
 #align equiv.eq_symm_apply Equiv.eq_symm_apply
 
@@ -339,7 +339,7 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 #align equiv.trans_refl Equiv.trans_refl
 
-@[simp] theorem refl_symm : (Equiv.refl α).symm = Equiv.refl α := rfl
+@[simp] lemma refl_symm : (Equiv.refl α).symm = Equiv.refl α := rfl
 #align equiv.refl_symm Equiv.refl_symm
 
 @[simp] theorem refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := by cases e; rfl
@@ -351,7 +351,7 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 @[simp] theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α := ext <| by simp
 #align equiv.self_trans_symm Equiv.self_trans_symm
 
-theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
+lemma trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
     (ab.trans bc).trans cd = ab.trans (bc.trans cd) := Equiv.ext fun _ => rfl
 #align equiv.trans_assoc Equiv.trans_assoc
 
@@ -394,28 +394,28 @@ def equivCongr (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) w
   right_inv ac := by ext x; simp only [trans_apply, comp_apply, apply_symm_apply]
 #align equiv.equiv_congr Equiv.equivCongr
 
-@[simp] theorem equivCongr_refl {α β} :
+@[simp] lemma equivCongr_refl {α β} :
     (Equiv.refl α).equivCongr (Equiv.refl β) = Equiv.refl (α ≃ β) := by ext; rfl
 #align equiv.equiv_congr_refl Equiv.equivCongr_refl
 
-@[simp] theorem equivCongr_symm {δ} (ab : α ≃ β) (cd : γ ≃ δ) :
+@[simp] lemma equivCongr_symm {δ} (ab : α ≃ β) (cd : γ ≃ δ) :
     (ab.equivCongr cd).symm = ab.symm.equivCongr cd.symm := by ext; rfl
 #align equiv.equiv_congr_symm Equiv.equivCongr_symm
 
-@[simp] theorem equivCongr_trans {δ ε ζ} (ab : α ≃ β) (de : δ ≃ ε) (bc : β ≃ γ) (ef : ε ≃ ζ) :
+@[simp] lemma equivCongr_trans {δ ε ζ} (ab : α ≃ β) (de : δ ≃ ε) (bc : β ≃ γ) (ef : ε ≃ ζ) :
     (ab.equivCongr de).trans (bc.equivCongr ef) = (ab.trans bc).equivCongr (de.trans ef) := by
   ext; rfl
 #align equiv.equiv_congr_trans Equiv.equivCongr_trans
 
-@[simp] theorem equivCongr_refl_left {α β γ} (bg : β ≃ γ) (e : α ≃ β) :
+@[simp] lemma equivCongr_refl_left {α β γ} (bg : β ≃ γ) (e : α ≃ β) :
     (Equiv.refl α).equivCongr bg e = e.trans bg := rfl
 #align equiv.equiv_congr_refl_left Equiv.equivCongr_refl_left
 
-@[simp] theorem equivCongr_refl_right {α β} (ab e : α ≃ β) :
+@[simp] lemma equivCongr_refl_right {α β} (ab e : α ≃ β) :
     ab.equivCongr (Equiv.refl β) e = ab.symm.trans e := rfl
 #align equiv.equiv_congr_refl_right Equiv.equivCongr_refl_right
 
-@[simp] theorem equivCongr_apply_apply {δ} (ab : α ≃ β) (cd : γ ≃ δ) (e : α ≃ γ) (x) :
+@[simp] lemma equivCongr_apply_apply {δ} (ab : α ≃ β) (cd : γ ≃ δ) (e : α ≃ γ) (x) :
     ab.equivCongr cd e x = cd (e (ab.symm x)) := rfl
 #align equiv.equiv_congr_apply_apply Equiv.equivCongr_apply_apply
 
@@ -430,11 +430,11 @@ def permCongr : Perm α' ≃ Perm β' := equivCongr e e
 theorem permCongr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).trans e := rfl
 #align equiv.perm_congr_def Equiv.permCongr_def
 
-@[simp] theorem permCongr_refl : e.permCongr (Equiv.refl _) = Equiv.refl _ := by
+@[simp] lemma permCongr_refl : e.permCongr (Equiv.refl _) = Equiv.refl _ := by
   simp [permCongr_def]
 #align equiv.perm_congr_refl Equiv.permCongr_refl
 
-@[simp] theorem permCongr_symm : e.permCongr.symm = e.symm.permCongr := rfl
+@[simp] lemma permCongr_symm : e.permCongr.symm = e.symm.permCongr := rfl
 #align equiv.perm_congr_symm Equiv.permCongr_symm
 
 @[simp] theorem permCongr_apply (p : Equiv.Perm α') (x) : e.permCongr p x = e (p (e.symm x)) := rfl
@@ -518,13 +518,13 @@ def arrowCongr {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ 
 #align equiv.arrow_congr_apply Equiv.arrowCongr_apply
 #align equiv.arrow_congr Equiv.arrowCongr
 
-theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
+lemma arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
     (f : α₁ → β₁) (g : β₁ → γ₁) :
     arrowCongr ea ec (g ∘ f) = arrowCongr eb ec g ∘ arrowCongr ea eb f := by
   ext; simp only [comp, arrowCongr_apply, eb.symm_apply_apply]
 #align equiv.arrow_congr_comp Equiv.arrowCongr_comp
 
-@[simp] theorem arrowCongr_refl {α β : Sort*} :
+@[simp] lemma arrowCongr_refl {α β : Sort*} :
     arrowCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) := rfl
 #align equiv.arrow_congr_refl Equiv.arrowCongr_refl
 
@@ -548,7 +548,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ :
 #align equiv.arrow_congr' Equiv.arrowCongr'
 #align equiv.arrow_congr'_apply Equiv.arrowCongr'_apply
 
-@[simp] theorem arrowCongr'_refl {α β : Type*} :
+@[simp] lemma arrowCongr'_refl {α β : Type*} :
     arrowCongr' (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) := rfl
 #align equiv.arrow_congr'_refl Equiv.arrowCongr'_refl
 
@@ -567,7 +567,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ :
 #align equiv.conj Equiv.conj
 #align equiv.conj_apply Equiv.conj_apply
 
-@[simp] theorem conj_refl : conj (Equiv.refl α) = Equiv.refl (α → α) := rfl
+@[simp] lemma conj_refl : conj (Equiv.refl α) = Equiv.refl (α → α) := rfl
 #align equiv.conj_refl Equiv.conj_refl
 
 @[simp] theorem conj_symm (e : α ≃ β) : e.conj.symm = e.symm.conj := rfl
@@ -584,19 +584,19 @@ theorem conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f�
   apply arrowCongr_comp
 #align equiv.conj_comp Equiv.conj_comp
 
-theorem eq_comp_symm {α β γ} (e : α ≃ β) (f : β → γ) (g : α → γ) : f = g ∘ e.symm ↔ f ∘ e = g :=
+lemma eq_comp_symm {α β γ} (e : α ≃ β) (f : β → γ) (g : α → γ) : f = g ∘ e.symm ↔ f ∘ e = g :=
   (e.arrowCongr (Equiv.refl γ)).symm_apply_eq.symm
 #align equiv.eq_comp_symm Equiv.eq_comp_symm
 
-theorem comp_symm_eq {α β γ} (e : α ≃ β) (f : β → γ) (g : α → γ) : g ∘ e.symm = f ↔ g = f ∘ e :=
+lemma comp_symm_eq {α β γ} (e : α ≃ β) (f : β → γ) (g : α → γ) : g ∘ e.symm = f ↔ g = f ∘ e :=
   (e.arrowCongr (Equiv.refl γ)).eq_symm_apply.symm
 #align equiv.comp_symm_eq Equiv.comp_symm_eq
 
-theorem eq_symm_comp {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) : f = e.symm ∘ g ↔ e ∘ f = g :=
+lemma eq_symm_comp {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) : f = e.symm ∘ g ↔ e ∘ f = g :=
   ((Equiv.refl γ).arrowCongr e).eq_symm_apply
 #align equiv.eq_symm_comp Equiv.eq_symm_comp
 
-theorem symm_comp_eq {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) : e.symm ∘ g = f ↔ g = e ∘ f :=
+lemma symm_comp_eq {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) : e.symm ∘ g = f ↔ g = e ∘ f :=
   ((Equiv.refl γ).arrowCongr e).symm_apply_eq
 #align equiv.symm_comp_eq Equiv.symm_comp_eq
 
@@ -703,19 +703,19 @@ def psigmaCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ 
 #align equiv.psigma_congr_right_apply Equiv.psigmaCongrRight_apply
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort*}
+lemma psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (psigmaCongrRight F).trans (psigmaCongrRight G) =
       psigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.psigma_congr_right_trans Equiv.psigmaCongrRight_trans
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
+lemma psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.psigma_congr_right_symm Equiv.psigmaCongrRight_symm
 
 -- Porting note: simp can now prove this, so I have removed `@[simp]`
-theorem psigmaCongrRight_refl {α} {β : α → Sort*} :
+lemma psigmaCongrRight_refl {α} {β : α → Sort*} :
     (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := rfl
 #align equiv.psigma_congr_right_refl Equiv.psigmaCongrRight_refl
 
@@ -731,19 +731,19 @@ def sigmaCongrRight {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β
 #align equiv.sigma_congr_right_apply Equiv.sigmaCongrRight_apply
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type*}
+lemma sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) =
       sigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.sigma_congr_right_trans Equiv.sigmaCongrRight_trans
 
 -- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
-theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) :
+lemma sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.sigma_congr_right_symm Equiv.sigmaCongrRight_symm
 
 -- Porting note: simp can now prove this, so I have removed `@[simp]`
-theorem sigmaCongrRight_refl {α} {β : α → Type*} :
+lemma sigmaCongrRight_refl {α} {β : α → Type*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 #align equiv.sigma_congr_right_refl Equiv.sigmaCongrRight_refl
 
@@ -776,18 +776,18 @@ namespace Perm
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight
 
-@[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort _}
+@[simp] lemma sigmaCongrRight_trans {α} {β : α → Sort _}
     (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
   Equiv.sigmaCongrRight_trans F G
 #align equiv.perm.sigma_congr_right_trans Equiv.Perm.sigmaCongrRight_trans
 
-@[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
+@[simp] lemma sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
   Equiv.sigmaCongrRight_symm F
 #align equiv.perm.sigma_congr_right_symm Equiv.Perm.sigmaCongrRight_symm
 
-@[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
+@[simp] lemma sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
   Equiv.sigmaCongrRight_refl
 #align equiv.perm.sigma_congr_right_refl Equiv.Perm.sigmaCongrRight_refl
@@ -848,7 +848,7 @@ def sigmaAssoc {α : Type*} {β : α → Type*} (γ : ∀ a : α, β a → Type*
 
 end
 
-protected theorem exists_unique_congr {p : α → Prop} {q : β → Prop}
+protected lemma exists_unique_congr {p : α → Prop} {q : β → Prop}
     (f : α ≃ β) (h : ∀ {x}, p x ↔ q (f x)) : (∃! x, p x) ↔ ∃! y, q y := by
   constructor
   · rintro ⟨a, ha₁, ha₂⟩
@@ -857,22 +857,22 @@ protected theorem exists_unique_congr {p : α → Prop} {q : β → Prop}
     exact ⟨f.symm b, h.2 (by simpa using hb₁), fun y hy => (eq_symm_apply f).2 (hb₂ _ (h.1 hy))⟩
 #align equiv.exists_unique_congr Equiv.exists_unique_congr
 
-protected theorem exists_unique_congr_left' {p : α → Prop} (f : α ≃ β) :
+protected lemma exists_unique_congr_left' {p : α → Prop} (f : α ≃ β) :
     (∃! x, p x) ↔ ∃! y, p (f.symm y) := Equiv.exists_unique_congr f fun {_} => by simp
 #align equiv.exists_unique_congr_left' Equiv.exists_unique_congr_left'
 
-protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
+protected lemma exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
     (∃! x, p (f x)) ↔ ∃! y, p y := (Equiv.exists_unique_congr_left' f.symm).symm
 #align equiv.exists_unique_congr_left Equiv.exists_unique_congr_left
 
-protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
+protected lemma forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) := by
   constructor <;> intro h₂ x
   · rw [← f.right_inv x]; apply h.mp; apply h₂
   · apply h.mpr; apply h₂
 #align equiv.forall_congr Equiv.forall_congr
 
-protected theorem forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ β)
+protected lemma forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p (f.symm x) ↔ q x) : (∀ x, p x) ↔ ∀ y, q y :=
   (Equiv.forall_congr f.symm h.symm).symm
 #align equiv.forall_congr' Equiv.forall_congr'
@@ -884,38 +884,38 @@ protected theorem forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ 
 -- (Stopping at ternary functions seems reasonable: at least in 1-categorical mathematics,
 -- it's rare to have axioms involving more than 3 elements at once.)
 
-protected theorem forall₂_congr {p : α₁ → β₁ → Prop} {q : α₂ → β₂ → Prop} (eα : α₁ ≃ α₂)
+protected lemma forall₂_congr {p : α₁ → β₁ → Prop} {q : α₂ → β₂ → Prop} (eα : α₁ ≃ α₂)
     (eβ : β₁ ≃ β₂) (h : ∀ {x y}, p x y ↔ q (eα x) (eβ y)) : (∀ x y, p x y) ↔ ∀ x y, q x y :=
   Equiv.forall_congr _ <| Equiv.forall_congr _ h
 #align equiv.forall₂_congr Equiv.forall₂_congr
 
-protected theorem forall₂_congr' {p : α₁ → β₁ → Prop} {q : α₂ → β₂ → Prop}
+protected lemma forall₂_congr' {p : α₁ → β₁ → Prop} {q : α₂ → β₂ → Prop}
     (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂) (h : ∀ {x y}, p (eα.symm x) (eβ.symm y) ↔ q x y) :
     (∀ x y, p x y) ↔ ∀ x y, q x y := (Equiv.forall₂_congr eα.symm eβ.symm h.symm).symm
 #align equiv.forall₂_congr' Equiv.forall₂_congr'
 
-protected theorem forall₃_congr {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop}
+protected lemma forall₃_congr {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop}
     (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂) (eγ : γ₁ ≃ γ₂) (h : ∀ {x y z}, p x y z ↔ q (eα x) (eβ y) (eγ z)) :
     (∀ x y z, p x y z) ↔ ∀ x y z, q x y z :=
   Equiv.forall₂_congr _ _ <| Equiv.forall_congr _ h
 #align equiv.forall₃_congr Equiv.forall₃_congr
 
-protected theorem forall₃_congr' {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop}
+protected lemma forall₃_congr' {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop}
     (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂) (eγ : γ₁ ≃ γ₂)
     (h : ∀ {x y z}, p (eα.symm x) (eβ.symm y) (eγ.symm z) ↔ q x y z) :
     (∀ x y z, p x y z) ↔ ∀ x y z, q x y z :=
   (Equiv.forall₃_congr eα.symm eβ.symm eγ.symm h.symm).symm
 #align equiv.forall₃_congr' Equiv.forall₃_congr'
 
-protected theorem forall_congr_left' {p : α → Prop} (f : α ≃ β) : (∀ x, p x) ↔ ∀ y, p (f.symm y) :=
+protected lemma forall_congr_left' {p : α → Prop} (f : α ≃ β) : (∀ x, p x) ↔ ∀ y, p (f.symm y) :=
   Equiv.forall_congr f <| by simp
 #align equiv.forall_congr_left' Equiv.forall_congr_left'
 
-protected theorem forall_congr_left {p : β → Prop} (f : α ≃ β) : (∀ x, p (f x)) ↔ ∀ y, p y :=
+protected lemma forall_congr_left {p : β → Prop} (f : α ≃ β) : (∀ x, p (f x)) ↔ ∀ y, p y :=
   (Equiv.forall_congr_left' f.symm).symm
 #align equiv.forall_congr_left Equiv.forall_congr_left
 
-protected theorem exists_congr_left {α β} (f : α ≃ β) {p : α → Prop} :
+protected lemma exists_congr_left {α β} (f : α ≃ β) {p : α → Prop} :
     (∃ a, p a) ↔ ∃ b, p (f.symm b) :=
   ⟨fun ⟨a, h⟩ => ⟨f a, by simpa using h⟩, fun ⟨b, h⟩ => ⟨_, h⟩⟩
 #align equiv.exists_congr_left Equiv.exists_congr_left
@@ -936,7 +936,7 @@ protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α 
   right_inv := by rintro ⟨a⟩; simp only [Quot.map, Equiv.apply_symm_apply]
 #align quot.congr Quot.congr
 
-@[simp] theorem congr_mk {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
+@[simp] lemma congr_mk {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
     (eq : ∀ a₁ a₂ : α, ra a₁ a₂ ↔ rb (e a₁) (e a₂)) (a : α) :
     Quot.congr e eq (Quot.mk ra a) = Quot.mk rb (e a) := rfl
 #align quot.congr_mk Quot.congr_mk
@@ -965,7 +965,7 @@ protected def congr {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
     Quotient ra ≃ Quotient rb := Quot.congr e eq
 #align quotient.congr Quotient.congr
 
-@[simp] theorem congr_mk {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
+@[simp] lemma congr_mk {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
     (eq : ∀ a₁ a₂ : α, Setoid.r a₁ a₂ ↔ Setoid.r (e a₁) (e a₂)) (a : α) :
     Quotient.congr e eq (Quotient.mk ra a) = Quotient.mk rb (e a) := rfl
 #align quotient.congr_mk Quotient.congr_mk

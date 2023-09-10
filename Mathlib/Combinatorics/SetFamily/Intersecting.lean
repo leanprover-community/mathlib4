@@ -54,11 +54,11 @@ theorem Intersecting.ne_bot (hs : s.Intersecting) (ha : a ∈ s) : a ≠ ⊥ :=
   ne_of_mem_of_not_mem ha hs.not_bot_mem
 #align set.intersecting.ne_bot Set.Intersecting.ne_bot
 
-theorem intersecting_empty : (∅ : Set α).Intersecting := fun _ => False.elim
+lemma intersecting_empty : (∅ : Set α).Intersecting := fun _ => False.elim
 #align set.intersecting_empty Set.intersecting_empty
 
 @[simp]
-theorem intersecting_singleton : ({a} : Set α).Intersecting ↔ a ≠ ⊥ := by simp [Intersecting]
+lemma intersecting_singleton : ({a} : Set α).Intersecting ↔ a ≠ ⊥ := by simp [Intersecting]
 #align set.intersecting_singleton Set.intersecting_singleton
 
 protected theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥)
@@ -70,7 +70,7 @@ protected theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥)
   · exact hs hb hc
 #align set.intersecting.insert Set.Intersecting.insert
 
-theorem intersecting_insert :
+lemma intersecting_insert :
     (insert a s).Intersecting ↔ s.Intersecting ∧ a ≠ ⊥ ∧ ∀ b ∈ s, ¬Disjoint a b :=
   ⟨fun h =>
     ⟨h.mono <| subset_insert _ _, h.ne_bot <| mem_insert _ _, fun _b hb =>
@@ -78,7 +78,7 @@ theorem intersecting_insert :
     fun h => h.1.insert h.2.1 h.2.2⟩
 #align set.intersecting_insert Set.intersecting_insert
 
-theorem intersecting_iff_pairwise_not_disjoint :
+lemma intersecting_iff_pairwise_not_disjoint :
     s.Intersecting ↔ (s.Pairwise fun a b => ¬Disjoint a b) ∧ s ≠ {⊥} := by
   refine' ⟨fun h => ⟨fun a ha b hb _ => h ha hb, _⟩, fun h a ha b hb hab => _⟩
   · rintro rfl
@@ -96,7 +96,7 @@ protected theorem Subsingleton.intersecting (hs : s.Subsingleton) : s.Intersecti
   intersecting_iff_pairwise_not_disjoint.trans <| and_iff_right <| hs.pairwise _
 #align set.subsingleton.intersecting Set.Subsingleton.intersecting
 
-theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α) :
+lemma intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α) :
     s.Intersecting ↔ s = ∅ := by
   refine'
     subsingleton_of_subsingleton.intersecting.trans
@@ -119,7 +119,7 @@ protected theorem Intersecting.isUpperSet (hs : s.Intersecting)
 #align set.intersecting.is_upper_set Set.Intersecting.isUpperSet
 
 /-- Maximal intersecting families are upper sets. Finset version. -/
-theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting)
+lemma Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting)
     (h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t) : IsUpperSet (s : Set α) := by
   classical
     rintro a b hab ha
@@ -132,27 +132,27 @@ theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting
 
 end SemilatticeInf
 
-theorem Intersecting.exists_mem_set {𝒜 : Set (Set α)} (h𝒜 : 𝒜.Intersecting) {s t : Set α}
+lemma Intersecting.exists_mem_set {𝒜 : Set (Set α)} (h𝒜 : 𝒜.Intersecting) {s t : Set α}
     (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : ∃ a, a ∈ s ∧ a ∈ t :=
   not_disjoint_iff.1 <| h𝒜 hs ht
 #align set.intersecting.exists_mem_set Set.Intersecting.exists_mem_set
 
-theorem Intersecting.exists_mem_finset [DecidableEq α] {𝒜 : Set (Finset α)} (h𝒜 : 𝒜.Intersecting)
+lemma Intersecting.exists_mem_finset [DecidableEq α] {𝒜 : Set (Finset α)} (h𝒜 : 𝒜.Intersecting)
     {s t : Finset α} (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : ∃ a, a ∈ s ∧ a ∈ t :=
   not_disjoint_iff.1 <| disjoint_coe.not.2 <| h𝒜 hs ht
 #align set.intersecting.exists_mem_finset Set.Intersecting.exists_mem_finset
 
 variable [BooleanAlgebra α]
 
-theorem Intersecting.not_compl_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
+lemma Intersecting.not_compl_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
     aᶜ ∉ s := fun h => hs ha h disjoint_compl_right
 #align set.intersecting.not_compl_mem Set.Intersecting.not_compl_mem
 
-theorem Intersecting.not_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
+lemma Intersecting.not_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
   fun h => hs ha h disjoint_compl_left
 #align set.intersecting.not_mem Set.Intersecting.not_mem
 
-theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
+lemma Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by
   rw [Finset.disjoint_left]
   rintro x hx hxc
@@ -160,7 +160,7 @@ theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Inter
   exact hs.not_compl_mem hx' hx
 #align set.intersecting.disjoint_map_compl Set.Intersecting.disjoint_map_compl
 
-theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
+lemma Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
     2 * s.card ≤ Fintype.card α := by
   classical
     refine' (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' _

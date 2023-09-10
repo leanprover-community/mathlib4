@@ -129,7 +129,7 @@ def conesEquiv (B : C) (F : Discrete J ⥤ Over B) :
 #align category_theory.over.construct_products.cones_equiv CategoryTheory.Over.ConstructProducts.conesEquiv
 
 /-- Use the above equivalence to prove we have a limit. -/
-theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J ⥤ Over B)
+lemma has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J ⥤ Over B)
     [HasLimit (widePullbackDiagramOfDiagramOver B F)] : HasLimit F :=
   HasLimit.mk
     { cone := _
@@ -138,24 +138,24 @@ theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J �
 #align category_theory.over.construct_products.has_over_limit_discrete_of_wide_pullback_limit CategoryTheory.Over.ConstructProducts.has_over_limit_discrete_of_widePullback_limit
 
 /-- Given a wide pullback in `C`, construct a product in `C/B`. -/
-theorem over_product_of_widePullback [HasLimitsOfShape (WidePullbackShape J) C] {B : C} :
+lemma over_product_of_widePullback [HasLimitsOfShape (WidePullbackShape J) C] {B : C} :
     HasLimitsOfShape (Discrete J) (Over B) :=
   { has_limit := fun F => has_over_limit_discrete_of_widePullback_limit F }
 #align category_theory.over.construct_products.over_product_of_wide_pullback CategoryTheory.Over.ConstructProducts.over_product_of_widePullback
 
 /-- Given a pullback in `C`, construct a binary product in `C/B`. -/
-theorem over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProducts (Over B) :=
+lemma over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProducts (Over B) :=
   over_product_of_widePullback
 #align category_theory.over.construct_products.over_binary_product_of_pullback CategoryTheory.Over.ConstructProducts.over_binaryProduct_of_pullback
 
 /-- Given all wide pullbacks in `C`, construct products in `C/B`. -/
-theorem over_products_of_widePullbacks [HasWidePullbacks.{w} C] {B : C} :
+lemma over_products_of_widePullbacks [HasWidePullbacks.{w} C] {B : C} :
     HasProducts.{w} (Over B) :=
   fun _ => over_product_of_widePullback
 #align category_theory.over.construct_products.over_products_of_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_products_of_widePullbacks
 
 /-- Given all finite wide pullbacks in `C`, construct finite products in `C/B`. -/
-theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B : C} :
+lemma over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B : C} :
     HasFiniteProducts (Over B) :=
   ⟨fun _ => over_product_of_widePullback⟩
 #align category_theory.over.construct_products.over_finite_products_of_finite_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_finiteProducts_of_finiteWidePullbacks

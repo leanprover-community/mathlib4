@@ -217,7 +217,7 @@ Given a Lie ideal `I ⊆ L` and a Lie submodule `N ⊆ M`, by tensoring the incl
 applying the action of `L` on `M`, we obtain morphism of Lie modules `f : I ⊗ N → L ⊗ M → M`.
 
 This lemma states that `⁅I, N⁆ = range f`. -/
-theorem lieIdeal_oper_eq_tensor_map_range :
+lemma lieIdeal_oper_eq_tensor_map_range :
     ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : (↥I) ⊗[R] (↥N) →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
   rw [← coe_toSubmodule_eq_iff, lieIdeal_oper_eq_linear_span, LieModuleHom.coeSubmodule_range,
     LieModuleHom.coe_linearMap_comp, LinearMap.range_comp, mapIncl_def, coe_linearMap_map,

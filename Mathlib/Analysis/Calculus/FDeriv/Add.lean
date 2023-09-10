@@ -417,7 +417,7 @@ theorem DifferentiableWithinAt.neg (h : DifferentiableWithinAt 𝕜 f s x) :
 #align differentiable_within_at.neg DifferentiableWithinAt.neg
 
 @[simp]
-theorem differentiableWithinAt_neg_iff :
+lemma differentiableWithinAt_neg_iff :
     DifferentiableWithinAt 𝕜 (fun y => -f y) s x ↔ DifferentiableWithinAt 𝕜 f s x :=
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 #align differentiable_within_at_neg_iff differentiableWithinAt_neg_iff
@@ -427,7 +427,7 @@ theorem DifferentiableAt.neg (h : DifferentiableAt 𝕜 f x) : DifferentiableAt 
 #align differentiable_at.neg DifferentiableAt.neg
 
 @[simp]
-theorem differentiableAt_neg_iff : DifferentiableAt 𝕜 (fun y => -f y) x ↔ DifferentiableAt 𝕜 f x :=
+lemma differentiableAt_neg_iff : DifferentiableAt 𝕜 (fun y => -f y) x ↔ DifferentiableAt 𝕜 f x :=
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 #align differentiable_at_neg_iff differentiableAt_neg_iff
 
@@ -436,7 +436,7 @@ theorem DifferentiableOn.neg (h : DifferentiableOn 𝕜 f s) : DifferentiableOn 
 #align differentiable_on.neg DifferentiableOn.neg
 
 @[simp]
-theorem differentiableOn_neg_iff : DifferentiableOn 𝕜 (fun y => -f y) s ↔ DifferentiableOn 𝕜 f s :=
+lemma differentiableOn_neg_iff : DifferentiableOn 𝕜 (fun y => -f y) s ↔ DifferentiableOn 𝕜 f s :=
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 #align differentiable_on_neg_iff differentiableOn_neg_iff
 
@@ -445,7 +445,7 @@ theorem Differentiable.neg (h : Differentiable 𝕜 f) : Differentiable 𝕜 fun
 #align differentiable.neg Differentiable.neg
 
 @[simp]
-theorem differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differentiable 𝕜 f :=
+lemma differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differentiable 𝕜 f :=
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 #align differentiable_neg_iff differentiable_neg_iff
 
@@ -459,7 +459,7 @@ theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
 #align fderiv_within_neg fderivWithin_neg
 
 @[simp]
-theorem fderiv_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
+lemma fderiv_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
   simp only [← fderivWithin_univ, fderivWithin_neg uniqueDiffWithinAt_univ]
 #align fderiv_neg fderiv_neg
 

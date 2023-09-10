@@ -23,18 +23,18 @@ open Real
 
 namespace circle
 
-theorem injective_arg : Injective fun z : circle => arg z := fun z w h =>
+lemma injective_arg : Injective fun z : circle => arg z := fun z w h =>
   Subtype.ext <| ext_abs_arg ((abs_coe_circle z).trans (abs_coe_circle w).symm) h
 #align circle.injective_arg circle.injective_arg
 
 @[simp]
-theorem arg_eq_arg {z w : circle} : arg z = arg w ↔ z = w :=
+lemma arg_eq_arg {z w : circle} : arg z = arg w ↔ z = w :=
   injective_arg.eq_iff
 #align circle.arg_eq_arg circle.arg_eq_arg
 
 end circle
 
-theorem arg_expMapCircle {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (expMapCircle x) = x := by
+lemma arg_expMapCircle {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (expMapCircle x) = x := by
   rw [expMapCircle_apply, exp_mul_I, arg_cos_add_sin_mul_I ⟨h₁, h₂⟩]
 #align arg_exp_map_circle arg_expMapCircle
 
@@ -70,19 +70,19 @@ noncomputable def argEquiv : circle ≃ Ioc (-π) π where
 
 end circle
 
-theorem leftInverse_expMapCircle_arg : LeftInverse expMapCircle (arg ∘ (↑)) :=
+lemma leftInverse_expMapCircle_arg : LeftInverse expMapCircle (arg ∘ (↑)) :=
   expMapCircle_arg
 #align left_inverse_exp_map_circle_arg leftInverse_expMapCircle_arg
 
-theorem invOn_arg_expMapCircle : InvOn (arg ∘ (↑)) expMapCircle (Ioc (-π) π) univ :=
+lemma invOn_arg_expMapCircle : InvOn (arg ∘ (↑)) expMapCircle (Ioc (-π) π) univ :=
   circle.argLocalEquiv.symm.invOn
 #align inv_on_arg_exp_map_circle invOn_arg_expMapCircle
 
-theorem surjOn_expMapCircle_neg_pi_pi : SurjOn expMapCircle (Ioc (-π) π) univ :=
+lemma surjOn_expMapCircle_neg_pi_pi : SurjOn expMapCircle (Ioc (-π) π) univ :=
   circle.argLocalEquiv.symm.surjOn
 #align surj_on_exp_map_circle_neg_pi_pi surjOn_expMapCircle_neg_pi_pi
 
-theorem expMapCircle_eq_expMapCircle {x y : ℝ} :
+lemma expMapCircle_eq_expMapCircle {x y : ℝ} :
     expMapCircle x = expMapCircle y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, expMapCircle_apply, expMapCircle_apply, exp_eq_exp_iff_exists_int]
   refine' exists_congr fun n => _
@@ -90,12 +90,12 @@ theorem expMapCircle_eq_expMapCircle {x y : ℝ} :
   norm_cast
 #align exp_map_circle_eq_exp_map_circle expMapCircle_eq_expMapCircle
 
-theorem periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
+lemma periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
   expMapCircle_eq_expMapCircle.2 ⟨1, by rw [Int.cast_one, one_mul]⟩
 #align periodic_exp_map_circle periodic_expMapCircle
 
 @[simp]
-theorem expMapCircle_two_pi : expMapCircle (2 * π) = 1 :=
+lemma expMapCircle_two_pi : expMapCircle (2 * π) = 1 :=
   periodic_expMapCircle.eq.trans expMapCircle_zero
 #align exp_map_circle_two_pi expMapCircle_two_pi
 
@@ -124,7 +124,7 @@ theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) :
 #align real.angle.coe_exp_map_circle Real.Angle.coe_expMapCircle
 
 @[simp]
-theorem Real.Angle.expMapCircle_zero : Real.Angle.expMapCircle 0 = 1 := by
+lemma Real.Angle.expMapCircle_zero : Real.Angle.expMapCircle 0 = 1 := by
   rw [← Real.Angle.coe_zero, Real.Angle.expMapCircle_coe, _root_.expMapCircle_zero]
 #align real.angle.exp_map_circle_zero Real.Angle.expMapCircle_zero
 

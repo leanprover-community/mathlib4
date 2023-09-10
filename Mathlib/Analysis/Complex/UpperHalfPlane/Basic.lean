@@ -65,9 +65,9 @@ instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 instance : Inhabited ℍ :=
   ⟨⟨Complex.I, by simp⟩⟩
 
-@[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
+@[ext] lemma ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
 
-@[simp, norm_cast] theorem ext_iff {a b : ℍ} : (a : ℂ) = b ↔ a = b := Subtype.coe_inj
+@[simp, norm_cast] lemma ext_iff {a b : ℍ} : (a : ℂ) = b ↔ a = b := Subtype.coe_inj
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
   Subtype.canLift fun (z : ℂ) => 0 < z.im
@@ -84,7 +84,7 @@ def re (z : ℍ) :=
 #align upper_half_plane.re UpperHalfPlane.re
 
 /-- Extensionality lemma in terms of `UpperHalfPlane.re` and `UpperHalfPlane.im`. -/
-theorem ext' {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
+lemma ext' {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
   ext <| Complex.ext hre him
 
 /-- Constructor for `UpperHalfPlane`. It is useful if `⟨z, h⟩` makes Lean use a wrong
@@ -270,12 +270,12 @@ instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
 
 set_option autoImplicit true in
 @[simp]
-theorem coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
+lemma coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
 set_option autoImplicit true in
 @[simp]
-theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
+lemma det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
@@ -329,7 +329,7 @@ end ModularScalarTowers
 
 -- Porting note: in the statement, we used to have coercions `↑· : ℝ`
 -- rather than `algebraMap R ℝ ·`.
-theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
+lemma specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z =
       mk
         (((algebraMap R ℝ (↑ₘ[R] g 0 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 0 1) : ℂ)) /
@@ -401,7 +401,7 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
     _ = Complex.normSq (denom g z) := by dsimp [denom, Complex.normSq]; ring
 #align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
 
-nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
+nonrec lemma SpecialLinearGroup.im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
   simp only [GeneralLinearGroup.val_det_apply, coe_GLPos_coe_GL_coe_matrix,
@@ -426,17 +426,17 @@ instance posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
 variable (x : { x : ℝ // 0 < x }) (z : ℍ)
 
 @[simp]
-theorem coe_pos_real_smul : ↑(x • z) = (x : ℝ) • (z : ℂ) :=
+lemma coe_pos_real_smul : ↑(x • z) = (x : ℝ) • (z : ℂ) :=
   rfl
 #align upper_half_plane.coe_pos_real_smul UpperHalfPlane.coe_pos_real_smul
 
 @[simp]
-theorem pos_real_im : (x • z).im = x * z.im :=
+lemma pos_real_im : (x • z).im = x * z.im :=
   Complex.smul_im _ _
 #align upper_half_plane.pos_real_im UpperHalfPlane.pos_real_im
 
 @[simp]
-theorem pos_real_re : (x • z).re = x * z.re :=
+lemma pos_real_re : (x • z).re = x * z.re :=
   Complex.smul_re _ _
 #align upper_half_plane.pos_real_re UpperHalfPlane.pos_real_re
 
@@ -452,17 +452,17 @@ instance : AddAction ℝ ℍ where
 variable (x : ℝ) (z : ℍ)
 
 @[simp]
-theorem coe_vadd : ↑(x +ᵥ z) = (x + z : ℂ) :=
+lemma coe_vadd : ↑(x +ᵥ z) = (x + z : ℂ) :=
   rfl
 #align upper_half_plane.coe_vadd UpperHalfPlane.coe_vadd
 
 @[simp]
-theorem vadd_re : (x +ᵥ z).re = x + z.re :=
+lemma vadd_re : (x +ᵥ z).re = x + z.re :=
   rfl
 #align upper_half_plane.vadd_re UpperHalfPlane.vadd_re
 
 @[simp]
-theorem vadd_im : (x +ᵥ z).im = z.im :=
+lemma vadd_im : (x +ᵥ z).im = z.im :=
   zero_add _
 #align upper_half_plane.vadd_im UpperHalfPlane.vadd_im
 

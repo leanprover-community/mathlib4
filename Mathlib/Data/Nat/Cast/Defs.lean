@@ -55,10 +55,10 @@ because they are recognized as terms of `R` (at least when `R` is an `AddMonoidW
 instance instOfNat [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
-@[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
+@[simp, norm_cast] lemma Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
   (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
 
-theorem Nat.cast_eq_ofNat [NatCast R] [Nat.AtLeastTwo n] : (Nat.cast n : R) = OfNat.ofNat n := rfl
+lemma Nat.cast_eq_ofNat [NatCast R] [Nat.AtLeastTwo n] : (Nat.cast n : R) = OfNat.ofNat n := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -103,7 +103,7 @@ namespace Nat
 variable [AddMonoidWithOne R]
 
 @[simp, norm_cast]
-theorem cast_zero : ((0 : ℕ) : R) = 0 :=
+lemma cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
 #align nat.cast_zero Nat.cast_zero
 
@@ -130,12 +130,12 @@ end Nat
 namespace Nat
 
 @[simp, norm_cast]
-theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
+lemma cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
 #align nat.cast_one Nat.cast_oneₓ
 
 @[simp, norm_cast]
-theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
+lemma cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
 #align nat.cast_add Nat.cast_addₓ
 
@@ -149,7 +149,7 @@ decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
 #align nat.bin_cast Nat.binCast
 
 @[simp]
-theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : ℕ) : R) := by
+lemma binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : ℕ) : R) := by
   apply Nat.strongInductionOn n
   intros k hk
   cases k with
@@ -171,18 +171,18 @@ section deprecated
 set_option linter.deprecated false
 
 @[norm_cast, deprecated]
-theorem cast_bit0 [AddMonoidWithOne R] (n : ℕ) : ((bit0 n : ℕ) : R) = bit0 (n : R) :=
+lemma cast_bit0 [AddMonoidWithOne R] (n : ℕ) : ((bit0 n : ℕ) : R) = bit0 (n : R) :=
   Nat.cast_add _ _
 #align nat.cast_bit0 Nat.cast_bit0
 
 @[norm_cast, deprecated]
-theorem cast_bit1 [AddMonoidWithOne R] (n : ℕ) : ((bit1 n : ℕ) : R) = bit1 (n : R) := by
+lemma cast_bit1 [AddMonoidWithOne R] (n : ℕ) : ((bit1 n : ℕ) : R) = bit1 (n : R) := by
   rw [bit1, cast_add_one, cast_bit0]; rfl
 #align nat.cast_bit1 Nat.cast_bit1
 
 end deprecated
 
-theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
+lemma cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
 #align nat.cast_two Nat.cast_two
 
 attribute [simp, norm_cast] Int.natAbs_ofNat
@@ -207,18 +207,18 @@ protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMon
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 #align add_monoid_with_one.binary AddMonoidWithOne.binary
 
-theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
+lemma one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
   rw [←Nat.cast_one, ←Nat.cast_add]
   apply congrArg
   decide
 #align one_add_one_eq_two one_add_one_eq_two
 
-theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
+lemma two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
   rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]
   apply congrArg
   decide
 
-theorem three_add_one_eq_four [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
+lemma three_add_one_eq_four [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
   rw [←two_add_one_eq_three, ←one_add_one_eq_two, ←Nat.cast_one,
     ←Nat.cast_add, ←Nat.cast_add, ←Nat.cast_add]
   apply congrArg

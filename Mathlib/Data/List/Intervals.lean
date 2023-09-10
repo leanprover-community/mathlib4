@@ -59,7 +59,7 @@ theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
 #align list.Ico.nodup List.Ico.nodup
 
 @[simp]
-theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
+lemma mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
   cases' le_total n m with hnm hmn
   · rw [add_tsub_cancel_of_le hnm]
@@ -69,7 +69,7 @@ theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
         Iff.intro (fun hln => (not_le_of_gt hln hnl).elim) fun hlm => lt_of_lt_of_le hlm hmn
 #align list.Ico.mem List.Ico.mem
 
-theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
+lemma eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
   simp [Ico, tsub_eq_zero_iff_le.mpr h]
 #align list.Ico.eq_nil_of_le List.Ico.eq_nil_of_le
 
@@ -83,16 +83,16 @@ theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
 #align list.Ico.map_sub List.Ico.map_sub
 
 @[simp]
-theorem self_empty {n : ℕ} : Ico n n = [] :=
+lemma self_empty {n : ℕ} : Ico n n = [] :=
   eq_nil_of_le (le_refl n)
 #align list.Ico.self_empty List.Ico.self_empty
 
 @[simp]
-theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
+lemma eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
   Iff.intro (fun h => tsub_eq_zero_iff_le.mp <| by rw [← length, h, List.length]) eq_nil_of_le
 #align list.Ico.eq_empty_iff List.Ico.eq_empty_iff
 
-theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
+lemma append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
   convert range'_append n (m-n) (l-m) 1 using 2
@@ -116,23 +116,23 @@ theorem bagInter_consecutive (n m l : Nat) :  @List.bagInter ℕ instBEq (Ico n 
 #align list.Ico.bag_inter_consecutive List.Ico.bagInter_consecutive
 
 @[simp]
-theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
+lemma succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
   simp [range', add_tsub_cancel_left]
 #align list.Ico.succ_singleton List.Ico.succ_singleton
 
-theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
+lemma succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
   rwa [← succ_singleton, append_consecutive]
   exact Nat.le_succ _
 #align list.Ico.succ_top List.Ico.succ_top
 
-theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
+lemma eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
   rw [← append_consecutive (Nat.le_succ n) h, succ_singleton]
   rfl
 #align list.Ico.eq_cons List.Ico.eq_cons
 
 @[simp]
-theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
+lemma pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   dsimp [Ico]
   rw [tsub_tsub_cancel_of_le (succ_le_of_lt h)]
   simp [← Nat.one_eq_succ_zero]
@@ -149,23 +149,23 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
 
 -- Porting Note: simp can prove this
 -- @[simp]
-theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
+lemma not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
 #align list.Ico.not_mem_top List.Ico.not_mem_top
 
-theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
+lemma filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
   filter_eq_self.2 fun k hk => by
     simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_True]
 #align list.Ico.filter_lt_of_top_le List.Ico.filter_lt_of_top_le
 
-theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
+lemma filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
   filter_eq_nil.2 fun k hk => by
      simp only [decide_eq_true_eq, not_lt]
      apply le_trans hln
      exact (mem.1 hk).1
 #align list.Ico.filter_lt_of_le_bot List.Ico.filter_lt_of_le_bot
 
-theorem filter_lt_of_ge {n m l : ℕ} (hlm : l ≤ m) :
+lemma filter_lt_of_ge {n m l : ℕ} (hlm : l ≤ m) :
     ((Ico n m).filter fun x => x < l) = Ico n l := by
   cases' le_total n l with hnl hln
   · rw [← append_consecutive hnl hlm, filter_append, filter_lt_of_top_le (le_refl l),
@@ -181,20 +181,20 @@ theorem filter_lt (n m l : ℕ) :
   · rw [min_eq_right hlm, filter_lt_of_ge hlm]
 #align list.Ico.filter_lt List.Ico.filter_lt
 
-theorem filter_le_of_le_bot {n m l : ℕ} (hln : l ≤ n) :
+lemma filter_le_of_le_bot {n m l : ℕ} (hln : l ≤ n) :
     ((Ico n m).filter fun x => l ≤ x) = Ico n m :=
   filter_eq_self.2 fun k hk => by
     rw [decide_eq_true_eq]
     exact le_trans hln (mem.1 hk).1
 #align list.Ico.filter_le_of_le_bot List.Ico.filter_le_of_le_bot
 
-theorem filter_le_of_top_le {n m l : ℕ} (hml : m ≤ l) : ((Ico n m).filter fun x => l ≤ x) = [] :=
+lemma filter_le_of_top_le {n m l : ℕ} (hml : m ≤ l) : ((Ico n m).filter fun x => l ≤ x) = [] :=
   filter_eq_nil.2 fun k hk => by
     rw [decide_eq_true_eq]
     exact not_le_of_gt (lt_of_lt_of_le (mem.1 hk).2 hml)
 #align list.Ico.filter_le_of_top_le List.Ico.filter_le_of_top_le
 
-theorem filter_le_of_le {n m l : ℕ} (hnl : n ≤ l) :
+lemma filter_le_of_le {n m l : ℕ} (hnl : n ≤ l) :
     ((Ico n m).filter fun x => l ≤ x) = Ico l m := by
   cases' le_total l m with hlm hml
   · rw [← append_consecutive hnl hlm, filter_append, filter_le_of_top_le (le_refl l),
@@ -209,14 +209,14 @@ theorem filter_le (n m l : ℕ) : ((Ico n m).filter fun x => l ≤ x) = Ico (max
   · rw [max_eq_left hln, filter_le_of_le_bot hln]
 #align list.Ico.filter_le List.Ico.filter_le
 
-theorem filter_lt_of_succ_bot {n m : ℕ} (hnm : n < m) :
+lemma filter_lt_of_succ_bot {n m : ℕ} (hnm : n < m) :
     ((Ico n m).filter fun x => x < n + 1) = [n] := by
   have r : min m (n + 1) = n + 1 := (@inf_eq_right _ _ m (n + 1)).mpr hnm
   simp [filter_lt n m (n + 1), r]
 #align list.Ico.filter_lt_of_succ_bot List.Ico.filter_lt_of_succ_bot
 
 @[simp]
-theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => x ≤ n) = [n] := by
+lemma filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => x ≤ n) = [n] := by
   rw [← filter_lt_of_succ_bot hnm]
   exact filter_congr' fun _ _ => by
     rw [decide_eq_true_eq, decide_eq_true_eq]

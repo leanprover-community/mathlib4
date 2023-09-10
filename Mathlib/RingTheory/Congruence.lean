@@ -97,7 +97,7 @@ instance : FunLike (RingCon R) R fun _ => R → Prop :=
       subst x; rfl }
 
 @[simp]
-theorem rel_eq_coe : c.r = c :=
+lemma rel_eq_coe : c.r = c :=
   rfl
 #align ring_con.rel_eq_coe RingCon.rel_eq_coe
 
@@ -105,24 +105,24 @@ protected theorem refl (x) : c x x :=
   c.refl' x
 #align ring_con.refl RingCon.refl
 
-protected theorem symm {x y} : c x y → c y x :=
+protected lemma symm {x y} : c x y → c y x :=
   c.symm'
 #align ring_con.symm RingCon.symm
 
-protected theorem trans {x y z} : c x y → c y z → c x z :=
+protected lemma trans {x y z} : c x y → c y z → c x z :=
   c.trans'
 #align ring_con.trans RingCon.trans
 
-protected theorem add {w x y z} : c w x → c y z → c (w + y) (x + z) :=
+protected lemma add {w x y z} : c w x → c y z → c (w + y) (x + z) :=
   c.add'
 #align ring_con.add RingCon.add
 
-protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
+protected lemma mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
   c.mul'
 #align ring_con.mul RingCon.mul
 
 @[simp]
-theorem rel_mk {s : Setoid R} {ha hm a b} : RingCon.mk s ha hm a b ↔ Setoid.r a b :=
+lemma rel_mk {s : Setoid R} {ha hm a b} : RingCon.mk s ha hm a b ↔ Setoid.r a b :=
   Iff.rfl
 #align ring_con.rel_mk RingCon.rel_mk
 
@@ -169,7 +169,7 @@ theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
 /-- Two elements are related by a congruence relation `c` iff they are represented by the same
 element of the quotient by `c`. -/
 @[simp]
-protected theorem eq {a b : R} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
+protected lemma eq {a b : R} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
   Quotient.eq''
 #align ring_con.eq RingCon.eq
 
@@ -210,7 +210,7 @@ variable [AddZeroClass R] [Mul R] (c : RingCon R)
 instance : Zero c.Quotient := inferInstanceAs (Zero c.toAddCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
+lemma coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
   rfl
 #align ring_con.coe_zero RingCon.coe_zero
 
@@ -223,7 +223,7 @@ variable [Add R] [MulOneClass R] (c : RingCon R)
 instance : One c.Quotient := inferInstanceAs (One c.toCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
+lemma coe_one : (↑(1 : R) : c.Quotient) = 1 :=
   rfl
 #align ring_con.coe_one RingCon.coe_one
 

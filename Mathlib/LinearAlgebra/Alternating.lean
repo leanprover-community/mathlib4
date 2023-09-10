@@ -113,7 +113,7 @@ instance coeFun : CoeFun (AlternatingMap R M N ι) fun _ => (ι → M) → N :=
 initialize_simps_projections AlternatingMap (toFun → apply)
 
 @[simp]
-theorem toFun_eq_coe : f.toFun = f :=
+lemma toFun_eq_coe : f.toFun = f :=
   rfl
 #align alternating_map.to_fun_eq_coe AlternatingMap.toFun_eq_coe
 
@@ -124,7 +124,7 @@ theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
   rfl
 #align alternating_map.coe_mk AlternatingMap.coe_mkₓ
 
-theorem congr_fun {f g : AlternatingMap R M N ι} (h : f = g) (x : ι → M) : f x = g x :=
+lemma congr_fun {f g : AlternatingMap R M N ι} (h : f = g) (x : ι → M) : f x = g x :=
   congr_arg (fun h : AlternatingMap R M N ι => h x) h
 #align alternating_map.congr_fun AlternatingMap.congr_fun
 
@@ -132,21 +132,21 @@ theorem congr_arg (f : AlternatingMap R M N ι) {x y : ι → M} (h : x = y) : f
   _root_.congr_arg (fun x : ι → M => f x) h
 #align alternating_map.congr_arg AlternatingMap.congr_arg
 
-theorem coe_injective : Injective ((↑) : AlternatingMap R M N ι → (ι → M) → N) :=
+lemma coe_injective : Injective ((↑) : AlternatingMap R M N ι → (ι → M) → N) :=
   FunLike.coe_injective
 #align alternating_map.coe_injective AlternatingMap.coe_injective
 
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
-theorem coe_inj {f g : AlternatingMap R M N ι} : (f : (ι → M) → N) = g ↔ f = g :=
+lemma coe_inj {f g : AlternatingMap R M N ι} : (f : (ι → M) → N) = g ↔ f = g :=
   coe_injective.eq_iff
 #align alternating_map.coe_inj AlternatingMap.coe_inj
 
 @[ext]
-theorem ext {f f' : AlternatingMap R M N ι} (H : ∀ x, f x = f' x) : f = f' :=
+lemma ext {f f' : AlternatingMap R M N ι} (H : ∀ x, f x = f' x) : f = f' :=
   FunLike.ext _ _ H
 #align alternating_map.ext AlternatingMap.ext
 
-theorem ext_iff {f g : AlternatingMap R M N ι} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : AlternatingMap R M N ι} : f = g ↔ ∀ x, f x = g x :=
   ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align alternating_map.ext_iff AlternatingMap.ext_iff
 
@@ -157,11 +157,11 @@ instance coe : Coe (AlternatingMap R M N ι) (MultilinearMap R (fun _ : ι => M)
 #align alternating_map.multilinear_map.has_coe AlternatingMap.coe
 
 @[simp, norm_cast]
-theorem coe_multilinearMap : ⇑(f : MultilinearMap R (fun _ : ι => M) N) = f :=
+lemma coe_multilinearMap : ⇑(f : MultilinearMap R (fun _ : ι => M) N) = f :=
   rfl
 #align alternating_map.coe_multilinear_map AlternatingMap.coe_multilinearMap
 
-theorem coe_multilinearMap_injective :
+lemma coe_multilinearMap_injective :
     Function.Injective ((↑) : AlternatingMap R M N ι → MultilinearMap R (fun _ : ι => M) N) :=
   fun _ _ h => ext <| MultilinearMap.congr_fun h
 #align alternating_map.coe_multilinear_map_injective AlternatingMap.coe_multilinearMap_injective
@@ -187,24 +187,24 @@ These are expressed in terms of `⇑f` instead of `f.toFun`.
 
 
 @[simp]
-theorem map_add [DecidableEq ι] (i : ι) (x y : M) :
+lemma map_add [DecidableEq ι] (i : ι) (x y : M) :
     f (update v i (x + y)) = f (update v i x) + f (update v i y) :=
   f.toMultilinearMap.map_add' v i x y
 #align alternating_map.map_add AlternatingMap.map_add
 
 @[simp]
-theorem map_sub [DecidableEq ι] (i : ι) (x y : M') :
+lemma map_sub [DecidableEq ι] (i : ι) (x y : M') :
     g' (update v' i (x - y)) = g' (update v' i x) - g' (update v' i y) :=
   g'.toMultilinearMap.map_sub v' i x y
 #align alternating_map.map_sub AlternatingMap.map_sub
 
 @[simp]
-theorem map_neg [DecidableEq ι] (i : ι) (x : M') : g' (update v' i (-x)) = -g' (update v' i x) :=
+lemma map_neg [DecidableEq ι] (i : ι) (x : M') : g' (update v' i (-x)) = -g' (update v' i x) :=
   g'.toMultilinearMap.map_neg v' i x
 #align alternating_map.map_neg AlternatingMap.map_neg
 
 @[simp]
-theorem map_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
+lemma map_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
     f (update v i (r • x)) = r • f (update v i x) :=
   f.toMultilinearMap.map_smul' v i r x
 #align alternating_map.map_smul AlternatingMap.map_smul
@@ -214,17 +214,17 @@ theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠
   f.map_eq_zero_of_eq' v i j h hij
 #align alternating_map.map_eq_zero_of_eq AlternatingMap.map_eq_zero_of_eq
 
-theorem map_coord_zero {m : ι → M} (i : ι) (h : m i = 0) : f m = 0 :=
+lemma map_coord_zero {m : ι → M} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
 #align alternating_map.map_coord_zero AlternatingMap.map_coord_zero
 
 @[simp]
-theorem map_update_zero [DecidableEq ι] (m : ι → M) (i : ι) : f (update m i 0) = 0 :=
+lemma map_update_zero [DecidableEq ι] (m : ι → M) (i : ι) : f (update m i 0) = 0 :=
   f.toMultilinearMap.map_update_zero m i
 #align alternating_map.map_update_zero AlternatingMap.map_update_zero
 
 @[simp]
-theorem map_zero [Nonempty ι] : f 0 = 0 :=
+lemma map_zero [Nonempty ι] : f 0 = 0 :=
   f.toMultilinearMap.map_zero
 #align alternating_map.map_zero AlternatingMap.map_zero
 
@@ -301,7 +301,7 @@ def pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Mo
 #align alternating_map.pi_apply AlternatingMap.pi_apply
 
 @[simp]
-theorem coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+lemma coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, AlternatingMap R M (N i) ι) :
     (pi f : MultilinearMap R (fun _ : ι => M) (∀ i, N i)) = MultilinearMap.pi fun a => f a :=
   rfl
@@ -318,7 +318,7 @@ def smulRight {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁] [Ad
 #align alternating_map.smul_right_apply AlternatingMap.smulRight_apply
 
 @[simp]
-theorem coe_smulRight {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+lemma coe_smulRight {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
     [Module R M₁] [Module R M₂] (f : AlternatingMap R M₁ R ι) (z : M₂) :
     (f.smulRight z : MultilinearMap R (fun _ : ι => M₁) M₂) = MultilinearMap.smulRight f z :=
   rfl
@@ -332,12 +332,12 @@ instance add : Add (AlternatingMap R M N ι) :=
 #align alternating_map.has_add AlternatingMap.add
 
 @[simp]
-theorem add_apply : (f + f') v = f v + f' v :=
+lemma add_apply : (f + f') v = f v + f' v :=
   rfl
 #align alternating_map.add_apply AlternatingMap.add_apply
 
 @[norm_cast]
-theorem coe_add : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' :=
+lemma coe_add : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' :=
   rfl
 #align alternating_map.coe_add AlternatingMap.coe_add
 
@@ -347,17 +347,17 @@ instance zero : Zero (AlternatingMap R M N ι) :=
 #align alternating_map.has_zero AlternatingMap.zero
 
 @[simp]
-theorem zero_apply : (0 : AlternatingMap R M N ι) v = 0 :=
+lemma zero_apply : (0 : AlternatingMap R M N ι) v = 0 :=
   rfl
 #align alternating_map.zero_apply AlternatingMap.zero_apply
 
 @[norm_cast]
-theorem coe_zero : ((0 : AlternatingMap R M N ι) : MultilinearMap R (fun _ : ι => M) N) = 0 :=
+lemma coe_zero : ((0 : AlternatingMap R M N ι) : MultilinearMap R (fun _ : ι => M) N) = 0 :=
   rfl
 #align alternating_map.coe_zero AlternatingMap.coe_zero
 
 @[simp]
-theorem mk_zero :
+lemma mk_zero :
     mk (0 : MultilinearMap R (fun _ : ι ↦ M) N) (0 : AlternatingMap R M N ι).2 = 0 :=
   rfl
 
@@ -381,7 +381,7 @@ theorem neg_apply (m : ι → M) : (-g) m = -g m :=
 #align alternating_map.neg_apply AlternatingMap.neg_apply
 
 @[norm_cast]
-theorem coe_neg : ((-g : AlternatingMap R M N' ι) : MultilinearMap R (fun _ : ι => M) N') = -g :=
+lemma coe_neg : ((-g : AlternatingMap R M N' ι) : MultilinearMap R (fun _ : ι => M) N') = -g :=
   rfl
 #align alternating_map.coe_neg AlternatingMap.coe_neg
 
@@ -398,7 +398,7 @@ theorem sub_apply (m : ι → M) : (g - g₂) m = g m - g₂ m :=
 #align alternating_map.sub_apply AlternatingMap.sub_apply
 
 @[norm_cast]
-theorem coe_sub : (↑(g - g₂) : MultilinearMap R (fun _ : ι => M) N') = g - g₂ :=
+lemma coe_sub : (↑(g - g₂) : MultilinearMap R (fun _ : ι => M) N') = g - g₂ :=
   rfl
 #align alternating_map.coe_sub AlternatingMap.coe_sub
 
@@ -510,7 +510,7 @@ theorem compAlternatingMap_apply (g : N →ₗ[R] N₂) (f : AlternatingMap R M 
   rfl
 #align linear_map.comp_alternating_map_apply LinearMap.compAlternatingMap_apply
 
-theorem smulRight_eq_comp {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
+lemma smulRight_eq_comp {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : AlternatingMap R M₁ R ι) (z : M₂) :
     f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
   rfl
@@ -577,7 +577,7 @@ theorem add_compLinearMap (f₁ f₂ : AlternatingMap R M N ι) (g : M₂ →ₗ
 #align alternating_map.add_comp_linear_map AlternatingMap.add_compLinearMap
 
 @[simp]
-theorem compLinearMap_zero [Nonempty ι] (f : AlternatingMap R M N ι) :
+lemma compLinearMap_zero [Nonempty ι] (f : AlternatingMap R M N ι) :
     f.compLinearMap (0 : M₂ →ₗ[R] M) = 0 := by
   ext
   -- Porting note: Was `simp_rw [.., ← Pi.zero_def, map_zero, zero_apply]`.
@@ -620,7 +620,7 @@ def domLCongr (e : M ≃ₗ[R] M₂) : AlternatingMap R M N ι ≃ₗ[S] Alterna
 #align alternating_map.dom_lcongr_apply AlternatingMap.domLCongr_apply
 
 @[simp]
-theorem domLCongr_refl : domLCongr R N ι S (LinearEquiv.refl R M) = LinearEquiv.refl S _ :=
+lemma domLCongr_refl : domLCongr R N ι S (LinearEquiv.refl R M) = LinearEquiv.refl S _ :=
   LinearEquiv.ext fun _ => AlternatingMap.ext fun _ => rfl
 #align alternating_map.dom_lcongr_refl AlternatingMap.domLCongr_refl
 
@@ -663,7 +663,7 @@ section
 
 open BigOperators
 
-theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M) (m : ι → M) :
+lemma map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M) (m : ι → M) :
     f (update m i (∑ a in t, g a)) = ∑ a in t, f (update m i (g a)) :=
   f.toMultilinearMap.map_update_sum t i g m
 #align alternating_map.map_update_sum AlternatingMap.map_update_sum
@@ -678,18 +678,18 @@ Various properties of reordered and repeated inputs which follow from
 -/
 
 
-theorem map_update_self [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
+lemma map_update_self [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (Function.update v i (v j)) = 0 :=
   f.map_eq_zero_of_eq _ (by rw [Function.update_same, Function.update_noteq hij.symm]) hij
 #align alternating_map.map_update_self AlternatingMap.map_update_self
 
-theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
+lemma map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
     f (Function.update (Function.update v i m) j m) = 0 :=
   f.map_eq_zero_of_eq _
     (by rw [Function.update_same, Function.update_noteq hij, Function.update_same]) hij
 #align alternating_map.map_update_update AlternatingMap.map_update_update
 
-theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
+lemma map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (v ∘ Equiv.swap i j) + f v = 0 := by
   rw [Equiv.comp_swap_eq_update]
   convert f.map_update_update v hij (v i + v j)
@@ -697,17 +697,17 @@ theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     Function.update_comm hij (v i + v j) (v _) v, Function.update_comm hij.symm (v i) (v i) v]
 #align alternating_map.map_swap_add AlternatingMap.map_swap_add
 
-theorem map_add_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
+lemma map_add_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f v + f (v ∘ Equiv.swap i j) = 0 := by
   rw [add_comm]
   exact f.map_swap_add v hij
 #align alternating_map.map_add_swap AlternatingMap.map_add_swap
 
-theorem map_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : g (v ∘ Equiv.swap i j) = -g v :=
+lemma map_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : g (v ∘ Equiv.swap i j) = -g v :=
   eq_neg_of_add_eq_zero_left <| g.map_swap_add v hij
 #align alternating_map.map_swap AlternatingMap.map_swap
 
-theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm ι) :
+lemma map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm ι) :
     g (v ∘ σ) = Equiv.Perm.sign σ • g v := by
   -- Porting note: `apply` → `induction'`
   induction' σ using Equiv.Perm.swap_induction_on' with s x y hxy hI
@@ -717,7 +717,7 @@ theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm �
       Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
 #align alternating_map.map_perm AlternatingMap.map_perm
 
-theorem map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
+lemma map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
     g v = Equiv.Perm.sign σ • g (v ∘ σ) := by
   rw [g.map_perm, smul_smul]
   simp
@@ -760,7 +760,7 @@ theorem domDomCongr_add (σ : ι ≃ ι') (f g : AlternatingMap R M N ι) :
 #align alternating_map.dom_dom_congr_add AlternatingMap.domDomCongr_add
 
 @[simp]
-theorem domDomCongr_smul {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
+lemma domDomCongr_smul {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
     (σ : ι ≃ ι') (c : S) (f : AlternatingMap R M N ι) :
     (c • f).domDomCongr σ = c • f.domDomCongr σ :=
   rfl
@@ -801,7 +801,7 @@ def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] Alternati
 #align alternating_map.dom_dom_lcongr AlternatingMap.domDomLcongr
 
 @[simp]
-theorem domDomLcongr_refl :
+lemma domDomLcongr_refl :
     (domDomLcongr S (Equiv.refl ι) : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι) =
       LinearEquiv.refl _ _ :=
   LinearEquiv.ext domDomCongr_refl
@@ -829,7 +829,7 @@ theorem domDomCongr_eq_zero_iff (σ : ι ≃ ι') (f : AlternatingMap R M N ι) 
   (domDomCongrEquiv σ : AlternatingMap R M N ι ≃+ AlternatingMap R M N ι').map_eq_zero_iff
 #align alternating_map.dom_dom_congr_eq_zero_iff AlternatingMap.domDomCongr_eq_zero_iff
 
-theorem domDomCongr_perm [Fintype ι] [DecidableEq ι] (σ : Equiv.Perm ι) :
+lemma domDomCongr_perm [Fintype ι] [DecidableEq ι] (σ : Equiv.Perm ι) :
     g.domDomCongr σ = Equiv.Perm.sign σ • g :=
   AlternatingMap.ext fun v => g.map_perm v σ
 #align alternating_map.dom_dom_congr_perm AlternatingMap.domDomCongr_perm
@@ -843,7 +843,7 @@ theorem coe_domDomCongr (σ : ι ≃ ι') :
 end DomDomCongr
 
 /-- If the arguments are linearly dependent then the result is `0`. -/
-theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [Module K M]
+lemma map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [Module K M]
     {N : Type*} [AddCommGroup N] [Module K N] [NoZeroSMulDivisors K N] (f : AlternatingMap K M N ι)
     (v : ι → M) (h : ¬LinearIndependent K v) : f v = 0 := by
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
@@ -866,13 +866,13 @@ section Fin
 open Fin
 
 /-- A version of `MultilinearMap.cons_add` for `AlternatingMap`. -/
-theorem map_vecCons_add {n : ℕ} (f : AlternatingMap R M N (Fin n.succ)) (m : Fin n → M) (x y : M) :
+lemma map_vecCons_add {n : ℕ} (f : AlternatingMap R M N (Fin n.succ)) (m : Fin n → M) (x y : M) :
     f (Matrix.vecCons (x + y) m) = f (Matrix.vecCons x m) + f (Matrix.vecCons y m) :=
   f.toMultilinearMap.cons_add _ _ _
 #align alternating_map.map_vec_cons_add AlternatingMap.map_vecCons_add
 
 /-- A version of `MultilinearMap.cons_smul` for `AlternatingMap`. -/
-theorem map_vecCons_smul {n : ℕ} (f : AlternatingMap R M N (Fin n.succ)) (m : Fin n → M) (c : R)
+lemma map_vecCons_smul {n : ℕ} (f : AlternatingMap R M N (Fin n.succ)) (m : Fin n → M) (c : R)
     (x : M) : f (Matrix.vecCons (c • x) m) = c • f (Matrix.vecCons x m) :=
   f.toMultilinearMap.cons_smul _ _ _
 #align alternating_map.map_vec_cons_smul AlternatingMap.map_vecCons_smul
@@ -939,7 +939,7 @@ namespace AlternatingMap
 
 /-- Alternatizing a multilinear map that is already alternating results in a scale factor of `n!`,
 where `n` is the number of inputs. -/
-theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : AlternatingMap R M N' ι) :
+lemma coe_alternatization [DecidableEq ι] [Fintype ι] (a : AlternatingMap R M N' ι) :
     MultilinearMap.alternatization (a : MultilinearMap R (fun _ => M) N')
     = Nat.factorial (Fintype.card ι) • a := by
   apply AlternatingMap.coe_injective
@@ -983,7 +983,7 @@ abbrev ModSumCongr (α β : Type*) :=
   _ ⧸ (Equiv.Perm.sumCongrHom α β).range
 #align equiv.perm.mod_sum_congr Equiv.Perm.ModSumCongr
 
-theorem ModSumCongr.swap_smul_involutive {α β : Type*} [DecidableEq (Sum α β)] (i j : Sum α β) :
+lemma ModSumCongr.swap_smul_involutive {α β : Type*} [DecidableEq (Sum α β)] (i j : Sum α β) :
     Function.Involutive (SMul.smul (Equiv.swap i j) : ModSumCongr α β → ModSumCongr α β) :=
   fun σ => by
     refine Quotient.inductionOn' σ fun σ => ?_
@@ -1166,7 +1166,7 @@ end AlternatingMap
 open Equiv
 
 /-- A helper lemma for `MultilinearMap.domCoprod_alternization`. -/
-theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableEq ιb]
+lemma MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableEq ιb]
     (a : MultilinearMap R' (fun _ : ιa => Mᵢ) N₁) (b : MultilinearMap R' (fun _ : ιb => Mᵢ) N₂) :
     MultilinearMap.domCoprod (MultilinearMap.alternatization a)
       (MultilinearMap.alternatization b) =
@@ -1184,7 +1184,7 @@ open AlternatingMap
 /-- Computing the `MultilinearMap.alternatization` of the `MultilinearMap.domCoprod` is the same
 as computing the `AlternatingMap.domCoprod` of the `MultilinearMap.alternatization`s.
 -/
-theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ιb]
+lemma MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ιb]
     (a : MultilinearMap R' (fun _ : ιa => Mᵢ) N₁) (b : MultilinearMap R' (fun _ : ιb => Mᵢ) N₂) :
     MultilinearMap.alternatization (MultilinearMap.domCoprod a b) =
       a.alternatization.domCoprod (MultilinearMap.alternatization b) := by
@@ -1226,7 +1226,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
 /-- Taking the `MultilinearMap.alternatization` of the `MultilinearMap.domCoprod` of two
 `AlternatingMap`s gives a scaled version of the `AlternatingMap.coprod` of those maps.
 -/
-theorem MultilinearMap.domCoprod_alternization_eq [DecidableEq ιa] [DecidableEq ιb]
+lemma MultilinearMap.domCoprod_alternization_eq [DecidableEq ιa] [DecidableEq ιb]
     (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
     MultilinearMap.alternatization
       (MultilinearMap.domCoprod a b : MultilinearMap R' (fun _ : Sum ιa ιb => Mᵢ) (N₁ ⊗ N₂)) =
@@ -1252,7 +1252,7 @@ variable [Module R' N₁] [Module R' N₂]
 
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
-theorem Basis.ext_alternating {f g : AlternatingMap R' N₁ N₂ ι} (e : Basis ι₁ R' N₁)
+lemma Basis.ext_alternating {f g : AlternatingMap R' N₁ N₂ ι} (e : Basis ι₁ R' N₁)
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
   classical
@@ -1298,18 +1298,18 @@ def curryLeft {n : ℕ} (f : AlternatingMap R' M'' N'' (Fin n.succ)) :
 #align alternating_map.curry_left_apply_apply AlternatingMap.curryLeft_apply_apply
 
 @[simp]
-theorem curryLeft_zero {n : ℕ} : curryLeft (0 : AlternatingMap R' M'' N'' (Fin n.succ)) = 0 :=
+lemma curryLeft_zero {n : ℕ} : curryLeft (0 : AlternatingMap R' M'' N'' (Fin n.succ)) = 0 :=
   rfl
 #align alternating_map.curry_left_zero AlternatingMap.curryLeft_zero
 
 @[simp]
-theorem curryLeft_add {n : ℕ} (f g : AlternatingMap R' M'' N'' (Fin n.succ)) :
+lemma curryLeft_add {n : ℕ} (f g : AlternatingMap R' M'' N'' (Fin n.succ)) :
     curryLeft (f + g) = curryLeft f + curryLeft g :=
   rfl
 #align alternating_map.curry_left_add AlternatingMap.curryLeft_add
 
 @[simp]
-theorem curryLeft_smul {n : ℕ} (r : R') (f : AlternatingMap R' M'' N'' (Fin n.succ)) :
+lemma curryLeft_smul {n : ℕ} (r : R') (f : AlternatingMap R' M'' N'' (Fin n.succ)) :
     curryLeft (r • f) = r • curryLeft f :=
   rfl
 #align alternating_map.curry_left_smul AlternatingMap.curryLeft_smul
@@ -1327,20 +1327,20 @@ def curryLeftLinearMap {n : ℕ} :
 
 /-- Currying with the same element twice gives the zero map. -/
 @[simp]
-theorem curryLeft_same {n : ℕ} (f : AlternatingMap R' M'' N'' (Fin n.succ.succ)) (m : M'') :
+lemma curryLeft_same {n : ℕ} (f : AlternatingMap R' M'' N'' (Fin n.succ.succ)) (m : M'') :
     (f.curryLeft m).curryLeft m = 0 :=
   ext fun x => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
 #align alternating_map.curry_left_same AlternatingMap.curryLeft_same
 
 @[simp]
-theorem curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')
+lemma curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')
     (f : AlternatingMap R' M'' N'' (Fin n.succ)) (m : M'') :
     (g.compAlternatingMap f).curryLeft m = g.compAlternatingMap (f.curryLeft m) :=
   rfl
 #align alternating_map.curry_left_comp_alternating_map AlternatingMap.curryLeft_compAlternatingMap
 
 @[simp]
-theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
+lemma curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
     (f : AlternatingMap R' M'' N'' (Fin n.succ)) (m : M₂'') :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
   ext fun v =>

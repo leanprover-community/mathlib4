@@ -58,7 +58,7 @@ theorem IsHausdorff.haus (_ : IsHausdorff I M) :
   IsHausdorff.haus'
 #align is_Hausdorff.haus IsHausdorff.haus
 
-theorem isHausdorff_iff :
+lemma isHausdorff_iff :
     IsHausdorff I M ↔ ∀ x : M, (∀ n : ℕ, x ≡ 0 [SMOD (I ^ n • ⊤ : Submodule R M)]) → x = 0 :=
   ⟨IsHausdorff.haus, fun h => ⟨h⟩⟩
 #align is_Hausdorff_iff isHausdorff_iff
@@ -69,7 +69,7 @@ theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
   IsPrecomplete.prec' _
 #align is_precomplete.prec IsPrecomplete.prec
 
-theorem isPrecomplete_iff :
+lemma isPrecomplete_iff :
     IsPrecomplete I M ↔
       ∀ f : ℕ → M,
         (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
@@ -137,7 +137,7 @@ def of : M →ₗ[R] Hausdorffification I M :=
 variable {I M}
 
 @[elab_as_elim]
-theorem induction_on {C : Hausdorffification I M → Prop} (x : Hausdorffification I M)
+lemma induction_on {C : Hausdorffification I M → Prop} (x : Hausdorffification I M)
     (ih : ∀ x, C (of I M x)) : C x :=
   Quotient.inductionOn' x ih
 #align Hausdorffification.induction_on Hausdorffification.induction_on
@@ -253,7 +253,7 @@ theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
 variable {I M}
 
 @[ext]
-theorem ext {x y : adicCompletion I M} (h : ∀ n, eval I M n x = eval I M n y) : x = y :=
+lemma ext {x y : adicCompletion I M} (h : ∀ n, eval I M n x = eval I M n y) : x = y :=
   Subtype.eq <| funext h
 #align adic_completion.ext adicCompletion.ext
 
@@ -283,7 +283,7 @@ open BigOperators
 
 open Finset
 
-theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+lemma le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
   intro x hx
   rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
   intro y

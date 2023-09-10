@@ -49,7 +49,7 @@ lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
 variable (n R)
 
 @[simp]
-theorem trace_zero : trace (0 : Matrix n n R) = 0 :=
+lemma trace_zero : trace (0 : Matrix n n R) = 0 :=
   (Finset.sum_const (0 : R)).trans <| smul_zero _
 #align matrix.trace_zero Matrix.trace_zero
 
@@ -64,7 +64,7 @@ theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
 #align matrix.trace_add Matrix.trace_add
 
 @[simp]
-theorem trace_smul [Monoid α] [DistribMulAction α R] (r : α) (A : Matrix n n R) :
+lemma trace_smul [Monoid α] [DistribMulAction α R] (r : α) (A : Matrix n n R) :
     trace (r • A) = r • trace A :=
   Finset.smul_sum.symm
 #align matrix.trace_smul Matrix.trace_smul
@@ -75,7 +75,7 @@ theorem trace_transpose (A : Matrix n n R) : trace Aᵀ = trace A :=
 #align matrix.trace_transpose Matrix.trace_transpose
 
 @[simp]
-theorem trace_conjTranspose [StarAddMonoid R] (A : Matrix n n R) : trace Aᴴ = star (trace A) :=
+lemma trace_conjTranspose [StarAddMonoid R] (A : Matrix n n R) : trace Aᴴ = star (trace A) :=
   (star_sum _ _).symm
 #align matrix.trace_conj_transpose Matrix.trace_conjTranspose
 
@@ -115,7 +115,7 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
 
-theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
+lemma _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
     f (trace A)  = trace (f.mapMatrix A) :=
   map_sum f (fun i => diag A i) Finset.univ
 
@@ -142,7 +142,7 @@ section One
 variable [DecidableEq n] [AddCommMonoidWithOne R]
 
 @[simp]
-theorem trace_one : trace (1 : Matrix n n R) = Fintype.card n := by
+lemma trace_one : trace (1 : Matrix n n R) = Fintype.card n := by
   simp_rw [trace, diag_one, Pi.one_def, Finset.sum_const, nsmul_one, Finset.card_univ]
 #align matrix.trace_one Matrix.trace_one
 
@@ -151,27 +151,27 @@ end One
 section Mul
 
 @[simp]
-theorem trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Matrix n m R) :
+lemma trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Matrix n m R) :
     trace (Aᵀ * Bᵀ) = trace (A * B) :=
   Finset.sum_comm
 #align matrix.trace_transpose_mul Matrix.trace_transpose_mul
 
-theorem trace_mul_comm [AddCommMonoid R] [CommSemigroup R] (A : Matrix m n R) (B : Matrix n m R) :
+lemma trace_mul_comm [AddCommMonoid R] [CommSemigroup R] (A : Matrix m n R) (B : Matrix n m R) :
     trace (A * B) = trace (B * A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
 #align matrix.trace_mul_comm Matrix.trace_mul_comm
 
-theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
+lemma trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * B * C) = trace (C * A * B) := by
   rw [trace_mul_comm, Matrix.mul_assoc]
 #align matrix.trace_mul_cycle Matrix.trace_mul_cycle
 
-theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
+lemma trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 #align matrix.trace_mul_cycle' Matrix.trace_mul_cycle'
 
 @[simp]
-theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
+lemma trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
     trace (col a * row b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]

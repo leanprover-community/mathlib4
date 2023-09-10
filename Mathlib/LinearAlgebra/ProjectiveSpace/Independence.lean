@@ -44,7 +44,7 @@ inductive Independent : (ι → ℙ K V) → Prop
 
 /-- A family of points in a projective space is independent if and only if the representative
 vectors determined by the family are linearly independent. -/
-theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivization.rep ∘ f) := by
+lemma independent_iff : Independent f ↔ LinearIndependent K (Projectivization.rep ∘ f) := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨ff, hff, hh⟩
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
@@ -59,7 +59,7 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
 
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
-theorem independent_iff_completeLattice_independent :
+lemma independent_iff_completeLattice_independent :
     Independent f ↔ CompleteLattice.Independent fun i => (f i).submodule := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨f, hf, hi⟩
@@ -80,7 +80,7 @@ inductive Dependent : (ι → ℙ K V) → Prop
 
 /-- A family of points in a projective space is dependent if and only if their
 representatives are linearly dependent. -/
-theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) := by
+lemma dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) := by
   refine' ⟨_, fun h => _⟩
   · rintro ⟨ff, hff, hh1⟩
     contrapose! hh1
@@ -94,12 +94,12 @@ theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.
 #align projectivization.dependent_iff Projectivization.dependent_iff
 
 /-- Dependence is the negation of independence. -/
-theorem dependent_iff_not_independent : Dependent f ↔ ¬Independent f := by
+lemma dependent_iff_not_independent : Dependent f ↔ ¬Independent f := by
   rw [dependent_iff, independent_iff]
 #align projectivization.dependent_iff_not_independent Projectivization.dependent_iff_not_independent
 
 /-- Independence is the negation of dependence. -/
-theorem independent_iff_not_dependent : Independent f ↔ ¬Dependent f := by
+lemma independent_iff_not_dependent : Independent f ↔ ¬Dependent f := by
   rw [dependent_iff_not_independent, Classical.not_not]
 #align projectivization.independent_iff_not_dependent Projectivization.independent_iff_not_dependent
 

@@ -45,7 +45,7 @@ theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClear
     simp only [eval_zero, RingHom.map_zero, mul_zero, Polynomial.map_zero]⟩
 #align denoms_clearable_zero denomsClearable_zero
 
-theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
+lemma denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
     (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i := by
   refine' ⟨r * a ^ n * b ^ (N - n), bi, bu, _⟩
   rw [C_mul_X_pow_eq_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, eval_mul, eval_pow, eval_C]
@@ -56,7 +56,7 @@ theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : �
 set_option linter.uppercaseLean3 false in
 #align denoms_clearable_C_mul_X_pow denomsClearable_C_mul_X_pow
 
-theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
+lemma DenomsClearable.add {N : ℕ} {f g : R[X]} :
     DenomsClearable a b N f i → DenomsClearable a b N g i → DenomsClearable a b N (f + g) i :=
   fun ⟨Df, bf, bfu, Hf⟩ ⟨Dg, bg, bgu, Hg⟩ =>
   ⟨Df + Dg, bf, bfu, by
@@ -88,7 +88,7 @@ denominators, yields a number greater than or equal to one.  The target can be a
 `LinearOrderedField K`.
 The assumption on `K` could be weakened to `LinearOrderedCommRing` assuming that the
 image of the denominator is invertible in `K`. -/
-theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
+lemma one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
     (b0 : 0 < b) (fab : eval ((a : K) / b) (f.map (algebraMap ℤ K)) ≠ 0) :
     (1 : K) ≤ (b : K) ^ f.natDegree * |eval ((a : K) / b) (f.map (algebraMap ℤ K))| := by
   obtain ⟨ev, bi, bu, hF⟩ :=

@@ -107,11 +107,11 @@ instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
 
 -- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
 -- the LHS simplifies to the RHS anyway.)
-theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
+lemma toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
 #align centroid_hom.to_fun_eq_coe CentroidHom.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align centroid_hom.ext CentroidHom.ext
 
@@ -125,7 +125,7 @@ theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
   rfl
 #align centroid_hom.to_add_monoid_hom_eq_coe CentroidHom.toAddMonoidHom_eq_coe
 
-theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
+lemma coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
   fun _f _g h => ext fun a ↦
     haveI := FunLike.congr_fun h a
     this
@@ -136,7 +136,7 @@ def toEnd (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
 #align centroid_hom.to_End CentroidHom.toEnd
 
-theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
+lemma toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
   coe_toAddMonoidHom_injective
 #align centroid_hom.to_End_injective CentroidHom.toEnd_injective
 
@@ -171,12 +171,12 @@ instance : Inhabited (CentroidHom α) :=
   ⟨CentroidHom.id α⟩
 
 @[simp, norm_cast]
-theorem coe_id : ⇑(CentroidHom.id α) = id :=
+lemma coe_id : ⇑(CentroidHom.id α) = id :=
   rfl
 #align centroid_hom.coe_id CentroidHom.coe_id
 
 @[simp, norm_cast]
-theorem toAddMonoidHom_id : (CentroidHom.id α : α →+ α) = AddMonoidHom.id α :=
+lemma toAddMonoidHom_id : (CentroidHom.id α : α →+ α) = AddMonoidHom.id α :=
   rfl
 #align centroid_hom.coe_to_add_monoid_hom_id CentroidHom.toAddMonoidHom_id
 
@@ -226,13 +226,13 @@ theorem id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
 #align centroid_hom.id_comp CentroidHom.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h ↦ ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
 #align centroid_hom.cancel_right CentroidHom.cancel_right
 
 @[simp]
-theorem cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
+lemma cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align centroid_hom.cancel_left CentroidHom.cancel_left
@@ -287,12 +287,12 @@ instance hasNpowNat : Pow (CentroidHom α) ℕ :=
 #align centroid_hom.has_npow_nat CentroidHom.hasNpowNat
 
 @[simp, norm_cast]
-theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
+lemma coe_zero : ⇑(0 : CentroidHom α) = 0 :=
   rfl
 #align centroid_hom.coe_zero CentroidHom.coe_zero
 
 @[simp, norm_cast]
-theorem coe_one : ⇑(1 : CentroidHom α) = id :=
+lemma coe_one : ⇑(1 : CentroidHom α) = id :=
   rfl
 #align centroid_hom.coe_one CentroidHom.coe_one
 
@@ -339,7 +339,7 @@ theorem nsmul_apply (f : CentroidHom α) (n : ℕ) (a : α) : (n • f) a = n �
 #align centroid_hom.nsmul_apply CentroidHom.nsmul_apply
 
 @[simp]
-theorem toEnd_zero : (0 : CentroidHom α).toEnd = 0 :=
+lemma toEnd_zero : (0 : CentroidHom α).toEnd = 0 :=
   rfl
 #align centroid_hom.to_End_zero CentroidHom.toEnd_zero
 
@@ -370,7 +370,7 @@ theorem nat_cast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
 #align centroid_hom.nat_cast_apply CentroidHom.nat_cast_apply
 
 @[simp]
-theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
+lemma toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
   rfl
 #align centroid_hom.to_End_one CentroidHom.toEnd_one
 

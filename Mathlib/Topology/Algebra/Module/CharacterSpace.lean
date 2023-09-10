@@ -70,7 +70,7 @@ protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 
 #align weak_dual.character_space.coe_coe WeakDual.CharacterSpace.coe_coe
 
 @[ext]
-theorem ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
+lemma ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
   FunLike.ext _ _ h
 #align weak_dual.character_space.ext WeakDual.CharacterSpace.ext
 
@@ -112,7 +112,7 @@ instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
 
 variable (𝕜 A)
 
-theorem union_zero :
+lemma union_zero :
     characterSpace 𝕜 A ∪ {0} = {φ : WeakDual 𝕜 A | ∀ x y : A, φ (x * y) = φ x * φ y} :=
   le_antisymm (by
       rintro φ (hφ | rfl)
@@ -122,7 +122,7 @@ theorem union_zero :
 #align weak_dual.character_space.union_zero WeakDual.CharacterSpace.union_zero
 
 /-- The `characterSpace 𝕜 A` along with `0` is always a closed set in `WeakDual 𝕜 A`. -/
-theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
+lemma union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A ∪ {0}) := by
   simp only [union_zero, Set.setOf_forall]
   exact
@@ -160,7 +160,7 @@ def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
     commutes' := AlgHomClass.commutes φ }
 #align weak_dual.character_space.to_alg_hom WeakDual.CharacterSpace.toAlgHom
 
-theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
+lemma eq_set_map_one_map_mul [Nontrivial 𝕜] :
     characterSpace 𝕜 A = {φ : WeakDual 𝕜 A | φ 1 = 1 ∧ ∀ x y : A, φ (x * y) = φ x * φ y} := by
   ext φ
   refine' ⟨_, _⟩
@@ -175,7 +175,7 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
 
 /-- under suitable mild assumptions on `𝕜`, the character space is a closed set in
 `WeakDual 𝕜 A`. -/
-protected theorem isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜] :
+protected lemma isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A) := by
   rw [eq_set_map_one_map_mul, Set.setOf_and]
   refine' IsClosed.inter (isClosed_eq (eval_continuous _) continuous_const) _
@@ -189,11 +189,11 @@ section Ring
 variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
   [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Ring A] [Algebra 𝕜 A]
 
-theorem apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A) : φ a ∈ spectrum 𝕜 a :=
+lemma apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A) : φ a ∈ spectrum 𝕜 a :=
   AlgHom.apply_mem_spectrum φ a
 #align weak_dual.character_space.apply_mem_spectrum WeakDual.CharacterSpace.apply_mem_spectrum
 
-theorem ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ker ψ) : φ = ψ := by
+lemma ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ker ψ) : φ = ψ := by
   ext x
   have : x - algebraMap 𝕜 A (ψ x) ∈ RingHom.ker φ := by
     simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using sub_self (ψ x)

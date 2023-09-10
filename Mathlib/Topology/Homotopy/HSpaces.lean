@@ -155,7 +155,7 @@ instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G] [T
 #align topological_group.H_space TopologicalGroup.hSpace
 #align topological_add_group.H_space TopologicalAddGroup.hSpace
 
-theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
+lemma one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
     (1 : G) = HSpace.e :=
   rfl
 #align topological_group.one_eq_H_space_e TopologicalGroup.one_eq_hSpace_e
@@ -178,7 +178,7 @@ def qRight (p : I × I) : I :=
   Set.projIcc 0 1 zero_le_one (2 * p.1 / (1 + p.2))
 #align unit_interval.Q_right unitInterval.qRight
 
-theorem continuous_qRight : Continuous qRight :=
+lemma continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
     Continuous.div (by continuity) (by continuity) fun x => (add_pos zero_lt_one).ne'
 #align unit_interval.continuous_Q_right unitInterval.continuous_qRight
@@ -240,7 +240,7 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
     rw [qRight_one_left, γ.target]
 #align path.delay_refl_right Path.delayReflRight
 
-theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
+lemma continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
     (continuous_snd.comp continuous_fst).path_eval <|
       continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
@@ -266,7 +266,7 @@ def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
   (delayReflRight θ γ.symm).symm
 #align path.delay_refl_left Path.delayReflLeft
 
-theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
+lemma continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
   Path.continuous_symm.comp <|
     continuous_delayReflRight.comp <|
       continuous_fst.prod_mk <| Path.continuous_symm.comp continuous_snd

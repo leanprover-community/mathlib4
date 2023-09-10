@@ -24,7 +24,7 @@ open Topology Classical
 
 variable {β : Type v}
 
-theorem CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β → ℝ)]
+lemma CauSeq.tendsto_limit [NormedRing β] [hn : IsAbsoluteValue (norm : β → ℝ)]
     (f : CauSeq β norm) [CauSeq.IsComplete β norm] : Tendsto f atTop (𝓝 f.lim) :=
   tendsto_nhds.mpr
     (by
@@ -51,7 +51,7 @@ variable [NormedField β]
 -/
 open Metric
 
-theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f := by
+lemma CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f := by
   cases' cauchy_iff.1 hf with hf1 hf2
   intro ε hε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
@@ -82,7 +82,7 @@ theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
 #align cau_seq.cauchy_seq CauSeq.cauchySeq
 
 /-- In a normed field, `CauSeq` coincides with the usual notion of Cauchy sequences. -/
-theorem isCauSeq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
+lemma isCauSeq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
     IsCauSeq norm u ↔ CauchySeq u :=
   ⟨fun h => CauSeq.cauchySeq ⟨u, h⟩, fun h => h.isCauSeq⟩
 #align cau_seq_iff_cauchy_seq isCauSeq_iff_cauchySeq

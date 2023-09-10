@@ -73,7 +73,7 @@ syntax irredDefLemma := atomic(" (" &"lemma" " := ") ident ")"
 Introduces an irreducible definition.
 `irreducible_def foo := 42` generates
 a constant `foo : Nat` as well as
-a theorem `foo_def : foo = 42`.
+a lemma `foo_def : foo = 42`.
 -/
 elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
     declSig:ppIndent(optDeclSig) val:declVal :

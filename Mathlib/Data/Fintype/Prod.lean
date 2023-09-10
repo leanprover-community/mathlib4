@@ -34,7 +34,7 @@ theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype
   simp
 #align set.to_finset_prod Set.toFinset_prod
 
-theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
+lemma toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
     s.offDiag.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
 #align set.to_finset_off_diag Set.toFinset_off_diag
@@ -45,7 +45,7 @@ instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
 @[simp]
-theorem Finset.univ_product_univ {α β : Type*} [Fintype α] [Fintype β] :
+lemma Finset.univ_product_univ {α β : Type*} [Fintype α] [Fintype β] :
     (univ : Finset α) ×ˢ (univ : Finset β) = univ :=
   rfl
 #align finset.univ_product_univ Finset.univ_product_univ
@@ -61,7 +61,7 @@ section
 open Classical
 
 @[simp]
-theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
+lemma infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
   refine'
     ⟨fun H => _, fun H =>
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
@@ -80,7 +80,7 @@ instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivia
 #align pi.infinite_of_left Pi.infinite_of_left
 
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
-theorem Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
+lemma Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
     [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
   let ⟨m⟩ := @Pi.Nonempty ι π _
   Infinite.of_injective _ (update_injective m i)

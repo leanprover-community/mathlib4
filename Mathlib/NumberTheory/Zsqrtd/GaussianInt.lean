@@ -112,12 +112,12 @@ theorem toComplex_mul (x y : ℤ[i]) : ((x * y : ℤ[i]) : ℂ) = x * y :=
 #align gaussian_int.to_complex_mul GaussianInt.toComplex_mul
 
 -- Porting note: @[simp] can prove this
-theorem toComplex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
+lemma toComplex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
   toComplex.map_one
 #align gaussian_int.to_complex_one GaussianInt.toComplex_one
 
 -- Porting note: @[simp] can prove this
-theorem toComplex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
+lemma toComplex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
   toComplex.map_zero
 #align gaussian_int.to_complex_zero GaussianInt.toComplex_zero
 
@@ -138,12 +138,12 @@ theorem toComplex_star (x : ℤ[i]) : ((star x : ℤ[i]) : ℂ) = conj (x : ℂ)
 #align gaussian_int.to_complex_star GaussianInt.toComplex_star
 
 @[simp]
-theorem toComplex_inj {x y : ℤ[i]} : (x : ℂ) = y ↔ x = y := by
+lemma toComplex_inj {x y : ℤ[i]} : (x : ℂ) = y ↔ x = y := by
   cases x; cases y; simp [toComplex_def₂]
 #align gaussian_int.to_complex_inj GaussianInt.toComplex_inj
 
 @[simp]
-theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
+lemma toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
   rw [← toComplex_zero, toComplex_inj]
 #align gaussian_int.to_complex_eq_zero GaussianInt.toComplex_eq_zero
 
@@ -162,10 +162,10 @@ theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
 #align gaussian_int.norm_nonneg GaussianInt.norm_nonneg
 
 @[simp]
-theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp
+lemma norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp
 #align gaussian_int.norm_eq_zero GaussianInt.norm_eq_zero
 
-theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
+lemma norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
   rw [lt_iff_le_and_ne, Ne.def, eq_comm, norm_eq_zero]; simp [norm_nonneg]
 #align gaussian_int.norm_pos GaussianInt.norm_pos
 
@@ -174,7 +174,7 @@ theorem abs_coe_nat_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
 #align gaussian_int.abs_coe_nat_norm GaussianInt.abs_coe_nat_norm
 
 @[simp]
-theorem nat_cast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
+lemma nat_cast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_ofNat, abs_coe_nat_norm]
 #align gaussian_int.nat_cast_nat_abs_norm GaussianInt.nat_cast_natAbs_norm
 
@@ -204,7 +204,7 @@ theorem toComplex_div_im (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, mul_add, add_mul]
 #align gaussian_int.to_complex_div_im GaussianInt.toComplex_div_im
 
-theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
+lemma normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
     (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
   rw [normSq_apply, normSq_apply, ← _root_.abs_mul_self, _root_.abs_mul, ←
       _root_.abs_mul_self y.re, _root_.abs_mul y.re, ← _root_.abs_mul_self x.im,

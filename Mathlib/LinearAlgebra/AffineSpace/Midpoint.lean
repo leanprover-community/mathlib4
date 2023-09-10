@@ -94,7 +94,7 @@ theorem midpoint_vadd_midpoint (v v' : V) (p p' : P) :
   lineMap_vadd_lineMap _ _ _ _ _
 #align midpoint_vadd_midpoint midpoint_vadd_midpoint
 
-theorem midpoint_eq_iff {x y z : P} : midpoint R x y = z ↔ pointReflection R z x = y :=
+lemma midpoint_eq_iff {x y z : P} : midpoint R x y = z ↔ pointReflection R z x = y :=
   eq_comm.trans
     ((injective_pointReflection_left_of_module R x).eq_iff'
         (AffineEquiv.pointReflection_midpoint_left x y)).symm
@@ -166,32 +166,32 @@ theorem right_sub_midpoint (v₁ v₂ : V) : v₂ - midpoint R v₁ v₂ = (⅟ 
 variable (R)
 
 @[simp]
-theorem midpoint_eq_left_iff {x y : P} : midpoint R x y = x ↔ x = y := by
+lemma midpoint_eq_left_iff {x y : P} : midpoint R x y = x ↔ x = y := by
   rw [midpoint_eq_iff, pointReflection_self]
 #align midpoint_eq_left_iff midpoint_eq_left_iff
 
 @[simp]
-theorem left_eq_midpoint_iff {x y : P} : x = midpoint R x y ↔ x = y := by
+lemma left_eq_midpoint_iff {x y : P} : x = midpoint R x y ↔ x = y := by
   rw [eq_comm, midpoint_eq_left_iff]
 #align left_eq_midpoint_iff left_eq_midpoint_iff
 
 @[simp]
-theorem midpoint_eq_right_iff {x y : P} : midpoint R x y = y ↔ x = y := by
+lemma midpoint_eq_right_iff {x y : P} : midpoint R x y = y ↔ x = y := by
   rw [midpoint_comm, midpoint_eq_left_iff, eq_comm]
 #align midpoint_eq_right_iff midpoint_eq_right_iff
 
 @[simp]
-theorem right_eq_midpoint_iff {x y : P} : y = midpoint R x y ↔ x = y := by
+lemma right_eq_midpoint_iff {x y : P} : y = midpoint R x y ↔ x = y := by
   rw [eq_comm, midpoint_eq_right_iff]
 #align right_eq_midpoint_iff right_eq_midpoint_iff
 
-theorem midpoint_eq_midpoint_iff_vsub_eq_vsub {x x' y y' : P} :
+lemma midpoint_eq_midpoint_iff_vsub_eq_vsub {x x' y y' : P} :
     midpoint R x y = midpoint R x' y' ↔ x -ᵥ x' = y' -ᵥ y := by
   rw [← @vsub_eq_zero_iff_eq V, midpoint_vsub_midpoint, midpoint_eq_iff, pointReflection_apply,
     vsub_eq_sub, zero_sub, vadd_eq_add, add_zero, neg_eq_iff_eq_neg, neg_vsub_eq_vsub_rev]
 #align midpoint_eq_midpoint_iff_vsub_eq_vsub midpoint_eq_midpoint_iff_vsub_eq_vsub
 
-theorem midpoint_eq_iff' {x y z : P} : midpoint R x y = z ↔ Equiv.pointReflection z x = y :=
+lemma midpoint_eq_iff' {x y z : P} : midpoint R x y = z ↔ Equiv.pointReflection z x = y :=
   midpoint_eq_iff
 #align midpoint_eq_iff' midpoint_eq_iff'
 

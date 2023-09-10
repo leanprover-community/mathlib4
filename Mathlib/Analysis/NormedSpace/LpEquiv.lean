@@ -47,7 +47,7 @@ set_option linter.uppercaseLean3 false
 variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
 
 /-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
-theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
+lemma Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
   rcases p.trichotomy with (rfl | rfl | _h)
   · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
   · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α => ‖f i‖).toFinite)
@@ -85,11 +85,11 @@ def AddEquiv.lpPiLp [Fact (1 ≤ p)] : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g => rfl }
 #align add_equiv.lp_pi_Lp AddEquiv.lpPiLp
 
-theorem coe_addEquiv_lpPiLp [Fact (1 ≤ p)] (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
+lemma coe_addEquiv_lpPiLp [Fact (1 ≤ p)] (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp coe_addEquiv_lpPiLp
 
-theorem coe_addEquiv_lpPiLp_symm [Fact (1 ≤ p)] (f : PiLp p E) :
+lemma coe_addEquiv_lpPiLp_symm [Fact (1 ≤ p)] (f : PiLp p E) :
     (AddEquiv.lpPiLp.symm f : ∀ i, E i) = f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp_symm coe_addEquiv_lpPiLp_symm
@@ -113,11 +113,11 @@ noncomputable def lpPiLpₗᵢ [Fact (1 ≤ p)] : lp E p ≃ₗᵢ[𝕜] PiLp p 
 
 variable {𝕜 E}
 
-theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : ∀ i, E i) = ⇑f :=
+lemma coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f : ∀ i, E i) = ⇑f :=
   rfl
 #align coe_lp_pi_Lpₗᵢ coe_lpPiLpₗᵢ
 
-theorem coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
+lemma coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
     ((lpPiLpₗᵢ E 𝕜).symm f : ∀ i, E i) = f :=
   rfl
 #align coe_lp_pi_Lpₗᵢ_symm coe_lpPiLpₗᵢ_symm

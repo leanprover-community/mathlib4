@@ -36,10 +36,10 @@ noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure 
 
 variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
-theorem sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
+lemma sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
 #align measure_theory.measure.sub_def MeasureTheory.Measure.sub_def
 
-theorem sub_le_of_le_add {d} (h : μ ≤ d + ν) : μ - ν ≤ d :=
+lemma sub_le_of_le_add {d} (h : μ ≤ d + ν) : μ - ν ≤ d :=
   sInf_le h
 #align measure_theory.measure.sub_le_of_le_add MeasureTheory.Measure.sub_le_of_le_add
 
@@ -47,28 +47,28 @@ theorem sub_eq_zero_of_le (h : μ ≤ ν) : μ - ν = 0 :=
   nonpos_iff_eq_zero'.1 <| sub_le_of_le_add <| by rwa [zero_add]
 #align measure_theory.measure.sub_eq_zero_of_le MeasureTheory.Measure.sub_eq_zero_of_le
 
-theorem sub_le : μ - ν ≤ μ :=
+lemma sub_le : μ - ν ≤ μ :=
   sub_le_of_le_add <| Measure.le_add_right le_rfl
 #align measure_theory.measure.sub_le MeasureTheory.Measure.sub_le
 
 @[simp]
-theorem sub_top : μ - ⊤ = 0 :=
+lemma sub_top : μ - ⊤ = 0 :=
   sub_eq_zero_of_le le_top
 #align measure_theory.measure.sub_top MeasureTheory.Measure.sub_top
 
 @[simp]
-theorem zero_sub : 0 - μ = 0 :=
+lemma zero_sub : 0 - μ = 0 :=
   sub_eq_zero_of_le μ.zero_le
 #align measure_theory.measure.zero_sub MeasureTheory.Measure.zero_sub
 
 @[simp]
-theorem sub_self : μ - μ = 0 :=
+lemma sub_self : μ - μ = 0 :=
   sub_eq_zero_of_le le_rfl
 #align measure_theory.measure.sub_self MeasureTheory.Measure.sub_self
 
 /-- This application lemma only works in special circumstances. Given knowledge of
 when `μ ≤ ν` and `ν ≤ μ`, a more general application lemma can be written. -/
-theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ) :
+lemma sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ) :
     (μ - ν) s = μ s - ν s := by
   -- We begin by defining `measure_sub`, which will be equal to `(μ - ν)`.
   let measure_sub : Measure α := MeasureTheory.Measure.ofMeasurable
@@ -96,7 +96,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
   apply Measure.ofMeasurable_apply _ h₁
 #align measure_theory.measure.sub_apply MeasureTheory.Measure.sub_apply
 
-theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
+lemma sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext1 s h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le

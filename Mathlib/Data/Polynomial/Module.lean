@@ -102,7 +102,7 @@ theorem single_smul (i : ℕ) (r : R) (m : M) : single R i (r • m) = r • sin
 
 variable {R}
 
-theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModule R M) (h0 : P 0)
+lemma induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModule R M) (h0 : P 0)
     (hadd : ∀ f g, P f → P g → P (f + g)) (hsingle : ∀ a b, P (single R a b)) : P f :=
   Finsupp.induction_linear f h0 hadd hsingle
 #align polynomial_module.induction_linear PolynomialModule.induction_linear

@@ -70,7 +70,7 @@ protected theorem isAntisymm (h : IsAntichain r univ) : IsAntisymm α r :=
   ⟨fun _ _ ha _ => h.eq trivial trivial ha⟩
 #align is_antichain.is_antisymm IsAntichain.isAntisymm
 
-protected theorem subsingleton [IsTrichotomous α r] (h : IsAntichain r s) : s.Subsingleton := by
+protected lemma subsingleton [IsTrichotomous α r] (h : IsAntichain r s) : s.Subsingleton := by
   rintro a ha b hb
   obtain hab | hab | hab := trichotomous_of r a b
   · exact h.eq ha hb hab
@@ -97,7 +97,7 @@ theorem preimage (hs : IsAntichain r s) {f : β → α} (hf : Injective f)
   hs hb hc (hf.ne hbc) <| h hr
 #align is_antichain.preimage IsAntichain.preimage
 
-theorem _root_.isAntichain_insert :
+lemma _root_.isAntichain_insert :
     IsAntichain r (insert a s) ↔ IsAntichain r s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b ∧ ¬r b a :=
   Set.pairwise_insert
 #align is_antichain_insert isAntichain_insert
@@ -124,7 +124,7 @@ theorem image_relEmbedding (hs : IsAntichain r s) (φ : r ↪r r') : IsAntichain
   exact hs has has' (fun haa' => h₁ (by rw [haa'])) (φ.map_rel_iff.mp h₂)
 #align is_antichain.image_rel_embedding IsAntichain.image_relEmbedding
 
-theorem preimage_relEmbedding {t : Set β} (ht : IsAntichain r' t) (φ : r ↪r r') :
+lemma preimage_relEmbedding {t : Set β} (ht : IsAntichain r' t) (φ : r ↪r r') :
     IsAntichain r (φ ⁻¹' t) := fun _ ha _s ha' hne hle =>
   ht ha ha' (fun h => hne (φ.injective h)) (φ.map_rel_iff.mpr hle)
 #align is_antichain.preimage_rel_embedding IsAntichain.preimage_relEmbedding
@@ -133,69 +133,69 @@ theorem image_relIso (hs : IsAntichain r s) (φ : r ≃r r') : IsAntichain r' (�
   hs.image_relEmbedding φ
 #align is_antichain.image_rel_iso IsAntichain.image_relIso
 
-theorem preimage_relIso {t : Set β} (hs : IsAntichain r' t) (φ : r ≃r r') :
+lemma preimage_relIso {t : Set β} (hs : IsAntichain r' t) (φ : r ≃r r') :
     IsAntichain r (φ ⁻¹' t) :=
   hs.preimage_relEmbedding φ
 #align is_antichain.preimage_rel_iso IsAntichain.preimage_relIso
 
-theorem image_relEmbedding_iff {φ : r ↪r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
+lemma image_relEmbedding_iff {φ : r ↪r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
   ⟨fun h => (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h =>
     h.image_relEmbedding φ⟩
 #align is_antichain.image_rel_embedding_iff IsAntichain.image_relEmbedding_iff
 
-theorem image_relIso_iff {φ : r ≃r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
+lemma image_relIso_iff {φ : r ≃r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
   @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
 #align is_antichain.image_rel_iso_iff IsAntichain.image_relIso_iff
 
-theorem image_embedding [LE α] [LE β] (hs : IsAntichain (· ≤ ·) s) (φ : α ↪o β) :
+lemma image_embedding [LE α] [LE β] (hs : IsAntichain (· ≤ ·) s) (φ : α ↪o β) :
     IsAntichain (· ≤ ·) (φ '' s) :=
   image_relEmbedding hs _
 #align is_antichain.image_embedding IsAntichain.image_embedding
 
-theorem preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) t) (φ : α ↪o β) :
+lemma preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) t) (φ : α ↪o β) :
     IsAntichain (· ≤ ·) (φ ⁻¹' t) :=
   preimage_relEmbedding ht _
 #align is_antichain.preimage_embedding IsAntichain.preimage_embedding
 
-theorem image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
+lemma image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
     IsAntichain (· ≤ ·) (φ '' s) ↔ IsAntichain (· ≤ ·) s :=
   image_relEmbedding_iff
 #align is_antichain.image_embedding_iff IsAntichain.image_embedding_iff
 
-theorem image_iso [LE α] [LE β] (hs : IsAntichain (· ≤ ·) s) (φ : α ≃o β) :
+lemma image_iso [LE α] [LE β] (hs : IsAntichain (· ≤ ·) s) (φ : α ≃o β) :
     IsAntichain (· ≤ ·) (φ '' s) :=
   image_relEmbedding hs _
 #align is_antichain.image_iso IsAntichain.image_iso
 
-theorem image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
+lemma image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
     IsAntichain (· ≤ ·) (φ '' s) ↔ IsAntichain (· ≤ ·) s :=
   image_relEmbedding_iff
 #align is_antichain.image_iso_iff IsAntichain.image_iso_iff
 
-theorem preimage_iso [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) t) (φ : α ≃o β) :
+lemma preimage_iso [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) t) (φ : α ≃o β) :
     IsAntichain (· ≤ ·) (φ ⁻¹' t) :=
   preimage_relEmbedding ht _
 #align is_antichain.preimage_iso IsAntichain.preimage_iso
 
-theorem preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
+lemma preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
     IsAntichain (· ≤ ·) (φ ⁻¹' t) ↔ IsAntichain (· ≤ ·) t :=
   ⟨fun h => (φ.image_preimage t).subst (h.image_iso φ), fun h => h.preimage_iso _⟩
 #align is_antichain.preimage_iso_iff IsAntichain.preimage_iso_iff
 
-theorem to_dual [LE α] (hs : IsAntichain (· ≤ ·) s) : @IsAntichain αᵒᵈ (· ≤ ·) s :=
+lemma to_dual [LE α] (hs : IsAntichain (· ≤ ·) s) : @IsAntichain αᵒᵈ (· ≤ ·) s :=
   fun _ ha _ hb hab => hs hb ha hab.symm
 #align is_antichain.to_dual IsAntichain.to_dual
 
-theorem to_dual_iff [LE α] : IsAntichain (· ≤ ·) s ↔ @IsAntichain αᵒᵈ (· ≤ ·) s :=
+lemma to_dual_iff [LE α] : IsAntichain (· ≤ ·) s ↔ @IsAntichain αᵒᵈ (· ≤ ·) s :=
   ⟨to_dual, to_dual⟩
 #align is_antichain.to_dual_iff IsAntichain.to_dual_iff
 
-theorem image_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
+lemma image_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl '' s) :=
   (hs.image_embedding (OrderIso.compl α).toOrderEmbedding).flip
 #align is_antichain.image_compl IsAntichain.image_compl
 
-theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
+lemma preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl ⁻¹' s) := fun _ ha _ ha' hne hle =>
   hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 #align is_antichain.preimage_compl IsAntichain.preimage_compl
@@ -218,13 +218,13 @@ theorem IsAntichain.not_lt (hs : IsAntichain (· ≤ ·) s) (ha : a ∈ s) (hb :
   fun h => hs ha hb h.ne h.le
 #align is_antichain.not_lt IsAntichain.not_lt
 
-theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
+lemma isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun b hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
     exact ⟨isAntichain_singleton _ _, isLeast_singleton⟩⟩
 #align is_antichain_and_least_iff isAntichain_and_least_iff
 
-theorem isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
+lemma isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun b hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
     exact ⟨isAntichain_singleton _ _, isGreatest_singleton⟩⟩
@@ -246,11 +246,11 @@ theorem IsGreatest.antichain_iff (hs : IsGreatest s a) : IsAntichain (· ≤ ·)
   (and_iff_left hs).symm.trans isAntichain_and_greatest_iff
 #align is_greatest.antichain_iff IsGreatest.antichain_iff
 
-theorem IsAntichain.bot_mem_iff [OrderBot α] (hs : IsAntichain (· ≤ ·) s) : ⊥ ∈ s ↔ s = {⊥} :=
+lemma IsAntichain.bot_mem_iff [OrderBot α] (hs : IsAntichain (· ≤ ·) s) : ⊥ ∈ s ↔ s = {⊥} :=
   isLeast_bot_iff.symm.trans hs.least_iff
 #align is_antichain.bot_mem_iff IsAntichain.bot_mem_iff
 
-theorem IsAntichain.top_mem_iff [OrderTop α] (hs : IsAntichain (· ≤ ·) s) : ⊤ ∈ s ↔ s = {⊤} :=
+lemma IsAntichain.top_mem_iff [OrderTop α] (hs : IsAntichain (· ≤ ·) s) : ⊤ ∈ s ↔ s = {⊤} :=
   isGreatest_top_iff.symm.trans hs.greatest_iff
 #align is_antichain.top_mem_iff IsAntichain.top_mem_iff
 
@@ -260,7 +260,7 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-theorem isAntichain_iff_forall_not_lt :
+lemma isAntichain_iff_forall_not_lt :
     IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
   ⟨fun hs _ ha _ => hs.not_lt ha, fun hs _ ha _ hb h h' => hs ha hb <| h'.lt_of_ne h⟩
 #align is_antichain_iff_forall_not_lt isAntichain_iff_forall_not_lt
@@ -292,21 +292,21 @@ theorem eq (hs : IsStrongAntichain r s) {a b c : α} (ha : a ∈ s) (hb : b ∈ 
     False.elim <| (h c).elim (not_not_intro hac) (not_not_intro hbc)
 #align is_strong_antichain.eq IsStrongAntichain.eq
 
-protected theorem isAntichain [IsRefl α r] (h : IsStrongAntichain r s) : IsAntichain r s :=
+protected lemma isAntichain [IsRefl α r] (h : IsStrongAntichain r s) : IsAntichain r s :=
   h.imp fun _ b hab => (hab b).resolve_right (not_not_intro <| refl _)
 #align is_strong_antichain.is_antichain IsStrongAntichain.isAntichain
 
-protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s.Subsingleton :=
+protected lemma subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s.Subsingleton :=
   fun a ha b hb =>
   let ⟨_, hac, hbc⟩ := directed_of r a b
   h.eq ha hb hac hbc
 #align is_strong_antichain.subsingleton IsStrongAntichain.subsingleton
 
-protected theorem flip [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
+protected lemma flip [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
   fun _ ha _ hb h c => (hs ha hb h c).imp (mt <| symm_of r) (mt <| symm_of r)
 #align is_strong_antichain.flip IsStrongAntichain.flip
 
-theorem swap [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
+lemma swap [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
   hs.flip
 #align is_strong_antichain.swap IsStrongAntichain.swap
 
@@ -322,7 +322,7 @@ theorem preimage (hs : IsStrongAntichain r s) {f : β → α} (hf : Injective f)
   (hs ha hb (hf.ne hab) _).imp (mt <| h _ _) (mt <| h _ _)
 #align is_strong_antichain.preimage IsStrongAntichain.preimage
 
-theorem _root_.isStrongAntichain_insert :
+lemma _root_.isStrongAntichain_insert :
     IsStrongAntichain r (insert a s) ↔
       IsStrongAntichain r s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ∀ c, ¬r a c ∨ ¬r b c :=
   Set.pairwise_insert_of_symmetric fun _ _ h c => (h c).symm
@@ -378,7 +378,7 @@ protected theorem insert (hs : IsWeakAntichain s) :
 
 end IsWeakAntichain
 
-theorem _root_.isWeakAntichain_insert :
+lemma _root_.isWeakAntichain_insert :
     IsWeakAntichain (insert a s) ↔ IsWeakAntichain s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬a ≺ b ∧ ¬b ≺ a :=
   isAntichain_insert
 #align is_weak_antichain_insert isWeakAntichain_insert

@@ -46,7 +46,7 @@ theorem convexOn_norm (hs : Convex ℝ s) : ConvexOn ℝ s norm :=
 
 /-- The norm on a real normed space is convex on the whole space. See also `Seminorm.convexOn`
 and `convexOn_norm`. -/
-theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
+lemma convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 #align convex_on_univ_norm convexOn_univ_norm
 
@@ -82,14 +82,14 @@ theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthicken
 
 /-- Given a point `x` in the convex hull of `s` and a point `y`, there exists a point
 of `s` at distance at least `dist x y` from `y`. -/
-theorem convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (y : E) :
+lemma convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (y : E) :
     ∃ x' ∈ s, dist x y ≤ dist x' y :=
   (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull hx
 #align convex_hull_exists_dist_ge convexHull_exists_dist_ge
 
 /-- Given a point `x` in the convex hull of `s` and a point `y` in the convex hull of `t`,
 there exist points `x' ∈ s` and `y' ∈ t` at distance at least `dist x y`. -/
-theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHull ℝ s)
+lemma convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHull ℝ s)
     (hy : y ∈ convexHull ℝ t) : ∃ x' ∈ s, ∃ y' ∈ t, dist x y ≤ dist x' y' := by
   rcases convexHull_exists_dist_ge hx y with ⟨x', hx', Hx'⟩
   rcases convexHull_exists_dist_ge hy x' with ⟨y', hy', Hy'⟩
@@ -116,7 +116,7 @@ theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.di
 
 /-- Convex hull of `s` is bounded if and only if `s` is bounded. -/
 @[simp]
-theorem bounded_convexHull {s : Set E} : Metric.Bounded (convexHull ℝ s) ↔ Metric.Bounded s := by
+lemma bounded_convexHull {s : Set E} : Metric.Bounded (convexHull ℝ s) ↔ Metric.Bounded s := by
   simp only [Metric.bounded_iff_ediam_ne_top, convexHull_ediam]
 #align bounded_convex_hull bounded_convexHull
 
@@ -129,7 +129,7 @@ instance (priority := 100) NormedSpace.loc_path_connected : LocPathConnectedSpac
     (convex_ball x r).isPathConnected <| by simp [r_pos]
 #align normed_space.loc_path_connected NormedSpace.loc_path_connected
 
-theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
+lemma dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
     dist x y + dist y z = dist x z := by
   simp only [dist_eq_norm, mem_segment_iff_sameRay] at *
   simpa only [sub_add_sub_cancel', norm_sub_rev] using h.norm_add.symm
@@ -143,7 +143,7 @@ theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } 
 #align is_connected_set_of_same_ray isConnected_setOf_sameRay
 
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
-theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
+lemma isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn

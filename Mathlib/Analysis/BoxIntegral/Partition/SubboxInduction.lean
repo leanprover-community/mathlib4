@@ -52,7 +52,7 @@ def splitCenter (I : Box ι) : Prepartition I where
 #align box_integral.prepartition.split_center BoxIntegral.Prepartition.splitCenter
 
 @[simp]
-theorem mem_splitCenter : J ∈ splitCenter I ↔ ∃ s, I.splitCenterBox s = J := by simp [splitCenter]
+lemma mem_splitCenter : J ∈ splitCenter I ↔ ∃ s, I.splitCenterBox s = J := by simp [splitCenter]
 #align box_integral.prepartition.mem_split_center BoxIntegral.Prepartition.mem_splitCenter
 
 theorem isPartition_splitCenter (I : Box ι) : IsPartition (splitCenter I) := fun x hx => by
@@ -83,7 +83,7 @@ hold true.
 Then `p I` is true. See also `BoxIntegral.Box.subbox_induction_on'` for a version using
 `BoxIntegral.Box.splitCenterBox` instead of `BoxIntegral.Prepartition.splitCenter`. -/
 @[elab_as_elim]
-theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
+lemma subbox_induction_on {p : Box ι → Prop} (I : Box ι)
     (H_ind : ∀ J ≤ I, (∀ J' ∈ splitCenter J, p J') → p J)
     (H_nhds : ∀ z ∈ Box.Icc I, ∃ U ∈ 𝓝[Box.Icc I] z, ∀ J ≤ I, ∀ (m : ℕ),
       z ∈ Box.Icc J → Box.Icc J ⊆ U →
@@ -150,7 +150,7 @@ exists a tagged prepartition `π'` of `I` such that
 * `π'` covers exactly the same part of `I` as `π`;
 * the distortion of `π'` is equal to the distortion of `π`.
 -/
-theorem exists_tagged_le_isHenstock_isSubordinate_iUnion_eq {I : Box ι} (r : (ι → ℝ) → Ioi (0 : ℝ))
+lemma exists_tagged_le_isHenstock_isSubordinate_iUnion_eq {I : Box ι} (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : Prepartition I) :
     ∃ π' : TaggedPrepartition I, π'.toPrepartition ≤ π ∧ π'.IsHenstock ∧ π'.IsSubordinate r ∧
       π'.distortion = π.distortion ∧ π'.iUnion = π.iUnion := by

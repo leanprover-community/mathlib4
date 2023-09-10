@@ -38,7 +38,7 @@ def doset (a : α) (s t : Set α) : Set α :=
   s * {a} * t
 #align doset Doset.doset
 
-theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y :=
+lemma mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y :=
   ⟨fun ⟨_, y, ⟨x, _, hx, rfl, rfl⟩, hy, h⟩ => ⟨x, hx, y, hy, h.symm⟩, fun ⟨x, hx, y, hy, h⟩ =>
     ⟨x * a, y, ⟨x, a, hx, rfl, rfl⟩, hy, h.symm⟩⟩
 #align doset.mem_doset Doset.mem_doset
@@ -47,7 +47,7 @@ theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
   mem_doset.mpr ⟨1, H.one_mem, 1, K.one_mem, (one_mul a).symm.trans (mul_one (1 * a)).symm⟩
 #align doset.mem_doset_self Doset.mem_doset_self
 
-theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
+lemma doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
     doset b H K = doset a H K := by
   obtain ⟨_, k, ⟨h, a, hh, rfl : _ = _, rfl⟩, hk, rfl⟩ := hb
   rw [doset, doset, ← Set.singleton_mul_singleton, ← Set.singleton_mul_singleton, mul_assoc,
@@ -55,7 +55,7 @@ theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
     Subgroup.subgroup_mul_singleton hh]
 #align doset.doset_eq_of_mem Doset.doset_eq_of_mem
 
-theorem mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
+lemma mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doset a H K) (doset b H K)) : b ∈ doset a H K := by
   rw [Set.not_disjoint_iff] at h
   simp only [mem_doset] at *
@@ -64,7 +64,7 @@ theorem mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
   rwa [mul_assoc, mul_assoc, eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc, eq_mul_inv_iff_mul_eq]
 #align doset.mem_doset_of_not_disjoint Doset.mem_doset_of_not_disjoint
 
-theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
+lemma eq_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doset a H K) (doset b H K)) : doset a H K = doset b H K := by
   rw [disjoint_comm] at h
   have ha : a ∈ doset b H K := mem_doset_of_not_disjoint h
@@ -81,7 +81,7 @@ def Quotient (H K : Set G) : Type _ :=
   _root_.Quotient (setoid H K)
 #align doset.quotient Doset.Quotient
 
-theorem rel_iff {H K : Subgroup G} {x y : G} :
+lemma rel_iff {H K : Subgroup G} {x y : G} :
     (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
     ⟨fun hxy => (congr_arg _ hxy).mpr (mem_doset_self H K y), fun hxy => (doset_eq_of_mem hxy).symm⟩
@@ -144,13 +144,13 @@ theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
   rw [← mul_assoc, ← T]
 #align doset.mk_out'_eq_mul Doset.mk_out'_eq_mul
 
-theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
+lemma mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset b H K) :
     mk H K a = mk H K b := by
   rw [eq]
   exact mem_doset.mp (h.symm ▸ mem_doset_self H K b)
 #align doset.mk_eq_of_doset_eq Doset.mk_eq_of_doset_eq
 
-theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
+lemma disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
     a ≠ b → Disjoint (doset a.out' H K) (doset b.out' (H : Set G) K) := by
   contrapose!
   intro h

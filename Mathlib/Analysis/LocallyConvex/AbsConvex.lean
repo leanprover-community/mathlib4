@@ -52,7 +52,7 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
 
-theorem nhds_basis_abs_convex :
+lemma nhds_basis_abs_convex :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
   refine'
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => _) fun s hs =>
@@ -65,7 +65,7 @@ theorem nhds_basis_abs_convex :
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
-theorem nhds_basis_abs_convex_open :
+lemma nhds_basis_abs_convex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
   refine' (nhds_basis_abs_convex 𝕜 E).to_hasBasis _ _
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
@@ -160,7 +160,7 @@ variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
-theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
+lemma with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine' SeminormFamily.withSeminorms_of_hasBasis _ _
   refine' (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => _) fun s hs => _
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩

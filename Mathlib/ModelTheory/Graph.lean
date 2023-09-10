@@ -73,7 +73,7 @@ protected def Theory.simpleGraph : Language.graph.Theory :=
 #align first_order.language.Theory.simple_graph FirstOrder.Language.Theory.simpleGraph
 
 @[simp]
-theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
+lemma Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
       (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
         Symmetric fun x y : V => RelMap adj ![x, y] :=
@@ -112,7 +112,7 @@ theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :
 #align simple_graph.simple_graph_of_structure SimpleGraph.simpleGraphOfStructure
 
 @[simp]
-theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
+lemma structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
     (simpleGraphOfStructure V).structure = S := by
   ext
   case funMap n f xs =>
@@ -131,7 +131,7 @@ theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨
         · exact r.elim
 #align first_order.language.Structure_simple_graph_of_structure FirstOrder.Language.structure_simpleGraphOfStructure
 
-theorem Theory.simpleGraph_isSatisfiable : Theory.IsSatisfiable Theory.simpleGraph :=
+lemma Theory.simpleGraph_isSatisfiable : Theory.IsSatisfiable Theory.simpleGraph :=
   ⟨@Theory.ModelType.of _ _ Unit (SimpleGraph.structure ⊥) _ _⟩
 #align first_order.language.Theory.simple_graph_is_satisfiable FirstOrder.Language.Theory.simpleGraph_isSatisfiable
 

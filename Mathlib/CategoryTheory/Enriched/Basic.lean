@@ -239,13 +239,13 @@ def ForgetEnrichment.homTo {X Y : ForgetEnrichment W C} (f : X ⟶ Y) :
 #align category_theory.forget_enrichment.hom_to CategoryTheory.ForgetEnrichment.homTo
 
 @[simp]
-theorem ForgetEnrichment.homTo_homOf {X Y : C} (f : 𝟙_ W ⟶ X ⟶[W] Y) :
+lemma ForgetEnrichment.homTo_homOf {X Y : C} (f : 𝟙_ W ⟶ X ⟶[W] Y) :
     ForgetEnrichment.homTo W (ForgetEnrichment.homOf W f) = f :=
   rfl
 #align category_theory.forget_enrichment.hom_to_hom_of CategoryTheory.ForgetEnrichment.homTo_homOf
 
 @[simp]
-theorem ForgetEnrichment.homOf_homTo {X Y : ForgetEnrichment W C} (f : X ⟶ Y) :
+lemma ForgetEnrichment.homOf_homTo {X Y : ForgetEnrichment W C} (f : X ⟶ Y) :
     ForgetEnrichment.homOf W (ForgetEnrichment.homTo W f) = f :=
   rfl
 #align category_theory.forget_enrichment.hom_of_hom_to CategoryTheory.ForgetEnrichment.homOf_homTo
@@ -265,7 +265,7 @@ theorem forgetEnrichment_id' (X : C) :
 
 /-- Composition in the "underlying" category of an enriched category. -/
 @[simp]
-theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ForgetEnrichment.homTo W (f ≫ g) =
       ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ ForgetEnrichment.homTo W g)) ≫
         eComp W _ _ _ :=

@@ -93,28 +93,28 @@ instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
 variable {β}
 
 @[to_additive (attr := simp)]
-theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
+lemma Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
     (b • QuotientGroup.mk a : α ⧸ H) = QuotientGroup.mk (b • a) :=
   rfl
 #align mul_action.quotient.smul_mk MulAction.Quotient.smul_mk
 #align add_action.quotient.vadd_mk AddAction.Quotient.vadd_mk
 
 @[to_additive (attr := simp)]
-theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
+lemma Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
     b • (a : α ⧸ H) = (b • a : α ⧸ H) :=
   rfl
 #align mul_action.quotient.smul_coe MulAction.Quotient.smul_coe
 #align add_action.quotient.vadd_coe AddAction.Quotient.vadd_coe
 
 @[to_additive (attr := simp)]
-theorem Quotient.mk_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) :
+lemma Quotient.mk_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out') = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
 #align mul_action.quotient.mk_smul_out' MulAction.Quotient.mk_smul_out'
 #align add_action.quotient.mk_vadd_out' AddAction.Quotient.mk_vadd_out'
 
 -- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
-theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out') = b • q :=
+lemma Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out') = b • q :=
   Quotient.mk_smul_out' H b q
 #align mul_action.quotient.coe_smul_out' MulAction.Quotient.coe_smul_out'
 #align add_action.quotient.coe_vadd_out' AddAction.Quotient.coe_vadd_out'
@@ -179,7 +179,7 @@ theorem ofQuotientStabilizer_smul (g : α) (g' : α ⧸ MulAction.stabilizer α 
 #align add_action.of_quotient_stabilizer_vadd AddAction.ofQuotientStabilizer_vadd
 
 @[to_additive]
-theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilizer α x) :=
+lemma injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilizer α x) :=
   fun y₁ y₂ =>
   Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
@@ -224,7 +224,7 @@ theorem orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
 #align add_action.orbit_equiv_quotient_stabilizer_symm_apply AddAction.orbitEquivQuotientStabilizer_symm_apply
 
 @[to_additive (attr := simp)]
-theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
+lemma stabilizer_quotient {G} [Group G] (H : Subgroup G) :
     MulAction.stabilizer G ((1 : G) : G ⧸ H) = H := by
   ext
   simp [QuotientGroup.eq]
@@ -266,7 +266,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
       "**Class formula** for a finite group acting on a finite type. See
       `AddAction.card_eq_sum_card_addGroup_div_card_stabilizer` for a specialized version using
       `Quotient.out'`."]
-theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [Fintype Ω]
+lemma card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [Fintype Ω]
     [∀ b : β, Fintype <| stabilizer α b] {φ : Ω → β} (hφ : LeftInverse Quotient.mk'' φ) :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) := by
   classical
@@ -293,7 +293,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σω : Ω, α 
 
 /-- **Class formula** for a finite group acting on a finite type. -/
 @[to_additive "**Class formula** for a finite group acting on a finite type."]
-theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fintype Ω]
+lemma card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fintype Ω]
     [∀ b : β, Fintype <| stabilizer α b] :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out') :=
   card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
@@ -333,7 +333,7 @@ elements fixed by each `g ∈ G` is the number of orbits. -/
 @[to_additive
       "**Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. "]
-theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a, Fintype <| fixedBy α β a]
+lemma sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a, Fintype <| fixedBy α β a]
     [Fintype Ω] : (∑ a : α, Fintype.card (fixedBy α β a)) = Fintype.card Ω * Fintype.card α := by
   rw [← Fintype.card_prod, ← Fintype.card_sigma,
     Fintype.card_congr (sigmaFixedByEquivOrbitsProdGroup α β)]
@@ -352,7 +352,7 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 end MulAction
 
 set_option autoImplicit true in
-theorem ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjClasses.mk g).carrier]
+lemma ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjClasses.mk g).carrier]
     [Fintype <| MulAction.stabilizer (ConjAct G) g] : Fintype.card (ConjClasses.mk g).carrier =
       Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
   classical
@@ -365,7 +365,7 @@ namespace Subgroup
 
 variable {G : Type*} [Group G] (H : Subgroup G)
 
-theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
+lemma normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
@@ -406,7 +406,7 @@ noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
       (Function.Embedding.piCongrRight fun g => quotientCentralizerEmbedding (g : G)))
 #align subgroup.quotient_center_embedding Subgroup.quotientCenterEmbedding
 
-theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G) (s : S) :
+lemma quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G) (s : S) :
     quotientCenterEmbedding hS g s = ⟨⁅g, s⁆, g, s, rfl⟩ :=
   rfl
 #align subgroup.quotient_center_embedding_apply Subgroup.quotientCenterEmbedding_apply

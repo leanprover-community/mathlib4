@@ -35,7 +35,7 @@ def convexJoin (s t : Set E) : Set E :=
 
 variable {𝕜}
 
-theorem mem_convexJoin : x ∈ convexJoin 𝕜 s t ↔ ∃ a ∈ s, ∃ b ∈ t, x ∈ segment 𝕜 a b := by
+lemma mem_convexJoin : x ∈ convexJoin 𝕜 s t ↔ ∃ a ∈ s, ∃ b ∈ t, x ∈ segment 𝕜 a b := by
   simp [convexJoin]
 #align mem_convex_join mem_convexJoin
 

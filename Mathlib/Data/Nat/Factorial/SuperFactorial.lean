@@ -32,18 +32,18 @@ section SuperFactorial
 variable {n : ℕ}
 
 @[simp]
-theorem superFactorial_zero : sf 0 = 1 :=
+lemma superFactorial_zero : sf 0 = 1 :=
   rfl
 
 theorem superFactorial_succ (n : ℕ) : (sf n.succ) = (n + 1)! * sf n :=
   rfl
 
 @[simp]
-theorem superFactorial_one : sf 1 = 1 :=
+lemma superFactorial_one : sf 1 = 1 :=
   rfl
 
 @[simp]
-theorem superFactorial_two : sf 2 = 2 :=
+lemma superFactorial_two : sf 2 = 2 :=
   rfl
 
 end SuperFactorial

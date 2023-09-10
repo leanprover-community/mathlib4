@@ -38,7 +38,7 @@ instance : LinearOrder Char where
   max := fun a b => if a ≤ b then b else a
   decidableLE := inferInstance
 
-theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
+lemma Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
   rw [Char.ofNat, dif_pos h]
   rfl
 #align char.of_nat_to_nat Char.ofNat_toNat

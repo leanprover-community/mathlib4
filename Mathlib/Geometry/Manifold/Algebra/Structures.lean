@@ -63,6 +63,6 @@ variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [Nontriv
 
 /-- A smooth (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-theorem topologicalSemiring_of_smooth [Semiring R] [SmoothRing I R] : TopologicalSemiring R :=
+lemma topologicalSemiring_of_smooth [Semiring R] [SmoothRing I R] : TopologicalSemiring R :=
   { continuousMul_of_smooth I, continuousAdd_of_smooth I with }
 #align topological_semiring_of_smooth topologicalSemiring_of_smooth

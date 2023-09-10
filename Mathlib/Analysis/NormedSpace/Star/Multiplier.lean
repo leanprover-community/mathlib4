@@ -104,7 +104,7 @@ algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(
 
 variable {𝕜 A}
 
-theorem range_toProd :
+lemma range_toProd :
     Set.range toProd = { lr : (A →L[𝕜] A) × (A →L[𝕜] A) | ∀ x y, lr.2 x * y = x * lr.1 y } :=
   Set.ext fun x =>
     ⟨by
@@ -216,7 +216,7 @@ theorem add_toProd (a b : 𝓜(𝕜, A)) : (a + b).toProd = a.toProd + b.toProd 
 #align double_centralizer.add_to_prod DoubleCentralizer.add_toProd
 
 @[simp]
-theorem zero_toProd : (0 : 𝓜(𝕜, A)).toProd = 0 :=
+lemma zero_toProd : (0 : 𝓜(𝕜, A)).toProd = 0 :=
   rfl
 #align double_centralizer.zero_to_prod DoubleCentralizer.zero_toProd
 
@@ -231,7 +231,7 @@ theorem sub_toProd (a b : 𝓜(𝕜, A)) : (a - b).toProd = a.toProd - b.toProd 
 #align double_centralizer.sub_to_prod DoubleCentralizer.sub_toProd
 
 @[simp]
-theorem one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
+lemma one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
   rfl
 #align double_centralizer.one_to_prod DoubleCentralizer.one_toProd
 
@@ -258,11 +258,11 @@ theorem add_snd (a b : 𝓜(𝕜, A)) : (a + b).snd = a.snd + b.snd :=
   rfl
 #align double_centralizer.add_snd DoubleCentralizer.add_snd
 
-theorem zero_fst : (0 : 𝓜(𝕜, A)).fst = 0 :=
+lemma zero_fst : (0 : 𝓜(𝕜, A)).fst = 0 :=
   rfl
 #align double_centralizer.zero_fst DoubleCentralizer.zero_fst
 
-theorem zero_snd : (0 : 𝓜(𝕜, A)).snd = 0 :=
+lemma zero_snd : (0 : 𝓜(𝕜, A)).snd = 0 :=
   rfl
 #align double_centralizer.zero_snd DoubleCentralizer.zero_snd
 
@@ -282,11 +282,11 @@ theorem sub_snd (a b : 𝓜(𝕜, A)) : (a - b).snd = a.snd - b.snd :=
   rfl
 #align double_centralizer.sub_snd DoubleCentralizer.sub_snd
 
-theorem one_fst : (1 : 𝓜(𝕜, A)).fst = 1 :=
+lemma one_fst : (1 : 𝓜(𝕜, A)).fst = 1 :=
   rfl
 #align double_centralizer.one_fst DoubleCentralizer.one_fst
 
-theorem one_snd : (1 : 𝓜(𝕜, A)).snd = 1 :=
+lemma one_snd : (1 : 𝓜(𝕜, A)).snd = 1 :=
   rfl
 #align double_centralizer.one_snd DoubleCentralizer.one_snd
 
@@ -330,14 +330,14 @@ def toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)�
   (a.fst, MulOpposite.op a.snd)
 #align double_centralizer.to_prod_mul_opposite DoubleCentralizer.toProdMulOpposite
 
-theorem toProdMulOpposite_injective :
+lemma toProdMulOpposite_injective :
     Function.Injective (toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ) :=
   fun _a _b h =>
     let h' := Prod.ext_iff.mp h
     ext (𝕜 := 𝕜) (A := A) _ _ <| Prod.ext h'.1 <| MulOpposite.op_injective h'.2
 #align double_centralizer.to_prod_mul_opposite_injective DoubleCentralizer.toProdMulOpposite_injective
 
-theorem range_toProdMulOpposite :
+lemma range_toProdMulOpposite :
     Set.range toProdMulOpposite =
       { lr : (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ | ∀ x y, unop lr.2 x * y = x * lr.1 y } :=
   Set.ext fun x =>
@@ -503,7 +503,7 @@ theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul �
   rfl
 #align double_centralizer.coe_snd DoubleCentralizer.coe_snd
 
-theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
+lemma coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
   ext x : 3
   · rfl -- `fst` is defeq
   · refine ContinuousLinearMap.ext fun y => ?_
@@ -570,7 +570,7 @@ instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
 instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
 
-theorem uniformEmbedding_toProdMulOpposite : UniformEmbedding (@toProdMulOpposite 𝕜 A _ _ _ _ _) :=
+lemma uniformEmbedding_toProdMulOpposite : UniformEmbedding (@toProdMulOpposite 𝕜 A _ _ _ _ _) :=
   uniformEmbedding_comap toProdMulOpposite_injective
 #align double_centralizer.uniform_embedding_to_prod_mul_opposite DoubleCentralizer.uniformEmbedding_toProdMulOpposite
 

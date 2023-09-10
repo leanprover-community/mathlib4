@@ -26,7 +26,7 @@ namespace Complex
 
 /-- **Fundamental theorem of algebra**: every non constant complex polynomial
   has a root -/
-theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
+lemma exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   contrapose! hf
   have : Metric.Bounded (Set.range (eval · f)⁻¹)
   · obtain ⟨z₀, h₀⟩ := f.exists_forall_norm_le

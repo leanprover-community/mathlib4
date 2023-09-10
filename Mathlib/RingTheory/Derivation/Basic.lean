@@ -73,7 +73,7 @@ instance : CoeFun (Derivation R A M) fun _ => A → M :=
   ⟨FunLike.coe⟩
 
 -- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
-theorem toFun_eq_coe : D.toFun = ⇑D :=
+lemma toFun_eq_coe : D.toFun = ⇑D :=
   rfl
 #align derivation.to_fun_eq_coe Derivation.toFun_eq_coe
 
@@ -95,7 +95,7 @@ theorem coeFn_coe (f : Derivation R A M) : ⇑(f : A →ₗ[R] M) = f :=
   rfl
 #align derivation.coe_fn_coe Derivation.coeFn_coe
 
-theorem coe_injective : @Function.Injective (Derivation R A M) (A → M) FunLike.coe :=
+lemma coe_injective : @Function.Injective (Derivation R A M) (A → M) FunLike.coe :=
   FunLike.coe_injective
 #align derivation.coe_injective Derivation.coe_injective
 
@@ -108,41 +108,41 @@ theorem congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
   FunLike.congr_fun h a
 #align derivation.congr_fun Derivation.congr_fun
 
-protected theorem map_add : D (a + b) = D a + D b :=
+protected lemma map_add : D (a + b) = D a + D b :=
   map_add D a b
 #align derivation.map_add Derivation.map_add
 
-protected theorem map_zero : D 0 = 0 :=
+protected lemma map_zero : D 0 = 0 :=
   map_zero D
 #align derivation.map_zero Derivation.map_zero
 
 @[simp]
-theorem map_smul : D (r • a) = r • D a :=
+lemma map_smul : D (r • a) = r • D a :=
   D.toLinearMap.map_smul r a
 #align derivation.map_smul Derivation.map_smul
 
 @[simp]
-theorem leibniz : D (a * b) = a • D b + b • D a :=
+lemma leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) : D (∑ i in s, f i) = ∑ i in s, D (f i) :=
+lemma map_sum {ι : Type*} (s : Finset ι) (f : ι → A) : D (∑ i in s, f i) = ∑ i in s, D (f i) :=
   D.toLinearMap.map_sum
 #align derivation.map_sum Derivation.map_sum
 
 @[simp]
-theorem map_smul_of_tower {S : Type*} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
+lemma map_smul_of_tower {S : Type*} [SMul S A] [SMul S M] [LinearMap.CompatibleSMul A M S R]
     (D : Derivation R A M) (r : S) (a : A) : D (r • a) = r • D a :=
   D.toLinearMap.map_smul_of_tower r a
 #align derivation.map_smul_of_tower Derivation.map_smul_of_tower
 
 @[simp]
-theorem map_one_eq_zero : D 1 = 0 :=
+lemma map_one_eq_zero : D 1 = 0 :=
   D.map_one_eq_zero'
 #align derivation.map_one_eq_zero Derivation.map_one_eq_zero
 
 @[simp]
-theorem map_algebraMap : D (algebraMap R A r) = 0 := by
+lemma map_algebraMap : D (algebraMap R A r) = 0 := by
   rw [← mul_one r, RingHom.map_mul, RingHom.map_one, ← smul_def, map_smul, map_one_eq_zero,
     smul_zero]
 #align derivation.map_algebra_map Derivation.map_algebraMap
@@ -163,7 +163,7 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
         Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
 #align derivation.leibniz_pow Derivation.leibniz_pow
 
-theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun x hx =>
+lemma eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun x hx =>
   Algebra.adjoin_induction hx h (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
     (fun x y hx hy => by simp only [map_add, *]) fun x y hx hy => by simp only [leibniz, *]
 #align derivation.eq_on_adjoin Derivation.eqOn_adjoin
@@ -181,12 +181,12 @@ instance : Zero (Derivation R A M) :=
       leibniz' := fun a b => by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
 
 @[simp]
-theorem coe_zero : ⇑(0 : Derivation R A M) = 0 :=
+lemma coe_zero : ⇑(0 : Derivation R A M) = 0 :=
   rfl
 #align derivation.coe_zero Derivation.coe_zero
 
 @[simp]
-theorem coe_zero_linearMap : ↑(0 : Derivation R A M) = (0 : A →ₗ[R] M) :=
+lemma coe_zero_linearMap : ↑(0 : Derivation R A M) = (0 : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_zero_linear_map Derivation.coe_zero_linearMap
 
@@ -211,7 +211,7 @@ theorem coe_add_linearMap (D1 D2 : Derivation R A M) : ↑(D1 + D2) = (D1 + D2 :
   rfl
 #align derivation.coe_add_linear_map Derivation.coe_add_linearMap
 
-theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
+lemma add_apply : (D1 + D2) a = D1 a + D2 a :=
   rfl
 #align derivation.add_apply Derivation.add_apply
 
@@ -296,12 +296,12 @@ def _root_.LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N where
 #align linear_map.comp_der LinearMap.compDer
 
 @[simp]
-theorem coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
+lemma coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_to_linear_map_comp Derivation.coe_to_linearMap_comp
 
 @[simp]
-theorem coe_comp : (f.compDer D : A → N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
+lemma coe_comp : (f.compDer D : A → N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
   rfl
 #align derivation.coe_comp Derivation.coe_comp
 
@@ -380,11 +380,11 @@ variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
-protected theorem map_neg : D (-a) = -D a :=
+protected lemma map_neg : D (-a) = -D a :=
   map_neg D a
 #align derivation.map_neg Derivation.map_neg
 
-protected theorem map_sub : D (a - b) = D a - D b :=
+protected lemma map_sub : D (a - b) = D a - D b :=
   map_sub D a b
 #align derivation.map_sub Derivation.map_sub
 
@@ -393,7 +393,7 @@ theorem map_coe_int (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 #align derivation.map_coe_int Derivation.map_coe_int
 
-theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
+lemma leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
   refine' eq_neg_of_add_eq_zero_left _
   calc
@@ -403,11 +403,11 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
 
 #align derivation.leibniz_of_mul_eq_one Derivation.leibniz_of_mul_eq_one
 
-theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
+lemma leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 #align derivation.leibniz_inv_of Derivation.leibniz_invOf
 
-theorem leibniz_inv {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
+lemma leibniz_inv {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
     (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
@@ -429,7 +429,7 @@ theorem coe_neg_linearMap (D : Derivation R A M) : ↑(-D) = (-D : A →ₗ[R] M
   rfl
 #align derivation.coe_neg_linear_map Derivation.coe_neg_linearMap
 
-theorem neg_apply : (-D) a = -D a :=
+lemma neg_apply : (-D) a = -D a :=
   rfl
 #align derivation.neg_apply Derivation.neg_apply
 
@@ -448,7 +448,7 @@ theorem coe_sub_linearMap (D1 D2 : Derivation R A M) : ↑(D1 - D2) = (D1 - D2 :
   rfl
 #align derivation.coe_sub_linear_map Derivation.coe_sub_linearMap
 
-theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
+lemma sub_apply : (D1 - D2) a = D1 a - D2 a :=
   rfl
 #align derivation.sub_apply Derivation.sub_apply
 

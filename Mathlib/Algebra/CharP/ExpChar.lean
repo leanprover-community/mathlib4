@@ -93,7 +93,7 @@ section NoZeroDivisors
 variable [NoZeroDivisors R]
 
 /-- A helper lemma: the characteristic is prime if it is non-zero. -/
-theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) : Nat.Prime p := by
+lemma char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) : Nat.Prime p := by
   cases' CharP.char_is_prime_or_zero R p with h h
   · exact h
   · contradiction

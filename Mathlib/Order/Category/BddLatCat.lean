@@ -120,19 +120,19 @@ theorem coe_forget_to_semilatInf (X : BddLatCat) :
   rfl
 #align BddLat.coe_forget_to_SemilatInf BddLatCat.coe_forget_to_semilatInf
 
-theorem forget_latCat_partOrdCat_eq_forget_bddOrd_partOrdCat :
+lemma forget_latCat_partOrdCat_eq_forget_bddOrd_partOrdCat :
     forget₂ BddLatCat LatCat ⋙ forget₂ LatCat PartOrdCat =
       forget₂ BddLatCat BddOrdCat ⋙ forget₂ BddOrdCat PartOrdCat :=
   rfl
 #align BddLat.forget_Lat_PartOrd_eq_forget_BddOrd_PartOrd BddLatCat.forget_latCat_partOrdCat_eq_forget_bddOrd_partOrdCat
 
-theorem forget_semilatSup_partOrdCat_eq_forget_bddOrd_partOrdCat :
+lemma forget_semilatSup_partOrdCat_eq_forget_bddOrd_partOrdCat :
     forget₂ BddLatCat SemilatSupCat ⋙ forget₂ SemilatSupCat PartOrdCat =
       forget₂ BddLatCat BddOrdCat ⋙ forget₂ BddOrdCat PartOrdCat :=
   rfl
 #align BddLat.forget_SemilatSup_PartOrd_eq_forget_BddOrd_PartOrd BddLatCat.forget_semilatSup_partOrdCat_eq_forget_bddOrd_partOrdCat
 
-theorem forget_semilatInf_partOrdCat_eq_forget_bddOrd_partOrdCat :
+lemma forget_semilatInf_partOrdCat_eq_forget_bddOrd_partOrdCat :
     forget₂ BddLatCat SemilatInfCat ⋙ forget₂ SemilatInfCat PartOrdCat =
       forget₂ BddLatCat BddOrdCat ⋙ forget₂ BddOrdCat PartOrdCat :=
   rfl
@@ -166,24 +166,24 @@ def dualEquiv : BddLatCat ≌ BddLatCat where
 
 end BddLatCat
 
-theorem bddLatCat_dual_comp_forget_to_bddOrdCat :
+lemma bddLatCat_dual_comp_forget_to_bddOrdCat :
     BddLatCat.dual ⋙ forget₂ BddLatCat BddOrdCat =
     forget₂ BddLatCat BddOrdCat ⋙ BddOrdCat.dual :=
   rfl
 #align BddLat_dual_comp_forget_to_BddOrd bddLatCat_dual_comp_forget_to_bddOrdCat
 
-theorem bddLatCat_dual_comp_forget_to_latCat :
+lemma bddLatCat_dual_comp_forget_to_latCat :
     BddLatCat.dual ⋙ forget₂ BddLatCat LatCat = forget₂ BddLatCat LatCat ⋙ LatCat.dual :=
   rfl
 #align BddLat_dual_comp_forget_to_Lat bddLatCat_dual_comp_forget_to_latCat
 
-theorem bddLatCat_dual_comp_forget_to_semilatSupCat :
+lemma bddLatCat_dual_comp_forget_to_semilatSupCat :
     BddLatCat.dual ⋙ forget₂ BddLatCat SemilatSupCat =
     forget₂ BddLatCat SemilatInfCat ⋙ SemilatInfCat.dual :=
   rfl
 #align BddLat_dual_comp_forget_to_SemilatSup bddLatCat_dual_comp_forget_to_semilatSupCat
 
-theorem bddLatCat_dual_comp_forget_to_semilatInfCat :
+lemma bddLatCat_dual_comp_forget_to_semilatInfCat :
     BddLatCat.dual ⋙ forget₂ BddLatCat SemilatInfCat =
     forget₂ BddLatCat SemilatSupCat ⋙ SemilatSupCat.dual :=
   rfl

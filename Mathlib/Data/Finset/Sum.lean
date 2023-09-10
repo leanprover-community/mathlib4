@@ -32,32 +32,32 @@ def disjSum : Finset (Sum α β) :=
 #align finset.disj_sum Finset.disjSum
 
 @[simp]
-theorem val_disjSum : (s.disjSum t).1 = s.1.disjSum t.1 :=
+lemma val_disjSum : (s.disjSum t).1 = s.1.disjSum t.1 :=
   rfl
 #align finset.val_disj_sum Finset.val_disjSum
 
 @[simp]
-theorem empty_disjSum : (∅ : Finset α).disjSum t = t.map Embedding.inr :=
+lemma empty_disjSum : (∅ : Finset α).disjSum t = t.map Embedding.inr :=
   val_inj.1 <| Multiset.zero_disjSum _
 #align finset.empty_disj_sum Finset.empty_disjSum
 
 @[simp]
-theorem disjSum_empty : s.disjSum (∅ : Finset β) = s.map Embedding.inl :=
+lemma disjSum_empty : s.disjSum (∅ : Finset β) = s.map Embedding.inl :=
   val_inj.1 <| Multiset.disjSum_zero _
 #align finset.disj_sum_empty Finset.disjSum_empty
 
 @[simp]
-theorem card_disjSum : (s.disjSum t).card = s.card + t.card :=
+lemma card_disjSum : (s.disjSum t).card = s.card + t.card :=
   Multiset.card_disjSum _ _
 #align finset.card_disj_sum Finset.card_disjSum
 
-theorem disjoint_map_inl_map_inr : Disjoint (s.map Embedding.inl) (t.map Embedding.inr) := by
+lemma disjoint_map_inl_map_inr : Disjoint (s.map Embedding.inl) (t.map Embedding.inr) := by
   simp_rw [disjoint_left, mem_map]
   rintro x ⟨a, _, rfl⟩ ⟨b, _, ⟨⟩⟩
 #align finset.disjoint_map_inl_map_inr Finset.disjoint_map_inl_map_inr
 
 @[simp]
-theorem map_inl_disjUnion_map_inr :
+lemma map_inl_disjUnion_map_inr :
     (s.map Embedding.inl).disjUnion (t.map Embedding.inr) (disjoint_map_inl_map_inr _ _) =
       s.disjSum t :=
   rfl
@@ -65,17 +65,17 @@ theorem map_inl_disjUnion_map_inr :
 
 variable {s t} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} {a : α} {b : β} {x : Sum α β}
 
-theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x :=
+lemma mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x :=
   Multiset.mem_disjSum
 #align finset.mem_disj_sum Finset.mem_disjSum
 
 @[simp]
-theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s :=
+lemma inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s :=
   Multiset.inl_mem_disjSum
 #align finset.inl_mem_disj_sum Finset.inl_mem_disjSum
 
 @[simp]
-theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t :=
+lemma inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t :=
   Multiset.inr_mem_disjSum
 #align finset.inr_mem_disj_sum Finset.inr_mem_disjSum
 

@@ -58,7 +58,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
 open scoped Classical
 
 /-- Mapping intermediate fields along the identity does not change them -/
-theorem IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) : E.map (AlgHom.id K L) = E :=
   SetLike.coe_injective <| Set.image_id _
 #align intermediate_field.map_id IntermediateField.map_id
@@ -91,7 +91,7 @@ theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L
 #align intermediate_field.finite_dimensional_bot IntermediateField.finiteDimensional_bot
 
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
-theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
+lemma IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext f
   refine' ⟨fun _ => Subgroup.mem_top _, fun _ => _⟩
@@ -102,27 +102,27 @@ theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [
 #align intermediate_field.fixing_subgroup.bot IntermediateField.fixingSubgroup.bot
 
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L` -/
-theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
+lemma top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
   ⟨⊥, IntermediateField.finiteDimensional_bot K L, IntermediateField.fixingSubgroup.bot⟩
 #align top_fixed_by_finite top_fixedByFinite
 
 /-- If `E1` and `E2` are finite-dimensional intermediate fields, then so is their compositum.
 This rephrases a result already in mathlib so that it is compatible with our type classes -/
-theorem finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E1 E2 : IntermediateField K L) (_ : FiniteDimensional K E1) (_ : FiniteDimensional K E2) :
     FiniteDimensional K (↥(E1 ⊔ E2)) :=
   IntermediateField.finiteDimensional_sup E1 E2
 #align finite_dimensional_sup finiteDimensional_sup
 
 /-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`-/
-theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
   ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
 #align intermediate_field.mem_fixing_subgroup_iff IntermediateField.mem_fixingSubgroup_iff
 
 /-- The map `E ↦ Gal(L/E)` is inclusion-reversing -/
-theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
     {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup := by
   rintro σ hσ ⟨x, hx⟩
   exact hσ ⟨x, h12 hx⟩
@@ -201,7 +201,7 @@ open scoped Topology Filter
 
 /-- Let `L/E/K` be a tower of fields with `E/K` finite. Then `Gal(L/E)` is an open subgroup of
   `L ≃ₐ[K] L`. -/
-theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [FiniteDimensional K E] :
     IsOpen (E.fixingSubgroup : Set (L ≃ₐ[K] L)) := by
   have h_basis : E.fixingSubgroup.carrier ∈ galGroupBasis K L :=
@@ -212,14 +212,14 @@ theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L
 
 /-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ L ≃ₐ[K] L` is
   closed. -/
-theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [FiniteDimensional K E] :
     IsClosed (E.fixingSubgroup : Set (L ≃ₐ[K] L)) :=
   OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
 #align intermediate_field.fixing_subgroup_is_closed IntermediateField.fixingSubgroup_isClosed
 
 /-- If `L/K` is an algebraic extension, then the Krull topology on `L ≃ₐ[K] L` is Hausdorff. -/
-theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : T2Space (L ≃ₐ[K] L) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
@@ -258,7 +258,7 @@ section TotallyDisconnected
 
 /-- If `L/K` is an algebraic field extension, then the Krull topology on `L ≃ₐ[K] L` is
   totally disconnected. -/
-theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Algebra K L]
+lemma krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
   apply isTotallyDisconnected_of_clopen_set
   intro σ τ h_diff

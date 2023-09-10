@@ -53,7 +53,7 @@ local infixr:65 " +ₗ " => leftAdd X Y
 -- mathport name: «expr +ᵣ »
 local infixr:65 " +ᵣ " => rightAdd X Y
 
-theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
+lemma isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
   have hr : ∀ f : X ⟶ Y, biprod.lift (0 : X ⟶ Y) f = f ≫ biprod.inr := by
     intro f
     ext
@@ -68,7 +68,7 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
     ⟨fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]⟩⟩
 #align category_theory.semiadditive_of_binary_biproducts.is_unital_left_add CategoryTheory.SemiadditiveOfBinaryBiproducts.isUnital_leftAdd
 
-theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
+lemma isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
   have h₂ : ∀ f : X ⟶ Y, biprod.desc (0 : X ⟶ Y) f = biprod.snd ≫ f := by
     intro f
     ext

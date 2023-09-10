@@ -30,7 +30,7 @@ variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
 /-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
 form. -/
-theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
+lemma oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
     (hxy : ‖x‖ = ‖y‖) (hxz : ‖x‖ = ‖z‖) : o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) := by
   have hy : y ≠ 0 := by
     rintro rfl
@@ -51,7 +51,7 @@ theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) 
 
 /-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
 form with radius specified. -/
-theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
+lemma oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
     {r : ℝ} (hx : ‖x‖ = r) (hy : ‖y‖ = r) (hz : ‖z‖ = r) :
     o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) :=
   o.oangle_eq_two_zsmul_oangle_sub_of_norm_eq hxyne hxzne (hy.symm ▸ hx) (hz.symm ▸ hx)
@@ -60,7 +60,7 @@ theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real {x y z : V} (hxyne : x �
 /-- Oriented vector angle version of "angles in same segment are equal" and "opposite angles of
 a cyclic quadrilateral add to π", for oriented angles mod π (for which those are the same
 result), represented here as equality of twice the angles. -/
-theorem two_zsmul_oangle_sub_eq_two_zsmul_oangle_sub_of_norm_eq {x₁ x₂ y z : V} (hx₁yne : x₁ ≠ y)
+lemma two_zsmul_oangle_sub_eq_two_zsmul_oangle_sub_of_norm_eq {x₁ x₂ y z : V} (hx₁yne : x₁ ≠ y)
     (hx₁zne : x₁ ≠ z) (hx₂yne : x₂ ≠ y) (hx₂zne : x₂ ≠ z) {r : ℝ} (hx₁ : ‖x₁‖ = r) (hx₂ : ‖x₂‖ = r)
     (hy : ‖y‖ = r) (hz : ‖z‖ = r) :
     (2 : ℤ) • o.oangle (y - x₁) (z - x₁) = (2 : ℤ) • o.oangle (y - x₂) (z - x₂) :=
@@ -80,7 +80,7 @@ local notation "o" => Module.Oriented.positiveOrientation
 namespace Sphere
 
 /-- Angle at center of a circle equals twice angle at circumference, oriented angle version. -/
-theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
+lemma oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃) :
     ∡ p₁ s.center p₃ = (2 : ℤ) • ∡ p₁ p₂ p₃ := by
   rw [mem_sphere, @dist_eq_norm_vsub V] at hp₁ hp₂ hp₃
@@ -91,7 +91,7 @@ theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (h
 /-- Oriented angle version of "angles in same segment are equal" and "opposite angles of a
 cyclic quadrilateral add to π", for oriented angles mod π (for which those are the same result),
 represented here as equality of twice the angles. -/
-theorem two_zsmul_oangle_eq {s : Sphere P} {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s)
+lemma two_zsmul_oangle_eq {s : Sphere P} {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s)
     (hp₃ : p₃ ∈ s) (hp₄ : p₄ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₄ : p₂ ≠ p₄) (hp₃p₁ : p₃ ≠ p₁)
     (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ := by
   rw [mem_sphere, @dist_eq_norm_vsub V] at hp₁ hp₂ hp₃ hp₄
@@ -106,7 +106,7 @@ end Sphere
 /-- Oriented angle version of "angles in same segment are equal" and "opposite angles of a
 cyclic quadrilateral add to π", for oriented angles mod π (for which those are the same result),
 represented here as equality of twice the angles. -/
-theorem Cospherical.two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
+lemma Cospherical.two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : Cospherical ({p₁, p₂, p₃, p₄} : Set P)) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₄ : p₂ ≠ p₄)
     (hp₃p₁ : p₃ ≠ p₁) (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ := by
   obtain ⟨s, hs⟩ := cospherical_iff_exists_sphere.1 h
@@ -118,7 +118,7 @@ namespace Sphere
 
 /-- The angle at the apex of an isosceles triangle is `π` minus twice a base angle, oriented
 angle-at-point form where the apex is given as the center of a circle. -/
-theorem oangle_eq_pi_sub_two_zsmul_oangle_center_left {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
+lemma oangle_eq_pi_sub_two_zsmul_oangle_center_left {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (h : p₁ ≠ p₂) : ∡ p₁ s.center p₂ = π - (2 : ℤ) • ∡ s.center p₂ p₁ := by
   rw [oangle_eq_pi_sub_two_zsmul_oangle_of_dist_eq h.symm
       (dist_center_eq_dist_center_of_mem_sphere' hp₂ hp₁)]
@@ -126,7 +126,7 @@ theorem oangle_eq_pi_sub_two_zsmul_oangle_center_left {s : Sphere P} {p₁ p₂ 
 
 /-- The angle at the apex of an isosceles triangle is `π` minus twice a base angle, oriented
 angle-at-point form where the apex is given as the center of a circle. -/
-theorem oangle_eq_pi_sub_two_zsmul_oangle_center_right {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
+lemma oangle_eq_pi_sub_two_zsmul_oangle_center_right {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (h : p₁ ≠ p₂) : ∡ p₁ s.center p₂ = π - (2 : ℤ) • ∡ p₂ p₁ s.center := by
   rw [oangle_eq_pi_sub_two_zsmul_oangle_center_left hp₁ hp₂ h,
     oangle_eq_oangle_of_dist_eq (dist_center_eq_dist_center_of_mem_sphere' hp₂ hp₁)]
@@ -134,7 +134,7 @@ theorem oangle_eq_pi_sub_two_zsmul_oangle_center_right {s : Sphere P} {p₁ p₂
 
 /-- Twice a base angle of an isosceles triangle with apex at the center of a circle, plus twice
 the angle at the apex of a triangle with the same base but apex on the circle, equals `π`. -/
-theorem two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi {s : Sphere P} {p₁ p₂ p₃ : P}
+lemma two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi {s : Sphere P} {p₁ p₂ p₃ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃)
     (hp₁p₃ : p₁ ≠ p₃) : (2 : ℤ) • ∡ p₃ p₁ s.center + (2 : ℤ) • ∡ p₁ p₂ p₃ = π := by
   rw [← oangle_center_eq_two_zsmul_oangle hp₁ hp₂ hp₃ hp₂p₁ hp₂p₃,
@@ -142,14 +142,14 @@ theorem two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi {s : Sphere P} {p₁ 
 #align euclidean_geometry.sphere.two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi EuclideanGeometry.Sphere.two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi
 
 /-- A base angle of an isosceles triangle with apex at the center of a circle is acute. -/
-theorem abs_oangle_center_left_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
+lemma abs_oangle_center_left_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : |(∡ s.center p₂ p₁).toReal| < π / 2 :=
   abs_oangle_right_toReal_lt_pi_div_two_of_dist_eq
     (dist_center_eq_dist_center_of_mem_sphere' hp₂ hp₁)
 #align euclidean_geometry.sphere.abs_oangle_center_left_to_real_lt_pi_div_two EuclideanGeometry.Sphere.abs_oangle_center_left_toReal_lt_pi_div_two
 
 /-- A base angle of an isosceles triangle with apex at the center of a circle is acute. -/
-theorem abs_oangle_center_right_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
+lemma abs_oangle_center_right_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : |(∡ p₂ p₁ s.center).toReal| < π / 2 :=
   abs_oangle_left_toReal_lt_pi_div_two_of_dist_eq
     (dist_center_eq_dist_center_of_mem_sphere' hp₂ hp₁)
@@ -159,7 +159,7 @@ theorem abs_oangle_center_right_toReal_lt_pi_div_two {s : Sphere P} {p₁ p₂ :
 multiple (by half the tangent of the angle between the chord and the radius at one of those
 points) of a `π / 2` rotation of the vector between those points, plus the midpoint of those
 points. -/
-theorem tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere P} {p₁ p₂ : P}
+lemma tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere P} {p₁ p₂ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h : p₁ ≠ p₂) :
     (Real.Angle.tan (∡ p₂ p₁ s.center) / 2) • o.rotation (π / 2 : ℝ) (p₂ -ᵥ p₁) +ᵥ
       midpoint ℝ p₁ p₂ = s.center := by
@@ -175,7 +175,7 @@ theorem tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere
 /-- Given three points on a circle, the center of that circle may be expressed explicitly as a
 multiple (by half the inverse of the tangent of the angle at one of those points) of a `π / 2`
 rotation of the vector between the other two points, plus the midpoint of those points. -/
-theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere P}
+lemma inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere P}
     {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₁p₂ : p₁ ≠ p₂) (hp₁p₃ : p₁ ≠ p₃)
     (hp₂p₃ : p₂ ≠ p₃) :
     ((Real.Angle.tan (∡ p₁ p₂ p₃))⁻¹ / 2) • o.rotation (π / 2 : ℝ) (p₃ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₃ =
@@ -189,7 +189,7 @@ theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sp
 /-- Given two points on a circle, the radius of that circle may be expressed explicitly as half
 the distance between those two points divided by the cosine of the angle between the chord and
 the radius at one of those points. -/
-theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
+lemma dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (h : p₁ ≠ p₂) :
     dist p₁ p₂ / Real.Angle.cos (∡ p₂ p₁ s.center) / 2 = s.radius := by
   rw [div_right_comm, div_eq_mul_inv _ (2 : ℝ), mul_comm,
@@ -216,7 +216,7 @@ theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ :
 /-- Given two points on a circle, twice the radius of that circle may be expressed explicitly as
 the distance between those two points divided by the cosine of the angle between the chord and
 the radius at one of those points. -/
-theorem dist_div_cos_oangle_center_eq_two_mul_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
+lemma dist_div_cos_oangle_center_eq_two_mul_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (h : p₁ ≠ p₂) :
     dist p₁ p₂ / Real.Angle.cos (∡ p₂ p₁ s.center) = 2 * s.radius := by
   rw [← dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₂ h, mul_div_cancel' _ (two_ne_zero' ℝ)]
@@ -225,7 +225,7 @@ theorem dist_div_cos_oangle_center_eq_two_mul_radius {s : Sphere P} {p₁ p₂ :
 /-- Given three points on a circle, the radius of that circle may be expressed explicitly as half
 the distance between two of those points divided by the absolute value of the sine of the angle
 at the third point (a version of the law of sines or sine rule). -/
-theorem dist_div_sin_oangle_div_two_eq_radius {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
+lemma dist_div_sin_oangle_div_two_eq_radius {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₁p₂ : p₁ ≠ p₂) (hp₁p₃ : p₁ ≠ p₃) (hp₂p₃ : p₂ ≠ p₃) :
     dist p₁ p₃ / |Real.Angle.sin (∡ p₁ p₂ p₃)| / 2 = s.radius := by
   convert dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₃ hp₁p₃
@@ -238,7 +238,7 @@ theorem dist_div_sin_oangle_div_two_eq_radius {s : Sphere P} {p₁ p₂ p₃ : P
 /-- Given three points on a circle, twice the radius of that circle may be expressed explicitly as
 the distance between two of those points divided by the absolute value of the sine of the angle
 at the third point (a version of the law of sines or sine rule). -/
-theorem dist_div_sin_oangle_eq_two_mul_radius {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
+lemma dist_div_sin_oangle_eq_two_mul_radius {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₁p₂ : p₁ ≠ p₂) (hp₁p₃ : p₁ ≠ p₃) (hp₂p₃ : p₂ ≠ p₃) :
     dist p₁ p₃ / |Real.Angle.sin (∡ p₁ p₂ p₃)| = 2 * s.radius := by
   rw [← dist_div_sin_oangle_div_two_eq_radius hp₁ hp₂ hp₃ hp₁p₂ hp₁p₃ hp₂p₃,
@@ -310,7 +310,7 @@ theorem circumsphere_eq_of_dist_of_oangle (t : Triangle ℝ P) {i₁ i₂ i₃ :
 
 /-- If two triangles have two points the same, and twice the angle at the third point the same,
 they have the same circumsphere. -/
-theorem circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t₂ : Triangle ℝ P}
+lemma circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t₂ : Triangle ℝ P}
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
     (h₁ : t₁.points i₁ = t₂.points i₁) (h₃ : t₁.points i₃ = t₂.points i₃)
     (h₂ : (2 : ℤ) • ∡ (t₁.points i₁) (t₁.points i₂) (t₁.points i₃) =
@@ -325,7 +325,7 @@ theorem circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t�
 /-- Given a triangle, and a fourth point such that twice the angle between two points of the
 triangle at that fourth point equals twice the third angle of the triangle, the fourth point
 lies in the circumsphere of the triangle. -/
-theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i₁ i₂ i₃ : Fin 3}
+lemma mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
     (h : (2 : ℤ) • ∡ (t.points i₁) p (t.points i₃) =
       (2 : ℤ) • ∡ (t.points i₁) (t.points i₂) (t.points i₃)) : p ∈ t.circumsphere := by
@@ -362,7 +362,7 @@ local notation "o" => Module.Oriented.positiveOrientation
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
 add to π", for oriented angles mod π. -/
-theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ : P}
+lemma cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) (hn : ¬Collinear ℝ ({p₁, p₂, p₄} : Set P)) :
     Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
   have hn' : ¬Collinear ℝ ({p₁, p₃, p₄} : Set P) := by
@@ -381,7 +381,7 @@ theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
 add to π", for oriented angles mod π, with a "concyclic" conclusion. -/
-theorem concyclic_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ : P}
+lemma concyclic_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) (hn : ¬Collinear ℝ ({p₁, p₂, p₄} : Set P)) :
     Concyclic ({p₁, p₂, p₃, p₄} : Set P) :=
   ⟨cospherical_of_two_zsmul_oangle_eq_of_not_collinear h hn, coplanar_of_fact_finrank_eq_two _⟩
@@ -389,7 +389,7 @@ theorem concyclic_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ :
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
 add to π", for oriented angles mod π, with a "cospherical or collinear" conclusion. -/
-theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
+lemma cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) :
     Cospherical ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) := by
   by_cases hc : Collinear ℝ ({p₁, p₂, p₄} : Set P)
@@ -414,7 +414,7 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
 add to π", for oriented angles mod π, with a "concyclic or collinear" conclusion. -/
-theorem concyclic_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
+lemma concyclic_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) :
     Concyclic ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) := by
   rcases cospherical_or_collinear_of_two_zsmul_oangle_eq h with (hc | hc)

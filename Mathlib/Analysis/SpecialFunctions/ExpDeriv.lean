@@ -38,26 +38,26 @@ theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   exact fun z hz => exp_bound_sq x z hz.le
 #align complex.has_deriv_at_exp Complex.hasDerivAt_exp
 
-theorem differentiable_exp : Differentiable 𝕜 exp := fun x =>
+lemma differentiable_exp : Differentiable 𝕜 exp := fun x =>
   (hasDerivAt_exp x).differentiableAt.restrictScalars 𝕜
 #align complex.differentiable_exp Complex.differentiable_exp
 
-theorem differentiableAt_exp {x : ℂ} : DifferentiableAt 𝕜 exp x :=
+lemma differentiableAt_exp {x : ℂ} : DifferentiableAt 𝕜 exp x :=
   differentiable_exp x
 #align complex.differentiable_at_exp Complex.differentiableAt_exp
 
 @[simp]
-theorem deriv_exp : deriv exp = exp :=
+lemma deriv_exp : deriv exp = exp :=
   funext fun x => (hasDerivAt_exp x).deriv
 #align complex.deriv_exp Complex.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
+lemma iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
 
-theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
+lemma contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
   -- porting note: added `@` due to `∀ {n}` weirdness above
   refine' @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
@@ -152,21 +152,21 @@ theorem Differentiable.cexp (hc : Differentiable 𝕜 f) :
     Differentiable 𝕜 fun x => Complex.exp (f x) := fun x => (hc x).cexp
 #align differentiable.cexp Differentiable.cexp
 
-theorem ContDiff.cexp {n} (h : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => Complex.exp (f x) :=
+lemma ContDiff.cexp {n} (h : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => Complex.exp (f x) :=
   Complex.contDiff_exp.comp h
 #align cont_diff.cexp ContDiff.cexp
 
-theorem ContDiffAt.cexp {n} (hf : ContDiffAt 𝕜 n f x) :
+lemma ContDiffAt.cexp {n} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => Complex.exp (f x)) x :=
   Complex.contDiff_exp.contDiffAt.comp x hf
 #align cont_diff_at.cexp ContDiffAt.cexp
 
-theorem ContDiffOn.cexp {n} (hf : ContDiffOn 𝕜 n f s) :
+lemma ContDiffOn.cexp {n} (hf : ContDiffOn 𝕜 n f s) :
     ContDiffOn 𝕜 n (fun x => Complex.exp (f x)) s :=
   Complex.contDiff_exp.comp_contDiffOn hf
 #align cont_diff_on.cexp ContDiffOn.cexp
 
-theorem ContDiffWithinAt.cexp {n} (hf : ContDiffWithinAt 𝕜 n f s x) :
+lemma ContDiffWithinAt.cexp {n} (hf : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n (fun x => Complex.exp (f x)) s x :=
   Complex.contDiff_exp.contDiffAt.comp_contDiffWithinAt x hf
 #align cont_diff_within_at.cexp ContDiffWithinAt.cexp
@@ -185,24 +185,24 @@ theorem hasDerivAt_exp (x : ℝ) : HasDerivAt exp (exp x) x :=
   (Complex.hasDerivAt_exp x).real_of_complex
 #align real.has_deriv_at_exp Real.hasDerivAt_exp
 
-theorem contDiff_exp {n} : ContDiff ℝ n exp :=
+lemma contDiff_exp {n} : ContDiff ℝ n exp :=
   Complex.contDiff_exp.real_of_complex
 #align real.cont_diff_exp Real.contDiff_exp
 
-theorem differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
+lemma differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
 #align real.differentiable_exp Real.differentiable_exp
 
-theorem differentiableAt_exp : DifferentiableAt ℝ exp x :=
+lemma differentiableAt_exp : DifferentiableAt ℝ exp x :=
   differentiable_exp x
 #align real.differentiable_at_exp Real.differentiableAt_exp
 
 @[simp]
-theorem deriv_exp : deriv exp = exp :=
+lemma deriv_exp : deriv exp = exp :=
   funext fun x => (hasDerivAt_exp x).deriv
 #align real.deriv_exp Real.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
+lemma iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align real.iter_deriv_exp Real.iter_deriv_exp
@@ -254,19 +254,19 @@ function, for standalone use and use with `simp`. -/
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
   {s : Set E}
 
-theorem ContDiff.exp {n} (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => Real.exp (f x) :=
+lemma ContDiff.exp {n} (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => Real.exp (f x) :=
   Real.contDiff_exp.comp hf
 #align cont_diff.exp ContDiff.exp
 
-theorem ContDiffAt.exp {n} (hf : ContDiffAt ℝ n f x) : ContDiffAt ℝ n (fun x => Real.exp (f x)) x :=
+lemma ContDiffAt.exp {n} (hf : ContDiffAt ℝ n f x) : ContDiffAt ℝ n (fun x => Real.exp (f x)) x :=
   Real.contDiff_exp.contDiffAt.comp x hf
 #align cont_diff_at.exp ContDiffAt.exp
 
-theorem ContDiffOn.exp {n} (hf : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun x => Real.exp (f x)) s :=
+lemma ContDiffOn.exp {n} (hf : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun x => Real.exp (f x)) s :=
   Real.contDiff_exp.comp_contDiffOn hf
 #align cont_diff_on.exp ContDiffOn.exp
 
-theorem ContDiffWithinAt.exp {n} (hf : ContDiffWithinAt ℝ n f s x) :
+lemma ContDiffWithinAt.exp {n} (hf : ContDiffWithinAt ℝ n f s x) :
     ContDiffWithinAt ℝ n (fun x => Real.exp (f x)) s x :=
   Real.contDiff_exp.contDiffAt.comp_contDiffWithinAt x hf
 #align cont_diff_within_at.exp ContDiffWithinAt.exp

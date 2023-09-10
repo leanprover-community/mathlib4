@@ -30,13 +30,13 @@ namespace Nat
 variable {R : Type u} [AddGroupWithOne R]
 
 @[simp, norm_cast]
-theorem cast_sub {m n} (h : m ≤ n) : ((n - m : ℕ) : R) = n - m :=
+lemma cast_sub {m n} (h : m ≤ n) : ((n - m : ℕ) : R) = n - m :=
   eq_sub_of_add_eq <| by rw [← cast_add, Nat.sub_add_cancel h]
 #align nat.cast_sub Nat.cast_subₓ
 -- `HasLiftT` appeared in the type signature
 
 @[simp, norm_cast]
-theorem cast_pred : ∀ {n}, 0 < n → ((n - 1 : ℕ) : R) = n - 1
+lemma cast_pred : ∀ {n}, 0 < n → ((n - 1 : ℕ) : R) = n - 1
   | 0, h => by cases h
   | n + 1, _ => by rw [cast_succ, add_sub_cancel]; rfl
 #align nat.cast_pred Nat.cast_pred
@@ -56,7 +56,7 @@ theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
 -- expected `n` to be implicit, and `HasLiftT`
 
 @[simp, norm_cast]
-theorem cast_zero : ((0 : ℤ) : R) = 0 :=
+lemma cast_zero : ((0 : ℤ) : R) = 0 :=
   (AddGroupWithOne.intCast_ofNat 0).trans Nat.cast_zero
 #align int.cast_zero Int.cast_zeroₓ
 -- type had `HasLiftT`
@@ -74,13 +74,13 @@ theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
   simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
-theorem cast_one : ((1 : ℤ) : R) = 1 := by
+lemma cast_one : ((1 : ℤ) : R) = 1 := by
   erw [cast_ofNat, Nat.cast_one]
 #align int.cast_one Int.cast_oneₓ
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
-theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
+lemma cast_neg : ∀ n, ((-n : ℤ) : R) = -n
   | (0 : ℕ) => by erw [cast_zero, neg_zero]
   | (n + 1 : ℕ) => by erw [cast_ofNat, cast_negSucc]
   | -[n+1] => by erw [cast_ofNat, cast_negSucc, neg_neg]
@@ -105,7 +105,7 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 #align int.cast_neg_of_nat Int.cast_negOfNat
 
 @[simp, norm_cast]
-theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
+lemma cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
   | (m : ℕ), (n : ℕ) => by simp [← Int.ofNat_add, Nat.cast_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
@@ -149,15 +149,15 @@ theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
 
 end deprecated
 
-theorem cast_two : ((2 : ℤ) : R) = 2 :=
+lemma cast_two : ((2 : ℤ) : R) = 2 :=
   show (((2 : ℕ) : ℤ) : R) = ((2 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
 #align int.cast_two Int.cast_two
 
-theorem cast_three : ((3 : ℤ) : R) = 3 :=
+lemma cast_three : ((3 : ℤ) : R) = 3 :=
   show (((3 : ℕ) : ℤ) : R) = ((3 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
 #align int.cast_three Int.cast_three
 
-theorem cast_four : ((4 : ℤ) : R) = 4 :=
+lemma cast_four : ((4 : ℤ) : R) = 4 :=
   show (((4 : ℕ) : ℤ) : R) = ((4 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
 #align int.cast_four Int.cast_four
 

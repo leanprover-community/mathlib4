@@ -1052,7 +1052,7 @@ To use this attribute, just write:
 
 ```
 @[to_additive]
-theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := mul_comm x y
+lemma mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := mul_comm x y
 ```
 
 This code will generate a theorem named `add_comm'`. It is also
@@ -1060,7 +1060,7 @@ possible to manually specify the name of the new declaration:
 
 ```
 @[to_additive add_foo]
-theorem foo := sorry
+lemma foo := sorry
 ```
 
 An existing documentation string will _not_ be automatically used, so if the theorem or definition
@@ -1070,7 +1070,7 @@ has a doc string, a doc string for the additive version should be passed explici
 ```
 /-- Multiplication is commutative -/
 @[to_additive "Addition is commutative"]
-theorem mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_semigroup.mul_comm
+lemma mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_semigroup.mul_comm
 ```
 
 The transport tries to do the right thing in most cases using several

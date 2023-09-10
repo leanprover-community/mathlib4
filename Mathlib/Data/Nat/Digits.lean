@@ -91,7 +91,7 @@ theorem digits_zero (b : ℕ) : digits b 0 = [] := by
 #align nat.digits_zero Nat.digits_zero
 
 -- @[simp] -- Porting note: simp can prove this
-theorem digits_zero_zero : digits 0 0 = [] :=
+lemma digits_zero_zero : digits 0 0 = [] :=
   rfl
 #align nat.digits_zero_zero Nat.digits_zero_zero
 
@@ -100,7 +100,7 @@ theorem digits_zero_succ (n : ℕ) : digits 0 n.succ = [n + 1] :=
   rfl
 #align nat.digits_zero_succ Nat.digits_zero_succ
 
-theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
+lemma digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
   | 0, h => (h rfl).elim
   | _ + 1, _ => rfl
 #align nat.digits_zero_succ' Nat.digits_zero_succ'
@@ -121,7 +121,7 @@ theorem digits_add_two_add_one (b n : ℕ) :
   simp [digits, digitsAux_def]
 #align nat.digits_add_two_add_one Nat.digits_add_two_add_one
 
-theorem digits_def' :
+lemma digits_def' :
     ∀ {b : ℕ} (_ : 1 < b) {n : ℕ} (_ : 0 < n), digits b n = (n % b) :: digits b (n / b)
   | 0, h => absurd h (by decide)
   | 1, h => absurd h (by decide)
@@ -159,7 +159,7 @@ def ofDigits {α : Type*} [Semiring α] (b : α) : List ℕ → α
   | h :: t => h + b * ofDigits b t
 #align nat.of_digits Nat.ofDigits
 
-theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
+lemma ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
     ofDigits b L = List.foldr (fun x y => ↑x + b * y) 0 L := by
   induction' L with d L ih
   · rfl
@@ -188,15 +188,15 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
 #align nat.of_digits_eq_sum_map_with_index Nat.ofDigits_eq_sum_mapIdx
 
 @[simp]
-theorem ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits]
+lemma ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits]
 #align nat.of_digits_singleton Nat.ofDigits_singleton
 
 @[simp]
-theorem ofDigits_one_cons {α : Type*} [Semiring α] (h : ℕ) (L : List ℕ) :
+lemma ofDigits_one_cons {α : Type*} [Semiring α] (h : ℕ) (L : List ℕ) :
     ofDigits (1 : α) (h :: L) = h + ofDigits 1 L := by simp [ofDigits]
 #align nat.of_digits_one_cons Nat.ofDigits_one_cons
 
-theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
+lemma ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
     ofDigits b (l1 ++ l2) = ofDigits b l1 + b ^ l1.length * ofDigits b l2 := by
   induction' l1 with hd tl IH
   · simp [ofDigits]
@@ -219,7 +219,7 @@ theorem coe_int_ofDigits (b : ℕ) (L : List ℕ) : ((ofDigits b L : ℕ) : ℤ)
   · dsimp [ofDigits]; push_cast; simp only
 #align nat.coe_int_of_digits Nat.coe_int_ofDigits
 
-theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
+lemma digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
     ∀ {L : List ℕ} (_ : ofDigits b L = 0), ∀ l ∈ L, l = 0
   | _ :: _, h0, _, List.Mem.head .. => Nat.eq_zero_of_add_eq_zero_right h0
   | _ :: _, h0, _, List.Mem.tail _ hL =>
@@ -289,7 +289,7 @@ This section contains various lemmas of properties relating to `digits` and `ofD
 -/
 
 
-theorem digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
+lemma digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
   constructor
   · intro h
     have : ofDigits b (digits b n) = ofDigits b [] := by rw [h]
@@ -299,11 +299,11 @@ theorem digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
     simp
 #align nat.digits_eq_nil_iff_eq_zero Nat.digits_eq_nil_iff_eq_zero
 
-theorem digits_ne_nil_iff_ne_zero {b n : ℕ} : digits b n ≠ [] ↔ n ≠ 0 :=
+lemma digits_ne_nil_iff_ne_zero {b n : ℕ} : digits b n ≠ [] ↔ n ≠ 0 :=
   not_congr digits_eq_nil_iff_eq_zero
 #align nat.digits_ne_nil_iff_ne_zero Nat.digits_ne_nil_iff_ne_zero
 
-theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
+lemma digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
     digits b n = (n % b) :: digits b (n / b) := by
   rcases b with (_ | _ | b)
   · rw [digits_zero_succ' w, Nat.mod_zero, Nat.div_zero, Nat.digits_zero_zero]
@@ -313,7 +313,7 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
   · simp only [digits_add_two_add_one, ne_eq]
 #align nat.digits_eq_cons_digits_div Nat.digits_eq_cons_digits_div
 
-theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
+lemma digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
   by_cases hm : m = 0
   · simp [hm]
@@ -326,7 +326,7 @@ theorem digits.injective (b : ℕ) : Function.Injective b.digits :=
 #align nat.digits.injective Nat.digits.injective
 
 @[simp]
-theorem digits_inj_iff {b n m : ℕ} : b.digits n = b.digits m ↔ n = m :=
+lemma digits_inj_iff {b n m : ℕ} : b.digits n = b.digits m ↔ n = m :=
   (digits.injective b).eq_iff
 #align nat.digits_inj_iff Nat.digits_inj_iff
 
@@ -365,7 +365,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
-theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
+lemma digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
   apply Nat.strongInductionOn m
   intro n IH d hd
   cases' n with n
@@ -383,13 +383,13 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
-theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
+lemma digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
   rcases b with (_ | _ | b) <;> try simp_all
   exact digits_lt_base' hd
 #align nat.digits_lt_base Nat.digits_lt_base
 
 /-- an n-digit number in base b + 2 is less than (b + 2)^n -/
-theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l, x < b + 2) :
+lemma ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l, x < b + 2) :
     ofDigits (b + 2) l < (b + 2) ^ l.length := by
   induction' l with hd tl IH
   · simp [ofDigits]
@@ -403,30 +403,30 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
 #align nat.of_digits_lt_base_pow_length' Nat.ofDigits_lt_base_pow_length'
 
 /-- an n-digit number in base b is less than b^n if b > 1 -/
-theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
+lemma ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
     ofDigits b l < b ^ l.length := by
   rcases b with (_ | _ | b) <;> try simp_all
   exact ofDigits_lt_base_pow_length' hl
 #align nat.of_digits_lt_base_pow_length Nat.ofDigits_lt_base_pow_length
 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
-theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
+lemma lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
   convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 #align nat.lt_base_pow_length_digits' Nat.lt_base_pow_length_digits'
 
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
-theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m).length := by
+lemma lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m).length := by
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 #align nat.lt_base_pow_length_digits Nat.lt_base_pow_length_digits
 
-theorem ofDigits_digits_append_digits {b m n : ℕ} :
+lemma ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 #align nat.of_digits_digits_append_digits Nat.ofDigits_digits_append_digits
 
-theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
+lemma digits_append_digits {b m n : ℕ} (hb : 0 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
   rcases eq_or_lt_of_le (Nat.succ_le_of_lt hb) with (rfl | hb)
   · simp [List.replicate_add]
@@ -453,7 +453,7 @@ theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (
 #align nat.le_digits_len_le Nat.le_digits_len_le
 
 @[mono]
-theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
+lemma ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
   induction' L with _ _ hi
   · rfl
   · simp only [ofDigits, cast_id, add_le_add_iff_left]
@@ -471,7 +471,7 @@ theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
       rw [← ofDigits_one <| digits p.succ n.succ]
       exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
 
-theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
+lemma pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by
   rw [← List.dropLast_append_getLast hl]
   simp only [List.length_append, List.length, zero_add, List.length_dropLast, ofDigits_append,
@@ -601,7 +601,7 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
 
 
 -- This is really a theorem about polynomials.
-theorem dvd_ofDigits_sub_ofDigits {α : Type*} [CommRing α] {a b k : α} (h : k ∣ a - b)
+lemma dvd_ofDigits_sub_ofDigits {α : Type*} [CommRing α] {a b k : α} (h : k ∣ a - b)
     (L : List ℕ) : k ∣ ofDigits a L - ofDigits b L := by
   induction' L with d L ih
   · change k ∣ 0 - 0
@@ -674,7 +674,7 @@ theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n
   apply ofDigits_zmodeq' _ _ _ h
 #align nat.zmodeq_of_digits_digits Nat.zmodeq_ofDigits_digits
 
-theorem ofDigits_neg_one :
+lemma ofDigits_neg_one :
     ∀ L : List ℕ, ofDigits (-1 : ℤ) L = (L.map fun n : ℕ => (n : ℤ)).alternatingSum
   | [] => rfl
   | [n] => by simp [ofDigits, List.alternatingSum]
@@ -715,7 +715,7 @@ theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ
     dvd_iff_dvd_of_dvd_sub (zmodeq_ofDigits_digits b b' c (Int.modEq_iff_dvd.2 h).symm _).symm.dvd
 #align nat.dvd_iff_dvd_of_digits Nat.dvd_iff_dvd_ofDigits
 
-theorem eleven_dvd_iff :
+lemma eleven_dvd_iff :
     11 ∣ n ↔ (11 : ℤ) ∣ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum := by
   have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by norm_num) n
   rw [ofDigits_neg_one] at t

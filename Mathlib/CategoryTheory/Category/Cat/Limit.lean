@@ -124,7 +124,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.has_limits.limit_cone_lift CategoryTheory.Cat.HasLimits.limitConeLift
 
 @[simp]
-theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
+lemma limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =
       eqToHom (congr_arg (limit.π (F ⋙ Cat.objects.{v, v}) j) h) := by

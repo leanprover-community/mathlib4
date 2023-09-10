@@ -99,10 +99,10 @@ def toUpperSet : α ≃ WithUpperSetTopology α := Equiv.refl _
 def ofUpperSet : WithUpperSetTopology α ≃ α := Equiv.refl _
 
 @[simp]
-theorem to_withUpperSetTopology_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
+lemma to_withUpperSetTopology_symm_eq : (@toUpperSet α).symm = ofUpperSet := rfl
 
 @[simp]
-theorem of_withUpperSetTopology_symm_eq : (@ofUpperSet α).symm = toUpperSet := rfl
+lemma of_withUpperSetTopology_symm_eq : (@ofUpperSet α).symm = toUpperSet := rfl
 
 @[simp]
 theorem toUpperSet_ofUpperSet (a : WithUpperSetTopology α) : toUpperSet (ofUpperSet a) = a := rfl
@@ -110,9 +110,9 @@ theorem toUpperSet_ofUpperSet (a : WithUpperSetTopology α) : toUpperSet (ofUppe
 @[simp]
 theorem ofUpperSet_toUpperSet (a : α) : ofUpperSet (toUpperSet a) = a := rfl
 
-theorem toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
+lemma toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
 
-theorem ofUpperSet_inj {a b : WithUpperSetTopology α} : ofUpperSet a = ofUpperSet b ↔ a = b :=
+lemma ofUpperSet_inj {a b : WithUpperSetTopology α} : ofUpperSet a = ofUpperSet b ↔ a = b :=
   Iff.rfl
 
 /-- A recursor for `WithUpperSetTopology`. Use as `induction x using WithUpperSetTopology.rec`. -/
@@ -129,10 +129,10 @@ instance : Preorder (WithUpperSetTopology α) := ‹Preorder α›
 
 instance : TopologicalSpace (WithUpperSetTopology α) := upperSetTopology' α
 
-theorem ofUpperSet_le_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
+lemma ofUpperSet_le_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
   Iff.rfl
 
-theorem toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b := Iff.rfl
+lemma toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b := Iff.rfl
 
 /-- `ofUpper` as an `OrderIso` -/
 def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α :=
@@ -157,10 +157,10 @@ def toLowerSet : α ≃ WithLowerSetTopology α := Equiv.refl _
 def ofLowerSet : WithLowerSetTopology α ≃ α := Equiv.refl _
 
 @[simp]
-theorem to_withLowerSetTopology_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl
+lemma to_withLowerSetTopology_symm_eq : (@toLowerSet α).symm = ofLowerSet := rfl
 
 @[simp]
-theorem of_withLowerSetTopology_symm_eq : (@ofLowerSet α).symm = toLowerSet := rfl
+lemma of_withLowerSetTopology_symm_eq : (@ofLowerSet α).symm = toLowerSet := rfl
 
 @[simp]
 theorem toLowerSet_ofLowerSet (a : WithLowerSetTopology α) : toLowerSet (ofLowerSet a) = a := rfl
@@ -168,9 +168,9 @@ theorem toLowerSet_ofLowerSet (a : WithLowerSetTopology α) : toLowerSet (ofLowe
 @[simp]
 theorem ofLowerSet_toLowerSet (a : α) : ofLowerSet (toLowerSet a) = a := rfl
 
-theorem toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl
+lemma toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl
 
-theorem ofLowerSet_inj {a b : WithLowerSetTopology α} : ofLowerSet a = ofLowerSet b ↔ a = b :=
+lemma ofLowerSet_inj {a b : WithLowerSetTopology α} : ofLowerSet a = ofLowerSet b ↔ a = b :=
   Iff.rfl
 
 /-- A recursor for `WithLowerSetTopology`. Use as `induction x using WithLowerSetTopology.rec`. -/
@@ -187,10 +187,10 @@ instance : Preorder (WithLowerSetTopology α) := ‹Preorder α›
 
 instance : TopologicalSpace (WithLowerSetTopology α) := lowerSetTopology' α
 
-theorem ofLowerSet_le_iff {a b : WithLowerSetTopology α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b :=
+lemma ofLowerSet_le_iff {a b : WithLowerSetTopology α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b :=
   Iff.rfl
 
-theorem toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b := Iff.rfl
+lemma toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b := Iff.rfl
 
 /-- `ofLower` as an `OrderIso` -/
 def ofLowerSetOrderIso : OrderIso (WithLowerSetTopology α) α :=

@@ -194,7 +194,7 @@ theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
 #align order_ring_hom.to_fun_eq_coe OrderRingHom.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align order_ring_hom.ext OrderRingHom.ext
 
@@ -269,7 +269,7 @@ instance : Inhabited (α →+*o α) :=
   ⟨OrderRingHom.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(OrderRingHom.id α) = id :=
+lemma coe_id : ⇑(OrderRingHom.id α) = id :=
   rfl
 #align order_ring_hom.coe_id OrderRingHom.coe_id
 
@@ -281,17 +281,17 @@ theorem id_apply (a : α) : OrderRingHom.id α a = a :=
 #align order_ring_hom.id_apply OrderRingHom.id_apply
 
 @[simp]
-theorem coe_ringHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
+lemma coe_ringHom_id : (OrderRingHom.id α : α →+* α) = RingHom.id α :=
   rfl
 #align order_ring_hom.coe_ring_hom_id OrderRingHom.coe_ringHom_id
 
 @[simp]
-theorem coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
+lemma coe_orderAddMonoidHom_id : (OrderRingHom.id α : α →+o α) = OrderAddMonoidHom.id α :=
   rfl
 #align order_ring_hom.coe_order_add_monoid_hom_id OrderRingHom.coe_orderAddMonoidHom_id
 
 @[simp]
-theorem coe_orderMonoidWithZeroHom_id :
+lemma coe_orderMonoidWithZeroHom_id :
     (OrderRingHom.id α : α →*₀o α) = OrderMonoidWithZeroHom.id α :=
   rfl
 #align order_ring_hom.coe_order_monoid_with_zero_hom_id OrderRingHom.coe_orderMonoidWithZeroHom_id
@@ -327,13 +327,13 @@ theorem id_comp (f : α →+*o β) : (OrderRingHom.id β).comp f = f :=
 #align order_ring_hom.id_comp OrderRingHom.id_comp
 
 @[simp]
-theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
+lemma cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
   ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, fun h => by rw [h]⟩
 #align order_ring_hom.cancel_right OrderRingHom.cancel_right
 
 @[simp]
-theorem cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injective f) :
+lemma cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align order_ring_hom.cancel_left OrderRingHom.cancel_left
@@ -391,7 +391,7 @@ theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
 #align order_ring_iso.to_fun_eq_coe OrderRingIso.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : α ≃+*o β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : α ≃+*o β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align order_ring_iso.ext OrderRingIso.ext
 
@@ -443,12 +443,12 @@ theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
 #align order_ring_iso.refl_apply OrderRingIso.refl_apply
 
 @[simp]
-theorem coe_ringEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
+lemma coe_ringEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
   rfl
 #align order_ring_iso.coe_ring_equiv_refl OrderRingIso.coe_ringEquiv_refl
 
 @[simp]
-theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=
+lemma coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=
   rfl
 #align order_ring_iso.coe_order_iso_refl OrderRingIso.coe_orderIso_refl
 
@@ -505,7 +505,7 @@ theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl 
   ext e.right_inv
 #align order_ring_iso.symm_trans_self OrderRingIso.symm_trans_self
 
-theorem symm_bijective : Bijective (OrderRingIso.symm : α ≃+*o β → β ≃+*o α) :=
+lemma symm_bijective : Bijective (OrderRingIso.symm : α ≃+*o β → β ≃+*o α) :=
   ⟨fun f g h => f.symm_symm.symm.trans <| (congr_arg OrderRingIso.symm h).trans g.symm_symm,
     fun f => ⟨f.symm, f.symm_symm⟩⟩
 #align order_ring_iso.symm_bijective OrderRingIso.symm_bijective
@@ -533,11 +533,11 @@ theorem coe_toOrderRingHom (f : α ≃+*o β) : ⇑(f : α →+*o β) = f :=
 #align order_ring_iso.coe_to_order_ring_hom OrderRingIso.coe_toOrderRingHom
 
 @[simp]
-theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderRingHom.id α :=
+lemma coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderRingHom.id α :=
   rfl
 #align order_ring_iso.coe_to_order_ring_hom_refl OrderRingIso.coe_toOrderRingHom_refl
 
-theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
+lemma toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
   fun f g h => FunLike.coe_injective <| by convert FunLike.ext'_iff.1 h using 0
 #align order_ring_iso.to_order_ring_hom_injective OrderRingIso.toOrderRingHom_injective
 

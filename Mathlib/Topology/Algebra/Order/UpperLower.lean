@@ -61,19 +61,19 @@ instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedComm
 
 variable [Preorder α] [HasUpperLowerClosure α] {s : Set α}
 
-protected theorem IsUpperSet.closure : IsUpperSet s → IsUpperSet (closure s) :=
+protected lemma IsUpperSet.closure : IsUpperSet s → IsUpperSet (closure s) :=
   HasUpperLowerClosure.isUpperSet_closure _
 #align is_upper_set.closure IsUpperSet.closure
 
-protected theorem IsLowerSet.closure : IsLowerSet s → IsLowerSet (closure s) :=
+protected lemma IsLowerSet.closure : IsLowerSet s → IsLowerSet (closure s) :=
   HasUpperLowerClosure.isLowerSet_closure _
 #align is_lower_set.closure IsLowerSet.closure
 
-protected theorem IsOpen.upperClosure : IsOpen s → IsOpen (upperClosure s : Set α) :=
+protected lemma IsOpen.upperClosure : IsOpen s → IsOpen (upperClosure s : Set α) :=
   HasUpperLowerClosure.isOpen_upperClosure _
 #align is_open.upper_closure IsOpen.upperClosure
 
-protected theorem IsOpen.lowerClosure : IsOpen s → IsOpen (lowerClosure s : Set α) :=
+protected lemma IsOpen.lowerClosure : IsOpen s → IsOpen (lowerClosure s : Set α) :=
   HasUpperLowerClosure.isOpen_lowerClosure _
 #align is_open.lower_closure IsOpen.lowerClosure
 

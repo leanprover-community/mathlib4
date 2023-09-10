@@ -88,7 +88,7 @@ instance : Coe (Pair α) (Pair β) :=
   ⟨coeFn⟩
 
 @[simp, norm_cast]
-theorem coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
+lemma coe_toPair {a b : α} : (↑(Pair.mk a b) : Pair β) = Pair.mk (a : β) (b : β) := rfl
 #align generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair GeneralizedContinuedFraction.Pair.coe_toPair
 
 end coe
@@ -177,7 +177,7 @@ instance : Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction �
   ⟨coeFn⟩
 
 @[simp, norm_cast]
-theorem coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
+lemma coe_toGeneralizedContinuedFraction {g : GeneralizedContinuedFraction α} :
     (g : GeneralizedContinuedFraction β) =
       ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩ := rfl
 #align generalized_continued_fraction.coe_to_generalized_continued_fraction GeneralizedContinuedFraction.coe_toGeneralizedContinuedFraction
@@ -241,7 +241,7 @@ instance : Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
   ⟨Subtype.val⟩
 
 -- Porting note: Syntactic tautology due to change in `Coe` above.
--- theorem coe_toGeneralizedContinuedFraction {s : SimpleContinuedFraction α} :
+-- lemma coe_toGeneralizedContinuedFraction {s : SimpleContinuedFraction α} :
 --     (↑s : GeneralizedContinuedFraction α) = s.val := rfl
 #noalign simple_continued_fraction.coe_to_generalized_continued_fraction
 
@@ -289,7 +289,7 @@ instance : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
   ⟨Subtype.val⟩
 
 -- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_to_simpleContinuedFraction {c : ContinuedFraction α} :
+-- lemma coe_to_simpleContinuedFraction {c : ContinuedFraction α} :
 --     (↑c : SimpleContinuedFraction α) = c.val := rfl
 #noalign continued_fraction.coe_to_simple_continued_fraction
 
@@ -299,7 +299,7 @@ instance : Coe (ContinuedFraction α) (GeneralizedContinuedFraction α) :=
   -- Porting note: was `fun c ↦ ↑(↑c : SimpleContinuedFraction α)`
 
 -- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_toGeneralizedContinuedFraction {c : ContinuedFraction α} :
+-- lemma coe_toGeneralizedContinuedFraction {c : ContinuedFraction α} :
 --     (↑c : GeneralizedContinuedFraction α) = c.val := rfl
 #noalign continued_fraction.coe_to_generalized_continued_fraction
 

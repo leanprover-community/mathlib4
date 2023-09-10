@@ -80,7 +80,7 @@ def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
 #align free_magma.rec_on_mul FreeMagma.recOnMul
 
 @[to_additive (attr := ext 1100)]
-theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
+lemma hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp only [map_mul, *]
 #align free_magma.hom_ext FreeMagma.hom_ext
 
@@ -124,7 +124,7 @@ theorem lift_of (x) : lift f (of x) = f x := rfl
 #align free_magma.lift_of FreeMagma.lift_of
 
 @[to_additive (attr := simp)]
-theorem lift_comp_of : lift f ∘ of = f := rfl
+lemma lift_comp_of : lift f ∘ of = f := rfl
 #align free_magma.lift_comp_of FreeMagma.lift_comp_of
 
 @[to_additive (attr := simp)]
@@ -186,11 +186,11 @@ theorem mul_bind (f : α → FreeMagma β) (x y : FreeMagma α) : x * y >>= f = 
 #align free_magma.mul_bind FreeMagma.mul_bind
 
 @[to_additive (attr := simp)]
-theorem pure_seq {α β : Type u} {f : α → β} {x : FreeMagma α} : pure f <*> x = f <$> x := rfl
+lemma pure_seq {α β : Type u} {f : α → β} {x : FreeMagma α} : pure f <*> x = f <$> x := rfl
 #align free_magma.pure_seq FreeMagma.pure_seq
 
 @[to_additive (attr := simp)]
-theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α} :
+lemma mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α} :
     f * g <*> x = (f <*> x) * (g <*> x) := rfl
 #align free_magma.mul_seq FreeMagma.mul_seq
 
@@ -240,7 +240,7 @@ theorem traverse_pure (x) : traverse F (pure x : FreeMagma α) = pure <$> F x :=
 #align free_magma.traverse_pure FreeMagma.traverse_pure
 
 @[to_additive (attr := simp)]
-theorem traverse_pure' : traverse F ∘ pure = fun x ↦ (pure <$> F x : m (FreeMagma β)) := rfl
+lemma traverse_pure' : traverse F ∘ pure = fun x ↦ (pure <$> F x : m (FreeMagma β)) := rfl
 #align free_magma.traverse_pure' FreeMagma.traverse_pure'
 
 @[to_additive (attr := simp)]
@@ -249,7 +249,7 @@ theorem traverse_mul (x y : FreeMagma α) :
 #align free_magma.traverse_mul FreeMagma.traverse_mul
 
 @[to_additive (attr := simp)]
-theorem traverse_mul' :
+lemma traverse_mul' :
     Function.comp (traverse F) ∘ @Mul.mul (FreeMagma α) _ = fun x y ↦
       (· * ·) <$> traverse F x <*> traverse F y := rfl
 #align free_magma.traverse_mul' FreeMagma.traverse_mul'
@@ -380,7 +380,7 @@ def of : α →ₙ* AssocQuotient α := ⟨Quot.mk _, fun _x _y ↦ rfl⟩
 instance [Inhabited α] : Inhabited (AssocQuotient α) := ⟨of default⟩
 
 @[to_additive (attr := elab_as_elim)]
-protected theorem induction_on {C : AssocQuotient α → Prop} (x : AssocQuotient α)
+protected lemma induction_on {C : AssocQuotient α → Prop} (x : AssocQuotient α)
     (ih : ∀ x, C (of x)) : C x := Quot.induction_on x ih
 #align magma.assoc_quotient.induction_on Magma.AssocQuotient.induction_on
 
@@ -389,7 +389,7 @@ section lift
 variable {β : Type v} [Semigroup β] (f : α →ₙ* β)
 
 @[to_additive (attr := ext 1100)]
-theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
+lemma hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
   (FunLike.ext _ _) fun x => AssocQuotient.induction_on x <| FunLike.congr_fun h
 #align magma.assoc_quotient.hom_ext Magma.AssocQuotient.hom_ext
 
@@ -412,7 +412,7 @@ theorem lift_of (x : α) : lift f (of x) = f x := rfl
 #align magma.assoc_quotient.lift_of Magma.AssocQuotient.lift_of
 
 @[to_additive (attr := simp)]
-theorem lift_comp_of : (lift f).comp of = f := lift.symm_apply_apply f
+lemma lift_comp_of : (lift f).comp of = f := lift.symm_apply_apply f
 #align magma.assoc_quotient.lift_comp_of Magma.AssocQuotient.lift_comp_of
 
 @[to_additive (attr := simp)]
@@ -510,7 +510,7 @@ protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of
 #align free_semigroup.rec_on_mul FreeSemigroup.recOnMul
 
 @[to_additive (attr := ext 1100)]
-theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
+lemma hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦
     FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
 #align free_semigroup.hom_ext FreeSemigroup.hom_ext
@@ -539,7 +539,7 @@ theorem lift_of (x : α) : lift f (of x) = f x := rfl
 #align free_semigroup.lift_of FreeSemigroup.lift_of
 
 @[to_additive (attr := simp)]
-theorem lift_comp_of : lift f ∘ of = f := rfl
+lemma lift_comp_of : lift f ∘ of = f := rfl
 #align free_semigroup.lift_comp_of FreeSemigroup.lift_comp_of
 
 @[to_additive (attr := simp)]
@@ -610,11 +610,11 @@ theorem mul_bind (f : α → FreeSemigroup β) (x y : FreeSemigroup α) :
 #align free_semigroup.mul_bind FreeSemigroup.mul_bind
 
 @[to_additive (attr := simp)]
-theorem pure_seq {f : α → β} {x : FreeSemigroup α} : pure f <*> x = f <$> x := rfl
+lemma pure_seq {f : α → β} {x : FreeSemigroup α} : pure f <*> x = f <$> x := rfl
 #align free_semigroup.pure_seq FreeSemigroup.pure_seq
 
 @[to_additive (attr := simp)]
-theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
+lemma mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
     f * g <*> x = (f <*> x) * (g <*> x) := mul_bind _ _ _
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
@@ -642,7 +642,7 @@ theorem traverse_pure (x) : traverse F (pure x : FreeSemigroup α) = pure <$> F 
 #align free_semigroup.traverse_pure FreeSemigroup.traverse_pure
 
 @[to_additive (attr := simp)]
-theorem traverse_pure' : traverse F ∘ pure = fun x ↦ (pure <$> F x : m (FreeSemigroup β)) := rfl
+lemma traverse_pure' : traverse F ∘ pure = fun x ↦ (pure <$> F x : m (FreeSemigroup β)) := rfl
 #align free_semigroup.traverse_pure' FreeSemigroup.traverse_pure'
 
 section
@@ -663,7 +663,7 @@ theorem traverse_mul (x y : FreeSemigroup α) :
 #align free_semigroup.traverse_mul FreeSemigroup.traverse_mul
 
 @[to_additive (attr := simp)]
-theorem traverse_mul' :
+lemma traverse_mul' :
     Function.comp (traverse F) ∘ @Mul.mul (FreeSemigroup α) _ = fun x y ↦
       (· * ·) <$> traverse F x <*> traverse F y := funext fun x ↦ funext fun y ↦ traverse_mul F x y
 #align free_semigroup.traverse_mul' FreeSemigroup.traverse_mul'
@@ -719,7 +719,7 @@ theorem toFreeSemigroup_of (x : α) : toFreeSemigroup (of x) = FreeSemigroup.of 
 #align free_magma.to_free_semigroup_of FreeMagma.toFreeSemigroup_of
 
 @[to_additive (attr := simp)]
-theorem toFreeSemigroup_comp_of : @toFreeSemigroup α ∘ of = FreeSemigroup.of := rfl
+lemma toFreeSemigroup_comp_of : @toFreeSemigroup α ∘ of = FreeSemigroup.of := rfl
 #align free_magma.to_free_semigroup_comp_of FreeMagma.toFreeSemigroup_comp_of
 
 @[to_additive]

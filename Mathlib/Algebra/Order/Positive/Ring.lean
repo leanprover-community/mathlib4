@@ -123,7 +123,7 @@ instance [Nontrivial R] : One { x : R // 0 < x } :=
   ⟨⟨1, one_pos⟩⟩
 
 @[simp]
-theorem val_one [Nontrivial R] : ((1 : { x : R // 0 < x }) : R) = 1 :=
+lemma val_one [Nontrivial R] : ((1 : { x : R // 0 < x }) : R) = 1 :=
   rfl
 #align positive.coe_one Positive.val_one
 

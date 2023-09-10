@@ -28,12 +28,12 @@ namespace CategoryTheory.Limits
 
 variable (J : Type u₂) [Category.{v₂} J] (C : Type u₁) [Category.{v₁} C]
 
-theorem hasLimitsOfShape_of_essentiallySmall [EssentiallySmall.{w₁} J]
+lemma hasLimitsOfShape_of_essentiallySmall [EssentiallySmall.{w₁} J]
     [HasLimitsOfSize.{w₁, w₁} C] : HasLimitsOfShape J C :=
   hasLimitsOfShape_of_equivalence <| Equivalence.symm <| equivSmallModel.{w₁} J
 #align category_theory.limits.has_limits_of_shape_of_essentially_small CategoryTheory.Limits.hasLimitsOfShape_of_essentiallySmall
 
-theorem hasColimitsOfShape_of_essentiallySmall [EssentiallySmall.{w₁} J]
+lemma hasColimitsOfShape_of_essentiallySmall [EssentiallySmall.{w₁} J]
     [HasColimitsOfSize.{w₁, w₁} C] : HasColimitsOfShape J C :=
   hasColimitsOfShape_of_equivalence <| Equivalence.symm <| equivSmallModel.{w₁} J
 #align category_theory.limits.has_colimits_of_shape_of_essentially_small CategoryTheory.Limits.hasColimitsOfShape_of_essentiallySmall

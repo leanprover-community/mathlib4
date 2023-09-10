@@ -111,7 +111,7 @@ instance : CategoryStruct (Algebra T) where
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
 @[simp]
-theorem comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
+lemma comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
     Algebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.monad.algebra.comp_eq_comp CategoryTheory.Monad.Algebra.comp_eq_comp
@@ -127,7 +127,7 @@ theorem id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
 #align category_theory.monad.algebra.id_f CategoryTheory.Monad.Algebra.id_f
 
 @[simp]
-theorem comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
+lemma comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.monad.algebra.comp_f CategoryTheory.Monad.Algebra.comp_f
 
@@ -204,7 +204,7 @@ def adj : T.free ⊣ T.forget :=
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
 -/
-theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
+lemma algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
   ⟨⟨{   f := inv f.f
         h := by
           rw [IsIso.eq_comp_inv f.f, Category.assoc, ← f.h]
@@ -222,13 +222,13 @@ instance forget_faithful : Faithful T.forget where
 
 /-- Given an algebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.
 -/
-theorem algebra_epi_of_epi {X Y : Algebra T} (f : X ⟶ Y) [h : Epi f.f] : Epi f :=
+lemma algebra_epi_of_epi {X Y : Algebra T} (f : X ⟶ Y) [h : Epi f.f] : Epi f :=
   (forget T).epi_of_epi_map h
 #align category_theory.monad.algebra_epi_of_epi CategoryTheory.Monad.algebra_epi_of_epi
 
 /-- Given an algebra morphism whose carrier part is a monomorphism, we get an algebra monomorphism.
 -/
-theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
+lemma algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget T).mono_of_mono_map h
 #align category_theory.monad.algebra_mono_of_mono CategoryTheory.Monad.algebra_mono_of_mono
 
@@ -236,12 +236,12 @@ instance : IsRightAdjoint T.forget :=
   ⟨T.free, T.adj⟩
 
 @[simp]
-theorem leftAdjoint_forget : leftAdjoint T.forget = T.free :=
+lemma leftAdjoint_forget : leftAdjoint T.forget = T.free :=
   rfl
 #align category_theory.monad.left_adjoint_forget CategoryTheory.Monad.leftAdjoint_forget
 
 @[simp]
-theorem ofRightAdjoint_forget : Adjunction.ofRightAdjoint T.forget = T.adj :=
+lemma ofRightAdjoint_forget : Adjunction.ofRightAdjoint T.forget = T.adj :=
   rfl
 #align category_theory.monad.of_right_adjoint_forget CategoryTheory.Monad.ofRightAdjoint_forget
 
@@ -307,7 +307,7 @@ def algebraEquivOfIsoMonads {T₁ T₂ : Monad C} (h : T₁ ≅ T₂) : Algebra 
 #align category_theory.monad.algebra_equiv_of_iso_monads CategoryTheory.Monad.algebraEquivOfIsoMonads
 
 @[simp]
-theorem algebra_equiv_of_iso_monads_comp_forget {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂) :
+lemma algebra_equiv_of_iso_monads_comp_forget {T₁ T₂ : Monad C} (h : T₁ ⟶ T₂) :
     algebraFunctorOfMonadHom h ⋙ forget _ = forget _ :=
   rfl
 #align category_theory.monad.algebra_equiv_of_iso_monads_comp_forget CategoryTheory.Monad.algebra_equiv_of_iso_monads_comp_forget
@@ -393,7 +393,7 @@ instance : CategoryStruct (Coalgebra G) where
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
 @[simp]
-theorem comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :
+lemma comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :
     Coalgebra.Hom.comp f g = f ≫ g :=
   rfl
 #align category_theory.comonad.coalgebra.comp_eq_comp CategoryTheory.Comonad.Coalgebra.comp_eq_comp
@@ -409,7 +409,7 @@ theorem id_f (A : Coalgebra G) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
 #align category_theory.comonad.coalgebra.id_f CategoryTheory.Comonad.Coalgebra.id_f
 
 @[simp]
-theorem comp_f {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
+lemma comp_f {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.comonad.coalgebra.comp_f CategoryTheory.Comonad.Coalgebra.comp_f
 
@@ -484,7 +484,7 @@ def adj : G.forget ⊣ G.cofree :=
 
 /-- Given a coalgebra morphism whose carrier part is an isomorphism, we get a coalgebra isomorphism.
 -/
-theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
+lemma coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
   ⟨⟨{   f := inv f.f
         h := by
           rw [IsIso.eq_inv_comp f.f, ← f.h_assoc]
@@ -502,13 +502,13 @@ instance forget_faithful : Faithful (forget G) where
 
 /-- Given a coalgebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.
 -/
-theorem algebra_epi_of_epi {X Y : Coalgebra G} (f : X ⟶ Y) [h : Epi f.f] : Epi f :=
+lemma algebra_epi_of_epi {X Y : Coalgebra G} (f : X ⟶ Y) [h : Epi f.f] : Epi f :=
   (forget G).epi_of_epi_map h
 #align category_theory.comonad.algebra_epi_of_epi CategoryTheory.Comonad.algebra_epi_of_epi
 
 /-- Given a coalgebra morphism whose carrier part is a monomorphism, we get an algebra monomorphism.
 -/
-theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
+lemma algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget G).mono_of_mono_map h
 #align category_theory.comonad.algebra_mono_of_mono CategoryTheory.Comonad.algebra_mono_of_mono
 
@@ -516,12 +516,12 @@ instance : IsLeftAdjoint G.forget :=
   ⟨_, G.adj⟩
 
 @[simp]
-theorem rightAdjoint_forget : rightAdjoint G.forget = G.cofree :=
+lemma rightAdjoint_forget : rightAdjoint G.forget = G.cofree :=
   rfl
 #align category_theory.comonad.right_adjoint_forget CategoryTheory.Comonad.rightAdjoint_forget
 
 @[simp]
-theorem ofLeftAdjoint_forget : Adjunction.ofLeftAdjoint G.forget = G.adj :=
+lemma ofLeftAdjoint_forget : Adjunction.ofLeftAdjoint G.forget = G.adj :=
   rfl
 #align category_theory.comonad.of_left_adjoint_forget CategoryTheory.Comonad.ofLeftAdjoint_forget
 

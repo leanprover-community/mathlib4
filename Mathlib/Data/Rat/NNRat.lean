@@ -66,24 +66,24 @@ instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
 #align nnrat.can_lift NNRat.canLift
 
 @[ext]
-theorem ext : (p : ℚ) = (q : ℚ) → p = q :=
+lemma ext : (p : ℚ) = (q : ℚ) → p = q :=
   Subtype.ext
 #align nnrat.ext NNRat.ext
 
-protected theorem coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
+protected lemma coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
   Subtype.coe_injective
 #align nnrat.coe_injective NNRat.coe_injective
 
 @[simp, norm_cast]
-theorem coe_inj : (p : ℚ) = q ↔ p = q :=
+lemma coe_inj : (p : ℚ) = q ↔ p = q :=
   Subtype.coe_inj
 #align nnrat.coe_inj NNRat.coe_inj
 
-theorem ext_iff : p = q ↔ (p : ℚ) = q :=
+lemma ext_iff : p = q ↔ (p : ℚ) = q :=
   Subtype.ext_iff
 #align nnrat.ext_iff NNRat.ext_iff
 
-theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
+lemma ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
   NNRat.coe_inj.not
 #align nnrat.ne_iff NNRat.ne_iff
 
@@ -113,12 +113,12 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
 #align nnrat.coe_nonneg NNRat.coe_nonneg
 
 @[simp, norm_cast]
-theorem coe_zero : ((0 : ℚ≥0) : ℚ) = 0 :=
+lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 :=
   rfl
 #align nnrat.coe_zero NNRat.coe_zero
 
 @[simp, norm_cast]
-theorem coe_one : ((1 : ℚ≥0) : ℚ) = 1 :=
+lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 :=
   rfl
 #align nnrat.coe_one NNRat.coe_one
 
@@ -152,33 +152,33 @@ theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
 #align nnrat.coe_sub NNRat.coe_sub
 
 @[simp]
-theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
+lemma coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 #align nnrat.coe_eq_zero NNRat.coe_eq_zero
 
-theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
+lemma coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 #align nnrat.coe_ne_zero NNRat.coe_ne_zero
 
 @[norm_cast] -- Porting note: simp can prove this
-theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
+lemma coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align nnrat.coe_le_coe NNRat.coe_le_coe
 
 @[norm_cast] -- Porting note: simp can prove this
-theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
+lemma coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
 
 @[simp, norm_cast]
-theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
+lemma coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
 #align nnrat.coe_pos NNRat.coe_pos
 
-theorem coe_mono : Monotone ((↑) : ℚ≥0 → ℚ) :=
+lemma coe_mono : Monotone ((↑) : ℚ≥0 → ℚ) :=
   fun _ _ ↦ coe_le_coe.2
 #align nnrat.coe_mono NNRat.coe_mono
 
-theorem toNNRat_mono : Monotone toNNRat :=
+lemma toNNRat_mono : Monotone toNNRat :=
   fun _ _ h ↦ max_le_max h le_rfl
 #align nnrat.to_nnrat_mono NNRat.toNNRat_mono
 
@@ -233,7 +233,7 @@ instance [AddCommMonoid α] [Module ℚ α] : Module ℚ≥0 α :=
   Module.compHom α coeHom
 
 @[simp]
-theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
+lemma coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 #align nnrat.coe_coe_hom NNRat.coe_coeHom
 
@@ -269,22 +269,22 @@ theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : ℚ) = (s.map (↑)
 #align nnrat.coe_multiset_prod NNRat.coe_multiset_prod
 
 @[norm_cast]
-theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℚ) :=
+lemma coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℚ) :=
   coeHom.map_sum _ _
 #align nnrat.coe_sum NNRat.coe_sum
 
-theorem toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
+lemma toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
     (∑ a in s, f a).toNNRat = ∑ a in s, (f a).toNNRat := by
   rw [← coe_inj, coe_sum, Rat.coe_toNNRat _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
 #align nnrat.to_nnrat_sum_of_nonneg NNRat.toNNRat_sum_of_nonneg
 
 @[norm_cast]
-theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℚ) :=
+lemma coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℚ) :=
   coeHom.map_prod _ _
 #align nnrat.coe_prod NNRat.coe_prod
 
-theorem toNNRat_prod_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a ∈ s, 0 ≤ f a) :
+lemma toNNRat_prod_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a ∈ s, 0 ≤ f a) :
     (∏ a in s, f a).toNNRat = ∏ a in s, (f a).toNNRat := by
   rw [← coe_inj, coe_prod, Rat.coe_toNNRat _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
@@ -295,7 +295,7 @@ theorem nsmul_coe (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
   coeHom.toAddMonoidHom.map_nsmul _ _
 #align nnrat.nsmul_coe NNRat.nsmul_coe
 
-theorem bddAbove_coe {s : Set ℚ≥0} : BddAbove ((↑) '' s : Set ℚ) ↔ BddAbove s :=
+lemma bddAbove_coe {s : Set ℚ≥0} : BddAbove ((↑) '' s : Set ℚ) ↔ BddAbove s :=
   ⟨fun ⟨b, hb⟩ ↦
     ⟨toNNRat b, fun ⟨y, _⟩ hys ↦
       show y ≤ max b 0 from (hb <| Set.mem_image_of_mem _ hys).trans <| le_max_left _ _⟩,
@@ -334,19 +334,19 @@ namespace Rat
 variable {p q : ℚ}
 
 @[simp]
-theorem toNNRat_zero : toNNRat 0 = 0 := rfl
+lemma toNNRat_zero : toNNRat 0 = 0 := rfl
 #align rat.to_nnrat_zero Rat.toNNRat_zero
 
 @[simp]
-theorem toNNRat_one : toNNRat 1 = 1 := rfl
+lemma toNNRat_one : toNNRat 1 = 1 := rfl
 #align rat.to_nnrat_one Rat.toNNRat_one
 
 @[simp]
-theorem toNNRat_pos : 0 < toNNRat q ↔ 0 < q := by simp [toNNRat, ← coe_lt_coe]
+lemma toNNRat_pos : 0 < toNNRat q ↔ 0 < q := by simp [toNNRat, ← coe_lt_coe]
 #align rat.to_nnrat_pos Rat.toNNRat_pos
 
 @[simp]
-theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
+lemma toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
   simpa [-toNNRat_pos] using (@toNNRat_pos q).not
 #align rat.to_nnrat_eq_zero Rat.toNNRat_eq_zero
 
@@ -359,7 +359,7 @@ theorem toNNRat_le_toNNRat_iff (hp : 0 ≤ p) : toNNRat q ≤ toNNRat p ↔ q �
 #align rat.to_nnrat_le_to_nnrat_iff Rat.toNNRat_le_toNNRat_iff
 
 @[simp]
-theorem toNNRat_lt_toNNRat_iff' : toNNRat q < toNNRat p ↔ q < p ∧ 0 < p := by
+lemma toNNRat_lt_toNNRat_iff' : toNNRat q < toNNRat p ↔ q < p ∧ 0 < p := by
   simp [← coe_lt_coe, toNNRat, lt_irrefl]
 #align rat.to_nnrat_lt_to_nnrat_iff' Rat.toNNRat_lt_toNNRat_iff'
 
@@ -376,28 +376,28 @@ theorem toNNRat_add (hq : 0 ≤ q) (hp : 0 ≤ p) : toNNRat (q + p) = toNNRat q 
   NNRat.ext <| by simp [toNNRat, hq, hp, add_nonneg]
 #align rat.to_nnrat_add Rat.toNNRat_add
 
-theorem toNNRat_add_le : toNNRat (q + p) ≤ toNNRat q + toNNRat p :=
+lemma toNNRat_add_le : toNNRat (q + p) ≤ toNNRat q + toNNRat p :=
   coe_le_coe.1 <| max_le (add_le_add (le_max_left _ _) (le_max_left _ _)) <| coe_nonneg _
 #align rat.to_nnrat_add_le Rat.toNNRat_add_le
 
-theorem toNNRat_le_iff_le_coe {p : ℚ≥0} : toNNRat q ≤ p ↔ q ≤ ↑p :=
+lemma toNNRat_le_iff_le_coe {p : ℚ≥0} : toNNRat q ≤ p ↔ q ≤ ↑p :=
   NNRat.gi.gc q p
 #align rat.to_nnrat_le_iff_le_coe Rat.toNNRat_le_iff_le_coe
 
-theorem le_toNNRat_iff_coe_le {q : ℚ≥0} (hp : 0 ≤ p) : q ≤ toNNRat p ↔ ↑q ≤ p := by
+lemma le_toNNRat_iff_coe_le {q : ℚ≥0} (hp : 0 ≤ p) : q ≤ toNNRat p ↔ ↑q ≤ p := by
   rw [← coe_le_coe, Rat.coe_toNNRat p hp]
 #align rat.le_to_nnrat_iff_coe_le Rat.le_toNNRat_iff_coe_le
 
-theorem le_toNNRat_iff_coe_le' {q : ℚ≥0} (hq : 0 < q) : q ≤ toNNRat p ↔ ↑q ≤ p :=
+lemma le_toNNRat_iff_coe_le' {q : ℚ≥0} (hq : 0 < q) : q ≤ toNNRat p ↔ ↑q ≤ p :=
   (le_or_lt 0 p).elim le_toNNRat_iff_coe_le fun hp ↦ by
     simp only [(hp.trans_le q.coe_nonneg).not_le, toNNRat_eq_zero.2 hp.le, hq.not_le]
 #align rat.le_to_nnrat_iff_coe_le' Rat.le_toNNRat_iff_coe_le'
 
-theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q < ↑p := by
+lemma toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q < ↑p := by
   rw [← coe_lt_coe, Rat.coe_toNNRat q hq]
 #align rat.to_nnrat_lt_iff_lt_coe Rat.toNNRat_lt_iff_lt_coe
 
-theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
+lemma lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 #align rat.lt_to_nnrat_iff_coe_lt Rat.lt_toNNRat_iff_coe_lt
 
@@ -457,12 +457,12 @@ def den (q : ℚ≥0) : ℕ :=
 #align nnrat.denom NNRat.den
 
 @[simp]
-theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num :=
+lemma natAbs_num_coe : (q : ℚ).num.natAbs = q.num :=
   rfl
 #align nnrat.nat_abs_num_coe NNRat.natAbs_num_coe
 
 @[simp]
-theorem den_coe : (q : ℚ).den = q.den :=
+lemma den_coe : (q : ℚ).den = q.den :=
   rfl
 #align nnrat.denom_coe NNRat.den_coe
 
@@ -474,7 +474,7 @@ theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   · exact hd
 #align nnrat.ext_num_denom NNRat.ext_num_den
 
-theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
+lemma ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
   ⟨by rintro rfl; exact ⟨rfl, rfl⟩, fun h ↦ ext_num_den h.1 h.2⟩
 #align nnrat.ext_num_denom_iff NNRat.ext_num_den_iff
 

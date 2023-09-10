@@ -140,51 +140,51 @@ theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWith
     := rfl
 
 @[ext]
-theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
+lemma ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   FunLike.ext _ _ h
 #align valuation.ext Valuation.ext
 
 variable (v : Valuation R Γ₀) {x y z : R}
 
 @[simp, norm_cast]
-theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
+lemma coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
 #align valuation.coe_coe Valuation.coe_coe
 
 -- @[simp] Porting note: simp can prove this
-theorem map_zero : v 0 = 0 :=
+lemma map_zero : v 0 = 0 :=
   v.map_zero'
 #align valuation.map_zero Valuation.map_zero
 
 -- @[simp] Porting note: simp can prove this
-theorem map_one : v 1 = 1 :=
+lemma map_one : v 1 = 1 :=
   v.map_one'
 #align valuation.map_one Valuation.map_one
 
 -- @[simp] Porting note: simp can prove this
-theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
+lemma map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 #align valuation.map_mul Valuation.map_mul
 
 -- Porting note: LHS side simplified so created map_add'
-theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
+lemma map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
   v.map_add_le_max'
 #align valuation.map_add Valuation.map_add
 
 @[simp]
-theorem map_add' : ∀ x y, v (x + y) ≤ v x ∨ v (x + y) ≤ v y := by
+lemma map_add' : ∀ x y, v (x + y) ≤ v x ∨ v (x + y) ≤ v y := by
   intro x y
   rw [← le_max_iff, ← ge_iff_le]
   apply map_add
 
-theorem map_add_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x + y) ≤ g :=
+lemma map_add_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x + y) ≤ g :=
   le_trans (v.map_add x y) <| max_le hx hy
 #align valuation.map_add_le Valuation.map_add_le
 
-theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
+lemma map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
   lt_of_le_of_lt (v.map_add x y) <| max_lt hx hy
 #align valuation.map_add_lt Valuation.map_add_lt
 
-theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
+lemma map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
     v (∑ i in s, f i) ≤ g := by
   refine'
     Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
@@ -193,7 +193,7 @@ theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf :
   exact v.map_add_le hf.1 (ih hf.2)
 #align valuation.map_sum_le Valuation.map_sum_le
 
-theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
+lemma map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g := by
   refine'
     Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
@@ -202,19 +202,19 @@ theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg :
   exact v.map_add_lt hf.1 (ih hf.2)
 #align valuation.map_sum_lt Valuation.map_sum_lt
 
-theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : 0 < g)
+lemma map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : 0 < g)
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g :=
   v.map_sum_lt (ne_of_gt hg) hf
 #align valuation.map_sum_lt' Valuation.map_sum_lt'
 
 -- @[simp] Porting note: simp can prove this
-theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
+lemma map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
 
 /-- Deprecated. Use `FunLike.ext_iff`. -/
 -- @[deprecated] Porting note: using `FunLike.ext_iff` is not viable below for now
-theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
+lemma ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
   FunLike.ext_iff
 #align valuation.ext_iff Valuation.ext_iff
 
@@ -227,11 +227,11 @@ def toPreorder : Preorder R :=
 
 /-- If `v` is a valuation on a division ring then `v(x) = 0` iff `x = 0`. -/
 -- @[simp] Porting note: simp can prove this
-theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 ↔ x = 0 :=
+lemma zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 ↔ x = 0 :=
   map_eq_zero v
 #align valuation.zero_iff Valuation.zero_iff
 
-theorem ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠ 0 ↔ x ≠ 0 :=
+lemma ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero v
 #align valuation.ne_zero_iff Valuation.ne_zero_iff
 
@@ -247,16 +247,16 @@ def comap {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) : Valuati
 #align valuation.comap Valuation.comap
 
 @[simp]
-theorem comap_apply {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) (s : S) :
+lemma comap_apply {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) (s : S) :
     v.comap f s = v (f s) := rfl
 #align valuation.comap_apply Valuation.comap_apply
 
 @[simp]
-theorem comap_id : v.comap (RingHom.id R) = v :=
+lemma comap_id : v.comap (RingHom.id R) = v :=
   ext fun _r => rfl
 #align valuation.comap_id Valuation.comap_id
 
-theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
+lemma comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
     v.comap (g.comp f) = (v.comap g).comap f :=
   ext fun _r => rfl
 #align valuation.comap_comp Valuation.comap_comp
@@ -300,7 +300,7 @@ theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
     _ = max (v x) (v y) := by rw [map_neg]
 #align valuation.map_sub Valuation.map_sub
 
-theorem map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g := by
+lemma map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g := by
   rw [sub_eq_add_neg]
   exact v.map_add_le hx (le_trans (le_of_eq (v.map_neg y)) hy)
 #align valuation.map_sub_le Valuation.map_sub_le
@@ -368,7 +368,7 @@ variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMono
   {v : Valuation R Γ₀} {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} {v₃ : Valuation R Γ''₀}
 
 @[refl]
-theorem refl : v.IsEquiv v := fun _ _ => Iff.refl _
+lemma refl : v.IsEquiv v := fun _ _ => Iff.refl _
 #align valuation.is_equiv.refl Valuation.IsEquiv.refl
 
 @[symm]
@@ -380,10 +380,10 @@ theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁
   Iff.trans (h₁₂ _ _) (h₂₃ _ _)
 #align valuation.is_equiv.trans Valuation.IsEquiv.trans
 
-theorem of_eq {v' : Valuation R Γ₀} (h : v = v') : v.IsEquiv v' := by subst h; rfl
+lemma of_eq {v' : Valuation R Γ₀} (h : v = v') : v.IsEquiv v' := by subst h; rfl
 #align valuation.is_equiv.of_eq Valuation.IsEquiv.of_eq
 
-theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (inf : Injective f)
+lemma map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (inf : Injective f)
     (h : v.IsEquiv v') : (v.map f hf).IsEquiv (v'.map f hf) :=
   let H : StrictMono f := hf.strictMono_of_injective inf
   fun r s =>
@@ -394,7 +394,7 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 #align valuation.is_equiv.map Valuation.IsEquiv.map
 
 /-- `comap` preserves equivalence. -/
-theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
+lemma comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 #align valuation.is_equiv.comap Valuation.IsEquiv.comap
 
@@ -412,13 +412,13 @@ end IsEquiv
 -- end of namespace
 section
 
-theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
+lemma isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
     [LinearOrderedCommMonoidWithZero Γ'₀] [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
     (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 #align valuation.is_equiv_of_map_strict_mono Valuation.isEquiv_of_map_strictMono
 
-theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
+lemma isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
     (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
@@ -438,13 +438,13 @@ theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     rwa [h]
 #align valuation.is_equiv_of_val_le_one Valuation.isEquiv_of_val_le_one
 
-theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
+lemma isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1 :=
   ⟨fun h x => by simpa using h x 1, isEquiv_of_val_le_one _ _⟩
 #align valuation.is_equiv_iff_val_le_one Valuation.isEquiv_iff_val_le_one
 
-theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
+lemma isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
   constructor
@@ -480,7 +480,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
         exact le_of_eq hx'
 #align valuation.is_equiv_iff_val_eq_one Valuation.isEquiv_iff_val_eq_one
 
-theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
+lemma isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
   constructor
@@ -510,14 +510,14 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
         exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
 #align valuation.is_equiv_iff_val_lt_one Valuation.isEquiv_iff_val_lt_one
 
-theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
+lemma isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
   rw [isEquiv_iff_val_lt_one]
   exact (Equiv.subRight 1).surjective.forall
 #align valuation.is_equiv_iff_val_sub_one_lt_one Valuation.isEquiv_iff_val_sub_one_lt_one
 
-theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
+lemma isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
     (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     [v.IsEquiv v', ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1, ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
         ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
@@ -581,7 +581,7 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
     _ ≤ v (a + s) := aux (a + s) (-s) (by rwa [← Ideal.neg_mem_iff] at h)
 #align valuation.map_add_supp Valuation.map_add_supp
 
-theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
+lemma comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Ideal.ext fun x => by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
 #align valuation.comap_supp Valuation.comap_supp
@@ -638,7 +638,7 @@ def of : AddValuation R Γ₀ where
 variable {h0} {h1} {hadd} {hmul} {r : R}
 
 @[simp]
-theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
+lemma of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
 #align add_valuation.of_apply AddValuation.of_apply
 
 /-- The `Valuation` associated to an `AddValuation` (useful if the latter is constructed using
@@ -656,12 +656,12 @@ end
 
 -- Porting note: Lean get confused about namespaces and instances below
 @[simp]
-theorem map_zero : v 0 = (⊤ : Γ₀) :=
+lemma map_zero : v 0 = (⊤ : Γ₀) :=
   Valuation.map_zero v
 #align add_valuation.map_zero AddValuation.map_zero
 
 @[simp]
-theorem map_one : v 1 = (0 : Γ₀) :=
+lemma map_one : v 1 = (0 : Γ₀) :=
   Valuation.map_one v
 #align add_valuation.map_one AddValuation.map_one
 
@@ -670,55 +670,55 @@ theorem map_one : v 1 = (0 : Γ₀) :=
 def asFun : R → Γ₀ := v
 
 @[simp]
-theorem map_mul : ∀ (x y : R), v (x * y) = v x + v y :=
+lemma map_mul : ∀ (x y : R), v (x * y) = v x + v y :=
   Valuation.map_mul v
 #align add_valuation.map_mul AddValuation.map_mul
 
 -- Porting note: LHS simplified so created map_add' and removed simp tag
-theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
+lemma map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
   Valuation.map_add v
 #align add_valuation.map_add AddValuation.map_add
 
 @[simp]
-theorem map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
+lemma map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
   intro x y
   rw [← @min_le_iff _ _ (v x) (v y) (v (x+y)), ← ge_iff_le]
   apply map_add
 
-theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
+lemma map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
   Valuation.map_add_le v hx hy
 #align add_valuation.map_le_add AddValuation.map_le_add
 
-theorem map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (x + y) :=
+lemma map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (x + y) :=
   Valuation.map_add_lt v hx hy
 #align add_valuation.map_lt_add AddValuation.map_lt_add
 
-theorem map_le_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, g ≤ v (f i)) :
+lemma map_le_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, g ≤ v (f i)) :
     g ≤ v (∑ i in s, f i) :=
   v.map_sum_le hf
 #align add_valuation.map_le_sum AddValuation.map_le_sum
 
-theorem map_lt_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ ⊤)
+lemma map_lt_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ ⊤)
     (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i in s, f i) :=
   v.map_sum_lt hg hf
 #align add_valuation.map_lt_sum AddValuation.map_lt_sum
 
-theorem map_lt_sum' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g < ⊤)
+lemma map_lt_sum' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g < ⊤)
     (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i in s, f i) :=
   v.map_sum_lt' hg hf
 #align add_valuation.map_lt_sum' AddValuation.map_lt_sum'
 
 @[simp]
-theorem map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) :=
+lemma map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) :=
   Valuation.map_pow v
 #align add_valuation.map_pow AddValuation.map_pow
 
 @[ext]
-theorem ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
+lemma ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   Valuation.ext h
 #align add_valuation.ext AddValuation.ext
 
-theorem ext_iff {v₁ v₂ : AddValuation R Γ₀} : v₁ = v₂ ↔ ∀ (r : R), v₁ r = v₂ r :=
+lemma ext_iff {v₁ v₂ : AddValuation R Γ₀} : v₁ = v₂ ↔ ∀ (r : R), v₁ r = v₂ r :=
   Valuation.ext_iff
 #align add_valuation.ext_iff AddValuation.ext_iff
 
@@ -731,11 +731,11 @@ def toPreorder : Preorder R :=
 
 /-- If `v` is an additive valuation on a division ring then `v(x) = ⊤` iff `x = 0`. -/
 @[simp]
-theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = (⊤ : Γ₀) ↔ x = 0 :=
+lemma top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = (⊤ : Γ₀) ↔ x = 0 :=
   v.zero_iff
 #align add_valuation.top_iff AddValuation.top_iff
 
-theorem ne_top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x ≠ (⊤ : Γ₀) ↔ x ≠ 0 :=
+lemma ne_top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x ≠ (⊤ : Γ₀) ↔ x ≠ 0 :=
   v.ne_zero_iff
 #align add_valuation.ne_top_iff AddValuation.ne_top_iff
 
@@ -745,11 +745,11 @@ def comap {S : Type*} [Ring S] (f : S →+* R) (v : AddValuation R Γ₀) : AddV
 #align add_valuation.comap AddValuation.comap
 
 @[simp]
-theorem comap_id : v.comap (RingHom.id R) = v :=
+lemma comap_id : v.comap (RingHom.id R) = v :=
   Valuation.comap_id v
 #align add_valuation.comap_id AddValuation.comap_id
 
-theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
+lemma comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
     v.comap (g.comp f) = (v.comap g).comap f :=
   Valuation.comap_comp v f g
 #align add_valuation.comap_comp AddValuation.comap_comp
@@ -796,7 +796,7 @@ theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
   Valuation.map_sub v x y
 #align add_valuation.map_sub AddValuation.map_sub
 
-theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) :=
+lemma map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) :=
   Valuation.map_sub_le v hx hy
 #align add_valuation.map_le_sub AddValuation.map_le_sub
 
@@ -821,7 +821,7 @@ variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWi
    {v₁ : AddValuation R Γ₀} {v₂ : AddValuation R Γ'₀} {v₃ : AddValuation R Γ''₀}
 
 @[refl]
-theorem refl : v.IsEquiv v :=
+lemma refl : v.IsEquiv v :=
   Valuation.IsEquiv.refl
 #align add_valuation.is_equiv.refl AddValuation.IsEquiv.refl
 
@@ -835,11 +835,11 @@ theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁
   Valuation.IsEquiv.trans h₁₂ h₂₃
 #align add_valuation.is_equiv.trans AddValuation.IsEquiv.trans
 
-theorem of_eq {v' : AddValuation R Γ₀} (h : v = v') : v.IsEquiv v' :=
+lemma of_eq {v' : AddValuation R Γ₀} (h : v = v') : v.IsEquiv v' :=
   Valuation.IsEquiv.of_eq h
 #align add_valuation.is_equiv.of_eq AddValuation.IsEquiv.of_eq
 
-theorem map {v' : AddValuation R Γ₀} (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f)
+lemma map {v' : AddValuation R Γ₀} (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f)
     (inf : Injective f) (h : v.IsEquiv v') : (v.map f ht hf).IsEquiv (v'.map f ht hf) :=
   @Valuation.IsEquiv.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _ _ _
     { toFun := f
@@ -849,7 +849,7 @@ theorem map {v' : AddValuation R Γ₀} (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = �
 #align add_valuation.is_equiv.map AddValuation.IsEquiv.map
 
 /-- `comap` preserves equivalence. -/
-theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
+lemma comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) :=
   Valuation.IsEquiv.comap f h
 #align add_valuation.is_equiv.comap AddValuation.IsEquiv.comap

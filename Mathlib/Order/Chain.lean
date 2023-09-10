@@ -60,7 +60,7 @@ def IsMaxChain (s : Set α) : Prop :=
 
 variable {r} {c c₁ c₂ c₃ s t : Set α} {a b x y : α}
 
-theorem isChain_empty : IsChain r ∅ :=
+lemma isChain_empty : IsChain r ∅ :=
   Set.pairwise_empty _
 #align is_chain_empty isChain_empty
 
@@ -68,11 +68,11 @@ theorem Set.Subsingleton.isChain (hs : s.Subsingleton) : IsChain r s :=
   hs.pairwise _
 #align set.subsingleton.is_chain Set.Subsingleton.isChain
 
-theorem IsChain.mono : s ⊆ t → IsChain r t → IsChain r s :=
+lemma IsChain.mono : s ⊆ t → IsChain r t → IsChain r s :=
   Set.Pairwise.mono
 #align is_chain.mono IsChain.mono
 
-theorem IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : ∀ x y, r x y → r' x y) :
+lemma IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : ∀ x y, r x y → r' x y) :
     IsChain r' s :=
   h.mono' fun x y => Or.imp (h_imp x y) (h_imp y x)
 #align is_chain.mono_rel IsChain.mono_rel
@@ -82,7 +82,7 @@ theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
 #align is_chain.symm IsChain.symm
 
-theorem isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
+lemma isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
 #align is_chain_of_trichotomous isChain_of_trichotomous
 
@@ -91,7 +91,7 @@ protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b �
   hs.insert_of_symmetric (fun _ _ => Or.symm) ha
 #align is_chain.insert IsChain.insert
 
-theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
+lemma isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
   refine' ⟨fun h => ⟨fun a b => _⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
   rw [or_left_comm, or_iff_not_imp_left]
   exact h trivial trivial
@@ -103,12 +103,12 @@ theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α 
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
 #align is_chain.image IsChain.image
 
-theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+lemma Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     IsChain (· ≤ ·) (range f) := by
   rw [← image_univ]
   exact (isChain_of_trichotomous _).image (· ≤ ·) _ _ hf
 
-theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
+lemma IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
 
@@ -124,7 +124,7 @@ theorem IsChain.directedOn (H : IsChain r s) : DirectedOn r s := fun x hx y hy =
   ((H.total hx hy).elim fun h => ⟨y, hy, h, refl _⟩) fun h => ⟨x, hx, refl _, h⟩
 #align is_chain.directed_on IsChain.directedOn
 
-protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f ⁻¹'o r) c) :
+protected lemma IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f ⁻¹'o r) c) :
     Directed r fun x : { a : β // a ∈ c } => f x :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ =>
     (by_cases fun hab : a = b => by
@@ -151,11 +151,11 @@ theorem IsMaxChain.not_superChain (h : IsMaxChain r s) : ¬SuperChain r s t := f
   ht.2.ne <| h.2 ht.1 ht.2.1
 #align is_max_chain.not_super_chain IsMaxChain.not_superChain
 
-theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) : ⊥ ∈ s :=
+lemma IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) : ⊥ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inl bot_le) <| subset_insert _ _).symm ▸ mem_insert _ _
 #align is_max_chain.bot_mem IsMaxChain.bot_mem
 
-theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) : ⊤ ∈ s :=
+lemma IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) : ⊤ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inr le_top) <| subset_insert _ _).symm ▸ mem_insert _ _
 #align is_max_chain.top_mem IsMaxChain.top_mem
 
@@ -188,7 +188,7 @@ theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 #align is_chain.super_chain_succ_chain IsChain.superChain_succChain
 
-theorem subset_succChain : s ⊆ SuccChain r s :=
+lemma subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
     rw [exists_and_left] at h
@@ -207,12 +207,12 @@ def maxChain (r : α → α → Prop) : Set α :=
   ⋃₀ setOf (ChainClosure r)
 #align max_chain maxChain
 
-theorem chainClosure_empty : ChainClosure r ∅ := by
+lemma chainClosure_empty : ChainClosure r ∅ := by
   have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => False.rec h
   simpa using this
 #align chain_closure_empty chainClosure_empty
 
-theorem chainClosure_maxChain : ChainClosure r (maxChain r) :=
+lemma chainClosure_maxChain : ChainClosure r (maxChain r) :=
   ChainClosure.union fun _ => id
 #align chain_closure_max_chain chainClosure_maxChain
 
@@ -279,7 +279,7 @@ theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
 
 There exists a maximal totally ordered set of `α`.
 Note that we do not require `α` to be partially ordered by `r`. -/
-theorem maxChain_spec : IsMaxChain r (maxChain r) :=
+lemma maxChain_spec : IsMaxChain r (maxChain r) :=
   by_contradiction fun h =>
     let ⟨_, H⟩ := chainClosure_maxChain.isChain.superChain_succChain h
     H.ne (chainClosure_maxChain.succ_fixpoint_iff.mpr rfl).symm
@@ -314,13 +314,13 @@ instance : SetLike (Flag α) α where
     congr
 
 @[ext]
-theorem ext : (s : Set α) = t → s = t :=
+lemma ext : (s : Set α) = t → s = t :=
   SetLike.ext'
 #align flag.ext Flag.ext
 
 -- Porting note: `simp` can now prove this
 -- @[simp]
-theorem mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
+lemma mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
   Iff.rfl
 #align flag.mem_coe_iff Flag.mem_coe_iff
 
@@ -342,11 +342,11 @@ protected theorem maxChain (s : Flag α) : IsMaxChain (· ≤ ·) (s : Set α) :
   ⟨s.chain_le, s.max_chain'⟩
 #align flag.max_chain Flag.maxChain
 
-theorem top_mem [OrderTop α] (s : Flag α) : (⊤ : α) ∈ s :=
+lemma top_mem [OrderTop α] (s : Flag α) : (⊤ : α) ∈ s :=
   s.maxChain.top_mem
 #align flag.top_mem Flag.top_mem
 
-theorem bot_mem [OrderBot α] (s : Flag α) : (⊥ : α) ∈ s :=
+lemma bot_mem [OrderBot α] (s : Flag α) : (⊥ : α) ∈ s :=
   s.maxChain.bot_mem
 #align flag.bot_mem Flag.bot_mem
 

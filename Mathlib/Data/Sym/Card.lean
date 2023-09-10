@@ -93,7 +93,7 @@ set_option linter.uppercaseLean3 false in
 #align sym.E2 Sym.e2
 
 -- porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
-theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
+lemma card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp
   | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
   | 1, k + 1 => by simp
@@ -115,7 +115,7 @@ theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sy
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/
-theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
+lemma card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]
 #align sym.card_sym_eq_choose Sym.card_sym_eq_choose
@@ -169,7 +169,7 @@ theorem card_image_offDiag (s : Finset α) :
     Nat.div_eq_of_eq_mul_right zero_lt_two (two_mul_card_image_offDiag s).symm]
 #align sym2.card_image_off_diag Sym2.card_image_offDiag
 
-theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
+lemma card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
   simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
   rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_isDiag]
@@ -179,7 +179,7 @@ theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 #align sym2.card_subtype_diag Sym2.card_subtype_diag
 
-theorem card_subtype_not_diag [Fintype α] :
+lemma card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
   convert card_image_offDiag (univ : Finset α)
   simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
@@ -206,7 +206,7 @@ theorem _root_.Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card
 #align finset.card_sym2 Finset.card_sym2
 
 /-- Type **stars and bars** for the case `n = 2`. -/
-protected theorem card [Fintype α] : card (Sym2 α) = card α * (card α + 1) / 2 :=
+protected lemma card [Fintype α] : card (Sym2 α) = card α * (card α + 1) / 2 :=
   Finset.card_sym2 _
 #align sym2.card Sym2.card
 

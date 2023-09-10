@@ -34,7 +34,7 @@ def antidiagonal (n : ℕ) : Finset (ℕ × ℕ) :=
 
 /-- A pair (i, j) is contained in the antidiagonal of `n` if and only if `i + j = n`. -/
 @[simp]
-theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
+lemma mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_def, Multiset.Nat.mem_antidiagonal]
 #align finset.nat.mem_antidiagonal Finset.Nat.mem_antidiagonal
 
@@ -45,7 +45,7 @@ theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 @[simp]
-theorem antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
+lemma antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
 #align finset.nat.antidiagonal_zero Finset.Nat.antidiagonal_zero
 
 theorem antidiagonal_succ (n : ℕ) :
@@ -70,7 +70,7 @@ theorem antidiagonal_succ' (n : ℕ) :
   exact Multiset.Nat.antidiagonal_succ'
 #align finset.nat.antidiagonal_succ' Finset.Nat.antidiagonal_succ'
 
-theorem antidiagonal_succ_succ' {n : ℕ} :
+lemma antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       cons (0, n + 2)
         (cons (n + 2, 0)
@@ -84,17 +84,17 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
 #align finset.nat.antidiagonal_succ_succ' Finset.Nat.antidiagonal_succ_succ'
 
 /-- See also `Finset.map.map_prodComm_antidiagonal`. -/
-@[simp] theorem map_swap_antidiagonal {n : ℕ} :
+@[simp] lemma map_swap_antidiagonal {n : ℕ} :
     (antidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = antidiagonal n :=
   eq_of_veq <| by simp [antidiagonal, Multiset.Nat.map_swap_antidiagonal]
 #align finset.nat.map_swap_antidiagonal Finset.Nat.map_swap_antidiagonal
 
-@[simp] theorem map_prodComm_antidiagonal {n : ℕ} :
+@[simp] lemma map_prodComm_antidiagonal {n : ℕ} :
     (antidiagonal n).map (Equiv.prodComm ℕ ℕ) = antidiagonal n :=
   map_swap_antidiagonal
 
 /-- A point in the antidiagonal is determined by its first co-ordinate. -/
-theorem antidiagonal_congr {n : ℕ} {p q : ℕ × ℕ} (hp : p ∈ antidiagonal n)
+lemma antidiagonal_congr {n : ℕ} {p q : ℕ × ℕ} (hp : p ∈ antidiagonal n)
     (hq : q ∈ antidiagonal n) : p = q ↔ p.fst = q.fst := by
   refine' ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((add_right_inj q.fst).mp _)⟩
   rw [mem_antidiagonal] at hp hq
@@ -103,25 +103,25 @@ theorem antidiagonal_congr {n : ℕ} {p q : ℕ × ℕ} (hp : p ∈ antidiagonal
 
 /-- A point in the antidiagonal is determined by its first co-ordinate (subtype version of
 `antidiagonal_congr`). This lemma is used by the `ext` tactic. -/
-@[ext] theorem antidiagonal_subtype_ext {n : ℕ} {p q : antidiagonal n} (h : p.val.1 = q.val.1) :
+@[ext] lemma antidiagonal_subtype_ext {n : ℕ} {p q : antidiagonal n} (h : p.val.1 = q.val.1) :
     p = q := Subtype.ext ((antidiagonal_congr p.prop q.prop).mpr h)
 
-theorem antidiagonal.fst_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 ≤ n := by
+lemma antidiagonal.fst_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 ≤ n := by
   rw [le_iff_exists_add]
   use kl.2
   rwa [mem_antidiagonal, eq_comm] at hlk
 #align finset.nat.antidiagonal.fst_le Finset.Nat.antidiagonal.fst_le
 
-theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
+lemma antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
   Nat.lt_succ_of_le $ antidiagonal.fst_le hlk
 
-theorem antidiagonal.snd_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 ≤ n := by
+lemma antidiagonal.snd_le {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 ≤ n := by
   rw [le_iff_exists_add]
   use kl.1
   rwa [mem_antidiagonal, eq_comm, add_comm] at hlk
 #align finset.nat.antidiagonal.snd_le Finset.Nat.antidiagonal.snd_le
 
-theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
+lemma antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.2 < n + 1 :=
   Nat.lt_succ_of_le $ antidiagonal.snd_le hlk
 
 theorem filter_fst_eq_antidiagonal (n m : ℕ) :

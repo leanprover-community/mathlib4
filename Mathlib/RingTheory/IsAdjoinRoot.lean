@@ -327,7 +327,7 @@ protected def isAdjoinRootMonic (hf : Monic f) : IsAdjoinRootMonic (AdjoinRoot f
 #align adjoin_root.is_adjoin_root_monic AdjoinRoot.isAdjoinRootMonic
 
 @[simp]
-theorem isAdjoinRoot_map_eq_mk : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mk f :=
+lemma isAdjoinRoot_map_eq_mk : (AdjoinRoot.isAdjoinRoot f).map = AdjoinRoot.mk f :=
   rfl
 #align adjoin_root.is_adjoin_root_map_eq_mk AdjoinRoot.isAdjoinRoot_map_eq_mk
 
@@ -338,7 +338,7 @@ theorem isAdjoinRootMonic_map_eq_mk (hf : f.Monic) :
 #align adjoin_root.is_adjoin_root_monic_map_eq_mk AdjoinRoot.isAdjoinRootMonic_map_eq_mk
 
 @[simp]
-theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoot.root f := by
+lemma isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoot.root f := by
   simp only [IsAdjoinRoot.root, AdjoinRoot.root, AdjoinRoot.isAdjoinRoot_map_eq_mk]
 #align adjoin_root.is_adjoin_root_root_eq_root AdjoinRoot.isAdjoinRoot_root_eq_root
 
@@ -472,12 +472,12 @@ theorem basis_apply (h : IsAdjoinRootMonic S f) (i) : h.basis i = h.root ^ (i : 
       · exact i.is_lt
 #align is_adjoin_root_monic.basis_apply IsAdjoinRootMonic.basis_apply
 
-theorem deg_pos [Nontrivial S] (h : IsAdjoinRootMonic S f) : 0 < natDegree f := by
+lemma deg_pos [Nontrivial S] (h : IsAdjoinRootMonic S f) : 0 < natDegree f := by
   rcases h.basis.index_nonempty with ⟨⟨i, hi⟩⟩
   exact (Nat.zero_le _).trans_lt hi
 #align is_adjoin_root_monic.deg_pos IsAdjoinRootMonic.deg_pos
 
-theorem deg_ne_zero [Nontrivial S] (h : IsAdjoinRootMonic S f) : natDegree f ≠ 0 :=
+lemma deg_ne_zero [Nontrivial S] (h : IsAdjoinRootMonic S f) : natDegree f ≠ 0 :=
   h.deg_pos.ne'
 #align is_adjoin_root_monic.deg_ne_zero IsAdjoinRootMonic.deg_ne_zero
 
@@ -563,7 +563,7 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
     simp [hi] at hn
 #align is_adjoin_root_monic.coeff_root_pow IsAdjoinRootMonic.coeff_root_pow
 
-theorem coeff_one [Nontrivial S] (h : IsAdjoinRootMonic S f) : h.coeff 1 = Pi.single 0 1 := by
+lemma coeff_one [Nontrivial S] (h : IsAdjoinRootMonic S f) : h.coeff 1 = Pi.single 0 1 := by
   rw [← h.coeff_root_pow h.deg_pos, pow_zero]
 #align is_adjoin_root_monic.coeff_one IsAdjoinRootMonic.coeff_one
 
@@ -571,7 +571,7 @@ theorem coeff_root (h : IsAdjoinRootMonic S f) (hdeg : 1 < natDegree f) :
     h.coeff h.root = Pi.single 1 1 := by rw [← h.coeff_root_pow hdeg, pow_one]
 #align is_adjoin_root_monic.coeff_root IsAdjoinRootMonic.coeff_root
 
-theorem coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
+lemma coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
     h.coeff (algebraMap R S x) = Pi.single 0 x := by
   ext i
   rw [Algebra.algebraMap_eq_smul_one, map_smul, coeff_one, Pi.smul_apply, smul_eq_mul]
@@ -664,26 +664,26 @@ theorem aequiv_symm (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
 #align is_adjoin_root.aequiv_symm IsAdjoinRoot.aequiv_symm
 
 @[simp]
-theorem lift_aequiv {U : Type*} [CommRing U] (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f)
+lemma lift_aequiv {U : Type*} [CommRing U] (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f)
     (i : R →+* U) (x hx z) : h'.lift i x hx (h.aequiv h' z) = h.lift i x hx z := by
   rw [← h.map_repr z, aequiv_map, lift_map, lift_map]
 #align is_adjoin_root.lift_aequiv IsAdjoinRoot.lift_aequiv
 
 @[simp]
-theorem liftHom_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+lemma liftHom_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (x : U) (hx z) : h'.liftHom x hx (h.aequiv h' z) = h.liftHom x hx z :=
   h.lift_aequiv h' _ _ hx _
 #align is_adjoin_root.lift_hom_aequiv IsAdjoinRoot.liftHom_aequiv
 
 @[simp]
-theorem aequiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+lemma aequiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) (x) :
     (h'.aequiv h'') (h.aequiv h' x) = h.aequiv h'' x :=
   h.liftHom_aequiv _ _ h''.aeval_root _
 #align is_adjoin_root.aequiv_aequiv IsAdjoinRoot.aequiv_aequiv
 
 @[simp]
-theorem aequiv_trans {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+lemma aequiv_trans {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) :
     (h.aequiv h').trans (h'.aequiv h'') = h.aequiv h'' := by ext z; exact h.aequiv_aequiv h' h'' z
 #align is_adjoin_root.aequiv_trans IsAdjoinRoot.aequiv_trans
@@ -710,13 +710,13 @@ theorem ofEquiv_root (h : IsAdjoinRoot S f) (e : S ≃ₐ[R] T) : (h.ofEquiv e).
 #align is_adjoin_root.of_equiv_root IsAdjoinRoot.ofEquiv_root
 
 @[simp]
-theorem aequiv_ofEquiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+lemma aequiv_ofEquiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (e : T ≃ₐ[R] U) : h.aequiv (h'.ofEquiv e) = (h.aequiv h').trans e := by
   ext a; rw [← h.map_repr a, aequiv_map, AlgEquiv.trans_apply, aequiv_map, ofEquiv_map_apply]
 #align is_adjoin_root.aequiv_of_equiv IsAdjoinRoot.aequiv_ofEquiv
 
 @[simp]
-theorem ofEquiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+lemma ofEquiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot U f) (e : S ≃ₐ[R] T) :
     (h.ofEquiv e).aequiv h' = e.symm.trans (h.aequiv h') := by
   ext a
@@ -730,7 +730,7 @@ end IsAdjoinRoot
 
 namespace IsAdjoinRootMonic
 
-theorem minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
+lemma minpoly_eq [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
     (h : IsAdjoinRootMonic S f) (hirr : Irreducible f) : minpoly R h.root = f :=
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root
   symm <|
@@ -748,7 +748,7 @@ section Algebra
 
 open AdjoinRoot IsAdjoinRoot minpoly PowerBasis IsAdjoinRootMonic Algebra
 
-theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S]
+lemma Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S]
     [IsIntegrallyClosed R] {x : S} (hx' : IsIntegral R x) :
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
   haveI := isDomain_of_prime (prime_of_isIntegrallyClosed hx')

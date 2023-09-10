@@ -59,7 +59,7 @@ variable {α : Type*} [TopologicalSpace α] {C : Set α}
 
 /-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
 then `x` is an accumulation point of `U ∩ C`. -/
-theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : U ∈ 𝓝 x) :
+lemma AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : U ∈ 𝓝 x) :
     AccPt x (𝓟 (U ∩ C)) := by
   have : 𝓝[≠] x ≤ 𝓟 U := by
     rw [le_principal_iff]
@@ -83,12 +83,12 @@ structure Perfect (C : Set α) : Prop where
   acc : Preperfect C
 #align perfect Perfect
 
-theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
+lemma preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
 
 /-- The intersection of a preperfect set and an open set is preperfect. -/
-theorem Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
+lemma Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
     Preperfect (U ∩ C) := by
   rintro x ⟨xU, xC⟩
   apply (hC _ xC).nhds_inter
@@ -109,7 +109,7 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
 #align preperfect.perfect_closure Preperfect.perfect_closure
 
 /-- In a T1 space, being preperfect is equivalent to having perfect closure.-/
-theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
+lemma preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
   · exact h.perfect_closure
   intro x xC
@@ -124,7 +124,7 @@ theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (
   exact H.mono this
 #align preperfect_iff_perfect_closure preperfect_iff_perfect_closure
 
-theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : x ∈ C) (xU : x ∈ U)
+lemma Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : x ∈ C) (xU : x ∈ U)
     (Uop : IsOpen U) : Perfect (closure (U ∩ C)) ∧ (closure (U ∩ C)).Nonempty := by
   constructor
   · apply Preperfect.perfect_closure
@@ -135,7 +135,7 @@ theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : 
 
 /-- Given a perfect nonempty set in a T2.5 space, we can find two disjoint perfect subsets.
 This is the main inductive step in the proof of the Cantor-Bendixson Theorem. -/
-theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty) :
+lemma Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty) :
     ∃ C₀ C₁ : Set α,
     (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C) ∧ (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C) ∧ Disjoint C₀ C₁ := by
   cases' hnonempty with y yC
@@ -161,7 +161,7 @@ section Kernel
 
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
 can be written as the union of a countable set and a perfect set.-/
-theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
+lemma exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
   obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
   let v := { U ∈ b | (U ∩ C).Countable }
@@ -197,7 +197,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
 
 /-- Any uncountable closed set in a second countable space contains a nonempty perfect subset.-/
-theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
+lemma exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
     (hclosed : IsClosed C) (hunc : ¬C.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ C := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
   refine' ⟨D, ⟨Dperf, _⟩⟩
@@ -259,7 +259,7 @@ open CantorScheme
 
 /-- Any nonempty perfect set in a complete metric space admits a continuous injection
 from the Cantor space, `ℕ → Bool`. -/
-theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
+lemma Perfect.exists_nat_bool_injection [CompleteSpace α] :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Injective f := by
   obtain ⟨u, -, upos', hu⟩ := exists_seq_strictAnti_tendsto' (zero_lt_one' ℝ≥0∞)
   have upos := fun n => (upos' n).1
@@ -315,7 +315,7 @@ end CantorInjMetric
 
 /-- Any closed uncountable subset of a Polish space admits a continuous injection
 from the Cantor space `ℕ → Bool`.-/
-theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
+lemma IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
   letI := upgradePolishSpace α

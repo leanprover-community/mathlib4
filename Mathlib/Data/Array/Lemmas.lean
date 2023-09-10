@@ -34,7 +34,7 @@ namespace Array'
 -- instance {n α} [Inhabited α] : Inhabited (Array' n α) :=
 --   DArray.inhabited
 
--- theorem toList_of_hEq {n₁ n₂ α} {a₁ : Array' n₁ α} {a₂ : Array' n₂ α} (hn : n₁ = n₂)
+-- lemma toList_of_hEq {n₁ n₂ α} {a₁ : Array' n₁ α} {a₂ : Array' n₂ α} (hn : n₁ = n₂)
 --     (ha : HEq a₁ a₂) : a₁.toList = a₂.toList := by congr <;> assumption
 #noalign array.to_list_of_heq
 
@@ -43,7 +43,7 @@ section RevList
 
 -- variable {n : ℕ} {α : Type u} {a : Array' n α}
 
--- theorem rev_list_reverse_aux :
+-- lemma rev_list_reverse_aux :
 --     ∀ (i) (h : i ≤ n) (t : List α),
 --       (a.iterateAux (fun _ => (· :: ·)) i h []).reverseAux t =
 --         a.revIterateAux (fun _ => (· :: ·)) i h t
@@ -52,12 +52,12 @@ section RevList
 #noalign array.rev_list_reverse_aux -- Array'.rev_list_reverse_aux
 
 -- @[simp]
--- theorem revList_reverse : a.revList.reverse = a.toList :=
+-- lemma revList_reverse : a.revList.reverse = a.toList :=
 --   rev_list_reverse_aux _ _ _
 #noalign array.rev_list_reverse -- Array'.revList_reverse
 
 -- @[simp]
--- theorem toList_reverse : a.toList.reverse = a.revList := by
+-- lemma toList_reverse : a.toList.reverse = a.revList := by
 --   rw [← rev_list_reverse, List.reverse_reverse]
 #noalign array.to_list_reverse -- Array'.toList_reverse
 
@@ -68,11 +68,11 @@ section Mem
 
 -- variable {n : ℕ} {α : Type u} {v : α} {a : Array' n α}
 
--- theorem Mem.def : v ∈ a ↔ ∃ i, a.read i = v :=
+-- lemma Mem.def : v ∈ a ↔ ∃ i, a.read i = v :=
 --   Iff.rfl
 #noalign array.mem.def --Array'.Mem.def
 
--- theorem mem_rev_list_aux :
+-- lemma mem_rev_list_aux :
 --     ∀ {i} (h : i ≤ n),
 --       (∃ j : Fin n, (j : ℕ) < i ∧ read a j = v) ↔ v ∈ a.iterateAux (fun _ => (· :: ·)) i h []
 --   | 0, _ => ⟨fun ⟨i, n, _⟩ => absurd n i.val.not_lt_zero, False.elim⟩
@@ -94,7 +94,7 @@ section Mem
 #noalign array.mem_rev_list_aux --Array'.mem_rev_list_aux
 
 -- @[simp]
--- theorem mem_revList : v ∈ a.revList ↔ v ∈ a :=
+-- lemma mem_revList : v ∈ a.revList ↔ v ∈ a :=
 --   Iff.symm <|
 --     Iff.trans
 --       (exists_congr fun j =>
@@ -103,7 +103,7 @@ section Mem
 #noalign array.mem_rev_list --Array'.mem_revList
 
 -- @[simp]
--- theorem mem_toList : v ∈ a.toList ↔ v ∈ a := by
+-- lemma mem_toList : v ∈ a.toList ↔ v ∈ a := by
 --   rw [← rev_list_reverse] <;> exact list.mem_reverse.trans mem_rev_list
 #noalign array.mem_to_list --Array'.mem_toList
 
@@ -114,7 +114,7 @@ section Foldr
 
 -- variable {n : ℕ} {α : Type u} {β : Type w} {b : β} {f : α → β → β} {a : Array' n α}
 
--- theorem rev_list_foldr_aux :
+-- lemma rev_list_foldr_aux :
 --     ∀ {i} (h : i ≤ n),
 --       (DArray.iterateAux a (fun _ => (· :: ·)) i h []).foldr f b =
 --         DArray.iterateAux a (fun _ => f) i h b
@@ -122,7 +122,7 @@ section Foldr
 --   | j + 1, h => congr_arg (f (read a ⟨j, h⟩)) (rev_list_foldr_aux _)
 #noalign array.rev_list_foldr_aux --Array'.rev_list_foldr_aux
 
--- theorem revList_foldr : a.revList.foldr f b = a.foldl b f :=
+-- lemma revList_foldr : a.revList.foldr f b = a.foldl b f :=
 --   rev_list_foldr_aux _
 #noalign array.rev_list_foldr --Array'.revList_foldr
 
@@ -133,7 +133,7 @@ section Foldl
 
 -- variable {n : ℕ} {α : Type u} {β : Type w} {b : β} {f : β → α → β} {a : Array' n α}
 
--- theorem toList_foldl : a.toList.foldl f b = a.foldl b (Function.swap f) := by
+-- lemma toList_foldl : a.toList.foldl f b = a.foldl b (Function.swap f) := by
 --   rw [← rev_list_reverse, List.foldl_reverse, rev_list_foldr]
 #noalign array.to_list_foldl --Array'.toList_foldl
 
@@ -193,7 +193,7 @@ section Nth
 --   cases i <;> apply to_list_nth_le
 #noalign array.to_list_nth_le' -- Array'.toList_nth_le'
 
--- theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
+-- lemma toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
 --   rw [List.get?_eq_some']
 --   have ll := to_list_length a
 --   constructor <;> intro h <;> cases' h with h e <;> subst v
@@ -201,7 +201,7 @@ section Nth
 --   · exact ⟨ll.symm ▸ h, to_list_nth_le _ _ _⟩
 #noalign array.to_list_nth --Array'.toList_get?
 
--- theorem write_toList {i v} : (a.write i v).toList = a.toList.set i v :=
+-- lemma write_toList {i v} : (a.write i v).toList = a.toList.set i v :=
 --   List.ext_nthLe (by simp) fun j h₁ h₂ => by
 --     have h₃ : j < n := by simpa using h₁
 --     rw [to_list_nth_le _ h₃]
@@ -224,7 +224,7 @@ section Enum
 
 -- variable {n : ℕ} {α : Type u} {a : Array' n α}
 
--- theorem mem_toList_enum {i v} : (i, v) ∈ a.toList.enum ↔ ∃ h, a.read ⟨i, h⟩ = v := by
+-- lemma mem_toList_enum {i v} : (i, v) ∈ a.toList.enum ↔ ∃ h, a.read ⟨i, h⟩ = v := by
 --   simp [List.mem_iff_get?, to_list_nth, and_comm, and_assoc, and_left_comm]
 #noalign array.mem_to_list_enum --Array'.mem_toList_enum
 
@@ -258,7 +258,7 @@ section PushBack
 
 -- variable {n : ℕ} {α : Type u} {v : α} {a : Array' n α}
 
--- theorem pushBack_rev_list_aux :
+-- lemma pushBack_rev_list_aux :
 --     ∀ i h h',
 --       DArray.iterateAux (a.pushBack v) (fun _ => (· :: ·)) i h [] =
 --         DArray.iterateAux a (fun _ => (· :: ·)) i h' []
@@ -272,7 +272,7 @@ section PushBack
 #noalign array.push_back_rev_list_aux -- Array'.pushBack_rev_list_aux
 
 -- @[simp]
--- theorem pushBack_revList : (a.pushBack v).revList = v :: a.revList := by
+-- lemma pushBack_revList : (a.pushBack v).revList = v :: a.revList := by
 --   unfold push_back rev_list foldl iterate DArray.iterate
 --   dsimp [DArray.iterateAux, read, DArray.read, push_back]
 --   rw [dif_pos (Eq.refl n)]
@@ -281,7 +281,7 @@ section PushBack
 #noalign array.push_back_rev_list -- Array'.pushBack_revList
 
 -- @[simp]
--- theorem pushBack_toList : (a.pushBack v).toList = a.toList ++ [v] := by
+-- lemma pushBack_toList : (a.pushBack v).toList = a.toList ++ [v] := by
 --   rw [← rev_list_reverse, ← rev_list_reverse, push_back_rev_list, List.reverse_cons]
 #noalign array.push_back_to_list -- Array'.pushBack_toList
 
@@ -293,7 +293,7 @@ section PushBack
 #noalign array.read_push_back_left -- Array'.read_pushBack_left
 
 -- @[simp]
--- theorem read_pushBack_right : (a.pushBack v).read (Fin.last _) = v := by
+-- lemma read_pushBack_right : (a.pushBack v).read (Fin.last _) = v := by
 --   cases' hn : Fin.last n with k hk
 --   have : k = n := by simpa [Fin.eq_iff_veq] using hn.symm
 --   simp [push_back, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]
@@ -307,7 +307,7 @@ section Foreach
 -- variable {n : ℕ} {α : Type u} {β : Type v} {i : Fin n} {f : Fin n → α → β} {a : Array' n α}
 --
 -- @[simp]
--- theorem read_foreach : (foreach a f).read i = f i (a.read i) :=
+-- lemma read_foreach : (foreach a f).read i = f i (a.read i) :=
 --   rfl
 #noalign array.read_foreach -- Array'.read_foreach
 
@@ -318,7 +318,7 @@ section Map
 
 -- variable {n : ℕ} {α : Type u} {β : Type v} {i : Fin n} {f : α → β} {a : Array' n α}
 --
--- theorem read_map : (a.map f).read i = f (a.read i) :=
+-- lemma read_map : (a.map f).read i = f (a.read i) :=
 --   read_foreach
 #noalign array.read_map -- Array'.read_map
 
@@ -330,7 +330,7 @@ section Map₂
 -- variable {n : ℕ} {α : Type u} {i : Fin n} {f : α → α → α} {a₁ a₂ : Array' n α}
 --
 -- @[simp]
--- theorem read_map₂ : (map₂ f a₁ a₂).read i = f (a₁.read i) (a₂.read i) :=
+-- lemma read_map₂ : (map₂ f a₁ a₂).read i = f (a₁.read i) (a₂.read i) :=
 --   read_foreach
 #noalign array.read_map₂ --Array'.read_map₂
 

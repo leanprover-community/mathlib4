@@ -46,7 +46,7 @@ protected def sigma : Finset (Σi, α i) :=
 variable {s s₁ s₂ t t₁ t₂}
 
 @[simp]
-theorem mem_sigma {a : Σi, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
+lemma mem_sigma {a : Σi, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
   Multiset.mem_sigma
 #align finset.mem_sigma Finset.mem_sigma
 
@@ -57,11 +57,11 @@ theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
 #align finset.coe_sigma Finset.coe_sigma
 
 @[simp]
-theorem sigma_nonempty : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempty := by simp [Finset.Nonempty]
+lemma sigma_nonempty : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempty := by simp [Finset.Nonempty]
 #align finset.sigma_nonempty Finset.sigma_nonempty
 
 @[simp]
-theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
+lemma sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
   simp only [← not_nonempty_iff_eq_empty, sigma_nonempty, not_exists, not_and]
 #align finset.sigma_eq_empty Finset.sigma_eq_empty
 
@@ -72,7 +72,7 @@ theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.s
   mem_sigma.2 ⟨hs hi, ht i ha⟩
 #align finset.sigma_mono Finset.sigma_mono
 
-theorem pairwiseDisjoint_map_sigmaMk :
+lemma pairwiseDisjoint_map_sigmaMk :
     (s : Set ι).PairwiseDisjoint fun i => (t i).map (Embedding.sigmaMk i) := by
   intro i _ j _ hij
   rw [Function.onFun, disjoint_left]
@@ -82,13 +82,13 @@ theorem pairwiseDisjoint_map_sigmaMk :
 #align finset.pairwise_disjoint_map_sigma_mk Finset.pairwiseDisjoint_map_sigmaMk
 
 @[simp]
-theorem disjiUnion_map_sigma_mk :
+lemma disjiUnion_map_sigma_mk :
     s.disjiUnion (fun i => (t i).map (Embedding.sigmaMk i)) pairwiseDisjoint_map_sigmaMk =
       s.sigma t :=
   rfl
 #align finset.disj_Union_map_sigma_mk Finset.disjiUnion_map_sigma_mk
 
-theorem sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
+lemma sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
     s.sigma t = s.biUnion fun i => (t i).map <| Embedding.sigmaMk i := by
   ext ⟨x, y⟩
   simp [and_left_comm]
@@ -96,7 +96,7 @@ theorem sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, F
 
 variable (s t) (f : (Σi, α i) → β)
 
-theorem sup_sigma [SemilatticeSup β] [OrderBot β] :
+lemma sup_sigma [SemilatticeSup β] [OrderBot β] :
     (s.sigma t).sup f = s.sup fun i => (t i).sup fun b => f ⟨i, b⟩ := by
   simp only [le_antisymm_iff, Finset.sup_le_iff, mem_sigma, and_imp, Sigma.forall]
   exact
@@ -104,7 +104,7 @@ theorem sup_sigma [SemilatticeSup β] [OrderBot β] :
       le_sup <| mem_sigma.2 ⟨hi, ha⟩⟩
 #align finset.sup_sigma Finset.sup_sigma
 
-theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
+lemma inf_sigma [SemilatticeInf β] [OrderTop β] :
     (s.sigma t).inf f = s.inf fun i => (t i).inf fun b => f ⟨i, b⟩ :=
   @sup_sigma _ _ βᵒᵈ _ _ _ _ _
 #align finset.inf_sigma Finset.inf_sigma
@@ -163,13 +163,13 @@ theorem not_mem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset
 
 variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σi, α i} {b : Σi, β i}
 
-theorem sigmaLift_nonempty :
+lemma sigmaLift_nonempty :
     (sigmaLift f a b).Nonempty ↔ ∃ h : a.1 = b.1, (f (h ▸ a.2) b.2).Nonempty := by
   simp_rw [nonempty_iff_ne_empty, sigmaLift]
   split_ifs with h <;> simp [h]
 #align finset.sigma_lift_nonempty Finset.sigmaLift_nonempty
 
-theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
+lemma sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
   · simp [h, forall_prop_of_true h]
@@ -186,7 +186,7 @@ theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆
 
 variable (f a b)
 
-theorem card_sigmaLift :
+lemma card_sigmaLift :
     (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
   simp_rw [sigmaLift]
   split_ifs with h <;> simp [h]

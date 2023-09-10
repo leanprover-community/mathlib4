@@ -77,7 +77,7 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
 #align witt_vector.mk_unit WittVector.mkUnit
 
 @[simp]
-theorem coe_mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : (mkUnit hA : 𝕎 k) = A :=
+lemma coe_mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : (mkUnit hA : 𝕎 k) = A :=
   rfl
 #align witt_vector.coe_mk_unit WittVector.coe_mkUnit
 
@@ -95,7 +95,7 @@ theorem isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUni
 
 variable (p)
 
-theorem irreducible : Irreducible (p : 𝕎 k) := by
+lemma irreducible : Irreducible (p : 𝕎 k) := by
   have hp : ¬IsUnit (p : 𝕎 k) := by
     intro hp
     simpa only [constantCoeff_apply, coeff_p_zero, not_isUnit_zero] using
@@ -160,7 +160,7 @@ https://github.com/leanprover/lean4/issues/1102
 -/
 /-- The ring of Witt Vectors of a perfect field of positive characteristic is a DVR.
 -/
-theorem discreteValuationRing : DiscreteValuationRing (𝕎 k) :=
+lemma discreteValuationRing : DiscreteValuationRing (𝕎 k) :=
   DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
     refine' ⟨p, irreducible p, fun {x} hx => _⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx

@@ -48,7 +48,7 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
 def MinFacHelper (n k : ℕ) : Prop :=
   2 < k ∧ k % 2 = 1 ∧ k ≤ minFac n
 
-theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
+lemma MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   have : 2 < minFac n := h.1.trans_le h.2.2
   rcases eq_zero_or_pos n with rfl|h
   · contradiction
@@ -65,7 +65,7 @@ theorem minFacHelper_0 (n : ℕ)
   · simp [(Nat.dvd_iff_mod_eq_zero ..).1 hpn] at h2
   · exact h
 
-theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
+lemma minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
   (np : minFac n ≠ k) : MinFacHelper n k' := by
   rw [← e]
   refine ⟨Nat.lt_add_right _ _ _ h.1, ?_, ?_⟩
@@ -83,32 +83,32 @@ theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
     exact h3
   exact h2
 
-theorem minFacHelper_2 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ Nat.Prime k)
+lemma minFacHelper_2 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ Nat.Prime k)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
   refine minFacHelper_1 e h λ h2 ↦ ?_
   rw [← h2] at nk
   exact nk <| minFac_prime h.one_lt.ne'
 
-theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = false)
+lemma minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = false)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
   refine minFacHelper_1 e h λ h2 ↦ ?_
   have nk := Nat.ne_of_beq_eq_false nk
   rw [← Nat.dvd_iff_mod_eq_zero, ← h2] at nk
   exact nk <| minFac_dvd n
 
-theorem isNat_minFac_1 : {a : ℕ} → IsNat a (nat_lit 1) → IsNat a.minFac 1
+lemma isNat_minFac_1 : {a : ℕ} → IsNat a (nat_lit 1) → IsNat a.minFac 1
   | _, ⟨rfl⟩ => ⟨minFac_one⟩
 
-theorem isNat_minFac_2 : {a a' : ℕ} → IsNat a a' → a' % 2 = 0 → IsNat a.minFac 2
+lemma isNat_minFac_2 : {a a' : ℕ} → IsNat a a' → a' % 2 = 0 → IsNat a.minFac 2
   | a, _, ⟨rfl⟩, h => ⟨by rw [cast_ofNat, minFac_eq_two_iff, Nat.dvd_iff_mod_eq_zero, h]⟩
 
-theorem isNat_minFac_3 : {n n' : ℕ} → (k : ℕ) →
+lemma isNat_minFac_3 : {n n' : ℕ} → (k : ℕ) →
     IsNat n n' → MinFacHelper n' k → nat_lit 0 = n' % k → IsNat (minFac n) k
   | n, _, k, ⟨rfl⟩, h1, h2 => by
     rw [eq_comm, ← Nat.dvd_iff_mod_eq_zero] at h2
     exact ⟨le_antisymm (minFac_le_of_dvd h1.1.le h2) h1.2.2⟩
 
-theorem isNat_minFac_4 : {n n' k : ℕ} →
+lemma isNat_minFac_4 : {n n' k : ℕ} →
     IsNat n n' → MinFacHelper n' k → (k * k).ble n' = false → IsNat (minFac n) n'
   | n, _, k, ⟨rfl⟩, h1, h2 => by
     refine ⟨(Nat.prime_def_minFac.mp ?_).2⟩
@@ -166,17 +166,17 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
     return .isNat sℕ c pc
   core
 
-theorem isNat_prime_0 : {n : ℕ} → IsNat n (nat_lit 0) → ¬ n.Prime
+lemma isNat_prime_0 : {n : ℕ} → IsNat n (nat_lit 0) → ¬ n.Prime
   | _, ⟨rfl⟩ => not_prime_zero
 
-theorem isNat_prime_1 : {n : ℕ} → IsNat n (nat_lit 1) → ¬ n.Prime
+lemma isNat_prime_1 : {n : ℕ} → IsNat n (nat_lit 1) → ¬ n.Prime
   | _, ⟨rfl⟩ => not_prime_one
 
-theorem isNat_prime_2 : {n n' : ℕ} →
+lemma isNat_prime_2 : {n n' : ℕ} →
     IsNat n n' → Nat.ble 2 n' = true → IsNat (minFac n') n' → n.Prime
   | _, _, ⟨rfl⟩, h1, ⟨h2⟩ => prime_def_minFac.mpr ⟨ble_eq.mp h1, h2⟩
 
-theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime := isNat.natElim h
+lemma isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime := isNat.natElim h
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
 @[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do

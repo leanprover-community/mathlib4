@@ -73,7 +73,7 @@ instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
 /-- Simplify subtraction for a torsor for an `AddGroup G` over
 itself. -/
 @[simp]
-theorem vsub_eq_sub {G : Type*} [AddGroup G] (g1 g2 : G) : g1 -ᵥ g2 = g1 - g2 :=
+lemma vsub_eq_sub {G : Type*} [AddGroup G] (g1 g2 : G) : g1 -ᵥ g2 = g1 - g2 :=
   rfl
 #align vsub_eq_sub vsub_eq_sub
 
@@ -97,13 +97,13 @@ theorem vadd_vsub (g : G) (p : P) : g +ᵥ p -ᵥ p = g :=
 
 /-- If the same point added to two group elements produces equal
 results, those group elements are equal. -/
-theorem vadd_right_cancel {g1 g2 : G} (p : P) (h : g1 +ᵥ p = g2 +ᵥ p) : g1 = g2 := by
+lemma vadd_right_cancel {g1 g2 : G} (p : P) (h : g1 +ᵥ p = g2 +ᵥ p) : g1 = g2 := by
 -- Porting note: vadd_vsub g₁ → vadd_vsub g₁ p
   rw [← vadd_vsub g1 p, h, vadd_vsub]
 #align vadd_right_cancel vadd_right_cancel
 
 @[simp]
-theorem vadd_right_cancel_iff {g1 g2 : G} (p : P) : g1 +ᵥ p = g2 +ᵥ p ↔ g1 = g2 :=
+lemma vadd_right_cancel_iff {g1 g2 : G} (p : P) : g1 +ᵥ p = g2 +ᵥ p ↔ g1 = g2 :=
   ⟨vadd_right_cancel p, fun h => h ▸ rfl⟩
 #align vadd_right_cancel_iff vadd_right_cancel_iff
 
@@ -128,18 +128,18 @@ theorem vsub_self (p : P) : p -ᵥ p = (0 : G) := by
 #align vsub_self vsub_self
 
 /-- If subtracting two points produces 0, they are equal. -/
-theorem eq_of_vsub_eq_zero {p1 p2 : P} (h : p1 -ᵥ p2 = (0 : G)) : p1 = p2 := by
+lemma eq_of_vsub_eq_zero {p1 p2 : P} (h : p1 -ᵥ p2 = (0 : G)) : p1 = p2 := by
   rw [← vsub_vadd p1 p2, h, zero_vadd]
 #align eq_of_vsub_eq_zero eq_of_vsub_eq_zero
 
 /-- Subtracting two points produces 0 if and only if they are
 equal. -/
 @[simp]
-theorem vsub_eq_zero_iff_eq {p1 p2 : P} : p1 -ᵥ p2 = (0 : G) ↔ p1 = p2 :=
+lemma vsub_eq_zero_iff_eq {p1 p2 : P} : p1 -ᵥ p2 = (0 : G) ↔ p1 = p2 :=
   Iff.intro eq_of_vsub_eq_zero fun h => h ▸ vsub_self _
 #align vsub_eq_zero_iff_eq vsub_eq_zero_iff_eq
 
-theorem vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
+lemma vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
   not_congr vsub_eq_zero_iff_eq
 #align vsub_ne_zero vsub_ne_zero
 
@@ -182,7 +182,7 @@ theorem eq_vadd_iff_vsub_eq (p1 : P) (g : G) (p2 : P) : p1 = g +ᵥ p2 ↔ p1 -�
   ⟨fun h => h.symm ▸ vadd_vsub _ _, fun h => h ▸ (vsub_vadd _ _).symm⟩
 #align eq_vadd_iff_vsub_eq eq_vadd_iff_vsub_eq
 
-theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
+lemma vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ -v₁ + v₂ = p₁ -ᵥ p₂ := by
   rw [eq_vadd_iff_vsub_eq, vadd_vsub_assoc, ← add_right_inj (-v₁), neg_add_cancel_left, eq_comm]
 #align vadd_eq_vadd_iff_neg_add_eq_vsub vadd_eq_vadd_iff_neg_add_eq_vsub
@@ -206,14 +206,14 @@ theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : v₁ +ᵥ p -ᵥ (
 
 /-- If the same point subtracted from two points produces equal
 results, those points are equal. -/
-theorem vsub_left_cancel {p1 p2 p : P} (h : p1 -ᵥ p = p2 -ᵥ p) : p1 = p2 := by
+lemma vsub_left_cancel {p1 p2 p : P} (h : p1 -ᵥ p = p2 -ᵥ p) : p1 = p2 := by
   rwa [← sub_eq_zero, vsub_sub_vsub_cancel_right, vsub_eq_zero_iff_eq] at h
 #align vsub_left_cancel vsub_left_cancel
 
 /-- The same point subtracted from two points produces equal results
 if and only if those points are equal. -/
 @[simp]
-theorem vsub_left_cancel_iff {p1 p2 p : P} : p1 -ᵥ p = p2 -ᵥ p ↔ p1 = p2 :=
+lemma vsub_left_cancel_iff {p1 p2 p : P} : p1 -ᵥ p = p2 -ᵥ p ↔ p1 = p2 :=
   ⟨vsub_left_cancel, fun h => h ▸ rfl⟩
 #align vsub_left_cancel_iff vsub_left_cancel_iff
 
@@ -224,7 +224,7 @@ theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G)
 
 /-- If subtracting two points from the same point produces equal
 results, those points are equal. -/
-theorem vsub_right_cancel {p1 p2 p : P} (h : p -ᵥ p1 = p -ᵥ p2) : p1 = p2 := by
+lemma vsub_right_cancel {p1 p2 p : P} (h : p -ᵥ p1 = p -ᵥ p2) : p1 = p2 := by
   refine' vadd_left_cancel (p -ᵥ p2) _
   rw [vsub_vadd, ← h, vsub_vadd]
 #align vsub_right_cancel vsub_right_cancel
@@ -232,7 +232,7 @@ theorem vsub_right_cancel {p1 p2 p : P} (h : p -ᵥ p1 = p -ᵥ p2) : p1 = p2 :=
 /-- Subtracting two points from the same point produces equal results
 if and only if those points are equal. -/
 @[simp]
-theorem vsub_right_cancel_iff {p1 p2 p : P} : p -ᵥ p1 = p -ᵥ p2 ↔ p1 = p2 :=
+lemma vsub_right_cancel_iff {p1 p2 p : P} : p -ᵥ p1 = p -ᵥ p2 ↔ p1 = p2 :=
   ⟨vsub_right_cancel, fun h => h ▸ rfl⟩
 #align vsub_right_cancel_iff vsub_right_cancel_iff
 
@@ -267,7 +267,7 @@ theorem vsub_vadd_comm (p1 p2 p3 : P) : (p1 -ᵥ p2 : G) +ᵥ p3 = p3 -ᵥ p2 +�
   simp
 #align vsub_vadd_comm vsub_vadd_comm
 
-theorem vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
+lemma vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ v₂ - v₁ = p₁ -ᵥ p₂ := by
   rw [vadd_eq_vadd_iff_neg_add_eq_vsub, neg_add_eq_sub]
 #align vadd_eq_vadd_iff_sub_eq_vsub vadd_eq_vadd_iff_sub_eq_vsub
@@ -414,7 +414,7 @@ theorem coe_constVAdd (v : G) : ⇑(constVAdd P v) = (· +ᵥ ·) v :=
 variable (G)
 
 @[simp]
-theorem constVAdd_zero : constVAdd P (0 : G) = 1 :=
+lemma constVAdd_zero : constVAdd P (0 : G) = 1 :=
   ext <| zero_vadd G
 #align equiv.const_vadd_zero Equiv.constVAdd_zero
 
@@ -480,7 +480,7 @@ theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P �
 set_option linter.deprecated false
 /-- `x` is the only fixed point of `pointReflection x`. This lemma requires
 `x + x = y + y ↔ x = y`. There is no typeclass to use here, so we add it as an explicit argument. -/
-theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bit0 : G → G)) :
+lemma pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bit0 : G → G)) :
     pointReflection x y = y ↔ y = x := by
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
@@ -490,7 +490,7 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
 -- omit G
 
 -- Porting note: need this to calm down CI
-theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
+lemma injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (bit0 : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
   fun x₁ x₂ (hy : pointReflection x₁ y = pointReflection x₂ y) => by

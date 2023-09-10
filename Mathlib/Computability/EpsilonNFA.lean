@@ -57,12 +57,12 @@ theorem subset_εClosure (S : Set σ) : S ⊆ M.εClosure S :=
 #align ε_NFA.subset_ε_closure εNFA.subset_εClosure
 
 @[simp]
-theorem εClosure_empty : M.εClosure ∅ = ∅ :=
+lemma εClosure_empty : M.εClosure ∅ = ∅ :=
   eq_empty_of_forall_not_mem fun s hs ↦ by induction hs <;> assumption
 #align ε_NFA.ε_closure_empty εNFA.εClosure_empty
 
 @[simp]
-theorem εClosure_univ : M.εClosure univ = univ :=
+lemma εClosure_univ : M.εClosure univ = univ :=
   eq_univ_of_univ_subset <| subset_εClosure _ _
 #align ε_NFA.ε_closure_univ εNFA.εClosure_univ
 
@@ -74,7 +74,7 @@ def stepSet (S : Set σ) (a : α) : Set σ :=
 variable {M}
 
 @[simp]
-theorem mem_stepSet_iff : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.εClosure (M.step t a) := by
+lemma mem_stepSet_iff : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.εClosure (M.step t a) := by
   simp_rw [stepSet, mem_iUnion₂, exists_prop]
 #align ε_NFA.mem_step_set_iff εNFA.mem_stepSet_iff
 
@@ -121,7 +121,7 @@ def eval :=
 #align ε_NFA.eval εNFA.eval
 
 @[simp]
-theorem eval_nil : M.eval [] = M.εClosure M.start :=
+lemma eval_nil : M.eval [] = M.εClosure M.start :=
   rfl
 #align ε_NFA.eval_nil εNFA.eval_nil
 
@@ -157,11 +157,11 @@ theorem toNFA_evalFrom_match (start : Set σ) :
 #align ε_NFA.to_NFA_eval_from_match εNFA.toNFA_evalFrom_match
 
 @[simp]
-theorem toNFA_correct : M.toNFA.accepts = M.accepts :=
+lemma toNFA_correct : M.toNFA.accepts = M.accepts :=
   rfl
 #align ε_NFA.to_NFA_correct εNFA.toNFA_correct
 
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+lemma pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :
     ∃ a b c, x = a ++ b ++ c ∧
       a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
@@ -238,22 +238,22 @@ theorem step_one (s a) : (1 : εNFA α σ).step s a = ∅ :=
 #align ε_NFA.step_one εNFA.step_one
 
 @[simp]
-theorem start_zero : (0 : εNFA α σ).start = ∅ :=
+lemma start_zero : (0 : εNFA α σ).start = ∅ :=
   rfl
 #align ε_NFA.start_zero εNFA.start_zero
 
 @[simp]
-theorem start_one : (1 : εNFA α σ).start = univ :=
+lemma start_one : (1 : εNFA α σ).start = univ :=
   rfl
 #align ε_NFA.start_one εNFA.start_one
 
 @[simp]
-theorem accept_zero : (0 : εNFA α σ).accept = ∅ :=
+lemma accept_zero : (0 : εNFA α σ).accept = ∅ :=
   rfl
 #align ε_NFA.accept_zero εNFA.accept_zero
 
 @[simp]
-theorem accept_one : (1 : εNFA α σ).accept = univ :=
+lemma accept_one : (1 : εNFA α σ).accept = univ :=
   rfl
 #align ε_NFA.accept_one εNFA.accept_one
 

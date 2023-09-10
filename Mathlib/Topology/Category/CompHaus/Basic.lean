@@ -72,7 +72,7 @@ set_option linter.uppercaseLean3 false in
 /-
 -- Porting note: This is now a syntactic tautology.
 @[simp]
-theorem coe_toTop {X : CompHaus} : (X.toTop : Type*) = X :=
+lemma coe_toTop {X : CompHaus} : (X.toTop : Type*) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_to_Top CompHaus.coe_toTop
@@ -91,7 +91,7 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.of CompHaus.of
 
 @[simp]
-theorem coe_of : (CompHaus.of X : Type _) = X :=
+lemma coe_of : (CompHaus.of X : Type _) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
@@ -109,13 +109,13 @@ instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
   show T2Space X.toTop from inferInstance
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
-theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
+lemma isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
   (hC.isCompact.image f.continuous).isClosed
 set_option linter.uppercaseLean3 false in
 #align CompHaus.is_closed_map CompHaus.isClosedMap
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
-theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
+lemma isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bijective f) :
     IsIso f := by
   let E := Equiv.ofBijective _ bij
   have hE : Continuous E.symm := by
@@ -327,7 +327,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u
 set_option linter.uppercaseLean3 false in
 #align CompHaus.limit_cone_is_limit CompHaus.limitConeIsLimit
 
-theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
+lemma epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · dsimp [Function.Surjective]
     contrapose!
@@ -374,7 +374,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 set_option linter.uppercaseLean3 false in
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
-theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
+lemma mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
     let g₁ : of PUnit ⟶ X := ⟨fun _ => x₁, continuous_const⟩

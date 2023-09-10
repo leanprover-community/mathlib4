@@ -46,12 +46,12 @@ abbrev IsClique (s : Set α) : Prop :=
   s.Pairwise G.Adj
 #align simple_graph.is_clique SimpleGraph.IsClique
 
-theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
+lemma isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 #align simple_graph.is_clique_iff SimpleGraph.isClique_iff
 
 /-- A clique is a set of vertices whose induced graph is complete. -/
-theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
+lemma isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [isClique_iff]
   constructor
   · intro h
@@ -81,7 +81,7 @@ theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := by
 #align simple_graph.is_clique.subset SimpleGraph.IsClique.subset
 
 @[simp]
-theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
+lemma isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
   Set.pairwise_bot_iff
 #align simple_graph.is_clique_bot_iff SimpleGraph.isClique_bot_iff
 
@@ -103,7 +103,7 @@ structure IsNClique (n : ℕ) (s : Finset α) : Prop where
   card_eq : s.card = n
 #align simple_graph.is_n_clique SimpleGraph.IsNClique
 
-theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ s.card = n :=
+lemma isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ s.card = n :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 #align simple_graph.is_n_clique_iff SimpleGraph.isNClique_iff
 
@@ -119,7 +119,7 @@ theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
 #align simple_graph.is_n_clique.mono SimpleGraph.IsNClique.mono
 
 @[simp]
-theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
+lemma isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
   rw [isNClique_iff, isClique_bot_iff]
   refine' and_congr_left _
   rintro rfl
@@ -128,13 +128,13 @@ theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧
 
 variable [DecidableEq α] {a b c : α}
 
-theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
+lemma is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
   simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
     simp [G.ne_of_adj, and_rotate, *]
 #align simple_graph.is_3_clique_triple_iff SimpleGraph.is3Clique_triple_iff
 
-theorem is3Clique_iff :
+lemma is3Clique_iff :
     G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
   refine' ⟨fun h ↦ _, _⟩
   · obtain ⟨a, b, c, -, -, -, hs⟩ := card_eq_three.1 h.card_eq
@@ -164,7 +164,7 @@ theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG
 #align simple_graph.is_n_clique.not_clique_free SimpleGraph.IsNClique.not_cliqueFree
 
-theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n)) ↪g G) :
+lemma not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n)) ↪g G) :
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
@@ -194,11 +194,11 @@ theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : Sim
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 #align simple_graph.not_clique_free_iff SimpleGraph.not_cliqueFree_iff
 
-theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGraph (Fin n)) ↪g G) := by
+lemma cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGraph (Fin n)) ↪g G) := by
   rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
 #align simple_graph.clique_free_iff SimpleGraph.cliqueFree_iff
 
-theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
+lemma not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff]
   exact ⟨(Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f⟩
@@ -221,7 +221,7 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
 #align simple_graph.clique_free.anti SimpleGraph.CliqueFree.anti
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
-theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
+lemma cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine' Nat.lt_le_antisymm hc _
   rw [cliqueFree_iff, not_isEmpty_iff] at h
@@ -229,7 +229,7 @@ theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n :
 #align simple_graph.clique_free_of_card_lt SimpleGraph.cliqueFree_of_card_lt
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
-theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
+lemma cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
     (hc : card ι < n) : (completeMultipartiteGraph V).CliqueFree n := by
   rw [cliqueFree_iff, isEmpty_iff]
   intro f
@@ -251,12 +251,12 @@ def cliqueSet (n : ℕ) : Set (Finset α) :=
   { s | G.IsNClique n s }
 #align simple_graph.clique_set SimpleGraph.cliqueSet
 
-theorem mem_cliqueSet_iff : s ∈ G.cliqueSet n ↔ G.IsNClique n s :=
+lemma mem_cliqueSet_iff : s ∈ G.cliqueSet n ↔ G.IsNClique n s :=
   Iff.rfl
 #align simple_graph.mem_clique_set_iff SimpleGraph.mem_cliqueSet_iff
 
 @[simp]
-theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
+lemma cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, Set.eq_empty_iff_forall_not_mem, mem_cliqueSet_iff]
 #align simple_graph.clique_set_eq_empty_iff SimpleGraph.cliqueSet_eq_empty_iff
 
@@ -290,7 +290,7 @@ def cliqueFinset (n : ℕ) : Finset (Finset α) :=
   univ.filter <| G.IsNClique n
 #align simple_graph.clique_finset SimpleGraph.cliqueFinset
 
-theorem mem_cliqueFinset_iff : s ∈ G.cliqueFinset n ↔ G.IsNClique n s :=
+lemma mem_cliqueFinset_iff : s ∈ G.cliqueFinset n ↔ G.IsNClique n s :=
   mem_filter.trans <| and_iff_right <| mem_univ _
 #align simple_graph.mem_clique_finset_iff SimpleGraph.mem_cliqueFinset_iff
 
@@ -300,7 +300,7 @@ theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cl
 #align simple_graph.coe_clique_finset SimpleGraph.coe_cliqueFinset
 
 @[simp]
-theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
+lemma cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, eq_empty_iff_forall_not_mem, mem_cliqueFinset_iff]
 #align simple_graph.clique_finset_eq_empty_iff SimpleGraph.cliqueFinset_eq_empty_iff
 

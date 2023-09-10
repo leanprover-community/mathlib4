@@ -84,7 +84,7 @@ private lemma pairMap_of_snd_nmem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
-private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
+private lemma pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     pairMap σ t ∈ pairs σ k := by
   rw [mem_pairs] at h ⊢
   rcases (em (t.snd ∈ t.fst)) with h1 | h1
@@ -101,7 +101,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
     exact (le_iff_eq_or_lt.mp h.left).resolve_left h.right
 
 @[simp]
-private theorem pairMap_involutive : (pairMap σ).Involutive := by
+private lemma pairMap_involutive : (pairMap σ).Involutive := by
   intro t
   rw [pairMap, pairMap]
   split_ifs with h1 h2 h3
@@ -110,7 +110,7 @@ private theorem pairMap_involutive : (pairMap σ).Involutive := by
   · simp_all
   · simp at h3
 
-private theorem weight_add_weight_pairMap {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
+private lemma weight_add_weight_pairMap {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     weight σ R k t + weight σ R k (pairMap σ t) = 0 := by
   rw [weight, weight]
   rw [mem_pairs] at h
@@ -248,7 +248,7 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     NewtonIdentities.disjUnion_filter_pairs_eq_pairs σ k, NewtonIdentities.weight_sum σ R k,
     neg_one_pow_mul_eq_zero_iff.mpr rfl]
 
-theorem sum_antidiagonal_card_esymm_psum_eq_zero :
+lemma sum_antidiagonal_card_esymm_psum_eq_zero :
     ∑ a in antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 := by
   let k := Fintype.card σ
   suffices : (-1 : MvPolynomial σ R) ^ (k + 1) *

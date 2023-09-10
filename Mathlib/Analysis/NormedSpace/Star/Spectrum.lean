@@ -41,7 +41,7 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
     simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
 #align unitary.spectrum_subset_circle unitary.spectrum_subset_circle
 
-theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
+lemma spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
   unitary.spectrum_subset_circle ⟨u, h⟩
 #align spectrum.subset_circle_of_unitary spectrum.subset_circle_of_unitary
@@ -57,7 +57,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Sta
 
 local notation "↑ₐ" => algebraMap ℂ A
 
-theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
+lemma IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
   refine' tendsto_nhds_unique _ hconst
@@ -87,7 +87,7 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
 #align is_star_normal.spectral_radius_eq_nnnorm IsStarNormal.spectralRadius_eq_nnnorm
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
-theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
+lemma IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
   have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
@@ -101,13 +101,13 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelf
 #align is_self_adjoint.mem_spectrum_eq_re IsSelfAdjoint.mem_spectrum_eq_re
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
-theorem selfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] (a : selfAdjoint A) {z : ℂ}
+lemma selfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] (a : selfAdjoint A) {z : ℂ}
     (hz : z ∈ spectrum ℂ (a : A)) : z = z.re :=
   a.prop.mem_spectrum_eq_re hz
 #align self_adjoint.mem_spectrum_eq_re selfAdjoint.mem_spectrum_eq_re
 
 /-- The spectrum of a selfadjoint is real -/
-theorem IsSelfAdjoint.val_re_map_spectrum [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) :
+lemma IsSelfAdjoint.val_re_map_spectrum [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) :
     spectrum ℂ a = ((↑) ∘ re '' spectrum ℂ a : Set ℂ) :=
   le_antisymm (fun z hz => ⟨z, hz, (ha.mem_spectrum_eq_re hz).symm⟩) fun z => by
     rintro ⟨z, hz, rfl⟩
@@ -115,7 +115,7 @@ theorem IsSelfAdjoint.val_re_map_spectrum [StarModule ℂ A] {a : A} (ha : IsSel
 #align is_self_adjoint.coe_re_map_spectrum IsSelfAdjoint.val_re_map_spectrum
 
 /-- The spectrum of a selfadjoint is real -/
-theorem selfAdjoint.val_re_map_spectrum [StarModule ℂ A] (a : selfAdjoint A) :
+lemma selfAdjoint.val_re_map_spectrum [StarModule ℂ A] (a : selfAdjoint A) :
     spectrum ℂ (a : A) = ((↑) ∘ re '' spectrum ℂ (a : A) : Set ℂ) :=
   a.property.val_re_map_spectrum
 #align self_adjoint.coe_re_map_spectrum selfAdjoint.val_re_map_spectrum

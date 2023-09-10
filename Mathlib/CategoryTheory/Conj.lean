@@ -46,27 +46,27 @@ def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y)
 
 -- @[simp, nolint simpNF] Porting note: dsimp can not prove this
 @[simp]
-theorem homCongr_apply {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ⟶ Y) :
+lemma homCongr_apply {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ⟶ Y) :
     α.homCongr β f = α.inv ≫ f ≫ β.hom := by
   rfl
 #align category_theory.iso.hom_congr_apply CategoryTheory.Iso.homCongr_apply
 
-theorem homCongr_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (γ : Z ≅ Z₁) (f : X ⟶ Y)
+lemma homCongr_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (γ : Z ≅ Z₁) (f : X ⟶ Y)
     (g : Y ⟶ Z) : α.homCongr γ (f ≫ g) = α.homCongr β f ≫ β.homCongr γ g := by simp
 #align category_theory.iso.hom_congr_comp CategoryTheory.Iso.homCongr_comp
 
 /- Porting note: removed `@[simp]`; simp can prove this -/
-theorem homCongr_refl {X Y : C} (f : X ⟶ Y) : (Iso.refl X).homCongr (Iso.refl Y) f = f := by simp
+lemma homCongr_refl {X Y : C} (f : X ⟶ Y) : (Iso.refl X).homCongr (Iso.refl Y) f = f := by simp
 #align category_theory.iso.hom_congr_refl CategoryTheory.Iso.homCongr_refl
 
 /- Porting note: removed `@[simp]`; simp can prove this -/
-theorem homCongr_trans {X₁ Y₁ X₂ Y₂ X₃ Y₃ : C} (α₁ : X₁ ≅ X₂) (β₁ : Y₁ ≅ Y₂) (α₂ : X₂ ≅ X₃)
+lemma homCongr_trans {X₁ Y₁ X₂ Y₂ X₃ Y₃ : C} (α₁ : X₁ ≅ X₂) (β₁ : Y₁ ≅ Y₂) (α₂ : X₂ ≅ X₃)
     (β₂ : Y₂ ≅ Y₃) (f : X₁ ⟶ Y₁) :
     (α₁ ≪≫ α₂).homCongr (β₁ ≪≫ β₂) f = (α₁.homCongr β₁).trans (α₂.homCongr β₂) f := by simp
 #align category_theory.iso.hom_congr_trans CategoryTheory.Iso.homCongr_trans
 
 @[simp]
-theorem homCongr_symm {X₁ Y₁ X₂ Y₂ : C} (α : X₁ ≅ X₂) (β : Y₁ ≅ Y₂) :
+lemma homCongr_symm {X₁ Y₁ X₂ Y₂ : C} (α : X₁ ≅ X₂) (β : Y₁ ≅ Y₂) :
     (α.homCongr β).symm = α.symm.homCongr β.symm :=
   rfl
 #align category_theory.iso.hom_congr_symm CategoryTheory.Iso.homCongr_symm
@@ -89,7 +89,7 @@ theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
 #align category_theory.iso.conj_comp CategoryTheory.Iso.conj_comp
 
 @[simp]
-theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
+lemma conj_id : α.conj (𝟙 X) = 𝟙 Y :=
   α.conj.map_one
 #align category_theory.iso.conj_id CategoryTheory.Iso.conj_id
 
@@ -99,7 +99,7 @@ theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
 #align category_theory.iso.refl_conj CategoryTheory.Iso.refl_conj
 
 @[simp]
-theorem trans_conj {Z : C} (β : Y ≅ Z) (f : End X) : (α ≪≫ β).conj f = β.conj (α.conj f) :=
+lemma trans_conj {Z : C} (β : Y ≅ Z) (f : End X) : (α ≪≫ β).conj f = β.conj (α.conj f) :=
   homCongr_trans α α β β f
 #align category_theory.iso.trans_conj CategoryTheory.Iso.trans_conj
 
@@ -136,7 +136,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_hom CategoryTheory.Iso.conjAut_hom
 
 @[simp]
-theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
+lemma trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
   simp only [conjAut_apply, Iso.trans_symm, Iso.trans_assoc]
 set_option linter.uppercaseLean3 false in
@@ -174,11 +174,11 @@ universe v₁ u₁
 
 variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D] (F : C ⥤ D)
 
-theorem map_homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ⟶ Y) :
+lemma map_homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ⟶ Y) :
     F.map (Iso.homCongr α β f) = Iso.homCongr (F.mapIso α) (F.mapIso β) (F.map f) := by simp
 #align category_theory.functor.map_hom_congr CategoryTheory.Functor.map_homCongr
 
-theorem map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
+lemma map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
     F.map (α.conj f) = (F.mapIso α).conj (F.map f) :=
   map_homCongr F α α f
 #align category_theory.functor.map_conj CategoryTheory.Functor.map_conj

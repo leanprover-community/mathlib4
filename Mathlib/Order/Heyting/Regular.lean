@@ -43,7 +43,7 @@ def IsRegular (a : α) : Prop :=
   aᶜᶜ = a
 #align heyting.is_regular Heyting.IsRegular
 
-protected theorem IsRegular.eq : IsRegular a → aᶜᶜ = a :=
+protected lemma IsRegular.eq : IsRegular a → aᶜᶜ = a :=
   id
 #align heyting.is_regular.eq Heyting.IsRegular.eq
 
@@ -57,10 +57,10 @@ section HeytingAlgebra
 
 variable [HeytingAlgebra α] {a b : α}
 
-theorem isRegular_bot : IsRegular (⊥ : α) := by rw [IsRegular, compl_bot, compl_top]
+lemma isRegular_bot : IsRegular (⊥ : α) := by rw [IsRegular, compl_bot, compl_top]
 #align heyting.is_regular_bot Heyting.isRegular_bot
 
-theorem isRegular_top : IsRegular (⊤ : α) := by rw [IsRegular, compl_top, compl_bot]
+lemma isRegular_top : IsRegular (⊤ : α) := by rw [IsRegular, compl_top, compl_bot]
 #align heyting.is_regular_top Heyting.isRegular_top
 
 theorem IsRegular.inf (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⊓ b) := by
@@ -114,16 +114,16 @@ namespace Regular
 @[coe] def val : Regular α → α :=
   Subtype.val
 
-theorem prop : ∀ a : Regular α, IsRegular a.val := Subtype.prop
+lemma prop : ∀ a : Regular α, IsRegular a.val := Subtype.prop
 
 instance : Coe (Regular α) α := ⟨Regular.val⟩
 
-theorem coe_injective : Injective ((↑) : Regular α → α) :=
+lemma coe_injective : Injective ((↑) : Regular α → α) :=
   Subtype.coe_injective
 #align heyting.regular.coe_injective Heyting.Regular.coe_injective
 
 @[simp]
-theorem coe_inj {a b : Regular α} : (a : α) = b ↔ a = b :=
+lemma coe_inj {a b : Regular α} : (a : α) = b ↔ a = b :=
   Subtype.coe_inj
 #align heyting.regular.coe_inj Heyting.Regular.coe_inj
 
@@ -143,12 +143,12 @@ instance hasCompl : HasCompl (Regular α) :=
   ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
 
 @[simp, norm_cast]
-theorem coe_top : ((⊤ : Regular α) : α) = ⊤ :=
+lemma coe_top : ((⊤ : Regular α) : α) = ⊤ :=
   rfl
 #align heyting.regular.coe_top Heyting.Regular.coe_top
 
 @[simp, norm_cast]
-theorem coe_bot : ((⊥ : Regular α) : α) = ⊥ :=
+lemma coe_bot : ((⊥ : Regular α) : α) = ⊥ :=
   rfl
 #align heyting.regular.coe_bot Heyting.Regular.coe_bot
 
@@ -177,12 +177,12 @@ instance boundedOrder : BoundedOrder (Regular α) :=
   BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
 
 @[simp, norm_cast]
-theorem coe_le_coe {a b : Regular α} : (a : α) ≤ b ↔ a ≤ b :=
+lemma coe_le_coe {a b : Regular α} : (a : α) ≤ b ↔ a ≤ b :=
   Iff.rfl
 #align heyting.regular.coe_le_coe Heyting.Regular.coe_le_coe
 
 @[simp, norm_cast]
-theorem coe_lt_coe {a b : Regular α} : (a : α) < b ↔ a < b :=
+lemma coe_lt_coe {a b : Regular α} : (a : α) < b ↔ a < b :=
   Iff.rfl
 #align heyting.regular.coe_lt_coe Heyting.Regular.coe_lt_coe
 
@@ -253,7 +253,7 @@ end HeytingAlgebra
 
 variable [BooleanAlgebra α]
 
-theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
+lemma isRegular_of_boolean : ∀ a : α, IsRegular a :=
   compl_compl
 #align heyting.is_regular_of_boolean Heyting.isRegular_of_boolean
 

@@ -88,27 +88,27 @@ theorem AddMonoid.End.nat_cast_def (n : ℕ) :
   rfl
 #align add_monoid.End.nat_cast_def AddMonoid.End.nat_cast_def
 
-theorem add_smul : (r + s) • x = r • x + s • x :=
+lemma add_smul : (r + s) • x = r • x + s • x :=
   Module.add_smul r s x
 #align add_smul add_smul
 
-theorem Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x = x := by
+lemma Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x = x := by
   rw [← add_smul, h, one_smul]
 #align convex.combo_self Convex.combo_self
 
 variable (R)
 
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
-theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
+lemma two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 #align two_smul two_smul
 
 set_option linter.deprecated false in
-@[deprecated] theorem two_smul' : (2 : R) • x = bit0 x :=
+@[deprecated] lemma two_smul' : (2 : R) • x = bit0 x :=
   two_smul R x
 #align two_smul' two_smul'
 
 @[simp]
-theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
+lemma invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
     (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
 #align inv_of_two_smul_add_inv_of_two_smul invOf_two_smul_add_invOf_two_smul
@@ -200,7 +200,7 @@ theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
 #align module.eq_zero_of_zero_eq_one Module.eq_zero_of_zero_eq_one
 
 @[simp]
-theorem smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} :
+lemma smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} :
     r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel'_right, one_smul]
 #align smul_add_one_sub_smul smul_add_one_sub_smul
 
@@ -253,7 +253,7 @@ def Module.ofCore (H : Module.Core R M) : Module R M :=
     smul_zero := fun r => (AddMonoidHom.mk' ((· • ·) r) (H.smul_add r)).map_zero }
 #align module.of_core Module.ofCore
 
-theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b = 1) :
+lemma Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b = 1) :
     a • x + b • y = b • (y - x) + x :=
   calc
     a • x + b • y = b • y - b • x + (a • x + b • x) := by abel
@@ -264,7 +264,7 @@ end AddCommGroup
 
 -- We'll later use this to show `Module ℕ M` and `Module ℤ M` are subsingletons.
 /-- A variant of `Module.ext` that's convenient for term-mode. -/
-theorem Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] (P Q : Module R M)
+lemma Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] (P Q : Module R M)
     (w : ∀ (r : R) (m : M), (haveI := P; r • m) = (haveI := Q; r • m)) :
     P = Q := by
   ext
@@ -276,13 +276,13 @@ section Module
 variable [Ring R] [AddCommGroup M] [Module R M] (r s : R) (x y : M)
 
 @[simp]
-theorem neg_smul : -r • x = -(r • x) :=
+lemma neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
 #align neg_smul neg_smul
 
 -- Porting note: simp can prove this
 --@[simp]
-theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
+lemma neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 #align neg_smul_neg neg_smul_neg
 
 @[simp]
@@ -370,7 +370,7 @@ instance RingHom.applyDistribMulAction [Semiring R] : DistribMulAction (R →+* 
 #align ring_hom.apply_distrib_mul_action RingHom.applyDistribMulAction
 
 @[simp]
-protected theorem RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • a = f a :=
+protected lemma RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • a = f a :=
   rfl
 #align ring_hom.smul_def RingHom.smul_def
 
@@ -451,18 +451,18 @@ def AddCommGroup.intModule.unique : Unique (Module ℤ M) where
 
 end AddCommGroup
 
-theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
+lemma map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
     (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂] (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [← zsmul_eq_smul_cast, map_zsmul]
 #align map_int_cast_smul map_int_cast_smul
 
-theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
+lemma map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_nsmul]
 #align map_nat_cast_smul map_nat_cast_smul
 
-theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
+lemma map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*)
     [DivisionSemiring R] [DivisionSemiring S] [Module R M]
     [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
@@ -480,7 +480,7 @@ theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
   · rw [← inv_smul_smul₀ hS (f _), ← map_nat_cast_smul f R S, smul_inv_smul₀ hR]
 #align map_inv_nat_cast_smul map_inv_nat_cast_smul
 
-theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
+lemma map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
@@ -489,14 +489,14 @@ theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
       map_inv_nat_cast_smul _ R S]
 #align map_inv_int_cast_smul map_inv_int_cast_smul
 
-theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
+lemma map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
     (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M] [Module S M₂] (c : ℚ)
     (x : M) : f ((c : R) • x) = (c : S) • f x := by
   rw [Rat.cast_def, Rat.cast_def, div_eq_mul_inv, div_eq_mul_inv, mul_smul, mul_smul,
     map_int_cast_smul f R S, map_inv_nat_cast_smul f R S]
 #align map_rat_cast_smul map_rat_cast_smul
 
-theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂] [Module ℚ M] [Module ℚ M₂] {F : Type*}
+lemma map_rat_smul [AddCommGroup M] [AddCommGroup M₂] [Module ℚ M] [Module ℚ M₂] {F : Type*}
     [AddMonoidHomClass F M M₂] (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
   map_rat_cast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
@@ -508,7 +508,7 @@ instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Mo
 
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
 agree on inverses of natural numbers in `R` and `S`. -/
-theorem inv_nat_cast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [DivisionSemiring R]
+lemma inv_nat_cast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [DivisionSemiring R]
     [DivisionSemiring S] [Module R E] [Module S E] (n : ℕ) (x : E) :
     (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_nat_cast_smul (AddMonoidHom.id E) R S n x
@@ -516,14 +516,14 @@ theorem inv_nat_cast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [Divisi
 
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on inverses of integer numbers in `R` and `S`. -/
-theorem inv_int_cast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
+lemma inv_int_cast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (n : ℤ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_int_cast_smul (AddMonoidHom.id E) R S n x
 #align inv_int_cast_smul_eq inv_int_cast_smul_eq
 
 /-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
-theorem inv_nat_cast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [DivisionSemiring R]
+lemma inv_nat_cast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [DivisionSemiring R]
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℕ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_nat_cast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
@@ -531,7 +531,7 @@ theorem inv_nat_cast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [Div
 
 /-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
-theorem inv_int_cast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [DivisionRing R]
+lemma inv_int_cast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [DivisionRing R]
     [Monoid α] [Module R E] [DistribMulAction α E] (n : ℤ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
   (map_inv_int_cast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
@@ -539,7 +539,7 @@ theorem inv_int_cast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [Divi
 
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on rational numbers in `R` and `S`. -/
-theorem rat_cast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
+lemma rat_cast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (r : ℚ) (x : E) : (r : R) • x = (r : S) • x :=
   map_rat_cast_smul (AddMonoidHom.id E) R S r x
 #align rat_cast_smul_eq rat_cast_smul_eq
@@ -589,7 +589,7 @@ class NoZeroSMulDivisors (R M : Type*) [Zero R] [Zero M] [SMul R M] : Prop where
 export NoZeroSMulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
 
 /-- Pullback a `NoZeroSMulDivisors` instance along an injective function. -/
-theorem Function.Injective.noZeroSMulDivisors {R M N : Type*} [Zero R] [Zero M] [Zero N]
+lemma Function.Injective.noZeroSMulDivisors {R M N : Type*} [Zero R] [Zero M] [Zero N]
     [SMul R M] [SMul R N] [NoZeroSMulDivisors R N] (f : M → N) (hf : Function.Injective f)
     (h0 : f 0 = 0) (hs : ∀ (c : R) (x : M), f (c • x) = c • f x) : NoZeroSMulDivisors R M :=
   ⟨fun {_ _} h =>
@@ -602,7 +602,7 @@ instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
   ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
 #align no_zero_divisors.to_no_zero_smul_divisors NoZeroDivisors.toNoZeroSMulDivisors
 
-theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
+lemma smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
     (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
   (eq_zero_or_eq_zero_of_smul_eq_zero h).elim hc hx
 #align smul_ne_zero smul_ne_zero
@@ -612,12 +612,12 @@ section SMulWithZero
 variable [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
 
 @[simp]
-theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
+lemma smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
   ⟨eq_zero_or_eq_zero_of_smul_eq_zero, fun h =>
     h.elim (fun h => h.symm ▸ zero_smul R x) fun h => h.symm ▸ smul_zero c⟩
 #align smul_eq_zero smul_eq_zero
 
-theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
+lemma smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne.def, smul_eq_zero, not_or]
 #align smul_ne_zero_iff smul_ne_zero_iff
 
 end SMulWithZero
@@ -633,7 +633,7 @@ variable (R) (M)
 
 --include R
 
-theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
+lemma Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
   ⟨by
     intro c x
     rw [nsmul_eq_smul_cast R, smul_eq_zero]
@@ -642,7 +642,7 @@ theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
 
 -- Porting note: left-hand side never simplifies when using simp on itself
 --@[simp]
-theorem two_nsmul_eq_zero {v : M} : 2 • v = 0 ↔ v = 0 := by
+lemma two_nsmul_eq_zero {v : M} : 2 • v = 0 ↔ v = 0 := by
   haveI := Nat.noZeroSMulDivisors R M
   simp [smul_eq_zero]
 #align two_nsmul_eq_zero two_nsmul_eq_zero
@@ -669,14 +669,14 @@ section SMulInjective
 
 variable (M)
 
-theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
+lemma smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
     Function.Injective ((· • ·) c : M → M) :=
   (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
 #align smul_right_injective smul_right_injective
 
 variable {M}
 
-theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
+lemma smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
     c • x = c • y ↔ x = y :=
   (smul_right_injective M hc).eq_iff
 #align smul_right_inj smul_right_inj
@@ -689,18 +689,18 @@ variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R M)
 --include R
 
-theorem self_eq_neg {v : M} : v = -v ↔ v = 0 := by
+lemma self_eq_neg {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
 #align self_eq_neg self_eq_neg
 
-theorem neg_eq_self {v : M} : -v = v ↔ v = 0 := by rw [eq_comm, self_eq_neg R M]
+lemma neg_eq_self {v : M} : -v = v ↔ v = 0 := by rw [eq_comm, self_eq_neg R M]
 #align neg_eq_self neg_eq_self
 
-theorem self_ne_neg {v : M} : v ≠ -v ↔ v ≠ 0 :=
+lemma self_ne_neg {v : M} : v ≠ -v ↔ v ≠ 0 :=
   (self_eq_neg R M).not
 #align self_ne_neg self_ne_neg
 
-theorem neg_ne_self {v : M} : -v ≠ v ↔ v ≠ 0 :=
+lemma neg_ne_self {v : M} : -v ≠ v ↔ v ≠ 0 :=
   (neg_eq_self R M).not
 #align neg_ne_self neg_ne_self
 
@@ -716,7 +716,7 @@ section SMulInjective
 
 variable (R)
 
-theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
+lemma smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
   fun c d h =>
   sub_eq_zero.mp
     ((smul_eq_zero.mp
@@ -756,13 +756,13 @@ end NoZeroSMulDivisors
 
 -- Porting note: simp can prove this
 --@[simp]
-theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
+lemma Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 #align nat.smul_one_eq_coe Nat.smul_one_eq_coe
 
 -- Porting note: simp can prove this
 --@[simp]
-theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
+lemma Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 

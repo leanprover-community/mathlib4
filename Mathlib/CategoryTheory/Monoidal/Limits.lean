@@ -39,7 +39,7 @@ instance limitFunctorial : Functorial fun F : J ⥤ C => limit F where
 #align category_theory.limits.limit_functorial CategoryTheory.Limits.limitFunctorial
 
 @[simp]
-theorem limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
+lemma limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
     map (fun F : J ⥤ C => limit F) α = Limits.lim.map α :=
   rfl
 #align category_theory.limits.limit_functorial_map CategoryTheory.Limits.limitFunctorial_map
@@ -116,12 +116,12 @@ theorem limLax_obj' (F : J ⥤ C) : limLax.obj F = lim.obj F :=
 #align category_theory.limits.lim_lax_obj' CategoryTheory.Limits.limLax_obj'
 
 @[simp]
-theorem limLax_map {F G : J ⥤ C} (α : F ⟶ G) : limLax.map α = lim.map α :=
+lemma limLax_map {F G : J ⥤ C} (α : F ⟶ G) : limLax.map α = lim.map α :=
   rfl
 #align category_theory.limits.lim_lax_map CategoryTheory.Limits.limLax_map
 
 @[simp]
-theorem limLax_ε :
+lemma limLax_ε :
     (@limLax J _ C _ _ _).ε =
       limit.lift _
         { pt := _

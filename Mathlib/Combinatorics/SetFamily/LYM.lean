@@ -128,25 +128,25 @@ def falling : Finset (Finset α) :=
 
 variable {𝒜 k} {s : Finset α}
 
-theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
+lemma mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
   simp_rw [falling, mem_sup, mem_powersetLen]
   aesop
 #align finset.mem_falling Finset.mem_falling
 
 variable (𝒜 k)
 
-theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
+lemma sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
 #align finset.sized_falling Finset.sized_falling
 
-theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
+lemma slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
   mem_falling.2 <| (mem_slice.1 hs).imp_left fun h => ⟨s, h, Subset.refl _⟩
 #align finset.slice_subset_falling Finset.slice_subset_falling
 
-theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
+lemma falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
   subset_singleton_iff'.2 fun _ ht => card_eq_zero.1 <| sized_falling _ _ ht
 #align finset.falling_zero_subset Finset.falling_zero_subset
 
-theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
+lemma slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
   simp_rw [mem_union, mem_slice, mem_shadow_iff, mem_falling]
   constructor
@@ -167,7 +167,7 @@ variable {𝒜 k}
 
 /-- The shadow of `falling m 𝒜` is disjoint from the `n`-sized elements of `𝒜`, thanks to the
 antichain property. -/
-theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
+lemma IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) (∂ (falling n 𝒜)) :=
   disjoint_right.2 fun s h₁ h₂ => by
     simp_rw [mem_shadow_iff, mem_falling] at h₁
@@ -178,7 +178,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
 #align finset.is_antichain.disjoint_slice_shadow_falling Finset.IsAntichain.disjoint_slice_shadow_falling
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
-theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
+lemma le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     (∑ r in range (k + 1),
         ((𝒜 # (Fintype.card α - r)).card : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
@@ -206,7 +206,7 @@ variable {𝒜 : Finset (Finset α)} {s : Finset α} {k : ℕ}
 
 /-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
 proportion of elements it takes from each layer is less than `1`. -/
-theorem sum_card_slice_div_choose_le_one [Fintype α]
+lemma sum_card_slice_div_choose_le_one [Fintype α]
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     (∑ r in range (Fintype.card α + 1), ((𝒜 # r).card : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
   classical
@@ -226,7 +226,7 @@ end LYM
 
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
-theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
+lemma IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     𝒜.card ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   classical

@@ -70,15 +70,15 @@ def conductor (x : S) : Ideal S where
 
 variable {R} {x : S}
 
-theorem conductor_eq_of_eq {y : S} (h : (R<x> : Set S) = R<y>) : conductor R x = conductor R y :=
+lemma conductor_eq_of_eq {y : S} (h : (R<x> : Set S) = R<y>) : conductor R x = conductor R y :=
   Ideal.ext fun _ => forall_congr' fun _ => Set.ext_iff.mp h _
 #align conductor_eq_of_eq conductor_eq_of_eq
 
-theorem conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy => by
+lemma conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy => by
   simpa only [mul_one] using hy 1
 #align conductor_subset_adjoin conductor_subset_adjoin
 
-theorem mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R<x> :=
+lemma mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R<x> :=
   ⟨fun h => h, fun h => h⟩
 #align mem_conductor_iff mem_conductor_iff
 
@@ -94,7 +94,7 @@ variable {I : Ideal R}
 
 /-- This technical lemma tell us that if `C` is the conductor of `R<x>` and `I` is an ideal of `R`
   then `p * (I * S) ⊆ I * R<x>` for any `p` in `C ∩ R` -/
-theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
+lemma prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     (hp : p ∈ Ideal.comap (algebraMap R S) (conductor R x)) (hz' : z ∈ I.map (algebraMap R S)) :
     algebraMap R S p * z ∈ algebraMap R<x> S '' ↑(I.map (algebraMap R R<x>)) := by
   rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_total] at hz'

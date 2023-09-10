@@ -29,7 +29,7 @@ def mulAntidiagonal (s t : Set α) (a : α) : Set (α × α) :=
 #align set.add_antidiagonal Set.addAntidiagonal
 
 @[to_additive (attr := simp)]
-theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a :=
+lemma mem_mulAntidiagonal : x ∈ mulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a :=
   Iff.rfl
 #align set.mem_mul_antidiagonal Set.mem_mulAntidiagonal
 #align set.mem_add_antidiagonal Set.mem_addAntidiagonal
@@ -50,14 +50,14 @@ end Mul
 
 -- Porting note: Removed simp attribute, simpnf linter can simplify lhs. Added aux version below
 @[to_additive]
-theorem swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
+lemma swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 #align set.swap_mem_mul_antidiagonal Set.swap_mem_mulAntidiagonal
 #align set.swap_mem_add_antidiagonal Set.swap_mem_addAntidiagonal
 
 @[to_additive (attr := simp)]
-theorem swap_mem_mulAntidiagonal_aux [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
+lemma swap_mem_mulAntidiagonal_aux [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
      x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
       ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
@@ -71,7 +71,7 @@ variable [CancelCommMonoid α] {s t : Set α} {a : α} {x y : mulAntidiagonal s 
 
 -- Porting note: to_additive cannot translate the "Mul" in "MulAntidiagonal" by itself here
 @[to_additive Set.AddAntidiagonal.fst_eq_fst_iff_snd_eq_snd]
-theorem fst_eq_fst_iff_snd_eq_snd : (x : α × α).1 = (y : α × α).1 ↔ (x : α × α).2 = (y : α × α).2 :=
+lemma fst_eq_fst_iff_snd_eq_snd : (x : α × α).1 = (y : α × α).1 ↔ (x : α × α).2 = (y : α × α).2 :=
   ⟨fun h =>
     mul_left_cancel
       (y.2.2.2.trans <| by
@@ -133,7 +133,7 @@ theorem finite_of_isPwo (hs : s.IsPwo) (ht : t.IsPwo) (a) : (mulAntidiagonal s t
 end OrderedCancelCommMonoid
 
 @[to_additive Set.AddAntidiagonal.finite_of_isWf]
-theorem finite_of_isWf [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWf) (ht : t.IsWf)
+lemma finite_of_isWf [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWf) (ht : t.IsWf)
     (a) : (mulAntidiagonal s t a).Finite :=
   finite_of_isPwo hs.isPwo ht.isPwo a
 #align set.mul_antidiagonal.finite_of_is_wf Set.MulAntidiagonal.finite_of_isWf

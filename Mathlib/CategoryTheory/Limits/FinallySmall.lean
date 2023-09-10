@@ -35,7 +35,7 @@ class FinallySmall : Prop where
   final_smallCategory : ∃ (S : Type w) (_ : SmallCategory S) (F : S ⥤ J), Final F
 
 /-- Constructor for `FinallySmall C` from an explicit small category witness. -/
-theorem FinallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCategory S]
+lemma FinallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCategory S]
     (F : S ⥤ J) [Final F] : FinallySmall.{w} J :=
   ⟨S, _, F, inferInstance⟩
 
@@ -56,7 +56,7 @@ instance final_fromFinalModel [FinallySmall.{w} J] : Final (fromFinalModel J) :=
   Classical.choose_spec (Classical.choose_spec (Classical.choose_spec
     (@FinallySmall.final_smallCategory J _ _)))
 
-theorem finallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : FinallySmall.{w} J :=
+lemma finallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : FinallySmall.{w} J :=
   FinallySmall.mk' (equivSmallModel.{w} J).inverse
 
 end FinallySmall
@@ -71,7 +71,7 @@ class InitiallySmall : Prop where
   initial_smallCategory : ∃ (S : Type w) (_ : SmallCategory S) (F : S ⥤ J), Initial F
 
 /-- Constructor for `InitialSmall C` from an explicit small category witness. -/
-theorem InitiallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCategory S]
+lemma InitiallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCategory S]
     (F : S ⥤ J) [Initial F] : InitiallySmall.{w} J :=
   ⟨S, _, F, inferInstance⟩
 
@@ -92,7 +92,7 @@ instance initial_fromInitialModel [InitiallySmall.{w} J] : Initial (fromInitialM
   Classical.choose_spec (Classical.choose_spec (Classical.choose_spec
     (@InitiallySmall.initial_smallCategory J _ _)))
 
-theorem initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallySmall.{w} J :=
+lemma initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallySmall.{w} J :=
   InitiallySmall.mk' (equivSmallModel.{w} J).inverse
 
 end InitiallySmall

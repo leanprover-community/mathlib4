@@ -142,7 +142,7 @@ instance : SMul α (UpperSet α) :=
   ⟨fun a s ↦ ⟨(· • ·) a '' s, s.2.smul⟩⟩
 
 @[to_additive (attr := simp,norm_cast)]
-theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
+lemma coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
   rfl
 #align upper_set.coe_one UpperSet.coe_one
 #align upper_set.coe_zero UpperSet.coe_zero
@@ -160,7 +160,7 @@ theorem coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
 #align upper_set.coe_sub UpperSet.coe_sub
 
 @[to_additive (attr := simp)]
-theorem Ici_one : Ici (1 : α) = 1 :=
+lemma Ici_one : Ici (1 : α) = 1 :=
   rfl
 #align upper_set.Ici_one UpperSet.Ici_one
 #align upper_set.Ici_zero UpperSet.Ici_zero
@@ -223,7 +223,7 @@ theorem coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
 #align lower_set.coe_sub LowerSet.coe_sub
 
 @[to_additive (attr := simp)]
-theorem Iic_one : Iic (1 : α) = 1 :=
+lemma Iic_one : Iic (1 : α) = 1 :=
   rfl
 #align lower_set.Iic_one LowerSet.Iic_one
 #align lower_set.Iic_zero LowerSet.Iic_zero
@@ -258,31 +258,31 @@ end LowerSet
 variable (a s t)
 
 @[to_additive (attr := simp)]
-theorem upperClosure_one : upperClosure (1 : Set α) = 1 :=
+lemma upperClosure_one : upperClosure (1 : Set α) = 1 :=
   upperClosure_singleton _
 #align upper_closure_one upperClosure_one
 #align upper_closure_zero upperClosure_zero
 
 @[to_additive (attr := simp)]
-theorem lowerClosure_one : lowerClosure (1 : Set α) = 1 :=
+lemma lowerClosure_one : lowerClosure (1 : Set α) = 1 :=
   lowerClosure_singleton _
 #align lower_closure_one lowerClosure_one
 #align lower_closure_zero lowerClosure_zero
 
 @[to_additive (attr := simp)]
-theorem upperClosure_smul : upperClosure (a • s) = a • upperClosure s :=
+lemma upperClosure_smul : upperClosure (a • s) = a • upperClosure s :=
   upperClosure_image <| OrderIso.mulLeft a
 #align upper_closure_smul upperClosure_smul
 #align upper_closure_vadd upperClosure_vadd
 
 @[to_additive (attr := simp)]
-theorem lowerClosure_smul : lowerClosure (a • s) = a • lowerClosure s :=
+lemma lowerClosure_smul : lowerClosure (a • s) = a • lowerClosure s :=
   lowerClosure_image <| OrderIso.mulLeft a
 #align lower_closure_smul lowerClosure_smul
 #align lower_closure_vadd lowerClosure_vadd
 
 @[to_additive]
-theorem mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
+lemma mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
   simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, upperClosure_iUnion, upperClosure_smul,
     UpperSet.coe_iInf₂]
   rfl
@@ -290,7 +290,7 @@ theorem mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
 #align add_upper_closure add_upperClosure
 
 @[to_additive]
-theorem mul_lowerClosure : s * lowerClosure t = lowerClosure (s * t) := by
+lemma mul_lowerClosure : s * lowerClosure t = lowerClosure (s * t) := by
   simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, lowerClosure_iUnion, lowerClosure_smul,
     LowerSet.coe_iSup₂]
   rfl
@@ -298,28 +298,28 @@ theorem mul_lowerClosure : s * lowerClosure t = lowerClosure (s * t) := by
 #align add_lower_closure add_lowerClosure
 
 @[to_additive]
-theorem upperClosure_mul : ↑(upperClosure s) * t = upperClosure (s * t) := by
+lemma upperClosure_mul : ↑(upperClosure s) * t = upperClosure (s * t) := by
   simp_rw [mul_comm _ t]
   exact mul_upperClosure _ _
 #align upper_closure_mul upperClosure_mul
 #align upper_closure_add upperClosure_add
 
 @[to_additive]
-theorem lowerClosure_mul : ↑(lowerClosure s) * t = lowerClosure (s * t) := by
+lemma lowerClosure_mul : ↑(lowerClosure s) * t = lowerClosure (s * t) := by
   simp_rw [mul_comm _ t]
   exact mul_lowerClosure _ _
 #align lower_closure_mul lowerClosure_mul
 #align lower_closure_add lowerClosure_add
 
 @[to_additive (attr := simp)]
-theorem upperClosure_mul_distrib : upperClosure (s * t) = upperClosure s * upperClosure t :=
+lemma upperClosure_mul_distrib : upperClosure (s * t) = upperClosure s * upperClosure t :=
   SetLike.coe_injective <| by
     rw [UpperSet.coe_mul, mul_upperClosure, upperClosure_mul, UpperSet.upperClosure]
 #align upper_closure_mul_distrib upperClosure_mul_distrib
 #align upper_closure_add_distrib upperClosure_add_distrib
 
 @[to_additive (attr := simp)]
-theorem lowerClosure_mul_distrib : lowerClosure (s * t) = lowerClosure s * lowerClosure t :=
+lemma lowerClosure_mul_distrib : lowerClosure (s * t) = lowerClosure s * lowerClosure t :=
   SetLike.coe_injective <| by
     rw [LowerSet.coe_mul, mul_lowerClosure, lowerClosure_mul, LowerSet.lowerClosure]
 #align lower_closure_mul_distrib lowerClosure_mul_distrib

@@ -143,7 +143,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
 #align category_theory.limits.inhabited_cone CategoryTheory.Limits.inhabitedCone
 
 @[reassoc (attr := simp)]
-theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
+lemma Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     c.π.app j ≫ F.map f = c.π.app j' := by
   rw [← c.π.naturality f]
   apply id_comp
@@ -181,7 +181,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
 #align category_theory.limits.inhabited_cocone CategoryTheory.Limits.inhabitedCocone
 
 @[reassoc] -- @[simp] -- Porting note: simp can prove this
-theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
+lemma Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
   apply comp_id
@@ -304,7 +304,7 @@ instance Cone.category : Category (Cone F) where
 -- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
 -- morphism, rather than the underlying structure.
 @[ext]
-theorem ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+lemma ConeMorphism.ext {c c' : Cone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
   cases f
   cases g
   congr
@@ -333,7 +333,7 @@ def eta (c : Cone F) : c ≅ ⟨c.pt, c.π⟩ :=
 /-- Given a cone morphism whose object part is an isomorphism, produce an
 isomorphism of cones.
 -/
-theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIso f.Hom] : IsIso f :=
+lemma cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIso f.Hom] : IsIso f :=
   ⟨⟨{   Hom := inv f.Hom
         w := fun j => (asIso f.Hom).inv_comp_eq.2 (f.w j).symm }, by aesop_cat⟩⟩
 #align category_theory.limits.cones.cone_iso_of_hom_iso CategoryTheory.Limits.Cones.cone_iso_of_hom_iso
@@ -503,7 +503,7 @@ instance Cocone.category : Category (Cocone F) where
 -- the Hom field of a category, we need to write the `ext` lemma in terms of the categorical
 -- morphism, rather than the underlying structure.
 @[ext]
-theorem CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
+lemma CoconeMorphism.ext {c c' : Cocone F} (f g : c ⟶ c') (w : f.Hom = g.Hom) : f = g := by
   cases f
   cases g
   congr
@@ -532,7 +532,7 @@ def eta (c : Cocone F) : c ≅ ⟨c.pt, c.ι⟩ :=
 /-- Given a cocone morphism whose object part is an isomorphism, produce an
 isomorphism of cocones.
 -/
-theorem cocone_iso_of_hom_iso {K : J ⥤ C} {c d : Cocone K} (f : c ⟶ d) [i : IsIso f.Hom] :
+lemma cocone_iso_of_hom_iso {K : J ⥤ C} {c d : Cocone K} (f : c ⟶ d) [i : IsIso f.Hom] :
     IsIso f :=
   ⟨⟨{ Hom := inv f.Hom
       w := fun j => (asIso f.Hom).comp_inv_eq.2 (f.w j).symm }, by aesop_cat⟩⟩

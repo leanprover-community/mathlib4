@@ -82,7 +82,7 @@ variable (R)
 /-- One characterization of a friendship graph is that there is exactly one walk of length 2
   between distinct vertices. These walks are counted in off-diagonal entries of the square of
   the adjacency matrix, so for a friendship graph, those entries are all 1. -/
-theorem adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
+lemma adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
     (G.adjMatrix R ^ 2 : Matrix V V R) v w = 1 := by
   rw [sq, ← Nat.cast_one, ← hG hvw]
   simp [commonNeighbors, neighborFinset_eq_filter, Finset.filter_filter, and_comm,
@@ -91,7 +91,7 @@ theorem adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
 
 /-- This calculation amounts to counting the number of length 3 walks between nonadjacent vertices.
   We use it to show that nonadjacent vertices have equal degrees. -/
-theorem adjMatrix_pow_three_of_not_adj {v w : V} (non_adj : ¬G.Adj v w) :
+lemma adjMatrix_pow_three_of_not_adj {v w : V} (non_adj : ¬G.Adj v w) :
     (G.adjMatrix R ^ 3 : Matrix V V R) v w = degree G v := by
   rw [pow_succ, adjMatrix_mul_apply, degree, card_eq_sum_ones, Nat.cast_sum]
   apply sum_congr rfl
@@ -109,7 +109,7 @@ variable {R}
   the degrees are equal if `((G.adjMatrix R) ^ 3) v w = ((G.adjMatrix R) ^ 3) w v`
 
   This is true as the adjacency matrix is symmetric. -/
-theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G w := by
+lemma degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G w := by
   rw [← Nat.cast_id (G.degree v), ← Nat.cast_id (G.degree w),
     ← adjMatrix_pow_three_of_not_adj ℕ hG hvw,
     ← adjMatrix_pow_three_of_not_adj ℕ hG fun h => hvw (G.symm h)]
@@ -129,7 +129,7 @@ theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
   · rw [adjMatrix_sq_of_ne R hG h, of_apply, if_neg h]
 #align theorems_100.friendship.adj_matrix_sq_of_regular Theorems100.Friendship.adjMatrix_sq_of_regular
 
-theorem adjMatrix_sq_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
+lemma adjMatrix_sq_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) : G.adjMatrix (ZMod p) ^ 2 = of fun _ _ => 1 := by
   simp [adjMatrix_sq_of_regular hG hd, dmod]
 #align theorems_100.friendship.adj_matrix_sq_mod_p_of_regular Theorems100.Friendship.adjMatrix_sq_mod_p_of_regular
@@ -192,7 +192,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
 
 /-- The size of a `d`-regular friendship graph is `1 mod (d-1)`, and thus `1 mod p` for a
   factor `p ∣ d-1`. -/
-theorem card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegularOfDegree d) :
+lemma card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegularOfDegree d) :
     (Fintype.card V : ZMod p) = 1 := by
   have hpos : 0 < Fintype.card V := Fintype.card_pos_iff.mpr inferInstance
   rw [← Nat.succ_pred_eq_of_pos hpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
@@ -210,7 +210,7 @@ theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     of_apply]
 #align theorems_100.friendship.adj_matrix_sq_mul_const_one_of_regular Theorems100.Friendship.adjMatrix_sq_mul_const_one_of_regular
 
-theorem adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
+lemma adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) :
     G.adjMatrix (ZMod p) * of (fun _ _ => 1) = of (fun _ _ => 1) := by
   rw [adjMatrix_sq_mul_const_one_of_regular hd, dmod]
@@ -218,7 +218,7 @@ theorem adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) 
 
 /-- Modulo a factor of `d-1`, the square and all higher powers of the adjacency matrix
   of a `d`-regular friendship graph reduce to the matrix whose entries are all 1. -/
-theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
+lemma adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
     (hd : G.IsRegularOfDegree d) {k : ℕ} (hk : 2 ≤ k) :
     G.adjMatrix (ZMod p) ^ k = of (fun _ _ => 1) := by
   match k with
@@ -328,7 +328,7 @@ end Friendship
   and now we do casework on `d`.
   If the degree is at most 2, we observe by casework that it has a politician anyway.
   If the degree is at least 3, the graph cannot exist. -/
-theorem friendship_theorem [Nonempty V] : ExistsPolitician G := by
+lemma friendship_theorem [Nonempty V] : ExistsPolitician G := by
   by_contra npG
   rcases hG.isRegularOf_not_existsPolitician npG with ⟨d, dreg⟩
   cases' lt_or_le d 3 with dle2 dge3

@@ -41,11 +41,11 @@ section
 
 variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
-theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
+lemma Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
 #align measure_theory.mem_ℒp.integrable_sq MeasureTheory.Memℒp.integrable_sq
 
-theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
+lemma memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
   rw [← memℒp_one_iff_integrable]
   convert (memℒp_norm_rpow_iff hf two_ne_zero ENNReal.two_ne_top).symm
@@ -53,7 +53,7 @@ theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasur
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.two_ne_top]
 #align measure_theory.mem_ℒp_two_iff_integrable_sq_norm MeasureTheory.memℒp_two_iff_integrable_sq_norm
 
-theorem memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
+lemma memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
   convert memℒp_two_iff_integrable_sq_norm hf using 3
   simp
@@ -75,7 +75,7 @@ theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Mem�
     (eventually_of_forall fun _ => norm_inner_le_norm _ _)
 #align measure_theory.mem_ℒp.const_inner MeasureTheory.Memℒp.const_inner
 
-theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
+lemma Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
   hf.of_le_mul (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
     (eventually_of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
 #align measure_theory.mem_ℒp.inner_const MeasureTheory.Memℒp.inner_const
@@ -92,7 +92,7 @@ theorem Integrable.inner_const (hf : Integrable f μ) (c : E) : Integrable (fun 
 
 variable [CompleteSpace E] [NormedSpace ℝ E]
 
-theorem _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
+lemma _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
     ∫ x, ⟪c, f x⟫ ∂μ = ⟪c, ∫ x, f x ∂μ⟫ :=
   ((innerSL 𝕜 c).restrictScalars ℝ).integral_comp_comm hf
 #align integral_inner integral_inner
@@ -260,7 +260,7 @@ theorem inner_indicatorConstLp_eq_set_integral_inner (f : Lp E 2 μ) (hs : Measu
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/
-theorem inner_indicatorConstLp_eq_inner_set_integral [CompleteSpace E] [NormedSpace ℝ E]
+lemma inner_indicatorConstLp_eq_inner_set_integral [CompleteSpace E] [NormedSpace ℝ E]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) (f : Lp E 2 μ) :
     (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ⟪c, ∫ x in s, f x ∂μ⟫ := by
   rw [← integral_inner (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs),

@@ -34,7 +34,7 @@ namespace Monotone
 /-- If `α` is a linear archimedean succ order and `β` is a linear order, then for any monotone
 function `f` and `m n : α`, the union of intervals `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`,
 is equal to `Set.Ioc (f m) (f n)` -/
-theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+lemma biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
     (hf : Monotone f) (m n : α) : ⋃ i ∈ Ico m n, Ioc (f i) (f (succ i)) = Ioc (f m) (f n) := by
   cases' le_total n m with hnm hmn
   · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), biUnion_empty]
@@ -49,7 +49,7 @@ theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioc (f n) (f (Order.succ n))` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+lemma pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioc (f n) (f (succ n))) :=
   (pairwise_disjoint_on _).2 fun _ _ hmn =>
     disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
@@ -58,7 +58,7 @@ theorem pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → �
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ico (f n) (f (Order.succ n))` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+lemma pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ico (f n) (f (succ n))) :=
   (pairwise_disjoint_on _).2 fun _ _ hmn =>
     disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
@@ -67,28 +67,28 @@ theorem pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → �
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioo (f n) (f (Order.succ n))` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioo_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+lemma pairwise_disjoint_on_Ioo_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioo (f n) (f (succ n))) :=
   hf.pairwise_disjoint_on_Ico_succ.mono fun _ _ h => h.mono Ioo_subset_Ico_self Ioo_subset_Ico_self
 #align monotone.pairwise_disjoint_on_Ioo_succ Monotone.pairwise_disjoint_on_Ioo_succ
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioc (f Order.pred n) (f n)` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioc_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+lemma pairwise_disjoint_on_Ioc_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioc (f (pred n)) (f n)) := by
   simpa only [(· ∘ ·), dual_Ico] using hf.dual.pairwise_disjoint_on_Ico_succ
 #align monotone.pairwise_disjoint_on_Ioc_pred Monotone.pairwise_disjoint_on_Ioc_pred
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ico (f Order.pred n) (f n)` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ico_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+lemma pairwise_disjoint_on_Ico_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ico (f (pred n)) (f n)) := by
   simpa only [(· ∘ ·), dual_Ioc] using hf.dual.pairwise_disjoint_on_Ioc_succ
 #align monotone.pairwise_disjoint_on_Ico_pred Monotone.pairwise_disjoint_on_Ico_pred
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioo (f Order.pred n) (f n)` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioo_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+lemma pairwise_disjoint_on_Ioo_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     Pairwise (Disjoint on fun n => Ioo (f (pred n)) (f n)) := by
   simpa only [(· ∘ ·), dual_Ioo] using hf.dual.pairwise_disjoint_on_Ioo_succ
 #align monotone.pairwise_disjoint_on_Ioo_pred Monotone.pairwise_disjoint_on_Ioo_pred
@@ -99,42 +99,42 @@ namespace Antitone
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ioc (f (Order.succ n)) (f n)` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+lemma pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
     Pairwise (Disjoint on fun n => Ioc (f (succ n)) (f n)) :=
   hf.dual_left.pairwise_disjoint_on_Ioc_pred
 #align antitone.pairwise_disjoint_on_Ioc_succ Antitone.pairwise_disjoint_on_Ioc_succ
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ico (f (Order.succ n)) (f n)` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+lemma pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
     Pairwise (Disjoint on fun n => Ico (f (succ n)) (f n)) :=
   hf.dual_left.pairwise_disjoint_on_Ico_pred
 #align antitone.pairwise_disjoint_on_Ico_succ Antitone.pairwise_disjoint_on_Ico_succ
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ioo (f (Order.succ n)) (f n)` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioo_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+lemma pairwise_disjoint_on_Ioo_succ [SuccOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
     Pairwise (Disjoint on fun n => Ioo (f (succ n)) (f n)) :=
   hf.dual_left.pairwise_disjoint_on_Ioo_pred
 #align antitone.pairwise_disjoint_on_Ioo_succ Antitone.pairwise_disjoint_on_Ioo_succ
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ioc (f n) (f (Order.pred n))` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioc_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+lemma pairwise_disjoint_on_Ioc_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
     Pairwise (Disjoint on fun n => Ioc (f n) (f (pred n))) :=
   hf.dual_left.pairwise_disjoint_on_Ioc_succ
 #align antitone.pairwise_disjoint_on_Ioc_pred Antitone.pairwise_disjoint_on_Ioc_pred
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ico (f n) (f (Order.pred n))` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ico_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+lemma pairwise_disjoint_on_Ico_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
     Pairwise (Disjoint on fun n => Ico (f n) (f (pred n))) :=
   hf.dual_left.pairwise_disjoint_on_Ico_succ
 #align antitone.pairwise_disjoint_on_Ico_pred Antitone.pairwise_disjoint_on_Ico_pred
 
 /-- If `α` is a linear pred order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ioo (f n) (f (Order.pred n))` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_Ioo_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+lemma pairwise_disjoint_on_Ioo_pred [PredOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
     Pairwise (Disjoint on fun n => Ioo (f n) (f (pred n))) :=
   hf.dual_left.pairwise_disjoint_on_Ioo_succ
 #align antitone.pairwise_disjoint_on_Ioo_pred Antitone.pairwise_disjoint_on_Ioo_pred

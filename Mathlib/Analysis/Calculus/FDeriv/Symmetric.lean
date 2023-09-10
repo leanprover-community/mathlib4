@@ -65,7 +65,7 @@ bilinear estimate for `f (x + hv + hw) - f (x + hv)` in terms of `f' w` and of `
 `o(h^2)`.
 
 This is a technical statement used to show that the second derivative is symmetric. -/
-theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
+lemma Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     (hw : x + v + w ∈ interior s) :
     (fun h : ℝ => f (x + h • v + h • w)
         - f (x + h • v) - h • f' x w - h ^ 2 • f'' v w - (h ^ 2 / 2) • f'' w w) =o[𝓝[>] 0]
@@ -176,7 +176,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
 along the vertices of a quadrilateral with sides `h v` and `h w` based at `x`.
 In a setting where `f` is not guaranteed to be continuous at `f`, we can still
 get this if we use a quadrilateral based at `h v + h w`. -/
-theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) • v ∈ interior s)
+lemma Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) • v ∈ interior s)
     (h4w : x + (4 : ℝ) • w ∈ interior s) :
     (fun h : ℝ => f (x + h • (2 • v + 2 • w)) + f (x + h • (v + w))
         - f (x + h • (2 • v + w)) - f (x + h • (v + 2 • w)) - h ^ 2 • f'' v w) =o[𝓝[>] 0]
@@ -230,7 +230,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one
 has `f'' v w = f'' w v`. Superseded by `Convex.second_derivative_within_at_symmetric`, which
 removes the assumption that `v` and `w` point inside `s`. -/
-theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
+lemma Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) :
     f'' w v = f'' v w := by
   have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 := by
@@ -255,7 +255,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
 
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
-theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Convex ℝ s)
+lemma Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Convex ℝ s)
     (hne : (interior s).Nonempty) {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
     (hx : HasFDerivWithinAt f' f'' (interior s) x) (v w : E) : f'' v w = f'' w v := by
@@ -305,7 +305,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
 
 /-- If a function is differentiable around `x`, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
-theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E →L[ℝ] F}
+lemma second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E →L[ℝ] F}
     {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x)
     (v w : E) : f'' v w = f'' w v := by
   rcases Metric.mem_nhds_iff.1 hf with ⟨ε, εpos, hε⟩
@@ -318,7 +318,7 @@ theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E �
 
 /-- If a function is differentiable, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
-theorem second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
+lemma second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.eventually_of_forall hf) hx v w
 #align second_derivative_symmetric second_derivative_symmetric

@@ -112,7 +112,7 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
 add_decl_doc AddMagmaCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
-theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
+lemma ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Magma.of_hom_apply MagmaCat.ofHom_apply
 #align AddMagma.of_hom_apply AddMagmaCat.ofHom_apply
@@ -198,7 +198,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 add_decl_doc AddSemigroupCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
-theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
+lemma ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
     ofHom f x = f x :=
   rfl
 #align Semigroup.of_hom_apply SemigroupCat.ofHom_apply

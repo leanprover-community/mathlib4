@@ -87,7 +87,7 @@ variable {m : MeasurableSpace α} [MeasurableSpace M] [SMul M α] [MeasurableSMu
   (μ : Measure α) [SMulInvariantMeasure M α μ]
 
 @[to_additive (attr := simp)]
-theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
+lemma measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
   { measurable := measurable_const_smul c
     map_eq := by
       ext1 s hs
@@ -97,7 +97,7 @@ theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
 #align measure_theory.measure_preserving_vadd MeasureTheory.measurePreserving_vadd
 
 @[to_additive (attr := simp)]
-theorem map_smul : map (c • ·) μ = μ :=
+lemma map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 #align measure_theory.map_smul MeasureTheory.map_smul
 #align measure_theory.map_vadd MeasureTheory.map_vadd
@@ -111,7 +111,7 @@ variable {M : Type uM} {N : Type uN}  {α : Type uα} {β : Type uβ}
   [MeasurableSpace M] [MeasurableSpace N] [MeasurableSpace α] [MeasurableSpace β]
 
 @[to_additive]
-theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
+lemma smulInvariantMeasure_map [SMul M α] [SMul M β]
     [MeasurableSMul M β]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (f : α → β)
     (hsmul : ∀ (m : M) a, f (m • a) = m • f a) (hf : Measurable f) :
@@ -153,7 +153,7 @@ variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpac
 
 - 6: for any `c : G`, scalar multiplication by `c` is a measure preserving map. -/
 @[to_additive]
-theorem smulInvariantMeasure_tfae :
+lemma smulInvariantMeasure_tfae :
     List.TFAE
       [SMulInvariantMeasure G α μ,
         ∀ (c : G) (s), MeasurableSet s → μ ((c • ·) ⁻¹' s) = μ s,
@@ -220,7 +220,7 @@ theorem measure_smul (s : Set α) : μ (c • s) = μ s :=
 variable {μ}
 
 @[to_additive]
-theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
+lemma NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
     NullMeasurableSet (c • s) μ := by
   simpa only [← preimage_smul_inv] using
     hs.preimage (measurePreserving_smul _ _).quasiMeasurePreserving
@@ -228,7 +228,7 @@ theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
 #align measure_theory.null_measurable_set.vadd MeasureTheory.NullMeasurableSet.vadd
 
 @[to_additive]
-theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by rwa [measure_smul]
+lemma measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by rwa [measure_smul]
 #align measure_theory.measure_smul_null MeasureTheory.measure_smul_null
 
 section IsMinimal
@@ -293,7 +293,7 @@ theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsO
 
 end IsMinimal
 
-theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[μ] s)
+lemma smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[μ] s)
     (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hy
   let e : α ≃ α := MulAction.toPermHom G α x
@@ -305,7 +305,7 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
   simpa only [MulAction.toPermHom_apply, MulAction.toPerm_apply, image_smul] using h
 #align measure_theory.smul_ae_eq_self_of_mem_zpowers MeasureTheory.smul_ae_eq_self_of_mem_zpowers
 
-theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α}
+lemma vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α}
     {m : MeasurableSpace α} [AddGroup G] [AddAction G α] [MeasurableSpace G] [MeasurableVAdd G α]
     {μ : Measure α} [VAddInvariantMeasure G α μ] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
@@ -324,7 +324,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
 attribute [to_additive existing vadd_ae_eq_self_of_mem_zmultiples] smul_ae_eq_self_of_mem_zpowers
 
 @[to_additive]
-theorem inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
+lemma inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
   smul_ae_eq_self_of_mem_zpowers hs <| inv_mem (Subgroup.mem_zpowers _)
 
 end MeasureTheory

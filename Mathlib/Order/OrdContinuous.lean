@@ -52,14 +52,14 @@ section Preorder
 
 variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
 
-protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
+protected lemma id : LeftOrdContinuous (id : α → α) := fun s x h => by
   simpa only [image_id] using h
 #align left_ord_continuous.id LeftOrdContinuous.id
 
 variable {α}
 
 -- porting note: not sure what is the correct name for this
-protected theorem order_dual : LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
+protected lemma order_dual : LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
 #align left_ord_continuous.order_dual LeftOrdContinuous.order_dual
 
@@ -78,7 +78,7 @@ theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdCont
 #align left_ord_continuous.comp LeftOrdContinuous.comp
 
 -- PORTING NOTE: how to do this in non-tactic mode?
-protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
+protected lemma iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
     LeftOrdContinuous f^[n] :=
 by induction n with
 | zero => exact LeftOrdContinuous.id α
@@ -164,13 +164,13 @@ section Preorder
 
 variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
 
-protected theorem id : RightOrdContinuous (id : α → α) := fun s x h => by
+protected lemma id : RightOrdContinuous (id : α → α) := fun s x h => by
   simpa only [image_id] using h
 #align right_ord_continuous.id RightOrdContinuous.id
 
 variable {α}
 
-protected theorem orderDual : RightOrdContinuous f → LeftOrdContinuous (toDual ∘ f ∘ ofDual) :=
+protected lemma orderDual : RightOrdContinuous f → LeftOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
 #align right_ord_continuous.order_dual RightOrdContinuous.orderDual
 
@@ -187,7 +187,7 @@ theorem comp (hg : RightOrdContinuous g) (hf : RightOrdContinuous f) : RightOrdC
   hg.orderDual.comp hf.orderDual
 #align right_ord_continuous.comp RightOrdContinuous.comp
 
-protected theorem iterate {f : α → α} (hf : RightOrdContinuous f) (n : ℕ) :
+protected lemma iterate {f : α → α} (hf : RightOrdContinuous f) (n : ℕ) :
     RightOrdContinuous f^[n] :=
   hf.orderDual.iterate n
 #align right_ord_continuous.iterate RightOrdContinuous.iterate
@@ -269,13 +269,13 @@ section Preorder
 
 variable [Preorder α] [Preorder β] (e : α ≃o β) {s : Set α} {x : α}
 
-protected theorem leftOrdContinuous : LeftOrdContinuous e := fun _ _ hx =>
+protected lemma leftOrdContinuous : LeftOrdContinuous e := fun _ _ hx =>
   ⟨Monotone.mem_upperBounds_image (fun _ _ => e.map_rel_iff.2) hx.1, fun _ hy =>
     e.rel_symm_apply.1 <|
       (isLUB_le_iff hx).2 fun _ hx' => e.rel_symm_apply.2 <| hy <| mem_image_of_mem _ hx'⟩
 #align order_iso.left_ord_continuous OrderIso.leftOrdContinuous
 
-protected theorem rightOrdContinuous : RightOrdContinuous e :=
+protected lemma rightOrdContinuous : RightOrdContinuous e :=
   OrderIso.leftOrdContinuous e.dual
 #align order_iso.right_ord_continuous OrderIso.rightOrdContinuous
 

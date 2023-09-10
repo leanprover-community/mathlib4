@@ -26,7 +26,7 @@ def toUnits [Group G] : G ≃* Gˣ where
 #align to_add_units toAddUnits
 
 @[to_additive (attr := simp)]
-theorem coe_toUnits [Group G] (g : G) : (toUnits g : G) = g :=
+lemma coe_toUnits [Group G] (g : G) : (toUnits g : G) = g :=
   rfl
 #align coe_to_units coe_toUnits
 #align coe_to_add_units coe_toAddUnits

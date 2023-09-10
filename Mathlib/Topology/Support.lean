@@ -58,13 +58,13 @@ theorem isClosed_mulTSupport (f : X → α) : IsClosed (mulTSupport f) :=
 #align is_closed_tsupport isClosed_tsupport
 
 @[to_additive]
-theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 := by
+lemma mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 := by
   rw [mulTSupport, closure_empty_iff, mulSupport_eq_empty_iff]
 #align mul_tsupport_eq_empty_iff mulTSupport_eq_empty_iff
 #align tsupport_eq_empty_iff tsupport_eq_empty_iff
 
 @[to_additive]
-theorem image_eq_one_of_nmem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
+lemma image_eq_one_of_nmem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
 #align image_eq_one_of_nmem_mul_tsupport image_eq_one_of_nmem_mulTSupport
 #align image_eq_zero_of_nmem_tsupport image_eq_zero_of_nmem_tsupport
@@ -84,19 +84,19 @@ theorem range_eq_image_mulTSupport_or (f : X → α) :
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
 #align range_eq_image_tsupport_or range_eq_image_tsupport_or
 
-theorem tsupport_mul_subset_left {α : Type*} [MulZeroClass α] {f g : X → α} :
+lemma tsupport_mul_subset_left {α : Type*} [MulZeroClass α] {f g : X → α} :
     (tsupport fun x => f x * g x) ⊆ tsupport f :=
   closure_mono (support_mul_subset_left _ _)
 #align tsupport_mul_subset_left tsupport_mul_subset_left
 
-theorem tsupport_mul_subset_right {α : Type*} [MulZeroClass α] {f g : X → α} :
+lemma tsupport_mul_subset_right {α : Type*} [MulZeroClass α] {f g : X → α} :
     (tsupport fun x => f x * g x) ⊆ tsupport g :=
   closure_mono (support_mul_subset_right _ _)
 #align tsupport_mul_subset_right tsupport_mul_subset_right
 
 end One
 
-theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α] [SMulWithZero M α]
+lemma tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α] [SMulWithZero M α]
     (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport f :=
   closure_mono <| support_smul_subset_left f g
 #align tsupport_smul_subset_left tsupport_smul_subset_left
@@ -110,14 +110,14 @@ variable [One β] [One γ] [One δ]
 variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
 
 @[to_additive]
-theorem not_mem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[𝓝 x] 1 := by
+lemma not_mem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[𝓝 x] 1 := by
   simp_rw [mulTSupport, mem_closure_iff_nhds, not_forall, not_nonempty_iff_eq_empty, exists_prop,
     ← disjoint_iff_inter_eq_empty, disjoint_mulSupport_iff, eventuallyEq_iff_exists_mem]
 #align not_mem_mul_tsupport_iff_eventually_eq not_mem_mulTSupport_iff_eventuallyEq
 #align not_mem_tsupport_iff_eventually_eq not_mem_tsupport_iff_eventuallyEq
 
 @[to_additive]
-theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
+lemma continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (em _).elim (hf x) fun hx =>
     (@continuousAt_const _ _ _ _ _ 1).congr (not_mem_mulTSupport_iff_eventuallyEq.mp hx).symm
@@ -136,13 +136,13 @@ def HasCompactMulSupport (f : α → β) : Prop :=
 #align has_compact_support HasCompactSupport
 
 @[to_additive]
-theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure (mulSupport f)) := by
+lemma hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure (mulSupport f)) := by
   rfl
 #align has_compact_mul_support_def hasCompactMulSupport_def
 #align has_compact_support_def hasCompactSupport_def
 
 @[to_additive]
-theorem exists_compact_iff_hasCompactMulSupport [T2Space α] :
+lemma exists_compact_iff_hasCompactMulSupport [T2Space α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
   simp_rw [← nmem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
     hasCompactMulSupport_def, exists_compact_superset_iff]
@@ -150,14 +150,14 @@ theorem exists_compact_iff_hasCompactMulSupport [T2Space α] :
 #align exists_compact_iff_has_compact_support exists_compact_iff_hasCompactSupport
 
 @[to_additive]
-theorem HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
+lemma HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
     (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro
 #align has_compact_support.intro HasCompactSupport.intro
 
 @[to_additive]
-theorem HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
+lemma HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
     (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
   isCompact_closure_of_subset_compact hK h
 
@@ -168,7 +168,7 @@ theorem HasCompactMulSupport.isCompact (hf : HasCompactMulSupport f) : IsCompact
 #align has_compact_support.is_compact HasCompactSupport.isCompact
 
 @[to_additive]
-theorem hasCompactMulSupport_iff_eventuallyEq :
+lemma hasCompactMulSupport_iff_eventuallyEq :
     HasCompactMulSupport f ↔ f =ᶠ[coclosedCompact α] 1 :=
   ⟨fun h => mem_coclosedCompact.mpr
     ⟨mulTSupport f, isClosed_mulTSupport _, h,
@@ -180,7 +180,7 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 
 @[to_additive]
-theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
+lemma HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
     (hf : Continuous f) : IsCompact (range f) := by
   cases' range_eq_image_mulTSupport_or f with h2 h2 <;> rw [h2]
   exacts [h.image hf, (h.image hf).insert 1]
@@ -188,14 +188,14 @@ theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompa
 #align has_compact_support.is_compact_range HasCompactSupport.isCompact_range
 
 @[to_additive]
-theorem HasCompactMulSupport.mono' {f' : α → γ} (hf : HasCompactMulSupport f)
+lemma HasCompactMulSupport.mono' {f' : α → γ} (hf : HasCompactMulSupport f)
     (hff' : mulSupport f' ⊆ mulTSupport f) : HasCompactMulSupport f' :=
   isCompact_of_isClosed_subset hf isClosed_closure <| closure_minimal hff' isClosed_closure
 #align has_compact_mul_support.mono' HasCompactMulSupport.mono'
 #align has_compact_support.mono' HasCompactSupport.mono'
 
 @[to_additive]
-theorem HasCompactMulSupport.mono {f' : α → γ} (hf : HasCompactMulSupport f)
+lemma HasCompactMulSupport.mono {f' : α → γ} (hf : HasCompactMulSupport f)
     (hff' : mulSupport f' ⊆ mulSupport f) : HasCompactMulSupport f' :=
   hf.mono' <| hff'.trans subset_closure
 #align has_compact_mul_support.mono HasCompactMulSupport.mono
@@ -310,7 +310,7 @@ of open sets, then for any point we can find a neighbourhood on which only finit
 @[to_additive " If a family of functions `f` has locally-finite support, subordinate to a family of
 open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
 are non-zero. "]
-theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
+lemma exists_finset_nhd_mulSupport_subset {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ (is : Finset ι), ∃ n, n ∈ 𝓝 x ∧ (n ⊆ ⋂ i ∈ is, U i) ∧

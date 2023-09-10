@@ -96,7 +96,7 @@ theorem bot_left (X : C) : ((⊥ : MonoOver X) : C) = ⊥_ C :=
 #align category_theory.mono_over.bot_left CategoryTheory.MonoOver.bot_left
 
 @[simp]
-theorem bot_arrow {X : C} : (⊥ : MonoOver X).arrow = initial.to X :=
+lemma bot_arrow {X : C} : (⊥ : MonoOver X).arrow = initial.to X :=
   rfl
 #align category_theory.mono_over.bot_arrow CategoryTheory.MonoOver.bot_arrow
 
@@ -124,7 +124,7 @@ def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
 #align category_theory.mono_over.bot_coe_iso_zero CategoryTheory.MonoOver.botCoeIsoZero
 
 -- porting note: removed @[simp] as the LHS simplifies
-theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
+lemma bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
 #align category_theory.mono_over.bot_arrow_eq_zero CategoryTheory.MonoOver.bot_arrow_eq_zero
 
@@ -230,7 +230,7 @@ theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
   rfl
 #align category_theory.subobject.top_eq_id CategoryTheory.Subobject.top_eq_id
 
-theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Subobject B).arrow := by
+lemma underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Subobject B).arrow := by
   convert underlyingIso_hom_comp_eq_mk (𝟙 B)
   simp only [comp_id]
 #align category_theory.subobject.underlying_iso_top_hom CategoryTheory.Subobject.underlyingIso_top_hom
@@ -241,7 +241,7 @@ instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
 #align category_theory.subobject.top_arrow_is_iso CategoryTheory.Subobject.top_arrow_isIso
 
 @[reassoc (attr := simp)]
-theorem underlyingIso_inv_top_arrow {B : C} :
+lemma underlyingIso_inv_top_arrow {B : C} :
     (underlyingIso _).inv ≫ (⊤ : Subobject B).arrow = 𝟙 B :=
   underlyingIso_arrow _
 #align category_theory.subobject.underlying_iso_inv_top_arrow CategoryTheory.Subobject.underlyingIso_inv_top_arrow
@@ -251,28 +251,28 @@ theorem map_top (f : X ⟶ Y) [Mono f] : (map f).obj ⊤ = Subobject.mk f :=
   Quotient.sound' ⟨MonoOver.mapTop f⟩
 #align category_theory.subobject.map_top CategoryTheory.Subobject.map_top
 
-theorem top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
+lemma top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
   ⟨f, comp_id _⟩
 #align category_theory.subobject.top_factors CategoryTheory.Subobject.top_factors
 
-theorem isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
+lemma isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
   ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h => by
     rw [← ofMkLEMk_comp h.le, Category.comp_id]
     exact IsIso.of_iso (isoOfMkEqMk _ _ h)⟩
 #align category_theory.subobject.is_iso_iff_mk_eq_top CategoryTheory.Subobject.isIso_iff_mk_eq_top
 
-theorem isIso_arrow_iff_eq_top {Y : C} (P : Subobject Y) : IsIso P.arrow ↔ P = ⊤ := by
+lemma isIso_arrow_iff_eq_top {Y : C} (P : Subobject Y) : IsIso P.arrow ↔ P = ⊤ := by
   rw [isIso_iff_mk_eq_top, mk_arrow]
 #align category_theory.subobject.is_iso_arrow_iff_eq_top CategoryTheory.Subobject.isIso_arrow_iff_eq_top
 
 instance isIso_top_arrow {Y : C} : IsIso (⊤ : Subobject Y).arrow := by rw [isIso_arrow_iff_eq_top]
 #align category_theory.subobject.is_iso_top_arrow CategoryTheory.Subobject.isIso_top_arrow
 
-theorem mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
+lemma mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
   (isIso_iff_mk_eq_top f).mp inferInstance
 #align category_theory.subobject.mk_eq_top_of_is_iso CategoryTheory.Subobject.mk_eq_top_of_isIso
 
-theorem eq_top_of_isIso_arrow {Y : C} (P : Subobject Y) [IsIso P.arrow] : P = ⊤ :=
+lemma eq_top_of_isIso_arrow {Y : C} (P : Subobject Y) [IsIso P.arrow] : P = ⊤ :=
   (isIso_arrow_iff_eq_top P).mp inferInstance
 #align category_theory.subobject.eq_top_of_is_iso_arrow CategoryTheory.Subobject.eq_top_of_isIso_arrow
 
@@ -284,7 +284,7 @@ theorem pullback_top (f : X ⟶ Y) : (pullback f).obj ⊤ = ⊤ :=
   Quotient.sound' ⟨MonoOver.pullbackTop f⟩
 #align category_theory.subobject.pullback_top CategoryTheory.Subobject.pullback_top
 
-theorem pullback_self {A B : C} (f : A ⟶ B) [Mono f] : (pullback f).obj (mk f) = ⊤ :=
+lemma pullback_self {A B : C} (f : A ⟶ B) [Mono f] : (pullback f).obj (mk f) = ⊤ :=
   Quotient.sound' ⟨MonoOver.pullbackSelf f⟩
 #align category_theory.subobject.pullback_self CategoryTheory.Subobject.pullback_self
 
@@ -303,7 +303,7 @@ instance orderBot {X : C} : OrderBot (Subobject X) where
     exact ⟨MonoOver.botLE f⟩
 #align category_theory.subobject.order_bot CategoryTheory.Subobject.orderBot
 
-theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
+lemma bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
   rfl
 #align category_theory.subobject.bot_eq_initial_to CategoryTheory.Subobject.bot_eq_initial_to
 
@@ -331,16 +331,16 @@ def botCoeIsoZero {B : C} : ((⊥ : Subobject B) : C) ≅ 0 :=
 
 variable [HasZeroMorphisms C]
 
-theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
+lemma bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
   mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial) (by simp)
 #align category_theory.subobject.bot_eq_zero CategoryTheory.Subobject.bot_eq_zero
 
 @[simp]
-theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
+lemma bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
 #align category_theory.subobject.bot_arrow CategoryTheory.Subobject.bot_arrow
 
-theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Factors f ↔ f = 0 :=
+lemma bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Factors f ↔ f = 0 :=
   ⟨by
     rintro ⟨h, rfl⟩
     simp only [MonoOver.bot_arrow_eq_zero, Functor.id_obj, Functor.const_obj_obj,
@@ -350,7 +350,7 @@ theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Facto
     exact ⟨0, by simp⟩⟩
 #align category_theory.subobject.bot_factors_iff_zero CategoryTheory.Subobject.bot_factors_iff_zero
 
-theorem mk_eq_bot_iff_zero {f : X ⟶ Y} [Mono f] : Subobject.mk f = ⊥ ↔ f = 0 :=
+lemma mk_eq_bot_iff_zero {f : X ⟶ Y} [Mono f] : Subobject.mk f = ⊥ ↔ f = 0 :=
   ⟨fun h => by simpa [h, bot_factors_iff_zero] using mk_factors_self f, fun h =>
     mk_eq_mk_of_comm _ _ ((isoZeroOfMonoEqZero h).trans HasZeroObject.zeroIsoInitial) (by simp [h])⟩
 #align category_theory.subobject.mk_eq_bot_iff_zero CategoryTheory.Subobject.mk_eq_bot_iff_zero
@@ -381,15 +381,15 @@ def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.inf
 #align category_theory.subobject.inf CategoryTheory.Subobject.inf
 
-theorem inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
+lemma inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
   Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
 #align category_theory.subobject.inf_le_left CategoryTheory.Subobject.inf_le_left
 
-theorem inf_le_right {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ g :=
+lemma inf_le_right {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ g :=
   Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
 #align category_theory.subobject.inf_le_right CategoryTheory.Subobject.inf_le_right
 
-theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (inf.obj f).obj g :=
+lemma le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (inf.obj f).obj g :=
   Quotient.inductionOn₃' h f g
     (by
       rintro f g h ⟨k⟩ ⟨l⟩
@@ -402,18 +402,18 @@ instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf_le_right := inf_le_right
   le_inf := le_inf
 
-theorem factors_left_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
+lemma factors_left_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (h : (X ⊓ Y).Factors f) : X.Factors f :=
   factors_of_le _ (inf_le_left _ _) h
 #align category_theory.subobject.factors_left_of_inf_factors CategoryTheory.Subobject.factors_left_of_inf_factors
 
-theorem factors_right_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
+lemma factors_right_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (h : (X ⊓ Y).Factors f) : Y.Factors f :=
   factors_of_le _ (inf_le_right _ _) h
 #align category_theory.subobject.factors_right_of_inf_factors CategoryTheory.Subobject.factors_right_of_inf_factors
 
 @[simp]
-theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
+lemma inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     (X ⊓ Y).Factors f ↔ X.Factors f ∧ Y.Factors f :=
   ⟨fun h => ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
     revert X Y
@@ -422,16 +422,16 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
 #align category_theory.subobject.inf_factors CategoryTheory.Subobject.inf_factors
 
-theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
+lemma inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) X (inf_le_left X Y), by simp⟩
 #align category_theory.subobject.inf_arrow_factors_left CategoryTheory.Subobject.inf_arrow_factors_left
 
-theorem inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y).arrow :=
+lemma inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) Y (inf_le_right X Y), by simp⟩
 #align category_theory.subobject.inf_arrow_factors_right CategoryTheory.Subobject.inf_arrow_factors_right
 
 @[simp]
-theorem finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} (f : A ⟶ B) :
+lemma finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} (f : A ⟶ B) :
     (s.inf P).Factors f ↔ ∀ i ∈ s, (P i).Factors f := by
   classical
   induction' s using Finset.induction_on with _ _ _ ih
@@ -440,7 +440,7 @@ theorem finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
 #align category_theory.subobject.finset_inf_factors CategoryTheory.Subobject.finset_inf_factors
 
 -- `i` is explicit here because often we'd like to defer a proof of `m`
-theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → Subobject B) (i : I)
+lemma finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → Subobject B) (i : I)
     (m : i ∈ s) : (P i).Factors (s.inf P).arrow := by
   classical
   revert i m
@@ -457,19 +457,19 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
       exact ih _ m
 #align category_theory.subobject.finset_inf_arrow_factors CategoryTheory.Subobject.finset_inf_arrow_factors
 
-theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
+lemma inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
     (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
   induction' f₂ using Quotient.inductionOn' with f₂
   rfl
 #align category_theory.subobject.inf_eq_map_pullback' CategoryTheory.Subobject.inf_eq_map_pullback'
 
-theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
+lemma inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
     (Quotient.mk'' f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) :=
   inf_eq_map_pullback' f₁ f₂
 #align category_theory.subobject.inf_eq_map_pullback CategoryTheory.Subobject.inf_eq_map_pullback
 
-theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
+lemma prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
     (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
   apply le_antisymm
   · refine' le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
@@ -477,12 +477,12 @@ theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f�
     exact prod.lift (inf_le_left _ _).hom (inf_le_right _ _).hom
 #align category_theory.subobject.prod_eq_inf CategoryTheory.Subobject.prod_eq_inf
 
-theorem inf_def {B : C} (m m' : Subobject B) : m ⊓ m' = (inf.obj m).obj m' :=
+lemma inf_def {B : C} (m m' : Subobject B) : m ⊓ m' = (inf.obj m).obj m' :=
   rfl
 #align category_theory.subobject.inf_def CategoryTheory.Subobject.inf_def
 
 /-- `⊓` commutes with pullback. -/
-theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
+lemma inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
     (pullback g).obj (f₁ ⊓ f₂) = (pullback g).obj f₁ ⊓ (pullback g).obj f₂ := by
   revert f₁
   apply Quotient.ind'
@@ -494,7 +494,7 @@ theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
 #align category_theory.subobject.inf_pullback CategoryTheory.Subobject.inf_pullback
 
 /-- `⊓` commutes with map. -/
-theorem inf_map {X Y : C} (g : Y ⟶ X) [Mono g] (f₁ f₂) :
+lemma inf_map {X Y : C} (g : Y ⟶ X) [Mono g] (f₁ f₂) :
     (map g).obj (f₁ ⊓ f₂) = (map g).obj f₁ ⊓ (map g).obj f₂ := by
   revert f₁
   apply Quotient.ind'
@@ -522,19 +522,19 @@ instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
   sup_le := fun m n k =>
     Quotient.inductionOn₃' m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
 
-theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : X.Factors f) :
+lemma sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : X.Factors f) :
     (X ⊔ Y).Factors f :=
   factors_of_le f le_sup_left P
 #align category_theory.subobject.sup_factors_of_factors_left CategoryTheory.Subobject.sup_factors_of_factors_left
 
-theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : Y.Factors f) :
+lemma sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : Y.Factors f) :
     (X ⊔ Y).Factors f :=
   factors_of_le f le_sup_right P
 #align category_theory.subobject.sup_factors_of_factors_right CategoryTheory.Subobject.sup_factors_of_factors_right
 
 variable [HasInitial C] [InitialMonoClass C]
 
-theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} {f : A ⟶ B}
+lemma finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} {f : A ⟶ B}
     (h : ∃ i ∈ s, (P i).Factors f) : (s.sup P).Factors f := by
   classical
   revert h
@@ -577,7 +577,7 @@ def wideCospan {A : C} (s : Set (Subobject A)) : WidePullbackShape (equivShrink 
 #align category_theory.subobject.wide_cospan CategoryTheory.Subobject.wideCospan
 
 @[simp]
-theorem wideCospan_map_term {A : C} (s : Set (Subobject A)) (j) :
+lemma wideCospan_map_term {A : C} (s : Set (Subobject A)) (j) :
     (wideCospan s).map (WidePullbackShape.Hom.term j) =
       ((equivShrink (Subobject A)).symm j).arrow :=
   rfl
@@ -598,7 +598,7 @@ def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s
 #align category_theory.subobject.le_Inf_cone CategoryTheory.Subobject.leInfCone
 
 @[simp]
-theorem leInfCone_π_app_none {A : C} (s : Set (Subobject A)) (f : Subobject A)
+lemma leInfCone_π_app_none {A : C} (s : Set (Subobject A)) (f : Subobject A)
     (k : ∀ g ∈ s, f ≤ g) : (leInfCone s f k).π.app none = f.arrow :=
   rfl
 #align category_theory.subobject.le_Inf_cone_π_app_none CategoryTheory.Subobject.leInfCone_π_app_none
@@ -634,7 +634,7 @@ def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (widePullbackι s)
 #align category_theory.subobject.Inf CategoryTheory.Subobject.sInf
 
-theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ f := by
+lemma sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ f := by
   fapply le_of_comm
   · exact (underlyingIso _).hom ≫
       Limits.limit.π (wideCospan s)
@@ -648,7 +648,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     aesop_cat
 #align category_theory.subobject.Inf_le CategoryTheory.Subobject.sInf_le
 
-theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
+lemma le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
   fapply le_of_comm
   · exact Limits.limit.lift _ (leInfCone s f k) ≫ (underlyingIso _).inv
@@ -682,7 +682,7 @@ def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (image.ι (smallCoproductDesc s))
 #align category_theory.subobject.Sup CategoryTheory.Subobject.sup
 
-theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
+lemma le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
   fapply le_of_comm
   · refine' eqToHom _ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
@@ -690,14 +690,14 @@ theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup 
   · simp [sSup, smallCoproductDesc]
 #align category_theory.subobject.le_Sup CategoryTheory.Subobject.le_sSup
 
-theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
+lemma symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=
   ⟨fun h => ⟨e.symm x, h, by simp⟩, by
     rintro ⟨a, m, rfl⟩
     simpa using m⟩
 #align category_theory.subobject.symm_apply_mem_iff_mem_image CategoryTheory.Subobject.symm_apply_mem_iff_mem_image
 
-theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
+lemma sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
   · refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
@@ -739,7 +739,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 open ZeroObject
 
 /-- A nonzero object has nontrivial subobject lattice. -/
-theorem nontrivial_of_not_isZero {X : C} (h : ¬IsZero X) : Nontrivial (Subobject X) :=
+lemma nontrivial_of_not_isZero {X : C} (h : ¬IsZero X) : Nontrivial (Subobject X) :=
   ⟨⟨mk (0 : 0 ⟶ X), mk (𝟙 X), fun w => h (IsZero.of_iso (isZero_zero C) (isoOfMkEqMk _ _ w).symm)⟩⟩
 #align category_theory.subobject.nontrivial_of_not_is_zero CategoryTheory.Subobject.nontrivial_of_not_isZero
 

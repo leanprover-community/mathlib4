@@ -51,7 +51,7 @@ namespace Homeomorph
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ₜ β → α ≃ β)
+lemma toEquiv_injective : Function.Injective (toEquiv : α ≃ₜ β → α ≃ β)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 #align homeomorph.to_equiv_injective Homeomorph.toEquiv_injective
 
@@ -97,7 +97,7 @@ theorem coe_symm_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv.symm = h.symm :=
 #align homeomorph.coe_symm_to_equiv Homeomorph.coe_symm_toEquiv
 
 @[ext]
-theorem ext {h h' : α ≃ₜ β} (H : ∀ x, h x = h' x) : h = h' :=
+lemma ext {h h' : α ≃ₜ β} (H : ∀ x, h x = h' x) : h = h' :=
   FunLike.ext _ _ H
 #align homeomorph.ext Homeomorph.ext
 
@@ -131,7 +131,7 @@ theorem homeomorph_mk_coe_symm (a : Equiv α β) (b c) :
 #align homeomorph.homeomorph_mk_coe_symm Homeomorph.homeomorph_mk_coe_symm
 
 @[simp]
-theorem refl_symm : (Homeomorph.refl α).symm = Homeomorph.refl α :=
+lemma refl_symm : (Homeomorph.refl α).symm = Homeomorph.refl α :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
@@ -253,38 +253,38 @@ noncomputable def ofEmbedding (f : α → β) (hf : Embedding f) : α ≃ₜ Set
   toEquiv := Equiv.ofInjective f hf.inj
 #align homeomorph.of_embedding Homeomorph.ofEmbedding
 
-protected theorem secondCountableTopology [TopologicalSpace.SecondCountableTopology β]
+protected lemma secondCountableTopology [TopologicalSpace.SecondCountableTopology β]
     (h : α ≃ₜ β) : TopologicalSpace.SecondCountableTopology α :=
   h.inducing.secondCountableTopology
 #align homeomorph.second_countable_topology Homeomorph.secondCountableTopology
 
-theorem isCompact_image {s : Set α} (h : α ≃ₜ β) : IsCompact (h '' s) ↔ IsCompact s :=
+lemma isCompact_image {s : Set α} (h : α ≃ₜ β) : IsCompact (h '' s) ↔ IsCompact s :=
   h.embedding.isCompact_iff_isCompact_image.symm
 #align homeomorph.is_compact_image Homeomorph.isCompact_image
 
-theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹' s) ↔ IsCompact s := by
+lemma isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹' s) ↔ IsCompact s := by
   rw [← image_symm]; exact h.symm.isCompact_image
 #align homeomorph.is_compact_preimage Homeomorph.isCompact_preimage
 
 @[simp]
-theorem isPreconnected_image {s : Set α} (h : α ≃ₜ β) :
+lemma isPreconnected_image {s : Set α} (h : α ≃ₜ β) :
     IsPreconnected (h '' s) ↔ IsPreconnected s :=
   ⟨fun hs ↦ by simpa only [image_symm, preimage_image]
     using hs.image _ h.symm.continuous.continuousOn,
     fun hs ↦ hs.image _ h.continuous.continuousOn⟩
 
 @[simp]
-theorem isPreconnected_preimage {s : Set β} (h : α ≃ₜ β) :
+lemma isPreconnected_preimage {s : Set β} (h : α ≃ₜ β) :
     IsPreconnected (h ⁻¹' s) ↔ IsPreconnected s := by
   rw [← image_symm, isPreconnected_image]
 
 @[simp]
-theorem isConnected_image {s : Set α} (h : α ≃ₜ β) :
+lemma isConnected_image {s : Set α} (h : α ≃ₜ β) :
     IsConnected (h '' s) ↔ IsConnected s :=
   nonempty_image_iff.and h.isPreconnected_image
 
 @[simp]
-theorem isConnected_preimage {s : Set β} (h : α ≃ₜ β) :
+lemma isConnected_preimage {s : Set β} (h : α ≃ₜ β) :
     IsConnected (h ⁻¹' s) ↔ IsConnected s := by
   rw [← image_symm, isConnected_image]
 
@@ -300,23 +300,23 @@ theorem map_cocompact (h : α ≃ₜ β) : map h (cocompact α) = cocompact β :
   rw [← h.comap_cocompact, map_comap_of_surjective h.surjective]
 #align homeomorph.map_cocompact Homeomorph.map_cocompact
 
-protected theorem compactSpace [CompactSpace α] (h : α ≃ₜ β) : CompactSpace β where
+protected lemma compactSpace [CompactSpace α] (h : α ≃ₜ β) : CompactSpace β where
   isCompact_univ := h.symm.isCompact_preimage.2 isCompact_univ
 #align homeomorph.compact_space Homeomorph.compactSpace
 
-protected theorem t0Space [T0Space α] (h : α ≃ₜ β) : T0Space β :=
+protected lemma t0Space [T0Space α] (h : α ≃ₜ β) : T0Space β :=
   h.symm.embedding.t0Space
 #align homeomorph.t0_space Homeomorph.t0Space
 
-protected theorem t1Space [T1Space α] (h : α ≃ₜ β) : T1Space β :=
+protected lemma t1Space [T1Space α] (h : α ≃ₜ β) : T1Space β :=
   h.symm.embedding.t1Space
 #align homeomorph.t1_space Homeomorph.t1Space
 
-protected theorem t2Space [T2Space α] (h : α ≃ₜ β) : T2Space β :=
+protected lemma t2Space [T2Space α] (h : α ≃ₜ β) : T2Space β :=
   h.symm.embedding.t2Space
 #align homeomorph.t2_space Homeomorph.t2Space
 
-protected theorem t3Space [T3Space α] (h : α ≃ₜ β) : T3Space β :=
+protected lemma t3Space [T3Space α] (h : α ≃ₜ β) : T3Space β :=
   h.symm.embedding.t3Space
 #align homeomorph.t3_space Homeomorph.t3Space
 
@@ -358,7 +358,7 @@ protected theorem closedEmbedding (h : α ≃ₜ β) : ClosedEmbedding h :=
   closedEmbedding_of_embedding_closed h.embedding h.isClosedMap
 #align homeomorph.closed_embedding Homeomorph.closedEmbedding
 
-protected theorem normalSpace [NormalSpace α] (h : α ≃ₜ β) : NormalSpace β :=
+protected lemma normalSpace [NormalSpace α] (h : α ≃ₜ β) : NormalSpace β :=
   h.symm.closedEmbedding.normalSpace
 #align homeomorph.normal_space Homeomorph.normalSpace
 
@@ -387,7 +387,7 @@ theorem image_frontier (h : α ≃ₜ β) (s : Set α) : h '' frontier s = front
 #align homeomorph.image_frontier Homeomorph.image_frontier
 
 @[to_additive]
-theorem _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : β → M}
+lemma _root_.HasCompactMulSupport.comp_homeomorph {M} [One M] {f : β → M}
     (hf : HasCompactMulSupport f) (φ : α ≃ₜ β) : HasCompactMulSupport (f ∘ φ) :=
   hf.comp_closedEmbedding φ.closedEmbedding
 #align has_compact_mul_support.comp_homeomorph HasCompactMulSupport.comp_homeomorph
@@ -413,7 +413,7 @@ theorem comap_nhds_eq (h : α ≃ₜ β) (y : β) : comap h (𝓝 y) = 𝓝 (h.s
 
 /-- If the codomain of a homeomorphism is a locally connected space, then the domain is also
 a locally connected space. -/
-theorem locallyConnectedSpace [i : LocallyConnectedSpace β] (h : α ≃ₜ β) :
+lemma locallyConnectedSpace [i : LocallyConnectedSpace β] (h : α ≃ₜ β) :
     LocallyConnectedSpace α := by
   have : ∀ x, (𝓝 x).HasBasis (fun s ↦ IsOpen s ∧ h x ∈ s ∧ IsConnected s)
       (h.symm '' ·) := fun x ↦ by
@@ -524,12 +524,12 @@ def prodComm : α × β ≃ₜ β × α where
 #align homeomorph.prod_comm Homeomorph.prodComm
 
 @[simp]
-theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
+lemma prodComm_symm : (prodComm α β).symm = prodComm β α :=
   rfl
 #align homeomorph.prod_comm_symm Homeomorph.prodComm_symm
 
 @[simp]
-theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
+lemma coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
 #align homeomorph.coe_prod_comm Homeomorph.coe_prodComm
 
@@ -553,7 +553,7 @@ def punitProd : PUnit × α ≃ₜ α :=
   (prodComm _ _).trans (prodPUnit _)
 #align homeomorph.punit_prod Homeomorph.punitProd
 
-@[simp] theorem coe_punitProd : ⇑(punitProd α) = Prod.snd := rfl
+@[simp] lemma coe_punitProd : ⇑(punitProd α) = Prod.snd := rfl
 #align homeomorph.coe_punit_prod Homeomorph.coe_punitProd
 
 /-- If both `α` and `β` have a unique element, then `α ≃ₜ β`. -/
@@ -576,7 +576,7 @@ def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSp
 #align homeomorph.Pi_congr_right Homeomorph.piCongrRight
 
 @[simp]
-theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSpace (β₁ i)]
+lemma piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSpace (β₁ i)]
     [∀ i, TopologicalSpace (β₂ i)] (F : ∀ i, β₁ i ≃ₜ β₂ i) :
     (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
   rfl
@@ -755,7 +755,7 @@ namespace Continuous
 
 variable [TopologicalSpace α] [TopologicalSpace β]
 
-theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace α] [T2Space β] {f : α ≃ β}
+lemma continuous_symm_of_equiv_compact_to_t2 [CompactSpace α] [T2Space β] {f : α ≃ β}
     (hf : Continuous f) : Continuous f.symm := by
   rw [continuous_iff_isClosed]
   intro C hC

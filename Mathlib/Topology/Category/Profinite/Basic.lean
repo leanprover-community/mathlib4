@@ -120,7 +120,7 @@ instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
 
 -- Porting note: removed, as it is a syntactic tautology.
 -- @[simp]
--- theorem coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type*) = (X : Type*) :=
+-- lemma coe_toCompHaus {X : Profinite} : (X.toCompHaus : Type*) = (X : Type*) :=
 --   rfl
 -- #align Profinite.coe_to_CompHaus Profinite.coe_toCompHaus
 
@@ -132,7 +132,7 @@ theorem coe_id (X : Profinite) : (𝟙 ((forget Profinite).obj X)) = id :=
 
 -- Porting note: have changed statement as the original LHS simplified.
 @[simp]
-theorem coe_comp {X Y Z : Profinite} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma coe_comp {X Y Z : Profinite} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget Profinite).map f ≫ (forget Profinite).map g) = g ∘ f :=
   rfl
 #align Profinite.coe_comp Profinite.coe_comp
@@ -173,7 +173,7 @@ instance : Faithful Profinite.toTopCat :=
 show Faithful <| inducedFunctor _ from inferInstance
 
 @[simp]
-theorem Profinite.to_compHausToTopCat :
+lemma Profinite.to_compHausToTopCat :
     profiniteToCompHaus ⋙ compHausToTop = Profinite.toTopCat :=
   rfl
 #align Profinite.to_CompHaus_to_Top Profinite.to_compHausToTopCat
@@ -313,7 +313,7 @@ noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Pr
 variable {X Y : Profinite.{u}} (f : X ⟶ Y)
 
 /-- Any morphism of profinite spaces is a closed map. -/
-theorem isClosedMap : IsClosedMap f :=
+lemma isClosedMap : IsClosedMap f :=
   CompHaus.isClosedMap _
 #align Profinite.is_closed_map Profinite.isClosedMap
 
@@ -359,7 +359,7 @@ def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
   right_inv f := by ext; rfl
 #align Profinite.iso_equiv_homeo Profinite.isoEquivHomeo
 
-theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
+lemma epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · -- Porting note: in mathlib3 `contrapose` saw through `Function.Surjective`.
     dsimp [Function.Surjective]
@@ -402,7 +402,7 @@ instance {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
 instance {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
   rwa [epi_iff_surjective, ← CompHaus.epi_iff_surjective]
 
-theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
+lemma mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro h
     haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance

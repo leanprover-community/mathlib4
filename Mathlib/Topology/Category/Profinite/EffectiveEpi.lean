@@ -226,7 +226,7 @@ For a finite family of profinite spaces `π a : X a → B` the following are equ
 * the map `∐ π a ⟶ B` is an epimorphism
 * `π` is jointly surjective
 -/
-theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Profinite}
+lemma effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Profinite}
     (X : α → Profinite) (π : (a : α) → (X a ⟶ B)) :
     TFAE [
       EffectiveEpiFamily X π,

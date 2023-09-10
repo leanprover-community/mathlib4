@@ -48,7 +48,7 @@ variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- `R` is integrally closed iff all integral elements of its fraction field `K`
 are also elements of `R`. -/
-theorem isIntegrallyClosed_iff :
+lemma isIntegrallyClosed_iff :
     IsIntegrallyClosed R ↔ ∀ {x : K}, IsIntegral R x → ∃ y, algebraMap R K y = x := by
   let e : K ≃ₐ[R] FractionRing R := IsLocalization.algEquiv R⁰ _ _
   constructor
@@ -63,7 +63,7 @@ theorem isIntegrallyClosed_iff :
 #align is_integrally_closed_iff isIntegrallyClosed_iff
 
 /-- `R` is integrally closed iff it is the integral closure of itself in its field of fractions. -/
-theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIntegralClosure R R K :=
+lemma isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIntegralClosure R R K :=
   (isIntegrallyClosed_iff K).trans <| by
     constructor
     · intro cl
@@ -86,16 +86,16 @@ variable {K : Type*} [Field K] [Algebra R K] [ifr : IsFractionRing R K]
 instance : IsIntegralClosure R R K :=
   (isIntegrallyClosed_iff_isIntegralClosure K).mp iic
 
-theorem isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=
+lemma isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=
   IsIntegralClosure.isIntegral_iff
 #align is_integrally_closed.is_integral_iff IsIntegrallyClosed.isIntegral_iff
 
-theorem exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
+lemma exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
   isIntegral_iff.mp <| isIntegral_of_pow hn hx
 #align is_integrally_closed.exists_algebra_map_eq_of_is_integral_pow IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [Field K] [Algebra R K]
+lemma exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [Field K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩
@@ -103,7 +103,7 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [Field K] [Algebr
 
 variable (K)
 
-theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R := by
+lemma integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R := by
   refine' eq_bot_iff.trans _
   constructor
   · rw [isIntegrallyClosed_iff K]
@@ -117,7 +117,7 @@ theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyC
 variable (R)
 
 @[simp]
-theorem integralClosure_eq_bot : integralClosure R K = ⊥ :=
+lemma integralClosure_eq_bot : integralClosure R K = ⊥ :=
   (integralClosure_eq_bot_iff K).mpr ‹_›
 #align is_integrally_closed.integral_closure_eq_bot IsIntegrallyClosed.integralClosure_eq_bot
 
@@ -136,7 +136,7 @@ variable [IsDomain R] [IsFractionRing R K]
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
 -- Can't be an instance because you need to supply `K`.
-theorem isIntegrallyClosedOfFiniteExtension [FiniteDimensional K L] :
+lemma isIntegrallyClosedOfFiniteExtension [FiniteDimensional K L] :
     IsIntegrallyClosed (integralClosure R L) :=
   letI : IsFractionRing (integralClosure R L) L := isFractionRing_of_finite_extension K L
   (integralClosure_eq_bot_iff L).mp integralClosure_idem

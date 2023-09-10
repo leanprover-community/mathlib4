@@ -49,7 +49,7 @@ variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
 variable (n : ℕ)
 
-theorem hasStrictDerivAt_pow :
+lemma hasStrictDerivAt_pow :
     ∀ (n : ℕ) (x : 𝕜), HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) ((n : 𝕜) * x ^ (n - 1)) x
   | 0, x => by simp [hasStrictDerivAt_const]
   | 1, x => by simpa using hasStrictDerivAt_id x
@@ -68,28 +68,28 @@ theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) (s : Set 𝕜) :
   (hasDerivAt_pow n x).hasDerivWithinAt
 #align has_deriv_within_at_pow hasDerivWithinAt_pow
 
-theorem differentiableAt_pow : DifferentiableAt 𝕜 (fun x : 𝕜 => x ^ n) x :=
+lemma differentiableAt_pow : DifferentiableAt 𝕜 (fun x : 𝕜 => x ^ n) x :=
   (hasDerivAt_pow n x).differentiableAt
 #align differentiable_at_pow differentiableAt_pow
 
-theorem differentiableWithinAt_pow :
+lemma differentiableWithinAt_pow :
     DifferentiableWithinAt 𝕜 (fun x : 𝕜 => x ^ n) s x :=
   (differentiableAt_pow n).differentiableWithinAt
 #align differentiable_within_at_pow differentiableWithinAt_pow
 
-theorem differentiable_pow : Differentiable 𝕜 fun x : 𝕜 => x ^ n := fun _ => differentiableAt_pow n
+lemma differentiable_pow : Differentiable 𝕜 fun x : 𝕜 => x ^ n := fun _ => differentiableAt_pow n
 #align differentiable_pow differentiable_pow
 
-theorem differentiableOn_pow : DifferentiableOn 𝕜 (fun x : 𝕜 => x ^ n) s :=
+lemma differentiableOn_pow : DifferentiableOn 𝕜 (fun x : 𝕜 => x ^ n) s :=
   (differentiable_pow n).differentiableOn
 #align differentiable_on_pow differentiableOn_pow
 
-theorem deriv_pow : deriv (fun x : 𝕜 => x ^ n) x = (n : 𝕜) * x ^ (n - 1) :=
+lemma deriv_pow : deriv (fun x : 𝕜 => x ^ n) x = (n : 𝕜) * x ^ (n - 1) :=
   (hasDerivAt_pow n x).deriv
 #align deriv_pow deriv_pow
 
 @[simp]
-theorem deriv_pow' : (deriv fun x : 𝕜 => x ^ n) = fun x => (n : 𝕜) * x ^ (n - 1) :=
+lemma deriv_pow' : (deriv fun x : 𝕜 => x ^ n) = fun x => (n : 𝕜) * x ^ (n - 1) :=
   funext fun _ => deriv_pow n
 #align deriv_pow' deriv_pow'
 

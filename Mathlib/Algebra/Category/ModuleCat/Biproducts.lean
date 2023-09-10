@@ -139,7 +139,7 @@ noncomputable def biproductIsoPi [Fintype J] (f : J → ModuleCat.{v} R) :
 #align Module.biproduct_iso_pi ModuleCat.biproductIsoPi
 
 @[simp, elementwise]
-theorem biproductIsoPi_inv_comp_π [Fintype J] (f : J → ModuleCat.{v} R) (j : J) :
+lemma biproductIsoPi_inv_comp_π [Fintype J] (f : J → ModuleCat.{v} R) (j : J) :
     (biproductIsoPi f).inv ≫ biproduct.π f j = (LinearMap.proj j : (∀ j, f j) →ₗ[R] f j) :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
 #align Module.biproduct_iso_pi_inv_comp_π ModuleCat.biproductIsoPi_inv_comp_π

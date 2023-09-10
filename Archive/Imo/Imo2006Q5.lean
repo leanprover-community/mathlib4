@@ -47,13 +47,13 @@ namespace Imo2006Q5
 
 /-- If every entry in a cyclic list of integers divides the next, then they all have the same
 absolute value. -/
-theorem Int.natAbs_eq_of_chain_dvd {l : Cycle ℤ} {x y : ℤ} (hl : l.Chain (· ∣ ·)) (hx : x ∈ l)
+lemma Int.natAbs_eq_of_chain_dvd {l : Cycle ℤ} {x y : ℤ} (hl : l.Chain (· ∣ ·)) (hx : x ∈ l)
     (hy : y ∈ l) : x.natAbs = y.natAbs := by
   rw [Cycle.chain_iff_pairwise] at hl
   exact Int.natAbs_eq_of_dvd_dvd (hl x hx y hy) (hl y hy x hx)
 #align imo2006_q5.int.nat_abs_eq_of_chain_dvd Imo2006Q5.Int.natAbs_eq_of_chain_dvd
 
-theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
+lemma Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
     (h₁ : (c - a).natAbs = (d - b).natAbs) (h₂ : (c - b).natAbs = (d - a).natAbs) :
     a + b = c + d := by
   cases' Int.natAbs_eq_natAbs_iff.1 h₁ with h₁ h₁
@@ -64,7 +64,7 @@ theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
 #align imo2006_q5.int.add_eq_add_of_nat_abs_eq_of_nat_abs_eq Imo2006Q5.Int.add_eq_add_of_natAbs_eq_of_natAbs_eq
 
 /-- The main lemma in the proof: if $P^k(t)=t$, then $P(P(t))=t$. -/
-theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
+lemma Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
     (ht : t ∈ periodicPts fun x => P.eval x) : IsPeriodicPt (fun x => P.eval x) 2 t := by
   -- The cycle [P(t) - t, P(P(t)) - P(t), ...]
   let C : Cycle ℤ := (periodicOrbit (fun x => P.eval x) t).map fun x => P.eval x - x
@@ -123,7 +123,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
       exact isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate ht hn'.symm
 #align imo2006_q5.polynomial.is_periodic_pt_eval_two Imo2006Q5.Polynomial.isPeriodicPt_eval_two
 
-theorem Polynomial.iterate_comp_sub_X_ne {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ}
+lemma Polynomial.iterate_comp_sub_X_ne {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ}
     (hk : 0 < k) : P.comp^[k] X - X ≠ 0 := by
   rw [sub_ne_zero]
   apply_fun natDegree
@@ -132,7 +132,7 @@ set_option linter.uppercaseLean3 false in
 #align imo2006_q5.polynomial.iterate_comp_sub_X_ne Imo2006Q5.Polynomial.iterate_comp_sub_X_ne
 
 /-- We solve the problem for the specific case k = 2 first. -/
-theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
+lemma imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     (P.comp P - X).roots.toFinset.card ≤ P.natDegree := by
   -- Auxiliary lemmas on degrees.
   have hPX : (P - X).natDegree = P.natDegree := by
@@ -194,7 +194,7 @@ end Imo2006Q5
 open Imo2006Q5
 
 /-- The general problem follows easily from the k = 2 case. -/
-theorem imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ} (hk : 0 < k) :
+lemma imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ} (hk : 0 < k) :
     (P.comp^[k] X - X).roots.toFinset.card ≤ P.natDegree := by
   refine' (Finset.card_le_of_subset fun t ht => _).trans (imo2006_q5' hP)
   have hP' : P.comp P - X ≠ 0 := by

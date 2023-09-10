@@ -59,14 +59,14 @@ def extentClosure (t : Set β) : Set α :=
 
 variable {r}
 
-theorem subset_intentClosure_iff_subset_extentClosure :
+lemma subset_intentClosure_iff_subset_extentClosure :
     t ⊆ intentClosure r s ↔ s ⊆ extentClosure r t :=
   ⟨fun h _ ha _ hb => h hb ha, fun h _ hb _ ha => h ha hb⟩
 #align subset_intent_closure_iff_subset_extent_closure subset_intentClosure_iff_subset_extentClosure
 
 variable (r)
 
-theorem gc_intentClosure_extentClosure :
+lemma gc_intentClosure_extentClosure :
     GaloisConnection (toDual ∘ intentClosure r) (extentClosure r ∘ ofDual) := fun _ _ =>
   subset_intentClosure_iff_subset_extentClosure
 #align gc_intent_closure_extent_closure gc_intentClosure_extentClosure
@@ -80,12 +80,12 @@ theorem extentClosure_swap (s : Set α) : extentClosure (swap r) s = intentClosu
 #align extent_closure_swap extentClosure_swap
 
 @[simp]
-theorem intentClosure_empty : intentClosure r ∅ = univ :=
+lemma intentClosure_empty : intentClosure r ∅ = univ :=
   eq_univ_of_forall fun _ _ => False.elim
 #align intent_closure_empty intentClosure_empty
 
 @[simp]
-theorem extentClosure_empty : extentClosure r ∅ = univ :=
+lemma extentClosure_empty : extentClosure r ∅ = univ :=
   intentClosure_empty _
 #align extent_closure_empty extentClosure_empty
 
@@ -153,11 +153,11 @@ theorem extentClosure_intentClosure_extentClosure (t : Set β) :
   intentClosure_extentClosure_intentClosure _ t
 #align extent_closure_intent_closure_extent_closure extentClosure_intentClosure_extentClosure
 
-theorem intentClosure_anti : Antitone (intentClosure r) :=
+lemma intentClosure_anti : Antitone (intentClosure r) :=
   (gc_intentClosure_extentClosure r).monotone_l
 #align intent_closure_anti intentClosure_anti
 
-theorem extentClosure_anti : Antitone (extentClosure r) :=
+lemma extentClosure_anti : Antitone (extentClosure r) :=
   intentClosure_anti _
 #align extent_closure_anti extentClosure_anti
 
@@ -201,10 +201,10 @@ theorem ext' (h : c.snd = d.snd) : c = d := by
   rfl
 #align concept.ext' Concept.ext'
 
-theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ => ext
+lemma fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ => ext
 #align concept.fst_injective Concept.fst_injective
 
-theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
+lemma snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
 #align concept.snd_injective Concept.snd_injective
 
 instance instSupConcept : Sup (Concept α β r) :=
@@ -229,17 +229,17 @@ instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
   (fst_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
-theorem fst_subset_fst_iff : c.fst ⊆ d.fst ↔ c ≤ d :=
+lemma fst_subset_fst_iff : c.fst ⊆ d.fst ↔ c ≤ d :=
   Iff.rfl
 #align concept.fst_subset_fst_iff Concept.fst_subset_fst_iff
 
 @[simp]
-theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
+lemma fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
   Iff.rfl
 #align concept.fst_ssubset_fst_iff Concept.fst_ssubset_fst_iff
 
 @[simp]
-theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
+lemma snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← fst_subset_fst_iff, ← c.closure_snd, ← d.closure_snd]
     exact extentClosure_anti _ h
@@ -248,15 +248,15 @@ theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
 #align concept.snd_subset_snd_iff Concept.snd_subset_snd_iff
 
 @[simp]
-theorem snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by
+lemma snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by
   rw [ssubset_iff_subset_not_subset, lt_iff_le_not_le, snd_subset_snd_iff, snd_subset_snd_iff]
 #align concept.snd_ssubset_snd_iff Concept.snd_ssubset_snd_iff
 
-theorem strictMono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun _ _ =>
+lemma strictMono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun _ _ =>
   fst_ssubset_fst_iff.2
 #align concept.strict_mono_fst Concept.strictMono_fst
 
-theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → Set β) := fun _ _ =>
+lemma strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → Set β) := fun _ _ =>
   snd_ssubset_snd_iff.2
 #align concept.strict_anti_snd Concept.strictAnti_snd
 
@@ -305,22 +305,22 @@ instance : CompleteLattice (Concept α β r) :=
     le_sInf := fun _ _ => subset_iInter₂ }
 
 @[simp]
-theorem top_fst : (⊤ : Concept α β r).fst = univ :=
+lemma top_fst : (⊤ : Concept α β r).fst = univ :=
   rfl
 #align concept.top_fst Concept.top_fst
 
 @[simp]
-theorem top_snd : (⊤ : Concept α β r).snd = intentClosure r univ :=
+lemma top_snd : (⊤ : Concept α β r).snd = intentClosure r univ :=
   rfl
 #align concept.top_snd Concept.top_snd
 
 @[simp]
-theorem bot_fst : (⊥ : Concept α β r).fst = extentClosure r univ :=
+lemma bot_fst : (⊥ : Concept α β r).fst = extentClosure r univ :=
   rfl
 #align concept.bot_fst Concept.bot_fst
 
 @[simp]
-theorem bot_snd : (⊥ : Concept α β r).snd = univ :=
+lemma bot_snd : (⊥ : Concept α β r).snd = univ :=
   rfl
 #align concept.bot_snd Concept.bot_snd
 
@@ -382,12 +382,12 @@ theorem swap_swap (c : Concept α β r) : c.swap.swap = c :=
 #align concept.swap_swap Concept.swap_swap
 
 @[simp]
-theorem swap_le_swap_iff : c.swap ≤ d.swap ↔ d ≤ c :=
+lemma swap_le_swap_iff : c.swap ≤ d.swap ↔ d ≤ c :=
   snd_subset_snd_iff
 #align concept.swap_le_swap_iff Concept.swap_le_swap_iff
 
 @[simp]
-theorem swap_lt_swap_iff : c.swap < d.swap ↔ d < c :=
+lemma swap_lt_swap_iff : c.swap < d.swap ↔ d < c :=
   snd_ssubset_snd_iff
 #align concept.swap_lt_swap_iff Concept.swap_lt_swap_iff
 

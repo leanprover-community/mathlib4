@@ -55,7 +55,7 @@ variable [NormedAddCommGroup E] [NormedSpace K E]
 
 This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
 `IsROrC ?x`. -/
-theorem proper_isROrC [FiniteDimensional K E] : ProperSpace E := by
+lemma proper_isROrC [FiniteDimensional K E] : ProperSpace E := by
   letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
   letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
@@ -73,19 +73,19 @@ end FiniteDimensional
 namespace IsROrC
 
 @[simp, isROrC_simps]
-theorem reClm_norm : ‖(reClm : K →L[ℝ] ℝ)‖ = 1 := by
+lemma reClm_norm : ‖(reClm : K →L[ℝ] ℝ)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
   convert ContinuousLinearMap.ratio_le_op_norm (reClm : K →L[ℝ] ℝ) (1 : K)
   simp
 #align is_R_or_C.re_clm_norm IsROrC.reClm_norm
 
 @[simp, isROrC_simps]
-theorem conjCle_norm : ‖(@conjCle K _ : K →L[ℝ] K)‖ = 1 :=
+lemma conjCle_norm : ‖(@conjCle K _ : K →L[ℝ] K)‖ = 1 :=
   (@conjLie K _).toLinearIsometry.norm_toContinuousLinearMap
 #align is_R_or_C.conj_cle_norm IsROrC.conjCle_norm
 
 @[simp, isROrC_simps]
-theorem ofRealClm_norm : ‖(ofRealClm : ℝ →L[ℝ] K)‖ = 1 :=
+lemma ofRealClm_norm : ‖(ofRealClm : ℝ →L[ℝ] K)‖ = 1 :=
   -- Porting note: the following timed out
   -- LinearIsometry.norm_toContinuousLinearMap ofRealLi
   LinearIsometry.norm_toContinuousLinearMap _

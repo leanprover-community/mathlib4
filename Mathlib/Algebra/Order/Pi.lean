@@ -134,25 +134,25 @@ theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
 variable {β} [Nonempty β]
 
 @[to_additive (attr := simp) const_nonneg]
-theorem one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
+lemma one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
   @const_le_const _ _ _ _ 1 _
 #align function.one_le_const Function.one_le_const
 #align function.const_nonneg Function.const_nonneg
 
 @[to_additive (attr := simp) const_pos]
-theorem one_lt_const : 1 < const β a ↔ 1 < a :=
+lemma one_lt_const : 1 < const β a ↔ 1 < a :=
   @const_lt_const _ _ _ _ 1 a
 #align function.one_lt_const Function.one_lt_const
 #align function.const_pos Function.const_pos
 
 @[to_additive (attr := simp)]
-theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
+lemma const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
   @const_le_const _ _ _ _ _ 1
 #align function.const_le_one Function.const_le_one
 #align function.const_nonpos Function.const_nonpos
 
 @[to_additive (attr := simp)]
-theorem const_lt_one : const β a < 1 ↔ a < 1 :=
+lemma const_lt_one : const β a < 1 ↔ a < 1 :=
   @const_lt_const _ _ _ _ _ 1
 #align function.const_lt_one Function.const_lt_one
 #align function.const_neg Function.const_neg
@@ -165,17 +165,17 @@ end Function
 
 -- variable (ι) [Zero α] {a : α}
 
--- private theorem function_const_nonneg_of_pos [Preorder α] (ha : 0 < a) : 0 ≤ const ι a :=
+-- private lemma function_const_nonneg_of_pos [Preorder α] (ha : 0 < a) : 0 ≤ const ι a :=
 --   const_nonneg_of_nonneg _ ha.le
 -- #align tactic.function_const_nonneg_of_pos tactic.function_const_nonneg_of_pos
 
 -- variable [Nonempty ι]
 
--- private theorem function_const_ne_zero : a ≠ 0 → const ι a ≠ 0 :=
+-- private lemma function_const_ne_zero : a ≠ 0 → const ι a ≠ 0 :=
 --   const_ne_zero.2
 -- #align tactic.function_const_ne_zero tactic.function_const_ne_zero
 
--- private theorem function_const_pos [Preorder α] : 0 < a → 0 < const ι a :=
+-- private lemma function_const_pos [Preorder α] : 0 < a → 0 < const ι a :=
 --   const_pos.2
 -- #align tactic.function_const_pos tactic.function_const_pos
 

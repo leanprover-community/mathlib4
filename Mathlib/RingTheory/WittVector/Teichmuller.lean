@@ -118,7 +118,7 @@ theorem teichmuller_coeff_pos (r : R) : ∀ (n : ℕ) (_ : 0 < n), (teichmuller 
 #align witt_vector.teichmuller_coeff_pos WittVector.teichmuller_coeff_pos
 
 @[simp]
-theorem teichmuller_zero : teichmuller p (0 : R) = 0 := by
+lemma teichmuller_zero : teichmuller p (0 : R) = 0 := by
   ext ⟨⟩ <;> · rw [zero_coeff]; rfl
 #align witt_vector.teichmuller_zero WittVector.teichmuller_zero
 

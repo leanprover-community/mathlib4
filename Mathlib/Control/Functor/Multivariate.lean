@@ -58,7 +58,7 @@ def supp {α : TypeVec n} (x : F α) (i : Fin2 n) : Set (α i) :=
   { y : α i | ∀ ⦃P⦄, LiftP P x → P i y }
 #align mvfunctor.supp MvFunctor.supp
 
-theorem of_mem_supp {α : TypeVec n} {x : F α} {P : ∀ ⦃i⦄, α i → Prop} (h : LiftP P x) (i : Fin2 n) :
+lemma of_mem_supp {α : TypeVec n} {x : F α} {P : ∀ ⦃i⦄, α i → Prop} (h : LiftP P x) (i : Fin2 n) :
     ∀ y ∈ supp x i, P y := fun _y hy => hy h
 #align mvfunctor.of_mem_supp MvFunctor.of_mem_supp
 
@@ -120,7 +120,7 @@ section LiftP'
 
 variable (F)
 
-theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
+lemma exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
                                   (f : α ⟹ β) (g : β ⟹ α)
                                   (h₀ : f ⊚ g = TypeVec.id)
                                   (h₁ : ∀ u : F α, P u ↔ q (f <$$> u)) :
@@ -184,7 +184,7 @@ private def g :
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
-theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
+lemma LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x := by
   dsimp only [LiftP, LiftP']
   apply exists_iff_exists_of_mono F (f _ n α) (g _ n α)

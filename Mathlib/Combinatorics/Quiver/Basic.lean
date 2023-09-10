@@ -76,7 +76,7 @@ lemma mk_map [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]
-theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F G : Prefunctor V W}
+lemma ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F G : Prefunctor V W}
     (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ (X Y : V) (f : X ⟶ Y),
       F.map f = Eq.recOn (h_obj Y).symm (Eq.recOn (h_obj X).symm (G.map f))) : F = G := by
@@ -113,17 +113,17 @@ def comp {U : Type*} [Quiver U] {V : Type*} [Quiver V] {W : Type*} [Quiver W]
 #align prefunctor.comp_map Prefunctor.comp_map
 
 @[simp]
-theorem comp_id {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+lemma comp_id {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
     F.comp (id _) = F := rfl
 #align prefunctor.comp_id Prefunctor.comp_id
 
 @[simp]
-theorem id_comp {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+lemma id_comp {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
     (id _).comp F = F := rfl
 #align prefunctor.id_comp Prefunctor.id_comp
 
 @[simp]
-theorem comp_assoc {U V W Z : Type*} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
+lemma comp_assoc {U V W Z : Type*} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
     (F : Prefunctor U V) (G : Prefunctor V W) (H : Prefunctor W Z) :
     (F.comp G).comp H = F.comp (G.comp H) :=
   rfl
@@ -167,7 +167,7 @@ instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty
 #align quiver.empty_quiver Quiver.emptyQuiver
 
 @[simp]
-theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
+lemma empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 #align quiver.empty_arrow Quiver.empty_arrow
 
 /-- A quiver is thin if it has no parallel arrows. -/

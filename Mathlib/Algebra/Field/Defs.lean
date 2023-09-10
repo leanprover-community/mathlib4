@@ -136,7 +136,7 @@ theorem cast_mk' (a b h1 h2) : ((⟨a, b, h1, h2⟩ : ℚ) : K) = a * (b : K)⁻
   DivisionRing.ratCast_mk _ _ _ _
 #align rat.cast_mk' Rat.cast_mk'
 
-theorem cast_def : ∀ r : ℚ, (r : K) = r.num / r.den
+lemma cast_def : ∀ r : ℚ, (r : K) = r.num / r.den
   | ⟨_, _, _, _⟩ => (cast_mk' _ _ _ _).trans (div_eq_mul_inv _ _).symm
 #align rat.cast_def Rat.cast_def
 

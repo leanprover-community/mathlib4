@@ -43,14 +43,14 @@ def mersenne (p : ℕ) : ℕ :=
   2 ^ p - 1
 #align mersenne mersenne
 
-theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
+lemma mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
   dsimp [mersenne]
   calc
     0 < 2 ^ 1 - 1 := by norm_num
     _ ≤ 2 ^ p - 1 := Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_right (Nat.succ_pos 1) h) 1
 #align mersenne_pos mersenne_pos
 
-theorem one_lt_mersenne {p : ℕ} (hp : 1 < p) : 1 < mersenne p :=
+lemma one_lt_mersenne {p : ℕ} (hp : 1 < p) : 1 < mersenne p :=
   lt_tsub_iff_right.2 <|
     calc 1 + 1 = 2 ^ 1 := by rw [one_add_one_eq_two, pow_one]
     _ < 2 ^ p := Nat.pow_lt_pow_of_lt_right one_lt_two hp
@@ -94,7 +94,7 @@ def sMod (p : ℕ) : ℕ → ℤ
   | i + 1 => (sMod p i ^ 2 - 2) % (2 ^ p - 1)
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
-theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
+lemma mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
   sub_pos.2 <| by exact_mod_cast Nat.one_lt_two_pow p hp
 
 theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
@@ -200,13 +200,13 @@ instance : DecidableEq (X q) := inferInstanceAs (DecidableEq (ZMod q × ZMod q))
 instance : AddCommGroup (X q) := inferInstanceAs (AddCommGroup (ZMod q × ZMod q))
 
 @[ext]
-theorem ext {x y : X q} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y := by
+lemma ext {x y : X q} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y := by
   cases x; cases y; congr
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.ext LucasLehmer.X.ext
 
-@[simp] theorem zero_fst : (0 : X q).1 = 0 := rfl
-@[simp] theorem zero_snd : (0 : X q).2 = 0 := rfl
+@[simp] lemma zero_fst : (0 : X q).1 = 0 := rfl
+@[simp] lemma zero_snd : (0 : X q).2 = 0 := rfl
 
 @[simp]
 theorem add_fst (x y : X q) : (x + y).1 = x.1 + y.1 :=
@@ -249,13 +249,13 @@ set_option linter.uppercaseLean3 false in
 instance : One (X q) where one := ⟨1, 0⟩
 
 @[simp]
-theorem one_fst : (1 : X q).1 = 1 :=
+lemma one_fst : (1 : X q).1 = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.one_fst LucasLehmer.X.one_fst
 
 @[simp]
-theorem one_snd : (1 : X q).2 = 0 :=
+lemma one_snd : (1 : X q).2 = 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.one_snd LucasLehmer.X.one_snd
@@ -347,7 +347,7 @@ set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_nat
 
 /-- The cardinality of `X` is `q^2`. -/
-theorem card_eq : Fintype.card (X q) = q ^ 2 := by
+lemma card_eq : Fintype.card (X q) = q ^ 2 := by
   dsimp [X]
   rw [Fintype.card_prod, ZMod.card q, sq]
 set_option linter.uppercaseLean3 false in
@@ -580,11 +580,11 @@ lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp]
   simpa using h
 
-theorem isNat_lucasLehmerTest : {p np : ℕ} →
+lemma isNat_lucasLehmerTest : {p np : ℕ} →
     IsNat p np → LucasLehmerTest np → LucasLehmerTest p
   | _, _, ⟨rfl⟩, h => h
 
-theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
+lemma isNat_not_lucasLehmerTest : {p np : ℕ} →
     IsNat p np → ¬ LucasLehmerTest np → ¬ LucasLehmerTest p
   | _, _, ⟨rfl⟩, h => h
 

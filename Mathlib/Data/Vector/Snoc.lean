@@ -31,21 +31,21 @@ section Simp
   variable (xs : Vector α n)
 
 @[simp]
-theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
+lemma snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
   rfl
 
 @[simp]
-theorem snoc_nil : (nil.snoc x) = x ::ᵥ nil :=
+lemma snoc_nil : (nil.snoc x) = x ::ᵥ nil :=
   rfl
 
 @[simp]
-theorem reverse_cons : reverse (x ::ᵥ xs) = (reverse xs).snoc x := by
+lemma reverse_cons : reverse (x ::ᵥ xs) = (reverse xs).snoc x := by
   cases xs
   simp only [reverse, cons, toList_mk, List.reverse_cons, snoc]
   congr
 
 @[simp]
-theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
+lemma reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   cases xs
   simp only [reverse, snoc, cons, toList_mk]
   congr
@@ -126,15 +126,15 @@ section Simp
 variable (xs : Vector α n)
 
 @[simp]
-theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
+lemma map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
   induction xs using Vector.inductionOn <;> simp_all
 
 @[simp]
-theorem mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
+lemma mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
   rfl
 
 @[simp]
-theorem mapAccumr_snoc :
+lemma mapAccumr_snoc :
     mapAccumr f (xs.snoc x) s
     = let q := f x s
       let r := mapAccumr f xs q.1
@@ -146,11 +146,11 @@ theorem mapAccumr_snoc :
 variable (ys : Vector β n)
 
 @[simp]
-theorem map₂_snoc : map₂ f (xs.snoc x) (ys.snoc y) = (map₂ f xs ys).snoc (f x y) := by
+lemma map₂_snoc : map₂ f (xs.snoc x) (ys.snoc y) = (map₂ f xs ys).snoc (f x y) := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_nil : mapAccumr₂ f Vector.nil Vector.nil s = (s, Vector.nil) :=
+lemma mapAccumr₂_nil : mapAccumr₂ f Vector.nil Vector.nil s = (s, Vector.nil) :=
   rfl
 
 @[simp]

@@ -63,17 +63,17 @@ theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := 
 variable {K}
 
 /-- A vector in `K` is orthogonal to one in `Kᗮ`. -/
-theorem inner_right_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪u, v⟫ = 0 :=
+lemma inner_right_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪u, v⟫ = 0 :=
   (K.mem_orthogonal v).1 hv u hu
 #align submodule.inner_right_of_mem_orthogonal Submodule.inner_right_of_mem_orthogonal
 
 /-- A vector in `Kᗮ` is orthogonal to one in `K`. -/
-theorem inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪v, u⟫ = 0 := by
+lemma inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪v, u⟫ = 0 := by
   rw [inner_eq_zero_symm]; exact inner_right_of_mem_orthogonal hu hv
 #align submodule.inner_left_of_mem_orthogonal Submodule.inner_left_of_mem_orthogonal
 
 /-- A vector is in `(𝕜 ∙ u)ᗮ` iff it is orthogonal to `u`. -/
-theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
+lemma mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
   refine' ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), _⟩
   intro hv w hw
   rw [mem_span_singleton] at hw
@@ -82,18 +82,18 @@ theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)�
 #align submodule.mem_orthogonal_singleton_iff_inner_right Submodule.mem_orthogonal_singleton_iff_inner_right
 
 /-- A vector in `(𝕜 ∙ u)ᗮ` is orthogonal to `u`. -/
-theorem mem_orthogonal_singleton_iff_inner_left {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪v, u⟫ = 0 := by
+lemma mem_orthogonal_singleton_iff_inner_left {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪v, u⟫ = 0 := by
   rw [mem_orthogonal_singleton_iff_inner_right, inner_eq_zero_symm]
 #align submodule.mem_orthogonal_singleton_iff_inner_left Submodule.mem_orthogonal_singleton_iff_inner_left
 
-theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ := by
+lemma sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ := by
   rw [mem_orthogonal']
   intro u hu
   rw [inner_sub_left, sub_eq_zero]
   exact h ⟨u, hu⟩
 #align submodule.sub_mem_orthogonal_of_inner_left Submodule.sub_mem_orthogonal_of_inner_left
 
-theorem sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
+lemma sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
     x - y ∈ Kᗮ := by
   intro u hu
   rw [inner_sub_right, sub_eq_zero]
@@ -103,7 +103,7 @@ theorem sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), 
 variable (K)
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
-theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
+lemma inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
   rw [mem_inf]
@@ -111,12 +111,12 @@ theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
 #align submodule.inf_orthogonal_eq_bot Submodule.inf_orthogonal_eq_bot
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
-theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_orthogonal_eq_bot]
+lemma orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_orthogonal_eq_bot]
 #align submodule.orthogonal_disjoint Submodule.orthogonal_disjoint
 
 /-- `Kᗮ` can be characterized as the intersection of the kernels of the operations of
 inner product with each of the elements of `K`. -/
-theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) := by
+lemma orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) := by
   apply le_antisymm
   · rw [le_iInf_iff]
     rintro ⟨v, hv⟩ w hw
@@ -127,7 +127,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v :
 #align submodule.orthogonal_eq_inter Submodule.orthogonal_eq_inter
 
 /-- The orthogonal complement of any submodule `K` is closed. -/
-theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
+lemma isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   have := fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   convert isClosed_iInter this
@@ -142,7 +142,7 @@ variable (𝕜 E)
 
 /-- `orthogonal` gives a `GaloisConnection` between
 `Submodule 𝕜 E` and its `OrderDual`. -/
-theorem orthogonal_gc :
+lemma orthogonal_gc :
     @GaloisConnection (Submodule 𝕜 E) (Submodule 𝕜 E)ᵒᵈ _ _ orthogonal orthogonal := fun _K₁ _K₂ =>
   ⟨fun h _v hv _u hu => inner_left_of_mem_orthogonal hv (h hu), fun h _v hv _u hu =>
     inner_left_of_mem_orthogonal hv (h hu)⟩
@@ -152,18 +152,18 @@ variable {𝕜 E}
 
 /-- `orthogonal` reverses the `≤` ordering of two
 subspaces. -/
-theorem orthogonal_le {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂) : K₂ᗮ ≤ K₁ᗮ :=
+lemma orthogonal_le {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂) : K₂ᗮ ≤ K₁ᗮ :=
   (orthogonal_gc 𝕜 E).monotone_l h
 #align submodule.orthogonal_le Submodule.orthogonal_le
 
 /-- `orthogonal.orthogonal` preserves the `≤` ordering of two
 subspaces. -/
-theorem orthogonal_orthogonal_monotone {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂) : K₁ᗮᗮ ≤ K₂ᗮᗮ :=
+lemma orthogonal_orthogonal_monotone {K₁ K₂ : Submodule 𝕜 E} (h : K₁ ≤ K₂) : K₁ᗮᗮ ≤ K₂ᗮᗮ :=
   orthogonal_le (orthogonal_le h)
 #align submodule.orthogonal_orthogonal_monotone Submodule.orthogonal_orthogonal_monotone
 
 /-- `K` is contained in `Kᗮᗮ`. -/
-theorem le_orthogonal_orthogonal : K ≤ Kᗮᗮ :=
+lemma le_orthogonal_orthogonal : K ≤ Kᗮᗮ :=
   (orthogonal_gc 𝕜 E).le_u_l _
 #align submodule.le_orthogonal_orthogonal Submodule.le_orthogonal_orthogonal
 
@@ -175,7 +175,7 @@ theorem inf_orthogonal (K₁ K₂ : Submodule 𝕜 E) : K₁ᗮ ⊓ K₂ᗮ = (K
 
 /-- The inf of an indexed family of orthogonal subspaces equals the
 subspace orthogonal to the sup. -/
-theorem iInf_orthogonal {ι : Type*} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
+lemma iInf_orthogonal {ι : Type*} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
   (orthogonal_gc 𝕜 E).l_iSup.symm
 #align submodule.infi_orthogonal Submodule.iInf_orthogonal
 
@@ -185,7 +185,7 @@ theorem sInf_orthogonal (s : Set <| Submodule 𝕜 E) : ⨅ K ∈ s, Kᗮ = (sSu
 #align submodule.Inf_orthogonal Submodule.sInf_orthogonal
 
 @[simp]
-theorem top_orthogonal_eq_bot : (⊤ : Submodule 𝕜 E)ᗮ = ⊥ := by
+lemma top_orthogonal_eq_bot : (⊤ : Submodule 𝕜 E)ᗮ = ⊥ := by
   ext x
   rw [mem_bot, mem_orthogonal]
   exact
@@ -195,13 +195,13 @@ theorem top_orthogonal_eq_bot : (⊤ : Submodule 𝕜 E)ᗮ = ⊥ := by
 #align submodule.top_orthogonal_eq_bot Submodule.top_orthogonal_eq_bot
 
 @[simp]
-theorem bot_orthogonal_eq_top : (⊥ : Submodule 𝕜 E)ᗮ = ⊤ := by
+lemma bot_orthogonal_eq_top : (⊥ : Submodule 𝕜 E)ᗮ = ⊤ := by
   rw [← top_orthogonal_eq_bot, eq_top_iff]
   exact le_orthogonal_orthogonal ⊤
 #align submodule.bot_orthogonal_eq_top Submodule.bot_orthogonal_eq_top
 
 @[simp]
-theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
+lemma orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
   refine'
     ⟨_, by
       rintro rfl
@@ -211,7 +211,7 @@ theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
   rwa [h, inf_comm, top_inf_eq] at this
 #align submodule.orthogonal_eq_top_iff Submodule.orthogonal_eq_top_iff
 
-theorem orthogonalFamily_self :
+lemma orthogonalFamily_self :
     OrthogonalFamily 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ
   | true, true => absurd rfl
   | true, false => fun _ x y => inner_right_of_mem_orthogonal x.prop y.prop
@@ -222,7 +222,7 @@ theorem orthogonalFamily_self :
 end Submodule
 
 @[simp]
-theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+lemma bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     (K : Submodule ℝ E) : bilinFormOfRealInner.orthogonal K = Kᗮ :=
   rfl
 #align bilin_form_of_real_inner_orthogonal bilinFormOfRealInner_orthogonal
@@ -246,59 +246,59 @@ def IsOrtho (U V : Submodule 𝕜 E) : Prop :=
 @[inherit_doc]
 infixl:50 " ⟂ " => Submodule.IsOrtho
 
-theorem isOrtho_iff_le {U V : Submodule 𝕜 E} : U ⟂ V ↔ U ≤ Vᗮ :=
+lemma isOrtho_iff_le {U V : Submodule 𝕜 E} : U ⟂ V ↔ U ≤ Vᗮ :=
   Iff.rfl
 #align submodule.is_ortho_iff_le Submodule.isOrtho_iff_le
 
 @[symm]
-theorem IsOrtho.symm {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ⟂ U :=
+lemma IsOrtho.symm {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ⟂ U :=
   (le_orthogonal_orthogonal _).trans (orthogonal_le h)
 #align submodule.is_ortho.symm Submodule.IsOrtho.symm
 
-theorem isOrtho_comm {U V : Submodule 𝕜 E} : U ⟂ V ↔ V ⟂ U :=
+lemma isOrtho_comm {U V : Submodule 𝕜 E} : U ⟂ V ↔ V ⟂ U :=
   ⟨IsOrtho.symm, IsOrtho.symm⟩
 #align submodule.is_ortho_comm Submodule.isOrtho_comm
 
-theorem symmetric_isOrtho : Symmetric (IsOrtho : Submodule 𝕜 E → Submodule 𝕜 E → Prop) := fun _ _ =>
+lemma symmetric_isOrtho : Symmetric (IsOrtho : Submodule 𝕜 E → Submodule 𝕜 E → Prop) := fun _ _ =>
   IsOrtho.symm
 #align submodule.symmetric_is_ortho Submodule.symmetric_isOrtho
 
-theorem IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : u ∈ U) (hv : v ∈ V) :
+lemma IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : u ∈ U) (hv : v ∈ V) :
     ⟪u, v⟫ = 0 :=
   h.symm hv _ hu
 #align submodule.is_ortho.inner_eq Submodule.IsOrtho.inner_eq
 
-theorem isOrtho_iff_inner_eq {U V : Submodule 𝕜 E} : U ⟂ V ↔ ∀ u ∈ U, ∀ v ∈ V, ⟪u, v⟫ = 0 :=
+lemma isOrtho_iff_inner_eq {U V : Submodule 𝕜 E} : U ⟂ V ↔ ∀ u ∈ U, ∀ v ∈ V, ⟪u, v⟫ = 0 :=
   forall₄_congr fun _u _hu _v _hv => inner_eq_zero_symm
 #align submodule.is_ortho_iff_inner_eq Submodule.isOrtho_iff_inner_eq
 
 /- TODO: generalize `Submodule.map₂` to semilinear maps, so that we can state
 `U ⟂ V ↔ Submodule.map₂ (innerₛₗ 𝕜) U V ≤ ⊥`. -/
 @[simp]
-theorem isOrtho_bot_left {V : Submodule 𝕜 E} : ⊥ ⟂ V :=
+lemma isOrtho_bot_left {V : Submodule 𝕜 E} : ⊥ ⟂ V :=
   bot_le
 #align submodule.is_ortho_bot_left Submodule.isOrtho_bot_left
 
 @[simp]
-theorem isOrtho_bot_right {U : Submodule 𝕜 E} : U ⟂ ⊥ :=
+lemma isOrtho_bot_right {U : Submodule 𝕜 E} : U ⟂ ⊥ :=
   isOrtho_bot_left.symm
 #align submodule.is_ortho_bot_right Submodule.isOrtho_bot_right
 
-theorem IsOrtho.mono_left {U₁ U₂ V : Submodule 𝕜 E} (hU : U₂ ≤ U₁) (h : U₁ ⟂ V) : U₂ ⟂ V :=
+lemma IsOrtho.mono_left {U₁ U₂ V : Submodule 𝕜 E} (hU : U₂ ≤ U₁) (h : U₁ ⟂ V) : U₂ ⟂ V :=
   hU.trans h
 #align submodule.is_ortho.mono_left Submodule.IsOrtho.mono_left
 
-theorem IsOrtho.mono_right {U V₁ V₂ : Submodule 𝕜 E} (hV : V₂ ≤ V₁) (h : U ⟂ V₁) : U ⟂ V₂ :=
+lemma IsOrtho.mono_right {U V₁ V₂ : Submodule 𝕜 E} (hV : V₂ ≤ V₁) (h : U ⟂ V₁) : U ⟂ V₂ :=
   (h.symm.mono_left hV).symm
 #align submodule.is_ortho.mono_right Submodule.IsOrtho.mono_right
 
-theorem IsOrtho.mono {U₁ V₁ U₂ V₂ : Submodule 𝕜 E} (hU : U₂ ≤ U₁) (hV : V₂ ≤ V₁) (h : U₁ ⟂ V₁) :
+lemma IsOrtho.mono {U₁ V₁ U₂ V₂ : Submodule 𝕜 E} (hU : U₂ ≤ U₁) (hV : V₂ ≤ V₁) (h : U₁ ⟂ V₁) :
     U₂ ⟂ V₂ :=
   (h.mono_right hV).mono_left hU
 #align submodule.is_ortho.mono Submodule.IsOrtho.mono
 
 @[simp]
-theorem isOrtho_self {U : Submodule 𝕜 E} : U ⟂ U ↔ U = ⊥ :=
+lemma isOrtho_self {U : Submodule 𝕜 E} : U ⟂ U ↔ U = ⊥ :=
   ⟨fun h => eq_bot_iff.mpr fun x hx => inner_self_eq_zero.mp (h hx x hx), fun h =>
     h.symm ▸ isOrtho_bot_left⟩
 #align submodule.is_ortho_self Submodule.isOrtho_self
@@ -313,66 +313,66 @@ theorem isOrtho_orthogonal_left (U : Submodule 𝕜 E) : Uᗮ ⟂ U :=
   (isOrtho_orthogonal_right U).symm
 #align submodule.is_ortho_orthogonal_left Submodule.isOrtho_orthogonal_left
 
-theorem IsOrtho.le {U V : Submodule 𝕜 E} (h : U ⟂ V) : U ≤ Vᗮ :=
+lemma IsOrtho.le {U V : Submodule 𝕜 E} (h : U ⟂ V) : U ≤ Vᗮ :=
   h
 #align submodule.is_ortho.le Submodule.IsOrtho.le
 
-theorem IsOrtho.ge {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ≤ Uᗮ :=
+lemma IsOrtho.ge {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ≤ Uᗮ :=
   h.symm
 #align submodule.is_ortho.ge Submodule.IsOrtho.ge
 
 @[simp]
-theorem isOrtho_top_right {U : Submodule 𝕜 E} : U ⟂ ⊤ ↔ U = ⊥ :=
+lemma isOrtho_top_right {U : Submodule 𝕜 E} : U ⟂ ⊤ ↔ U = ⊥ :=
   ⟨fun h => eq_bot_iff.mpr fun _x hx => inner_self_eq_zero.mp (h hx _ mem_top), fun h =>
     h.symm ▸ isOrtho_bot_left⟩
 #align submodule.is_ortho_top_right Submodule.isOrtho_top_right
 
 @[simp]
-theorem isOrtho_top_left {V : Submodule 𝕜 E} : ⊤ ⟂ V ↔ V = ⊥ :=
+lemma isOrtho_top_left {V : Submodule 𝕜 E} : ⊤ ⟂ V ↔ V = ⊥ :=
   isOrtho_comm.trans isOrtho_top_right
 #align submodule.is_ortho_top_left Submodule.isOrtho_top_left
 
 /-- Orthogonal submodules are disjoint. -/
-theorem IsOrtho.disjoint {U V : Submodule 𝕜 E} (h : U ⟂ V) : Disjoint U V :=
+lemma IsOrtho.disjoint {U V : Submodule 𝕜 E} (h : U ⟂ V) : Disjoint U V :=
   (Submodule.orthogonal_disjoint _).mono_right h.symm
 #align submodule.is_ortho.disjoint Submodule.IsOrtho.disjoint
 
 @[simp]
-theorem isOrtho_sup_left {U₁ U₂ V : Submodule 𝕜 E} : U₁ ⊔ U₂ ⟂ V ↔ U₁ ⟂ V ∧ U₂ ⟂ V :=
+lemma isOrtho_sup_left {U₁ U₂ V : Submodule 𝕜 E} : U₁ ⊔ U₂ ⟂ V ↔ U₁ ⟂ V ∧ U₂ ⟂ V :=
   sup_le_iff
 #align submodule.is_ortho_sup_left Submodule.isOrtho_sup_left
 
 @[simp]
-theorem isOrtho_sup_right {U V₁ V₂ : Submodule 𝕜 E} : U ⟂ V₁ ⊔ V₂ ↔ U ⟂ V₁ ∧ U ⟂ V₂ :=
+lemma isOrtho_sup_right {U V₁ V₂ : Submodule 𝕜 E} : U ⟂ V₁ ⊔ V₂ ↔ U ⟂ V₁ ∧ U ⟂ V₂ :=
   isOrtho_comm.trans <| isOrtho_sup_left.trans <| isOrtho_comm.and isOrtho_comm
 #align submodule.is_ortho_sup_right Submodule.isOrtho_sup_right
 
 @[simp]
-theorem isOrtho_sSup_left {U : Set (Submodule 𝕜 E)} {V : Submodule 𝕜 E} :
+lemma isOrtho_sSup_left {U : Set (Submodule 𝕜 E)} {V : Submodule 𝕜 E} :
     sSup U ⟂ V ↔ ∀ Uᵢ ∈ U, Uᵢ ⟂ V :=
   sSup_le_iff
 #align submodule.is_ortho_Sup_left Submodule.isOrtho_sSup_left
 
 @[simp]
-theorem isOrtho_sSup_right {U : Submodule 𝕜 E} {V : Set (Submodule 𝕜 E)} :
+lemma isOrtho_sSup_right {U : Submodule 𝕜 E} {V : Set (Submodule 𝕜 E)} :
     U ⟂ sSup V ↔ ∀ Vᵢ ∈ V, U ⟂ Vᵢ :=
   isOrtho_comm.trans <| isOrtho_sSup_left.trans <| by simp_rw [isOrtho_comm]
 #align submodule.is_ortho_Sup_right Submodule.isOrtho_sSup_right
 
 @[simp]
-theorem isOrtho_iSup_left {ι : Sort*} {U : ι → Submodule 𝕜 E} {V : Submodule 𝕜 E} :
+lemma isOrtho_iSup_left {ι : Sort*} {U : ι → Submodule 𝕜 E} {V : Submodule 𝕜 E} :
     iSup U ⟂ V ↔ ∀ i, U i ⟂ V :=
   iSup_le_iff
 #align submodule.is_ortho_supr_left Submodule.isOrtho_iSup_left
 
 @[simp]
-theorem isOrtho_iSup_right {ι : Sort*} {U : Submodule 𝕜 E} {V : ι → Submodule 𝕜 E} :
+lemma isOrtho_iSup_right {ι : Sort*} {U : Submodule 𝕜 E} {V : ι → Submodule 𝕜 E} :
     U ⟂ iSup V ↔ ∀ i, U ⟂ V i :=
   isOrtho_comm.trans <| isOrtho_iSup_left.trans <| by simp_rw [isOrtho_comm]
 #align submodule.is_ortho_supr_right Submodule.isOrtho_iSup_right
 
 @[simp]
-theorem isOrtho_span {s t : Set E} :
+lemma isOrtho_span {s t : Set E} :
     span 𝕜 s ⟂ span 𝕜 t ↔ ∀ ⦃u⦄, u ∈ s → ∀ ⦃v⦄, v ∈ t → ⟪u, v⟫ = 0 := by
   simp_rw [span_eq_iSup_of_singleton_spans s, span_eq_iSup_of_singleton_spans t, isOrtho_iSup_left,
     isOrtho_iSup_right, isOrtho_iff_le, span_le, Set.subset_def, SetLike.mem_coe,
@@ -412,7 +412,7 @@ theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U
 
 end Submodule
 
-theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
+lemma orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
     (OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) ↔ Pairwise ((· ⟂ ·) on V) :=
   forall₃_congr fun _i _j _hij =>
     Subtype.forall.trans <|
@@ -425,7 +425,7 @@ alias ⟨OrthogonalFamily.pairwise, OrthogonalFamily.of_pairwise⟩ := orthogona
 #align orthogonal_family.of_pairwise OrthogonalFamily.of_pairwise
 
 /-- Two submodules in an orthogonal family with different indices are orthogonal. -/
-theorem OrthogonalFamily.isOrtho {ι} {V : ι → Submodule 𝕜 E}
+lemma OrthogonalFamily.isOrtho {ι} {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i j : ι} (hij : i ≠ j) :
     V i ⟂ V j :=
   hV.pairwise hij

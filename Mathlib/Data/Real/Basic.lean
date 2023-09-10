@@ -42,7 +42,7 @@ namespace CauSeq.Completion
 
 -- this can't go in `Data.Real.CauSeqCompletion` as the structure on `ℚ` isn't available
 @[simp]
-theorem ofRat_rat {abv : ℚ → ℚ} [IsAbsoluteValue abv] (q : ℚ) :
+lemma ofRat_rat {abv : ℚ → ℚ} [IsAbsoluteValue abv] (q : ℚ) :
     ofRat (q : ℚ) = (q : Cauchy abv) :=
   rfl
 #align cau_seq.completion.of_rat_rat CauSeq.Completion.ofRat_rat
@@ -55,11 +55,11 @@ open CauSeq CauSeq.Completion
 
 variable {x y : ℝ}
 
-theorem ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
+lemma ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
   | ⟨a⟩, ⟨b⟩ => by rw [ofCauchy.injEq]
 #align real.ext_cauchy_iff Real.ext_cauchy_iff
 
-theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
+lemma ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
   ext_cauchy_iff.2
 #align real.ext_cauchy Real.ext_cauchy
 
@@ -109,11 +109,11 @@ instance : Sub ℝ :=
 noncomputable instance : Inv ℝ :=
   ⟨inv'⟩
 
-theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
+lemma ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
   zero_def.symm
 #align real.of_cauchy_zero Real.ofCauchy_zero
 
-theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
+lemma ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
   one_def.symm
 #align real.of_cauchy_one Real.ofCauchy_one
 
@@ -134,37 +134,37 @@ theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
   (mul_def _ _).symm
 #align real.of_cauchy_mul Real.ofCauchy_mul
 
-theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
+lemma ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
   show _ = inv' _ by rw [inv']
 #align real.of_cauchy_inv Real.ofCauchy_inv
 
-theorem cauchy_zero : (0 : ℝ).cauchy = 0 :=
+lemma cauchy_zero : (0 : ℝ).cauchy = 0 :=
   show zero.cauchy = 0 by rw [zero_def]
 #align real.cauchy_zero Real.cauchy_zero
 
-theorem cauchy_one : (1 : ℝ).cauchy = 1 :=
+lemma cauchy_one : (1 : ℝ).cauchy = 1 :=
   show one.cauchy = 1 by rw [one_def]
 #align real.cauchy_one Real.cauchy_one
 
-theorem cauchy_add : ∀ a b, (a + b : ℝ).cauchy = a.cauchy + b.cauchy
+lemma cauchy_add : ∀ a b, (a + b : ℝ).cauchy = a.cauchy + b.cauchy
   | ⟨a⟩, ⟨b⟩ => show (add _ _).cauchy = _ by rw [add_def]
 #align real.cauchy_add Real.cauchy_add
 
-theorem cauchy_neg : ∀ a, (-a : ℝ).cauchy = -a.cauchy
+lemma cauchy_neg : ∀ a, (-a : ℝ).cauchy = -a.cauchy
   | ⟨a⟩ => show (neg _).cauchy = _ by rw [neg_def]
 #align real.cauchy_neg Real.cauchy_neg
 
-theorem cauchy_mul : ∀ a b, (a * b : ℝ).cauchy = a.cauchy * b.cauchy
+lemma cauchy_mul : ∀ a b, (a * b : ℝ).cauchy = a.cauchy * b.cauchy
   | ⟨a⟩, ⟨b⟩ => show (mul _ _).cauchy = _ by rw [mul_def]
 #align real.cauchy_mul Real.cauchy_mul
 
-theorem cauchy_sub : ∀ a b, (a - b : ℝ).cauchy = a.cauchy - b.cauchy
+lemma cauchy_sub : ∀ a b, (a - b : ℝ).cauchy = a.cauchy - b.cauchy
   | ⟨a⟩, ⟨b⟩ => by
     rw [sub_eq_add_neg, ← cauchy_neg, ← cauchy_add]
     rfl
 #align real.cauchy_sub Real.cauchy_sub
 
-theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
+lemma cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
   | ⟨f⟩ => show (inv' _).cauchy = _ by rw [inv']
 #align real.cauchy_inv Real.cauchy_inv
 
@@ -299,7 +299,7 @@ def mk (x : CauSeq ℚ abs) : ℝ :=
   ⟨CauSeq.Completion.mk x⟩
 #align real.mk Real.mk
 
-theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
+lemma mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 #align real.mk_eq Real.mk_eq
 
@@ -313,32 +313,32 @@ private irreducible_def lt : ℝ → ℝ → Prop
 instance : LT ℝ :=
   ⟨lt⟩
 
-theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
+lemma lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
   show lt _ _ ↔ _ by rw [lt_def]; rfl
 #align real.lt_cauchy Real.lt_cauchy
 
 @[simp]
-theorem mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
+lemma mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
   lt_cauchy
 #align real.mk_lt Real.mk_lt
 
-theorem mk_zero : mk 0 = 0 := by rw [← ofCauchy_zero]; rfl
+lemma mk_zero : mk 0 = 0 := by rw [← ofCauchy_zero]; rfl
 #align real.mk_zero Real.mk_zero
 
-theorem mk_one : mk 1 = 1 := by rw [← ofCauchy_one]; rfl
+lemma mk_one : mk 1 = 1 := by rw [← ofCauchy_one]; rfl
 #align real.mk_one Real.mk_one
 
-theorem mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← ofCauchy_add]
+lemma mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← ofCauchy_add]
 #align real.mk_add Real.mk_add
 
-theorem mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← ofCauchy_mul]
+lemma mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← ofCauchy_mul]
 #align real.mk_mul Real.mk_mul
 
-theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauchy_neg]
+lemma mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauchy_neg]
 #align real.mk_neg Real.mk_neg
 
 @[simp]
-theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
+lemma mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
   rw [← mk_zero, mk_lt]
   exact iff_of_eq (congr_arg Pos (sub_zero f))
 #align real.mk_pos Real.mk_pos
@@ -349,21 +349,21 @@ private irreducible_def le (x y : ℝ) : Prop :=
 instance : LE ℝ :=
   ⟨le⟩
 
-private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
+private lemma le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
   show le _ _ ↔ _ by rw [le_def]
 
 @[simp]
-theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by simp [le_def', mk_eq]; rfl
+lemma mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by simp [le_def', mk_eq]; rfl
 #align real.mk_le Real.mk_le
 
 @[elab_as_elim]
-protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
+protected lemma ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
   cases' x with x
   induction' x using Quot.induction_on with x
   exact h x
 #align real.ind_mk Real.ind_mk
 
-theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
+lemma add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
   induction a using Real.ind_mk
   induction b using Real.ind_mk
   induction c using Real.ind_mk
@@ -393,20 +393,20 @@ instance partialOrder : PartialOrder ℝ where
 
 instance : Preorder ℝ := by infer_instance
 
-theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
+lemma ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   erw [mk_lt]
   exact const_lt
 #align real.rat_cast_lt Real.ratCast_lt
 
-protected theorem zero_lt_one : (0 : ℝ) < 1 := by
+protected lemma zero_lt_one : (0 : ℝ) < 1 := by
   convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 #align real.zero_lt_one Real.zero_lt_one
 
-protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
+protected lemma fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 #align real.fact_zero_lt_one Real.fact_zero_lt_one
 
-protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
+protected lemma mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   induction' a using Real.ind_mk with a
   induction' b using Real.ind_mk with b
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
@@ -609,7 +609,7 @@ converging to the same number may be printed differently.
 -/
 unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
 
-theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
+lemma le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
   induction' x using Real.ind_mk with x
   apply le_of_not_lt
@@ -623,14 +623,14 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 #align real.le_mk_of_forall_le Real.le_mk_of_forall_le
 
-theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
+lemma mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
     mk f ≤ x := by
   cases' h with i H
   rw [← neg_le_neg_iff, ← mk_neg]
   exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 #align real.mk_le_of_forall_le Real.mk_le_of_forall_le
 
-theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
+lemma mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
     (H : ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| ≤ ε) : |mk f - x| ≤ ε :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add'.2 <|
@@ -650,7 +650,7 @@ instance instArchimedean : Archimedean ℝ :=
 noncomputable instance : FloorRing ℝ :=
   Archimedean.floorRing _
 
-theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) :=
+lemma isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) :=
   ⟨fun H ε ε0 =>
     let ⟨δ, δ0, δε⟩ := exists_pos_rat_lt ε0
     (H _ δ0).imp fun i hi j ij => lt_trans (by simpa using (@Rat.cast_lt ℝ _ _ _).2 (hi _ ij)) δε,
@@ -765,17 +765,17 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ :=
     csSup_of_not_bddAbove := fun s hs ↦ by simp [hs, sSup_def]
     csInf_of_not_bddBelow := fun s hs ↦ by simp [hs, sInf_def, sSup_def] }
 
-theorem lt_sInf_add_pos {s : Set ℝ} (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) :
+lemma lt_sInf_add_pos {s : Set ℝ} (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) :
     ∃ a ∈ s, a < sInf s + ε :=
   exists_lt_of_csInf_lt h <| lt_add_of_pos_right _ hε
 #align real.lt_Inf_add_pos Real.lt_sInf_add_pos
 
-theorem add_neg_lt_sSup {s : Set ℝ} (h : s.Nonempty) {ε : ℝ} (hε : ε < 0) :
+lemma add_neg_lt_sSup {s : Set ℝ} (h : s.Nonempty) {ε : ℝ} (hε : ε < 0) :
     ∃ a ∈ s, sSup s + ε < a :=
   exists_lt_of_lt_csSup h <| add_lt_iff_neg_left.2 hε
 #align real.add_neg_lt_Sup Real.add_neg_lt_sSup
 
-theorem sInf_le_iff {s : Set ℝ} (h : BddBelow s) (h' : s.Nonempty) {a : ℝ} :
+lemma sInf_le_iff {s : Set ℝ} (h : BddBelow s) (h' : s.Nonempty) {a : ℝ} :
     sInf s ≤ a ↔ ∀ ε, 0 < ε → ∃ x ∈ s, x < a + ε := by
   rw [le_iff_forall_pos_lt_add]
   constructor <;> intro H ε ε_pos
@@ -784,7 +784,7 @@ theorem sInf_le_iff {s : Set ℝ} (h : BddBelow s) (h' : s.Nonempty) {a : ℝ} :
     exact csInf_lt_of_lt h x_in hx
 #align real.Inf_le_iff Real.sInf_le_iff
 
-theorem le_sSup_iff {s : Set ℝ} (h : BddAbove s) (h' : s.Nonempty) {a : ℝ} :
+lemma le_sSup_iff {s : Set ℝ} (h : BddAbove s) (h' : s.Nonempty) {a : ℝ} :
     a ≤ sSup s ↔ ∀ ε, ε < 0 → ∃ x ∈ s, a + ε < x := by
   rw [le_iff_forall_pos_lt_add]
   refine' ⟨fun H ε ε_neg => _, fun H ε ε_pos => _⟩
@@ -794,11 +794,11 @@ theorem le_sSup_iff {s : Set ℝ} (h : BddAbove s) (h' : s.Nonempty) {a : ℝ} :
 #align real.le_Sup_iff Real.le_sSup_iff
 
 @[simp]
-theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
+lemma sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 #align real.Sup_empty Real.sSup_empty
 
-theorem ciSup_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
+lemma ciSup_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
   rw [Set.range_eq_empty_iff]
@@ -806,45 +806,45 @@ theorem ciSup_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 
 #align real.csupr_empty Real.ciSup_empty
 
 @[simp]
-theorem ciSup_const_zero {α : Sort*} : ⨆ _ : α, (0 : ℝ) = 0 := by
+lemma ciSup_const_zero {α : Sort*} : ⨆ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciSup_empty _
   · exact ciSup_const
 #align real.csupr_const_zero Real.ciSup_const_zero
 
-theorem sSup_of_not_bddAbove {s : Set ℝ} (hs : ¬BddAbove s) : sSup s = 0 :=
+lemma sSup_of_not_bddAbove {s : Set ℝ} (hs : ¬BddAbove s) : sSup s = 0 :=
   dif_neg fun h => hs h.2
 #align real.Sup_of_not_bdd_above Real.sSup_of_not_bddAbove
 
-theorem iSup_of_not_bddAbove {α : Sort*} {f : α → ℝ} (hf : ¬BddAbove (Set.range f)) :
+lemma iSup_of_not_bddAbove {α : Sort*} {f : α → ℝ} (hf : ¬BddAbove (Set.range f)) :
     ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
 #align real.supr_of_not_bdd_above Real.iSup_of_not_bddAbove
 
-theorem sSup_univ : sSup (@Set.univ ℝ) = 0 :=
+lemma sSup_univ : sSup (@Set.univ ℝ) = 0 :=
   Real.sSup_of_not_bddAbove fun ⟨_, h⟩ => not_le_of_lt (lt_add_one _) <| h (Set.mem_univ _)
 #align real.Sup_univ Real.sSup_univ
 
 @[simp]
-theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
+lemma sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 #align real.Inf_empty Real.sInf_empty
 
-theorem ciInf_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
+lemma ciInf_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
   rw [iInf_of_empty', sInf_empty]
 #align real.cinfi_empty Real.ciInf_empty
 
 @[simp]
-theorem ciInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ) = 0 := by
+lemma ciInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciInf_empty _
   · exact ciInf_const
 #align real.cinfi_const_zero Real.ciInf_const_zero
 
-theorem sInf_of_not_bddBelow {s : Set ℝ} (hs : ¬BddBelow s) : sInf s = 0 :=
+lemma sInf_of_not_bddBelow {s : Set ℝ} (hs : ¬BddBelow s) : sInf s = 0 :=
   neg_eq_zero.2 <| sSup_of_not_bddAbove <| mt bddAbove_neg.1 hs
 #align real.Inf_of_not_bdd_below Real.sInf_of_not_bddBelow
 
-theorem iInf_of_not_bddBelow {α : Sort*} {f : α → ℝ} (hf : ¬BddBelow (Set.range f)) :
+lemma iInf_of_not_bddBelow {α : Sort*} {f : α → ℝ} (hf : ¬BddBelow (Set.range f)) :
     ⨅ i, f i = 0 :=
   sInf_of_not_bddBelow hf
 #align real.infi_of_not_bdd_below Real.iInf_of_not_bddBelow
@@ -863,7 +863,7 @@ theorem sSup_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sS
 As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
 suffices to show that `f i` is nonnegative to show that `0 ≤ ⨆ i, f i`.
 -/
-protected theorem iSup_nonneg {ι : Sort*} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i :=
+protected lemma iSup_nonneg {ι : Sort*} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i :=
   sSup_nonneg _ <| Set.forall_range_iff.2 hf
 #align real.supr_nonneg Real.iSup_nonneg
 
@@ -872,12 +872,12 @@ As `0` is the default value for `Real.sSup` of the empty set or sets which are n
 suffices to show that all elements of `S` are bounded by a nonnegative number to show that `sSup S`
 is bounded by this number.
 -/
-protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (ha : 0 ≤ a) : sSup S ≤ a := by
+protected lemma sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (ha : 0 ≤ a) : sSup S ≤ a := by
   rcases S.eq_empty_or_nonempty with (rfl | hS₂)
   exacts [sSup_empty.trans_le ha, csSup_le hS₂ hS]
 #align real.Sup_le Real.sSup_le
 
-protected theorem iSup_le {ι : Sort*} {f : ι → ℝ} {a : ℝ} (hS : ∀ i, f i ≤ a) (ha : 0 ≤ a) :
+protected lemma iSup_le {ι : Sort*} {f : ι → ℝ} {a : ℝ} (hS : ∀ i, f i ≤ a) (ha : 0 ≤ a) :
     ⨆ i, f i ≤ a :=
   Real.sSup_le (Set.forall_range_iff.2 hS) ha
 #align real.supr_le Real.iSup_le
@@ -900,7 +900,7 @@ theorem sInf_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sI
 /-- As `0` is the default value for `Real.sInf` of the empty set, it suffices to show that `f i` is
 bounded below by `0` to show that `0 ≤ iInf f`.
 -/
-theorem iInf_nonneg {ι} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f :=
+lemma iInf_nonneg {ι} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f :=
   sInf_nonneg _ <| Set.forall_range_iff.2 hf
 
 /--
@@ -943,7 +943,7 @@ instance : CauSeq.IsComplete ℝ abs :=
 
 open Set
 
-theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
+lemma iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
     (hf_mono : Monotone f) : ⨅ r : Ioi x, f r = ⨅ q : { q' : ℚ // x < q' }, f q := by
   refine' le_antisymm _ _
   · have : Nonempty { r' : ℚ // x < ↑r' } := by

@@ -41,11 +41,11 @@ noncomputable def viaEmbeddingHom : Perm α →* Perm β :=
   extendDomainHom (ofInjective ι.1 ι.2)
 #align equiv.perm.via_embedding_hom Equiv.Perm.viaEmbeddingHom
 
-theorem viaEmbeddingHom_apply : viaEmbeddingHom ι e = viaEmbedding e ι :=
+lemma viaEmbeddingHom_apply : viaEmbeddingHom ι e = viaEmbedding e ι :=
   rfl
 #align equiv.perm.via_embedding_hom_apply Equiv.Perm.viaEmbeddingHom_apply
 
-theorem viaEmbeddingHom_injective : Function.Injective (viaEmbeddingHom ι) :=
+lemma viaEmbeddingHom_injective : Function.Injective (viaEmbeddingHom ι) :=
   extendDomainHom_injective (ofInjective ι.1 ι.2)
 #align equiv.perm.via_embedding_hom_injective Equiv.Perm.viaEmbeddingHom_injective
 

@@ -113,7 +113,7 @@ theorem ext (H : CoverDense K G) (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.o
   simp [h f₂]
 #align category_theory.cover_dense.ext CategoryTheory.CoverDense.ext
 
-theorem functorPullback_pushforward_covering [Full G] (H : CoverDense K G) {X : C}
+lemma functorPullback_pushforward_covering [Full G] (H : CoverDense K G) {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
   refine' K.superset_covering _ (K.bind_covering T.property fun Y f _ => H.is_cover Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', ⟨rfl⟩⟩, rfl⟩
@@ -167,12 +167,12 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 
 -- porting note: `pushforward_family` was tagged `@[simp]` in Lean 3 so we add the
 -- equation lemma
-@[simp] theorem pushforwardFamily_def {X} (x : ℱ.obj (op X)) :
+@[simp] lemma pushforwardFamily_def {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
   ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x : _) := rfl
 
 /-- (Implementation). The `pushforwardFamily` defined is compatible. -/
-theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
+lemma pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
   apply H.ext
@@ -201,7 +201,7 @@ noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun
 #align category_theory.cover_dense.types.app_hom CategoryTheory.CoverDense.Types.appHom
 
 @[simp]
-theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
+lemma pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
     pushforwardFamily α x f (Presieve.in_coverByImage G f) = α.app (op Y) (ℱ.map f.op x) := by
   unfold pushforwardFamily
   -- porting note: congr_fun was more powerful in Lean 3; I had to explicitly supply
@@ -220,7 +220,7 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
 #align category_theory.cover_dense.types.pushforward_family_apply CategoryTheory.CoverDense.Types.pushforwardFamily_apply
 
 @[simp]
-theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
+lemma appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
     ℱ'.val.map f (appHom H α X x) = α.app (op Y) (ℱ.map f x) := by
   refine'
     ((ℱ'.cond _ (H.is_cover X)).valid_glue (pushforwardFamily_compatible H α x) f.unop
@@ -230,7 +230,7 @@ theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
 #align category_theory.cover_dense.types.app_hom_restrict CategoryTheory.CoverDense.Types.appHom_restrict
 
 @[simp]
-theorem appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
+lemma appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
     appHom H α X ≫ ℱ'.val.map f = ℱ.map f ≫ α.app (op Y) := by
   ext
   apply appHom_restrict
@@ -458,7 +458,7 @@ noncomputable def restrictHomEquivHom : (G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) ≃
 /-- Given a full and cover-dense functor `G` and a natural transformation of sheaves `α : ℱ ⟶ ℱ'`,
 if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
-theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
+lemma iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
     IsIso α := by
   convert IsIso.of_iso (sheafIso H (asIso (whiskerLeft G.op α.val))) using 1
   ext1
@@ -466,7 +466,7 @@ theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIs
 #align category_theory.cover_dense.iso_of_restrict_iso CategoryTheory.CoverDense.iso_of_restrict_iso
 
 /-- A fully faithful cover-dense functor preserves compatible families. -/
-theorem compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
+lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
   constructor
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ eq
   apply H.ext

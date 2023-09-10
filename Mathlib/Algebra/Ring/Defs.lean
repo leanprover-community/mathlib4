@@ -75,7 +75,7 @@ instance (priority := 100) Distrib.rightDistribClass (R : Type*) [Distrib R] :
   ⟨Distrib.right_distrib⟩
 #align distrib.right_distrib_class Distrib.rightDistribClass
 
-theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
+lemma left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
     a * (b + c) = a * b + a * c :=
   LeftDistribClass.left_distrib a b c
 #align left_distrib left_distrib
@@ -83,7 +83,7 @@ theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
 alias mul_add := left_distrib
 #align mul_add mul_add
 
-theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
+lemma right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
     (a + b) * c = a * c + b * c :=
   RightDistribClass.right_distrib a b c
 #align right_distrib right_distrib
@@ -91,7 +91,7 @@ theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
 alias add_mul := right_distrib
 #align add_mul add_mul
 
-theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) :
+lemma distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) :
     (a + b + c) * d = a * d + b * d + c * d := by simp [right_distrib]
 #align distrib_three_right distrib_three_right
 
@@ -151,19 +151,19 @@ section DistribMulOneClass
 
 variable [Add α] [MulOneClass α]
 
-theorem add_one_mul [RightDistribClass α] (a b : α) : (a + 1) * b = a * b + b := by
+lemma add_one_mul [RightDistribClass α] (a b : α) : (a + 1) * b = a * b + b := by
   rw [add_mul, one_mul]
 #align add_one_mul add_one_mul
 
-theorem mul_add_one [LeftDistribClass α] (a b : α) : a * (b + 1) = a * b + a := by
+lemma mul_add_one [LeftDistribClass α] (a b : α) : a * (b + 1) = a * b + a := by
   rw [mul_add, mul_one]
 #align mul_add_one mul_add_one
 
-theorem one_add_mul [RightDistribClass α] (a b : α) : (1 + a) * b = b + a * b := by
+lemma one_add_mul [RightDistribClass α] (a b : α) : (1 + a) * b = b + a * b := by
   rw [add_mul, one_mul]
 #align one_add_mul one_add_mul
 
-theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b := by
+lemma mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b := by
   rw [mul_add, mul_one]
 #align mul_one_add mul_one_add
 
@@ -192,13 +192,13 @@ theorem mul_two (n : α) : n * 2 = n + n :=
 end NonAssocSemiring
 
 @[to_additive]
-theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
+lemma mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
     (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
 #align mul_ite mul_ite
 #align add_ite add_ite
 
 @[to_additive]
-theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
+lemma ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
     (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
 #align ite_mul ite_mul
 #align ite_add ite_add
@@ -214,24 +214,24 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 attribute [simp] mul_ite ite_mul
 
 -- Porting note: no @[simp] because simp proves it
-theorem mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
+lemma mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (a * if P then 1 else 0) = if P then a else 0 := by simp
 #align mul_boole mul_boole
 
 -- Porting note: no @[simp] because simp proves it
-theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
+lemma boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 #align boole_mul boole_mul
 
-theorem ite_mul_zero_left {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
+lemma ite_mul_zero_left {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
     ite P (a * b) 0 = ite P a 0 * b := by by_cases h : P <;> simp [h]
 #align ite_mul_zero_left ite_mul_zero_left
 
-theorem ite_mul_zero_right {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
+lemma ite_mul_zero_right {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
     ite P (a * b) 0 = a * ite P b 0 := by by_cases h : P <;> simp [h]
 #align ite_mul_zero_right ite_mul_zero_right
 
-theorem ite_and_mul_zero {α : Type*} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
+lemma ite_and_mul_zero {α : Type*} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
     (a b : α) : ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
   simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 #align ite_and_mul_zero ite_and_mul_zero

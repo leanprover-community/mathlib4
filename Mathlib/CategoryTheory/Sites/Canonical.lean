@@ -242,7 +242,7 @@ theorem of_yoneda_isSheaf (J : GrothendieckTopology C)
 #align category_theory.sheaf.subcanonical.of_yoneda_is_sheaf CategoryTheory.Sheaf.Subcanonical.of_yoneda_isSheaf
 
 /-- If `J` is subcanonical, then any representable is a `J`-sheaf. -/
-theorem isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical J)
+lemma isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical J)
     (P : Cᵒᵖ ⥤ Type v) [P.Representable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_representable P)
 #align category_theory.sheaf.subcanonical.is_sheaf_of_representable CategoryTheory.Sheaf.Subcanonical.isSheaf_of_representable

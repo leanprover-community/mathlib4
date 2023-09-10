@@ -32,7 +32,7 @@ section
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 
-theorem id_tensor_π_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : Z ⊗ Y ⟶ W)
+lemma id_tensor_π_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : Z ⊗ Y ⟶ W)
     (wh : (𝟙 Z ⊗ f) ≫ h = (𝟙 Z ⊗ g) ≫ h) :
     (𝟙 Z ⊗ coequalizer.π f g) ≫
         (PreservesCoequalizer.iso (tensorLeft Z) f g).inv ≫ coequalizer.desc h wh =
@@ -40,7 +40,7 @@ theorem id_tensor_π_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y
   map_π_preserves_coequalizer_inv_desc (tensorLeft Z) f g h wh
 #align id_tensor_π_preserves_coequalizer_inv_desc id_tensor_π_preserves_coequalizer_inv_desc
 
-theorem id_tensor_π_preserves_coequalizer_inv_colimMap_desc {X Y Z X' Y' Z' : C} (f g : X ⟶ Y)
+lemma id_tensor_π_preserves_coequalizer_inv_colimMap_desc {X Y Z X' Y' Z' : C} (f g : X ⟶ Y)
     (f' g' : X' ⟶ Y') (p : Z ⊗ X ⟶ X') (q : Z ⊗ Y ⟶ Y') (wf : (𝟙 Z ⊗ f) ≫ q = p ≫ f')
     (wg : (𝟙 Z ⊗ g) ≫ q = p ≫ g') (h : Y' ⟶ Z') (wh : f' ≫ h = g' ≫ h) :
     (𝟙 Z ⊗ coequalizer.π f g) ≫
@@ -56,7 +56,7 @@ section
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
-theorem π_tensor_id_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : Y ⊗ Z ⟶ W)
+lemma π_tensor_id_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y) (h : Y ⊗ Z ⟶ W)
     (wh : (f ⊗ 𝟙 Z) ≫ h = (g ⊗ 𝟙 Z) ≫ h) :
     (coequalizer.π f g ⊗ 𝟙 Z) ≫
         (PreservesCoequalizer.iso (tensorRight Z) f g).inv ≫ coequalizer.desc h wh =
@@ -64,7 +64,7 @@ theorem π_tensor_id_preserves_coequalizer_inv_desc {W X Y Z : C} (f g : X ⟶ Y
   map_π_preserves_coequalizer_inv_desc (tensorRight Z) f g h wh
 #align π_tensor_id_preserves_coequalizer_inv_desc π_tensor_id_preserves_coequalizer_inv_desc
 
-theorem π_tensor_id_preserves_coequalizer_inv_colimMap_desc {X Y Z X' Y' Z' : C} (f g : X ⟶ Y)
+lemma π_tensor_id_preserves_coequalizer_inv_colimMap_desc {X Y Z X' Y' Z' : C} (f g : X ⟶ Y)
     (f' g' : X' ⟶ Y') (p : X ⊗ Z ⟶ X') (q : Y ⊗ Z ⟶ Y') (wf : (f ⊗ 𝟙 Z) ≫ q = p ≫ f')
     (wg : (g ⊗ 𝟙 Z) ≫ q = p ≫ g') (h : Y' ⟶ Z') (wh : f' ≫ h = g' ≫ h) :
     (coequalizer.π f g ⊗ 𝟙 Z) ≫
@@ -148,7 +148,7 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.id_hom' Bimod.id_hom'
 
 @[simp]
-theorem comp_hom' {M N K : Bimod A B} (f : M ⟶ N) (g : N ⟶ K) :
+lemma comp_hom' {M N K : Bimod A B} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -240,7 +240,7 @@ noncomputable def actLeft : R.X ⊗ X P Q ⟶ X P Q :=
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.act_left Bimod.TensorBimod.actLeft
 
-theorem id_tensor_π_actLeft :
+lemma id_tensor_π_actLeft :
     (𝟙 R.X ⊗ coequalizer.π _ _) ≫ actLeft P Q =
       (α_ _ _ _).inv ≫ (P.actLeft ⊗ 𝟙 Q.X) ≫ coequalizer.π _ _ := by
   erw [map_π_preserves_coequalizer_inv_colimMap (tensorLeft _)]
@@ -248,7 +248,7 @@ theorem id_tensor_π_actLeft :
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.id_tensor_π_act_left Bimod.TensorBimod.id_tensor_π_actLeft
 
-theorem one_act_left' : (R.one ⊗ 𝟙 _) ≫ actLeft P Q = (λ_ _).hom := by
+lemma one_act_left' : (R.one ⊗ 𝟙 _) ≫ actLeft P Q = (λ_ _).hom := by
   refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
   dsimp [X]
   -- porting note: had to replace `rw` by `erw`
@@ -261,7 +261,7 @@ theorem one_act_left' : (R.one ⊗ 𝟙 _) ≫ actLeft P Q = (λ_ _).hom := by
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.one_act_left' Bimod.TensorBimod.one_act_left'
 
-theorem left_assoc' :
+lemma left_assoc' :
     (R.mul ⊗ 𝟙 _) ≫ actLeft P Q = (α_ R.X R.X _).hom ≫ (𝟙 R.X ⊗ actLeft P Q) ≫ actLeft P Q := by
   refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
   dsimp [X]
@@ -309,7 +309,7 @@ noncomputable def actRight : X P Q ⊗ T.X ⟶ X P Q :=
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.act_right Bimod.TensorBimod.actRight
 
-theorem π_tensor_id_actRight :
+lemma π_tensor_id_actRight :
     (coequalizer.π _ _ ⊗ 𝟙 T.X) ≫ actRight P Q =
       (α_ _ _ _).hom ≫ (𝟙 P.X ⊗ Q.actRight) ≫ coequalizer.π _ _ := by
   erw [map_π_preserves_coequalizer_inv_colimMap (tensorRight _)]
@@ -317,7 +317,7 @@ theorem π_tensor_id_actRight :
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.π_tensor_id_act_right Bimod.TensorBimod.π_tensor_id_actRight
 
-theorem actRight_one' : (𝟙 _ ⊗ T.one) ≫ actRight P Q = (ρ_ _).hom := by
+lemma actRight_one' : (𝟙 _ ⊗ T.one) ≫ actRight P Q = (ρ_ _).hom := by
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
   dsimp [X]
   -- porting note: had to replace `rw` by `erw`
@@ -330,7 +330,7 @@ theorem actRight_one' : (𝟙 _ ⊗ T.one) ≫ actRight P Q = (ρ_ _).hom := by
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.act_right_one' Bimod.TensorBimod.actRight_one'
 
-theorem right_assoc' :
+lemma right_assoc' :
     (𝟙 _ ⊗ T.mul) ≫ actRight P Q =
       (α_ _ T.X T.X).inv ≫ (actRight P Q ⊗ 𝟙 T.X) ≫ actRight P Q := by
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
@@ -356,7 +356,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
-theorem middle_assoc' :
+lemma middle_assoc' :
     (actLeft P Q ⊗ 𝟙 T.X) ≫ actRight P Q =
       (α_ R.X _ T.X).hom ≫ (𝟙 R.X ⊗ actRight P Q) ≫ actLeft P Q := by
   refine' (cancel_epi ((tensorLeft _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 _
@@ -435,7 +435,7 @@ noncomputable def tensorHom {X Y Z : Mon_ C} {M₁ M₂ : Bimod X Y} {N₁ N₂ 
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_hom Bimod.tensorHom
 
-theorem tensor_id {X Y Z : Mon_ C} {M : Bimod X Y} {N : Bimod Y Z} :
+lemma tensor_id {X Y Z : Mon_ C} {M : Bimod X Y} {N : Bimod Y Z} :
     tensorHom (𝟙 M) (𝟙 N) = 𝟙 (M.tensorBimod N) := by
   ext
   apply Limits.coequalizer.hom_ext
@@ -446,7 +446,7 @@ theorem tensor_id {X Y Z : Mon_ C} {M : Bimod X Y} {N : Bimod Y Z} :
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_id Bimod.tensor_id
 
-theorem tensor_comp {X Y Z : Mon_ C} {M₁ M₂ M₃ : Bimod X Y} {N₁ N₂ N₃ : Bimod Y Z} (f₁ : M₁ ⟶ M₂)
+lemma tensor_comp {X Y Z : Mon_ C} {M₁ M₂ M₃ : Bimod X Y} {N₁ N₂ N₃ : Bimod Y Z} (f₁ : M₁ ⟶ M₂)
     (f₂ : M₂ ⟶ M₃) (g₁ : N₁ ⟶ N₂) (g₂ : N₂ ⟶ N₃) :
     tensorHom (f₁ ≫ f₂) (g₁ ≫ g₂) = tensorHom f₁ g₁ ≫ tensorHom f₂ g₂ := by
   ext
@@ -508,7 +508,7 @@ noncomputable def hom :
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.hom Bimod.AssociatorBimod.hom
 
-theorem hom_left_act_hom' :
+lemma hom_left_act_hom' :
     ((P.tensorBimod Q).tensorBimod L).actLeft ≫ hom P Q L =
       (𝟙 R.X ⊗ hom P Q L) ≫ (P.tensorBimod (Q.tensorBimod L)).actLeft := by
   dsimp; dsimp [hom, homAux]
@@ -535,7 +535,7 @@ theorem hom_left_act_hom' :
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.hom_left_act_hom' Bimod.AssociatorBimod.hom_left_act_hom'
 
-theorem hom_right_act_hom' :
+lemma hom_right_act_hom' :
     ((P.tensorBimod Q).tensorBimod L).actRight ≫ hom P Q L =
       (hom P Q L ⊗ 𝟙 U.X) ≫ (P.tensorBimod (Q.tensorBimod L)).actRight := by
   dsimp; dsimp [hom, homAux]
@@ -606,7 +606,7 @@ noncomputable def inv :
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.inv Bimod.AssociatorBimod.inv
 
-theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
+lemma hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
   dsimp [hom, homAux, inv, invAux]
   apply coequalizer.hom_ext
   slice_lhs 1 2 => rw [coequalizer.π_desc]
@@ -621,7 +621,7 @@ theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.hom_inv_id Bimod.AssociatorBimod.hom_inv_id
 
-theorem inv_hom_id : inv P Q L ≫ hom P Q L = 𝟙 _ := by
+lemma inv_hom_id : inv P Q L ≫ hom P Q L = 𝟙 _ := by
   dsimp [hom, homAux, inv, invAux]
   apply coequalizer.hom_ext
   slice_lhs 1 2 => rw [coequalizer.π_desc]
@@ -654,7 +654,7 @@ noncomputable def inv : P.X ⟶ TensorBimod.X (regular R) P :=
 set_option linter.uppercaseLean3 false in
 #align Bimod.left_unitor_Bimod.inv Bimod.LeftUnitorBimod.inv
 
-theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
+lemma hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
   ext; dsimp
   slice_lhs 1 2 => rw [coequalizer.π_desc]
@@ -669,7 +669,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
 set_option linter.uppercaseLean3 false in
 #align Bimod.left_unitor_Bimod.hom_inv_id Bimod.LeftUnitorBimod.hom_inv_id
 
-theorem inv_hom_id : inv P ≫ hom P = 𝟙 _ := by
+lemma inv_hom_id : inv P ≫ hom P = 𝟙 _ := by
   dsimp [hom, inv]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   rw [one_actLeft, Iso.inv_hom_id]
@@ -680,7 +680,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
-theorem hom_left_act_hom' :
+lemma hom_left_act_hom' :
     ((regular R).tensorBimod P).actLeft ≫ hom P = (𝟙 R.X ⊗ hom P) ≫ P.actLeft := by
   dsimp; dsimp [hom, TensorBimod.actLeft, regular]
   refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
@@ -692,7 +692,7 @@ theorem hom_left_act_hom' :
 set_option linter.uppercaseLean3 false in
 #align Bimod.left_unitor_Bimod.hom_left_act_hom' Bimod.LeftUnitorBimod.hom_left_act_hom'
 
-theorem hom_right_act_hom' :
+lemma hom_right_act_hom' :
     ((regular R).tensorBimod P).actRight ≫ hom P = (hom P ⊗ 𝟙 S.X) ≫ P.actRight := by
   dsimp; dsimp [hom, TensorBimod.actRight, regular]
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
@@ -722,7 +722,7 @@ noncomputable def inv : P.X ⟶ TensorBimod.X P (regular S) :=
 set_option linter.uppercaseLean3 false in
 #align Bimod.right_unitor_Bimod.inv Bimod.RightUnitorBimod.inv
 
-theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
+lemma hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
   ext; dsimp
   slice_lhs 1 2 => rw [coequalizer.π_desc]
@@ -736,7 +736,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
 set_option linter.uppercaseLean3 false in
 #align Bimod.right_unitor_Bimod.hom_inv_id Bimod.RightUnitorBimod.hom_inv_id
 
-theorem inv_hom_id : inv P ≫ hom P = 𝟙 _ := by
+lemma inv_hom_id : inv P ≫ hom P = 𝟙 _ := by
   dsimp [hom, inv]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   rw [actRight_one, Iso.inv_hom_id]
@@ -747,7 +747,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
-theorem hom_left_act_hom' :
+lemma hom_left_act_hom' :
     (P.tensorBimod (regular S)).actLeft ≫ hom P = (𝟙 R.X ⊗ hom P) ≫ P.actLeft := by
   dsimp; dsimp [hom, TensorBimod.actLeft, regular]
   refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
@@ -759,7 +759,7 @@ theorem hom_left_act_hom' :
 set_option linter.uppercaseLean3 false in
 #align Bimod.right_unitor_Bimod.hom_left_act_hom' Bimod.RightUnitorBimod.hom_left_act_hom'
 
-theorem hom_right_act_hom' :
+lemma hom_right_act_hom' :
     (P.tensorBimod (regular S)).actRight ≫ hom P = (hom P ⊗ 𝟙 S.X) ≫ P.actRight := by
   dsimp; dsimp [hom, TensorBimod.actRight, regular]
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
@@ -811,13 +811,13 @@ noncomputable def rightUnitorBimod {X Y : Mon_ C} (M : Bimod X Y) : M.tensorBimo
 set_option linter.uppercaseLean3 false in
 #align Bimod.right_unitor_Bimod Bimod.rightUnitorBimod
 
-theorem whisker_left_comp_bimod {X Y Z : Mon_ C} (M : Bimod X Y) {N P Q : Bimod Y Z} (f : N ⟶ P)
+lemma whisker_left_comp_bimod {X Y Z : Mon_ C} (M : Bimod X Y) {N P Q : Bimod Y Z} (f : N ⟶ P)
     (g : P ⟶ Q) : tensorHom (𝟙 M) (f ≫ g) = tensorHom (𝟙 M) f ≫ tensorHom (𝟙 M) g := by
   rw [← tensor_comp, Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_left_comp_Bimod Bimod.whisker_left_comp_bimod
 
-theorem id_whisker_left_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
+lemma id_whisker_left_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
     tensorHom (𝟙 (regular X)) f = (leftUnitorBimod M).hom ≫ f ≫ (leftUnitorBimod N).inv := by
   dsimp [tensorHom, regular, leftUnitorBimod]
   ext
@@ -841,7 +841,7 @@ theorem id_whisker_left_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
 set_option linter.uppercaseLean3 false in
 #align Bimod.id_whisker_left_Bimod Bimod.id_whisker_left_bimod
 
-theorem comp_whisker_left_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y)
+lemma comp_whisker_left_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y)
     {P P' : Bimod Y Z} (f : P ⟶ P') :
     tensorHom (𝟙 (M.tensorBimod N)) f =
       (associatorBimod M N P).hom ≫
@@ -869,13 +869,13 @@ theorem comp_whisker_left_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X 
 set_option linter.uppercaseLean3 false in
 #align Bimod.comp_whisker_left_Bimod Bimod.comp_whisker_left_bimod
 
-theorem comp_whisker_right_bimod {X Y Z : Mon_ C} {M N P : Bimod X Y} (f : M ⟶ N) (g : N ⟶ P)
+lemma comp_whisker_right_bimod {X Y Z : Mon_ C} {M N P : Bimod X Y} (f : M ⟶ N) (g : N ⟶ P)
     (Q : Bimod Y Z) : tensorHom (f ≫ g) (𝟙 Q) = tensorHom f (𝟙 Q) ≫ tensorHom g (𝟙 Q) := by
   rw [← tensor_comp, Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align Bimod.comp_whisker_right_Bimod Bimod.comp_whisker_right_bimod
 
-theorem whisker_right_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
+lemma whisker_right_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
     tensorHom f (𝟙 (regular Y)) = (rightUnitorBimod M).hom ≫ f ≫ (rightUnitorBimod N).inv := by
   dsimp [tensorHom, regular, rightUnitorBimod]
   ext
@@ -898,7 +898,7 @@ theorem whisker_right_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_right_id_Bimod Bimod.whisker_right_id_bimod
 
-theorem whisker_right_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶ M') (N : Bimod X Y)
+lemma whisker_right_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶ M') (N : Bimod X Y)
     (P : Bimod Y Z) :
     tensorHom f (𝟙 (N.tensorBimod P)) =
       (associatorBimod M N P).inv ≫
@@ -926,7 +926,7 @@ theorem whisker_right_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M �
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_right_comp_Bimod Bimod.whisker_right_comp_bimod
 
-theorem whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y} (f : N ⟶ N')
+lemma whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y} (f : N ⟶ N')
     (P : Bimod Y Z) :
     tensorHom (tensorHom (𝟙 M) f) (𝟙 P) =
       (associatorBimod M N P).hom ≫
@@ -956,7 +956,7 @@ theorem whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_assoc_Bimod Bimod.whisker_assoc_bimod
 
-theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y Z} (f : M ⟶ N)
+lemma whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y Z} (f : M ⟶ N)
     (g : P ⟶ Q) : tensorHom (𝟙 M) g ≫ tensorHom f (𝟙 Q) =
       tensorHom f (𝟙 P) ≫ tensorHom (𝟙 N) g := by
   dsimp [tensorHom]
@@ -973,7 +973,7 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_exchange_Bimod Bimod.whisker_exchange_bimod
 
 set_option maxHeartbeats 400000 in
-theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P : Bimod X Y)
+lemma pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P : Bimod X Y)
     (Q : Bimod Y Z) :
     tensorHom (associatorBimod M N P).hom (𝟙 Q) ≫
       (associatorBimod M (N.tensorBimod P) Q).hom ≫
@@ -1016,7 +1016,7 @@ theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P :
 set_option linter.uppercaseLean3 false in
 #align Bimod.pentagon_Bimod Bimod.pentagon_bimod
 
-theorem triangle_bimod {X Y Z : Mon_ C} (M : Bimod X Y) (N : Bimod Y Z) :
+lemma triangle_bimod {X Y Z : Mon_ C} (M : Bimod X Y) (N : Bimod Y Z) :
     (associatorBimod M (regular Y) N).hom ≫ tensorHom (𝟙 M) (leftUnitorBimod N).hom =
       tensorHom (rightUnitorBimod M).hom (𝟙 N) := by
   dsimp [tensorHom, associatorBimod, leftUnitorBimod, rightUnitorBimod]

@@ -57,7 +57,7 @@ namespace Nat
 /-- The multiplicity of `m` in `n` is the number of positive natural numbers `i` such that `m ^ i`
 divides `n`. This set is expressed by filtering `Ico 1 b` where `b` is any bound greater than
 `log m n`. -/
-theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (hb : log m n < b) :
+lemma multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (hb : log m n < b) :
     multiplicity m n = ↑((Finset.Ico 1 b).filter fun i => m ^ i ∣ n).card :=
   calc
     multiplicity m n = ↑(Ico 1 <| (multiplicity m n).get (finite_nat_iff.2 ⟨hm, hn⟩) + 1).card := by
@@ -78,25 +78,25 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
 
 namespace Prime
 
-theorem multiplicity_one {p : ℕ} (hp : p.Prime) : multiplicity p 1 = 0 :=
+lemma multiplicity_one {p : ℕ} (hp : p.Prime) : multiplicity p 1 = 0 :=
   multiplicity.one_right hp.prime.not_unit
 #align nat.prime.multiplicity_one Nat.Prime.multiplicity_one
 
-theorem multiplicity_mul {p m n : ℕ} (hp : p.Prime) :
+lemma multiplicity_mul {p m n : ℕ} (hp : p.Prime) :
     multiplicity p (m * n) = multiplicity p m + multiplicity p n :=
   multiplicity.mul hp.prime
 #align nat.prime.multiplicity_mul Nat.Prime.multiplicity_mul
 
-theorem multiplicity_pow {p m n : ℕ} (hp : p.Prime) :
+lemma multiplicity_pow {p m n : ℕ} (hp : p.Prime) :
     multiplicity p (m ^ n) = n • multiplicity p m :=
   multiplicity.pow hp.prime
 #align nat.prime.multiplicity_pow Nat.Prime.multiplicity_pow
 
-theorem multiplicity_self {p : ℕ} (hp : p.Prime) : multiplicity p p = 1 :=
+lemma multiplicity_self {p : ℕ} (hp : p.Prime) : multiplicity p p = 1 :=
   multiplicity.multiplicity_self hp.prime.not_unit hp.ne_zero
 #align nat.prime.multiplicity_self Nat.Prime.multiplicity_self
 
-theorem multiplicity_pow_self {p n : ℕ} (hp : p.Prime) : multiplicity p (p ^ n) = n :=
+lemma multiplicity_pow_self {p n : ℕ} (hp : p.Prime) : multiplicity p (p ^ n) = n :=
   multiplicity.multiplicity_pow_self hp.ne_zero hp.prime.not_unit n
 #align nat.prime.multiplicity_pow_self Nat.Prime.multiplicity_pow_self
 
@@ -104,7 +104,7 @@ theorem multiplicity_pow_self {p n : ℕ} (hp : p.Prime) : multiplicity p (p ^ n
 
 The multiplicity of a prime in `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
-theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
+lemma multiplicity_factorial {p : ℕ} (hp : p.Prime) :
     ∀ {n b : ℕ}, log p n < b → multiplicity p n ! = (∑ i in Ico 1 b, n / p ^ i : ℕ)
   | 0, b, _ => by simp [Ico, hp.multiplicity_one]
   | n + 1, b, hb =>
@@ -124,7 +124,7 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
 
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
-theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
+lemma multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
     multiplicity p (p * (n + 1))! = multiplicity p (p * n)! + multiplicity p (n + 1) + 1 := by
   have hp' := hp.prime
   have h0 : 2 ≤ p := hp.two_le
@@ -150,7 +150,7 @@ theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
 #align nat.prime.multiplicity_factorial_mul_succ Nat.Prime.multiplicity_factorial_mul_succ
 
 /-- The multiplicity of `p` in `(p * n)!` is `n` more than that of `n!`. -/
-theorem multiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
+lemma multiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     multiplicity p (p * n)! = multiplicity p n ! + n := by
   induction' n with n ih
   · simp
@@ -162,18 +162,18 @@ theorem multiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
 
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
-theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
+lemma pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
     p ^ r ∣ n ! ↔ r ≤ ∑ i in Ico 1 b, n / p ^ i := by
   rw [← PartENat.coe_le_coe, ← hp.multiplicity_factorial hbn, ← pow_dvd_iff_le_multiplicity]
 #align nat.prime.pow_dvd_factorial_iff Nat.Prime.pow_dvd_factorial_iff
 
-theorem multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
+lemma multiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
     multiplicity p n ! ≤ (n / (p - 1) : ℕ) := by
   rw [hp.multiplicity_factorial (lt_succ_self _), PartENat.coe_le_coe]
   exact Nat.geom_sum_Ico_le hp.two_le _ _
 #align nat.prime.multiplicity_factorial_le_div_pred Nat.Prime.multiplicity_factorial_le_div_pred
 
-theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
+lemma multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     ∑ i in Finset.Ico 1 b, n / p ^ i =
       ((∑ i in Finset.Ico 1 b, k / p ^ i) + ∑ i in Finset.Ico 1 b, (n - k) / p ^ i) +
         ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
@@ -189,7 +189,7 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
 /-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p (n + k)`. -/
-theorem multiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
+lemma multiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
     multiplicity p (choose (n + k) k) =
       ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
   have h₁ :
@@ -210,7 +210,7 @@ theorem multiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k)
 /-- The multiplicity of `p` in `choose n k` is the number of carries when `k` and `n - k`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p n`. -/
-theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
+lemma multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     multiplicity p (choose n k) =
       ((Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
   have := Nat.sub_add_cancel hkn
@@ -220,7 +220,7 @@ theorem multiplicity_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb 
 #align nat.prime.multiplicity_choose Nat.Prime.multiplicity_choose
 
 /-- A lower bound on the multiplicity of `p` in `choose n k`. -/
-theorem multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
+lemma multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
     ∀ n k : ℕ, multiplicity p n ≤ multiplicity p (choose n k) + multiplicity p k
   | _, 0 => by simp
   | 0, _ + 1 => by simp
@@ -253,7 +253,7 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
     (by rw [← hp.multiplicity_pow_self]; exact multiplicity_le_multiplicity_choose_add hp _ _)
 #align nat.prime.multiplicity_choose_prime_pow_add_multiplicity Nat.Prime.multiplicity_choose_prime_pow_add_multiplicity
 
-theorem multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
+lemma multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
     multiplicity p (choose (p ^ n) k) =
       ↑(n - (multiplicity p k).get (finite_nat_iff.2 ⟨hp.ne_one, hk0.bot_lt⟩)) :=
   PartENat.eq_natCast_sub_of_add_eq_natCast <|
@@ -276,7 +276,7 @@ theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 �
 
 end Prime
 
-theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicity 2 n ! < n := by
+lemma multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine' binaryRec _ _
   · exact fun h => False.elim <| h rfl

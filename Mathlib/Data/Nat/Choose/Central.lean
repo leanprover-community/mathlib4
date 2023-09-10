@@ -46,7 +46,7 @@ theorem centralBinom_ne_zero (n : ℕ) : centralBinom n ≠ 0 :=
 #align nat.central_binom_ne_zero Nat.centralBinom_ne_zero
 
 @[simp]
-theorem centralBinom_zero : centralBinom 0 = 1 :=
+lemma centralBinom_zero : centralBinom 0 = 1 :=
   choose_zero_right _
 #align nat.central_binom_zero Nat.centralBinom_zero
 
@@ -100,7 +100,7 @@ theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * c
 This bound is weaker than `Nat.four_pow_lt_mul_centralBinom`, but it is of historical interest
 because it appears in Erdős's proof of Bertrand's postulate.
 -/
-theorem four_pow_le_two_mul_self_mul_centralBinom :
+lemma four_pow_le_two_mul_self_mul_centralBinom :
     ∀ (n : ℕ) (_ : 0 < n), 4 ^ n ≤ 2 * n * centralBinom n
   | 0, pr => (Nat.not_lt_zero _ pr).elim
   | 1, _ => by norm_num [centralBinom, choose]
@@ -119,7 +119,7 @@ theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
       choose_succ_succ' (n + 1 + n) n, choose_symm_add, ← two_mul]
 #align nat.two_dvd_central_binom_succ Nat.two_dvd_centralBinom_succ
 
-theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBinom n := by
+lemma two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBinom n := by
   rw [← Nat.succ_pred_eq_of_pos h]
   exact two_dvd_centralBinom_succ n.pred
 #align nat.two_dvd_central_binom_of_one_le Nat.two_dvd_centralBinom_of_one_le

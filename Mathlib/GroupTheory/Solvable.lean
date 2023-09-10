@@ -42,7 +42,7 @@ def derivedSeries : ℕ → Subgroup G
 #align derived_series derivedSeries
 
 @[simp]
-theorem derivedSeries_zero : derivedSeries G 0 = ⊤ :=
+lemma derivedSeries_zero : derivedSeries G 0 = ⊤ :=
   rfl
 #align derived_series_zero derivedSeries_zero
 
@@ -61,7 +61,7 @@ theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
 
 -- porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]
-theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
+lemma derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
 #align derived_series_one derivedSeries_one
 
@@ -109,7 +109,7 @@ class IsSolvable : Prop where
   solvable : ∃ n : ℕ, derivedSeries G n = ⊥
 #align is_solvable IsSolvable
 
-theorem isSolvable_def : IsSolvable G ↔ ∃ n : ℕ, derivedSeries G n = ⊥ :=
+lemma isSolvable_def : IsSolvable G ↔ ∃ n : ℕ, derivedSeries G n = ⊥ :=
   ⟨fun h => h.solvable, fun h => ⟨h⟩⟩
 #align is_solvable_def isSolvable_def
 
@@ -117,7 +117,7 @@ instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSo
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 #align comm_group.is_solvable CommGroup.isSolvable
 
-theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
+lemma isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
     IsSolvable G := by
   letI hG' : CommGroup G := { hG with mul_comm := h }
   cases hG
@@ -134,7 +134,7 @@ instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolva
 
 variable {G}
 
-theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
+lemma solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
     (g : G →* G'') (hfg : g.ker ≤ f.range) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
@@ -177,7 +177,7 @@ section IsSimpleGroup
 
 variable [IsSimpleGroup G]
 
-theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = commutator G := by
+lemma IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = commutator G := by
   induction' n with n ih
   · exact derivedSeries_one G
   rw [_root_.derivedSeries_succ, ih, _root_.commutator]
@@ -186,7 +186,7 @@ theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = co
   · rwa [h]
 #align is_simple_group.derived_series_succ IsSimpleGroup.derivedSeries_succ
 
-theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ IsSolvable G :=
+lemma IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ IsSolvable G :=
   ⟨isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
     cases n
     · intro a b
@@ -203,14 +203,14 @@ end IsSimpleGroup
 
 section PermNotSolvable
 
-theorem not_solvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
+lemma not_solvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬IsSolvable G :=
   mt (isSolvable_def _).mp
     (not_exists_of_forall_not fun n h =>
       h1 (Subgroup.mem_bot.mp ((congr_arg (Membership.mem g) h).mp (h2 n))))
 #align not_solvable_of_mem_derived_series not_solvable_of_mem_derivedSeries
 
-theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
+lemma Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
   let x : Equiv.Perm (Fin 5) := ⟨![1, 2, 0, 3, 4], ![2, 0, 1, 3, 4], by decide, by decide⟩
   let y : Equiv.Perm (Fin 5) := ⟨![3, 4, 2, 0, 1], ![3, 4, 2, 0, 1], by decide, by decide⟩
   let z : Equiv.Perm (Fin 5) := ⟨![0, 3, 2, 1, 4], ![0, 3, 2, 1, 4], by decide, by decide⟩

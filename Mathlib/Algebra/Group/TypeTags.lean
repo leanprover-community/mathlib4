@@ -59,12 +59,12 @@ def toMul : Additive α ≃ α := ofMul.symm
 #align additive.to_mul Additive.toMul
 
 @[simp]
-theorem ofMul_symm_eq : (@ofMul α).symm = toMul :=
+lemma ofMul_symm_eq : (@ofMul α).symm = toMul :=
   rfl
 #align additive.of_mul_symm_eq Additive.ofMul_symm_eq
 
 @[simp]
-theorem toMul_symm_eq : (@toMul α).symm = ofMul :=
+lemma toMul_symm_eq : (@toMul α).symm = ofMul :=
   rfl
 #align additive.to_mul_symm_eq Additive.toMul_symm_eq
 
@@ -82,12 +82,12 @@ def toAdd : Multiplicative α ≃ α := ofAdd.symm
 #align multiplicative.to_add Multiplicative.toAdd
 
 @[simp]
-theorem ofAdd_symm_eq : (@ofAdd α).symm = toAdd :=
+lemma ofAdd_symm_eq : (@ofAdd α).symm = toAdd :=
   rfl
 #align multiplicative.of_add_symm_eq Multiplicative.ofAdd_symm_eq
 
 @[simp]
-theorem toAdd_symm_eq : (@toAdd α).symm = ofAdd :=
+lemma toAdd_symm_eq : (@toAdd α).symm = ofAdd :=
   rfl
 #align multiplicative.to_add_symm_eq Multiplicative.toAdd_symm_eq
 
@@ -147,19 +147,19 @@ instance Multiplicative.mul [Add α] : Mul (Multiplicative α) where
   mul x y := ofAdd (toAdd x + toAdd y)
 
 @[simp]
-theorem ofAdd_add [Add α] (x y : α) : ofAdd (x + y) = ofAdd x * ofAdd y := rfl
+lemma ofAdd_add [Add α] (x y : α) : ofAdd (x + y) = ofAdd x * ofAdd y := rfl
 #align of_add_add ofAdd_add
 
 @[simp]
-theorem toAdd_mul [Add α] (x y : Multiplicative α) : toAdd (x * y) = toAdd x + toAdd y := rfl
+lemma toAdd_mul [Add α] (x y : Multiplicative α) : toAdd (x * y) = toAdd x + toAdd y := rfl
 #align to_add_mul toAdd_mul
 
 @[simp]
-theorem ofMul_mul [Mul α] (x y : α) : ofMul (x * y) = ofMul x + ofMul y := rfl
+lemma ofMul_mul [Mul α] (x y : α) : ofMul (x * y) = ofMul x + ofMul y := rfl
 #align of_mul_mul ofMul_mul
 
 @[simp]
-theorem toMul_add [Mul α] (x y : Additive α) : toMul (x + y) = toMul x * toMul y := rfl
+lemma toMul_add [Mul α] (x y : Additive α) : toMul (x + y) = toMul x * toMul y := rfl
 #align to_mul_add toMul_add
 
 instance Additive.addSemigroup [Semigroup α] : AddSemigroup (Additive α) :=
@@ -214,32 +214,32 @@ instance [One α] : Zero (Additive α) :=
   ⟨Additive.ofMul 1⟩
 
 @[simp]
-theorem ofMul_one [One α] : @Additive.ofMul α 1 = 0 := rfl
+lemma ofMul_one [One α] : @Additive.ofMul α 1 = 0 := rfl
 #align of_mul_one ofMul_one
 
 @[simp]
-theorem ofMul_eq_zero {A : Type*} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
+lemma ofMul_eq_zero {A : Type*} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
 #align of_mul_eq_zero ofMul_eq_zero
 
 @[simp]
-theorem toMul_zero [One α] : toMul (0 : Additive α) = 1 := rfl
+lemma toMul_zero [One α] : toMul (0 : Additive α) = 1 := rfl
 #align to_mul_zero toMul_zero
 
 instance [Zero α] : One (Multiplicative α) :=
   ⟨Multiplicative.ofAdd 0⟩
 
 @[simp]
-theorem ofAdd_zero [Zero α] : @Multiplicative.ofAdd α 0 = 1 :=
+lemma ofAdd_zero [Zero α] : @Multiplicative.ofAdd α 0 = 1 :=
   rfl
 #align of_add_zero ofAdd_zero
 
 @[simp]
-theorem ofAdd_eq_one {A : Type*} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 :=
+lemma ofAdd_eq_one {A : Type*} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 ↔ x = 0 :=
   Iff.rfl
 #align of_add_eq_one ofAdd_eq_one
 
 @[simp]
-theorem toAdd_one [Zero α] : toAdd (1 : Multiplicative α) = 0 :=
+lemma toAdd_one [Zero α] : toAdd (1 : Multiplicative α) = 0 :=
   rfl
 #align to_add_one toAdd_one
 
@@ -295,12 +295,12 @@ instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd (toMul x)⁻¹⟩
 
 @[simp]
-theorem ofMul_inv [Inv α] (x : α) : ofMul x⁻¹ = -ofMul x :=
+lemma ofMul_inv [Inv α] (x : α) : ofMul x⁻¹ = -ofMul x :=
   rfl
 #align of_mul_inv ofMul_inv
 
 @[simp]
-theorem toMul_neg [Inv α] (x : Additive α) : toMul (-x) = (toMul x)⁻¹ :=
+lemma toMul_neg [Inv α] (x : Additive α) : toMul (-x) = (toMul x)⁻¹ :=
   rfl
 #align to_mul_neg toMul_neg
 
@@ -308,12 +308,12 @@ instance Multiplicative.inv [Neg α] : Inv (Multiplicative α) :=
   ⟨fun x => ofMul (-toAdd x)⟩
 
 @[simp]
-theorem ofAdd_neg [Neg α] (x : α) : ofAdd (-x) = (ofAdd x)⁻¹ :=
+lemma ofAdd_neg [Neg α] (x : α) : ofAdd (-x) = (ofAdd x)⁻¹ :=
   rfl
 #align of_add_neg ofAdd_neg
 
 @[simp]
-theorem toAdd_inv [Neg α] (x : Multiplicative α) : toAdd x⁻¹ = -(toAdd x) :=
+lemma toAdd_inv [Neg α] (x : Multiplicative α) : toAdd x⁻¹ = -(toAdd x) :=
   rfl
 #align to_add_inv toAdd_inv
 
@@ -326,22 +326,22 @@ instance Multiplicative.div [Sub α] : Div (Multiplicative α) where
 #align multiplicative.has_div Multiplicative.div
 
 @[simp]
-theorem ofAdd_sub [Sub α] (x y : α) : ofAdd (x - y) = ofAdd x / ofAdd y :=
+lemma ofAdd_sub [Sub α] (x y : α) : ofAdd (x - y) = ofAdd x / ofAdd y :=
   rfl
 #align of_add_sub ofAdd_sub
 
 @[simp]
-theorem toAdd_div [Sub α] (x y : Multiplicative α) : toAdd (x / y) = toAdd x - toAdd y :=
+lemma toAdd_div [Sub α] (x y : Multiplicative α) : toAdd (x / y) = toAdd x - toAdd y :=
   rfl
 #align to_add_div toAdd_div
 
 @[simp]
-theorem ofMul_div [Div α] (x y : α) : ofMul (x / y) = ofMul x - ofMul y :=
+lemma ofMul_div [Div α] (x y : α) : ofMul (x / y) = ofMul x - ofMul y :=
   rfl
 #align of_mul_div ofMul_div
 
 @[simp]
-theorem toMul_sub [Div α] (x y : Additive α) : toMul (x - y) = toMul x / toMul y :=
+lemma toMul_sub [Div α] (x y : Additive α) : toMul (x - y) = toMul x / toMul y :=
   rfl
 #align to_mul_sub toMul_sub
 

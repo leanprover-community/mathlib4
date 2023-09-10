@@ -88,7 +88,7 @@ theorem algebraMap_apply (r : R) :
   rfl
 #align direct_sum.algebra_map_apply DirectSum.algebraMap_apply
 
-theorem algebraMap_toAddMonoid_hom :
+lemma algebraMap_toAddMonoid_hom :
     ↑(algebraMap R (⨁ i, A i)) = (DirectSum.of A 0).comp (GAlgebra.toFun : R →+ A 0) :=
   rfl
 #align direct_sum.algebra_map_to_add_monoid_hom DirectSum.algebraMap_toAddMonoid_hom

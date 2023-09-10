@@ -66,7 +66,7 @@ of great interest for the end user.
 
 
 /-- Shows that the fractional parts of the stream are in `[0,1)`. -/
-theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
+lemma nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : 0 ≤ ifp_n.fr ∧ ifp_n.fr < 1 := by
   cases n
   case zero =>
@@ -80,19 +80,19 @@ theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
 #align generalized_continued_fraction.int_fract_pair.nth_stream_fr_nonneg_lt_one GeneralizedContinuedFraction.IntFractPair.nth_stream_fr_nonneg_lt_one
 
 /-- Shows that the fractional parts of the stream are nonnegative. -/
-theorem nth_stream_fr_nonneg {ifp_n : IntFractPair K}
+lemma nth_stream_fr_nonneg {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : 0 ≤ ifp_n.fr :=
   (nth_stream_fr_nonneg_lt_one nth_stream_eq).left
 #align generalized_continued_fraction.int_fract_pair.nth_stream_fr_nonneg GeneralizedContinuedFraction.IntFractPair.nth_stream_fr_nonneg
 
 /-- Shows that the fractional parts of the stream are smaller than one. -/
-theorem nth_stream_fr_lt_one {ifp_n : IntFractPair K}
+lemma nth_stream_fr_lt_one {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : ifp_n.fr < 1 :=
   (nth_stream_fr_nonneg_lt_one nth_stream_eq).right
 #align generalized_continued_fraction.int_fract_pair.nth_stream_fr_lt_one GeneralizedContinuedFraction.IntFractPair.nth_stream_fr_lt_one
 
 /-- Shows that the integer parts of the stream are at least one. -/
-theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
+lemma one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
     (succ_nth_stream_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) : 1 ≤ ifp_succ_n.b := by
   obtain ⟨ifp_n, nth_stream_eq, stream_nth_fr_ne_zero, ⟨-⟩⟩ :
     ∃ ifp_n,
@@ -111,7 +111,7 @@ Shows that the `n + 1`th integer part `bₙ₊₁` of the stream is smaller or e
 the `n`th fractional part `frₙ` of the stream.
 This result is straight-forward as `bₙ₊₁` is defined as the floor of `1 / frₙ`.
 -/
-theorem succ_nth_stream_b_le_nth_stream_fr_inv {ifp_n ifp_succ_n : IntFractPair K}
+lemma succ_nth_stream_b_le_nth_stream_fr_inv {ifp_n ifp_succ_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n)
     (succ_nth_stream_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ := by
@@ -135,7 +135,7 @@ fraction `GeneralizedContinuedFraction.of`.
 
 
 /-- Shows that the integer parts of the continued fraction are at least one. -/
-theorem of_one_le_get?_part_denom {b : K}
+lemma of_one_le_get?_part_denom {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) : 1 ≤ b := by
   obtain ⟨gp_n, nth_s_eq, ⟨-⟩⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b;
   exact exists_s_b_of_part_denom nth_part_denom_eq
@@ -150,7 +150,7 @@ theorem of_one_le_get?_part_denom {b : K}
 Shows that the partial numerators `aᵢ` of the continued fraction are equal to one and the partial
 denominators `bᵢ` correspond to integers.
 -/
-theorem of_part_num_eq_one_and_exists_int_part_denom_eq {gp : GeneralizedContinuedFraction.Pair K}
+lemma of_part_num_eq_one_and_exists_int_part_denom_eq {gp : GeneralizedContinuedFraction.Pair K}
     (nth_s_eq : (of v).s.get? n = some gp) : gp.a = 1 ∧ ∃ z : ℤ, gp.b = (z : K) := by
   obtain ⟨ifp, stream_succ_nth_eq, -⟩ : ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ _
   exact IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some nth_s_eq
@@ -163,7 +163,7 @@ theorem of_part_num_eq_one_and_exists_int_part_denom_eq {gp : GeneralizedContinu
 #align generalized_continued_fraction.of_part_num_eq_one_and_exists_int_part_denom_eq GeneralizedContinuedFraction.of_part_num_eq_one_and_exists_int_part_denom_eq
 
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
-theorem of_part_num_eq_one {a : K} (nth_part_num_eq : (of v).partialNumerators.get? n = some a) :
+lemma of_part_num_eq_one {a : K} (nth_part_num_eq : (of v).partialNumerators.get? n = some a) :
     a = 1 := by
   obtain ⟨gp, nth_s_eq, gp_a_eq_a_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.a = a;
   exact exists_s_a_of_part_num nth_part_num_eq
@@ -172,7 +172,7 @@ theorem of_part_num_eq_one {a : K} (nth_part_num_eq : (of v).partialNumerators.g
 #align generalized_continued_fraction.of_part_num_eq_one GeneralizedContinuedFraction.of_part_num_eq_one
 
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
-theorem exists_int_eq_of_part_denom {b : K}
+lemma exists_int_eq_of_part_denom {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
   obtain ⟨gp, nth_s_eq, gp_b_eq_b_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.b = b;
   exact exists_s_b_of_part_denom nth_part_denom_eq
@@ -190,7 +190,7 @@ denominators `Bₙ` are bounded from below by the fibonacci sequence `Nat.fib`. 
 -- open `Nat` as we will make use of fibonacci numbers.
 open Nat
 
-theorem fib_le_of_continuantsAux_b :
+lemma fib_le_of_continuantsAux_b :
     n ≤ 1 ∨ ¬(of v).TerminatedAt (n - 2) → (fib n : K) ≤ ((of v).continuantsAux n).b :=
   Nat.strong_induction_on n
     (by
@@ -247,7 +247,7 @@ theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n -
 /-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
 
 
-theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
+lemma zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
   let g := of v
   induction' n with n IH
   case zero => rfl
@@ -266,11 +266,11 @@ theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
 #align generalized_continued_fraction.zero_le_of_continuants_aux_b GeneralizedContinuedFraction.zero_le_of_continuantsAux_b
 
 /-- Shows that all denominators are nonnegative. -/
-theorem zero_le_of_denom : 0 ≤ (of v).denominators n := by
+lemma zero_le_of_denom : 0 ≤ (of v).denominators n := by
   rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]; exact zero_le_of_continuantsAux_b
 #align generalized_continued_fraction.zero_le_of_denom GeneralizedContinuedFraction.zero_le_of_denom
 
-theorem le_of_succ_succ_get?_continuantsAux_b {b : K}
+lemma le_of_succ_succ_get?_continuantsAux_b {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) :
     b * ((of v).continuantsAux <| n + 1).b ≤ ((of v).continuantsAux <| n + 2).b := by
   obtain ⟨gp_n, nth_s_eq, rfl⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b
@@ -281,7 +281,7 @@ theorem le_of_succ_succ_get?_continuantsAux_b {b : K}
 
 /-- Shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is the `n`th partial denominator and `Bₙ₊₁` and `Bₙ` are
 the `n + 1`th and `n`th denominator of the continued fraction. -/
-theorem le_of_succ_get?_denom {b : K}
+lemma le_of_succ_get?_denom {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) :
     b * (of v).denominators n ≤ (of v).denominators (n + 1) := by
   rw [denom_eq_conts_b, nth_cont_eq_succ_nth_cont_aux]
@@ -289,7 +289,7 @@ theorem le_of_succ_get?_denom {b : K}
 #align generalized_continued_fraction.le_of_succ_nth_denom GeneralizedContinuedFraction.le_of_succ_get?_denom
 
 /-- Shows that the sequence of denominators is monotone, that is `Bₙ ≤ Bₙ₊₁`. -/
-theorem of_denom_mono : (of v).denominators n ≤ (of v).denominators (n + 1) := by
+lemma of_denom_mono : (of v).denominators n ≤ (of v).denominators (n + 1) := by
   let g := of v
   cases' Decidable.em <| g.partialDenominators.TerminatedAt n with terminated not_terminated
   · have : g.partialDenominators.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
@@ -377,7 +377,7 @@ position, i.e. bounds for the term `|v - (GeneralizedContinuedFraction.of v).con
 
 /-- This lemma follows from the finite correctness proof, the determinant equality, and
 by simplifying the difference. -/
-theorem sub_convergents_eq {ifp : IntFractPair K}
+lemma sub_convergents_eq {ifp : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp) :
     let g := of v
     let B := (g.continuantsAux (n + 1)).b
@@ -550,7 +550,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
 `GCF.abs_sub_convergents_le`, but sometimes it is easier to apply and sufficient for one's use case.
  -/
-theorem abs_sub_convergents_le' {b : K}
+lemma abs_sub_convergents_le' {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) :
     |v - (of v).convergents n| ≤ 1 / (b * (of v).denominators n * (of v).denominators n) := by
   have not_terminated_at_n : ¬(of v).TerminatedAt n := by

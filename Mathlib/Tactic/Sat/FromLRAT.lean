@@ -132,7 +132,7 @@ such that all literals in the clause are falsified except for `¬l`;
 so in the context `h₁` where we suppose that `¬l` is falsified,
 the clause itself is falsified so we can prove `False`.
 We continue the proof in `h₂`, with the assumption that `l` is falsified. -/
-theorem Valuation.by_cases {v : Valuation} {l}
+lemma Valuation.by_cases {v : Valuation} {l}
   (h₁ : v.neg l.negate → False) (h₂ : v.neg l → False) : False :=
 match l with
 | Literal.pos _ => h₂ h₁
@@ -153,7 +153,7 @@ def Valuation.mk : List Prop → Valuation
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
-theorem Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
+lemma Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
   (Valuation.mk as).implies p ps as₁.length → p := by
   induction ps generalizing as₁ with
   | nil => exact fun _ ↦ id
@@ -172,7 +172,7 @@ structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
 /-- If `f` is unsatisfiable, and every `v` which agrees with `ps` implies `¬⟦f⟧_v → p`, then `p`.
 Equivalently, there exists a valuation `v` which agrees with `ps`,
 and every such valuation yields `¬⟦f⟧_v` because `f` is unsatisfiable. -/
-theorem Fmla.refute {ps} (f : Fmla) (hf : f.proof [])
+lemma Fmla.refute {ps} (f : Fmla) (hf : f.proof [])
   (hv : ∀ v, Valuation.implies v (Fmla.reify v f p) ps 0) : p :=
   (Valuation.mk_implies [] rfl (hv _)).1 (hf _)
 
@@ -202,7 +202,7 @@ theorem Clause.reify_and (h₁ : Literal.reify v l a) (h₂ : Clause.reify v c b
   ⟨fun H ↦ ⟨h₁.1 (by_contra fun hn ↦ H hn.elim), h₂.1 fun h ↦ H fun _ ↦ h⟩⟩
 
 /-- The reification of the empty clause is `True`: `¬⟦⊥⟧_v ≡ True`. -/
-theorem Clause.reify_zero : Clause.reify v Clause.nil True := ⟨fun _ ↦ trivial⟩
+lemma Clause.reify_zero : Clause.reify v Clause.nil True := ⟨fun _ ↦ trivial⟩
 
 /-- The reification of a singleton clause `¬⟦l⟧_v ≡ ¬⟦l⟧_v`. -/
 theorem Clause.reify_one (h₁ : Literal.reify v l a) : Clause.reify v (Clause.nil.cons l) a :=
@@ -565,7 +565,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
   return (nvars, ctx, ctx', mkConst declName)
 
 /-- Main entry point. Given strings `cnf` and `lrat` with unparsed file data, and a name `name`,
-adds `theorem name : type := proof` where `type` is a propositional theorem like
+adds `lemma name : type := proof` where `type` is a propositional theorem like
 `∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1`.
 
 Also creates auxiliaries named `name.ctx_1` (for the CNF formula)

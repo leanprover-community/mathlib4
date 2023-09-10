@@ -207,7 +207,7 @@ theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain,
 #align linear_pmap.adjoint_apply_eq LinearPMap.adjoint_apply_eq
 
 /-- The fundamental property of the adjoint. -/
-theorem adjoint_isFormalAdjoint : T†.IsFormalAdjoint T := fun x =>
+lemma adjoint_isFormalAdjoint : T†.IsFormalAdjoint T := fun x =>
   (adjoint_apply_of_dense hT x).symm ▸ adjointAux_inner hT x
 #align linear_pmap.adjoint_is_formal_adjoint LinearPMap.adjoint_isFormalAdjoint
 
@@ -256,7 +256,7 @@ instance instStar : Star (E →ₗ.[𝕜] E) where
 
 variable {A : E →ₗ.[𝕜] E}
 
-theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := Iff.rfl
+lemma isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := Iff.rfl
 
 /-- Every self-adjoint `LinearPMap` has dense domain.
 

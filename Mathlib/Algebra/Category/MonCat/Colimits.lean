@@ -125,7 +125,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.colimits.monoid_colimit_type MonCat.Colimits.monoidColimitType
 
 @[simp]
-theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
+lemma quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.quot_one MonCat.Colimits.quot_one
@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.colimits.cocone_morphism MonCat.Colimits.coconeMorphism
 
 @[simp]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
+lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound

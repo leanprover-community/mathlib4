@@ -31,23 +31,23 @@ namespace UpperHalfPlane
 instance : TopologicalSpace ℍ :=
   instTopologicalSpaceSubtype
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℍ → ℂ) :=
+lemma openEmbedding_coe : OpenEmbedding ((↑) : ℍ → ℂ) :=
   IsOpen.openEmbedding_subtype_val <| isOpen_lt continuous_const Complex.continuous_im
 #align upper_half_plane.open_embedding_coe UpperHalfPlane.openEmbedding_coe
 
-theorem embedding_coe : Embedding ((↑) : ℍ → ℂ) :=
+lemma embedding_coe : Embedding ((↑) : ℍ → ℂ) :=
   embedding_subtype_val
 #align upper_half_plane.embedding_coe UpperHalfPlane.embedding_coe
 
-theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
+lemma continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
   embedding_coe.continuous
 #align upper_half_plane.continuous_coe UpperHalfPlane.continuous_coe
 
-theorem continuous_re : Continuous re :=
+lemma continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe
 #align upper_half_plane.continuous_re UpperHalfPlane.continuous_re
 
-theorem continuous_im : Continuous im :=
+lemma continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 #align upper_half_plane.continuous_im UpperHalfPlane.continuous_im
 

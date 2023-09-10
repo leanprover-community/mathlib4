@@ -50,7 +50,7 @@ variable {R A : Type*} [Semiring R]
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
-theorem mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {a0 b0 : A}
+lemma mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {a0 b0 : A}
     (h : ∀ {a b : A}, a ∈ f.support → b ∈ g.support → a ≠ a0 ∨ b ≠ b0 → a + b ≠ a0 + b0) :
     (f * g) (a0 + b0) = f a0 * g b0 := by
   classical
@@ -67,14 +67,14 @@ theorem mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {
 
 section LeftOrRightOrderability
 
-theorem Left.exists_add_of_mem_support_single_mul [AddLeftCancelSemigroup A]
+lemma Left.exists_add_of_mem_support_single_mul [AddLeftCancelSemigroup A]
     {g : AddMonoidAlgebra R A} (a x : A)
     (hx : x ∈ (single a 1 * g : AddMonoidAlgebra R A).support) : ∃ b ∈ g.support, a + b = x := by
   rwa [support_single_mul _ _ (fun y => by rw [one_mul] : ∀ y : R, 1 * y = 0 ↔ _),
     Finset.mem_map] at hx
 #align add_monoid_algebra.left.exists_add_of_mem_support_single_mul AddMonoidAlgebra.Left.exists_add_of_mem_support_single_mul
 
-theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
+lemma Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
     {f : AddMonoidAlgebra R A} (b x : A)
     (hx : x ∈ (f * single b 1 : AddMonoidAlgebra R A).support) : ∃ a ∈ f.support, a + b = x := by
   rwa [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _),
@@ -83,7 +83,7 @@ theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a left-ordered add right
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
-theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
+lemma NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
     [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
   ⟨@fun f g fg => by
     contrapose! fg
@@ -121,7 +121,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a right-ordered add left
 cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
-theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigroup A]
+lemma NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigroup A]
     [LinearOrder A] [CovariantClass A A (Function.swap (· + ·)) (· < ·)] :
     NoZeroDivisors (AddMonoidAlgebra R A) :=
   ⟨@fun f g fg => by

@@ -84,11 +84,11 @@ a type with *b*ot or *t*op respectively.
 
 variable (degb : A → B) (degt : A → T) (f g : AddMonoidAlgebra R A)
 
-theorem sup_support_add_le : (f + g).support.sup degb ≤ f.support.sup degb ⊔ g.support.sup degb :=
+lemma sup_support_add_le : (f + g).support.sup degb ≤ f.support.sup degb ⊔ g.support.sup degb :=
   (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
 #align add_monoid_algebra.sup_support_add_le AddMonoidAlgebra.sup_support_add_le
 
-theorem le_inf_support_add : f.support.inf degt ⊓ g.support.inf degt ≤ (f + g).support.inf degt :=
+lemma le_inf_support_add : f.support.inf degt ⊓ g.support.inf degt ≤ (f + g).support.inf degt :=
   sup_support_add_le (fun a : A => OrderDual.toDual (degt a)) f g
 #align add_monoid_algebra.le_inf_support_add AddMonoidAlgebra.le_inf_support_add
 
@@ -100,7 +100,7 @@ variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
   [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] [CovariantClass T T (· + ·) (· ≤ ·)]
   [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
 
-theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
+lemma sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : AddMonoidAlgebra R A) :
     (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   refine' (Finset.sup_mono <| support_mul _ _).trans _
@@ -109,7 +109,7 @@ theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤
     exact Finset.le_sup ‹_›
 #align add_monoid_algebra.sup_support_mul_le AddMonoidAlgebra.sup_support_mul_le
 
-theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
+lemma le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
     (f g : AddMonoidAlgebra R A) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt := by
     refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_mul_le (_) f g

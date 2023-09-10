@@ -114,7 +114,7 @@ instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
   TopologicalSpace.induced (fun x y => B x y) Pi.topologicalSpace
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is continuous. -/
-theorem coeFn_continuous : Continuous fun (x : WeakBilin B) y => B x y :=
+lemma coeFn_continuous : Continuous fun (x : WeakBilin B) y => B x y :=
   continuous_induced_dom
 #align weak_bilin.coe_fn_continuous WeakBilin.coeFn_continuous
 
@@ -122,18 +122,18 @@ theorem eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
   (continuous_pi_iff.mp (coeFn_continuous B)) y
 #align weak_bilin.eval_continuous WeakBilin.eval_continuous
 
-theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakBilin B}
+lemma continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakBilin B}
     (h : ∀ y, Continuous fun a => B (g a) y) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 #align weak_bilin.continuous_of_continuous_eval WeakBilin.continuous_of_continuous_eval
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is an embedding. -/
-theorem embedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
+lemma embedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
     Embedding fun (x : WeakBilin B) y => B x y :=
   Function.Injective.embedding_induced <| LinearMap.coe_injective.comp hB
 #align weak_bilin.embedding WeakBilin.embedding
 
-theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B} {x : WeakBilin B}
+lemma tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B} {x : WeakBilin B}
     (hB : Function.Injective B) :
     Tendsto f l (𝓝 x) ↔ ∀ y, Tendsto (fun i => B (f i) y) l (𝓝 (B x y)) := by
   rw [← tendsto_pi_nhds, Embedding.tendsto_nhds_iff (embedding hB)]
@@ -273,7 +273,7 @@ instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommCl
   ⟨continuous_induced_rng.2 <|
       continuous_fst.smul ((WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).comp continuous_snd)⟩
 
-theorem coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
+lemma coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
   continuous_induced_dom
 #align weak_dual.coe_fn_continuous WeakDual.coeFn_continuous
 
@@ -281,7 +281,7 @@ theorem eval_continuous (y : E) : Continuous fun x : WeakDual 𝕜 E => x y :=
   continuous_pi_iff.mp coeFn_continuous y
 #align weak_dual.eval_continuous WeakDual.eval_continuous
 
-theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual 𝕜 E}
+lemma continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual 𝕜 E}
     (h : ∀ y, Continuous fun a => (g a) y) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 #align weak_dual.continuous_of_continuous_eval WeakDual.continuous_of_continuous_eval
@@ -336,7 +336,7 @@ theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
 
 end WeakSpace
 
-theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
+lemma tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
     Tendsto f l (𝓝 x) ↔
       ∀ y, Tendsto (fun i => topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=

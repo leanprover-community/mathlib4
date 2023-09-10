@@ -68,13 +68,13 @@ def modPart : ℤ :=
 
 variable {p}
 
-theorem modPart_lt_p : modPart p r < p := by
+lemma modPart_lt_p : modPart p r < p := by
   convert Int.emod_lt _ _
   · simp
   · exact_mod_cast hp_prime.1.ne_zero
 #align padic_int.mod_part_lt_p PadicInt.modPart_lt_p
 
-theorem modPart_nonneg : 0 ≤ modPart p r :=
+lemma modPart_nonneg : 0 ≤ modPart p r :=
   Int.emod_nonneg _ <| by exact_mod_cast hp_prime.1.ne_zero
 #align padic_int.mod_part_nonneg PadicInt.modPart_nonneg
 
@@ -168,7 +168,7 @@ theorem zmod_congr_of_sub_mem_max_ideal (x : ℤ_[p]) (m n : ℕ) (hm : x - m �
 
 variable (x : ℤ_[p])
 
-theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p] := by
+lemma exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p] := by
   simp only [maximalIdeal_eq_span_p, Ideal.mem_span_singleton, ← norm_lt_one_iff_dvd]
   obtain ⟨r, hr⟩ := rat_dense p (x : ℚ_[p]) zero_lt_one
   have H : ‖(r : ℚ_[p])‖ ≤ 1 := by
@@ -197,15 +197,15 @@ def zmodRepr : ℕ :=
   Classical.choose (exists_mem_range x)
 #align padic_int.zmod_repr PadicInt.zmodRepr
 
-theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
+lemma zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   Classical.choose_spec (exists_mem_range x)
 #align padic_int.zmod_repr_spec PadicInt.zmodRepr_spec
 
-theorem zmodRepr_lt_p : zmodRepr x < p :=
+lemma zmodRepr_lt_p : zmodRepr x < p :=
   (zmodRepr_spec _).1
 #align padic_int.zmod_repr_lt_p PadicInt.zmodRepr_lt_p
 
-theorem sub_zmodRepr_mem : x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
+lemma sub_zmodRepr_mem : x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   (zmodRepr_spec _).2
 #align padic_int.sub_zmod_repr_mem PadicInt.sub_zmodRepr_mem
 
@@ -269,7 +269,7 @@ to coerce to rings of arbitrary characteristic, instead of only rings of charact
 This coercion is only a ring homomorphism if it coerces into a ring whose characteristic divides
 `p`. While this is not the case here we can still make use of the coercion.
 -/
-theorem toZMod_spec : x - (toZMod x : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
+lemma toZMod_spec : x - (toZMod x : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
   convert sub_zmodRepr_mem x using 2
   dsimp [toZMod, toZModHom]
   rcases exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
@@ -279,7 +279,7 @@ theorem toZMod_spec : x - (toZMod x : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
   simpa only [zero_add] using zmodRepr_lt_p x
 #align padic_int.to_zmod_spec PadicInt.toZMod_spec
 
-theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal ℤ_[p] := by
+lemma ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal ℤ_[p] := by
   ext x
   rw [RingHom.mem_ker]
   constructor
@@ -446,7 +446,7 @@ theorem cast_toZModPow (m n : ℕ) (h : m ≤ n) (x : ℤ_[p]) : ↑(toZModPow n
   rfl
 #align padic_int.cast_to_zmod_pow PadicInt.cast_toZModPow
 
-theorem denseRange_nat_cast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
+lemma denseRange_nat_cast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   intro x
   rw [Metric.mem_closure_range_iff]
   intro ε hε
@@ -458,7 +458,7 @@ theorem denseRange_nat_cast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   apply appr_spec
 #align padic_int.dense_range_nat_cast PadicInt.denseRange_nat_cast
 
-theorem denseRange_int_cast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
+lemma denseRange_int_cast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
   refine DenseRange.induction_on denseRange_nat_cast x ?_ ?_
   · exact isClosed_closure
@@ -488,7 +488,7 @@ def nthHom (r : R) : ℕ → ℤ := fun n => (f n r : ZMod (p ^ n)).val
 #align padic_int.nth_hom PadicInt.nthHom
 
 @[simp]
-theorem nthHom_zero : nthHom f 0 = 0 := by simp [nthHom]; rfl
+lemma nthHom_zero : nthHom f 0 = 0 := by simp [nthHom]; rfl
 #align padic_int.nth_hom_zero PadicInt.nthHom_zero
 
 variable {f}
@@ -522,7 +522,7 @@ def nthHomSeq (r : R) : PadicSeq p :=
 #align padic_int.nth_hom_seq PadicInt.nthHomSeq
 
 -- this lemma ran into issues after changing to `NeZero` and I'm not sure why.
-theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
+lemma nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   intro ε hε
   change _ < _ at hε
   use 1
@@ -585,10 +585,10 @@ theorem limNthHom_spec (r : R) :
   exact hN _ hn
 #align padic_int.lim_nth_hom_spec PadicInt.limNthHom_spec
 
-theorem limNthHom_zero : limNthHom f_compat 0 = 0 := by simp [limNthHom]; rfl
+lemma limNthHom_zero : limNthHom f_compat 0 = 0 := by simp [limNthHom]; rfl
 #align padic_int.lim_nth_hom_zero PadicInt.limNthHom_zero
 
-theorem limNthHom_one : limNthHom f_compat 1 = 1 :=
+lemma limNthHom_one : limNthHom f_compat 1 = 1 :=
   Subtype.ext <| Quot.sound <| nthHomSeq_one f_compat
 #align padic_int.lim_nth_hom_one PadicInt.limNthHom_one
 
@@ -664,7 +664,7 @@ theorem lift_self (z : ℤ_[p]) : @lift p _ ℤ_[p] _ toZModPow zmod_cast_comp_t
 
 end lift
 
-theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y) ↔ x = y := by
+lemma ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y) ↔ x = y := by
   constructor
   · intro h
     rw [← lift_self x, ← lift_self y]
@@ -673,7 +673,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
     rfl
 #align padic_int.ext_of_to_zmod_pow PadicInt.ext_of_toZModPow
 
-theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
+lemma toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
     (∀ n, (toZModPow n).comp g = (toZModPow n).comp g') ↔ g = g' := by
   constructor
   · intro hg

@@ -51,7 +51,7 @@ class HasSolidNorm (α : Type*) [NormedAddCommGroup α] [Lattice α] : Prop wher
 
 variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
 
-theorem norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
+lemma norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
   HasSolidNorm.solid h
 #align norm_le_norm_of_abs_le_abs norm_le_norm_of_abs_le_abs
 
@@ -198,20 +198,20 @@ theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
     exact norm_sup_sub_sup_le_norm x y z
 #align lipschitz_with_sup_right lipschitzWith_sup_right
 
-theorem lipschitzWith_pos : LipschitzWith 1 (PosPart.pos : α → α) :=
+lemma lipschitzWith_pos : LipschitzWith 1 (PosPart.pos : α → α) :=
   lipschitzWith_sup_right 0
 #align lipschitz_with_pos lipschitzWith_pos
 
-theorem continuous_pos : Continuous (PosPart.pos : α → α) :=
+lemma continuous_pos : Continuous (PosPart.pos : α → α) :=
   LipschitzWith.continuous lipschitzWith_pos
 #align continuous_pos continuous_pos
 
-theorem continuous_neg' : Continuous (NegPart.neg : α → α) := by
+lemma continuous_neg' : Continuous (NegPart.neg : α → α) := by
   refine continuous_pos.comp <| @continuous_neg _ _ _ TopologicalAddGroup.toContinuousNeg
   -- porting note: see the [Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/can't.20infer.20.60ContinuousNeg.60)
 #align continuous_neg' continuous_neg'
 
-theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } := by
+lemma isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } := by
   suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)} by
     rw [this]
     exact IsClosed.preimage continuous_neg' isClosed_singleton
@@ -222,7 +222,7 @@ theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0
   -- `have : CovariantClass E E (· + ·) (· ≤ ·) := inferInstance`
 #align is_closed_nonneg isClosed_nonneg
 
-theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]
+lemma isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]
     [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
     IsClosed { p : G × G | p.fst ≤ p.snd } := by
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G => p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=

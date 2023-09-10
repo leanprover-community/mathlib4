@@ -108,7 +108,7 @@ noncomputable def sheafificationWhiskerRightIso :
 #align category_theory.grothendieck_topology.sheafification_whisker_right_iso CategoryTheory.GrothendieckTopology.sheafificationWhiskerRightIso
 
 @[simp]
-theorem sheafificationWhiskerRightIso_hom_app :
+lemma sheafificationWhiskerRightIso_hom_app :
     (J.sheafificationWhiskerRightIso F).hom.app P = (J.sheafifyCompIso F P).hom := by
   dsimp [sheafificationWhiskerRightIso, sheafifyCompIso]
   simp only [Category.id_comp, Category.comp_id]
@@ -116,7 +116,7 @@ theorem sheafificationWhiskerRightIso_hom_app :
 #align category_theory.grothendieck_topology.sheafification_whisker_right_iso_hom_app CategoryTheory.GrothendieckTopology.sheafificationWhiskerRightIso_hom_app
 
 @[simp]
-theorem sheafificationWhiskerRightIso_inv_app :
+lemma sheafificationWhiskerRightIso_inv_app :
     (J.sheafificationWhiskerRightIso F).inv.app P = (J.sheafifyCompIso F P).inv := by
   dsimp [sheafificationWhiskerRightIso, sheafifyCompIso]
   simp only [Category.id_comp, Category.comp_id]
@@ -124,7 +124,7 @@ theorem sheafificationWhiskerRightIso_inv_app :
 #align category_theory.grothendieck_topology.sheafification_whisker_right_iso_inv_app CategoryTheory.GrothendieckTopology.sheafificationWhiskerRightIso_inv_app
 
 @[simp, reassoc]
-theorem whiskerRight_toSheafify_sheafifyCompIso_hom :
+lemma whiskerRight_toSheafify_sheafifyCompIso_hom :
     whiskerRight (J.toSheafify _) _ ≫ (J.sheafifyCompIso F P).hom = J.toSheafify _ := by
   dsimp [sheafifyCompIso]
   erw [whiskerRight_comp, Category.assoc]
@@ -135,7 +135,7 @@ theorem whiskerRight_toSheafify_sheafifyCompIso_hom :
 #align category_theory.grothendieck_topology.whisker_right_to_sheafify_sheafify_comp_iso_hom CategoryTheory.GrothendieckTopology.whiskerRight_toSheafify_sheafifyCompIso_hom
 
 @[simp, reassoc]
-theorem toSheafify_comp_sheafifyCompIso_inv :
+lemma toSheafify_comp_sheafifyCompIso_inv :
     J.toSheafify _ ≫ (J.sheafifyCompIso F P).inv = whiskerRight (J.toSheafify _) _ := by
   rw [Iso.comp_inv_eq]; simp
 #align category_theory.grothendieck_topology.to_sheafify_comp_sheafify_comp_iso_inv CategoryTheory.GrothendieckTopology.toSheafify_comp_sheafifyCompIso_inv
@@ -147,7 +147,7 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
 
 @[simp]
-theorem sheafifyCompIso_inv_eq_sheafifyLift :
+lemma sheafifyCompIso_inv_eq_sheafifyLift :
     (J.sheafifyCompIso F P).inv =
       J.sheafifyLift (whiskerRight (J.toSheafify P) F) ((J.sheafify_isSheaf _).comp _) := by
   apply J.sheafifyLift_unique

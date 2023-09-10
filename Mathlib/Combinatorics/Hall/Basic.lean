@@ -74,7 +74,7 @@ def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) 
 
 /-- When the Hall condition is satisfied, the set of matchings on a finite set is nonempty.
 This is where `Finset.all_card_le_biUnion_card_iff_existsInjective'` comes into the argument. -/
-theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t : ι → Finset α)
+lemma hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t : ι → Finset α)
     (h : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card) (ι' : Finset ι) :
     Nonempty (hallMatchingsOn t ι') := by
   classical
@@ -120,7 +120,7 @@ Recall that `s.biUnion t` is the union of all the sets `t i` for `i ∈ s`.
 This theorem is bootstrapped from `Finset.all_card_le_biUnion_card_iff_exists_injective'`,
 which has the additional constraint that `ι` is a `Fintype`.
 -/
-theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α : Type v}
+lemma Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α : Type v}
     [DecidableEq α] (t : ι → Finset α) :
     (∀ s : Finset ι, s.card ≤ (s.biUnion t).card) ↔
       ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
@@ -184,7 +184,7 @@ a subrelation of the relation) iff every subset of
 
 Note: if `[Fintype β]`, then there exist instances for `[∀ (a : α), Fintype (Rel.image r {a})]`.
 -/
-theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {β : Type v}
+lemma Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {β : Type v}
     [DecidableEq β] (r : α → β → Prop) [∀ a : α, Fintype (Rel.image r {a})] :
     (∀ A : Finset α, A.card ≤ Fintype.card (Rel.image r A)) ↔
       ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) := by
@@ -210,7 +210,7 @@ of the relation) iff every subset of `k` terms of `α` is related to at least `k
 It is like `Fintype.all_card_le_rel_image_card_iff_exists_injective` but uses `Finset.filter`
 rather than `Rel.image`.
 -/
-theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : Type v} [Fintype β]
+lemma Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : Type v} [Fintype β]
     (r : α → β → Prop) [∀ a, DecidablePred (r a)] :
     (∀ A : Finset α, A.card ≤ (univ.filter fun b : β => ∃ a ∈ A, r a b).card) ↔
       ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) := by

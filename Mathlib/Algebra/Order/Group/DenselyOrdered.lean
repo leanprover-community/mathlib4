@@ -38,13 +38,13 @@ theorem le_of_forall_one_lt_div_le (h : ∀ ε : α, 1 < ε → a / ε ≤ b) : 
 #align le_of_forall_pos_sub_le le_of_forall_pos_sub_le
 
 @[to_additive]
-theorem le_iff_forall_one_lt_le_mul : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε :=
+lemma le_iff_forall_one_lt_le_mul : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε :=
   ⟨fun h _ ε_pos => le_mul_of_le_of_one_le h ε_pos.le, le_of_forall_one_lt_le_mul⟩
 #align le_iff_forall_one_lt_le_mul le_iff_forall_one_lt_le_mul
 #align le_iff_forall_pos_le_add le_iff_forall_pos_le_add
 
 @[to_additive]
-theorem le_iff_forall_lt_one_mul_le : a ≤ b ↔ ∀ ε < 1, a * ε ≤ b :=
+lemma le_iff_forall_lt_one_mul_le : a ≤ b ↔ ∀ ε < 1, a * ε ≤ b :=
   @le_iff_forall_one_lt_le_mul αᵒᵈ _ _ _ _ _ _
 #align le_iff_forall_lt_one_mul_le le_iff_forall_lt_one_mul_le
 #align le_iff_forall_neg_add_le le_iff_forall_neg_add_le

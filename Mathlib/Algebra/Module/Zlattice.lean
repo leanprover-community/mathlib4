@@ -60,7 +60,7 @@ def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 #align zspan.fundamental_domain Zspan.fundamentalDomain
 
 @[simp]
-theorem mem_fundamentalDomain {m : E} :
+lemma mem_fundamentalDomain {m : E} :
     m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
 #align zspan.mem_fundamental_domain Zspan.mem_fundamentalDomain
 
@@ -151,7 +151,7 @@ theorem fract_add_zspan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
 
 variable {b}
 
-theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
+lemma fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
   classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
     mem_fundamentalDomain, Set.mem_Ico]
 #align zspan.fract_eq_self Zspan.fract_eq_self
@@ -165,7 +165,7 @@ theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b 
 /-- The map `fract` with codomain restricted to `fundamentalDomain`. -/
 def fractRestrict (x : E) : fundamentalDomain b := ⟨fract b x, fract_mem_fundamentalDomain b x⟩
 
-theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
+lemma fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
   fun x => ⟨↑x, Subtype.eq (fract_eq_self.mpr (Subtype.mem x))⟩
 
 @[simp]
@@ -179,7 +179,7 @@ theorem fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ
     Pi.neg_apply, ← eq_intCast (algebraMap ℤ K) _, Set.mem_range]
 #align zspan.fract_eq_fract Zspan.fract_eq_fract
 
-theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b i‖ := by
+lemma norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b i‖ := by
   classical
   calc
     ‖fract b m‖ = ‖∑ i, b.repr (fract b m) i • b i‖ := by rw [b.sum_repr]
@@ -214,7 +214,7 @@ end Unique
 
 end Fintype
 
-theorem fundamentalDomain_bounded [Finite ι] [HasSolidNorm K] :
+lemma fundamentalDomain_bounded [Finite ι] [HasSolidNorm K] :
     Metric.Bounded (fundamentalDomain b) := by
   cases nonempty_fintype ι
   use 2 * ∑ j, ‖b j‖
@@ -225,14 +225,14 @@ theorem fundamentalDomain_bounded [Finite ι] [HasSolidNorm K] :
   rw [← two_mul]
 #align zspan.fundamental_domain_bounded Zspan.fundamentalDomain_bounded
 
-theorem vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x : E) :
+lemma vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x : E) :
     y +ᵥ x ∈ fundamentalDomain b ↔ y = -floor b x := by
   rw [Subtype.ext_iff, ← add_right_inj x, AddSubgroupClass.coe_neg, ← sub_eq_add_neg, ← fract_apply,
     ← fract_zspan_add b _ (Subtype.mem y), add_comm, ← vadd_eq_add, ← vadd_def, eq_comm, ←
     fract_eq_self]
 #align zspan.vadd_mem_fundamental_domain Zspan.vadd_mem_fundamentalDomain
 
-theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
+lemma exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
     ∃! v : span ℤ (Set.range b), v +ᵥ x ∈ fundamentalDomain b := by
   cases nonempty_fintype ι
   refine ⟨-floor b x, ?_, fun y h => ?_⟩
@@ -258,11 +258,11 @@ def quotientEquiv [Fintype ι] :
     exact ⟨Quotient.mk'' a, rfl⟩
 
 @[simp]
-theorem quotientEquiv_apply_mk [Fintype ι] (x : E) :
+lemma quotientEquiv_apply_mk [Fintype ι] (x : E) :
     quotientEquiv b (Submodule.Quotient.mk x) = fractRestrict b x := rfl
 
 @[simp]
-theorem quotientEquiv.symm_apply [Fintype ι] (x : fundamentalDomain b) :
+lemma quotientEquiv.symm_apply [Fintype ι] (x : fundamentalDomain b) :
     (quotientEquiv b).symm x = Submodule.Quotient.mk ↑x := by
   rw [Equiv.symm_apply_eq, quotientEquiv_apply_mk b ↑x, Subtype.ext_iff, fractRestrict_apply]
   exact (fract_eq_self.mpr x.prop).symm
@@ -276,7 +276,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable (b : Basis ι ℝ E)
 
 @[measurability]
-theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
+lemma fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
   haveI : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   let f := (Finsupp.linearEquivFunOnFinite ℝ ℝ ι).toLinearMap.comp b.repr.toLinearMap
@@ -292,7 +292,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
 
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
 by `Zspan.fundamentalDomain` is a fundamental domain. -/
-protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
+protected lemma isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
     (μ : Measure E) :
     IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ := by
   cases nonempty_fintype ι
@@ -313,7 +313,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional
 variable [ProperSpace E] {L : AddSubgroup E} [DiscreteTopology L]
 variable (hs : span K (L : Set E) = ⊤)
 
-theorem Zlattice.FG : AddSubgroup.FG L := by
+lemma Zlattice.FG : AddSubgroup.FG L := by
   suffices (AddSubgroup.toIntSubmodule L).FG by exact (fg_iff_add_subgroup_fg _).mp this
   obtain ⟨s, ⟨h_incl, ⟨h_span, h_lind⟩⟩⟩ := exists_linearIndependent K (L : Set E)
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
@@ -348,10 +348,10 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.finite h_lind)
 
-theorem Zlattice.module_finite : Module.Finite ℤ L :=
+lemma Zlattice.module_finite : Module.Finite ℤ L :=
   Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K hs))
 
-theorem Zlattice.module_free : Module.Free ℤ L := by
+lemma Zlattice.module_free : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K hs
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   have : NoZeroSMulDivisors ℤ E := RatModule.noZeroSMulDivisors
@@ -362,7 +362,7 @@ theorem Zlattice.module_free : Module.Free ℤ L := by
 
 open FiniteDimensional
 
-theorem Zlattice.rank : finrank ℤ L = finrank K E := by
+lemma Zlattice.rank : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K hs
   have : Module.Free ℤ L := module_free K hs

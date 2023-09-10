@@ -75,16 +75,16 @@ theorem slope_sub_smul (f : k → E) {a b : k} (h : a ≠ b) :
   simp [slope, inv_smul_smul₀ (sub_ne_zero.2 h.symm)]
 #align slope_sub_smul slope_sub_smul
 
-theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E)) : f a = f b := by
+lemma eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E)) : f a = f b := by
   rw [← sub_smul_slope_vadd f a b, h, smul_zero, zero_vadd]
 #align eq_of_slope_eq_zero eq_of_slope_eq_zero
 
-theorem AffineMap.slope_comp {F PF : Type*} [AddCommGroup F] [Module k F] [AddTorsor F PF]
+lemma AffineMap.slope_comp {F PF : Type*} [AddCommGroup F] [Module k F] [AddTorsor F PF]
     (f : PE →ᵃ[k] PF) (g : k → PE) (a b : k) : slope (f ∘ g) a b = f.linear (slope g a b) := by
   simp only [slope, (· ∘ ·), f.linear.map_smul, f.linearMap_vsub]
 #align affine_map.slope_comp AffineMap.slope_comp
 
-theorem LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
+lemma LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
     (a b : k) : slope (f ∘ g) a b = f (slope g a b) :=
   f.toAffineMap.slope_comp g a b
 #align linear_map.slope_comp LinearMap.slope_comp

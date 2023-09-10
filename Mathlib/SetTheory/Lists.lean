@@ -99,7 +99,7 @@ theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction 
 #align lists'.to_of_list Lists'.to_ofList
 
 @[simp]
-theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
+lemma of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
   suffices
     ∀ (b) (h : true = b) (l : Lists' α b),
       let l' : Lists' α true := by rw [h]; exact l
@@ -153,16 +153,16 @@ equivalent as a ZFA list to this ZFA list. -/
 instance {b} : Membership (Lists α) (Lists' α b) :=
   ⟨fun a l => ∃ a' ∈ l.toList, a ~ a'⟩
 
-theorem mem_def {b a} {l : Lists' α b} : a ∈ l ↔ ∃ a' ∈ l.toList, a ~ a' :=
+lemma mem_def {b a} {l : Lists' α b} : a ∈ l ↔ ∃ a' ∈ l.toList, a ~ a' :=
   Iff.rfl
 #align lists'.mem_def Lists'.mem_def
 
 @[simp]
-theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
+lemma mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
   simp [mem_def, or_and_right, exists_or]
 #align lists'.mem_cons Lists'.mem_cons
 
-theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
+lemma cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
   refine' ⟨fun h => _, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
   cases' h with l a' a'' l l' e m s;
@@ -171,7 +171,7 @@ theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l�
   cases a; cases a'; cases h'; exact ⟨⟨_, m, e⟩, s⟩
 #align lists'.cons_subset Lists'.cons_subset
 
-theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
+lemma ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
     Lists'.ofList l₁ ⊆ Lists'.ofList l₂ := by
   induction' l₁ with _ _ l₁_ih; · exact Subset.nil
   refine' Subset.cons (Lists.Equiv.refl _) _ (l₁_ih (List.subset_of_cons_subset h))
@@ -179,18 +179,18 @@ theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
 #align lists'.of_list_subset Lists'.ofList_subset
 
 @[refl]
-theorem Subset.refl {l : Lists' α true} : l ⊆ l := by
+lemma Subset.refl {l : Lists' α true} : l ⊆ l := by
   rw [← Lists'.of_toList l]; exact ofList_subset (List.Subset.refl _)
 #align lists'.subset.refl Lists'.Subset.refl
 
-theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil := by
+lemma subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil := by
   rw [← of_toList l]
   induction toList l <;> intro h
   · rfl
   · rcases cons_subset.1 h with ⟨⟨_, ⟨⟩, _⟩, _⟩
 #align lists'.subset_nil Lists'.subset_nil
 
-theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList), a ∈ l₂
+lemma mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList), a ∈ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
     cases' s with _ _ _ _ _ e m s
@@ -200,7 +200,7 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
     · exact mem_of_subset' s h
 #align lists'.mem_of_subset' Lists'.mem_of_subset'
 
-theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
+lemma subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
   ⟨fun H a => mem_of_subset' H, fun H => by
     rw [← of_toList l₁]
     revert H; induction' toList l₁ with h t t_ih <;> intro H
@@ -248,7 +248,7 @@ theorem isList_toList (l : List (Lists α)) : IsList (ofList l) :=
 theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by simp [ofList, of']
 #align lists.to_of_list Lists.to_ofList
 
-theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
+lemma of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
   | ⟨true, l⟩, _ => by simp_all [ofList, of']
 #align lists.of_to_list Lists.of_toList
 
@@ -289,12 +289,12 @@ def mem (a : Lists α) : Lists α → Prop
 instance : Membership (Lists α) (Lists α) :=
   ⟨mem⟩
 
-theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
+lemma isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
   | ⟨_, Lists'.nil⟩, _ => rfl
   | ⟨_, Lists'.cons' _ _⟩, _ => rfl
 #align lists.is_list_of_mem Lists.isList_of_mem
 
-theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ ↔ l₁ ⊆ l₂ ∧ l₂ ⊆ l₁ := by
+lemma Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ ↔ l₁ ⊆ l₂ ∧ l₂ ⊆ l₁ := by
   refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
   cases' h with _ _ _ h₁ h₂
   · simp [Lists'.Subset.refl]
@@ -303,16 +303,16 @@ theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ �
 
 attribute [refl] Equiv.refl
 
-theorem equiv_atom {a} {l : Lists α} : atom a ~ l ↔ atom a = l :=
+lemma equiv_atom {a} {l : Lists α} : atom a ~ l ↔ atom a = l :=
   ⟨fun h => by cases h; rfl, fun h => h ▸ Equiv.refl _⟩
 #align lists.equiv_atom Lists.equiv_atom
 
 @[symm]
-theorem Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
+lemma Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
   cases' h with _ _ _ h₁ h₂ <;> [rfl; exact Equiv.antisymm h₂ h₁]
 #align lists.equiv.symm Lists.Equiv.symm
 
-theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃ := by
+lemma Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃ := by
   let trans := fun l₁ : Lists α => ∀ ⦃l₂ l₃⦄, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃
   suffices PProd (∀ l₁, trans l₁) (∀ (l : Lists' α true), ∀ l' ∈ l.toList, trans l') by exact this.1
   apply inductionMut
@@ -367,12 +367,12 @@ def Equiv.decidableMeas :
   | PSum.inr <| PSum.inr ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
 #align lists.equiv.decidable_meas Lists.Equiv.decidableMeas
 
-theorem sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
+lemma sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
   cases l <;> simp only [Lists'.atom.sizeOf_spec, Lists'.nil.sizeOf_spec, Lists'.cons'.sizeOf_spec,
     true_or, add_pos_iff]
 #align lists.sizeof_pos Lists.sizeof_pos
 
-theorem lt_sizeof_cons' {b} (a : Lists' α b) (l) :
+lemma lt_sizeof_cons' {b} (a : Lists' α b) (l) :
     SizeOf.sizeOf (⟨b, a⟩ : Lists α) < SizeOf.sizeOf (Lists'.cons' a l) := by
   simp only [Sigma.mk.sizeOf_spec, Lists'.cons'.sizeOf_spec, lt_add_iff_pos_right]
   apply sizeof_pos
@@ -443,16 +443,16 @@ end Lists
 
 namespace Lists'
 
-theorem mem_equiv_left {l : Lists' α true} : ∀ {a a'}, a ~ a' → (a ∈ l ↔ a' ∈ l) :=
+lemma mem_equiv_left {l : Lists' α true} : ∀ {a a'}, a ~ a' → (a ∈ l ↔ a' ∈ l) :=
   suffices ∀ {a a'}, a ~ a' → a ∈ l → a' ∈ l from fun e => ⟨this e, this e.symm⟩
   fun e₁ ⟨_, m₃, e₂⟩ => ⟨_, m₃, e₁.symm.trans e₂⟩
 #align lists'.mem_equiv_left Lists'.mem_equiv_left
 
-theorem mem_of_subset {a} {l₁ l₂ : Lists' α true} (s : l₁ ⊆ l₂) : a ∈ l₁ → a ∈ l₂
+lemma mem_of_subset {a} {l₁ l₂ : Lists' α true} (s : l₁ ⊆ l₂) : a ∈ l₁ → a ∈ l₂
   | ⟨_, m, e⟩ => (mem_equiv_left e).2 (mem_of_subset' s m)
 #align lists'.mem_of_subset Lists'.mem_of_subset
 
-theorem Subset.trans {l₁ l₂ l₃ : Lists' α true} (h₁ : l₁ ⊆ l₂) (h₂ : l₂ ⊆ l₃) : l₁ ⊆ l₃ :=
+lemma Subset.trans {l₁ l₂ l₃ : Lists' α true} (h₁ : l₁ ⊆ l₂) (h₂ : l₂ ⊆ l₃) : l₁ ⊆ l₃ :=
   subset_def.2 fun _ m₁ => mem_of_subset h₂ <| mem_of_subset' h₁ m₁
 #align lists'.subset.trans Lists'.Subset.trans
 

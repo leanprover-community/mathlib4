@@ -89,7 +89,7 @@ theorem of_smul (i : ι) (c : R) (x) : of M i (c • x) = c • of M i x :=
 
 variable {R}
 
-theorem support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : ⨁ i, M i) :
+lemma support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : ⨁ i, M i) :
     (c • v).support ⊆ v.support :=
   DFinsupp.support_smul _ _
 #align direct_sum.support_smul DirectSum.support_smul
@@ -107,7 +107,7 @@ def toModule : (⨁ i, M i) →ₗ[R] N :=
 
 /-- Coproducts in the categories of modules and additive monoids commute with the forgetful functor
 from modules to additive monoids. -/
-theorem coe_toModule_eq_coe_toAddMonoid :
+lemma coe_toModule_eq_coe_toAddMonoid :
     (toModule R ι N φ : (⨁ i, M i) → N) = toAddMonoid fun i ↦ (φ i).toAddMonoidHom := rfl
 #align direct_sum.coe_to_module_eq_coe_to_add_monoid DirectSum.coe_toModule_eq_coe_toAddMonoid
 
@@ -164,7 +164,7 @@ def linearEquivFunOnFintype [Fintype ι] : (⨁ i, M i) ≃ₗ[R] ∀ i, M i :=
 variable {ι M}
 
 @[simp]
-theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
+lemma linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
   ext a
   change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
@@ -172,7 +172,7 @@ theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : 
 #align direct_sum.linear_equiv_fun_on_fintype_lof DirectSum.linearEquivFunOnFintype_lof
 
 @[simp]
-theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
+lemma linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m := by
   change (DFinsupp.equivFunOnFintype.symm (Pi.single i m)) = _
   rw [DFinsupp.equivFunOnFintype_symm_single i m]
@@ -180,7 +180,7 @@ theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : �
 #align direct_sum.linear_equiv_fun_on_fintype_symm_single DirectSum.linearEquivFunOnFintype_symm_single
 
 @[simp]
-theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
+lemma linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
     (linearEquivFunOnFintype R ι M).symm f = f := by
   simp [linearEquivFunOnFintype]
 #align direct_sum.linear_equiv_fun_on_fintype_symm_coe DirectSum.linearEquivFunOnFintype_symm_coe
@@ -204,11 +204,11 @@ theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i 
 #align direct_sum.apply_eq_component DirectSum.apply_eq_component
 
 @[ext]
-theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
+lemma ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
   DFinsupp.ext h
 #align direct_sum.ext DirectSum.ext
 
-theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
+lemma ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
   ⟨fun h _ ↦ by rw [h], ext R⟩
 #align direct_sum.ext_iff DirectSum.ext_iff
 
@@ -269,7 +269,7 @@ noncomputable def sigmaLuncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableE
 #align direct_sum.sigma_luncurry DirectSum.sigmaLuncurry
 
 @[simp]
-theorem sigmaLuncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)]
+lemma sigmaLuncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)]
     (f : ⨁ (i) (j), δ i j) (i : ι) (j : α i) : sigmaLuncurry R f ⟨i, j⟩ = f i j :=
   sigmaUncurry_apply f i j
 #align direct_sum.sigma_luncurry_apply DirectSum.sigmaLuncurry_apply
@@ -375,7 +375,7 @@ theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
 /-- When indexed by only two distinct elements, `DirectSum.IsInternal` implies
 the two submodules are complementary. Over a `Ring R`, this is true as an iff, as
 `DirectSum.isInternal_submodule_iff_isCompl`. -/
-theorem IsInternal.isCompl {A : ι → Submodule R M} {i j : ι} (hij : i ≠ j)
+lemma IsInternal.isCompl {A : ι → Submodule R M} {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) (hi : IsInternal A) : IsCompl (A i) (A j) :=
   ⟨hi.submodule_independent.pairwiseDisjoint hij,
     codisjoint_iff.mpr <| Eq.symm <| hi.submodule_iSup_eq_top.symm.trans <| by
@@ -394,7 +394,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see
 `CompleteLattice.Independent.dfinsupp_lsum_injective` for details. -/
-theorem isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule R M}
+lemma isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule R M}
     (hi : CompleteLattice.Independent A) (hs : iSup A = ⊤) : IsInternal A :=
   ⟨hi.dfinsupp_lsum_injective,
     LinearMap.range_eq_top.1 <| (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
@@ -421,12 +421,12 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
 
-theorem IsInternal.addSubmonoid_independent {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
+lemma IsInternal.addSubmonoid_independent {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
     (h : IsInternal A) : CompleteLattice.Independent A :=
   CompleteLattice.independent_of_dfinsupp_sumAddHom_injective _ h.injective
 #align direct_sum.is_internal.add_submonoid_independent DirectSum.IsInternal.addSubmonoid_independent
 
-theorem IsInternal.addSubgroup_independent {M : Type*} [AddCommGroup M] {A : ι → AddSubgroup M}
+lemma IsInternal.addSubgroup_independent {M : Type*} [AddCommGroup M] {A : ι → AddSubgroup M}
     (h : IsInternal A) : CompleteLattice.Independent A :=
   CompleteLattice.independent_of_dfinsupp_sumAddHom_injective' _ h.injective
 #align direct_sum.is_internal.add_subgroup_independent DirectSum.IsInternal.addSubgroup_independent

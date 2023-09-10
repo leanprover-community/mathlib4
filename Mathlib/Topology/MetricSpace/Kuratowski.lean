@@ -47,7 +47,7 @@ def embeddingOfSubset : ℓ^∞(ℕ) :=
     exact abs_dist_sub_le _ _ _⟩
 #align Kuratowski_embedding.embedding_of_subset KuratowskiEmbedding.embeddingOfSubset
 
-theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
+lemma embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
   rfl
 #align Kuratowski_embedding.embedding_of_subset_coe KuratowskiEmbedding.embeddingOfSubset_coe
 
@@ -140,7 +140,7 @@ Theorem 2.2 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2
 The same result for the case of a finite type `ι` is implemented in
 `LipschitzOnWith.extend_pi`.
 -/
-theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
+lemma LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
     {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
   -- Construct the coordinate-wise extensions
   rw [LipschitzOnWith.coordinate] at hfl

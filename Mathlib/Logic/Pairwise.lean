@@ -43,7 +43,7 @@ protected theorem Pairwise.eq (h : Pairwise r) : ¬r a b → a = b :=
   not_imp_comm.1 <| @h _ _
 #align pairwise.eq Pairwise.eq
 
-theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ ·) on f) :=
+lemma Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ ·) on f) :=
   forall₂_congr fun _i _j => not_imp_not.symm
 #align function.injective_iff_pairwise_ne Function.injective_iff_pairwise_ne
 

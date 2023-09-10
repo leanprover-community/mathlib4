@@ -143,18 +143,18 @@ def IsTerminal.from {X : C} (t : IsTerminal X) (Y : C) : Y ⟶ X :=
 #align category_theory.limits.is_terminal.from CategoryTheory.Limits.IsTerminal.from
 
 /-- Any two morphisms to a terminal object are equal. -/
-theorem IsTerminal.hom_ext {X Y : C} (t : IsTerminal X) (f g : Y ⟶ X) : f = g :=
+lemma IsTerminal.hom_ext {X Y : C} (t : IsTerminal X) (f g : Y ⟶ X) : f = g :=
   IsLimit.hom_ext t (by aesop_cat)
 #align category_theory.limits.is_terminal.hom_ext CategoryTheory.Limits.IsTerminal.hom_ext
 
 @[simp]
-theorem IsTerminal.comp_from {Z : C} (t : IsTerminal Z) {X Y : C} (f : X ⟶ Y) :
+lemma IsTerminal.comp_from {Z : C} (t : IsTerminal Z) {X Y : C} (f : X ⟶ Y) :
     f ≫ t.from Y = t.from X :=
   t.hom_ext _ _
 #align category_theory.limits.is_terminal.comp_from CategoryTheory.Limits.IsTerminal.comp_from
 
 @[simp]
-theorem IsTerminal.from_self {X : C} (t : IsTerminal X) : t.from X = 𝟙 X :=
+lemma IsTerminal.from_self {X : C} (t : IsTerminal X) : t.from X = 𝟙 X :=
   t.hom_ext _ _
 #align category_theory.limits.is_terminal.from_self CategoryTheory.Limits.IsTerminal.from_self
 
@@ -164,37 +164,37 @@ def IsInitial.to {X : C} (t : IsInitial X) (Y : C) : X ⟶ Y :=
 #align category_theory.limits.is_initial.to CategoryTheory.Limits.IsInitial.to
 
 /-- Any two morphisms from an initial object are equal. -/
-theorem IsInitial.hom_ext {X Y : C} (t : IsInitial X) (f g : X ⟶ Y) : f = g :=
+lemma IsInitial.hom_ext {X Y : C} (t : IsInitial X) (f g : X ⟶ Y) : f = g :=
   IsColimit.hom_ext t (by aesop_cat)
 #align category_theory.limits.is_initial.hom_ext CategoryTheory.Limits.IsInitial.hom_ext
 
 @[simp]
-theorem IsInitial.to_comp {X : C} (t : IsInitial X) {Y Z : C} (f : Y ⟶ Z) : t.to Y ≫ f = t.to Z :=
+lemma IsInitial.to_comp {X : C} (t : IsInitial X) {Y Z : C} (f : Y ⟶ Z) : t.to Y ≫ f = t.to Z :=
   t.hom_ext _ _
 #align category_theory.limits.is_initial.to_comp CategoryTheory.Limits.IsInitial.to_comp
 
 @[simp]
-theorem IsInitial.to_self {X : C} (t : IsInitial X) : t.to X = 𝟙 X :=
+lemma IsInitial.to_self {X : C} (t : IsInitial X) : t.to X = 𝟙 X :=
   t.hom_ext _ _
 #align category_theory.limits.is_initial.to_self CategoryTheory.Limits.IsInitial.to_self
 
 /-- Any morphism from a terminal object is split mono. -/
-theorem IsTerminal.isSplitMono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : IsSplitMono f :=
+lemma IsTerminal.isSplitMono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : IsSplitMono f :=
   IsSplitMono.mk' ⟨t.from _, t.hom_ext _ _⟩
 #align category_theory.limits.is_terminal.is_split_mono_from CategoryTheory.Limits.IsTerminal.isSplitMono_from
 
 /-- Any morphism to an initial object is split epi. -/
-theorem IsInitial.isSplitEpi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : IsSplitEpi f :=
+lemma IsInitial.isSplitEpi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : IsSplitEpi f :=
   IsSplitEpi.mk' ⟨t.to _, t.hom_ext _ _⟩
 #align category_theory.limits.is_initial.is_split_epi_to CategoryTheory.Limits.IsInitial.isSplitEpi_to
 
 /-- Any morphism from a terminal object is mono. -/
-theorem IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
+lemma IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
   haveI := t.isSplitMono_from f; infer_instance
 #align category_theory.limits.is_terminal.mono_from CategoryTheory.Limits.IsTerminal.mono_from
 
 /-- Any morphism to an initial object is epi. -/
-theorem IsInitial.epi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : Epi f := by
+lemma IsInitial.epi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : Epi f := by
   haveI := t.isSplitEpi_to f; infer_instance
 #align category_theory.limits.is_initial.epi_to CategoryTheory.Limits.IsInitial.epi_to
 
@@ -261,7 +261,7 @@ theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
     isLimitChangeEmptyCone C (limit.isLimit F₁) _ (eqToIso rfl)⟩⟩⟩
 #align category_theory.limits.has_terminal_change_diagram CategoryTheory.Limits.hasTerminalChangeDiagram
 
-theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
+lemma hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
     HasLimitsOfShape (Discrete.{w'} PEmpty) C where
   has_limit _ := hasTerminalChangeDiagram C (h.1 (Functor.empty C))
 #align category_theory.limits.has_terminal_change_universe CategoryTheory.Limits.hasTerminalChangeUniverse
@@ -295,7 +295,7 @@ theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
     isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
 #align category_theory.limits.has_initial_change_diagram CategoryTheory.Limits.hasInitialChangeDiagram
 
-theorem hasInitialChangeUniverse [h : HasColimitsOfShape (Discrete.{w} PEmpty) C] :
+lemma hasInitialChangeUniverse [h : HasColimitsOfShape (Discrete.{w} PEmpty) C] :
     HasColimitsOfShape (Discrete.{w'} PEmpty) C where
   has_colimit _ := hasInitialChangeDiagram C (h.1 (Functor.empty C))
 #align category_theory.limits.has_initial_change_universe CategoryTheory.Limits.hasInitialChangeUniverse
@@ -334,7 +334,7 @@ theorem hasTerminal_of_unique (X : C) [h : ∀ Y : C, Unique (Y ⟶ X)] : HasTer
   { has_limit := fun F => HasLimit.mk ⟨_, (isTerminalEquivUnique F X).invFun h⟩ }
 #align category_theory.limits.has_terminal_of_unique CategoryTheory.Limits.hasTerminal_of_unique
 
-theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
+lemma IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
   { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩,
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 #align category_theory.limits.is_terminal.has_terminal CategoryTheory.Limits.IsTerminal.hasTerminal
@@ -345,7 +345,7 @@ theorem hasInitial_of_unique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : HasInit
   { has_colimit := fun F => HasColimit.mk ⟨_, (isInitialEquivUnique F X).invFun h⟩ }
 #align category_theory.limits.has_initial_of_unique CategoryTheory.Limits.hasInitial_of_unique
 
-theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
+lemma IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
   has_colimit F :=
     HasColimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
 #align category_theory.limits.is_initial.has_initial CategoryTheory.Limits.IsInitial.hasInitial
@@ -379,12 +379,12 @@ instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
 #align category_theory.limits.unique_from_initial CategoryTheory.Limits.uniqueFromInitial
 
 @[simp]
-theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
+lemma terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by aesop
 #align category_theory.limits.terminal.comp_from CategoryTheory.Limits.terminal.comp_from
 
 @[simp]
-theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
+lemma initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
   aesop
 #align category_theory.limits.initial.to_comp CategoryTheory.Limits.initial.to_comp
 
@@ -442,11 +442,11 @@ instance hasTerminal_op_of_hasInitial [HasInitial C] : HasTerminal Cᵒᵖ :=
   (terminalOpOfInitial initialIsInitial).hasTerminal
 #align category_theory.limits.has_terminal_op_of_has_initial CategoryTheory.Limits.hasTerminal_op_of_hasInitial
 
-theorem hasTerminal_of_hasInitial_op [HasInitial Cᵒᵖ] : HasTerminal C :=
+lemma hasTerminal_of_hasInitial_op [HasInitial Cᵒᵖ] : HasTerminal C :=
   (terminalUnopOfInitial initialIsInitial).hasTerminal
 #align category_theory.limits.has_terminal_of_has_initial_op CategoryTheory.Limits.hasTerminal_of_hasInitial_op
 
-theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
+lemma hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 #align category_theory.limits.has_initial_of_has_terminal_op CategoryTheory.Limits.hasInitial_of_hasTerminal_op
 
@@ -470,7 +470,7 @@ def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTer
 #align category_theory.limits.limit_const_terminal CategoryTheory.Limits.limitConstTerminal
 
 @[reassoc (attr := simp)]
-theorem limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C]
+lemma limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
       terminal.from _ := by aesop_cat
@@ -496,7 +496,7 @@ def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasIn
 #align category_theory.limits.colimit_const_initial CategoryTheory.Limits.colimitConstInitial
 
 @[reassoc (attr := simp)]
-theorem ι_colimitConstInitial_hom {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C]
+lemma ι_colimitConstInitial_hom {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C]
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
       initial.to _ := by aesop_cat
@@ -516,7 +516,7 @@ class InitialMonoClass (C : Type u₁) [Category.{v₁} C] : Prop where
   isInitial_mono_from : ∀ {I} (X : C) (hI : IsInitial I), Mono (hI.to X)
 #align category_theory.limits.initial_mono_class CategoryTheory.Limits.InitialMonoClass
 
-theorem IsInitial.mono_from [InitialMonoClass C] {I} {X : C} (hI : IsInitial I) (f : I ⟶ X) :
+lemma IsInitial.mono_from [InitialMonoClass C] {I} {X : C} (hI : IsInitial I) (f : I ⟶ X) :
     Mono f := by
   rw [hI.hom_ext f (hI.to X)]
   apply InitialMonoClass.isInitial_mono_from
@@ -529,7 +529,7 @@ instance (priority := 100) initial.mono_from [HasInitial C] [InitialMonoClass C]
 
 /-- To show a category is an `InitialMonoClass` it suffices to give an initial object such that
 every morphism out of it is a monomorphism. -/
-theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mono (hI.to X)) :
+lemma InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mono (hI.to X)) :
     InitialMonoClass C where
   isInitial_mono_from {I'} X hI' := by
     rw [hI'.hom_ext (hI'.to X) ((hI'.uniqueUpToIso hI).hom ≫ hI.to X)]
@@ -538,21 +538,21 @@ theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mon
 
 /-- To show a category is an `InitialMonoClass` it suffices to show every morphism out of the
 initial object is a monomorphism. -/
-theorem InitialMonoClass.of_initial [HasInitial C] (h : ∀ X : C, Mono (initial.to X)) :
+lemma InitialMonoClass.of_initial [HasInitial C] (h : ∀ X : C, Mono (initial.to X)) :
     InitialMonoClass C :=
   InitialMonoClass.of_isInitial initialIsInitial h
 #align category_theory.limits.initial_mono_class.of_initial CategoryTheory.Limits.InitialMonoClass.of_initial
 
 /-- To show a category is an `InitialMonoClass` it suffices to show the unique morphism from an
 initial object to a terminal object is a monomorphism. -/
-theorem InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerminal T)
+lemma InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerminal T)
     (_ : Mono (hI.to T)) : InitialMonoClass C :=
   InitialMonoClass.of_isInitial hI fun X => mono_of_mono_fac (hI.hom_ext (_ ≫ hT.from X) (hI.to T))
 #align category_theory.limits.initial_mono_class.of_is_terminal CategoryTheory.Limits.InitialMonoClass.of_isTerminal
 
 /-- To show a category is an `InitialMonoClass` it suffices to show the unique morphism from the
 initial object to a terminal object is a monomorphism. -/
-theorem InitialMonoClass.of_terminal [HasInitial C] [HasTerminal C] (h : Mono (initial.to (⊤_ C))) :
+lemma InitialMonoClass.of_terminal [HasInitial C] [HasTerminal C] (h : Mono (initial.to (⊤_ C))) :
     InitialMonoClass C :=
   InitialMonoClass.of_isTerminal initialIsInitial terminalIsTerminal h
 #align category_theory.limits.initial_mono_class.of_terminal CategoryTheory.Limits.InitialMonoClass.of_terminal
@@ -714,7 +714,7 @@ def colimitOfInitial (F : J ⥤ C) [HasInitial J] [HasColimit F]
 
 /-- If `j` is initial in the index category, then the map `limit.π F j` is an isomorphism.
 -/
-theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit F] :
+lemma isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit F] :
     IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramInitial I F), ⟨by ext; simp, by simp⟩⟩⟩
 #align category_theory.limits.is_iso_π_of_is_initial CategoryTheory.Limits.isIso_π_of_isInitial
@@ -723,7 +723,7 @@ instance isIso_π_initial [HasInitial J] (F : J ⥤ C) [HasLimit F] : IsIso (lim
   isIso_π_of_isInitial initialIsInitial F
 #align category_theory.limits.is_iso_π_initial CategoryTheory.Limits.isIso_π_initial
 
-theorem isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasLimit F]
+lemma isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasLimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramTerminal I F), by ext; simp, by simp⟩⟩
 #align category_theory.limits.is_iso_π_of_is_terminal CategoryTheory.Limits.isIso_π_of_isTerminal
@@ -735,7 +735,7 @@ instance isIso_π_terminal [HasTerminal J] (F : J ⥤ C) [HasLimit F]
 
 /-- If `j` is terminal in the index category, then the map `colimit.ι F j` is an isomorphism.
 -/
-theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColimit F] :
+lemma isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColimit F] :
     IsIso (colimit.ι F j) :=
   ⟨⟨colimit.desc _ (coconeOfDiagramTerminal I F), ⟨by simp, by ext; simp⟩⟩⟩
 #align category_theory.limits.is_iso_ι_of_is_terminal CategoryTheory.Limits.isIso_ι_of_isTerminal
@@ -744,7 +744,7 @@ instance isIso_ι_terminal [HasTerminal J] (F : J ⥤ C) [HasColimit F] : IsIso 
   isIso_ι_of_isTerminal terminalIsTerminal F
 #align category_theory.limits.is_iso_ι_terminal CategoryTheory.Limits.isIso_ι_terminal
 
-theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimit F]
+lemma isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (colimit.ι F j) :=
   ⟨⟨colimit.desc _ (coconeOfDiagramInitial I F), by
     refine ⟨?_, by ext; simp⟩

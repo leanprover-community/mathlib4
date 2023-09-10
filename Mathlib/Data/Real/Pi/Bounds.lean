@@ -164,36 +164,36 @@ elab "pi_upper_bound " "[" l:term,* "]" : tactic => do
 
 end Tactic
 
-theorem pi_gt_three : 3 < π := by
+lemma pi_gt_three : 3 < π := by
   pi_lower_bound [23/16]
 #align real.pi_gt_three Real.pi_gt_three
 
-theorem pi_gt_314 : 3.14 < π := by
+lemma pi_gt_314 : 3.14 < π := by
   pi_lower_bound [99 / 70, 874 / 473, 1940 / 989, 1447 / 727]
 #align real.pi_gt_314 Real.pi_gt_314
 
-theorem pi_lt_315 : π < 3.15 := by
+lemma pi_lt_315 : π < 3.15 := by
   pi_upper_bound [140 / 99, 279 / 151, 51 / 26, 412 / 207]
 #align real.pi_lt_315 Real.pi_lt_315
 
-theorem pi_gt_31415 : 3.1415 < π := by
+lemma pi_gt_31415 : 3.1415 < π := by
   pi_lower_bound
         [11482 / 8119, 5401 / 2923, 2348 / 1197, 11367 / 5711, 25705 / 12868, 23235 / 11621]
 #align real.pi_gt_31415 Real.pi_gt_31415
 
-theorem pi_lt_31416 : π < 3.1416 := by
+lemma pi_lt_31416 : π < 3.1416 := by
     pi_upper_bound
         [4756 / 3363, 101211 / 54775, 505534 / 257719, 83289 / 41846, 411278 / 205887,
           438142 / 219137, 451504 / 225769, 265603 / 132804, 849938 / 424971]
 #align real.pi_lt_31416 Real.pi_lt_31416
 
-theorem pi_gt_3141592 : 3.141592 < π := by
+lemma pi_gt_3141592 : 3.141592 < π := by
     pi_lower_bound
         [11482 / 8119, 7792 / 4217, 54055 / 27557, 949247 / 476920, 3310126 / 1657059,
           2635492 / 1318143, 1580265 / 790192, 1221775 / 610899, 3612247 / 1806132, 849943 / 424972]
 #align real.pi_gt_3141592 Real.pi_gt_3141592
 
-theorem pi_lt_3141593 : π < 3.141593 := by
+lemma pi_lt_3141593 : π < 3.141593 := by
     pi_upper_bound
         [27720 / 19601, 56935 / 30813, 49359 / 25163, 258754 / 130003, 113599 / 56868,
           1101994 / 551163, 8671537 / 4336095, 3877807 / 1938940, 52483813 / 26242030,

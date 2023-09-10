@@ -83,22 +83,22 @@ variable {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGrou
   [∀ i, NormedSpace 𝕜 (E' i)] {φ : 𝕜 → ∀ i, E' i} {φ' : ∀ i, E' i}
 
 @[simp]
-theorem hasStrictDerivAt_pi :
+lemma hasStrictDerivAt_pi :
     HasStrictDerivAt φ φ' x ↔ ∀ i, HasStrictDerivAt (fun x => φ x i) (φ' i) x :=
   hasStrictFDerivAt_pi'
 #align has_strict_deriv_at_pi hasStrictDerivAt_pi
 
 @[simp]
-theorem hasDerivAtFilter_pi :
+lemma hasDerivAtFilter_pi :
     HasDerivAtFilter φ φ' x L ↔ ∀ i, HasDerivAtFilter (fun x => φ x i) (φ' i) x L :=
   hasFDerivAtFilter_pi'
 #align has_deriv_at_filter_pi hasDerivAtFilter_pi
 
-theorem hasDerivAt_pi : HasDerivAt φ φ' x ↔ ∀ i, HasDerivAt (fun x => φ x i) (φ' i) x :=
+lemma hasDerivAt_pi : HasDerivAt φ φ' x ↔ ∀ i, HasDerivAt (fun x => φ x i) (φ' i) x :=
   hasDerivAtFilter_pi
 #align has_deriv_at_pi hasDerivAt_pi
 
-theorem hasDerivWithinAt_pi :
+lemma hasDerivWithinAt_pi :
     HasDerivWithinAt φ φ' s x ↔ ∀ i, HasDerivWithinAt (fun x => φ x i) (φ' i) s x :=
   hasDerivAtFilter_pi
 #align has_deriv_within_at_pi hasDerivWithinAt_pi

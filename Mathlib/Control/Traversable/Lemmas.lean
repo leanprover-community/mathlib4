@@ -64,14 +64,14 @@ def PureTransformation :
 #align traversable.pure_transformation Traversable.PureTransformation
 
 @[simp]
-theorem pureTransformation_apply {α} (x : id α) : PureTransformation F x = pure x :=
+lemma pureTransformation_apply {α} (x : id α) : PureTransformation F x = pure x :=
   rfl
 #align traversable.pure_transformation_apply Traversable.pureTransformation_apply
 
 variable {F G} (x : t β)
 
 -- Porting note: need to specify `m/F/G := Id` because `id` no longer has a `Monad` instance
-theorem map_eq_traverse_id : map (f := t) f = traverse (m := Id) (pure ∘ f) :=
+lemma map_eq_traverse_id : map (f := t) f = traverse (m := Id) (pure ∘ f) :=
   funext fun y => (traverse_eq_map_id f y).symm
 #align traversable.map_eq_traverse_id Traversable.map_eq_traverse_id
 
@@ -108,7 +108,7 @@ theorem naturality' (η : ApplicativeTransformation F G) (x : t (F α)) :
 #align traversable.naturality' Traversable.naturality'
 
 @[functor_norm]
-theorem traverse_id : traverse pure = (pure : t α → Id (t α)) := by
+lemma traverse_id : traverse pure = (pure : t α → Id (t α)) := by
   ext
   exact id_traverse _
 #align traversable.traverse_id Traversable.traverse_id

@@ -134,7 +134,7 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
 
 See <https://stacks.math.columbia.edu/tag/002N>.
 -/
-theorem has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualizers C] :
+lemma has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualizers C] :
     HasLimitsOfSize.{w, w} C :=
   { has_limits_of_shape :=
     fun _ _ => { has_limit := fun F => hasLimit_of_equalizer_and_product F } }
@@ -144,7 +144,7 @@ theorem has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualiz
 
 See <https://stacks.math.columbia.edu/tag/002O>.
 -/
-theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts C]
+lemma hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts C]
     [HasEqualizers C] : HasFiniteLimits C where
   out _ := { has_limit := fun F => hasLimit_of_equalizer_and_product F }
 #align category_theory.limits.has_finite_limits_of_has_equalizers_and_finite_products CategoryTheory.Limits.hasFiniteLimits_of_hasEqualizers_and_finite_products
@@ -233,7 +233,7 @@ noncomputable def preservesLimitsOfPreservesEqualizersAndProducts [HasEqualizers
   preservesLimitsOfShape := preservesLimitOfPreservesEqualizersAndProduct G
 #align category_theory.limits.preserves_limits_of_preserves_equalizers_and_products CategoryTheory.Limits.preservesLimitsOfPreservesEqualizersAndProducts
 
-theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
+lemma hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
     HasFiniteLimits C :=
   @hasFiniteLimits_of_hasEqualizers_and_finite_products C _
     (@hasFiniteProducts_of_has_binary_and_terminal C _
@@ -362,7 +362,7 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
 
 See <https://stacks.math.columbia.edu/tag/002P>.
 -/
-theorem has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [HasCoequalizers C] :
+lemma has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [HasCoequalizers C] :
     HasColimitsOfSize.{w, w} C where
   has_colimits_of_shape := fun _ _ =>
       { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
@@ -372,7 +372,7 @@ theorem has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [Ha
 
 See <https://stacks.math.columbia.edu/tag/002Q>.
 -/
-theorem hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCoproducts C]
+lemma hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCoproducts C]
     [HasCoequalizers C] : HasFiniteColimits C where
   out _ := { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
 #align category_theory.limits.has_finite_colimits_of_has_coequalizers_and_finite_coproducts CategoryTheory.Limits.hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts
@@ -462,7 +462,7 @@ noncomputable def preservesColimitsOfPreservesCoequalizersAndCoproducts [HasCoeq
   preservesColimitsOfShape := preservesColimitOfPreservesCoequalizersAndCoproduct G
 #align category_theory.limits.preserves_colimits_of_preserves_coequalizers_and_coproducts CategoryTheory.Limits.preservesColimitsOfPreservesCoequalizersAndCoproducts
 
-theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
+lemma hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
     HasFiniteColimits C :=
   @hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts C _
     (@hasFiniteCoproducts_of_has_binary_and_initial C _

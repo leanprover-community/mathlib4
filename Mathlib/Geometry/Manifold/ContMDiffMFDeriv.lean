@@ -75,7 +75,7 @@ This result is used to show that maps into the 1-jet bundle and cotangent bundle
 This result should be generalized to a `ContMDiffWithinAt` for `mfderivWithin`.
 If we do that, we can deduce `ContMDiffOn.contMDiffOn_tangentMapWithin` from this.
 -/
-protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N → M)
+protected lemma ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N → M)
     (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (x₀, g x₀)) (hg : ContMDiffAt J I m g x₀)
     (hmn : m + 1 ≤ n) :
     ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
@@ -188,7 +188,7 @@ We have to insert a coordinate change from `x₀` to `x` to make the derivative 
 This is a special case of `ContMDiffAt.mfderiv` where `f` does not contain any parameters and
 `g = id`.
 -/
-theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I I' n f x₀)
+lemma ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I I' n f x₀)
     (hmn : m + 1 ≤ n) :
     ContMDiffAt I 𝓘(𝕜, E →L[𝕜] E') m (inTangentCoordinates I I' id f (mfderiv I I' f) x₀) x₀ :=
   haveI : ContMDiffAt (I.prod I) I' n (fun x : M × M => f x.2) (x₀, x₀) :=
@@ -204,7 +204,7 @@ We have to insert a coordinate change from `x₀` to `g₁(x)` to make the deriv
 This is similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is applied to a
 (variable) vector.
 -/
-theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M) (g₁ : N' → N) (g₂ : N' → E)
+lemma ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M) (g₁ : N' → N) (g₂ : N' → E)
     (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (g₁ x₀, g (g₁ x₀)))
     (hg : ContMDiffAt J I m g (g₁ x₀)) (hg₁ : ContMDiffAt J' J m g₁ x₀)
     (hg₂ : ContMDiffAt J' 𝓘(𝕜, E) m g₂ x₀) (hmn : m + 1 ≤ n) :
@@ -224,7 +224,7 @@ section tangentMap
 derivative is continuous. In this auxiliary lemma, we prove this fact when the source and target
 space are model spaces in models with corners. The general fact is proved in
 `ContMDiffOn.continuousOn_tangentMapWithin`-/
-theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
+lemma ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) (hs : UniqueMDiffOn I s) :
     ContinuousOn (tangentMapWithin I I' f s) (π E (TangentSpace I) ⁻¹' s) := by
   suffices h :
@@ -284,7 +284,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
 `C^m` when `m+1 ≤ n`. In this auxiliary lemma, we prove this fact when the source and target space
 are model spaces in models with corners. The general fact is proved in
 `ContMDiffOn.contMDiffOn_tangentMapWithin` -/
-theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
+lemma ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     (hf : ContMDiffOn I I' n f s) (hmn : m + 1 ≤ n) (hs : UniqueMDiffOn I s) :
     ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s)
       (π E (TangentSpace I) ⁻¹' s) := by

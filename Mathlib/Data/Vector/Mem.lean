@@ -35,7 +35,7 @@ theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a :=
       ⟨i, by rwa [toList_length], h⟩⟩
 #align vector.mem_iff_nth Vector.mem_iff_get
 
-theorem not_mem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
+lemma not_mem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
   unfold Vector.nil
   dsimp
   simp

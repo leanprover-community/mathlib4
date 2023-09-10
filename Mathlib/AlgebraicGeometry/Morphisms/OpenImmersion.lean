@@ -31,24 +31,24 @@ namespace AlgebraicGeometry
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
-theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
+lemma isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
     OpenEmbedding f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
   constructor
   · intro h; exact ⟨h.1, inferInstance⟩
   · rintro ⟨h₁, h₂⟩; exact IsOpenImmersion.of_stalk_iso f h₁
 #align algebraic_geometry.is_open_immersion_iff_stalk AlgebraicGeometry.isOpenImmersion_iff_stalk
 
-theorem isOpenImmersion_stableUnderComposition :
+lemma isOpenImmersion_stableUnderComposition :
     MorphismProperty.StableUnderComposition @IsOpenImmersion := by
   intro X Y Z f g h₁ h₂; exact LocallyRingedSpace.IsOpenImmersion.comp f g
 #align algebraic_geometry.is_open_immersion_stable_under_composition AlgebraicGeometry.isOpenImmersion_stableUnderComposition
 
-theorem isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
+lemma isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
   apply isOpenImmersion_stableUnderComposition.respectsIso
   intro _ _ _; infer_instance
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersion_respectsIso
 
-theorem isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersion := by
+lemma isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersion := by
   constructor
   · exact isOpenImmersion_respectsIso
   · intros; infer_instance
@@ -72,7 +72,7 @@ theorem isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImme
       infer_instance
 #align algebraic_geometry.is_open_immersion_is_local_at_target AlgebraicGeometry.isOpenImmersion_is_local_at_target
 
-theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.TFAE
+lemma IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.TFAE
     [IsOpenImmersion f,
     ∃ 𝒰 : Scheme.OpenCover.{u} Y,
       ∀ i : 𝒰.J, IsOpenImmersion (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
@@ -86,13 +86,13 @@ theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.T
   isOpenImmersion_is_local_at_target.openCover_TFAE f
 #align algebraic_geometry.is_open_immersion.open_cover_tfae AlgebraicGeometry.IsOpenImmersion.openCover_TFAE
 
-theorem IsOpenImmersion.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y)
+lemma IsOpenImmersion.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y)
     (f : X ⟶ Y) :
     IsOpenImmersion f ↔ ∀ i, IsOpenImmersion (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
   isOpenImmersion_is_local_at_target.openCover_iff f 𝒰
 #align algebraic_geometry.is_open_immersion.open_cover_iff AlgebraicGeometry.IsOpenImmersion.openCover_iff
 
-theorem isOpenImmersion_stableUnderBaseChange :
+lemma isOpenImmersion_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @IsOpenImmersion :=
   MorphismProperty.StableUnderBaseChange.mk isOpenImmersion_respectsIso <| by
     intro X Y Z f g H; infer_instance

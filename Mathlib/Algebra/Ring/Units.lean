@@ -38,7 +38,7 @@ protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
 #align units.coe_neg Units.val_neg
 
 @[simp, norm_cast]
-protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
+protected lemma coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
 #align units.coe_neg_one Units.coe_neg_one
 
@@ -92,23 +92,23 @@ end Ring
 
 end Units
 
-theorem IsUnit.neg [Monoid α] [HasDistribNeg α] {a : α} : IsUnit a → IsUnit (-a)
+lemma IsUnit.neg [Monoid α] [HasDistribNeg α] {a : α} : IsUnit a → IsUnit (-a)
   | ⟨x, hx⟩ => hx ▸ (-x).isUnit
 #align is_unit.neg IsUnit.neg
 
 @[simp]
-theorem IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔ IsUnit a :=
+lemma IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔ IsUnit a :=
   ⟨fun h => neg_neg a ▸ h.neg, IsUnit.neg⟩
 #align is_unit.neg_iff IsUnit.neg_iff
 
-theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) :=
+lemma IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) :=
   (IsUnit.neg_iff _).symm.trans <| neg_sub x y ▸ Iff.rfl
 #align is_unit.sub_iff IsUnit.sub_iff
 
 namespace Units
 
 @[field_simps]
-theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
+lemma divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ + b /ₚ u₂ = (a * u₂ + u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [divp, add_mul, mul_inv_rev, val_mul]
   rw [mul_comm (↑u₁ * b), mul_comm b]
@@ -118,12 +118,12 @@ theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
 #align units.divp_add_divp Units.divp_add_divp
 
 @[field_simps]
-theorem divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
+lemma divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ - b /ₚ u₂ = (a * u₂ - u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]
 #align units.divp_sub_divp Units.divp_sub_divp
 
-theorem add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (1 + ↑a⁻¹ * b) := by
+lemma add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (1 + ↑a⁻¹ * b) := by
   rw [mul_add, mul_one, ← mul_assoc, Units.mul_inv, one_mul]
 #align units.add_eq_mul_one_add_div Units.add_eq_mul_one_add_div
 

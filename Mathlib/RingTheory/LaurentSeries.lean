@@ -70,7 +70,7 @@ theorem powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
 #align laurent_series.power_series_part_coeff LaurentSeries.powerSeriesPart_coeff
 
 @[simp]
-theorem powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
+lemma powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
   ext
   simp
 #align laurent_series.power_series_part_zero LaurentSeries.powerSeriesPart_zero
@@ -119,7 +119,7 @@ instance [CommSemiring R] : Algebra (PowerSeries R) (LaurentSeries R) :=
   (HahnSeries.ofPowerSeries ℤ R).toAlgebra
 
 @[simp]
-theorem coe_algebraMap [CommSemiring R] :
+lemma coe_algebraMap [CommSemiring R] :
     ⇑(algebraMap (PowerSeries R) (LaurentSeries R)) = HahnSeries.ofPowerSeries ℤ R :=
   rfl
 #align laurent_series.coe_algebra_map LaurentSeries.coe_algebraMap
@@ -182,32 +182,32 @@ open LaurentSeries
 variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
 @[norm_cast] -- Porting note: simp can prove this
-theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
+lemma coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
   (ofPowerSeries ℤ R).map_zero
 #align power_series.coe_zero PowerSeries.coe_zero
 
 @[norm_cast] -- Porting note: simp can prove this
-theorem coe_one : ((1 : PowerSeries R) : LaurentSeries R) = 1 :=
+lemma coe_one : ((1 : PowerSeries R) : LaurentSeries R) = 1 :=
   (ofPowerSeries ℤ R).map_one
 #align power_series.coe_one PowerSeries.coe_one
 
 @[norm_cast] -- Porting note: simp can prove this
-theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
+lemma coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 #align power_series.coe_add PowerSeries.coe_add
 
 @[simp, norm_cast]
-theorem coe_sub : ((f' - g' : PowerSeries R') : LaurentSeries R') = f' - g' :=
+lemma coe_sub : ((f' - g' : PowerSeries R') : LaurentSeries R') = f' - g' :=
   (ofPowerSeries ℤ R').map_sub _ _
 #align power_series.coe_sub PowerSeries.coe_sub
 
 @[simp, norm_cast]
-theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
+lemma coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 #align power_series.coe_neg PowerSeries.coe_neg
 
 @[norm_cast] -- Porting note: simp can prove this
-theorem coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
+lemma coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 #align power_series.coe_mul PowerSeries.coe_mul
 
@@ -230,13 +230,13 @@ set_option linter.uppercaseLean3 false in
 #align power_series.coe_C PowerSeries.coe_C
 
 -- @[simp] -- Porting note: simp can prove this
-theorem coe_X : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
+lemma coe_X : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
   ofPowerSeries_X
 set_option linter.uppercaseLean3 false in
 #align power_series.coe_X PowerSeries.coe_X
 
 @[simp, norm_cast]
-theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
+lemma coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
     ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]

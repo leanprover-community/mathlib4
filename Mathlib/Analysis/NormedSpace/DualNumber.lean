@@ -31,7 +31,7 @@ variable [IsROrC 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
 variable [TopologicalRing R] [CompleteSpace R] [T2Space R]
 
 @[simp]
-theorem exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=
+lemma exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=
   exp_inr _ _
 #align dual_number.exp_eps DualNumber.exp_eps
 

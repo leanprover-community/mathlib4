@@ -54,7 +54,7 @@ section Semifield
 variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Semifield K]
 
 -- maybe try to relax the universe constraint
-theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
+lemma ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
     ker (toLin' (diagonal w)) =
       ⨆ i ∈ { i | w i = 0 }, LinearMap.range (LinearMap.stdBasis K (fun _ => K) i) := by
   rw [← comap_bot, ← iInf_ker_proj, comap_iInf]
@@ -65,7 +65,7 @@ theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
     (Set.toFinite _)).symm
 #align matrix.ker_diagonal_to_lin' Matrix.ker_diagonal_toLin'
 
-theorem range_diagonal [DecidableEq m] (w : m → K) :
+lemma range_diagonal [DecidableEq m] (w : m → K) :
     LinearMap.range (toLin' (diagonal w)) =
       ⨆ i ∈ { i | w i ≠ 0 }, LinearMap.range (LinearMap.stdBasis K (fun _ => K) i) := by
   dsimp only [mem_setOf_eq]
@@ -84,7 +84,7 @@ section Field
 
 variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Field K]
 
-theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
+lemma rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     LinearMap.rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by
   have hu : univ ⊆ { i : m | w i = 0 }ᶜ ∪ { i : m | w i = 0 } := by rw [Set.compl_union_self]
   have hd : Disjoint { i : m | w i ≠ 0 } { i : m | w i = 0 } := disjoint_compl_left

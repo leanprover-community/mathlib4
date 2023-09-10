@@ -83,7 +83,7 @@ theorem lift_coe (x : α) : lift f x = f x :=
 
 -- porting note: removed `simp` attribute to appease `simpNF` linter.
 @[to_additive]
-theorem lift_one : lift f 1 = 1 :=
+lemma lift_one : lift f 1 = 1 :=
   rfl
 #align with_one.lift_one WithOne.lift_one
 #align with_zero.lift_zero WithZero.lift_zero
@@ -116,7 +116,7 @@ theorem map_coe (f : α →ₙ* β) (a : α) : map f (a : WithOne α) = f a :=
 #align with_zero.map_coe WithZero.map_coe
 
 @[to_additive (attr := simp)]
-theorem map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
+lemma map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
   ext x
   induction x using WithOne.cases_on <;> rfl
 #align with_one.map_id WithOne.map_id
@@ -151,7 +151,7 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
 -- porting note: for this declaration and the two below I added the `to_additive` attribute because
 -- it seemed to be missing from mathlib3, hence the lack of additive `#align`s.
 @[to_additive (attr := simp)]
-theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
+lemma _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
   MulEquiv.toMonoidHom_injective map_id
 #align mul_equiv.with_one_congr_refl MulEquiv.withOneCongr_refl
 

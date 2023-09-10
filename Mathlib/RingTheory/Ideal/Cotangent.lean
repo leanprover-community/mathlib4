@@ -59,18 +59,18 @@ instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 #align ideal.to_cotangent Ideal.toCotangent
 
-theorem map_toCotangent_ker : I.toCotangent.ker.map I.subtype = I ^ 2 := by
+lemma map_toCotangent_ker : I.toCotangent.ker.map I.subtype = I ^ 2 := by
   rw [Ideal.toCotangent, Submodule.ker_mkQ, pow_two, Submodule.map_smul'' I ⊤ (Submodule.subtype I),
     Algebra.id.smul_eq_mul, Submodule.map_subtype_top]
 
 #align ideal.map_to_cotangent_ker Ideal.map_toCotangent_ker
 
-theorem mem_toCotangent_ker {x : I} : x ∈ LinearMap.ker I.toCotangent ↔ (x : R) ∈ I ^ 2 := by
+lemma mem_toCotangent_ker {x : I} : x ∈ LinearMap.ker I.toCotangent ↔ (x : R) ∈ I ^ 2 := by
   rw [← I.map_toCotangent_ker]
   simp
 #align ideal.mem_to_cotangent_ker Ideal.mem_toCotangent_ker
 
-theorem toCotangent_eq {x y : I} : I.toCotangent x = I.toCotangent y ↔ (x - y : R) ∈ I ^ 2 := by
+lemma toCotangent_eq {x y : I} : I.toCotangent x = I.toCotangent y ↔ (x - y : R) ∈ I ^ 2 := by
   rw [← sub_eq_zero]
   exact I.mem_toCotangent_ker
 #align ideal.to_cotangent_eq Ideal.toCotangent_eq
@@ -78,13 +78,13 @@ theorem toCotangent_eq {x y : I} : I.toCotangent x = I.toCotangent y ↔ (x - y 
 theorem toCotangent_eq_zero (x : I) : I.toCotangent x = 0 ↔ (x : R) ∈ I ^ 2 := I.mem_toCotangent_ker
 #align ideal.to_cotangent_eq_zero Ideal.toCotangent_eq_zero
 
-theorem toCotangent_surjective : Function.Surjective I.toCotangent := Submodule.mkQ_surjective _
+lemma toCotangent_surjective : Function.Surjective I.toCotangent := Submodule.mkQ_surjective _
 #align ideal.to_cotangent_surjective Ideal.toCotangent_surjective
 
-theorem toCotangent_range : LinearMap.range I.toCotangent = ⊤ := Submodule.range_mkQ _
+lemma toCotangent_range : LinearMap.range I.toCotangent = ⊤ := Submodule.range_mkQ _
 #align ideal.to_cotangent_range Ideal.toCotangent_range
 
-theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
+lemma cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
   constructor
   · intro H
     refine' (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) _)
@@ -103,7 +103,7 @@ def cotangentToQuotientSquare : I.Cotangent →ₗ[R] R ⧸ I ^ 2 :=
         Submodule.range_subtype, smul_eq_mul, pow_two] )
 #align ideal.cotangent_to_quotient_square Ideal.cotangentToQuotientSquare
 
-theorem to_quotient_square_comp_toCotangent :
+lemma to_quotient_square_comp_toCotangent :
     I.cotangentToQuotientSquare.comp I.toCotangent = (I ^ 2).mkQ.comp (Submodule.subtype I) :=
   LinearMap.ext fun _ => rfl
 #align ideal.to_quotient_square_comp_to_cotangent Ideal.to_quotient_square_comp_toCotangent
@@ -127,7 +127,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   · intro x y hx hy; exact add_mem hx hy
 #align ideal.cotangent_ideal_square Ideal.cotangentIdeal_square
 
-theorem to_quotient_square_range :
+lemma to_quotient_square_range :
     LinearMap.range I.cotangentToQuotientSquare = I.cotangentIdeal.restrictScalars R := by
   trans LinearMap.range (I.cotangentToQuotientSquare.comp I.toCotangent)
   · rw [LinearMap.range_comp, I.toCotangent_range, Submodule.map_top]

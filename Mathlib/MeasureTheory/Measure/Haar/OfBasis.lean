@@ -136,7 +136,7 @@ theorem parallelepiped_eq_convexHull (v : ι → E) :
 #align parallelepiped_eq_convex_hull parallelepiped_eq_convexHull
 
 /-- The axis aligned parallelepiped over `ι → ℝ` is a cuboid. -/
-theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
+lemma parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
     (parallelepiped fun i => Pi.single i (a i)) = Set.uIcc 0 a := by
   ext x
   simp_rw [Set.uIcc, mem_parallelepiped_iff, Set.mem_Icc, Pi.le_def, ← forall_and, Pi.inf_apply,
@@ -273,7 +273,7 @@ protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
   measurable_invFun := measurable_id
 #align euclidean_space.measurable_equiv EuclideanSpace.measurableEquiv
 
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
+lemma coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
 
 end EuclideanSpace

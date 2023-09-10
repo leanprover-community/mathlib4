@@ -147,13 +147,13 @@ def diagram : MultispanIndex C where
 #align category_theory.glue_data.diagram CategoryTheory.GlueData.diagram
 
 @[simp]
-theorem diagram_l : D.diagram.L = (D.J × D.J) :=
+lemma diagram_l : D.diagram.L = (D.J × D.J) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.diagram_L CategoryTheory.GlueData.diagram_l
 
 @[simp]
-theorem diagram_r : D.diagram.R = D.J :=
+lemma diagram_r : D.diagram.R = D.J :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.diagram_R CategoryTheory.GlueData.diagram_r
@@ -179,12 +179,12 @@ theorem diagram_snd (i j : D.J) : D.diagram.snd ⟨i, j⟩ = D.t i j ≫ D.f j i
 #align category_theory.glue_data.diagram_snd CategoryTheory.GlueData.diagram_snd
 
 @[simp]
-theorem diagram_left : D.diagram.left = D.V :=
+lemma diagram_left : D.diagram.left = D.V :=
   rfl
 #align category_theory.glue_data.diagram_left CategoryTheory.GlueData.diagram_left
 
 @[simp]
-theorem diagram_right : D.diagram.right = D.U :=
+lemma diagram_right : D.diagram.right = D.U :=
   rfl
 #align category_theory.glue_data.diagram_right CategoryTheory.GlueData.diagram_right
 
@@ -338,7 +338,7 @@ variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F
 -- porting note: commented out omit
 -- omit H
 
-theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
+lemma hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
   ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
 #align category_theory.glue_data.has_colimit_multispan_comp CategoryTheory.GlueData.hasColimit_multispan_comp
 
@@ -347,7 +347,7 @@ theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
 
 attribute [local instance] hasColimit_multispan_comp
 
-theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
+lemma hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
   hasColimitOfIso (D.diagramIso F).symm
 #align category_theory.glue_data.has_colimit_map_glue_data_diagram CategoryTheory.GlueData.hasColimit_mapGlueData_diagram
 

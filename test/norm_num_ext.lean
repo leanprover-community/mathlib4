@@ -39,47 +39,47 @@ example : Nat.sqrt 122 = 11 := by norm_num1
 example : Nat.sqrt (123456^2) = 123456 := by norm_num1
 example : Nat.sqrt (123456^2 + 123456) = 123456 := by norm_num1
 
-theorem ex11 : Nat.coprime 1 2 := by norm_num1
-theorem ex12 : Nat.coprime 2 1 := by norm_num1
-theorem ex13 : ¬ Nat.coprime 0 0 := by norm_num1
-theorem ex14 : ¬ Nat.coprime 0 3 := by norm_num1
-theorem ex15 : ¬ Nat.coprime 2 0 := by norm_num1
-theorem ex16 : Nat.coprime 2 3 := by norm_num1
-theorem ex16' : Nat.coprime 3 2 := by norm_num1
-theorem ex17 : ¬ Nat.coprime 2 4 := by norm_num1
+lemma ex11 : Nat.coprime 1 2 := by norm_num1
+lemma ex12 : Nat.coprime 2 1 := by norm_num1
+lemma ex13 : ¬ Nat.coprime 0 0 := by norm_num1
+lemma ex14 : ¬ Nat.coprime 0 3 := by norm_num1
+lemma ex15 : ¬ Nat.coprime 2 0 := by norm_num1
+lemma ex16 : Nat.coprime 2 3 := by norm_num1
+lemma ex16' : Nat.coprime 3 2 := by norm_num1
+lemma ex17 : ¬ Nat.coprime 2 4 := by norm_num1
 
-theorem ex21 : Nat.gcd 1 2 = 1 := by norm_num1
-theorem ex22 : Nat.gcd 2 1 = 1 := by norm_num1
-theorem ex23 : Nat.gcd 0 0 = 0 := by norm_num1
-theorem ex24 : Nat.gcd 0 3 = 3 := by norm_num1
-theorem ex25 : Nat.gcd 2 0 = 2 := by norm_num1
-theorem ex26 : Nat.gcd 2 3 = 1 := by norm_num1
-theorem ex27 : Nat.gcd 2 4 = 2 := by norm_num1
+lemma ex21 : Nat.gcd 1 2 = 1 := by norm_num1
+lemma ex22 : Nat.gcd 2 1 = 1 := by norm_num1
+lemma ex23 : Nat.gcd 0 0 = 0 := by norm_num1
+lemma ex24 : Nat.gcd 0 3 = 3 := by norm_num1
+lemma ex25 : Nat.gcd 2 0 = 2 := by norm_num1
+lemma ex26 : Nat.gcd 2 3 = 1 := by norm_num1
+lemma ex27 : Nat.gcd 2 4 = 2 := by norm_num1
 
-theorem ex31 : Nat.lcm 1 2 = 2 := by norm_num1
-theorem ex32 : Nat.lcm 2 1 = 2 := by norm_num1
-theorem ex33 : Nat.lcm 0 0 = 0 := by norm_num1
-theorem ex34 : Nat.lcm 0 3 = 0 := by norm_num1
-theorem ex35 : Nat.lcm 2 0 = 0 := by norm_num1
-theorem ex36 : Nat.lcm 2 3 = 6 := by norm_num1
-theorem ex37 : Nat.lcm 2 4 = 4 := by norm_num1
+lemma ex31 : Nat.lcm 1 2 = 2 := by norm_num1
+lemma ex32 : Nat.lcm 2 1 = 2 := by norm_num1
+lemma ex33 : Nat.lcm 0 0 = 0 := by norm_num1
+lemma ex34 : Nat.lcm 0 3 = 0 := by norm_num1
+lemma ex35 : Nat.lcm 2 0 = 0 := by norm_num1
+lemma ex36 : Nat.lcm 2 3 = 6 := by norm_num1
+lemma ex37 : Nat.lcm 2 4 = 4 := by norm_num1
 
-theorem ex41 : Int.gcd 2 3 = 1 := by norm_num1
-theorem ex42 : Int.gcd (-2) 3 = 1 := by norm_num1
-theorem ex43 : Int.gcd 2 (-3) = 1 := by norm_num1
-theorem ex44 : Int.gcd (-2) (-3) = 1 := by norm_num1
+lemma ex41 : Int.gcd 2 3 = 1 := by norm_num1
+lemma ex42 : Int.gcd (-2) 3 = 1 := by norm_num1
+lemma ex43 : Int.gcd 2 (-3) = 1 := by norm_num1
+lemma ex44 : Int.gcd (-2) (-3) = 1 := by norm_num1
 
-theorem ex51 : Int.lcm 2 3 = 6 := by norm_num1
-theorem ex52 : Int.lcm (-2) 3 = 6 := by norm_num1
-theorem ex53 : Int.lcm 2 (-3) = 6 := by norm_num1
-theorem ex54 : Int.lcm (-2) (-3) = 6 := by norm_num1
+lemma ex51 : Int.lcm 2 3 = 6 := by norm_num1
+lemma ex52 : Int.lcm (-2) 3 = 6 := by norm_num1
+lemma ex53 : Int.lcm 2 (-3) = 6 := by norm_num1
+lemma ex54 : Int.lcm (-2) (-3) = 6 := by norm_num1
 
-theorem ex61 : Nat.gcd (553105253 * 776531401) (553105253 * 920419823) = 553105253 := by norm_num1
-theorem ex62 : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num1
-theorem ex62' : Nat.gcd (2^1001 - 1) (2^1000 - 1) = 1 := by norm_num1
-theorem ex63 : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num1
-theorem ex64 : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := by norm_num1
-theorem ex64' : Int.gcd (1 - 2^500) (2^510 - 1) + 1 = 2^10 := by norm_num1
+lemma ex61 : Nat.gcd (553105253 * 776531401) (553105253 * 920419823) = 553105253 := by norm_num1
+lemma ex62 : Nat.gcd (2^1000 - 1) (2^1001 - 1) = 1 := by norm_num1
+lemma ex62' : Nat.gcd (2^1001 - 1) (2^1000 - 1) = 1 := by norm_num1
+lemma ex63 : Nat.gcd (2^500 - 1) (2^510 - 1) = 2^10 - 1 := by norm_num1
+lemma ex64 : Int.gcd (1 - 2^500) (2^510 - 1) = 2^10 - 1 := by norm_num1
+lemma ex64' : Int.gcd (1 - 2^500) (2^510 - 1) + 1 = 2^10 := by norm_num1
 
 example : IsCoprime (1 : ℤ) 2 := by norm_num1
 example : IsCoprime (2 : ℤ) 1 := by norm_num1

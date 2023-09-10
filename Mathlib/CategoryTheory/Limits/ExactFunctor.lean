@@ -148,14 +148,14 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.of_exact_obj CategoryTheory.RightExactFunctor.ofExact_obj
 
 @[simp]
-theorem LeftExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
+lemma LeftExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (LeftExactFunctor.ofExact C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.of_exact_map CategoryTheory.LeftExactFunctor.ofExact_map
 
 @[simp]
-theorem RightExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
+lemma RightExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
     (RightExactFunctor.ofExact C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -180,21 +180,21 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.forget_obj CategoryTheory.ExactFunctor.forget_obj
 
 @[simp]
-theorem LeftExactFunctor.forget_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
+lemma LeftExactFunctor.forget_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
     (LeftExactFunctor.forget C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.forget_map CategoryTheory.LeftExactFunctor.forget_map
 
 @[simp]
-theorem RightExactFunctor.forget_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
+lemma RightExactFunctor.forget_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     (RightExactFunctor.forget C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.forget_map CategoryTheory.RightExactFunctor.forget_map
 
 @[simp]
-theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) : (ExactFunctor.forget C D).map α = α :=
+lemma ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) : (ExactFunctor.forget C D).map α = α :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.forget_map CategoryTheory.ExactFunctor.forget_map

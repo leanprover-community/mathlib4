@@ -20,12 +20,12 @@ theorem ex4 (a b : Nat) : Fin (a + b) = Fin (b + a) := by
   guard_target = a + b = b + a
   apply Nat.add_comm
 
-theorem ex5 : ((a : Nat) → Fin (a + 1)) = ((a : Nat) → Fin (1 + a)) := by
+lemma ex5 : ((a : Nat) → Fin (a + 1)) = ((a : Nat) → Fin (1 + a)) := by
   congr! 2 with a
   guard_target = a + 1 = 1 + a
   apply Nat.add_comm
 
-theorem ex6 : ((a : Nat) × Fin (a + 1)) = ((a : Nat) × Fin (1 + a)) := by
+lemma ex6 : ((a : Nat) × Fin (a + 1)) = ((a : Nat) × Fin (1 + a)) := by
   congr! 3 with a
   guard_target = a + 1 = 1 + a
   apply Nat.add_comm
@@ -51,7 +51,7 @@ theorem ex12 (p q : Prop) (h : p ↔ q) : p = q := by
 theorem ex13 (x y : α) (h : x = y) (f : α → Nat) : f x = f y := by
   congr!
 
-theorem ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : HEq z 0) :
+lemma ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : HEq z 0) :
     HEq f (fun (_ : α) => z) := by
   congr!
   · guard_target = Nat = α

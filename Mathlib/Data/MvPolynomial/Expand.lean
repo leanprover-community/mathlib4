@@ -58,7 +58,7 @@ theorem expand_one_apply (f : MvPolynomial σ R) : expand 1 f = f := by
 #align mv_polynomial.expand_one_apply MvPolynomial.expand_one_apply
 
 @[simp]
-theorem expand_one : expand 1 = AlgHom.id R (MvPolynomial σ R) := by
+lemma expand_one : expand 1 = AlgHom.id R (MvPolynomial σ R) := by
   ext1 f
   rw [expand_one_apply, AlgHom.id_apply]
 #align mv_polynomial.expand_one MvPolynomial.expand_one

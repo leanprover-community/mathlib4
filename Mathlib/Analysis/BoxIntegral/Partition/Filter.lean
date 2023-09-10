@@ -272,15 +272,15 @@ def GP : IntegrationParams := ⊥
 set_option linter.uppercaseLean3 false in
 #align box_integral.integration_params.GP BoxIntegral.IntegrationParams.GP
 
-theorem henstock_le_riemann : Henstock ≤ Riemann := by trivial
+lemma henstock_le_riemann : Henstock ≤ Riemann := by trivial
 set_option linter.uppercaseLean3 false in
 #align box_integral.integration_params.Henstock_le_Riemann BoxIntegral.IntegrationParams.henstock_le_riemann
 
-theorem henstock_le_mcShane : Henstock ≤ McShane := by trivial
+lemma henstock_le_mcShane : Henstock ≤ McShane := by trivial
 set_option linter.uppercaseLean3 false in
 #align box_integral.integration_params.Henstock_le_McShane BoxIntegral.IntegrationParams.henstock_le_mcShane
 
-theorem gp_le : GP ≤ l :=
+lemma gp_le : GP ≤ l :=
   bot_le
 set_option linter.uppercaseLean3 false in
 #align box_integral.integration_params.GP_le BoxIntegral.IntegrationParams.gp_le
@@ -343,7 +343,7 @@ def toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I)
   ⨆ c : ℝ≥0, l.toFilterDistortioniUnion I c π₀
 #align box_integral.integration_params.to_filter_Union BoxIntegral.IntegrationParams.toFilteriUnion
 
-theorem rCond_of_bRiemann_eq_false {ι} (l : IntegrationParams) (hl : l.bRiemann = false)
+lemma rCond_of_bRiemann_eq_false {ι} (l : IntegrationParams) (hl : l.bRiemann = false)
     {r : (ι → ℝ) → Ioi (0 : ℝ)} : l.RCond r := by
   simp [RCond, hl]
 set_option linter.uppercaseLean3 false in
@@ -415,7 +415,7 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
     simpa [hc]
 #align box_integral.integration_params.mem_base_set.filter BoxIntegral.IntegrationParams.MemBaseSet.filter
 
-theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
+lemma biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
     (h : ∀ J ∈ π, l.MemBaseSet J c r (πi J)) (hp : ∀ J ∈ π, (πi J).IsPartition)
     (hc : l.bDistortion → π.compl.distortion ≤ c) : l.MemBaseSet I c r (π.biUnionTagged πi) := by
   refine' ⟨TaggedPrepartition.isSubordinate_biUnionTagged.2 fun J hJ => (h J hJ).1,
@@ -429,12 +429,12 @@ theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepa
 #align box_integral.integration_params.bUnion_tagged_mem_base_set BoxIntegral.IntegrationParams.biUnionTagged_memBaseSet
 
 @[mono]
-theorem RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ ≤ l₂) (hr : l₂.RCond r) :
+lemma RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ ≤ l₂) (hr : l₂.RCond r) :
     l₁.RCond r :=
   fun hR => hr (le_iff_imp.1 h.1 hR)
 #align box_integral.integration_params.r_cond.mono BoxIntegral.IntegrationParams.RCond.mono
 
-nonrec theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁)
+nonrec lemma RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁)
     (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
   fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
 #align box_integral.integration_params.r_cond.min BoxIntegral.IntegrationParams.RCond.min

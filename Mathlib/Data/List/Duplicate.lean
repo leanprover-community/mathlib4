@@ -57,7 +57,7 @@ theorem Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l := by
 #align list.duplicate.mem_cons_self List.Duplicate.mem_cons_self
 
 @[simp]
-theorem duplicate_cons_self_iff : x ∈+ x :: l ↔ x ∈ l :=
+lemma duplicate_cons_self_iff : x ∈+ x :: l ↔ x ∈ l :=
   ⟨Duplicate.mem_cons_self, Mem.duplicate_cons_self⟩
 #align list.duplicate_cons_self_iff List.duplicate_cons_self_iff
 
@@ -82,11 +82,11 @@ theorem Duplicate.elim_nil (h : x ∈+ []) : False :=
   not_duplicate_nil x h
 #align list.duplicate.elim_nil List.Duplicate.elim_nil
 
-theorem Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
+lemma Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
   not_duplicate_singleton x y h
 #align list.duplicate.elim_singleton List.Duplicate.elim_singleton
 
-theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
+lemma duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
   refine' ⟨fun h => _, fun h => _⟩
   · cases' h with _ hm _ _ hm
     · exact Or.inl ⟨rfl, hm⟩
@@ -96,15 +96,15 @@ theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x 
     · exact h.cons_duplicate
 #align list.duplicate_cons_iff List.duplicate_cons_iff
 
-theorem Duplicate.of_duplicate_cons {y : α} (h : x ∈+ y :: l) (hx : x ≠ y) : x ∈+ l := by
+lemma Duplicate.of_duplicate_cons {y : α} (h : x ∈+ y :: l) (hx : x ≠ y) : x ∈+ l := by
   simpa [duplicate_cons_iff, hx.symm] using h
 #align list.duplicate.of_duplicate_cons List.Duplicate.of_duplicate_cons
 
-theorem duplicate_cons_iff_of_ne {y : α} (hne : x ≠ y) : x ∈+ y :: l ↔ x ∈+ l := by
+lemma duplicate_cons_iff_of_ne {y : α} (hne : x ≠ y) : x ∈+ y :: l ↔ x ∈+ l := by
   simp [duplicate_cons_iff, hne.symm]
 #align list.duplicate_cons_iff_of_ne List.duplicate_cons_iff_of_ne
 
-theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x ∈+ l' := by
+lemma Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x ∈+ l' := by
   induction' h with l₁ l₂ y _ IH l₁ l₂ y h IH
   · exact hx
   · exact (IH hx).duplicate_cons _
@@ -115,7 +115,7 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
 #align list.duplicate.mono_sublist List.Duplicate.mono_sublist
 
 /-- The contrapositive of `List.nodup_iff_sublist`. -/
-theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
+lemma duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
   induction' l with y l IH
   · simp
   · by_cases hx : x = y
@@ -127,11 +127,11 @@ theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
       · contradiction
 #align list.duplicate_iff_sublist List.duplicate_iff_sublist
 
-theorem nodup_iff_forall_not_duplicate : Nodup l ↔ ∀ x : α, ¬x ∈+ l := by
+lemma nodup_iff_forall_not_duplicate : Nodup l ↔ ∀ x : α, ¬x ∈+ l := by
   simp_rw [nodup_iff_sublist, duplicate_iff_sublist]
 #align list.nodup_iff_forall_not_duplicate List.nodup_iff_forall_not_duplicate
 
-theorem exists_duplicate_iff_not_nodup : (∃ x : α, x ∈+ l) ↔ ¬Nodup l := by
+lemma exists_duplicate_iff_not_nodup : (∃ x : α, x ∈+ l) ↔ ¬Nodup l := by
   simp [nodup_iff_forall_not_duplicate]
 #align list.exists_duplicate_iff_not_nodup List.exists_duplicate_iff_not_nodup
 
@@ -139,7 +139,7 @@ theorem Duplicate.not_nodup (h : x ∈+ l) : ¬Nodup l := fun H =>
   nodup_iff_forall_not_duplicate.mp H _ h
 #align list.duplicate.not_nodup List.Duplicate.not_nodup
 
-theorem duplicate_iff_two_le_count [DecidableEq α] : x ∈+ l ↔ 2 ≤ count x l := by
+lemma duplicate_iff_two_le_count [DecidableEq α] : x ∈+ l ↔ 2 ≤ count x l := by
   simp [duplicate_iff_sublist, le_count_iff_replicate_sublist]
 #align list.duplicate_iff_two_le_count List.duplicate_iff_two_le_count
 

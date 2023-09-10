@@ -91,7 +91,7 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj a = a :=
 #align category_theory.free_bicategory.preinclusion_obj CategoryTheory.FreeBicategory.preinclusion_obj
 
 @[simp]
-theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
+lemma preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) := by
   rcases η with ⟨⟨⟩⟩
   cases Discrete.ext _ _ (by assumption)
@@ -145,7 +145,7 @@ def normalizeIso {a : B} :
 /-- Given a 2-morphism between `f` and `g` in the free bicategory, we have the equality
 `normalizeAux p f = normalizeAux p g`.
 -/
-theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
+lemma normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     normalizeAux p f = normalizeAux p g := by
   rcases η with ⟨η'⟩
   apply @congr_fun _ _ fun p => normalizeAux p f
@@ -158,7 +158,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
 #align category_theory.free_bicategory.normalize_aux_congr CategoryTheory.FreeBicategory.normalizeAux_congr
 
 /-- The 2-isomorphism `normalizeIso p f` is natural in `f`. -/
-theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
+lemma normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
         (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
@@ -185,7 +185,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
 
 -- Porting note: the left-hand side is not in simp-normal form.
 -- @[simp]
-theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
+lemma normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
     normalizeAux nil (f.comp g) = (normalizeAux nil f).comp (normalizeAux nil g) := by
   induction g generalizing a with
   | id => rfl

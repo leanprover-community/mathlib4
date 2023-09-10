@@ -44,7 +44,7 @@ def IsSubterminal (A : C) : Prop :=
   ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g
 #align category_theory.is_subterminal CategoryTheory.IsSubterminal
 
-theorem IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
+lemma IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
   Iff.rfl
 #align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def
 
@@ -59,7 +59,7 @@ theorem IsSubterminal.mono_isTerminal_from (hA : IsSubterminal A) {T : C} (hT : 
 /-- If `A` is subterminal, the unique morphism from it to the terminal object is a monomorphism.
 The converse of `isSubterminal_of_mono_terminal_from`.
 -/
-theorem IsSubterminal.mono_terminal_from [HasTerminal C] (hA : IsSubterminal A) :
+lemma IsSubterminal.mono_terminal_from [HasTerminal C] (hA : IsSubterminal A) :
     Mono (terminal.from A) :=
   hA.mono_isTerminal_from terminalIsTerminal
 #align category_theory.is_subterminal.mono_terminal_from CategoryTheory.IsSubterminal.mono_terminal_from
@@ -67,7 +67,7 @@ theorem IsSubterminal.mono_terminal_from [HasTerminal C] (hA : IsSubterminal A) 
 /-- If the unique morphism from `A` to a terminal object is a monomorphism, `A` is subterminal.
 The converse of `IsSubterminal.mono_isTerminal_from`.
 -/
-theorem isSubterminal_of_mono_isTerminal_from {T : C} (hT : IsTerminal T) [Mono (hT.from A)] :
+lemma isSubterminal_of_mono_isTerminal_from {T : C} (hT : IsTerminal T) [Mono (hT.from A)] :
     IsSubterminal A := fun Z f g => by
   rw [← cancel_mono (hT.from A)]
   apply hT.hom_ext
@@ -76,17 +76,17 @@ theorem isSubterminal_of_mono_isTerminal_from {T : C} (hT : IsTerminal T) [Mono 
 /-- If the unique morphism from `A` to the terminal object is a monomorphism, `A` is subterminal.
 The converse of `IsSubterminal.mono_terminal_from`.
 -/
-theorem isSubterminal_of_mono_terminal_from [HasTerminal C] [Mono (terminal.from A)] :
+lemma isSubterminal_of_mono_terminal_from [HasTerminal C] [Mono (terminal.from A)] :
     IsSubterminal A := fun Z f g => by
   rw [← cancel_mono (terminal.from A)]
   apply Subsingleton.elim
 #align category_theory.is_subterminal_of_mono_terminal_from CategoryTheory.isSubterminal_of_mono_terminal_from
 
-theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal T := fun _ _ _ =>
+lemma isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal T := fun _ _ _ =>
   hT.hom_ext _ _
 #align category_theory.is_subterminal_of_is_terminal CategoryTheory.isSubterminal_of_isTerminal
 
-theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ =>
+lemma isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ =>
   Subsingleton.elim _ _
 #align category_theory.is_subterminal_of_terminal CategoryTheory.isSubterminal_of_terminal
 
@@ -103,7 +103,7 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
 The converse of `isSubterminal.isIso_diag`.
 -/
-theorem isSubterminal_of_isIso_diag [HasBinaryProduct A A] [IsIso (diag A)] : IsSubterminal A :=
+lemma isSubterminal_of_isIso_diag [HasBinaryProduct A A] [IsIso (diag A)] : IsSubterminal A :=
   fun Z f g => by
   have : (Limits.prod.fst : A ⨯ A ⟶ _) = Limits.prod.snd := by simp [← cancel_epi (diag A)]
   rw [← prod.lift_fst f g, this, prod.lift_snd]
@@ -171,14 +171,14 @@ def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoO
 #align category_theory.subterminals_equiv_mono_over_terminal CategoryTheory.subterminalsEquivMonoOverTerminal
 
 @[simp]
-theorem subterminals_to_monoOver_terminal_comp_forget [HasTerminal C] :
+lemma subterminals_to_monoOver_terminal_comp_forget [HasTerminal C] :
     (subterminalsEquivMonoOverTerminal C).functor ⋙ MonoOver.forget _ ⋙ Over.forget _ =
       subterminalInclusion C :=
   rfl
 #align category_theory.subterminals_to_mono_over_terminal_comp_forget CategoryTheory.subterminals_to_monoOver_terminal_comp_forget
 
 @[simp]
-theorem monoOver_terminal_to_subterminals_comp [HasTerminal C] :
+lemma monoOver_terminal_to_subterminals_comp [HasTerminal C] :
     (subterminalsEquivMonoOverTerminal C).inverse ⋙ subterminalInclusion C =
       MonoOver.forget _ ⋙ Over.forget _ :=
   rfl

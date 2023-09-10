@@ -43,7 +43,7 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 This lemma contains a slightly more general version of this statement (where one considers
 convergence along some subfilter, typically `𝓝[<] x` or `𝓝[>] x`) tailored to the application
 to almost everywhere differentiability of monotone functions. -/
-theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : Filter ℝ} (hl : l ≤ 𝓝[≠] x)
+lemma tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : Filter ℝ} (hl : l ≤ 𝓝[≠] x)
     (hf : Tendsto (fun y => (f y - d) / (y - x)) l (𝓝 a))
     (h' : Tendsto (fun y => y + c * (y - x) ^ 2) l l) :
     Tendsto (fun y => (f (y + c * (y - x) ^ 2) - d) / (y - x)) l (𝓝 a) := by
@@ -135,7 +135,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
 
 /-- A monotone function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
-theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
+lemma Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
     ∀ᵐ x, HasDerivAt f (rnDeriv hf.stieltjesFunction.measure volume x).toReal x := by
   /- We already know that the Stieltjes function associated to `f` (i.e., `g : x ↦ f (x^+)`) is
     differentiable almost everywhere. We reduce to this statement by sandwiching values of `f` with
@@ -215,7 +215,7 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
 #align monotone.ae_has_deriv_at Monotone.ae_hasDerivAt
 
 /-- A monotone real function is differentiable Lebesgue-almost everywhere. -/
-theorem Monotone.ae_differentiableAt {f : ℝ → ℝ} (hf : Monotone f) :
+lemma Monotone.ae_differentiableAt {f : ℝ → ℝ} (hf : Monotone f) :
     ∀ᵐ x, DifferentiableAt ℝ f x := by
   filter_upwards [hf.ae_hasDerivAt] with x hx using hx.differentiableAt
 #align monotone.ae_differentiable_at Monotone.ae_differentiableAt
@@ -224,7 +224,7 @@ theorem Monotone.ae_differentiableAt {f : ℝ → ℝ} (hf : Monotone f) :
 this set. This version does not assume that `s` is measurable. For a formulation with
 `volume.restrict s` assuming that `s` is measurable, see `MonotoneOn.ae_differentiableWithinAt`.
 -/
-theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set ℝ} (hf : MonotoneOn f s) :
+lemma MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set ℝ} (hf : MonotoneOn f s) :
     ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
   /- We use a global monotone extension of `f`, and argue that this extension is differentiable
     almost everywhere. Such an extension need not exist (think of `1/x` on `(0, +∞)`), but it exists
@@ -247,7 +247,7 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
 this set. This version assumes that `s` is measurable and uses `volume.restrict s`.
 For a formulation without measurability assumption,
 see `MonotoneOn.ae_differentiableWithinAt_of_mem`. -/
-theorem MonotoneOn.ae_differentiableWithinAt {f : ℝ → ℝ} {s : Set ℝ} (hf : MonotoneOn f s)
+lemma MonotoneOn.ae_differentiableWithinAt {f : ℝ → ℝ} {s : Set ℝ} (hf : MonotoneOn f s)
     (hs : MeasurableSet s) : ∀ᵐ x ∂volume.restrict s, DifferentiableWithinAt ℝ f s x := by
   rw [ae_restrict_iff' hs]
   exact hf.ae_differentiableWithinAt_of_mem

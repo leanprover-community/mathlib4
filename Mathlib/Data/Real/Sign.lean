@@ -33,18 +33,18 @@ noncomputable def sign (r : ℝ) : ℝ :=
   if r < 0 then -1 else if 0 < r then 1 else 0
 #align real.sign Real.sign
 
-theorem sign_of_neg {r : ℝ} (hr : r < 0) : sign r = -1 := by rw [sign, if_pos hr]
+lemma sign_of_neg {r : ℝ} (hr : r < 0) : sign r = -1 := by rw [sign, if_pos hr]
 #align real.sign_of_neg Real.sign_of_neg
 
-theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_lt]
+lemma sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_lt]
 #align real.sign_of_pos Real.sign_of_pos
 
 @[simp]
-theorem sign_zero : sign 0 = 0 := by rw [sign, if_neg (lt_irrefl _), if_neg (lt_irrefl _)]
+lemma sign_zero : sign 0 = 0 := by rw [sign, if_neg (lt_irrefl _), if_neg (lt_irrefl _)]
 #align real.sign_zero Real.sign_zero
 
 @[simp]
-theorem sign_one : sign 1 = 1 :=
+lemma sign_one : sign 1 = 1 :=
   sign_of_pos <| by norm_num
 #align real.sign_one Real.sign_one
 
@@ -61,7 +61,7 @@ theorem sign_apply_eq_of_ne_zero (r : ℝ) (h : r ≠ 0) : sign r = -1 ∨ sign 
 #align real.sign_apply_eq_of_ne_zero Real.sign_apply_eq_of_ne_zero
 
 @[simp]
-theorem sign_eq_zero_iff {r : ℝ} : sign r = 0 ↔ r = 0 := by
+lemma sign_eq_zero_iff {r : ℝ} : sign r = 0 ↔ r = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
   · rw [sign_of_neg hn, neg_eq_zero] at h
@@ -79,7 +79,7 @@ theorem sign_int_cast (z : ℤ) : sign (z : ℝ) = ↑(Int.sign z) := by
   · rw [sign_of_pos (Int.cast_pos.mpr hp), Int.sign_eq_one_of_pos hp, Int.cast_one]
 #align real.sign_int_cast Real.sign_int_cast
 
-theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by
+lemma sign_neg {r : ℝ} : sign (-r) = -sign r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
   · rw [sign_of_neg hn, sign_of_pos (neg_pos.mpr hn), neg_neg]
   · rw [sign_zero, neg_zero, sign_zero]

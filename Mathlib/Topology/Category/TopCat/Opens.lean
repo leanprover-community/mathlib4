@@ -100,7 +100,7 @@ theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
 #align topological_space.opens.inf_le_left_apply_mk TopologicalSpace.Opens.infLELeft_apply_mk
 
 @[simp]
-theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
+lemma leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
     (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i : _) m⟩ :=
   rfl
 #align topological_space.opens.le_supr_apply_mk TopologicalSpace.Opens.leSupr_apply_mk
@@ -131,7 +131,7 @@ def inclusion {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
   continuous_toFun := continuous_subtype_val
 #align topological_space.opens.inclusion TopologicalSpace.Opens.inclusion
 
-theorem openEmbedding {X : TopCat.{u}} (U : Opens X) : OpenEmbedding (inclusion U) :=
+lemma openEmbedding {X : TopCat.{u}} (U : Opens X) : OpenEmbedding (inclusion U) :=
   IsOpen.openEmbedding_subtype_val U.2
 #align topological_space.opens.open_embedding TopologicalSpace.Opens.openEmbedding
 
@@ -234,7 +234,7 @@ def mapId : map (𝟙 X) ≅ 𝟭 (Opens X) where
   inv := { app := fun U => eqToHom (map_id_obj U).symm }
 #align topological_space.opens.map_id TopologicalSpace.Opens.mapId
 
-theorem map_id_eq : map (𝟙 X) = 𝟭 (Opens X) := by
+lemma map_id_eq : map (𝟙 X) = 𝟭 (Opens X) := by
   rfl
 #align topological_space.opens.map_id_eq TopologicalSpace.Opens.map_id_eq
 
@@ -332,20 +332,20 @@ namespace TopologicalSpace.Opens
 open TopologicalSpace
 
 @[simp]
-theorem openEmbedding_obj_top {X : TopCat} (U : Opens X) :
+lemma openEmbedding_obj_top {X : TopCat} (U : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
   ext1
   exact Set.image_univ.trans Subtype.range_coe
 #align topological_space.opens.open_embedding_obj_top TopologicalSpace.Opens.openEmbedding_obj_top
 
 @[simp]
-theorem inclusion_map_eq_top {X : TopCat} (U : Opens X) : (Opens.map U.inclusion).obj U = ⊤ := by
+lemma inclusion_map_eq_top {X : TopCat} (U : Opens X) : (Opens.map U.inclusion).obj U = ⊤ := by
   ext1
   exact Subtype.coe_preimage_self _
 #align topological_space.opens.inclusion_map_eq_top TopologicalSpace.Opens.inclusion_map_eq_top
 
 @[simp]
-theorem adjunction_counit_app_self {X : TopCat} (U : Opens X) :
+lemma adjunction_counit_app_self {X : TopCat} (U : Opens X) :
     U.openEmbedding.isOpenMap.adjunction.counit.app U = eqToHom (by simp) := Subsingleton.elim _ _
 #align topological_space.opens.adjunction_counit_app_self TopologicalSpace.Opens.adjunction_counit_app_self
 
@@ -359,7 +359,7 @@ theorem inclusion_top_functor (X : TopCat) :
     apply Subsingleton.elim
 #align topological_space.opens.inclusion_top_functor TopologicalSpace.Opens.inclusion_top_functor
 
-theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :
+lemma functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :
     hf.functor.obj ((Opens.map f).obj U) = hf.functor.obj ⊤ ⊓ U := by
   ext
   constructor
@@ -380,7 +380,7 @@ lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
     exact ⟨⟨x, h⟩, rfl⟩
 
 @[simp]
-theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
+lemma functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion).obj V) = V ⊓ U := by
   ext1
   refine' Set.image_preimage_eq_inter_range.trans _
@@ -388,19 +388,19 @@ theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
   rfl
 #align topological_space.opens.functor_map_eq_inf TopologicalSpace.Opens.functor_map_eq_inf
 
-theorem map_functor_eq' {X U : TopCat} (f : U ⟶ X) (hf : OpenEmbedding f) (V) :
+lemma map_functor_eq' {X U : TopCat} (f : U ⟶ X) (hf : OpenEmbedding f) (V) :
     ((Opens.map f).obj <| hf.isOpenMap.functor.obj V) = V :=
   Opens.ext <| Set.preimage_image_eq _ hf.inj
 #align topological_space.opens.map_functor_eq' TopologicalSpace.Opens.map_functor_eq'
 
 @[simp]
-theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
+lemma map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
     ((Opens.map U.inclusion).obj <| U.openEmbedding.isOpenMap.functor.obj V) = V :=
   TopologicalSpace.Opens.map_functor_eq' _ U.openEmbedding V
 #align topological_space.opens.map_functor_eq TopologicalSpace.Opens.map_functor_eq
 
 @[simp]
-theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
+lemma adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
       eqToHom (by dsimp; rw [map_functor_eq V]) :=
   by apply Subsingleton.elim

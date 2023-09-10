@@ -96,7 +96,7 @@ theorem id_obj (X : C) : (𝟭 C).obj X = X := rfl
 #align category_theory.functor.id_obj CategoryTheory.Functor.id_obj
 
 @[simp]
-theorem id_map {X Y : C} (f : X ⟶ Y) : (𝟭 C).map f = f := rfl
+lemma id_map {X Y : C} (f : X ⟶ Y) : (𝟭 C).map f = f := rfl
 #align category_theory.functor.id_map CategoryTheory.Functor.id_map
 
 end

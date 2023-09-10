@@ -72,7 +72,7 @@ open scoped ComplexConjugate
 variable {R : Type*} [CommRing R]
 
 @[simp]
-theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
+lemma ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
   Subsingleton.elim _ _
 #align clifford_algebra_ring.ι_eq_zero CliffordAlgebraRing.ι_eq_zero
 
@@ -97,13 +97,13 @@ theorem reverse_apply (x : CliffordAlgebra (0 : QuadraticForm R Unit)) :
 #align clifford_algebra_ring.reverse_apply CliffordAlgebraRing.reverse_apply
 
 @[simp]
-theorem reverse_eq_id :
+lemma reverse_eq_id :
     (reverse : CliffordAlgebra (0 : QuadraticForm R Unit) →ₗ[R] _) = LinearMap.id :=
   LinearMap.ext reverse_apply
 #align clifford_algebra_ring.reverse_eq_id CliffordAlgebraRing.reverse_eq_id
 
 @[simp]
-theorem involute_eq_id :
+lemma involute_eq_id :
     (involute : CliffordAlgebra (0 : QuadraticForm R Unit) →ₐ[R] _) = AlgHom.id R _ := by ext; simp
 #align clifford_algebra_ring.involute_eq_id CliffordAlgebraRing.involute_eq_id
 
@@ -173,13 +173,13 @@ def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
 #align clifford_algebra_complex.of_complex CliffordAlgebraComplex.ofComplex
 
 @[simp]
-theorem ofComplex_I : ofComplex Complex.I = ι Q 1 :=
+lemma ofComplex_I : ofComplex Complex.I = ι Q 1 :=
   Complex.liftAux_apply_I _ (by simp)
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra_complex.of_complex_I CliffordAlgebraComplex.ofComplex_I
 
 @[simp]
-theorem toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ := by
+lemma toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ := by
   ext1
   dsimp only [AlgHom.comp_apply, Subtype.coe_mk, AlgHom.id_apply]
   rw [ofComplex_I, toComplex_ι, one_smul]
@@ -191,7 +191,7 @@ theorem toComplex_ofComplex (c : ℂ) : toComplex (ofComplex c) = c :=
 #align clifford_algebra_complex.to_complex_of_complex CliffordAlgebraComplex.toComplex_ofComplex
 
 @[simp]
-theorem ofComplex_comp_toComplex : ofComplex.comp toComplex = AlgHom.id ℝ (CliffordAlgebra Q) := by
+lemma ofComplex_comp_toComplex : ofComplex.comp toComplex = AlgHom.id ℝ (CliffordAlgebra Q) := by
   ext
   dsimp only [LinearMap.comp_apply, Subtype.coe_mk, AlgHom.id_apply, AlgHom.toLinearMap_apply,
     AlgHom.comp_apply]
@@ -229,7 +229,7 @@ theorem reverse_apply (x : CliffordAlgebra Q) : reverse (R := ℝ) x = x := by
 #align clifford_algebra_complex.reverse_apply CliffordAlgebraComplex.reverse_apply
 
 @[simp]
-theorem reverse_eq_id : (reverse : CliffordAlgebra Q →ₗ[ℝ] _) = LinearMap.id :=
+lemma reverse_eq_id : (reverse : CliffordAlgebra Q →ₗ[ℝ] _) = LinearMap.id :=
   LinearMap.ext reverse_apply
 #align clifford_algebra_complex.reverse_eq_id CliffordAlgebraComplex.reverse_eq_id
 
@@ -336,7 +336,7 @@ theorem ofQuaternion_mk (a₁ a₂ a₃ a₄ : R) :
 #align clifford_algebra_quaternion.of_quaternion_mk CliffordAlgebraQuaternion.ofQuaternion_mk
 
 @[simp]
-theorem ofQuaternion_comp_toQuaternion :
+lemma ofQuaternion_comp_toQuaternion :
     ofQuaternion.comp toQuaternion = AlgHom.id R (CliffordAlgebra (Q c₁ c₂)) := by
   ext : 1
   dsimp -- before we end up with two goals and have to do this twice
@@ -355,7 +355,7 @@ theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
 #align clifford_algebra_quaternion.of_quaternion_to_quaternion CliffordAlgebraQuaternion.ofQuaternion_toQuaternion
 
 @[simp]
-theorem toQuaternion_comp_ofQuaternion :
+lemma toQuaternion_comp_ofQuaternion :
     toQuaternion.comp ofQuaternion = AlgHom.id R ℍ[R,c₁,c₂] := by
   apply QuaternionAlgebra.lift.symm.injective
   ext1 <;> dsimp [QuaternionAlgebra.Basis.lift] <;> simp
@@ -420,7 +420,7 @@ theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r
 #align clifford_algebra_dual_number.equiv_ι CliffordAlgebraDualNumber.equiv_ι
 
 @[simp]
-theorem equiv_symm_eps :
+lemma equiv_symm_eps :
     CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
   -- Porting note: Original proof was `DualNumber.lift_apply_eps _`
   DualNumber.lift_apply_eps (R := R) (A := CliffordAlgebra (0 : QuadraticForm R R)) _

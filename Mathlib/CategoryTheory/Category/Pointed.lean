@@ -49,7 +49,7 @@ set_option linter.uppercaseLean3 false in
 #align Pointed.of Pointed.of
 
 @[simp]
-theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=
+lemma coe_of {X : Type*} (point : X) : ↥(of point) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Pointed.coe_of Pointed.coe_of

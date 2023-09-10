@@ -80,7 +80,7 @@ instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstS
 #align has_continuous_vadd.has_continuous_const_vadd ContinuousVAdd.continuousConstVAdd
 
 @[to_additive]
-theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
+lemma Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
     (hf : Tendsto f l (𝓝 c)) (hg : Tendsto g l (𝓝 a)) :
     Tendsto (fun x => f x • g x) l (𝓝 <| c • a) :=
   (continuous_smul.tendsto _).comp (hf.prod_mk_nhds hg)
@@ -88,7 +88,7 @@ theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M
 #align filter.tendsto.vadd Filter.Tendsto.vadd
 
 @[to_additive]
-theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Tendsto f l (𝓝 c))
+lemma Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Tendsto f l (𝓝 c))
     (a : X) : Tendsto (fun x => f x • a) l (𝓝 (c • a)) :=
   hf.smul tendsto_const_nhds
 #align filter.tendsto.smul_const Filter.Tendsto.smul_const
@@ -190,7 +190,7 @@ section LatticeOps
 variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 
 @[to_additive]
-theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
+lemma continuousSMul_sInf {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
   -- porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
   -- unification instead.
@@ -205,14 +205,14 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
 #align has_continuous_vadd_Inf continuousVAdd_sInf
 
 @[to_additive]
-theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
+lemma continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
   continuousSMul_sInf <| Set.forall_range_iff.mpr h
 #align has_continuous_smul_infi continuousSMul_iInf
 #align has_continuous_vadd_infi continuousVAdd_iInf
 
 @[to_additive]
-theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
+lemma continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
   refine' continuousSMul_iInf fun b => _
@@ -230,7 +230,7 @@ variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
 /-- An `AddTorsor` for a connected space is a connected space. This is not an instance because
 it loops for a group as a torsor over itself. -/
-protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
+protected lemma AddTorsor.connectedSpace : ConnectedSpace P :=
   { isPreconnected_univ := by
       convert
         isPreconnected_univ.image (Equiv.vaddConst (Classical.arbitrary P) : G → P)

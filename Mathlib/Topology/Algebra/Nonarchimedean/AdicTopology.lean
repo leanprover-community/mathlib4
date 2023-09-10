@@ -114,7 +114,7 @@ theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
-theorem adic_module_basis :
+lemma adic_module_basis :
     I.ringFilterBasis.SubmodulesBasis fun n : ℕ => I ^ n • (⊤ : Submodule R M) :=
   { inter := fun i j =>
       ⟨max i j,
@@ -156,7 +156,7 @@ def IsAdic [H : TopologicalSpace R] (J : Ideal R) : Prop :=
 
 /-- A topological ring is `J`-adic if and only if it admits the powers of `J` as a basis of
 open neighborhoods of zero. -/
-theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} :
+lemma isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} :
     IsAdic J ↔
       (∀ n : ℕ, IsOpen ((J ^ n : Ideal R) : Set R)) ∧
         ∀ s ∈ 𝓝 (0 : R), ∃ n : ℕ, ((J ^ n : Ideal R) : Set R) ⊆ s := by
@@ -187,7 +187,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
 
 variable [TopologicalSpace R] [TopologicalRing R]
 
-theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
+lemma is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
   rw [isAdic_iff] at h ⊢
   constructor
   · intro m
@@ -205,7 +205,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     apply Nat.le_add_left
 #align is_ideal_adic_pow is_ideal_adic_pow
 
-theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
+lemma is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
     IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
   rw [isAdic_iff]
   constructor

@@ -152,7 +152,7 @@ instance (priority := 100) hasEqualizers : HasEqualizers C :=
 end
 
 /-- If a zero morphism is a cokernel of `f`, then `f` is an epimorphism. -/
-theorem epi_of_zero_cokernel {X Y : C} (f : X ⟶ Y) (Z : C)
+lemma epi_of_zero_cokernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsColimit (CokernelCofork.ofπ (0 : Y ⟶ Z) (show f ≫ 0 = 0 by simp))) : Epi f :=
   ⟨fun u v huv => by
     obtain ⟨W, w, hw, hl⟩ := normalMonoOfMono (equalizer.ι u v)
@@ -172,7 +172,7 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- If `f ≫ g = 0` implies `g = 0` for all `g`, then `g` is a monomorphism. -/
-theorem epi_of_zero_cancel {X Y : C} (f : X ⟶ Y)
+lemma epi_of_zero_cancel {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Y ⟶ Z) (_ : f ≫ g = 0), g = 0) : Epi f :=
   epi_of_zero_cokernel f 0 <| zeroCokernelOfZeroCancel f hf
 #align category_theory.normal_mono_category.epi_of_zero_cancel CategoryTheory.NormalMonoCategory.epi_of_zero_cancel
@@ -317,7 +317,7 @@ instance (priority := 100) hasCoequalizers : HasCoequalizers C :=
 end
 
 /-- If a zero morphism is a kernel of `f`, then `f` is a monomorphism. -/
-theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
+lemma mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsLimit (KernelFork.ofι (0 : Z ⟶ X) (show 0 ≫ f = 0 by simp))) : Mono f :=
   ⟨fun u v huv => by
     obtain ⟨W, w, hw, hl⟩ := normalEpiOfEpi (coequalizer.π u v)
@@ -340,7 +340,7 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- If `g ≫ f = 0` implies `g = 0` for all `g`, then `f` is a monomorphism. -/
-theorem mono_of_cancel_zero {X Y : C} (f : X ⟶ Y)
+lemma mono_of_cancel_zero {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Z ⟶ X) (_ : g ≫ f = 0), g = 0) : Mono f :=
   mono_of_zero_kernel f 0 <| zeroKernelOfCancelZero f hf
 #align category_theory.normal_epi_category.mono_of_cancel_zero CategoryTheory.NormalEpiCategory.mono_of_cancel_zero

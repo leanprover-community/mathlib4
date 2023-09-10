@@ -80,7 +80,7 @@ theorem MulSalemSpencer.mono (h : t ⊆ s) (hs : MulSalemSpencer s) : MulSalemSp
 #align add_salem_spencer.mono AddSalemSpencer.mono
 
 @[to_additive (attr := simp)]
-theorem mulSalemSpencer_empty : MulSalemSpencer (∅ : Set α) := fun _ _ _ ha => ha.elim
+lemma mulSalemSpencer_empty : MulSalemSpencer (∅ : Set α) := fun _ _ _ ha => ha.elim
 #align mul_salem_spencer_empty mulSalemSpencer_empty
 #align add_salem_spencer_empty addSalemSpencer_empty
 
@@ -97,14 +97,14 @@ theorem mulSalemSpencer_singleton (a : α) : MulSalemSpencer ({a} : Set α) :=
 #align add_salem_spencer_singleton addSalemSpencer_singleton
 
 @[to_additive AddSalemSpencer.prod]
-theorem MulSalemSpencer.prod {t : Set β} (hs : MulSalemSpencer s) (ht : MulSalemSpencer t) :
+lemma MulSalemSpencer.prod {t : Set β} (hs : MulSalemSpencer s) (ht : MulSalemSpencer t) :
     MulSalemSpencer (s ×ˢ t) := fun _ _ _ ha hb hc h =>
   Prod.ext (hs ha.1 hb.1 hc.1 (Prod.ext_iff.1 h).1) (ht ha.2 hb.2 hc.2 (Prod.ext_iff.1 h).2)
 #align mul_salem_spencer.prod MulSalemSpencer.prod
 #align add_salem_spencer.prod AddSalemSpencer.prod
 
 @[to_additive]
-theorem mulSalemSpencer_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
+lemma mulSalemSpencer_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
     (hs : ∀ i, MulSalemSpencer (s i)) : MulSalemSpencer ((univ : Set ι).pi s) :=
   fun _ _ _ ha hb hc h =>
   funext fun i => hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i
@@ -118,7 +118,7 @@ section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s : Set α} {a : α}
 
 @[to_additive]
-theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s β 2] (f : F)
+lemma MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s β 2] (f : F)
     (hf : s.InjOn f) (h : MulSalemSpencer (f '' s)) : MulSalemSpencer s :=
   fun _ _ _ ha hb hc habc => hf ha hb <|
     h (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
@@ -128,7 +128,7 @@ theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s
 
 -- TODO: Generalize to Freiman homs
 @[to_additive]
-theorem MulSalemSpencer.image [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
+lemma MulSalemSpencer.image [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : MulSalemSpencer s) : MulSalemSpencer (f '' s) := by
   rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
   rw [h ha hb hc (hf (mul_mem_mul ha hb) (mul_mem_mul hc hc) <| by rwa [map_mul, map_mul])]
@@ -142,7 +142,7 @@ section CancelCommMonoid
 variable [CancelCommMonoid α] {s : Set α} {a : α}
 
 @[to_additive]
-theorem mulSalemSpencer_insert : MulSalemSpencer (insert a s) ↔ MulSalemSpencer s ∧
+lemma mulSalemSpencer_insert : MulSalemSpencer (insert a s) ↔ MulSalemSpencer s ∧
     (∀ ⦃b c⦄, b ∈ s → c ∈ s → a * b = c * c → a = b) ∧
     ∀ ⦃b c⦄, b ∈ s → c ∈ s → b * c = a * a → b = c := by
   refine' ⟨fun hs => ⟨hs.mono (subset_insert _ _),
@@ -190,7 +190,7 @@ theorem MulSalemSpencer.mul_right (hs : MulSalemSpencer s) : MulSalemSpencer ((�
 #align add_salem_spencer.add_right AddSalemSpencer.add_right
 
 @[to_additive]
-theorem mulSalemSpencer_mul_left_iff : MulSalemSpencer ((· * ·) a '' s) ↔ MulSalemSpencer s :=
+lemma mulSalemSpencer_mul_left_iff : MulSalemSpencer ((· * ·) a '' s) ↔ MulSalemSpencer s :=
   ⟨fun hs b c d hb hc hd h =>
     mul_left_cancel
       (hs (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) (mem_image_of_mem _ hd) <| by
@@ -200,7 +200,7 @@ theorem mulSalemSpencer_mul_left_iff : MulSalemSpencer ((· * ·) a '' s) ↔ Mu
 #align add_salem_spencer_add_left_iff addSalemSpencer_add_left_iff
 
 @[to_additive]
-theorem mulSalemSpencer_mul_right_iff : MulSalemSpencer ((· * a) '' s) ↔ MulSalemSpencer s :=
+lemma mulSalemSpencer_mul_right_iff : MulSalemSpencer ((· * a) '' s) ↔ MulSalemSpencer s :=
   ⟨fun hs b c d hb hc hd h =>
     mul_right_cancel
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
@@ -267,7 +267,7 @@ end CancelCommMonoidWithZero
 
 section Nat
 
-theorem addSalemSpencer_iff_eq_right {s : Set ℕ} :
+lemma addSalemSpencer_iff_eq_right {s : Set ℕ} :
     AddSalemSpencer s ↔ ∀ ⦃a b c⦄, a ∈ s → b ∈ s → c ∈ s → a + b = c + c → a = c := by
   refine' forall₄_congr fun a b c _ => forall₃_congr fun _ _ habc => ⟨_, _⟩
   · rintro rfl
@@ -282,7 +282,7 @@ end Nat
 /-- The frontier of a closed strictly convex set only contains trivial arithmetic progressions.
 The idea is that an arithmetic progression is contained on a line and the frontier of a strictly
 convex set does not contain lines. -/
-theorem addSalemSpencer_frontier [LinearOrderedField 𝕜] [TopologicalSpace E] [AddCommMonoid E]
+lemma addSalemSpencer_frontier [LinearOrderedField 𝕜] [TopologicalSpace E] [AddCommMonoid E]
     [Module 𝕜 E] {s : Set E} (hs₀ : IsClosed s) (hs₁ : StrictConvex 𝕜 s) :
     AddSalemSpencer (frontier s) := by
   intro a b c ha hb hc habc
@@ -293,7 +293,7 @@ theorem addSalemSpencer_frontier [LinearOrderedField 𝕜] [TopologicalSpace E] 
       (add_halves _) hc.2
 #align add_salem_spencer_frontier addSalemSpencer_frontier
 
-theorem addSalemSpencer_sphere [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E]
+lemma addSalemSpencer_sphere [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E]
     (x : E) (r : ℝ) : AddSalemSpencer (sphere x r) := by
   obtain rfl | hr := eq_or_ne r 0
   · rw [sphere_zero]
@@ -331,12 +331,12 @@ def mulRothNumber : Finset α →o ℕ :=
 #align add_roth_number addRothNumber
 
 @[to_additive]
-theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.card
+lemma mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.card
 #align mul_roth_number_le mulRothNumber_le
 #align add_roth_number_le addRothNumber_le
 
 @[to_additive]
-theorem mulRothNumber_spec :
+lemma mulRothNumber_spec :
     ∃ (t : _) (_ : t ⊆ s), t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
   @Nat.findGreatest_spec _ _
     (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α)) _ (Nat.zero_le _)
@@ -361,7 +361,7 @@ theorem MulSalemSpencer.roth_number_eq (hs : MulSalemSpencer (s : Set α)) :
 #align add_salem_spencer.roth_number_eq AddSalemSpencer.roth_number_eq
 
 @[to_additive (attr := simp)]
-theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
+lemma mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
   Nat.eq_zero_of_le_zero <| (mulRothNumber_le _).trans card_empty.le
 #align mul_roth_number_empty mulRothNumber_empty
 #align add_roth_number_empty addRothNumber_empty
@@ -419,7 +419,7 @@ section CancelCommMonoid
 variable [CancelCommMonoid α] (s : Finset α) (a : α)
 
 @[to_additive (attr := simp)]
-theorem mulRothNumber_map_mul_left :
+lemma mulRothNumber_map_mul_left :
     mulRothNumber (s.map <| mulLeftEmbedding a) = mulRothNumber s := by
   refine' le_antisymm _ _
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s.map <| mulLeftEmbedding a)
@@ -438,7 +438,7 @@ theorem mulRothNumber_map_mul_left :
 #align add_roth_number_map_add_left addRothNumber_map_add_left
 
 @[to_additive (attr := simp)]
-theorem mulRothNumber_map_mul_right :
+lemma mulRothNumber_map_mul_right :
     mulRothNumber (s.map <| mulRightEmbedding a) = mulRothNumber s := by
   rw [← mulLeftEmbedding_eq_mulRightEmbedding, mulRothNumber_map_mul_left s a]
 #align mul_roth_number_map_mul_right mulRothNumber_map_mul_right
@@ -494,7 +494,7 @@ theorem rothNumberNat_add_le (M N : ℕ) :
 #align roth_number_nat_add_le rothNumberNat_add_le
 
 @[simp]
-theorem rothNumberNat_zero : rothNumberNat 0 = 0 :=
+lemma rothNumberNat_zero : rothNumberNat 0 = 0 :=
   rfl
 #align roth_number_nat_zero rothNumberNat_zero
 
@@ -509,14 +509,14 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
 
 open Asymptotics Filter
 
-theorem rothNumberNat_isBigOWith_id :
+lemma rothNumberNat_isBigOWith_id :
     IsBigOWith 1 atTop (fun N => (rothNumberNat N : ℝ)) fun N => (N : ℝ) :=
   isBigOWith_of_le _ <| by simpa only [Real.norm_coe_nat, Nat.cast_le] using rothNumberNat_le
 set_option linter.uppercaseLean3 false in
 #align roth_number_nat_is_O_with_id rothNumberNat_isBigOWith_id
 
 /-- The Roth number has the trivial bound `rothNumberNat N = O(N)`. -/
-theorem rothNumberNat_isBigO_id : (fun N => (rothNumberNat N : ℝ)) =O[atTop] fun N => (N : ℝ) :=
+lemma rothNumberNat_isBigO_id : (fun N => (rothNumberNat N : ℝ)) =O[atTop] fun N => (N : ℝ) :=
   rothNumberNat_isBigOWith_id.isBigO
 set_option linter.uppercaseLean3 false in
 #align roth_number_nat_is_O_id rothNumberNat_isBigO_id

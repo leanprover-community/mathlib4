@@ -126,13 +126,13 @@ theorem whiskerLeft_id' (F : C ⥤ D) {G : D ⥤ E} : whiskerLeft F (𝟙 G) = �
 #align category_theory.whisker_left_id' CategoryTheory.whiskerLeft_id'
 
 @[simp]
-theorem whiskerRight_id {G : C ⥤ D} (F : D ⥤ E) :
+lemma whiskerRight_id {G : C ⥤ D} (F : D ⥤ E) :
     whiskerRight (NatTrans.id G) F = NatTrans.id (G.comp F) :=
   ((whiskeringRight C D E).obj F).map_id _
 #align category_theory.whisker_right_id CategoryTheory.whiskerRight_id
 
 @[simp]
-theorem whiskerRight_id' {G : C ⥤ D} (F : D ⥤ E) : whiskerRight (𝟙 G) F = 𝟙 (G.comp F) :=
+lemma whiskerRight_id' {G : C ⥤ D} (F : D ⥤ E) : whiskerRight (𝟙 G) F = 𝟙 (G.comp F) :=
   ((whiskeringRight C D E).obj F).map_id _
 #align category_theory.whisker_right_id' CategoryTheory.whiskerRight_id'
 
@@ -143,7 +143,7 @@ theorem whiskerLeft_comp (F : C ⥤ D) {G H K : D ⥤ E} (α : G ⟶ H) (β : H 
 #align category_theory.whisker_left_comp CategoryTheory.whiskerLeft_comp
 
 @[simp]
-theorem whiskerRight_comp {G H K : C ⥤ D} (α : G ⟶ H) (β : H ⟶ K) (F : D ⥤ E) :
+lemma whiskerRight_comp {G H K : C ⥤ D} (α : G ⟶ H) (β : H ⟶ K) (F : D ⥤ E) :
     whiskerRight (α ≫ β) F = whiskerRight α F ≫ whiskerRight β F :=
   ((whiskeringRight C D E).obj F).map_comp α β
 #align category_theory.whisker_right_comp CategoryTheory.whiskerRight_comp
@@ -175,13 +175,13 @@ def isoWhiskerRight {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) : G ⋙ F ≅ H
 #align category_theory.iso_whisker_right CategoryTheory.isoWhiskerRight
 
 @[simp]
-theorem isoWhiskerRight_hom {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
+lemma isoWhiskerRight_hom {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
     (isoWhiskerRight α F).hom = whiskerRight α.hom F :=
   rfl
 #align category_theory.iso_whisker_right_hom CategoryTheory.isoWhiskerRight_hom
 
 @[simp]
-theorem isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
+lemma isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
     (isoWhiskerRight α F).inv = whiskerRight α.inv F :=
   rfl
 #align category_theory.iso_whisker_right_inv CategoryTheory.isoWhiskerRight_inv
@@ -209,7 +209,7 @@ theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H �
 #align category_theory.whisker_left_twice CategoryTheory.whiskerLeft_twice
 
 @[simp]
-theorem whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
+lemma whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
     whiskerRight (whiskerRight α F) G = whiskerRight α (F ⋙ G) :=
   rfl
 #align category_theory.whisker_right_twice CategoryTheory.whiskerRight_twice
@@ -283,7 +283,7 @@ variable {E : Type u₅} [Category.{v₅} E]
 
 variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
-theorem pentagon :
+lemma pentagon :
     whiskerRight (associator F G H).hom K ≫
         (associator F (G ⋙ H) K).hom ≫ whiskerLeft F (associator G H K).hom =
       (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by aesop_cat

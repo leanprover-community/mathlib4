@@ -55,7 +55,7 @@ variable {σ : Type u} {K : Type u} [Field K]
 
 open Classical
 
-theorem rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ →₀ ℕ) := by
+lemma rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
 #align mv_polynomial.rank_mv_polynomial MvPolynomial.rank_mvPolynomial
 

@@ -133,12 +133,12 @@ set_option quotPrecheck false in
 notation:30 B " ^^ " A:30 => (exp A).obj B
 
 @[simp, reassoc]
-theorem ev_coev : Limits.prod.map (𝟙 A) ((coev A).app B) ≫ (ev A).app (A ⨯ B) = 𝟙 (A ⨯ B) :=
+lemma ev_coev : Limits.prod.map (𝟙 A) ((coev A).app B) ≫ (ev A).app (A ⨯ B) = 𝟙 (A ⨯ B) :=
   ihom.ev_coev A B
 #align category_theory.exp.ev_coev CategoryTheory.exp.ev_coev
 
 @[simp, reassoc]
-theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
+lemma coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
   ihom.coev_ev A B
 #align category_theory.exp.coev_ev CategoryTheory.exp.coev_ev
 
@@ -234,11 +234,11 @@ theorem curry_id_eq_coev (A X : C) [Exponentiable A] : curry (𝟙 _) = (exp.coe
   rw [curry_eq, (exp A).map_id (A ⨯ _)]; apply comp_id
 #align category_theory.cartesian_closed.curry_id_eq_coev CategoryTheory.CartesianClosed.curry_id_eq_coev
 
-theorem curry_injective : Function.Injective (curry : (A ⨯ Y ⟶ X) → (Y ⟶ A ⟹ X)) :=
+lemma curry_injective : Function.Injective (curry : (A ⨯ Y ⟶ X) → (Y ⟶ A ⟹ X)) :=
   (Closed.isAdj.adj.homEquiv _ _).injective
 #align category_theory.cartesian_closed.curry_injective CategoryTheory.CartesianClosed.curry_injective
 
-theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X)) :=
+lemma uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X)) :=
   (Closed.isAdj.adj.homEquiv _ _).symm.injective
 #align category_theory.cartesian_closed.uncurry_injective CategoryTheory.CartesianClosed.uncurry_injective
 
@@ -299,7 +299,7 @@ theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by simp [pre
 #align category_theory.pre_id CategoryTheory.pre_id
 
 @[simp]
-theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
+lemma pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
     (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) : pre (f ≫ g) = pre g ≫ pre f := by
   rw [pre, pre, pre, transferNatTransSelf_comp, prod.functor.map_comp]
 #align category_theory.pre_map CategoryTheory.pre_map
@@ -368,7 +368,7 @@ i.e. any morphism to `I` is an iso.
 This actually shows a slightly stronger version: any morphism to an initial object from an
 exponentiable object is an isomorphism.
 -/
-theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
+lemma strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
   haveI : Mono (prod.lift (𝟙 A) f ≫ (zeroMul t).hom) := mono_comp _ _
   rw [zeroMul_hom, prod.lift_snd] at this
   haveI : IsSplitEpi f := IsSplitEpi.mk' ⟨t.to _, t.hom_ext _ _⟩
@@ -380,7 +380,7 @@ instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
 #align category_theory.to_initial_is_iso CategoryTheory.to_initial_isIso
 
 /-- If an initial object `0` exists in a CCC then every morphism from it is monic. -/
-theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mono (t.to B) :=
+lemma initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mono (t.to B) :=
   ⟨fun g h _ => by
     haveI := strict_initial t g
     haveI := strict_initial t h

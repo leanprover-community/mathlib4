@@ -79,7 +79,7 @@ def space (K : SimplicialComplex 𝕜 E) : Set E :=
 #align geometry.simplicial_complex.space Geometry.SimplicialComplex.space
 
 -- Porting note: Expanded `∃ s ∈ K.faces` to get the type to match more closely with Lean 3
-theorem mem_space_iff : x ∈ K.space ↔ ∃ (s : _) (_ : s ∈ K.faces), x ∈ convexHull 𝕜 (s : Set E) :=
+lemma mem_space_iff : x ∈ K.space ↔ ∃ (s : _) (_ : s ∈ K.faces), x ∈ convexHull 𝕜 (s : Set E) :=
   mem_iUnion₂
 #align geometry.simplicial_complex.mem_space_iff Geometry.SimplicialComplex.mem_space_iff
 
@@ -148,17 +148,17 @@ def vertices (K : SimplicialComplex 𝕜 E) : Set E :=
   { x | {x} ∈ K.faces }
 #align geometry.simplicial_complex.vertices Geometry.SimplicialComplex.vertices
 
-theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
+lemma mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
 #align geometry.simplicial_complex.mem_vertices Geometry.SimplicialComplex.mem_vertices
 
-theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
+lemma vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
   refine' ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => _⟩
   obtain ⟨s, hs, hx⟩ := mem_iUnion₂.1 h
   exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_ne_empty _)
 #align geometry.simplicial_complex.vertices_eq Geometry.SimplicialComplex.vertices_eq
 
-theorem vertices_subset_space : K.vertices ⊆ K.space :=
+lemma vertices_subset_space : K.vertices ⊆ K.space :=
   vertices_eq.subset.trans <| iUnion₂_mono fun x _ => subset_convexHull 𝕜 (x : Set E)
 #align geometry.simplicial_complex.vertices_subset_space Geometry.SimplicialComplex.vertices_subset_space
 
@@ -190,11 +190,11 @@ def facets (K : SimplicialComplex 𝕜 E) : Set (Finset E) :=
   { s ∈ K.faces | ∀ ⦃t⦄, t ∈ K.faces → s ⊆ t → s = t }
 #align geometry.simplicial_complex.facets Geometry.SimplicialComplex.facets
 
-theorem mem_facets : s ∈ K.facets ↔ s ∈ K.faces ∧ ∀ t ∈ K.faces, s ⊆ t → s = t :=
+lemma mem_facets : s ∈ K.facets ↔ s ∈ K.faces ∧ ∀ t ∈ K.faces, s ⊆ t → s = t :=
   mem_sep_iff
 #align geometry.simplicial_complex.mem_facets Geometry.SimplicialComplex.mem_facets
 
-theorem facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
+lemma facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
 #align geometry.simplicial_complex.facets_subset Geometry.SimplicialComplex.facets_subset
 
 theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
@@ -249,14 +249,14 @@ instance : Inhabited (SimplicialComplex 𝕜 E) :=
 
 variable {𝕜 E}
 
-theorem faces_bot : (⊥ : SimplicialComplex 𝕜 E).faces = ∅ := rfl
+lemma faces_bot : (⊥ : SimplicialComplex 𝕜 E).faces = ∅ := rfl
 #align geometry.simplicial_complex.faces_bot Geometry.SimplicialComplex.faces_bot
 
-theorem space_bot : (⊥ : SimplicialComplex 𝕜 E).space = ∅ :=
+lemma space_bot : (⊥ : SimplicialComplex 𝕜 E).space = ∅ :=
   Set.biUnion_empty _
 #align geometry.simplicial_complex.space_bot Geometry.SimplicialComplex.space_bot
 
-theorem facets_bot : (⊥ : SimplicialComplex 𝕜 E).facets = ∅ :=
+lemma facets_bot : (⊥ : SimplicialComplex 𝕜 E).facets = ∅ :=
   eq_empty_of_subset_empty facets_subset
 #align geometry.simplicial_complex.facets_bot Geometry.SimplicialComplex.facets_bot
 

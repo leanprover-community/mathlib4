@@ -42,30 +42,30 @@ theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
 #align pnat.nat_pred_add_one PNat.natPred_add_one
 
 @[mono]
-theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
+lemma natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 #align pnat.nat_pred_strict_mono PNat.natPred_strictMono
 
 @[mono]
-theorem natPred_monotone : Monotone natPred :=
+lemma natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 #align pnat.nat_pred_monotone PNat.natPred_monotone
 
-theorem natPred_injective : Function.Injective natPred :=
+lemma natPred_injective : Function.Injective natPred :=
   natPred_strictMono.injective
 #align pnat.nat_pred_injective PNat.natPred_injective
 
 @[simp]
-theorem natPred_lt_natPred {m n : ℕ+} : m.natPred < n.natPred ↔ m < n :=
+lemma natPred_lt_natPred {m n : ℕ+} : m.natPred < n.natPred ↔ m < n :=
   natPred_strictMono.lt_iff_lt
 #align pnat.nat_pred_lt_nat_pred PNat.natPred_lt_natPred
 
 @[simp]
-theorem natPred_le_natPred {m n : ℕ+} : m.natPred ≤ n.natPred ↔ m ≤ n :=
+lemma natPred_le_natPred {m n : ℕ+} : m.natPred ≤ n.natPred ↔ m ≤ n :=
   natPred_strictMono.le_iff_le
 #align pnat.nat_pred_le_nat_pred PNat.natPred_le_natPred
 
 @[simp]
-theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
+lemma natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
 #align pnat.nat_pred_inj PNat.natPred_inj
 
@@ -74,30 +74,30 @@ end PNat
 namespace Nat
 
 @[mono]
-theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
+lemma succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 #align nat.succ_pnat_strict_mono Nat.succPNat_strictMono
 
 @[mono]
-theorem succPNat_mono : Monotone succPNat :=
+lemma succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 #align nat.succ_pnat_mono Nat.succPNat_mono
 
 @[simp]
-theorem succPNat_lt_succPNat {m n : ℕ} : m.succPNat < n.succPNat ↔ m < n :=
+lemma succPNat_lt_succPNat {m n : ℕ} : m.succPNat < n.succPNat ↔ m < n :=
   succPNat_strictMono.lt_iff_lt
 #align nat.succ_pnat_lt_succ_pnat Nat.succPNat_lt_succPNat
 
 @[simp]
-theorem succPNat_le_succPNat {m n : ℕ} : m.succPNat ≤ n.succPNat ↔ m ≤ n :=
+lemma succPNat_le_succPNat {m n : ℕ} : m.succPNat ≤ n.succPNat ↔ m ≤ n :=
   succPNat_strictMono.le_iff_le
 #align nat.succ_pnat_le_succ_pnat Nat.succPNat_le_succPNat
 
-theorem succPNat_injective : Function.Injective succPNat :=
+lemma succPNat_injective : Function.Injective succPNat :=
   succPNat_strictMono.injective
 #align nat.succ_pnat_injective Nat.succPNat_injective
 
 @[simp]
-theorem succPNat_inj {n m : ℕ} : succPNat n = succPNat m ↔ n = m :=
+lemma succPNat_inj {n m : ℕ} : succPNat n = succPNat m ↔ n = m :=
   succPNat_injective.eq_iff
 #align nat.succ_pnat_inj Nat.succPNat_inj
 
@@ -113,7 +113,7 @@ open Nat
  subtraction, division and powers.
 -/
 @[simp, norm_cast]
-theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
+lemma coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
   SetCoe.ext_iff
 #align pnat.coe_inj PNat.coe_inj
 
@@ -160,14 +160,14 @@ def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
 #align order_iso.pnat_iso_nat_apply OrderIso.pnatIsoNat_apply
 
 @[simp]
-theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
+lemma _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
   rfl
 #align order_iso.pnat_iso_nat_symm_apply OrderIso.pnatIsoNat_symm_apply
 
-theorem lt_add_one_iff : ∀ {a b : ℕ+}, a < b + 1 ↔ a ≤ b := Nat.lt_add_one_iff
+lemma lt_add_one_iff : ∀ {a b : ℕ+}, a < b + 1 ↔ a ≤ b := Nat.lt_add_one_iff
 #align pnat.lt_add_one_iff PNat.lt_add_one_iff
 
-theorem add_one_le_iff : ∀ {a b : ℕ+}, a + 1 ≤ b ↔ a < b := Nat.add_one_le_iff
+lemma add_one_le_iff : ∀ {a b : ℕ+}, a + 1 ≤ b ↔ a < b := Nat.add_one_le_iff
 #align pnat.add_one_le_iff PNat.add_one_le_iff
 
 instance : OrderBot ℕ+ where
@@ -175,7 +175,7 @@ instance : OrderBot ℕ+ where
   bot_le a := a.property
 
 @[simp]
-theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
+lemma bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
 #align pnat.bot_eq_one PNat.bot_eq_one
 
@@ -237,12 +237,12 @@ def coeMonoidHom : ℕ+ →* ℕ where
 #align pnat.coe_monoid_hom PNat.coeMonoidHom
 
 @[simp]
-theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
+lemma coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
   rfl
 #align pnat.coe_coe_monoid_hom PNat.coe_coeMonoidHom
 
 @[simp]
-theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
+lemma le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
   le_bot_iff
 #align pnat.le_one_iff PNat.le_one_iff
 
@@ -290,7 +290,7 @@ theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ
     rfl
 #align pnat.sub_coe PNat.sub_coe
 
-theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
+lemma add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
     PNat.eq <| by
       rw [add_coe, sub_coe, if_pos h]
@@ -298,7 +298,7 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
 #align pnat.add_sub_of_lt PNat.add_sub_of_lt
 
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
-theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
+lemma exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
   | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl
   | ⟨n + 2, _⟩, _ => ⟨⟨n + 1, by simp⟩, rfl⟩
 #align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
@@ -328,7 +328,7 @@ def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n +
 #align pnat.rec_on PNat.recOn
 
 @[simp]
-theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
+lemma recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
   rfl
 #align pnat.rec_on_one PNat.recOn_one
 
@@ -339,7 +339,7 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
   cases n <;> [exact absurd h (by decide); rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
-theorem modDivAux_spec :
+lemma modDivAux_spec :
     ∀ (k : ℕ+) (r q : ℕ) (_ : ¬(r = 0 ∧ q = 0)),
       ((modDivAux k r q).1 : ℕ) + k * (modDivAux k r q).2 = r + k * q
   | k, 0, 0, h => (h ⟨rfl, rfl⟩).elim
@@ -391,7 +391,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
 #align pnat.mod_le PNat.mod_le
 
-theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
+lemma dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   constructor <;> intro h
   · rcases h with ⟨_, rfl⟩
     apply dvd_mul_right
@@ -405,7 +405,7 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
       rw [← coe_inj, h, mul_coe, mk_coe]
 #align pnat.dvd_iff PNat.dvd_iff
 
-theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
+lemma dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
   rw [dvd_iff]
   rw [Nat.dvd_iff_mod_eq_zero]; constructor
   · intro h
@@ -419,20 +419,20 @@ theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by
       exact ((Nat.mod_lt (m : ℕ) k.pos).ne h).elim
 #align pnat.dvd_iff' PNat.dvd_iff'
 
-theorem le_of_dvd {m n : ℕ+} : m ∣ n → m ≤ n := by
+lemma le_of_dvd {m n : ℕ+} : m ∣ n → m ≤ n := by
   rw [dvd_iff']
   intro h
   rw [← h]
   apply (mod_le n m).left
 #align pnat.le_of_dvd PNat.le_of_dvd
 
-theorem mul_div_exact {m k : ℕ+} (h : k ∣ m) : k * divExact m k = m := by
+lemma mul_div_exact {m k : ℕ+} (h : k ∣ m) : k * divExact m k = m := by
   apply PNat.eq; rw [mul_coe]
   change (k : ℕ) * (div m k).succ = m
   rw [← div_add_mod m k, dvd_iff'.mp h, Nat.mul_succ]
 #align pnat.mul_div_exact PNat.mul_div_exact
 
-theorem dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm =>
+lemma dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm =>
   (le_of_dvd hmn).antisymm (le_of_dvd hnm)
 #align pnat.dvd_antisymm PNat.dvd_antisymm
 
@@ -440,7 +440,7 @@ theorem dvd_one_iff (n : ℕ+) : n ∣ 1 ↔ n = 1 :=
   ⟨fun h => dvd_antisymm h (one_dvd n), fun h => h.symm ▸ dvd_refl 1⟩
 #align pnat.dvd_one_iff PNat.dvd_one_iff
 
-theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
+lemma pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   apply pos_iff_ne_zero.2
   intro hzero
   rw [hzero] at h

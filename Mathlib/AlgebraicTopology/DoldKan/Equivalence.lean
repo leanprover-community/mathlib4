@@ -172,7 +172,7 @@ def equivalence : SimplicialObject A ≌ ChainComplex A ℕ := by
   exact N.asEquivalence
 #align category_theory.abelian.dold_kan.equivalence CategoryTheory.Abelian.DoldKan.equivalence
 
-theorem equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=
+lemma equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=
   rfl
 #align category_theory.abelian.dold_kan.equivalence_inverse CategoryTheory.Abelian.DoldKan.equivalence_inverse
 

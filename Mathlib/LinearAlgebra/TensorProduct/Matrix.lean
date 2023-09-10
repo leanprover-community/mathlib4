@@ -62,7 +62,7 @@ theorem Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
 #align matrix.to_lin_kronecker Matrix.toLin_kronecker
 
 /-- `TensorProduct.comm` corresponds to a permutation of the identity matrix. -/
-theorem TensorProduct.toMatrix_comm :
+lemma TensorProduct.toMatrix_comm :
     toMatrix (bM.tensorProduct bN) (bN.tensorProduct bM) (TensorProduct.comm R M N) =
       (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap _root_.id := by
   ext ⟨i, j⟩ ⟨i', j'⟩
@@ -73,7 +73,7 @@ theorem TensorProduct.toMatrix_comm :
 #align tensor_product.to_matrix_comm TensorProduct.toMatrix_comm
 
 /-- `TensorProduct.assoc` corresponds to a permutation of the identity matrix. -/
-theorem TensorProduct.toMatrix_assoc :
+lemma TensorProduct.toMatrix_assoc :
     toMatrix ((bM.tensorProduct bN).tensorProduct bP) (bM.tensorProduct (bN.tensorProduct bP))
         (TensorProduct.assoc R M N P) =
       (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix _root_.id (Equiv.prodAssoc _ _ _) := by

@@ -133,7 +133,7 @@ def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
 #align mv_polynomial.kill_compl MvPolynomial.killCompl
 
-theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
+lemma killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
     rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos, Equiv.ofInjective_symm_apply]
@@ -161,7 +161,7 @@ def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R 
 #align mv_polynomial.rename_equiv MvPolynomial.renameEquiv
 
 @[simp]
-theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
+lemma renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
   AlgEquiv.ext rename_id
 #align mv_polynomial.rename_equiv_refl MvPolynomial.renameEquiv_refl
 
@@ -182,17 +182,17 @@ section
 
 variable (f : R →+* S) (k : σ → τ) (g : τ → S) (p : MvPolynomial σ R)
 
-theorem eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
+lemma eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
   apply MvPolynomial.induction_on p <;>
     · intros
       simp [*]
 #align mv_polynomial.eval₂_rename MvPolynomial.eval₂_rename
 
-theorem eval₂Hom_rename : eval₂Hom f g (rename k p) = eval₂Hom f (g ∘ k) p :=
+lemma eval₂Hom_rename : eval₂Hom f g (rename k p) = eval₂Hom f (g ∘ k) p :=
   eval₂_rename _ _ _ _
 #align mv_polynomial.eval₂_hom_rename MvPolynomial.eval₂Hom_rename
 
-theorem aeval_rename [Algebra R S] : aeval g (rename k p) = aeval (g ∘ k) p :=
+lemma aeval_rename [Algebra R S] : aeval g (rename k p) = aeval (g ∘ k) p :=
   eval₂Hom_rename _ _ _ _
 #align mv_polynomial.aeval_rename MvPolynomial.aeval_rename
 
@@ -321,7 +321,7 @@ theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
 #align mv_polynomial.coeff_rename_ne_zero MvPolynomial.coeff_rename_ne_zero
 
 @[simp]
-theorem constantCoeff_rename {τ : Type*} (f : σ → τ) (φ : MvPolynomial σ R) :
+lemma constantCoeff_rename {τ : Type*} (f : σ → τ) (φ : MvPolynomial σ R) :
     constantCoeff (rename f φ) = constantCoeff φ := by
   apply φ.induction_on
   · intro a
@@ -336,7 +336,7 @@ end Coeff
 
 section Support
 
-theorem support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} [DecidableEq τ]
+lemma support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} [DecidableEq τ]
     (h : Function.Injective f) :
     (rename f p).support = Finset.image (Finsupp.mapDomain f) p.support := by
   rw [rename_eq]

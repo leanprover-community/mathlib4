@@ -110,7 +110,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every
 neighborhood of `z₀` to a neighborhood of `z₀`. For the particular case of a holomorphic function on
 `ℂ`, see `AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux`. -/
-theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : AnalyticAt ℂ g z₀) :
+lemma AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : AnalyticAt ℂ g z₀) :
     (∀ᶠ z in 𝓝 z₀, g z = g z₀) ∨ 𝓝 (g z₀) ≤ map g (𝓝 z₀) := by
   /- The idea of the proof is to use the one-dimensional version applied to the restriction of `g`
     to lines going through `z₀` (indexed by `sphere (0 : E) 1`). If the restriction is eventually

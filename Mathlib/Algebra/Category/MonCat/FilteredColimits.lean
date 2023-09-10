@@ -115,7 +115,7 @@ noncomputable def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
 
 /-- Multiplication in the colimit is well-defined in the left argument. -/
 @[to_additive "Addition in the colimit is well-defined in the left argument."]
-theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
+lemma colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
     (hxx' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) x x') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
   cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
@@ -140,7 +140,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
 
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive "Addition in the colimit is well-defined in the right argument."]
-theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
+lemma colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     (hyy' : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget MonCat) y y') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
@@ -275,7 +275,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit.{v, u} F where
 #align AddMon.filtered_colimits.cocone_morphism AddMonCat.FilteredColimits.coconeMorphism
 
 @[to_additive (attr := simp)]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
+lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
   MonoidHom.ext fun x => congr_fun ((Types.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
 #align Mon.filtered_colimits.cocone_naturality MonCat.FilteredColimits.cocone_naturality

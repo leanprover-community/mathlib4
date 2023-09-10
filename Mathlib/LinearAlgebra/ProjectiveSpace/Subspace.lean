@@ -146,12 +146,12 @@ instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/
 @[simp]
-theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
+lemma span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 #align projectivization.subspace.span_empty Projectivization.Subspace.span_empty
 
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
-theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
+lemma span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
   rw [eq_top_iff, SetLike.le_def]
   intro x _hx
   exact subset_span _ (Set.mem_univ x)
@@ -159,18 +159,18 @@ theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
 
 /-- The span of a set of points is contained in a subspace if and only if the set of points is
 contained in the subspace. -/
-theorem span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤ W ↔ S ⊆ W :=
+lemma span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤ W ↔ S ⊆ W :=
   gi.gc S W
 #align projectivization.subspace.span_le_subspace_iff Projectivization.Subspace.span_le_subspace_iff
 
 /-- If a set of points is a subset of another set of points, then its span will be contained in the
 span of that set. -/
 @[mono]
-theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
+lemma monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 #align projectivization.subspace.monotone_span Projectivization.Subspace.monotone_span
 
-theorem subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T ⊆ span U) :
+lemma subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T ⊆ span U) :
     S ⊆ span U :=
   gi.gc.le_u_l_trans hST hTU
 #align projectivization.subspace.subset_span_trans Projectivization.Subspace.subset_span_trans
@@ -182,23 +182,23 @@ theorem span_union (S T : Set (ℙ K V)) : span (S ∪ T) = span S ⊔ span T :=
 
 /-- The supremum of a collection of subspaces is equal to the span of the union of the
 collection. -/
-theorem span_iUnion {ι} (s : ι → Set (ℙ K V)) : span (⋃ i, s i) = ⨆ i, span (s i) :=
+lemma span_iUnion {ι} (s : ι → Set (ℙ K V)) : span (⋃ i, s i) = ⨆ i, span (s i) :=
   (@gi K V _ _ _).gc.l_iSup
 #align projectivization.subspace.span_Union Projectivization.Subspace.span_iUnion
 
 /-- The supremum of a subspace and the span of a set of points is equal to the span of the union of
 the subspace and the set of points. -/
-theorem sup_span {S : Set (ℙ K V)} {W : Subspace K V} : W ⊔ span S = span (W ∪ S) := by
+lemma sup_span {S : Set (ℙ K V)} {W : Subspace K V} : W ⊔ span S = span (W ∪ S) := by
   rw [span_union, span_coe]
 #align projectivization.subspace.sup_span Projectivization.Subspace.sup_span
 
-theorem span_sup {S : Set (ℙ K V)} {W : Subspace K V} : span S ⊔ W = span (S ∪ W) := by
+lemma span_sup {S : Set (ℙ K V)} {W : Subspace K V} : span S ⊔ W = span (S ∪ W) := by
   rw [span_union, span_coe]
 #align projectivization.subspace.span_sup Projectivization.Subspace.span_sup
 
 /-- A point in a projective space is contained in the span of a set of points if and only if the
 point is contained in all subspaces of the projective space which contain the set of points. -/
-theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) :
+lemma mem_span {S : Set (ℙ K V)} (u : ℙ K V) :
     u ∈ span S ↔ ∀ W : Subspace K V, S ⊆ W → u ∈ W := by
   simp_rw [← span_le_subspace_iff]
   exact ⟨fun hu W hW => hW hu, fun W => W (span S) (le_refl _)⟩
@@ -206,7 +206,7 @@ theorem mem_span {S : Set (ℙ K V)} (u : ℙ K V) :
 
 /-- The span of a set of points in a projective space is equal to the infimum of the collection of
 subspaces which contain the set. -/
-theorem span_eq_sInf {S : Set (ℙ K V)} : span S = sInf { W : Subspace K V| S ⊆ W } := by
+lemma span_eq_sInf {S : Set (ℙ K V)} : span S = sInf { W : Subspace K V| S ⊆ W } := by
   ext x
   simp_rw [mem_carrier_iff, mem_span x]
   refine ⟨fun hx => ?_, fun hx W hW => ?_⟩
@@ -218,14 +218,14 @@ theorem span_eq_sInf {S : Set (ℙ K V)} : span S = sInf { W : Subspace K V| S �
 /-- If a set of points in projective space is contained in a subspace, and that subspace is
 contained in the span of the set of points, then the span of the set of points is equal to
 the subspace. -/
-theorem span_eq_of_le {S : Set (ℙ K V)} {W : Subspace K V} (hS : S ⊆ W) (hW : W ≤ span S) :
+lemma span_eq_of_le {S : Set (ℙ K V)} {W : Subspace K V} (hS : S ⊆ W) (hW : W ≤ span S) :
     span S = W :=
   le_antisymm (span_le_subspace_iff.mpr hS) hW
 #align projectivization.subspace.span_eq_of_le Projectivization.Subspace.span_eq_of_le
 
 /-- The spans of two sets of points in a projective space are equal if and only if each set of
 points is contained in the span of the other set. -/
-theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span T ∧ T ⊆ span S :=
+lemma span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span T ∧ T ⊆ span S :=
   ⟨fun h => ⟨h ▸ subset_span S, h.symm ▸ subset_span T⟩, fun h =>
     le_antisymm (span_le_subspace_iff.2 h.1) (span_le_subspace_iff.2 h.2)⟩
 #align projectivization.subspace.span_eq_span_iff Projectivization.Subspace.span_eq_span_iff

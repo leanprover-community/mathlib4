@@ -123,7 +123,7 @@ instance : AddCommGroup (ColimitType.{w} F) where
 instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := ⟨0⟩
 
 @[simp]
-theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
+lemma quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
   rfl
 #align AddCommGroup.colimits.quot_zero AddCommGroupCat.Colimits.quot_zero
 
@@ -161,7 +161,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit.{w} F where
 #align AddCommGroup.colimits.cocone_morphism AddCommGroupCat.Colimits.coconeMorphism
 
 @[simp]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
+lemma cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{w} F j' = coconeMorphism F j := by
   ext
   apply Quot.sound

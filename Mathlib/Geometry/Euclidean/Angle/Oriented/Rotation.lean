@@ -140,12 +140,12 @@ theorem rotation_symm (θ : Real.Angle) : (o.rotation θ).symm = o.rotation (-θ
 
 /-- Rotation by 0 is the identity. -/
 @[simp]
-theorem rotation_zero : o.rotation 0 = LinearIsometryEquiv.refl ℝ V := by ext; simp [rotation]
+lemma rotation_zero : o.rotation 0 = LinearIsometryEquiv.refl ℝ V := by ext; simp [rotation]
 #align orientation.rotation_zero Orientation.rotation_zero
 
 /-- Rotation by π is negation. -/
 @[simp]
-theorem rotation_pi : o.rotation π = LinearIsometryEquiv.neg ℝ := by
+lemma rotation_pi : o.rotation π = LinearIsometryEquiv.neg ℝ := by
   ext x
   simp [rotation]
 #align orientation.rotation_pi Orientation.rotation_pi
@@ -155,7 +155,7 @@ theorem rotation_pi_apply (x : V) : o.rotation π x = -x := by simp
 #align orientation.rotation_pi_apply Orientation.rotation_pi_apply
 
 /-- Rotation by π / 2 is the "right-angle-rotation" map `J`. -/
-theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
+lemma rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
   ext x
   simp [rotation]
 #align orientation.rotation_pi_div_two Orientation.rotation_pi_div_two
@@ -226,7 +226,7 @@ theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
 
 /-- Rotating the first vector by `θ` subtracts `θ` from the angle between two vectors. -/
 @[simp]
-theorem oangle_rotation_left {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.Angle) :
+lemma oangle_rotation_left {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.Angle) :
     o.oangle (o.rotation θ x) y = o.oangle x y - θ := by
   simp only [oangle, o.kahler_rotation_left']
   rw [Complex.arg_mul_coe_angle, Real.Angle.arg_expMapCircle]
@@ -237,7 +237,7 @@ theorem oangle_rotation_left {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.
 
 /-- Rotating the second vector by `θ` adds `θ` to the angle between two vectors. -/
 @[simp]
-theorem oangle_rotation_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.Angle) :
+lemma oangle_rotation_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ y) = o.oangle x y + θ := by
   simp only [oangle, o.kahler_rotation_right]
   rw [Complex.arg_mul_coe_angle, Real.Angle.arg_expMapCircle]
@@ -248,13 +248,13 @@ theorem oangle_rotation_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real
 
 /-- The rotation of a vector by `θ` has an angle of `-θ` from that vector. -/
 @[simp]
-theorem oangle_rotation_self_left {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
+lemma oangle_rotation_self_left {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle (o.rotation θ x) x = -θ := by simp [hx]
 #align orientation.oangle_rotation_self_left Orientation.oangle_rotation_self_left
 
 /-- A vector has an angle of `θ` from the rotation of that vector by `θ`. -/
 @[simp]
-theorem oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
+lemma oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ x) = θ := by simp [hx]
 #align orientation.oangle_rotation_self_right Orientation.oangle_rotation_self_right
 
@@ -285,7 +285,7 @@ theorem oangle_rotation (x y : V) (θ : Real.Angle) :
 
 /-- A rotation of a nonzero vector equals that vector if and only if the angle is zero. -/
 @[simp]
-theorem rotation_eq_self_iff_angle_eq_zero {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
+lemma rotation_eq_self_iff_angle_eq_zero {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.rotation θ x = x ↔ θ = 0 := by
   constructor
   · intro h
@@ -297,7 +297,7 @@ theorem rotation_eq_self_iff_angle_eq_zero {x : V} (hx : x ≠ 0) (θ : Real.Ang
 
 /-- A nonzero vector equals a rotation of that vector if and only if the angle is zero. -/
 @[simp]
-theorem eq_rotation_self_iff_angle_eq_zero {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
+lemma eq_rotation_self_iff_angle_eq_zero {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     x = o.rotation θ x ↔ θ = 0 := by rw [← o.rotation_eq_self_iff_angle_eq_zero hx, eq_comm]
 #align orientation.eq_rotation_self_iff_angle_eq_zero Orientation.eq_rotation_self_iff_angle_eq_zero
 
@@ -324,7 +324,7 @@ theorem rotation_oangle_eq_iff_norm_eq (x y : V) : o.rotation (o.oangle x y) x =
 
 /-- The angle between two nonzero vectors is `θ` if and only if the second vector is the first
 rotated by `θ` and scaled by the ratio of the norms. -/
-theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+lemma oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
     (θ : Real.Angle) : o.oangle x y = θ ↔ y = (‖y‖ / ‖x‖) • o.rotation θ x := by
   have hp := div_pos (norm_pos_iff.2 hy) (norm_pos_iff.2 hx)
   constructor
@@ -338,7 +338,7 @@ theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : 
 
 /-- The angle between two nonzero vectors is `θ` if and only if the second vector is the first
 rotated by `θ` and scaled by a positive real. -/
-theorem oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+lemma oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
     (θ : Real.Angle) : o.oangle x y = θ ↔ ∃ r : ℝ, 0 < r ∧ y = r • o.rotation θ x := by
   constructor
   · intro h
@@ -351,7 +351,7 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero {x y : V} (hx : x ≠ 0) (
 /-- The angle between two vectors is `θ` if and only if they are nonzero and the second vector
 is the first rotated by `θ` and scaled by the ratio of the norms, or `θ` and at least one of the
 vectors are zero. -/
-theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle) :
+lemma oangle_eq_iff_eq_norm_div_norm_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle) :
     o.oangle x y = θ ↔
       x ≠ 0 ∧ y ≠ 0 ∧ y = (‖y‖ / ‖x‖) • o.rotation θ x ∨ θ = 0 ∧ (x = 0 ∨ y = 0) := by
   by_cases hx : x = 0
@@ -365,7 +365,7 @@ theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_or_eq_zero {x y : V} (θ : 
 /-- The angle between two vectors is `θ` if and only if they are nonzero and the second vector
 is the first rotated by `θ` and scaled by a positive real, or `θ` and at least one of the
 vectors are zero. -/
-theorem oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle) :
+lemma oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle) :
     o.oangle x y = θ ↔
       (x ≠ 0 ∧ y ≠ 0 ∧ ∃ r : ℝ, 0 < r ∧ y = r • o.rotation θ x) ∨ θ = 0 ∧ (x = 0 ∨ y = 0) := by
   by_cases hx : x = 0
@@ -377,7 +377,7 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle
 #align orientation.oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero Orientation.oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero
 
 /-- Any linear isometric equivalence in `V` with positive determinant is `rotation`. -/
-theorem exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
+lemma exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
     (hd : 0 < LinearMap.det (f.toLinearEquiv : V →ₗ[ℝ] V)) :
     ∃ θ : Real.Angle, f = o.rotation θ := by
   haveI : Nontrivial V :=
@@ -484,7 +484,7 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
 
 /-- The inner product between two vectors is zero if and only if the first vector is zero or
 the second is a multiple of a `π / 2` rotation of that vector. -/
-theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
+lemma inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
   rw [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero]
   refine' ⟨fun h => _, fun h => _⟩

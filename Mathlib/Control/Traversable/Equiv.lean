@@ -54,16 +54,16 @@ protected def functor : Functor t' where map := Equiv.map eqv
 -- Porting note: `LawfulFunctor` is missing an `#align`.
 variable [LawfulFunctor t]
 
-protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := by
+protected lemma id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := by
   simp [Equiv.map, id_map]
 #align equiv.id_map Equiv.id_map
 
-protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
+protected lemma comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
     Equiv.map eqv (h ∘ g) x = Equiv.map eqv h (Equiv.map eqv g x) := by
   simp [Equiv.map]; apply comp_map
 #align equiv.comp_map Equiv.comp_map
 
-protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
+protected lemma lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
   -- Porting note: why is `_inst` required here?
   let _inst := Equiv.functor eqv; {
     map_const := fun {_ _} => rfl
@@ -71,7 +71,7 @@ protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
     comp_map := Equiv.comp_map eqv }
 #align equiv.is_lawful_functor Equiv.lawfulFunctor
 
-protected theorem lawfulFunctor' [F : Functor t']
+protected lemma lawfulFunctor' [F : Functor t']
     (h₀ : ∀ {α β} (f : α → β), Functor.map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), Functor.mapConst f = (Equiv.map eqv ∘ Function.const α) f) :
     LawfulFunctor t' := by
@@ -154,7 +154,7 @@ protected theorem naturality (f : α → F β) (x : t' α) :
 /-- The fact that `t` is a lawful traversable functor carries over the
 equivalences to `t'`, with the traversable functor structure given by
 `Equiv.traversable`. -/
-protected theorem isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
+protected lemma isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
   -- Porting note: Same `_inst` local variable problem.
   let _inst := Equiv.traversable eqv; {
     toLawfulFunctor := Equiv.lawfulFunctor eqv
@@ -169,7 +169,7 @@ protected theorem isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable
 carrying the traversable functor structure from `t` over the
 equivalences, then the fact that `t` is a lawful traversable functor
 carries over as well. -/
-protected theorem isLawfulTraversable' [Traversable t']
+protected lemma isLawfulTraversable' [Traversable t']
     (h₀ : ∀ {α β} (f : α → β), map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), mapConst f = (Equiv.map eqv ∘ Function.const α) f)
     (h₂ :

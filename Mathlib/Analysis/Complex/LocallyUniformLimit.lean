@@ -139,7 +139,7 @@ theorem exists_cthickening_tendstoUniformlyOn (hf : TendstoLocallyUniformlyOn F 
 /-- A locally uniform limit of holomorphic functions on an open domain of the complex plane is
 holomorphic (the derivatives converge locally uniformly to that of the limit, which is proved
 as `TendstoLocallyUniformlyOn.deriv`). -/
-theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
+lemma _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
     (hf : TendstoLocallyUniformlyOn F f φ U) (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U)
     (hU : IsOpen U) : DifferentiableOn ℂ f U := by
   rintro x hx
@@ -176,7 +176,7 @@ section Tsums
 
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
 summable function, and each term in the sum is differentiable on `U`, then so is the sum. -/
-theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u)
+lemma differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     (hf : ∀ i : ι, DifferentiableOn ℂ (F i) U) (hU : IsOpen U)
     (hF_le : ∀ (i : ι) (w : ℂ), w ∈ U → ‖F i w‖ ≤ u i) :
     DifferentiableOn ℂ (fun w : ℂ => ∑' i : ι, F i w) U := by
@@ -189,7 +189,7 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
 summable function, then the sum of `deriv F i` at a point in `U` is the derivative of the
 sum. -/
-theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
+lemma hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     (hf : ∀ i : ι, DifferentiableOn ℂ (F i) U) (hU : IsOpen U)
     (hF_le : ∀ (i : ι) (w : ℂ), w ∈ U → ‖F i w‖ ≤ u i) (hz : z ∈ U) :
     HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by

@@ -119,7 +119,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: added to speed up elaboration
 attribute [irreducible] N₁Γ₀
 
-theorem N₂Γ₂_toKaroubi : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ = Γ₀ ⋙ N₁ := by
+lemma N₂Γ₂_toKaroubi : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ = Γ₀ ⋙ N₁ := by
   have h := Functor.congr_obj (functorExtension₂_comp_whiskeringLeft_toKaroubi
     (ChainComplex C ℕ) (SimplicialObject C)) Γ₀
   have h' := Functor.congr_obj (functorExtension₁_comp_whiskeringLeft_toKaroubi

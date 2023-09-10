@@ -21,7 +21,7 @@ open scoped Filter
 
 open Filter Set Metric
 
-theorem setOf_liouville_eq_iInter_iUnion :
+lemma setOf_liouville_eq_iInter_iUnion :
     { x | Liouville x } =
       ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_ : 1 < b),
       ball ((a : ℝ) / b) (1 / (b : ℝ) ^ n) \ {(a : ℝ) / b} := by
@@ -30,7 +30,7 @@ theorem setOf_liouville_eq_iInter_iUnion :
     mem_singleton_iff, mem_ball, Real.dist_eq, and_comm]
 #align set_of_liouville_eq_Inter_Union setOf_liouville_eq_iInter_iUnion
 
-theorem isGδ_setOf_liouville : IsGδ { x | Liouville x } := by
+lemma isGδ_setOf_liouville : IsGδ { x | Liouville x } := by
   rw [setOf_liouville_eq_iInter_iUnion]
   refine isGδ_iInter fun n => IsOpen.isGδ ?_
   refine isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => ?_
@@ -38,7 +38,7 @@ theorem isGδ_setOf_liouville : IsGδ { x | Liouville x } := by
 set_option linter.uppercaseLean3 false in
 #align is_Gδ_set_of_liouville isGδ_setOf_liouville
 
-theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
+lemma setOf_liouville_eq_irrational_inter_iInter_iUnion :
     { x | Liouville x } =
       { x | Irrational x } ∩ ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (hb : 1 < b),
       ball (a / b) (1 / (b : ℝ) ^ n) := by
@@ -53,7 +53,7 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
 #align set_of_liouville_eq_irrational_inter_Inter_Union setOf_liouville_eq_irrational_inter_iInter_iUnion
 
 /-- The set of Liouville numbers is a residual set. -/
-theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
+lemma eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
   rw [Filter.Eventually, setOf_liouville_eq_irrational_inter_iInter_iUnion]
   refine eventually_residual_irrational.and ?_
   refine eventually_residual.2 ⟨_, ?_, Rat.denseEmbedding_coe_real.dense.mono ?_, Subset.rfl⟩
@@ -70,6 +70,6 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
 #align eventually_residual_liouville eventually_residual_liouville
 
 /-- The set of Liouville numbers in dense. -/
-theorem dense_liouville : Dense { x | Liouville x } :=
+lemma dense_liouville : Dense { x | Liouville x } :=
     dense_of_mem_residual eventually_residual_liouville
 #align dense_liouville dense_liouville

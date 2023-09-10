@@ -141,7 +141,7 @@ theorem NatTrans.leftDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
 
 -- porting note: removed "The `simp_nf` linter times out here, so we disable it."
 @[simp]
-theorem NatTrans.leftDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive] (α : F ⟶ G)
+lemma NatTrans.leftDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive] (α : F ⟶ G)
     (β : G ⟶ H) (n : ℕ) :
     NatTrans.leftDerived (α ≫ β) n = NatTrans.leftDerived α n ≫ NatTrans.leftDerived β n := by
   simp [NatTrans.leftDerived]
@@ -150,7 +150,7 @@ theorem NatTrans.leftDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H
 /-- A component of the natural transformation between left-derived functors can be computed
 using a chosen projective resolution.
 -/
-theorem NatTrans.leftDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) {X : C}
+lemma NatTrans.leftDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) {X : C}
     (P : ProjectiveResolution X) :
     (NatTrans.leftDerived α n).app X =
       (F.leftDerivedObjIso n P).hom ≫

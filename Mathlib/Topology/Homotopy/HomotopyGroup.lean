@@ -154,7 +154,7 @@ def const : Ω^ N X x :=
 #align gen_loop.const GenLoop.const
 
 @[simp]
-theorem const_apply {t} : (@const N X _ x) t = x :=
+lemma const_apply {t} : (@const N X _ x) t = x :=
   rfl
 #align gen_loop.const_apply GenLoop.const_apply
 
@@ -185,7 +185,7 @@ nonrec theorem trans (H0 : Homotopic f g) (H1 : Homotopic g h) : Homotopic f h :
   H0.trans H1
 #align gen_loop.homotopic.trans GenLoop.Homotopic.trans
 
-theorem equiv : Equivalence (@Homotopic N X _ x) :=
+lemma equiv : Equivalence (@Homotopic N X _ x) :=
   ⟨Homotopic.refl, Homotopic.symm, Homotopic.trans⟩
 #align gen_loop.homotopic.equiv GenLoop.Homotopic.equiv
 
@@ -369,7 +369,7 @@ def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
     ext1; change _ = f _; congr; ext1; simp
 #align gen_loop.symm_at GenLoop.symmAt
 
-theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
+lemma transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
     transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) := by
   ext; simp_rw [transAt, coe_copy, Function.update_apply, if_neg h, if_neg h.symm]
   split_ifs <;>
@@ -377,12 +377,12 @@ theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
       apply ite_ite_comm; rintro rfl; exact h.symm
 #align gen_loop.trans_at_distrib GenLoop.transAt_distrib
 
-theorem fromLoop_trans_toLoop {i : N} {p q : Ω^ N X x} :
+lemma fromLoop_trans_toLoop {i : N} {p q : Ω^ N X x} :
     fromLoop i ((toLoop i p).trans <| toLoop i q) = transAt i p q :=
   (copy_eq _ _).symm
 #align gen_loop.from_loop_trans_to_loop GenLoop.fromLoop_trans_toLoop
 
-theorem fromLoop_symm_toLoop {i : N} {p : Ω^ N X x} : fromLoop i (toLoop i p).symm = symmAt i p :=
+lemma fromLoop_symm_toLoop {i : N} {p : Ω^ N X x} : fromLoop i (toLoop i p).symm = symmAt i p :=
   (copy_eq _ _).symm
 #align gen_loop.from_loop_symm_to_loop GenLoop.fromLoop_symm_toLoop
 
@@ -534,14 +534,14 @@ theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = 
     coe_symm_toEquiv, loopHomeo_symm_apply]
 #align homotopy_group.aux_group_indep HomotopyGroup.auxGroup_indep
 
-theorem transAt_indep {i} (j) (f g : Ω^ N X x) :
+lemma transAt_indep {i} (j) (f g : Ω^ N X x) :
     (⟦transAt i f g⟧ : HomotopyGroup N X x) = ⟦transAt j f g⟧ := by
   simp_rw [← fromLoop_trans_toLoop]
   let m := fun (G) (_ : Group G) => ((· * ·) : G → G → G)
   exact congr_fun₂ (congr_arg (m <| HomotopyGroup N X x) <| auxGroup_indep i j) ⟦g⟧ ⟦f⟧
 #align homotopy_group.trans_at_indep HomotopyGroup.transAt_indep
 
-theorem symmAt_indep {i} (j) (f : Ω^ N X x) :
+lemma symmAt_indep {i} (j) (f : Ω^ N X x) :
     (⟦symmAt i f⟧ : HomotopyGroup N X x) = ⟦symmAt j f⟧ := by
   simp_rw [← fromLoop_symm_toLoop]
   let inv := fun (G) (_ : Group G) => ((·⁻¹) : G → G)
@@ -549,19 +549,19 @@ theorem symmAt_indep {i} (j) (f : Ω^ N X x) :
 #align homotopy_group.symm_at_indep HomotopyGroup.symmAt_indep
 
 /-- Characterization of multiplicative identity -/
-theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
+lemma one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
   rfl
 #align homotopy_group.one_def HomotopyGroup.one_def
 
 /-- Characterization of multiplication -/
-theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
+lemma mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
   -- porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec
 
 /-- Characterization of multiplicative inverse -/
-theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} : ((⟦p⟧)⁻¹ : HomotopyGroup N X x) = ⟦symmAt i p⟧ :=
+lemma inv_spec [Nonempty N] {i} {p : Ω^ N X x} : ((⟦p⟧)⁻¹ : HomotopyGroup N X x) = ⟦symmAt i p⟧ :=
   by rw [symmAt_indep _ p, ← fromLoop_symm_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.inv_spec HomotopyGroup.inv_spec
 

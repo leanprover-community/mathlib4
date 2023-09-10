@@ -48,7 +48,7 @@ namespace IsEuclidean
 variable {abv}
 
 -- Rearrange the parameters to `map_lt_map_iff'` so it elaborates better.
-theorem map_lt_map_iff {x y : R} (h : abv.IsEuclidean) : abv x < abv y ↔ x ≺ y :=
+lemma map_lt_map_iff {x y : R} (h : abv.IsEuclidean) : abv x < abv y ↔ x ≺ y :=
   map_lt_map_iff' h
 #align absolute_value.is_euclidean.map_lt_map_iff AbsoluteValue.IsEuclidean.map_lt_map_iff
 
@@ -68,7 +68,7 @@ open Int
 
 -- TODO: generalize to `LinearOrderedEuclideanDomain`s if we ever get a definition of those
 /-- `abs : ℤ → ℤ` is a Euclidean absolute value -/
-protected theorem abs_isEuclidean : IsEuclidean (AbsoluteValue.abs : AbsoluteValue ℤ ℤ) :=
+protected lemma abs_isEuclidean : IsEuclidean (AbsoluteValue.abs : AbsoluteValue ℤ ℤ) :=
   {  map_lt_map_iff' := fun {x y} =>
        show abs x < abs y ↔ natAbs x < natAbs y by rw [abs_eq_natAbs, abs_eq_natAbs, ofNat_lt] }
 #align absolute_value.abs_is_euclidean AbsoluteValue.abs_isEuclidean

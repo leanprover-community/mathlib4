@@ -54,7 +54,7 @@ theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X 
 #align category_theory.core.id_hom CategoryTheory.Core.id_hom
 
 @[simp]
-theorem comp_hom {X Y Z : Core C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
+lemma comp_hom {X Y Z : Core C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 #align category_theory.core.comp_hom CategoryTheory.Core.comp_hom
 

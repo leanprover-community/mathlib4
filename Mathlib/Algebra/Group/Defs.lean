@@ -169,13 +169,13 @@ section IsLeftCancelMul
 variable [IsLeftCancelMul G] {a b c : G}
 
 @[to_additive]
-theorem mul_left_cancel : a * b = a * c → b = c :=
+lemma mul_left_cancel : a * b = a * c → b = c :=
   IsLeftCancelMul.mul_left_cancel a b c
 #align mul_left_cancel mul_left_cancel
 #align add_left_cancel add_left_cancel
 
 @[to_additive]
-theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
+lemma mul_left_cancel_iff : a * b = a * c ↔ b = c :=
   ⟨mul_left_cancel, congr_arg _⟩
 #align mul_left_cancel_iff mul_left_cancel_iff
 #align add_left_cancel_iff add_left_cancel_iff
@@ -204,13 +204,13 @@ section IsRightCancelMul
 variable [IsRightCancelMul G] {a b c : G}
 
 @[to_additive]
-theorem mul_right_cancel : a * b = c * b → a = c :=
+lemma mul_right_cancel : a * b = c * b → a = c :=
   IsRightCancelMul.mul_right_cancel a b c
 #align mul_right_cancel mul_right_cancel
 #align add_right_cancel add_right_cancel
 
 @[to_additive]
-theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
+lemma mul_right_cancel_iff : b * a = c * a ↔ b = c :=
   ⟨mul_right_cancel, congr_arg (· * a)⟩
 #align mul_right_cancel_iff mul_right_cancel_iff
 #align add_right_cancel_iff add_right_cancel_iff
@@ -261,7 +261,7 @@ section Semigroup
 variable [Semigroup G]
 
 @[to_additive]
-theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
+lemma mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
 #align mul_assoc mul_assoc
 #align add_assoc add_assoc
@@ -299,7 +299,7 @@ section CommSemigroup
 variable [CommSemigroup G]
 
 @[to_additive]
-theorem mul_comm : ∀ a b : G, a * b = b * a :=
+lemma mul_comm : ∀ a b : G, a * b = b * a :=
   CommSemigroup.mul_comm
 #align mul_comm mul_comm
 #align add_comm add_comm
@@ -447,7 +447,7 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
 attribute [to_additive] MulOneClass
 
 @[to_additive (attr := ext)]
-theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
+lemma MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
   rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
   -- congr
@@ -461,13 +461,13 @@ section MulOneClass
 variable {M : Type u} [MulOneClass M]
 
 @[to_additive (attr := simp)]
-theorem one_mul : ∀ a : M, 1 * a = a :=
+lemma one_mul : ∀ a : M, 1 * a = a :=
   MulOneClass.one_mul
 #align one_mul one_mul
 #align zero_add zero_add
 
 @[to_additive (attr := simp)]
-theorem mul_one : ∀ a : M, a * 1 = a :=
+lemma mul_one : ∀ a : M, a * 1 = a :=
   MulOneClass.mul_one
 #align mul_one mul_one
 #align add_zero add_zero
@@ -654,7 +654,7 @@ section Monoid
 variable {M : Type u} [Monoid M]
 
 @[to_additive]
-theorem left_inv_eq_right_inv {a b c : M} (hba : b * a = 1) (hac : a * c = 1) : b = c := by
+lemma left_inv_eq_right_inv {a b c : M} (hba : b * a = 1) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
 #align left_inv_eq_right_inv left_inv_eq_right_inv
 #align left_neg_eq_right_neg left_neg_eq_right_neg
@@ -960,7 +960,7 @@ theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻�
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
-theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
+lemma negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
   Int.negSucc n • a = -((n + 1) • a) := by
   rw [← ofNat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
@@ -1012,7 +1012,7 @@ attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
 variable [InvOneClass G]
 
 @[to_additive (attr := simp)]
-theorem inv_one : (1 : G)⁻¹ = 1 :=
+lemma inv_one : (1 : G)⁻¹ = 1 :=
   InvOneClass.inv_one
 #align inv_one inv_one
 #align neg_zero neg_zero
@@ -1053,7 +1053,7 @@ theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
 #align neg_add_rev neg_add_rev
 
 @[to_additive]
-theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
+lemma inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
   DivisionMonoid.inv_eq_of_mul _ _
 #align inv_eq_of_mul_eq_one_right inv_eq_of_mul_eq_one_right
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
@@ -1116,7 +1116,7 @@ section Group
 variable [Group G] {a b c : G}
 
 @[to_additive (attr := simp)]
-theorem mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
+lemma mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
   Group.mul_left_inv
 #align mul_left_inv mul_left_inv
 #align add_left_neg add_left_neg
@@ -1184,7 +1184,7 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
 end Group
 
 @[to_additive]
-theorem Group.toDivInvMonoid_injective {G : Type*} :
+lemma Group.toDivInvMonoid_injective {G : Type*} :
     Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
 #align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
@@ -1201,7 +1201,7 @@ class CommGroup (G : Type u) extends Group G, CommMonoid G
 attribute [to_additive existing] CommGroup.toCommMonoid
 
 @[to_additive]
-theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
+lemma CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align comm_group.to_group_injective CommGroup.toGroup_injective
 #align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective

@@ -158,7 +158,7 @@ namespace Localization
 
 variable [L.IsLocalization W]
 
-theorem inverts : W.IsInvertedBy L :=
+lemma inverts : W.IsInvertedBy L :=
   (inferInstance : L.IsLocalization W).inverts
 #align category_theory.localization.inverts CategoryTheory.Localization.inverts
 
@@ -199,7 +199,7 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
     _ ≅ W.Q := Functor.rightUnitor _
 #align category_theory.localization.comp_equivalence_from_model_inverse_iso CategoryTheory.Localization.compEquivalenceFromModelInverseIso
 
-theorem essSurj : EssSurj L :=
+lemma essSurj : EssSurj L :=
   ⟨fun X =>
     ⟨(Construction.objEquiv W).invFun ((equivalenceFromModel L W).inverse.obj X),
       Nonempty.intro
@@ -253,7 +253,7 @@ def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
   (whiskeringLeft C D E).obj L
 #align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
 
-theorem whiskeringLeftFunctor'_eq :
+lemma whiskeringLeftFunctor'_eq :
     whiskeringLeftFunctor' L W E = Localization.whiskeringLeftFunctor L W E ⋙ inducedFunctor _ :=
   rfl
 #align category_theory.localization.whiskering_left_functor'_eq CategoryTheory.Localization.whiskeringLeftFunctor'_eq
@@ -277,7 +277,7 @@ instance : Faithful (whiskeringLeftFunctor' L W E) := by
   infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
 
-theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
+lemma natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
   haveI : CategoryTheory.EssSurj L := essSurj L W
   ext Y
@@ -408,7 +408,7 @@ namespace IsLocalization
 
 open Localization
 
-theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W] : L₂.IsLocalization W := by
+lemma of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W] : L₂.IsLocalization W := by
   have h := Localization.inverts L₁ W
   rw [MorphismProperty.IsInvertedBy.iff_of_iso W e] at h
   let F₁ := Localization.Construction.lift L₁ (Localization.inverts L₁ W)
@@ -421,7 +421,7 @@ theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W]
 
 /-- If `L : C ⥤ D` is a localization for `W : MorphismProperty C`, then it is also
 the case of a functor obtained by post-composing `L` with an equivalence of categories. -/
-theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
+lemma of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
     [L.IsLocalization W] (e : L ⋙ eq.functor ≅ L') : L'.IsLocalization W := by
   have h : W.IsInvertedBy L' := by
     rw [← MorphismProperty.IsInvertedBy.iff_of_iso W e]

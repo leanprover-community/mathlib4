@@ -140,12 +140,12 @@ initialize_simps_projections NonUnitalAlgHom
   (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [NonUnitalAlgHomClass F R A B] (f : F) :
+protected lemma coe_coe {F : Type*} [NonUnitalAlgHomClass F R A B] (f : F) :
     ⇑(f : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_coe NonUnitalAlgHom.coe_coe
 
-theorem coe_injective : @Function.Injective (A →ₙₐ[R] B) (A → B) (↑) := by
+lemma coe_injective : @Function.Injective (A →ₙₐ[R] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
 
@@ -159,17 +159,17 @@ instance : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
   map_mul f := f.map_mul'
 
 @[ext]
-theorem ext {f g : A →ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
+lemma ext {f g : A →ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
 #align non_unital_alg_hom.ext NonUnitalAlgHom.ext
 
-theorem ext_iff {f g : A →ₙₐ[R] B} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : A →ₙₐ[R] B} : f = g ↔ ∀ x, f x = g x :=
   ⟨by
     rintro rfl x
     rfl, ext⟩
 #align non_unital_alg_hom.ext_iff NonUnitalAlgHom.ext_iff
 
-theorem congr_fun {f g : A →ₙₐ[R] B} (h : f = g) (x : A) : f x = g x :=
+lemma congr_fun {f g : A →ₙₐ[R] B} (h : f = g) (x : A) : f x = g x :=
   h ▸ rfl
 #align non_unital_alg_hom.congr_fun NonUnitalAlgHom.congr_fun
 
@@ -209,13 +209,13 @@ theorem coe_to_mulHom (f : A →ₙₐ[R] B) : ⇑(f : A →ₙ* B) = f :=
   rfl
 #align non_unital_alg_hom.coe_to_mul_hom NonUnitalAlgHom.coe_to_mulHom
 
-theorem to_distribMulActionHom_injective {f g : A →ₙₐ[R] B}
+lemma to_distribMulActionHom_injective {f g : A →ₙₐ[R] B}
     (h : (f : A →+[R] B) = (g : A →+[R] B)) : f = g := by
   ext a
   exact DistribMulActionHom.congr_fun h a
 #align non_unital_alg_hom.to_distrib_mul_action_hom_injective NonUnitalAlgHom.to_distribMulActionHom_injective
 
-theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
+lemma to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
   exact FunLike.congr_fun h a
 #align non_unital_alg_hom.to_mul_hom_injective NonUnitalAlgHom.to_mulHom_injective
@@ -260,7 +260,7 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
     map_smul' := fun _ _ => rfl }
 
 @[simp]
-theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
+lemma coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
   rfl
 
 instance : Zero (A →ₙₐ[R] B) :=
@@ -270,12 +270,12 @@ instance : One (A →ₙₐ[R] A) :=
   ⟨NonUnitalAlgHom.id R A⟩
 
 @[simp]
-theorem coe_zero : ⇑(0 : A →ₙₐ[R] B) = 0 :=
+lemma coe_zero : ⇑(0 : A →ₙₐ[R] B) = 0 :=
   rfl
 #align non_unital_alg_hom.coe_zero NonUnitalAlgHom.coe_zero
 
 @[simp]
-theorem coe_one : ((1 : A →ₙₐ[R] A) : A → A) = id :=
+lemma coe_one : ((1 : A →ₙₐ[R] A) : A → A) = id :=
   rfl
 #align non_unital_alg_hom.coe_one NonUnitalAlgHom.coe_one
 
@@ -374,7 +374,7 @@ theorem snd_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (snd R B C).com
 #align non_unital_alg_hom.snd_prod NonUnitalAlgHom.snd_prod
 
 @[simp]
-theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
+lemma prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
   coe_injective Pi.prod_fst_snd
 #align non_unital_alg_hom.prod_fst_snd NonUnitalAlgHom.prod_fst_snd
 
@@ -404,7 +404,7 @@ def inr : B →ₙₐ[R] A × B :=
 variable {R A B}
 
 @[simp]
-theorem coe_inl : (inl R A B : A → A × B) = fun x => (x, 0) :=
+lemma coe_inl : (inl R A B : A → A × B) = fun x => (x, 0) :=
   rfl
 #align non_unital_alg_hom.coe_inl NonUnitalAlgHom.coe_inl
 
@@ -413,7 +413,7 @@ theorem inl_apply (x : A) : inl R A B x = (x, 0) :=
 #align non_unital_alg_hom.inl_apply NonUnitalAlgHom.inl_apply
 
 @[simp]
-theorem coe_inr : (inr R A B : B → A × B) = Prod.mk 0 :=
+lemma coe_inr : (inr R A B : B → A × B) = Prod.mk 0 :=
   rfl
 #align non_unital_alg_hom.coe_inr NonUnitalAlgHom.coe_inr
 

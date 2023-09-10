@@ -70,7 +70,7 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
 section Examples
 
 @[simp]
-theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
+lemma bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align polynomial.bernoulli_zero Polynomial.bernoulli_zero
 
 @[simp]

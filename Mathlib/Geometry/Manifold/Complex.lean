@@ -53,7 +53,7 @@ variable {M : Type*} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood
 of `c`. This is a manifold version of `Complex.norm_eventually_eq_of_isLocalMax`. -/
-theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M → F} {c : M}
+lemma Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M → F} {c : M}
     (hd : ∀ᶠ z in 𝓝 c, MDifferentiableAt I 𝓘(ℂ, F) f z) (hc : IsLocalMax (norm ∘ f) c) :
     ∀ᶠ y in 𝓝 c, ‖f y‖ = ‖f c‖ := by
   set e := extChartAt I c
@@ -85,7 +85,7 @@ namespace MDifferentiableOn
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space. Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `‖f x‖ = ‖f c‖` for all `x ∈ U`. -/
-theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
+lemma norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const M ‖f c‖) U := by
   set V := {z ∈ U | ‖f z‖ = ‖f c‖}
@@ -110,7 +110,7 @@ complex normed space.  Let `f : E → F` be a function that is complex different
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` for all `x ∈ U`.
 
 TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/
-theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M → F} {U : Set M}
+lemma eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M → F} {U : Set M}
     {c : M} (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const M (f c)) U := fun x hx =>
   have H₁ : ‖f x‖ = ‖f c‖ := hd.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm hx
@@ -123,7 +123,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
 
 /-- If a function `f : M → F` from a complex manifold to a complex normed space is holomorphic on a
 (pre)connected compact open set, then it is a constant on this set. -/
-theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
+lemma apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
      (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hpc : IsPreconnected U) (hc : IsCompact U)
      (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
   refine ?_
@@ -152,7 +152,7 @@ model so that it works, e.g., on a product of two manifolds without a boundary. 
 namespace MDifferentiable
 
 /-- A holomorphic function on a compact complex manifold is locally constant. -/
-protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(ℂ, F) f) :
+protected lemma isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(ℂ, F) f) :
     IsLocallyConstant f :=
   haveI : LocallyConnectedSpace H := I.toHomeomorph.locallyConnectedSpace
   haveI : LocallyConnectedSpace M := ChartedSpace.locallyConnectedSpace H M
@@ -162,14 +162,14 @@ protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(�
 #align mdifferentiable.is_locally_constant MDifferentiable.isLocallyConstant
 
 /-- A holomorphic function on a compact connected complex manifold is constant. -/
-theorem apply_eq_of_compactSpace [PreconnectedSpace M] {f : M → F}
+lemma apply_eq_of_compactSpace [PreconnectedSpace M] {f : M → F}
     (hf : MDifferentiable I 𝓘(ℂ, F) f) (a b : M) : f a = f b :=
   hf.isLocallyConstant.apply_eq_of_preconnectedSpace _ _
 #align mdifferentiable.apply_eq_of_compact_space MDifferentiable.apply_eq_of_compactSpace
 
 /-- A holomorphic function on a compact connected complex manifold is the constant function `f ≡ v`,
 for some value `v`. -/
-theorem exists_eq_const_of_compactSpace [PreconnectedSpace M] {f : M → F}
+lemma exists_eq_const_of_compactSpace [PreconnectedSpace M] {f : M → F}
     (hf : MDifferentiable I 𝓘(ℂ, F) f) : ∃ v : F, f = Function.const M v :=
   hf.isLocallyConstant.exists_eq_const
 #align mdifferentiable.exists_eq_const_of_compact_space MDifferentiable.exists_eq_const_of_compactSpace

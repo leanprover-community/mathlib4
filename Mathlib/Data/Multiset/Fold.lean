@@ -57,7 +57,7 @@ theorem fold_zero (b : α) : (0 : Multiset α).fold op b = b :=
 #align multiset.fold_zero Multiset.fold_zero
 
 @[simp]
-theorem fold_cons_left : ∀ (b a : α) (s : Multiset α), (a ::ₘ s).fold op b = a * s.fold op b :=
+lemma fold_cons_left : ∀ (b a : α) (s : Multiset α), (a ::ₘ s).fold op b = a * s.fold op b :=
   foldr_cons _ _
 #align multiset.fold_cons_left Multiset.fold_cons_left
 
@@ -80,7 +80,7 @@ theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
       ha.assoc])
 #align multiset.fold_add Multiset.fold_add
 
-theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
+lemma fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
     (s.bind t).fold op ((s.map b).fold op b₀) =
     (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
   induction' s using Multiset.induction_on with a ha ih
@@ -92,7 +92,7 @@ theorem fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
   foldr_singleton _ _ _ _
 #align multiset.fold_singleton Multiset.fold_singleton
 
-theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
+lemma fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
     (s.map fun x => f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=
   Multiset.induction_on s (by simp) (fun a b h => by
     rw [map_cons, fold_cons_left, h, map_cons, fold_cons_left, map_cons,
@@ -100,19 +100,19 @@ theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
       ha.assoc, hc.comm (g a), ha.assoc])
 #align multiset.fold_distrib Multiset.fold_distrib
 
-theorem fold_hom {op' : β → β → β} [IsCommutative β op'] [IsAssociative β op'] {m : α → β}
+lemma fold_hom {op' : β → β → β} [IsCommutative β op'] [IsAssociative β op'] {m : α → β}
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) (b : α) (s : Multiset α) :
     (s.map m).fold op' (m b) = m (s.fold op b) :=
   Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [hm])
 #align multiset.fold_hom Multiset.fold_hom
 
-theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ : α) :
+lemma fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ : α) :
     ((s₁ ∪ s₂).fold op b₁ * (s₁ ∩ s₂).fold op b₂) = s₁.fold op b₁ * s₂.fold op b₂ := by
   rw [← fold_add op, union_add_inter, fold_add op]
 #align multiset.fold_union_inter Multiset.fold_union_inter
 
 @[simp]
-theorem fold_dedup_idem [DecidableEq α] [hi : IsIdempotent α op] (s : Multiset α) (b : α) :
+lemma fold_dedup_idem [DecidableEq α] [hi : IsIdempotent α op] (s : Multiset α) (b : α) :
     (dedup s).fold op b = s.fold op b :=
   Multiset.induction_on s (by simp) fun a s IH => by
     by_cases h : a ∈ s <;> simp [IH, h]
@@ -124,7 +124,7 @@ end Fold
 
 section Order
 
-theorem max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddMonoid α] (l : Multiset α)
+lemma max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddMonoid α] (l : Multiset α)
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
   induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h
@@ -138,7 +138,7 @@ end Order
 
 open Nat
 
-theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
+lemma le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
   ⟨(s.map fun a => count a s).fold max 0,
     le_iff_count.2 fun a => by
       rw [count_nsmul]; by_cases h : a ∈ s

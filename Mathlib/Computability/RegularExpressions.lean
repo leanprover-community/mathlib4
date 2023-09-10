@@ -84,12 +84,12 @@ instance : Pow (RegularExpression α) ℕ :=
 --attribute [match_pattern] Mul.mul
 
 @[simp]
-theorem zero_def : (zero : RegularExpression α) = 0 :=
+lemma zero_def : (zero : RegularExpression α) = 0 :=
   rfl
 #align regular_expression.zero_def RegularExpression.zero_def
 
 @[simp]
-theorem one_def : (epsilon : RegularExpression α) = 1 :=
+lemma one_def : (epsilon : RegularExpression α) = 1 :=
   rfl
 #align regular_expression.one_def RegularExpression.one_def
 
@@ -117,12 +117,12 @@ def matches' : RegularExpression α → Language α
 #align regular_expression.matches RegularExpression.matches'
 
 @[simp]
-theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
+lemma matches'_zero : (0 : RegularExpression α).matches' = 0 :=
   rfl
 #align regular_expression.matches_zero RegularExpression.matches'_zero
 
 @[simp]
-theorem matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
+lemma matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
   rfl
 #align regular_expression.matches_epsilon RegularExpression.matches'_epsilon
 
@@ -417,7 +417,7 @@ protected theorem map_pow (f : α → β) (P : RegularExpression α) :
 #align regular_expression.map_pow RegularExpression.map_pow
 
 @[simp]
-theorem map_id : ∀ P : RegularExpression α, P.map id = P
+lemma map_id : ∀ P : RegularExpression α, P.map id = P
   | 0 => rfl
   | 1 => rfl
   | char a => rfl

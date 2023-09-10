@@ -28,7 +28,7 @@ open Filter
 
 namespace Complex
 
-theorem hasStrictFDerivAt_cpow {p : ℂ × ℂ} (hp : 0 < p.1.re ∨ p.1.im ≠ 0) :
+lemma hasStrictFDerivAt_cpow {p : ℂ × ℂ} (hp : 0 < p.1.re ∨ p.1.im ≠ 0) :
     HasStrictFDerivAt (fun x : ℂ × ℂ => x.1 ^ x.2)
       ((p.2 * p.1 ^ (p.2 - 1)) • ContinuousLinearMap.fst ℂ ℂ ℂ +
         (p.1 ^ p.2 * log p.1) • ContinuousLinearMap.snd ℂ ℂ ℂ) p := by
@@ -42,14 +42,14 @@ theorem hasStrictFDerivAt_cpow {p : ℂ × ℂ} (hp : 0 < p.1.re ∨ p.1.im ≠ 
     ((hasStrictFDerivAt_fst.clog hp).mul hasStrictFDerivAt_snd).cexp
 #align complex.has_strict_fderiv_at_cpow Complex.hasStrictFDerivAt_cpow
 
-theorem hasStrictFDerivAt_cpow' {x y : ℂ} (hp : 0 < x.re ∨ x.im ≠ 0) :
+lemma hasStrictFDerivAt_cpow' {x y : ℂ} (hp : 0 < x.re ∨ x.im ≠ 0) :
     HasStrictFDerivAt (fun x : ℂ × ℂ => x.1 ^ x.2)
       ((y * x ^ (y - 1)) • ContinuousLinearMap.fst ℂ ℂ ℂ +
         (x ^ y * log x) • ContinuousLinearMap.snd ℂ ℂ ℂ) (x, y) :=
   @hasStrictFDerivAt_cpow (x, y) hp
 #align complex.has_strict_fderiv_at_cpow' Complex.hasStrictFDerivAt_cpow'
 
-theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
+lemma hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
     HasStrictDerivAt (fun y => x ^ y) (x ^ y * log x) y := by
   rcases em (x = 0) with (rfl | hx)
   · replace h := h.neg_resolve_left rfl
@@ -60,7 +60,7 @@ theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
       ((hasStrictDerivAt_id y).const_mul (log x)).cexp
 #align complex.has_strict_deriv_at_const_cpow Complex.hasStrictDerivAt_const_cpow
 
-theorem hasFDerivAt_cpow {p : ℂ × ℂ} (hp : 0 < p.1.re ∨ p.1.im ≠ 0) :
+lemma hasFDerivAt_cpow {p : ℂ × ℂ} (hp : 0 < p.1.re ∨ p.1.im ≠ 0) :
     HasFDerivAt (fun x : ℂ × ℂ => x.1 ^ x.2)
       ((p.2 * p.1 ^ (p.2 - 1)) • ContinuousLinearMap.fst ℂ ℂ ℂ +
         (p.1 ^ p.2 * log p.1) • ContinuousLinearMap.snd ℂ ℂ ℂ) p :=
@@ -141,7 +141,7 @@ variable {f g : ℂ → ℂ} {s : Set ℂ} {f' g' x c : ℂ}
 
 /-- A private lemma that rewrites the output of lemmas like `HasFDerivAt.cpow` to the form
 expected by lemmas like `HasDerivAt.cpow`. -/
-private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulRight f' +
+private lemma aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulRight f' +
     (f x ^ g x * log (f x)) • (1 : ℂ →L[ℂ] ℂ).smulRight g') 1 =
       g x * f x ^ (g x - 1) * f' + f x ^ g x * log (f x) * g' := by
   simp only [Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.one_apply,
@@ -206,7 +206,7 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
 
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
-theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
+lemma hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
   rw [Ne.def, ← add_eq_zero_iff_eq_neg, ← Ne.def] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
@@ -302,7 +302,7 @@ theorem differentiableAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
   (contDiffAt_rpow_of_ne p hp).differentiableAt le_rfl
 #align real.differentiable_at_rpow_of_ne Real.differentiableAt_rpow_of_ne
 
-theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : HasStrictDerivAt f f' x)
+lemma _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : HasStrictDerivAt f f' x)
     (hg : HasStrictDerivAt g g' x) (h : 0 < f x) : HasStrictDerivAt (fun x => f x ^ g x)
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
   convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
@@ -310,7 +310,7 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
   simp [mul_assoc, mul_comm, mul_left_comm]
 #align has_strict_deriv_at.rpow HasStrictDerivAt.rpow
 
-theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
+lemma hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by
   cases' hx.lt_or_lt with hx hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
@@ -319,7 +319,7 @@ theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
   · simpa using (hasStrictDerivAt_id x).rpow (hasStrictDerivAt_const x p) hx
 #align real.has_strict_deriv_at_rpow_const_of_ne Real.hasStrictDerivAt_rpow_const_of_ne
 
-theorem hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
+lemma hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
     HasStrictDerivAt (fun x => a ^ x) (a ^ x * log a) x := by
   simpa using (hasStrictDerivAt_const _ _).rpow (hasStrictDerivAt_id x) ha
 #align real.has_strict_deriv_at_const_rpow Real.hasStrictDerivAt_const_rpow
@@ -335,7 +335,7 @@ lemma differentiableOn_rpow_const (p : ℝ) :
 /-- This lemma says that `fun x => a ^ x` is strictly differentiable for `a < 0`. Note that these
 values of `a` are outside of the "official" domain of `a ^ x`, and we may redefine `a ^ x`
 for negative `a` if some other definition will be more convenient. -/
-theorem hasStrictDerivAt_const_rpow_of_neg {a x : ℝ} (ha : a < 0) :
+lemma hasStrictDerivAt_const_rpow_of_neg {a x : ℝ} (ha : a < 0) :
     HasStrictDerivAt (fun x => a ^ x) (a ^ x * log a - exp (log a * x) * sin (x * π) * π) x := by
   simpa using (hasStrictFDerivAt_rpow_of_neg (a, x) ha).comp_hasStrictDerivAt x
     ((hasStrictDerivAt_const _ _).prod (hasStrictDerivAt_id _))
@@ -347,7 +347,7 @@ namespace Real
 
 variable {z x y : ℝ}
 
-theorem hasDerivAt_rpow_const {x p : ℝ} (h : x ≠ 0 ∨ 1 ≤ p) :
+lemma hasDerivAt_rpow_const {x p : ℝ} (h : x ≠ 0 ∨ 1 ≤ p) :
     HasDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by
   rcases ne_or_eq x 0 with (hx | rfl)
   · exact (hasStrictDerivAt_rpow_const_of_ne hx _).hasDerivAt
@@ -358,26 +358,26 @@ theorem hasDerivAt_rpow_const {x p : ℝ} (h : x ≠ 0 ∨ 1 ≤ p) :
     continuousAt_const.mul (continuousAt_id.rpow_const (Or.inr (sub_nonneg.2 h)))]
 #align real.has_deriv_at_rpow_const Real.hasDerivAt_rpow_const
 
-theorem differentiable_rpow_const {p : ℝ} (hp : 1 ≤ p) : Differentiable ℝ fun x : ℝ => x ^ p :=
+lemma differentiable_rpow_const {p : ℝ} (hp : 1 ≤ p) : Differentiable ℝ fun x : ℝ => x ^ p :=
   fun _ => (hasDerivAt_rpow_const (Or.inr hp)).differentiableAt
 #align real.differentiable_rpow_const Real.differentiable_rpow_const
 
-theorem deriv_rpow_const {x p : ℝ} (h : x ≠ 0 ∨ 1 ≤ p) :
+lemma deriv_rpow_const {x p : ℝ} (h : x ≠ 0 ∨ 1 ≤ p) :
     deriv (fun x : ℝ => x ^ p) x = p * x ^ (p - 1) :=
   (hasDerivAt_rpow_const h).deriv
 #align real.deriv_rpow_const Real.deriv_rpow_const
 
-theorem deriv_rpow_const' {p : ℝ} (h : 1 ≤ p) :
+lemma deriv_rpow_const' {p : ℝ} (h : 1 ≤ p) :
     (deriv fun x : ℝ => x ^ p) = fun x => p * x ^ (p - 1) :=
   funext fun _ => deriv_rpow_const (Or.inr h)
 #align real.deriv_rpow_const' Real.deriv_rpow_const'
 
-theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : ℕ∞} (h : x ≠ 0) :
+lemma contDiffAt_rpow_const_of_ne {x p : ℝ} {n : ℕ∞} (h : x ≠ 0) :
     ContDiffAt ℝ n (fun x => x ^ p) x :=
   (contDiffAt_rpow_of_ne (x, p) h).comp x (contDiffAt_id.prod contDiffAt_const)
 #align real.cont_diff_at_rpow_const_of_ne Real.contDiffAt_rpow_const_of_ne
 
-theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
+lemma contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
     ContDiff ℝ n fun x : ℝ => x ^ p := by
   induction' n with n ihn generalizing p
   · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
@@ -387,17 +387,17 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
     refine' ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 #align real.cont_diff_rpow_const_of_le Real.contDiff_rpow_const_of_le
 
-theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
+lemma contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
     ContDiffAt ℝ n (fun x : ℝ => x ^ p) x :=
   (contDiff_rpow_const_of_le h).contDiffAt
 #align real.cont_diff_at_rpow_const_of_le Real.contDiffAt_rpow_const_of_le
 
-theorem contDiffAt_rpow_const {x p : ℝ} {n : ℕ} (h : x ≠ 0 ∨ ↑n ≤ p) :
+lemma contDiffAt_rpow_const {x p : ℝ} {n : ℕ} (h : x ≠ 0 ∨ ↑n ≤ p) :
     ContDiffAt ℝ n (fun x : ℝ => x ^ p) x :=
   h.elim contDiffAt_rpow_const_of_ne contDiffAt_rpow_const_of_le
 #align real.cont_diff_at_rpow_const Real.contDiffAt_rpow_const
 
-theorem hasStrictDerivAt_rpow_const {x p : ℝ} (hx : x ≠ 0 ∨ 1 ≤ p) :
+lemma hasStrictDerivAt_rpow_const {x p : ℝ} (hx : x ≠ 0 ∨ 1 ≤ p) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x :=
   ContDiffAt.hasStrictDerivAt' (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
     (hasDerivAt_rpow_const hx) le_rfl

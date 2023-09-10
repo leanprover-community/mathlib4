@@ -59,12 +59,12 @@ instance isCentralScalar (R : Type*) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentral
     IsCentralScalar R αᵐᵒᵖ :=
   ⟨fun _ _ => unop_injective <| op_smul_eq_smul _ _⟩
 
-theorem op_smul_eq_op_smul_op {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
+lemma op_smul_eq_op_smul_op {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
     (r : R) (a : α) : op (r • a) = op r • op a :=
   (op_smul_eq_smul r (op a)).symm
 #align mul_opposite.op_smul_eq_op_smul_op MulOpposite.op_smul_eq_op_smul_op
 
-theorem unop_smul_eq_unop_smul_unop {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α]
+lemma unop_smul_eq_unop_smul_unop {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α]
     [IsCentralScalar R α] (r : Rᵐᵒᵖ) (a : αᵐᵒᵖ) : unop (r • a) = unop r • unop a :=
   (unop_smul_eq_smul r (unop a)).symm
 #align mul_opposite.unop_smul_eq_unop_smul_unop MulOpposite.unop_smul_eq_unop_smul_unop
@@ -93,13 +93,13 @@ instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
 #align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
 @[to_additive]
-theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
+lemma op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
   rfl
 #align op_smul_eq_mul op_smul_eq_mul
 #align op_vadd_eq_add op_vadd_eq_add
 
 @[to_additive (attr := simp)]
-theorem MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop :=
+lemma MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop :=
   rfl
 #align mul_opposite.smul_eq_mul_unop MulOpposite.smul_eq_mul_unop
 #align add_opposite.vadd_eq_add_unop AddOpposite.vadd_eq_add_unop

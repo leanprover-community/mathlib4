@@ -70,11 +70,11 @@ def Register :=
   ℕ
 #align arithcc.register Arithcc.Register
 
-theorem Register.lt_succ_self : ∀ r : Register, r < r + 1 :=
+lemma Register.lt_succ_self : ∀ r : Register, r < r + 1 :=
   Nat.lt_succ_self
 #align arithcc.register.lt_succ_self Arithcc.Register.lt_succ_self
 
-theorem Register.le_of_lt_succ {r₁ r₂ : Register} : r₁ < r₂ + 1 → r₁ ≤ r₂ :=
+lemma Register.le_of_lt_succ {r₁ r₂ : Register} : r₁ < r₂ + 1 → r₁ ≤ r₂ :=
   Nat.le_of_succ_le_succ
 #align arithcc.register.le_of_lt_succ Arithcc.Register.le_of_lt_succ
 
@@ -212,13 +212,13 @@ protected theorem StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ :
 #align arithcc.state_eq_rs.refl Arithcc.StateEqRs.refl
 
 @[symm]
-protected theorem StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
+protected lemma StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₁ := by
   simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
 #align arithcc.state_eq_rs.symm Arithcc.StateEqRs.symm
 
 @[trans]
-protected theorem StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
+protected lemma StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
   simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
 #align arithcc.state_eq_rs.trans Arithcc.StateEqRs.trans
@@ -235,13 +235,13 @@ protected theorem StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by 
 #align arithcc.state_eq.refl Arithcc.StateEq.refl
 
 @[symm]
-protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
+protected lemma StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
   simp [StateEq]; intros
   constructor <;> (symm; assumption)
 #align arithcc.state_eq.symm Arithcc.StateEq.symm
 
 @[trans]
-protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
+protected lemma StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₃ → ζ₁ ≃[t] ζ₃ := by
   simp [StateEq]; intros
   constructor
@@ -266,7 +266,7 @@ instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs
   ⟨@StateEqStateEqRs.trans _⟩
 
 /-- Writing the same value to register `t` gives `≃[t + 1]` from `≃[t]`. -/
-theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t] ζ₂) (v : Word) :
+lemma stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t] ζ₂) (v : Word) :
     write t v ζ₁ ≃[t + 1] write t v ζ₂ := by
   simp [StateEq, StateEqRs] at *
   constructor; · exact h.1
@@ -280,7 +280,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
 #align arithcc.state_eq_implies_write_eq Arithcc.stateEq_implies_write_eq
 
 /-- Writing the same value to any register preserves `≃[t]/ac`. -/
-theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t]/ac ζ₂)
+lemma stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t]/ac ζ₂)
     (r : Register) (v : Word) : write r v ζ₁ ≃[t]/ac write r v ζ₂ := by
   simp [StateEqRs] at *
   intro r' hr'
@@ -289,7 +289,7 @@ theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : 
 #align arithcc.state_eq_rs_implies_write_eq_rs Arithcc.stateEqRs_implies_write_eq_rs
 
 /-- `≃[t + 1]` with writing to register `t` implies `≃[t]`. -/
-theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
+lemma write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
     (h : ζ₁ ≃[t + 1] write t v ζ₂) : ζ₁ ≃[t] ζ₂ := by
   simp [StateEq, StateEqRs] at *
   constructor; · exact h.1
@@ -303,7 +303,7 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
 
 Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit.
 -/
-theorem compiler_correctness :
+lemma compiler_correctness :
     ∀ (map : Identifier → Register) (e : Expr) (ξ : Identifier → Word) (η : State) (t : Register),
       (∀ x, read (loc x map) η = ξ x) →
         (∀ x, loc x map < t) → outcome (compile map e t) η ≃[t] { η with ac := value e ξ } := by

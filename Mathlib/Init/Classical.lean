@@ -27,7 +27,7 @@ alias prop_complete := propComplete -- TODO: fix in core
 theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
   @cases_true_false p h1 h2 a
 
-theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
+lemma cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
 #align classical.cases Classical.cases
 
 alias by_cases := byCases

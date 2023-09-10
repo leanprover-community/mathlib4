@@ -27,14 +27,14 @@ def TFAE (l : List Prop) : Prop :=
   ∀ x ∈ l, ∀ y ∈ l, x ↔ y
 #align list.tfae List.TFAE
 
-theorem tfae_nil : TFAE [] :=
+lemma tfae_nil : TFAE [] :=
   forall_mem_nil _
 #align list.tfae_nil List.tfae_nil
 
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 #align list.tfae_singleton List.tfae_singleton
 
-theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
+lemma tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
   ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
     fun p hp q hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
       by
@@ -45,7 +45,7 @@ theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔
         · exact H _ hp _ hq⟩
 #align list.tfae_cons_of_mem List.tfae_cons_of_mem
 
-theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
+lemma tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
 #align list.tfae_cons_cons List.tfae_cons_cons
 
@@ -53,7 +53,7 @@ theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : T
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
 #align list.tfae_of_forall List.tfae_of_forall
 
-theorem tfae_of_cycle {a b} {l : List Prop} :
+lemma tfae_of_cycle {a b} {l : List Prop} :
     List.Chain (· → ·) a (b :: l) → (ilast' b l → a) → TFAE (a :: b :: l) := by
   induction' l with c l IH generalizing a b <;>
     simp only [tfae_cons_cons, tfae_singleton, and_true_iff, chain_cons, Chain.nil] at *
@@ -64,7 +64,7 @@ theorem tfae_of_cycle {a b} {l : List Prop} :
   exact ⟨⟨ab, la ∘ (this.2 c (Mem.head _) _ (ilast'_mem _ _)).1 ∘ bc⟩, this⟩
 #align list.tfae_of_cycle List.tfae_of_cycle
 
-theorem TFAE.out {l} (h : TFAE l) (n₁ n₂) {a b} (h₁ : List.get? l n₁ = some a := by rfl)
+lemma TFAE.out {l} (h : TFAE l) (n₁ n₂) {a b} (h₁ : List.get? l n₁ = some a := by rfl)
     (h₂ : List.get? l n₂ = some b := by rfl) : a ↔ b :=
   h _ (List.get?_mem h₁) _ (List.get?_mem h₂)
 #align list.tfae.out List.TFAE.out
@@ -81,7 +81,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
   forall_tfae [_, _, _] H
 ```
 -/
-theorem forall_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+lemma forall_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∀ a, p a)).TFAE := by
   simp_rw [TFAE, List.forall_mem_map_iff]
   intros p₁ hp₁ p₂ hp₂
@@ -100,7 +100,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
   exists_tfae [_, _, _] H
 ```
 -/
-theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+lemma exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∃ a, p a)).TFAE := by
   simp_rw [TFAE, List.forall_mem_map_iff]
   intros p₁ hp₁ p₂ hp₂

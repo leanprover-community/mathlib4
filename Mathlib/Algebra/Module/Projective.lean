@@ -83,18 +83,18 @@ section Semiring
 variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M : Type*}
   [AddCommMonoid M] [Module R M] {N : Type*} [AddCommMonoid N] [Module R N]
 
-theorem projective_def :
+lemma projective_def :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align module.projective_def Module.projective_def
 
-theorem projective_def' :
+lemma projective_def' :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
   by simp_rw [projective_def, FunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 #align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
-theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g : P →ₗ[R] N)
+lemma projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g : P →ₗ[R] N)
     (hf : Function.Surjective f) : ∃ h : P →ₗ[R] M, f.comp h = g := by
   /-
     Here's the first step of the proof.
@@ -118,7 +118,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
 projective. -/
-theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P]
+lemma Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P]
     [Module R P] (huniv : ∀ (f : (P →₀ R) →ₗ[R] P), Function.Surjective f →
       ∃ h : P →ₗ[R] (P →₀ R), f.comp h = .id) :
     Projective R P :=
@@ -152,7 +152,7 @@ section Ring
 variable {R : Type*} [Ring R] {P : Type*} [AddCommGroup P] [Module R P]
 
 /-- Free modules are projective. -/
-theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
+lemma Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
@@ -174,7 +174,7 @@ section OfLiftingProperty
 -- porting note: todo: generalize to `P : Type v`?
 /-- A module which satisfies the universal property is projective. Note that the universe variables
 in `huniv` are somewhat restricted. -/
-theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
+lemma Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
     [AddCommMonoid P] [Module R P]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
     (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommMonoid M] [AddCommMonoid N]
@@ -188,7 +188,7 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
 -- porting note: todo: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
-theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
+lemma Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P]
     -- If for all surjections of `R`-modules `M →ₗ N`, all maps `P →ₗ N` lift to `P →ₗ M`,
     (huniv : ∀ {M : Type max v u} {N : Type max u v} [AddCommGroup M] [AddCommGroup N]

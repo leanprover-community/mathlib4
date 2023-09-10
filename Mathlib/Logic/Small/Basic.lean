@@ -35,7 +35,7 @@ class Small (α : Type v) : Prop where
 
 /-- Constructor for `Small α` from an explicit witness type and equivalence.
 -/
-theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
+lemma Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
   ⟨⟨S, ⟨e⟩⟩⟩
 #align small.mk' Small.mk'
 
@@ -52,7 +52,7 @@ noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
 #align equiv_shrink equivShrink
 
 @[ext]
-theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
+lemma Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
     (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
   simpa using w
 
@@ -69,7 +69,7 @@ instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 #align small_self small_self
 
-theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
+lemma small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
   let ⟨_, ⟨f⟩⟩ := hβ.equiv_small
   Small.mk' (e.trans f)
 #align small_map small_map
@@ -87,7 +87,7 @@ instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
 #align small_ulift small_ulift
 
-theorem small_type : Small.{max (u + 1) v} (Type u) :=
+lemma small_type : Small.{max (u + 1) v} (Type u) :=
   small_max.{max (u + 1) v} _
 #align small_type small_type
 
@@ -95,7 +95,7 @@ section
 
 open Classical
 
-theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
+lemma small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 #align small_congr small_congr
 
@@ -103,17 +103,17 @@ instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
 
-theorem small_of_injective {α : Type v} {β : Type w} [Small.{u} β] {f : α → β}
+lemma small_of_injective {α : Type v} {β : Type w} [Small.{u} β] {f : α → β}
     (hf : Function.Injective f) : Small.{u} α :=
   small_map (Equiv.ofInjective f hf)
 #align small_of_injective small_of_injective
 
-theorem small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α → β}
+lemma small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α → β}
     (hf : Function.Surjective f) : Small.{u} β :=
   small_of_injective (Function.injective_surjInv hf)
 #align small_of_surjective small_of_surjective
 
-theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t :=
+lemma small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t :=
   let f : t → s := fun x => ⟨x, hts x.prop⟩
   @small_of_injective _ _ _ f fun _ _ hxy => Subtype.ext (Subtype.mk.inj hxy)
 #align small_subset small_subset
@@ -127,7 +127,7 @@ instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : 
 /-- This can be seen as a version of `small_of_surjective` in which the function `f` doesn't
     actually land in `β` but in some larger type `γ` related to `β` via an injective function `g`.
     -/
-theorem small_of_injective_of_exists {α : Type v} {β : Type w} {γ : Type v'} [Small.{u} α]
+lemma small_of_injective_of_exists {α : Type v} {β : Type w} {γ : Type v'} [Small.{u} α]
     (f : α → γ) {g : β → γ} (hg : Function.Injective g) (h : ∀ b : β, ∃ a : α, f a = g b) :
     Small.{u} β := by
   by_cases hβ : Nonempty β
@@ -177,7 +177,7 @@ instance small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [S
   small_of_surjective Set.surjective_onto_image
 #align small_image small_image
 
-theorem not_small_type : ¬Small.{u} (Type max u v)
+lemma not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
     @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
       dsimp at e

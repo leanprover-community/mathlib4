@@ -50,7 +50,7 @@ def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
     split_ifs <;> simp only [left_lt_add_div_two, add_div_two_lt_right, I.lower_lt_upper]
 #align box_integral.box.split_center_box BoxIntegral.Box.splitCenterBox
 
-theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
+lemma mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
     y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s := by
   simp only [splitCenterBox, mem_def, ← forall_and]
   refine' forall_congr' fun i ↦ _
@@ -80,7 +80,7 @@ theorem injective_splitCenterBox (I : Box ι) : Injective I.splitCenterBox := fu
 #align box_integral.box.injective_split_center_box BoxIntegral.Box.injective_splitCenterBox
 
 @[simp]
-theorem exists_mem_splitCenterBox {I : Box ι} {x : ι → ℝ} : (∃ s, x ∈ I.splitCenterBox s) ↔ x ∈ I :=
+lemma exists_mem_splitCenterBox {I : Box ι} {x : ι → ℝ} : (∃ s, x ∈ I.splitCenterBox s) ↔ x ∈ I :=
   ⟨fun ⟨s, hs⟩ ↦ I.splitCenterBox_le s hs, fun hx ↦
     ⟨{ i | (I.lower i + I.upper i) / 2 < x i }, mem_splitCenterBox.2 ⟨hx, fun _ ↦ Iff.rfl⟩⟩⟩
 #align box_integral.box.exists_mem_split_center_box BoxIntegral.Box.exists_mem_splitCenterBox
@@ -119,7 +119,7 @@ Then `p I` is true. See also `BoxIntegral.Box.subbox_induction_on` for a version
 The proof still works if we assume `H_ind` only for subboxes `J ≤ I` that are homothetic to `I` with
 a coefficient of the form `2⁻ᵐ` but we do not need this generalization yet. -/
 @[elab_as_elim]
-theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
+lemma subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
     (H_ind : ∀ J ≤ I, (∀ s, p (splitCenterBox J s)) → p J)
     (H_nhds : ∀ z ∈ Box.Icc I, ∃ U ∈ 𝓝[Box.Icc I] z, ∀ J ≤ I, ∀ (m : ℕ), z ∈ Box.Icc J →
       Box.Icc J ⊆ U → (∀ i, J.upper i - J.lower i = (I.upper i - I.lower i) / 2 ^ m) → p J) :

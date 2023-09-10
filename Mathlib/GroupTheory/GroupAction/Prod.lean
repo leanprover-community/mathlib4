@@ -45,13 +45,13 @@ instance smul : SMul M (α × β) :=
   ⟨fun a p => (a • p.1, a • p.2)⟩
 
 @[to_additive (attr := simp)]
-theorem smul_fst : (a • x).1 = a • x.1 :=
+lemma smul_fst : (a • x).1 = a • x.1 :=
   rfl
 #align prod.smul_fst Prod.smul_fst
 #align prod.vadd_fst Prod.vadd_fst
 
 @[to_additive (attr := simp)]
-theorem smul_snd : (a • x).2 = a • x.2 :=
+lemma smul_snd : (a • x).2 = a • x.2 :=
   rfl
 #align prod.smul_snd Prod.smul_snd
 #align prod.vadd_snd Prod.vadd_snd
@@ -69,16 +69,16 @@ theorem smul_def (a : M) (x : α × β) : a • x = (a • x.1, a • x.2) :=
 #align prod.vadd_def Prod.vadd_def
 
 @[to_additive (attr := simp)]
-theorem smul_swap : (a • x).swap = a • x.swap :=
+lemma smul_swap : (a • x).swap = a • x.swap :=
   rfl
 #align prod.smul_swap Prod.smul_swap
 #align prod.vadd_swap Prod.vadd_swap
 
-theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
+lemma smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_zero_mk Prod.smul_zero_mk
 
-theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
+lemma smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
     a • (b, (0 : β)) = (a • b, 0) := by rw [Prod.smul_mk, smul_zero]
 #align prod.smul_mk_zero Prod.smul_mk_zero
 

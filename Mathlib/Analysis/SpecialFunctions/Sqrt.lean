@@ -43,7 +43,7 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   continuous_invFun := continuousOn_id.sqrt
 #align real.sq_local_homeomorph Real.sqLocalHomeomorph
 
-theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
+lemma deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ n, ContDiffAt ℝ n sqrt x := by
   cases' hx.lt_or_lt with hx hx
   · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
@@ -58,15 +58,15 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
         (contDiffAt_id.pow 2)
 #align real.deriv_sqrt_aux Real.deriv_sqrt_aux
 
-theorem hasStrictDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x :=
+lemma hasStrictDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x :=
   (deriv_sqrt_aux hx).1
 #align real.has_strict_deriv_at_sqrt Real.hasStrictDerivAt_sqrt
 
-theorem contDiffAt_sqrt {x : ℝ} {n : ℕ∞} (hx : x ≠ 0) : ContDiffAt ℝ n sqrt x :=
+lemma contDiffAt_sqrt {x : ℝ} {n : ℕ∞} (hx : x ≠ 0) : ContDiffAt ℝ n sqrt x :=
   (deriv_sqrt_aux hx).2 n
 #align real.cont_diff_at_sqrt Real.contDiffAt_sqrt
 
-theorem hasDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasDerivAt sqrt (1 / (2 * sqrt x)) x :=
+lemma hasDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasDerivAt sqrt (1 / (2 * sqrt x)) x :=
   (hasStrictDerivAt_sqrt hx).hasDerivAt
 #align real.has_deriv_at_sqrt Real.hasDerivAt_sqrt
 

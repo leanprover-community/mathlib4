@@ -50,7 +50,7 @@ theorem Function.Embedding.toEquivRange_symm_apply_self (a : α) :
     f.toEquivRange.symm ⟨f a, Set.mem_range_self a⟩ = a := by simp [Equiv.symm_apply_eq]
 #align function.embedding.to_equiv_range_symm_apply_self Function.Embedding.toEquivRange_symm_apply_self
 
-theorem Function.Embedding.toEquivRange_eq_ofInjective :
+lemma Function.Embedding.toEquivRange_eq_ofInjective :
     f.toEquivRange = Equiv.ofInjective f f.injective := by
   ext
   simp
@@ -74,20 +74,20 @@ theorem Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
   convert Equiv.Perm.extendDomain_apply_image e (Function.Embedding.toEquivRange f) a
 #align equiv.perm.via_fintype_embedding_apply_image Equiv.Perm.viaFintypeEmbedding_apply_image
 
-theorem Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.range f) :
+lemma Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.range f) :
     e.viaFintypeEmbedding f b = f (e (f.invOfMemRange ⟨b, h⟩)) := by
   simp only [viaFintypeEmbedding, Function.Embedding.invOfMemRange]
   rw [Equiv.Perm.extendDomain_apply_subtype]
   congr
 #align equiv.perm.via_fintype_embedding_apply_mem_range Equiv.Perm.viaFintypeEmbedding_apply_mem_range
 
-theorem Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range {b : β} (h : b ∉ Set.range f) :
+lemma Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range {b : β} (h : b ∉ Set.range f) :
     e.viaFintypeEmbedding f b = b := by
   rwa [Equiv.Perm.viaFintypeEmbedding, Equiv.Perm.extendDomain_apply_not_subtype]
 #align equiv.perm.via_fintype_embedding_apply_not_mem_range Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range
 
 @[simp]
-theorem Equiv.Perm.viaFintypeEmbedding_sign [DecidableEq α] [Fintype β] :
+lemma Equiv.Perm.viaFintypeEmbedding_sign [DecidableEq α] [Fintype β] :
     Equiv.Perm.sign (e.viaFintypeEmbedding f) = Equiv.Perm.sign e := by
   simp [Equiv.Perm.viaFintypeEmbedding]
 #align equiv.perm.via_fintype_embedding_sign Equiv.Perm.viaFintypeEmbedding_sign

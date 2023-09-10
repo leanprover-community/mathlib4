@@ -49,7 +49,7 @@ theorem cmpUsing_eq_lt (a b : α) : (cmpUsing lt a b = Ordering.lt) = lt a b := 
 #align cmp_using_eq_lt cmpUsing_eq_lt
 
 @[simp]
-theorem cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) :
+lemma cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) :
     (cmpUsing lt a b = Ordering.gt) = lt b a := by
   simp only [cmpUsing, Ordering.ite_eq_gt_distrib, if_false_right_eq_and, and_true,
     if_false_left_eq_and]

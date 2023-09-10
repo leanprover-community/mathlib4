@@ -44,7 +44,7 @@ noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A
 #align simplicial_object.splitting.π_summand SimplicialObject.Splitting.πSummand
 
 @[reassoc (attr := simp)]
-theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
+lemma ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     s.ιSummand A ≫ s.πSummand A = 𝟙 _ := by
   dsimp only [ιSummand, iso_hom, πSummand, iso_inv, summand]
   simp only [summand, assoc, IsIso.hom_inv_id_assoc]
@@ -54,7 +54,7 @@ theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A 
 #align simplicial_object.splitting.ι_π_summand_eq_id SimplicialObject.Splitting.ι_πSummand_eq_id
 
 @[reassoc (attr := simp)]
-theorem ι_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
+lemma ι_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : s.ιSummand A ≫ s.πSummand B = 0 := by
   dsimp only [ιSummand, iso_hom, πSummand, iso_inv, summand]
   simp only [summand, assoc, IsIso.hom_inv_id_assoc]
@@ -75,7 +75,7 @@ theorem decomposition_id (Δ : SimplexCategoryᵒᵖ) :
 #align simplicial_object.splitting.decomposition_id SimplicialObject.Splitting.decomposition_id
 
 @[reassoc (attr := simp)]
-theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
+lemma σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
     X.σ i ≫ s.πSummand (IndexSet.id (op [n + 1])) = 0 := by
   apply s.hom_ext'
   intro A
@@ -92,7 +92,7 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
 /-- If a simplicial object `X` in an additive category is split,
 then `PInfty` vanishes on all the summands of `X _[n]` which do
 not correspond to the identity of `[n]`. -/
-theorem ιSummand_comp_PInfty_eq_zero {X : SimplicialObject C} (s : SimplicialObject.Splitting X)
+lemma ιSummand_comp_PInfty_eq_zero {X : SimplicialObject C} (s : SimplicialObject.Splitting X)
     {n : ℕ} (A : SimplicialObject.Splitting.IndexSet (op [n])) (hA : ¬A.EqId) :
     s.ιSummand A ≫ PInfty.f n = 0 := by
   rw [SimplicialObject.Splitting.IndexSet.eqId_iff_mono] at hA
@@ -100,7 +100,7 @@ theorem ιSummand_comp_PInfty_eq_zero {X : SimplicialObject C} (s : SimplicialOb
 set_option linter.uppercaseLean3 false in
 #align simplicial_object.splitting.ι_summand_comp_P_infty_eq_zero SimplicialObject.Splitting.ιSummand_comp_PInfty_eq_zero
 
-theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _[n]) :
+lemma comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _[n]) :
     f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op [n])) = 0 := by
   constructor
   · intro h

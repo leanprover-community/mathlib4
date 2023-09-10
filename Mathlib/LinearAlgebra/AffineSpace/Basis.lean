@@ -73,19 +73,19 @@ instance funLike : FunLike (AffineBasis ι k P) ι fun _ => P where
 #align affine_basis.fun_like AffineBasis.funLike
 
 @[ext]
-theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
+lemma ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
   FunLike.coe_injective h
 #align affine_basis.ext AffineBasis.ext
 
-theorem ind : AffineIndependent k b :=
+lemma ind : AffineIndependent k b :=
   b.ind'
 #align affine_basis.ind AffineBasis.ind
 
-theorem tot : affineSpan k (range b) = ⊤ :=
+lemma tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 #align affine_basis.tot AffineBasis.tot
 
-protected theorem nonempty : Nonempty ι :=
+protected lemma nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by
     simpa only [@range_eq_empty _ _ hι, AffineSubspace.span_empty, bot_ne_top] using b.tot
 #align affine_basis.nonempty AffineBasis.nonempty
@@ -98,7 +98,7 @@ def reindex (e : ι ≃ ι') : AffineBasis ι' k P :=
 #align affine_basis.reindex AffineBasis.reindex
 
 @[simp, norm_cast]
-theorem coe_reindex : ⇑(b.reindex e) = b ∘ e.symm :=
+lemma coe_reindex : ⇑(b.reindex e) = b ∘ e.symm :=
   rfl
 #align affine_basis.coe_reindex AffineBasis.coe_reindex
 
@@ -108,7 +108,7 @@ theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
 #align affine_basis.reindex_apply AffineBasis.reindex_apply
 
 @[simp]
-theorem reindex_refl : b.reindex (Equiv.refl _) = b :=
+lemma reindex_refl : b.reindex (Equiv.refl _) = b :=
   ext rfl
 #align affine_basis.reindex_refl AffineBasis.reindex_refl
 
@@ -179,7 +179,7 @@ theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
     Basis.sumCoords_self_apply, sub_self]
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
-theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
+lemma coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
   cases' eq_or_ne i j with h h <;> simp [h]
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
@@ -200,7 +200,7 @@ theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s
 #align affine_basis.coord_apply_combination_of_not_mem AffineBasis.coord_apply_combination_of_not_mem
 
 @[simp]
-theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
+lemma sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
@@ -210,7 +210,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := 
 #align affine_basis.sum_coord_apply_eq_one AffineBasis.sum_coord_apply_eq_one
 
 @[simp]
-theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
+lemma affineCombination_coord_eq_self [Fintype ι] (q : P) :
     (Finset.univ.affineCombination k b fun i => b.coord i q) = q := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
@@ -224,20 +224,20 @@ theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
 /-- A variant of `AffineBasis.affineCombination_coord_eq_self` for the special case when the
 affine space is a module so we can talk about linear combinations. -/
 @[simp]
-theorem linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (v : V) :
+lemma linear_combination_coord_eq_self [Fintype ι] (b : AffineBasis ι k V) (v : V) :
     ∑ i, b.coord i v • b i = v := by
   have hb := b.affineCombination_coord_eq_self v
   rwa [Finset.univ.affineCombination_eq_linear_combination _ _ (b.sum_coord_apply_eq_one v)] at hb
 #align affine_basis.linear_combination_coord_eq_self AffineBasis.linear_combination_coord_eq_self
 
-theorem ext_elem [Finite ι] {q₁ q₂ : P} (h : ∀ i, b.coord i q₁ = b.coord i q₂) : q₁ = q₂ := by
+lemma ext_elem [Finite ι] {q₁ q₂ : P} (h : ∀ i, b.coord i q₁ = b.coord i q₂) : q₁ = q₂ := by
   cases nonempty_fintype ι
   rw [← b.affineCombination_coord_eq_self q₁, ← b.affineCombination_coord_eq_self q₂]
   simp only [h]
 #align affine_basis.ext_elem AffineBasis.ext_elem
 
 @[simp]
-theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i : P → k) = 1 := by
+lemma coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i : P → k) = 1 := by
   ext q
   have hp : (range b).Subsingleton := by
     rw [← image_univ]
@@ -251,7 +251,7 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
 #align affine_basis.coe_coord_of_subsingleton_eq_one AffineBasis.coe_coord_of_subsingleton_eq_one
 
-theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coord i := by
+lemma surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coord i := by
   classical
     intro x
     obtain ⟨j, hij⟩ := exists_ne i
@@ -301,14 +301,14 @@ section DivisionRing
 variable [DivisionRing k] [Module k V]
 
 @[simp]
-theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
+lemma coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
     (hi : i ∈ s) : b.coord i (s.centroid k b) = (s.card : k)⁻¹ := by
   rw [Finset.centroid,
     b.coord_apply_combination_of_mem hi (s.sum_centroidWeights_eq_one_of_nonempty _ ⟨i, hi⟩),
     Finset.centroidWeights, Function.const_apply]
 #align affine_basis.coord_apply_centroid AffineBasis.coord_apply_centroid
 
-theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
+lemma exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
     ∃ (s : _) (_ : s ⊆ t) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
   refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
@@ -317,7 +317,7 @@ theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
 
 variable (k V P)
 
-theorem exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
+lemma exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
   let ⟨s, _, hs⟩ := exists_affine_subbasis (AffineSubspace.span_univ k V P)
   ⟨s, hs⟩
 #align affine_basis.exists_affine_basis AffineBasis.exists_affineBasis

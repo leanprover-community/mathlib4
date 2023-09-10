@@ -93,25 +93,25 @@ instance : Membership (Set G) (GroupFilterBasis G) :=
   ⟨fun s f ↦ s ∈ f.sets⟩
 
 @[to_additive]
-theorem one {U : Set G} : U ∈ B → (1 : G) ∈ U :=
+lemma one {U : Set G} : U ∈ B → (1 : G) ∈ U :=
   GroupFilterBasis.one'
 #align group_filter_basis.one GroupFilterBasis.one
 #align add_group_filter_basis.zero AddGroupFilterBasis.zero
 
 @[to_additive]
-theorem mul {U : Set G} : U ∈ B → ∃ V ∈ B, V * V ⊆ U :=
+lemma mul {U : Set G} : U ∈ B → ∃ V ∈ B, V * V ⊆ U :=
   GroupFilterBasis.mul'
 #align group_filter_basis.mul GroupFilterBasis.mul
 #align add_group_filter_basis.add AddGroupFilterBasis.add
 
 @[to_additive]
-theorem inv {U : Set G} : U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x⁻¹) ⁻¹' U :=
+lemma inv {U : Set G} : U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x⁻¹) ⁻¹' U :=
   GroupFilterBasis.inv'
 #align group_filter_basis.inv GroupFilterBasis.inv
 #align add_group_filter_basis.neg AddGroupFilterBasis.neg
 
 @[to_additive]
-theorem conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀ * x * x₀⁻¹) ⁻¹' U :=
+lemma conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀ * x * x₀⁻¹) ⁻¹' U :=
   GroupFilterBasis.conj'
 #align group_filter_basis.conj GroupFilterBasis.conj
 #align add_group_filter_basis.conj AddGroupFilterBasis.conj
@@ -284,7 +284,7 @@ variable {R : Type u} [Ring R] (B : RingFilterBasis R)
 instance : Membership (Set R) (RingFilterBasis R) :=
   ⟨fun s B ↦ s ∈ B.sets⟩
 
-theorem mul {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V * V ⊆ U :=
+lemma mul {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V * V ⊆ U :=
   mul' hU
 #align ring_filter_basis.mul RingFilterBasis.mul
 
@@ -351,7 +351,7 @@ instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
   ⟨fun s B ↦ s ∈ B.sets⟩
 #align module_filter_basis.group_filter_basis.has_mem ModuleFilterBasis.GroupFilterBasis.hasMem
 
-theorem smul {U : Set M} (hU : U ∈ B) : ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ B, V • W ⊆ U :=
+lemma smul {U : Set M} (hU : U ∈ B) : ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ B, V • W ⊆ U :=
   B.smul' hU
 #align module_filter_basis.smul ModuleFilterBasis.smul
 
@@ -407,7 +407,7 @@ by their neighborhoods of 0 to obtain the `ContinuousSMul` on the pre-existing t
 
 But it turns out it's just easier to get it as a byproduct of the proof, so this is just a free
 quality-of-life improvement. -/
-theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [TopologicalSpace M]
+lemma _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [TopologicalSpace M]
     [TopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
     (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ (j : _) (_ : p j), V • b j ⊆ b i)
     (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ (j : _) (_ : p j), b j ⊆ (fun x ↦ x₀ • x) ⁻¹' b i)

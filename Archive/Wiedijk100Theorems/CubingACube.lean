@@ -33,7 +33,7 @@ variable {n : ℕ}
   neither endpoint of `J` coincides with an endpoint of `I`, `¬ (K ⊆ J)` and
   `K` does not lie completely to the left nor completely to the right of `J`.
   Then `I ∩ K \ J` is nonempty. -/
-theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (h₁ : x₁ < y₁) (hy : y₁ < y₂)
+lemma Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (h₁ : x₁ < y₁) (hy : y₁ < y₂)
     (h₂ : y₂ < x₂) (hz₁ : z₁ ≤ y₂) (hz₂ : y₁ ≤ z₂) (hw : w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂) :
     ∃ w, w ∈ Ico x₁ x₂ ∧ w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂ := by
   simp only [not_and, not_lt, mem_Ico] at hw
@@ -78,12 +78,12 @@ theorem univ_pi_side (c : Cube n) : pi univ (side c) = c.toSet :=
   ext fun _ => mem_univ_pi
 #align theorems_100.«82».cube.univ_pi_side Theorems100.«82».Cube.univ_pi_side
 
-theorem toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
+lemma toSet_subset {c c' : Cube n} : c.toSet ⊆ c'.toSet ↔ ∀ j, c.side j ⊆ c'.side j := by
   simp only [← univ_pi_side, univ_pi_subset_univ_pi_iff, (c.side_nonempty _).ne_empty, exists_false,
     or_false_iff]
 #align theorems_100.«82».cube.to_set_subset Theorems100.«82».Cube.toSet_subset
 
-theorem toSet_disjoint {c c' : Cube n} :
+lemma toSet_disjoint {c c' : Cube n} :
     Disjoint c.toSet c'.toSet ↔ ∃ j, Disjoint (c.side j) (c'.side j) := by
   simp only [← univ_pi_side, disjoint_univ_pi]
 #align theorems_100.«82».cube.to_set_disjoint Theorems100.«82».Cube.toSet_disjoint
@@ -136,7 +136,7 @@ def unitCube : Cube n :=
 #align theorems_100.«82».cube.unit_cube Theorems100.«82».Cube.unitCube
 
 @[simp]
-theorem side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
+lemma side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
   norm_num [unitCube, side]
 #align theorems_100.«82».cube.side_unit_cube Theorems100.«82».Cube.side_unitCube
 
@@ -158,39 +158,39 @@ namespace Correct
 
 variable (h : Correct cs)
 
-theorem toSet_subset_unitCube {i} : (cs i).toSet ⊆ unitCube.toSet := by
+lemma toSet_subset_unitCube {i} : (cs i).toSet ⊆ unitCube.toSet := by
   convert h.iUnion_eq ▸ subset_iUnion _ i
 #align theorems_100.«82».correct.to_set_subset_unit_cube Theorems100.«82».Correct.toSet_subset_unitCube
 
-theorem side_subset {i j} : (cs i).side j ⊆ Ico 0 1 := by
+lemma side_subset {i j} : (cs i).side j ⊆ Ico 0 1 := by
   simpa only [side_unitCube] using toSet_subset.1 h.toSet_subset_unitCube j
 #align theorems_100.«82».correct.side_subset Theorems100.«82».Correct.side_subset
 
-theorem zero_le_of_mem_side {i j x} (hx : x ∈ (cs i).side j) : 0 ≤ x :=
+lemma zero_le_of_mem_side {i j x} (hx : x ∈ (cs i).side j) : 0 ≤ x :=
   (side_subset h hx).1
 #align theorems_100.«82».correct.zero_le_of_mem_side Theorems100.«82».Correct.zero_le_of_mem_side
 
-theorem zero_le_of_mem {i p} (hp : p ∈ (cs i).toSet) (j) : 0 ≤ p j :=
+lemma zero_le_of_mem {i p} (hp : p ∈ (cs i).toSet) (j) : 0 ≤ p j :=
   zero_le_of_mem_side h (hp j)
 #align theorems_100.«82».correct.zero_le_of_mem Theorems100.«82».Correct.zero_le_of_mem
 
-theorem zero_le_b {i j} : 0 ≤ (cs i).b j :=
+lemma zero_le_b {i j} : 0 ≤ (cs i).b j :=
   zero_le_of_mem h (cs i).b_mem_toSet j
 #align theorems_100.«82».correct.zero_le_b Theorems100.«82».Correct.zero_le_b
 
-theorem b_add_w_le_one {j} : (cs i).b j + (cs i).w ≤ 1 := by
+lemma b_add_w_le_one {j} : (cs i).b j + (cs i).w ≤ 1 := by
   have : side (cs i) j ⊆ Ico 0 1 := side_subset h
   rw [side, Ico_subset_Ico_iff] at this
   convert this.2
   simp [hw]
 #align theorems_100.«82».correct.b_add_w_le_one Theorems100.«82».Correct.b_add_w_le_one
 
-theorem nontrivial_fin : Nontrivial (Fin n) :=
+lemma nontrivial_fin : Nontrivial (Fin n) :=
   Fin.nontrivial_iff_two_le.2 (Nat.le_of_succ_le_succ h.three_le)
 #align theorems_100.«82».correct.nontrivial_fin Theorems100.«82».Correct.nontrivial_fin
 
 /-- The width of any cube in the partition cannot be 1. -/
-theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
+lemma w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   intro hi
   cases' exists_ne i with i' hi'
   let p := (cs i').b
@@ -247,7 +247,7 @@ def Valley (cs : ι → Cube (n + 1)) (c : Cube (n + 1)) : Prop :=
 variable {c : Cube (n + 1)} (h : Correct cs) (v : Valley cs c)
 
 /-- The bottom of the unit cube is a valley -/
-theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube := by
+lemma valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube := by
   refine' ⟨_, _, _⟩
   · intro v
     simp only [bottom, and_imp, mem_iUnion, mem_setOf_eq]
@@ -301,7 +301,7 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
 #align theorems_100.«82».w_lt_w Theorems100.«82».w_lt_w
 
 /-- There are at least two cubes in a valley -/
-theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
+lemma nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rcases v.1 c.b_mem_bottom with ⟨_, ⟨i, rfl⟩, hi⟩
   have h2i : i ∈ bcubes cs c :=
     ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
@@ -327,14 +327,14 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
 #align theorems_100.«82».nontrivial_bcubes Theorems100.«82».nontrivial_bcubes
 
 /-- There is a cube in the valley -/
-theorem nonempty_bcubes : (bcubes cs c).Nonempty :=
+lemma nonempty_bcubes : (bcubes cs c).Nonempty :=
   (nontrivial_bcubes h v).nonempty
 #align theorems_100.«82».nonempty_bcubes Theorems100.«82».nonempty_bcubes
 
 variable [Finite ι]
 
 /-- There is a smallest cube in the valley -/
-theorem exists_mi : ∃ i ∈ bcubes cs c, ∀ i' ∈ bcubes cs c, (cs i).w ≤ (cs i').w :=
+lemma exists_mi : ∃ i ∈ bcubes cs c, ∀ i' ∈ bcubes cs c, (cs i).w ≤ (cs i').w :=
   (bcubes cs c).exists_min_image (fun i => (cs i).w) (Set.toFinite _) (nonempty_bcubes h v)
 #align theorems_100.«82».exists_mi Theorems100.«82».exists_mi
 
@@ -345,7 +345,7 @@ def mi : ι :=
 
 variable {h v}
 
-theorem mi_mem_bcubes : mi h v ∈ bcubes cs c :=
+lemma mi_mem_bcubes : mi h v ∈ bcubes cs c :=
   (Classical.choose_spec <| exists_mi h v).1
 #align theorems_100.«82».mi_mem_bcubes Theorems100.«82».mi_mem_bcubes
 
@@ -359,7 +359,7 @@ theorem mi_strict_minimal (hii' : mi h v ≠ i) (hi : i ∈ bcubes cs c) :
 #align theorems_100.«82».mi_strict_minimal Theorems100.«82».mi_strict_minimal
 
 /-- The top of `mi` cannot be 1, since there is a larger cube in the valley -/
-theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
+lemma mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   apply ne_of_lt; rcases (nontrivial_bcubes h v).exists_ne (mi h v) with ⟨i, hi, h2i⟩
   apply lt_of_lt_of_le _ h.b_add_w_le_one; exact i; exact 0
   rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
@@ -371,7 +371,7 @@ theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   More precisely, there is a j-th coordinate `x : ℝ` in the valley, but not in `mi`,
   such that every cube that shares a (particular) j-th coordinate with `mi` also contains j-th
   coordinate `x` -/
-theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) j) :
+lemma smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) j) :
     ∃ x : ℝ, x ∈ c.side j.succ \ (cs <| mi h v).side j.succ ∧
       ∀ ⦃i'⦄ (_ : i' ∈ bcubes cs c),
         i' ≠ mi h v → (cs <| mi h v).b j.succ ∈ (cs i').side j.succ → x ∈ (cs i').side j.succ := by
@@ -481,7 +481,7 @@ theorem mi_not_onBoundary' (j : Fin n) :
 
 /-- The top of `mi` gives rise to a new valley, since the neighbouring cubes extend further upward
   than `mi`. -/
-theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
+lemma valley_mi : Valley cs (cs (mi h v)).shiftUp := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
   refine' ⟨_, _, _⟩
   · intro p; apply h.shiftUp_bottom_subset_bottoms mi_xm_ne_one
@@ -550,24 +550,24 @@ def decreasingSequence (k : ℕ) : ℝ :=
   (cs (sequenceOfCubes h k).1).w
 #align theorems_100.«82».decreasing_sequence Theorems100.«82».decreasingSequence
 
-theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
+lemma strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
   strictAnti_nat_of_succ_lt fun k => by
     let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
     apply w_lt_w h v (mi_mem_bcubes : mi h v ∈ _)
 #align theorems_100.«82».strict_anti_sequence_of_cubes Theorems100.«82».strictAnti_sequenceOfCubes
 
-theorem injective_sequenceOfCubes : Injective (sequenceOfCubes h) :=
+lemma injective_sequenceOfCubes : Injective (sequenceOfCubes h) :=
   @Injective.of_comp _ _ _ (fun x : { _i : ι // _ } => (cs x.1).w) _
     (strictAnti_sequenceOfCubes h).injective
 #align theorems_100.«82».injective_sequence_of_cubes Theorems100.«82».injective_sequenceOfCubes
 
 /-- The infinite sequence of cubes contradicts the finiteness of the family. -/
-theorem not_correct : ¬Correct cs := fun h =>
+lemma not_correct : ¬Correct cs := fun h =>
   (Finite.of_injective _ <| injective_sequenceOfCubes h).false
 #align theorems_100.«82».not_correct Theorems100.«82».not_correct
 
 /-- **Dissection of Cubes**: A cube cannot be cubed. -/
-theorem cannot_cube_a_cube :
+lemma cannot_cube_a_cube :
     ∀ {n : ℕ}, n ≥ 3 →                         -- In ℝ^n for n ≥ 3
     ∀ {s : Set (Cube n)}, s.Finite →           -- given a finite collection of (hyper)cubes
     s.Nontrivial →                             -- containing at least two elements

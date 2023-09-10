@@ -51,38 +51,38 @@ noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
 
-theorem sqrt_le_sqrt_iff : sqrt x ≤ sqrt y ↔ x ≤ y :=
+lemma sqrt_le_sqrt_iff : sqrt x ≤ sqrt y ↔ x ≤ y :=
   sqrt.le_iff_le
 #align nnreal.sqrt_le_sqrt_iff NNReal.sqrt_le_sqrt_iff
 
-theorem sqrt_lt_sqrt_iff : sqrt x < sqrt y ↔ x < y :=
+lemma sqrt_lt_sqrt_iff : sqrt x < sqrt y ↔ x < y :=
   sqrt.lt_iff_lt
 #align nnreal.sqrt_lt_sqrt_iff NNReal.sqrt_lt_sqrt_iff
 
-theorem sqrt_eq_iff_sq_eq : sqrt x = y ↔ y ^ 2 = x :=
+lemma sqrt_eq_iff_sq_eq : sqrt x = y ↔ y ^ 2 = x :=
   sqrt.toEquiv.apply_eq_iff_eq_symm_apply.trans eq_comm
 #align nnreal.sqrt_eq_iff_sq_eq NNReal.sqrt_eq_iff_sq_eq
 
-theorem sqrt_le_iff : sqrt x ≤ y ↔ x ≤ y ^ 2 :=
+lemma sqrt_le_iff : sqrt x ≤ y ↔ x ≤ y ^ 2 :=
   sqrt.to_galoisConnection _ _
 #align nnreal.sqrt_le_iff NNReal.sqrt_le_iff
 
-theorem le_sqrt_iff : x ≤ sqrt y ↔ x ^ 2 ≤ y :=
+lemma le_sqrt_iff : x ≤ sqrt y ↔ x ^ 2 ≤ y :=
   (sqrt.symm.to_galoisConnection _ _).symm
 #align nnreal.le_sqrt_iff NNReal.le_sqrt_iff
 
 @[simp]
-theorem sqrt_eq_zero : sqrt x = 0 ↔ x = 0 :=
+lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 :=
   sqrt_eq_iff_sq_eq.trans <| by rw [eq_comm, sq, zero_mul]
 #align nnreal.sqrt_eq_zero NNReal.sqrt_eq_zero
 
 @[simp]
-theorem sqrt_zero : sqrt 0 = 0 :=
+lemma sqrt_zero : sqrt 0 = 0 :=
   sqrt_eq_zero.2 rfl
 #align nnreal.sqrt_zero NNReal.sqrt_zero
 
 @[simp]
-theorem sqrt_one : sqrt 1 = 1 :=
+lemma sqrt_one : sqrt 1 = 1 :=
   sqrt_eq_iff_sq_eq.2 <| one_pow _
 #align nnreal.sqrt_one NNReal.sqrt_one
 
@@ -121,10 +121,10 @@ theorem sqrt_div (x y : ℝ≥0) : sqrt (x / y) = sqrt x / sqrt y :=
   map_div₀ sqrtHom x y
 #align nnreal.sqrt_div NNReal.sqrt_div
 
-theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
+lemma continuous_sqrt : Continuous sqrt := sqrt.continuous
 #align nnreal.continuous_sqrt NNReal.continuous_sqrt
 
-@[simp] theorem sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
+@[simp] lemma sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
 alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
@@ -179,12 +179,12 @@ noncomputable def sqrt (x : ℝ) : ℝ :=
 variable {x y : ℝ}
 
 @[simp, norm_cast]
-theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = Real.sqrt x := by
+lemma coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = Real.sqrt x := by
   rw [Real.sqrt, Real.toNNReal_coe]
 #align real.coe_sqrt Real.coe_sqrt
 
 @[continuity]
-theorem continuous_sqrt : Continuous sqrt :=
+lemma continuous_sqrt : Continuous sqrt :=
   NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 #align real.continuous_sqrt Real.continuous_sqrt
 
@@ -205,7 +205,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : sqrt (x * x) = x :=
   (mul_self_inj_of_nonneg (sqrt_nonneg _) h).1 (mul_self_sqrt (mul_self_nonneg _))
 #align real.sqrt_mul_self Real.sqrt_mul_self
 
-theorem sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
+lemma sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
     cases' le_or_lt 0 x with hle hlt
@@ -224,7 +224,7 @@ theorem sqrt_eq_iff_mul_self_eq_of_pos (h : 0 < y) : sqrt x = y ↔ y * y = x :=
 #align real.sqrt_eq_iff_mul_self_eq_of_pos Real.sqrt_eq_iff_mul_self_eq_of_pos
 
 @[simp]
-theorem sqrt_eq_one : sqrt x = 1 ↔ x = 1 :=
+lemma sqrt_eq_one : sqrt x = 1 ↔ x = 1 :=
   calc
     sqrt x = 1 ↔ 1 * 1 = x := sqrt_eq_iff_mul_self_eq_of_pos zero_lt_one
     _ ↔ x = 1 := by rw [eq_comm, mul_one]
@@ -250,11 +250,11 @@ theorem sqrt_sq_eq_abs (x : ℝ) : sqrt (x ^ 2) = |x| := by rw [sq, sqrt_mul_sel
 #align real.sqrt_sq_eq_abs Real.sqrt_sq_eq_abs
 
 @[simp]
-theorem sqrt_zero : sqrt 0 = 0 := by simp [sqrt]
+lemma sqrt_zero : sqrt 0 = 0 := by simp [sqrt]
 #align real.sqrt_zero Real.sqrt_zero
 
 @[simp]
-theorem sqrt_one : sqrt 1 = 1 := by simp [sqrt]
+lemma sqrt_one : sqrt 1 = 1 := by simp [sqrt]
 #align real.sqrt_one Real.sqrt_one
 
 @[simp]
@@ -285,7 +285,7 @@ theorem sqrt_le_left (hy : 0 ≤ y) : sqrt x ≤ y ↔ x ≤ y ^ 2 := by
     Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
 #align real.sqrt_le_left Real.sqrt_le_left
 
-theorem sqrt_le_iff : sqrt x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
+lemma sqrt_le_iff : sqrt x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
   rw [← and_iff_right_of_imp fun h => (sqrt_nonneg x).trans h, and_congr_right_iff]
   exact sqrt_le_left
 #align real.sqrt_le_iff Real.sqrt_le_iff
@@ -336,18 +336,18 @@ theorem sqrt_inj (hx : 0 ≤ x) (hy : 0 ≤ y) : sqrt x = sqrt y ↔ x = y := by
 theorem sqrt_eq_zero (h : 0 ≤ x) : sqrt x = 0 ↔ x = 0 := by simpa using sqrt_inj h le_rfl
 #align real.sqrt_eq_zero Real.sqrt_eq_zero
 
-theorem sqrt_eq_zero' : sqrt x = 0 ↔ x ≤ 0 := by
+lemma sqrt_eq_zero' : sqrt x = 0 ↔ x ≤ 0 := by
   rw [sqrt, NNReal.coe_eq_zero, NNReal.sqrt_eq_zero, Real.toNNReal_eq_zero]
 #align real.sqrt_eq_zero' Real.sqrt_eq_zero'
 
 theorem sqrt_ne_zero (h : 0 ≤ x) : sqrt x ≠ 0 ↔ x ≠ 0 := by rw [not_iff_not, sqrt_eq_zero h]
 #align real.sqrt_ne_zero Real.sqrt_ne_zero
 
-theorem sqrt_ne_zero' : sqrt x ≠ 0 ↔ 0 < x := by rw [← not_le, not_iff_not, sqrt_eq_zero']
+lemma sqrt_ne_zero' : sqrt x ≠ 0 ↔ 0 < x := by rw [← not_le, not_iff_not, sqrt_eq_zero']
 #align real.sqrt_ne_zero' Real.sqrt_ne_zero'
 
 @[simp]
-theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
+lemma sqrt_pos : 0 < sqrt x ↔ 0 < x :=
   lt_iff_lt_of_le_iff_le (Iff.trans (by simp [le_antisymm_iff, sqrt_nonneg]) sqrt_eq_zero')
 #align real.sqrt_pos Real.sqrt_pos
 
@@ -416,23 +416,23 @@ theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : sqrt (x / y) = sqrt x / sqrt y 
 #align real.sqrt_div' Real.sqrt_div'
 
 @[simp]
-theorem div_sqrt : x / sqrt x = sqrt x := by
+lemma div_sqrt : x / sqrt x = sqrt x := by
   cases' le_or_lt x 0 with h h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 #align real.div_sqrt Real.div_sqrt
 
-theorem sqrt_div_self' : sqrt x / x = 1 / sqrt x := by rw [← div_sqrt, one_div_div, div_sqrt]
+lemma sqrt_div_self' : sqrt x / x = 1 / sqrt x := by rw [← div_sqrt, one_div_div, div_sqrt]
 #align real.sqrt_div_self' Real.sqrt_div_self'
 
-theorem sqrt_div_self : sqrt x / x = (sqrt x)⁻¹ := by rw [sqrt_div_self', one_div]
+lemma sqrt_div_self : sqrt x / x = (sqrt x)⁻¹ := by rw [sqrt_div_self', one_div]
 #align real.sqrt_div_self Real.sqrt_div_self
 
 theorem lt_sqrt (hx : 0 ≤ x) : x < sqrt y ↔ x ^ 2 < y := by
   rw [← sqrt_lt_sqrt_iff (sq_nonneg _), sqrt_sq hx]
 #align real.lt_sqrt Real.lt_sqrt
 
-theorem sq_lt : x ^ 2 < y ↔ -sqrt y < x ∧ x < sqrt y := by
+lemma sq_lt : x ^ 2 < y ↔ -sqrt y < x ∧ x < sqrt y := by
   rw [← abs_lt, ← sq_abs, lt_sqrt (abs_nonneg _)]
 #align real.sq_lt Real.sq_lt
 
@@ -444,20 +444,20 @@ theorem lt_sqrt_of_sq_lt (h : x ^ 2 < y) : x < sqrt y :=
   (sq_lt.mp h).2
 #align real.lt_sqrt_of_sq_lt Real.lt_sqrt_of_sq_lt
 
-theorem lt_sq_of_sqrt_lt {x y : ℝ} (h : sqrt x < y) : x < y ^ 2 := by
+lemma lt_sq_of_sqrt_lt {x y : ℝ} (h : sqrt x < y) : x < y ^ 2 := by
   have hy := x.sqrt_nonneg.trans_lt h
   rwa [← sqrt_lt_sqrt_iff_of_pos (sq_pos_of_pos hy), sqrt_sq hy.le]
 #align real.lt_sq_of_sqrt_lt Real.lt_sq_of_sqrt_lt
 
 /-- The natural square root is at most the real square root -/
-theorem nat_sqrt_le_real_sqrt {a : ℕ} : ↑(Nat.sqrt a) ≤ Real.sqrt ↑a := by
+lemma nat_sqrt_le_real_sqrt {a : ℕ} : ↑(Nat.sqrt a) ≤ Real.sqrt ↑a := by
   rw [Real.le_sqrt (Nat.cast_nonneg _) (Nat.cast_nonneg _)]
   norm_cast
   exact Nat.sqrt_le' a
 #align real.nat_sqrt_le_real_sqrt Real.nat_sqrt_le_real_sqrt
 
 /-- The real square root is at most the natural square root plus one -/
-theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1 := by
+lemma real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1 := by
   rw [Real.sqrt_le_iff]
   constructor
   · norm_cast
@@ -483,7 +483,7 @@ open Real
 
 variable {α : Type*}
 
-theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
+lemma Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
     Tendsto (fun x => sqrt (f x)) l (𝓝 (sqrt x)) :=
   (continuous_sqrt.tendsto _).comp h
 #align filter.tendsto.sqrt Filter.Tendsto.sqrt

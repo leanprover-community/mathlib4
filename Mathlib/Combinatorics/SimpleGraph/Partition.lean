@@ -95,7 +95,7 @@ theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
   exact h2.1
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex
 
-theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by
+lemma partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by
   intro hn
   have hw := P.mem_partOfVertex w
   rw [← hn] at hw
@@ -115,7 +115,7 @@ def toColoring' : G.Coloring (Set V) :=
   Coloring.mk P.partOfVertex fun hvw ↦ P.partOfVertex_ne_of_adj hvw
 #align simple_graph.partition.to_coloring' SimpleGraph.Partition.toColoring'
 
-theorem to_colorable [Fintype P.parts] : G.Colorable (Fintype.card P.parts) :=
+lemma to_colorable [Fintype P.parts] : G.Colorable (Fintype.card P.parts) :=
   P.toColoring.to_colorable
 #align simple_graph.partition.to_colorable SimpleGraph.Partition.to_colorable
 
@@ -138,7 +138,7 @@ def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
 @[simps]
 instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 
-theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
+lemma partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
   · rintro ⟨P, hf, hc⟩
     have : Fintype P.parts := hf.fintype

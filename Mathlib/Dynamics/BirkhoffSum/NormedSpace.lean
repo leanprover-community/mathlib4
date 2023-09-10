@@ -72,7 +72,7 @@ along the orbit of `f x` and along the orbit of `x`
 tends to zero.
 
 See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage'`. -/
-theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : α → E} {x : α}
+lemma tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : α → E} {x : α}
     (h : Metric.Bounded (range (g <| f^[·] x))) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) := by
   rcases h with ⟨C, hC⟩
@@ -89,7 +89,7 @@ along the orbit of `f x` and along the orbit of `x`
 tends to zero.
 
 See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage`. -/
-theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
+lemma tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
     (h : Metric.Bounded (range g)) (f : α → α) (x : α):
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
   tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.mono <| range_comp_subset_range _ _

@@ -97,45 +97,45 @@ protected theorem hasDerivWithinAt_aeval (x : 𝕜) (s : Set 𝕜) :
   (q.hasDerivAt_aeval x).hasDerivWithinAt
 #align polynomial.has_deriv_within_at_aeval Polynomial.hasDerivWithinAt_aeval
 
-protected theorem differentiableAt : DifferentiableAt 𝕜 (fun x => p.eval x) x :=
+protected lemma differentiableAt : DifferentiableAt 𝕜 (fun x => p.eval x) x :=
   (p.hasDerivAt x).differentiableAt
 #align polynomial.differentiable_at Polynomial.differentiableAt
 
-protected theorem differentiableAt_aeval : DifferentiableAt 𝕜 (fun x => aeval x q) x :=
+protected lemma differentiableAt_aeval : DifferentiableAt 𝕜 (fun x => aeval x q) x :=
   (q.hasDerivAt_aeval x).differentiableAt
 #align polynomial.differentiable_at_aeval Polynomial.differentiableAt_aeval
 
-protected theorem differentiableWithinAt : DifferentiableWithinAt 𝕜 (fun x => p.eval x) s x :=
+protected lemma differentiableWithinAt : DifferentiableWithinAt 𝕜 (fun x => p.eval x) s x :=
   p.differentiableAt.differentiableWithinAt
 #align polynomial.differentiable_within_at Polynomial.differentiableWithinAt
 
-protected theorem differentiableWithinAt_aeval :
+protected lemma differentiableWithinAt_aeval :
     DifferentiableWithinAt 𝕜 (fun x => aeval x q) s x :=
   q.differentiableAt_aeval.differentiableWithinAt
 #align polynomial.differentiable_within_at_aeval Polynomial.differentiableWithinAt_aeval
 
-protected theorem differentiable : Differentiable 𝕜 fun x => p.eval x := fun _ => p.differentiableAt
+protected lemma differentiable : Differentiable 𝕜 fun x => p.eval x := fun _ => p.differentiableAt
 #align polynomial.differentiable Polynomial.differentiable
 
-protected theorem differentiable_aeval : Differentiable 𝕜 fun x : 𝕜 => aeval x q := fun _ =>
+protected lemma differentiable_aeval : Differentiable 𝕜 fun x : 𝕜 => aeval x q := fun _ =>
   q.differentiableAt_aeval
 #align polynomial.differentiable_aeval Polynomial.differentiable_aeval
 
-protected theorem differentiableOn : DifferentiableOn 𝕜 (fun x => p.eval x) s :=
+protected lemma differentiableOn : DifferentiableOn 𝕜 (fun x => p.eval x) s :=
   p.differentiable.differentiableOn
 #align polynomial.differentiable_on Polynomial.differentiableOn
 
-protected theorem differentiableOn_aeval : DifferentiableOn 𝕜 (fun x => aeval x q) s :=
+protected lemma differentiableOn_aeval : DifferentiableOn 𝕜 (fun x => aeval x q) s :=
   q.differentiable_aeval.differentiableOn
 #align polynomial.differentiable_on_aeval Polynomial.differentiableOn_aeval
 
 @[simp]
-protected theorem deriv : deriv (fun x => p.eval x) x = p.derivative.eval x :=
+protected lemma deriv : deriv (fun x => p.eval x) x = p.derivative.eval x :=
   (p.hasDerivAt x).deriv
 #align polynomial.deriv Polynomial.deriv
 
 @[simp]
-protected theorem deriv_aeval : deriv (fun x => aeval x q) x = aeval x (derivative q) :=
+protected lemma deriv_aeval : deriv (fun x => aeval x q) x = aeval x (derivative q) :=
   (q.hasDerivAt_aeval x).deriv
 #align polynomial.deriv_aeval Polynomial.deriv_aeval
 
@@ -173,13 +173,13 @@ protected theorem hasFDerivWithinAt_aeval (x : 𝕜) :
 #align polynomial.has_fderiv_within_at_aeval Polynomial.hasFDerivWithinAt_aeval
 
 @[simp]
-protected theorem fderiv :
+protected lemma fderiv :
     fderiv 𝕜 (fun x => p.eval x) x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (p.derivative.eval x) :=
   (p.hasFDerivAt x).fderiv
 #align polynomial.fderiv Polynomial.fderiv
 
 @[simp]
-protected theorem fderiv_aeval :
+protected lemma fderiv_aeval :
     fderiv 𝕜 (fun x => aeval x q) x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (aeval x (derivative q)) :=
   (q.hasFDerivAt_aeval x).fderiv
 #align polynomial.fderiv_aeval Polynomial.fderiv_aeval

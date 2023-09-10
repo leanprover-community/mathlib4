@@ -108,7 +108,7 @@ smaller than or equal to `k` leaves those `e` for which there is a prime `p > k`
 `e + 1`, or the union over those primes `p > k` of the sets of `e`s for which `e + 1` is a multiple
 of `p`.
 -/
-theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
+lemma range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   ext e
   simp only [mem_biUnion, not_and, mem_sdiff, mem_filter, mem_range, U, M, P]
   push_neg
@@ -126,7 +126,7 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
 The number of `e < x` for which `e + 1` has a prime factor `p > k` is bounded by `x` times the sum
 of reciprocals of primes in `(k, x]`.
 -/
-theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x k, 1 / (p : ℝ) := by
+lemma card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x k, 1 / (p : ℝ) := by
   let P := Finset.filter (fun p => k < p ∧ Nat.Prime p) (range (x + 1))
   let N p := Finset.filter (fun e => p ∣ e + 1) (range x)
   have h : card (Finset.biUnion P N) ≤ ∑ p in P, card (N p) := card_biUnion_le
@@ -141,7 +141,7 @@ theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x 
 The number of `e < x` for which `e + 1` is a squarefree product of primes smaller than or equal to
 `k` is bounded by `2 ^ k`, the number of subsets of `[1, k]`.
 -/
-theorem card_le_two_pow {x k : ℕ} :
+lemma card_le_two_pow {x k : ℕ} :
     card (Finset.filter (fun e => Squarefree (e + 1)) (M x k)) ≤ 2 ^ k := by
   let M₁ := Finset.filter (fun e => Squarefree (e + 1)) (M x k)
   let f s := (Finset.prod s fun a => a) - 1
@@ -176,7 +176,7 @@ theorem card_le_two_pow {x k : ℕ} :
 The number of `e < x` for which `e + 1` is a product of powers of primes smaller than or equal to
 `k` is bounded by `2 ^ k * nat.sqrt x`.
 -/
-theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt x := by
+lemma card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt x := by
   let M₁ := Finset.filter (fun e => Squarefree (e + 1)) (M x k)
   let M₂ := M (Nat.sqrt x) k
   let K := M₁ ×ˢ M₂
@@ -208,7 +208,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2
 #align theorems_100.card_le_two_pow_mul_sqrt Theorems100.card_le_two_pow_mul_sqrt
 
-theorem Real.tendsto_sum_one_div_prime_atTop :
+lemma Real.tendsto_sum_one_div_prime_atTop :
     Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop := by
   -- Assume that the sum of the reciprocals of the primes converges.

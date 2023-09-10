@@ -43,42 +43,42 @@ section LocallyFiniteOrder
 variable [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
 @[simp]
-theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
+lemma nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 #align finset.nonempty_Icc Finset.nonempty_Icc
 
 @[simp]
-theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
+lemma nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 #align finset.nonempty_Ico Finset.nonempty_Ico
 
 @[simp]
-theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
+lemma nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
 #align finset.nonempty_Ioc Finset.nonempty_Ioc
 
 @[simp]
-theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
+lemma nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
 #align finset.nonempty_Ioo Finset.nonempty_Ioo
 
 @[simp]
-theorem Icc_eq_empty_iff : Icc a b = ∅ ↔ ¬a ≤ b := by
+lemma Icc_eq_empty_iff : Icc a b = ∅ ↔ ¬a ≤ b := by
   rw [← coe_eq_empty, coe_Icc, Set.Icc_eq_empty_iff]
 #align finset.Icc_eq_empty_iff Finset.Icc_eq_empty_iff
 
 @[simp]
-theorem Ico_eq_empty_iff : Ico a b = ∅ ↔ ¬a < b := by
+lemma Ico_eq_empty_iff : Ico a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ico, Set.Ico_eq_empty_iff]
 #align finset.Ico_eq_empty_iff Finset.Ico_eq_empty_iff
 
 @[simp]
-theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
+lemma Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioc, Set.Ioc_eq_empty_iff]
 #align finset.Ioc_eq_empty_iff Finset.Ioc_eq_empty_iff
 
 @[simp]
-theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
+lemma Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
 #align finset.Ioo_eq_empty_iff Finset.Ioo_eq_empty_iff
 
@@ -118,42 +118,42 @@ theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and_iff, le_rfl]
+lemma left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and_iff, le_rfl]
 #align finset.left_mem_Icc Finset.left_mem_Icc
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and_iff, le_refl]
+lemma left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and_iff, le_refl]
 #align finset.left_mem_Ico Finset.left_mem_Ico
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true_iff, le_rfl]
+lemma right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true_iff, le_rfl]
 #align finset.right_mem_Icc Finset.right_mem_Icc
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true_iff, le_rfl]
+lemma right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true_iff, le_rfl]
 #align finset.right_mem_Ioc Finset.right_mem_Ioc
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem left_not_mem_Ioc : a ∉ Ioc a b := fun h => lt_irrefl _ (mem_Ioc.1 h).1
+lemma left_not_mem_Ioc : a ∉ Ioc a b := fun h => lt_irrefl _ (mem_Ioc.1 h).1
 #align finset.left_not_mem_Ioc Finset.left_not_mem_Ioc
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem left_not_mem_Ioo : a ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).1
+lemma left_not_mem_Ioo : a ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).1
 #align finset.left_not_mem_Ioo Finset.left_not_mem_Ioo
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem right_not_mem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).2
+lemma right_not_mem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).2
 #align finset.right_not_mem_Ico Finset.right_not_mem_Ico
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem right_not_mem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
+lemma right_not_mem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
 #align finset.right_not_mem_Ioo Finset.right_not_mem_Ioo
 
 theorem Icc_subset_Icc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := by
@@ -219,27 +219,27 @@ theorem Icc_subset_Ico_right (h : b₁ < b₂) : Icc a b₁ ⊆ Ico a b₂ := by
   exact Set.Icc_subset_Ico_right h
 #align finset.Icc_subset_Ico_right Finset.Icc_subset_Ico_right
 
-theorem Ioo_subset_Ico_self : Ioo a b ⊆ Ico a b := by
+lemma Ioo_subset_Ico_self : Ioo a b ⊆ Ico a b := by
   rw [← coe_subset, coe_Ioo, coe_Ico]
   exact Set.Ioo_subset_Ico_self
 #align finset.Ioo_subset_Ico_self Finset.Ioo_subset_Ico_self
 
-theorem Ioo_subset_Ioc_self : Ioo a b ⊆ Ioc a b := by
+lemma Ioo_subset_Ioc_self : Ioo a b ⊆ Ioc a b := by
   rw [← coe_subset, coe_Ioo, coe_Ioc]
   exact Set.Ioo_subset_Ioc_self
 #align finset.Ioo_subset_Ioc_self Finset.Ioo_subset_Ioc_self
 
-theorem Ico_subset_Icc_self : Ico a b ⊆ Icc a b := by
+lemma Ico_subset_Icc_self : Ico a b ⊆ Icc a b := by
   rw [← coe_subset, coe_Ico, coe_Icc]
   exact Set.Ico_subset_Icc_self
 #align finset.Ico_subset_Icc_self Finset.Ico_subset_Icc_self
 
-theorem Ioc_subset_Icc_self : Ioc a b ⊆ Icc a b := by
+lemma Ioc_subset_Icc_self : Ioc a b ⊆ Icc a b := by
   rw [← coe_subset, coe_Ioc, coe_Icc]
   exact Set.Ioc_subset_Icc_self
 #align finset.Ioc_subset_Icc_self Finset.Ioc_subset_Icc_self
 
-theorem Ioo_subset_Icc_self : Ioo a b ⊆ Icc a b :=
+lemma Ioo_subset_Icc_self : Ioo a b ⊆ Icc a b :=
   Ioo_subset_Ico_self.trans Ico_subset_Icc_self
 #align finset.Ioo_subset_Icc_self Finset.Ioo_subset_Icc_self
 
@@ -276,19 +276,19 @@ variable (a)
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem Ico_self : Ico a a = ∅ :=
+lemma Ico_self : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 #align finset.Ico_self Finset.Ico_self
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem Ioc_self : Ioc a a = ∅ :=
+lemma Ioc_self : Ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 #align finset.Ioc_self Finset.Ioc_self
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem Ioo_self : Ioo a a = ∅ :=
+lemma Ioo_self : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 #align finset.Ioo_self Finset.Ioo_self
 
@@ -300,7 +300,7 @@ def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : 
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩
 #align set.fintype_of_mem_bounds Set.fintypeOfMemBounds
 
-theorem _root_.BddBelow.finite_of_bddAbove {s : Set α} (h₀ : BddBelow s) (h₁ : BddAbove s) :
+lemma _root_.BddBelow.finite_of_bddAbove {s : Set α} (h₀ : BddBelow s) (h₁ : BddAbove s) :
     s.Finite := by
   let ⟨a, ha⟩ := h₀
   let ⟨b, hb⟩ := h₁
@@ -309,76 +309,76 @@ theorem _root_.BddBelow.finite_of_bddAbove {s : Set α} (h₀ : BddBelow s) (h�
 
 section Filter
 
-theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
+lemma Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     (Ico a b).filter (· < c) = ∅ :=
   filter_false_of_mem fun _ hx => (hca.trans (mem_Ico.1 hx).1).not_lt
 #align finset.Ico_filter_lt_of_le_left Finset.Ico_filter_lt_of_le_left
 
-theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
+lemma Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
     (Ico a b).filter (· < c) = Ico a b :=
   filter_true_of_mem fun _ hx => (mem_Ico.1 hx).2.trans_le hbc
 #align finset.Ico_filter_lt_of_right_le Finset.Ico_filter_lt_of_right_le
 
-theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
+lemma Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
     (Ico a b).filter (· < c) = Ico a c := by
   ext x
   rw [mem_filter, mem_Ico, mem_Ico, and_right_comm]
   exact and_iff_left_of_imp fun h => h.2.trans_le hcb
 #align finset.Ico_filter_lt_of_le_right Finset.Ico_filter_lt_of_le_right
 
-theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred ((· ≤ ·) c)] (hca : c ≤ a) :
+lemma Ico_filter_le_of_le_left {a b c : α} [DecidablePred ((· ≤ ·) c)] (hca : c ≤ a) :
     (Ico a b).filter ((· ≤ ·) c) = Ico a b :=
   filter_true_of_mem fun _ hx => hca.trans (mem_Ico.1 hx).1
 #align finset.Ico_filter_le_of_le_left Finset.Ico_filter_le_of_le_left
 
-theorem Ico_filter_le_of_right_le {a b : α} [DecidablePred ((· ≤ ·) b)] :
+lemma Ico_filter_le_of_right_le {a b : α} [DecidablePred ((· ≤ ·) b)] :
     (Ico a b).filter ((· ≤ ·) b) = ∅ :=
   filter_false_of_mem fun _ hx => (mem_Ico.1 hx).2.not_le
 #align finset.Ico_filter_le_of_right_le Finset.Ico_filter_le_of_right_le
 
-theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred ((· ≤ ·) c)] (hac : a ≤ c) :
+lemma Ico_filter_le_of_left_le {a b c : α} [DecidablePred ((· ≤ ·) c)] (hac : a ≤ c) :
     (Ico a b).filter ((· ≤ ·) c) = Ico c b := by
   ext x
   rw [mem_filter, mem_Ico, mem_Ico, and_comm, and_left_comm]
   exact and_iff_right_of_imp fun h => hac.trans h.1
 #align finset.Ico_filter_le_of_left_le Finset.Ico_filter_le_of_left_le
 
-theorem Icc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
+lemma Icc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     (Icc a b).filter (· < c) = Icc a b :=
   filter_true_of_mem  fun _ hx => lt_of_le_of_lt (mem_Icc.1 hx).2 h
 #align finset.Icc_filter_lt_of_lt_right Finset.Icc_filter_lt_of_lt_right
 
-theorem Ioc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
+lemma Ioc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     (Ioc a b).filter (· < c) = Ioc a b :=
   filter_true_of_mem  fun _ hx => lt_of_le_of_lt (mem_Ioc.1 hx).2 h
 #align finset.Ioc_filter_lt_of_lt_right Finset.Ioc_filter_lt_of_lt_right
 
-theorem Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] {a c : α}
+lemma Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] {a c : α}
     [DecidablePred (· < c)] (h : a < c) : (Iic a).filter (· < c) = Iic a :=
   filter_true_of_mem fun _ hx => lt_of_le_of_lt (mem_Iic.1 hx) h
 #align finset.Iic_filter_lt_of_lt_right Finset.Iic_filter_lt_of_lt_right
 
 variable (a b) [Fintype α]
 
-theorem filter_lt_lt_eq_Ioo [DecidablePred fun j => a < j ∧ j < b] :
+lemma filter_lt_lt_eq_Ioo [DecidablePred fun j => a < j ∧ j < b] :
     (univ.filter fun j => a < j ∧ j < b) = Ioo a b := by
   ext
   simp
 #align finset.filter_lt_lt_eq_Ioo Finset.filter_lt_lt_eq_Ioo
 
-theorem filter_lt_le_eq_Ioc [DecidablePred fun j => a < j ∧ j ≤ b] :
+lemma filter_lt_le_eq_Ioc [DecidablePred fun j => a < j ∧ j ≤ b] :
     (univ.filter fun j => a < j ∧ j ≤ b) = Ioc a b := by
   ext
   simp
 #align finset.filter_lt_le_eq_Ioc Finset.filter_lt_le_eq_Ioc
 
-theorem filter_le_lt_eq_Ico [DecidablePred fun j => a ≤ j ∧ j < b] :
+lemma filter_le_lt_eq_Ico [DecidablePred fun j => a ≤ j ∧ j < b] :
     (univ.filter fun j => a ≤ j ∧ j < b) = Ico a b := by
   ext
   simp
 #align finset.filter_le_lt_eq_Ico Finset.filter_le_lt_eq_Ico
 
-theorem filter_le_le_eq_Icc [DecidablePred fun j => a ≤ j ∧ j ≤ b] :
+lemma filter_le_le_eq_Icc [DecidablePred fun j => a ≤ j ∧ j ≤ b] :
     (univ.filter fun j => a ≤ j ∧ j ≤ b) = Icc a b := by
   ext
   simp
@@ -390,27 +390,27 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
-theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
+lemma Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
   simpa [← coe_subset] using Set.Icc_subset_Ici_self
 #align finset.Icc_subset_Ici_self Finset.Icc_subset_Ici_self
 
-theorem Ico_subset_Ici_self : Ico a b ⊆ Ici a := by
+lemma Ico_subset_Ici_self : Ico a b ⊆ Ici a := by
   simpa [← coe_subset] using Set.Ico_subset_Ici_self
 #align finset.Ico_subset_Ici_self Finset.Ico_subset_Ici_self
 
-theorem Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := by
+lemma Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := by
   simpa [← coe_subset] using Set.Ioc_subset_Ioi_self
 #align finset.Ioc_subset_Ioi_self Finset.Ioc_subset_Ioi_self
 
-theorem Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := by
+lemma Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := by
   simpa [← coe_subset] using Set.Ioo_subset_Ioi_self
 #align finset.Ioo_subset_Ioi_self Finset.Ioo_subset_Ioi_self
 
-theorem Ioc_subset_Ici_self : Ioc a b ⊆ Ici a :=
+lemma Ioc_subset_Ici_self : Ioc a b ⊆ Ici a :=
   Ioc_subset_Icc_self.trans Icc_subset_Ici_self
 #align finset.Ioc_subset_Ici_self Finset.Ioc_subset_Ici_self
 
-theorem Ioo_subset_Ici_self : Ioo a b ⊆ Ici a :=
+lemma Ioo_subset_Ici_self : Ioo a b ⊆ Ici a :=
   Ioo_subset_Ico_self.trans Ico_subset_Ici_self
 #align finset.Ioo_subset_Ici_self Finset.Ioo_subset_Ici_self
 
@@ -420,27 +420,27 @@ section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
 
-theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := by
+lemma Icc_subset_Iic_self : Icc a b ⊆ Iic b := by
   simpa [← coe_subset] using Set.Icc_subset_Iic_self
 #align finset.Icc_subset_Iic_self Finset.Icc_subset_Iic_self
 
-theorem Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := by
+lemma Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := by
   simpa [← coe_subset] using Set.Ioc_subset_Iic_self
 #align finset.Ioc_subset_Iic_self Finset.Ioc_subset_Iic_self
 
-theorem Ico_subset_Iio_self : Ico a b ⊆ Iio b := by
+lemma Ico_subset_Iio_self : Ico a b ⊆ Iio b := by
   simpa [← coe_subset] using Set.Ico_subset_Iio_self
 #align finset.Ico_subset_Iio_self Finset.Ico_subset_Iio_self
 
-theorem Ioo_subset_Iio_self : Ioo a b ⊆ Iio b := by
+lemma Ioo_subset_Iio_self : Ioo a b ⊆ Iio b := by
   simpa [← coe_subset] using Set.Ioo_subset_Iio_self
 #align finset.Ioo_subset_Iio_self Finset.Ioo_subset_Iio_self
 
-theorem Ico_subset_Iic_self : Ico a b ⊆ Iic b :=
+lemma Ico_subset_Iic_self : Ico a b ⊆ Iic b :=
   Ico_subset_Icc_self.trans Icc_subset_Iic_self
 #align finset.Ico_subset_Iic_self Finset.Ico_subset_Iic_self
 
-theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
+lemma Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
 #align finset.Ioo_subset_Iic_self Finset.Ioo_subset_Iic_self
 
@@ -452,27 +452,27 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α] {a : α}
 
-theorem Ioi_subset_Ici_self : Ioi a ⊆ Ici a := by
+lemma Ioi_subset_Ici_self : Ioi a ⊆ Ici a := by
   simpa [← coe_subset] using Set.Ioi_subset_Ici_self
 #align finset.Ioi_subset_Ici_self Finset.Ioi_subset_Ici_self
 
-theorem _root_.BddBelow.finite {s : Set α} (hs : BddBelow s) : s.Finite :=
+lemma _root_.BddBelow.finite {s : Set α} (hs : BddBelow s) : s.Finite :=
   let ⟨a, ha⟩ := hs
   (Ici a).finite_toSet.subset fun _ hx => mem_Ici.2 <| ha hx
 #align bdd_below.finite BddBelow.finite
 
-theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelow s :=
+lemma _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelow s :=
   mt BddBelow.finite
 #align set.infinite.not_bdd_below Set.Infinite.not_bddBelow
 
 variable [Fintype α]
 
-theorem filter_lt_eq_Ioi [DecidablePred ((· < ·) a)] : univ.filter ((· < ·) a) = Ioi a := by
+lemma filter_lt_eq_Ioi [DecidablePred ((· < ·) a)] : univ.filter ((· < ·) a) = Ioi a := by
   ext
   simp
 #align finset.filter_lt_eq_Ioi Finset.filter_lt_eq_Ioi
 
-theorem filter_le_eq_Ici [DecidablePred ((· ≤ ·) a)] : univ.filter ((· ≤ ·) a) = Ici a := by
+lemma filter_le_eq_Ici [DecidablePred ((· ≤ ·) a)] : univ.filter ((· ≤ ·) a) = Ici a := by
   ext
   simp
 #align finset.filter_le_eq_Ici Finset.filter_le_eq_Ici
@@ -483,26 +483,26 @@ section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α] {a : α}
 
-theorem Iio_subset_Iic_self : Iio a ⊆ Iic a := by
+lemma Iio_subset_Iic_self : Iio a ⊆ Iic a := by
   simpa [← coe_subset] using Set.Iio_subset_Iic_self
 #align finset.Iio_subset_Iic_self Finset.Iio_subset_Iic_self
 
-theorem _root_.BddAbove.finite {s : Set α} (hs : BddAbove s) : s.Finite :=
+lemma _root_.BddAbove.finite {s : Set α} (hs : BddAbove s) : s.Finite :=
   hs.dual.finite
 #align bdd_above.finite BddAbove.finite
 
-theorem _root_.Set.Infinite.not_bddAbove {s : Set α} : s.Infinite → ¬BddAbove s :=
+lemma _root_.Set.Infinite.not_bddAbove {s : Set α} : s.Infinite → ¬BddAbove s :=
   mt BddAbove.finite
 #align set.infinite.not_bdd_above Set.Infinite.not_bddAbove
 
 variable [Fintype α]
 
-theorem filter_gt_eq_Iio [DecidablePred (· < a)] : univ.filter (· < a) = Iio a := by
+lemma filter_gt_eq_Iio [DecidablePred (· < a)] : univ.filter (· < a) = Iio a := by
   ext
   simp
 #align finset.filter_gt_eq_Iio Finset.filter_gt_eq_Iio
 
-theorem filter_ge_eq_Iic [DecidablePred (· ≤ a)] : univ.filter (· ≤ a) = Iic a := by
+lemma filter_ge_eq_Iic [DecidablePred (· ≤ a)] : univ.filter (· ≤ a) = Iic a := by
   ext
   simp
 #align finset.filter_ge_eq_Iic Finset.filter_ge_eq_Iic
@@ -526,7 +526,7 @@ theorem Icc_self (a : α) : Icc a a = {a} := by rw [← coe_eq_singleton, coe_Ic
 #align finset.Icc_self Finset.Icc_self
 
 @[simp]
-theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
+lemma Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   rw [← coe_eq_singleton, coe_Icc, Set.Icc_eq_singleton_iff]
 #align finset.Icc_eq_singleton_iff Finset.Icc_eq_singleton_iff
 
@@ -627,7 +627,7 @@ theorem Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_not_mem_Io
   classical rw [cons_eq_insert, Ioo_insert_left h]
 #align finset.Ico_eq_cons_Ioo Finset.Ico_eq_cons_Ioo
 
-theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
+lemma Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
     ((Ico a b).filter fun x => x ≤ a) = {a} := by
   ext x
   rw [mem_filter, mem_Ico, mem_singleton, and_right_comm, ← le_antisymm_iff, eq_comm]
@@ -674,20 +674,20 @@ section OrderTop
 variable [LocallyFiniteOrderTop α]
 
 @[simp]
-theorem Ici_erase [DecidableEq α] (a : α) : (Ici a).erase a = Ioi a := by
+lemma Ici_erase [DecidableEq α] (a : α) : (Ici a).erase a = Ioi a := by
   ext
   simp_rw [Finset.mem_erase, mem_Ici, mem_Ioi, lt_iff_le_and_ne, and_comm, ne_comm]
 #align finset.Ici_erase Finset.Ici_erase
 
 @[simp]
-theorem Ioi_insert [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
+lemma Ioi_insert [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
   ext
   simp_rw [Finset.mem_insert, mem_Ici, mem_Ioi, le_iff_lt_or_eq, or_comm, eq_comm]
 #align finset.Ioi_insert Finset.Ioi_insert
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
+lemma not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
 #align finset.not_mem_Ioi_self Finset.not_mem_Ioi_self
 
 -- Purposefully written the other way around
@@ -707,20 +707,20 @@ section OrderBot
 variable [LocallyFiniteOrderBot α]
 
 @[simp]
-theorem Iic_erase [DecidableEq α] (b : α) : (Iic b).erase b = Iio b := by
+lemma Iic_erase [DecidableEq α] (b : α) : (Iic b).erase b = Iio b := by
   ext
   simp_rw [Finset.mem_erase, mem_Iic, mem_Iio, lt_iff_le_and_ne, and_comm]
 #align finset.Iic_erase Finset.Iic_erase
 
 @[simp]
-theorem Iio_insert [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
+lemma Iio_insert [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
   ext
   simp_rw [Finset.mem_insert, mem_Iic, mem_Iio, le_iff_lt_or_eq, or_comm]
 #align finset.Iio_insert Finset.Iio_insert
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
+lemma not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
 #align finset.not_mem_Iio_self Finset.not_mem_Iio_self
 
 -- Purposefully written the other way around
@@ -745,38 +745,38 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α] {a b : α}
 
-theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
+lemma Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
     Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
   rw [← coe_subset, coe_Ico, coe_Ico, Set.Ico_subset_Ico_iff h]
 #align finset.Ico_subset_Ico_iff Finset.Ico_subset_Ico_iff
 
-theorem Ico_union_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
+lemma Ico_union_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     Ico a b ∪ Ico b c = Ico a c := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico_eq_Ico hab hbc]
 #align finset.Ico_union_Ico_eq_Ico Finset.Ico_union_Ico_eq_Ico
 
 @[simp]
-theorem Ioc_union_Ioc_eq_Ioc {a b c : α} (h₁ : a ≤ b) (h₂ : b ≤ c) :
+lemma Ioc_union_Ioc_eq_Ioc {a b c : α} (h₁ : a ≤ b) (h₂ : b ≤ c) :
     Ioc a b ∪ Ioc b c = Ioc a c := by
   rw [← coe_inj, coe_union, coe_Ioc, coe_Ioc, coe_Ioc, Set.Ioc_union_Ioc_eq_Ioc h₁ h₂]
 #align finset.Ioc_union_Ioc_eq_Ioc Finset.Ioc_union_Ioc_eq_Ioc
 
-theorem Ico_subset_Ico_union_Ico {a b c : α} : Ico a c ⊆ Ico a b ∪ Ico b c := by
+lemma Ico_subset_Ico_union_Ico {a b c : α} : Ico a c ⊆ Ico a b ∪ Ico b c := by
   rw [← coe_subset, coe_union, coe_Ico, coe_Ico, coe_Ico]
   exact Set.Ico_subset_Ico_union_Ico
 #align finset.Ico_subset_Ico_union_Ico Finset.Ico_subset_Ico_union_Ico
 
-theorem Ico_union_Ico' {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
+lemma Ico_union_Ico' {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico' hcb had]
 #align finset.Ico_union_Ico' Finset.Ico_union_Ico'
 
-theorem Ico_union_Ico {a b c d : α} (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
+lemma Ico_union_Ico {a b c d : α} (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico h₁ h₂]
 #align finset.Ico_union_Ico Finset.Ico_union_Ico
 
-theorem Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
+lemma Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [← coe_inj, coe_inter, coe_Ico, coe_Ico, coe_Ico, ← inf_eq_min, ← sup_eq_max,
     Set.Ico_inter_Ico]
 #align finset.Ico_inter_Ico Finset.Ico_inter_Ico
@@ -802,7 +802,7 @@ theorem Ioo_filter_lt (a b c : α) : (Ioo a b).filter (· < c) = Ioo a (min b c)
 #align finset.Ioo_filter_lt Finset.Ioo_filter_lt
 
 @[simp]
-theorem Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α) :
+lemma Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α) :
     (Iio a).filter (· < b) = Iio (min a b) := by
   ext
   simp [and_assoc]
@@ -837,7 +837,7 @@ theorem _root_.Set.Infinite.exists_gt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, a 
   not_bddAbove_iff.1 hs.not_bddAbove
 #align set.infinite.exists_gt Set.Infinite.exists_gt
 
-theorem _root_.Set.infinite_iff_exists_gt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, a < b :=
+lemma _root_.Set.infinite_iff_exists_gt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, a < b :=
   ⟨Set.Infinite.exists_gt, Set.infinite_of_forall_exists_gt⟩
 #align set.infinite_iff_exists_gt Set.infinite_iff_exists_gt
 
@@ -850,7 +850,7 @@ theorem _root_.Set.Infinite.exists_lt (hs : s.Infinite) : ∀ a, ∃ b ∈ s, b 
   not_bddBelow_iff.1 hs.not_bddBelow
 #align set.infinite.exists_lt Set.Infinite.exists_lt
 
-theorem _root_.Set.infinite_iff_exists_lt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, b < a :=
+lemma _root_.Set.infinite_iff_exists_lt [Nonempty α] : s.Infinite ↔ ∀ a, ∃ b ∈ s, b < a :=
   ⟨Set.Infinite.exists_lt, Set.infinite_of_forall_exists_lt⟩
 #align set.infinite_iff_exists_lt Set.infinite_iff_exists_lt
 
@@ -890,31 +890,31 @@ theorem uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem uIcc_self : [[a, a]] = {a} := by simp [uIcc]
+lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 #align finset.uIcc_self Finset.uIcc_self
 
 @[simp]
-theorem nonempty_uIcc : Finset.Nonempty [[a, b]] :=
+lemma nonempty_uIcc : Finset.Nonempty [[a, b]] :=
   nonempty_Icc.2 inf_le_sup
 #align finset.nonempty_uIcc Finset.nonempty_uIcc
 
-theorem Icc_subset_uIcc : Icc a b ⊆ [[a, b]] :=
+lemma Icc_subset_uIcc : Icc a b ⊆ [[a, b]] :=
   Icc_subset_Icc inf_le_left le_sup_right
 #align finset.Icc_subset_uIcc Finset.Icc_subset_uIcc
 
-theorem Icc_subset_uIcc' : Icc b a ⊆ [[a, b]] :=
+lemma Icc_subset_uIcc' : Icc b a ⊆ [[a, b]] :=
   Icc_subset_Icc inf_le_right le_sup_left
 #align finset.Icc_subset_uIcc' Finset.Icc_subset_uIcc'
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem left_mem_uIcc : a ∈ [[a, b]] :=
+lemma left_mem_uIcc : a ∈ [[a, b]] :=
   mem_Icc.2 ⟨inf_le_left, le_sup_left⟩
 #align finset.left_mem_uIcc Finset.left_mem_uIcc
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem right_mem_uIcc : b ∈ [[a, b]] :=
+lemma right_mem_uIcc : b ∈ [[a, b]] :=
   mem_Icc.2 ⟨inf_le_right, le_sup_right⟩
 #align finset.right_mem_uIcc Finset.right_mem_uIcc
 
@@ -937,11 +937,11 @@ theorem uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b�
   exact Icc_subset_Icc (_root_.le_inf ha.1 hb.1) (_root_.sup_le ha.2 hb.2)
 #align finset.uIcc_subset_Icc Finset.uIcc_subset_Icc
 
-theorem uIcc_subset_uIcc_iff_mem : [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
+lemma uIcc_subset_uIcc_iff_mem : [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
   ⟨fun h => ⟨h left_mem_uIcc, h right_mem_uIcc⟩, fun h => uIcc_subset_uIcc h.1 h.2⟩
 #align finset.uIcc_subset_uIcc_iff_mem Finset.uIcc_subset_uIcc_iff_mem
 
-theorem uIcc_subset_uIcc_iff_le' :
+lemma uIcc_subset_uIcc_iff_le' :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₂ ⊓ b₂ ≤ a₁ ⊓ b₁ ∧ a₁ ⊔ b₁ ≤ a₂ ⊔ b₂ :=
   Icc_subset_Icc_iff inf_le_sup
 #align finset.uIcc_subset_uIcc_iff_le' Finset.uIcc_subset_uIcc_iff_le'
@@ -960,12 +960,12 @@ section DistribLattice
 
 variable [DistribLattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-theorem eq_of_mem_uIcc_of_mem_uIcc : a ∈ [[b, c]] → b ∈ [[a, c]] → a = b := by
+lemma eq_of_mem_uIcc_of_mem_uIcc : a ∈ [[b, c]] → b ∈ [[a, c]] → a = b := by
   simp_rw [mem_uIcc]
   exact Set.eq_of_mem_uIcc_of_mem_uIcc
 #align finset.eq_of_mem_uIcc_of_mem_uIcc Finset.eq_of_mem_uIcc_of_mem_uIcc
 
-theorem eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = c := by
+lemma eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = c := by
   simp_rw [mem_uIcc]
   exact Set.eq_of_mem_uIcc_of_mem_uIcc'
 #align finset.eq_of_mem_uIcc_of_mem_uIcc' Finset.eq_of_mem_uIcc_of_mem_uIcc'
@@ -985,7 +985,7 @@ section LinearOrder
 
 variable [LinearOrder α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
+lemma Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 #align finset.Icc_min_max Finset.Icc_min_max
 
@@ -997,32 +997,32 @@ theorem uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
   uIcc_of_le <| le_of_not_ge h
 #align finset.uIcc_of_not_ge Finset.uIcc_of_not_ge
 
-theorem uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a :=
+lemma uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a :=
   coe_injective <| by
     push_cast
     exact Set.uIcc_eq_union
 #align finset.uIcc_eq_union Finset.uIcc_eq_union
 
-theorem mem_uIcc' : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [uIcc_eq_union]
+lemma mem_uIcc' : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [uIcc_eq_union]
 #align finset.mem_uIcc' Finset.mem_uIcc'
 
-theorem not_mem_uIcc_of_lt : c < a → c < b → c ∉ [[a, b]] := by
+lemma not_mem_uIcc_of_lt : c < a → c < b → c ∉ [[a, b]] := by
   rw [mem_uIcc]
   exact Set.not_mem_uIcc_of_lt
 #align finset.not_mem_uIcc_of_lt Finset.not_mem_uIcc_of_lt
 
-theorem not_mem_uIcc_of_gt : a < c → b < c → c ∉ [[a, b]] := by
+lemma not_mem_uIcc_of_gt : a < c → b < c → c ∉ [[a, b]] := by
   rw [mem_uIcc]
   exact Set.not_mem_uIcc_of_gt
 #align finset.not_mem_uIcc_of_gt Finset.not_mem_uIcc_of_gt
 
-theorem uIcc_subset_uIcc_iff_le :
+lemma uIcc_subset_uIcc_iff_le :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ min a₂ b₂ ≤ min a₁ b₁ ∧ max a₁ b₁ ≤ max a₂ b₂ :=
   uIcc_subset_uIcc_iff_le'
 #align finset.uIcc_subset_uIcc_iff_le Finset.uIcc_subset_uIcc_iff_le
 
 /-- A sort of triangle inequality. -/
-theorem uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] :=
+lemma uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] :=
   coe_subset.1 <| by
     push_cast
     exact Set.uIcc_subset_uIcc_union_uIcc
@@ -1132,7 +1132,7 @@ theorem image_add_right_Ioo (a b c : α) : (Ioo a b).image (· + c) = Ioo (a + c
 end OrderedCancelAddCommMonoid
 
 @[to_additive]
-theorem prod_prod_Ioi_mul_eq_prod_prod_off_diag [Fintype ι] [LinearOrder ι]
+lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag [Fintype ι] [LinearOrder ι]
     [LocallyFiniteOrderTop ι] [LocallyFiniteOrderBot ι] [CommMonoid α] (f : ι → ι → α) :
     (∏ i, ∏ j in Ioi i, f j i * f i j) = ∏ i, ∏ j in {i}ᶜ, f j i := by
   simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]

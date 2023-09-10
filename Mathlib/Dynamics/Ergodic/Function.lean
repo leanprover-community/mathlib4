@@ -24,7 +24,7 @@ variable {α X : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 from `α` to a nonempty space with a countable family of measurable sets
 separating points of a set `s` such that `f x ∈ s` for a.e. `x`.
 If `g` that is a.e.-invariant under `f`, then `g` is a.e. constant. -/
-theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [Nonempty X] [MeasurableSpace X]
+lemma QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [Nonempty X] [MeasurableSpace X]
     {s : Set X} [HasCountableSeparatingOn X MeasurableSet s] {f : α → α} {g : α → X}
     (h : QuasiErgodic f μ) (hs : ∀ᵐ x ∂μ, g x ∈ s) (hgm : NullMeasurable g μ)
     (hg_eq : g ∘ f =ᵐ[μ] g) :
@@ -74,7 +74,7 @@ namespace QuasiErgodic
 Let `g : α → X` be an a.e. strongly measurable function
 from `α` to a nonempty metrizable topological space.
 If `g` is a.e.-invariant under `f`, then `g` is a.e. constant. -/
-theorem ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : QuasiErgodic f μ)
+lemma ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : QuasiErgodic f μ)
     (hgm : AEStronglyMeasurable g μ) (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c := by
   borelize X
   rcases hgm.isSeparable_ae_range with ⟨t, ht, hgt⟩
@@ -96,7 +96,7 @@ namespace Ergodic
 Let `g : α → X` be an a.e. strongly measurable function
 from `α` to a nonempty metrizable topological space.
 If `g` is a.e.-invariant under `f`, then `g` is a.e. constant. -/
-theorem ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : Ergodic f μ) (hgm : AEStronglyMeasurable g μ)
+lemma ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : Ergodic f μ) (hgm : AEStronglyMeasurable g μ)
     (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c :=
   h.quasiErgodic.ae_eq_const_of_ae_eq_comp_ae hgm hg_eq
 

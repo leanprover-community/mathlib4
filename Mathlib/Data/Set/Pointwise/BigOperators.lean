@@ -84,7 +84,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
 
 /-- A version of `Set.mem_finset_prod` with a simpler RHS for products over a Fintype. -/
 @[to_additive " A version of `Set.mem_finset_sum` with a simpler RHS for sums over a Fintype. "]
-theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
+lemma mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
     (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α) (_ : ∀ i, g i ∈ f i), ∏ i, g i = a := by
   rw [mem_finset_prod]
   simp
@@ -116,7 +116,7 @@ theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf
 #align set.list_sum_subset_list_sum Set.list_sum_subset_list_sum
 
 @[to_additive]
-theorem list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
+lemma list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_list_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.list_prod_singleton Set.list_prod_singleton
@@ -143,7 +143,7 @@ theorem multiset_prod_subset_multiset_prod (t : Multiset ι) (f₁ f₂ : ι →
 #align set.multiset_sum_subset_multiset_sum Set.multiset_sum_subset_multiset_sum
 
 @[to_additive]
-theorem multiset_prod_singleton {M : Type*} [CommMonoid M] (s : Multiset M) :
+lemma multiset_prod_singleton {M : Type*} [CommMonoid M] (s : Multiset M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_multiset_prod (singletonMonoidHom : M →* Set M) _).symm
 #align set.multiset_prod_singleton Set.multiset_prod_singleton
@@ -166,7 +166,7 @@ theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set �
 #align set.finset_sum_subset_finset_sum Set.finset_sum_subset_finset_sum
 
 @[to_additive]
-theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
+lemma finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
     (∏ i : ι in s, ({I i} : Set M)) = {∏ i : ι in s, I i} :=
   (map_prod (singletonMonoidHom : M →* Set M) _ _).symm
 #align set.finset_prod_singleton Set.finset_prod_singleton
@@ -183,7 +183,7 @@ theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
 
 /-- A special case of `Set.image_finset_prod_pi` for `Finset.univ`. -/
 @[to_additive "A special case of `Set.image_finset_sum_pi` for `Finset.univ`. "]
-theorem image_fintype_prod_pi [Fintype ι] (S : ι → Set α) :
+lemma image_fintype_prod_pi [Fintype ι] (S : ι → Set α) :
     (fun f : ι → α => ∏ i, f i) '' univ.pi S = ∏ i, S i := by
   simpa only [Finset.coe_univ] using image_finset_prod_pi Finset.univ S
 #align set.image_fintype_prod_pi Set.image_fintype_prod_pi

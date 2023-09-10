@@ -110,11 +110,11 @@ theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := i
 variable {β}
 
 @[simp]
-theorem mem_cutMap_iff : b ∈ cutMap β a ↔ ∃ q : ℚ, (q : α) < a ∧ (q : β) = b := Iff.rfl
+lemma mem_cutMap_iff : b ∈ cutMap β a ↔ ∃ q : ℚ, (q : α) < a ∧ (q : β) = b := Iff.rfl
 #align linear_ordered_field.mem_cut_map_iff LinearOrderedField.mem_cutMap_iff
 
 -- @[simp] -- Porting note: not in simpNF
-theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α) < a :=
+lemma coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α) < a :=
   Rat.cast_injective.mem_set_image
 #align linear_ordered_field.coe_mem_cut_map_iff LinearOrderedField.coe_mem_cutMap_iff
 
@@ -183,7 +183,7 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
-theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
+lemma inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 #align linear_ordered_field.induced_map_mono LinearOrderedField.inducedMap_mono
 
@@ -199,11 +199,11 @@ theorem inducedMap_rat (q : ℚ) : inducedMap α β (q : α) = q := by
 #align linear_ordered_field.induced_map_rat LinearOrderedField.inducedMap_rat
 
 @[simp]
-theorem inducedMap_zero : inducedMap α β 0 = 0 := by exact_mod_cast inducedMap_rat α β 0
+lemma inducedMap_zero : inducedMap α β 0 = 0 := by exact_mod_cast inducedMap_rat α β 0
 #align linear_ordered_field.induced_map_zero LinearOrderedField.inducedMap_zero
 
 @[simp]
-theorem inducedMap_one : inducedMap α β 1 = 1 := by exact_mod_cast inducedMap_rat α β 1
+lemma inducedMap_one : inducedMap α β 1 = 1 := by exact_mod_cast inducedMap_rat α β 1
 #align linear_ordered_field.induced_map_one LinearOrderedField.inducedMap_one
 
 variable {α β} {a : α} {b : β} {q : ℚ}
@@ -212,7 +212,7 @@ theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a :=
   (inducedMap_zero α _).ge.trans <| inducedMap_mono _ _ ha
 #align linear_ordered_field.induced_map_nonneg LinearOrderedField.inducedMap_nonneg
 
-theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a := by
+lemma coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a := by
   refine ⟨fun h => ?_, fun hq => ?_⟩
   · rw [← inducedMap_rat α] at h
     exact (inducedMap_mono α β).reflect_lt h
@@ -221,7 +221,7 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact_mod_cast hq
 #align linear_ordered_field.coe_lt_induced_map_iff LinearOrderedField.coe_lt_inducedMap_iff
 
-theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
+lemma lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
   ⟨fun h => (exists_rat_btwn h).imp fun q => And.imp_right coe_lt_inducedMap_iff.1,
     fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 #align linear_ordered_field.lt_induced_map_iff LinearOrderedField.lt_inducedMap_iff
@@ -328,15 +328,15 @@ def inducedOrderRingIso : β ≃+*o γ :=
 #align linear_ordered_field.induced_order_ring_iso LinearOrderedField.inducedOrderRingIso
 
 @[simp]
-theorem coe_inducedOrderRingIso : ⇑(inducedOrderRingIso β γ) = inducedMap β γ := rfl
+lemma coe_inducedOrderRingIso : ⇑(inducedOrderRingIso β γ) = inducedMap β γ := rfl
 #align linear_ordered_field.coe_induced_order_ring_iso LinearOrderedField.coe_inducedOrderRingIso
 
 @[simp]
-theorem inducedOrderRingIso_symm : (inducedOrderRingIso β γ).symm = inducedOrderRingIso γ β := rfl
+lemma inducedOrderRingIso_symm : (inducedOrderRingIso β γ).symm = inducedOrderRingIso γ β := rfl
 #align linear_ordered_field.induced_order_ring_iso_symm LinearOrderedField.inducedOrderRingIso_symm
 
 @[simp]
-theorem inducedOrderRingIso_self : inducedOrderRingIso β β = OrderRingIso.refl β :=
+lemma inducedOrderRingIso_self : inducedOrderRingIso β β = OrderRingIso.refl β :=
   OrderRingIso.ext inducedMap_self
 #align linear_ordered_field.induced_order_ring_iso_self LinearOrderedField.inducedOrderRingIso_self
 

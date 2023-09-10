@@ -60,7 +60,7 @@ namespace Idempotents
 
 /-- A category is idempotent complete iff for all idempotent endomorphisms,
 the equalizer of the identity and this idempotent exists. -/
-theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
+lemma isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     IsIdempotentComplete C ↔ ∀ (X : C) (p : X ⟶ X), p ≫ p = p → HasEqualizer (𝟙 X) p := by
   constructor
   · intro
@@ -96,7 +96,7 @@ variable {C}
 
 /-- In a preadditive category, when `p : X ⟶ X` is idempotent,
 then `𝟙 X - p` is also idempotent. -/
-theorem idem_of_id_sub_idem [Preadditive C] {X : C} (p : X ⟶ X) (hp : p ≫ p = p) :
+lemma idem_of_id_sub_idem [Preadditive C] {X : C} (p : X ⟶ X) (hp : p ≫ p = p) :
     (𝟙 _ - p) ≫ (𝟙 _ - p) = 𝟙 _ - p := by
   simp only [comp_sub, sub_comp, id_comp, comp_id, hp, sub_self, sub_zero]
 #align category_theory.idempotents.idem_of_id_sub_idem CategoryTheory.Idempotents.idem_of_id_sub_idem
@@ -104,7 +104,7 @@ theorem idem_of_id_sub_idem [Preadditive C] {X : C} (p : X ⟶ X) (hp : p ≫ p 
 variable (C)
 
 /-- A preadditive category is pseudoabelian iff all idempotent endomorphisms have a kernel. -/
-theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
+lemma isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
     IsIdempotentComplete C ↔ ∀ (X : C) (p : X ⟶ X), p ≫ p = p → HasKernel p := by
   rw [isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent]
   constructor
@@ -127,7 +127,7 @@ instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category
 
 variable {C}
 
-theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
+lemma split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p')
     (h : ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) :
     ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
@@ -140,7 +140,7 @@ theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     rw [hpp', ← assoc, φ.inv_hom_id, id_comp]
 #align category_theory.idempotents.split_imp_of_iso CategoryTheory.Idempotents.split_imp_of_iso
 
-theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
+lemma split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p') :
     (∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) ↔
       ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
@@ -154,7 +154,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     rfl
 #align category_theory.idempotents.split_iff_of_iso CategoryTheory.Idempotents.split_iff_of_iso
 
-theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
+lemma Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
   refine' ⟨_⟩
   intro X' p hp
@@ -174,7 +174,7 @@ theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
 #align category_theory.idempotents.equivalence.is_idempotent_complete CategoryTheory.Idempotents.Equivalence.isIdempotentComplete
 
 /-- If `C` and `D` are equivalent categories, that `C` is idempotent complete iff `D` is. -/
-theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C ≌ D) :
+lemma isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C ≌ D) :
     IsIdempotentComplete C ↔ IsIdempotentComplete D := by
   constructor
   · exact Equivalence.isIdempotentComplete ε
@@ -195,7 +195,7 @@ theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentC
     rfl
 #align category_theory.idempotents.is_idempotent_complete_of_is_idempotent_complete_opposite CategoryTheory.Idempotents.isIdempotentComplete_of_isIdempotentComplete_opposite
 
-theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C := by
+lemma isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C := by
   constructor
   · exact isIdempotentComplete_of_isIdempotentComplete_opposite
   · intro h

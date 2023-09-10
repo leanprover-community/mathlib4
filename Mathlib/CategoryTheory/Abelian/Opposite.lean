@@ -92,13 +92,13 @@ def cokernelUnopOp : Opposite.op (cokernel g.unop) ≅ kernel g :=
   (kernelOpUnop g.unop).op
 #align category_theory.cokernel_unop_op CategoryTheory.cokernelUnopOp
 
-theorem cokernel.π_op :
+lemma cokernel.π_op :
     (cokernel.π f.op).unop =
       (cokernelOpUnop f).hom ≫ kernel.ι f ≫ eqToHom (Opposite.unop_op _).symm :=
   by simp [cokernelOpUnop]
 #align category_theory.cokernel.π_op CategoryTheory.cokernel.π_op
 
-theorem kernel.ι_op :
+lemma kernel.ι_op :
     (kernel.ι f.op).unop = eqToHom (Opposite.unop_op _) ≫ cokernel.π f ≫ (kernelOpUnop f).inv := by
   simp [kernelOpUnop]
 #align category_theory.kernel.ι_op CategoryTheory.kernel.ι_op
@@ -121,12 +121,12 @@ def kernelUnopUnop : kernel g.unop ≅ (cokernel g).unop :=
   (kernelUnopOp g).unop.symm
 #align category_theory.kernel_unop_unop CategoryTheory.kernelUnopUnop
 
-theorem kernel.ι_unop :
+lemma kernel.ι_unop :
     (kernel.ι g.unop).op = eqToHom (Opposite.op_unop _) ≫ cokernel.π g ≫ (kernelUnopOp g).inv := by
   simp
 #align category_theory.kernel.ι_unop CategoryTheory.kernel.ι_unop
 
-theorem cokernel.π_unop :
+lemma cokernel.π_unop :
     (cokernel.π g.unop).op =
       (cokernelUnopOp g).hom ≫ kernel.ι g ≫ eqToHom (Opposite.op_unop _).symm :=
   by simp
@@ -161,7 +161,7 @@ def imageUnopUnop : (image g).unop ≅ image g.unop :=
   (imageUnopOp g).unop
 #align category_theory.image_unop_unop CategoryTheory.imageUnopUnop
 
-theorem image_ι_op_comp_imageUnopOp_hom :
+lemma image_ι_op_comp_imageUnopOp_hom :
     (image.ι g.unop).op ≫ (imageUnopOp g).hom = factorThruImage g := by
   simp only [imageUnopOp, Iso.trans, Iso.symm, Iso.op, cokernelOpOp_inv, cokernelEpiComp_hom,
     cokernelCompIsIso_hom, Abelian.coimageIsoImage'_hom, ← Category.assoc, ← op_comp]
@@ -172,18 +172,18 @@ theorem image_ι_op_comp_imageUnopOp_hom :
   erw [IsIso.inv_id, Category.id_comp]
 #align category_theory.image_ι_op_comp_image_unop_op_hom CategoryTheory.image_ι_op_comp_imageUnopOp_hom
 
-theorem imageUnopOp_hom_comp_image_ι :
+lemma imageUnopOp_hom_comp_image_ι :
     (imageUnopOp g).hom ≫ image.ι g = (factorThruImage g.unop).op := by
   simp only [← cancel_epi (image.ι g.unop).op, ← Category.assoc, image_ι_op_comp_imageUnopOp_hom,
     ← op_comp, image.fac, Quiver.Hom.op_unop]
 #align category_theory.image_unop_op_hom_comp_image_ι CategoryTheory.imageUnopOp_hom_comp_image_ι
 
-theorem factorThruImage_comp_imageUnopOp_inv :
+lemma factorThruImage_comp_imageUnopOp_inv :
     factorThruImage g ≫ (imageUnopOp g).inv = (image.ι g.unop).op := by
   rw [Iso.comp_inv_eq, image_ι_op_comp_imageUnopOp_hom]
 #align category_theory.factor_thru_image_comp_image_unop_op_inv CategoryTheory.factorThruImage_comp_imageUnopOp_inv
 
-theorem imageUnopOp_inv_comp_op_factorThruImage :
+lemma imageUnopOp_inv_comp_op_factorThruImage :
     (imageUnopOp g).inv ≫ (factorThruImage g.unop).op = image.ι g := by
   rw [Iso.inv_comp_eq, imageUnopOp_hom_comp_image_ι]
 #align category_theory.image_unop_op_inv_comp_op_factor_thru_image CategoryTheory.imageUnopOp_inv_comp_op_factorThruImage

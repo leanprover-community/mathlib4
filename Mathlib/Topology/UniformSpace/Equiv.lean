@@ -48,7 +48,7 @@ namespace UniformEquiv
 
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 
-theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
+lemma toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 #align uniform_equiv.to_equiv_injective UniformEquiv.toEquiv_injective
 
@@ -96,7 +96,7 @@ theorem coe_symm_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv.symm = h.symm :=
 #align uniform_equiv.coe_symm_to_equiv UniformEquiv.coe_symm_toEquiv
 
 @[ext]
-theorem ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
+lemma ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
   toEquiv_injective <| Equiv.ext H
 #align uniform_equiv.ext UniformEquiv.ext
 
@@ -129,7 +129,7 @@ theorem uniformEquiv_mk_coe_symm (a : Equiv α β) (b c) :
 #align uniform_equiv.uniform_equiv_mk_coe_symm UniformEquiv.uniformEquiv_mk_coe_symm
 
 @[simp]
-theorem refl_symm : (UniformEquiv.refl α).symm = UniformEquiv.refl α :=
+lemma refl_symm : (UniformEquiv.refl α).symm = UniformEquiv.refl α :=
   rfl
 #align uniform_equiv.refl_symm UniformEquiv.refl_symm
 
@@ -303,12 +303,12 @@ def prodComm : α × β ≃ᵤ β × α
 #align uniform_equiv.prod_comm UniformEquiv.prodComm
 
 @[simp]
-theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
+lemma prodComm_symm : (prodComm α β).symm = prodComm β α :=
   rfl
 #align uniform_equiv.prod_comm_symm UniformEquiv.prodComm_symm
 
 @[simp]
-theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
+lemma coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
 #align uniform_equiv.coe_prod_comm UniformEquiv.coe_prodComm
 
@@ -339,7 +339,7 @@ def punitProd : PUnit × α ≃ᵤ α :=
 #align uniform_equiv.punit_prod UniformEquiv.punitProd
 
 @[simp]
-theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
+lemma coe_punitProd : ⇑(punitProd α) = Prod.snd :=
   rfl
 #align uniform_equiv.coe_punit_prod UniformEquiv.coe_punitProd
 

@@ -48,7 +48,7 @@ abbrev cycles (i : ι) : Subobject (C.X i) :=
   kernelSubobject (C.dFrom i)
 #align homological_complex.cycles HomologicalComplex.cycles
 
-theorem cycles_eq_kernelSubobject {i j : ι} (r : c.Rel i j) :
+lemma cycles_eq_kernelSubobject {i j : ι} (r : c.Rel i j) :
     C.cycles i = kernelSubobject (C.d i j) :=
   C.kernel_from_eq_kernel r
 #align homological_complex.cycles_eq_kernel_subobject HomologicalComplex.cycles_eq_kernelSubobject
@@ -59,7 +59,7 @@ def cyclesIsoKernel {i j : ι} (r : c.Rel i j) : (C.cycles i : V) ≅ kernel (C.
   Subobject.isoOfEq _ _ (C.cycles_eq_kernelSubobject r) ≪≫ kernelSubobjectIso (C.d i j)
 #align homological_complex.cycles_iso_kernel HomologicalComplex.cyclesIsoKernel
 
-theorem cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles i = ⊤ := by
+lemma cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles i = ⊤ := by
   rw [eq_top_iff]
   apply le_kernelSubobject
   rw [C.dFrom_eq_zero h, comp_zero]
@@ -76,7 +76,7 @@ abbrev boundaries (C : HomologicalComplex V c) (j : ι) : Subobject (C.X j) :=
   imageSubobject (C.dTo j)
 #align homological_complex.boundaries HomologicalComplex.boundaries
 
-theorem boundaries_eq_imageSubobject [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
+lemma boundaries_eq_imageSubobject [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
     C.boundaries j = imageSubobject (C.d i j) :=
   C.image_to_eq_image r
 #align homological_complex.boundaries_eq_image_subobject HomologicalComplex.boundaries_eq_imageSubobject
@@ -88,7 +88,7 @@ def boundariesIsoImage [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
   Subobject.isoOfEq _ _ (C.boundaries_eq_imageSubobject r) ≪≫ imageSubobjectIso (C.d i j)
 #align homological_complex.boundaries_iso_image HomologicalComplex.boundariesIsoImage
 
-theorem boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
+lemma boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
   rw [eq_bot_iff]
   refine' imageSubobject_le _ 0 _
   rw [C.dTo_eq_zero h, zero_comp]

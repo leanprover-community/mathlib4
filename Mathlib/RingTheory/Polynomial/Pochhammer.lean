@@ -50,12 +50,12 @@ noncomputable def pochhammer : ℕ → S[X]
 #align pochhammer pochhammer
 
 @[simp]
-theorem pochhammer_zero : pochhammer S 0 = 1 :=
+lemma pochhammer_zero : pochhammer S 0 = 1 :=
   rfl
 #align pochhammer_zero pochhammer_zero
 
 @[simp]
-theorem pochhammer_one : pochhammer S 1 = X := by simp [pochhammer]
+lemma pochhammer_one : pochhammer S 1 = X := by simp [pochhammer]
 #align pochhammer_one pochhammer_one
 
 theorem pochhammer_succ_left (n : ℕ) : pochhammer S (n + 1) = X * (pochhammer S n).comp (X + 1) :=
@@ -90,17 +90,17 @@ theorem pochhammer_eval_cast (n k : ℕ) :
     Nat.cast_id, eq_natCast]
 #align pochhammer_eval_cast pochhammer_eval_cast
 
-theorem pochhammer_eval_zero {n : ℕ} : (pochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
+lemma pochhammer_eval_zero {n : ℕ} : (pochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
   cases n
   · simp
   · simp [X_mul, Nat.succ_ne_zero, pochhammer_succ_left]
 #align pochhammer_eval_zero pochhammer_eval_zero
 
-theorem pochhammer_zero_eval_zero : (pochhammer S 0).eval 0 = 1 := by simp
+lemma pochhammer_zero_eval_zero : (pochhammer S 0).eval 0 = 1 := by simp
 #align pochhammer_zero_eval_zero pochhammer_zero_eval_zero
 
 @[simp]
-theorem pochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (pochhammer S n).eval 0 = 0 := by
+lemma pochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (pochhammer S n).eval 0 = 0 := by
   simp [pochhammer_eval_zero, h]
 #align pochhammer_ne_zero_eval_zero pochhammer_ne_zero_eval_zero
 
@@ -117,7 +117,7 @@ theorem pochhammer_succ_right (n : ℕ) :
         nat_cast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
 #align pochhammer_succ_right pochhammer_succ_right
 
-theorem pochhammer_succ_eval {S : Type*} [Semiring S] (n : ℕ) (k : S) :
+lemma pochhammer_succ_eval {S : Type*} [Semiring S] (n : ℕ) (k : S) :
     (pochhammer S (n + 1)).eval k = (pochhammer S n).eval k * (k + n) := by
   rw [pochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, ← C_eq_nat_cast,
     eval_C_mul, Nat.cast_comm, ← mul_add]
@@ -136,7 +136,7 @@ theorem pochhammer_succ_comp_X_add_one (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align pochhammer_succ_comp_X_add_one pochhammer_succ_comp_X_add_one
 
-theorem Polynomial.mul_X_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
+lemma Polynomial.mul_X_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
     (p * (X + (n : S[X]))).comp q = p.comp q * (q + n) := by
   rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
 set_option linter.uppercaseLean3 false in

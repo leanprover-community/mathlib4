@@ -459,7 +459,7 @@ instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
 #noalign category_theory.pseudofunctor.to_oplax_eq_coe
 
 @[simp]
-theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
+lemma to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
   rfl
 #align category_theory.pseudofunctor.to_oplax_obj CategoryTheory.Pseudofunctor.to_oplax_obj
 
@@ -477,7 +477,7 @@ theorem to_oplax_mapId (a : B) : (F : OplaxFunctor B C).mapId a = (F.mapId a).ho
 #align category_theory.pseudofunctor.to_oplax_map_id CategoryTheory.Pseudofunctor.to_oplax_mapId
 
 @[simp]
-theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+lemma to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (F : OplaxFunctor B C).mapComp f g = (F.mapComp f g).hom :=
   rfl
 #align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.to_oplax_mapComp

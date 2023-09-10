@@ -50,7 +50,7 @@ variable [StrongRankCondition F] [StrongRankCondition K]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem lift_rank_mul_lift_rank :
+lemma lift_rank_mul_lift_rank :
     Cardinal.lift.{w} (Module.rank F K) * Cardinal.lift.{v} (Module.rank K A) =
       Cardinal.lift.{v} (Module.rank F A) := by
   -- porting note: `Module.Free.exists_basis` now has implicit arguments, but this is annoying
@@ -75,7 +75,7 @@ theorem rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddComm
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem FiniteDimensional.finrank_mul_finrank' [Module.Finite F K]
+lemma FiniteDimensional.finrank_mul_finrank' [Module.Finite F K]
     [Module.Finite K A] : finrank F K * finrank K A = finrank F A := by
   letI := nontrivial_of_invariantBasisNumber F
   let b := Module.Free.chooseBasis F K
@@ -96,7 +96,7 @@ namespace FiniteDimensional
 
 open IsNoetherian
 
-theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
+lemma trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
   Module.Finite.trans K A
 #align finite_dimensional.trans FiniteDimensional.trans
 
@@ -111,7 +111,7 @@ theorem left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Alge
   FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K L).toLinearMap (RingHom.injective _)
 #align finite_dimensional.left FiniteDimensional.left
 
-theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
+lemma right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
     rw [Submodule.restrictScalars_top, eq_top_iff, ← hb, Submodule.span_le]
@@ -122,7 +122,7 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
 `dim_F(A) = dim_F(K) * dim_K(A)`.
 
 This is `FiniteDimensional.finrank_mul_finrank'` with one fewer finiteness assumption. -/
-theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A = finrank F A := by
+lemma finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A = finrank F A := by
   by_cases hA : FiniteDimensional K A
   · replace hA : FiniteDimensional K A := hA -- porting note: broken instance cache
     rw [finrank_mul_finrank']

@@ -241,7 +241,7 @@ end invertibleTwo
     dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_right _ _)
 
-theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
+lemma antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
     rw [dist_lineMap_lineMap, NNReal.coe_inv, ← dist_nndist, mul_left_comm,

@@ -55,12 +55,12 @@ instance one : One (Icc (0 : α) 1) where one := ⟨1, right_mem_Icc.2 zero_le_o
 #align set.Icc.has_one Set.Icc.one
 
 @[simp, norm_cast]
-theorem coe_zero : ↑(0 : Icc (0 : α) 1) = (0 : α) :=
+lemma coe_zero : ↑(0 : Icc (0 : α) 1) = (0 : α) :=
   rfl
 #align set.Icc.coe_zero Set.Icc.coe_zero
 
 @[simp, norm_cast]
-theorem coe_one : ↑(1 : Icc (0 : α) 1) = (1 : α) :=
+lemma coe_one : ↑(1 : Icc (0 : α) 1) = (1 : α) :=
   rfl
 #align set.Icc.coe_one Set.Icc.coe_one
 
@@ -75,22 +75,22 @@ theorem mk_one (h : (1 : α) ∈ Icc (0 : α) 1) : (⟨1, h⟩ : Icc (0 : α) 1)
 #align set.Icc.mk_one Set.Icc.mk_one
 
 @[simp, norm_cast]
-theorem coe_eq_zero {x : Icc (0 : α) 1} : (x : α) = 0 ↔ x = 0 := by
+lemma coe_eq_zero {x : Icc (0 : α) 1} : (x : α) = 0 ↔ x = 0 := by
   symm
   exact Subtype.ext_iff
 #align set.Icc.coe_eq_zero Set.Icc.coe_eq_zero
 
-theorem coe_ne_zero {x : Icc (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
+lemma coe_ne_zero {x : Icc (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr coe_eq_zero
 #align set.Icc.coe_ne_zero Set.Icc.coe_ne_zero
 
 @[simp, norm_cast]
-theorem coe_eq_one {x : Icc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
+lemma coe_eq_one {x : Icc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
   symm
   exact Subtype.ext_iff
 #align set.Icc.coe_eq_one Set.Icc.coe_eq_one
 
-theorem coe_ne_one {x : Icc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
+lemma coe_ne_one {x : Icc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 #align set.Icc.coe_ne_one Set.Icc.coe_ne_one
 
@@ -103,12 +103,12 @@ theorem coe_le_one (x : Icc (0 : α) 1) : (x : α) ≤ 1 :=
 #align set.Icc.coe_le_one Set.Icc.coe_le_one
 
 /-- like `coe_nonneg`, but with the inequality in `Icc (0:α) 1`. -/
-theorem nonneg {t : Icc (0 : α) 1} : 0 ≤ t :=
+lemma nonneg {t : Icc (0 : α) 1} : 0 ≤ t :=
   t.2.1
 #align set.Icc.nonneg Set.Icc.nonneg
 
 /-- like `coe_le_one`, but with the inequality in `Icc (0:α) 1`. -/
-theorem le_one {t : Icc (0 : α) 1} : t ≤ 1 :=
+lemma le_one {t : Icc (0 : α) 1} : t ≤ 1 :=
   t.2.2
 #align set.Icc.le_one Set.Icc.le_one
 
@@ -130,11 +130,11 @@ theorem coe_pow (x : Icc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Icc.coe_pow Set.Icc.coe_pow
 
-theorem mul_le_left {x y : Icc (0 : α) 1} : x * y ≤ x :=
+lemma mul_le_left {x y : Icc (0 : α) 1} : x * y ≤ x :=
   (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq (mul_one _)
 #align set.Icc.mul_le_left Set.Icc.mul_le_left
 
-theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
+lemma mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
   (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
 #align set.Icc.mul_le_right Set.Icc.mul_le_right
 
@@ -161,12 +161,12 @@ instance cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivis
 
 variable {β : Type*} [OrderedRing β]
 
-theorem one_sub_mem {t : β} (ht : t ∈ Icc (0 : β) 1) : 1 - t ∈ Icc (0 : β) 1 := by
+lemma one_sub_mem {t : β} (ht : t ∈ Icc (0 : β) 1) : 1 - t ∈ Icc (0 : β) 1 := by
   rw [mem_Icc] at *
   exact ⟨sub_nonneg.2 ht.2, (sub_le_self_iff _).2 ht.1⟩
 #align set.Icc.one_sub_mem Set.Icc.one_sub_mem
 
-theorem mem_iff_one_sub_mem {t : β} : t ∈ Icc (0 : β) 1 ↔ 1 - t ∈ Icc (0 : β) 1 :=
+lemma mem_iff_one_sub_mem {t : β} : t ∈ Icc (0 : β) 1 ↔ 1 - t ∈ Icc (0 : β) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 #align set.Icc.mem_iff_one_sub_mem Set.Icc.mem_iff_one_sub_mem
 
@@ -187,22 +187,22 @@ instance zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := ⟨0, left_m
 #align set.Ico.has_zero Set.Ico.zero
 
 @[simp, norm_cast]
-theorem coe_zero [Nontrivial α] : ↑(0 : Ico (0 : α) 1) = (0 : α) :=
+lemma coe_zero [Nontrivial α] : ↑(0 : Ico (0 : α) 1) = (0 : α) :=
   rfl
 #align set.Ico.coe_zero Set.Ico.coe_zero
 
 @[simp]
-theorem mk_zero [Nontrivial α] (h : (0 : α) ∈ Ico (0 : α) 1) : (⟨0, h⟩ : Ico (0 : α) 1) = 0 :=
+lemma mk_zero [Nontrivial α] (h : (0 : α) ∈ Ico (0 : α) 1) : (⟨0, h⟩ : Ico (0 : α) 1) = 0 :=
   rfl
 #align set.Ico.mk_zero Set.Ico.mk_zero
 
 @[simp, norm_cast]
-theorem coe_eq_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) = 0 ↔ x = 0 := by
+lemma coe_eq_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) = 0 ↔ x = 0 := by
   symm
   exact Subtype.ext_iff
 #align set.Ico.coe_eq_zero Set.Ico.coe_eq_zero
 
-theorem coe_ne_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
+lemma coe_ne_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr coe_eq_zero
 #align set.Ico.coe_ne_zero Set.Ico.coe_ne_zero
 
@@ -215,7 +215,7 @@ theorem coe_lt_one (x : Ico (0 : α) 1) : (x : α) < 1 :=
 #align set.Ico.coe_lt_one Set.Ico.coe_lt_one
 
 /-- like `coe_nonneg`, but with the inequality in `Ico (0:α) 1`. -/
-theorem nonneg [Nontrivial α] {t : Ico (0 : α) 1} : 0 ≤ t :=
+lemma nonneg [Nontrivial α] {t : Ico (0 : α) 1} : 0 ≤ t :=
   t.2.1
 #align set.Ico.nonneg Set.Ico.nonneg
 
@@ -252,22 +252,22 @@ instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_l
 #align set.Ioc.has_one Set.Ioc.one
 
 @[simp, norm_cast]
-theorem coe_one [Nontrivial α] : ↑(1 : Ioc (0 : α) 1) = (1 : α) :=
+lemma coe_one [Nontrivial α] : ↑(1 : Ioc (0 : α) 1) = (1 : α) :=
   rfl
 #align set.Ioc.coe_one Set.Ioc.coe_one
 
 @[simp]
-theorem mk_one [Nontrivial α] (h : (1 : α) ∈ Ioc (0 : α) 1) : (⟨1, h⟩ : Ioc (0 : α) 1) = 1 :=
+lemma mk_one [Nontrivial α] (h : (1 : α) ∈ Ioc (0 : α) 1) : (⟨1, h⟩ : Ioc (0 : α) 1) = 1 :=
   rfl
 #align set.Ioc.mk_one Set.Ioc.mk_one
 
 @[simp, norm_cast]
-theorem coe_eq_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
+lemma coe_eq_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
   symm
   exact Subtype.ext_iff
 #align set.Ioc.coe_eq_one Set.Ioc.coe_eq_one
 
-theorem coe_ne_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
+lemma coe_ne_one [Nontrivial α] {x : Ioc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 #align set.Ioc.coe_ne_one Set.Ioc.coe_ne_one
 
@@ -280,7 +280,7 @@ theorem coe_le_one (x : Ioc (0 : α) 1) : (x : α) ≤ 1 :=
 #align set.Ioc.coe_le_one Set.Ioc.coe_le_one
 
 /-- like `coe_le_one`, but with the inequality in `Ioc (0:α) 1`. -/
-theorem le_one [Nontrivial α] {t : Ioc (0 : α) 1} : t ≤ 1 :=
+lemma le_one [Nontrivial α] {t : Ioc (0 : α) 1} : t ≤ 1 :=
   t.2.2
 #align set.Ioc.le_one Set.Ioc.le_one
 
@@ -368,13 +368,13 @@ instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigro
 
 variable {β : Type*} [OrderedRing β]
 
-theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
+lemma one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
   rw [mem_Ioo] at *
   refine' ⟨sub_pos.2 ht.2, _⟩
   exact lt_of_le_of_ne ((sub_le_self_iff 1).2 ht.1.le) (mt sub_eq_self.mp ht.1.ne')
 #align set.Ioo.one_sub_mem Set.Ioo.one_sub_mem
 
-theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
+lemma mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 #align set.Ioo.mem_iff_one_sub_mem Set.Ioo.mem_iff_one_sub_mem
 

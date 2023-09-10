@@ -27,7 +27,7 @@ instance {α : Type*} (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] :
   ⟨univ.sigma fun _ => univ, fun ⟨a, b⟩ => by simp⟩
 
 @[simp]
-theorem Finset.univ_sigma_univ {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
+lemma Finset.univ_sigma_univ {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
     ((univ : Finset α).sigma fun a => (univ : Finset (β a))) = univ :=
   rfl
 #align finset.univ_sigma_univ Finset.univ_sigma_univ

@@ -92,7 +92,7 @@ noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExte
           Equiv.Set.sumDiffSubset (hs.to_subtype_range.subset_extend _)
 #align basis.sum_extend Basis.sumExtend
 
-theorem subset_extend {s : Set V} (hs : LinearIndependent K ((↑) : s → V)) :
+lemma subset_extend {s : Set V} (hs : LinearIndependent K ((↑) : s → V)) :
     s ⊆ hs.extend (Set.subset_univ _) :=
   hs.subset_extend _
 #align basis.subset_extend Basis.subset_extend
@@ -121,22 +121,22 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
 #align basis.of_vector_space_apply_self Basis.ofVectorSpace_apply_self
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
+lemma coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
   funext fun x => ofVectorSpace_apply_self K V x
 #align basis.coe_of_vector_space Basis.coe_ofVectorSpace
 
-theorem ofVectorSpaceIndex.linearIndependent :
+lemma ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
   convert (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
 #align basis.of_vector_space_index.linear_independent Basis.ofVectorSpaceIndex.linearIndependent
 
-theorem range_ofVectorSpace : range (ofVectorSpace K V) = ofVectorSpaceIndex K V :=
+lemma range_ofVectorSpace : range (ofVectorSpace K V) = ofVectorSpaceIndex K V :=
   range_extend _
 #align basis.range_of_vector_space Basis.range_ofVectorSpace
 
-theorem exists_basis : ∃ s : Set V, Nonempty (Basis s K V) :=
+lemma exists_basis : ∃ s : Set V, Nonempty (Basis s K V) :=
   ⟨ofVectorSpaceIndex K V, ⟨ofVectorSpace K V⟩⟩
 #align basis.exists_basis Basis.exists_basis
 
@@ -150,7 +150,7 @@ open Fintype
 
 variable (K V)
 
-theorem VectorSpace.card_fintype [Fintype K] [Fintype V] : ∃ n : ℕ, card V = card K ^ n := by
+lemma VectorSpace.card_fintype [Fintype K] [Fintype V] : ∃ n : ℕ, card V = card K ^ n := by
   classical
   exact ⟨card (Basis.ofVectorSpaceIndex K V), Module.card_fintype (Basis.ofVectorSpace K V)⟩
 #align vector_space.card_fintype VectorSpace.card_fintype
@@ -248,7 +248,7 @@ theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_sur
 
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
 space. -/
-theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
+lemma LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
     ∃ g : V →ₗ[K] V', g.comp p.subtype = f :=
   let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩

@@ -22,7 +22,7 @@ theorem addUnits_eq_zero (u : AddUnits ℕ) : u = 0 :=
 #align nat.add_units_eq_zero Nat.addUnits_eq_zero
 
 @[simp]
-protected theorem isUnit_iff {n : ℕ} : IsUnit n ↔ n = 1 :=
+protected lemma isUnit_iff {n : ℕ} : IsUnit n ↔ n = 1 :=
   Iff.intro
     (fun ⟨u, hu⟩ =>
       match n, u, hu, Nat.units_eq_one u with

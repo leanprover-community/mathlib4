@@ -88,7 +88,7 @@ def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
 #align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
 
-theorem refl : ∀ x, S.Rel x x := S.refl'
+lemma refl : ∀ x, S.Rel x x := S.refl'
 #align discrete_quotient.refl DiscreteQuotient.refl
 
 theorem symm (x y : X) : S.Rel x y → S.Rel y x := S.symm'
@@ -114,15 +114,15 @@ theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.Rel x) :=
   Set.ext fun _ => eq_comm.trans Quotient.eq''
 #align discrete_quotient.fiber_eq DiscreteQuotient.fiber_eq
 
-theorem proj_surjective : Function.Surjective S.proj :=
+lemma proj_surjective : Function.Surjective S.proj :=
   Quotient.surjective_Quotient_mk''
 #align discrete_quotient.proj_surjective DiscreteQuotient.proj_surjective
 
-theorem proj_quotientMap : QuotientMap S.proj :=
+lemma proj_quotientMap : QuotientMap S.proj :=
   quotientMap_quot_mk
 #align discrete_quotient.proj_quotient_map DiscreteQuotient.proj_quotientMap
 
-theorem proj_continuous : Continuous S.proj :=
+lemma proj_continuous : Continuous S.proj :=
   S.proj_quotientMap.continuous
 #align discrete_quotient.proj_continuous DiscreteQuotient.proj_continuous
 
@@ -131,7 +131,7 @@ instance : DiscreteTopology S :=
     rw [← S.proj_quotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
-theorem proj_isLocallyConstant : IsLocallyConstant S.proj :=
+lemma proj_isLocallyConstant : IsLocallyConstant S.proj :=
   (IsLocallyConstant.iff_continuous S.proj).2 S.proj_continuous
 #align discrete_quotient.proj_is_locally_constant DiscreteQuotient.proj_isLocallyConstant
 
@@ -186,7 +186,7 @@ def comap (S : DiscreteQuotient Y) : DiscreteQuotient X where
 #align discrete_quotient.comap DiscreteQuotient.comap
 
 @[simp]
-theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl
+lemma comap_id : S.comap (ContinuousMap.id X) = S := rfl
 #align discrete_quotient.comap_id DiscreteQuotient.comap_id
 
 @[simp]
@@ -195,7 +195,7 @@ theorem comap_comp (S : DiscreteQuotient Z) : S.comap (g.comp f) = (S.comap g).c
 #align discrete_quotient.comap_comp DiscreteQuotient.comap_comp
 
 @[mono]
-theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.comap f := by tauto
+lemma comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.comap f := by tauto
 #align discrete_quotient.comap_mono DiscreteQuotient.comap_mono
 
 end Comap
@@ -210,7 +210,7 @@ def ofLE (h : A ≤ B) : A → B :=
 #align discrete_quotient.of_le DiscreteQuotient.ofLE
 
 @[simp]
-theorem ofLE_refl : ofLE (le_refl A) = id := by
+lemma ofLE_refl : ofLE (le_refl A) = id := by
   ext ⟨⟩
   rfl
 #align discrete_quotient.of_le_refl DiscreteQuotient.ofLE_refl
@@ -260,19 +260,19 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
     (S.isClopen_setOf_rel x).connectedComponent_subset (S.refl _) <| h.symm ▸ mem_connectedComponent
 
 @[simp]
-theorem proj_bot_eq [LocallyConnectedSpace X] {x y : X} :
+lemma proj_bot_eq [LocallyConnectedSpace X] {x y : X} :
     proj ⊥ x = proj ⊥ y ↔ connectedComponent x = connectedComponent y :=
   Quotient.eq''
 #align discrete_quotient.proj_bot_eq DiscreteQuotient.proj_bot_eq
 
-theorem proj_bot_inj [DiscreteTopology X] {x y : X} : proj ⊥ x = proj ⊥ y ↔ x = y := by simp
+lemma proj_bot_inj [DiscreteTopology X] {x y : X} : proj ⊥ x = proj ⊥ y ↔ x = y := by simp
 #align discrete_quotient.proj_bot_inj DiscreteQuotient.proj_bot_inj
 
-theorem proj_bot_injective [DiscreteTopology X] : Injective (⊥ : DiscreteQuotient X).proj :=
+lemma proj_bot_injective [DiscreteTopology X] : Injective (⊥ : DiscreteQuotient X).proj :=
   fun _ _ => proj_bot_inj.1
 #align discrete_quotient.proj_bot_injective DiscreteQuotient.proj_bot_injective
 
-theorem proj_bot_bijective [DiscreteTopology X] : Bijective (⊥ : DiscreteQuotient X).proj :=
+lemma proj_bot_bijective [DiscreteTopology X] : Bijective (⊥ : DiscreteQuotient X).proj :=
   ⟨proj_bot_injective, proj_surjective _⟩
 #align discrete_quotient.proj_bot_bijective DiscreteQuotient.proj_bot_bijective
 
@@ -286,17 +286,17 @@ def LEComap : Prop :=
   A ≤ B.comap f
 #align discrete_quotient.le_comap DiscreteQuotient.LEComap
 
-theorem leComap_id : LEComap (.id X) A A := le_rfl
+lemma leComap_id : LEComap (.id X) A A := le_rfl
 #align discrete_quotient.le_comap_id DiscreteQuotient.leComap_id
 
 variable {A A' B B'} {f} {g : C(Y, Z)} {C : DiscreteQuotient Z}
 
 @[simp]
-theorem leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
+lemma leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
   Iff.rfl
 #align discrete_quotient.le_comap_id_iff DiscreteQuotient.leComap_id_iff
 
-theorem LEComap.comp : LEComap g B C → LEComap f A B → LEComap (g.comp f) A C := by tauto
+lemma LEComap.comp : LEComap g B C → LEComap f A B → LEComap (g.comp f) A C := by tauto
 #align discrete_quotient.le_comap.comp DiscreteQuotient.LEComap.comp
 
 @[mono]
@@ -323,7 +323,7 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 #align discrete_quotient.map_proj DiscreteQuotient.map_proj
 
 @[simp]
-theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
+lemma map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
 -- porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
@@ -361,7 +361,7 @@ theorem map_comp_ofLE (cond : LEComap f A B) (h : A' ≤ A) :
 
 end Map
 
-theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
+lemma eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
     {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y := by
   rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_clopen,
     mem_iInter]
@@ -369,14 +369,14 @@ theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconn
   exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
-theorem fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
+lemma fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
     A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLE h a} := by
   rcases A.proj_surjective a with ⟨a, rfl⟩
   rw [fiber_eq, ofLE_proj, fiber_eq]
   exact fun _ h' => h h'
 #align discrete_quotient.fiber_subset_of_le DiscreteQuotient.fiber_subset_ofLE
 
-theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
+lemma exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     (compat : ∀ (A B : DiscreteQuotient X) (h : A ≤ B), ofLE h (Qs _) = Qs _) :
     ∃ x : X, ∀ Q : DiscreteQuotient X, Q.proj x = Qs _ := by
   have H₁ : ∀ Q₁ Q₂, Q₁ ≤ Q₂ → proj Q₁ ⁻¹' {Qs Q₁} ⊆ proj Q₂ ⁻¹' {Qs Q₂} := fun _ _ h => by
@@ -414,7 +414,7 @@ def lift : LocallyConstant f.discreteQuotient α :=
 #align locally_constant.lift LocallyConstant.lift
 
 @[simp]
-theorem lift_comp_proj : f.lift ∘ f.discreteQuotient.proj = f := rfl
+lemma lift_comp_proj : f.lift ∘ f.discreteQuotient.proj = f := rfl
 #align locally_constant.lift_comp_proj LocallyConstant.lift_comp_proj
 
 end LocallyConstant

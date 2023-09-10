@@ -83,7 +83,7 @@ namespace MixedCharZero
 Reduction to `p` prime: When proving any statement `P` about mixed characteristic rings we
 can always assume that `p` is prime.
 -/
-theorem reduce_to_p_prime {P : Prop} :
+lemma reduce_to_p_prime {P : Prop} :
     (∀ p > 0, MixedCharZero R p → P) ↔ ∀ p : ℕ, p.Prime → MixedCharZero R p → P := by
   constructor
   · intro h q q_prime q_mixedChar
@@ -110,7 +110,7 @@ theorem reduce_to_p_prime {P : Prop} :
 Reduction to `I` prime ideal: When proving statements about mixed characteristic rings,
 after we reduced to `p` prime, we can assume that the ideal `I` in the definition is maximal.
 -/
-theorem reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
+lemma reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
     (∃ I : Ideal R, I ≠ ⊤ ∧ CharP (R ⧸ I) p) ↔ ∃ I : Ideal R, I.IsMaximal ∧ CharP (R ⧸ I) p := by
   constructor
   · intro g
@@ -159,7 +159,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 namespace EqualCharZero
 
 /-- `ℚ`-algebra implies equal characteristic. -/
-theorem of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
+lemma of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
   constructor
   intro a b h_ab
@@ -176,7 +176,7 @@ section ConstructionAlgebraRat
 variable {R}
 
 /-- Internal: Not intended to be used outside this local construction. -/
-theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
+lemma PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by
   -- `n : R` is a unit iff `(n)` is not a proper ideal in `R`.
   rw [← Ideal.span_singleton_eq_top]
@@ -202,7 +202,7 @@ noncomputable instance coePNatUnits
 
 /-- Internal: Not intended to be used outside this local construction. -/
 @[simp]
-theorem pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ((1 : ℕ+) : Rˣ) = 1 := by
+lemma pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ((1 : ℕ+) : Rˣ) = 1 := by
   apply Units.ext
   rw [Units.val_one]
   change ((PNat.isUnit_natCast (R := R) 1).unit : R) = 1
@@ -212,7 +212,7 @@ theorem pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] 
 
 /-- Internal: Not intended to be used outside this local construction. -/
 @[simp]
-theorem pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] (n : ℕ+) :
+lemma pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] (n : ℕ+) :
     ((n : Rˣ) : R) = ↑n := by
   change ((PNat.isUnit_natCast (R := R) n).unit : R) = ↑n
   simp only [IsUnit.unit_spec]
@@ -248,7 +248,7 @@ set_option linter.uppercaseLean3 false in
 end ConstructionAlgebraRat
 
 /-- Not mixed characteristic implies equal characteristic. -/
-theorem of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
+lemma of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
     ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI_ne_top
   suffices h_charP : CharP (R ⧸ I) 0
@@ -276,13 +276,13 @@ theorem to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
 A ring of characteristic zero has equal characteristic iff it does not
 have mixed characteristic for any `p`.
 -/
-theorem iff_not_mixedCharZero [CharZero R] :
+lemma iff_not_mixedCharZero [CharZero R] :
     (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) ↔ ∀ p > 0, ¬MixedCharZero R p :=
   ⟨to_not_mixedCharZero R, of_not_mixedCharZero R⟩
 #align equal_char_zero_iff_not_mixed_char EqualCharZero.iff_not_mixedCharZero
 
 /-- A ring is a `ℚ`-algebra iff it has equal characteristic zero. -/
-theorem nonempty_algebraRat_iff :
+lemma nonempty_algebraRat_iff :
     Nonempty (Algebra ℚ R) ↔ ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   constructor
   · intro h_alg
@@ -299,7 +299,7 @@ end EqualCharZero
 /--
 A ring of characteristic zero is not a `ℚ`-algebra iff it has mixed characteristic for some `p`.
 -/
-theorem isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
+lemma isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
     IsEmpty (Algebra ℚ R) ↔ ∃ p > 0, MixedCharZero R p := by
   rw [← not_iff_not]
   push_neg
@@ -323,7 +323,7 @@ section MainStatements
 variable {P : Prop}
 
 /-- Split a `Prop` in characteristic zero into equal and mixed characteristic. -/
-theorem split_equalCharZero_mixedCharZero [CharZero R] (h_equal : Algebra ℚ R → P)
+lemma split_equalCharZero_mixedCharZero [CharZero R] (h_equal : Algebra ℚ R → P)
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
   by_cases h : ∃ p > 0, MixedCharZero R p
   · rcases h with ⟨p, ⟨H, hp⟩⟩
@@ -360,7 +360,7 @@ In an `IsDomain R`, split any `Prop` over `R` into the three cases:
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.
 -/
-theorem split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Prime p → CharP R p → P)
+lemma split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Prime p → CharP R p → P)
     (h_equal : Algebra ℚ R → P) (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
   refine split_by_characteristic R ?_ h_equal h_mixed
   intro p p_pos p_char
@@ -374,7 +374,7 @@ In a `LocalRing R`, split any `Prop` over `R` into the three cases:
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.
 -/
-theorem split_by_characteristic_localRing [LocalRing R]
+lemma split_by_characteristic_localRing [LocalRing R]
     (h_pos : ∀ p : ℕ, IsPrimePow p → CharP R p → P) (h_equal : Algebra ℚ R → P)
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
   refine' split_by_characteristic R _ h_equal h_mixed

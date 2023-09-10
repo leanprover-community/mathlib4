@@ -56,7 +56,7 @@ instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α)
 #align list.countable List.countable
 
 @[simp]
-theorem encode_list_nil : encode (@nil α) = 0 :=
+lemma encode_list_nil : encode (@nil α) = 0 :=
   rfl
 #align encodable.encode_list_nil Encodable.encode_list_nil
 
@@ -67,7 +67,7 @@ theorem encode_list_cons (a : α) (l : List α) :
 #align encodable.encode_list_cons Encodable.encode_list_cons
 
 @[simp]
-theorem decode_list_zero : decode (α := List α) 0 = some [] :=
+lemma decode_list_zero : decode (α := List α) 0 = some [] :=
   show decodeList 0 = some [] by rw [decodeList]
 #align encodable.decode_list_zero Encodable.decode_list_zero
 
@@ -80,7 +80,7 @@ theorem decode_list_succ (v : ℕ) :
     simp [decodeList, e]; rfl
 #align encodable.decode_list_succ Encodable.decode_list_succ
 
-theorem length_le_encode : ∀ l : List α, length l ≤ encode l
+lemma length_le_encode : ∀ l : List α, length l ≤ encode l
   | [] => Nat.zero_le _
   | _ :: l => succ_le_succ <| (length_le_encode l).trans (right_le_pair _ _)
 #align encodable.length_le_encode Encodable.length_le_encode
@@ -94,7 +94,7 @@ variable [Encodable α]
 private def enle : α → α → Prop :=
   encode ⁻¹'o (· ≤ ·)
 
-private theorem enle.isLinearOrder : IsLinearOrder α enle :=
+private lemma enle.isLinearOrder : IsLinearOrder α enle :=
   (RelEmbedding.preimage ⟨encode, encode_injective⟩ (· ≤ ·)).isLinearOrder
 
 private def decidable_enle (a b : α) : Decidable (enle a b) := by
@@ -201,7 +201,7 @@ def sortedUniv (α) [Fintype α] [Encodable α] : List α :=
 #align encodable.sorted_univ Encodable.sortedUniv
 
 @[simp]
-theorem mem_sortedUniv {α} [Fintype α] [Encodable α] (x : α) : x ∈ sortedUniv α :=
+lemma mem_sortedUniv {α} [Fintype α] [Encodable α] (x : α) : x ∈ sortedUniv α :=
   (Finset.mem_sort _).2 (Finset.mem_univ _)
 #align encodable.mem_sorted_univ Encodable.mem_sortedUniv
 
@@ -246,7 +246,7 @@ open Encodable
 section List
 
 @[nolint unusedHavesSuffices] -- Porting note: false positive
-theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
+lemma denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
   | succ v => by
     cases' e : unpair v with v₁ v₂
@@ -266,7 +266,7 @@ instance denumerableList : Denumerable (List α) :=
 #align denumerable.denumerable_list Denumerable.denumerableList
 
 @[simp]
-theorem list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α, ofNat_encode]
+lemma list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α, ofNat_encode]
 #align denumerable.list_of_nat_zero Denumerable.list_ofNat_zero
 
 @[simp, nolint unusedHavesSuffices] -- Porting note: false positive
@@ -298,25 +298,25 @@ def raise : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise l (m + n)
 #align denumerable.raise Denumerable.raise
 
-theorem lower_raise : ∀ l n, lower (raise l n) n = l
+lemma lower_raise : ∀ l n, lower (raise l n) n = l
   | [], n => rfl
   | m :: l, n => by rw [raise, lower, add_tsub_cancel_right, lower_raise l]
 #align denumerable.lower_raise Denumerable.lower_raise
 
-theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
+lemma raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], n, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
     simp [raise, lower, tsub_add_cancel_of_le this, raise_lower h.of_cons]
 #align denumerable.raise_lower Denumerable.raise_lower
 
-theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
+lemma raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
   | [], _ => List.Chain.nil
   | _ :: _, _ => List.Chain.cons (Nat.le_add_left _ _) (raise_chain _ _)
 #align denumerable.raise_chain Denumerable.raise_chain
 
 /-- `raise l n` is a non-decreasing sequence. -/
-theorem raise_sorted : ∀ l n, List.Sorted (· ≤ ·) (raise l n)
+lemma raise_sorted : ∀ l n, List.Sorted (· ≤ ·) (raise l n)
   | [], _ => List.sorted_nil
   | _ :: _, _ => List.chain_iff_pairwise.1 (raise_chain _ _)
 #align denumerable.raise_sorted Denumerable.raise_sorted
@@ -355,12 +355,12 @@ def raise' : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise' l (m + n + 1)
 #align denumerable.raise' Denumerable.raise'
 
-theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
+lemma lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], n => rfl
   | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
 #align denumerable.lower_raise' Denumerable.lower_raise'
 
-theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
+lemma raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], n, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ (l.mem_cons_self _)
@@ -368,14 +368,14 @@ theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < �
       raise_lower' (List.rel_of_sorted_cons h₂ : ∀ a ∈ l, m < a) h₂.of_cons]
 #align denumerable.raise_lower' Denumerable.raise_lower'
 
-theorem raise'_chain : ∀ (l) {m n}, m < n → List.Chain (· < ·) m (raise' l n)
+lemma raise'_chain : ∀ (l) {m n}, m < n → List.Chain (· < ·) m (raise' l n)
   | [], _, _, _ => List.Chain.nil
   | _ :: _, _, _, h =>
     List.Chain.cons (lt_of_lt_of_le h (Nat.le_add_left _ _)) (raise'_chain _ (lt_succ_self _))
 #align denumerable.raise'_chain Denumerable.raise'_chain
 
 /-- `raise' l n` is a strictly increasing sequence. -/
-theorem raise'_sorted : ∀ l n, List.Sorted (· < ·) (raise' l n)
+lemma raise'_sorted : ∀ l n, List.Sorted (· < ·) (raise' l n)
   | [], _ => List.sorted_nil
   | _ :: _, _ => List.chain_iff_pairwise.1 (raise'_chain _ (lt_succ_self _))
 #align denumerable.raise'_sorted Denumerable.raise'_sorted

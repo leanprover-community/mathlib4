@@ -290,7 +290,7 @@ def p2 : (gluing 𝒰 f g).glued ⟶ Y := by
   exact (t_fst_snd _ _ _ _ _).symm
 #align algebraic_geometry.Scheme.pullback.p2 AlgebraicGeometry.Scheme.Pullback.p2
 
-theorem p_comm : p1 𝒰 f g ≫ f = p2 𝒰 f g ≫ g := by
+lemma p_comm : p1 𝒰 f g ≫ f = p2 𝒰 f g ≫ g := by
   apply Multicoequalizer.hom_ext
   intro i
   erw [Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
@@ -369,7 +369,7 @@ def gluedLift : s.pt ⟶ (gluing 𝒰 f g).glued := by
     exact pullback.condition_assoc _
 #align algebraic_geometry.Scheme.pullback.glued_lift AlgebraicGeometry.Scheme.Pullback.gluedLift
 
-theorem gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
+lemma gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
   rw [← cancel_epi (𝒰.pullbackCover s.fst).fromGlued]
   apply Multicoequalizer.hom_ext
   intro b
@@ -384,7 +384,7 @@ theorem gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
   rfl
 #align algebraic_geometry.Scheme.pullback.glued_lift_p1 AlgebraicGeometry.Scheme.Pullback.gluedLift_p1
 
-theorem gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
+lemma gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
   rw [← cancel_epi (𝒰.pullbackCover s.fst).fromGlued]
   apply Multicoequalizer.hom_ext
   intro b
@@ -545,7 +545,7 @@ def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
     rw [← pullback.condition_assoc, h₂]
 #align algebraic_geometry.Scheme.pullback.glued_is_limit AlgebraicGeometry.Scheme.Pullback.gluedIsLimit
 
-theorem hasPullback_of_cover : HasPullback f g :=
+lemma hasPullback_of_cover : HasPullback f g :=
   ⟨⟨⟨_, gluedIsLimit 𝒰 f g⟩⟩⟩
 #align algebraic_geometry.Scheme.pullback.has_pullback_of_cover AlgebraicGeometry.Scheme.Pullback.hasPullback_of_cover
 
@@ -557,7 +557,7 @@ instance affine_hasPullback {A B C : CommRingCat}
     ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit Spec (Spec.preimage f) (Spec.preimage g)⟩⟩⟩
 #align algebraic_geometry.Scheme.pullback.affine_has_pullback AlgebraicGeometry.Scheme.Pullback.affine_hasPullback
 
-theorem affine_affine_hasPullback {B C : CommRingCat} {X : Scheme}
+lemma affine_affine_hasPullback {B C : CommRingCat} {X : Scheme}
     (f : X ⟶ Spec.obj (Opposite.op C)) (g : Spec.obj (Opposite.op B) ⟶ Spec.obj (Opposite.op C)) :
     HasPullback f g :=
   hasPullback_of_cover X.affineCover f g

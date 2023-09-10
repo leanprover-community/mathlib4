@@ -73,7 +73,7 @@ theorem ι_eq_v_add_smul_e0 (m : M) (r : R) : ι (Q' Q) (m, r) = v Q m + r • e
     smul_zero, smul_eq_mul, mul_one, ← LinearMap.map_add, Prod.mk_add_mk, zero_add, add_zero]
 #align clifford_algebra.equiv_even.ι_eq_v_add_smul_e0 CliffordAlgebra.EquivEven.ι_eq_v_add_smul_e0
 
-theorem e0_mul_e0 : e0 Q * e0 Q = -1 :=
+lemma e0_mul_e0 : e0 Q * e0 Q = -1 :=
   (ι_sq_scalar _ _).trans <| by simp
 #align clifford_algebra.equiv_even.e0_mul_e0 CliffordAlgebra.EquivEven.e0_mul_e0
 
@@ -109,12 +109,12 @@ theorem involute_v (m : M) : involute (v Q m) = -v Q m :=
 #align clifford_algebra.equiv_even.involute_v CliffordAlgebra.EquivEven.involute_v
 
 @[simp]
-theorem reverse_e0 : reverse (Q := Q' Q) (e0 Q) = e0 Q :=
+lemma reverse_e0 : reverse (Q := Q' Q) (e0 Q) = e0 Q :=
   reverse_ι _
 #align clifford_algebra.equiv_even.reverse_e0 CliffordAlgebra.EquivEven.reverse_e0
 
 @[simp]
-theorem involute_e0 : involute (e0 Q) = -e0 Q :=
+lemma involute_e0 : involute (e0 Q) = -e0 Q :=
   involute_ι _
 #align clifford_algebra.equiv_even.involute_e0 CliffordAlgebra.EquivEven.involute_e0
 
@@ -185,7 +185,7 @@ theorem ofEven_ι (x y : M × R) :
   refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
 
-theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
+lemma toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
   even.algHom_ext (Q' Q) <|
     EvenHom.ext _ _ <|
       LinearMap.ext fun m₁ =>
@@ -218,7 +218,7 @@ theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
                 rw [ι_eq_v_add_smul_e0, ι_eq_v_add_smul_e0, mul_add, add_mul, add_mul, add_assoc]
 #align clifford_algebra.to_even_comp_of_even CliffordAlgebra.toEven_comp_ofEven
 
-theorem ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
+lemma ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
   CliffordAlgebra.hom_ext <|
     LinearMap.ext fun m =>
       calc

@@ -88,7 +88,7 @@ theorem exists_maximal_of_chains_bounded (h : ∀ c, IsChain r c → ∃ ub, ∀
 /-- A variant of Zorn's lemma. If every nonempty chain of a nonempty type has an upper bound, then
 there is a maximal element.
 -/
-theorem exists_maximal_of_nonempty_chains_bounded [Nonempty α]
+lemma exists_maximal_of_nonempty_chains_bounded [Nonempty α]
     (h : ∀ c, IsChain r c → c.Nonempty → ∃ ub, ∀ a ∈ c, a ≺ ub)
     (trans : ∀ {a b c}, a ≺ b → b ≺ c → a ≺ c) : ∃ m, ∀ a, m ≺ a → a ≺ m :=
   exists_maximal_of_chains_bounded
@@ -107,7 +107,7 @@ theorem zorn_preorder (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c)
   exists_maximal_of_chains_bounded h le_trans
 #align zorn_preorder zorn_preorder
 
-theorem zorn_nonempty_preorder [Nonempty α]
+lemma zorn_nonempty_preorder [Nonempty α]
     (h : ∀ c : Set α, IsChain (· ≤ ·) c → c.Nonempty → BddAbove c) : ∃ m : α, ∀ a, m ≤ a → a ≤ m :=
   exists_maximal_of_nonempty_chains_bounded h le_trans
 #align zorn_nonempty_preorder zorn_nonempty_preorder
@@ -161,7 +161,7 @@ theorem zorn_partialOrder (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbov
   ⟨m, fun a ha => le_antisymm (hm a ha) ha⟩
 #align zorn_partial_order zorn_partialOrder
 
-theorem zorn_nonempty_partialOrder [Nonempty α]
+lemma zorn_nonempty_partialOrder [Nonempty α]
     (h : ∀ c : Set α, IsChain (· ≤ ·) c → c.Nonempty → BddAbove c) : ∃ m : α, ∀ a, m ≤ a → a = m :=
   let ⟨m, hm⟩ := zorn_nonempty_preorder h
   ⟨m, fun a ha => le_antisymm (hm a ha) ha⟩

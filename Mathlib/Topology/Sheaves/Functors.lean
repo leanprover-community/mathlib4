@@ -39,7 +39,7 @@ namespace TopCat
 
 namespace Presheaf.SheafConditionPairwiseIntersections
 
-theorem map_diagram :
+lemma map_diagram :
     Pairwise.diagram U ⋙ Opens.map f = Pairwise.diagram ((Opens.map f).obj ∘ U) := by
   have obj_eq : ∀ (j : Pairwise ι), (Pairwise.diagram U ⋙ Opens.map f).obj j =
     (Pairwise.diagram ((Opens.map f).toPrefunctor.obj ∘ U)).obj j
@@ -50,7 +50,7 @@ theorem map_diagram :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.map_diagram TopCat.Presheaf.SheafConditionPairwiseIntersections.map_diagram
 
-theorem mapCocone :
+lemma mapCocone :
     HEq ((Opens.map f).mapCocone (Pairwise.cocone U))
       (Pairwise.cocone ((Opens.map f).obj ∘ U)) := by
   unfold Functor.mapCocone Cocones.functoriality; dsimp; congr
@@ -60,7 +60,7 @@ theorem mapCocone :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.map_cocone TopCat.Presheaf.SheafConditionPairwiseIntersections.mapCocone
 
-theorem pushforward_sheaf_of_sheaf {F : Presheaf C X} (h : F.IsSheafPairwiseIntersections) :
+lemma pushforward_sheaf_of_sheaf {F : Presheaf C X} (h : F.IsSheafPairwiseIntersections) :
     (f _* F).IsSheafPairwiseIntersections := fun ι U => by
   convert h ((Opens.map f).obj ∘ U) using 2
   rw [← map_diagram]; rfl
@@ -79,7 +79,7 @@ open Presheaf
 
 /-- The pushforward of a sheaf (by a continuous map) is a sheaf.
 -/
-theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf := by
+lemma pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf := by
   rw [isSheaf_iff_isSheafPairwiseIntersections] at h ⊢
   exact SheafConditionPairwiseIntersections.pushforward_sheaf_of_sheaf f h
 set_option linter.uppercaseLean3 false in

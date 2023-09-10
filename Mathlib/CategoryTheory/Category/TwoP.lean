@@ -45,7 +45,7 @@ def of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
 #align Twop.of TwoP.of
 
 @[simp]
-theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
+lemma coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
   rfl
 #align Twop.coe_of TwoP.coe_of
 
@@ -99,14 +99,14 @@ noncomputable def swapEquiv : TwoP ≌ TwoP :=
 #align Twop.swap_equiv TwoP.swapEquiv
 
 @[simp]
-theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
+lemma swapEquiv_symm : swapEquiv.symm = swapEquiv :=
   rfl
 #align Twop.swap_equiv_symm TwoP.swapEquiv_symm
 
 end TwoP
 
 @[simp]
-theorem TwoP_swap_comp_forget_to_Bipointed :
+lemma TwoP_swap_comp_forget_to_Bipointed :
     TwoP.swap ⋙ forget₂ TwoP Bipointed = forget₂ TwoP Bipointed ⋙ Bipointed.swap :=
   rfl
 #align Twop_swap_comp_forget_to_Bipointed TwoP_swap_comp_forget_to_Bipointed
@@ -130,23 +130,23 @@ noncomputable def pointedToTwoPSnd : Pointed.{u} ⥤ TwoP where
 #align Pointed_to_Twop_snd pointedToTwoPSnd
 
 @[simp]
-theorem pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToTwoPSnd :=
+lemma pointedToTwoPFst_comp_swap : pointedToTwoPFst ⋙ TwoP.swap = pointedToTwoPSnd :=
   rfl
 #align Pointed_to_Twop_fst_comp_swap pointedToTwoPFst_comp_swap
 
 @[simp]
-theorem pointedToTwoPSnd_comp_swap : pointedToTwoPSnd ⋙ TwoP.swap = pointedToTwoPFst :=
+lemma pointedToTwoPSnd_comp_swap : pointedToTwoPSnd ⋙ TwoP.swap = pointedToTwoPFst :=
   rfl
 #align Pointed_to_Twop_snd_comp_swap pointedToTwoPSnd_comp_swap
 
 @[simp]
-theorem pointedToTwoPFst_comp_forget_to_bipointed :
+lemma pointedToTwoPFst_comp_forget_to_bipointed :
     pointedToTwoPFst ⋙ forget₂ TwoP Bipointed = pointedToBipointedFst :=
   rfl
 #align Pointed_to_Twop_fst_comp_forget_to_Bipointed pointedToTwoPFst_comp_forget_to_bipointed
 
 @[simp]
-theorem pointedToTwoPSnd_comp_forget_to_bipointed :
+lemma pointedToTwoPSnd_comp_forget_to_bipointed :
     pointedToTwoPSnd ⋙ forget₂ TwoP Bipointed = pointedToBipointedSnd :=
   rfl
 #align Pointed_to_Twop_snd_comp_forget_to_Bipointed pointedToTwoPSnd_comp_forget_to_bipointed

@@ -103,7 +103,7 @@ theorem elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l))
   exact hl.not_mem hj
 #align list.tprod.elim_of_mem List.TProd.elim_of_mem
 
-theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (TProd.mk l f).elim hi = f i
+lemma elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (TProd.mk l f).elim hi = f i
   | i :: is, f, j, hj => by
     by_cases hji : j = i
     · subst hji
@@ -113,7 +113,7 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
 #align list.tprod.elim_mk List.TProd.elim_mk
 
 @[ext]
-theorem ext :
+lemma ext :
     ∀ {l : List ι} (_ : l.Nodup) {v w : TProd α l}
       (_ : ∀ (i) (hi : i ∈ l), v.elim hi = w.elim hi), v = w
   | [], _, v, w, _ => PUnit.ext v w
@@ -154,7 +154,7 @@ protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α 
   | i :: is, t => t i ×ˢ Set.tprod is t
 #align set.tprod Set.tprod
 
-theorem mk_preimage_tprod :
+lemma mk_preimage_tprod :
     ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.tprod l t = { i | i ∈ l }.pi t
   | [], t => by simp [Set.tprod]
   | i :: l, t => by
@@ -170,7 +170,7 @@ theorem mk_preimage_tprod :
     exact fun _ => h
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
-theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
+lemma elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
     (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t := by
   have h2 : { i | i ∈ l } = univ := by
     ext i

@@ -23,7 +23,7 @@ section Group
 
 variable {α β γ : Type*} [Group α] [MulAction α β]
 
-theorem mulSupport_comp_inv_smul [One γ] (c : α) (f : β → γ) :
+lemma mulSupport_comp_inv_smul [One γ] (c : α) (f : β → γ) :
     (mulSupport fun x ↦ f (c⁻¹ • x)) = c • mulSupport f := by
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem, mem_mulSupport]
@@ -31,7 +31,7 @@ theorem mulSupport_comp_inv_smul [One γ] (c : α) (f : β → γ) :
 
 /- Note: to_additive also automatically translates `SMul` to `VAdd`, so we give the additive version
 manually. -/
-theorem support_comp_inv_smul [Zero γ] (c : α) (f : β → γ) :
+lemma support_comp_inv_smul [Zero γ] (c : α) (f : β → γ) :
     (support fun x ↦ f (c⁻¹ • x)) = c • support f := by
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem, mem_support]
@@ -45,7 +45,7 @@ section GroupWithZero
 
 variable {α β γ : Type*} [GroupWithZero α] [MulAction α β]
 
-theorem mulSupport_comp_inv_smul₀ [One γ] {c : α} (hc : c ≠ 0) (f : β → γ) :
+lemma mulSupport_comp_inv_smul₀ [One γ] {c : α} (hc : c ≠ 0) (f : β → γ) :
     (mulSupport fun x ↦ f (c⁻¹ • x)) = c • mulSupport f := by
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem₀ hc, mem_mulSupport]
@@ -53,7 +53,7 @@ theorem mulSupport_comp_inv_smul₀ [One γ] {c : α} (hc : c ≠ 0) (f : β →
 
 /- Note: to_additive also automatically translates `SMul` to `VAdd`, so we give the additive version
 manually. -/
-theorem support_comp_inv_smul₀ [Zero γ] {c : α} (hc : c ≠ 0) (f : β → γ) :
+lemma support_comp_inv_smul₀ [Zero γ] {c : α} (hc : c ≠ 0) (f : β → γ) :
     (support fun x ↦ f (c⁻¹ • x)) = c • support f := by
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem₀ hc, mem_support]

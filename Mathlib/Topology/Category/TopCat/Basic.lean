@@ -67,7 +67,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
 -- Porting note: simp can prove this; removed simp
-theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+lemma comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.comp_app TopCat.comp_app
@@ -140,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.homeo_of_iso TopCat.homeoOfIso
 
 @[simp]
-theorem of_isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : homeoOfIso (isoOfHomeo f) = f := by
+lemma of_isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : homeoOfIso (isoOfHomeo f) = f := by
   -- Porting note: unfold some defs now
   dsimp [homeoOfIso, isoOfHomeo]
   ext
@@ -149,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.of_iso_of_homeo TopCat.of_isoOfHomeo
 
 @[simp]
-theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso f) = f := by
+lemma of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso f) = f := by
   -- Porting note: unfold some defs now
   dsimp [homeoOfIso, isoOfHomeo]
   ext
@@ -158,20 +158,20 @@ set_option linter.uppercaseLean3 false in
 #align Top.of_homeo_of_iso TopCat.of_homeoOfIso
 
 -- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+lemma openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding (f ≫ g) ↔ OpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).openEmbedding.of_comp_iff f
 set_option linter.uppercaseLean3 false in
 #align Top.open_embedding_iff_comp_is_iso TopCat.openEmbedding_iff_comp_isIso
 
 @[simp]
-theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+lemma openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
   simp only [←Functor.map_comp]
   exact openEmbedding_iff_comp_isIso f g
 
 -- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+lemma openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     OpenEmbedding (f ≫ g) ↔ OpenEmbedding g := by
   constructor
   · intro h
@@ -182,7 +182,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.open_embedding_iff_is_iso_comp TopCat.openEmbedding_iff_isIso_comp
 
 @[simp]
-theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+lemma openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
   simp only [←Functor.map_comp]
   exact openEmbedding_iff_isIso_comp f g

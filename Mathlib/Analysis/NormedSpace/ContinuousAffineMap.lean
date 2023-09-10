@@ -126,7 +126,7 @@ theorem to_affine_map_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.con
 #align continuous_affine_map.to_affine_map_cont_linear ContinuousAffineMap.to_affine_map_contLinear
 
 @[simp]
-theorem zero_contLinear : (0 : P →A[R] W).contLinear = 0 :=
+lemma zero_contLinear : (0 : P →A[R] W).contLinear = 0 :=
   rfl
 #align continuous_affine_map.zero_cont_linear ContinuousAffineMap.zero_contLinear
 
@@ -166,15 +166,15 @@ noncomputable instance hasNorm : Norm (V →A[𝕜] W) :=
   ⟨fun f => max ‖f 0‖ ‖f.contLinear‖⟩
 #align continuous_affine_map.has_norm ContinuousAffineMap.hasNorm
 
-theorem norm_def : ‖f‖ = max ‖f 0‖ ‖f.contLinear‖ :=
+lemma norm_def : ‖f‖ = max ‖f 0‖ ‖f.contLinear‖ :=
   rfl
 #align continuous_affine_map.norm_def ContinuousAffineMap.norm_def
 
-theorem norm_contLinear_le : ‖f.contLinear‖ ≤ ‖f‖ :=
+lemma norm_contLinear_le : ‖f.contLinear‖ ≤ ‖f‖ :=
   le_max_right _ _
 #align continuous_affine_map.norm_cont_linear_le ContinuousAffineMap.norm_contLinear_le
 
-theorem norm_image_zero_le : ‖f 0‖ ≤ ‖f‖ :=
+lemma norm_image_zero_le : ‖f 0‖ ≤ ‖f‖ :=
   le_max_left _ _
 #align continuous_affine_map.norm_image_zero_le ContinuousAffineMap.norm_image_zero_le
 

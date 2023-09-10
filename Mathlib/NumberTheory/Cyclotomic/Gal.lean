@@ -52,7 +52,7 @@ variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
 
 /-- `IsPrimitiveRoot.autToPow` is injective in the case that it's considered over a cyclotomic
 field extension. -/
-theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
+lemma autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   apply_fun Units.val at hfg
   simp only [IsPrimitiveRoot.coe_autToPow_apply] at hfg
@@ -152,7 +152,7 @@ noncomputable def fromZetaAut : L ≃ₐ[K] L :=
       ((zeta_spec n K L).pow_iff_coprime n.pos hζ.choose).mp <| hζ.choose_spec.2.symm ▸ hμ
 #align is_cyclotomic_extension.from_zeta_aut IsCyclotomicExtension.fromZetaAut
 
-theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
+lemma fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
 -- Porting note: `generalize_proofs` did not generalize the same proofs, making the proof different.
   generalize_proofs h1 h2

@@ -71,7 +71,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
   (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
     ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
 
-theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
+lemma pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
   refine'
     ⟨_, fun h =>

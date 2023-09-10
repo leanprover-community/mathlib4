@@ -90,12 +90,12 @@ def finsubgraphOfAdj {u v : V} (e : G.Adj u v) : G.Finsubgraph :=
 #align simple_graph.finsubgraph_of_adj SimpleGraph.finsubgraphOfAdj
 
 -- Lemmas establishing the ordering between edge- and vertex-generated subgraphs.
-theorem singletonFinsubgraph_le_adj_left {u v : V} {e : G.Adj u v} :
+lemma singletonFinsubgraph_le_adj_left {u v : V} {e : G.Adj u v} :
     singletonFinsubgraph u ≤ finsubgraphOfAdj e := by
   simp [singletonFinsubgraph, finsubgraphOfAdj]
 #align simple_graph.singleton_finsubgraph_le_adj_left SimpleGraph.singletonFinsubgraph_le_adj_left
 
-theorem singletonFinsubgraph_le_adj_right {u v : V} {e : G.Adj u v} :
+lemma singletonFinsubgraph_le_adj_right {u v : V} {e : G.Adj u v} :
     singletonFinsubgraph v ≤ finsubgraphOfAdj e := by
   simp [singletonFinsubgraph, finsubgraphOfAdj]
 #align simple_graph.singleton_finsubgraph_le_adj_right SimpleGraph.singletonFinsubgraph_le_adj_right
@@ -116,7 +116,7 @@ def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) : G.Finsubgrap
 
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is
 a homomorphism from the whole of `G` to `F`. -/
-theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
+lemma nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
     (h : ∀ G' : G.Subgraph, G'.verts.Finite → G'.coe →g F) : Nonempty (G →g F) := by
   -- Obtain a `Fintype` instance for `W`.
   cases nonempty_fintype W

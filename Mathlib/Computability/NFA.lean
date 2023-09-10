@@ -90,7 +90,7 @@ def eval : List α → Set σ :=
 #align NFA.eval NFA.eval
 
 @[simp]
-theorem eval_nil : M.eval [] = M.start :=
+lemma eval_nil : M.eval [] = M.start :=
   rfl
 #align NFA.eval_nil NFA.eval_nil
 
@@ -108,7 +108,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 #align NFA.accepts NFA.accepts
 
-theorem mem_accepts : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by rfl
+lemma mem_accepts : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by rfl
 
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
@@ -119,13 +119,13 @@ def toDFA : DFA α (Set σ) where
 #align NFA.to_DFA NFA.toDFA
 
 @[simp]
-theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
+lemma toDFA_correct : M.toDFA.accepts = M.accepts := by
   ext x
   rw [mem_accepts, DFA.mem_accepts]
   constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
 #align NFA.to_DFA_correct NFA.toDFA_correct
 
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+lemma pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :
     ∃ a b c,
       x = a ++ b ++ c ∧

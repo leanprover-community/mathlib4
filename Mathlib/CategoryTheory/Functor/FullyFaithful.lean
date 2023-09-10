@@ -116,7 +116,7 @@ section
 variable {F : C ⥤ D} [Full F] [Faithful F] {X Y Z : C}
 
 @[simp]
-theorem preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
+lemma preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
   F.map_injective (by simp)
 #align category_theory.preimage_id CategoryTheory.preimage_id
 
@@ -279,7 +279,7 @@ instance Faithful.comp [Faithful F] [Faithful G] :
     Faithful (F ⋙ G) where map_injective p := F.map_injective (G.map_injective p)
 #align category_theory.faithful.comp CategoryTheory.Faithful.comp
 
-theorem Faithful.of_comp [Faithful <| F ⋙ G] : Faithful F :=
+lemma Faithful.of_comp [Faithful <| F ⋙ G] : Faithful F :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
   { map_injective := fun {_ _} => Function.Injective.of_comp (F ⋙ G).map_injective }
 #align category_theory.faithful.of_comp CategoryTheory.Faithful.of_comp
@@ -295,7 +295,7 @@ def Full.ofIso [Full F] (α : F ≅ F') :
   witness f := by simp [←NatIso.naturality_1 α]
 #align category_theory.full.of_iso CategoryTheory.Full.ofIso
 
-theorem Faithful.of_iso [Faithful F] (α : F ≅ F') : Faithful F' :=
+lemma Faithful.of_iso [Faithful F] (α : F ≅ F') : Faithful F' :=
   { map_injective := fun h =>
       F.map_injective (by rw [← NatIso.naturality_1 α.symm, h, NatIso.naturality_1 α.symm]) }
 #align category_theory.faithful.of_iso CategoryTheory.Faithful.of_iso
@@ -304,7 +304,7 @@ end
 
 variable {F G}
 
-theorem Faithful.of_comp_iso {H : C ⥤ E} [Faithful H] (h : F ⋙ G ≅ H) : Faithful F :=
+lemma Faithful.of_comp_iso {H : C ⥤ E} [Faithful H] (h : F ⋙ G ≅ H) : Faithful F :=
   @Faithful.of_comp _ _ _ _ _ _ F G (Faithful.of_iso h.symm)
 #align category_theory.faithful.of_comp_iso CategoryTheory.Faithful.of_comp_iso
 
@@ -313,7 +313,7 @@ alias _root_.CategoryTheory.Iso.faithful_of_comp := Faithful.of_comp_iso
 
 -- We could prove this from `Faithful.of_comp_iso` using `eq_to_iso`,
 -- but that would introduce a cyclic import.
-theorem Faithful.of_comp_eq {H : C ⥤ E} [ℋ : Faithful H] (h : F ⋙ G = H) : Faithful F :=
+lemma Faithful.of_comp_eq {H : C ⥤ E} [ℋ : Faithful H] (h : F ⋙ G = H) : Faithful F :=
   @Faithful.of_comp _ _ _ _ _ _ F G (h.symm ▸ ℋ)
 #align category_theory.faithful.of_comp_eq CategoryTheory.Faithful.of_comp_eq
 
@@ -397,14 +397,14 @@ def fullyFaithfulCancelRight {F G : C ⥤ D} (H : D ⥤ E) [Full H] [Faithful H]
 #align category_theory.fully_faithful_cancel_right CategoryTheory.fullyFaithfulCancelRight
 
 @[simp]
-theorem fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [Faithful H]
+lemma fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [Faithful H]
     (comp_iso : F ⋙ H ≅ G ⋙ H) (X : C) :
     (fullyFaithfulCancelRight H comp_iso).hom.app X = H.preimage (comp_iso.hom.app X) :=
   rfl
 #align category_theory.fully_faithful_cancel_right_hom_app CategoryTheory.fullyFaithfulCancelRight_hom_app
 
 @[simp]
-theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [Faithful H]
+lemma fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [Faithful H]
     (comp_iso : F ⋙ H ≅ G ⋙ H) (X : C) :
     (fullyFaithfulCancelRight H comp_iso).inv.app X = H.preimage (comp_iso.inv.app X) :=
   rfl

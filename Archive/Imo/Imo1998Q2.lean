@@ -135,7 +135,7 @@ theorem A_fibre_over_contestant_card (c : C) :
   unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
-theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
+lemma A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     agreedContestants r p = ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
@@ -146,7 +146,7 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     cases h; aesop
 #align imo1998_q2.A_fibre_over_judge_pair Imo1998Q2.A_fibre_over_judgePair
 
-theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
+lemma A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
     (agreedContestants r p).card =
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
   rw [A_fibre_over_judgePair r h]
@@ -155,7 +155,7 @@ theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
   unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_judge_pair_card Imo1998Q2.A_fibre_over_judgePair_card
 
-theorem A_card_upper_bound {k : ℕ}
+lemma A_card_upper_bound {k : ℕ}
     (hk : ∀ p : JudgePair J, p.Distinct → (agreedContestants r p).card ≤ k) :
     (A r).card ≤ k * (Fintype.card J * Fintype.card J - Fintype.card J) := by
   change _ ≤ k * (Finset.card _ * Finset.card _ - Finset.card _)
@@ -168,11 +168,11 @@ theorem A_card_upper_bound {k : ℕ}
 
 end
 
-theorem add_sq_add_sq_sub {α : Type _} [Ring α] (x y : α) :
+lemma add_sq_add_sq_sub {α : Type _} [Ring α] (x y : α) :
     (x + y) * (x + y) + (x - y) * (x - y) = 2 * x * x + 2 * y * y := by noncomm_ring
 #align imo1998_q2.add_sq_add_sq_sub Imo1998Q2.add_sq_add_sq_sub
 
-theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
+lemma norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
     2 * z * z + 2 * z + 1 ≤ x * x + y * y := by
   suffices 4 * z * z + 4 * z + 1 + 1 ≤ 2 * x * x + 2 * y * y by
     rw [← mul_le_mul_left (zero_lt_two' ℤ)]; ring_nf at this ⊢; exact this
@@ -186,7 +186,7 @@ section
 
 variable [Fintype J]
 
-theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
+lemma judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
     2 * z * z + 2 * z + 1 ≤ (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card := by
   let x := (Finset.univ.filter fun j => r c j).card
   let y := (Finset.univ.filter fun j => ¬r c j).card
@@ -198,7 +198,7 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
   rw [Finset.filter_card_add_filter_neg_card_eq_card, ← hJ]; rfl
 #align imo1998_q2.judge_pairs_card_lower_bound Imo1998Q2.judge_pairs_card_lower_bound
 
-theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
+lemma distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
     2 * z * z ≤ (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card := by
   let s := Finset.univ.filter fun p : JudgePair J => p.Agree r c
   let t := Finset.univ.filter fun p : JudgePair J => p.Distinct
@@ -214,7 +214,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   · apply Finset.sdiff_subset
 #align imo1998_q2.distinct_judge_pairs_card_lower_bound Imo1998Q2.distinct_judge_pairs_card_lower_bound
 
-theorem A_card_lower_bound [Fintype C] {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) :
+lemma A_card_lower_bound [Fintype C] {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) :
     2 * z * z * Fintype.card C ≤ (A r).card := by
   have h : ∀ a, a ∈ A r → Prod.fst a ∈ @Finset.univ C _ := by intros; apply Finset.mem_univ
   apply Finset.mul_card_image_le_card_of_maps_to h
@@ -225,7 +225,7 @@ theorem A_card_lower_bound [Fintype C] {z : ℕ} (hJ : Fintype.card J = 2 * z + 
 
 end
 
-theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
+lemma clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff]
   -- porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
@@ -241,7 +241,7 @@ end Imo1998Q2
 
 open Imo1998Q2
 
-theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = a)
+lemma imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = a)
     (hJ : Fintype.card J = b) (ha : 0 < a) (hb : Odd b)
     (hk : ∀ p : JudgePair J, p.Distinct → (agreedContestants r p).card ≤ k) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a := by

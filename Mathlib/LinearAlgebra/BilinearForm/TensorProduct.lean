@@ -133,7 +133,7 @@ theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M�
 variable (R M₁ M₂) in
 -- TODO: make this `rfl`
 @[simp]
-theorem tensorDistribEquiv_toLinearMap :
+lemma tensorDistribEquiv_toLinearMap :
     (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := by
   ext B₁ B₂ : 3
   apply toLin.injective

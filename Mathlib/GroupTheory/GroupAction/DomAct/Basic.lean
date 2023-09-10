@@ -156,7 +156,7 @@ instance [SMul M α] : SMul Mᵈᵐᵃ (α → β) where
   smul c f a := f (mk.symm c • a)
 
 @[to_additive]
-theorem smul_apply [SMul M α] (c : Mᵈᵐᵃ) (f : α → β) (a : α) : (c • f) a = f (mk.symm c • a) := rfl
+lemma smul_apply [SMul M α] (c : Mᵈᵐᵃ) (f : α → β) (a : α) : (c • f) a = f (mk.symm c • a) := rfl
 
 @[to_additive]
 instance [SMul M α] [SMul N β] : SMulCommClass Mᵈᵐᵃ N (α → β) where

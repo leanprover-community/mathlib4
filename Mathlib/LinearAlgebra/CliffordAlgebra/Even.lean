@@ -61,7 +61,7 @@ def even : Subalgebra R (CliffordAlgebra Q) :=
 -- porting note: added, otherwise Lean can't find this when it needs it
 instance : AddCommMonoid (even Q) := AddSubmonoidClass.toAddCommMonoid _
 @[simp]
-theorem even_toSubmodule : Subalgebra.toSubmodule (even Q) = evenOdd Q 0 :=
+lemma even_toSubmodule : Subalgebra.toSubmodule (even Q) = evenOdd Q 0 :=
   rfl
 #align clifford_algebra.even_to_submodule CliffordAlgebra.even_toSubmodule
 
@@ -211,7 +211,7 @@ def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
 #align clifford_algebra.even.lift.aux CliffordAlgebra.even.lift.aux
 
 @[simp]
-theorem aux_one : aux f 1 = 1 :=
+lemma aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
 #align clifford_algebra.even.lift.aux_one CliffordAlgebra.even.lift.aux_one
 

@@ -37,7 +37,7 @@ variable (p : ℕ) [Fact p.Prime]
 
 /-- **Wilson's Lemma**: the product of `1`, ..., `p-1` is `-1` modulo `p`. -/
 @[simp]
-theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
+lemma wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
   refine'
     calc
       ((p - 1)! : ZMod p) = ∏ x in Ico 1 (succ (p - 1)), (x : ZMod p) := by
@@ -70,7 +70,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
 #align zmod.wilsons_lemma ZMod.wilsons_lemma
 
 @[simp]
-theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
+lemma prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
   -- Porting note: was `conv in Ico 1 p =>`
   conv =>
     congr

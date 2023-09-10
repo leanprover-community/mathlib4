@@ -24,12 +24,12 @@ namespace ULift
 instance [RatCast α] : RatCast (ULift α) := ⟨λ a ↦ up a⟩
 
 @[simp, norm_cast]
-theorem up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q :=
+lemma up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q :=
   rfl
 #align ulift.up_rat_cast ULift.up_ratCast
 
 @[simp, norm_cast]
-theorem down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q :=
+lemma down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q :=
   rfl
 #align ulift.down_rat_cast ULift.down_ratCast
 

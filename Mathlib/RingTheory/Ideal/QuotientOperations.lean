@@ -65,13 +65,13 @@ def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f
 #align ring_hom.quotient_ker_equiv_of_right_inverse RingHom.quotientKerEquivOfRightInverse
 
 @[simp]
-theorem quotientKerEquivOfRightInverse.apply {g : S → R} (hf : Function.RightInverse g f)
+lemma quotientKerEquivOfRightInverse.apply {g : S → R} (hf : Function.RightInverse g f)
     (x : R ⧸ ker f) : quotientKerEquivOfRightInverse hf x = kerLift f x :=
   rfl
 #align ring_hom.quotient_ker_equiv_of_right_inverse.apply RingHom.quotientKerEquivOfRightInverse.apply
 
 @[simp]
-theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.RightInverse g f)
+lemma quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.RightInverse g f)
     (x : S) : (quotientKerEquivOfRightInverse hf).symm x = Ideal.Quotient.mk (ker f) (g x) :=
   rfl
 #align ring_hom.quotient_ker_equiv_of_right_inverse.symm.apply RingHom.quotientKerEquivOfRightInverse.Symm.apply
@@ -97,18 +97,18 @@ theorem map_quotient_self (I : Ideal R) : map (Quotient.mk I) I = ⊥ :=
 #align ideal.map_quotient_self Ideal.map_quotient_self
 
 @[simp]
-theorem mk_ker {I : Ideal R} : RingHom.ker (Quotient.mk I) = I := by
+lemma mk_ker {I : Ideal R} : RingHom.ker (Quotient.mk I) = I := by
   ext
   rw [RingHom.ker, mem_comap, @Submodule.mem_bot _ _ _ _ Semiring.toModule _,
     Quotient.eq_zero_iff_mem]
 #align ideal.mk_ker Ideal.mk_ker
 
-theorem map_mk_eq_bot_of_le {I J : Ideal R} (h : I ≤ J) : I.map (Quotient.mk J) = ⊥ := by
+lemma map_mk_eq_bot_of_le {I J : Ideal R} (h : I ≤ J) : I.map (Quotient.mk J) = ⊥ := by
   rw [map_eq_bot_iff_le_ker, mk_ker]
   exact h
 #align ideal.map_mk_eq_bot_of_le Ideal.map_mk_eq_bot_of_le
 
-theorem ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S)
+lemma ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S)
     (H : I ≤ RingHom.ker f) :
     RingHom.ker (Ideal.Quotient.lift I f H) = f.ker.map (Quotient.mk I) := by
   apply Ideal.ext
@@ -139,14 +139,14 @@ theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMax
 
 /-- See also `Ideal.mem_quotient_iff_mem` in case `I ≤ J`. -/
 @[simp]
-theorem mem_quotient_iff_mem_sup {I J : Ideal R} {x : R} :
+lemma mem_quotient_iff_mem_sup {I J : Ideal R} {x : R} :
     Quotient.mk I x ∈ J.map (Quotient.mk I) ↔ x ∈ J ⊔ I := by
   rw [← mem_comap, comap_map_of_surjective (Quotient.mk I) Quotient.mk_surjective, ←
     RingHom.ker_eq_comap_bot, mk_ker]
 #align ideal.mem_quotient_iff_mem_sup Ideal.mem_quotient_iff_mem_sup
 
 /-- See also `Ideal.mem_quotient_iff_mem_sup` if the assumption `I ≤ J` is not available. -/
-theorem mem_quotient_iff_mem {I J : Ideal R} (hIJ : I ≤ J) {x : R} :
+lemma mem_quotient_iff_mem {I J : Ideal R} (hIJ : I ≤ J) {x : R} :
     Quotient.mk I x ∈ J.map (Quotient.mk I) ↔ x ∈ J := by
   rw [mem_quotient_iff_mem_sup, sup_eq_left.mpr hIJ]
 #align ideal.mem_quotient_iff_mem Ideal.mem_quotient_iff_mem
@@ -181,7 +181,7 @@ def Quotient.mkₐ (I : Ideal A) : A →ₐ[R₁] A ⧸ I :=
   ⟨⟨⟨⟨fun a => Submodule.Quotient.mk a, rfl⟩, fun _ _ => rfl⟩, rfl, fun _ _ => rfl⟩, fun _ => rfl⟩
 #align ideal.quotient.mkₐ Ideal.Quotient.mkₐ
 
-theorem Quotient.algHom_ext {I : Ideal A} {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
+lemma Quotient.algHom_ext {I : Ideal A} {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
     (h : f.comp (Quotient.mkₐ R₁ I) = g.comp (Quotient.mkₐ R₁ I)) : f = g :=
   AlgHom.ext fun x => Quotient.inductionOn' x <| AlgHom.congr_fun h
 #align ideal.quotient.alg_hom_ext Ideal.Quotient.algHom_ext
@@ -307,14 +307,14 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
 #align ideal.quotient_ker_alg_equiv_of_right_inverse Ideal.quotientKerAlgEquivOfRightInverse
 
 @[simp]
-theorem quotientKerAlgEquivOfRightInverse.apply {f : A →ₐ[R₁] B} {g : B → A}
+lemma quotientKerAlgEquivOfRightInverse.apply {f : A →ₐ[R₁] B} {g : B → A}
     (hf : Function.RightInverse g f) (x : A ⧸ (RingHom.ker f.toRingHom)) :
     quotientKerAlgEquivOfRightInverse hf x = kerLiftAlg f x :=
   rfl
 #align ideal.quotient_ker_alg_equiv_of_right_inverse.apply Ideal.quotientKerAlgEquivOfRightInverse.apply
 
 @[simp]
-theorem QuotientKerAlgEquivOfRightInverseSymm.apply {f : A →ₐ[R₁] B} {g : B → A}
+lemma QuotientKerAlgEquivOfRightInverseSymm.apply {f : A →ₐ[R₁] B} {g : B → A}
     (hf : Function.RightInverse g f) (x : B) : (quotientKerAlgEquivOfRightInverse hf).symm x =
     Quotient.mkₐ R₁ (RingHom.ker f.toRingHom) (g x) :=
   rfl
@@ -333,18 +333,18 @@ def quotientMap {I : Ideal R} (J : Ideal S) (f : R →+* S) (hIJ : I ≤ J.comap
 #align ideal.quotient_map Ideal.quotientMap
 
 @[simp]
-theorem quotientMap_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f} {x : R} :
+lemma quotientMap_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f} {x : R} :
     quotientMap I f H (Quotient.mk J x) = Quotient.mk I (f x) :=
   Quotient.lift_mk J _ _
 #align ideal.quotient_map_mk Ideal.quotientMap_mk
 
 @[simp]
-theorem quotientMap_algebraMap {J : Ideal A} {I : Ideal S} {f : A →+* S} {H : J ≤ I.comap f}
+lemma quotientMap_algebraMap {J : Ideal A} {I : Ideal S} {f : A →+* S} {H : J ≤ I.comap f}
     {x : R₁} : quotientMap I f H (algebraMap R₁ (A ⧸ J) x) = Quotient.mk I (f (algebraMap _ _ x)) :=
   Quotient.lift_mk J _ _
 #align ideal.quotient_map_algebra_map Ideal.quotientMap_algebraMap
 
-theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J ≤ I.comap f) :
+lemma quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J ≤ I.comap f) :
     (quotientMap I f H).comp (Quotient.mk J) = (Quotient.mk I).comp f :=
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 #align ideal.quotient_map_comp_mk Ideal.quotientMap_comp_mk
@@ -390,7 +390,7 @@ theorem quotientEquiv_symm_mk (I : Ideal R) (J : Ideal S) (f : R ≃+* S)
 #align ideal.quotient_equiv_symm_mk Ideal.quotientEquiv_symm_mk
 
 /-- `H` and `h` are kept as separate hypothesis since H is used in constructing the quotient map. -/
-theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
+lemma quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
     (h : I.comap f ≤ J) : Function.Injective (quotientMap I f H) := by
   refine' (injective_iff_map_eq_zero (quotientMap I f H)).2 fun a ha => _
   obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
@@ -399,12 +399,12 @@ theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
 #align ideal.quotient_map_injective' Ideal.quotientMap_injective'
 
 /-- If we take `J = I.comap f` then `QuotientMap` is injective automatically. -/
-theorem quotientMap_injective {I : Ideal S} {f : R →+* S} :
+lemma quotientMap_injective {I : Ideal S} {f : R →+* S} :
     Function.Injective (quotientMap I f le_rfl) :=
   quotientMap_injective' le_rfl
 #align ideal.quotient_map_injective Ideal.quotientMap_injective
 
-theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
+lemma quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
     (hf : Function.Surjective f) : Function.Surjective (quotientMap I f H) := fun x =>
   let ⟨x, hx⟩ := Quotient.mk_surjective x
   let ⟨y, hy⟩ := hf x
@@ -412,7 +412,7 @@ theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
 #align ideal.quotient_map_surjective Ideal.quotientMap_surjective
 
 /-- Commutativity of a square is preserved when taking quotients by an ideal. -/
-theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S'] {f : R →+* S}
+lemma comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S'] {f : R →+* S}
     {f' : R' →+* S'} {g : R →+* R'} {g' : S →+* S'} (hfg : f'.comp g = g'.comp f) (I : Ideal S') :
     -- Porting note: was losing track of I
     let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
@@ -433,12 +433,12 @@ def quotientMapₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (hIJ : I �
 #align ideal.quotient_mapₐ Ideal.quotientMapₐ
 
 @[simp]
-theorem quotient_map_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} :
+lemma quotient_map_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} :
     quotientMapₐ J f H (Quotient.mk I x) = Quotient.mkₐ R₁ J (f x) :=
   rfl
 #align ideal.quotient_map_mkₐ Ideal.quotient_map_mkₐ
 
-theorem quotient_map_comp_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
+lemma quotient_map_comp_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
     (quotientMapₐ J f H).comp (Quotient.mkₐ R₁ I) = (Quotient.mkₐ R₁ J).comp f :=
   AlgHom.ext fun x => by simp only [quotient_map_mkₐ, Quotient.mkₐ_eq_mk, AlgHom.comp_apply]
 #align ideal.quotient_map_comp_mkₐ Ideal.quotient_map_comp_mkₐ
@@ -461,7 +461,7 @@ instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
   (quotientMap I (algebraMap R A) (le_of_eq rfl)).toAlgebra
 #align ideal.quotient_algebra Ideal.quotientAlgebra
 
-theorem algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
+lemma algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
@@ -477,13 +477,13 @@ def quotientEquivAlgOfEq {I J : Ideal A} (h : I = J) : (A ⧸ I) ≃ₐ[R₁] A 
 #align ideal.quotient_equiv_alg_of_eq Ideal.quotientEquivAlgOfEq
 
 @[simp]
-theorem quotientEquivAlgOfEq_mk {I J : Ideal A} (h : I = J) (x : A) :
+lemma quotientEquivAlgOfEq_mk {I J : Ideal A} (h : I = J) (x : A) :
     quotientEquivAlgOfEq R₁ h (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J x :=
   rfl
 #align ideal.quotient_equiv_alg_of_eq_mk Ideal.quotientEquivAlgOfEq_mk
 
 @[simp]
-theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
+lemma quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
     (quotientEquivAlgOfEq R₁ h).symm = quotientEquivAlgOfEq R₁ h.symm := by
   ext
   rfl
@@ -513,7 +513,7 @@ def quotLeftToQuotSup : R ⧸ I →+* R ⧸ I ⊔ J :=
 #align double_quot.quot_left_to_quot_sup DoubleQuot.quotLeftToQuotSup
 
 /-- The kernel of `quotLeftToQuotSup` -/
-theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
+lemma ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
     J.map (Ideal.Quotient.mk I) := by
   simp only [mk_ker, sup_idem, sup_comm, quotLeftToQuotSup, Quotient.factor, ker_quotient_lift,
     map_eq_iff_sup_ker_eq_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← sup_assoc]
@@ -533,7 +533,7 @@ def quotQuotMk : R →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
 
 -- Porting note: mismatched instances
 /-- The kernel of `quotQuotMk` -/
-theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
+lemma ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
   rw [RingHom.ker_eq_comap_bot, quotQuotMk, ← comap_comap, ← RingHom.ker, mk_ker,
     comap_map_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← RingHom.ker, mk_ker,
     sup_comm]
@@ -584,13 +584,13 @@ theorem quotQuotEquivComm_quotQuotMk (x : R) :
 
 -- Porting note: mismatched instances
 @[simp]
-theorem quotQuotEquivComm_comp_quotQuotMk :
+lemma quotQuotEquivComm_comp_quotQuotMk :
     RingHom.comp (↑(quotQuotEquivComm I J)) (quotQuotMk I J) = quotQuotMk J I :=
   RingHom.ext <| quotQuotEquivComm_quotQuotMk I J
 #align double_quot.quot_quot_equiv_comm_comp_quot_quot_mk DoubleQuot.quotQuotEquivComm_comp_quotQuotMk
 
 @[simp]
-theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := by
+lemma quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := by
   /-  Porting note: this proof used to just be rfl but currently rfl opens up a bottomless pit
   of processor cycles. Synthesizing instances does not seem to be an issue.
   -/
@@ -640,7 +640,7 @@ end
 section Algebra
 
 @[simp]
-theorem quotQuotEquivComm_mk_mk [CommRing R] (I J : Ideal R) (x : R) :
+lemma quotQuotEquivComm_mk_mk [CommRing R] (I J : Ideal R) (x : R) :
     quotQuotEquivComm I J (Ideal.Quotient.mk _ (Ideal.Quotient.mk _ x)) = algebraMap R _ x :=
   rfl
 #align double_quot.quot_quot_equiv_comm_mk_mk DoubleQuot.quotQuotEquivComm_mk_mk
@@ -671,13 +671,13 @@ def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
 #align double_quot.quot_left_to_quot_supₐ DoubleQuot.quotLeftToQuotSupₐ
 
 @[simp]
-theorem quotLeftToQuotSupₐ_toRingHom :
+lemma quotLeftToQuotSupₐ_toRingHom :
     (quotLeftToQuotSupₐ R I J : _ →+* _) = quotLeftToQuotSup I J :=
   rfl
 #align double_quot.quot_left_to_quot_supₐ_to_ring_hom DoubleQuot.quotLeftToQuotSupₐ_toRingHom
 
 @[simp]
-theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQuotSup I J :=
+lemma coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQuotSup I J :=
   rfl
 #align double_quot.coe_quot_left_to_quot_supₐ DoubleQuot.coe_quotLeftToQuotSupₐ
 
@@ -688,14 +688,14 @@ def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A 
 #align double_quot.quot_quot_to_quot_supₐ DoubleQuot.quotQuotToQuotSupₐ
 
 @[simp]
-theorem quotQuotToQuotSupₐ_toRingHom :
+lemma quotQuotToQuotSupₐ_toRingHom :
     ((quotQuotToQuotSupₐ R I J) : _ ⧸ map (Ideal.Quotient.mkₐ R I) J →+* _) =
       quotQuotToQuotSup I J :=
   rfl
 #align double_quot.quot_quot_to_quot_supₐ_to_ring_hom DoubleQuot.quotQuotToQuotSupₐ_toRingHom
 
 @[simp]
-theorem coe_quotQuotToQuotSupₐ : ⇑(quotQuotToQuotSupₐ R I J) = quotQuotToQuotSup I J :=
+lemma coe_quotQuotToQuotSupₐ : ⇑(quotQuotToQuotSupₐ R I J) = quotQuotToQuotSup I J :=
   rfl
 #align double_quot.coe_quot_quot_to_quot_supₐ DoubleQuot.coe_quotQuotToQuotSupₐ
 
@@ -706,13 +706,13 @@ def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
 #align double_quot.quot_quot_mkₐ DoubleQuot.quotQuotMkₐ
 
 @[simp]
-theorem quotQuotMkₐ_toRingHom :
+lemma quotQuotMkₐ_toRingHom :
     (quotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = quotQuotMk I J :=
   rfl
 #align double_quot.quot_quot_mkₐ_to_ring_hom DoubleQuot.quotQuotMkₐ_toRingHom
 
 @[simp]
-theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
+lemma coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
   rfl
 #align double_quot.coe_quot_quot_mkₐ DoubleQuot.coe_quotQuotMkₐ
 
@@ -723,13 +723,13 @@ def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸
 #align double_quot.lift_sup_quot_quot_mkₐ DoubleQuot.liftSupQuotQuotMkₐ
 
 @[simp]
-theorem liftSupQuotQuotMkₐ_toRingHom :
+lemma liftSupQuotQuotMkₐ_toRingHom :
     (liftSupQuotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = liftSupQuotQuotMk I J :=
   rfl
 #align double_quot.lift_sup_quot_quot_mkₐ_to_ring_hom DoubleQuot.liftSupQuotQuotMkₐ_toRingHom
 
 @[simp]
-theorem coe_liftSupQuotQuotMkₐ : ⇑(liftSupQuotQuotMkₐ R I J) = liftSupQuotQuotMk I J :=
+lemma coe_liftSupQuotQuotMkₐ : ⇑(liftSupQuotQuotMkₐ R I J) = liftSupQuotQuotMk I J :=
   rfl
 #align double_quot.coe_lift_sup_quot_quot_mkₐ DoubleQuot.coe_liftSupQuotQuotMkₐ
 
@@ -740,19 +740,19 @@ def quotQuotEquivQuotSupₐ : ((A ⧸ I) ⧸ J.map (Quotient.mkₐ R I)) ≃ₐ[
 #align double_quot.quot_quot_equiv_quot_supₐ DoubleQuot.quotQuotEquivQuotSupₐ
 
 @[simp]
-theorem quotQuotEquivQuotSupₐ_toRingEquiv :
+lemma quotQuotEquivQuotSupₐ_toRingEquiv :
     (quotQuotEquivQuotSupₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _) = quotQuotEquivQuotSup I J :=
   rfl
 #align double_quot.quot_quot_equiv_quot_supₐ_to_ring_equiv DoubleQuot.quotQuotEquivQuotSupₐ_toRingEquiv
 
 @[simp]
 -- Porting note: had to add an extra coercion arrow on the right hand side.
-theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = ⇑(quotQuotEquivQuotSup I J) :=
+lemma coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = ⇑(quotQuotEquivQuotSup I J) :=
   rfl
 #align double_quot.coe_quot_quot_equiv_quot_supₐ DoubleQuot.coe_quotQuotEquivQuotSupₐ
 
 @[simp]
-theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
+lemma quotQuotEquivQuotSupₐ_symm_toRingEquiv :
     ((quotQuotEquivQuotSupₐ R I J).symm : _ ≃+* _ ⧸ J.map (Quotient.mkₐ R I)) =
       (quotQuotEquivQuotSup I J).symm :=
   rfl
@@ -760,7 +760,7 @@ theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
 
 @[simp]
 -- Porting note: had to add an extra coercion arrow on the right hand side.
-theorem coe_quotQuotEquivQuotSupₐ_symm :
+lemma coe_quotQuotEquivQuotSupₐ_symm :
     ⇑(quotQuotEquivQuotSupₐ R I J).symm = ⇑(quotQuotEquivQuotSup I J).symm :=
   rfl
 #align double_quot.coe_quot_quot_equiv_quot_supₐ_symm DoubleQuot.coe_quotQuotEquivQuotSupₐ_symm
@@ -773,7 +773,7 @@ def quotQuotEquivCommₐ :
 #align double_quot.quot_quot_equiv_commₐ DoubleQuot.quotQuotEquivCommₐ
 
 @[simp]
-theorem quotQuotEquivCommₐ_toRingEquiv :
+lemma quotQuotEquivCommₐ_toRingEquiv :
     (quotQuotEquivCommₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _ ⧸ I.map (Quotient.mkₐ R J)) =
       quotQuotEquivComm I J :=
   -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
@@ -783,12 +783,12 @@ theorem quotQuotEquivCommₐ_toRingEquiv :
 #align double_quot.quot_quot_equiv_commₐ_to_ring_equiv DoubleQuot.quotQuotEquivCommₐ_toRingEquiv
 
 @[simp]
-theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuotEquivComm I J) :=
+lemma coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuotEquivComm I J) :=
   rfl
 #align double_quot.coe_quot_quot_equiv_commₐ DoubleQuot.coe_quotQuotEquivCommₐ
 
 @[simp]
-theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := by
+lemma quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := by
   -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
   -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
   -- and timing out.
@@ -798,7 +798,7 @@ theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuot
 #align double_quot.quot_quot_equiv_comm_symmₐ DoubleQuot.quotQuotEquivComm_symmₐ
 
 @[simp]
-theorem quotQuotEquivComm_comp_quotQuotMkₐ :
+lemma quotQuotEquivComm_comp_quotQuotMkₐ :
     AlgHom.comp (↑(quotQuotEquivCommₐ R I J)) (quotQuotMkₐ R I J) = quotQuotMkₐ R J I :=
   AlgHom.ext <| quotQuotEquivComm_quotQuotMk I J
 #align double_quot.quot_quot_equiv_comm_comp_quot_quot_mkₐ DoubleQuot.quotQuotEquivComm_comp_quotQuotMkₐ

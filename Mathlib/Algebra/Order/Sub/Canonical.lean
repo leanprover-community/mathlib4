@@ -155,7 +155,7 @@ protected theorem tsub_inj_right (hab : AddLECancellable (a - b)) (h₁ : b ≤ 
   rw [tsub_add_cancel_of_le h₁, h₃, tsub_add_cancel_of_le h₂]
 #align add_le_cancellable.tsub_inj_right AddLECancellable.tsub_inj_right
 
-protected theorem lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α (· + ·) (· < ·)]
+protected lemma lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α (· + ·) (· < ·)]
     (hb : AddLECancellable b) (hca : c ≤ a) (h : a - b < a - c) : c < b := by
   conv_lhs at h => rw [← tsub_add_cancel_of_le hca]
   exact lt_of_add_lt_add_left (hb.lt_add_of_tsub_lt_right h)
@@ -172,7 +172,7 @@ protected theorem tsub_lt_tsub_right_of_le (hc : AddLECancellable c) (h : c ≤ 
   rwa [add_tsub_cancel_of_le h]
 #align add_le_cancellable.tsub_lt_tsub_right_of_le AddLECancellable.tsub_lt_tsub_right_of_le
 
-protected theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (· + ·) (· < ·)]
+protected lemma tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (· + ·) (· < ·)]
     (hb : AddLECancellable b) (hab : AddLECancellable (a - b)) (h₁ : b ≤ a) (h₂ : c ≤ a) :
     a - b < a - c ↔ c < b :=
   ⟨hb.lt_of_tsub_lt_tsub_left_of_le h₂, hab.tsub_lt_tsub_left_of_le h₁⟩
@@ -262,12 +262,12 @@ theorem lt_tsub_iff_left_of_le (h : c ≤ b) : a < b - c ↔ c + a < b :=
 #align lt_tsub_iff_left_of_le lt_tsub_iff_left_of_le
 
 /-- See `lt_of_tsub_lt_tsub_left` for a stronger statement in a linear order. -/
-theorem lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α (· + ·) (· < ·)] (hca : c ≤ a)
+lemma lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α (· + ·) (· < ·)] (hca : c ≤ a)
     (h : a - b < a - c) : c < b :=
   Contravariant.AddLECancellable.lt_of_tsub_lt_tsub_left_of_le hca h
 #align lt_of_tsub_lt_tsub_left_of_le lt_of_tsub_lt_tsub_left_of_le
 
-theorem tsub_lt_tsub_left_of_le : b ≤ a → c < b → a - b < a - c :=
+lemma tsub_lt_tsub_left_of_le : b ≤ a → c < b → a - b < a - c :=
   Contravariant.AddLECancellable.tsub_lt_tsub_left_of_le
 #align tsub_lt_tsub_left_of_le tsub_lt_tsub_left_of_le
 
@@ -280,7 +280,7 @@ theorem tsub_inj_right (h₁ : b ≤ a) (h₂ : c ≤ a) (h₃ : a - b = a - c) 
 #align tsub_inj_right tsub_inj_right
 
 /-- See `tsub_lt_tsub_iff_left_of_le` for a stronger statement in a linear order. -/
-theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (· + ·) (· < ·)] (h₁ : b ≤ a)
+lemma tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (· + ·) (· < ·)] (h₁ : b ≤ a)
     (h₂ : c ≤ a) : a - b < a - c ↔ c < b :=
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le Contravariant.AddLECancellable h₁
     h₂
@@ -311,17 +311,17 @@ section CanonicallyOrderedAddMonoid
 
 variable [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
-theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
+lemma add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
 #align add_tsub_cancel_iff_le add_tsub_cancel_iff_le
 
-theorem tsub_add_cancel_iff_le : b - a + a = b ↔ a ≤ b := by
+lemma tsub_add_cancel_iff_le : b - a + a = b ↔ a ≤ b := by
   rw [add_comm]
   exact add_tsub_cancel_iff_le
 #align tsub_add_cancel_iff_le tsub_add_cancel_iff_le
 
 @[simp]
-theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
+lemma tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
   rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
 
@@ -334,7 +334,7 @@ theorem tsub_self (a : α) : a - a = 0 :=
   tsub_eq_zero_of_le le_rfl
 #align tsub_self tsub_self
 
-theorem tsub_le_self : a - b ≤ a :=
+lemma tsub_le_self : a - b ≤ a :=
   tsub_le_iff_left.mpr <| le_add_left le_rfl
 #align tsub_le_self tsub_le_self
 
@@ -346,7 +346,7 @@ theorem tsub_self_add (a b : α) : a - (a + b) = 0 :=
   tsub_eq_zero_of_le <| self_le_add_right _ _
 #align tsub_self_add tsub_self_add
 
-theorem tsub_pos_iff_not_le : 0 < a - b ↔ ¬a ≤ b := by
+lemma tsub_pos_iff_not_le : 0 < a - b ↔ ¬a ≤ b := by
   rw [pos_iff_ne_zero, Ne.def, tsub_eq_zero_iff_le]
 #align tsub_pos_iff_not_le tsub_pos_iff_not_le
 
@@ -417,7 +417,7 @@ section CanonicallyLinearOrderedAddMonoid
 variable [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
-theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
+lemma tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
 #align tsub_pos_iff_lt tsub_pos_iff_lt
 
 theorem tsub_eq_tsub_min (a b : α) : a - b = a - min a b := by
@@ -471,11 +471,11 @@ theorem tsub_lt_tsub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b :=
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_right h
 #align tsub_lt_tsub_iff_right tsub_lt_tsub_iff_right
 
-theorem tsub_lt_self : 0 < a → 0 < b → a - b < a :=
+lemma tsub_lt_self : 0 < a → 0 < b → a - b < a :=
   Contravariant.AddLECancellable.tsub_lt_self
 #align tsub_lt_self tsub_lt_self
 
-theorem tsub_lt_self_iff : a - b < a ↔ 0 < a ∧ 0 < b :=
+lemma tsub_lt_self_iff : a - b < a ↔ 0 < a ∧ 0 < b :=
   Contravariant.AddLECancellable.tsub_lt_self_iff
 #align tsub_lt_self_iff tsub_lt_self_iff
 
@@ -489,22 +489,22 @@ end Contra
 /-! ### Lemmas about `max` and `min`. -/
 
 
-theorem tsub_add_eq_max : a - b + b = max a b := by
+lemma tsub_add_eq_max : a - b + b = max a b := by
   cases' le_total a b with h h
   · rw [max_eq_right h, tsub_eq_zero_of_le h, zero_add]
   · rw [max_eq_left h, tsub_add_cancel_of_le h]
 #align tsub_add_eq_max tsub_add_eq_max
 
-theorem add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, tsub_add_eq_max]
+lemma add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, tsub_add_eq_max]
 #align add_tsub_eq_max add_tsub_eq_max
 
-theorem tsub_min : a - min a b = a - b := by
+lemma tsub_min : a - min a b = a - b := by
   cases' le_total a b with h h
   · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
   · rw [min_eq_right h]
 #align tsub_min tsub_min
 
-theorem tsub_add_min : a - b + min a b = a := by
+lemma tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 #align tsub_add_min tsub_add_min

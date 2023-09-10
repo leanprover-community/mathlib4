@@ -68,7 +68,7 @@ def Numeric : PGame → Prop
   | ⟨_, _, L, R⟩ => (∀ i j, L i < R j) ∧ (∀ i, Numeric (L i)) ∧ ∀ j, Numeric (R j)
 #align pgame.numeric SetTheory.PGame.Numeric
 
-theorem numeric_def {x : PGame} :
+lemma numeric_def {x : PGame} :
     Numeric x ↔
       (∀ i j, x.moveLeft i < x.moveRight j) ∧
         (∀ i, Numeric (x.moveLeft i)) ∧ ∀ j, Numeric (x.moveRight j) := by
@@ -77,27 +77,27 @@ theorem numeric_def {x : PGame} :
 
 namespace Numeric
 
-theorem mk {x : PGame} (h₁ : ∀ i j, x.moveLeft i < x.moveRight j) (h₂ : ∀ i, Numeric (x.moveLeft i))
+lemma mk {x : PGame} (h₁ : ∀ i j, x.moveLeft i < x.moveRight j) (h₂ : ∀ i, Numeric (x.moveLeft i))
     (h₃ : ∀ j, Numeric (x.moveRight j)) : Numeric x :=
   numeric_def.2 ⟨h₁, h₂, h₃⟩
 #align pgame.numeric.mk SetTheory.PGame.Numeric.mk
 
-theorem left_lt_right {x : PGame} (o : Numeric x) (i : x.LeftMoves) (j : x.RightMoves) :
+lemma left_lt_right {x : PGame} (o : Numeric x) (i : x.LeftMoves) (j : x.RightMoves) :
     x.moveLeft i < x.moveRight j := by cases x; exact o.1 i j
 #align pgame.numeric.left_lt_right SetTheory.PGame.Numeric.left_lt_right
 
-theorem moveLeft {x : PGame} (o : Numeric x) (i : x.LeftMoves) : Numeric (x.moveLeft i) := by
+lemma moveLeft {x : PGame} (o : Numeric x) (i : x.LeftMoves) : Numeric (x.moveLeft i) := by
   cases x; exact o.2.1 i
 #align pgame.numeric.move_left SetTheory.PGame.Numeric.moveLeft
 
-theorem moveRight {x : PGame} (o : Numeric x) (j : x.RightMoves) : Numeric (x.moveRight j) := by
+lemma moveRight {x : PGame} (o : Numeric x) (j : x.RightMoves) : Numeric (x.moveRight j) := by
   cases x; exact o.2.2 j
 #align pgame.numeric.move_right SetTheory.PGame.Numeric.moveRight
 
 end Numeric
 
 @[elab_as_elim]
-theorem numeric_rec {C : PGame → Prop}
+lemma numeric_rec {C : PGame → Prop}
     (H : ∀ (l r) (L : l → PGame) (R : r → PGame), (∀ i j, L i < R j) →
       (∀ i, Numeric (L i)) → (∀ i, Numeric (R i)) → (∀ i, C (L i)) → (∀ i, C (R i)) →
       C ⟨l, r, L, R⟩) :
@@ -106,7 +106,7 @@ theorem numeric_rec {C : PGame → Prop}
     H _ _ _ _ h hl hr (fun i => numeric_rec H _ (hl i)) fun i => numeric_rec H _ (hr i)
 #align pgame.numeric_rec SetTheory.PGame.numeric_rec
 
-theorem Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : Numeric y := by
+lemma Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : Numeric y := by
   induction' x using PGame.moveRecOn with x IHl IHr generalizing y
   apply Numeric.mk (fun i j => ?_) (fun i => ?_) fun j => ?_
   · rw [← lt_congr (r.moveLeftSymm i).equiv (r.moveRightSymm j).equiv]
@@ -116,11 +116,11 @@ theorem Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : 
 #align pgame.relabelling.numeric_imp SetTheory.PGame.Relabelling.numeric_imp
 
 /-- Relabellings preserve being numeric. -/
-theorem Relabelling.numeric_congr {x y : PGame} (r : x ≡r y) : Numeric x ↔ Numeric y :=
+lemma Relabelling.numeric_congr {x y : PGame} (r : x ≡r y) : Numeric x ↔ Numeric y :=
   ⟨r.numeric_imp, r.symm.numeric_imp⟩
 #align pgame.relabelling.numeric_congr SetTheory.PGame.Relabelling.numeric_congr
 
-theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x := by
+lemma lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x := by
   refine' numeric_rec (C := fun x => ∀ z (_oz : Numeric z), x ⧏ z → ¬z ⧏ x)
     (fun xl xr xL xR hx _oxl _oxr IHxl IHxr => _) x ox y oy
   refine' numeric_rec fun yl yr yL yR hy oyl oyr _IHyl _IHyr => _
@@ -131,26 +131,26 @@ theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → �
   · exact IHxr _ _ (oyr _) (h₁.lf_moveRight _) (h₂.lf_moveRight _)
 #align pgame.lf_asymm SetTheory.PGame.lf_asymm
 
-theorem le_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) : x ≤ y :=
+lemma le_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) : x ≤ y :=
   not_lf.1 (lf_asymm ox oy h)
 #align pgame.le_of_lf SetTheory.PGame.le_of_lf
 
 alias Lf.le := le_of_lf
 #align pgame.lf.le SetTheory.PGame.Lf.le
 
-theorem lt_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) : x < y :=
+lemma lt_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) : x < y :=
   (lt_or_fuzzy_of_lf h).resolve_right (not_fuzzy_of_le (h.le ox oy))
 #align pgame.lt_of_lf SetTheory.PGame.lt_of_lf
 
 alias Lf.lt := lt_of_lf
 #align pgame.lf.lt SetTheory.PGame.Lf.lt
 
-theorem lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ x < y :=
+lemma lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ x < y :=
   ⟨fun h => h.lt ox oy, lf_of_lt⟩
 #align pgame.lf_iff_lt SetTheory.PGame.lf_iff_lt
 
 /-- Definition of `x ≤ y` on numeric pre-games, in terms of `<` -/
-theorem le_iff_forall_lt {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
+lemma le_iff_forall_lt {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     x ≤ y ↔ (∀ i, x.moveLeft i < y) ∧ ∀ j, x < y.moveRight j := by
   refine' le_iff_forall_lf.trans (and_congr _ _) <;>
       refine' forall_congr' fun i => lf_iff_lt _ _ <;>
@@ -158,18 +158,18 @@ theorem le_iff_forall_lt {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
 #align pgame.le_iff_forall_lt SetTheory.PGame.le_iff_forall_lt
 
 /-- Definition of `x < y` on numeric pre-games, in terms of `≤` -/
-theorem lt_iff_exists_le {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
+lemma lt_iff_exists_le {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     x < y ↔ (∃ i, x ≤ y.moveLeft i) ∨ ∃ j, x.moveRight j ≤ y := by
   rw [← lf_iff_lt ox oy, lf_iff_exists_le]
 #align pgame.lt_iff_exists_le SetTheory.PGame.lt_iff_exists_le
 
-theorem lt_of_exists_le {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
+lemma lt_of_exists_le {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     ((∃ i, x ≤ y.moveLeft i) ∨ ∃ j, x.moveRight j ≤ y) → x < y :=
   (lt_iff_exists_le ox oy).2
 #align pgame.lt_of_exists_le SetTheory.PGame.lt_of_exists_le
 
 /-- The definition of `x < y` on numeric pre-games, in terms of `<` two moves later. -/
-theorem lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
+lemma lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     x < y ↔
       (∃ i, (∀ i', x.moveLeft i' < y.moveLeft i) ∧ ∀ j, x < (y.moveLeft i).moveRight j) ∨
         ∃ j, (∀ i, (x.moveRight j).moveLeft i < y) ∧ ∀ j', x.moveRight j < y.moveRight j' := by
@@ -179,11 +179,11 @@ theorem lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 #align pgame.lt_def SetTheory.PGame.lt_def
 
-theorem not_fuzzy {x y : PGame} (ox : Numeric x) (oy : Numeric y) : ¬Fuzzy x y :=
+lemma not_fuzzy {x y : PGame} (ox : Numeric x) (oy : Numeric y) : ¬Fuzzy x y :=
   fun h => not_lf.2 ((lf_of_fuzzy h).le ox oy) h.2
 #align pgame.not_fuzzy SetTheory.PGame.not_fuzzy
 
-theorem lt_or_equiv_or_gt {x y : PGame} (ox : Numeric x) (oy : Numeric y) :
+lemma lt_or_equiv_or_gt {x y : PGame} (ox : Numeric x) (oy : Numeric y) :
     x < y ∨ (x ≈ y) ∨ y < x :=
   ((lf_or_equiv_or_gf x y).imp fun h => h.lt ox oy) <| Or.imp_right fun h => h.lt oy ox
 #align pgame.lt_or_equiv_or_gt SetTheory.PGame.lt_or_equiv_or_gt
@@ -202,38 +202,38 @@ theorem numeric_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves]
   Numeric.mk (fun _ => isEmptyElim) H isEmptyElim
 #align pgame.numeric_of_is_empty_right_moves SetTheory.PGame.numeric_of_isEmpty_rightMoves
 
-theorem numeric_zero : Numeric 0 :=
+lemma numeric_zero : Numeric 0 :=
   numeric_of_isEmpty 0
 #align pgame.numeric_zero SetTheory.PGame.numeric_zero
 
-theorem numeric_one : Numeric 1 :=
+lemma numeric_one : Numeric 1 :=
   numeric_of_isEmpty_rightMoves 1 fun _ => numeric_zero
 #align pgame.numeric_one SetTheory.PGame.numeric_one
 
-theorem Numeric.neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
+lemma Numeric.neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
   | ⟨_, _, _, _⟩, o =>
     ⟨fun j i => neg_lt_neg_iff.2 (o.1 i j), fun j => (o.2.2 j).neg, fun i => (o.2.1 i).neg⟩
 #align pgame.numeric.neg SetTheory.PGame.Numeric.neg
 
 namespace Numeric
 
-theorem moveLeft_lt {x : PGame} (o : Numeric x) (i) : x.moveLeft i < x :=
+lemma moveLeft_lt {x : PGame} (o : Numeric x) (i) : x.moveLeft i < x :=
   (moveLeft_lf i).lt (o.moveLeft i) o
 #align pgame.numeric.move_left_lt SetTheory.PGame.Numeric.moveLeft_lt
 
-theorem moveLeft_le {x : PGame} (o : Numeric x) (i) : x.moveLeft i ≤ x :=
+lemma moveLeft_le {x : PGame} (o : Numeric x) (i) : x.moveLeft i ≤ x :=
   (o.moveLeft_lt i).le
 #align pgame.numeric.move_left_le SetTheory.PGame.Numeric.moveLeft_le
 
-theorem lt_moveRight {x : PGame} (o : Numeric x) (j) : x < x.moveRight j :=
+lemma lt_moveRight {x : PGame} (o : Numeric x) (j) : x < x.moveRight j :=
   (lf_moveRight j).lt o (o.moveRight j)
 #align pgame.numeric.lt_move_right SetTheory.PGame.Numeric.lt_moveRight
 
-theorem le_moveRight {x : PGame} (o : Numeric x) (j) : x ≤ x.moveRight j :=
+lemma le_moveRight {x : PGame} (o : Numeric x) (j) : x ≤ x.moveRight j :=
   (o.lt_moveRight j).le
 #align pgame.numeric.le_move_right SetTheory.PGame.Numeric.le_moveRight
 
-theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
+lemma add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ox, oy =>
     ⟨by
       rintro (ix | iy) (jx | jy)
@@ -254,14 +254,14 @@ termination_by _ x y _ _ => (x, y) -- Porting note: Added `termination_by`
 decreasing_by pgame_wf_tac
 #align pgame.numeric.add SetTheory.PGame.Numeric.add
 
-theorem sub {x y : PGame} (ox : Numeric x) (oy : Numeric y) : Numeric (x - y) :=
+lemma sub {x y : PGame} (ox : Numeric x) (oy : Numeric y) : Numeric (x - y) :=
   ox.add oy.neg
 #align pgame.numeric.sub SetTheory.PGame.Numeric.sub
 
 end Numeric
 
 /-- Pre-games defined by natural numbers are numeric. -/
-theorem numeric_nat : ∀ n : ℕ, Numeric n
+lemma numeric_nat : ∀ n : ℕ, Numeric n
   | 0 => numeric_zero
   | n + 1 => (numeric_nat n).add numeric_one
 #align pgame.numeric_nat SetTheory.PGame.numeric_nat
@@ -372,17 +372,17 @@ def toGame : Surreal →+o Game where
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
 #align surreal.to_game Surreal.toGame
 
-theorem zero_toGame : toGame 0 = 0 :=
+lemma zero_toGame : toGame 0 = 0 :=
   rfl
 #align surreal.zero_to_game Surreal.zero_toGame
 
 @[simp]
-theorem one_toGame : toGame 1 = 1 :=
+lemma one_toGame : toGame 1 = 1 :=
   rfl
 #align surreal.one_to_game Surreal.one_toGame
 
 @[simp]
-theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
+lemma nat_toGame : ∀ n : ℕ, toGame n = n :=
   map_natCast' _ one_toGame
 #align surreal.nat_to_game Surreal.nat_toGame
 

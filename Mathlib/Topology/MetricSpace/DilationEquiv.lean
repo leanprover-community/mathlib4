@@ -64,7 +64,7 @@ instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
 @[simp] theorem coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
 
 @[ext]
-protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
+protected lemma ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
   FunLike.ext _ _ h
 
 /-- Inverse `DilationEquiv`. -/
@@ -91,8 +91,8 @@ def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 
-@[simp] theorem refl_symm : (refl X).symm = refl X := rfl
-@[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
+@[simp] lemma refl_symm : (refl X).symm = refl X := rfl
+@[simp] lemma ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
 
 /-- Composition of `DilationEquiv`s. -/
 @[simps! (config := .asFn) apply]
@@ -137,11 +137,11 @@ instance : Group (X ≃ᵈ X) where
   mul_left_inv := self_trans_symm
 
 theorem mul_def (e e' : X ≃ᵈ X) : e * e' = e'.trans e := rfl
-theorem one_def : (1 : X ≃ᵈ X) = refl X := rfl
+lemma one_def : (1 : X ≃ᵈ X) = refl X := rfl
 theorem inv_def (e : X ≃ᵈ X) : e⁻¹ = e.symm := rfl
 
 @[simp] theorem coe_mul (e e' : X ≃ᵈ X) : ⇑(e * e') = e ∘ e' := rfl
-@[simp] theorem coe_one : ⇑(1 : X ≃ᵈ X) = id := rfl
+@[simp] lemma coe_one : ⇑(1 : X ≃ᵈ X) = id := rfl
 theorem coe_inv (e : X ≃ᵈ X) : ⇑(e⁻¹) = e.symm := rfl
 
 /-- `Dilation.ratio` as a monoid homomorphism. -/

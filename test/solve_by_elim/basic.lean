@@ -164,7 +164,7 @@ section issue1581
 
 axiom mySorry {α} : α
 
-@[dummy_label_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
+@[dummy_label_attr] lemma le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
 
 example : 5 ≤ 7 := by
   apply_rules using dummy_label_attr

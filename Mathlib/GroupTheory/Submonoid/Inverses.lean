@@ -44,7 +44,7 @@ noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
     mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
-theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
+lemma IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
     ↑x⁻¹ = (↑x.prop.unit⁻¹ : M) :=
   rfl
 #align submonoid.is_unit.submonoid.coe_inv Submonoid.IsUnit.Submonoid.coe_inv
@@ -66,7 +66,7 @@ def leftInv : Submonoid M where
 #align add_submonoid.left_neg AddSubmonoid.leftNeg
 
 @[to_additive]
-theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
+lemma leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rintro x ⟨⟨y, z, h₁⟩, h₂ : x * y = 1⟩
   convert z.prop
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
@@ -107,7 +107,7 @@ theorem mul_fromLeftInv (x : S.leftInv) : (x : M) * S.fromLeftInv x = 1 :=
 #align add_submonoid.add_from_left_neg AddSubmonoid.add_fromLeftNeg
 
 @[to_additive (attr := simp)]
-theorem fromLeftInv_one : S.fromLeftInv 1 = 1 :=
+lemma fromLeftInv_one : S.fromLeftInv 1 = 1 :=
   (one_mul _).symm.trans (Subtype.eq <| S.mul_fromLeftInv 1)
 #align submonoid.from_left_inv_one Submonoid.fromLeftInv_one
 #align add_submonoid.from_left_neg_zero AddSubmonoid.fromLeftNeg_zero
@@ -125,7 +125,7 @@ theorem fromLeftInv_mul (x : S.leftInv) : (S.fromLeftInv x : M) * x = 1 := by
 #align add_submonoid.from_left_neg_add AddSubmonoid.fromLeftNeg_add
 
 @[to_additive]
-theorem leftInv_le_isUnit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx⟩ ↦
+lemma leftInv_le_isUnit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx⟩ ↦
   ⟨⟨x, y, hx, mul_comm x y ▸ hx⟩, rfl⟩
 #align submonoid.left_inv_le_is_unit Submonoid.leftInv_le_isUnit
 #align add_submonoid.left_neg_le_is_add_unit AddSubmonoid.leftNeg_le_isAddUnit
@@ -225,7 +225,7 @@ variable [Group M] (S : Submonoid M)
 open Pointwise
 
 @[to_additive]
-theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=
+lemma leftInv_eq_inv : S.leftInv = S⁻¹ :=
   Submonoid.ext fun _ ↦
     ⟨fun h ↦ Submonoid.mem_inv.mpr ((inv_eq_of_mul_eq_one_right h.choose_spec).symm ▸
       h.choose.prop),

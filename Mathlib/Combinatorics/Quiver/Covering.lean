@@ -89,13 +89,13 @@ def Prefunctor.costar (u : U) : Quiver.Costar u → Quiver.Costar (φ.obj u) := 
 #align prefunctor.costar Prefunctor.costar
 
 @[simp]
-theorem Prefunctor.star_apply {u v : U} (e : u ⟶ v) :
+lemma Prefunctor.star_apply {u v : U} (e : u ⟶ v) :
     φ.star u (Quiver.Star.mk e) = Quiver.Star.mk (φ.map e) :=
   rfl
 #align prefunctor.star_apply Prefunctor.star_apply
 
 @[simp]
-theorem Prefunctor.costar_apply {u v : U} (e : u ⟶ v) :
+lemma Prefunctor.costar_apply {u v : U} (e : u ⟶ v) :
     φ.costar v (Quiver.Costar.mk e) = Quiver.Costar.mk (φ.map e) :=
   rfl
 #align prefunctor.costar_apply Prefunctor.costar_apply
@@ -207,7 +207,7 @@ def Prefunctor.pathStar (u : U) : Quiver.PathStar u → Quiver.PathStar (φ.obj 
 #align prefunctor.path_star Prefunctor.pathStar
 
 @[simp]
-theorem Prefunctor.pathStar_apply {u v : U} (p : Path u v) :
+lemma Prefunctor.pathStar_apply {u v : U} (p : Path u v) :
     φ.pathStar u (Quiver.PathStar.mk p) = Quiver.PathStar.mk (φ.mapPath p) :=
   rfl
 #align prefunctor.path_star_apply Prefunctor.pathStar_apply
@@ -297,13 +297,13 @@ def Quiver.starEquivCostar (u : U) : Quiver.Star u ≃ Quiver.Costar u where
 #align quiver.star_equiv_costar Quiver.starEquivCostar
 
 @[simp]
-theorem Quiver.starEquivCostar_apply {u v : U} (e : u ⟶ v) :
+lemma Quiver.starEquivCostar_apply {u v : U} (e : u ⟶ v) :
     Quiver.starEquivCostar u (Quiver.Star.mk e) = Quiver.Costar.mk (reverse e) :=
   rfl
 #align quiver.star_equiv_costar_apply Quiver.starEquivCostar_apply
 
 @[simp]
-theorem Quiver.starEquivCostar_symm_apply {u v : U} (e : u ⟶ v) :
+lemma Quiver.starEquivCostar_symm_apply {u v : U} (e : u ⟶ v) :
     (Quiver.starEquivCostar v).symm (Quiver.Costar.mk e) = Quiver.Star.mk (reverse e) :=
   rfl
 #align quiver.star_equiv_costar_symm_apply Quiver.starEquivCostar_symm_apply

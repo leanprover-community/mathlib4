@@ -68,17 +68,17 @@ def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ 
   cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃).symm)
 #align holor_index.assoc_left HolorIndex.assocLeft
 
-theorem take_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.take = t.take.take
+lemma take_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.take = t.take.take
   | ⟨is, h⟩ =>
     Subtype.eq <| by
       simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right, min_eq_left]
 #align holor_index.take_take HolorIndex.take_take
 
-theorem drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.take = t.take.drop
+lemma drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.take = t.take.drop
   | ⟨is, h⟩ => Subtype.eq (by simp [assocRight, take, drop, cast_type, List.drop_take])
 #align holor_index.drop_take HolorIndex.drop_take
 
-theorem drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
+lemma drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
   | ⟨is, h⟩ => Subtype.eq (by simp [add_comm, assocRight, drop, cast_type, List.drop_drop])
 #align holor_index.drop_drop HolorIndex.drop_drop
 
@@ -191,7 +191,7 @@ def assocLeft : Holor α (ds₁ ++ (ds₂ ++ ds₃)) → Holor α (ds₁ ++ ds�
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃).symm)
 #align holor.assoc_left Holor.assocLeft
 
-theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
+lemma mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
     x ⊗ y ⊗ z = (x ⊗ (y ⊗ z)).assocLeft :=
   funext fun t : HolorIndex (ds₁ ++ ds₂ ++ ds₃) => by
     rw [assocLeft]
@@ -201,29 +201,29 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
     rw [append_assoc]
 #align holor.mul_assoc0 Holor.mul_assoc0
 
-theorem mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
+lemma mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
     HEq (mul (mul x y) z) (mul x (mul y z)) := by simp [cast_heq, mul_assoc0, assocLeft]
 #align holor.mul_assoc Holor.mul_assoc
 
-theorem mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
+lemma mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
     x ⊗ (y + z) = x ⊗ y + x ⊗ z := funext fun t => left_distrib (x t.take) (y t.drop) (z t.drop)
 #align holor.mul_left_distrib Holor.mul_left_distrib
 
-theorem mul_right_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₁) (z : Holor α ds₂) :
+lemma mul_right_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₁) (z : Holor α ds₂) :
     (x + y) ⊗ z = x ⊗ z + y ⊗ z := funext fun t => add_mul (x t.take) (y t.take) (z t.drop)
 #align holor.mul_right_distrib Holor.mul_right_distrib
 
 @[simp]
-nonrec theorem zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
+nonrec lemma zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
   funext fun t => zero_mul (x (HolorIndex.drop t))
 #align holor.zero_mul Holor.zero_mul
 
 @[simp]
-nonrec theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
+nonrec lemma mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
   funext fun t => mul_zero (x (HolorIndex.take t))
 #align holor.mul_zero Holor.mul_zero
 
-theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
+lemma mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
       simp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop, HSMul.hSMul]
 #align holor.mul_scalar_mul Holor.mul_scalar_mul
@@ -259,23 +259,23 @@ theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x 
         _ = y ⟨i :: is, _⟩ := congr_arg (fun t => y t) (Subtype.eq rfl)
 #align holor.slice_eq Holor.slice_eq
 
-theorem slice_unitVec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
+lemma slice_unitVec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
   funext fun t : HolorIndex ds =>
     if h : i = j then by simp [slice, mul, HolorIndex.take, unitVec, HolorIndex.drop, h]
     else by simp [slice, mul, HolorIndex.take, unitVec, HolorIndex.drop, h]; rfl
 #align holor.slice_unit_vec_mul Holor.slice_unitVec_mul
 
-theorem slice_add [Add α] (i : ℕ) (hid : i < d) (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) :
+lemma slice_add [Add α] (i : ℕ) (hid : i < d) (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) :
     slice x i hid + slice y i hid = slice (x + y) i hid :=
   funext fun t => by simp [slice, (· + ·), Add.add]
 #align holor.slice_add Holor.slice_add
 
-theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d :: ds)) i hid = 0 :=
+lemma slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d :: ds)) i hid = 0 :=
   rfl
 #align holor.slice_zero Holor.slice_zero
 
-theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
+lemma slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
     (f : β → Holor α (d :: ds)) : (∑ x in s, slice (f x) i hid) = slice (∑ x in s, f x) i hid := by
   letI := Classical.decEq β
   refine' Finset.induction_on s _ _
@@ -287,7 +287,7 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
 /-- The original holor can be recovered from its slices by multiplying with unit vectors and
 summing up. -/
 @[simp]
-theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
+lemma sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
     (∑ i in (Finset.range d).attach,
         unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
@@ -321,18 +321,18 @@ inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → 
     CPRankMax1 x → CPRankMax n y → CPRankMax (n + 1) (x + y)
 #align holor.cprank_max Holor.CPRankMax
 
-theorem cprankMax_nil [Monoid α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
+lemma cprankMax_nil [Monoid α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
   have h := CPRankMax.succ 0 x 0 (CPRankMax1.nil x) CPRankMax.zero
   rwa [add_zero x, zero_add] at h
 #align holor.cprank_max_nil Holor.cprankMax_nil
 
-theorem cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
+lemma cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
   CPRankMax 1 x := by
   have h' := CPRankMax.succ 0 x 0 h CPRankMax.zero
   rwa [zero_add, add_zero] at h'
 #align holor.cprank_max_1 Holor.cprankMax_1
 
-theorem cprankMax_add [Monoid α] [AddMonoid α] :
+lemma cprankMax_add [Monoid α] [AddMonoid α] :
     ∀ {m : ℕ} {n : ℕ} {x : Holor α ds} {y : Holor α ds},
       CPRankMax m x → CPRankMax n y → CPRankMax (m + n) (x + y)
   | 0, n, x, y, hx, hy => by
@@ -347,7 +347,7 @@ theorem cprankMax_add [Monoid α] [AddMonoid α] :
       exact cprankMax_add hx₂ hy
 #align holor.cprank_max_add Holor.cprankMax_add
 
-theorem cprankMax_mul [Ring α] :
+lemma cprankMax_mul [Ring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)
   | 0, x, _, CPRankMax.zero => by simp [mul_zero x, CPRankMax.zero]
   | n + 1, x, _, CPRankMax.succ _ y₁ y₂ hy₁ hy₂ => by
@@ -358,7 +358,7 @@ theorem cprankMax_mul [Ring α] :
     · exact cprankMax_mul _ x y₂ hy₂
 #align holor.cprank_max_mul Holor.cprankMax_mul
 
-theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
+lemma cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
     (∀ x ∈ s, CPRankMax n (f x)) → CPRankMax (s.card * n) (∑ x in s, f x) :=
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])
@@ -374,7 +374,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
       exact cprankMax_add (h_cprank x (Finset.mem_insert_self x s)) ih')
 #align holor.cprank_max_sum Holor.cprankMax_sum
 
-theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankMax ds.prod x
+lemma cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankMax ds.prod x
   | [], x => cprankMax_nil x
   | d :: ds, x => by
     have h_summands :
@@ -403,7 +403,7 @@ noncomputable def cprank [Ring α] (x : Holor α ds) : Nat :=
   @Nat.find (fun n => CPRankMax n x) (Classical.decPred _) ⟨ds.prod, cprankMax_upper_bound x⟩
 #align holor.cprank Holor.cprank
 
-theorem cprank_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, cprank x ≤ ds.prod :=
+lemma cprank_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, cprank x ≤ ds.prod :=
   fun {ds} x =>
   letI := Classical.decPred fun n : ℕ => CPRankMax n x
   Nat.find_min' ⟨ds.prod, show (fun n => CPRankMax n x) ds.prod from cprankMax_upper_bound x⟩

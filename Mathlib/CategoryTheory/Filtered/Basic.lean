@@ -135,11 +135,11 @@ variable [IsFilteredOrEmpty C]
 -- porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsFilteredOrEmpty` have been added instead
 --
--- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
+-- lemma cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
 --  IsFilteredOrEmpty.cocone_objs
 -- #align category_theory.is_filtered.cocone_objs CategoryTheory.IsFiltered.cocone_objs
 --
---theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h :=
+--lemma cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h :=
 --  IsFilteredOrEmpty.cocone_maps
 --#align category_theory.is_filtered.cocone_maps CategoryTheory.IsFiltered.cocone_maps
 
@@ -187,7 +187,7 @@ noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
 `f ≫ coeqHom f f' = f' ≫ coeqHom f f'`.
 -/
 @[reassoc]
-theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' ≫ coeqHom f f' :=
+lemma coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' ≫ coeqHom f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose_spec
 #align category_theory.is_filtered.coeq_condition CategoryTheory.IsFiltered.coeq_condition
 
@@ -205,7 +205,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 /-- If `C` is filtered or emtpy, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is
 filtered or empty.
 -/
-theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrEmpty D :=
+lemma of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrEmpty D :=
   { cocone_objs := fun X Y =>
       ⟨_, h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
     cocone_maps := fun X Y f g =>
@@ -253,7 +253,7 @@ indexed collection of `Finset`s of morphisms `{f, ...}` in `C`,
 there exists an object `S`, with a morphism `T X : X ⟶ S` from each `X`,
 such that the triangles commute: `f ≫ T Y = T X`, for `f : X ⟶ Y` in the `Finset`.
 -/
-theorem sup_exists :
+lemma sup_exists :
     ∃ (S : C) (T : ∀ {X : C}, X ∈ O → (X ⟶ S)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
         (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
@@ -301,7 +301,7 @@ noncomputable def toSup {X : C} (m : X ∈ O) : X ⟶ sup O H :=
 
 /-- The triangles of consisting of a morphism in `H` and the maps to `sup O H` commute.
 -/
-theorem toSup_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
+lemma toSup_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
     (mf : (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H) :
     f ≫ toSup O H mY = toSup O H mX :=
   (sup_exists O H).choose_spec.choose_spec mX mY mf
@@ -340,7 +340,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 
 /-- If `C` is filtered, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is filtered.
 -/
-theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered D :=
+lemma of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered D :=
   { IsFilteredOrEmpty.of_right_adjoint h with
     Nonempty := IsFiltered.Nonempty.map R.obj }
 #align category_theory.is_filtered.of_right_adjoint CategoryTheory.IsFiltered.of_right_adjoint
@@ -411,11 +411,11 @@ noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ 
         (coeqHom g h ≫ rightToMax (coeq f g) (coeq g h))
 #align category_theory.is_filtered.coeq₃_hom CategoryTheory.IsFiltered.coeq₃Hom
 
-theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h :=
+lemma coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h :=
   by simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 #align category_theory.is_filtered.coeq₃_condition₁ CategoryTheory.IsFiltered.coeq₃_condition₁
 
-theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
+lemma coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h := by
   dsimp [coeq₃Hom]
   slice_lhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
@@ -424,13 +424,13 @@ theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
   simp only [Category.assoc]
 #align category_theory.is_filtered.coeq₃_condition₂ CategoryTheory.IsFiltered.coeq₃_condition₂
 
-theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
+lemma coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
   Eq.trans (coeq₃_condition₁ f g h) (coeq₃_condition₂ f g h)
 #align category_theory.is_filtered.coeq₃_condition₃ CategoryTheory.IsFiltered.coeq₃_condition₃
 
 /-- For every span `j ⟵ i ⟶ j'`, there
    exists a cocone `j ⟶ k ⟵ j'` such that the square commutes. -/
-theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
+lemma span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
     ∃ (k : C) (g : j ⟶ k) (g' : j' ⟶ k), f ≫ g = f' ≫ g' :=
   let ⟨K, G, G', _⟩ := IsFilteredOrEmpty.cocone_objs j j'
   let ⟨k, e, he⟩ := IsFilteredOrEmpty.cocone_maps (f ≫ G) (f' ≫ G')
@@ -450,7 +450,7 @@ theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
 in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
 making the resulting squares commute.
 -/
-theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁) (g₂ : j₂ ⟶ k₂) :
+lemma bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁) (g₂ : j₂ ⟶ k₂) :
     ∃ (s : C) (α : k₁ ⟶ s) (β : k₂ ⟶ s), f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β := by
   obtain ⟨t, k₁t, k₂t, ht⟩ := span f₁ g₁
   obtain ⟨s, ts, hs⟩ := IsFilteredOrEmpty.cocone_maps (f₂ ≫ k₁t) (g₂ ≫ k₂t)
@@ -475,7 +475,7 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
 in a filtered category, we can construct an object `s` and three morphisms from `k₁`, `k₂` and `l`
 to `s`, making the resulting squares commute.
 -/
-theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j₂ ⟶ k₁) (f₃ : j₂ ⟶ k₂) (f₄ : j₃ ⟶ k₂)
+lemma tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j₂ ⟶ k₁) (f₃ : j₂ ⟶ k₂) (f₄ : j₃ ⟶ k₂)
     (g₁ : j₁ ⟶ l) (g₂ : j₃ ⟶ l) :
     ∃ (s : C) (α : k₁ ⟶ s) (β : l ⟶ s) (γ : k₂ ⟶ s),
       f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
@@ -563,11 +563,11 @@ variable [IsCofilteredOrEmpty C]
 -- porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsCofilteredOrEmpty` have been added instead
 --
---theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
+--lemma cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
 --  IsCofilteredOrEmpty.cone_objs
 --#align category_theory.is_cofiltered.cone_objs CategoryTheory.IsCofiltered.cone_objs
 --
---theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g :=
+--lemma cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g :=
 --  IsCofilteredOrEmpty.cone_maps
 --#align category_theory.is_cofiltered.cone_maps CategoryTheory.IsCofiltered.cone_maps
 
@@ -615,13 +615,13 @@ noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
 `eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 -/
 @[reassoc]
-theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f' ≫ f' :=
+lemma eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f' ≫ f' :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose_spec
 #align category_theory.is_cofiltered.eq_condition CategoryTheory.IsCofiltered.eq_condition
 
 /-- For every cospan `j ⟶ i ⟵ j'`,
  there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
-theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
+lemma cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
     ∃ (k : C) (g : k ⟶ j) (g' : k ⟶ j'), g ≫ f = g' ≫ f' :=
   let ⟨K, G, G', _⟩ := IsCofilteredOrEmpty.cone_objs j j'
   let ⟨k, e, he⟩ := IsCofilteredOrEmpty.cone_maps (G ≫ f) (G' ≫ f')
@@ -648,7 +648,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 /-- If `C` is cofiltered or empty, and we have a functor `L : C ⥤ D` with a right adjoint,
 then `D` is cofiltered or empty.
 -/
-theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofilteredOrEmpty D :=
+lemma of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofilteredOrEmpty D :=
   { cone_objs := fun X Y =>
       ⟨L.obj (min (R.obj X) (R.obj Y)), (h.homEquiv _ X).symm (minToLeft _ _),
         (h.homEquiv _ Y).symm (minToRight _ _), ⟨⟩⟩
@@ -697,7 +697,7 @@ indexed collection of `Finset`s of morphisms `{f, ...}` in `C`,
 there exists an object `S`, with a morphism `T X : S ⟶ X` from each `X`,
 such that the triangles commute: `T X ≫ f = T Y`, for `f : X ⟶ Y` in the `Finset`.
 -/
-theorem inf_exists :
+lemma inf_exists :
     ∃ (S : C) (T : ∀ {X : C}, X ∈ O → (S ⟶ X)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
         (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
@@ -745,7 +745,7 @@ noncomputable def infTo {X : C} (m : X ∈ O) : inf O H ⟶ X :=
 
 /-- The triangles consisting of a morphism in `H` and the maps from `inf O H` commute.
 -/
-theorem infTo_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
+lemma infTo_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
     (mf : (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H) :
     infTo O H mX ≫ f = infTo O H mY :=
   (inf_exists O H).choose_spec.choose_spec mX mY mf
@@ -786,7 +786,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 /-- If `C` is cofiltered, and we have a functor `L : C ⥤ D` with a right adjoint,
 then `D` is cofiltered.
 -/
-theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered D :=
+lemma of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered D :=
   { IsCofilteredOrEmpty.of_left_adjoint h with
     Nonempty := IsCofiltered.Nonempty.map L.obj }
 #align category_theory.is_cofiltered.of_left_adjoint CategoryTheory.IsCofiltered.of_left_adjoint

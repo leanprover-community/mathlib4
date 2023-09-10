@@ -246,8 +246,8 @@ private unsafe def Float.valUnsafe : Float → floatSpec.float := unsafeCast
 private unsafe def Float.mkUnsafe : floatSpec.float → Float := unsafeCast
 @[implemented_by Float.valUnsafe] private def Float.valImpl (x : Float) : floatSpec.float := x.1
 @[implemented_by Float.mkUnsafe] private def Float.mkImpl (x : floatSpec.float) : Float := ⟨x⟩
-@[csimp] private theorem Float.val_eq : @Float.val = Float.valImpl := rfl
-@[csimp] private theorem Float.mk_eq : @Float.mk = Float.mkImpl := rfl
+@[csimp] private lemma Float.val_eq : @Float.val = Float.valImpl := rfl
+@[csimp] private lemma Float.mk_eq : @Float.mk = Float.mkImpl := rfl
 
 -- These types need manual implementations because the default implementation in `compileStruct`
 -- uses `Expr.proj` which has an invalid IR type.

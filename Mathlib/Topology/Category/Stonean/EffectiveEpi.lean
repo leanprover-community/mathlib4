@@ -129,7 +129,7 @@ For a finite family of extremally spaces `π a : X a → B` the following are eq
 * the map `∐ π a ⟶ B` is an epimorphism
 * `π` is jointly surjective
 -/
-theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Stonean}
+lemma effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Stonean}
     (X : α → Stonean) (π : (a : α) → (X a ⟶ B)) :
     TFAE [
       EffectiveEpiFamily X π,

@@ -77,14 +77,14 @@ This concept does not have a standard name in the literature.
 add_decl_doc WittVector.coeff
 
 @[ext]
-theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
+lemma ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
   cases x
   cases y
   simp only at h
   simp [Function.funext_iff, h]
 #align witt_vector.ext WittVector.ext
 
-theorem ext_iff {x y : 𝕎 R} : x = y ↔ ∀ n, x.coeff n = y.coeff n :=
+lemma ext_iff {x y : 𝕎 R} : x = y ↔ ∀ n, x.coeff n = y.coeff n :=
   ⟨fun h n => by rw [h], ext⟩
 #align witt_vector.ext_iff WittVector.ext_iff
 
@@ -234,7 +234,7 @@ theorem wittZero_eq_zero (n : ℕ) : wittZero p n = 0 := by
 #align witt_vector.witt_zero_eq_zero WittVector.wittZero_eq_zero
 
 @[simp]
-theorem wittOne_zero_eq_one : wittOne p 0 = 1 := by
+lemma wittOne_zero_eq_one : wittOne p 0 = 1 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittOne, wittStructureRat, xInTermsOfW_zero, AlgHom.map_one, RingHom.map_one,
     bind₁_X_right, map_wittStructureInt]
@@ -260,28 +260,28 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
 #align witt_vector.witt_one_pos_eq_zero WittVector.wittOne_pos_eq_zero
 
 @[simp]
-theorem wittAdd_zero : wittAdd p 0 = X (0, 0) + X (1, 0) := by
+lemma wittAdd_zero : wittAdd p 0 = X (0, 0) + X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittAdd, wittStructureRat, AlgHom.map_add, RingHom.map_add, rename_X,
     xInTermsOfW_zero, map_X, wittPolynomial_zero, bind₁_X_right, map_wittStructureInt]
 #align witt_vector.witt_add_zero WittVector.wittAdd_zero
 
 @[simp]
-theorem wittSub_zero : wittSub p 0 = X (0, 0) - X (1, 0) := by
+lemma wittSub_zero : wittSub p 0 = X (0, 0) - X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittSub, wittStructureRat, AlgHom.map_sub, RingHom.map_sub, rename_X,
     xInTermsOfW_zero, map_X, wittPolynomial_zero, bind₁_X_right, map_wittStructureInt]
 #align witt_vector.witt_sub_zero WittVector.wittSub_zero
 
 @[simp]
-theorem wittMul_zero : wittMul p 0 = X (0, 0) * X (1, 0) := by
+lemma wittMul_zero : wittMul p 0 = X (0, 0) * X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittMul, wittStructureRat, rename_X, xInTermsOfW_zero, map_X, wittPolynomial_zero,
     RingHom.map_mul, bind₁_X_right, AlgHom.map_mul, map_wittStructureInt]
 #align witt_vector.witt_mul_zero WittVector.wittMul_zero
 
 @[simp]
-theorem wittNeg_zero : wittNeg p 0 = -X (0, 0) := by
+lemma wittNeg_zero : wittNeg p 0 = -X (0, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittNeg, wittStructureRat, rename_X, xInTermsOfW_zero, map_X, wittPolynomial_zero,
     RingHom.map_neg, AlgHom.map_neg, bind₁_X_right, map_wittStructureInt]
@@ -335,7 +335,7 @@ theorem zero_coeff (n : ℕ) : (0 : 𝕎 R).coeff n = 0 :=
 #align witt_vector.zero_coeff WittVector.zero_coeff
 
 @[simp]
-theorem one_coeff_zero : (1 : 𝕎 R).coeff 0 = 1 :=
+lemma one_coeff_zero : (1 : 𝕎 R).coeff 0 = 1 :=
   show (aeval _ (wittOne p 0) : R) = 1 by simp only [wittOne_zero_eq_one, AlgHom.map_one]
 #align witt_vector.one_coeff_zero WittVector.one_coeff_zero
 
@@ -347,7 +347,7 @@ theorem one_coeff_eq_of_pos (n : ℕ) (hn : 0 < n) : coeff (1 : 𝕎 R) n = 0 :=
 variable {p R}
 
 @[simp]
-theorem v2_coeff {p' R'} (x y : WittVector p' R') (i : Fin 2) :
+lemma v2_coeff {p' R'} (x y : WittVector p' R') (i : Fin 2) :
     (![x, y] i).coeff = ![x.coeff, y.coeff] i := by fin_cases i <;> simp
 #align witt_vector.v2_coeff WittVector.v2_coeff
 

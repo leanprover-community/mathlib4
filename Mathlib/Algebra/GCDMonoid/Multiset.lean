@@ -41,7 +41,7 @@ def lcm (s : Multiset α) : α :=
 #align multiset.lcm Multiset.lcm
 
 @[simp]
-theorem lcm_zero : (0 : Multiset α).lcm = 1 :=
+lemma lcm_zero : (0 : Multiset α).lcm = 1 :=
   fold_zero _ _
 #align multiset.lcm_zero Multiset.lcm_zero
 
@@ -51,7 +51,7 @@ theorem lcm_cons (a : α) (s : Multiset α) : (a ::ₘ s).lcm = GCDMonoid.lcm a 
 #align multiset.lcm_cons Multiset.lcm_cons
 
 @[simp]
-theorem lcm_singleton {a : α} : ({a} : Multiset α).lcm = normalize a :=
+lemma lcm_singleton {a : α} : ({a} : Multiset α).lcm = normalize a :=
   (fold_singleton _ _ _).trans <| lcm_one_right _
 #align multiset.lcm_singleton Multiset.lcm_singleton
 
@@ -60,16 +60,16 @@ theorem lcm_add (s₁ s₂ : Multiset α) : (s₁ + s₂).lcm = GCDMonoid.lcm s�
   Eq.trans (by simp [lcm]) (fold_add _ _ _ _ _)
 #align multiset.lcm_add Multiset.lcm_add
 
-theorem lcm_dvd {s : Multiset α} {a : α} : s.lcm ∣ a ↔ ∀ b ∈ s, b ∣ a :=
+lemma lcm_dvd {s : Multiset α} {a : α} : s.lcm ∣ a ↔ ∀ b ∈ s, b ∣ a :=
   Multiset.induction_on s (by simp)
     (by simp (config := { contextual := true }) [or_imp, forall_and, lcm_dvd_iff])
 #align multiset.lcm_dvd Multiset.lcm_dvd
 
-theorem dvd_lcm {s : Multiset α} {a : α} (h : a ∈ s) : a ∣ s.lcm :=
+lemma dvd_lcm {s : Multiset α} {a : α} (h : a ∈ s) : a ∣ s.lcm :=
   lcm_dvd.1 dvd_rfl _ h
 #align multiset.dvd_lcm Multiset.dvd_lcm
 
-theorem lcm_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.lcm ∣ s₂.lcm :=
+lemma lcm_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₁.lcm ∣ s₂.lcm :=
   lcm_dvd.2 fun _ hb ↦ dvd_lcm (h hb)
 #align multiset.lcm_mono Multiset.lcm_mono
 
@@ -83,7 +83,7 @@ theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
 #align multiset.normalize_lcm Multiset.normalize_lcm
 
 @[simp]
-nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s := by
+nonrec lemma lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s := by
   induction' s using Multiset.induction_on with a s ihs
   · simp only [lcm_zero, one_ne_zero, not_mem_zero]
   · simp only [mem_cons, lcm_cons, lcm_eq_zero_iff, ihs, @eq_comm _ a]
@@ -131,7 +131,7 @@ def gcd (s : Multiset α) : α :=
 #align multiset.gcd Multiset.gcd
 
 @[simp]
-theorem gcd_zero : (0 : Multiset α).gcd = 0 :=
+lemma gcd_zero : (0 : Multiset α).gcd = 0 :=
   fold_zero _ _
 #align multiset.gcd_zero Multiset.gcd_zero
 
@@ -141,7 +141,7 @@ theorem gcd_cons (a : α) (s : Multiset α) : (a ::ₘ s).gcd = GCDMonoid.gcd a 
 #align multiset.gcd_cons Multiset.gcd_cons
 
 @[simp]
-theorem gcd_singleton {a : α} : ({a} : Multiset α).gcd = normalize a :=
+lemma gcd_singleton {a : α} : ({a} : Multiset α).gcd = normalize a :=
   (fold_singleton _ _ _).trans <| gcd_zero_right _
 #align multiset.gcd_singleton Multiset.gcd_singleton
 
@@ -150,16 +150,16 @@ theorem gcd_add (s₁ s₂ : Multiset α) : (s₁ + s₂).gcd = GCDMonoid.gcd s�
   Eq.trans (by simp [gcd]) (fold_add _ _ _ _ _)
 #align multiset.gcd_add Multiset.gcd_add
 
-theorem dvd_gcd {s : Multiset α} {a : α} : a ∣ s.gcd ↔ ∀ b ∈ s, a ∣ b :=
+lemma dvd_gcd {s : Multiset α} {a : α} : a ∣ s.gcd ↔ ∀ b ∈ s, a ∣ b :=
   Multiset.induction_on s (by simp)
     (by simp (config := { contextual := true }) [or_imp, forall_and, dvd_gcd_iff])
 #align multiset.dvd_gcd Multiset.dvd_gcd
 
-theorem gcd_dvd {s : Multiset α} {a : α} (h : a ∈ s) : s.gcd ∣ a :=
+lemma gcd_dvd {s : Multiset α} {a : α} (h : a ∈ s) : s.gcd ∣ a :=
   dvd_gcd.1 dvd_rfl _ h
 #align multiset.gcd_dvd Multiset.gcd_dvd
 
-theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s₁.gcd :=
+lemma gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s₁.gcd :=
   dvd_gcd.2 fun _ hb ↦ gcd_dvd (h hb)
 #align multiset.gcd_mono Multiset.gcd_mono
 

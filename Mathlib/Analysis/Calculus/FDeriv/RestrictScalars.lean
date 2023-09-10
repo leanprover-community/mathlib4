@@ -54,7 +54,7 @@ theorem HasStrictFDerivAt.restrictScalars (h : HasStrictFDerivAt f f' x) :
   h
 #align has_strict_fderiv_at.restrict_scalars HasStrictFDerivAt.restrictScalars
 
-theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' x L) :
+lemma HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' x L) :
     HasFDerivAtFilter f (f'.restrictScalars 𝕜) x L :=
   h
 #align has_fderiv_at_filter.restrict_scalars HasFDerivAtFilter.restrictScalars
@@ -86,13 +86,13 @@ theorem Differentiable.restrictScalars (h : Differentiable 𝕜' f) : Differenti
   (h x).restrictScalars 𝕜
 #align differentiable.restrict_scalars Differentiable.restrictScalars
 
-theorem hasFDerivWithinAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivWithinAt f g' s x)
+lemma hasFDerivWithinAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivWithinAt f g' s x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivWithinAt f f' s x := by
   rw [← H] at h
   exact h
 #align has_fderiv_within_at_of_restrict_scalars hasFDerivWithinAt_of_restrictScalars
 
-theorem hasFDerivAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivAt f g' x)
+lemma hasFDerivAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivAt f g' x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivAt f f' x := by
   rw [← H] at h
   exact h

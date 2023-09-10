@@ -279,7 +279,7 @@ stating that the sequence of measures on `[0, π/2]` given by integration agains
 `tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
 
 
-theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
+lemma tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
     Tendsto
       (fun n : ℕ => (∫ x in (0 : ℝ)..π / 2, (cos x : ℂ) ^ n * f x) /
         (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ))

@@ -366,7 +366,7 @@ theorem ι_fromGlued (x : 𝒰.J) : 𝒰.gluedCover.ι x ≫ 𝒰.fromGlued = �
   Multicoequalizer.π_desc _ _ _ _ _
 #align algebraic_geometry.Scheme.open_cover.ι_from_glued AlgebraicGeometry.Scheme.OpenCover.ι_fromGlued
 
-theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
+lemma fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
@@ -401,7 +401,7 @@ instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
   infer_instance
 #align algebraic_geometry.Scheme.open_cover.from_glued_stalk_iso AlgebraicGeometry.Scheme.OpenCover.fromGlued_stalk_iso
 
-theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
+lemma fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
   intro U hU
   rw [isOpen_iff_forall_mem_open]
   intro x hx
@@ -418,7 +418,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
   · exact ⟨hx, 𝒰.Covers x⟩
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 
-theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
+lemma fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
   -- Porting note: the continuity argument used to be `by continuity`
   openEmbedding_of_continuous_injective_open
     (ContinuousMap.continuous_toFun _) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
@@ -465,14 +465,14 @@ def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
 #align algebraic_geometry.Scheme.open_cover.glue_morphisms AlgebraicGeometry.Scheme.OpenCover.glueMorphisms
 
 @[simp, reassoc]
-theorem ι_glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
+lemma ι_glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, (pullback.fst : pullback (𝒰.map x) (𝒰.map y) ⟶ _) ≫ f x = pullback.snd ≫ f y)
     (x : 𝒰.J) : 𝒰.map x ≫ 𝒰.glueMorphisms f hf = f x := by
   rw [← ι_fromGlued, Category.assoc]
   erw [IsIso.hom_inv_id_assoc, Multicoequalizer.π_desc]
 #align algebraic_geometry.Scheme.open_cover.ι_glue_morphisms AlgebraicGeometry.Scheme.OpenCover.ι_glueMorphisms
 
-theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
+lemma hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
   rw [← cancel_epi 𝒰.fromGlued]
   apply Multicoequalizer.hom_ext
   intro x

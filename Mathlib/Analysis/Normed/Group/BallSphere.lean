@@ -26,7 +26,7 @@ instance : InvolutiveNeg (sphere (0 : E) r) where
   neg_neg x := Subtype.ext <| neg_neg x.1
 
 @[simp]
-theorem coe_neg_sphere {r : ℝ} (v : sphere (0 : E) r) : ↑(-v) = (-v : E) :=
+lemma coe_neg_sphere {r : ℝ} (v : sphere (0 : E) r) : ↑(-v) = (-v : E) :=
   rfl
 #align coe_neg_sphere coe_neg_sphere
 
@@ -41,7 +41,7 @@ instance {r : ℝ} : InvolutiveNeg (ball (0 : E) r) where
   neg := Subtype.map Neg.neg fun w => by simp
   neg_neg x := Subtype.ext <| neg_neg x.1
 
-@[simp] theorem coe_neg_ball {r : ℝ} (v : ball (0 : E) r) : ↑(-v) = (-v : E) := rfl
+@[simp] lemma coe_neg_ball {r : ℝ} (v : ball (0 : E) r) : ↑(-v) = (-v : E) := rfl
 #align coe_neg_ball coe_neg_ball
 
 -- porting note: todo: need to specify instance to avoid timeout
@@ -55,7 +55,7 @@ instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
   neg := Subtype.map Neg.neg fun w => by simp
   neg_neg x := Subtype.ext <| neg_neg x.1
 
-@[simp] theorem coe_neg_closedBall {r : ℝ} (v : closedBall (0 : E) r) : ↑(-v) = (-v : E) := rfl
+@[simp] lemma coe_neg_closedBall {r : ℝ} (v : closedBall (0 : E) r) : ↑(-v) = (-v : E) := rfl
 #align coe_neg_closed_ball coe_neg_closedBall
 
 -- porting note: todo: need to specify instance to avoid timeout

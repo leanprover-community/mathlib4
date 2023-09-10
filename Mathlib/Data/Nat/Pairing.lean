@@ -57,7 +57,7 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
     simp [pair, hl.not_lt, add_assoc, add_tsub_cancel_of_le (le_of_not_gt h), sm]
 #align nat.mkpair_unpair Nat.pair_unpair
 
-theorem pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
+lemma pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
   simpa [H] using pair_unpair n
 #align nat.mkpair_unpair' Nat.pair_unpair'
 
@@ -82,16 +82,16 @@ def pairEquiv : ℕ × ℕ ≃ ℕ :=
 #align nat.mkpair_equiv_apply Nat.pairEquiv_apply
 #align nat.mkpair_equiv_symm_apply Nat.pairEquiv_symm_apply
 
-theorem surjective_unpair : Surjective unpair :=
+lemma surjective_unpair : Surjective unpair :=
   pairEquiv.symm.surjective
 #align nat.surjective_unpair Nat.surjective_unpair
 
 @[simp]
-theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :=
+lemma pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :=
   pairEquiv.injective.eq_iff.trans (@Prod.ext_iff ℕ ℕ (a, b) (c, d))
 #align nat.mkpair_eq_mkpair Nat.pair_eq_pair
 
-theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
+lemma unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
   simp [unpair]
   by_cases h : n - s * s < s <;> simp [h]
@@ -102,12 +102,12 @@ theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
 #align nat.unpair_lt Nat.unpair_lt
 
 @[simp]
-theorem unpair_zero : unpair 0 = 0 := by
+lemma unpair_zero : unpair 0 = 0 := by
   rw [unpair]
   simp
 #align nat.unpair_zero Nat.unpair_zero
 
-theorem unpair_left_le : ∀ n : ℕ, (unpair n).1 ≤ n
+lemma unpair_left_le : ∀ n : ℕ, (unpair n).1 ≤ n
   | 0 => by simp
   | n + 1 => le_of_lt (unpair_lt (Nat.succ_pos _))
 #align nat.unpair_left_le Nat.unpair_left_le
@@ -124,7 +124,7 @@ theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
   simpa using right_le_pair n.unpair.1 n.unpair.2
 #align nat.unpair_right_le Nat.unpair_right_le
 
-theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
+lemma pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
   by_cases h₁ : a₁ < b <;> simp [pair, h₁, add_assoc]
   · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
     simp at h₂
@@ -183,13 +183,13 @@ open Nat
 section CompleteLattice
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
+lemma iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨆ n : ℕ, f n.unpair.1 n.unpair.2 = ⨆ (i : ℕ) (j : ℕ), f i j := by
   rw [← (iSup_prod : ⨆ i : ℕ × ℕ, f i.1 i.2 = _), ← Nat.surjective_unpair.iSup_comp]
 #align supr_unpair iSup_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
+lemma iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨅ n : ℕ, f n.unpair.1 n.unpair.2 = ⨅ (i : ℕ) (j : ℕ), f i j :=
   iSup_unpair (show ℕ → ℕ → αᵒᵈ from f)
 #align infi_unpair iInf_unpair
@@ -200,20 +200,20 @@ namespace Set
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
+lemma iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.iUnion_prod]
   exact surjective_unpair.iUnion_comp (fun x => s x.fst ×ˢ t x.snd)
 #align set.Union_unpair_prod Set.iUnion_unpair_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem iUnion_unpair {α} (f : ℕ → ℕ → Set α) :
+lemma iUnion_unpair {α} (f : ℕ → ℕ → Set α) :
     ⋃ n : ℕ, f n.unpair.1 n.unpair.2 = ⋃ (i : ℕ) (j : ℕ), f i j :=
   iSup_unpair f
 #align set.Union_unpair Set.iUnion_unpair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem iInter_unpair {α} (f : ℕ → ℕ → Set α) :
+lemma iInter_unpair {α} (f : ℕ → ℕ → Set α) :
     ⋂ n : ℕ, f n.unpair.1 n.unpair.2 = ⋂ (i : ℕ) (j : ℕ), f i j :=
   iInf_unpair f
 #align set.Inter_unpair Set.iInter_unpair

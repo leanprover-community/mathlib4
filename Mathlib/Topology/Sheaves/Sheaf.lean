@@ -93,14 +93,14 @@ theorem isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unit TopCat.Presheaf.isSheaf_unit
 
-theorem isSheaf_iso_iff {F G : Presheaf C X} (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
+lemma isSheaf_iso_iff {F G : Presheaf C X} (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
   Presheaf.isSheaf_of_iso_iff α
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_iso_iff TopCat.Presheaf.isSheaf_iso_iff
 
 /-- Transfer the sheaf condition across an isomorphism of presheaves.
 -/
-theorem isSheaf_of_iso {F G : Presheaf C X} (α : F ≅ G) (h : F.IsSheaf) : G.IsSheaf :=
+lemma isSheaf_of_iso {F G : Presheaf C X} (α : F ≅ G) (h : F.IsSheaf) : G.IsSheaf :=
   (isSheaf_iso_iff α).1 h
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_of_iso TopCat.Presheaf.isSheaf_of_iso
@@ -160,7 +160,7 @@ theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.id_app TopCat.Sheaf.id_app
 
-theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
+lemma comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
     (f ≫ g).1.app t = f.1.app t ≫ g.1.app t :=
   rfl
 set_option linter.uppercaseLean3 false in

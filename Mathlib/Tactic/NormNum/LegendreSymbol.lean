@@ -222,11 +222,11 @@ theorem jacobiSymNat.qr₃_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b
   jacobiSymNat.qr₃ _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
 #align norm_num.jacobi_sym_nat.qr₃_mod Mathlib.Meta.NormNum.jacobiSymNat.qr₃_mod
 
-theorem isInt_jacobiSym : {a na : ℤ} → {b nb : ℕ} → {r : ℤ} →
+lemma isInt_jacobiSym : {a na : ℤ} → {b nb : ℕ} → {r : ℤ} →
     IsInt a na → IsNat b nb → jacobiSym na nb = r → IsInt (jacobiSym a b) r
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isInt_jacobiSymNat : {a na : ℕ} → {b nb : ℕ} → {r : ℤ} →
+lemma isInt_jacobiSymNat : {a na : ℕ} → {b nb : ℕ} → {r : ℤ} →
     IsNat a na → IsNat b nb → jacobiSymNat na nb = r → IsInt (jacobiSymNat a b) r
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 

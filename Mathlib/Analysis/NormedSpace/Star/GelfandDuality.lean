@@ -79,7 +79,7 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
     Quotient.mkₐ ℂ I
 #align ideal.to_character_space Ideal.toCharacterSpace
 
-theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
+lemma Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
   simp only [CharacterSpace.equivAlgHom_symm_coe, AlgHom.coe_comp, AlgHom.coe_coe,
@@ -90,7 +90,7 @@ theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
 
 /-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivalent
 to `gelfandTransform ℂ A a` takes the value zero at some character. -/
-theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
+lemma WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
     ∃ f : characterSpace ℂ A, f a = 0 := by
   obtain ⟨M, hM, haM⟩ := (span {a}).exists_le_maximal (span_singleton_ne_top ha)
   exact
@@ -99,7 +99,7 @@ theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
         (haM (mem_span_singleton.mpr ⟨1, (mul_one a).symm⟩))⟩
 #align weak_dual.character_space.exists_apply_eq_zero WeakDual.CharacterSpace.exists_apply_eq_zero
 
-theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
+lemma WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z := by
   refine' ⟨fun hz => _, _⟩
   · obtain ⟨f, hf⟩ := WeakDual.CharacterSpace.exists_apply_eq_zero hz
@@ -140,7 +140,7 @@ theorem gelfandTransform_map_star (a : A) :
 variable (A)
 
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
-theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
+lemma gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   nontriviality A
   refine' AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => _
   /- By `spectrum.gelfandTransform_eq`, the spectra of `star a * a` and its
@@ -157,7 +157,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
 #align gelfand_transform_isometry gelfandTransform_isometry
 
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
-theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
+lemma gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).injective, _⟩
   /- The range of `gelfandTransform ℂ A` is actually a `StarSubalgebra`. The key lemma below may be
     hard to spot; it's `map_star` coming from `WeakDual.Complex.instStarHomClass`, which is a
@@ -229,7 +229,7 @@ variable (A)
 
 /-- `WeakDual.CharacterSpace.compContinuousMap` sends the identity to the identity. -/
 @[simp]
-theorem compContinuousMap_id :
+lemma compContinuousMap_id :
     compContinuousMap (StarAlgHom.id ℂ A) = ContinuousMap.id (characterSpace ℂ A) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
 #align weak_dual.character_space.comp_continuous_map_id WeakDual.CharacterSpace.compContinuousMap_id

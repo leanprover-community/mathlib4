@@ -56,7 +56,7 @@ def toUpperSet (s : ClopenUpperSet α) : UpperSet α :=
 #align clopen_upper_set.to_upper_set ClopenUpperSet.toUpperSet
 
 @[ext]
-protected theorem ext {s t : ClopenUpperSet α} (h : (s : Set α) = t) : s = t :=
+protected lemma ext {s t : ClopenUpperSet α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
 #align clopen_upper_set.ext ClopenUpperSet.ext
 
@@ -94,12 +94,12 @@ theorem coe_inf (s t : ClopenUpperSet α) : (↑(s ⊓ t) : Set α) = ↑s ∩ �
 #align clopen_upper_set.coe_inf ClopenUpperSet.coe_inf
 
 @[simp]
-theorem coe_top : (↑(⊤ : ClopenUpperSet α) : Set α) = univ :=
+lemma coe_top : (↑(⊤ : ClopenUpperSet α) : Set α) = univ :=
   rfl
 #align clopen_upper_set.coe_top ClopenUpperSet.coe_top
 
 @[simp]
-theorem coe_bot : (↑(⊥ : ClopenUpperSet α) : Set α) = ∅ :=
+lemma coe_bot : (↑(⊥ : ClopenUpperSet α) : Set α) = ∅ :=
   rfl
 #align clopen_upper_set.coe_bot ClopenUpperSet.coe_bot
 

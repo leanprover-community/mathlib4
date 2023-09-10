@@ -26,13 +26,13 @@ instance typesSymmetric : SymmetricCategory.{u} (Type u) :=
 #align category_theory.types_symmetric CategoryTheory.typesSymmetric
 
 @[simp]
-theorem braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
+lemma braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
     ((β_ X Y).hom : X ⊗ Y → Y ⊗ X) (x, y) = (y, x) :=
   rfl
 #align category_theory.braiding_hom_apply CategoryTheory.braiding_hom_apply
 
 @[simp]
-theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
+lemma braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
     ((β_ X Y).inv : Y ⊗ X → X ⊗ Y) (y, x) = (x, y) :=
   rfl
 #align category_theory.braiding_inv_apply CategoryTheory.braiding_inv_apply

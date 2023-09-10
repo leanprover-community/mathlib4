@@ -18,15 +18,15 @@ open Lean Meta Elab.Tactic Parser.Tactic
 
 variable (p q : Prop) (s : α → Prop)
 
-theorem not_not_eq : (¬ ¬ p) = p := propext not_not
-theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
-theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
-theorem not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or
-theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
-theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
-theorem not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext not_imp
+lemma not_not_eq : (¬ ¬ p) = p := propext not_not
+lemma not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
+lemma not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
+lemma not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or
+lemma not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
+lemma not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
+lemma not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext not_imp
 theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
-theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
+lemma not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
 variable {β : Type u} [LinearOrder β]

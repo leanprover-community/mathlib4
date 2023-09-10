@@ -95,7 +95,7 @@ def dualEquiv : DistLatCat ≌ DistLatCat where
 
 end DistLatCat
 
-theorem distLatCat_dual_comp_forget_to_latCat :
+lemma distLatCat_dual_comp_forget_to_latCat :
     DistLatCat.dual ⋙ forget₂ DistLatCat LatCat = forget₂ DistLatCat LatCat ⋙ LatCat.dual :=
   rfl
 #align DistLat_dual_comp_forget_to_Lat distLatCat_dual_comp_forget_to_latCat

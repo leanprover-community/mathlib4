@@ -44,13 +44,13 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
   ⟨s, Trunc.mk ⟨a, h⟩⟩
 #align semiquot.mk Semiquot.mk
 
-theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
+lemma ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine' ⟨congr_arg _, fun h => _⟩
   cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 #align semiquot.ext_s Semiquot.ext_s
 
-theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=
+lemma ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=
   ext_s.trans Set.ext_iff
 #align semiquot.ext Semiquot.ext
 
@@ -59,7 +59,7 @@ theorem exists_mem (q : Semiquot α) : ∃ a, a ∈ q :=
   ⟨a, h⟩
 #align semiquot.exists_mem Semiquot.exists_mem
 
-theorem eq_mk_of_mem {q : Semiquot α} {a : α} (h : a ∈ q) : q = @mk _ a q.1 h :=
+lemma eq_mk_of_mem {q : Semiquot α} {a : α} (h : a ∈ q) : q = @mk _ a q.1 h :=
   ext_s.2 rfl
 #align semiquot.eq_mk_of_mem Semiquot.eq_mk_of_mem
 
@@ -73,7 +73,7 @@ protected def pure (a : α) : Semiquot α :=
 #align semiquot.pure Semiquot.pure
 
 @[simp]
-theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
+lemma mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
   Set.mem_singleton_iff
 #align semiquot.mem_pure' Semiquot.mem_pure'
 
@@ -147,17 +147,17 @@ instance : Monad Semiquot where
   bind := @Semiquot.bind
 
 @[simp]
-theorem map_def {β} : ((· <$> ·) : (α → β) → Semiquot α → Semiquot β) = map :=
+lemma map_def {β} : ((· <$> ·) : (α → β) → Semiquot α → Semiquot β) = map :=
   rfl
 #align semiquot.map_def Semiquot.map_def
 
 @[simp]
-theorem bind_def {β} : ((· >>= ·) : Semiquot α → (α → Semiquot β) → Semiquot β) = bind :=
+lemma bind_def {β} : ((· >>= ·) : Semiquot α → (α → Semiquot β) → Semiquot β) = bind :=
   rfl
 #align semiquot.bind_def Semiquot.bind_def
 
 @[simp]
-theorem mem_pure {a b : α} : a ∈ (pure b : Semiquot α) ↔ a = b :=
+lemma mem_pure {a b : α} : a ∈ (pure b : Semiquot α) ↔ a = b :=
   Set.mem_singleton_iff
 #align semiquot.mem_pure Semiquot.mem_pure
 
@@ -166,7 +166,7 @@ theorem mem_pure_self (a : α) : a ∈ (pure a : Semiquot α) :=
 #align semiquot.mem_pure_self Semiquot.mem_pure_self
 
 @[simp]
-theorem pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=
+lemma pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=
   ext_s.trans Set.singleton_eq_singleton_iff
 #align semiquot.pure_inj Semiquot.pure_inj
 
@@ -197,7 +197,7 @@ instance : SemilatticeSup (Semiquot α) :=
     sup_le := fun _ _ _ => Set.union_subset }
 
 @[simp]
-theorem pure_le {a : α} {s : Semiquot α} : pure a ≤ s ↔ a ∈ s :=
+lemma pure_le {a : α} {s : Semiquot α} : pure a ≤ s ↔ a ∈ s :=
   Set.singleton_subset_iff
 #align semiquot.pure_le Semiquot.pure_le
 
@@ -213,12 +213,12 @@ def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 #align semiquot.get Semiquot.get
 
-theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
+lemma get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   let ⟨a, h⟩ := exists_mem q
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
 #align semiquot.get_mem Semiquot.get_mem
 
-theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
+lemma eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
   ext.2 fun a => by simp; exact ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
 #align semiquot.eq_pure Semiquot.eq_pure
 
@@ -229,22 +229,22 @@ theorem pure_isPure (a : α) : IsPure (pure a)
     rwa [←ac] at ab
 #align semiquot.pure_is_pure Semiquot.pure_isPure
 
-theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
+lemma isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
   ⟨fun h => ⟨_, eq_pure h⟩, fun ⟨_, e⟩ => e.symm ▸ pure_isPure _⟩
 #align semiquot.is_pure_iff Semiquot.isPure_iff
 
-theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
+lemma IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
 #align semiquot.is_pure.mono Semiquot.IsPure.mono
 
-theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
+lemma IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by
       rw [eq_pure h, eq_pure (h.mono st)]; simp; exact h _ (get_mem _) _ (st <| get_mem _),
     le_of_eq⟩
 #align semiquot.is_pure.min Semiquot.IsPure.min
 
-theorem isPure_of_subsingleton [Subsingleton α] (q : Semiquot α) : IsPure q
+lemma isPure_of_subsingleton [Subsingleton α] (q : Semiquot α) : IsPure q
   | _, _, _, _ => Subsingleton.elim _ _
 #align semiquot.is_pure_of_subsingleton Semiquot.isPure_of_subsingleton
 
@@ -257,7 +257,7 @@ instance [Inhabited α] : Inhabited (Semiquot α) :=
   ⟨univ⟩
 
 @[simp]
-theorem mem_univ [Inhabited α] : ∀ a, a ∈ @univ α _ :=
+lemma mem_univ [Inhabited α] : ∀ a, a ∈ @univ α _ :=
   @Set.mem_univ α
 #align semiquot.mem_univ Semiquot.mem_univ
 
@@ -267,7 +267,7 @@ theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
 #align semiquot.univ_unique Semiquot.univ_unique
 
 @[simp]
-theorem isPure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
+lemma isPure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
   ⟨fun h => ⟨fun a b => h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ => h a b⟩
 #align semiquot.is_pure_univ Semiquot.isPure_univ
 

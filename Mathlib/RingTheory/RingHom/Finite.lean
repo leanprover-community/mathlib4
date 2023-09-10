@@ -20,18 +20,18 @@ open scoped TensorProduct
 
 open TensorProduct Algebra.TensorProduct
 
-theorem finite_stableUnderComposition : StableUnderComposition @Finite := by
+lemma finite_stableUnderComposition : StableUnderComposition @Finite := by
   introv R hf hg
   exact hg.comp hf
 #align ring_hom.finite_stable_under_composition RingHom.finite_stableUnderComposition
 
-theorem finite_respectsIso : RespectsIso @Finite := by
+lemma finite_respectsIso : RespectsIso @Finite := by
   apply finite_stableUnderComposition.respectsIso
   intros
   exact Finite.of_surjective _ (RingEquiv.toEquiv _).surjective
 #align ring_hom.finite_respects_iso RingHom.finite_respectsIso
 
-theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
+lemma finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
   refine StableUnderBaseChange.mk _ finite_respectsIso ?_
   classical
   introv h

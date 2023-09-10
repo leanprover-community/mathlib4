@@ -202,7 +202,7 @@ def Model.bundled {M : Type w} [LM : L.Structure M] [ne : Nonempty M] (h : M ⊨
 #align first_order.language.Theory.model.bundled FirstOrder.Language.Theory.Model.bundled
 
 @[simp]
-theorem coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.bundled : Type w) = M :=
+lemma coe_of {M : Type w} [L.Structure M] [Nonempty M] (h : M ⊨ T) : (h.bundled : Type w) = M :=
   rfl
 #align first_order.language.Theory.coe_of FirstOrder.Language.Theory.coe_of
 

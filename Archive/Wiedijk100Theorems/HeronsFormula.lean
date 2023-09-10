@@ -39,7 +39,7 @@ variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ
   We show this by equating this formula to `a * b * sin γ`, where `γ` is the angle opposite
   the side `c`.
  -/
-theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
+lemma heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
     let a := dist p1 p2
     let b := dist p3 p2
     let c := dist p1 p3

@@ -112,11 +112,11 @@ theorem mk₂'_apply (f : M → N → Pₗ) {H1 H2 H3 H4} (m : M) (n : N) :
     (mk₂' R S f H1 H2 H3 H4 : M →ₗ[R] N →ₗ[S] Pₗ) m n = f m n := rfl
 #align linear_map.mk₂'_apply LinearMap.mk₂'_apply
 
-theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m n, f m n = g m n) : f = g :=
+lemma ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m n, f m n = g m n) : f = g :=
   LinearMap.ext fun m => LinearMap.ext fun n => H m n
 #align linear_map.ext₂ LinearMap.ext₂
 
-theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
+lemma congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
   LinearMap.congr_fun (LinearMap.congr_fun h x) y
 #align linear_map.congr_fun₂ LinearMap.congr_fun₂
 
@@ -148,7 +148,7 @@ theorem flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.f
 
 open BigOperators
 
-theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
+lemma flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]
 #align linear_map.flip_inj LinearMap.flip_inj
 
@@ -176,7 +176,7 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
   (flip f y).map_smulₛₗ _ _
 #align linear_map.map_smulₛₗ₂ LinearMap.map_smulₛₗ₂
 
-theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
+lemma map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
     f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
   (flip f y).map_sum
 #align linear_map.map_sum₂ LinearMap.map_sum₂
@@ -332,7 +332,7 @@ theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl�
 #align linear_map.compl₂_apply LinearMap.compl₂_apply
 
 @[simp]
-theorem compl₂_id : f.compl₂ LinearMap.id = f := by
+lemma compl₂_id : f.compl₂ LinearMap.id = f := by
   ext
   rw [compl₂_apply, id_coe, id.def]
 #align linear_map.compl₂_id LinearMap.compl₂_id
@@ -355,7 +355,7 @@ theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁�
   simp_rw [compl₁₂_apply, id_coe, id.def]
 #align linear_map.compl₁₂_id_id LinearMap.compl₁₂_id_id
 
-theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
+lemma compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
     f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ := by
   constructor <;> intro h
@@ -411,12 +411,12 @@ variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
 
-theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
+lemma lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
   smul_right_injective _ hx
 #align linear_map.lsmul_injective LinearMap.lsmul_injective
 
-theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
+lemma ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
   LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 #align linear_map.ker_lsmul LinearMap.ker_lsmul

@@ -80,7 +80,7 @@ open Zsqrtd
 it is contained in the submonoid of unitary elements.
 
 TODO: merge this result with `Pell.isPell_iff_mem_unitary`. -/
-theorem is_pell_solution_iff_mem_unitary {d : ℤ} {a : ℤ√d} :
+lemma is_pell_solution_iff_mem_unitary {d : ℤ} {a : ℤ√d} :
     a.re ^ 2 - d * a.im ^ 2 = 1 ↔ a ∈ unitary (ℤ√d) := by
   rw [← norm_eq_one_iff_mem_unitary, norm_def, sq, sq, ← mul_assoc]
 #align pell.is_pell_solution_iff_mem_unitary Pell.is_pell_solution_iff_mem_unitary
@@ -139,7 +139,7 @@ theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.p
 
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
 @[ext]
-theorem ext {a b : Solution₁ d} (hx : a.x = b.x) (hy : a.y = b.y) : a = b :=
+lemma ext {a b : Solution₁ d} (hx : a.x = b.x) (hy : a.y = b.y) : a = b :=
   Subtype.ext <| ext.mpr ⟨hx, hy⟩
 #align pell.solution₁.ext Pell.Solution₁.ext
 
@@ -165,12 +165,12 @@ theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : 
 #align pell.solution₁.coe_mk Pell.Solution₁.coe_mk
 
 @[simp]
-theorem x_one : (1 : Solution₁ d).x = 1 :=
+lemma x_one : (1 : Solution₁ d).x = 1 :=
   rfl
 #align pell.solution₁.x_one Pell.Solution₁.x_one
 
 @[simp]
-theorem y_one : (1 : Solution₁ d).y = 0 :=
+lemma y_one : (1 : Solution₁ d).y = 0 :=
   rfl
 #align pell.solution₁.y_one Pell.Solution₁.y_one
 
@@ -225,7 +225,7 @@ theorem x_ne_zero (h₀ : 0 ≤ d) (a : Solution₁ d) : a.x ≠ 0 := by
 #align pell.solution₁.x_ne_zero Pell.Solution₁.x_ne_zero
 
 /-- A solution with `x > 1` must have `y ≠ 0`. -/
-theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := by
+lemma y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := by
   intro hy
   have prop := a.prop
   rw [hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero] at prop
@@ -233,14 +233,14 @@ theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := 
 #align pell.solution₁.y_ne_zero_of_one_lt_x Pell.Solution₁.y_ne_zero_of_one_lt_x
 
 /-- If a solution has `x > 1`, then `d` is positive. -/
-theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
+lemma d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
   refine' pos_of_mul_pos_left _ (sq_nonneg a.y)
   rw [a.prop_y, sub_pos]
   exact one_lt_pow ha two_ne_zero
 #align pell.solution₁.d_pos_of_one_lt_x Pell.Solution₁.d_pos_of_one_lt_x
 
 /-- If a solution has `x > 1`, then `d` is not a square. -/
-theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
+lemma d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
@@ -255,7 +255,7 @@ theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) :
 #align pell.solution₁.eq_one_of_x_eq_one Pell.Solution₁.eq_one_of_x_eq_one
 
 /-- A solution is `1` or `-1` if and only if `y = 0`. -/
-theorem eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 ↔ a.y = 0 := by
+lemma eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 ↔ a.y = 0 := by
   refine' ⟨fun H => H.elim (fun h => by simp [h]) fun h => by simp [h], fun H => _⟩
   have prop := a.prop
   rw [H, sq (0 : ℤ), mul_zero, mul_zero, sub_zero, sq_eq_one_iff] at prop
@@ -263,7 +263,7 @@ theorem eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 �
 #align pell.solution₁.eq_one_or_neg_one_iff_y_eq_zero Pell.Solution₁.eq_one_or_neg_one_iff_y_eq_zero
 
 /-- The set of solutions with `x > 0` is closed under multiplication. -/
-theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a * b).x := by
+lemma x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a * b).x := by
   simp only [x_mul]
   refine' neg_lt_iff_pos_add'.mp (abs_lt.mp _).1
   rw [← abs_of_pos ha, ← abs_of_pos hb, ← abs_mul, ← sq_lt_sq, mul_pow a.x, a.prop_x, b.prop_x, ←
@@ -280,7 +280,7 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
 #align pell.solution₁.x_mul_pos Pell.Solution₁.x_mul_pos
 
 /-- The set of solutions with `x` and `y` positive is closed under multiplication. -/
-theorem y_mul_pos {a b : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (hbx : 0 < b.x)
+lemma y_mul_pos {a b : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (hbx : 0 < b.x)
     (hby : 0 < b.y) : 0 < (a * b).y := by
   simp only [y_mul]
   positivity
@@ -288,7 +288,7 @@ theorem y_mul_pos {a b : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (hbx : 0
 
 /-- If `(x, y)` is a solution with `x` positive, then all its powers with natural exponents
 have positive `x`. -/
-theorem x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x := by
+lemma x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x := by
   induction' n with n ih
   · simp only [Nat.zero_eq, pow_zero, x_one, zero_lt_one]
   · rw [pow_succ]
@@ -297,7 +297,7 @@ theorem x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x 
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then all its powers with positive
 natural exponents have positive `y`. -/
-theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : ℕ) :
+lemma y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : ℕ) :
     0 < (a ^ n.succ).y := by
   induction' n with n ih
   · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, hay, pow_one]
@@ -307,7 +307,7 @@ theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : 
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then all its powers with positive
 exponents have positive `y`. -/
-theorem y_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) {n : ℤ} (hn : 0 < n) :
+lemma y_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) {n : ℤ} (hn : 0 < n) :
     0 < (a ^ n).y := by
   lift n to ℕ using hn.le
   norm_cast at hn ⊢
@@ -316,7 +316,7 @@ theorem y_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) {n : ℤ}
 #align pell.solution₁.y_zpow_pos Pell.Solution₁.y_zpow_pos
 
 /-- If `(x, y)` is a solution with `x` positive, then all its powers have positive `x`. -/
-theorem x_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℤ) : 0 < (a ^ n).x := by
+lemma x_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℤ) : 0 < (a ^ n).x := by
   cases n with
   | ofNat n =>
     rw [Int.ofNat_eq_coe, zpow_ofNat]
@@ -328,7 +328,7 @@ theorem x_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℤ) : 0 < (a ^ n).x
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then the `y` component of any power
 has the same sign as the exponent. -/
-theorem sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y)
+lemma sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y)
     (n : ℤ) : (a ^ n).y.sign = n.sign := by
   rcases n with ((_ | n) | n)
   · rfl
@@ -492,22 +492,22 @@ namespace IsFundamental
 open Solution₁
 
 /-- A fundamental solution has positive `x`. -/
-theorem x_pos {a : Solution₁ d} (h : IsFundamental a) : 0 < a.x :=
+lemma x_pos {a : Solution₁ d} (h : IsFundamental a) : 0 < a.x :=
   zero_lt_one.trans h.1
 #align pell.is_fundamental.x_pos Pell.IsFundamental.x_pos
 
 /-- If a fundamental solution exists, then `d` must be positive. -/
-theorem d_pos {a : Solution₁ d} (h : IsFundamental a) : 0 < d :=
+lemma d_pos {a : Solution₁ d} (h : IsFundamental a) : 0 < d :=
   d_pos_of_one_lt_x h.1
 #align pell.is_fundamental.d_pos Pell.IsFundamental.d_pos
 
 /-- If a fundamental solution exists, then `d` must be a non-square. -/
-theorem d_nonsquare {a : Solution₁ d} (h : IsFundamental a) : ¬IsSquare d :=
+lemma d_nonsquare {a : Solution₁ d} (h : IsFundamental a) : ¬IsSquare d :=
   d_nonsquare_of_one_lt_x h.1
 #align pell.is_fundamental.d_nonsquare Pell.IsFundamental.d_nonsquare
 
 /-- If there is a fundamental solution, it is unique. -/
-theorem subsingleton {a b : Solution₁ d} (ha : IsFundamental a) (hb : IsFundamental b) : a = b := by
+lemma subsingleton {a b : Solution₁ d} (ha : IsFundamental a) (hb : IsFundamental b) : a = b := by
   have hx := le_antisymm (ha.2.2 hb.1) (hb.2.2 ha.1)
   refine' Solution₁.ext hx _
   have : d * a.y ^ 2 = d * b.y ^ 2 := by rw [a.prop_y, b.prop_y, hx]
@@ -541,7 +541,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
 
 /-- The map sending an integer `n` to the `y`-coordinate of `a^n` for a fundamental
 solution `a` is stritcly increasing. -/
-theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
+lemma y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     StrictMono fun n : ℤ => (a ^ n).y := by
   have H : ∀ n : ℤ, 0 ≤ n → (a ^ n).y < (a ^ (n + 1)).y := by
     intro n hn
@@ -563,7 +563,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
 #align pell.is_fundamental.y_strict_mono Pell.IsFundamental.y_strictMono
 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
-theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
+lemma zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
     (a ^ m).y < (a ^ n).y ↔ m < n := by
   refine' ⟨fun H => _, fun H => h.y_strictMono H⟩
   contrapose! H
@@ -571,14 +571,14 @@ theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
 #align pell.is_fundamental.zpow_y_lt_iff_lt Pell.IsFundamental.zpow_y_lt_iff_lt
 
 /-- The `n`th power of a fundamental solution is trivial if and only if `n = 0`. -/
-theorem zpow_eq_one_iff {a : Solution₁ d} (h : IsFundamental a) (n : ℤ) : a ^ n = 1 ↔ n = 0 := by
+lemma zpow_eq_one_iff {a : Solution₁ d} (h : IsFundamental a) (n : ℤ) : a ^ n = 1 ↔ n = 0 := by
   rw [← zpow_zero a]
   exact ⟨fun H => h.y_strictMono.injective (congr_arg Solution₁.y H), fun H => H ▸ rfl⟩
 #align pell.is_fundamental.zpow_eq_one_iff Pell.IsFundamental.zpow_eq_one_iff
 
 /-- A power of a fundamental solution is never equal to the negative of a power of this
 fundamental solution. -/
-theorem zpow_ne_neg_zpow {a : Solution₁ d} (h : IsFundamental a) {n n' : ℤ} : a ^ n ≠ -a ^ n' := by
+lemma zpow_ne_neg_zpow {a : Solution₁ d} (h : IsFundamental a) {n n' : ℤ} : a ^ n ≠ -a ^ n' := by
   intro hf
   apply_fun Solution₁.x at hf
   have H := x_zpow_pos h.x_pos n
@@ -588,14 +588,14 @@ theorem zpow_ne_neg_zpow {a : Solution₁ d} (h : IsFundamental a) {n n' : ℤ} 
 
 /-- The `x`-coordinate of a fundamental solution is a lower bound for the `x`-coordinate
 of any positive solution. -/
-theorem x_le_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x) :
+lemma x_le_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x) :
     a₁.x ≤ a.x :=
   h.2.2 hax
 #align pell.is_fundamental.x_le_x Pell.IsFundamental.x_le_x
 
 /-- The `y`-coordinate of a fundamental solution is a lower bound for the `y`-coordinate
 of any positive solution. -/
-theorem y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
+lemma y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : a₁.y ≤ a.y := by
   have H : d * (a₁.y ^ 2 - a.y ^ 2) = a₁.x ^ 2 - a.x ^ 2 := by rw [a.prop_x, a₁.prop_x]; ring
   rw [← abs_of_pos hay, ← abs_of_pos h.2.1, ← sq_le_sq, ← mul_le_mul_left h.d_pos, ← sub_nonpos, ←
@@ -605,7 +605,7 @@ theorem y_le_y {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ 
 #align pell.is_fundamental.y_le_y Pell.IsFundamental.y_le_y
 
 -- helper lemma for the next three results
-theorem x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d}
+lemma x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d}
     (hax : 1 < a.x) (hay : 0 < a.y) : a.x * a₁.y ≤ a.y * a₁.x := by
   rw [← abs_of_pos <| zero_lt_one.trans hax, ← abs_of_pos hay, ← abs_of_pos h.x_pos, ←
     abs_of_pos h.2.1, ← abs_mul, ← abs_mul, ← sq_le_sq, mul_pow, mul_pow, a.prop_x, a₁.prop_x, ←
@@ -617,7 +617,7 @@ theorem x_mul_y_le_y_mul_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : 
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
 the `y`-coordinate remains nonnegative. -/
-theorem mul_inv_y_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
+lemma mul_inv_y_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 ≤ (a * a₁⁻¹).y := by
   simpa only [y_inv, mul_neg, y_mul, le_neg_add_iff_add_le, add_zero] using
     h.x_mul_y_le_y_mul_x hax hay
@@ -625,7 +625,7 @@ theorem mul_inv_y_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
 the `x`-coordinate stays positive. -/
-theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
+lemma mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 < (a * a₁⁻¹).x := by
   simp only [x_mul, x_inv, y_inv, mul_neg, lt_add_neg_iff_add_lt, zero_add]
   refine' (mul_lt_mul_left <| zero_lt_one.trans hax).mp _
@@ -638,7 +638,7 @@ theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solut
 
 /-- If we multiply a positive solution with the inverse of a fundamental solution,
 the `x`-coordinate decreases. -/
-theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
+lemma mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : (a * a₁⁻¹).x < a.x := by
   simp only [x_mul, x_inv, y_inv, mul_neg, add_neg_lt_iff_le_add']
   refine' (mul_lt_mul_left h.2.1).mp _
@@ -660,7 +660,7 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
 #align pell.is_fundamental.mul_inv_x_lt_x Pell.IsFundamental.mul_inv_x_lt_x
 
 /-- Any nonnegative solution is a power with nonnegative exponent of a fundamental solution. -/
-theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
+lemma eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
   -- Porting note: added
@@ -690,7 +690,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
 #align pell.is_fundamental.eq_pow_of_nonneg Pell.IsFundamental.eq_pow_of_nonneg
 
 /-- Every solution is, up to a sign, a power of a given fundamental solution. -/
-theorem eq_zpow_or_neg_zpow {a₁ : Solution₁ d} (h : IsFundamental a₁) (a : Solution₁ d) :
+lemma eq_zpow_or_neg_zpow {a₁ : Solution₁ d} (h : IsFundamental a₁) (a : Solution₁ d) :
     ∃ n : ℤ, a = a₁ ^ n ∨ a = -a₁ ^ n := by
   obtain ⟨b, hbx, hby, hb⟩ := exists_pos_variant h.d_pos a
   obtain ⟨n, hn⟩ := h.eq_pow_of_nonneg hbx hby

@@ -440,7 +440,7 @@ theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
+lemma hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
     (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.injective w
@@ -478,7 +478,7 @@ def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
   lift R (0 : X → R)
 #align free_algebra.algebra_map_inv FreeAlgebra.algebraMapInv
 
-theorem algebraMap_leftInverse :
+lemma algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
   simp [algebraMapInv]
 #align free_algebra.algebra_map_left_inverse FreeAlgebra.algebraMap_leftInverse
@@ -500,7 +500,7 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔
 #align free_algebra.algebra_map_eq_one_iff FreeAlgebra.algebraMap_eq_one_iff
 
 -- this proof is copied from the approach in `FreeAbelianGroup.of_injective`
-theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
+lemma ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
   fun x y hoxy ↦
   by_contradiction <| by
     classical exact fun hxy : x ≠ y ↦
@@ -512,12 +512,12 @@ theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgeb
 #align free_algebra.ι_injective FreeAlgebra.ι_injective
 
 @[simp]
-theorem ι_inj [Nontrivial R] (x y : X) : ι R x = ι R y ↔ x = y :=
+lemma ι_inj [Nontrivial R] (x y : X) : ι R x = ι R y ↔ x = y :=
   ι_injective.eq_iff
 #align free_algebra.ι_inj FreeAlgebra.ι_inj
 
 @[simp]
-theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h ↦ by
+lemma ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h ↦ by
   let f0 : FreeAlgebra R X →ₐ[R] R := lift R 0
   let f1 : FreeAlgebra R X →ₐ[R] R := lift R 1
   have hf0 : f0 (ι R x) = 0 := lift_ι_apply _ _
@@ -528,12 +528,12 @@ theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap 
 #align free_algebra.ι_ne_algebra_map FreeAlgebra.ι_ne_algebraMap
 
 @[simp]
-theorem ι_ne_zero [Nontrivial R] (x : X) : ι R x ≠ 0 :=
+lemma ι_ne_zero [Nontrivial R] (x : X) : ι R x ≠ 0 :=
   ι_ne_algebraMap x 0
 #align free_algebra.ι_ne_zero FreeAlgebra.ι_ne_zero
 
 @[simp]
-theorem ι_ne_one [Nontrivial R] (x : X) : ι R x ≠ 1 :=
+lemma ι_ne_one [Nontrivial R] (x : X) : ι R x ≠ 1 :=
   ι_ne_algebraMap x 1
 #align free_algebra.ι_ne_one FreeAlgebra.ι_ne_one
 
@@ -551,7 +551,7 @@ If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of
 preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim]
-theorem induction {C : FreeAlgebra R X → Prop}
+lemma induction {C : FreeAlgebra R X → Prop}
     (h_grade0 : ∀ r, C (algebraMap R (FreeAlgebra R X) r)) (h_grade1 : ∀ x, C (ι R x))
     (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
     (a : FreeAlgebra R X) : C a := by
@@ -575,7 +575,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
 #align free_algebra.induction FreeAlgebra.induction
 
 @[simp]
-theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
+lemma adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
   set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
   refine top_unique fun x hx => ?_; clear hx
   induction x using FreeAlgebra.induction with

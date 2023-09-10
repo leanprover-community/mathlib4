@@ -44,7 +44,7 @@ variable {𝕜 E : Type*}
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
 all of `s` to values strictly below `1`. -/
-theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+lemma separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
     (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) : ∃ f : E →L[ℝ] ℝ, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
   let f : E →ₗ.[ℝ] ℝ := LinearPMap.mkSpanSingleton x₀ 1 (ne_of_mem_of_not_mem hs₀ hx₀).symm
@@ -193,7 +193,7 @@ theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClo
 #align geometric_hahn_banach_closed_point geometric_hahn_banach_closed_point
 
 /-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
-theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
+lemma geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     ∃ f : E →L[ℝ] ℝ, f x < f y := by
   obtain ⟨f, s, t, hs, st, ht⟩ :=
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton

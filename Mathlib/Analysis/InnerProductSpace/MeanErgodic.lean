@@ -40,7 +40,7 @@ Usually, this fact is not formulated as a separate lemma.
 I chose to do it in order to isolate parts of the proof that do not rely
 on the inner product space structure.
 -/
-theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace 𝕜 E]
+lemma LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace 𝕜 E]
     (f : E →ₗ[𝕜] E) (hf : LipschitzWith 1 f) (g : E →L[𝕜] LinearMap.eqLocus f 1)
     (hg_proj : ∀ x : LinearMap.eqLocus f 1, g x = x)
     (hg_ker : (LinearMap.ker g : Set E) ⊆ closure (LinearMap.range (f - 1))) (x : E) :

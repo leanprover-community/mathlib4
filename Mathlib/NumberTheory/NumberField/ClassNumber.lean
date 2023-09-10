@@ -41,7 +41,7 @@ noncomputable def classNumber : ℕ :=
 variable {K}
 
 /-- The class number of a number field is `1` iff the ring of integers is a PID. -/
-theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (ringOfIntegers K) :=
+lemma classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (ringOfIntegers K) :=
   card_classGroup_eq_one_iff
 #align number_field.class_number_eq_one_iff NumberField.classNumber_eq_one_iff
 
@@ -51,7 +51,7 @@ namespace Rat
 
 open NumberField
 
-theorem classNumber_eq : NumberField.classNumber ℚ = 1 :=
+lemma classNumber_eq : NumberField.classNumber ℚ = 1 :=
   classNumber_eq_one_iff.mpr <| by
     convert IsPrincipalIdealRing.of_surjective
       (Rat.ringOfIntegersEquiv.symm: ℤ →+* ringOfIntegers ℚ) Rat.ringOfIntegersEquiv.symm.surjective

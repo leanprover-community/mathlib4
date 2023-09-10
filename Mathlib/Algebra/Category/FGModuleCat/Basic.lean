@@ -198,7 +198,7 @@ instance forget₂Monoidal_linear : (forget₂Monoidal R).toFunctor.Linear R := 
   exact Functor.fullSubcategoryInclusionLinear _ _
 #align fgModule.forget₂_monoidal_linear FGModuleCat.forget₂Monoidal_linear
 
-theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
+lemma Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
     Iso.conj i f = LinearEquiv.conj (isoToLinearEquiv i) f :=
   rfl
 #align fgModule.iso.conj_eq_conj FGModuleCat.Iso.conj_eq_conj
@@ -225,7 +225,7 @@ instance : MonoidalClosed (FGModuleCat K) := by
 variable (V W : FGModuleCat K)
 
 @[simp]
-theorem ihom_obj : (ihom V).obj W = FGModuleCat.of K (V →ₗ[K] W) :=
+lemma ihom_obj : (ihom V).obj W = FGModuleCat.of K (V →ₗ[K] W) :=
   rfl
 #align fgModule.ihom_obj FGModuleCat.ihom_obj
 
@@ -245,7 +245,7 @@ def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K 
   coevaluation K V
 #align fgModule.fgModule_coevaluation FGModuleCat.FGModuleCatCoevaluation
 
-theorem FGModuleCatCoevaluation_apply_one :
+lemma FGModuleCatCoevaluation_apply_one :
     FGModuleCatCoevaluation K V (1 : K) =
       ∑ i : Basis.ofVectorSpaceIndex K V,
         (Basis.ofVectorSpace K V) i ⊗ₜ[K] (Basis.ofVectorSpace K V).coord i :=
@@ -266,7 +266,7 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 -- Porting note: extremely slow, was fast in mathlib3.
 -- I tried many things using `dsimp` and `change`, but couldn't find anything faster than this.
 set_option maxHeartbeats 1500000 in
-private theorem coevaluation_evaluation :
+private lemma coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     (𝟙 V' ⊗ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ⊗ 𝟙 V') =
       (ρ_ V').hom ≫ (λ_ V').inv := by
@@ -274,7 +274,7 @@ private theorem coevaluation_evaluation :
 
 -- Porting note: extremely slow, was fast in mathlib3.
 set_option maxHeartbeats 400000 in
-private theorem evaluation_coevaluation :
+private lemma evaluation_coevaluation :
     (FGModuleCatCoevaluation K V ⊗ 𝟙 V) ≫
         (α_ V (FGModuleCatDual K V) V).hom ≫ (𝟙 V ⊗ FGModuleCatEvaluation K V) =
       (λ_ V).hom ≫ (ρ_ V).inv := by

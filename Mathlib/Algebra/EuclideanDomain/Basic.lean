@@ -32,7 +32,7 @@ variable [EuclideanDomain R]
 /-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0`  -/
 local infixl:50 " ≺ " => EuclideanDomain.R
 
-theorem mul_div_cancel_left {a : R} (b) (a0 : a ≠ 0) : a * b / a = b :=
+lemma mul_div_cancel_left {a : R} (b) (a0 : a ≠ 0) : a * b / a = b :=
   Eq.symm <|
     eq_of_sub_eq_zero <|
       by_contradiction fun h => by
@@ -47,7 +47,7 @@ theorem mul_div_cancel (a) {b : R} (b0 : b ≠ 0) : a * b / b = a := by
 #align euclidean_domain.mul_div_cancel EuclideanDomain.mul_div_cancel
 
 @[simp]
-theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
+lemma mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
   ⟨fun h => by
     rw [← div_add_mod a b, h, add_zero]
     exact dvd_mul_right _ _, fun ⟨c, e⟩ => by
@@ -63,7 +63,7 @@ theorem mod_self (a : R) : a % a = 0 :=
   mod_eq_zero.2 dvd_rfl
 #align euclidean_domain.mod_self EuclideanDomain.mod_self
 
-theorem dvd_mod_iff {a b c : R} (h : c ∣ b) : c ∣ a % b ↔ c ∣ a := by
+lemma dvd_mod_iff {a b c : R} (h : c ∣ b) : c ∣ a % b ↔ c ∣ a := by
   rw [← dvd_add_right (h.mul_right _), div_add_mod]
 #align euclidean_domain.dvd_mod_iff EuclideanDomain.dvd_mod_iff
 
@@ -78,21 +78,21 @@ theorem zero_mod (b : R) : 0 % b = 0 :=
 #align euclidean_domain.zero_mod EuclideanDomain.zero_mod
 
 @[simp]
-theorem zero_div {a : R} : 0 / a = 0 :=
+lemma zero_div {a : R} : 0 / a = 0 :=
   by_cases (fun a0 : a = 0 => a0.symm ▸ div_zero 0) fun a0 => by
     simpa only [zero_mul] using mul_div_cancel 0 a0
 #align euclidean_domain.zero_div EuclideanDomain.zero_div
 
 @[simp]
-theorem div_self {a : R} (a0 : a ≠ 0) : a / a = 1 := by
+lemma div_self {a : R} (a0 : a ≠ 0) : a / a = 1 := by
   simpa only [one_mul] using mul_div_cancel 1 a0
 #align euclidean_domain.div_self EuclideanDomain.div_self
 
-theorem eq_div_of_mul_eq_left {a b c : R} (hb : b ≠ 0) (h : a * b = c) : a = c / b := by
+lemma eq_div_of_mul_eq_left {a b c : R} (hb : b ≠ 0) (h : a * b = c) : a = c / b := by
   rw [← h, mul_div_cancel _ hb]
 #align euclidean_domain.eq_div_of_mul_eq_left EuclideanDomain.eq_div_of_mul_eq_left
 
-theorem eq_div_of_mul_eq_right {a b c : R} (ha : a ≠ 0) (h : a * b = c) : b = c / a := by
+lemma eq_div_of_mul_eq_right {a b c : R} (ha : a ≠ 0) (h : a * b = c) : b = c / a := by
   rw [← h, mul_div_cancel_left _ ha]
 #align euclidean_domain.eq_div_of_mul_eq_right EuclideanDomain.eq_div_of_mul_eq_right
 
@@ -104,7 +104,7 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
   rw [mul_div_cancel_left _ hz, mul_left_comm, mul_div_cancel_left _ hz]
 #align euclidean_domain.mul_div_assoc EuclideanDomain.mul_div_assoc
 
-protected theorem mul_div_cancel' {a b : R} (hb : b ≠ 0) (hab : b ∣ a) : b * (a / b) = a := by
+protected lemma mul_div_cancel' {a b : R} (hb : b ≠ 0) (hab : b ∣ a) : b * (a / b) = a := by
   rw [← mul_div_assoc _ hab, mul_div_cancel_left _ hb]
 #align euclidean_domain.mul_div_cancel' EuclideanDomain.mul_div_cancel'
 
@@ -114,7 +114,7 @@ theorem div_one (p : R) : p / 1 = p :=
   (EuclideanDomain.eq_div_of_mul_eq_left (one_ne_zero' R) (mul_one p)).symm
 #align euclidean_domain.div_one EuclideanDomain.div_one
 
-theorem div_dvd_of_dvd {p q : R} (hpq : q ∣ p) : p / q ∣ p := by
+lemma div_dvd_of_dvd {p q : R} (hpq : q ∣ p) : p / q ∣ p := by
   by_cases hq : q = 0
   · rw [hq, zero_dvd_iff] at hpq
     rw [hpq]
@@ -124,7 +124,7 @@ theorem div_dvd_of_dvd {p q : R} (hpq : q ∣ p) : p / q ∣ p := by
     EuclideanDomain.mul_div_cancel _ hq]
 #align euclidean_domain.div_dvd_of_dvd EuclideanDomain.div_dvd_of_dvd
 
-theorem dvd_div_of_mul_dvd {a b c : R} (h : a * b ∣ c) : b ∣ c / a := by
+lemma dvd_div_of_mul_dvd {a b c : R} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [div_zero, dvd_zero]
   rcases h with ⟨d, rfl⟩
@@ -165,19 +165,19 @@ theorem gcd_dvd_right (a b : R) : gcd a b ∣ b :=
   (gcd_dvd a b).right
 #align euclidean_domain.gcd_dvd_right EuclideanDomain.gcd_dvd_right
 
-protected theorem gcd_eq_zero_iff {a b : R} : gcd a b = 0 ↔ a = 0 ∧ b = 0 :=
+protected lemma gcd_eq_zero_iff {a b : R} : gcd a b = 0 ↔ a = 0 ∧ b = 0 :=
   ⟨fun h => by simpa [h] using gcd_dvd a b, by
     rintro ⟨rfl, rfl⟩
     exact gcd_zero_right _⟩
 #align euclidean_domain.gcd_eq_zero_iff EuclideanDomain.gcd_eq_zero_iff
 
-theorem dvd_gcd {a b c : R} : c ∣ a → c ∣ b → c ∣ gcd a b :=
+lemma dvd_gcd {a b c : R} : c ∣ a → c ∣ b → c ∣ gcd a b :=
   GCD.induction a b (fun _ _ H => by simpa only [gcd_zero_left] using H) fun a b _ IH ca cb => by
     rw [gcd_val]
     exact IH ((dvd_mod_iff ca).2 cb) ca
 #align euclidean_domain.dvd_gcd EuclideanDomain.dvd_gcd
 
-theorem gcd_eq_left {a b : R} : gcd a b = a ↔ a ∣ b :=
+lemma gcd_eq_left {a b : R} : gcd a b = a ↔ a ∣ b :=
   ⟨fun h => by
     rw [← h]
     apply gcd_dvd_right, fun h => by rw [gcd_val, mod_eq_zero.2 h, gcd_zero_left]⟩
@@ -269,7 +269,7 @@ theorem dvd_lcm_right (x y : R) : y ∣ lcm x y :=
     ⟨z, Eq.symm <| eq_div_of_mul_eq_right hxy <| by rw [← mul_assoc, mul_right_comm, ← hz]⟩
 #align euclidean_domain.dvd_lcm_right EuclideanDomain.dvd_lcm_right
 
-theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := by
+lemma lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := by
   rw [lcm]
   by_cases hxy : gcd x y = 0
   · rw [hxy, div_zero]
@@ -293,7 +293,7 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
 #align euclidean_domain.lcm_dvd EuclideanDomain.lcm_dvd
 
 @[simp]
-theorem lcm_dvd_iff {x y z : R} : lcm x y ∣ z ↔ x ∣ z ∧ y ∣ z :=
+lemma lcm_dvd_iff {x y z : R} : lcm x y ∣ z ↔ x ∣ z ∧ y ∣ z :=
   ⟨fun hz => ⟨(dvd_lcm_left _ _).trans hz, (dvd_lcm_right _ _).trans hz⟩, fun ⟨hxz, hyz⟩ =>
     lcm_dvd hxz hyz⟩
 #align euclidean_domain.lcm_dvd_iff EuclideanDomain.lcm_dvd_iff
@@ -307,7 +307,7 @@ theorem lcm_zero_right (x : R) : lcm x 0 = 0 := by rw [lcm, mul_zero, zero_div]
 #align euclidean_domain.lcm_zero_right EuclideanDomain.lcm_zero_right
 
 @[simp]
-theorem lcm_eq_zero_iff {x y : R} : lcm x y = 0 ↔ x = 0 ∨ y = 0 := by
+lemma lcm_eq_zero_iff {x y : R} : lcm x y = 0 ↔ x = 0 ∨ y = 0 := by
   constructor
   · intro hxy
     rw [lcm, mul_div_assoc _ (gcd_dvd_right _ _), mul_eq_zero] at hxy
@@ -341,14 +341,14 @@ end LCM
 
 section Div
 
-theorem mul_div_mul_cancel {a b c : R} (ha : a ≠ 0) (hcb : c ∣ b) : a * b / (a * c) = b / c := by
+lemma mul_div_mul_cancel {a b c : R} (ha : a ≠ 0) (hcb : c ∣ b) : a * b / (a * c) = b / c := by
   by_cases hc : c = 0; · simp [hc]
   refine' eq_div_of_mul_eq_right hc (mul_left_cancel₀ ha _)
   rw [← mul_assoc, ← mul_div_assoc _ (mul_dvd_mul_left a hcb),
     mul_div_cancel_left _ (mul_ne_zero ha hc)]
 #align euclidean_domain.mul_div_mul_cancel EuclideanDomain.mul_div_mul_cancel
 
-theorem mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b) :
+lemma mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b) :
     a * b / (c * d) = a / c * (b / d) := by
   rcases eq_or_ne c 0 with (rfl | hc0); · simp
   rcases eq_or_ne d 0 with (rfl | hd0); · simp

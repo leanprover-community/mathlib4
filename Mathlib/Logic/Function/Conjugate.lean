@@ -55,11 +55,11 @@ theorem comp_left (hab : Semiconj fab ga gb) (hbc : Semiconj fbc gb gc) :
   fun x ↦ by simp only [comp_apply, hab.eq, hbc.eq]
 #align function.semiconj.comp_left Function.Semiconj.comp_left
 
-theorem id_right : Semiconj f id id :=
+lemma id_right : Semiconj f id id :=
   fun _ ↦ rfl
 #align function.semiconj.id_right Function.Semiconj.id_right
 
-theorem id_left : Semiconj id ga ga :=
+lemma id_left : Semiconj id ga ga :=
   fun _ ↦ rfl
 #align function.semiconj.id_left Function.Semiconj.id_left
 
@@ -68,7 +68,7 @@ theorem inverses_right (h : Semiconj f ga gb) (ha : RightInverse ga' ga) (hb : L
   fun x ↦ by rw [← hb (f (ga' x)), ← h.eq, ha x]
 #align function.semiconj.inverses_right Function.Semiconj.inverses_right
 
-theorem option_map {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) :
+lemma option_map {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) :
     Semiconj (Option.map f) (Option.map ga) (Option.map gb)
   | none => rfl
   | some _ => congr_arg some <| h _
@@ -89,7 +89,7 @@ open Function (Commute)
 
 /-- Reinterpret `Function.Semiconj f g g` as `Function.Commute f g`. These two predicates are
 definitionally equal but have different dot-notation lemmas. -/
-theorem Semiconj.commute {f g : α → α} (h : Semiconj f g g) : Commute f g := h
+lemma Semiconj.commute {f g : α → α} (h : Semiconj f g g) : Commute f g := h
 #align function.semiconj.commute Function.Semiconj.commute
 
 namespace Commute
@@ -118,15 +118,15 @@ theorem comp_left (h : Commute f g) (h' : Commute f' g) : Commute (f ∘ f') g :
   (h.symm.comp_right h'.symm).symm
 #align function.commute.comp_left Function.Commute.comp_left
 
-theorem id_right : Commute f id :=
+lemma id_right : Commute f id :=
   Semiconj.id_right
 #align function.commute.id_right Function.Commute.id_right
 
-theorem id_left : Commute id f :=
+lemma id_left : Commute id f :=
   Semiconj.id_left
 #align function.commute.id_left Function.Commute.id_left
 
-theorem option_map {f g : α → α} : Commute f g → Commute (Option.map f) (Option.map g) :=
+lemma option_map {f g : α → α} : Commute f g → Commute (Option.map f) (Option.map g) :=
   Semiconj.option_map
 #align function.commute.option_map Function.Commute.option_map
 
@@ -156,26 +156,26 @@ protected theorem comp_eq (h : Semiconj₂ f ga gb) : bicompr f ga = bicompl gb 
 theorem id_left (op : α → α → α) : Semiconj₂ id op op := fun _ _ ↦ rfl
 #align function.semiconj₂.id_left Function.Semiconj₂.id_left
 
-theorem comp {f' : β → γ} {gc : γ → γ → γ} (hf' : Semiconj₂ f' gb gc) (hf : Semiconj₂ f ga gb) :
+lemma comp {f' : β → γ} {gc : γ → γ → γ} (hf' : Semiconj₂ f' gb gc) (hf : Semiconj₂ f ga gb) :
     Semiconj₂ (f' ∘ f) ga gc := fun x y ↦ by simp only [hf'.eq, hf.eq, comp_apply]
 #align function.semiconj₂.comp Function.Semiconj₂.comp
 
-theorem isAssociative_right [IsAssociative α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
+lemma isAssociative_right [IsAssociative α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     IsAssociative β gb :=
   ⟨h_surj.forall₃.2 fun x₁ x₂ x₃ ↦ by simp only [← h.eq, @IsAssociative.assoc _ ga]⟩
 #align function.semiconj₂.is_associative_right Function.Semiconj₂.isAssociative_right
 
-theorem isAssociative_left [IsAssociative β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
+lemma isAssociative_left [IsAssociative β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     IsAssociative α ga :=
   ⟨fun x₁ x₂ x₃ ↦ h_inj <| by simp only [h.eq, @IsAssociative.assoc _ gb]⟩
 #align function.semiconj₂.is_associative_left Function.Semiconj₂.isAssociative_left
 
-theorem isIdempotent_right [IsIdempotent α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
+lemma isIdempotent_right [IsIdempotent α ga] (h : Semiconj₂ f ga gb) (h_surj : Surjective f) :
     IsIdempotent β gb :=
   ⟨h_surj.forall.2 fun x ↦ by simp only [← h.eq, @IsIdempotent.idempotent _ ga]⟩
 #align function.semiconj₂.is_idempotent_right Function.Semiconj₂.isIdempotent_right
 
-theorem isIdempotent_left [IsIdempotent β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
+lemma isIdempotent_left [IsIdempotent β gb] (h : Semiconj₂ f ga gb) (h_inj : Injective f) :
     IsIdempotent α ga :=
   ⟨fun x ↦ h_inj <| by rw [h.eq, @IsIdempotent.idempotent _ gb]⟩
 #align function.semiconj₂.is_idempotent_left Function.Semiconj₂.isIdempotent_left

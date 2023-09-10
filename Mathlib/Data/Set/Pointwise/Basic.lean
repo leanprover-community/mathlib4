@@ -91,43 +91,43 @@ scoped[Pointwise] attribute [instance] Set.one Set.zero
 open Pointwise
 
 @[to_additive]
-theorem singleton_one : ({1} : Set α) = 1 :=
+lemma singleton_one : ({1} : Set α) = 1 :=
   rfl
 #align set.singleton_one Set.singleton_one
 #align set.singleton_zero Set.singleton_zero
 
 @[to_additive (attr := simp)]
-theorem mem_one : a ∈ (1 : Set α) ↔ a = 1 :=
+lemma mem_one : a ∈ (1 : Set α) ↔ a = 1 :=
   Iff.rfl
 #align set.mem_one Set.mem_one
 #align set.mem_zero Set.mem_zero
 
 @[to_additive]
-theorem one_mem_one : (1 : α) ∈ (1 : Set α) :=
+lemma one_mem_one : (1 : α) ∈ (1 : Set α) :=
   Eq.refl _
 #align set.one_mem_one Set.one_mem_one
 #align set.zero_mem_zero Set.zero_mem_zero
 
 @[to_additive (attr := simp)]
-theorem one_subset : 1 ⊆ s ↔ (1 : α) ∈ s :=
+lemma one_subset : 1 ⊆ s ↔ (1 : α) ∈ s :=
   singleton_subset_iff
 #align set.one_subset Set.one_subset
 #align set.zero_subset Set.zero_subset
 
 @[to_additive]
-theorem one_nonempty : (1 : Set α).Nonempty :=
+lemma one_nonempty : (1 : Set α).Nonempty :=
   ⟨1, rfl⟩
 #align set.one_nonempty Set.one_nonempty
 #align set.zero_nonempty Set.zero_nonempty
 
 @[to_additive (attr := simp)]
-theorem image_one {f : α → β} : f '' 1 = {f 1} :=
+lemma image_one {f : α → β} : f '' 1 = {f 1} :=
   image_singleton
 #align set.image_one Set.image_one
 #align set.image_zero Set.image_zero
 
 @[to_additive]
-theorem subset_one_iff_eq : s ⊆ 1 ↔ s = ∅ ∨ s = 1 :=
+lemma subset_one_iff_eq : s ⊆ 1 ↔ s = ∅ ∨ s = 1 :=
   subset_singleton_iff_eq
 #align set.subset_one_iff_eq Set.subset_one_iff_eq
 #align set.subset_zero_iff_eq Set.subset_zero_iff_eq
@@ -146,7 +146,7 @@ noncomputable def singletonOneHom : OneHom α (Set α) :=
 #align set.singleton_zero_hom Set.singletonZeroHom
 
 @[to_additive (attr := simp)]
-theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
+lemma coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
   rfl
 #align set.coe_singleton_one_hom Set.coe_singletonOneHom
 #align set.coe_singleton_zero_hom Set.coe_singletonZeroHom
@@ -177,37 +177,37 @@ section Inv
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
-theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
+lemma mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl
 #align set.mem_inv Set.mem_inv
 #align set.mem_neg Set.mem_neg
 
 @[to_additive (attr := simp)]
-theorem inv_preimage : Inv.inv ⁻¹' s = s⁻¹ :=
+lemma inv_preimage : Inv.inv ⁻¹' s = s⁻¹ :=
   rfl
 #align set.inv_preimage Set.inv_preimage
 #align set.neg_preimage Set.neg_preimage
 
 @[to_additive (attr := simp)]
-theorem inv_empty : (∅ : Set α)⁻¹ = ∅ :=
+lemma inv_empty : (∅ : Set α)⁻¹ = ∅ :=
   rfl
 #align set.inv_empty Set.inv_empty
 #align set.neg_empty Set.neg_empty
 
 @[to_additive (attr := simp)]
-theorem inv_univ : (univ : Set α)⁻¹ = univ :=
+lemma inv_univ : (univ : Set α)⁻¹ = univ :=
   rfl
 #align set.inv_univ Set.inv_univ
 #align set.neg_univ Set.neg_univ
 
 @[to_additive (attr := simp)]
-theorem inter_inv : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ :=
+lemma inter_inv : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ :=
   preimage_inter
 #align set.inter_inv Set.inter_inv
 #align set.inter_neg Set.inter_neg
 
 @[to_additive (attr := simp)]
-theorem union_inv : (s ∪ t)⁻¹ = s⁻¹ ∪ t⁻¹ :=
+lemma union_inv : (s ∪ t)⁻¹ = s⁻¹ ∪ t⁻¹ :=
   preimage_union
 #align set.union_inv Set.union_inv
 #align set.union_neg Set.union_neg
@@ -225,7 +225,7 @@ theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :
 #align set.Union_neg Set.iUnion_neg
 
 @[to_additive (attr := simp)]
-theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
+lemma compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 #align set.compl_inv Set.compl_inv
 #align set.compl_neg Set.compl_neg
@@ -237,12 +237,12 @@ section InvolutiveInv
 variable [InvolutiveInv α] {s t : Set α} {a : α}
 
 @[to_additive]
-theorem inv_mem_inv : a⁻¹ ∈ s⁻¹ ↔ a ∈ s := by simp only [mem_inv, inv_inv]
+lemma inv_mem_inv : a⁻¹ ∈ s⁻¹ ↔ a ∈ s := by simp only [mem_inv, inv_inv]
 #align set.inv_mem_inv Set.inv_mem_inv
 #align set.neg_mem_neg Set.neg_mem_neg
 
 @[to_additive (attr := simp)]
-theorem nonempty_inv : s⁻¹.Nonempty ↔ s.Nonempty :=
+lemma nonempty_inv : s⁻¹.Nonempty ↔ s.Nonempty :=
   inv_involutive.surjective.nonempty_preimage
 #align set.nonempty_inv Set.nonempty_inv
 #align set.nonempty_neg Set.nonempty_neg
@@ -254,7 +254,7 @@ theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
 #align set.nonempty.neg Set.Nonempty.neg
 
 @[to_additive (attr := simp)]
-theorem image_inv : Inv.inv '' s = s⁻¹ :=
+lemma image_inv : Inv.inv '' s = s⁻¹ :=
   congr_fun (image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _
 #align set.image_inv Set.image_inv
 #align set.image_neg Set.image_neg
@@ -265,13 +265,13 @@ noncomputable instance involutiveInv : InvolutiveInv (Set α) where
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
 @[to_additive (attr := simp)]
-theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=
+lemma inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=
   (Equiv.inv α).surjective.preimage_subset_preimage_iff
 #align set.inv_subset_inv Set.inv_subset_inv
 #align set.neg_subset_neg Set.neg_subset_neg
 
 @[to_additive]
-theorem inv_subset : s⁻¹ ⊆ t ↔ s ⊆ t⁻¹ := by rw [← inv_subset_inv, inv_inv]
+lemma inv_subset : s⁻¹ ⊆ t ↔ s ⊆ t⁻¹ := by rw [← inv_subset_inv, inv_inv]
 #align set.inv_subset Set.inv_subset
 #align set.neg_subset Set.neg_subset
 
@@ -287,7 +287,7 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 #align set.neg_insert Set.neg_insert
 
 @[to_additive]
-theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
+lemma inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
   rw [← image_inv]
   exact (range_comp _ _).symm
 #align set.inv_range Set.inv_range
@@ -296,7 +296,7 @@ theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i =>
 open MulOpposite
 
 @[to_additive]
-theorem image_op_inv : op '' s⁻¹ = (op '' s)⁻¹ := by
+lemma image_op_inv : op '' s⁻¹ = (op '' s)⁻¹ := by
   simp_rw [← image_inv, Function.Semiconj.set_image op_inv s]
 #align set.image_op_inv Set.image_op_inv
 #align set.image_op_neg Set.image_op_neg
@@ -327,159 +327,159 @@ protected def mul : Mul (Set α) :=
 scoped[Pointwise] attribute [instance] Set.mul Set.add
 
 @[to_additive (attr := simp)]
-theorem image2_mul : image2 (· * ·) s t = s * t :=
+lemma image2_mul : image2 (· * ·) s t = s * t :=
   rfl
 #align set.image2_mul Set.image2_mul
 #align set.image2_add Set.image2_add
 
 @[to_additive]
-theorem mem_mul : a ∈ s * t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x * y = a :=
+lemma mem_mul : a ∈ s * t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x * y = a :=
   Iff.rfl
 #align set.mem_mul Set.mem_mul
 #align set.mem_add Set.mem_add
 
 @[to_additive]
-theorem mul_mem_mul : a ∈ s → b ∈ t → a * b ∈ s * t :=
+lemma mul_mem_mul : a ∈ s → b ∈ t → a * b ∈ s * t :=
   mem_image2_of_mem
 #align set.mul_mem_mul Set.mul_mem_mul
 #align set.add_mem_add Set.add_mem_add
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive add_image_prod]
-theorem image_mul_prod : (fun x : α × α => x.fst * x.snd) '' s ×ˢ t = s * t :=
+lemma image_mul_prod : (fun x : α × α => x.fst * x.snd) '' s ×ˢ t = s * t :=
   image_prod _
 #align set.image_mul_prod Set.image_mul_prod
 #align set.add_image_prod Set.add_image_prod
 
 @[to_additive (attr := simp)]
-theorem empty_mul : ∅ * s = ∅ :=
+lemma empty_mul : ∅ * s = ∅ :=
   image2_empty_left
 #align set.empty_mul Set.empty_mul
 #align set.empty_add Set.empty_add
 
 @[to_additive (attr := simp)]
-theorem mul_empty : s * ∅ = ∅ :=
+lemma mul_empty : s * ∅ = ∅ :=
   image2_empty_right
 #align set.mul_empty Set.mul_empty
 #align set.add_empty Set.add_empty
 
 @[to_additive (attr := simp)]
-theorem mul_eq_empty : s * t = ∅ ↔ s = ∅ ∨ t = ∅ :=
+lemma mul_eq_empty : s * t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image2_eq_empty_iff
 #align set.mul_eq_empty Set.mul_eq_empty
 #align set.add_eq_empty Set.add_eq_empty
 
 @[to_additive (attr := simp)]
-theorem mul_nonempty : (s * t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
+lemma mul_nonempty : (s * t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image2_nonempty_iff
 #align set.mul_nonempty Set.mul_nonempty
 #align set.add_nonempty Set.add_nonempty
 
 @[to_additive]
-theorem Nonempty.mul : s.Nonempty → t.Nonempty → (s * t).Nonempty :=
+lemma Nonempty.mul : s.Nonempty → t.Nonempty → (s * t).Nonempty :=
   Nonempty.image2
 #align set.nonempty.mul Set.Nonempty.mul
 #align set.nonempty.add Set.Nonempty.add
 
 @[to_additive]
-theorem Nonempty.of_mul_left : (s * t).Nonempty → s.Nonempty :=
+lemma Nonempty.of_mul_left : (s * t).Nonempty → s.Nonempty :=
   Nonempty.of_image2_left
 #align set.nonempty.of_mul_left Set.Nonempty.of_mul_left
 #align set.nonempty.of_add_left Set.Nonempty.of_add_left
 
 @[to_additive]
-theorem Nonempty.of_mul_right : (s * t).Nonempty → t.Nonempty :=
+lemma Nonempty.of_mul_right : (s * t).Nonempty → t.Nonempty :=
   Nonempty.of_image2_right
 #align set.nonempty.of_mul_right Set.Nonempty.of_mul_right
 #align set.nonempty.of_add_right Set.Nonempty.of_add_right
 
 @[to_additive (attr := simp)]
-theorem mul_singleton : s * {b} = (· * b) '' s :=
+lemma mul_singleton : s * {b} = (· * b) '' s :=
   image2_singleton_right
 #align set.mul_singleton Set.mul_singleton
 #align set.add_singleton Set.add_singleton
 
 @[to_additive (attr := simp)]
-theorem singleton_mul : {a} * t = (· * ·) a '' t :=
+lemma singleton_mul : {a} * t = (· * ·) a '' t :=
   image2_singleton_left
 #align set.singleton_mul Set.singleton_mul
 #align set.singleton_add Set.singleton_add
 
 -- Porting note: simp can prove this
 @[to_additive]
-theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
+lemma singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
 #align set.singleton_mul_singleton Set.singleton_mul_singleton
 #align set.singleton_add_singleton Set.singleton_add_singleton
 
 @[to_additive (attr := mono)]
-theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
+lemma mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 #align set.mul_subset_mul Set.mul_subset_mul
 #align set.add_subset_add Set.add_subset_add
 
 @[to_additive]
-theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
+lemma mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
   image2_subset_left
 #align set.mul_subset_mul_left Set.mul_subset_mul_left
 #align set.add_subset_add_left Set.add_subset_add_left
 
 @[to_additive]
-theorem mul_subset_mul_right : s₁ ⊆ s₂ → s₁ * t ⊆ s₂ * t :=
+lemma mul_subset_mul_right : s₁ ⊆ s₂ → s₁ * t ⊆ s₂ * t :=
   image2_subset_right
 #align set.mul_subset_mul_right Set.mul_subset_mul_right
 #align set.add_subset_add_right Set.add_subset_add_right
 
 @[to_additive]
-theorem mul_subset_iff : s * t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x * y ∈ u :=
+lemma mul_subset_iff : s * t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x * y ∈ u :=
   image2_subset_iff
 #align set.mul_subset_iff Set.mul_subset_iff
 #align set.add_subset_iff Set.add_subset_iff
 
 @[to_additive]
-theorem union_mul : (s₁ ∪ s₂) * t = s₁ * t ∪ s₂ * t :=
+lemma union_mul : (s₁ ∪ s₂) * t = s₁ * t ∪ s₂ * t :=
   image2_union_left
 #align set.union_mul Set.union_mul
 #align set.union_add Set.union_add
 
 @[to_additive]
-theorem mul_union : s * (t₁ ∪ t₂) = s * t₁ ∪ s * t₂ :=
+lemma mul_union : s * (t₁ ∪ t₂) = s * t₁ ∪ s * t₂ :=
   image2_union_right
 #align set.mul_union Set.mul_union
 #align set.add_union Set.add_union
 
 @[to_additive]
-theorem inter_mul_subset : s₁ ∩ s₂ * t ⊆ s₁ * t ∩ (s₂ * t) :=
+lemma inter_mul_subset : s₁ ∩ s₂ * t ⊆ s₁ * t ∩ (s₂ * t) :=
   image2_inter_subset_left
 #align set.inter_mul_subset Set.inter_mul_subset
 #align set.inter_add_subset Set.inter_add_subset
 
 @[to_additive]
-theorem mul_inter_subset : s * (t₁ ∩ t₂) ⊆ s * t₁ ∩ (s * t₂) :=
+lemma mul_inter_subset : s * (t₁ ∩ t₂) ⊆ s * t₁ ∩ (s * t₂) :=
   image2_inter_subset_right
 #align set.mul_inter_subset Set.mul_inter_subset
 #align set.add_inter_subset Set.add_inter_subset
 
 @[to_additive]
-theorem inter_mul_union_subset_union : s₁ ∩ s₂ * (t₁ ∪ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
+lemma inter_mul_union_subset_union : s₁ ∩ s₂ * (t₁ ∪ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
   image2_inter_union_subset_union
 #align set.inter_mul_union_subset_union Set.inter_mul_union_subset_union
 #align set.inter_add_union_subset_union Set.inter_add_union_subset_union
 
 @[to_additive]
-theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
+lemma union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s₁ * t₁ ∪ s₂ * t₂ :=
   image2_union_inter_subset_union
 #align set.union_mul_inter_subset_union Set.union_mul_inter_subset_union
 #align set.union_add_inter_subset_union Set.union_add_inter_subset_union
 
 @[to_additive]
-theorem iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
+lemma iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
   iUnion_image_left _
 #align set.Union_mul_left_image Set.iUnion_mul_left_image
 #align set.Union_add_left_image Set.iUnion_add_left_image
 
 @[to_additive]
-theorem iUnion_mul_right_image : ⋃ a ∈ t, (· * a) '' s = s * t :=
+lemma iUnion_mul_right_image : ⋃ a ∈ t, (· * a) '' s = s * t :=
   iUnion_image_right _
 #align set.Union_mul_right_image Set.iUnion_mul_right_image
 #align set.Union_add_right_image Set.iUnion_add_right_image
@@ -552,7 +552,7 @@ noncomputable def singletonMulHom : α →ₙ* Set α :=
 #align set.singleton_add_hom Set.singletonAddHom
 
 @[to_additive (attr := simp)]
-theorem coe_singletonMulHom : (singletonMulHom : α → Set α) = singleton :=
+lemma coe_singletonMulHom : (singletonMulHom : α → Set α) = singleton :=
   rfl
 #align set.coe_singleton_mul_hom Set.coe_singletonMulHom
 #align set.coe_singleton_add_hom Set.coe_singletonAddHom
@@ -566,7 +566,7 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
 open MulOpposite
 
 @[to_additive (attr := simp)]
-theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
+lemma image_op_mul : op '' (s * t) = op '' t * op '' s :=
   image_image2_antidistrib op_mul
 #align set.image_op_mul Set.image_op_mul
 #align set.image_op_add Set.image_op_add
@@ -593,159 +593,159 @@ protected def div : Div (Set α) :=
 scoped[Pointwise] attribute [instance] Set.div Set.sub
 
 @[to_additive (attr := simp)]
-theorem image2_div : image2 Div.div s t = s / t :=
+lemma image2_div : image2 Div.div s t = s / t :=
   rfl
 #align set.image2_div Set.image2_div
 #align set.image2_sub Set.image2_sub
 
 @[to_additive]
-theorem mem_div : a ∈ s / t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x / y = a :=
+lemma mem_div : a ∈ s / t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x / y = a :=
   Iff.rfl
 #align set.mem_div Set.mem_div
 #align set.mem_sub Set.mem_sub
 
 @[to_additive]
-theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
+lemma div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
   mem_image2_of_mem
 #align set.div_mem_div Set.div_mem_div
 #align set.sub_mem_sub Set.sub_mem_sub
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive sub_image_prod]
-theorem image_div_prod : (fun x : α × α => x.fst / x.snd) '' s ×ˢ t = s / t :=
+lemma image_div_prod : (fun x : α × α => x.fst / x.snd) '' s ×ˢ t = s / t :=
   image_prod _
 #align set.image_div_prod Set.image_div_prod
 #align set.sub_image_prod Set.sub_image_prod
 
 @[to_additive (attr := simp)]
-theorem empty_div : ∅ / s = ∅ :=
+lemma empty_div : ∅ / s = ∅ :=
   image2_empty_left
 #align set.empty_div Set.empty_div
 #align set.empty_sub Set.empty_sub
 
 @[to_additive (attr := simp)]
-theorem div_empty : s / ∅ = ∅ :=
+lemma div_empty : s / ∅ = ∅ :=
   image2_empty_right
 #align set.div_empty Set.div_empty
 #align set.sub_empty Set.sub_empty
 
 @[to_additive (attr := simp)]
-theorem div_eq_empty : s / t = ∅ ↔ s = ∅ ∨ t = ∅ :=
+lemma div_eq_empty : s / t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image2_eq_empty_iff
 #align set.div_eq_empty Set.div_eq_empty
 #align set.sub_eq_empty Set.sub_eq_empty
 
 @[to_additive (attr := simp)]
-theorem div_nonempty : (s / t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
+lemma div_nonempty : (s / t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image2_nonempty_iff
 #align set.div_nonempty Set.div_nonempty
 #align set.sub_nonempty Set.sub_nonempty
 
 @[to_additive]
-theorem Nonempty.div : s.Nonempty → t.Nonempty → (s / t).Nonempty :=
+lemma Nonempty.div : s.Nonempty → t.Nonempty → (s / t).Nonempty :=
   Nonempty.image2
 #align set.nonempty.div Set.Nonempty.div
 #align set.nonempty.sub Set.Nonempty.sub
 
 @[to_additive]
-theorem Nonempty.of_div_left : (s / t).Nonempty → s.Nonempty :=
+lemma Nonempty.of_div_left : (s / t).Nonempty → s.Nonempty :=
   Nonempty.of_image2_left
 #align set.nonempty.of_div_left Set.Nonempty.of_div_left
 #align set.nonempty.of_sub_left Set.Nonempty.of_sub_left
 
 @[to_additive]
-theorem Nonempty.of_div_right : (s / t).Nonempty → t.Nonempty :=
+lemma Nonempty.of_div_right : (s / t).Nonempty → t.Nonempty :=
   Nonempty.of_image2_right
 #align set.nonempty.of_div_right Set.Nonempty.of_div_right
 #align set.nonempty.of_sub_right Set.Nonempty.of_sub_right
 
 @[to_additive (attr := simp)]
-theorem div_singleton : s / {b} = (· / b) '' s :=
+lemma div_singleton : s / {b} = (· / b) '' s :=
   image2_singleton_right
 #align set.div_singleton Set.div_singleton
 #align set.sub_singleton Set.sub_singleton
 
 @[to_additive (attr := simp)]
-theorem singleton_div : {a} / t = (· / ·) a '' t :=
+lemma singleton_div : {a} / t = (· / ·) a '' t :=
   image2_singleton_left
 #align set.singleton_div Set.singleton_div
 #align set.singleton_sub Set.singleton_sub
 
 -- Porting note: simp can prove this
 @[to_additive]
-theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
+lemma singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
 #align set.singleton_div_singleton Set.singleton_div_singleton
 #align set.singleton_sub_singleton Set.singleton_sub_singleton
 
 @[to_additive (attr := mono)]
-theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
+lemma div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 #align set.div_subset_div Set.div_subset_div
 #align set.sub_subset_sub Set.sub_subset_sub
 
 @[to_additive]
-theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
+lemma div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image2_subset_left
 #align set.div_subset_div_left Set.div_subset_div_left
 #align set.sub_subset_sub_left Set.sub_subset_sub_left
 
 @[to_additive]
-theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
+lemma div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image2_subset_right
 #align set.div_subset_div_right Set.div_subset_div_right
 #align set.sub_subset_sub_right Set.sub_subset_sub_right
 
 @[to_additive]
-theorem div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :=
+lemma div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :=
   image2_subset_iff
 #align set.div_subset_iff Set.div_subset_iff
 #align set.sub_subset_iff Set.sub_subset_iff
 
 @[to_additive]
-theorem union_div : (s₁ ∪ s₂) / t = s₁ / t ∪ s₂ / t :=
+lemma union_div : (s₁ ∪ s₂) / t = s₁ / t ∪ s₂ / t :=
   image2_union_left
 #align set.union_div Set.union_div
 #align set.union_sub Set.union_sub
 
 @[to_additive]
-theorem div_union : s / (t₁ ∪ t₂) = s / t₁ ∪ s / t₂ :=
+lemma div_union : s / (t₁ ∪ t₂) = s / t₁ ∪ s / t₂ :=
   image2_union_right
 #align set.div_union Set.div_union
 #align set.sub_union Set.sub_union
 
 @[to_additive]
-theorem inter_div_subset : s₁ ∩ s₂ / t ⊆ s₁ / t ∩ (s₂ / t) :=
+lemma inter_div_subset : s₁ ∩ s₂ / t ⊆ s₁ / t ∩ (s₂ / t) :=
   image2_inter_subset_left
 #align set.inter_div_subset Set.inter_div_subset
 #align set.inter_sub_subset Set.inter_sub_subset
 
 @[to_additive]
-theorem div_inter_subset : s / (t₁ ∩ t₂) ⊆ s / t₁ ∩ (s / t₂) :=
+lemma div_inter_subset : s / (t₁ ∩ t₂) ⊆ s / t₁ ∩ (s / t₂) :=
   image2_inter_subset_right
 #align set.div_inter_subset Set.div_inter_subset
 #align set.sub_inter_subset Set.sub_inter_subset
 
 @[to_additive]
-theorem inter_div_union_subset_union : s₁ ∩ s₂ / (t₁ ∪ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
+lemma inter_div_union_subset_union : s₁ ∩ s₂ / (t₁ ∪ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
   image2_inter_union_subset_union
 #align set.inter_div_union_subset_union Set.inter_div_union_subset_union
 #align set.inter_sub_union_subset_union Set.inter_sub_union_subset_union
 
 @[to_additive]
-theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
+lemma union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s₁ / t₁ ∪ s₂ / t₂ :=
   image2_union_inter_subset_union
 #align set.union_div_inter_subset_union Set.union_div_inter_subset_union
 #align set.union_sub_inter_subset_union Set.union_sub_inter_subset_union
 
 @[to_additive]
-theorem iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
+lemma iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
   iUnion_image_left _
 #align set.Union_div_left_image Set.iUnion_div_left_image
 #align set.Union_sub_left_image Set.iUnion_sub_left_image
 
 @[to_additive]
-theorem iUnion_div_right_image : ⋃ a ∈ t, (· / a) '' s = s / t :=
+lemma iUnion_div_right_image : ⋃ a ∈ t, (· / a) '' s = s / t :=
   iUnion_image_right _
 #align set.Union_div_right_image Set.iUnion_div_right_image
 #align set.Union_sub_right_image Set.iUnion_sub_right_image
@@ -861,13 +861,13 @@ protected noncomputable def commSemigroup : CommSemigroup (Set α) :=
 #align set.add_comm_semigroup Set.addCommSemigroup
 
 @[to_additive]
-theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
+lemma inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
   image2_inter_union_subset mul_comm
 #align set.inter_mul_union_subset Set.inter_mul_union_subset
 #align set.inter_add_union_subset Set.inter_add_union_subset
 
 @[to_additive]
-theorem union_mul_inter_subset : (s ∪ t) * (s ∩ t) ⊆ s * t :=
+lemma union_mul_inter_subset : (s ∪ t) * (s ∩ t) ⊆ s * t :=
   image2_union_inter_subset mul_comm
 #align set.union_mul_inter_subset Set.union_mul_inter_subset
 #align set.union_add_inter_subset Set.union_add_inter_subset
@@ -899,7 +899,7 @@ theorem subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ 
 #align set.subset_add_left Set.subset_add_left
 
 @[to_additive]
-theorem subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun x hx =>
+lemma subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun x hx =>
   ⟨1, x, hs, hx, one_mul _⟩
 #align set.subset_mul_right Set.subset_mul_right
 #align set.subset_add_right Set.subset_add_right
@@ -912,7 +912,7 @@ noncomputable def singletonMonoidHom : α →* Set α :=
 #align set.singleton_add_monoid_hom Set.singletonAddMonoidHom
 
 @[to_additive (attr := simp)]
-theorem coe_singletonMonoidHom : (singletonMonoidHom : α → Set α) = singleton :=
+lemma coe_singletonMonoidHom : (singletonMonoidHom : α → Set α) = singleton :=
   rfl
 #align set.coe_singleton_monoid_hom Set.coe_singletonMonoidHom
 #align set.coe_singleton_add_monoid_hom Set.coe_singletonAddMonoidHom
@@ -973,7 +973,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
 #align set.nsmul_subset_nsmul_of_zero_mem Set.nsmul_subset_nsmul_of_zero_mem
 
 @[to_additive (attr := simp)]
-theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
+lemma empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
 #align set.empty_pow Set.empty_pow
 #align set.empty_nsmul Set.empty_nsmul
@@ -991,28 +991,28 @@ theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
 #align set.univ_add_of_zero_mem Set.univ_add_of_zero_mem
 
 @[to_additive (attr := simp)]
-theorem univ_mul_univ : (univ : Set α) * univ = univ :=
+lemma univ_mul_univ : (univ : Set α) * univ = univ :=
   mul_univ_of_one_mem <| mem_univ _
 #align set.univ_mul_univ Set.univ_mul_univ
 #align set.univ_add_univ Set.univ_add_univ
 
 --TODO: `to_additive` trips up on the `1 : ℕ` used in the pattern-matching.
 @[simp]
-theorem nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
+lemma nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => one_nsmul _
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
 #align set.nsmul_univ Set.nsmul_univ
 
 @[to_additive existing (attr := simp) nsmul_univ]
-theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
+lemma univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _
   | n + 2 => fun _ => by rw [pow_succ, univ_pow n.succ_ne_zero, univ_mul_univ]
 #align set.univ_pow Set.univ_pow
 
 @[to_additive]
-protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
+protected lemma _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
   IsUnit.map (singletonMonoidHom : α →* Set α)
 #align is_unit.set IsUnit.set
 #align is_add_unit.set IsAddUnit.set
@@ -1035,7 +1035,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {s t : Set α}
 
 @[to_additive]
-protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
+protected lemma mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
   refine' ⟨fun h => _, _⟩
   · have hst : (s * t).Nonempty := h.symm.subst one_nonempty
     obtain ⟨a, ha⟩ := hst.of_image2_left
@@ -1068,7 +1068,7 @@ protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
 #align set.subtraction_monoid Set.subtractionMonoid
 
 @[to_additive (attr := simp 500)]
-theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
+lemma isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Set.mul_eq_one_iff.1 u.mul_inv
@@ -1117,11 +1117,11 @@ lacks.
 -/
 
 
-theorem mul_add_subset : s * (t + u) ⊆ s * t + s * u :=
+lemma mul_add_subset : s * (t + u) ⊆ s * t + s * u :=
   image2_distrib_subset_left mul_add
 #align set.mul_add_subset Set.mul_add_subset
 
-theorem add_mul_subset : (s + t) * u ⊆ s * u + t * u :=
+lemma add_mul_subset : (s + t) * u ⊆ s * u + t * u :=
   image2_distrib_subset_right add_mul
 #align set.add_mul_subset Set.add_mul_subset
 
@@ -1158,13 +1158,13 @@ variable [Group α] {s t : Set α} {a b : α}
 
 
 @[to_additive (attr := simp)]
-theorem one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by
+lemma one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by
   simp [not_disjoint_iff_nonempty_inter, mem_div, div_eq_one, Set.Nonempty]
 #align set.one_mem_div_iff Set.one_mem_div_iff
 #align set.zero_mem_sub_iff Set.zero_mem_sub_iff
 
 @[to_additive]
-theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
+lemma not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 #align set.not_one_mem_div_iff Set.not_one_mem_div_iff
 #align set.not_zero_mem_sub_iff Set.not_zero_mem_sub_iff
@@ -1189,64 +1189,64 @@ theorem isUnit_singleton (a : α) : IsUnit ({a} : Set α) :=
 #align set.is_add_unit_singleton Set.isAddUnit_singleton
 
 @[to_additive (attr := simp)]
-theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
+lemma isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
   simp only [isUnit_iff, Group.isUnit, and_true_iff]
 #align set.is_unit_iff_singleton Set.isUnit_iff_singleton
 #align set.is_add_unit_iff_singleton Set.isAddUnit_iff_singleton
 
 @[to_additive (attr := simp)]
-theorem image_mul_left : (· * ·) a '' t = (· * ·) a⁻¹ ⁻¹' t := by
+lemma image_mul_left : (· * ·) a '' t = (· * ·) a⁻¹ ⁻¹' t := by
   rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
 #align set.image_mul_left Set.image_mul_left
 #align set.image_add_left Set.image_add_left
 
 @[to_additive (attr := simp)]
-theorem image_mul_right : (· * b) '' t = (· * b⁻¹) ⁻¹' t := by
+lemma image_mul_right : (· * b) '' t = (· * b⁻¹) ⁻¹' t := by
   rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
 #align set.image_mul_right Set.image_mul_right
 #align set.image_add_right Set.image_add_right
 
 @[to_additive]
-theorem image_mul_left' : (fun b => a⁻¹ * b) '' t = (fun b => a * b) ⁻¹' t := by simp
+lemma image_mul_left' : (fun b => a⁻¹ * b) '' t = (fun b => a * b) ⁻¹' t := by simp
 #align set.image_mul_left' Set.image_mul_left'
 #align set.image_add_left' Set.image_add_left'
 
 @[to_additive]
-theorem image_mul_right' : (· * b⁻¹) '' t = (· * b) ⁻¹' t := by simp
+lemma image_mul_right' : (· * b⁻¹) '' t = (· * b) ⁻¹' t := by simp
 #align set.image_mul_right' Set.image_mul_right'
 #align set.image_add_right' Set.image_add_right'
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_singleton : (· * ·) a ⁻¹' {b} = {a⁻¹ * b} := by
+lemma preimage_mul_left_singleton : (· * ·) a ⁻¹' {b} = {a⁻¹ * b} := by
   rw [← image_mul_left', image_singleton]
 #align set.preimage_mul_left_singleton Set.preimage_mul_left_singleton
 #align set.preimage_add_left_singleton Set.preimage_add_left_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_right_singleton : (· * a) ⁻¹' {b} = {b * a⁻¹} := by
+lemma preimage_mul_right_singleton : (· * a) ⁻¹' {b} = {b * a⁻¹} := by
   rw [← image_mul_right', image_singleton]
 #align set.preimage_mul_right_singleton Set.preimage_mul_right_singleton
 #align set.preimage_add_right_singleton Set.preimage_add_right_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_one : (· * ·) a ⁻¹' 1 = {a⁻¹} := by
+lemma preimage_mul_left_one : (· * ·) a ⁻¹' 1 = {a⁻¹} := by
   rw [← image_mul_left', image_one, mul_one]
 #align set.preimage_mul_left_one Set.preimage_mul_left_one
 #align set.preimage_add_left_zero Set.preimage_add_left_zero
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_right_one : (· * b) ⁻¹' 1 = {b⁻¹} := by
+lemma preimage_mul_right_one : (· * b) ⁻¹' 1 = {b⁻¹} := by
   rw [← image_mul_right', image_one, one_mul]
 #align set.preimage_mul_right_one Set.preimage_mul_right_one
 #align set.preimage_add_right_zero Set.preimage_add_right_zero
 
 @[to_additive]
-theorem preimage_mul_left_one' : (fun b => a⁻¹ * b) ⁻¹' 1 = {a} := by simp
+lemma preimage_mul_left_one' : (fun b => a⁻¹ * b) ⁻¹' 1 = {a} := by simp
 #align set.preimage_mul_left_one' Set.preimage_mul_left_one'
 #align set.preimage_add_left_zero' Set.preimage_add_left_zero'
 
 @[to_additive]
-theorem preimage_mul_right_one' : (· * b⁻¹) ⁻¹' 1 = {b} := by simp
+lemma preimage_mul_right_one' : (· * b⁻¹) ⁻¹' 1 = {b} := by simp
 #align set.preimage_mul_right_one' Set.preimage_mul_right_one'
 #align set.preimage_add_right_zero' Set.preimage_add_right_zero'
 
@@ -1291,13 +1291,13 @@ section Mul
 variable [Mul α] [Mul β] [MulHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
-theorem image_mul : m '' (s * t) = m '' s * m '' t :=
+lemma image_mul : m '' (s * t) = m '' s * m '' t :=
   image_image2_distrib <| map_mul m
 #align set.image_mul Set.image_mul
 #align set.image_add Set.image_add
 
 @[to_additive]
-theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t ⊆ m ⁻¹' (s * t) := by
+lemma preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t ⊆ m ⁻¹' (s * t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
   exact ⟨_, _, ‹_›, ‹_›, (map_mul m _ _).symm⟩
 #align set.preimage_mul_preimage_subset Set.preimage_mul_preimage_subset
@@ -1310,13 +1310,13 @@ section Group
 variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
-theorem image_div : m '' (s / t) = m '' s / m '' t :=
+lemma image_div : m '' (s / t) = m '' s / m '' t :=
   image_image2_distrib <| map_div m
 #align set.image_div Set.image_div
 #align set.image_sub Set.image_sub
 
 @[to_additive]
-theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t ⊆ m ⁻¹' (s / t) := by
+lemma preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t ⊆ m ⁻¹' (s / t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
   exact ⟨_, _, ‹_›, ‹_›, (map_div m _ _).symm⟩
 #align set.preimage_div_preimage_subset Set.preimage_div_preimage_subset
@@ -1325,7 +1325,7 @@ theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t �
 end Group
 
 @[to_additive]
-theorem bddAbove_mul [OrderedCommMonoid α] {A B : Set α} :
+lemma bddAbove_mul [OrderedCommMonoid α] {A B : Set α} :
     BddAbove A → BddAbove B → BddAbove (A * B) := by
   rintro ⟨bA, hbA⟩ ⟨bB, hbB⟩
   use bA * bB
@@ -1346,7 +1346,7 @@ open Pointwise
 namespace Group
 
 @[to_additive]
-theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {B : ℕ} (h2 : ∀ n, f n ≤ B)
+lemma card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {B : ℕ} (h2 : ∀ n, f n ≤ B)
     (h3 : ∀ n, f n = f (n + 1) → f (n + 1) = f (n + 2)) : ∀ k, B ≤ k → f k = f B := by
   have key : ∃ n : ℕ, n ≤ B ∧ f n = f (n + 1) := by
     contrapose! h2

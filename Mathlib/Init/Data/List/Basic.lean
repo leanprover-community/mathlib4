@@ -41,8 +41,8 @@ def headI [Inhabited α] : List α → α
   | (a :: _) => a
 #align list.head List.headI
 
-@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
-@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
+@[simp] lemma headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] lemma headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
 
 #align list.map₂ List.zipWith
 
@@ -78,7 +78,7 @@ def getLastI [Inhabited α] : List α → α
 #align list.ret List.ret
 
 /-- `≤` implies not `>` for lists. -/
-theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
+lemma le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
 
 end List

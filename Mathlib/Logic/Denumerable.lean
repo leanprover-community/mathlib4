@@ -57,7 +57,7 @@ theorem decode_eq_ofNat (α) [Denumerable α] (n : ℕ) : decode (α := α) n = 
 #align denumerable.decode_eq_of_nat Denumerable.decode_eq_ofNat
 
 @[simp]
-theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
+lemma ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
   Option.some.inj <| (decode_eq_ofNat _ _).symm.trans h
 #align denumerable.of_nat_of_decode Denumerable.ofNat_of_decode
 
@@ -175,7 +175,7 @@ theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, 
 #align denumerable.prod_of_nat_val Denumerable.prod_ofNat_val
 
 @[simp]
-theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
+lemma prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
 #align denumerable.prod_nat_of_nat Denumerable.prod_nat_ofNat
 
 instance int : Denumerable ℤ :=
@@ -239,7 +239,7 @@ def succ (x : s) : s :=
   ⟨↑x + Nat.find h + 1, Nat.find_spec h⟩
 #align nat.subtype.succ Nat.Subtype.succ
 
-theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
+lemma succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_lt h
   have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.2)
@@ -248,7 +248,7 @@ theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
     exact add_le_add_right (add_le_add_left this _) _
 #align nat.subtype.succ_le_of_lt Nat.Subtype.succ_le_of_lt
 
-theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
+lemma le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
@@ -265,7 +265,7 @@ theorem lt_succ_self (x : s) : x < succ x :=
     _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
 #align nat.subtype.lt_succ_self Nat.Subtype.lt_succ_self
 
-theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
+lemma lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
     lt_of_le_of_lt h (lt_succ_self _)⟩
 #align nat.subtype.lt_succ_iff_le Nat.Subtype.lt_succ_iff_le
@@ -276,7 +276,7 @@ def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
   | n + 1 => succ (ofNat s n)
 #align nat.subtype.of_nat Nat.Subtype.ofNat
 
-theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
+lemma ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
   | x => fun hx => by
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
@@ -302,16 +302,16 @@ decreasing_by
   tauto
 #align nat.subtype.of_nat_surjective_aux Nat.Subtype.ofNat_surjective_aux
 
-theorem ofNat_surjective : Surjective (ofNat s) := fun ⟨_, hx⟩ => ofNat_surjective_aux hx
+lemma ofNat_surjective : Surjective (ofNat s) := fun ⟨_, hx⟩ => ofNat_surjective_aux hx
 #align nat.subtype.of_nat_surjective Nat.Subtype.ofNat_surjective
 
 @[simp]
-theorem ofNat_range : Set.range (ofNat s) = Set.univ :=
+lemma ofNat_range : Set.range (ofNat s) = Set.univ :=
   ofNat_surjective.range_eq
 #align nat.subtype.of_nat_range Nat.Subtype.ofNat_range
 
 @[simp]
-theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s := by
+lemma coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s := by
   rw [Set.range_comp Subtype.val, ofNat_range, Set.image_univ, Subtype.range_coe]
 #align nat.subtype.coe_comp_of_nat_range Nat.Subtype.coe_comp_ofNat_range
 
@@ -324,7 +324,7 @@ private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· 
 
 open Finset
 
-private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
+private lemma right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
     rintro n hn
@@ -379,7 +379,7 @@ theorem nonempty_denumerable (α : Type*) [Countable α] [Infinite α] : Nonempt
   (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
 
-theorem nonempty_denumerable_iff {α : Type*} :
+lemma nonempty_denumerable_iff {α : Type*} :
     Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
   ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
 

@@ -30,7 +30,7 @@ def atImInfty :=
   Filter.atTop.comap UpperHalfPlane.im
 #align upper_half_plane.at_im_infty UpperHalfPlane.atImInfty
 
-theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻¹' Set.Ici i :=
+lemma atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻¹' Set.Ici i :=
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis
 #align upper_half_plane.at_im_infty_basis UpperHalfPlane.atImInfty_basis
 
@@ -48,7 +48,7 @@ def IsZeroAtImInfty {α : Type*} [Zero α] [TopologicalSpace α] (f : ℍ → α
   ZeroAtFilter atImInfty f
 #align upper_half_plane.is_zero_at_im_infty UpperHalfPlane.IsZeroAtImInfty
 
-theorem zero_form_isBoundedAtImInfty {α : Type*} [NormedField α] :
+lemma zero_form_isBoundedAtImInfty {α : Type*} [NormedField α] :
     IsBoundedAtImInfty (0 : ℍ → α) :=
   const_boundedAtFilter atImInfty (0 : α)
 #align upper_half_plane.zero_form_is_bounded_at_im_infty UpperHalfPlane.zero_form_isBoundedAtImInfty
@@ -63,7 +63,7 @@ def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (�
   boundedFilterSubalgebra atImInfty
 #align upper_half_plane.bounded_at_im_infty_subalgebra UpperHalfPlane.boundedAtImInftySubalgebra
 
-nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
+nonrec lemma IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
     (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
   simpa only [Pi.one_apply, mul_one, norm_eq_abs] using hf.mul hg
 #align upper_half_plane.is_bounded_at_im_infty.mul UpperHalfPlane.IsBoundedAtImInfty.mul

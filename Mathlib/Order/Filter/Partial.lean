@@ -269,13 +269,13 @@ theorem ptendsto'_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
   rtendsto'_def _ _ _
 #align filter.ptendsto'_def Filter.ptendsto'_def
 
-theorem ptendsto_of_ptendsto' {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} :
+lemma ptendsto_of_ptendsto' {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} :
     PTendsto' f l₁ l₂ → PTendsto f l₁ l₂ := by
   rw [ptendsto_def, ptendsto'_def]
   exact fun h s sl₂ => mem_of_superset (h s sl₂) (PFun.preimage_subset_core _ _)
 #align filter.ptendsto_of_ptendsto' Filter.ptendsto_of_ptendsto'
 
-theorem ptendsto'_of_ptendsto {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} (h : f.Dom ∈ l₁) :
+lemma ptendsto'_of_ptendsto {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} (h : f.Dom ∈ l₁) :
     PTendsto f l₁ l₂ → PTendsto' f l₁ l₂ := by
   rw [ptendsto_def, ptendsto'_def]
   intro h' s sl₂

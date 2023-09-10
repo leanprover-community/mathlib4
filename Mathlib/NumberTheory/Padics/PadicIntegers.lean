@@ -72,7 +72,7 @@ variable {p : ℕ} [Fact p.Prime]
 instance : Coe ℤ_[p] ℚ_[p] :=
   ⟨Subtype.val⟩
 
-theorem ext {x y : ℤ_[p]} : (x : ℚ_[p]) = y → x = y :=
+lemma ext {x y : ℤ_[p]} : (x : ℚ_[p]) = y → x = y :=
   Subtype.ext
 #align padic_int.ext PadicInt.ext
 
@@ -89,7 +89,7 @@ def subring : Subring ℚ_[p] where
 #align padic_int.subring PadicInt.subring
 
 @[simp]
-theorem mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff.rfl
+lemma mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff.rfl
 #align padic_int.mem_subring_iff PadicInt.mem_subring_iff
 
 variable {p}
@@ -115,7 +115,7 @@ instance : Inhabited ℤ_[p] := ⟨0⟩
 instance : One ℤ_[p] := ⟨⟨1, by norm_num⟩⟩
 
 @[simp]
-theorem mk_zero {h} : (⟨0, h⟩ : ℤ_[p]) = (0 : ℤ_[p]) := rfl
+lemma mk_zero {h} : (⟨0, h⟩ : ℤ_[p]) = (0 : ℤ_[p]) := rfl
 #align padic_int.mk_zero PadicInt.mk_zero
 
 @[simp, norm_cast]
@@ -135,11 +135,11 @@ theorem coe_sub (z1 z2 : ℤ_[p]) : ((z1 - z2 : ℤ_[p]) : ℚ_[p]) = z1 - z2 :=
 #align padic_int.coe_sub PadicInt.coe_sub
 
 @[simp, norm_cast]
-theorem coe_one : ((1 : ℤ_[p]) : ℚ_[p]) = 1 := rfl
+lemma coe_one : ((1 : ℤ_[p]) : ℚ_[p]) = 1 := rfl
 #align padic_int.coe_one PadicInt.coe_one
 
 @[simp, norm_cast]
-theorem coe_zero : ((0 : ℤ_[p]) : ℚ_[p]) = 0 := rfl
+lemma coe_zero : ((0 : ℤ_[p]) : ℚ_[p]) = 0 := rfl
 #align padic_int.coe_zero PadicInt.coe_zero
 
 theorem coe_eq_zero (z : ℤ_[p]) : (z : ℚ_[p]) = 0 ↔ z = 0 := by rw [← coe_zero, Subtype.coe_inj]
@@ -223,7 +223,7 @@ instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
 variable {p}
 
-theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
+lemma norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 #align padic_int.norm_def PadicInt.norm_def
 
 variable (p)
@@ -276,16 +276,16 @@ theorem norm_pow (z : ℤ_[p]) : ∀ n : ℕ, ‖z ^ n‖ = ‖z‖ ^ n
 theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := padicNormE.nonarchimedean _ _
 #align padic_int.nonarchimedean PadicInt.nonarchimedean
 
-theorem norm_add_eq_max_of_ne {q r : ℤ_[p]} : ‖q‖ ≠ ‖r‖ → ‖q + r‖ = max ‖q‖ ‖r‖ :=
+lemma norm_add_eq_max_of_ne {q r : ℤ_[p]} : ‖q‖ ≠ ‖r‖ → ‖q + r‖ = max ‖q‖ ‖r‖ :=
   padicNormE.add_eq_max_of_ne
 #align padic_int.norm_add_eq_max_of_ne PadicInt.norm_add_eq_max_of_ne
 
-theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
+lemma norm_eq_of_norm_add_lt_right {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   by_contra fun hne =>
     not_lt_of_ge (by rw [norm_add_eq_max_of_ne hne]; apply le_max_right) h
 #align padic_int.norm_eq_of_norm_add_lt_right PadicInt.norm_eq_of_norm_add_lt_right
 
-theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
+lemma norm_eq_of_norm_add_lt_left {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   by_contra fun hne =>
     not_lt_of_ge (by rw [norm_add_eq_max_of_ne hne]; apply le_max_left) h
 #align padic_int.norm_eq_of_norm_add_lt_left PadicInt.norm_eq_of_norm_add_lt_left
@@ -298,11 +298,11 @@ theorem norm_int_cast_eq_padic_norm (z : ℤ) : ‖(z : ℤ_[p])‖ = ‖(z : �
 #align padic_int.norm_int_cast_eq_padic_norm PadicInt.norm_int_cast_eq_padic_norm
 
 @[simp]
-theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ ⟨q, hq⟩ = ‖q‖ := rfl
+lemma norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ ⟨q, hq⟩ = ‖q‖ := rfl
 #align padic_int.norm_eq_padic_norm PadicInt.norm_eq_padic_norm
 
 @[simp]
-theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
+lemma norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
 #align padic_int.norm_p PadicInt.norm_p
 
 -- @[simp] -- Porting note: not in simpNF
@@ -328,7 +328,7 @@ namespace PadicInt
 
 variable (p : ℕ) [hp : Fact p.Prime]
 
-theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (-(k : ℤ)) < ε := by
+lemma exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := exists_nat_gt ε⁻¹
   use k
   rw [← inv_lt_inv hε (_root_.zpow_pos_of_pos _ _)]
@@ -341,7 +341,7 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
   · exact_mod_cast hp.1.pos
 #align padic_int.exists_pow_neg_lt PadicInt.exists_pow_neg_lt
 
-theorem exists_pow_neg_lt_rat {ε : ℚ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℚ) ^ (-(k : ℤ)) < ε := by
+lemma exists_pow_neg_lt_rat {ε : ℚ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℚ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := @exists_pow_neg_lt p _ ε (by exact_mod_cast hε)
   use k
   rw [show (p : ℝ) = (p : ℚ) by simp] at hk
@@ -355,7 +355,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℤ_[p])‖ < 1 ↔ (p : ℤ
   padicNormE.norm_int_lt_one_iff_dvd k
 #align padic_int.norm_int_lt_one_iff_dvd PadicInt.norm_int_lt_one_iff_dvd
 
-theorem norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
+lemma norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
     ‖(k : ℤ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k :=
   suffices ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ ↑(p ^ n) ∣ k by simpa [norm_int_cast_eq_padic_norm]
   padicNormE.norm_int_le_pow_iff_dvd _ _
@@ -369,22 +369,22 @@ def valuation (x : ℤ_[p]) :=
   Padic.valuation (x : ℚ_[p])
 #align padic_int.valuation PadicInt.valuation
 
-theorem norm_eq_pow_val {x : ℤ_[p]} (hx : x ≠ 0) : ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
+lemma norm_eq_pow_val {x : ℤ_[p]} (hx : x ≠ 0) : ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
   refine @Padic.norm_eq_pow_val p hp x ?_
   contrapose! hx
   exact Subtype.val_injective hx
 #align padic_int.norm_eq_pow_val PadicInt.norm_eq_pow_val
 
 @[simp]
-theorem valuation_zero : valuation (0 : ℤ_[p]) = 0 := Padic.valuation_zero
+lemma valuation_zero : valuation (0 : ℤ_[p]) = 0 := Padic.valuation_zero
 #align padic_int.valuation_zero PadicInt.valuation_zero
 
 @[simp]
-theorem valuation_one : valuation (1 : ℤ_[p]) = 0 := Padic.valuation_one
+lemma valuation_one : valuation (1 : ℤ_[p]) = 0 := Padic.valuation_one
 #align padic_int.valuation_one PadicInt.valuation_one
 
 @[simp]
-theorem valuation_p : valuation (p : ℤ_[p]) = 1 := by simp [valuation]
+lemma valuation_p : valuation (p : ℤ_[p]) = 1 := by simp [valuation]
 #align padic_int.valuation_p PadicInt.valuation_p
 
 theorem valuation_nonneg (x : ℤ_[p]) : 0 ≤ x.valuation := by
@@ -422,7 +422,7 @@ section Units
 -- Porting note: `reducible` cannot be local and making it global breaks a lot of things
 -- attribute [local reducible] PadicInt
 
-theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
+lemma mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
   | ⟨k, _⟩, h => by
     have hk : k ≠ 0 := fun h' => zero_ne_one' ℚ_[p] (by simp [h'] at h)
     unfold PadicInt.inv
@@ -433,10 +433,10 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
     simp [mul_inv_cancel hk]
 #align padic_int.mul_inv PadicInt.mul_inv
 
-theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
+lemma inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
 #align padic_int.inv_mul PadicInt.inv_mul
 
-theorem isUnit_iff {z : ℤ_[p]} : IsUnit z ↔ ‖z‖ = 1 :=
+lemma isUnit_iff {z : ℤ_[p]} : IsUnit z ↔ ‖z‖ = 1 :=
   ⟨fun h => by
     rcases isUnit_iff_dvd_one.1 h with ⟨w, eq⟩
     refine' le_antisymm (norm_le_one _) _
@@ -445,11 +445,11 @@ theorem isUnit_iff {z : ℤ_[p]} : IsUnit z ↔ ‖z‖ = 1 :=
     ⟨⟨z, z.inv, mul_inv h, inv_mul h⟩, rfl⟩⟩
 #align padic_int.is_unit_iff PadicInt.isUnit_iff
 
-theorem norm_lt_one_add {z1 z2 : ℤ_[p]} (hz1 : ‖z1‖ < 1) (hz2 : ‖z2‖ < 1) : ‖z1 + z2‖ < 1 :=
+lemma norm_lt_one_add {z1 z2 : ℤ_[p]} (hz1 : ‖z1‖ < 1) (hz2 : ‖z2‖ < 1) : ‖z1 + z2‖ < 1 :=
   lt_of_le_of_lt (nonarchimedean _ _) (max_lt hz1 hz2)
 #align padic_int.norm_lt_one_add PadicInt.norm_lt_one_add
 
-theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ < 1 :=
+lemma norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ < 1 :=
   calc
     ‖z1 * z2‖ = ‖z1‖ * ‖z2‖ := by simp
     _ < 1 := mul_lt_one_of_nonneg_of_lt_one_right (norm_le_one _) (norm_nonneg _) hz2
@@ -457,7 +457,7 @@ theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ <
 #align padic_int.norm_lt_one_mul PadicInt.norm_lt_one_mul
 
 -- @[simp] -- Porting note: not in simpNF
-theorem mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by
+lemma mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by
   rw [lt_iff_le_and_ne]; simp [norm_le_one z, nonunits, isUnit_iff]
 #align padic_int.mem_nonunits PadicInt.mem_nonunits
 
@@ -468,7 +468,7 @@ def mkUnits {u : ℚ_[p]} (h : ‖u‖ = 1) : ℤ_[p]ˣ :=
 #align padic_int.mk_units PadicInt.mkUnits
 
 @[simp]
-theorem mkUnits_eq {u : ℚ_[p]} (h : ‖u‖ = 1) : ((mkUnits h : ℤ_[p]) : ℚ_[p]) = u := rfl
+lemma mkUnits_eq {u : ℚ_[p]} (h : ‖u‖ = 1) : ((mkUnits h : ℤ_[p]) : ℚ_[p]) = u := rfl
 #align padic_int.mk_units_eq PadicInt.mkUnits_eq
 
 @[simp]
@@ -486,11 +486,11 @@ def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
 #align padic_int.unit_coeff PadicInt.unitCoeff
 
 @[simp]
-theorem unitCoeff_coe {x : ℤ_[p]} (hx : x ≠ 0) :
+lemma unitCoeff_coe {x : ℤ_[p]} (hx : x ≠ 0) :
     (unitCoeff hx : ℚ_[p]) = x * (p : ℚ_[p]) ^ (-x.valuation) := rfl
 #align padic_int.unit_coeff_coe PadicInt.unitCoeff_coe
 
-theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
+lemma unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
     x = (unitCoeff hx : ℤ_[p]) * (p : ℤ_[p]) ^ Int.natAbs (valuation x) := by
   apply Subtype.coe_injective
   push_cast
@@ -584,12 +584,12 @@ section Dvr
 instance : LocalRing ℤ_[p] :=
   LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
-theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
+lemma p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
   have : (p : ℝ)⁻¹ < 1 := inv_lt_one <| by exact_mod_cast hp.1.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 #align padic_int.p_nonnunit PadicInt.p_nonnunit
 
-theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
+lemma maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
   apply le_antisymm
   · intro x hx
     simp only [LocalRing.mem_maximalIdeal, mem_nonunits] at hx
@@ -598,13 +598,13 @@ theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p]
     exact p_nonnunit
 #align padic_int.maximal_ideal_eq_span_p PadicInt.maximalIdeal_eq_span_p
 
-theorem prime_p : Prime (p : ℤ_[p]) := by
+lemma prime_p : Prime (p : ℤ_[p]) := by
   rw [← Ideal.span_singleton_prime, ← maximalIdeal_eq_span_p]
   · infer_instance
   · exact_mod_cast hp.1.ne_zero
 #align padic_int.prime_p PadicInt.prime_p
 
-theorem irreducible_p : Irreducible (p : ℤ_[p]) := Prime.irreducible prime_p
+lemma irreducible_p : Irreducible (p : ℤ_[p]) := Prime.irreducible prime_p
 #align padic_int.irreducible_p PadicInt.irreducible_p
 
 instance : DiscreteValuationRing ℤ_[p] :=
@@ -612,7 +612,7 @@ instance : DiscreteValuationRing ℤ_[p] :=
     ⟨p, irreducible_p, fun {x hx} =>
       ⟨x.valuation.natAbs, unitCoeff hx, by rw [mul_comm, ← unitCoeff_spec hx]⟩⟩
 
-theorem ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
+lemma ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
     ∃ n : ℕ, s = Ideal.span {(p : ℤ_[p]) ^ n} :=
   DiscreteValuationRing.ideal_eq_span_pow_irreducible hs irreducible_p
 #align padic_int.ideal_eq_span_pow_p PadicInt.ideal_eq_span_pow_p

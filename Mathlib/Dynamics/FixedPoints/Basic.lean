@@ -84,17 +84,17 @@ theorem to_leftInverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g 
 
 /-- If `g` (semi)conjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/
-protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semiconj g fa fb) :
+protected lemma map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semiconj g fa fb) :
     IsFixedPt fb (g x) :=
   calc
     fb (g x) = g (fa x) := (h.eq x).symm
     _ = g x := congr_arg g hx
 #align function.is_fixed_pt.map Function.IsFixedPt.map
 
-protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
+protected lemma apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
 #align function.is_fixed_pt.apply Function.IsFixedPt.apply
 
-theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
+lemma preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
     IsFixedPt (Set.preimage f^[n]) s := by
   rw [Set.preimage_iterate_eq]
   exact h.iterate n
@@ -137,25 +137,25 @@ instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
 #align function.fixed_points.decidable Function.fixedPoints.decidable
 
 @[simp]
-theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
+lemma mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
   Iff.rfl
 #align function.mem_fixed_points Function.mem_fixedPoints
 
-theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
+lemma mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
   rfl
 #align function.mem_fixed_points_iff Function.mem_fixedPoints_iff
 
 @[simp]
-theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
+lemma fixedPoints_id : fixedPoints (@id α) = Set.univ :=
   Set.ext fun _ => by simpa using isFixedPt_id _
 #align function.fixed_points_id Function.fixedPoints_id
 
-theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
+lemma fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
 #align function.fixed_points_subset_range Function.fixedPoints_subset_range
 
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/
-theorem Semiconj.mapsTo_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
+lemma Semiconj.mapsTo_fixedPoints {g : α → β} (h : Semiconj g fa fb) :
     Set.MapsTo g (fixedPoints fa) (fixedPoints fb) := fun _ hx => hx.map h
 #align function.semiconj.maps_to_fixed_pts Function.Semiconj.mapsTo_fixedPoints
 

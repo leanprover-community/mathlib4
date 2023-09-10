@@ -63,7 +63,7 @@ class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
 #align category_theory.is_split_mono.exists_split_mono CategoryTheory.IsSplitMono.exists_splitMono
 
 /-- A constructor for `IsSplitMono f` taking a `SplitMono f` as an argument -/
-theorem IsSplitMono.mk' {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : IsSplitMono f :=
+lemma IsSplitMono.mk' {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : IsSplitMono f :=
   ⟨Nonempty.intro sm⟩
 #align category_theory.is_split_mono.mk' CategoryTheory.IsSplitMono.mk'
 
@@ -93,7 +93,7 @@ class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
 #align category_theory.is_split_epi.exists_split_epi CategoryTheory.IsSplitEpi.exists_splitEpi
 
 /-- A constructor for `IsSplitEpi f` taking a `SplitEpi f` as an argument -/
-theorem IsSplitEpi.mk' {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : IsSplitEpi f :=
+lemma IsSplitEpi.mk' {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : IsSplitEpi f :=
   ⟨Nonempty.intro se⟩
 #align category_theory.is_split_epi.mk' CategoryTheory.IsSplitEpi.mk'
 
@@ -103,7 +103,7 @@ noncomputable def retraction {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : Y �
 #align category_theory.retraction CategoryTheory.retraction
 
 @[reassoc (attr := simp)]
-theorem IsSplitMono.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : f ≫ retraction f = 𝟙 X :=
+lemma IsSplitMono.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : f ≫ retraction f = 𝟙 X :=
   hf.exists_splitMono.some.id
 #align category_theory.is_split_mono.id CategoryTheory.IsSplitMono.id
 
@@ -119,7 +119,7 @@ instance retraction_isSplitEpi {X Y : C} (f : X ⟶ Y) [IsSplitMono f] :
 #align category_theory.retraction_is_split_epi CategoryTheory.retraction_isSplitEpi
 
 /-- A split mono which is epi is an iso. -/
-theorem isIso_of_epi_of_isSplitMono {X Y : C} (f : X ⟶ Y) [IsSplitMono f] [Epi f] : IsIso f :=
+lemma isIso_of_epi_of_isSplitMono {X Y : C} (f : X ⟶ Y) [IsSplitMono f] [Epi f] : IsIso f :=
   ⟨⟨retraction f, ⟨by simp, by simp [← cancel_epi f]⟩⟩⟩
 #align category_theory.is_iso_of_epi_of_is_split_mono CategoryTheory.isIso_of_epi_of_isSplitMono
 
@@ -131,7 +131,7 @@ noncomputable def section_ {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : Y ⟶ X
 #align category_theory.section_ CategoryTheory.section_
 
 @[reassoc (attr := simp)]
-theorem IsSplitEpi.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : section_ f ≫ f = 𝟙 Y :=
+lemma IsSplitEpi.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : section_ f ≫ f = 𝟙 Y :=
   hf.exists_splitEpi.some.id
 #align category_theory.is_split_epi.id CategoryTheory.IsSplitEpi.id
 
@@ -146,7 +146,7 @@ instance section_isSplitMono {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] : IsSplitMon
 #align category_theory.section_is_split_mono CategoryTheory.section_isSplitMono
 
 /-- A split epi which is mono is an iso. -/
-theorem isIso_of_mono_of_isSplitEpi {X Y : C} (f : X ⟶ Y) [Mono f] [IsSplitEpi f] : IsIso f :=
+lemma isIso_of_mono_of_isSplitEpi {X Y : C} (f : X ⟶ Y) [Mono f] [IsSplitEpi f] : IsIso f :=
   ⟨⟨section_ f, ⟨by simp [← cancel_mono f], by simp⟩⟩⟩
 #align category_theory.is_iso_of_mono_of_is_split_epi CategoryTheory.isIso_of_mono_of_isSplitEpi
 
@@ -160,7 +160,7 @@ instance (priority := 100) IsSplitEpi.of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   IsSplitEpi.mk' { section_ := inv f }
 #align category_theory.is_split_epi.of_iso CategoryTheory.IsSplitEpi.of_iso
 
-theorem SplitMono.mono {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : Mono f :=
+lemma SplitMono.mono {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : Mono f :=
   { right_cancellation := fun g h w => by replace w := w =≫ sm.retraction; simpa using w }
 #align category_theory.split_mono.mono CategoryTheory.SplitMono.mono
 
@@ -169,7 +169,7 @@ instance (priority := 100) IsSplitMono.mono {X Y : C} (f : X ⟶ Y) [hf : IsSpli
   hf.exists_splitMono.some.mono
 #align category_theory.is_split_mono.mono CategoryTheory.IsSplitMono.mono
 
-theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
+lemma SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
   { left_cancellation := fun g h w => by replace w := se.section_ ≫= w; simpa using w }
 #align category_theory.split_epi.epi CategoryTheory.SplitEpi.epi
 
@@ -179,25 +179,25 @@ instance (priority := 100) IsSplitEpi.epi {X Y : C} (f : X ⟶ Y) [hf : IsSplitE
 #align category_theory.is_split_epi.epi CategoryTheory.IsSplitEpi.epi
 
 /-- Every split mono whose retraction is mono is an iso. -/
-theorem IsIso.of_mono_retraction' {X Y : C} {f : X ⟶ Y} (hf : SplitMono f) [Mono <| hf.retraction] :
+lemma IsIso.of_mono_retraction' {X Y : C} {f : X ⟶ Y} (hf : SplitMono f) [Mono <| hf.retraction] :
     IsIso f :=
   ⟨⟨hf.retraction, ⟨by simp, (cancel_mono_id <| hf.retraction).mp (by simp)⟩⟩⟩
 #align category_theory.is_iso.of_mono_retraction' CategoryTheory.IsIso.of_mono_retraction'
 
 /-- Every split mono whose retraction is mono is an iso. -/
-theorem IsIso.of_mono_retraction {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f]
+lemma IsIso.of_mono_retraction {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f]
     [hf' : Mono <| retraction f] : IsIso f :=
   @IsIso.of_mono_retraction' _ _ _ _ _ hf.exists_splitMono.some hf'
 #align category_theory.is_iso.of_mono_retraction CategoryTheory.IsIso.of_mono_retraction
 
 /-- Every split epi whose section is epi is an iso. -/
-theorem IsIso.of_epi_section' {X Y : C} {f : X ⟶ Y} (hf : SplitEpi f) [Epi <| hf.section_] :
+lemma IsIso.of_epi_section' {X Y : C} {f : X ⟶ Y} (hf : SplitEpi f) [Epi <| hf.section_] :
     IsIso f :=
   ⟨⟨hf.section_, ⟨(cancel_epi_id <| hf.section_).mp (by simp), by simp⟩⟩⟩
 #align category_theory.is_iso.of_epi_section' CategoryTheory.IsIso.of_epi_section'
 
 /-- Every split epi whose section is epi is an iso. -/
-theorem IsIso.of_epi_section {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] [hf' : Epi <| section_ f] :
+lemma IsIso.of_epi_section {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] [hf' : Epi <| section_ f] :
     IsIso f :=
   @IsIso.of_epi_section' _ _ _ _ _ hf.exists_splitEpi.some hf'
 #align category_theory.is_iso.of_epi_section CategoryTheory.IsIso.of_epi_section
@@ -235,13 +235,13 @@ end
 
 /-- In a category in which every monomorphism is split, every monomorphism splits. This is not an
     instance because it would create an instance loop. -/
-theorem isSplitMono_of_mono [SplitMonoCategory C] {X Y : C} (f : X ⟶ Y) [Mono f] : IsSplitMono f :=
+lemma isSplitMono_of_mono [SplitMonoCategory C] {X Y : C} (f : X ⟶ Y) [Mono f] : IsSplitMono f :=
   SplitMonoCategory.isSplitMono_of_mono _
 #align category_theory.is_split_mono_of_mono CategoryTheory.isSplitMono_of_mono
 
 /-- In a category in which every epimorphism is split, every epimorphism splits. This is not an
     instance because it would create an instance loop. -/
-theorem isSplitEpi_of_epi [SplitEpiCategory C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsSplitEpi f :=
+lemma isSplitEpi_of_epi [SplitEpiCategory C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsSplitEpi f :=
   SplitEpiCategory.isSplitEpi_of_epi _
 #align category_theory.is_split_epi_of_epi CategoryTheory.isSplitEpi_of_epi
 

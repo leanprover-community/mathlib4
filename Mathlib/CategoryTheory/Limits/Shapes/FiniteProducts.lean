@@ -55,7 +55,7 @@ noncomputable example [HasFiniteProducts C] (X : C) : C :=
 
 /-- If a category has all products then in particular it has finite products.
 -/
-theorem hasFiniteProducts_of_hasProducts [HasProducts.{w} C] : HasFiniteProducts C :=
+lemma hasFiniteProducts_of_hasProducts [HasProducts.{w} C] : HasFiniteProducts C :=
   ⟨fun _ => hasLimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift.{w})⟩
 #align category_theory.limits.has_finite_products_of_has_products CategoryTheory.Limits.hasFiniteProducts_of_hasProducts
 
@@ -87,7 +87,7 @@ instance (priority := 10) hasFiniteCoproducts_of_hasFiniteColimits [HasFiniteCol
 
 /-- If a category has all coproducts then in particular it has finite coproducts.
 -/
-theorem hasFiniteCoproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasFiniteCoproducts C :=
+lemma hasFiniteCoproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasFiniteCoproducts C :=
   ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift.{w})⟩
 #align category_theory.limits.has_finite_coproducts_of_has_coproducts CategoryTheory.Limits.hasFiniteCoproducts_of_hasCoproducts
 

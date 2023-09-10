@@ -53,7 +53,7 @@ theorem apply_mem_map₂ (f : M →ₗ[R] N →ₗ[R] P) {m : M} {n : N} {p : Su
   (le_iSup _ ⟨m, hm⟩ : _ ≤ map₂ f p q) ⟨n, hn, by rfl⟩
 #align submodule.apply_mem_map₂ Submodule.apply_mem_map₂
 
-theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submodule R N}
+lemma map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submodule R N}
     {r : Submodule R P} : map₂ f p q ≤ r ↔ ∀ m ∈ p, ∀ n ∈ q, f m n ∈ r :=
   ⟨fun H _m hm _n hn => H <| apply_mem_map₂ _ hm hn, fun H =>
     iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
@@ -95,17 +95,17 @@ theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : ma
 #align submodule.map₂_bot_left Submodule.map₂_bot_left
 
 @[mono]
-theorem map₂_le_map₂ {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q₁ q₂ : Submodule R N}
+lemma map₂_le_map₂ {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q₁ q₂ : Submodule R N}
     (hp : p₁ ≤ p₂) (hq : q₁ ≤ q₂) : map₂ f p₁ q₁ ≤ map₂ f p₂ q₂ :=
   map₂_le.2 fun _m hm _n hn => apply_mem_map₂ _ (hp hm) (hq hn)
 #align submodule.map₂_le_map₂ Submodule.map₂_le_map₂
 
-theorem map₂_le_map₂_left {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q : Submodule R N}
+lemma map₂_le_map₂_left {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q : Submodule R N}
     (h : p₁ ≤ p₂) : map₂ f p₁ q ≤ map₂ f p₂ q :=
   map₂_le_map₂ h (le_refl q)
 #align submodule.map₂_le_map₂_left Submodule.map₂_le_map₂_left
 
-theorem map₂_le_map₂_right {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q₁ q₂ : Submodule R N}
+lemma map₂_le_map₂_right {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q₁ q₂ : Submodule R N}
     (h : q₁ ≤ q₂) : map₂ f p q₁ ≤ map₂ f p q₂ :=
   map₂_le_map₂ (le_refl p) h
 #align submodule.map₂_le_map₂_right Submodule.map₂_le_map₂_right

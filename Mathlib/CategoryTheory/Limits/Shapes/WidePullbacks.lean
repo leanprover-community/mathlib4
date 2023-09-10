@@ -367,7 +367,7 @@ theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
 
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
-theorem lift_base : lift f fs w ≫ base arrows = f := by
+lemma lift_base : lift f fs w ≫ base arrows = f := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 #align category_theory.limits.wide_pullback.lift_base CategoryTheory.Limits.WidePullback.lift_base
 
@@ -445,7 +445,7 @@ theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
 
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
-theorem head_desc : head arrows ≫ desc f fs w = f := by
+lemma head_desc : head arrows ≫ desc f fs w = f := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 #align category_theory.limits.wide_pushout.head_desc CategoryTheory.Limits.WidePushout.head_desc
 
@@ -572,12 +572,12 @@ def widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape 
 
 /-- If a category has wide pushouts on a higher universe level it also has wide pushouts
 on a lower universe level. -/
-theorem hasWidePushouts_shrink [HasWidePushouts.{max w w'} C] : HasWidePushouts.{w} C := fun _ =>
+lemma hasWidePushouts_shrink [HasWidePushouts.{max w w'} C] : HasWidePushouts.{w} C := fun _ =>
   hasColimitsOfShape_of_equivalence (WidePushoutShape.equivalenceOfEquiv _ Equiv.ulift.{w'})
 
 /-- If a category has wide pullbacks on a higher universe level it also has wide pullbacks
 on a lower universe level. -/
-theorem hasWidePullbacks_shrink [HasWidePullbacks.{max w w'} C] : HasWidePullbacks.{w} C := fun _ =>
+lemma hasWidePullbacks_shrink [HasWidePullbacks.{max w w'} C] : HasWidePullbacks.{w} C := fun _ =>
   hasLimitsOfShape_of_equivalence (WidePullbackShape.equivalenceOfEquiv _ Equiv.ulift.{w'})
 #align category_theory.limits.has_wide_pullbacks_shrink CategoryTheory.Limits.hasWidePullbacks_shrink
 

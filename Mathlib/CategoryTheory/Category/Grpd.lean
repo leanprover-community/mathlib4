@@ -101,13 +101,13 @@ set_option linter.uppercaseLean3 false in
 
 /-- Convert arrows in the category of groupoids to functors,
 which sometimes helps in applying simp lemmas -/
-theorem hom_to_functor {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g = f ⋙ g :=
+lemma hom_to_functor {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g = f ⋙ g :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.hom_to_functor CategoryTheory.Grpd.hom_to_functor
 
 /-- Converts identity in the category of groupoids to the functor identity -/
-theorem id_to_functor {C : Grpd.{v, u}} : 𝟭 C = 𝟙 C :=
+lemma id_to_functor {C : Grpd.{v, u}} : 𝟭 C = 𝟙 C :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.id_to_functor CategoryTheory.Grpd.id_to_functor

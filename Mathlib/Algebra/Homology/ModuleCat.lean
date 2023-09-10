@@ -35,7 +35,7 @@ namespace ModuleCat
 /-- To prove that two maps out of a homology group are equal,
 it suffices to check they are equal on the images of cycles.
 -/
-theorem homology_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
+lemma homology_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
     {h k : homology f g w ⟶ K}
     (w :
       ∀ x : LinearMap.ker g,
@@ -59,7 +59,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.to_cycles ModuleCat.toCycles
 
 @[ext]
-theorem cycles_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
+lemma cycles_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
     {x y : (C.cycles i : Type u)}
     (w : (C.cycles i).arrow x = (C.cycles i).arrow y) : x = y := by
   apply_fun (C.cycles i).arrow using (ModuleCat.mono_iff_injective _).mp (cycles C i).arrow_mono
@@ -86,7 +86,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.to_homology ModuleCat.toHomology
 
 @[ext]
-theorem homology_ext' {M : ModuleCat R} (i : ι) {h k : C.homology i ⟶ M}
+lemma homology_ext' {M : ModuleCat R} (i : ι) {h k : C.homology i ⟶ M}
     (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology x) = k (toHomology x)) : h = k :=
   homology_ext _ w
 set_option linter.uppercaseLean3 false in

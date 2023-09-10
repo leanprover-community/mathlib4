@@ -82,7 +82,7 @@ theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n
   dif_neg (by push_neg; exact h)
 #align ideal.ramification_idx_eq_zero Ideal.ramificationIdx_eq_zero
 
-theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
+lemma ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
     ramificationIdx f p P = n := by
   let Q : ℕ → Prop := fun m => ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
   have : Q n := by
@@ -95,7 +95,7 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
   exact h.not_le (this' _ hle)
 #align ideal.ramification_idx_spec Ideal.ramificationIdx_spec
 
-theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
+lemma ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
   cases' n with n n
   · simp at hgt
   · rw [Nat.lt_succ_iff]
@@ -107,7 +107,7 @@ theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationI
 #align ideal.ramification_idx_lt Ideal.ramificationIdx_lt
 
 @[simp]
-theorem ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
+lemma ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
   dif_neg <| not_exists.mpr fun n hn => n.lt_succ_self.not_le (hn _ (by simp))
 #align ideal.ramification_idx_bot Ideal.ramificationIdx_bot
 
@@ -116,22 +116,22 @@ theorem ramificationIdx_of_not_le (h : ¬map f p ≤ P) : ramificationIdx f p P 
   ramificationIdx_spec (by simp) (by simpa using h)
 #align ideal.ramification_idx_of_not_le Ideal.ramificationIdx_of_not_le
 
-theorem ramificationIdx_ne_zero {e : ℕ} (he : e ≠ 0) (hle : map f p ≤ P ^ e)
+lemma ramificationIdx_ne_zero {e : ℕ} (he : e ≠ 0) (hle : map f p ≤ P ^ e)
     (hnle : ¬map f p ≤ P ^ (e + 1)) : ramificationIdx f p P ≠ 0 := by
   rwa [ramificationIdx_spec hle hnle]
 #align ideal.ramification_idx_ne_zero Ideal.ramificationIdx_ne_zero
 
-theorem le_pow_of_le_ramificationIdx {n : ℕ} (hn : n ≤ ramificationIdx f p P) :
+lemma le_pow_of_le_ramificationIdx {n : ℕ} (hn : n ≤ ramificationIdx f p P) :
     map f p ≤ P ^ n := by
   contrapose! hn
   exact ramificationIdx_lt hn
 #align ideal.le_pow_of_le_ramification_idx Ideal.le_pow_of_le_ramificationIdx
 
-theorem le_pow_ramificationIdx : map f p ≤ P ^ ramificationIdx f p P :=
+lemma le_pow_ramificationIdx : map f p ≤ P ^ ramificationIdx f p P :=
   le_pow_of_le_ramificationIdx (le_refl _)
 #align ideal.le_pow_ramification_idx Ideal.le_pow_ramificationIdx
 
-theorem le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P) :=
+lemma le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P) :=
   map_le_iff_le_comap.mp le_pow_ramificationIdx
 #align ideal.le_comap_pow_ramification_idx Ideal.le_comap_pow_ramificationIdx
 
@@ -198,7 +198,7 @@ noncomputable def inertiaDeg [p.IsMaximal] : ℕ :=
 
 -- Useful for the `nontriviality` tactic using `comap_eq_of_scalar_tower_quotient`.
 @[simp]
-theorem inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ P)] :
+lemma inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ P)] :
     inertiaDeg f p P = 0 := by
   have := Ideal.Quotient.subsingleton_iff.mp hQ
   subst this
@@ -206,7 +206,7 @@ theorem inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ 
 #align ideal.inertia_deg_of_subsingleton Ideal.inertiaDeg_of_subsingleton
 
 @[simp]
-theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
+lemma inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
     [IsScalarTower R (R ⧸ p) (S ⧸ P)] [hp : p.IsMaximal] :
     inertiaDeg (algebraMap R S) p P = finrank (R ⧸ p) (S ⧸ P) := by
   nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
@@ -251,7 +251,7 @@ The statement we prove is actually slightly more general:
  * it suffices that the inclusion `algebraMap R S : R → S` is nontrivial
  * the function `f' : V'' → V'` doesn't need to be injective
 -/
-theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDomain R] [IsDedekindDomain R]
+lemma FinrankQuotientMap.linearIndependent_of_nontrivial [IsDomain R] [IsDedekindDomain R]
     (hRS : RingHom.ker (algebraMap R S) ≠ ⊤) (f : V'' →ₗ[R] V) (hf : Function.Injective f)
     (f' : V'' →ₗ[R] V') {ι : Type*} {b : ι → V''} (hb' : LinearIndependent S (f' ∘ b)) :
     LinearIndependent K (f ∘ b) := by
@@ -298,7 +298,7 @@ Here,
 
 More precisely, we avoid quotients in this statement and instead require that `b ∪ pS` spans `S`.
 -/
-theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [IsNoetherian R S]
+lemma FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [IsNoetherian R S]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [IsIntegralClosure S R L]
     [NoZeroSMulDivisors R K] (hp : p ≠ ⊤) (b : Set S)
     (hb' : Submodule.span R b ⊔ (p.map (algebraMap R S)).restrictScalars R = ⊤) :
@@ -398,7 +398,7 @@ variable (K L)
 
 /-- If `p` is a maximal ideal of `R`, and `S` is the integral closure of `R` in `L`,
 then the dimension `[S/pS : R/p]` is equal to `[Frac(S) : Frac(R)]`. -/
-theorem finrank_quotient_map [IsDomain R] [IsDomain S] [IsDedekindDomain R] [Algebra K L]
+lemma finrank_quotient_map [IsDomain R] [IsDomain S] [IsDedekindDomain R] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] [IsIntegralClosure S R L]
     [hp : p.IsMaximal] [IsNoetherian R S] :
     finrank (R ⧸ p) (S ⧸ map (algebraMap R S) p) = finrank K L := by
@@ -516,7 +516,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
       Subtype.coe_mk, _root_.map_mul, map_sub, sub_mul]
 #align ideal.quotient_to_quotient_range_pow_quot_succ_aux Ideal.quotientToQuotientRangePowQuotSuccAux
 
-theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
+lemma quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux f p P a_mem (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_left _ x a_mem)⟩ :=
   by apply Quotient.map'_mk''
@@ -542,13 +542,13 @@ noncomputable def quotientToQuotientRangePowQuotSucc {i : ℕ} {a : S} (a_mem : 
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
 #align ideal.quotient_to_quotient_range_pow_quot_succ Ideal.quotientToQuotientRangePowQuotSucc
 
-theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
+lemma quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSucc f p P a_mem (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_left _ x a_mem)⟩ :=
   quotientToQuotientRangePowQuotSuccAux_mk f p P a_mem x
 #align ideal.quotient_to_quotient_range_pow_quot_succ_mk Ideal.quotientToQuotientRangePowQuotSucc_mk
 
-theorem quotientToQuotientRangePowQuotSucc_injective [IsDomain S] [IsDedekindDomain S] [P.IsPrime]
+lemma quotientToQuotientRangePowQuotSucc_injective [IsDomain S] [IsDedekindDomain S] [P.IsPrime]
     {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_not_mem : a ∉ P ^ (i + 1)) :
     Function.Injective (quotientToQuotientRangePowQuotSucc f p P a_mem) := fun x =>
   Quotient.inductionOn' x fun x y =>
@@ -568,7 +568,7 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDomain S] [IsDedekindDom
           a_not_mem
 #align ideal.quotient_to_quotient_range_pow_quot_succ_injective Ideal.quotientToQuotientRangePowQuotSucc_injective
 
-theorem quotientToQuotientRangePowQuotSucc_surjective [IsDomain S] [IsDedekindDomain S]
+lemma quotientToQuotientRangePowQuotSucc_surjective [IsDomain S] [IsDedekindDomain S]
     (hP0 : P ≠ ⊥) [hP : P.IsPrime] {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i)
     (a_not_mem : a ∉ P ^ (i + 1)) :
     Function.Surjective (quotientToQuotientRangePowQuotSucc f p P a_mem) := by
@@ -615,7 +615,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDomain S] [IsDedekin
 
 /-- Since the inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)` has a kernel isomorphic to `P / S`,
 `[P^i / P^e : R / p] = [P^(i+1) / P^e : R / p] + [P / S : R / p]` -/
-theorem rank_pow_quot_aux [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
+lemma rank_pow_quot_aux [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
     {i : ℕ} (hi : i < e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
       Module.rank (R ⧸ p) (S ⧸ P) +
@@ -626,7 +626,7 @@ theorem rank_pow_quot_aux [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsP
   exact (rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
 #align ideal.rank_pow_quot_aux Ideal.rank_pow_quot_aux
 
-theorem rank_pow_quot [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
+lemma rank_pow_quot [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
     (i : ℕ) (hi : i ≤ e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
       (e - i) • Module.rank (R ⧸ p) (S ⧸ P) := by
@@ -646,7 +646,7 @@ theorem rank_pow_quot [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime
 
 /-- If `p` is a maximal ideal of `R`, `S` extends `R` and `P^e` lies over `p`,
 then the dimension `[S/(P^e) : R/p]` is equal to `e * [S/P : R/p]`. -/
-theorem rank_prime_pow_ramificationIdx [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime]
+lemma rank_prime_pow_ramificationIdx [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime]
     (hP0 : P ≠ ⊥) (he : e ≠ 0) :
     Module.rank (R ⧸ p) (S ⧸ P ^ e) =
       e •
@@ -661,7 +661,7 @@ theorem rank_prime_pow_ramificationIdx [IsDomain S] [IsDedekindDomain S] [p.IsMa
 
 /-- If `p` is a maximal ideal of `R`, `S` extends `R` and `P^e` lies over `p`,
 then the dimension `[S/(P^e) : R/p]`, as a natural number, is equal to `e * [S/P : R/p]`. -/
-theorem finrank_prime_pow_ramificationIdx [IsDomain S] [IsDedekindDomain S] (hP0 : P ≠ ⊥)
+lemma finrank_prime_pow_ramificationIdx [IsDomain S] [IsDedekindDomain S] (hP0 : P ≠ ⊥)
     [p.IsMaximal] [P.IsPrime] (he : e ≠ 0) :
     finrank (R ⧸ p) (S ⧸ P ^ e) =
       e *
@@ -724,7 +724,7 @@ instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset)
 
 attribute [local instance] Ideal.Quotient.field
 
-theorem Factors.finrank_pow_ramificationIdx [p.IsMaximal]
+lemma Factors.finrank_pow_ramificationIdx [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
     finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx (algebraMap R S) p P) =
       ramificationIdx (algebraMap R S) p P * inertiaDeg (algebraMap R S) p P := by
@@ -741,7 +741,7 @@ instance Factors.finiteDimensional_quotient [IsNoetherian R S] [p.IsMaximal]
         LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective
 #align ideal.factors.finite_dimensional_quotient Ideal.Factors.finiteDimensional_quotient
 
-theorem Factors.inertiaDeg_ne_zero [IsNoetherian R S] [p.IsMaximal]
+lemma Factors.inertiaDeg_ne_zero [IsNoetherian R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) : inertiaDeg (algebraMap R S) p P ≠ 0 := by
   rw [inertiaDeg_algebraMap]; exact (FiniteDimensional.finrank_pos_iff.mpr inferInstance).ne'
 #align ideal.factors.inertia_deg_ne_zero Ideal.Factors.inertiaDeg_ne_zero

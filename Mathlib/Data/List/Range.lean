@@ -30,7 +30,7 @@ namespace List
 
 variable {α : Type u}
 
-@[simp] theorem range'_one {step} : range' s 1 step = [s] := rfl
+@[simp] lemma range'_one {step} : range' s 1 step = [s] := rfl
 
 #align list.length_range' List.length_range'
 #align list.range'_eq_nil List.range'_eq_nil
@@ -40,7 +40,7 @@ variable {α : Type u}
 #align list.chain_succ_range' List.chain_succ_range'
 #align list.chain_lt_range' List.chain_lt_range'
 
-theorem pairwise_lt_range' : ∀ s n (step := 1) (_ : 0 < step := by simp),
+lemma pairwise_lt_range' : ∀ s n (step := 1) (_ : 0 < step := by simp),
   Pairwise (· < ·) (range' s n step)
   | _, 0, _, _ => Pairwise.nil
   | s, n + 1, _, h => chain_iff_pairwise.1 (chain_lt_range' s n h)
@@ -56,11 +56,11 @@ theorem nodup_range' (s n : ℕ) (step := 1) (h : 0 < step := by simp) : Nodup (
 
 set_option linter.deprecated false in
 @[simp]
-theorem nthLe_range' {n m step} (i) (H : i < (range' n m step).length) :
+lemma nthLe_range' {n m step} (i) (H : i < (range' n m step).length) :
     nthLe (range' n m step) i H = n + step * i := get_range' i H
 
 set_option linter.deprecated false in
-theorem nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
+lemma nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
     nthLe (range' n m) i H = n + i := by simp
 #align list.nth_le_range' List.nthLe_range'_1
 
@@ -130,12 +130,12 @@ def finRange (n : ℕ) : List (Fin n) :=
 #align list.fin_range List.finRange
 
 @[simp]
-theorem finRange_zero : finRange 0 = [] :=
+lemma finRange_zero : finRange 0 = [] :=
   rfl
 #align list.fin_range_zero List.finRange_zero
 
 @[simp]
-theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n :=
+lemma mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n :=
   mem_pmap.2
     ⟨a.1, mem_range.2 a.2, by
       cases a
@@ -152,12 +152,12 @@ theorem length_finRange (n : ℕ) : (finRange n).length = n := by
 #align list.length_fin_range List.length_finRange
 
 @[simp]
-theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
+lemma finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
   rw [← length_eq_zero, length_finRange]
 #align list.fin_range_eq_nil List.finRange_eq_nil
 
 @[to_additive]
-theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
+lemma prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
     ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
   rw [range_succ, map_append, map_singleton, prod_append, prod_cons, prod_nil, mul_one]
 #align list.prod_range_succ List.prod_range_succ
@@ -167,7 +167,7 @@ theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
   term in the product rather than the last.-/
 @[to_additive
   "A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
-theorem prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
+lemma prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
     ((range n.succ).map f).prod = f 0 * ((range n).map fun i => f (succ i)).prod :=
   Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
     rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
@@ -198,13 +198,13 @@ theorem unzip_enumFrom_eq_prod (l : List α) {n : ℕ} :
 
 set_option linter.deprecated false in
 @[simp]
-theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i :=
+lemma nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i :=
   get_range i H
 #align list.nth_le_range List.nthLe_range
 
 -- Porting note: new theorem
 @[simp]
-theorem get_finRange {n : ℕ} {i : ℕ} (h) :
+lemma get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp only [finRange, get_range, get_pmap]
 
@@ -216,7 +216,7 @@ theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
 
 set_option linter.deprecated false in
 @[simp]
-theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
+lemma nthLe_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).nthLe i h = ⟨i, length_finRange n ▸ h⟩ :=
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange

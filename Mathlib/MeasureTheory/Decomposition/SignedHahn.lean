@@ -130,7 +130,7 @@ private theorem someExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
   rw [someExistsOneDivLT, dif_pos hi]
   exact Classical.choose_spec (findExistsOneDivLT_spec hi)
 
-private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
+private lemma someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
   by_cases hi : ¬s ≤[i] 0
   · exact
       let ⟨h, _⟩ := someExistsOneDivLT_spec hi
@@ -138,10 +138,10 @@ private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
   · rw [someExistsOneDivLT, dif_neg hi]
     exact Set.empty_subset _
 
-private theorem someExistsOneDivLT_subset' : someExistsOneDivLT s (i \ j) ⊆ i :=
+private lemma someExistsOneDivLT_subset' : someExistsOneDivLT s (i \ j) ⊆ i :=
   Set.Subset.trans someExistsOneDivLT_subset (Set.diff_subset _ _)
 
-private theorem someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneDivLT s i) := by
+private lemma someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneDivLT s i) := by
   by_cases hi : ¬s ≤[i] 0
   · exact
       let ⟨_, h, _⟩ := someExistsOneDivLT_spec hi
@@ -204,7 +204,7 @@ private theorem restrictNonposSeq_measurableSet (n : ℕ) :
     · rw [restrictNonposSeq]
       exact someExistsOneDivLT_measurableSet
 
-private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
+private lemma restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
   rw [Set.eq_empty_iff_forall_not_mem]
   rintro x ⟨hx₁, hx₂⟩
@@ -214,7 +214,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
-private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
+private lemma restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h
   rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
   rcases lt_or_gt_of_ne h with (h | h)
@@ -336,11 +336,11 @@ def measureOfNegatives (s : SignedMeasure α) : Set ℝ :=
   s '' { B | MeasurableSet B ∧ s ≤[B] 0 }
 #align measure_theory.signed_measure.measure_of_negatives MeasureTheory.SignedMeasure.measureOfNegatives
 
-theorem zero_mem_measureOfNegatives : (0 : ℝ) ∈ s.measureOfNegatives :=
+lemma zero_mem_measureOfNegatives : (0 : ℝ) ∈ s.measureOfNegatives :=
   ⟨∅, ⟨MeasurableSet.empty, le_restrict_empty _ _⟩, s.empty⟩
 #align measure_theory.signed_measure.zero_mem_measure_of_negatives MeasureTheory.SignedMeasure.zero_mem_measureOfNegatives
 
-theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
+lemma bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
   simp_rw [BddBelow, Set.Nonempty, mem_lowerBounds]
   by_contra' h
   have h' : ∀ n : ℕ, ∃ y : ℝ, y ∈ s.measureOfNegatives ∧ y < -n := fun n => h (-n)
@@ -417,7 +417,7 @@ theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
 #align measure_theory.signed_measure.exists_is_compl_positive_negative MeasureTheory.SignedMeasure.exists_isCompl_positive_negative
 
 /-- The symmetric difference of two Hahn decompositions has measure zero. -/
-theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α}
+lemma of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α}
     (hi : MeasurableSet i) (hj : MeasurableSet j) (hi' : 0 ≤[i] s ∧ s ≤[iᶜ] 0)
     (hj' : 0 ≤[j] s ∧ s ≤[jᶜ] 0) : s (i ∆ j) = 0 ∧ s (iᶜ ∆ jᶜ) = 0 := by
   rw [restrict_le_restrict_iff s 0, restrict_le_restrict_iff 0 s] at hi' hj'

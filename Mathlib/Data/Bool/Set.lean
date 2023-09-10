@@ -20,12 +20,12 @@ open Set
 namespace Bool
 
 @[simp]
-theorem univ_eq : (univ : Set Bool) = {false, true} :=
+lemma univ_eq : (univ : Set Bool) = {false, true} :=
   (eq_univ_of_forall Bool.dichotomy).symm
 #align bool.univ_eq Bool.univ_eq
 
 @[simp]
-theorem range_eq {α : Type*} (f : Bool → α) : range f = {f false, f true} := by
+lemma range_eq {α : Type*} (f : Bool → α) : range f = {f false, f true} := by
   rw [← image_univ, univ_eq, image_pair]
 #align bool.range_eq Bool.range_eq
 

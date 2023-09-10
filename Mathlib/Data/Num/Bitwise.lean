@@ -104,7 +104,7 @@ def shiftl : PosNum → Nat → PosNum
 
 -- Porting note: `PosNum.shiftl` is defined as tail-recursive in Lean4.
 --               This theorem ensures the definition is same to one in Lean3.
-theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), shiftl p n.succ = bit0 (shiftl p n)
+lemma shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), shiftl p n.succ = bit0 (shiftl p n)
   | _, 0       => rfl
   | p, .succ n => shiftl_succ_eq_bit0_shiftl p.bit0 n
 

@@ -143,7 +143,7 @@ def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α)
 
 /-- Given a measure, there exists a continuous linear form on the space of all bounded functions
 (not necessarily measurable) that coincides with the integral on bounded measurable functions. -/
-theorem exists_linear_extension_to_boundedFunctions [MeasurableSpace α] (μ : Measure α)
+lemma exists_linear_extension_to_boundedFunctions [MeasurableSpace α] (μ : Measure α)
     [IsFiniteMeasure μ] :
     ∃ φ : (DiscreteCopy α →ᵇ ℝ) →L[ℝ] ℝ,
       ∀ f : DiscreteCopy α →ᵇ ℝ, Integrable f μ → φ f = ∫ x, f x ∂μ := by
@@ -158,7 +158,7 @@ def _root_.MeasureTheory.Measure.extensionToBoundedFunctions [MeasurableSpace α
   (exists_linear_extension_to_boundedFunctions μ).choose
 #align measure_theory.measure.extension_to_bounded_functions MeasureTheory.Measure.extensionToBoundedFunctions
 
-theorem extensionToBoundedFunctions_apply [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ]
+lemma extensionToBoundedFunctions_apply [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ]
     (f : DiscreteCopy α →ᵇ ℝ) (hf : Integrable f μ) :
     μ.extensionToBoundedFunctions f = ∫ x, f x ∂μ :=
   (exists_linear_extension_to_boundedFunctions μ).choose_spec f hf
@@ -440,7 +440,7 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
 @[simp]
-theorem continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
+lemma continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
     (x : α) : (evalClm ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
   let f := (evalClm ℝ x).toBoundedAdditiveMeasure
   calc
@@ -451,7 +451,7 @@ theorem continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology �
     _ = 0 := by simp
 #align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalClm_eq_zero
 
-theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
+lemma toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = (μ s).toReal := by
   change
@@ -469,7 +469,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
     exact norm_indicator_le_one _
 #align counterexample.phillips_1940.to_functions_to_measure Counterexample.Phillips1940.toFunctions_toMeasure
 
-theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
+lemma toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = (μ s).toReal := by
   let f := μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure

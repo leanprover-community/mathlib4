@@ -75,7 +75,7 @@ theorem le_succFn (i : ι) : i ≤ succFn i := by
   exact fun x hx ↦ le_of_lt hx
 #align linear_locally_finite_order.le_succ_fn LinearLocallyFiniteOrder.le_succFn
 
-theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi i) k) :
+lemma isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi i) k) :
     IsGLB (Set.Ioc i j) k := by
   simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h ⊢
   refine' ⟨fun x hx ↦ h.1 x hx.1, fun x hx ↦ h.2 x _⟩
@@ -85,7 +85,7 @@ theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi
   · exact le_trans (hx j ⟨hij_lt, le_rfl⟩) h_lt.le
 #align linear_locally_finite_order.is_glb_Ioc_of_is_glb_Ioi LinearLocallyFiniteOrder.isGLB_Ioc_of_isGLB_Ioi
 
-theorem isMax_of_succFn_le [LocallyFiniteOrder ι] (i : ι) (hi : succFn i ≤ i) : IsMax i := by
+lemma isMax_of_succFn_le [LocallyFiniteOrder ι] (i : ι) (hi : succFn i ≤ i) : IsMax i := by
   refine' fun j _ ↦ not_lt.mp fun hij_lt ↦ _
   have h_succFn_eq : succFn i = i := le_antisymm hi (le_succFn i)
   have h_glb : IsGLB (Finset.Ioc i j : Set ι) i := by
@@ -202,7 +202,7 @@ theorem toZ_of_lt (hi : i < i0) : toZ i0 i = -Nat.find (exists_pred_iterate_of_l
 #align to_Z_of_lt toZ_of_lt
 
 @[simp]
-theorem toZ_of_eq : toZ i0 i0 = 0 := by
+lemma toZ_of_eq : toZ i0 i0 = 0 := by
   rw [toZ_of_ge le_rfl]
   norm_cast
   refine' le_antisymm (Nat.find_le _) (zero_le _)
@@ -282,7 +282,7 @@ theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     exact isMin_iterate_pred_of_eq_of_ne h_eq.symm (Ne.symm hmn)
 #align to_Z_iterate_pred_of_not_is_min toZ_iterate_pred_of_not_isMin
 
-theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
+lemma le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
   cases' le_or_lt i0 i with hi hi <;> cases' le_or_lt i0 j with hj hj
   · rw [← iterate_succ_toZ i hi, ← iterate_succ_toZ j hj]
     exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ _) (Int.toNat_le_toNat h_le)
@@ -293,7 +293,7 @@ theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
     exact neg_le_neg h_le
 #align le_of_to_Z_le le_of_toZ_le
 
-theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
+lemma toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
   by_cases hi_max : IsMax i
   · rw [le_antisymm h_le (hi_max h_le)]
   by_cases hj_min : IsMin j
@@ -346,15 +346,15 @@ theorem toZ_le_iff (i j : ι) : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
   ⟨le_of_toZ_le, toZ_mono⟩
 #align to_Z_le_iff toZ_le_iff
 
-theorem toZ_iterate_succ [NoMaxOrder ι] (n : ℕ) : toZ i0 (succ^[n] i0) = n :=
+lemma toZ_iterate_succ [NoMaxOrder ι] (n : ℕ) : toZ i0 (succ^[n] i0) = n :=
   toZ_iterate_succ_of_not_isMax n (not_isMax _)
 #align to_Z_iterate_succ toZ_iterate_succ
 
-theorem toZ_iterate_pred [NoMinOrder ι] (n : ℕ) : toZ i0 (pred^[n] i0) = -n :=
+lemma toZ_iterate_pred [NoMinOrder ι] (n : ℕ) : toZ i0 (pred^[n] i0) = -n :=
   toZ_iterate_pred_of_not_isMin n (not_isMin _)
 #align to_Z_iterate_pred toZ_iterate_pred
 
-theorem injective_toZ : Function.Injective (toZ i0) :=
+lemma injective_toZ : Function.Injective (toZ i0) :=
   fun _ _ h ↦ le_antisymm (le_of_toZ_le h.le) (le_of_toZ_le h.symm.le)
 #align injective_to_Z injective_toZ
 

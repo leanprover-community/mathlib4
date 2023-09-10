@@ -39,12 +39,12 @@ variable (F : J × K ⥤ C)
 
 open CategoryTheory.prod
 
-theorem map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
+lemma map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
     F.map ((𝟙 j, f) : (j, k) ⟶ (j, k')) = ((curry.obj F).obj j).map f :=
   rfl
 #align category_theory.limits.map_id_left_eq_curry_map CategoryTheory.Limits.map_id_left_eq_curry_map
 
-theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
+lemma map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
     F.map ((f, 𝟙 k) : (j, k) ⟶ (j', k)) = ((curry.obj (Prod.swap K J ⋙ F)).obj k).map f :=
   rfl
 #align category_theory.limits.map_id_right_eq_curry_swap_map CategoryTheory.Limits.map_id_right_eq_curry_swap_map

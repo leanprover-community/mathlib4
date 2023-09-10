@@ -40,7 +40,7 @@ noncomputable def mapToFractionRing (B : Type*) [CommRing B] [Algebra A B] [IsLo
 #align localization.map_to_fraction_ring Localization.mapToFractionRing
 
 @[simp]
-theorem mapToFractionRing_apply {B : Type*} [CommRing B] [Algebra A B] [IsLocalization S B]
+lemma mapToFractionRing_apply {B : Type*} [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) (b : B) :
     mapToFractionRing K S B hS b = IsLocalization.lift (map_isUnit_of_le K S hS) b :=
   rfl

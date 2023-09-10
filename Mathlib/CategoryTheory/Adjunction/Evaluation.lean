@@ -76,7 +76,7 @@ instance evaluationIsRightAdjoint (c : C) : IsRightAdjoint ((evaluation _ D).obj
   ⟨_, evaluationAdjunctionRight _ _⟩
 #align category_theory.evaluation_is_right_adjoint CategoryTheory.evaluationIsRightAdjoint
 
-theorem NatTrans.mono_iff_mono_app {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
+lemma NatTrans.mono_iff_mono_app {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
   constructor
   · intro h c
     exact (inferInstance : Mono (((evaluation _ _).obj c).map η))
@@ -135,7 +135,7 @@ instance evaluationIsLeftAdjoint (c : C) : IsLeftAdjoint ((evaluation _ D).obj c
   ⟨_, evaluationAdjunctionLeft _ _⟩
 #align category_theory.evaluation_is_left_adjoint CategoryTheory.evaluationIsLeftAdjoint
 
-theorem NatTrans.epi_iff_epi_app {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by
+lemma NatTrans.epi_iff_epi_app {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by
   constructor
   · intro h c
     exact (inferInstance : Epi (((evaluation _ _).obj c).map η))

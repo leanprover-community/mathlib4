@@ -42,7 +42,7 @@ def sumLift₂ : ∀ (_ : Sum α₁ α₂) (_ : Sum β₁ β₂), Finset (Sum γ
 
 variable {f f₁ g₁ g f₂ g₂} {a : Sum α₁ α₂} {b : Sum β₁ β₂} {c : Sum γ₁ γ₂}
 
-theorem mem_sumLift₂ :
+lemma mem_sumLift₂ :
     c ∈ sumLift₂ f g a b ↔
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
@@ -59,7 +59,7 @@ theorem mem_sumLift₂ :
   · rintro (⟨a, b, c, rfl, rfl, rfl, h⟩ | ⟨a, b, c, rfl, rfl, rfl, h⟩) <;> exact mem_map_of_mem _ h
 #align finset.mem_sum_lift₂ Finset.mem_sumLift₂
 
-theorem inl_mem_sumLift₂ {c₁ : γ₁} :
+lemma inl_mem_sumLift₂ {c₁ : γ₁} :
     inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ := by
   rw [mem_sumLift₂, or_iff_left]
   simp only [inl.injEq, exists_and_left, exists_eq_left']
@@ -67,7 +67,7 @@ theorem inl_mem_sumLift₂ {c₁ : γ₁} :
   exact inl_ne_inr h
 #align finset.inl_mem_sum_lift₂ Finset.inl_mem_sumLift₂
 
-theorem inr_mem_sumLift₂ {c₂ : γ₂} :
+lemma inr_mem_sumLift₂ {c₂ : γ₂} :
     inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ := by
   rw [mem_sumLift₂, or_iff_right]
   simp only [inr.injEq, exists_and_left, exists_eq_left']
@@ -75,7 +75,7 @@ theorem inr_mem_sumLift₂ {c₂ : γ₂} :
   exact inr_ne_inl h
 #align finset.inr_mem_sum_lift₂ Finset.inr_mem_sumLift₂
 
-theorem sumLift₂_eq_empty :
+lemma sumLift₂_eq_empty :
     sumLift₂ f g a b = ∅ ↔
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
         ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
@@ -90,7 +90,7 @@ theorem sumLift₂_eq_empty :
   · exact map_eq_empty.2 (h.2 _ _ rfl rfl)
 #align finset.sum_lift₂_eq_empty Finset.sumLift₂_eq_empty
 
-theorem sumLift₂_nonempty :
+lemma sumLift₂_nonempty :
     (sumLift₂ f g a b).Nonempty ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty := by
@@ -135,75 +135,75 @@ instance : LocallyFiniteOrder (Sum α β)
 
 variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : Sum α β)
 
-theorem Icc_inl_inl : Icc (inl a₁ : Sum α β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
+lemma Icc_inl_inl : Icc (inl a₁ : Sum α β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
   rfl
 #align sum.Icc_inl_inl Sum.Icc_inl_inl
 
-theorem Ico_inl_inl : Ico (inl a₁ : Sum α β) (inl a₂) = (Ico a₁ a₂).map Embedding.inl :=
+lemma Ico_inl_inl : Ico (inl a₁ : Sum α β) (inl a₂) = (Ico a₁ a₂).map Embedding.inl :=
   rfl
 #align sum.Ico_inl_inl Sum.Ico_inl_inl
 
-theorem Ioc_inl_inl : Ioc (inl a₁ : Sum α β) (inl a₂) = (Ioc a₁ a₂).map Embedding.inl :=
+lemma Ioc_inl_inl : Ioc (inl a₁ : Sum α β) (inl a₂) = (Ioc a₁ a₂).map Embedding.inl :=
   rfl
 #align sum.Ioc_inl_inl Sum.Ioc_inl_inl
 
-theorem Ioo_inl_inl : Ioo (inl a₁ : Sum α β) (inl a₂) = (Ioo a₁ a₂).map Embedding.inl :=
+lemma Ioo_inl_inl : Ioo (inl a₁ : Sum α β) (inl a₂) = (Ioo a₁ a₂).map Embedding.inl :=
   rfl
 #align sum.Ioo_inl_inl Sum.Ioo_inl_inl
 
 @[simp]
-theorem Icc_inl_inr : Icc (inl a₁) (inr b₂) = ∅ :=
+lemma Icc_inl_inr : Icc (inl a₁) (inr b₂) = ∅ :=
   rfl
 #align sum.Icc_inl_inr Sum.Icc_inl_inr
 
 @[simp]
-theorem Ico_inl_inr : Ico (inl a₁) (inr b₂) = ∅ :=
+lemma Ico_inl_inr : Ico (inl a₁) (inr b₂) = ∅ :=
   rfl
 #align sum.Ico_inl_inr Sum.Ico_inl_inr
 
 @[simp]
-theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
+lemma Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 #align sum.Ioc_inl_inr Sum.Ioc_inl_inr
 
 @[simp, nolint simpNF] -- Porting note: dsimp can not prove this
-theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
+lemma Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
   rfl
 #align sum.Ioo_inl_inr Sum.Ioo_inl_inr
 
 @[simp]
-theorem Icc_inr_inl : Icc (inr b₁) (inl a₂) = ∅ :=
+lemma Icc_inr_inl : Icc (inr b₁) (inl a₂) = ∅ :=
   rfl
 #align sum.Icc_inr_inl Sum.Icc_inr_inl
 
 @[simp]
-theorem Ico_inr_inl : Ico (inr b₁) (inl a₂) = ∅ :=
+lemma Ico_inr_inl : Ico (inr b₁) (inl a₂) = ∅ :=
   rfl
 #align sum.Ico_inr_inl Sum.Ico_inr_inl
 
 @[simp]
-theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
+lemma Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 #align sum.Ioc_inr_inl Sum.Ioc_inr_inl
 
 @[simp, nolint simpNF] -- Porting note: dsimp can not prove this
-theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
+lemma Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
   rfl
 #align sum.Ioo_inr_inl Sum.Ioo_inr_inl
 
-theorem Icc_inr_inr : Icc (inr b₁ : Sum α β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=
+lemma Icc_inr_inr : Icc (inr b₁ : Sum α β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=
   rfl
 #align sum.Icc_inr_inr Sum.Icc_inr_inr
 
-theorem Ico_inr_inr : Ico (inr b₁ : Sum α β) (inr b₂) = (Ico b₁ b₂).map Embedding.inr :=
+lemma Ico_inr_inr : Ico (inr b₁ : Sum α β) (inr b₂) = (Ico b₁ b₂).map Embedding.inr :=
   rfl
 #align sum.Ico_inr_inr Sum.Ico_inr_inr
 
-theorem Ioc_inr_inr : Ioc (inr b₁ : Sum α β) (inr b₂) = (Ioc b₁ b₂).map Embedding.inr :=
+lemma Ioc_inr_inr : Ioc (inr b₁ : Sum α β) (inr b₂) = (Ioc b₁ b₂).map Embedding.inr :=
   rfl
 #align sum.Ioc_inr_inr Sum.Ioc_inr_inr
 
-theorem Ioo_inr_inr : Ioo (inr b₁ : Sum α β) (inr b₂) = (Ioo b₁ b₂).map Embedding.inr :=
+lemma Ioo_inr_inr : Ioo (inr b₁ : Sum α β) (inr b₂) = (Ioo b₁ b₂).map Embedding.inr :=
   rfl
 #align sum.Ioo_inr_inr Sum.Ioo_inr_inr
 

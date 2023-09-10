@@ -110,21 +110,21 @@ theorem summable_div_const_iff (h : a ≠ 0) : (Summable fun i => f i / a) ↔ S
   simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
 #align summable_div_const_iff summable_div_const_iff
 
-theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x :=
+lemma tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x :=
   if hf : Summable f then hf.tsum_mul_left a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
 #align tsum_mul_left tsum_mul_left
 
-theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a :=
+lemma tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a :=
   if hf : Summable f then hf.tsum_mul_right a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
 #align tsum_mul_right tsum_mul_right
 
-theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
+lemma tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 #align tsum_div_const tsum_div_const
 
@@ -194,7 +194,7 @@ variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : ℕ → α}
 
 /- The family `(k, l) : ℕ × ℕ ↦ f k * g l` is summable if and only if the family
 `(n, k, l) : Σ (n : ℕ), Nat.antidiagonal n ↦ f k * g l` is summable. -/
-theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
+lemma summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
     (Summable fun x : ℕ × ℕ => f x.1 * g x.2) ↔
       Summable fun x : Σn : ℕ, Nat.antidiagonal n => f (x.2 : ℕ × ℕ).1 * g (x.2 : ℕ × ℕ).2 :=
   Nat.sigmaAntidiagonalEquivProd.summable_iff.symm

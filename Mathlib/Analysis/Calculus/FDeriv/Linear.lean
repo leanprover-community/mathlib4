@@ -59,33 +59,33 @@ There are currently two variants of these in mathlib, the bundled version
 predicate `IsBoundedLinearMap`). We give statements for both versions. -/
 
 
-protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
+protected lemma ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
   (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
 #align continuous_linear_map.has_strict_fderiv_at ContinuousLinearMap.hasStrictFDerivAt
 
-protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
+protected lemma ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
   (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
 #align continuous_linear_map.has_fderiv_at_filter ContinuousLinearMap.hasFDerivAtFilter
 
-protected theorem ContinuousLinearMap.hasFDerivWithinAt : HasFDerivWithinAt e e s x :=
+protected lemma ContinuousLinearMap.hasFDerivWithinAt : HasFDerivWithinAt e e s x :=
   e.hasFDerivAtFilter
 #align continuous_linear_map.has_fderiv_within_at ContinuousLinearMap.hasFDerivWithinAt
 
-protected theorem ContinuousLinearMap.hasFDerivAt : HasFDerivAt e e x :=
+protected lemma ContinuousLinearMap.hasFDerivAt : HasFDerivAt e e x :=
   e.hasFDerivAtFilter
 #align continuous_linear_map.has_fderiv_at ContinuousLinearMap.hasFDerivAt
 
 @[simp]
-protected theorem ContinuousLinearMap.differentiableAt : DifferentiableAt 𝕜 e x :=
+protected lemma ContinuousLinearMap.differentiableAt : DifferentiableAt 𝕜 e x :=
   e.hasFDerivAt.differentiableAt
 #align continuous_linear_map.differentiable_at ContinuousLinearMap.differentiableAt
 
-protected theorem ContinuousLinearMap.differentiableWithinAt : DifferentiableWithinAt 𝕜 e s x :=
+protected lemma ContinuousLinearMap.differentiableWithinAt : DifferentiableWithinAt 𝕜 e s x :=
   e.differentiableAt.differentiableWithinAt
 #align continuous_linear_map.differentiable_within_at ContinuousLinearMap.differentiableWithinAt
 
 @[simp]
-protected theorem ContinuousLinearMap.fderiv : fderiv 𝕜 e x = e :=
+protected lemma ContinuousLinearMap.fderiv : fderiv 𝕜 e x = e :=
   e.hasFDerivAt.fderiv
 #align continuous_linear_map.fderiv ContinuousLinearMap.fderiv
 
@@ -96,11 +96,11 @@ protected theorem ContinuousLinearMap.fderivWithin (hxs : UniqueDiffWithinAt �
 #align continuous_linear_map.fderiv_within ContinuousLinearMap.fderivWithin
 
 @[simp]
-protected theorem ContinuousLinearMap.differentiable : Differentiable 𝕜 e := fun _ =>
+protected lemma ContinuousLinearMap.differentiable : Differentiable 𝕜 e := fun _ =>
   e.differentiableAt
 #align continuous_linear_map.differentiable ContinuousLinearMap.differentiable
 
-protected theorem ContinuousLinearMap.differentiableOn : DifferentiableOn 𝕜 e s :=
+protected lemma ContinuousLinearMap.differentiableOn : DifferentiableOn 𝕜 e s :=
   e.differentiable.differentiableOn
 #align continuous_linear_map.differentiable_on ContinuousLinearMap.differentiableOn
 

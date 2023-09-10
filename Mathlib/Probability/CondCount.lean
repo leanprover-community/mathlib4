@@ -56,18 +56,18 @@ def condCount (s : Set Ω) : Measure Ω :=
 #align probability_theory.cond_count ProbabilityTheory.condCount
 
 @[simp]
-theorem condCount_empty_meas : (condCount ∅ : Measure Ω) = 0 := by simp [condCount]
+lemma condCount_empty_meas : (condCount ∅ : Measure Ω) = 0 := by simp [condCount]
 #align probability_theory.cond_count_empty_meas ProbabilityTheory.condCount_empty_meas
 
-theorem condCount_empty {s : Set Ω} : condCount s ∅ = 0 := by simp
+lemma condCount_empty {s : Set Ω} : condCount s ∅ = 0 := by simp
 #align probability_theory.cond_count_empty ProbabilityTheory.condCount_empty
 
-theorem finite_of_condCount_ne_zero {s t : Set Ω} (h : condCount s t ≠ 0) : s.Finite := by
+lemma finite_of_condCount_ne_zero {s t : Set Ω} (h : condCount s t ≠ 0) : s.Finite := by
   by_contra hs'
   simp [condCount, cond, Measure.count_apply_infinite hs'] at h
 #align probability_theory.finite_of_cond_count_ne_zero ProbabilityTheory.finite_of_condCount_ne_zero
 
-theorem condCount_univ [Fintype Ω] {s : Set Ω} :
+lemma condCount_univ [Fintype Ω] {s : Set Ω} :
     condCount Set.univ s = Measure.count s / Fintype.card Ω := by
   rw [condCount, cond_apply _ MeasurableSet.univ, ← ENNReal.div_eq_inv_mul, Set.univ_inter]
   congr
@@ -78,7 +78,7 @@ theorem condCount_univ [Fintype Ω] {s : Set Ω} :
 
 variable [MeasurableSingletonClass Ω]
 
-theorem condCount_isProbabilityMeasure {s : Set Ω} (hs : s.Finite) (hs' : s.Nonempty) :
+lemma condCount_isProbabilityMeasure {s : Set Ω} (hs : s.Finite) (hs' : s.Nonempty) :
     IsProbabilityMeasure (condCount s) :=
   { measure_univ := by
       rw [condCount, cond_apply _ hs.measurableSet, Set.inter_univ, ENNReal.inv_mul_cancel]

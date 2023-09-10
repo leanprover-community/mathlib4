@@ -72,7 +72,7 @@ variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R
 namespace RingHomCompTriple
 
 @[simp]
-theorem comp_apply [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] {x : R₁} : σ₂₃ (σ₁₂ x) = σ₁₃ x :=
+lemma comp_apply [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] {x : R₁} : σ₂₃ (σ₁₂ x) = σ₁₃ x :=
   RingHom.congr_fun comp_eq x
 #align ring_hom_comp_triple.comp_apply RingHomCompTriple.comp_apply
 
@@ -98,13 +98,13 @@ namespace RingHomInvPair
 variable [RingHomInvPair σ σ']
 
 -- @[simp] Porting note: `simp` can prove it
-theorem comp_apply_eq {x : R₁} : σ' (σ x) = x := by
+lemma comp_apply_eq {x : R₁} : σ' (σ x) = x := by
   rw [← RingHom.comp_apply, comp_eq]
   simp
 #align ring_hom_inv_pair.comp_apply_eq RingHomInvPair.comp_apply_eq
 
 -- @[simp] Porting note: `simp` can prove it
-theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
+lemma comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   rw [← RingHom.comp_apply, comp_eq₂]
   simp
 #align ring_hom_inv_pair.comp_apply_eq₂ RingHomInvPair.comp_apply_eq₂
@@ -191,7 +191,7 @@ instance ids : RingHomSurjective (RingHom.id R₁) :=
 #align ring_hom_surjective.ids RingHomSurjective.ids
 
 /-- This cannot be an instance as there is no way to infer `σ₁₂` and `σ₂₃`. -/
-theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective σ₁₂] [RingHomSurjective σ₂₃] :
+lemma comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective σ₁₂] [RingHomSurjective σ₂₃] :
     RingHomSurjective σ₁₃ :=
   { is_surjective := by
       have := σ₂₃.surjective.comp σ₁₂.surjective

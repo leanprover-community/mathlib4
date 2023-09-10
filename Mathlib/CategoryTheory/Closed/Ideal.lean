@@ -91,7 +91,7 @@ def exponentialIdealReflective (A : C) [Reflective i] [ExponentialIdeal i] :
 /-- Given a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, we can show `i`
 is an exponential ideal.
 -/
-theorem ExponentialIdeal.mk_of_iso [Reflective i]
+lemma ExponentialIdeal.mk_of_iso [Reflective i]
     (h : ∀ A : C, i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A) : ExponentialIdeal i := by
   apply ExponentialIdeal.mk'
   intro B A
@@ -109,7 +109,7 @@ variable (i : D ⥤ C)
 -- Porting note: this used to be used as a local instance,
 -- now it can instead be used as a have when needed
 -- we assume HasFiniteProducts D as a hypothesis below
-theorem reflective_products [HasFiniteProducts C] [Reflective i] : HasFiniteProducts D :=
+lemma reflective_products [HasFiniteProducts C] [Reflective i] : HasFiniteProducts D :=
   ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 #align category_theory.reflective_products CategoryTheory.reflective_products
 

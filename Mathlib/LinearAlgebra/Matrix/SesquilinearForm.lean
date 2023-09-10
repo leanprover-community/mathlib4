@@ -227,13 +227,13 @@ theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m R) (i : n) (j : m) :
 #align matrix.to_linear_map₂'_std_basis Matrix.toLinearMap₂'_stdBasis
 
 @[simp]
-theorem LinearMap.toMatrixₛₗ₂'_symm :
+lemma LinearMap.toMatrixₛₗ₂'_symm :
     (LinearMap.toMatrixₛₗ₂'.symm : Matrix n m R ≃ₗ[R] _) = Matrix.toLinearMapₛₗ₂' σ₁ σ₂ :=
   rfl
 #align linear_map.to_matrixₛₗ₂'_symm LinearMap.toMatrixₛₗ₂'_symm
 
 @[simp]
-theorem Matrix.toLinearMapₛₗ₂'_symm :
+lemma Matrix.toLinearMapₛₗ₂'_symm :
     ((Matrix.toLinearMapₛₗ₂' σ₁ σ₂).symm : _ ≃ₗ[R] Matrix n m R) = LinearMap.toMatrixₛₗ₂' :=
   LinearMap.toMatrixₛₗ₂'.symm_symm
 #align matrix.to_linear_mapₛₗ₂'_symm Matrix.toLinearMapₛₗ₂'_symm
@@ -392,23 +392,23 @@ theorem LinearMap.toMatrix₂Aux_eq (B : M₁ →ₗ[R] M₂ →ₗ[R] R) :
 #align linear_map.to_matrix₂_aux_eq LinearMap.toMatrix₂Aux_eq
 
 @[simp]
-theorem LinearMap.toMatrix₂_symm : (LinearMap.toMatrix₂ b₁ b₂).symm = Matrix.toLinearMap₂ b₁ b₂ :=
+lemma LinearMap.toMatrix₂_symm : (LinearMap.toMatrix₂ b₁ b₂).symm = Matrix.toLinearMap₂ b₁ b₂ :=
   rfl
 #align linear_map.to_matrix₂_symm LinearMap.toMatrix₂_symm
 
 @[simp]
-theorem Matrix.toLinearMap₂_symm : (Matrix.toLinearMap₂ b₁ b₂).symm = LinearMap.toMatrix₂ b₁ b₂ :=
+lemma Matrix.toLinearMap₂_symm : (Matrix.toLinearMap₂ b₁ b₂).symm = LinearMap.toMatrix₂ b₁ b₂ :=
   (LinearMap.toMatrix₂ b₁ b₂).symm_symm
 #align matrix.to_linear_map₂_symm Matrix.toLinearMap₂_symm
 
-theorem Matrix.toLinearMap₂_basisFun :
+lemma Matrix.toLinearMap₂_basisFun :
     Matrix.toLinearMap₂ (Pi.basisFun R n) (Pi.basisFun R m) = Matrix.toLinearMap₂' := by
   ext M
   simp only [Matrix.toLinearMap₂_apply, Matrix.toLinearMap₂'_apply, Pi.basisFun_repr, coe_comp,
     Function.comp_apply]
 #align matrix.to_linear_map₂_basis_fun Matrix.toLinearMap₂_basisFun
 
-theorem LinearMap.toMatrix₂_basisFun :
+lemma LinearMap.toMatrix₂_basisFun :
     LinearMap.toMatrix₂ (Pi.basisFun R n) (Pi.basisFun R m) = LinearMap.toMatrix₂' := by
   ext B
   rw [LinearMap.toMatrix₂_apply, LinearMap.toMatrix₂'_apply, Pi.basisFun_apply, Pi.basisFun_apply]
@@ -553,7 +553,7 @@ def Matrix.IsSkewAdjoint :=
 variable [DecidableEq n] [DecidableEq n']
 
 @[simp]
-theorem isAdjointPair_toLinearMap₂' :
+lemma isAdjointPair_toLinearMap₂' :
     LinearMap.IsAdjointPair (Matrix.toLinearMap₂' J) (Matrix.toLinearMap₂' J') (Matrix.toLin' A)
         (Matrix.toLin' A') ↔
       Matrix.IsAdjointPair J J' A A' := by
@@ -571,7 +571,7 @@ theorem isAdjointPair_toLinearMap₂' :
 #align is_adjoint_pair_to_linear_map₂' isAdjointPair_toLinearMap₂'
 
 @[simp]
-theorem isAdjointPair_toLinearMap₂ :
+lemma isAdjointPair_toLinearMap₂ :
     LinearMap.IsAdjointPair (Matrix.toLinearMap₂ b₁ b₁ J) (Matrix.toLinearMap₂ b₂ b₂ J')
         (Matrix.toLin b₁ b₂ A) (Matrix.toLin b₂ b₁ A') ↔
       Matrix.IsAdjointPair J J' A A' := by
@@ -621,7 +621,7 @@ def pairSelfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 #align pair_self_adjoint_matrices_submodule pairSelfAdjointMatricesSubmodule
 
 @[simp]
-theorem mem_pairSelfAdjointMatricesSubmodule :
+lemma mem_pairSelfAdjointMatricesSubmodule :
     A₁ ∈ pairSelfAdjointMatricesSubmodule J J₂ ↔ Matrix.IsAdjointPair J J₂ A₁ A₁ := by
   simp only [pairSelfAdjointMatricesSubmodule, LinearEquiv.coe_coe, LinearMap.toMatrix'_apply,
     Submodule.mem_map, mem_isPairSelfAdjointSubmodule]
@@ -643,7 +643,7 @@ def selfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 #align self_adjoint_matrices_submodule selfAdjointMatricesSubmodule
 
 @[simp]
-theorem mem_selfAdjointMatricesSubmodule :
+lemma mem_selfAdjointMatricesSubmodule :
     A₁ ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A₁ := by
   erw [mem_pairSelfAdjointMatricesSubmodule]
   rfl
@@ -656,7 +656,7 @@ def skewAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 #align skew_adjoint_matrices_submodule skewAdjointMatricesSubmodule
 
 @[simp]
-theorem mem_skewAdjointMatricesSubmodule :
+lemma mem_skewAdjointMatricesSubmodule :
     A₁ ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A₁ := by
   erw [mem_pairSelfAdjointMatricesSubmodule]
   simp [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair]
@@ -686,25 +686,25 @@ theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinear
 variable (B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁)
 
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
-theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :
+lemma _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :
     M.toLinearMap₂'.SeparatingLeft := fun x hx =>
   h.eq_zero_of_ortho fun y => by simpa only [toLinearMap₂'_apply'] using hx y
 #align matrix.nondegenerate.to_linear_map₂' Matrix.Nondegenerate.toLinearMap₂'
 
 @[simp]
-theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff {M : Matrix ι ι R₁} :
+lemma _root_.Matrix.separatingLeft_toLinearMap₂'_iff {M : Matrix ι ι R₁} :
     M.toLinearMap₂'.SeparatingLeft ↔ M.Nondegenerate :=
   ⟨fun h v hv => h v fun w => (M.toLinearMap₂'_apply' _ _).trans <| hv w,
     Matrix.Nondegenerate.toLinearMap₂'⟩
 #align matrix.separating_left_to_linear_map₂'_iff Matrix.separatingLeft_toLinearMap₂'_iff
 
-theorem _root_.Matrix.Nondegenerate.toLinearMap₂ {M : Matrix ι ι R₁} (h : M.Nondegenerate)
+lemma _root_.Matrix.Nondegenerate.toLinearMap₂ {M : Matrix ι ι R₁} (h : M.Nondegenerate)
     (b : Basis ι R₁ M₁) : (toLinearMap₂ b b M).SeparatingLeft :=
   (Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂ b).mp h.toLinearMap₂'
 #align matrix.nondegenerate.to_linear_map₂ Matrix.Nondegenerate.toLinearMap₂
 
 @[simp]
-theorem _root_.Matrix.separatingLeft_toLinearMap₂_iff {M : Matrix ι ι R₁} (b : Basis ι R₁ M₁) :
+lemma _root_.Matrix.separatingLeft_toLinearMap₂_iff {M : Matrix ι ι R₁} (b : Basis ι R₁ M₁) :
     (toLinearMap₂ b b M).SeparatingLeft ↔ M.Nondegenerate := by
   rw [← Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinearMap₂,
     Matrix.separatingLeft_toLinearMap₂'_iff]
@@ -712,25 +712,25 @@ theorem _root_.Matrix.separatingLeft_toLinearMap₂_iff {M : Matrix ι ι R₁} 
 
 -- Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
 @[simp]
-theorem nondegenerate_toMatrix₂'_iff {B : (ι → R₁) →ₗ[R₁] (ι → R₁) →ₗ[R₁] R₁} :
+lemma nondegenerate_toMatrix₂'_iff {B : (ι → R₁) →ₗ[R₁] (ι → R₁) →ₗ[R₁] R₁} :
     B.toMatrix₂'.Nondegenerate ↔ B.SeparatingLeft :=
   Matrix.separatingLeft_toLinearMap₂'_iff.symm.trans <|
     (Matrix.toLinearMap₂'_toMatrix' B).symm ▸ Iff.rfl
 #align linear_map.nondegenerate_to_matrix₂'_iff LinearMap.nondegenerate_toMatrix₂'_iff
 
-theorem SeparatingLeft.toMatrix₂' {B : (ι → R₁) →ₗ[R₁] (ι → R₁) →ₗ[R₁] R₁} (h : B.SeparatingLeft) :
+lemma SeparatingLeft.toMatrix₂' {B : (ι → R₁) →ₗ[R₁] (ι → R₁) →ₗ[R₁] R₁} (h : B.SeparatingLeft) :
     B.toMatrix₂'.Nondegenerate :=
   nondegenerate_toMatrix₂'_iff.mpr h
 #align linear_map.separating_left.to_matrix₂' LinearMap.SeparatingLeft.toMatrix₂'
 
 @[simp]
-theorem nondegenerate_toMatrix_iff {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁) :
+lemma nondegenerate_toMatrix_iff {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁) :
     (toMatrix₂ b b B).Nondegenerate ↔ B.SeparatingLeft :=
   (Matrix.separatingLeft_toLinearMap₂_iff b).symm.trans <|
     (Matrix.toLinearMap₂_toMatrix₂ b b B).symm ▸ Iff.rfl
 #align linear_map.nondegenerate_to_matrix_iff LinearMap.nondegenerate_toMatrix_iff
 
-theorem SeparatingLeft.toMatrix₂ {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (h : B.SeparatingLeft)
+lemma SeparatingLeft.toMatrix₂ {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (h : B.SeparatingLeft)
     (b : Basis ι R₁ M₁) : (toMatrix₂ b b B).Nondegenerate :=
   (nondegenerate_toMatrix_iff b).mpr h
 #align linear_map.separating_left.to_matrix₂ LinearMap.SeparatingLeft.toMatrix₂
@@ -738,7 +738,7 @@ theorem SeparatingLeft.toMatrix₂ {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁
 -- Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero`
 variable [IsDomain R₁]
 
-theorem separatingLeft_toLinearMap₂'_iff_det_ne_zero {M : Matrix ι ι R₁} :
+lemma separatingLeft_toLinearMap₂'_iff_det_ne_zero {M : Matrix ι ι R₁} :
     M.toLinearMap₂'.SeparatingLeft ↔ M.det ≠ 0 := by
   rw [Matrix.separatingLeft_toLinearMap₂'_iff, Matrix.nondegenerate_iff_det_ne_zero]
 #align linear_map.separating_left_to_linear_map₂'_iff_det_ne_zero LinearMap.separatingLeft_toLinearMap₂'_iff_det_ne_zero
@@ -748,12 +748,12 @@ theorem separatingLeft_toLinearMap₂'_of_det_ne_zero' (M : Matrix ι ι R₁) (
   separatingLeft_toLinearMap₂'_iff_det_ne_zero.mpr h
 #align linear_map.separating_left_to_linear_map₂'_of_det_ne_zero' LinearMap.separatingLeft_toLinearMap₂'_of_det_ne_zero'
 
-theorem separatingLeft_iff_det_ne_zero {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁) :
+lemma separatingLeft_iff_det_ne_zero {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁) :
     B.SeparatingLeft ↔ (toMatrix₂ b b B).det ≠ 0 := by
   rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix_iff]
 #align linear_map.separating_left_iff_det_ne_zero LinearMap.separatingLeft_iff_det_ne_zero
 
-theorem separatingLeft_of_det_ne_zero {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁)
+lemma separatingLeft_of_det_ne_zero {B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] R₁} (b : Basis ι R₁ M₁)
     (h : (toMatrix₂ b b B).det ≠ 0) : B.SeparatingLeft :=
   (separatingLeft_iff_det_ne_zero b).mpr h
 #align linear_map.separating_left_of_det_ne_zero LinearMap.separatingLeft_of_det_ne_zero

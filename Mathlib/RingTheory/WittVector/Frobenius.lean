@@ -130,7 +130,7 @@ theorem map_frobeniusPoly.key₁ (n j : ℕ) (hj : j < p ^ n) :
 #align witt_vector.map_frobenius_poly.key₁ WittVector.map_frobeniusPoly.key₁
 
 /-- A key numerical identity needed for the proof of `WittVector.map_frobeniusPoly`. -/
-theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n - i)) :
+lemma map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n - i)) :
     j - v p ⟨j + 1, j.succ_pos⟩ + n = i + j + (n - i - v p ⟨j + 1, j.succ_pos⟩) := by
   generalize h : v p ⟨j + 1, j.succ_pos⟩ = m
   rsuffices ⟨h₁, h₂⟩ : m ≤ n - i ∧ m ≤ j
@@ -309,7 +309,7 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
   · rw [map_pow, aeval_X]
 #align witt_vector.coeff_frobenius_char_p WittVector.coeff_frobenius_charP
 
-theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius R p) := by
+lemma frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius R p) := by
   ext (x n)
   simp only [coeff_frobenius_charP, map_coeff, frobenius_def]
 #align witt_vector.frobenius_eq_map_frobenius WittVector.frobenius_eq_map_frobenius
@@ -335,7 +335,7 @@ def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
       exact frobenius_apply_frobeniusEquiv_symm R p _ }
 #align witt_vector.frobenius_equiv WittVector.frobeniusEquiv
 
-theorem frobenius_bijective [PerfectRing R p] :
+lemma frobenius_bijective [PerfectRing R p] :
     Function.Bijective (@WittVector.frobenius p R _ _) :=
   (frobeniusEquiv p R).bijective
 #align witt_vector.frobenius_bijective WittVector.frobenius_bijective

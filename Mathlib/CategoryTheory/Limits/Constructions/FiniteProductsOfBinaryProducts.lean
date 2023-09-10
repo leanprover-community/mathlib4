@@ -95,7 +95,7 @@ variable [HasBinaryProducts C] [HasTerminal C]
 This is a helper lemma for `hasFiniteProductsOfHasBinaryAndTerminal`, which is more general
 than this.
 -/
-private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
+private lemma hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
   | 0 => fun f => by
     letI : HasLimitsOfShape (Discrete (Fin 0)) C :=
       hasLimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
@@ -105,7 +105,7 @@ private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
     apply HasLimit.mk ⟨_, extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)⟩
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
-theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
+lemma hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
   letI := hasProduct_fin n fun n => K.obj ⟨n⟩
   let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
@@ -236,7 +236,7 @@ If `C` has an initial object and binary coproducts, then it has a coproduct for 
 This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is more general
 than this.
 -/
-private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
+private lemma hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
   | 0 => fun f => by
     letI : HasColimitsOfShape (Discrete (Fin 0)) C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
@@ -247,7 +247,7 @@ private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct
       HasColimit.mk ⟨_, extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)⟩
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
-theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
+lemma hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
   letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
   let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨i⟩ => Iso.refl _

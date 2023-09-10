@@ -171,7 +171,7 @@ theorem apply_fdifferential (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDeri
 #align apply_fdifferential apply_fdifferential
 
 @[simp]
-theorem apply_hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y)
+lemma apply_hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y)
     (v : PointDerivation I x) (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅ₕ h v g = 𝒅 f x v g :=
   rfl
 #align apply_hfdifferential apply_hfdifferential

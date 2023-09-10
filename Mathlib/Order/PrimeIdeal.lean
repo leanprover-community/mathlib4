@@ -54,33 +54,33 @@ namespace PrimePair
 
 variable [Preorder P] (IF : PrimePair P)
 
-theorem compl_I_eq_F : (IF.I : Set P)ᶜ = IF.F :=
+lemma compl_I_eq_F : (IF.I : Set P)ᶜ = IF.F :=
   IF.isCompl_I_F.compl_eq
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.compl_I_eq_F Order.Ideal.PrimePair.compl_I_eq_F
 
-theorem compl_F_eq_I : (IF.F : Set P)ᶜ = IF.I :=
+lemma compl_F_eq_I : (IF.F : Set P)ᶜ = IF.I :=
   IF.isCompl_I_F.eq_compl.symm
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.compl_F_eq_I Order.Ideal.PrimePair.compl_F_eq_I
 
-theorem I_isProper : IsProper IF.I := by
+lemma I_isProper : IsProper IF.I := by
   cases' IF.F.nonempty with w h
   apply isProper_of_not_mem (_ : w ∉ IF.I)
   rwa [← IF.compl_I_eq_F] at h
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.I_is_proper Order.Ideal.PrimePair.I_isProper
 
-protected theorem disjoint : Disjoint (IF.I : Set P) IF.F :=
+protected lemma disjoint : Disjoint (IF.I : Set P) IF.F :=
   IF.isCompl_I_F.disjoint
 #align order.ideal.prime_pair.disjoint Order.Ideal.PrimePair.disjoint
 
-theorem I_union_F : (IF.I : Set P) ∪ IF.F = Set.univ :=
+lemma I_union_F : (IF.I : Set P) ∪ IF.F = Set.univ :=
   IF.isCompl_I_F.sup_eq_top
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.I_union_F Order.Ideal.PrimePair.I_union_F
 
-theorem F_union_I : (IF.F : Set P) ∪ IF.I = Set.univ :=
+lemma F_union_I : (IF.F : Set P) ∪ IF.I = Set.univ :=
   IF.isCompl_I_F.symm.sup_eq_top
 set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.F_union_I Order.Ideal.PrimePair.F_union_I
@@ -127,7 +127,7 @@ theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ 
   exact fun h => inf_mem h.1 h.2
 #align order.ideal.is_prime.mem_or_mem Order.Ideal.IsPrime.mem_or_mem
 
-theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :
+lemma IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :
     IsPrime I := by
   rw [IsPrime_iff]
   use ‹_›
@@ -138,7 +138,7 @@ theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I �
   · exact @mem_compl_of_ge _ _ _
 #align order.ideal.is_prime.of_mem_or_mem Order.Ideal.IsPrime.of_mem_or_mem
 
-theorem isPrime_iff_mem_or_mem [IsProper I] : IsPrime I ↔ ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I :=
+lemma isPrime_iff_mem_or_mem [IsProper I] : IsPrime I ↔ ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I :=
   ⟨IsPrime.mem_or_mem, IsPrime.of_mem_or_mem⟩
 #align order.ideal.is_prime_iff_mem_or_mem Order.Ideal.isPrime_iff_mem_or_mem
 
@@ -182,7 +182,7 @@ theorem IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ �
   hI.mem_or_compl_mem.resolve_left hxnI
 #align order.ideal.is_prime.mem_compl_of_not_mem Order.Ideal.IsPrime.mem_compl_of_not_mem
 
-theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I := by
+lemma isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I := by
   simp only [isPrime_iff_mem_or_mem, or_iff_not_imp_left]
   intro x y hxy hxI
   have hxcI : xᶜ ∈ I := h.resolve_left hxI
@@ -190,7 +190,7 @@ theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ x
   rwa [inf_comm, sup_inf_inf_compl] at ass
 #align order.ideal.is_prime_of_mem_or_compl_mem Order.Ideal.isPrime_of_mem_or_compl_mem
 
-theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I :=
+lemma isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I :=
   ⟨fun h _ => h.mem_or_compl_mem, isPrime_of_mem_or_compl_mem⟩
 #align order.ideal.is_prime_iff_mem_or_compl_mem Order.Ideal.isPrime_iff_mem_or_compl_mem
 

@@ -129,7 +129,7 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 
 /-- The coherent topology on a precoherent category is subcanonical. -/
-theorem isSubcanonical : Sheaf.Subcanonical (coherentTopology C) :=
+lemma isSubcanonical : Sheaf.Subcanonical (coherentTopology C) :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
 
 end coherentTopology
@@ -144,7 +144,7 @@ Effective epi families in a precoherent category are transitive, in the sense th
 `EffectiveEpiFamily`.
 Note: The finiteness condition is an artifact of the proof and is probably unnecessary.
 -/
-theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α → C}
+lemma EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α → C}
     (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Fintype (β a)]
     {Y_n : (a : α) → β a → C} (π_n : (a : α) → (b : β a) → (Y_n a b ⟶ Y a))
     (H : ∀ a, EffectiveEpiFamily (Y_n a) (π_n a)) :

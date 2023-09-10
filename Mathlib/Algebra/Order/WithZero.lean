@@ -90,20 +90,20 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [O
 #align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
 
 @[simp]
-theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
+lemma zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
 #align zero_le' zero_le'
 
 @[simp]
-theorem not_lt_zero' : ¬a < 0 :=
+lemma not_lt_zero' : ¬a < 0 :=
   not_lt_of_le zero_le'
 #align not_lt_zero' not_lt_zero'
 
 @[simp]
-theorem le_zero_iff : a ≤ 0 ↔ a = 0 :=
+lemma le_zero_iff : a ≤ 0 ↔ a = 0 :=
   ⟨fun h ↦ le_antisymm h zero_le', fun h ↦ h ▸ le_rfl⟩
 #align le_zero_iff le_zero_iff
 
-theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
+lemma zero_lt_iff : 0 < a ↔ a ≠ 0 :=
   ⟨ne_of_gt, fun h ↦ lt_of_le_of_ne zero_le' h.symm⟩
 #align zero_lt_iff zero_lt_iff
 
@@ -263,7 +263,7 @@ def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
 #align order_iso.mul_left₀'_to_equiv OrderIso.mulLeft₀'_toEquiv
 #align order_iso.mul_left₀'_apply OrderIso.mulLeft₀'_apply
 
-theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
+lemma OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
   ext
   rfl
@@ -279,7 +279,7 @@ def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
 #align order_iso.mul_right₀'_apply OrderIso.mulRight₀'_apply
 #align order_iso.mul_right₀'_to_equiv OrderIso.mulRight₀'_toEquiv
 
-theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
+lemma OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by
   ext
   rfl

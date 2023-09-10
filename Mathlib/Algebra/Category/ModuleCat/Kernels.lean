@@ -70,12 +70,12 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
 end
 
 /-- The category of R-modules has kernels, given by the inclusion of the kernel submodule. -/
-theorem hasKernels_moduleCat : HasKernels (ModuleCat R) :=
+lemma hasKernels_moduleCat : HasKernels (ModuleCat R) :=
   ⟨fun f => HasLimit.mk ⟨_, kernelIsLimit f⟩⟩
 #align Module.has_kernels_Module ModuleCat.hasKernels_moduleCat
 
 /-- The category of R-modules has cokernels, given by the projection onto the quotient. -/
-theorem hasCokernels_moduleCat : HasCokernels (ModuleCat R) :=
+lemma hasCokernels_moduleCat : HasCokernels (ModuleCat R) :=
   ⟨fun f => HasColimit.mk ⟨_, cokernelIsColimit f⟩⟩
 #align Module.has_cokernels_Module ModuleCat.hasCokernels_moduleCat
 
@@ -99,13 +99,13 @@ noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
 @[simp, elementwise]
     -- Porting note: broken dot notation
-theorem kernelIsoKer_inv_kernel_ι : (kernelIsoKer f).inv ≫ kernel.ι f =
+lemma kernelIsoKer_inv_kernel_ι : (kernelIsoKer f).inv ≫ kernel.ι f =
     (LinearMap.ker f).subtype :=
   limit.isoLimitCone_inv_π _ _
 #align Module.kernel_iso_ker_inv_kernel_ι ModuleCat.kernelIsoKer_inv_kernel_ι
 
 @[simp, elementwise]
-theorem kernelIsoKer_hom_ker_subtype :
+lemma kernelIsoKer_hom_ker_subtype :
     -- Porting note: broken dot notation
     (kernelIsoKer f).hom ≫ (LinearMap.ker f).subtype = kernel.ι f :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) WalkingParallelPair.zero
@@ -122,19 +122,19 @@ noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H)
 
 -- We now show this isomorphism commutes with the projection of target to the cokernel.
 @[simp, elementwise]
-theorem cokernel_π_cokernelIsoRangeQuotient_hom :
+lemma cokernel_π_cokernelIsoRangeQuotient_hom :
     cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = f.range.mkQ := by
   -- Porting note: needs help with F but got rid of rfl after
   convert colimit.isoColimitCocone_ι_hom (F := parallelPair f 0) _ _
 #align Module.cokernel_π_cokernel_iso_range_quotient_hom ModuleCat.cokernel_π_cokernelIsoRangeQuotient_hom
 
 @[simp, elementwise]
-theorem range_mkQ_cokernelIsoRangeQuotient_inv :
+lemma range_mkQ_cokernelIsoRangeQuotient_inv :
     ↿f.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f :=
   colimit.isoColimitCocone_ι_inv ⟨_, cokernelIsColimit f⟩ WalkingParallelPair.one
 #align Module.range_mkq_cokernel_iso_range_quotient_inv ModuleCat.range_mkQ_cokernelIsoRangeQuotient_inv
 
-theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
+lemma cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
     cokernel.π f x = cokernel.π f y := by
   subst w
   simpa only [map_add, add_right_eq_self] using cokernel.condition_apply f m

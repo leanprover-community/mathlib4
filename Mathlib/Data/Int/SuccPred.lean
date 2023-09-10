@@ -34,16 +34,16 @@ instance : PredOrder ℤ where
   le_of_pred_lt {_ _} := le_of_sub_one_lt
 
 @[simp]
-theorem succ_eq_succ : Order.succ = succ :=
+lemma succ_eq_succ : Order.succ = succ :=
   rfl
 #align int.succ_eq_succ Int.succ_eq_succ
 
 @[simp]
-theorem pred_eq_pred : Order.pred = pred :=
+lemma pred_eq_pred : Order.pred = pred :=
   rfl
 #align int.pred_eq_pred Int.pred_eq_pred
 
-theorem pos_iff_one_le {a : ℤ} : 0 < a ↔ 1 ≤ a :=
+lemma pos_iff_one_le {a : ℤ} : 0 < a ↔ 1 ≤ a :=
   Order.succ_le_iff.symm
 #align int.pos_iff_one_le Int.pos_iff_one_le
 
@@ -73,7 +73,7 @@ instance : IsPredArchimedean ℤ :=
 /-! ### Covering relation -/
 
 
-protected theorem covby_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
+protected lemma covby_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
   succ_eq_iff_covby.symm
 #align int.covby_iff_succ_eq Int.covby_iff_succ_eq
 
@@ -89,7 +89,7 @@ theorem covby_add_one (z : ℤ) : z ⋖ z + 1 :=
 end Int
 
 @[simp, norm_cast]
-theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
+lemma Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
   rw [Nat.covby_iff_succ_eq, Int.covby_iff_succ_eq]
   exact Int.coe_nat_inj'
 #align nat.cast_int_covby_iff Nat.cast_int_covby_iff

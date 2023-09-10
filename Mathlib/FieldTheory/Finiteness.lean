@@ -27,7 +27,7 @@ variable {K : Type u} {V : Type v} [DivisionRing K] [AddCommGroup V] [Module K V
 /-- A module over a division ring is noetherian if and only if
 its dimension (as a cardinal) is strictly less than the first infinite cardinal `ℵ₀`.
 -/
-theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
+lemma iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
   let b := Basis.ofVectorSpace K V
   rw [← b.mk_eq_rank'', lt_aleph0_iff_set_finite]
   constructor
@@ -45,7 +45,7 @@ variable (K V)
 
 /-- The dimension of a noetherian module over a division ring, as a cardinal,
 is strictly less than the first infinite cardinal `ℵ₀`. -/
-theorem rank_lt_aleph0 : ∀ [IsNoetherian K V], Module.rank K V < ℵ₀ :=
+lemma rank_lt_aleph0 : ∀ [IsNoetherian K V], Module.rank K V < ℵ₀ :=
   @IsNoetherian.iff_rank_lt_aleph0.1
 #align is_noetherian.rank_lt_aleph_0 IsNoetherian.rank_lt_aleph0
 
@@ -63,7 +63,7 @@ noncomputable instance [IsNoetherian K V] : Fintype (Basis.ofVectorSpaceIndex K 
 
 /-- In a noetherian module over a division ring,
 if a basis is indexed by a set, that set is finite. -/
-theorem finite_basis_index {ι : Type*} {s : Set ι} [IsNoetherian K V] (b : Basis s K V) :
+lemma finite_basis_index {ι : Type*} {s : Set ι} [IsNoetherian K V] (b : Basis s K V) :
     s.Finite :=
   b.finite_index_of_rank_lt_aleph0 (rank_lt_aleph0 K V)
 #align is_noetherian.finite_basis_index IsNoetherian.finite_basis_index
@@ -77,13 +77,13 @@ noncomputable def finsetBasisIndex [IsNoetherian K V] : Finset V :=
 #align is_noetherian.finset_basis_index IsNoetherian.finsetBasisIndex
 
 @[simp]
-theorem coe_finsetBasisIndex [IsNoetherian K V] :
+lemma coe_finsetBasisIndex [IsNoetherian K V] :
     (↑(finsetBasisIndex K V) : Set V) = Basis.ofVectorSpaceIndex K V :=
   Set.Finite.coe_toFinset _
 #align is_noetherian.coe_finset_basis_index IsNoetherian.coe_finsetBasisIndex
 
 @[simp]
-theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
+lemma coeSort_finsetBasisIndex [IsNoetherian K V] :
     (finsetBasisIndex K V : Type _) = Basis.ofVectorSpaceIndex K V :=
   Set.Finite.coeSort_toFinset _
 #align is_noetherian.coe_sort_finset_basis_index IsNoetherian.coeSort_finsetBasisIndex
@@ -98,7 +98,7 @@ noncomputable def finsetBasis [IsNoetherian K V] : Basis (finsetBasisIndex K V) 
 #align is_noetherian.finset_basis IsNoetherian.finsetBasis
 
 @[simp]
-theorem range_finsetBasis [IsNoetherian K V] :
+lemma range_finsetBasis [IsNoetherian K V] :
     Set.range (finsetBasis K V) = Basis.ofVectorSpaceIndex K V := by
   rw [finsetBasis, Basis.range_reindex, Basis.range_ofVectorSpace]
 #align is_noetherian.range_finset_basis IsNoetherian.range_finsetBasis
@@ -106,7 +106,7 @@ theorem range_finsetBasis [IsNoetherian K V] :
 variable {K V}
 
 /-- A module over a division ring is noetherian if and only if it is finitely generated. -/
-theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
+lemma iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
   constructor
   · intro h
     exact

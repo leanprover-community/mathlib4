@@ -257,16 +257,16 @@ instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
 --   FunLike.hasCoeToFun
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
-theorem toFun_eq_coe {f : HeytingHom α β} : f.toFun = ⇑f :=
+lemma toFun_eq_coe {f : HeytingHom α β} : f.toFun = ⇑f :=
   rfl
 #align heyting_hom.to_fun_eq_coe HeytingHom.toFun_eq_coe
 
 @[simp]
-theorem toFun_eq_coe_aux {f : HeytingHom α β} : (↑f.toLatticeHom) = ⇑f :=
+lemma toFun_eq_coe_aux {f : HeytingHom α β} : (↑f.toLatticeHom) = ⇑f :=
   rfl
 
 @[ext]
-theorem ext {f g : HeytingHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : HeytingHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align heyting_hom.ext HeytingHom.ext
 
@@ -299,7 +299,7 @@ protected def id : HeytingHom α α :=
 #align heyting_hom.id HeytingHom.id
 
 @[simp]
-theorem coe_id : ⇑(HeytingHom.id α) = id :=
+lemma coe_id : ⇑(HeytingHom.id α) = id :=
   rfl
 #align heyting_hom.coe_id HeytingHom.coe_id
 
@@ -384,16 +384,16 @@ instance : CoheytingHomClass (CoheytingHom α β) α β where
 
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
-theorem toFun_eq_coe {f : CoheytingHom α β} : f.toFun = (f : α → β) :=
+lemma toFun_eq_coe {f : CoheytingHom α β} : f.toFun = (f : α → β) :=
   rfl
 #align coheyting_hom.to_fun_eq_coe CoheytingHom.toFun_eq_coe
 
 @[simp]
-theorem toFun_eq_coe_aux {f : CoheytingHom α β} : (↑f.toLatticeHom) = ⇑f :=
+lemma toFun_eq_coe_aux {f : CoheytingHom α β} : (↑f.toLatticeHom) = ⇑f :=
   rfl
 
 @[ext]
-theorem ext {f g : CoheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : CoheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align coheyting_hom.ext CoheytingHom.ext
 
@@ -426,7 +426,7 @@ protected def id : CoheytingHom α α :=
 #align coheyting_hom.id CoheytingHom.id
 
 @[simp]
-theorem coe_id : ⇑(CoheytingHom.id α) = id :=
+lemma coe_id : ⇑(CoheytingHom.id α) = id :=
   rfl
 #align coheyting_hom.coe_id CoheytingHom.coe_id
 
@@ -510,16 +510,16 @@ instance : BiheytingHomClass (BiheytingHom α β) α β where
 --   FunLike.hasCoeToFun
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
-theorem toFun_eq_coe {f : BiheytingHom α β} : f.toFun = (f : α → β) :=
+lemma toFun_eq_coe {f : BiheytingHom α β} : f.toFun = (f : α → β) :=
   rfl
 #align biheyting_hom.to_fun_eq_coe BiheytingHom.toFun_eq_coe
 
 @[simp]
-theorem toFun_eq_coe_aux {f : BiheytingHom α β} : (↑f.toLatticeHom) = ⇑f :=
+lemma toFun_eq_coe_aux {f : BiheytingHom α β} : (↑f.toLatticeHom) = ⇑f :=
   rfl
 
 @[ext]
-theorem ext {f g : BiheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : BiheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align biheyting_hom.ext BiheytingHom.ext
 
@@ -550,7 +550,7 @@ protected def id : BiheytingHom α α :=
 #align biheyting_hom.id BiheytingHom.id
 
 @[simp]
-theorem coe_id : ⇑(BiheytingHom.id α) = id :=
+lemma coe_id : ⇑(BiheytingHom.id α) = id :=
   rfl
 #align biheyting_hom.coe_id BiheytingHom.coe_id
 

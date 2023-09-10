@@ -23,40 +23,40 @@ namespace Int
 variable {m n : ℤ}
 
 @[simp]
-theorem emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+lemma emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
 #align int.mod_two_ne_one Int.emod_two_ne_one
 
 -- `EuclideanDomain.mod_eq_zero` uses (2 ∣ n) as normal form
 @[local simp]
-theorem emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+lemma emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
 #align int.mod_two_ne_zero Int.emod_two_ne_zero
 
-theorem even_iff : Even n ↔ n % 2 = 0 :=
+lemma even_iff : Even n ↔ n % 2 = 0 :=
   ⟨fun ⟨m, hm⟩ => by simp [← two_mul, hm],
     fun h => ⟨n / 2, (emod_add_ediv n 2).symm.trans (by simp [← two_mul, h])⟩⟩
 #align int.even_iff Int.even_iff
 
-theorem odd_iff : Odd n ↔ n % 2 = 1 :=
+lemma odd_iff : Odd n ↔ n % 2 = 1 :=
   ⟨fun ⟨m, hm⟩ => (by rw [hm, add_emod]; norm_num),
     fun h => ⟨n / 2, (emod_add_ediv n 2).symm.trans (by rw [h]; abel)⟩⟩
 #align int.odd_iff Int.odd_iff
 
-theorem not_even_iff : ¬Even n ↔ n % 2 = 1 := by rw [even_iff, emod_two_ne_zero]
+lemma not_even_iff : ¬Even n ↔ n % 2 = 1 := by rw [even_iff, emod_two_ne_zero]
 #align int.not_even_iff Int.not_even_iff
 
-theorem not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, emod_two_ne_one]
+lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, emod_two_ne_one]
 #align int.not_odd_iff Int.not_odd_iff
 
-theorem even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
+lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
 #align int.even_iff_not_odd Int.even_iff_not_odd
 
 @[simp]
-theorem odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
+lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
 #align int.odd_iff_not_even Int.odd_iff_not_even
 
-theorem isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
+lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← Set.compl_setOf, isCompl_compl]
 #align int.is_compl_even_odd Int.isCompl_even_odd
 
@@ -83,7 +83,7 @@ theorem even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
 #align int.even_xor_odd' Int.even_xor'_odd'
 
 @[simp]
-theorem two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
+lemma two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
   even_iff_two_dvd.symm.not.trans not_even_iff
 #align int.two_dvd_ne_zero Int.two_dvd_ne_zero
 
@@ -92,19 +92,19 @@ instance : DecidablePred (Even : ℤ → Prop) := fun _ => decidable_of_iff _ ev
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ odd_iff_not_even.symm
 
 @[simp]
-theorem not_even_one : ¬Even (1 : ℤ) := by
+lemma not_even_one : ¬Even (1 : ℤ) := by
   rw [even_iff]
   norm_num
 #align int.not_even_one Int.not_even_one
 
 @[parity_simps]
-theorem even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
+lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
   cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
   simp [even_iff, h₁, h₂, Int.add_emod]
 #align int.even_add Int.even_add
 
-theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
+lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
   rw [even_add, even_iff_not_odd, even_iff_not_odd, not_iff_not]
 #align int.even_add' Int.even_add'
 
@@ -119,27 +119,27 @@ theorem two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by
 #align int.two_not_dvd_two_mul_add_one Int.two_not_dvd_two_mul_add_one
 
 @[parity_simps]
-theorem even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by
+lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by
   simp [sub_eq_add_neg, parity_simps]
 #align int.even_sub Int.even_sub
 
-theorem even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
+lemma even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
   rw [even_sub, even_iff_not_odd, even_iff_not_odd, not_iff_not]
 #align int.even_sub' Int.even_sub'
 
 @[parity_simps]
-theorem even_add_one : Even (n + 1) ↔ ¬Even n := by
+lemma even_add_one : Even (n + 1) ↔ ¬Even n := by
   simp [even_add]
 #align int.even_add_one Int.even_add_one
 
 @[parity_simps]
-theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by
+lemma even_mul : Even (m * n) ↔ Even m ∨ Even n := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
   cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
   simp [even_iff, h₁, h₂, Int.mul_emod]
 #align int.even_mul Int.even_mul
 
-theorem odd_mul : Odd (m * n) ↔ Odd m ∧ Odd n := by simp [not_or, parity_simps]
+lemma odd_mul : Odd (m * n) ↔ Odd m ∧ Odd n := by simp [not_or, parity_simps]
 #align int.odd_mul Int.odd_mul
 
 theorem Odd.of_mul_left (h : Odd (m * n)) : Odd m :=
@@ -151,28 +151,28 @@ theorem Odd.of_mul_right (h : Odd (m * n)) : Odd n :=
 #align int.odd.of_mul_right Int.Odd.of_mul_right
 
 @[parity_simps]
-theorem even_pow {n : ℕ} : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
+lemma even_pow {n : ℕ} : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
   induction' n with n ih <;> simp [*, even_mul, pow_succ]
   tauto
 #align int.even_pow Int.even_pow
 
-theorem even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m :=
+lemma even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m :=
   even_pow.trans <| and_iff_left h
 #align int.even_pow' Int.even_pow'
 
 @[parity_simps]
-theorem odd_pow {n : ℕ} : Odd (m ^ n) ↔ Odd m ∨ n = 0 := by
+lemma odd_pow {n : ℕ} : Odd (m ^ n) ↔ Odd m ∨ n = 0 := by
   rw [← not_iff_not, ← Int.even_iff_not_odd, not_or, ← Int.even_iff_not_odd, Int.even_pow]
 
-theorem odd_pow' {n : ℕ} (h : n ≠ 0) : Odd (m ^ n) ↔ Odd m :=
+lemma odd_pow' {n : ℕ} (h : n ≠ 0) : Odd (m ^ n) ↔ Odd m :=
   odd_pow.trans <| or_iff_left h
 
 @[parity_simps]
-theorem odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
+lemma odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
   rw [odd_iff_not_even, even_add, not_iff, odd_iff_not_even]
 #align int.odd_add Int.odd_add
 
-theorem odd_add' : Odd (m + n) ↔ (Odd n ↔ Even m) := by
+lemma odd_add' : Odd (m + n) ↔ (Odd n ↔ Even m) := by
   rw [add_comm, odd_add]
 #align int.odd_add' Int.odd_add'
 
@@ -181,11 +181,11 @@ theorem ne_of_odd_add (h : Odd (m + n)) : m ≠ n :=
 #align int.ne_of_odd_add Int.ne_of_odd_add
 
 @[parity_simps]
-theorem odd_sub : Odd (m - n) ↔ (Odd m ↔ Even n) := by
+lemma odd_sub : Odd (m - n) ↔ (Odd m ↔ Even n) := by
   rw [odd_iff_not_even, even_sub, not_iff, odd_iff_not_even]
 #align int.odd_sub Int.odd_sub
 
-theorem odd_sub' : Odd (m - n) ↔ (Odd n ↔ Even m) := by
+lemma odd_sub' : Odd (m - n) ↔ (Odd n ↔ Even m) := by
   rw [odd_iff_not_even, even_sub, not_iff, not_iff_comm, odd_iff_not_even]
 #align int.odd_sub' Int.odd_sub'
 
@@ -205,13 +205,13 @@ theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
 #align int.odd_coe_nat Int.odd_coe_nat
 
 @[simp]
-theorem natAbs_even : Even n.natAbs ↔ Even n := by
+lemma natAbs_even : Even n.natAbs ↔ Even n := by
   simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]
 #align int.nat_abs_even Int.natAbs_even
 
 -- Porting note: was simp. simp can prove this.
 --@[simp]
-theorem natAbs_odd : Odd n.natAbs ↔ Odd n := by
+lemma natAbs_odd : Odd n.natAbs ↔ Odd n := by
   rw [odd_iff_not_even, Nat.odd_iff_not_even, natAbs_even]
 #align int.nat_abs_odd Int.natAbs_odd
 
@@ -225,7 +225,7 @@ alias ⟨_, _root_.Odd.natAbs⟩ := natAbs_odd
 -- mathlib3 had:
 -- `attribute [protected] Even.natAbs Odd.natAbs`
 
-theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
+lemma four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     4 ∣ a + b ∨ 4 ∣ a - b := by
   obtain ⟨m, rfl⟩ := ha
   obtain ⟨n, rfl⟩ := hb
@@ -245,28 +245,28 @@ theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     rfl
 #align int.four_dvd_add_or_sub_of_odd Int.four_dvd_add_or_sub_of_odd
 
-theorem two_mul_ediv_two_of_even : Even n → 2 * (n / 2) = n :=
+lemma two_mul_ediv_two_of_even : Even n → 2 * (n / 2) = n :=
   fun h => Int.mul_ediv_cancel' (even_iff_two_dvd.mp h)
 #align int.two_mul_div_two_of_even Int.two_mul_ediv_two_of_even
 
-theorem ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
+lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
   fun h => Int.ediv_mul_cancel (even_iff_two_dvd.mp h)
 #align int.div_two_mul_two_of_even Int.ediv_two_mul_two_of_even
 
-theorem two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by
+lemma two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by
   rintro ⟨c, rfl⟩
   rw [mul_comm]
   convert Int.ediv_add_emod' (2 * c + 1) 2
   simp [Int.add_emod]
 #align int.two_mul_div_two_add_one_of_odd Int.two_mul_ediv_two_add_one_of_odd
 
-theorem ediv_two_mul_two_add_one_of_odd : Odd n → n / 2 * 2 + 1 = n := by
+lemma ediv_two_mul_two_add_one_of_odd : Odd n → n / 2 * 2 + 1 = n := by
   rintro ⟨c, rfl⟩
   convert Int.ediv_add_emod' (2 * c + 1) 2
   simp [Int.add_emod]
 #align int.div_two_mul_two_add_one_of_odd Int.ediv_two_mul_two_add_one_of_odd
 
-theorem add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
+lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
   rintro ⟨c, rfl⟩
   rw [add_comm]
   convert Int.ediv_add_emod' (2 * c + 1) 2

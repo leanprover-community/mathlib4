@@ -92,21 +92,21 @@ end
 namespace InjectiveResolution
 
 @[simp]
-theorem ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 := by
+lemma ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 := by
   apply zero_of_source_iso_zero
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
 -- Porting note: removed @[simp] simp can prove this
-theorem ι_f_zero_comp_complex_d {Z : C} (I : InjectiveResolution Z) :
+lemma ι_f_zero_comp_complex_d {Z : C} (I : InjectiveResolution Z) :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 :=
   I.exact₀.w
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_zero_comp_complex_d CategoryTheory.InjectiveResolution.ι_f_zero_comp_complex_d
 
 -- Porting note: removed @[simp] simp can prove this
-theorem complex_d_comp {Z : C} (I : InjectiveResolution Z) (n : ℕ) :
+lemma complex_d_comp {Z : C} (I : InjectiveResolution Z) (n : ℕ) :
     I.cocomplex.d n (n + 1) ≫ I.cocomplex.d (n + 1) (n + 2) = 0 :=
   (I.exact _).w
 set_option linter.uppercaseLean3 false in

@@ -43,14 +43,14 @@ theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded 
   Subrelation.wf (h _ _) hr
 #align well_founded.mono WellFounded.mono
 
-theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
+lemma onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
 #align well_founded.on_fun WellFounded.onFun
 
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
-theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
+lemma has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
     s.Nonempty → ∃ a ∈ s, ∀ x ∈ s, ¬r x a
   | ⟨a, ha⟩ => show ∃ b ∈ s, ∀ x ∈ s, ¬r x b from
     Acc.recOn (H.apply a) (fun x _ IH =>
@@ -67,19 +67,19 @@ noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) 
   Classical.choose (H.has_min s h)
 #align well_founded.min WellFounded.min
 
-theorem min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) :
+lemma min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) :
     H.min s h ∈ s :=
   let ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
   h
 #align well_founded.min_mem WellFounded.min_mem
 
-theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) {x}
+lemma not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) {x}
     (hx : x ∈ s) : ¬r x (H.min s h) :=
   let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s h)
   h' _ hx
 #align well_founded.not_lt_min WellFounded.not_lt_min
 
-theorem wellFounded_iff_has_min {r : α → α → Prop} :
+lemma wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
   refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
   by_contra hx
@@ -97,7 +97,7 @@ protected noncomputable def sup {r : α → α → Prop} (wf : WellFounded r) (s
   wf.min { x | ∀ a ∈ s, r a x } h
 #align well_founded.sup WellFounded.sup
 
-protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set α} (h : Bounded r s) {x}
+protected lemma lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set α} (h : Bounded r s) {x}
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
 #align well_founded.lt_sup WellFounded.lt_sup
@@ -112,7 +112,7 @@ protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 #align well_founded.succ WellFounded.succ
 
-protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
+protected lemma lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
   apply min_mem
@@ -120,7 +120,7 @@ protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α}
 
 end
 
-protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
+protected lemma lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor
   · intro h'
@@ -142,11 +142,11 @@ section LinearOrder
 
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop)) [PartialOrder γ]
 
-theorem min_le {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
+lemma min_le {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
 #align well_founded.min_le WellFounded.min_le
 
-private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f)
+private lemma eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f)
     (hg : StrictMono g) (hfg : Set.range f = Set.range g) {b : β} (H : ∀ a < b, f a = g a) :
     f b ≤ g b := by
   obtain ⟨c, hc⟩ : g b ∈ Set.range f := by
@@ -159,7 +159,7 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
   · rw [← hc]
     exact hf.monotone hbc
 
-theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
+lemma eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
     Set.range f = Set.range g ↔ f = g :=
   ⟨fun hfg => by
     funext a
@@ -170,7 +170,7 @@ theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : S
     congr_arg _⟩
 #align well_founded.eq_strict_mono_iff_eq_range WellFounded.eq_strictMono_iff_eq_range
 
-theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
+lemma self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra' h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
@@ -194,7 +194,7 @@ noncomputable def argmin [Nonempty α] : α :=
   WellFounded.min (InvImage.wf f h) Set.univ Set.univ_nonempty
 #align function.argmin Function.argmin
 
-theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f h) :=
+lemma not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f h) :=
   WellFounded.not_lt_min (InvImage.wf f h) _ _ (Set.mem_univ a)
 #align function.not_lt_argmin Function.not_lt_argmin
 
@@ -244,7 +244,7 @@ let `bot : α`. This induction principle shows that `C (f bot)` holds, given tha
 * some `a` that is accessible by `r` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
   satisfying `r c b` and `C (f c)`. -/
-theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : β → Prop}
+lemma Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : β → Prop}
     {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) : C (f a) → C (f bot) :=
   (@Acc.recOn _ _ (fun x _ => C (f x) → C (f bot)) _ ha) fun x _ ih' hC =>
     (eq_or_ne (f x) (f bot)).elim (fun h => h ▸ hC) (fun h =>
@@ -256,7 +256,7 @@ theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : A
 This induction principle shows that `C bot` holds, given that
 * some `a` that is accessible by `r` satisfies `C a`, and
 * for each `b ≠ bot` such that `C b` holds, there is `c` satisfying `r c b` and `C c`. -/
-theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : α → Prop}
+lemma Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : α → Prop}
     (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
   ha.induction_bot' ih
 #align acc.induction_bot Acc.induction_bot
@@ -267,7 +267,7 @@ This induction principle shows that `C (f bot)` holds, given that
 * some `a` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
   satisfying `r c b` and `C (f c)`. -/
-theorem WellFounded.induction_bot' {α β} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
+lemma WellFounded.induction_bot' {α β} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
     {C : β → Prop} {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) :
     C (f a) → C (f bot) :=
   (hwf.apply a).induction_bot' ih
@@ -280,7 +280,7 @@ This induction principle shows that `C bot` holds, given that
 
 The naming is inspired by the fact that when `r` is transitive, it follows that `bot` is
 the smallest element w.r.t. `r` that satisfies `C`. -/
-theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
+lemma WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
     {C : α → Prop} (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
   hwf.induction_bot' ih
 #align well_founded.induction_bot WellFounded.induction_bot

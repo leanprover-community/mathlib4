@@ -44,7 +44,7 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
 #align valuation.on_quot Valuation.onQuot
 
 @[simp]
-theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
+lemma onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
   ext fun _ => rfl
 #align valuation.on_quot_comap_eq Valuation.onQuot_comap_eq
@@ -64,7 +64,7 @@ theorem comap_onQuot_eq (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
 #align valuation.comap_on_quot_eq Valuation.comap_onQuot_eq
 
 /-- The quotient valuation on `R / J` has support `(supp v) / J` if `J ⊆ supp v`. -/
-theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
+lemma supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) := by
   apply le_antisymm
   · rintro ⟨x⟩ hx
@@ -75,7 +75,7 @@ theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     exact hx
 #align valuation.supp_quot Valuation.supp_quot
 
-theorem supp_quot_supp : supp (v.onQuot le_rfl) = 0 := by
+lemma supp_quot_supp : supp (v.onQuot le_rfl) = 0 := by
   rw [supp_quot]
   exact Ideal.map_quotient_self _
 #align valuation.supp_quot_supp Valuation.supp_quot_supp
@@ -104,12 +104,12 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : AddValuation (R ⧸ J) Γ₀ :=
 #align add_valuation.on_quot AddValuation.onQuot
 
 @[simp]
-theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
+lemma onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
     (v.onQuot hJ).comap (Ideal.Quotient.mk J) = v :=
   Valuation.onQuot_comap_eq v hJ
 #align add_valuation.on_quot_comap_eq AddValuation.onQuot_comap_eq
 
-theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
+lemma comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Valuation.comap_supp v f
 #align add_valuation.comap_supp AddValuation.comap_supp
@@ -126,12 +126,12 @@ theorem comap_onQuot_eq (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
 #align add_valuation.comap_on_quot_eq AddValuation.comap_onQuot_eq
 
 /-- The quotient valuation on `R / J` has support `(supp v) / J` if `J ⊆ supp v`. -/
-theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
+lemma supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) :=
   Valuation.supp_quot v hJ
 #align add_valuation.supp_quot AddValuation.supp_quot
 
-theorem supp_quot_supp : supp ((Valuation.onQuot v) le_rfl) = 0 :=
+lemma supp_quot_supp : supp ((Valuation.onQuot v) le_rfl) = 0 :=
   Valuation.supp_quot_supp v
 #align add_valuation.supp_quot_supp AddValuation.supp_quot_supp
 

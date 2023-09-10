@@ -56,7 +56,7 @@ theorem monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
 #align minpoly.monic minpoly.monic
 
 /-- A minimal polynomial is nonzero. -/
-theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
+lemma ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
   (monic hx).ne_zero
 #align minpoly.ne_zero minpoly.ne_zero
 
@@ -79,7 +79,7 @@ variable (A x)
 
 /-- An element is a root of its minimal polynomial. -/
 @[simp]
-theorem aeval : aeval x (minpoly A x) = 0 := by
+lemma aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
   split_ifs with hx -- Porting note: `split_ifs` doesn't remove the `if`s
   · rw [dif_pos hx]
@@ -89,13 +89,13 @@ theorem aeval : aeval x (minpoly A x) = 0 := by
 #align minpoly.aeval minpoly.aeval
 
 /-- A minimal polynomial is not `1`. -/
-theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
+lemma ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   intro h
   refine' (one_ne_zero : (1 : B) ≠ 0) _
   simpa using congr_arg (Polynomial.aeval x) h
 #align minpoly.ne_one minpoly.ne_one
 
-theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
+lemma map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
     (minpoly A x).map f ≠ 1 := by
   by_cases hx : IsIntegral A x
   · exact mt ((monic hx).eq_one_of_map_eq_one f) (ne_one A x)
@@ -104,7 +104,7 @@ theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A
 #align minpoly.map_ne_one minpoly.map_ne_one
 
 /-- A minimal polynomial is not a unit. -/
-theorem not_isUnit [Nontrivial B] : ¬IsUnit (minpoly A x) := by
+lemma not_isUnit [Nontrivial B] : ¬IsUnit (minpoly A x) := by
   haveI : Nontrivial A := (algebraMap A B).domain_nontrivial
   by_cases hx : IsIntegral A x
   · exact mt (monic hx).eq_one_of_isUnit (ne_one A x)
@@ -126,14 +126,14 @@ theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
 
 /-- The defining property of the minimal polynomial of an element `x`:
 it is the monic polynomial with smallest degree that has `x` as its root. -/
-theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
+lemma min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p := by
   delta minpoly; split_ifs with hx
   · exact le_of_not_lt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
   · simp only [degree_zero, bot_le]
 #align minpoly.min minpoly.min
 
-theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
+lemma unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
     (hl : ∀ q : A[X], degree q < degree p → q = 0 ∨ Polynomial.aeval x q ≠ 0) :
     p = minpoly A x := by
   nontriviality A
@@ -159,7 +159,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
 #align minpoly.unique' minpoly.unique'
 
 @[nontriviality]
-theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
+lemma subsingleton [Subsingleton B] : minpoly A x = 1 := by
   nontriviality A
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
@@ -181,7 +181,7 @@ variable [Ring B] [Algebra A B]
 variable {x : B}
 
 /-- The degree of a minimal polynomial, as a natural number, is positive. -/
-theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minpoly A x) := by
+lemma natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minpoly A x) := by
   rw [pos_iff_ne_zero]
   intro ndeg_eq_zero
   have eq_one : minpoly A x = 1 := by
@@ -192,7 +192,7 @@ theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minp
 #align minpoly.nat_degree_pos minpoly.natDegree_pos
 
 /-- The degree of a minimal polynomial is positive. -/
-theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A x) :=
+lemma degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A x) :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos hx)
 #align minpoly.degree_pos minpoly.degree_pos
 
@@ -220,7 +220,7 @@ variable [Ring B] [Algebra A B]
 variable {x : B}
 
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
-theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
+lemma aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
   refine' fun ha => (min A x hamonic ha).not_lt (degree_lt_degree _)
   obtain ⟨_, c, hu, he⟩ := hdvd

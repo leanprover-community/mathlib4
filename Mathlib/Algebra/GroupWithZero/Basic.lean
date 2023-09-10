@@ -48,11 +48,11 @@ section MulZeroClass
 
 variable [MulZeroClass M₀] {a b : M₀}
 
-theorem left_ne_zero_of_mul : a * b ≠ 0 → a ≠ 0 :=
+lemma left_ne_zero_of_mul : a * b ≠ 0 → a ≠ 0 :=
   mt fun h => mul_eq_zero_of_left h b
 #align left_ne_zero_of_mul left_ne_zero_of_mul
 
-theorem right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
+lemma right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
   mt (mul_eq_zero_of_right a)
 #align right_ne_zero_of_mul right_ne_zero_of_mul
 
@@ -60,17 +60,17 @@ theorem ne_zero_and_ne_zero_of_mul (h : a * b ≠ 0) : a ≠ 0 ∧ b ≠ 0 :=
   ⟨left_ne_zero_of_mul h, right_ne_zero_of_mul h⟩
 #align ne_zero_and_ne_zero_of_mul ne_zero_and_ne_zero_of_mul
 
-theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 :=
+lemma mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 :=
   if ha : a = 0 then by rw [ha, zero_mul] else by rw [h ha, mul_zero]
 #align mul_eq_zero_of_ne_zero_imp_eq_zero mul_eq_zero_of_ne_zero_imp_eq_zero
 
 /-- To match `one_mul_eq_id`. -/
-theorem zero_mul_eq_const : (· * ·) (0 : M₀) = Function.const _ 0 :=
+lemma zero_mul_eq_const : (· * ·) (0 : M₀) = Function.const _ 0 :=
   funext zero_mul
 #align zero_mul_eq_const zero_mul_eq_const
 
 /-- To match `mul_one_eq_id`. -/
-theorem mul_zero_eq_const : (· * (0 : M₀)) = Function.const _ 0 :=
+lemma mul_zero_eq_const : (· * (0 : M₀)) = Function.const _ 0 :=
   funext mul_zero
 #align mul_zero_eq_const mul_zero_eq_const
 
@@ -121,7 +121,7 @@ def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
 
 /-- In a monoid with zero, zero equals one if and only if all elements of that semiring
 are equal. -/
-theorem subsingleton_iff_zero_eq_one : (0 : M₀) = 1 ↔ Subsingleton M₀ :=
+lemma subsingleton_iff_zero_eq_one : (0 : M₀) = 1 ↔ Subsingleton M₀ :=
   ⟨fun h => haveI := uniqueOfZeroEqOne h; inferInstance, fun h => @Subsingleton.elim _ h _ _⟩
 #align subsingleton_iff_zero_eq_one subsingleton_iff_zero_eq_one
 
@@ -133,7 +133,7 @@ theorem eq_of_zero_eq_one (h : (0 : M₀) = 1) (a b : M₀) : a = b :=
 #align eq_of_zero_eq_one eq_of_zero_eq_one
 
 /-- In a monoid with zero, either zero and one are nonequal, or zero is the only element. -/
-theorem zero_ne_one_or_forall_eq_0 : (0 : M₀) ≠ 1 ∨ ∀ a : M₀, a = 0 :=
+lemma zero_ne_one_or_forall_eq_0 : (0 : M₀) ≠ 1 ∨ ∀ a : M₀, a = 0 :=
   not_or_of_imp eq_zero_of_zero_eq_one
 #align zero_ne_one_or_forall_eq_0 zero_ne_one_or_forall_eq_0
 
@@ -164,22 +164,22 @@ instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisor
 #align cancel_monoid_with_zero.to_no_zero_divisors CancelMonoidWithZero.to_noZeroDivisors
 
 @[simp]
-theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
+lemma mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
   by_cases hc : c = 0 <;> [simp [hc]; simp [mul_left_inj', hc]]
 #align mul_eq_mul_right_iff mul_eq_mul_right_iff
 
 @[simp]
-theorem mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
+lemma mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
   by_cases ha : a = 0 <;> [simp [ha]; simp [mul_right_inj', ha]]
 #align mul_eq_mul_left_iff mul_eq_mul_left_iff
 
-theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
+lemma mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
   calc
     a * b = a ↔ a * b = a * 1 := by rw [mul_one]
     _ ↔ b = 1 ∨ a = 0 := mul_eq_mul_left_iff
 #align mul_right_eq_self₀ mul_right_eq_self₀
 
-theorem mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
+lemma mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
   calc
     a * b = b ↔ a * b = 1 * b := by rw [one_mul]
     _ ↔ a = 1 ∨ b = 0 := mul_eq_mul_right_iff
@@ -347,16 +347,16 @@ theorem div_self_mul_self' (a : G₀) : a / (a * a) = a⁻¹ :=
 #align div_self_mul_self' div_self_mul_self'
 
 
-theorem one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by
+lemma one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by
   simpa only [one_div] using inv_ne_zero h
 #align one_div_ne_zero one_div_ne_zero
 
 @[simp]
-theorem inv_eq_zero {a : G₀} : a⁻¹ = 0 ↔ a = 0 := by rw [inv_eq_iff_eq_inv, inv_zero]
+lemma inv_eq_zero {a : G₀} : a⁻¹ = 0 ↔ a = 0 := by rw [inv_eq_iff_eq_inv, inv_zero]
 #align inv_eq_zero inv_eq_zero
 
 @[simp]
-theorem zero_eq_inv {a : G₀} : 0 = a⁻¹ ↔ 0 = a :=
+lemma zero_eq_inv {a : G₀} : 0 = a⁻¹ ↔ 0 = a :=
   eq_comm.trans <| inv_eq_zero.trans eq_comm
 #align zero_eq_inv zero_eq_inv
 
@@ -368,20 +368,20 @@ theorem div_div_self (a : G₀) : a / (a / a) = a := by
   exact mul_self_div_self a
 #align div_div_self div_div_self
 
-theorem ne_zero_of_one_div_ne_zero {a : G₀} (h : 1 / a ≠ 0) : a ≠ 0 := fun ha : a = 0 => by
+lemma ne_zero_of_one_div_ne_zero {a : G₀} (h : 1 / a ≠ 0) : a ≠ 0 := fun ha : a = 0 => by
   rw [ha, div_zero] at h
   contradiction
 #align ne_zero_of_one_div_ne_zero ne_zero_of_one_div_ne_zero
 
-theorem eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
+lemma eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
   Classical.byCases (fun ha => ha) fun ha => ((one_div_ne_zero ha) h).elim
 #align eq_zero_of_one_div_eq_zero eq_zero_of_one_div_eq_zero
 
-theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
+lemma mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
   ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel h]⟩
 #align mul_left_surjective₀ mul_left_surjective₀
 
-theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
+lemma mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel h]⟩
 #align mul_right_surjective₀ mul_right_surjective₀
 

@@ -100,7 +100,7 @@ theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ →
 theorem ModularForm.toSlashInvariantForm_coe (f : ModularForm Γ k) : ⇑f.1 = f :=
   rfl
 
-theorem CuspForm.toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
+lemma CuspForm.toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
   rfl
 #align cusp_form_to_fun_eq_coe CuspForm.toFun_eq_coe
 
@@ -108,12 +108,12 @@ theorem CuspForm.toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) 
 theorem CuspForm.toSlashInvariantForm_coe (f : CuspForm Γ k) : ⇑f.1 = f := rfl
 
 @[ext]
-theorem ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g :=
+lemma ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align modular_form.ext ModularForm.ext
 
 @[ext]
-theorem CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
+lemma CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align cusp_form.ext CuspForm.ext
 
@@ -166,7 +166,7 @@ instance hasZero : Zero (ModularForm Γ k) :=
 #align modular_form.has_zero ModularForm.hasZero
 
 @[simp]
-theorem coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
+lemma coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
   rfl
 #align modular_form.coe_zero ModularForm.coe_zero
 
@@ -260,7 +260,7 @@ def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g :
 #align modular_form.mul ModularForm.mul
 
 @[simp]
-theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1)
+lemma mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1)
     (g : ModularForm Γ k_2) : (f.mul g : ℍ → ℂ) = f * g :=
   rfl
 #align modular_form.mul_coe ModularForm.mul_coe
@@ -273,7 +273,7 @@ instance : One (ModularForm Γ 0) :=
           ModularForm.is_invariant_one] using atImInfty.const_boundedAtFilter (1 : ℂ) }⟩
 
 @[simp]
-theorem one_coe_eq_one : ((1 : ModularForm Γ 0) : ℍ → ℂ) = 1 :=
+lemma one_coe_eq_one : ((1 : ModularForm Γ 0) : ℍ → ℂ) = 1 :=
   rfl
 #align modular_form.one_coe_eq_one ModularForm.one_coe_eq_one
 
@@ -309,7 +309,7 @@ instance hasZero : Zero (CuspForm Γ k) :=
 #align cusp_form.has_zero CuspForm.hasZero
 
 @[simp]
-theorem coe_zero : ⇑(0 : CuspForm Γ k) = (0 : ℍ → ℂ) :=
+lemma coe_zero : ⇑(0 : CuspForm Γ k) = (0 : ℍ → ℂ) :=
   rfl
 #align cusp_form.coe_zero CuspForm.coe_zero
 

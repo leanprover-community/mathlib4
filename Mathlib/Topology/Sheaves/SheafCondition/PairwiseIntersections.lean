@@ -248,7 +248,7 @@ in terms of a limit diagram over all `{ V : opens X // ∃ i, V ≤ U i }`
 is equivalent to the reformulation
 in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/
-theorem isSheafOpensLeCover_iff_isSheafPairwiseIntersections :
+lemma isSheafOpensLeCover_iff_isSheafPairwiseIntersections :
     F.IsSheafOpensLeCover ↔ F.IsSheafPairwiseIntersections :=
   forall₂_congr fun _ U =>
     Equiv.nonempty_congr <|
@@ -277,7 +277,7 @@ set_option linter.uppercaseLean3 false in
 /-- The sheaf condition in terms of an equalizer diagram is equivalent
 to the reformulation in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/
-theorem isSheaf_iff_isSheafPairwiseIntersections : F.IsSheaf ↔ F.IsSheafPairwiseIntersections := by
+lemma isSheaf_iff_isSheafPairwiseIntersections : F.IsSheaf ↔ F.IsSheafPairwiseIntersections := by
   rw [isSheaf_iff_isSheafOpensLeCover,
     isSheafOpensLeCover_iff_isSheafPairwiseIntersections]
 set_option linter.uppercaseLean3 false in
@@ -287,7 +287,7 @@ set_option linter.uppercaseLean3 false in
 to the reformulation in terms of the presheaf preserving the limit of the diagram
 consisting of the `U i` and `U i ⊓ U j`.
 -/
-theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
+lemma isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
     F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections := by
   rw [isSheaf_iff_isSheafPairwiseIntersections]
   constructor
@@ -319,20 +319,20 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.inter_union_pullback_cone TopCat.Sheaf.interUnionPullbackCone
 
 @[simp]
-theorem interUnionPullbackCone_pt : (interUnionPullbackCone F U V).pt = F.1.obj (op <| U ⊔ V) :=
+lemma interUnionPullbackCone_pt : (interUnionPullbackCone F U V).pt = F.1.obj (op <| U ⊔ V) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.inter_union_pullback_cone_X TopCat.Sheaf.interUnionPullbackCone_pt
 
 @[simp]
-theorem interUnionPullbackCone_fst :
+lemma interUnionPullbackCone_fst :
     (interUnionPullbackCone F U V).fst = F.1.map (homOfLE le_sup_left).op :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.inter_union_pullback_cone_fst TopCat.Sheaf.interUnionPullbackCone_fst
 
 @[simp]
-theorem interUnionPullbackCone_snd :
+lemma interUnionPullbackCone_snd :
     (interUnionPullbackCone F U V).snd = F.1.map (homOfLE le_sup_right).op :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -380,7 +380,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.inter_union_pullback_cone_lift TopCat.Sheaf.interUnionPullbackConeLift
 
-theorem interUnionPullbackConeLift_left :
+lemma interUnionPullbackConeLift_left :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_left).op = s.fst := by
   erw [Category.assoc]
   simp_rw [← F.1.map_comp]
@@ -390,7 +390,7 @@ theorem interUnionPullbackConeLift_left :
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.inter_union_pullback_cone_lift_left TopCat.Sheaf.interUnionPullbackConeLift_left
 
-theorem interUnionPullbackConeLift_right :
+lemma interUnionPullbackConeLift_right :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_right).op = s.snd := by
   erw [Category.assoc]
   simp_rw [← F.1.map_comp]
@@ -463,7 +463,7 @@ def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) 
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.obj_sup_iso_prod_eq_locus TopCat.Sheaf.objSupIsoProdEqLocus
 
-theorem objSupIsoProdEqLocus_hom_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+lemma objSupIsoProdEqLocus_hom_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
     ((F.objSupIsoProdEqLocus U V).hom x).1.fst = F.1.map (homOfLE le_sup_left).op x :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
@@ -472,7 +472,7 @@ theorem objSupIsoProdEqLocus_hom_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.obj_sup_iso_prod_eq_locus_hom_fst TopCat.Sheaf.objSupIsoProdEqLocus_hom_fst
 
-theorem objSupIsoProdEqLocus_hom_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+lemma objSupIsoProdEqLocus_hom_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
     ((F.objSupIsoProdEqLocus U V).hom x).1.snd = F.1.map (homOfLE le_sup_right).op x :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
@@ -481,7 +481,7 @@ theorem objSupIsoProdEqLocus_hom_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.obj_sup_iso_prod_eq_locus_hom_snd TopCat.Sheaf.objSupIsoProdEqLocus_hom_snd
 
-theorem objSupIsoProdEqLocus_inv_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+lemma objSupIsoProdEqLocus_inv_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
     F.1.map (homOfLE le_sup_left).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.1 :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
@@ -490,7 +490,7 @@ theorem objSupIsoProdEqLocus_inv_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.obj_sup_iso_prod_eq_locus_inv_fst TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst
 
-theorem objSupIsoProdEqLocus_inv_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+lemma objSupIsoProdEqLocus_inv_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
     F.1.map (homOfLE le_sup_right).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.2 :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp

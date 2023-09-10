@@ -51,21 +51,21 @@ def essInf {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :=
   μ.ae.liminf f
 #align ess_inf essInf
 
-theorem essSup_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essSup f μ = essSup g μ :=
+lemma essSup_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essSup f μ = essSup g μ :=
   limsup_congr hfg
 #align ess_sup_congr_ae essSup_congr_ae
 
-theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = essInf g μ :=
+lemma essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = essInf g μ :=
   @essSup_congr_ae α βᵒᵈ _ _ _ _ _ hfg
 #align ess_inf_congr_ae essInf_congr_ae
 
 @[simp]
-theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
+lemma essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
   limsup_const _
 #align ess_sup_const' essSup_const'
 
 @[simp]
-theorem essInf_const' [NeZero μ] (c : β) : essInf (fun _ : α => c) μ = c :=
+lemma essInf_const' [NeZero μ] (c : β) : essInf (fun _ : α => c) μ = c :=
   liminf_const _
 #align ess_inf_const' essInf_const'
 
@@ -83,13 +83,13 @@ section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder β] {x : β} {f : α → β}
 
-theorem essSup_eq_sInf {m : MeasurableSpace α} (μ : Measure α) (f : α → β) :
+lemma essSup_eq_sInf {m : MeasurableSpace α} (μ : Measure α) (f : α → β) :
     essSup f μ = sInf { a | μ { x | a < f x } = 0 } := by
   dsimp [essSup, limsup, limsSup]
   simp only [eventually_map, ae_iff, not_le]
 #align ess_sup_eq_Inf essSup_eq_sInf
 
-theorem essInf_eq_sSup {m : MeasurableSpace α} (μ : Measure α) (f : α → β) :
+lemma essInf_eq_sSup {m : MeasurableSpace α} (μ : Measure α) (f : α → β) :
     essInf f μ = sSup { a | μ { x | f x < a } = 0 } := by
   dsimp [essInf, liminf, limsInf]
   simp only [eventually_map, ae_iff, not_le]
@@ -142,70 +142,70 @@ section CompleteLattice
 variable [CompleteLattice β]
 
 @[simp]
-theorem essSup_measure_zero {m : MeasurableSpace α} {f : α → β} : essSup f (0 : Measure α) = ⊥ :=
+lemma essSup_measure_zero {m : MeasurableSpace α} {f : α → β} : essSup f (0 : Measure α) = ⊥ :=
   le_bot_iff.mp (sInf_le (by simp [Set.mem_setOf_eq, EventuallyLE, ae_iff]))
 #align ess_sup_measure_zero essSup_measure_zero
 
 @[simp]
-theorem essInf_measure_zero {_ : MeasurableSpace α} {f : α → β} : essInf f (0 : Measure α) = ⊤ :=
+lemma essInf_measure_zero {_ : MeasurableSpace α} {f : α → β} : essInf f (0 : Measure α) = ⊤ :=
   @essSup_measure_zero α βᵒᵈ _ _ _
 #align ess_inf_measure_zero essInf_measure_zero
 
-theorem essSup_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essSup f μ ≤ essSup g μ :=
+lemma essSup_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essSup f μ ≤ essSup g μ :=
   limsup_le_limsup hfg
 #align ess_sup_mono_ae essSup_mono_ae
 
-theorem essInf_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essInf f μ ≤ essInf g μ :=
+lemma essInf_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essInf f μ ≤ essInf g μ :=
   liminf_le_liminf hfg
 #align ess_inf_mono_ae essInf_mono_ae
 
-theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c) : essSup f μ ≤ c := by
+lemma essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c) : essSup f μ ≤ c := by
   refine' (essSup_mono_ae hf).trans _
   by_cases hμ : μ = 0
   · simp [hμ]
   · rwa [essSup_const]
 #align ess_sup_le_of_ae_le essSup_le_of_ae_le
 
-theorem le_essInf_of_ae_le {f : α → β} (c : β) (hf : (fun _ => c) ≤ᵐ[μ] f) : c ≤ essInf f μ :=
+lemma le_essInf_of_ae_le {f : α → β} (c : β) (hf : (fun _ => c) ≤ᵐ[μ] f) : c ≤ essInf f μ :=
   @essSup_le_of_ae_le α βᵒᵈ _ _ _ _ c hf
 #align le_ess_inf_of_ae_le le_essInf_of_ae_le
 
-theorem essSup_const_bot : essSup (fun _ : α => (⊥ : β)) μ = (⊥ : β) :=
+lemma essSup_const_bot : essSup (fun _ : α => (⊥ : β)) μ = (⊥ : β) :=
   limsup_const_bot
 #align ess_sup_const_bot essSup_const_bot
 
-theorem essInf_const_top : essInf (fun _ : α => (⊤ : β)) μ = (⊤ : β) :=
+lemma essInf_const_top : essInf (fun _ : α => (⊤ : β)) μ = (⊤ : β) :=
   liminf_const_top
 #align ess_inf_const_top essInf_const_top
 
-theorem OrderIso.essSup_apply {m : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
+lemma OrderIso.essSup_apply {m : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
     (μ : Measure α) (g : β ≃o γ) : g (essSup f μ) = essSup (fun x => g (f x)) μ := by
   refine' OrderIso.limsup_apply g _ _ _ _
   all_goals isBoundedDefault
 #align order_iso.ess_sup_apply OrderIso.essSup_apply
 
-theorem OrderIso.essInf_apply {_ : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
+lemma OrderIso.essInf_apply {_ : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
     (μ : Measure α) (g : β ≃o γ) : g (essInf f μ) = essInf (fun x => g (f x)) μ :=
   @OrderIso.essSup_apply α βᵒᵈ _ _ γᵒᵈ _ _ _ g.dual
 #align order_iso.ess_inf_apply OrderIso.essInf_apply
 
-theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν ≤ essSup f μ := by
+lemma essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν ≤ essSup f μ := by
   refine' limsup_le_limsup_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) _ _
   all_goals isBoundedDefault
 #align ess_sup_mono_measure essSup_mono_measure
 
-theorem essSup_mono_measure' {α : Type*} {β : Type*} {_ : MeasurableSpace α}
+lemma essSup_mono_measure' {α : Type*} {β : Type*} {_ : MeasurableSpace α}
     {μ ν : MeasureTheory.Measure α} [CompleteLattice β] {f : α → β} (hμν : ν ≤ μ) :
     essSup f ν ≤ essSup f μ :=
   essSup_mono_measure (Measure.absolutelyContinuous_of_le hμν)
 #align ess_sup_mono_measure' essSup_mono_measure'
 
-theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f ν ≤ essInf f μ := by
+lemma essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f ν ≤ essInf f μ := by
   refine' liminf_le_liminf_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) _ _
   all_goals isBoundedDefault
 #align ess_inf_antitone_measure essInf_antitone_measure
 
-theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
+lemma essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
     essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup]
   suffices h_smul : (c • μ).ae = μ.ae; · rw [h_smul]
@@ -265,7 +265,7 @@ end CompleteLattice
 section CompleteLinearOrder
 
 variable [CompleteLinearOrder β]
-theorem essSup_indicator_eq_essSup_restrict [Zero β] {s : Set α} {f : α → β}
+lemma essSup_indicator_eq_essSup_restrict [Zero β] {s : Set α} {f : α → β}
     (hf : 0 ≤ᵐ[μ.restrict s] f) (hs : MeasurableSet s) (hs_not_null : μ s ≠ 0) :
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   refine'
@@ -306,11 +306,11 @@ theorem ae_le_essSup (f : α → ℝ≥0∞) : ∀ᵐ y ∂μ, f y ≤ essSup f 
 #align ennreal.ae_le_ess_sup ENNReal.ae_le_essSup
 
 @[simp]
-theorem essSup_eq_zero_iff : essSup f μ = 0 ↔ f =ᵐ[μ] 0 :=
+lemma essSup_eq_zero_iff : essSup f μ = 0 ↔ f =ᵐ[μ] 0 :=
   limsup_eq_zero_iff
 #align ennreal.ess_sup_eq_zero_iff ENNReal.essSup_eq_zero_iff
 
-theorem essSup_const_mul {a : ℝ≥0∞} : essSup (fun x : α => a * f x) μ = a * essSup f μ :=
+lemma essSup_const_mul {a : ℝ≥0∞} : essSup (fun x : α => a * f x) μ = a * essSup f μ :=
   limsup_const_mul
 #align ennreal.ess_sup_const_mul ENNReal.essSup_const_mul
 
@@ -322,14 +322,14 @@ theorem essSup_add_le (f g : α → ℝ≥0∞) : essSup (f + g) μ ≤ essSup f
   limsup_add_le f g
 #align ennreal.ess_sup_add_le ENNReal.essSup_add_le
 
-theorem essSup_liminf_le {ι} [Countable ι] [LinearOrder ι] (f : ι → α → ℝ≥0∞) :
+lemma essSup_liminf_le {ι} [Countable ι] [LinearOrder ι] (f : ι → α → ℝ≥0∞) :
     essSup (fun x => atTop.liminf fun n => f n x) μ ≤
       atTop.liminf fun n => essSup (fun x => f n x) μ := by
   simp_rw [essSup]
   exact ENNReal.limsup_liminf_le_liminf_limsup fun a b => f b a
 #align ennreal.ess_sup_liminf_le ENNReal.essSup_liminf_le
 
-theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) μ.ae f) :
+lemma coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) μ.ae f) :
     ((essSup f μ : ℝ≥0) : ℝ≥0∞) = essSup (fun x => (f x : ℝ≥0∞)) μ :=
   (ENNReal.coe_sInf <| hf).trans <|
     eq_of_forall_le_iff fun r => by

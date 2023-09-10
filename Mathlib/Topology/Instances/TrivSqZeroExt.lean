@@ -47,35 +47,35 @@ theorem nhds_def (x : tsze R M) : nhds x = (nhds x.fst).prod (nhds x.snd) := by
   exact nhds_prod_eq
 #align triv_sq_zero_ext.nhds_def TrivSqZeroExt.nhds_def
 
-theorem nhds_inl [Zero M] (x : R) : nhds (inl x : tsze R M) = (nhds x).prod (nhds 0) :=
+lemma nhds_inl [Zero M] (x : R) : nhds (inl x : tsze R M) = (nhds x).prod (nhds 0) :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inl TrivSqZeroExt.nhds_inl
 
-theorem nhds_inr [Zero R] (m : M) : nhds (inr m : tsze R M) = (nhds 0).prod (nhds m) :=
+lemma nhds_inr [Zero R] (m : M) : nhds (inr m : tsze R M) = (nhds 0).prod (nhds m) :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inr TrivSqZeroExt.nhds_inr
 
-nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
+nonrec lemma continuous_fst : Continuous (fst : tsze R M → R) :=
   continuous_fst
 #align triv_sq_zero_ext.continuous_fst TrivSqZeroExt.continuous_fst
 
-nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
+nonrec lemma continuous_snd : Continuous (snd : tsze R M → M) :=
   continuous_snd
 #align triv_sq_zero_ext.continuous_snd TrivSqZeroExt.continuous_snd
 
-theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
+lemma continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
   continuous_id.prod_mk continuous_const
 #align triv_sq_zero_ext.continuous_inl TrivSqZeroExt.continuous_inl
 
-theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
+lemma continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
   continuous_const.prod_mk continuous_id
 #align triv_sq_zero_ext.continuous_inr TrivSqZeroExt.continuous_inr
 
-theorem embedding_inl [Zero M] : Embedding (inl : R → tsze R M) :=
+lemma embedding_inl [Zero M] : Embedding (inl : R → tsze R M) :=
   embedding_of_embedding_compose continuous_inl continuous_fst embedding_id
 #align triv_sq_zero_ext.embedding_inl TrivSqZeroExt.embedding_inl
 
-theorem embedding_inr [Zero R] : Embedding (inr : M → tsze R M) :=
+lemma embedding_inr [Zero R] : Embedding (inr : M → tsze R M) :=
   embedding_of_embedding_compose continuous_inr continuous_snd embedding_id
 #align triv_sq_zero_ext.embedding_inr TrivSqZeroExt.embedding_inr
 
@@ -124,7 +124,7 @@ instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (ts
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
 really care about the `TopologicalRing` instance below. -/
-theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+lemma topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [TopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
     TopologicalSemiring (tsze R M) := { }
 #align triv_sq_zero_ext.topological_semiring TrivSqZeroExt.topologicalSemiring
@@ -143,22 +143,22 @@ instance [TopologicalSpace S] [SMul S R] [SMul S M] [ContinuousSMul S R] [Contin
 
 variable (M)
 
-theorem hasSum_inl [AddCommMonoid R] [AddCommMonoid M] {f : α → R} {a : R} (h : HasSum f a) :
+lemma hasSum_inl [AddCommMonoid R] [AddCommMonoid M] {f : α → R} {a : R} (h : HasSum f a) :
     HasSum (fun x ↦ inl (f x)) (inl a : tsze R M) :=
   h.map (⟨⟨inl, inl_zero _⟩, inl_add _⟩ : R →+ tsze R M) continuous_inl
 #align triv_sq_zero_ext.has_sum_inl TrivSqZeroExt.hasSum_inl
 
-theorem hasSum_inr [AddCommMonoid R] [AddCommMonoid M] {f : α → M} {a : M} (h : HasSum f a) :
+lemma hasSum_inr [AddCommMonoid R] [AddCommMonoid M] {f : α → M} {a : M} (h : HasSum f a) :
     HasSum (fun x ↦ inr (f x)) (inr a : tsze R M) :=
   h.map (⟨⟨inr, inr_zero _⟩, inr_add _⟩ : M →+ tsze R M) continuous_inr
 #align triv_sq_zero_ext.has_sum_inr TrivSqZeroExt.hasSum_inr
 
-theorem hasSum_fst [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
+lemma hasSum_fst [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ fst (f x)) (fst a) :=
   h.map (⟨⟨fst, fst_zero⟩, fst_add⟩ : tsze R M →+ R) continuous_fst
 #align triv_sq_zero_ext.has_sum_fst TrivSqZeroExt.hasSum_fst
 
-theorem hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
+lemma hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
     (h : HasSum f a) : HasSum (fun x ↦ snd (f x)) (snd a) :=
   h.map (⟨⟨snd, snd_zero⟩, snd_add⟩ : tsze R M →+ M) continuous_snd
 #align triv_sq_zero_ext.has_sum_snd TrivSqZeroExt.hasSum_snd

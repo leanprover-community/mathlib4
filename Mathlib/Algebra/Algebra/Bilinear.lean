@@ -90,17 +90,17 @@ theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
 #align linear_map.mul_left_right_apply LinearMap.mulLeftRight_apply
 
 @[simp]
-theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
+lemma mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
 #align linear_map.mul'_apply LinearMap.mul'_apply
 
 @[simp]
-theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 :=
+lemma mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 :=
   (mul R A).map_zero
 #align linear_map.mul_left_zero_eq_zero LinearMap.mulLeft_zero_eq_zero
 
 @[simp]
-theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 :=
+lemma mulRight_zero_eq_zero : mulRight R (0 : A) = 0 :=
   (mul R A).flip.map_zero
 #align linear_map.mul_right_zero_eq_zero LinearMap.mulRight_zero_eq_zero
 
@@ -128,7 +128,7 @@ def _root_.NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
 variable {R A}
 
 @[simp]
-theorem _root_.NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
+lemma _root_.NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
   rfl
 #align non_unital_alg_hom.coe_lmul_eq_mul NonUnitalAlgHom.coe_lmul_eq_mul
 
@@ -180,7 +180,7 @@ def _root_.Algebra.lmul : A →ₐ[R] End R A :=
 variable {R A}
 
 @[simp]
-theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
+lemma _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
   rfl
 #align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
 
@@ -203,13 +203,13 @@ theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
 #align linear_map.mul_right_eq_zero_iff LinearMap.mulRight_eq_zero_iff
 
 @[simp]
-theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := by
+lemma mulLeft_one : mulLeft R (1 : A) = LinearMap.id := by
   ext
   simp only [LinearMap.id_coe, one_mul, id.def, mulLeft_apply]
 #align linear_map.mul_left_one LinearMap.mulLeft_one
 
 @[simp]
-theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := by
+lemma mulRight_one : mulRight R (1 : A) = LinearMap.id := by
   ext
   simp only [LinearMap.id_coe, mul_one, id.def, mulRight_apply]
 #align linear_map.mul_right_one LinearMap.mulRight_one
@@ -232,21 +232,21 @@ section Ring
 
 variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
 
-theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
+lemma mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulLeft R x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
   letI := NoZeroDivisors.to_isDomain A
   exact mul_right_injective₀ hx
 #align linear_map.mul_left_injective LinearMap.mulLeft_injective
 
-theorem mulRight_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
+lemma mulRight_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulRight R x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
   letI := NoZeroDivisors.to_isDomain A
   exact mul_left_injective₀ hx
 #align linear_map.mul_right_injective LinearMap.mulRight_injective
 
-theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) := by
+lemma mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
   letI := NoZeroDivisors.to_isDomain A
   exact mul_right_injective₀ hx

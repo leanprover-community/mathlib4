@@ -38,17 +38,17 @@ section AbelRuffini
 
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
-theorem gal_zero_isSolvable : IsSolvable (0 : F[X]).Gal := by infer_instance
+lemma gal_zero_isSolvable : IsSolvable (0 : F[X]).Gal := by infer_instance
 #align gal_zero_is_solvable gal_zero_isSolvable
 
-theorem gal_one_isSolvable : IsSolvable (1 : F[X]).Gal := by infer_instance
+lemma gal_one_isSolvable : IsSolvable (1 : F[X]).Gal := by infer_instance
 #align gal_one_is_solvable gal_one_isSolvable
 
 theorem gal_C_isSolvable (x : F) : IsSolvable (C x).Gal := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align gal_C_is_solvable gal_C_isSolvable
 
-theorem gal_X_isSolvable : IsSolvable (X : F[X]).Gal := by infer_instance
+lemma gal_X_isSolvable : IsSolvable (X : F[X]).Gal := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align gal_X_is_solvable gal_X_isSolvable
 
@@ -60,12 +60,12 @@ theorem gal_X_pow_isSolvable (n : ℕ) : IsSolvable (X ^ n : F[X]).Gal := by inf
 set_option linter.uppercaseLean3 false in
 #align gal_X_pow_is_solvable gal_X_pow_isSolvable
 
-theorem gal_mul_isSolvable {p q : F[X]} (_ : IsSolvable p.Gal) (_ : IsSolvable q.Gal) :
+lemma gal_mul_isSolvable {p q : F[X]} (_ : IsSolvable p.Gal) (_ : IsSolvable q.Gal) :
     IsSolvable (p * q).Gal :=
   solvable_of_solvable_injective (Gal.restrictProd_injective p q)
 #align gal_mul_is_solvable gal_mul_isSolvable
 
-theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, IsSolvable (Gal p)) :
+lemma gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, IsSolvable (Gal p)) :
     IsSolvable s.prod.Gal := by
   apply Multiset.induction_on' s
   · exact gal_one_isSolvable
@@ -74,7 +74,7 @@ theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, IsSolvable (G
     exact gal_mul_isSolvable (hs p hps) ht
 #align gal_prod_is_solvable gal_prod_isSolvable
 
-theorem gal_isSolvable_of_splits {p q : F[X]}
+lemma gal_isSolvable_of_splits {p q : F[X]}
     (_ : Fact (p.Splits (algebraMap F q.SplittingField))) (hq : IsSolvable q.Gal) :
     IsSolvable p.Gal :=
   haveI : IsSolvable (q.SplittingField ≃ₐ[F] q.SplittingField) := hq
@@ -158,7 +158,7 @@ set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_C_is_solvable_aux gal_X_pow_sub_C_isSolvable_aux
 
 set_option maxHeartbeats 250000 in
-theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [Field E]
+lemma splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [Field E]
     (i : F →+* E) (n : ℕ) {a : F} (ha : a ≠ 0) (h : (X ^ n - C a).Splits i) :
     (X ^ n - 1 : F[X]).Splits i := by
   have ha' : i a ≠ 0 := mt ((injective_iff_map_eq_zero i).mp i.injective a) ha
@@ -311,7 +311,7 @@ set_option linter.uppercaseLean3 false in
 
 set_option maxHeartbeats 400000 in
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
-theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (α ^ n)) : P α := by
+lemma induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (α ^ n)) : P α := by
   let p := minpoly F (α ^ n)
   have hp : p.comp (X ^ n) ≠ 0 := by
     intro h
@@ -338,7 +338,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
 #align solvable_by_rad.induction3 solvableByRad.induction3
 
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
-theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
+lemma induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
   let p := minpoly F α
   let q := minpoly F β
   have hpq := Polynomial.splits_of_splits_mul _
@@ -370,7 +370,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
 #align solvable_by_rad.induction2 solvableByRad.induction2
 
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
-theorem induction1 {α β : solvableByRad F E} (hβ : β ∈ F⟮α⟯) (hα : P α) : P β :=
+lemma induction1 {α β : solvableByRad F E} (hβ : β ∈ F⟮α⟯) (hα : P α) : P β :=
   induction2 (adjoin.mono F _ _ (ge_of_eq (Set.pair_eq_singleton α)) hβ) hα hα
 #align solvable_by_rad.induction1 solvableByRad.induction1
 
@@ -389,7 +389,7 @@ theorem isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := b
 
 /-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with an
 `IsSolvableByRad` root has solvable Galois group -/
-theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aeval α q = 0)
+lemma isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aeval α q = 0)
     (hα : IsSolvableByRad F α) : IsSolvable q.Gal := by
   have : _root_.IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
     rw [minpoly.eq_of_irreducible q_irred q_aeval, ←

@@ -65,7 +65,7 @@ end CharZero
 
 section Homomorphism
 
-theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
+lemma mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
   refine' Finset.sum_congr rfl fun n _ => _
@@ -101,7 +101,7 @@ theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
   rfl
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
-theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
+lemma mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n := by
   simp only [mem_restrictDegree, degrees_def, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
@@ -116,12 +116,12 @@ def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=
 #align mv_polynomial.basis_monomials MvPolynomial.basisMonomials
 
 @[simp]
-theorem coe_basisMonomials :
+lemma coe_basisMonomials :
     (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
   rfl
 #align mv_polynomial.coe_basis_monomials MvPolynomial.coe_basisMonomials
 
-theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
+lemma linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)
     (Finsupp.single_left_injective one_ne_zero)
 set_option linter.uppercaseLean3 false in
@@ -140,7 +140,7 @@ noncomputable def basisMonomials : Basis ℕ R R[X] :=
 #align polynomial.basis_monomials Polynomial.basisMonomials
 
 @[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
+lemma coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
   funext fun _ => ofFinsupp_single _ _
 #align polynomial.coe_basis_monomials Polynomial.coe_basisMonomials
 

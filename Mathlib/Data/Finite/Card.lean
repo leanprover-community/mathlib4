@@ -54,73 +54,73 @@ theorem Nat.card_eq (α : Type*) :
   · simp only [*, card_eq_zero_of_infinite, not_finite_iff_infinite.mpr, dite_false]
 #align nat.card_eq Nat.card_eq
 
-theorem Finite.card_pos_iff [Finite α] : 0 < Nat.card α ↔ Nonempty α := by
+lemma Finite.card_pos_iff [Finite α] : 0 < Nat.card α ↔ Nonempty α := by
   haveI := Fintype.ofFinite α
   rw [Nat.card_eq_fintype_card, Fintype.card_pos_iff]
 #align finite.card_pos_iff Finite.card_pos_iff
 
-theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
+lemma Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
   Finite.card_pos_iff.mpr h
 #align finite.card_pos Finite.card_pos
 
 namespace Finite
 
-theorem cast_card_eq_mk {α : Type*} [Finite α] : ↑(Nat.card α) = Cardinal.mk α :=
+lemma cast_card_eq_mk {α : Type*} [Finite α] : ↑(Nat.card α) = Cardinal.mk α :=
   Cardinal.cast_toNat_of_lt_aleph0 (Cardinal.lt_aleph0_of_finite α)
 #align finite.cast_card_eq_mk Finite.cast_card_eq_mk
 
-theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
+lemma card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   simp only [Nat.card_eq_fintype_card, Fintype.card_eq]
 #align finite.card_eq Finite.card_eq
 
-theorem card_le_one_iff_subsingleton [Finite α] : Nat.card α ≤ 1 ↔ Subsingleton α := by
+lemma card_le_one_iff_subsingleton [Finite α] : Nat.card α ≤ 1 ↔ Subsingleton α := by
   haveI := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_le_one_iff_subsingleton]
 #align finite.card_le_one_iff_subsingleton Finite.card_le_one_iff_subsingleton
 
-theorem one_lt_card_iff_nontrivial [Finite α] : 1 < Nat.card α ↔ Nontrivial α := by
+lemma one_lt_card_iff_nontrivial [Finite α] : 1 < Nat.card α ↔ Nontrivial α := by
   haveI := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.one_lt_card_iff_nontrivial]
 #align finite.one_lt_card_iff_nontrivial Finite.one_lt_card_iff_nontrivial
 
-theorem one_lt_card [Finite α] [h : Nontrivial α] : 1 < Nat.card α :=
+lemma one_lt_card [Finite α] [h : Nontrivial α] : 1 < Nat.card α :=
   one_lt_card_iff_nontrivial.mpr h
 #align finite.one_lt_card Finite.one_lt_card
 
 @[simp]
-theorem card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
+lemma card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
   haveI := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_option]
 #align finite.card_option Finite.card_option
 
-theorem card_le_of_injective [Finite β] (f : α → β) (hf : Function.Injective f) :
+lemma card_le_of_injective [Finite β] (f : α → β) (hf : Function.Injective f) :
     Nat.card α ≤ Nat.card β := by
   haveI := Fintype.ofFinite β
   haveI := Fintype.ofInjective f hf
   simpa only [Nat.card_eq_fintype_card, ge_iff_le] using Fintype.card_le_of_injective f hf
 #align finite.card_le_of_injective Finite.card_le_of_injective
 
-theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
+lemma card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
   card_le_of_injective _ f.injective
 #align finite.card_le_of_embedding Finite.card_le_of_embedding
 
-theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
+lemma card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
     Nat.card β ≤ Nat.card α := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofSurjective f hf
   simpa only [Nat.card_eq_fintype_card, ge_iff_le] using Fintype.card_le_of_surjective f hf
 #align finite.card_le_of_surjective Finite.card_le_of_surjective
 
-theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
+lemma card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
   haveI := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_eq_zero_iff]
 #align finite.card_eq_zero_iff Finite.card_eq_zero_iff
 
 /-- If `f` is injective, then `Nat.card α ≤ Nat.card β`. We must also assume
   `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
-theorem card_le_of_injective' {f : α → β} (hf : Function.Injective f)
+lemma card_le_of_injective' {f : α → β} (hf : Function.Injective f)
     (h : Nat.card β = 0 → Nat.card α = 0) : Nat.card α ≤ Nat.card β :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h zero_le') fun h =>
     @card_le_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
@@ -135,14 +135,14 @@ theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card 
 
 /-- If `f` is surjective, then `Nat.card β ≤ Nat.card α`. We must also assume
   `Nat.card α = 0 → Nat.card β = 0` since `Nat.card` is defined to be `0` for infinite types. -/
-theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
+lemma card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
     (h : Nat.card α = 0 → Nat.card β = 0) : Nat.card β ≤ Nat.card α :=
   (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h zero_le') fun h =>
     @card_le_of_surjective α β (Nat.finite_of_card_ne_zero h) f hf
 #align finite.card_le_of_surjective' Finite.card_le_of_surjective'
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
-theorem card_eq_zero_of_surjective {f : α → β} (hf : Function.Surjective f) (h : Nat.card β = 0) :
+lemma card_eq_zero_of_surjective {f : α → β} (hf : Function.Surjective f) (h : Nat.card β = 0) :
     Nat.card α = 0 := by
   cases finite_or_infinite β
   · haveI := card_eq_zero_iff.mp h
@@ -153,36 +153,36 @@ theorem card_eq_zero_of_surjective {f : α → β} (hf : Function.Surjective f) 
 #align finite.card_eq_zero_of_surjective Finite.card_eq_zero_of_surjective
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
-theorem card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.Injective f)
+lemma card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.Injective f)
     (h : Nat.card α = 0) : Nat.card β = 0 :=
   card_eq_zero_of_surjective (Function.invFun_surjective hf) h
 #align finite.card_eq_zero_of_injective Finite.card_eq_zero_of_injective
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
-theorem card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
+lemma card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
   card_eq_zero_of_injective f.2 h
 #align finite.card_eq_zero_of_embedding Finite.card_eq_zero_of_embedding
 
-theorem card_sum [Finite α] [Finite β] : Nat.card (Sum α β) = Nat.card α + Nat.card β := by
+lemma card_sum [Finite α] [Finite β] : Nat.card (Sum α β) = Nat.card α + Nat.card β := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   simp only [Nat.card_eq_fintype_card, Fintype.card_sum]
 #align finite.card_sum Finite.card_sum
 
-theorem card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
+lemma card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
   card_le_of_surjective _ Set.surjective_onto_image
 #align finite.card_image_le Finite.card_image_le
 
-theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ Nat.card α :=
+lemma card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ Nat.card α :=
   card_le_of_surjective _ Set.surjective_onto_range
 #align finite.card_range_le Finite.card_range_le
 
-theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
+lemma card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, ge_iff_le] using Fintype.card_subtype_le p
 #align finite.card_subtype_le Finite.card_subtype_le
 
-theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
+lemma card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
     Nat.card { x // p x } < Nat.card α := by
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx

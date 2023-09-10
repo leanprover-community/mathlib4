@@ -41,7 +41,7 @@ class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α →o α}, Continuous f → Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
 
-theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
+lemma LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
     (hf : Continuous' f) : Fix.fix f = f (Fix.fix f) :=
   LawfulFix.fix_eq (hf.to_bundled _)
 #align lawful_fix.fix_eq' LawfulFix.fix_eq'
@@ -54,7 +54,7 @@ namespace Fix
 
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
-theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
+lemma approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   induction i with
   | zero => dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
   | succ _ i_ih => intro; apply f.monotone; apply i_ih
@@ -117,13 +117,13 @@ def approxChain : Chain ((a : _) → Part <| β a) :=
   ⟨approx f, approx_mono f⟩
 #align part.fix.approx_chain Part.Fix.approxChain
 
-theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
+lemma le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
   simp only [(· ∈ ·), forall_exists_index]
   rintro i rfl
   apply approx_mono'
 #align part.fix.le_f_of_mem_approx Part.Fix.le_f_of_mem_approx
 
-theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
+lemma approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
   Stream'.mem_of_nth_eq rfl
 #align part.fix.approx_mem_approx_chain Part.Fix.approx_mem_approxChain
 
@@ -143,7 +143,7 @@ open Nat
 
 open Nat.Upto OmegaCompletePartialOrder
 
-theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
+lemma fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
   apply le_antisymm
   · intro x
     cases' exists_fix_le_approx f x with i hx
@@ -160,7 +160,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     apply approx_le_fix f
 #align part.fix_eq_ωSup Part.fix_eq_ωSup
 
-theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
+lemma fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
   simp only [Fix.approxChain, OrderHom.coe_mk]
@@ -172,7 +172,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
 
 variable {f} (hc : Continuous f)
 
-theorem fix_eq : Part.fix f = f (Part.fix f) := by
+lemma fix_eq : Part.fix f = f (Part.fix f) := by
   rw [fix_eq_ωSup f, hc]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
@@ -245,14 +245,14 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
-theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
+lemma continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
   ext x y
   dsimp [curry, ωSup]
   rw [map_comp, map_comp]
   rfl
 #align pi.continuous_curry Pi.continuous_curry
 
-theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
+lemma continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
   ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
@@ -275,7 +275,7 @@ variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) �
 
 variable (hc : Continuous f)
 
-theorem uncurry_curry_continuous :
+lemma uncurry_curry_continuous :
     Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
   continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
 #align pi.uncurry_curry_continuous Pi.uncurry_curry_continuous

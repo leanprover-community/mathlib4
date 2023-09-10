@@ -87,7 +87,7 @@ instance categoryOfDifferentialObjects : Category (DifferentialObject S C) where
 
 -- Porting note: added
 @[ext]
-theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
+lemma ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
   Hom.ext _ _ w
 
 @[simp]
@@ -95,13 +95,13 @@ theorem id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj :=
 #align category_theory.differential_object.id_f CategoryTheory.DifferentialObject.id_f
 
 @[simp]
-theorem comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.differential_object.comp_f CategoryTheory.DifferentialObject.comp_f
 
 @[simp]
-theorem eqToHom_f {X Y : DifferentialObject S C} (h : X = Y) :
+lemma eqToHom_f {X Y : DifferentialObject S C} (h : X = Y) :
     Hom.f (eqToHom h) = eqToHom (congr_arg _ h) := by
   subst h
   rw [eqToHom_refl, eqToHom_refl]
@@ -146,12 +146,12 @@ theorem isoApp_refl (X : DifferentialObject S C) : isoApp (Iso.refl X) = Iso.ref
 #align category_theory.differential_object.iso_app_refl CategoryTheory.DifferentialObject.isoApp_refl
 
 @[simp]
-theorem isoApp_symm {X Y : DifferentialObject S C} (f : X ≅ Y) : isoApp f.symm = (isoApp f).symm :=
+lemma isoApp_symm {X Y : DifferentialObject S C} (f : X ≅ Y) : isoApp f.symm = (isoApp f).symm :=
   rfl
 #align category_theory.differential_object.iso_app_symm CategoryTheory.DifferentialObject.isoApp_symm
 
 @[simp]
-theorem isoApp_trans {X Y Z : DifferentialObject S C} (f : X ≅ Y) (g : Y ≅ Z) :
+lemma isoApp_trans {X Y Z : DifferentialObject S C} (f : X ≅ Y) (g : Y ≅ Z) :
     isoApp (f ≪≫ g) = isoApp f ≪≫ isoApp g := rfl
 #align category_theory.differential_object.iso_app_trans CategoryTheory.DifferentialObject.isoApp_trans
 

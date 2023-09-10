@@ -27,7 +27,7 @@ instance : Group (r ≃r r) where
   mul_left_inv f := ext f.symm_apply_apply
 
 @[simp]
-theorem coe_one : ((1 : r ≃r r) : α → α) = id :=
+lemma coe_one : ((1 : r ≃r r) : α → α) = id :=
   rfl
 #align rel_iso.coe_one RelIso.coe_one
 

@@ -108,14 +108,14 @@ theorem exists_seq_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p 
   use S
   simpa only [forall_range_iff] using hS
 
-theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
+lemma HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
     HasCountableSeparatingOn α p₂ t₂ where
   exists_countable_separating :=
     let ⟨S, hSc, hSp, hSt⟩ := h.1
     ⟨S, hSc, fun s hs ↦ hp s (hSp s hs), fun x hx y hy ↦ hSt x (ht hx) y (ht hy)⟩
 
-theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {t : Set α}
+lemma HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {t : Set α}
     {q : Set t → Prop} [h : HasCountableSeparatingOn t q univ]
     (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
@@ -166,7 +166,7 @@ theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Se
   · exact hne.imp fun a ha ↦ ⟨ha, mem_of_superset htl (empty_subset _)⟩
   · exact ⟨x, hts rfl, htl⟩
 
-theorem exists_singleton_mem_of_mem_of_forall_separating [Nonempty α] (p : Set α → Prop)
+lemma exists_singleton_mem_of_mem_of_forall_separating [Nonempty α] (p : Set α → Prop)
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) :
     ∃ a, {a} ∈ l := by
   rcases s.eq_empty_or_nonempty with rfl | hne
@@ -180,7 +180,7 @@ theorem exists_subsingleton_mem_of_forall_separating (p : Set α → Prop)
   let ⟨t, _, hts, htl⟩ := exists_subset_subsingleton_mem_of_forall_separating p univ_mem hl
   ⟨t, hts, htl⟩
 
-theorem exists_singleton_mem_of_forall_separating [Nonempty α] (p : Set α → Prop)
+lemma exists_singleton_mem_of_forall_separating [Nonempty α] (p : Set α → Prop)
     [HasCountableSeparatingOn α p univ] (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) :
     ∃ x : α, {x} ∈ l :=
   exists_singleton_mem_of_mem_of_forall_separating p univ_mem hl
@@ -199,13 +199,13 @@ theorem exists_mem_eventuallyEq_const_of_eventually_mem_of_forall_separating (p 
     ∃ a ∈ s, f =ᶠ[l] const α a :=
   exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating p (l := map f l) hs hne h
 
-theorem exists_eventuallyEq_const_of_eventually_mem_of_forall_separating [Nonempty β]
+lemma exists_eventuallyEq_const_of_eventually_mem_of_forall_separating [Nonempty β]
     (p : Set β → Prop) {s : Set β} [HasCountableSeparatingOn β p s] (hs : ∀ᶠ x in l, f x ∈ s)
     (h : ∀ U, p U → (∀ᶠ x in l, f x ∈ U) ∨ (∀ᶠ x in l, f x ∉ U)) :
     ∃ a, f =ᶠ[l] const α a :=
   exists_singleton_mem_of_mem_of_forall_separating (l := map f l) p hs h
 
-theorem exists_eventuallyEq_const_of_forall_separating [Nonempty β] (p : Set β → Prop)
+lemma exists_eventuallyEq_const_of_forall_separating [Nonempty β] (p : Set β → Prop)
     [HasCountableSeparatingOn β p univ]
     (h : ∀ U, p U → (∀ᶠ x in l, f x ∈ U) ∨ (∀ᶠ x in l, f x ∉ U)) :
     ∃ a, f =ᶠ[l] const α a :=

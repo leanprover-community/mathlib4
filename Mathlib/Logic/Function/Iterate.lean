@@ -50,7 +50,7 @@ open Function (Commute)
 variable (f : α → α)
 
 @[simp]
-theorem iterate_zero : f^[0] = id :=
+lemma iterate_zero : f^[0] = id :=
   rfl
 #align function.iterate_zero Function.iterate_zero
 
@@ -83,7 +83,7 @@ theorem iterate_add_apply (m n : ℕ) (x : α) : f^[m + n] x = f^[m] (f^[n] x) :
 #align function.iterate_add_apply Function.iterate_add_apply
 
 @[simp]
-theorem iterate_one : f^[1] = f :=
+lemma iterate_one : f^[1] = f :=
   funext fun _ ↦ rfl
 #align function.iterate_one Function.iterate_one
 
@@ -94,7 +94,7 @@ theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
 
 variable {f}
 
-theorem iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x :=
+lemma iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x :=
   Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ_apply, h, ihn]
 #align function.iterate_fixed Function.iterate_fixed
 
@@ -112,12 +112,12 @@ theorem Bijective.iterate (Hbij : Bijective f) (n : ℕ) : Bijective f^[n] :=
 
 namespace Semiconj
 
-theorem iterate_right {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) (n : ℕ) :
+lemma iterate_right {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) (n : ℕ) :
     Semiconj f ga^[n] gb^[n] :=
   Nat.recOn n id_right fun _ ihn ↦ ihn.comp_right h
 #align function.semiconj.iterate_right Function.Semiconj.iterate_right
 
-theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| n + 1)) (n k : ℕ) :
+lemma iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| n + 1)) (n k : ℕ) :
     Semiconj f^[n] (g k) (g <| n + k) := by
   induction n generalizing k with
   | zero =>
@@ -176,7 +176,7 @@ theorem iterate_iterate_self (m n : ℕ) : Commute f^[m] f^[n] :=
 
 end Commute
 
-theorem Semiconj₂.iterate {f : α → α} {op : α → α → α} (hf : Semiconj₂ f op op) (n : ℕ) :
+lemma Semiconj₂.iterate {f : α → α} {op : α → α → α} (hf : Semiconj₂ f op op) (n : ℕ) :
     Semiconj₂ f^[n] op op :=
   Nat.recOn n (Semiconj₂.id_left op) fun _ ihn ↦ ihn.comp hf
 #align function.semiconj₂.iterate Function.Semiconj₂.iterate
@@ -192,11 +192,11 @@ theorem iterate_succ_apply' (n : ℕ) (x : α) : f^[n.succ] x = f (f^[n] x) := b
   rfl
 #align function.iterate_succ_apply' Function.iterate_succ_apply'
 
-theorem iterate_pred_comp_of_pos {n : ℕ} (hn : 0 < n) : f^[n.pred] ∘ f = f^[n] := by
+lemma iterate_pred_comp_of_pos {n : ℕ} (hn : 0 < n) : f^[n.pred] ∘ f = f^[n] := by
   rw [← iterate_succ, Nat.succ_pred_eq_of_pos hn]
 #align function.iterate_pred_comp_of_pos Function.iterate_pred_comp_of_pos
 
-theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[n] := by
+lemma comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[n] := by
   rw [← iterate_succ', Nat.succ_pred_eq_of_pos hn]
 #align function.comp_iterate_pred_of_pos Function.comp_iterate_pred_of_pos
 
@@ -215,14 +215,14 @@ theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → 
 
 variable {f} {m n : ℕ} {a : α}
 
-theorem LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :
+lemma LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :
     LeftInverse g^[n] f^[n] :=
   Nat.recOn n (fun _ ↦ rfl) fun n ihn ↦ by
     rw [iterate_succ', iterate_succ]
     exact ihn.comp hg
 #align function.left_inverse.iterate Function.LeftInverse.iterate
 
-theorem RightInverse.iterate {g : α → α} (hg : RightInverse g f) (n : ℕ) :
+lemma RightInverse.iterate {g : α → α} (hg : RightInverse g f) (n : ℕ) :
     RightInverse g^[n] f^[n] :=
   LeftInverse.iterate hg n
 #align function.right_inverse.iterate Function.RightInverse.iterate
@@ -248,7 +248,7 @@ lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a =
   { exact iterate_cancel_of_add hf (by rwa [Nat.sub_add_cancel h]) }
 #align function.iterate_cancel Function.iterate_cancel
 
-theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
+lemma involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
   funext_iff.symm
 #align function.involutive_iff_iter_2_eq_id Function.involutive_iff_iter_2_eq_id
 

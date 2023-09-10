@@ -34,7 +34,7 @@ open NumberField Units
 
 section Rat
 
-theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
+lemma Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
@@ -48,7 +48,7 @@ section IsUnit
 
 variable {K}
 
-theorem isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
+lemma isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
@@ -60,7 +60,7 @@ namespace NumberField.Units
 
 section coe
 
-theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
+lemma coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
   fun _ _ h => by rwa [SetLike.coe_eq_coe, Units.eq_iff] at h
 
 variable {K}
@@ -74,9 +74,9 @@ theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
   exact map_zpow _ x n
 
-theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
+lemma coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
 
-theorem coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
+lemma coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
 
 theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
   Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
@@ -90,7 +90,7 @@ section torsion
 /-- The torsion subgroup of the group of units. -/
 def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
 
-theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
+lemma mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, h_pos, h_eq⟩ φ => ?_, fun h => ?_⟩
@@ -124,7 +124,7 @@ def torsion_order [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype
 
 /-- If `k` does not divide `torsion_order` then there are no nontrivial roots of unity of
   order dividing `k`. -/
-theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsion_order K)) :
+lemma rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsion_order K)) :
     ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
   refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
@@ -138,7 +138,7 @@ theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (tors
 
 /-- The group of roots of unity of order dividing `torsion_order` is equal to the torsion
 group. -/
-theorem rootsOfUnity_eq_torsion [NumberField K] :
+lemma rootsOfUnity_eq_torsion [NumberField K] :
     rootsOfUnity (torsion_order K) (𝓞 K) = torsion K := by
   ext ζ
   rw [torsion, mem_rootsOfUnity]

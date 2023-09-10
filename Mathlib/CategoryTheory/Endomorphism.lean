@@ -58,7 +58,7 @@ def asHom (f : End X) : X ⟶ X := f
 #align category_theory.End.as_hom CategoryTheory.End.asHom
 
 @[simp] -- porting note: todo: use `of`/`asHom`?
-theorem one_def : (1 : End X) = 𝟙 X := rfl
+lemma one_def : (1 : End X) = 𝟙 X := rfl
 #align category_theory.End.one_def CategoryTheory.End.one_def
 
 @[simp] -- porting note: todo: use `of`/`asHom`?
@@ -92,11 +92,11 @@ instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) 
   mul_smul _ _ _ := Category.assoc _ _ _
 #align category_theory.End.mul_action_left CategoryTheory.End.mulActionLeft
 
-theorem smul_right {X Y : C} {r : End Y} {f : X ⟶ Y} : r • f = f ≫ r :=
+lemma smul_right {X Y : C} {r : End Y} {f : X ⟶ Y} : r • f = f ≫ r :=
   rfl
 #align category_theory.End.smul_right CategoryTheory.End.smul_right
 
-theorem smul_left {X : Cᵒᵖ} {Y : C} {r : End X} {f : unop X ⟶ Y} : r • f = r.unop ≫ f :=
+lemma smul_left {X : Cᵒᵖ} {Y : C} {r : End X} {f : unop X ⟶ Y} : r • f = r.unop ≫ f :=
   rfl
 #align category_theory.End.smul_left CategoryTheory.End.smul_left
 
@@ -110,7 +110,7 @@ instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
 
 end End
 
-theorem isUnit_iff_isIso {C : Type u} [Category.{v} C] {X : C} (f : End X) :
+lemma isUnit_iff_isIso {C : Type u} [Category.{v} C] {X : C} (f : End X) :
     IsUnit (f : End X) ↔ IsIso f :=
   ⟨fun h => { out := ⟨h.unit.inv, ⟨h.unit.inv_val, h.unit.val_inv⟩⟩ }, fun h =>
     ⟨⟨f, inv f, by simp, by simp⟩, rfl⟩⟩

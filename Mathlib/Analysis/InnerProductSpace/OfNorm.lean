@@ -70,7 +70,7 @@ class InnerProductSpaceable : Prop where
 
 variable (𝕜) {E}
 
-theorem InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
+lemma InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
     InnerProductSpaceable E :=
   ⟨parallelogram_law_with_norm 𝕜⟩
 #align inner_product_space.to_inner_product_spaceable InnerProductSpace.toInnerProductSpaceable
@@ -102,7 +102,7 @@ private def innerProp' (r : 𝕜) : Prop :=
 
 variable {E}
 
-theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
+lemma innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
   intro x y
   simp only [inner_, neg_mul_eq_neg_mul, one_mul, Int.cast_one, one_smul, RingHom.map_one, map_neg,
     Int.cast_neg, neg_smul, neg_one_mul]
@@ -117,7 +117,7 @@ theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
   ring
 #align inner_product_spaceable.inner_prop_neg_one InnerProductSpaceable.innerProp_neg_one
 
-theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
+lemma _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
   have := Continuous.const_smul (M := 𝕜) hf I
@@ -285,7 +285,7 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
   · simp only [Function.comp_apply, IsROrC.ofReal_ratCast, rat_prop _ _]
 
-private theorem I_prop : innerProp' E (I : 𝕜) := by
+private lemma I_prop : innerProp' E (I : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0
   · rw [hI, ← Nat.cast_zero]; exact nat_prop _
   intro x y
@@ -334,7 +334,7 @@ variable [InnerProductSpaceable E]
 parallelogram identity can be given a compatible inner product. Do
 `casesI nonempty_innerProductSpace 𝕜 E` to locally upgrade `InnerProductSpaceable E` to
 `InnerProductSpace 𝕜 E`. -/
-theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
+lemma nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
   ⟨{  inner := inner_ 𝕜
       norm_sq_eq_inner := inner_.norm_sq
       conj_symm := inner_.conj_symm

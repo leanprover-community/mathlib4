@@ -67,7 +67,7 @@ namespace Nat
 
 #align nat.succ_add_eq_succ_add Nat.succ_add_eq_succ_add
 
-theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
+lemma eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   | 0, m => fun _ => Or.inl rfl
   | succ n, m => by
     rw [succ_mul]; intro h
@@ -104,7 +104,7 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 
 #align nat.le_total Nat.le_total
 
-protected theorem lt_of_le_and_ne {m n : ℕ} (h1 : m ≤ n) : m ≠ n → m < n :=
+protected lemma lt_of_le_and_ne {m n : ℕ} (h1 : m ≤ n) : m ≠ n → m < n :=
   Or.resolve_right (Or.symm (Nat.eq_or_lt_of_le h1))
 #align nat.lt_of_le_and_ne Nat.lt_of_le_and_ne
 
@@ -237,12 +237,12 @@ protected theorem bit1_succ_eq (n : ℕ) : bit1 (succ n) = succ (succ (bit1 n)) 
   Eq.trans (Nat.bit1_eq_succ_bit0 (succ n)) (congr_arg succ (Nat.bit0_succ_eq n))
 #align nat.bit1_succ_eq Nat.bit1_succ_eq
 
-protected theorem bit1_ne_one : ∀ {n : ℕ}, n ≠ 0 → bit1 n ≠ 1
+protected lemma bit1_ne_one : ∀ {n : ℕ}, n ≠ 0 → bit1 n ≠ 1
   | 0, h, _h1 => absurd rfl h
   | _n + 1, _h, h1 => Nat.noConfusion h1 fun h2 => absurd h2 (succ_ne_zero _)
 #align nat.bit1_ne_one Nat.bit1_ne_one
 
-protected theorem bit0_ne_one : ∀ n : ℕ, bit0 n ≠ 1
+protected lemma bit0_ne_one : ∀ n : ℕ, bit0 n ≠ 1
   | 0, h => absurd h (Ne.symm Nat.one_ne_zero)
   | n + 1, h =>
     have h1 : succ (succ (n + n)) = 1 := succ_add n n ▸ h
@@ -251,7 +251,7 @@ protected theorem bit0_ne_one : ∀ n : ℕ, bit0 n ≠ 1
 
 #align nat.add_self_ne_one Nat.add_self_ne_one
 
-protected theorem bit1_ne_bit0 : ∀ n m : ℕ, bit1 n ≠ bit0 m
+protected lemma bit1_ne_bit0 : ∀ n m : ℕ, bit1 n ≠ bit0 m
   | 0, m, h => absurd h (Ne.symm (Nat.add_self_ne_one m))
   | n + 1, 0, h =>
     have h1 : succ (bit0 (succ n)) = 0 := h
@@ -263,11 +263,11 @@ protected theorem bit1_ne_bit0 : ∀ n m : ℕ, bit1 n ≠ bit0 m
     absurd h2 (Nat.bit1_ne_bit0 n m)
 #align nat.bit1_ne_bit0 Nat.bit1_ne_bit0
 
-protected theorem bit0_ne_bit1 : ∀ n m : ℕ, bit0 n ≠ bit1 m := fun n m : Nat =>
+protected lemma bit0_ne_bit1 : ∀ n m : ℕ, bit0 n ≠ bit1 m := fun n m : Nat =>
   Ne.symm (Nat.bit1_ne_bit0 m n)
 #align nat.bit0_ne_bit1 Nat.bit0_ne_bit1
 
-protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
+protected lemma bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | 0, 0, _h => rfl
   | 0, m + 1, h => by contradiction
   | n + 1, 0, h => by contradiction
@@ -280,21 +280,21 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
     rw [this]
 #align nat.bit0_inj Nat.bit0_inj
 
-protected theorem bit1_inj : ∀ {n m : ℕ}, bit1 n = bit1 m → n = m := @fun n m h =>
+protected lemma bit1_inj : ∀ {n m : ℕ}, bit1 n = bit1 m → n = m := @fun n m h =>
   have : succ (bit0 n) = succ (bit0 m) := by simp [Nat.bit1_eq_succ_bit0] at h; rw [h]
   have : bit0 n = bit0 m := by injection this
   Nat.bit0_inj this
 #align nat.bit1_inj Nat.bit1_inj
 
-protected theorem bit0_ne {n m : ℕ} : n ≠ m → bit0 n ≠ bit0 m := fun h₁ h₂ =>
+protected lemma bit0_ne {n m : ℕ} : n ≠ m → bit0 n ≠ bit0 m := fun h₁ h₂ =>
   absurd (Nat.bit0_inj h₂) h₁
 #align nat.bit0_ne Nat.bit0_ne
 
-protected theorem bit1_ne {n m : ℕ} : n ≠ m → bit1 n ≠ bit1 m := fun h₁ h₂ =>
+protected lemma bit1_ne {n m : ℕ} : n ≠ m → bit1 n ≠ bit1 m := fun h₁ h₂ =>
   absurd (Nat.bit1_inj h₂) h₁
 #align nat.bit1_ne Nat.bit1_ne
 
-protected theorem zero_ne_bit0 {n : ℕ} : n ≠ 0 → 0 ≠ bit0 n := fun h => Ne.symm (Nat.bit0_ne_zero h)
+protected lemma zero_ne_bit0 {n : ℕ} : n ≠ 0 → 0 ≠ bit0 n := fun h => Ne.symm (Nat.bit0_ne_zero h)
 #align nat.zero_ne_bit0 Nat.zero_ne_bit0
 
 protected theorem zero_ne_bit1 (n : ℕ) : 0 ≠ bit1 n :=
@@ -305,10 +305,10 @@ protected theorem one_ne_bit0 (n : ℕ) : 1 ≠ bit0 n :=
   Ne.symm (Nat.bit0_ne_one n)
 #align nat.one_ne_bit0 Nat.one_ne_bit0
 
-protected theorem one_ne_bit1 {n : ℕ} : n ≠ 0 → 1 ≠ bit1 n := fun h => Ne.symm (Nat.bit1_ne_one h)
+protected lemma one_ne_bit1 {n : ℕ} : n ≠ 0 → 1 ≠ bit1 n := fun h => Ne.symm (Nat.bit1_ne_one h)
 #align nat.one_ne_bit1 Nat.one_ne_bit1
 
-protected theorem one_lt_bit1 : ∀ {n : Nat}, n ≠ 0 → 1 < bit1 n
+protected lemma one_lt_bit1 : ∀ {n : Nat}, n ≠ 0 → 1 < bit1 n
   | 0, h => by contradiction
   | succ n, _h => by
     rw [Nat.bit1_succ_eq]
@@ -316,7 +316,7 @@ protected theorem one_lt_bit1 : ∀ {n : Nat}, n ≠ 0 → 1 < bit1 n
     apply zero_lt_succ
 #align nat.one_lt_bit1 Nat.one_lt_bit1
 
-protected theorem one_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 1 < bit0 n
+protected lemma one_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 1 < bit0 n
   | 0, h => by contradiction
   | succ n, _h => by
     rw [Nat.bit0_succ_eq]
@@ -324,19 +324,19 @@ protected theorem one_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 1 < bit0 n
     apply zero_lt_succ
 #align nat.one_lt_bit0 Nat.one_lt_bit0
 
-protected theorem bit0_lt {n m : Nat} (h : n < m) : bit0 n < bit0 m :=
+protected lemma bit0_lt {n m : Nat} (h : n < m) : bit0 n < bit0 m :=
   Nat.add_lt_add h h
 #align nat.bit0_lt Nat.bit0_lt
 
-protected theorem bit1_lt {n m : Nat} (h : n < m) : bit1 n < bit1 m :=
+protected lemma bit1_lt {n m : Nat} (h : n < m) : bit1 n < bit1 m :=
   succ_lt_succ (Nat.add_lt_add h h)
 #align nat.bit1_lt Nat.bit1_lt
 
-protected theorem bit0_lt_bit1 {n m : Nat} (h : n ≤ m) : bit0 n < bit1 m :=
+protected lemma bit0_lt_bit1 {n m : Nat} (h : n ≤ m) : bit0 n < bit1 m :=
   lt_succ_of_le (Nat.add_le_add h h)
 #align nat.bit0_lt_bit1 Nat.bit0_lt_bit1
 
-protected theorem bit1_lt_bit0 : ∀ {n m : Nat}, n < m → bit1 n < bit0 m
+protected lemma bit1_lt_bit0 : ∀ {n m : Nat}, n < m → bit1 n < bit0 m
   | n, 0, h => absurd h n.not_lt_zero
   | n, succ m, h =>
     have : n ≤ m := le_of_lt_succ h
@@ -349,7 +349,7 @@ protected theorem one_le_bit1 (n : ℕ) : 1 ≤ bit1 n :=
   show 1 ≤ succ (bit0 n) from succ_le_succ (bit0 n).zero_le
 #align nat.one_le_bit1 Nat.one_le_bit1
 
-protected theorem one_le_bit0 : ∀ n : ℕ, n ≠ 0 → 1 ≤ bit0 n
+protected lemma one_le_bit0 : ∀ n : ℕ, n ≠ 0 → 1 ≤ bit0 n
   | 0, h => absurd rfl h
   | n + 1, _h =>
     suffices 1 ≤ succ (succ (bit0 n)) from Eq.symm (Nat.bit0_succ_eq n) ▸ this
@@ -376,7 +376,7 @@ def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ
   · exact H2 _ h
 #align nat.discriminate Nat.discriminate
 
-theorem one_eq_succ_zero : 1 = succ 0 :=
+lemma one_eq_succ_zero : 1 = succ 0 :=
   rfl
 #align nat.one_succ_zero Nat.one_eq_succ_zero
 
@@ -414,7 +414,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.sub_self_add Nat.sub_self_add
 
-protected theorem le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔ x + k ≤ y := by
+protected lemma le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔ x + k ≤ y := by
   rw [← Nat.add_sub_cancel x k, Nat.sub_le_sub_iff_right h, Nat.add_sub_cancel]
 #align nat.le_sub_iff_right Nat.le_sub_iff_right
 
@@ -505,12 +505,12 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
 
 -- porting note: added `elab_as_elim`
 @[elab_as_elim]
-protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
+protected lemma strong_induction_on {p : Nat → Prop} (n : Nat)
     (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
   Nat.strongRecOn n h
 #align nat.strong_induction_on Nat.strong_induction_on
 
-protected theorem case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 0)
+protected lemma case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 0)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
   Nat.strong_induction_on a fun n =>
     match n with
@@ -621,7 +621,7 @@ theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
 
 #align nat.div_div_eq_div_mul Nat.div_div_eq_div_mul
 
-protected theorem mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k) = n / k := by
+protected lemma mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k) = n / k := by
   rw [← Nat.div_div_eq_div_mul, Nat.mul_div_cancel_left _ H]
 #align nat.mul_div_mul Nat.mul_div_mul
 
@@ -726,15 +726,15 @@ protected def find : ℕ :=
   (Nat.findX H).1
 #align nat.find Nat.find
 
-protected theorem find_spec : p (Nat.find H) :=
+protected lemma find_spec : p (Nat.find H) :=
   (Nat.findX H).2.left
 #align nat.find_spec Nat.find_spec
 
-protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
+protected lemma find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
 #align nat.find_min Nat.find_min
 
-protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
+protected lemma find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
   le_of_not_lt fun l => Nat.find_min H l h
 #align nat.find_min' Nat.find_min'
 

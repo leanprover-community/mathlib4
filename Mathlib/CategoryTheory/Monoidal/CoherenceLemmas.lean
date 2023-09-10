@@ -65,16 +65,16 @@ theorem triangle_assoc_comp_right_inv (X Y : C) :
   coherence
 #align category_theory.monoidal_category.triangle_assoc_comp_right_inv CategoryTheory.MonoidalCategory.triangle_assoc_comp_right_inv
 
-theorem unitors_equal : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
+lemma unitors_equal : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   coherence
 #align category_theory.monoidal_category.unitors_equal CategoryTheory.MonoidalCategory.unitors_equal
 
-theorem unitors_inv_equal : (λ_ (𝟙_ C)).inv = (ρ_ (𝟙_ C)).inv := by
+lemma unitors_inv_equal : (λ_ (𝟙_ C)).inv = (ρ_ (𝟙_ C)).inv := by
   coherence
 #align category_theory.monoidal_category.unitors_inv_equal CategoryTheory.MonoidalCategory.unitors_inv_equal
 
 @[reassoc]
-theorem pentagon_hom_inv {W X Y Z : C} :
+lemma pentagon_hom_inv {W X Y Z : C} :
     (α_ W X (Y ⊗ Z)).hom ≫ (𝟙 W ⊗ (α_ X Y Z).inv) =
       (α_ (W ⊗ X) Y Z).inv ≫ ((α_ W X Y).hom ⊗ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom := by
   coherence

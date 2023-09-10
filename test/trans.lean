@@ -73,7 +73,7 @@ example (a : α) (c : γ) : ∀ b : β, HEq a b → HEq b c → HEq a c := by
 
 def MyLE (n m : Nat) := ∃ k, n + k = m
 
-@[trans] theorem MyLE.trans {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
+@[trans] lemma MyLE.trans {n m k : Nat} (h1 : MyLE n m) (h2 : MyLE m k) : MyLE n k := by
   cases h1
   cases h2
   subst_vars

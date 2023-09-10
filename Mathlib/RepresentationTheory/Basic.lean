@@ -82,7 +82,7 @@ noncomputable def asAlgebraHom : MonoidAlgebra k G →ₐ[k] Module.End k V :=
   (lift k G _) ρ
 #align representation.as_algebra_hom Representation.asAlgebraHom
 
-theorem asAlgebraHom_def : asAlgebraHom ρ = (lift k G _) ρ :=
+lemma asAlgebraHom_def : asAlgebraHom ρ = (lift k G _) ρ :=
   rfl
 #align representation.as_algebra_hom_def Representation.asAlgebraHom_def
 
@@ -287,7 +287,7 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 variable (ρ : Representation k G V)
 
 @[simp]
-theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
+lemma ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
     ofMulAction k G H g f h = f (g⁻¹ • h) := by
   conv_lhs => rw [← smul_inv_smul g h]
   let h' := g⁻¹ • h

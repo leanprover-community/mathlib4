@@ -102,13 +102,13 @@ variable [Algebra R S] [Algebra S A] [Algebra S B]
 
 variable {R S A}
 
-theorem of_algebraMap_eq [Algebra R A]
+lemma of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
   ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
 #align is_scalar_tower.of_algebra_map_eq IsScalarTower.of_algebraMap_eq
 
 /-- See note [partially-applied ext lemmas]. -/
-theorem of_algebraMap_eq' [Algebra R A]
+lemma of_algebraMap_eq' [Algebra R A]
     (h : algebraMap R A = (algebraMap S A).comp (algebraMap R S)) : IsScalarTower R S A :=
   of_algebraMap_eq <| RingHom.ext_iff.1 h
 #align is_scalar_tower.of_algebra_map_eq' IsScalarTower.of_algebraMap_eq'
@@ -119,7 +119,7 @@ variable [Algebra R A] [Algebra R B]
 
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
-theorem algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) :=
+lemma algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) :=
   RingHom.ext fun x => by
     simp_rw [RingHom.comp_apply, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
 #align is_scalar_tower.algebra_map_eq IsScalarTower.algebraMap_eq
@@ -129,7 +129,7 @@ theorem algebraMap_apply (x : R) : algebraMap R A x = algebraMap S A (algebraMap
 #align is_scalar_tower.algebra_map_apply IsScalarTower.algebraMap_apply
 
 @[ext]
-theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 h2 : Algebra S A)
+lemma Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 h2 : Algebra S A)
     (h : ∀ (r : S) (x : A), (by have I := h1; exact r • x) = r • x) : h1 = h2 :=
   Algebra.algebra_ext _ _ fun r => by
     simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
@@ -145,12 +145,12 @@ theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
 #align is_scalar_tower.to_alg_hom_apply IsScalarTower.toAlgHom_apply
 
 @[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+lemma coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
   RingHom.ext fun _ => rfl
 #align is_scalar_tower.coe_to_alg_hom IsScalarTower.coe_toAlgHom
 
 @[simp]
-theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
+lemma coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
 #align is_scalar_tower.coe_to_alg_hom' IsScalarTower.coe_toAlgHom'
 
 variable {R S A B}
@@ -221,7 +221,7 @@ theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+*
 theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
 #align alg_hom.coe_restrict_scalars' AlgHom.coe_restrictScalars'
 
-theorem restrictScalars_injective :
+lemma restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
   AlgHom.ext (AlgHom.congr_fun h : _)
 #align alg_hom.restrict_scalars_injective AlgHom.restrictScalars_injective
@@ -249,7 +249,7 @@ theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+*
 theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
 #align alg_equiv.coe_restrict_scalars' AlgEquiv.coe_restrictScalars'
 
-theorem restrictScalars_injective :
+lemma restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
   AlgEquiv.ext (AlgEquiv.congr_fun h : _)
 #align alg_equiv.restrict_scalars_injective AlgEquiv.restrictScalars_injective
@@ -297,7 +297,7 @@ variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 open IsScalarTower
 
-theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
+lemma smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
   span_induction hks (fun c hc => subset_span <| Set.mem_smul.2 ⟨c, x, hc, hx, rfl⟩)
     (by rw [zero_smul]; exact zero_mem _)
@@ -307,7 +307,7 @@ theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ s
 
 variable [SMulCommClass R S A]
 
-theorem smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
+lemma smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
     (hx : x ∈ span R t) : k • x ∈ span R (s • t) :=
   span_induction hx (fun x hx => smul_mem_span_smul_of_mem (hs.symm ▸ mem_top) hx)
     (by rw [smul_zero]; exact zero_mem _)
@@ -315,7 +315,7 @@ theorem smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S}
     fun c x hx => smul_comm c k x ▸ smul_mem _ _ hx
 #align submodule.smul_mem_span_smul Submodule.smul_mem_span_smul
 
-theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
+lemma smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
     (hx : x ∈ span R (s • t)) : k • x ∈ span R (s • t) :=
   span_induction hx
     (fun x hx => by
@@ -327,7 +327,7 @@ theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S
     fun c x hx => smul_comm c k x ▸ smul_mem _ _ hx
 #align submodule.smul_mem_span_smul' Submodule.smul_mem_span_smul'
 
-theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
+lemma span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
     span R (s • t) = (span S t).restrictScalars R :=
   le_antisymm
     (span_le.2 fun _x hx =>
@@ -352,14 +352,14 @@ theorem span_algebraMap_image (a : Set R) :
   (Submodule.span_image <| Algebra.linearMap R S).trans rfl
 #align submodule.span_algebra_map_image Submodule.span_algebraMap_image
 
-theorem span_algebraMap_image_of_tower {S T : Type*} [CommSemiring S] [Semiring T] [Module R S]
+lemma span_algebraMap_image_of_tower {S T : Type*} [CommSemiring S] [Semiring T] [Module R S]
     [IsScalarTower R S S] [Algebra R T] [Algebra S T] [IsScalarTower R S T] (a : Set S) :
     Submodule.span R (algebraMap S T '' a) =
       (Submodule.span R a).map ((Algebra.linearMap S T).restrictScalars R) :=
   (Submodule.span_image <| (Algebra.linearMap S T).restrictScalars R).trans rfl
 #align submodule.span_algebra_map_image_of_tower Submodule.span_algebraMap_image_of_tower
 
-theorem map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T] [Algebra R S]
+lemma map_mem_span_algebraMap_image {S T : Type*} [CommSemiring S] [Semiring T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] (x : S) (a : Set S)
     (hx : x ∈ Submodule.span R a) : algebraMap S T x ∈ Submodule.span R (algebraMap S T '' a) := by
   rw [span_algebraMap_image_of_tower, mem_map]
@@ -380,7 +380,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
-theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
+lemma lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
     Function.Injective (lsmul R B M x) :=
   smul_right_injective M hx
 #align algebra.lsmul_injective Algebra.lsmul_injective

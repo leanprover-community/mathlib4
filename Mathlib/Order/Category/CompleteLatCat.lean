@@ -91,7 +91,7 @@ def dualEquiv : CompleteLatCat ≌ CompleteLatCat where
 
 end CompleteLatCat
 
-theorem completeLatCat_dual_comp_forget_to_bddLatCat :
+lemma completeLatCat_dual_comp_forget_to_bddLatCat :
     CompleteLatCat.dual ⋙ forget₂ CompleteLatCat BddLatCat =
     forget₂ CompleteLatCat BddLatCat ⋙ BddLatCat.dual :=
   rfl

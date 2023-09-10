@@ -53,31 +53,31 @@ def bipartiteBelow : Finset α := s.filter fun a ↦ r a b
 def bipartiteAbove : Finset β := t.filter (r a)
 #align finset.bipartite_above Finset.bipartiteAbove
 
-theorem bipartiteBelow_swap : t.bipartiteBelow (swap r) a = t.bipartiteAbove r a := rfl
+lemma bipartiteBelow_swap : t.bipartiteBelow (swap r) a = t.bipartiteAbove r a := rfl
 #align finset.bipartite_below_swap Finset.bipartiteBelow_swap
 
-theorem bipartiteAbove_swap : s.bipartiteAbove (swap r) b = s.bipartiteBelow r b := rfl
+lemma bipartiteAbove_swap : s.bipartiteAbove (swap r) b = s.bipartiteBelow r b := rfl
 #align finset.bipartite_above_swap Finset.bipartiteAbove_swap
 
 @[simp, norm_cast]
-theorem coe_bipartiteBelow : (s.bipartiteBelow r b : Set α) = { a ∈ s | r a b } := coe_filter _ _
+lemma coe_bipartiteBelow : (s.bipartiteBelow r b : Set α) = { a ∈ s | r a b } := coe_filter _ _
 #align finset.coe_bipartite_below Finset.coe_bipartiteBelow
 
 @[simp, norm_cast]
-theorem coe_bipartiteAbove : (t.bipartiteAbove r a : Set β) = { b ∈ t | r a b } := coe_filter _ _
+lemma coe_bipartiteAbove : (t.bipartiteAbove r a : Set β) = { b ∈ t | r a b } := coe_filter _ _
 #align finset.coe_bipartite_above Finset.coe_bipartiteAbove
 
 variable {s t a a' b b'}
 
 @[simp]
-theorem mem_bipartiteBelow {a : α} : a ∈ s.bipartiteBelow r b ↔ a ∈ s ∧ r a b := mem_filter
+lemma mem_bipartiteBelow {a : α} : a ∈ s.bipartiteBelow r b ↔ a ∈ s ∧ r a b := mem_filter
 #align finset.mem_bipartite_below Finset.mem_bipartiteBelow
 
 @[simp]
-theorem mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧ r a b := mem_filter
+lemma mem_bipartiteAbove {b : β} : b ∈ t.bipartiteAbove r a ↔ b ∈ t ∧ r a b := mem_filter
 #align finset.mem_bipartite_above Finset.mem_bipartiteAbove
 
-theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
+lemma sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
     (∑ a in s, (t.bipartiteAbove r a).card) = ∑ b in t, (s.bipartiteBelow r b).card := by
   simp_rw [card_eq_sum_ones, bipartiteAbove, bipartiteBelow, sum_filter]
   exact sum_comm
@@ -85,7 +85,7 @@ theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (
 
 /-- Double counting argument. Considering `r` as a bipartite graph, the LHS is a lower bound on the
 number of edges while the RHS is an upper bound. -/
-theorem card_mul_le_card_mul [∀ a b, Decidable (r a b)]
+lemma card_mul_le_card_mul [∀ a b, Decidable (r a b)]
     (hm : ∀ a ∈ s, m ≤ (t.bipartiteAbove r a).card)
     (hn : ∀ b ∈ t, (s.bipartiteBelow r b).card ≤ n) : s.card * m ≤ t.card * n :=
   calc
@@ -95,13 +95,13 @@ theorem card_mul_le_card_mul [∀ a b, Decidable (r a b)]
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
 #align finset.card_mul_le_card_mul Finset.card_mul_le_card_mul
 
-theorem card_mul_le_card_mul' [∀ a b, Decidable (r a b)]
+lemma card_mul_le_card_mul' [∀ a b, Decidable (r a b)]
     (hn : ∀ b ∈ t, n ≤ (s.bipartiteBelow r b).card)
     (hm : ∀ a ∈ s, (t.bipartiteAbove r a).card ≤ m) : t.card * n ≤ s.card * m :=
   card_mul_le_card_mul (swap r) hn hm
 #align finset.card_mul_le_card_mul' Finset.card_mul_le_card_mul'
 
-theorem card_mul_eq_card_mul [∀ a b, Decidable (r a b)]
+lemma card_mul_eq_card_mul [∀ a b, Decidable (r a b)]
     (hm : ∀ a ∈ s, (t.bipartiteAbove r a).card = m)
     (hn : ∀ b ∈ t, (s.bipartiteBelow r b).card = n) : s.card * m = t.card * n :=
   (card_mul_le_card_mul _ (fun a ha ↦ (hm a ha).ge) fun b hb ↦ (hn b hb).le).antisymm <|

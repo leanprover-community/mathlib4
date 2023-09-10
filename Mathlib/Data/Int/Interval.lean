@@ -77,52 +77,52 @@ namespace Int
 
 variable (a b : ℤ)
 
-theorem Icc_eq_finset_map :
+lemma Icc_eq_finset_map :
     Icc a b =
       (Finset.range (b + 1 - a).toNat).map (Nat.castEmbedding.trans <| addLeftEmbedding a) :=
   rfl
 #align int.Icc_eq_finset_map Int.Icc_eq_finset_map
 
-theorem Ico_eq_finset_map :
+lemma Ico_eq_finset_map :
     Ico a b = (Finset.range (b - a).toNat).map (Nat.castEmbedding.trans <| addLeftEmbedding a) :=
   rfl
 #align int.Ico_eq_finset_map Int.Ico_eq_finset_map
 
-theorem Ioc_eq_finset_map :
+lemma Ioc_eq_finset_map :
     Ioc a b =
       (Finset.range (b - a).toNat).map (Nat.castEmbedding.trans <| addLeftEmbedding (a + 1)) :=
   rfl
 #align int.Ioc_eq_finset_map Int.Ioc_eq_finset_map
 
-theorem Ioo_eq_finset_map :
+lemma Ioo_eq_finset_map :
     Ioo a b =
       (Finset.range (b - a - 1).toNat).map (Nat.castEmbedding.trans <| addLeftEmbedding (a + 1)) :=
   rfl
 #align int.Ioo_eq_finset_map Int.Ioo_eq_finset_map
 
-theorem uIcc_eq_finset_map :
+lemma uIcc_eq_finset_map :
     uIcc a b = (range (max a b + 1 - min a b).toNat).map
       (Nat.castEmbedding.trans <| addLeftEmbedding $ min a b) := rfl
 #align int.uIcc_eq_finset_map Int.uIcc_eq_finset_map
 
 @[simp]
-theorem card_Icc : (Icc a b).card = (b + 1 - a).toNat := (card_map _).trans $ card_range _
+lemma card_Icc : (Icc a b).card = (b + 1 - a).toNat := (card_map _).trans $ card_range _
 #align int.card_Icc Int.card_Icc
 
 @[simp]
-theorem card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans $ card_range _
+lemma card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans $ card_range _
 #align int.card_Ico Int.card_Ico
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans $ card_range _
+lemma card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans $ card_range _
 #align int.card_Ioc Int.card_Ioc
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans $ card_range _
+lemma card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans $ card_range _
 #align int.card_Ioo Int.card_Ioo
 
 @[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
+lemma card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
   (card_map _).trans <|
     Int.ofNat.inj <| by
       -- porting note: TODO: Restore `int.coe_nat_inj` and remove the `change`
@@ -149,26 +149,26 @@ theorem card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
 #align int.card_Ioo_of_lt Int.card_Ioo_of_lt
 
 -- porting note: removed `simp` attribute because `simpNF` says it can prove it
-theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
+lemma card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
   rw [← card_Icc, Fintype.card_ofFinset]
 #align int.card_fintype_Icc Int.card_fintype_Icc
 
 -- porting note: removed `simp` attribute because `simpNF` says it can prove it
-theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
+lemma card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
   rw [← card_Ico, Fintype.card_ofFinset]
 #align int.card_fintype_Ico Int.card_fintype_Ico
 
 -- porting note: removed `simp` attribute because `simpNF` says it can prove it
-theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
+lemma card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 #align int.card_fintype_Ioc Int.card_fintype_Ioc
 
 -- porting note: removed `simp` attribute because `simpNF` says it can prove it
-theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
+lemma card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 #align int.card_fintype_Ioo Int.card_fintype_Ioo
 
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
+lemma card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
   rw [← card_uIcc, Fintype.card_ofFinset]
 #align int.card_fintype_uIcc Int.card_fintype_uIcc
 

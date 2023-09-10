@@ -86,7 +86,7 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 #align Module.to_kernel_subobject ModuleCat.toKernelSubobject
 
 @[simp]
-theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
+lemma toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
   -- Porting note: The whole proof was just `simp [toKernelSubobject]`.
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
@@ -107,7 +107,7 @@ two elements in homology are equal if they differ by a boundary.
 -- the conversation beginning at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
 -- Goal.20state.20not.20updating.2C.20bugs.2C.20etc.2E/near/338456803
-theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [HasImage f]
+lemma cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [HasImage f]
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w

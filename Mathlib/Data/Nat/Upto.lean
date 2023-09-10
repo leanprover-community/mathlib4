@@ -50,7 +50,7 @@ instance : LT (Upto p) :=
 
 /-- The "greater than" relation on `Upto p` is well founded if (and only if) there exists a value
 satisfying `p`. -/
-protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
+protected lemma wf : (∃ x, p x) → WellFounded (Upto.GT p)
   | ⟨x, h⟩ => by
     suffices Upto.GT p = InvImage (· < ·) fun y : Nat.Upto p => x - y.val by
       rw [this]

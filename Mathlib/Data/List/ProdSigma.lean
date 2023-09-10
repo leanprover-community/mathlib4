@@ -35,13 +35,13 @@ theorem product_cons (a : α) (l₁ : List α) (l₂ : List β) :
 #align list.product_cons List.product_cons
 
 @[simp]
-theorem product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
+lemma product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
   | [] => rfl
   | _ :: l => by simp [product_cons, product_nil]
 #align list.product_nil List.product_nil
 
 @[simp]
-theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
+lemma mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
     (a, b) ∈ l₁ ×ˢ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
   simp_all [SProd.sprod, product, mem_bind, mem_map, Prod.ext_iff, exists_prop, and_left_comm,
     exists_and_left, exists_eq_left, exists_eq_right]
@@ -72,13 +72,13 @@ theorem sigma_cons (a : α) (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
 #align list.sigma_cons List.sigma_cons
 
 @[simp]
-theorem sigma_nil : ∀ l : List α, (l.sigma fun a => @nil (σ a)) = []
+lemma sigma_nil : ∀ l : List α, (l.sigma fun a => @nil (σ a)) = []
   | [] => rfl
   | _ :: l => by simp [sigma_cons, sigma_nil]
 #align list.sigma_nil List.sigma_nil
 
 @[simp]
-theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ a} :
+lemma mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ a} :
     Sigma.mk a b ∈ l₁.sigma l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ a := by
   simp [List.sigma, mem_bind, mem_map, exists_prop, exists_and_left, and_left_comm,
     exists_eq_left, heq_iff_eq, exists_eq_right]

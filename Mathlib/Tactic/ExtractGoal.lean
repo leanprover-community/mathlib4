@@ -37,7 +37,7 @@ For example, calling `set_option pp.all true in extract_goal` in the examples be
 -- `theorem int_eq_nat` is the output of the `extract_goal` from the example below
 -- the type ascription is removed and the `↑` is replaced by `Int.ofNat`:
 -- Lean infers the correct (false) statement
-theorem int_eq_nat {z : Int} : ∃ n, Int.ofNat n = z := sorry
+lemma int_eq_nat {z : Int} : ∃ n, Int.ofNat n = z := sorry
 
 example {z : Int} : ∃ n : Nat, ↑n = z := by
   extract_goal  -- produces `int_eq_nat`
@@ -52,7 +52,7 @@ import Std.Classes.Cast
 -- `theorem extracted_1` is the output of the `extract_goal` from the example below
 -- the type ascription is erased and the `↑` is untouched:
 -- Lean infers a different statement, since it fills in `↑` with `id` and uses `n : Int`
-theorem extracted_1 {z : Int} : ∃ n, ↑n = z := ⟨_, rfl⟩
+lemma extracted_1 {z : Int} : ∃ n, ↑n = z := ⟨_, rfl⟩
 
 example {z : Int} : ∃ n : Nat, ↑n = z := by
   extract_goal
@@ -73,7 +73,7 @@ example (a : α) : ∃ f : α → α, f a = a := by
   extract_goal
   exact ⟨id, rfl⟩
 
-theorem extracted_1.{u_1} {α : Sort u_1} (a : α) : ∃ f, f a = a := sorry
+lemma extracted_1.{u_1} {α : Sort u_1} (a : α) : ∃ f, f a = a := sorry
 -- `f` is uninterpreted: `⊢ ∃ f, sorryAx α true = a`
 ```
 and also
@@ -81,7 +81,7 @@ and also
 import Mathlib.Data.Polynomial.Basic
 
 --  The `extract_goal` below produces this statement:
-theorem extracted_1 : X = X := sorry
+lemma extracted_1 : X = X := sorry
 -- Yet, Lean is unable to figure out what is the coefficients Semiring for `X`
 /-
 typeclass instance problem is stuck, it is often due to metavariables

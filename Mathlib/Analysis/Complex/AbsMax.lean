@@ -103,7 +103,7 @@ The lemmas with names `*_auxₙ` are considered to be private and should not be 
 file.
 -/
 
-theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
+lemma norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     (hd : DiffContOnCl ℂ f (ball z (dist w z)))
     (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
   -- Consider a circle of radius `r = dist w z`.
@@ -141,7 +141,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
 Now we drop the assumption `CompleteSpace F` by embedding `F` into its completion.
 -/
 
-theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ball z (dist w z)))
+lemma norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ball z (dist w z)))
     (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have he : ∀ x, ‖e x‖ = ‖x‖ := UniformSpace.Completion.norm_coe
@@ -156,7 +156,7 @@ Then we replace the assumption `IsMaxOn (norm ∘ f) (Metric.closedBall z r) z` 
 weaker assumption `IsMaxOn (norm ∘ f) (Metric.ball z r) z`.
 -/
 
-theorem norm_max_aux₃ {f : ℂ → F} {z w : ℂ} {r : ℝ} (hr : dist w z = r)
+lemma norm_max_aux₃ {f : ℂ → F} {z w : ℂ} {r : ℝ} (hr : dist w z = r)
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) : ‖f w‖ = ‖f z‖ := by
   subst r
   rcases eq_or_ne w z with (rfl | hne); · rfl
@@ -178,7 +178,7 @@ Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any 
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
 value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball.  -/
-theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
+lemma norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) :
     EqOn (norm ∘ f) (const E ‖f z‖) (closedBall z r) := by
   intro w hw
@@ -199,7 +199,7 @@ theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a set `s`, the norm
 of `f` takes it maximum on `s` at `z`, and `w` is a point such that the closed ball with center `z`
 and radius `dist w z` is included in `s`, then `‖f w‖ = ‖f z‖`. -/
-theorem norm_eq_norm_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E}
+lemma norm_eq_norm_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E}
     (hd : DiffContOnCl ℂ f s) (hz : IsMaxOn (norm ∘ f) s z) (hsub : ball z (dist w z) ⊆ s) :
     ‖f w‖ = ‖f z‖ :=
   norm_eqOn_closedBall_of_isMaxOn (hd.mono hsub) (hz.on_subset hsub) (mem_closedBall.2 le_rfl)
@@ -208,7 +208,7 @@ theorem norm_eq_norm_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood
 of `c`. -/
-theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
+lemma norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
     (hd : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMax (norm ∘ f) c) :
     ∀ᶠ y in 𝓝 c, ‖f y‖ = ‖f c‖ := by
   rcases nhds_basis_closedBall.eventually_iff.1 (hd.and hc) with ⟨r, hr₀, hr⟩
@@ -218,7 +218,7 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
       (hr <| ball_subset_closedBall hx).2⟩
 #align complex.norm_eventually_eq_of_is_local_max Complex.norm_eventually_eq_of_isLocalMax
 
-theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
+lemma isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
   refine' isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and _
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w; exact hd.eventually_differentiableAt hz.1
@@ -229,7 +229,7 @@ theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space. Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `‖f x‖ = ‖f c‖` for all `x ∈ U`. -/
-theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
+lemma norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DifferentiableOn ℂ f U) (hcU : c ∈ U)
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const E ‖f c‖) U := by
   set V := U ∩ {z | IsMaxOn (norm ∘ f) U z}
@@ -252,7 +252,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
 complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U` and is
 continuous on its closure. Suppose that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then
 `‖f x‖ = ‖f c‖` for all `x ∈ closure U`. -/
-theorem norm_eqOn_closure_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
+lemma norm_eqOn_closure_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DiffContOnCl ℂ f U) (hcU : c ∈ U)
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const E ‖f c‖) (closure U) :=
   (norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hd.differentiableOn hcU hm).of_subset_closure
@@ -280,7 +280,7 @@ complex normed space.  Let `f : E → F` be a function that is complex different
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` for all `x ∈ U`.
 
 TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/
-theorem eqOn_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
+lemma eqOn_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DifferentiableOn ℂ f U) (hcU : c ∈ U)
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const E (f c)) U := fun x hx =>
   have H₁ : ‖f x‖ = ‖f c‖ := norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hd hcU hm hx
@@ -293,7 +293,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
 complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U` and is
 continuous on its closure. Suppose that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then
 `f x = f c` for all `x ∈ closure U`. -/
-theorem eqOn_closure_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
+lemma eqOn_closure_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DiffContOnCl ℂ f U) (hcU : c ∈ U)
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const E (f c)) (closure U) :=
   (eqOn_of_isPreconnected_of_isMaxOn_norm hc ho hd.differentiableOn hcU hm).of_subset_closure
@@ -305,7 +305,7 @@ Suppose that the codomain `F` is a strictly convex space, `f` is complex differe
 `s`, `f` is continuous on the closure of `s`, the norm of `f` takes it maximum on `s` at `z`, and
 `w` is a point such that the closed ball with center `z` and radius `dist w z` is included in `s`,
 then `f w = f z`. -/
-theorem eq_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E} (hd : DiffContOnCl ℂ f s)
+lemma eq_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E} (hd : DiffContOnCl ℂ f s)
     (hz : IsMaxOn (norm ∘ f) s z) (hsub : ball z (dist w z) ⊆ s) : f w = f z :=
   have H₁ : ‖f w‖ = ‖f z‖ := norm_eq_norm_of_isMaxOn_of_ball_subset hd hz hsub
   have H₂ : ‖f w + f z‖ = ‖f z + f z‖ :=
@@ -321,7 +321,7 @@ normed complex space to a strictly convex normed complex space has the following
 - the norm `‖f w‖` takes its maximum value on the open ball at its center.
 
 Then `f` is a constant on the closed ball.  -/
-theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
+lemma eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) :
     EqOn f (const E (f z)) (closedBall z r) := fun _x hx =>
   eq_of_isMaxOn_of_ball_subset hd hz <| ball_subset_ball hx
@@ -330,7 +330,7 @@ theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `f` is locally constant in a neighborhood
 of `c`. -/
-theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
+lemma eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
     (hd : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMax (norm ∘ f) c) :
     ∀ᶠ y in 𝓝 c, f y = f c := by
   rcases nhds_basis_closedBall.eventually_iff.1 (hd.and hc) with ⟨r, hr₀, hr⟩
@@ -340,7 +340,7 @@ theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
       (hr <| ball_subset_closedBall hx).2⟩
 #align complex.eventually_eq_of_is_local_max_norm Complex.eventually_eq_of_isLocalMax_norm
 
-theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
+lemma eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
     (hf : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMin (norm ∘ f) c) :
     (∀ᶠ z in 𝓝 c, f z = f c) ∨ f c = 0 := by
   refine' or_iff_not_imp_right.mpr fun h => _
@@ -366,7 +366,7 @@ variable [Nontrivial E]
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a nonempty bounded
 set `U` and is continuous on its closure, then there exists a point `z ∈ frontier U` such that
 `(‖f ·‖)` takes it maximum value on `closure U` at `z`. -/
-theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F} {U : Set E}
+lemma exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F} {U : Set E}
     (hb : Bounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
     ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   have hc : IsCompact (closure U) := hb.isCompact_closure
@@ -384,7 +384,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a bounded set `U` and
 `‖f z‖ ≤ C` for any `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
-theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : Bounded U)
+lemma norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : Bounded U)
     (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
@@ -408,7 +408,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : B
 
 /-- If two complex differentiable functions `f g : E → F` are equal on the boundary of a bounded set
 `U`, then they are equal on `closure U`. -/
-theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U)
+lemma eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
   suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0; · simpa [sub_eq_zero] using H
@@ -418,7 +418,7 @@ theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded 
 
 /-- If two complex differentiable functions `f g : E → F` are equal on the boundary of a bounded set
 `U`, then they are equal on `U`. -/
-theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U) (hf : DiffContOnCl ℂ f U)
+lemma eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U) (hf : DiffContOnCl ℂ f U)
     (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) : EqOn f g U :=
   (eqOn_closure_of_eqOn_frontier hU hf hg hfg).mono subset_closure
 #align complex.eq_on_of_eq_on_frontier Complex.eqOn_of_eqOn_frontier

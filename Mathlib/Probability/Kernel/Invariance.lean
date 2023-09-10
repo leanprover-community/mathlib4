@@ -84,7 +84,7 @@ theorem Invariant.comp_const (hκ : Invariant κ μ) : κ ∘ₖ const α μ = c
   rw [← const_bind_eq_comp_const κ μ, hκ.def]
 #align probability_theory.kernel.invariant.comp_const ProbabilityTheory.kernel.Invariant.comp_const
 
-theorem Invariant.comp [IsSFiniteKernel κ] (hκ : Invariant κ μ) (hη : Invariant η μ) :
+lemma Invariant.comp [IsSFiniteKernel κ] (hκ : Invariant κ μ) (hη : Invariant η μ) :
     Invariant (κ ∘ₖ η) μ := by
   cases' isEmpty_or_nonempty α with _ hα
   · exact Subsingleton.elim _ _

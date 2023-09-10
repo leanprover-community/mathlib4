@@ -70,7 +70,7 @@ theorem norm_injOn_ray_right (hy : y ≠ 0) : { x | SameRay ℝ x y }.InjOn norm
   simpa only [SameRay.sameRay_comm] using norm_injOn_ray_left hy
 #align norm_inj_on_ray_right norm_injOn_ray_right
 
-theorem sameRay_iff_norm_smul_eq : SameRay ℝ x y ↔ ‖x‖ • y = ‖y‖ • x :=
+lemma sameRay_iff_norm_smul_eq : SameRay ℝ x y ↔ ‖x‖ • y = ‖y‖ • x :=
   ⟨SameRay.norm_smul_eq, fun h =>
     or_iff_not_imp_left.2 fun hx =>
       or_iff_not_imp_left.2 fun hy => ⟨‖y‖, ‖x‖, norm_pos_iff.2 hy, norm_pos_iff.2 hx, h.symm⟩⟩
@@ -89,7 +89,7 @@ alias ⟨SameRay.inv_norm_smul_eq, _⟩ := sameRay_iff_inv_norm_smul_eq_of_ne
 
 /-- Two vectors `x y` in a real normed space are on the ray if and only if one of them is zero or
 the unit vectors `‖x‖⁻¹ • x` and `‖y‖⁻¹ • y` are equal. -/
-theorem sameRay_iff_inv_norm_smul_eq : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ ‖x‖⁻¹ • x = ‖y‖⁻¹ • y := by
+lemma sameRay_iff_inv_norm_smul_eq : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ ‖x‖⁻¹ • x = ‖y‖⁻¹ • y := by
   rcases eq_or_ne x 0 with (rfl | hx); · simp [SameRay.zero_left]
   rcases eq_or_ne y 0 with (rfl | hy); · simp [SameRay.zero_right]
   simp only [sameRay_iff_inv_norm_smul_eq_of_ne hx hy, *, false_or_iff]

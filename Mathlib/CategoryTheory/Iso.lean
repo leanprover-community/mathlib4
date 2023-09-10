@@ -110,18 +110,18 @@ theorem symm_inv (α : X ≅ Y) : α.symm.inv = α.hom :=
 #align category_theory.iso.symm_inv CategoryTheory.Iso.symm_inv
 
 @[simp]
-theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id) :
+lemma symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id) :
     Iso.symm { hom, inv, hom_inv_id := hom_inv_id, inv_hom_id := inv_hom_id } =
       { hom := inv, inv := hom, hom_inv_id := inv_hom_id, inv_hom_id := hom_inv_id } :=
   rfl
 #align category_theory.iso.symm_mk CategoryTheory.Iso.symm_mk
 
 @[simp]
-theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := by cases α; rfl
+lemma symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := by cases α; rfl
 #align category_theory.iso.symm_symm_eq CategoryTheory.Iso.symm_symm_eq
 
 @[simp]
-theorem symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β :=
+lemma symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β :=
   ⟨fun h => symm_symm_eq α ▸ symm_symm_eq β ▸ congr_arg symm h, congr_arg symm⟩
 #align category_theory.iso.symm_eq_iff CategoryTheory.Iso.symm_eq_iff
 
@@ -165,7 +165,7 @@ instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) wher
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
 
 @[simp]
-theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id)
+lemma trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id)
     (hom' : Y ⟶ Z) (inv' : Z ⟶ Y) (hom_inv_id') (inv_hom_id') (hom_inv_id'') (inv_hom_id'') :
     Iso.trans ⟨hom, inv, hom_inv_id, inv_hom_id⟩ ⟨hom', inv', hom_inv_id', inv_hom_id'⟩ =
      ⟨hom ≫ hom', inv' ≫ inv, hom_inv_id'', inv_hom_id''⟩ :=
@@ -178,7 +178,7 @@ theorem trans_symm (α : X ≅ Y) (β : Y ≅ Z) : (α ≪≫ β).symm = β.symm
 #align category_theory.iso.trans_symm CategoryTheory.Iso.trans_symm
 
 @[simp]
-theorem trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') :
+lemma trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') :
     (α ≪≫ β) ≪≫ γ = α ≪≫ β ≪≫ γ := by
   ext; simp only [trans_hom, Category.assoc]
 #align category_theory.iso.trans_assoc CategoryTheory.Iso.trans_assoc
@@ -285,7 +285,7 @@ theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
 
 -- attribute [reassoc] hom_inv_id inv_hom_id
 -- #print hom_inv_id_assoc
---   theorem CategoryTheory.IsIso.hom_inv_id_assoc {X Y : C} (f : X ⟶ Y) [I : IsIso f]
+--   lemma CategoryTheory.IsIso.hom_inv_id_assoc {X Y : C} (f : X ⟶ Y) [I : IsIso f]
 --     {Z : C} (h : X ⟶ Z),
 --     f ≫ Classical.choose (_ : Exists fun inv ↦ f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y) ≫ h = h := ...
 
@@ -341,13 +341,13 @@ instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
 
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets [CategoryTheory])]
-theorem inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
+lemma inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     inv f = g := by
   apply (cancel_epi f).mp
   simp [hom_inv_id]
 #align category_theory.is_iso.inv_eq_of_hom_inv_id CategoryTheory.IsIso.inv_eq_of_hom_inv_id
 
-theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id : g ≫ f = 𝟙 Y) :
+lemma inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id : g ≫ f = 𝟙 Y) :
     inv f = g := by
   apply (cancel_mono f).mp
   simp [inv_hom_id]
@@ -355,12 +355,12 @@ theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets [CategoryTheory])]
-theorem eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
+lemma eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     g = inv f :=
   (inv_eq_of_hom_inv_id hom_inv_id).symm
 #align category_theory.is_iso.eq_inv_of_hom_inv_id CategoryTheory.IsIso.eq_inv_of_hom_inv_id
 
-theorem eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id : g ≫ f = 𝟙 Y) :
+lemma eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id : g ≫ f = 𝟙 Y) :
     g = inv f :=
   (inv_eq_of_inv_hom_id inv_hom_id).symm
 #align category_theory.is_iso.eq_inv_of_inv_hom_id CategoryTheory.IsIso.eq_inv_of_inv_hom_id
@@ -389,19 +389,19 @@ instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
 #align category_theory.is_iso.comp_is_iso CategoryTheory.IsIso.comp_isIso
 
 @[simp]
-theorem inv_id : inv (𝟙 X) = 𝟙 X := by
+lemma inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 #align category_theory.is_iso.inv_id CategoryTheory.IsIso.inv_id
 
 @[simp]
-theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
+lemma inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp
 #align category_theory.is_iso.inv_comp CategoryTheory.IsIso.inv_comp
 
 @[simp]
-theorem inv_inv [IsIso f] : inv (inv f) = f := by
+lemma inv_inv [IsIso f] : inv (inv f) = f := by
   apply inv_eq_of_hom_inv_id
   simp
 #align category_theory.is_iso.inv_inv CategoryTheory.IsIso.inv_inv
@@ -438,26 +438,26 @@ theorem eq_comp_inv (α : X ⟶ Y) [IsIso α] {f : Z ⟶ Y} {g : Z ⟶ X} : g = 
   (asIso α).eq_comp_inv
 #align category_theory.is_iso.eq_comp_inv CategoryTheory.IsIso.eq_comp_inv
 
-theorem of_isIso_comp_left {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [IsIso (f ≫ g)] :
+lemma of_isIso_comp_left {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [IsIso (f ≫ g)] :
     IsIso g := by
   rw [← id_comp g, ← inv_hom_id f, assoc]
   infer_instance
 #align category_theory.is_iso.of_is_iso_comp_left CategoryTheory.IsIso.of_isIso_comp_left
 
-theorem of_isIso_comp_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] [IsIso (f ≫ g)] :
+lemma of_isIso_comp_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] [IsIso (f ≫ g)] :
     IsIso f := by
   rw [← comp_id f, ← hom_inv_id g, ← assoc]
   infer_instance
 #align category_theory.is_iso.of_is_iso_comp_right CategoryTheory.IsIso.of_isIso_comp_right
 
-theorem of_isIso_fac_left {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso f]
+lemma of_isIso_fac_left {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso f]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso g := by
   rw [← w] at hh
   haveI := hh
   exact of_isIso_comp_left f g
 #align category_theory.is_iso.of_is_iso_fac_left CategoryTheory.IsIso.of_isIso_fac_left
 
-theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso g]
+lemma of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso g]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso f := by
   rw [← w] at hh
   haveI := hh
@@ -468,12 +468,12 @@ end IsIso
 
 open IsIso
 
-theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
+lemma eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1
   erw [inv_hom_id, p, inv_hom_id]
 #align category_theory.eq_of_inv_eq_inv CategoryTheory.eq_of_inv_eq_inv
 
-theorem IsIso.inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] : inv f = inv g ↔ f = g :=
+lemma IsIso.inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] : inv f = inv g ↔ f = g :=
   Iso.inv_eq_inv (asIso f) (asIso g)
 #align category_theory.is_iso.inv_eq_inv CategoryTheory.IsIso.inv_eq_inv
 
@@ -507,13 +507,13 @@ namespace Iso
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets [CategoryTheory])]
-theorem inv_ext {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : f.inv = g :=
+lemma inv_ext {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : f.inv = g :=
   ((hom_comp_eq_id f).1 hom_inv_id).symm
 #align category_theory.iso.inv_ext CategoryTheory.Iso.inv_ext
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
 @[aesop apply safe (rule_sets [CategoryTheory])]
-theorem inv_ext' {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : g = f.inv :=
+lemma inv_ext' {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : g = f.inv :=
   (hom_comp_eq_id f).1 hom_inv_id
 #align category_theory.iso.inv_ext' CategoryTheory.Iso.inv_ext'
 
@@ -532,25 +532,25 @@ Presumably we could write `X ↪ Y` and `X ↠ Y`.
 
 
 @[simp]
-theorem cancel_iso_hom_left {X Y Z : C} (f : X ≅ Y) (g g' : Y ⟶ Z) :
+lemma cancel_iso_hom_left {X Y Z : C} (f : X ≅ Y) (g g' : Y ⟶ Z) :
     f.hom ≫ g = f.hom ≫ g' ↔ g = g' := by
   simp only [cancel_epi]
 #align category_theory.iso.cancel_iso_hom_left CategoryTheory.Iso.cancel_iso_hom_left
 
 @[simp]
-theorem cancel_iso_inv_left {X Y Z : C} (f : Y ≅ X) (g g' : Y ⟶ Z) :
+lemma cancel_iso_inv_left {X Y Z : C} (f : Y ≅ X) (g g' : Y ⟶ Z) :
     f.inv ≫ g = f.inv ≫ g' ↔ g = g' := by
   simp only [cancel_epi]
 #align category_theory.iso.cancel_iso_inv_left CategoryTheory.Iso.cancel_iso_inv_left
 
 @[simp]
-theorem cancel_iso_hom_right {X Y Z : C} (f f' : X ⟶ Y) (g : Y ≅ Z) :
+lemma cancel_iso_hom_right {X Y Z : C} (f f' : X ⟶ Y) (g : Y ≅ Z) :
     f ≫ g.hom = f' ≫ g.hom ↔ f = f' := by
   simp only [cancel_mono]
 #align category_theory.iso.cancel_iso_hom_right CategoryTheory.Iso.cancel_iso_hom_right
 
 @[simp]
-theorem cancel_iso_inv_right {X Y Z : C} (f f' : X ⟶ Y) (g : Z ≅ Y) :
+lemma cancel_iso_inv_right {X Y Z : C} (f f' : X ⟶ Y) (g : Z ≅ Y) :
     f ≫ g.inv = f' ≫ g.inv ↔ f = f' := by
   simp only [cancel_mono]
 #align category_theory.iso.cancel_iso_inv_right CategoryTheory.Iso.cancel_iso_inv_right
@@ -563,13 +563,13 @@ We provide two more lemmas, for case of three morphisms, because this actually c
 but then stop.
 -/
 @[simp]
-theorem cancel_iso_hom_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
+lemma cancel_iso_hom_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Y ≅ Z) : f ≫ g ≫ h.hom = f' ≫ g' ≫ h.hom ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono]
 #align category_theory.iso.cancel_iso_hom_right_assoc CategoryTheory.Iso.cancel_iso_hom_right_assoc
 
 @[simp]
-theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
+lemma cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Z ≅ Y) : f ≫ g ≫ h.inv = f' ≫ g' ≫ h.inv ↔ f ≫ g = f' ≫ g' := by
   simp only [← Category.assoc, cancel_mono]
 #align category_theory.iso.cancel_iso_inv_right_assoc CategoryTheory.Iso.cancel_iso_inv_right_assoc

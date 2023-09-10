@@ -39,7 +39,7 @@ variable [OrderTopology 𝕜]
 
 section PolynomialAtTop
 
-theorem isEquivalent_atTop_lead :
+lemma isEquivalent_atTop_lead :
     (fun x => eval x P) ~[atTop] fun x => P.leadingCoeff * x ^ P.natDegree := by
   by_cases h : P = 0
   · simp [h, IsEquivalent.refl]
@@ -61,7 +61,7 @@ theorem tendsto_atTop_of_leadingCoeff_nonneg (hdeg : 0 < P.degree) (hnng : 0 ≤
       hnng.lt_of_ne' <| leadingCoeff_ne_zero.mpr <| ne_zero_of_degree_gt hdeg
 #align polynomial.tendsto_at_top_of_leading_coeff_nonneg Polynomial.tendsto_atTop_of_leadingCoeff_nonneg
 
-theorem tendsto_atTop_iff_leadingCoeff_nonneg :
+lemma tendsto_atTop_iff_leadingCoeff_nonneg :
     Tendsto (fun x => eval x P) atTop atTop ↔ 0 < P.degree ∧ 0 ≤ P.leadingCoeff := by
   refine' ⟨fun h => _, fun h => tendsto_atTop_of_leadingCoeff_nonneg P h.1 h.2⟩
   have : Tendsto (fun x => P.leadingCoeff * x ^ P.natDegree) atTop atTop :=
@@ -70,7 +70,7 @@ theorem tendsto_atTop_iff_leadingCoeff_nonneg :
   exact ⟨this.1, this.2.le⟩
 #align polynomial.tendsto_at_top_iff_leading_coeff_nonneg Polynomial.tendsto_atTop_iff_leadingCoeff_nonneg
 
-theorem tendsto_atBot_iff_leadingCoeff_nonpos :
+lemma tendsto_atBot_iff_leadingCoeff_nonpos :
     Tendsto (fun x => eval x P) atTop atBot ↔ 0 < P.degree ∧ P.leadingCoeff ≤ 0 := by
   simp only [← tendsto_neg_atTop_iff, ← eval_neg, tendsto_atTop_iff_leadingCoeff_nonneg,
     degree_neg, leadingCoeff_neg, neg_nonneg]
@@ -88,7 +88,7 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
   · exact tendsto_abs_atBot_atTop.comp (P.tendsto_atBot_of_leadingCoeff_nonpos hdeg hP)
 #align polynomial.abs_tendsto_at_top Polynomial.abs_tendsto_atTop
 
-theorem abs_isBoundedUnder_iff :
+lemma abs_isBoundedUnder_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
   refine' ⟨fun h => _, fun h => ⟨|P.coeff 0|, eventually_map.mpr (eventually_of_forall
     (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
@@ -97,12 +97,12 @@ theorem abs_isBoundedUnder_iff :
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
 #align polynomial.abs_is_bounded_under_iff Polynomial.abs_isBoundedUnder_iff
 
-theorem abs_tendsto_atTop_iff : Tendsto (fun x => abs <| eval x P) atTop atTop ↔ 0 < P.degree :=
+lemma abs_tendsto_atTop_iff : Tendsto (fun x => abs <| eval x P) atTop atTop ↔ 0 < P.degree :=
   ⟨fun h => not_le.mp (mt (abs_isBoundedUnder_iff P).mpr (not_isBoundedUnder_of_tendsto_atTop h)),
     abs_tendsto_atTop P⟩
 #align polynomial.abs_tendsto_at_top_iff Polynomial.abs_tendsto_atTop_iff
 
-theorem tendsto_nhds_iff {c : 𝕜} :
+lemma tendsto_nhds_iff {c : 𝕜} :
     Tendsto (fun x => eval x P) atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
   refine' ⟨fun h => _, fun h => _⟩
   · have := P.isEquivalent_atTop_lead.tendsto_nhds h
@@ -121,7 +121,7 @@ end PolynomialAtTop
 
 section PolynomialDivAtTop
 
-theorem isEquivalent_atTop_div :
+lemma isEquivalent_atTop_div :
     (fun x => eval x P / eval x Q) ~[atTop] fun x =>
       P.leadingCoeff / Q.leadingCoeff * x ^ (P.natDegree - Q.natDegree : ℤ) := by
   by_cases hP : P = 0

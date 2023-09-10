@@ -23,7 +23,7 @@ variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 open Pointwise
 
 @[to_additive]
-theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :
+lemma mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :
     a ∈ (List.ofFn s).prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i ↦ (f i : α)).prod = a := by
   induction' n with n ih generalizing a
   · simp_rw [List.ofFn_zero, List.prod_nil, Fin.exists_fin_zero_pi, eq_comm, Set.mem_one]
@@ -33,7 +33,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :
 #align set.mem_sum_list_of_fn Set.mem_sum_list_ofFn
 
 @[to_additive]
-theorem mem_list_prod {l : List (Set α)} {a : α} :
+lemma mem_list_prod {l : List (Set α)} {a : α} :
     a ∈ l.prod ↔
       ∃ l' : List (Σs : Set α, ↥s),
         List.prod (l'.map fun x ↦ (Sigma.snd x : α)) = a ∧ l'.map Sigma.fst = l := by
@@ -49,7 +49,7 @@ theorem mem_list_prod {l : List (Set α)} {a : α} :
 #align set.mem_list_sum Set.mem_list_sum
 
 @[to_additive]
-theorem mem_pow {a : α} {n : ℕ} :
+lemma mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i ↦ (f i : α)).prod = a := by
   rw [← mem_prod_list_ofFn, List.ofFn_const, List.prod_replicate]
 #align set.mem_pow Set.mem_pow

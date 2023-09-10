@@ -54,6 +54,6 @@ def Flag.rangeFin (f : Fin (n + 1) → α) (h0 : f 0 = ⊥) (hlast : f (.last n)
   Chain' := (IsMaxChain.range_fin_of_covby h0 hlast hcovby).1
   max_chain' := (IsMaxChain.range_fin_of_covby h0 hlast hcovby).2
 
-@[simp] theorem Flag.mem_rangeFin {x h0 hlast hcovby} :
+@[simp] lemma Flag.mem_rangeFin {x h0 hlast hcovby} :
     x ∈ rangeFin f h0 hlast hcovby ↔ ∃ k, f k = x :=
   Iff.rfl

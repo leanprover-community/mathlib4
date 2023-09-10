@@ -90,12 +90,12 @@ def toAffineMap : V₁ →ᵃ[k] V₂ where
 #align linear_map.to_affine_map LinearMap.toAffineMap
 
 @[simp]
-theorem coe_toAffineMap : ⇑f.toAffineMap = f :=
+lemma coe_toAffineMap : ⇑f.toAffineMap = f :=
   rfl
 #align linear_map.coe_to_affine_map LinearMap.coe_toAffineMap
 
 @[simp]
-theorem toAffineMap_linear : f.toAffineMap.linear = f :=
+lemma toAffineMap_linear : f.toAffineMap.linear = f :=
   rfl
 #align linear_map.to_affine_map_linear LinearMap.toAffineMap_linear
 
@@ -139,15 +139,15 @@ theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2
 
 /-- Two affine maps are equal if they coerce to the same function. -/
 @[ext]
-theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
+lemma ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
   FunLike.ext _ _ h
 #align affine_map.ext AffineMap.ext
 
-theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
+lemma ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
   ⟨fun h _ => h ▸ rfl, ext⟩
 #align affine_map.ext_iff AffineMap.ext_iff
 
-theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) (⇑) :=
+lemma coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) (⇑) :=
   FunLike.coe_injective
 #align affine_map.coe_fn_injective AffineMap.coeFn_injective
 
@@ -155,7 +155,7 @@ protected theorem congr_arg (f : P1 →ᵃ[k] P2) {x y : P1} (h : x = y) : f x =
   congr_arg _ h
 #align affine_map.congr_arg AffineMap.congr_arg
 
-protected theorem congr_fun {f g : P1 →ᵃ[k] P2} (h : f = g) (x : P1) : f x = g x :=
+protected lemma congr_fun {f g : P1 →ᵃ[k] P2} (h : f = g) (x : P1) : f x = g x :=
   h ▸ rfl
 #align affine_map.congr_fun AffineMap.congr_fun
 
@@ -263,7 +263,7 @@ instance : Neg (P1 →ᵃ[k] V2)
     where neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
 
 @[simp, norm_cast]
-theorem coe_zero : ⇑(0 : P1 →ᵃ[k] V2) = 0 :=
+lemma coe_zero : ⇑(0 : P1 →ᵃ[k] V2) = 0 :=
   rfl
 #align affine_map.coe_zero AffineMap.coe_zero
 
@@ -283,7 +283,7 @@ theorem coe_sub (f g : P1 →ᵃ[k] V2) : ⇑(f - g) = f - g :=
 #align affine_map.coe_sub AffineMap.coe_sub
 
 @[simp]
-theorem zero_linear : (0 : P1 →ᵃ[k] V2).linear = 0 :=
+lemma zero_linear : (0 : P1 →ᵃ[k] V2).linear = 0 :=
   rfl
 #align affine_map.zero_linear AffineMap.zero_linear
 
@@ -343,12 +343,12 @@ def fst : P1 × P2 →ᵃ[k] P1 where
 #align affine_map.fst AffineMap.fst
 
 @[simp]
-theorem coe_fst : ⇑(fst : P1 × P2 →ᵃ[k] P1) = Prod.fst :=
+lemma coe_fst : ⇑(fst : P1 × P2 →ᵃ[k] P1) = Prod.fst :=
   rfl
 #align affine_map.coe_fst AffineMap.coe_fst
 
 @[simp]
-theorem fst_linear : (fst : P1 × P2 →ᵃ[k] P1).linear = LinearMap.fst k V1 V2 :=
+lemma fst_linear : (fst : P1 × P2 →ᵃ[k] P1).linear = LinearMap.fst k V1 V2 :=
   rfl
 #align affine_map.fst_linear AffineMap.fst_linear
 
@@ -360,12 +360,12 @@ def snd : P1 × P2 →ᵃ[k] P2 where
 #align affine_map.snd AffineMap.snd
 
 @[simp]
-theorem coe_snd : ⇑(snd : P1 × P2 →ᵃ[k] P2) = Prod.snd :=
+lemma coe_snd : ⇑(snd : P1 × P2 →ᵃ[k] P2) = Prod.snd :=
   rfl
 #align affine_map.coe_snd AffineMap.coe_snd
 
 @[simp]
-theorem snd_linear : (snd : P1 × P2 →ᵃ[k] P2).linear = LinearMap.snd k V1 V2 :=
+lemma snd_linear : (snd : P1 × P2 →ᵃ[k] P2).linear = LinearMap.snd k V1 V2 :=
   rfl
 #align affine_map.snd_linear AffineMap.snd_linear
 
@@ -379,12 +379,12 @@ nonrec def id : P1 →ᵃ[k] P1 where
 
 /-- The identity affine map acts as the identity. -/
 @[simp]
-theorem coe_id : ⇑(id k P1) = _root_.id :=
+lemma coe_id : ⇑(id k P1) = _root_.id :=
   rfl
 #align affine_map.coe_id AffineMap.coe_id
 
 @[simp]
-theorem id_linear : (id k P1).linear = LinearMap.id :=
+lemma id_linear : (id k P1).linear = LinearMap.id :=
   rfl
 #align affine_map.id_linear AffineMap.id_linear
 
@@ -449,7 +449,7 @@ theorem coe_mul (f g : P1 →ᵃ[k] P1) : ⇑(f * g) = f ∘ g :=
 #align affine_map.coe_mul AffineMap.coe_mul
 
 @[simp]
-theorem coe_one : ⇑(1 : P1 →ᵃ[k] P1) = _root_.id :=
+lemma coe_one : ⇑(1 : P1 →ᵃ[k] P1) = _root_.id :=
   rfl
 #align affine_map.coe_one AffineMap.coe_one
 
@@ -487,7 +487,7 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
   and_congr f.linear_injective_iff f.linear_surjective_iff
 #align affine_map.linear_bijective_iff AffineMap.linear_bijective_iff
 
-theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
+lemma image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
   -- porting note: `simp` needs `Set.mem_vsub` to be an expression
@@ -566,27 +566,27 @@ theorem lineMap_apply_one (p₀ p₁ : P1) : lineMap p₀ p₁ (1 : k) = p₁ :=
 #align affine_map.line_map_apply_one AffineMap.lineMap_apply_one
 
 @[simp]
-theorem lineMap_eq_lineMap_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c₁ c₂ : k} :
+lemma lineMap_eq_lineMap_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c₁ c₂ : k} :
     lineMap p₀ p₁ c₁ = lineMap p₀ p₁ c₂ ↔ p₀ = p₁ ∨ c₁ = c₂ := by
   rw [lineMap_apply, lineMap_apply, ← @vsub_eq_zero_iff_eq V1, vadd_vsub_vadd_cancel_right, ←
     sub_smul, smul_eq_zero, sub_eq_zero, vsub_eq_zero_iff_eq, or_comm, eq_comm]
 #align affine_map.line_map_eq_line_map_iff AffineMap.lineMap_eq_lineMap_iff
 
 @[simp]
-theorem lineMap_eq_left_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} :
+lemma lineMap_eq_left_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} :
     lineMap p₀ p₁ c = p₀ ↔ p₀ = p₁ ∨ c = 0 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_zero]
 #align affine_map.line_map_eq_left_iff AffineMap.lineMap_eq_left_iff
 
 @[simp]
-theorem lineMap_eq_right_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} :
+lemma lineMap_eq_right_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} :
     lineMap p₀ p₁ c = p₁ ↔ p₀ = p₁ ∨ c = 1 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_one]
 #align affine_map.line_map_eq_right_iff AffineMap.lineMap_eq_right_iff
 
 variable (k)
 
-theorem lineMap_injective [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} (h : p₀ ≠ p₁) :
+lemma lineMap_injective [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} (h : p₀ ≠ p₁) :
     Function.Injective (lineMap p₀ p₁ : k → P1) := fun _c₁ _c₂ hc =>
   (lineMap_eq_lineMap_iff.mp hc).resolve_left h
 #align affine_map.line_map_injective AffineMap.lineMap_injective
@@ -674,7 +674,7 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ =>
   simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
 #align affine_map.decomp' AffineMap.decomp'
 
-theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
+lemma image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
     ext x
@@ -864,7 +864,7 @@ variable {𝕜 E F : Type*} [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Modul
 
 /-- Applying an affine map to an affine combination of two points yields an affine combination of
 the images. -/
-theorem Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} (h : a + b = 1) :
+lemma Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} (h : a + b = 1) :
     f (a • x + b • y) = a • f x + b • f y := by
   simp only [Convex.combo_eq_smul_sub_add h, ← vsub_eq_sub]
   exact f.apply_lineMap _ _ _

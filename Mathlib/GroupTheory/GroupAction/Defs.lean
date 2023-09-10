@@ -75,7 +75,7 @@ export FaithfulSMul (eq_of_smul_eq_smul)
 export FaithfulVAdd (eq_of_vadd_eq_vadd)
 
 @[to_additive]
-theorem smul_left_injective' [SMul M α] [FaithfulSMul M α] :
+lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] :
     Function.Injective ((· • ·) : M → α → α) := fun _ _ h =>
   FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
 #align smul_left_injective' smul_left_injective'
@@ -226,13 +226,13 @@ theorem SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommCla
 because this would cause a loop in the instance search graph. -/
 add_decl_doc VAddCommClass.symm
 
-theorem Function.Injective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
+lemma Function.Injective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N β] {f : α → β} (hf : Function.Injective f)
     (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
     SMulCommClass M N α where
   smul_comm c₁ c₂ x := hf <| by simp only [h₁, h₂, smul_comm c₁ c₂ (f x)]
 
-theorem Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
+lemma Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N α] {f : α → β} (hf : Function.Surjective f)
     (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
     SMulCommClass M N β where
@@ -261,7 +261,7 @@ class IsScalarTower (M N α : Type*) [SMul M N] [SMul N α] [SMul M α] : Prop w
 #align is_scalar_tower IsScalarTower
 
 @[to_additive (attr := simp)]
-theorem smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α] (x : M)
+lemma smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α] (x : M)
     (y : N) (z : α) : (x • y) • z = x • y • z :=
   IsScalarTower.smul_assoc x y z
 #align smul_assoc smul_assoc
@@ -293,7 +293,7 @@ class IsCentralScalar (M α : Type*) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop whe
 attribute [simp] IsCentralScalar.op_smul_eq_smul
 
 @[to_additive]
-theorem IsCentralScalar.unop_smul_eq_smul {M α : Type*} [SMul M α] [SMul Mᵐᵒᵖ α]
+lemma IsCentralScalar.unop_smul_eq_smul {M α : Type*} [SMul M α] [SMul Mᵐᵒᵖ α]
     [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
   induction m using MulOpposite.rec'
   exact (IsCentralScalar.op_smul_eq_smul _ a).symm
@@ -375,7 +375,7 @@ are still metavariables.
 
        This cannot be an instance because it can cause infinite loops whenever the `SMul` arguments
        are still metavariables."]
-theorem comp.isScalarTower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
+lemma comp.isScalarTower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
     haveI := comp α g; haveI := comp β g; exact IsScalarTower N α β :=
   { comp α g, comp β g with
     smul_assoc := fun n => smul_assoc (g n) }
@@ -388,7 +388,7 @@ are still metavariables.
 @[to_additive
       "This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
        are still metavariables."]
-theorem comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
+lemma comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
     haveI := comp α g
     SMulCommClass N β α :=
   { comp α g with
@@ -402,7 +402,7 @@ are still metavariables.
 @[to_additive
       "This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
        are still metavariables."]
-theorem comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
+lemma comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
     haveI := comp α g
     SMulCommClass β N α :=
   { comp α g with
@@ -417,7 +417,7 @@ section
 /-- Note that the `SMulCommClass α β β` typeclass argument is usually satisfied by `Algebra α β`.
 -/
 @[to_additive] -- Porting note: nolint to_additive_doc
-theorem mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x y : β) :
+lemma mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x y : β) :
     x * s • y = s • (x * y) :=
   (smul_comm s x y).symm
 #align mul_smul_comm mul_smul_comm
@@ -426,14 +426,14 @@ theorem mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`.
 -/
 @[to_additive] -- Porting note: nolint to_additive_doc
-theorem smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
+lemma smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x * y = r • (x * y) :=
   smul_assoc r x y
 #align smul_mul_assoc smul_mul_assoc
 #align vadd_add_assoc vadd_add_assoc
 
 @[to_additive]
-theorem smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [SMul γ δ]
+lemma smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [SMul γ δ]
     [IsScalarTower α β δ] [IsScalarTower α γ δ] [SMulCommClass β γ δ] (a : α) (b : β) (c : γ)
     (d : δ) : (a • b) • c • d = (a • c) • b • d := by
   rw [smul_assoc, smul_assoc, smul_comm b]
@@ -443,14 +443,14 @@ theorem smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] 
 variable [SMul M α]
 
 @[to_additive]
-theorem Commute.smul_right [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
+lemma Commute.smul_right [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
     (h : Commute a b) (r : M) : Commute a (r • b) :=
   (mul_smul_comm _ _ _).trans ((congr_arg _ h).trans <| (smul_mul_assoc _ _ _).symm)
 #align commute.smul_right Commute.smul_right
 #align add_commute.vadd_right AddCommute.vadd_right
 
 @[to_additive]
-theorem Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
+lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
     (h : Commute a b) (r : M) : Commute (r • a) b :=
   (h.symm.smul_right r).symm
 #align commute.smul_left Commute.smul_left
@@ -496,7 +496,7 @@ theorem one_smul (b : α) : (1 : M) • b = b :=
 
 /-- `SMul` version of `one_mul_eq_id` -/
 @[to_additive "`VAdd` version of `zero_add_eq_id`"]
-theorem one_smul_eq_id : ((· • ·) (1 : M) : α → α) = id :=
+lemma one_smul_eq_id : ((· • ·) (1 : M) : α → α) = id :=
   funext <| one_smul _
 #align one_smul_eq_id one_smul_eq_id
 #align zero_vadd_eq_id zero_vadd_eq_id
@@ -589,7 +589,7 @@ variable {M}
 /-- Note that the `IsScalarTower M α α` and `SMulCommClass M α α` typeclass arguments are
 usually satisfied by `Algebra M α`. -/
 @[to_additive] -- Porting note: nolint to_additive_doc
-theorem smul_mul_smul [Mul α] (r s : M) (x y : α) [IsScalarTower M α α] [SMulCommClass M α α] :
+lemma smul_mul_smul [Mul α] (r s : M) (x y : α) [IsScalarTower M α α] [SMulCommClass M α α] :
     r • x * s • y = (r * s) • (x * y) := by
   rw [smul_mul_assoc, mul_smul_comm, ← smul_assoc, smul_eq_mul]
 #align smul_mul_smul smul_mul_smul
@@ -649,33 +649,33 @@ end
 section CompatibleScalar
 
 @[to_additive]
-theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
+lemma smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
     [IsScalarTower M N α] (x : M) (y : α) : (x • (1 : N)) • y = x • y := by
   rw [smul_assoc, one_smul]
 #align smul_one_smul smul_one_smul
 #align vadd_zero_vadd vadd_zero_vadd
 
 @[to_additive (attr := simp)]
-theorem smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
+lemma smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
     x • (1 : N) * y = x • y := by rw [smul_mul_assoc, one_mul]
 #align smul_one_mul smul_one_mul
 #align vadd_zero_add vadd_zero_add
 
 @[to_additive (attr := simp)]
-theorem mul_smul_one {M N} [MulOneClass N] [SMul M N] [SMulCommClass M N N] (x : M) (y : N) :
+lemma mul_smul_one {M N} [MulOneClass N] [SMul M N] [SMulCommClass M N N] (x : M) (y : N) :
     y * x • (1 : N) = x • y := by rw [← smul_eq_mul, ← smul_comm, smul_eq_mul, mul_one]
 #align mul_smul_one mul_smul_one
 #align add_vadd_zero add_vadd_zero
 
 @[to_additive]
-theorem IsScalarTower.of_smul_one_mul {M N} [Monoid N] [SMul M N]
+lemma IsScalarTower.of_smul_one_mul {M N} [Monoid N] [SMul M N]
     (h : ∀ (x : M) (y : N), x • (1 : N) * y = x • y) : IsScalarTower M N N :=
   ⟨fun x y z => by rw [← h, smul_eq_mul, mul_assoc, h, smul_eq_mul]⟩
 #align is_scalar_tower.of_smul_one_mul IsScalarTower.of_smul_one_mul
 #align vadd_assoc_class.of_vadd_zero_add VAddAssocClass.of_vadd_zero_add
 
 @[to_additive]
-theorem SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
+lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
     (H : ∀ (x : M) (y : N), y * x • (1 : N) = x • y) : SMulCommClass M N N :=
   ⟨fun x y z => by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
 #align smul_comm_class.of_mul_smul_one SMulCommClass.of_mul_smul_one
@@ -1133,7 +1133,7 @@ theorem Function.End.mul_def (f g : Function.End α) : (f * g) = f ∘ g :=
   rfl
 
 --TODO - This statement should be somethting like `toFun 1 = id`
-theorem Function.End.one_def : (1 : Function.End α) = id :=
+lemma Function.End.one_def : (1 : Function.End α) = id :=
   rfl
 
 /-- `Function.End.applyMulAction` is faithful. -/
@@ -1154,7 +1154,7 @@ instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
 #align add_monoid.End.apply_distrib_mul_action AddMonoid.End.applyDistribMulAction
 
 @[simp]
-theorem AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : f • a = f a :=
+lemma AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : f • a = f a :=
   rfl
 #align add_monoid.End.smul_def AddMonoid.End.smul_def
 
@@ -1196,22 +1196,22 @@ instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β :=
 #align multiplicative.has_smul Multiplicative.smul
 
 @[simp]
-theorem toMul_smul [SMul α β] (a) (b : β) : (toMul a : α) • b = a +ᵥ b :=
+lemma toMul_smul [SMul α β] (a) (b : β) : (toMul a : α) • b = a +ᵥ b :=
   rfl
 #align to_mul_smul toMul_smul
 
 @[simp]
-theorem ofMul_vadd [SMul α β] (a : α) (b : β) : ofMul a +ᵥ b = a • b :=
+lemma ofMul_vadd [SMul α β] (a : α) (b : β) : ofMul a +ᵥ b = a • b :=
   rfl
 #align of_mul_vadd ofMul_vadd
 
 @[simp]
-theorem toAdd_vadd [VAdd α β] (a) (b : β) : (toAdd a : α) +ᵥ b = a • b :=
+lemma toAdd_vadd [VAdd α β] (a) (b : β) : (toAdd a : α) +ᵥ b = a • b :=
   rfl
 #align to_add_vadd toAdd_vadd
 
 @[simp]
-theorem ofAdd_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b :=
+lemma ofAdd_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b :=
   rfl
 #align of_add_smul ofAdd_smul
 

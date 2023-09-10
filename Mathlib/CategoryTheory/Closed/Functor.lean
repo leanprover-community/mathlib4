@@ -108,7 +108,7 @@ theorem uncurry_expComparison (A B : C) :
 #align category_theory.uncurry_exp_comparison CategoryTheory.uncurry_expComparison
 
 /-- The exponential comparison map is natural in `A`. -/
-theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
+lemma expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
       whiskerRight (pre f) _ ≫ expComparison F A' := by
   ext B

@@ -74,11 +74,11 @@ theorem balancedCore_subset (s : Set E) : balancedCore 𝕜 s ⊆ s :=
   sUnion_subset fun _ ht => ht.2
 #align balanced_core_subset balancedCore_subset
 
-theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
+lemma balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
   eq_empty_of_subset_empty (balancedCore_subset _)
 #align balanced_core_empty balancedCore_empty
 
-theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
+lemma mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
   simp_rw [balancedCore, mem_sUnion, mem_setOf_eq, and_assoc]
 #align mem_balanced_core_iff mem_balancedCore_iff
 
@@ -101,11 +101,11 @@ theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆
   subset_sUnion_of_mem ⟨hs, h⟩
 #align balanced.subset_core_of_subset Balanced.subset_balancedCore_of_subset
 
-theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
+lemma mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=
   mem_iInter₂
 #align mem_balanced_core_aux_iff mem_balancedCoreAux_iff
 
-theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ (r : 𝕜) (_ : ‖r‖ ≤ 1), x ∈ r • s :=
+lemma mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ (r : 𝕜) (_ : ‖r‖ ≤ 1), x ∈ r • s :=
   mem_iUnion₂
 #align mem_balanced_hull_iff mem_balancedHull_iff
 
@@ -128,7 +128,7 @@ theorem balancedCore_zero_mem (hs : (0 : E) ∈ s) : (0 : E) ∈ balancedCore �
   mem_balancedCore_iff.2 ⟨0, balanced_zero, zero_subset.2 hs, Set.zero_mem_zero⟩
 #align balanced_core_zero_mem balancedCore_zero_mem
 
-theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) ∈ s :=
+lemma balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) ∈ s :=
   ⟨fun h => zero_subset.1 <| (zero_smul_set h).superset.trans <|
     (balancedCore_balanced s (0 : 𝕜) <| norm_zero.trans_le zero_le_one).trans <|
       balancedCore_subset _,
@@ -137,7 +137,7 @@ theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) �
 
 variable (𝕜)
 
-theorem subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull 𝕜 s := fun _ hx =>
+lemma subset_balancedHull [NormOneClass 𝕜] {s : Set E} : s ⊆ balancedHull 𝕜 s := fun _ hx =>
   mem_balancedHull_iff.2 ⟨1, norm_one.le, _, hx, one_smul _ _⟩
 #align subset_balanced_hull subset_balancedHull
 
@@ -160,7 +160,7 @@ section NormedField
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 @[simp]
-theorem balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
+lemma balancedCoreAux_empty : balancedCoreAux 𝕜 (∅ : Set E) = ∅ := by
   simp_rw [balancedCoreAux, iInter₂_eq_empty_iff, smul_set_empty]
   exact fun _ => ⟨1, norm_one.ge, not_mem_empty _⟩
 #align balanced_core_aux_empty balancedCoreAux_empty
@@ -191,7 +191,7 @@ theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ bal
   exact inv_le_one hr
 #align balanced_core_aux_maximal balancedCoreAux_maximal
 
-theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCoreAux 𝕜 s :=
+lemma balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCoreAux 𝕜 s :=
   balancedCoreAux_maximal (balancedCore_subset s) (balancedCore_balanced s)
 #align balanced_core_subset_balanced_core_aux balancedCore_subset_balancedCoreAux
 
@@ -261,14 +261,14 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
 
 variable (𝕜 E)
 
-theorem nhds_basis_balanced :
+lemma nhds_basis_balanced :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s) id :=
   Filter.hasBasis_self.mpr fun s hs =>
     ⟨balancedCore 𝕜 s, balancedCore_mem_nhds_zero hs, balancedCore_balanced s,
       balancedCore_subset s⟩
 #align nhds_basis_balanced nhds_basis_balanced
 
-theorem nhds_basis_closed_balanced [RegularSpace E] :
+lemma nhds_basis_closed_balanced [RegularSpace E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ IsClosed s ∧ Balanced 𝕜 s) id := by
   refine'
     (closed_nhds_basis 0).to_hasBasis (fun s hs => _) fun s hs => ⟨s, ⟨hs.1, hs.2.1⟩, rfl.subset⟩

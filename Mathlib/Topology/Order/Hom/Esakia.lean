@@ -124,11 +124,11 @@ instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
 @[simp]
 theorem toOrderHom_eq_coe (f : PseudoEpimorphism α β) : ⇑f.toOrderHom = f := rfl
 
-theorem toFun_eq_coe {f : PseudoEpimorphism α β} : f.toFun = (f : α → β) := rfl
+lemma toFun_eq_coe {f : PseudoEpimorphism α β} : f.toFun = (f : α → β) := rfl
 #align pseudo_epimorphism.to_fun_eq_coe PseudoEpimorphism.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : PseudoEpimorphism α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : PseudoEpimorphism α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align pseudo_epimorphism.ext PseudoEpimorphism.ext
 
@@ -157,11 +157,11 @@ instance : Inhabited (PseudoEpimorphism α α) :=
   ⟨PseudoEpimorphism.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(PseudoEpimorphism.id α) = id := rfl
+lemma coe_id : ⇑(PseudoEpimorphism.id α) = id := rfl
 #align pseudo_epimorphism.coe_id PseudoEpimorphism.coe_id
 
 @[simp]
-theorem coe_id_orderHom : (PseudoEpimorphism.id α : α →o α) = OrderHom.id := rfl
+lemma coe_id_orderHom : (PseudoEpimorphism.id α : α →o α) = OrderHom.id := rfl
 #align pseudo_epimorphism.coe_id_order_hom PseudoEpimorphism.coe_id_orderHom
 
 variable {α}
@@ -209,13 +209,13 @@ theorem id_comp (f : PseudoEpimorphism α β) : (PseudoEpimorphism.id β).comp f
 #align pseudo_epimorphism.id_comp PseudoEpimorphism.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : PseudoEpimorphism β γ} {f : PseudoEpimorphism α β}
+lemma cancel_right {g₁ g₂ : PseudoEpimorphism β γ} {f : PseudoEpimorphism α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align pseudo_epimorphism.cancel_right PseudoEpimorphism.cancel_right
 
 @[simp]
-theorem cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism α β} (hg : Injective g) :
+lemma cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align pseudo_epimorphism.cancel_left PseudoEpimorphism.cancel_left
@@ -251,15 +251,15 @@ instance : CoeFun (EsakiaHom α β) fun _ => α → β :=
 
 -- Porting note: introduced this to appease simpNF linter with `toFun_eq_coe`
 @[simp]
-theorem toContinuousOrderHom_coe {f : EsakiaHom α β} :
+lemma toContinuousOrderHom_coe {f : EsakiaHom α β} :
     f.toContinuousOrderHom = (f : α → β) := rfl
 
 -- Porting note: removed simp attribute as simp now solves this
-theorem toFun_eq_coe {f : EsakiaHom α β} : f.toFun = (f : α → β) := rfl
+lemma toFun_eq_coe {f : EsakiaHom α β} : f.toFun = (f : α → β) := rfl
 #align esakia_hom.to_fun_eq_coe EsakiaHom.toFun_eq_coe
 
 @[ext]
-theorem ext {f g : EsakiaHom α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : EsakiaHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align esakia_hom.ext EsakiaHom.ext
 
@@ -289,11 +289,11 @@ instance : Inhabited (EsakiaHom α α) :=
   ⟨EsakiaHom.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(EsakiaHom.id α) = id := rfl
+lemma coe_id : ⇑(EsakiaHom.id α) = id := rfl
 #align esakia_hom.coe_id EsakiaHom.coe_id
 
 @[simp]
-theorem coe_id_pseudoEpimorphism :
+lemma coe_id_pseudoEpimorphism :
     (EsakiaHom.id α : PseudoEpimorphism α α) = PseudoEpimorphism.id α := rfl
 #align esakia_hom.coe_id_pseudo_epimorphism EsakiaHom.coe_id_pseudoEpimorphism
 
@@ -304,7 +304,7 @@ theorem id_apply (a : α) : EsakiaHom.id α a = a := rfl
 #align esakia_hom.id_apply EsakiaHom.id_apply
 
 @[simp]
-theorem coe_id_continuousOrderHom : (EsakiaHom.id α : α →Co α) = ContinuousOrderHom.id α := rfl
+lemma coe_id_continuousOrderHom : (EsakiaHom.id α : α →Co α) = ContinuousOrderHom.id α := rfl
 #align esakia_hom.coe_id_continuous_order_hom EsakiaHom.coe_id_continuousOrderHom
 
 /-- Composition of `EsakiaHom`s as an `EsakiaHom`. -/
@@ -349,13 +349,13 @@ theorem id_comp (f : EsakiaHom α β) : (EsakiaHom.id β).comp f = f :=
 #align esakia_hom.id_comp EsakiaHom.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : EsakiaHom β γ} {f : EsakiaHom α β} (hf : Surjective f) :
+lemma cancel_right {g₁ g₂ : EsakiaHom β γ} {f : EsakiaHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align esakia_hom.cancel_right EsakiaHom.cancel_right
 
 @[simp]
-theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : Injective g) :
+lemma cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align esakia_hom.cancel_left EsakiaHom.cancel_left

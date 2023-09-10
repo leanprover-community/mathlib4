@@ -23,12 +23,12 @@ namespace IsROrC
 variable {𝕜 : Type*} [IsROrC 𝕜]
 
 @[measurability]
-theorem measurable_re : Measurable (re : 𝕜 → ℝ) :=
+lemma measurable_re : Measurable (re : 𝕜 → ℝ) :=
   continuous_re.measurable
 #align is_R_or_C.measurable_re IsROrC.measurable_re
 
 @[measurability]
-theorem measurable_im : Measurable (im : 𝕜 → ℝ) :=
+lemma measurable_im : Measurable (im : 𝕜 → ℝ) :=
   continuous_im.measurable
 #align is_R_or_C.measurable_im IsROrC.measurable_im
 
@@ -65,7 +65,7 @@ section
 variable {α 𝕜 : Type*} [IsROrC 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
-theorem IsROrC.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=
+lemma IsROrC.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=
   IsROrC.continuous_ofReal.measurable
 #align is_R_or_C.measurable_of_real IsROrC.measurable_ofReal
 

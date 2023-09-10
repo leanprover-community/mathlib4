@@ -76,13 +76,13 @@ def indexEquivOfInv [Nontrivial A] [DecidableEq m] [DecidableEq n] {M : Matrix m
   equivOfPiLEquivPi (toLin'OfInv hMM' hM'M)
 #align matrix.index_equiv_of_inv Matrix.indexEquivOfInv
 
-theorem det_comm [DecidableEq n] (M N : Matrix n n A) : det (M * N) = det (N * M) := by
+lemma det_comm [DecidableEq n] (M N : Matrix n n A) : det (M * N) = det (N * M) := by
   rw [det_mul, det_mul, mul_comm]
 #align matrix.det_comm Matrix.det_comm
 
 /-- If there exists a two-sided inverse `M'` for `M` (indexed differently),
 then `det (N * M) = det (M * N)`. -/
-theorem det_comm' [DecidableEq m] [DecidableEq n] {M : Matrix n m A} {N : Matrix m n A}
+lemma det_comm' [DecidableEq m] [DecidableEq n] {M : Matrix n m A} {N : Matrix m n A}
     {M' : Matrix m n A} (hMM' : M * M' = 1) (hM'M : M' * M = 1) : det (M * N) = det (N * M) := by
   nontriviality A
   -- Although `m` and `n` are different a priori, we will show they have the same cardinality.
@@ -95,7 +95,7 @@ theorem det_comm' [DecidableEq m] [DecidableEq n] {M : Matrix n m A} {N : Matrix
 /-- If `M'` is a two-sided inverse for `M` (indexed differently), `det (M * N * M') = det N`.
 
 See `Matrix.det_conj` and `Matrix.det_conj'` for the case when `M' = M⁻¹` or vice versa. -/
-theorem det_conj_of_mul_eq_one [DecidableEq m] [DecidableEq n] {M : Matrix m n A}
+lemma det_conj_of_mul_eq_one [DecidableEq m] [DecidableEq n] {M : Matrix m n A}
     {M' : Matrix n m A} {N : Matrix n n A} (hMM' : M * M' = 1) (hM'M : M' * M = 1) :
     det (M * N * M') = det N := by
   rw [← det_comm' hM'M hMM', ← Matrix.mul_assoc, hM'M, Matrix.one_mul]
@@ -115,7 +115,7 @@ variable {A : Type*} [CommRing A] [Module A M]
 variable {κ : Type*} [Fintype κ]
 
 /-- The determinant of `LinearMap.toMatrix` does not depend on the choice of basis. -/
-theorem det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Basis κ A M)
+lemma det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Basis κ A M)
     (f : M →ₗ[A] M) : det (LinearMap.toMatrix b b f) = det (LinearMap.toMatrix c c f) := by
   rw [← linearMap_toMatrix_mul_basis_toMatrix c b c, ← basis_toMatrix_mul_linearMap_toMatrix b c b,
       Matrix.det_conj_of_mul_eq_one] <;>
@@ -148,7 +148,7 @@ theorem detAux_def' (b : Basis ι A M) (f : M →ₗ[A] M) :
   rfl
 #align linear_map.det_aux_def LinearMap.detAux_def'
 
-theorem detAux_def'' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
+lemma detAux_def'' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
     (b' : Basis ι' A M) (f : M →ₗ[A] M) :
     LinearMap.detAux tb f = Matrix.det (LinearMap.toMatrix b' b' f) := by
   induction tb using Trunc.induction_on with
@@ -181,7 +181,7 @@ protected irreducible_def det : (M →ₗ[A] M) →* A :=
 #align linear_map.det LinearMap.det
 
 open scoped Classical in
-theorem coe_det [DecidableEq M] :
+lemma coe_det [DecidableEq M] :
     ⇑(LinearMap.det : (M →ₗ[A] M) →* A) =
       if H : ∃ s : Finset M, Nonempty (Basis s A M) then
         LinearMap.detAux (Trunc.mk H.choose_spec.some)
@@ -197,7 +197,7 @@ end
 
 -- Auxiliary lemma, the `simp` normal form goes in the other direction
 -- (using `LinearMap.det_toMatrix`)
-theorem det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis s A M)
+lemma det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis s A M)
     (f : M →ₗ[A] M) : LinearMap.det f = Matrix.det (LinearMap.toMatrix b b f) := by
   have : ∃ s : Finset M, Nonempty (Basis s A M) := ⟨s, ⟨b⟩⟩
   rw [LinearMap.coe_det, dif_pos, detAux_def'' _ b] <;> assumption
@@ -214,7 +214,7 @@ theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
 #align linear_map.det_to_matrix LinearMap.det_toMatrix
 
 @[simp]
-theorem det_toMatrix' {ι : Type*} [Fintype ι] [DecidableEq ι] (f : (ι → A) →ₗ[A] ι → A) :
+lemma det_toMatrix' {ι : Type*} [Fintype ι] [DecidableEq ι] (f : (ι → A) →ₗ[A] ι → A) :
     Matrix.det (LinearMap.toMatrix' f) = LinearMap.det f := by simp [← toMatrix_eq_toMatrix']
 #align linear_map.det_to_matrix' LinearMap.det_toMatrix'
 
@@ -232,7 +232,7 @@ theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matr
 /-- To show `P (LinearMap.det f)` it suffices to consider `P (Matrix.det (toMatrix _ _ f))` and
 `P 1`. -/
 -- @[elab_as_elim] -- Porting note: This attr can't be applied.
-theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
+lemma det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
     P (LinearMap.det f) := by
   rw [LinearMap.det_def]
@@ -250,13 +250,13 @@ theorem det_comp (f g : M →ₗ[A] M) :
 #align linear_map.det_comp LinearMap.det_comp
 
 @[simp]
-theorem det_id : LinearMap.det (LinearMap.id : M →ₗ[A] M) = 1 :=
+lemma det_id : LinearMap.det (LinearMap.id : M →ₗ[A] M) = 1 :=
   LinearMap.det.map_one
 #align linear_map.det_id LinearMap.det_id
 
 /-- Multiplying a map by a scalar `c` multiplies its determinant by `c ^ dim M`. -/
 @[simp]
-theorem det_smul {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] (c : 𝕜)
+lemma det_smul {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] (c : 𝕜)
     (f : M →ₗ[𝕜] M) :
     LinearMap.det (c • f) = c ^ FiniteDimensional.finrank 𝕜 M * LinearMap.det f := by
   by_cases H : ∃ s : Finset M, Nonempty (Basis s 𝕜 M)
@@ -270,7 +270,7 @@ theorem det_smul {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Modul
       simp [coe_det, H, this]
 #align linear_map.det_smul LinearMap.det_smul
 
-theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
+lemma det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
     LinearMap.det (0 : M →ₗ[A] M) = 0 := by
   haveI := Classical.decEq ι
   cases nonempty_fintype ι
@@ -281,19 +281,19 @@ theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
 and `0` otherwise. We give a formula that also works in infinite dimension, where we define
 the determinant to be `1`. -/
 @[simp]
-theorem det_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] :
+lemma det_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] :
     LinearMap.det (0 : M →ₗ[𝕜] M) = (0 : 𝕜) ^ FiniteDimensional.finrank 𝕜 M := by
   simp only [← zero_smul 𝕜 (1 : M →ₗ[𝕜] M), det_smul, mul_one, MonoidHom.map_one]
 #align linear_map.det_zero LinearMap.det_zero
 
-theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
+lemma det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
   have b : Basis (Fin 0) R M := Basis.empty M
   rw [← f.det_toMatrix b]
   exact Matrix.det_isEmpty
 #align linear_map.det_eq_one_of_subsingleton LinearMap.det_eq_one_of_subsingleton
 
-theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M]
+lemma det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M]
     [Module 𝕜 M] (h : FiniteDimensional.finrank 𝕜 M = 0) (f : M →ₗ[𝕜] M) :
     LinearMap.det (f : M →ₗ[𝕜] M) = 1 := by
   classical
@@ -307,7 +307,7 @@ theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [A
 
 /-- Conjugating a linear map by a linear equiv does not change its determinant. -/
 @[simp]
-theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (e : M ≃ₗ[A] N) :
+lemma det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (e : M ≃ₗ[A] N) :
     LinearMap.det ((e : M →ₗ[A] N) ∘ₗ f ∘ₗ (e.symm : N →ₗ[A] M)) = LinearMap.det f := by
   classical
     by_cases H : ∃ s : Finset M, Nonempty (Basis s A M)
@@ -326,7 +326,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
 #align linear_map.det_conj LinearMap.det_conj
 
 /-- If a linear map is invertible, so is its determinant. -/
-theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
+lemma isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
     IsUnit (LinearMap.det f) := by
   obtain ⟨g, hg⟩ : ∃ g, f.comp g = 1 := hf.exists_right_inv
   have : LinearMap.det f * LinearMap.det g = 1 := by
@@ -335,7 +335,7 @@ theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf
 #align linear_map.is_unit_det LinearMap.isUnit_det
 
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
-theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
+lemma finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
     (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M := by
   by_cases H : ∃ s : Finset M, Nonempty (Basis s 𝕜 M)
   · rcases H with ⟨s, ⟨hs⟩⟩
@@ -344,7 +344,7 @@ theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜
 #align linear_map.finite_dimensional_of_det_ne_one LinearMap.finiteDimensional_of_det_ne_one
 
 /-- If the determinant of a map vanishes, then the map is not onto. -/
-theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
+lemma range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
     (hf : LinearMap.det f = 0) : LinearMap.range f < ⊤ := by
   have : FiniteDimensional 𝕜 M := by simp [f.finiteDimensional_of_det_ne_one, hf]
   contrapose hf
@@ -353,7 +353,7 @@ theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] 
 #align linear_map.range_lt_top_of_det_eq_zero LinearMap.range_lt_top_of_det_eq_zero
 
 /-- If the determinant of a map vanishes, then the map is not injective. -/
-theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
+lemma bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
     (hf : LinearMap.det f = 0) : ⊥ < LinearMap.ker f := by
   have : FiniteDimensional 𝕜 M := by simp [f.finiteDimensional_of_det_ne_one, hf]
   contrapose hf
@@ -383,7 +383,7 @@ theorem coe_inv_det (f : M ≃ₗ[R] M) : ↑(LinearEquiv.det f)⁻¹ = LinearMa
 #align linear_equiv.coe_inv_det LinearEquiv.coe_inv_det
 
 @[simp]
-theorem det_refl : LinearEquiv.det (LinearEquiv.refl R M) = 1 :=
+lemma det_refl : LinearEquiv.det (LinearEquiv.refl R M) = 1 :=
   Units.ext <| LinearMap.det_id
 #align linear_equiv.det_refl LinearEquiv.det_refl
 
@@ -411,14 +411,14 @@ end LinearEquiv
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
-theorem LinearEquiv.det_mul_det_symm {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
+lemma LinearEquiv.det_mul_det_symm {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
     LinearMap.det (f : M →ₗ[A] M) * LinearMap.det (f.symm : M →ₗ[A] M) = 1 := by
   simp [← LinearMap.det_comp]
 #align linear_equiv.det_mul_det_symm LinearEquiv.det_mul_det_symm
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
-theorem LinearEquiv.det_symm_mul_det {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
+lemma LinearEquiv.det_symm_mul_det {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
     LinearMap.det (f.symm : M →ₗ[A] M) * LinearMap.det (f : M →ₗ[A] M) = 1 :=
   by simp [← LinearMap.det_comp]
 #align linear_equiv.det_symm_mul_det LinearEquiv.det_symm_mul_det
@@ -431,13 +431,13 @@ theorem LinearEquiv.isUnit_det (f : M ≃ₗ[R] M') (v : Basis ι R M) (v' : Bas
 #align linear_equiv.is_unit_det LinearEquiv.isUnit_det
 
 /-- Specialization of `LinearEquiv.isUnit_det` -/
-theorem LinearEquiv.isUnit_det' {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
+lemma LinearEquiv.isUnit_det' {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
     IsUnit (LinearMap.det (f : M →ₗ[A] M)) :=
   isUnit_of_mul_eq_one _ _ f.det_mul_det_symm
 #align linear_equiv.is_unit_det' LinearEquiv.isUnit_det'
 
 /-- The determinant of `f.symm` is the inverse of that of `f` when `f` is a linear equiv. -/
-theorem LinearEquiv.det_coe_symm {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M ≃ₗ[𝕜] M) :
+lemma LinearEquiv.det_coe_symm {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M ≃ₗ[𝕜] M) :
     LinearMap.det (f.symm : M →ₗ[𝕜] M) = (LinearMap.det (f : M →ₗ[𝕜] M))⁻¹ := by
   field_simp [IsUnit.ne_zero f.isUnit_det']
 #align linear_equiv.det_coe_symm LinearEquiv.det_coe_symm
@@ -464,7 +464,7 @@ def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis 
 #align linear_equiv.of_is_unit_det LinearEquiv.ofIsUnitDet
 
 @[simp]
-theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis ι R M'}
+lemma LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis ι R M'}
     (h : IsUnit (LinearMap.toMatrix v v' f).det) :
     (LinearEquiv.ofIsUnitDet h : M →ₗ[R] M') = f := by
   ext x
@@ -493,7 +493,7 @@ theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ
   exact Associated.mul_left _ (associated_one_iff_isUnit.mpr e.isUnit_det')
 #align linear_map.associated_det_of_eq_comp LinearMap.associated_det_of_eq_comp
 
-theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module R N]
+lemma LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module R N]
     (f : N →ₗ[R] M) (e e' : M ≃ₗ[R] N) :
     Associated (LinearMap.det (f ∘ₗ ↑e)) (LinearMap.det (f ∘ₗ ↑e')) := by
   refine' LinearMap.associated_det_of_eq_comp (e.trans e'.symm) _ _ _
@@ -532,20 +532,20 @@ theorem Basis.det_apply (v : ι → M) : e.det v = Matrix.det (e.toMatrix v) :=
   rfl
 #align basis.det_apply Basis.det_apply
 
-theorem Basis.det_self : e.det e = 1 := by simp [e.det_apply]
+lemma Basis.det_self : e.det e = 1 := by simp [e.det_apply]
 #align basis.det_self Basis.det_self
 
 @[simp]
-theorem Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R M ι 1 := by
+lemma Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R M ι 1 := by
   ext v
   exact Matrix.det_isEmpty
 #align basis.det_is_empty Basis.det_isEmpty
 
 /-- `Basis.det` is not the zero map. -/
-theorem Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h => by simpa [h] using e.det_self
+lemma Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h => by simpa [h] using e.det_self
 #align basis.det_ne_zero Basis.det_ne_zero
 
-theorem is_basis_iff_det {v : ι → M} :
+lemma is_basis_iff_det {v : ι → M} :
     LinearIndependent R v ∧ span R (Set.range v) = ⊤ ↔ IsUnit (e.det v) := by
   constructor
   · rintro ⟨hli, hspan⟩
@@ -578,7 +578,7 @@ theorem AlternatingMap.eq_smul_basis_det (f : AlternatingMap R M R ι) : f = f e
 #align alternating_map.eq_smul_basis_det AlternatingMap.eq_smul_basis_det
 
 @[simp]
-theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
+lemma AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : AlternatingMap R M R ι) : f e = 0 ↔ f = 0 :=
   ⟨fun h => by
     cases nonempty_fintype ι
@@ -587,7 +587,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
    fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
 #align alternating_map.map_basis_eq_zero_iff AlternatingMap.map_basis_eq_zero_iff
 
-theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
+lemma AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : AlternatingMap R M R ι) : f e ≠ 0 ↔ f ≠ 0 :=
   not_congr <| f.map_basis_eq_zero_iff e
 #align alternating_map.map_basis_ne_zero_iff AlternatingMap.map_basis_ne_zero_iff
@@ -603,7 +603,7 @@ theorem Basis.det_comp (e : Basis ι A M) (f : M →ₗ[A] M) (v : ι → M) :
 #align basis.det_comp Basis.det_comp
 
 @[simp]
-theorem Basis.det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M') (f : M →ₗ[A] M') :
+lemma Basis.det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M') (f : M →ₗ[A] M') :
     b'.det (f ∘ b) = LinearMap.det (f ∘ₗ (b'.equiv b (Equiv.refl ι) : M' →ₗ[A] M)) := by
   rw [Basis.det_apply, ← LinearMap.det_toMatrix b', LinearMap.toMatrix_comp _ b, Matrix.det_mul,
     LinearMap.toMatrix_basis_equiv, Matrix.det_one, mul_one]
@@ -611,17 +611,17 @@ theorem Basis.det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M
   rw [Basis.toMatrix_apply, LinearMap.toMatrix_apply, Function.comp_apply]
 #align basis.det_comp_basis Basis.det_comp_basis
 
-theorem Basis.det_reindex {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
+lemma Basis.det_reindex {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
     (e : ι ≃ ι') : (b.reindex e).det v = b.det (v ∘ e) := by
   rw [Basis.det_apply, Basis.toMatrix_reindex', det_reindexAlgEquiv, Basis.det_apply]
 #align basis.det_reindex Basis.det_reindex
 
-theorem Basis.det_reindex' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
+lemma Basis.det_reindex' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
     (e : ι ≃ ι') : (b.reindex e).det = b.det.domDomCongr e :=
   AlternatingMap.ext fun _ => Basis.det_reindex _ _ _
 #align basis.det_reindex' Basis.det_reindex'
 
-theorem Basis.det_reindex_symm {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
+lemma Basis.det_reindex_symm {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
     (v : ι → M) (e : ι' ≃ ι) : (b.reindex e.symm).det (v ∘ e) = b.det v := by
   rw [Basis.det_reindex, Function.comp.assoc, e.self_comp_symm, Function.comp.right_id]
 #align basis.det_reindex_symm Basis.det_reindex_symm
@@ -638,14 +638,14 @@ theorem Basis.det_map' (b : Basis ι R M) (f : M ≃ₗ[R] M') :
 #align basis.det_map' Basis.det_map'
 
 @[simp]
-theorem Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := by
+lemma Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := by
   ext M
   rw [Basis.det_apply, Basis.coePiBasisFun.toMatrix_eq_transpose, det_transpose]
 #align pi.basis_fun_det Pi.basisFun_det
 
 /-- If we fix a background basis `e`, then for any other basis `v`, we can characterise the
 coordinates provided by `v` in terms of determinants relative to `e`. -/
-theorem Basis.det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndependent R v)
+lemma Basis.det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndependent R v)
     (hsp : ⊤ ≤ span R (range v)) (i : ι) :
     e.det v • (Basis.mk hli hsp).coord i = e.det.toMultilinearMap.toLinearMap v i := by
   apply (Basis.mk hli hsp).ext
@@ -681,7 +681,7 @@ theorem Basis.det_unitsSMul_self (w : ι → Rˣ) : e.det (e.unitsSMul w) = ∏ 
 
 /-- The determinant of a basis constructed by `isUnitSMul` is the product of the given units. -/
 @[simp]
-theorem Basis.det_isUnitSMul {w : ι → R} (hw : ∀ i, IsUnit (w i)) :
+lemma Basis.det_isUnitSMul {w : ι → R} (hw : ∀ i, IsUnit (w i)) :
     e.det (e.isUnitSMul hw) = ∏ i, w i :=
   e.det_unitsSMul_self _
 #align basis.det_is_unit_smul Basis.det_isUnitSMul

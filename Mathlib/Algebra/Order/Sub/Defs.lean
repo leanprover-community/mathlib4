@@ -62,16 +62,16 @@ section Add
 variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
-theorem tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
+lemma tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 #align tsub_le_iff_right tsub_le_iff_right
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
-theorem add_tsub_le_right : a + b - b ≤ a :=
+lemma add_tsub_le_right : a + b - b ≤ a :=
   tsub_le_iff_right.mpr le_rfl
 #align add_tsub_le_right add_tsub_le_right
 
-theorem le_tsub_add : b ≤ b - a + a :=
+lemma le_tsub_add : b ≤ b - a + a :=
   tsub_le_iff_right.mp le_rfl
 #align le_tsub_add le_tsub_add
 
@@ -90,15 +90,15 @@ section AddCommSemigroup
 
 variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
 
-theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
+lemma tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 #align tsub_le_iff_left tsub_le_iff_left
 
-theorem le_add_tsub : a ≤ b + (a - b) :=
+lemma le_add_tsub : a ≤ b + (a - b) :=
   tsub_le_iff_left.mp le_rfl
 #align le_add_tsub le_add_tsub
 
 /-- See `add_tsub_cancel_left` for the equality if `ContravariantClass α α (+) (≤)`. -/
-theorem add_tsub_le_left : a + b - a ≤ b :=
+lemma add_tsub_le_left : a + b - a ≤ b :=
   tsub_le_iff_left.mpr le_rfl
 #align add_tsub_le_left add_tsub_le_left
 
@@ -106,11 +106,11 @@ theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
   tsub_le_iff_left.mpr <| h.trans le_add_tsub
 #align tsub_le_tsub_right tsub_le_tsub_right
 
-theorem tsub_le_iff_tsub_le : a - b ≤ c ↔ a - c ≤ b := by rw [tsub_le_iff_left, tsub_le_iff_right]
+lemma tsub_le_iff_tsub_le : a - b ≤ c ↔ a - c ≤ b := by rw [tsub_le_iff_left, tsub_le_iff_right]
 #align tsub_le_iff_tsub_le tsub_le_iff_tsub_le
 
 /-- See `tsub_tsub_cancel_of_le` for the equality. -/
-theorem tsub_tsub_le : b - (b - a) ≤ a :=
+lemma tsub_tsub_le : b - (b - a) ≤ a :=
   tsub_le_iff_right.mpr le_add_tsub
 #align tsub_tsub_le tsub_tsub_le
 
@@ -126,42 +126,42 @@ theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _
 #align tsub_le_tsub tsub_le_tsub
 
-theorem antitone_const_tsub : Antitone fun x => c - x := fun _ _ hxy => tsub_le_tsub rfl.le hxy
+lemma antitone_const_tsub : Antitone fun x => c - x := fun _ _ hxy => tsub_le_tsub rfl.le hxy
 #align antitone_const_tsub antitone_const_tsub
 
 /-- See `add_tsub_assoc_of_le` for the equality. -/
-theorem add_tsub_le_assoc : a + b - c ≤ a + (b - c) := by
+lemma add_tsub_le_assoc : a + b - c ≤ a + (b - c) := by
   rw [tsub_le_iff_left, add_left_comm]
   exact add_le_add_left le_add_tsub a
 #align add_tsub_le_assoc add_tsub_le_assoc
 
 /-- See `tsub_add_eq_add_tsub` for the equality. -/
-theorem add_tsub_le_tsub_add : a + b - c ≤ a - c + b := by
+lemma add_tsub_le_tsub_add : a + b - c ≤ a - c + b := by
   rw [add_comm, add_comm _ b]
   exact add_tsub_le_assoc
 #align add_tsub_le_tsub_add add_tsub_le_tsub_add
 
-theorem add_le_add_add_tsub : a + b ≤ a + c + (b - c) := by
+lemma add_le_add_add_tsub : a + b ≤ a + c + (b - c) := by
   rw [add_assoc]
   exact add_le_add_left le_add_tsub a
 #align add_le_add_add_tsub add_le_add_add_tsub
 
-theorem le_tsub_add_add : a + b ≤ a - c + (b + c) := by
+lemma le_tsub_add_add : a + b ≤ a - c + (b + c) := by
   rw [add_comm a, add_comm (a - c)]
   exact add_le_add_add_tsub
 #align le_tsub_add_add le_tsub_add_add
 
-theorem tsub_le_tsub_add_tsub : a - c ≤ a - b + (b - c) := by
+lemma tsub_le_tsub_add_tsub : a - c ≤ a - b + (b - c) := by
   rw [tsub_le_iff_left, ← add_assoc, add_right_comm]
   exact le_add_tsub.trans (add_le_add_right le_add_tsub _)
 #align tsub_le_tsub_add_tsub tsub_le_tsub_add_tsub
 
-theorem tsub_tsub_tsub_le_tsub : c - a - (c - b) ≤ b - a := by
+lemma tsub_tsub_tsub_le_tsub : c - a - (c - b) ≤ b - a := by
   rw [tsub_le_iff_left, tsub_le_iff_left, add_left_comm]
   exact le_tsub_add.trans (add_le_add_left le_add_tsub _)
 #align tsub_tsub_tsub_le_tsub tsub_tsub_tsub_le_tsub
 
-theorem tsub_tsub_le_tsub_add {a b c : α} : a - (b - c) ≤ a - b + c :=
+lemma tsub_tsub_le_tsub_add {a b c : α} : a - (b - c) ≤ a - b + c :=
   tsub_le_iff_right.2 <|
     calc
       a ≤ a - b + b := le_tsub_add
@@ -170,7 +170,7 @@ theorem tsub_tsub_le_tsub_add {a b c : α} : a - (b - c) ≤ a - b + c :=
 #align tsub_tsub_le_tsub_add tsub_tsub_le_tsub_add
 
 /-- See `tsub_add_tsub_comm` for the equality. -/
-theorem add_tsub_add_le_tsub_add_tsub : a + b - (c + d) ≤ a - c + (b - d) := by
+lemma add_tsub_add_le_tsub_add_tsub : a + b - (c + d) ≤ a - c + (b - d) := by
   rw [add_comm c, tsub_le_iff_left, add_assoc, ← tsub_le_iff_left, ← tsub_le_iff_left]
   refine' (tsub_le_tsub_right add_tsub_le_assoc c).trans _
   rw [add_comm a, add_comm (a - c)]
@@ -178,13 +178,13 @@ theorem add_tsub_add_le_tsub_add_tsub : a + b - (c + d) ≤ a - c + (b - d) := b
 #align add_tsub_add_le_tsub_add_tsub add_tsub_add_le_tsub_add_tsub
 
 /-- See `add_tsub_add_eq_tsub_left` for the equality. -/
-theorem add_tsub_add_le_tsub_left : a + b - (a + c) ≤ b - c := by
+lemma add_tsub_add_le_tsub_left : a + b - (a + c) ≤ b - c := by
   rw [tsub_le_iff_left, add_assoc]
   exact add_le_add_left le_add_tsub _
 #align add_tsub_add_le_tsub_left add_tsub_add_le_tsub_left
 
 /-- See `add_tsub_add_eq_tsub_right` for the equality. -/
-theorem add_tsub_add_le_tsub_right : a + c - (b + c) ≤ a - b := by
+lemma add_tsub_add_le_tsub_right : a + c - (b + c) ≤ a - b := by
   rw [tsub_le_iff_left, add_right_comm]
   exact add_le_add_right le_add_tsub c
 #align add_tsub_add_le_tsub_right add_tsub_add_le_tsub_right
@@ -222,11 +222,11 @@ section Contra
 
 variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
-theorem le_add_tsub_swap : a ≤ b + a - b :=
+lemma le_add_tsub_swap : a ≤ b + a - b :=
   Contravariant.AddLECancellable.le_add_tsub_swap
 #align le_add_tsub_swap le_add_tsub_swap
 
-theorem le_add_tsub' : a ≤ a + b - b :=
+lemma le_add_tsub' : a ≤ a + b - b :=
   Contravariant.AddLECancellable.le_add_tsub
 #align le_add_tsub' le_add_tsub'
 
@@ -244,7 +244,7 @@ end AddCommSemigroup
 
 variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
-theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
+lemma tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
 #align tsub_nonpos tsub_nonpos
 
 alias ⟨_, tsub_nonpos_of_le⟩ := tsub_nonpos
@@ -272,7 +272,7 @@ theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
   apply tsub_add_eq_tsub_tsub
 #align tsub_add_eq_tsub_tsub_swap tsub_add_eq_tsub_tsub_swap
 
-theorem tsub_right_comm : a - b - c = a - c - b := by
+lemma tsub_right_comm : a - b - c = a - c - b := by
   rw [←tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
 #align tsub_right_comm tsub_right_comm
 
@@ -371,11 +371,11 @@ theorem lt_add_of_tsub_lt_right (h : a - c < b) : a < b + c :=
 
 /-- This lemma (and some of its corollaries) also holds for `ENNReal`, but this proof doesn't work
 for it. Maybe we should add this lemma as field to `OrderedSub`? -/
-theorem lt_tsub_of_add_lt_left : a + c < b → c < b - a :=
+lemma lt_tsub_of_add_lt_left : a + c < b → c < b - a :=
   Contravariant.AddLECancellable.lt_tsub_of_add_lt_left
 #align lt_tsub_of_add_lt_left lt_tsub_of_add_lt_left
 
-theorem lt_tsub_of_add_lt_right : a + c < b → a < b - c :=
+lemma lt_tsub_of_add_lt_right : a + c < b → a < b - c :=
   Contravariant.AddLECancellable.lt_tsub_of_add_lt_right
 #align lt_tsub_of_add_lt_right lt_tsub_of_add_lt_right
 
@@ -413,16 +413,16 @@ theorem lt_of_tsub_lt_tsub_right (h : a - c < b - c) : a < b :=
 #align lt_of_tsub_lt_tsub_right lt_of_tsub_lt_tsub_right
 
 /-- See `lt_tsub_iff_right_of_le` for a weaker statement in a partial order. -/
-theorem lt_tsub_iff_right : a < b - c ↔ a + c < b :=
+lemma lt_tsub_iff_right : a < b - c ↔ a + c < b :=
   lt_iff_lt_of_le_iff_le tsub_le_iff_right
 #align lt_tsub_iff_right lt_tsub_iff_right
 
 /-- See `lt_tsub_iff_left_of_le` for a weaker statement in a partial order. -/
-theorem lt_tsub_iff_left : a < b - c ↔ c + a < b :=
+lemma lt_tsub_iff_left : a < b - c ↔ c + a < b :=
   lt_iff_lt_of_le_iff_le tsub_le_iff_left
 #align lt_tsub_iff_left lt_tsub_iff_left
 
-theorem lt_tsub_comm : a < b - c ↔ c < b - a :=
+lemma lt_tsub_comm : a < b - c ↔ c < b - a :=
   lt_tsub_iff_left.trans lt_tsub_iff_right.symm
 #align lt_tsub_comm lt_tsub_comm
 

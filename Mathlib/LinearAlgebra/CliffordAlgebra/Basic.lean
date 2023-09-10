@@ -188,7 +188,7 @@ theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
+lemma hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
     f.toLinearMap.comp (ι Q) = g.toLinearMap.comp (ι Q) → f = g := by
   intro h
   apply (lift Q).symm.injective
@@ -203,7 +203,7 @@ and is preserved under addition and muliplication, then it holds for all of `Cli
 See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.right_induction`.
 -/
 @[elab_as_elim]
-theorem induction {C : CliffordAlgebra Q → Prop}
+lemma induction {C : CliffordAlgebra Q → Prop}
     (h_grade0 : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (h_grade1 : ∀ x, C (ι Q x))
     (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
     (a : CliffordAlgebra Q) : C a := by
@@ -290,7 +290,7 @@ theorem map_apply_ι (f : M₁ →ₗ[R] M₂) (hf) (m : M₁) : map Q₁ Q₂ f
 #align clifford_algebra.map_apply_ι CliffordAlgebra.map_apply_ι
 
 @[simp]
-theorem map_id :
+lemma map_id :
     (map Q₁ Q₁ (LinearMap.id : M₁ →ₗ[R] M₁) fun m => rfl) = AlgHom.id R (CliffordAlgebra Q₁) := by
   ext m; exact map_apply_ι _ _ _ _ m
 #align clifford_algebra.map_id CliffordAlgebra.map_id
@@ -341,7 +341,7 @@ theorem equivOfIsometry_trans (e₁₂ : Q₁.IsometryEquiv Q₂) (e₂₃ : Q�
 #align clifford_algebra.equiv_of_isometry_trans CliffordAlgebra.equivOfIsometry_trans
 
 @[simp]
-theorem equivOfIsometry_refl :
+lemma equivOfIsometry_refl :
     (equivOfIsometry <| QuadraticForm.IsometryEquiv.refl Q₁) = AlgEquiv.refl := by
   ext x
   exact AlgHom.congr_fun (map_id Q₁) x
@@ -367,7 +367,7 @@ theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
   convert (rfl : ⅟ (ι Q m) = _)
 #align clifford_algebra.inv_of_ι CliffordAlgebra.invOf_ι
 
-theorem isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
+lemma isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
   cases h.nonempty_invertible
   letI := invertibleιOfInvertible Q m
   exact isUnit_of_invertible (ι Q m)

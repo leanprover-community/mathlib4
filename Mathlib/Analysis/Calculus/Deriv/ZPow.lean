@@ -71,7 +71,7 @@ theorem hasDerivWithinAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) (s 
   (hasDerivAt_zpow m x h).hasDerivWithinAt
 #align has_deriv_within_at_zpow hasDerivWithinAt_zpow
 
-theorem differentiableAt_zpow : DifferentiableAt 𝕜 (fun x => x ^ m) x ↔ x ≠ 0 ∨ 0 ≤ m :=
+lemma differentiableAt_zpow : DifferentiableAt 𝕜 (fun x => x ^ m) x ↔ x ≠ 0 ∨ 0 ≤ m :=
   ⟨fun H => NormedField.continuousAt_zpow.1 H.continuousAt, fun H =>
     (hasDerivAt_zpow m x H).differentiableAt⟩
 #align differentiable_at_zpow differentiableAt_zpow

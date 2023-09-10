@@ -49,7 +49,7 @@ theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
 #align field.to_is_field Field.toIsField
 
 @[simp]
-theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
+lemma IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
   ⟨h.exists_pair_ne⟩
 #align is_field.nontrivial IsField.nontrivial
 

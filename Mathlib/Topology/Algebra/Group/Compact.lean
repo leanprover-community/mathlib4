@@ -48,7 +48,7 @@ is locally compact. -/
 @[to_additive
   "Every separated topological additive group
   in which there exists a compact set with nonempty interior is locally compact."]
-theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group [T2Space G]
+lemma TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group [T2Space G]
     (K : PositiveCompacts G) : LocallyCompactSpace G :=
   have := K.weaklyLocallyCompactSpace_of_group; inferInstance
 #align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group

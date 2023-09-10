@@ -113,22 +113,22 @@ section CommSemiring
 
 variable [CommSemiring R] (f : ι → R[X]) (t : Multiset R[X])
 
-theorem natDegree_multiset_prod_le : t.prod.natDegree ≤ (t.map natDegree).sum :=
+lemma natDegree_multiset_prod_le : t.prod.natDegree ≤ (t.map natDegree).sum :=
   Quotient.inductionOn t (by simpa using natDegree_list_prod_le)
 #align polynomial.nat_degree_multiset_prod_le Polynomial.natDegree_multiset_prod_le
 
-theorem natDegree_prod_le : (∏ i in s, f i).natDegree ≤ ∑ i in s, (f i).natDegree := by
+lemma natDegree_prod_le : (∏ i in s, f i).natDegree ≤ ∑ i in s, (f i).natDegree := by
   simpa using natDegree_multiset_prod_le (s.1.map f)
 #align polynomial.nat_degree_prod_le Polynomial.natDegree_prod_le
 
 /-- The degree of a product of polynomials is at most the sum of the degrees,
 where the degree of the zero polynomial is ⊥.
 -/
-theorem degree_multiset_prod_le : t.prod.degree ≤ (t.map Polynomial.degree).sum :=
+lemma degree_multiset_prod_le : t.prod.degree ≤ (t.map Polynomial.degree).sum :=
   Quotient.inductionOn t (by simpa using degree_list_prod_le)
 #align polynomial.degree_multiset_prod_le Polynomial.degree_multiset_prod_le
 
-theorem degree_prod_le : (∏ i in s, f i).degree ≤ ∑ i in s, (f i).degree := by
+lemma degree_prod_le : (∏ i in s, f i).degree ≤ ∑ i in s, (f i).degree := by
   simpa only [Multiset.map_map] using degree_multiset_prod_le (s.1.map f)
 #align polynomial.degree_prod_le Polynomial.degree_prod_le
 
@@ -223,12 +223,12 @@ theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s,
   · simpa using h
 #align polynomial.coeff_prod_of_nat_degree_le Polynomial.coeff_prod_of_natDegree_le
 
-theorem coeff_zero_multiset_prod : t.prod.coeff 0 = (t.map fun f => coeff f 0).prod := by
+lemma coeff_zero_multiset_prod : t.prod.coeff 0 = (t.map fun f => coeff f 0).prod := by
   refine' Multiset.induction_on t _ fun a t ht => _; · simp
   rw [Multiset.prod_cons, Multiset.map_cons, Multiset.prod_cons, Polynomial.mul_coeff_zero, ht]
 #align polynomial.coeff_zero_multiset_prod Polynomial.coeff_zero_multiset_prod
 
-theorem coeff_zero_prod : (∏ i in s, f i).coeff 0 = ∏ i in s, (f i).coeff 0 := by
+lemma coeff_zero_prod : (∏ i in s, f i).coeff 0 = ∏ i in s, (f i).coeff 0 := by
   simpa using coeff_zero_multiset_prod (s.1.map f)
 #align polynomial.coeff_zero_prod Polynomial.coeff_zero_prod
 
@@ -252,7 +252,7 @@ theorem multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_next_coeff Polynomial.multiset_prod_X_sub_C_nextCoeff
 
-theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
+lemma prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
     nextCoeff (∏ i in s, (X - C (f i))) = -∑ i in s, f i := by
   simpa using multiset_prod_X_sub_C_nextCoeff (s.1.map f)
 set_option linter.uppercaseLean3 false in
@@ -293,7 +293,7 @@ variable [Semiring R] [NoZeroDivisors R]
 the sum of the degrees, where the degree of the zero polynomial is ⊥.
 `[Nontrivial R]` is needed, otherwise for `l = []` we have `⊥` in the LHS and `0` in the RHS.
 -/
-theorem degree_list_prod [Nontrivial R] (l : List R[X]) : l.prod.degree = (l.map degree).sum :=
+lemma degree_list_prod [Nontrivial R] (l : List R[X]) : l.prod.degree = (l.map degree).sum :=
   map_list_prod (@degreeMonoidHom R _ _ _) l
 #align polynomial.degree_list_prod Polynomial.degree_list_prod
 
@@ -329,14 +329,14 @@ theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees, where the degree of the zero polynomial is ⊥.
 -/
-theorem degree_multiset_prod [Nontrivial R] : t.prod.degree = (t.map fun f => degree f).sum :=
+lemma degree_multiset_prod [Nontrivial R] : t.prod.degree = (t.map fun f => degree f).sum :=
   map_multiset_prod (@degreeMonoidHom R _ _ _) _
 #align polynomial.degree_multiset_prod Polynomial.degree_multiset_prod
 
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees, where the degree of the zero polynomial is ⊥.
 -/
-theorem degree_prod [Nontrivial R] : (∏ i in s, f i).degree = ∑ i in s, (f i).degree :=
+lemma degree_prod [Nontrivial R] : (∏ i in s, f i).degree = ∑ i in s, (f i).degree :=
   map_prod (@degreeMonoidHom R _ _ _) _ _
 #align polynomial.degree_prod Polynomial.degree_prod
 
@@ -346,7 +346,7 @@ the product of the leading coefficients.
 See `Polynomial.leadingCoeff_multiset_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
-theorem leadingCoeff_multiset_prod :
+lemma leadingCoeff_multiset_prod :
     t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod := by
   rw [← leadingCoeffHom_apply, MonoidHom.map_multiset_prod]
   rfl
@@ -358,7 +358,7 @@ the product of the leading coefficients.
 See `Polynomial.leadingCoeff_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
-theorem leadingCoeff_prod : (∏ i in s, f i).leadingCoeff = ∏ i in s, (f i).leadingCoeff := by
+lemma leadingCoeff_prod : (∏ i in s, f i).leadingCoeff = ∏ i in s, (f i).leadingCoeff := by
   simpa using leadingCoeff_multiset_prod (s.1.map f)
 #align polynomial.leading_coeff_prod Polynomial.leadingCoeff_prod
 

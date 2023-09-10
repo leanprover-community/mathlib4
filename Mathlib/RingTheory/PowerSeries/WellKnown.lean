@@ -90,56 +90,56 @@ def cos : PowerSeries A :=
 variable {A A'} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
 
 @[simp]
-theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
+lemma coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
   coeff_mk _ _
 #align power_series.coeff_exp PowerSeries.coeff_exp
 
 @[simp]
-theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
+lemma constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_exp]
   simp
 #align power_series.constant_coeff_exp PowerSeries.constantCoeff_exp
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by
+lemma coeff_sin_bit0 : coeff A (bit0 n) (sin A) = 0 := by
   rw [sin, coeff_mk, if_pos (even_bit0 n)]
 #align power_series.coeff_sin_bit0 PowerSeries.coeff_sin_bit0
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_sin_bit1 : coeff A (bit1 n) (sin A) = (-1) ^ n * coeff A (bit1 n) (exp A) := by
+lemma coeff_sin_bit1 : coeff A (bit1 n) (sin A) = (-1) ^ n * coeff A (bit1 n) (exp A) := by
   rw [sin, coeff_mk, if_neg n.not_even_bit1, Nat.bit1_div_two, ← mul_one_div, map_mul, map_pow,
     map_neg, map_one, coeff_exp]
 #align power_series.coeff_sin_bit1 PowerSeries.coeff_sin_bit1
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_cos_bit0 : coeff A (bit0 n) (cos A) = (-1) ^ n * coeff A (bit0 n) (exp A) := by
+lemma coeff_cos_bit0 : coeff A (bit0 n) (cos A) = (-1) ^ n * coeff A (bit0 n) (exp A) := by
   rw [cos, coeff_mk, if_pos (even_bit0 n), Nat.bit0_div_two, ← mul_one_div, map_mul, map_pow,
     map_neg, map_one, coeff_exp]
 #align power_series.coeff_cos_bit0 PowerSeries.coeff_cos_bit0
 
 set_option linter.deprecated false in
 @[simp]
-theorem coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
+lemma coeff_cos_bit1 : coeff A (bit1 n) (cos A) = 0 := by
   rw [cos, coeff_mk, if_neg n.not_even_bit1]
 #align power_series.coeff_cos_bit1 PowerSeries.coeff_cos_bit1
 
 @[simp]
-theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
+lemma map_exp : map (f : A →+* A') (exp A) = exp A' := by
   ext
   simp
 #align power_series.map_exp PowerSeries.map_exp
 
 @[simp]
-theorem map_sin : map f (sin A) = sin A' := by
+lemma map_sin : map f (sin A) = sin A' := by
   ext
   simp [sin, apply_ite f]
 #align power_series.map_sin PowerSeries.map_sin
 
 @[simp]
-theorem map_cos : map f (cos A) = cos A' := by
+lemma map_cos : map f (cos A) = cos A' := by
   ext
   simp [cos, apply_ite f]
 #align power_series.map_cos PowerSeries.map_cos
@@ -153,7 +153,7 @@ open Finset Nat
 variable {A : Type*} [CommRing A]
 
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
-theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
+lemma exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
   ext n
   simp only [coeff_mul, exp, rescale, coeff_mk, MonoidHom.coe_mk, OneHom.coe_mk, coe_mk,
@@ -181,12 +181,12 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 #align power_series.exp_mul_exp_eq_exp_add PowerSeries.exp_mul_exp_eq_exp_add
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
-theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
+lemma exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
   convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 #align power_series.exp_mul_exp_neg_eq_one PowerSeries.exp_mul_exp_neg_eq_one
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
-theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
+lemma exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction' k with k h
   · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero, zero_eq,
       pow_zero (exp A), coe_comp]
@@ -196,7 +196,7 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
 
 /-- Shows that
 $\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/
-theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
+lemma exp_pow_sum [Algebra ℚ A] (n : ℕ) :
     ((Finset.range n).sum fun k => exp A ^ k) =
       PowerSeries.mk fun p => (Finset.range n).sum
         fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by

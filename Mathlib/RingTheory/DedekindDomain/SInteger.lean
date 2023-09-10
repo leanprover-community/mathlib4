@@ -69,7 +69,7 @@ def integer : Subalgebra R K :=
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
 #align set.integer Set.integer
 
-theorem integer_eq :
+lemma integer_eq :
     (S.integer K).toSubring =
       ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring :=
   SetLike.ext' <| by
@@ -96,7 +96,7 @@ def unit : Subgroup Kˣ :=
       simp only [mem_setOf, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
 #align set.unit Set.unit
 
-theorem unit_eq :
+lemma unit_eq :
     S.unit K = ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.unitGroup :=
   Subgroup.copy_eq _ _ _
 #align set.unit_eq Set.unit_eq

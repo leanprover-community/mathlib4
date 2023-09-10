@@ -80,7 +80,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_to_normalized_Moore_complex_comp_inclusion_of_Moore_complex_map AlgebraicTopology.DoldKan.PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap
 
 @[reassoc (attr := simp)]
-theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
+lemma PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
       PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f :=
   by aesop_cat

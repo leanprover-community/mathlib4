@@ -55,7 +55,7 @@ def mulDysonEtransform : Finset α × Finset α :=
 #align finset.add_dyson_e_transform Finset.addDysonEtransform
 
 @[to_additive]
-theorem mulDysonEtransform.subset :
+lemma mulDysonEtransform.subset :
     (mulDysonEtransform e x).1 * (mulDysonEtransform e x).2 ⊆ x.1 * x.2 := by
   refine' union_mul_inter_subset_union.trans (union_subset Subset.rfl _)
   rw [mul_smul_comm, smul_mul_assoc, inv_smul_smul, mul_comm]
@@ -63,7 +63,7 @@ theorem mulDysonEtransform.subset :
 #align finset.add_dyson_e_transform.subset Finset.addDysonEtransform.subset
 
 @[to_additive]
-theorem mulDysonEtransform.card :
+lemma mulDysonEtransform.card :
     (mulDysonEtransform e x).1.card + (mulDysonEtransform e x).2.card = x.1.card + x.2.card := by
   dsimp
   rw [← card_smul_finset e (_ ∩ _), smul_finset_inter, smul_inv_smul, inter_comm,
@@ -72,7 +72,7 @@ theorem mulDysonEtransform.card :
 #align finset.add_dyson_e_transform.card Finset.addDysonEtransform.card
 
 @[to_additive (attr := simp)]
-theorem mulDysonEtransform_idem :
+lemma mulDysonEtransform_idem :
     mulDysonEtransform e (mulDysonEtransform e x) = mulDysonEtransform e x := by
   ext : 1 <;> dsimp
   · rw [smul_finset_inter, smul_inv_smul, inter_comm, union_eq_left_iff_subset]
@@ -85,7 +85,7 @@ theorem mulDysonEtransform_idem :
 variable {e x}
 
 @[to_additive]
-theorem mulDysonEtransform.smul_finset_snd_subset_fst :
+lemma mulDysonEtransform.smul_finset_snd_subset_fst :
     e • (mulDysonEtransform e x).2 ⊆ (mulDysonEtransform e x).1 := by
   dsimp
   rw [smul_finset_inter, smul_inv_smul, inter_comm]
@@ -129,17 +129,17 @@ def mulEtransformRight : Finset α × Finset α :=
 #align finset.add_e_transform_right Finset.addEtransformRight
 
 @[to_additive (attr := simp)]
-theorem mulEtransformLeft_one : mulEtransformLeft 1 x = x := by simp [mulEtransformLeft]
+lemma mulEtransformLeft_one : mulEtransformLeft 1 x = x := by simp [mulEtransformLeft]
 #align finset.mul_e_transform_left_one Finset.mulEtransformLeft_one
 #align finset.add_e_transform_left_zero Finset.addEtransformLeft_zero
 
 @[to_additive (attr := simp)]
-theorem mulEtransformRight_one : mulEtransformRight 1 x = x := by simp [mulEtransformRight]
+lemma mulEtransformRight_one : mulEtransformRight 1 x = x := by simp [mulEtransformRight]
 #align finset.mul_e_transform_right_one Finset.mulEtransformRight_one
 #align finset.add_e_transform_right_zero Finset.addEtransformRight_zero
 
 @[to_additive]
-theorem mulEtransformLeft.fst_mul_snd_subset :
+lemma mulEtransformLeft.fst_mul_snd_subset :
     (mulEtransformLeft e x).1 * (mulEtransformLeft e x).2 ⊆ x.1 * x.2 := by
   refine' inter_mul_union_subset_union.trans (union_subset Subset.rfl _)
   rw [op_smul_finset_mul_eq_mul_smul_finset, smul_inv_smul]
@@ -147,7 +147,7 @@ theorem mulEtransformLeft.fst_mul_snd_subset :
 #align finset.add_e_transform_left.fst_add_snd_subset Finset.addEtransformLeft.fst_add_snd_subset
 
 @[to_additive]
-theorem mulEtransformRight.fst_mul_snd_subset :
+lemma mulEtransformRight.fst_mul_snd_subset :
     (mulEtransformRight e x).1 * (mulEtransformRight e x).2 ⊆ x.1 * x.2 := by
   refine' union_mul_inter_subset_union.trans (union_subset Subset.rfl _)
   rw [op_smul_finset_mul_eq_mul_smul_finset, smul_inv_smul]
@@ -155,14 +155,14 @@ theorem mulEtransformRight.fst_mul_snd_subset :
 #align finset.add_e_transform_right.fst_add_snd_subset Finset.addEtransformRight.fst_add_snd_subset
 
 @[to_additive]
-theorem mulEtransformLeft.card :
+lemma mulEtransformLeft.card :
     (mulEtransformLeft e x).1.card + (mulEtransformRight e x).1.card = 2 * x.1.card :=
   (card_inter_add_card_union _ _).trans <| by rw [card_smul_finset, two_mul]
 #align finset.mul_e_transform_left.card Finset.mulEtransformLeft.card
 #align finset.add_e_transform_left.card Finset.addEtransformLeft.card
 
 @[to_additive]
-theorem mulEtransformRight.card :
+lemma mulEtransformRight.card :
     (mulEtransformLeft e x).2.card + (mulEtransformRight e x).2.card = 2 * x.2.card :=
   (card_union_add_card_inter _ _).trans <| by rw [card_smul_finset, two_mul]
 #align finset.mul_e_transform_right.card Finset.mulEtransformRight.card
@@ -171,7 +171,7 @@ theorem mulEtransformRight.card :
 /-- This statement is meant to be combined with `le_or_lt_of_add_le_add` and similar lemmas. -/
 @[to_additive AddEtransform.card "This statement is meant to be combined with
 `le_or_lt_of_add_le_add` and similar lemmas."]
-protected theorem MulEtransform.card :
+protected lemma MulEtransform.card :
     (mulEtransformLeft e x).1.card + (mulEtransformLeft e x).2.card +
         ((mulEtransformRight e x).1.card + (mulEtransformRight e x).2.card) =
       x.1.card + x.2.card + (x.1.card + x.2.card) := by
@@ -186,13 +186,13 @@ section CommGroup
 variable [CommGroup α] (e : α) (x : Finset α × Finset α)
 
 @[to_additive (attr := simp)]
-theorem mulEtransformLeft_inv : mulEtransformLeft e⁻¹ x = (mulEtransformRight e x.swap).swap := by
+lemma mulEtransformLeft_inv : mulEtransformLeft e⁻¹ x = (mulEtransformRight e x.swap).swap := by
   simp [-op_inv, op_smul_eq_smul, mulEtransformLeft, mulEtransformRight]
 #align finset.mul_e_transform_left_inv Finset.mulEtransformLeft_inv
 #align finset.add_e_transform_left_neg Finset.addEtransformLeft_neg
 
 @[to_additive (attr := simp)]
-theorem mulEtransformRight_inv : mulEtransformRight e⁻¹ x = (mulEtransformLeft e x.swap).swap := by
+lemma mulEtransformRight_inv : mulEtransformRight e⁻¹ x = (mulEtransformLeft e x.swap).swap := by
   simp [-op_inv, op_smul_eq_smul, mulEtransformLeft, mulEtransformRight]
 #align finset.mul_e_transform_right_inv Finset.mulEtransformRight_inv
 #align finset.add_e_transform_right_neg Finset.addEtransformRight_neg

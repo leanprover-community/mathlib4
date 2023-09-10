@@ -34,7 +34,7 @@ instance : EmbeddingLike (MyEmbedding A B) A B :=
 /-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
 instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
 
-@[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
+@[ext] lemma ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
@@ -150,7 +150,7 @@ theorem apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
 #align embedding_like.apply_eq_iff_eq EmbeddingLike.apply_eq_iff_eq
 
 @[simp]
-theorem comp_injective {F : Sort*} [EmbeddingLike F β γ] (f : α → β) (e : F) :
+lemma comp_injective {F : Sort*} [EmbeddingLike F β γ] (f : α → β) (e : F) :
     Function.Injective (e ∘ f) ↔ Function.Injective f :=
   (EmbeddingLike.injective e).of_comp_iff f
 #align embedding_like.comp_injective EmbeddingLike.comp_injective

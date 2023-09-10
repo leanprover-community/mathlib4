@@ -60,7 +60,7 @@ lemma discrim_eq_sq_of_quadratic_eq_zero {x : R} (h : a * x * x + b * x + c = 0)
 
 /-- A quadratic has roots if and only if its discriminant equals some square.
 -/
-theorem quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
+lemma quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
     (ha : a ≠ 0) (x : R) :
     a * x * x + b * x + c = 0 ↔ discrim a b c = (2 * a * x + b) ^ 2 := by
   refine ⟨discrim_eq_sq_of_quadratic_eq_zero, fun h ↦ ?_⟩

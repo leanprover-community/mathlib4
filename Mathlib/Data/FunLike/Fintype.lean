@@ -63,7 +63,7 @@ variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [FunLike F α β] [Fu
 
 Can't be an instance because it can cause infinite loops.
 -/
-theorem FunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
+lemma FunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
   Finite.of_injective _ FunLike.coe_injective
 #align fun_like.finite FunLike.finite
 
@@ -72,7 +72,7 @@ theorem FunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
 Non-dependent version of `FunLike.finite` that might be easier to infer.
 Can't be an instance because it can cause infinite loops.
 -/
-theorem FunLike.finite' [Finite α] [Finite γ] : Finite G :=
+lemma FunLike.finite' [Finite α] [Finite γ] : Finite G :=
   FunLike.finite G
 #align fun_like.finite' FunLike.finite'
 

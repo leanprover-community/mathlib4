@@ -60,12 +60,12 @@ def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × �
 #align smooth_bump_covering.embedding_pi_tangent SmoothBumpCovering.embeddingPiTangent
 
 @[local simp]
-theorem embeddingPiTangent_coe :
+lemma embeddingPiTangent_coe :
     ⇑f.embeddingPiTangent = fun x i => (f i x • extChartAt I (f.c i) x, f i x) :=
   rfl
 #align smooth_bump_covering.embedding_pi_tangent_coe SmoothBumpCovering.embeddingPiTangent_coe
 
-theorem embeddingPiTangent_injOn : InjOn f.embeddingPiTangent s := by
+lemma embeddingPiTangent_injOn : InjOn f.embeddingPiTangent s := by
   intro x hx y _ h
   simp only [embeddingPiTangent_coe, funext_iff] at h
   obtain ⟨h₁, h₂⟩ := Prod.mk.inj_iff.1 (h (f.ind x hx))
@@ -115,7 +115,7 @@ theorem embeddingPiTangent_injective_mfderiv (x : M) (hx : x ∈ s) :
 /-- Baby version of the **Whitney weak embedding theorem**: if `M` admits a finite covering by
 supports of bump functions, then for some `n` it can be immersed into the `n`-dimensional
 Euclidean space. -/
-theorem exists_immersion_euclidean [Finite ι] (f : SmoothBumpCovering ι I M) :
+lemma exists_immersion_euclidean [Finite ι] (f : SmoothBumpCovering ι I M) :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
       Smooth I (𝓡 n) e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   cases nonempty_fintype ι
@@ -138,7 +138,7 @@ end SmoothBumpCovering
 /-- Baby version of the Whitney weak embedding theorem: if `M` admits a finite covering by
 supports of bump functions, then for some `n` it can be embedded into the `n`-dimensional
 Euclidean space. -/
-theorem exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M] :
+lemma exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M] :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
       Smooth I (𝓡 n) e ∧ ClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   rcases SmoothBumpCovering.exists_isSubordinate I isClosed_univ fun (x : M) _ => univ_mem with

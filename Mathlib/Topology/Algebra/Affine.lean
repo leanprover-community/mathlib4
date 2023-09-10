@@ -35,7 +35,7 @@ variable [Ring R] [Module R E] [Module R F]
 
 /-- An affine map is continuous iff its underlying linear map is continuous. See also
 `AffineMap.continuous_linear_iff`. -/
-theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linear := by
+lemma continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linear := by
   constructor
   · intro hc
     rw [decomp' f]
@@ -47,7 +47,7 @@ theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linea
 
 /-- The line map is continuous. -/
 @[continuity]
-theorem lineMap_continuous [TopologicalSpace R] [ContinuousSMul R F] {p v : F} :
+lemma lineMap_continuous [TopologicalSpace R] [ContinuousSMul R F] {p v : F} :
     Continuous (lineMap p v : R →ᵃ[R] F) :=
   continuous_iff.mpr <|
     (continuous_id.smul continuous_const).add <| @continuous_const _ _ _ _ (0 : F)

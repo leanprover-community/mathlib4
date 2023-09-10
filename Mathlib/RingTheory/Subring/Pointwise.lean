@@ -49,7 +49,7 @@ scoped[Pointwise] attribute [instance] Subring.pointwiseMulAction
 
 open Pointwise
 
-theorem pointwise_smul_def {a : M} (S : Subring R) :
+lemma pointwise_smul_def {a : M} (S : Subring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
 #align subring.pointwise_smul_def Subring.pointwise_smul_def
@@ -107,29 +107,29 @@ variable [Group M] [Ring R] [MulSemiringAction M R]
 open Pointwise
 
 @[simp]
-theorem smul_mem_pointwise_smul_iff {a : M} {S : Subring R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
+lemma smul_mem_pointwise_smul_iff {a : M} {S : Subring R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
   smul_mem_smul_set_iff
 #align subring.smul_mem_pointwise_smul_iff Subring.smul_mem_pointwise_smul_iff
 
-theorem mem_pointwise_smul_iff_inv_smul_mem {a : M} {S : Subring R} {x : R} :
+lemma mem_pointwise_smul_iff_inv_smul_mem {a : M} {S : Subring R} {x : R} :
     x ∈ a • S ↔ a⁻¹ • x ∈ S :=
   mem_smul_set_iff_inv_smul_mem
 #align subring.mem_pointwise_smul_iff_inv_smul_mem Subring.mem_pointwise_smul_iff_inv_smul_mem
 
-theorem mem_inv_pointwise_smul_iff {a : M} {S : Subring R} {x : R} : x ∈ a⁻¹ • S ↔ a • x ∈ S :=
+lemma mem_inv_pointwise_smul_iff {a : M} {S : Subring R} {x : R} : x ∈ a⁻¹ • S ↔ a • x ∈ S :=
   mem_inv_smul_set_iff
 #align subring.mem_inv_pointwise_smul_iff Subring.mem_inv_pointwise_smul_iff
 
 @[simp]
-theorem pointwise_smul_le_pointwise_smul_iff {a : M} {S T : Subring R} : a • S ≤ a • T ↔ S ≤ T :=
+lemma pointwise_smul_le_pointwise_smul_iff {a : M} {S T : Subring R} : a • S ≤ a • T ↔ S ≤ T :=
   set_smul_subset_set_smul_iff
 #align subring.pointwise_smul_le_pointwise_smul_iff Subring.pointwise_smul_le_pointwise_smul_iff
 
-theorem pointwise_smul_subset_iff {a : M} {S T : Subring R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
+lemma pointwise_smul_subset_iff {a : M} {S T : Subring R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
   set_smul_subset_iff
 #align subring.pointwise_smul_subset_iff Subring.pointwise_smul_subset_iff
 
-theorem subset_pointwise_smul_iff {a : M} {S T : Subring R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
+lemma subset_pointwise_smul_iff {a : M} {S T : Subring R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_set_smul_iff
 #align subring.subset_pointwise_smul_iff Subring.subset_pointwise_smul_iff
 
@@ -145,32 +145,32 @@ variable [GroupWithZero M] [Ring R] [MulSemiringAction M R]
 open Pointwise
 
 @[simp]
-theorem smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :
+lemma smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :
     a • x ∈ a • S ↔ x ∈ S :=
   smul_mem_smul_set_iff₀ ha (S : Set R) x
 #align subring.smul_mem_pointwise_smul_iff₀ Subring.smul_mem_pointwise_smul_iff₀
 
-theorem mem_pointwise_smul_iff_inv_smul_mem₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :
+lemma mem_pointwise_smul_iff_inv_smul_mem₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :
     x ∈ a • S ↔ a⁻¹ • x ∈ S :=
   mem_smul_set_iff_inv_smul_mem₀ ha (S : Set R) x
 #align subring.mem_pointwise_smul_iff_inv_smul_mem₀ Subring.mem_pointwise_smul_iff_inv_smul_mem₀
 
-theorem mem_inv_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :
+lemma mem_inv_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :
     x ∈ a⁻¹ • S ↔ a • x ∈ S :=
   mem_inv_smul_set_iff₀ ha (S : Set R) x
 #align subring.mem_inv_pointwise_smul_iff₀ Subring.mem_inv_pointwise_smul_iff₀
 
 @[simp]
-theorem pointwise_smul_le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subring R} :
+lemma pointwise_smul_le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subring R} :
     a • S ≤ a • T ↔ S ≤ T :=
   set_smul_subset_set_smul_iff₀ ha
 #align subring.pointwise_smul_le_pointwise_smul_iff₀ Subring.pointwise_smul_le_pointwise_smul_iff₀
 
-theorem pointwise_smul_le_iff₀ {a : M} (ha : a ≠ 0) {S T : Subring R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
+lemma pointwise_smul_le_iff₀ {a : M} (ha : a ≠ 0) {S T : Subring R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
   set_smul_subset_iff₀ ha
 #align subring.pointwise_smul_le_iff₀ Subring.pointwise_smul_le_iff₀
 
-theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subring R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
+lemma le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subring R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_set_smul_iff₀ ha
 #align subring.le_pointwise_smul_iff₀ Subring.le_pointwise_smul_iff₀
 

@@ -31,7 +31,7 @@ open scoped BigOperators
 variable (G : Type u) [Group G]
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
-theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
+lemma sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
     [∀ x : ConjClasses G, Fintype x.carrier] :
     ∑ x : ConjClasses G, x.carrier.toFinset.card = Fintype.card G := by
   suffices : (Σ x : ConjClasses G, x.carrier) ≃ G
@@ -39,7 +39,7 @@ theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
   simpa [carrier_eq_preimage_mk] using Equiv.sigmaFiberEquiv ConjClasses.mk
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
-theorem Group.sum_card_conj_classes_eq_card [Finite G] :
+lemma Group.sum_card_conj_classes_eq_card [Finite G] :
     ∑ᶠ x : ConjClasses G, x.carrier.ncard = Nat.card G := by
   classical
   cases nonempty_fintype G
@@ -48,7 +48,7 @@ theorem Group.sum_card_conj_classes_eq_card [Finite G] :
 
 /-- The **class equation** for finite groups. The cardinality of a group is equal to the size
 of its center plus the sum of the size of all its nontrivial conjugacy classes. -/
-theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
+lemma Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
     Nat.card (Subgroup.center G) + ∑ᶠ x ∈ noncenter G, Nat.card x.carrier = Nat.card G := by
   classical
   cases nonempty_fintype G

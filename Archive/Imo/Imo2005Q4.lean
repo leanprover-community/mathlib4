@@ -26,7 +26,7 @@ def a (n : ℕ) : ℤ :=
 
 /-- Key lemma (a modular arithmetic calculation):  Given a prime `p` other than `2` or `3`, the
 `(p - 2)`th term of the sequence has `p` as a factor. -/
-theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 : p ≠ 3) :
+lemma find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 : p ≠ 3) :
     ↑p ∣ a (p - 2) := by
   -- Since `p` is neither `2` nor `3`, it is coprime with `2`, `3`, and `6`
   rw [Ne.def, ← Nat.prime_dvd_prime_iff_eq hp (by norm_num), ← Nat.Prime.coprime_iff_not_dvd hp]
@@ -51,7 +51,7 @@ end IMO2005Q4
 open IMO2005Q4
 
 /-- Main statement:  The only positive integer coprime to all terms of the sequence `a` is `1`. -/
-theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime (a n) k) ↔ k = 1 := by
+lemma imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime (a n) k) ↔ k = 1 := by
   constructor; rotate_left
   · -- The property is clearly true for `k = 1`
     rintro rfl n -

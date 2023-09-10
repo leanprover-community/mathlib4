@@ -19,7 +19,7 @@ namespace Tactic
 
 namespace NormNum
 
-theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
+lemma int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
   refine Nat.dvd_antisymm ?_ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
   rw [← Int.coe_nat_dvd, ← h₃]
@@ -61,29 +61,29 @@ theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     dsimp only -- Porting note: the `dsimp only` was not necessary in Lean3.
     rw [← dm, ← hd, Nat.gcd_mul_lcm]
 
-theorem int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
+lemma int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
     (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.gcd x' y' = d) :
     Int.gcd x y = d := by subst_vars; rw [Int.gcd_def]
 
-theorem int_lcm_helper {x y : ℤ} {x' y' d : ℕ}
+lemma int_lcm_helper {x y : ℤ} {x' y' d : ℕ}
     (hx : x.natAbs = x') (hy : y.natAbs = y') (h : Nat.lcm x' y' = d) :
     Int.lcm x y = d := by subst_vars; rw [Int.lcm_def]
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-theorem isNat_gcd : {x y nx ny z : ℕ} →
+lemma isNat_gcd : {x y nx ny z : ℕ} →
     IsNat x nx → IsNat y ny → Nat.gcd nx ny = z → IsNat (Nat.gcd x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isNat_lcm : {x y nx ny z : ℕ} →
+lemma isNat_lcm : {x y nx ny z : ℕ} →
     IsNat x nx → IsNat y ny → Nat.lcm nx ny = z → IsNat (Nat.lcm x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isInt_gcd : {x y nx ny : ℤ} → {z : ℕ} →
+lemma isInt_gcd : {x y nx ny : ℤ} → {z : ℕ} →
     IsInt x nx → IsInt y ny → Int.gcd nx ny = z → IsNat (Int.gcd x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
-theorem isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
+lemma isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
     IsInt x nx → IsInt y ny → Int.lcm nx ny = z → IsNat (Int.lcm x y) z
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 

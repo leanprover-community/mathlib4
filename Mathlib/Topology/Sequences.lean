@@ -78,13 +78,13 @@ def seqClosure (s : Set X) : Set X :=
   { a | ∃ x : ℕ → X, (∀ n : ℕ, x n ∈ s) ∧ Tendsto x atTop (𝓝 a) }
 #align seq_closure seqClosure
 
-theorem subset_seqClosure {s : Set X} : s ⊆ seqClosure s := fun p hp =>
+lemma subset_seqClosure {s : Set X} : s ⊆ seqClosure s := fun p hp =>
   ⟨const ℕ p, fun _ => hp, tendsto_const_nhds⟩
 #align subset_seq_closure subset_seqClosure
 
 /-- The sequential closure of a set is contained in the closure of that set.
 The converse is not true. -/
-theorem seqClosure_subset_closure {s : Set X} : seqClosure s ⊆ closure s := fun _p ⟨_x, xM, xp⟩ =>
+lemma seqClosure_subset_closure {s : Set X} : seqClosure s ⊆ closure s := fun _p ⟨_x, xM, xp⟩ =>
   mem_closure_of_tendsto xp (univ_mem' xM)
 #align seq_closure_subset_closure seqClosure_subset_closure
 
@@ -96,22 +96,22 @@ def IsSeqClosed (s : Set X) : Prop :=
 #align is_seq_closed IsSeqClosed
 
 /-- The sequential closure of a sequentially closed set is the set itself. -/
-theorem IsSeqClosed.seqClosure_eq {s : Set X} (hs : IsSeqClosed s) : seqClosure s = s :=
+lemma IsSeqClosed.seqClosure_eq {s : Set X} (hs : IsSeqClosed s) : seqClosure s = s :=
   Subset.antisymm (fun _p ⟨_x, hx, hp⟩ => hs hx hp) subset_seqClosure
 #align is_seq_closed.seq_closure_eq IsSeqClosed.seqClosure_eq
 
 /-- If a set is equal to its sequential closure, then it is sequentially closed. -/
-theorem isSeqClosed_of_seqClosure_eq {s : Set X} (hs : seqClosure s = s) : IsSeqClosed s :=
+lemma isSeqClosed_of_seqClosure_eq {s : Set X} (hs : seqClosure s = s) : IsSeqClosed s :=
   fun x _p hxs hxp => hs ▸ ⟨x, hxs, hxp⟩
 #align is_seq_closed_of_seq_closure_eq isSeqClosed_of_seqClosure_eq
 
 /-- A set is sequentially closed iff it is equal to its sequential closure. -/
-theorem isSeqClosed_iff {s : Set X} : IsSeqClosed s ↔ seqClosure s = s :=
+lemma isSeqClosed_iff {s : Set X} : IsSeqClosed s ↔ seqClosure s = s :=
   ⟨IsSeqClosed.seqClosure_eq, isSeqClosed_of_seqClosure_eq⟩
 #align is_seq_closed_iff isSeqClosed_iff
 
 /-- A set is sequentially closed if it is closed. -/
-protected theorem IsClosed.isSeqClosed {s : Set X} (hc : IsClosed s) : IsSeqClosed s :=
+protected lemma IsClosed.isSeqClosed {s : Set X} (hc : IsClosed s) : IsSeqClosed s :=
   fun _u _x hu hx => hc.mem_of_tendsto hx (eventually_of_forall hu)
 #align is_closed.is_seq_closed IsClosed.isSeqClosed
 
@@ -122,13 +122,13 @@ class FrechetUrysohnSpace (X : Type*) [TopologicalSpace X] : Prop where
   closure_subset_seqClosure : ∀ s : Set X, closure s ⊆ seqClosure s
 #align frechet_urysohn_space FrechetUrysohnSpace
 
-theorem seqClosure_eq_closure [FrechetUrysohnSpace X] (s : Set X) : seqClosure s = closure s :=
+lemma seqClosure_eq_closure [FrechetUrysohnSpace X] (s : Set X) : seqClosure s = closure s :=
   seqClosure_subset_closure.antisymm <| FrechetUrysohnSpace.closure_subset_seqClosure s
 #align seq_closure_eq_closure seqClosure_eq_closure
 
 /-- In a Fréchet-Urysohn space, a point belongs to the closure of a set iff it is a limit
 of a sequence taking values in this set. -/
-theorem mem_closure_iff_seq_limit [FrechetUrysohnSpace X] {s : Set X} {a : X} :
+lemma mem_closure_iff_seq_limit [FrechetUrysohnSpace X] {s : Set X} {a : X} :
     a ∈ closure s ↔ ∃ x : ℕ → X, (∀ n : ℕ, x n ∈ s) ∧ Tendsto x atTop (𝓝 a) := by
   rw [← seqClosure_eq_closure]
   rfl
@@ -140,7 +140,7 @@ that works for any pair of filters assuming that the filter in the domain is cou
 
 This property is equivalent to the definition of `FrechetUrysohnSpace`, see
 `FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto`. -/
-theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : X} {b : Y} :
+lemma tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : X} {b : Y} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 b) := by
   refine'
     ⟨fun hf u hu => hf.comp hu, fun h =>
@@ -189,13 +189,13 @@ instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysoh
 #align frechet_urysohn_space.to_sequential_space FrechetUrysohnSpace.to_sequentialSpace
 
 /-- In a sequential space, a sequentially closed set is closed. -/
-protected theorem IsSeqClosed.isClosed [SequentialSpace X] {s : Set X} (hs : IsSeqClosed s) :
+protected lemma IsSeqClosed.isClosed [SequentialSpace X] {s : Set X} (hs : IsSeqClosed s) :
     IsClosed s :=
   SequentialSpace.isClosed_of_seq s hs
 #align is_seq_closed.is_closed IsSeqClosed.isClosed
 
 /-- In a sequential space, a set is closed iff it's sequentially closed. -/
-theorem isSeqClosed_iff_isClosed [SequentialSpace X] {M : Set X} : IsSeqClosed M ↔ IsClosed M :=
+lemma isSeqClosed_iff_isClosed [SequentialSpace X] {M : Set X} : IsSeqClosed M ↔ IsClosed M :=
   ⟨IsSeqClosed.isClosed, IsClosed.isSeqClosed⟩
 #align is_seq_closed_iff_is_closed isSeqClosed_iff_isClosed
 
@@ -207,29 +207,29 @@ def SeqContinuous (f : X → Y) : Prop :=
 
 /-- The preimage of a sequentially closed set under a sequentially continuous map is sequentially
 closed. -/
-theorem IsSeqClosed.preimage {f : X → Y} {s : Set Y} (hs : IsSeqClosed s) (hf : SeqContinuous f) :
+lemma IsSeqClosed.preimage {f : X → Y} {s : Set Y} (hs : IsSeqClosed s) (hf : SeqContinuous f) :
     IsSeqClosed (f ⁻¹' s) := fun _x _p hx hp => hs hx (hf hp)
 #align is_seq_closed.preimage IsSeqClosed.preimage
 
 -- A continuous function is sequentially continuous.
-protected theorem Continuous.seqContinuous {f : X → Y} (hf : Continuous f) : SeqContinuous f :=
+protected lemma Continuous.seqContinuous {f : X → Y} (hf : Continuous f) : SeqContinuous f :=
   fun _x p hx => (hf.tendsto p).comp hx
 #align continuous.seq_continuous Continuous.seqContinuous
 
 /-- A sequentially continuous function defined on a sequential space is continuous. -/
-protected theorem SeqContinuous.continuous [SequentialSpace X] {f : X → Y} (hf : SeqContinuous f) :
+protected lemma SeqContinuous.continuous [SequentialSpace X] {f : X → Y} (hf : SeqContinuous f) :
     Continuous f :=
   continuous_iff_isClosed.mpr fun _s hs => (hs.isSeqClosed.preimage hf).isClosed
 #align seq_continuous.continuous SeqContinuous.continuous
 
 /-- If the domain of a function is a sequential space, then continuity of this function is
 equivalent to its sequential continuity. -/
-theorem continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
+lemma continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
     Continuous f ↔ SeqContinuous f :=
   ⟨Continuous.seqContinuous, SeqContinuous.continuous⟩
 #align continuous_iff_seq_continuous continuous_iff_seqContinuous
 
-theorem QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : QuotientMap f) :
+lemma QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : QuotientMap f) :
     SequentialSpace Y :=
   ⟨fun _s hs => hf.isClosed_preimage.mp <| (hs.preimage <| hf.continuous.seqContinuous).isClosed⟩
 #align quotient_map.sequential_space QuotientMap.sequentialSpace
@@ -262,7 +262,7 @@ class SeqCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 export SeqCompactSpace (seq_compact_univ)
 
-theorem IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {x : ℕ → X}
+lemma IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {x : ℕ → X}
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   let ⟨ψ, hψ, huψ⟩ := extraction_of_frequently_atTop hx
@@ -270,7 +270,7 @@ theorem IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {
   ⟨a, a_in, ψ ∘ φ, hψ.comp hφ, h⟩
 #align is_seq_compact.subseq_of_frequently_in IsSeqCompact.subseq_of_frequently_in
 
-theorem SeqCompactSpace.tendsto_subseq [SeqCompactSpace X] (x : ℕ → X) :
+lemma SeqCompactSpace.tendsto_subseq [SeqCompactSpace X] (x : ℕ → X) :
     ∃ (a : X) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   let ⟨a, _, φ, mono, h⟩ := seq_compact_univ fun n => mem_univ (x n)
   ⟨a, φ, mono, h⟩
@@ -282,19 +282,19 @@ variable [FirstCountableTopology X]
 
 open TopologicalSpace.FirstCountableTopology
 
-protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
+protected lemma IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>
   let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (eventually_of_forall x_in))
   ⟨a, a_in, tendsto_subseq ha⟩
 #align is_compact.is_seq_compact IsCompact.isSeqCompact
 
-theorem IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
+lemma IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   hs.isSeqCompact.subseq_of_frequently_in hx
 #align is_compact.tendsto_subseq' IsCompact.tendsto_subseq'
 
-theorem IsCompact.tendsto_subseq {s : Set X} {x : ℕ → X} (hs : IsCompact s) (hx : ∀ n, x n ∈ s) :
+lemma IsCompact.tendsto_subseq {s : Set X} {x : ℕ → X} (hs : IsCompact s) (hx : ∀ n, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   hs.isSeqCompact hx
 #align is_compact.tendsto_subseq IsCompact.tendsto_subseq
@@ -305,7 +305,7 @@ instance (priority := 100) FirstCountableTopology.seq_compact_of_compact [Compac
   ⟨isCompact_univ.isSeqCompact⟩
 #align first_countable_topology.seq_compact_of_compact FirstCountableTopology.seq_compact_of_compact
 
-theorem CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
+lemma CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
     ∃ (a : _) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   SeqCompactSpace.tendsto_subseq x
 #align compact_space.tendsto_subseq CompactSpace.tendsto_subseq
@@ -388,11 +388,11 @@ protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
 
 /-- A version of Bolzano-Weistrass: in a uniform space with countably generated uniformity filter
 (e.g., in a metric space), a set is compact if and only if it is sequentially compact. -/
-protected theorem UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
+protected lemma UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 #align uniform_space.is_compact_iff_is_seq_compact UniformSpace.isCompact_iff_isSeqCompact
 
-theorem UniformSpace.compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
+lemma UniformSpace.compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, UniformSpace.isCompact_iff_isSeqCompact]
 #align uniform_space.compact_space_iff_seq_compact_space UniformSpace.compactSpace_iff_seqCompactSpace
 
@@ -404,7 +404,7 @@ variable [PseudoMetricSpace X]
 
 open Metric
 
-nonrec theorem SeqCompact.lebesgue_number_lemma_of_metric {ι : Sort*} {c : ι → Set X} {s : Set X}
+nonrec lemma SeqCompact.lebesgue_number_lemma_of_metric {ι : Sort*} {c : ι → Set X} {s : Set X}
     (hs : IsSeqCompact s) (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) :
     ∃ δ > 0, ∀ a ∈ s, ∃ i, ball a δ ⊆ c i :=
   lebesgue_number_lemma_of_metric hs.isCompact hc₁ hc₂

@@ -74,7 +74,7 @@ protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) :
 #align int.neg_succ_of_nat_inj_iff Int.negSucc_inj
 #align int.neg_succ_of_nat_eq Int.negSucc_eq
 
-protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
+protected lemma neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 #align int.neg_inj Int.neg_eq_neg
 
 #align int.sub_nat_nat_elim Int.subNatNat_elim
@@ -88,11 +88,11 @@ protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 
 #align int.nat_abs Int.natAbs
 
 @[deprecated natAbs_eq_zero]
-theorem eq_zero_of_natAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0 := natAbs_eq_zero.1
+lemma eq_zero_of_natAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0 := natAbs_eq_zero.1
 #align int.eq_zero_of_nat_abs_eq_zero Int.eq_zero_of_natAbs_eq_zero
 
 @[deprecated natAbs_pos]
-theorem natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_pos.2 h
+lemma natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_pos.2 h
 #align int.nat_abs_pos_of_ne_zero Int.natAbs_pos_of_ne_zero
 
 #align int.nat_abs_zero Int.natAbs_zero

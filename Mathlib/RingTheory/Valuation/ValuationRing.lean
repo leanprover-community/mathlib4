@@ -235,7 +235,7 @@ noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
 theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A K a := rfl
 #align valuation_ring.coe_equiv_integer_apply ValuationRing.coe_equivInteger_apply
 
-theorem range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
+lemma range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
   ext; exact mem_integer_iff _ _ _
 #align valuation_ring.range_algebra_map_eq ValuationRing.range_algebraMap_eq
 
@@ -282,14 +282,14 @@ variable {R : Type*} [CommRing R] [IsDomain R] {K : Type*}
 
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
-theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
+lemma iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := ValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
 #align valuation_ring.iff_dvd_total ValuationRing.iff_dvd_total
 
-theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
+lemma iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
   classical
   refine' ⟨fun _ => ⟨le_total⟩, fun H => iff_dvd_total.mpr ⟨fun a b => _⟩⟩
   have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
@@ -299,11 +299,11 @@ theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := b
 
 variable (K)
 
-theorem dvd_total [h : ValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
+lemma dvd_total [h : ValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
   @IsTotal.total _ _ (iff_dvd_total.mp h) x y
 #align valuation_ring.dvd_total ValuationRing.dvd_total
 
-theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
+lemma unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
   have := dvd_total p q
   rw [Irreducible.dvd_comm hp hq, or_self_iff] at this
@@ -312,7 +312,7 @@ theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) 
 
 variable (R)
 
-theorem iff_isInteger_or_isInteger :
+lemma iff_isInteger_or_isInteger :
     ValuationRing R ↔ ∀ x : K, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹ := by
   constructor
   · intro H x
@@ -338,7 +338,7 @@ theorem iff_isInteger_or_isInteger :
 
 variable {K}
 
-theorem isInteger_or_isInteger [h : ValuationRing R] (x : K) :
+lemma isInteger_or_isInteger [h : ValuationRing R] (x : K) :
     IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹ :=
   (iff_isInteger_or_isInteger R K).mp h x
 #align valuation_ring.is_integer_or_is_integer ValuationRing.isInteger_or_isInteger
@@ -355,7 +355,7 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   · erw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
   · erw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
-theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R := by
+lemma iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R := by
   classical
   refine ⟨fun H => ⟨inferInstance, inferInstance⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
@@ -392,7 +392,7 @@ protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
 
 end
 
-theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
+lemma _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
     [ValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
   ⟨fun a b => by
@@ -408,7 +408,7 @@ variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain �
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/
-theorem of_integers : ValuationRing 𝒪 := by
+lemma of_integers : ValuationRing 𝒪 := by
   constructor
   intro a b
   cases' le_total (v (algebraMap 𝒪 K a)) (v (algebraMap 𝒪 K b)) with h h

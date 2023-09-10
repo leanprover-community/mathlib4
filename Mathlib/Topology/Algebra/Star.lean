@@ -33,15 +33,15 @@ section Continuity
 
 variable [TopologicalSpace R] [Star R] [ContinuousStar R]
 
-theorem continuousOn_star {s : Set R} : ContinuousOn star s :=
+lemma continuousOn_star {s : Set R} : ContinuousOn star s :=
   continuous_star.continuousOn
 #align continuous_on_star continuousOn_star
 
-theorem continuousWithinAt_star {s : Set R} {x : R} : ContinuousWithinAt star s x :=
+lemma continuousWithinAt_star {s : Set R} {x : R} : ContinuousWithinAt star s x :=
   continuous_star.continuousWithinAt
 #align continuous_within_at_star continuousWithinAt_star
 
-theorem continuousAt_star {x : R} : ContinuousAt star x :=
+lemma continuousAt_star {x : R} : ContinuousAt star x :=
   continuous_star.continuousAt
 #align continuous_at_star continuousAt_star
 
@@ -49,7 +49,7 @@ theorem tendsto_star (a : R) : Tendsto star (𝓝 a) (𝓝 (star a)) :=
   continuousAt_star
 #align tendsto_star tendsto_star
 
-theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto f l (𝓝 y)) :
+lemma Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto f l (𝓝 y)) :
     Tendsto (fun x => star (f x)) l (𝓝 (star y)) :=
   (continuous_star.tendsto y).comp h
 #align filter.tendsto.star Filter.Tendsto.star

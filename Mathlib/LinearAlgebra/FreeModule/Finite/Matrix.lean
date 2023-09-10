@@ -84,7 +84,7 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
 /-- The finrank of `M →ₗ[R] N` is `(finrank R M) * (finrank R N)`. -/
-theorem FiniteDimensional.finrank_linearMap :
+lemma FiniteDimensional.finrank_linearMap :
     finrank R (M →ₗ[R] N) = finrank R M * finrank R N := by
   classical
     letI := nontrivial_of_invariantBasisNumber R
@@ -95,7 +95,7 @@ theorem FiniteDimensional.finrank_linearMap :
 
 end CommRing
 
-theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [StrongRankCondition K] [Fintype n]
+lemma Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [StrongRankCondition K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
   rw [Matrix.vecMulVec_eq, Matrix.toLin'_mul]
   refine' le_trans (LinearMap.rank_comp_le_left _ _) _

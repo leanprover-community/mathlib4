@@ -58,12 +58,12 @@ def ofSigma : (Σa : α, β a → WType β) → WType β
 #align W_type.of_sigma WType.ofSigma
 
 @[simp]
-theorem ofSigma_toSigma : ∀ w : WType β, ofSigma (toSigma w) = w
+lemma ofSigma_toSigma : ∀ w : WType β, ofSigma (toSigma w) = w
   | ⟨_, _⟩ => rfl
 #align W_type.of_sigma_to_sigma WType.ofSigma_toSigma
 
 @[simp]
-theorem toSigma_ofSigma : ∀ s : Σa : α, β a → WType β, toSigma (ofSigma s) = s
+lemma toSigma_ofSigma : ∀ s : Σa : α, β a → WType β, toSigma (ofSigma s) = s
   | ⟨_, _⟩ => rfl
 #align W_type.to_sigma_of_sigma WType.toSigma_ofSigma
 

@@ -72,7 +72,7 @@ attribute [gcongr]
 
 /-! # ≤, / -/
 
-protected theorem Nat.div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) :
+protected lemma Nat.div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) :
     a / c ≤ b / d :=
   calc a / c ≤ b / c := Nat.div_le_div_right h1
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
@@ -103,7 +103,7 @@ attribute [gcongr]
 
 /-! # <, ^ -/
 
-theorem zpow_lt_of_lt [LinearOrderedSemifield α] {a : α} {m n : ℤ} (hx : 1 < a) (h : m < n) :
+lemma zpow_lt_of_lt [LinearOrderedSemifield α] {a : α} {m n : ℤ} (hx : 1 < a) (h : m < n) :
     a ^ m < a ^ n :=
   zpow_strictMono hx h
 
@@ -114,5 +114,5 @@ attribute [gcongr]
 /-! # coercions -/
 
 @[gcongr]
-theorem Nat.cast_le_cast [OrderedSemiring α] [CharZero α] {x y : ℕ} (h : x ≤ y) : (x:α) ≤ y :=
+lemma Nat.cast_le_cast [OrderedSemiring α] [CharZero α] {x y : ℕ} (h : x ≤ y) : (x:α) ≤ y :=
   Nat.cast_le.mpr h

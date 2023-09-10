@@ -43,12 +43,12 @@ instance : PredOrder ℕ where
     · exact h
 
 @[simp]
-theorem succ_eq_succ : Order.succ = succ :=
+lemma succ_eq_succ : Order.succ = succ :=
   rfl
 #align nat.succ_eq_succ Nat.succ_eq_succ
 
 @[simp]
-theorem pred_eq_pred : Order.pred = pred :=
+lemma pred_eq_pred : Order.pred = pred :=
   rfl
 #align nat.pred_eq_pred Nat.pred_eq_pred
 
@@ -79,14 +79,14 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
 /-! ### Covering relation -/
 
 
-protected theorem covby_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
+protected lemma covby_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
   succ_eq_iff_covby.symm
 #align nat.covby_iff_succ_eq Nat.covby_iff_succ_eq
 
 end Nat
 
 @[simp, norm_cast]
-theorem Fin.coe_covby_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
+lemma Fin.coe_covby_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 #align fin.coe_covby_iff Fin.coe_covby_iff
 

@@ -76,7 +76,7 @@ theorem hasDerivWithinAt_inv (x_ne_zero : x ≠ 0) (s : Set 𝕜) :
   (hasDerivAt_inv x_ne_zero).hasDerivWithinAt
 #align has_deriv_within_at_inv hasDerivWithinAt_inv
 
-theorem differentiableAt_inv : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔ x ≠ 0 :=
+lemma differentiableAt_inv : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔ x ≠ 0 :=
   ⟨fun H => NormedField.continuousAt_inv.1 H.continuousAt, fun H =>
     (hasDerivAt_inv H).differentiableAt⟩
 #align differentiable_at_inv differentiableAt_inv
@@ -86,18 +86,18 @@ theorem differentiableWithinAt_inv (x_ne_zero : x ≠ 0) :
   (differentiableAt_inv.2 x_ne_zero).differentiableWithinAt
 #align differentiable_within_at_inv differentiableWithinAt_inv
 
-theorem differentiableOn_inv : DifferentiableOn 𝕜 (fun x : 𝕜 => x⁻¹) { x | x ≠ 0 } := fun _x hx =>
+lemma differentiableOn_inv : DifferentiableOn 𝕜 (fun x : 𝕜 => x⁻¹) { x | x ≠ 0 } := fun _x hx =>
   differentiableWithinAt_inv hx
 #align differentiable_on_inv differentiableOn_inv
 
-theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
+lemma deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
   · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv.1 (not_not.2 rfl))]
   · exact (hasDerivAt_inv hne).deriv
 #align deriv_inv deriv_inv
 
 @[simp]
-theorem deriv_inv' : (deriv fun x : 𝕜 => x⁻¹) = fun x => -(x ^ 2)⁻¹ :=
+lemma deriv_inv' : (deriv fun x : 𝕜 => x⁻¹) = fun x => -(x ^ 2)⁻¹ :=
   funext fun _ => deriv_inv
 #align deriv_inv' deriv_inv'
 
@@ -117,7 +117,7 @@ theorem hasFDerivWithinAt_inv (x_ne_zero : x ≠ 0) :
   (hasFDerivAt_inv x_ne_zero).hasFDerivWithinAt
 #align has_fderiv_within_at_inv hasFDerivWithinAt_inv
 
-theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
+lemma fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
   rw [← deriv_fderiv, deriv_inv]
 #align fderiv_inv fderiv_inv
 

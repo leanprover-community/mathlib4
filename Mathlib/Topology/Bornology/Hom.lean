@@ -54,7 +54,7 @@ end
 
 export LocallyBoundedMapClass (comap_cobounded_le)
 
-theorem IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] {f : F}
+lemma IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] {f : F}
     {s : Set α} (hs : IsBounded s) : IsBounded (f '' s) :=
   comap_cobounded_le_iff.1 (comap_cobounded_le f) hs
 #align is_bounded.image IsBounded.image
@@ -94,7 +94,7 @@ instance : CoeFun (LocallyBoundedMap α β) fun _ => α → β where
 #noalign locally_bounded_map.to_fun_eq_coe
 
 @[ext]
-theorem ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : LocallyBoundedMap α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align locally_bounded_map.ext LocallyBoundedMap.ext
 
@@ -142,7 +142,7 @@ instance : Inhabited (LocallyBoundedMap α α) :=
   ⟨LocallyBoundedMap.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(LocallyBoundedMap.id α) = id :=
+lemma coe_id : ⇑(LocallyBoundedMap.id α) = id :=
   rfl
 #align locally_bounded_map.coe_id LocallyBoundedMap.coe_id
 
@@ -189,14 +189,14 @@ theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f
 #align locally_bounded_map.id_comp LocallyBoundedMap.id_comp
 
 @[simp]
-theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
+lemma cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
 -- porting note: unification was not strong enough to do `congrArg _`.
 #align locally_bounded_map.cancel_right LocallyBoundedMap.cancel_right
 
 @[simp]
-theorem cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
+lemma cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align locally_bounded_map.cancel_left LocallyBoundedMap.cancel_left

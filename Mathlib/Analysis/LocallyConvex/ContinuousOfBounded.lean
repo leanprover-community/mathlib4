@@ -72,14 +72,14 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
     exact (smul_zero _).symm⟩
 #align linear_map.clm_of_exists_bounded_image LinearMap.clmOfExistsBoundedImage
 
-theorem LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
+lemma LinearMap.clmOfExistsBoundedImage_coe {f : E →ₗ[𝕜] F}
     {h : ∃ (V : Set E) (_ : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)} :
     (f.clmOfExistsBoundedImage h : E →ₗ[𝕜] F) = f :=
   rfl
 #align linear_map.clm_of_exists_bounded_image_coe LinearMap.clmOfExistsBoundedImage_coe
 
 @[simp]
-theorem LinearMap.clmOfExistsBoundedImage_apply {f : E →ₗ[𝕜] F}
+lemma LinearMap.clmOfExistsBoundedImage_apply {f : E →ₗ[𝕜] F}
     {h : ∃ (V : Set E) (_ : V ∈ 𝓝 (0 : E)), Bornology.IsVonNBounded 𝕜 (f '' V)} {x : E} :
     f.clmOfExistsBoundedImage h x = f x :=
   rfl
@@ -173,7 +173,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
 #align linear_map.continuous_at_zero_of_locally_bounded LinearMap.continuousAt_zero_of_locally_bounded
 
 /-- If `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous. -/
-theorem LinearMap.continuous_of_locally_bounded [UniformAddGroup F] (f : E →ₛₗ[σ] F)
+lemma LinearMap.continuous_of_locally_bounded [UniformAddGroup F] (f : E →ₛₗ[σ] F)
     (hf : ∀ (s : Set E) (_ : IsVonNBounded 𝕜 s), IsVonNBounded 𝕜' (f '' s)) : Continuous f :=
   (uniformContinuous_of_continuousAt_zero f <| f.continuousAt_zero_of_locally_bounded hf).continuous
 #align linear_map.continuous_of_locally_bounded LinearMap.continuous_of_locally_bounded

@@ -73,11 +73,11 @@ def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
       (continuousOn_const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
 
 @[simp]
-theorem LocalHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
+lemma LocalHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_apply]
 
 @[simp]
-theorem LocalHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
+lemma LocalHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_symm_apply]
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
@@ -94,7 +94,7 @@ def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
 #align homeomorph_unit_ball Homeomorph.unitBall
 
 @[simp]
-theorem Homeomorph.coe_unitBall_apply_zero :
+lemma Homeomorph.coe_unitBall_apply_zero :
     (Homeomorph.unitBall (0 : E) : E) = 0 :=
   LocalHomeomorph.univUnitBall_apply_zero
 #align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero

@@ -78,7 +78,7 @@ def IsCompactElement {α : Type*} [CompleteLattice α] (k : α) :=
   ∀ s : Set α, k ≤ sSup s → ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id
 #align complete_lattice.is_compact_element CompleteLattice.IsCompactElement
 
-theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
+lemma isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
     CompleteLattice.IsCompactElement k ↔
       ∀ (ι : Type u) (s : ι → α), k ≤ iSup s → ∃ t : Finset ι, k ≤ t.sup s := by
   classical
@@ -148,7 +148,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
       exact ⟨htS, by rwa [← htsup]⟩
 #align complete_lattice.is_compact_element_iff_le_of_directed_Sup_le CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le
 
-theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElement k) {ι : Type*}
+lemma IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElement k) {ι : Type*}
     (f : ι → α) (h : k ≤ ⨆ i, f i) : ∃ s : Finset ι, k ≤ ⨆ i ∈ s, f i := by
   classical
     let g : Finset ι → α := fun s => ⨆ i ∈ s, f i
@@ -170,7 +170,7 @@ theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElemen
 
 /-- A compact element `k` has the property that any directed set lying strictly below `k` has
 its `sSup` strictly below `k`. -/
-theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α] {k : α}
+lemma IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α] {k : α}
     (hk : IsCompactElement k) {s : Set α} (hemp : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s)
     (hbelow : ∀ x ∈ s, x < k) : sSup s < k := by
   rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
@@ -182,7 +182,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
   exact hxk.ne (hxk.le.antisymm hkx)
 #align complete_lattice.is_compact_element.directed_Sup_lt_of_lt CompleteLattice.IsCompactElement.directed_sSup_lt_of_lt
 
-theorem finset_sup_compact_of_compact {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
+lemma finset_sup_compact_of_compact {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
     (h : ∀ x ∈ s, IsCompactElement (f x)) : IsCompactElement (s.sup f) := by
   classical
     rw [isCompactElement_iff_le_of_directed_sSup_le]
@@ -244,7 +244,7 @@ theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
     apply RelHomClass.map_sup a
 #align complete_lattice.is_sup_closed_compact.well_founded CompleteLattice.IsSupClosedCompact.wellFounded
 
-theorem isSupFiniteCompact_iff_all_elements_compact :
+lemma isSupFiniteCompact_iff_all_elements_compact :
     IsSupFiniteCompact α ↔ ∀ k : α, IsCompactElement k := by
   refine' ⟨fun h k s hs => _, fun h s => _⟩
   · obtain ⟨t, ⟨hts, htsup⟩⟩ := h s
@@ -260,7 +260,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
 #align complete_lattice.is_Sup_finite_compact_iff_all_elements_compact CompleteLattice.isSupFiniteCompact_iff_all_elements_compact
 
 open List in
-theorem wellFounded_characterisations : List.TFAE
+lemma wellFounded_characterisations : List.TFAE
     [WellFounded (( · > · ) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
   tfae_have 1 → 2
@@ -274,16 +274,16 @@ theorem wellFounded_characterisations : List.TFAE
   tfae_finish
 #align complete_lattice.well_founded_characterisations CompleteLattice.wellFounded_characterisations
 
-theorem wellFounded_iff_isSupFiniteCompact :
+lemma wellFounded_iff_isSupFiniteCompact :
     WellFounded ((· > ·) : α → α → Prop) ↔ IsSupFiniteCompact α :=
   (wellFounded_characterisations α).out 0 1
 #align complete_lattice.well_founded_iff_is_Sup_finite_compact CompleteLattice.wellFounded_iff_isSupFiniteCompact
 
-theorem isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
+lemma isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
   (wellFounded_characterisations α).out 1 2
 #align complete_lattice.is_Sup_finite_compact_iff_is_sup_closed_compact CompleteLattice.isSupFiniteCompact_iff_isSupClosedCompact
 
-theorem isSupClosedCompact_iff_wellFounded :
+lemma isSupClosedCompact_iff_wellFounded :
     IsSupClosedCompact α ↔ WellFounded ((· > ·) : α → α → Prop) :=
   (wellFounded_characterisations α).out 2 0
 #align complete_lattice.is_sup_closed_compact_iff_well_founded CompleteLattice.isSupClosedCompact_iff_wellFounded
@@ -345,12 +345,12 @@ theorem sSup_compact_le_eq (b) :
 #align Sup_compact_le_eq sSup_compact_le_eq
 
 @[simp]
-theorem sSup_compact_eq_top : sSup { a : α | CompleteLattice.IsCompactElement a } = ⊤ := by
+lemma sSup_compact_eq_top : sSup { a : α | CompleteLattice.IsCompactElement a } = ⊤ := by
   refine' Eq.trans (congr rfl (Set.ext fun x => _)) (sSup_compact_le_eq ⊤)
   exact (and_iff_left le_top).symm
 #align Sup_compact_eq_top sSup_compact_eq_top
 
-theorem le_iff_compact_le_imp {a b : α} :
+lemma le_iff_compact_le_imp {a b : α} :
     a ≤ b ↔ ∀ c : α, CompleteLattice.IsCompactElement c → c ≤ a → c ≤ b :=
   ⟨fun ab c _ ca => le_trans ca ab, fun h => by
     rw [← sSup_compact_le_eq a, ← sSup_compact_le_eq b]
@@ -408,7 +408,7 @@ protected theorem Directed.disjoint_iSup_left (h : Directed (· ≤ ·) f) :
 #align directed.disjoint_supr_left Directed.disjoint_iSup_left
 
 /-- This property is equivalent to `α` being upper continuous. -/
-theorem inf_sSup_eq_iSup_inf_sup_finset :
+lemma inf_sSup_eq_iSup_inf_sup_finset :
     a ⊓ sSup s = ⨆ (t : Finset α) (_ : ↑t ⊆ s), a ⊓ t.sup id :=
   le_antisymm
     (by
@@ -422,7 +422,7 @@ theorem inf_sSup_eq_iSup_inf_sup_finset :
       iSup_le fun h => inf_le_inf_left _ ((Finset.sup_id_eq_sSup t).symm ▸ sSup_le_sSup h))
 #align inf_Sup_eq_supr_inf_sup_finset inf_sSup_eq_iSup_inf_sup_finset
 
-theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
+lemma CompleteLattice.setIndependent_iff_finite {s : Set α} :
     CompleteLattice.SetIndependent s ↔
       ∀ t : Finset α, ↑t ⊆ s → CompleteLattice.SetIndependent (↑t : Set α) :=
   ⟨fun hs t ht => hs.mono ht, fun h a ha => by
@@ -438,7 +438,7 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
         exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
 
-theorem CompleteLattice.setIndependent_iUnion_of_directed {η : Type*} {s : η → Set α}
+lemma CompleteLattice.setIndependent_iUnion_of_directed {η : Type*} {s : η → Set α}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, CompleteLattice.SetIndependent (s i)) :
     CompleteLattice.SetIndependent (⋃ i, s i) := by
   by_cases hη : Nonempty η
@@ -453,7 +453,7 @@ theorem CompleteLattice.setIndependent_iUnion_of_directed {η : Type*} {s : η �
     exact hη ⟨i⟩
 #align complete_lattice.set_independent_Union_of_directed CompleteLattice.setIndependent_iUnion_of_directed
 
-theorem CompleteLattice.independent_sUnion_of_directed {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s)
+lemma CompleteLattice.independent_sUnion_of_directed {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, CompleteLattice.SetIndependent a) : CompleteLattice.SetIndependent (⋃₀ s) := by
   rw [Set.sUnion_eq_iUnion]
   exact CompleteLattice.setIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
@@ -472,7 +472,7 @@ theorem isCompactlyGenerated_of_wellFounded (h : WellFounded ((· > ·) : α →
 
 /-- A compact element `k` has the property that any `b < k` lies below a "maximal element below
 `k`", which is to say `[⊥, k]` is coatomic. -/
-theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
+lemma Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
     IsCoatomic (Set.Iic k) := by
   constructor
   rintro ⟨b, hbk⟩
@@ -619,11 +619,11 @@ theorem complementedLattice_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a }
 #align complemented_lattice_of_Sup_atoms_eq_top complementedLattice_of_sSup_atoms_eq_top
 
 /-- See [Theorem 6.6][calugareanu]. -/
-theorem complementedLattice_of_isAtomistic [IsAtomistic α] : ComplementedLattice α :=
+lemma complementedLattice_of_isAtomistic [IsAtomistic α] : ComplementedLattice α :=
   complementedLattice_of_sSup_atoms_eq_top sSup_atoms_eq_top
 #align complemented_lattice_of_is_atomistic complementedLattice_of_isAtomistic
 
-theorem complementedLattice_iff_isAtomistic : ComplementedLattice α ↔ IsAtomistic α := by
+lemma complementedLattice_iff_isAtomistic : ComplementedLattice α ↔ IsAtomistic α := by
   constructor <;> intros
   · exact isAtomistic_of_complementedLattice
   · exact complementedLattice_of_isAtomistic

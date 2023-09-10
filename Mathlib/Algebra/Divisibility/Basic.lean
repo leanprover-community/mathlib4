@@ -55,19 +55,19 @@ theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
   h
 #align exists_eq_mul_right_of_dvd exists_eq_mul_right_of_dvd
 
-theorem dvd_def : a ∣ b ↔ ∃ c, b = a * c :=
+lemma dvd_def : a ∣ b ↔ ∃ c, b = a * c :=
   Iff.rfl
 
 alias dvd_iff_exists_eq_mul_right := dvd_def
 
-theorem Dvd.elim {P : Prop} {a b : α} (H₁ : a ∣ b) (H₂ : ∀ c, b = a * c → P) : P :=
+lemma Dvd.elim {P : Prop} {a b : α} (H₁ : a ∣ b) (H₂ : ∀ c, b = a * c → P) : P :=
   Exists.elim H₁ H₂
 #align dvd.elim Dvd.elim
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
 @[trans]
-theorem dvd_trans : a ∣ b → b ∣ c → a ∣ c
+lemma dvd_trans : a ∣ b → b ∣ c → a ∣ c
   | ⟨d, h₁⟩, ⟨e, h₂⟩ => ⟨d * e, h₁ ▸ h₂.trans <| mul_assoc a d e⟩
 #align dvd_trans dvd_trans
 
@@ -96,7 +96,7 @@ section map_dvd
 
 variable {M N : Type*} [Monoid M] [Monoid N]
 
-theorem map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
+lemma map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 
@@ -121,7 +121,7 @@ theorem dvd_refl (a : α) : a ∣ a :=
   Dvd.intro 1 (mul_one a)
 #align dvd_refl dvd_refl
 
-theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
+lemma dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 #align dvd_rfl dvd_rfl
 
 instance : IsRefl α (· ∣ ·) :=
@@ -154,13 +154,13 @@ theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
   Dvd.elim h fun c => fun H1 : b = a * c => Exists.intro c (Eq.trans H1 (mul_comm a c))
 #align exists_eq_mul_left_of_dvd exists_eq_mul_left_of_dvd
 
-theorem dvd_iff_exists_eq_mul_left : a ∣ b ↔ ∃ c, b = c * a :=
+lemma dvd_iff_exists_eq_mul_left : a ∣ b ↔ ∃ c, b = c * a :=
   ⟨exists_eq_mul_left_of_dvd, by
     rintro ⟨c, rfl⟩
     exact ⟨c, mul_comm _ _⟩⟩
 #align dvd_iff_exists_eq_mul_left dvd_iff_exists_eq_mul_left
 
-theorem Dvd.elim_left {P : Prop} (h₁ : a ∣ b) (h₂ : ∀ c, b = c * a → P) : P :=
+lemma Dvd.elim_left {P : Prop} (h₁ : a ∣ b) (h₂ : ∀ c, b = c * a → P) : P :=
   Exists.elim (exists_eq_mul_left_of_dvd h₁) fun c => fun h₃ : b = c * a => h₂ c h₃
 #align dvd.elim_left Dvd.elim_left
 
@@ -177,7 +177,7 @@ alias Dvd.dvd.mul_left := dvd_mul_of_dvd_right
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
-theorem mul_dvd_mul : ∀ {a b c d : α}, a ∣ b → c ∣ d → a * c ∣ b * d
+lemma mul_dvd_mul : ∀ {a b c d : α}, a ∣ b → c ∣ d → a * c ∣ b * d
   | a, _, c, _, ⟨e, rfl⟩, ⟨f, rfl⟩ => ⟨e * f, by simp⟩
 #align mul_dvd_mul mul_dvd_mul
 
@@ -199,7 +199,7 @@ theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c :=
   mul_dvd_mul h (dvd_refl c)
 #align mul_dvd_mul_right mul_dvd_mul_right
 
-theorem pow_dvd_pow_of_dvd {a b : α} (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^ n
+lemma pow_dvd_pow_of_dvd {a b : α} (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^ n
   | 0 => by rw [pow_zero, pow_zero]
   | n + 1 => by
     rw [pow_succ, pow_succ]

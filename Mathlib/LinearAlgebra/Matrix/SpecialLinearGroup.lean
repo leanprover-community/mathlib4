@@ -134,22 +134,22 @@ theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLine
 #align matrix.special_linear_group.coe_mk Matrix.SpecialLinearGroup.coe_mk
 
 @[simp]
-theorem coe_inv : ↑ₘA⁻¹ = adjugate A :=
+lemma coe_inv : ↑ₘA⁻¹ = adjugate A :=
   rfl
 #align matrix.special_linear_group.coe_inv Matrix.SpecialLinearGroup.coe_inv
 
 @[simp]
-theorem coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
+lemma coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
   rfl
 #align matrix.special_linear_group.coe_mul Matrix.SpecialLinearGroup.coe_mul
 
 @[simp]
-theorem coe_one : ↑ₘ(1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
+lemma coe_one : ↑ₘ(1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
   rfl
 #align matrix.special_linear_group.coe_one Matrix.SpecialLinearGroup.coe_one
 
 @[simp]
-theorem det_coe : det ↑ₘA = 1 :=
+lemma det_coe : det ↑ₘA = 1 :=
   A.2
 #align matrix.special_linear_group.det_coe Matrix.SpecialLinearGroup.det_coe
 
@@ -158,12 +158,12 @@ theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
   rfl
 #align matrix.special_linear_group.coe_pow Matrix.SpecialLinearGroup.coe_pow
 
-theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
+lemma det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
   norm_num
 #align matrix.special_linear_group.det_ne_zero Matrix.SpecialLinearGroup.det_ne_zero
 
-theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘg i ≠ 0 := fun h =>
+lemma row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘg i ≠ 0 := fun h =>
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
 #align matrix.special_linear_group.row_ne_zero Matrix.SpecialLinearGroup.row_ne_zero
 
@@ -208,7 +208,7 @@ theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
   rfl
 #align matrix.special_linear_group.to_lin'_symm_to_linear_map Matrix.SpecialLinearGroup.toLin'_symm_to_linearMap
 
-theorem toLin'_injective :
+lemma toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 #align matrix.special_linear_group.to_lin'_injective Matrix.SpecialLinearGroup.toLin'_injective
@@ -309,7 +309,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 #align matrix.special_linear_group.fin_two_induction Matrix.SpecialLinearGroup.fin_two_induction
 
-theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
+lemma fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
@@ -350,15 +350,15 @@ def T : SL(2, ℤ) :=
   ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of] ⟩
 #align modular_group.T ModularGroup.T
 
-theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
+lemma coe_S : ↑ₘS = !![0, -1; 1, 0] :=
   rfl
 #align modular_group.coe_S ModularGroup.coe_S
 
-theorem coe_T : ↑ₘT = !![1, 1; 0, 1] :=
+lemma coe_T : ↑ₘT = !![1, 1; 0, 1] :=
   rfl
 #align modular_group.coe_T ModularGroup.coe_T
 
-theorem coe_T_inv : ↑ₘT⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
+lemma coe_T_inv : ↑ₘT⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
 #align modular_group.coe_T_inv ModularGroup.coe_T_inv
 
 theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by

@@ -92,7 +92,7 @@ instance : CoeFun C(α, β) fun _ => α → β :=
   FunLike.hasCoeToFun-/
 
 @[simp]
-theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
+lemma toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
@@ -105,12 +105,12 @@ def Simps.apply (f : C(α, β)) : α → β := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp] -- Porting note: removed `norm_cast` attribute
-protected theorem coe_coe {F : Type*} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
+protected lemma coe_coe {F : Type*} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
   rfl
 #align continuous_map.coe_coe ContinuousMap.coe_coe
 
 @[ext]
-theorem ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
+lemma ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext _ _ h
 #align continuous_map.ext ContinuousMap.ext
 
@@ -148,7 +148,7 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
 #align continuous_map.continuous_at ContinuousMap.continuousAt
 
 /-- Deprecated. Use `FunLike.congr_fun` instead. -/
-protected theorem congr_fun {f g : C(α, β)} (H : f = g) (x : α) : f x = g x :=
+protected lemma congr_fun {f g : C(α, β)} (H : f = g) (x : α) : f x = g x :=
   H ▸ rfl
 #align continuous_map.congr_fun ContinuousMap.congr_fun
 
@@ -157,7 +157,7 @@ protected theorem congr_arg (f : C(α, β)) {x y : α} (h : x = y) : f x = f y :
   h ▸ rfl
 #align continuous_map.congr_arg ContinuousMap.congr_arg
 
-theorem coe_injective : @Function.Injective C(α, β) (α → β) (↑) := fun f g h => by
+lemma coe_injective : @Function.Injective C(α, β) (α → β) (↑) := fun f g h => by
   cases f; cases g; congr
 #align continuous_map.coe_injective ContinuousMap.coe_injective
 
@@ -195,7 +195,7 @@ protected def id : C(α, α) where
 #align continuous_map.id ContinuousMap.id
 
 @[simp]
-theorem coe_id : ⇑(ContinuousMap.id α) = id :=
+lemma coe_id : ⇑(ContinuousMap.id α) = id :=
   rfl
 #align continuous_map.coe_id ContinuousMap.coe_id
 
@@ -271,13 +271,13 @@ theorem comp_const (f : C(β, γ)) (b : β) : f.comp (const α b) = const α (f 
 #align continuous_map.comp_const ContinuousMap.comp_const
 
 @[simp]
-theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
+lemma cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
   ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
 #align continuous_map.cancel_right ContinuousMap.cancel_right
 
 @[simp]
-theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
+lemma cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_map.cancel_left ContinuousMap.cancel_left
@@ -384,7 +384,7 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
   rfl
 #align continuous_map.restrict_apply_mk ContinuousMap.restrict_apply_mk
 
-theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
+lemma injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
     Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
   FunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
     congr_arg FunLike.coe h
@@ -417,12 +417,12 @@ noncomputable def liftCover : C(α, β) :=
 variable {S φ hφ hS}
 
 @[simp]
-theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
+lemma liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
   rw [liftCover, coe_mk, Set.liftCover_coe _]
 #align continuous_map.lift_cover_coe ContinuousMap.liftCover_coe
 
 -- @[simp] -- Porting note: the simpNF linter complained
-theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
+lemma liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
@@ -450,14 +450,14 @@ variable {A F hF hA}
 -- closed by `liftCover_coe x'`
 -- Might be something to do with the `let`s in the definition of `liftCover'`?
 @[simp]
-theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
+lemma liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
   by delta liftCover'; exact liftCover_coe x'
 #align continuous_map.lift_cover_coe' ContinuousMap.liftCover_coe'
 
 -- porting note: porting program suggested `ext <| liftCover_coe'`
 @[simp]
-theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
+lemma liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
 #align continuous_map.lift_cover_restrict' ContinuousMap.liftCover_restrict'
 
@@ -483,30 +483,30 @@ instance : Coe (α ≃ₜ β) C(α, β) :=
   ⟨Homeomorph.toContinuousMap⟩
 
 -- Porting note: Syntactic tautology
-/-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
+/-lemma toContinuousMap_as_coe : f.toContinuousMap = f :=
   rfl
 #align homeomorph.to_continuous_map_as_coe Homeomorph.toContinuousMap_as_coe-/
 #noalign homeomorph.to_continuous_map_as_coe
 
 @[simp]
-theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
+lemma coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
   rfl
 #align homeomorph.coe_refl Homeomorph.coe_refl
 
 @[simp]
-theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
+lemma coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
   rfl
 #align homeomorph.coe_trans Homeomorph.coe_trans
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
-theorem symm_comp_toContinuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
+lemma symm_comp_toContinuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
   by rw [← coe_trans, self_trans_symm, coe_refl]
 #align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_toContinuousMap
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
-theorem toContinuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
+lemma toContinuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
   by rw [← coe_trans, symm_trans_self, coe_refl]
 #align homeomorph.to_continuous_map_comp_symm Homeomorph.toContinuousMap_comp_symm
 

@@ -43,22 +43,22 @@ def zeroLocus (I : Ideal (MvPolynomial σ k)) : Set (σ → k) :=
 #align mv_polynomial.zero_locus MvPolynomial.zeroLocus
 
 @[simp]
-theorem mem_zeroLocus_iff {I : Ideal (MvPolynomial σ k)} {x : σ → k} :
+lemma mem_zeroLocus_iff {I : Ideal (MvPolynomial σ k)} {x : σ → k} :
     x ∈ zeroLocus I ↔ ∀ p ∈ I, eval x p = 0 :=
   Iff.rfl
 #align mv_polynomial.mem_zero_locus_iff MvPolynomial.mem_zeroLocus_iff
 
-theorem zeroLocus_anti_mono {I J : Ideal (MvPolynomial σ k)} (h : I ≤ J) :
+lemma zeroLocus_anti_mono {I J : Ideal (MvPolynomial σ k)} (h : I ≤ J) :
     zeroLocus J ≤ zeroLocus I := fun _ hx p hp => hx p <| h hp
 #align mv_polynomial.zero_locus_anti_mono MvPolynomial.zeroLocus_anti_mono
 
 @[simp]
-theorem zeroLocus_bot : zeroLocus (⊥ : Ideal (MvPolynomial σ k)) = ⊤ :=
+lemma zeroLocus_bot : zeroLocus (⊥ : Ideal (MvPolynomial σ k)) = ⊤ :=
   eq_top_iff.2 fun x _ _ hp => Trans.trans (congr_arg (eval x) (mem_bot.1 hp)) (eval x).map_zero
 #align mv_polynomial.zero_locus_bot MvPolynomial.zeroLocus_bot
 
 @[simp]
-theorem zeroLocus_top : zeroLocus (⊤ : Ideal (MvPolynomial σ k)) = ⊥ :=
+lemma zeroLocus_top : zeroLocus (⊤ : Ideal (MvPolynomial σ k)) = ⊥ :=
   eq_bot_iff.2 fun x hx => one_ne_zero ((eval x).map_one ▸ hx 1 Submodule.mem_top : (1 : k) = 0)
 #align mv_polynomial.zero_locus_top MvPolynomial.zeroLocus_top
 
@@ -72,16 +72,16 @@ def vanishingIdeal (V : Set (σ → k)) : Ideal (MvPolynomial σ k) where
 #align mv_polynomial.vanishing_ideal MvPolynomial.vanishingIdeal
 
 @[simp]
-theorem mem_vanishingIdeal_iff {V : Set (σ → k)} {p : MvPolynomial σ k} :
+lemma mem_vanishingIdeal_iff {V : Set (σ → k)} {p : MvPolynomial σ k} :
     p ∈ vanishingIdeal V ↔ ∀ x ∈ V, eval x p = 0 :=
   Iff.rfl
 #align mv_polynomial.mem_vanishing_ideal_iff MvPolynomial.mem_vanishingIdeal_iff
 
-theorem vanishingIdeal_anti_mono {A B : Set (σ → k)} (h : A ≤ B) :
+lemma vanishingIdeal_anti_mono {A B : Set (σ → k)} (h : A ≤ B) :
     vanishingIdeal B ≤ vanishingIdeal A := fun _ hp x hx => hp x <| h hx
 #align mv_polynomial.vanishing_ideal_anti_mono MvPolynomial.vanishingIdeal_anti_mono
 
-theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (σ → k)) = ⊤ :=
+lemma vanishingIdeal_empty : vanishingIdeal (∅ : Set (σ → k)) = ⊤ :=
   le_antisymm le_top fun _ _ x hx => absurd hx (Set.not_mem_empty x)
 #align mv_polynomial.vanishing_ideal_empty MvPolynomial.vanishingIdeal_empty
 
@@ -93,13 +93,13 @@ theorem zeroLocus_vanishingIdeal_le (V : Set (σ → k)) : V ≤ zeroLocus (vani
   fun V hV _ hp => hp V hV
 #align mv_polynomial.zero_locus_vanishing_ideal_le MvPolynomial.zeroLocus_vanishingIdeal_le
 
-theorem zeroLocus_vanishingIdeal_galoisConnection :
+lemma zeroLocus_vanishingIdeal_galoisConnection :
     @GaloisConnection (Ideal (MvPolynomial σ k)) (Set (σ → k))ᵒᵈ _ _ zeroLocus vanishingIdeal :=
   GaloisConnection.monotone_intro (fun _ _ ↦ vanishingIdeal_anti_mono)
     (fun _ _ ↦ zeroLocus_anti_mono) le_vanishingIdeal_zeroLocus zeroLocus_vanishingIdeal_le
 #align mv_polynomial.zero_locus_vanishing_ideal_galois_connection MvPolynomial.zeroLocus_vanishingIdeal_galoisConnection
 
-theorem le_zeroLocus_iff_le_vanishingIdeal {V : Set (σ → k)} {I : Ideal (MvPolynomial σ k)} :
+lemma le_zeroLocus_iff_le_vanishingIdeal {V : Set (σ → k)} {I : Ideal (MvPolynomial σ k)} :
     V ≤ zeroLocus I ↔ I ≤ vanishingIdeal V :=
   zeroLocus_vanishingIdeal_galoisConnection.le_iff_le
 

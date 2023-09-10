@@ -37,7 +37,7 @@ variable {A B : C} {X Y : D} {i : A ⟶ B} {p : X ⟶ Y} {u : G.obj A ⟶ X} {v 
 /-- When we have an adjunction `G ⊣ F`, any commutative square where the left
 map is of the form `G.map i` and the right map is `p` has an "adjoint" commutative
 square whose left map is `i` and whose right map is `F.map p`. -/
-theorem right_adjoint : CommSq (adj.homEquiv _ _ u) i (F.map p) (adj.homEquiv _ _ v) :=
+lemma right_adjoint : CommSq (adj.homEquiv _ _ u) i (F.map p) (adj.homEquiv _ _ v) :=
   ⟨by
     simp only [Adjunction.homEquiv_unit, assoc, ← F.map_comp, sq.w]
     rw [F.map_comp, Adjunction.unit_naturality_assoc]⟩
@@ -64,7 +64,7 @@ def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.right_adjoint adj).LiftS
 #align category_theory.comm_sq.right_adjoint_lift_struct_equiv CategoryTheory.CommSq.rightAdjointLiftStructEquiv
 
 /-- A square has a lifting if and only if its (right) adjoint square has a lifting. -/
-theorem right_adjoint_hasLift_iff : HasLift (sq.right_adjoint adj) ↔ HasLift sq := by
+lemma right_adjoint_hasLift_iff : HasLift (sq.right_adjoint adj) ↔ HasLift sq := by
   simp only [HasLift.iff]
   exact Equiv.nonempty_congr (sq.rightAdjointLiftStructEquiv adj).symm
 #align category_theory.comm_sq.right_adjoint_has_lift_iff CategoryTheory.CommSq.right_adjoint_hasLift_iff
@@ -83,7 +83,7 @@ variable {A B : C} {X Y : D} {i : A ⟶ B} {p : X ⟶ Y} {u : A ⟶ F.obj X} {v 
 /-- When we have an adjunction `G ⊣ F`, any commutative square where the left
 map is of the form `i` and the right map is `F.map p` has an "adjoint" commutative
 square whose left map is `G.map i` and whose right map is `p`. -/
-theorem left_adjoint : CommSq ((adj.homEquiv _ _).symm u) (G.map i) p ((adj.homEquiv _ _).symm v) :=
+lemma left_adjoint : CommSq ((adj.homEquiv _ _).symm u) (G.map i) p ((adj.homEquiv _ _).symm v) :=
   ⟨by
     simp only [Adjunction.homEquiv_counit, assoc, ← G.map_comp_assoc, ← sq.w]
     rw [G.map_comp, assoc, Adjunction.counit_naturality]⟩
@@ -110,7 +110,7 @@ def leftAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.left_adjoint adj).LiftStr
 #align category_theory.comm_sq.left_adjoint_lift_struct_equiv CategoryTheory.CommSq.leftAdjointLiftStructEquiv
 
 /-- A (left) adjoint square has a lifting if and only if the original square has a lifting. -/
-theorem left_adjoint_hasLift_iff : HasLift (sq.left_adjoint adj) ↔ HasLift sq := by
+lemma left_adjoint_hasLift_iff : HasLift (sq.left_adjoint adj) ↔ HasLift sq := by
   simp only [HasLift.iff]
   exact Equiv.nonempty_congr (sq.leftAdjointLiftStructEquiv adj).symm
 #align category_theory.comm_sq.left_adjoint_has_lift_iff CategoryTheory.CommSq.left_adjoint_hasLift_iff

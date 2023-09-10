@@ -77,7 +77,7 @@ end Imo2008Q3
 
 open Imo2008Q3
 
-theorem imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
+lemma imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
     ∃ p : ℕ, Nat.Prime p ∧ p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) := by
   intro N
   obtain ⟨p, hpp, hineq₁, hpmod4⟩ := Nat.exists_prime_gt_modEq_one (N ^ 2 + 20) four_ne_zero

@@ -52,7 +52,7 @@ variable {β : Type v} [Semiring α] [Semiring β]
 variable {f : α → β} (hf : IsSemiringHom f) {x y : α}
 
 /-- The identity map is a semiring homomorphism. -/
-theorem id : IsSemiringHom (@id α) := by refine' { .. } <;> intros <;> rfl
+lemma id : IsSemiringHom (@id α) := by refine' { .. } <;> intros <;> rfl
 #align is_semiring_hom.id IsSemiringHom.id
 
 /-- The composition of two semiring homomorphisms is a semiring homomorphism. -/
@@ -91,7 +91,7 @@ namespace IsRingHom
 variable {β : Type v} [Ring α] [Ring β]
 
 /-- A map of rings that is a semiring homomorphism is also a ring homomorphism. -/
-theorem of_semiring {f : α → β} (H : IsSemiringHom f) : IsRingHom f :=
+lemma of_semiring {f : α → β} (H : IsSemiringHom f) : IsRingHom f :=
   { H with }
 #align is_ring_hom.of_semiring IsRingHom.of_semiring
 
@@ -117,7 +117,7 @@ theorem map_sub (hf : IsRingHom f) : f (x - y) = f x - f y := by
 #align is_ring_hom.map_sub IsRingHom.map_sub
 
 /-- The identity map is a ring homomorphism. -/
-theorem id : IsRingHom (@id α) := by refine' { .. } <;> intros <;> rfl
+lemma id : IsRingHom (@id α) := by refine' { .. } <;> intros <;> rfl
 #align is_ring_hom.id IsRingHom.id
 
 -- see Note [no instance on morphisms]
@@ -151,7 +151,7 @@ def of {f : α → β} (hf : IsSemiringHom f) : α →+* β :=
 #align ring_hom.of RingHom.of
 
 @[simp]
-theorem coe_of {f : α → β} (hf : IsSemiringHom f) : ⇑(of hf) = f :=
+lemma coe_of {f : α → β} (hf : IsSemiringHom f) : ⇑(of hf) = f :=
   rfl
 #align ring_hom.coe_of RingHom.coe_of
 
@@ -164,7 +164,7 @@ theorem to_isSemiringHom (f : α →+* β) : IsSemiringHom f :=
 
 end
 
-theorem to_isRingHom {α γ} [Ring α] [Ring γ] (g : α →+* γ) : IsRingHom g :=
+lemma to_isRingHom {α γ} [Ring α] [Ring γ] (g : α →+* γ) : IsRingHom g :=
   IsRingHom.of_semiring g.to_isSemiringHom
 #align ring_hom.to_is_ring_hom RingHom.to_isRingHom
 

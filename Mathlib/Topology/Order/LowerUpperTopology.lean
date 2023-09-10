@@ -78,12 +78,12 @@ def ofLower : WithLowerTopology α ≃ α := Equiv.refl _
 #align with_lower_topology.of_lower WithLowerTopology.ofLower
 
 @[simp]
-theorem to_withLowerTopology_symm_eq : (@toLower α).symm = ofLower :=
+lemma to_withLowerTopology_symm_eq : (@toLower α).symm = ofLower :=
   rfl
 #align with_lower_topology.to_with_lower_topology_symm_eq WithLowerTopology.to_withLowerTopology_symm_eq
 
 @[simp]
-theorem of_withLowerTopology_symm_eq : (@ofLower α).symm = toLower :=
+lemma of_withLowerTopology_symm_eq : (@ofLower α).symm = toLower :=
   rfl
 #align with_lower_topology.of_with_lower_topology_symm_eq WithLowerTopology.of_withLowerTopology_symm_eq
 
@@ -98,12 +98,12 @@ theorem ofLower_toLower (a : α) : ofLower (toLower a) = a :=
 #align with_lower_topology.of_lower_to_lower WithLowerTopology.ofLower_toLower
 
 -- porting note: removed @[simp] to make linter happy
-theorem toLower_inj {a b : α} : toLower a = toLower b ↔ a = b :=
+lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.to_lower_inj WithLowerTopology.toLower_inj
 
 -- porting note: removed @[simp] to make linter happy
-theorem ofLower_inj {a b : WithLowerTopology α} : ofLower a = ofLower b ↔ a = b :=
+lemma ofLower_inj {a b : WithLowerTopology α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.of_lower_inj WithLowerTopology.ofLower_inj
 
@@ -162,11 +162,11 @@ def toUpper : α ≃ WithUpperTopology α := Equiv.refl _
 def ofUpper : WithUpperTopology α ≃ α := Equiv.refl _
 
 @[simp]
-theorem to_withUpperTopology_symm_eq {α} : (@toUpper α).symm = ofUpper :=
+lemma to_withUpperTopology_symm_eq {α} : (@toUpper α).symm = ofUpper :=
   rfl
 
 @[simp]
-theorem of_withUpperTopology_symm_eq : (@ofUpper α).symm = toUpper :=
+lemma of_withUpperTopology_symm_eq : (@ofUpper α).symm = toUpper :=
   rfl
 
 @[simp]
@@ -177,10 +177,10 @@ theorem toUpper_ofUpper (a : WithUpperTopology α) : toUpper (ofUpper a) = a :=
 theorem ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a :=
   rfl
 
-theorem toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b :=
+lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b :=
   Iff.rfl
 
-theorem ofUpper_inj {a b : WithUpperTopology α} : ofUpper a = ofUpper b ↔ a = b :=
+lemma ofUpper_inj {a b : WithUpperTopology α} : ofUpper a = ofUpper b ↔ a = b :=
   Iff.rfl
 
 /-- A recursor for `WithUpperTopology`. Use as `induction x using WithUpperTopology.rec`. -/
@@ -267,7 +267,7 @@ def withLowerTopologyHomeomorph : WithLowerTopology α ≃ₜ α :=
   WithLowerTopology.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 #align lower_topology.with_lower_topology_homeomorph LowerTopology.withLowerTopologyHomeomorph
 
-theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
+lemma isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 #align lower_topology.is_open_iff_generate_Ici_compl LowerTopology.isOpen_iff_generate_Ici_compl
 
@@ -314,7 +314,7 @@ theorem closure_singleton (a : α) : closure {a} = Ici a :=
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 #align lower_topology.closure_singleton LowerTopology.closure_singleton
 
-protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
+protected lemma isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   convert isTopologicalBasis_of_subbasis (topology_eq α)
   simp_rw [lowerBasis, coe_upperClosure, compl_iUnion]
   ext s
@@ -378,7 +378,7 @@ variable {α}
 def withUpperTopologyHomeomorph : WithUpperTopology α ≃ₜ α :=
   WithUpperTopology.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
+lemma isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 
 instance instLowerTopologyDual [Preorder α] [TopologicalSpace α] [UpperTopology α] :
@@ -408,7 +408,7 @@ The closure of a singleton `{a}` in the upper topology is the left-infinite righ
 theorem closure_singleton (a : α) : closure {a} = Iic a :=
   LowerTopology.closure_singleton (α := αᵒᵈ) _
 
-protected theorem isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
+protected lemma isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
   LowerTopology.isTopologicalBasis (α := αᵒᵈ)
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous provided that the

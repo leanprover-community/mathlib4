@@ -94,7 +94,7 @@ theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 #align topological_space.open_nhds.inclusion_obj TopologicalSpace.OpenNhds.inclusion_obj
 
-theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
+lemma openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
   U.1.openEmbedding
 #align topological_space.open_nhds.open_embedding TopologicalSpace.OpenNhds.openEmbedding
 

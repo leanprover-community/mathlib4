@@ -122,15 +122,15 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
 #align mul_action_hom.map_smul MulActionHom.map_smul
 
 @[ext]
-theorem ext {f g : X →[M'] Y} : (∀ x, f x = g x) → f = g :=
+lemma ext {f g : X →[M'] Y} : (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
-theorem ext_iff {f g : X →[M'] Y} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : X →[M'] Y} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
-protected theorem congr_fun {f g : X →[M'] Y} (h : f = g) (x : X) : f x = g x :=
+protected lemma congr_fun {f g : X →[M'] Y} (h : f = g) (x : X) : f x = g x :=
   FunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
@@ -285,25 +285,25 @@ theorem coe_fn_coe' (f : A →+[M] B) : ⇑(f : A →[M] B) = f :=
 #align distrib_mul_action_hom.coe_fn_coe' DistribMulActionHom.coe_fn_coe'
 
 @[ext]
-theorem ext {f g : A →+[M] B} : (∀ x, f x = g x) → f = g :=
+lemma ext {f g : A →+[M] B} : (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionHom.ext
 
-theorem ext_iff {f g : A →+[M] B} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : A →+[M] B} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align distrib_mul_action_hom.ext_iff DistribMulActionHom.ext_iff
 
-protected theorem congr_fun {f g : A →+[M] B} (h : f = g) (x : A) : f x = g x :=
+protected lemma congr_fun {f g : A →+[M] B} (h : f = g) (x : A) : f x = g x :=
   FunLike.congr_fun h _
 #align distrib_mul_action_hom.congr_fun DistribMulActionHom.congr_fun
 
-theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g : A →[M] B)) :
+lemma toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g : A →[M] B)) :
     f = g := by
   ext a
   exact MulActionHom.congr_fun h a
 #align distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
 
-theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
+lemma toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
   exact FunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
@@ -349,12 +349,12 @@ instance : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
 
 @[simp]
-theorem coe_zero : ⇑(0 : A →+[M] B) = 0 :=
+lemma coe_zero : ⇑(0 : A →+[M] B) = 0 :=
   rfl
 #align distrib_mul_action_hom.coe_zero DistribMulActionHom.coe_zero
 
 @[simp]
-theorem coe_one : ⇑(1 : A →+[M] A) = id :=
+lemma coe_one : ⇑(1 : A →+[M] A) = id :=
   rfl
 #align distrib_mul_action_hom.coe_one DistribMulActionHom.coe_one
 
@@ -403,12 +403,12 @@ variable {R M'}
 variable [AddMonoid M'] [DistribMulAction R M']
 
 @[ext]
-theorem ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g := by
+lemma ext_ring {f g : R →+[R] M'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smul, g.map_smul, h]
 #align distrib_mul_action_hom.ext_ring DistribMulActionHom.ext_ring
 
-theorem ext_ring_iff {f g : R →+[R] M'} : f = g ↔ f 1 = g 1 :=
+lemma ext_ring_iff {f g : R →+[R] M'} : f = g ↔ f 1 = g 1 :=
   ⟨fun h => h ▸ rfl, ext_ring⟩
 #align distrib_mul_action_hom.ext_ring_iff DistribMulActionHom.ext_ring_iff
 
@@ -517,11 +517,11 @@ theorem coe_fn_coe' (f : R →+*[M] S) : ⇑(f : R →+[M] S) = f :=
 #align mul_semiring_action_hom.coe_fn_coe' MulSemiringActionHom.coe_fn_coe'
 
 @[ext]
-theorem ext {f g : R →+*[M] S} : (∀ x, f x = g x) → f = g :=
+lemma ext {f g : R →+*[M] S} : (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
 
-theorem ext_iff {f g : R →+*[M] S} : f = g ↔ ∀ x, f x = g x :=
+lemma ext_iff {f g : R →+*[M] S} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 

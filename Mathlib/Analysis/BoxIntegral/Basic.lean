@@ -105,7 +105,7 @@ theorem integralSum_inf_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
   integralSum_biUnion_partition f vol π _ fun _J hJ => h.restrict (Prepartition.le_of_mem _ hJ)
 #align box_integral.integral_sum_inf_partition BoxIntegral.integralSum_inf_partition
 
-theorem integralSum_fiberwise {α} (g : Box ι → α) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
+lemma integralSum_fiberwise {α} (g : Box ι → α) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) :
     (∑ y in π.boxes.image g, integralSum f vol (π.filter (g · = y))) = integralSum f vol π :=
   π.sum_fiberwise g fun J => vol J (f <| π.tag J)
@@ -190,7 +190,7 @@ theorem HasIntegral.tendsto (h : HasIntegral I l f vol y) :
 #align box_integral.has_integral.tendsto BoxIntegral.HasIntegral.tendsto
 
 /-- The `ε`-`δ` definition of `BoxIntegral.HasIntegral`. -/
-theorem hasIntegral_iff : HasIntegral I l f vol y ↔
+lemma hasIntegral_iff : HasIntegral I l f vol y ↔
     ∀ ε > (0 : ℝ), ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧
       ∀ c π, l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ ε :=
   ((l.hasBasis_toFilteriUnion_top I).tendsto_iff nhds_basis_closedBall).trans <| by
@@ -209,14 +209,14 @@ theorem HasIntegral.of_mul (a : ℝ)
   exact ⟨r, hr, fun c π hπ hπp => (H c π hπ hπp).trans ha.le⟩
 #align box_integral.has_integral_of_mul BoxIntegral.HasIntegral.of_mul
 
-theorem integrable_iff_cauchy [CompleteSpace F] :
+lemma integrable_iff_cauchy [CompleteSpace F] :
     Integrable I l f vol ↔ Cauchy ((l.toFilteriUnion I ⊤).map (integralSum f vol)) :=
   cauchy_map_iff_exists_tendsto.symm
 #align box_integral.integrable_iff_cauchy BoxIntegral.integrable_iff_cauchy
 
 /-- In a complete space, a function is integrable if and only if its integral sums form a Cauchy
 net. Here we restate this fact in terms of `∀ ε > 0, ∃ r, ...`. -/
-theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
+lemma integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
     ∀ ε > (0 : ℝ), ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧
       ∀ c₁ c₂ π₁ π₂, l.MemBaseSet I c₁ (r c₁) π₁ → π₁.IsPartition → l.MemBaseSet I c₂ (r c₂) π₂ →
         π₂.IsPartition → dist (integralSum f vol π₁) (integralSum f vol π₂) ≤ ε := by
@@ -231,7 +231,7 @@ theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
         fun H π₁ π₂ c₁ h₁ hU₁ c₂ h₂ hU₂ => H c₁ c₂ π₁ π₂ h₁ hU₁ h₂ hU₂⟩
 #align box_integral.integrable_iff_cauchy_basis BoxIntegral.integrable_iff_cauchy_basis
 
-theorem HasIntegral.mono {l₁ l₂ : IntegrationParams} (h : HasIntegral I l₁ f vol y) (hl : l₂ ≤ l₁) :
+lemma HasIntegral.mono {l₁ l₂ : IntegrationParams} (h : HasIntegral I l₁ f vol y) (hl : l₂ ≤ l₁) :
     HasIntegral I l₂ f vol y :=
   h.mono_left <| IntegrationParams.toFilteriUnion_mono _ hl _
 #align box_integral.has_integral.mono BoxIntegral.HasIntegral.mono
@@ -242,7 +242,7 @@ protected theorem Integrable.hasIntegral (h : Integrable I l f vol) :
   exact Classical.choose_spec h
 #align box_integral.integrable.has_integral BoxIntegral.Integrable.hasIntegral
 
-theorem Integrable.mono {l'} (h : Integrable I l f vol) (hle : l' ≤ l) : Integrable I l' f vol :=
+lemma Integrable.mono {l'} (h : Integrable I l f vol) (hle : l' ≤ l) : Integrable I l' f vol :=
   ⟨_, h.hasIntegral.mono hle⟩
 #align box_integral.integrable.mono BoxIntegral.Integrable.mono
 
@@ -286,12 +286,12 @@ theorem Integrable.of_neg (hf : Integrable I l (-f) vol) : Integrable I l f vol 
 #align box_integral.integrable.of_neg BoxIntegral.Integrable.of_neg
 
 @[simp]
-theorem integrable_neg : Integrable I l (-f) vol ↔ Integrable I l f vol :=
+lemma integrable_neg : Integrable I l (-f) vol ↔ Integrable I l f vol :=
   ⟨fun h => h.of_neg, fun h => h.neg⟩
 #align box_integral.integrable_neg BoxIntegral.integrable_neg
 
 @[simp]
-theorem integral_neg : integral I l (-f) vol = -integral I l f vol :=
+lemma integral_neg : integral I l (-f) vol = -integral I l f vol :=
   if h : Integrable I l f vol then h.hasIntegral.neg.integral_eq
   else by rw [integral, integral, dif_neg h, dif_neg (mt Integrable.of_neg h), neg_zero]
 #align box_integral.integral_neg BoxIntegral.integral_neg
@@ -324,19 +324,19 @@ theorem integrable_const (c : E) : Integrable I l (fun _ => c) vol :=
   ⟨_, hasIntegral_const c⟩
 #align box_integral.integrable_const BoxIntegral.integrable_const
 
-theorem hasIntegral_zero : HasIntegral I l (fun _ => (0 : E)) vol 0 := by
+lemma hasIntegral_zero : HasIntegral I l (fun _ => (0 : E)) vol 0 := by
   simpa only [← (vol I).map_zero] using hasIntegral_const (0 : E)
 #align box_integral.has_integral_zero BoxIntegral.hasIntegral_zero
 
-theorem integrable_zero : Integrable I l (fun _ => (0 : E)) vol :=
+lemma integrable_zero : Integrable I l (fun _ => (0 : E)) vol :=
   ⟨0, hasIntegral_zero⟩
 #align box_integral.integrable_zero BoxIntegral.integrable_zero
 
-theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
+lemma integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
   hasIntegral_zero.integral_eq
 #align box_integral.integral_zero BoxIntegral.integral_zero
 
-theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
+lemma HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i in s, f i x) vol (∑ i in s, g i) := by
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
@@ -354,7 +354,7 @@ theorem Integrable.smul (hf : Integrable I l f vol) (c : ℝ) : Integrable I l (
   (hf.hasIntegral.smul c).integrable
 #align box_integral.integrable.smul BoxIntegral.Integrable.smul
 
-theorem Integrable.of_smul {c : ℝ} (hf : Integrable I l (c • f) vol) (hc : c ≠ 0) :
+lemma Integrable.of_smul {c : ℝ} (hf : Integrable I l (c • f) vol) (hc : c ≠ 0) :
     Integrable I l f vol := by
   simpa [inv_smul_smul₀ hc] using hf.smul c⁻¹
 #align box_integral.integrable.of_smul BoxIntegral.Integrable.of_smul
@@ -372,7 +372,7 @@ open MeasureTheory
 
 /-- The integral of a nonnegative function w.r.t. a volume generated by a locally-finite measure is
 nonnegative. -/
-theorem integral_nonneg {g : ℝⁿ → ℝ} (hg : ∀ x ∈ Box.Icc I, 0 ≤ g x) (μ : Measure ℝⁿ)
+lemma integral_nonneg {g : ℝⁿ → ℝ} (hg : ∀ x ∈ Box.Icc I, 0 ≤ g x) (μ : Measure ℝⁿ)
     [IsLocallyFiniteMeasure μ] : 0 ≤ integral I l g μ.toBoxAdditive.toSMul := by
   by_cases hgi : Integrable I l g μ.toBoxAdditive.toSMul
   · refine ge_of_tendsto' hgi.hasIntegral fun π => sum_nonneg fun J _ => ?_
@@ -382,7 +382,7 @@ theorem integral_nonneg {g : ℝⁿ → ℝ} (hg : ∀ x ∈ Box.Icc I, 0 ≤ g 
 
 /-- If `‖f x‖ ≤ g x` on `[l, u]` and `g` is integrable, then the norm of the integral of `f` is less
 than or equal to the integral of `g`. -/
-theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ g x)
+lemma norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ g x)
     (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] (hg : Integrable I l g μ.toBoxAdditive.toSMul) :
     ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ integral I l g μ.toBoxAdditive.toSMul := by
   by_cases hfi : Integrable.{u, v, v} I l f μ.toBoxAdditive.toSMul
@@ -395,7 +395,7 @@ theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Ic
     exact integral_nonneg (fun x hx => (norm_nonneg _).trans (hle x hx)) μ
 #align box_integral.norm_integral_le_of_norm_le BoxIntegral.norm_integral_le_of_norm_le
 
-theorem norm_integral_le_of_le_const {c : ℝ} (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ)
+lemma norm_integral_le_of_le_const {c : ℝ} (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ)
     [IsLocallyFiniteMeasure μ] : ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ (μ I).toReal * c :=
   by simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 #align box_integral.norm_integral_le_of_le_const BoxIntegral.norm_integral_le_of_le_const
@@ -678,7 +678,7 @@ variable (l)
 /-- A continuous function is box-integrable with respect to any locally finite measure.
 
 This is true for any volume with bounded variation. -/
-theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
+lemma integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
     (hc : ContinuousOn f (Box.Icc I)) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
     Integrable.{u, v, v} I l f μ.toBoxAdditive.toSMul := by
   have huc := I.isCompact_Icc.uniformContinuousOn_of_continuous hc

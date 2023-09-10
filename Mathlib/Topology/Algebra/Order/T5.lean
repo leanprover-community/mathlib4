@@ -24,7 +24,7 @@ variable {X : Type*} [LinearOrder X] [TopologicalSpace X] [OrderTopology X] {a b
 namespace Set
 
 @[simp]
-theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a ↔ s ∈ 𝓝 a := by
+lemma ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a ↔ s ∈ 𝓝 a := by
   refine' ⟨fun h => mem_of_superset h ordConnectedComponent_subset, fun h => _⟩
   rcases exists_Icc_mem_subset_of_mem_nhds h with ⟨b, c, ha, ha', hs⟩
   exact mem_of_superset ha' (subset_ordConnectedComponent ha hs)

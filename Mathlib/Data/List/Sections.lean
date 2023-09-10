@@ -20,7 +20,7 @@ namespace List
 
 variable {α β : Type*}
 
-theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (· ∈ ·) f L := by
+lemma mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (· ∈ ·) f L := by
   refine' ⟨fun h => _, fun h => _⟩
   · induction L generalizing f
     · cases mem_singleton.1 h
@@ -34,11 +34,11 @@ theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (
     exact ⟨f, fs, a, al, rfl⟩
 #align list.mem_sections List.mem_sections
 
-theorem mem_sections_length {L : List (List α)} {f} (h : f ∈ sections L) : length f = length L :=
+lemma mem_sections_length {L : List (List α)} {f} (h : f ∈ sections L) : length f = length L :=
   (mem_sections.1 h).length_eq
 #align list.mem_sections_length List.mem_sections_length
 
-theorem rel_sections {r : α → β → Prop} :
+lemma rel_sections {r : α → β → Prop} :
     (Forall₂ (Forall₂ r) ⇒ Forall₂ (Forall₂ r)) sections sections
   | _, _, Forall₂.nil => Forall₂.cons Forall₂.nil Forall₂.nil
   | _, _, Forall₂.cons h₀ h₁ =>
