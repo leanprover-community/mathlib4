@@ -19,6 +19,9 @@ abbrev PointedCone (𝕜) (E)
 
 namespace PointedCone
 
+set_option quotPrecheck false in
+notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
+
 instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
   coe := fun S => {
     carrier := S
@@ -47,23 +50,23 @@ theorem zero_mem (S : PointedCone 𝕜 E) : 0 ∈ S :=
 instance instZero (S : PointedCone 𝕜 E) : Zero S :=
   ⟨0, S.zero_mem⟩
 
-
 section Maps
 
 variable {F : Type*} [AddCommMonoid F] [Module 𝕜 F]
 variable {G : Type*} [AddCommMonoid G] [Module 𝕜 G]
 
 -- needs fixing
-abbrev σ := RingHom.id { c : 𝕜 // 0 ≤ c }
+abbrev σ := RingHom.id 𝕜≥0
 
 /-- This section is likely no longer relevant as maps between submodules are already defined.
 The only thing I should figure out how to add is the coercion between maps between PointedCones
 and maps between ConvexCones.
 -/
 
+
 @[simp, norm_cast]
-lemma map_coe (S : PointedCone 𝕜 E)
-    (f : E →ₛₗ[σ] F) :
+lemma map_coe' (S : PointedCone 𝕜 E)
+    (f : E →ₗ[𝕜≥0] F) :
     (S.map f : Set F) = f '' S := Submodule.map_coe _ _
 
 end Maps
