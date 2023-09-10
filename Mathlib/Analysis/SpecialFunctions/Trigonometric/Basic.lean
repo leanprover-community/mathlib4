@@ -740,20 +740,16 @@ theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSe
       · rw [mul_comm, sq, mul_assoc, ← mul_div_assoc, mul_div_cancel_left _ this, ← mul_div_assoc,
           mul_div_cancel_left _ this]
     · exact add_nonneg two_pos.le (sqrtTwoAddSeries_zero_nonneg _)
-    apply le_of_lt
-    apply mul_pos _ two_pos
-    apply cos_pos_of_mem_Ioo ⟨_, _⟩
+    refine le_of_lt <| mul_pos (cos_pos_of_mem_Ioo ⟨?_, ?_⟩) two_pos
     · trans (0 : ℝ)
       · rw [neg_lt_zero]
-        apply pi_div_two_pos
-      · apply div_pos pi_pos
-        apply pow_pos
-        norm_num
+        exact pi_div_two_pos
+      · exact div_pos pi_pos <| pow_pos two_pos _
     apply div_lt_div' (le_refl π) _ pi_pos two_pos
     refine' lt_of_le_of_lt (le_of_eq (pow_one _).symm) _
     apply pow_lt_pow
     · norm_num
-    · apply Nat.succ_lt_succ; apply Nat.succ_pos
+    · exact Nat.succ_lt_succ n.succ_pos
 #align real.cos_pi_over_two_pow Real.cos_pi_over_two_pow
 
 theorem sin_sq_pi_over_two_pow (n : ℕ) :
@@ -777,14 +773,9 @@ theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin_sq_pi_over_two_pow_succ, sub_mul]
   · congr <;> norm_num
   · rw [sub_nonneg]
-    apply le_of_lt
-    apply sqrtTwoAddSeries_lt_two
-  apply le_of_lt
-  apply mul_pos ?_ two_pos
-  apply sin_pos_of_pos_of_lt_pi
-  · apply div_pos pi_pos
-    apply pow_pos
-    norm_num
+    exact (sqrtTwoAddSeries_lt_two _).le
+  refine le_of_lt <| mul_pos (sin_pos_of_pos_of_lt_pi ?_ ?_) two_pos
+  · exact div_pos pi_pos <| pow_pos two_pos _
   refine' lt_of_lt_of_le _ (le_of_eq (div_one _))
   rw [div_lt_div_left pi_pos (pow_pos two_pos _) one_pos]
   refine' lt_of_le_of_lt (le_of_eq (pow_zero 2).symm) _
@@ -889,8 +880,7 @@ theorem sq_cos_pi_div_six : cos (π / 6) ^ 2 = 3 / 4 := by
 @[simp]
 theorem cos_pi_div_six : cos (π / 6) = sqrt 3 / 2 := by
   suffices sqrt 3 = cos (π / 6) * 2 by
-    field_simp [(by norm_num : 0 ≠ 2)]
-    exact this.symm
+    field_simp [(by norm_num : 0 ≠ 2), ← this]
   rw [sqrt_eq_iff_sq_eq]
   · have h1 := (mul_right_inj' (by norm_num : (4 : ℝ) ≠ 0)).mpr sq_cos_pi_div_six
     rw [← sub_eq_zero] at h1 ⊢
