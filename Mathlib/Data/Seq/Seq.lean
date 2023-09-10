@@ -704,6 +704,9 @@ theorem map_id : ∀ s : Seq α, map id s = s
 #align stream.seq.map_id Stream'.Seq.map_id
 
 @[simp]
+theorem map_id' (s : Seq α) : map (fun a => a) s = s := map_id s
+
+@[simp]
 theorem map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
   | ⟨s, al⟩ => by apply Subtype.eq; dsimp [tail, map]
 #align stream.seq.map_tail Stream'.Seq.map_tail
@@ -714,6 +717,14 @@ theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f)
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
 #align stream.seq.map_comp Stream'.Seq.map_comp
+
+@[simp]
+theorem map_map (f : α → β) (g : β → γ) (s : Seq α) : map g (map f s) = map (g ∘ f) s :=
+  Eq.symm <| map_comp f g s
+
+theorem map_injective {f : α → β} (hf : Function.Injective f) : Function.Injective (map f) :=
+  fun _ _ h =>
+    Subtype.eq <| Stream'.map_injective (Option.map_injective hf) (congr_arg Subtype.val h)
 
 @[simp]
 theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s) (map f t) := by
@@ -736,6 +747,15 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
 theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
   | ⟨_, _⟩, _ => rfl
 #align stream.seq.map_nth Stream'.Seq.map_get?
+
+theorem map_congr {f g : α → β} {s : Seq α} : (∀ a ∈ s, f a = g a) → map f s = map g s := by
+  rcases s with ⟨s, _⟩
+  intro hs
+  apply Subtype.eq
+  dsimp only [Seq.map]
+  apply Stream'.map_congr; intro o ho
+  apply Option.map_congr; rintro a rfl
+  exact hs a ho
 
 instance : Functor Seq where map := @map
 
@@ -849,9 +869,9 @@ theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   rw [Nat.succ_eq_add_one, ← get?_tail, ← dropn_tail]; apply IH
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
 
-theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
+theorem mem_map_of_mem (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
-#align stream.seq.mem_map Stream'.Seq.mem_map
+#align stream.seq.mem_map Stream'.Seq.mem_map_of_mem
 
 theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b :=
   fun {s} h => by match s with
@@ -861,6 +881,11 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
     · injection oe
     · injection oe with h'; exact ⟨a, om, h'⟩
 #align stream.seq.exists_of_mem_map Stream'.Seq.exists_of_mem_map
+
+@[simp]
+theorem mem_map {b : β} {f : α → β} {s : Seq α} : b ∈ map f s ↔ ∃ a, a ∈ s ∧ f a = b where
+  mp  := exists_of_mem_map
+  mpr := by rintro ⟨b, h, rfl⟩; exact mem_map_of_mem f h
 
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
@@ -969,9 +994,7 @@ theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
 theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
   | ⟨a, s⟩ => by
     dsimp [bind, map]
-    -- Porting note: Was `rw [map_comp]; simp [Function.comp, ret]`
-    rw [map_comp, ret]
-    simp
+    rw [map_comp, ret, join_nil, join_map_ret]
 #align stream.seq1.bind_ret Stream'.Seq1.bind_ret
 
 @[simp]

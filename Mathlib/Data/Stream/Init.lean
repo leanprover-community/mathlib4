@@ -135,6 +135,10 @@ theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a =
     exact ⟨n', h⟩
 #align stream.eq_or_mem_of_mem_cons Stream'.eq_or_mem_of_mem_cons
 
+@[simp]
+theorem mem_nth (n : ℕ) (s : Stream' α) : nth s n ∈ s :=
+  Exists.intro n rfl
+
 theorem mem_of_nth_eq {n : Nat} {s : Stream' α} {a : α} : a = nth s n → a ∈ s := fun h =>
   Exists.intro n h
 #align stream.mem_of_nth_eq Stream'.mem_of_nth_eq
@@ -183,6 +187,9 @@ theorem map_tail (s : Stream' α) : map f (tail s) = tail (map f s) :=
   rfl
 #align stream.map_tail Stream'.map_tail
 
+theorem map_injective {f : α → β} (hf : Injective f) : Injective (map f) :=
+  Function.Injective.comp_left hf
+
 theorem mem_map {a : α} {s : Stream' α} : a ∈ s → f a ∈ map f s := fun ⟨n, h⟩ =>
   Exists.intro n (by rw [nth_map, h])
 #align stream.mem_map Stream'.mem_map
@@ -190,6 +197,9 @@ theorem mem_map {a : α} {s : Stream' α} : a ∈ s → f a ∈ map f s := fun �
 theorem exists_of_mem_map {f} {b : β} {s : Stream' α} : b ∈ map f s → ∃ a, a ∈ s ∧ f a = b :=
   fun ⟨n, h⟩ => ⟨nth s n, ⟨n, rfl⟩, h.symm⟩
 #align stream.exists_of_mem_map Stream'.exists_of_mem_map
+
+theorem map_congr {f g : α → β} {s : Stream' α} : (∀ a ∈ s, f a = g a) → map f s = map g s :=
+  fun h => Stream'.ext fun n => h (nth s n) (mem_nth n s)
 
 end Map
 

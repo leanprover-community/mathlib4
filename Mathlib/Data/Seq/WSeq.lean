@@ -1427,7 +1427,7 @@ theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s
 #align stream.wseq.map_comp Stream'.WSeq.map_comp
 
 theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
-  Seq.mem_map (Option.map f)
+  Seq.mem_map_of_mem (Option.map f)
 #align stream.wseq.mem_map Stream'.WSeq.mem_map
 
 -- The converse is not true without additional assumptions
