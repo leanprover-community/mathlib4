@@ -86,11 +86,11 @@ initialize registerBuiltinAttribute {
     let fail := throwError
       "@[trans] attribute only applies to lemmas proving
       x ∼ y → y ∼ z → x ∼ z, got {indentExpr declTy} with target {indentExpr targetTy}"
-    let some (rel, x, z) ← targetTy.rel?' | fail
+    let some (rel, x, z) ← targetTy.rel? | fail
     let some yzHyp := xs.back? | fail
     let some xyHyp := xs.pop.back? | fail
-    let some (_, y, z') ← (← inferType yzHyp).rel?' | fail
-    let some (_, x', y') ← (← inferType xyHyp).rel?' | fail
+    let some (_, y, z') ← (← inferType yzHyp).rel? | fail
+    let some (_, x', y') ← (← inferType xyHyp).rel? | fail
     unless ← isDefEq x x' do fail
     unless ← isDefEq y y' do fail
     unless ← isDefEq z z' do fail

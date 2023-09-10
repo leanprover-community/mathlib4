@@ -207,7 +207,12 @@ theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 #align set.eq_on_refl Set.eqOn_refl
 
-@[trans]
+-- Right now, the change to the `trans` tactic in #7014 means that we can't put `@[trans]` here:
+-- it doesn't like that `s` comes last.
+-- Possible solutions:
+-- 1. Reorder the arguments on Set.EqOn.
+-- 2. Make `trans` more flexible.
+-- (Just dropping the attribute is not okay: it is used in Mathlib.Topology.MetricSpace.Contracting)
 theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f₁ f₃ s := fun _ hx =>
   (h₁ hx).trans (h₂ hx)
 #align set.eq_on.trans Set.EqOn.trans

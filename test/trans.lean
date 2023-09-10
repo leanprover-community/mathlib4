@@ -5,6 +5,28 @@ set_option autoImplicit true
 
 attribute [trans] Setoid.trans
 
+section EqOn
+
+def Set (α : Type u) := α → Prop
+
+protected def Set.Mem (a : α) (s : Set α) : Prop :=
+  s a
+
+instance : Membership α (Set α) :=
+  ⟨Set.Mem⟩
+
+def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop :=
+  ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
+
+-- Doesn't like that `s` comes last. Possible solutions:
+-- 1. Reorder the arguments of `EqOn`.
+-- 2. Make `trans` more flexible.
+@[trans]
+theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f₁ f₃ s := fun _ hx =>
+  (h₁ hx).trans (h₂ hx)
+
+end EqOn
+
 -- testing that the attribute is recognized and used
 def nleq (a b : Nat) : Prop := a ≤ b
 
