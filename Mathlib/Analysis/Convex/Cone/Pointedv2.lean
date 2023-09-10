@@ -26,10 +26,6 @@ to use the `Module` API to work with convex cones.
 
 variable {𝕜 E F G : Type*}
 
-set_option quotPrecheck false in
-/-- The set of non-negative elements. -/
-notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
-
 /-- A pointed cone is a `Submodule` of the ambient space with scalars restricted to being
 non-negative. -/
 abbrev PointedCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
@@ -37,6 +33,10 @@ abbrev PointedCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMon
   Submodule { c : 𝕜 // 0 ≤ c } E
 
 namespace PointedCone
+
+set_option quotPrecheck false in
+/-- The set of non-negative elements. -/
+notation "𝕜≥0" => { c : 𝕜 // 0 ≤ c }
 
 section Definitions
 
@@ -98,14 +98,12 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 variable [AddCommMonoid F] [Module 𝕜 F]
 variable [AddCommMonoid G] [Module 𝕜 G]
 
-/-- We consider the ambient space `E` as a module over just the non-negative scalars. -/
-local instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
+instance : Module 𝕜≥0 E := Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
+instance : IsScalarTower 𝕜≥0 𝕜 E := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
+instance : IsScalarTower 𝕜≥0 𝕜 F := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
 
 /-- The image of a pointed cone under a `𝕜`-linear map is a pointed cone. -/
 def map (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 E) : PointedCone 𝕜 F :=
-  have inst1 : IsScalarTower 𝕜≥0 𝕜 E := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
-  have inst2 : IsScalarTower 𝕜≥0 𝕜 F := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
-  have : LinearMap.CompatibleSMul E F 𝕜≥0 𝕜 := @LinearMap.IsScalarTower.compatibleSMul E F _ _ 𝕜≥0 𝕜 _ _ _ _ inst1 _ _ inst2
   let f' := LinearMap.restrictScalars 𝕜≥0 f
   Submodule.map f' S
 
@@ -125,11 +123,9 @@ theorem map_map (g : F →ₗ[𝕜] G) (f : E →ₗ[𝕜] F) (S : PointedCone �
 theorem map_id (S : PointedCone 𝕜 E) : S.map LinearMap.id = S :=
   SetLike.coe_injective <| Set.image_id _
 
+
 /-- The preimage of a convex cone under a `𝕜`-linear map is a convex cone. -/
 def comap (f : E →ₗ[𝕜] F) (S : PointedCone 𝕜 F) : PointedCone 𝕜 E :=
-  have inst1 : IsScalarTower 𝕜≥0 𝕜 E := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
-  have inst2 : IsScalarTower 𝕜≥0 𝕜 F := SMul.comp.isScalarTower ↑Nonneg.coeRingHom
-  have : LinearMap.CompatibleSMul E F 𝕜≥0 𝕜 := @LinearMap.IsScalarTower.compatibleSMul E F _ _ 𝕜≥0 𝕜 _ _ _ _ inst1 _ _ inst2
   let f' := LinearMap.restrictScalars { c : 𝕜 // 0 ≤ c } f
   Submodule.comap f' S
 
