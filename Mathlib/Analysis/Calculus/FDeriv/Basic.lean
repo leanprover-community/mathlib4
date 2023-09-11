@@ -182,14 +182,14 @@ def DifferentiableAt (f : E → F) (x : E) :=
 /-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
 Otherwise, it is set to `0`. If `x` is isolated in `s`, we take the derivative within `s` to
 be zero for convenience. -/
-def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
+irreducible_def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
   if 𝓝[s \ {x}] x = ⊥ then 0 else
   if h : ∃ f', HasFDerivWithinAt f f' s x then Classical.choose h else 0
 #align fderiv_within fderivWithin
 
 /-- If `f` has a derivative at `x`, then `fderiv 𝕜 f x` is such a derivative. Otherwise, it is
 set to `0`. -/
-def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
+irreducible_def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
   if h : ∃ f', HasFDerivAt f f' x then Classical.choose h else 0
 #align fderiv fderiv
 
@@ -540,9 +540,9 @@ theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithi
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  by_cases H : 𝓝[s\{x}] x = ⊥
+  by_cases H : 𝓝[s \ {x}] x = ⊥
   · exact HasFDerivWithinAt_of_nhdsWithin_eq_bot H
-  · dsimp only [fderivWithin]
+  · simp only [fderivWithin]
     rw [if_neg H]
     dsimp only [DifferentiableWithinAt] at h
     rw [dif_pos h]
@@ -551,9 +551,8 @@ theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt �
 
 theorem DifferentiableAt.hasFDerivAt (h : DifferentiableAt 𝕜 f x) :
     HasFDerivAt f (fderiv 𝕜 f x) x := by
-  dsimp only [fderiv]
   dsimp only [DifferentiableAt] at h
-  rw [dif_pos h]
+  rw [fderiv, dif_pos h]
   exact Classical.choose_spec h
 #align differentiable_at.has_fderiv_at DifferentiableAt.hasFDerivAt
 
