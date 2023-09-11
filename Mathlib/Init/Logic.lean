@@ -666,3 +666,5 @@ end Binary
 #align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
+
+attribute [pp_with_univ] ULift PUnit PEmpty
