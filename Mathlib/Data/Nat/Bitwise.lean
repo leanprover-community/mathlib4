@@ -234,8 +234,8 @@ lemma bitwise'_bit' {f : Bool → Bool → Bool} (a m b n)
     bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
   unfold bitwise'
   rw [binaryRec_eq', binaryRec_eq']
-  . apply Or.inr hbn
-  . apply Or.inr ham
+  · apply Or.inr hbn
+  · apply Or.inr ham
 
 lemma div2_succ_succ (x) :
     div2 (x + 2) = (div2 x) + 1 := by
@@ -265,11 +265,11 @@ lemma bitwise_eq_bitwise' (f) :
   · unfold bitwise
     simp [h2]
     split_ifs with hx hf
-    . contradiction
-    . unfold bitwise' binaryRec
+    · contradiction
+    · unfold bitwise' binaryRec
       simp [hx, hf]
       exact Eq.symm (bit_decomp x)
-    . unfold bitwise' binaryRec
+    · unfold bitwise' binaryRec
       simp [hx, hf]
   · rw [← bit_decomp x, ← bit_decomp y]
     unfold bitwise
@@ -277,7 +277,7 @@ lemma bitwise_eq_bitwise' (f) :
     nth_rewrite 8 [← bit_decomp x]
     nth_rewrite 8 [← bit_decomp y]
     rw [bitwise'_bit']
-    . cases' hx: bodd x
+    · cases' hx: bodd x
       <;> cases' hy: bodd y
       <;> ring_nf
       <;> rw [ih (div2 x + div2 y)
@@ -289,8 +289,8 @@ lemma bitwise_eq_bitwise' (f) :
     all_goals
       intro h
       rcases div2_eq_zero h with ⟨⟩|⟨⟨⟩⟩;
-      . contradiction
-      . rfl
+      · contradiction
+      · rfl
 
 theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
   bitwise f x y < 2 ^ n := by
