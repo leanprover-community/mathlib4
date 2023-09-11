@@ -6,7 +6,7 @@ Authors: Mohanad Ahmed
 
 import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Matrix.Rank
-import Mathlib.LinearAlgebra.Matrix.SVD.svdReindex
+import Mathlib.LinearAlgebra.Matrix.SVD.Reindex
 
 /-! # Singular Value Decomposition
 
