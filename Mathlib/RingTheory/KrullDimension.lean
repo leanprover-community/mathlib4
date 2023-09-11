@@ -405,10 +405,10 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIicEquiv_isMonotone :
 We have a canonical order isomorphism from `Set.Iic 𝔭` to
 `PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)`.
 -/
-@[simp]
+@[simps!]
 def _root_.PrimeSpectrum.IicToLocalizationAtPrime_OrderIso :
-  (Set.Iic 𝔭) ≃o (PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)) := by
-exact Equiv.toOrderIso (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭)
+  (Set.Iic 𝔭) ≃o (PrimeSpectrum (Localization.AtPrime 𝔭.asIdeal)) :=
+Equiv.toOrderIso (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭)
   (PrimeSpectrum.IicToLocalizationAtPrimeEquiv_isMonotone 𝔭)
     (PrimeSpectrum.LocalizationAtPrimeToIicEquiv_isMonotone 𝔭)
 
@@ -416,8 +416,8 @@ exact Equiv.toOrderIso (PrimeSpectrum.IicToLocalizationAtPrimeEquiv 𝔭)
 The height of `𝔭` is equal to the Krull dimension of `localization.at_prime 𝔭.as_ideal`.
 -/
 theorem primeIdealHeight_eq_ringKrullDim_of_Localization :
-  height (PrimeSpectrum R) 𝔭 = ringKrullDim (Localization.AtPrime 𝔭.asIdeal) :=
-krullDim.eq_of_OrderIso (PrimeSpectrum.IicToLocalizationAtPrime_OrderIso 𝔭)
+  height (PrimeSpectrum R) 𝔭 = ringKrullDim (Localization.AtPrime 𝔭.asIdeal) := by
+exact krullDim.eq_of_OrderIso (PrimeSpectrum.IicToLocalizationAtPrime_OrderIso 𝔭)
 
 end aboutHeightAndLocalization
 
