@@ -986,8 +986,8 @@ abbrev ModSumCongr (α β : Type*) :=
 theorem ModSumCongr.swap_smul_involutive {α β : Type*} [DecidableEq (Sum α β)] (i j : Sum α β) :
     Function.Involutive (SMul.smul (Equiv.swap i j) : ModSumCongr α β → ModSumCongr α β) :=
   fun σ => by
-    refine Quotient.inductionOn' σ fun σ => ?_
-    exact _root_.congr_arg Quotient.mk'' (Equiv.swap_mul_involutive i j σ)
+    refine Quotient.inductionOn σ fun σ => ?_
+    exact congr_arg (Quotient.mk _) (Equiv.swap_mul_involutive i j σ)
 #align equiv.perm.mod_sum_congr.swap_smul_involutive Equiv.Perm.ModSumCongr.swap_smul_involutive
 
 end Equiv.Perm
@@ -1036,8 +1036,8 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : AlternatingMap R' Mᵢ N₁
     (b : AlternatingMap R' Mᵢ N₂ ιb) (σ : Perm.ModSumCongr ιa ιb) {v : Sum ιa ιb → Mᵢ}
     {i j : Sum ιa ιb} (hv : v i = v j) (hij : i ≠ j) :
     domCoprod.summand a b σ v + domCoprod.summand a b (swap i j • σ) v = 0 := by
-  refine Quotient.inductionOn' σ fun σ => ?_
-  dsimp only [Quotient.liftOn'_mk'', Quotient.map'_mk'', MulAction.Quotient.smul_mk,
+  refine Quotient.inductionOn σ fun σ => ?_
+  dsimp only [Quotient.liftOn'_mk, Quotient.map'_mk, MulAction.Quotient.smul_mk,
     domCoprod.summand]
   rw [smul_eq_mul, Perm.sign_mul, Perm.sign_swap hij]
   simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul, Units.val_neg,
@@ -1054,8 +1054,8 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : AlternatingMap R' Mᵢ 
     (b : AlternatingMap R' Mᵢ N₂ ιb) (σ : Perm.ModSumCongr ιa ιb) {v : Sum ιa ιb → Mᵢ}
     {i j : Sum ιa ιb} (hv : v i = v j) (hij : i ≠ j) :
     swap i j • σ = σ → domCoprod.summand a b σ v = 0 := by
-  refine Quotient.inductionOn' σ fun σ => ?_
-  dsimp only [Quotient.liftOn'_mk'', Quotient.map'_mk'', MultilinearMap.smul_apply,
+  refine Quotient.inductionOn σ fun σ => ?_
+  dsimp only [Quotient.liftOn'_mk, Quotient.map'_mk, MultilinearMap.smul_apply,
     MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply, domCoprod.summand]
   intro hσ
   cases' hi : σ⁻¹ i with val val <;> cases' hj : σ⁻¹ j with val_1 val_1 <;>
@@ -1146,8 +1146,8 @@ def domCoprod' :
         Finset.smul_sum, MultilinearMap.sum_apply, domCoprod.summand]
       congr
       ext σ
-      refine Quotient.inductionOn' σ fun σ => ?_
-      simp only [Quotient.liftOn'_mk'', coe_add, coe_smul, MultilinearMap.smul_apply,
+      refine Quotient.inductionOn σ fun σ => ?_
+      simp only [Quotient.liftOn'_mk, coe_add, coe_smul, MultilinearMap.smul_apply,
         ← MultilinearMap.domCoprod'_apply]
       simp only [TensorProduct.add_tmul, ← TensorProduct.smul_tmul', TensorProduct.tmul_add,
         TensorProduct.tmul_smul, LinearMap.map_add, LinearMap.map_smul]
