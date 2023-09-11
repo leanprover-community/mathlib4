@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
 import Std
-import Mathlib.Tactic.PPWithUniv
 
 set_option autoImplicit true
 
