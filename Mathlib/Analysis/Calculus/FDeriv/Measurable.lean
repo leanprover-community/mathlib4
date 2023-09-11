@@ -442,32 +442,16 @@ theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace �
   exact (measurable_deriv f).stronglyMeasurable
 #align strongly_measurable_deriv stronglyMeasurable_deriv
 
-theorem range_deriv_subset_closure_range (f : 𝕜 → F) :
-    range (deriv f) ⊆ closure (Submodule.span 𝕜 (range f)) := by
-  rintro - ⟨p, rfl⟩
-  by_cases H : DifferentiableAt 𝕜 f p
-  · apply mem_closure_of_tendsto (hasDerivAt_iff_tendsto_slope.1 H.hasDerivAt)
-    apply eventually_of_forall (fun t ↦ ?_)
-    simp only [slope, vsub_eq_sub, SetLike.mem_coe]
-    refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
-    · exact Submodule.subset_span (mem_range_self t)
-    · exact Submodule.subset_span (mem_range_self p)
-  · rw [deriv_zero_of_not_differentiableAt H]
-    exact subset_closure (zero_mem _)
-
 theorem stronglyMeasurable_deriv_of_continuous [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
     [h : SecondCountableTopologyEither 𝕜 F] {f : 𝕜 → F} (hf : Continuous f) :
     StronglyMeasurable (deriv f) := by
   borelize F
   rcases h.out with h𝕜|hF
   · apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv f, ?_⟩
-    have Z := range_deriv_subset_closure_range f
-    apply (IsSeparable.span _).closure.mono Z
+    apply (IsSeparable.span _).closure.mono (range_deriv_subset_closure_range f)
     rw [← image_univ]
     exact (isSeparable_of_separableSpace univ).image hf
   · exact (measurable_deriv f).stronglyMeasurable
-
-#exit
 
 theorem aemeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) (μ : Measure 𝕜) : AEMeasurable (deriv f) μ :=
@@ -478,6 +462,11 @@ theorem aestronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 
     [SecondCountableTopology F] (f : 𝕜 → F) (μ : Measure 𝕜) : AEStronglyMeasurable (deriv f) μ :=
   (stronglyMeasurable_deriv f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv aestronglyMeasurable_deriv
+
+theorem aestronglyMeasurable_deriv_of_continuous [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
+    [SecondCountableTopologyEither 𝕜 F] {f : 𝕜 → F} (hf : Continuous f) (μ : Measure 𝕜) :
+    AEStronglyMeasurable (deriv f) μ :=
+  (stronglyMeasurable_deriv_of_continuous hf).aestronglyMeasurable
 
 end fderiv
 
@@ -820,6 +809,14 @@ theorem stronglyMeasurable_derivWithin_Ici [SecondCountableTopology F] :
   exact (measurable_derivWithin_Ici f).stronglyMeasurable
 #align strongly_measurable_deriv_within_Ici stronglyMeasurable_derivWithin_Ici
 
+theorem stronglyMeasurable_derivWithin_Ici_of_continuous {f : ℝ → F} (hf : Continuous f) :
+    StronglyMeasurable (fun x ↦ derivWithin f (Ici x) x) := by
+  borelize F
+  apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_derivWithin_Ici f, ?_⟩
+  apply (IsSeparable.span _).closure.mono (range_derivWithin_subset_closure_range' f _)
+  rw [← image_univ]
+  exact (isSeparable_of_separableSpace univ).image hf
+
 theorem aemeasurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
     AEMeasurable (fun x => derivWithin f (Ici x) x) μ :=
   (measurable_derivWithin_Ici f).aemeasurable
@@ -829,6 +826,11 @@ theorem aestronglyMeasurable_derivWithin_Ici [SecondCountableTopology F] (μ : M
     AEStronglyMeasurable (fun x => derivWithin f (Ici x) x) μ :=
   (stronglyMeasurable_derivWithin_Ici f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv_within_Ici aestronglyMeasurable_derivWithin_Ici
+
+theorem aestronglyMeasurable_derivWithin_Ici_of_continuous
+    {f : ℝ → F} (hf : Continuous f) (μ : Measure ℝ) :
+    AEStronglyMeasurable (fun x ↦ derivWithin f (Ici x) x) μ :=
+  (stronglyMeasurable_derivWithin_Ici_of_continuous hf).aestronglyMeasurable
 
 /-- The set of right differentiability points of a function taking values in a complete space is
 Borel-measurable. -/
@@ -849,6 +851,10 @@ theorem stronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] :
   exact (measurable_derivWithin_Ioi f).stronglyMeasurable
 #align strongly_measurable_deriv_within_Ioi stronglyMeasurable_derivWithin_Ioi
 
+theorem stronglyMeasurable_derivWithin_Ioi_of_continuous {f : ℝ → F} (hf : Continuous f) :
+    StronglyMeasurable fun x => derivWithin f (Ioi x) x := by
+  simpa [derivWithin_Ioi_eq_Ici] using stronglyMeasurable_derivWithin_Ici_of_continuous hf
+
 theorem aemeasurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
     AEMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
   (measurable_derivWithin_Ioi f).aemeasurable
@@ -858,6 +864,11 @@ theorem aestronglyMeasurable_derivWithin_Ioi [SecondCountableTopology F] (μ : M
     AEStronglyMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
   (stronglyMeasurable_derivWithin_Ioi f).aestronglyMeasurable
 #align ae_strongly_measurable_deriv_within_Ioi aestronglyMeasurable_derivWithin_Ioi
+
+theorem aestronglyMeasurable_derivWithin_Ioi_of_continuous {f : ℝ → F} (hf : Continuous f)
+    (μ : Measure ℝ) :
+    AEStronglyMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
+  (stronglyMeasurable_derivWithin_Ioi_of_continuous hf).aestronglyMeasurable
 
 end RightDeriv
 
@@ -1027,16 +1038,12 @@ theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measurab
     have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)
         ⊆ closure (Submodule.span 𝕜 (range f.uncurry)) := by
       rintro - ⟨p, rfl⟩
-      dsimp
-      by_cases H : DifferentiableAt 𝕜 (f p.1) p.2
-      · apply mem_closure_of_tendsto (hasDerivAt_iff_tendsto_slope.1 H.hasDerivAt)
-        apply eventually_of_forall (fun t ↦ ?_)
-        simp only [slope, vsub_eq_sub, SetLike.mem_coe]
-        refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
-        · exact Submodule.subset_span (mem_range_self (p.1, t))
-        · exact Submodule.subset_span (mem_range_self (p.1, p.2))
-      · rw [deriv_zero_of_not_differentiableAt H]
-        exact subset_closure (zero_mem _)
+      have A : deriv (f p.1) p.2 ∈ closure (Submodule.span 𝕜 (range (f p.1))) :=
+        range_deriv_subset_closure_range _ (mem_range_self _)
+      have B : range (f p.1) ⊆ range (f.uncurry) := by
+        rintro - ⟨x, rfl⟩
+        exact mem_range_self (p.1, x)
+      exact closure_mono (Submodule.span_mono B) A
     apply (IsSeparable.span _).closure.mono this
     rw [← image_univ]
     exact (isSeparable_of_separableSpace univ).image hf

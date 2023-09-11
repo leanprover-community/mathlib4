@@ -101,6 +101,32 @@ theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
+theorem range_derivWithin_subset_closure_range' (f : 𝕜 → F) (s : 𝕜 → Set 𝕜) :
+    range (fun x ↦ derivWithin f (s x) x) ⊆ closure (Submodule.span 𝕜 (range f)) := by
+  rintro - ⟨x, rfl⟩
+  rcases eq_or_neBot (𝓝[s x \ {x}] x) with H|H
+  · simp [derivWithin, fderivWithin, H]
+    exact subset_closure (zero_mem _)
+  by_cases H' : DifferentiableWithinAt 𝕜 f (s x) x
+  · apply mem_closure_of_tendsto (hasDerivWithinAt_iff_tendsto_slope.1 H'.hasDerivWithinAt)
+    apply eventually_of_forall (fun y ↦ ?_)
+    simp only [slope, vsub_eq_sub, SetLike.mem_coe]
+    refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
+    · exact Submodule.subset_span (mem_range_self y)
+    · exact Submodule.subset_span (mem_range_self x)
+  · dsimp
+    rw [derivWithin_zero_of_not_differentiableWithinAt H']
+    exact subset_closure (zero_mem _)
+
+theorem range_derivWithin_subset_closure_range (f : 𝕜 → F) (s : Set 𝕜) :
+    range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (range f)) :=
+  range_derivWithin_subset_closure_range' f _
+
+theorem range_deriv_subset_closure_range (f : 𝕜 → F) :
+    range (deriv f) ⊆ closure (Submodule.span 𝕜 (range f)) := by
+  simp_rw [← derivWithin_univ]
+  exact range_derivWithin_subset_closure_range f _
+
 end NormedField
 
 /-! ### Upper estimates on liminf and limsup -/

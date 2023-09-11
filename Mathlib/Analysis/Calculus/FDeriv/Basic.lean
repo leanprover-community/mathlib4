@@ -180,9 +180,10 @@ def DifferentiableAt (f : E → F) (x : E) :=
 #align differentiable_at DifferentiableAt
 
 /-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
-Otherwise, it is set to `0`. -/
+Otherwise, it is set to `0`. If `x` is isolated in `s`, we take the derivative within `s` to
+be zero for convenience. -/
 def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
-  if 𝓝[s\{x}] x = ⊥ then 0 else
+  if 𝓝[s \ {x}] x = ⊥ then 0 else
   if h : ∃ f', HasFDerivWithinAt f f' s x then Classical.choose h else 0
 #align fderiv_within fderivWithin
 
@@ -215,6 +216,15 @@ variable {x : E}
 variable {s t : Set E}
 
 variable {L L₁ L₂ : Filter E}
+
+theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
+  rw [fderivWithin, if_pos h]
+
+theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 := by
+  apply fderivWithin_zero_of_isolated
+  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne.def, Classical.not_not] at h
+  rw [eq_bot_iff, ← h]
+  exact nhdsWithin_mono _ (diff_subset s {x})
 
 theorem fderivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 f s x = 0 := by
@@ -523,10 +533,10 @@ theorem HasFDerivWithinAt_of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem hasFDerivWithinAt_of_not_mem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x := by
+theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x := by
   simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne.def, Classical.not_not] at h
   simp [HasFDerivWithinAt, HasFDerivAtFilter, h, IsLittleO, IsBigOWith]
-#align has_fderiv_within_at_of_not_mem_closure hasFDerivWithinAt_of_not_mem_closure
+#align has_fderiv_within_at_of_not_mem_closure hasFDerivWithinAt_of_nmem_closure
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
@@ -1219,21 +1229,21 @@ open Function
 variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
 
-theorem HasStrictFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+theorem HasStrictFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
   rw [not_mem_tsupport_iff_eventuallyEq] at h
   exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
 
-theorem HasFDerivAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
+theorem HasFDerivAt.of_nmem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
-  (HasStrictFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivAt
+  (HasStrictFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivAt
 
 theorem HasFDerivWithinAt.of_not_mem_tsupport (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
-  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).hasFDerivWithinAt
+  (HasFDerivAt.of_nmem_tsupport 𝕜 h).hasFDerivWithinAt
 
 theorem fderiv_of_not_mem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
-  (HasFDerivAt.of_not_mem_tsupport 𝕜 h).fderiv
+  (HasFDerivAt.of_nmem_tsupport 𝕜 h).fderiv
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
   rw [← not_imp_not, nmem_support]
