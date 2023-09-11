@@ -444,7 +444,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
-@[to_additive (attr := simp) (reorder := 8)]
+@[to_additive (attr := simp) (reorder := 8 9)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -461,7 +461,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zsmul' map_zsmul'
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive (attr := simp) (reorder := 8)
+@[to_additive (attr := simp) (reorder := 8 9)
 "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
@@ -1617,7 +1617,6 @@ def ofMapMulInv {H : Type _} [Group H] (f : G → H)
       _ = f x * f y := by
         { simp only [map_div]
           simp only [mul_right_inv, one_mul, inv_inv] }
-
 #align monoid_hom.of_map_mul_inv MonoidHom.ofMapMulInv
 #align add_monoid_hom.of_map_add_neg AddMonoidHom.ofMapAddNeg
 

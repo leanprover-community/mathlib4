@@ -98,7 +98,7 @@ theorem tendsto_rat_cast_atBot_iff [LinearOrderedField R] [Archimedean R] {f : �
 theorem atTop_hasAntitoneBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n where
   antitone := fun _ _ h => Ici_subset_Ici.2 (Nat.mono_cast h)
-  mem_iff' _t := ⟨fun ht => infᵢ_sets_induct ht ⟨0, trivial, subset_univ _⟩
+  mem_iff' _t := ⟨fun ht => iInf_sets_induct ht ⟨0, trivial, subset_univ _⟩
       fun {x _ _} h₁ ⟨n, _, hn⟩ =>
         let ⟨m, hm⟩ := exists_nat_ge x
         ⟨max m n, trivial, fun _y hy => ⟨h₁ (hm.trans ((Nat.cast_le.2 (le_max_left _ _)).trans hy)),

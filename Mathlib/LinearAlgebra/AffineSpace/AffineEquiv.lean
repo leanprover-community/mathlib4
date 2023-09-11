@@ -41,9 +41,6 @@ open Function Set
 
 open Affine
 
--- Porting note: this is needed because of lean4#2074
-attribute [-instance] Ring.toNonAssocRing
-
 /-- An affine equivalence is an equivalence between affine spaces such that both forward
 and inverse maps are affine.
 

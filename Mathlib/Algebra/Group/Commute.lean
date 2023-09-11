@@ -9,7 +9,6 @@ Authors: Neil Strickland, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Semiconj
-import Mathlib.Tactic.SimpRw
 
 /-!
 # Commuting pairs of elements in monoids

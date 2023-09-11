@@ -287,9 +287,7 @@ theorem sum_divisors_eq_sum_properDivisors_add_self :
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   · rw [← cons_self_properDivisors hn, Finset.sum_cons, add_comm]
-#align
-  nat.sum_divisors_eq_sum_proper_divisors_add_self
-  Nat.sum_divisors_eq_sum_properDivisors_add_self
+#align nat.sum_divisors_eq_sum_proper_divisors_add_self Nat.sum_divisors_eq_sum_properDivisors_add_self
 
 /-- `n : ℕ` is perfect if and only the sum of the proper divisors of `n` is `n` and `n`
   is positive. -/

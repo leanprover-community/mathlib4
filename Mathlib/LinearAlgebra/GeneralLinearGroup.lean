@@ -69,8 +69,7 @@ def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M where
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
   map_mul' x y := by ext; rfl
-#align linear_map.general_linear_group.general_linear_equiv
-  LinearMap.GeneralLinearGroup.generalLinearEquiv
+#align linear_map.general_linear_group.general_linear_equiv LinearMap.GeneralLinearGroup.generalLinearEquiv
 
 @[simp]
 theorem generalLinearEquiv_to_linearMap (f : GeneralLinearGroup R M) :

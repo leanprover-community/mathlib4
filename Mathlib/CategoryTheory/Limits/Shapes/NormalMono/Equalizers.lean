@@ -88,8 +88,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
           fun s m h₁ _ =>
           (cancel_mono (kernel.ι (prod.lift f g))).1 <|
             calc
-              m ≫ kernel.ι (prod.lift f g) = m ≫ a' ≫ a :=
-                by
+              m ≫ kernel.ι (prod.lift f g) = m ≫ a' ≫ a := by
                 congr
                 exact ha'.symm
               _ = PullbackCone.fst s ≫ a := by rw [← Category.assoc, h₁]
@@ -323,8 +322,7 @@ end
 /-- If a zero morphism is a kernel of `f`, then `f` is a monomorphism. -/
 theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsLimit (KernelFork.ofι (0 : Z ⟶ X) (show 0 ≫ f = 0 by simp))) : Mono f :=
-  ⟨fun u v huv =>
-    by
+  ⟨fun u v huv => by
     obtain ⟨W, w, hw, hl⟩ := normalEpiOfEpi (coequalizer.π u v)
     obtain ⟨m, hm⟩ := coequalizer.desc' f huv
     have reassoced {W : C} (h : coequalizer u v ⟶  W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by

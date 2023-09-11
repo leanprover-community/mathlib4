@@ -502,8 +502,7 @@ def FunctorsInverting.mk {W : MorphismProperty C} {D : Type _} [Category D] (F :
 
 theorem IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) :
     W.IsInvertedBy F₁ ↔ W.IsInvertedBy F₂ := by
-  suffices ∀ (X Y : C) (f : X ⟶ Y), IsIso (F₁.map f) ↔ IsIso (F₂.map f)
-    by
+  suffices ∀ (X Y : C) (f : X ⟶ Y), IsIso (F₁.map f) ↔ IsIso (F₂.map f) by
     constructor
     exact fun h X Y f hf => by
       rw [← this]

@@ -9,7 +9,6 @@ Authors: Mario Carneiro, Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Mathport.Rename
 
 /-!
 # Disjoint union of types
@@ -109,12 +108,10 @@ variable {x y : Sum α β}
 
 @[simp] theorem getLeft_eq_none_iff : x.getLeft = none ↔ x.isRight := by
   cases x <;> simp only [getLeft, isRight, eq_self_iff_true]
-
 #align sum.get_left_eq_none_iff Sum.getLeft_eq_none_iff
 
 @[simp] theorem getRight_eq_none_iff : x.getRight = none ↔ x.isLeft := by
   cases x <;> simp only [getRight, isLeft, eq_self_iff_true]
-
 #align sum.get_right_eq_none_iff Sum.getRight_eq_none_iff
 
 @[simp] lemma getLeft_eq_some_iff {a : α} : x.getLeft = a ↔ x = inl a := by
@@ -401,19 +398,16 @@ theorem liftRel_inl_inl : LiftRel r s (inl a) (inl c) ↔ r a c :=
   ⟨fun h ↦ by
     cases h
     assumption, LiftRel.inl⟩
-
 #align sum.lift_rel_inl_inl Sum.liftRel_inl_inl
 
 @[simp]
 theorem not_liftRel_inl_inr : ¬LiftRel r s (inl a) (inr d) :=
   fun.
-
 #align sum.not_lift_rel_inl_inr Sum.not_liftRel_inl_inr
 
 @[simp]
 theorem not_liftRel_inr_inl : ¬LiftRel r s (inr b) (inl c) :=
   fun.
-
 #align sum.not_lift_rel_inr_inl Sum.not_liftRel_inr_inl
 
 @[simp]
@@ -421,7 +415,6 @@ theorem liftRel_inr_inr : LiftRel r s (inr b) (inr d) ↔ s b d :=
   ⟨fun h ↦ by
     cases h
     assumption, LiftRel.inr⟩
-
 #align sum.lift_rel_inr_inr Sum.liftRel_inr_inr
 
 instance [∀ a c, Decidable (r a c)] [∀ b d, Decidable (s b d)] :
@@ -459,7 +452,6 @@ theorem liftRel_swap_iff : LiftRel s r x.swap y.swap ↔ LiftRel r s x y :=
   ⟨fun h ↦ by
     rw [← swap_swap x, ← swap_swap y]
     exact h.swap, LiftRel.swap⟩
-
 #align sum.lift_rel_swap_iff Sum.liftRel_swap_iff
 
 end LiftRel
@@ -514,7 +506,6 @@ protected theorem LiftRel.lex {a b : Sum α β} (h : LiftRel r s a b) : Lex r s 
 #align sum.lift_rel.lex Sum.LiftRel.lex
 
 theorem liftRel_subrelation_lex : Subrelation (LiftRel r s) (Lex r s) := LiftRel.lex
-
 #align sum.lift_rel_subrelation_lex Sum.liftRel_subrelation_lex
 
 theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r₁ s₁ x y) :

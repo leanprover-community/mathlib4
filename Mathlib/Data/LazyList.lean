@@ -56,7 +56,6 @@ then this function does not terminate.
 def toList : LazyList α → List α
   | nil => []
   | cons h t => h :: toList (t.get)
-
 #align lazy_list.to_list LazyList.toList
 
 /-- Returns the first element of the lazy list,

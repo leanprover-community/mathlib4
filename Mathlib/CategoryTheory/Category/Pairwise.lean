@@ -158,28 +158,28 @@ section
 variable [CompleteLattice α]
 
 /-- Auxiliary definition for `cocone`. -/
-def coconeιApp : ∀ o : Pairwise ι, diagramObj U o ⟶ supᵢ U
-  | single i => homOfLE (le_supᵢ U i)
-  | pair i _ => homOfLE inf_le_left ≫ homOfLE (le_supᵢ U i)
+def coconeιApp : ∀ o : Pairwise ι, diagramObj U o ⟶ iSup U
+  | single i => homOfLE (le_iSup U i)
+  | pair i _ => homOfLE inf_le_left ≫ homOfLE (le_iSup U i)
 #align category_theory.pairwise.cocone_ι_app CategoryTheory.Pairwise.coconeιApp
 
 /-- Given a function `U : ι → α` for `[CompleteLattice α]`,
-`supᵢ U` provides a cocone over `diagram U`.
+`iSup U` provides a cocone over `diagram U`.
 -/
 @[simps]
 def cocone : Cocone (diagram U) where
-  pt := supᵢ U
+  pt := iSup U
   ι :=
     { app := coconeιApp U }
 #align category_theory.pairwise.cocone CategoryTheory.Pairwise.cocone
 
 /-- Given a function `U : ι → α` for `[CompleteLattice α]`,
-`infᵢ U` provides a limit cone over `diagram U`.
+`iInf U` provides a limit cone over `diagram U`.
 -/
 def coconeIsColimit : IsColimit (cocone U) where
   desc s := homOfLE
     (by
-      apply CompleteSemilatticeSup.supₛ_le
+      apply CompleteSemilatticeSup.sSup_le
       rintro _ ⟨j, rfl⟩
       exact (s.ι.app (single j)).le)
 #align category_theory.pairwise.cocone_is_colimit CategoryTheory.Pairwise.coconeIsColimit

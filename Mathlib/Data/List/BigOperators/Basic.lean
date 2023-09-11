@@ -46,7 +46,6 @@ theorem prod_cons : (a :: l).prod = a * l.prod :=
     (a :: l).prod = foldl (· * ·) (a * 1) l :=
       by simp only [List.prod, foldl_cons, one_mul, mul_one]
     _ = _ := foldl_assoc
-
 #align list.prod_cons List.prod_cons
 #align list.sum_cons List.sum_cons
 
@@ -55,7 +54,6 @@ theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
   calc
     (l₁ ++ l₂).prod = foldl (· * ·) (foldl (· * ·) 1 l₁ * 1) l₂ := by simp [List.prod]
     _ = l₁.prod * l₂.prod := foldl_assoc
-
 #align list.prod_append List.prod_append
 #align list.sum_append List.sum_append
 
@@ -183,7 +181,6 @@ theorem prod_take_succ :
     rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc,
       nthLe_cons, dif_neg (Nat.add_one_ne_zero _)]
     simp
-
 #align list.prod_take_succ List.prod_take_succ
 #align list.sum_take_succ List.sum_take_succ
 
@@ -495,8 +492,7 @@ theorem one_lt_prod_of_one_lt [OrderedCommMonoid M] :
     ∀ (l : List M) (_ : ∀ x ∈ l, (1 : M) < x) (_ : l ≠ []), 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
-  | a :: b :: l, hl₁, _ =>
-    by
+  | a :: b :: l, hl₁, _ => by
     simp only [forall_eq_or_imp, List.mem_cons] at hl₁
     rw [List.prod_cons]
     apply one_lt_mul_of_lt_of_le' hl₁.1

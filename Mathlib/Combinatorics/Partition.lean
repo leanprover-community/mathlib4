@@ -97,8 +97,7 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n
   parts_sum := by
     have lt : l.filter (· = 0) + l.filter (· ≠ 0) = l := filter_add_not _ l
     apply_fun Multiset.sum  at lt
-    have lz : (l.filter (· = 0)).sum = 0 :=
-      by
+    have lz : (l.filter (· = 0)).sum = 0 := by
       rw [Multiset.sum_eq_zero_iff]
       simp
     rwa [sum_add (filter (fun x => x = 0) l) (filter (fun x => ¬x = 0) l),lz,hl, zero_add] at lt

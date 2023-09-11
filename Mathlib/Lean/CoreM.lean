@@ -22,3 +22,9 @@ Return the percentage of the max heartbeats allowed
 that have been consumed so far in this computation.
 -/
 def heartbeatsPercent : CoreM Nat := do pure <| (← IO.getNumHeartbeats) * 100 / (← getMaxHeartbeats)
+
+/-- Log a message if it looks like we ran out of time. -/
+def reportOutOfHeartbeats (tac : Name) (stx : Syntax) : CoreM Unit := do
+  if (← heartbeatsPercent) ≥ 90 then
+    logInfoAt stx (s!"`{tac}` stopped because it was running out of time.\n" ++
+      "You may get better results using `set_option maxHeartbeats 0`.")

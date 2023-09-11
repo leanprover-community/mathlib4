@@ -10,7 +10,6 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Lift
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures

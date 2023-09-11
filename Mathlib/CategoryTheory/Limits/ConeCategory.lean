@@ -106,7 +106,6 @@ theorem hasLimitsOfShape_iff_isLeftAdjoint_const :
       (forall_congr' fun F => (Cone.equivCostructuredArrow F).hasTerminal_iff)
     _ ↔ Nonempty (IsLeftAdjoint (const J : C ⥤ _)) :=
       nonempty_isLeftAdjoint_iff_hasTerminal_costructuredArrow.symm
-
 #align category_theory.limits.has_limits_of_shape_iff_is_left_adjoint_const CategoryTheory.Limits.hasLimitsOfShape_iff_isLeftAdjoint_const
 
 theorem IsLimit.liftConeMorphism_eq_isTerminal_from {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
@@ -193,7 +192,6 @@ theorem hasColimitsOfShape_iff_isRightAdjoint_const :
       (forall_congr' fun F => (Cocone.equivStructuredArrow F).hasInitial_iff)
     _ ↔ Nonempty (IsRightAdjoint (const J : C ⥤ _)) :=
       nonempty_isRightAdjoint_iff_hasInitial_structuredArrow.symm
-
 #align category_theory.limits.has_colimits_of_shape_iff_is_right_adjoint_const CategoryTheory.Limits.hasColimitsOfShape_iff_isRightAdjoint_const
 
 theorem IsColimit.descCoconeMorphism_eq_isInitial_to {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)

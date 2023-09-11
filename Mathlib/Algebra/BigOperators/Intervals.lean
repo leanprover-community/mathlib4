@@ -111,8 +111,8 @@ theorem prod_Ico_eq_div {δ : Type _} [CommGroup δ] (f : ℕ → δ) {m n : ℕ
 
 @[to_additive]
 theorem prod_range_sub_prod_range {α : Type _} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
-    ((∏ k in range m, f k) / ∏ k in range n, f k) = ∏ k in (range m).filter fun k => n ≤ k, f k :=
-  by
+    ((∏ k in range m, f k) / ∏ k in range n, f k) =
+    ∏ k in (range m).filter fun k => n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr
   apply Finset.ext

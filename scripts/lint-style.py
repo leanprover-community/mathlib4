@@ -46,6 +46,7 @@ ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported tactic{,.omega,.observe}
 ERR_UNF = 10 # unfreeze_local_instances
+ERR_IBY = 11 # isolated by
 
 exceptions = []
 
@@ -228,6 +229,18 @@ def import_omega_check(lines, path):
             errors += [(ERR_TAC, line_nr, path)]
     return errors
 
+def isolated_by_check(lines, path):
+    errors = []
+    for line_nr, line in enumerate(lines, 1):
+        if line.strip() == "by":
+            # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
+            # should not be used in the second or later arguments of a tuple/anonymous constructor
+            # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
+            prev_line = lines[line_nr - 2].rstrip()
+            if not prev_line.endswith(",") and not re.search(", fun [^,]* =>$", prev_line):
+                errors += [(ERR_IBY, line_nr, path)]
+    return errors
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -266,11 +279,15 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder, nor tactic.omega or tactic.observe")
+        if errno == ERR_IBY:
+            output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
 
 def lint(path):
     with path.open(encoding="utf-8") as f:
         lines = f.readlines()
         errs = long_lines_check(lines, path)
+        format_errors(errs)
+        errs = isolated_by_check(lines, path)
         format_errors(errs)
         (b, errs) = import_only_check(lines, path)
         if b:

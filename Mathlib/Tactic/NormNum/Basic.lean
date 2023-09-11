@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Thomas Murrills
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
-import Qq
+import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` basic plugins
@@ -723,7 +723,7 @@ theorem eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ = _, Eq _ _] def evalEq : NormNumExt where eval {u α} e := do
   let .app (.app f a) b ← whnfR e | failure
-  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
   let ra ← derive a; let rb ← derive b
@@ -778,7 +778,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ ≤ _] def evalLE : NormNumExt where eval (e : Q(Prop)) := do
   let .app (.app f a) b ← whnfR e | failure
-  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
     let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do
@@ -834,7 +834,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ < _] def evalLT : NormNumExt where eval (e : Q(Prop)) := do
   let .app (.app f a) b ← whnfR e | failure
-  let ⟨.succ u, α, a⟩ ← inferTypeQ a | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
   let intArm (_ : Unit) : MetaM (@Result _ (q(Prop) : Q(Type)) e) := do

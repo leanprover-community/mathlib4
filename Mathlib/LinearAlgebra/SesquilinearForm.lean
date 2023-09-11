@@ -111,16 +111,6 @@ section Field
 variable [Field K] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁] [Field K₂] [AddCommGroup V₂]
   [Module K₂ V₂] {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-instance : Module K K := Semiring.toModule
-
--- Alternative to the above:
--- instance : AddCommMonoid (V₂ →ₛₗ[I₂] K) := LinearMap.addCommMonoid
--- instance : Module K (V₂ →ₛₗ[I₂] K) := LinearMap.instModuleLinearMapAddCommMonoid
--- set_option maxHeartbeats 400000
-
 -- todo: this also holds for [CommRing R] [IsDomain R] when J₁ is invertible
 theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₁} (ha : a ≠ 0) :
     IsOrtho B x y ↔ IsOrtho B (a • x) y := by
@@ -156,8 +146,7 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
     rw [linearIndependent_iff']
     intro s w hs i hi
     have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
-    have hsum : (s.sum fun j : n ↦ I₁ (w j) * B (v j) (v i)) = I₁ (w i) * B (v i) (v i) :=
-      by
+    have hsum : (s.sum fun j : n ↦ I₁ (w j) * B (v j) (v i)) = I₁ (w i) * B (v i) (v i) := by
       apply Finset.sum_eq_single_of_mem i hi
       intro j _hj hij
       rw [isOrthoᵢ_def.1 hv₁ _ _ hij, mul_zero]
@@ -270,9 +259,6 @@ end Symmetric
 
 section Alternating
 
--- porting note: alternative lean4#2074 checked using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
 variable [CommRing R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁] {I₁ : R₁ →+* R}
   {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
 
@@ -284,7 +270,6 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R) : Prop :=
 namespace IsAlt
 
 variable (H : B.IsAlt)
-
 
 theorem self_eq_zero (x : M₁) : B x x = 0 :=
   H x
@@ -328,9 +313,6 @@ namespace Submodule
 
 /-! ### The orthogonal complement -/
 
--- porting note: alternative lean4#2074 checked using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
 variable [CommRing R] [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R}
   {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
 
@@ -371,17 +353,11 @@ end Submodule
 
 namespace LinearMap
 
-/- porting note: disabling `Ring.toNonAssocRing` solves some of the problems, but not the one with
-`Submodule.orthogonalBilin`. That one can be avoided by making Lean find the instance through
-unification, but then the proof still has problems, so we opt for `etaExperiment` in a few
-declarations below. -/
-
 section Orthogonal
 
 variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
   {J : K →+* K} {J₁ : K₁ →+* K} {J₁' : K₁ →+* K}
 
-set_option synthInstance.etaExperiment true in
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] K) (x : V₁)
     (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
@@ -398,7 +374,6 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
       (fun hfalse ↦ False.elim $ hx hfalse)
 #align linear_map.span_singleton_inf_orthogonal_eq_bot LinearMap.span_singleton_inf_orthogonal_eq_bot
 
-set_option synthInstance.etaExperiment true in
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] K} (x : V) :
     Submodule.orthogonalBilin (K ∙ x) B = LinearMap.ker (B x) := by
@@ -410,9 +385,6 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
     rw [isOrtho_def, map_smulₛₗ₂, smul_eq_zero]
     exact Or.intro_right _ h
 #align linear_map.orthogonal_span_singleton_eq_to_lin_ker LinearMap.orthogonal_span_singleton_eq_to_lin_ker
-
--- porting note: workaround for lean4#2074, `etaExperiment` works here
-attribute [-instance] Ring.toNonAssocRing
 
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
@@ -426,8 +398,8 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
     IsCompl (K ∙ x) (@Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _  (K ∙ x) B) :=
-  { Disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
-    Codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
+  { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
+    codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 #align linear_map.is_compl_span_singleton_orthogonal LinearMap.isCompl_span_singleton_orthogonal
 
 end Orthogonal
@@ -503,10 +475,6 @@ variable [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup M₁] [Module R M₁]
 
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
 variable {B F : M →ₗ[R] M →ₗ[R] R} {B' : M₁ →ₗ[R] M₁ →ₗ[R] R}
 
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
@@ -561,10 +529,6 @@ section AddCommGroup
 variable [CommRing R]
 
 variable [AddCommGroup M] [Module R M]
-
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
 
 variable [AddCommGroup M₁] [Module R M₁] (B F : M →ₗ[R] M →ₗ[R] R)
 
@@ -767,10 +731,6 @@ section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] {I I' : R →+* R}
 
--- porting note: manual instances required. Alternative solution is lean4#2074
--- verified using `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
-
 theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
   refine' ⟨hB', _⟩
@@ -796,7 +756,7 @@ theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
   refine' hW.le_bot ⟨hx, fun y hy ↦ _⟩
   specialize b₁ ⟨y, hy⟩
-  simp_rw [domRestrict₁₂_apply, Submodule.coe_mk] at b₁
+  simp_rw [domRestrict₁₂_apply] at b₁
   rw [hB.ortho_comm]
   exact b₁
 #align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerateRestrictOfDisjointOrthogonal
@@ -835,8 +795,7 @@ set_option linter.uppercaseLean3 false in
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is left-separating
 if the basis has no elements which are self-orthogonal. -/
 theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
-    (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft :=
-  by
+    (v : Basis n R M) (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
   intro m hB
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [LinearEquiv.map_eq_zero_iff]

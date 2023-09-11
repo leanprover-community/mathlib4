@@ -451,9 +451,9 @@ section IsCompl
 /-- Two elements `x` and `y` are complements of each other if `x ⊔ y = ⊤` and `x ⊓ y = ⊥`. -/
 structure IsCompl [PartialOrder α] [BoundedOrder α] (x y : α) : Prop where
   /-- If `x` and `y` are to be complementary in an order, they should be disjoint. -/
-  protected Disjoint : Disjoint x y
+  protected disjoint : Disjoint x y
   /-- If `x` and `y` are to be complementary in an order, they should be codisjoint. -/
-  protected Codisjoint : Codisjoint x y
+  protected codisjoint : Codisjoint x y
 #align is_compl IsCompl
 
 theorem isCompl_iff [PartialOrder α] [BoundedOrder α] {a b : α} :
@@ -495,11 +495,11 @@ theorem of_eq (h₁ : x ⊓ y = ⊥) (h₂ : x ⊔ y = ⊤) : IsCompl x y :=
 #align is_compl.of_eq IsCompl.of_eq
 
 theorem inf_eq_bot (h : IsCompl x y) : x ⊓ y = ⊥ :=
-  h.Disjoint.eq_bot
+  h.disjoint.eq_bot
 #align is_compl.inf_eq_bot IsCompl.inf_eq_bot
 
 theorem sup_eq_top (h : IsCompl x y) : x ⊔ y = ⊤ :=
-  h.Codisjoint.eq_top
+  h.codisjoint.eq_top
 #align is_compl.sup_eq_top IsCompl.sup_eq_top
 
 end BoundedLattice
@@ -512,7 +512,6 @@ theorem inf_left_le_of_le_sup_right (h : IsCompl x y) (hle : a ≤ b ⊔ y) : a 
     _ = b ⊓ x ⊔ y ⊓ x := inf_sup_right
     _ = b ⊓ x := by rw [h.symm.inf_eq_bot, sup_bot_eq]
     _ ≤ b := inf_le_left
-
 #align is_compl.inf_left_le_of_le_sup_right IsCompl.inf_left_le_of_le_sup_right
 
 theorem le_sup_right_iff_inf_left_le {a b} (h : IsCompl x y) : a ≤ b ⊔ y ↔ a ⊓ x ≤ b :=
@@ -553,7 +552,7 @@ theorem right_le_iff (h : IsCompl x y) : y ≤ z ↔ Codisjoint z x :=
 #align is_compl.right_le_iff IsCompl.right_le_iff
 
 protected theorem Antitone {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') (hx : x ≤ x') : y' ≤ y :=
-  h'.right_le_iff.2 <| h.symm.Codisjoint.mono_right hx
+  h'.right_le_iff.2 <| h.symm.codisjoint.mono_right hx
 #align is_compl.antitone IsCompl.Antitone
 
 theorem right_unique (hxy : IsCompl x y) (hxz : IsCompl x z) : y = z :=
@@ -589,10 +588,8 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
       fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
-
   · rintro ⟨ha, hb⟩ z hza hzb
     refine' ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
-
 #align prod.disjoint_iff Prod.disjoint_iff
 
 protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :

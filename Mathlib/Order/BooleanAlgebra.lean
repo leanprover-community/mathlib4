@@ -9,7 +9,6 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
-import Aesop
 
 /-!
 # (Generalized) Boolean algebras
@@ -162,7 +161,6 @@ theorem sdiff_inf_sdiff : x \ y ⊓ y \ x = ⊥ :=
       _ = x ⊓ y \ x ⊓ x \ y := by rw [inf_inf_sdiff, bot_sup_eq]
       _ = x ⊓ x \ y ⊓ y \ x := by ac_rfl
       _ = x \ y ⊓ y \ x := by rw [inf_of_le_right sdiff_le']
-
 #align sdiff_inf_sdiff sdiff_inf_sdiff
 
 theorem disjoint_sdiff_sdiff : Disjoint (x \ y) (y \ x) :=
@@ -175,7 +173,6 @@ theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
     x ⊓ y \ x = (x ⊓ y ⊔ x \ y) ⊓ y \ x := by rw [sup_inf_sdiff]
     _ = x ⊓ y ⊓ y \ x ⊔ x \ y ⊓ y \ x := by rw [inf_sup_right]
     _ = ⊥ := by rw [@inf_comm _ _ x y, inf_inf_sdiff, sdiff_inf_sdiff, bot_sup_eq]
-
 #align inf_sdiff_self_right inf_sdiff_self_right
 
 @[simp]
@@ -315,7 +312,6 @@ theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x :=
     x \ y = x ↔ x \ y = x \ ⊥ := by rw [sdiff_bot]
     _ ↔ x ⊓ y = x ⊓ ⊥ := sdiff_eq_sdiff_iff_inf_eq_inf
     _ ↔ Disjoint y x := by rw [inf_bot_eq, inf_comm, disjoint_iff]
-
 #align sdiff_eq_self_iff_disjoint sdiff_eq_self_iff_disjoint
 
 theorem sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := by
@@ -343,7 +339,6 @@ theorem sup_inf_inf_sdiff : x ⊓ y ⊓ z ⊔ y \ z = x ⊓ y ⊔ y \ z :=
     x ⊓ y ⊓ z ⊔ y \ z = x ⊓ (y ⊓ z) ⊔ y \ z := by rw [inf_assoc]
     _ = (x ⊔ y \ z) ⊓ y := by rw [sup_inf_right, sup_inf_sdiff]
     _ = x ⊓ y ⊔ y \ z := by rw [inf_sup_right, inf_sdiff_left]
-
 #align sup_inf_inf_sdiff sup_inf_inf_sdiff
 
 theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
@@ -368,8 +363,6 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
       _ = x ⊓ (y \ z ⊓ y) ⊓ x \ y := by conv_lhs => rw [← inf_sdiff_left]
       _ = x ⊓ (y \ z ⊓ (y ⊓ x \ y)) := by ac_rfl
       _ = ⊥ := by rw [inf_sdiff_self_right, inf_bot_eq, inf_bot_eq]
-
-
 #align sdiff_sdiff_right sdiff_sdiff_right
 
 theorem sdiff_sdiff_right' : x \ (y \ z) = x \ y ⊔ x ⊓ z :=
@@ -377,7 +370,6 @@ theorem sdiff_sdiff_right' : x \ (y \ z) = x \ y ⊔ x ⊓ z :=
     x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := sdiff_sdiff_right
     _ = z ⊓ x ⊓ y ⊔ x \ y := by ac_rfl
     _ = x \ y ⊔ x ⊓ z := by rw [sup_inf_inf_sdiff, sup_comm, inf_comm]
-
 #align sdiff_sdiff_right' sdiff_sdiff_right'
 
 theorem sdiff_sdiff_eq_sdiff_sup (h : z ≤ x) : x \ (y \ z) = x \ y ⊔ z := by
@@ -417,7 +409,6 @@ theorem sdiff_sdiff_sup_sdiff : z \ (x \ y ⊔ y \ x) = z ⊓ (z \ x ⊔ y) ⊓ 
         by rw [sup_inf_left, @sup_comm _ _ (z \ y), sup_inf_sdiff]
     _ = z ⊓ z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by ac_rfl
     _ = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by rw [inf_idem]
-
 #align sdiff_sdiff_sup_sdiff sdiff_sdiff_sup_sdiff
 
 theorem sdiff_sdiff_sup_sdiff' : z \ (x \ y ⊔ y \ x) = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y :=
@@ -427,7 +418,6 @@ theorem sdiff_sdiff_sup_sdiff' : z \ (x \ y ⊔ y \ x) = z ⊓ x ⊓ y ⊔ z \ x
     _ = (z \ x ⊔ z ⊓ y ⊓ x) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by ac_rfl
     _ = z \ x ⊓ z \ y ⊔ z ⊓ y ⊓ x := sup_inf_right.symm
     _ = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y := by ac_rfl
-
 #align sdiff_sdiff_sup_sdiff' sdiff_sdiff_sup_sdiff'
 
 theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
@@ -479,7 +469,6 @@ theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :
       _ = (x \ y ⊔ x ⊔ y \ x) ⊓ (x \ y ⊔ (y \ x ⊔ y)) := by ac_rfl
       _ = (x ⊔ y \ x) ⊓ (x \ y ⊔ y) := by rw [sup_sdiff_right, sup_sdiff_right]
       _ = x ⊔ y := by rw [sup_sdiff_self_right, sup_sdiff_self_left, inf_idem]
-
 #align sup_eq_sdiff_sup_sdiff_sup_inf sup_eq_sdiff_sup_sdiff_sup_inf
 
 theorem sup_lt_of_lt_sdiff_left (h : y < z \ x) (hxz : x ≤ z) : x ⊔ y < z := by

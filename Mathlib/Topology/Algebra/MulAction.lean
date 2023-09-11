@@ -179,32 +179,32 @@ section LatticeOps
 variable {ι : Sort _} {M X : Type _} [TopologicalSpace M] [SMul M X]
 
 @[to_additive]
-theorem continuousSMul_infₛ {ts : Set (TopologicalSpace X)}
-    (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (infₛ ts) :=
-  -- porting note: {} doesn't work because `infₛ ts` isn't found by TC search. `(_)` finds it by
+theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
+    (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
+  -- porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
   -- unification instead.
   @ContinuousSMul.mk M X _ _ (_) <| by
       -- porting note: needs `( :)`
-      rw [← (@infₛ_singleton _ _ ‹TopologicalSpace M›:)]
+      rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
       exact
-        continuous_infₛ_rng.2 fun t ht =>
-          continuous_infₛ_dom₂ (Eq.refl _) ht
+        continuous_sInf_rng.2 fun t ht =>
+          continuous_sInf_dom₂ (Eq.refl _) ht
             (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
-#align has_continuous_smul_Inf continuousSMul_infₛ
-#align has_continuous_vadd_Inf continuousVAdd_infₛ
+#align has_continuous_smul_Inf continuousSMul_sInf
+#align has_continuous_vadd_Inf continuousVAdd_sInf
 
 @[to_additive]
-theorem continuousSMul_infᵢ {ts' : ι → TopologicalSpace X}
+theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
-  continuousSMul_infₛ <| Set.forall_range_iff.mpr h
-#align has_continuous_smul_infi continuousSMul_infᵢ
-#align has_continuous_vadd_infi continuousVAdd_infᵢ
+  continuousSMul_sInf <| Set.forall_range_iff.mpr h
+#align has_continuous_smul_infi continuousSMul_iInf
+#align has_continuous_vadd_infi continuousVAdd_iInf
 
 @[to_additive]
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
-  rw [inf_eq_infᵢ]
-  refine' continuousSMul_infᵢ fun b => _
+  rw [inf_eq_iInf]
+  refine' continuousSMul_iInf fun b => _
   cases b <;> assumption
 #align has_continuous_smul_inf continuousSMul_inf
 #align has_continuous_vadd_inf continuousVAdd_inf

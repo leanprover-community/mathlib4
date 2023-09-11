@@ -102,8 +102,11 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
         cache   := stt.cache.insert   filePath (some fileHash)
         depsMap := stt.depsMap.insert filePath fileImports })
 
+/-- Files to start hashing from. -/
+def roots : Array FilePath := #["Mathlib.lean", "MathlibExtras.lean"]
+
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo : IO HashMemo :=
-  return (← StateT.run (getFileHash ⟨"Mathlib.lean"⟩) default).2
+  return (← StateT.run (roots.mapM getFileHash) default).2
 
 end Cache.Hashing

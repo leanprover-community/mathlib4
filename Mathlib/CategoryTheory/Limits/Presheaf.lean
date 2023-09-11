@@ -175,8 +175,6 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
     Adjunction.leftAdjointOfEquiv_obj, Function.comp_apply, Functor.map_id, comp_id,
     colimit.cocone_ι, Functor.op_obj]
   rfl
-
-
 #align category_theory.colimit_adj.extend_along_yoneda_map CategoryTheory.ColimitAdj.extendAlongYoneda_map
 
 /-- Show `extendAlongYoneda` is left adjoint to `restrictedYoneda`.

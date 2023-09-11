@@ -60,9 +60,9 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMin.isSuccLimit : IsMin a → IsSuccLimit a := fun h _ hab =>
+protected theorem _root_.IsMin.isSuccLimit : IsMin a → IsSuccLimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
-#align is_min.is_succ_limit Order.IsMin.isSuccLimit
+#align is_min.is_succ_limit IsMin.isSuccLimit
 
 theorem isSuccLimit_bot [OrderBot α] : IsSuccLimit (⊥ : α) :=
   IsMin.isSuccLimit isMin_bot
@@ -123,7 +123,7 @@ section PartialOrder
 variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort _}
 
 theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
-  h b (Order.Covby.succ_eq hba)
+  h b (Covby.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.isSuccLimit_of_succ_ne
 
 theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
@@ -277,9 +277,9 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMax.isPredLimit : IsMax a → IsPredLimit a := fun h _ hab =>
+protected theorem _root_.IsMax.isPredLimit : IsMax a → IsPredLimit a := fun h _ hab =>
   not_isMax_of_lt hab.lt h
-#align is_max.is_pred_limit Order.IsMax.isPredLimit
+#align is_max.is_pred_limit IsMax.isPredLimit
 
 theorem isPredLimit_top [OrderTop α] : IsPredLimit (⊤ : α) :=
    IsMax.isPredLimit isMax_top

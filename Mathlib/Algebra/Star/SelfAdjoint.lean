@@ -330,8 +330,7 @@ instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
 instance : NatCast (selfAdjoint R) where
-  -- porting note: `(_)` works around lean4#2074
-  natCast n := ⟨n, @isSelfAdjoint_natCast _ _ (_) n⟩
+  natCast n := ⟨n, isSelfAdjoint_natCast _⟩
 
 instance : IntCast (selfAdjoint R) where
   intCast n := ⟨n, isSelfAdjoint_intCast _⟩
@@ -377,8 +376,7 @@ section Field
 variable [Field R] [StarRing R]
 
 instance : Inv (selfAdjoint R) where
-  -- porting note: `(_)` works around lean4#2074
-  inv x := ⟨x.val⁻¹, @IsSelfAdjoint.inv _ _ (_) _ x.prop⟩
+  inv x := ⟨x.val⁻¹, x.prop.inv⟩
 
 @[simp, norm_cast]
 theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
@@ -386,8 +384,7 @@ theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
 #align self_adjoint.coe_inv selfAdjoint.val_inv
 
 instance : Div (selfAdjoint R) where
-  -- porting note: `(_)` works around lean4#2074
-  div x y := ⟨x / y, @IsSelfAdjoint.div _ _ (_) _ _ x.prop y.prop⟩
+  div x y := ⟨x / y, x.prop.div y.prop⟩
 
 @[simp, norm_cast]
 theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
@@ -395,8 +392,7 @@ theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
 #align self_adjoint.coe_div selfAdjoint.val_div
 
 instance : Pow (selfAdjoint R) ℤ where
-  -- porting note: `(_)` works around lean4#2074
-  pow x z := ⟨(x : R) ^ z, @IsSelfAdjoint.zpow _ _ (_) _ x.prop z⟩
+  pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
 
 @[simp, norm_cast]
 theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=

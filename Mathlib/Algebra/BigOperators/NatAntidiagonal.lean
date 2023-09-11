@@ -42,9 +42,8 @@ theorem prod_antidiagonal_swap {n : ℕ} {f : ℕ × ℕ → M} :
 #align finset.nat.prod_antidiagonal_swap Finset.Nat.prod_antidiagonal_swap
 #align finset.nat.sum_antidiagonal_swap Finset.Nat.sum_antidiagonal_swap
 
-theorem prod_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → M} :
-    (∏ p in antidiagonal (n + 1), f p) = f (n + 1, 0) * ∏ p in antidiagonal n, f (p.1, p.2 + 1) :=
-  by
+theorem prod_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → M} : (∏ p in antidiagonal (n + 1), f p) =
+    f (n + 1, 0) * ∏ p in antidiagonal n, f (p.1, p.2 + 1) := by
   rw [← prod_antidiagonal_swap, prod_antidiagonal_succ, ← prod_antidiagonal_swap]
   rfl
 #align finset.nat.prod_antidiagonal_succ' Finset.Nat.prod_antidiagonal_succ'

@@ -10,6 +10,7 @@ Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 import Std.Tactic.Lint.Frontend
 import Std.Tactic.Lint.Misc
+import Std.Tactic.CoeExt
 import Mathlib.Mathport.Rename
 
 /-!
@@ -38,6 +39,8 @@ structure Bundled (c : Type u → Type v) : Type max (u + 1) v where
 #align category_theory.bundled CategoryTheory.Bundled
 
 namespace Bundled
+
+attribute [coe] α
 
 -- This is needed so that we can ask for an instance of `c α` below even though Lean doesn't know
 -- that `c α` is a typeclass.

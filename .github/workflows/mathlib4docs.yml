@@ -1,4 +1,4 @@
-name: build and deploy mathlib3 docs
+name: build and deploy mathlib4 docs
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: clean up
         run: |
-          rm -rf *
+          rm -rf ../workaround ../mathlib4_docs
           rm -rf $HOME/.elan
           rm -rf $HOME/.cache/mathlib
           rm -rf $HOME/.ssh
@@ -43,6 +43,6 @@ jobs:
       - name: clean up
         if: always()
         run: |
-          rm -rf workaround mathlib4_docs deploy_key
+          rm -rf ../workaround ../mathlib4_docs
           rm -rf $HOME/.elan
           rm -rf $HOME/.cache/mathlib

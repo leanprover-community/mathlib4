@@ -195,8 +195,7 @@ pair of corresponding components. -/
 def isoApp {X Y : ∀ i, C i} (f : X ≅ Y) (i : I) : X i ≅ Y i :=
   ⟨f.hom i, f.inv i, by
     dsimp
-    rw [← comp_apply, Iso.hom_inv_id, id_apply],
-    by
+    rw [← comp_apply, Iso.hom_inv_id, id_apply], by
     dsimp
     rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
 #align category_theory.pi.iso_app CategoryTheory.Pi.isoApp

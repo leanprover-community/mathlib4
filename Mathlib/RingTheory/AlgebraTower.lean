@@ -121,8 +121,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
-  · have h1 : (∑ i in s.image Prod.fst ×ᶠ s.image Prod.snd, g i • b i.1 • c i.2) = 0 :=
-      by
+  · have h1 : (∑ i in s.image Prod.fst ×ᶠ s.image Prod.snd, g i • b i.1 • c i.2) = 0 := by
       rw [← hsg]
       exact
         (Finset.sum_subset Finset.subset_product fun p _ hp =>
@@ -232,8 +231,7 @@ def algHomEquivSigma : (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ 
     rfl
   right_inv := by
     rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, hg⟩⟩
-    obtain rfl : f = fun x => g (algebraMap B C x) :=
-      by
+    obtain rfl : f = fun x => g (algebraMap B C x) := by
       ext x
       exact (hg x).symm
     rfl

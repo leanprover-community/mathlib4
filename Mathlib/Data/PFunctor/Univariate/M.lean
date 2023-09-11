@@ -346,8 +346,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
   dsimp only [Approx.sMk, dest, head]
   cases' h : x.approx (succ n) with _ hd ch
-  have h' : hd = head' (x.approx 1) :=
-    by
+  have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
     apply x.consistent
   revert ch

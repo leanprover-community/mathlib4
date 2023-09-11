@@ -47,7 +47,6 @@ theorem quotient' {R : Type _} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
 
 end CharP
 
-set_option synthInstance.etaExperiment true in
 theorem Ideal.Quotient.index_eq_zero {R : Type _} [CommRing R] (I : Ideal R) :
     (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]

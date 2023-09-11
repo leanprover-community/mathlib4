@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
 import Std.Logic
+import Std.WF
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Relation.Rfl
@@ -304,7 +305,11 @@ alias instDecidableOr ← Or.decidable
 alias instDecidableAnd ← And.decidable
 alias instDecidableNot ← Not.decidable
 alias instDecidableIff ← Iff.decidable
+alias instDecidableTrue ← decidableTrue
+alias instDecidableFalse ← decidableFalse
 
+#align decidable.true decidableTrue
+#align decidable.false decidableFalse
 #align or.decidable Or.decidable
 #align and.decidable And.decidable
 #align not.decidable Not.decidable
@@ -538,18 +543,6 @@ theorem right_comm : Commutative f → Associative f → RightCommutative f :=
       _ = (a*c)*b := Eq.symm (hassoc a c b)
 
 end Binary
-
-namespace WellFounded
-
-variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
-
-unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
-  F x fun y _ ↦ impl hwf F y
-
-@[implemented_by fix'.impl]
-def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
-
-end WellFounded
 
 #align not.elim Not.elim
 #align not.imp Not.imp

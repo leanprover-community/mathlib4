@@ -110,7 +110,7 @@ end IsGenericPoint
 theorem isGenericPoint_iff_forall_closed (hS : IsClosed S) (hxS : x ∈ S) :
     IsGenericPoint x S ↔ ∀ Z : Set α, IsClosed Z → x ∈ Z → S ⊆ Z := by
   have : closure {x} ⊆ S := closure_minimal (singleton_subset_iff.2 hxS) hS
-  simp_rw [IsGenericPoint, subset_antisymm_iff, this, true_and_iff, closure, subset_interₛ_iff,
+  simp_rw [IsGenericPoint, subset_antisymm_iff, this, true_and_iff, closure, subset_sInter_iff,
     mem_setOf_eq, and_imp, singleton_subset_iff]
 #align is_generic_point_iff_forall_closed isGenericPoint_iff_forall_closed
 
@@ -250,4 +250,3 @@ instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α where
 #align t2_space.quasi_sober T2Space.quasiSober
 
 end Sober
-

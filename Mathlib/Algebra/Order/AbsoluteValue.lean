@@ -11,8 +11,6 @@ Authors: Mario Carneiro, Anne Baanen
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Regular
 
 /-!

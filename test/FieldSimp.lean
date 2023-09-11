@@ -27,14 +27,9 @@ by field_simp
 
 /-
 Combining `eq_divp_iff_mul_eq` and `divp_eq_iff_mul_eq`.
-
-This example is currently commented out because it is weirdly slow.
-See https://github.com/leanprover/lean4/issues/2055.
-
-It works with `set_option maxHeartbeats 300000`.
 -/
---example : a /ₚ u₁ = b /ₚ u₂ ↔ a * u₂ = b * u₁ :=
---by field_simp
+example : a /ₚ u₁ = b /ₚ u₂ ↔ a * u₂ = b * u₁ :=
+by field_simp
 
 /--
 Making sure inverses of units are rewritten properly.

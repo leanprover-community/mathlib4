@@ -203,13 +203,13 @@ theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N}
     exact s.mul_mem hx hy
 #align free_product.lift_mrange_le FreeProduct.lift_mrange_le
 
-theorem mrange_eq_supᵢ {N} [Monoid N] (f : ∀ i, M i →* N) :
+theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
-  apply le_antisymm (lift_mrange_le f fun i => le_supᵢ (fun i => MonoidHom.mrange (f i)) i)
-  apply supᵢ_le _
+  apply le_antisymm (lift_mrange_le f fun i => le_iSup (fun i => MonoidHom.mrange (f i)) i)
+  apply iSup_le _
   rintro i _ ⟨x, rfl⟩
   exact ⟨of x, by simp only [lift_of]⟩
-#align free_product.mrange_eq_supr FreeProduct.mrange_eq_supᵢ
+#align free_product.mrange_eq_supr FreeProduct.mrange_eq_iSup
 
 section Group
 
@@ -251,12 +251,12 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     exact s.mul_mem hx hy
 #align free_product.lift_range_le FreeProduct.lift_range_le
 
-theorem range_eq_supᵢ {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
-  apply le_antisymm (lift_range_le _ f fun i => le_supᵢ (fun i => MonoidHom.range (f i)) i)
-  apply supᵢ_le _
+theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
+  apply le_antisymm (lift_range_le _ f fun i => le_iSup (fun i => MonoidHom.range (f i)) i)
+  apply iSup_le _
   rintro i _ ⟨x, rfl⟩
   exact ⟨of x, by simp only [lift_of]⟩
-#align free_product.range_eq_supr FreeProduct.range_eq_supᵢ
+#align free_product.range_eq_supr FreeProduct.range_eq_iSup
 
 end Group
 
@@ -410,7 +410,6 @@ theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
 instance summandAction (i) : MulAction (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
-    simp_rw [one_mul]
     apply (equivPair i).symm_apply_eq.mpr
     simp [equivPair]
   mul_smul m m' w := by
@@ -536,8 +535,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
 #align free_product.neword.to_list_head' FreeProduct.NeWord.toList_head?
 
 @[simp]
-theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ :=
-  by
+theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]

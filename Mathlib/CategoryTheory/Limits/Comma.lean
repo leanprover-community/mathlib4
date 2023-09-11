@@ -136,8 +136,7 @@ def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L] {c₁ : Coco
     { left := t₁.desc ((fst L R).mapCocone s)
       right := t₂.desc ((snd L R).mapCocone s)
       w :=
-        (isColimitOfPreserves L t₁).hom_ext fun j =>
-          by
+        (isColimitOfPreserves L t₁).hom_ext fun j => by
           rw [coconeOfPreserves_pt_hom, (isColimitOfPreserves L t₁).fac_assoc,
             colimitAuxiliaryCocone_ι_app, assoc, ← R.map_comp, t₂.fac, L.mapCocone_ι_app, ←
             L.map_comp_assoc, t₁.fac]
@@ -242,7 +241,6 @@ noncomputable instance createsLimitsOfShape [PreservesLimitsOfShape J G] :
 #align category_theory.structured_arrow.creates_limits_of_shape CategoryTheory.StructuredArrow.createsLimitsOfShape
 
 noncomputable instance createsLimits [PreservesLimits G] : CreatesLimits (proj X G : _) where
-
 #align category_theory.structured_arrow.creates_limits CategoryTheory.StructuredArrow.createsLimits
 
 instance mono_right_of_mono [HasPullbacks A] [PreservesLimitsOfShape WalkingCospan G]

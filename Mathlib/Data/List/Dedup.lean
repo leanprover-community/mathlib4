@@ -49,7 +49,6 @@ theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
   simpa only [dedup, forall_mem_ne, not_not] using this
   intros x y z xz
   exact not_and_or.1 <| mt (fun h ↦ h.1.trans h.2) xz
-
 #align list.mem_dedup List.mem_dedup
 
 @[simp]

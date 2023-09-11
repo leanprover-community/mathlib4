@@ -41,8 +41,6 @@ variable {R A : Type _} {a b : A} {r : R}
 
 variable [OrderedCommRing R] [OrderedRing A] [Algebra R A]
 
--- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
-instance : Module R A := Algebra.toModule
 
 variable [OrderedSMul R A]
 

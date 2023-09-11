@@ -195,14 +195,14 @@ instance : TopologicalSpace (Alexandroff X) where
     refine' ⟨_, hs.inter ht⟩
     rintro ⟨hms', hmt'⟩
     simpa [compl_inter] using (hms hms').union (hmt hmt')
-  isOpen_unionₛ S ho := by
+  isOpen_sUnion S ho := by
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
       refine' ⟨_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
       refine' isCompact_of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
-      exact compl_subset_compl.mpr (preimage_mono <| subset_unionₛ_of_mem hsS)
-    rw [preimage_unionₛ]
-    exact isOpen_bunionᵢ fun s hs => (ho s hs).2
+      exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
+    rw [preimage_sUnion]
+    exact isOpen_biUnion fun s hs => (ho s hs).2
 
 variable {s : Set (Alexandroff X)} {t : Set X}
 

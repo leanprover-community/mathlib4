@@ -240,9 +240,6 @@ instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCond
           (LinearEquiv.funCongrLeft R R e)).toLinearMap
   have i' : Injective f' := i.comp (LinearEquiv.injective _)
   apply @zero_ne_one (Fin (1 + m) → R) _ _
-  -- porting note: this next line is needed because of lean4#2074 and it works with `etaExperiment`
-  -- in particular, Lean can't infer `IsNoetherian R R` from `IsNoetherianRing R`
-  have : IsNoetherian R R := ‹IsNoetherianRing R›
   apply (IsNoetherian.equivPunitOfProdInjective f' i').injective
   ext
 #align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
@@ -267,9 +264,6 @@ end
 section
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι' : Type w}
-
--- porting note: using this to get around lena4#2074. `etaExperiment` works here though.
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :

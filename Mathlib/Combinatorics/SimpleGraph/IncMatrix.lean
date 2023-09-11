@@ -78,11 +78,10 @@ section MulZeroOneClass
 
 variable [MulZeroOneClass R] {a b : α} {e : Sym2 α}
 
-theorem incMatrix_apply_mul_incMatrix_apply :
-    G.incMatrix R a e * G.incMatrix R b e = (G.incidenceSet a ∩ G.incidenceSet b).indicator 1 e :=
-  by
+theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R b e =
+    (G.incidenceSet a ∩ G.incidenceSet b).indicator 1 e := by
   classical simp only [incMatrix, Set.indicator_apply, ← ite_and_mul_zero, Pi.one_apply, mul_one,
-      Set.mem_inter_iff]
+    Set.mem_inter_iff]
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply SimpleGraph.incMatrix_apply_mul_incMatrix_apply
 
 theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :

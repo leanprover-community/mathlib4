@@ -131,7 +131,6 @@ theorem toLex_strictMono : @StrictMono _ _ _ (Prod.Lex.preorder α β) (toLex : 
   obtain rfl | ha : a₁ = a₂ ∨ _ := h.le.1.eq_or_lt
   · exact right _ (Prod.mk_lt_mk_iff_right.1 h)
   · exact left _ _ ha
-
 #align prod.lex.to_lex_strict_mono Prod.Lex.toLex_strictMono
 
 end Preorder
@@ -149,9 +148,9 @@ instance partialOrder (α β : Type _) [PartialOrder α] [PartialOrder β] : Par
 instance linearOrder (α β : Type _) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
   { Prod.Lex.partialOrder α β with
     le_total := total_of (Prod.Lex _ _),
-    decidable_le := Prod.Lex.decidable _ _,
-    decidable_lt := Prod.Lex.decidable _ _,
-    decidable_eq := Lex.decidableEq _ _, }
+    decidableLE := Prod.Lex.decidable _ _,
+    decidableLT := Prod.Lex.decidable _ _,
+    decidableEq := Lex.decidableEq _ _, }
 #align prod.lex.linear_order Prod.Lex.linearOrder
 
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where

@@ -50,8 +50,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
     card (derangements (Fin (n + 2))) =
       (n + 1) * card (derangements (Fin n)) + (n + 1) * card (derangements (Fin (n + 1))) := by
   -- get some basic results about the size of fin (n+1) plus or minus an element
-  have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) :=
-    by
+  have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
     simp only [Fintype.card_fin, Finset.card_fin, Fintype.card_ofFinset, Finset.filter_ne' _ a,
       Set.mem_compl_singleton_iff, Finset.card_erase_of_mem (Finset.mem_univ a),

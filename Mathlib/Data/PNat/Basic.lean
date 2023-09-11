@@ -395,7 +395,6 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
       rw [mul_one] at h₂
       exact ⟨h₂, le_refl (k : ℕ)⟩
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
-
 #align pnat.mod_le PNat.mod_le
 
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by

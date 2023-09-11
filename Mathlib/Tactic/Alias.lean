@@ -116,7 +116,11 @@ def Target.toString : Target → String
     }
     -- TODO add @alias attribute
     Command.liftTermElabM do
-      Lean.addDecl decl
+      if isNoncomputable (← getEnv) resolved then
+        addDecl decl
+        setEnv $ addNoncomputable (← getEnv) declName
+      else
+        addAndCompile decl
       Term.addTermInfo' a (← mkConstWithLevelParams declName) (isBinder := true)
       let target := Target.plain resolved
       let docString := match doc with | none => target.toString

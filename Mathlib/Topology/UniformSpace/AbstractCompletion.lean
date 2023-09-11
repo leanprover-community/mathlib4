@@ -208,8 +208,7 @@ theorem map_coe (hf : UniformContinuous f) (a : α) : map f (ι a) = ι' (f a) :
 
 theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous g)
     (h : ∀ a, ι' (f a) = g (ι a)) : map f = g :=
-  pkg.funext (pkg.continuous_map _ _) hg.continuous <|
-    by
+  pkg.funext (pkg.continuous_map _ _) hg.continuous <| by
     intro a
     change pkg.extend (ι' ∘ f) _ = _
     simp only [(· ∘ ·), h, ←comp_apply (f := g)]

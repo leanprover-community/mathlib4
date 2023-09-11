@@ -352,12 +352,10 @@ theorem RightInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : �
 
 theorem LeftInverse.rightInverse {f : α → β} {g : β → α} (h : LeftInverse g f) : RightInverse f g :=
   h
-
 #align function.left_inverse.right_inverse Function.LeftInverse.rightInverse
 
 theorem RightInverse.leftInverse {f : α → β} {g : β → α} (h : RightInverse g f) : LeftInverse f g :=
   h
-
 #align function.right_inverse.left_inverse Function.RightInverse.leftInverse
 
 theorem LeftInverse.surjective {f : α → β} {g : β → α} (h : LeftInverse f g) : Surjective f :=

@@ -405,6 +405,8 @@ def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (
     funext f; dsimp [const]; aesop_cat
 #align category_theory.limits.is_limit.hom_iso CategoryTheory.Limits.IsLimit.homIso
 
+pp_extended_field_notation IsLimit.homIso
+
 @[simp]
 theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :
     (IsLimit.homIso h W).hom f = (t.extend f.down).π :=
@@ -434,6 +436,8 @@ def homIso' (h : IsLimit t) (W : C) :
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
 #align category_theory.limits.is_limit.hom_iso' CategoryTheory.Limits.IsLimit.homIso'
+
+pp_extended_field_notation IsLimit.homIso'
 
 /-- If G : C → D is a faithful functor which sends t to a limit cone,
   then it suffices to check that the induced maps for the image of t
@@ -927,6 +931,8 @@ def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅
     funext f; dsimp [const]; aesop_cat
 #align category_theory.limits.is_colimit.hom_iso CategoryTheory.Limits.IsColimit.homIso
 
+pp_extended_field_notation IsColimit.homIso
+
 @[simp]
 theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
     (IsColimit.homIso h W).hom f = (t.extend f.down).ι :=
@@ -952,6 +958,8 @@ def homIso' (h : IsColimit t) (W : C) :
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
 #align category_theory.limits.is_colimit.hom_iso' CategoryTheory.Limits.IsColimit.homIso'
+
+pp_extended_field_notation IsColimit.homIso'
 
 /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
   then it suffices to check that the induced maps for the image of t

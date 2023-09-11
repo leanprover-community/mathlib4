@@ -87,9 +87,8 @@ theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
 theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
   ⟨fun d a h => not_nodup_pair a (d.sublist h),
     by
-    induction' l with a l IH <;> intro h; · exact nodup_nil
-    exact
-      (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
+      induction' l with a l IH <;> intro h; · exact nodup_nil
+      exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
         h a <| (singleton_sublist.2 al).cons_cons _⟩
 #align list.nodup_iff_sublist List.nodup_iff_sublist
 

@@ -71,7 +71,7 @@ def binaryFanZeroRight (X : C) : BinaryFan X (0 : C) :=
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
   BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by aesop_cat) (by aesop_cat)
-    (fun s m h₁ => by simpa using h₁)
+    (fun s m h₁ _ => by simpa using h₁)
 #align category_theory.limits.binary_fan_zero_right_is_limit CategoryTheory.Limits.binaryFanZeroRightIsLimit
 
 instance hasBinaryProduct_zero_right (X : C) : HasBinaryProduct X (0 : C) :=

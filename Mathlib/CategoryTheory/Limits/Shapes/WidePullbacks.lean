@@ -369,9 +369,8 @@ theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
 #align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.WidePullback.hom_eq_lift
 
 @[ext 1100]
-theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) :
-    (∀ j : J, g1 ≫ π arrows j = g2 ≫ π arrows j) → g1 ≫ base arrows = g2 ≫ base arrows → g1 = g2 :=
-  by
+theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
+    g1 ≫ π arrows j = g2 ≫ π arrows j) → g1 ≫ base arrows = g2 ≫ base arrows → g1 = g2 := by
   intro h1 h2
   apply limit.hom_ext
   rintro (_ | _)
@@ -451,9 +450,8 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
 #align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.WidePushout.hom_eq_desc
 
 @[ext 1100]
-theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) :
-    (∀ j : J, ι arrows j ≫ g1 = ι arrows j ≫ g2) → head arrows ≫ g1 = head arrows ≫ g2 → g1 = g2 :=
-  by
+theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,
+    ι arrows j ≫ g1 = ι arrows j ≫ g2) → head arrows ≫ g1 = head arrows ≫ g2 → g1 = g2 := by
   intro h1 h2
   apply colimit.hom_ext
   rintro (_ | _)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.abelian.opposite
-! leanprover-community/mathlib commit 8c75ef3517d4106e89fe524e6281d0b0545f47fc
+! leanprover-community/mathlib commit a5ff45a1c92c278b03b52459a620cfd9c49ebc80
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -29,6 +29,7 @@ variable (C : Type _) [Category C] [Abelian C]
 --attribute [local instance]
 --  hasFiniteLimits_of_hasEqualizers_and_finite_products
 --  hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts
+--  Abelian.hasFiniteBiproducts
 
 instance : Abelian Cᵒᵖ := by
   -- porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have

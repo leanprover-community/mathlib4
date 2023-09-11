@@ -137,7 +137,6 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
 def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
   obj X := StructuredArrow.mk fun _ => X.2
   map {X Y} f := StructuredArrow.homMk f.val (by funext; simp [f.2])
-
 #align category_theory.category_of_elements.to_structured_arrow CategoryTheory.CategoryOfElements.toStructuredArrow
 
 @[simp]

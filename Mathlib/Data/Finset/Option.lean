@@ -94,11 +94,11 @@ theorem mem_eraseNone {s : Finset (Option α)} {x : α} : x ∈ eraseNone s ↔ 
   simp [eraseNone]
 #align finset.mem_erase_none Finset.mem_eraseNone
 
-theorem eraseNone_eq_bunionᵢ [DecidableEq α] (s : Finset (Option α)) :
-    eraseNone s = s.bunionᵢ Option.toFinset := by
+theorem eraseNone_eq_biUnion [DecidableEq α] (s : Finset (Option α)) :
+    eraseNone s = s.biUnion Option.toFinset := by
   ext
   simp
-#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_bunionᵢ
+#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_biUnion
 
 @[simp]
 theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = s := by

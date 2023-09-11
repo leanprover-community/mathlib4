@@ -10,8 +10,6 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.Tauto
 
 /-!
 # Intervals without endpoints ordering

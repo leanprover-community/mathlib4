@@ -291,7 +291,7 @@ theorem trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y
 instance : LinearOrder (Tropical R) :=
   { instPartialOrderTropical with
     le_total := fun a b => le_total (untrop a) (untrop b)
-    decidable_le := Tropical.decidableLE
+    decidableLE := Tropical.decidableLE
     max := fun a b => trop (max (untrop a) (untrop b))
     max_def := fun a b => untrop_injective (by simp [max_def]; split_ifs <;> simp)
     min := (· + ·)

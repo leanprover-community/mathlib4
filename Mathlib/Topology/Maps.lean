@@ -98,7 +98,7 @@ theorem Inducing.nhds_eq_comap {f : α → β} (hf : Inducing f) : ∀ a : α, �
 
 theorem Inducing.nhdsSet_eq_comap {f : α → β} (hf : Inducing f) (s : Set α) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
-  simp only [nhdsSet, supₛ_image, comap_supᵢ, hf.nhds_eq_comap, supᵢ_image]
+  simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
 #align inducing.nhds_set_eq_comap Inducing.nhdsSet_eq_comap
 
 theorem Inducing.map_nhds_eq {f : α → β} (hf : Inducing f) (a : α) : (𝓝 a).map f = 𝓝[range f] f a :=
@@ -385,7 +385,6 @@ theorem of_sections {f : α → β}
       𝓝 (f x) = map f (map g (𝓝 (f x))) := by rw [map_map, hgf.comp_eq_id, map_id]
       _ ≤ map f (𝓝 (g (f x))) := map_mono hgc
       _ = map f (𝓝 x) := by rw [hgx]
-
 #align is_open_map.of_sections IsOpenMap.of_sections
 
 theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')

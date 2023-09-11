@@ -219,8 +219,7 @@ theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
 
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
-    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg =>
-      by
+    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
       by_cases hf : LimZero f
       · simp [hf, this.1 hf, Setoid.refl]

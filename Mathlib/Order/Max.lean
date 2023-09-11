@@ -9,7 +9,6 @@ Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Synonym
-import Mathlib.Tactic.Classical
 
 /-!
 # Minimal/maximal and bottom/top elements

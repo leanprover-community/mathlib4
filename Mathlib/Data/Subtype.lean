@@ -9,7 +9,6 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Subtypes

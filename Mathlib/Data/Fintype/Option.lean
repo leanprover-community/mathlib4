@@ -58,8 +58,7 @@ that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α] [DecidableEq α], P α → P (Option α))
     (α : Type u) [Fintype α] [DecidableEq α] : Trunc (P α) := by
-  suffices ∀ n : ℕ, Trunc (P (ULift <| Fin n))
-    by
+  suffices ∀ n : ℕ, Trunc (P (ULift <| Fin n)) by
     apply Trunc.bind (this (Fintype.card α))
     intro h
     apply Trunc.map _ (Fintype.truncEquivFin α)

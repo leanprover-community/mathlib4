@@ -85,7 +85,6 @@ theorem card_comm_eq_card_conjClasses_mul_card :
     (Setoid.ext fun g h ↦ (Setoid.comm' _).trans isConj_iff.symm :
       MulAction.orbitRel (ConjAct G) G = IsConj.setoid G),
     @card_congr' (Quotient (IsConj.setoid G)) (ConjClasses G) _ _ rfl]
-
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by

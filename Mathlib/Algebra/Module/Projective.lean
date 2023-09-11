@@ -189,7 +189,6 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
 #align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
 -- porting note: todo: generalize to `P : Type v`?
-set_option synthInstance.etaExperiment true in
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]

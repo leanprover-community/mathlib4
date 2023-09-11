@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.matrix.block
-! leanprover-community/mathlib commit eba5bb3155cab51d80af00e8d7d69fa271b1302b
+! leanprover-community/mathlib commit c060baa79af5ca092c54b8bf04f0f10592f59489
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -128,6 +128,22 @@ theorem toBlocks_fromBlocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : M
   rfl
 #align matrix.to_blocks_from_blocks₂₂ Matrix.toBlocks_fromBlocks₂₂
 
+/-- Two block matrices are equal if their blocks are equal. -/
+theorem ext_iff_blocks {A B : Matrix (Sum n o) (Sum l m) α} :
+    A = B ↔
+      A.toBlocks₁₁ = B.toBlocks₁₁ ∧
+        A.toBlocks₁₂ = B.toBlocks₁₂ ∧ A.toBlocks₂₁ = B.toBlocks₂₁ ∧ A.toBlocks₂₂ = B.toBlocks₂₂ :=
+  ⟨fun h => h ▸ ⟨rfl, rfl, rfl, rfl⟩, fun ⟨h₁₁, h₁₂, h₂₁, h₂₂⟩ => by
+    rw [← fromBlocks_toBlocks A, ← fromBlocks_toBlocks B, h₁₁, h₁₂, h₂₁, h₂₂]⟩
+#align matrix.ext_iff_blocks Matrix.ext_iff_blocks
+
+@[simp]
+theorem fromBlocks_inj {A : Matrix n l α} {B : Matrix n m α} {C : Matrix o l α} {D : Matrix o m α}
+    {A' : Matrix n l α} {B' : Matrix n m α} {C' : Matrix o l α} {D' : Matrix o m α} :
+    fromBlocks A B C D = fromBlocks A' B' C' D' ↔ A = A' ∧ B = B' ∧ C = C' ∧ D = D' :=
+  ext_iff_blocks
+#align matrix.from_blocks_inj Matrix.fromBlocks_inj
+
 theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
     (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
   by ext (i j); rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
@@ -217,6 +233,12 @@ theorem fromBlocks_neg [Neg R] (A : Matrix n l R) (B : Matrix n m R) (C : Matrix
   ext i j
   cases i <;> cases j <;> simp [fromBlocks]
 #align matrix.from_blocks_neg Matrix.fromBlocks_neg
+
+@[simp]
+theorem fromBlocks_zero [Zero α] : fromBlocks (0 : Matrix n l α) 0 0 (0 : Matrix o m α) = 0 := by
+  ext (i j)
+  rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
+#align matrix.from_blocks_zero Matrix.fromBlocks_zero
 
 theorem fromBlocks_add [Add α] (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (A' : Matrix n l α) (B' : Matrix n m α) (C' : Matrix o l α)
@@ -529,6 +551,17 @@ theorem blockDiag_blockDiagonal [DecidableEq o] (M : o → Matrix m n α) :
   funext fun _ => ext fun i j => blockDiagonal_apply_eq M i j _
 #align matrix.block_diag_block_diagonal Matrix.blockDiag_blockDiagonal
 
+theorem blockDiagonal_injective [DecidableEq o] :
+    Function.Injective (blockDiagonal : (o → Matrix m n α) → Matrix _ _ α) :=
+  Function.LeftInverse.injective blockDiag_blockDiagonal
+#align matrix.block_diagonal_injective Matrix.blockDiagonal_injective
+
+@[simp]
+theorem blockDiagonal_inj [DecidableEq o] {M N : o → Matrix m n α} :
+    blockDiagonal M = blockDiagonal N ↔ M = N :=
+  blockDiagonal_injective.eq_iff
+#align matrix.block_diagonal_inj Matrix.blockDiagonal_inj
+
 @[simp]
 theorem blockDiag_one [DecidableEq o] [DecidableEq m] [One α] :
     blockDiag (1 : Matrix (m × o) (m × o) α) = 1 :=
@@ -820,6 +853,17 @@ theorem blockDiag'_blockDiagonal' [DecidableEq o] (M : ∀ i, Matrix (m' i) (n' 
     blockDiag' (blockDiagonal' M) = M :=
   funext fun _ => ext fun _ _ => blockDiagonal'_apply_eq M _ _ _
 #align matrix.block_diag'_block_diagonal' Matrix.blockDiag'_blockDiagonal'
+
+theorem blockDiagonal'_injective [DecidableEq o] :
+    Function.Injective (blockDiagonal' : (∀ i, Matrix (m' i) (n' i) α) → Matrix _ _ α) :=
+  Function.LeftInverse.injective blockDiag'_blockDiagonal'
+#align matrix.block_diagonal'_injective Matrix.blockDiagonal'_injective
+
+@[simp]
+theorem blockDiagonal'_inj [DecidableEq o] {M N : ∀ i, Matrix (m' i) (n' i) α} :
+    blockDiagonal' M = blockDiagonal' N ↔ M = N :=
+  blockDiagonal'_injective.eq_iff
+#align matrix.block_diagonal'_inj Matrix.blockDiagonal'_inj
 
 @[simp]
 theorem blockDiag'_one [DecidableEq o] [∀ i, DecidableEq (m' i)] [One α] :

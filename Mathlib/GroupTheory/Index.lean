@@ -65,8 +65,7 @@ theorem index_comap_of_surjective {G' : Type _} [Group G'] {f : G' →* G}
     (hf : Function.Surjective f) : (H.comap f).index = H.index := by
   letI := QuotientGroup.leftRel H
   letI := QuotientGroup.leftRel (H.comap f)
-  have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) :=
-    by
+  have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
   refine' Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨_, _⟩)
@@ -362,8 +361,8 @@ theorem index_eq_card [Fintype (G ⧸ H)] : H.index = Fintype.card (G ⧸ H) :=
 #align add_subgroup.index_eq_card AddSubgroup.index_eq_card
 
 @[to_additive index_mul_card]
-theorem index_mul_card [Fintype G] [hH : Fintype H] : H.index * Fintype.card H = Fintype.card G :=
-  by
+theorem index_mul_card [Fintype G] [hH : Fintype H] :
+    H.index * Fintype.card H = Fintype.card G := by
   rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm];
     exact relindex_mul_index bot_le
 #align subgroup.index_mul_card Subgroup.index_mul_card
@@ -451,39 +450,39 @@ theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
 #align add_subgroup.index_inf_le AddSubgroup.index_inf_le
 
 @[to_additive]
-theorem relindex_infᵢ_ne_zero {ι : Type _} [_hι : Finite ι] {f : ι → Subgroup G}
+theorem relindex_iInf_ne_zero {ι : Type _} [_hι : Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).relindex L ≠ 0) : (⨅ i, f i).relindex L ≠ 0 :=
   haveI := Fintype.ofFinite ι
   (Finset.prod_ne_zero_iff.mpr fun i _hi => hf i) ∘
     Nat.card_pi.symm.trans ∘
-      Finite.card_eq_zero_of_embedding (quotientInfᵢSubgroupOfEmbedding f L)
-#align subgroup.relindex_infi_ne_zero Subgroup.relindex_infᵢ_ne_zero
-#align add_subgroup.relindex_infi_ne_zero AddSubgroup.relindex_infᵢ_ne_zero
+      Finite.card_eq_zero_of_embedding (quotientiInfSubgroupOfEmbedding f L)
+#align subgroup.relindex_infi_ne_zero Subgroup.relindex_iInf_ne_zero
+#align add_subgroup.relindex_infi_ne_zero AddSubgroup.relindex_iInf_ne_zero
 
 @[to_additive]
-theorem relindex_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
+theorem relindex_iInf_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
     (⨅ i, f i).relindex L ≤ ∏ i, (f i).relindex L :=
   le_of_le_of_eq
-    (Finite.card_le_of_embedding' (quotientInfᵢSubgroupOfEmbedding f L) fun h =>
+    (Finite.card_le_of_embedding' (quotientiInfSubgroupOfEmbedding f L) fun h =>
       let ⟨i, _hi, h⟩ := Finset.prod_eq_zero_iff.mp (Nat.card_pi.symm.trans h)
-      relindex_eq_zero_of_le_left (infᵢ_le f i) h)
+      relindex_eq_zero_of_le_left (iInf_le f i) h)
     Nat.card_pi
-#align subgroup.relindex_infi_le Subgroup.relindex_infᵢ_le
-#align add_subgroup.relindex_infi_le AddSubgroup.relindex_infᵢ_le
+#align subgroup.relindex_infi_le Subgroup.relindex_iInf_le
+#align add_subgroup.relindex_infi_le AddSubgroup.relindex_iInf_le
 
 @[to_additive]
-theorem index_infᵢ_ne_zero {ι : Type _} [Finite ι] {f : ι → Subgroup G}
+theorem index_iInf_ne_zero {ι : Type _} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).index ≠ 0) : (⨅ i, f i).index ≠ 0 := by
   simp_rw [← relindex_top_right] at hf⊢
-  exact relindex_infᵢ_ne_zero hf
-#align subgroup.index_infi_ne_zero Subgroup.index_infᵢ_ne_zero
-#align add_subgroup.index_infi_ne_zero AddSubgroup.index_infᵢ_ne_zero
+  exact relindex_iInf_ne_zero hf
+#align subgroup.index_infi_ne_zero Subgroup.index_iInf_ne_zero
+#align add_subgroup.index_infi_ne_zero AddSubgroup.index_iInf_ne_zero
 
 @[to_additive]
-theorem index_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
-    (⨅ i, f i).index ≤ ∏ i, (f i).index := by simp_rw [← relindex_top_right, relindex_infᵢ_le]
-#align subgroup.index_infi_le Subgroup.index_infᵢ_le
-#align add_subgroup.index_infi_le AddSubgroup.index_infᵢ_le
+theorem index_iInf_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
+    (⨅ i, f i).index ≤ ∏ i, (f i).index := by simp_rw [← relindex_top_right, relindex_iInf_le]
+#align subgroup.index_infi_le Subgroup.index_iInf_le
+#align add_subgroup.index_infi_le AddSubgroup.index_iInf_le
 
 --porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
 @[to_additive (attr := simp) index_eq_one]
@@ -603,12 +602,12 @@ instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
 
 variable (G)
 
-instance finiteIndex_center [Finite (commutatorSet G)] [Group.Fg G] : FiniteIndex (center G) := by
+instance finiteIndex_center [Finite (commutatorSet G)] [Group.FG G] : FiniteIndex (center G) := by
   obtain ⟨S, -, hS⟩ := Group.rank_spec G
   exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
 #align subgroup.finite_index_center Subgroup.finiteIndex_center
 
-theorem index_center_le_pow [Finite (commutatorSet G)] [Group.Fg G] :
+theorem index_center_le_pow [Finite (commutatorSet G)] [Group.FG G] :
     (center G).index ≤ Nat.card (commutatorSet G) ^ Group.rank G := by
   obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
   rw [← hS1, ← Fintype.card_coe, ← Nat.card_eq_fintype_card, ← Finset.coe_sort_coe, ← Nat.card_fun]

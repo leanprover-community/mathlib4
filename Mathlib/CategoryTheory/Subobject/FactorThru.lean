@@ -170,13 +170,13 @@ theorem factorThru_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y}
 #align category_theory.subobject.factor_thru_zero CategoryTheory.Subobject.factorThru_zero
 
 -- `h` is an explicit argument here so we can use
--- `rw factorThru_ofLe h`, obtaining a subgoal `P.Factors f`.
+-- `rw factorThru_ofLE h`, obtaining a subgoal `P.Factors f`.
 -- (While the reverse direction looks plausible as a simp lemma, it seems to be unproductive.)
-theorem factorThru_ofLe {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q) (w : P.Factors f) :
+theorem factorThru_ofLE {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q) (w : P.Factors f) :
     Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLE P Q h := by
   ext
   simp
-#align category_theory.subobject.factor_thru_of_le CategoryTheory.Subobject.factorThru_ofLe
+#align category_theory.subobject.factor_thru_of_le CategoryTheory.Subobject.factorThru_ofLE
 
 section Preadditive
 

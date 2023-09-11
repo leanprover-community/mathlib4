@@ -14,7 +14,6 @@ import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Intervals.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
-import Mathlib.Tactic.WLOG
 
 /-!
 # Order of an element
@@ -104,8 +103,7 @@ theorem isOfFinOrder_iff_coe (H : Submonoid G) (x : H) : IsOfFinOrder x ↔ IsOf
 @[to_additive "The image of an element of finite additive order has finite additive order."]
 theorem MonoidHom.isOfFinOrder {H : Type v} [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :
     IsOfFinOrder <| f x :=
-  (isOfFinOrder_iff_pow_eq_one _).mpr <|
-    by
+  (isOfFinOrder_iff_pow_eq_one _).mpr <| by
     rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
     exact ⟨n, npos, by rw [← f.map_pow, hn, f.map_one]⟩
 #align monoid_hom.is_of_fin_order MonoidHom.isOfFinOrder
@@ -279,8 +277,8 @@ theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
 #align nsmul_eq_zero_iff_modeq nsmul_eq_zero_iff_modEq
 
 @[to_additive]
-theorem orderOf_map_dvd {H : Type _} [Monoid H] (ψ : G →* H) (x : G) : orderOf (ψ x) ∣ orderOf x :=
-  by
+theorem orderOf_map_dvd {H : Type _} [Monoid H] (ψ : G →* H) (x : G) :
+    orderOf (ψ x) ∣ orderOf x := by
   apply orderOf_dvd_of_pow_eq_one
   rw [← map_pow, pow_orderOf_eq_one]
   apply map_one
@@ -310,8 +308,7 @@ theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
   suffices a = 1 by simp [this, ha]
   -- Assume `a` is not one...
   by_contra h
-  have a_min_fac_dvd_p_sub_one : a.minFac ∣ n :=
-    by
+  have a_min_fac_dvd_p_sub_one : a.minFac ∣ n := by
     obtain ⟨b, hb⟩ : ∃ b : ℕ, a = b * a.minFac := exists_eq_mul_left_of_dvd a.minFac_dvd
     rw [hb, ← mul_assoc] at ha
     exact Dvd.intro_left (orderOf x * b) ha.symm
@@ -335,7 +332,7 @@ theorem orderOf_eq_orderOf_iff {H : Type _} [Monoid H] {y : H} :
 @[to_additive]
 theorem orderOf_injective {H : Type _} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
     orderOf (f x) = orderOf x := by
-  simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, iff_self_iff, forall_const]
+  simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
 
@@ -468,8 +465,7 @@ theorem orderOf_eq_prime_pow (hnot : ¬x ^ p ^ n = 1) (hfin : x ^ p ^ (n + 1) = 
 @[to_additive exists_addOrderOf_eq_prime_pow_iff]
 theorem exists_orderOf_eq_prime_pow_iff :
     (∃ k : ℕ, orderOf x = p ^ k) ↔ ∃ m : ℕ, x ^ (p : ℕ) ^ m = 1 :=
-  ⟨fun ⟨k, hk⟩ => ⟨k, by rw [← hk, pow_orderOf_eq_one]⟩, fun ⟨_, hm⟩ =>
-    by
+  ⟨fun ⟨k, hk⟩ => ⟨k, by rw [← hk, pow_orderOf_eq_one]⟩, fun ⟨_, hm⟩ => by
     obtain ⟨k, _, hk⟩ := (Nat.dvd_prime_pow hp.elim).mp (orderOf_dvd_of_pow_eq_one hm)
     exact ⟨k, hk⟩⟩
 #align exists_order_of_eq_prime_pow_iff exists_orderOf_eq_prime_pow_iff
@@ -543,8 +539,7 @@ variable [Group G] [AddGroup A] {i : ℤ}
 /-- Inverses of elements of finite order have finite order. -/
 @[to_additive "Inverses of elements of finite additive order have finite additive order."]
 theorem IsOfFinOrder.inv {x : G} (hx : IsOfFinOrder x) : IsOfFinOrder x⁻¹ :=
-  (isOfFinOrder_iff_pow_eq_one _).mpr <|
-    by
+  (isOfFinOrder_iff_pow_eq_one _).mpr <| by
     rcases(isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
     refine' ⟨n, npos, by simp_rw [inv_pow, hn, inv_one]⟩
 #align is_of_fin_order.inv IsOfFinOrder.inv
@@ -659,7 +654,7 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
   calc
     (∑ m in (Finset.range n.succ).filter (· ∣ n),
           (Finset.univ.filter fun x : G => orderOf x = m).card) = _ :=
-      (Finset.card_bunionᵢ
+      (Finset.card_biUnion
           (by
             intros
             apply Finset.disjoint_filter.2
@@ -1024,8 +1019,7 @@ theorem image_range_orderOf [DecidableEq G] :
 /- TODO: Generalise to `Finite` + `CancelMonoid`. -/
 @[to_additive gcd_nsmul_card_eq_zero_iff]
 theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :=
-  ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h =>
-    by
+  ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
     let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
     rw [hm, pow_mul, h, one_pow]⟩
 #align pow_gcd_card_eq_one_iff pow_gcd_card_eq_one_iff
@@ -1074,7 +1068,7 @@ def powCardSubgroup {G : Type _} [Group G] [Fintype G] (S : Set G) (hS : S.Nonem
   subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩ $ by
     classical!
     apply (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm
-    simp_rw [← pow_add, Group.card_pow_eq_card_pow_card_univ S (Fintype.card G) le_rfl,
+    simp_rw [← pow_add,
         Group.card_pow_eq_card_pow_card_univ S (Fintype.card G + Fintype.card G) le_add_self]
 #align pow_card_subgroup powCardSubgroup
 #align smul_card_add_subgroup smulCardAddSubgroup

@@ -196,7 +196,7 @@ instance linearOrder : LinearOrder ℚ where
   le_trans := @Rat.le_trans
   le_antisymm := @Rat.le_antisymm
   le_total := Rat.le_total
-  decidable_le _ _ := by infer_instance
+  decidableLE _ _ := by infer_instance
   lt_iff_le_not_le _ _ := by
     rw [← Rat.not_le, and_iff_right_of_imp (Rat.le_total _ _).resolve_left]
 

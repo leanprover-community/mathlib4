@@ -490,7 +490,7 @@ variable {B : Type u₁} [CommRing B]
 /-- The universal ring homomorphism from `RingQuot r` to `B ⧸ Ideal.ofRel r`. -/
 def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Ideal.ofRel r :=
   lift ⟨Ideal.Quotient.mk (Ideal.ofRel r),
-        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_infₛ.mpr
+        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_sInf.mpr
           fun _ w ↦ w ⟨x, y, h, sub_add_cancel x y⟩⟩
 #align ring_quot.ring_quot_to_ideal_quotient RingQuot.ringQuotToIdealQuotient
 
@@ -564,7 +564,6 @@ private irreducible_def star' : RingQuot r → RingQuot r
 
 theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
-
 #align ring_quot.star'_quot RingQuot.star'_quot
 
 /-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/

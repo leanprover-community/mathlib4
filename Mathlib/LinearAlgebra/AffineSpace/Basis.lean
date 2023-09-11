@@ -126,7 +126,6 @@ noncomputable def basisOf (i : ι) : Basis { j : ι // j ≠ i } k V :=
       suffices
         Submodule.span k (range fun j : { x // x ≠ i } => b ↑j -ᵥ b i) = vectorSpan k (range b) by
         rw [this, ← direction_affineSpan, b.tot, AffineSubspace.direction_top]
-        exact le_rfl
       conv_rhs => rw [← image_univ]
       rw [vectorSpan_image_eq_span_vsub_set_right_ne k b (mem_univ i)]
       congr
@@ -147,7 +146,6 @@ theorem basisOf_reindex (i : ι') :
   simp
 #align affine_basis.basis_of_reindex AffineBasis.basisOf_reindex
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The `i`th barycentric coordinate of a point. -/
 noncomputable def coord (i : ι) : P →ᵃ[k] k where
   toFun q := 1 - (b.basisOf i).sumCoords (q -ᵥ b i)
@@ -158,7 +156,6 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
       sub_add_eq_sub_sub_swap, add_comm, sub_eq_add_neg]
 #align affine_basis.coord AffineBasis.coord
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
   rfl
@@ -299,7 +296,6 @@ noncomputable def coords : P →ᵃ[k] ι → k where
     rw [AffineMap.map_vadd, linear_eq_sumCoords,
         LinearMap.neg_apply]
     simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
-
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]

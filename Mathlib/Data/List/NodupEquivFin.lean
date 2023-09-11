@@ -176,8 +176,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
   rw [sublist_iff_exists_orderEmbedding_get?_eq]
   constructor
   · rintro ⟨f, hf⟩
-    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length :=
-      by
+    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length := by
       intro i hi
       specialize hf i
       rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
@@ -208,9 +207,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · rw [get?_eq_none.mpr, get?_eq_none.mpr]
         · simp
         · simpa using hi
-#align
-  list.sublist_iff_exists_fin_order_embedding_nth_le_eq
-  List.sublist_iff_exists_fin_orderEmbedding_get_eq
+#align list.sublist_iff_exists_fin_order_embedding_nth_le_eq List.sublist_iff_exists_fin_orderEmbedding_get_eq
 
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.

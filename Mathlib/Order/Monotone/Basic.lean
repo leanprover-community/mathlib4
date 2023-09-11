@@ -12,9 +12,6 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Coe
 
 /-!
 # Monotonicity
@@ -1088,7 +1085,6 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
     rw [hf₀, ← hg₀]
     exact hg Nat.zero_lt_one
   · exact hg (Nat.lt_succ_self _)
-
 #align int.exists_strict_mono Int.exists_strictMono
 
 /-- If `α` is a nonempty preorder with no minimal or maximal elements, then there exists a strictly

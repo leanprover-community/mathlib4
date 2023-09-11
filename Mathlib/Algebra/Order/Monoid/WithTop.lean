@@ -227,7 +227,6 @@ protected theorem le_of_add_le_add_left [LE α] [ContravariantClass α α (· + 
     · exact (not_top_le_coe _ h).elim
     · simp only [← coe_add, coe_le_coe] at h ⊢
       exact le_of_add_le_add_left h
-
 #align with_top.le_of_add_le_add_left WithTop.le_of_add_le_add_left
 
 protected theorem le_of_add_le_add_right [LE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]

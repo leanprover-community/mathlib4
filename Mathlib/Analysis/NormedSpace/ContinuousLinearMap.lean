@@ -30,7 +30,6 @@ This file is meant to be lightweight (it is imported by much of the analysis lib
 before adding imports!
 -/
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 open Metric ContinuousLinearMap
 
 open Set Real
@@ -174,8 +173,7 @@ variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 theorem ContinuousLinearMap.uniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
     UniformEmbedding f :=
   (AddMonoidHomClass.antilipschitz_of_bound f hf).uniformEmbedding f.uniformContinuous
-#align continuous_linear_map.uniform_embedding_of_bound
-  ContinuousLinearMap.uniformEmbedding_of_bound
+#align continuous_linear_map.uniform_embedding_of_bound ContinuousLinearMap.uniformEmbedding_of_bound
 
 end Normed
 

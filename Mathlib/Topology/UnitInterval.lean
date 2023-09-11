@@ -175,14 +175,7 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 #align unit_interval.mul_pos_mem_iff unitInterval.mul_pos_mem_iff
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
--- Porting note: used to be
--- constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
-letI : NeZero 1 := inferInstance
-constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> try {linarith}
-· rw [← (mul_le_mul_left (zero_lt_two))]
-  simp [le_of_sub_nonneg h₁]
-· rw [sub_nonneg]
-  exact (div_le_iff' (zero_lt_two)).1 h₁
+constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 #align unit_interval.two_mul_sub_one_mem_iff unitInterval.two_mul_sub_one_mem_iff
 
 end unitInterval

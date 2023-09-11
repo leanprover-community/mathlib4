@@ -95,7 +95,7 @@ instance largeCategory : LargeCategory Bipointed where
 #align Bipointed.large_category Bipointed.largeCategory
 
 instance concreteCategory : ConcreteCategory Bipointed where
-  Forget :=
+  forget :=
     { obj := Bipointed.X
       map := @Hom.toFun }
   forget_faithful := ⟨@Hom.ext⟩

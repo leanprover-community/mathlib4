@@ -64,7 +64,6 @@ variable {α : Type _} {β : Type _}
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
   | none => b
-
 #align option.elim Option.elim'
 
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
@@ -105,7 +104,6 @@ theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
 @[simp]
 theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
-
 #align option.mem_to_list Option.mem_toList
 
 instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :

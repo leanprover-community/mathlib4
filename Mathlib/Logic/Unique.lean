@@ -11,7 +11,7 @@ Authors: Johan Commelin
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Common
 
 /-!
 # Types with a unique term
@@ -101,7 +101,6 @@ instance PUnit.unique : Unique PUnit.{u} where
 @[simp, nolint simpNF]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
-
 #align punit.default_eq_star PUnit.default_eq_unit
 
 /-- Every provable proposition is unique, as all proofs are equal. -/

@@ -194,7 +194,6 @@ theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFu
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply, Line.map, Option.getD_map]
   rfl
-
 #align combinatorics.line.map_apply Combinatorics.Line.map_apply
 
 @[simp]
@@ -220,7 +219,7 @@ theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
 
 @[simp]
 theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
-  simp_rw [Line.apply, Line.diagonal, Option.getD_none]
+  simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
 /-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
@@ -341,9 +340,7 @@ theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [F
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
-#align
-  combinatorics.line.exists_mono_in_high_dimension
-  Combinatorics.Line.exists_mono_in_high_dimension
+#align combinatorics.line.exists_mono_in_high_dimension Combinatorics.Line.exists_mono_in_high_dimension
 
 end Line
 
@@ -376,7 +373,7 @@ theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finse
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp_rw [Line.apply, ← hy, Option.map_some', Option.getD]
+    simp_rw [← hy, Option.map_some', Option.getD]
 #align combinatorics.exists_mono_homothetic_copy Combinatorics.exists_mono_homothetic_copy
 
 end Combinatorics

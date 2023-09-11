@@ -123,8 +123,8 @@ theorem HasBasis.tendstoIxxClass {ι : Type _} {p : ι → Prop} {s} {l : Filter
 #align filter.has_basis.tendsto_Ixx_class Filter.HasBasis.tendstoIxxClass
 
 instance tendsto_Icc_atTop_atTop : TendstoIxxClass Icc (atTop : Filter α) atTop :=
-  (hasBasis_infᵢ_principal_finite _).tendstoIxxClass fun _ _ =>
-    Set.OrdConnected.out <| ordConnected_binterᵢ fun _ _ => ordConnected_Ici
+  (hasBasis_iInf_principal_finite _).tendstoIxxClass fun _ _ =>
+    Set.OrdConnected.out <| ordConnected_biInter fun _ _ => ordConnected_Ici
 #align filter.tendsto_Icc_at_top_at_top Filter.tendsto_Icc_atTop_atTop
 
 instance tendsto_Ico_atTop_atTop : TendstoIxxClass Ico (atTop : Filter α) atTop :=
@@ -140,8 +140,8 @@ instance tendsto_Ioo_atTop_atTop : TendstoIxxClass Ioo (atTop : Filter α) atTop
 #align filter.tendsto_Ioo_at_top_at_top Filter.tendsto_Ioo_atTop_atTop
 
 instance tendsto_Icc_atBot_atBot : TendstoIxxClass Icc (atBot : Filter α) atBot :=
-  (hasBasis_infᵢ_principal_finite _).tendstoIxxClass fun _ _ =>
-    Set.OrdConnected.out <| ordConnected_binterᵢ fun _ _ => ordConnected_Iic
+  (hasBasis_iInf_principal_finite _).tendstoIxxClass fun _ _ =>
+    Set.OrdConnected.out <| ordConnected_biInter fun _ _ => ordConnected_Iic
 #align filter.tendsto_Icc_at_bot_at_bot Filter.tendsto_Icc_atBot_atBot
 
 instance tendsto_Ico_atBot_atBot : TendstoIxxClass Ico (atBot : Filter α) atBot :=

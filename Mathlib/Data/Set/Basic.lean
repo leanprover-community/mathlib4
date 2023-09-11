@@ -10,11 +10,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Lift
 
 /-!
 # Basic properties of sets
@@ -523,7 +518,7 @@ theorem inter_nonempty_iff_exists_left : (s ∩ t).Nonempty ↔ ∃ x ∈ s, x �
 #align set.inter_nonempty_iff_exists_left Set.inter_nonempty_iff_exists_left
 
 theorem inter_nonempty_iff_exists_right : (s ∩ t).Nonempty ↔ ∃ x ∈ t, x ∈ s := by
-  simp_rw [inter_nonempty, exists_prop, and_comm]
+  simp_rw [inter_nonempty, and_comm]
 #align set.inter_nonempty_iff_exists_right Set.inter_nonempty_iff_exists_right
 
 theorem nonempty_iff_univ_nonempty : Nonempty α ↔ (univ : Set α).Nonempty :=
@@ -2582,7 +2577,6 @@ theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
     exact ⟨x, Subtype.prop x, y, Subtype.prop y, fun h => hxy (Subtype.coe_injective h)⟩
   · rintro ⟨x, hx, y, hy, hxy⟩
     exact ⟨⟨x, hx⟩, mem_univ _, ⟨y, hy⟩, mem_univ _, Subtype.mk_eq_mk.not.mpr hxy⟩
-
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
 alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort

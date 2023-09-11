@@ -440,23 +440,23 @@ instance : InfSet (Con M) :=
     under the map to the underlying equivalence relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum of
 the set's image under the map to the underlying equivalence relation."]
-theorem infₛ_toSetoid (S : Set (Con M)) : (infₛ S).toSetoid = infₛ (toSetoid '' S) :=
+theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' S) :=
   Setoid.ext' fun x y =>
     ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
-#align con.Inf_to_setoid Con.infₛ_toSetoid
-#align add_con.Inf_to_setoid AddCon.infₛ_toSetoid
+#align con.Inf_to_setoid Con.sInf_toSetoid
+#align add_con.Inf_to_setoid AddCon.sInf_toSetoid
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
     under the map to the underlying binary relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum
 of the set's image under the map to the underlying binary relation."]
-theorem infₛ_def (S : Set (Con M)) : ⇑(infₛ S) = infₛ (@Set.image (Con M) (M → M → Prop) (↑) S) :=
-  by
+theorem sInf_def (S : Set (Con M)) :
+    ⇑(sInf S) = sInf (@Set.image (Con M) (M → M → Prop) (↑) S) := by
   ext
-  simp only [infₛ_image, infᵢ_apply, infᵢ_Prop_eq]
+  simp only [sInf_image, iInf_apply, iInf_Prop_eq]
   rfl
-#align con.Inf_def Con.infₛ_def
-#align add_con.Inf_def AddCon.infₛ_def
+#align con.Inf_def Con.sInf_def
+#align add_con.Inf_def AddCon.sInf_def
 
 @[to_additive]
 instance : PartialOrder (Con M) where
@@ -507,9 +507,9 @@ theorem inf_iff_and {c d : Con M} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
 @[to_additive addConGen_eq "The inductively defined smallest additive congruence relation
 containing a binary relation `r` equals the infimum of the set of additive congruence relations
 containing `r`."]
-theorem conGen_eq (r : M → M → Prop) : conGen r = infₛ { s : Con M | ∀ x y, r x y → s x y } :=
+theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y, r x y → s x y } :=
   le_antisymm
-    (le_infₛ (fun s hs x y (hxy : (conGen r).r x y) =>
+    (le_sInf (fun s hs x y (hxy : (conGen r).r x y) =>
       show s.r x y by
         apply ConGen.Rel.recOn (motive := fun x y _ => s.r x y) hxy
         . exact fun x y h => hs x y h
@@ -517,7 +517,7 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = infₛ { s : Con M | ∀ x
         . exact fun _ => s.symm'
         . exact fun _ _ => s.trans'
         . exact fun _ _ => s.mul))
-    (infₛ_le ConGen.Rel.of)
+    (sInf_le ConGen.Rel.of)
 #align con.con_gen_eq Con.conGen_eq
 #align add_con.add_con_gen_eq AddCon.addConGen_eq
 
@@ -526,7 +526,7 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = infₛ { s : Con M | ∀ x
 @[to_additive addConGen_le "The smallest additive congruence relation containing a binary
 relation `r` is contained in any additive congruence relation containing `r`."]
 theorem conGen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → @Setoid.r _ c.toSetoid x y) :
-    conGen r ≤ c := by rw [conGen_eq]; exact infₛ_le h
+    conGen r ≤ c := by rw [conGen_eq]; exact sInf_le h
 #align con.con_gen_le Con.conGen_le
 #align add_con.add_con_gen_le AddCon.addConGen_le
 
@@ -544,7 +544,7 @@ theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : co
 @[to_additive (attr := simp) addConGen_of_addCon "Additive congruence relations equal the smallest
 additive congruence relation in which they are contained."]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
-  le_antisymm (by rw [conGen_eq]; exact infₛ_le fun _ _ => id) ConGen.Rel.of
+  le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
 #align con.con_gen_of_con Con.conGen_of_con
 #align add_con.add_con_gen_of_con AddCon.addConGen_of_addCon
 #align add_con.add_con_gen_of_add_con AddCon.addConGen_of_addCon
@@ -564,10 +564,9 @@ theorem conGen_idem (r : M → M → Prop) : conGen (conGen r) = conGen r :=
 @[to_additive sup_eq_addConGen "The supremum of additive congruence relations `c, d` equals the
 smallest additive congruence relation containing the binary relation '`x` is related to `y`
 by `c` or `d`'."]
-theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y :=
-  by
+theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x y := by
   rw [conGen_eq]
-  apply congr_arg infₛ
+  apply congr_arg sInf
   simp only [le_def, or_imp, ← forall_and]
 #align con.sup_eq_con_gen Con.sup_eq_conGen
 #align add_con.sup_eq_add_con_gen AddCon.sup_eq_addConGen
@@ -583,30 +582,30 @@ theorem sup_def {c d : Con M} : c ⊔ d = conGen (c.r ⊔ d.r) := by rw [sup_eq_
 /-- The supremum of a set of congruence relations `S` equals the smallest congruence relation
     containing the binary relation 'there exists `c ∈ S` such that `x` is related to `y` by
     `c`'. -/
-@[to_additive supₛ_eq_addConGen "The supremum of a set of additive congruence relations `S` equals
+@[to_additive sSup_eq_addConGen "The supremum of a set of additive congruence relations `S` equals
 the smallest additive congruence relation containing the binary relation 'there exists `c ∈ S`
 such that `x` is related to `y` by `c`'."]
-theorem supₛ_eq_conGen (S : Set (Con M)) : supₛ S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y :=
-  by
+theorem sSup_eq_conGen (S : Set (Con M)) :
+    sSup S = conGen fun x y => ∃ c : Con M, c ∈ S ∧ c x y := by
   rw [conGen_eq]
-  apply congr_arg infₛ
+  apply congr_arg sInf
   ext
   exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
-#align con.Sup_eq_con_gen Con.supₛ_eq_conGen
-#align add_con.Sup_eq_add_con_gen AddCon.supₛ_eq_addConGen
+#align con.Sup_eq_con_gen Con.sSup_eq_conGen
+#align add_con.Sup_eq_add_con_gen AddCon.sSup_eq_addConGen
 
 /-- The supremum of a set of congruence relations is the same as the smallest congruence relation
     containing the supremum of the set's image under the map to the underlying binary relation. -/
 @[to_additive "The supremum of a set of additive congruence relations is the same as the smallest
 additive congruence relation containing the supremum of the set's image under the map to the
 underlying binary relation."]
-theorem supₛ_def {S : Set (Con M)} :
-    supₛ S = conGen (supₛ (@Set.image (Con M) (M → M → Prop) ((⇑) : Con M → M → M → Prop) S)) := by
-  rw [supₛ_eq_conGen, supₛ_image]
+theorem sSup_def {S : Set (Con M)} :
+    sSup S = conGen (sSup (@Set.image (Con M) (M → M → Prop) ((⇑) : Con M → M → M → Prop) S)) := by
+  rw [sSup_eq_conGen, sSup_image]
   congr with (x y)
-  simp only [supₛ_image, supᵢ_apply, supᵢ_Prop_eq, exists_prop, rel_eq_coe]
-#align con.Sup_def Con.supₛ_def
-#align add_con.Sup_def AddCon.supₛ_def
+  simp only [sSup_image, iSup_apply, iSup_Prop_eq, exists_prop, rel_eq_coe]
+#align con.Sup_def Con.sSup_def
+#align add_con.Sup_def AddCon.sSup_def
 
 variable (M)
 
@@ -962,8 +961,7 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
     are equal on elements that are coercions from the monoid. -/
 @[to_additive "Homomorphisms on the quotient of an AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
-theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g :=
-  by
+theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
   congr 1
   exact FunLike.ext_iff.2 h
@@ -1159,8 +1157,13 @@ protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
 #align add_con.nsmul AddCon.nsmul
 
 @[to_additive]
-instance {M : Type _} [MulOneClass M] (c : Con M) : One c.Quotient
-    where one := ((1 : M) : c.Quotient)
+instance [MulOneClass M] (c : Con M) : One c.Quotient where
+  -- Using Quotient.mk'' here instead of c.toQuotient
+  -- since c.toQuotient is not reducible.
+  -- This would lead to non-defeq diamonds since this instance ends up in
+  -- quotients modulo ideals.
+  one := Quotient.mk'' (1 : M)
+  -- one := ((1 : M) : c.Quotient)
 
 @[to_additive]
 theorem smul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
@@ -1274,7 +1277,8 @@ instance zpowinst : Pow c.Quotient ℤ :=
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
 an `add_group`."]
 instance group : Group c.Quotient :=
-  Function.Surjective.group _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
+  Function.Surjective.group Quotient.mk''
+    Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align con.group Con.group
 #align add_con.add_group AddCon.addGroup
@@ -1291,8 +1295,8 @@ that takes elements `x y : M` with proofs of `c (x * y) 1` and `c (y * x) 1`, an
 of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. -/
 @[to_additive]
 def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
-    (Hf : ∀ x y hxy hyx x' y' hxy' hyx', c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α :=
-  by
+    (Hf : ∀ x y hxy hyx x' y' hxy' hyx',
+      c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
   refine'
     @Con.hrecOn₂ M M _ _ c c (fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
       (↑u⁻¹ : c.Quotient)

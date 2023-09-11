@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.equiv
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -47,7 +47,7 @@ equivalence, isomorphism, morphism, ring hom, hom
 
 noncomputable section
 
-open Classical BigOperators Polynomial Set Function Finsupp AddMonoidAlgebra
+open BigOperators Polynomial Set Function Finsupp AddMonoidAlgebra
 
 universe u v w x
 
@@ -81,8 +81,7 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
       rw [eval₂_X, Polynomial.eval₂_X]
   right_inv p :=
     Polynomial.induction_on p (fun a => by rw [Polynomial.eval₂_C, MvPolynomial.eval₂_C])
-      (fun p q hp hq => by rw [Polynomial.eval₂_add, MvPolynomial.eval₂_add, hp, hq]) fun p n _ =>
-      by
+    (fun p q hp hq => by rw [Polynomial.eval₂_add, MvPolynomial.eval₂_add, hp, hq]) fun p n _ => by
       rw [Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_X, Polynomial.eval₂_C,
         eval₂_mul, eval₂_C, eval₂_pow, eval₂_X]
   map_mul' _ _ := eval₂_mul _ _

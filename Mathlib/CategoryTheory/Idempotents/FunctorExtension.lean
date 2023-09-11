@@ -259,7 +259,6 @@ noncomputable def karoubiUniversal : C ⥤ D ≌ Karoubi C ⥤ D :=
   (karoubiUniversal₂ C D).trans (Equivalence.congrRight (toKaroubi D).asEquivalence.symm)
 #align category_theory.idempotents.karoubi_universal CategoryTheory.Idempotents.karoubiUniversal
 
-set_option maxHeartbeats 400000 in
 theorem karoubiUniversal_functor_eq : (karoubiUniversal C D).functor = functorExtension C D :=
   rfl
 #align category_theory.idempotents.karoubi_universal_functor_eq CategoryTheory.Idempotents.karoubiUniversal_functor_eq

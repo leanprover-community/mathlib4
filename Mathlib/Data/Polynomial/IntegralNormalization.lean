@@ -56,8 +56,8 @@ theorem integralNormalization_coeff {f : R[X]} {i : ℕ} :
     mem_support_iff]
 #align polynomial.integral_normalization_coeff Polynomial.integralNormalization_coeff
 
-theorem integralNormalization_support {f : R[X]} : (integralNormalization f).support ⊆ f.support :=
-  by
+theorem integralNormalization_support {f : R[X]} :
+    (integralNormalization f).support ⊆ f.support := by
   intro
   simp (config := { contextual := true }) [integralNormalization, coeff_monomial, mem_support_iff]
 #align polynomial.integral_normalization_support Polynomial.integralNormalization_support
@@ -95,8 +95,8 @@ section IsDomain
 variable [Ring R] [IsDomain R]
 
 @[simp]
-theorem support_integralNormalization {f : R[X]} : (integralNormalization f).support = f.support :=
-  by
+theorem support_integralNormalization {f : R[X]} :
+    (integralNormalization f).support = f.support := by
   by_cases hf : f = 0; · simp [hf]
   ext i
   refine' ⟨fun h => integralNormalization_support h, _⟩
@@ -158,4 +158,3 @@ end IsDomain
 end IntegralNormalization
 
 end Polynomial
-

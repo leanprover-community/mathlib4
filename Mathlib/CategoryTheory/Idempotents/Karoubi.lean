@@ -169,7 +169,7 @@ instance : Faithful (toKaroubi C) where
 variable {C}
 
 @[simps add zero neg]
-instance [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
+instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   add f g :=
     ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
@@ -284,6 +284,7 @@ def decompId_p (P : Karoubi C) : (P.X : Karoubi C) ⟶ P :=
 
 /-- The formal direct factor of `P.X` given by the idempotent `P.p` in the category `C`
 is actually a direct factor in the category `Karoubi C`. -/
+@[reassoc]
 theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
   simp only [comp_f, id_eq, P.idem, decompId_i, decompId_p]

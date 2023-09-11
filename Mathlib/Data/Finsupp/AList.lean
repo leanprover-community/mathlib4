@@ -32,17 +32,17 @@ variable {α M : Type _} [Zero M]
 noncomputable def toAList (f : α →₀ M) : AList fun _x : α => M :=
   ⟨f.graph.toList.map Prod.toSigma,
     by
-    rw [List.NodupKeys, List.keys, List.map_map, Prod.fst_comp_toSigma, List.nodup_map_iff_inj_on]
-    · rintro ⟨b, m⟩ hb ⟨c, n⟩ hc (rfl : b = c)
-      rw [Finset.mem_toList, Finsupp.mem_graph_iff] at hb hc
-      dsimp at hb hc
-      rw [← hc.1, hb.1]
-    · apply Finset.nodup_toList⟩
+      rw [List.NodupKeys, List.keys, List.map_map, Prod.fst_comp_toSigma, List.nodup_map_iff_inj_on]
+      · rintro ⟨b, m⟩ hb ⟨c, n⟩ hc (rfl : b = c)
+        rw [Finset.mem_toList, Finsupp.mem_graph_iff] at hb hc
+        dsimp at hb hc
+        rw [← hc.1, hb.1]
+      · apply Finset.nodup_toList⟩
 #align finsupp.to_alist Finsupp.toAList
 
 @[simp]
-theorem toAList_keys_toFinset [DecidableEq α] (f : α →₀ M) : f.toAList.keys.toFinset = f.support :=
-  by
+theorem toAList_keys_toFinset [DecidableEq α] (f : α →₀ M) :
+    f.toAList.keys.toFinset = f.support := by
   ext
   simp [toAList, AList.mem_keys, AList.keys, List.keys]
 #align finsupp.to_alist_keys_to_finset Finsupp.toAList_keys_toFinset

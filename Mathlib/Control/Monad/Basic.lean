@@ -10,6 +10,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Control.SimpSet
+import Mathlib.Tactic.Common
 
 /-!
 # Monad

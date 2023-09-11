@@ -62,9 +62,9 @@ theorem image2_def {α β γ : Type _} (f : α → β → γ) (s : Set α) (t : 
 
 instance : LawfulMonad Set := LawfulMonad.mk'
   (id_map := image_id)
-  (pure_bind := bunionᵢ_singleton)
-  (bind_assoc := fun _ _ _ => by simp only [bind_def, bunionᵢ_unionᵢ])
-  (bind_pure_comp := fun _ _ => (image_eq_unionᵢ _ _).symm)
+  (pure_bind := biUnion_singleton)
+  (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
+  (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
   (bind_map := fun _ _ => seq_def.symm)
 
 instance : CommApplicative (Set : Type u → Type u) :=

@@ -11,7 +11,6 @@ Authors: Kyle Miller
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Ring
 /-!
 # Racks and Quandles

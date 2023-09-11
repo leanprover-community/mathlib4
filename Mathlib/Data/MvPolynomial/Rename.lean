@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.rename
-! leanprover-community/mathlib commit eabc6192c84ccce3936a8577a987b80b95ba75f6
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -43,7 +43,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 open Set Function Finsupp AddMonoidAlgebra
 
@@ -83,8 +83,7 @@ theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPolynomial σ R) :
 @[simp]
 theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     rename g (rename f p) = rename (g ∘ f) p :=
-  show rename g (eval₂ C (X ∘ f) p) = _
-    by
+  show rename g (eval₂ C (X ∘ f) p) = _ by
     simp only [rename, aeval_eq_eval₂Hom]
     -- porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
     -- Hopefully this is less prone to breaking
@@ -231,6 +230,7 @@ end
 /-- Every polynomial is a polynomial in finitely many variables. -/
 theorem exists_finset_rename (p : MvPolynomial σ R) :
     ∃ (s : Finset σ)(q : MvPolynomial { x // x ∈ s } R), p = rename (↑) q := by
+  classical
   apply induction_on p
   · intro r
     exact ⟨∅, C r, by rw [rename_C]⟩
@@ -295,6 +295,7 @@ section Coeff
 @[simp]
 theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
     (rename f φ).coeff (d.mapDomain f) = φ.coeff d := by
+  classical
   apply φ.induction_on' (P := fun ψ => coeff (Finsupp.mapDomain f d) ((rename f) ψ) = coeff d ψ)
   -- Lean could no longer infer the motive
   · intro u r
@@ -306,6 +307,7 @@ theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolyno
 
 theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
     (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
+  classical
   rw [rename_eq, ← not_mem_support_iff]
   intro H
   replace H := mapDomain_support H
@@ -338,7 +340,8 @@ end Coeff
 
 section Support
 
-theorem support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
+theorem support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} [DecidableEq τ]
+    (h : Function.Injective f) :
     (rename f p).support = Finset.image (Finsupp.mapDomain f) p.support := by
   rw [rename_eq]
   exact Finsupp.mapDomain_support_of_injective (mapDomain_injective h) _

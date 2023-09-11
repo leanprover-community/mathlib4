@@ -64,7 +64,7 @@ theorem rank_lt_aleph0 : Module.rank R M < ℵ₀ := by
   letI := nontrivial_of_invariantBasisNumber R
   -- porting note: can't use `‹_›` as that pulls the unused `N` into the context
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
-  refine' (csupᵢ_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
+  refine' (ciSup_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 #align finite_dimensional.rank_lt_aleph_0 FiniteDimensional.rank_lt_aleph0
 
@@ -101,8 +101,7 @@ theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ R) = c
 
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
 theorem finrank_pi {ι : Type v} [Fintype ι] : finrank R (ι → R) = card ι := by
-  set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-    simp [finrank]
+  simp [finrank]
 #align finite_dimensional.finrank_pi FiniteDimensional.finrank_pi
 
 /-- The finrank of the direct sum is the sum of the finranks. -/
@@ -139,14 +138,12 @@ theorem finrank_matrix (m n : Type _) [Fintype m] [Fintype n] :
 
 variable {R M N}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 theorem nonempty_linearEquiv_of_finrank_eq (cond : finrank R M = finrank R N) :
     Nonempty (M ≃ₗ[R] N) :=
   nonempty_linearEquiv_of_lift_rank_eq <| by simp only [← finrank_eq_rank, cond, lift_natCast]
 #align finite_dimensional.nonempty_linear_equiv_of_finrank_eq FiniteDimensional.nonempty_linearEquiv_of_finrank_eq
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Two finite and free modules are isomorphic if and only if they have the same (finite) rank. -/
 theorem nonempty_linearEquiv_iff_finrank_eq : Nonempty (M ≃ₗ[R] N) ↔ finrank R M = finrank R N :=
   ⟨fun ⟨h⟩ => h.finrank_eq, fun h => nonempty_linearEquiv_of_finrank_eq h⟩
@@ -154,7 +151,6 @@ theorem nonempty_linearEquiv_iff_finrank_eq : Nonempty (M ≃ₗ[R] N) ↔ finra
 
 variable (M N)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 noncomputable def _root_.LinearEquiv.ofFinrankEq (cond : finrank R M = finrank R N) : M ≃ₗ[R] N :=
   Classical.choice <| nonempty_linearEquiv_of_finrank_eq cond
@@ -193,13 +189,11 @@ variable [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup N] [Module R N]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R N] {f : M →ₗ[R] N}
     (hf : Function.Injective f) : finrank R M ≤ finrank R N :=
   finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
 #align linear_map.finrank_le_finrank_of_injective LinearMap.finrank_le_finrank_of_injective
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] N) :
     finrank R (LinearMap.range f) ≤ finrank R M :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_range_le f) (rank_lt_aleph0 _ _)
@@ -220,7 +214,6 @@ theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
       ((Submodule.mkQ s).rank_le_of_surjective (surjective_quot_mk _))
 #align submodule.finrank_quotient_le Submodule.finrank_quotient_le
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Pushforwards of finite submodules have a smaller finrank. -/
 theorem Submodule.finrank_map_le (f : M →ₗ[R] N) (p : Submodule R M) [Module.Finite R p] :
     finrank R (p.map f) ≤ finrank R p :=

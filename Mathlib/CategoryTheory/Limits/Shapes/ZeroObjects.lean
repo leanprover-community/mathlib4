@@ -9,7 +9,6 @@ Authors: Scott Morrison, Johan Commelin
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Zero objects

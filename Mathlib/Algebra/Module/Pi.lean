@@ -32,10 +32,10 @@ variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 
-theorem IsSMulRegular.pi {α : Type _} [∀ i, SMul α <| f i] {k : α}
+theorem _root_.IsSMulRegular.pi {α : Type _} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
   funext fun i => hk i (congr_fun h i : _)
-#align is_smul_regular.pi Pi.IsSMulRegular.pi
+#align is_smul_regular.pi IsSMulRegular.pi
 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=

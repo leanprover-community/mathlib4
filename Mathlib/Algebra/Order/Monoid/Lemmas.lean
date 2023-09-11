@@ -12,9 +12,6 @@ Yuyang Zhao
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.MinMax
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Use
 
 /-!
 # Ordered monoids

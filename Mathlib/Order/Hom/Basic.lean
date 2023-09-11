@@ -13,7 +13,6 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.Replace
 
 /-!
 # Order homomorphisms

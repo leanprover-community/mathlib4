@@ -343,7 +343,7 @@ theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense 
     let g := (𝓤 α).lift fun s => f.lift' (p s)
     have mp₀ : Monotone p := fun a b h t s ⟨x, xs, xa⟩ => ⟨x, xs, h xa⟩
     have mp₁ : ∀ {s}, Monotone (p s) := fun h x ⟨y, ya, yxs⟩ => ⟨y, h ya, yxs⟩
-    have : f ≤ g := le_infᵢ₂ fun s hs => le_infᵢ₂ fun t ht =>
+    have : f ≤ g := le_iInf₂ fun s hs => le_iInf₂ fun t ht =>
       le_principal_iff.mpr <| mem_of_superset ht fun x hx => ⟨x, hx, refl_mem_uniformity hs⟩
     have : NeBot g := hf.left.mono this
     have : NeBot (comap m g) :=

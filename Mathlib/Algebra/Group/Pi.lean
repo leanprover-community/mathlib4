@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 
 ! This file was ported from Lean 3 source module algebra.group.pi
-! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
+! leanprover-community/mathlib commit e4bc74cbaf429d706cb9140902f7ca6c431e75a4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -472,6 +472,20 @@ def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) : f i →ₙ* ∀ i, f i 
 #align mul_hom.single_apply MulHom.single_apply
 
 variable {f}
+
+@[to_additive]
+theorem Pi.mulSingle_sup [∀ i, SemilatticeSup (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
+    Pi.mulSingle i (x ⊔ y) = Pi.mulSingle i x ⊔ Pi.mulSingle i y :=
+  Function.update_sup _ _ _ _
+#align pi.mul_single_sup Pi.mulSingle_sup
+#align pi.single_sup Pi.single_sup
+
+@[to_additive]
+theorem Pi.mulSingle_inf [∀ i, SemilatticeInf (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
+    Pi.mulSingle i (x ⊓ y) = Pi.mulSingle i x ⊓ Pi.mulSingle i y :=
+  Function.update_inf _ _ _ _
+#align pi.mul_single_inf Pi.mulSingle_inf
+#align pi.single_inf Pi.single_inf
 
 @[to_additive]
 theorem Pi.mulSingle_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :

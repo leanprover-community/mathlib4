@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.funext
-! leanprover-community/mathlib commit da01792ca4894d4f3a98d06b6c50455e5ed25da3
+! leanprover-community/mathlib commit 0b89934139d3be96f9dab477f10c20f9f93da580
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Data.MvPolynomial.Rename
-import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Data.MvPolynomial.Polynomial
 
 /-!
 ## Function extensionality for multivariate polynomials

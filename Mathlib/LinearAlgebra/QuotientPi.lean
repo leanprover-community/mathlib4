@@ -38,9 +38,6 @@ variable {N : Type _} [AddCommGroup N] [Module R N]
 
 variable {Ns : ι → Type _} [∀ i, AddCommGroup (Ns i)] [∀ i, Module R (Ns i)]
 
--- Porting note: TODO remove after https://github.com/leanprover/lean4/issues/2074 fixed
-attribute [-instance] Ring.toNonAssocRing
-
 /-- Lift a family of maps to the direct sum of quotients. -/
 def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i)) (q : Submodule R N)
     (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) : (∀ i, Ms i ⧸ p i) →ₗ[R] N ⧸ q :=

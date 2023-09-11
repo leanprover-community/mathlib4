@@ -10,10 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.SimpRw
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -90,11 +86,9 @@ section OrderTop
 noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align top_order_or_no_top_order topOrderOrNoTopOrder
 
 section LE
@@ -258,11 +252,9 @@ section OrderBot
 noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Bot α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align bot_order_or_no_bot_order botOrderOrNoBotOrder
 
 section LE
