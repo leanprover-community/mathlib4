@@ -744,7 +744,7 @@ class ConnectedSpace (α : Type u) [TopologicalSpace α] extends PreconnectedSpa
   toNonempty : Nonempty α
 #align connected_space ConnectedSpace
 
-attribute [instance] ConnectedSpace.toNonempty
+attribute [instance 50] ConnectedSpace.toNonempty  -- see Note [lower instance priority]
 
 -- see Note [lower instance priority]
 theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=

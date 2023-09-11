@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 
 ! This file was ported from Lean 3 source module algebra.order.ring.lemmas
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 44e29dbcff83ba7114a464d592b8c3743987c1e5
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -660,7 +660,10 @@ theorem mul_lt_iff_lt_one_left [MulPosStrictMono α] [MulPosReflectLT α] (b0 : 
   Iff.trans (by rw [one_mul]) (mul_lt_mul_right b0)
 #align mul_lt_iff_lt_one_left mul_lt_iff_lt_one_left
 
-/-! Lemmas of the form `1 ≤ b → a ≤ a * b`. -/
+/-! Lemmas of the form `1 ≤ b → a ≤ a * b`.
+
+Variants with `< 0` and `≤ 0` instead of `0 <` and `0 ≤` appear in `Mathlib/Algebra/Order/Ring/Defs`
+(which imports this file) as they need additional results which are not yet available here. -/
 
 
 theorem mul_le_of_le_one_left [MulPosMono α] (hb : 0 ≤ b) (h : a ≤ 1) : a * b ≤ b := by

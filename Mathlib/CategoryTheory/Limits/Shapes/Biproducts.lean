@@ -319,7 +319,7 @@ class HasBiproductsOfShape : Prop where
   has_biproduct : ∀ F : J → C, HasBiproduct F
 #align category_theory.limits.has_biproducts_of_shape CategoryTheory.Limits.HasBiproductsOfShape
 
-attribute [instance] HasBiproductsOfShape.has_biproduct
+attribute [instance 100] HasBiproductsOfShape.has_biproduct
 
 /-- `HasFiniteBiproducts C` represents a choice of biproduct for every family of objects in `C`
 indexed by a finite type. -/
@@ -1227,7 +1227,7 @@ class HasBinaryBiproducts : Prop where
   has_binary_biproduct : ∀ P Q : C, HasBinaryBiproduct P Q
 #align category_theory.limits.has_binary_biproducts CategoryTheory.Limits.HasBinaryBiproducts
 
-attribute [instance] HasBinaryBiproducts.has_binary_biproduct
+attribute [instance 100] HasBinaryBiproducts.has_binary_biproduct
 
 /-- A category with finite biproducts has binary biproducts.
 

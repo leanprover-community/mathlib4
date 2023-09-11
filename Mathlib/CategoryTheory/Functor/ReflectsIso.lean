@@ -52,13 +52,15 @@ theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.ma
   ReflectsIsomorphisms.reflects F f
 #align category_theory.is_iso_of_reflects_iso CategoryTheory.isIso_of_reflects_iso
 
-instance (priority := 100) of_full_and_faithful (F : C ⥤ D) [Full F] [Faithful F] :
+instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
+    (F : C ⥤ D) [Full F] [Faithful F] :
     ReflectsIsomorphisms F
     where reflects f i :=
     ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
-#align category_theory.of_full_and_faithful CategoryTheory.of_full_and_faithful
+#align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
-instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsIsomorphisms F] [ReflectsIsomorphisms G] :
+instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
+    [ReflectsIsomorphisms F] [ReflectsIsomorphisms G] :
     ReflectsIsomorphisms (F ⋙ G) :=
   ⟨fun f (hf : IsIso (G.map _)) => by
     haveI := isIso_of_reflects_iso (F.map f) G

@@ -96,7 +96,7 @@ def mk (I : Ideal R) : R →+* R ⧸ I where
 compositions with `Ideal.Quotient.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
   RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)

@@ -148,9 +148,9 @@ class HasCoreflexiveEqualizers : Prop where
   has_eq : ∀ ⦃A B : C⦄ (f g : A ⟶ B) [IsCoreflexivePair f g], HasEqualizer f g
 #align category_theory.limits.has_coreflexive_equalizers CategoryTheory.Limits.HasCoreflexiveEqualizers
 
-attribute [instance] HasReflexiveCoequalizers.has_coeq
+attribute [instance 1] HasReflexiveCoequalizers.has_coeq
 
-attribute [instance] HasCoreflexiveEqualizers.has_eq
+attribute [instance 1] HasCoreflexiveEqualizers.has_eq
 
 theorem hasCoequalizer_of_common_section [HasReflexiveCoequalizers C] {A B : C} {f g : A ⟶ B}
     (r : B ⟶ A) (rf : r ≫ f = 𝟙 _) (rg : r ≫ g = 𝟙 _) : HasCoequalizer f g := by

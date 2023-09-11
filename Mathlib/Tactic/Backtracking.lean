@@ -63,11 +63,6 @@ Configuration structure to control the behaviour of `backtrack`:
 structure BacktrackConfig where
   /-- Maximum recursion depth. -/
   maxDepth : Nat := 6
-  /-- If `failAtMaxDepth`, then `backtracking` will fail (and backtrack)
-  upon reaching the max depth. Otherwise, upon reaching the max depth,
-  all remaining goals will be returned.
-  (defaults to `true`) -/
-  failAtMaxDepth : Bool := true
   /-- An arbitrary procedure which can be used to modify the list of goals
   before each attempt to apply a lemma.
   Called as `proc goals curr`, where `goals` are the original goals for `backtracking`,
@@ -112,12 +107,7 @@ run cfg.maxDepth goals []
   match n with
   | 0 => do
     -- We're out of fuel.
-    if cfg.failAtMaxDepth then
-      throwError "backtrack exceeded the recursion limit"
-    else
-      -- Before returning the goals, we run `cfg.proc` one last time.
-      let curr := acc.reverse ++ curr
-      return (← cfg.proc goals curr).getD curr
+    throwError "backtrack exceeded the recursion limit"
   | n + 1 => do
   -- First, run `cfg.proc`, to see if it wants to modify the goals.
   match ← cfg.proc goals curr with

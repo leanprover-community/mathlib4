@@ -120,7 +120,7 @@ class CoproductsDisjoint (C : Type u) [Category.{v} C] where
   CoproductDisjoint : ∀ X Y : C, CoproductDisjoint X Y
 #align category_theory.limits.coproducts_disjoint CategoryTheory.Limits.CoproductsDisjoint
 
-attribute [instance] CoproductsDisjoint.CoproductDisjoint
+attribute [instance 999] CoproductsDisjoint.CoproductDisjoint
 
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in
 general that `C` has strict initial objects, for instance consider the category of types and

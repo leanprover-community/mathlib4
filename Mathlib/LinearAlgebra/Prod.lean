@@ -748,6 +748,20 @@ def prodComm (R M N : Type _) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [
     map_smul' := fun _r ⟨_m, _n⟩ => rfl }
 #align linear_equiv.prod_comm LinearEquiv.prodComm
 
+section prodComm
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+theorem fst_comp_prodComm :
+    (LinearMap.fst R N M).comp (prodComm R M N).toLinearMap = (LinearMap.snd R M N) := by
+  ext <;> simp
+
+theorem snd_comp_prodComm :
+    (LinearMap.snd R N M).comp (prodComm R M N).toLinearMap = (LinearMap.fst R M N) := by
+  ext <;> simp
+
+end prodComm
+
 section
 
 variable [Semiring R]

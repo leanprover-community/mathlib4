@@ -34,7 +34,7 @@ open CategoryTheory.Category
 
 namespace CategoryTheory
 
-attribute [instance] IsConnected.is_nonempty
+attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
 

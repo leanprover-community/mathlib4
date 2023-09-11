@@ -778,8 +778,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
-    ext Y
-    funext y
+    ext Y y
     simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
 #align category_theory.sieve.functor_inclusion_is_mono CategoryTheory.Sieve.functorInclusion_is_mono
 

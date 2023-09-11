@@ -489,7 +489,7 @@ theorem Cofork.IsColimit.existsUnique {s : Cofork f g} (hs : IsColimit s) {W : C
 
 /-- This is a slightly more convenient method to verify that a fork is a limit cone. It
     only asks for a proof of facts that carry any mathematical content -/
-@[simps lift]
+@[simps]
 def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     (fac : ∀ s : Fork f g, lift s ≫ Fork.ι t = Fork.ι s)
     (uniq : ∀ (s : Fork f g) (m : s.pt ⟶ t.pt) (_ : m ≫ t.ι = s.ι), m = lift s) : IsLimit t :=

@@ -113,7 +113,8 @@ abbrev PreservesColimits (F : C ⥤ D) :=
   PreservesColimitsOfSize.{v₂, v₂} F
 #align category_theory.limits.preserves_colimits CategoryTheory.Limits.PreservesColimits
 
-attribute [instance]
+-- see Note [lower instance priority]
+attribute [instance 100]
   PreservesLimitsOfShape.preservesLimit PreservesLimitsOfSize.preservesLimitsOfShape
   PreservesColimitsOfShape.preservesColimit
   PreservesColimitsOfSize.preservesColimitsOfShape

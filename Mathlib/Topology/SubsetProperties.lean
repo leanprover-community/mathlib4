@@ -1782,7 +1782,7 @@ class IrreducibleSpace (α : Type u) [TopologicalSpace α] extends Preirreducibl
 #align irreducible_space IrreducibleSpace
 
 -- see Note [lower instance priority]
-attribute [instance] IrreducibleSpace.toNonempty
+attribute [instance 50] IrreducibleSpace.toNonempty
 
 theorem IrreducibleSpace.isIrreducible_univ (α : Type u) [TopologicalSpace α] [IrreducibleSpace α] :
     IsIrreducible (univ : Set α) :=

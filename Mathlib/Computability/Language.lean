@@ -292,10 +292,9 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
--- Porting note: `noncomputable` required.
-noncomputable instance : KleeneAlgebra (Language α) :=
-  { Language.instSemiringLanguage, Set.instCompleteBooleanAlgebraSet,
-      Language.instKStarLanguage with
+instance : KleeneAlgebra (Language α) :=
+  { Language.instSemiringLanguage, Set.instCompleteBooleanAlgebraSet with
+    kstar := fun L ↦ L∗,
     one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,

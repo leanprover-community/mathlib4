@@ -511,7 +511,6 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
     convert h f hf
     rw [yonedaEquiv_naturality]
     simp [yonedaEquiv]
-    rfl
 #align category_theory.presieve.extension_iff_amalgamation CategoryTheory.Presieve.extension_iff_amalgamation
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.

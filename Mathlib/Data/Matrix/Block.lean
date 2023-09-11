@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.matrix.block
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
+! leanprover-community/mathlib commit eba5bb3155cab51d80af00e8d7d69fa271b1302b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -31,9 +31,14 @@ variable {l m n o p q : Type _} {m' n' p' : o → Type _}
 
 variable {R : Type _} {S : Type _} {α : Type _} {β : Type _}
 
-open Matrix
+open BigOperators Matrix
 
 namespace Matrix
+
+theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : Sum m n → α) :
+    v ⬝ᵥ w = v ∘ Sum.inl ⬝ᵥ w ∘ Sum.inl + v ∘ Sum.inr ⬝ᵥ w ∘ Sum.inr :=
+  Fintype.sum_sum_type _
+#align matrix.dot_product_block Matrix.dotProduct_block
 
 section BlockMatrices
 

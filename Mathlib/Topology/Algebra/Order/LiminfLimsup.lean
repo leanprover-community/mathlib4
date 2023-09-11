@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.algebra.order.liminf_limsup
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
+! leanprover-community/mathlib commit 52932b3a083d4142e78a15dc928084a22fea9ba0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -13,6 +13,7 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
+import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Order.Basic
 
 /-!
@@ -20,7 +21,7 @@ import Mathlib.Topology.Order.Basic
 -/
 
 
-open Filter
+open Filter TopologicalSpace
 
 open Topology Classical
 
@@ -252,7 +253,55 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
   exact H a as b bs ab ⟨A, B⟩
 #align tendsto_of_no_upcrossings tendsto_of_no_upcrossings
 
+variable [FirstCountableTopology α] {f : Filter β} [CountableInterFilter f] {u : β → α}
+
+theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
+    ∀ᶠ b in f, u b ≤ f.limsup u := by
+  obtain ha | ha := isTop_or_exists_gt (f.limsup u)
+  · exact eventually_of_forall fun _ => ha _
+  by_cases H : IsGLB (Set.Ioi (f.limsup u)) (f.limsup u)
+  · obtain ⟨u, -, -, hua, hu⟩ := H.exists_seq_antitone_tendsto ha
+    have := fun n => eventually_lt_of_limsup_lt (hu n) hf
+    exact
+      (eventually_countable_forall.2 this).mono fun b hb =>
+        ge_of_tendsto hua <| eventually_of_forall fun n => (hb _).le
+  · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
+      simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
+        not_and, not_forall, not_le, exists_prop] at H
+      exact H fun x => le_of_lt
+    filter_upwards [eventually_lt_of_limsup_lt xa hf] with y hy
+    contrapose! hy
+    exact hx hy
+#align eventually_le_limsup eventually_le_limsup
+
+theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
+    ∀ᶠ b in f, f.liminf u ≤ u b :=
+  @eventually_le_limsup αᵒᵈ _ _ _ _ _ _ _ _ hf
+#align eventually_liminf_le eventually_liminf_le
+
 end ConditionallyCompleteLinearOrder
+
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder α] [TopologicalSpace α] [FirstCountableTopology α] [OrderTopology α]
+  {f : Filter β} [CountableInterFilter f] {u : β → α}
+
+@[simp]
+theorem limsup_eq_bot : f.limsup u = ⊥ ↔ u =ᶠ[f] ⊥ :=
+  ⟨fun h =>
+    (EventuallyLE.trans eventually_le_limsup <| eventually_of_forall fun _ => h.le).mono fun x hx =>
+      le_antisymm hx bot_le,
+    fun h => by
+    rw [limsup_congr h]
+    exact limsup_const_bot⟩
+#align limsup_eq_bot limsup_eq_bot
+
+@[simp]
+theorem liminf_eq_top : f.liminf u = ⊤ ↔ u =ᶠ[f] ⊤ :=
+  @limsup_eq_bot αᵒᵈ _ _ _ _ _ _ _ _
+#align liminf_eq_top liminf_eq_top
+
+end CompleteLinearOrder
 
 end LiminfLimsup
 

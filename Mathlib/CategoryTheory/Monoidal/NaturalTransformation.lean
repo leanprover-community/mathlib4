@@ -57,6 +57,8 @@ structure MonoidalNatTrans (F G : LaxMonoidalFunctor C D) extends
 attribute [reassoc (attr := simp)] MonoidalNatTrans.tensor
 attribute [reassoc (attr := simp)] MonoidalNatTrans.unit
 
+initialize_simps_projections MonoidalNatTrans (+toNatTrans, -app)
+
 #align category_theory.monoidal_nat_trans.unit CategoryTheory.MonoidalNatTrans.unit
 #align category_theory.monoidal_nat_trans.unit_assoc CategoryTheory.MonoidalNatTrans.unit_assoc
 #align category_theory.monoidal_nat_trans.tensor CategoryTheory.MonoidalNatTrans.tensor

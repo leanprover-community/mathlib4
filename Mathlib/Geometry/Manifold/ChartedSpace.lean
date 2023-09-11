@@ -115,9 +115,7 @@ composition of local equivs with `≫`.
 
 noncomputable section
 
-open Classical Topology
-
-open Filter
+open Classical Topology Filter
 
 universe u
 
@@ -402,10 +400,10 @@ class ClosedUnderRestriction (G : StructureGroupoid H) : Prop where
     ∀ {e : LocalHomeomorph H H}, e ∈ G → ∀ s : Set H, IsOpen s → e.restr s ∈ G
 #align closed_under_restriction ClosedUnderRestriction
 
-theorem closed_under_restriction' {G : StructureGroupoid H} [ClosedUnderRestriction G]
+theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestriction G]
     {e : LocalHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
   ClosedUnderRestriction.closedUnderRestriction he s hs
-#align closed_under_restriction' closed_under_restriction'
+#align closed_under_restriction' closedUnderRestriction'
 
 /-- The trivial restriction-closed groupoid, containing only local homeomorphisms equivalent to the
 restriction of the identity to the various open subsets. -/
@@ -460,7 +458,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     apply StructureGroupoid.le_iff.mpr
     rintro e ⟨s, hs, hes⟩
     refine' G.eq_on_source _ hes
-    convert closed_under_restriction' G.id_mem hs
+    convert closedUnderRestriction' G.id_mem hs
     -- Porting note: was
     -- change s = _ ∩ _
     -- rw [hs.interior_eq]
@@ -1073,7 +1071,7 @@ instance [ClosedUnderRestriction G] : HasGroupoid s G where
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
     refine' G.eq_on_source _ (subtypeRestr_symm_trans_subtypeRestr s (chartAt x) (chartAt x'))
-    apply closed_under_restriction'
+    apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _) (chart_mem_atlas _)
     · exact preimage_open_of_open_symm (chartAt _) s.2
 

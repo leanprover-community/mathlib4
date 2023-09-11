@@ -410,7 +410,7 @@ class HasImages : Prop where
 
 attribute [inherit_doc HasImages] HasImages.has_image
 
-attribute [instance] HasImages.has_image
+attribute [instance 100] HasImages.has_image
 
 end
 
@@ -857,7 +857,7 @@ class HasImageMaps where
   has_image_map : ∀ {f g : Arrow C} (st : f ⟶ g), HasImageMap st
 #align category_theory.limits.has_image_maps CategoryTheory.Limits.HasImageMaps
 
-attribute [instance] HasImageMaps.has_image_map
+attribute [instance 100] HasImageMaps.has_image_map
 
 end
 

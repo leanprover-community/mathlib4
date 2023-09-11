@@ -57,7 +57,7 @@ class AddTorsor (G : outParam (Type _)) (P : Type _) [outParam <| AddGroup G] ex
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
+attribute [instance 100] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
 
 --Porting note: removed
 --attribute [nolint dangerous_instance] AddTorsor.toVSub

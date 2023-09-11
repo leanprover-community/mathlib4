@@ -36,9 +36,7 @@ endowed with an order.
 -/
 
 
-open Set Function Filter
-
-open Topology
+open Set Function Filter Topology
 
 /-!
 ### Definition and notation
@@ -95,7 +93,7 @@ theorem isClosed_omegaLimit : IsClosed (ω f ϕ s) :=
   isClosed_interᵢ fun _u ↦ isClosed_interᵢ fun _hu ↦ isClosed_closure
 #align is_closed_omega_limit isClosed_omegaLimit
 
-theorem mapsTo_omega_limit' {α' β' : Type _} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
+theorem mapsTo_omegaLimit' {α' β' : Type _} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
     {ϕ' : τ → α' → β'} {ga : α → α'} {s' : Set α'} (hs : MapsTo ga s s') {gb : β → β'}
     (hg : ∀ᶠ t in f, EqOn (gb ∘ ϕ t) (ϕ' t ∘ ga) s) (hgc : Continuous gb) :
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') := by
@@ -105,14 +103,13 @@ theorem mapsTo_omega_limit' {α' β' : Type _} [TopologicalSpace β'] {f : Filte
   calc
     gb (ϕ t x) = ϕ' t (ga x) := ht.2 hx
     _ ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
-
-#align maps_to_omega_limit' mapsTo_omega_limit'
+#align maps_to_omega_limit' mapsTo_omegaLimit'
 
 theorem mapsTo_omegaLimit {α' β' : Type _} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
     {ϕ' : τ → α' → β'} {ga : α → α'} {s' : Set α'} (hs : MapsTo ga s s') {gb : β → β'}
     (hg : ∀ t x, gb (ϕ t x) = ϕ' t (ga x)) (hgc : Continuous gb) :
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') :=
-  mapsTo_omega_limit' _ hs (eventually_of_forall fun t x _hx ↦ hg t x) hgc
+  mapsTo_omegaLimit' _ hs (eventually_of_forall fun t x _hx ↦ hg t x) hgc
 #align maps_to_omega_limit mapsTo_omegaLimit
 
 theorem omegaLimit_image_eq {α' : Type _} (ϕ : τ → α' → β) (f : Filter τ) (g : α → α') :
@@ -208,15 +205,15 @@ theorem omegaLimit_eq_interᵢ : ω f ϕ s = ⋂ u : ↥f.sets, closure (image2 
   binterᵢ_eq_interᵢ _ _
 #align omega_limit_eq_Inter omegaLimit_eq_interᵢ
 
-theorem omegaLimit_eq_bInter_inter {v : Set τ} (hv : v ∈ f) :
+theorem omegaLimit_eq_binterᵢ_inter {v : Set τ} (hv : v ∈ f) :
     ω f ϕ s = ⋂ u ∈ f, closure (image2 ϕ (u ∩ v) s) :=
   Subset.antisymm (interᵢ₂_mono' fun u hu ↦ ⟨u ∩ v, inter_mem hu hv, Subset.rfl⟩)
     (interᵢ₂_mono fun _u _hu ↦ closure_mono <| image2_subset (inter_subset_left _ _) Subset.rfl)
-#align omega_limit_eq_bInter_inter omegaLimit_eq_bInter_inter
+#align omega_limit_eq_bInter_inter omegaLimit_eq_binterᵢ_inter
 
 theorem omegaLimit_eq_interᵢ_inter {v : Set τ} (hv : v ∈ f) :
     ω f ϕ s = ⋂ u : ↥f.sets, closure (image2 ϕ (u ∩ v) s) := by
-  rw [omegaLimit_eq_bInter_inter _ _ _ hv]
+  rw [omegaLimit_eq_binterᵢ_inter _ _ _ hv]
   apply binterᵢ_eq_interᵢ
 #align omega_limit_eq_Inter_inter omegaLimit_eq_interᵢ_inter
 
@@ -325,7 +322,6 @@ theorem nonempty_omegaLimit_of_isCompact_absorbing [NeBot f] {c : Set β} (hc₁
     calc
       _ ⊆ closure (image2 ϕ v s) := closure_mono (image2_subset (inter_subset_right _ _) Subset.rfl)
       _ ⊆ c := hv₂
-
   · exact fun _ ↦ isClosed_closure
 #align nonempty_omega_limit_of_is_compact_absorbing nonempty_omegaLimit_of_isCompact_absorbing
 
@@ -354,8 +350,8 @@ theorem isInvariant_omegaLimit (hf : ∀ t, Tendsto ((· + ·) t) f f) : IsInvar
       (continuous_const.flow ϕ continuous_id)
 #align flow.is_invariant_omega_limit Flow.isInvariant_omegaLimit
 
-theorem omegaLimit_image_subset (t : τ) (ht : Tendsto (· + t) f f) : ω f ϕ (ϕ t '' s) ⊆ ω f ϕ s :=
-  by
+theorem omegaLimit_image_subset (t : τ) (ht : Tendsto (· + t) f f) :
+    ω f ϕ (ϕ t '' s) ⊆ ω f ϕ s := by
   simp only [omegaLimit_image_eq, ← map_add]
   exact omegaLimit_subset_of_tendsto ϕ s ht
 #align flow.omega_limit_image_subset Flow.omegaLimit_image_subset
@@ -396,8 +392,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto ((· + ·) t) f f) : ω f ϕ 
         ((isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
   have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty :=
     l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_fw_image _ _ _ hu hb.1, hb.2⟩
-  have l₃ : (o ∩ image2 ϕ u s).Nonempty :=
-    by
+  have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)
   rcases l₃ with ⟨ϕra, ho, ⟨_, _, hr, ha, hϕra⟩⟩

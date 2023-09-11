@@ -50,6 +50,9 @@ syntax (name := dischargeConv) "discharge" (" => " tacticSeq)? : conv
       setGoals (m.mvarId! :: gs)
   | _ => Elab.throwUnsupportedSyntax
 
+/-- Use `refine` in `conv` mode. -/
+macro "refine " e:term : conv => `(conv| tactic => refine $e)
+
 open Elab Tactic
 /--
 The command `#conv tac => e` will run a conv tactic `tac` on `e`, and display the resulting

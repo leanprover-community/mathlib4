@@ -75,13 +75,13 @@ set_option linter.uppercaseLean3 false in
 theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
     IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
   refine' isClosed_of_closure_subset fun t ht x hx => _
-  -- t : closeds α,  ht : t ∈ closure {t : closeds α | t ⊆ s},
+  -- t : Closeds α,  ht : t ∈ closure {t : Closeds α | t ⊆ s},
   -- x : α,  hx : x ∈ t
   -- goal : x ∈ s
   have : x ∈ closure s := by
     refine' mem_closure_iff.2 fun ε εpos => _
     rcases mem_closure_iff.1 ht ε εpos with ⟨u, hu, Dtu⟩
-    -- u : closeds α,  hu : u ∈ {t : closeds α | t ⊆ s},  hu' : edist t u < ε
+    -- u : Closeds α,  hu : u ∈ {t : Closeds α | t ⊆ s},  hu' : edist t u < ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dtu with ⟨y, hy, Dxy⟩
     -- y : α,  hy : y ∈ u, Dxy : edist x y < ε
     exact ⟨y, hu hy, Dxy⟩
@@ -189,8 +189,8 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     ENNReal.Tendsto.const_mul
       (ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 <| by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)
   rw [MulZeroClass.mul_zero] at this
-  obtain ⟨N, hN⟩ : ∃ N, ∀ b ≥ N, ε > 2 * B b
-  exact ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
+  obtain ⟨N, hN⟩ : ∃ N, ∀ b ≥ N, ε > 2 * B b :=
+    ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
 #align emetric.closeds.complete_space EMetric.Closeds.completeSpace
 
@@ -208,7 +208,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     rcases EMetric.totallyBounded_iff.1
         (isCompact_iff_totallyBounded_isComplete.1 (@isCompact_univ α _ _)).1 δ δpos with
       ⟨s, fs, hs⟩
-    -- s : set α,  fs : s.finite,  hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
+    -- s : Set α,  fs : s.Finite,  hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
     -- we first show that any set is well approximated by a subset of `s`.
     have main : ∀ u : Set α, ∃ (v : _)(_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
       intro u
@@ -431,7 +431,7 @@ theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α =>
   convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
     (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
     (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
-  norm_cast
+  norm_num
 #align metric.lipschitz_inf_dist Metric.lipschitz_infDist
 
 theorem uniformContinuous_infDist_Hausdorff_dist :
