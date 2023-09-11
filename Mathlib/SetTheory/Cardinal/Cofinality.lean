@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.cardinal.cofinality
-! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Ordinal.FixedPoint
+
+#align_import set_theory.cardinal.cofinality from "leanprover-community/mathlib"@"7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f"
 
 /-!
 # Cofinality
@@ -1164,15 +1161,18 @@ theorem derivFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : 
   have hω : ℵ₀ < c.ord.cof := by
     rw [hc.cof_eq]
     exact lt_of_le_of_ne hc.1 hc'.symm
-  apply a.limitRecOn
-  · rw [derivFamily_zero]
+  induction a using limitRecOn with
+  | H₁ =>
+    rw [derivFamily_zero]
     exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-  · intro b hb hb'
+  | H₂ b hb =>
+    intro hb'
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
         ((ord_isLimit hc.1).2 _ (hb ((lt_succ b).trans hb')))
-  · intro b hb H hb'
+  | H₃ b hb H =>
+    intro hb'
     rw [derivFamily_limit f hb]
     exact
       bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.category.Quiv
-! leanprover-community/mathlib commit 350a381705199e9a070f84e98e803c3c25a97a4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.PathCategory
+
+#align_import category_theory.category.Quiv from "leanprover-community/mathlib"@"350a381705199e9a070f84e98e803c3c25a97a4c"
 
 /-!
 # The category of quivers
@@ -74,8 +71,7 @@ namespace Cat
 
 /-- The functor sending each quiver to its path category. -/
 @[simps]
-def free : QuivCat.{v, u} ⥤ Cat.{max u v, u}
-    where
+def free : QuivCat.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (Paths V)
   map F :=
     { obj := fun X => F.obj X
@@ -83,12 +79,12 @@ def free : QuivCat.{v, u} ⥤ Cat.{max u v, u}
       map_comp := fun f g => F.mapPath_comp f g }
   map_id V := by
     change (show Paths V ⥤ _ from _) = _
-    ext
+    ext; swap
     apply eq_conj_eqToHom
     rfl
   map_comp {U _ _} F G := by
     change (show Paths U ⥤ _ from _) = _
-    ext
+    ext; swap
     apply eq_conj_eqToHom
     rfl
 set_option linter.uppercaseLean3 false in
@@ -127,7 +123,7 @@ def adj : Cat.free ⊣ QuivCat.forget :=
             exact Category.id_comp _ }
       homEquiv_naturality_left_symm := fun {V _ _} f g => by
         change (show Paths V ⥤ _ from _) = _
-        ext
+        ext; swap
         apply eq_conj_eqToHom
         rfl }
 set_option linter.uppercaseLean3 false in

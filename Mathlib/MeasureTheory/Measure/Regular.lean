@@ -2,13 +2,10 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris Van Doorn, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.regular
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+#align_import measure_theory.measure.regular from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Regular measures
@@ -347,7 +344,7 @@ namespace InnerRegular
 variable {p q : Set α → Prop} {U s : Set α} {ε r : ℝ≥0∞}
 
 /-- If a measure is inner regular (using closed or compact sets), then every measurable set of
-finite measure can by approximated by a (closed or compact) subset. -/
+finite measure can be approximated by a (closed or compact) subset. -/
 theorem measurableSet_of_open [OuterRegular μ] (H : InnerRegular μ p IsOpen) (h0 : p ∅)
     (hd : ∀ ⦃s U⦄, p s → IsOpen U → p (s \ U)) :
     InnerRegular μ p fun s => MeasurableSet s ∧ μ s ≠ ∞ := by

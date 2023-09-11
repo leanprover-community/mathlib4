@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.module.hom
-! leanprover-community/mathlib commit 134625f523e737f650a6ea7f0c82a6177e45e622
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
+
+#align_import algebra.module.hom from "leanprover-community/mathlib"@"134625f523e737f650a6ea7f0c82a6177e45e622"
 
 /-!
 # Bundled Hom instances for module and multiplicative actions

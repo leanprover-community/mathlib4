@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed.field.unit_ball
-! leanprover-community/mathlib commit 3339976e2bcae9f1c81e620836d1eb736e3c4700
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.BallSphere
+
+#align_import analysis.normed.field.unit_ball from "leanprover-community/mathlib"@"3339976e2bcae9f1c81e620836d1eb736e3c4700"
 
 /-!
 # Algebraic structures on unit balls and spheres

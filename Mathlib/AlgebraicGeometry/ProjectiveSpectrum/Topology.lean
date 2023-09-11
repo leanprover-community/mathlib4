@@ -2,15 +2,12 @@
 Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
-
-! This file was ported from Lean 3 source module algebraic_geometry.projective_spectrum.topology
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
+
+#align_import algebraic_geometry.projective_spectrum.topology from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # Projective spectrum of a graded ring

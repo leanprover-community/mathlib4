@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.splitting_field.construction
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Normal
+
+#align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Splitting fields

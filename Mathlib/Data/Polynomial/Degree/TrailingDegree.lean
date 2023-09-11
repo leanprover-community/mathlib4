@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.degree.trailing_degree
-! leanprover-community/mathlib commit 302eab4f46abb63de520828de78c04cb0f9b5836
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import data.polynomial.degree.trailing_degree from "leanprover-community/mathlib"@"302eab4f46abb63de520828de78c04cb0f9b5836"
 
 /-!
 # Trailing degree of univariate polynomials
@@ -180,7 +177,7 @@ theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n := by
   -- Porting note: Needed to account for different coercion behaviour & add the lemma below
   have : Nat.cast n = WithTop.some n := rfl
-  exact mt fun h => by rw [natTrailingDegree, h, this, ←WithTop.some_eq_coe, Option.getD_coe]
+  exact mt fun h => by rw [natTrailingDegree, h, this, ←WithTop.some_eq_coe, Option.getD_some]
 #align polynomial.trailing_degree_ne_of_nat_trailing_degree_ne Polynomial.trailingDegree_ne_of_natTrailingDegree_ne
 
 theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}

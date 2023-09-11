@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.algebra.tower
-! leanprover-community/mathlib commit 71150516f28d9826c7341f8815b31f7d8770c212
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.LinearAlgebra.Span
+
+#align_import algebra.algebra.tower from "leanprover-community/mathlib"@"71150516f28d9826c7341f8815b31f7d8770c212"
 
 /-!
 # Towers of algebras

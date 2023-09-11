@@ -2,15 +2,12 @@
 Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
-
-! This file was ported from Lean 3 source module algebra.module.projective
-! leanprover-community/mathlib commit 405ea5cee7a7070ff8fb8dcb4cfb003532e34bce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
+
+#align_import algebra.module.projective from "leanprover-community/mathlib"@"405ea5cee7a7070ff8fb8dcb4cfb003532e34bce"
 
 /-!
 
@@ -142,11 +139,11 @@ variable {ι : Type _} (A : ι → Type _) [∀ i : ι, AddCommMonoid (A i)] [�
 instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
   .of_lifting_property'' fun f hf ↦ by
     classical
-      choose g hg using fun i ↦ projective_lifting_property f (Dfinsupp.lsingle i) hf
-      replace hg : ∀ i x, f (g i x) = Dfinsupp.single i x := fun i ↦ FunLike.congr_fun (hg i)
-      refine ⟨Dfinsupp.coprodMap g, ?_⟩
+      choose g hg using fun i ↦ projective_lifting_property f (DFinsupp.lsingle i) hf
+      replace hg : ∀ i x, f (g i x) = DFinsupp.single i x := fun i ↦ FunLike.congr_fun (hg i)
+      refine ⟨DFinsupp.coprodMap g, ?_⟩
       ext i x j
-      simp only [comp_apply, id_apply, Dfinsupp.lsingle_apply, Dfinsupp.coprodMap_apply_single, hg]
+      simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
 
 end Semiring
 

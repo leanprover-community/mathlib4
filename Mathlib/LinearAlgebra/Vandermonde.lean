@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.vandermonde
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+
+#align_import linear_algebra.vandermonde from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Vandermonde matrix
@@ -132,7 +129,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
     · intro j
       simp
     · intro i j
-      simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSuccEmb, Pi.smul_apply]
+      simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
       rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
       congr 1
       refine' Finset.sum_congr rfl fun i' hi' => _

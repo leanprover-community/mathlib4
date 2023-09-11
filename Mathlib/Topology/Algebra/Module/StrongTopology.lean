@@ -2,13 +2,10 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.module.strong_topology
-! leanprover-community/mathlib commit 8905e5ed90859939681a725b00f6063e65096d95
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.UniformConvergence
+
+#align_import topology.algebra.module.strong_topology from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
 /-!
 # Strong topologies on the space of continuous linear maps

@@ -2,11 +2,6 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.basic
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Analysis.Complex.Basic
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.LinearAlgebra.BilinearForm
+
+#align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Inner product space
@@ -37,7 +34,7 @@ product structure on `n → 𝕜` for `𝕜 = ℝ` or `ℂ`, see `EuclideanSpace
   properties, most notably the Cauchy-Schwarz inequality. Here `𝕜` is understood to be either `ℝ`
   or `ℂ`, through the `IsROrC` typeclass.
 - We show that the inner product is continuous, `continuous_inner`, and bundle it as the
-  the continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
+  continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
 - We define `Orthonormal`, a predicate on a function `v : ι → E`, and prove the existence of a
   maximal orthonormal set, `exists_maximal_orthonormal`.  Bessel's inequality,
   `Orthonormal.tsum_inner_products_le`, states that given an orthonormal set `v` and a vector `x`,
@@ -61,8 +58,8 @@ in the second.
 inner product space, Hilbert space, norm
 
 ## References
-*  [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
-*  [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
+* [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
+* [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
@@ -544,17 +541,17 @@ theorem Finsupp.inner_sum {ι : Type _} (l : ι →₀ 𝕜) (v : ι → E) (x :
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 #align finsupp.inner_sum Finsupp.inner_sum
 
-theorem Dfinsupp.sum_inner {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.sum_inner {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.sum_inner, smul_eq_mul]
-#align dfinsupp.sum_inner Dfinsupp.sum_inner
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.sum_inner, smul_eq_mul]
+#align dfinsupp.sum_inner DFinsupp.sum_inner
 
-theorem Dfinsupp.inner_sum {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.inner_sum {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.inner_sum, smul_eq_mul]
-#align dfinsupp.inner_sum Dfinsupp.inner_sum
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.inner_sum, smul_eq_mul]
+#align dfinsupp.inner_sum DFinsupp.inner_sum
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
@@ -1132,21 +1129,21 @@ theorem parallelogram_law_with_nnnorm (x y : E) :
 
 variable {𝕜}
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two (x y : E) :
     re ⟪x, y⟫ = (‖x + y‖ * ‖x + y‖ - ‖x‖ * ‖x‖ - ‖y‖ * ‖y‖) / 2 := by
   rw [@norm_add_mul_self 𝕜]
   ring
 #align re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two (x y : E) :
     re ⟪x, y⟫ = (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ - ‖x - y‖ * ‖x - y‖) / 2 := by
   rw [@norm_sub_mul_self 𝕜]
   ring
 #align re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_add_mul_self_sub_norm_sub_mul_self_div_four (x y : E) :
     re ⟪x, y⟫ = (‖x + y‖ * ‖x + y‖ - ‖x - y‖ * ‖x - y‖) / 4 := by
   rw [@norm_add_mul_self 𝕜, @norm_sub_mul_self 𝕜]
@@ -1979,7 +1976,7 @@ open DirectSum
 /-- An indexed family of mutually-orthogonal subspaces of an inner product space `E`.
 
 The simple way to express this concept would be as a condition on `V : ι → Submodule 𝕜 E`.  We
-We instead implement it as a condition on a family of inner product spaces each equipped with an
+instead implement it as a condition on a family of inner product spaces each equipped with an
 isometric embedding into `E`, thus making it a property of morphisms rather than subobjects.
 The connection to the subobject spelling is shown in `orthogonalFamily_iff_pairwise`.
 
@@ -2013,12 +2010,12 @@ theorem OrthogonalFamily.inner_right_dfinsupp (l : ⨁ i, G i) (i : ι) (v : G i
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
   calc
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
-      Dfinsupp.inner_sum (fun j => V j) l (V i v)
+      DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun j => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
-      simp only [Dfinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
-        Dfinsupp.mem_support_toFun]
+      simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
+        DFinsupp.mem_support_toFun]
       split_ifs with h
       · simp only [LinearIsometry.inner_map_map]
       · simp only [of_not_not h, inner_zero_right]
@@ -2166,8 +2163,8 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   ext i
   suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
   calc
-    ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-      simpa only [Dfinsupp.sumAddHom_apply, Dfinsupp.lsum_apply_apply] using
+    ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
+      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 #align orthogonal_family.independent OrthogonalFamily.independent

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.diagonal
-! leanprover-community/mathlib commit f6bab67886fb92c3e2f539cc90a83815f69a189d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+
+#align_import category_theory.limits.shapes.diagonal from "leanprover-community/mathlib"@"f6bab67886fb92c3e2f539cc90a83815f69a189d"
 
 /-!
 # The diagonal object of a morphism.
@@ -123,7 +120,7 @@ V₁ ×[X ×[Y] U] V₂ ⟶ V₁ ×[U] V₂
         |                 |
         |                 |
         ↓                 ↓
-        X         ⟶  X ×[Y] X
+        X        ⟶ X ×[Y] X
 
 is a pullback square.
 Also see `pullback_fst_map_snd_isPullback`.
@@ -213,10 +210,10 @@ variable
 given `f : X ⟶ T`, `g : Y ⟶ T`, and `i : T ⟶ S`, the diagram
 
 X ×ₜ Y ⟶ X ×ₛ Y
-   |         |
-   |         |
-   ↓         ↓
-   T   ⟶ T ×ₛ T
+  |         |
+  |         |
+  ↓         ↓
+  T  ⟶  T ×ₛ T
 
 is a pullback square.
 Also see `pullback_map_diagonal_isPullback`.
@@ -367,11 +364,11 @@ end
 
 /-- Given the following diagram with `S ⟶ S'` a monomorphism,
 
-    X  ⟶ X'
+    X ⟶ X'
       ↘      ↘
-        S  ⟶ S'
+        S ⟶ S'
       ↗      ↗
-    Y  ⟶ Y'
+    Y ⟶ Y'
 
 This iso witnesses the fact that
 

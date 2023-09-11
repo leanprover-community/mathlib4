@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
-
-! This file was ported from Lean 3 source module algebra.homology.quasi_iso
-! leanprover-community/mathlib commit 956af7c76589f444f2e1313911bad16366ea476d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.CategoryTheory.Abelian.Homology
+
+#align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
 
 /-!
 # Quasi-isomorphisms

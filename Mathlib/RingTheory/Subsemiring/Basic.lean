@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module ring_theory.subsemiring.basic
-! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
@@ -16,6 +11,8 @@ import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import ring_theory.subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
 /-!
 # Bundled subsemirings

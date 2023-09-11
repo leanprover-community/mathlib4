@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.complemented
-! leanprover-community/mathlib commit 3397560e65278e5f31acefcdea63138bd53d1cd4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+
+#align_import analysis.normed_space.complemented from "leanprover-community/mathlib"@"3397560e65278e5f31acefcdea63138bd53d1cd4"
 
 /-!
 # Complemented subspaces of normed vector spaces

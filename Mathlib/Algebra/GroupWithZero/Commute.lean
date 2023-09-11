@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.commute
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Tactic.Nontriviality
+
+#align_import algebra.group_with_zero.commute from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.

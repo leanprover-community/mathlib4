@@ -2,14 +2,11 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Andrew Yang
-
-! This file was ported from Lean 3 source module algebra.homology.short_exact.preadditive
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+#align_import algebra.homology.short_exact.preadditive from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Short exact sequences, and splittings.

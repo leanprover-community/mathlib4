@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.Prime
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying the way that `apply?` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/Util/TacticCaches/LibrarySearch.extra`
+-- `build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 
 noncomputable section

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu, Jack McKoen
-
-! This file was ported from Lean 3 source module ring_theory.valuation.valuation_subring
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+
+#align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 

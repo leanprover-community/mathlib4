@@ -2,13 +2,10 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Eric Wieser, Joachim Breitner
-
-! This file was ported from Lean 3 source module group_theory.is_free_group
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.FreeGroup
+
+#align_import group_theory.is_free_group from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Free groups structures on arbitrary types
@@ -121,7 +118,7 @@ theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of
   lift.symm.injective (funext h)
 #align is_free_group.ext_hom IsFreeGroup.ext_hom
 
-/-- The universal property of a free group: A functions from the generators of `G` to another
+/-- The universal property of a free group: A function from the generators of `G` to another
 group extends in a unique way to a homomorphism from `G`.
 
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already

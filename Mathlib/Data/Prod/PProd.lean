@@ -2,13 +2,10 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.prod.pprod
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Basic
+
+#align_import data.prod.pprod from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Extra facts about `PProd`

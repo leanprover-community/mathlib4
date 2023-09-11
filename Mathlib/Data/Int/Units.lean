@@ -2,15 +2,12 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.units
-! leanprover-community/mathlib commit 641b6a82006416ec431b2987b354af9311fed4f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
+
+#align_import data.int.units from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
 /-!
 # Lemmas about units in `ℤ`.

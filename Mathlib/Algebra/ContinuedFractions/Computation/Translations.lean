@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.computation.translations
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Translations
+
+#align_import algebra.continued_fractions.computation.translations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions

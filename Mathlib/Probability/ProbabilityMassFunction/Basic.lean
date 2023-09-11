@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
-
-! This file was ported from Lean 3 source module probability.probability_mass_function.basic
-! leanprover-community/mathlib commit 4ac69b290818724c159de091daa3acd31da0ee6d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.ENNReal
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Dirac
+
+#align_import probability.probability_mass_function.basic from "leanprover-community/mathlib"@"4ac69b290818724c159de091daa3acd31da0ee6d"
 
 /-!
 # Probability mass functions

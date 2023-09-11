@@ -2,15 +2,12 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module analysis.convex.side
-! leanprover-community/mathlib commit a63928c34ec358b5edcda2bf7513c50052a5230f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Group.AddTorsor
+
+#align_import analysis.convex.side from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
 /-!
 # Sides of affine subspaces

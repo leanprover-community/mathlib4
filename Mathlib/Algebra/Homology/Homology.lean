@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.homology
-! leanprover-community/mathlib commit 618ea3d5c99240cd7000d8376924906a148bf9ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.CategoryTheory.GradedObject
+
+#align_import algebra.homology.homology from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
 /-!
 # The homology of a complex
@@ -205,10 +202,13 @@ abbrev cyclesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles i : V) ⟶ (C₂.cy
 #align cycles_map cyclesMap
 
 -- Porting note: Originally `@[simp, reassoc.1, elementwise]`
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem cyclesMap_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cyclesMap f i ≫ (C₂.cycles i).arrow = (C₁.cycles i).arrow ≫ f.f i := by simp
 #align cycles_map_arrow cyclesMap_arrow
+
+attribute [simp 1100] cyclesMap_arrow_assoc
+attribute [simp] cyclesMap_arrow_apply
 
 @[simp]
 theorem cyclesMap_id (i : ι) : cyclesMap (𝟙 C₁) i = 𝟙 _ := by

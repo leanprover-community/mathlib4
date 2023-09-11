@@ -2,14 +2,11 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.exterior_algebra.basic
-! leanprover-community/mathlib commit b8d2eaa69d69ce8f03179a5cda774fc0cde984e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.Alternating
+
+#align_import linear_algebra.exterior_algebra.basic from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
 /-!
 # Exterior Algebras
@@ -267,7 +264,9 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
   · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
     by_cases h : i = 0
     · rw [h, ι_sq_zero, MulZeroClass.zero_mul]
-    · replace hn := congr_arg ((· * ·) <| ι R <| f 0) (hn (fun i => f <| Fin.succ i) (i.pred h))
+    · replace hn :=
+        congr_arg
+          ((· * ·) <| ι R <| f 0) (hn (fun i => f <| Fin.succ i) (i.pred h))
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, MulZeroClass.mul_zero] at hn
       refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
@@ -299,8 +298,11 @@ def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
         · convert MulZeroClass.mul_zero (ι R (f 0))
-          refine' hn (fun i => f <| Fin.succ i) (x.pred hx)
-            (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _ (Fin.pred_lt_pred_iff.mpr h)
+          refine'
+            hn
+              (fun i => f <| Fin.succ i) (x.pred hx)
+              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
+              (Fin.pred_lt_pred_iff.mpr h)
           simp only [Fin.succ_pred]
           exact hfxy
     toFun := F }

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.tensor_product
-! leanprover-community/mathlib commit 657df4339ae6ceada048c8a2980fb10e393143ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Abelian
+
+#align_import algebra.lie.tensor_product from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
 /-!
 # Tensor products of Lie modules

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.trace
-! leanprover-community/mathlib commit 32b08ef840dd25ca2e47e035c5da03ce16d2dc3c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
+
+#align_import linear_algebra.matrix.trace from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
 /-!
 # Trace of a matrix

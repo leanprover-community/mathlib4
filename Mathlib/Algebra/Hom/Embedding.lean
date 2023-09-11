@@ -2,14 +2,11 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.hom.embedding
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Embedding.Basic
+
+#align_import algebra.hom.embedding from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.

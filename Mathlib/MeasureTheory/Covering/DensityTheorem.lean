@@ -2,15 +2,12 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module measure_theory.covering.density_theorem
-! leanprover-community/mathlib commit 5f6e827d81dfbeb6151d7016586ceeb0099b9655
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Doubling
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.Differentiation
+
+#align_import measure_theory.covering.density_theorem from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
 /-!
 # Uniformly locally doubling measures and Lebesgue's density theorem
@@ -156,7 +153,7 @@ theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.res
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
 centers are not required to be fixed. -/
-theorem ae_tendsto_average_norm_sub {f : α → E} (hf : Integrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
+theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
     ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
       (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
       Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), ‖f y - f x‖ ∂μ) l (𝓝 0) := by
@@ -166,8 +163,8 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : Integrable f μ) (K : �
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
 centers are not required to be fixed. -/
-theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E} (hf : Integrable f μ)
-    (K : ℝ) : ∀ᵐ x ∂μ,
+theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E]
+    {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
       ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
         (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
         Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), f y ∂μ) l (𝓝 (f x)) := by

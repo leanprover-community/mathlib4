@@ -2,14 +2,11 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module category_theory.quotient
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
+
+#align_import category_theory.quotient from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Quotient category

@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measurable_space_def
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Disjointed
 import Mathlib.Tactic.Measurability
+
+#align_import measure_theory.measurable_space_def from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Measurable spaces and measurable functions

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_product_basis
-! leanprover-community/mathlib commit f784cc6142443d9ee623a20788c282112c322081
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+
+#align_import linear_algebra.tensor_product_basis from "leanprover-community/mathlib"@"f784cc6142443d9ee623a20788c282112c322081"
 
 /-!
 # Bases and dimensionality of tensor products of modules

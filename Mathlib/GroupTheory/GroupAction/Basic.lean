@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.basic
-! leanprover-community/mathlib commit d30d31261cdb4d2f5e612eabc3c4bf45556350d5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.group_action.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
 /-!
 # Basic properties of group actions

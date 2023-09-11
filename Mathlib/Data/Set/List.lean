@@ -2,15 +2,12 @@
 Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.list
-! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Fin.Basic
+
+#align_import data.set.list from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
 
 /-!
 # Lemmas about `List`s and `Set.range`

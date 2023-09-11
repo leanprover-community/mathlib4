@@ -2,19 +2,16 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module testing.slim_check.functions
-! leanprover-community/mathlib commit f9c300047a57aeda7c2fe15a3ac2455eb05ec225
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.ToDfinsupp
+import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+
+#align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
 
 /-!
 ## `slim_check`: generators for functions
@@ -215,13 +212,13 @@ instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
 #align slim_check.total_function.finsupp.sampleable_ext SlimCheck.TotalFunction.Finsupp.sampleableExt
 
 -- TODO: support a non-constant codomain type
-instance Dfinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
+instance DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
-  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDfinsupp
+  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
   sample := SampleableExt.sample (α := α → β)
   -- note: no way of shrinking the domain without an inverse to `interp`
   shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
-#align slim_check.total_function.dfinsupp.sampleable_ext SlimCheck.TotalFunction.Dfinsupp.sampleableExt
+#align slim_check.total_function.dfinsupp.sampleable_ext SlimCheck.TotalFunction.DFinsupp.sampleableExt
 
 end Finsupp
 

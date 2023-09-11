@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.denumerable
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
+
+#align_import logic.denumerable from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Denumerable types
@@ -66,7 +63,7 @@ theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := 
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
-  obtain ⟨a, h, e⟩ := decode_inv n
+  obtain ⟨a, h, e⟩ := decode_inv (α := α) n
   rwa [ofNat_of_decode h]
 #align denumerable.encode_of_nat Denumerable.encode_ofNat
 
@@ -381,6 +378,10 @@ end Denumerable
 theorem nonempty_denumerable (α : Type _) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
   (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
+
+theorem nonempty_denumerable_iff {α : Type _} :
+    Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
+  ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
 
 instance nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β] [Infinite β] :
     Nonempty (α ≃ β) := by

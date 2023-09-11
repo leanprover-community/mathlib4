@@ -2,17 +2,14 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_algebra.basic
-! leanprover-community/mathlib commit b8d2eaa69d69ce8f03179a5cda774fc0cde984e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.LinearAlgebra.Multilinear.Basic
+
+#align_import linear_algebra.tensor_algebra.basic from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
 /-!
 # Tensor Algebras

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.monoid_algebra.division
-! leanprover-community/mathlib commit 72c366d0475675f1309d3027d3d7d47ee4423951
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Order
+
+#align_import algebra.monoid_algebra.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
 /-!
 # Division of `AddMonoidAlgebra` by monomials

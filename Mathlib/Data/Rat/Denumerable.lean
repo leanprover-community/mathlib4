@@ -2,13 +2,10 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.rat.denumerable
-! leanprover-community/mathlib commit dde670c9a3f503647fd5bfdf1037bad526d3397a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Basic
+
+#align_import data.rat.denumerable from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
 /-!
 # Denumerability of ℚ

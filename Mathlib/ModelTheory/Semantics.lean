@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.semantics
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.ModelTheory.Syntax
+
+#align_import model_theory.semantics from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # Basics on First-Order Semantics
@@ -100,7 +97,7 @@ theorem realize_relabel {t : L.Term α} {g : α → β} {v : β → M} :
 theorem realize_liftAt {n n' m : ℕ} {t : L.Term (Sum α (Fin n))} {v : Sum α (Fin (n + n')) → M} :
     (t.liftAt n' m).realize v =
       t.realize (v ∘ Sum.map id fun i : Fin _ =>
-        if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i) :=
+        if ↑i < m then Fin.castAdd n' i else Fin.addNat i n') :=
   realize_relabel
 #align first_order.language.term.realize_lift_at FirstOrder.Language.Term.realize_liftAt
 
@@ -407,7 +404,7 @@ theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
     (hmn : m + n' ≤ n + 1) :
     (φ.liftAt n' m).Realize v xs ↔
-      φ.Realize v (xs ∘ fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i) := by
+      φ.Realize v (xs ∘ fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n') := by
   rw [liftAt]
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 k _ ih3
   · simp [mapTermRel, Realize]
@@ -428,22 +425,22 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       · rw [if_neg h]
         refine' (congr rfl (ext _)).trans (snoc_last _ _)
         simp
-    · simp only [Function.comp_apply, Fin.snoc_castSuccEmb]
-      refine' (congr rfl (ext _)).trans (snoc_castSuccEmb _ _ _)
-      simp only [coe_castSuccEmb, coe_orderIso_apply]
+    · simp only [Function.comp_apply, Fin.snoc_castSucc]
+      refine' (congr rfl (ext _)).trans (snoc_castSucc _ _ _)
+      simp only [coe_castSucc, coe_orderIso_apply]
       split_ifs <;> simp
 #align first_order.language.bounded_formula.realize_lift_at FirstOrder.Language.BoundedFormula.realize_liftAt
 
 theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + 1) → M}
     (hmn : m ≤ n) :
     (φ.liftAt 1 m).Realize v xs ↔
-      φ.Realize v (xs ∘ fun i => if ↑i < m then castSuccEmb i else i.succ) := by
-  simp [realize_liftAt (add_le_add_right hmn 1), castSuccEmb]
+      φ.Realize v (xs ∘ fun i => if ↑i < m then castSucc i else i.succ) := by
+  simp [realize_liftAt (add_le_add_right hmn 1), castSucc]
 #align first_order.language.bounded_formula.realize_lift_at_one FirstOrder.Language.BoundedFormula.realize_liftAt_one
 
 @[simp]
 theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α → M}
-    {xs : Fin (n + 1) → M} : (φ.liftAt 1 n).Realize v xs ↔ φ.Realize v (xs ∘ castSuccEmb) := by
+    {xs : Fin (n + 1) → M} : (φ.liftAt 1 n).Realize v xs ↔ φ.Realize v (xs ∘ castSucc) := by
   rw [realize_liftAt_one (refl n), iff_eq_eq]
   refine' congr rfl (congr rfl (funext fun i => _))
   rw [if_pos i.is_lt]
@@ -514,12 +511,12 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
   induction' hψ with _ _ hψ _ _ _hψ ih _ _ _hψ ih
   · rw [hψ.toPrenexImpRight]
   · refine' _root_.trans (forall_congr' fun _ => ih hφ.liftAt) _
-    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSuccEmb, realize_all]
+    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
     exact ⟨fun h1 a h2 => h1 h2 a, fun h1 h2 a => h1 a h2⟩
   · unfold toPrenexImpRight
     rw [realize_ex]
     refine' _root_.trans (exists_congr fun _ => ih hφ.liftAt) _
-    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSuccEmb, realize_ex]
+    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_ex]
     refine' ⟨_, fun h' => _⟩
     · rintro ⟨a, ha⟩ h
       exact ⟨a, ha h⟩
@@ -539,7 +536,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
   · unfold toPrenexImp
     rw [realize_ex]
     refine' _root_.trans (exists_congr fun _ => ih hψ.liftAt) _
-    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSuccEmb, realize_all]
+    simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
     refine' ⟨_, fun h' => _⟩
     · rintro ⟨a, ha⟩ h
       exact ha (h a)
@@ -679,7 +676,7 @@ theorem realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
 theorem realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
     (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
-    castIso_refl, OrderIso.coe_refl, Function.comp.right_id,
+    cast_refl, Function.comp.right_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 #align first_order.language.formula.realize_relabel_sum_inr FirstOrder.Language.Formula.realize_relabel_sum_inr
 
@@ -933,9 +930,9 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M
         · rw [Sum.elim_inr, Sum.elim_inr,
             finSumFinEquiv_symm_last, Sum.map_inr, Sum.elim_inr]
           simp [Fin.snoc]
-        · simp only [castSuccEmb, Function.comp_apply, Sum.elim_inr,
+        · simp only [castSucc, Function.comp_apply, Sum.elim_inr,
             finSumFinEquiv_symm_apply_castAdd, Sum.map_inl, Sum.elim_inl]
-          rw [← castSuccEmb]
+          rw [← castSucc]
           simp
     · exact Fin.elim0 x
 #align first_order.language.bounded_formula.realize_to_formula FirstOrder.Language.BoundedFormula.realize_toFormula

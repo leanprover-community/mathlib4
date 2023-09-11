@@ -2,13 +2,10 @@
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.acyclic
-! leanprover-community/mathlib commit b07688016d62f81d14508ff339ea3415558d6353
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+
+#align_import combinatorics.simple_graph.acyclic from "leanprover-community/mathlib"@"b07688016d62f81d14508ff339ea3415558d6353"
 
 /-!
 
@@ -97,7 +94,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     specialize h ph
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
     replace h := h.2 (q.append p.reverse)
-    simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse'] at h
+    simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
     cases' h with h h
     · cases q with
       | nil => simp [Walk.isPath_def] at hp

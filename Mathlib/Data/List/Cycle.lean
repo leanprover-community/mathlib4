@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.cycle
-! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.List.Rotate
+
+#align_import data.list.cycle from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
 /-!
 # Cycles of a list
@@ -400,7 +397,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
 
 set_option linter.deprecated false in
 theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    prev l.reverse x (mem_reverse'.mpr hx) = next l x hx := by
+    prev l.reverse x (mem_reverse.mpr hx) = next l x hx := by
   obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
   have key : l.length - 1 - k < l.length :=
@@ -418,8 +415,8 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    next l.reverse x (mem_reverse'.mpr hx) = prev l x hx := by
-  convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x ((mem_reverse _ _).mpr hx)).symm
+    next l.reverse x (mem_reverse.mpr hx) = prev l x hx := by
+  convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
@@ -555,7 +552,7 @@ theorem reverse_coe (l : List α) : (l : Cycle α).reverse = l.reverse :=
 
 @[simp]
 theorem mem_reverse_iff {a : α} {s : Cycle α} : a ∈ s.reverse ↔ a ∈ s :=
-  Quot.inductionOn s fun _ => mem_reverse'
+  Quot.inductionOn s fun _ => mem_reverse
 #align cycle.mem_reverse_iff Cycle.mem_reverse_iff
 
 @[simp]
@@ -686,7 +683,7 @@ theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬S
 /-- The `s : Cycle α` as a `Multiset α`.
 -/
 def toMultiset (s : Cycle α) : Multiset α :=
-  Quotient.liftOn' s (↑) fun _ _  h => Multiset.coe_eq_coe.mpr h.perm
+  Quotient.liftOn' s (↑) fun _ _ h => Multiset.coe_eq_coe.mpr h.perm
 #align cycle.to_multiset Cycle.toMultiset
 
 @[simp]

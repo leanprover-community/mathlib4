@@ -2,15 +2,12 @@
 Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
-
-! This file was ported from Lean 3 source module computability.encoding
-! leanprover-community/mathlib commit b6395b3a5acd655b16385fa0cdbf1961d6c34b3e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Num.Lemmas
 import Mathlib.SetTheory.Cardinal.Ordinal
+
+#align_import computability.encoding from "leanprover-community/mathlib"@"b6395b3a5acd655b16385fa0cdbf1961d6c34b3e"
 
 /-!
 # Encodings

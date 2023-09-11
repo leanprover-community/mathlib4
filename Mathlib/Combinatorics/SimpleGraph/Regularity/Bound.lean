@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.bound
-! leanprover-community/mathlib commit bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Order.Partition.Equipartition
+
+#align_import combinatorics.simple_graph.regularity.bound from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Numerical bounds for Szemerédi Regularity Lemma

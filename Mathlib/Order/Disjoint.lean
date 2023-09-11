@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.disjoint
-! leanprover-community/mathlib commit 22c4d2ff43714b6ff724b2745ccfdc0f236a4a76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
+
+#align_import order.disjoint from "leanprover-community/mathlib"@"22c4d2ff43714b6ff724b2745ccfdc0f236a4a76"
 
 /-!
 # Disjointness and complements

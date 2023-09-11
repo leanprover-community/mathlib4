@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module geometry.manifold.smooth_manifold_with_corners
-! leanprover-community/mathlib commit ddec54a71a0dd025c05445d467f1a2b7d586a3ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Geometry.Manifold.ChartedSpace
+
+#align_import geometry.manifold.smooth_manifold_with_corners from "leanprover-community/mathlib"@"ddec54a71a0dd025c05445d467f1a2b7d586a3ba"
 
 /-!
 # Smooth manifolds (possibly with boundary or corners)
@@ -1341,6 +1338,21 @@ def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 #align written_in_ext_chart_at writtenInExtChartAt
 
+theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
+  simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
+  simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
+  simp_all only [mfld_simps]
+
 variable (𝕜)
 
 theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
@@ -1370,6 +1382,24 @@ theorem extChartAt_prod (x : M × M') :
   -- synonym
   rw [LocalEquiv.prod_trans]
 #align ext_chart_at_prod extChartAt_prod
+
+theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
+    (letI := ChartedSpace.comp H H' M'; extChartAt I x) =
+      (chartAt H' x).toLocalEquiv ≫ extChartAt I (chartAt H' x x) :=
+  LocalEquiv.trans_assoc ..
+
+theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
+    (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
+    (letI := ChartedSpace.comp H H' M'; writtenInExtChartAt I I x (chartAt H' x) y) = y := by
+  letI := ChartedSpace.comp H H' M'
+  simp_all only [mfld_simps, chartAt_comp]
+
+theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
+    (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
+    ( letI := ChartedSpace.comp H H' M'
+      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
+  letI := ChartedSpace.comp H H' M'
+  simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
 

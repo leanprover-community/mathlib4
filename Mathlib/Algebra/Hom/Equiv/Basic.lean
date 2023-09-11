@@ -2,17 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.equiv.basic
-! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Pi.Algebra
+
+#align_import algebra.hom.equiv.basic from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Multiplicative and additive equivs
@@ -36,10 +32,22 @@ Equiv, MulEquiv, AddEquiv
 
 variable {F α β A B M N P Q G H : Type _}
 
+/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/  
+@[to_additive (attr := simps) 
+  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"] 
+def OneHom.inverse [One M] [One N] 
+    (f : OneHom M N) (g : N → M) 
+    (h₁ : Function.LeftInverse g f) : 
+  OneHom N M := 
+  { toFun := g,
+    map_one' := by rw [← f.map_one, h₁] }
+
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive "Makes an additive inverse from a bijection which preserves addition."]
-def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Function.LeftInverse g f)
-  (h₂ : Function.RightInverse g f) : N →ₙ* M where
+@[to_additive (attr := simps) 
+  "Makes an additive inverse from a bijection which preserves addition."]
+def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) 
+    (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : N →ₙ* M where
   toFun := g
   map_mul' x y :=
     calc
@@ -50,10 +58,12 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
 #align add_hom.inverse AddHom.inverse
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive (attr := simps) "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
+@[to_additive (attr := simps) 
+  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
 def MonoidHom.inverse {A B : Type _} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
-  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
-  { (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g, map_one' := by rw [← f.map_one, h₁] }
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
+  { (f : OneHom A B).inverse g h₁,
+    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g } 
 #align monoid_hom.inverse MonoidHom.inverse
 #align add_monoid_hom.inverse AddMonoidHom.inverse
 #align monoid_hom.inverse_apply MonoidHom.inverse_apply

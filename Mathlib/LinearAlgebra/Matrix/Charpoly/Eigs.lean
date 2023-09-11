@@ -2,14 +2,11 @@
 Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.eigs
-! leanprover-community/mathlib commit 48dc6abe71248bd6f4bffc9703dc87bdd4e37d0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+
+#align_import linear_algebra.matrix.charpoly.eigs from "leanprover-community/mathlib"@"48dc6abe71248bd6f4bffc9703dc87bdd4e37d0b"
 
 /-!
 # Eigenvalues are characteristic polynomial roots.

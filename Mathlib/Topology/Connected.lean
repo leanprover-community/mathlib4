@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.connected
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.SubsetProperties
+
+#align_import topology.connected from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
 /-!
 # Connected subsets of topological spaces
@@ -756,6 +753,13 @@ theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=
   ⟨univ_nonempty, isPreconnected_univ⟩
 #align is_connected_univ isConnected_univ
 
+lemma preconnectedSpace_iff_univ : PreconnectedSpace α ↔ IsPreconnected (univ : Set α) :=
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+
+lemma connectedSpace_iff_univ : ConnectedSpace α ↔ IsConnected (univ : Set α) :=
+  ⟨fun h ↦ ⟨univ_nonempty, h.1.1⟩,
+   fun h ↦ ConnectedSpace.mk (toPreconnectedSpace := ⟨h.2⟩) ⟨h.1.some⟩⟩
+
 theorem isPreconnected_range [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (h : Continuous f) : IsPreconnected (range f) :=
   @image_univ _ _ f ▸ isPreconnected_univ.image _ h.continuousOn
@@ -765,6 +769,15 @@ theorem isConnected_range [TopologicalSpace β] [ConnectedSpace α] {f : α → 
     IsConnected (range f) :=
   ⟨range_nonempty f, isPreconnected_range h⟩
 #align is_connected_range isConnected_range
+
+theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace β]
+  {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
+  rw [connectedSpace_iff_univ, ← hf.range_eq]
+  exact isConnected_range hf'
+
+instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :
+    ConnectedSpace (Quotient s) :=
+  (surjective_quotient_mk _).connectedSpace continuous_coinduced_rng
 
 theorem DenseRange.preconnectedSpace [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (hf : DenseRange f) (hc : Continuous f) : PreconnectedSpace β :=

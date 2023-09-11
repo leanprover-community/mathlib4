@@ -29,7 +29,7 @@ example (α : Sort u) (a b : α) : a = b ↔ b = a := test.eq_iff a b
 mk_iff_of_inductive_prop HEq      test.heq_iff
 example {α : Sort u} (a : α) {β : Sort u} (b : β) : HEq a b ↔ β = α ∧ HEq b a := test.heq_iff a b
 
-mk_iff_of_inductive_prop List.Perm  test.perm_iff
+mk_iff_of_inductive_prop List.Perm test.perm_iff
 example {α : Type _} (a b : List α) :
     a ~ b ↔
       a = List.nil ∧ b = List.nil ∨
@@ -37,7 +37,7 @@ example {α : Type _} (a b : List α) :
           (∃ (x y : α) (l : List α), a = y :: x :: l ∧ b = x :: y :: l) ∨
             ∃ (l₂ : List α), a ~ l₂ ∧ l₂ ~ b := test.perm_iff a b
 
-mk_iff_of_inductive_prop List.Pairwise  test.pairwise_iff
+mk_iff_of_inductive_prop List.Pairwise test.pairwise_iff
 example {α : Type} (R : α → α → Prop) (al : List α) :
     List.Pairwise R al ↔
       al = List.nil ∨

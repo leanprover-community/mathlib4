@@ -2,16 +2,13 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.category.Ring.basic
-! leanprover-community/mathlib commit 34b2a989ad80bce3a5de749d935a4f23726e26e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.category.Ring.basic from "leanprover-community/mathlib"@"34b2a989ad80bce3a5de749d935a4f23726e26e9"
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.

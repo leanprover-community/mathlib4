@@ -2,15 +2,11 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.field.defs
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Order.Ring.Defs
+
+#align_import algebra.order.field.defs from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Linear ordered (semi)fields

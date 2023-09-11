@@ -2,14 +2,11 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.charpoly.to_matrix
-! leanprover-community/mathlib commit baab5d3091555838751562e6caad33c844bea15e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
+
+#align_import linear_algebra.charpoly.to_matrix from "leanprover-community/mathlib"@"baab5d3091555838751562e6caad33c844bea15e"
 
 /-!
 

@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.limits_of_products_and_equalizers
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
@@ -18,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+
+#align_import category_theory.limits.constructions.limits_of_products_and_equalizers from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Constructing limits from products and equalizers.
@@ -221,7 +218,7 @@ noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [H
   preservesFiniteLimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
-    haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
+    haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
     apply @preservesLimitOfPreservesEqualizersAndProduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasLimitsOfShape_discrete _ _
     · apply hasLimitsOfShape_discrete _
@@ -283,7 +280,7 @@ def buildColimit : Cocone F where
     { app := fun j => c₂.ι.app ⟨_⟩ ≫ i.π
       naturality := fun j₁ j₂ f => by
         dsimp
-        have reassoced (f : (p : J × J) × (p.fst ⟶  p.snd)) {W : C} {h : _ ⟶  W} :
+        have reassoced (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} {h : _ ⟶ W} :
           c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
             simp only [← Category.assoc, eq_whisker (hs f)]
         rw [Category.comp_id, ← reassoced ⟨⟨_, _⟩, f⟩, i.condition, ← Category.assoc, ht] }
@@ -303,11 +300,11 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
     · apply t₁.hom_ext
       intro j
       cases' j with j
-      have reassoced_s (f : (p : J ×  J) × (p.fst ⟶  p.snd)) {W : C} (h : _ ⟶  W) :
+      have reassoced_s (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} (h : _ ⟶ W) :
         c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
           simp only [← Category.assoc]
           apply eq_whisker (hs f)
-      have reassoced_t (f : (p : J ×  J) × (p.fst ⟶  p.snd)) {W : C} (h : _ ⟶  W) :
+      have reassoced_t (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} (h : _ ⟶ W) :
         c₁.ι.app ⟨f⟩ ≫ t ≫ h = c₂.ι.app ⟨f.fst.fst⟩ ≫ h := by
           simp only [← Category.assoc]
           apply eq_whisker (ht f)
@@ -438,7 +435,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
 end
 
 /- Porting note: the original parameter [∀ (J) [Fintype J], PreservesColimitsOfShape
-(Discrete.{0} J) G]  triggered the error "invalid parametric local instance, parameter
+(Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter
 with type Fintype J does not have forward dependencies, type class resolution cannot use
 this kind of local instance because it will not be able to infer a value for this parameter."
 Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
@@ -450,7 +447,7 @@ noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoprodu
   preservesFiniteColimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
-    haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
+    haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
     apply @preservesColimitOfPreservesCoequalizersAndCoproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasColimitsOfShape_discrete _ _
     · apply hasColimitsOfShape_discrete _

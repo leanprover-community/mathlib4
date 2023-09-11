@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module order.filter.bases
-! leanprover-community/mathlib commit 996b0ff959da753a555053a480f36e5f264d4207
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Set.Countable
 import Mathlib.Order.Filter.Prod
+
+#align_import order.filter.bases from "leanprover-community/mathlib"@"996b0ff959da753a555053a480f36e5f264d4207"
 
 /-!
 # Filter bases

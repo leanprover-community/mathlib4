@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.nat.factorial.cast
-! leanprover-community/mathlib commit d50b12ae8e2bd910d08a94823976adae9825718b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Pochhammer
+
+#align_import data.nat.factorial.cast from "leanprover-community/mathlib"@"d50b12ae8e2bd910d08a94823976adae9825718b"
 
 /-!
 # Cast of factorials

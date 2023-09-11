@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.quotient
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.LinearAlgebra.Span
+
+#align_import linear_algebra.quotient from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Quotients by submodules
@@ -32,7 +29,7 @@ open LinearMap QuotientAddGroup
 
 /-- The equivalence relation associated to a submodule `p`, defined by `x ≈ y` iff `-x + y ∈ p`.
 
-Note this is equivalent to `y - x ∈ p`, but defined this way to be be defeq to the `AddSubgroup`
+Note this is equivalent to `y - x ∈ p`, but defined this way to be defeq to the `AddSubgroup`
 version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup

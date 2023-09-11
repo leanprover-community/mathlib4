@@ -2,16 +2,14 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.gauge
-! leanprover-community/mathlib commit 373b03b5b9d0486534edbe94747f23cb3712f93d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Convex.Basic
+import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.Seminorm
+import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Data.IsROrC.Basic
+
+#align_import analysis.convex.gauge from "leanprover-community/mathlib"@"373b03b5b9d0486534edbe94747f23cb3712f93d"
 
 /-!
 # The Minkowski functional
@@ -188,17 +186,36 @@ theorem gauge_lt_eq (absorbs : Absorbent ℝ s) (a : ℝ) :
       (gauge_le_of_mem hr₀.le hx).trans_lt hr₁⟩
 #align gauge_lt_eq gauge_lt_eq
 
+theorem mem_openSegment_of_gauge_lt_one (absorbs : Absorbent ℝ s) (hgauge : gauge s x < 1) :
+    ∃ y ∈ s, x ∈ openSegment ℝ 0 y := by
+  rcases exists_lt_of_gauge_lt absorbs hgauge with ⟨r, hr₀, hr₁, y, hy, rfl⟩
+  refine ⟨y, hy, 1 - r, r, ?_⟩
+  simp [*]
+
 theorem gauge_lt_one_subset_self (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) :
-    { x | gauge s x < 1 } ⊆ s := by
-  rw [gauge_lt_eq absorbs]
-  refine' Set.iUnion₂_subset fun r hr _ => _
-  rintro ⟨y, hy, rfl⟩
-  exact hs.smul_mem_of_zero_mem h₀ hy (Ioo_subset_Icc_self hr)
+    { x | gauge s x < 1 } ⊆ s := fun _x hx ↦
+  let ⟨_y, hys, hx⟩ := mem_openSegment_of_gauge_lt_one absorbs hx
+  hs.openSegment_subset h₀ hys hx
 #align gauge_lt_one_subset_self gauge_lt_one_subset_self
 
 theorem gauge_le_one_of_mem {x : E} (hx : x ∈ s) : gauge s x ≤ 1 :=
   gauge_le_of_mem zero_le_one <| by rwa [one_smul]
 #align gauge_le_one_of_mem gauge_le_one_of_mem
+
+/-- Gauge is subadditive. -/
+theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
+    gauge s (x + y) ≤ gauge s x + gauge s y := by
+  refine' le_of_forall_pos_lt_add fun ε hε => _
+  obtain ⟨a, ha, ha', x, hx, rfl⟩ :=
+    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s x) (half_pos hε))
+  obtain ⟨b, hb, hb', y, hy, rfl⟩ :=
+    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s y) (half_pos hε))
+  calc
+    gauge s (a • x + b • y) ≤ a + b := gauge_le_of_mem (by positivity) <| by
+      rw [hs.add_smul ha.le hb.le]
+      exact add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
+    _ < gauge s (a • x) + gauge s (b • y) + ε := by linarith
+#align gauge_add_le gauge_add_le
 
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 #align self_subset_gauge_le_one self_subset_gauge_le_one
@@ -366,30 +383,97 @@ theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s
     at h_gauge_lt
 #align gauge_lt_of_mem_smul gauge_lt_of_mem_smulₓ
 
+theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
+    (h : gauge s x ≤ 1) : x ∈ closure s := by
+  have : ∀ᶠ r : ℝ in 𝓝[<] 1, r • x ∈ s
+  · filter_upwards [Ico_mem_nhdsWithin_Iio' one_pos] with r ⟨hr₀, hr₁⟩
+    apply gauge_lt_one_subset_self hc hs₀ ha
+    rw [mem_setOf_eq, gauge_smul_of_nonneg hr₀]
+    exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
+  refine mem_closure_of_tendsto ?_ this
+  exact Filter.Tendsto.mono_left (Continuous.tendsto' (by continuity) _ _ (one_smul _ _))
+    inf_le_left
+
+theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
+    (h : gauge s x = 1) : x ∈ frontier s :=
+  ⟨mem_closure_of_gauge_le_one hc hs₀ ha h.le, fun h' ↦
+    (interior_subset_gauge_lt_one s h').out.ne h⟩
+
 end TopologicalSpace
 
-theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
-    gauge s (x + y) ≤ gauge s x + gauge s y := by
-  refine' le_of_forall_pos_lt_add fun ε hε => _
-  obtain ⟨a, ha, ha', hx⟩ :=
-    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s x) (half_pos hε))
-  obtain ⟨b, hb, hb', hy⟩ :=
-    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s y) (half_pos hε))
-  rw [mem_smul_set_iff_inv_smul_mem₀ ha.ne'] at hx
-  rw [mem_smul_set_iff_inv_smul_mem₀ hb.ne'] at hy
-  suffices gauge s (x + y) ≤ a + b by linarith
-  have hab : 0 < a + b := add_pos ha hb
-  apply gauge_le_of_mem hab.le
-  have := convex_iff_div.1 hs hx hy ha.le hb.le hab
-  rwa [smul_smul, smul_smul, ← mul_div_right_comm, ← mul_div_right_comm, mul_inv_cancel ha.ne',
-    mul_inv_cancel hb.ne', ← smul_add, one_div, ← mem_smul_set_iff_inv_smul_mem₀ hab.ne'] at this
-#align gauge_add_le gauge_add_le
+section TopologicalAddGroup
+
+open Filter
+
+variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+
+/-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
+is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
+`Convex.lipschitz_gauge`. -/
+theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) := by
+  have ha : Absorbent ℝ s := absorbent_nhds_zero hs₀
+  simp only [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_Icc_pos _).tendsto_right_iff]
+  intro x ε hε₀
+  rw [← map_add_left_nhds_zero, eventually_map]
+  have : ε • s ∩ -(ε • s) ∈ 𝓝 0
+  · exact inter_mem ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀)
+      (neg_mem_nhds_zero _ ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀))
+  filter_upwards [this] with y hy
+  constructor
+  · rw [sub_le_iff_le_add]
+    calc
+      gauge s x = gauge s (x + y + (-y)) := by simp
+      _ ≤ gauge s (x + y) + gauge s (-y) := gauge_add_le hc ha _ _
+      _ ≤ gauge s (x + y) + ε := add_le_add_left (gauge_le_of_mem hε₀.le (mem_neg.1 hy.2)) _
+  · calc
+      gauge s (x + y) ≤ gauge s x + gauge s y := gauge_add_le hc ha _ _
+      _ ≤ gauge s x + ε := add_le_add_left (gauge_le_of_mem hε₀.le hy.1) _
+
+theorem gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+    { x | gauge s x < 1 } = interior s := by
+  refine Subset.antisymm (fun x hx ↦ ?_) (interior_subset_gauge_lt_one s)
+  rcases mem_openSegment_of_gauge_lt_one (absorbent_nhds_zero hs₀) hx with ⟨y, hys, hxy⟩
+  exact hc.openSegment_interior_self_subset_interior (mem_interior_iff_mem_nhds.2 hs₀) hys hxy
+
+theorem gauge_lt_one_iff_mem_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+    gauge s x < 1 ↔ x ∈ interior s :=
+  Set.ext_iff.1 (gauge_lt_one_eq_interior hc hs₀) _
+
+theorem gauge_le_one_iff_mem_closure (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+    gauge s x ≤ 1 ↔ x ∈ closure s :=
+  ⟨mem_closure_of_gauge_le_one hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀), fun h ↦
+    le_on_closure (fun _ ↦ gauge_le_one_of_mem) (continuous_gauge hc hs₀).continuousOn
+      continuousOn_const h⟩
+
+theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+    gauge s x = 1 ↔ x ∈ frontier s := by
+  rw [eq_iff_le_not_lt, gauge_le_one_iff_mem_closure hc hs₀, gauge_lt_one_iff_mem_interior hc hs₀]
+  rfl
+
+theorem gauge_eq_zero [T1Space E] (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
+    gauge s x = 0 ↔ x = 0 := by
+  refine ⟨not_imp_not.1 fun (h : x ≠ 0) ↦ ne_of_gt ?_, fun h ↦ h.symm ▸ gauge_zero⟩
+  rcases hb (isOpen_compl_singleton.mem_nhds h.symm) with ⟨c, hc₀, hc⟩
+  refine (inv_pos.2 hc₀).trans_le <| le_csInf hs.gauge_set_nonempty ?_
+  rintro r ⟨hr₀, x, hx, rfl⟩
+  contrapose! hc
+  refine ⟨r⁻¹, ?_, fun h ↦ ?_⟩
+  · rw [norm_inv, Real.norm_of_nonneg hr₀.le, le_inv hc₀ hr₀]
+    exact hc.le
+  · rcases h hx with ⟨y, hy, rfl⟩
+    simp [hr₀.ne'] at hy
+
+theorem gauge_pos [T1Space E] (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
+    0 < gauge s x ↔ x ≠ 0 := by
+  simp only [(gauge_nonneg _).gt_iff_ne, Ne.def, gauge_eq_zero hs hb]
+
+end TopologicalAddGroup
 
 section IsROrC
 
 variable [IsROrC 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
-/-- `gauge s` as a seminorm when `s` is  balanced, convex and absorbent. -/
+/-- `gauge s` as a seminorm when `s` is balanced, convex and absorbent. -/
 @[simps!]
 def gaugeSeminorm (hs₀ : Balanced 𝕜 s) (hs₁ : Convex ℝ s) (hs₂ : Absorbent ℝ s) : Seminorm 𝕜 E :=
   Seminorm.of (gauge s) (gauge_add_le hs₁ hs₂) (gauge_smul hs₀)
@@ -445,25 +529,57 @@ theorem Seminorm.gaugeSeminorm_ball (p : Seminorm ℝ E) :
 
 end AddCommGroup
 
-section Norm
+section Seminormed
 
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s : Set E} {r : ℝ} {x : E}
+open Metric
 
-theorem gauge_unit_ball (x : E) : gauge (Metric.ball (0 : E) 1) x = ‖x‖ := by
+theorem gauge_unit_ball (x : E) : gauge (ball (0 : E) 1) x = ‖x‖ := by
   rw [← ball_normSeminorm ℝ, Seminorm.gauge_ball, coe_normSeminorm]
 #align gauge_unit_ball gauge_unit_ball
 
-theorem gauge_ball (hr : 0 < r) (x : E) : gauge (Metric.ball (0 : E) r) x = ‖x‖ / r := by
-  rw [← smul_unitBall_of_pos hr, gauge_smul_left, Pi.smul_apply, gauge_unit_ball, smul_eq_mul,
+theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ / r := by
+  rcases hr.eq_or_lt with rfl | hr
+  · simp
+  · rw [← smul_unitBall_of_pos hr, gauge_smul_left, Pi.smul_apply, gauge_unit_ball, smul_eq_mul,
     abs_of_nonneg hr.le, div_eq_inv_mul]
-  simp_rw [mem_ball_zero_iff, norm_neg]
-  exact fun _ => id
-#align gauge_ball gauge_ball
+    simp_rw [mem_ball_zero_iff, norm_neg]
+    exact fun _ => id
+
+@[deprecated gauge_ball]
+theorem gauge_ball' (hr : 0 < r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ / r :=
+  gauge_ball hr.le x
+#align gauge_ball gauge_ball'
+
+@[simp]
+theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦ by
+  simp only [← singleton_zero, gauge_def', mem_closure_zero_iff_norm, norm_smul, mul_eq_zero,
+    norm_eq_zero, inv_eq_zero]
+  rcases (norm_nonneg x).eq_or_gt with hx | hx
+  · convert csInf_Ioi (a := (0 : ℝ))
+    exact Set.ext fun r ↦ and_iff_left (.inr hx)
+  · convert Real.sInf_empty
+    exact eq_empty_of_forall_not_mem fun r ⟨hr₀, hr⟩ ↦ hx.ne' <| hr.resolve_left hr₀.out.ne'
+
+@[simp]
+theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x = ‖x‖ / r := by
+  rcases hr.eq_or_lt with rfl | hr'
+  · rw [div_zero, closedBall_zero', singleton_zero, gauge_closure_zero]; rfl
+  · apply le_antisymm
+    · rw [← gauge_ball hr]
+      exact gauge_mono (absorbent_ball_zero hr') ball_subset_closedBall x
+    · suffices : ∀ᶠ R in 𝓝[>] r, ‖x‖ / R ≤ gauge (closedBall 0 r) x
+      · refine le_of_tendsto ?_ this
+        exact tendsto_const_nhds.div inf_le_left hr'.ne'
+      filter_upwards [self_mem_nhdsWithin] with R hR
+      rw [← gauge_ball (hr.trans hR.out.le)]
+      refine gauge_mono ?_ (closedBall_subset_ball hR) _
+      exact (absorbent_ball_zero hr').subset ball_subset_closedBall
 
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by
   obtain hr | hr := le_or_lt r 0
   · exact (mul_nonpos_of_nonpos_of_nonneg hr <| gauge_nonneg _).trans (norm_nonneg _)
-  rw [mul_comm, ← le_div_iff hr, ← gauge_ball hr]
+  rw [mul_comm, ← le_div_iff hr, ← gauge_ball hr.le]
   exact gauge_mono (absorbent_ball_zero hr) hs x
 #align mul_gauge_le_norm mul_gauge_le_norm
 
@@ -475,15 +591,30 @@ theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r
       gauge s x = gauge s (y + (x - y)) := by simp
       _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.subset hs) _ _
       _ ≤ gauge s y + ‖x - y‖ / r :=
-        add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr _)) _
+        add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr.le _)) _
       _ = gauge s y + r⁻¹ * dist x y := by rw [dist_eq_norm, div_eq_inv_mul, NNReal.coe_inv]
 #align convex.lipschitz_with_gauge Convex.lipschitzWith_gauge
 
+theorem Convex.lipschitz_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0 : E)) :
+    ∃ K, LipschitzWith K (gauge s) :=
+  let ⟨r, hr₀, hr⟩ := Metric.mem_nhds_iff.1 h₀
+  ⟨(⟨r, hr₀.le⟩ : ℝ≥0)⁻¹, hc.lipschitzWith_gauge hr₀ hr⟩
+
 theorem Convex.uniformContinuous_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0 : E)) :
-    UniformContinuous (gauge s) := by
-  obtain ⟨r, hr₀, hr⟩ := Metric.mem_nhds_iff.1 h₀
-  lift r to ℝ≥0 using le_of_lt hr₀
-  exact (hc.lipschitzWith_gauge hr₀ hr).uniformContinuous
+    UniformContinuous (gauge s) :=
+  let ⟨_K, hK⟩ := hc.lipschitz_gauge h₀; hK.uniformContinuous
 #align convex.uniform_continuous_gauge Convex.uniformContinuous_gauge
 
-end Norm
+end Seminormed
+
+section Normed
+
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] {s : Set E} {r : ℝ} {x : E}
+open Metric
+
+theorem le_gauge_of_subset_closedBall (hs : Absorbent ℝ s) (hr : 0 ≤ r) (hsr : s ⊆ closedBall 0 r) :
+    ‖x‖ / r ≤ gauge s x := by
+  rw [← gauge_closedBall hr]
+  exact gauge_mono hs hsr _
+
+end Normed

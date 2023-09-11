@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.order.priestley
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Topology.Separation
+
+#align_import topology.order.priestley from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Priestley spaces
@@ -40,7 +37,7 @@ variable {α : Type _}
 
 /-- A Priestley space is an ordered topological space such that any two distinct points can be
 separated by a clopen upper set. Compactness is often assumed, but we do not include it here. -/
-class PriestleySpace (α : Type _) [Preorder α] [TopologicalSpace α] where
+class PriestleySpace (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
   priestley {x y : α} : ¬x ≤ y → ∃ U : Set α, IsClopen U ∧ IsUpperSet U ∧ x ∈ U ∧ y ∉ U
 #align priestley_space PriestleySpace
 

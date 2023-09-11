@@ -2,15 +2,12 @@
 Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module algebraic_topology.fundamental_groupoid.induced_maps
-! leanprover-community/mathlib commit e5470580a62bf043e10976760edfe73c913eb71e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+
+#align_import algebraic_topology.fundamental_groupoid.induced_maps from "leanprover-community/mathlib"@"e5470580a62bf043e10976760edfe73c913eb71e"
 
 /-!
 # Homotopic maps induce naturally isomorphic functors

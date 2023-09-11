@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
+
+#align_import data.set.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Basic properties of sets
@@ -310,34 +307,34 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 
 
 instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (. ≤ .) by infer_instance
+  show IsRefl (Set α) (· ≤ ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
-  show IsTrans (Set α) (. ≤ .) by infer_instance
+  show IsTrans (Set α) (· ≤ ·) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (. ≤ .) (. ≤ .)  (. ≤ .) by infer_instance
+  show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
 
 instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  show IsAntisymm (Set α) (. ≤ .) by infer_instance
+  show IsAntisymm (Set α) (· ≤ ·) by infer_instance
 
 instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  show IsIrrefl (Set α) (. < .) by infer_instance
+  show IsIrrefl (Set α) (· < ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊂ ·) :=
-  show IsTrans (Set α) (. < .) by infer_instance
+  show IsTrans (Set α) (· < ·) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. < .)  (. < .) by infer_instance
+  show Trans (· < ·) (· < ·) (· < ·) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. ≤ .)  (. < .) by infer_instance
+  show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. ≤ .) (. < .)  (. < .) by infer_instance
+  show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
 instance : IsAsymm (Set α) (· ⊂ ·) :=
-  show IsAsymm (Set α) (. < .) by infer_instance
+  show IsAsymm (Set α) (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
@@ -831,14 +828,17 @@ theorem union_subset_iff {s t u : Set α} : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ 
   (forall_congr' fun _ => or_imp).trans forall_and
 #align set.union_subset_iff Set.union_subset_iff
 
+@[gcongr]
 theorem union_subset_union {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ s₂) (h₂ : t₁ ⊆ t₂) :
     s₁ ∪ t₁ ⊆ s₂ ∪ t₂ := fun _ => Or.imp (@h₁ _) (@h₂ _)
 #align set.union_subset_union Set.union_subset_union
 
+@[gcongr]
 theorem union_subset_union_left {s₁ s₂ : Set α} (t) (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
 #align set.union_subset_union_left Set.union_subset_union_left
 
+@[gcongr]
 theorem union_subset_union_right (s) {t₁ t₂ : Set α} (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂ :=
   union_subset_union Subset.rfl h
 #align set.union_subset_union_right Set.union_subset_union_right
@@ -1008,14 +1008,17 @@ theorem univ_inter (a : Set α) : univ ∩ a = a :=
   top_inf_eq
 #align set.univ_inter Set.univ_inter
 
+@[gcongr]
 theorem inter_subset_inter {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ t₁) (h₂ : s₂ ⊆ t₂) :
     s₁ ∩ s₂ ⊆ t₁ ∩ t₂ := fun _ => And.imp (@h₁ _) (@h₂ _)
 #align set.inter_subset_inter Set.inter_subset_inter
 
+@[gcongr]
 theorem inter_subset_inter_left {s t : Set α} (u : Set α) (H : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter H Subset.rfl
 #align set.inter_subset_inter_left Set.inter_subset_inter_left
 
+@[gcongr]
 theorem inter_subset_inter_right {s t : Set α} (u : Set α) (H : s ⊆ t) : u ∩ s ⊆ u ∩ t :=
   inter_subset_inter Subset.rfl H
 #align set.inter_subset_inter_right Set.inter_subset_inter_right
@@ -1697,6 +1700,10 @@ theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_not_mem s).symm
 #align set.nonempty_compl Set.nonempty_compl
 
+@[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := by
+  obtain ⟨y, hy⟩ := exists_ne x
+  exact ⟨y, by simp [hy]⟩
+
 theorem mem_compl_singleton_iff {a x : α} : x ∈ ({a} : Set α)ᶜ ↔ x ≠ a :=
   Iff.rfl
 #align set.mem_compl_singleton_iff Set.mem_compl_singleton_iff
@@ -1739,6 +1746,8 @@ theorem subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ :=
 theorem compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s :=
   @compl_le_compl_iff_le (Set α) _ _ _
 #align set.compl_subset_compl Set.compl_subset_compl
+
+@[gcongr] theorem compl_subset_compl_of_subset (h : t ⊆ s) : sᶜ ⊆ tᶜ := compl_subset_compl.2 h
 
 theorem subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
   @le_compl_iff_disjoint_left (Set α) _ _ _

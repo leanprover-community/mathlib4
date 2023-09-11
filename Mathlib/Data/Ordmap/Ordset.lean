@@ -2,17 +2,14 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.ordmap.ordset
-! leanprover-community/mathlib commit 47b51515e69f59bca5cf34ef456e6000fe205a69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Dist
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
+
+#align_import data.ordmap.ordset from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
 /-!
 # Verification of the `Ordnode α` datatype
@@ -1341,7 +1338,7 @@ theorem Valid'.balance' {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : 
 #align ordnode.valid'.balance' Ordnode.Valid'.balance'
 
 theorem Valid'.balance {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
-    (H : ∃ l' r',  BalancedSz l' r' ∧
+    (H : ∃ l' r', BalancedSz l' r' ∧
           (Nat.dist (size l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l')) :
     Valid' o₁ (@balance α l x r) o₂ := by
   rw [balance_eq_balance' hl.3 hr.3 hl.2 hr.2]; exact hl.balance' hr H

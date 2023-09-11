@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.injective_resolution
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
+
+#align_import category_theory.abelian.injective_resolution from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Main result

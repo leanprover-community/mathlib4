@@ -2,17 +2,14 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.vector.basic
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+
+#align_import data.vector.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -381,14 +378,14 @@ theorem scanl_head : (scanl f b v).head = b := by
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
-function `f : β → α → β` of the `castSuccEmb i` element of
+function `f : β → α → β` of the `castSucc i` element of
 `scanl f b v` and `get v i`.
 
 This lemma is the `get` version of `scanl_cons`.
 -/
 @[simp]
 theorem scanl_get (i : Fin n) :
-    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSuccEmb i)) (v.get i) := by
+    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
   cases' n with n
   · exact i.elim0
   induction' n with n hn generalizing b
@@ -396,9 +393,9 @@ theorem scanl_get (i : Fin n) :
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
-    · simp only [get_zero, scanl_head, Fin.castSuccEmb_zero, head_cons]
+    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
-      simp only [hn, Fin.castSuccEmb_fin_succ, get_cons_succ]
+      simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
 #align vector.scanl_nth Vector.scanl_get
 
 end Scan
@@ -593,10 +590,10 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} :
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
-      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSuccEmb i)
+      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
     refine' Subtype.eq _
-    simp only [insertNth_val, Fin.val_succ, Fin.castSuccEmb, Fin.coe_castAdd]
+    simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
     apply List.insertNth_comm
     · assumption
     · rw [hl]
@@ -715,7 +712,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
   simp! [cast, *, functor_norm]
   · rfl
   · rw [Vector.traverse_def, ih]
-    simp [functor_norm, (. ∘ .)]
+    simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :

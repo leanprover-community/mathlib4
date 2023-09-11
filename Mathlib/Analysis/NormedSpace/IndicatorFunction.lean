@@ -2,14 +2,11 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.indicator_function
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Algebra.IndicatorFunction
+
+#align_import analysis.normed_space.indicator_function from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Indicator function and norm

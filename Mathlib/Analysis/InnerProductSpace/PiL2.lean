@@ -2,16 +2,13 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.pi_L2
-! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.UnitaryGroup
+
+#align_import analysis.inner_product_space.pi_L2 from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -207,8 +204,8 @@ theorem DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply [DecidableE
     let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
     suffices ∀ v : ⨁ i, V i, e₂ v = ∑ i, e₁ v i by exact this (e₁.symm w)
     intro v
-    -- Porting note: added `Dfinsupp.lsum`
-    simp [DirectSum.coeLinearMap, DirectSum.toModule, Dfinsupp.lsum, Dfinsupp.sumAddHom_apply]
+    -- Porting note: added `DFinsupp.lsum`
+    simp [DirectSum.coeLinearMap, DirectSum.toModule, DFinsupp.lsum, DFinsupp.sumAddHom_apply]
 #align direct_sum.is_internal.isometry_L2_of_orthogonal_family_symm_apply DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply
 
 end

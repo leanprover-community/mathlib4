@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Simon Hudon
-
-! This file was ported from Lean 3 source module category_theory.monoidal.of_chosen_finite_products.symmetric
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+
+#align_import category_theory.monoidal.of_chosen_finite_products.symmetric from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 # The symmetric monoidal structure on a category with chosen finite products.

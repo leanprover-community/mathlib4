@@ -2,15 +2,12 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module number_theory.zsqrtd.gaussian_int
-! leanprover-community/mathlib commit 5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import number_theory.zsqrtd.gaussian_int from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
 /-!
 # Gaussian integers
@@ -26,7 +23,7 @@ The homomorphism `GaussianInt.toComplex` into the complex numbers is also define
 
 ## See also
 
-See `number_theory.zsqrtd.gaussian_int` for:
+See `NumberTheory.Zsqrtd.QuadraticReciprocity` for:
 * `prime_iff_mod_four_eq_three_of_nat_prime`:
   A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 

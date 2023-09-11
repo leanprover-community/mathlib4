@@ -67,7 +67,7 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
 example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
  by linarith
 
-example (x y z : Rat) (h1 : 2*x  < 3*y) (h2 : -4*x + z/2 < 0)
+example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
         (h3 : 12*y - z < 0)  : False :=
 by linarith
 
@@ -443,7 +443,7 @@ axiom abs_nonneg' : ∀ r, 0 ≤ abs r
 example (t : R) (a b : ℚ) (h : a ≤ b) : abs (t^2) * a ≤ abs (t^2) * b :=
 by nlinarith [abs_nonneg' abs (t^2)]
 
-example (t : R)  (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b :=
+example (t : R) (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b :=
 by linarith [abs_nonneg' abs (t^2)]
 
 example (t : R) (a b : ℚ) (h : a ≤ b) : abs t * a ≤ abs t * b :=
@@ -462,11 +462,17 @@ lemma works {a b : ℕ} (hab : a ≤ b) (h : b < a) : false := by
 
 end T
 
--- example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c :=
+by linarith (config := {splitNe := true})
 
--- example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
+by linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : b ≤ a) : b < a :=
+by linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : ¬a < b) : b < a :=
+by linarith (config := {splitNe := true})
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 

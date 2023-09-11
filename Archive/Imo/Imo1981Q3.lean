@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
-
-! This file was ported from Lean 3 source module imo.imo1981_q3
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Fib
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
+
+#align_import imo.imo1981_q3 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1981 Q3

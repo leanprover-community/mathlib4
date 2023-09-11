@@ -2,11 +2,6 @@
 Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
-
-! This file was ported from Lean 3 source module analysis.complex.upper_half_plane.basic
-! leanprover-community/mathlib commit 34d3797325d202bd7250431275bb871133cdb611
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Parity
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
 import Mathlib.Tactic.LinearCombination
+
+#align_import analysis.complex.upper_half_plane.basic from "leanprover-community/mathlib"@"34d3797325d202bd7250431275bb871133cdb611"
 
 /-!
 # The upper half plane and its automorphisms

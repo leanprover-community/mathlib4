@@ -2,13 +2,10 @@
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.monoidal.category
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.monoidal.category from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Monoidal categories

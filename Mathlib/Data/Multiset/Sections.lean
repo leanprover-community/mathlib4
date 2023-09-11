@@ -2,13 +2,10 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.multiset.sections
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Bind
+
+#align_import data.multiset.sections from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Sections of a multiset

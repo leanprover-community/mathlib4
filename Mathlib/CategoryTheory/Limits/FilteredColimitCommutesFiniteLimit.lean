@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.filtered_colimit_commutes_finite_limit
-! leanprover-community/mathlib commit 3f409bd9df181d26dd223170da7b6830ece18442
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.limits.filtered_colimit_commutes_finite_limit from "leanprover-community/mathlib"@"3f409bd9df181d26dd223170da7b6830ece18442"
 
 /-!
 # Filtered colimits commute with finite limits.

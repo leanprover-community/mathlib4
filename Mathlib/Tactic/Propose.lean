@@ -66,7 +66,7 @@ def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (requi
 
 /--
 Attempts to find lemmas which use all of the `required` expressions as arguments, and
-can by unified with the given `type` (which may contain metavariables, which we avoid assigning).
+can be unified with the given `type` (which may contain metavariables, which we avoid assigning).
 We look up candidate lemmas from a discrimination tree using the first such expression.
 
 Returns an array of pairs, containing the names of found lemmas and the resulting application.
@@ -112,6 +112,7 @@ syntax (name := propose') "have?" "!"? (" : " term)? " using " (colGt term),+ : 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic
   | `(tactic| have?%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
+    let stx ← getRef
     let goal ← getMainGoal
     goal.withContext do
       let required ← terms.mapM (elabTerm · none)
@@ -123,7 +124,7 @@ elab_rules : tactic
         throwError "propose could not find any lemmas using the given hypotheses"
       -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        addHaveSuggestion tk (← inferType p.2) p.2
+        addHaveSuggestion tk (← inferType p.2) p.2 stx
       if lucky.isSome then
         let mut g := goal
         for p in proposals.toList.take 10 do
@@ -131,6 +132,9 @@ elab_rules : tactic
         replaceMainGoal [g]
 
 @[inherit_doc propose'] syntax "have?!" (" : " term)? " using " (colGt term),+ : tactic
+@[inherit_doc propose'] syntax "have!?" (" : " term)? " using " (colGt term),+ : tactic
 macro_rules
   | `(tactic| have?!%$tk $[: $type]? using $terms,*) =>
+    `(tactic| have?%$tk ! $[: $type]? using $terms,*)
+  | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)

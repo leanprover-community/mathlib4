@@ -2,17 +2,14 @@
 Copyright (c) 2018 Reid Barton All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison, David Wärn
-
-! This file was ported from Lean 3 source module category_theory.groupoid
-! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Symmetric
+
+#align_import category_theory.groupoid from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
 /-!
 # Groupoids
@@ -86,8 +83,7 @@ def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
   ⟨Groupoid.inv, Groupoid.inv, fun f => by simp, fun f => by simp⟩
 #align category_theory.groupoid.inv_equiv CategoryTheory.Groupoid.invEquiv
 
-instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C
-    where
+instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C where
   reverse' f := Groupoid.inv f
   inv' f := by
     dsimp [Quiver.reverse]
@@ -99,18 +95,16 @@ theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv 
   rfl
 #align category_theory.groupoid.reverse_eq_inv CategoryTheory.Groupoid.reverse_eq_inv
 
-instance functorMapReverse {D : Type _} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse
-    where
-      map_reverse' f := by
-        simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
-          Functor.map_inv]
+instance functorMapReverse {D : Type _} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
+  map_reverse' f := by
+    simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
+      Functor.map_inv]
 #align category_theory.functor_map_reverse CategoryTheory.functorMapReverse
 
 variable (X Y)
 
 /-- In a groupoid, isomorphisms are equivalent to morphisms. -/
-def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y)
-    where
+def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
   invFun f := ⟨f, Groupoid.inv f, (by aesop_cat), (by aesop_cat)⟩
   left_inv i := Iso.ext rfl
@@ -121,8 +115,7 @@ variable (C)
 
 /-- The functor from a groupoid `C` to its opposite sending every morphism to its inverse. -/
 @[simps]
-noncomputable def Groupoid.invFunctor : C ⥤ Cᵒᵖ
-    where
+noncomputable def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
   obj := Opposite.op
   map {X Y} f := (inv f).op
 #align category_theory.groupoid.inv_functor CategoryTheory.Groupoid.invFunctor
@@ -141,8 +134,8 @@ noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), Is
 #align category_theory.groupoid.of_is_iso CategoryTheory.Groupoid.ofIsIso
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
-def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C
-    where inv _ := all_unique.default
+def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where
+  inv _ := all_unique.default
 #align category_theory.groupoid.of_hom_unique CategoryTheory.Groupoid.ofHomUnique
 
 end
@@ -158,16 +151,15 @@ instance InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] 
 section
 
 instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
-    Groupoid.{max u v} (∀ i : I, J i)
-    where
-      inv f := fun i : I => Groupoid.inv (f i)
-      comp_inv := fun f => by funext i; apply Groupoid.comp_inv
-      inv_comp := fun f => by funext i; apply Groupoid.inv_comp
+    Groupoid.{max u v} (∀ i : I, J i) where
+  inv f := fun i : I => Groupoid.inv (f i)
+  comp_inv := fun f => by funext i; apply Groupoid.comp_inv
+  inv_comp := fun f => by funext i; apply Groupoid.inv_comp
 #align category_theory.groupoid_pi CategoryTheory.groupoidPi
 
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
-    Groupoid.{max u₂ v₂} (α × β)
-    where inv f := (Groupoid.inv f.1, Groupoid.inv f.2)
+    Groupoid.{max u₂ v₂} (α × β) where
+  inv f := (Groupoid.inv f.1, Groupoid.inv f.2)
 #align category_theory.groupoid_prod CategoryTheory.groupoidProd
 
 end

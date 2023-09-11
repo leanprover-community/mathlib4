@@ -2,14 +2,11 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
-
-! This file was ported from Lean 3 source module data.nat.cast.defs
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
+
+#align_import data.nat.cast.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Cast of natural numbers
@@ -57,7 +54,7 @@ instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
 @[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
+  (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
 
 theorem Nat.cast_eq_ofNat [NatCast R] [Nat.AtLeastTwo n] : (Nat.cast n : R) = OfNat.ofNat n := rfl
 

@@ -2,14 +2,11 @@
 Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
-
-! This file was ported from Lean 3 source module representation_theory.group_cohomology.basic
-! leanprover-community/mathlib commit cc5dd6244981976cc9da7afc4eee5682b037a013
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+
+#align_import representation_theory.group_cohomology.basic from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
 /-!
 # The group cohomology of a `k`-linear `G`-representation
@@ -120,7 +117,7 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 variable [Group G] (n) (A : Rep k G)
 
 /- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 800000 in
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
 and the homogeneous `linearYonedaObjResolution`. -/
@@ -138,12 +135,12 @@ and the homogeneous `linearYonedaObjResolution`. -/
     ←Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
   simp only [@Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul, Fin.succAbove_zero,
     diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1)), Function.comp_apply,
-    Fin.partialProd_succ, Fin.castSuccEmb_zero, Fin.partialProd_zero, one_mul]
+    Fin.partialProd_succ, Fin.castSucc_zero, Fin.partialProd_zero, one_mul]
   congr 1
   · congr
     ext
-    have := Fin.partialProd_right_inv g (Fin.castSuccEmb x)
-    simp only [mul_inv_rev, Fin.castSuccEmb_fin_succ] at *
+    have := Fin.partialProd_right_inv g (Fin.castSucc x)
+    simp only [mul_inv_rev, Fin.castSucc_fin_succ] at *
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
   · exact Finset.sum_congr rfl fun j hj => by
       rw [diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ] -/
@@ -158,11 +155,11 @@ and the homogeneous `linearYonedaObjResolution`. -/
   simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   rw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
-  simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSuccEmb_zero,
+  simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
     Fin.partialProd_zero, one_mul]
   rcongr x
-  · have := Fin.partialProd_right_inv g (Fin.castSuccEmb x)
-    simp only [mul_inv_rev, Fin.castSuccEmb_fin_succ] at this ⊢
+  · have := Fin.partialProd_right_inv g (Fin.castSucc x)
+    simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
   · rw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
 #align inhomogeneous_cochains.d_eq InhomogeneousCochains.d_eq
@@ -175,7 +172,7 @@ variable [Group G] (n) (A : Rep k G)
 
 open InhomogeneousCochains
 
-set_option maxHeartbeats 6400000 in
+set_option maxHeartbeats 3200000 in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
@@ -202,7 +199,7 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     exact map_zero _
 #align group_cohomology.inhomogeneous_cochains GroupCohomology.inhomogeneousCochains
 
-set_option maxHeartbeats 6400000
+set_option maxHeartbeats 3200000 in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by

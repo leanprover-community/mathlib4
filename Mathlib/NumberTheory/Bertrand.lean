@@ -2,17 +2,14 @@
 Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
-
-! This file was ported from Lean 3 source module number_theory.bertrand
-! leanprover-community/mathlib commit a16665637b378379689c566204817ae792ac8b39
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Factorization
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+
+#align_import number_theory.bertrand from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
 /-!
 # Bertrand's Postulate
@@ -247,8 +244,8 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   run_tac do
     for i in [317, 163, 83, 43, 23, 13, 7, 5, 3, 2] do
       let i : Term := quote i
-      evalTactic
-        (← `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num) (by norm_num) _))
+      evalTactic <| ←
+        `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) _)
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 #align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 

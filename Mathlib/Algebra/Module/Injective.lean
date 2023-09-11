@@ -2,17 +2,14 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.module.injective
-! leanprover-community/mathlib commit f8d8465c3c392a93b9ed226956e26dee00975946
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Data.TypeMax -- Porting note: added for universe issues
+
+#align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 
 /-!
 # Injective modules
@@ -21,7 +18,7 @@ import Mathlib.Data.TypeMax -- Porting note: added for universe issues
 
 * `Module.Injective`: an `R`-module `Q` is injective if and only if every injective `R`-linear
   map descends to a linear map to `Q`, i.e. in the following diagram, if `f` is injective then there
-  is an `R`-linear map `h : Y ⟶  Q` such that `g = h ∘ f`
+  is an `R`-linear map `h : Y ⟶ Q` such that `g = h ∘ f`
   ```
   X --- f ---> Y
   |
@@ -30,7 +27,7 @@ import Mathlib.Data.TypeMax -- Porting note: added for universe issues
   Q
   ```
 * `Module.Baer`: an `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an
-  `Ideal R` extends to an `R`-linear map `R ⟶  Q`
+  `Ideal R` extends to an `R`-linear map `R ⟶ Q`
 
 ## Main statements
 

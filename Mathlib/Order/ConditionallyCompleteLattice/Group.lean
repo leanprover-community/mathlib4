@@ -2,15 +2,11 @@
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-Ported by: Anatole Dedecker
-
-! This file was ported from Lean 3 source module order.conditionally_complete_lattice.group
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Algebra.Order.Group.TypeTags
+
+#align_import order.conditionally_complete_lattice.group from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Conditionally complete lattices and groups.

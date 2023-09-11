@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module measure_theory.measure.doubling
-! leanprover-community/mathlib commit 5f6e827d81dfbeb6151d7016586ceeb0099b9655
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+
+#align_import measure_theory.measure.doubling from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
 /-!
 # Uniformly locally doubling measures
@@ -45,7 +42,7 @@ volumes grow exponentially in hyperbolic space. To be really explicit, consider 
 of curvature -1, the area of a disc of radius `ε` is `A(ε) = 2π(cosh(ε) - 1)` so
 `A(2ε)/A(ε) ~ exp(ε)`. -/
 class IsUnifLocDoublingMeasure {α : Type _} [MetricSpace α] [MeasurableSpace α]
-  (μ : Measure α) where
+  (μ : Measure α) : Prop where
   exists_measure_closedBall_le_mul'' :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε)
 #align is_unif_loc_doubling_measure IsUnifLocDoublingMeasure

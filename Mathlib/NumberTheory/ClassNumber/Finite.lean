@@ -2,11 +2,6 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.finite
-! leanprover-community/mathlib commit ea0bcd84221246c801a6f8fbe8a4372f6d04b176
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -15,6 +10,8 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.Norm
+
+#align_import number_theory.class_number.finite from "leanprover-community/mathlib"@"ea0bcd84221246c801a6f8fbe8a4372f6d04b176"
 
 /-!
 # Class numbers of global fields
@@ -249,7 +246,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     rw [← bS.sum_repr a]
     simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
-      Finset.sum_congr rfl fun i _ =>  _
+      Finset.sum_congr rfl fun i _ => _
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
     rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i

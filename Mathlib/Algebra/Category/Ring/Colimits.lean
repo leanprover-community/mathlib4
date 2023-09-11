@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Ring.colimits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import algebra.category.Ring.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of commutative rings has all colimits.
@@ -172,11 +169,11 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   zero_add x := Quot.inductionOn x fun _ => Quot.sound (Relation.zero_add _)
   add_zero x := Quot.inductionOn x fun _ => Quot.sound (Relation.add_zero _)
   add_left_neg := Quot.ind fun x => by
-    simp only [(. + .)]
+    simp only [(· + ·)]
     exact Quot.sound (Relation.add_left_neg x)
   add_assoc x y z := by
     refine Quot.induction_on₃ x y z (fun a b c => ?_)
-    simp only [(. + .)]
+    simp only [(· + ·)]
     apply Quot.sound
     apply Relation.add_assoc
 
@@ -191,18 +188,18 @@ instance : CommRing (ColimitType.{v} F) :=
     add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
     mul_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.mul_comm _ _
     add_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), Add.add]
+      simp only [(· + ·), Add.add]
       exact Quot.sound (Relation.add_assoc _ _ _)
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. * .)]
+      simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
     mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
     zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), (. * .), Add.add]
+      simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
     right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), (. * .), Add.add]
+      simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
 @[simp]
@@ -335,7 +332,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_zero' := rfl
   map_add' x y := by
     refine Quot.induction_on₂ x y fun a b => ?_
-    dsimp [descFun, (. + .)]
+    dsimp [descFun, (· + ·)]
     rw [←quot_add]
     rfl
   map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl

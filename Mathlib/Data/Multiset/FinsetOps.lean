@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.finset_ops
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Dedup
+
+#align_import data.multiset.finset_ops from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-!
 # Preparations for defining operations on `Finset`.

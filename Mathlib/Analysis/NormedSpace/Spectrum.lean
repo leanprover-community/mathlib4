@@ -2,11 +2,6 @@
 Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.spectrum
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
+
+#align_import analysis.normed_space.spectrum from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -330,7 +327,7 @@ theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ
     simpa only [norm_toNNReal, Real.toNNReal_coe] using
       Real.toNNReal_mono (mem_closedBall_zero_iff.mp z_mem)
   have H₁ : Differentiable 𝕜 fun w : 𝕜 => 1 - w • a := (differentiable_id.smul_const a).const_sub 1
-  exact DifferentiableAt.comp z (differentiableAt_inverse hu.unit) H₁.differentiableAt
+  exact DifferentiableAt.comp z (differentiableAt_inverse hu) H₁.differentiableAt
 #align spectrum.differentiable_on_inverse_one_sub_smul spectrum.differentiableOn_inverse_one_sub_smul
 
 end OneSubSmul

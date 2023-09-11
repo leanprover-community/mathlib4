@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.module.submodule.pointwise
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Span
+
+#align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-! # Pointwise instances on `Submodule`s
 

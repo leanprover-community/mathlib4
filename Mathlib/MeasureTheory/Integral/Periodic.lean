@@ -2,17 +2,14 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.integral.periodic
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Topology.Algebra.Order.Floor
+
+#align_import measure_theory.integral.periodic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # Integrals of periodic functions
@@ -118,7 +115,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
     apply coe_real_preimage_closedBall_inter_eq
     simpa only [hT', Real.closedBall_eq_Icc, zero_add, zero_sub] using Ioc_subset_Icc_self
-  rw [add_haar_closedBall_center]
+  rw [addHaar_closedBall_center]
   simp only [restrict_apply' measurableSet_Ioc, (by linarith : -(T / 2) + T = T / 2), h₂, ←
     (AddCircle.measurePreserving_mk T (-(T / 2))).measure_preimage measurableSet_closedBall]
   by_cases hε : ε < T / 2

@@ -2,15 +2,12 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_product.matrix
-! leanprover-community/mathlib commit f784cc6142443d9ee623a20788c282112c322081
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.TensorProductBasis
+
+#align_import linear_algebra.tensor_product.matrix from "leanprover-community/mathlib"@"f784cc6142443d9ee623a20788c282112c322081"
 
 /-!
 # Connections between `TensorProduct` and `Matrix`

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module algebra.ring.comp_typeclasses
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.ring.comp_typeclasses from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Propositional typeclasses on several ring homs

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.clique
-! leanprover-community/mathlib commit cd7f0626a0b04be1dda223a26123313514a55fb4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Finset.Pairwise
+
+#align_import combinatorics.simple_graph.clique from "leanprover-community/mathlib"@"cd7f0626a0b04be1dda223a26123313514a55fb4"
 
 /-!
 # Graph cliques

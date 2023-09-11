@@ -2,13 +2,10 @@
 Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
-
-! This file was ported from Lean 3 source module miu_language.basic
-! leanprover-community/mathlib commit 7e3fa4c114f6f12380cf3b181fd4bd03a2f05b79
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Linarith
+
+#align_import miu_language.basic from "leanprover-community/mathlib"@"7e3fa4c114f6f12380cf3b181fd4bd03a2f05b79"
 
 /-!
 # An MIU Decision Procedure in Lean

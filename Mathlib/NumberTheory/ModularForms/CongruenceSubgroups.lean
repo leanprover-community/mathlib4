@@ -2,16 +2,13 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.congruence_subgroups
-! leanprover-community/mathlib commit ae690b0c236e488a0043f6faa8ce3546e7f2f9c5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+
+#align_import number_theory.modular_forms.congruence_subgroups from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
 
 /-!
 # Congruence subgroups

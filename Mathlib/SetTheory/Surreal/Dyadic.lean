@@ -2,16 +2,13 @@
 Copyright (c) 2021 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
-
-! This file was ported from Lean 3 source module set_theory.surreal.dyadic
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import set_theory.surreal.dyadic from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Dyadic numbers

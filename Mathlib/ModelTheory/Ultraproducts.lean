@@ -2,15 +2,12 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.ultraproducts
-! leanprover-community/mathlib commit f1ae620609496a37534c2ab3640b641d5be8b6f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Quotients
 import Mathlib.Order.Filter.Germ
 import Mathlib.Order.Filter.Ultrafilter
+
+#align_import model_theory.ultraproducts from "leanprover-community/mathlib"@"f1ae620609496a37534c2ab3640b641d5be8b6f0"
 
 /-! # Ultraproducts and Łoś's Theorem
 
@@ -133,7 +130,7 @@ theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormu
           Fin.snoc (fun i : Fin k => v i a) (m a) := by
       refine' fun m a => funext (Fin.reverseInduction _ fun i _ => _)
       · simp only [Fin.snoc_last]
-      · simp only [Fin.snoc_castSuccEmb]
+      · simp only [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]
     simp only [Function.comp, ih, h']
     refine' ⟨fun h => _, fun h m => _⟩

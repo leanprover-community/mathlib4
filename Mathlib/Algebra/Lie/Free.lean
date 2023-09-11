@@ -2,16 +2,13 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.free
-! leanprover-community/mathlib commit 841ac1a3d9162bf51c6327812ecb6e5e71883ac4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
+
+#align_import algebra.lie.free from "leanprover-community/mathlib"@"841ac1a3d9162bf51c6327812ecb6e5e71883ac4"
 
 /-!
 # Free Lie algebras
@@ -258,7 +255,7 @@ theorem lift_unique (f : X → L) (g : FreeLieAlgebra R X →ₗ⁅R⁆ L) : g �
 
 @[simp]
 theorem lift_of_apply (f : X → L) (x) : lift R f (of R x) = f x := by
-  rw [← @Function.comp_apply  _ _ _ (lift R f) (of R) x, of_comp_lift]
+  rw [← @Function.comp_apply _ _ _ (lift R f) (of R) x, of_comp_lift]
 #align free_lie_algebra.lift_of_apply FreeLieAlgebra.lift_of_apply
 
 @[simp]

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.set_like.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
+
+#align_import data.set_like.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
 /-!
 # Typeclass for types with a set-like extensionality property

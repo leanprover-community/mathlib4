@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.lebesgue.basic
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.LinearAlgebra.Determinant
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+#align_import measure_theory.measure.lebesgue.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Lebesgue measure on the real line and on `ℝⁿ`

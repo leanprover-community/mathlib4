@@ -2,17 +2,14 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.extra_degeneracy
-! leanprover-community/mathlib commit 324a7502510e835cdbd3de1519b6c66b51fb2467
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Tactic.FinCases
+
+#align_import algebraic_topology.extra_degeneracy from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
 
 /-!
 
@@ -220,8 +217,9 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     by_cases j = 0
     · subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
-    · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
-      simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply]
+    · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
+      simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply,
+        Fin.succAboveEmb_apply]
   s_comp_σ n i := by
     ext1 φ
     apply SimplexCategory.Hom.ext
@@ -267,7 +265,9 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     f.cechNerve.obj (op [n]) ⟶ f.cechNerve.obj (op [n + 1]) :=
   WidePullback.lift (WidePullback.base _)
     (fun i =>
-      dite (i = 0) (fun _ => WidePullback.base _ ≫ S.section_) fun h => WidePullback.π _ (i.pred h))
+      dite (i = 0)
+        (fun _ => WidePullback.base _ ≫ S.section_)
+        (fun h => WidePullback.π _ (i.pred h)))
     fun i => by
       dsimp
       split_ifs with h

@@ -2,16 +2,13 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module combinatorics.hales_jewett
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import combinatorics.hales_jewett from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # The Hales-Jewett theorem
@@ -352,7 +349,7 @@ theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finse
   skip
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι :=  Finset.univ.filter (fun i => l.idxFun i = none ) with hs
+  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none ) with hs
   refine'
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
       c, _⟩

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.basic
-! leanprover-community/mathlib commit 3a69562db5a458db8322b190ec8d9a8bbd8a5b14
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+
+#align_import analysis.calculus.fderiv.basic from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
 
 /-!
 # The Fréchet derivative
@@ -325,7 +322,7 @@ theorem hasFDerivAt_iff_isLittleO_nhds_zero :
 #align has_fderiv_at_iff_is_o_nhds_zero hasFDerivAt_iff_isLittleO_nhds_zero
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then it its derivative at `x₀` has norm bounded by `C`. This version
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
 only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
 theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) : ‖f'‖ ≤ C := by
@@ -342,7 +339,7 @@ theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (h
 #align has_fderiv_at.le_of_lip' HasFDerivAt.le_of_lip'
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then it its derivative at `x₀` has norm bounded by `C`. -/
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
 theorem HasFDerivAt.le_of_lip {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
   refine' hf.le_of_lip' C.coe_nonneg _
@@ -405,7 +402,7 @@ alias hasFDerivWithinAt_insert ↔ HasFDerivWithinAt.of_insert HasFDerivWithinAt
 #align has_fderiv_within_at.of_insert HasFDerivWithinAt.of_insert
 #align has_fderiv_within_at.insert' HasFDerivWithinAt.insert'
 
-theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
+protected theorem HasFDerivWithinAt.insert (h : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt g g' (insert x s) x :=
   h.insert'
 #align has_fderiv_within_at.insert HasFDerivWithinAt.insert
@@ -546,7 +543,7 @@ theorem fderiv_eq {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x
 #align fderiv_eq fderiv_eq
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then it its derivative at `x₀` has norm bounded by `C`.
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
 Version using `fderiv`. -/
 -- Porting note: renamed so that dot-notation makes sense
 theorem DifferentiableAt.le_of_lip {f : E → F} {x₀ : E} (hf : DifferentiableAt 𝕜 f x₀)
@@ -763,8 +760,7 @@ set_option linter.uppercaseLean3 false in
 theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
     (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
   have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
-    isBigO_iff.2
-      ⟨C, eventually_of_forall fun _ => AddMonoidHomClass.bound_of_antilipschitz f' hf' _⟩
+    isBigO_iff.2 ⟨C, eventually_of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
   (this.trans (hf.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
     sub_add_cancel _ _
 set_option linter.uppercaseLean3 false in
@@ -827,6 +823,17 @@ theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
 #align filter.eventually_eq.has_strict_fderiv_at_iff Filter.EventuallyEq.hasStrictFDerivAt_iff
+
+theorem HasStrictFDerivAt.congr_fderiv (h : HasStrictFDerivAt f f' x) (h' : f' = g') :
+    HasStrictFDerivAt f g' x :=
+  h' ▸ h
+
+theorem HasFDerivAt.congr_fderiv (h : HasFDerivAt f f' x) (h' : f' = g') : HasFDerivAt f g' x :=
+  h' ▸ h
+
+theorem HasFDerivWithinAt.congr_fderiv (h : HasFDerivWithinAt f f' s x) (h' : f' = g') :
+    HasFDerivWithinAt f g' s x :=
+  h' ▸ h
 
 theorem HasStrictFDerivAt.congr_of_eventuallyEq (h : HasStrictFDerivAt f f' x)
     (h₁ : f =ᶠ[𝓝 x] f₁) : HasStrictFDerivAt f₁ f' x :=

@@ -2,16 +2,13 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.field.defs
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.Ring.Defs
 import Std.Data.Rat
 import Mathlib.Data.Rat.Init
+
+#align_import algebra.field.defs from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
 /-!
 # Division (semi)rings and (semi)fields

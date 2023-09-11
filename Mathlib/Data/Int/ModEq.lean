@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.int.modeq
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Ring
+
+#align_import data.int.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
 /-!
 
@@ -288,6 +285,10 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     _ ≡ b + 0 [ZMOD n] := (dvd_mul_right _ _).modEq_zero_int.add_left _
     _ ≡ b [ZMOD n] := by rw [add_zero]
 #align int.modeq_add_fac Int.modEq_add_fac
+
+theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
+  convert Int.modEq_add_fac (-c) ha using 1
+  ring
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
   modEq_add_fac _ ModEq.rfl

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.bornology.hom
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Bornology.Basic
+
+#align_import topology.bornology.hom from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Locally bounded maps

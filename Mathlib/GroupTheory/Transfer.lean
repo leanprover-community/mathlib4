@@ -2,14 +2,11 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.transfer
-! leanprover-community/mathlib commit 56489b558d42c30f6aac5947cafc9a594f60813b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
+
+#align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # The Transfer Homomorphism
@@ -212,7 +209,7 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 
 section BurnsideTransfer
 
-variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ (P : Subgroup G).centralizer)
+variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=

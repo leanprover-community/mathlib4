@@ -2,15 +2,12 @@
 Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.galois
-! leanprover-community/mathlib commit 9fb8964792b4237dac6200193a0d533f1b3f7423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Fixed
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+
+#align_import field_theory.galois from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 
 /-!
 # Galois Extensions

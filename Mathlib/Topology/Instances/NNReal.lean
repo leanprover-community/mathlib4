@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module topology.instances.nnreal
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Instances.Real
+
+#align_import topology.instances.nnreal from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Topology on `ℝ≥0`

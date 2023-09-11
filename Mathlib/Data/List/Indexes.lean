@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
-
-! This file was ported from Lean 3 source module data.list.indexes
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
+
+#align_import data.list.indexes from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Lemmas about List.*Idx functions.

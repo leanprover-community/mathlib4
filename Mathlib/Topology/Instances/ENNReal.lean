@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.instances.ennreal
-! leanprover-community/mathlib commit ec4b2eeb50364487f80421c0b4c41328a611f30d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
@@ -14,6 +9,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.T5
 import Mathlib.Topology.MetricSpace.Lipschitz
+
+#align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
 
 /-!
 # Topology on extended non-negative reals
@@ -1004,7 +1001,7 @@ theorem tsum_iUnion_le_tsum {ι : Type _} (f : α → ℝ≥0∞) (t : ι → Se
 
 theorem tsum_biUnion_le_tsum {ι : Type _} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s , t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
-  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s,  t i, f x := tsum_congr_subtype _ <| by simp
+  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_subtype _ <| by simp
   _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
 
 theorem tsum_biUnion_le {ι : Type _} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module representation_theory.invariants
-! leanprover-community/mathlib commit 55b3f8206b8596db8bb1804d8a92814a0b6670c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.FdRep
+
+#align_import representation_theory.invariants from "leanprover-community/mathlib"@"55b3f8206b8596db8bb1804d8a92814a0b6670c9"
 
 /-!
 # Subspace of invariants a group representation
@@ -141,7 +138,7 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
   exact comm
 #align representation.lin_hom.mem_invariants_iff_comm Representation.linHom.mem_invariants_iff_comm
 
-/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the the representation
+/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
@@ -160,7 +157,7 @@ section FdRep
 
 variable {k : Type u} [Field k] {G : GroupCat.{u}}
 
-/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the the representation
+/-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 def invariantsEquivFdRepHom (X Y : FdRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y := by
   rw [← FdRep.forget₂_ρ, ← FdRep.forget₂_ρ]

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.Scheme
-! leanprover-community/mathlib commit 88474d1b5af6d37c2ab728b757771bced7f5194c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.Ring.Constructions
+
+#align_import algebraic_geometry.Scheme from "leanprover-community/mathlib"@"88474d1b5af6d37c2ab728b757771bced7f5194c"
 
 /-!
 # The category of schemes

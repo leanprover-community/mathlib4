@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kyle Miller All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.sym.sym2
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.SetLike.Basic
+
+#align_import data.sym.sym2 from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # The symmetric square
@@ -240,7 +237,7 @@ theorem coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α)
 def map (f : α → β) : Sym2 α → Sym2 β :=
   Quotient.map (Prod.map f f)
     (by
-      intro _ _ h;
+      intro _ _ h
       cases h
       · constructor
       apply Rel.swap)
@@ -590,12 +587,12 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
         cases' x with _ x; · simp at hx
         cases' x with _ x; · simp at hx
-        cases' x with _ x; swap;
+        cases' x with _ x; swap
         · exfalso
           simp at hx
         cases' y with _ y; · simp at hy
         cases' y with _ y; · simp at hy
-        cases' y with _ y; swap;
+        cases' y with _ y; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)

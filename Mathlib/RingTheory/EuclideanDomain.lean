@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.euclidean_domain
-! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import ring_theory.euclidean_domain from "leanprover-community/mathlib"@"bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6"
 
 /-!
 # Lemmas about Euclidean domains
@@ -26,9 +23,7 @@ euclidean domain
 -/
 
 
-noncomputable section
-
-open Classical
+section
 
 open EuclideanDomain Set Ideal
 
@@ -74,7 +69,8 @@ end GCDMonoid
 namespace EuclideanDomain
 
 /-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
-def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R where
+-- porting note: added `DecidableEq R`
+def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm
   gcd_dvd_left := gcd_dvd_left
@@ -87,26 +83,26 @@ def gcdMonoid (R) [EuclideanDomain R] : GCDMonoid R where
 
 variable {α : Type _} [EuclideanDomain α] [DecidableEq α]
 
-theorem span_gcd {α} [EuclideanDomain α] (x y : α) :
+theorem span_gcd (x y : α) :
     span ({gcd x y} : Set α) = span ({x, y} : Set α) :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.span_gcd x y
 #align euclidean_domain.span_gcd EuclideanDomain.span_gcd
 
-theorem gcd_isUnit_iff {α} [EuclideanDomain α] {x y : α} : IsUnit (gcd x y) ↔ IsCoprime x y :=
+theorem gcd_isUnit_iff {x y : α} : IsUnit (gcd x y) ↔ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.gcd_isUnit_iff x y
 #align euclidean_domain.gcd_is_unit_iff EuclideanDomain.gcd_isUnit_iff
 
 -- this should be proved for UFDs surely?
-theorem isCoprime_of_dvd {α} [EuclideanDomain α] {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
+theorem isCoprime_of_dvd {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits α, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.isCoprime_of_dvd x y nonzero H
 #align euclidean_domain.is_coprime_of_dvd EuclideanDomain.isCoprime_of_dvd
 
 -- this should be proved for UFDs surely?
-theorem dvd_or_coprime {α} [EuclideanDomain α] (x y : α) (h : Irreducible x) :
+theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
   letI := EuclideanDomain.gcdMonoid α
   _root_.dvd_or_coprime x y h

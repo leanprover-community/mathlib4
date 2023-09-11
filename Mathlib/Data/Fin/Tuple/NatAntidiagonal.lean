@@ -2,16 +2,13 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.fin.tuple.nat_antidiagonal
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Equiv.Fin
+
+#align_import data.fin.tuple.nat_antidiagonal from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Collections of tuples of naturals with the same sum

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.bind
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+
+#align_import data.multiset.bind from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Bind operation for multisets

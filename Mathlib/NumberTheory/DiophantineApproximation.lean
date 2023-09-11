@@ -2,11 +2,6 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.diophantine_approximation
-! leanprover-community/mathlib commit e25a317463bd37d88e33da164465d8c47922b1cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
@@ -15,6 +10,8 @@ import Mathlib.Data.Int.Units
 import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.Basic
+
+#align_import number_theory.diophantine_approximation from "leanprover-community/mathlib"@"e25a317463bd37d88e33da164465d8c47922b1cd"
 
 /-!
 # Diophantine Approximation
@@ -582,7 +579,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
 #align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
-if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
+if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This version uses `Real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
@@ -600,7 +597,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 #align real.exists_rat_eq_convergent Real.exists_rat_eq_convergent
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
-if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
+if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `generalized_contined_fraction.convergents`. -/
 theorem exists_continued_fraction_convergent_eq_rat {q : ℚ}

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Antoine Labelle
-
-! This file was ported from Lean 3 source module linear_algebra.contraction
-! leanprover-community/mathlib commit 657df4339ae6ceada048c8a2980fb10e393143ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.contraction from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
 /-!
 # Contractions

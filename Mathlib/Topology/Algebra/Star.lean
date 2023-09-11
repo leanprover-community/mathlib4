@@ -2,16 +2,13 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module topology.algebra.star
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.algebra.star from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Continuity of `star`

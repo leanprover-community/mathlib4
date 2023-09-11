@@ -2,11 +2,6 @@
 Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
-
-! This file was ported from Lean 3 source module analysis.normed_space.operator_norm
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.Asymptotics.Asymptotics
@@ -14,6 +9,8 @@ import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
+
+#align_import analysis.normed_space.operator_norm from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
 /-!
 # Operator norm on the space of continuous linear maps
@@ -1694,8 +1691,8 @@ def extend : Fₗ →SL[σ₁₂] F :=
         exact f.map_add _ _
     map_smul' := fun k => by
       refine' fun b => h_dense.induction_on b _ _
-      · exact
-          isClosed_eq (cont.comp (continuous_const_smul _)) ((continuous_const_smul _).comp cont)
+      · exact isClosed_eq (cont.comp (continuous_const_smul _))
+          ((continuous_const_smul _).comp cont)
       · intro x
         rw [← map_smul]
         simp only [eq]
@@ -1725,40 +1722,26 @@ section
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
-set_option quotPrecheck false in
--- Porting note: this should be `local notation`, not `scoped notation`,
--- as we don't want it beyond the next declaration, but that causes errors.
-/-- Convenient notation for `op_norm_extend_le`. -/
-scoped notation "ψ" => f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing
-
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
-theorem op_norm_extend_le : ‖ψ‖ ≤ N * ‖f‖ := by
-  have uni : UniformInducing e := (uniformEmbedding_of_bound _ h_e).toUniformInducing
-  have eq : ∀ x, ψ (e x) = f x := uniformly_extend_of_ind uni h_dense f.uniformContinuous
-  by_cases N0 : 0 ≤ N
-  · refine' op_norm_le_bound ψ _ (isClosed_property h_dense (isClosed_le _ _) _)
-    · exact mul_nonneg N0 (norm_nonneg _)
-    · exact continuous_norm.comp (cont ψ)
-    · exact continuous_const.mul continuous_norm
-    · intro x
-      rw [eq]
-      calc
-        ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-        _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
-        _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
-  · have he : ∀ x : E, x = 0 := by
-      intro x
-      have N0 : N ≤ 0 := le_of_lt (lt_of_not_ge N0)
-      rw [← norm_le_zero_iff]
-      exact le_trans (h_e x) (mul_nonpos_of_nonpos_of_nonneg N0 (norm_nonneg _))
-    have hf : f = 0 := by
-      ext x
-      simp only [he x, zero_apply, map_zero]
-    have hψ : ψ = 0 := by
-      rw [hf]
-      apply extend_zero
-    rw [hψ, hf, norm_zero, norm_zero, MulZeroClass.mul_zero]
+theorem op_norm_extend_le :
+    ‖f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing‖ ≤ N * ‖f‖ := by
+  -- Add `op_norm_le_of_dense`?
+  refine op_norm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ ?_) fun x ↦ ?_)
+  · cases le_total 0 N with
+    | inl hN => exact mul_nonneg hN (norm_nonneg _)
+    | inr hN =>
+      have : Unique E := ⟨⟨0⟩, fun x ↦ norm_le_zero_iff.mp <|
+        (h_e x).trans (mul_nonpos_of_nonpos_of_nonneg hN (norm_nonneg _))⟩
+      obtain rfl : f = 0 := Subsingleton.elim ..
+      simp
+  · exact (cont _).norm
+  · exact continuous_const.mul continuous_norm
+  · rw [extend_eq]
+    calc
+      ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
+      _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
+      _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 #align continuous_linear_map.op_norm_extend_le ContinuousLinearMap.op_norm_extend_le
 
 end

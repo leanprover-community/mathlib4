@@ -2,14 +2,11 @@
 Copyright (c) 2022 Filippo A. E. Nuccio Mortarino Majno di Capriglio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
-
-! This file was ported from Lean 3 source module topology.homotopy.H_spaces
-! leanprover-community/mathlib commit 729d23f9e1640e1687141be89b106d3c8f9d10c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Homotopy.Path
+
+#align_import topology.homotopy.H_spaces from "leanprover-community/mathlib"@"729d23f9e1640e1687141be89b106d3c8f9d10c0"
 
 /-!
 # H-spaces
@@ -98,8 +95,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    -- porting note: was `use ⟨G, hG⟩`
-    refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
+    use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exacts [Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
     · rintro ⟨x, y⟩
@@ -118,8 +114,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.hmulE.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    -- porting note: was `use ⟨G, hG⟩`
-    refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
+    use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exacts [Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
     · rintro ⟨x, y⟩

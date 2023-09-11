@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.topology
-! leanprover-community/mathlib commit 0e3aacdc98d25e0afe035c452d876d28cbffaa7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Topology.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import analysis.convex.topology from "leanprover-community/mathlib"@"0e3aacdc98d25e0afe035c452d876d28cbffaa7e"
 
 /-!
 # Topological properties of convex sets

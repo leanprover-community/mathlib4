@@ -2,16 +2,13 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.complex
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Topology.LocallyConstant.Basic
+
+#align_import geometry.manifold.complex from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-! # Holomorphic functions on complex manifolds
 

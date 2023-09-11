@@ -2,13 +2,10 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.squarefree
-! leanprover-community/mathlib commit 00d163e35035c3577c1c79fa53b68de17781ffc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.UniqueFactorizationDomain
+
+#align_import algebra.squarefree from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
 /-!
 # Squarefree elements of monoids

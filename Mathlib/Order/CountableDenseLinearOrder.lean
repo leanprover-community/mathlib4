@@ -2,14 +2,11 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module order.countable_dense_linear_order
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Data.Finset.Lattice
+
+#align_import order.countable_dense_linear_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -145,7 +142,7 @@ variable (β)
     partial isomorphism can be extended to one defined at `a`. -/
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
-  carrier f := ∃ b : β, (a, b) ∈ f.val
+  carrier := {f | ∃ b : β, (a, b) ∈ f.val}
   mem_gt f := by
     cases' exists_across f a with b a_b
     refine
@@ -166,7 +163,7 @@ variable (α) {β}
     partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
-  carrier f := ∃ a, (a, b) ∈ f.val
+  carrier := {f | ∃ a, (a, b) ∈ f.val}
   mem_gt f := by
     rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine' ⟨f'.comm, ⟨a, _⟩, _⟩

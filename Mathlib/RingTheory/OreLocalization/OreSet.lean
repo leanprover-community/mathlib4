@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
-
-! This file was ported from Lean 3 source module ring_theory.ore_localization.ore_set
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.GroupTheory.Submonoid.Basic
+
+#align_import ring_theory.ore_localization.ore_set from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 

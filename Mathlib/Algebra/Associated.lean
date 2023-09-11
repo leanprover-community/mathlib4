@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
-
-! This file was ported from Lean 3 source module algebra.associated
-! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Parity
+
+#align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -807,7 +804,7 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-instance : Mul (Associates α) :=
+instance instMul : Mul (Associates α) :=
   ⟨fun a' b' =>
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
@@ -819,7 +816,7 @@ theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk
   rfl
 #align associates.mk_mul_mk Associates.mk_mul_mk
 
-instance : CommMonoid (Associates α) where
+instance instCommMonoid : CommMonoid (Associates α) where
   one := 1
   mul := (· * ·)
   mul_one a' := Quotient.inductionOn a' <| fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
@@ -830,7 +827,7 @@ instance : CommMonoid (Associates α) where
   mul_comm a' b' :=
     Quotient.inductionOn₂ a' b' <| fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
-instance : Preorder (Associates α) where
+instance instPreorder : Preorder (Associates α) where
   le := Dvd.dvd
   le_refl := dvd_refl
   le_trans a b c := dvd_trans
@@ -916,7 +913,7 @@ theorem le_mul_right {a b : Associates α} : a ≤ a * b :=
 theorem le_mul_left {a b : Associates α} : a ≤ b * a := by rw [mul_comm]; exact le_mul_right
 #align associates.le_mul_left Associates.le_mul_left
 
-instance : OrderBot (Associates α) where
+instance instOrderBot : OrderBot (Associates α) where
   bot := 1
   bot_le _ := one_le
 
@@ -933,7 +930,7 @@ theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a �
             b = a * c * ↑d := hd.symm
             _ = a * (↑d * c) := by ac_rfl
             ⟩
-    Quotient.inductionOn c' step  hc'
+    Quotient.inductionOn c' step hc'
 #align associates.dvd_of_mk_le_mk Associates.dvd_of_mk_le_mk
 
 theorem mk_le_mk_of_dvd {a b : α} : a ∣ b → Associates.mk a ≤ Associates.mk b := fun ⟨c, hc⟩ =>
@@ -985,7 +982,7 @@ section CommMonoidWithZero
 
 variable [CommMonoidWithZero α]
 
-instance : CommMonoidWithZero (Associates α) where
+instance instCommMonoidWithZero : CommMonoidWithZero (Associates α) where
     zero_mul := by
       rintro ⟨a⟩
       show Associates.mk (0 * a) = Associates.mk 0
@@ -995,11 +992,11 @@ instance : CommMonoidWithZero (Associates α) where
       show Associates.mk (a * 0) = Associates.mk 0
       rw [mul_zero]
 
-instance : OrderTop (Associates α) where
+instance instOrderTop : OrderTop (Associates α) where
   top := 0
   le_top a := ⟨0, (mul_zero a).symm⟩
 
-instance : BoundedOrder (Associates α) where
+instance instBoundedOrder : BoundedOrder (Associates α) where
 
 instance [DecidableRel ((· ∣ ·) : α → α → Prop)] :
     DecidableRel ((· ∣ ·) : Associates α → Associates α → Prop) := fun a b =>
@@ -1086,15 +1083,15 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α]
 
-instance : PartialOrder (Associates α) where
+instance instPartialOrder : PartialOrder (Associates α) where
     le_antisymm := fun a' b' =>
       Quotient.inductionOn₂ a' b' fun _ _ hab hba =>
         Quot.sound <| associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
-instance : OrderedCommMonoid (Associates α) where
+instance instOrderedCommMonoid : OrderedCommMonoid (Associates α) where
     mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
-instance : CancelCommMonoidWithZero (Associates α) :=
+instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) :=
 { (by infer_instance : CommMonoidWithZero (Associates α)) with
   mul_left_cancel_of_ne_zero := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h

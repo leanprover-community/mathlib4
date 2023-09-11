@@ -2,14 +2,11 @@
 Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.pi_system
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.MeasureTheory.MeasurableSpaceDef
+
+#align_import measure_theory.pi_system from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.

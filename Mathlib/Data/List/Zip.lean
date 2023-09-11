@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
-
-! This file was ported from Lean 3 source module data.list.zip
-! leanprover-community/mathlib commit 134625f523e737f650a6ea7f0c82a6177e45e622
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Order.Monoid.MinMax
+
+#align_import data.list.zip from "leanprover-community/mathlib"@"134625f523e737f650a6ea7f0c82a6177e45e622"
 
 /-!
 # zip & unzip
@@ -72,6 +69,8 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
   | a :: l₁, b :: l₂ => by
     simp only [zip_cons_cons, map_cons, zip_swap l₁ l₂, Prod.swap_prod_mk]
 #align list.zip_swap List.zip_swap
+
+#align list.length_zip_with List.length_zipWith
 
 @[simp]
 theorem length_zip :

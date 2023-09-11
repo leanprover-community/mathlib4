@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.quaternion
-! leanprover-community/mathlib commit cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
+
+#align_import algebra.quaternion from "leanprover-community/mathlib"@"cf7a7252c1989efe5800e0b3cdfeb4228ac6b40e"
 
 /-!
 # Quaternions
@@ -1312,7 +1309,7 @@ section Field
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
-@[simps (config := { attrs := [] })]
+@[simps (config := { isSimp := false })]
 instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 

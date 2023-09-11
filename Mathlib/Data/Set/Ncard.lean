@@ -2,14 +2,11 @@
 Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
-
-! This file was ported from Lean 3 source module data.set.ncard
-! leanprover-community/mathlib commit 74c2af38a828107941029b03839882c5c6f87a04
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.Finprod
+
+#align_import data.set.ncard from "leanprover-community/mathlib"@"74c2af38a828107941029b03839882c5c6f87a04"
 
 /-!
 # Noncomputable Set Cardinality
@@ -42,7 +39,7 @@ a `Finite s` term in the cases where `s` is a set in a `Finite` type.
 Often, where there are two set arguments `s` and `t`, the Finiteness of one follows from the other
 in the context of the theorem, in which case we only include the ones that are needed, and derive
 the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
-finiteness arguments; they are are true by coincidence due to junk values.
+finiteness arguments; they are true by coincidence due to junk values.
 -/
 
 open BigOperators
@@ -416,7 +413,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   have hft' := Fintype.ofInjective f' finj
   simp_rw [ncard_eq_toFinset_card] at hst
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ (by simpa) (by simpa)
+  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa)
   · simp
   · simp [hf]
   · intros a₁ a₂ ha₁ ha₂ h

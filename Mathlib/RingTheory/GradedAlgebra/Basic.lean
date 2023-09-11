@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.Algebra.DirectSum.Ring
+
+#align_import ring_theory.graded_algebra.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Internally-graded rings and algebras
@@ -107,7 +104,7 @@ end DirectSum
 /-- The projection maps of a graded ring -/
 def GradedRing.proj (i : ι) : A →+ A :=
   (AddSubmonoidClass.Subtype (𝒜 i)).comp <|
-    (Dfinsupp.evalAddMonoidHom i).comp <|
+    (DFinsupp.evalAddMonoidHom i).comp <|
       RingHom.toAddMonoidHom <| RingEquiv.toRingHom <| DirectSum.decomposeRingEquiv 𝒜
 #align graded_ring.proj GradedRing.proj
 
@@ -124,7 +121,7 @@ theorem GradedRing.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
 
 theorem GradedRing.mem_support_iff [∀ (i) (x : 𝒜 i), Decidable (x ≠ 0)] (r : A) (i : ι) :
     i ∈ (decompose 𝒜 r).support ↔ GradedRing.proj 𝒜 i r ≠ 0 :=
-  Dfinsupp.mem_support_iff.trans ZeroMemClass.coe_eq_zero.not.symm
+  DFinsupp.mem_support_iff.trans ZeroMemClass.coe_eq_zero.not.symm
 #align graded_ring.mem_support_iff GradedRing.mem_support_iff
 
 end GradedRing
@@ -221,7 +218,7 @@ open DirectSum
 
 /-- The projection maps of graded algebra-/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
-  (𝒜 i).subtype.comp <| (Dfinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
+  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 #align graded_algebra.proj GradedAlgebra.proj
 
 @[simp]
@@ -237,7 +234,7 @@ theorem GradedAlgebra.proj_recompose (a : ⨁ i, 𝒜 i) (i : ι) :
 
 theorem GradedAlgebra.mem_support_iff [DecidableEq A] (r : A) (i : ι) :
     i ∈ (decompose 𝒜 r).support ↔ GradedAlgebra.proj 𝒜 i r ≠ 0 :=
-  Dfinsupp.mem_support_iff.trans Submodule.coe_eq_zero.not.symm
+  DFinsupp.mem_support_iff.trans Submodule.coe_eq_zero.not.symm
 #align graded_algebra.mem_support_iff GradedAlgebra.mem_support_iff
 
 end GradedAlgebra

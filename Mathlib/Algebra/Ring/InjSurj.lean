@@ -2,15 +2,12 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
-
-! This file was ported from Lean 3 source module algebra.ring.inj_surj
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.GroupWithZero.InjSurj
+
+#align_import algebra.ring.inj_surj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps.

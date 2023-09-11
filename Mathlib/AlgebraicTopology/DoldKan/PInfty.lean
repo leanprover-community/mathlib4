@@ -2,15 +2,12 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.p_infty
-! leanprover-community/mathlib commit 31019c2504b17f85af7e0577585fad996935a317
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Projections
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+
+#align_import algebraic_topology.dold_kan.p_infty from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
 
 /-!
 

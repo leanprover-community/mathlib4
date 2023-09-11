@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module group_theory.group_action.pi
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.pi from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
 /-!
 # Pi instances for multiplicative actions

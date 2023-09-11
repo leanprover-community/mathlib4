@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johannes Hölzl, Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
-
-! This file was ported from Lean 3 source module measure_theory.function.ae_eq_fun
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Order.Filter.Germ
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+
+#align_import measure_theory.function.ae_eq_fun from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 

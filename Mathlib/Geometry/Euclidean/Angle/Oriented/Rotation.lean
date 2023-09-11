@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.euclidean.angle.oriented.rotation
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
+
+#align_import geometry.euclidean.angle.oriented.rotation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Rotations by oriented angles.
@@ -261,7 +258,7 @@ theorem oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ x) = θ := by simp [hx]
 #align orientation.oangle_rotation_self_right Orientation.oangle_rotation_self_right
 
-/-- Rotating the first vector by the angle between the two vectors results an an angle of 0. -/
+/-- Rotating the first vector by the angle between the two vectors results in an angle of 0. -/
 @[simp]
 theorem oangle_rotation_oangle_left (x y : V) : o.oangle (o.rotation (o.oangle x y) x) y = 0 := by
   by_cases hx : x = 0
@@ -272,7 +269,7 @@ theorem oangle_rotation_oangle_left (x y : V) : o.oangle (o.rotation (o.oangle x
 #align orientation.oangle_rotation_oangle_left Orientation.oangle_rotation_oangle_left
 
 /-- Rotating the first vector by the angle between the two vectors and swapping the vectors
-results an an angle of 0. -/
+results in an angle of 0. -/
 @[simp]
 theorem oangle_rotation_oangle_right (x y : V) : o.oangle y (o.rotation (o.oangle x y) x) = 0 := by
   rw [oangle_rev]

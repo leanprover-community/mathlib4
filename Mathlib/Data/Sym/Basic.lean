@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kyle Miller All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.sym.basic
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.ApplyFun
+
+#align_import data.sym.basic from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Symmetric powers
@@ -147,15 +144,15 @@ symmetric power.
 instance : Coe (Vector α n) (Sym α n) where coe x := ofVector x
 
 @[simp]
-theorem of_vector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
+theorem ofVector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
   rfl
-#align sym.of_vector_nil Sym.of_vector_nil
+#align sym.of_vector_nil Sym.ofVector_nil
 
 @[simp]
-theorem of_vector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
+theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
   rfl
-#align sym.of_vector_cons Sym.of_vector_cons
+#align sym.of_vector_cons Sym.ofVector_cons
 
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
 -/
@@ -410,8 +407,7 @@ theorem map_injective {f : α → β} (hf : Injective f) (n : ℕ) :
 /-- Mapping an equivalence `α ≃ β` using `Sym.map` gives an equivalence between `Sym α n` and
 `Sym β n`. -/
 @[simps]
-def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n
-    where
+def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
   toFun := map e
   invFun := map e.symm
   left_inv x := by rw [map_map, Equiv.symm_comp_self, map_id]
@@ -461,8 +457,7 @@ theorem attach_cons (x : α) (s : Sym α n) :
 
 /-- Change the length of a `Sym` using an equality.
 The simp-normal form is for the `cast` to be pushed outward. -/
-protected def cast {n m : ℕ} (h : n = m) : Sym α n ≃ Sym α m
-    where
+protected def cast {n m : ℕ} (h : n = m) : Sym α n ≃ Sym α m where
   toFun s := ⟨s.val, s.2.trans h⟩
   invFun s := ⟨s.val, s.2.trans h.symm⟩
   left_inv _ := Subtype.ext rfl
@@ -670,8 +665,7 @@ end SymOptionSuccEquiv
 /-- The symmetric product over `Option` is a disjoint union over simpler symmetric products. -/
 --@[simps]
 def symOptionSuccEquiv [DecidableEq α] :
-    Sym (Option α) n.succ ≃ Sum (Sym (Option α) n) (Sym α n.succ)
-    where
+    Sym (Option α) n.succ ≃ Sum (Sym (Option α) n) (Sym α n.succ) where
   toFun := SymOptionSuccEquiv.encode
   invFun := SymOptionSuccEquiv.decode
   left_inv := SymOptionSuccEquiv.decode_encode

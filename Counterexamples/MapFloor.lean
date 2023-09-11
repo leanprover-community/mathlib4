@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module map_floor
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.Polynomial.Reverse
+
+#align_import map_floor from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # Floors and ceils aren't preserved under ordered ring homomorphisms
@@ -88,7 +85,7 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
 instance : LinearOrderedCommRing ℤ[ε] :=
   { IntWithEpsilon.linearOrder, IntWithEpsilon.commRing, IntWithEpsilon.orderedAddCommGroup,
     IntWithEpsilon.nontrivial with
-    zero_le_one := Or.inr ⟨0, by simp; rw [coeff_zero, coeff_one_zero]; linarith⟩
+    zero_le_one := Or.inr ⟨0, by simp⟩
     mul_pos := fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos}
 
 instance : FloorRing ℤ[ε] :=

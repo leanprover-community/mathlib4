@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.basic
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.PropInstances
+
+#align_import order.heyting.basic from "leanprover-community/mathlib"@"9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4"
 
 /-!
 # Heyting algebras
@@ -209,7 +206,7 @@ class HeytingAlgebra (α : Type _) extends GeneralizedHeytingAlgebra α, Bot α,
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 #align heyting_algebra HeytingAlgebra
 
-/-- A co-Heyting algebra is a bounded  lattice with an additional binary difference operation `\`
+/-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `\ a` is right adjoint to `⊔ a`. -/
 class CoheytingAlgebra (α : Type _) extends GeneralizedCoheytingAlgebra α, Top α, HNot α where
   /-- `⊤` is a greatest element -/
@@ -895,6 +892,20 @@ theorem compl_top : (⊤ : α)ᶜ = ⊥ :=
 theorem compl_bot : (⊥ : α)ᶜ = ⊤ := by rw [← himp_bot, himp_self]
 #align compl_bot compl_bot
 
+@[simp] theorem le_compl_self : a ≤ aᶜ ↔ a = ⊥ := by
+  rw [le_compl_iff_disjoint_left, disjoint_self]
+
+@[simp] theorem ne_compl_self [Nontrivial α] : a ≠ aᶜ := by
+  intro h
+  cases le_compl_self.1 (le_of_eq h)
+  simp at h
+
+@[simp] theorem compl_ne_self [Nontrivial α] : aᶜ ≠ a :=
+  ne_comm.1 ne_compl_self
+
+@[simp] theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
+  rw [lt_iff_le_and_ne]; simp
+
 theorem le_compl_compl : a ≤ aᶜᶜ :=
   disjoint_compl_right.le_compl_right
 #align le_compl_compl le_compl_compl
@@ -903,6 +914,7 @@ theorem compl_anti : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
 #align compl_anti compl_anti
 
+@[gcongr]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
   compl_anti h
 #align compl_le_compl compl_le_compl

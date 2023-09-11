@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Keeley Hoek, Simon Hudon, Scott Morrison
-
-! This file was ported from Lean 3 source module data.mllist
-! leanprover-community/mathlib commit 8f6fd1b69096c6a587f745d354306c0d46396915
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Basic
+
+#align_import data.mllist from "leanprover-community/mathlib"@"8f6fd1b69096c6a587f745d354306c0d46396915"
 
 /-! # Monadic lazy lists.
 

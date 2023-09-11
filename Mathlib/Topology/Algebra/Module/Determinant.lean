@@ -3,14 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.algebra.module.determinant
-! leanprover-community/mathlib commit 4b262b8463002087e407be07080b91d213361e64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Determinant
+
+#align_import topology.algebra.module.determinant from "leanprover-community/mathlib"@"4b262b8463002087e407be07080b91d213361e64"
 
 /-!
 # The determinant of a continuous linear map.

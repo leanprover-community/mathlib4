@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.hom.set
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Set.Image
+
+#align_import order.hom.set from "leanprover-community/mathlib"@"198161d833f2c01498c39c266b0b3dbe2c7a8c07"
 
 /-!
 # Order homomorphisms and sets

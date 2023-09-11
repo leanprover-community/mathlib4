@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.open_immersion.Scheme
-! leanprover-community/mathlib commit 533f62f4dd62a5aad24a04326e6e787c8f7e98b1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+
+#align_import algebraic_geometry.open_immersion.Scheme from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
 /-!
 # Open immersions of schemes
@@ -258,7 +255,7 @@ theorem affineBasisCover_map_range (X : Scheme) (x : X)
       (X.affineCover.map x).1.base '' (PrimeSpectrum.basicOpen r).1 := by
   erw [coe_comp, Set.range_comp]
   -- Porting note : `congr` fails to see the goal is comparing image of the same function
-  refine congr_arg (_ '' .) ?_
+  refine congr_arg (_ '' ·) ?_
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
 #align algebraic_geometry.Scheme.affine_basis_cover_map_range AlgebraicGeometry.Scheme.affineBasisCover_map_range
 
@@ -439,7 +436,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme} (f : X ⟶ Y
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.1.base)).openEmbedding⟩
 #align algebraic_geometry.is_iso_iff_stalk_iso AlgebraicGeometry.isIso_iff_stalk_iso
 
-/-- A open immersion induces an isomorphism from the domain onto the image -/
+/-- An open immersion induces an isomorphism from the domain onto the image -/
 def isoRestrict : X ≅ (Z.restrict H.base_open : _) :=
   ⟨(LocallyRingedSpace.IsOpenImmersion.isoRestrict H).hom,
     (LocallyRingedSpace.IsOpenImmersion.isoRestrict H).inv,
@@ -1049,7 +1046,7 @@ theorem Γ_map_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
   congr
 #align algebraic_geometry.Γ_map_morphism_restrict AlgebraicGeometry.Γ_map_morphismRestrict
 
-/-- Restricting a morphism onto the the image of an open immersion is isomorphic to the base change
+/-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
 def morphismRestrictOpensRange {X Y U : Scheme} (f : X ⟶ Y) (g : U ⟶ Y) [hg : IsOpenImmersion g] :
     Arrow.mk (f ∣_ Scheme.Hom.opensRange g) ≅ Arrow.mk (pullback.snd : pullback f g ⟶ _) := by
@@ -1105,7 +1102,7 @@ def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Ope
   ext1
   dsimp
   rw [coe_comp, Set.range_comp]
-  apply congr_arg (U.inclusion '' .)
+  apply congr_arg (U.inclusion '' ·)
   exact Subtype.range_val
 #align algebraic_geometry.morphism_restrict_restrict AlgebraicGeometry.morphismRestrictRestrict
 

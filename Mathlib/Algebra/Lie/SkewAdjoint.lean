@@ -2,15 +2,12 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.skew_adjoint
-! leanprover-community/mathlib commit 075b3f7d19b9da85a0b54b3e33055a74fc388dec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.Tactic.NoncommRing
+
+#align_import algebra.lie.skew_adjoint from "leanprover-community/mathlib"@"075b3f7d19b9da85a0b54b3e33055a74fc388dec"
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form

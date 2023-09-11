@@ -2,17 +2,14 @@
 Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
-
-! This file was ported from Lean 3 source module imo.imo2013_q1
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
+
+#align_import imo.imo2013_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2013 Q1

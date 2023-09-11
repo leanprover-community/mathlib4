@@ -2,13 +2,10 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.monotone_convergence
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
+
+#align_import topology.algebra.order.monotone_convergence from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Bounded monotone sequences converge

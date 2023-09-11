@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.algebra.monoid from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Theory of topological monoids

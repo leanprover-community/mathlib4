@@ -2,11 +2,6 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.integral_closure
-! leanprover-community/mathlib commit 641b6a82006416ec431b2987b354af9311fed4f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.LinearAlgebra.FiniteDimensional
@@ -16,6 +11,8 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.TensorProduct
+
+#align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
 /-!
 # Integral closure of a subring.
@@ -115,6 +112,26 @@ theorem isIntegral_of_submodule_noetherian (S : Subalgebra R A)
 #align is_integral_of_submodule_noetherian isIntegral_of_submodule_noetherian
 
 end Ring
+
+section
+
+variable {K A : Type _}
+
+variable [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A]
+
+variable (K)
+
+theorem isIntegral_of_finite (e : A) : IsIntegral K e :=
+  isIntegral_of_noetherian (IsNoetherian.iff_fg.2 inferInstance) _
+
+variable (A)
+
+/-- A field extension is integral if it is finite. -/
+theorem Algebra.isIntegral_of_finite : Algebra.IsIntegral K A := fun x =>
+  isIntegral_of_submodule_noetherian ⊤ (IsNoetherian.iff_fg.2 inferInstance) x Algebra.mem_top
+#align algebra.is_integral_of_finite Algebra.isIntegral_of_finite
+
+end
 
 section
 

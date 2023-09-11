@@ -2,11 +2,6 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.norm
-! leanprover-community/mathlib commit fecd3520d2a236856f254f27714b80dcfe28ea57
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.LinearAlgebra.Determinant
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Galois
+
+#align_import ring_theory.norm from "leanprover-community/mathlib"@"fecd3520d2a236856f254f27714b80dcfe28ea57"
 
 /-!
 # Norm for (finite) ring extensions
@@ -300,7 +297,7 @@ variable (K)
 
 /-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
-of `x` over all the `K`-embeddings `σ`  of `L` into `E`. -/
+of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
 theorem norm_eq_prod_embeddings [FiniteDimensional K L] [IsSeparable K L] [IsAlgClosed E] (x : L) :
     algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
   have hx := IsSeparable.isIntegral K x

@@ -2,13 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.open_pos
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+#align_import measure_theory.measure.open_pos from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Measures positive on nonempty opens
@@ -39,7 +37,7 @@ class IsOpenPosMeasure : Prop where
   open_pos : ∀ U : Set X, IsOpen U → U.Nonempty → μ U ≠ 0
 #align measure_theory.measure.is_open_pos_measure MeasureTheory.Measure.IsOpenPosMeasure
 
-variable [IsOpenPosMeasure μ] {s U : Set X} {x : X}
+variable [IsOpenPosMeasure μ] {s U F : Set X} {x : X}
 
 theorem _root_.IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U ≠ 0 :=
   IsOpenPosMeasure.open_pos U hU hne
@@ -48,6 +46,9 @@ theorem _root_.IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U 
 theorem _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   (hU.measure_ne_zero μ hne).bot_lt
 #align is_open.measure_pos IsOpen.measure_pos
+
+instance (priority := 100) [Nonempty X] : NeZero μ :=
+  ⟨measure_univ_pos.mp <| isOpen_univ.measure_pos μ univ_nonempty⟩
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
@@ -80,9 +81,32 @@ theorem _root_.LE.le.isOpenPosMeasure (h : μ ≤ ν) : IsOpenPosMeasure ν :=
   h.absolutelyContinuous.isOpenPosMeasure
 #align has_le.le.is_open_pos_measure LE.le.isOpenPosMeasure
 
+theorem _root_.IsOpen.measure_zero_iff_eq_empty (hU : IsOpen U) :
+    μ U = 0 ↔ U = ∅ :=
+  ⟨fun h ↦ (hU.measure_eq_zero_iff μ).mp h, fun h ↦ by simp [h]⟩
+
+theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
+    U =ᵐ[μ] (∅ : Set X) ↔ U = ∅ := by
+  rw [ae_eq_empty, hU.measure_zero_iff_eq_empty]
+
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 #align is_open.eq_empty_of_measure_zero IsOpen.eq_empty_of_measure_zero
+
+theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
+    F =ᵐ[μ] univ ↔ F = univ := by
+  refine' ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
+  rwa [ae_eq_univ, hF.isOpen_compl.measure_eq_zero_iff μ, compl_empty_iff] at h
+
+theorem _root_.IsClosed.measure_eq_univ_iff_eq [OpensMeasurableSpace X] [IsFiniteMeasure μ]
+    (hF : IsClosed F) :
+    μ F = μ univ ↔ F = univ := by
+  rw [← ae_eq_univ_iff_measure_eq hF.measurableSet.nullMeasurableSet, hF.ae_eq_univ_iff_eq]
+
+theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsProbabilityMeasure μ]
+    (hF : IsClosed F) :
+    μ F = 1 ↔ F = univ := by
+  rw [← measure_univ (μ := μ), hF.measure_eq_univ_iff_eq]
 
 theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
   isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
@@ -124,6 +148,17 @@ theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg :
     f =ᵐ[μ] g ↔ f = g :=
   ⟨fun h => eq_of_ae_eq h hf hg, fun h => h ▸ EventuallyEq.rfl⟩
 #align continuous.ae_eq_iff_eq Continuous.ae_eq_iff_eq
+
+variable {μ}
+
+theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
+    {Z : Type _} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
+    {f : X → Z} (hf : Continuous f) (hf_surj : Function.Surjective f) :
+    (Measure.map f μ).IsOpenPosMeasure := by
+  refine' ⟨fun U hUo hUne => _⟩
+  rw [Measure.map_apply hf.measurable hUo.measurableSet]
+  exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
+#align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
 
 end Basic
 
@@ -188,9 +223,17 @@ theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ (nonempty_ball.2 hr)
 #align metric.measure_ball_pos Metric.measure_ball_pos
 
+/-- See also `Metric.measure_closedBall_pos_iff`. -/
 theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBall x r) :=
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align metric.measure_closed_ball_pos Metric.measure_closedBall_pos
+
+@[simp] lemma measure_closedBall_pos_iff {X : Type _} [MetricSpace X] {m : MeasurableSpace X}
+    (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
+    0 < μ (closedBall x r) ↔ 0 < r := by
+  refine' ⟨fun h ↦ _, measure_closedBall_pos μ x⟩
+  contrapose! h
+  rw [(subsingleton_closedBall x h).measure_zero μ]
 
 end Metric
 

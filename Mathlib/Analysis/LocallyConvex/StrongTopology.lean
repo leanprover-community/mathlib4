@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module analysis.locally_convex.strong_topology
-! leanprover-community/mathlib commit 47b12e7f2502f14001f891ca87fbae2b4acaed3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+#align_import analysis.locally_convex.strong_topology from "leanprover-community/mathlib"@"47b12e7f2502f14001f891ca87fbae2b4acaed3f"
 
 /-!
 # Local convexity of the strong topology

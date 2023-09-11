@@ -2,13 +2,10 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.isocrystal
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.FrobeniusFractionField
+
+#align_import ring_theory.witt_vector.isocrystal from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
 /-!
 

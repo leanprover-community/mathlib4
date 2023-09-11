@@ -2,14 +2,11 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module linear_algebra.invariant_basis_number
-! leanprover-community/mathlib commit 5fd3186f1ec30a75d5f65732e3ce5e623382556f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import linear_algebra.invariant_basis_number from "leanprover-community/mathlib"@"5fd3186f1ec30a75d5f65732e3ce5e623382556f"
 
 /-!
 # Invariant basis number property
@@ -103,7 +100,7 @@ theorem strongRankCondition_iff_succ :
   · by_contra H
     exact
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
-        (hf.comp (Function.extend_injective (RelEmbedding.injective _) _))
+        (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]

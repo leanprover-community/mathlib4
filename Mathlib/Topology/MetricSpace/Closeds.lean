@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.closeds
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.Sets.Compacts
+
+#align_import topology.metric_space.closeds from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Closed subsets
@@ -75,15 +72,15 @@ set_option linter.uppercaseLean3 false in
 theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
     IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
   refine' isClosed_of_closure_subset fun t ht x hx => _
-  -- t : Closeds α,  ht : t ∈ closure {t : Closeds α | t ⊆ s},
-  -- x : α,  hx : x ∈ t
+  -- t : Closeds α, ht : t ∈ closure {t : Closeds α | t ⊆ s},
+  -- x : α, hx : x ∈ t
   -- goal : x ∈ s
   have : x ∈ closure s := by
     refine' mem_closure_iff.2 fun ε εpos => _
     rcases mem_closure_iff.1 ht ε εpos with ⟨u, hu, Dtu⟩
-    -- u : Closeds α,  hu : u ∈ {t : Closeds α | t ⊆ s},  hu' : edist t u < ε
+    -- u : Closeds α, hu : u ∈ {t : Closeds α | t ⊆ s}, hu' : edist t u < ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dtu with ⟨y, hy, Dxy⟩
-    -- y : α,  hy : y ∈ u, Dxy : edist x y < ε
+    -- y : α, hy : y ∈ u, Dxy : edist x y < ε
     exact ⟨y, hu hy, Dxy⟩
   rwa [hs.closure_eq] at this
 #align emetric.is_closed_subsets_of_is_closed EMetric.isClosed_subsets_of_isClosed
@@ -166,13 +163,13 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     intro n x xt0
     have : x ∈ closure (⋃ m ≥ n, s m : Set α) := by apply mem_iInter.1 xt0 n
     rcases mem_closure_iff.1 this (B n) (B_pos n) with ⟨z, hz, Dxz⟩
-    -- z : α,  Dxz : edist x z < B n,
+    -- z : α, Dxz : edist x z < B n,
     simp only [exists_prop, Set.mem_iUnion] at hz
     rcases hz with ⟨m, ⟨m_ge_n, hm⟩⟩
     -- m : ℕ, m_ge_n : m ≥ n, hm : z ∈ s m
     have : hausdorffEdist (s m : Set α) (s n) < B n := hs n m n m_ge_n (le_refl n)
     rcases exists_edist_lt_of_hausdorffEdist_lt hm this with ⟨y, hy, Dzy⟩
-    -- y : α,  hy : y ∈ s n,  Dzy : edist z y < B n
+    -- y : α, hy : y ∈ s n, Dzy : edist z y < B n
     exact
       ⟨y, hy,
         calc
@@ -208,7 +205,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     rcases EMetric.totallyBounded_iff.1
         (isCompact_iff_totallyBounded_isComplete.1 (@isCompact_univ α _ _)).1 δ δpos with
       ⟨s, fs, hs⟩
-    -- s : Set α,  fs : s.Finite,  hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
+    -- s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
     -- we first show that any set is well approximated by a subset of `s`.
     have main : ∀ u : Set α, ∃ (v : _) (_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
       intro u
@@ -273,7 +270,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     exact ⟨s.nonempty, s.isCompact⟩
   rw [this]
   refine' isClosed_of_closure_subset fun s hs => ⟨_, _⟩
-  · -- take a set set t which is nonempty and at a finite distance of s
+  · -- take a set t which is nonempty and at a finite distance of s
     rcases mem_closure_iff.1 hs ⊤ ENNReal.coe_lt_top with ⟨t, ht, Dst⟩
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`
@@ -288,7 +285,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
         (ENNReal.half_pos εpos.ne') with
       ⟨u, fu, ut⟩
     refine' ⟨u, ⟨fu, fun x hx => _⟩⟩
-    -- u : set α,  fu : u.finite,  ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
+    -- u : set α, fu : u.finite, ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
     -- then s is covered by the union of the balls centered at u of radius ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dst with ⟨z, hz, Dxz⟩
     rcases mem_iUnion₂.1 (ut hz) with ⟨y, hy, Dzy⟩
@@ -347,7 +344,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
       rcases totallyBounded_iff.1 this (δ / 2) δpos' with ⟨a, af, ta⟩
-      -- a : set α,  af : a.finite,  ta : t ⊆ ⋃ (y : α) (H : y ∈ a), eball y (δ / 2)
+      -- a : set α, af : a.finite, ta : t ⊆ ⋃ (y : α) (H : y ∈ a), eball y (δ / 2)
       -- replace each center by a nearby approximation in `s`, giving a new set `b`
       let b := F '' a
       have : b.Finite := af.image _

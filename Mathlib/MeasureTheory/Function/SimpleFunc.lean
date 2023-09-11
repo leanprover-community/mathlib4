@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.function.simple_func
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Support
+
+#align_import measure_theory.function.simple_func from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Simple functions

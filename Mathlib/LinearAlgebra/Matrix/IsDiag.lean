@@ -2,15 +2,12 @@
 Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.is_diag
-! leanprover-community/mathlib commit 55e2dfde0cff928ce5c70926a3f2c7dee3e2dd99
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.Data.Matrix.Kronecker
+
+#align_import linear_algebra.matrix.is_diag from "leanprover-community/mathlib"@"55e2dfde0cff928ce5c70926a3f2c7dee3e2dd99"
 
 /-!
 # Diagonal matrices

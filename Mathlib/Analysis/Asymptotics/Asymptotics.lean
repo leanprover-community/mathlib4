@@ -2,16 +2,13 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.asymptotics.asymptotics
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.LocalHomeomorph
+
+#align_import analysis.asymptotics.asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Asymptotics
@@ -703,8 +700,8 @@ theorem isBigOWith_insert [TopologicalSpace α] {x : α} {s : Set α} {C : ℝ} 
   simp_rw [IsBigOWith_def, nhdsWithin_insert, eventually_sup, eventually_pure, h, true_and_iff]
 #align asymptotics.is_O_with_insert Asymptotics.isBigOWith_insert
 
-theorem IsBigOWith.insert [TopologicalSpace α] {x : α} {s : Set α} {C : ℝ} {g : α → E} {g' : α → F}
-    (h1 : IsBigOWith C (𝓝[s] x) g g') (h2 : ‖g x‖ ≤ C * ‖g' x‖) :
+protected theorem IsBigOWith.insert [TopologicalSpace α] {x : α} {s : Set α} {C : ℝ} {g : α → E}
+    {g' : α → F} (h1 : IsBigOWith C (𝓝[s] x) g g') (h2 : ‖g x‖ ≤ C * ‖g' x‖) :
     IsBigOWith C (𝓝[insert x s] x) g g' :=
   (isBigOWith_insert h2).mpr h1
 #align asymptotics.is_O_with.insert Asymptotics.IsBigOWith.insert
@@ -718,8 +715,8 @@ theorem isLittleO_insert [TopologicalSpace α] {x : α} {s : Set α} {g : α →
   exact mul_nonneg hc.le (norm_nonneg _)
 #align asymptotics.is_o_insert Asymptotics.isLittleO_insert
 
-theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {g : α → E'} {g' : α → F'}
-    (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
+protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {g : α → E'}
+    {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
   (isLittleO_insert h2).mpr h1
 #align asymptotics.is_o.insert Asymptotics.IsLittleO.insert
 

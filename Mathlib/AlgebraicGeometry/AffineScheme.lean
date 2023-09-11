@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.AffineScheme
-! leanprover-community/mathlib commit 88474d1b5af6d37c2ab728b757771bced7f5194c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
+
+#align_import algebraic_geometry.AffineScheme from "leanprover-community/mathlib"@"88474d1b5af6d37c2ab728b757771bced7f5194c"
 
 /-!
 # Affine schemes
@@ -698,7 +695,7 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   convert hU.isLocalization_stalk' y hx
 #align algebraic_geometry.is_affine_open.is_localization_stalk AlgebraicGeometry.IsAffineOpen.isLocalization_stalk
 
-/-- The basic open set of a section `f` on an an affine open as an `X.affineOpens`. -/
+/-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
 @[simps]
 def Scheme.affineBasicOpen (X : Scheme) {U : X.affineOpens} (f : X.presheaf.obj <| op U) :
     X.affineOpens :=

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module order.iterate
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Monotone.Basic
+
+#align_import order.iterate from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
 /-!
 # Inequalities on iterates

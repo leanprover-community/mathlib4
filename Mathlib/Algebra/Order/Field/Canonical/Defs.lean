@@ -2,16 +2,12 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
-Ported by: Rémy Degenne
-
-! This file was ported from Lean 3 source module algebra.order.field.canonical.defs
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.WithZero
+
+#align_import algebra.order.field.canonical.defs from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # Canonically ordered semifields

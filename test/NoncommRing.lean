@@ -3,7 +3,7 @@ import Mathlib.Tactic.NoncommRing
 local notation (name := commutator) "⁅"a", "b"⁆" => a * b - b * a
 
 set_option quotPrecheck false
-local infix:70  " ⚬ " => fun a b => a * b + b * a
+local infix:70 " ⚬ " => fun a b => a * b + b * a
 
 variable {R : Type _} [Ring R]
 variable (a b c : R)

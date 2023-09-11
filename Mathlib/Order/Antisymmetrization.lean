@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.antisymmetrization
-! leanprover-community/mathlib commit 3353f661228bd27f632c600cd1a58b874d847c90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Relation
+
+#align_import order.antisymmetrization from "leanprover-community/mathlib"@"3353f661228bd27f632c600cd1a58b874d847c90"
 
 /-!
 # Turning a preorder into a partial order
@@ -27,7 +24,7 @@ such that `a ≤ b` and `b ≤ a`.
   preorder, `Antisymmetrization α` is a partial order.
 -/
 
-/- Porting Notes: There are many changes from `toAntisymmetrization (. ≤ .)` to
+/- Porting Notes: There are many changes from `toAntisymmetrization (· ≤ ·)` to
 `@toAntisymmetrization α (· ≤ ·) _` -/
 
 open Function OrderDual

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.quaternion
-! leanprover-community/mathlib commit 07992a1d1f7a4176c6d3f160209608be4e198566
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Quaternion
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Topology.Algebra.Algebra
+
+#align_import analysis.quaternion from "leanprover-community/mathlib"@"07992a1d1f7a4176c6d3f160209608be4e198566"
 
 /-!
 # Quaternions as a normed algebra

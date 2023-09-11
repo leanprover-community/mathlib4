@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.CompleteLat
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.BddLatCat
 import Mathlib.Order.Hom.CompleteLattice
+
+#align_import order.category.CompleteLat from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of complete lattices
@@ -58,7 +55,7 @@ instance : BundledHom @CompleteLatticeHom where
 deriving instance LargeCategory for CompleteLatCat
 
 instance : ConcreteCategory CompleteLatCat :=
-  by dsimp [CompleteLatCat];  infer_instance
+  by dsimp [CompleteLatCat]; infer_instance
 
 instance hasForgetToBddLat : HasForget₂ CompleteLatCat BddLatCat where
   forget₂ :=
