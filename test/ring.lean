@@ -108,3 +108,11 @@ example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by
   conv => ring
   trivial
+
+-- check that mdata is consumed
+def f : Nat → Nat := sorry
+
+example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
+  have ha : a + 0 = a := by ring
+  rw [ha] -- goal has mdata
+  ring1

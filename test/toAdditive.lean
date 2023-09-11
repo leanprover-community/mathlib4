@@ -175,6 +175,14 @@ run_cmd do
   unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
   unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
 
+@[to_additive addFixedNumeralTest]
+def fixedNumeralTest {α} [One α] :=
+@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 _
+
+@[to_additive addFixedNumeralTest2]
+def fixedNumeralTest2 {α} [One α] :=
+@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
+
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
 def some_def.in_namespace : Bool := false

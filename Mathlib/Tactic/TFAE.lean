@@ -7,7 +7,7 @@ import Lean
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Data.List.TFAE
-import Qq.Match
+import Qq
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -152,9 +152,9 @@ def proveTFAE (l : Q(List Prop)) : TacticM Q(TFAE $l) := do
   match l with
   | ~q([]) => return q(tfae_nil)
   | ~q([$P]) => return q(tfae_singleton $P)
-  | ~q($P :: $P' :: $l) =>
-    let c ← proveChain P q($P' :: $l)
-    let il ← proveILast'Impl P P' l
+  | ~q($P :: $P' :: $l') =>
+    let c ← proveChain P q($P' :: $l')
+    let il ← proveILast'Impl P P' l'
     return q(tfae_of_cycle $c $il)
 
 /-! # `tfae_have` components -/

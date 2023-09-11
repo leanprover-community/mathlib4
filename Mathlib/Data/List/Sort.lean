@@ -379,7 +379,7 @@ theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
   | [], b :: l' => by simp [merge]
   | a :: l, [] => by simp [merge]
   | a :: l, b :: l' => by
-    by_cases a ≼ b
+    by_cases h : a ≼ b
     · simpa [merge, h] using perm_merge _ _
     · suffices b :: merge r (a :: l) l' ~ a :: (l ++ b :: l') by simpa [merge, h]
       exact ((perm_merge _ _).cons _).trans ((swap _ _ _).trans (perm_middle.symm.cons _))

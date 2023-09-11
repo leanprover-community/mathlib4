@@ -9,7 +9,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
-import Qq.Match
+import Qq
 
 /-!
 ## `positivity` core functionality
@@ -145,19 +145,22 @@ def throwNone [Monad m] [Alternative m]
 def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone do
   match ← NormNum.derive e with
   | .isBool .. => failure
-  | .isNat i lit p =>
+  | .isNat _ lit p =>
     if 0 < lit.natLit! then
       let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
-      have p : Q(by clear! «$i»; exact NormNum.IsNat $e $lit) := p
+      assertInstancesCommute
+      have p : Q(NormNum.IsNat $e $lit) := p
       let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
       pure (.positive (q(@pos_of_isNat $α _ _ _ $p $p') : Expr))
     else
       let _a ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
-      have p : Q(by clear! «$i»; exact NormNum.IsNat $e $lit) := p
+      assertInstancesCommute
+      have p : Q(NormNum.IsNat $e $lit) := p
       pure (.nonnegative (q(nonneg_of_isNat $p) : Expr))
-  | .isNegNat i lit p =>
+  | .isNegNat _ lit p =>
     let _a ← synthInstanceQ (q(StrictOrderedRing $α) : Q(Type u))
-    have p : Q(by clear! «$i»; exact NormNum.IsInt $e (Int.negOfNat $lit)) := p
+    assertInstancesCommute
+    have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
     let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
     pure (.nonzero (q(nz_of_isNegNat $p $p') : Expr))
   | .isRat _ .. => throwError "isRat" -- TODO

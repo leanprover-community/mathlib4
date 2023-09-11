@@ -1015,7 +1015,7 @@ instance : Monad FreeGroup.{u} where
   map {_α} {_β} {f} := map f
   bind {_α} {_β} {x} {f} := lift f x
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
     (Cp : ∀ x, C <| pure x) (Ci : ∀ x, C (pure x) → C (pure x)⁻¹)
     (Cm : ∀ x y, C x → C y → C (x * y)) : C z :=

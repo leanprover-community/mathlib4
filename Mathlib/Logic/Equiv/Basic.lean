@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
 
 ! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
+! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

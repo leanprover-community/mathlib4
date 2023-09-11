@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 
 ! This file was ported from Lean 3 source module topology.homeomorph
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
+! leanprover-community/mathlib commit 3b267e70a936eebb21ab546f49a8df34dd300b25
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,6 +76,9 @@ protected def symm (h : α ≃ₜ β) : β ≃ₜ α where
   continuous_invFun := h.continuous_toFun
   toEquiv := h.toEquiv.symm
 #align homeomorph.symm Homeomorph.symm
+
+@[simp] theorem symm_symm (h : α ≃ₜ β) : h.symm.symm = h := rfl
+#align homeomorph.symm_symm Homeomorph.symm_symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/

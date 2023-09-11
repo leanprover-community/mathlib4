@@ -458,7 +458,7 @@ variable (F) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
 /-- The canonical morphism from `G` applied to the limit of `F` to the limit of `F ⋙ G`.
 -/
 def limit.post : G.obj (limit F) ⟶ limit (F ⋙ G) :=
-  limit.lift (F ⋙ G) (mapCone G (limit.cone F))
+  limit.lift (F ⋙ G) (G.mapCone (limit.cone F))
 #align category_theory.limits.limit.post CategoryTheory.Limits.limit.post
 
 @[reassoc (attr := simp)]
@@ -469,7 +469,7 @@ theorem limit.post_π (j : J) : limit.post F G ≫ limit.π (F ⋙ G) j = G.map 
 
 @[simp]
 theorem limit.lift_post (c : Cone F) :
-    G.map (limit.lift F c) ≫ limit.post F G = limit.lift (F ⋙ G) (mapCone G c) := by
+    G.map (limit.lift F c) ≫ limit.post F G = limit.lift (F ⋙ G) (G.mapCone c) := by
   ext
   rw [assoc, limit.post_π, ← G.map_comp, limit.lift_π, limit.lift_π]
   rfl
@@ -1038,7 +1038,7 @@ variable (F) [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
 to `G` applied to the colimit of `F`.
 -/
 def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
-  colimit.desc (F ⋙ G) (mapCocone G (colimit.cocone F))
+  colimit.desc (F ⋙ G) (G.mapCocone (colimit.cocone F))
 #align category_theory.limits.colimit.post CategoryTheory.Limits.colimit.post
 
 @[reassoc (attr := simp)]
@@ -1050,7 +1050,7 @@ theorem colimit.ι_post (j : J) : colimit.ι (F ⋙ G) j ≫ colimit.post F G = 
 
 @[simp]
 theorem colimit.post_desc (c : Cocone F) :
-    colimit.post F G ≫ G.map (colimit.desc F c) = colimit.desc (F ⋙ G) (mapCocone G c) := by
+    colimit.post F G ≫ G.map (colimit.desc F c) = colimit.desc (F ⋙ G) (G.mapCocone c) := by
   ext
   rw [← assoc, colimit.ι_post, ← G.map_comp, colimit.ι_desc, colimit.ι_desc]
   rfl

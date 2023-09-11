@@ -93,10 +93,10 @@ theorem dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl
   simp only [instUnionList, cons_union] at *
-  rw [← IH]
-  show dedup (a :: (l₁ ++ l₂)) = List.insert a (dedup (l₁ ++ l₂))
-  by_cases a ∈ dedup (l₁ ++ l₂) <;> [rw [dedup_cons_of_mem' h, insert_of_mem h],
-    rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]]
+  rw [← IH, cons_append]
+  by_cases h : a ∈ dedup (l₁ ++ l₂)
+  · rw [dedup_cons_of_mem' h, insert_of_mem h]
+  · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
 #align list.dedup_append List.dedup_append
 
 theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]

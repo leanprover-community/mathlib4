@@ -393,7 +393,7 @@ theorem pwFilter_map (f : β → α) :
 theorem pwFilter_sublist : ∀ l : List α, pwFilter R l <+ l
   | [] => nil_sublist _
   | x :: l => by
-    by_cases ∀ y ∈ pwFilter R l, R x y
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · rw [pwFilter_cons_of_pos h]
       exact (pwFilter_sublist l).cons_cons _
     · rw [pwFilter_cons_of_neg h]
@@ -407,7 +407,7 @@ theorem pwFilter_subset (l : List α) : pwFilter R l ⊆ l :=
 theorem pairwise_pwFilter : ∀ l : List α, Pairwise R (pwFilter R l)
   | [] => Pairwise.nil
   | x :: l => by
-    by_cases ∀ y ∈ pwFilter R l, R x y
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · rw [pwFilter_cons_of_pos h]
       exact pairwise_cons.2 ⟨h, pairwise_pwFilter l⟩
     · rw [pwFilter_cons_of_neg h]
@@ -438,7 +438,7 @@ theorem forall_mem_pwFilter (neg_trans : ∀ {x y z}, R x z → R x y ∨ R y z)
   ⟨by
     induction' l with x l IH; · exact fun _ _ h => (not_mem_nil _ h).elim
     simp only [forall_mem_cons]
-    by_cases ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
+    by_cases h : ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
     · simp only [pwFilter_cons_of_pos h, forall_mem_cons, and_imp]
       exact fun r H => ⟨r, IH H⟩
     · rw [pwFilter_cons_of_neg h]

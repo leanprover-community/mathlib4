@@ -674,7 +674,7 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort _} {a b : α} (h : a
 theorem update_idem {α} [DecidableEq α] {β : α → Sort _} {a : α} (v w : β a) (f : ∀ a, β a) :
     update (update f a v) a w = update f a w := by
   funext b
-  by_cases b = a <;> simp [update, h]
+  by_cases h : b = a <;> simp [update, h]
 #align function.update_idem Function.update_idem
 
 end Update

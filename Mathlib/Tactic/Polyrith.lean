@@ -112,16 +112,16 @@ instance : Quote ℚ where
 
 variable (vars : Array Syntax.Term) in
 /-- Converts a `Poly` expression into a `Syntax` suitable as an input to `linear_combination`. -/
-def Poly.toSyntax : Poly → Syntax.Term
-  | .const z => quote z
-  | .var n => vars[n]!
-  | .hyp stx => stx
-  | .add p q => Unhygienic.run `($p.toSyntax + $q.toSyntax)
-  | .sub p q => Unhygienic.run `($p.toSyntax - $q.toSyntax)
-  | .mul p q => Unhygienic.run `($p.toSyntax * $q.toSyntax)
-  | .div p q => Unhygienic.run `($p.toSyntax / $q.toSyntax)
-  | .pow p q => Unhygienic.run `($p.toSyntax ^ $q.toSyntax)
-  | .neg p => Unhygienic.run `(-$p.toSyntax)
+def Poly.toSyntax : Poly → Unhygienic Syntax.Term
+  | .const z => pure (quote z)
+  | .var n => pure vars[n]!
+  | .hyp stx => pure stx
+  | .add p q => do `($(← p.toSyntax) + $(← q.toSyntax))
+  | .sub p q => do `($(← p.toSyntax) - $(← q.toSyntax))
+  | .mul p q => do `($(← p.toSyntax) * $(← q.toSyntax))
+  | .div p q => do `($(← p.toSyntax) / $(← q.toSyntax))
+  | .pow p q => do `($(← p.toSyntax) ^ $(← q.toSyntax))
+  | .neg p => do `(-$(← p.toSyntax))
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
@@ -339,7 +339,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
           pure <| match p.unDiv? with
           | some (p, den) => (p.mul' h).div (.const den)
           | none => p.mul' h
-        let stx := p.toSyntax vars
+        let stx := (withRef (← getRef) <| p.toSyntax vars).run
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
           else `(tactic| linear_combination $stx:term)

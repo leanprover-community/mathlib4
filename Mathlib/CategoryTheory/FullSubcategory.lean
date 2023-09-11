@@ -153,9 +153,11 @@ def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ 
 #align category_theory.full_subcategory.map_obj_obj CategoryTheory.FullSubcategory.map_obj_obj
 #align category_theory.full_subcategory.map_map CategoryTheory.FullSubcategory.map_map
 
-instance (h : ∀ ⦃X⦄, Z X → Z' X) : Full (FullSubcategory.map h) where preimage f := f
+instance FullSubcategory.full_map (h : ∀ ⦃X⦄, Z X → Z' X) :
+  Full (FullSubcategory.map h) where preimage f := f
 
-instance (h : ∀ ⦃X⦄, Z X → Z' X) : Faithful (FullSubcategory.map h) where
+instance FullSubcategory.faithful_map (h : ∀ ⦃X⦄, Z X → Z' X) :
+  Faithful (FullSubcategory.map h) where
 
 @[simp]
 theorem FullSubcategory.map_inclusion (h : ∀ ⦃X⦄, Z X → Z' X) :

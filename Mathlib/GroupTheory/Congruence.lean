@@ -1324,7 +1324,7 @@ theorem liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
 #align con.lift_on_units_mk Con.liftOnUnits_mk
 #align add_con.lift_on_add_units_mk AddCon.liftOnAddUnits_mk
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient)
     (H : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1), p ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
     p u := by

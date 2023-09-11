@@ -157,7 +157,7 @@ theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
     or `min a b = b` and `b < a`.
     Use cases on this lemma to automate linarith in inequalities -/
 theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
-  by_cases a ≤ b
+  by_cases h : a ≤ b
   · left
     exact ⟨min_eq_left h, h⟩
 

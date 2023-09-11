@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.lattice
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 1c857a1f6798cb054be942199463c2cf904cb937
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -524,11 +524,11 @@ theorem sup_inf_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
   simp_rw [_root_.inf_comm]
 #align finset.sup_inf_distrib_right Finset.sup_inf_distrib_right
 
-theorem disjoint_sup_right : Disjoint a (s.sup f) ↔ ∀ i ∈ s, Disjoint a (f i) := by
+protected theorem disjoint_sup_right : Disjoint a (s.sup f) ↔ ∀ i ∈ s, Disjoint a (f i) := by
   simp only [disjoint_iff, sup_inf_distrib_left, sup_eq_bot_iff]
 #align finset.disjoint_sup_right Finset.disjoint_sup_right
 
-theorem disjoint_sup_left : Disjoint (s.sup f) a ↔ ∀ i ∈ s, Disjoint (f i) a := by
+protected theorem disjoint_sup_left : Disjoint (s.sup f) a ↔ ∀ i ∈ s, Disjoint (f i) a := by
   simp only [disjoint_iff, sup_inf_distrib_right, sup_eq_bot_iff]
 #align finset.disjoint_sup_left Finset.disjoint_sup_left
 

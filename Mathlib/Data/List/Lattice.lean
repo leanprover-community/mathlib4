@@ -233,7 +233,7 @@ theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
 theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
   | [], l₂ => by simp only [nil_bagInter, not_mem_nil, false_and_iff]
   | b :: l₁, l₂ => by
-    by_cases b ∈ l₂
+    by_cases h : b ∈ l₂
     · rw [cons_bagInter_of_pos _ h, mem_cons, mem_cons, mem_bagInter]
       by_cases ba : a = b
       · simp only [ba, h, eq_self_iff_true, true_or_iff, true_and_iff]
@@ -269,7 +269,7 @@ theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l
   | [], l₂ => by simp
   | b :: l₁, l₂ =>
     by
-    by_cases b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
+    by_cases h : b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
     · exact (bagInter_sublist_left _ _).cons_cons _
     · apply sublist_cons_of_sublist
       apply bagInter_sublist_left

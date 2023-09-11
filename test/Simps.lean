@@ -140,16 +140,16 @@ noncomputable def bar2 {α} : α ≃ α :=
 Classical.choice ⟨foo.rfl⟩
 
 run_cmd liftCoreM <| do
-  _ ← successIfFail <| simpsTac .missing `foo.bar1
+  _ ← successIfFail <| simpsTac .missing `foo.bar1 { rhsMd := .default, simpRhs := true }
   --   "Invalid `simps` attribute. Target Nat is not a structure"
-  _ ← successIfFail <| simpsTac .missing `foo.bar2
+  _ ← successIfFail <| simpsTac .missing `foo.bar2 { rhsMd := .default, simpRhs := true }
   --   "Invalid `simps` attribute. The body is not a constructor application:
   -- Classical.choice (_ : Nonempty (α ≃ α))"
   pure ()
 
 /- test that if a non-constructor is given as definition, then
   `{rhsMd := .default, simpRhs := true}` is applied automatically. -/
-@[simps] def rfl2 {α} : α ≃ α := foo.rfl
+@[simps!] def rfl2 {α} : α ≃ α := foo.rfl
 
 example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
   dsimp
@@ -177,11 +177,11 @@ def my_equiv := Equiv'
 /- check projections for nested structures -/
 
 namespace CountNested
-@[simps (config := {attrs := [`norm]})]
+@[simps]
 def nested1 : MyProd ℕ $ MyProd ℤ ℕ :=
 ⟨2, -1, 1⟩
 
-@[simps (config := {isSimp := false})]
+@[simps (config := .lemmasOnly)]
 def nested2 : ℕ × MyProd ℕ ℕ :=
 ⟨2, MyProd.map Nat.succ Nat.pred ⟨1, 2⟩⟩
 
@@ -353,7 +353,8 @@ run_cmd liftTermElabM <| do
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify5 {} [("snd_snd", .missing)]
+  _ ← successIfFail <| simpsTac .missing `specify.specify5 { rhsMd := .default, simpRhs := true }
+    [("snd_snd", .missing)]
 --     "Invalid simp lemma specify.specify5_snd_snd.
 -- The given definition is not a constructor application:
 --   Classical.choice specify.specify5._proof_1"
@@ -409,7 +410,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `pprodEquivProd2_invFun_snd |>.isSome
 
 -- we can disable this behavior with the option `notRecursive`.
-@[simps (config := {notRecursive := []})] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
+@[simps! (config := {notRecursive := []})] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
 pprodEquivProd2
 
 run_cmd liftTermElabM <| do
@@ -491,7 +492,7 @@ example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp; 
 @[simps] protected def Equiv2.symm2 {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f.toFun, f.right_inv, f.left_inv⟩
 
-@[simps (config := {fullyApplied := false})] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
+@[simps (config := .asFn)] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 example {α β} (f : Equiv2 α β) (y : β) {x} (h : f.invFun y = x) : f.symm y = x := by simp; rw [h]
@@ -774,7 +775,7 @@ example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = 
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
 -- it interacts somewhat well with multiple projections (though the generated name is not great)
-@[simps snd_coe_fst] def foo {α β γ δ : Type _} (x : α) (e₁ : α ≃ β) (e₂ : γ ≃ δ) :
+@[simps! snd_coe_fst] def foo {α β γ δ : Type _} (x : α) (e₁ : α ≃ β) (e₂ : γ ≃ δ) :
   α × (α × γ ≃ β × δ) :=
 ⟨x, Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm⟩
 
@@ -1022,7 +1023,7 @@ example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
   guard_target = x = z
   rw [h]
 
-@[simps toEquiv' apply symm_apply] def foo2 (α : Type) : DecoratedEquiv α α :=
+@[simps! toEquiv' apply symm_apply] def foo2 (α : Type) : DecoratedEquiv α α :=
 { foo.rfl with
   P_toFun  := λ _ _ h => h
   P_invFun := λ _ _ h => h }
@@ -1078,10 +1079,10 @@ example {α : Type} (x z : α) (h : x = z) : (ffoo α).symm x = z := by
   guard_target = x = z
   rw [h]
 
-@[simps] def ffoo3 (α : Type) : FurtherDecoratedEquiv α α :=
+@[simps!] def ffoo3 (α : Type) : FurtherDecoratedEquiv α α :=
 { foo α with Q_toFun  := λ y => ⟨y, rfl⟩, Q_invFun  := λ y => ⟨y, rfl⟩ }
 
-@[simps apply toEquiv' toEquiv'_toFun toDecoratedEquiv_apply]
+@[simps! apply toEquiv' toEquiv'_toFun toDecoratedEquiv_apply]
 def ffoo4 (α : Type) : FurtherDecoratedEquiv α α :=
 { Q_toFun := λ y => ⟨y, rfl⟩, Q_invFun := λ y => ⟨y, rfl⟩, toDecoratedEquiv := foo α }
 
@@ -1112,7 +1113,7 @@ initialize_simps_projections OneMore (toFun → apply, invFun → symm_apply,
 
 example {α : Type} (x : α) : (fffoo α).symm x = x := by dsimp
 
-@[simps apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
+@[simps! apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
 def fffoo2 (α : Type) : OneMore α α := fffoo α
 
 /- test the case where a projection takes additional arguments. -/

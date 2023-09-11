@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.complete_lattice
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit 5709b0d8725255e76f47debca6400c07b5c2d8e6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1133,7 +1133,7 @@ theorem infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt :
 #align infi_eq_of_forall_ge_of_forall_gt_exists_lt infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
 
 theorem supᵢ_eq_dif {p : Prop} [Decidable p] (a : p → α) :
-    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases p <;> simp [h]
+    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases h : p <;> simp [h]
 #align supr_eq_dif supᵢ_eq_dif
 
 theorem supᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨆ _h : p, a) = if p then a else ⊥ :=

@@ -599,7 +599,7 @@ theorem sum_mapDomain_index_addMonoidHom [AddCommMonoid N] {f : α → β} {s : 
 
 theorem embDomain_eq_mapDomain (f : α ↪ β) (v : α →₀ M) : embDomain f v = mapDomain f v := by
   ext a
-  by_cases a ∈ Set.range f
+  by_cases h : a ∈ Set.range f
   · rcases h with ⟨a, rfl⟩
     rw [mapDomain_apply f.injective, embDomain_apply]
   · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
@@ -1183,7 +1183,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
   Multiset.induction_on s (fun h => False.elim (by simp at h))
     (by
       intro f s ih ha
-      by_cases a ∈ f.support
+      by_cases h : a ∈ f.support
       · exact ⟨f, Multiset.mem_cons_self _ _, h⟩
       · simp only [Multiset.sum_cons, mem_support_iff, add_apply, not_mem_support_iff.1 h,
           zero_add] at ha
@@ -1413,7 +1413,7 @@ variable [Zero M] [MonoidWithZero R] [MulActionWithZero R M]
 
 @[simp]
 theorem single_smul (a b : α) (f : α → M) (r : R) : single a r b • f a = single a (r • f b) b := by
-  by_cases a = b <;> simp [h]
+  by_cases h : a = b <;> simp [h]
 #align finsupp.single_smul Finsupp.single_smul
 
 end

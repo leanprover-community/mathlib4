@@ -841,7 +841,7 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
     l₁.bagInter t ~ l₂.bagInter t := by
   induction' h with x _ _ _ _ x y _ _ _ _ _ _ ih_1 ih_2 generalizing t; · simp
   · by_cases x ∈ t <;> simp [*, Perm.cons]
-  · by_cases x = y
+  · by_cases h : x = y
     · simp [h]
     by_cases xt : x ∈ t <;> by_cases yt : y ∈ t
     · simp [xt, yt, mem_erase_of_ne h, mem_erase_of_ne (Ne.symm h), erase_comm, swap]
@@ -854,7 +854,7 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
 theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by
   induction' l with a l IH generalizing t₁ t₂ p; · simp
-  by_cases a ∈ t₁
+  by_cases h : a ∈ t₁
   · simp [h, p.subset h, IH (p.erase _)]
   · simp [h, mt p.mem_iff.2 h, IH p]
 #align list.perm.bag_inter_left List.Perm.bagInter_left
@@ -880,11 +880,11 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
       specialize H b
       simp at H
       contradiction
-    · have : a ∈ l₂ := count_pos.1 (by rw [← H] ; simp)
+    · have : a ∈ l₂ := count_pos.1 (by rw [← H]; simp)
       refine' ((IH fun b => _).cons a).trans (perm_cons_erase this).symm
       specialize H b
       rw [(perm_cons_erase this).count_eq] at H
-      by_cases b = a <;> simp [h] at H⊢ <;> assumption⟩
+      by_cases h : b = a <;> simpa [h] using H⟩
 #align list.perm_iff_count List.perm_iff_count
 
 theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :

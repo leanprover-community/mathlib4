@@ -451,8 +451,7 @@ variable (S)
 
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership. If `p` holds for `0` and all
       elements of `s`, and is preserved under addition, then `p` holds for all elements of the
       additive closure of `s`."]
@@ -476,8 +475,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
 #align add_submonoid.closure_induction' AddSubmonoid.closure_induction'
 
 /-- An induction principle for closure membership for predicates with two arguments.  -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)
     (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H1_left : ∀ x, p 1 x) (H1_right : ∀ x, p x 1)
@@ -493,8 +491,7 @@ theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ clos
 /-- If `s` is a dense set in a monoid `M`, `Submonoid.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, verify `p 1`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
       order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
       `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`."]

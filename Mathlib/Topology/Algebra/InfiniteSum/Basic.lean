@@ -136,7 +136,7 @@ theorem hasSum_iff_hasSum {g : γ → α}
 #align has_sum_iff_has_sum hasSum_iff_hasSum
 
 theorem Function.Injective.hasSum_iff {g : γ → β} (hg : Injective g)
-    (hf : ∀ (x) (_ : x ∉ Set.range g), f x = 0) : HasSum (f ∘ g) a ↔ HasSum f a := by
+    (hf : ∀ x, x ∉ Set.range g → f x = 0) : HasSum (f ∘ g) a ↔ HasSum f a := by
   simp only [HasSum, Tendsto, comp_apply, hg.map_atTop_finset_sum_eq hf]
 #align function.injective.has_sum_iff Function.Injective.hasSum_iff
 
@@ -144,6 +144,15 @@ theorem Function.Injective.summable_iff {g : γ → β} (hg : Injective g)
     (hf : ∀ (x) (_ : x ∉ Set.range g), f x = 0) : Summable (f ∘ g) ↔ Summable f :=
   exists_congr fun _ => hg.hasSum_iff hf
 #align function.injective.summable_iff Function.Injective.summable_iff
+
+@[simp] theorem hasSum_extend_zero {g : β → γ} (hg : Injective g) :
+    HasSum (extend g f 0) a ↔ HasSum f a := by
+  rw [← hg.hasSum_iff, extend_comp hg]
+  exact extend_apply' _ _
+
+@[simp] theorem summable_extend_zero {g : β → γ} (hg : Injective g) :
+    Summable (extend g f 0) ↔ Summable f :=
+  exists_congr fun _ => hasSum_extend_zero hg
 
 theorem hasSum_subtype_iff_of_support_subset {s : Set β} (hf : support f ⊆ s) :
     HasSum (f ∘ (↑) : s → α) a ↔ HasSum f a :=

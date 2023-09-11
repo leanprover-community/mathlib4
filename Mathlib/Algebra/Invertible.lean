@@ -412,7 +412,7 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
   then `r : R` is invertible if `f r` is.
 
 The inverse is computed as `g (⅟(f r))` -/
-@[simps! (config := { attrs := [] })]
+@[simps! (config := .lemmasOnly)]
 def Invertible.ofLeftInverse {R : Type _} {S : Type _} {G : Type _} [MulOneClass R] [MulOneClass S]
     [MonoidHomClass G S R] (f : R → S) (g : G) (r : R) (h : Function.LeftInverse g f)
     [Invertible (f r)] : Invertible r :=
