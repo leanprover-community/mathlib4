@@ -44,12 +44,6 @@ jobs:
       - name: Look for ignored files
         uses: credfeto/action-no-ignored-files@v1.1.0
 
-      - name: Install bibtool
-        if: ${{ 'bors' == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bibtool
-
       - name: install Python
         if: ${{ 'bors' == 'ubuntu-latest' }}
         uses: actions/setup-python@v4
