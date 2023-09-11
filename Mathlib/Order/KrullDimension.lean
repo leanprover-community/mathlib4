@@ -127,7 +127,7 @@ lemma eq_len_of_finiteDimensionalType [FiniteDimensionalType α] :
 
 /-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
   is `β`. -/
-lemma infiniteDimensional_of_strictMono
+def infiniteDimensional_of_strictMono
     (f : α → β) (hf : StrictMono f) [h : InfiniteDimensionalType α] :
     InfiniteDimensionalType β where
   longRelSeries := λ n ↦ LTSeries.map (h.longRelSeries n) f hf

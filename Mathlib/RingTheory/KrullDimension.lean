@@ -300,7 +300,8 @@ lemma _root_.PrimeSpectrum.LocalizationAtPrimeToIic_isLeftInverse :
     (PrimeSpectrum.IicToLocalizationAtPrime 𝔭) := by
 { intro 𝔭'; ext x; constructor
   · intro hx
-    change Localization.mk x 1 ∈ _root_.Ideal.localization' 𝔭'.val.asIdeal 𝔭.asIdeal.primeCompl at hx
+    change Localization.mk x 1 ∈ _root_.Ideal.localization' 𝔭'.val.asIdeal
+      𝔭.asIdeal.primeCompl at hx
     rcases hx with ⟨a, b, hab⟩
     erw [Localization.mk_eq_mk_iff, Localization.r_iff_exists, one_mul] at hab
     rcases hab with ⟨c, hc⟩
