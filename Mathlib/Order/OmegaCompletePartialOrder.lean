@@ -95,8 +95,8 @@ namespace Chain
 variable {α : Type u} {β : Type v} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-instance : OrderHomClass (Chain α) ℕ α :=
-  inferInstanceAs (OrderHomClass (ℕ →o α) ℕ α)
+instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
+instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨FunLike.coe⟩
 
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
@@ -119,7 +119,6 @@ lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.di
 -- @[simps! (config := { fullyApplied := false })]
 def map : Chain β :=
   f.comp c
-@[simp] theorem map_coe : c.map f = f ∘ c := rfl
 #align omega_complete_partial_order.chain.map OmegaCompletePartialOrder.Chain.map
 
 @[simp] theorem map_coe : ⇑(map c f) = f ∘ c := rfl
@@ -163,7 +162,6 @@ that have the same index. -/
 -- @[simps!]
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
   OrderHom.prod c₀ c₁
-@[simp] theorem zip_coe (c₀ : Chain α) (c₁ : Chain β) (x : ℕ) : zip c₀ c₁ x = (c₀ x, c₁ x) := rfl
 #align omega_complete_partial_order.chain.zip OmegaCompletePartialOrder.Chain.zip
 
 @[simp] theorem zip_coe (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
@@ -465,7 +463,7 @@ instance : OmegaCompletePartialOrder (α × β) where
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
 
 theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := by
-  refine eq_of_forall_ge_iff fun ⟨z₁, z₂⟩ => ?_
+  apply eq_of_forall_ge_iff; rintro ⟨z₁, z₂⟩
   simp [ωSup_le_iff, forall_and]
 #align prod.ωSup_zip Prod.ωSup_zip
 
