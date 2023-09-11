@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Tactic.Common
 
 #align_import data.int.units from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 

@@ -138,8 +138,6 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
     rw [iSup_ne_bot_subtype, hT.orthogonalComplement_iSup_eigenspaces_eq_bot]
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot' LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot'
 
--- porting note: a modest increast in the `synthInstance.maxHeartbeats`, but we should still fix it.
-set_option synthInstance.maxHeartbeats 23000 in
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
 an internal direct sum decomposition of `E`.
 
