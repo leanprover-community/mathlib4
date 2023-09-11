@@ -391,7 +391,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
 set_option maxHeartbeats 700000 in
 -- Porting note: extra heartbeats are needed to infer the instance
 -- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
-set_option synthInstance.maxHeartbeats 200000 in
+set_option synthInstance.maxHeartbeats 100000 in
 -- This has type
 -- `Derivation R S (Ω[S⁄R]) ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
 -- But lean times-out if this is given explicitly.
@@ -669,6 +669,8 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
     KaehlerDifferential.mapBaseChange R A B (x ⊗ₜ y) = x • KaehlerDifferential.map R R A B y := by
   conv_lhs => rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul', LinearMap.map_smul]
   congr 1
+  -- Note: cannot find this one after changes in #6965, slightly over the limit
+  have : IsScalarTower A B (B ⊗[A] Ω[A⁄R]) := TensorProduct.isScalarTower_left
   exact IsBaseChange.lift_eq _ _ _
 #align kaehler_differential.map_base_change_tmul KaehlerDifferential.mapBaseChange_tmul
 
