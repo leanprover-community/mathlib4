@@ -2,16 +2,13 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.congruence
-! leanprover-community/mathlib commit 2f39bcbc98f8255490f8d4562762c9467694c809
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
+
+#align_import ring_theory.congruence from "leanprover-community/mathlib"@"2f39bcbc98f8255490f8d4562762c9467694c809"
 
 /-!
 # Congruence relations on rings
@@ -41,14 +38,14 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 and new-style structures. We can revisit this in Lean 4. (After and not during the port!) -/
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
-structure RingCon (R : Type _) [Add R] [Mul R] extends Setoid R where
+structure RingCon (R : Type*) [Add R] [Mul R] extends Setoid R where
   /-- Ring congruence relations are closed under addition -/
   add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
   /-- Ring congruence relations are closed under multiplication -/
   mul' : ∀ {w x y z}, r w x → r y z → r (w * y) (x * z)
 #align ring_con RingCon
 
-variable {α R : Type _}
+variable {α R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
@@ -79,7 +76,7 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-/-- Every `ring_con` is also an `AddCon` -/
+/-- Every `RingCon` is also an `AddCon` -/
 def toAddCon : AddCon R :=
   { c with }
 #align ring_con.to_add_con RingCon.toAddCon
@@ -405,7 +402,7 @@ instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower
   { c.toCon.mulAction with
     smul := (· • ·)
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
-    smul_add := fun _ => Quotient.ind₂' fun _ _  => congr_arg toQuotient <| smul_add _ _ _ }
+    smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient :=

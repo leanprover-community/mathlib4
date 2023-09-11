@@ -2,25 +2,23 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.prod.basic
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Core
-import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Inhabit
 
-/-!
-# Extra facts about `prod`
+#align_import data.prod.basic from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
-This file defines `prod.swap : α × β → β × α` and proves various simple lemmas about `prod`.
+/-!
+# Extra facts about `Prod`
+
+This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
 -/
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+set_option autoImplicit true
+
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 @[simp]
 theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) :=
@@ -28,6 +26,10 @@ theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p
 #align prod_map Prod_map
 
 namespace Prod
+
+@[simp]
+theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
+  | (_, _) => rfl
 
 @[simp]
 theorem «forall» {p : α × β → Prop} : (∀ x, p x) ↔ ∀ a b, p (a, b) :=
@@ -57,7 +59,7 @@ theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Func
   rfl
 #align prod.fst_comp_mk Prod.fst_comp_mk
 
-@[simp]
+@[simp, mfld_simps]
 theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
   rfl
 #align prod.map_mk Prod.map_mk
@@ -81,7 +83,7 @@ theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ 
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
 a single `Prod.map` of composed functions.
 -/
-theorem map_comp_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) :
+theorem map_comp_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) :
     Prod.map g g' ∘ Prod.map f f' = Prod.map (g ∘ f) (g' ∘ f') :=
   rfl
 #align prod.map_comp_map Prod.map_comp_map
@@ -89,7 +91,7 @@ theorem map_comp_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β �
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
 a single `Prod.map` of composed functions, fully applied.
 -/
-theorem map_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) (x : α × γ) :
+theorem map_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) (x : α × γ) :
     Prod.map g g' (Prod.map f f' x) = Prod.map (g ∘ f) (g' ∘ f') x :=
   rfl
 #align prod.map_map Prod.map_map
@@ -101,24 +103,25 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b�
   Iff.of_eq (mk.injEq _ _ _ _)
 #align prod.mk.inj_iff Prod.mk.inj_iff
 
-theorem mk.inj_left {α β : Type _} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
+theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
   intro b₁ b₂ h
   simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
 #align prod.mk.inj_left Prod.mk.inj_left
 
-theorem mk.inj_right {α β : Type _} (b : β) :
+theorem mk.inj_right {α β : Type*} (b : β) :
     Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
 #align prod.mk.inj_right Prod.mk.inj_right
 
 lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
-lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
-#align prod.mk_inj_right Prod.mk_inj_right
 #align prod.mk_inj_left Prod.mk_inj_left
 
+lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
+#align prod.mk_inj_right Prod.mk_inj_right
+
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
-  rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
+  rw [mk.inj_iff]
 #align prod.ext_iff Prod.ext_iff
 
 @[ext]
@@ -134,6 +137,7 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
 #align prod.id_prod Prod.id_prod
 
+@[simp]
 theorem map_id : Prod.map (@id α) (@id β) = id :=
   id_prod
 #align prod.map_id Prod.map_id
@@ -257,7 +261,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRef
   ⟨Lex.refl_right _ _⟩
 
 instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
-⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
+  ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :

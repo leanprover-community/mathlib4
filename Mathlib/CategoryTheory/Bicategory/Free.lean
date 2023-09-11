@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.free
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor
+
+#align_import category_theory.bicategory.free from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Free bicategories
@@ -74,7 +71,7 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
   | vcomp {a b} {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) : Hom₂ f h
   | whisker_left {a b c} (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
       Hom₂ (f ≫ g) (f ≫ h)-- `η` cannot be earlier than `h` since it is a recursive argument.
-  | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶  c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
+  | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶ c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
   | associator {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
       Hom₂ ((f ≫ g) ≫ h) (f ≫ (g ≫ h))
   | associator_inv {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
@@ -378,7 +375,6 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   mapId a := Iso.refl _
   mapComp f g := Iso.refl _
   map₂ := Quot.lift (liftHom₂ F) fun η θ H => liftHom₂_congr F H
-  map₂_id := by aesop_cat
   -- Porting note: We'd really prefer not to be doing this by hand.
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by

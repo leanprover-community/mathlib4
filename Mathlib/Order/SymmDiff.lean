@@ -2,15 +2,11 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
-Ported by: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module order.symm_diff
-! leanprover-community/mathlib commit 6eb334bd8f3433d5b08ba156b8ec3e6af47e1904
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Logic.Equiv.Basic
+
+#align_import order.symm_diff from "leanprover-community/mathlib"@"6eb334bd8f3433d5b08ba156b8ec3e6af47e1904"
 
 /-!
 # Symmetric difference and bi-implication
@@ -58,7 +54,7 @@ Heyting
 
 open Function OrderDual
 
-variable {ι α β : Type _} {π : ι → Type _}
+variable {ι α β : Type*} {π : ι → Type*}
 
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
 def symmDiff [Sup α] [SDiff α] (a b : α) : α :=
@@ -72,9 +68,9 @@ def bihimp [Inf α] [HImp α] (a b : α) : α :=
 #align bihimp bihimp
 
 /- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
-  `order` or `symm_diff` if that happens. -/
+  `order` or `symmDiff` if that happens. -/
 /-- Notation for symmDiff -/
-infixl:100 " ∆ " =>  symmDiff
+infixl:100 " ∆ " => symmDiff
 
 /-- Notation for bihimp -/
 infixl:100 " ⇔ " => bihimp

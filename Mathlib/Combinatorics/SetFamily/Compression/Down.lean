@@ -2,14 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.compression.down
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Tactic.ScopedNS
+
+#align_import combinatorics.set_family.compression.down from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Down-compressions
@@ -41,7 +37,7 @@ compression, down-compression
 -/
 
 
-variable {α : Type _} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
+variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 
 namespace Finset
 

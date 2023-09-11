@@ -2,14 +2,12 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fun_like.basic
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.NormCast
+import Mathlib.Util.CompileInductive
+
+#align_import data.fun_like.basic from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Typeclass for a type `F` with an injective map to `A → B`
@@ -20,17 +18,17 @@ This typeclass is primarily for use by homomorphisms like `MonoidHom` and `Linea
 
 A typical type of morphisms should be declared as:
 ```
-structure MyHom (A B : Type _) [MyClass A] [MyClass B] :=
-(toFun : A → B)
-(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
+structure MyHom (A B : Type*) [MyClass A] [MyClass B] :=
+  (toFun : A → B)
+  (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyHom
 
-variables (A B : Type _) [MyClass A] [MyClass B]
+variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "morphism class" design below:
 instance : FunLike (MyHom A B) A (λ _, B) :=
-{ coe := MyHom.toFun, coe_injective' := λ f g h, by cases f; cases g; congr' }
+  { coe := MyHom.toFun, coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply
 `FunLike.coe` directly. -/
@@ -41,8 +39,8 @@ instance : CoeFun (MyHom A B) (λ _, A → B) := ⟨MyHom.toFun⟩
 /-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyHom A B) (f' : A → B) (h : f' = ⇑f) : MyHom A B :=
-{ toFun := f',
-  map_op' := h.symm ▸ f.map_op' }
+  { toFun := f',
+    map_op' := h.symm ▸ f.map_op' }
 
 end MyHom
 ```
@@ -60,19 +58,19 @@ Continuing the example above:
 ```
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
-class MyHomClass (F : Type _) (A B : outParam <| Type _) [MyClass A] [MyClass B]
+class MyHomClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
   extends FunLike F A (λ _, B) :=
 (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
-@[simp] lemma map_op {F A B : Type _} [MyClass A] [MyClass B] [MyHomClass F A B]
+@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
   (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
 MyHomClass.map_op
 
 -- You can replace `MyHom.FunLike` with the below instance:
 instance : MyHomClass (MyHom A B) A B :=
-{ coe := MyHom.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := MyHom.map_op' }
+  { coe := MyHom.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := MyHom.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -81,24 +79,24 @@ The second step is to add instances of your new `MyHomClass` for all types exten
 Typically, you can just declare a new class analogous to `MyHomClass`:
 
 ```
-structure CoolerHom (A B : Type _) [CoolClass A] [CoolClass B]
+structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
   extends MyHom A B :=
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-class CoolerHomClass (F : Type _) (A B : outParam <| Type _) [CoolClass A] [CoolClass B]
+class CoolerHomClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
   extends MyHomClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
-@[simp] lemma map_cool {F A B : Type _} [CoolClass A] [CoolClass B] [CoolerHomClass F A B]
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerHomClass F A B]
   (f : F) : f CoolClass.cool = CoolClass.cool :=
 MyHomClass.map_op
 
 -- You can also replace `MyHom.FunLike` with the below instance:
 instance : CoolerHomClass (CoolHom A B) A B :=
-{ coe := CoolHom.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := CoolHom.map_op',
-  map_cool := CoolHom.map_cool' }
+  { coe := CoolHom.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := CoolHom.map_op',
+    map_cool := CoolHom.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -107,7 +105,7 @@ Then any declaration taking a specific type of morphisms as parameter can instea
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyHom A B) : sorry := sorry
-lemma do_something {F : Type _} [MyHomClass F A B] (f : F) : sorry := sorry
+lemma do_something {F : Type*} [MyHomClass F A B] (f : F) : sorry := sorry
 ```
 
 This means anything set up for `MyHom`s will automatically work for `CoolerHomClass`es,
@@ -129,18 +127,21 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
 @[notation_class * toFun Simps.findCoercionArgs]
-class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sort _) where
+class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
   /-- The coercion to functions must be injective. -/
   coe_injective' : Function.Injective coe
 #align fun_like FunLike
 
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% FunLike.coe
+
 section Dependent
 
 /-! ### `FunLike F α β` where `β` depends on `a : α` -/
 
-variable (F α : Sort _) (β : α → Sort _)
+variable (F α : Sort*) (β : α → Sort*)
 
 namespace FunLike
 
@@ -195,7 +196,7 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
-⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
+  ⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
 #align fun_like.subsingleton_cod FunLike.subsingleton_cod
 
 end FunLike
@@ -206,7 +207,7 @@ section NonDependent
 
 /-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort _} [i : FunLike F α fun _ ↦ β]
+variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 

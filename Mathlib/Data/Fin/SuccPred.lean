@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.fin.succ_pred
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.SuccPred.Basic
+
+#align_import data.fin.succ_pred from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 
 /-!
 # Successors and predecessors of `Fin n`

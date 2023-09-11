@@ -2,16 +2,13 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module group_theory.nielsen_schreier
-! leanprover-community/mathlib commit 1bda4fc53de6ade5ab9da36f2192e24e2084a2ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Action
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.GroupTheory.IsFreeGroup
+
+#align_import group_theory.nielsen_schreier from "leanprover-community/mathlib"@"1bda4fc53de6ade5ab9da36f2192e24e2084a2ce"
 
 /-!
 # The Nielsen-Schreier theorem
@@ -194,7 +191,7 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
   treeHom T a ≫ p ≫ inv (treeHom T b)
 #align is_free_groupoid.spanning_tree.loop_of_hom IsFreeGroupoid.SpanningTree.loopOfHom
 
-/-- Turning an edge in the spanning tree into a loop gives the indentity loop. -/
+/-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
@@ -284,7 +281,7 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
   let f : G → X := fun g => FreeGroup.of (WeaklyConnectedComponent.mk g)
   let F : G ⥤ CategoryTheory.SingleObj.{u} (X : Type u) := SingleObj.differenceFunctor f
   change (F.map p) = ((@CategoryTheory.Functor.const G _ _ (SingleObj.category X)).obj ()).map p
-  congr ; ext
+  congr; ext
   rw [Functor.const_obj_map, id_as_one, differenceFunctor_map, @mul_inv_eq_one _ _ (f _)]
   apply congr_arg FreeGroup.of
   apply (WeaklyConnectedComponent.eq _ _).mpr

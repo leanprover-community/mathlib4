@@ -2,21 +2,18 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.infix
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 
+#align_import data.list.infix from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
+
 /-!
-# Prefixes, subfixes, infixes
+# Prefixes, suffixes, infixes
 
 This file proves properties about
-* `List.prefix`: `l₁` is a prefix of `l₂` if `l₂` starts with `l₁`.
-* `List.subfix`: `l₁` is a subfix of `l₂` if `l₂` ends with `l₁`.
-* `List.infix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some subfix of `l₂`.
+* `List.isPrefix`: `l₁` is a prefix of `l₂` if `l₂` starts with `l₁`.
+* `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
+* `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
@@ -26,13 +23,13 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 ## Notation
 
 `l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
-`l₁ <:+ l₂`: `l₁` is a subfix of `l₂`.
+`l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
 `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
 open Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 
@@ -88,13 +85,13 @@ theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
 #align list.reverse_prefix List.reverse_prefix
 #align list.reverse_infix List.reverse_infix
 
-alias reverse_prefix ↔ _ isSuffix.reverse
+alias ⟨_, isSuffix.reverse⟩ := reverse_prefix
 #align list.is_suffix.reverse List.isSuffix.reverse
 
-alias reverse_suffix ↔ _ isPrefix.reverse
+alias ⟨_, isPrefix.reverse⟩ := reverse_suffix
 #align list.is_prefix.reverse List.isPrefix.reverse
 
-alias reverse_infix ↔ _ isInfix.reverse
+alias ⟨_, isInfix.reverse⟩ := reverse_infix
 #align list.is_infix.reverse List.isInfix.reverse
 
 #align list.is_infix.length_le List.isInfix.length_le
@@ -104,13 +101,13 @@ alias reverse_infix ↔ _ isInfix.reverse
 #align list.prefix_nil_iff List.prefix_nil
 #align list.suffix_nil_iff List.suffix_nil
 
-alias infix_nil ↔ eq_nil_of_infix_nil _
+alias ⟨eq_nil_of_infix_nil, _⟩ := infix_nil
 #align list.eq_nil_of_infix_nil List.eq_nil_of_infix_nil
 
-alias prefix_nil ↔ eq_nil_of_prefix_nil _
+alias ⟨eq_nil_of_prefix_nil, _⟩ := prefix_nil
 #align list.eq_nil_of_prefix_nil List.eq_nil_of_prefix_nil
 
-alias suffix_nil ↔ eq_nil_of_suffix_nil _
+alias ⟨eq_nil_of_suffix_nil, _⟩ := suffix_nil
 #align list.eq_nil_of_suffix_nil List.eq_nil_of_suffix_nil
 
 #align list.infix_iff_prefix_suffix List.infix_iff_prefix_suffix
@@ -160,11 +157,11 @@ lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropS
 #align list.mem_of_mem_slice List.mem_of_mem_dropSlice
 
 theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
-  ⟨l.dropWhile p, takeWhile_append_drop p l⟩
+  ⟨l.dropWhile p, takeWhile_append_dropWhile p l⟩
 #align list.take_while_prefix List.takeWhile_prefix
 
 theorem dropWhile_suffix (p : α → Bool) : l.dropWhile p <:+ l :=
-  ⟨l.takeWhile p, takeWhile_append_drop p l⟩
+  ⟨l.takeWhile p, takeWhile_append_dropWhile p l⟩
 #align list.drop_while_suffix List.dropWhile_suffix
 
 theorem dropLast_prefix : ∀ l : List α, l.dropLast <+: l

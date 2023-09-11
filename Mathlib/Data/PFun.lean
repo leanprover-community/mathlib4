@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfun
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
+
+#align_import data.pfun from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Partial functions
@@ -58,17 +55,17 @@ Monad operations:
 open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
-  `α` to `β`. It is defined as `α → part β`. -/
-def PFun (α β : Type _) :=
+  `α` to `β`. It is defined as `α → Part β`. -/
+def PFun (α β : Type*) :=
   α → Part β
 #align pfun PFun
 
-/-- `α  →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
+/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
 infixr:25 " →. " => PFun
 
 namespace PFun
 
-variable {α β γ δ ε ι : Type _}
+variable {α β γ δ ε ι : Type*}
 
 instance inhabited : Inhabited (α →. β) :=
   ⟨fun _ => Part.none⟩
@@ -123,10 +120,10 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 #align pfun.as_subtype PFun.asSubtype
 
 /-- The type of partial functions `α →. β` is equivalent to
-the type of pairs `(p : α → Prop, f : subtype p → β)`. -/
+the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
-    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp ; congr ⟩
+    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr ⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -230,7 +227,7 @@ instance monad : Monad (PFun α) where
 
 instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
-  (id_map := fun f => by funext a ; dsimp [Functor.map, PFun.map] ; cases f a; rfl)
+  (id_map := fun f => by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
   (pure_bind := fun x f => funext fun a => Part.bind_some _ (f x))
   (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
 #align pfun.is_lawful_monad PFun.lawfulMonad
@@ -263,7 +260,7 @@ def fix (f : α →. Sum β α) : α →. β := fun a =>
 
 theorem dom_of_mem_fix {f : α →. Sum β α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
   let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-  rw [WellFounded.fixFEq] at h₂ ; exact h₂.fst.fst
+  rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
 #align pfun.dom_of_mem_fix PFun.dom_of_mem_fix
 
 theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
@@ -271,10 +268,10 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
   ⟨fun h => by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
     rw [WellFounded.fixFEq] at h₂
-    simp at h₂
+    simp only [Part.mem_assert_iff] at h₂
     cases' h₂ with h₂ h₃
-    split at h₃ <;> simp at h₃
-    next e => subst b; refine' Or.inl ⟨h₂, e⟩
+    split at h₃
+    next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
    fun h => by
     simp [fix]
@@ -328,19 +325,19 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 
 /-- A recursion principle for `PFun.fix`. -/
 @[elab_as_elim]
-def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
-  have h₂ := (Part.mem_assert_iff.1 h).snd;
+  have h₂ := (Part.mem_assert_iff.1 h).snd
   -- Porting note: revert/intro trick required to address `generalize_proofs` bug
   revert h₂
-  generalize_proofs h₁;
+  generalize_proofs h₁
   intro h₂; clear h
   induction' h₁ with a ha IH
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
 
-theorem fixInduction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
@@ -354,7 +351,7 @@ theorem fixInduction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} {
 `a` given that `f a` inherits `P` from `a` and `P` holds for preimages of `b`.
 -/
 @[elab_as_elim]
-def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α}
+def fixInduction' {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α}
     (h : b ∈ f.fix a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
   refine' fixInduction h fun a' h ih => _
@@ -365,7 +362,7 @@ def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α}
   · exact hind _ _ (fix_fwd h e) e (ih _ e)
 #align pfun.fix_induction' PFun.fixInduction'
 
-theorem fixInduction'_stop {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
+theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (fa : Sum.inl b ∈ f a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) :
     @fixInduction' _ _ C _ _ _ h hbase hind = hbase a fa := by
@@ -379,7 +376,7 @@ theorem fixInduction'_stop {C : α → Sort _} {f : α →. Sum β α} {b : β} 
   simp
 #align pfun.fix_induction'_stop PFun.fixInduction'_stop
 
-theorem fixInduction'_fwd {C : α → Sort _} {f : α →. Sum β α} {b : β} {a a' : α} (h : b ∈ f.fix a)
+theorem fixInduction'_fwd {C : α → Sort*} {f : α →. Sum β α} {b : β} {a a' : α} (h : b ∈ f.fix a)
     (h' : b ∈ f.fix a') (fa : Sum.inr a' ∈ f a)
     (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) :
@@ -451,13 +448,13 @@ theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ 
   Rel.preimage_union _ s t
 #align pfun.preimage_union PFun.preimage_union
 
-theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext ; simp [mem_preimage, mem_dom]
+theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 #align pfun.preimage_univ PFun.preimage_univ
 
-theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext ; simp
+theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
 #align pfun.coe_preimage PFun.coe_preimage
 
-/-- Core of a set `s : set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
+/-- Core of a set `s : Set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
 such that `f a ∈ s`, if `f a` is defined. -/
 def core (s : Set β) : Set α :=
   f.graph'.core s
@@ -501,7 +498,7 @@ theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = 
 end
 
 theorem core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
-  ext x ; simp [core_def]
+  ext x; simp [core_def]
 #align pfun.core_restrict PFun.core_restrict
 
 theorem preimage_subset_core (f : α →. β) (s : Set β) : f.preimage s ⊆ f.core s :=
@@ -560,12 +557,12 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
 #align pfun.mem_to_subtype_iff PFun.mem_toSubtype_iff
 
 /-- The identity as a partial function -/
-protected def id (α : Type _) : α →. α :=
+protected def id (α : Type*) : α →. α :=
   Part.some
 #align pfun.id PFun.id
 
 @[simp]
-theorem coe_id (α : Type _) : ((id : α → α) : α →. α) = PFun.id α :=
+theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
   rfl
 #align pfun.coe_id PFun.coe_id
 
@@ -704,7 +701,7 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golf'd verson of the `tidy?` proof
+  -- Porting note: was `by tidy`, below is a golf'd version of the `tidy?` proof
   ext $ λ ⟨_, _⟩ ⟨_, _⟩ =>
   ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
    λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩

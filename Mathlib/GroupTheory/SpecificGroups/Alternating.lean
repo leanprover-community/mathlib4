@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module group_theory.specific_groups.alternating
-! leanprover-community/mathlib commit 0f6670b8af2dff699de1c0b4b49039b31bc13c46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.IntervalCases
+
+#align_import group_theory.specific_groups.alternating from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
 /-!
 # Alternating Groups
@@ -46,7 +43,7 @@ alternating group permutation
 
 open Equiv Equiv.Perm Subgroup Fintype
 
-variable (α : Type _) [Fintype α] [DecidableEq α]
+variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/

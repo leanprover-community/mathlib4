@@ -2,15 +2,12 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.admissible_absolute_value
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+
+#align_import number_theory.class_number.admissible_absolute_value from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Admissible absolute values
@@ -36,7 +33,7 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 
 namespace AbsoluteValue
 
-variable {R : Type _} [EuclideanDomain R]
+variable {R : Type*} [EuclideanDomain R]
 
 variable (abv : AbsoluteValue R ℤ)
 
@@ -62,7 +59,7 @@ variable {abv}
 
 /-- For all `ε > 0` and finite families `A`, we can partition the remainders of `A` mod `b`
 into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
-theorem exists_partition {ι : Type _} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
+theorem exists_partition {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
     (A : ι → R) (h : abv.IsAdmissible) : ∃ t : ι → Fin (h.card ε),
       ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι
@@ -125,7 +122,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
 
 /-- Any large enough family of vectors in `R^ι` has a pair of elements
 whose remainders are close together, pointwise. -/
-theorem exists_approx {ι : Type _} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
+theorem exists_approx {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
     (h : abv.IsAdmissible) (A : Fin (h.card ε ^ Fintype.card ι).succ → ι → R) :
     ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι

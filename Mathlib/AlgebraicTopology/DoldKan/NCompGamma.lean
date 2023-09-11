@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.n_comp_gamma
-! leanprover-community/mathlib commit 19d6240dcc5e5c8bd6e1e3c588b92e837af76f9e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
 import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
+
+#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
@@ -21,6 +18,8 @@ It is then shown that `Γ₂N₂.natTrans` is an isomorphism by using
 that it becomes an isomorphism after the application of the functor
 `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 which reflects isomorphisms.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -34,7 +33,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
@@ -67,7 +66,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
         dsimp at h'
         linarith
     by_cases hj₁ : j₁ = 0
-    . subst hj₁
+    · subst hj₁
       rw [assoc, ← SimplexCategory.δ_comp_δ'' (Fin.zero_le _)]
       simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ j₂.succ_ne_zero, zero_comp]
@@ -76,7 +75,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
-      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero] ; linarith)
+      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; linarith)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_comp_map_mono_eq_zero AlgebraicTopology.DoldKan.PInfty_comp_map_mono_eq_zero
 
@@ -187,6 +186,12 @@ lemma compatibility_Γ₂N₁_Γ₂N₂_hom_app (X : SimplicialObject C) :
 
 -- Porting note: added to speed up elaboration
 attribute [irreducible] compatibility_Γ₂N₁_Γ₂N₂
+
+lemma compatibility_Γ₂N₁_Γ₂N₂_inv_app (X : SimplicialObject C) :
+    compatibility_Γ₂N₁_Γ₂N₂.inv.app X =
+      eqToHom (by rw [← Functor.assoc, compatibility_N₁_N₂]) := by
+  rw [← cancel_mono (compatibility_Γ₂N₁_Γ₂N₂.hom.app X), Iso.inv_hom_id_app,
+    compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_trans, eqToHom_refl]
 
 namespace Γ₂N₂
 

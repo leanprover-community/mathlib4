@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.real.enat_ennreal
-! leanprover-community/mathlib commit 53b216bcc1146df1c4a0a86877890ea9f1f01589
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Real.ENNReal
+
+#align_import data.real.enat_ennreal from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`
@@ -37,7 +34,7 @@ theorem map_coe_nnreal : WithTop.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞
   rfl
 #align enat.map_coe_nnreal ENat.map_coe_nnreal
 
-/-- Coercion `ℕ∞ → ℝ≥0∞` as an `order_embedding`. -/
+/-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
 @[simps! (config := { fullyApplied := false })]
 def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
   Nat.castOrderEmbedding.withTopMap

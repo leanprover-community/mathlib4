@@ -2,15 +2,12 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Mon.basic
-! leanprover-community/mathlib commit 0caf3701139ef2e69c215717665361cda205a90b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+
+#align_import algebra.category.Mon.basic from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
 /-!
 # Category instances for monoid, add_monoid, comm_monoid, and add_comm_monoid.
@@ -22,6 +19,8 @@ We introduce the bundled categories:
 * `AddCommMonCat`
 along with the relevant forgetful functors between them.
 -/
+
+set_option autoImplicit true
 
 
 universe u v
@@ -45,7 +44,7 @@ namespace MonCat
 /-- `MonoidHom` doesn't actually assume associativity. This alias is needed to make the category
 theory machinery work. -/
 @[to_additive]
-abbrev AssocMonoidHom (M N : Type _) [Monoid M] [Monoid N] :=
+abbrev AssocMonoidHom (M N : Type*) [Monoid M] [Monoid N] :=
   MonoidHom M N
 set_option linter.uppercaseLean3 false in
 #align Mon.assoc_monoid_hom MonCat.AssocMonoidHom
@@ -58,7 +57,7 @@ add_decl_doc AddMonCat.AssocAddMonoidHom
 
 @[to_additive]
 instance bundledHom : BundledHom AssocMonoidHom where
-  toFun  {X Y} _ _ f := ⇑f
+  toFun {X Y} _ _ f := ⇑f
   id _ := MonoidHom.id _
   comp _ _ _ := MonoidHom.comp
 set_option linter.uppercaseLean3 false in
@@ -69,12 +68,13 @@ set_option linter.uppercaseLean3 false in
 deriving instance LargeCategory for MonCat
 attribute [to_additive instAddMonCatLargeCategory] instMonCatLargeCategory
 
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
 instance concreteCategory : ConcreteCategory MonCat :=
   BundledHom.concreteCategory _
 
 @[to_additive]
-instance : CoeSort MonCat (Type _) where
+instance : CoeSort MonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
@@ -84,6 +84,10 @@ instance (X : MonCat) : Monoid X := X.str
 @[to_additive]
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
+
+@[to_additive]
+instance Hom_FunLike (X Y : MonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (X →* Y) X (fun _ => Y) by infer_instance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -136,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.of_hom AddMonCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddMonCat`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/
 add_decl_doc AddMonCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -145,8 +149,23 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
+---- porting note: added to ease the port of `RepresentationTheory.Action`
 @[to_additive]
-instance {G : Type _} [Group G] : Group (MonCat.of G) := by assumption
+instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
+
+@[to_additive (attr := simp)]
+lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
+
+---- porting note: added to ease the port of `RepresentationTheory.Action`
+@[to_additive (attr := simp)]
+lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
+
+@[to_additive (attr := simp)]
+lemma mul_of {A : Type*} [Monoid A] (a b : A) :
+    @HMul.hMul (MonCat.of A) (MonCat.of A) (MonCat.of A) _ a b = a * b := rfl
+
+@[to_additive]
+instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 
 end MonCat
 
@@ -170,13 +189,14 @@ instance : BundledHom.ParentProjection @CommMonoid.toMonoid := ⟨⟩
 deriving instance LargeCategory for CommMonCat
 attribute [to_additive instAddCommMonCatLargeCategory] instCommMonCatLargeCategory
 
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
 instance concreteCategory : ConcreteCategory CommMonCat := by
   dsimp only [CommMonCat]
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommMonCat (Type _) where
+instance : CoeSort CommMonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
@@ -186,6 +206,10 @@ instance (X : CommMonCat) : CommMonoid X := X.str
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
+
+@[to_additive]
+instance Hom_FunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (X →* Y) X (fun _ => Y) by infer_instance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -249,7 +273,7 @@ instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonC
 @[to_additive]
 def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y := f
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
 add_decl_doc AddCommMonCat.ofHom
 
 @[to_additive (attr := simp)]

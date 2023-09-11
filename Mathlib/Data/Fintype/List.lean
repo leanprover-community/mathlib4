@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.fintype.list
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Powerset
+
+#align_import data.fintype.list from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 
@@ -20,7 +17,7 @@ admits a `Fintype` instance.
 
 ## Implementation details
 To construct the `Fintype` instance, a function lifting a `Multiset α`
-to the `Finset (list α)` that can construct it is provided.
+to the `Finset (List α)` that can construct it is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 In general, a `DecidableEq` instance is not necessary to define this function,
@@ -30,7 +27,7 @@ which is a TODO.
 -/
 
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 open List
 

@@ -2,19 +2,15 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.ring.canonical
-! leanprover-community/mathlib commit 824f9ae93a4f5174d2ea948e2d75843dd83447bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.GroupTheory.GroupAction.Defs
 
+#align_import algebra.order.ring.canonical from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
+
 /-!
-# Canoncially ordered rings and semirings.
+# Canonically ordered rings and semirings.
 
 * `CanonicallyOrderedCommSemiring`
   - `CanonicallyOrderedAddMonoid` & multiplication & `*` respects `≤` & no zero divisors
@@ -32,12 +28,12 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type _}
+variable {α : Type u} {β : Type*}
 
 /-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
 iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
 not the integers or other ordered groups. -/
-class CanonicallyOrderedCommSemiring (α : Type _) extends CanonicallyOrderedAddMonoid α,
+class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddMonoid α,
     CommSemiring α where
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0

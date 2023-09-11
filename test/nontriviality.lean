@@ -5,6 +5,7 @@ import Mathlib.Data.Nat.Basic
 
 /-! ### Test `nontriviality` with inequality hypotheses -/
 
+set_option autoImplicit true
 
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality
@@ -40,7 +41,7 @@ example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 2 ∣ 4 := by
   rename_i inst; guard_hyp inst : Nontrivial R
   decide
 
-/-! Test using `@[nontriviality]` lemmas in `nontriviality and custom `simp` lemmas -/
+/-! Test using `@[nontriviality]` lemmas in `nontriviality` and custom `simp` lemmas -/
 
 
 def EmptyOrUniv {α : Type _} (s : Set α) : Prop :=

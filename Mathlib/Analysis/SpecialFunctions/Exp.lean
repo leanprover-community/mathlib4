@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.exp
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
+
+#align_import analysis.special_functions.exp from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
 
 /-!
 # Complex and real exponential
@@ -44,7 +41,6 @@ theorem exp_bound_sq (x z : ℂ) (hz : ‖z‖ ≤ 1) :
     _ = ‖exp x‖ * ‖exp z - 1 - z‖ := (norm_mul _ _)
     _ ≤ ‖exp x‖ * ‖z‖ ^ 2 :=
       mul_le_mul_of_nonneg_left (abs_exp_sub_one_sub_id_le hz) (norm_nonneg _)
-
 #align complex.exp_bound_sq Complex.exp_bound_sq
 
 theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) (x y : ℂ)
@@ -64,7 +60,6 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
     _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) :=
       (add_le_add_left (mul_le_mul le_rfl hyx_sq_le (sq_nonneg _) (norm_nonneg _)) _)
     _ = (1 + r) * ‖exp x‖ * ‖y - x‖ := by ring
-
 #align complex.locally_lipschitz_exp Complex.locally_lipschitz_exp
 
 -- Porting note: proof by term mode `locally_lipschitz_exp zero_le_one le_rfl x`
@@ -87,7 +82,7 @@ end Complex
 
 section ComplexContinuousExpComp
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Complex
 
@@ -134,7 +129,7 @@ end Real
 
 section RealContinuousExpComp
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Real
 
@@ -168,7 +163,7 @@ end RealContinuousExpComp
 
 namespace Real
 
-variable {α : Type _} {x y z : ℝ} {l : Filter α}
+variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
 theorem exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
   rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
@@ -212,7 +207,7 @@ theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
 @[simp]
 theorem isBoundedUnder_le_exp_comp {f : α → ℝ} :
     (IsBoundedUnder (· ≤ ·) l fun x => exp (f x)) ↔ IsBoundedUnder (· ≤ ·) l f :=
-  exp_monotone.isBoundedUnder_le_comp tendsto_exp_atTop
+  exp_monotone.isBoundedUnder_le_comp_iff tendsto_exp_atTop
 #align real.is_bounded_under_le_exp_comp Real.isBoundedUnder_le_exp_comp
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/
@@ -236,7 +231,6 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
       (div_le_div_of_le (mul_pos (exp_pos _) hC₀).le
         (exp_le_exp.2 <| (Nat.ceil_lt_add_one hx₀.le).le))
     _ = exp x / C := by rw [add_comm, exp_add, mul_div_mul_left _ _ (exp_pos _).ne']
-
 #align real.tendsto_exp_div_pow_at_top Real.tendsto_exp_div_pow_atTop
 
 /-- The function `x^n * exp(-x)` tends to `0` at `+∞`, for any natural number `n`. -/
@@ -447,13 +441,13 @@ theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := 
   simp [nhdsWithin, comap_exp_nhds_zero, this]
 #align complex.comap_exp_nhds_within_zero Complex.comap_exp_nhdsWithin_zero
 
-theorem tendsto_exp_nhds_zero_iff {α : Type _} {l : Filter α} {f : α → ℂ} :
+theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
   simp_rw [←comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
   rfl
 #align complex.tendsto_exp_nhds_zero_iff Complex.tendsto_exp_nhds_zero_iff
 
-/-- `Complex.abs (complex.exp z) → ∞` as `Complex.re z → ∞`. TODO: use `Bornology.cobounded`. -/
+/-- `Complex.abs (Complex.exp z) → ∞` as `Complex.re z → ∞`. TODO: use `Bornology.cobounded`. -/
 theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (comap abs atTop) :=
   comap_exp_comap_abs_atTop ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_top Complex.tendsto_exp_comap_re_atTop

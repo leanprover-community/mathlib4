@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.functor.reflects_isomorphisms
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Functor.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
+
+#align_import category_theory.functor.reflects_isomorphisms from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Functors which reflect isomorphisms

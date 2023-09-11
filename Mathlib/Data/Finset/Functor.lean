@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finset.functor
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Multiset.Functor
+
+#align_import data.finset.functor from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Functoriality of `Finset`
@@ -144,7 +141,7 @@ instance commApplicative : CommApplicative Finset :=
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
       change (s.biUnion fun a => t.image fun b => (a, b))
         = t.biUnion fun b => s.image fun a => (a, b)
-      trans s.product t <;> [rw [product_eq_biUnion], rw [product_eq_biUnion_right]] }
+      trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
 
 end Applicative
 

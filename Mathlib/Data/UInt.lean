@@ -23,7 +23,7 @@ instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
 
 instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
 
-instance USize.neZero : NeZero  USize.size := NeZero.of_pos usize_size_gt_zero
+instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
